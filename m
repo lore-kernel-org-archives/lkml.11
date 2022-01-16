@@ -2,621 +2,258 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86678C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 13:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1156C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 13:27:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235276AbiAPNZz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 08:25:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44740 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235195AbiAPNZy (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 08:25:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880CAC061574;
-        Sun, 16 Jan 2022 05:25:53 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S235322AbiAPN1c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 08:27:32 -0500
+Received: from mx3.molgen.mpg.de ([141.14.17.11]:50395 "EHLO mx1.molgen.mpg.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232360AbiAPN1b (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 16 Jan 2022 08:27:31 -0500
+Received: from [192.168.0.4] (ip5f5aeaa0.dynamic.kabel-deutschland.de [95.90.234.160])
+        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2475EB80D41;
-        Sun, 16 Jan 2022 13:25:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07128C36AE7;
-        Sun, 16 Jan 2022 13:25:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642339550;
-        bh=Lv/w19RFsCS19dBN/BlA8nwdPb+A2tMMfa5vNemp8cg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=d1nv9zD+266hAHl4cVgiZbXeRqsne/rut5/qaeDbgWWKRKsR486AqoJbG+5VbO2QZ
-         CkWRujp+2pcF96XVnY2s8C0jNYrW9WHhtE//b8ps1aQJZFT3eprKgl++TqfBam05hx
-         N+ikEhS0pYOeGkUmdtjZevvO8gYtxQAt4nwHWgVh0KjnHU4GvL+qiffyivndLepte3
-         s5tTcl61bTjsLw3Vin19qIsKI1EEiQK6+Q52vQsXK19lvaTGYtWaE92MHrcPwxARtx
-         nG7hz6UFim/aax6G9Nvv8b4scDDYrF4byo/xLzkXgsxY4HuVaJE3LE9ofSXyeLAJy1
-         8jWc4KO4cvvxQ==
-Date:   Sun, 16 Jan 2022 13:31:51 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc:     <robh+dt@kernel.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/3] iio:frequency:admv1014: add support for ADMV1014
-Message-ID: <20220116133151.0123633c@jic23-huawei>
-In-Reply-To: <20220110145839.163998-1-antoniu.miclaus@analog.com>
-References: <20220110145839.163998-1-antoniu.miclaus@analog.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 0B12661EA1BE4;
+        Sun, 16 Jan 2022 14:27:29 +0100 (CET)
+Message-ID: <d7206e12-1b99-c3be-84f4-df22af427ef5@molgen.mpg.de>
+Date:   Sun, 16 Jan 2022 14:27:28 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: Unable to transfer big files to Nokia N9
+Content-Language: en-US
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+To:     Luiz Augusto von Dentz <luiz.dentz@gmail.com>
+Cc:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        linux-bluetooth@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>, regressions@lists.linux.dev,
+        Takashi Iwai <tiwai@suse.com>
+References: <eb6d86eb-d156-d7ac-0965-181719023d51@molgen.mpg.de>
+ <CABBYNZLENxvXMCh6XbBSnu0jasV1F0QestEK5v2mnNUpJdw3Vw@mail.gmail.com>
+ <cf71bdea-ec22-e4c9-016c-69e94a130607@molgen.mpg.de>
+ <a93c0fa7-7b84-6aea-265b-c913e0c84678@molgen.mpg.de>
+In-Reply-To: <a93c0fa7-7b84-6aea-265b-c913e0c84678@molgen.mpg.de>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 10 Jan 2022 16:58:37 +0200
-Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+#regzbot introduced: 81be03e026dc0c16dc1c64e088b2a53b73caa895
 
-> The ADMV1014 is a silicon germanium (SiGe), wideband,
-> microwave downconverter optimized for point to point microwave
-> radio designs operating in the 24 GHz to 44 GHz frequency range.
+
+Dear Luiz,
+
+
+It turns out there was a regression in Linux 5.16-rc1.
+
+
+Am 20.12.21 um 22:31 schrieb Paul Menzel:
+
+> Am 01.12.21 um 23:07 schrieb Paul Menzel:
 > 
-> Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/ADMV1014.pdf
+>> Am 01.12.21 um 19:29 schrieb Luiz Augusto von Dentz:
+>>
+>>> On Wed, Dec 1, 2021 at 9:39 AM Paul Menzel <pmenzel@molgen.mpg.de> 
+>>> wrote:
+>>
+>>>> For the first time, I wanted to transfer a 2 MB PDF file from a Dell
+>>>> Latitude E7250 with Debian sid/unstable with Linux 5.16-rc1 to a Nokia
+>>>> N9 (MeeGo/Harmattan). Using the package *bluez-obexd* 5.61-1 and GNOME
+>>>> 41, the device was found, and paired fine. Then I selected to transfer
+>>>> the 2 MB file, and after starting for a second, it timed out after the
+>>>> progress bar moves forward ones and failed.
+>>>>
+>>>> The systemd journal contains:
+>>>>
+>>>>       obexd[21139]: Transfer(0x56243fe4f790) Error: Timed out waiting for response
+>>>>
+>>>> Testing with a a 5 byte test text file, worked fine. Also testing with a
+>>>> Galaly M32, both files were transferred without problems (though slowly
+>>>> with 32 KB/s.)
+>>>>
+>>>> Trying to connect to the device with bluetoothctl failed for me, and the
+>>>> journal contained, it failed.
+>>>>
+>>>>       $ bluetoothctl
+>>>>       Agent registered
+>>>>       [bluetooth]# connect 40:98:4E:5B:CE:XX
+>>>>       Attempting to connect to 40:98:4E:5B:CE:XX
+>>>>       Failed to connect: org.bluez.Error.Failed
+>>>>
+>>>>       bluetoothd[21104]: src/service.c:btd_service_connect() a2dp-source profile connect failed for 40:98:4E:5B:CE:B3: Protocol not available
+>>>>
+>>>> As the Nokia N9 was once pretty popular in the Linux community, I am
+>>>> pretty sure, it used to work fine in the past, and there is some
+>>>> regression. It’d be great, if you could give me some hints how to
+>>>> further debug the issue.
+>>>
+>>> We will need some logs, obexd and btmon, if possible.
+>>
+>> I only managed to get the btmon trace [1]. I did `sudo modprobe -r 
+>> btusb` and `sudo btmon -w /dev/shm/trace.log`.
+>>
+>> Linux messages:
+>>
+>>      [29880.100381] calling  btusb_driver_init+0x0/0x1000 [btusb] @ 28716
+>>      [29880.239603] usbcore: registered new interface driver btusb
+>>      [29880.239608] initcall btusb_driver_init+0x0/0x1000 [btusb] returned 0 after 135952 usecs
+>>      [29880.240706] Bluetooth: hci0: unexpected event for opcode 0x0500
+>>      [29880.241598] Bluetooth: hci0: Legacy ROM 2.5 revision 1.0 build 3 week 17 2014
+>>      [29880.241605] Bluetooth: hci0: Intel device is already patched. patch num: 32
+>>
+>>  From the system journal:
+>>
+>>      Dez 01 22:52:19 ersatz obexd[21139]: Transfer(0x56243fe53dd0) Error: Timed out waiting for response
 > 
-No blank line here. Datasheet is part of the tag block.
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> Were you able to see anything in the attached logs? If the obexd logs 
+> are missing, can you please tell how I should capture them?
+> 
+> I also tested with Ubuntu 20.04 (*linux-image-5.11.0-27-generic*) and 
+> 21.10 (*linux-image-5.13.0-19-generic*) live systems booted from a USB 
+> storage device, and transferring `/usr/bin/systemctl` 
+> (`/lib/systemd/systemd`) with size of 1.8 MB worked fine.
+> 
+> Could there be a regression in that area? Unfortunately, it’s not easy 
+> for me to do a bisection on the device at hand.
+> 
+> (Would it be possible to do with QEMU and USB controller and Bluetooth 
+> device passthrough? How can I transfer the file on the command line so I 
+> wouldn’t need to install a desktop environment?)
 
-I requested a full ABI listing and comments in the patches description in my v1
-review because some elements (hardwaregain) are not particularly obvious and
-I'd like to understand how they relate to the actual things going on in the
-signal path.  I can figure it out from the datasheet, but much easier if you
-provide an explanation for reviewers as that's a dense document!
+Turns out, that is indeed possible [2], but turned out to be cumbersome, 
+as I hit the regression [3], which seems to have been fixed by commit 
+95655456e7ce (Bluetooth: btintel: Fix broken LED quirk for legacy ROM 
+devices) merged in the current Linux 5.17 cycle this week.
 
-Some of the controls look to be IQ or IF mode specific and we should only
-expose those relevant to the mode from the dt bindings.
+As a work around, I applied a hunk from Takashi’s patch.
 
+-       { USB_DEVICE(0x8087, 0x0a2a), .driver_info = BTUSB_INTEL_COMBINED },
++       { USB_DEVICE(0x8087, 0x0a2a), .driver_info = BTUSB_INTEL_COMBINED |
++ 
+BTUSB_INTEL_BROKEN_INITIAL_NCMD },
 
->  config ADRF6780
->          tristate "Analog Devices ADRF6780 Microwave Upconverter"
->          depends on SPI
-> diff --git a/drivers/iio/frequency/Makefile b/drivers/iio/frequency/Makefile
-> index ae3136c79202..5f0348e5eb53 100644
-> --- a/drivers/iio/frequency/Makefile
-> +++ b/drivers/iio/frequency/Makefile
-> @@ -7,4 +7,5 @@
->  obj-$(CONFIG_AD9523) += ad9523.o
->  obj-$(CONFIG_ADF4350) += adf4350.o
->  obj-$(CONFIG_ADF4371) += adf4371.o
-> +obj-$(CONFIG_ADMV1014) += admv1014.o
->  obj-$(CONFIG_ADRF6780) += adrf6780.o
-> diff --git a/drivers/iio/frequency/admv1014.c b/drivers/iio/frequency/admv1014.c
-> new file mode 100644
-> index 000000000000..ed30b4f916b6
-> --- /dev/null
-> +++ b/drivers/iio/frequency/admv1014.c
-> @@ -0,0 +1,949 @@
+My problem with the Nokia N9 is still present in Linus’ master branch.
 
-...
+Then I built a minimal Linux kernel for QEMU, and ran:
 
-> +
-> +static const int mixer_vgate_table[] = {106, 107, 108, 110, 111, 112, 113, 114, 117, 118, 119, 120, 122, 123, 44, 45};
+     qemu-system-x86_64 -cpu host -m 2G -enable-kvm \
+       -usb -device usb-host,vendorid=0x8087,productid=0x0a2a \
+       -drive file=/dev/shm/debian-64.img,format=raw,if=virtio \
+       -net nic -net user,hostfwd=tcp::22223-:22 \
+       -kernel /dev/shm/bzImage -append "root=/dev/vda1 rw quiet"
 
-Too long. Add some line breaks to keep it below 80 chars.
+In the Debian sid/unstable VM, I used
 
-> +
+     ssh root@localhost -p 22223
 
-...
+I once had to pair the VM with the Nokia N9 in bluetoothctl, and then 
+started `/usr/libexec/bluetooth/obexd`, and ran `obexctl`, and connected 
+first with `connect`, and then ran `send /lib/systemd/systemd` to 
+transfer the file. In the problematic cases it stopped/hung after the 
+first progress message.
 
+     # obexctl
+     [NEW] Client /org/bluez/obex
+     [obex]# connect 40:98:4E:5B:CE:XX
+     Attempting to connect to 40:98:4E:5B:CE:XX
+     [NEW] Session /org/bluez/obex/client/session0 [default]
+     [NEW] ObjectPush /org/bluez/obex/client/session0
+     Connection successful
+     [40:98:4E:5B:CE:XX]# send /lib/systemd/systemd
+     Attempting to send /lib/systemd/systemd to 
+/org/bluez/obex/client/session0
+     [NEW] Transfer /org/bluez/obex/client/session0/transfer0
+     Transfer /org/bluez/obex/client/session0/transfer0
+         Status: queued
+         Name: systemd
+         Size: 1841712
+         Filename: /lib/systemd/systemd
+         Session: /org/bluez/obex/client/session0
+     [CHG] Transfer /org/bluez/obex/client/session0/transfer0 Status: active
+     [CHG] Transfer /org/bluez/obex/client/session0/transfer0 
+Transferred: 32737 (@32KB/s 00:55)
+     [CHG] Transfer /org/bluez/obex/client/session0/transfer0 Status: error
+     [DEL] Transfer /org/bluez/obex/client/session0/transfer0
 
-> +static int admv1014_read_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int *val, int *val2, long info)
-> +{
-> +	struct admv1014_state *st = iio_priv(indio_dev);
-> +	unsigned int data;
-> +	int ret;
-> +
-> +	switch (info) {
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		ret = admv1014_spi_read(st, ADMV1014_REG_IF_AMP_BB_AMP, &data);
-> +		if (ret)
-> +			return ret;
-> +
-> +		if (chan->channel2 == IIO_MOD_I)
-> +			*val = FIELD_GET(ADMV1014_BB_AMP_OFFSET_I_MSK, data);
-> +		else
-> +			*val = FIELD_GET(ADMV1014_BB_AMP_OFFSET_Q_MSK, data);
-> +
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_PHASE:
-> +		ret = admv1014_spi_read(st, ADMV1014_REG_LO_AMP_PHASE_ADJUST1, &data);
-> +		if (ret)
-> +			return ret;
-> +
-> +		if (chan->channel2 == IIO_MOD_I)
-> +			*val = FIELD_GET(ADMV1014_LOAMP_PH_ADJ_I_FINE_MSK, data);
-> +		else
-> +			*val = FIELD_GET(ADMV1014_LOAMP_PH_ADJ_Q_FINE_MSK, data);
-> +
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		ret = admv1014_spi_read(st, ADMV1014_REG_MIXER, &data);
-> +		if (ret)
-> +			return ret;
-> +
-> +		*val = FIELD_GET(ADMV1014_DET_PROG_MSK, data);
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_HARDWAREGAIN:
-> +		ret = admv1014_spi_read(st, ADMV1014_REG_BB_AMP_AGC, &data);
+Some manual bisection of Linux releases, verified, that the regression 
+was introduced in Linux 5.16-rc1. (Lucky me, I started using Bluetooth 
+with the Nokia with Linux 5.16-rc1.) Then I verified it was introduced 
+by the Bluetooth pull request for Linux 5.16. Then I picked commit 
+81be03e026dc0c16dc1c64e088b2a53b73caa895 due to the commit message, and 
+bisected from there, and it turns out, that this commit is actually 
+introducing the regression.
 
-Not immediately obvious to me what this is... It might be a scale on the output
-channel?  Also I think it only applies in in IQ mode rather than IF?
+     $ git bisect good
+     81be03e026dc0c16dc1c64e088b2a53b73caa895 is the first bad commit
+     commit 81be03e026dc0c16dc1c64e088b2a53b73caa895
+     Author: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+     Date:   Fri Sep 3 15:27:32 2021 -0700
 
-> +		if (ret)
-> +			return ret;
-> +
-> +		*val = FIELD_GET(ADMV1014_BB_AMP_GAIN_CTRL_MSK, data);
-> +		return IIO_VAL_INT;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
+         Bluetooth: RFCOMM: Replace use of memcpy_from_msg with 
+bt_skb_sendmmsg
 
+         This makes use of bt_skb_sendmmsg instead using memcpy_from_msg 
+which
+         is not considered safe to be used when lock_sock is held.
 
-...
+         Also make rfcomm_dlc_send handle skb with fragments and queue 
+them all
+         atomically.
 
+         Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+         Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 
-> +
-> +#define _ADMV1014_EXT_INFO(_name, _shared, _ident) { \
-> +		.name = _name, \
-> +		.read = admv1014_read, \
-> +		.write = admv1014_write, \
-> +		.private = _ident, \
-> +		.shared = _shared, \
-> +}
-> +
-> +static const struct iio_chan_spec_ext_info admv1014_ext_info[] = {
-> +	_ADMV1014_EXT_INFO("calibscale_coarse", IIO_SEPARATE, ADMV1014_CALIBSCALE_COARSE),
-> +	_ADMV1014_EXT_INFO("calibscale_fine", IIO_SEPARATE, ADMV1014_CALIBSCALE_FINE),
-> +	{ },
-Null terminator, so ideally no trailing comma.  We'll never add anything after this last
-element.
+      net/bluetooth/rfcomm/core.c | 50 
+++++++++++++++++++++++++++++++++++++++-------
+      net/bluetooth/rfcomm/sock.c | 46 
++++++++++--------------------------------
+      2 files changed, 53 insertions(+), 43 deletions(-)
 
-As I read the datasheet (may well be wrong) these are only relevant in IF mode so we shouldn't
-expose them if in IQ..
-
-> +};
-> +
-> +#define ADMV1014_CHAN(_channel, rf_comp) {				\
-> +	.type = IIO_ALTVOLTAGE,						\
-> +	.modified = 1,							\
-> +	.output = 0,							\
-> +	.indexed = 1,							\
-> +	.channel2 = IIO_MOD_##rf_comp,					\
-> +	.channel = _channel,						\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_PHASE) |		\
-> +		BIT(IIO_CHAN_INFO_OFFSET),				\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_HARDWAREGAIN)	\
-> +	}
-> +
-> +#define ADMV1014_CHAN_CALIBSCALE(_channel, rf_comp, _admv1014_ext_info) {	\
-> +	.type = IIO_ALTVOLTAGE,						\
-> +	.modified = 1,							\
-> +	.output = 0,							\
-> +	.indexed = 1,							\
-> +	.channel2 = IIO_MOD_##rf_comp,					\
-> +	.channel = _channel,						\
-> +	.ext_info = _admv1014_ext_info					\
-> +	}
-> +
-> +static const struct iio_chan_spec admv1014_channels[] = {
-> +	ADMV1014_CHAN(0, I),
-> +	ADMV1014_CHAN(0, Q),
-> +	ADMV1014_CHAN_CALIBSCALE(0, I, admv1014_ext_info),
-> +	ADMV1014_CHAN_CALIBSCALE(0, Q, admv1014_ext_info),
-> +	{
-> +		.type = IIO_POWER,
-> +		.modified = 1,
-> +		.output = 0,
-> +		.indexed = 1,
-> +		.channel = 0,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_SCALE),
-> +		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE)
-> +	}
-> +};
-> +
-> +static void admv1014_clk_disable(void *data)
-> +{
-> +	clk_disable_unprepare(data);
-> +}
-> +
-> +static void admv1014_reg_disable(void *data)
-> +{
-> +	regulator_disable(data);
-> +}
-> +
-> +static void admv1014_powerdown(void *data)
-> +{
-> +	unsigned int enable_reg, enable_reg_msk;
-> +
-> +	/* Disable all components in the Enable Register */
-> +	enable_reg_msk = ADMV1014_IBIAS_PD_MSK |
-> +			ADMV1014_IF_AMP_PD_MSK |
-> +			ADMV1014_QUAD_BG_PD_MSK |
-> +			ADMV1014_BB_AMP_PD_MSK |
-> +			ADMV1014_QUAD_IBIAS_PD_MSK |
-> +			ADMV1014_BG_PD_MSK;
-> +
-> +	enable_reg = FIELD_PREP(ADMV1014_IBIAS_PD_MSK, 1) |
-> +			FIELD_PREP(ADMV1014_IF_AMP_PD_MSK, 1) |
-> +			FIELD_PREP(ADMV1014_QUAD_BG_PD_MSK, 1) |
-> +			FIELD_PREP(ADMV1014_BB_AMP_PD_MSK, 1) |
-> +			FIELD_PREP(ADMV1014_QUAD_IBIAS_PD_MSK, 1) |
-> +			FIELD_PREP(ADMV1014_BG_PD_MSK, 1);
-> +
-> +	admv1014_spi_update_bits(data, ADMV1014_REG_ENABLE,
-> +				 enable_reg_msk, enable_reg);
-> +}
-> +
-> +static int admv1014_init(struct admv1014_state *st)
-> +{
-> +	int ret;
-> +	unsigned int chip_id, enable_reg, enable_reg_msk;
-> +	struct spi_device *spi = st->spi;
-> +
-> +	ret = regulator_enable(st->vcm_reg);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Failed to enable Common-Mode Voltage!\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = devm_add_action_or_reset(&spi->dev, admv1014_reg_disable, st->vcm_reg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (regulator_get_voltage(st->vcc_if_bb_reg) != 3300000) {
-> +		dev_err(&spi->dev, "Invalid BB and IF supply voltage value!\n");
-
-See below.
-
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = regulator_enable(st->vcc_if_bb_reg);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Failed to enable BB and IF Voltage!\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = devm_add_action_or_reset(&spi->dev, admv1014_reg_disable, st->vcc_if_bb_reg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (regulator_get_voltage(st->vcc_vga_reg) != 3300000) {
-> +		dev_err(&spi->dev, "Invalid RF Amplifier supply voltage value!\n");
-
-See below for why I don't think you should be doing this.
-
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = regulator_enable(st->vcc_vga_reg);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Failed to enable RF Amplifier Voltage!\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = devm_add_action_or_reset(&spi->dev, admv1014_reg_disable, st->vcc_vga_reg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (regulator_get_voltage(st->vcc_vva_reg) != 1800000) {
-
-This is an optional regulator in the dt spec, so you can't guarantee a read will give
-you anything useful.   I'm also not sure that checking supply voltages are correct
-is something a driver should be doing.
-
-A regulator might only do 1800001 and that is probably within tolerances anyway so
-this level of precision is not a good idea.
-
-I would just drop these checks and stick to regulator enables.  Probably use the
-bulk interfaces to cut down on code as well.
-
-> +		dev_err(&spi->dev, "Invalid VVA Control Circuit voltage value!\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = regulator_enable(st->vcc_vva_reg);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Failed to enable VVA Control Circuit Voltage!\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = devm_add_action_or_reset(&spi->dev, admv1014_reg_disable, st->vcc_vva_reg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (regulator_get_voltage(st->vcc_lna_3p3_reg) != 3300000) {
-> +		dev_err(&spi->dev, "Invalid Low Noise Amplifier 3.3V voltage value!\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = regulator_enable(st->vcc_lna_3p3_reg);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Failed to enable Low Noise Amplifier 3.3V Voltage!\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = devm_add_action_or_reset(&spi->dev, admv1014_reg_disable, st->vcc_lna_3p3_reg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (regulator_get_voltage(st->vcc_lna_1p5_reg) != 1500000) {
-> +		dev_err(&spi->dev, "Invalid BB and Low Noise Amplifier 1.5V voltage value!\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = regulator_enable(st->vcc_lna_1p5_reg);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Failed to enable Low Noise Amplifier 1.5V Voltage!\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = devm_add_action_or_reset(&spi->dev, admv1014_reg_disable, st->vcc_lna_1p5_reg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (regulator_get_voltage(st->vcc_bg_reg) != 3300000) {
-> +		dev_err(&spi->dev, "Invalid Band Gap Circuit voltage value!\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = regulator_enable(st->vcc_bg_reg);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Failed to enable Band Gap Circuit Voltage!\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = devm_add_action_or_reset(&spi->dev, admv1014_reg_disable, st->vcc_bg_reg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (regulator_get_voltage(st->vcc_quad_reg) != 3300000) {
-> +		dev_err(&spi->dev, "Invalid BB and Quadruple voltage value!\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = regulator_enable(st->vcc_quad_reg);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Failed to enable Quadruple Voltage!\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = devm_add_action_or_reset(&spi->dev, admv1014_reg_disable, st->vcc_quad_reg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (regulator_get_voltage(st->vcc_mixer_reg) != 3300000) {
-> +		dev_err(&spi->dev, "Invalid Mixer supply voltage value!\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = regulator_enable(st->vcc_mixer_reg);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Failed to enable Mixer Voltage!\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = devm_add_action_or_reset(&spi->dev, admv1014_reg_disable, st->vcc_mixer_reg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = clk_prepare_enable(st->clkin);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = devm_add_action_or_reset(&spi->dev, admv1014_clk_disable, st->clkin);
-> +	if (ret)
-> +		return ret;
-> +
-> +	st->nb.notifier_call = admv1014_freq_change;
-> +	ret = devm_clk_notifier_register(&spi->dev, st->clkin, &st->nb);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Perform a software reset */
-> +	ret = __admv1014_spi_update_bits(st, ADMV1014_REG_SPI_CONTROL,
-> +					 ADMV1014_SPI_SOFT_RESET_MSK,
-> +					 FIELD_PREP(ADMV1014_SPI_SOFT_RESET_MSK, 1));
-> +	if (ret) {
-> +		dev_err(&spi->dev, "ADMV1014 SPI software reset failed.\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = __admv1014_spi_update_bits(st, ADMV1014_REG_SPI_CONTROL,
-> +					 ADMV1014_SPI_SOFT_RESET_MSK,
-> +					 FIELD_PREP(ADMV1014_SPI_SOFT_RESET_MSK, 0));
-> +	if (ret) {
-> +		dev_err(&spi->dev, "ADMV1014 SPI software reset disable failed.\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = admv1014_spi_write(st, ADMV1014_REG_VVA_TEMP_COMP, 0x727C);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Writing default Temperature Compensation value failed.\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = admv1014_spi_read(st, ADMV1014_REG_SPI_CONTROL, &chip_id);
-
-Mixing locked and unlocked calls in init doesn't make much sense.
-It's fine to use either locked or unlocked throughout as we can't race
-but it's not a fast path where the locks will matter.
+Unfortunately, the patch does not cleanly revert, so users have to wait 
+until an expert can take a look, and come up with a fix.
 
 
-> +	if (ret)
-> +		return ret;
-> +
-> +	chip_id = (chip_id & ADMV1014_CHIP_ID_MSK) >> 4;
-> +	if (chip_id != ADMV1014_CHIP_ID) {
-> +		dev_err(&spi->dev, "Invalid Chip ID.\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	ret = __admv1014_spi_update_bits(st, ADMV1014_REG_QUAD,
-> +					 ADMV1014_QUAD_SE_MODE_MSK,
-> +					 FIELD_PREP(ADMV1014_QUAD_SE_MODE_MSK,
-> +						    st->quad_se_mode));
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Writing Quad SE Mode failed.\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = admv1014_update_quad_filters(st);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Update Quad Filters failed.\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = admv1014_update_vcm_settings(st);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Update VCM Settings failed.\n");
-> +		return ret;
-> +	}
-> +
-> +	enable_reg_msk = ADMV1014_P1DB_COMPENSATION_MSK |
-> +			 ADMV1014_IF_AMP_PD_MSK |
-> +			 ADMV1014_BB_AMP_PD_MSK |
-> +			 ADMV1014_DET_EN_MSK;
-> +
-> +	enable_reg = FIELD_PREP(ADMV1014_P1DB_COMPENSATION_MSK, st->p1db_comp ? 3 : 0) |
-> +		     FIELD_PREP(ADMV1014_IF_AMP_PD_MSK, !(st->input_mode)) |
-> +		     FIELD_PREP(ADMV1014_BB_AMP_PD_MSK, st->input_mode) |
-> +		     FIELD_PREP(ADMV1014_DET_EN_MSK, st->det_en);
-> +
-> +	return __admv1014_spi_update_bits(st, ADMV1014_REG_ENABLE, enable_reg_msk, enable_reg);
+Kind regards,
 
-> +}
-> +
-> +static int admv1014_properties_parse(struct admv1014_state *st)
-> +{
-> +	const char *str;
-> +	struct spi_device *spi = st->spi;
-> +
-> +	st->det_en = device_property_read_bool(&spi->dev, "adi,detector-enable");
-> +
-> +	st->p1db_comp = device_property_read_bool(&spi->dev, "adi,p1db-compensation-enable");
-> +
-> +	str = "iq";
-> +	device_property_read_string(&spi->dev, "adi,input-mode", &str);
-> +
-> +	if (!strcmp(str, "iq"))
-> +		st->input_mode = ADMV1014_IQ_MODE;
-> +	else if (!strcmp(str, "if"))
-> +		st->input_mode = ADMV1014_IF_MODE;
-> +	else
-> +		return -EINVAL;
-> +
-> +	str = "diff";
-> +	device_property_read_string(&spi->dev, "adi,quad-se-mode", &str);
-> +
-> +	if (!strcmp(str, "diff"))
-> +		st->quad_se_mode = ADMV1014_SE_MODE_DIFF;
-> +	else if (!strcmp(str, "se-pos"))
-> +		st->quad_se_mode = ADMV1014_SE_MODE_POS;
-> +	else if (!strcmp(str, "se-neg"))
-> +		st->quad_se_mode = ADMV1014_SE_MODE_NEG;
-> +	else
-> +		return -EINVAL;
-> +
-> +	st->vcm_reg = devm_regulator_get(&spi->dev, "vcm");
-> +	if (IS_ERR(st->vcm_reg))
-> +		return dev_err_probe(&spi->dev, PTR_ERR(st->vcm_reg),
-> +				     "failed to get the common-mode voltage\n");
-> +
-> +	st->vcc_if_bb_reg = devm_regulator_get(&spi->dev, "vcc-if-bb");
-> +	if (IS_ERR(st->vcc_if_bb_reg))
-> +		return dev_err_probe(&spi->dev, PTR_ERR(st->vcc_if_bb_reg),
-> +				     "failed to get the BB and IF supply\n");
-> +
-> +	st->vcc_vga_reg = devm_regulator_get(&spi->dev, "vcc-vga");
-> +	if (IS_ERR(st->vcc_vga_reg))
-> +		return dev_err_probe(&spi->dev, PTR_ERR(st->vcc_vga_reg),
-> +				     "failed to get the RF Amplifier supply\n");
-> +
-> +	st->vcc_vva_reg = devm_regulator_get(&spi->dev, "vcc-vva");
-> +	if (IS_ERR(st->vcc_vva_reg))
-> +		return dev_err_probe(&spi->dev, PTR_ERR(st->vcc_vva_reg),
-> +				     "failed to get the VVA Control Circuit supply\n");
-> +
-> +	st->vcc_lna_3p3_reg = devm_regulator_get(&spi->dev, "vcc-lna-3p3");
-> +	if (IS_ERR(st->vcc_lna_3p3_reg))
-> +		return dev_err_probe(&spi->dev, PTR_ERR(st->vcc_lna_3p3_reg),
-> +				     "failed to get the Low Noise Amplifier 3.3V supply\n");
-> +
-> +	st->vcc_lna_1p5_reg = devm_regulator_get(&spi->dev, "vcc-lna-1p5");
-> +	if (IS_ERR(st->vcc_lna_1p5_reg))
-> +		return dev_err_probe(&spi->dev, PTR_ERR(st->vcc_lna_1p5_reg),
-> +				     "failed to get the Low Noise Amplifier 1.5V supply\n");
-> +
-> +	st->vcc_bg_reg = devm_regulator_get(&spi->dev, "vcc-bg");
-> +	if (IS_ERR(st->vcc_lna_1p5_reg))
-> +		return dev_err_probe(&spi->dev, PTR_ERR(st->vcc_bg_reg),
-> +				     "failed to get the Band Gap Circuit supply\n");
-> +
-> +	st->vcc_quad_reg = devm_regulator_get(&spi->dev, "vcc-quad");
-> +	if (IS_ERR(st->vcc_quad_reg))
-> +		return dev_err_probe(&spi->dev, PTR_ERR(st->vcc_quad_reg),
-> +				     "failed to get the Quadruple supply\n");
-> +
-> +	st->vcc_mixer_reg = devm_regulator_get(&spi->dev, "vcc-mixer");
-> +	if (IS_ERR(st->vcc_quad_reg))
-> +		return dev_err_probe(&spi->dev, PTR_ERR(st->vcc_mixer_reg),
-> +				     "failed to get the Mixer supply\n");
-> +
-> +	st->clkin = devm_clk_get(&spi->dev, "lo_in");
-> +	if (IS_ERR(st->clkin))
-> +		return dev_err_probe(&spi->dev, PTR_ERR(st->clkin),
-> +				     "failed to get the LO input clock\n");
-> +
-> +	return 0;
-> +}
-> +
-> +static int admv1014_probe(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct admv1014_state *st;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	st = iio_priv(indio_dev);
-> +
-> +	indio_dev->info = &admv1014_info;
-> +	indio_dev->name = "admv1014";
-> +	indio_dev->channels = admv1014_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(admv1014_channels);
-> +
-> +	st->spi = spi;
-> +
-> +	ret = admv1014_properties_parse(st);
-> +	if (ret)
-> +		return ret;
-> +
-> +	mutex_init(&st->lock);
-> +
-> +	ret = admv1014_init(st);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = devm_add_action_or_reset(&spi->dev, admv1014_powerdown, st);
-> +	if (ret)
+Paul
 
-Move this into init as it is undoing just one step of all the stuff done
-in init rather than all of them.  If it were doing all the undos then it would
-be fine at this level.
 
-> +		return ret;
-> +
-> +	return devm_iio_device_register(&spi->dev, indio_dev);
-> +}
-> +
+PS: For the records:
 
+     $ git bisect log
+     # bad: [81be03e026dc0c16dc1c64e088b2a53b73caa895] Bluetooth: 
+RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg
+     # good: [49d8a5606428ca0962d09050a5af81461ff90fbb] Bluetooth: fix 
+init and cleanup of sco_conn.timeout_work
+     git bisect start '81be03e026dc0' 'HEAD^'
+     # good: [904c139a2517191e48f9cb1bb2d611ae59434009] Bluetooth: Add 
+support for msbc coding format
+     git bisect good 904c139a2517191e48f9cb1bb2d611ae59434009
+     # good: [8bba13b1d08d42e2e8308924fa5c1551a7b2b011] Bluetooth: 
+btintel: Fix incorrect out of memory check
+     git bisect good 8bba13b1d08d42e2e8308924fa5c1551a7b2b011
+     # good: [38f64f650dc0e44c146ff88d15a7339efa325918] Bluetooth: Add 
+bt_skb_sendmsg helper
+     git bisect good 38f64f650dc0e44c146ff88d15a7339efa325918
+     # good: [0771cbb3b97d3c1d68eecd7f00055f599954c34e] Bluetooth: SCO: 
+Replace use of memcpy_from_msg with bt_skb_sendmsg
+     git bisect good 0771cbb3b97d3c1d68eecd7f00055f599954c34e
+     # first bad commit: [81be03e026dc0c16dc1c64e088b2a53b73caa895] 
+Bluetooth: RFCOMM: Replace use of memcpy_from_msg with bt_skb_sendmmsg
+
+
+Kind regards,
+
+Paul
+
+
+>> [1]: https://owww.molgen.mpg.de/~pmenzel/trace.log.7z
+[2]: 
+https://lore.kernel.org/linux-bluetooth/5891f0d5-8d51-9da5-7663-718f301490b1@molgen.mpg.de/T/#u
+[3]: 
+https://lore.kernel.org/linux-bluetooth/20211202162256.31837-1-tiwai@suse.de/
