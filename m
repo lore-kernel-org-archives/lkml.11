@@ -2,113 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 140B4C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 01:27:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B94AC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 02:03:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234057AbiAPB1W (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 15 Jan 2022 20:27:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59568 "EHLO
+        id S234072AbiAPCDe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 15 Jan 2022 21:03:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39024 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234022AbiAPB1U (ORCPT
+        with ESMTP id S234061AbiAPCDd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 15 Jan 2022 20:27:20 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D6EDC061574;
-        Sat, 15 Jan 2022 17:27:20 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id s15so6366646pfw.1;
-        Sat, 15 Jan 2022 17:27:20 -0800 (PST)
+        Sat, 15 Jan 2022 21:03:33 -0500
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EF14C06161C
+        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 18:03:33 -0800 (PST)
+Received: by mail-pg1-x535.google.com with SMTP id 133so2013431pgb.0
+        for <linux-kernel@vger.kernel.org>; Sat, 15 Jan 2022 18:03:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fVNk1oSC2wmUwoQeO0W1p6ZN64nd0MuS2ZCKpwibvj4=;
-        b=GNZE6fOKDnUfdraKk5RMFrgn9lwisSNz9qvP3BqHa7m9ijXROEICvFS/tlJWK8yENJ
-         DUxZsUOoNoauCkntdnUV+vdr9ED1siJYrLHxrlLJrV40p/bNWNwXPe2n3iz0WpOQzyoG
-         Q/rrfTGoFtQKQ8nxsF0FWg0cJoH7Dm7PCbRWeDPIYG5Mx7VEl/llYyqNAUfx2sFLo63/
-         KW2ucz0iP3QH/bmMGkbInDU5JhuCZNOFDsTD6N9W5uuzxHIJQeKiqg96AJ+yh1TGSJwW
-         u24vuoUUqdoDSyUc8bVXG9Wl0A04BEvpLxXOtE0+niVckGUpF6fqbIgXxw1GEtDqnhKM
-         /6mg==
+        d=igorinstitute-com.20210112.gappssmtp.com; s=20210112;
+        h=message-id:from:date:subject:to:cc;
+        bh=EQpPofv3xqVheya0dgefCVu2/vpqFU87ufMossH4bmQ=;
+        b=WyZmlmZplLS8zfYwy8JZCK4zxfN773ZY67zGGv43GjSQbpeJp2sSAgI/ZzQRFrZlX8
+         FLGhVsixwvrXFVgbAFnRzNE2XDpwDgL3RdJBKMrnMeX3wEy3BExHbaC0/0F8+8s/3DZH
+         CTSNY4v5VwwBZ+ShgfXy//zoDrUSdpels/Of4iN1J/LeJdIhWr7KKqyWJIciF6d4q3B8
+         83TePSuKskIQrH2nLGtK776rp8eH5TZo3lQPe8HP6YAJis4xdtEXw7hbw0oIAYcr0eyS
+         oMFBlWLTSX2SyU2eNq+YtA3vDwzc2fJv3bZjNnhZj0rAmUs4aX+2Zu6E0XQXrTZ3oKQ3
+         j/Eg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fVNk1oSC2wmUwoQeO0W1p6ZN64nd0MuS2ZCKpwibvj4=;
-        b=mjR94hV5zRkHeClYCQI5Ny7ZvflpI2CXrJprFhfUxkPjxf6zA0u8ci/Y17Tm1nE6Ev
-         ef7bAJiSjaoFHmyqUlH8Ih2U02KHEf0bnSsTHK7cYU/B8OP0vJsDJH7rDiT/3MARsYIr
-         mOOSYSVOdRaWzt1reYFoiOzBvN7MKt+Sy5IDyH2u2kuhdaNX7EXXw12eGJ8UO748TKX1
-         8rKigI5bI2DdBJgVn3Y4a+79h3t0krWh1Cw2VGShMZCu4ugZroq1VDqzjJul/7CMkbF2
-         lRZCjHu39dmoI4HWkjKQvUfFXu5O4pu8beM3hgy0lyMacagYw3Tzy8TPz6YOo2KwQJTL
-         5d6A==
-X-Gm-Message-State: AOAM532AUI7Ijg5kIlz+pEwiBxPAHREPhdh85uZSXpzPvgOJmx8qpROq
-        JHNPrykwuAk3r+6qPY1oxOemTO3iE/w7xxQRz/8=
-X-Google-Smtp-Source: ABdhPJwusC2Ptee2VAtRyN8/4WCPspEyEzpVkFcqIlTzBenyInh58k+gHcrFVc+c2xZNXscINK2gYw==
-X-Received: by 2002:a63:6f08:: with SMTP id k8mr13368971pgc.51.1642296439601;
-        Sat, 15 Jan 2022 17:27:19 -0800 (PST)
-Received: from localhost.localdomain ([50.39.160.154])
-        by smtp.gmail.com with ESMTPSA id ot18sm9478939pjb.8.2022.01.15.17.27.19
+        h=x-gm-message-state:message-id:from:date:subject:to:cc;
+        bh=EQpPofv3xqVheya0dgefCVu2/vpqFU87ufMossH4bmQ=;
+        b=g25dobKSt14TFPC3Vi84MamH9jIvuuc9ZyD063SFP1qXIOxV5clmYU6fvvgxaGGb7a
+         SZAIfUKI2VEh08TPjtvmG5GNqZdCnocCBu6lmvh+Sehn+YZxtvsAUcDSNNICiDB48ljU
+         wAwyhz898N2lhmolJURd/WmSXaeBpcAR4AKDPVXYIgqhH9ZX3HhqIrTszKPfqKXER8SR
+         aDHSMaH/lvZaX67Bv9uU7YnHnPxZoQn8gjjZPfsxSC3ZehXZDdMZ+bXRKo67rokDJZvc
+         01tm05RvtFcLkfFsOYpPRpqfcpZ+AD/2A6noxy72qD3Bq9J17vS+4vwZV5zYtZCWcL3V
+         +Rhg==
+X-Gm-Message-State: AOAM530K50AAkGnDWhWq8JEkVjPgkg7gaCKVvQiufMkDT60jI1FokvWb
+        SkQhy2jajJtM+NRNYgaFV1CHkQ==
+X-Google-Smtp-Source: ABdhPJzi4Nm0DAxYTAaquO6l69+WqV4eA7FwkV4Kp5hunLWNzSWKwTbscVwRpgaBdnUYKJtCnkMnRg==
+X-Received: by 2002:aa7:9ec7:0:b0:4be:19fa:f0f3 with SMTP id r7-20020aa79ec7000000b004be19faf0f3mr15342794pfq.8.1642298612838;
+        Sat, 15 Jan 2022 18:03:32 -0800 (PST)
+Received: from localhost ([121.99.145.49])
+        by smtp.gmail.com with ESMTPSA id c10sm9761822pfl.200.2022.01.15.18.03.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 15 Jan 2022 17:27:19 -0800 (PST)
-From:   Tadeusz Struk <tstruk@gmail.com>
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-Cc:     Tadeusz Struk <tstruk@gmail.com>, Shuah Khan <shuah@kernel.org>,
-        linux-integrity@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/2] selftests: tpm: add async space test with noneexisting handle
-Date:   Sat, 15 Jan 2022 17:26:27 -0800
-Message-Id: <20220116012627.2031-2-tstruk@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220116012627.2031-1-tstruk@gmail.com>
-References: <20220116012627.2031-1-tstruk@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sat, 15 Jan 2022 18:03:32 -0800 (PST)
+Message-Id: <cover.1642298336.git.daniel.beer@igorinstitute.com>
+From:   Daniel Beer <daniel.beer@igorinstitute.com>
+Date:   Sun, 16 Jan 2022 14:58:56 +1300
+Subject: [PATCH v3 0/2] ASoC: add support for TAS5805M digital amplifier
+To:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Andy Liu <andy-liu@ti.com>,
+        Daniel Beer <daniel.beer@igorinstitute.com>,
+        Derek Simkowiak <derek.simkowiak@igorinstitute.com>,
+        Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a test for /dev/tpmrm0 in async mode that checks if
-the code handles invalid handles correctly.
+This pair of patches implements support for the TAS5805M class D audio
+amplifier. This driver, and the example configuration in the device-tree
+file, were originally based on a 4.19 series kernel and have been
+modified slightly from the tested version.
 
-Cc: Jarkko Sakkinen <jarkko@kernel.org>
-Cc: Shuah Khan <shuah@kernel.org>
-Cc: <linux-integrity@vger.kernel.org>
-Cc: <linux-kselftest@vger.kernel.org>
-Cc: <linux-kernel@vger.kernel.org>
+This resubmission differs from v2 as follows:
 
-Tested-by: Jarkko Sakkinen<jarkko@kernel.org>
-Signed-off-by: Tadeusz Struk <tstruk@gmail.com>
----
-Changed in v2:
-- Updated commit message
-Changed in v3:
-- Fixed typo in the function name
----
- tools/testing/selftests/tpm2/tpm2_tests.py | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+  - The redundant mutex has been removed
+  - DSP configuration is loaded as a firmware image, rather than
+    directly from the device-tree
+  - The volume control returns non-zero when the values have changed, as
+    required
+  - Some corrections to device-tree example
 
-diff --git a/tools/testing/selftests/tpm2/tpm2_tests.py b/tools/testing/selftests/tpm2/tpm2_tests.py
-index 9d764306887b..340ffef97fb6 100644
---- a/tools/testing/selftests/tpm2/tpm2_tests.py
-+++ b/tools/testing/selftests/tpm2/tpm2_tests.py
-@@ -302,3 +302,19 @@ class AsyncTest(unittest.TestCase):
-         log.debug("Calling get_cap in a NON_BLOCKING mode")
-         async_client.get_cap(tpm2.TPM2_CAP_HANDLES, tpm2.HR_LOADED_SESSION)
-         async_client.close()
-+
-+    def test_flush_invalid_context(self):
-+        log = logging.getLogger(__name__)
-+        log.debug(sys._getframe().f_code.co_name)
-+
-+        async_client = tpm2.Client(tpm2.Client.FLAG_SPACE | tpm2.Client.FLAG_NONBLOCK)
-+        log.debug("Calling flush_context passing in an invalid handle ")
-+        handle = 0x80123456
-+        rc = 0
-+        try:
-+            async_client.flush_context(handle)
-+        except OSError as e:
-+            rc = e.errno
-+
-+        self.assertEqual(rc, 22)
-+        async_client.close()
+Daniel Beer (2):
+  ASoC: add support for TAS5805M digital amplifier
+  ASoC: dt-bindings: add bindings for TI TAS5805M.
+
+ .../devicetree/bindings/sound/tas5805m.yaml   |  56 ++
+ sound/soc/codecs/Kconfig                      |   9 +
+ sound/soc/codecs/Makefile                     |   2 +
+ sound/soc/codecs/tas5805m.c                   | 567 ++++++++++++++++++
+ 4 files changed, 634 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/sound/tas5805m.yaml
+ create mode 100644 sound/soc/codecs/tas5805m.c
+
 -- 
 2.30.2
 
