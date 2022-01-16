@@ -2,209 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DB62C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 12:58:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7DF8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 12:59:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235303AbiAPM61 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 07:58:27 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34598 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235281AbiAPM6Y (ORCPT
+        id S235310AbiAPM7u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 07:59:50 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:46336 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235281AbiAPM7t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 07:58:24 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CFCC5B80CBB;
-        Sun, 16 Jan 2022 12:58:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 455B9C36AE9;
-        Sun, 16 Jan 2022 12:58:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642337901;
-        bh=crWtyNK5zxiQBZDo3g0NyCg6HOCKw7F4DWaYul3pOEs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XQZyS2M3331U8AIPsDScFgEW8t/cR+vBZLahOJFRgeSMzAc6np2HiByRCR2fJLXNQ
-         OjdFrk+yaVQR5HM0SrwIEd4OF2GAvfW3bLMHgfvdLttorA+CeehqwJ4Yjmhz/EfTtv
-         JG57wYi3m/11pFc4V0/IeK0cxRaLJZWL9g30CnHiRr5BNLAMYMwmtvIoraZazaVW1V
-         WOCX/RX15qDUdcuM3KVBJMvbk7RHiV3hC9j9ixgQ8KSWuEyN5Eo8mS6FKmlHt9BTR1
-         AdfvLPhIvEBeabtBh9A7iLAYytZQ29Nfx/VRVfL5E+Tyad5in+o8XRZsee8gCQwPMN
-         Dix2mq6givYwA==
-Date:   Sun, 16 Jan 2022 13:04:22 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc:     <robh+dt@kernel.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 2/3] dt-bindings:iio:frequency: add admv1014 binding
-Message-ID: <20220116130422.167bca2e@jic23-huawei>
-In-Reply-To: <20220110151350.164095-1-antoniu.miclaus@analog.com>
-References: <20220110151350.164095-1-antoniu.miclaus@analog.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sun, 16 Jan 2022 07:59:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642337988;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=DNYqjS3KFZ8+i72HB477mvELEUPUlmZhwi7en5ySxHM=;
+        b=PDB6vdzKgFBrJxKNiNeVQTRa+wjWuH3yXayE2jUpwCkfNV8pBTDT+OzGknoWBCJQWDIEwp
+        KI5fEY/z6Vw9Mj/K+Umperc8r77O474FT74e8Ciw+a5yI0iuX4ca5RG4V6x9x3ituH6OpU
+        Z8j7azPL73lp8HnwHUuaorgPji16bj0=
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
+ [209.85.210.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-314-0EGiU0_rME6OE0qEMv8LdA-1; Sun, 16 Jan 2022 07:59:45 -0500
+X-MC-Unique: 0EGiU0_rME6OE0qEMv8LdA-1
+Received: by mail-ot1-f71.google.com with SMTP id 39-20020a9d0eaa000000b0058f56d89582so4232808otj.0
+        for <linux-kernel@vger.kernel.org>; Sun, 16 Jan 2022 04:59:44 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DNYqjS3KFZ8+i72HB477mvELEUPUlmZhwi7en5ySxHM=;
+        b=o2m/Y0+thOcHi5izOezh8yh/0nhQbSWoWPBU0px6yEInmGvY4YEz5G+obDOrKeNW0f
+         xLk0F08if/dT01LaxbeD+B+2CMg2BCaXSgL5d2SCiV4BDN4D54oZKPdwVltSreA5Pma3
+         GimGi1msfhpqB118ng0eF4Nau7B2L+sZiB34RWXPqA25aB0tGo9BYcXy3E3fC7Hp0FnU
+         46oRn5ayWuvfHgLra+VAO4SMiGYMQG7qMtl7aBKBZ1RGdSWS1eiPXkldGL4hFY9iorfC
+         39jdPFkjjzTcdB3JNCYkyAuryQDbMXLae30AgKCbgwizB5eET9msfr1LTkGRvbwqquy7
+         CWIQ==
+X-Gm-Message-State: AOAM5326NScUPkuuuskxQ2jrmcH8WFEzsFPOvGoCme8gJ/q0j2T1WTUN
+        0ZWszNMr1srHwOY5C2toKKdrMerIbBsQotF46NTr829UHmPIKp8hQRAgz5KCq5TiISbYFRBw0x7
+        8A7I/BCEYuQexHUwwqykJz6t0
+X-Received: by 2002:a9d:730c:: with SMTP id e12mr7152946otk.169.1642337984014;
+        Sun, 16 Jan 2022 04:59:44 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyrfpxyWsulP1/h6vkbFQ4Qxe0Ta5JWTP2oWkUQEO76XbZQsGOdY13EWOhJiDhQ6zPtsr8a4w==
+X-Received: by 2002:a9d:730c:: with SMTP id e12mr7152923otk.169.1642337983480;
+        Sun, 16 Jan 2022 04:59:43 -0800 (PST)
+Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
+        by smtp.gmail.com with ESMTPSA id e69sm4347369ote.1.2022.01.16.04.59.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 16 Jan 2022 04:59:43 -0800 (PST)
+From:   trix@redhat.com
+To:     jack@suse.com
+Cc:     linux-kernel@vger.kernel.org, Tom Rix <trix@redhat.com>
+Subject: [PATCH] quota: cleanup double word in comment
+Date:   Sun, 16 Jan 2022 04:59:36 -0800
+Message-Id: <20220116125936.389767-1-trix@redhat.com>
+X-Mailer: git-send-email 2.26.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 10 Jan 2022 17:13:49 +0200
-Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+From: Tom Rix <trix@redhat.com>
 
-> Add device tree bindings for the ADMV1014 Upconverter.
-> 
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-Just one totally trivial comment on this that I could tidy up with applying
-if patch 1 is good and others are happy with the series.
+Remove the second 'handle'.
 
-Thanks,
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ include/linux/quota.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Jonathan
-
-> ---
-> changes in v2:
->  - move clock description unde `clock-names` section
->  - expand `p1db-comp-enable` to `p1db-compensation-enable`
->  - add regulators for all VCC_* supplies, as suggested
->  .../bindings/iio/frequency/adi,admv1014.yaml  | 129 ++++++++++++++++++
->  1 file changed, 129 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
-> new file mode 100644
-> index 000000000000..9c43cec72560
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
-> @@ -0,0 +1,129 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/frequency/adi,admv1014.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: ADMV1014 Microwave Downconverter
-> +
-> +maintainers:
-> +  - Antoniu Miclaus <antoniu.miclaus@analog.com>
-> +
-> +description: |
-> +   Wideband, microwave downconverter optimized for point to point microwave
-> +   radio designs operating in the 24 GHz to 44 GHz frequency range.
-> +
-> +   https://www.analog.com/en/products/admv1014.html
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,admv1014
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  spi-max-frequency:
-> +    maximum: 1000000
-> +
-> +  clocks:
-> +    minItems: 1
-> +
-> +  clock-names:
-> +    items:
-> +      - const: lo_in
-> +    description:
-> +      Definition of the external clock that serves as input Local Oscillator.
-Trivial: Not sure "Definition of" adds anything?
-	External clock that provides the Local Oscilator input.
-perhaps?
-
-> +
-> +  vcm-supply:
-> +    description:
-> +      Common-mode voltage regulator.
-> +
-> +  vcc-if-bb-supply:
-> +    description:
-> +      BB and IF supply voltage regulator.
-> +
-> +  vcc-vga-supply:
-> +    description:
-> +      RF Amplifier supply voltage regulator.
-> +
-> +  vcc-vva-supply:
-> +    description:
-> +      VVA Control Circuit supply voltage regulator.
-> +
-> +  vcc-lna-3p3-supply:
-> +    description:
-> +      Low Noise Amplifier 3.3V supply voltage regulator.
-> +
-> +  vcc-lna-1p5-supply:
-> +    description:
-> +      Low Noise Amplifier 1.5V supply voltage regulator.
-> +
-> +  vcc-bg-supply:
-> +    description:
-> +      Band Gap Circuit supply voltage regulator.
-> +
-> +  vcc-quad-supply:
-> +    description:
-> +      Quadruple supply voltage regulator.
-> +
-> +  vcc-mixer-supply:
-> +    description:
-> +      Mixer supply voltage regulator.
-> +
-> +  adi,input-mode:
-> +    description:
-> +      Select the input mode.
-> +      iq - in-phase quadrature (I/Q) input
-> +      if - complex intermediate frequency (IF) input
-> +    enum: [iq, if]
-> +
-> +  adi,detector-enable:
-> +    description:
-> +      Digital Rx Detector Enable. The Square Law Detector output is
-> +      available at output pin VDET.
-> +    type: boolean
-> +
-> +  adi,p1db-compensation-enable:
-> +    description:
-> +      Turn on bits to optimize P1dB.
-> +    type: boolean
-> +
-> +  adi,quad-se-mode:
-> +    description:
-> +      Switch the LO path from differential to single-ended operation.
-> +      se-neg - Single-Ended Mode, Negative Side Disabled.
-> +      se-pos - Single-Ended Mode, Positive Side Disabled.
-> +      diff - Differential Mode.
-> +    enum: [se-neg, se-pos, diff]
-> +
-> +  '#clock-cells':
-> +    const: 0
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - clock-names
-> +  - vcm-supply
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    spi {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +      admv1014@0{
-> +        compatible = "adi,admv1014";
-> +        reg = <0>;
-> +        spi-max-frequency = <1000000>;
-> +        clocks = <&admv1014_lo>;
-> +        clock-names = "lo_in";
-> +        vcm-supply = <&vcm>;
-> +        adi,quad-se-mode = "diff";
-> +        adi,detector-enable;
-> +        adi,p1db-compensation-enable;
-> +      };
-> +    };
-> +...
+diff --git a/include/linux/quota.h b/include/linux/quota.h
+index 18ebd39c94871..fd692b4a41d5f 100644
+--- a/include/linux/quota.h
++++ b/include/linux/quota.h
+@@ -91,7 +91,7 @@ extern bool qid_valid(struct kqid qid);
+  *
+  *	When there is no mapping defined for the user-namespace, type,
+  *	qid tuple an invalid kqid is returned.  Callers are expected to
+- *	test for and handle handle invalid kqids being returned.
++ *	test for and handle invalid kqids being returned.
+  *	Invalid kqids may be tested for using qid_valid().
+  */
+ static inline struct kqid make_kqid(struct user_namespace *from,
+-- 
+2.26.3
 
