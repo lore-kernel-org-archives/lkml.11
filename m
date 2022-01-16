@@ -2,115 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C803C4332F
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 16:31:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 432CBC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 16:35:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233830AbiAPQbI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 11:31:08 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.50]:33759 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231292AbiAPQbG (ORCPT
+        id S233892AbiAPQfc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 11:35:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57936 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231292AbiAPQfa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 11:31:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1642350648;
-    s=strato-dkim-0002; d=gerhold.net;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
-    From:Subject:Sender;
-    bh=wd5B5q6uhmXCkTltl4oPLre+b0CAXOOsrH3DYJLPWOk=;
-    b=QAyRW1JmAAA/yFoj8X3QlSMfV7J/1fZy54Yx3ak5/iNi9bBnRjTZ0qdv2HRCVFrQeH
-    4I9sz6VMbpxUQOhW874t2uU7b+e+pkg9hOpqKlo8sy+eGHj5CMVFdSQrAUEgNkj4ko1a
-    +//H9KPf6J9h/viwiQOokXiVltBL/RziMlcqLcyRLAIDnTGiOFY5mqGVGmhdK+R0DkTz
-    UbLMgs+VUrIn5piPwwXZXhDJ7ggj2l/dUCJ/ZReyuW2PRPpX2rdRpICmDN9XGTLvUGxJ
-    4lyglW81xWiXjBh7BIzt/MjXtU7CupYK6pceuw04NaqNn/qWpawq+FnenPnkDAgKJT5Q
-    T5Vw==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u267FZF9PwpcNKLVrK8+86Y="
-X-RZG-CLASS-ID: mo00
-Received: from gerhold.net
-    by smtp.strato.de (RZmta 47.37.6 AUTH)
-    with ESMTPSA id h68d06y0GGUk8zU
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Sun, 16 Jan 2022 17:30:46 +0100 (CET)
-Date:   Sun, 16 Jan 2022 17:30:39 +0100
-From:   Stephan Gerhold <stephan@gerhold.net>
-To:     Luca Weiss <luca@z3ntu.xyz>
-Cc:     linux-arm-msm@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Vladimir Lypak <vladimir.lypak@gmail.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Subject: Re: [PATCH 09/15] rpmsg: smd: Drop unnecessary condition for channel
- creation
-Message-ID: <YeRILypv8ajssNae@gerhold.net>
-References: <20220112194118.178026-1-luca@z3ntu.xyz>
- <20220112194118.178026-10-luca@z3ntu.xyz>
- <Yd9KebiZUjTuHtIM@gerhold.net>
- <12385151.O9o76ZdvQC@g550jk>
+        Sun, 16 Jan 2022 11:35:30 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDC27C061574;
+        Sun, 16 Jan 2022 08:35:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 773D0B80D84;
+        Sun, 16 Jan 2022 16:35:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C242C36AE7;
+        Sun, 16 Jan 2022 16:35:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642350927;
+        bh=TG8bFe/YQ4SfEpe1uR+dWRC9Z/suScV1haDJ8ijTz+8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=a1YidBPYNqgH2RmHIiVrk5oyEzKtAFhD5uovYU+RxbbEMaX7JivapBpPMKbX3K1Wk
+         RA/yYHlVxPJXxc9N6Ya8GvbiWpvegBLMJhtsVhOeQIqzD2wd6Bw3zt+IDN80QAp1gi
+         jQ0/QsmCxyLBhYtF4+qR0HU5RzFWnOUbigS8NSQtHtCPpHkFIyXJ7LhgV02BlzjWUe
+         6E+MHWKz+jqn8I33YHaKLJlpDLzSj6IowxqKJRptfoW2OyixhWF9nrH9f9XAK1JdWL
+         qXFh2MVkXfy3gtevXMwafHrTBzdu//JNq//+RHOVmvQ+DE2pV98QNdmEMCS6beCNra
+         KAU+YP9HDh9/g==
+Date:   Sun, 16 Jan 2022 16:41:26 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Iain Hunter <drhunter95@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>, lothar.felten@gmail.com,
+        iain@hunterembedded.co.uk,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Zeng Tao <prime.zeng@hisilicon.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5] workaround regression in ina2xx introduced by
+ cb47755725da("time: Prevent undefined behaviour in timespec64_to_ns()")
+Message-ID: <20220116164126.6b1f432d@jic23-huawei>
+In-Reply-To: <8262640.lOV4Wx5bFT@stewarton>
+References: <20211216183506.2247510-1-drhunter95@gmail.com>
+        <db22c771-13be-11a2-a8db-b5d6b7d9e0c1@metafoo.de>
+        <8262640.lOV4Wx5bFT@stewarton>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <12385151.O9o76ZdvQC@g550jk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 16, 2022 at 05:08:29PM +0100, Luca Weiss wrote:
-> On Mittwoch, 12. Jänner 2022 22:39:53 CET Stephan Gerhold wrote:
-> > On Wed, Jan 12, 2022 at 08:40:58PM +0100, Luca Weiss wrote:
-> > > From: Vladimir Lypak <vladimir.lypak@gmail.com>
+On Sun, 19 Dec 2021 11:39:20 +0000
+Iain Hunter <drhunter95@gmail.com> wrote:
+
+> On Thursday, 16 December 2021 18:47:30 GMT Lars-Peter Clausen wrote:
+> > On 12/16/21 7:34 PM, Iain Hunter wrote:  
+> > > From: Iain Hunter <iain@hunterembedded.co.uk>
 > > > 
-> > > RPM Firmware on variety of newer SoCs such as MSM8917 (also likely
-> > > MSM8937, MSM8940, MSM8952), MSM8953 and on some MSM8916 devices) doesn't
-> > > initiate opening of the SMD channel if it was previously opened by
-> > > bootloader. This doesn't allow probing of smd-rpm driver on such devices
-> > > because there is a check that requires RPM this behaviour.
+> > > Commit cb47755725da("time: Prevent undefined behaviour in
+> > > timespec64_to_ns()") introduced a regression in the ina2xx driver.
+> > > In ina2xx_capture_thread() a timespec64 structure is used to calculate
+> > > the delta time until the next sample time. This delta can be negative if
+> > > the next sample time was in the past which is common in ina2xx driver.
+> > > In the negative case timespec64_to_ns() now clamps the negative time
+> > > to KTIME_MAX. This essentially puts ina2xx thread to sleep forever.
+> > > Proposed patch is to:
+> > > a) change from timespec64_XXX() to standard raw ktime_XXX() APIs to remove
+> > > non-standard timespec64 calls.
 > > > 
-> > > Signed-off-by: Vladimir Lypak <vladimir.lypak@gmail.com>
-> > > Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
-> > > Reviewed-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+> > > b) split the functionality in the loop into two parts:
+> > >   - do while loop only does the test to see if the next sample time is in
+> > >   the
+> > > 
+> > > future or in the past. If in the past and the next sample time will be
+> > > incremented until it is in the future. This test is done with a simple
+> > > signed comparison as we are only interested in the sign being positive or
+> > > negative.
+> > > 
+> > >   - after do while loop we know that next is later than now and so delay
+> > >   is
+> > > 
+> > > positive and ksub_sub() can be used to get the delay which is positive.  
 > > 
-> > This is effectively a "Revert "Revert "rpmsg: smd: Create device for all
-> > channels""":
+> > This sounds to me as if the original commit that introduced the change
+> > is broken since it doesn't handle negative timespecs. And other drivers
+> > would be affected by this as well.
 > > 
-> > https://lore.kernel.org/linux-arm-msm/20171212235857.10432-3-bjorn.andersson
-> > @linaro.org/
-> > https://lore.kernel.org/linux-arm-msm/20180315181244.8859-1-bjorn.andersson
-> > @linaro.org/
+> > Had a quick look and there is commit 39ff83f2f6cc "time: Handle negative
+> > seconds correctly in timespec64_to_ns()"[1].
 > > 
-> > Won't this cause the same regression reported by Srinivas again?
+> > Which should also fix this driver.
 > > 
+> > - Lars  
 > 
-> Do you have any suggestion on another way to solve this? Without this commit 
-> the regulators just won't probe at all, I haven't looked very deep into it 
-> though given this patch solves it.
-> 
-> I guess worst case it'll become a devicetree property to enable this quirk?
-> 
+> Hi Lars,
+> From a functionality point of view commit[1] would fix the ina2xx driver. 
+> However, during the original patch discussion it was pointed out that ktime 
+> API is a much more standard solution to work out timings and that timespec64 
+> didn't provide any benefit. There is only one other reference to timespec64 in 
+> drivers/iio (in industrialio-core.c) but many usages of ktime.
+> Iain
+> > 
+> > [1]
+> > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?i
+> > d=39ff83f2f6cc  
+> > > Signed-off-by: Iain Hunter <iain@hunterembedded.co.uk>
+> > > 
+> > > Fixes: cb47755725da("time: Prevent undef$
 
-My spontaneous suggestion would be to skip the check only for the
-"rpm_requests" channel, e.g. something like
+Please fix this tag and resend.  Also there should be no blank lines in the tag
+block. 
 
-	if (remote_state != SMD_CHANNEL_OPENING &&
-	    remote_state != SMD_CHANNEL_OPENED &&
-	    strcmp(channel->name, "rpm_requests")
-		continue;
+Or perhaps drop the tag and treat this as a cleanup, which is what I believe it
+is after the fix Lars called out.
 
-This will avoid changing the behavior for anything but the RPM channel.
-I don't think anything else is affected by the same problem (since the
-bootloader or earlier firmware should not make use of any other channel).
-Also, we definitely *always* want to open the channel to the RPM because
-otherwise almost everything breaks.
+Patch title also should be in keeping with patches to the subsystem in question.
+Here something like:
 
-Many solutions are possible though so at the end it is mostly up to
-Bjorn to decide I think. :)
+iio:adc:ina2xx: Switch from timespec64 to ktime_t.
 
 Thanks,
-Stephan
+
+Jonathan
+
+> > > ---
+> > > 
+> > >   drivers/iio/adc/ina2xx-adc.c | 15 +++++++--------
+> > >   1 file changed, 7 insertions(+), 8 deletions(-)
+> > > 
+> > > diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+> > > index a4b2ff9e0..17f702772 100644
+> > > --- a/drivers/iio/adc/ina2xx-adc.c
+> > > +++ b/drivers/iio/adc/ina2xx-adc.c
+> > > @@ -775,7 +775,7 @@ static int ina2xx_capture_thread(void *data)
+> > > 
+> > >   	struct ina2xx_chip_info *chip = iio_priv(indio_dev);
+> > >   	int sampling_us = SAMPLING_PERIOD(chip);
+> > >   	int ret;
+> > > 
+> > > -	struct timespec64 next, now, delta;
+> > > +	ktime_t next, now;
+> > > 
+> > >   	s64 delay_us;
+> > >   	
+> > >   	/*
+> > > 
+> > > @@ -785,7 +785,7 @@ static int ina2xx_capture_thread(void *data)
+> > > 
+> > >   	if (!chip->allow_async_readout)
+> > >   	
+> > >   		sampling_us -= 200;
+> > > 
+> > > -	ktime_get_ts64(&next);
+> > > +	next = ktime_get();
+> > > 
+> > >   	do {
+> > >   	
+> > >   		while (!chip->allow_async_readout) {
+> > > 
+> > > @@ -798,7 +798,7 @@ static int ina2xx_capture_thread(void *data)
+> > > 
+> > >   			 * reset the reference timestamp.
+> > >   			 */
+> > >   			
+> > >   			if (ret == 0)
+> > > 
+> > > -				ktime_get_ts64(&next);
+> > > +				next = ktime_get();
+> > > 
+> > >   			else
+> > >   			
+> > >   				break;
+> > >   		
+> > >   		}
+> > > 
+> > > @@ -807,7 +807,7 @@ static int ina2xx_capture_thread(void *data)
+> > > 
+> > >   		if (ret < 0)
+> > >   		
+> > >   			return ret;
+> > > 
+> > > -		ktime_get_ts64(&now);
+> > > +		now = ktime_get();
+> > > 
+> > >   		/*
+> > >   		
+> > >   		 * Advance the timestamp for the next poll by one sampling
+> > > 
+> > > @@ -816,11 +816,10 @@ static int ina2xx_capture_thread(void *data)
+> > > 
+> > >   		 * multiple times, i.e. samples are dropped.
+> > >   		 */
+> > >   		
+> > >   		do {
+> > > 
+> > > -			timespec64_add_ns(&next, 1000 * sampling_us);
+> > > -			delta = timespec64_sub(next, now);
+> > > -			delay_us = div_s64(timespec64_to_ns(&delta),   
+> 1000);
+> > > -		} while (delay_us <= 0);
+> > > +			next = ktime_add_us(next, sampling_us);
+> > > +		} while (next <= now);
+> > > 
+> > > +		delay_us = ktime_to_us(ktime_sub(next, now));
+> > > 
+> > >   		usleep_range(delay_us, (delay_us * 3) >> 1);
+> > >   	
+> > >   	} while (!kthread_should_stop());  
+> 
+> 
+> 
+> 
+
