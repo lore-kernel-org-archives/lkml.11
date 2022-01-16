@@ -2,194 +2,97 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 445D2C43217
-	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 11:25:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52518C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 16 Jan 2022 11:31:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234876AbiAPLZA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 06:25:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46430 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230451AbiAPLY7 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 06:24:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C31C5C061574;
-        Sun, 16 Jan 2022 03:24:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C6F9B80D3D;
-        Sun, 16 Jan 2022 11:24:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3F66C36AE7;
-        Sun, 16 Jan 2022 11:24:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642332296;
-        bh=SCm04AFPsLST/8ZlVrtGPvyNPIJ3KZ962EHDyckiGZk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HGqax4vFQK6J0AxhqaMoxaDep75PIIIEccQ0z6I5FWuausPJQEBQ5IBujRmh0vBhN
-         y3SLmRcnGHIaGzMuWGMUkC93/BHBobWQ4vRer44UR7Rtdoz+vDwCkICOXANTJ5b7Ob
-         cjIsNtbWYo3RTwiWaxQh5w8/LmiJP+HqqZBdIVSKA/iTr1eeRRXi0hHAx2mgCR8o/6
-         PRSuL0W+aY+iO62VPEA8YefbjuXhmFYBqomi9k28wRm1MWXpAV980Ogi/N1OHN1zMT
-         lcCfXATIgQrrOJyzIytIyRJLYi7r0cumRAExpaKqUJhNg3yGhhrsSGiNgxrXyLor/L
-         0N0PotkRZCliA==
-Date:   Sun, 16 Jan 2022 11:30:56 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Cristian Pop <cristian.pop@analog.com>
-Cc:     <linux-iio@vger.kernel.org>, <linux-gpio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <robh+dt@kernel.org>
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: addac: one-bit-adc-dac yaml
- documentation
-Message-ID: <20220116113056.535a5cad@jic23-huawei>
-In-Reply-To: <20220111115919.14645-1-cristian.pop@analog.com>
-References: <20220111115919.14645-1-cristian.pop@analog.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        id S234926AbiAPLb6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 06:31:58 -0500
+Received: from mga07.intel.com ([134.134.136.100]:65151 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232797AbiAPLb5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 16 Jan 2022 06:31:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642332717; x=1673868717;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=7DfAvPtPxvzuYNgkB3IZgnRqPUprJjtECkW/DRPaWCs=;
+  b=PnM8olxLVJ0+PuJtaxKuiN7+03T2MyosBbdqbCS+okqLOoDBjam2mhZY
+   TIUnnPeIPgPNppZjdgDhM/zJLCFhivnu3rSipCmEmUDt2K73RfUN9p5mj
+   5/bafxWcHMcyyzGOcBWU48+8cppmHYD0gQW4rQlnr4NNRjc4YYeA2lJla
+   X77K5RUc4fPxSbpuW0hmF6TbR1ys4OjosOFI8Q+VEqgy9zg4JMb3eNpc8
+   6vViZbu3Fx5nsHQ4i4KsYavWCj8Pq/9NErGgZ3M57bPWSfbL9vlE8HMpn
+   ueUS34+mZTIxqiBpByd2hz/00BTNajTSB2ABDscmcg6KoOd8nUcrR4Fh0
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10228"; a="307822128"
+X-IronPort-AV: E=Sophos;i="5.88,293,1635231600"; 
+   d="scan'208";a="307822128"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2022 03:31:57 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,293,1635231600"; 
+   d="scan'208";a="517060914"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 16 Jan 2022 03:31:55 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n93lK-000AfB-Vj; Sun, 16 Jan 2022 11:31:54 +0000
+Date:   Sun, 16 Jan 2022 19:31:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Samuel Pascua <pascua.samuel.14@gmail.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Iskren Chernev <iskren.chernev@gmail.com>
+Subject: dtbs_check: arch/arm/boot/dts/qcom-msm8974-samsung-klte.dt.yaml:
+ mdss@fd900000: status:0: 'ok' is not one of ['okay', 'disabled', 'reserved']
+Message-ID: <202201161804.sd3UKeLn-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 11 Jan 2022 13:59:18 +0200
-Cristian Pop <cristian.pop@analog.com> wrote:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   a33f5c380c4bd3fa5278d690421b72052456d9fe
+commit: 3657b677d20d4b6bda441bd568d037446bd6d880 ARM: dts: qcom: msm8974-klte: add support for display
+date:   12 months ago
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
+reproduce: make ARCH=arm dtbs_check
 
-> This adds device tree bindings for the one-bit-adc-dac.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-This series really needs a cover letter where you describe in
-general terms what the aim is etc.
 
-> 
-> Signed-off-by: Cristian Pop <cristian.pop@analog.com>
-> V1->V2                                                                     
->  - I am aware of the recommendation of rename/move this driver. Should we  
->    consider "drivers/io/gpio.c"? 
+dtcheck warnings: (new ones prefixed by >>)
+   arch/arm/boot/dts/qcom-msm8974-samsung-klte.dt.yaml: tcsr-mutex: 'syscon' does not match any of the regexes: 'pinctrl-[0-9]+'
+   	From schema: Documentation/devicetree/bindings/hwlock/qcom-hwspinlock.yaml
+   arch/arm/boot/dts/qcom-msm8974-samsung-klte.dt.yaml: memory@fc428000: 'device_type' is a required property
+   	From schema: /usr/local/lib/python3.9/dist-packages/dtschema/schemas/memory.yaml
+   arch/arm/boot/dts/qcom-msm8974-samsung-klte.dt.yaml: vadc@3100: 'die_temp', 'ref_1250v', 'ref_625mv', 'ref_buf_625mv', 'ref_gnd', 'ref_vdd' do not match any of the regexes: '^.*@[0-9a-f]+$', 'pinctrl-[0-9]+'
+   	From schema: Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml
+   arch/arm/boot/dts/qcom-msm8974-samsung-klte.dt.yaml: ocmem@fdd00000: 'ranges' is a required property
+   	From schema: Documentation/devicetree/bindings/sram/qcom,ocmem.yaml
+   arch/arm/boot/dts/qcom-msm8974-samsung-klte.dt.yaml: adreno@fdb00000: status:0: 'ok' is not one of ['okay', 'disabled', 'reserved']
+   	From schema: /usr/local/lib/python3.9/dist-packages/dtschema/schemas/dt-core.yaml
+>> arch/arm/boot/dts/qcom-msm8974-samsung-klte.dt.yaml: mdss@fd900000: status:0: 'ok' is not one of ['okay', 'disabled', 'reserved']
+   	From schema: /usr/local/lib/python3.9/dist-packages/dtschema/schemas/dt-core.yaml
+>> arch/arm/boot/dts/qcom-msm8974-samsung-klte.dt.yaml: mdp@fd900000: status:0: 'ok' is not one of ['okay', 'disabled', 'reserved']
+   	From schema: /usr/local/lib/python3.9/dist-packages/dtschema/schemas/dt-core.yaml
+>> arch/arm/boot/dts/qcom-msm8974-samsung-klte.dt.yaml: dsi@fd922800: status:0: 'ok' is not one of ['okay', 'disabled', 'reserved']
+   	From schema: /usr/local/lib/python3.9/dist-packages/dtschema/schemas/dt-core.yaml
+>> arch/arm/boot/dts/qcom-msm8974-samsung-klte.dt.yaml: dsi-phy@fd922a00: status:0: 'ok' is not one of ['okay', 'disabled', 'reserved']
+   	From schema: /usr/local/lib/python3.9/dist-packages/dtschema/schemas/dt-core.yaml
+   schemas/input/input.yaml: ignoring, error in schema: properties: power-off-time-sec
+   Traceback (most recent call last):
+     File "/usr/local/bin/dt-validate", line 170, in <module>
+       sg.check_trees(filename, testtree)
+     File "/usr/local/bin/dt-validate", line 119, in check_trees
+       self.check_subtree(dt, subtree, False, "/", "/", filename)
+     File "/usr/local/bin/dt-validate", line 110, in check_subtree
+       self.check_subtree(tree, value, disabled, name, fullname + name, filename)
+     File "/usr/local/bin/dt-validate", line 110, in check_subtree
 
-Probably keep with the naming of the hwmon iio bridge and go with
-gpio_iio.c to indicate bridge from gpio to iio.
-
-I'll put more general comments in patch 2 review, but I'm very doubtful
-that setting this up via dt is giong to be the way forward.
-Shall we say, the iio_hwmon bindings have always been controversial and
-we'd probably not get away with them today...
-
-Reason being it's policy not wiring and reflects internal Linux subsystem
-constructs, not generic things applicable to all operating systems.
-
-                                          
->  - Add .yaml file                                                          
->  - Remove blank lines, remove unnecessary coma                             
->  - Remove macros for channels                                              
->  - Check if channel is input for write_raw                                 
->  - Use labels instead of extend_name                                       
->  - Fix channel indexing                                                    
->  - Use "sizeof(*channels)" in devm_kcalloc()                               
->  - Remove assignment: " indio_dev->dev.parent = &pdev->dev;"               
->  - Remove "platform_set_drvdata"                               
-Not in this patch so shouldn't be in this description.            
->  - Remove "adi" from compatible string since is not ADI specific driver.
-> ---
-
-Version log here for stuff in this patch.  Fine to have the log in the
-cover letter if the changes tend to go across multiple patches (renames etc).
-
->  .../bindings/iio/addac/one-bit-adc-dac.yaml   | 89 +++++++++++++++++++
->  1 file changed, 89 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/addac/one-bit-adc-dac.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/addac/one-bit-adc-dac.yaml b/Documentation/devicetree/bindings/iio/addac/one-bit-adc-dac.yaml
-> new file mode 100644
-> index 000000000000..dbed0f3b1ca4
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/addac/one-bit-adc-dac.yaml
-> @@ -0,0 +1,89 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +# Copyright 2020 Analog Devices Inc.
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/addac/one-bit-adc-dac.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Analog Devices one bit ADC DAC driver
-> +
-> +maintainers:
-> +  - Cristian Pop <cristian.pop@analog.com>
-> +
-> +description: |
-> +  One bit ADC DAC driver
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - adi,one-bit-adc-dac
-> +
-> +  '#address-cells':
-> +    const: 1
-> +
-> +  '#size-cells':
-> +    const: 0
-> +
-> +  in-gpios:
-> +    description: Input GPIOs
-> +
-> +  out-gpios:
-> +    description: Output GPIOs
-> +
-> +required:
-> +  - compatible
-> +  - in-gpios
-> +  - out-gpios
-> +
-> +patternProperties:
-> +  "^channel@([0-9]|1[0-5])$":
-> +    type: object
-> +    description: |
-> +      Represents the external channels which are connected to the ADDAC.
-> +
-> +    properties:
-> +      reg:
-> +        maxItems: 1
-> +        description: |
-> +          The channel number.
-> +
-> +      label:
-> +        description: |
-> +          Unique name to identify which channel this is.
-> +
-> +    required:
-> +      - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    one-bit-adc-dac@0 {
-> +        compatible = "one-bit-adc-dac";
-> +
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        in-gpios = <&gpio 17 0>, <&gpio 27 0>;
-> +        out-gpios = <&gpio 23 0>, <&gpio 24 0>;
-> +
-> +        channel@0 {
-> +          reg = <0>;
-> +          label = "i_17";
-> +        };
-> +
-> +        channel@1 {
-> +          reg = <1>;
-> +          label = "i_27";
-> +        };
-> +
-> +        channel@2 {
-> +          reg = <2>;
-> +          label = "o_23";
-> +        };
-> +
-> +        channel@3 {
-> +          reg = <3>;
-> +          label = "o_24";
-> +        };
-> +    };
-
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
