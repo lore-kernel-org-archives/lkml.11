@@ -2,163 +2,207 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15E2DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 12:16:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48AF6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 12:18:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239800AbiAQMQb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 07:16:31 -0500
-Received: from mout.gmx.net ([212.227.17.22]:40493 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239559AbiAQMQa (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 07:16:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1642421781;
-        bh=0umTTU4XfVVX+KXxZBAd7v3zaeX2hoWPbrIx01aJkMM=;
-        h=X-UI-Sender-Class:Date:To:Cc:References:From:Subject:In-Reply-To;
-        b=dTam736OkShsJUDXUaKisxBZIIRwJ4/ptbwrL8lRSVSkkpHPwOHDjKOXtJSjTFFkR
-         XL72Id8Yh8G5/Dhig9vZhcWYrky8E+fxWB4Q3oCvzHEPgs9EsNbETCzQdKyZrwv4sv
-         x+Lbd5lT3TvJxpTnvf9Pmxa8cqEDb5gDlu6rAEe4=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.167.237]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MRTRN-1mulpA1Q85-00NPv8; Mon, 17
- Jan 2022 13:16:21 +0100
-Message-ID: <c80ed72c-2eb4-16dd-a7ad-57e9dde59ba1@gmx.de>
-Date:   Mon, 17 Jan 2022 13:15:16 +0100
+        id S239806AbiAQMSK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 07:18:10 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:34898 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S236982AbiAQMSJ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 07:18:09 -0500
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20HB8SZj003347;
+        Mon, 17 Jan 2022 13:17:58 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=selector1;
+ bh=eAGtpLGxSBUIlXwyUQAhV0dqyriUuuNNn2oh2mbZPlM=;
+ b=DgNwH5wkS7WR5MsVB12K4Hb0y95syoI73hW3Hz1yatctkv9FKEEVO9/sBLdXUcb8NxpX
+ PxmpDHxk5GTZ4/XkippKkmIYortMSjixxKXym0a+16yktuzeTrKd28NmYAq3PckEd2Z8
+ jRxlaD2f34CBPLxWbxyhBmzYPHErJfvqZwFVTO8P2fkUINMp670qDpRjaaVlXnnlReel
+ yROuzJrW40UviuGdsjgkOYWPM9XCLuRjAtl7Rya3rqdOMahZOrh+F68RKgDTO8KDTNy4
+ S5xoigD63gMP+WHXx4b78cgWphAhSCbWQZIXj1utwlr55BGORQM8U59/2TULiWjsLp3K DQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dmq5g4gkb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 17 Jan 2022 13:17:58 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 9F45110002A;
+        Mon, 17 Jan 2022 13:17:57 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node1.st.com [10.75.127.4])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 94AEF214D28;
+        Mon, 17 Jan 2022 13:17:57 +0100 (CET)
+Received: from localhost (10.75.127.49) by SFHDAG2NODE1.st.com (10.75.127.4)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 17 Jan 2022 13:17:57
+ +0100
+From:   <patrice.chotard@foss.st.com>
+To:     Mark Brown <broonie@kernel.org>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+CC:     <linux-spi@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <christophe.kerello@foss.st.com>,
+        <patrice.chotard@foss.st.com>, <stable@vger.kernel.org>
+Subject: [PATCH v3] spi: stm32-qspi: Update spi registering
+Date:   Mon, 17 Jan 2022 13:17:44 +0100
+Message-ID: <20220117121744.29729-1-patrice.chotard@foss.st.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Content-Language: en-US
-To:     Daniel Vetter <daniel@ffwll.ch>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "airlied@gmail.com" <airlied@gmail.com>
-Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-References: <YeG8ydoJNWWkGrTb@ls3530>
- <CAKMK7uGdJckdM+fg+576iJXsqzCOUg20etPBMwRLB9U7GcG01Q@mail.gmail.com>
-From:   Helge Deller <deller@gmx.de>
-Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
-In-Reply-To: <CAKMK7uGdJckdM+fg+576iJXsqzCOUg20etPBMwRLB9U7GcG01Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:D2eGrpuAUbVVzZrhjRVJ3cJjkjGmaGCwoincAiE9iwih9KDLXNU
- 29l6dw5iBTUHU1WPz48pV4an0QAJy/hP2fmgokflBgIwptu2HWBmg4/2fi9/R2uPqLxtPPK
- d2WroLO/yK/49QqHe6lwRcz+KzE3QhZSDPxhY27X8aRsd2nMpNh4Hn+5uE5warHJiMrPVEs
- YYR/NhMPjBw+2kFNgZG1A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:+f37p3vPXP4=:wyoDRTccsWKM6CQP0NxMjQ
- tD9j8iMD2H9Qv32t0kd0TIVpEDZvC7D5vBW7+uIRf7qURHwhEoLrJ57SK2XMPqxuLzTdGl5ET
- UiN4xPP50lLaqmenQb/cw7fwaIQiXlUYA69kKVRYqz81LzYZa9yKEQNwu9D1MNstGjQn8F1kE
- DWzDX68i3LhfwXlJhEsCketjgDeZfLN+Zmb2tUY5wnBNrxtq+l5X1APKgNf97wR2H0Ju6L2Im
- T1wid4TJqXWUmx+oKu7Svm/VWD5UdDJHlJfCAawo5Q+HNiS0YPgD+c8AIaHGpvk0+LVfrqQRu
- 7EZEOtlI/1TQ/Zf5wxfbVXWJzFIA85X4RFLODqbTMjep5LXS6A0xumCZ8q+aPwHwHAA5U7igd
- lGAhCjLRpNbJUbbUE3A5NvMzJJmle/9jyKeiArme6sm7WzMCo8WeM7TRmhvRqseatgTd+G2Vr
- ZSgHzMkuI5i7AcPdSzFkEGMG5Uy2hFlj8bUPL+S/OcFX1fq2/6VJiB6QdoaGZHvgpRUvMjK8s
- 5zpxvI11OpqV6pjmbeadQwUwxHqaDA57emWKOYZ7yR+TVmoAQHDwl8BZt/7/ERfCChKeypNsz
- lZ0qNWV46MwQWgavaxW/TwEK6oFTPWRWKpmxtRRvk3mKuS58lGWv6M55HDV7oQjwCravf585m
- EyZwMPQZaUtlsivuk8V2tgOjLleAnjqj3a+oOX1XIAvapQlen9GdV492oHjzx22i1jIDAoKzW
- JqX6YWHb2Y/JPdKMRNCQvbav9+eEEtANUNt5PoNO7k6zVLWnVhQVbllT7RgKpPYD4xIpD/4HU
- uz4Dbj1cRyUUi5REHfKlEaMiX/bKlnrqJFGH4yH2lWiBgqBZp++DK6bSa1hurRel3gfKMLuno
- r9UviaH01J8HzQ54n2qU1JO0/iSVD8zSnOI25IJPbaOpkreO/aZwhXgLHRgFB/cgFmt2J+Fpg
- ORxGdhoYY1N/yU3fFKSWKqttM0BDLAr5tSifkts/WZE7N8dt/SXNb3LE7TkLortOTbrWbOEvc
- ye8E2R7RoG3A/tr2KZbsJycis1s6EHysWZVyoqCYM76ZbawCf9hN4FQE22UKpNnRjQ2bnwTKH
- VGJi6W/QCLr2X4=
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.49]
+X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE1.st.com
+ (10.75.127.4)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-17_05,2022-01-14_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Daniel,
+From: Patrice Chotard <patrice.chotard@foss.st.com>
 
-On 1/17/22 11:02, Daniel Vetter wrote:
-> Hi Helge
->
-> On Fri, Jan 14, 2022 at 7:18 PM Helge Deller <deller@gmx.de> wrote:
->>
->> The fbdev layer is orphaned, but seems to need some care.
->> So I'd like to step up as new maintainer.
->>
->> Signed-off-by: Helge Deller <deller@gmx.de>
->>
->> diff --git a/MAINTAINERS b/MAINTAINERS
->> index 5d0cd537803a..ce47dbc467cc 100644
->> --- a/MAINTAINERS
->> +++ b/MAINTAINERS
->> @@ -7583,11 +7583,12 @@ W:      http://floatingpoint.sourceforge.net/em=
-ulator/index.html
->>  F:     arch/x86/math-emu/
->>
->>  FRAMEBUFFER LAYER
->> -L:     dri-devel@lists.freedesktop.org
->> +M:     Helge Deller <deller@gmx.de>
->>  L:     linux-fbdev@vger.kernel.org
->> -S:     Orphan
->
-> Maybe don't rush maintainer changes in over the w/e without even botheri=
-ng
-> to get any input from the people who've been maintaining it before.
->
-> Because the status isn't entirely correct, fbdev core code and fbcon and
-> all that has been maintained, but in bugfixes only mode. And there's ver=
-y
-> solid&important reasons to keep merging these patches through a drm tree=
-,
-> because that's where all the driver development happens, and hence also
-> all the testing (e.g. the drm test suite has some fbdev tests - the only
-> automated ones that exist to my knowledge - and we run them in CI). So
-> moving that into an obscure new tree which isn't even in linux-next yet =
-is
-> no good at all.
->
-> Now fbdev driver bugfixes is indeed practically orphaned and I very much
-> welcome anyone stepping up for that, but the simplest approach there wou=
-ld
-> be to just get drm-misc commit rights and push the oddball bugfix in the=
-re
-> directly. But also if you want to do your own pull requests to Linus for
-> that I don't care and there's really no interference I think, so
-> whatever floats.
->
-> But any code that is relevant for drm drivers really needs to go in thro=
-ugh
-> drm trees, nothing else makes much sense.
->
-> I guess you're first action as newly minted fbdev maintainer is going to=
- be to
-> clean up the confusion you just created.
+Some device driver need to communicate to qspi device during the remove
+process, qspi controller must be functional when spi_unregister_master()
+is called.
 
-Most of my machines depend on a working fbdev layer since drm isn't (and p=
-robably
--due to technical requirements of DRM- won't be) available for those.
-So, since the fbdev drivers were marked orphaned, I decided to step up as =
-maintainer.
+To ensure this, replace devm_spi_register_master() by spi_register_master()
+and spi_unregister_master() is called directly in .remove callback before
+stopping the qspi controller.
 
-I see your point that at least the fbdev core code and fbcon are shared be=
-tween DRM and fbdev.
-For me it's really not important to drive any patches through a seperate t=
-ree, so
-I'd be happy to join the drm-misc tree if you feel it's necessary. (By the=
- way,
-adding my tree to for-next was on my todo list...)
+This issue was put in evidence using kernel v5.11 and later
+with a spi-nor which supports the software reset feature introduced
+by commit d73ee7534cc5 ("mtd: spi-nor: core: perform a Soft Reset on
+shutdown")
 
-What's important for me though is, to keep fbdev actively maintained, whic=
-h means:
-a) to get fixes which were posted to fbdev mailing list applied if they ar=
-e useful & correct,
-b) to include new drivers (for old hardware) if they arrive (probably happ=
-ens rarely but there can be).
-   I know of at least one driver which won't be able to support DRM....
-   Of course, if the hardware is capable to support DRM, it should be writ=
-ten for DRM and not applied for fbdev.
-c) reintroduce the state where fbcon is fast on fbdev. This is important f=
-or non-DRM machines,
-   either when run on native hardware or in an emulator.
-d) not break DRM development
+Fixes: c530cd1d9d5e ("spi: spi-mem: add stm32 qspi controller")
 
-Especially regarding c) I complained in [1] and got no feedback. I really =
-would like to
-understand where the actual problems were and what's necessary to fix them=
-.
+Signed-off-by: Patrice Chotard <patrice.chotard@foss.st.com>
+Cc: <stable@vger.kernel.org> # 5.8.x
+---
 
-Helge
+v3: 
+  _ Update error path due to devm_spi_alloc_master() usage
 
-[1] https://lore.kernel.org/r/feea8303-2b83-fc36-972c-4fc8ad723bde@gmx.de
+v2: 
+  _ update commit message
+  _ make usage of devm_spi_alloc_master() instead of spi_alloc_master()
+
+ drivers/spi/spi-stm32-qspi.c | 47 +++++++++++++-----------------------
+ 1 file changed, 17 insertions(+), 30 deletions(-)
+
+diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
+index 514337c86d2c..ffdc55f87e82 100644
+--- a/drivers/spi/spi-stm32-qspi.c
++++ b/drivers/spi/spi-stm32-qspi.c
+@@ -688,7 +688,7 @@ static int stm32_qspi_probe(struct platform_device *pdev)
+ 	struct resource *res;
+ 	int ret, irq;
+ 
+-	ctrl = spi_alloc_master(dev, sizeof(*qspi));
++	ctrl = devm_spi_alloc_master(dev, sizeof(*qspi));
+ 	if (!ctrl)
+ 		return -ENOMEM;
+ 
+@@ -697,58 +697,46 @@ static int stm32_qspi_probe(struct platform_device *pdev)
+ 
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "qspi");
+ 	qspi->io_base = devm_ioremap_resource(dev, res);
+-	if (IS_ERR(qspi->io_base)) {
+-		ret = PTR_ERR(qspi->io_base);
+-		goto err_master_put;
+-	}
++	if (IS_ERR(qspi->io_base))
++		return PTR_ERR(qspi->io_base);
+ 
+ 	qspi->phys_base = res->start;
+ 
+ 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "qspi_mm");
+ 	qspi->mm_base = devm_ioremap_resource(dev, res);
+-	if (IS_ERR(qspi->mm_base)) {
+-		ret = PTR_ERR(qspi->mm_base);
+-		goto err_master_put;
+-	}
++	if (IS_ERR(qspi->mm_base))
++		return PTR_ERR(qspi->mm_base);
+ 
+ 	qspi->mm_size = resource_size(res);
+-	if (qspi->mm_size > STM32_QSPI_MAX_MMAP_SZ) {
+-		ret = -EINVAL;
+-		goto err_master_put;
+-	}
++	if (qspi->mm_size > STM32_QSPI_MAX_MMAP_SZ)
++		return -EINVAL;
+ 
+ 	irq = platform_get_irq(pdev, 0);
+-	if (irq < 0) {
+-		ret = irq;
+-		goto err_master_put;
+-	}
++	if (irq < 0)
++		return irq;
+ 
+ 	ret = devm_request_irq(dev, irq, stm32_qspi_irq, 0,
+ 			       dev_name(dev), qspi);
+ 	if (ret) {
+ 		dev_err(dev, "failed to request irq\n");
+-		goto err_master_put;
++		return ret;
+ 	}
+ 
+ 	init_completion(&qspi->data_completion);
+ 	init_completion(&qspi->match_completion);
+ 
+ 	qspi->clk = devm_clk_get(dev, NULL);
+-	if (IS_ERR(qspi->clk)) {
+-		ret = PTR_ERR(qspi->clk);
+-		goto err_master_put;
+-	}
++	if (IS_ERR(qspi->clk))
++		return PTR_ERR(qspi->clk);
+ 
+ 	qspi->clk_rate = clk_get_rate(qspi->clk);
+-	if (!qspi->clk_rate) {
+-		ret = -EINVAL;
+-		goto err_master_put;
+-	}
++	if (!qspi->clk_rate)
++		return -EINVAL;
+ 
+ 	ret = clk_prepare_enable(qspi->clk);
+ 	if (ret) {
+ 		dev_err(dev, "can not enable the clock\n");
+-		goto err_master_put;
++		return ret;
+ 	}
+ 
+ 	rstc = devm_reset_control_get_exclusive(dev, NULL);
+@@ -784,7 +772,7 @@ static int stm32_qspi_probe(struct platform_device *pdev)
+ 	pm_runtime_enable(dev);
+ 	pm_runtime_get_noresume(dev);
+ 
+-	ret = devm_spi_register_master(dev, ctrl);
++	ret = spi_register_master(ctrl);
+ 	if (ret)
+ 		goto err_pm_runtime_free;
+ 
+@@ -806,8 +794,6 @@ static int stm32_qspi_probe(struct platform_device *pdev)
+ 	stm32_qspi_dma_free(qspi);
+ err_clk_disable:
+ 	clk_disable_unprepare(qspi->clk);
+-err_master_put:
+-	spi_master_put(qspi->ctrl);
+ 
+ 	return ret;
+ }
+@@ -817,6 +803,7 @@ static int stm32_qspi_remove(struct platform_device *pdev)
+ 	struct stm32_qspi *qspi = platform_get_drvdata(pdev);
+ 
+ 	pm_runtime_get_sync(qspi->dev);
++	spi_unregister_master(qspi->ctrl);
+ 	/* disable qspi */
+ 	writel_relaxed(0, qspi->io_base + QSPI_CR);
+ 	stm32_qspi_dma_free(qspi);
+-- 
+2.17.1
+
