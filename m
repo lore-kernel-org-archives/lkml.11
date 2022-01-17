@@ -2,78 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EFFEC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:10:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1872CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:11:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240874AbiAQQKu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 11:10:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33518 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237587AbiAQQKs (ORCPT
+        id S237524AbiAQQLJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 11:11:09 -0500
+Received: from mail-out.m-online.net ([212.18.0.9]:41750 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237430AbiAQQLF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 11:10:48 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06559C061574;
-        Mon, 17 Jan 2022 08:10:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=QgdfAvNkIxpa6lPCvlC647cLv8L2qmMu1/dpfaEB93w=; b=Fjhxxp7lxySoKYa9cyiWJG7FVs
-        WaEuNqpzk19HPcYLCHkevL229dA7u9e+JX1T0WA85c9fOLhvhb2kOc4CFsq2QzryBBmyC0RVej8Lh
-        FsA43/etrlHVf8yNdWTsNsjNXwTAFV4YVfbh+GhHXHkQllsCEzm3oRW2q+Cb/DvfB+EnVFJHQxOWv
-        /XxwnN5zRXslv8kc/D/Y8De6gYle1MEvaiGwB5QcSqHKivV4ZHVnX0L/wDvnj6d5MsQxuAwyDEKNE
-        Ydi56Oc216JZHOGO24A9uW+oym3fXQJp+/3rjd5Q+gpvEOb2NOUETI4W+XNLP0gSTs+FueAGoi1z/
-        sCra3q6g==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n9Uak-008MgI-8c; Mon, 17 Jan 2022 16:10:46 +0000
-Date:   Mon, 17 Jan 2022 16:10:46 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     "Kirill A. Shutemov" <kirill@shutemov.name>
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org
-Subject: Re: [PATCH 04/12] mm/vmscan: Free non-shmem folios without splitting
- them
-Message-ID: <YeWVBkgYMp4MctTW@casper.infradead.org>
-References: <20220116121822.1727633-1-willy@infradead.org>
- <20220116121822.1727633-5-willy@infradead.org>
- <20220117160625.oofpzl7tqm5udwaj@box.shutemov.name>
+        Mon, 17 Jan 2022 11:11:05 -0500
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4Jcxj127Sfz1qxHZ;
+        Mon, 17 Jan 2022 17:11:01 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4Jcxj11LGyz1qqkB;
+        Mon, 17 Jan 2022 17:11:01 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id Q6HIU5Zbaqg4; Mon, 17 Jan 2022 17:11:00 +0100 (CET)
+X-Auth-Info: WBIdWVkrdSiGmO+QDBQxoTmVr79e6qe1UsEYV5yN1imGIbBKMcVHNSoaZeLM3kUt
+Received: from igel.home (ppp-46-244-183-111.dynamic.mnet-online.de [46.244.183.111])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Mon, 17 Jan 2022 17:11:00 +0100 (CET)
+Received: by igel.home (Postfix, from userid 1000)
+        id 1E58D2C3ABC; Mon, 17 Jan 2022 17:10:59 +0100 (CET)
+From:   Andreas Schwab <schwab@linux-m68k.org>
+To:     Changbin Du <changbin.du@gmail.com>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] riscv: eliminate unreliable __builtin_frame_address(1)
+References: <20220117154433.3124-1-changbin.du@gmail.com>
+X-Yow:  Where's the Coke machine?  Tell me a joke!!
+Date:   Mon, 17 Jan 2022 17:10:59 +0100
+In-Reply-To: <20220117154433.3124-1-changbin.du@gmail.com> (Changbin Du's
+        message of "Mon, 17 Jan 2022 23:44:33 +0800")
+Message-ID: <87czkq7370.fsf@igel.home>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.91 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220117160625.oofpzl7tqm5udwaj@box.shutemov.name>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 07:06:25PM +0300, Kirill A. Shutemov wrote:
-> On Sun, Jan 16, 2022 at 12:18:14PM +0000, Matthew Wilcox (Oracle) wrote:
-> > We have to allocate memory in order to split a file-backed folio, so
-> > it's not a good idea to split them in the memory freeing path.
-> 
-> Could elaborate on why split a file-backed folio requires memory
-> allocation?
+On Jan 17 2022, Changbin Du wrote:
 
-In the commit message or explain it to you now?
+> I tried different pieces of code which uses __builtin_frame_address(1)
+> (with both gcc version 7.5.0 and 10.3.0) to verify whether it works as
+> expected on riscv64. The result is negative.
+>
+> What the compiler had generated is as below:
+> 31                      fp = (unsigned long)__builtin_frame_address(1);
+>    0xffffffff80006024 <+200>:   ld      s1,0(s0)
+>
+> It takes '0(s0)' as the address of frame 1 (caller), but the actual address
+> should be '-16(s0)'.
+>
+>           |       ...       | <-+
+>           +-----------------+   |
+>           | return address  |   |
+>           | previous fp     |   |
+>           | saved registers |   |
+>           | local variables |   |
+>   $fp --> |       ...       |   |
+>           +-----------------+   |
+>           | return address  |   |
+>           | previous fp --------+
+>           | saved registers |
+>   $sp --> | local variables |
+>           +-----------------+
+>
+> This leads the kernel can not dump the full stack trace on riscv.
+>
+> [    7.222126][    T1] Call Trace:
+> [    7.222804][    T1] [<ffffffff80006058>] dump_backtrace+0x2c/0x3a
+>
+> This problem is not exposed on most riscv builds just because the '0(s0)'
+> occasionally is the address frame 2 (caller's caller), if only ra and fp
+> are stored in frame 1 (caller).
+>
+>           |       ...       | <-+
+>           +-----------------+   |
+>           | return address  |   |
+>   $fp --> | previous fp     |   |
+>           +-----------------+   |
+>           | return address  |   |
+>           | previous fp --------+
+>           | saved registers |
+>   $sp --> | local variables |
+>           +-----------------+
+>
+> This could be a *bug* of gcc that should be fixed.
 
-We need to allocate xarray nodes to store all the newly-independent
-pages.  With a folio that's more than 64 entries in size (current
-implementation), we elide the lowest layer of the radix tree.  But
-with any data structure that tracks folios, we'll need to create
-space in it to track N folios instead of 1.
+Yes, it would be nice to get this fixed.  The riscv target does not
+override DYNAMIC_CHAIN_ADDRESS, thus the default is used, which has the
+noted effect.
 
-> > It also
-> > doesn't work for XFS because pages have an extra reference count from
-> > page_has_private() and split_huge_page() expects that reference to have
-> > already been removed.
-> 
-> Need to adjust can_split_huge_page()?
-
-no?
-
-> > Unfortunately, we still have to split shmem THPs
-> > because we can't handle swapping out an entire THP yet.
-> 
-> ... especially if the system doesn't have swap :P
-
-Not sure what correction to the commit message you want here.
+-- 
+Andreas Schwab, schwab@linux-m68k.org
+GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
+"And now for something completely different."
