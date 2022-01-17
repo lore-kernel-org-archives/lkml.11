@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39D47C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35F52C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:03:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242359AbiAQRDx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:03:53 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50122 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241422AbiAQRCH (ORCPT
+        id S237916AbiAQRDz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:03:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51978 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241799AbiAQRCO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:02:07 -0500
+        Mon, 17 Jan 2022 12:02:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B2FCAB81142;
-        Mon, 17 Jan 2022 17:02:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E890EC36AE3;
-        Mon, 17 Jan 2022 17:02:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6AE4A6119F;
+        Mon, 17 Jan 2022 17:02:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA9BFC36AED;
+        Mon, 17 Jan 2022 17:02:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642438924;
-        bh=+AaJ2Kyc9/AN4fMiQbu1GuSehzeuq+HaoOnzLpJMD20=;
+        s=k20201202; t=1642438932;
+        bh=Y4ZVPC9JgMkic69D/SYjuLk7XJOUJS7KtSR9xJSVSd8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=A4RqkopBfP6BM6GdHjrRs43894MOeQ3KpeyStLOpClcnfoeN60Ke7pQF3VY1jEDs/
-         JaVunxeEF0OA9e/knYaCkYAj62i0ZRIWD0TnBnrbvd5yACq4mJTa7Qfo8RJkrIGXmC
-         B0yJCuwn1yOLa+GKbRrTreP4Iiob13nXBtH4Fn5h3ksiv1jwhVtoRFw2AwQewyBJD+
-         IlRXp9qKHHgXTZxrB5EziWuqyWtjTlE7Oj706ydHYrb2IvP6kOpPEzVgcnvRwZ36+5
-         U2pjXUFXta0w1HnRzake67GLFz9oKeRto+gsU55W9Q/h2XF4DTmqkAZcja/AYNfie9
-         hMlsgDFPBAjZw==
+        b=ZlqYiDUhQIT+4m6A1zV31wcVHltE5Np7uuqmGm5BnAQZ+8WyzNXKtVwcS6SPbRY5H
+         irx2EhzWJnq0S9mSxl+GIojZOdCrodKoy6wfF2tJHahmf3njxkRBXo4/84bDC86ZAt
+         B9CsIpd6v6IO3zlQ5mKgKdtXz6nFvbrrnT5/MNSOB1EgjTcZJTIg/XIN9aN+kJS7j0
+         r8QkJgsKv70zxlsQaAAxADoRUDV5cFSNXyZMzucnWsjiDbzMAvo39sUIJGIIDW1I3+
+         QcM1JnZLxbZY0kpLsAprq9SuVGsPyllRHdwWO/8ieqPPgtxFMN1XfWfbXGyfWGNH6G
+         CShwsTeiV2S2A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Gilles BULOZ <gilles.buloz@kontron.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.15 16/44] nvmem: core: set size for sysfs bin file
-Date:   Mon, 17 Jan 2022 12:00:59 -0500
-Message-Id: <20220117170127.1471115-16-sashal@kernel.org>
+Cc:     James Smart <jsmart2021@gmail.com>,
+        Justin Tee <justin.tee@broadcom.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, james.smart@broadcom.com,
+        dick.kennedy@broadcom.com, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 20/44] scsi: lpfc: Fix leaked lpfc_dmabuf mbox allocations with NPIV
+Date:   Mon, 17 Jan 2022 12:01:03 -0500
+Message-Id: <20220117170127.1471115-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117170127.1471115-1-sashal@kernel.org>
 References: <20220117170127.1471115-1-sashal@kernel.org>
@@ -49,35 +51,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+From: James Smart <jsmart2021@gmail.com>
 
-[ Upstream commit 86192251033308bb42f1e9813c962989d8ed07ec ]
+[ Upstream commit f0d3919697492950f57a26a1093aee53880d669d ]
 
-For some reason we never set the size for nvmem sysfs binary file.
-Set this.
+During rmmod testing, messages appeared indicating lpfc_mbuf_pool entries
+were still busy. This situation was only seen doing rmmod after at least 1
+vport (NPIV) instance was created and destroyed. The number of messages
+scaled with the number of vports created.
 
-Reported-by: Gilles BULOZ <gilles.buloz@kontron.com>
-Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-Link: https://lore.kernel.org/r/20211130133909.6154-1-srinivas.kandagatla@linaro.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+When a vport is created, it can receive a PLOGI from another initiator
+Nport.  When this happens, the driver prepares to ack the PLOGI and
+prepares an RPI for registration (via mbx cmd) which includes an mbuf
+allocation. During the unsolicited PLOGI processing and after the RPI
+preparation, the driver recognizes it is one of the vport instances and
+decides to reject the PLOGI. During the LS_RJT preparation for the PLOGI,
+the mailbox struct allocated for RPI registration is freed, but the mbuf
+that was also allocated is not released.
+
+Fix by freeing the mbuf with the mailbox struct in the LS_RJT path.
+
+As part of the code review to figure the issue out a couple of other areas
+where found that also would not have released the mbuf. Those are cleaned
+up as well.
+
+Link: https://lore.kernel.org/r/20211204002644.116455-2-jsmart2021@gmail.com
+Co-developed-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: Justin Tee <justin.tee@broadcom.com>
+Signed-off-by: James Smart <jsmart2021@gmail.com>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/nvmem/core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/scsi/lpfc/lpfc_els.c       | 6 +++++-
+ drivers/scsi/lpfc/lpfc_init.c      | 8 ++++++--
+ drivers/scsi/lpfc/lpfc_nportdisc.c | 6 ++++++
+ 3 files changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
-index 8976da38b375a..9aecb83021a2d 100644
---- a/drivers/nvmem/core.c
-+++ b/drivers/nvmem/core.c
-@@ -307,6 +307,8 @@ static umode_t nvmem_bin_attr_is_visible(struct kobject *kobj,
- 	struct device *dev = kobj_to_dev(kobj);
- 	struct nvmem_device *nvmem = to_nvmem_device(dev);
+diff --git a/drivers/scsi/lpfc/lpfc_els.c b/drivers/scsi/lpfc/lpfc_els.c
+index f7197b7161d52..6d7b9571f5c03 100644
+--- a/drivers/scsi/lpfc/lpfc_els.c
++++ b/drivers/scsi/lpfc/lpfc_els.c
+@@ -6877,6 +6877,7 @@ static int
+ lpfc_get_rdp_info(struct lpfc_hba *phba, struct lpfc_rdp_context *rdp_context)
+ {
+ 	LPFC_MBOXQ_t *mbox = NULL;
++	struct lpfc_dmabuf *mp;
+ 	int rc;
  
-+	attr->size = nvmem->size;
-+
- 	return nvmem_bin_attr_get_umode(nvmem);
- }
+ 	mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
+@@ -6892,8 +6893,11 @@ lpfc_get_rdp_info(struct lpfc_hba *phba, struct lpfc_rdp_context *rdp_context)
+ 	mbox->mbox_cmpl = lpfc_mbx_cmpl_rdp_page_a0;
+ 	mbox->ctx_ndlp = (struct lpfc_rdp_context *)rdp_context;
+ 	rc = lpfc_sli_issue_mbox(phba, mbox, MBX_NOWAIT);
+-	if (rc == MBX_NOT_FINISHED)
++	if (rc == MBX_NOT_FINISHED) {
++		mp = (struct lpfc_dmabuf *)mbox->ctx_buf;
++		lpfc_mbuf_free(phba, mp->virt, mp->phys);
+ 		goto issue_mbox_fail;
++	}
  
+ 	return 0;
+ 
+diff --git a/drivers/scsi/lpfc/lpfc_init.c b/drivers/scsi/lpfc/lpfc_init.c
+index 0fee8d590b0c4..2bbd1be6cc5d4 100644
+--- a/drivers/scsi/lpfc/lpfc_init.c
++++ b/drivers/scsi/lpfc/lpfc_init.c
+@@ -5314,8 +5314,10 @@ lpfc_sli4_async_link_evt(struct lpfc_hba *phba,
+ 	 */
+ 	if (!(phba->hba_flag & HBA_FCOE_MODE)) {
+ 		rc = lpfc_sli_issue_mbox(phba, pmb, MBX_NOWAIT);
+-		if (rc == MBX_NOT_FINISHED)
++		if (rc == MBX_NOT_FINISHED) {
++			lpfc_mbuf_free(phba, mp->virt, mp->phys);
+ 			goto out_free_dmabuf;
++		}
+ 		return;
+ 	}
+ 	/*
+@@ -6266,8 +6268,10 @@ lpfc_sli4_async_fc_evt(struct lpfc_hba *phba, struct lpfc_acqe_fc_la *acqe_fc)
+ 	}
+ 
+ 	rc = lpfc_sli_issue_mbox(phba, pmb, MBX_NOWAIT);
+-	if (rc == MBX_NOT_FINISHED)
++	if (rc == MBX_NOT_FINISHED) {
++		lpfc_mbuf_free(phba, mp->virt, mp->phys);
+ 		goto out_free_dmabuf;
++	}
+ 	return;
+ 
+ out_free_dmabuf:
+diff --git a/drivers/scsi/lpfc/lpfc_nportdisc.c b/drivers/scsi/lpfc/lpfc_nportdisc.c
+index 27263f02ab9f6..7d717a4ac14d1 100644
+--- a/drivers/scsi/lpfc/lpfc_nportdisc.c
++++ b/drivers/scsi/lpfc/lpfc_nportdisc.c
+@@ -322,6 +322,7 @@ lpfc_rcv_plogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
+ {
+ 	struct lpfc_hba    *phba = vport->phba;
+ 	struct lpfc_dmabuf *pcmd;
++	struct lpfc_dmabuf *mp;
+ 	uint64_t nlp_portwwn = 0;
+ 	uint32_t *lp;
+ 	IOCB_t *icmd;
+@@ -571,6 +572,11 @@ lpfc_rcv_plogi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
+ 		 * a default RPI.
+ 		 */
+ 		if (phba->sli_rev == LPFC_SLI_REV4) {
++			mp = (struct lpfc_dmabuf *)login_mbox->ctx_buf;
++			if (mp) {
++				lpfc_mbuf_free(phba, mp->virt, mp->phys);
++				kfree(mp);
++			}
+ 			mempool_free(login_mbox, phba->mbox_mem_pool);
+ 			login_mbox = NULL;
+ 		} else {
 -- 
 2.34.1
 
