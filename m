@@ -2,53 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1B95C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:13:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8372C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243431AbiAQRNj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:13:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46356 "EHLO
+        id S243571AbiAQRNm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:13:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243059AbiAQRIZ (ORCPT
+        with ESMTP id S243400AbiAQRJm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:08:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6AD8C061574;
-        Mon, 17 Jan 2022 09:04:50 -0800 (PST)
+        Mon, 17 Jan 2022 12:09:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4031EC061A75;
+        Mon, 17 Jan 2022 09:05:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A706861278;
-        Mon, 17 Jan 2022 17:04:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5206C36AEF;
-        Mon, 17 Jan 2022 17:04:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 062C2B8115C;
+        Mon, 17 Jan 2022 17:05:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6EFFC36AE7;
+        Mon, 17 Jan 2022 17:05:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439090;
-        bh=zqxVLJAQDSMqLlm3O2uF0y8g2XadcjGY1EzyOllkM8s=;
+        s=k20201202; t=1642439137;
+        bh=DgL0M9pJ+5hLvwUAh76NXDtoQtsqUyxfMwlZsYc7D1A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aLlbxPOEs1E77MUZyICq9PH5P18U2qgG8emlrxLq51MwhTYGuuwMnsMHYjxxV4KHD
-         MrC9qsgEy3ID+HNTt94e0ZByeWRqolFDZCuP/upFPN2kg0M9mSbuLas1HoUum2tbQu
-         qwjc4DCRi676H3qtz4YQguuWSTHCExhtY5Llzss5U4IP8sZhxqn07l/a/HSJi6+oji
-         /i5C3DNJFw9f5FwkGqQpxDGFy3A7tdQFZfD4CbHl98mqKSqpGdKNMrajFHi3+PgIfo
-         LSx0TZqvICHydMn7ciBfSv6d0qO0b1QXaYnYPdYQuiFge3M6eZHS2rrlDxhXOsqRlu
-         UHBhWEnHYqYuw==
+        b=pHzxSgfo/PA/9qYP706HF9exgh2MqGsbZY6NdaVUuFuWLVO1DKjAszufXMlu9wpVT
+         JT9vKo/4iFstjvaXpbh46OiTqG8m4MKeGJVDQYqonLJ+Th5Yd0Tbm4ZEXSbd5neHJC
+         Jx2/vDK4D8lNDY76U5eCzgDkGG918lnXW0NhbhPRp9VDLbfg6OvcqXODUMIpvpv9Vf
+         D3qI9G2486XfEvhQ9TZlXidD+9Pq5HtNFUhRss9tSHnRxsvdoaH6GmabOscHqImlGJ
+         3de4XnNVGK4bQ6zvTMUfAtaJ73k34+sQO22JMmuLvk6fDBpLyCYlhp2ZbnOwNA9/sr
+         afi9o31fPFBwg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miaoqian Lin <linmq006@gmail.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        chunkuang.hu@kernel.org, p.zabel@pengutronix.de, airlied@linux.ie,
-        daniel@ffwll.ch, matthias.bgg@gmail.com,
-        dri-devel@lists.freedesktop.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 33/34] phy: mediatek: Fix missing check in mtk_mipi_tx_probe
-Date:   Mon, 17 Jan 2022 12:03:23 -0500
-Message-Id: <20220117170326.1471712-33-sashal@kernel.org>
+Cc:     Ye Guojin <ye.guojin@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>, yangyingliang@huawei.com,
+        linux-mips@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 17/21] MIPS: OCTEON: add put_device() after of_find_device_by_node()
+Date:   Mon, 17 Jan 2022 12:04:49 -0500
+Message-Id: <20220117170454.1472347-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170326.1471712-1-sashal@kernel.org>
-References: <20220117170326.1471712-1-sashal@kernel.org>
+In-Reply-To: <20220117170454.1472347-1-sashal@kernel.org>
+References: <20220117170454.1472347-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -57,35 +52,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Ye Guojin <ye.guojin@zte.com.cn>
 
-[ Upstream commit 399c91c3f30531593e5ff6ca7b53f47092128669 ]
+[ Upstream commit 858779df1c0787d3fec827fb705708df9ebdb15b ]
 
-The of_device_get_match_data() function may return NULL.
-Add check to prevent potential null dereference.
+This was found by coccicheck:
+./arch/mips/cavium-octeon/octeon-platform.c, 332, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 324, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-platform.c, 395, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 387, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-usb.c, 512, 3-9, ERROR missing
+put_device; call of_find_device_by_node on line 515, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-usb.c, 543, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 515, but without a
+corresponding object release within this function.
 
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Link: https://lore.kernel.org/r/20211224082103.7658-1-linmq006@gmail.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/mediatek/mtk_mipi_tx.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/mips/cavium-octeon/octeon-platform.c | 2 ++
+ arch/mips/cavium-octeon/octeon-usb.c      | 1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/drivers/gpu/drm/mediatek/mtk_mipi_tx.c b/drivers/gpu/drm/mediatek/mtk_mipi_tx.c
-index 8cee2591e7284..ccc742dc78bd9 100644
---- a/drivers/gpu/drm/mediatek/mtk_mipi_tx.c
-+++ b/drivers/gpu/drm/mediatek/mtk_mipi_tx.c
-@@ -147,6 +147,8 @@ static int mtk_mipi_tx_probe(struct platform_device *pdev)
- 		return -ENOMEM;
+diff --git a/arch/mips/cavium-octeon/octeon-platform.c b/arch/mips/cavium-octeon/octeon-platform.c
+index 51685f893eab0..c214fe4e678bb 100644
+--- a/arch/mips/cavium-octeon/octeon-platform.c
++++ b/arch/mips/cavium-octeon/octeon-platform.c
+@@ -328,6 +328,7 @@ static int __init octeon_ehci_device_init(void)
  
- 	mipi_tx->driver_data = of_device_get_match_data(dev);
-+	if (!mipi_tx->driver_data)
-+		return -ENODEV;
+ 	pd->dev.platform_data = &octeon_ehci_pdata;
+ 	octeon_ehci_hw_start(&pd->dev);
++	put_device(&pd->dev);
  
- 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	mipi_tx->regs = devm_ioremap_resource(dev, mem);
+ 	return ret;
+ }
+@@ -391,6 +392,7 @@ static int __init octeon_ohci_device_init(void)
+ 
+ 	pd->dev.platform_data = &octeon_ohci_pdata;
+ 	octeon_ohci_hw_start(&pd->dev);
++	put_device(&pd->dev);
+ 
+ 	return ret;
+ }
+diff --git a/arch/mips/cavium-octeon/octeon-usb.c b/arch/mips/cavium-octeon/octeon-usb.c
+index 4017398519cf9..e092d86e63581 100644
+--- a/arch/mips/cavium-octeon/octeon-usb.c
++++ b/arch/mips/cavium-octeon/octeon-usb.c
+@@ -544,6 +544,7 @@ static int __init dwc3_octeon_device_init(void)
+ 			devm_iounmap(&pdev->dev, base);
+ 			devm_release_mem_region(&pdev->dev, res->start,
+ 						resource_size(res));
++			put_device(&pdev->dev);
+ 		}
+ 	} while (node != NULL);
+ 
 -- 
 2.34.1
 
