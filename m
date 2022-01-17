@@ -2,123 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19FC9C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 03:07:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 498FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 03:15:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236912AbiAQDHG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 22:07:06 -0500
-Received: from mga12.intel.com ([192.55.52.136]:46396 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234099AbiAQDHD (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 22:07:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642388823; x=1673924823;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=R8Sn8SZmhuMPafCTfdZnGovaHJidPy4VsCKLE6frY5I=;
-  b=bdS4wD6AHE+mJ2tHmHW171YjF8JhXjxLB36Hsbsc27Kq4S5wvNKufoAr
-   yT+4jZV3XJGfKRljngwCMX5I2k13+OqzwGFDhT4HlFHsWQtPIiTD/LZ7/
-   p82Gd6n9yAVqe9yJHHzEn9y/9fCTCixYlzio/9m3tGMa8wxE+2uPqTsW9
-   EGrgNYTBQNVVubuasV+C/UgdrMxNZWG0znms8zKGtXftAA7wk+BCps7OQ
-   ZfHpesFyWY6fMVdeO98TACgPLT/4pNP6rTaIbInRB6gQzsWOeg3dWbN78
-   pjtsxJy9vfp7S+TFz8wN9XgetYEw+ucqNBVpkK1WaCR0/DYByMXQMiBB2
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10229"; a="224521886"
-X-IronPort-AV: E=Sophos;i="5.88,294,1635231600"; 
-   d="scan'208";a="224521886"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2022 19:07:03 -0800
-X-IronPort-AV: E=Sophos;i="5.88,294,1635231600"; 
-   d="scan'208";a="476489507"
-Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.105])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2022 19:06:58 -0800
-Date:   Mon, 17 Jan 2022 11:17:52 +0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     Maxim Levitsky <mlevitsk@redhat.com>
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Zeng Guang <guang.zeng@intel.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Hu, Robert" <robert.hu@intel.com>
-Subject: Re: [PATCH v5 7/8] KVM: VMX: Update PID-pointer table entry when
- APIC ID is changed
-Message-ID: <20220117031750.GA5339@gao-cwp>
-References: <640e82f3-489d-60af-1d31-25096bef1a46@amd.com>
- <4eee5de5-ab76-7094-17aa-adc552032ba0@intel.com>
- <aa86022c-2816-4155-8d77-f4faf6018255@amd.com>
- <aa7db6d2-8463-2517-95ce-c0bba22e80d4@intel.com>
- <d058f7464084cadc183bd9dbf02c7f525bb9f902.camel@redhat.com>
- <20220110074523.GA18434@gao-cwp>
- <1ff69ed503faa4c5df3ad1b5abe8979d570ef2b8.camel@redhat.com>
- <YeClaZWM1cM+WLjH@google.com>
- <20220114025825.GA3010@gao-cwp>
- <4b9fb845bf698f7efa6b46d525b37e329dd693ea.camel@redhat.com>
+        id S236899AbiAQDPX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 22:15:23 -0500
+Received: from mwweb08oc.mail2world.com ([74.202.142.113]:49732 "EHLO
+        mwweb08oc.m2wprod.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S230324AbiAQDPV (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 16 Jan 2022 22:15:21 -0500
+X-Greylist: delayed 1082 seconds by postgrey-1.27 at vger.kernel.org; Sun, 16 Jan 2022 22:15:21 EST
+Received: from mail pickup service by mwweb08oc.m2wprod.com with Microsoft SMTPSVC;
+         Sun, 16 Jan 2022 18:59:00 -0800
+Received: from mail pickup service by mwweb08oc.mail2world.com with Microsoft SMTPSVC;
+         Sun, 16 Jan 2022 18:58:56 -0800
+auth-sender: gheskett@shentel.net
+Received: from 204.111.64.149 unverified ([204.111.64.149]) by mwweb08oc.mail2world.com with Mail2World SMTP Server; 
+        Sun, 16 Jan 2022 18:58:56 -0800
+From:   gene heskett <gheskett@shentel.net>
+To:     linux-kernel@vger.kernel.org
+Subject: What replaces the 4.19.y scripts/mkknlimg in 5.16-rc6-rt12?
+Date:   Sun, 16 Jan 2022 21:56:48 -0500
+Message-ID: <3003419.O0OFyGy2SB@coyote>
+Organization: only accidental
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4b9fb845bf698f7efa6b46d525b37e329dd693ea.camel@redhat.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-CTCH-Spam: Unknown
+X-CTCH-RefID: str=0001.0A702F1B.61E4DAF1.001A,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
+X-OriginalArrivalTime: 17 Jan 2022 02:58:56.0604 (UTC) FILETIME=[2B1C01C0:01D80B4E]
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 10:17:34AM +0200, Maxim Levitsky wrote:
->On Fri, 2022-01-14 at 10:58 +0800, Chao Gao wrote:
->> On Thu, Jan 13, 2022 at 10:19:21PM +0000, Sean Christopherson wrote:
->> > On Tue, Jan 11, 2022, Maxim Levitsky wrote:
->> > > Both Intel and AMD's PRM also state that changing APIC ID is implementation
->> > > dependent.
->> > >  
->> > > I vote to forbid changing apic id, at least in the case any APIC acceleration
->> > > is used, be that APICv or AVIC.
->> > 
->> > That has my vote as well.  For IPIv in particular there's not much concern with
->> > backwards compability, i.e. we can tie the behavior to enable_ipiv.
->Great!
->> 
->> Hi Sean and Levitsky,
->> 
->> Let's align on the implementation.
->> 
->> To disable changes for xAPIC ID when IPIv/AVIC is enabled:
->> 
->> 1. introduce a variable (forbid_apicid_change) for this behavior in kvm.ko
->> and export it so that kvm-intel, kvm-amd can set it when IPIv/AVIC is
->> enabled. To reduce complexity, this variable is a module level setting.
->> 
->> 2. when guest attempts to change xAPIC ID but it is forbidden, KVM prints
->> a warning on host and injects a #GP to guest.
->> 
->> 3. remove AVIC code that deals with changes to xAPIC ID.
->> 
->
->I have a patch for both, I attached them.
+Greetings all;
 
-Looks good to me. We will drop this patch and rely on the first attached patch
-to forbid guest from changing xAPIC ID.
+That script/mkknlimg is missing in v5.16-rc6-rt2. What replaces it?
 
->I haven't tested either of these patches that much other than a smoke test,
->but I did test all of the guests I  have and none broke in regard to boot.
->
->I will send those patches as part of larger patch series that implements
->nesting for AVIC. I hope to do this next week.
+Or, can this script be copied to a v5.16-rc6-rt12 build and used?
 
-Thanks.
+Thanks a bunch, I'm trying to build a v5.16-rc6-rt12 on a rpi4 for the 
+rpi4. The build itself was flawless.
+
+Cheers, Gene Heskett.
+-- 
+"There are four boxes to be used in defense of liberty:
+ soap, ballot, jury, and ammo. Please use in that order."
+-Ed Howdershelt (Author, 1940)
+If we desire respect for the law, we must first make the law respectable.
+ - Louis D. Brandeis
+Genes Web page <http://geneslinuxbox.net:6309/gene>
+
+
+
