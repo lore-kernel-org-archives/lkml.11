@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90AE5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:06:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04956C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:06:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242231AbiAQRGs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:06:48 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52762 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241500AbiAQRCz (ORCPT
+        id S242282AbiAQRGv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:06:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241951AbiAQRDK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:02:55 -0500
+        Mon, 17 Jan 2022 12:03:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5505EC061574;
+        Mon, 17 Jan 2022 09:02:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2ED2661238;
-        Mon, 17 Jan 2022 17:02:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDABFC36AF6;
-        Mon, 17 Jan 2022 17:02:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 208EEB8115B;
+        Mon, 17 Jan 2022 17:02:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18CD2C36AE3;
+        Mon, 17 Jan 2022 17:02:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642438974;
-        bh=VffSaQeFa9LtkWe5JdScSFvdlZGz2Hde+F96tYEm9vU=;
+        s=k20201202; t=1642438957;
+        bh=JiOVbM2qS81Tf9TfdFeLSOmQd6su6h5Fdx5wlgaihSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TBgR/mfDcPYrCH4ta9lxe6ycxej324l2GKrZGMGsmlPORvvS4i21Lpk3YNkJaavET
-         PQXzPqmai2L1mzoWHSeHpcefu49Kh5guArPY0io2hTarB2UW62E5xn1GYA4FDXJwlP
-         OZ1+C3vIGYi20vXrTQm2z0AyneKjvKf5hStGl64HJL4uRyZp3dQDhnNQS5ZNfhg6oR
-         9x5iiFAS5AUmEceTKLxVw8Rv4J5H5G0tjAsrGb5H8mUPY/UqeKz6Zo5Unusl02b3xn
-         0B37nk82MQgbH+IOXXk8tYLgBIxflNFBZNQ9EJJ/XpwoBP8rEn+V5X4aHl6z5x56zm
-         1i0grqQtqPT6Q==
+        b=mWBCgogEk9OVqXA8neC2iqt8j3Pm5T6Ge3Gu50HiiGHmXDH8jilcP7uFPHw7udUop
+         pWVLU/S+lPSNHwskiRKzDXU92/Vj5ejIlOFDVNEgogIqanB/52EAx6QvUGIwChi3Ii
+         RwlCHpzxDEufGKCnyJHkDPkBTNZIsJ5sHHHqzg+E/P4c18tcYRDVjb32scMESDcBRt
+         1AGXLnwLUqz4wZyR76MQXzn+Zq9MA866AHZA4xQaFx/O9J8W56aupCCQMCMwMUynvf
+         waRGePRQG/XexVeQqJN4//2cqkoNGVSJNnH7w0HbGeW6e+7XpO/6dL20XL1UmFsAZQ
+         oFVmH0PgRaPYw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christoph Hellwig <hch@lst.de>, Baoquan He <bhe@redhat.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 35/44] scsi: sr: Don't use GFP_DMA
-Date:   Mon, 17 Jan 2022 12:01:18 -0500
-Message-Id: <20220117170127.1471115-35-sashal@kernel.org>
+Cc:     Ye Guojin <ye.guojin@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>, yangyingliang@huawei.com,
+        linux-mips@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 29/44] MIPS: OCTEON: add put_device() after of_find_device_by_node()
+Date:   Mon, 17 Jan 2022 12:01:12 -0500
+Message-Id: <20220117170127.1471115-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117170127.1471115-1-sashal@kernel.org>
 References: <20220117170127.1471115-1-sashal@kernel.org>
@@ -49,58 +52,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Ye Guojin <ye.guojin@zte.com.cn>
 
-[ Upstream commit d94d94969a4ba07a43d62429c60372320519c391 ]
+[ Upstream commit 858779df1c0787d3fec827fb705708df9ebdb15b ]
 
-The allocated buffers are used as a command payload, for which the block
-layer and/or DMA API do the proper bounce buffering if needed.
+This was found by coccicheck:
+./arch/mips/cavium-octeon/octeon-platform.c, 332, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 324, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-platform.c, 395, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 387, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-usb.c, 512, 3-9, ERROR missing
+put_device; call of_find_device_by_node on line 515, but without a
+corresponding object release within this function.
+./arch/mips/cavium-octeon/octeon-usb.c, 543, 1-7, ERROR missing
+put_device; call of_find_device_by_node on line 515, but without a
+corresponding object release within this function.
 
-Link: https://lore.kernel.org/r/20211222090842.920724-1-hch@lst.de
-Reported-by: Baoquan He <bhe@redhat.com>
-Reviewed-by: Baoquan He <bhe@redhat.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/sr.c        | 2 +-
- drivers/scsi/sr_vendor.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ arch/mips/cavium-octeon/octeon-platform.c | 2 ++
+ arch/mips/cavium-octeon/octeon-usb.c      | 1 +
+ 2 files changed, 3 insertions(+)
 
-diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
-index 8b17b35283aa5..1203374828b97 100644
---- a/drivers/scsi/sr.c
-+++ b/drivers/scsi/sr.c
-@@ -851,7 +851,7 @@ static void get_capabilities(struct scsi_cd *cd)
+diff --git a/arch/mips/cavium-octeon/octeon-platform.c b/arch/mips/cavium-octeon/octeon-platform.c
+index d56e9b9d2e434..a994022e32c9f 100644
+--- a/arch/mips/cavium-octeon/octeon-platform.c
++++ b/arch/mips/cavium-octeon/octeon-platform.c
+@@ -328,6 +328,7 @@ static int __init octeon_ehci_device_init(void)
  
+ 	pd->dev.platform_data = &octeon_ehci_pdata;
+ 	octeon_ehci_hw_start(&pd->dev);
++	put_device(&pd->dev);
  
- 	/* allocate transfer buffer */
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer) {
- 		sr_printk(KERN_ERR, cd, "out of memory.\n");
- 		return;
-diff --git a/drivers/scsi/sr_vendor.c b/drivers/scsi/sr_vendor.c
-index 1f988a1b9166f..a61635326ae0a 100644
---- a/drivers/scsi/sr_vendor.c
-+++ b/drivers/scsi/sr_vendor.c
-@@ -131,7 +131,7 @@ int sr_set_blocklength(Scsi_CD *cd, int blocklength)
- 	if (cd->vendor == VENDOR_TOSHIBA)
- 		density = (blocklength > 2048) ? 0x81 : 0x83;
+ 	return ret;
+ }
+@@ -391,6 +392,7 @@ static int __init octeon_ohci_device_init(void)
  
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
+ 	pd->dev.platform_data = &octeon_ohci_pdata;
+ 	octeon_ohci_hw_start(&pd->dev);
++	put_device(&pd->dev);
  
-@@ -179,7 +179,7 @@ int sr_cd_check(struct cdrom_device_info *cdi)
- 	if (cd->cdi.mask & CDC_MULTI_SESSION)
- 		return 0;
- 
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
+ 	return ret;
+ }
+diff --git a/arch/mips/cavium-octeon/octeon-usb.c b/arch/mips/cavium-octeon/octeon-usb.c
+index 6e4d3619137af..4df919d26b082 100644
+--- a/arch/mips/cavium-octeon/octeon-usb.c
++++ b/arch/mips/cavium-octeon/octeon-usb.c
+@@ -537,6 +537,7 @@ static int __init dwc3_octeon_device_init(void)
+ 			devm_iounmap(&pdev->dev, base);
+ 			devm_release_mem_region(&pdev->dev, res->start,
+ 						resource_size(res));
++			put_device(&pdev->dev);
+ 		}
+ 	} while (node != NULL);
  
 -- 
 2.34.1
