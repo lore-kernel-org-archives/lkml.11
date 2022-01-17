@@ -2,251 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44C83C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 08:44:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54EF2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 08:44:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238341AbiAQIn4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 03:43:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235503AbiAQInz (ORCPT
+        id S238399AbiAQIoF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 03:44:05 -0500
+Received: from szxga03-in.huawei.com ([45.249.212.189]:31163 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238330AbiAQIn5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 03:43:55 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7595C061574;
-        Mon, 17 Jan 2022 00:43:54 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id o15so54724761lfo.11;
-        Mon, 17 Jan 2022 00:43:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=Gei4KEt16IF1U/BK6GOeSIu4C3tKBRM/27+JDfBhFtQ=;
-        b=dIuO2s4yr24DkvXm0bbnamEQhJ8+rYgX0hnFFd/9Q+m1bY22fPF0pPRbJQnZ2ojEYY
-         KDVW5IjRg3ondyg7hvQ69zhrbEgbYuMoSaj5sr+QblzM4Q+kYAgni4awP/SonC/k8vdw
-         tK4TYOr6jcKK9cMG1vRLNtkAPyGFd5fA9sSC8Z/7BfBKXn8Sk29yRQnBQ9aaTGG31lDu
-         5C+ODfIe0RxoSzwW95ZzJY/qEXFcf0vaIqDGpjAn/RXsb0Tm6Dsb9zyp3xeNeGgAQtCf
-         UcaLJpClhY6HAvnwzA5aDLbqA4V07s09JT1FGEEvFMfC1VCtLe8JWMW1xjWv3wkzBZBU
-         hMaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=Gei4KEt16IF1U/BK6GOeSIu4C3tKBRM/27+JDfBhFtQ=;
-        b=5KcrzPeYc1jDIyJ1PuVPDKdGhhbPuAOmjjIUBE38gYKBWJcfw07Pu7wDxUx9ez3/sx
-         LCrnW2GEJeSSzU2J7o5uZbZuLG2QQ5a2jsMK1bKTG8l1jmysdepenOrpajbzz1RZXBva
-         70pjOmnqm5p95liOYCjitn0761LJL1+G6CbhSj9OCLEpQJNzxR8VgR0o2PLCXLikWCd3
-         Jla7cWks0h39bbeFL1gpZSH7hmUy+EXfeMT4Cu+SSlFG3PETr/XvAjN3C32d1+sjCFzF
-         DhEAysh5xOEy0wpEnZD3SEMDEx6gpcIR1Hs0yQC5r4pQEpfaC1p/g/awq5WyAEFq+mQv
-         4Pdw==
-X-Gm-Message-State: AOAM530x8Sgt+nZspS5cu5UPudwLabNQQGd5fAgKxwwiBdAWfY+a/8q7
-        JVz3xZ17gVPVhgEVwtCOg/c=
-X-Google-Smtp-Source: ABdhPJxbGCZ1V1SBZgWU+SbvrBUzDnpO9n3rKlbhqeqlSBmgiXMAWivPlrLqEGwTQN7JAf3Cw7X8mg==
-X-Received: by 2002:ac2:596e:: with SMTP id h14mr15443046lfp.236.1642409033184;
-        Mon, 17 Jan 2022 00:43:53 -0800 (PST)
-Received: from smtpclient.apple (31-178-191-245.dynamic.chello.pl. [31.178.191.245])
-        by smtp.gmail.com with ESMTPSA id cf42sm1322134lfb.251.2022.01.17.00.43.52
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jan 2022 00:43:52 -0800 (PST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
-Subject: Re: [PATCH 5/9] arm64: dts: rockchip: add rk3568 tsadc nodes
-From:   Piotr Oniszczuk <piotr.oniszczuk@gmail.com>
-In-Reply-To: <20210728135534.703028-6-pgwipeout@gmail.com>
-Date:   Mon, 17 Jan 2022 09:43:49 +0100
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        linux-rockchip@lists.infradead.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <C3AE0A81-A829-4241-A65E-EB28825E3C33@gmail.com>
-References: <20210728135534.703028-1-pgwipeout@gmail.com>
- <20210728135534.703028-6-pgwipeout@gmail.com>
-To:     Peter Geis <pgwipeout@gmail.com>
-X-Mailer: Apple Mail (2.3654.120.0.1.13)
+        Mon, 17 Jan 2022 03:43:57 -0500
+Received: from kwepemi500001.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Jcljv0xfNz8wNn;
+        Mon, 17 Jan 2022 16:41:07 +0800 (CST)
+Received: from kwepemm600009.china.huawei.com (7.193.23.164) by
+ kwepemi500001.china.huawei.com (7.221.188.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Mon, 17 Jan 2022 16:43:54 +0800
+Received: from huawei.com (10.175.127.227) by kwepemm600009.china.huawei.com
+ (7.193.23.164) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 17 Jan
+ 2022 16:43:54 +0800
+From:   Yu Kuai <yukuai3@huawei.com>
+To:     <axboe@kernel.dk>
+CC:     <linux-block@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <yukuai3@huawei.com>, <yi.zhang@huawei.com>
+Subject: [PATCH RESEND 3/3] blk-mq: allow hardware queue to get more tag while sharing a tag set
+Date:   Mon, 17 Jan 2022 16:54:55 +0800
+Message-ID: <20220117085455.2269760-4-yukuai3@huawei.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220117085455.2269760-1-yukuai3@huawei.com>
+References: <20220117085455.2269760-1-yukuai3@huawei.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.127.227]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ kwepemm600009.china.huawei.com (7.193.23.164)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+If there are multiple active queues while sharing a tag set, the
+avaliable driver tag for each queue is fair share currently. However,
+we found this way cause performance degradation in our environment:
 
+A virtual machine which has 12 scsi disks on the same scsi host, each
+disk represents a network disk on host machine. In virtual machine, each
+disk will issue a sg io about every 15s, which will cause active queues
+to be 12 before the disk is idle(blk_mq_tag_idle() is called), and io
+performance is bad due to short of driver tag during that time.
 
-> Wiadomo=C5=9B=C4=87 napisana przez Peter Geis <pgwipeout@gmail.com> w =
-dniu 28.07.2021, o godz. 15:55:
->=20
-> Add the thermal and tsadc nodes to the rk3568 device tree.
-> There are two sensors, one for the cpu, one for the gpu.
->=20
-> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
-> ---
-> .../boot/dts/rockchip/rk3568-pinctrl.dtsi     |  6 ++
-> arch/arm64/boot/dts/rockchip/rk356x.dtsi      | 71 +++++++++++++++++++
-> 2 files changed, 77 insertions(+)
->=20
-> diff --git a/arch/arm64/boot/dts/rockchip/rk3568-pinctrl.dtsi =
-b/arch/arm64/boot/dts/rockchip/rk3568-pinctrl.dtsi
-> index a588ca95ace2..b464c7bda1f7 100644
-> --- a/arch/arm64/boot/dts/rockchip/rk3568-pinctrl.dtsi
-> +++ b/arch/arm64/boot/dts/rockchip/rk3568-pinctrl.dtsi
-> @@ -2420,6 +2420,12 @@ spi3m1_cs1: spi3m1-cs1 {
-> 	};
->=20
-> 	tsadc {
-> +		/omit-if-no-ref/
-> +		tsadc_gpio: tsadc-gpio {
-> +			rockchip,pins =3D
-> +				<0 RK_PA1 0 &pcfg_pull_none>;
-> +		};
-> +
-> 		/omit-if-no-ref/
-> 		tsadcm0_shut: tsadcm0-shut {
-> 			rockchip,pins =3D
-> diff --git a/arch/arm64/boot/dts/rockchip/rk356x.dtsi =
-b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-> index 77c679304916..0905fac0726a 100644
-> --- a/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-> +++ b/arch/arm64/boot/dts/rockchip/rk356x.dtsi
-> @@ -51,6 +51,7 @@ cpu0: cpu@0 {
-> 			compatible =3D "arm,cortex-a55";
-> 			reg =3D <0x0 0x0>;
-> 			clocks =3D <&scmi_clk 0>;
-> +			#cooling-cells =3D <2>;
-> 			enable-method =3D "psci";
-> 			operating-points-v2 =3D <&cpu0_opp_table>;
-> 		};
-> @@ -59,6 +60,7 @@ cpu1: cpu@100 {
-> 			device_type =3D "cpu";
-> 			compatible =3D "arm,cortex-a55";
-> 			reg =3D <0x0 0x100>;
-> +			#cooling-cells =3D <2>;
-> 			enable-method =3D "psci";
-> 			operating-points-v2 =3D <&cpu0_opp_table>;
-> 		};
-> @@ -67,6 +69,7 @@ cpu2: cpu@200 {
-> 			device_type =3D "cpu";
-> 			compatible =3D "arm,cortex-a55";
-> 			reg =3D <0x0 0x200>;
-> +			#cooling-cells =3D <2>;
-> 			enable-method =3D "psci";
-> 			operating-points-v2 =3D <&cpu0_opp_table>;
-> 		};
-> @@ -75,6 +78,7 @@ cpu3: cpu@300 {
-> 			device_type =3D "cpu";
-> 			compatible =3D "arm,cortex-a55";
-> 			reg =3D <0x0 0x300>;
-> +			#cooling-cells =3D <2>;
-> 			enable-method =3D "psci";
-> 			operating-points-v2 =3D <&cpu0_opp_table>;
-> 		};
-> @@ -774,6 +778,73 @@ uart9: serial@fe6d0000 {
-> 		status =3D "disabled";
-> 	};
->=20
-> +	thermal_zones: thermal-zones {
-> +		cpu_thermal: cpu-thermal {
-> +			polling-delay-passive =3D <100>;
-> +			polling-delay =3D <1000>;
-> +
-> +			thermal-sensors =3D <&tsadc 0>;
-> +
-> +			trips {
-> +				cpu_alert0: cpu_alert0 {
-> +					temperature =3D <70000>;
-> +					hysteresis =3D <2000>;
-> +					type =3D "passive";
-> +				};
-> +				cpu_alert1: cpu_alert1 {
-> +					temperature =3D <75000>;
-> +					hysteresis =3D <2000>;
-> +					type =3D "passive";
-> +				};
-> +				cpu_crit: cpu_crit {
-> +					temperature =3D <95000>;
-> +					hysteresis =3D <2000>;
-> +					type =3D "critical";
-> +				};
-> +			};
-> +
-> +			cooling-maps {
-> +				map0 {
-> +					trip =3D <&cpu_alert0>;
-> +					cooling-device =3D
-> +						<&cpu0 THERMAL_NO_LIMIT =
-THERMAL_NO_LIMIT>,
-> +						<&cpu1 THERMAL_NO_LIMIT =
-THERMAL_NO_LIMIT>,
-> +						<&cpu2 THERMAL_NO_LIMIT =
-THERMAL_NO_LIMIT>,
-> +						<&cpu3 THERMAL_NO_LIMIT =
-THERMAL_NO_LIMIT>;
-> +				};
-> +			};
-> +		};
-> +
-> +		gpu_thermal: gpu-thermal {
-> +			polling-delay-passive =3D <20>; /* milliseconds =
-*/
-> +			polling-delay =3D <1000>; /* milliseconds */
-> +
-> +			thermal-sensors =3D <&tsadc 1>;
-> +		};
-> +	};
-> +
-> +	tsadc: tsadc@fe710000 {
-> +		compatible =3D "rockchip,rk3568-tsadc";
-> +		reg =3D <0x0 0xfe710000 0x0 0x100>;
-> +		interrupts =3D <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>;
-> +		assigned-clocks =3D <&cru CLK_TSADC_TSEN>, <&cru =
-CLK_TSADC>;
-> +		assigned-clock-rates =3D <17000000>, <700000>;
-> +		clocks =3D <&cru CLK_TSADC>, <&cru PCLK_TSADC>;
-> +		clock-names =3D "tsadc", "apb_pclk";
-> +		resets =3D <&cru SRST_TSADC>, <&cru SRST_P_TSADC>,
-> +			 <&cru SRST_TSADCPHY>;
-> +		reset-names =3D "tsadc", "tsadc-apb", "tsadc-phy";
-> +		rockchip,grf =3D <&grf>;
-> +		rockchip,hw-tshut-temp =3D <95000>;
-> +		rockchip,hw-tshut-mode =3D <1>; /* tshut mode 0:CRU =
-1:GPIO */
-> +		rockchip,hw-tshut-polarity =3D <0>; /* tshut polarity =
-0:LOW 1:HIGH */
-> +		pinctrl-names =3D "gpio", "otpout";
-> +		pinctrl-0 =3D <&tsadc_gpio>;
-> +		pinctrl-1 =3D <&tsadc_shutorg>;
-> +		#thermal-sensor-cells =3D <1>;
-> +		status =3D "disabled";
-> +	};
-> +
-> 	saradc: saradc@fe720000 {
-> 		compatible =3D "rockchip,rk3568-saradc", =
-"rockchip,rk3399-saradc";
-> 		reg =3D <0x0 0xfe720000 0x0 0x100>;
-> --=20
-> 2.25.1
->=20
->=20
-> _______________________________________________
-> Linux-rockchip mailing list
-> Linux-rockchip@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-rockchip
+Thus if there are no hctx ever failed to get driver tag, don't limit the
+available driver tags as fair share. And if someone do failed to get
+driver tag, fall back to fair share.
 
-Peter,
+Signed-off-by: Yu Kuai <yukuai3@huawei.com>
+---
+ block/blk-mq.h | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-I'm trying to use this series to get thermal on rk3566 based tvbox =
-(x96-x6).
-Driver loads but i'm getting following error:
-
-[  132.873979] rockchip-thermal fe710000.tsadc: failed to register =
-sensor 0: -517
-[  132.874650] rockchip-thermal fe710000.tsadc: failed to register =
-sensor[0] : error =3D -517
-
-Maybe you have some hints here?
-
+diff --git a/block/blk-mq.h b/block/blk-mq.h
+index 948791ea2a3e..4b059221b265 100644
+--- a/block/blk-mq.h
++++ b/block/blk-mq.h
+@@ -352,6 +352,10 @@ static inline bool hctx_may_queue(struct blk_mq_hw_ctx *hctx,
+ 	if (bt->sb.depth == 1)
+ 		return true;
+ 
++	/* Don't use fair share untill some hctx failed to get driver tag */
++	if (!atomic_read(&hctx->tags->pending_queues))
++		return true;
++
+ 	if (blk_mq_is_shared_tags(hctx->flags)) {
+ 		struct request_queue *q = hctx->queue;
+ 
+-- 
+2.31.1
 
