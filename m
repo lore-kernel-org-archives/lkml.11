@@ -2,122 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0ECA2C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 20:30:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28F6FC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 20:39:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243123AbiAQUa0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 15:30:26 -0500
-Received: from mail.efficios.com ([167.114.26.124]:43262 "EHLO
+        id S243060AbiAQUjl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 15:39:41 -0500
+Received: from mail.efficios.com ([167.114.26.124]:46622 "EHLO
         mail.efficios.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235244AbiAQUaZ (ORCPT
+        with ESMTP id S229877AbiAQUjj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 15:30:25 -0500
+        Mon, 17 Jan 2022 15:39:39 -0500
 Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 40B2F3048DC;
-        Mon, 17 Jan 2022 15:30:24 -0500 (EST)
+        by mail.efficios.com (Postfix) with ESMTP id 596C730492D;
+        Mon, 17 Jan 2022 15:39:39 -0500 (EST)
 Received: from mail.efficios.com ([127.0.0.1])
         by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id oWV3qCxQNE33; Mon, 17 Jan 2022 15:30:23 -0500 (EST)
+        with ESMTP id WKMDQYRJ36QK; Mon, 17 Jan 2022 15:39:38 -0500 (EST)
 Received: from localhost (localhost [127.0.0.1])
-        by mail.efficios.com (Postfix) with ESMTP id 9027A3046D7;
-        Mon, 17 Jan 2022 15:30:23 -0500 (EST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com 9027A3046D7
+        by mail.efficios.com (Postfix) with ESMTP id DAC393048F1;
+        Mon, 17 Jan 2022 15:39:38 -0500 (EST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 mail.efficios.com DAC393048F1
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=efficios.com;
-        s=default; t=1642451423;
-        bh=Fuss6rxEbY9C0XsqWjuiCNTFvR+z4EdHL0f9IdHH/Qc=;
+        s=default; t=1642451978;
+        bh=nncvokTdjsee5tzKxA/veggGUZZ9ULSWsY7QtAMw1Bc=;
         h=From:To:Date:Message-Id;
-        b=eiYoObBNuJtLPqAAn8GfV9zXCA8p1raPikETP/ceWx6Zi8Tkt72JrvS6izhw+hZpM
-         g51LKd5gvyQ1U0hrlN7ii0hyUGsYoev0i97vBcp13sTV/8ZN6mMLYLc2Rphy62z1V9
-         BKlT4zt4ErtzOQ9unq+cV06De3BwEgTzZbAHQ0eoap5ONK/lm4WapYLpkLXkOPtAB8
-         bPdsCpoXtWVRAio5xJYfE997m+Xb60ktQQIaSsQxpF+y8j+Lutlr9MXDLV3TpoMmMb
-         4paQCrZ1l2QtCACCtJqgC3no7Zr6cRiYgWoLTd8v1z3HUbDe1hB9Mt000Q7J7YCZGP
-         /vE4IwB6Yrs0g==
+        b=qS0YDsnfsMJIFjJGNgV1ZQwET8nAOhiXqTaKq8a2BYoPAmqulJkIAE0Zwc1qnjjn8
+         eS0LCqgfg5JduBuclgyMTvQmV169IlverXnckpDOq+u2mbRbHC37j/paSnXKeQW///
+         GZMJBuURG7wdi2llPwxOgESblCsOVh5gz9ROJVaw8RlWxwQAS0MGQl6BONcPAh8DTj
+         YNn3HBpFQi6L7MjLxyoDfj4c44jSePsRFGi/b2TOmgArLZKzgo8dY+C1yKDpIb3OJz
+         TXga5zLQvNnEUHVIKSvPnI0+E9fVmMO6UEtMBEfbjlsBYlm5oDj56e3E4x3vGobYy8
+         Bv7cBJCKUuZhw==
 X-Virus-Scanned: amavisd-new at efficios.com
 Received: from mail.efficios.com ([127.0.0.1])
         by localhost (mail03.efficios.com [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id UcqkJhrEUucV; Mon, 17 Jan 2022 15:30:23 -0500 (EST)
+        with ESMTP id ToEmXpaVHVXv; Mon, 17 Jan 2022 15:39:38 -0500 (EST)
 Received: from localhost.localdomain (192-222-180-24.qc.cable.ebox.net [192.222.180.24])
-        by mail.efficios.com (Postfix) with ESMTPSA id 0742A3048DB;
-        Mon, 17 Jan 2022 15:30:23 -0500 (EST)
+        by mail.efficios.com (Postfix) with ESMTPSA id 944833048EF;
+        Mon, 17 Jan 2022 15:39:38 -0500 (EST)
 From:   Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
 To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Ingo Molnar <mingo@kernel.org>, linux-kernel@vger.kernel.org,
+Cc:     linux-kernel@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
         "Paul E . McKenney" <paulmck@kernel.org>,
-        Oleg Nesterov <oleg@redhat.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Chris Metcalf <cmetcalf@ezchip.com>,
-        Christoph Lameter <cl@linux.com>,
-        Kirill Tkhai <tkhai@yandex.ru>, Mike Galbraith <efault@gmx.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>,
-        Peter Oskolkov <posk@google.com>, stable@vger.kernel.org
-Subject: [PATCH] sched/membarrier: Fix membarrier-rseq fence command missing from query bitmask
-Date:   Mon, 17 Jan 2022 15:30:10 -0500
-Message-Id: <20220117203010.30129-1-mathieu.desnoyers@efficios.com>
+        Boqun Feng <boqun.feng@gmail.com>,
+        "H . Peter Anvin" <hpa@zytor.com>, Paul Turner <pjt@google.com>,
+        linux-api@vger.kernel.org,
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Florian Weimer <fw@deneb.enyo.de>, David.Laight@ACULAB.COM,
+        carlos@redhat.com,
+        Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
+Subject: [RFC PATCH 1/5] selftests/rseq: Remove useless assignment to cpu variable
+Date:   Mon, 17 Jan 2022 15:39:21 -0500
+Message-Id: <20220117203925.12164-2-mathieu.desnoyers@efficios.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220117203925.12164-1-mathieu.desnoyers@efficios.com>
+References: <20220117203925.12164-1-mathieu.desnoyers@efficios.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The membarrier command MEMBARRIER_CMD_QUERY allows querying the
-available membarrier commands. When the membarrier-rseq fence commands
-were added, a new MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK was
-introduced with the intent to expose them with the MEMBARRIER_CMD_QUERY
-command, the but it was never added to MEMBARRIER_CMD_BITMASK.
-
-The membarrier-rseq fence commands are therefore not wired up with the
-query command.
-
-Rename MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK to
-MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK (the bitmask is not a command
-per-se), and change the erroneous
-MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ_BITMASK (which does not
-actually exist) to MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ.
-
-Wire up MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK in
-MEMBARRIER_CMD_BITMASK. Fixing this allows discovering availability of
-the membarrier-rseq fence feature.
-
-Fixes: 2a36ab717e8f ("rseq/membarrier: Add MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ")
 Signed-off-by: Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
-Cc: Peter Oskolkov <posk@google.com>
-Cc: Peter Zijlstra (Intel) <peterz@infradead.org>
-Cc: <stable@vger.kernel.org> # 5.10+
 ---
- kernel/sched/membarrier.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ tools/testing/selftests/rseq/param_test.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/kernel/sched/membarrier.c b/kernel/sched/membarrier.c
-index b5add64d9698..3d2825408e3a 100644
---- a/kernel/sched/membarrier.c
-+++ b/kernel/sched/membarrier.c
-@@ -147,11 +147,11 @@
- #endif
- 
- #ifdef CONFIG_RSEQ
--#define MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK		\
-+#define MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK		\
- 	(MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ			\
--	| MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ_BITMASK)
-+	| MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED_RSEQ)
- #else
--#define MEMBARRIER_CMD_PRIVATE_EXPEDITED_RSEQ_BITMASK	0
-+#define MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK	0
- #endif
- 
- #define MEMBARRIER_CMD_BITMASK						\
-@@ -159,7 +159,8 @@
- 	| MEMBARRIER_CMD_REGISTER_GLOBAL_EXPEDITED			\
- 	| MEMBARRIER_CMD_PRIVATE_EXPEDITED				\
- 	| MEMBARRIER_CMD_REGISTER_PRIVATE_EXPEDITED			\
--	| MEMBARRIER_PRIVATE_EXPEDITED_SYNC_CORE_BITMASK)
-+	| MEMBARRIER_PRIVATE_EXPEDITED_SYNC_CORE_BITMASK		\
-+	| MEMBARRIER_PRIVATE_EXPEDITED_RSEQ_BITMASK)
- 
- static void ipi_mb(void *info)
- {
+diff --git a/tools/testing/selftests/rseq/param_test.c b/tools/testing/selftests/rseq/param_test.c
+index 699ad5f93c34..cc2cfc1da938 100644
+--- a/tools/testing/selftests/rseq/param_test.c
++++ b/tools/testing/selftests/rseq/param_test.c
+@@ -368,9 +368,7 @@ void *test_percpu_spinlock_thread(void *arg)
+ 		abort();
+ 	reps = thread_data->reps;
+ 	for (i = 0; i < reps; i++) {
+-		int cpu = rseq_cpu_start();
+-
+-		cpu = rseq_this_cpu_lock(&data->lock);
++		int cpu = rseq_this_cpu_lock(&data->lock);
+ 		data->c[cpu].count++;
+ 		rseq_percpu_unlock(&data->lock, cpu);
+ #ifndef BENCHMARK
 -- 
 2.17.1
 
