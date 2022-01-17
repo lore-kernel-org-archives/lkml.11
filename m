@@ -2,138 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 548F5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 03:04:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19FC9C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 03:07:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234152AbiAQDEe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 22:04:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51980 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234146AbiAQDEb (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 22:04:31 -0500
-Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4140AC061574;
-        Sun, 16 Jan 2022 19:04:31 -0800 (PST)
-Received: by mail-lf1-x12c.google.com with SMTP id p27so40680679lfa.1;
-        Sun, 16 Jan 2022 19:04:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=BcLWSCFxcIxXuHQd2ZX9wwZMoc7+0eTGm4EM3OR4jpU=;
-        b=ZaYjBcoytcgYu0YN53yR2+fkLtowk5L8XQrd3YiWdvpWRMdSuV+UiGQWRqZglFwrxL
-         nywXxwAMzJynw9HACRFMOllznNjNePAsByIFVs+g78yNBgqaRe2A9dV32wAspZvqXISi
-         KmyVLzXj9mlQM5ZZupLPyx+3ynUKXuws0mCzgyM4ZrqghLrCbkP/DWJzEMFwmefjT9+t
-         g+wlmuZJgiE3HQrBlFZGhhR7aD9Yk2HwmfeoRUs1eGUVNRDb7FAQlqxs2DWFQzb60iaJ
-         6XLCYkEdxisU4Zc8UpzIeNbWtn6k3FdHtQ3JHKRwkn1KXA3cWHmH8hYEOGFzLV20fLpd
-         IIvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=BcLWSCFxcIxXuHQd2ZX9wwZMoc7+0eTGm4EM3OR4jpU=;
-        b=fvU7etFEfMzX4yIWd8ktYiTDq0agB3CVyHrivYcT9tt3e7jga9XTPPqaU0Ft+NM2fT
-         58y9U6MLe5kDzJdCGR4Ua5aLN64J02+rx74jvILfKpd+xmGXvY8JXu3c/R/acUq2AE59
-         md1V+VAoM6o3/AYLm02xDFKZCSC8GRJ36PpHEGM0ux/7emD+q5h6Lp04EgMZZrqvaFrk
-         sRgrKT2UIHcbBg1mQLkgcs1RF69KR7uf3+XnZGqtWKwLYeXrquFdpXL3TB/WNHiTl/HT
-         2aW3to2F3eZ8AjbJjIx1LyllAVP+uz/GyfYSYTvlA1F/iAmLPhvV4npflr6SSpwa3AnJ
-         kibg==
-X-Gm-Message-State: AOAM5331ms7CpIwcgHb3+UyixmmwMPC/1XosvCKFHnrA0okhmco25B6t
-        z1S9toSWr7A+bEoOYszy2DnKwrXiYAQmT7LqZg2txqpID8c=
-X-Google-Smtp-Source: ABdhPJz4uUl+FXb01sRnnkK7Rxg2VDSdVajRNqiRCXRw5oGeSNRQP49xOMe53sf7wPJJQPyYgOM+qr8r1nbY3pkSCgE=
-X-Received: by 2002:a19:8c4a:: with SMTP id i10mr14679181lfj.537.1642388668824;
- Sun, 16 Jan 2022 19:04:28 -0800 (PST)
+        id S236912AbiAQDHG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 22:07:06 -0500
+Received: from mga12.intel.com ([192.55.52.136]:46396 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234099AbiAQDHD (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 16 Jan 2022 22:07:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642388823; x=1673924823;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=R8Sn8SZmhuMPafCTfdZnGovaHJidPy4VsCKLE6frY5I=;
+  b=bdS4wD6AHE+mJ2tHmHW171YjF8JhXjxLB36Hsbsc27Kq4S5wvNKufoAr
+   yT+4jZV3XJGfKRljngwCMX5I2k13+OqzwGFDhT4HlFHsWQtPIiTD/LZ7/
+   p82Gd6n9yAVqe9yJHHzEn9y/9fCTCixYlzio/9m3tGMa8wxE+2uPqTsW9
+   EGrgNYTBQNVVubuasV+C/UgdrMxNZWG0znms8zKGtXftAA7wk+BCps7OQ
+   ZfHpesFyWY6fMVdeO98TACgPLT/4pNP6rTaIbInRB6gQzsWOeg3dWbN78
+   pjtsxJy9vfp7S+TFz8wN9XgetYEw+ucqNBVpkK1WaCR0/DYByMXQMiBB2
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10229"; a="224521886"
+X-IronPort-AV: E=Sophos;i="5.88,294,1635231600"; 
+   d="scan'208";a="224521886"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2022 19:07:03 -0800
+X-IronPort-AV: E=Sophos;i="5.88,294,1635231600"; 
+   d="scan'208";a="476489507"
+Received: from gao-cwp.sh.intel.com (HELO gao-cwp) ([10.239.159.105])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2022 19:06:58 -0800
+Date:   Mon, 17 Jan 2022 11:17:52 +0800
+From:   Chao Gao <chao.gao@intel.com>
+To:     Maxim Levitsky <mlevitsk@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Zeng Guang <guang.zeng@intel.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "Luck, Tony" <tony.luck@intel.com>,
+        Kan Liang <kan.liang@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Kim Phillips <kim.phillips@amd.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jethro Beekman <jethro@fortanix.com>,
+        "Huang, Kai" <kai.huang@intel.com>,
+        "x86@kernel.org" <x86@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Hu, Robert" <robert.hu@intel.com>
+Subject: Re: [PATCH v5 7/8] KVM: VMX: Update PID-pointer table entry when
+ APIC ID is changed
+Message-ID: <20220117031750.GA5339@gao-cwp>
+References: <640e82f3-489d-60af-1d31-25096bef1a46@amd.com>
+ <4eee5de5-ab76-7094-17aa-adc552032ba0@intel.com>
+ <aa86022c-2816-4155-8d77-f4faf6018255@amd.com>
+ <aa7db6d2-8463-2517-95ce-c0bba22e80d4@intel.com>
+ <d058f7464084cadc183bd9dbf02c7f525bb9f902.camel@redhat.com>
+ <20220110074523.GA18434@gao-cwp>
+ <1ff69ed503faa4c5df3ad1b5abe8979d570ef2b8.camel@redhat.com>
+ <YeClaZWM1cM+WLjH@google.com>
+ <20220114025825.GA3010@gao-cwp>
+ <4b9fb845bf698f7efa6b46d525b37e329dd693ea.camel@redhat.com>
 MIME-Version: 1.0
-From:   Steve French <smfrench@gmail.com>
-Date:   Sun, 16 Jan 2022 21:04:17 -0600
-Message-ID: <CAH2r5mu=D=hnvdUTnZg8fYYRUbnGkOLzzo667XxmbYw8ZOBTxA@mail.gmail.com>
-Subject: [GIT PULL] cifs/smb3 fixes
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        CIFS <linux-cifs@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4b9fb845bf698f7efa6b46d525b37e329dd693ea.camel@redhat.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Please pull the following changes since commit
-c9e6606c7fe92b50a02ce51dda82586ebdf99b48:
+On Fri, Jan 14, 2022 at 10:17:34AM +0200, Maxim Levitsky wrote:
+>On Fri, 2022-01-14 at 10:58 +0800, Chao Gao wrote:
+>> On Thu, Jan 13, 2022 at 10:19:21PM +0000, Sean Christopherson wrote:
+>> > On Tue, Jan 11, 2022, Maxim Levitsky wrote:
+>> > > Both Intel and AMD's PRM also state that changing APIC ID is implementation
+>> > > dependent.
+>> > >  
+>> > > I vote to forbid changing apic id, at least in the case any APIC acceleration
+>> > > is used, be that APICv or AVIC.
+>> > 
+>> > That has my vote as well.  For IPIv in particular there's not much concern with
+>> > backwards compability, i.e. we can tie the behavior to enable_ipiv.
+>Great!
+>> 
+>> Hi Sean and Levitsky,
+>> 
+>> Let's align on the implementation.
+>> 
+>> To disable changes for xAPIC ID when IPIv/AVIC is enabled:
+>> 
+>> 1. introduce a variable (forbid_apicid_change) for this behavior in kvm.ko
+>> and export it so that kvm-intel, kvm-amd can set it when IPIv/AVIC is
+>> enabled. To reduce complexity, this variable is a module level setting.
+>> 
+>> 2. when guest attempts to change xAPIC ID but it is forbidden, KVM prints
+>> a warning on host and injects a #GP to guest.
+>> 
+>> 3. remove AVIC code that deals with changes to xAPIC ID.
+>> 
+>
+>I have a patch for both, I attached them.
 
-  Linux 5.16-rc8 (2022-01-02 14:23:25 -0800)
+Looks good to me. We will drop this patch and rely on the first attached patch
+to forbid guest from changing xAPIC ID.
 
-are available in the Git repository at:
+>I haven't tested either of these patches that much other than a smoke test,
+>but I did test all of the guests I  have and none broke in regard to boot.
+>
+>I will send those patches as part of larger patch series that implements
+>nesting for AVIC. I hope to do this next week.
 
-  git://git.samba.org/sfrench/cifs-2.6.git tags/5.17-rc-part1-smb3-fixes
-
-for you to fetch changes up to 9bbf8662a27b56358366027d1a77c0676f85b222:
-
-  cifs: fix FILE_BOTH_DIRECTORY_INFO definition (2022-01-15 10:08:47 -0600)
-
-----------------------------------------------------------------
-13 cifs/smb3 fixes
-
-- 9 multichannel patches mostly related to improving reconnect behavior
-- 4 minor cleanup patches
-
-There are a similar number of additional patches that I will send later
-in the week that are still being tested and reviewed, and hopefully that
-will also include the integration with the new fscache that Dave Howell's
-is working with me on.
-----------------------------------------------------------------
-Colin Ian King (1):
-      cifs: remove redundant assignment to pointer p
-
-Enzo Matsumiya (1):
-      cifs: fix hang on cifs_get_next_mid()
-
-Eugene Korenevsky (1):
-      cifs: fix FILE_BOTH_DIRECTORY_INFO definition
-
-Jeff Layton (1):
-      cifs: move superblock magic defitions to magic.h
-
-Shyam Prasad N (8):
-      cifs: track individual channel status using chans_need_reconnect
-      cifs: use the chans_need_reconnect bitmap for reconnect status
-      cifs: adjust DebugData to use chans_need_reconnect for conn status
-      cifs: add WARN_ON for when chan_count goes below minimum
-      cifs: reconnect only the connection and not smb session where possible
-      cifs: take cifs_tcp_ses_lock for status checks
-      cifs: maintain a state machine for tcp/smb/tcon sessions
-      cifs: avoid race during socket reconnect between send and recv
-
-Yang Li (1):
-      cifs: Fix smb311_update_preauth_hash() kernel-doc comment
-
- fs/cifs/cifs_debug.c       |   8 ++-
- fs/cifs/cifs_spnego.c      |   4 +-
- fs/cifs/cifs_spnego.h      |   3 +-
- fs/cifs/cifs_swn.c         |   4 +-
- fs/cifs/cifsencrypt.c      |   6 +-
- fs/cifs/cifsfs.c           |   5 +-
- fs/cifs/cifsglob.h         |  79 +++++++++++--------------
- fs/cifs/cifspdu.h          |   2 +-
- fs/cifs/cifsproto.h        |  31 ++++++++--
- fs/cifs/cifssmb.c          |  94 +++++++++++++++++++++++------
- fs/cifs/connect.c          | 230
-++++++++++++++++++++++++++++++++++++++++++++++++++---------------------
- fs/cifs/netmisc.c          |   4 +-
- fs/cifs/ntlmssp.h          |   2 +
- fs/cifs/sess.c             | 183
-++++++++++++++++++++++++++++++++++++++------------------
- fs/cifs/smb1ops.c          |  24 +++++---
- fs/cifs/smb2glob.h         |   2 -
- fs/cifs/smb2misc.c         |   5 +-
- fs/cifs/smb2ops.c          |  34 +++++++----
- fs/cifs/smb2pdu.c          | 179
-+++++++++++++++++++++++++++++++++++++------------------
- fs/cifs/smb2proto.h        |   6 +-
- fs/cifs/smb2transport.c    |  61 ++++++++++++++-----
- fs/cifs/transport.c        |  78 ++++++++++++++++--------
- include/uapi/linux/magic.h |   4 ++
- 23 files changed, 723 insertions(+), 325 deletions(-)
-
-
--- 
-Thanks,
-
-Steve
+Thanks.
