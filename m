@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22892C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 18:55:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB0AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 18:55:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242870AbiAQSzx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 13:55:53 -0500
-Received: from mga09.intel.com ([134.134.136.24]:11989 "EHLO mga09.intel.com"
+        id S242851AbiAQSzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 13:55:54 -0500
+Received: from mga05.intel.com ([192.55.52.43]:54723 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230519AbiAQSzr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S233574AbiAQSzr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 17 Jan 2022 13:55:47 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1642445747; x=1673981747;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=rSSDTIAen0zDd6kEhdfoILJM56+4S6HFTy7KKtUouJM=;
-  b=aZGXvDZyHrryTyb0QhJRkjLvdcjgUHlqwIjcGmYajIxabdyMIrmT02pP
-   wxsDNIHcQxyrKdseAF8rHIvDI45MsIlYUhA7bw2fOyKMLfQ34DdSinY2s
-   G86EqwpRYgrg/BGhPheE6oVLeBm0mkB1cbNmTU6ldSq2PShn+vQpaZMs/
-   COL2aujh3PE8oUz0MJ3dinTbqNCCYnWLA6T0WzP/q0K/6a35AKZ4LMu0j
-   sJduiWpXbxL4A3iGGd4njHJ7zFpT12L6+GBTQDBGXFjmQclgxfYy9sOC7
-   6oj6IZev5lhMDxYZr9LjAD96MBaOGT9x8Cz/oOWtC8I9sFO+cAgX/6odF
+  bh=jGxQR1NAPq34rowHwZf+YnxGBKCulWznhSjNSCXmWsI=;
+  b=SAelhPXsBzr5KjKIFwaAX1LjOV/8qH96JJZ+ob2aWkQyHLG9rkk/4uFc
+   U+r6smJOsyh7NDbNNW8Gs1G86Ujs+6Iu8h8lA7bqa5COxNFKo2eUJM52S
+   j3uQOTRRU5aHzLpzRqrzAq4ly9UjtMXirjWdkHcie4yiepfrGOzU+SLrn
+   vyhE8RY/m4b3Pg1JIRj3q+6oTSHz7CX10itY6LNRLOtYI7YhDyGyO01VT
+   2PRiYEjIx75YjxifjpvBcWvFNvrLAl86EpmMVMASqWVNysN26YQoCQN+R
+   VC+sThGEniHQEvLbYPbEx7ERhv1S/em5y4H58ANdKObP4YF/GYpAYquc2
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="244475536"
+X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="331027474"
 X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="244475536"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 10:55:46 -0800
+   d="scan'208";a="331027474"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 10:55:46 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="594872834"
+   d="scan'208";a="621893298"
 Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga004.fm.intel.com with ESMTP; 17 Jan 2022 10:55:45 -0800
+  by fmsmga002.fm.intel.com with ESMTP; 17 Jan 2022 10:55:45 -0800
 Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1n9XAO-000Bmq-QO; Mon, 17 Jan 2022 18:55:44 +0000
-Date:   Tue, 18 Jan 2022 02:54:49 +0800
+        id 1n9XAO-000Bmv-Rk; Mon, 17 Jan 2022 18:55:44 +0000
+Date:   Tue, 18 Jan 2022 02:54:55 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     kbuild-all@lists.01.org, GNU/Weeb Mailing List <gwml@gnuweeb.org>,
+To:     Thomas Zimmermann <tzimmermann@suse.de>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
         linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-lib 20/24]
- xtensa-linux-ld: fs/fscache/stats.o:undefined reference to
- `netfs_stats_show'
-Message-ID: <202201180236.bFOg48wO-lkp@intel.com>
+Subject: [drm-misc:drm-misc-next 4/5] drivers/gpu/drm/msm/edp/edp.h:15:10:
+ fatal error: 'drm/drm_dp_helper.h' file not found
+Message-ID: <202201180257.Ntm7G4ic-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -53,30 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-lib
-head:   12617e48874cc7e301b04f65b22b762cca3aea01
-commit: d775438577aaab8808eaf4cfb2963d941a439b8b [20/24] netfs, fscache: Make netfslib depend on fscache
-config: xtensa-randconfig-r021-20220116 (https://download.01.org/0day-ci/archive/20220118/202201180236.bFOg48wO-lkp@intel.com/config)
-compiler: xtensa-linux-gcc (GCC) 11.2.0
+tree:   git://anongit.freedesktop.org/drm/drm-misc drm-misc-next
+head:   032a125904995985334766911de9e26ee2bbd646
+commit: 5b529e8d9c387a34ca2b8008dc65f55d539b3ef6 [4/5] drm/dp: Move public DisplayPort headers into dp/
+config: arm-randconfig-r014-20220117 (https://download.01.org/0day-ci/archive/20220118/202201180257.Ntm7G4ic-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 5f782d25a742302d25ef3c8b84b54f7483c2deb9)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/d775438577aaab8808eaf4cfb2963d941a439b8b
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-lib
-        git checkout d775438577aaab8808eaf4cfb2963d941a439b8b
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        git remote add drm-misc git://anongit.freedesktop.org/drm/drm-misc
+        git fetch --no-tags drm-misc drm-misc-next
+        git checkout 5b529e8d9c387a34ca2b8008dc65f55d539b3ef6
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=xtensa SHELL=/bin/bash
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/gpu/drm/msm/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
->> xtensa-linux-ld: fs/fscache/stats.o:(.text+0xac): undefined reference to `netfs_stats_show'
-   xtensa-linux-ld: fs/fscache/stats.o: in function `fscache_stats_show':
->> stats.c:(.text+0x1a7): undefined reference to `netfs_stats_show'
+   In file included from drivers/gpu/drm/msm/edp/edp_aux.c:6:
+>> drivers/gpu/drm/msm/edp/edp.h:15:10: fatal error: 'drm/drm_dp_helper.h' file not found
+   #include <drm/drm_dp_helper.h>
+            ^~~~~~~~~~~~~~~~~~~~~
+   1 error generated.
+--
+>> drivers/gpu/drm/msm/edp/edp_ctrl.c:10:10: fatal error: 'drm/drm_dp_helper.h' file not found
+   #include <drm/drm_dp_helper.h>
+            ^~~~~~~~~~~~~~~~~~~~~
+   1 error generated.
+
+
+vim +15 drivers/gpu/drm/msm/edp/edp.h
+
+ab5b0107ccf382 Hai Li          2015-01-07   8  
+ab5b0107ccf382 Hai Li          2015-01-07   9  #include <linux/i2c.h>
+ab5b0107ccf382 Hai Li          2015-01-07  10  #include <linux/interrupt.h>
+ab5b0107ccf382 Hai Li          2015-01-07  11  #include <linux/kernel.h>
+ab5b0107ccf382 Hai Li          2015-01-07  12  #include <linux/platform_device.h>
+ee68c743f8d074 Boris Brezillon 2019-08-26  13  #include <drm/drm_bridge.h>
+78f27b1ce3f852 Masahiro Yamada 2017-04-24  14  #include <drm/drm_crtc.h>
+78f27b1ce3f852 Masahiro Yamada 2017-04-24 @15  #include <drm/drm_dp_helper.h>
+ab5b0107ccf382 Hai Li          2015-01-07  16  
+
+:::::: The code at line 15 was first introduced by commit
+:::::: 78f27b1ce3f852543443b5d2f12a40f217e3555e drm/msm: fix include notation and remove -Iinclude/drm flag
+
+:::::: TO: Masahiro Yamada <yamada.masahiro@socionext.com>
+:::::: CC: Daniel Vetter <daniel.vetter@ffwll.ch>
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
