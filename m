@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04956C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:06:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96117C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:06:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242282AbiAQRGv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:06:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44846 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241951AbiAQRDK (ORCPT
+        id S242602AbiAQRGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:06:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50952 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241748AbiAQRDM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:03:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5505EC061574;
-        Mon, 17 Jan 2022 09:02:40 -0800 (PST)
+        Mon, 17 Jan 2022 12:03:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 208EEB8115B;
-        Mon, 17 Jan 2022 17:02:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18CD2C36AE3;
-        Mon, 17 Jan 2022 17:02:37 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4DDA2B81136;
+        Mon, 17 Jan 2022 17:03:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B319C36B00;
+        Mon, 17 Jan 2022 17:03:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642438957;
-        bh=JiOVbM2qS81Tf9TfdFeLSOmQd6su6h5Fdx5wlgaihSw=;
+        s=k20201202; t=1642438988;
+        bh=dPNDS9c1FKRDuq5vFo9z89Gbkjn2n1/fPgl2lhDlYk4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mWBCgogEk9OVqXA8neC2iqt8j3Pm5T6Ge3Gu50HiiGHmXDH8jilcP7uFPHw7udUop
-         pWVLU/S+lPSNHwskiRKzDXU92/Vj5ejIlOFDVNEgogIqanB/52EAx6QvUGIwChi3Ii
-         RwlCHpzxDEufGKCnyJHkDPkBTNZIsJ5sHHHqzg+E/P4c18tcYRDVjb32scMESDcBRt
-         1AGXLnwLUqz4wZyR76MQXzn+Zq9MA866AHZA4xQaFx/O9J8W56aupCCQMCMwMUynvf
-         waRGePRQG/XexVeQqJN4//2cqkoNGVSJNnH7w0HbGeW6e+7XpO/6dL20XL1UmFsAZQ
-         oFVmH0PgRaPYw==
+        b=PGFsLMOdU22eRUaMirhqSQ/YGhpUEkBVn549ynxQBxEUvdDWM73l2lsWkraG4TECE
+         idny53MbxKH3/7qoSIWA1XqdQ+MNJPPxd6qEsPXRXQ4eYpN40ZRiWfykAosjqr6dAw
+         /Qy3SKv0qeFZhUol0IPq7OMLIMGow/efHRcosLmrKXfgFeH5dJczrJOX6YCfWYauEf
+         qNMGHxFzYbkMiES3/HyDbhp09m9hrPxA7CaW1wSMSMiLG6EI+hwnZeA/o/Sk14zgdV
+         azyVu+Bljeuek/hb+kkY1KuT6yjc0cctRX+tc4KVmPb/abjqBMKcMrsix3bKFkDpIP
+         6OGJ0u0xclfpw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ye Guojin <ye.guojin@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, yangyingliang@huawei.com,
-        linux-mips@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 29/44] MIPS: OCTEON: add put_device() after of_find_device_by_node()
-Date:   Mon, 17 Jan 2022 12:01:12 -0500
-Message-Id: <20220117170127.1471115-29-sashal@kernel.org>
+Cc:     Tzung-Bi Shih <tzungbi@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, matthias.bgg@gmail.com,
+        jiaxin.yu@mediatek.com, angelogioacchino.delregno@collabora.com,
+        alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 39/44] ASoC: mediatek: mt8173: fix device_node leak
+Date:   Mon, 17 Jan 2022 12:01:22 -0500
+Message-Id: <20220117170127.1471115-39-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117170127.1471115-1-sashal@kernel.org>
 References: <20220117170127.1471115-1-sashal@kernel.org>
@@ -52,64 +52,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ye Guojin <ye.guojin@zte.com.cn>
+From: Tzung-Bi Shih <tzungbi@google.com>
 
-[ Upstream commit 858779df1c0787d3fec827fb705708df9ebdb15b ]
+[ Upstream commit 493433785df0075afc0c106ab65f10a605d0b35d ]
 
-This was found by coccicheck:
-./arch/mips/cavium-octeon/octeon-platform.c, 332, 1-7, ERROR missing
-put_device; call of_find_device_by_node on line 324, but without a
-corresponding object release within this function.
-./arch/mips/cavium-octeon/octeon-platform.c, 395, 1-7, ERROR missing
-put_device; call of_find_device_by_node on line 387, but without a
-corresponding object release within this function.
-./arch/mips/cavium-octeon/octeon-usb.c, 512, 3-9, ERROR missing
-put_device; call of_find_device_by_node on line 515, but without a
-corresponding object release within this function.
-./arch/mips/cavium-octeon/octeon-usb.c, 543, 1-7, ERROR missing
-put_device; call of_find_device_by_node on line 515, but without a
-corresponding object release within this function.
+Fixes the device_node leak.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Ye Guojin <ye.guojin@zte.com.cn>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
+Link: https://lore.kernel.org/r/20211224064719.2031210-2-tzungbi@google.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/cavium-octeon/octeon-platform.c | 2 ++
- arch/mips/cavium-octeon/octeon-usb.c      | 1 +
- 2 files changed, 3 insertions(+)
+ sound/soc/mediatek/mt8173/mt8173-max98090.c      | 3 +++
+ sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c | 2 ++
+ sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c | 2 ++
+ sound/soc/mediatek/mt8173/mt8173-rt5650.c        | 2 ++
+ 4 files changed, 9 insertions(+)
 
-diff --git a/arch/mips/cavium-octeon/octeon-platform.c b/arch/mips/cavium-octeon/octeon-platform.c
-index d56e9b9d2e434..a994022e32c9f 100644
---- a/arch/mips/cavium-octeon/octeon-platform.c
-+++ b/arch/mips/cavium-octeon/octeon-platform.c
-@@ -328,6 +328,7 @@ static int __init octeon_ehci_device_init(void)
- 
- 	pd->dev.platform_data = &octeon_ehci_pdata;
- 	octeon_ehci_hw_start(&pd->dev);
-+	put_device(&pd->dev);
- 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-max98090.c b/sound/soc/mediatek/mt8173/mt8173-max98090.c
+index fc94314bfc02f..3bdd4931316cd 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-max98090.c
++++ b/sound/soc/mediatek/mt8173/mt8173-max98090.c
+@@ -180,6 +180,9 @@ static int mt8173_max98090_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(codec_node);
++	of_node_put(platform_node);
  	return ret;
  }
-@@ -391,6 +392,7 @@ static int __init octeon_ohci_device_init(void)
  
- 	pd->dev.platform_data = &octeon_ohci_pdata;
- 	octeon_ohci_hw_start(&pd->dev);
-+	put_device(&pd->dev);
- 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
+index 0f28dc2217c09..390da5bf727eb 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
+@@ -218,6 +218,8 @@ static int mt8173_rt5650_rt5514_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
  	return ret;
  }
-diff --git a/arch/mips/cavium-octeon/octeon-usb.c b/arch/mips/cavium-octeon/octeon-usb.c
-index 6e4d3619137af..4df919d26b082 100644
---- a/arch/mips/cavium-octeon/octeon-usb.c
-+++ b/arch/mips/cavium-octeon/octeon-usb.c
-@@ -537,6 +537,7 @@ static int __init dwc3_octeon_device_init(void)
- 			devm_iounmap(&pdev->dev, base);
- 			devm_release_mem_region(&pdev->dev, res->start,
- 						resource_size(res));
-+			put_device(&pdev->dev);
- 		}
- 	} while (node != NULL);
+ 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
+index 077c6ee067806..c8e4e85e10575 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
+@@ -285,6 +285,8 @@ static int mt8173_rt5650_rt5676_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650.c b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
+index c28ebf891cb05..e168d31f44459 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
+@@ -323,6 +323,8 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
  
 -- 
 2.34.1
