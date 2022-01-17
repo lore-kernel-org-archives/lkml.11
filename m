@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB0AFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 18:55:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DBA0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 18:55:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242851AbiAQSzy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 13:55:54 -0500
-Received: from mga05.intel.com ([192.55.52.43]:54723 "EHLO mga05.intel.com"
+        id S242941AbiAQSz4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 13:55:56 -0500
+Received: from mga14.intel.com ([192.55.52.115]:4516 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233574AbiAQSzr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S233419AbiAQSzr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 17 Jan 2022 13:55:47 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1642445747; x=1673981747;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=jGxQR1NAPq34rowHwZf+YnxGBKCulWznhSjNSCXmWsI=;
-  b=SAelhPXsBzr5KjKIFwaAX1LjOV/8qH96JJZ+ob2aWkQyHLG9rkk/4uFc
-   U+r6smJOsyh7NDbNNW8Gs1G86Ujs+6Iu8h8lA7bqa5COxNFKo2eUJM52S
-   j3uQOTRRU5aHzLpzRqrzAq4ly9UjtMXirjWdkHcie4yiepfrGOzU+SLrn
-   vyhE8RY/m4b3Pg1JIRj3q+6oTSHz7CX10itY6LNRLOtYI7YhDyGyO01VT
-   2PRiYEjIx75YjxifjpvBcWvFNvrLAl86EpmMVMASqWVNysN26YQoCQN+R
-   VC+sThGEniHQEvLbYPbEx7ERhv1S/em5y4H58ANdKObP4YF/GYpAYquc2
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="331027474"
+  bh=ZM2XHMed555QqYiAsyiZlPsS6Y1GbSKroXHhQpZmjIE=;
+  b=TKVwmTo/NAltYmLkd8YgMX8WFxWhTjKP0t7wpKGiKywkjg/s49EH9Itc
+   vIJ/bRFRGGHOxbY1v+R/sxMJstbzTuhltQpzm8yP4tMoI/IY/0fVjPL2U
+   7XHXknnlq+1rPDR9TBGa35DVQkI9WKCt93+pTv4MNDIq8J6++c707HrE/
+   LXfXUy3No/8m9SJz3x5Su+khkVy1a46oEyiFX2AjPxKC+jIAY5ggtwIyg
+   mGkbsjEDvB0JKyiZExuQj0oZdGRwxlwQhQc/Oq4oFJOsu/vtT6qXIzV9t
+   OgiTUQvT9kCc7uFg/djxlc1wrc7248YORfap72rK4+7jcgObDD7pJK8T7
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="244874925"
 X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="331027474"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 10:55:46 -0800
+   d="scan'208";a="244874925"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 10:55:47 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="621893298"
+   d="scan'208";a="560440125"
 Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 17 Jan 2022 10:55:45 -0800
+  by orsmga001.jf.intel.com with ESMTP; 17 Jan 2022 10:55:45 -0800
 Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1n9XAO-000Bmv-Rk; Mon, 17 Jan 2022 18:55:44 +0000
-Date:   Tue, 18 Jan 2022 02:54:55 +0800
+        id 1n9XAO-000Bmk-PE; Mon, 17 Jan 2022 18:55:44 +0000
+Date:   Tue, 18 Jan 2022 02:54:46 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Thomas Zimmermann <tzimmermann@suse.de>
+To:     David Howells <dhowells@redhat.com>
 Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
         linux-kernel@vger.kernel.org
-Subject: [drm-misc:drm-misc-next 4/5] drivers/gpu/drm/msm/edp/edp.h:15:10:
- fatal error: 'drm/drm_dp_helper.h' file not found
-Message-ID: <202201180257.Ntm7G4ic-lkp@intel.com>
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-lib 21/24]
+ fs/netfs/read_helper.c:1267:7: error: implicit declaration of function
+ 'netfs_is_cache_enabled'
+Message-ID: <202201180210.aveIQZWP-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -52,57 +54,212 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://anongit.freedesktop.org/drm/drm-misc drm-misc-next
-head:   032a125904995985334766911de9e26ee2bbd646
-commit: 5b529e8d9c387a34ca2b8008dc65f55d539b3ef6 [4/5] drm/dp: Move public DisplayPort headers into dp/
-config: arm-randconfig-r014-20220117 (https://download.01.org/0day-ci/archive/20220118/202201180257.Ntm7G4ic-lkp@intel.com/config)
+Hi David,
+
+First bad commit (maybe != root cause):
+
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-lib
+head:   12617e48874cc7e301b04f65b22b762cca3aea01
+commit: 76e2a6186d78be90874f3d45f7a41c583a0458f0 [21/24] cifs: Support fscache rewrite
+config: i386-randconfig-r036-20220117 (https://download.01.org/0day-ci/archive/20220118/202201180210.aveIQZWP-lkp@intel.com/config)
 compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 5f782d25a742302d25ef3c8b84b54f7483c2deb9)
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        git remote add drm-misc git://anongit.freedesktop.org/drm/drm-misc
-        git fetch --no-tags drm-misc drm-misc-next
-        git checkout 5b529e8d9c387a34ca2b8008dc65f55d539b3ef6
+        # https://github.com/ammarfaizi2/linux-block/commit/76e2a6186d78be90874f3d45f7a41c583a0458f0
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-lib
+        git checkout 76e2a6186d78be90874f3d45f7a41c583a0458f0
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/gpu/drm/msm/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash fs/netfs/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All errors (new ones prefixed by >>):
 
-   In file included from drivers/gpu/drm/msm/edp/edp_aux.c:6:
->> drivers/gpu/drm/msm/edp/edp.h:15:10: fatal error: 'drm/drm_dp_helper.h' file not found
-   #include <drm/drm_dp_helper.h>
-            ^~~~~~~~~~~~~~~~~~~~~
-   1 error generated.
---
->> drivers/gpu/drm/msm/edp/edp_ctrl.c:10:10: fatal error: 'drm/drm_dp_helper.h' file not found
-   #include <drm/drm_dp_helper.h>
-            ^~~~~~~~~~~~~~~~~~~~~
-   1 error generated.
+   fs/netfs/read_helper.c:971:14: warning: variable 'folio' is uninitialized when used here [-Wuninitialized]
+                           folio_put(folio);
+                                     ^~~~~
+   fs/netfs/read_helper.c:920:21: note: initialize the variable 'folio' to silence this warning
+           struct folio *folio;
+                              ^
+                               = NULL
+>> fs/netfs/read_helper.c:1267:7: error: implicit declaration of function 'netfs_is_cache_enabled' [-Werror,-Wimplicit-function-declaration]
+           if (!netfs_is_cache_enabled(ctx) &&
+                ^
+   1 warning and 1 error generated.
 
 
-vim +15 drivers/gpu/drm/msm/edp/edp.h
+vim +/netfs_is_cache_enabled +1267 fs/netfs/read_helper.c
 
-ab5b0107ccf382 Hai Li          2015-01-07   8  
-ab5b0107ccf382 Hai Li          2015-01-07   9  #include <linux/i2c.h>
-ab5b0107ccf382 Hai Li          2015-01-07  10  #include <linux/interrupt.h>
-ab5b0107ccf382 Hai Li          2015-01-07  11  #include <linux/kernel.h>
-ab5b0107ccf382 Hai Li          2015-01-07  12  #include <linux/platform_device.h>
-ee68c743f8d074 Boris Brezillon 2019-08-26  13  #include <drm/drm_bridge.h>
-78f27b1ce3f852 Masahiro Yamada 2017-04-24  14  #include <drm/drm_crtc.h>
-78f27b1ce3f852 Masahiro Yamada 2017-04-24 @15  #include <drm/drm_dp_helper.h>
-ab5b0107ccf382 Hai Li          2015-01-07  16  
+e1b1240c1ff5f8 David Howells 2020-09-22  1194  
+e1b1240c1ff5f8 David Howells 2020-09-22  1195  /**
+e1b1240c1ff5f8 David Howells 2020-09-22  1196   * netfs_write_begin - Helper to prepare for writing
+e1b1240c1ff5f8 David Howells 2020-09-22  1197   * @file: The file to read from
+e1b1240c1ff5f8 David Howells 2020-09-22  1198   * @mapping: The mapping to read from
+e1b1240c1ff5f8 David Howells 2020-09-22  1199   * @pos: File position at which the write will begin
+78525c74d9e7d1 David Howells 2021-08-11  1200   * @len: The length of the write (may extend beyond the end of the folio chosen)
+78525c74d9e7d1 David Howells 2021-08-11  1201   * @aop_flags: AOP_* flags
+78525c74d9e7d1 David Howells 2021-08-11  1202   * @_folio: Where to put the resultant folio
+e1b1240c1ff5f8 David Howells 2020-09-22  1203   * @_fsdata: Place for the netfs to store a cookie
+e1b1240c1ff5f8 David Howells 2020-09-22  1204   *
+e1b1240c1ff5f8 David Howells 2020-09-22  1205   * Pre-read data for a write-begin request by drawing data from the cache if
+e1b1240c1ff5f8 David Howells 2020-09-22  1206   * possible, or the netfs if not.  Space beyond the EOF is zero-filled.
+e1b1240c1ff5f8 David Howells 2020-09-22  1207   * Multiple I/O requests from different sources will get munged together.  If
+e1b1240c1ff5f8 David Howells 2020-09-22  1208   * necessary, the readahead window can be expanded in either direction to a
+e1b1240c1ff5f8 David Howells 2020-09-22  1209   * more convenient alighment for RPC efficiency or to make storage in the cache
+e1b1240c1ff5f8 David Howells 2020-09-22  1210   * feasible.
+e1b1240c1ff5f8 David Howells 2020-09-22  1211   *
+e1b1240c1ff5f8 David Howells 2020-09-22  1212   * The calling netfs must provide a table of operations, only one of which,
+e1b1240c1ff5f8 David Howells 2020-09-22  1213   * issue_op, is mandatory.
+e1b1240c1ff5f8 David Howells 2020-09-22  1214   *
+e1b1240c1ff5f8 David Howells 2020-09-22  1215   * The check_write_begin() operation can be provided to check for and flush
+78525c74d9e7d1 David Howells 2021-08-11  1216   * conflicting writes once the folio is grabbed and locked.  It is passed a
+e1b1240c1ff5f8 David Howells 2020-09-22  1217   * pointer to the fsdata cookie that gets returned to the VM to be passed to
+e1b1240c1ff5f8 David Howells 2020-09-22  1218   * write_end.  It is permitted to sleep.  It should return 0 if the request
+78525c74d9e7d1 David Howells 2021-08-11  1219   * should go ahead; unlock the folio and return -EAGAIN to cause the folio to
+78525c74d9e7d1 David Howells 2021-08-11  1220   * be regot; or return an error.
+e1b1240c1ff5f8 David Howells 2020-09-22  1221   *
+810800743d8a6f David Howells 2021-06-29  1222   * The calling netfs must initialise a netfs context contiguous to the vfs
+810800743d8a6f David Howells 2021-06-29  1223   * inode before calling this.
+810800743d8a6f David Howells 2021-06-29  1224   *
+e1b1240c1ff5f8 David Howells 2020-09-22  1225   * This is usable whether or not caching is enabled.
+e1b1240c1ff5f8 David Howells 2020-09-22  1226   */
+e1b1240c1ff5f8 David Howells 2020-09-22  1227  int netfs_write_begin(struct file *file, struct address_space *mapping,
+78525c74d9e7d1 David Howells 2021-08-11  1228  		      loff_t pos, unsigned int len, unsigned int aop_flags,
+810800743d8a6f David Howells 2021-06-29  1229  		      struct folio **_folio, void **_fsdata)
+e1b1240c1ff5f8 David Howells 2020-09-22  1230  {
+e1b1240c1ff5f8 David Howells 2020-09-22  1231  	struct netfs_read_request *rreq;
+810800743d8a6f David Howells 2021-06-29  1232  	struct netfs_i_context *ctx = netfs_i_context(file_inode(file ));
+78525c74d9e7d1 David Howells 2021-08-11  1233  	struct folio *folio;
+78525c74d9e7d1 David Howells 2021-08-11  1234  	unsigned int debug_index = 0, fgp_flags;
+e1b1240c1ff5f8 David Howells 2020-09-22  1235  	pgoff_t index = pos >> PAGE_SHIFT;
+e1b1240c1ff5f8 David Howells 2020-09-22  1236  	int ret;
+e1b1240c1ff5f8 David Howells 2020-09-22  1237  
+e1b1240c1ff5f8 David Howells 2020-09-22  1238  	DEFINE_READAHEAD(ractl, file, NULL, mapping, index);
+e1b1240c1ff5f8 David Howells 2020-09-22  1239  
+e1b1240c1ff5f8 David Howells 2020-09-22  1240  retry:
+78525c74d9e7d1 David Howells 2021-08-11  1241  	fgp_flags = FGP_LOCK | FGP_WRITE | FGP_CREAT | FGP_STABLE;
+78525c74d9e7d1 David Howells 2021-08-11  1242  	if (aop_flags & AOP_FLAG_NOFS)
+78525c74d9e7d1 David Howells 2021-08-11  1243  		fgp_flags |= FGP_NOFS;
+78525c74d9e7d1 David Howells 2021-08-11  1244  	folio = __filemap_get_folio(mapping, index, fgp_flags,
+78525c74d9e7d1 David Howells 2021-08-11  1245  				    mapping_gfp_mask(mapping));
+78525c74d9e7d1 David Howells 2021-08-11  1246  	if (!folio)
+e1b1240c1ff5f8 David Howells 2020-09-22  1247  		return -ENOMEM;
+e1b1240c1ff5f8 David Howells 2020-09-22  1248  
+810800743d8a6f David Howells 2021-06-29  1249  	if (ctx->ops->check_write_begin) {
+e1b1240c1ff5f8 David Howells 2020-09-22  1250  		/* Allow the netfs (eg. ceph) to flush conflicts. */
+810800743d8a6f David Howells 2021-06-29  1251  		ret = ctx->ops->check_write_begin(file, pos, len, folio, _fsdata);
+e1b1240c1ff5f8 David Howells 2020-09-22  1252  		if (ret < 0) {
+0246f3e5737d0b David Howells 2021-04-06  1253  			trace_netfs_failure(NULL, NULL, ret, netfs_fail_check_write_begin);
+e1b1240c1ff5f8 David Howells 2020-09-22  1254  			if (ret == -EAGAIN)
+e1b1240c1ff5f8 David Howells 2020-09-22  1255  				goto retry;
+e1b1240c1ff5f8 David Howells 2020-09-22  1256  			goto error;
+e1b1240c1ff5f8 David Howells 2020-09-22  1257  		}
+e1b1240c1ff5f8 David Howells 2020-09-22  1258  	}
+e1b1240c1ff5f8 David Howells 2020-09-22  1259  
+78525c74d9e7d1 David Howells 2021-08-11  1260  	if (folio_test_uptodate(folio))
+78525c74d9e7d1 David Howells 2021-08-11  1261  		goto have_folio;
+e1b1240c1ff5f8 David Howells 2020-09-22  1262  
+2093a555c34cf6 David Howells 2021-07-09  1263  	/* If the folio is beyond the EOF, we want to clear it - unless it's
+e1b1240c1ff5f8 David Howells 2020-09-22  1264  	 * within the cache granule containing the EOF, in which case we need
+e1b1240c1ff5f8 David Howells 2020-09-22  1265  	 * to preload the granule.
+e1b1240c1ff5f8 David Howells 2020-09-22  1266  	 */
+810800743d8a6f David Howells 2021-06-29 @1267  	if (!netfs_is_cache_enabled(ctx) &&
+810800743d8a6f David Howells 2021-06-29  1268  	    netfs_skip_folio_read(folio, pos, len, false)) {
+e1b1240c1ff5f8 David Howells 2020-09-22  1269  		netfs_stat(&netfs_n_rh_write_zskip);
+78525c74d9e7d1 David Howells 2021-08-11  1270  		goto have_folio_no_wait;
+e1b1240c1ff5f8 David Howells 2020-09-22  1271  	}
+e1b1240c1ff5f8 David Howells 2020-09-22  1272  
+e1b1240c1ff5f8 David Howells 2020-09-22  1273  	ret = -ENOMEM;
+810800743d8a6f David Howells 2021-06-29  1274  	rreq = netfs_alloc_read_request(mapping, file);
+e1b1240c1ff5f8 David Howells 2020-09-22  1275  	if (!rreq)
+e1b1240c1ff5f8 David Howells 2020-09-22  1276  		goto error;
+78525c74d9e7d1 David Howells 2021-08-11  1277  	rreq->start		= folio_file_pos(folio);
+78525c74d9e7d1 David Howells 2021-08-11  1278  	rreq->len		= folio_size(folio);
+78525c74d9e7d1 David Howells 2021-08-11  1279  	rreq->no_unlock_folio	= folio_index(folio);
+78525c74d9e7d1 David Howells 2021-08-11  1280  	__set_bit(NETFS_RREQ_NO_UNLOCK_FOLIO, &rreq->flags);
+e1b1240c1ff5f8 David Howells 2020-09-22  1281  
+32d9d354c2bb5e David Howells 2021-08-10  1282  	ret = netfs_begin_cache_operation(rreq, ctx);
+726218fdc22c9b David Howells 2020-02-06  1283  	if (ret == -ENOMEM || ret == -EINTR || ret == -ERESTARTSYS)
+726218fdc22c9b David Howells 2020-02-06  1284  		goto error_put;
+726218fdc22c9b David Howells 2020-02-06  1285  
+e1b1240c1ff5f8 David Howells 2020-09-22  1286  	netfs_stat(&netfs_n_rh_write_begin);
+e1b1240c1ff5f8 David Howells 2020-09-22  1287  	trace_netfs_read(rreq, pos, len, netfs_read_trace_write_begin);
+e1b1240c1ff5f8 David Howells 2020-09-22  1288  
+e1b1240c1ff5f8 David Howells 2020-09-22  1289  	/* Expand the request to meet caching requirements and download
+e1b1240c1ff5f8 David Howells 2020-09-22  1290  	 * preferences.
+e1b1240c1ff5f8 David Howells 2020-09-22  1291  	 */
+78525c74d9e7d1 David Howells 2021-08-11  1292  	ractl._nr_pages = folio_nr_pages(folio);
+e1b1240c1ff5f8 David Howells 2020-09-22  1293  	netfs_rreq_expand(rreq, &ractl);
+e1b1240c1ff5f8 David Howells 2020-09-22  1294  
+2093a555c34cf6 David Howells 2021-07-09  1295  	/* Set up the output buffer */
+2093a555c34cf6 David Howells 2021-07-09  1296  	ret = netfs_rreq_set_up_buffer(rreq, &ractl, folio,
+2093a555c34cf6 David Howells 2021-07-09  1297  				       readahead_index(&ractl), readahead_count(&ractl));
+2093a555c34cf6 David Howells 2021-07-09  1298  	if (ret < 0) {
+78525c74d9e7d1 David Howells 2021-08-11  1299  		/* We hold the folio locks, so we can drop the references */
+78525c74d9e7d1 David Howells 2021-08-11  1300  		folio_get(folio);
+78525c74d9e7d1 David Howells 2021-08-11  1301  		while (readahead_folio(&ractl))
+78525c74d9e7d1 David Howells 2021-08-11  1302  			;
+2093a555c34cf6 David Howells 2021-07-09  1303  		goto error_put;
+2093a555c34cf6 David Howells 2021-07-09  1304  	}
+e1b1240c1ff5f8 David Howells 2020-09-22  1305  
+2093a555c34cf6 David Howells 2021-07-09  1306  	netfs_get_read_request(rreq);
+e1b1240c1ff5f8 David Howells 2020-09-22  1307  	atomic_set(&rreq->nr_rd_ops, 1);
+e1b1240c1ff5f8 David Howells 2020-09-22  1308  	do {
+e1b1240c1ff5f8 David Howells 2020-09-22  1309  		if (!netfs_rreq_submit_slice(rreq, &debug_index))
+e1b1240c1ff5f8 David Howells 2020-09-22  1310  			break;
+e1b1240c1ff5f8 David Howells 2020-09-22  1311  
+e1b1240c1ff5f8 David Howells 2020-09-22  1312  	} while (rreq->submitted < rreq->len);
+e1b1240c1ff5f8 David Howells 2020-09-22  1313  
+e1b1240c1ff5f8 David Howells 2020-09-22  1314  	/* Keep nr_rd_ops incremented so that the ref always belongs to us, and
+e1b1240c1ff5f8 David Howells 2020-09-22  1315  	 * the service code isn't punted off to a random thread pool to
+e1b1240c1ff5f8 David Howells 2020-09-22  1316  	 * process.
+e1b1240c1ff5f8 David Howells 2020-09-22  1317  	 */
+e1b1240c1ff5f8 David Howells 2020-09-22  1318  	for (;;) {
+e1b1240c1ff5f8 David Howells 2020-09-22  1319  		wait_var_event(&rreq->nr_rd_ops, atomic_read(&rreq->nr_rd_ops) == 1);
+e1b1240c1ff5f8 David Howells 2020-09-22  1320  		netfs_rreq_assess(rreq, false);
+e1b1240c1ff5f8 David Howells 2020-09-22  1321  		if (!test_bit(NETFS_RREQ_IN_PROGRESS, &rreq->flags))
+e1b1240c1ff5f8 David Howells 2020-09-22  1322  			break;
+e1b1240c1ff5f8 David Howells 2020-09-22  1323  		cond_resched();
+e1b1240c1ff5f8 David Howells 2020-09-22  1324  	}
+e1b1240c1ff5f8 David Howells 2020-09-22  1325  
+e1b1240c1ff5f8 David Howells 2020-09-22  1326  	ret = rreq->error;
+0246f3e5737d0b David Howells 2021-04-06  1327  	if (ret == 0 && rreq->submitted < rreq->len) {
+0246f3e5737d0b David Howells 2021-04-06  1328  		trace_netfs_failure(rreq, NULL, ret, netfs_fail_short_write_begin);
+e1b1240c1ff5f8 David Howells 2020-09-22  1329  		ret = -EIO;
+0246f3e5737d0b David Howells 2021-04-06  1330  	}
+e1b1240c1ff5f8 David Howells 2020-09-22  1331  	netfs_put_read_request(rreq, false);
+e1b1240c1ff5f8 David Howells 2020-09-22  1332  	if (ret < 0)
+e1b1240c1ff5f8 David Howells 2020-09-22  1333  		goto error;
+e1b1240c1ff5f8 David Howells 2020-09-22  1334  
+78525c74d9e7d1 David Howells 2021-08-11  1335  have_folio:
+78525c74d9e7d1 David Howells 2021-08-11  1336  	ret = folio_wait_fscache_killable(folio);
+e1b1240c1ff5f8 David Howells 2020-09-22  1337  	if (ret < 0)
+e1b1240c1ff5f8 David Howells 2020-09-22  1338  		goto error;
+78525c74d9e7d1 David Howells 2021-08-11  1339  have_folio_no_wait:
+78525c74d9e7d1 David Howells 2021-08-11  1340  	*_folio = folio;
+e1b1240c1ff5f8 David Howells 2020-09-22  1341  	_leave(" = 0");
+e1b1240c1ff5f8 David Howells 2020-09-22  1342  	return 0;
+e1b1240c1ff5f8 David Howells 2020-09-22  1343  
+e1b1240c1ff5f8 David Howells 2020-09-22  1344  error_put:
+e1b1240c1ff5f8 David Howells 2020-09-22  1345  	netfs_put_read_request(rreq, false);
+e1b1240c1ff5f8 David Howells 2020-09-22  1346  error:
+78525c74d9e7d1 David Howells 2021-08-11  1347  	folio_unlock(folio);
+78525c74d9e7d1 David Howells 2021-08-11  1348  	folio_put(folio);
+e1b1240c1ff5f8 David Howells 2020-09-22  1349  	_leave(" = %d", ret);
+e1b1240c1ff5f8 David Howells 2020-09-22  1350  	return ret;
+e1b1240c1ff5f8 David Howells 2020-09-22  1351  }
+e1b1240c1ff5f8 David Howells 2020-09-22  1352  EXPORT_SYMBOL(netfs_write_begin);
+5559c4bc348e31 David Howells 2021-08-20  1353  
 
-:::::: The code at line 15 was first introduced by commit
-:::::: 78f27b1ce3f852543443b5d2f12a40f217e3555e drm/msm: fix include notation and remove -Iinclude/drm flag
+:::::: The code at line 1267 was first introduced by commit
+:::::: 810800743d8a6fd292f870720030771ec9459dcc netfs: Add a netfs inode context
 
-:::::: TO: Masahiro Yamada <yamada.masahiro@socionext.com>
-:::::: CC: Daniel Vetter <daniel.vetter@ffwll.ch>
+:::::: TO: David Howells <dhowells@redhat.com>
+:::::: CC: David Howells <dhowells@redhat.com>
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
