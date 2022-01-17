@@ -2,376 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EEA9C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 15:51:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9BA8C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 15:56:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240657AbiAQPva (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 10:51:30 -0500
-Received: from alexa-out.qualcomm.com ([129.46.98.28]:60212 "EHLO
-        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237414AbiAQPv2 (ORCPT
+        id S240669AbiAQP4S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 10:56:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58238 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237414AbiAQP4Q (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 10:51:28 -0500
+        Mon, 17 Jan 2022 10:56:16 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC43C06161C
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 07:56:15 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id p27so47593617lfa.1
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 07:56:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1642434688; x=1673970688;
-  h=message-id:date:mime-version:subject:from:to:cc:
-   references:in-reply-to:content-transfer-encoding;
-  bh=Xu4Wa5A7HDAUzmX9TePf9+Nz8qiFjPhyBjM1nYof5Lo=;
-  b=MVlDkst01fc6irOWdrMB11BxtrMOUn1sFPVeuUt01K4AhqoGXUtbWdk5
-   ZPRbJ9LmtFgpSSve/zqtQwsKJLL9Kd4jYy1T8s6Ckyarz22V7k8ANkny9
-   oMw3ELIoGB4wvhM4/sHNTn6ggxmYsPdnpbgKHGu4tm2fZibcJZc5Z/gG0
-   o=;
-Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
-  by alexa-out.qualcomm.com with ESMTP; 17 Jan 2022 07:51:28 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 07:51:12 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Mon, 17 Jan 2022 07:51:11 -0800
-Received: from [10.50.45.28] (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Mon, 17 Jan
- 2022 07:51:07 -0800
-Message-ID: <9f648096-e694-7d4d-859b-ea173d5fb611@quicinc.com>
-Date:   Mon, 17 Jan 2022 21:21:03 +0530
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=hLXVfGuqokAhjQPquljpv4IuCQa5SRFe/JWEcrZu/DE=;
+        b=vWlPwu36tQDWXefh3AbPXuoJBEob07beXqKflgEp+7ZAnJW5ToHIDMHJIor8471x1c
+         nFYXIH7cEZDVMG3Ad1Imes4RlH8Ydng8D3FkDW5MMRCK22hHEVThHKgMd85wVsb7GFYN
+         NjF51iRPH0L/P/djgibOK7lcyHSKmyAdtxFeBBJf6FY8PPwF7Tw2bYnIWeB4Xuf5pF2j
+         gac7TcyYTjXdsC0I9fClYQR/2Xm0R2RHuY/uCppEBkwPgNSHe4J3imjM2CYIZYS9qZe3
+         9CkqPiTksIsEa0tVVl3iEHdCi5/WLw/yxczM5hZetsHNeD8jc+DfAsoK7XK+iNuiLe/v
+         ECHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=hLXVfGuqokAhjQPquljpv4IuCQa5SRFe/JWEcrZu/DE=;
+        b=XEFo1qR8QwvYylHuOhzy/T7ezRcZ0II2FfukxZ+U4vYGlYTXti5AfGG3Lfp0AO8ap3
+         zn/puFJ//4h7n2ynkCXlCS0PsEStH7ptu7Iuu6C54LqTDIzKblcmTCBGtGtJBxy+xwH3
+         J0TOG60xPoNaDnFBUISFBpOvlqCQTaWOa9igNOed5MwT/7DgU6JtPavSzdtxFIvuvb22
+         N8+PwppYOf3CICpZG0p1Vc+SiAMKAtpTlw8M91YT2EOSLyYlnesyAVIHIUeh92nld4Jo
+         WSuNzi1tBfx9J4lV/WspIgX54uKhImDJqToRs+gdU0+4sa61YPXlrLsfiRAmtQzvA2Q0
+         y+qg==
+X-Gm-Message-State: AOAM531kJTF2j5sQ5nGD1q7yr1gvSl6GyraJEJXwxiB0W8eddQETxsKa
+        yH8BXxM4dcdf16g8pvdlhQo8Dg==
+X-Google-Smtp-Source: ABdhPJz7FbfdpZdmtC5Jx84Ckv5DAebrmkY0nZUOV+wJaKhApnBN6pH5FhbND8E1a+JvKqJk7BwvRw==
+X-Received: by 2002:ac2:5597:: with SMTP id v23mr16906486lfg.477.1642434974035;
+        Mon, 17 Jan 2022 07:56:14 -0800 (PST)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id k19sm1425334lfu.176.2022.01.17.07.56.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Jan 2022 07:56:13 -0800 (PST)
+Received: by box.localdomain (Postfix, from userid 1000)
+        id 84A7810387E; Mon, 17 Jan 2022 18:56:41 +0300 (+03)
+Date:   Mon, 17 Jan 2022 18:56:41 +0300
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org
+Subject: Re: [PATCH 02/12] filemap: Use folio_put_refs() in
+ filemap_free_folio()
+Message-ID: <20220117155641.u5ysambg72nq2p6y@box.shutemov.name>
+References: <20220116121822.1727633-1-willy@infradead.org>
+ <20220116121822.1727633-3-willy@infradead.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.2
-Subject: Re: [PATCHv8 4/5] lib: Add register read/write tracing support
-Content-Language: en-US
-From:   Sai Prakash Ranjan <quic_saipraka@quicinc.com>
-To:     Steven Rostedt <rostedt@goodmis.org>
-CC:     Will Deacon <will@kernel.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Marc Zyngier <maz@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-        gregkh <gregkh@linuxfoundation.org>, <quic_psodagud@quicinc.com>,
-        Trilok Soni <quic_tsoni@quicinc.com>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-arm-msm@vger.kernel.org>,
-        Prasad Sodagudi <psodagud@codeaurora.org>
-References: <cover.1642309054.git.quic_saipraka@quicinc.com>
- <8ad60797d6d8f40c3bdba20b1678fa9014bc1a20.1642309054.git.quic_saipraka@quicinc.com>
- <20220117100314.416a4d68@rorschach.local.home>
- <8bbe3552-cd47-c9d4-a296-ba446b7b2f45@quicinc.com>
-In-Reply-To: <8bbe3552-cd47-c9d4-a296-ba446b7b2f45@quicinc.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220116121822.1727633-3-willy@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/17/2022 9:00 PM, Sai Prakash Ranjan wrote:
-> Hi Steve,
->
-> On 1/17/2022 8:33 PM, Steven Rostedt wrote:
->> On Mon, 17 Jan 2022 09:02:53 +0530
->> Sai Prakash Ranjan <quic_saipraka@quicinc.com> wrote:
->>
->>> diff --git a/include/trace/events/rwmmio.h 
->>> b/include/trace/events/rwmmio.h
->>> new file mode 100644
->>> index 000000000000..798fbe1ac9f9
->>> --- /dev/null
->>> +++ b/include/trace/events/rwmmio.h
->>> @@ -0,0 +1,112 @@
->>> +/* SPDX-License-Identifier: GPL-2.0-only */
->>> +/*
->>> + * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All 
->>> rights reserved.
->>> + */
->>> +#undef TRACE_SYSTEM
->>> +#define TRACE_SYSTEM rwmmio
->>> +
->>> +#if !defined(_TRACE_RWMMIO_H) || defined(TRACE_HEADER_MULTI_READ)
->>> +#define _TRACE_RWMMIO_H
->>> +
->>> +#include <linux/tracepoint.h>
->>> +
->>> +TRACE_EVENT(rwmmio_write,
->>> +
->>> +    TP_PROTO(unsigned long caller, u64 val, u8 width, volatile void 
->>> __iomem *addr),
->>> +
->>> +    TP_ARGS(caller, val, width, addr),
->>> +
->>> +    TP_STRUCT__entry(
->>> +        __field(u64, caller)
->>> +        __field(u64, val)
->>> +        __field(u64, addr)
->>> +        __field(u8, width)
->>> +    ),
->>> +
->>> +    TP_fast_assign(
->>> +        __entry->caller = caller;
->>> +        __entry->val = val;
->>> +        __entry->addr = (unsigned long)(void *)addr;
->>> +        __entry->width = width;
->>> +    ),
->>> +
->>> +    TP_printk("%pS width=%d val=%#llx addr=%#llx",
->>> +        (void *)(unsigned long)__entry->caller, __entry->width,
->>> +        __entry->val, __entry->addr)
->>> +);
->>> +
->>> +TRACE_EVENT(rwmmio_post_write,
->>> +
->>> +    TP_PROTO(unsigned long caller, u64 val, u8 width, volatile void 
->>> __iomem *addr),
->>> +
->>> +    TP_ARGS(caller, val, width, addr),
->>> +
->>> +    TP_STRUCT__entry(
->>> +        __field(u64, caller)
->>> +        __field(u64, val)
->>> +        __field(u64, addr)
->>> +        __field(u8, width)
->>> +    ),
->>> +
->>> +    TP_fast_assign(
->>> +        __entry->caller = caller;
->>> +        __entry->val = val;
->>> +        __entry->addr = (unsigned long)(void *)addr;
->>> +        __entry->width = width;
->>> +    ),
->>> +
->>> +    TP_printk("%pS width=%d val=%#llx addr=%#llx",
->>> +        (void *)(unsigned long)__entry->caller, __entry->width,
->>> +        __entry->val, __entry->addr)
->>> +);
->>> +
->>> +TRACE_EVENT(rwmmio_read,
->>> +
->>> +    TP_PROTO(unsigned long caller, u8 width, const volatile void 
->>> __iomem *addr),
->>> +
->>> +    TP_ARGS(caller, width, addr),
->>> +
->>> +    TP_STRUCT__entry(
->>> +        __field(u64, caller)
->>> +        __field(u64, addr)
->>> +        __field(u8, width)
->>> +    ),
->>> +
->>> +    TP_fast_assign(
->>> +        __entry->caller = caller;
->>> +        __entry->addr = (unsigned long)(void *)addr;
->>> +        __entry->width = width;
->>> +    ),
->>> +
->>> +    TP_printk("%pS width=%d addr=%#llx",
->>> +         (void *)(unsigned long)__entry->caller, __entry->width, 
->>> __entry->addr)
->>> +);
->>> +
->>> +TRACE_EVENT(rwmmio_post_read,
->>> +
->>> +    TP_PROTO(unsigned long caller, u64 val, u8 width, const 
->>> volatile void __iomem *addr),
->>> +
->>> +    TP_ARGS(caller, val, width, addr),
->>> +
->>> +    TP_STRUCT__entry(
->>> +        __field(u64, caller)
->>> +        __field(u64, val)
->>> +        __field(u64, addr)
->>> +        __field(u8, width)
->>> +    ),
->>> +
->>> +    TP_fast_assign(
->>> +        __entry->caller = caller;
->>> +        __entry->val = val;
->>> +        __entry->addr = (unsigned long)(void *)addr;
->>> +        __entry->width = width;
->>> +    ),
->>> +
->>> +    TP_printk("%pS width=%d val=%#llx addr=%#llx",
->>> +         (void *)(unsigned long)__entry->caller, __entry->width,
->>> +         __entry->val, __entry->addr)
->>> +);
->> The above should be replaced with:
->>
->> DECLARE_EVENT_CLASS(rwmmio_rw_template,
->>
->>     TP_PROTO(unsigned long caller, u64 val, u8 width, volatile void 
->> __iomem *addr),
->>
->>     TP_ARGS(caller, val, width, addr),
->>
->>     TP_STRUCT__entry(
->>         __field(u64, caller)
->>         __field(u64, val)
->>         __field(u64, addr)
->>         __field(u8, width)
->>     ),
->>
->>     TP_fast_assign(
->>         __entry->caller = caller;
->>         __entry->val = val;
->>         __entry->addr = (unsigned long)(void *)addr;
->>         __entry->width = width;
->>     ),
->>
->>     TP_printk("%pS width=%d val=%#llx addr=%#llx",
->>         (void *)(unsigned long)__entry->caller, __entry->width,
->>         __entry->val, __entry->addr)
->> );
->>
->> DEFINE_EVENT(rwmmio_rw_template, rwmmio_write,
->>     TP_PROTO(unsigned long caller, u64 val, u8 width, volatile void 
->> __iomem *addr),
->>     TP_ARGS(caller, val, width, addr)
->> );
->>
->> DEFINE_EVENT(rwmmio_rw_template, rwmmio_post_write,
->>     TP_PROTO(unsigned long caller, u64 val, u8 width, volatile void 
->> __iomem *addr),
->>     TP_ARGS(caller, val, width, addr)
->> );
->>
->> DEFINE_EVENT(rwmmio_rw_template, rwmmio_post_read,
->>     TP_PROTO(unsigned long caller, u64 val, u8 width, volatile void 
->> __iomem *addr),
->>     TP_ARGS(caller, val, width, addr)
->> );
->>
->> It will save around 15k in memory.
->>
->> And since rwmmio_read doesn't have a val field, it can stay a 
->> TRACE_EVENT.
->>
->> TRACE_EVENT(rwmmio_read,
->>
->>     TP_PROTO(unsigned long caller, u8 width, const volatile void 
->> __iomem *addr),
->>
->>     TP_ARGS(caller, width, addr),
->>
->>     TP_STRUCT__entry(
->>         __field(u64, caller)
->>         __field(u64, addr)
->>         __field(u8, width)
->>     ),
->>
->>     TP_fast_assign(
->>         __entry->caller = caller;
->>         __entry->addr = (unsigned long)(void *)addr;
->>         __entry->width = width;
->>     ),
->>
->>     TP_printk("%pS width=%d addr=%#llx",
->>          (void *)(unsigned long)__entry->caller, __entry->width, 
->> __entry->addr)
->> );
->>
->> -- Steve
->
-> Thanks for the review, will add these changes in next version.
->
->
+On Sun, Jan 16, 2022 at 12:18:12PM +0000, Matthew Wilcox (Oracle) wrote:
+> This shrinks filemap_free_folio() by 55 bytes in my .config; 24 bytes
+> from removing the VM_BUG_ON_FOLIO() and 31 bytes from unifying the
+> small/large folio paths.
+> 
+> We could just use folio_ref_sub() here since the caller should hold a
+> reference (as the VM_BUG_ON_FOLIO() was asserting), but that's fragile.
+> 
+> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> ---
+>  mm/filemap.c | 10 ++++------
+>  1 file changed, 4 insertions(+), 6 deletions(-)
+> 
+> diff --git a/mm/filemap.c b/mm/filemap.c
+> index 2fd9b2f24025..afc8f5ca85ac 100644
+> --- a/mm/filemap.c
+> +++ b/mm/filemap.c
+> @@ -231,17 +231,15 @@ void __filemap_remove_folio(struct folio *folio, void *shadow)
+>  void filemap_free_folio(struct address_space *mapping, struct folio *folio)
+>  {
+>  	void (*freepage)(struct page *);
+> +	int refs = 1;
+>  
+>  	freepage = mapping->a_ops->freepage;
+>  	if (freepage)
+>  		freepage(&folio->page);
+>  
+> -	if (folio_test_large(folio) && !folio_test_hugetlb(folio)) {
+> -		folio_ref_sub(folio, folio_nr_pages(folio));
+> -		VM_BUG_ON_FOLIO(folio_ref_count(folio) <= 0, folio);
+> -	} else {
+> -		folio_put(folio);
+> -	}
+> +	if (folio_test_large(folio) && !folio_test_hugetlb(folio))
+> +		refs = folio_nr_pages(folio);
 
-Just one note that I need to keep rwmmio_post_read also as TRACE_EVENT 
-because
-of const qualifier in post_read resulting in compiler warnings,
+Isn't folio_test_large() check redundant? folio_nr_pages() would return 1
+for non-large folio, wouldn't it?
 
-lib/trace_readwrite.c:43:50: warning: passing argument 4 of 
-‘trace_rwmmio_post_read’ discards ‘const’ qualifier from pointer target 
-type [-Wdiscarded-qualifiers]
+> +	folio_put_refs(folio, refs);
+>  }
+>  
+>  /**
+> -- 
+> 2.34.1
+> 
 
-Thanks,
-Sai
->>> +
->>> +#endif /* _TRACE_RWMMIO_H */
->>> +
->>> +#include <trace/define_trace.h>
->>> diff --git a/lib/Kconfig b/lib/Kconfig
->>> index c80fde816a7e..ea520c315c0f 100644
->>> --- a/lib/Kconfig
->>> +++ b/lib/Kconfig
->>> @@ -119,6 +119,13 @@ config INDIRECT_IOMEM_FALLBACK
->>>         mmio accesses when the IO memory address is not a registered
->>>         emulated region.
->>>   +config TRACE_MMIO_ACCESS
->>> +    bool "Register read/write tracing"
->>> +    depends on TRACING && ARCH_HAVE_TRACE_MMIO_ACCESS
->>> +    help
->>> +      Create tracepoints for MMIO read/write operations. These 
->>> trace events
->>> +      can be used for logging all MMIO read/write operations.
->>> +
->>>   source "lib/crypto/Kconfig"
->>>     config CRC_CCITT
->>> diff --git a/lib/Makefile b/lib/Makefile
->>> index 300f569c626b..43813b0061cd 100644
->>> --- a/lib/Makefile
->>> +++ b/lib/Makefile
->>> @@ -152,6 +152,8 @@ lib-y += logic_pio.o
->>>     lib-$(CONFIG_INDIRECT_IOMEM) += logic_iomem.o
->>>   +obj-$(CONFIG_TRACE_MMIO_ACCESS) += trace_readwrite.o
->>> +
->>>   obj-$(CONFIG_GENERIC_HWEIGHT) += hweight.o
->>>     obj-$(CONFIG_BTREE) += btree.o
->>> diff --git a/lib/trace_readwrite.c b/lib/trace_readwrite.c
->>> new file mode 100644
->>> index 000000000000..88637038b30c
->>> --- /dev/null
->>> +++ b/lib/trace_readwrite.c
->>> @@ -0,0 +1,47 @@
->>> +// SPDX-License-Identifier: GPL-2.0-only
->>> +/*
->>> + * Register read and write tracepoints
->>> + *
->>> + * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All 
->>> rights reserved.
->>> + */
->>> +
->>> +#include <linux/ftrace.h>
->>> +#include <linux/module.h>
->>> +#include <asm-generic/io.h>
->>> +
->>> +#define CREATE_TRACE_POINTS
->>> +#include <trace/events/rwmmio.h>
->>> +
->>> +#ifdef CONFIG_TRACE_MMIO_ACCESS
->>> +void log_write_mmio(u64 val, u8 width, volatile void __iomem *addr,
->>> +            unsigned long caller_addr)
->>> +{
->>> +    trace_rwmmio_write(caller_addr, val, width, addr);
->>> +}
->>> +EXPORT_SYMBOL_GPL(log_write_mmio);
->>> +EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_write);
->>> +
->>> +void log_post_write_mmio(u64 val, u8 width, volatile void __iomem 
->>> *addr,
->>> +             unsigned long caller_addr)
->>> +{
->>> +    trace_rwmmio_post_write(caller_addr, val, width, addr);
->>> +}
->>> +EXPORT_SYMBOL_GPL(log_post_write_mmio);
->>> +EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_post_write);
->>> +
->>> +void log_read_mmio(u8 width, const volatile void __iomem *addr,
->>> +           unsigned long caller_addr)
->>> +{
->>> +    trace_rwmmio_read(caller_addr, width, addr);
->>> +}
->>> +EXPORT_SYMBOL_GPL(log_read_mmio);
->>> +EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_read);
->>> +
->>> +void log_post_read_mmio(u64 val, u8 width, const volatile void 
->>> __iomem *addr,
->>> +            unsigned long caller_addr)
->>> +{
->>> +    trace_rwmmio_post_read(caller_addr, val, width, addr);
->>> +}
->>> +EXPORT_SYMBOL_GPL(log_post_read_mmio);
->>> +EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_post_read);
->>> +#endif /* CONFIG_TRACE_MMIO_ACCESS */
-
-
+-- 
+ Kirill A. Shutemov
