@@ -2,180 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DE5AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:39:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48E06C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:41:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241109AbiAQQi7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 11:38:59 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:38554 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240955AbiAQQi6 (ORCPT
+        id S241119AbiAQQlP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 11:41:15 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:30830 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237683AbiAQQlO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 11:38:58 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id DF10021128;
-        Mon, 17 Jan 2022 16:38:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1642437536; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=46+aTYyORS42IEh3fuIrSiQpTrbZxIhHkbdtfpF5rr8=;
-        b=SgGcyCqz70+ak+69wdrKJ8N4Mk//ON1ygriSE4RPO8ifMGEjyaWy+Gbe/TFZ+sV3MjhXTy
-        JjObYt/cHRQjm2iuULSsS26rr2eML4CsfHaLMsNcyfnOaKkb+iHHvioaXoPKEJ+kBfqogf
-        u9pKl+w5BGocnKd1OSOIeCLxaYyCBkU=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1642437536;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=46+aTYyORS42IEh3fuIrSiQpTrbZxIhHkbdtfpF5rr8=;
-        b=H2YJQNCjNpQnCidTAhsemTwTerFsEWE7n5xRtcIiciWvCQUy6AseSHTcSxayMG/IWvpdBE
-        QteCQi4JenSdXWCw==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 5821613DB5;
-        Mon, 17 Jan 2022 16:38:56 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id 8sDAE6Cb5WHAZwAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Mon, 17 Jan 2022 16:38:56 +0000
-Message-ID: <d2520b56-953b-2552-149b-41f232a7fc0b@suse.cz>
-Date:   Mon, 17 Jan 2022 17:38:55 +0100
+        Mon, 17 Jan 2022 11:41:14 -0500
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20HE5ahC022577;
+        Mon, 17 Jan 2022 11:41:06 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3dn4wyhqnb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 17 Jan 2022 11:41:05 -0500
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 20HGf43T064958
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 17 Jan 2022 11:41:04 -0500
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 17 Jan 2022 11:41:03 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 17 Jan 2022 11:41:03 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 17 Jan 2022 11:41:03 -0500
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 20HGes81012846;
+        Mon, 17 Jan 2022 11:40:56 -0500
+From:   Cristian Pop <cristian.pop@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>, <devicetree@vger.kernel.org>,
+        <robh+dt@kernel.org>, Cristian Pop <cristian.pop@analog.com>
+Subject: [PATCH v1 1/2] dt:bindings:iio:frequency: Add ADMV4420 doc
+Date:   Mon, 17 Jan 2022 18:52:46 +0200
+Message-ID: <20220117165247.15718-1-cristian.pop@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Content-Language: en-US
-To:     Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Song Liu <songliubraving@fb.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        David Rientjes <rientjes@google.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Rik van Riel <riel@surriel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Michel Lespinasse <walken.cr@gmail.com>,
-        Jerome Glisse <jglisse@redhat.com>,
-        Minchan Kim <minchan@google.com>,
-        Joel Fernandes <joelaf@google.com>,
-        Rom Lemarchand <romlem@google.com>
-References: <20211201142918.921493-1-Liam.Howlett@oracle.com>
- <20211201142918.921493-24-Liam.Howlett@oracle.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-Subject: Re: [PATCH v4 23/66] mm/mmap: Use advanced maple tree API for
- mmap_region()
-In-Reply-To: <20211201142918.921493-24-Liam.Howlett@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: NvqntSvOezvVh2VyCaZ45n6amTrluZ6P
+X-Proofpoint-ORIG-GUID: NvqntSvOezvVh2VyCaZ45n6amTrluZ6P
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-17_07,2022-01-14_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 phishscore=0
+ mlxlogscore=999 priorityscore=1501 suspectscore=0 clxscore=1015
+ impostorscore=0 adultscore=0 mlxscore=0 bulkscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201170105
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/1/21 15:30, Liam Howlett wrote:
-> From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
-> 
-> Changing mmap_region() to use the maple tree state and the advanced
-> maple tree interface allows for a lot less tree walking.
-> 
-> This change removes the last caller of munmap_vma_range(), so drop this
-> unused function.
-> 
-> Add vma_expand() to expand a VMA if possible by doing the necessary
-> hugepage check, uprobe_munmap of files, dcache flush, modifications then
-> undoing the detaches, etc.
-> 
-> Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
-> ---
->  mm/mmap.c | 227 +++++++++++++++++++++++++++++++++++++++++-------------
->  1 file changed, 175 insertions(+), 52 deletions(-)
-> 
-> diff --git a/mm/mmap.c b/mm/mmap.c
-> index c06c5b850e1e..b0b7e327bf8b 100644
-> --- a/mm/mmap.c
-> +++ b/mm/mmap.c
-> @@ -496,29 +496,6 @@ static inline struct vm_area_struct *__vma_next(struct mm_struct *mm,
->  	return vma->vm_next;
->  }
->  
-> -/*
-> - * munmap_vma_range() - munmap VMAs that overlap a range.
-> - * @mm: The mm struct
-> - * @start: The start of the range.
-> - * @len: The length of the range.
-> - * @pprev: pointer to the pointer that will be set to previous vm_area_struct
-> - *
-> - * Find all the vm_area_struct that overlap from @start to
-> - * @end and munmap them.  Set @pprev to the previous vm_area_struct.
-> - *
-> - * Returns: -ENOMEM on munmap failure or 0 on success.
-> - */
-> -static inline int
-> -munmap_vma_range(struct mm_struct *mm, unsigned long start, unsigned long len,
-> -		 struct vm_area_struct **pprev, struct list_head *uf)
-> -{
-> -	// Needs optimization.
-> -	while (range_has_overlap(mm, start, start + len, pprev))
-> -		if (do_munmap(mm, start, len, uf))
-> -			return -ENOMEM;
-> -	return 0;
-> -}
-> -
->  static unsigned long count_vma_pages_range(struct mm_struct *mm,
->  		unsigned long addr, unsigned long end)
->  {
-> @@ -619,6 +596,101 @@ static void __insert_vm_struct(struct mm_struct *mm, struct vm_area_struct *vma)
->  	mm->map_count++;
->  }
->  
-> +/*
-> + * vma_expand - Expand an existing VMA
-> + * @mas: The maple state
-> + * @vma: The vma to expand
-> + * @start: The start of the vma
-> + * @end: The exclusive end of the vma
-> + */
+Add device tree bindings for the ADMV4420 K band downconverter.
 
-Looks like this, similarly to the brk case, replaces one path calling
-vma_merge->__vma_adjust() with something else. But this one is better
-encapsulated and visible, so less likely to be forgotten in case something
-changes. Would be even better if the brk case used it too :) seems like it
-doesn't, at least as of this patch.
+Signed-off-by: Cristian Pop <cristian.pop@analog.com>
+---
+ .../bindings/iio/frequency/adi,admv4420.yaml  | 54 +++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
 
-But it would be great to improve the documentation here - some params are
-not documented, notably 'next', and I would explicitly state which scenarios
-it does cover - i.e. vma_merge() lists 8 scenarios and I assume this can
-handlea subset of those?
-And scenarios not covered could be VM_WARN_ON'd?
-Without such stated assumptions, it's hard/impossible to review both the
-implementation against them and, and the callers against them.
-
-> +inline int vma_expand(struct ma_state *mas, struct vm_area_struct *vma,
-> +		      unsigned long start, unsigned long end, pgoff_t pgoff,
-> +		      struct vm_area_struct *next)
-> +{
-> +	struct mm_struct *mm = vma->vm_mm;
-> +	struct address_space *mapping = NULL;
-> +	struct rb_root_cached *root = NULL;
-> +	struct anon_vma *anon_vma = vma->anon_vma;
-> +	struct file *file = vma->vm_file;
-> +	bool remove_next = false;
-> +	int error;
-> +
-> +	if (next && (vma != next) && (end == next->vm_end)) {
-
-For example here this suggests that a case of 'end > next->vm_end' case is
-not covered? How do I know whether it's intended or a bug?
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
+new file mode 100644
+index 000000000000..f26af2718f23
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
+@@ -0,0 +1,54 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/frequency/adi,admv4420.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ADMV4420 K Band Downconverter
++
++maintainers:
++- Cristian Pop <cristian.pop@analog.com>
++
++description: |
++    The ADMV4420 is a highly integrated, double balanced, active
++    mixer with an integrated fractional-N synthesizer, ideally suited
++    for next generation K band satellite communications
++properties:
++  compatible:
++    enum:
++      - adi,admv4420
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 1000000
++
++  adi,lo_freq_hz:
++    description: LO Frequency
++    $ref: /schemas/types.yaml#/definitions/uint64
++
++  adi,ref_ext_single_ended_en:
++    description: External reference selected.
++    type: boolean
++
++required:
++- compatible
++- reg
++
++additionalProperties: false
++
++examples:
++- |
++    spi {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      admv4420@0 {
++        compatible = "adi,admv4420";
++        reg = <0>;
++        spi-max-frequency = <1000000>;
++        adi,lo_freq_hz = /bits/ 64 <16743700000>;
++        adi,ref_ext_single_ended_en;
++      };
++    };
++...
+-- 
+2.17.1
 
