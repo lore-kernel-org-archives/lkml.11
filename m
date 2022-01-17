@@ -2,135 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61E58C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:16:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2817C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242912AbiAQRQ5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:16:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48154 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243570AbiAQRNm (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:13:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B103C034005;
-        Mon, 17 Jan 2022 09:08:19 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94E22611F1;
-        Mon, 17 Jan 2022 17:08:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 135E2C36AE3;
-        Mon, 17 Jan 2022 17:08:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439298;
-        bh=1j7mayRmOuGQ+nRLdXsL59wVA+c5vHDalgnqM39ocY4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Si8sFMV3nG3l2aHYSD7vfEhM/AXiLbNYQfrLSyLfcbdWJZw5T74GRip0yljRjPtlQ
-         +Ir4X95TUu9T3zc6PaeqPetjW2pdCF48cBgFIgbdjkY7RqOQ7a4UQ3J1QRlZ49ux9j
-         +EPcERxTslUYqPsMtlFhM16L8OELfm3+KKs1J9VgW3PD8SvVr749MHMMhLrSvIpDI1
-         RgMehNsUocX30jDemisIk0pd7VmTRy+O7LkU7dRFUQudRRALkoO3rd7fhHXnP8gpQH
-         042FQI5eKkp6PIEaJQ95X8VH8Hp+1CwnAlwqy3M507OvZ1Jf4VQV9O0nlGJOlq5geY
-         fhkmE9mKTFbbg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>, Zqiang <qiang.zhang1211@gmail.com>,
-        syzbot+bb950e68b400ab4f65f8@syzkaller.appspotmail.com,
-        Sasha Levin <sashal@kernel.org>, perex@perex.cz,
-        tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.4 09/12] ALSA: seq: Set upper limit of processed events
-Date:   Mon, 17 Jan 2022 12:07:53 -0500
-Message-Id: <20220117170757.1473318-9-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170757.1473318-1-sashal@kernel.org>
-References: <20220117170757.1473318-1-sashal@kernel.org>
+        id S242728AbiAQRSD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:18:03 -0500
+Received: from foss.arm.com ([217.140.110.172]:33262 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S243001AbiAQRQv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 12:16:51 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id DA7F16D;
+        Mon, 17 Jan 2022 09:16:49 -0800 (PST)
+Received: from e113632-lin (e113632-lin.cambridge.arm.com [10.1.196.57])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id BC2943F766;
+        Mon, 17 Jan 2022 09:16:48 -0800 (PST)
+From:   Valentin Schneider <valentin.schneider@arm.com>
+To:     Yihao Wu <wuyihao@linux.alibaba.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc:     Shanpei Chen <shanpeic@linux.alibaba.com>,
+        =?utf-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] sched/fair: Again ignore percpu threads for imbalance pulls
+In-Reply-To: <5f8497cd-aeaf-906d-a2d8-2e0a752fed4b@linux.alibaba.com>
+References: <20211211094808.109295-1-wuyihao@linux.alibaba.com> <87k0g48kyp.mognet@arm.com> <5f8497cd-aeaf-906d-a2d8-2e0a752fed4b@linux.alibaba.com>
+Date:   Mon, 17 Jan 2022 17:16:42 +0000
+Message-ID: <87ee56705h.mognet@arm.com>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+On 17/01/22 22:50, Yihao Wu wrote:
+> Thanks a lot for the help, Valentin and Peter!
+>
+> On 2021/12/17 2:26am, Valentin Schneider wrote:
+>> On 11/12/21 17:48, Yihao Wu wrote:
+>>> commit 2f5f4cce496e ("sched/fair: Ignore percpu threads for imbalance
+>>> pulls") was meant to fix a performance issue, when load balance tries to
+>>> migrate pinned kernel threads at MC domain level. This was destined to
+>>> fail.
+>> 
+>>> After it fails, it further makes wakeup balance at NUMA domain level
+>>> messed up. The most severe case that I noticed and frequently occurs:
+>>>      |sum_nr_running(node1) - sum_nr_running(node2)| > 100
+>>>
+>> 
+>> Wakeup balance (aka find_idlest_cpu()) is different from periodic load
+>> balance (aka load_balance()) and doesn't use can_migrate_task(), so the
+>> incriminated commit shouldn't have impacted it (at least not in obvious
+>> ways...). Do you have any more details on that issue
+>
+> The original bugfix concerns only about load balance. While I found wake
+> up balance is impacted too, after I observed regression in lmbench3 test
+> suite. This is how it's impacted:
+>
+> - Periodic load balance
+> - kthread_is_per_cpu? No
+> - env->flags |= LBF_SOME_PINNED
+> - sd_parent..imbalance being set to 1 because of LBF_SOME_PINNED
+>
+> So far exactly the same as what Chandrasekhar describes in 2f5f4cce496e.
+> Then imbalance connects periodic and wakeup balance.
+>
+> - Wakeup balance(find_idlest_group)
+> - update_sg_wakeup_stats classifies local_sgs as group_imbalanced
+> - find_idlest_group chooses another NUMA node
+>
+> wakeup balance keeps doing this until another NUMA node becomes so busy.
+> And another periodic load balance just shifts it around, makeing the 
+> previously overloaded node completely idle now.
+>
 
-[ Upstream commit 6fadb494a638d8b8a55864ecc6ac58194f03f327 ]
+Oooh, right, I came to the same conclusion when I got that stress-ng
+regression report back then:
 
-Currently ALSA sequencer core tries to process the queued events as
-much as possible when they become dispatchable.  If applications try
-to queue too massive events to be processed at the very same timing,
-the sequencer core would still try to process such all events, either
-in the interrupt context or via some notifier; in either away, it
-might be a cause of RCU stall or such problems.
+https://lore.kernel.org/all/871rajkfkn.mognet@arm.com/
 
-As a potential workaround for those problems, this patch adds the
-upper limit of the amount of events to be processed.  The remaining
-events are processed in the next batch, so they won't be lost.
+I pretty much gave up on that as the regression we caused by removing an
+obscure/accidental balance which I couldn't properly codify. I can give it
+another shot, but AFAICT that only affects fork/exec heavy workloads (that
+-13% was on something doing almost only forks) which is an odd case to
+support.
 
-For the time being, it's limited up to 1000 events per queue, which
-should be high enough for any normal usages.
+> (Thanks to the great schedviz tool, I observed that all workloads as a 
+> whole, is migrated between the two NUMA nodes in a ping-pong pattern, 
+> and with a period around 3ms)
+>
+> The reason wake up balance suffers more is, in fork+exit test case, 
+> wakeup balance happens with much higher frequency. It exists in real 
+> world applications too I believe.
+>
+>> 
+>>> However the original bugfix failed, because it covers only case 1) below.
+>>>    1) Created by create_kthread
+>>>    2) Created by kernel_thread
+>>> No kthread is assigned to task_struct in case 2 (Please refer to comments
+>>> in free_kthread_struct) so it simply won't work.
+>>>
+>>> The easist way to cover both cases is to check nr_cpus_allowed, just as
+>>> discussed in the mailing list of the v1 version of the original fix.
+>>>
+>>> * lmbench3.lat_proc -P 104 fork (2 NUMA, and 26 cores, 2 threads)
+>>>
+>> 
+>> Reasoning about "proper" pcpu kthreads was simpler since they are static,
+>> see 3a7956e25e1d ("kthread: Fix PF_KTHREAD vs to_kthread() race")
+>> 
+> Get it. Thanks.
+>
+>>>                           w/out patch                 w/ patch
+>>> fork+exit latency            1660 ms                  1520 ms (   8.4%)
+>>>
+>>> Fixes: 2f5f4cce496e ("sched/fair: Ignore percpu threads for imbalance pulls")
+>>> Signed-off-by: Yihao Wu <wuyihao@linux.alibaba.com>
+>>> ---
+>>>   kernel/kthread.c | 6 +-----
+>>>   1 file changed, 1 insertion(+), 5 deletions(-)
+>>>
+>>> diff --git a/kernel/kthread.c b/kernel/kthread.c
+>>> index 4a4d7092a2d8..cb05d3ff2de4 100644
+>>> --- a/kernel/kthread.c
+>>> +++ b/kernel/kthread.c
+>>> @@ -543,11 +543,7 @@ void kthread_set_per_cpu(struct task_struct *k, int cpu)
+>>>
+>>>   bool kthread_is_per_cpu(struct task_struct *p)
+>>>   {
+>>> -	struct kthread *kthread = __to_kthread(p);
+>>> -	if (!kthread)
+>>> -		return false;
+>>> -
+>>> -	return test_bit(KTHREAD_IS_PER_CPU, &kthread->flags);
+>>> +	return (p->flags & PF_KTHREAD) && p->nr_cpus_allowed == 1;
+>>>   }
+>> 
+>> As Peter said, this is going to cause issues. If you look at
+>> kthread_set_per_cpu(), we also store a CPU value which we expect to be
+>> valid when kthread_is_per_cpu(), which that change is breaking.
+>> 
+>> AIUI what you want to patch is the actual usage in can_migrate_task()
+>> 
+>
+> Get it. Some may want a consistent view of kthread_is_per_cpu, 
+> kthread->cpu, and KTHREAD_IS_PER_CPU.
+>
+> Are you suggesting to patch only can_migrate_task to check 
+> nr_cpus_allowed?
 
-Reported-by: Zqiang <qiang.zhang1211@gmail.com>
-Reported-by: syzbot+bb950e68b400ab4f65f8@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20211102033222.3849-1-qiang.zhang1211@gmail.com
-Link: https://lore.kernel.org/r/20211207165146.2888-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- sound/core/seq/seq_queue.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+Yes
 
-diff --git a/sound/core/seq/seq_queue.c b/sound/core/seq/seq_queue.c
-index ea1aa07962761..b923059a22276 100644
---- a/sound/core/seq/seq_queue.c
-+++ b/sound/core/seq/seq_queue.c
-@@ -257,12 +257,15 @@ struct snd_seq_queue *snd_seq_queue_find_name(char *name)
- 
- /* -------------------------------------------------------- */
- 
-+#define MAX_CELL_PROCESSES_IN_QUEUE	1000
-+
- void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
- {
- 	unsigned long flags;
- 	struct snd_seq_event_cell *cell;
- 	snd_seq_tick_time_t cur_tick;
- 	snd_seq_real_time_t cur_time;
-+	int processed = 0;
- 
- 	if (q == NULL)
- 		return;
-@@ -285,6 +288,8 @@ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
- 		if (!cell)
- 			break;
- 		snd_seq_dispatch_event(cell, atomic, hop);
-+		if (++processed >= MAX_CELL_PROCESSES_IN_QUEUE)
-+			goto out; /* the rest processed at the next batch */
- 	}
- 
- 	/* Process time queue... */
-@@ -294,14 +299,19 @@ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
- 		if (!cell)
- 			break;
- 		snd_seq_dispatch_event(cell, atomic, hop);
-+		if (++processed >= MAX_CELL_PROCESSES_IN_QUEUE)
-+			goto out; /* the rest processed at the next batch */
- 	}
- 
-+ out:
- 	/* free lock */
- 	spin_lock_irqsave(&q->check_lock, flags);
- 	if (q->check_again) {
- 		q->check_again = 0;
--		spin_unlock_irqrestore(&q->check_lock, flags);
--		goto __again;
-+		if (processed < MAX_CELL_PROCESSES_IN_QUEUE) {
-+			spin_unlock_irqrestore(&q->check_lock, flags);
-+			goto __again;
-+		}
- 	}
- 	q->check_blocked = 0;
- 	spin_unlock_irqrestore(&q->check_lock, flags);
--- 
-2.34.1
+> Wouldn't it be confusing if it uses an alternative way 
+> to tell if p is a per-cpu kthread?
+>
 
+Well then it wouldn't catch just per-CPU kthreads, but rather any pinned
+task (kernel or otherwise). But then you have to check/test if that's a
+sane thing to :)
+
+> I haven't a better solution though. :(
+>
+>
+> Thanks,
+> Yihao Wu
+>
+>>>
+>>>   /**
+>>> --
+>>> 2.32.0.604.gb1f3e1269
