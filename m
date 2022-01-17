@@ -2,143 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C02E7C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 15:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30E56C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 15:33:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240473AbiAQPco (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 10:32:44 -0500
-Received: from out03.mta.xmission.com ([166.70.13.233]:52512 "EHLO
-        out03.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233231AbiAQPcl (ORCPT
+        id S240464AbiAQPdG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 10:33:06 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:58940 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233231AbiAQPdE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 10:32:41 -0500
-Received: from in01.mta.xmission.com ([166.70.13.51]:54108)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1n9Tzs-004w04-6E; Mon, 17 Jan 2022 08:32:40 -0700
-Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:42762 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1n9Tzr-0037Dt-3S; Mon, 17 Jan 2022 08:32:39 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        Oleg Nesterov <oleg@redhat.com>
-References: <878rvhlvh2.fsf@email.froward.int.ebiederm.org>
-        <CAHk-=wgS865kHU=4NO=AvK07fcK7M6C6EYGdk80R1tkPKTLyhQ@mail.gmail.com>
-Date:   Mon, 17 Jan 2022 09:31:48 -0600
-In-Reply-To: <CAHk-=wgS865kHU=4NO=AvK07fcK7M6C6EYGdk80R1tkPKTLyhQ@mail.gmail.com>
-        (Linus Torvalds's message of "Mon, 17 Jan 2022 06:08:49 +0200")
-Message-ID: <87bl0aidjv.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 17 Jan 2022 10:33:04 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 3A57621138;
+        Mon, 17 Jan 2022 15:33:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1642433583; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=qD8D98EtGtghmZr3jvOj2j5NtXzPnCgyaV65+nnknkk=;
+        b=WWxYDDtGw1Xaxj4kTnUpsGYqfXos8gTyXNN1juSbEKBYz5dQ7aHOHSPGSynU9B3ohL/ynR
+        3w/94i+XoQ7KLsu+uxri5CYT5zg5SItvngUR0+X92NqtqlkTiIP/by2VFkBsj3FBg7ODgY
+        HLoKNGcLsWgI4TQzitpRBGzLLyTC3tk=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1642433583;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=qD8D98EtGtghmZr3jvOj2j5NtXzPnCgyaV65+nnknkk=;
+        b=CxmtMrH6x1tc0oei7hCBfVX5kwrVTDlLWjm8BzisdTZNm0+DaXqd7WJ/xTPj8UzcLKx3nw
+        2yE8JTInXexPOuDQ==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0A47113C84;
+        Mon, 17 Jan 2022 15:33:03 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id hRYFAS+M5WF+QQAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Mon, 17 Jan 2022 15:33:03 +0000
+Message-ID: <06e9cd6c-320c-af1a-ef12-55e2e8c13f17@suse.cz>
+Date:   Mon, 17 Jan 2022 16:33:02 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1n9Tzr-0037Dt-3S;;;mid=<87bl0aidjv.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX19ZWVrcOdq1hisGxVJ5gj7TZ9EAQIwa2/M=
-X-SA-Exim-Connect-IP: 68.110.24.146
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [GIT PULL] signal/exit/ptrace changes for v5.17
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+From:   Vlastimil Babka <vbabka@suse.cz>
+Subject: [GIT PULL] slab for 5.17 - part 2
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>, patches@lists.linux.dev,
+        Joerg Roedel <joro@8bytes.org>
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus Torvalds <torvalds@linux-foundation.org> writes:
+Linus,
 
-> On Sat, Jan 15, 2022 at 2:00 AM Eric W. Biederman <ebiederm@xmission.com> wrote:
->>
->> I am currently investigating to figure out if wake_up_interruptible
->> (instead of simply wake_up) ever makes sense outside of the signal code.
->
-> It may not be a huge deal, but it *absolutely* makes sense.
->
-> Any subsystem that uses "wait_event_interruptible()" (or variations of
-> that) should by default only use "wake_up_interruptible()" to wake the
-> wait queue.
->
-> The reason? Being (interruptibly) on one wait-queue does *NOT* make it
-> impossible that the very same process isn't waiting non-interruptibly
-> on another one.
->
-> It's not hugely common, but the Linux kernel wait-queues have very
-> much been designed for the whole "one process can be on multiple wait
-> queues for different reasons at the same time" model. That is *very*
-> core.
->
-> People sometimes think that is just a "poll/select()" thing, but
-> that's not at all true. It's quite valid to do things like
->
->         add_wait_queue(..)
->         for (.. some loop ..) {
->                 set_current_state(TASK_INTERRUPTIBLE);
->                 ... do various things, checking state etc ..
->                schedule();
->         }
->         set_current_state(TASK_RUNNABLE);
->         remove_wait_queue();
->
-> and part of that "do various things" is obviously checking for signals
-> and other "exit this wait loop", but other things can be things like
-> taking a page fault because you copied data from user space etc.
->
-> And that in turn may end up having a nested wait on another waitqueue
-> (for the IO), and the outer wait queue should basically strive to not
-> wake up unrelated "deeper" sleeps, because that is pointless and just
-> causes extra wakeups.
->
-> So the page fault event will cause a nested TASK_UNINTERRUPTIBLE
-> sleep, and when that IO has completed, it goes into TASK_RUNNABLE, so
-> the outer (interruptible) loop above will have a "dummy schedule()"
-> and loop around again to be put back into TASK_INTERRUPTIBLE sleep
-> next time around.
->
-> But note how it would be pointless to use a "wake_up()" on this outer
-> wait queue - it would wake up the deeper IO sleep too, and that would
-> just see "oh, the IO I'm waiting for hasn't completed, so I'll just
-> have to go to sleep again".
->
-> Would it still _work_? Yes. Is the above _common_? No. But it's a
-> really fundamnetal pattern in the kernel, and it's fundamentally how
-> wait queues work, and how they should work, and an interruptible sleep
-> should generally be seen as pairing with an interruptible wake,
-> because that's just how things are.
->
-> Why would you want to change something basic like that? Yes, using
-> "wake_up()" instead of "wake_up_interruptible()" would still result in
-> a working kernel, but it's just _pointless_.
+please pull the remaining slab changes from
 
-Thank you for the detailed reply.  I am going to have to spend a little
-bit digesting it.
+  git://git.kernel.org/pub/scm/linux/kernel/git/vbabka/slab.git tags/slab-for-5.17-part2
 
-They why is that I am digging into how to reliably test for and get
-just the wakeups needed in the coredump code.
+======================================
 
-As a first approximation writing to files and causing dump_interrupted
-to change for signal_pending to fatal_sending_pending worked like a
-charm.  Unfortunately the pipe code is still performing interruptible
-waits and io_uring causes truncated coredumps.
+- Finish the conversion to struct slab by removing slab-specific fields
+  from struct page.
 
-I would like to have a version of pipe_write that sleeps in
-TASK_KILLABLE.  I want the I/O wake-ups and I want the SIGKILL wake ups
-but I don't want any other wake-ups.  Unfortunately the I/O wake-ups in
-the pipe code are sent with wake_up_interruptible.  So a task sleeping
-in TASK_KILLABLE won't get them.
+======================================
 
-Which means that the obvious solution of changing
-wait_event_interruptible to wake_event_killable breaks coredump support
-(as I found out the hard way).
+The previous pull request [1] did most of the conversion, but there was also
+series in iommu tree removing the iommu's usage of struct page 'freelist'
+field, blocking the final struct page cleanup. So this pull request is based on
+the previous one, adds a merge of iommu tree and a single commit on top, and
+has been like this in linux-next since Wed last week. The iommu tree went
+mainline since then, so this should add just the single commit to mainline now.
 
-I understand things well enough that I can change the signal code and
-not make the coredump code worse.  I am still trying to figure out what
-a clean maintainable solution for coredumps writing to pipes is going to
-be.  So I will dig in and read the code that has the nested wait queues
-and see if I can understand that logic, and keep thinking about the
-coredump support.
+Vlastimil
 
-Eric
+[1] https://lore.kernel.org/all/fa6573eb-9d5c-ef49-06b1-157c16efb868@suse.cz/
+
+Matthew Wilcox (Oracle) (1):
+      mm: Remove slab from struct page
+
+Vlastimil Babka (1):
+      Merge branch 'core' of git://git.kernel.org/pub/scm/linux/kernel/git/joro/iommu into slab-struct_slab-part2-v1
+
+ drivers/iommu/amd/io_pgtable.c       | 110 ++++++--------
+ drivers/iommu/dma-iommu.c            | 274 +++++++++++++++++++++++++++--------
+ drivers/iommu/intel/iommu.c          |  89 ++++--------
+ drivers/iommu/io-pgtable-arm.c       |   9 +-
+ drivers/iommu/iommu.c                |   3 +-
+ drivers/iommu/iova.c                 | 209 ++------------------------
+ drivers/vdpa/vdpa_user/iova_domain.c |   8 -
+ include/linux/iommu.h                |   3 +-
+ include/linux/iova.h                 |  68 +--------
+ include/linux/mm_types.h             |  28 ----
+ include/linux/page-flags.h           |  37 -----
+ include/trace/events/iommu.h         |  10 +-
+ mm/slab.h                            |   6 -
+ 13 files changed, 314 insertions(+), 540 deletions(-)
