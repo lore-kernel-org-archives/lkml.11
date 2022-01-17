@@ -2,305 +2,278 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0232C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 11:49:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 481ACC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 11:50:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239212AbiAQLtR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 06:49:17 -0500
-Received: from mail-dm6nam10on2053.outbound.protection.outlook.com ([40.107.93.53]:58848
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S236426AbiAQLtQ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 06:49:16 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eqQxQ9dy5WVozOF1HrTxwpk9EVd2+K17wqQ/Q1qCa/XEYwtYuDsNSh+ORSuFDpwFmw83Wiexogj6fl2PVN0cFfBGPAWeABeU571weIBGc+Evo594JdnM/7lGo8za5aO1Ujel/RJ2EX//AZyG2am6oxwnBkwBtTmZ7G/veZE5o2aTxv/T2QvoiIRj/OlsAU3wkb4YKiyh485qYuNNe3qZzWlze3/oiXgMIykFMhdgGieFvuvrp5TBckpIO4+T9iqfMzjTNul0C2B5DrK7dYcXbhYW7XUDRmgbas7GIFyETrznu5QxxC431dafRe2ltF7Zki+uKXVfiy/hB4mBdtarPw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=4JZrpD3IDhBvFoe4ZirLE51IXiPt1uWMM+9C84wMQQA=;
- b=bGMsHiQPE3ZQdIQz/o/68HNfOf+QvQVYJ0PrE/YQZnkxC5foQYmVlDMFtfq9vqm6ikP/3aeU3U1NJiP6H3B4Z65h24mlEVEWZbkiKdp1HEzeNhldnFh8XRuPY0QZDFlY47TAkH6NdqE67Q3sUqXepNx6QEFez5H6xE6nCnJ66xznTsrFNK8zIIVCisIPUilJFOiPdbHfSIGjx29l++Q2T9mYN0jYBU+SWYG8UM0hIDt/raihgi/aU17yv2vMYvRKTpeVKj96+HgCszjVZMhLmvqSxiz+MsxBAAAkpkBOWC/qRD0SkMdD9C6jtOIEXGb70DEDbZfcciCuuza15G0ZQg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
- header.d=amd.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=4JZrpD3IDhBvFoe4ZirLE51IXiPt1uWMM+9C84wMQQA=;
- b=cqXkpVp3VZCW23B0WOvMwY0fZXaS4ENw+GiDgY+Q44wfOef9S/tbDOlqU/dLLGQyldyWJcfzztL4ZA6k5C+FjE3Ed16Zu9VGkCWU6yxIdvy9eqiY2cjbIa2wnGlnzKfFxqnUYsF4I91n2KzBEdJFvCP5+wMO5CVAoRAlbcApyGs=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=amd.com;
-Received: from DM6PR12MB3627.namprd12.prod.outlook.com (2603:10b6:5:3e::18) by
- DM5PR12MB1211.namprd12.prod.outlook.com (2603:10b6:3:79::12) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4888.11; Mon, 17 Jan 2022 11:49:14 +0000
-Received: from DM6PR12MB3627.namprd12.prod.outlook.com
- ([fe80::2437:1c64:765e:2fb6]) by DM6PR12MB3627.namprd12.prod.outlook.com
- ([fe80::2437:1c64:765e:2fb6%5]) with mapi id 15.20.4888.014; Mon, 17 Jan 2022
- 11:49:14 +0000
-Message-ID: <4b4b1119-7a4e-4cb7-e6a7-8af8a99284fe@amd.com>
-Date:   Mon, 17 Jan 2022 17:18:56 +0530
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.2
-Subject: Re: [PATCH v2 1/6] ASoC: amd: acp: Add generic support for PDM
- controller on ACP
-Content-Language: en-US
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        broonie@kernel.org, alsa-devel@alsa-project.org
-Cc:     Sunil-kumar.Dommati@amd.com,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        open list <linux-kernel@vger.kernel.org>,
-        Basavaraj.Hiregoudar@amd.com, Takashi Iwai <tiwai@suse.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        V sujith kumar Reddy <vsujithkumar.reddy@amd.com>,
-        Arnd Bergmann <arnd@arndb.de>, Vijendar.Mukunda@amd.com,
-        Alexander.Deucher@amd.com
-References: <20220113163348.434108-1-AjitKumar.Pandey@amd.com>
- <20220113163348.434108-2-AjitKumar.Pandey@amd.com>
- <7d79a8a7-b9b5-8a0c-a140-810bc647927c@linux.intel.com>
-From:   Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
-In-Reply-To: <7d79a8a7-b9b5-8a0c-a140-810bc647927c@linux.intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: PN2PR01CA0160.INDPRD01.PROD.OUTLOOK.COM
- (2603:1096:c01:26::15) To DM6PR12MB3627.namprd12.prod.outlook.com
- (2603:10b6:5:3e::18)
+        id S239228AbiAQLuE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 06:50:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58098 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236426AbiAQLuB (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 06:50:01 -0500
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF2D9C061574;
+        Mon, 17 Jan 2022 03:50:00 -0800 (PST)
+Received: by mail-wm1-x329.google.com with SMTP id g81-20020a1c9d54000000b0034cd1acd9b5so989814wme.1;
+        Mon, 17 Jan 2022 03:50:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Qh9qlD7Xxyuod6l2VHcORITt556iH0cP6xXy3RESnzc=;
+        b=Mlh7ovtSMXfYuLtZJBDHb8iGlTGgdK+kw1r5kJiXwtkbGmEsnjbmlZKUV5ho5ALXtc
+         ErsaGGPcarRlcH0t4J9vPlE7jazy1cyw4hGIdk5wDin+9M1XbOFs7iX0+erqOXDuyLDU
+         N13wuTcAslvW26atfDB8z2bt5QcgcQx0NvYODdDPvmJu5WOEdUigB3+CL6bozU4yXHIO
+         z5RuHGs7a1T0dgtc9eifrjqDUx3C7Cj1uVvulqDbFgE7j4WbdpSwVcPr5oIJjqyg57+1
+         JsTSCgmyV7thCpmP1yut4igRrUJ/m74v/GBfEAf36/FiwfUXtIG2YDJO9iRXKAcSCsHW
+         HgNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Qh9qlD7Xxyuod6l2VHcORITt556iH0cP6xXy3RESnzc=;
+        b=iOX4ti44lj69MuTQbgjNq4mVl5bcDUlENfExRpiiyv9ysDRhUKzL2u+mOR0P4wV0sS
+         2LFb//a3v4FTAVH3tRcj77p4+BXscTDdkUOOVW9327aDbBwo8eU+T+fckc7Y1fOI1lGg
+         GPoPkQ+p7NmC+Hf65Tbeydm7pFpHMI8LP+FQcZvbtg1IYO69FjCbkJEnJlj6EAKmIs+p
+         gHHRaYd7sPucrZ+zmC2dc1AR4xnsEEGzRSf6geyLxcuQf1IgVGHtxMu/uc4ouuEh0/fh
+         JvFZ2SaWI3nz05QoQV8sPSLQUcKvoZB8GGasXD7jCCv38rDlVVro7RtUhE7LjV8avePU
+         HcGg==
+X-Gm-Message-State: AOAM532r0OntNu2o50mAZGTfjEEUcov8QmTzl6bJYbAUr+8fn4nOm0Yg
+        R4d22Da8lybdbUpwwIAHjmY=
+X-Google-Smtp-Source: ABdhPJxnzn9RYFSiRwIN27xe7uwz9Ej9yjcj/6lztBm/AGx+ZaPHnqv2QULOgW5amVoWsoNmN1+5pg==
+X-Received: by 2002:a5d:453a:: with SMTP id j26mr15627235wra.348.1642420199348;
+        Mon, 17 Jan 2022 03:49:59 -0800 (PST)
+Received: from [192.168.0.14] ([37.223.145.74])
+        by smtp.gmail.com with ESMTPSA id n7sm13895148wms.46.2022.01.17.03.49.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Jan 2022 03:49:58 -0800 (PST)
+Message-ID: <c8fc24a2-9ee3-75a2-0928-95a217d9dfdf@gmail.com>
+Date:   Mon, 17 Jan 2022 12:49:56 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c0b9a095-1566-4c9d-6252-08d9d9af6193
-X-MS-TrafficTypeDiagnostic: DM5PR12MB1211:EE_
-X-Microsoft-Antispam-PRVS: <DM5PR12MB1211C418094E6F7DC6A9215382579@DM5PR12MB1211.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: spvTR/FH7KF5W+vxKkQ6KdsV1Rd8ESmu5pY1deqHoGRZpZ1dDDJ4HhPSL5f0JII/Jwh5uFpo3zCc94r69QBa2k2pCRPaXWoywVRtxwG9iTbrFQJQvUUKgR7N92+KNm9d89QN6L7jeHIL0x4Akp+zZ7LhOvdc6zEGAHZXn09l+mna2fElWT9ucZsSQH2eCRaSkFhRw3GrVUc3HU20VCDPcr1okZZYXgGd81nriyoTbDR9yOB8pq7dR4UpBTyX592f2qX+pn6bMprp6AO1MYaFh2bSLKIBZF6/HD9PbZiuBOa3oUI0L+EsHo3qF6cGuQIFjkoCVTGNhIGRvbUFfTkgXZ539MAHgD6bCFaFPz96Rk3hcTcUcr+iTAM1UVoMOC69oy8ONAXvJyyiXcXF8AfGuLzW7BLAWPKRgTl5KWz+Sq8qUSihK9BqOnLrLgnCGQaRFSu5ix74d/ZPNZZYEt09gtii9l1qX+YK3ikOkUF6Bt6/S1lOqM/izYYWi/LsGFIG4PL3xDBkaxmistD0MKc9LjWJauDlc8mqdbJ63OouYWgRXLhRA59XI1QBY/X5ya2+I2HuGBDHMGNPUUH8YNkIMqB1nZJbu2x3W2IhxsF8uCnB7FacBQTB6Yxdya7B+6wwhApgCLxiPg4/FlRzt6n4QTPWfM1+//djHE5TvLnb5dyyiGc/GQSFjs+x4BPYG6ua47QiTT9uQRBaS6z0mfcXOFIbyn291gKMvmxDEsdOYSWOlyJm0PwSvM9wN4dusSmZ
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3627.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(508600001)(2616005)(6512007)(53546011)(86362001)(6506007)(5660300002)(186003)(26005)(4326008)(31696002)(36756003)(6486002)(38100700002)(2906002)(83380400001)(66946007)(54906003)(316002)(8676002)(6666004)(8936002)(31686004)(66476007)(66556008)(41533002)(45980500001)(43740500002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?YzlwSUpieEVCVk5oOWN0b2VRQmxBazJuMkY3OGFBSkM5YnpGUGdMQW93YTM5?=
- =?utf-8?B?cmIzWFY5THlFQXYrWjRhd1o0OW9tWmNyRys0T2J5NU9vY1ZRY0tjU2JpNVRz?=
- =?utf-8?B?cUl2Y2lmYjV2dCtIZzFkWmNNUm1TcmszT0xoZk9EU0dJVFRNRGZrQmhSQXQ1?=
- =?utf-8?B?S1BQQndmZDJvOFJxakE5dndaTStEamNlL2ZPTDhvS0tLcVBoZ255MlB6SFJZ?=
- =?utf-8?B?aXVJL2hnUlJOME85U2FpcURtem5pbzZ0YVVqdW9neERwOWF1VTlaaXBFdW1O?=
- =?utf-8?B?QlZWZFJxcDFobFkyTHEvaG9BNVNLajg3VnBhNFF0TnhJUjhNc2dSSzhMYVEy?=
- =?utf-8?B?b1ZlTXRMWWdUdDN5RU5MaFlyanQvSEdlTW0vZWp5dmhJZVZsbU5aMzJSdGpV?=
- =?utf-8?B?OEFMVms4SjQ5U3Z2enNveFJzV1NvVVZyNy9XbU11WnVXUnBTeFpZQ2tCM3F4?=
- =?utf-8?B?T01RRW1pSXVUSmwxZEFEUjF1ZGZ3NDNTWWFDQVhhWkpKaGNCazJtclV1eTZG?=
- =?utf-8?B?b2V4RWxxWXpNWXJZQlFvU1p1MmRaTkplV1BFSUtxUlRBRXIvSkdBUkNFL29Y?=
- =?utf-8?B?UC9MRURsNGsrNjhnaStXVGdXS1kvdWRnZ21UWER0eVhPRmh1MzVDNFV1bDVE?=
- =?utf-8?B?L0hpaVNTV2RHU3AyUXppbEVFYTNLK0hGK29ObkZ1ellxVDkyc1A2SERvTFoy?=
- =?utf-8?B?bVdBTWk4V2ZvNXhmVU5ySHVaRll2MnBvdTI4clA1V3h5L3Y0V2VJK2J4TzNs?=
- =?utf-8?B?cG9qVm1nU2ljWUs3OTFkdnBBZmFjcU5HaWl6WWlaajlKZzA2K05YcDNucnk4?=
- =?utf-8?B?bDJidG80RFAwOXBkQ2NPcVJQVzBWOS9FL2dod0M0cGd1eUhpZHJ5NU5udWk1?=
- =?utf-8?B?N1ZjT1FDY2JhQkFZdTVpcEVKMTc3Z3d3NldYMG9hNE53U1JJcE8zTUNCYU1w?=
- =?utf-8?B?OE5SaW15RmxlaDdObUp6b2R5Z0ZuM29QTDRzOW5VTFl3Vm44RHdzaXdYUk9h?=
- =?utf-8?B?VUtPNmxvSk9iQjRjaTExM3FidTVjcFlnaWNjWnZ5VmQ4S0NDaTlHTkhqZFBI?=
- =?utf-8?B?eFdqN0NpZE9HMHVmOEpPemhITUhwRy8reU01TmdqdjU3UytGR3lJb1RWZTFr?=
- =?utf-8?B?Zzh1NlVKa0F4VHFZZTZGUVcxaFk1ei9EZHRDMUFDbkdnd25pbDVvenlFUzJB?=
- =?utf-8?B?R3Y1YzBTMGZsQ2s0Uk50akh4N2xxZnZYSFhZVm1ORWZ0WDM5TGtPTkl0dCtW?=
- =?utf-8?B?ektka0FGOG5kYTVhZzZPZGQ4S1dwZGpKS2FPZHdEU2MrSU9wNEVZamFTdTRI?=
- =?utf-8?B?Y095RVFzZ2crbjJnUmcvbmZkRGVCWjF4anhKUTZOK28zZlpwdVpjSDVWc0Zl?=
- =?utf-8?B?cFpMYU11TVdLYjljWG41Wi9PUmhRNE5sUVFLanYzcUlna3A0Z0NQTUhjYkxD?=
- =?utf-8?B?YXlSNGZnMDAwZ1VGek83TEJjZ05CYVR1cW92REp2ckwzZmp2Tm1QRlRSb2hv?=
- =?utf-8?B?OFN5QmdPWmo1N3kzcXUvTTFJY1p2U2ZtTEk4Vms5aEp2dytWUGFLQjlTUzk5?=
- =?utf-8?B?WVR2a05QTTRleEdGMHdobzk2dWRDeS9rVWtXYUw3dUJUREs3bDlkSG93cEFT?=
- =?utf-8?B?ektXM1RGS0RyV2grbVZVdVFQUktFQ1Zmb085NjFQdEZ4c3VzZXliaE03akpo?=
- =?utf-8?B?d2dTWGtySGJHWXkyTXI2WG4wNlk4ZHBURzdydEV1bnFFTzNiUmhjWFczUEkv?=
- =?utf-8?B?MXFjd2pic3oyVjNDUmpkMGdxTlpzZWRaZVlWdjJjSDJLcCtyQkZhUHoyY1lX?=
- =?utf-8?B?ZmJESHd5enBhMHZlYVhPcTg4TjFjclIyZFZiZ1ZFRmFSSjBjYXRFWHNvMU9a?=
- =?utf-8?B?d09YbHdOMGZJMjZjOVFsWFgreTk3Q0ErempLY1JRcHlEcTh1UkVGdGxaQWpU?=
- =?utf-8?B?dkgvS0xLblNyOHEzRHJLLzJOcDh0K1hGSFdrbk9nVmRTUGtNeUFsZGQ5RFIz?=
- =?utf-8?B?bzdVeTZoVDcyb2xsQ3k0UktycFljdmVqMmg4S1lWVlpWNjRxaWhhUE4zY0l6?=
- =?utf-8?B?Z21CLytqNjdDOTBCOFBjODUybm1OcnowRVZyV3NFWGFRQ0RmdzJmZTlPV2FP?=
- =?utf-8?B?ZzYxek84aGNlZzd3REtkM3IxTERmcyt0Tm5xWmIrcTZjdEJNemk5WlMvUFdq?=
- =?utf-8?Q?f7EXVJd7V7g4qNyXvo03MCo=3D?=
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c0b9a095-1566-4c9d-6252-08d9d9af6193
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3627.namprd12.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jan 2022 11:49:14.0282
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: vt71bykNyrsND0mfRCjaC09YHXuRW22aEFoq3hB+CsVwYtuQSnOqySMBu3XDH+C/9i1Us0NeT/PY2+ejguqEWg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1211
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Subject: Re: [PATCH v10 00/13] Clean up "mediatek,larb"
+Content-Language: en-US
+To:     AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Yong Wu <yong.wu@mediatek.com>,
+        Hans Verkuil <hverkuil@xs4all.nl>,
+        Joerg Roedel <jroedel@suse.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        David Airlie <airlied@linux.ie>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>
+Cc:     Evan Green <evgreen@chromium.org>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Tomasz Figa <tfiga@chromium.org>,
+        Will Deacon <will.deacon@arm.com>,
+        linux-mediatek@lists.infradead.org, srv_heupstream@mediatek.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        iommu@lists.linux-foundation.org, youlin.pei@mediatek.com,
+        Matthias Kaehlcke <mka@chromium.org>, anan.sun@mediatek.com,
+        yi.kuo@mediatek.com, acourbot@chromium.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Chun-Kuang Hu <chunkuang.hu@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Eizan Miyamoto <eizan@chromium.org>,
+        anthony.huang@mediatek.com,
+        Frank Wunderlich <frank-w@public-files.de>,
+        mingyuan.ma@mediatek.com, yf.wang@mediatek.com,
+        libo.kang@mediatek.com
+References: <20220117070510.17642-1-yong.wu@mediatek.com>
+ <06e5e76c-557a-20a5-b8dd-37b25b3384a3@collabora.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <06e5e76c-557a-20a5-b8dd-37b25b3384a3@collabora.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
 
-On 1/14/2022 12:04 AM, Pierre-Louis Bossart wrote:
-> [CAUTION: External Email]
+On 17/01/2022 11:27, AngeloGioacchino Del Regno wrote:
+> Il 17/01/22 08:04, Yong Wu ha scritto:
+>> MediaTek IOMMU block diagram always like below:
+>>
+>>          M4U
+>>           |
+>>      smi-common
+>>           |
+>>    -------------
+>>    |         |  ...
+>>    |         |
+>> larb1     larb2
+>>    |         |
+>> vdec       venc
+>>
+>> All the consumer connect with smi-larb, then connect with smi-common.
+>>
+>> When the consumer works, it should enable the smi-larb's power which also
+>> need enable the smi-common's power firstly.
+>>
+>> Thus, Firstly, use the device link connect the consumer and the
+>> smi-larbs. then add device link between the smi-larb and smi-common.
+>>
+>> After adding the device_link, then "mediatek,larb" property can be removed.
+>> the iommu consumer don't need call the mtk_smi_larb_get/put to enable
+>> the power and clock of smi-larb and smi-common.
+>>
+>> Base on the media branch [1] and a jpeg dtbinding patchset[2] that already got
+>> the necessary R-b.
+>>
+>> [1] git://linuxtv.org/hverkuil/media_tree.git tags/br-v5.18d
+>> [2] 
+>> https://lore.kernel.org/linux-mediatek/20211206130425.184420-1-hsinyi@chromium.org/ 
+>>
+>>
+>> Change notes:
+>> v10: a) Rebase on the media tree. Respin the "media: mtk-vcodec:" patches.
+>>       b) Add Joerg's Ack for iommu patches.
+>>
+>> v9: 
+>> https://lore.kernel.org/linux-mediatek/20211112105509.12010-1-yong.wu@mediatek.com/ 
+>>
+>>      1) Add return -ENODEV when the dev is null.
+>>      2) Add more strict about the case that a iommu consume device use the 
+>> ports in
+>>      different larbs. Don't allow this case.
+>>      3) Remove two codec interface: mtk_vcodec_release_enc/dec_pm since it 
+>> only has one
+>>      line now.
+>>
+>> v8: 
+>> https://lore.kernel.org/linux-mediatek/20210929013719.25120-1-yong.wu@mediatek.com/ 
+>>
+>>      1) Rebase on v5.15-rc1.
+>>      2) Don't rebase the below mdp patchset that may still need more discuss.
+>>      
+>> https://lore.kernel.org/linux-mediatek/20210709022324.1607884-1-eizan@chromium.org/ 
+>>
+>>      3) Add Frank's Tested-by. Remove Dafna's Tested-by as he requested.
+>>
+>> v7: 
+>> https://lore.kernel.org/linux-mediatek/20210730025238.22456-1-yong.wu@mediatek.com/ 
+>>
+>>      1) Fix a arm32 boot fail issue. reported from Frank.
+>>      2) Add a return fail in the mtk drm. suggested by Dafna.
+>>
+>> v6: 
+>> https://lore.kernel.org/linux-mediatek/20210714025626.5528-1-yong.wu@mediatek.com/ 
+>>
+>>      1) rebase on v5.14-rc1.
+>>      2) Fix the issue commented in v5 from Dafna and Hsin-Yi.
+>>      3) Remove the patches about using pm_runtime_resume_and_get since they have
+>>         already been merged by other patches.
+>>
+>> v5: 
+>> https://lore.kernel.org/linux-mediatek/20210410091128.31823-1-yong.wu@mediatek.com/ 
+>>
+>>      1) Base v5.12-rc2.
+>>      2) Remove changing the mtk-iommu to module_platform_driver patch, It have 
+>> already been a
+>>      independent patch.
+>>
+>> v4: 
+>> https://lore.kernel.org/linux-mediatek/1590826218-23653-1-git-send-email-yong.wu@mediatek.com/ 
+>>
+>>      base on v5.7-rc1.
+>>    1) Move drm PM patch before smi patchs.
+>>    2) Change builtin_platform_driver to module_platform_driver since we may need
+>>       build as module.
+>>    3) Rebase many patchset as above.
+>>
+>> v3: 
+>> https://lore.kernel.org/linux-iommu/1567503456-24725-1-git-send-email-yong.wu@mediatek.com/ 
+>>
+>>      1) rebase on v5.3-rc1 and the latest mt8183 patchset.
+>>      2) Use device_is_bound to check whether the driver is ready from Matthias.
+>>      3) Add DL_FLAG_STATELESS flag when calling device_link_add and explain the
+>>     reason in the commit message[3/14].
+>>      4) Add a display patch[12/14] into this series. otherwise it may affect
+>>     display HW fastlogo even though it don't happen in mt8183.
+>> v2: 
+>> https://lore.kernel.org/linux-iommu/1560171313-28299-1-git-send-email-yong.wu@mediatek.com/ 
+>>
+>>     1) rebase on v5.2-rc1.
+>>     2) Move adding device_link between the consumer and smi-larb into
+>> iommu_add_device from Robin.
+>>     3) add DL_FLAG_AUTOREMOVE_CONSUMER even though the smi is built-in from Evan.
+>>     4) Remove the shutdown callback in iommu.
+>>
+>> v1: 
+>> https://lore.kernel.org/linux-iommu/1546318276-18993-1-git-send-email-yong.wu@mediatek.com/ 
+>>
+>>
+>> Yong Wu (12):
+>>    dt-binding: mediatek: Get rid of mediatek,larb for multimedia HW
+>>    iommu/mediatek-v1: Free the existed fwspec if the master dev already
+>>      has
+>>    iommu/mediatek: Return ENODEV if the device is NULL
+>>    iommu/mediatek: Add probe_defer for smi-larb
+>>    iommu/mediatek: Add device_link between the consumer and the larb
+>>      devices
+>>    media: mtk-jpeg: Get rid of mtk_smi_larb_get/put
+>>    media: mtk-mdp: Get rid of mtk_smi_larb_get/put
+>>    drm/mediatek: Get rid of mtk_smi_larb_get/put
+>>    media: mtk-vcodec: Get rid of mtk_smi_larb_get/put
+>>    memory: mtk-smi: Get rid of mtk_smi_larb_get/put
+>>    arm: dts: mediatek: Get rid of mediatek,larb for MM nodes
+>>    arm64: dts: mediatek: Get rid of mediatek,larb for MM nodes
+>>
+>> Yongqiang Niu (1):
+>>    drm/mediatek: Add pm runtime support for ovl and rdma
+>>
+>>   .../display/mediatek/mediatek,disp.txt        |  9 ----
+>>   .../media/mediatek,vcodec-decoder.yaml        |  7 ---
+>>   .../media/mediatek,vcodec-encoder.yaml        |  8 ----
+>>   .../bindings/media/mediatek-jpeg-decoder.yaml |  9 ----
+>>   .../bindings/media/mediatek-jpeg-encoder.yaml |  9 ----
+>>   .../bindings/media/mediatek-mdp.txt           |  8 ----
+>>   arch/arm/boot/dts/mt2701.dtsi                 |  2 -
+>>   arch/arm/boot/dts/mt7623n.dtsi                |  5 ---
+>>   arch/arm64/boot/dts/mediatek/mt8173.dtsi      | 16 -------
+>>   arch/arm64/boot/dts/mediatek/mt8183.dtsi      |  6 ---
+>>   drivers/gpu/drm/mediatek/mtk_disp_ovl.c       |  8 +++-
+>>   drivers/gpu/drm/mediatek/mtk_disp_rdma.c      |  9 +++-
+>>   drivers/gpu/drm/mediatek/mtk_drm_crtc.c       | 15 ++++---
+>>   drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.c   | 36 +--------------
+>>   drivers/gpu/drm/mediatek/mtk_drm_ddp_comp.h   |  1 -
+>>   drivers/gpu/drm/mediatek/mtk_drm_drv.c        |  5 +--
+>>   drivers/iommu/mtk_iommu.c                     | 34 ++++++++++++++
+>>   drivers/iommu/mtk_iommu_v1.c                  | 42 ++++++++++++++++-
+>>   .../media/platform/mtk-jpeg/mtk_jpeg_core.c   | 45 +------------------
+>>   .../media/platform/mtk-jpeg/mtk_jpeg_core.h   |  2 -
+>>   drivers/media/platform/mtk-mdp/mtk_mdp_comp.c | 40 -----------------
+>>   drivers/media/platform/mtk-mdp/mtk_mdp_comp.h |  2 -
+>>   drivers/media/platform/mtk-mdp/mtk_mdp_core.c |  1 -
+>>   .../platform/mtk-vcodec/mtk_vcodec_dec_drv.c  |  2 -
+>>   .../platform/mtk-vcodec/mtk_vcodec_dec_hw.c   |  1 -
+>>   .../platform/mtk-vcodec/mtk_vcodec_dec_pm.c   | 41 +++--------------
+>>   .../platform/mtk-vcodec/mtk_vcodec_drv.h      |  3 --
+>>   .../platform/mtk-vcodec/mtk_vcodec_enc.c      |  1 -
+>>   .../platform/mtk-vcodec/mtk_vcodec_enc_drv.c  |  2 -
+>>   .../platform/mtk-vcodec/mtk_vcodec_enc_pm.c   | 45 +++----------------
+>>   drivers/memory/mtk-smi.c                      | 14 ------
+>>   include/soc/mediatek/smi.h                    | 20 ---------
+>>   32 files changed, 115 insertions(+), 333 deletions(-)
+>>
 > 
-> couple of nit-picks:
+> Hello Hans, Matthias,
+> on my side, this series is totally ready for merge, hence, green light from here.
 > 
+> Can you please take it for 5.18?
 > 
->> diff --git a/sound/soc/amd/acp/acp-pdm.c b/sound/soc/amd/acp/acp-pdm.c
->> new file mode 100644
->> index 000000000000..cb9bbd795eee
->> --- /dev/null
->> +++ b/sound/soc/amd/acp/acp-pdm.c
->> @@ -0,0 +1,181 @@
->> +// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
->> +//
->> +// This file is provided under a dual BSD/GPLv2 license. When using or
->> +// redistributing this file, you may do so under either license.
->> +//
->> +// Copyright(c) 2021 Advanced Micro Devices, Inc.
-> 
-> 2022?
-> 
->> +//
->> +// Authors: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
->> +//       Vijendar Mukunda <Vijendar.Mukunda@amd.com>
->> +//
->> +
->> +/*
->> + * Generic Hardware interface for ACP Audio PDM controller
->> + */
->> +
->> +#include <linux/platform_device.h>
->> +#include <linux/module.h>
->> +#include <linux/err.h>
->> +#include <linux/io.h>
->> +#include <sound/pcm_params.h>
->> +#include <sound/soc.h>
->> +#include <sound/soc-dai.h>
->> +#include <linux/dma-mapping.h>
-> 
-> alphabetical order?
-> 
->> +
->> +#include "amd.h"
->> +
->> +#define DRV_NAME "acp-pdm"
->> +
->> +#define PDM_DMA_STAT         0x10
->> +#define PDM_DMA_INTR_MASK    0x10000
->> +#define PDM_DEC_64           0x2
->> +#define PDM_CLK_FREQ_MASK    0x07
->> +#define PDM_MISC_CTRL_MASK   0x10
->> +#define PDM_ENABLE           0x01
->> +#define PDM_DISABLE          0x00
->> +#define DMA_EN_MASK          0x02
->> +#define DELAY_US             5
->> +#define PDM_TIMEOUT          1000
->> +
->> +static int acp_dmic_dai_trigger(struct snd_pcm_substream *substream,
->> +                            int cmd, struct snd_soc_dai *dai)
->> +{
->> +     struct acp_stream *stream = substream->runtime->private_data;
->> +     struct device *dev = dai->component->dev;
->> +     struct acp_dev_data *adata = dev_get_drvdata(dev);
->> +     u32 physical_addr, size_dmic, period_bytes;
->> +     unsigned int dma_enable;
->> +     int ret = 0;
->> +
->> +     period_bytes = frames_to_bytes(substream->runtime,
->> +                     substream->runtime->period_size);
->> +     size_dmic = frames_to_bytes(substream->runtime,
->> +                     substream->runtime->buffer_size);
->> +
->> +     physical_addr = stream->reg_offset + MEM_WINDOW_START;
->> +
->> +     /* Init DMIC Ring buffer */
->> +     writel(physical_addr, adata->acp_base + ACP_WOV_RX_RINGBUFADDR);
->> +     writel(size_dmic, adata->acp_base + ACP_WOV_RX_RINGBUFSIZE);
->> +     writel(period_bytes, adata->acp_base + ACP_WOV_RX_INTR_WATERMARK_SIZE);
->> +     writel(0x01, adata->acp_base + ACPAXI2AXI_ATU_CTRL);
-> 
-> could this be done in a .prepare step?
-> 
->> +
->> +     switch (cmd) {
->> +     case SNDRV_PCM_TRIGGER_START:
->> +     case SNDRV_PCM_TRIGGER_RESUME:
->> +     case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
->> +             dma_enable = readl(adata->acp_base + ACP_WOV_PDM_DMA_ENABLE);
->> +             if (!(dma_enable & DMA_EN_MASK)) {
->> +                     writel(PDM_ENABLE, adata->acp_base + ACP_WOV_PDM_ENABLE);
->> +                     writel(PDM_ENABLE, adata->acp_base + ACP_WOV_PDM_DMA_ENABLE);
->> +             }
->> +
->> +             ret = readl_poll_timeout_atomic(adata->acp_base + ACP_WOV_PDM_DMA_ENABLE,
->> +                                             dma_enable, (dma_enable & DMA_EN_MASK),
->> +                                             DELAY_US, PDM_TIMEOUT);
->> +             break;
->> +     case SNDRV_PCM_TRIGGER_STOP:
->> +     case SNDRV_PCM_TRIGGER_SUSPEND:
->> +     case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
->> +             dma_enable = readl(adata->acp_base + ACP_WOV_PDM_DMA_ENABLE);
->> +             if ((dma_enable & DMA_EN_MASK)) {
->> +                     writel(PDM_DISABLE, adata->acp_base + ACP_WOV_PDM_ENABLE);
->> +                     writel(PDM_DISABLE, adata->acp_base + ACP_WOV_PDM_DMA_ENABLE);
->> +
->> +             }
->> +
->> +             ret = readl_poll_timeout_atomic(adata->acp_base + ACP_WOV_PDM_DMA_ENABLE,
->> +                                             dma_enable, !(dma_enable & DMA_EN_MASK),
->> +                                             DELAY_US, PDM_TIMEOUT);
-> 
-> is the _atomic needed?
-> 
->> +             break;
->> +     default:
->> +             ret = -EINVAL;
->> +             break;
->> +     }
->> +
->> +     return ret;
->> +}
->> +
->> +static int acp_dmic_hwparams(struct snd_pcm_substream *substream,
->> +     struct snd_pcm_hw_params *hwparams, struct snd_soc_dai *dai)
->> +{
->> +     struct device *dev = dai->component->dev;
->> +     struct acp_dev_data *adata = dev_get_drvdata(dev);
->> +     unsigned int dmic_ctrl, channels, ch_mask;
->> +
->> +     /* Enable default DMIC clk */
->> +     writel(PDM_CLK_FREQ_MASK, adata->acp_base + ACP_WOV_CLK_CTRL);
->> +     dmic_ctrl = readl(adata->acp_base + ACP_WOV_MISC_CTRL);
->> +     dmic_ctrl |= PDM_MISC_CTRL_MASK;
->> +     writel(dmic_ctrl, adata->acp_base + ACP_WOV_MISC_CTRL);
-> 
-> .hw_params can be called multiple times, should this clock handling be
-> done in a .prepare step?
-> 
-> Or alternatively in .startup - this doesn't seem to depend on hardware
-> parameters?
-> 
->> +
->> +     channels = params_channels(hwparams);
->> +     switch (channels) {
->> +     case 2:
->> +             ch_mask = 0;
->> +             break;
->> +     case 4:
->> +             ch_mask = 1;
->> +             break;
->> +     case 6:
->> +             ch_mask = 2;
->> +             break;
->> +     default:
->> +             dev_err(dev, "Invalid channels %d\n", channels);
->> +             return -EINVAL;
->> +     }
->> +
->> +     if (params_format(hwparams) != SNDRV_PCM_FORMAT_S32_LE) {
->> +             dev_err(dai->dev, "Invalid format:%d\n", params_format(hwparams));
->> +             return -EINVAL;
->> +     }
->> +
->> +     writel(ch_mask, adata->acp_base + ACP_WOV_PDM_NO_OF_CHANNELS);
->> +     writel(PDM_DEC_64, adata->acp_base + ACP_WOV_PDM_DECIMATION_FACTOR);
->> +
->> +     return 0;
->> +}
-> 
->> +MODULE_LICENSE("GPL v2");
-> 
-> "GPL" is enough
-> 
-> 
-Thanks, will try to adopt commnets in v3 patch chain
+
+@Hans: I understand you take the series through your tree. Please let me know 
+when you do so. I'll take care of patch 12 and 13, which should go through my tree.
+
+Thanks!
+Matthias
