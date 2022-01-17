@@ -2,114 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A534BC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 08:16:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B50D3C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 08:17:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237998AbiAQIQA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 03:16:00 -0500
-Received: from szxga01-in.huawei.com ([45.249.212.187]:16715 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237985AbiAQIP7 (ORCPT
+        id S238001AbiAQIRX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 03:17:23 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45812 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233253AbiAQIRW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 03:15:59 -0500
-Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.57])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Jcl4b05S4zZfB6;
-        Mon, 17 Jan 2022 16:12:15 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Mon, 17 Jan 2022 16:15:57 +0800
-From:   Shaokun Zhang <zhangshaokun@hisilicon.com>
-To:     <linux-pm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Guo Yang <guoyang2@huawei.com>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Shaokun Zhang <zhangshaokun@hisilicon.com>
-Subject: [PATCH] cpuidle: menu: Fix long delay issue when tick stopped
-Date:   Mon, 17 Jan 2022 16:16:15 +0800
-Message-ID: <20220117081615.45449-1-zhangshaokun@hisilicon.com>
-X-Mailer: git-send-email 2.33.0
+        Mon, 17 Jan 2022 03:17:22 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 64BA5B80DF2;
+        Mon, 17 Jan 2022 08:17:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66080C36AE7;
+        Mon, 17 Jan 2022 08:17:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1642407440;
+        bh=7V2uwOg2XQE1qErJ/nwZj130Wi+eTJqoL9PiUIS/Pns=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=ARIRBjMGLNFTzyzqbzZQTigMaGQKjAFdQ0c4oJ4IhKR/qZYM8DV6yeq+hcYK5JfXA
+         MILnT071KlV1itZZMKNAiiFe/jzhUn3qA9tEbN7YrC2S/Zs3Cr7yu3NxPy+wrawLju
+         SNmb/dPtxcYjASeq6EnT8mZ0l6NDJNcJzC0iEKb4=
+Date:   Mon, 17 Jan 2022 09:17:17 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "linux-spdx@vger.kernel.org" <linux-spdx@vger.kernel.org>
+Subject: Re: [PATCH v2] powerpc: Add missing SPDX license identifiers to DTS
+ files
+Message-ID: <YeUmDV8vgHO592qt@kroah.com>
+References: <633873803244c2122381cb11228a6a9a7385abd4.1642402958.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.69.192.56]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml500023.china.huawei.com (7.185.36.114)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <633873803244c2122381cb11228a6a9a7385abd4.1642402958.git.christophe.leroy@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guo Yang <guoyang2@huawei.com>
+On Mon, Jan 17, 2022 at 07:03:45AM +0000, Christophe Leroy wrote:
+> Several DTS files are missing SPDX license identifiers.
 
-The network delay was always big on arm server tested by qperf,
-the reason was that the cpu entered deep power down idle state(like intel
-C6) and can't goto a shallow one.
+Normally DTS files are not just GPLv2, are you sure this is intended?
 
-The intervals in @get_typical_interval() was much smaller than predicted_ns
-in @menu_select(), so the predict state is always deepest and cause long
-time network delay.
+> 
+> For files in fsl/ subdirectory, GPL v2 or later is used based
+> on the comments in the files.
 
-Every time when the cpu got an interrupt from the network, the cpu was
-waken up and did the IRQ, after that the cpu enter @menu_select()
-but the @tick_nohz_tick_stopped() was true and get a big data->next_timer_ns,
-the cpu can never goto a shallow state util the data->next_timer_ns timeout.
-Below was the print when the issue occurrence.
+You do not seem to have gotten the license correct for these, the text
+in the file comments disagrees with GPLv2+ only.
 
-[   37.082861] intervals = 36us
-[   37.082875] intervals = 15us
-[   37.082888] intervals = 22us
-[   37.082902] intervals = 35us
-[   37.082915] intervals = 34us
-[   37.082929] intervals = 39us
-[   37.082942] intervals = 39us
-[   37.082956] intervals = 35us
-[   37.082970] target_residency_ns = 10000, predicted_ns = 35832710
-[   37.082998] target_residency_ns = 600000, predicted_ns = 35832710
-[   37.083037] intervals = 36us
-[   37.083050] intervals = 15us
-[   37.083064] intervals = 22us
-[   37.083077] intervals = 35us
-[   37.083091] intervals = 34us
-[   37.083104] intervals = 39us
-[   37.083118] intervals = 39us
-[   37.083131] intervals = 35us
-[   37.083145] target_residency_ns = 10000, predicted_ns = 35657420
-[   37.083174] target_residency_ns = 600000, predicted_ns = 35657420
-[   37.083212] intervals = 36us
-[   37.083225] intervals = 15us
-[   37.083239] intervals = 22us
-[   37.083253] intervals = 35us
-[   37.083266] intervals = 34us
-[   37.083279] intervals = 39us
-[   37.083293] intervals = 39us
-[   37.083307] intervals = 35us
-[   37.083320] target_residency_ns = 10000, predicted_ns = 35482140
-[   37.083349] target_residency_ns = 600000, predicted_ns = 35482140
+Please be VERY careful when adding license tags to files like this, if
+this patch was accepted it would get very confusing as they are
+contradictions in the file itself suddenly.
 
-Add idle tick wakeup judge before change predicted_ns.
+Also, when adding SPDX lines, remove the boiler-plate license text at
+the same time so that we can verify that the SPDX line is correct.  If
+you had done that here, it would be obvious that the patch is incorrect.
 
-Cc: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-Signed-off-by: Guo Yang <guoyang2@huawei.com>
-Signed-off-by: Shaokun Zhang <zhangshaokun@hisilicon.com>
----
- drivers/cpuidle/governors/menu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+As-is, this patch is not acceptable, sorry.
 
-diff --git a/drivers/cpuidle/governors/menu.c b/drivers/cpuidle/governors/menu.c
-index c492268..3f03843 100644
---- a/drivers/cpuidle/governors/menu.c
-+++ b/drivers/cpuidle/governors/menu.c
-@@ -313,7 +313,7 @@ static int menu_select(struct cpuidle_driver *drv, struct cpuidle_device *dev,
- 				get_typical_interval(data, predicted_us)) *
- 				NSEC_PER_USEC;
- 
--	if (tick_nohz_tick_stopped()) {
-+	if (tick_nohz_tick_stopped() && data->tick_wakeup) {
- 		/*
- 		 * If the tick is already stopped, the cost of possible short
- 		 * idle duration misprediction is much higher, because the CPU
--- 
-1.8.3.1
-
+greg k-h
