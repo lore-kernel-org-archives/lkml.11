@@ -2,125 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67EE6C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 18:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF5EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 18:35:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242854AbiAQSfu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 13:35:50 -0500
-Received: from mga12.intel.com ([192.55.52.136]:48634 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242843AbiAQSfR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 13:35:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642444517; x=1673980517;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=IgZjj9XbMC7hMTZDfcpEgux3Es+6Lrg4o7zKivFg6PY=;
-  b=PcMiqLVoSu9VN8i4/914pwfQLxc4vLjAbErNIXxOeES0uVXFlXflLI4o
-   CKmVqINWUGP+m5beHJ2g1tjhPrAwOYYeBJrCiX/v3mfayqLAQpcB2fGPi
-   UNB74SvgiiPFCu+CYkN6uRd+08C3pLAgwFzleVug00BixaYkqtJgcpJzV
-   CNACnkTyK27ur/2tQlq+nr+1tb07/Y5ZU5NAhQt4Oqd++xU3JWpMfI9CD
-   pcMeU+yBgU2693xz5z2NnlolDXH8weL1BnKQgyLI5kWrpRJoQzBlZO/XR
-   097wJRitotblLkiedWdBJJzBUHeTAiozfVtjyGomzam1XtaNI+ZPm5hF+
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10229"; a="224656030"
-X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="224656030"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 10:35:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="492434292"
-Received: from nntpat99-84.inn.intel.com ([10.125.99.84])
-  by orsmga002.jf.intel.com with ESMTP; 17 Jan 2022 10:35:13 -0800
-From:   Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Namhyung Kim <namhyung@kernel.org>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        Alexei Budankov <abudankov@huawei.com>,
-        Riccardo Mancini <rickyman7@gmail.com>
-Subject: [PATCH v13 11/16] perf record: Introduce data transferred and compressed stats
-Date:   Mon, 17 Jan 2022 21:34:31 +0300
-Message-Id: <b5d598034c507dfb7544d2125500280b7d434764.1642440724.git.alexey.v.bayduraev@linux.intel.com>
-X-Mailer: git-send-email 2.19.0
-In-Reply-To: <cover.1642440724.git.alexey.v.bayduraev@linux.intel.com>
-References: <cover.1642440724.git.alexey.v.bayduraev@linux.intel.com>
+        id S242761AbiAQSfw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 13:35:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39464 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242721AbiAQSf2 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 13:35:28 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABC1C061747;
+        Mon, 17 Jan 2022 10:35:17 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id x11so35269422lfa.2;
+        Mon, 17 Jan 2022 10:35:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=z2LAhV4KSzEZogKZQmx+VN5D6iQExMOg1CIIQQv1a6c=;
+        b=h87/EoWOnR4jHU5VsE3cQlywU1F5aajaPPF6NBrQ7B136ytNj+vUCmFT2Ff6mEnICk
+         OZaElTNLEXhiiNqUQh2XXjICn19cekST5Z96lwa8zcLZv272+0CfD0ulWkMivlp3QOL5
+         +aBOX1Z9CMnKHcOn5lVUa9k98Ydyluw5/wLspul1yTAnJzAJ2ZGqJfRf/uy/zm7S09xC
+         265GFZFjCtzlvA6mY8PIl3JdTya3GQqM6K1Q+CB/gxRP4nC7esdQ7cW0MhXyTlWiK80u
+         GAmRqvNuiJMoBO6PpL9L1vcJrzTaqE4VACExsA0Tp2jUF8fSEEbGaB6dynLQ5kPQW0Lj
+         ONBA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=z2LAhV4KSzEZogKZQmx+VN5D6iQExMOg1CIIQQv1a6c=;
+        b=znkQwNKjF07d2VP74WVOEOKUV695euIbqCyiiEBLDuXN5HiM7StAKZPm/8cHMuNU89
+         /1SiQEWvj2ZdVR6ZTxyGYwjWYmfpNNa6sJ1mK3HwTAZ0sFcq5i2aWOYOztJDWLSE/m5t
+         A1K2IEKl4Q3AyGmtfj19SWJ8RR8MqwjzTm3UAI7uNdPMMymfNrOEYPuTYbdmgLy/BYex
+         W9KR9KZ+Z/EcwFJOIuC5Jcj8/tTjBAGUg0C/9dUFDYHnBX0JDrIoQQas+S/WqX8BkrpI
+         YbYo/XtZS/7ag0mGRzYcpBAcVZ8p/MVdBan398NbTjQf3CvS/b+9oi+lFnxb8Q6UgDkb
+         2oXw==
+X-Gm-Message-State: AOAM532RaGYPwCsTWXc4cknnUYrCwEn+YqTTR9xRJdClikVMsYLAaHlx
+        sXm/wp2AJrKuRe68LH/9Bhg=
+X-Google-Smtp-Source: ABdhPJwPjWeTQQzIRDbxUo/5CKG8WBZxjXWryCjlZG50Z7qK7RwRsmt5226luHOYipkbH83k9xAeDA==
+X-Received: by 2002:a05:651c:547:: with SMTP id q7mr5630262ljp.464.1642444515624;
+        Mon, 17 Jan 2022 10:35:15 -0800 (PST)
+Received: from [192.168.1.11] ([94.103.227.208])
+        by smtp.gmail.com with ESMTPSA id k12sm1455871lfu.252.2022.01.17.10.35.14
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Jan 2022 10:35:15 -0800 (PST)
+Message-ID: <a63d6d9b-7e95-3e88-fcd2-2fe5e623dd5b@gmail.com>
+Date:   Mon, 17 Jan 2022 21:35:13 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] ath9k_htc: fix uninit value bugs
+Content-Language: en-US
+To:     Kalle Valo <kvalo@kernel.org>
+Cc:     ath9k-devel@qca.qualcomm.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org, linville@tuxdriver.com,
+        vasanth@atheros.com, Sujith.Manoharan@atheros.com,
+        senthilkumar@atheros.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
+References: <20220115122733.11160-1-paskripkin@gmail.com>
+ <164242422410.16718.5618838300043178474.kvalo@kernel.org>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <164242422410.16718.5618838300043178474.kvalo@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce bytes_transferred and bytes_compressed stats so they
-would capture statistics for the related data buffer transfers.
+Hi Kalle,
 
-Acked-by: Andi Kleen <ak@linux.intel.com>
-Acked-by: Namhyung Kim <namhyung@gmail.com>
-Reviewed-by: Riccardo Mancini <rickyman7@gmail.com>
-Tested-by: Riccardo Mancini <rickyman7@gmail.com>
-Signed-off-by: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
----
- tools/perf/builtin-record.c | 25 ++++++++++++++++++++++---
- 1 file changed, 22 insertions(+), 3 deletions(-)
+On 1/17/22 15:57, Kalle Valo wrote:
+>> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
+>> Reported-by: syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
+>> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
+> 
+> How did you test this? As syzbot is mentioned I assume you did not test this on
+> a real device, it would help a lot if this is clearly mentioned in the commit
+> log. My trust on syzbot fixes is close to zero due to bad past history.
+> 
 
-diff --git a/tools/perf/builtin-record.c b/tools/perf/builtin-record.c
-index 7d0338b5a0e3..0f8488d12f44 100644
---- a/tools/perf/builtin-record.c
-+++ b/tools/perf/builtin-record.c
-@@ -111,6 +111,8 @@ struct record_thread {
- 	unsigned long long	samples;
- 	unsigned long		waking;
- 	u64			bytes_written;
-+	u64			bytes_transferred;
-+	u64			bytes_compressed;
- };
- 
- static __thread struct record_thread *thread;
-@@ -1407,8 +1409,13 @@ static size_t zstd_compress(struct perf_session *session, struct mmap *map,
- 	compressed = zstd_compress_stream_to_records(zstd_data, dst, dst_size, src, src_size,
- 						     max_record_size, process_comp_header);
- 
--	session->bytes_transferred += src_size;
--	session->bytes_compressed  += compressed;
-+	if (map && map->file) {
-+		thread->bytes_transferred += src_size;
-+		thread->bytes_compressed  += compressed;
-+	} else {
-+		session->bytes_transferred += src_size;
-+		session->bytes_compressed  += compressed;
-+	}
- 
- 	return compressed;
- }
-@@ -2098,8 +2105,20 @@ static int record__stop_threads(struct record *rec)
- 	for (t = 1; t < rec->nr_threads; t++)
- 		record__terminate_thread(&thread_data[t]);
- 
--	for (t = 0; t < rec->nr_threads; t++)
-+	for (t = 0; t < rec->nr_threads; t++) {
- 		rec->samples += thread_data[t].samples;
-+		if (!record__threads_enabled(rec))
-+			continue;
-+		rec->session->bytes_transferred += thread_data[t].bytes_transferred;
-+		rec->session->bytes_compressed += thread_data[t].bytes_compressed;
-+		pr_debug("threads[%d]: samples=%lld, wakes=%ld, ", thread_data[t].tid,
-+			 thread_data[t].samples, thread_data[t].waking);
-+		if (thread_data[t].bytes_transferred && thread_data[t].bytes_compressed)
-+			pr_debug("trasferred=%ld, compressed=%ld\n",
-+				 thread_data[t].bytes_transferred, thread_data[t].bytes_compressed);
-+		else
-+			pr_debug("written=%ld\n", thread_data[t].bytes_written);
-+	}
- 
- 	return 0;
- }
--- 
-2.19.0
+You are right, I've tested only with syzbot's reproducer. I've followed 
+simple guess: if code works properly with random values in these fields 
+for 14+ years, then zeroing them won't hurt much.
 
+I might be missing something, but unfortunately I don't have suitable hw 
+piece to test the change.
+
+
+
+
+With regards,
+Pavel Skripkin
