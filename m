@@ -2,76 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A816C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:13:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BDA7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:13:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243064AbiAQRNB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:13:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46492 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241421AbiAQRGr (ORCPT
+        id S243148AbiAQRND (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:13:03 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57780 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242547AbiAQRHi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:06:47 -0500
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D45A1C06124D
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 09:04:17 -0800 (PST)
-Received: by mail-qv1-xf32.google.com with SMTP id jr5so18907799qvb.11
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 09:04:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=0hNWdm5n9u5qVC3fRUHZ7VK1Pllh2iO5xA98hrEfK2U=;
-        b=aJKzCXehSh69U3RCXCcLUhLPpMbpEfuimfkbEzb64vl/w1F4Xv+rtrMmPMNLj6S7Fc
-         P/HAGYoGIXtQarO8AB5hoYnxeNGQsPg7lRCBGn9+gKDkaINIkfagzfWYLeqc9bFkfSNZ
-         oXuoZT0lN+g6LPPqL8iXwNFSJx67yLdwW+r+E=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0hNWdm5n9u5qVC3fRUHZ7VK1Pllh2iO5xA98hrEfK2U=;
-        b=Gy8kKsp/R7fzcHtq2BsHpf1n51LNZeb4kEvx2+74hDfuthjMOxcGW/IyelalFSY7Z8
-         yNP5aZHbWnulmDTcZvGirE8lhKSqdxvwKxsoyuVaW7yntUXeTuyjLdxp4MTNVCIyANVp
-         ZUeeFv/5I00j1zYOXszS0sAtdH76/xPkSikVCbG3gZeHwP0iF4R1V/yBZyNbEB1DRLGG
-         +A09/c2LoyS8VTsege4wLkmu38UjYoaxDxdyLcfpAlrv+0hN/1GlQG07NzcUPwdte9xu
-         xKYSDgzpjmieL+bBkR/8BTafPBZBiqC3QuHIN9hKVmnRCw7wQ2obKjK2NxDZjCWsKXxN
-         +iWw==
-X-Gm-Message-State: AOAM532DCaty18IDVYN7wA0gF/aV6ASaauEAs2T23pTm4blVJQMQuQD9
-        86Sezu6g20+6dq34dWDWLFDflw==
-X-Google-Smtp-Source: ABdhPJywSIAmiF2poqUmvx5cjQbTfPwoIKoE310ebp7bGexVbeDlQNyNuXc0bpNU3+eOG7ut+NWlJw==
-X-Received: by 2002:ad4:5ca5:: with SMTP id q5mr19346839qvh.128.1642439057064;
-        Mon, 17 Jan 2022 09:04:17 -0800 (PST)
-Received: from meerkat.local (bras-base-mtrlpq5031w-grc-32-216-209-220-181.dsl.bell.ca. [216.209.220.181])
-        by smtp.gmail.com with ESMTPSA id j2sm1637993qko.117.2022.01.17.09.04.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 09:04:16 -0800 (PST)
-Date:   Mon, 17 Jan 2022 12:04:15 -0500
-From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Roberto Sassu <roberto.sassu@huawei.com>, dhowells@redhat.com,
-        dwmw2@infradead.org, herbert@gondor.apana.org.au,
-        davem@davemloft.net, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        zohar@linux.ibm.com, ebiggers@kernel.org
-Subject: Re: [PATCH 00/14] KEYS: Add support for PGP keys and signatures
-Message-ID: <20220117170415.7j342okd67xl6rix@meerkat.local>
-References: <20220111180318.591029-1-roberto.sassu@huawei.com>
- <YeV+jkGg6mpQdRID@zx2c4.com>
- <20220117165933.l3762ppcbj5jxicc@meerkat.local>
+        Mon, 17 Jan 2022 12:07:38 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C40E1612A4;
+        Mon, 17 Jan 2022 17:07:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5999EC36AEC;
+        Mon, 17 Jan 2022 17:07:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642439257;
+        bh=ztCq9ANAcBkHdS4/TOCP4mgItl7HAp3oyahqlUf+rPU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=llx0wWBx9ceVD2hDe0QY8iXCFR+vlvBkbH1WH82FCIwLX7yQTfJoPNlMJFSu96BxP
+         z48+6427qvFSdtf1WQAz1veQbVXPPGMSIZ7KE244+bmazmxDSEl+YHf4GaVrPZjF06
+         xCM3JMrFhdGJRe5oJ39jF2tQaGfTHvZLHsdk3shAGWDWcYwEpcg/GayK0YLUPZAUI9
+         /kQFoWvCkApGxpt7JJDGixYhiqH3HuP5O+K9+46iPQrM+WW9puEiC0yI8TFLrJlAIQ
+         rG2OG24D7KTOkUUbZcw4AeKJkwfzHIUl6KAlSGp4BZNAuZ3eX+BqsIE1gxG4QR0+l5
+         9I9paqL2Atqxw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Joakim Tjernlund <joakim.tjernlund@infinera.com>,
+        Scott Wood <oss@buserror.net>, Wolfram Sang <wsa@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        chris.packham@alliedtelesis.co.nz, linux-i2c@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 07/13] i2c: mpc: Correct I2C reset procedure
+Date:   Mon, 17 Jan 2022 12:07:15 -0500
+Message-Id: <20220117170722.1473137-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220117170722.1473137-1-sashal@kernel.org>
+References: <20220117170722.1473137-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220117165933.l3762ppcbj5jxicc@meerkat.local>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 11:59:33AM -0500, Konstantin Ryabitsev wrote:
-> The most promising non-PGP development of PKI signatures that I've seen lately
-> is the openssh FIDO2 integration (the -sk keys) and support for
-> signing/verifying arbitrary external content using `ssh-keygen -n`. It even
+From: Joakim Tjernlund <joakim.tjernlund@infinera.com>
 
-Typo fix: that should be `ssh-keygen -Y`
+[ Upstream commit ebe82cf92cd4825c3029434cabfcd2f1780e64be ]
 
--K
+Current I2C reset procedure is broken in two ways:
+1) It only generate 1 START instead of 9 STARTs and STOP.
+2) It leaves the bus Busy so every I2C xfer after the first
+   fixup calls the reset routine again, for every xfer there after.
+
+This fixes both errors.
+
+Signed-off-by: Joakim Tjernlund <joakim.tjernlund@infinera.com>
+Acked-by: Scott Wood <oss@buserror.net>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/i2c/busses/i2c-mpc.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
+
+diff --git a/drivers/i2c/busses/i2c-mpc.c b/drivers/i2c/busses/i2c-mpc.c
+index 90e4f839eb1cb..d153fc28e6bfb 100644
+--- a/drivers/i2c/busses/i2c-mpc.c
++++ b/drivers/i2c/busses/i2c-mpc.c
+@@ -107,23 +107,30 @@ static irqreturn_t mpc_i2c_isr(int irq, void *dev_id)
+ /* Sometimes 9th clock pulse isn't generated, and slave doesn't release
+  * the bus, because it wants to send ACK.
+  * Following sequence of enabling/disabling and sending start/stop generates
+- * the 9 pulses, so it's all OK.
++ * the 9 pulses, each with a START then ending with STOP, so it's all OK.
+  */
+ static void mpc_i2c_fixup(struct mpc_i2c *i2c)
+ {
+ 	int k;
+-	u32 delay_val = 1000000 / i2c->real_clk + 1;
+-
+-	if (delay_val < 2)
+-		delay_val = 2;
++	unsigned long flags;
+ 
+ 	for (k = 9; k; k--) {
+ 		writeccr(i2c, 0);
+-		writeccr(i2c, CCR_MSTA | CCR_MTX | CCR_MEN);
++		writeb(0, i2c->base + MPC_I2C_SR); /* clear any status bits */
++		writeccr(i2c, CCR_MEN | CCR_MSTA); /* START */
++		readb(i2c->base + MPC_I2C_DR); /* init xfer */
++		udelay(15); /* let it hit the bus */
++		local_irq_save(flags); /* should not be delayed further */
++		writeccr(i2c, CCR_MEN | CCR_MSTA | CCR_RSTA); /* delay SDA */
+ 		readb(i2c->base + MPC_I2C_DR);
+-		writeccr(i2c, CCR_MEN);
+-		udelay(delay_val << 1);
++		if (k != 1)
++			udelay(5);
++		local_irq_restore(flags);
+ 	}
++	writeccr(i2c, CCR_MEN); /* Initiate STOP */
++	readb(i2c->base + MPC_I2C_DR);
++	udelay(15); /* Let STOP propagate */
++	writeccr(i2c, 0);
+ }
+ 
+ static int i2c_wait(struct mpc_i2c *i2c, unsigned timeout, int writing)
+-- 
+2.34.1
+
