@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0A1C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:08:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B6E6C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:08:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242841AbiAQRIb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:08:31 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52996 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242671AbiAQRFl (ORCPT
+        id S243113AbiAQRIh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:08:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46224 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241801AbiAQRFx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:05:41 -0500
+        Mon, 17 Jan 2022 12:05:53 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FE9C061768;
+        Mon, 17 Jan 2022 09:03:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2FA93B810A2;
-        Mon, 17 Jan 2022 17:05:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35CE5C36AEC;
-        Mon, 17 Jan 2022 17:05:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 13644B81163;
+        Mon, 17 Jan 2022 17:03:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9D56C36AEC;
+        Mon, 17 Jan 2022 17:03:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439139;
-        bh=esUmQol+H/4d9Hgo8Aa5Ag4uakS/BpjuUbGvpirtm4s=;
+        s=k20201202; t=1642439032;
+        bh=FjNJmuvmKPUn0Y/tUQqXZwC+h96sYOLijJ9A1+62c5o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HZBq7eRcabCWQchi1HED75c9NJXYBS27W0nuG3q3P5OrxIJDz9CO1fkXEfAeKWy3p
-         zrBEWTqQbpO8UzPbujwAw0/AggKlM2K5dgwVOUepaP0oWPqmcnKJyeGPcOix4QKdag
-         4ThOgr80lqsl5GCaweLRRqTgsUHDaYXIfO26BPTmiDc9Ru9SrKoc745w/joQmlMXKh
-         b+Rs5tud5ruRVPZmGda9dZKFwgRmYAXw4bDs+bksq7LriLzApCv3cIPNQhaEkdHSMD
-         SeEyxK1ztlsuS0NO1jMnToexyq/JRxwnYGCIpUP2GWmvfel1o2iYfTm5mgjAXfwqBr
-         asqbKA4NF497g==
+        b=lhST0HJdST2E9+itPZntK0qbaxuEhfc32bZhXkKwWzPJi8AyhHwJ6kSWemiQAHayb
+         zTimBdeDTMjDSco8S05lCibyoGoAeDnJ7jo0nKQ1LRncQEN8yd7n8cnsM2d8f/ogoa
+         kQKb2rxNLGczxjiNQFncUzGbXOXiH0cLq/1IeF6CvDgAEFwFfR79bpJ3d3ynVs/F9I
+         clno7zpJd17iRQxric4BJrQsKpQiiwPF+FyvvRFpAxzJcbtAIyoU5KDbIG3QQzoPXY
+         FhpZeRy4+w3Q3RdF00KyWTGWnMR/yieOHh/c+Bprypz70brBWYSLDWhYcKDVWcwINX
+         nEKXAcuViiFFw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>, linux-i2c@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 18/21] i2c: designware-pci: Fix to change data types of hcnt and lcnt parameters
-Date:   Mon, 17 Jan 2022 12:04:50 -0500
-Message-Id: <20220117170454.1472347-18-sashal@kernel.org>
+Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Erhard Furtner <erhard_f@mailbox.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, benh@kernel.crashing.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.10 12/34] powerpc/powermac: Add missing lockdep_register_key()
+Date:   Mon, 17 Jan 2022 12:03:02 -0500
+Message-Id: <20220117170326.1471712-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170454.1472347-1-sashal@kernel.org>
-References: <20220117170454.1472347-1-sashal@kernel.org>
+In-Reply-To: <20220117170326.1471712-1-sashal@kernel.org>
+References: <20220117170326.1471712-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,42 +53,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit d52097010078c1844348dc0e467305e5f90fd317 ]
+[ Upstream commit df1f679d19edb9eeb67cc2f96b29375f21991945 ]
 
-The data type of hcnt and lcnt in the struct dw_i2c_dev is of type u16.
-It's better to have same data type in struct dw_scl_sda_cfg as well.
+KeyWest i2c @0xf8001003 irq 42 /uni-n@f8000000/i2c@f8001000
+BUG: key c2d00cbc has not been registered!
+------------[ cut here ]------------
+DEBUG_LOCKS_WARN_ON(1)
+WARNING: CPU: 0 PID: 1 at kernel/locking/lockdep.c:4801 lockdep_init_map_type+0x4c0/0xb4c
+Modules linked in:
+CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.15.5-gentoo-PowerMacG4 #9
+NIP:  c01a9428 LR: c01a9428 CTR: 00000000
+REGS: e1033cf0 TRAP: 0700   Not tainted  (5.15.5-gentoo-PowerMacG4)
+MSR:  00029032 <EE,ME,IR,DR,RI>  CR: 24002002  XER: 00000000
 
-Reported-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+GPR00: c01a9428 e1033db0 c2d1cf20 00000016 00000004 00000001 c01c0630 e1033a73
+GPR08: 00000000 00000000 00000000 e1033db0 24002004 00000000 f8729377 00000003
+GPR16: c1829a9c 00000000 18305357 c1416fc0 c1416f80 c006ac60 c2d00ca8 c1416f00
+GPR24: 00000000 c21586f0 c2160000 00000000 c2d00cbc c2170000 c216e1a0 c2160000
+NIP [c01a9428] lockdep_init_map_type+0x4c0/0xb4c
+LR [c01a9428] lockdep_init_map_type+0x4c0/0xb4c
+Call Trace:
+[e1033db0] [c01a9428] lockdep_init_map_type+0x4c0/0xb4c (unreliable)
+[e1033df0] [c1c177b8] kw_i2c_add+0x334/0x424
+[e1033e20] [c1c18294] pmac_i2c_init+0x9ec/0xa9c
+[e1033e80] [c1c1a790] smp_core99_probe+0xbc/0x35c
+[e1033eb0] [c1c03cb0] kernel_init_freeable+0x190/0x5a4
+[e1033f10] [c000946c] kernel_init+0x28/0x154
+[e1033f30] [c0035148] ret_from_kernel_thread+0x14/0x1c
+
+Add missing lockdep_register_key()
+
+Reported-by: Erhard Furtner <erhard_f@mailbox.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/69e4f55565bb45ebb0843977801b245af0c666fe.1638264741.git.christophe.leroy@csgroup.eu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-designware-pcidrv.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ arch/powerpc/platforms/powermac/low_i2c.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/i2c/busses/i2c-designware-pcidrv.c b/drivers/i2c/busses/i2c-designware-pcidrv.c
-index 05b35ac33ce33..735326e5eb8cf 100644
---- a/drivers/i2c/busses/i2c-designware-pcidrv.c
-+++ b/drivers/i2c/busses/i2c-designware-pcidrv.c
-@@ -37,10 +37,10 @@ enum dw_pci_ctl_id_t {
- };
- 
- struct dw_scl_sda_cfg {
--	u32 ss_hcnt;
--	u32 fs_hcnt;
--	u32 ss_lcnt;
--	u32 fs_lcnt;
-+	u16 ss_hcnt;
-+	u16 fs_hcnt;
-+	u16 ss_lcnt;
-+	u16 fs_lcnt;
- 	u32 sda_hold;
- };
- 
+diff --git a/arch/powerpc/platforms/powermac/low_i2c.c b/arch/powerpc/platforms/powermac/low_i2c.c
+index f77a59b5c2e1a..de34fa34c42d8 100644
+--- a/arch/powerpc/platforms/powermac/low_i2c.c
++++ b/arch/powerpc/platforms/powermac/low_i2c.c
+@@ -582,6 +582,7 @@ static void __init kw_i2c_add(struct pmac_i2c_host_kw *host,
+ 	bus->close = kw_i2c_close;
+ 	bus->xfer = kw_i2c_xfer;
+ 	mutex_init(&bus->mutex);
++	lockdep_register_key(&bus->lock_key);
+ 	lockdep_set_class(&bus->mutex, &bus->lock_key);
+ 	if (controller == busnode)
+ 		bus->flags = pmac_i2c_multibus;
 -- 
 2.34.1
 
