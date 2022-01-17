@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B37FBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:06:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D16D8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:06:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242798AbiAQRGA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:06:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45176 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241592AbiAQRD7 (ORCPT
+        id S232585AbiAQRGF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:06:05 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50320 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241623AbiAQREA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:03:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43CFFC061746;
-        Mon, 17 Jan 2022 09:02:57 -0800 (PST)
+        Mon, 17 Jan 2022 12:04:00 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D763D61213;
-        Mon, 17 Jan 2022 17:02:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2481DC36AED;
-        Mon, 17 Jan 2022 17:02:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3D8FB81131;
+        Mon, 17 Jan 2022 17:03:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71824C36AE3;
+        Mon, 17 Jan 2022 17:03:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642438976;
-        bh=YXBDOB0oCSKS1lj5s5dvau3YvJ0D92OK3LAuRsBUZ8A=;
+        s=k20201202; t=1642439038;
+        bh=e21FpSYim1ygMkk92DWrzZG+FchegcpQRTza2xVC53M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VEYG+VvX0Ecdji0cUJfihW/WYFcUpVYQIRL9iEHDf8k31G4j8aKjVBdueB04Zv/9p
-         B/pN0PzK3SBXd3PpJv8khDBazDlIbulOPQU6qprXr70ROF3o05SpzZbAT/dXa7cEcP
-         WSeKGEeuENq2Dx76a4X6UU+e8BPhBhdnGSEwF7i8IpzKdvacx1CUzHuhijKxIQgyuS
-         U/XPuygvWsaf661rPhud6IgHIT88/4aTvGG94N4B1JYEWYL/7ze6rXCn6HNOC0HC7K
-         pu4cO4G6hlKdMOoIsVYhuf45YY5qnah5KNtRTqoj81Lj2GxTIs4BPuwgZRB32BTolq
-         zPW6BeDFfEtyw==
+        b=SpyWIZVGKcKRNKAC2ld8SEpiN6QY20kRLT8kFVfaSmZG/S6WaxSIAshcToFusNluS
+         UrVy5sD1wSKHjyw6+9tg0zQpyhxxre2npKkdbXZbO1kfvmBj2/Df1w38YLLJU9Te08
+         ub6zdpODf46l8XkpugpHhE5n6x1blcLHTKxXm9mr4sqgdGiZanBi+WW2CMNfEabwDl
+         lx09VgxCYLn/8gEt+g7OH7ImS7WsskKrvzQFZQU355EmNWXXnZ0Vt/Y3UkFVRfZuVc
+         MsmtztB51wLN3jVlcYst19tBPey/HPkCIJsNvQ9JHZvLEH3nkxWOP9mNFYILsiJOTx
+         q0bMVl6zgkTMA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sreekanth Reddy <sreekanth.reddy@broadcom.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, sathya.prakash@broadcom.com,
-        kashyap.desai@broadcom.com, sumit.saxena@broadcom.com,
-        jejb@linux.ibm.com, mpi3mr-linuxdrv.pdl@broadcom.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 36/44] scsi: mpi3mr: Fixes around reply request queues
-Date:   Mon, 17 Jan 2022 12:01:19 -0500
-Message-Id: <20220117170127.1471115-36-sashal@kernel.org>
+Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Fabiano Rosas <farosas@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, npiggin@gmail.com,
+        paulus@ozlabs.org, ravi.bangoria@linux.ibm.com,
+        bharata@linux.ibm.com, nathan@kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.10 14/34] KVM: PPC: Book3S: Suppress failed alloc warning in H_COPY_TOFROM_GUEST
+Date:   Mon, 17 Jan 2022 12:03:04 -0500
+Message-Id: <20220117170326.1471712-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170127.1471115-1-sashal@kernel.org>
-References: <20220117170127.1471115-1-sashal@kernel.org>
+In-Reply-To: <20220117170326.1471712-1-sashal@kernel.org>
+References: <20220117170326.1471712-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,60 +52,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-[ Upstream commit 243bcc8efdb1f44b1a1d415e6821a246714c68ce ]
+[ Upstream commit 792020907b11c6f9246c21977cab3bad985ae4b6 ]
 
-Set reply queue depth of 1K for B0 and 4K for A0.
+H_COPY_TOFROM_GUEST is an hcall for an upper level VM to access its nested
+VMs memory. The userspace can trigger WARN_ON_ONCE(!(gfp & __GFP_NOWARN))
+in __alloc_pages() by constructing a tiny VM which only does
+H_COPY_TOFROM_GUEST with a too big GPR9 (number of bytes to copy).
 
-While freeing the segmented request queues use the actual queue depth that
-is used while creating them.
+This silences the warning by adding __GFP_NOWARN.
 
-Link: https://lore.kernel.org/r/20211220141159.16117-25-sreekanth.reddy@broadcom.com
-Signed-off-by: Sreekanth Reddy <sreekanth.reddy@broadcom.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Spotted by syzkaller.
+
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Reviewed-by: Fabiano Rosas <farosas@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20210901084550.1658699-1-aik@ozlabs.ru
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/mpi3mr/mpi3mr.h    | 3 ++-
- drivers/scsi/mpi3mr/mpi3mr_fw.c | 4 +++-
- 2 files changed, 5 insertions(+), 2 deletions(-)
+ arch/powerpc/kvm/book3s_hv_nested.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/mpi3mr/mpi3mr.h b/drivers/scsi/mpi3mr/mpi3mr.h
-index 9787b53a2b598..2cc42432bd0c0 100644
---- a/drivers/scsi/mpi3mr/mpi3mr.h
-+++ b/drivers/scsi/mpi3mr/mpi3mr.h
-@@ -79,7 +79,8 @@ extern int prot_mask;
+diff --git a/arch/powerpc/kvm/book3s_hv_nested.c b/arch/powerpc/kvm/book3s_hv_nested.c
+index a5f1ae892ba68..d0b6c8c16c48a 100644
+--- a/arch/powerpc/kvm/book3s_hv_nested.c
++++ b/arch/powerpc/kvm/book3s_hv_nested.c
+@@ -510,7 +510,7 @@ long kvmhv_copy_tofrom_guest_nested(struct kvm_vcpu *vcpu)
+ 	if (eaddr & (0xFFFUL << 52))
+ 		return H_PARAMETER;
  
- /* Operational queue management definitions */
- #define MPI3MR_OP_REQ_Q_QD		512
--#define MPI3MR_OP_REP_Q_QD		4096
-+#define MPI3MR_OP_REP_Q_QD		1024
-+#define MPI3MR_OP_REP_Q_QD4K		4096
- #define MPI3MR_OP_REQ_Q_SEG_SIZE	4096
- #define MPI3MR_OP_REP_Q_SEG_SIZE	4096
- #define MPI3MR_MAX_SEG_LIST_SIZE	4096
-diff --git a/drivers/scsi/mpi3mr/mpi3mr_fw.c b/drivers/scsi/mpi3mr/mpi3mr_fw.c
-index 4a8316c6bd41a..5af36c54cb596 100644
---- a/drivers/scsi/mpi3mr/mpi3mr_fw.c
-+++ b/drivers/scsi/mpi3mr/mpi3mr_fw.c
-@@ -1278,7 +1278,7 @@ static void mpi3mr_free_op_req_q_segments(struct mpi3mr_ioc *mrioc, u16 q_idx)
- 			mrioc->op_reply_qinfo[q_idx].q_segment_list = NULL;
- 		}
- 	} else
--		size = mrioc->req_qinfo[q_idx].num_requests *
-+		size = mrioc->req_qinfo[q_idx].segment_qd *
- 		    mrioc->facts.op_req_sz;
+-	buf = kzalloc(n, GFP_KERNEL);
++	buf = kzalloc(n, GFP_KERNEL | __GFP_NOWARN);
+ 	if (!buf)
+ 		return H_NO_MEM;
  
- 	for (j = 0; j < mrioc->req_qinfo[q_idx].num_segments; j++) {
-@@ -1565,6 +1565,8 @@ static int mpi3mr_create_op_reply_q(struct mpi3mr_ioc *mrioc, u16 qidx)
- 
- 	reply_qid = qidx + 1;
- 	op_reply_q->num_replies = MPI3MR_OP_REP_Q_QD;
-+	if (!mrioc->pdev->revision)
-+		op_reply_q->num_replies = MPI3MR_OP_REP_Q_QD4K;
- 	op_reply_q->ci = 0;
- 	op_reply_q->ephase = 1;
- 	atomic_set(&op_reply_q->pend_ios, 0);
 -- 
 2.34.1
 
