@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 593B4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C688C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:03:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235424AbiAQRDl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:03:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45106 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241561AbiAQRB5 (ORCPT
+        id S242314AbiAQRDr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:03:47 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51812 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242021AbiAQRCB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:01:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16946C061760;
-        Mon, 17 Jan 2022 09:01:49 -0800 (PST)
+        Mon, 17 Jan 2022 12:02:01 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 88BF061230;
-        Mon, 17 Jan 2022 17:01:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE869C36AEC;
-        Mon, 17 Jan 2022 17:01:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EFCFA6119C;
+        Mon, 17 Jan 2022 17:02:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B29EC36AE3;
+        Mon, 17 Jan 2022 17:01:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642438909;
-        bh=ZKIO0EI8etdhFdJgw05cNmBcT16ZGNTA2eUjGktLPHw=;
+        s=k20201202; t=1642438920;
+        bh=e9qHwmWQeW+I8N/3hk78hKYr7tPj2scOY6Gr/oCbo4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=O+vJHy2zHOfxkmI49EcYGXUHgqi/dhx9fLsAKLEbiCvLo3XFsC4AbuG8xDIzxvcRA
-         gAiO77F4uHAbZy7j8NpFE/LTY1r79PihHyK/xrdC0hOOhbR70sKVMp2rKghXd2KcGV
-         oDx76qMBBRXZMWF+ujpI6xzRa0RmfFWMu84DgAnNoNrkkjSrSOaJm63Cls3VJFW4DG
-         pWcAdaguuFrf4Hlv/yLpYGRwD7fiKJgziWJboy7nfRV0JpbxWxyi81OI6J8P0R/y9f
-         nkbAqAlD8nxyCeNb01Ud6MCoP1g2PsISdPsoI/sNT6cQcnAtgyFVqptOZnYFSjiXBm
-         uu/62VDbpSAHg==
+        b=dXPzrl2fsmiwZeU4YLn8F6rF9I2f/Djey4zEzYgYU+N19q9bFiMb0QXRly8C0SDOF
+         F0V+uwVPTSNtDIpCF0/HnOLh8qvXfSkCqc/HQxM7wKTKkNF/NgkpyW/NNt55pAxVJC
+         clzAkBOl0glMrDPsa81WwSsTxbvQ+NWTU9JKJZoaiCADw0PSYnYIZAuIz2/0O8bpoa
+         pTUof3qksIhfKgtEk3Ucd+wL6e56q2UvJLdEVQ/ya/ljrW3NNORbvUTvZ4kywTAS6w
+         hOb4hnE062wOu/pNenQtvHIUwxk1/ejKF6je5b81/svWSYZKHbd1aW38O7ekgrf0sW
+         OMQjddDFm41Mw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, srikar@linux.vnet.ibm.com,
-        ego@linux.vnet.ibm.com, parth@linux.ibm.com, clg@kaod.org,
-        hbathini@linux.ibm.com, npiggin@gmail.com, robh@kernel.org,
-        yukuai3@huawei.com, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.15 09/44] powerpc/smp: Move setup_profiling_timer() under CONFIG_PROFILING
-Date:   Mon, 17 Jan 2022 12:00:52 -0500
-Message-Id: <20220117170127.1471115-9-sashal@kernel.org>
+Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Fabiano Rosas <farosas@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, npiggin@gmail.com,
+        paulus@ozlabs.org, ravi.bangoria@linux.ibm.com,
+        bharata@linux.ibm.com, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.15 14/44] KVM: PPC: Book3S: Suppress failed alloc warning in H_COPY_TOFROM_GUEST
+Date:   Mon, 17 Jan 2022 12:00:57 -0500
+Message-Id: <20220117170127.1471115-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117170127.1471115-1-sashal@kernel.org>
 References: <20220117170127.1471115-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,39 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-[ Upstream commit a4ac0d249a5db80e79d573db9e4ad29354b643a8 ]
+[ Upstream commit 792020907b11c6f9246c21977cab3bad985ae4b6 ]
 
-setup_profiling_timer() is only needed when CONFIG_PROFILING is enabled.
+H_COPY_TOFROM_GUEST is an hcall for an upper level VM to access its nested
+VMs memory. The userspace can trigger WARN_ON_ONCE(!(gfp & __GFP_NOWARN))
+in __alloc_pages() by constructing a tiny VM which only does
+H_COPY_TOFROM_GUEST with a too big GPR9 (number of bytes to copy).
 
-Fixes the following W=1 warning when CONFIG_PROFILING=n:
-  linux/arch/powerpc/kernel/smp.c:1638:5: error: no previous prototype for ‘setup_profiling_timer’
+This silences the warning by adding __GFP_NOWARN.
 
+Spotted by syzkaller.
+
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+Reviewed-by: Fabiano Rosas <farosas@linux.ibm.com>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211124093254.1054750-5-mpe@ellerman.id.au
+Link: https://lore.kernel.org/r/20210901084550.1658699-1-aik@ozlabs.ru
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/smp.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/powerpc/kvm/book3s_hv_nested.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
-index 605bab448f847..c7ef0739c8640 100644
---- a/arch/powerpc/kernel/smp.c
-+++ b/arch/powerpc/kernel/smp.c
-@@ -1640,10 +1640,12 @@ void start_secondary(void *unused)
- 	BUG();
- }
+diff --git a/arch/powerpc/kvm/book3s_hv_nested.c b/arch/powerpc/kvm/book3s_hv_nested.c
+index ed8a2c9f56299..89295b52a97c3 100644
+--- a/arch/powerpc/kvm/book3s_hv_nested.c
++++ b/arch/powerpc/kvm/book3s_hv_nested.c
+@@ -582,7 +582,7 @@ long kvmhv_copy_tofrom_guest_nested(struct kvm_vcpu *vcpu)
+ 	if (eaddr & (0xFFFUL << 52))
+ 		return H_PARAMETER;
  
-+#ifdef CONFIG_PROFILING
- int setup_profiling_timer(unsigned int multiplier)
- {
- 	return 0;
- }
-+#endif
+-	buf = kzalloc(n, GFP_KERNEL);
++	buf = kzalloc(n, GFP_KERNEL | __GFP_NOWARN);
+ 	if (!buf)
+ 		return H_NO_MEM;
  
- static void fixup_topology(void)
- {
 -- 
 2.34.1
 
