@@ -2,100 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89E26C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 08:34:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 801BEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 08:36:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238230AbiAQIek (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 03:34:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41588 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238257AbiAQIeh (ORCPT
+        id S238241AbiAQIgF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 03:36:05 -0500
+Received: from m1397.mail.163.com ([220.181.13.97]:45498 "EHLO
+        m1397.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233273AbiAQIgE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 03:34:37 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE586C061574;
-        Mon, 17 Jan 2022 00:34:36 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: usama.anjum)
-        with ESMTPSA id B4D1B1F4135B
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642408475;
-        bh=xoK0jv3NtU8ZkFPzIzfvCTtQcjyKWM9goIUF47mzE/o=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=IqPEoxEtxahmxn6slrmLI5kbao8z63Jjv3ia08ySyB2cwgvYAjuXWtX/zfe6H8SVu
-         LVU6yeTfN5PyztamR8/+VsrtSEok9fHjGiQKH/Q4VQD9k+eO3ktHcOimWf9KPHA/tJ
-         35gFyCbIUM2qBZgGg0rjph6PN1V7dqTh2/ukELJ8pcrqXjaTITDGaTZZIJyC1NHSGR
-         yfOEyKC5i1RUhzJeePiBaWs/vG2NG2RXQ8bmKxDzt+WdoGX/79A3IxpjQmZQXZ0Nga
-         ZyFxn3DJ55nAST/jHMH4Woogxhc79M2UKW7WOexmE/UBYqDKp+QqCJ4xTkOihpaKBb
-         VmRwclfcTAidQ==
-Message-ID: <b5b69eac10039de1b287df90279f464bd70e1de0.camel@collabora.com>
-Subject: Re: [PATCH] iio: frequency: admv1013: remove the always true
- condition
-From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Muhammad Usama Anjum <usama.anjum@collabora.com>
-Date:   Mon, 17 Jan 2022 13:34:28 +0500
-In-Reply-To: <20220115180941.709a667a@jic23-huawei>
-References: <YdS3gJYtECMaDDjA@debian-BULLSEYE-live-builder-AMD64>
-         <20220115180941.709a667a@jic23-huawei>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Mon, 17 Jan 2022 03:36:04 -0500
+X-Greylist: delayed 925 seconds by postgrey-1.27 at vger.kernel.org; Mon, 17 Jan 2022 03:35:56 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:MIME-Version:Message-ID; bh=U6AJg
+        RT9yEKALKqy71zPTJhLAEDKSAmRLqeRA/LEZqI=; b=og+G4EDMAh4i2EurjCB65
+        teC8pAYUU5c4O0ADKf3qc8RxMr7UEwDepXJOswqKL5CyZcY+U93HKNLyFaB6+kLP
+        us5VJOosw9eK37s4Ry1Nd8ZwGezVY7NMjnOXCAt/l5W6V5vBg75r7+48C6BSMI5P
+        WDLiTOA9hIKs3f+JLqwlKY=
+Received: from slark_xiao$163.com ( [112.97.53.17] ) by ajax-webmail-wmsvr97
+ (Coremail) ; Mon, 17 Jan 2022 16:20:12 +0800 (CST)
+X-Originating-IP: [112.97.53.17]
+Date:   Mon, 17 Jan 2022 16:20:12 +0800 (CST)
+From:   "Slark Xiao" <slark_xiao@163.com>
+To:     "Manivannan Sadhasivam" <mani@kernel.org>
+Cc:     hemantk@codeaurora.org, mhi@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re:Re: [PATCH net] bus: mhi: Add mru_default for Foxconn SDX55
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210622(1d4788a8)
+ Copyright (c) 2002-2022 www.mailtech.cn 163com
+In-Reply-To: <20220117075323.GA4209@thinkpad>
+References: <20220115103912.3775-1-slark_xiao@163.com>
+ <20220117075323.GA4209@thinkpad>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=GBK
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Message-ID: <76f0a70a.2e7f.17e671f4eb0.Coremail.slark_xiao@163.com>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: YcGowABHbCu8JuVhoh8NAA--.52392W
+X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiJRaLZGAJmDy6WgABsw
+X-Coremail-Antispam: 1U5529EdanIXcx71UUUUU7vcSsGvfC2KfnxnUU==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 2022-01-15 at 18:09 +0000, Jonathan Cameron wrote:
-> On Wed, 5 Jan 2022 02:09:20 +0500
-> Muhammad Usama Anjum <usama.anjum@collabora.com> wrote:
-> 
-> > unsigned int variable is always greater than or equal to zero. Make the
-> > if condition simple.
-> > 
-> > Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
-> Hi,
-> 
-> + CC Antoniu and this should have a Fixes tag.
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-Fixes: da35a7b526d9 ("iio: frequency: admv1013: add support for ADMV1013")
-
-Please let me know if I should send a V2 with this tag included.
-
-Thanks,
-Usama
-> > ---
-> >  drivers/iio/frequency/admv1013.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/frequency/admv1013.c b/drivers/iio/frequency/admv1013.c
-> > index 6cdeb50143af..3f3c478e9baa 100644
-> > --- a/drivers/iio/frequency/admv1013.c
-> > +++ b/drivers/iio/frequency/admv1013.c
-> > @@ -348,7 +348,7 @@ static int admv1013_update_mixer_vgate(struct admv1013_state *st)
-> >  
-> > 
-> > 
-> > 
-> >  	vcm = regulator_get_voltage(st->reg);
-> >  
-> > 
-> > 
-> > 
-> > -	if (vcm >= 0 && vcm < 1800000)
-> > +	if (vcm < 1800000)
-> >  		mixer_vgate = (2389 * vcm / 1000000 + 8100) / 100;
-> >  	else if (vcm > 1800000 && vcm < 2600000)
-> >  		mixer_vgate = (2375 * vcm / 1000000 + 125) / 100;
-> 
-
-
+CgpBdCAyMDIyLTAxLTE3IDE1OjUzOjIzLCAiTWFuaXZhbm5hbiBTYWRoYXNpdmFtIiA8bWFuaUBr
+ZXJuZWwub3JnPiB3cm90ZToKPk9uIFNhdCwgSmFuIDE1LCAyMDIyIGF0IDA2OjM5OjEyUE0gKzA4
+MDAsIFNsYXJrIFhpYW8gd3JvdGU6Cj4+IEZvciBkZWZhdWx0IG1lY2hhbmlzbSwgcHJvZHVjdCB3
+b3VsZCB1c2UgZGVmYXVsdCBNUlUgMzUwMCBpZgo+PiB0aGV5IGRpZG4ndCBkZWZpbmUgaXQuIEJ1
+dCBmb3IgRm94Y29ubiBTRFg1NSwgdGhlcmUgaXMgYSBrbm93bgo+PiBpc3N1ZSB3aGljaCBNUlUg
+MzUwMCB3b3VsZCBsZWFkIHRvIGRhdGEgY29ubmVjdGlvbiBsb3N0Lgo+PiBTbyB3ZSBhbGlnbiBp
+dCB3aXRoIFF1YWxjb21tIGRlZmF1bHQgTVJVIHNldHRpbmdzLgo+PiAKPj4gU2lnbmVkLW9mZi1i
+eTogU2xhcmsgWGlhbyA8c2xhcmtfeGlhb0AxNjMuY29tPgo+Cj5SZXZpZXdlZC1ieTogTWFuaXZh
+bm5hbiBTYWRoYXNpdmFtIDxtYW5pQGtlcm5lbC5vcmc+Cj4KPllvdSBuZWVkIHRvIGFkZCBGaXhl
+cyB0YWcgc28gdGhhdCBJIGNhbiBxdWV1ZSB0aGlzIHBhdGNoIGZvciB2NS4xNyBSQ3MuCj4KPlRo
+YW5rcywKPk1hbmkKPgpIaSBNYW5pLAogIE5ldyBwYXRjaCBpcyBjb21taXR0ZWQuIFBsZWFzZSBo
+ZWxwIGRvIGEgY2hlY2sgYWdhaW4uCgpUaGFua3MhCj4+IC0tLQo+PiAgZHJpdmVycy9idXMvbWhp
+L3BjaV9nZW5lcmljLmMgfCAxICsKPj4gIDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlvbigrKQo+
+PiAKPj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvYnVzL21oaS9wY2lfZ2VuZXJpYy5jIGIvZHJpdmVy
+cy9idXMvbWhpL3BjaV9nZW5lcmljLmMKPj4gaW5kZXggM2EyNThhNjc3ZGY4Li43NGU4ZmMzNDJj
+ZmQgMTAwNjQ0Cj4+IC0tLSBhL2RyaXZlcnMvYnVzL21oaS9wY2lfZ2VuZXJpYy5jCj4+ICsrKyBi
+L2RyaXZlcnMvYnVzL21oaS9wY2lfZ2VuZXJpYy5jCj4+IEBAIC0zNjYsNiArMzY2LDcgQEAgc3Rh
+dGljIGNvbnN0IHN0cnVjdCBtaGlfcGNpX2Rldl9pbmZvIG1oaV9mb3hjb25uX3NkeDU1X2luZm8g
+PSB7Cj4+ICAJLmNvbmZpZyA9ICZtb2RlbV9mb3hjb25uX3NkeDU1X2NvbmZpZywKPj4gIAkuYmFy
+X251bSA9IE1ISV9QQ0lfREVGQVVMVF9CQVJfTlVNLAo+PiAgCS5kbWFfZGF0YV93aWR0aCA9IDMy
+LAo+PiArCS5tcnVfZGVmYXVsdCA9IDMyNzY4LAo+PiAgCS5zaWRlYmFuZF93YWtlID0gZmFsc2Us
+Cj4+ICB9Owo+PiAgCj4+IC0tIAo+PiAyLjI1LjEKPj4gCg==
