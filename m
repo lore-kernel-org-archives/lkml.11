@@ -2,102 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19D78C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 21:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F56FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 21:56:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243377AbiAQVy4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 16:54:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231401AbiAQVyx (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 16:54:53 -0500
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CA8C061574
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 13:54:53 -0800 (PST)
-Received: by mail-qk1-x72c.google.com with SMTP id h2so427860qkp.10
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 13:54:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=KmBygC3q5AQG8qkNJvnSnx+ggl7+9U+ombjnJKusFG4=;
-        b=BBYk7pWCxTpa4e9gEBi36zq0wZnDK1j8g3Khe3W2pLKftHSHr/CXDUEoyfqz3ooNbi
-         Glv8rYMWVGazEcND3kjnCvRMhHh/gu6xQWjwk8OJcUpOewIl+l/ejIwlhSRThY2N0OVs
-         mwTbFhmbf+K+mhRd0FmNjgwoVw20osV7MBe8U=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KmBygC3q5AQG8qkNJvnSnx+ggl7+9U+ombjnJKusFG4=;
-        b=cQc17qxMrV6XqM4MwTDlQkL1kJ2dyVezV3YOn3GjPZkFn47zKHHXVQimxTYto+C6q3
-         1keZhI+1eCLuC5aeay+CgFeCs+2mItxhAMt2GqwINSp6jUz7BStnKP9/KVjqkxrVgrmj
-         4YsEurlKfxT6FHnF4JuPoSNCTE5+o9auLTfPLxSXI3ju++guPDnOh1NF7okMqIGdXj7t
-         O5Mkdyhdx+9zrWcjSf8gfaocbgt2Ltr+ph5rduTM3CVYfWY5UZ/jjuEFrKS68XlZ2dp3
-         yS618Vem5HE4ku/BsEJ+xg6UctrkG5iz22/0YoRAyQdkhQelZgysiRh7SJDU4fx6Lwyr
-         6PAg==
-X-Gm-Message-State: AOAM533Ym99CJwcS8ufrYXwADCaFukFTENPHsGJMZ75Zc8XRxY/2CqT/
-        ocilIFAqoKm1T4n4lPOLVNOEYw==
-X-Google-Smtp-Source: ABdhPJxaMz1oYURs6e5lMt7vVVBbGEnFSB7TjiLRH+xlZuiq3V/0TG+DoST9VWbXv6HeYfW5osR6TA==
-X-Received: by 2002:a37:aad8:: with SMTP id t207mr15930861qke.216.1642456492290;
-        Mon, 17 Jan 2022 13:54:52 -0800 (PST)
-Received: from nitro.local (bras-base-mtrlpq5031w-grc-32-216-209-220-181.dsl.bell.ca. [216.209.220.181])
-        by smtp.gmail.com with ESMTPSA id f9sm9371606qkp.94.2022.01.17.13.54.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 13:54:51 -0800 (PST)
-Date:   Mon, 17 Jan 2022 16:54:49 -0500
-From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-To:     "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
-Cc:     Roberto Sassu <roberto.sassu@huawei.com>, dhowells@redhat.com,
-        dwmw2@infradead.org, herbert@gondor.apana.org.au,
-        davem@davemloft.net, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        zohar@linux.ibm.com, ebiggers@kernel.org,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: Re: [PATCH 00/14] KEYS: Add support for PGP keys and signatures
-Message-ID: <20220117215449.2qboqd3nmsky2g3w@nitro.local>
-References: <20220111180318.591029-1-roberto.sassu@huawei.com>
- <YeV+jkGg6mpQdRID@zx2c4.com>
- <20220117165933.l3762ppcbj5jxicc@meerkat.local>
- <392d28fa-7a2c-867a-5fbb-640064461eb7@maciej.szmigiero.name>
+        id S243401AbiAQVz6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 16:55:58 -0500
+Received: from mail.skyhub.de ([5.9.137.197]:45214 "EHLO mail.skyhub.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238246AbiAQVzv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 16:55:51 -0500
+Received: from zn.tnic (dslb-088-067-202-008.088.067.pools.vodafone-ip.de [88.67.202.8])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 8FB521EC0535;
+        Mon, 17 Jan 2022 22:55:43 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1642456543;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=rlAKVglu1iQl9gKMOXnGKYgVbZ1OvWrfPtGJgp9ATfQ=;
+        b=okZdM0249RhydtvgMuemFW7JEyVvNAMy3mH+qqtJT5Q/91DdlfnttD9rfBDMqdsw2Lplhd
+        LxZxaxbRKkptkR+1dphk5LaCGk6wug6wIF49Mo1j/lvJYhNzZISXScXMPiIUcp9uCL88El
+        BudB6p5faL5jzQupmvg4TLbu6CRi19A=
+Date:   Mon, 17 Jan 2022 22:55:46 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Nicolas Pitre <nico@fluxnic.net>
+Cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        linux-hardening@vger.kernel.org, x86@kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Bruce Schlobohm <bruce.schlobohm@intel.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Marios Pomonis <pomonis@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        "H.J. Lu" <hjl.tools@gmail.com>, linux-kernel@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, linux-arch@vger.kernel.org,
+        live-patching@vger.kernel.org, llvm@lists.linux.dev
+Subject: Re: [PATCH v9 04/15] arch: introduce ASM function sections
+Message-ID: <YeXl4hideuWxQCfu@zn.tnic>
+References: <20211223002209.1092165-1-alexandr.lobakin@intel.com>
+ <20211223002209.1092165-5-alexandr.lobakin@intel.com>
+ <YeXasIO5ArXxtw1J@zn.tnic>
+ <8n284257-9665-s3q1-6833-rn966p87qoqs@syhkavp.arg>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <392d28fa-7a2c-867a-5fbb-640064461eb7@maciej.szmigiero.name>
+In-Reply-To: <8n284257-9665-s3q1-6833-rn966p87qoqs@syhkavp.arg>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 09:59:22PM +0100, Maciej S. Szmigiero wrote:
-> > I am concerned that ed25519 private key management is very rudimentary -- more
-> > often than not it is just kept somewhere on disk, often without any passphrase
-> > encryption.
-> > 
-> > With all its legacy warts, GnuPG at least has decent support for hardware
-> > off-load via OpenPGP smartcards or TPM integration in GnuPG 2.3, but the best
-> > we have with ed25519 is passhprase protection as implemented in minisign (and
+On Mon, Jan 17, 2022 at 04:38:33PM -0500, Nicolas Pitre wrote:
+> On Mon, 17 Jan 2022, Borislav Petkov wrote:
 > 
-> I am not sure that I understood your point here correctly, but GnuPG
-> already supports ed25519 keys, including stored on a smartcard - for
-> example, on a YubiKey [1].
-
-Yes, I know, but you cannot use ed25519-capable OpenPGP smartcards to create
-non-PGP signatures. The discussion was about using ed25519 signatures
-directly (e.g. like signify/minisign do). Jason pointed out to me on IRC that
-it's possible to do it with YubiHSM, but it's an expensive device ($650 USD
-from Yubico).
-
-> While the current software support for ed25519 might be limited, there
-> is certainly progress being made, RFC 8410 allowed these algos for X.509
-> certificates.
-> Support for such certificates is already implemented in OpenSSL [2].
+> > Thanks for explaining this. The gas manpage is very, hm, verbose
+> > <sarcarstic eyeroll> ;-\:
 > 
-> ECDSA, on the other hand, is very fragile with respect to random number
-> generation at signing time.
-> We know that people got burned here in the past.
+> GNU tools tend to be far better documented in their info pages.
 
-I think this is taking us far away from the main topic (which
-signing/verification standards to use in-kernel).
+Good point, the corresponding text in the info page explains this option
+properly.
 
--K
+Now I need to remember that about GNU tools.
+
+There are a couple of redirects in that manpage to the info pages "See
+the info pages for documentation of ..." but I guess they should slap
+something along those lines at the end too:
+
+SEE ALSO
+       gcc(1), ld(1), and the Info entries for binutils and ld. Also, for
+       more info on gas options, see the corresponding info pages.
+
+Or so. :-)
+
+Thx.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
