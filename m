@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73BDFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:05:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D5B8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:05:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241784AbiAQRFS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:05:18 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50818 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241338AbiAQRDB (ORCPT
+        id S242213AbiAQRFV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:05:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45064 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241218AbiAQRDN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:03:01 -0500
+        Mon, 17 Jan 2022 12:03:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD50CC06177C;
+        Mon, 17 Jan 2022 09:02:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9A0A0B81161;
-        Mon, 17 Jan 2022 17:03:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F7E6C36AF2;
-        Mon, 17 Jan 2022 17:02:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6B4E6B8115E;
+        Mon, 17 Jan 2022 17:02:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 65EB7C36AF5;
+        Mon, 17 Jan 2022 17:02:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642438979;
-        bh=vqm+l+et8fHmf+ZDrFYxAyjLbW9sX4AdX0B4LSjo1aY=;
+        s=k20201202; t=1642438959;
+        bh=qSHAdX9uc0AHbgp4tUx3Otx5dAYl9F+lSQ3RPSFr8sE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BgvvEl/SJ7qAVQQNbiah6dLtl3gBWqsbBgWd3eXW4tvY4dUcd6aQNKHuySqmb9qpz
-         BCopNtxgTgsSScBlg/3hX2GLGb8XmbQdUJP/t1dWPyf5Sn9UEn7mArVOtomnu6y6Ak
-         UoVssy9HB6rxfb6LqgarfPBF2es7+vUy/jP1SpjIL/X6TxxsOT6iAR+U8W8bgPVZJP
-         zJzIK7zKIkA5KhV72b6zODyHZxizzbL7DuJVRqVplj9DoLBsht1+r6dacFo9Nw8r8Y
-         rEC9CdvuyMJo8dR+uK65zuXE0f2EuJ27uXxwNs9XULhD50IaZjPul3YzZQW8UIeqJJ
-         IKGHYZ+5ReCXg==
+        b=gP62QWWzi7XMJYlgzZfVfFkRb/ST47Hy1PL3eCHMtrhTGjiyOP+S6tqxLAjU1agyU
+         uJOxsWpJe7e1iGwdQSGy+ccGbjHC6wYN6esLGFShdw1GuqKwB4BJgkmnSFrq8JULrj
+         jty5VX+cctm8g8fDLhgiBKnjUA2HCSTap7KZHymUYsjiguJCNFx/PXFX1KImBHBJCy
+         asK49PtKgTYIMtl+LIuAAv0+jSjq+FSHdVyFt+CXwZhJ96fWa6AT51gen7RHWmWES9
+         e7Lcv6gHuhCTgpYZTbGlAjuqjHmxlE4uodkzytonrcIuKAQKQ3WlKsWWU+buJzRjDe
+         XHVvVf9SOvmeA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tzung-Bi Shih <tzungbi@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, matthias.bgg@gmail.com,
-        jiaxin.yu@mediatek.com, alsa-devel@alsa-project.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 37/44] ASoC: mediatek: mt8192-mt6359: fix device_node leak
-Date:   Mon, 17 Jan 2022 12:01:20 -0500
-Message-Id: <20220117170127.1471115-37-sashal@kernel.org>
+Cc:     Marc Zyngier <maz@kernel.org>, Jay Chen <jkchen@linux.alibaba.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de
+Subject: [PATCH AUTOSEL 5.15 30/44] irqchip/gic-v4: Disable redistributors' view of the VPE table at boot time
+Date:   Mon, 17 Jan 2022 12:01:13 -0500
+Message-Id: <20220117170127.1471115-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117170127.1471115-1-sashal@kernel.org>
 References: <20220117170127.1471115-1-sashal@kernel.org>
@@ -52,40 +51,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tzung-Bi Shih <tzungbi@google.com>
+From: Marc Zyngier <maz@kernel.org>
 
-[ Upstream commit 4e28491a7a198c668437f2be8a91a76aa52f20eb ]
+[ Upstream commit 79a7f77b9b154d572bd9d2f1eecf58c4d018d8e2 ]
 
-The of_parse_phandle() document:
-    >>> Use of_node_put() on it when done.
+Jay Chen reported that using a kdump kernel on a GICv4.1 system
+results in a RAS error being delivered when the secondary kernel
+configures the ITS's view of the new VPE table.
 
-The driver didn't call of_node_put().  Fixes the leak.
+As it turns out, that's because each RD still has a pointer to
+the previous instance of the VPE table, and that particular
+implementation is very upset by seeing two bits of the HW that
+should point to the same table with different values.
 
-Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
-Link: https://lore.kernel.org/r/20211214040028.2992627-1-tzungbi@google.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+To solve this, let's invalidate any reference that any RD has to
+the VPE table when discovering the RDs. The ITS can then be
+programmed as expected.
+
+Reported-by: Jay Chen <jkchen@linux.alibaba.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Link: https://lore.kernel.org/r/20211214064716.21407-1-jkchen@linux.alibaba.com
+Link: https://lore.kernel.org/r/20211216144804.1578566-1-maz@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/irqchip/irq-gic-v3.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
-index a606133951b70..24a5d0adec1ba 100644
---- a/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
-+++ b/sound/soc/mediatek/mt8192/mt8192-mt6359-rt1015-rt5682.c
-@@ -1172,7 +1172,11 @@ static int mt8192_mt6359_dev_probe(struct platform_device *pdev)
- 		return ret;
- 	}
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index fd4e9a37fea67..7bbccb13b896b 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -920,6 +920,22 @@ static int __gic_update_rdist_properties(struct redist_region *region,
+ {
+ 	u64 typer = gic_read_typer(ptr + GICR_TYPER);
  
--	return devm_snd_soc_register_card(&pdev->dev, card);
-+	ret = devm_snd_soc_register_card(&pdev->dev, card);
++	/* Boot-time cleanip */
++	if ((typer & GICR_TYPER_VLPIS) && (typer & GICR_TYPER_RVPEID)) {
++		u64 val;
 +
-+	of_node_put(platform_node);
-+	of_node_put(hdmi_codec);
-+	return ret;
- }
++		/* Deactivate any present vPE */
++		val = gicr_read_vpendbaser(ptr + SZ_128K + GICR_VPENDBASER);
++		if (val & GICR_VPENDBASER_Valid)
++			gicr_write_vpendbaser(GICR_VPENDBASER_PendingLast,
++					      ptr + SZ_128K + GICR_VPENDBASER);
++
++		/* Mark the VPE table as invalid */
++		val = gicr_read_vpropbaser(ptr + SZ_128K + GICR_VPROPBASER);
++		val &= ~GICR_VPROPBASER_4_1_VALID;
++		gicr_write_vpropbaser(val, ptr + SZ_128K + GICR_VPROPBASER);
++	}
++
+ 	gic_data.rdists.has_vlpis &= !!(typer & GICR_TYPER_VLPIS);
  
- #ifdef CONFIG_OF
+ 	/* RVPEID implies some form of DirectLPI, no matter what the doc says... :-/ */
 -- 
 2.34.1
 
