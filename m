@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E67C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:06:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90AE5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:06:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242590AbiAQRGk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:06:40 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52218 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242460AbiAQREc (ORCPT
+        id S242231AbiAQRGs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:06:48 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52762 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241500AbiAQRCz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:04:32 -0500
+        Mon, 17 Jan 2022 12:02:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0C158B8114A;
-        Mon, 17 Jan 2022 17:04:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0B15C36AEF;
-        Mon, 17 Jan 2022 17:04:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2ED2661238;
+        Mon, 17 Jan 2022 17:02:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDABFC36AF6;
+        Mon, 17 Jan 2022 17:02:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439069;
-        bh=TCMAxjkJB9dgoIXSVmuuBks01Ti+Fg5Kyhrp6E1okHA=;
+        s=k20201202; t=1642438974;
+        bh=VffSaQeFa9LtkWe5JdScSFvdlZGz2Hde+F96tYEm9vU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JQ+EDwaa9ZsIx0ouOYzzO4tq80aFsB677SzMKGqxoK8f6DfOd0MyNAflOHlo9WYfc
-         u1xyuNeDLfZxzMLLMRu/Cy4jnqrBMV+hZlfgGrZK6ZQNf3Y9AMP+r5Mm9qGifjHVdG
-         E49k9wdndo8ZbQeNMT21N3zjXDPfEqy3pX5VSYlojvGvYvTdkKi75HYDGYjgU2SMZS
-         Y5LVmsKyciKxaiPPjrVjHw8pZwJzivgEn0+AnBHLvsIzBtj0mLHDlau4z3RJwjeaSF
-         iSgulIZuwkgPElLRyoAC9G4nVkg1/LZACLnz2p9UUdY8IG8bv2YltRPmWNmsmxwPaj
-         EWjYmX/nfWYIQ==
+        b=TBgR/mfDcPYrCH4ta9lxe6ycxej324l2GKrZGMGsmlPORvvS4i21Lpk3YNkJaavET
+         PQXzPqmai2L1mzoWHSeHpcefu49Kh5guArPY0io2hTarB2UW62E5xn1GYA4FDXJwlP
+         OZ1+C3vIGYi20vXrTQm2z0AyneKjvKf5hStGl64HJL4uRyZp3dQDhnNQS5ZNfhg6oR
+         9x5iiFAS5AUmEceTKLxVw8Rv4J5H5G0tjAsrGb5H8mUPY/UqeKz6Zo5Unusl02b3xn
+         0B37nk82MQgbH+IOXXk8tYLgBIxflNFBZNQ9EJJ/XpwoBP8rEn+V5X4aHl6z5x56zm
+         1i0grqQtqPT6Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marc Zyngier <maz@kernel.org>, Jay Chen <jkchen@linux.alibaba.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de
-Subject: [PATCH AUTOSEL 5.10 27/34] irqchip/gic-v4: Disable redistributors' view of the VPE table at boot time
-Date:   Mon, 17 Jan 2022 12:03:17 -0500
-Message-Id: <20220117170326.1471712-27-sashal@kernel.org>
+Cc:     Christoph Hellwig <hch@lst.de>, Baoquan He <bhe@redhat.com>,
+        "Martin K . Petersen" <martin.petersen@oracle.com>,
+        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
+        linux-scsi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 35/44] scsi: sr: Don't use GFP_DMA
+Date:   Mon, 17 Jan 2022 12:01:18 -0500
+Message-Id: <20220117170127.1471115-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170326.1471712-1-sashal@kernel.org>
-References: <20220117170326.1471712-1-sashal@kernel.org>
+In-Reply-To: <20220117170127.1471115-1-sashal@kernel.org>
+References: <20220117170127.1471115-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -48,60 +49,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Zyngier <maz@kernel.org>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit 79a7f77b9b154d572bd9d2f1eecf58c4d018d8e2 ]
+[ Upstream commit d94d94969a4ba07a43d62429c60372320519c391 ]
 
-Jay Chen reported that using a kdump kernel on a GICv4.1 system
-results in a RAS error being delivered when the secondary kernel
-configures the ITS's view of the new VPE table.
+The allocated buffers are used as a command payload, for which the block
+layer and/or DMA API do the proper bounce buffering if needed.
 
-As it turns out, that's because each RD still has a pointer to
-the previous instance of the VPE table, and that particular
-implementation is very upset by seeing two bits of the HW that
-should point to the same table with different values.
-
-To solve this, let's invalidate any reference that any RD has to
-the VPE table when discovering the RDs. The ITS can then be
-programmed as expected.
-
-Reported-by: Jay Chen <jkchen@linux.alibaba.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Link: https://lore.kernel.org/r/20211214064716.21407-1-jkchen@linux.alibaba.com
-Link: https://lore.kernel.org/r/20211216144804.1578566-1-maz@kernel.org
+Link: https://lore.kernel.org/r/20211222090842.920724-1-hch@lst.de
+Reported-by: Baoquan He <bhe@redhat.com>
+Reviewed-by: Baoquan He <bhe@redhat.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/irqchip/irq-gic-v3.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ drivers/scsi/sr.c        | 2 +-
+ drivers/scsi/sr_vendor.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
-index 1bdb7acf445f4..04d1b3963b6ba 100644
---- a/drivers/irqchip/irq-gic-v3.c
-+++ b/drivers/irqchip/irq-gic-v3.c
-@@ -915,6 +915,22 @@ static int __gic_update_rdist_properties(struct redist_region *region,
- {
- 	u64 typer = gic_read_typer(ptr + GICR_TYPER);
+diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
+index 8b17b35283aa5..1203374828b97 100644
+--- a/drivers/scsi/sr.c
++++ b/drivers/scsi/sr.c
+@@ -851,7 +851,7 @@ static void get_capabilities(struct scsi_cd *cd)
  
-+	/* Boot-time cleanip */
-+	if ((typer & GICR_TYPER_VLPIS) && (typer & GICR_TYPER_RVPEID)) {
-+		u64 val;
-+
-+		/* Deactivate any present vPE */
-+		val = gicr_read_vpendbaser(ptr + SZ_128K + GICR_VPENDBASER);
-+		if (val & GICR_VPENDBASER_Valid)
-+			gicr_write_vpendbaser(GICR_VPENDBASER_PendingLast,
-+					      ptr + SZ_128K + GICR_VPENDBASER);
-+
-+		/* Mark the VPE table as invalid */
-+		val = gicr_read_vpropbaser(ptr + SZ_128K + GICR_VPROPBASER);
-+		val &= ~GICR_VPROPBASER_4_1_VALID;
-+		gicr_write_vpropbaser(val, ptr + SZ_128K + GICR_VPROPBASER);
-+	}
-+
- 	gic_data.rdists.has_vlpis &= !!(typer & GICR_TYPER_VLPIS);
  
- 	/* RVPEID implies some form of DirectLPI, no matter what the doc says... :-/ */
+ 	/* allocate transfer buffer */
+-	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
++	buffer = kmalloc(512, GFP_KERNEL);
+ 	if (!buffer) {
+ 		sr_printk(KERN_ERR, cd, "out of memory.\n");
+ 		return;
+diff --git a/drivers/scsi/sr_vendor.c b/drivers/scsi/sr_vendor.c
+index 1f988a1b9166f..a61635326ae0a 100644
+--- a/drivers/scsi/sr_vendor.c
++++ b/drivers/scsi/sr_vendor.c
+@@ -131,7 +131,7 @@ int sr_set_blocklength(Scsi_CD *cd, int blocklength)
+ 	if (cd->vendor == VENDOR_TOSHIBA)
+ 		density = (blocklength > 2048) ? 0x81 : 0x83;
+ 
+-	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
++	buffer = kmalloc(512, GFP_KERNEL);
+ 	if (!buffer)
+ 		return -ENOMEM;
+ 
+@@ -179,7 +179,7 @@ int sr_cd_check(struct cdrom_device_info *cdi)
+ 	if (cd->cdi.mask & CDC_MULTI_SESSION)
+ 		return 0;
+ 
+-	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
++	buffer = kmalloc(512, GFP_KERNEL);
+ 	if (!buffer)
+ 		return -ENOMEM;
+ 
 -- 
 2.34.1
 
