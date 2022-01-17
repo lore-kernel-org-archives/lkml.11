@@ -2,67 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D953BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 08:17:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24F87C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 08:19:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238013AbiAQIRZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 03:17:25 -0500
-Received: from mail-m975.mail.163.com ([123.126.97.5]:24218 "EHLO
-        mail-m975.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231253AbiAQIRW (ORCPT
+        id S238018AbiAQITF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 03:19:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37872 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231253AbiAQITD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 03:17:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=zGy/c
-        +rMZ+YP77HHohIlehh2vF9jVqV2GGfASZ90qrc=; b=Y0hhUnkIIbKqhF/cQjIIY
-        YN+dfq3qrYZexbFVW4K0xXFknnyeGhfjfERPLo/L38MmskdBcXsc+/UkNnaqrCnT
-        L02nBzU4eKD+1pcVbPajfixjQd2c4VKu2JIdzFgfMzCe8BC6a/xa7lAjKN39IORG
-        G3XXYqC3Es2nEMDrYSB9/k=
-Received: from localhost.localdomain (unknown [112.97.49.17])
-        by smtp5 (Coremail) with SMTP id HdxpCgAXT6DzJeVh5THMAQ--.604S2;
-        Mon, 17 Jan 2022 16:16:53 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     mani@kernel.org, hemantk@codeaurora.org
-Cc:     mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH net v2] For default mechanism, product would use default MRU 3500 if they didn't define it. But for Foxconn SDX55, there is a known issue which MRU 3500 would lead to data connection lost. So we align it with Qualcomm default MRU settings.
-Date:   Mon, 17 Jan 2022 16:16:44 +0800
-Message-Id: <20220117081644.21121-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 17 Jan 2022 03:19:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C58A5C061574;
+        Mon, 17 Jan 2022 00:19:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62B8961017;
+        Mon, 17 Jan 2022 08:19:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AE81C36AE7;
+        Mon, 17 Jan 2022 08:19:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1642407541;
+        bh=ETISPVgo24AGeOAgB8tUjhJrTBKIAvd8h8N9Nd/B6qE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=GCfqFO/kV9D6sYEiRkXw/hJbRTyhPndm+2Z9Yd6XoMu3XemG4oMnDxRA0+jq9ezwa
+         pw5AfYgnsaMpTLiVi5yE2gWxFvLcLWPZ/yLohxgI7G7VfD4xhVoGjF+/b0QPICQiiq
+         yqmgC5ku/Pro59ZZgiexHau/GBi1VVY7JwBG5sgU=
+Date:   Mon, 17 Jan 2022 09:18:58 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        Thomas Gleixner <gleixner@linutronix.de>,
+        "linux-spdx@vger.kernel.org" <linux-spdx@vger.kernel.org>
+Subject: Re: [PATCH v2] powerpc: Add missing SPDX license identifiers
+Message-ID: <YeUmcnyx499r6oYq@kroah.com>
+References: <f46026c3157dd856847ee8cb7ccac08453f58174.1642401402.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: HdxpCgAXT6DzJeVh5THMAQ--.604S2
-X-Coremail-Antispam: 1Uf129KBjvdXoW7Gw18tr4xGF1kWw4fCFy5twb_yoWxtrg_Cr
-        ZxGF97Gws8WryDGw1vqan5JrWrKa4rWr1kAF1Iqrn8J342vwnxXwnYqr18JFnIgF45CF9r
-        J3s5Zr1rAw4YgjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUbasj7UUUUU==
-X-Originating-IP: [112.97.49.17]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiNQCLZFrPfDWNuwABsx
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f46026c3157dd856847ee8cb7ccac08453f58174.1642401402.git.christophe.leroy@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Fixes: 5c2c85315948 ("bus: mhi: pci-generic: configurable network interface MRU")
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
+On Mon, Jan 17, 2022 at 06:41:45AM +0000, Christophe Leroy wrote:
+> Several files are missing SPDX license identifiers.
+> 
+> Following files are given the following SPDX identifier based on the comments in the top of the file:
+> 
+> 	boot/crtsavres.S:/* SPDX-License-Identifier: GPL-2.0+ */
+> 	include/asm/epapr_hcalls.h:/* SPDX-License-Identifier: GPL-2.0+ OR BSD */
+> 	include/asm/fsl_hcalls.h:/* SPDX-License-Identifier: GPL-2.0+ OR BSD */
+> 	include/asm/ibmebus.h:/* SPDX-License-Identifier: GPL-2.0 OR OpenIB BSD */
+> 	include/asm/sfp-machine.h:/* SPDX-License-Identifier: LGPL-2.0+ */
+> 	kvm/mpic.c:// SPDX-License-Identifier: GPL-2.0
+> 	lib/crtsavres.S:/* SPDX-License-Identifier: GPL-2.0+ */
+> 	mm/book3s64/hash_4k.c:// SPDX-License-Identifier: LGPL-2.0
+> 	mm/book3s64/hash_64k.c:// SPDX-License-Identifier: LGPL-2.0
+> 	mm/book3s64/hash_hugepage.c:// SPDX-License-Identifier: LGPL-2.1
+> 	platforms/pseries/ibmebus.c:// SPDX-License-Identifier: GPL-2.0 OR OpenIB BSD
+> 	tools/head_check.sh:# SPDX-License-Identifier: GPL-2.0+
+> 	xmon/ppc.h:/* SPDX-License-Identifier: GPL-1.0+ */
+> 
+> Add to other files the default kernel license identifier, in extenso GPL-2.0.
 
----
-v2: Add Fixes tag
----
- drivers/bus/mhi/pci_generic.c | 1 +
- 1 file changed, 1 insertion(+)
+Please also remove the old license text at the same time so that we can
+verify that you got the licenses correct.  As-is, we can not do that
+easily with this patch so it's not ok.
 
-diff --git a/drivers/bus/mhi/pci_generic.c b/drivers/bus/mhi/pci_generic.c
-index 3a258a677df8..74e8fc342cfd 100644
---- a/drivers/bus/mhi/pci_generic.c
-+++ b/drivers/bus/mhi/pci_generic.c
-@@ -366,6 +366,7 @@ static const struct mhi_pci_dev_info mhi_foxconn_sdx55_info = {
- 	.config = &modem_foxconn_sdx55_config,
- 	.bar_num = MHI_PCI_DEFAULT_BAR_NUM,
- 	.dma_data_width = 32,
-+	.mru_default = 32768,
- 	.sideband_wake = false,
- };
- 
--- 
-2.25.1
+thanks,
 
+greg k-h
