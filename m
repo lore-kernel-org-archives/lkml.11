@@ -2,93 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97DD3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 15:56:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 935ADC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 15:56:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240716AbiAQP4c (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 10:56:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58298 "EHLO
+        id S240747AbiAQP4h (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 10:56:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240685AbiAQP42 (ORCPT
+        with ESMTP id S240699AbiAQP4a (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 10:56:28 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E920C061401
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 07:56:27 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id d18-20020a05600c251200b0034974323cfaso25412104wma.4
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 07:56:27 -0800 (PST)
+        Mon, 17 Jan 2022 10:56:30 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAB71C06161C
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 07:56:29 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id d187-20020a1c1dc4000000b003474b4b7ebcso526052wmd.5
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 07:56:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DsqyxsAVSlOxkHs/ktXlOIw0yzzlQm8nxft+ufPq6ZE=;
-        b=Be35HJXMEKMEDeYomL0vE4JSstxzgh5Pw2+y6BLt5xqr0tVHCBQFkkRvcdoCQqw5P4
-         G7uvxNF3mp3szyL3Mi+c6BcbUa37AR9OGg4+Qa7PS1NfWmg3LQGttAfgDkeFc594M3M0
-         EdikTcg36rkSP0F1f1tm0IPUXyZiAC4RaB5Y2SW621B8M/3o+AT0+dRmEE4GPYa3EyRd
-         GZS3V7skrUj+cf6DY0jiDSrDsj0FmMu/IlkKQ8Yk6dfO/axKpgAWNMtJI3KtQZ2nxu2B
-         s1Tjg1IP8mbOChCX/usmY9i6c5bNTzQ72nqPt2AFQd9MZbvIvmVDBb2JZ+fF4At0VKI6
-         jwQQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=17LNy9CZCP/+ZCdmdAFt4lcNroP4x+vbh8EUReOHAKQ=;
+        b=myzg5tHLPabWaZfbAFNqhMc5tgs6CACzdGcvLA+m1kDstDrK8nQWPQkzoDNMtDYf6L
+         yFgffmK7U/OjMUNCP9iQkf0IVI8tuFdsfbYke8xMnp4a4WFDGW7AGLqoggHvpLUUiLIf
+         0+sGkvCWroLz9UUWXBS16UGeSlgPtUb5KhhC2NFAwEU5YvlJFOJ8zCPGFf6yMA/zaA9B
+         nJfrLqh4iQFndhY0RD6SgXSW2tHvAAC2xpUBVZaAg2PPshrR37yjLObNgt7UpU59aLC6
+         8pvccvU0yC1GqeE/wdCUVQOCJ4LwSNk7JXY5iZ7U6/CEw5OCkNZAIAtVCb/uw4j+eh15
+         tUEA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DsqyxsAVSlOxkHs/ktXlOIw0yzzlQm8nxft+ufPq6ZE=;
-        b=0jH8zaqICCBg544PkQr9BhLc/RUIGvkz5Aq2+1cTOR24BCw5Ihl+t3fP7XDVRIopTv
-         ZxS53XNKXlcy8de2gyJQOtwlDBktKEFVtFCP+Z0P/fGi2FRQbZ+gPr+54fkNPoq2GSCl
-         KZ2gwTT84aecs/3w9vZVIo5D5/MvjRmU7u9zcgWIepcCS9s/DoCCWwxlBXtaFV1PO/nk
-         7S5cIXB+sCb+5m/sUyNmoGhfbHielxOPc9v8wiHDhJ7Rzh/4AbqamwZoeoqLHtrf1KGT
-         EF3s7nLCJ/HZ3Qb8HNFXW2Y26DjBpsBLcbCd7FZ8EXQc6c4QxTP2Jsgv4h8GUTY0KYsV
-         fZxw==
-X-Gm-Message-State: AOAM533koTfquXzc3QU/w+XSG76jnAuuV3WwVKXZIlCZWtBHimzTkXJ6
-        RBshRr9cJpPpkt23PbrFPKSnJmyQMs4yQA==
-X-Google-Smtp-Source: ABdhPJzahs8bcHSsKhULSprSsbqUAigoWScg0qPNCMMBkhA12fU/iySVFVyEzZ9GkhQKC/nO+JwuRQ==
-X-Received: by 2002:a5d:6dd1:: with SMTP id d17mr21161718wrz.520.1642434986037;
-        Mon, 17 Jan 2022 07:56:26 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=17LNy9CZCP/+ZCdmdAFt4lcNroP4x+vbh8EUReOHAKQ=;
+        b=EmWV1euzkUBGUFMxgggLGxsP246p6enJUcDNkcVRRoILNg8y0U7B6XVol4KjH/M4p7
+         g8vBO810JsnMhrlLg5dZ6C613d57gIo4Obg1rP+5wiogYorE/iWWN75PM5P/IuikpK5D
+         015wjtOxUINNbaCZMkm4OORx+jC7oeFJmMrTcODI7Fnfx3jVSQd304P5oWrVe9idU6H1
+         C/J1KnAWxnCcCQSHYSHgQSp/6n66yx04a/W2KMlYrRwWawHQAaosagozsyO+0ypsCBAz
+         YMOFM+W8Nhwnnd+9GbDVtHVzR78Og3+pn/N1cX4P30k2H9yz/GAuVUfMeLGMEv0exFxX
+         MZxw==
+X-Gm-Message-State: AOAM532Vits2gS01h7vZfPTXczowTld7SoUnlwmQ9XNYtnPdZjXqgQ/i
+        CCm41zlGQD2mnY17n3JSe4j954iUD3CtcQ==
+X-Google-Smtp-Source: ABdhPJyDp87Po46VaGOl6acuVZtXN+Q1xZ5oDZxrG5yNSi308OV+MzOqT4zgSdan/g2SlMojqms2Lw==
+X-Received: by 2002:a5d:59ac:: with SMTP id p12mr8800161wrr.9.1642434988332;
+        Mon, 17 Jan 2022 07:56:28 -0800 (PST)
 Received: from localhost.localdomain (hst-221-60.medicom.bg. [84.238.221.60])
-        by smtp.gmail.com with ESMTPSA id i82sm15542900wma.23.2022.01.17.07.56.25
+        by smtp.gmail.com with ESMTPSA id i82sm15542900wma.23.2022.01.17.07.56.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 07:56:25 -0800 (PST)
+        Mon, 17 Jan 2022 07:56:27 -0800 (PST)
 From:   Stanimir Varbanov <stanimir.varbanov@linaro.org>
 To:     linux-media@vger.kernel.org, linux-arm-msm@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-api@vger.kernel.org
 Cc:     hverkuil-cisco@xs4all.nl,
         Stanimir Varbanov <stanimir.varbanov@linaro.org>
-Subject: [PATCH v3 0/6] Qualcomm custom compressed pixfmt
-Date:   Mon, 17 Jan 2022 17:55:53 +0200
-Message-Id: <20220117155559.234026-1-stanimir.varbanov@linaro.org>
+Subject: [PATCH v3 2/6] venus: helpers: Add helper to check supported pixel formats
+Date:   Mon, 17 Jan 2022 17:55:55 +0200
+Message-Id: <20220117155559.234026-3-stanimir.varbanov@linaro.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220117155559.234026-1-stanimir.varbanov@linaro.org>
+References: <20220117155559.234026-1-stanimir.varbanov@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes since v2:
+Add a helper to check supported pixel format per codec and session
+type.
 
-- 1/6, Added a phrase that the format is opaque (Hans).
-- 6/6, new patch to address an issue with reconfigure.
+Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+---
+ drivers/media/platform/qcom/venus/helpers.c | 23 +++++++++++++++++++++
+ drivers/media/platform/qcom/venus/helpers.h |  1 +
+ 2 files changed, 24 insertions(+)
 
-regards,
-Stan
-
-Stanimir Varbanov (6):
-  v4l: Add Qualcomm custom compressed pixel formats
-  venus: helpers: Add helper to check supported pixel formats
-  venus: Add a handling of QC08C compressed format
-  venus: hfi_platform: Correct supported compressed format
-  venus: Add a handling of QC10C compressed format
-  venus: vdec: Use output resolution on reconfigure
-
- .../media/v4l/pixfmt-reserved.rst             | 19 +++++++
- drivers/media/platform/qcom/venus/helpers.c   | 51 +++++++++++--------
- drivers/media/platform/qcom/venus/helpers.h   |  1 +
- .../platform/qcom/venus/hfi_platform_v4.c     |  4 +-
- .../platform/qcom/venus/hfi_platform_v6.c     |  4 +-
- drivers/media/platform/qcom/venus/vdec.c      | 35 +++++++++++--
- drivers/media/v4l2-core/v4l2-ioctl.c          |  2 +
- include/uapi/linux/videodev2.h                |  2 +
- 8 files changed, 87 insertions(+), 31 deletions(-)
-
+diff --git a/drivers/media/platform/qcom/venus/helpers.c b/drivers/media/platform/qcom/venus/helpers.c
+index 84c3a511ec31..a5464385a716 100644
+--- a/drivers/media/platform/qcom/venus/helpers.c
++++ b/drivers/media/platform/qcom/venus/helpers.c
+@@ -1797,6 +1797,29 @@ int venus_helper_get_out_fmts(struct venus_inst *inst, u32 v4l2_fmt,
+ }
+ EXPORT_SYMBOL_GPL(venus_helper_get_out_fmts);
+ 
++bool venus_helper_check_format(struct venus_inst *inst, u32 v4l2_pixfmt)
++{
++	struct venus_core *core = inst->core;
++	u32 fmt = to_hfi_raw_fmt(v4l2_pixfmt);
++	struct hfi_plat_caps *caps;
++	u32 buftype;
++
++	if (!fmt)
++		return false;
++
++	caps = venus_caps_by_codec(core, inst->hfi_codec, inst->session_type);
++	if (!caps)
++		return false;
++
++	if (inst->session_type == VIDC_SESSION_TYPE_DEC)
++		buftype = HFI_BUFFER_OUTPUT2;
++	else
++		buftype = HFI_BUFFER_OUTPUT;
++
++	return find_fmt_from_caps(caps, buftype, fmt);
++}
++EXPORT_SYMBOL_GPL(venus_helper_check_format);
++
+ int venus_helper_set_stride(struct venus_inst *inst,
+ 			    unsigned int width, unsigned int height)
+ {
+diff --git a/drivers/media/platform/qcom/venus/helpers.h b/drivers/media/platform/qcom/venus/helpers.h
+index 32619c3e8c97..358e4f39c9c0 100644
+--- a/drivers/media/platform/qcom/venus/helpers.h
++++ b/drivers/media/platform/qcom/venus/helpers.h
+@@ -55,6 +55,7 @@ void venus_helper_init_instance(struct venus_inst *inst);
+ int venus_helper_session_init(struct venus_inst *inst);
+ int venus_helper_get_out_fmts(struct venus_inst *inst, u32 fmt, u32 *out_fmt,
+ 			      u32 *out2_fmt, bool ubwc);
++bool venus_helper_check_format(struct venus_inst *inst, u32 v4l2_pixfmt);
+ int venus_helper_alloc_dpb_bufs(struct venus_inst *inst);
+ int venus_helper_free_dpb_bufs(struct venus_inst *inst);
+ int venus_helper_intbufs_alloc(struct venus_inst *inst);
 -- 
 2.25.1
 
