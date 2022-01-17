@@ -2,140 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3713C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:10:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03EDEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:10:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240923AbiAQQKO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 11:10:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33266 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240834AbiAQQJx (ORCPT
+        id S240943AbiAQQKP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 11:10:15 -0500
+Received: from netrider.rowland.org ([192.131.102.5]:51253 "HELO
+        netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with SMTP id S240864AbiAQQKD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 11:09:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD879C06161C;
-        Mon, 17 Jan 2022 08:09:52 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E338610A2;
-        Mon, 17 Jan 2022 16:09:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37B40C36AE7;
-        Mon, 17 Jan 2022 16:09:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642435791;
-        bh=ZSQ5ho0teCkT9pTWbslhru7s+LtfklfD3T7qG27l5r8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZV8x33dGIDyobz5SQtQamWq6q+v8HEA9zisI3K36ZHlyh6m0C7ISw/gs4h9iSlPtz
-         STcHcuplBufxZTFFDXK4NTzc5Fnu/b7ZcdOPYswLKGIbLwHO7oEvd3q2rvXTGWQMD4
-         GgqHU8TMX3NvjHPH6c8UZJnzAV9PgBwPB1EZBy4cs/PkEwfEmwqp5KS13g3Dt7Jr83
-         ggqhD/gnwc2aYEEdkmXbizA4/WrxjnCiuvnM1XZDcKFAlCBy/72rjtbEbpIhCPiubH
-         Nj8pN0H+Dsj/+fTdZFdRHvMGLtKzni2L72O5a/ch2GMg4m4La9oS4l91JuP+MVwJU8
-         ebwPHD05MJf3Q==
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Andi Kleen <andi@firstfloor.org>
-Cc:     linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ian Rogers <irogers@google.com>, Jiri Olsa <jolsa@kernel.org>,
-        Namhyung Kim <namhyung@kernel.org>
-Subject: [PATCH 2/4] perf stat: No need to setup affinities when starting a workload
-Date:   Mon, 17 Jan 2022 13:09:29 -0300
-Message-Id: <20220117160931.1191712-3-acme@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117160931.1191712-1-acme@kernel.org>
-References: <20220117160931.1191712-1-acme@kernel.org>
+        Mon, 17 Jan 2022 11:10:03 -0500
+Received: (qmail 40593 invoked by uid 1000); 17 Jan 2022 11:10:02 -0500
+Date:   Mon, 17 Jan 2022 11:10:02 -0500
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     gregkh@linuxfoundation.org, mathias.nyman@linux.intel.com,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        Bixuan Cui <cuibixuan@huawei.com>,
+        Rajat Jain <rajatja@google.com>, Andrew Lunn <andrew@lunn.ch>,
+        Chris Chiu <chris.chiu@canonical.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] usb: core: Bail out when port is stuck in reset loop
+Message-ID: <YeWU2ido11JzbDe6@rowland.harvard.edu>
+References: <20211230052811.650191-1-kai.heng.feng@canonical.com>
+ <CAAd53p6ev+yQT+jf32UrTMWQXwDPYtmZSrW0zCQnKuUaBbtXUg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAAd53p6ev+yQT+jf32UrTMWQXwDPYtmZSrW0zCQnKuUaBbtXUg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnaldo Carvalho de Melo <acme@redhat.com>
+On Mon, Jan 17, 2022 at 11:00:05AM +0800, Kai-Heng Feng wrote:
+> On Thu, Dec 30, 2021 at 1:28 PM Kai-Heng Feng
+> <kai.heng.feng@canonical.com> wrote:
+> >
+> > Unplugging USB device may cause an incorrect warm reset loop and the
+> > port can no longer be used:
+> > [  143.039019] xhci_hcd 0000:00:14.0: Port change event, 2-3, id 19, portsc: 0x4202c0
+> > [  143.039025] xhci_hcd 0000:00:14.0: handle_port_status: starting usb2 port polling.
+> > [  143.039051] hub 2-0:1.0: state 7 ports 10 chg 0000 evt 0008
+> > [  143.039058] xhci_hcd 0000:00:14.0: Get port status 2-3 read: 0x4202c0, return 0x4102c0
+> > [  143.039092] xhci_hcd 0000:00:14.0: clear port3 connect change, portsc: 0x4002c0
+> > [  143.039096] usb usb2-port3: link state change
+> > [  143.039099] xhci_hcd 0000:00:14.0: clear port3 link state change, portsc: 0x2c0
+> > [  143.039101] usb usb2-port3: do warm reset
+> > [  143.096736] xhci_hcd 0000:00:14.0: Get port status 2-3 read: 0x2b0, return 0x2b0
+> > [  143.096751] usb usb2-port3: not warm reset yet, waiting 50ms
+> > [  143.131500] xhci_hcd 0000:00:14.0: Can't queue urb, port error, link inactive
+> > [  143.138260] xhci_hcd 0000:00:14.0: Port change event, 2-3, id 19, portsc: 0x2802a0
+> > [  143.138263] xhci_hcd 0000:00:14.0: handle_port_status: starting usb2 port polling.
+> > [  143.160756] xhci_hcd 0000:00:14.0: Get port status 2-3 read: 0x2802a0, return 0x3002a0
+> > [  143.160798] usb usb2-port3: not warm reset yet, waiting 200ms
+> >
+> > The port status is PP=1, CCS=0, PED=0, PLS=Inactive, which is Error
+> > state per "USB3 Root Hub Port State Machine". It's reasonable to perform
+> > warm reset several times, but if the port is still not enabled after
+> > many attempts, consider it's gone and treat it as disconnected.
+> >
+> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+> 
+> A gentle ping...
+> 
+> > ---
+> >  drivers/usb/core/hub.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
+> > index 00070a8a65079..f618d86d526d1 100644
+> > --- a/drivers/usb/core/hub.c
+> > +++ b/drivers/usb/core/hub.c
+> > @@ -2979,7 +2979,8 @@ static int hub_port_reset(struct usb_hub *hub, int port1,
+> >                 }
+> >
+> >                 /* Check for disconnect or reset */
+> > -               if (status == 0 || status == -ENOTCONN || status == -ENODEV) {
+> > +               if (status == 0 || status == -ENOTCONN || status == -ENODEV ||
+> > +                   (status == -EBUSY && i == PORT_RESET_TRIES - 1)) {
 
-I.e. the simple:
+How about modifying the comment so that people will know what this 
+extra test is trying to do?  The original comment no longer gives an 
+accurate description of the test.
 
-  $ perf stat sleep 1
+Alan Stern
 
-Uses a dummy CPU map and thus there is no need to setup/cleanup
-affinities to avoid IPIs, etc.
-
-With this we're down to a sched_getaffinity() call, in the libnuma
-initialization, that probably can be removed in a followup patch.
-
-Cc: Adrian Hunter <adrian.hunter@intel.com>
-Cc: Andi Kleen <andi@firstfloor.org>
-Cc: Ian Rogers <irogers@google.com>
-Cc: Jiri Olsa <jolsa@kernel.org>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
----
- tools/perf/builtin-stat.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
-
-diff --git a/tools/perf/builtin-stat.c b/tools/perf/builtin-stat.c
-index 973ade18b72a9479..934e992c966fb950 100644
---- a/tools/perf/builtin-stat.c
-+++ b/tools/perf/builtin-stat.c
-@@ -788,7 +788,7 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
- 	const bool forks = (argc > 0);
- 	bool is_pipe = STAT_RECORD ? perf_stat.data.is_pipe : false;
- 	struct evlist_cpu_iterator evlist_cpu_itr;
--	struct affinity affinity;
-+	struct affinity saved_affinity, *affinity = NULL;
- 	int err;
- 	bool second_pass = false;
- 
-@@ -803,8 +803,11 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
- 	if (group)
- 		evlist__set_leader(evsel_list);
- 
--	if (affinity__setup(&affinity) < 0)
--		return -1;
-+	if (!cpu_map__is_dummy(evsel_list->core.cpus)) {
-+		if (affinity__setup(&saved_affinity) < 0)
-+			return -1;
-+		affinity = &saved_affinity;
-+	}
- 
- 	evlist__for_each_entry(evsel_list, counter) {
- 		if (bpf_counter__load(counter, &target))
-@@ -813,7 +816,7 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
- 			all_counters_use_bpf = false;
- 	}
- 
--	evlist__for_each_cpu(evlist_cpu_itr, evsel_list, &affinity) {
-+	evlist__for_each_cpu(evlist_cpu_itr, evsel_list, affinity) {
- 		counter = evlist_cpu_itr.evsel;
- 
- 		/*
-@@ -869,7 +872,7 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
- 		 */
- 
- 		/* First close errored or weak retry */
--		evlist__for_each_cpu(evlist_cpu_itr, evsel_list, &affinity) {
-+		evlist__for_each_cpu(evlist_cpu_itr, evsel_list, affinity) {
- 			counter = evlist_cpu_itr.evsel;
- 
- 			if (!counter->reset_group && !counter->errored)
-@@ -878,7 +881,7 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
- 			perf_evsel__close_cpu(&counter->core, evlist_cpu_itr.cpu_map_idx);
- 		}
- 		/* Now reopen weak */
--		evlist__for_each_cpu(evlist_cpu_itr, evsel_list, &affinity) {
-+		evlist__for_each_cpu(evlist_cpu_itr, evsel_list, affinity) {
- 			counter = evlist_cpu_itr.evsel;
- 
- 			if (!counter->reset_group && !counter->errored)
-@@ -904,7 +907,7 @@ static int __run_perf_stat(int argc, const char **argv, int run_idx)
- 			counter->supported = true;
- 		}
- 	}
--	affinity__cleanup(&affinity);
-+	affinity__cleanup(affinity);
- 
- 	evlist__for_each_entry(evsel_list, counter) {
- 		if (!counter->supported) {
--- 
-2.34.1
-
+> >                         usb_clear_port_feature(hub->hdev, port1,
+> >                                         USB_PORT_FEAT_C_RESET);
+> >
+> > --
+> > 2.33.1
+> >
