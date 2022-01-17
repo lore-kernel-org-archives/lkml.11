@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F245C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:04:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24E47C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:04:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242089AbiAQREU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:04:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44984 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241832AbiAQRCc (ORCPT
+        id S242457AbiAQREa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:04:30 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50436 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242094AbiAQRCf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:02:32 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B315C0617BF;
-        Mon, 17 Jan 2022 09:01:59 -0800 (PST)
+        Mon, 17 Jan 2022 12:02:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C6BAFB81148;
-        Mon, 17 Jan 2022 17:01:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8996C36AE7;
-        Mon, 17 Jan 2022 17:01:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 22D31B8114B;
+        Mon, 17 Jan 2022 17:02:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DCEEC36AE3;
+        Mon, 17 Jan 2022 17:02:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642438917;
-        bh=lllL1+YSQOwmnLAGhKuxtgJRcS5EeLGylTj5nvLlLTA=;
+        s=k20201202; t=1642438953;
+        bh=Sk+xXa+P1+yP8WuweNAfqZxJsA9AOeunJxTM3kRPWqc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RwG58vJU+GlVUcXjctaQQF7XwIE/lxmXDXPJfqRPUJpENkumnmsMgQqFKyDC1fCUV
-         7eSPpLfAeLg0XJMhYC5jBIlF6QhRoJrLavzFss4d+DNPgvumU8cQHzSTJJH4fzf3xm
-         2i8KOe8112ALnJXAjfcD2z+NF1x7EPkQ7vLHXGEW+HdXmghjZCsJDp2ZUs8NI5pwHv
-         KRBo5GVJujnX8NA+AvPK62FzFqZ33XJhUwk/AoKpoABa/vKUTf88fcbvNLy55QPDdG
-         IeY3Wyuo9D/WOOfzUzl+TtVQPFEa5181Pwo1eTR20nzn38FqjftI79S1lVCo1V8ox2
-         nwWIrd+PpXOeQ==
+        b=jp8o9aC4KWPt/lYich21PAzP2t8cafwDBU2D45nDfLcWULaEcvWvRc73V/aVWcj0U
+         dNARSZ2mzSp45GBeEI7ax6wPbj0IlDLxmjPj3hLR5iCloEmhiEkmsjs9TlXCiMHTJb
+         B2RdxqNmnnvHL/zWW89hkobPGr21h54JKIRi30HUTpX+//5lVSDjtt1BxMB38g6F1z
+         7B+Htpx9EQvQgH3gHZcgCvpelW5NQSWUh/Nz9JKisHCp+qsAaeo8/Z0cQogck9a3I2
+         qB+8CvGx8NwLbuh82ACpO34NMMdWdnWUY3pjWF/gLpccsyhWLRHbok3oYYXjLaxOMW
+         kJ1cxNAipc3Tw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>,
+Cc:     Hari Bathini <hbathini@linux.ibm.com>,
         Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, npiggin@gmail.com,
-        farosas@linux.ibm.com, paulus@ozlabs.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.15 13/44] KVM: PPC: Book3S: Suppress warnings when allocating too big memory slots
-Date:   Mon, 17 Jan 2022 12:00:56 -0500
-Message-Id: <20220117170127.1471115-13-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, sfr@canb.auug.org.au,
+        nick.child@ibm.com, nathan@kernel.org, sxwjean@gmail.com,
+        aneesh.kumar@linux.ibm.com, srikar@linux.vnet.ibm.com,
+        ego@linux.vnet.ibm.com, parth@linux.ibm.com,
+        valentin.schneider@arm.com, clg@kaod.org, npiggin@gmail.com,
+        robh@kernel.org, yukuai3@huawei.com, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.15 27/44] powerpc/fadump: Fix inaccurate CPU state info in vmcore generated with panic
+Date:   Mon, 17 Jan 2022 12:01:10 -0500
+Message-Id: <20220117170127.1471115-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117170127.1471115-1-sashal@kernel.org>
 References: <20220117170127.1471115-1-sashal@kernel.org>
@@ -53,50 +53,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+From: Hari Bathini <hbathini@linux.ibm.com>
 
-[ Upstream commit 511d25d6b789fffcb20a3eb71899cf974a31bd9d ]
+[ Upstream commit 06e629c25daa519be620a8c17359ae8fc7a2e903 ]
 
-The userspace can trigger "vmalloc size %lu allocation failure: exceeds
-total pages" via the KVM_SET_USER_MEMORY_REGION ioctl.
+In panic path, fadump is triggered via a panic notifier function.
+Before calling panic notifier functions, smp_send_stop() gets called,
+which stops all CPUs except the panic'ing CPU. Commit 8389b37dffdc
+("powerpc: stop_this_cpu: remove the cpu from the online map.") and
+again commit bab26238bbd4 ("powerpc: Offline CPU in stop_this_cpu()")
+started marking CPUs as offline while stopping them. So, if a kernel
+has either of the above commits, vmcore captured with fadump via panic
+path would not process register data for all CPUs except the panic'ing
+CPU. Sample output of crash-utility with such vmcore:
 
-This silences the warning by checking the limit before calling vzalloc()
-and returns ENOMEM if failed.
+  # crash vmlinux vmcore
+  ...
+        KERNEL: vmlinux
+      DUMPFILE: vmcore  [PARTIAL DUMP]
+          CPUS: 1
+          DATE: Wed Nov 10 09:56:34 EST 2021
+        UPTIME: 00:00:42
+  LOAD AVERAGE: 2.27, 0.69, 0.24
+         TASKS: 183
+      NODENAME: XXXXXXXXX
+       RELEASE: 5.15.0+
+       VERSION: #974 SMP Wed Nov 10 04:18:19 CST 2021
+       MACHINE: ppc64le  (2500 Mhz)
+        MEMORY: 8 GB
+         PANIC: "Kernel panic - not syncing: sysrq triggered crash"
+           PID: 3394
+       COMMAND: "bash"
+          TASK: c0000000150a5f80  [THREAD_INFO: c0000000150a5f80]
+           CPU: 1
+         STATE: TASK_RUNNING (PANIC)
 
-This does not call underlying valloc helpers as __vmalloc_node() is only
-exported when CONFIG_TEST_VMALLOC_MODULE and __vmalloc_node_range() is
-not exported at all.
+  crash> p -x __cpu_online_mask
+  __cpu_online_mask = $1 = {
+    bits = {0x2, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
+  }
+  crash>
+  crash>
+  crash> p -x __cpu_active_mask
+  __cpu_active_mask = $2 = {
+    bits = {0xff, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
+  }
+  crash>
 
-Spotted by syzkaller.
+While this has been the case since fadump was introduced, the issue
+was not identified for two probable reasons:
 
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-[mpe: Use 'size' for the variable rather than 'cb']
+  - In general, the bulk of the vmcores analyzed were from crash
+    due to exception.
+
+  - The above did change since commit 8341f2f222d7 ("sysrq: Use
+    panic() to force a crash") started using panic() instead of
+    deferencing NULL pointer to force a kernel crash. But then
+    commit de6e5d38417e ("powerpc: smp_send_stop do not offline
+    stopped CPUs") stopped marking CPUs as offline till kernel
+    commit bab26238bbd4 ("powerpc: Offline CPU in stop_this_cpu()")
+    reverted that change.
+
+To ensure post processing register data of all other CPUs happens
+as intended, let panic() function take the crash friendly path (read
+crash_smp_send_stop()) with the help of crash_kexec_post_notifiers
+option. Also, as register data for all CPUs is captured by f/w, skip
+IPI callbacks here for fadump, to avoid any complications in finding
+the right backtraces.
+
+Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20210901084512.1658628-1-aik@ozlabs.ru
+Link: https://lore.kernel.org/r/20211207103719.91117-2-hbathini@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kvm/book3s_hv.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/powerpc/kernel/fadump.c |  8 ++++++++
+ arch/powerpc/kernel/smp.c    | 10 ++++++++++
+ 2 files changed, 18 insertions(+)
 
-diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
-index 7b74fc0a986b8..94da0d25eb125 100644
---- a/arch/powerpc/kvm/book3s_hv.c
-+++ b/arch/powerpc/kvm/book3s_hv.c
-@@ -4861,8 +4861,12 @@ static int kvmppc_core_prepare_memory_region_hv(struct kvm *kvm,
- 	unsigned long npages = mem->memory_size >> PAGE_SHIFT;
+diff --git a/arch/powerpc/kernel/fadump.c b/arch/powerpc/kernel/fadump.c
+index b7ceb041743c9..60f5fc14aa235 100644
+--- a/arch/powerpc/kernel/fadump.c
++++ b/arch/powerpc/kernel/fadump.c
+@@ -1641,6 +1641,14 @@ int __init setup_fadump(void)
+ 	else if (fw_dump.reserve_dump_area_size)
+ 		fw_dump.ops->fadump_init_mem_struct(&fw_dump);
  
- 	if (change == KVM_MR_CREATE) {
--		slot->arch.rmap = vzalloc(array_size(npages,
--					  sizeof(*slot->arch.rmap)));
-+		unsigned long size = array_size(npages, sizeof(*slot->arch.rmap));
++	/*
++	 * In case of panic, fadump is triggered via ppc_panic_event()
++	 * panic notifier. Setting crash_kexec_post_notifiers to 'true'
++	 * lets panic() function take crash friendly path before panic
++	 * notifiers are invoked.
++	 */
++	crash_kexec_post_notifiers = true;
 +
-+		if ((size >> PAGE_SHIFT) > totalram_pages())
-+			return -ENOMEM;
+ 	return 1;
+ }
+ subsys_initcall(setup_fadump);
+diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
+index d03823aa7e4de..fb95f92dcfac6 100644
+--- a/arch/powerpc/kernel/smp.c
++++ b/arch/powerpc/kernel/smp.c
+@@ -61,6 +61,7 @@
+ #include <asm/cpu_has_feature.h>
+ #include <asm/ftrace.h>
+ #include <asm/kup.h>
++#include <asm/fadump.h>
+ 
+ #ifdef DEBUG
+ #include <asm/udbg.h>
+@@ -638,6 +639,15 @@ void crash_smp_send_stop(void)
+ {
+ 	static bool stopped = false;
+ 
++	/*
++	 * In case of fadump, register data for all CPUs is captured by f/w
++	 * on ibm,os-term rtas call. Skip IPI callbacks to other CPUs before
++	 * this rtas call to avoid tricky post processing of those CPUs'
++	 * backtraces.
++	 */
++	if (should_fadump_crash())
++		return;
 +
-+		slot->arch.rmap = vzalloc(size);
- 		if (!slot->arch.rmap)
- 			return -ENOMEM;
- 	}
+ 	if (stopped)
+ 		return;
+ 
 -- 
 2.34.1
 
