@@ -2,88 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A8EC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 12:23:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC81DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 12:24:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239854AbiAQMXb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 07:23:31 -0500
-Received: from mga12.intel.com ([192.55.52.136]:27708 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239588AbiAQMX3 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 07:23:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642422209; x=1673958209;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=7qgtDhFYqtyV75FVvzgVQnoln6aCvcYogDhoI1pjh38=;
-  b=Efc9uyYPULax0S2Jbs/xm4suxL/ND0mToRKvbLob+4cfmn7QUM8EJLsn
-   0rfRVvVnuRkAdH1gzL8kYptL8qc8CzS82bxX/s6LIVU7Xayn9IUs3uhQ4
-   YEd6FqsWVIV6s0rCFkKRctiOw7GpmsHOLHUZkEHRgNN8JdqwcZ9GYaKRe
-   pnpf9JmDJ+ihNm4y7bODBeo/lVGmz9jBT2nnN0RmLuRfu/tt4f1jrXivw
-   P8RvK7cRhpw7J7EiHl3OGQM3/kM6Px68Q01VsmmpFCUYaeZp8jnGC//Zo
-   wIdhfoAs+YZE5SA6is+u+4fWgV9vADUh3PnqmrMXcF4ydo816tXcqWLqH
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10229"; a="224592813"
-X-IronPort-AV: E=Sophos;i="5.88,295,1635231600"; 
-   d="scan'208";a="224592813"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 04:23:28 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,295,1635231600"; 
-   d="scan'208";a="625176278"
-Received: from mattu-haswell.fi.intel.com (HELO [10.237.72.199]) ([10.237.72.199])
-  by orsmga004.jf.intel.com with ESMTP; 17 Jan 2022 04:23:26 -0800
-Subject: Re: [PATCH v4] xhci: re-initialize the HC during resume if HCE was
- set
-To:     Puma Hsu <pumahsu@google.com>, mathias.nyman@intel.com,
-        gregkh@linuxfoundation.org
-Cc:     s.shtylyov@omp.ru, albertccwang@google.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-References: <20220117053918.671399-1-pumahsu@google.com>
-From:   Mathias Nyman <mathias.nyman@linux.intel.com>
-Message-ID: <f6d19871-a9d0-85a8-d834-f8f8198cbe15@linux.intel.com>
-Date:   Mon, 17 Jan 2022 14:24:54 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+        id S239865AbiAQMY2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 07:24:28 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:57380 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236811AbiAQMYW (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 07:24:22 -0500
+Date:   Mon, 17 Jan 2022 12:24:19 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1642422261;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xn8Tf8OGT62AB8lgwbLdJnoZHST9sm/ZalyTyMZXzXc=;
+        b=kkdekkyftUTnbdixJWzOg/w7q8tRBFQ1k8R+rXiuUhd6qREDc62S9QQFnZeW69srMaH21N
+        +4R/KC6fm4+/to8d1X4PERwiR6S2bzFUpsL+XR2ot+juHwAa46PiqB+ILLyWzgFWXLZzkK
+        iYN1GMfs9k7E2Sftxo0k1oUqvYqCq+Yi+0XUhRDu71FjocTp/aE8oLXq38jaNNHkvyqWmk
+        1r5ivlk4ob9ru/57YqZnzx3ubCy5ztg23BROW2YN36eoSyoFUa2F1g6GXx9YUqiObb0LZQ
+        qSGTdewHTBuWJoQrBBzrHrT700OopBf2MmMEQbIAMq2hxl4rOhku/lr3o5KdeQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1642422261;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=xn8Tf8OGT62AB8lgwbLdJnoZHST9sm/ZalyTyMZXzXc=;
+        b=kvnEhgJiQBme8YpsNxQVX8hM7FwAbyneyGSUD3YormH+A09d/9+1/zz6nkmOE9gy5FUFHe
+        zHBtY0/5SibKAXDw==
+From:   "irqchip-bot for Sander Vanheule" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
+Subject: [irqchip: irq/irqchip-fixes] irqchip/realtek-rtl: Service all pending
+ interrupts
+Cc:     Sander Vanheule <sander@svanheule.net>,
+        Marc Zyngier <maz@kernel.org>, tglx@linutronix.de
+In-Reply-To: =?utf-8?q?=3C5082ad3cb8b4eedf55075561b93eff6570299fe1=2E16417?=
+ =?utf-8?q?39718=2Egit=2Esander=40svanheule=2Enet=3E?=
+References: =?utf-8?q?=3C5082ad3cb8b4eedf55075561b93eff6570299fe1=2E164173?=
+ =?utf-8?q?9718=2Egit=2Esander=40svanheule=2Enet=3E?=
 MIME-Version: 1.0
-In-Reply-To: <20220117053918.671399-1-pumahsu@google.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Message-ID: <164242225972.16921.17762117940529896605.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17.1.2022 7.39, Puma Hsu wrote:
-> When HCE(Host Controller Error) is set, it means an internal
-> error condition has been detected. Software needs to re-initialize
-> the HC, so add this check in xhci resume.
-> 
-> Cc: stable@vger.kernel.org
-> Signed-off-by: Puma Hsu <pumahsu@google.com>
-> ---
-> v2: Follow Sergey Shtylyov <s.shtylyov@omp.ru>'s comment.
-> v3: Add stable@vger.kernel.org for stable release.
-> v4: Refine the commit message.
-> 
->  drivers/usb/host/xhci.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
-> index dc357cabb265..ab440ce8420f 100644
-> --- a/drivers/usb/host/xhci.c
-> +++ b/drivers/usb/host/xhci.c
-> @@ -1146,8 +1146,8 @@ int xhci_resume(struct xhci_hcd *xhci, bool hibernated)
->  		temp = readl(&xhci->op_regs->status);
->  	}
->  
-> -	/* If restore operation fails, re-initialize the HC during resume */
-> -	if ((temp & STS_SRE) || hibernated) {
-> +	/* If restore operation fails or HC error is detected, re-initialize the HC during resume */
-> +	if ((temp & (STS_SRE | STS_HCE)) || hibernated) {
+The following commit has been merged into the irq/irqchip-fixes branch of irqchip:
 
-Add a debug message in case we reset due to HCE
+Commit-ID:     960dd884ddf5621ae6284cd3a42724500a97ae4c
+Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/960dd884ddf5621ae6284cd3a42724500a97ae4c
+Author:        Sander Vanheule <sander@svanheule.net>
+AuthorDate:    Sun, 09 Jan 2022 15:54:34 +01:00
+Committer:     Marc Zyngier <maz@kernel.org>
+CommitterDate: Mon, 17 Jan 2022 12:16:26 
 
--Mathias  
+irqchip/realtek-rtl: Service all pending interrupts
+
+Instead of only servicing the lowest pending interrupt line, make sure
+all pending SoC interrupts are serviced before exiting the chained
+handler. This adds a small overhead if only one interrupt is pending,
+but should prevent rapid re-triggering of the handler.
+
+Signed-off-by: Sander Vanheule <sander@svanheule.net>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Link: https://lore.kernel.org/r/5082ad3cb8b4eedf55075561b93eff6570299fe1.1641739718.git.sander@svanheule.net
+---
+ drivers/irqchip/irq-realtek-rtl.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/irqchip/irq-realtek-rtl.c b/drivers/irqchip/irq-realtek-rtl.c
+index 568614e..50a5682 100644
+--- a/drivers/irqchip/irq-realtek-rtl.c
++++ b/drivers/irqchip/irq-realtek-rtl.c
+@@ -76,16 +76,20 @@ static void realtek_irq_dispatch(struct irq_desc *desc)
+ {
+ 	struct irq_chip *chip = irq_desc_get_chip(desc);
+ 	struct irq_domain *domain;
+-	unsigned int pending;
++	unsigned long pending;
++	unsigned int soc_int;
+ 
+ 	chained_irq_enter(chip, desc);
+ 	pending = readl(REG(RTL_ICTL_GIMR)) & readl(REG(RTL_ICTL_GISR));
++
+ 	if (unlikely(!pending)) {
+ 		spurious_interrupt();
+ 		goto out;
+ 	}
++
+ 	domain = irq_desc_get_handler_data(desc);
+-	generic_handle_domain_irq(domain, __ffs(pending));
++	for_each_set_bit(soc_int, &pending, 32)
++		generic_handle_domain_irq(domain, soc_int);
+ 
+ out:
+ 	chained_irq_exit(chip, desc);
