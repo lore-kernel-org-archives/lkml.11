@@ -2,127 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 772EFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 10:19:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6175C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 10:20:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238517AbiAQKT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 05:19:58 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:57010 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237275AbiAQKT4 (ORCPT
+        id S238546AbiAQKUD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 05:20:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37618 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237629AbiAQKT7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 05:19:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642414796;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=M2Jwh6X9L+KjOaA4kG9lgML07Ljz7RAuTmgyF2gmzTk=;
-        b=ia8CocW+aU7CrEnviYKCfmitlsW6lKnE94+YbNxRfW4THV7s3IAOdS4bgvyPqfq4H2NyWQ
-        HjIaeMf5230zrXfeNlcYlX+d4Adze6k84JNjBrryl/RWmNx8NGFl+cd5jCIskJlBTPZyBK
-        e1jpNUX1BEm3nWN4ds+fgxVMf+a4ceQ=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-644-yoINiyZfMkywE2a75pL7Tg-1; Mon, 17 Jan 2022 05:19:53 -0500
-X-MC-Unique: yoINiyZfMkywE2a75pL7Tg-1
-Received: by mail-wm1-f72.google.com with SMTP id p14-20020a1c544e000000b003490705086bso4846779wmi.7
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 02:19:52 -0800 (PST)
+        Mon, 17 Jan 2022 05:19:59 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0045C061574
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 02:19:58 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id u21so63418479edd.5
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 02:19:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4/B8S0T6l/cNTFCwbllAbkeryrIurv7WGfpD2SElg7M=;
+        b=dv+17V5MOPEzuLfM1Cm4a6q4iFsZiMxvmb+0viRdfYd80RUx9gSegypMRnWQrTQsgq
+         ELfJeQS4rdN44RZDM7QPPQ+LhOWupRIi2hAcGelXeM8j3ZRa1Ovn58l4OFMKbb0SCu+G
+         sDzPWHuK7OWM2HO8kcdaLHy+dfHG+z9C+iDOU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=M2Jwh6X9L+KjOaA4kG9lgML07Ljz7RAuTmgyF2gmzTk=;
-        b=LbzHjmSaZamakZRQ9XV5i3A9dSTrtKXmvvkVl1a8KBQ2oMo+7/e5fkSQeiad9Pe8h2
-         ZwiPKK22ISUDgoqxte50gT+4Q0JYFfiDuX1IDs+MdoZkCdgjyN5M3O9qepTpozgERgrT
-         tlBFMsqp3611dWQxc0waW4Me4N+mgtGPgui8bkfRF9/Bq5vOWVDe+FPt0qPu0nEwvk3s
-         2+AMT/AYw3s7XWUzaOq3fPDwmfVjhX6X+ubUXyNHab9jZuIz9IUh/CD8pXCCsKGRohYe
-         U6ZrSKhO2MV75vSn7bNr/ZsEJUlRS7PGaulpTJd27z9TWCzCb0RqTAFvCtitU+AQcEQA
-         eSxw==
-X-Gm-Message-State: AOAM5307A2YmPmGk0iYq7ZqO4KeDBhMESipVmbyT6SqDBhkQyaMIXfug
-        l9T9uDe+sXjXLOKzZxnFXOGWQmDelsfjsy/YH2VFoRF2fAukYipXAHtWdGiDCjzxih4VSNa7yRD
-        hAS9DYMlmdKtXoWkrbMM/MqDv
-X-Received: by 2002:adf:b60d:: with SMTP id f13mr8447986wre.225.1642414791822;
-        Mon, 17 Jan 2022 02:19:51 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzjvQUUb/H0EZLSZ3Ie0h6oeM1z//4qUyAexcNH+Hmg6QGgAM53E0ZxOy6w07KCaNZAYcAt7Q==
-X-Received: by 2002:adf:b60d:: with SMTP id f13mr8447972wre.225.1642414791578;
-        Mon, 17 Jan 2022 02:19:51 -0800 (PST)
-Received: from [192.168.1.102] ([92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id z7sm15283605wrm.117.2022.01.17.02.19.50
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4/B8S0T6l/cNTFCwbllAbkeryrIurv7WGfpD2SElg7M=;
+        b=y/cKdYDzcGrr70m7APTU9UMMYyopVbHibH76q33dgxen+wqu055HpP0PPEsVVPgsRv
+         Lh+wXz3GrK0phQuqQ0Bu+tPzSinYRr2vnR6KHskimqINbet4PMygvN7XlvIaiP19JBxr
+         mERAoWSNImkDLNBLLJ529B1QMIxTiuoKe/ZeqdOJKYtM2wYTR/ni0Qju4x1z053nbCRP
+         VEIE2tzIRYHb+j+bOHsEBSVDyFNeWVjXoPVf6WEJoiafo42uO7kS2vX8T5Zv5Wd6fGTD
+         hn+Cye4kygQDffTg3u5DjxDP2WNPXyAOGe6oa62ICG+ugDz0kVzZVnY5MkhlN3Lzn8vq
+         7LVQ==
+X-Gm-Message-State: AOAM532ZJxmtKVNB8UPLRX0IvBgcGFnuUfxnf/DyPcCJnVnX5PwN0F0R
+        1p+pxdbEWacm43uwGo4lR1DvQq9661DDMJSw
+X-Google-Smtp-Source: ABdhPJyaA9kKuOxLlM8Ij8sMCuw/VH6OfQX8eG4OEnJvMxQsOGqgJcMz9a/TG+VULsYYqPqergv9pg==
+X-Received: by 2002:a17:907:96a4:: with SMTP id hd36mr15706302ejc.369.1642414797227;
+        Mon, 17 Jan 2022 02:19:57 -0800 (PST)
+Received: from mail-wm1-f46.google.com (mail-wm1-f46.google.com. [209.85.128.46])
+        by smtp.gmail.com with ESMTPSA id b2sm4261597ejh.199.2022.01.17.02.19.57
+        for <linux-kernel@vger.kernel.org>
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Jan 2022 02:19:51 -0800 (PST)
-Message-ID: <fa7d7b0e-50bf-dc1b-a708-408de47b1e66@redhat.com>
-Date:   Mon, 17 Jan 2022 11:19:50 +0100
+        Mon, 17 Jan 2022 02:19:57 -0800 (PST)
+Received: by mail-wm1-f46.google.com with SMTP id ay4-20020a05600c1e0400b0034a81a94607so20584962wmb.1
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 02:19:57 -0800 (PST)
+X-Received: by 2002:a05:600c:3482:: with SMTP id a2mr3476469wmq.152.1642414785683;
+ Mon, 17 Jan 2022 02:19:45 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
-Content-Language: en-US
-To:     Daniel Vetter <daniel@ffwll.ch>, Helge Deller <deller@gmx.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "airlied@gmail.com" <airlied@gmail.com>
-Cc:     linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-References: <YeG8ydoJNWWkGrTb@ls3530>
- <CAKMK7uGdJckdM+fg+576iJXsqzCOUg20etPBMwRLB9U7GcG01Q@mail.gmail.com>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <CAKMK7uGdJckdM+fg+576iJXsqzCOUg20etPBMwRLB9U7GcG01Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <2752208.1642413437@warthog.procyon.org.uk>
+In-Reply-To: <2752208.1642413437@warthog.procyon.org.uk>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Mon, 17 Jan 2022 12:19:29 +0200
+X-Gmail-Original-Message-ID: <CAHk-=wjQG5HnwQD98z8de1EvRzDnebZxh=gQUVTKCn0DOp7PQw@mail.gmail.com>
+Message-ID: <CAHk-=wjQG5HnwQD98z8de1EvRzDnebZxh=gQUVTKCn0DOp7PQw@mail.gmail.com>
+Subject: Re: Out of order read() completion and buffer filling beyond returned amount
+To:     David Howells <dhowells@redhat.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Dave Wysochanski <dwysocha@redhat.com>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Jeff Layton <jlayton@kernel.org>,
+        Latchesar Ionkov <lucho@ionkov.net>,
+        Marc Dionne <marc.dionne@auristor.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        Omar Sandoval <osandov@osandov.com>,
+        Shyam Prasad N <nspmangalore@gmail.com>,
+        Steve French <sfrench@samba.org>,
+        Trond Myklebust <trondmy@hammerspace.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        ceph-devel@vger.kernel.org, linux-afs@lists.infradead.org,
+        linux-cachefs@redhat.com, CIFS <linux-cifs@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        "open list:NFS, SUNRPC, AND..." <linux-nfs@vger.kernel.org>,
+        v9fs-developer@lists.sourceforge.net,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/17/22 11:02, Daniel Vetter wrote:
-
-[snip]
-
->>  FRAMEBUFFER LAYER
->> -L:     dri-devel@lists.freedesktop.org
->> +M:     Helge Deller <deller@gmx.de>
->>  L:     linux-fbdev@vger.kernel.org
->> -S:     Orphan
-> 
-> Maybe don't rush maintainer changes in over the w/e without even bothering
-> to get any input from the people who've been maintaining it before.
-> 
-> Because the status isn't entirely correct, fbdev core code and fbcon and
-> all that has been maintained, but in bugfixes only mode. And there's very
-> solid&important reasons to keep merging these patches through a drm tree,
-> because that's where all the driver development happens, and hence also
-> all the testing (e.g. the drm test suite has some fbdev tests - the only
-> automated ones that exist to my knowledge - and we run them in CI). So
-> moving that into an obscure new tree which isn't even in linux-next yet is
-> no good at all.
-> 
-> Now fbdev driver bugfixes is indeed practically orphaned and I very much
-> welcome anyone stepping up for that, but the simplest approach there would
-> be to just get drm-misc commit rights and push the oddball bugfix in there
-> directly. But also if you want to do your own pull requests to Linus for
-> that I don't care and there's really no interference I think, so
-> whatever floats.
+On Mon, Jan 17, 2022 at 11:57 AM David Howells <dhowells@redhat.com> wrote:
 >
+> Do you have an opinion on whether it's permissible for a filesystem to write
+> into the read() buffer beyond the amount it claims to return, though still
+> within the specified size of the buffer?
 
-I second that getting commit rights in drm-misc and pushing the changes
-there makes much more sense than keeping a separate tree for fbdev.
+I'm pretty sure that would seriously violate POSIX in the general
+case, and maybe even break some programs that do fancy buffer
+management (ie I could imagine some circular buffer thing that expects
+any "unwritten" ('unread'?) parts to stay with the old contents)
 
-Not only for the fbdev core and fbcon but also for fbdev drivers. There
-is common for fbdev drivers bugs to be exposed after DRM changes, so it
-is more convenient to push fixes for these through the same tree as well.
+That said, that's for generic 'read()' cases for things like tty's or
+pipes etc that can return partial reads in the first place.
 
-As an example, just last week I had to fix issues in the vga16fb driver
-that started to occur after a change to support simpledrm in aarch64:
+If it's a regular file, then any partial read *already* violates
+POSIX, and nobody sane would do any such buffer management because
+it's supposed to be a 'can't happen' thing.
 
-https://lore.kernel.org/all/20220111131601.u36j6grsvnir5gvp@houat/T/
+And since you mention DIO, that's doubly true, and is already outside
+basic POSIX, and has already violated things like "all or nothing"
+rules for visibility of writes-vs-reads (which admittedly most Linux
+filesystems have violated even outside of DIO, since the strictest
+reading of the rules are incredibly nasty anyway). But filesystems
+like XFS which took some of the strict rules more seriously already
+ignored them for DIO, afaik.
 
-If there is a separate tree for fbdev, then this would require to do
-some coordination, share and merge immutable branches, etc for no
-clear benefit.
+So I suspect you're fine. Buffered reads might care more, but even
+there the whole "you can't really validly have partial reads anyway"
+thing is a bigger violation to begin with.
 
-Best regards,-- 
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
+With DIO, I suspect nobody cares about _those_ kinds of semantic
+details. People who use DIO tend to care primarily about performance -
+it's why they use it, after all - and are probably more than happy to
+be lax about other rules.
 
+But maybe somebody would prefer to have a mount option to specify just
+how out-of-spec things can be (ie like the traditional old nfs 'intr'
+thing). If only for testing, and for 'in case some odd app breaks'
+
+                Linus
