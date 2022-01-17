@@ -2,526 +2,257 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B28BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2050EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:41:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241128AbiAQQlR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 11:41:17 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:32676 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241116AbiAQQlP (ORCPT
+        id S241135AbiAQQld (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 11:41:33 -0500
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:25260 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241125AbiAQQlb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 11:41:15 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20HE0KBi022546;
-        Mon, 17 Jan 2022 11:41:06 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3dn4wyhqnf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 17 Jan 2022 11:41:06 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 20HGf5is064961
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 17 Jan 2022 11:41:05 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 17 Jan
- 2022 11:41:04 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 17 Jan 2022 11:41:04 -0500
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 20HGes82012846;
-        Mon, 17 Jan 2022 11:41:00 -0500
-From:   Cristian Pop <cristian.pop@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>, <devicetree@vger.kernel.org>,
-        <robh+dt@kernel.org>, Cristian Pop <cristian.pop@analog.com>
-Subject: [PATCH v1 2/2] iio:frequency:admv4420.c: Add support for ADMV4420
-Date:   Mon, 17 Jan 2022 18:52:47 +0200
-Message-ID: <20220117165247.15718-2-cristian.pop@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220117165247.15718-1-cristian.pop@analog.com>
-References: <20220117165247.15718-1-cristian.pop@analog.com>
+        Mon, 17 Jan 2022 11:41:31 -0500
+Received: from pps.filterd (m0246630.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20HGB7MX013442;
+        Mon, 17 Jan 2022 16:41:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
+ from : subject : to : cc : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=corp-2021-07-09;
+ bh=7DlJsiJhn++GZSqXQlkR8SP4YoSZS8jeosKD+w4TB80=;
+ b=zg1J1R02ewlibeWx30SSlVbvZCa4uZ3vhavXgSYAMsPYB7d5KhFFYGrkep9Jmp28H337
+ i21leuheUjA9wa5zSUXqhaZbywquxSfeUMGzADuz6wWIoK4QnxGXSrRuSnEemhxKB5hV
+ Vl/YrJi5Cp9H5vV5MGYv3mRk82Hoa0gv5tP9qTVGDFLCcK44JmX6b2gj8wgXp/TqzfQH
+ OPvlVGxmoa0FKudh8XfJEBRJoKg+F786fWc//iziB2uBFUOWQdyPInEpCPsRj5akLJ3U
+ sP2VXbvIJTqT8EvQZOeKKpfhElaxNBIWdKB2JutKPHkH2d7usgtcsfzAAE1rXBVuhac6 Kw== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3dnbrnr1xr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 17 Jan 2022 16:41:11 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20HGebDL196087;
+        Mon, 17 Jan 2022 16:41:10 GMT
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2104.outbound.protection.outlook.com [104.47.58.104])
+        by userp3030.oracle.com with ESMTP id 3dkkcvumn5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 17 Jan 2022 16:41:10 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dTlAVQooGBaCRKbLGWJS3rIzi/QCSdAl0GjcVxv2Pi8FZn+duh8suQOrHyN/+tJXedTMiFZziLi9LESKH3MOa6nRMienGdXSy3ow2ZqZ+K1O8Rmx/ShFzD+Ql4+yVqMeWpmSO+WVqHQCnzinHdwh7curfKYuTqywkbQerwtz7yIKH2yeqZsLQEuB+KU9i4Lglt/N9xVRYEkPMi2Z8kkFevJeiYFvH9CqZ9dSMjtZFxC7PxUqRnMbxS9e/ayQXk1HCWcRYa1RSAep9Yp5Q+ioygCNPWaMXEHUdEKjAGnIzF36DM/5NWaKm6zFH+XIus4r69p6KlX8rWJisuYD77hxJw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7DlJsiJhn++GZSqXQlkR8SP4YoSZS8jeosKD+w4TB80=;
+ b=jbklUqx4JtNASz8nDighqH5JN27OF9eH2s9qRFR7VTEfHjbUg1JUoM2hI5GCaXEcCvclSHsnQeze5rUQvqs9C63oLQu6NWu95Y5Go2GzUlCvS8J8cPGbT6AxF3q4acn4GnPVr1d0dL4jYrhbusncICWOW+/cVO1DBQ9Banthq0MJGMBwJYoE00lYmKtp5nrVpNtXH6CRjHUhy0D4jOH0+cjIifjJNHz+HeTUvJUS7ElmNynhtIaGv4T7TvRKUGS+U9cfFOkXJqmfu4fJ0VRJgkAfk3W9K4Webuu5MxodhfvZawEiVwh3KlRJGYc5M6/i4espy58vyLHXjmv4kZGlJA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
+ dkim=pass header.d=oracle.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7DlJsiJhn++GZSqXQlkR8SP4YoSZS8jeosKD+w4TB80=;
+ b=BXQgShWpXL/44Tu2W8jLBJKAj4TM/zwiwZxcUDYBXDezLg4fVcJREblel3vijRQIvNjZqgEkXi21vwLFByy1RQGH9vBnUHlTX9dfWZd+WjV2itJe9pS9rMkR4yPCxR9PKyxLafFa+cN8SOaF08A47ozPGyHvpjxgzY89ZydAc6w=
+Received: from DM5PR10MB1466.namprd10.prod.outlook.com (2603:10b6:3:b::7) by
+ SJ0PR10MB5438.namprd10.prod.outlook.com (2603:10b6:a03:3b8::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.9; Mon, 17 Jan
+ 2022 16:41:08 +0000
+Received: from DM5PR10MB1466.namprd10.prod.outlook.com
+ ([fe80::21b5:910:b965:9e6c]) by DM5PR10MB1466.namprd10.prod.outlook.com
+ ([fe80::21b5:910:b965:9e6c%6]) with mapi id 15.20.4888.014; Mon, 17 Jan 2022
+ 16:41:07 +0000
+Message-ID: <783145b7-243b-b85e-e274-44ef6c0696b9@oracle.com>
+Date:   Mon, 17 Jan 2022 10:41:05 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+From:   Mike Christie <michael.christie@oracle.com>
+Subject: Re: [PATCH V6 01/10] Use copy_process in vhost layer
+To:     "Eric W. Biederman" <ebiederm@xmission.com>
+Cc:     geert@linux-m68k.org, vverma@digitalocean.com, hdanton@sina.com,
+        hch@infradead.org, stefanha@redhat.com, jasowang@redhat.com,
+        mst@redhat.com, sgarzare@redhat.com,
+        virtualization@lists.linux-foundation.org,
+        christian.brauner@ubuntu.com, axboe@kernel.dk,
+        linux-kernel@vger.kernel.org
+References: <20211129194707.5863-1-michael.christie@oracle.com>
+ <87tuf79gni.fsf@email.froward.int.ebiederm.org>
+ <a171238e-d731-1c22-af72-0f7faf7f4bea@oracle.com>
+ <87tuf11oe6.fsf@email.froward.int.ebiederm.org>
+ <a3bd6fe7-1775-6fdd-3a02-e779c4d4e498@oracle.com>
+ <87pmpoxzuf.fsf@email.froward.int.ebiederm.org>
+Content-Language: en-US
+In-Reply-To: <87pmpoxzuf.fsf@email.froward.int.ebiederm.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: CH2PR07CA0011.namprd07.prod.outlook.com
+ (2603:10b6:610:20::24) To DM5PR10MB1466.namprd10.prod.outlook.com
+ (2603:10b6:3:b::7)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: zv44Kwb_gHKcMRZqy6Z6qCXG3vd6escY
-X-Proofpoint-ORIG-GUID: zv44Kwb_gHKcMRZqy6Z6qCXG3vd6escY
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-17_07,2022-01-14_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 phishscore=0
- mlxlogscore=999 priorityscore=1501 suspectscore=0 clxscore=1015
- impostorscore=0 adultscore=0 mlxscore=0 bulkscore=0 malwarescore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201170105
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4799c5ba-f979-47e9-e8b7-08d9d9d828e7
+X-MS-TrafficTypeDiagnostic: SJ0PR10MB5438:EE_
+X-Microsoft-Antispam-PRVS: <SJ0PR10MB5438643F1AAC2001F5F31819F1579@SJ0PR10MB5438.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: tvhPZIOtZPG5NPnE8XrI1vAeD3gi/CSszwefyqrz5FMF9nMtxObP/UOUYPVdH6KKlb97jH8Sc6zKO4MGvOXEvGPpI0yJJW2lDkOTbSvUgaxc5s2Y8pSLT0pqJ1YqFaUG2N98iyNEooYh9rI6aaD2PidWdSBBGxdVy6NBh6v4un7xE1FBy0lI28PoVS2yorJhspqh3ekKazUvdMfG+/YePiprkPvJ52vUmi/vXcd3u6k5sHuBxM8C/oqLFLQ9VEEBNDIYzmHN2gcbV7rVW6tiF4gPTi7uPHxabjr2WvJMKGzPd4oPqb9FNPPXcy/yzYkjKzg9IFlRe0hJo3DZSvQHKug9ZGtinRCDOyLOB1Iz5fV/y4OUxTJduNbFHZSTuTOIVS0OwdbqySo445Z9m9yGGj2NNs4wzybVYzACIEg7Q13nB94D294Mo2NDF3gCEtIIKxYUOhovFoDKf5uQtYnyjV7435DQsa2KkzI8vbyyl0r+x2dLG48sV6ZzM76ORL7qK7MJesET9Lmm+HaTAe4rHXaKHC0ce0MisitaJsF6rXi1txq0hs6cojeuzb2WFZS1HAIUn6KfGmmBrhusO9UXsivSIITHc2af1sQwKLGrdoTMnkYN/sMqm2AU6yR+1Fa3OJBItgmrb8iuHWsQV9SelTNbYN/w11a5CUnNpNkcJCJapkTXooyQP5PVeRI8cI6Mqo5Gwx9/oPaQDzFeeSj8O62kPWda/Mtt3+E8QEpjq00=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM5PR10MB1466.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(31696002)(8936002)(8676002)(508600001)(31686004)(4326008)(83380400001)(6512007)(2906002)(316002)(38100700002)(36756003)(2616005)(26005)(186003)(6916009)(6506007)(53546011)(5660300002)(6486002)(66556008)(66476007)(66946007)(7416002)(86362001)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?UHMzUUEvbTRVbmdlcnlCc0dHWDZ4L291UDQvZjg1TkR2eGZIOWZSU25ULzQv?=
+ =?utf-8?B?RWpQQWprUm9vZklRa09UMEJnUE0ySno4RVhvWkhzeVZlWFM1UCttaDRaTUhn?=
+ =?utf-8?B?UzBpWUhCTFgyTFp2QVprSzJuak5RYzFrSklPeVhZN0xzWHoyOHZHVlh0QnZE?=
+ =?utf-8?B?a2NkOXdiL2MwcWJDM3RyR1NrbGNORVE4bnVDWkFPQnM5R0FyVmNHZGV6YmZx?=
+ =?utf-8?B?TE5zZHA2ODF2Qk5EcTRDbEZnMHlmZmNpeUZQL3h5aE96a3dNanJKanl4c0Uz?=
+ =?utf-8?B?MmtEWUdYUWdOa0c5cHd5RE1uVkJ0YlFIWHNmT0VpZ3JrOWlvS0VyOC9scW5W?=
+ =?utf-8?B?eGlWUlM1M2ZVWDJZQXlNZnpKMEQzOXE1Uk9FOGc5Tzc3NFdFNGRXRXhrcnV6?=
+ =?utf-8?B?eEZaL0hrVVdYYms0OXZMSGFJMlpocDhhcEpTL2pHcGg4VlNTZEY4L0lVVm1q?=
+ =?utf-8?B?ZW10OGtuVS9mZjdQdTh3RlFNQWw1YUFrdEIwbTIxOUFIUmJERGxqVElPT081?=
+ =?utf-8?B?WHZPbllLSDdjK0tTSFN3dTh2aVFYK0JjUGlsVTJwY3hsLzY3VTBRODE1a1pB?=
+ =?utf-8?B?YTBZaEI5YUczSCtsajZSa3R6a0JNNzc5YTJzY3NEeVlDL0t5bzNrditRODQ3?=
+ =?utf-8?B?UUExN2l5cGc1dDFTclpkTkx3Nm9Pek5Id21WcXhpbTkrTG1mOHFyelJpWisr?=
+ =?utf-8?B?N0JUOVNKV29YSVY5YlRWZEgvcVNHaHd2TCtIQmFkUmUrMFRTVENUUWhGR0kv?=
+ =?utf-8?B?RkFVY3c0R1d6bkJhS2NxaThaL3NVT091d0ZDTWVKb3pWWW1UY2ZhbHlzRVBW?=
+ =?utf-8?B?VFlETktTdm1jQUNodU9xSFBENlV3SDkxbnhlTVlPWGF2WUI0OXh1ME5tUk9W?=
+ =?utf-8?B?QUE5dllxbzdhdG44ZFpDZzU4dUptb09YUERwYk0rdFRCTHhiTTNialg0NUNX?=
+ =?utf-8?B?UUpHNkN3WGxMeXJDdWQ4MGdDSFhiWnM5cWcvVzc3YkcyTXYxRFV5elZCQ1ZK?=
+ =?utf-8?B?OXo3Z2E5Y1ZRZW5CbHpyQ09yaFJiZ0ZWKytFSXA2Y0pKbUlRR29teHByR1Fq?=
+ =?utf-8?B?Y0VXSllzanRaZ2M5QjJ6VmwrdWx4QS9BcllESlpsa25QRWRySHFoRElLMnpV?=
+ =?utf-8?B?STdTeVFZdlVZbWFidHUyc1d2Z1ZHNXJmUjlMaWVVRSswNGsxNkVKc2c1TGl4?=
+ =?utf-8?B?eXRubVRkR0xXUEljUzRGNWNrRjNmUHZnUDNiNEM5Z0hWdmdXbXJldk9INXRW?=
+ =?utf-8?B?VmN2aXQvMVhLU3NDbnB6UUV6M1NydGR1cDR1clJIZkFDS0RIbkJ0TlY2c1VO?=
+ =?utf-8?B?azdUQUxkL0pDeXZTeG1tNStzd2VicUF0bm1OeUZXTFUrYjNQUUVVVkkzVmJi?=
+ =?utf-8?B?d3ByaCs4NWZXRWFjMjYraDE3V3lyTE4vYUIvRStEeWlNd1ozOXYwRTE5Q1N1?=
+ =?utf-8?B?bkxMSmVsVWx6MHhyNEpLaUc4Y2Q1Vll3eUpEc05nUFNsblBwZXZjakIvd2Yr?=
+ =?utf-8?B?OFhENy9CSlF4Qm1vVUhxZXFxS2t4dDgrejd0Sm1LeWI0K2RwQ2E3dUN1Vm1l?=
+ =?utf-8?B?bXptYVhiZ1hIdjBCWEF4NXFyN3dRMllkK2NZdzc4WERRZSt3UXVsVVlyRVVY?=
+ =?utf-8?B?eWY1VlF3RDNRNWkvL25pU3lYcnFjTHJSL1Q5R05JUVNTSWlscGlCR3Rra3E2?=
+ =?utf-8?B?NlZoTzEzaWYyZktoV2NkdlN0ODZURlVyL0FNZHZ4Q3BpN0hMZWZjTHltSGhh?=
+ =?utf-8?B?VzdNUVN2ZXBoaFcxR0FWY2Jlcndibjdwd2o3YUcwbXZQbnZWUVhKK1BJN3JE?=
+ =?utf-8?B?TXFsaDloVmFveWM5SUd5aDJ4SHBoemZsa3pCbGJPMi96elR3RkRVVGROdDlT?=
+ =?utf-8?B?TDNON1BRc09RaTJqRVU3d0xSTDBBZm10c3YvQldkNFhldlFTUFRZZmxkZy9x?=
+ =?utf-8?B?aXR0byt5ZmRFN3FCaVduVWdFeTNiZEp5Y1FXb2RXRTgxMUVFd2ZNTGxEZm1z?=
+ =?utf-8?B?RTNodEtKNzdtQVMvSnFlNjIxaFZhT0llditIeWloZFNFeW43dGl3cmE0Wm1S?=
+ =?utf-8?B?R3g1N2lPenNSaVBMSHVXbFNPT1ZlaDR2dGp6aGFZRkhQaFFBZUNxVlgyVkFp?=
+ =?utf-8?B?S00wZmZEY1R3WTdmYm1pbGo5dnlIaFE4dmtSc2hrRjRXMnNnUG1Ed29uWjRT?=
+ =?utf-8?B?enB4TlF2NXd4YWFwb2srNE9vTU5LZ0F0Slc5SzRDck1UVktETks5eFErSWsz?=
+ =?utf-8?B?Y3V0REhmUGJUVlF2a1o4b0REdmV3PT0=?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4799c5ba-f979-47e9-e8b7-08d9d9d828e7
+X-MS-Exchange-CrossTenant-AuthSource: DM5PR10MB1466.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jan 2022 16:41:07.3804
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: O0pSGQr+86YHx75uz+WhZboK+uu+hu7104hbqiSoFcHSaF+Ab0VjJcKEFAmRL+aogw4uJYSHsq6xngxIXhvo22Cm+wJLIkVqueIUq+cLuHo=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR10MB5438
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10230 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 bulkscore=0
+ malwarescore=0 adultscore=0 phishscore=0 mlxscore=0 spamscore=0
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201170104
+X-Proofpoint-GUID: zAhHgpVAYMxpijbRINins9G22mRdlhSP
+X-Proofpoint-ORIG-GUID: zAhHgpVAYMxpijbRINins9G22mRdlhSP
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add support for K Band Downconverter with Integrated
-Fractional-N PLL and VCO.
-More info:
-https://www.analog.com/en/products/admv4420.html
+On 12/22/21 12:24 PM, Eric W. Biederman wrote:
+> All I am certain of is that you need to set
+> "args->exit_signal = -1;".  This prevents having to play games with
+> do_notify_parent.
 
-Signed-off-by: Cristian Pop <cristian.pop@analog.com>
----
- drivers/iio/frequency/Kconfig    |  10 +
- drivers/iio/frequency/Makefile   |   1 +
- drivers/iio/frequency/admv4420.c | 412 +++++++++++++++++++++++++++++++
- 3 files changed, 423 insertions(+)
- create mode 100644 drivers/iio/frequency/admv4420.c
+Hi Eric,
 
-diff --git a/drivers/iio/frequency/Kconfig b/drivers/iio/frequency/Kconfig
-index b44036f843af..55aa63548c00 100644
---- a/drivers/iio/frequency/Kconfig
-+++ b/drivers/iio/frequency/Kconfig
-@@ -60,6 +60,16 @@ config ADMV1013
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called admv1013.
+I have all your review comments handled except this one. It's looking like it's
+more difficult than just setting the exit_signal=-1, so I wanted to check that
+I understood you.
+
+Here is what I'm currently looking at:
+
+1. I can't just set args->exit_signal to -1, because we end up with a task_struct
+that's partially setup like a CLONE_THREAD task. What happens is copy_process
+will set the task's exit_signal to -1 and then thread_group_leader() will return
+false. When code like the thread_group_leader check in copy_process runs, we will
+then go down the CLONE_THREAD paths which are not setup and hit crashes.
+
+We would need changes like the following which does not crash anymore but is not
+correct for many reasons. I am just posting this code as an example of the issue
+I am hitting.
+
+@@ -1637,11 +1637,13 @@ static void posix_cpu_timers_init_group(struct signal_struct *sig)
+ 	posix_cputimers_group_init(pct, cpu_limit);
+ }
  
-+config ADMV4420
-+	tristate "Analog Devices ADMV4420 K Band Downconverter"
-+	depends on SPI && COMMON_CLK
-+	help
-+	  Say yes here to build support for Analog Devices K Band
-+	  Downconverter with integrated Fractional-N PLL and VCO.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called admv4420.
-+
- config ADRF6780
-         tristate "Analog Devices ADRF6780 Microwave Upconverter"
-         depends on SPI
-diff --git a/drivers/iio/frequency/Makefile b/drivers/iio/frequency/Makefile
-index ae6899856c99..782e5baa1630 100644
---- a/drivers/iio/frequency/Makefile
-+++ b/drivers/iio/frequency/Makefile
-@@ -8,4 +8,5 @@ obj-$(CONFIG_AD9523) += ad9523.o
- obj-$(CONFIG_ADF4350) += adf4350.o
- obj-$(CONFIG_ADF4371) += adf4371.o
- obj-$(CONFIG_ADMV1013) += admv1013.o
-+obj-$(CONFIG_ADMV4420) += admv4420.o
- obj-$(CONFIG_ADRF6780) += adrf6780.o
-diff --git a/drivers/iio/frequency/admv4420.c b/drivers/iio/frequency/admv4420.c
-new file mode 100644
-index 000000000000..f32039ab2cd3
---- /dev/null
-+++ b/drivers/iio/frequency/admv4420.c
-@@ -0,0 +1,412 @@
-+// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-+/*
-+ * ADMV4420
-+ *
-+ * Copyright 2021 Analog Devices Inc.
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/module.h>
-+#include <linux/regmap.h>
-+#include <linux/spi/spi.h>
-+
-+/* ADMV4420 Register Map */
-+#define ADMV4420_SPI_CONFIG_1			0x00
-+#define ADMV4420_SPI_CONFIG_2			0x01
-+#define ADMV4420_CHIPTYPE			0x03
-+#define ADMV4420_PRODUCT_ID_L			0x04
-+#define ADMV4420_PRODUCT_ID_H			0x05
-+#define ADMV4420_SCRATCHPAD			0x0A
-+#define ADMV4420_SPI_REV			0x0B
-+#define ADMV4420_ENABLES			0x103
-+#define ADMV4420_SDO_LEVEL			0x108
-+#define ADMV4420_INT_L				0x200
-+#define ADMV4420_INT_H				0x201
-+#define ADMV4420_FRAC_L				0x202
-+#define ADMV4420_FRAC_M				0x203
-+#define ADMV4420_FRAC_H				0x204
-+#define ADMV4420_MOD_L				0x208
-+#define ADMV4420_MOD_M				0x209
-+#define ADMV4420_MOD_H				0x20A
-+#define ADMV4420_R_DIV_L			0x20C
-+#define ADMV4420_R_DIV_H			0x20D
-+#define ADMV4420_REFERENCE			0x20E
-+#define ADMV4420_VCO_DATA_READBACK1		0x211
-+#define ADMV4420_VCO_DATA_READBACK2		0x212
-+#define ADMV4420_PLL_MUX_SEL			0x213
-+#define ADMV4420_LOCK_DETECT			0x214
-+#define ADMV4420_BAND_SELECT			0x215
-+#define ADMV4420_VCO_ALC_TIMEOUT		0x216
-+#define ADMV4420_VCO_MANUAL			0x217
-+#define ADMV4420_ALC				0x219
-+#define ADMV4420_VCO_TIMEOUT1			0x21C
-+#define ADMV4420_VCO_TIMEOUT2			0x21D
-+#define ADMV4420_VCO_BAND_DIV			0x21E
-+#define ADMV4420_VCO_READBACK_SEL		0x21F
-+#define ADMV4420_AUTOCAL			0x226
-+#define ADMV4420_CP_STATE			0x22C
-+#define ADMV4420_CP_BLEED_EN			0x22D
-+#define ADMV4420_CP_CURRENT			0x22E
-+#define ADMV4420_CP_BLEED			0x22F
-+
-+
-+#define ADMV4420_SPI_CONFIG_1_SOFTRESET_	BIT(7)
-+#define ADMV4420_SPI_CONFIG_1_SDOACTIVE_	BIT(4)
-+#define ADMV4420_SPI_CONFIG_1_SDOACTIVE		BIT(3)
-+#define ADMV4420_SPI_CONFIG_1_SOFTRESET		BIT(1)
-+
-+#define ADMV4420_REFERENCE_IN_MODE(x)		(x << 1)
-+#define ADMV4420_REFERENCE_DOUBLER(x)		(x << 2)
-+#define ADMV4420_REFERENCE_DIVIDE_BY_2_MASK	BIT(0)
-+#define ADMV4420_REFERENCE_MODE_MASK		BIT(1)
-+#define ADMV4420_REFERENCE_DOUBLER_MASK		BIT(2)
-+#define ADMV4420_REF_DIVIDER_MAX_VAL		GENMASK(9, 0)
-+#define ADMV4420_N_COUNTER_INT_MAX		GENMASK(15, 0)
-+#define ADMV4420_N_COUNTER_FRAC_MAX		GENMASK(23, 0)
-+#define ADMV4420_N_COUNTER_MOD_MAX		GENMASK(23, 0)
-+
-+#define ADMV4420_INT_L_MASK			GENMASK(7, 0)
-+#define ADMV4420_INT_H_MASK			GENMASK(15, 8)
-+#define ADMV4420_FRAC_L_MASK			GENMASK(7, 0)
-+#define ADMV4420_FRAC_M_MASK			GENMASK(15, 8)
-+#define ADMV4420_FRAC_H_MASK			GENMASK(23, 16)
-+#define ADMV4420_MOD_L_MASK			GENMASK(7, 0)
-+#define ADMV4420_MOD_M_MASK			GENMASK(15, 8)
-+#define ADMV4420_MOD_H_MASK			GENMASK(23, 16)
-+
-+#define ENABLE_PLL				BIT(6)
-+#define ENABLE_LO				BIT(5)
-+#define ENABLE_VCO				BIT(3)
-+#define ENABLE_IFAMP				BIT(2)
-+#define ENABLE_MIXER				BIT(1)
-+#define ENABLE_LNA				BIT(0)
-+
-+#define ADMV4420_SCRATCH_PAD_VAL_1              0xAD
-+#define ADMV4420_SCRATCH_PAD_VAL_2              0xEA
-+
-+#define ADMV4420_REF_FREQ_HZ                    50000000
-+#define MAX_N_COUNTER                           655360UL
-+#define MAX_R_DIVIDER                           1024
-+#define ADMV4420_DEFAULT_LO_FREQ_HZ		16750000000ULL
-+
-+enum admv4420_mux_sel {
-+	ADMV4420_LOW = 0,
-+	ADMV4420_LOCK_DTCT = 1,
-+	ADMV4420_R_COUNTER_PER_2 = 4,
-+	ADMV4420_N_CONUTER_PER_2 = 5,
-+	ADMV4420_HIGH = 8,
-+};
-+
-+struct admv4420_reference_block {
-+	bool doubler_en;
-+	bool divide_by_2_en;
-+	bool ref_single_ended;
-+	u32 divider;
-+};
-+
-+struct admv4420_n_counter {
-+	u32 int_val;
-+	u32 frac_val;
-+	u32 mod_val;
-+	u32 n_counter;
-+};
-+
-+struct admv4420_state {
-+	struct spi_device		*spi;
-+	struct regmap			*regmap;
-+	u64				pfd_freq_hz;
-+	u64				vco_freq_hz;
-+	u64				lo_freq_hz;
-+	struct admv4420_reference_block ref_block;
-+	struct admv4420_n_counter	n_counter;
-+	enum admv4420_mux_sel		mux_sel;
-+	struct mutex			lock;
-+};
-+
-+static const struct regmap_config admv4420_regmap_config = {
-+	.reg_bits = 16,
-+	.val_bits = 8,
-+	.read_flag_mask = BIT(7),
-+};
-+
-+static int admv4420_reg_access(struct iio_dev *indio_dev,
-+			       u32 reg, u32 writeval,
-+			       u32 *readval)
-+{
-+	struct admv4420_state *st = iio_priv(indio_dev);
-+
-+	if (readval)
-+		return regmap_read(st->regmap, reg, readval);
-+	else
-+		return regmap_write(st->regmap, reg, writeval);
-+}
-+
-+static int admv4420_set_n_counter(struct admv4420_state *st, u32 int_val, u32 frac_val, u32 mod_val)
-+{
-+	int ret;
-+
-+	ret = regmap_write(st->regmap, ADMV4420_FRAC_H, FIELD_GET(ADMV4420_FRAC_H_MASK, frac_val));
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, ADMV4420_FRAC_M, FIELD_GET(ADMV4420_FRAC_M_MASK, frac_val));
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, ADMV4420_FRAC_L, FIELD_GET(ADMV4420_FRAC_L_MASK, frac_val));
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, ADMV4420_MOD_H, FIELD_GET(ADMV4420_MOD_H_MASK, mod_val));
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, ADMV4420_MOD_M, FIELD_GET(ADMV4420_MOD_M_MASK, mod_val));
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, ADMV4420_MOD_L, FIELD_GET(ADMV4420_MOD_L_MASK, mod_val));
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, ADMV4420_INT_H, FIELD_GET(ADMV4420_INT_H_MASK, int_val));
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(st->regmap, ADMV4420_INT_L, FIELD_GET(ADMV4420_INT_L_MASK, int_val));
-+}
-+
-+static int admv4420_read_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int *val, int *val2, long info)
-+{
-+	struct admv4420_state *st = iio_priv(indio_dev);
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_FREQUENCY:
-+		*val = div_u64(st->lo_freq_hz, 1000000);
-+		div_u64_rem(st->lo_freq_hz, 1000000, val2);
-+
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info admv4420_info = {
-+	.read_raw = admv4420_read_raw,
-+	.debugfs_reg_access = &admv4420_reg_access,
-+};
-+
-+static const struct iio_chan_spec admv4420_channels[] = {
-+	{
-+		.type = IIO_ALTVOLTAGE,
-+		.output = 0,
-+		.indexed = 1,
-+		.channel = 0,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_FREQUENCY),
-+	},
-+};
-+
-+static void admv4420_dt_parse(struct admv4420_state *st)
-+{
-+	struct spi_device *spi = st->spi;
-+
-+	device_property_read_u64(&spi->dev, "adi,lo_freq_hz", &st->lo_freq_hz);
-+	st->ref_block.ref_single_ended = of_property_read_bool(spi->dev.of_node,
-+							       "adi,ref_ext_single_ended_en");
-+}
-+
-+static inline uint64_t admv4420_calc_pfd_vco(struct admv4420_state *st)
-+{
-+	return div_u64(st->vco_freq_hz * 10, st->n_counter.n_counter);
-+}
-+
-+static inline uint64_t admv4420_calc_pfd_ref(struct admv4420_state *st)
-+{
-+	uint64_t tmp;
-+
-+	tmp = ADMV4420_REF_FREQ_HZ * (st->ref_block.doubler_en ? 2 : 1);
-+	return div_u64(tmp, st->ref_block.divider * (st->ref_block.divide_by_2_en ? 2 : 1));
-+}
-+
-+static int admv4420_calc_parameters(struct admv4420_state *st)
-+{
-+	u64 pfd_ref, pfd_vco;
-+	bool sol_found = false;
-+
-+	st->ref_block.doubler_en = false;
-+	st->ref_block.divide_by_2_en = false;
-+	st->vco_freq_hz = div_u64(st->lo_freq_hz, 2);
-+
-+	for (st->ref_block.divider = 1; st->ref_block.divider < MAX_R_DIVIDER;
-+	    st->ref_block.divider++) {
-+		pfd_ref = admv4420_calc_pfd_ref(st);
-+		for (st->n_counter.n_counter = 1; st->n_counter.n_counter < MAX_N_COUNTER;
-+		    st->n_counter.n_counter++) {
-+			pfd_vco = admv4420_calc_pfd_vco(st);
-+			if (pfd_ref == pfd_vco) {
-+				sol_found = true;
-+				break;
-+			}
-+		}
-+
-+		if (sol_found)
-+			break;
-+
-+		st->n_counter.n_counter = 1;
-+	}
-+	if (!sol_found)
-+		return -1;
-+
-+	st->n_counter.int_val = div_u64_rem(st->n_counter.n_counter, 10, &st->n_counter.frac_val);
-+	st->n_counter.mod_val = 1;
-+
-+	return 0;
-+}
-+
-+static int admv4420_setup(struct iio_dev *indio_dev)
-+{
-+	struct admv4420_state *st = iio_priv(indio_dev);
-+	u32 val = 0;
-+	int ret;
-+
-+	ret = regmap_write(st->regmap, ADMV4420_SPI_CONFIG_1,
-+			   ADMV4420_SPI_CONFIG_1_SOFTRESET_ | ADMV4420_SPI_CONFIG_1_SOFTRESET);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, ADMV4420_SPI_CONFIG_1,
-+			   ADMV4420_SPI_CONFIG_1_SDOACTIVE_ | ADMV4420_SPI_CONFIG_1_SDOACTIVE);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, ADMV4420_SCRATCHPAD, ADMV4420_SCRATCH_PAD_VAL_1);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_read(st->regmap, ADMV4420_SCRATCHPAD, &val);
-+	if (ret)
-+		return ret;
-+
-+	if (val != ADMV4420_SCRATCH_PAD_VAL_1) {
-+		dev_err(indio_dev->dev.parent, "Failed ADMV4420 to read/write scratchpad %x ", val);
-+		return -EIO;
-+	}
-+
-+	ret = regmap_write(st->regmap, ADMV4420_SCRATCHPAD, ADMV4420_SCRATCH_PAD_VAL_2);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_read(st->regmap, ADMV4420_SCRATCHPAD, &val);
-+	if (ret)
-+		return ret;
-+
-+	if (val != ADMV4420_SCRATCH_PAD_VAL_2) {
-+		dev_err(indio_dev->dev.parent, "Failed to read/write scratchpad %x ", val);
-+		return -EIO;
-+	}
-+
-+	st->mux_sel = ADMV4420_LOCK_DTCT;
-+	st->lo_freq_hz = ADMV4420_DEFAULT_LO_FREQ_HZ;
-+
-+	admv4420_dt_parse(st);
-+
-+	ret = admv4420_calc_parameters(st);
-+	if (ret) {
-+		dev_err(indio_dev->dev.parent, "Failed calc parameters for %lld ", st->vco_freq_hz);
-+		return ret;
-+	}
-+
-+	ret = regmap_write(st->regmap, ADMV4420_R_DIV_L,
-+			   FIELD_GET(0xFF, st->ref_block.divider));
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, ADMV4420_R_DIV_H,
-+			   FIELD_GET(0xFF00, st->ref_block.divider));
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, ADMV4420_REFERENCE,
-+			   st->ref_block.divide_by_2_en |
-+			   ADMV4420_REFERENCE_IN_MODE(st->ref_block.ref_single_ended) |
-+			   ADMV4420_REFERENCE_DOUBLER(st->ref_block.doubler_en));
-+	if (ret)
-+		return ret;
-+
-+	ret = admv4420_set_n_counter(st, st->n_counter.int_val, st->n_counter.frac_val, st->n_counter.mod_val);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, ADMV4420_PLL_MUX_SEL, st->mux_sel);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, ADMV4420_ENABLES, ENABLE_PLL | ENABLE_LO | ENABLE_VCO |
-+			   ENABLE_IFAMP | ENABLE_MIXER | ENABLE_LNA);
-+	if (ret)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int admv4420_probe(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev;
-+	struct admv4420_state *st;
-+	struct regmap *regmap;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	regmap = devm_regmap_init_spi(spi, &admv4420_regmap_config);
-+	if (IS_ERR(regmap)) {
-+		dev_err(&spi->dev, "Error  ADMV4420 initializing spi regmap: %ld\n",
-+			PTR_ERR(regmap));
-+		return PTR_ERR(regmap);
-+	}
-+
-+	st = iio_priv(indio_dev);
-+	st->spi = spi;
-+	st->regmap = regmap;
-+	mutex_init(&st->lock);
-+
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->name = "admv4420";
-+	indio_dev->info = &admv4420_info;
-+	indio_dev->channels = admv4420_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(admv4420_channels);
-+
-+	ret = admv4420_setup(indio_dev);
-+	if (ret) {
-+		dev_err(&spi->dev, "Setup ADMV4420 failed (%d)\n", ret);
-+		return ret;
-+	}
-+
-+	return devm_iio_device_register(&spi->dev, indio_dev);
-+}
-+
-+static const struct of_device_id admv4420_of_match[] = {
-+	{ .compatible = "adi,admv4420" },
-+	{ },
-+};
-+
-+MODULE_DEVICE_TABLE(of, admv4420_of_match);
-+
-+static struct spi_driver admv4420_driver = {
-+	.driver = {
-+		.name	= "admv4420",
-+		.of_match_table = admv4420_of_match,
-+	},
-+	.probe		= admv4420_probe,
-+};
-+module_spi_driver(admv4420_driver);
-+
-+MODULE_AUTHOR("Cristian Pop <cristian.pop@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices ADMV44200 K Band Downconverter");
-+MODULE_LICENSE("Dual BSD/GPL");
--- 
-2.17.1
+-static int copy_signal(unsigned long clone_flags, struct task_struct *tsk)
++static int copy_signal(unsigned long clone_flags, struct task_struct *tsk,
++		       struct kernel_clone_args *args)
+ {
+ 	struct signal_struct *sig;
+ 
+-	if (clone_flags & CLONE_THREAD)
++	if (clone_flags & CLONE_THREAD || args->exit_signal == -1)
+ 		return 0;
+ 
+ 	sig = kmem_cache_zalloc(signal_cachep, GFP_KERNEL);
+@@ -2194,7 +2244,7 @@ static __latent_entropy struct task_struct *copy_process(
+ 	retval = copy_sighand(clone_flags, p);
+ 	if (retval)
+ 		goto bad_fork_cleanup_fs;
+-	retval = copy_signal(clone_flags, p);
++	retval = copy_signal(clone_flags, p, args);
+ 	if (retval)
+ 		goto bad_fork_cleanup_sighand;
+ 	retval = copy_mm(clone_flags, p);
+@@ -2277,6 +2327,9 @@ static __latent_entropy struct task_struct *copy_process(
+ 	if (clone_flags & CLONE_THREAD) {
+ 		p->group_leader = current->group_leader;
+ 		p->tgid = current->tgid;
++	} else if (args->exit_signal == -1) {
++		p->group_leader = current->group_leader;
++		p->tgid = p->pid;
+ 	} else {
+ 		p->group_leader = p;
+ 		p->tgid = p->pid;
 
+
+2. Instead of #1, I could add some code where we just set
+task_struct->exit_signal to -1. We could do this twords the end of copy_process
+or after it has returned, but before we do do_exit. However, hat will have similar
+issues as #1 during the exit handling.
+
+For example, __exit_signal will call thread_group_leader which would return false.
+__unhash_process would then not detach the pid and we would later hit crashes due
+to the task_struct being freed already. I could add code like above to the exit related
+code paths, but it gets messy like above.
+
+3. I thought I could separate the leader detection from the exit signal by adding
+a flag/field to kernel_clone_args and task_struct. But then I get to the point
+where I just need a check for USER/VHOST_WORKER tasks in exit_notify which is
+similar to the patch you didn't like where I added the check in do_notify_parent.
+So I thought you might not like this approach.
+
+Note:
+We can't set our task's exit_signal to SIGCHLD and get autoreaped like suggested in
+another mail. The original idea for the do_notify_parent was we wanted the behavior
+that kthreads have where they get autoreaped on exit. kthreads get autoreaped there
+because the threadd task that is the parent ignores all signals and so we hit the
+parent SIG_IGN check:
+
+        psig = tsk->parent->sighand;
+        spin_lock_irqsave(&psig->siglock, flags);
+        if (!tsk->ptrace && sig == SIGCHLD &&
+            (psig->action[SIGCHLD-1].sa.sa_handler == SIG_IGN ||
+             (psig->action[SIGCHLD-1].sa.sa_flags & SA_NOCLDWAIT))) {
+
+Our parent, the qemu task, does not ignore SIGCHLD and so will not hit the code above.
+
+4. Maybe I am going in the wrong direction and we need kthreads. I could add a:
+
+if (!is_ucounts_overlimit(task_ucounts(p), UCOUNT_RLIMIT_NPROC, rlimit(RLIMIT_NPROC)))
+	inc_rlimit_ucounts(task_ucounts(p), UCOUNT_RLIMIT_NPROC, 1);
+
+to vhost.c or to kthread.c when some new arg is passed in.
+
+
+What do you think?
