@@ -2,187 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23092C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 03:00:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA14CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 03:00:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234080AbiAQC77 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 21:59:59 -0500
-Received: from szxga08-in.huawei.com ([45.249.212.255]:31094 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230366AbiAQC75 (ORCPT
+        id S234123AbiAQDAX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 22:00:23 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:51866
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234088AbiAQDAU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 21:59:57 -0500
-Received: from kwepemi100002.china.huawei.com (unknown [172.30.72.54])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Jcc3x3rPgz1FChT;
-        Mon, 17 Jan 2022 10:56:13 +0800 (CST)
-Received: from kwepeml500003.china.huawei.com (7.221.188.182) by
- kwepemi100002.china.huawei.com (7.221.188.188) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 17 Jan 2022 10:59:55 +0800
-Received: from dggpeml500011.china.huawei.com (7.185.36.84) by
- kwepeml500003.china.huawei.com (7.221.188.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 17 Jan 2022 10:59:55 +0800
-Received: from dggpeml500011.china.huawei.com ([7.185.36.84]) by
- dggpeml500011.china.huawei.com ([7.185.36.84]) with mapi id 15.01.2308.020;
- Mon, 17 Jan 2022 10:59:55 +0800
-From:   "zhudi (E)" <zhudi2@huawei.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "Andrii Nakryiko" <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        bpf <bpf@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "Luzhihao (luzhihao, Euler)" <luzhihao@huawei.com>,
-        "Chenxiang (EulerOS)" <rose.chen@huawei.com>
-Subject: Re: [PATCH bpf-next v5 2/2] selftests: bpf: test BPF_PROG_QUERY for
- progs attached to sockmap
-Thread-Topic: [PATCH bpf-next v5 2/2] selftests: bpf: test BPF_PROG_QUERY for
- progs attached to sockmap
-Thread-Index: AdgLTktk3At/PtlUThCT0czbKVqVNQ==
-Date:   Mon, 17 Jan 2022 02:59:55 +0000
-Message-ID: <7ac10b7b68b94337971f6d755f735e68@huawei.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.136.114.155]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        Sun, 16 Jan 2022 22:00:20 -0500
+Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com [209.85.167.200])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 430013F19C
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 03:00:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1642388419;
+        bh=tbFdbl3a6wyFWQoCr2QHMITY6WUY2RtOQOu/UXgg7ZI=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=fKAj44UmJp6l2yXiWHuECM13MhUxIVk8LMdOzIVD/pDhQPlJuR5y4d9wYiAirtR/M
+         ePVfLMM0uA+3GIYJpObkzbOavwjzTpJ7hvUmY1DLz4UrNiIhYi17bYvrDZM/vKQ3mz
+         BpzQJzdh5eqEu2arZRJG4xkIAG1tduzY9a5zEyMwnpn/x8J/wu5h3Jp169O4I5AQdZ
+         t647fKNYxPxXCRmjS0HZ9Sl2WkaMUVcHCzLVJg5wusGQ8fBadaRGqLy4vXGuZh8qDk
+         WKED2RQDQqgMmUONfxF1lT7IysdMDB2pLum3Gcb2aiEA3fzsSmjI9XuUCDwmKPvZOy
+         AOkAYXYH1lBDg==
+Received: by mail-oi1-f200.google.com with SMTP id g4-20020acab604000000b002c8b24c3964so10479184oif.22
+        for <linux-kernel@vger.kernel.org>; Sun, 16 Jan 2022 19:00:19 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tbFdbl3a6wyFWQoCr2QHMITY6WUY2RtOQOu/UXgg7ZI=;
+        b=D8sGDdNIzfrGO8rY4dJWxAmeej129oEv788LrGYjpWWYURuNqgSmF1n0bvyKCgBvNS
+         UYAzIOjevJRg6ZIggdRSErMAsECc0fk5P6rRykuf86o/4zh5DxTff+XX8+hegmUzoHET
+         g8W1ARx6Y7H2L1VP3Ug5nUTQrrfLt8QLr6F65D9ZKm/N0AkS/2L9crPl7MkQuAzA+Q+d
+         354EoVK2ZiR32U4TJaby3RJDMjf8VQG+NnGSHVENerVgzGNIIUhQs3JU+f4WmG9hA2vR
+         ZO2sEYydpo7U8dJ7ACxdOtqGtLwF3unBcOMgx7MqAIFinQMlQtGTYlwSfIjjmO9FVMzy
+         MtBQ==
+X-Gm-Message-State: AOAM531fEV0w4J/uaK5lt/jlMhiAeTJcNcxOD6rS3nXHiMUr6/4U2RUh
+        VPwJnojAZZiQcSTb3Gb7kpGUwRkpLgbOcvOsc5EvBDSOzZ4V2mrCxTJFKFIWLPkU1T1AbvPYWud
+        uvev1rRMZ5zCvlXelbcBCrYy5JQ2TFmiU1rM3tPW134ibr7PZZZNFw2dfjQ==
+X-Received: by 2002:a05:6830:1f3a:: with SMTP id e26mr14796109oth.233.1642388417993;
+        Sun, 16 Jan 2022 19:00:17 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy1QTZiASpuDes7BN+zVFAzK/CfctQWh69kH+opon159gi/rJ0OyWyyCiCx0ejSAwa1FVur/IxA+NmYd5yZkT4=
+X-Received: by 2002:a05:6830:1f3a:: with SMTP id e26mr14796090oth.233.1642388417639;
+ Sun, 16 Jan 2022 19:00:17 -0800 (PST)
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+References: <20211230052811.650191-1-kai.heng.feng@canonical.com>
+In-Reply-To: <20211230052811.650191-1-kai.heng.feng@canonical.com>
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Mon, 17 Jan 2022 11:00:05 +0800
+Message-ID: <CAAd53p6ev+yQT+jf32UrTMWQXwDPYtmZSrW0zCQnKuUaBbtXUg@mail.gmail.com>
+Subject: Re: [PATCH v3] usb: core: Bail out when port is stuck in reset loop
+To:     gregkh@linuxfoundation.org
+Cc:     stern@rowland.harvard.edu, mathias.nyman@linux.intel.com,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        Bixuan Cui <cuibixuan@huawei.com>,
+        Rajat Jain <rajatja@google.com>, Andrew Lunn <andrew@lunn.ch>,
+        Chris Chiu <chris.chiu@canonical.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiBPbiBGcmksIEphbiAxNCwgMjAyMiBhdCA2OjM0IFBNIHpodWRpIChFKSA8emh1ZGkyQGh1YXdl
-aS5jb20+IHdyb3RlOg0KPiA+DQo+ID4gPiBPbiBUaHUsIEphbiAxMywgMjAyMiBhdCAxOjAxIEFN
-IERpIFpodSA8emh1ZGkyQGh1YXdlaS5jb20+IHdyb3RlOg0KPiA+ID4gPg0KPiA+ID4gPiBBZGQg
-dGVzdCBmb3IgcXVlcnlpbmcgcHJvZ3MgYXR0YWNoZWQgdG8gc29ja21hcC4gd2UgdXNlIGFuIGV4
-aXN0aW5nDQo+ID4gPiA+IGxpYmJwZiBxdWVyeSBpbnRlcmZhY2UgdG8gcXVlcnkgcHJvZyBjbnQg
-YmVmb3JlIGFuZCBhZnRlciBwcm9ncw0KPiA+ID4gPiBhdHRhY2hpbmcgdG8gc29ja21hcCBhbmQg
-Y2hlY2sgd2hldGhlciB0aGUgcXVlcmllZCBwcm9nIGlkIGlzIHJpZ2h0Lg0KPiA+ID4gPg0KPiA+
-ID4gPiBTaWduZWQtb2ZmLWJ5OiBEaSBaaHUgPHpodWRpMkBodWF3ZWkuY29tPg0KPiA+ID4gPiBB
-Y2tlZC1ieTogWW9uZ2hvbmcgU29uZyA8eWhzQGZiLmNvbT4NCj4gPiA+ID4gLS0tDQo+ID4gPiA+
-ICAuLi4vc2VsZnRlc3RzL2JwZi9wcm9nX3Rlc3RzL3NvY2ttYXBfYmFzaWMuYyAgfCA3MA0KPiAr
-KysrKysrKysrKysrKysrKysrDQo+ID4gPiA+ICAuLi4vYnBmL3Byb2dzL3Rlc3Rfc29ja21hcF9w
-cm9nc19xdWVyeS5jICAgICAgfCAyNCArKysrKysrDQo+ID4gPiA+ICAyIGZpbGVzIGNoYW5nZWQs
-IDk0IGluc2VydGlvbnMoKykNCj4gPiA+ID4gIGNyZWF0ZSBtb2RlIDEwMDY0NA0KPiA+ID4gdG9v
-bHMvdGVzdGluZy9zZWxmdGVzdHMvYnBmL3Byb2dzL3Rlc3Rfc29ja21hcF9wcm9nc19xdWVyeS5j
-DQo+ID4gPiA+DQo+ID4gPiA+IGRpZmYgLS1naXQgYS90b29scy90ZXN0aW5nL3NlbGZ0ZXN0cy9i
-cGYvcHJvZ190ZXN0cy9zb2NrbWFwX2Jhc2ljLmMNCj4gPiA+IGIvdG9vbHMvdGVzdGluZy9zZWxm
-dGVzdHMvYnBmL3Byb2dfdGVzdHMvc29ja21hcF9iYXNpYy5jDQo+ID4gPiA+IGluZGV4IDg1ZGIw
-ZjRjZGQ5NS4uMDY5MjNlYTQ0YmFkIDEwMDY0NA0KPiA+ID4gPiAtLS0gYS90b29scy90ZXN0aW5n
-L3NlbGZ0ZXN0cy9icGYvcHJvZ190ZXN0cy9zb2NrbWFwX2Jhc2ljLmMNCj4gPiA+ID4gKysrIGIv
-dG9vbHMvdGVzdGluZy9zZWxmdGVzdHMvYnBmL3Byb2dfdGVzdHMvc29ja21hcF9iYXNpYy5jDQo+
-ID4gPiA+IEBAIC04LDYgKzgsNyBAQA0KPiA+ID4gPiAgI2luY2x1ZGUgInRlc3Rfc29ja21hcF91
-cGRhdGUuc2tlbC5oIg0KPiA+ID4gPiAgI2luY2x1ZGUgInRlc3Rfc29ja21hcF9pbnZhbGlkX3Vw
-ZGF0ZS5za2VsLmgiDQo+ID4gPiA+ICAjaW5jbHVkZSAidGVzdF9zb2NrbWFwX3NrYl92ZXJkaWN0
-X2F0dGFjaC5za2VsLmgiDQo+ID4gPiA+ICsjaW5jbHVkZSAidGVzdF9zb2NrbWFwX3Byb2dzX3F1
-ZXJ5LnNrZWwuaCINCj4gPiA+ID4gICNpbmNsdWRlICJicGZfaXRlcl9zb2NrbWFwLnNrZWwuaCIN
-Cj4gPiA+ID4NCj4gPiA+ID4gICNkZWZpbmUgVENQX1JFUEFJUiAgICAgICAgICAgICAxOSAgICAg
-IC8qIFRDUCBzb2NrIGlzIHVuZGVyIHJlcGFpcg0KPiA+ID4gcmlnaHQgbm93ICovDQo+ID4gPiA+
-IEBAIC0zMTUsNiArMzE2LDY5IEBAIHN0YXRpYyB2b2lkDQo+IHRlc3Rfc29ja21hcF9za2JfdmVy
-ZGljdF9hdHRhY2goZW51bQ0KPiA+ID4gYnBmX2F0dGFjaF90eXBlIGZpcnN0LA0KPiA+ID4gPiAg
-ICAgICAgIHRlc3Rfc29ja21hcF9za2JfdmVyZGljdF9hdHRhY2hfX2Rlc3Ryb3koc2tlbCk7DQo+
-ID4gPiA+ICB9DQo+ID4gPiA+DQo+ID4gPiA+ICtzdGF0aWMgX191MzIgcXVlcnlfcHJvZ19pZChp
-bnQgcHJvZ19mZCkNCj4gPiA+ID4gK3sNCj4gPiA+ID4gKyAgICAgICBzdHJ1Y3QgYnBmX3Byb2df
-aW5mbyBpbmZvID0ge307DQo+ID4gPiA+ICsgICAgICAgX191MzIgaW5mb19sZW4gPSBzaXplb2Yo
-aW5mbyk7DQo+ID4gPiA+ICsgICAgICAgaW50IGVycjsNCj4gPiA+ID4gKw0KPiA+ID4gPiArICAg
-ICAgIGVyciA9IGJwZl9vYmpfZ2V0X2luZm9fYnlfZmQocHJvZ19mZCwgJmluZm8sICZpbmZvX2xl
-bik7DQo+ID4gPiA+ICsgICAgICAgaWYgKCFBU1NFUlRfT0soZXJyLCAiYnBmX29ial9nZXRfaW5m
-b19ieV9mZCIpIHx8DQo+ID4gPiA+ICsgICAgICAgICAgICFBU1NFUlRfRVEoaW5mb19sZW4sIHNp
-emVvZihpbmZvKSwNCj4gImJwZl9vYmpfZ2V0X2luZm9fYnlfZmQiKSkNCj4gPiA+ID4gKyAgICAg
-ICAgICAgICAgIHJldHVybiAwOw0KPiA+ID4gPiArDQo+ID4gPiA+ICsgICAgICAgcmV0dXJuIGlu
-Zm8uaWQ7DQo+ID4gPiA+ICt9DQo+ID4gPiA+ICsNCj4gPiA+ID4gK3N0YXRpYyB2b2lkIHRlc3Rf
-c29ja21hcF9wcm9nc19xdWVyeShlbnVtIGJwZl9hdHRhY2hfdHlwZQ0KPiBhdHRhY2hfdHlwZSkN
-Cj4gPiA+ID4gK3sNCj4gPiA+ID4gKyAgICAgICBzdHJ1Y3QgdGVzdF9zb2NrbWFwX3Byb2dzX3F1
-ZXJ5ICpza2VsOw0KPiA+ID4gPiArICAgICAgIGludCBlcnIsIG1hcF9mZCwgdmVyZGljdF9mZCwg
-ZHVyYXRpb24gPSAwOw0KPiA+ID4gPiArICAgICAgIF9fdTMyIGF0dGFjaF9mbGFncyA9IDA7DQo+
-ID4gPiA+ICsgICAgICAgX191MzIgcHJvZ19pZHNbM10gPSB7fTsNCj4gPiA+ID4gKyAgICAgICBf
-X3UzMiBwcm9nX2NudCA9IDM7DQo+ID4gPiA+ICsNCj4gPiA+ID4gKyAgICAgICBza2VsID0gdGVz
-dF9zb2NrbWFwX3Byb2dzX3F1ZXJ5X19vcGVuX2FuZF9sb2FkKCk7DQo+ID4gPiA+ICsgICAgICAg
-aWYgKCFBU1NFUlRfT0tfUFRSKHNrZWwsDQo+ID4gPiAidGVzdF9zb2NrbWFwX3Byb2dzX3F1ZXJ5
-X19vcGVuX2FuZF9sb2FkIikpDQo+ID4gPiA+ICsgICAgICAgICAgICAgICByZXR1cm47DQo+ID4g
-PiA+ICsNCj4gPiA+ID4gKyAgICAgICBtYXBfZmQgPSBicGZfbWFwX19mZChza2VsLT5tYXBzLnNv
-Y2tfbWFwKTsNCj4gPiA+ID4gKw0KPiA+ID4gPiArICAgICAgIGlmIChhdHRhY2hfdHlwZSA9PSBC
-UEZfU0tfTVNHX1ZFUkRJQ1QpDQo+ID4gPiA+ICsgICAgICAgICAgICAgICB2ZXJkaWN0X2ZkID0N
-Cj4gPiA+IGJwZl9wcm9ncmFtX19mZChza2VsLT5wcm9ncy5wcm9nX3NrbXNnX3ZlcmRpY3QpOw0K
-PiA+ID4gPiArICAgICAgIGVsc2UNCj4gPiA+ID4gKyAgICAgICAgICAgICAgIHZlcmRpY3RfZmQg
-PQ0KPiA+ID4gYnBmX3Byb2dyYW1fX2ZkKHNrZWwtPnByb2dzLnByb2dfc2tiX3ZlcmRpY3QpOw0K
-PiA+ID4gPiArDQo+ID4gPiA+ICsgICAgICAgZXJyID0gYnBmX3Byb2dfcXVlcnkobWFwX2ZkLCBh
-dHRhY2hfdHlwZSwgMCAvKiBxdWVyeSBmbGFncyAqLywNCj4gPiA+ID4gKyAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAmYXR0YWNoX2ZsYWdzLCBwcm9nX2lkcywgJnByb2dfY250KTsNCj4gPiA+
-ID4gKyAgICAgICBpZiAoIUFTU0VSVF9PSyhlcnIsICJicGZfcHJvZ19xdWVyeSBmYWlsZWQiKSkN
-Cj4gPiA+ID4gKyAgICAgICAgICAgICAgIGdvdG8gb3V0Ow0KPiA+ID4gPiArDQo+ID4gPiA+ICsg
-ICAgICAgaWYgKCFBU1NFUlRfRVEoYXR0YWNoX2ZsYWdzLCAgMCwgIndyb25nIGF0dGFjaF9mbGFn
-cyBvbiBxdWVyeSIpKQ0KPiA+ID4gPiArICAgICAgICAgICAgICAgZ290byBvdXQ7DQo+ID4gPiA+
-ICsNCj4gPiA+ID4gKyAgICAgICBpZiAoIUFTU0VSVF9FUShwcm9nX2NudCwgMCwgIndyb25nIHBy
-b2dyYW0gY291bnQgb24gcXVlcnkiKSkNCj4gPiA+ID4gKyAgICAgICAgICAgICAgIGdvdG8gb3V0
-Ow0KPiANCj4gSSBtZWFuIGhlcmUgdGhhdCB5b3UgY2FuIGRvIGp1c3QNCj4gDQo+IEFTU0VSVF9P
-SyhlcnIsIC4uLik7DQo+IEFTU0VSVF9FUShhdHRhY2hfZmxhZ3MsIC4uLik7DQo+IEFTU0VSVF9F
-UShwcm9nX2NudCwgLi4uKTsNCj4gDQo+IE5vIGlmICsgZ290byBuZWNlc3NhcnkuDQoNCkkgc2Vl
-IHdoYXQgeW91IG1lYW4uIEknbGwgbW9kaWZ5IHRoZSBjb2RlLCB0aGFua3MNCg0KPiANCj4gPiA+
-ID4gKw0KPiA+ID4gPiArICAgICAgIGVyciA9IGJwZl9wcm9nX2F0dGFjaCh2ZXJkaWN0X2ZkLCBt
-YXBfZmQsIGF0dGFjaF90eXBlLCAwKTsNCj4gPiA+ID4gKyAgICAgICBpZiAoIUFTU0VSVF9PSyhl
-cnIsICJicGZfcHJvZ19hdHRhY2ggZmFpbGVkIikpDQo+ID4gPiA+ICsgICAgICAgICAgICAgICBn
-b3RvIG91dDsNCj4gPiA+ID4gKw0KPiA+ID4gPiArICAgICAgIHByb2dfY250ID0gMTsNCj4gPiA+
-ID4gKyAgICAgICBlcnIgPSBicGZfcHJvZ19xdWVyeShtYXBfZmQsIGF0dGFjaF90eXBlLCAwIC8q
-IHF1ZXJ5IGZsYWdzICovLA0KPiA+ID4gPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICZh
-dHRhY2hfZmxhZ3MsIHByb2dfaWRzLCAmcHJvZ19jbnQpOw0KPiA+ID4gPiArDQo+ID4gPiA+ICsg
-ICAgICAgQVNTRVJUX09LKGVyciwgImJwZl9wcm9nX3F1ZXJ5IGZhaWxlZCIpOw0KPiA+ID4gPiAr
-ICAgICAgIEFTU0VSVF9FUShhdHRhY2hfZmxhZ3MsIDAsICJ3cm9uZyBhdHRhY2hfZmxhZ3Mgb24g
-cXVlcnkiKTsNCj4gPiA+ID4gKyAgICAgICBBU1NFUlRfRVEocHJvZ19jbnQsIDEsICJ3cm9uZyBw
-cm9ncmFtIGNvdW50IG9uIHF1ZXJ5Iik7DQo+ID4gPiA+ICsgICAgICAgQVNTRVJUX0VRKHByb2df
-aWRzWzBdLCBxdWVyeV9wcm9nX2lkKHZlcmRpY3RfZmQpLA0KPiA+ID4gPiArICAgICAgICAgICAg
-ICAgICAid3JvbmcgcHJvZ19pZHMgb24gcXVlcnkiKTsNCj4gPiA+DQo+ID4gPiBTZWUgaG93IG11
-Y2ggZWFzaWVyIGl0IGlzIHRvIGZvbGxvdyB0aGVzZSB0ZXN0cywgd2h5IGRpZG4ndCB5b3UgZG8g
-dGhlDQo+ID4gPiBzYW1lIHdpdGggZXJyLCBhdHRhY2hfZmxhZ3MgYW5kIHByb2cgYWJvdmU/DQo+
-ID4NCj4gPiBJdCBpcyByZWNvbW1lbmRlZCBieSBZb25naG9uZyBTb25nIHRvIGluY3JlYXNlIHRo
-ZSB0ZXN0IGNvdmVyYWdlLg0KPiANCj4gc2VlIGFib3ZlDQo+IA0KPiA+DQo+ID4gPg0KPiA+ID4N
-Cj4gPiA+ID4gKw0KPiA+ID4gPiArICAgICAgIGJwZl9wcm9nX2RldGFjaDIodmVyZGljdF9mZCwg
-bWFwX2ZkLCBhdHRhY2hfdHlwZSk7DQo+ID4gPiA+ICtvdXQ6DQo+ID4gPiA+ICsgICAgICAgdGVz
-dF9zb2NrbWFwX3Byb2dzX3F1ZXJ5X19kZXN0cm95KHNrZWwpOw0KPiA+ID4gPiArfQ0KPiA+ID4g
-PiArDQo+ID4gPiA+ICB2b2lkIHRlc3Rfc29ja21hcF9iYXNpYyh2b2lkKQ0KPiA+ID4gPiAgew0K
-PiA+ID4gPiAgICAgICAgIGlmICh0ZXN0X19zdGFydF9zdWJ0ZXN0KCJzb2NrbWFwIGNyZWF0ZV91
-cGRhdGVfZnJlZSIpKQ0KPiA+ID4gPiBAQCAtMzQxLDQgKzQwNSwxMCBAQCB2b2lkIHRlc3Rfc29j
-a21hcF9iYXNpYyh2b2lkKQ0KPiA+ID4gPg0KPiA+ID4gdGVzdF9zb2NrbWFwX3NrYl92ZXJkaWN0
-X2F0dGFjaChCUEZfU0tfU0tCX1NUUkVBTV9WRVJESUNULA0KPiA+ID4gPg0KPiA+ID4gQlBGX1NL
-X1NLQl9WRVJESUNUKTsNCj4gPiA+ID4gICAgICAgICB9DQo+ID4gPiA+ICsgICAgICAgaWYgKHRl
-c3RfX3N0YXJ0X3N1YnRlc3QoInNvY2ttYXAgcHJvZ3MgcXVlcnkiKSkgew0KPiA+ID4gPiArICAg
-ICAgICAgICAgICAgdGVzdF9zb2NrbWFwX3Byb2dzX3F1ZXJ5KEJQRl9TS19NU0dfVkVSRElDVCk7
-DQo+ID4gPiA+ICsNCj4gPiA+IHRlc3Rfc29ja21hcF9wcm9nc19xdWVyeShCUEZfU0tfU0tCX1NU
-UkVBTV9QQVJTRVIpOw0KPiA+ID4gPiArDQo+ID4gPiB0ZXN0X3NvY2ttYXBfcHJvZ3NfcXVlcnko
-QlBGX1NLX1NLQl9TVFJFQU1fVkVSRElDVCk7DQo+ID4gPiA+ICsgICAgICAgICAgICAgICB0ZXN0
-X3NvY2ttYXBfcHJvZ3NfcXVlcnkoQlBGX1NLX1NLQl9WRVJESUNUKTsNCj4gPiA+DQo+ID4gPiBX
-aHkgYXJlIHRoZXNlIG5vdCBzZXBhcmF0ZSBzdWJ0ZXN0cz8gV2hhdCdzIHRoZSBiZW5lZml0IG9m
-IGJ1bmRsaW5nDQo+ID4gPiB0aGVtIGludG8gb25lIHN1YnRlc3Q/DQo+ID4gPg0KPiA+DQo+ID4g
-VGhlc2UgYXJlIGVzc2VudGlhbGx5IGRvaW5nIHRoZSBzYW1lIHRoaW5nLCBqdXN0IGZvciBkaWZm
-ZXJlbnQgcHJvZ3JhbSBhdHRhY2gNCj4gdHlwZXMuDQo+IA0KPiBSaWdodCwgc28gdGhleSBhcmUg
-aW5kZXBlbmRlbnQgc3VidGVzdHMsIG5vPyBOb3Qgc2VwYXJhdGUgdGVzdHMsIGJ1dA0KPiBub3Qg
-b25lIHN1YnRlc3QgZWl0aGVyLg0KDQpPaywgSSdsbCBzcGxpdCBpdCBpbnRvIHNldmVyYWwgc3Vi
-c2V0cy4NCg0KPiA+DQo+ID4gPiA+ICsgICAgICAgfQ0KPiA+ID4gPiAgfQ0KPiA+ID4gPiBkaWZm
-IC0tZ2l0IGEvdG9vbHMvdGVzdGluZy9zZWxmdGVzdHMvYnBmL3Byb2dzL3Rlc3Rfc29ja21hcF9w
-cm9nc19xdWVyeS5jDQo+ID4gPiBiL3Rvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL2JwZi9wcm9ncy90
-ZXN0X3NvY2ttYXBfcHJvZ3NfcXVlcnkuYw0KPiA+ID4gPiBuZXcgZmlsZSBtb2RlIDEwMDY0NA0K
-PiA+ID4gPiBpbmRleCAwMDAwMDAwMDAwMDAuLjlkNThkNjFjMGRlZQ0KPiA+ID4gPiAtLS0gL2Rl
-di9udWxsDQo+ID4gPiA+ICsrKyBiL3Rvb2xzL3Rlc3Rpbmcvc2VsZnRlc3RzL2JwZi9wcm9ncy90
-ZXN0X3NvY2ttYXBfcHJvZ3NfcXVlcnkuYw0KPiA+ID4gPiBAQCAtMCwwICsxLDI0IEBADQo+ID4g
-PiA+ICsvLyBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMA0KPiA+ID4gPiArI2luY2x1
-ZGUgInZtbGludXguaCINCj4gPiA+ID4gKyNpbmNsdWRlIDxicGYvYnBmX2hlbHBlcnMuaD4NCj4g
-PiA+ID4gKw0KPiA+ID4gPiArc3RydWN0IHsNCj4gPiA+ID4gKyAgICAgICBfX3VpbnQodHlwZSwg
-QlBGX01BUF9UWVBFX1NPQ0tNQVApOw0KPiA+ID4gPiArICAgICAgIF9fdWludChtYXhfZW50cmll
-cywgMSk7DQo+ID4gPiA+ICsgICAgICAgX190eXBlKGtleSwgX191MzIpOw0KPiA+ID4gPiArICAg
-ICAgIF9fdHlwZSh2YWx1ZSwgX191NjQpOw0KPiA+ID4gPiArfSBzb2NrX21hcCBTRUMoIi5tYXBz
-Iik7DQo+ID4gPiA+ICsNCj4gPiA+ID4gK1NFQygic2tfc2tiIikNCj4gPiA+ID4gK2ludCBwcm9n
-X3NrYl92ZXJkaWN0KHN0cnVjdCBfX3NrX2J1ZmYgKnNrYikNCj4gPiA+ID4gK3sNCj4gPiA+ID4g
-KyAgICAgICByZXR1cm4gU0tfUEFTUzsNCj4gPiA+ID4gK30NCj4gPiA+ID4gKw0KPiA+ID4gPiAr
-U0VDKCJza19tc2ciKQ0KPiA+ID4gPiAraW50IHByb2dfc2ttc2dfdmVyZGljdChzdHJ1Y3Qgc2tf
-bXNnX21kICptc2cpDQo+ID4gPiA+ICt7DQo+ID4gPiA+ICsgICAgICAgcmV0dXJuIFNLX1BBU1M7
-DQo+ID4gPiA+ICt9DQo+ID4gPiA+ICsNCj4gPiA+ID4gK2NoYXIgX2xpY2Vuc2VbXSBTRUMoImxp
-Y2Vuc2UiKSA9ICJHUEwiOw0KPiA+ID4gPiAtLQ0KPiA+ID4gPiAyLjI3LjANCj4gPiA+ID4NCg==
+On Thu, Dec 30, 2021 at 1:28 PM Kai-Heng Feng
+<kai.heng.feng@canonical.com> wrote:
+>
+> Unplugging USB device may cause an incorrect warm reset loop and the
+> port can no longer be used:
+> [  143.039019] xhci_hcd 0000:00:14.0: Port change event, 2-3, id 19, portsc: 0x4202c0
+> [  143.039025] xhci_hcd 0000:00:14.0: handle_port_status: starting usb2 port polling.
+> [  143.039051] hub 2-0:1.0: state 7 ports 10 chg 0000 evt 0008
+> [  143.039058] xhci_hcd 0000:00:14.0: Get port status 2-3 read: 0x4202c0, return 0x4102c0
+> [  143.039092] xhci_hcd 0000:00:14.0: clear port3 connect change, portsc: 0x4002c0
+> [  143.039096] usb usb2-port3: link state change
+> [  143.039099] xhci_hcd 0000:00:14.0: clear port3 link state change, portsc: 0x2c0
+> [  143.039101] usb usb2-port3: do warm reset
+> [  143.096736] xhci_hcd 0000:00:14.0: Get port status 2-3 read: 0x2b0, return 0x2b0
+> [  143.096751] usb usb2-port3: not warm reset yet, waiting 50ms
+> [  143.131500] xhci_hcd 0000:00:14.0: Can't queue urb, port error, link inactive
+> [  143.138260] xhci_hcd 0000:00:14.0: Port change event, 2-3, id 19, portsc: 0x2802a0
+> [  143.138263] xhci_hcd 0000:00:14.0: handle_port_status: starting usb2 port polling.
+> [  143.160756] xhci_hcd 0000:00:14.0: Get port status 2-3 read: 0x2802a0, return 0x3002a0
+> [  143.160798] usb usb2-port3: not warm reset yet, waiting 200ms
+>
+> The port status is PP=1, CCS=0, PED=0, PLS=Inactive, which is Error
+> state per "USB3 Root Hub Port State Machine". It's reasonable to perform
+> warm reset several times, but if the port is still not enabled after
+> many attempts, consider it's gone and treat it as disconnected.
+>
+> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+
+A gentle ping...
+
+> ---
+>  drivers/usb/core/hub.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
+> index 00070a8a65079..f618d86d526d1 100644
+> --- a/drivers/usb/core/hub.c
+> +++ b/drivers/usb/core/hub.c
+> @@ -2979,7 +2979,8 @@ static int hub_port_reset(struct usb_hub *hub, int port1,
+>                 }
+>
+>                 /* Check for disconnect or reset */
+> -               if (status == 0 || status == -ENOTCONN || status == -ENODEV) {
+> +               if (status == 0 || status == -ENOTCONN || status == -ENODEV ||
+> +                   (status == -EBUSY && i == PORT_RESET_TRIES - 1)) {
+>                         usb_clear_port_feature(hub->hdev, port1,
+>                                         USB_PORT_FEAT_C_RESET);
+>
+> --
+> 2.33.1
+>
