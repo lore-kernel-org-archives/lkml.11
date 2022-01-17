@@ -2,88 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E649C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 10:51:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEBE4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 10:56:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238770AbiAQKvz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 05:51:55 -0500
-Received: from mga02.intel.com ([134.134.136.20]:4116 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231277AbiAQKvy (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 05:51:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642416714; x=1673952714;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=36H2drjwpOY4IU2f8ScW/ajOBwnGkRxRYemk8d7v1T4=;
-  b=hBlC6FHk1JtUQwx0MlghSwhlxAAQQFC5B25S8D5KhzCpbLd/ZY3K/OHF
-   ALoudRo1EKdBIRPgsCxPiDF2IpyRa4Svmg6EG3jBNwag74LWH4qRQxpfc
-   5vq2IRBL/qawFuYHM5Bp0iqapaCHuGFx/F/lBqGphjkRLIAbbI8kCCAmU
-   dITOCrYowJcGni1KlPbvxzcAf85Y2EAr1KRo318+1NTpXKWebdF7vuPE6
-   Ojtth4htkZdw/NXMIH4hZ+Px7/9fgdqN51JRPnPgH6IbXZlBy6nYdToCF
-   8D5VHsoShcxY1+lReHadQuODy+2Ouk/dLesL55gZf39GZZIASVR3VGDjB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10229"; a="231958928"
-X-IronPort-AV: E=Sophos;i="5.88,295,1635231600"; 
-   d="scan'208";a="231958928"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 02:51:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,295,1635231600"; 
-   d="scan'208";a="693032267"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 17 Jan 2022 02:51:31 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n9Pbm-000BUN-QQ; Mon, 17 Jan 2022 10:51:30 +0000
-Date:   Mon, 17 Jan 2022 18:51:03 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Roger Quadros <rogerq@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Krzysztof Kozlowski <krzk@kernel.org>
-Subject: ERROR: modpost: "gpmc_omap_get_nand_ops"
- [drivers/mtd/nand/raw/omap2_nand.ko] undefined!
-Message-ID: <202201171805.5HeoR4rS-lkp@intel.com>
+        id S238790AbiAQK4P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 05:56:15 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57918 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229503AbiAQK4N (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 05:56:13 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0964460FE8;
+        Mon, 17 Jan 2022 10:56:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C0F6C36AE7;
+        Mon, 17 Jan 2022 10:56:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642416971;
+        bh=WyPJvdRmUEPwRoLB14a6aObUcdcSgZBUxYOv6PmK66E=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=WOJ7Mq1g21hn5lAnuRXnhsSIsJe7Q5UD3AEdAhkk6F0ZFFampyGRfr0J6nI0YITWS
+         TyTRUN59zdVVukOzE2m1aOnE5Yt36n27x3of1zmX1PBxiAcItWc0EZXuwBcAbY6ErW
+         h5HKkIp4EuBiyokFdArbhOt0JZUiKy5XfInxgAOhAHjvtMX94anV8P99Xr+rQ5BZlz
+         ZNdw9+ZF07ybL9svsVxBICN7pLrgz4ilGetxGvwVMEkF0ZbxYY8Ry4/uQXxXshpZwz
+         osrsjQViITL7XNUg+QyMXorCJtUyPqRd2LjkCyoHKrC71MOrBnc0ig/2CXyS7W0+z1
+         AsGYw3vFwHQ1g==
+Date:   Mon, 17 Jan 2022 11:56:07 +0100
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Subject: Re: [PATCH 1/2] iio: imu: st_lsm6dsx: Limit requested watermark
+ value to hwfifo size
+Message-ID: <YeVLRzmUw/U9GRC3@lore-desk>
+References: <20220117102512.31725-1-paul@crapouillou.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="bP2/75p4uu4UIPkj"
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220117102512.31725-1-paul@crapouillou.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   0c947b893d69231a9add855939da7c66237ab44f
-commit: dbcb124acebd8148e9e858a231f1798956dd3ca6 mtd: rawnand: omap2: Select GPMC device driver for ARCH_K3
-date:   4 weeks ago
-config: arm64-randconfig-r001-20220117 (https://download.01.org/0day-ci/archive/20220117/202201171805.5HeoR4rS-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 5f782d25a742302d25ef3c8b84b54f7483c2deb9)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm64 cross compiling tool for clang build
-        # apt-get install binutils-aarch64-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=dbcb124acebd8148e9e858a231f1798956dd3ca6
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout dbcb124acebd8148e9e858a231f1798956dd3ca6
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+--bP2/75p4uu4UIPkj
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+> Instead of returning an error if the watermark value is too high, which
+> the core will silently ignore anyway, limit the value to the hardware
+> FIFO size; a lower-than-requested value is still better than using the
+> default, which is usually 1.
+>=20
 
->> ERROR: modpost: "gpmc_omap_get_nand_ops" [drivers/mtd/nand/raw/omap2_nand.ko] undefined!
+Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
-Kconfig warnings: (for reference only)
-   WARNING: unmet direct dependencies detected for OMAP_GPMC
-   Depends on MEMORY && OF_ADDRESS
-   Selected by
-   - MTD_NAND_OMAP2 && MTD && MTD_RAW_NAND && (ARCH_OMAP2PLUS || ARCH_KEYSTONE || COMPILE_TEST && HAS_IOMEM && ARCH_K3
+> Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> ---
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/i=
+mu/st_lsm6dsx/st_lsm6dsx_core.c
+> index 727b4b6ac696..5fd46bf1a11b 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> @@ -54,6 +54,7 @@
+>  #include <linux/iio/sysfs.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/irq.h>
+> +#include <linux/minmax.h>
+>  #include <linux/pm.h>
+>  #include <linux/property.h>
+>  #include <linux/regmap.h>
+> @@ -1607,8 +1608,7 @@ int st_lsm6dsx_set_watermark(struct iio_dev *iio_de=
+v, unsigned int val)
+>  	struct st_lsm6dsx_hw *hw =3D sensor->hw;
+>  	int err;
+> =20
+> -	if (val < 1 || val > hw->settings->fifo_ops.max_size)
+> -		return -EINVAL;
+> +	val =3D clamp_val(val, 1, hw->settings->fifo_ops.max_size);
+> =20
+>  	mutex_lock(&hw->conf_lock);
+> =20
+> --=20
+> 2.34.1
+>=20
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+--bP2/75p4uu4UIPkj
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYeVLRgAKCRA6cBh0uS2t
+rM07AP4nFkyIdNtLaE6ZhYiaSwvF1FlkQJNl3Hsa7eTwNQwWSwD/e6jifcjD2e53
+sQcPYAXSVQEW/aPuHbAoY8i8f/GO8Q4=
+=Gqbr
+-----END PGP SIGNATURE-----
+
+--bP2/75p4uu4UIPkj--
