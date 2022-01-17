@@ -2,93 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A559CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 12:13:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23CBFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 12:14:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239758AbiAQMN6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 07:13:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35606 "EHLO
+        id S239785AbiAQMO4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 07:14:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232783AbiAQMN5 (ORCPT
+        with ESMTP id S239765AbiAQMOz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 07:13:57 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37863C061574;
-        Mon, 17 Jan 2022 04:13:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=0xwjXHytdG9TW+eEv4h5HG046BJiyWLMcQrJvytddgc=; b=Pz8qepblptPdOh+nacvo2kZqQ4
-        1ITos2gLO+OPiB77uK7PkjNvo7oL9fZrE+gVFXl/EZjE0fcMaiuNDDZR+/mhn1jDamMHBX68xBPZP
-        P1QvUSgvqMdcGkx60U3GHqCbO8uOdwurN8/WsCs0sTIey18EU6B+ACuqHIPrhVnY87KG+cJNTAegQ
-        1vO7/SjXM0Kv51kNUDzTMp5ysaC4X0YLehawm3MHYtqHk98oar1uNQWWLRst0Prx1WLzD0m2O1PLF
-        mzkSome0hxLI/FCGZpTOZk2AJaqz0QPkKKgkCbgDGUnSbVfU2K+190bUlsEpAH+MLJ/u0BwG5WwhJ
-        hBIqjnRQ==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n9Qsd-001dpx-C8; Mon, 17 Jan 2022 12:12:59 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 775EA3001FD;
-        Mon, 17 Jan 2022 13:12:57 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 387852027C5EF; Mon, 17 Jan 2022 13:12:57 +0100 (CET)
-Date:   Mon, 17 Jan 2022 13:12:57 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Peter Oskolkov <posk@posk.io>
-Cc:     mingo@redhat.com, tglx@linutronix.de, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-api@vger.kernel.org, x86@kernel.org,
-        pjt@google.com, posk@google.com, avagin@google.com,
-        jannh@google.com, tdelisle@uwaterloo.ca
-Subject: Re: [RFC][PATCH 3/3] sched: User Mode Concurency Groups
-Message-ID: <YeVdSYrkmMW2i8+N@hirez.programming.kicks-ass.net>
-References: <20211214204445.665580974@infradead.org>
- <20211214205358.701701555@infradead.org>
- <20211221171900.GA580323@dev-hv>
- <YeGEM7TP3tekBVEh@hirez.programming.kicks-ass.net>
+        Mon, 17 Jan 2022 07:14:55 -0500
+Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BA6DC061574
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 04:14:55 -0800 (PST)
+Received: by mail-qk1-x72e.google.com with SMTP id c190so17670332qkg.9
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 04:14:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uUCg1YItvyrIw9CiOXyM/OuBol/sDAALpX7c8j0fvaI=;
+        b=7SlHDseHUVpPddEzwv+4fXqO4TdfNIF9mfH025WwpQ1ebXVTobjMduO9FCh0VaiDYe
+         SMH4EBWzX5vIT5/qoLvLepJC3YMrdqoKUyBsUO+9Q96wNnSN1hoU03OKYVFkaAGHFx1T
+         fj/vk3ZG45CrQYaznO+Mlf/4L0Q36j2dqV5S7yILS8ESJFDIRAJ4J8UtLyJ7+LWOZcIg
+         TTf7N7ovIdIJ9GyT2uG030JMPCXTdIJRnBXNM59F6+nlYgoa+J7RHYzKGNzsYu8cVLyA
+         8qY+rL1MKV8uM7M9Oz57ZHECNOPmZUWF24rDZp/Z7uKH+EJ0VvP2lYufxpyVnyUbcdSl
+         +g8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uUCg1YItvyrIw9CiOXyM/OuBol/sDAALpX7c8j0fvaI=;
+        b=MS2lIG2FNhGZ5h9YwpxfIJRtkRPe9xFAYdkT2P8UVNCHb5nzkw3oRg2es6u5RgnjyR
+         Ym6wO4mA74BmoBT78k6Yk6eqJxDFYIDGXGLISgj0iomGdaNI75uCUsAt5ogs91as+RnK
+         6OsSZVncSNzUTjwZ4OnKl6a6rC36xbIQi6W/A1SRQAZG0p5KDIh3rfp2Eb5kHylCUEjY
+         n3qYDBFJQzqURHk1y270fygi10vCmkTVFircStpCxIkN21TB3DqqLV9Ejp364vGgbWC2
+         k+bTlJEWMo+nZWzT6m0851gbrB2lSEG7/+asSfFbQskvhezq0zE92CPRJgFOSl7ms8rh
+         H7BQ==
+X-Gm-Message-State: AOAM532ZvqGOSHjuhVdjBxoLGb/iCfn2z0kqWQajvvnDZqyByepbld8S
+        B7C/W381I7ougImfiqXaig1dhw==
+X-Google-Smtp-Source: ABdhPJx537Oz6IfeVhDgAwlyGXWeK9OlLGcahtEwqIPOZeC75pvWMLMNQyiaqPc0LZaMaJ5aDqBRng==
+X-Received: by 2002:a05:620a:4086:: with SMTP id f6mr126915qko.146.1642421694623;
+        Mon, 17 Jan 2022 04:14:54 -0800 (PST)
+Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
+        by smtp.gmail.com with ESMTPSA id bp42sm8871383qtb.61.2022.01.17.04.14.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Jan 2022 04:14:54 -0800 (PST)
+Date:   Mon, 17 Jan 2022 07:14:53 -0500
+From:   Johannes Weiner <hannes@cmpxchg.org>
+To:     cgel.zte@gmail.com
+Cc:     akpm@linux-foundation.org, sfr@canb.auug.org.au,
+        linux-mm@kvack.org, linux-kernel@vger.kernel.org,
+        Yang Yang <yang.yang29@zte.com.cn>
+Subject: Re: [PATCH] psi: Treat ksm swapping in copy as memstall
+Message-ID: <YeVdvVVBvrXH5U0L@cmpxchg.org>
+References: <20220116152150.859520-1-yang.yang29@zte.com.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YeGEM7TP3tekBVEh@hirez.programming.kicks-ass.net>
+In-Reply-To: <20220116152150.859520-1-yang.yang29@zte.com.cn>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 03:09:55PM +0100, Peter Zijlstra wrote:
-> On Tue, Dec 21, 2021 at 05:19:00PM +0000, Peter Oskolkov wrote:
+Hello Yang,
 
-> > > +	/*
-> > > +	 * Workers will still block in umcg_notify_resume() before they can
-> > > +	 * consume their error, servers however need to get the error asap.
-> > > +	 *
-> > > +	 * Still, things might be unrecoverably screwy after this. Not our
-> > > +	 * problem.
-> > 
-> > I think we should explicitly document the unrecoverable screwiness
-> > of errors here, so that the userspace proactively kills itself
-> > to avoid badness. The only reason that returning an error here is
-> > mildly preferable to just killing the task (we already do that
-> > in other places) is to give the userspace an opportunity to
-> > log an error, with more state/info than we can do here.
+On Sun, Jan 16, 2022 at 03:21:51PM +0000, cgel.zte@gmail.com wrote:
+> From: Yang Yang <yang.yang29@zte.com.cn>
 > 
-> Bah, I should've written a better comment, because I can't quite
-> remember the case I had in mind. Also, again from the LAZY patch, I
-> think we can actually do better in some of the cases here.
+> When faults in from swap what used to be a ksm page and that page
+> had been swapped in before, system has to make a copy. Obviously
+> this kind of copy is related to high memory pressure, so we treat
+> it as memstall. Although ksm page merging is not because of high
+> memory pressure.
 > 
-> Specifically, currently we'll enqueue on ::runnable_workers_ptr and fail
-> waking ::next_tid and leave it at that. While I think waking
-> ::server_tid in that case makes sense.
+> Information of this new kind of stall will help psi to account
+> memory pressure more precise.
+
+Thanks for your patch. I'm curious if you have a concrete use case
+where this makes a difference, or if this is something you found while
+reading the code?
+
+> Signed-off-by: Yang Yang <yang.yang29@zte.com.cn>
+> ---
+>  mm/ksm.c | 4 ++++
+>  1 file changed, 4 insertions(+)
 > 
-> I'll go prod at this.
+> diff --git a/mm/ksm.c b/mm/ksm.c
+> index 4a7f8614e57d..d4ec6773f9b8 100644
+> --- a/mm/ksm.c
+> +++ b/mm/ksm.c
+> @@ -39,6 +39,7 @@
+>  #include <linux/freezer.h>
+>  #include <linux/oom.h>
+>  #include <linux/numa.h>
+> +#include <linux/psi.h>
+>  
+>  #include <asm/tlbflush.h>
+>  #include "internal.h"
+> @@ -2569,6 +2570,7 @@ struct page *ksm_might_need_to_copy(struct page *page,
+>  {
+>  	struct anon_vma *anon_vma = page_anon_vma(page);
+>  	struct page *new_page;
+> +	unsigned long pflags;
+>  
+>  	if (PageKsm(page)) {
+>  		if (page_stable_node(page) &&
+> @@ -2583,6 +2585,7 @@ struct page *ksm_might_need_to_copy(struct page *page,
+>  	if (!PageUptodate(page))
+>  		return page;		/* let do_swap_page report the error */
+>  
+> +	psi_memstall_enter(&pflags);
+>  	new_page = alloc_page_vma(GFP_HIGHUSER_MOVABLE, vma, address);
+>  	if (new_page &&
+>  	    mem_cgroup_charge(page_folio(new_page), vma->vm_mm, GFP_KERNEL)) {
+> @@ -2600,6 +2603,7 @@ struct page *ksm_might_need_to_copy(struct page *page,
+>  #endif
+>  	}
+>  
+> +	psi_memstall_leave(&pflags);
 
-Is anybody actually planning to use ::next_tid for workers?
+This does unconditional stall accounting for a swapin operation. But
+if you take a look at workingset_refault() -> folio_wait_bit_common(),
+we only count memory stalls when the page is thrashing, not when it's
+a transitionary refault (which happen even when there is enough memory
+to hold the workingset). You need to check PageWorkingset() at least.
 
-My current thinking is that much of the problems here stem from that.
-
-Let me ponder more..
+But again I'd be curious first if this is a practical concern. Swapins
+should be IO dominated - or in the case of zswap dominated by the
+decompression. Does a page copy really matter?
