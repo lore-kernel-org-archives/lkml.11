@@ -2,112 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54725C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 15:45:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EF77C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 15:49:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240636AbiAQPps (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 10:45:48 -0500
-Received: from out03.mta.xmission.com ([166.70.13.233]:54542 "EHLO
-        out03.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240627AbiAQPpm (ORCPT
+        id S240618AbiAQPty (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 10:49:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56788 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237369AbiAQPtw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 10:45:42 -0500
-Received: from in01.mta.xmission.com ([166.70.13.51]:33720)
-        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1n9UCT-004xBO-RM; Mon, 17 Jan 2022 08:45:41 -0700
-Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:43290 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1n9UCP-0039lU-RD; Mon, 17 Jan 2022 08:45:41 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Kees Cook <keescook@chromium.org>,
-        Oleg Nesterov <oleg@redhat.com>
-References: <878rvhlvh2.fsf@email.froward.int.ebiederm.org>
-        <CAHk-=wgS865kHU=4NO=AvK07fcK7M6C6EYGdk80R1tkPKTLyhQ@mail.gmail.com>
-        <CAHk-=wheeokE5rr_64iS_qnKmzSH4=e2Ds2L3gR_zSH=Cr4F5w@mail.gmail.com>
-Date:   Mon, 17 Jan 2022 09:45:30 -0600
-In-Reply-To: <CAHk-=wheeokE5rr_64iS_qnKmzSH4=e2Ds2L3gR_zSH=Cr4F5w@mail.gmail.com>
-        (Linus Torvalds's message of "Mon, 17 Jan 2022 06:15:16 +0200")
-Message-ID: <87czkqgycl.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        Mon, 17 Jan 2022 10:49:52 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F11FC061574
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 07:49:52 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id l6-20020a17090a4d4600b001b44bb75a8bso190973pjh.3
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 07:49:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dx8fnWE+qOBeQr9kWBJW6eoNu5QGa/KK1NgfQeSied0=;
+        b=NPslNjmG+eWwHB4BtfIVCYR/L1b7WXwleBapn1UxMXM+0hYxNssNCjNwMG12tN1QBb
+         /fm7PzlXOTqJyEk4jK9gV8YzP07uhWLhxUMFCForGuawYMNXa0J3gHQ78yYFrGhZ1sft
+         NqGqkP/wf9uFBs7xEzqT3h+6oDriJo6uMgwjyzvaNCLZpMh5Ul1WPa9MF6ZcikwmRmce
+         oCHtO1dTHUt5sZ79e0jQK1l7W3fbxyuds66AvJdSDhJdDZoR9O4IHxIpZk7umIYBjGb7
+         2tQT+NknALyO62g/bLLIWbwCTvlAK7QgsXsxP8QRR5uzZRhMVv2Vg1InCdTfrZwNwXDu
+         +GsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dx8fnWE+qOBeQr9kWBJW6eoNu5QGa/KK1NgfQeSied0=;
+        b=bfdwZIBFgJcyiWhAi5gBT93YNAcMjkdCFmhMv1aw1PTWw/6fswQEat3ZuZ2XKDKKaU
+         FTUESWrQWC905WV0dSPwmGowd8bhrvu/yB4FhIsjSEvWE9UTQVQB67mzib4S3VNm+05+
+         tKQWVy2C6NwGhnSLLGV6dUtfK1Q34tm45464k0ErYdLwnGpiW2LtMiyZNfC/e0ZDWVgS
+         mp1WXzefl77egENYx68Bj5VRNvw/vjnWf3HncjVSXZlohECY9NBl/SKVlK5nqlY/0cbp
+         usXa/TH8zn88seeQJKQXzhIpeWWZpifNOemRmryFhPrmpA2WMFI4Y+rFQL+EE63D1Wlo
+         pD3Q==
+X-Gm-Message-State: AOAM532EdBBsK5LKom24F18VytX8LCSMCg5LoMSTNa3K6NCQ6b9a/pLP
+        AR993O233Am7FNu4cCgtFWcB0gKjKGNHnbIt39V9qQ==
+X-Google-Smtp-Source: ABdhPJx438y5P/pXbWn13UAH3bdxpvZwSPVeO84ILQCgrWjMtGNUu/plW6d6LoxJo/0nGn6EOb1T0M4Sha0cjXqw+VE=
+X-Received: by 2002:a17:902:b189:b0:149:6c45:24c with SMTP id
+ s9-20020a170902b18900b001496c45024cmr22987695plr.21.1642434591811; Mon, 17
+ Jan 2022 07:49:51 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1n9UCP-0039lU-RD;;;mid=<87czkqgycl.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX19WrZnXKf82504GcdKsNKP43XxE9vbC1D4=
-X-SA-Exim-Connect-IP: 68.110.24.146
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [GIT PULL] signal/exit/ptrace changes for v5.17
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
+References: <20220117154150.5145-1-lzmlzmhh@gmail.com>
+In-Reply-To: <20220117154150.5145-1-lzmlzmhh@gmail.com>
+From:   Robert Foss <robert.foss@linaro.org>
+Date:   Mon, 17 Jan 2022 16:49:40 +0100
+Message-ID: <CAG3jFyuEpiSdzNQ9=U30Bvr4bC+diG3XJHX6Kz38Mw62a5YVGA@mail.gmail.com>
+Subject: Re: [PATCH v3] drm/bridge: Remove extra device acquisition method of
+ i2c client in lt9611 driver
+To:     Zhiming Liu <lzmlzmhh@gmail.com>
+Cc:     narmstrong@baylibre.com, laurent.pinchart@ideasonboard.com,
+        jonas@kwiboo.se, jernej.skrabec@gmail.com, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Linus Torvalds <torvalds@linux-foundation.org> writes:
+Hey Zhiming,
 
-> On Mon, Jan 17, 2022 at 6:08 AM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
->>
->>
->> People sometimes think that is just a "poll/select()" thing, but
->> that's not at all true. It's quite valid to do things like
->>
->>         add_wait_queue(..)
->>         for (.. some loop ..) {
->>                 set_current_state(TASK_INTERRUPTIBLE);
->>                 ... do various things, checking state etc ..
->>                schedule();
->>         }
->>         set_current_state(TASK_RUNNABLE);
->>         remove_wait_queue();
+On Mon, 17 Jan 2022 at 16:42, Zhiming Liu <lzmlzmhh@gmail.com> wrote:
 >
-> Of course, in most modern cases, the above sequence is actually
-> encoded as a "wait_event_interruptible()", because we don't generally
-> want to open-code the whole thing.
+> drm/bridge: Remove extra device acquisition method of i2c client in lt9611 driver.
 
-Yes.
+The commit title is already in the email title, it doesn't need to be
+sent twice, sorry if I was unclear about this.
 
-What I was looking at that inspired the question is that
-"wake_up" ultimately expands to "try_to_wake_up(task, TASK_NORMAL, 0)".
-
-Whereas "wake_up_interruptible" expands to
-"try_to_wake_up(task, TASK_INTERRUPTIBLE, 0)".
-
-With the practical challenge that if I want to change
-wait_event_interruptible to wait_event_killable I need to change all of
-the wakers.
-
-> But the actual end result still ends up being exactly the same, it's
-> just syntactically denser and more legible version of the above thing,
-> and you can still have the "event" you wait on have nested waiting
-> situations.
 >
-> The nested waiting is by no means common. The only _common_situation
-> where you're on multiple wait queues tends to be select/poll kind of
-> things, when they aren't really nested as much as iterated over, but
-> conceptually the nested case is still quite important, and it allows
-> you to do things that a traditional "wait_on()" interface with just
-> one single wait-queue just doesn't allow for.
+> We have got the device of i2c client in probe function.So we should remove extra
 
-I think it may just be the part of the kernel where I usually work.
-Changing wait_event_interruptible to wait_event_killable has always just
-worked for me, but it doesn't in the pipe code.
+This line is too long, and `checkpatch.pl --strict` complains about its length.
 
-It doesn't because of wake_up_interruptible.
+> device acquisition method of i2c client.
+>
+> Signed-off-by: Zhiming Liu <lzmlzmhh@gmail.com>
+> ---
+>  drivers/gpu/drm/bridge/lontium-lt9611.c    | 4 ++--
+>  drivers/gpu/drm/bridge/lontium-lt9611uxc.c | 4 ++--
+>  2 files changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/bridge/lontium-lt9611.c b/drivers/gpu/drm/bridge/lontium-lt9611.c
+> index dafb1b47c15f..feb128a4557d 100644
+> --- a/drivers/gpu/drm/bridge/lontium-lt9611.c
+> +++ b/drivers/gpu/drm/bridge/lontium-lt9611.c
+> @@ -1090,7 +1090,7 @@ static int lt9611_probe(struct i2c_client *client,
+>         if (!lt9611)
+>                 return -ENOMEM;
+>
+> -       lt9611->dev = &client->dev;
+> +       lt9611->dev = dev;
+>         lt9611->client = client;
+>         lt9611->sleep = false;
+>
+> @@ -1100,7 +1100,7 @@ static int lt9611_probe(struct i2c_client *client,
+>                 return PTR_ERR(lt9611->regmap);
+>         }
+>
+> -       ret = lt9611_parse_dt(&client->dev, lt9611);
+> +       ret = lt9611_parse_dt(dev, lt9611);
+>         if (ret) {
+>                 dev_err(dev, "failed to parse device tree\n");
+>                 return ret;
+> diff --git a/drivers/gpu/drm/bridge/lontium-lt9611uxc.c b/drivers/gpu/drm/bridge/lontium-lt9611uxc.c
+> index 33f9716da0ee..3d62e6bf6892 100644
+> --- a/drivers/gpu/drm/bridge/lontium-lt9611uxc.c
+> +++ b/drivers/gpu/drm/bridge/lontium-lt9611uxc.c
+> @@ -860,7 +860,7 @@ static int lt9611uxc_probe(struct i2c_client *client,
+>         if (!lt9611uxc)
+>                 return -ENOMEM;
+>
+> -       lt9611uxc->dev = &client->dev;
+> +       lt9611uxc->dev = dev;
+>         lt9611uxc->client = client;
+>         mutex_init(&lt9611uxc->ocm_lock);
+>
+> @@ -870,7 +870,7 @@ static int lt9611uxc_probe(struct i2c_client *client,
+>                 return PTR_ERR(lt9611uxc->regmap);
+>         }
+>
+> -       ret = lt9611uxc_parse_dt(&client->dev, lt9611uxc);
+> +       ret = lt9611uxc_parse_dt(dev, lt9611uxc);
+>         if (ret) {
+>                 dev_err(dev, "failed to parse device tree\n");
+>                 return ret;
+> --
 
-I do know that short-term-disk-sleep aka task_uninterruptible is special
-to performing things like disk I/O, and really short term things.
+I fixed the two remaining issues in your patch, but in the future I
+would suggest running `checkpatch.pl --strict` on every patch before
+emailing them out. It's very easy to miss something.
 
-It might just be the names but I look at wake_up_interruptible and my
-klaxon's go off in my head saying something doesn't make sense.  So I
-will read up and look at those nested wait-queue scenarios and see if I
-can find the piece of understanding I am missing.
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
 
-Eric
+Applied to drm-misc-next.
