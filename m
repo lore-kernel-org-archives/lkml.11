@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDA53C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:03:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7EE3C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235642AbiAQRD4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:03:56 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50204 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241377AbiAQRCO (ORCPT
+        id S241638AbiAQREA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:04:00 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52044 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241309AbiAQRCS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:02:14 -0500
+        Mon, 17 Jan 2022 12:02:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6E978B8113E;
-        Mon, 17 Jan 2022 17:02:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E0DAC36AE3;
-        Mon, 17 Jan 2022 17:02:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F0499611D9;
+        Mon, 17 Jan 2022 17:02:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 799A0C36AE7;
+        Mon, 17 Jan 2022 17:02:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642438931;
-        bh=rzv9QsLSnsaJatj1QVJsHn9psvDfIQR4TzyiepA7mZ4=;
+        s=k20201202; t=1642438937;
+        bh=vCWM391mahdHAJjL6H0oEHOo3B7sCwqL6vruq8eQ2u4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t1DJQrdVp9FTHeOOrGRfEYPgoUUSct70dVnEp7RAWZAGcGPGXTfSEdJafcTbXdYoo
-         D62QtdIhMngtoU0ZXTWFwJjmzZnM3YCj3pFZsnP4kBQSsHOhOcFmKKrAPvtBFV11Fy
-         u5YPEyWODoVoA5n2KubmK/RkM42ZNG0IB/uG220mekEC1tgT617jZ0H33Wu1oJnEWQ
-         /py4a44AUaKMCnyMxnZhyLPgC9v07vtbzx1CigXO/7KjDEpK9xUyfv5iUTMpXyBYO7
-         e/HdG89LEixG0tZAp6QjHZkhiEsFKYgR26Mm5gjiDZIGyhleM7gwpOGDafnMDwn66Z
-         d/GfAsjDLzMYQ==
+        b=i9ViTeRi5wgj71M3jmboqxN+6laa74sIGC76xRE7wzOFljEShECzb6CU7wZzkgVVw
+         Q2o+LklI0yTSR2Sa76orgOxmNKedyBndhECJLPlPuvJ4c4koVukMB3CS8DJ0cuHO8n
+         GxflkjEuwnUPL1GW0VrzPZYl+g0G5enoEkOXFI2c7mk3w59svvDCVPd9Sr9OlMK2Oq
+         19FVI/SV8VSOpN+Rbbv7a14ZiT4Qn5Uq/7PYm0idIm55KVpvg2GO2RI6zqc/G+fICd
+         HEv2nhE4ZzttPvrmX2FvIq2tL4w6XPjUPK6aCGU55BxRqxLYIbwHn+ahMPihxj2MUF
+         UFUe5VA6vcRQA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Bart Van Assche <bvanassche@acm.org>,
-        Bean Huo <beanhuo@micron.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        avri.altman@wdc.com, cang@codeaurora.org, adrian.hunter@intel.com,
-        asutoshd@codeaurora.org, linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 19/44] scsi: ufs: Fix a kernel crash during shutdown
-Date:   Mon, 17 Jan 2022 12:01:02 -0500
-Message-Id: <20220117170127.1471115-19-sashal@kernel.org>
+Cc:     Takashi Iwai <tiwai@suse.de>, Zqiang <qiang.zhang1211@gmail.com>,
+        syzbot+bb950e68b400ab4f65f8@syzkaller.appspotmail.com,
+        Sasha Levin <sashal@kernel.org>, perex@perex.cz,
+        tiwai@suse.com, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.15 22/44] ALSA: seq: Set upper limit of processed events
+Date:   Mon, 17 Jan 2022 12:01:05 -0500
+Message-Id: <20220117170127.1471115-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117170127.1471115-1-sashal@kernel.org>
 References: <20220117170127.1471115-1-sashal@kernel.org>
@@ -51,83 +49,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 3489c34bd02b73a72646037d673a122a53cee174 ]
+[ Upstream commit 6fadb494a638d8b8a55864ecc6ac58194f03f327 ]
 
-Fix the following kernel crash:
+Currently ALSA sequencer core tries to process the queued events as
+much as possible when they become dispatchable.  If applications try
+to queue too massive events to be processed at the very same timing,
+the sequencer core would still try to process such all events, either
+in the interrupt context or via some notifier; in either away, it
+might be a cause of RCU stall or such problems.
 
-Unable to handle kernel paging request at virtual address ffffffc91e735000
-Call trace:
- __queue_work+0x26c/0x624
- queue_work_on+0x6c/0xf0
- ufshcd_hold+0x12c/0x210
- __ufshcd_wl_suspend+0xc0/0x400
- ufshcd_wl_shutdown+0xb8/0xcc
- device_shutdown+0x184/0x224
- kernel_restart+0x4c/0x124
- __arm64_sys_reboot+0x194/0x264
- el0_svc_common+0xc8/0x1d4
- do_el0_svc+0x30/0x8c
- el0_svc+0x20/0x30
- el0_sync_handler+0x84/0xe4
- el0_sync+0x1bc/0x1c0
+As a potential workaround for those problems, this patch adds the
+upper limit of the amount of events to be processed.  The remaining
+events are processed in the next batch, so they won't be lost.
 
-Fix this crash by ungating the clock before destroying the work queue on
-which clock gating work is queued.
+For the time being, it's limited up to 1000 events per queue, which
+should be high enough for any normal usages.
 
-Link: https://lore.kernel.org/r/20211203231950.193369-15-bvanassche@acm.org
-Tested-by: Bean Huo <beanhuo@micron.com>
-Reviewed-by: Bean Huo <beanhuo@micron.com>
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reported-by: Zqiang <qiang.zhang1211@gmail.com>
+Reported-by: syzbot+bb950e68b400ab4f65f8@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/r/20211102033222.3849-1-qiang.zhang1211@gmail.com
+Link: https://lore.kernel.org/r/20211207165146.2888-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/ufs/ufshcd.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ sound/core/seq/seq_queue.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 31adf25e57b0d..4d50caa8cbbf5 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -1657,7 +1657,8 @@ int ufshcd_hold(struct ufs_hba *hba, bool async)
- 	bool flush_result;
- 	unsigned long flags;
+diff --git a/sound/core/seq/seq_queue.c b/sound/core/seq/seq_queue.c
+index d6c02dea976c8..bc933104c3eea 100644
+--- a/sound/core/seq/seq_queue.c
++++ b/sound/core/seq/seq_queue.c
+@@ -235,12 +235,15 @@ struct snd_seq_queue *snd_seq_queue_find_name(char *name)
  
--	if (!ufshcd_is_clkgating_allowed(hba))
-+	if (!ufshcd_is_clkgating_allowed(hba) ||
-+	    !hba->clk_gating.is_initialized)
- 		goto out;
- 	spin_lock_irqsave(hba->host->host_lock, flags);
- 	hba->clk_gating.active_reqs++;
-@@ -1817,7 +1818,7 @@ static void __ufshcd_release(struct ufs_hba *hba)
+ /* -------------------------------------------------------- */
  
- 	if (hba->clk_gating.active_reqs || hba->clk_gating.is_suspended ||
- 	    hba->ufshcd_state != UFSHCD_STATE_OPERATIONAL ||
--	    hba->outstanding_tasks ||
-+	    hba->outstanding_tasks || !hba->clk_gating.is_initialized ||
- 	    hba->active_uic_cmd || hba->uic_async_done ||
- 	    hba->clk_gating.state == CLKS_OFF)
- 		return;
-@@ -1952,11 +1953,15 @@ static void ufshcd_exit_clk_gating(struct ufs_hba *hba)
++#define MAX_CELL_PROCESSES_IN_QUEUE	1000
++
+ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
  {
- 	if (!hba->clk_gating.is_initialized)
- 		return;
-+
- 	ufshcd_remove_clk_gating_sysfs(hba);
--	cancel_work_sync(&hba->clk_gating.ungate_work);
--	cancel_delayed_work_sync(&hba->clk_gating.gate_work);
--	destroy_workqueue(hba->clk_gating.clk_gating_workq);
-+
-+	/* Ungate the clock if necessary. */
-+	ufshcd_hold(hba, false);
- 	hba->clk_gating.is_initialized = false;
-+	ufshcd_release(hba);
-+
-+	destroy_workqueue(hba->clk_gating.clk_gating_workq);
- }
+ 	unsigned long flags;
+ 	struct snd_seq_event_cell *cell;
+ 	snd_seq_tick_time_t cur_tick;
+ 	snd_seq_real_time_t cur_time;
++	int processed = 0;
  
- /* Must be called with host lock acquired */
+ 	if (q == NULL)
+ 		return;
+@@ -263,6 +266,8 @@ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
+ 		if (!cell)
+ 			break;
+ 		snd_seq_dispatch_event(cell, atomic, hop);
++		if (++processed >= MAX_CELL_PROCESSES_IN_QUEUE)
++			goto out; /* the rest processed at the next batch */
+ 	}
+ 
+ 	/* Process time queue... */
+@@ -272,14 +277,19 @@ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
+ 		if (!cell)
+ 			break;
+ 		snd_seq_dispatch_event(cell, atomic, hop);
++		if (++processed >= MAX_CELL_PROCESSES_IN_QUEUE)
++			goto out; /* the rest processed at the next batch */
+ 	}
+ 
++ out:
+ 	/* free lock */
+ 	spin_lock_irqsave(&q->check_lock, flags);
+ 	if (q->check_again) {
+ 		q->check_again = 0;
+-		spin_unlock_irqrestore(&q->check_lock, flags);
+-		goto __again;
++		if (processed < MAX_CELL_PROCESSES_IN_QUEUE) {
++			spin_unlock_irqrestore(&q->check_lock, flags);
++			goto __again;
++		}
+ 	}
+ 	q->check_blocked = 0;
+ 	spin_unlock_irqrestore(&q->check_lock, flags);
 -- 
 2.34.1
 
