@@ -2,49 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09143C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:06:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E67C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:06:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241895AbiAQRGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:06:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44992 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242464AbiAQREb (ORCPT
+        id S242590AbiAQRGk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:06:40 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52218 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242460AbiAQREc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:04:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75851C0613AD;
-        Mon, 17 Jan 2022 09:03:03 -0800 (PST)
+        Mon, 17 Jan 2022 12:04:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 303A3B81157;
-        Mon, 17 Jan 2022 17:03:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2AFDC36AE3;
-        Mon, 17 Jan 2022 17:02:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0C158B8114A;
+        Mon, 17 Jan 2022 17:04:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0B15C36AEF;
+        Mon, 17 Jan 2022 17:04:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642438980;
-        bh=MQZNKsIA8dH2rECRUuLDz3Ofvj0Sz2YQD2ogUS2SVoQ=;
+        s=k20201202; t=1642439069;
+        bh=TCMAxjkJB9dgoIXSVmuuBks01Ti+Fg5Kyhrp6E1okHA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BHAJ/UuibtWdG3xbACjATHQxdJUtw9PuD3xwFiXoslyo/nJdSCj++VGCISm2ocEiM
-         CMlty7hriBpEoZJEMFrEfy96YLK0Qyotu1uzhaQVddJcANRN1HcUwWrK04IoMA/hkl
-         7XYEBUf3EZLPut+owT3Tj5ulz6DQYRLFBwH0bxdbRPMBUTWni2fSQ/fc+k6NeANhqf
-         mNHDOiPXSDDAOpQOhhMKATdh4ihqutzu8y9N0LhES+0Nq9A/cRNX3hMplAwGHjWF96
-         3pLb00Jj7GEtJ19NkTqCmrDTsMX6nbZ92MXOhc/omx1hV+MpZiF+Xl2ZYsSnrOx9cn
-         1TuU0IlKKY2HA==
+        b=JQ+EDwaa9ZsIx0ouOYzzO4tq80aFsB677SzMKGqxoK8f6DfOd0MyNAflOHlo9WYfc
+         u1xyuNeDLfZxzMLLMRu/Cy4jnqrBMV+hZlfgGrZK6ZQNf3Y9AMP+r5Mm9qGifjHVdG
+         E49k9wdndo8ZbQeNMT21N3zjXDPfEqy3pX5VSYlojvGvYvTdkKi75HYDGYjgU2SMZS
+         Y5LVmsKyciKxaiPPjrVjHw8pZwJzivgEn0+AnBHLvsIzBtj0mLHDlau4z3RJwjeaSF
+         iSgulIZuwkgPElLRyoAC9G4nVkg1/LZACLnz2p9UUdY8IG8bv2YltRPmWNmsmxwPaj
+         EWjYmX/nfWYIQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chunfeng Yun <chunfeng.yun@mediatek.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        kishon@ti.com, matthias.bgg@gmail.com,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-phy@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 38/44] phy: phy-mtk-tphy: add support efuse setting
-Date:   Mon, 17 Jan 2022 12:01:21 -0500
-Message-Id: <20220117170127.1471115-38-sashal@kernel.org>
+Cc:     Marc Zyngier <maz@kernel.org>, Jay Chen <jkchen@linux.alibaba.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de
+Subject: [PATCH AUTOSEL 5.10 27/34] irqchip/gic-v4: Disable redistributors' view of the VPE table at boot time
+Date:   Mon, 17 Jan 2022 12:03:17 -0500
+Message-Id: <20220117170326.1471712-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170127.1471115-1-sashal@kernel.org>
-References: <20220117170127.1471115-1-sashal@kernel.org>
+In-Reply-To: <20220117170326.1471712-1-sashal@kernel.org>
+References: <20220117170326.1471712-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,276 +48,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chunfeng Yun <chunfeng.yun@mediatek.com>
+From: Marc Zyngier <maz@kernel.org>
 
-[ Upstream commit 6f2b033cb883f64ad084a75f13634242c7e179a6 ]
+[ Upstream commit 79a7f77b9b154d572bd9d2f1eecf58c4d018d8e2 ]
 
-Due to some SoCs have a bit shift issue that will drop a bit for usb3
-phy or pcie phy, fix it by adding software efuse reading and setting,
-but only support it optionally for version 2/3.
+Jay Chen reported that using a kdump kernel on a GICv4.1 system
+results in a RAS error being delivered when the secondary kernel
+configures the ITS's view of the new VPE table.
 
-Signed-off-by: Chunfeng Yun <chunfeng.yun@mediatek.com>
-Link: https://lore.kernel.org/r/20211218082802.5256-2-chunfeng.yun@mediatek.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+As it turns out, that's because each RD still has a pointer to
+the previous instance of the VPE table, and that particular
+implementation is very upset by seeing two bits of the HW that
+should point to the same table with different values.
+
+To solve this, let's invalidate any reference that any RD has to
+the VPE table when discovering the RDs. The ITS can then be
+programmed as expected.
+
+Reported-by: Jay Chen <jkchen@linux.alibaba.com>
+Signed-off-by: Marc Zyngier <maz@kernel.org>
+Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Link: https://lore.kernel.org/r/20211214064716.21407-1-jkchen@linux.alibaba.com
+Link: https://lore.kernel.org/r/20211216144804.1578566-1-maz@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/mediatek/phy-mtk-tphy.c | 162 ++++++++++++++++++++++++++++
- 1 file changed, 162 insertions(+)
+ drivers/irqchip/irq-gic-v3.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/drivers/phy/mediatek/phy-mtk-tphy.c b/drivers/phy/mediatek/phy-mtk-tphy.c
-index cdcef865fe9e5..98a942c607a67 100644
---- a/drivers/phy/mediatek/phy-mtk-tphy.c
-+++ b/drivers/phy/mediatek/phy-mtk-tphy.c
-@@ -12,6 +12,7 @@
- #include <linux/iopoll.h>
- #include <linux/mfd/syscon.h>
- #include <linux/module.h>
-+#include <linux/nvmem-consumer.h>
- #include <linux/of_address.h>
- #include <linux/of_device.h>
- #include <linux/phy/phy.h>
-@@ -41,6 +42,9 @@
- #define SSUSB_SIFSLV_V2_U3PHYD		0x200
- #define SSUSB_SIFSLV_V2_U3PHYA		0x400
- 
-+#define U3P_MISC_REG1		0x04
-+#define MR1_EFUSE_AUTO_LOAD_DIS		BIT(6)
-+
- #define U3P_USBPHYACR0		0x000
- #define PA0_RG_U2PLL_FORCE_ON		BIT(15)
- #define PA0_USB20_PLL_PREDIV		GENMASK(7, 6)
-@@ -133,6 +137,8 @@
- #define P3C_RG_SWRST_U3_PHYD_FORCE_EN	BIT(24)
- 
- #define U3P_U3_PHYA_REG0	0x000
-+#define P3A_RG_IEXT_INTR		GENMASK(15, 10)
-+#define P3A_RG_IEXT_INTR_VAL(x)		((0x3f & (x)) << 10)
- #define P3A_RG_CLKDRV_OFF		GENMASK(3, 2)
- #define P3A_RG_CLKDRV_OFF_VAL(x)	((0x3 & (x)) << 2)
- 
-@@ -187,6 +193,19 @@
- #define P3D_RG_FWAKE_TH		GENMASK(21, 16)
- #define P3D_RG_FWAKE_TH_VAL(x)	((0x3f & (x)) << 16)
- 
-+#define U3P_U3_PHYD_IMPCAL0		0x010
-+#define P3D_RG_FORCE_TX_IMPEL		BIT(31)
-+#define P3D_RG_TX_IMPEL			GENMASK(28, 24)
-+#define P3D_RG_TX_IMPEL_VAL(x)		((0x1f & (x)) << 24)
-+
-+#define U3P_U3_PHYD_IMPCAL1		0x014
-+#define P3D_RG_FORCE_RX_IMPEL		BIT(31)
-+#define P3D_RG_RX_IMPEL			GENMASK(28, 24)
-+#define P3D_RG_RX_IMPEL_VAL(x)		((0x1f & (x)) << 24)
-+
-+#define U3P_U3_PHYD_RSV			0x054
-+#define P3D_RG_EFUSE_AUTO_LOAD_DIS	BIT(12)
-+
- #define U3P_U3_PHYD_CDR1		0x05c
- #define P3D_RG_CDR_BIR_LTD1		GENMASK(28, 24)
- #define P3D_RG_CDR_BIR_LTD1_VAL(x)	((0x1f & (x)) << 24)
-@@ -307,6 +326,11 @@ struct mtk_phy_pdata {
- 	 * 48M PLL, fix it by switching PLL to 26M from default 48M
- 	 */
- 	bool sw_pll_48m_to_26m;
-+	/*
-+	 * Some SoCs (e.g. mt8195) drop a bit when use auto load efuse,
-+	 * support sw way, also support it for v2/v3 optionally.
-+	 */
-+	bool sw_efuse_supported;
- 	enum mtk_phy_version version;
- };
- 
-@@ -336,6 +360,10 @@ struct mtk_phy_instance {
- 	struct regmap *type_sw;
- 	u32 type_sw_reg;
- 	u32 type_sw_index;
-+	u32 efuse_sw_en;
-+	u32 efuse_intr;
-+	u32 efuse_tx_imp;
-+	u32 efuse_rx_imp;
- 	int eye_src;
- 	int eye_vrt;
- 	int eye_term;
-@@ -1040,6 +1068,130 @@ static int phy_type_set(struct mtk_phy_instance *instance)
- 	return 0;
- }
- 
-+static int phy_efuse_get(struct mtk_tphy *tphy, struct mtk_phy_instance *instance)
-+{
-+	struct device *dev = &instance->phy->dev;
-+	int ret = 0;
-+
-+	/* tphy v1 doesn't support sw efuse, skip it */
-+	if (!tphy->pdata->sw_efuse_supported) {
-+		instance->efuse_sw_en = 0;
-+		return 0;
-+	}
-+
-+	/* software efuse is optional */
-+	instance->efuse_sw_en = device_property_read_bool(dev, "nvmem-cells");
-+	if (!instance->efuse_sw_en)
-+		return 0;
-+
-+	switch (instance->type) {
-+	case PHY_TYPE_USB2:
-+		ret = nvmem_cell_read_variable_le_u32(dev, "intr", &instance->efuse_intr);
-+		if (ret) {
-+			dev_err(dev, "fail to get u2 intr efuse, %d\n", ret);
-+			break;
-+		}
-+
-+		/* no efuse, ignore it */
-+		if (!instance->efuse_intr) {
-+			dev_warn(dev, "no u2 intr efuse, but dts enable it\n");
-+			instance->efuse_sw_en = 0;
-+			break;
-+		}
-+
-+		dev_dbg(dev, "u2 efuse - intr %x\n", instance->efuse_intr);
-+		break;
-+
-+	case PHY_TYPE_USB3:
-+	case PHY_TYPE_PCIE:
-+		ret = nvmem_cell_read_variable_le_u32(dev, "intr", &instance->efuse_intr);
-+		if (ret) {
-+			dev_err(dev, "fail to get u3 intr efuse, %d\n", ret);
-+			break;
-+		}
-+
-+		ret = nvmem_cell_read_variable_le_u32(dev, "rx_imp", &instance->efuse_rx_imp);
-+		if (ret) {
-+			dev_err(dev, "fail to get u3 rx_imp efuse, %d\n", ret);
-+			break;
-+		}
-+
-+		ret = nvmem_cell_read_variable_le_u32(dev, "tx_imp", &instance->efuse_tx_imp);
-+		if (ret) {
-+			dev_err(dev, "fail to get u3 tx_imp efuse, %d\n", ret);
-+			break;
-+		}
-+
-+		/* no efuse, ignore it */
-+		if (!instance->efuse_intr &&
-+		    !instance->efuse_rx_imp &&
-+		    !instance->efuse_rx_imp) {
-+			dev_warn(dev, "no u3 intr efuse, but dts enable it\n");
-+			instance->efuse_sw_en = 0;
-+			break;
-+		}
-+
-+		dev_dbg(dev, "u3 efuse - intr %x, rx_imp %x, tx_imp %x\n",
-+			instance->efuse_intr, instance->efuse_rx_imp,instance->efuse_tx_imp);
-+		break;
-+	default:
-+		dev_err(dev, "no sw efuse for type %d\n", instance->type);
-+		ret = -EINVAL;
-+	}
-+
-+	return ret;
-+}
-+
-+static void phy_efuse_set(struct mtk_phy_instance *instance)
-+{
-+	struct device *dev = &instance->phy->dev;
-+	struct u2phy_banks *u2_banks = &instance->u2_banks;
-+	struct u3phy_banks *u3_banks = &instance->u3_banks;
-+	u32 tmp;
-+
-+	if (!instance->efuse_sw_en)
-+		return;
-+
-+	switch (instance->type) {
-+	case PHY_TYPE_USB2:
-+		tmp = readl(u2_banks->misc + U3P_MISC_REG1);
-+		tmp |= MR1_EFUSE_AUTO_LOAD_DIS;
-+		writel(tmp, u2_banks->misc + U3P_MISC_REG1);
-+
-+		tmp = readl(u2_banks->com + U3P_USBPHYACR1);
-+		tmp &= ~PA1_RG_INTR_CAL;
-+		tmp |= PA1_RG_INTR_CAL_VAL(instance->efuse_intr);
-+		writel(tmp, u2_banks->com + U3P_USBPHYACR1);
-+		break;
-+	case PHY_TYPE_USB3:
-+	case PHY_TYPE_PCIE:
-+		tmp = readl(u3_banks->phyd + U3P_U3_PHYD_RSV);
-+		tmp |= P3D_RG_EFUSE_AUTO_LOAD_DIS;
-+		writel(tmp, u3_banks->phyd + U3P_U3_PHYD_RSV);
-+
-+		tmp = readl(u3_banks->phyd + U3P_U3_PHYD_IMPCAL0);
-+		tmp &= ~P3D_RG_TX_IMPEL;
-+		tmp |= P3D_RG_TX_IMPEL_VAL(instance->efuse_tx_imp);
-+		tmp |= P3D_RG_FORCE_TX_IMPEL;
-+		writel(tmp, u3_banks->phyd + U3P_U3_PHYD_IMPCAL0);
-+
-+		tmp = readl(u3_banks->phyd + U3P_U3_PHYD_IMPCAL1);
-+		tmp &= ~P3D_RG_RX_IMPEL;
-+		tmp |= P3D_RG_RX_IMPEL_VAL(instance->efuse_rx_imp);
-+		tmp |= P3D_RG_FORCE_RX_IMPEL;
-+		writel(tmp, u3_banks->phyd + U3P_U3_PHYD_IMPCAL1);
-+
-+		tmp = readl(u3_banks->phya + U3P_U3_PHYA_REG0);
-+		tmp &= ~P3A_RG_IEXT_INTR;
-+		tmp |= P3A_RG_IEXT_INTR_VAL(instance->efuse_intr);
-+		writel(tmp, u3_banks->phya + U3P_U3_PHYA_REG0);
-+		break;
-+	default:
-+		dev_warn(dev, "no sw efuse for type %d\n", instance->type);
-+		break;
-+	}
-+}
-+
- static int mtk_phy_init(struct phy *phy)
+diff --git a/drivers/irqchip/irq-gic-v3.c b/drivers/irqchip/irq-gic-v3.c
+index 1bdb7acf445f4..04d1b3963b6ba 100644
+--- a/drivers/irqchip/irq-gic-v3.c
++++ b/drivers/irqchip/irq-gic-v3.c
+@@ -915,6 +915,22 @@ static int __gic_update_rdist_properties(struct redist_region *region,
  {
- 	struct mtk_phy_instance *instance = phy_get_drvdata(phy);
-@@ -1050,6 +1202,8 @@ static int mtk_phy_init(struct phy *phy)
- 	if (ret)
- 		return ret;
+ 	u64 typer = gic_read_typer(ptr + GICR_TYPER);
  
-+	phy_efuse_set(instance);
++	/* Boot-time cleanip */
++	if ((typer & GICR_TYPER_VLPIS) && (typer & GICR_TYPER_RVPEID)) {
++		u64 val;
 +
- 	switch (instance->type) {
- 	case PHY_TYPE_USB2:
- 		u2_phy_instance_init(tphy, instance);
-@@ -1134,6 +1288,7 @@ static struct phy *mtk_phy_xlate(struct device *dev,
- 	struct mtk_phy_instance *instance = NULL;
- 	struct device_node *phy_np = args->np;
- 	int index;
-+	int ret;
- 
- 	if (args->args_count != 1) {
- 		dev_err(dev, "invalid number of cells in 'phy' property\n");
-@@ -1174,6 +1329,10 @@ static struct phy *mtk_phy_xlate(struct device *dev,
- 		return ERR_PTR(-EINVAL);
- 	}
- 
-+	ret = phy_efuse_get(tphy, instance);
-+	if (ret)
-+		return ERR_PTR(ret);
++		/* Deactivate any present vPE */
++		val = gicr_read_vpendbaser(ptr + SZ_128K + GICR_VPENDBASER);
++		if (val & GICR_VPENDBASER_Valid)
++			gicr_write_vpendbaser(GICR_VPENDBASER_PendingLast,
++					      ptr + SZ_128K + GICR_VPENDBASER);
 +
- 	phy_parse_property(tphy, instance);
- 	phy_type_set(instance);
++		/* Mark the VPE table as invalid */
++		val = gicr_read_vpropbaser(ptr + SZ_128K + GICR_VPROPBASER);
++		val &= ~GICR_VPROPBASER_4_1_VALID;
++		gicr_write_vpropbaser(val, ptr + SZ_128K + GICR_VPROPBASER);
++	}
++
+ 	gic_data.rdists.has_vlpis &= !!(typer & GICR_TYPER_VLPIS);
  
-@@ -1196,10 +1355,12 @@ static const struct mtk_phy_pdata tphy_v1_pdata = {
- 
- static const struct mtk_phy_pdata tphy_v2_pdata = {
- 	.avoid_rx_sen_degradation = false,
-+	.sw_efuse_supported = true,
- 	.version = MTK_PHY_V2,
- };
- 
- static const struct mtk_phy_pdata tphy_v3_pdata = {
-+	.sw_efuse_supported = true,
- 	.version = MTK_PHY_V3,
- };
- 
-@@ -1210,6 +1371,7 @@ static const struct mtk_phy_pdata mt8173_pdata = {
- 
- static const struct mtk_phy_pdata mt8195_pdata = {
- 	.sw_pll_48m_to_26m = true,
-+	.sw_efuse_supported = true,
- 	.version = MTK_PHY_V3,
- };
- 
+ 	/* RVPEID implies some form of DirectLPI, no matter what the doc says... :-/ */
 -- 
 2.34.1
 
