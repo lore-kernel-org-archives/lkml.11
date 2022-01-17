@@ -2,123 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56926C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 10:45:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2E2DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 10:47:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236209AbiAQKp5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 05:45:57 -0500
-Received: from unknown-3-146.windriver.com ([147.11.3.146]:10400 "EHLO
-        mail1.wrs.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S233756AbiAQKpz (ORCPT
+        id S238730AbiAQKrV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 05:47:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43810 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233756AbiAQKrT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 05:45:55 -0500
-X-Greylist: delayed 1571 seconds by postgrey-1.27 at vger.kernel.org; Mon, 17 Jan 2022 05:45:54 EST
-Received: from mail.windriver.com (mail.wrs.com [147.11.1.11])
-        by mail1.wrs.com (8.15.2/8.15.2) with ESMTPS id 20HAI1Rp024995
-        (version=TLSv1.1 cipher=DHE-RSA-AES256-SHA bits=256 verify=FAIL);
-        Mon, 17 Jan 2022 02:18:01 -0800
-Received: from ala-exchng01.corp.ad.wrs.com (ala-exchng01.corp.ad.wrs.com [147.11.82.252])
-        by mail.windriver.com (8.15.2/8.15.2) with ESMTPS id 20HAHtAH008450
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 17 Jan 2022 02:18:00 -0800 (PST)
-Received: from pek-lpggp7.wrs.com (128.224.153.21) by
- ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2242.12; Mon, 17 Jan 2022 02:17:51 -0800
-From:   Xiaolei Wang <xiaolei.wang@windriver.com>
-To:     <hongxing.zhu@nxp.com>, <l.stach@pengutronix.de>,
-        <lorenzo.pieralisi@arm.com>, <robh@kernel.org>, <kw@linux.com>,
-        <bhelgaas@google.com>, <shawnguo@kernel.org>,
-        <s.hauer@pengutronix.de>, <kernel@pengutronix.de>,
-        <festevam@gmail.com>
-CC:     <linux-imx@nxp.com>, <linux-pci@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH] pci: imx: disable reglator when imx6_pcie_probe fails
-Date:   Mon, 17 Jan 2022 18:17:35 +0800
-Message-ID: <20220117101735.3512039-1-xiaolei.wang@windriver.com>
-X-Mailer: git-send-email 2.25.1
+        Mon, 17 Jan 2022 05:47:19 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B516C061574;
+        Mon, 17 Jan 2022 02:47:19 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id b13so63969969edn.0;
+        Mon, 17 Jan 2022 02:47:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=kQrPFgdxVgPR6BVQXGQ/0R4Kn0v4ZftEF3a6Zc0bXEg=;
+        b=VTl1vqutUhGOzDHpntFj3kNJ16v8xteNMJDLIGBN4SuZflcIMGQMoSGggoRb3tFdjQ
+         ZGBScoCkznZzd4jZbF31zq/ShP/WPI5CoJUbNIKli7cbyFDmvaCx8rZqKedtwK/+Ej7q
+         WuH5F+I7I7vNMF/mfmYbTxLYf8DvgwHTz1Epo6O1bwVQpBpq+EF8ydKmHyzBVYIDyMs8
+         hYVnM7xdkst2GSo8BP9VCJ5XgWe9Un6juUTtiT+LSujXfGS27pOgB6nGBKp7jPsuAV0a
+         JbPqIbe8VC+dPv43ZG6Hz5sJcYu0uRV1nkOFQTIFLl5iTeTxxTotjKh8dOLia1ot6NGv
+         n68A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kQrPFgdxVgPR6BVQXGQ/0R4Kn0v4ZftEF3a6Zc0bXEg=;
+        b=kU3l8jyW1WCyXjLyM+2iHpETVJQN0EzSapB2CCpAyz5oDy5HHWsAW5g+oq0kKMbTX1
+         P1/wMofH831EvgNpsxI3jq0oVtkAeUSEWIQctD2mMY+aUVgEr3HfKH4lyFZMw6ogUxQY
+         6iNza/1Kf+BSyKKIHJ0tCJz39Q1A53DdXhO4cfNPmillM7EMrynJ/VblNCg1McupMD86
+         fRPQ7qRTEzfxvwdeVRFGjX0TFHINLhshh6tQC2ed+A5c/34F0hdMmwOjxKcTy+nAIfFl
+         1Ab3meuY3HMFWQqvnlCjqEH0isKaON935Ci3Ic/reAdTNJbtzP0xX5IJltX7b+URqJmr
+         2E2w==
+X-Gm-Message-State: AOAM531ft03//dlSS8nkZy1o3d06QYP18iFtH9bSlovLN3edNS+CGf7s
+        00PSki6vp07GGLmdhityN0+0lEPJ/iI=
+X-Google-Smtp-Source: ABdhPJy1fBH6oJcwoFfp0VB+M+Dxx9jIZNtaspcHFK8jiVeml0mwOxxjdGTIwB7HB8vIiF1gWaJWEg==
+X-Received: by 2002:a05:6402:254d:: with SMTP id l13mr2009027edb.190.1642416437484;
+        Mon, 17 Jan 2022 02:47:17 -0800 (PST)
+Received: from [192.168.2.1] (81-204-249-205.fixed.kpn.net. [81.204.249.205])
+        by smtp.gmail.com with ESMTPSA id l25sm2944774edc.20.2022.01.17.02.47.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Jan 2022 02:47:17 -0800 (PST)
+Subject: Re: [PATCH v1 1/3] dts64: rk3568: drop pclk_xpcs from gmac0
+To:     Frank Wunderlich <linux@fw-web.de>,
+        linux-rockchip@lists.infradead.org
+Cc:     Frank Wunderlich <frank-w@public-files.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Peter Geis <pgwipeout@gmail.com>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220116124911.65203-1-linux@fw-web.de>
+ <20220116124911.65203-2-linux@fw-web.de>
+From:   Johan Jonker <jbx6244@gmail.com>
+Message-ID: <8285bea7-559c-5834-78c7-5a062b7d8269@gmail.com>
+Date:   Mon, 17 Jan 2022 11:47:16 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [128.224.153.21]
-X-ClientProxiedBy: ala-exchng01.corp.ad.wrs.com (147.11.82.252) To
- ala-exchng01.corp.ad.wrs.com (147.11.82.252)
+In-Reply-To: <20220116124911.65203-2-linux@fw-web.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: wrsadmin <wrsadmin@pek-xwang8-d1.corp.ad.wrs.com>
+Hi Frank,
 
-disable reglator when imx6_pcie_probe fails,
-otherwise the following calltrace will appear
+Despite that the DT is hosted in the kernel tree
+DT and mainline kernel driver support are 2 separate things.
+PCLK_XPCS might be in use elsewhere.
 
-[ 3.785075] ------------[ cut here ]------------
-[ 3.788142] Registering SWP/SWPB emulation handler
-[ 3.789853] WARNING: CPU: 0 PID: 7 at drivers/regulator/core.c:2257 _regulator_put.part.0+0x1bc/0x1e0
-[ 3.795680] Loading compiled-in X.509 certificates
-[ 3.803947] Modules linked in:
-[ 3.811922] CPU: 0 PID: 7 Comm: kworker/u8:0 Not tainted 5.16.0-10645-g3c750c7b6143-dirty #9
-[ 3.820393] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
-[ 3.826945] Workqueue: events_unbound async_run_entry_fn
-[ 3.832304] unwind_backtrace from show_stack+0x10/0x14
-[ 3.837569] show_stack from dump_stack_lvl+0x58/0x70
-[ 3.842663] dump_stack_lvl from __warn+0xd8/0x114
-[ 3.847493] __warn from warn_slowpath_fmt+0x5c/0xc4
-[ 3.852490] warn_slowpath_fmt from _regulator_put.part.0+0x1bc/0x1e0
-[ 3.858968] _regulator_put.part.0 from regulator_put+0x2c/0x3c
-[ 3.864918] regulator_put from release_nodes+0x50/0x178
-[ 3.870270] release_nodes from devres_release_all+0x80/0xd0
-[ 3.875968] devres_release_all from really_probe+0xdc/0x30c
-[ 3.881661] really_probe from __driver_probe_device+0x80/0xe4
-[ 3.887522] __driver_probe_device from driver_probe_device+0x30/0xd4
-[ 3.893991] driver_probe_device from __driver_attach_async_helper+0x20/0x38
-[ 3.901068] __driver_attach_async_helper from async_run_entry_fn+0x20/0xb4
-[ 3.908059] async_run_entry_fn from process_one_work+0x298/0x7d0
-[ 3.914188] process_one_work from worker_thread+0x30/0x510
-[ 3.919792] worker_thread from kthread+0x128/0x14c
-[ 3.924705] kthread from ret_from_fork+0x14/0x38
-[ 3.929443] Exception stack(0xc20cbfb0 to 0xc20cbff8)
-[ 3.934521] bfa0: 00000000 00000000 00000000 00000000
-[ 3.942722] bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-[ 3.950922] bfe0: 00000000 00000000 00000000 00000000 00000013 00000000
-[ 3.957677] irq event stamp: 1207
-[ 3.961024] hardirqs last enabled at (1215): [<c0198270>] __up_console_sem+0x50/0x60
-[ 3.968974] hardirqs last disabled at (1224): [<c019825c>] __up_console_sem+0x3c/0x60
-[ 3.976911] softirqs last enabled at (1206): [<c010150c>] __do_softirq+0x2ec/0x5a4
-[ 3.984669] softirqs last disabled at (1197): [<c012ef08>] irq_exit+0x18c/0x20c
-[ 3.992021] ---[ end trace 45a52c023bf8fb33 ]---
+Given the link below pclk_xpcs is only needed for rk3568.
+Maybe gmac1 should have a PCLK_XPCS too, because one can select between
+them.
 
-Signed-off-by: wrsadmin <wrsadmin@pek-xwang8-d1.corp.ad.wrs.com>
----
- drivers/pci/controller/dwc/pci-imx6.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ethernet: stmicro: stmmac: Add SGMII/QSGMII support for RK3568
+https://github.com/rockchip-linux/kernel/commit/1fc7cbfe9e227c700c692f1de3137914b3ea6ca6
 
-diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
-index 6974bd5aa116..f8279a15463b 100644
---- a/drivers/pci/controller/dwc/pci-imx6.c
-+++ b/drivers/pci/controller/dwc/pci-imx6.c
-@@ -1216,7 +1216,7 @@ static int imx6_pcie_probe(struct platform_device *pdev)
- 
- 	ret = dw_pcie_host_init(&pci->pp);
- 	if (ret < 0)
--		return ret;
-+		goto err_vpcie;
- 
- 	if (pci_msi_enabled()) {
- 		u8 offset = dw_pcie_find_capability(pci, PCI_CAP_ID_MSI);
-@@ -1226,6 +1226,11 @@ static int imx6_pcie_probe(struct platform_device *pdev)
- 	}
- 
- 	return 0;
-+
-+err_vpcie:
-+	regulator_disable(imx6_pcie->vpcie);
-+
-+	return ret;
- }
- 
- static void imx6_pcie_shutdown(struct platform_device *pdev)
--- 
-2.25.1
+The original dtsi did have PCLK_XPCS in both nodes.
+https://github.com/rockchip-linux/kernel/blob/develop-4.19/arch/arm64/boot/dts/rockchip/rk3568.dtsi#L2121
+https://github.com/rockchip-linux/kernel/blob/develop-4.19/arch/arm64/boot/dts/rockchip/rk3568.dtsi#L1492
 
+Maybe fix the document or leave it as it is for now as long the driver
+isn't updated and someone has tested it.
+That's up to the DT maintainer.
+
+Johan
+
+===
+
+XPCS is also part of PD_PIPE.
+See Rockchip RK3568 TRM Part1 V1.0-20210111.pdf page 475.
+Please advise if the power-domain@RK3568_PD_PIPE does need a PCLK_XPCS
+fix or is PCLK_PIPE enough in combination with a PHY driver?
+
+PD_PIPE:
+
+BIU_PIPE
+USB3OTG
+PCIE20
+PCIE30
+SATA
+XPCS
+
+
+	power-domain@RK3568_PD_PIPE {
+		reg = <RK3568_PD_PIPE>;
+		clocks = <&cru PCLK_PIPE>;
+		pm_qos = <&qos_pcie2x1>,
+			 <&qos_pcie3x1>,
+			 <&qos_pcie3x2>,
+			 <&qos_sata0>,
+			 <&qos_sata1>,
+			 <&qos_sata2>,
+			 <&qos_usb3_0>,
+			 <&qos_usb3_1>;
+		#power-domain-cells = <0>;
+	};
+
+
+
+On 1/16/22 1:49 PM, Frank Wunderlich wrote:
+> From: Frank Wunderlich <frank-w@public-files.de>
+> 
+> pclk_xpcs is not supported and breaks dtbs_check, so remove it
+> 
+> following warnings occour, and many more
+> 
+> rk3568-evb1-v10.dt.yaml: ethernet@fe2a0000: clocks:
+>     [[15, 386], [15, 389], [15, 389], [15, 184], [15, 180], [15, 181],
+>     [15, 389], [15, 185], [15, 172]] is too long
+> 	From schema: Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> rk3568-evb1-v10.dt.yaml: ethernet@fe2a0000: clock-names:
+>     ['stmmaceth', 'mac_clk_rx', 'mac_clk_tx', 'clk_mac_refout', 'aclk_mac',
+>     'pclk_mac', 'clk_mac_speed', 'ptp_ref', 'pclk_xpcs'] is too long
+> 	From schema: Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> 
+> after removing the clock the other warnings are also gone.
+> 
+> Co-developed-by: Peter Geis <pgwipeout@gmail.com>
+> Signed-off-by: Peter Geis <pgwipeout@gmail.com>
+> Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
+> ---
+>  arch/arm64/boot/dts/rockchip/rk3568.dtsi | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
+> 
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3568.dtsi b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
+> index 2fd313a295f8..d91df1cde736 100644
+> --- a/arch/arm64/boot/dts/rockchip/rk3568.dtsi
+> +++ b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
+> @@ -32,13 +32,11 @@ gmac0: ethernet@fe2a0000 {
+>  		clocks = <&cru SCLK_GMAC0>, <&cru SCLK_GMAC0_RX_TX>,
+>  			 <&cru SCLK_GMAC0_RX_TX>, <&cru CLK_MAC0_REFOUT>,
+>  			 <&cru ACLK_GMAC0>, <&cru PCLK_GMAC0>,
+> -			 <&cru SCLK_GMAC0_RX_TX>, <&cru CLK_GMAC0_PTP_REF>,
+> -			 <&cru PCLK_XPCS>;
+> +			 <&cru SCLK_GMAC0_RX_TX>, <&cru CLK_GMAC0_PTP_REF>;
+>  		clock-names = "stmmaceth", "mac_clk_rx",
+>  			      "mac_clk_tx", "clk_mac_refout",
+>  			      "aclk_mac", "pclk_mac",
+> -			      "clk_mac_speed", "ptp_ref",
+> -			      "pclk_xpcs";
+> +			      "clk_mac_speed", "ptp_ref";
+>  		resets = <&cru SRST_A_GMAC0>;
+>  		reset-names = "stmmaceth";
+>  		rockchip,grf = <&grf>;
+> 
