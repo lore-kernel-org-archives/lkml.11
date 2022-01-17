@@ -2,143 +2,210 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DC67C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 15:43:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E66FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 15:43:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240607AbiAQPn0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 10:43:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55304 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237299AbiAQPnZ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 10:43:25 -0500
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4FF2C061574
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 07:43:25 -0800 (PST)
-Received: by mail-qv1-xf36.google.com with SMTP id l13so17226878qvz.10
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 07:43:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xP9+nNeU0pPJaNyxSHM1rhH01w3/wZxyHMR8TSEhtmc=;
-        b=HI+dCws7RQMLYP9FBlt/2mFcL0vyCtoCwfD9I0VStsOrIN6g8+Fo9xE/YelF6Pbxu3
-         XiFr/vbnUpBGg7toREDqQ8zDaFgRoAOqG5NzYjJDCX2HnP6Fq1POJ1aa7hBDy6HLVbqM
-         MIWNj3C6u1IiBvd+9vOsrxLcTiJyYHZjrZEPPhIJAcX1+pyyOKg8WTdoRzGKyPQcZMLy
-         gtn/B++uXwvZzVzljfwRvGRn3Uw3l/zbG641yc+3FPnNx8v6tuJ8mbiU9+FD0JW2fC6H
-         BjSries8Zi7VLqiWZ6yWEChcWLiahxcOMv0MKIXzDQl9x0iGC+oey6o28L26CQchYmud
-         1y3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xP9+nNeU0pPJaNyxSHM1rhH01w3/wZxyHMR8TSEhtmc=;
-        b=nvkFN96tRHNvbWQstXFs3TgUafgsZh2bynoSlnSjVixAjNCjc9UhVKO7gX9EykxBsO
-         YlkXdMC8ErYVA4laLJlgr1I+j1AalarIhDiIw3PifW7ls6Ap2Rxvyg8Jjz5lkfK2ECDL
-         MecttCRFPLabqoDagscB8IesEZtNHFMKCueBN3U2oNE62EQnHf1RPLCXUlYI3hh3tKTM
-         Z+txJ43Jd2R5kFQLB2HGIx/jRl4uzCMMct/w420UKSByfzF6zKzon8VB3crxXjWUNEZF
-         Mve35gUTLSfWWqZv+SMP3RrK3FD7LiLfuBDQz/5uHuo3OWQ1R5SSNmRSyKafMLpfoNvY
-         LigA==
-X-Gm-Message-State: AOAM533gsB6MxQkloMjT8XmQm674jYKl4c9IxbiroinbysFomHlzR4a4
-        svj9xC/gM2hV2hDMgW/dB7qP+9rPtT2eBMcG
-X-Google-Smtp-Source: ABdhPJyuIYYJkAmO78IaACd35H7++l0ftE0t2n1dbEcW++BwwQmlTQhzXYiFoGGUv/HzUQyK31Z0aQ==
-X-Received: by 2002:a05:6214:4001:: with SMTP id kd1mr18390236qvb.13.1642434204942;
-        Mon, 17 Jan 2022 07:43:24 -0800 (PST)
-Received: from WRT-WX9.. ([207.246.89.135])
-        by smtp.gmail.com with ESMTPSA id i11sm3978507qti.55.2022.01.17.07.43.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 07:43:24 -0800 (PST)
-From:   Changbin Du <changbin.du@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>, linux-kernel@vger.kernel.org,
-        linux-riscv@lists.infradead.org,
-        Changbin Du <changbin.du@gmail.com>
-Subject: [PATCH] sysrq: do not omit current cpu when showing backtrace of all active CPUs
-Date:   Mon, 17 Jan 2022 23:43:00 +0800
-Message-Id: <20220117154300.2808-1-changbin.du@gmail.com>
-X-Mailer: git-send-email 2.32.0
+        id S240620AbiAQPns (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 10:43:48 -0500
+Received: from mout.gmx.net ([212.227.17.21]:40483 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240608AbiAQPnq (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 10:43:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1642434186;
+        bh=+TVQ+7UtVks/m9/GncR3RWLn+/OJtfPHJr9nYMoiJRM=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=GSI0JVZbbWFXMMmRZTFd+5sMOk1Jo9br/Giflzjlx8P2hwht8eqFMj8PKuToH6dcz
+         OT41bhaFZoCG4xoi8oMaEutYlB+ohSzSsctkAroUmykNOr3jJmR96aPKBVqh2EWd46
+         OpWW/Oj6QmAUFoWA13YVsHOOgKgJhRBg9Ep0+w4M=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.167.237]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1M5fIQ-1nGdpg0yTa-007FjN; Mon, 17
+ Jan 2022 16:43:06 +0100
+Message-ID: <cf21018b-f231-7538-169e-2ad450643cbf@gmx.de>
+Date:   Mon, 17 Jan 2022 16:42:00 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
+Content-Language: en-US
+To:     Daniel Vetter <daniel@ffwll.ch>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        "airlied@gmail.com" <airlied@gmail.com>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+References: <YeG8ydoJNWWkGrTb@ls3530>
+ <CAKMK7uGdJckdM+fg+576iJXsqzCOUg20etPBMwRLB9U7GcG01Q@mail.gmail.com>
+ <c80ed72c-2eb4-16dd-a7ad-57e9dde59ba1@gmx.de>
+ <CAKMK7uHVHn9apB6YYbLSwu+adEB2Fqp4FM0z582zf4F-v3_GnQ@mail.gmail.com>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <CAKMK7uHVHn9apB6YYbLSwu+adEB2Fqp4FM0z582zf4F-v3_GnQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:tfVvt5d3VZ1s/Z+29Gkdp0lLmE4BSkXR4U8/Uz9LDjTtXSYfQl8
+ BVfikzp0D2U5HHoqUaCTRXmi72Tt32PLwEyA2uuoJ2BwJwKHUyfcfiMS9DFsi3pqojy9OB4
+ cy7yi2Rsg10MADz4XqKWlRnn5nN4zZb+JNlRcU80YQk2T9MqGMUHHhwHtx8+Wf5hF6hrOpz
+ OvruOcYgqMP1gXbe4+65w==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:qPR5NpcXXbY=:I8Rj0ZHtJKgKVsRntLdOei
+ coJroARINzvdAi7UQfHqshCaDgD5pkCnCSGwwIiW1lnIocMt+1RuAYY3reby8R3q1tDPvT8nY
+ jM0eVRMkKynnMhStgCWQ5RebFEJ19MGJJhqFjKNXSBUXF8ZQS3OfG8TSDisd41mG7fOyic+a9
+ 0a1u5xAYllzNH0ShcQpxBT1AVBmgXE2Y0xg3WJ1V1W5wkTPP1CJo5NJsCOlILnttv226C/grp
+ mbSUN0RUf55VONtix6PSMD9byMPeKCLfhHLKh/fFfoeuGlPAlq4ek1iOQnTNgbBAhsHgPAfr5
+ DC4PnDJEL52z7fmWlNmS6oMQ5gR1yP3Y1NKBNt3cXjBr7Lv4qqM4xLcQhGzEbM/EV6ea7PcTL
+ 3xMiyE/zeWWtfhdiH8qbEnVc8+7zPG7Y/5tG042gnIMYVmTIU8iKnk+WpofcAKOB6rXd/OIoK
+ fwquo/f3syNLR2U/FRq+6hl7RZh3eGkkSoxpsJkNvxYeFIjX6qhQyBipNEDvN6uC6zdBUqq41
+ TsqJTMbYvwx9J0yxeDZ6u7rDuZA7XS1Ht44pkZRqPEqK8DtXFo50awjESFnp1j+SJFagWpiEv
+ Y4LtcG0i5mK5Ipt0rb8Pz4T0nP96iUfibBzrHcArfxXlgMa3/wYBcgh1rHt3X+2i6+OHgrEK7
+ yiSMmUFInXQPQGxufJPMW7iU8sjrluLcYj8i2JGWrRCLQyWvWBqLmxF/stFmLYv133su7zZh4
+ wBfESrZhU41z+jQ3nHY6we6+p+um9mb1FxcGG84pjD794w+Al9Ha/QtDLoHhEXVNIpEdWqSeU
+ gE7NB6H33ctqYtpm3qTOUwcpqgpAOH+8YAj4RilFRqlz0wn4Zf/Lx6fug4sBTLwq12KMbppRX
+ thvHjU52wgU7a1oWqkGIiMx9LNJGuLGkLYCXJVhZ4/ij5o0Z5KVME65u6U86Gj6DoXA7Ubnt+
+ AMJyL4Hxe5o9Fw7Q8qtCafwrDYWdkAzMeNLtOthBmrHD1GEbEV8x0/ndzv4JxuGXarF+zwlP4
+ T0rtn6TcWeKCn3pI3Dp3d+s01ox8GbLK6Vc0rd4wz3PZqATnBVVhJr8kLogDzAPlelgLRPnqv
+ 43378dZqwZ+Qa0=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The backtrace of current CPU also should be printed as it is active. This
-change add stack trace for current CPU and print a hint for idle CPU for
-the generic workqueue based printing. (x86 already does this)
+On 1/17/22 16:00, Daniel Vetter wrote:
+> On Mon, Jan 17, 2022 at 1:16 PM Helge Deller <deller@gmx.de> wrote:
+>>
+>> Hello Daniel,
+>>
+>> On 1/17/22 11:02, Daniel Vetter wrote:
+>>> Hi Helge
+>>>
+>>> On Fri, Jan 14, 2022 at 7:18 PM Helge Deller <deller@gmx.de> wrote:
+>>>>
+>>>> The fbdev layer is orphaned, but seems to need some care.
+>>>> So I'd like to step up as new maintainer.
+>>>>
+>>>> Signed-off-by: Helge Deller <deller@gmx.de>
+>>>>
+>>>> diff --git a/MAINTAINERS b/MAINTAINERS
+>>>> index 5d0cd537803a..ce47dbc467cc 100644
+>>>> --- a/MAINTAINERS
+>>>> +++ b/MAINTAINERS
+>>>> @@ -7583,11 +7583,12 @@ W:      http://floatingpoint.sourceforge.net/=
+emulator/index.html
+>>>>  F:     arch/x86/math-emu/
+>>>>
+>>>>  FRAMEBUFFER LAYER
+>>>> -L:     dri-devel@lists.freedesktop.org
+>>>> +M:     Helge Deller <deller@gmx.de>
+>>>>  L:     linux-fbdev@vger.kernel.org
+>>>> -S:     Orphan
+>>>
+>>> Maybe don't rush maintainer changes in over the w/e without even bothe=
+ring
+>>> to get any input from the people who've been maintaining it before.
+>>>
+>>> Because the status isn't entirely correct, fbdev core code and fbcon a=
+nd
+>>> all that has been maintained, but in bugfixes only mode. And there's v=
+ery
+>>> solid&important reasons to keep merging these patches through a drm tr=
+ee,
+>>> because that's where all the driver development happens, and hence als=
+o
+>>> all the testing (e.g. the drm test suite has some fbdev tests - the on=
+ly
+>>> automated ones that exist to my knowledge - and we run them in CI). So
+>>> moving that into an obscure new tree which isn't even in linux-next ye=
+t is
+>>> no good at all.
+>>>
+>>> Now fbdev driver bugfixes is indeed practically orphaned and I very mu=
+ch
+>>> welcome anyone stepping up for that, but the simplest approach there w=
+ould
+>>> be to just get drm-misc commit rights and push the oddball bugfix in t=
+here
+>>> directly. But also if you want to do your own pull requests to Linus f=
+or
+>>> that I don't care and there's really no interference I think, so
+>>> whatever floats.
+>>>
+>>> But any code that is relevant for drm drivers really needs to go in th=
+rough
+>>> drm trees, nothing else makes much sense.
+>>>
+>>> I guess you're first action as newly minted fbdev maintainer is going =
+to be to
+>>> clean up the confusion you just created.
+>>
+>> Most of my machines depend on a working fbdev layer since drm isn't (an=
+d probably
+>> -due to technical requirements of DRM- won't be) available for those.
+>> So, since the fbdev drivers were marked orphaned, I decided to step up =
+as maintainer.
+>>
+>> I see your point that at least the fbdev core code and fbcon are shared=
+ between DRM and fbdev.
+>> For me it's really not important to drive any patches through a seperat=
+e tree, so
+>> I'd be happy to join the drm-misc tree if you feel it's necessary. (By =
+the way,
+>> adding my tree to for-next was on my todo list...)
+>>
+>> What's important for me though is, to keep fbdev actively maintained, w=
+hich means:
+>> a) to get fixes which were posted to fbdev mailing list applied if they=
+ are useful & correct,
+>
+> Yeah it'd be great if we have that, for a while Bart took care of
+> these, but had to step down again. drm-misc is maintained with the dim
+> scrip suite, which comes with docs and bash completion and everything.
+> Good starting pointer is here:
+>
+> https://drm.pages.freedesktop.org/maintainer-tools/getting-started.html
+>
+> Process for getting commit rights is documented here:
+>
+> https://drm.pages.freedesktop.org/maintainer-tools/commit-access.html#dr=
+m-misc
+>
+> But there's a pile more. I think once we've set that up and got it
+> going we can look at the bigger items. Some of them are fairly
+> low-hanging fruit, but the past 5+ years absolutely no one bothered to
+> step up and sort them out. Other problem areas in fbdev are extremely
+> hard to fix properly, without only doing minimal security-fixes only
+> support, so fair warning there. I think a good starting point would be
+> to read the patches and discussions for some of the things you've
+> reverted in your tree.
+>
+> Anyway I hope this gets you started, and hopefully after a minor
+> detour: Welcome to dri-devel, we're happy to take any help we can get,
+> there's lots to do!
+>
 
-Now it looks like below:
-[  279.401567] sysrq: Show backtrace of all active CPUs
-[  279.407234] sysrq: CPU5:
-[  279.407505] Call Trace:
-[  279.408789] [<ffffffff8000606c>] dump_backtrace+0x2c/0x3a
-[  279.411698] [<ffffffff800060ac>] show_stack+0x32/0x3e
-[  279.411809] [<ffffffff80542258>] sysrq_handle_showallcpus+0x4c/0xc6
-[  279.411929] [<ffffffff80542f16>] __handle_sysrq+0x106/0x26c
-[  279.412034] [<ffffffff805436a8>] write_sysrq_trigger+0x64/0x74
-[  279.412139] [<ffffffff8029cd48>] proc_reg_write+0x8e/0xe2
-[  279.412252] [<ffffffff8021a8f8>] vfs_write+0x90/0x2be
-[  279.412362] [<ffffffff8021acd2>] ksys_write+0xa6/0xce
-[  279.412467] [<ffffffff8021ad24>] sys_write+0x2a/0x38
-[  279.412689] [<ffffffff80003ff8>] ret_from_syscall+0x0/0x2
-[  279.417173] sysrq: CPU6: backtrace skipped as idling
-[  279.417185] sysrq: CPU4: backtrace skipped as idling
-[  279.417187] sysrq: CPU0: backtrace skipped as idling
-[  279.417181] sysrq: CPU7: backtrace skipped as idling
-[  279.417190] sysrq: CPU1: backtrace skipped as idling
-[  279.417193] sysrq: CPU3: backtrace skipped as idling
-[  279.417219] sysrq: CPU2:
-[  279.419179] Call Trace:
-[  279.419440] [<ffffffff8000606c>] dump_backtrace+0x2c/0x3a
-[  279.419782] [<ffffffff800060ac>] show_stack+0x32/0x3e
-[  279.420015] [<ffffffff80542b30>] showacpu+0x5c/0x96
-[  279.420317] [<ffffffff800ba71c>] flush_smp_call_function_queue+0xd6/0x218
-[  279.420569] [<ffffffff800bb438>] generic_smp_call_function_single_interrupt+0x14/0x1c
-[  279.420798] [<ffffffff800079ae>] handle_IPI+0xaa/0x13a
-[  279.421024] [<ffffffff804dcb92>] riscv_intc_irq+0x56/0x70
-[  279.421274] [<ffffffff80a05b70>] generic_handle_arch_irq+0x6a/0xfa
-[  279.421518] [<ffffffff80004006>] ret_from_exception+0x0/0x10
-[  279.421750] [<ffffffff80096492>] rcu_idle_enter+0x16/0x1e
+Hello Daniel,
 
-Signed-off-by: Changbin Du <changbin.du@gmail.com>
----
- drivers/tty/sysrq.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+you somehow missed to answer my main topics below...:
 
-diff --git a/drivers/tty/sysrq.c b/drivers/tty/sysrq.c
-index bbfd004449b5..34cfdda4aff5 100644
---- a/drivers/tty/sysrq.c
-+++ b/drivers/tty/sysrq.c
-@@ -232,8 +232,10 @@ static void showacpu(void *dummy)
- 	unsigned long flags;
- 
- 	/* Idle CPUs have no interesting backtrace. */
--	if (idle_cpu(smp_processor_id()))
-+	if (idle_cpu(smp_processor_id())) {
-+		pr_info("CPU%d: backtrace skipped as idling\n", smp_processor_id());
- 		return;
-+	}
- 
- 	raw_spin_lock_irqsave(&show_lock, flags);
- 	pr_info("CPU%d:\n", smp_processor_id());
-@@ -260,10 +262,13 @@ static void sysrq_handle_showallcpus(int key)
- 
- 		if (in_hardirq())
- 			regs = get_irq_regs();
--		if (regs) {
--			pr_info("CPU%d:\n", smp_processor_id());
-+
-+		pr_info("CPU%d:\n", smp_processor_id());
-+		if (regs)
- 			show_regs(regs);
--		}
-+		else
-+			show_stack(NULL, NULL, KERN_INFO);
-+
- 		schedule_work(&sysrq_showallcpus);
- 	}
- }
--- 
-2.32.0
+>
+>> b) to include new drivers (for old hardware) if they arrive (probably h=
+appens rarely but there can be).
+>>    I know of at least one driver which won't be able to support DRM....
+>>    Of course, if the hardware is capable to support DRM, it should be w=
+ritten for DRM and not applied for fbdev.
+>> c) reintroduce the state where fbcon is fast on fbdev. This is importan=
+t for non-DRM machines,
+>>    either when run on native hardware or in an emulator.
+>> d) not break DRM development
+>>
+>> Especially regarding c) I complained in [1] and got no feedback. I real=
+ly would like to
+>> understand where the actual problems were and what's necessary to fix t=
+hem.
+>>
+>> Helge
+>>
+>> [1] https://lore.kernel.org/r/feea8303-2b83-fc36-972c-4fc8ad723bde@gmx.=
+de
+>
+>
+>
 
