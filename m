@@ -2,90 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE99EC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 21:45:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC1C9C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 21:48:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243357AbiAQVpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 16:45:50 -0500
-Received: from mout.gmx.net ([212.227.15.15]:35177 "EHLO mout.gmx.net"
+        id S243314AbiAQVsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 16:48:53 -0500
+Received: from mga14.intel.com ([192.55.52.115]:14142 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235812AbiAQVps (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 16:45:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1642455936;
-        bh=6czN+Kc8MWNVarvsSp3OMW6bjBq/Kmp3PxQSsnJVhqA=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=Nmd9zKSu7Lj459Sbf9nLgDqaTkvEx+23VGFpMsj9u0nyo6wV5DPjNmGIayhf//QxI
-         HdS5BY7dBT62/hqNe5y4vzwdFLX9cw5GZt/7IgDn/tEdVWrxNK/shzesJ8nQ68Ykot
-         4blMKofJcb/r6KMpaAWPY2kXeNhAgB10s0SQI8vw=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.167.237]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MnJlW-1mQJNs05R6-00jIIT; Mon, 17
- Jan 2022 22:45:36 +0100
-Message-ID: <4f1d6018-d74e-8e62-ea4d-0ca79c6bbbc5@gmx.de>
-Date:   Mon, 17 Jan 2022 22:44:30 +0100
+        id S235812AbiAQVsv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 16:48:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642456131; x=1673992131;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=DBeO6aDiIEQG/4PRcF+TRJQpRxMi0Jc+fiRJum1lmsQ=;
+  b=L5BBb+VVEGznJIqePsth4bcO7yEDMAhACbHL6uhFI58wDYCCrD7ozM5R
+   bXY/KHq1J7LU+9i0XyWFbLCT8r9TtL59AM+GhdEtVR4gwO5xrkSkxgpwC
+   8bWJ4ZYCTYRlhQJnuwrewNtYpNrRIM2ixHiI5i53+dZAZ1tp2Ar8qvlv2
+   +Y6Z9YbT0AlXWp+DErhJkM+Vkh08YyFCkSFs6MThGSfvKNwxQHKYl8fgH
+   qCQ5AC2If8W954Z+KiI8iyK8qXfh4VJtB6FsrOVMVlcgTpRTYJGBgBFd3
+   SXaytTIiMjukrnvGGwgLHXw35AF97RJKPXvQ8XxgtTP2WTG07KpSIosTa
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="244893342"
+X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
+   d="scan'208";a="244893342"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 13:48:51 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
+   d="scan'208";a="476768406"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 17 Jan 2022 13:48:49 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n9Zrt-000BtY-Au; Mon, 17 Jan 2022 21:48:49 +0000
+Date:   Tue, 18 Jan 2022 05:48:20 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
+        linux-kernel@vger.kernel.org
+Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-lib 14/24]
+ fs/netfs/read_helper.c:979:14: warning: variable 'folio' is uninitialized
+ when used here
+Message-ID: <202201180514.gVYTloyy-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
-Content-Language: en-US
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     linux-fbdev@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-References: <YeG8ydoJNWWkGrTb@ls3530>
- <CAKMK7uGdJckdM+fg+576iJXsqzCOUg20etPBMwRLB9U7GcG01Q@mail.gmail.com>
- <c80ed72c-2eb4-16dd-a7ad-57e9dde59ba1@gmx.de>
- <CAKMK7uHVHn9apB6YYbLSwu+adEB2Fqp4FM0z582zf4F-v3_GnQ@mail.gmail.com>
- <cf21018b-f231-7538-169e-2ad450643cbf@gmx.de>
- <97d49bca-f5f7-dba4-b62d-b6fcdd4276ac@suse.de> <87ee5659dt.fsf@intel.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <87ee5659dt.fsf@intel.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:AOsSvq0ynHAvfBH2SFINyupBFJzMXhDwC8RnC8hf3CnICi4Jsat
- Ct8gGrDqnAjesUAJHGfQprWoxmCPydOMephNCMqSWBogYzxgci+23NVIRTzeGCLIydhPcZS
- sq2ik5QEdL1oZWu4yIYiyGg3YZhHPOSNb837RKwnlmY3RGSwwqIbxuXBtJlQK47b+jcATcu
- P9mckP5YLx37w2LgIWKlQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:piSOiqy5ZTQ=:DVwFlP6DwEhVdZeTYweZOB
- bpRPq/C6eezPlmQOxPGaIX1v5Iqi4dvkpu1dvAKt20iHn61MQZYbFwwecKiL8xN8qd7GurTJG
- Rp4VBG3PyiL5RHwwYrVpxDuu+MGpX3zOF+PNx7a/vFnme2lUHESiDidh+OgigDk3hlOW29Qfd
- DMy9UweODd0r/NvRKyD9i9qSjc0OY0HhFaw/z8kdGqtdRrVv8SJZWGBFuOvTupmKLJimy15T7
- uJW1Ta5t2OxGDJDaPVJeY0b4nB+ruona1kaJLZgraa6NJCCL3LVthzzlSzEsZCYlsrG1SLGcj
- 0Q+C74cmH9DhQFrYO3F3vwacpBH/LUD4xdhcSbassJNPSC6XStx9jR76J7NVcknc55XvNSdlC
- Hql7AgyZeB31ue+qH7iCmoOfaS8BSgafTmxlo4S/c+21GPwt2lO7Atmz8GtehqjHUKCTTEkpW
- QJS3uL8jTHvi+raHWEIZu9oYzytWZGOtTFzihWeGQIxxACMm514osLAvbXGel7lqJTGikEZrD
- jGWXfML4QRSmpXmDKTCuv4MgTuSVa0lyC0VtDV84AD82Z5J4ory0W/4iaWl8pBipoNlMXweLF
- UOGBitK16EX++ucJDt6Me4PudicoH13DzgzvsozWUz+QiQrlbjAAfvKbIWP/55k3NEHx9eGDh
- IeKFLEdA+ptMvwJQlJwl2XvRrv6qQy6H3SEP9CUYbaK9VFRcEefXNK3+jfh1Uoyd1vY+oXaGV
- nr1+MWYjTVVwJp12ZyjgweY8ZrN7lRlMuU5cHbR/dMd6Mj+KKzKFW+wsTXf85rwUdRqTVa4/3
- soQZipgus3o8PdvmmlOV9R2ZW+NFHeQd2B7FVJdCB4ORmExoqdzsbbEw70dkVIWTE6tudWgcn
- bNE09V526l05SpUsr60b5yCq+BE2zTeRqsKo5yl/gjLTDjZCCsMEbmoOH8Nho5W2GiL8KIsTA
- jKeZsfzR+yJfQ58pouKS6g76I7t3CHPQ5R5EFHoOO5t5TEJExTxGzjK6XrOuMYCN2348Uuegy
- PADDJNiJsHpLey0MZfIQ0otgPHtVfpjcieYcl+JYkfI3nALkS0P/pyf6L7+0htfrPWZ4dxdR4
- JgxnoUWcI7ZHsU=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/17/22 22:40, Jani Nikula wrote:
-> On Mon, 17 Jan 2022, Thomas Zimmermann <tzimmermann@suse.de> wrote:
->> Seems like few people read linux-fbdev these days.
->
-> How much traffic is there to linux-fbdev that is *not* Cc'd to dri-devel
-> also?
+tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-lib
+head:   e450b62f32df4384c141a6a382811b3fe5723bad
+commit: e6b340ed3634bb80396afb564c499eebdeff601f [14/24] netfs: Use a buffer in netfs_read_request and add pages to it
+config: x86_64-randconfig-a001-20220117 (https://download.01.org/0day-ci/archive/20220118/202201180514.gVYTloyy-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 5f782d25a742302d25ef3c8b84b54f7483c2deb9)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/ammarfaizi2/linux-block/commit/e6b340ed3634bb80396afb564c499eebdeff601f
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-lib
+        git checkout e6b340ed3634bb80396afb564c499eebdeff601f
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/netfs/
 
-Doesn't seem like much traffic - which IMHO is OK for such a tree with
-mostly just maintenance patches.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> Do we still need a separate linux-fbdev mailing list at all?
+All warnings (new ones prefixed by >>):
 
-Yes. I want to have it seperate of dri-devel.
-Actually I'd prefer to drop dri-devel from the list where patches
-for fbdev are sent...
+>> fs/netfs/read_helper.c:979:14: warning: variable 'folio' is uninitialized when used here [-Wuninitialized]
+                           folio_put(folio);
+                                     ^~~~~
+   fs/netfs/read_helper.c:928:21: note: initialize the variable 'folio' to silence this warning
+           struct folio *folio;
+                              ^
+                               = NULL
+   1 warning generated.
 
-Helge
+
+vim +/folio +979 fs/netfs/read_helper.c
+
+   943	
+   944		ret = netfs_rreq_add_folios_to_buffer(rreq, want_index, have_index - 1,
+   945						      gfp_mask);
+   946		if (ret < 0)
+   947			return ret;
+   948		have_folios += have_index - want_index;
+   949	
+   950		ret = netfs_rreq_add_folios_to_buffer(rreq, have_index + have_folios,
+   951						      want_index + want_folios - 1,
+   952						      gfp_mask);
+   953		if (ret < 0)
+   954			return ret;
+   955	
+   956		/* Transfer the folios proposed by the VM into the buffer and take refs
+   957		 * on them.  The locks will be dropped in netfs_rreq_unlock().
+   958		 */
+   959		if (ractl) {
+   960			while ((folio = readahead_folio(ractl))) {
+   961				folio_get(folio);
+   962				if (folio == keep)
+   963					folio_get(folio);
+   964				ret = xa_insert_set_mark(&rreq->buffer,
+   965							 folio_index(folio), folio,
+   966							 XA_MARK_0, gfp_mask);
+   967				if (ret < 0) {
+   968					if (folio != keep)
+   969						folio_unlock(folio);
+   970					folio_put(folio);
+   971					return ret;
+   972				}
+   973			}
+   974		} else {
+   975			folio_get(keep);
+   976			ret = xa_insert_set_mark(&rreq->buffer, keep->index, keep,
+   977						 XA_MARK_0, gfp_mask);
+   978			if (ret < 0) {
+ > 979				folio_put(folio);
+   980				return ret;
+   981			}
+   982		}
+   983		return 0;
+   984	}
+   985	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
