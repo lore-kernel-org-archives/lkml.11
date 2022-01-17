@@ -2,72 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E92C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 14:12:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17388C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 14:13:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235066AbiAQOMr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 09:12:47 -0500
-Received: from szxga08-in.huawei.com ([45.249.212.255]:31099 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234397AbiAQOMq (ORCPT
+        id S236155AbiAQONY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 09:13:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34416 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235121AbiAQONR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 09:12:46 -0500
-Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Jcv0F5Gl5z1FClb;
-        Mon, 17 Jan 2022 22:09:01 +0800 (CST)
-Received: from dggpemm500002.china.huawei.com (7.185.36.229) by
- dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 17 Jan 2022 22:12:44 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500002.china.huawei.com (7.185.36.229) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 17 Jan 2022 22:12:44 +0800
-From:   Chen Wandun <chenwandun@huawei.com>
-To:     <akpm@linux-foundation.org>, <linux-mm@kvack.org>,
-        <linux-kernel@vger.kernel.org>, <guillaume.tucker@collabora.com>
-Subject: [PATCH] Revert "mm/page_isolation: unset migratetype directly for non Buddy page"
-Date:   Mon, 17 Jan 2022 22:27:12 +0800
-Message-ID: <20220117142712.3967624-1-chenwandun@huawei.com>
-X-Mailer: git-send-email 2.18.0.huawei.25
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpemm500002.china.huawei.com (7.185.36.229)
-X-CFilter-Loop: Reflected
+        Mon, 17 Jan 2022 09:13:17 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F67C061574;
+        Mon, 17 Jan 2022 06:13:17 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id m1so58135538lfq.4;
+        Mon, 17 Jan 2022 06:13:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=NhWmdpO0ww12Y4vGwaeCuxcyowg2Z3CLJR7KOrNG8jk=;
+        b=QmoQI9Z8TXMYgST+9tYxQ6hfHkjTRGgRV9hmU/MUre5kRFxbz4VB51FguhUf5PG910
+         Gt03+vL27lp+A1Q9dIy+RhFF5pEW4pXkULI4f5OCDNwQj9m7F39JVV8gXaAyEubSQxte
+         GqxxZ9nni3WyXzQuKvyziB/6ROMxPZn6FncT7W3LhgVDiSolkq8k5KR4lwPJUghslBW8
+         wBqX0Ld1ZAmOsb4zMXohNEhEzhmmiw1TpdV8Jpf8VOIqQekO3Y0JiuzxJVJk285dejA0
+         lJUqtIFXClBOmqzkqibUXZQ0mNFB6cJrw6ZA14cD1lQbXQHjoStH9FZxxoGSgMXkZWgX
+         WdOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
+         :content-transfer-encoding:message-id:references:to;
+        bh=NhWmdpO0ww12Y4vGwaeCuxcyowg2Z3CLJR7KOrNG8jk=;
+        b=fGBjPsRz9rnu+UrlS7NQrry2mbOeez9KRFfe2GPcHiovxtPE3OwSPBN5mKWoakN9IQ
+         GJY30b1dDQ8qUuBnnW2paSNs9axrViyNdsCtSdW22zE8VVkHsJZ3m6XPp6J8BbY0+hOp
+         99cMJLe0J84ElRI/6W5hi0MRhNh8YUbLN0l52MQDKOFyW3RTSbA+Nca/7/fqUQMnis4a
+         HJcHO0Wm5yTfDGkV7sYml+G5k+lBwu1/lU2lyjQs8DI4+BB78K63LViBgYZ/4Bc0PfMI
+         Ufak1CScjn/3xFKvKnNYyoOy8Fxfb3elDzROXS7gXNKRcys2ZtlszelZ/W0hw5x8vNGy
+         3+lA==
+X-Gm-Message-State: AOAM533EiRIH6bnwtBWVBkJqfucZMPyeRDvZud4PtKWq8CC9sGMp4036
+        awIyOT5CHFqSFqUXRSo3nQ8=
+X-Google-Smtp-Source: ABdhPJwlvEDpJUX3yDmk/G4z41azN6dgu1AcVgv8oPnyCIDyWNIHaVUS0GSW0lzwe6J1yfDX2JcS2g==
+X-Received: by 2002:a05:6512:606:: with SMTP id b6mr16460100lfe.396.1642428795695;
+        Mon, 17 Jan 2022 06:13:15 -0800 (PST)
+Received: from smtpclient.apple (31-178-191-245.dynamic.chello.pl. [31.178.191.245])
+        by smtp.gmail.com with ESMTPSA id r9sm484433lfi.38.2022.01.17.06.13.14
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 17 Jan 2022 06:13:15 -0800 (PST)
+Content-Type: text/plain;
+        charset=utf-8
+Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
+Subject: Re: [PATCH 5/9] arm64: dts: rockchip: add rk3568 tsadc nodes
+From:   Piotr Oniszczuk <piotr.oniszczuk@gmail.com>
+In-Reply-To: <CAMdYzYo2gkNvNYjU9_kc4cTwNBFU+kg3bRwaS3yCCAsMdo-Tow@mail.gmail.com>
+Date:   Mon, 17 Jan 2022 15:13:14 +0100
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <E3AA167E-1E40-45CD-8CBB-3EB280856604@gmail.com>
+References: <20210728135534.703028-1-pgwipeout@gmail.com>
+ <20210728135534.703028-6-pgwipeout@gmail.com>
+ <C3AE0A81-A829-4241-A65E-EB28825E3C33@gmail.com>
+ <CAMdYzYo2gkNvNYjU9_kc4cTwNBFU+kg3bRwaS3yCCAsMdo-Tow@mail.gmail.com>
+To:     Peter Geis <pgwipeout@gmail.com>
+X-Mailer: Apple Mail (2.3654.120.0.1.13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This reverts commit 075782149abff45ee22f27315eced44d02b96779.
 
-commit 075782149abf ("mm/page_isolation: unset migratetype directly for
-non Buddy page") will result memory that should in buddy disappear by
-mistake. move_freepages_block move all pages in pageblock instead of
-pages indicated by input parameter, so if input pages is not in buddy
-but other pages in pageblock is in buddy, it will result in page out of
-control.
 
-Reported-by: "kernelci.org bot" <bot@kernelci.org>
-Signed-off-by: Chen Wandun <chenwandun@huawei.com>
----
- mm/page_isolation.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Wiadomo=C5=9B=C4=87 napisana przez Peter Geis <pgwipeout@gmail.com> w =
+dniu 17.01.2022, o godz. 14:49:
+>=20
+>>=20
+>> Peter,
+>>=20
+>> I'm trying to use this series to get thermal on rk3566 based tvbox =
+(x96-x6).
+>> Driver loads but i'm getting following error:
+>>=20
+>> [  132.873979] rockchip-thermal fe710000.tsadc: failed to register =
+sensor 0: -517
+>> [  132.874650] rockchip-thermal fe710000.tsadc: failed to register =
+sensor[0] : error =3D -517
+>>=20
+>> Maybe you have some hints here?
+>=20
+> Error -517 means -EPROBE_DEFER, a device it relies on hasn't probed.
+> TSADC doesn't directly rely on anything that shouldn't already be
+> enabled. (Pinctrl, clocks, and grf all break a lot more than tsadc if
+> disabled)
+> Does your kernel config have all of the rockchip elements enabled?
+>=20
 
-diff --git a/mm/page_isolation.c b/mm/page_isolation.c
-index 6a0ddda6b3c5..f67c4c70f17f 100644
---- a/mm/page_isolation.c
-+++ b/mm/page_isolation.c
-@@ -115,7 +115,7 @@ static void unset_migratetype_isolate(struct page *page, unsigned migratetype)
- 	 * onlining - just onlined memory won't immediately be considered for
- 	 * allocation.
- 	 */
--	if (!isolated_page && PageBuddy(page)) {
-+	if (!isolated_page) {
- 		nr_pages = move_freepages_block(zone, page, migratetype, NULL);
- 		__mod_zone_freepage_state(zone, nr_pages, migratetype);
- 	}
--- 
-2.18.0.huawei.25
+Peter,
+For sure I can't say 'yes' with 100% confidence.
+I'm trying do my best for rk3566 (currently have working: =
+SD/Eth/HDMI/Sound/USB2port0/BT).
 
+Maybe you may point me pls for good reference of rk356x defconfig?
+
+btw: a bit of  context:
+In my application (https://github.com/warpme/minimyth2) i have target to =
+have single OS binary for all supported =
+Allwinner/Amlogic/Rockchip/Broadcom devices.
+By this kernel config i'm using is painfully assembled to have minimal =
+working kernel for all targets.
+It's a painful road....but still want to go this route for: minimal =
+image size; shortest build time & one-for-all binary.
+my current config: =
+https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-5.16/f=
+iles/linux-5.16-arm64-armv8.config
+
+btw2: for rk3566 i'm using majority of your patches!=20
+Great work of you!
+=20
+
+
+ =20
+
+
+=20=
