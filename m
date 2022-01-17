@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE94C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:05:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38981C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:05:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242345AbiAQRFs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:05:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44898 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242333AbiAQRDu (ORCPT
+        id S242362AbiAQRFy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:05:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50204 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242350AbiAQRDw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:03:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61E11C061749;
-        Mon, 17 Jan 2022 09:02:51 -0800 (PST)
+        Mon, 17 Jan 2022 12:03:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 02FFA611E0;
-        Mon, 17 Jan 2022 17:02:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4BDCC36AEC;
-        Mon, 17 Jan 2022 17:02:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5FB04B8113E;
+        Mon, 17 Jan 2022 17:03:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C178DC36AEC;
+        Mon, 17 Jan 2022 17:03:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642438970;
-        bh=fgpNcpGwTQOlUCWiGZGZm/cuplCzU4SORglq/H8Knog=;
+        s=k20201202; t=1642439030;
+        bh=GnC4qoc3qNiPeEEPfhsgJBYgncJZP5nIfaEdUe0w6x0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sn/5D8HIa2xg7ZUOcBqACG2Ksld12GGFGzDemTMfbpbAKKrjWiQy2lSLz3PgmwrRD
-         D88q3sZbT5TiXQsFiXhxf7RP7EOgvIA32l4RBcGo+0TLDY1sXt6eiVqE+CgQ83C4zI
-         dhce2W4ZQP+gxn7ydA11iXJoTDQR28Vw5KCN85jxMUafBfwKG6Ll6H34S4vuN6/IBG
-         Gjq8j4s1nl1I8RV2bGviLw6WphsJ0p8gsDTQr68utTgJBXsi8b7uJjKTi3RYFmDUPz
-         M5gcqca+PUC8ACfot+SUYDI1oQSJ+yWdYqe4rLC+7y10FL3aIsgG3/JaB5SBfVZtfS
-         qEQGurZTcGVCQ==
+        b=ZWmBINbiIDoDcKkL+Vkin3SPiX8wID05i6kVA7cgLwmBh/dCq9Qz8GyXWtyr8SEdG
+         k2SbdPZIQgAC85+xucyOoq/IedlljdZ0D8h2IbRWb3lNLL28nQUcPc0jf2EMWnaQVO
+         17yOLFn0R9Izqrb/WLxbAXJY/69r3ZVeh0VY4sFoBfPJ3Fkck2LAadyX1XtP3yiL0M
+         jvNPeZgM/yTStomS/m1JNLOjeV/+psKHYijSE/w4sS6Nx55mcXuOu1r5ejhFVNXd1R
+         yv1xupfXI+ogC81Yp3NfeWzt++shtH3NpX7y2U4P98Leg+i4f9nzeNk8fyx67OquM9
+         LXX2jFzFB7dRA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        linuxppc-dev@lists.ozlabs.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 33/44] selftests/powerpc: Add a test of sigreturning to the kernel
-Date:   Mon, 17 Jan 2022 12:01:16 -0500
-Message-Id: <20220117170127.1471115-33-sashal@kernel.org>
+Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Christian Hewitt <christianshewitt@gmail.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>, narmstrong@baylibre.com,
+        mturquette@baylibre.com, sboyd@kernel.org, khilman@baylibre.com,
+        linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 11/34] clk: meson: gxbb: Fix the SDM_EN bit for MPLL0 on GXBB
+Date:   Mon, 17 Jan 2022 12:03:01 -0500
+Message-Id: <20220117170326.1471712-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170127.1471115-1-sashal@kernel.org>
-References: <20220117170127.1471115-1-sashal@kernel.org>
+In-Reply-To: <20220117170326.1471712-1-sashal@kernel.org>
+References: <20220117170326.1471712-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,185 +52,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[ Upstream commit a8968521cfdc3e339fe69473d6632e0aa8d7202a ]
+[ Upstream commit ff54938dd190d85f740b9bf9dde59b550936b621 ]
 
-We have a general signal fuzzer, sigfuz, which can modify the MSR & NIP
-before sigreturn. But the chance of it hitting a kernel address and also
-clearing MSR_PR is fairly slim.
+There are reports that 48kHz audio does not work on the WeTek Play 2
+(which uses a GXBB SoC), while 44.1kHz audio works fine on the same
+board. There are also reports of 48kHz audio working fine on GXL and
+GXM SoCs, which are using an (almost) identical AIU (audio controller).
 
-So add a specific test of sigreturn to a kernel address, both with and
-without attempting to clear MSR_PR (which the kernel must block).
+Experimenting has shown that MPLL0 is causing this problem. In the .dts
+we have by default:
+	assigned-clocks = <&clkc CLKID_MPLL0>,
+			  <&clkc CLKID_MPLL1>,
+			  <&clkc CLKID_MPLL2>;
+	assigned-clock-rates = <294912000>,
+			       <270950400>,
+			       <393216000>;
+The MPLL0 rate is divisible by 48kHz without remainder and the MPLL1
+rate is divisible by 44.1kHz without remainder. Swapping these two clock
+rates "fixes" 48kHz audio but breaks 44.1kHz audio.
 
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211209115944.4062384-1-mpe@ellerman.id.au
+Everything looks normal when looking at the info provided by the common
+clock framework while playing 48kHz audio (via I2S with mclk-fs = 256):
+        mpll_prediv                 1        1        0  2000000000
+           mpll0_div                1        1        0   294909641
+              mpll0                 1        1        0   294909641
+                 cts_amclk_sel       1        1        0   294909641
+                    cts_amclk_div       1        1        0    12287902
+                       cts_amclk       1        1        0    12287902
+
+meson-clk-msr however shows that the actual MPLL0 clock is off by more
+than 38MHz:
+        mp0_out               333322917    +/-10416Hz
+
+The rate seen by meson-clk-msr is very close to what we would get when
+SDM (the fractional part) was ignored:
+  (2000000000Hz * 16384) / ((16384 * 6) = 333.33MHz
+If SDM was considered the we should get close to:
+  (2000000000Hz * 16384) / ((16384 * 6) + 12808) = 294.9MHz
+
+Further experimenting shows that HHI_MPLL_CNTL7[15] does not have any
+effect on the rate of MPLL0 as seen my meson-clk-msr (regardless of
+whether that bit is zero or one the rate is always the same according to
+meson-clk-msr). Using HHI_MPLL_CNTL[25] on the other hand as SDM_EN
+results in SDM being considered for the rate output by the hardware. The
+rate - as seen by meson-clk-msr - matches with what we expect when
+SDM_EN is enabled (fractional part is being considered, resulting in a
+294.9MHz output) or disable (fractional part being ignored, resulting in
+a 333.33MHz output).
+
+Reported-by: Christian Hewitt <christianshewitt@gmail.com>
+Tested-by: Christian Hewitt <christianshewitt@gmail.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+Link: https://lore.kernel.org/r/20211031135006.1508796-1-martin.blumenstingl@googlemail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../selftests/powerpc/signal/.gitignore       |   1 +
- .../testing/selftests/powerpc/signal/Makefile |   1 +
- .../powerpc/signal/sigreturn_kernel.c         | 132 ++++++++++++++++++
- 3 files changed, 134 insertions(+)
- create mode 100644 tools/testing/selftests/powerpc/signal/sigreturn_kernel.c
+ drivers/clk/meson/gxbb.c | 44 +++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 41 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/powerpc/signal/.gitignore b/tools/testing/selftests/powerpc/signal/.gitignore
-index ce3375cd8e73e..8f6c816099a48 100644
---- a/tools/testing/selftests/powerpc/signal/.gitignore
-+++ b/tools/testing/selftests/powerpc/signal/.gitignore
-@@ -4,3 +4,4 @@ signal_tm
- sigfuz
- sigreturn_vdso
- sig_sc_double_restart
-+sigreturn_kernel
-diff --git a/tools/testing/selftests/powerpc/signal/Makefile b/tools/testing/selftests/powerpc/signal/Makefile
-index d6ae54663aed7..84e201572466d 100644
---- a/tools/testing/selftests/powerpc/signal/Makefile
-+++ b/tools/testing/selftests/powerpc/signal/Makefile
-@@ -1,5 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0
- TEST_GEN_PROGS := signal signal_tm sigfuz sigreturn_vdso sig_sc_double_restart
-+TEST_GEN_PROGS += sigreturn_kernel
+diff --git a/drivers/clk/meson/gxbb.c b/drivers/clk/meson/gxbb.c
+index 0a68af6eec3dd..d42551a46ec91 100644
+--- a/drivers/clk/meson/gxbb.c
++++ b/drivers/clk/meson/gxbb.c
+@@ -712,6 +712,35 @@ static struct clk_regmap gxbb_mpll_prediv = {
+ };
  
- CFLAGS += -maltivec
- $(OUTPUT)/signal_tm: CFLAGS += -mhtm
-diff --git a/tools/testing/selftests/powerpc/signal/sigreturn_kernel.c b/tools/testing/selftests/powerpc/signal/sigreturn_kernel.c
-new file mode 100644
-index 0000000000000..0a1b6e591eeed
---- /dev/null
-+++ b/tools/testing/selftests/powerpc/signal/sigreturn_kernel.c
-@@ -0,0 +1,132 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Test that we can't sigreturn to kernel addresses, or to kernel mode.
-+ */
+ static struct clk_regmap gxbb_mpll0_div = {
++	.data = &(struct meson_clk_mpll_data){
++		.sdm = {
++			.reg_off = HHI_MPLL_CNTL7,
++			.shift   = 0,
++			.width   = 14,
++		},
++		.sdm_en = {
++			.reg_off = HHI_MPLL_CNTL,
++			.shift   = 25,
++			.width	 = 1,
++		},
++		.n2 = {
++			.reg_off = HHI_MPLL_CNTL7,
++			.shift   = 16,
++			.width   = 9,
++		},
++		.lock = &meson_clk_lock,
++	},
++	.hw.init = &(struct clk_init_data){
++		.name = "mpll0_div",
++		.ops = &meson_clk_mpll_ops,
++		.parent_hws = (const struct clk_hw *[]) {
++			&gxbb_mpll_prediv.hw
++		},
++		.num_parents = 1,
++	},
++};
 +
-+#define _GNU_SOURCE
-+
-+#include <stdio.h>
-+#include <signal.h>
-+#include <stdlib.h>
-+#include <sys/types.h>
-+#include <sys/wait.h>
-+#include <unistd.h>
-+
-+#include "utils.h"
-+
-+#define MSR_PR (1ul << 14)
-+
-+static volatile unsigned long long sigreturn_addr;
-+static volatile unsigned long long sigreturn_msr_mask;
-+
-+static void sigusr1_handler(int signo, siginfo_t *si, void *uc_ptr)
-+{
-+	ucontext_t *uc = (ucontext_t *)uc_ptr;
-+
-+	if (sigreturn_addr)
-+		UCONTEXT_NIA(uc) = sigreturn_addr;
-+
-+	if (sigreturn_msr_mask)
-+		UCONTEXT_MSR(uc) &= sigreturn_msr_mask;
-+}
-+
-+static pid_t fork_child(void)
-+{
-+	pid_t pid;
-+
-+	pid = fork();
-+	if (pid == 0) {
-+		raise(SIGUSR1);
-+		exit(0);
-+	}
-+
-+	return pid;
-+}
-+
-+static int expect_segv(pid_t pid)
-+{
-+	int child_ret;
-+
-+	waitpid(pid, &child_ret, 0);
-+	FAIL_IF(WIFEXITED(child_ret));
-+	FAIL_IF(!WIFSIGNALED(child_ret));
-+	FAIL_IF(WTERMSIG(child_ret) != 11);
-+
-+	return 0;
-+}
-+
-+int test_sigreturn_kernel(void)
-+{
-+	struct sigaction act;
-+	int child_ret, i;
-+	pid_t pid;
-+
-+	act.sa_sigaction = sigusr1_handler;
-+	act.sa_flags = SA_SIGINFO;
-+	sigemptyset(&act.sa_mask);
-+
-+	FAIL_IF(sigaction(SIGUSR1, &act, NULL));
-+
-+	for (i = 0; i < 2; i++) {
-+		// Return to kernel
-+		sigreturn_addr = 0xcull << 60;
-+		pid = fork_child();
-+		expect_segv(pid);
-+
-+		// Return to kernel virtual
-+		sigreturn_addr = 0xc008ull << 48;
-+		pid = fork_child();
-+		expect_segv(pid);
-+
-+		// Return out of range
-+		sigreturn_addr = 0xc010ull << 48;
-+		pid = fork_child();
-+		expect_segv(pid);
-+
-+		// Return to no-man's land, just below PAGE_OFFSET
-+		sigreturn_addr = (0xcull << 60) - (64 * 1024);
-+		pid = fork_child();
-+		expect_segv(pid);
-+
-+		// Return to no-man's land, above TASK_SIZE_4PB
-+		sigreturn_addr = 0x1ull << 52;
-+		pid = fork_child();
-+		expect_segv(pid);
-+
-+		// Return to 0xd space
-+		sigreturn_addr = 0xdull << 60;
-+		pid = fork_child();
-+		expect_segv(pid);
-+
-+		// Return to 0xe space
-+		sigreturn_addr = 0xeull << 60;
-+		pid = fork_child();
-+		expect_segv(pid);
-+
-+		// Return to 0xf space
-+		sigreturn_addr = 0xfull << 60;
-+		pid = fork_child();
-+		expect_segv(pid);
-+
-+		// Attempt to set PR=0 for 2nd loop (should be blocked by kernel)
-+		sigreturn_msr_mask = ~MSR_PR;
-+	}
-+
-+	printf("All children killed as expected\n");
-+
-+	// Don't change address, just MSR, should return to user as normal
-+	sigreturn_addr = 0;
-+	sigreturn_msr_mask = ~MSR_PR;
-+	pid = fork_child();
-+	waitpid(pid, &child_ret, 0);
-+	FAIL_IF(!WIFEXITED(child_ret));
-+	FAIL_IF(WIFSIGNALED(child_ret));
-+	FAIL_IF(WEXITSTATUS(child_ret) != 0);
-+
-+	return 0;
-+}
-+
-+int main(void)
-+{
-+	return test_harness(test_sigreturn_kernel, "sigreturn_kernel");
-+}
++static struct clk_regmap gxl_mpll0_div = {
+ 	.data = &(struct meson_clk_mpll_data){
+ 		.sdm = {
+ 			.reg_off = HHI_MPLL_CNTL7,
+@@ -748,7 +777,16 @@ static struct clk_regmap gxbb_mpll0 = {
+ 	.hw.init = &(struct clk_init_data){
+ 		.name = "mpll0",
+ 		.ops = &clk_regmap_gate_ops,
+-		.parent_hws = (const struct clk_hw *[]) { &gxbb_mpll0_div.hw },
++		.parent_data = &(const struct clk_parent_data) {
++			/*
++			 * Note:
++			 * GXL and GXBB have different SDM_EN registers. We
++			 * fallback to the global naming string mechanism so
++			 * mpll0_div picks up the appropriate one.
++			 */
++			.name = "mpll0_div",
++			.index = -1,
++		},
+ 		.num_parents = 1,
+ 		.flags = CLK_SET_RATE_PARENT,
+ 	},
+@@ -3043,7 +3081,7 @@ static struct clk_hw_onecell_data gxl_hw_onecell_data = {
+ 		[CLKID_VAPB_1]		    = &gxbb_vapb_1.hw,
+ 		[CLKID_VAPB_SEL]	    = &gxbb_vapb_sel.hw,
+ 		[CLKID_VAPB]		    = &gxbb_vapb.hw,
+-		[CLKID_MPLL0_DIV]	    = &gxbb_mpll0_div.hw,
++		[CLKID_MPLL0_DIV]	    = &gxl_mpll0_div.hw,
+ 		[CLKID_MPLL1_DIV]	    = &gxbb_mpll1_div.hw,
+ 		[CLKID_MPLL2_DIV]	    = &gxbb_mpll2_div.hw,
+ 		[CLKID_MPLL_PREDIV]	    = &gxbb_mpll_prediv.hw,
+@@ -3438,7 +3476,7 @@ static struct clk_regmap *const gxl_clk_regmaps[] = {
+ 	&gxbb_mpll0,
+ 	&gxbb_mpll1,
+ 	&gxbb_mpll2,
+-	&gxbb_mpll0_div,
++	&gxl_mpll0_div,
+ 	&gxbb_mpll1_div,
+ 	&gxbb_mpll2_div,
+ 	&gxbb_cts_amclk_div,
 -- 
 2.34.1
 
