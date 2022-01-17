@@ -2,164 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B07BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 14:48:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99E77C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 14:51:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237168AbiAQOsr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 09:48:47 -0500
-Received: from mout.gmx.net ([212.227.17.20]:59109 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231979AbiAQOsj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 09:48:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1642430909;
-        bh=0z5LHwE5NG6AcV/mo1P1LpHBQnyVU+bCpmzShbRlbGU=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=fS+Bu50tH8J6jQmtlnTIrC8aRu9PBg/h/d9G4/qwdTpXpePoYTvZNMlQEFZ4pgPvC
-         VLzqu/UtNNadpMDDudUr5xUKAqtU474B9xhybWkQyuOz/ekiyKEkNqLrVM5mIoWg2w
-         zhiXsT872MQgcVGi58UW4JGKEEHuVPBoU+SF8c20=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.167.237]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1N9Mtg-1mDA6q3GWC-015KxP; Mon, 17
- Jan 2022 15:48:28 +0100
-Message-ID: <57d276d3-aa12-fa40-6f90-dc19ef393679@gmx.de>
-Date:   Mon, 17 Jan 2022 15:47:23 +0100
+        id S237191AbiAQOvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 09:51:01 -0500
+Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:52561 "EHLO
+        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237195AbiAQOu7 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 09:50:59 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R211e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=wuyihao@linux.alibaba.com;NM=1;PH=DS;RN=8;SR=0;TI=SMTPD_---0V27uN1Z_1642431056;
+Received: from B-V5AVMD6P-1927.local(mailfrom:wuyihao@linux.alibaba.com fp:SMTPD_---0V27uN1Z_1642431056)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 17 Jan 2022 22:50:56 +0800
+Subject: Re: [PATCH] sched/fair: Again ignore percpu threads for imbalance
+ pulls
+To:     Valentin Schneider <valentin.schneider@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>
+Cc:     Shanpei Chen <shanpeic@linux.alibaba.com>,
+        =?UTF-8?B?546L6LSH?= <yun.wang@linux.alibaba.com>,
+        linux-kernel@vger.kernel.org
+References: <20211211094808.109295-1-wuyihao@linux.alibaba.com>
+ <87k0g48kyp.mognet@arm.com>
+From:   Yihao Wu <wuyihao@linux.alibaba.com>
+Message-ID: <5f8497cd-aeaf-906d-a2d8-2e0a752fed4b@linux.alibaba.com>
+Date:   Mon, 17 Jan 2022 22:50:55 +0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.12.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
+In-Reply-To: <87k0g48kyp.mognet@arm.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     Gerd Hoffmann <kraxel@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "airlied@gmail.com" <airlied@gmail.com>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Javier Martinez Canillas <javierm@redhat.com>
-References: <YeG8ydoJNWWkGrTb@ls3530>
- <CAKMK7uGdJckdM+fg+576iJXsqzCOUg20etPBMwRLB9U7GcG01Q@mail.gmail.com>
- <c80ed72c-2eb4-16dd-a7ad-57e9dde59ba1@gmx.de>
- <20220117125716.yjwxsze35j2ndn2i@sirius.home.kraxel.org>
- <CAMuHMdW=Zpp2mHbrBx7i0WN8PqY3XpK5qpyAyYxgf9n88edpug@mail.gmail.com>
- <70530b62-7b3f-db88-7f1a-f89b824e5825@suse.de>
- <CAMuHMdW5M=zEuGEnQQc3JytDhoxCKRiq0QFw+HOPp0YMORzidw@mail.gmail.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <CAMuHMdW5M=zEuGEnQQc3JytDhoxCKRiq0QFw+HOPp0YMORzidw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:0IYh08vDK6QIg5wdcH+NhEdYzxVPfDL3OyfZJU3NzK8g5WMPnjY
- oX/cVPByBDrvgHTcvm5X2rmX4escCEdre5r98uIWeHzo7VTtIf73qg0b6k1wt5xA80GbFuP
- nWcJZHaH7HzleB5Ps49xB68EzA8xktko/LZeGGnVHJMlSBzOayoZJiM3hQiOvtUN+pWyboV
- 33lix+6VBnZlf+fLh2PtQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:UH5P+eqU0rM=:VibbxS6CbIXwAAHtUnBBil
- ak0y+AouoDFlohFc1kDED8OdBWiPWQi4OxNxG91caPk365RWHdqNL+5MavZP8H02vDX8LCzGo
- MVWcVPLxXUolZJXk3I95wKmb5Z6xdctAAUaYg0cjX2mxmJlZmcgI1GKAJXYYQY0rmSJqOKHa8
- mNFZv5js/9BvtE0muCBbdHx6sPMQhiQdQrweaNXdTUXShIBkzH3q33+DOFcohFgd6PQaLFUTY
- pZAqU+hFzJaqkSo4rgIO3Kuxy0A6uSbodB+FNtgKLUV6RlLPhkkng4uPoRuC9CL1J2JmfrM9r
- YwPNNm+MZRgHcdDxq4jVW5xcIlezjODv0Ie5QWmzZDJy4E3eVK7cLshOn9BOHfKun7zCGT0FT
- 69wiJkOqn4Wvk8UaKp4uQDN4CWKLLyffyKGGF6V0iZ3WyXcUIvfj1gFEeJqM1E64k0W8xfb9y
- drqIR0nbcX/bbNHNB7bxerLW58LLawcOCF6CRpTbFO9W+cHXRrDUvQXT5w78xh/vi2rIDlvFE
- hGfnCF/fsDortY0tls1paWya/2FOdDkb+Ar4O4W1ZUvrT+LbrM4xiQZD1Y0RTLXUnEB+vcILc
- qIzIQ4rATz3gMR8WdElKkza+8MWBNIazjuRD0DT/TiIVpMkdFzlBB+bJcAPd4FNoPzOvuz2Zw
- 0KwJAeIM0pavx6HPvnfXrseWIWPnqd9OfnrdOyWuPkgJGu5rAEdn1lVv3Ch8scq8e/v17Lf3C
- eG69HJrIYMUwE1xLT+mrPj7zmIvrypsRrZf0SzZrIpjwFXiYFEJue5oztcwqPKTgR3JtMAJAY
- vZnHdC8pEoNoLbkxv9s8sYY2I/BVdFP7t+WzMgHfyBVtDKkr7uxQgBxL00qD6udKARD2dq5pq
- Rrte4Svx3XdA3ihPS+OpulywPNDhkCNm8+wcXGjHli5Z/CVpxWhUP13V6FyDHjwEo/22blKCw
- dwHB3B+GvfhYIDwfZMA9kCyiyxtBtsZk57OOmBTBHgdJ+xVtiZzXO7vvBXSQZlYU3uXca7P7M
- o5hUCMbMbaxrouPQ9eg0/MCpL39cfhQBMtnVd5rGFZ1Nv8Xp13veDPmQJcz0Ia+R9dIYyCCMy
- KZj6rsnDIiTTlc=
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/17/22 15:10, Geert Uytterhoeven wrote:
-> Hi Thomas,
->
-> On Mon, Jan 17, 2022 at 2:51 PM Thomas Zimmermann <tzimmermann@suse.de> =
-wrote:
->> Am 17.01.22 um 14:29 schrieb Geert Uytterhoeven:
->>> On Mon, Jan 17, 2022 at 1:57 PM Gerd Hoffmann <kraxel@redhat.com> wrot=
-e:
->>>>> b) to include new drivers (for old hardware) if they arrive (probabl=
-y happens rarely but there can be).
->>>>>     I know of at least one driver which won't be able to support DRM=
-....
->>>>
->>>> Hmm?  I seriously doubt that.  There is always the option to use a
->>>> shadow framebuffer, then convert from standard drm formats to whateve=
-r
->>>> esoteric pixel format your hardware expects.
->>>>
->>>> Been there, done that.  Have a look at the cirrus driver.  The physic=
-al
->>>> hardware was designed in the early 90-ies, almost 30 years ago.  Thes=
-e
->>>> days it exists in virtual form only (qemu emulates it).  Thanks to th=
-e
->>>> drm driver it runs wayland just fine even though it has a bunch of
->>>> constrains dictated by the hardware design.
->>>
->>> The Cirrus DRM driver supports TrueColor (RGB565/888 and ARGB8888)
->>> modes only.  The Cirrus fbdev driver also supports mochrome and 256
->>> color modes.
->>>
->>> There exist some DRM drivers that do support DRM_FORMAT_C8, but none o=
-f
->>> the "tiny" ones do. Same for DRM_FORMAT_RGB{332,233}.  Using a shadow
->>> frame buffer to convert from truecolor to 256 colors would be doable,
->>> but would give bad results. And what about less colors?
->>> Adding support for e.g. DRM_FORMAT_C4 is not straight-forward, as
->>> the DRM core assumes in many places that a pixel is at least 1 byte,
->>> and would crash otherwise (yes I tried).  Other modes needed are
->>> DRM_FORMAT_Y4 and DRM_FORMAT_{BW,WB} (monochrome).
+Thanks a lot for the help, Valentin and Peter!
+
+On 2021/12/17 2:26am, Valentin Schneider wrote:
+> On 11/12/21 17:48, Yihao Wu wrote:
+>> commit 2f5f4cce496e ("sched/fair: Ignore percpu threads for imbalance
+>> pulls") was meant to fix a performance issue, when load balance tries to
+>> migrate pinned kernel threads at MC domain level. This was destined to
+>> fail.
+> 
+>> After it fails, it further makes wakeup balance at NUMA domain level
+>> messed up. The most severe case that I noticed and frequently occurs:
+>>      |sum_nr_running(node1) - sum_nr_running(node2)| > 100
 >>
->> We export XRGB32 from each driver, because userspace expects it. But
->> that is not a hard requirement. Userspace can use any format. It's just
->> that no one seems to have any use cases so far, so no work has been
->> done. Think of XRGB32 as a fallback.
->
-> Using an XRGB32 intermediate would kill the user experience on old
-> machines, due to both increased memory usage and copy overhead.
->
->> Personally, I'd much appreciate if userspace would support more of the
->> native formats and not rely on XRGB32.
->
-> Supporting monochrome, 16 colors, and 256 colors would be nice.
+> 
+> Wakeup balance (aka find_idlest_cpu()) is different from periodic load
+> balance (aka load_balance()) and doesn't use can_migrate_task(), so the
+> incriminated commit shouldn't have impacted it (at least not in obvious
+> ways...). Do you have any more details on that issue
 
-=46rom this conversation it seems DRM completely lacks backwards compatibi=
-lity,
-including a missing 2D bitblt copy.
-Isn't that all what's needed and then migrating existing drivers would
-be easy ?
+The original bugfix concerns only about load balance. While I found wake
+up balance is impacted too, after I observed regression in lmbench3 test
+suite. This is how it's impacted:
 
-Helge
+- Periodic load balance
+- kthread_is_per_cpu? No
+- env->flags |= LBF_SOME_PINNED
+- sd_parent..imbalance being set to 1 because of LBF_SOME_PINNED
 
+So far exactly the same as what Chandrasekhar describes in 2f5f4cce496e.
+Then imbalance connects periodic and wakeup balance.
 
->>> This not only to support "old" hardware, but also modern small OLED
->>> and e-ink displays.
+- Wakeup balance(find_idlest_group)
+- update_sg_wakeup_stats classifies local_sgs as group_imbalanced
+- find_idlest_group chooses another NUMA node
+
+wakeup balance keeps doing this until another NUMA node becomes so busy.
+And another periodic load balance just shifts it around, makeing the 
+previously overloaded node completely idle now.
+
+(Thanks to the great schedviz tool, I observed that all workloads as a 
+whole, is migrated between the two NUMA nodes in a ping-pong pattern, 
+and with a period around 3ms)
+
+The reason wake up balance suffers more is, in fork+exit test case, 
+wakeup balance happens with much higher frequency. It exists in real 
+world applications too I believe.
+
+> 
+>> However the original bugfix failed, because it covers only case 1) below.
+>>    1) Created by create_kthread
+>>    2) Created by kernel_thread
+>> No kthread is assigned to task_struct in case 2 (Please refer to comments
+>> in free_kthread_struct) so it simply won't work.
 >>
->> There's a DRM driver for Repaper e-Ink displays. So it seems doable at
->> least.
->
-> Which uses an DRM_FORMAT_XRGB8888 intermediate, and
-> drm_fb_xrgb8888_to_gray8() and repaper_gray8_to_mono_reversed()
-> to convert from truecolor to monochrome.  I guess that would work,
-> as this is a slow e-ink display.  Have fun as a text console ;-)
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m=
-68k.org
->
-> In personal conversations with technical people, I call myself a hacker.=
- But
-> when I'm talking to journalists I just say "programmer" or something lik=
-e that.
->                                 -- Linus Torvalds
->
+>> The easist way to cover both cases is to check nr_cpus_allowed, just as
+>> discussed in the mailing list of the v1 version of the original fix.
+>>
+>> * lmbench3.lat_proc -P 104 fork (2 NUMA, and 26 cores, 2 threads)
+>>
+> 
+> Reasoning about "proper" pcpu kthreads was simpler since they are static,
+> see 3a7956e25e1d ("kthread: Fix PF_KTHREAD vs to_kthread() race")
+> 
+Get it. Thanks.
 
+>>                           w/out patch                 w/ patch
+>> fork+exit latency            1660 ms                  1520 ms (   8.4%)
+>>
+>> Fixes: 2f5f4cce496e ("sched/fair: Ignore percpu threads for imbalance pulls")
+>> Signed-off-by: Yihao Wu <wuyihao@linux.alibaba.com>
+>> ---
+>>   kernel/kthread.c | 6 +-----
+>>   1 file changed, 1 insertion(+), 5 deletions(-)
+>>
+>> diff --git a/kernel/kthread.c b/kernel/kthread.c
+>> index 4a4d7092a2d8..cb05d3ff2de4 100644
+>> --- a/kernel/kthread.c
+>> +++ b/kernel/kthread.c
+>> @@ -543,11 +543,7 @@ void kthread_set_per_cpu(struct task_struct *k, int cpu)
+>>
+>>   bool kthread_is_per_cpu(struct task_struct *p)
+>>   {
+>> -	struct kthread *kthread = __to_kthread(p);
+>> -	if (!kthread)
+>> -		return false;
+>> -
+>> -	return test_bit(KTHREAD_IS_PER_CPU, &kthread->flags);
+>> +	return (p->flags & PF_KTHREAD) && p->nr_cpus_allowed == 1;
+>>   }
+> 
+> As Peter said, this is going to cause issues. If you look at
+> kthread_set_per_cpu(), we also store a CPU value which we expect to be
+> valid when kthread_is_per_cpu(), which that change is breaking.
+> 
+> AIUI what you want to patch is the actual usage in can_migrate_task()
+> 
+
+Get it. Some may want a consistent view of kthread_is_per_cpu, 
+kthread->cpu, and KTHREAD_IS_PER_CPU.
+
+Are you suggesting to patch only can_migrate_task to check 
+nr_cpus_allowed? Wouldn't it be confusing if it uses an alternative way 
+to tell if p is a per-cpu kthread?
+
+I haven't a better solution though. :(
+
+
+Thanks,
+Yihao Wu
+
+>>
+>>   /**
+>> --
+>> 2.32.0.604.gb1f3e1269
