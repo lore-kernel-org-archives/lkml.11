@@ -2,45 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59831C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:12:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84C21C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:12:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243621AbiAQRMZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:12:25 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56658 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241838AbiAQRI0 (ORCPT
+        id S242248AbiAQRMa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:12:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46358 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243058AbiAQRIZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:08:26 -0500
+        Mon, 17 Jan 2022 12:08:25 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E0D6C06161C;
+        Mon, 17 Jan 2022 09:04:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A7140B81155;
-        Mon, 17 Jan 2022 17:08:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E991C36AE7;
-        Mon, 17 Jan 2022 17:08:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CFBA6611BE;
+        Mon, 17 Jan 2022 17:04:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D7DD8C36AE3;
+        Mon, 17 Jan 2022 17:04:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439303;
-        bh=1WUYU2h+Ihp81t3u07UTnT8V09OXmsMPudnXV6CtIy8=;
+        s=k20201202; t=1642439088;
+        bh=ZqzrJaiaGVNMXGWL+p/VujNjJlhpChX0ptTIT8Wsttc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b4hqjg1XqBet+tDJ+wM5VSFUtZFJXrf5VJTVv/mpUbp+Wv65MgUwLWd/DskMtSgtD
-         mc/qiioUUAzQLcTW6CP7pJsDDvDF1pc4yn2Zs0zvnF1IsZvP1T65F60OJAgW7PE5VK
-         IsVBELla3G3JORXSJhOS4EbCdd4AVTecE9o2ttBU9MJf64jdcsJoxqY1smLRUdz8bQ
-         gPv427Mrz+9WxVY8feTEcA9Ot1971TtpPfcRWRnKtDFD5S8Tt4EQsPv1HaH61hjWX0
-         kZdCkifm1zJ3oUBGjpUslYQbQcBRIv7WPJycVLWfVLUbRGjdN5XArDoAEWBYfmLhPY
-         HZqgqkiRBOgyA==
+        b=LQ5br7MEbpARGWWkcTUkcqnM7Dqo53FRLNqc4x+dSeJd3iMHGDft6ShRq3P6tL3iM
+         srKBVRI3eeiX+zJtYAcdtA9nHW/NMWNi6a/4g+neHxilleckPQZSjY7g4I6sJ1XP9Z
+         n0g0cQfU2YYqepbSLL0jnvAEssnt3kJo0/tKDTxeh4anvs1220MTgcTywROL+Zk3MB
+         5bo2HxGENvA8Y1JJw+mqIwowyDgnVgHMw0cvSS7iyzOxT7stChAb9r7ZlBIVfuSFjR
+         ROWScPLnxmQpZ3zb0uZCThcYzHTBEGWquBEJp4Og/nY76OAONiIdzq2u/gMhSVBgR8
+         tQ72AoPHTzHBw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christoph Hellwig <hch@lst.de>, Baoquan He <bhe@redhat.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 12/12] scsi: sr: Don't use GFP_DMA
-Date:   Mon, 17 Jan 2022 12:07:56 -0500
-Message-Id: <20220117170757.1473318-12-sashal@kernel.org>
+Cc:     Tzung-Bi Shih <tzungbi@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, matthias.bgg@gmail.com,
+        jiaxin.yu@mediatek.com, rikard.falkeborn@gmail.com,
+        alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 32/34] ASoC: mediatek: mt8183: fix device_node leak
+Date:   Mon, 17 Jan 2022 12:03:22 -0500
+Message-Id: <20220117170326.1471712-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170757.1473318-1-sashal@kernel.org>
-References: <20220117170757.1473318-1-sashal@kernel.org>
+In-Reply-To: <20220117170326.1471712-1-sashal@kernel.org>
+References: <20220117170326.1471712-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -49,59 +55,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Tzung-Bi Shih <tzungbi@google.com>
 
-[ Upstream commit d94d94969a4ba07a43d62429c60372320519c391 ]
+[ Upstream commit cb006006fe6221f092fadaffd3f219288304c9ad ]
 
-The allocated buffers are used as a command payload, for which the block
-layer and/or DMA API do the proper bounce buffering if needed.
+Fixes the device_node leak.
 
-Link: https://lore.kernel.org/r/20211222090842.920724-1-hch@lst.de
-Reported-by: Baoquan He <bhe@redhat.com>
-Reviewed-by: Baoquan He <bhe@redhat.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
+Link: https://lore.kernel.org/r/20211224064719.2031210-3-tzungbi@google.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/sr.c        | 2 +-
- drivers/scsi/sr_vendor.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ sound/soc/mediatek/mt8183/mt8183-da7219-max98357.c         | 6 +++++-
+ sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c | 7 ++++++-
+ 2 files changed, 11 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
-index df019b78d9f79..e26d6cc3c8716 100644
---- a/drivers/scsi/sr.c
-+++ b/drivers/scsi/sr.c
-@@ -883,7 +883,7 @@ static void get_capabilities(struct scsi_cd *cd)
+diff --git a/sound/soc/mediatek/mt8183/mt8183-da7219-max98357.c b/sound/soc/mediatek/mt8183/mt8183-da7219-max98357.c
+index 20d31b69a5c00..9cc0f26b08fbc 100644
+--- a/sound/soc/mediatek/mt8183/mt8183-da7219-max98357.c
++++ b/sound/soc/mediatek/mt8183/mt8183-da7219-max98357.c
+@@ -787,7 +787,11 @@ static int mt8183_da7219_max98357_dev_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
  
+-	return devm_snd_soc_register_card(&pdev->dev, card);
++	ret = devm_snd_soc_register_card(&pdev->dev, card);
++
++	of_node_put(platform_node);
++	of_node_put(hdmi_codec);
++	return ret;
+ }
  
- 	/* allocate transfer buffer */
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer) {
- 		sr_printk(KERN_ERR, cd, "out of memory.\n");
- 		return;
-diff --git a/drivers/scsi/sr_vendor.c b/drivers/scsi/sr_vendor.c
-index 11a238cb22223..629bfe1b20263 100644
---- a/drivers/scsi/sr_vendor.c
-+++ b/drivers/scsi/sr_vendor.c
-@@ -118,7 +118,7 @@ int sr_set_blocklength(Scsi_CD *cd, int blocklength)
- 		density = (blocklength > 2048) ? 0x81 : 0x83;
- #endif
+ #ifdef CONFIG_OF
+diff --git a/sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c b/sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c
+index 79ba2f2d84522..14ce8b93597f3 100644
+--- a/sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c
++++ b/sound/soc/mediatek/mt8183/mt8183-mt6358-ts3a227-max98357.c
+@@ -720,7 +720,12 @@ mt8183_mt6358_ts3a227_max98357_dev_probe(struct platform_device *pdev)
+ 				 __func__, ret);
+ 	}
  
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
+-	return devm_snd_soc_register_card(&pdev->dev, card);
++	ret = devm_snd_soc_register_card(&pdev->dev, card);
++
++	of_node_put(platform_node);
++	of_node_put(ec_codec);
++	of_node_put(hdmi_codec);
++	return ret;
+ }
  
-@@ -166,7 +166,7 @@ int sr_cd_check(struct cdrom_device_info *cdi)
- 	if (cd->cdi.mask & CDC_MULTI_SESSION)
- 		return 0;
- 
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
- 
+ #ifdef CONFIG_OF
 -- 
 2.34.1
 
