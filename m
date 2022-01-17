@@ -2,105 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE8DEC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:26:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 960CCC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:30:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234088AbiAQR0n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:26:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51416 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232943AbiAQR0l (ORCPT
+        id S235454AbiAQRak (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:30:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:23430 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237889AbiAQRaS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:26:41 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C475C06173E
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 09:26:41 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id 133so7171573pgb.0
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 09:26:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=9xoC5BsgBs/Mu4qr+hvIn82GqzQBroS+8rFaa/f2Y/Q=;
-        b=dAYvjWk1j+16Hngzm2LLt+t7e+CbrlYiMl4l4BmVmHKl2cbhj0iER34yXKF/X3bwGW
-         Qr5VUfV5ZxX0PyqVwyZSLOJuU82BuGOipjVoVD2fdcluplrY9NGJ8XkBHiqsNueKrjI4
-         WVvWljGrn7QsFeKYApaJw4uO0IajmBOQ1EsdVjXaiA81MRnTAnyBgG8B/t0G6W2FMr+U
-         uu22lpYcvFc0WzKKSciststJXXRh+sDHBDOpcZfFncQzOx50NzGsWMCujhd2pvtTmemW
-         4A98ORWnlHXEzY+6l+1Ss9H48dp9XalcXo28uTEC8KE/mHx78E+PGoZVlfV7YsXZzq46
-         j/fQ==
+        Mon, 17 Jan 2022 12:30:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642440616;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/w6ywDujGqIOgc7nIxG43iGWbwsdbvdKl0S+bN7l8WM=;
+        b=dF+POrFzbOE8gyiRIa84yjnHE5+zbNlaUMIqtREmT2kWMjqVUfU4MNBuABGSEuFYJfJ10H
+        7mGeQ2h3k3+LYqLvKRPjd1FKqt4TG9nCgje/ifEZPNs1cYYkVPdD5QnNp+e62x/q20TSrq
+        ZlX1UMAS6u5XyY4TPL8yujpfTnVybYI=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-194-E1ZjEWEMO7uRPMJUxa9AXw-1; Mon, 17 Jan 2022 12:30:15 -0500
+X-MC-Unique: E1ZjEWEMO7uRPMJUxa9AXw-1
+Received: by mail-wm1-f72.google.com with SMTP id i81-20020a1c3b54000000b003467c58cbddso14370135wma.5
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 09:30:15 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=9xoC5BsgBs/Mu4qr+hvIn82GqzQBroS+8rFaa/f2Y/Q=;
-        b=qxjUBsQMPBx0XSlUkedS1a2tQDYRRs1yw+173y27NcavuUiK22Wydm6pRtnc4XNNiT
-         xJHDfyfh9C5GEltvykLKFEgX+cz2WzSgh2i5Rd6mvII3MSs0sBk4EcDF93H9MozuC0yb
-         36+EwqD8tmjZ4cu3I1tCbJ1lvBsIA5Y5pv4vS/H+r5DaRplgz8yWekPrpgjaM6NMCwkc
-         CQL7BX9l/A1InD2WblzfhPkoo3dp6BAdyqhDHROq4y9Mx8dlmDtskHD969URpUgwusoj
-         Ra+sbn+Ju3HdJoXHnhww5S8rw8+GHCXCx3E1qX0Y+ko08tQtKBbP/tSyucf4X2KAZ40K
-         Hgng==
-X-Gm-Message-State: AOAM5332w3hmyXYsLG5JDpxbpExNh0uN228NynNlwxw3B22AwkrR6WPY
-        GVapsXVJu9lY0SXJfq6Mhu+dxA==
-X-Google-Smtp-Source: ABdhPJwVHQsaIzkL9JzjnuMFHxnugQ0rALeKq6btNIsXwiYFKnL0G1gx7VsQK7B3fGJ4eP7Cw23AjA==
-X-Received: by 2002:a63:7e14:: with SMTP id z20mr19653366pgc.194.1642440400571;
-        Mon, 17 Jan 2022 09:26:40 -0800 (PST)
-Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
-        by smtp.gmail.com with ESMTPSA id l18sm14832167pfu.63.2022.01.17.09.26.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 09:26:39 -0800 (PST)
-Date:   Mon, 17 Jan 2022 10:26:37 -0700
-From:   Mathieu Poirier <mathieu.poirier@linaro.org>
-To:     "allen-kh.cheng" <allen-kh.cheng@mediatek.com>
-Cc:     Ohad Ben-Cohen <ohad@wizery.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tinghan Shen <tinghan.shen@mediatek.com>,
-        Project_Global_Chrome_Upstream_Group@mediatek.com,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-remoteproc@vger.kernel.org
-Subject: Re: [PATCH v4 0/2] Add SCP support for mt8186
-Message-ID: <20220117172637.GB1119324@p14s>
-References: <20220105094125.6917-1-allen-kh.cheng@mediatek.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=/w6ywDujGqIOgc7nIxG43iGWbwsdbvdKl0S+bN7l8WM=;
+        b=Rx2hHXS2Fx+keC7QyvC2Uebicr6Q7kDbg+sThGG/gTsVwWId7ufSJ3HU44zh5hyzwT
+         5FG00fPaW8P4Pv65kd+q1VBNYhgi73bnsZPGdU4AYdeFZ4YnW1tnpqL1PlEB78Mo3pNP
+         3Agc7d25IOAf/3XKvMok+ozGsS0nYEX6ISClWbiWjYdPAY9983RKgX0vBtKRccq0pIkb
+         fuo1NijHgqRw1344koXUI1nHkL9/YGyBwdIHrxK9TpAVsNPk8yI/VaYkk63y9Cao3yku
+         dZEdARoepDMZOc4BuO/5HY/NMJqCHdAm0MVuDK11ck2VvtmlpJEL7eYMgqTgA1F+d+YL
+         hr2g==
+X-Gm-Message-State: AOAM533j0vEgH12OfD7RCG5DSusDw5GTJxzhK/D//PIGg/OCbeYZLnUX
+        onHjcXoerchowTaJe4I2gKY1+h52X0VKjRCfapl/vHQNV3pAc9jn+BH+u1QaAurY1++3qkwAy2l
+        uXN/3e769CncmENb2aZSFVUDN
+X-Received: by 2002:a1c:1b8d:: with SMTP id b135mr13740222wmb.106.1642440614565;
+        Mon, 17 Jan 2022 09:30:14 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwVpMF2YQx9CrtZpY9sSGHuePn/J4o80SHieckI1taBsJrTQ/JwESYa8QUgT+segefEukoCuA==
+X-Received: by 2002:a1c:1b8d:: with SMTP id b135mr13739901wmb.106.1642440609499;
+        Mon, 17 Jan 2022 09:30:09 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id h17sm13847457wro.68.2022.01.17.09.30.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Jan 2022 09:30:08 -0800 (PST)
+Message-ID: <c427371c-474e-1233-4e57-66210bfc5687@redhat.com>
+Date:   Mon, 17 Jan 2022 18:30:07 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220105094125.6917-1-allen-kh.cheng@mediatek.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v2 2/4] KVM: x86: Partially allow KVM_SET_CPUID{,2} after
+ KVM_RUN
+Content-Language: en-US
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Igor Mammedov <imammedo@redhat.com>,
+        linux-kernel@vger.kernel.org
+References: <20220117150542.2176196-1-vkuznets@redhat.com>
+ <20220117150542.2176196-3-vkuznets@redhat.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220117150542.2176196-3-vkuznets@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 05, 2022 at 05:41:23PM +0800, allen-kh.cheng wrote:
-> From: Allen-KH Cheng <Allen-KH.Cheng@mediatek.com>
-> 
-> changes since v3:
->  - use rproc-next
-> 
-> changes since v2:
->  - remove redundant SoB
-> 
-> changes since v1:
->  - use mt8192_power_on_sram() helper
->  - add MT8186_SCP_L1_SRAM_PD_P1 in mtk_common.h
->  - add MT8186_SCP_L1_SRAM_PD_P2 in mtk_common.h
-> 
-> Based on rproc-next
-> 
-> Allen-KH Cheng (2):
->   dt-bindings: remoteproc: mediatek: Add binding for mt8186 scp
->   remoteproc: mediatek: Support mt8186 scp
-> 
->  .../bindings/remoteproc/mtk,scp.yaml          |  1 +
->  drivers/remoteproc/mtk_common.h               |  3 ++
->  drivers/remoteproc/mtk_scp.c                  | 35 +++++++++++++++++++
->  3 files changed, 39 insertions(+)
+On 1/17/22 16:05, Vitaly Kuznetsov wrote:
+>   
+> +/* Check whether the supplied CPUID data is equal to what is already set for the vCPU. */
+> +static int kvm_cpuid_check_equal(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
+> +				 int nent)
+> +{
+> +	struct kvm_cpuid_entry2 *best;
+> +	int i;
+> +
+> +	for (i = 0; i < nent; i++) {
+> +		best = kvm_find_cpuid_entry(vcpu, e2[i].function, e2[i].index);
+> +		if (!best)
+> +			return -EINVAL;
+> +
+> +		if (e2[i].eax != best->eax || e2[i].ebx != best->ebx ||
+> +		    e2[i].ecx != best->ecx || e2[i].edx != best->edx)
+> +			return -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
 
-Both patches in this set are giving me a checkpatch warning that is impossible
-to miss.  I deleting this patchset from my queue.   
+What about this alternative implementation:
 
-> 
-> -- 
-> 2.18.0
-> 
+/* Check whether the supplied CPUID data is equal to what is already set for the vCPU. */
+static int kvm_cpuid_check_equal(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
+                                  int nent)
+{
+         struct kvm_cpuid_entry2 *orig;
+         int i;
+
+         if (nent != vcpu->arch.cpuid_nent)
+                 return -EINVAL;
+
+         for (i = 0; i < nent; i++) {
+                 orig = &vcpu->arch.cpuid_entries[i];
+                 if (e2[i].function != orig->function ||
+                     e2[i].index != orig->index ||
+                     e2[i].eax != orig->eax || e2[i].ebx != orig->ebx ||
+                     e2[i].ecx != orig->ecx || e2[i].edx != orig->edx)
+                         return -EINVAL;
+         }
+
+         return 0;
+}
+
+avoiding the repeated calls to kvm_find_cpuid_entry?
+
+Paolo
+
