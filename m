@@ -2,116 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B645FC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 07:38:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1CE6C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 07:38:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237581AbiAQHiK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 02:38:10 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:46654 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S233071AbiAQHiJ (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 02:38:09 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20GMK1XY032410;
-        Mon, 17 Jan 2022 08:37:48 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=/SNGdY3EQVSNuahotUyAeXgj55tr+Btw2r79mHMIAqs=;
- b=1n5+bzmuzkeFRtr/AHIYVezYaItONZpCk3sXbbJCAqqNMboi4El2Yq7X3PgS7AvNb3GU
- k2yOQ0w8dA1DCssdFBIxlxf0Vip4mftOdyOk5oN1h7kgZcYetaQstLa4Lmo8/+fMnUqf
- b6m1s8ceQzS9FaJBKYAxHKi7sTlznjkf6B+WCLSeRLN6vdn6vWmRIM+MJnIR+Mum5V9D
- m88IEaHa7IWtRCfykPkaP4w9Y20uB4G2ZkTtUQrxgXH/Y0333WuSh0VaNLODQzQ/gmgN
- uUrJWkBg9wtlR85nLKM0bg0abvthzetMYcs+hwU6G3nHcpuKWhJ7Y5xy7waEya6yAPDQ Tg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dmq5g2vph-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 17 Jan 2022 08:37:47 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 0FED7100034;
-        Mon, 17 Jan 2022 08:37:46 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node1.st.com [10.75.127.4])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 5E0B820DD0E;
-        Mon, 17 Jan 2022 08:37:46 +0100 (CET)
-Received: from lmecxl0573.lme.st.com (10.75.127.44) by SFHDAG2NODE1.st.com
- (10.75.127.4) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 17 Jan
- 2022 08:37:45 +0100
-Subject: Re: [PATCH v2] spi: stm32-qspi: Update spi registering
-To:     Lukas Wunner <lukas@wunner.de>
-CC:     Mark Brown <broonie@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        <linux-spi@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <christophe.kerello@foss.st.com>,
-        <stable@vger.kernel.org>
-References: <20220112144424.5278-1-patrice.chotard@foss.st.com>
- <20220116125205.GA18267@wunner.de>
-From:   Patrice CHOTARD <patrice.chotard@foss.st.com>
-Message-ID: <b07ba47f-2709-6b10-2332-7a0d163401bc@foss.st.com>
-Date:   Mon, 17 Jan 2022 08:37:45 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S237590AbiAQHi3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 02:38:29 -0500
+Received: from mga05.intel.com ([192.55.52.43]:2026 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237582AbiAQHi2 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 02:38:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642405108; x=1673941108;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Zved+1luvwAvJlvtMjwPMjVVFJImLNxrs1+SJq8VYew=;
+  b=UTWgcygI0z6a+E7kywstOT4D03CaJdSxdpTnejo2x+sETeq7VkUUBBWb
+   Kd5+/VP0+krTZTGoM2XX04RbfXUZ5PhYpmBw7OcjOwhzvaxvrOqMC5DqE
+   9MWXeozWGBW2V9T94Dy0QLXrninp8+l3P1VnDPzH0P2TGJJNz1npiHOBw
+   CG0LLtSKE5GRvdmIXANootduQG+UvIfRsEJ0hcHrGb0MBnZ0yzG7Lj6uX
+   JEa3HLGg9Y2+K/ptNlndCErsD/G1bx55ZkAmp8egvgOYUAqGfo1THCumL
+   ugq6helM6CwuK3OcJaWYxHOPCSRGW7LulKI3NmPajgdOJ6H9AK7mUsOK0
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10229"; a="330921398"
+X-IronPort-AV: E=Sophos;i="5.88,295,1635231600"; 
+   d="scan'208";a="330921398"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2022 23:38:27 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,295,1635231600"; 
+   d="scan'208";a="577963593"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 16 Jan 2022 23:38:26 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n9Maw-000BM2-8R; Mon, 17 Jan 2022 07:38:26 +0000
+Date:   Mon, 17 Jan 2022 15:38:07 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Ingo Molnar <mingo@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [mingo-tip:sched/headers 203/2384] kernel/kcsan/permissive.h:31:26:
+ error: no member named 'flags' in 'struct task_struct'
+Message-ID: <202201171545.dO2soyng-lkp@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20220116125205.GA18267@wunner.de>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE1.st.com
- (10.75.127.4)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-17_02,2022-01-14_01,2021-12-02_01
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Lukas
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
+head:   4c707c1c0de83967079b4e385012fa5b00e2cd11
+commit: 762c0e5e35546dcaccb201e1e3dae69e34f7733b [203/2384] headers/deps: Move task_struct::flags to per_task()
+config: x86_64-randconfig-c007 (https://download.01.org/0day-ci/archive/20220117/202201171545.dO2soyng-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project c63a3175c2947e8c1a2d3bbe16a8586600705c54)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=762c0e5e35546dcaccb201e1e3dae69e34f7733b
+        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
+        git fetch --no-tags mingo-tip sched/headers
+        git checkout 762c0e5e35546dcaccb201e1e3dae69e34f7733b
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
 
-On 1/16/22 1:52 PM, Lukas Wunner wrote:
-> On Wed, Jan 12, 2022 at 03:44:24PM +0100, patrice.chotard@foss.st.com wrote:
->> diff --git a/drivers/spi/spi-stm32-qspi.c b/drivers/spi/spi-stm32-qspi.c
->> index 514337c86d2c..09839a3dbb26 100644
->> --- a/drivers/spi/spi-stm32-qspi.c
->> +++ b/drivers/spi/spi-stm32-qspi.c
->> @@ -688,7 +688,7 @@ static int stm32_qspi_probe(struct platform_device *pdev)
->>  	struct resource *res;
->>  	int ret, irq;
->>  
->> -	ctrl = spi_alloc_master(dev, sizeof(*qspi));
->> +	ctrl = devm_spi_alloc_master(dev, sizeof(*qspi));
->>  	if (!ctrl)
->>  		return -ENOMEM;
->>  
->> @@ -784,7 +784,7 @@ static int stm32_qspi_probe(struct platform_device *pdev)
->>  	pm_runtime_enable(dev);
->>  	pm_runtime_get_noresume(dev);
->>  
->> -	ret = devm_spi_register_master(dev, ctrl);
->> +	ret = spi_register_master(ctrl);
->>  	if (ret)
->>  		goto err_pm_runtime_free;
->>
-> 
-> Unfortunately this patch is still not correct:  It introduces a
-> double free in the probe error path.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Argh yes, my bad.
+All errors (new ones prefixed by >>):
 
-> 
-> You need to remove this...
-> 
-> err_master_put:
-> 	spi_master_put(qspi->ctrl);
-> 
-> ...and replace all the gotos in stm32_qspi_probe() which jump
-> to the err_master_put label with a return statement.
-> 
-> Thanks,
-> 
-> Lukas
-> 
-Thanks 
-Patrice
+   In file included from kernel/kcsan/core.c:25:
+>> kernel/kcsan/permissive.h:31:26: error: no member named 'flags' in 'struct task_struct'
+           return ptr == &current->flags;
+                          ~~~~~~~  ^
+   1 error generated.
+
+
+vim +31 kernel/kcsan/permissive.h
+
+49f72d5358dd3c Marco Elver 2021-06-07  18  
+49f72d5358dd3c Marco Elver 2021-06-07  19  /*
+49f72d5358dd3c Marco Elver 2021-06-07  20   * Access ignore rules based on address.
+49f72d5358dd3c Marco Elver 2021-06-07  21   */
+49f72d5358dd3c Marco Elver 2021-06-07  22  static __always_inline bool kcsan_ignore_address(const volatile void *ptr)
+49f72d5358dd3c Marco Elver 2021-06-07  23  {
+49f72d5358dd3c Marco Elver 2021-06-07  24  	if (!IS_ENABLED(CONFIG_KCSAN_PERMISSIVE))
+49f72d5358dd3c Marco Elver 2021-06-07  25  		return false;
+49f72d5358dd3c Marco Elver 2021-06-07  26  
+d8fd74d35a8d3c Marco Elver 2021-06-07  27  	/*
+d8fd74d35a8d3c Marco Elver 2021-06-07  28  	 * Data-racy bitops on current->flags are too common, ignore completely
+d8fd74d35a8d3c Marco Elver 2021-06-07  29  	 * for now.
+d8fd74d35a8d3c Marco Elver 2021-06-07  30  	 */
+d8fd74d35a8d3c Marco Elver 2021-06-07 @31  	return ptr == &current->flags;
+49f72d5358dd3c Marco Elver 2021-06-07  32  }
+49f72d5358dd3c Marco Elver 2021-06-07  33  
+
+:::::: The code at line 31 was first introduced by commit
+:::::: d8fd74d35a8d3c602232e3238e916bda9d03d520 kcsan: permissive: Ignore data-racy 1-bit value changes
+
+:::::: TO: Marco Elver <elver@google.com>
+:::::: CC: Paul E. McKenney <paulmck@kernel.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
