@@ -2,98 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF5EDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 18:35:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 841A6C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 18:35:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242761AbiAQSfw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 13:35:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39464 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242721AbiAQSf2 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 13:35:28 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6ABC1C061747;
-        Mon, 17 Jan 2022 10:35:17 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id x11so35269422lfa.2;
-        Mon, 17 Jan 2022 10:35:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=z2LAhV4KSzEZogKZQmx+VN5D6iQExMOg1CIIQQv1a6c=;
-        b=h87/EoWOnR4jHU5VsE3cQlywU1F5aajaPPF6NBrQ7B136ytNj+vUCmFT2Ff6mEnICk
-         OZaElTNLEXhiiNqUQh2XXjICn19cekST5Z96lwa8zcLZv272+0CfD0ulWkMivlp3QOL5
-         +aBOX1Z9CMnKHcOn5lVUa9k98Ydyluw5/wLspul1yTAnJzAJ2ZGqJfRf/uy/zm7S09xC
-         265GFZFjCtzlvA6mY8PIl3JdTya3GQqM6K1Q+CB/gxRP4nC7esdQ7cW0MhXyTlWiK80u
-         GAmRqvNuiJMoBO6PpL9L1vcJrzTaqE4VACExsA0Tp2jUF8fSEEbGaB6dynLQ5kPQW0Lj
-         ONBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=z2LAhV4KSzEZogKZQmx+VN5D6iQExMOg1CIIQQv1a6c=;
-        b=znkQwNKjF07d2VP74WVOEOKUV695euIbqCyiiEBLDuXN5HiM7StAKZPm/8cHMuNU89
-         /1SiQEWvj2ZdVR6ZTxyGYwjWYmfpNNa6sJ1mK3HwTAZ0sFcq5i2aWOYOztJDWLSE/m5t
-         A1K2IEKl4Q3AyGmtfj19SWJ8RR8MqwjzTm3UAI7uNdPMMymfNrOEYPuTYbdmgLy/BYex
-         W9KR9KZ+Z/EcwFJOIuC5Jcj8/tTjBAGUg0C/9dUFDYHnBX0JDrIoQQas+S/WqX8BkrpI
-         YbYo/XtZS/7ag0mGRzYcpBAcVZ8p/MVdBan398NbTjQf3CvS/b+9oi+lFnxb8Q6UgDkb
-         2oXw==
-X-Gm-Message-State: AOAM532RaGYPwCsTWXc4cknnUYrCwEn+YqTTR9xRJdClikVMsYLAaHlx
-        sXm/wp2AJrKuRe68LH/9Bhg=
-X-Google-Smtp-Source: ABdhPJwPjWeTQQzIRDbxUo/5CKG8WBZxjXWryCjlZG50Z7qK7RwRsmt5226luHOYipkbH83k9xAeDA==
-X-Received: by 2002:a05:651c:547:: with SMTP id q7mr5630262ljp.464.1642444515624;
-        Mon, 17 Jan 2022 10:35:15 -0800 (PST)
-Received: from [192.168.1.11] ([94.103.227.208])
-        by smtp.gmail.com with ESMTPSA id k12sm1455871lfu.252.2022.01.17.10.35.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Jan 2022 10:35:15 -0800 (PST)
-Message-ID: <a63d6d9b-7e95-3e88-fcd2-2fe5e623dd5b@gmail.com>
-Date:   Mon, 17 Jan 2022 21:35:13 +0300
+        id S242814AbiAQSfz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 13:35:55 -0500
+Received: from mga12.intel.com ([192.55.52.136]:48629 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242885AbiAQSfY (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 13:35:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642444524; x=1673980524;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=nrckZ+4w+t9xcn0jGApSjWwJZOqejG13YfVPSf21LRY=;
+  b=XfybOAGdF0G0N54HWJB0DgyhtQKxIiuw2mRE2aCD8Hjmpgn48F9Igb2G
+   eswKUe3VoZ2GPGCPFXJZD58Xl1yPhFiAJurhWQFJJqRkKkRCFttphxGg4
+   4/xmY3Ez+9e5ZQC2E9/HO0PYkcXjYuB/HpDOsTifIvbjSPHDYokYlwry8
+   t+piYhHcKB3dEJ48sr0AEDFNhkIQCtQMqJJSKRaHkR4kT4uTSDQbH9mzx
+   thQen5QCRuSmD7GZ5eJc1u+LcZTr0BoM0N8dlj9/xKze0DxwAnUMrPxMk
+   14XQlBnnoGjRr/yS87xgmM7qm3HH7STmWg+z35yz+WEcA2OawYEeX5i0b
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10229"; a="224656040"
+X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
+   d="scan'208";a="224656040"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 10:35:20 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
+   d="scan'208";a="492434298"
+Received: from nntpat99-84.inn.intel.com ([10.125.99.84])
+  by orsmga002.jf.intel.com with ESMTP; 17 Jan 2022 10:35:17 -0800
+From:   Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Namhyung Kim <namhyung@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Andi Kleen <ak@linux.intel.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Alexander Antonov <alexander.antonov@linux.intel.com>,
+        Alexei Budankov <abudankov@huawei.com>,
+        Riccardo Mancini <rickyman7@gmail.com>
+Subject: [PATCH v13 12/16] perf record: Introduce --threads command line option
+Date:   Mon, 17 Jan 2022 21:34:32 +0300
+Message-Id: <01aeae43b047f428596c4ef9f9342ab94865cedd.1642440724.git.alexey.v.bayduraev@linux.intel.com>
+X-Mailer: git-send-email 2.19.0
+In-Reply-To: <cover.1642440724.git.alexey.v.bayduraev@linux.intel.com>
+References: <cover.1642440724.git.alexey.v.bayduraev@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] ath9k_htc: fix uninit value bugs
-Content-Language: en-US
-To:     Kalle Valo <kvalo@kernel.org>
-Cc:     ath9k-devel@qca.qualcomm.com, kvalo@codeaurora.org,
-        davem@davemloft.net, kuba@kernel.org, linville@tuxdriver.com,
-        vasanth@atheros.com, Sujith.Manoharan@atheros.com,
-        senthilkumar@atheros.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
-References: <20220115122733.11160-1-paskripkin@gmail.com>
- <164242422410.16718.5618838300043178474.kvalo@kernel.org>
-From:   Pavel Skripkin <paskripkin@gmail.com>
-In-Reply-To: <164242422410.16718.5618838300043178474.kvalo@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kalle,
+Provide --threads option in perf record command line interface.
+The option creates a data streaming thread for each CPU in the system.
+Document --threads option in Documentation/perf-record.txt.
 
-On 1/17/22 15:57, Kalle Valo wrote:
->> Fixes: fb9987d0f748 ("ath9k_htc: Support for AR9271 chipset.")
->> Reported-by: syzbot+f83a1df1ed4f67e8d8ad@syzkaller.appspotmail.com
->> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
-> 
-> How did you test this? As syzbot is mentioned I assume you did not test this on
-> a real device, it would help a lot if this is clearly mentioned in the commit
-> log. My trust on syzbot fixes is close to zero due to bad past history.
-> 
+Reviewed-by: Riccardo Mancini <rickyman7@gmail.com>
+Tested-by: Riccardo Mancini <rickyman7@gmail.com>
+Signed-off-by: Alexey Bayduraev <alexey.v.bayduraev@linux.intel.com>
+---
+ tools/perf/Documentation/perf-record.txt |  4 ++
+ tools/perf/builtin-record.c              | 48 +++++++++++++++++++++++-
+ 2 files changed, 51 insertions(+), 1 deletion(-)
 
-You are right, I've tested only with syzbot's reproducer. I've followed 
-simple guess: if code works properly with random values in these fields 
-for 14+ years, then zeroing them won't hurt much.
+diff --git a/tools/perf/Documentation/perf-record.txt b/tools/perf/Documentation/perf-record.txt
+index 9ccc75935bc5..b9c6b112bf46 100644
+--- a/tools/perf/Documentation/perf-record.txt
++++ b/tools/perf/Documentation/perf-record.txt
+@@ -713,6 +713,10 @@ measurements:
+  wait -n ${perf_pid}
+  exit $?
+ 
++--threads::
++Write collected trace data into several data files using parallel threads.
++The option creates a data streaming thread for each CPU in the system.
++
+ include::intel-hybrid.txt[]
+ 
+ --debuginfod[=URLs]::
+diff --git a/tools/perf/builtin-record.c b/tools/perf/builtin-record.c
+index 0f8488d12f44..ba1622a192a9 100644
+--- a/tools/perf/builtin-record.c
++++ b/tools/perf/builtin-record.c
+@@ -127,6 +127,11 @@ static const char *thread_msg_tags[THREAD_MSG__MAX] = {
+ 	"UNDEFINED", "READY"
+ };
+ 
++enum thread_spec {
++	THREAD_SPEC__UNDEFINED = 0,
++	THREAD_SPEC__CPU,
++};
++
+ struct record {
+ 	struct perf_tool	tool;
+ 	struct record_opts	opts;
+@@ -2768,6 +2773,16 @@ static void record__thread_mask_free(struct thread_mask *mask)
+ 	record__mmap_cpu_mask_free(&mask->affinity);
+ }
+ 
++static int record__parse_threads(const struct option *opt, const char *str, int unset)
++{
++	struct record_opts *opts = opt->value;
++
++	if (unset || !str || !strlen(str))
++		opts->threads_spec = THREAD_SPEC__CPU;
++
++	return 0;
++}
++
+ static int parse_output_max_size(const struct option *opt,
+ 				 const char *str, int unset)
+ {
+@@ -3242,6 +3257,9 @@ static struct option __record_options[] = {
+ 			  &record.debuginfod.set, "debuginfod urls",
+ 			  "Enable debuginfod data retrieval from DEBUGINFOD_URLS or specified urls",
+ 			  "system"),
++	OPT_CALLBACK_OPTARG(0, "threads", &record.opts, NULL, "spec",
++			    "write collected trace data into several data files using parallel threads",
++			    record__parse_threads),
+ 	OPT_END()
+ };
+ 
+@@ -3292,6 +3310,31 @@ static int record__alloc_thread_masks(struct record *rec, int nr_threads, int nr
+ 	return ret;
+ }
+ 
++static int record__init_thread_cpu_masks(struct record *rec, struct perf_cpu_map *cpus)
++{
++	int t, ret, nr_cpus = perf_cpu_map__nr(cpus);
++
++	ret = record__alloc_thread_masks(rec, nr_cpus, cpu__max_cpu().cpu);
++	if (ret)
++		return ret;
++
++	rec->nr_threads = nr_cpus;
++	pr_debug("nr_threads: %d\n", rec->nr_threads);
++
++	for (t = 0; t < rec->nr_threads; t++) {
++		set_bit(cpus->map[t].cpu, rec->thread_masks[t].maps.bits);
++		set_bit(cpus->map[t].cpu, rec->thread_masks[t].affinity.bits);
++		if (verbose) {
++			pr_debug("thread_masks[%d]: ", t);
++			mmap_cpu_mask__scnprintf(&rec->thread_masks[t].maps, "maps");
++			pr_debug("thread_masks[%d]: ", t);
++			mmap_cpu_mask__scnprintf(&rec->thread_masks[t].affinity, "affinity");
++		}
++	}
++
++	return 0;
++}
++
+ static int record__init_thread_default_masks(struct record *rec, struct perf_cpu_map *cpus)
+ {
+ 	int ret;
+@@ -3311,7 +3354,10 @@ static int record__init_thread_masks(struct record *rec)
+ {
+ 	struct perf_cpu_map *cpus = rec->evlist->core.cpus;
+ 
+-	return record__init_thread_default_masks(rec, cpus);
++	if (!record__threads_enabled(rec))
++		return record__init_thread_default_masks(rec, cpus);
++
++	return record__init_thread_cpu_masks(rec, cpus);
+ }
+ 
+ int cmd_record(int argc, const char **argv)
+-- 
+2.19.0
 
-I might be missing something, but unfortunately I don't have suitable hw 
-piece to test the change.
-
-
-
-
-With regards,
-Pavel Skripkin
