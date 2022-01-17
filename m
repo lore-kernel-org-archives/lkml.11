@@ -2,187 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFA0BC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 14:36:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 238E8C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 14:38:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234788AbiAQOgF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 09:36:05 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28990 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234646AbiAQOgD (ORCPT
+        id S234932AbiAQOiC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 09:38:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40172 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234891AbiAQOh7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 09:36:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642430163;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0GXsjvYqgApuYgej4CjFXthDC/WRS/ARzY7AF/+YP/U=;
-        b=XhRv/AnighVqNZdqFYkSXOYz/45D712SuKpQOUHLDcO12XTsCuHpO/8+dzqtue/BnQLEwC
-        34ukwZeve53+NzLmxatq2zC18vaRVMUYTv+r0onVojkGbRKMYx+2gI7Io9GX7rMFvMF5+d
-        o1f+yqMhiumNB/GRLH8OQE5EBAWSoJc=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-150-KLri-jYgNnGvd_LUBCVJkA-1; Mon, 17 Jan 2022 09:36:02 -0500
-X-MC-Unique: KLri-jYgNnGvd_LUBCVJkA-1
-Received: by mail-qk1-f199.google.com with SMTP id o6-20020a05620a22c600b0047a9959171aso4739522qki.12
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 06:36:02 -0800 (PST)
+        Mon, 17 Jan 2022 09:37:59 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57550C06161C
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 06:37:59 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id g81-20020a1c9d54000000b0034cd1acd9b5so2112000wme.1
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 06:37:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:references:from:organization:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4vQvlRkBG8jyAFRkdJw5QqA+mnvGAb10rlLjyuN04xs=;
+        b=QjEdn1V494YIOgy22qdp6vDH5BZPbC+l+4DyMdnaxhOsSomlH3tJ3xiazui+zjN3Zi
+         yfy8cV03n9ak5nStGvMoXx4ezcKXinKQUvu2ibsFQbmAEZvtUEJSL26lWX+1bBACIFzj
+         Kw7kaqcJ32ykROt5YjJ+EQQ0u1jT8rnn2Shgbnw7/N30GpIWtYDOgbjV86asy9fBM0Al
+         m4ujK2sK+a1huYIOlrurQJyS+zEF1el0VI4xrkqmCFNkCQ5IKROkvdfOiksT2rarMBKp
+         QyA9qCMCZDLcaTaMIPu4hK1BpRWOonYu5NYf1eB58VXO0lQ6Yz7YCCCcijaMH3bSvF8x
+         7iRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=0GXsjvYqgApuYgej4CjFXthDC/WRS/ARzY7AF/+YP/U=;
-        b=cGKYPuK0iPAYmiMvw13DjkdPH7sgaqdHxSSqv2SIVSCdWf61ElUwTyIC3alvvYiWkP
-         xUeIM2AVBd+TTGis7toqBAFNtZ4tlrH5tALbuVhUSekxAHyn0LkIGjusseNkIcCeSN+K
-         3h+lbJfCu9EEwEvsL2c1a/z6AqYfU3eLrx3tKkEeQf5spuQbuf8Eh5HgFm7FTff2Yatu
-         aaXai8vLM/WEHTBVJ1VaV2bc4p0gTj0snxOKa4F7ykVNxtobqp8afDL9FbJB9vYjZCSJ
-         BJMSj8K0EUXLrExJ2x3XGamRTGgO3XHYyAiZmNWg0Q5dfonlYOMng773ngFd1QKprWs2
-         vSIA==
-X-Gm-Message-State: AOAM530viHx8dsG0fHqWh2va/D/zmySdC2mn/4GOCqmsxYIvOczLE7a1
-        xZpQ0Rt4aIfNZRquI4lnPWhFRfFIQGG1EfF7biI0KlwfVc82LPmebIiSztHqgXdAs8LcPfNz7/W
-        3+mzSlcf/+HGxCi8TiARIEkWH
-X-Received: by 2002:ac8:7f12:: with SMTP id f18mr6216822qtk.643.1642430161601;
-        Mon, 17 Jan 2022 06:36:01 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz8KukT/ZNmG+VATMnw8vtIzAkw+sVuNtD7kejW9XkeoQXxY5HdrfRHqFeFmzHPUSRco0+oKw==
-X-Received: by 2002:ac8:7f12:: with SMTP id f18mr6216795qtk.643.1642430161298;
-        Mon, 17 Jan 2022 06:36:01 -0800 (PST)
-Received: from bfoster (c-24-61-119-116.hsd1.ma.comcast.net. [24.61.119.116])
-        by smtp.gmail.com with ESMTPSA id b6sm9056207qtk.91.2022.01.17.06.36.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 06:36:01 -0800 (PST)
-Date:   Mon, 17 Jan 2022 09:35:58 -0500
-From:   Brian Foster <bfoster@redhat.com>
-To:     Ian Kent <raven@themaw.net>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        David Howells <dhowells@redhat.com>,
-        Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        xfs <linux-xfs@vger.kernel.org>
-Subject: Re: [PATCH] vfs: check dentry is still valid in get_link()
-Message-ID: <YeV+zseKGNqnSuKR@bfoster>
-References: <164180589176.86426.501271559065590169.stgit@mickey.themaw.net>
- <YeJr7/E+9stwEb3t@zeniv-ca.linux.org.uk>
- <275358741c4ee64b5e4e008d514876ed4ec1071c.camel@themaw.net>
+        h=x-gm-message-state:subject:to:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=4vQvlRkBG8jyAFRkdJw5QqA+mnvGAb10rlLjyuN04xs=;
+        b=CPke9th5oiojdfhpGLxICx7yFTC+GkZhiuav//lFSVKybf7XrHRD2DGD9TkRnXGwcq
+         NWp+44gvERai4wULSNfvSy+4r9MIiRBkNRWvR/TvFeeCLQ9+uInd7pBzy1Nb9YeN6O3a
+         sveDo38U9RvgcYZJFAf3ejGYpptZ4dNZwsrpf5SMyfRiEAmQ9FsRn8WBgrSg+DIHf1cS
+         l4cZDmz8nn+MNhHYxutxRtykd1q23Z33q+jeIJQ1SkpHmYfKsIXgjGSItOQPn0xLrWcc
+         FqXJkdlr5kaCCAcUDKaJnVMEnYZtGkMycH7v0JyTcss0pj/4nLJyj5NZd+ERYdpnSjG3
+         S2Lg==
+X-Gm-Message-State: AOAM533fgqkdIlmyCAQZ1hu1QcP/qk5BCiMMkAjZWb26qybtQ70hqulQ
+        vOCTcGdYgu1SY6yREYEoGxzzGKZ3kH33jA==
+X-Google-Smtp-Source: ABdhPJwqlv7WG3XoYbvtpmNzZ7lMwU5e5dYWkiNHREnVczkvwGQlzQCCr5goFgi16xexqDTyavAgjg==
+X-Received: by 2002:adf:f2c5:: with SMTP id d5mr19119203wrp.90.1642430277417;
+        Mon, 17 Jan 2022 06:37:57 -0800 (PST)
+Received: from ?IPv6:2001:861:44c0:66c0:c004:9fe1:fbda:2d0c? ([2001:861:44c0:66c0:c004:9fe1:fbda:2d0c])
+        by smtp.gmail.com with ESMTPSA id j9sm14444458wms.0.2022.01.17.06.37.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Jan 2022 06:37:56 -0800 (PST)
+Subject: Re: [PATCH] arm64: dts: meson: add audio playback to P212
+To:     Christian Hewitt <christianshewitt@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220113044546.16856-1-christianshewitt@gmail.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+Message-ID: <aa02e3f7-3f77-4b9c-74a0-987045de0352@baylibre.com>
+Date:   Mon, 17 Jan 2022 15:37:56 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <20220113044546.16856-1-christianshewitt@gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <275358741c4ee64b5e4e008d514876ed4ec1071c.camel@themaw.net>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 10:55:32AM +0800, Ian Kent wrote:
-> On Sat, 2022-01-15 at 06:38 +0000, Al Viro wrote:
-> > On Mon, Jan 10, 2022 at 05:11:31PM +0800, Ian Kent wrote:
-> > > When following a trailing symlink in rcu-walk mode it's possible
-> > > for
-> > > the dentry to become invalid between the last dentry seq lock check
-> > > and getting the link (eg. an unlink) leading to a backtrace similar
-> > > to this:
-> > > 
-> > > crash> bt
-> > > PID: 10964  TASK: ffff951c8aa92f80  CPU: 3   COMMAND: "TaniumCX"
-> > > …
-> > >  #7 [ffffae44d0a6fbe0] page_fault at ffffffff8d6010fe
-> > >     [exception RIP: unknown or invalid address]
-> > >     RIP: 0000000000000000  RSP: ffffae44d0a6fc90  RFLAGS: 00010246
-> > >     RAX: ffffffff8da3cc80  RBX: ffffae44d0a6fd30  RCX:
-> > > 0000000000000000
-> > >     RDX: ffffae44d0a6fd98  RSI: ffff951aa9af3008  RDI:
-> > > 0000000000000000
-> > >     RBP: 0000000000000000   R8: ffffae44d0a6fb94   R9:
-> > > 0000000000000000
-> > >     R10: ffff951c95d8c318  R11: 0000000000080000  R12:
-> > > ffffae44d0a6fd98
-> > >     R13: ffff951aa9af3008  R14: ffff951c8c9eb840  R15:
-> > > 0000000000000000
-> > >     ORIG_RAX: ffffffffffffffff  CS: 0010  SS: 0018
-> > >  #8 [ffffae44d0a6fc90] trailing_symlink at ffffffff8cf24e61
-> > >  #9 [ffffae44d0a6fcc8] path_lookupat at ffffffff8cf261d1
-> > > #10 [ffffae44d0a6fd28] filename_lookup at ffffffff8cf2a700
-> > > #11 [ffffae44d0a6fe40] vfs_statx at ffffffff8cf1dbc4
-> > > #12 [ffffae44d0a6fe98] __do_sys_newstat at ffffffff8cf1e1f9
-> > > #13 [ffffae44d0a6ff38] do_syscall_64 at ffffffff8cc0420b
-> > > 
-> > > Most of the time this is not a problem because the inode is
-> > > unchanged
-> > > while the rcu read lock is held.
-> > > 
-> > > But xfs can re-use inodes which can result in the inode -
-> > > >get_link()
-> > > method becoming invalid (or NULL).
-> > 
-> > Without an RCU delay?  Then we have much worse problems...
+Hi,
+
+On 13/01/2022 05:45, Christian Hewitt wrote:
+> Add initial audio support limited to HDMI i2s.
 > 
-> Sorry for the delay.
+> Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
+> ---
+> The P212 dts is widely used with Android box devices that follow the
+> reference design. The real P212 development board probably has many
+> more audio capabilities, but as a minimum we can enable HDMI output
+> and help box users too.
 > 
-> That was a problem that was discussed at length with the original post
-> of this patch that included a patch for this too (misguided though it
-> was).
+>  .../boot/dts/amlogic/meson-gxl-s905x-p212.dts | 40 +++++++++++++++++++
+>  1 file changed, 40 insertions(+)
+> 
+> diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-p212.dts b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-p212.dts
+> index 2602940c2077..a39830379c74 100644
+> --- a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-p212.dts
+> +++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-p212.dts
+> @@ -7,6 +7,7 @@
+>  /dts-v1/;
+>  
+>  #include "meson-gxl-s905x-p212.dtsi"
+> +#include <dt-bindings/sound/meson-aiu.h>
+>  
+>  / {
+>  	compatible = "amlogic,p212", "amlogic,s905x", "amlogic,meson-gxl";
+> @@ -32,6 +33,45 @@
+>  			};
+>  		};
+>  	};
+> +
+> +	sound {
+> +		compatible = "amlogic,gx-sound-card";
+> +		model = "S905X-P212";
+> +		assigned-clocks = <&clkc CLKID_MPLL0>,
+> +				  <&clkc CLKID_MPLL1>,
+> +				  <&clkc CLKID_MPLL2>;
+> +		assigned-clock-parents = <0>, <0>, <0>;
+> +		assigned-clock-rates = <294912000>,
+> +				       <270950400>,
+> +				       <393216000>;
+> +		status = "okay";
+> +
+> +		dai-link-0 {
+> +			sound-dai = <&aiu AIU_CPU CPU_I2S_FIFO>;
+> +		};
+> +
+> +		dai-link-1 {
+> +			sound-dai = <&aiu AIU_CPU CPU_I2S_ENCODER>;
+> +			dai-format = "i2s";
+> +			mclk-fs = <256>;
+> +
+> +			codec-0 {
+> +				sound-dai = <&aiu AIU_HDMI CTRL_I2S>;
+> +			};
+> +		};
+> +
+> +		dai-link-2 {
+> +			sound-dai = <&aiu AIU_HDMI CTRL_OUT>;
+> +
+> +			codec-0 {
+> +				sound-dai = <&hdmi_tx>;
+> +			};
+> +		};
+> +	};
+> +};
+> +
+> +&aiu {
+> +	status = "okay";
+>  };
+>  
+>  &cec_AO {
 > 
 
-To Al's question, at the end of the day there is no rcu delay involved
-with inode reuse in XFS. We do use call_rcu() for eventual freeing of
-inodes (see __xfs_inode_free()), but inode reuse occurs for inodes that
-have been put into a "reclaim" state before getting to the point of
-freeing the struct inode memory. This lead to the long discussion [1]
-Ian references around ways to potentially deal with that. I think the
-TLDR of that thread is there are various potential options for
-improvement, such as to rcu wait on inode creation/reuse (either
-explicitly or via more open coded grace period cookie tracking), to rcu
-wait somewhere in the destroy sequence before inodes become reuse
-candidates, etc., but none of them seemingly agreeable for varying
-reasons (IIRC mostly stemming from either performance or compexity) [2].
+The P212 ref board has an analog audio output with a DIO2133CT14 amplifier unmuted by default with the active high GPIOH_5 to mute.
 
-The change that has been made so far in XFS is to turn rcuwalk for
-symlinks off once again, which looks like landed in Linus' tree as
-commit 7b7820b83f23 ("xfs: don't expose internal symlink metadata
-buffers to the vfs"). The hope is that between that patch and this
-prospective vfs tweak, we can have a couple incremental fixes that at
-least address the practical problem users have been running into (which
-is a crash due to a NULL ->get_link() callback pointer due to inode
-reuse). The inode reuse vs. rcu thing might still be a broader problem,
-but AFAIA that mechanism has been in place in XFS on Linux pretty much
-forever.
+It's very probable all the STB boxes uses the same scheme, so it'll be safe to add the analog audio output here exactly like libretech-cc.
 
-Brian
-
-[1] https://lore.kernel.org/linux-fsdevel/163660197073.22525.11235124150551283676.stgit@mickey.themaw.net/
-
-[2] Yet another idea could be a mix of two of the previously discussed
-approaches: stamp the current rcu gp marker in the xfs_inode somewhere
-on destroy and check it on reuse to conditionally rcu wait when
-necessary. Perhaps that might provide enough batching to mitigate
-performance impact when compared to an unconditional create side wait.
-
-> That discussion resulted in Darrick merging the problem xfs inline
-> symlink handling with the xfs normal symlink handling.
-> 
-> Another problem with these inline syslinks was they would hand a
-> pointer to internal xfs storage to the VFS. Darrick's change
-> allocates and copies the link then hands it to the VFS to free
-> after use. And since there's an allocation in the symlink handler
-> the rcu-walk case returns -ECHILD (on passed NULL dentry) so the
-> VFS will call unlazy before that next call which I think is itself
-> enough to resolve this problem.
-> 
-> The only thing I think might be questionable is the VFS copy of the
-> inode pointer but I think the inode is rcu freed so it will be
-> around and the seq count will have changed so I think it should be
-> ok.
-> 
-> If I'm missing something please say so, ;)
-> 
-> Darrick's patch is (was last I looked) in his xfs-next tree.
-> 
-> Ian
-> 
-> 
-
+Neil
