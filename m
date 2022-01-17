@@ -2,237 +2,209 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7351BC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 13:26:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDEF0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 13:28:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232654AbiAQN0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 08:26:19 -0500
-Received: from mailout2.samsung.com ([203.254.224.25]:63995 "EHLO
-        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232371AbiAQN0S (ORCPT
+        id S232981AbiAQN2E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 08:28:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52588 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232969AbiAQN17 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 08:26:18 -0500
-Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220117132616epoutp0264f4d50f5e0757d85afe7966a6e64d3c~LEbk49sTg2252522525epoutp02R
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 13:26:16 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220117132616epoutp0264f4d50f5e0757d85afe7966a6e64d3c~LEbk49sTg2252522525epoutp02R
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1642425976;
-        bh=jJYIuzuaNEFnNoUSu/2MnSA+EPnb7LgcjQMBnYhMUyk=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=rGym4fpa6AvM9HP+Br0iWxrW30mvCdh7M9UPqDMtLl1ySxNHNmL7VzNeYkGgpV+HS
-         RpMgAOVA8barhowucFxaGhKYNLnA3aOTwSCQH3qerqP9gDHP/oM4vuFYWG0fvsxmdI
-         QIUqoSoxyATHJ7+ENFUwhXjDB2tjPzRw9ixv3/8o=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
-        20220117132615epcas5p16624146221ce26631968fe9b6310c9ae~LEbkbTCDN0268702687epcas5p18;
-        Mon, 17 Jan 2022 13:26:15 +0000 (GMT)
-Received: from epsmges5p2new.samsung.com (unknown [182.195.38.176]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4Jct2p2tm0z4x9Pt; Mon, 17 Jan
-        2022 13:26:10 +0000 (GMT)
-Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
-        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        5D.57.46822.64E65E16; Mon, 17 Jan 2022 22:25:26 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220117132609epcas5p20eb1ddff0d0bf74393acfc37d16ad027~LEbeXe2c31268812688epcas5p2Z;
-        Mon, 17 Jan 2022 13:26:09 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220117132609epsmtrp115d45856a6933f230ea84e93ed2b2dd1~LEbeWnVEE1765217652epsmtrp18;
-        Mon, 17 Jan 2022 13:26:09 +0000 (GMT)
-X-AuditID: b6c32a4a-dfbff7000000b6e6-e6-61e56e466d5d
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        89.2A.08738.17E65E16; Mon, 17 Jan 2022 22:26:09 +0900 (KST)
-Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220117132607epsmtip1ed04742abc9fee9b50b79ca74fe17ee6~LEbcQmvjr2208722087epsmtip1E;
-        Mon, 17 Jan 2022 13:26:06 +0000 (GMT)
-From:   "Alim Akhtar" <alim.akhtar@samsung.com>
-To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@canonical.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Cc:     <soc@kernel.org>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <olof@lixom.net>,
-        <linus.walleij@linaro.org>, <catalin.marinas@arm.com>,
-        <robh+dt@kernel.org>, <s.nawrocki@samsung.com>,
-        <linux-samsung-soc@vger.kernel.org>, <pankaj.dubey@samsung.com>,
-        <linux-fsd@tesla.com>
-In-Reply-To: <5ab62673-8d46-ec1d-1c80-696421ab69ca@canonical.com>
-Subject: RE: [PATCH 13/23] dt-bindings: arm: add Tesla FSD ARM SoC
-Date:   Mon, 17 Jan 2022 18:56:05 +0530
-Message-ID: <00c901d80ba5$c9ae6ab0$5d0b4010$@samsung.com>
+        Mon, 17 Jan 2022 08:27:59 -0500
+Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4A72C06161C
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 05:27:59 -0800 (PST)
+Received: by mail-qk1-x731.google.com with SMTP id 193so18803643qkh.13
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 05:27:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=profian-com.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hFDF2tPlUbmWEoHNMAw7TG0D6N8Bl0AMVvp/eJFnoik=;
+        b=gQIzMHow1dS4cWcNkbuQ6IzKT1CAF/5/5eUqf0SBjqW8kr5umH+z9iqX9lZDi7v/y/
+         9fSnZvALgBvMQn7dbs4Xu55q6X/FnU4RtphAggIJAm87XRGXWN4KxdJFC0ubK/GAg1Ng
+         OhpVyw81L3YMJNNkM65j7/tnpfCvW7JVKqfQSCkrjFCjEIwzUyQUVG+Ljp5wWVAMUvWc
+         b2LArG9QfbOPLhl1gUhCf1hy7n6eCDD6d31lXlMI7HtvP8oSJUeE7/A0BAOMBuR3kjwO
+         xZvAnjtGpdllwoQrTkCaTPKjl60Sgq8tMcEIAAgOC6cNoW8kMMG8GrWFOqWz0L8F5xlc
+         kUVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hFDF2tPlUbmWEoHNMAw7TG0D6N8Bl0AMVvp/eJFnoik=;
+        b=gnW39GDEj65vkhQF1Q72TPq00Y4m3TWcD3CC+nuNH2l+GQGdaKHouu3sbUw6hyjvKO
+         QES4qjrRtw1B//6f/F7wB/SPZBL5BFq5V3x71vSeSNS3+Xwwz0XloKWPysycCyvmbDfO
+         K5D5X7K1V/hUXfrqt+Lofh8VeB5Ii3LtOe7UpyfF0DFJEAFzXh9dfY80qIxio0UmA8Ea
+         HFQ6ou1Y34tiNKm07dbUTiqQbAy/wvBypBzOVIVJHqgFkhHf1ZqdD0NDD76IdFGLEUzG
+         oYooYYAfqfOYCpJb113cMsmyv4AbXauv4YbvIYvCYVazl1L5djoEhgjaXenIhXjKt2ww
+         KAeA==
+X-Gm-Message-State: AOAM531U94M2J3vha7UT2L8cxpaAYSJFGHTttlCnLaBiyPWAt1jz8wn/
+        WaqqFQWK7IuRkLgOnLn87EIsMW4CHtoFiP1c//bksQ==
+X-Google-Smtp-Source: ABdhPJy6OXvTexwF88bxt0G0bRgiqtTH5BtdCVwYVEih7fPZ5WANJC6MX3HYCGgF02fFxrhRZWLc3zJB6cAZUyUGvnM=
+X-Received: by 2002:a05:620a:2a0a:: with SMTP id o10mr13774791qkp.47.1642426078828;
+ Mon, 17 Jan 2022 05:27:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQKuNmZ/+9PJHbdzezyQqzGEXzr0sgIR+KN8AmyCbh0CxU8U/wHDvG0jANpCFQOqa8cWwA==
-Content-Language: en-us
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrPJsWRmVeSWpSXmKPExsWy7bCmuq5b3tNEg403WSzeL+thtJh/5Byr
-        xca3P5gspvxZzmSx6fE1VouPPfdYLR6+Cre4vGsOm8WM8/uYLE5d/8xmsWjrF3aL1r1H2C0O
-        v2lntXh8/Q+bA5/HmnlrGD1mNfSyeWxa1cnmcefaHjaPzUvqPa6caGL16NuyitHjX9Ncdo/P
-        m+QCOKOybTJSE1NSixRS85LzUzLz0m2VvIPjneNNzQwMdQ0tLcyVFPISc1NtlVx8AnTdMnOA
-        bldSKEvMKQUKBSQWFyvp29kU5ZeWpCpk5BeX2CqlFqTkFJgU6BUn5haX5qXr5aWWWBkaGBiZ
-        AhUmZGdcW9vBXrBaseLmqvVMDYyrZLoYOTkkBEwkXj+dytjFyMUhJLCbUWLP4X1MEM4nRolF
-        C46wQjifGSX2vlrOCtPSvOoyE4gtJLCLUeLgU3OIopeMErs/HAdLsAnoSuxY3MYGkhAR6GSU
-        WP39J9hcZoEVTBLzT91lAaniFHCUuP9iJzuILSzgJPH35jmwFSwCqhItU68AxTk4eAUsJZ7/
-        VwAJ8woISpyc+QSslVlAW2LZwtfMEBcpSPx8ugysVUQgTOLipJnsEDXiEi+PHmEH2Ssh8IJD
-        YveSj0wQDS4S1x61QtnCEq+Ob2GHsKUkXva3ge2VEMiW6NllDBGukVg67xgLhG0vceDKHBaQ
-        EmYBTYn1u/QhVvFJ9P5+wgTRySvR0SYEUa0q0fzuKlSntMTE7m5oGHpIvHrym3UCo+IsJI/N
-        QvLYLCQPzEJYtoCRZRWjZGpBcW56arFpgVFeajk8vpPzczcxglO2ltcOxocPPugdYmTiYDzE
-        KMHBrCTCe4z7SaIQb0piZVVqUX58UWlOavEhRlNgYE9klhJNzgdmjbySeEMTSwMTMzMzE0tj
-        M0Mlcd7T6RsShQTSE0tSs1NTC1KLYPqYODilGpiKV57UE7JN7f357m/VVHsmtoym/yKzv4so
-        vzZ8+X6vVcK1T88WqvFlfXlccdmpkVlHeInfzwteAl8jdLda/3aQPRG2dvKWw7fUNV9HyjOK
-        tj5luiD5YvuCVL3FPL4F02/cWXi4tPn5urru715HUo7fNLV+lewiJjr3XOeFO/qc32zmq6mf
-        1jJT9N7cd6+iXStcfG7Kx7tlfavtr30V+fgy8vmnT6sXxCvVnO5/e20VO/firmW/5d6tjDPc
-        WRk2b4WKd8t/2wDJlqtWG5wazxlezp4kWG0e++30A4uri+O0zsUad37aJWKYuOtedYuvfIt2
-        +54v/Zxc4rp7s9SCshxlamuNc86/k+V/5tcSYKbEUpyRaKjFXFScCABv5Y91YgQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrFIsWRmVeSWpSXmKPExsWy7bCSnG5h3tNEgw3PeSzeL+thtJh/5Byr
-        xca3P5gspvxZzmSx6fE1VouPPfdYLR6+Cre4vGsOm8WM8/uYLE5d/8xmsWjrF3aL1r1H2C0O
-        v2lntXh8/Q+bA5/HmnlrGD1mNfSyeWxa1cnmcefaHjaPzUvqPa6caGL16NuyitHjX9Ncdo/P
-        m+QCOKO4bFJSczLLUov07RK4Mo6fWMtWcEKh4tGFT+wNjEeluxg5OSQETCSaV11m6mLk4hAS
-        2MEosbinhREiIS1xfeMEdghbWGLlv+fsEEXPGSVmLDnGApJgE9CV2LG4jQ0kISLQzShxpWcm
-        I4jDLLCFSaLzxRlmiJYbTBLnV34Fm8Up4Chx/8VOMFtYwEni781zrCA2i4CqRMvUK0BxDg5e
-        AUuJ5/8VQMK8AoISJ2c+AdvGLKAt0fuwlRHGXrbwNTPEeQoSP58uAxsjIhAmcXHSTHaIGnGJ
-        l0ePsE9gFJ6FZNQsJKNmIRk1C0nLAkaWVYySqQXFuem5xYYFRnmp5XrFibnFpXnpesn5uZsY
-        wdGrpbWDcc+qD3qHGJk4GA8xSnAwK4nwHuN+kijEm5JYWZValB9fVJqTWnyIUZqDRUmc90LX
-        yXghgfTEktTs1NSC1CKYLBMHp1QDU3bqohM3/ZqfMqY83e/IIZ32+rJ4zZfDR93ikpdMljun
-        p1N7Qlr155T7zBn6LI/DHq61ujqhb0+9QdaijSXfGBti7qQ87VlgnynepNOQcCIt6lZZ0pNr
-        LQKu6vmme2qkGC5vOOe5+uC60/ZustlHmiLtL6spN93JNy3+5K50oo/bzXDT3eYfT3QLzod+
-        Z1lxPavcKq/NYr14wDT30AxpjrZ1m5MOMb7SqjQ6wsEouzlnM4fHBat1mY8Mz+tKLDFcoNtT
-        cMEq642Wt8ms3JzMp4suXHK3nJl+6tqsSUaxASpur89kuvAWXYg56L1/i175pUNtZ5X78h39
-        19w9aTLd0GBelQE37wqnWWbVfXOVWIozEg21mIuKEwGJ2u9HTQMAAA==
-X-CMS-MailID: 20220117132609epcas5p20eb1ddff0d0bf74393acfc37d16ad027
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220113122408epcas5p45053d1bf0acf2d8233a98b6c1abab6eb
-References: <20220113121143.22280-1-alim.akhtar@samsung.com>
-        <CGME20220113122408epcas5p45053d1bf0acf2d8233a98b6c1abab6eb@epcas5p4.samsung.com>
-        <20220113121143.22280-14-alim.akhtar@samsung.com>
-        <53c17ddc-a049-72ed-7237-de23db7889da@canonical.com>
-        <085801d80967$e4b8fe00$ae2afa00$@samsung.com>
-        <5ab62673-8d46-ec1d-1c80-696421ab69ca@canonical.com>
+References: <573e0836-6ac2-30a4-0c21-d4763707ac96@intel.com>
+ <YdgvFTIRboHwTgRT@iki.fi> <op.1fmvdehpwjvjmi@hhuan26-mobl1.mshome.net>
+ <YdmxpTVM1JG8nxQ3@iki.fi> <YdmzDy1BOHgh8CII@iki.fi> <Ydm6RiIwuh3IspRI@iki.fi>
+ <op.1fsvkfiwwjvjmi@hhuan26-mobl1.mshome.net> <YdzjEzjF0YKn+pZ6@iki.fi>
+ <4195402f-cbf9-bc75-719d-22cea8e36e60@intel.com> <Yd9pMq4lUy56B+50@iki.fi>
+ <Yd9qmMx7NO450mzZ@iki.fi> <CAHAy0tRi2q+wG+yBttq0FYeK-5wUAoK_=ZCtWsfQf0m8oPc1-w@mail.gmail.com>
+ <168fb2c9-de3f-384a-bb17-ab84db2cf533@intel.com>
+In-Reply-To: <168fb2c9-de3f-384a-bb17-ab84db2cf533@intel.com>
+From:   Nathaniel McCallum <nathaniel@profian.com>
+Date:   Mon, 17 Jan 2022 08:27:47 -0500
+Message-ID: <CAHAy0tSohetXa5+-_Qhcn_UO8ZvUew+kR_CLZOUePAiUDHO5=Q@mail.gmail.com>
+Subject: Re: [PATCH 05/25] x86/sgx: Introduce runtime protection bits
+To:     Reinette Chatre <reinette.chatre@intel.com>
+Cc:     Jarkko Sakkinen <jarkko@kernel.org>,
+        Haitao Huang <haitao.huang@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>, dave.hansen@linux.intel.com,
+        tglx@linutronix.de, bp@alien8.de, mingo@redhat.com,
+        linux-sgx@vger.kernel.org, x86@kernel.org, seanjc@google.com,
+        kai.huang@intel.com, cathy.zhang@intel.com, cedric.xing@intel.com,
+        haitao.huang@intel.com, mark.shanahan@intel.com, hpa@zytor.com,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof
+On Thu, Jan 13, 2022 at 4:43 PM Reinette Chatre
+<reinette.chatre@intel.com> wrote:
+>
+> Hi Jarkko and Nathaniel,
+>
+> On 1/13/2022 12:09 PM, Nathaniel McCallum wrote:
+> > On Wed, Jan 12, 2022 at 6:56 PM Jarkko Sakkinen <jarkko@kernel.org> wrote:
+> >>
+> >> On Thu, Jan 13, 2022 at 01:50:13AM +0200, Jarkko Sakkinen wrote:
+> >>> On Tue, Jan 11, 2022 at 09:13:27AM -0800, Reinette Chatre wrote:
+> >>>> Hi Jarkko,
+> >>>>
+> >>>> On 1/10/2022 5:53 PM, Jarkko Sakkinen wrote:
+> >>>>> On Mon, Jan 10, 2022 at 04:05:21PM -0600, Haitao Huang wrote:
+> >>>>>> On Sat, 08 Jan 2022 10:22:30 -0600, Jarkko Sakkinen <jarkko@kernel.org>
+> >>>>>> wrote:
+> >>>>>>
+> >>>>>>> On Sat, Jan 08, 2022 at 05:51:46PM +0200, Jarkko Sakkinen wrote:
+> >>>>>>>> On Sat, Jan 08, 2022 at 05:45:44PM +0200, Jarkko Sakkinen wrote:
+> >>>>>>>>> On Fri, Jan 07, 2022 at 10:14:29AM -0600, Haitao Huang wrote:
+> >>>>>>>>>>>>> OK, so the question is: do we need both or would a
+> >>>>>>>> mechanism just
+> >>>>>>>>>>>> to extend
+> >>>>>>>>>>>>> permissions be sufficient?
+> >>>>>>>>>>>>
+> >>>>>>>>>>>> I do believe that we need both in order to support pages
+> >>>>>>>> having only
+> >>>>>>>>>>>> the permissions required to support their intended use
+> >>>>>>>> during the
+> >>>>>>>>>>>> time the
+> >>>>>>>>>>>> particular access is required. While technically it is
+> >>>>>>>> possible to grant
+> >>>>>>>>>>>> pages all permissions they may need during their lifetime it
+> >>>>>>>> is safer to
+> >>>>>>>>>>>> remove permissions when no longer required.
+> >>>>>>>>>>>
+> >>>>>>>>>>> So if we imagine a run-time: how EMODPR would be useful, and
+> >>>>>>>> how using it
+> >>>>>>>>>>> would make things safer?
+> >>>>>>>>>>>
+> >>>>>>>>>> In scenarios of JIT compilers, once code is generated into RW pages,
+> >>>>>>>>>> modifying both PTE and EPCM permissions to RX would be a good
+> >>>>>>>> defensive
+> >>>>>>>>>> measure. In that case, EMODPR is useful.
+> >>>>>>>>>
+> >>>>>>>>> What is the exact threat we are talking about?
+> >>>>>>>>
+> >>>>>>>> To add: it should be *significantly* critical thread, given that not
+> >>>>>>>> supporting only EAUG would leave us only one complex call pattern with
+> >>>>>>>> EACCEPT involvement.
+> >>>>>>>>
+> >>>>>>>> I'd even go to suggest to leave EMODPR out of the patch set, and
+> >>>>>>>> introduce
+> >>>>>>>> it when there is PoC code for any of the existing run-time that
+> >>>>>>>> demonstrates the demand for it. Right now this way too speculative.
+> >>>>>>>>
+> >>>>>>>> Supporting EMODPE is IMHO by factors more critical.
+> >>>>>>>
+> >>>>>>> At least it does not protected against enclave code because an enclave
+> >>>>>>> can
+> >>>>>>> always choose not to EACCEPT any of the EMODPR requests. I'm not only
+> >>>>>>> confused here about the actual threat but also the potential adversary
+> >>>>>>> and
+> >>>>>>> target.
+> >>>>>>>
+> >>>>>> I'm not sure I follow your thoughts here. The sequence should be for enclave
+> >>>>>> to request  EMODPR in the first place through runtime to kernel, then to
+> >>>>>> verify with EACCEPT that the OS indeed has done EMODPR.
+> >>>>>> If enclave does not verify with EACCEPT, then its own code has
+> >>>>>> vulnerability. But this does not justify OS not providing the mechanism to
+> >>>>>> request EMODPR.
+> >>>>>
+> >>>>> The question is really simple: what is the threat scenario? In order to use
+> >>>>> the word "vulnerability", you would need one.
+> >>>>>
+> >>>>> Given the complexity of the whole dance with EMODPR it is mandatory to have
+> >>>>> one, in order to ack it to the mainline.
+> >>>>>
+> >>>>
+> >>>> Which complexity related to EMODPR are you concerned about? In a later message
+> >>>> you mention "This leaves only EAUG and EMODT requiring the EACCEPT handshake"
+> >>>> so it seems that you are perhaps concerned about the flow involving EACCEPT?
+> >>>> The OS does not require nor depend on EACCEPT being called as part of these flows
+> >>>> so a faulty or misbehaving user space omitting an EACCEPT call would not impact
+> >>>> these flows in the OS, but would of course impact the enclave.
+> >>>
+> >>> I'd say *any* complexity because I see no benefit of supporting it. E.g.
+> >>> EMODPR/EACCEPT/EMODPE sequence I mentioned to Haitao concerns me. How is
+> >>> EMODPR going to help with any sort of workload?
+> >>
+> >> I've even started think should we just always allow mmap()?
+> >
+> > I suspect this may be the most ergonomic way forward. Instructions
+> > like EAUG/EMODPR/etc are really irrelevant implementation details to
+> > what the enclave wants, which is a memory mapping in the enclave. Why
+> > make the enclave runner do multiple context switches just to change
+> > the memory map of an enclave?
+>
+> The enclave runner is not forced to make any changes to a memory mapping. To start,
+> this implementation supports and does not change the existing ABI where a new
+> memory mapping can only be created if its permissions are the same or weaker
+> than the EPCM permissions. After the memory mapping is created the EPCM permissions
+> can change (thanks to SGX2) and when they do there are no forced nor required
+> changes to the memory mapping - pages remain accessible where the memory mapping
+> and EPCM permissions agree. It is true that if an enclave chooses to relax permissions
+> to an enclave page (EMODPE) then the memory mapping may need to be changed as
+> should be expected to access a page with permissions that the memory mapping
+> did not previously allow.
+>
+> Are you saying that the permissions of a new memory mapping should now be allowed
+> to exceed EPCM permissions and thus the enclave runner would not need to modify a
+> memory mapping when EPCM permissions are relaxed? As mentioned above this may be
+> considered a change in ABI but something we could support on SGX2 systems.
+>
+> I would also like to highlight Haitao's earlier comment that a foundation of SGX is
+> that the OS is untrusted. The enclave owner does not trust the OS and needs EMODPR
+> and EMODPE to manage enclave page permissions.
 
->-----Original Message-----
->From: Krzysztof Kozlowski =5Bmailto:krzysztof.kozlowski=40canonical.com=5D
->Sent: Friday, January 14, 2022 11:00 PM
->To: Alim Akhtar <alim.akhtar=40samsung.com>; linux-arm-
->kernel=40lists.infradead.org; linux-kernel=40vger.kernel.org
->Cc: soc=40kernel.org; linux-clk=40vger.kernel.org; devicetree=40vger.kerne=
-l.org;
->olof=40lixom.net; linus.walleij=40linaro.org; catalin.marinas=40arm.com;
->robh+dt=40kernel.org; s.nawrocki=40samsung.com; linux-samsung-
->soc=40vger.kernel.org; pankaj.dubey=40samsung.com; linux-fsd=40tesla.com
->Subject: Re: =5BPATCH 13/23=5D dt-bindings: arm: add Tesla FSD ARM SoC
->
->On 14/01/2022 17:57, Alim Akhtar wrote:
->>
->>
->>> -----Original Message-----
->>> From: Krzysztof Kozlowski =5Bmailto:krzysztof.kozlowski=40canonical.com=
-=5D
->>> Sent: Thursday, January 13, 2022 6:03 PM
->>> To: Alim Akhtar <alim.akhtar=40samsung.com>; linux-arm-
->>> kernel=40lists.infradead.org; linux-kernel=40vger.kernel.org
->>> Cc: soc=40kernel.org; linux-clk=40vger.kernel.org;
->>> devicetree=40vger.kernel.org; olof=40lixom.net; linus.walleij=40linaro.=
-org;
->>> catalin.marinas=40arm.com;
->>> robh+dt=40kernel.org; s.nawrocki=40samsung.com; linux-samsung-
->>> soc=40vger.kernel.org; pankaj.dubey=40samsung.com; linux-fsd=40tesla.co=
-m
->>> Subject: Re: =5BPATCH 13/23=5D dt-bindings: arm: add Tesla FSD ARM SoC
->>>
->>> On 13/01/2022 13:11, Alim Akhtar wrote:
->>>> Add device tree bindings for the Tesla FSD ARM SoC.
->>>>
->>>> Cc: linux-fsd=40tesla.com
->>>> Signed-off-by: Alim Akhtar <alim.akhtar=40samsung.com>
->>>> ---
->>>>  .../devicetree/bindings/arm/tesla.yaml        =7C 25 ++++++++++++++++=
-+++
->>>>  1 file changed, 25 insertions(+)
->>>>  create mode 100644
->Documentation/devicetree/bindings/arm/tesla.yaml
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/arm/tesla.yaml
->>>> b/Documentation/devicetree/bindings/arm/tesla.yaml
->>>> new file mode 100644
->>>> index 000000000000..9f89cde76c85
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/arm/tesla.yaml
->>>> =40=40 -0,0 +1,25 =40=40
->>>> +=23 SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause %YAML 1.2
->>>> +---
->>>> +=24id:
->>>> +https://protect2.fireeye.com/v1/url?k=3D2f0fac44-70949546-2f0e270b-0c
->>>> +c4
->>>> +7a312ab0-50c826f7b1999a5f&q=3D1&e=3Dbcbf277f-4e93-4705-8f6a-
->>> 2beaa7eb31e2&
->>>>
->+u=3Dhttp%3A%2F%2Fdevicetree.org%2Fschemas%2Farm%2Ftesla.yaml%23
->>>> +=24schema:
->>>> +https://protect2.fireeye.com/v1/url?k=3Dd8493fe2-87d206e0-d848b4ad-
->0c
->>>> +c4
->>>> +7a312ab0-f4e5046adc7da972&q=3D1&e=3Dbcbf277f-4e93-4705-8f6a-
->>> 2beaa7eb31e2&
->>>> +u=3Dhttp%3A%2F%2Fdevicetree.org%2Fmeta-schemas%2Fcore.yaml%23
->>>> +
->>>> +title: Tesla Full Self Driving(FSD) platforms device tree bindings
->>>> +
->>>> +maintainers:
->>>> +  - Alim Akhtar <alim.akhtar=40samsung.com>
->>>> +  - linux-fsd=40tesla.com
->>>> +
->>>> +properties:
->>>> +  =24nodename:
->>>> +    const: '/'
->>>> +  compatible:
->>>> +    oneOf:
->>>> +
->>>> +      - description: FSD SoC board
->>>> +        items:
->>>> +          - const: tesla,fsd
->>>
->>> Either this is a SoC or a board compatible... Cannot be both.
->>>
->> Actually we call this as fsd board, so let me add accordingly compatible=
- (fsd-
->baord) for board.
->> Thanks
->
->It's confusing and probably not accurate. In your series fsd is three thin=
-gs in
->the same time: an architecture, a SoC and a board (DTS). The last two shou=
-ld
->definitely be different. You probably have some eval board (how it is call=
-ed
->also in Tesla open source git) or some specific product board.
->
-Understood, let me clear this confusion in the patchset-2 where fsd board w=
-ill have its own compatible and=20
-of course SoC will have its own (shared with fsd architecture) compatible.
+As I understand the problem, there are two permission sets:
 
->I cannot judge how different this is from Exynos subarchitecture - looking=
- at
->patches it is not different - so I could understand a FSD sub-arch with on=
-ly one
->SoC.
->
-I understand, it is a bit difficult to visualize it with the current patch =
-set.
-As discuss on the other thread, FSD is different, more over the vendor is d=
-ifferent, internal design is different.
->
->Best regards,
->Krzysztof
+ * The EPCM permissions
+ * The mmap() permissions
 
+The mmap() permissions cannot exceed the EPCM permissions, for obvious reasons.
+
+Hypothesis: there is no practical reason the EPCM permissions should
+exceed mmap() permissions.
+
+If the hypothesis is true, then userspace shouldn't have an API to
+manage EPCM permissions distinct from mmap() permissions. Instead,
+userspace should just call mmap() and the kernel should internally
+adjust the EPCM permissions to match the mmap() permissions. This has
+a performance advantage that every permissions change is one syscall
+rather than two.
+
+So what is the use case where an enclave would want to restrict mmap()
+permissions but not restrict EPCM?
