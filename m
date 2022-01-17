@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 742BCC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:12:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07A64C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:12:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243282AbiAQRMN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:12:13 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56332 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243023AbiAQRIH (ORCPT
+        id S243476AbiAQRMT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:12:19 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56292 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242785AbiAQRIN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:08:07 -0500
+        Mon, 17 Jan 2022 12:08:13 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 37434B81055;
-        Mon, 17 Jan 2022 17:08:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56C22C36AEC;
-        Mon, 17 Jan 2022 17:08:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1C87612C5;
+        Mon, 17 Jan 2022 17:08:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55BFEC36AF8;
+        Mon, 17 Jan 2022 17:08:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439284;
-        bh=DBhoTDsqf5w5ZsFacLKJcbmnshW2rD6yux0NBPC2nTY=;
+        s=k20201202; t=1642439292;
+        bh=P8JodIRX2uzjywT3FD6+DpyuTrOHA3GSKST3Iwdgot4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FXQ6sf6843MMj/EMtO/MMuH0ELSUwHtW6cZ8niVJ3YdfO9RUezuhlmOF/w1d8UgHF
-         +fvU2yhHASfUAQ40v8XsotpNyQ+DqN4Ae/o3y8ut2mpYrhfKNcpPIMmUtA3DfhKZ9U
-         QwKIjWe8hsNgGfP0cK1jB8LZhviMAnsco/Pib5ml7fTXm9qzCRq+w82/r3kNvcgfIw
-         qPAJNs3R9rFlps1FwDVNH+txDtg7AQVgeT5zjEo5icB/mJ4KKDW3n9bml9E3EB9Gxg
-         fYjm8JmMEca6UfdGaeSUSZRrQKXwhQzA3cOWhdb2O2e81zBMcAJKRIkEM50bfbewKn
-         mZ3QmSrixw41A==
+        b=VLmxv1pjJvz+H9yO8jJvIg+/mp8Vmcjm2EwZ9oz2m9sY8+Hg5zsADln4vH0bsE+hY
+         B5rS8K01uZLCGA+rVfcHkWMGz3cyjSbbLw9IaFfe++PU8QGQhFgn06I90utGbk3B7n
+         VzbuKRtIaFlDNM0/39XMKDYsQIhf8lf3EPQ+NVtFapslRhUz2zB/C6jBA5qG1Hjjru
+         HL5MwOugstyOmS0KIR1k2tm8rsyDXNnsfNr2GKDzguoRWBBb6ed3Hqppul116LM+cU
+         lKhCn1F/ZU2T600yJuVRmiU8eQiJeMBzP9EdtH9hOzn2OHwJPsqDJ6G/3pW0cnSF1P
+         HKRM9fGNY4tOA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Julia Lawall <Julia.Lawall@lip6.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 4.4 03/12] powerpc/cell: add missing of_node_put
-Date:   Mon, 17 Jan 2022 12:07:47 -0500
-Message-Id: <20220117170757.1473318-3-sashal@kernel.org>
+Cc:     Joakim Tjernlund <joakim.tjernlund@infinera.com>,
+        Scott Wood <oss@buserror.net>, Wolfram Sang <wsa@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        chris.packham@alliedtelesis.co.nz, linux-i2c@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 07/12] i2c: mpc: Correct I2C reset procedure
+Date:   Mon, 17 Jan 2022 12:07:51 -0500
+Message-Id: <20220117170757.1473318-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117170757.1473318-1-sashal@kernel.org>
 References: <20220117170757.1473318-1-sashal@kernel.org>
@@ -48,55 +49,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+From: Joakim Tjernlund <joakim.tjernlund@infinera.com>
 
-[ Upstream commit a841fd009e51c8c0a8f07c942e9ab6bb48da8858 ]
+[ Upstream commit ebe82cf92cd4825c3029434cabfcd2f1780e64be ]
 
-for_each_node_by_name performs an of_node_get on each iteration, so
-a break out of the loop requires an of_node_put.
+Current I2C reset procedure is broken in two ways:
+1) It only generate 1 START instead of 9 STARTs and STOP.
+2) It leaves the bus Busy so every I2C xfer after the first
+   fixup calls the reset routine again, for every xfer there after.
 
-A simplified version of the semantic patch that fixes this problem is as
-follows (http://coccinelle.lip6.fr):
+This fixes both errors.
 
-// <smpl>
-@@
-expression e,e1;
-local idexpression n;
-@@
-
- for_each_node_by_name(n, e1) {
-   ... when != of_node_put(n)
-       when != e = n
-(
-   return n;
-|
-+  of_node_put(n);
-?  return ...;
-)
-   ...
- }
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1448051604-25256-7-git-send-email-Julia.Lawall@lip6.fr
+Signed-off-by: Joakim Tjernlund <joakim.tjernlund@infinera.com>
+Acked-by: Scott Wood <oss@buserror.net>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/cell/iommu.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/i2c/busses/i2c-mpc.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/arch/powerpc/platforms/cell/iommu.c b/arch/powerpc/platforms/cell/iommu.c
-index 14a582b212745..4edceff5791ad 100644
---- a/arch/powerpc/platforms/cell/iommu.c
-+++ b/arch/powerpc/platforms/cell/iommu.c
-@@ -1107,6 +1107,7 @@ static int __init cell_iommu_fixed_mapping_init(void)
- 			if (hbase < dbase || (hend > (dbase + dsize))) {
- 				pr_debug("iommu: hash window doesn't fit in"
- 					 "real DMA window\n");
-+				of_node_put(np);
- 				return -1;
- 			}
- 		}
+diff --git a/drivers/i2c/busses/i2c-mpc.c b/drivers/i2c/busses/i2c-mpc.c
+index 2e083a71c2215..988ea9df6654c 100644
+--- a/drivers/i2c/busses/i2c-mpc.c
++++ b/drivers/i2c/busses/i2c-mpc.c
+@@ -107,23 +107,30 @@ static irqreturn_t mpc_i2c_isr(int irq, void *dev_id)
+ /* Sometimes 9th clock pulse isn't generated, and slave doesn't release
+  * the bus, because it wants to send ACK.
+  * Following sequence of enabling/disabling and sending start/stop generates
+- * the 9 pulses, so it's all OK.
++ * the 9 pulses, each with a START then ending with STOP, so it's all OK.
+  */
+ static void mpc_i2c_fixup(struct mpc_i2c *i2c)
+ {
+ 	int k;
+-	u32 delay_val = 1000000 / i2c->real_clk + 1;
+-
+-	if (delay_val < 2)
+-		delay_val = 2;
++	unsigned long flags;
+ 
+ 	for (k = 9; k; k--) {
+ 		writeccr(i2c, 0);
+-		writeccr(i2c, CCR_MSTA | CCR_MTX | CCR_MEN);
++		writeb(0, i2c->base + MPC_I2C_SR); /* clear any status bits */
++		writeccr(i2c, CCR_MEN | CCR_MSTA); /* START */
++		readb(i2c->base + MPC_I2C_DR); /* init xfer */
++		udelay(15); /* let it hit the bus */
++		local_irq_save(flags); /* should not be delayed further */
++		writeccr(i2c, CCR_MEN | CCR_MSTA | CCR_RSTA); /* delay SDA */
+ 		readb(i2c->base + MPC_I2C_DR);
+-		writeccr(i2c, CCR_MEN);
+-		udelay(delay_val << 1);
++		if (k != 1)
++			udelay(5);
++		local_irq_restore(flags);
+ 	}
++	writeccr(i2c, CCR_MEN); /* Initiate STOP */
++	readb(i2c->base + MPC_I2C_DR);
++	udelay(15); /* Let STOP propagate */
++	writeccr(i2c, 0);
+ }
+ 
+ static int i2c_wait(struct mpc_i2c *i2c, unsigned timeout, int writing)
 -- 
 2.34.1
 
