@@ -2,345 +2,372 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E210C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 11:50:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FE11C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 11:50:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239234AbiAQLui (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 06:50:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58240 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239238AbiAQLuc (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 06:50:32 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8EE3C06161C
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 03:50:31 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9QVx-0000fx-Mn; Mon, 17 Jan 2022 12:49:33 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9QVo-00AoYK-L6; Mon, 17 Jan 2022 12:49:23 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9QVn-0001x3-Fg; Mon, 17 Jan 2022 12:49:23 +0100
-Date:   Mon, 17 Jan 2022 12:49:23 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        platform-driver-x86@vger.kernel.org,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <20220117114923.d5vajgitxneec7j7@pengutronix.de>
-References: <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
- <20220114092557.jrkfx7ihg26ekzci@pengutronix.de>
- <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru>
- <20220114202226.ugzklxv4wzr6egwj@pengutronix.de>
- <c9026f17-2b3f-ee94-0ea3-5630f981fbc1@omp.ru>
- <CAMuHMdXVbRudGs69f9ZzaP1PXhteDNZiXA658eMFAwP4nr9r3w@mail.gmail.com>
- <20220117092444.opoedfcf5k5u6otq@pengutronix.de>
- <CAMuHMdUgZUeraHadRAi2Z=DV+NuNBrKPkmAKsvFvir2MuquVoA@mail.gmail.com>
+        id S233846AbiAQLux (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 06:50:53 -0500
+Received: from mail-dm6nam10on2069.outbound.protection.outlook.com ([40.107.93.69]:7141
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S239263AbiAQLul (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 06:50:41 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bqVZft3KQhdtFPzUJZG7eMJX2CY+wEh1eA97lc/Ln/EQs8XbP9YP1PRCp2ub1e9+fzj3ju7dyBYMbLL+oAp4afmkwL5v4JiPBk3b9hwcH4vm1OFNPirpoAD4M4WpxlHokaWVX3SjZXDODpdzY1YZkv3wMp2HAz4wnp0Jrsq/H0yTz+Xxt5pW6xX8Z70ZAjEuOL/Kjty6HkSOzJZ48iPjJEoboPLjQkGNoc6oe/w3hiPxJimOlgp0dKQBuZxa6ZshXVFWxtNC4FJRLAKio2bAvvylalMr6c+rkXeTKuE4xICFb9+1iUwtuPfnjYLr2RmTM3cYiR4vfUc7P4wt30orxA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=bdxach2RwNKsAtJAun78H8b9MbGs7i+sSowxVn2/NL0=;
+ b=oJDDFH6oAn9qPHFz5yG1hfvaCPuiuqoXOfiQZgED41EWzW20iRhEnCRSAhNMp/lu3ceEbGTe92QvCup6WR+j8Y/NopxybQ3LbTsSCfgIDsL6n/gqc14w+ZItPKQuN1dSgiU8Ts8Ic+zaF96oPLMFLzRAvIFeM53gaWA6utvaD/KajmrfcrbF8RcA42TMmDKWAYcoPGckHDB87cPcPUsl+qRXZerOh8PjDGPbxme0qae6zpiyGKl3+I7yLMP0K74eauuSJHMV3VWVNu57oyz/GqzXhnPwgT7gC6WnXOdRQsZZfgWeH7bHPIsmCYapgEt5iPPwk3Ng32aroaxQejLb7w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=amd.com; dmarc=pass action=none header.from=amd.com; dkim=pass
+ header.d=amd.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bdxach2RwNKsAtJAun78H8b9MbGs7i+sSowxVn2/NL0=;
+ b=w0MRGAku9z1+0a0UCOp2zwzUyZGQHm1roYFi8z1tH/vD/D3/vmzN6S0uehfSPXr3WZIZedBQLGulfyn+7n3qDZEriXkW3Oiosyw85nMjKkQ42cAHNAWYYn/Vb/WCbOKEVXjKS1QMYvPhEYsrBHlGAzUPS2yJceyRPUJr9XReKA0=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=amd.com;
+Received: from DM6PR12MB3627.namprd12.prod.outlook.com (2603:10b6:5:3e::18) by
+ DM5PR12MB1211.namprd12.prod.outlook.com (2603:10b6:3:79::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4888.11; Mon, 17 Jan 2022 11:50:39 +0000
+Received: from DM6PR12MB3627.namprd12.prod.outlook.com
+ ([fe80::2437:1c64:765e:2fb6]) by DM6PR12MB3627.namprd12.prod.outlook.com
+ ([fe80::2437:1c64:765e:2fb6%5]) with mapi id 15.20.4888.014; Mon, 17 Jan 2022
+ 11:50:39 +0000
+Message-ID: <85efbeec-6a63-9f34-d13a-2bdad327097f@amd.com>
+Date:   Mon, 17 Jan 2022 17:20:25 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.2
+Subject: Re: [PATCH v2 4/6] ASoC: amd: acp: Add ACP init()/deinit() callback
+ for Renoir.
+Content-Language: en-US
+To:     =?UTF-8?Q?Amadeusz_S=c5=82awi=c5=84ski?= 
+        <amadeuszx.slawinski@linux.intel.com>, broonie@kernel.org,
+        alsa-devel@alsa-project.org
+Cc:     Sunil-kumar.Dommati@amd.com,
+        open list <linux-kernel@vger.kernel.org>,
+        Basavaraj.Hiregoudar@amd.com, Takashi Iwai <tiwai@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>, Vijendar.Mukunda@amd.com,
+        Alexander.Deucher@amd.com
+References: <20220113163348.434108-1-AjitKumar.Pandey@amd.com>
+ <20220113163348.434108-5-AjitKumar.Pandey@amd.com>
+ <e815d582-bd7d-6ec0-05ca-97d633ef9e13@linux.intel.com>
+From:   Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
+In-Reply-To: <e815d582-bd7d-6ec0-05ca-97d633ef9e13@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: BM1PR01CA0077.INDPRD01.PROD.OUTLOOK.COM
+ (2603:1096:b00:1::17) To DM6PR12MB3627.namprd12.prod.outlook.com
+ (2603:10b6:5:3e::18)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="p6yh245p57zhiyck"
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdUgZUeraHadRAi2Z=DV+NuNBrKPkmAKsvFvir2MuquVoA@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 89a81b2a-a1a7-42a1-4ff1-08d9d9af9508
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1211:EE_
+X-Microsoft-Antispam-PRVS: <DM5PR12MB1211FEFE69CDD1C42357957B82579@DM5PR12MB1211.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2276;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: A3IyHDI8TmK5tGU8le0utoQH0fMkY027R0ymZO977BbQeh1avRe5vU8IamhAUhDInZ0cqMUnMfCkI+9uSZ24cI9cIeIVnezEoyomHgau7eeBCyrjPIjANxicCYSuuidH+1xYMhZs7qxMllzzHy2rCHQs1MROgbB2T51HHi5KNbdPxHsgoQNiQygH9AGnCgbTflp0PrwnQctQQLTdacd5IcYZrFKXFFKQXAzLmZP+o+5lYbc5z2MLfnzds4UNOp4vNbhk4zBEC2I6faL/7q3/XireL3ybXOIyfOnKnfLRvEyZoahMmJYujiBpuUBuX/J6CbFammo2hb2CPa5jO9tkhYvRreDUSQvgqaTy+t0cYS/sVWRdmbUwkH2si44DX7FeIrox0+/JtqQH3RWmOF/1XQ3NCdVy1902vQ4LPQS6+9fRteoucAhF0TlYscaMVVZ20d1NVWpbmzUi84y6EsucfC3+ZD23/R0ylVuWzsefREatbPY4lRBi+kRm6eOH0CozERJwVamxj8XLTi3jWbIDGDggUyoKruw/Ab35fZoeW9pwXjXOlzZuIvxvJPdd2baADKdexKn1RlfjiG9XVVsgqAWILNE6Nw+AH79YPAaJQLG+D/OhMkMWwZ0SOMJS5130dJ1PC1yi2MI/KxX10D+JVW6CLhjMoRL5BFrWSSZSJ10dmz+79XCSzJFAEmyytKGpJ/DcrKgOgbfHEJTXKYgYJJfuQTKnHcrufzj031aF+LY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB3627.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(508600001)(2616005)(6512007)(53546011)(86362001)(6506007)(5660300002)(186003)(26005)(4326008)(31696002)(36756003)(6486002)(38100700002)(2906002)(83380400001)(66946007)(54906003)(316002)(8676002)(6666004)(8936002)(31686004)(66476007)(66556008)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cy9YZXNoZFNPZlFXMFhMdlhvRXpXRmozKy91WjROdWxFeTYxU2JkU0NXZnAw?=
+ =?utf-8?B?OGp6TC9YbjRoZC9uODJtUmlYb2JsdG4rNzNheUdsTmsybkUzQy9MWnVOL21p?=
+ =?utf-8?B?Z0tZWTJlQXE3b0JFYmFhcWpwZTZnQjBUYmlCVHdhN2JxK3BXMExHZnpyeXZh?=
+ =?utf-8?B?UnlQYk9HbzNjZ2JUdlN6NEpHL2JVTGlkMGFRaHRmZ0ZERW9rOTlZOEkyamlI?=
+ =?utf-8?B?MFBNb1FHbld6RGFpbzU3UEd1bkxPWnV6bHF6VWxrZEk5OS9YTld2Vmw3dUFY?=
+ =?utf-8?B?SDdwVkh6UGFRd3lKN0N1TG12VkNYUW1kMW8zc2s3VWJPaFArWmhScThha20x?=
+ =?utf-8?B?N2ptYys5eWxnS3NrVzR4bE1yOUhPQlhGWm9lc0d6VmZ5L0I5cjdFc29LdHN3?=
+ =?utf-8?B?M0xZNlVNVjJUM1IrUTVjbkZvUkZSRFZGOFI4TmF2alNZcW0rblh4Qks3Q09W?=
+ =?utf-8?B?Z1B4NjFZdkNHMUNQZHAzOTVMbnBKOVhuN2ZjbjJtS3UyNkRBaVhiK2xWZTU1?=
+ =?utf-8?B?c3hvcEd5cHhHNlo5TVZ1QmxMN3VOL3NlMGtEaXZBRHovN0N6ZmxMYlE2S0tu?=
+ =?utf-8?B?KzhydWtHM1pQeHB0Y3h2MXlKZ0ZyZDNLMFZaRlh5TnZ5citzUWtmRjJidENk?=
+ =?utf-8?B?cU5yamtlemR4ZnBXWVFYeXlJYkgxQndOR085TExUdS96VU5LK1pvd0NobVlP?=
+ =?utf-8?B?OXlQMTRmbGVqUWhyWVVWdFF6NDJHZnNWOC9sMUJrMGpiTDV4Qk1lNFlUdm41?=
+ =?utf-8?B?THBHUUFyeGFvMlpuSlJrQ3dtSWtSNDJSM3dZQUhVU2xPSkJpcDVNb29iNnNa?=
+ =?utf-8?B?aWhrYTRLYk1BMjZnWGJKTWR1aVZLWGcxcnp6eW0vTTBqdDVxQjJiNEVEYmpw?=
+ =?utf-8?B?SHNtNDgxNWdGR1FwNTkxZ0FUYytvaHJUaVZoTHQ3eXRtZXRiQ0N1VkJOMFFZ?=
+ =?utf-8?B?YStac3VQaXVkOE4vTE10L1R4OXZCZmJCV290MW9MaXNENTlQUEIvQXhIMlNW?=
+ =?utf-8?B?TmFGUG1XQlc1ZklkL0xWTmkvUFhuTFRDU1ZxUkxCZ1VDRmZwNXJVU1lWUDFj?=
+ =?utf-8?B?RkRFRkd6aVo3TUpZVGFRWkV5YW1iRUpaRGI4Rmx5a0xUcjBIRk5EZk81bjBr?=
+ =?utf-8?B?aXdleFYwTElCcTFGb213dzRJNS9jMkpyWjUxUmV1U0RmMXZEcE5rQzZxT2FW?=
+ =?utf-8?B?UGdHcHp1dER6R0lEaHY1SWdQK2xKSVFaSmxYREpTZUYwazJaYkF5NVBkbGdU?=
+ =?utf-8?B?clJqOGtHWXd2dkxvUy80bG9OSE0zWE5Xb1RXYTIxSktmc2JWRlFIeFJtUlJH?=
+ =?utf-8?B?MnRlR2lhL1BacUp5bzhBc3A3VGIrVWdBYmRjcDVUejBTazZQZ3NsU08xeHJq?=
+ =?utf-8?B?Q2RTVTdwcHVTenRBaWRhR3NHSW1QbGxvNnhrYkdpNTFDTlNzckEyd0g5akNa?=
+ =?utf-8?B?Z0pGL3FDN1BBOEVtTTgxcUp6YmFHQzhaSGVFNnhkN1p5STB2dm5lL0NWYXk3?=
+ =?utf-8?B?eml6YUVTVlJXRWFiTko0bzNkV1RmRGNaNlRZcE5sR2loS09CZklNaTFuNE5W?=
+ =?utf-8?B?SHBOVWRLamZLQTA3dGFDZmlLaFNkZStmdTd6NlBucUNnSWoydnNUczVpTHY5?=
+ =?utf-8?B?WWZ4YWU1Q1lmckVlTWI0OFpVR3NSUmdHWmZJVmxOOUpUczUrK1hkNFZMS1R1?=
+ =?utf-8?B?YUdlL1N4emg5VkpicGI5cVppSU42bjVad2wrQ0N0cWZZMUM3VnB4eU1TR0pF?=
+ =?utf-8?B?M3F1b05ncDEvdGt6WGdGSm52YmZkazJWVlRndmsvdVhFZlpkWUorSXBJSGJa?=
+ =?utf-8?B?R216eTcvOFVzZHBqc0xUZTVpSGpKSktsVWxUZUNhemRtKzJtS0U3Q0ZaWVpF?=
+ =?utf-8?B?Y25IU3RsZGJ5QWFDRkx3a041ZHk0eXNCdzh0d3lHQndjY2dTUHV2ZzNZTS9S?=
+ =?utf-8?B?TTJWaVNqM1h6em9acnc4TFAzempKQVNFaFZNdkRzdlZOMzRtRXF4SlpxU0Jn?=
+ =?utf-8?B?MU5ab2JseDQzaUx6TTZVOFpWMityR0dGTkNPWS94eTdsNFc1clBEL2pyanhY?=
+ =?utf-8?B?VlZyN01aQnQ5cFJ1WGRSRnZRNUlSeWRUTGR6cnNlcFZLaVZkUHN3cThyeTlo?=
+ =?utf-8?B?c05NWHpZV0RFTUxlUmIyd0NXcnY0MzEzaTBub1hBcDJXanUyQTZheS9pcW9B?=
+ =?utf-8?Q?W5IXfptQJbvEreNU6JjNVYw=3D?=
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 89a81b2a-a1a7-42a1-4ff1-08d9d9af9508
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB3627.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jan 2022 11:50:39.5808
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: P6qYPui/lf0dQqIpJT610RfDfPB9VlcHFt8daZxzj+hr03DkOwiyPRN3hwvbmymzWcVVlWDhxPOmYJlBzMFRnw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1211
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 
---p6yh245p57zhiyck
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
-On Mon, Jan 17, 2022 at 11:35:52AM +0100, Geert Uytterhoeven wrote:
-> Hi Uwe,
->=20
-> On Mon, Jan 17, 2022 at 10:24 AM Uwe Kleine-K=F6nig
-> <u.kleine-koenig@pengutronix.de> wrote:
-> > On Mon, Jan 17, 2022 at 09:41:42AM +0100, Geert Uytterhoeven wrote:
-> > > On Sat, Jan 15, 2022 at 9:22 PM Sergey Shtylyov <s.shtylyov@omp.ru> w=
-rote:
-> > > > On 1/14/22 11:22 PM, Uwe Kleine-K=F6nig wrote:
-> > > > > You have to understand that for clk (and regulator and gpiod) NUL=
-L is a
-> > > > > valid descriptor that can actually be used, it just has no effect=
-=2E So
-> > > > > this is a convenience value for the case "If the clk/regulator/gp=
-iod in
-> > > > > question isn't available, there is nothing to do". This is what m=
-akes
-> > > > > clk_get_optional() and the others really useful and justifies the=
-ir
-> > > > > existence. This doesn't apply to platform_get_irq_optional().
-> > > >
-> > > >    I do understand that. However, IRQs are a different beast with t=
-heir
-> > > > own justifications...
-> > >
-> > > > > clk_get_optional() is sane and sensible for cases where the clk m=
-ight be
-> > > > > absent and it helps you because you don't have to differentiate b=
-etween
-> > > > > "not found" and "there is an actual resource".
-> > > > >
-> > > > > The reason for platform_get_irq_optional()'s existence is just th=
-at
-> > > > > platform_get_irq() emits an error message which is wrong or subop=
-timal
-> > > >
-> > > >    I think you are very wrong here. The real reason is to simplify =
-the
-> > > > callers.
-> > >
-> > > Indeed.
-> >
-> > The commit that introduced platform_get_irq_optional() said:
-> >
-> >         Introduce a new platform_get_irq_optional() that works much like
-> >         platform_get_irq() but does not output an error on failure to
-> >         find the interrupt.
-> >
-> > So the author of 8973ea47901c81a1912bd05f1577bed9b5b52506 failed to
-> > mention the real reason? Or look at
-> > 31a8d8fa84c51d3ab00bf059158d5de6178cf890:
-> >
-> >         [...] use platform_get_irq_optional() to get second/third IRQ
-> >         which are optional to avoid below error message during probe:
-> >         [...]
-> >
-> > Look through the output of
-> >
-> >         git log -Splatform_get_irq_optional
-> >
-> > to find several more of these.
->=20
-> Commit 8973ea47901c81a1 ("driver core: platform: Introduce
-> platform_get_irq_optional()") and the various fixups fixed the ugly
-> printing of error messages that were not applicable.
-> In hindsight, probably commit 7723f4c5ecdb8d83 ("driver core:
-> platform: Add an error message to platform_get_irq*()") should have
-> been reverted instead, until a platform_get_irq_optional() with proper
-> semantics was introduced.
-
-ack.
-
-> But as we were all in a hurry to kill the non-applicable error
-> message, we went for the quick and dirty fix.
->=20
-> > Also I fail to see how a caller of (today's) platform_get_irq_optional()
-> > is simpler than a caller of platform_get_irq() given that there is no
-> > semantic difference between the two. Please show me a single
-> > conversion from platform_get_irq to platform_get_irq_optional that
-> > yielded a simplification.
->=20
-> That's exactly why we want to change the latter to return 0 ;-)
-
-OK. So you agree to my statement "The reason for
-platform_get_irq_optional()'s existence is just that platform_get_irq()
-emits an error message [...]". Actually you don't want to oppose but
-say: It's unfortunate that the silent variant of platform_get_irq() took
-the obvious name of a function that could have an improved return code
-semantic.
-
-So my suggestion to rename todays platform_get_irq_optional() to
-platform_get_irq_silently() and then introducing
-platform_get_irq_optional() with your suggested semantic seems
-intriguing and straigt forward to me.
-
-Another thought: platform_get_irq emits an error message for all
-problems. Wouldn't it be consistent to let platform_get_irq_optional()
-emit an error message for all problems but "not found"?
-Alternatively remove the error printk from platform_get_irq().
-
-> > So you need some more effort to convince me of your POV.
-> >
-> > > Even for clocks, you cannot assume that you can always blindly use
-> > > the returned dummy (actually a NULL pointer) to call into the clk
-> > > API.  While this works fine for simple use cases, where you just
-> > > want to enable/disable an optional clock (clk_prepare_enable() and
-> > > clk_disable_unprepare()), it does not work for more complex use cases.
-> >
-> > Agreed. But for clks and gpiods and regulators the simple case is quite
-> > usual. For irqs it isn't.
->=20
-> It is for devices that can have either separate interrupts, or a single
-> multiplexed interrupt.
->=20
-> The logic in e.g. drivers/tty/serial/sh-sci.c and
-> drivers/spi/spi-rspi.c could be simplified and improved (currently
-> it doesn't handle deferred probe) if platform_get_irq_optional()
-> would return 0 instead of -ENXIO.
-
-Looking at sh-sci.c the irq handling logic could be improved even
-without a changed platform_get_irq_optional():
-
-diff --git a/drivers/tty/serial/sh-sci.c b/drivers/tty/serial/sh-sci.c
-index 968967d722d4..c7dc9fb84844 100644
---- a/drivers/tty/serial/sh-sci.c
-+++ b/drivers/tty/serial/sh-sci.c
-@@ -2873,11 +2873,13 @@ static int sci_init_single(struct platform_device *=
-dev,
- 	 * interrupt ID numbers, or muxed together with another interrupt.
- 	 */
- 	if (sci_port->irqs[0] < 0)
--		return -ENXIO;
-+		return sci_port->irqs[0];
-=20
--	if (sci_port->irqs[1] < 0)
-+	if (sci_port->irqs[1] =3D=3D -ENXIO)
- 		for (i =3D 1; i < ARRAY_SIZE(sci_port->irqs); i++)
- 			sci_port->irqs[i] =3D sci_port->irqs[0];
-+	else if (sci_port->irqs[1] < 0)
-+		return sci_port->irqs[1];
-=20
- 	sci_port->params =3D sci_probe_regmap(p);
- 	if (unlikely(sci_port->params =3D=3D NULL))
-
-And then the code flow is actively irritating. sci_init_single() copies
-irqs[0] to all other irqs[i] and then sci_request_irq() loops over the
-already requested irqs and checks for duplicates. A single place that
-identifies the exact set of required irqs would already help a lot.
-
-Also for spi-rspi.c I don't see how platform_get_irq_byname_optional()
-returning 0 instead of -ENXIO would help. Please talk in patches.
-
-Preferably first simplify in-driver logic to make the conversion to the
-new platform_get_irq_optional() actually reviewable.
-
-> > And if you cannot blindly use the dummy, then you're not the targetted
-> > caller of *_get_optional() and should better use *_get() and handle
-> > -ENODEV explicitly.
->=20
-> No, because the janitors tend to consolidate error message handling,
-> by moving the printing up, inside the *_get() methods.  That's exactly
-> what happened here.
-
-This is in my eyes the root cause of the issues at hand. Moving the
-error message handling into a get function is only right for most of the
-callers. So the more conservative approach would be to introduce a noisy
-variant of the get function and convert all users that benefit
-separately while the unreviewed callers and those that don't want an
-error message can happily continue to use the silent variant.
-
-> So there are three reasons: because the absence of an optional IRQ
-> is not an error, and thus that should not cause (a) an error code
-> to be returned, and (b) an error message to be printed, and (c)
-> because it can simplify the logic in device drivers.
-
-I don't agree to (a). If the value signaling not-found is -ENXIO or 0
-(or -ENODEV) doesn't matter much. I wouldn't deviate from the return
-code semantics of platform_get_irq() just for having to check against 0
-instead of -ENXIO. Zero is then just another magic value.
-(c) still has to be proven, see above.
-
-> Commit 8973ea47901c81a1 ("driver core: platform: Introduce
-> platform_get_irq_optional()") fixed (b), but didn't address (a) and
-> (c).
-
-Yes, it fixed (b) and picked a bad name for that.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---p6yh245p57zhiyck
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHlV8AACgkQwfwUeK3K
-7Am0GQf8CoKYtZsyB2Veq4tA4dVxwehDrqSNzD0/oee9gQ2W8Ug3o/BHJYBwahzq
-EvMyo3JUywFfBFS6fqP6q+5CXaw3qhcVdLIQIYR1NbdbDku9fPpYgUlMeO8FLj0S
-AjA1gReJzZffpqQa+j6sWHbwoCmV4ZWTYuhi2tnY6gxes4QcBTcXhrlPtPvEcvRj
-xiaHDNvm4yBJjau7t98dhCCfb9ioYwkuGybaTVJenP6u4ZB5QxTAKBsVZsaYscE9
-K/bTKX+pt+MFJrjy6AN6Qq4JYNuQK8v7MawD5u/q9qZHAELmMQaNyWTpBBDKqjGv
-Z8p6bAtXmJy2dTalO786GdRxwAWrMQ==
-=gT+3
------END PGP SIGNATURE-----
-
---p6yh245p57zhiyck--
+On 1/14/2022 2:31 PM, Amadeusz Sławiński wrote:
+> [CAUTION: External Email]
+> 
+> On 1/13/2022 5:33 PM, Ajit Kumar Pandey wrote:
+>> ACP hardware has PGFSM control registers that can be configured to
+>> power On/Off the ACP IP block. Add acp init()/de_init() callbacks
+>> in renoir platform driver probe()/remove() respectively to power
+>> on and off ACP IP block on ACP3X device.
+>>
+>> Signed-off-by: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
+>> ---
+>>   sound/soc/amd/acp/acp-renoir.c       | 170 +++++++++++++++++++++++++++
+>>   sound/soc/amd/acp/chip_offset_byte.h |   6 +
+>>   2 files changed, 176 insertions(+)
+>>
+>> diff --git a/sound/soc/amd/acp/acp-renoir.c 
+>> b/sound/soc/amd/acp/acp-renoir.c
+>> index 770a57a0677b..a29f910f25d1 100644
+>> --- a/sound/soc/amd/acp/acp-renoir.c
+>> +++ b/sound/soc/amd/acp/acp-renoir.c
+>> @@ -25,6 +25,19 @@
+>>
+>>   #define DRV_NAME "acp_asoc_renoir"
+>>
+>> +#define ACP_SOFT_RST_DONE_MASK       0x00010001
+>> +
+>> +#define ACP_PWR_ON_MASK              0x01
+>> +#define ACP_PWR_OFF_MASK     0x00
+>> +#define ACP_PGFSM_STAT_MASK  0x03
+>> +#define ACP_POWERED_ON               0x00
+>> +#define ACP_PWR_ON_IN_PROGRESS       0x01
+>> +#define ACP_POWERED_OFF              0x02
+>> +
+>> +
+>> +#define ACP_ERROR_MASK 0x20000000
+>> +#define ACP_EXT_INTR_STAT_CLEAR_MASK 0xFFFFFFFF
+>> +
+>>   static struct snd_soc_acpi_codecs amp_rt1019 = {
+>>       .num_codecs = 1,
+>>       .codecs = {"10EC1019"}
+>> @@ -112,11 +125,154 @@ static struct snd_soc_dai_driver 
+>> acp_renoir_dai[] = {
+>>   },
+>>   };
+>>
+>> +static int acp3x_power_on(void __iomem *base)
+>> +{
+>> +     u32 val;
+>> +     int timeout = 0;
+>> +
+>> +     val = readl(base + ACP_PGFSM_STATUS);
+>> +
+>> +     if (val == ACP_POWERED_ON)
+>> +             return 0;
+>> +
+>> +     if ((val & ACP_PGFSM_STAT_MASK) != ACP_PWR_ON_IN_PROGRESS)
+>> +             writel(ACP_PWR_ON_MASK, base + ACP_PGFSM_CONTROL);
+>> +
+>> +     while (++timeout < 500) {
+>> +             val = readl(base + ACP_PGFSM_STATUS);
+>> +             if (!val)
+>> +                     return 0;
+>> +             udelay(1);
+>> +     }
+> 
+> Can this while loop perhaps be replaced with readl_poll_timeout?
+> Similarly for cases below?
+> 
+>> +
+>> +     return -ETIMEDOUT;
+>> +}
+>> +
+>> +static int acp3x_power_off(void __iomem *base)
+>> +{
+>> +     u32 val;
+>> +     int timeout = 0;
+>> +
+>> +     writel(ACP_PWR_OFF_MASK, base + ACP_PGFSM_CONTROL);
+>> +
+>> +     while (++timeout < 500) {
+>> +             val = readl(base + ACP_PGFSM_STATUS);
+>> +             if ((val & ACP_PGFSM_STAT_MASK) == ACP_POWERED_OFF)
+>> +                     return 0;
+>> +             udelay(1);
+>> +     }
+>> +
+>> +     return -ETIMEDOUT;
+>> +}
+>> +
+>> +static int acp3x_reset(void __iomem *base)
+>> +{
+>> +     u32 val;
+>> +     int timeout = 0;
+>> +
+>> +     writel(1, base + ACP_SOFT_RESET);
+>> +
+>> +     while (++timeout < 500) {
+>> +             val = readl(base + ACP_SOFT_RESET);
+>> +             if (val & ACP_SOFT_RST_DONE_MASK)
+>> +                     break;
+>> +             cpu_relax();
+>> +     }
+>> +
+>> +     writel(0, base + ACP_SOFT_RESET);
+>> +
+>> +     timeout = 0;
+>> +     while (++timeout < 500) {
+>> +             val = readl(base + ACP_SOFT_RESET);
+>> +             if (!val)
+>> +                     return 0;
+>> +             cpu_relax();
+>> +     }
+>> +
+>> +     return -ETIMEDOUT;
+>> +}
+>> +
+>> +static void acp3x_enable_interrupts(void __iomem *base)
+>> +{
+>> +     u32 ext_intr_ctrl;
+>> +
+>> +     writel(0x01, base + ACP_EXTERNAL_INTR_ENB);
+>> +     ext_intr_ctrl = readl(base + ACP_EXTERNAL_INTR_CNTL);
+>> +     ext_intr_ctrl |= ACP_ERROR_MASK;
+>> +     writel(ext_intr_ctrl, base + ACP_EXTERNAL_INTR_CNTL);
+>> +}
+>> +
+>> +static void acp3x_disable_interrupts(void __iomem *base)
+>> +{
+>> +     writel(ACP_EXT_INTR_STAT_CLEAR_MASK, base + 
+>> ACP_EXTERNAL_INTR_STAT);
+>> +     writel(0x00, base + ACP_EXTERNAL_INTR_ENB);
+>> +}
+>> +
+>> +static int rn_acp_init(void __iomem *base)
+>> +{
+>> +     int ret;
+>> +
+>> +     /* power on */
+>> +     ret = acp3x_power_on(base);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     writel(0x01, base + ACP_CONTROL);
+>> +
+>> +     /* Reset */
+>> +     ret = acp3x_reset(base);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     acp3x_enable_interrupts(base);
+>> +
+>> +     return 0;
+>> +}
+>> +
+>> +static int rn_acp_deinit(void __iomem *base)
+>> +{
+>> +     int ret = 0;
+>> +
+>> +     acp3x_disable_interrupts(base);
+>> +
+>> +     /* Reset */
+>> +     ret = acp3x_reset(base);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     writel(0x00, base + ACP_CONTROL);
+>> +
+>> +     /* power off */
+>> +     ret = acp3x_power_off(base);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     return 0;
+>> +}
+>>   static int renoir_audio_probe(struct platform_device *pdev)
+>>   {
+>>       struct device *dev = &pdev->dev;
+>> +     struct acp_chip_info *chip;
+>>       struct acp_dev_data *adata;
+>>       struct resource *res;
+>> +     int ret;
+>> +
+>> +     chip = dev_get_platdata(&pdev->dev);
+>> +     if (!chip || !chip->base) {
+>> +             dev_err(&pdev->dev, "ACP chip data is NULL\n");
+>> +             return -ENODEV;
+>> +     }
+>> +
+>> +     if (chip->acp_rev != ACP3X_DEV) {
+>> +             dev_err(&pdev->dev, "Un-supported ACP Revision %d\n", 
+>> chip->acp_rev);
+>> +             return -ENODEV;
+>> +     }
+>> +
+>> +     ret = rn_acp_init(chip->base);
+>> +     if (ret) {
+>> +             dev_err(&pdev->dev, "ACP Init failed\n");
+>> +             return -EINVAL;
+>> +     }
+>>
+>>       adata = devm_kzalloc(dev, sizeof(struct acp_dev_data), GFP_KERNEL);
+>>       if (!adata)
+>> @@ -155,6 +311,20 @@ static int renoir_audio_probe(struct 
+>> platform_device *pdev)
+>>   static int renoir_audio_remove(struct platform_device *pdev)
+>>   {
+>>       struct device *dev = &pdev->dev;
+>> +     struct acp_chip_info *chip;
+>> +     int ret;
+>> +
+>> +     chip = dev_get_platdata(&pdev->dev);
+>> +     if (!chip || !chip->base) {
+>> +             dev_err(&pdev->dev, "ACP chip data is NULL\n");
+>> +             return -ENODEV;
+>> +     }
+>> +
+>> +     ret = rn_acp_deinit(chip->base);
+>> +     if (ret) {
+>> +             dev_err(&pdev->dev, "ACP de-init Failed\n");
+>> +             return -EINVAL;
+>> +     }
+>>
+>>       acp_platform_unregister(dev);
+>>       return 0;
+>> diff --git a/sound/soc/amd/acp/chip_offset_byte.h 
+>> b/sound/soc/amd/acp/chip_offset_byte.h
+>> index e38589a142e9..88f6fa597cd6 100644
+>> --- a/sound/soc/amd/acp/chip_offset_byte.h
+>> +++ b/sound/soc/amd/acp/chip_offset_byte.h
+>> @@ -14,6 +14,12 @@
+>>   #define ACPAXI2AXI_ATU_CTRL                           0xC40
+>>   #define ACPAXI2AXI_ATU_PAGE_SIZE_GRP_5                0xC20
+>>   #define ACPAXI2AXI_ATU_BASE_ADDR_GRP_5                0xC24
+>> +
+>> +#define ACP_PGFSM_CONTROL                    0x141C
+>> +#define ACP_PGFSM_STATUS                        0x1420
+>> +#define ACP_SOFT_RESET                          0x1000
+>> +#define ACP_CONTROL                             0x1004
+>> +
+>>   #define ACP_EXTERNAL_INTR_ENB                         0x1800
+>>   #define ACP_EXTERNAL_INTR_CNTL                        0x1804
+>>   #define ACP_EXTERNAL_INTR_STAT                        0x1808
+> 
+ok will improvise this in next patch chain
