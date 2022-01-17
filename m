@@ -2,135 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC1C9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 21:48:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B388C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 21:49:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243314AbiAQVsx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 16:48:53 -0500
-Received: from mga14.intel.com ([192.55.52.115]:14142 "EHLO mga14.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235812AbiAQVsv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 16:48:51 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642456131; x=1673992131;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=DBeO6aDiIEQG/4PRcF+TRJQpRxMi0Jc+fiRJum1lmsQ=;
-  b=L5BBb+VVEGznJIqePsth4bcO7yEDMAhACbHL6uhFI58wDYCCrD7ozM5R
-   bXY/KHq1J7LU+9i0XyWFbLCT8r9TtL59AM+GhdEtVR4gwO5xrkSkxgpwC
-   8bWJ4ZYCTYRlhQJnuwrewNtYpNrRIM2ixHiI5i53+dZAZ1tp2Ar8qvlv2
-   +Y6Z9YbT0AlXWp+DErhJkM+Vkh08YyFCkSFs6MThGSfvKNwxQHKYl8fgH
-   qCQ5AC2If8W954Z+KiI8iyK8qXfh4VJtB6FsrOVMVlcgTpRTYJGBgBFd3
-   SXaytTIiMjukrnvGGwgLHXw35AF97RJKPXvQ8XxgtTP2WTG07KpSIosTa
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="244893342"
-X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="244893342"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 13:48:51 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="476768406"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 17 Jan 2022 13:48:49 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n9Zrt-000BtY-Au; Mon, 17 Jan 2022 21:48:49 +0000
-Date:   Tue, 18 Jan 2022 05:48:20 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-lib 14/24]
- fs/netfs/read_helper.c:979:14: warning: variable 'folio' is uninitialized
- when used here
-Message-ID: <202201180514.gVYTloyy-lkp@intel.com>
+        id S243369AbiAQVti (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 16:49:38 -0500
+Received: from pb-sasl-trial21.pobox.com ([173.228.157.51]:54843 "EHLO
+        pb-sasl-trial21.pobox.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233431AbiAQVtg (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 16:49:36 -0500
+X-Greylist: delayed 656 seconds by postgrey-1.27 at vger.kernel.org; Mon, 17 Jan 2022 16:49:35 EST
+Received: from pb-sasl-trial21.pobox.com (localhost.local [127.0.0.1])
+        by pb-sasl-trial21.pobox.com (Postfix) with ESMTP id 574E91F98F;
+        Mon, 17 Jan 2022 16:38:39 -0500 (EST)
+        (envelope-from nico@fluxnic.net)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=pobox.com; h=date:from:to
+        :cc:subject:in-reply-to:message-id:references:mime-version
+        :content-type; s=sasl; bh=zHTCsXhUflqG5NDTDETust6K8wY=; b=l3aqFz
+        fcswXCeUZAknRJXQfFykkxtIqxRVp6V0lwKzhODdF5qUUAmqBx3ry8Sbr4HCSXc7
+        02Low6RVnJGWn3rhYnDMkvGdNCY3UyBx3ssiQZonv2Alr+VU1/5c8NDYOq7O41Re
+        U0vEEf+WJlphqJc0Jv3odUeJYB146gB8F/4Hk=
+Received: from pb-smtp20.sea.icgroup.com (pb-smtp20.pobox.com [10.110.30.20])
+        by pb-sasl-trial21.pobox.com (Postfix) with ESMTP id 38CE11F98C;
+        Mon, 17 Jan 2022 16:38:39 -0500 (EST)
+        (envelope-from nico@fluxnic.net)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed; d=fluxnic.net;
+ h=date:from:to:cc:subject:in-reply-to:message-id:references:mime-version:content-type; s=2016-12.pbsmtp; bh=97k/YWCIM2xZt1fXcNpvHo0/q7gN6rGe/OBE09sgPW0=; b=tGjceoNgnUQowKwZBQcMObZYxb0XkZetLIAKdSEDPkirP5BZKs01nVYlbqUJFKnnjLnjmDdaYC/dR1wmwGbZAWgxzx+b64cU+JqFgxKUYKT7fi2x+qluy+wlPpXzsdOAH10spiimWmr8h8YXgPGuIhVnuRup2CrBCkA7znTINms=
+Received: from yoda.home (unknown [96.21.170.108])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by pb-smtp20.pobox.com (Postfix) with ESMTPSA id 10961178028;
+        Mon, 17 Jan 2022 16:38:36 -0500 (EST)
+        (envelope-from nico@fluxnic.net)
+Received: from xanadu.home (xanadu.home [192.168.2.2])
+        by yoda.home (Postfix) with ESMTPSA id 0B3022DA0040;
+        Mon, 17 Jan 2022 16:38:34 -0500 (EST)
+Date:   Mon, 17 Jan 2022 16:38:33 -0500 (EST)
+From:   Nicolas Pitre <nico@fluxnic.net>
+To:     Borislav Petkov <bp@alien8.de>
+cc:     Alexander Lobakin <alexandr.lobakin@intel.com>,
+        linux-hardening@vger.kernel.org, x86@kernel.org,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Kristen Carlson Accardi <kristen@linux.intel.com>,
+        Kees Cook <keescook@chromium.org>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Tony Luck <tony.luck@intel.com>,
+        Bruce Schlobohm <bruce.schlobohm@intel.com>,
+        Jessica Yu <jeyu@kernel.org>,
+        kernel test robot <lkp@intel.com>,
+        Miroslav Benes <mbenes@suse.cz>,
+        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Josh Poimboeuf <jpoimboe@redhat.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Marios Pomonis <pomonis@google.com>,
+        Sami Tolvanen <samitolvanen@google.com>,
+        "H.J. Lu" <hjl.tools@gmail.com>, linux-kernel@vger.kernel.org,
+        linux-kbuild@vger.kernel.org, linux-arch@vger.kernel.org,
+        live-patching@vger.kernel.org, llvm@lists.linux.dev
+Subject: Re: [PATCH v9 04/15] arch: introduce ASM function sections
+In-Reply-To: <YeXasIO5ArXxtw1J@zn.tnic>
+Message-ID: <8n284257-9665-s3q1-6833-rn966p87qoqs@syhkavp.arg>
+References: <20211223002209.1092165-1-alexandr.lobakin@intel.com> <20211223002209.1092165-5-alexandr.lobakin@intel.com> <YeXasIO5ArXxtw1J@zn.tnic>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+X-Pobox-Relay-ID: D377A396-77DD-11EC-BE07-C85A9F429DF0-78420484!pb-smtp20.pobox.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-lib
-head:   e450b62f32df4384c141a6a382811b3fe5723bad
-commit: e6b340ed3634bb80396afb564c499eebdeff601f [14/24] netfs: Use a buffer in netfs_read_request and add pages to it
-config: x86_64-randconfig-a001-20220117 (https://download.01.org/0day-ci/archive/20220118/202201180514.gVYTloyy-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 5f782d25a742302d25ef3c8b84b54f7483c2deb9)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/e6b340ed3634bb80396afb564c499eebdeff601f
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-lib
-        git checkout e6b340ed3634bb80396afb564c499eebdeff601f
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash fs/netfs/
+On Mon, 17 Jan 2022, Borislav Petkov wrote:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> Thanks for explaining this. The gas manpage is very, hm, verbose
+> <sarcarstic eyeroll> ;-\:
 
-All warnings (new ones prefixed by >>):
-
->> fs/netfs/read_helper.c:979:14: warning: variable 'folio' is uninitialized when used here [-Wuninitialized]
-                           folio_put(folio);
-                                     ^~~~~
-   fs/netfs/read_helper.c:928:21: note: initialize the variable 'folio' to silence this warning
-           struct folio *folio;
-                              ^
-                               = NULL
-   1 warning generated.
+GNU tools tend to be far better documented in their info pages.
 
 
-vim +/folio +979 fs/netfs/read_helper.c
-
-   943	
-   944		ret = netfs_rreq_add_folios_to_buffer(rreq, want_index, have_index - 1,
-   945						      gfp_mask);
-   946		if (ret < 0)
-   947			return ret;
-   948		have_folios += have_index - want_index;
-   949	
-   950		ret = netfs_rreq_add_folios_to_buffer(rreq, have_index + have_folios,
-   951						      want_index + want_folios - 1,
-   952						      gfp_mask);
-   953		if (ret < 0)
-   954			return ret;
-   955	
-   956		/* Transfer the folios proposed by the VM into the buffer and take refs
-   957		 * on them.  The locks will be dropped in netfs_rreq_unlock().
-   958		 */
-   959		if (ractl) {
-   960			while ((folio = readahead_folio(ractl))) {
-   961				folio_get(folio);
-   962				if (folio == keep)
-   963					folio_get(folio);
-   964				ret = xa_insert_set_mark(&rreq->buffer,
-   965							 folio_index(folio), folio,
-   966							 XA_MARK_0, gfp_mask);
-   967				if (ret < 0) {
-   968					if (folio != keep)
-   969						folio_unlock(folio);
-   970					folio_put(folio);
-   971					return ret;
-   972				}
-   973			}
-   974		} else {
-   975			folio_get(keep);
-   976			ret = xa_insert_set_mark(&rreq->buffer, keep->index, keep,
-   977						 XA_MARK_0, gfp_mask);
-   978			if (ret < 0) {
- > 979				folio_put(folio);
-   980				return ret;
-   981			}
-   982		}
-   983		return 0;
-   984	}
-   985	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+Nicolas
