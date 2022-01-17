@@ -2,186 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2625C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:06:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E633AC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:07:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240722AbiAQQGi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 11:06:38 -0500
-Received: from mout.gmx.net ([212.227.17.22]:51155 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237342AbiAQQGg (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 11:06:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1642435587;
-        bh=s5BIBuSXS7UxV06lWqKoBfQTCsNxGaUxkMitDZfBz9U=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=hrniWZGE+BsmDagjivRek4WFwVYPKilvlnJ1lzpC3gAdOx9sFfjiNdq2jeagck7uc
-         iHbp88+x6rvhwoSeJCb9s/u62Um6dt844fHSdYMyVt1Flg/okPkwh4j/FzKd9A6bCg
-         aQEuhkgpf1myePB5kgq5mLFk9be7l/BWeT1R5gIQ=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.167.237]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MhD2Y-1mf5iy3dXG-00eOrF; Mon, 17
- Jan 2022 17:06:26 +0100
-Message-ID: <669792cd-9899-980a-04b1-4ff64886b751@gmx.de>
-Date:   Mon, 17 Jan 2022 17:05:21 +0100
+        id S240724AbiAQQHN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 11:07:13 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49994 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235180AbiAQQHM (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 11:07:12 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AA4161034;
+        Mon, 17 Jan 2022 16:07:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3CD6EC36AE3;
+        Mon, 17 Jan 2022 16:07:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642435631;
+        bh=savEbw0Fq5jjf0eRzSMg5CUeza/UcrBnw+kG0Zx0SQA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qAGiC9WQQQRyt4g9rn98cyXAzcF1q1Xg9AGoWlQE+ukoM49QGVXM/MCvPNt+T6Ily
+         AIBHiC9Ft8zm7rNCfuWmXK5ND4/YGdCCe2GM6UvCXPt+0ff3xwvAjffpyWOAc1P2px
+         5nmcNhoKVfAZo7+Kn1P5LLY8mFjvcoNNvSFHSAyHtWz4RC79cNerjR/msPFwQw6lWB
+         1RRRkzo8waubeN9xphJUEJ75CodbF7hIrSZ9lyYVkuxEXoMf0vOMpt1cZqA/i0EdpU
+         3W48TMw8uO54uuaCEfwkRK3yrJWIN3jQtzjN3k6dYU83CH6pLAWhgruEpWuYtJk5ib
+         CJhcQP/xSYUeg==
+Date:   Mon, 17 Jan 2022 21:37:05 +0530
+From:   Manivannan Sadhasivam <mani@kernel.org>
+To:     Slark Xiao <slark_xiao@163.com>
+Cc:     hemantk@codeaurora.org, mhi@lists.linux.dev,
+        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: Re: [PATCH net v2] For default mechanism, product would use
+ default MRU 3500 if they didn't define it. But for Foxconn SDX55, there is a
+ known issue which MRU 3500 would lead to data connection lost. So we align
+ it with Qualcomm default MRU settings.
+Message-ID: <20220117160705.GC4209@thinkpad>
+References: <20220117081644.21121-1-slark_xiao@163.com>
+ <20220117084432.GB4209@thinkpad>
+ <50e92997.386b.17e6775c20b.Coremail.slark_xiao@163.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
-Content-Language: en-US
-To:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Gerd Hoffmann <kraxel@redhat.com>, Daniel Vetter <daniel@ffwll.ch>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        "airlied@gmail.com" <airlied@gmail.com>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Javier Martinez Canillas <javierm@redhat.com>
-References: <YeG8ydoJNWWkGrTb@ls3530>
- <CAKMK7uGdJckdM+fg+576iJXsqzCOUg20etPBMwRLB9U7GcG01Q@mail.gmail.com>
- <c80ed72c-2eb4-16dd-a7ad-57e9dde59ba1@gmx.de>
- <20220117125716.yjwxsze35j2ndn2i@sirius.home.kraxel.org>
- <CAMuHMdW=Zpp2mHbrBx7i0WN8PqY3XpK5qpyAyYxgf9n88edpug@mail.gmail.com>
- <70530b62-7b3f-db88-7f1a-f89b824e5825@suse.de>
- <CAMuHMdW5M=zEuGEnQQc3JytDhoxCKRiq0QFw+HOPp0YMORzidw@mail.gmail.com>
- <57d276d3-aa12-fa40-6f90-dc19ef393679@gmx.de>
- <faa46e76-d38c-f436-d005-ce69915033fb@suse.de>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <faa46e76-d38c-f436-d005-ce69915033fb@suse.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:ZW2m36RD2bEb4hSnYRTY1+FAWG6uOcoJ3sYwXhAVazg96rrtGSL
- utdB9MSWGPPp1VJzhrRkYpTqxqHevQB29c39eXmh7A+lTvJZGHPlXC3qsILj1KNVIpF/Grz
- JqaMFa/iHQHjb86Zo8V1r//lXg3TAOANEqiraHnB+/7lJAaPsNWdl0UocvHmRgcBuk2t414
- EcT0rmXNmEnSwlr/FfdIw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:NUlVH8f4SYE=:gGcTH/ICXvEUgsOIfGcJ7c
- bs1UF2IahUFvlpW8tB1nVz/2MfNmWiT2wWihsiypKa/zn1dWfcDYKi41YpEP8uVEiyGSQIWKg
- 1pV0NTWHSXPEo0A8wkP63wu9l7grwPN8zK112rpVBAejK+2A8+gf2pHhLDvdMRCdYxEVM4yKt
- /cfGmn4trlF1BDKOsWxCJ4hVyN6AWo/16KpksygeCVElgrGPkn3SwRaGrVnfzuHoXwK07UKQa
- hlEvCS3f9a8Zq/om3iFHH+BLOCANtvMSNcAnuctbliNdBk3BZsCldozu+yGdYEEQ3ap1FERmy
- 1beq2IvkX7QmWJPZiN844fFoKYhevMX5jY9TIY4AUIJoJDqpdOqyKiyphZJxojQwXfpvzEJN8
- rYzCTMJaMWjjni34+V164fWloiubd6AOaL1s8CBR8bNGaYgDkUak7JEu7mGWgQII+miaWYKU5
- zeG1ESGoR8tUUEB7ykzcNlsCigu1HUc9r3r/MQHPBJzS9oKYL3yYWHvV654PDCf52ePn22G73
- RGz2G2d+km1QD1osoM7RPI1xVInOhwGACwXu+eKzu7fATma8XWijYdMHXsu7ORHT6+u1Af7F3
- Dvg5ZKJ3XM9ThR0i0ndpMHedMD6MHWEh8NMsNkDwG+arRGjaF5xlAAxHSC2m0nOp9AoN1py0n
- 4MSOWbfxR5dlTvjBN+k2DYgPdmE6d7Q3ljsiVgAj1gp7kwYofR3Tz7tFdZPEve5xka7Ba+u8h
- pH4MS9YjRNHTZOjNsIy54UF2kb7lMdQbCGsb+fz6zSuJtgPm+42kNT2IY5jkn89ZHzkvUYGVd
- 5UcNoNO+PaEVKpTlp+PbuL+t5Wh9pux358htzi+Grwrc2v5m5NsxFm3oFNoQpIMhCgV42cyS0
- ybVPmUwIGOM2YVbvC7qHZmKjnOUVnVLLkPxoeBH40i99ILbog6jVkkiW7ubgzzk1w6CxpGjKT
- RZx7Y1I4oC7uU5ZVrbRXmsiGZXznP3KCc1F+SKv51Pgnnnn7TKkq1oU77FNsQqiR8juhDp8fO
- WtAWXcXjwzrH7bMnfIEIbht+W6xENBe3hm7BNY5mpPt80GmGNypVzg7pK74J3ZbtOoUUc4phE
- DdXRLqsbOqW8aI=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <50e92997.386b.17e6775c20b.Coremail.slark_xiao@163.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Thomas,
+On Mon, Jan 17, 2022 at 05:54:37PM +0800, Slark Xiao wrote:
+> 
+> 
+> 
+> 
+> 
+> 
+> At 2022-01-17 16:44:32, "Manivannan Sadhasivam" <mani@kernel.org> wrote:
+> >On Mon, Jan 17, 2022 at 04:16:44PM +0800, Slark Xiao wrote:
+> >> Fixes: 5c2c85315948 ("bus: mhi: pci-generic: configurable network interface MRU")
+> >
+> >You have messed up the patch subject, please fix it. Also, the correct fixes tag
+> >should be the one added the Foxconn modem support, precisely "aac426562f56".
+> >
+> Yes, sorry for this mistake. 
+> >One more thing, please make sure this MRU value works well for other Foxconn
+> >modems supported by this config.
+> >
+> I am sure this would work for all  our device. BTW, I want to add this mru_default to 
+> cinterion-mv31 PRODUCT. Shall I use v3 or create a new version for that? It's confirmed 
+> that this change could help fix issue on that product.
 
-On 1/17/22 16:05, Thomas Zimmermann wrote:
-> Hi
->
-> Am 17.01.22 um 15:47 schrieb Helge Deller:
->> On 1/17/22 15:10, Geert Uytterhoeven wrote:
->> [...]
->>> Using an XRGB32 intermediate would kill the user experience on old
->>> machines, due to both increased memory usage and copy overhead.
->>>
->>>> Personally, I'd much appreciate if userspace would support more of th=
-e
->>>> native formats and not rely on XRGB32.
->>>
->>> Supporting monochrome, 16 colors, and 256 colors would be nice.
->>
->> =C2=A0From this conversation it seems DRM completely lacks backwards co=
-mpatibility,
->> including a missing 2D bitblt copy.
->> Isn't that all what's needed and then migrating existing drivers would
->> be easy ?
->
-> What exactly do you mean by 'backwards compatibility'?
+Please submit individual patches with Fixes tag each.
 
-DRM to provide possibility to run (in at least a few) of the bitmap format=
-s
-mentioned above.
+> >> Signed-off-by: Slark Xiao <slark_xiao@163.com>
+> >
+> >You should have added my Reviewed-by tag too...
+> Shall I add reviewd-by tag if I add changes on MV31 product?
+> >
 
-> The driver API is different, of course.
+No, only to this patch since I haven't reviewed the MV31 patch.
 
-Sure.
-I would think of a defined set how to activate a special graphics output.
-And a function to do on-screen 2D bitblt to move contents (for usage of
-fbcon emulation).
+Thanks,
+Mani
 
-> My conversion helpers can provide a starting point to move fbdev code
-> into DRM drivers.
-I need to look into this.
-
-> For fbdev 2d-bitblt ioctls,
-
-I'm not talking about 2d bitblt "IOCTLS". I'm talking about fbcon utilizin=
-g
-2D graphic card bitblt to move on-screen contents to speed up a text conso=
-le.
-E.g. text upwards scrolling.
-
-> you can add them to DRM drivers and set
-> up DRM's fbdev emulation accordingly. Some DRM drivers do/did this.
-
-> To my knowledge, so far there's not been a use case where that
-> provides a benefit over simple memcpy.
-
-It's a huge difference on older machines with slower busses for example.
-So, for text console emulation, moving windows ... it's important.
-
-> For fast 2d blitting from userspace, you should read Daniel's comment
-> at [1]. tl;dr: a generic solution is non-trivial.
-Probably. I think fbdev doesn't provide that functionality either today
-(at least I think so) - so that's probably not a focus (and not relevant
-regading the "backwards compatibility" I mentioned).
-
-Helge
-
-
-> Best regards
-> Thomas
->
-> [1] https://blog.ffwll.ch/2018/08/no-2d-in-drm.html
->
->>
->> Helge
->>
->>
->>>>> This not only to support "old" hardware, but also modern small OLED
->>>>> and e-ink displays.
->>>>
->>>> There's a DRM driver for Repaper e-Ink displays. So it seems doable a=
-t
->>>> least.
->>>
->>> Which uses an DRM_FORMAT_XRGB8888 intermediate, and
->>> drm_fb_xrgb8888_to_gray8() and repaper_gray8_to_mono_reversed()
->>> to convert from truecolor to monochrome.=C2=A0 I guess that would work=
-,
->>> as this is a slow e-ink display.=C2=A0 Have fun as a text console ;-)
->>>
->>> Gr{oetje,eeting}s,
->>>
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0 Geert
->>>
->>> --
->>> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux=
--m68k.org
->>>
->>> In personal conversations with technical people, I call myself a hacke=
-r. But
->>> when I'm talking to journalists I just say "programmer" or something l=
-ike that.
->>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 -- Linus Torvalds
->>>
->>
->
-
+> >Thanks,
+> >Mani
+> >
+> >> 
+> >> ---
+> >> v2: Add Fixes tag
+> >> ---
+> >>  drivers/bus/mhi/pci_generic.c | 1 +
+> >>  1 file changed, 1 insertion(+)
+> >> 
+> >> diff --git a/drivers/bus/mhi/pci_generic.c b/drivers/bus/mhi/pci_generic.c
+> >> index 3a258a677df8..74e8fc342cfd 100644
+> >> --- a/drivers/bus/mhi/pci_generic.c
+> >> +++ b/drivers/bus/mhi/pci_generic.c
+> >> @@ -366,6 +366,7 @@ static const struct mhi_pci_dev_info mhi_foxconn_sdx55_info = {
+> >>  	.config = &modem_foxconn_sdx55_config,
+> >>  	.bar_num = MHI_PCI_DEFAULT_BAR_NUM,
+> >>  	.dma_data_width = 32,
+> >> +	.mru_default = 32768,
+> >>  	.sideband_wake = false,
+> >>  };
+> >>  
+> >> -- 
+> >> 2.25.1
+> >> 
