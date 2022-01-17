@@ -2,106 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FDBFC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 08:11:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1ECDC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 08:14:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237931AbiAQILV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 03:11:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36032 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230177AbiAQILU (ORCPT
+        id S237970AbiAQIOO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 03:14:14 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:59660 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S230028AbiAQIOM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 03:11:20 -0500
-Received: from relay1-d.mail.gandi.net (relay1-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::221])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F1AC061574;
-        Mon, 17 Jan 2022 00:11:19 -0800 (PST)
-Received: (Authenticated sender: jacopo@jmondi.org)
-        by mail.gandi.net (Postfix) with ESMTPSA id E8675240033;
-        Mon, 17 Jan 2022 08:10:08 +0000 (UTC)
-Date:   Mon, 17 Jan 2022 09:11:10 +0100
-From:   Jacopo Mondi <jacopo@jmondi.org>
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Mon, 17 Jan 2022 03:14:12 -0500
+X-UUID: 51f31bc786b24f499ee097c30bf01df9-20220117
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
+        h=Content-Transfer-Encoding:Content-Type:In-Reply-To:MIME-Version:Date:Message-ID:From:References:CC:To:Subject; bh=MLngfimllDjAWxvbO5d7nuFB2Pcu+gxeE6ZEyPxU+7k=;
+        b=oJ1ut0EVW/7ybuC1pUxz7bcqzFDICJKPtXNBizQ6zeD63gwOARw7E/b8t18dTk6SwbHE7Amb6bAahQP/WaSALqi7A2ZXrMWhNjYKuU8si6OPF1KJtQemAvXxjw0DmEmOnJimoAUEgLZQfGU0+5JPRMpCuvkygkmkaA/IwxyB0yQ=;
+X-UUID: 51f31bc786b24f499ee097c30bf01df9-20220117
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <macpaul.lin@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 698620270; Mon, 17 Jan 2022 16:14:01 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 17 Jan 2022 16:14:00 +0800
+Received: from [172.21.84.99] (172.21.84.99) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 17 Jan 2022 16:14:00 +0800
+Subject: Re: [PATCH 2/3] mmc: core: Add support for SDIO async interrupt
+To:     Axe Yang <axe.yang@mediatek.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        linux-media@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] media: dt-bindings: media: renesas,csi2: Update
- data-lanes property
-Message-ID: <20220117081110.bkwr3ttoexgr2wjt@uno.localdomain>
-References: <20220113103215.27080-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+        =?UTF-8?B?Q2hhb3RpYW4gSmluZyAo5LqV5pyd5aSpKQ==?= 
+        <Chaotian.Jing@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Adrian Hunter <adrian.hunter@intel.com>
+CC:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Satya Tangirala <satyat@google.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Lucas Stach <dev@lynxeye.de>,
+        Eric Biggers <ebiggers@google.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Kiwoong Kim <kwmad.kim@samsung.com>,
+        Yue Hu <huyue2@yulong.com>, Tian Tao <tiantao6@hisilicon.com>,
+        "angelogioacchino.delregno@collabora.com" 
+        <angelogioacchino.delregno@collabora.com>,
+        "linux-mmc@vger.kernel.org" <linux-mmc@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-mediatek@lists.infradead.org" 
+        <linux-mediatek@lists.infradead.org>
+References: <20220117071220.17330-1-axe.yang@mediatek.com>
+ <20220117071220.17330-3-axe.yang@mediatek.com>
+From:   Macpaul Lin <macpaul.lin@mediatek.com>
+Message-ID: <60f3d381-1af4-d002-e179-9550672dae5b@mediatek.com>
+Date:   Mon, 17 Jan 2022 16:14:00 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220113103215.27080-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+In-Reply-To: <20220117071220.17330-3-axe.yang@mediatek.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Prabhakar,
+T24gMS8xNy8yMiAzOjEyIFBNLCBBeGUgWWFuZyB3cm90ZToNCj4gSWYgY2FwLXNkaW8tYXN5bmMt
+aXJxIGZsYWcgaXMgc2V0IGluIGhvc3QgZHRzIG5vZGUsIHBhcnNlIEVBSQ0KPiBpbmZvcm1hdGlv
+biBmcm9tIFNESU8gQ0NDUiBpbnRlcnJ1cHQgZXh0ZXJuc2lvbiBzZWdtZW50LiBJZiBhc3luYw0K
+PiBpbnRlcnJ1cHQgaXMgc3VwcG9ydGVkIGJ5IFNESU8gY2FyZCB0aGVuIHNlbmQgY29tbWFuZCB0
+byBjYXJkIHRvDQo+IGVuYWJsZSBpdCBhbmQgc2V0IGVuYWJsZV9hc3luY19pcnEgZmxhZyBpbiBz
+ZGlvX2NjY3Igc3RydWN0dXJlIHRvIDEuDQo+IFRoZSBwYXJzZSBmbG93IGlzIGltcGxlbWVudGVk
+IGluIHNkaW9fcmVhZF9jY2NyKCkuDQo+IA0KPiBBY2tlZC1ieTogQW5nZWxvR2lvYWNjaGlubyBE
+ZWwgUmVnbm8gPGFuZ2Vsb2dpb2FjY2hpbm8uZGVscmVnbm9AY29sbGFib3JhLmNvbT4NCj4gU2ln
+bmVkLW9mZi1ieTogQXhlIFlhbmcgPGF4ZS55YW5nQG1lZGlhdGVrLmNvbT4NCg0KW2RlbGV0ZWQu
+Li5dDQoNCkl0IHNlZW1zIHRoZSBwcmVmaXggIltQQVRDSCB2M10iIGRpZG4ndCBhcHBsaWVkIHRv
+IHN1YmplY3Qgb2YgZWFjaCBwYXRjaCANCmluIHYzIHNlcmllcy4gUGxlYXNlIHJlbWVtYmVyIHRv
+IGtlZXAgdGhlIHZlcnNpb24gYWxpZ25lZCBpbiB0aGUgc2FtZSANCnBhdGNoIHNldC4gVXNlICJn
+aXQgZm9ybWF0LXBhdGNoIC0tc3ViamVjdC1wcmVmaXg9W1BBVENIIHYzXSIgdG8gaGVscCANCnlv
+dSB0byBrZWVwIHRoZSB2ZXJzaW9uIG51bWJlciBhbGlnbmVkIGlzIHN1Z2dlc3RlZC4NCg0KVGhh
+bmtzIQ0KTWFjcGF1bCBMaW4=
 
-On Thu, Jan 13, 2022 at 10:32:14AM +0000, Lad Prabhakar wrote:
-> CSI-2 (CSI4LNK0) on R-Car and RZ/G2 supports 4-lane mode which is already
-> handled by rcar-csi2.c driver. This patch updates the data-lanes property
-> to describe the same.
->
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> ---
->  .../devicetree/bindings/media/renesas,csi2.yaml          | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
->
-> diff --git a/Documentation/devicetree/bindings/media/renesas,csi2.yaml b/Documentation/devicetree/bindings/media/renesas,csi2.yaml
-> index e6a036721082..064a0a4c5737 100644
-> --- a/Documentation/devicetree/bindings/media/renesas,csi2.yaml
-> +++ b/Documentation/devicetree/bindings/media/renesas,csi2.yaml
-> @@ -67,7 +67,14 @@ properties:
->                  maxItems: 1
->
->                data-lanes:
-> -                maxItems: 1
-> +                items:
-> +                  minItems: 1
-> +                  maxItems: 4
-> +                  items:
-> +                    - const: 1
-> +                    - const: 2
-> +                    - const: 3
-> +                    - const: 4
-
-Seeing "maxItems: 1" there confuses me too, as the property is an
-array of data-lanes, but I'm afraid your change does not what you
-intend as it would allow you to specify the number of data lanes as an
-integer rather than as an array.
-
-I think it would probably be correct to set
-
-                data-lanes: true
-
-(maybe maxItems: 1 is correct already)
-
-And restrict the number of valid combinations in the board DTS file
-with a construct like:
-
-    data-lanes:
-      oneOf:
-        - items:
-            - const: 1
-            - const: 2
-            - const: 3
-            - const: 4
-        - items:
-            - const: 1
-            - const: 2
-
-Thanks
-   j
-
->
->              required:
->                - clock-lanes
-> --
-> 2.17.1
->
