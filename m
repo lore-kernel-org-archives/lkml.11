@@ -2,228 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 339CCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:19:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 217B9C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:21:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241049AbiAQQTo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 11:19:44 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:52662 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241082AbiAQQTh (ORCPT
+        id S241060AbiAQQV5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 11:21:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237650AbiAQQV4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 11:19:37 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 943AFCE13C4
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 16:19:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12DA7C36AE3;
-        Mon, 17 Jan 2022 16:19:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642436374;
-        bh=ZwvPVIDm+TPyGCluwrWEskSKaBP5kf9WX7wLN2lEs24=;
-        h=From:To:Cc:Subject:Date:From;
-        b=fZi9wrIC/m37BriAarnskbsCy5+UEuEcoJFt2XUD7+J2k7u8rvxBh3a9igLSoDk6E
-         pYfQR/GnRn49Ye69GrJoG66BYkCWfB+B+aOACmEIw8F2xlOXIYStQka302bEqSCIIj
-         mGADhUlKFPA1FG5YV1LedYNX4pR6rXDL3pr4G4KJ6fmoJOZNAI66CRP8aXFBGj14yw
-         4QH6nHkYNAhsbu47BHTi/8gYSyr754WfIJ6HzFZ1KAA7vSQSps5uZjJk2hl8QtSFRO
-         lJih0p+GnFctlks5nfk2F3kAEQRWUzn15IYef/Mjqv+Pp3CGivcidvZkyKz7mBVE+t
-         3NqQJqW3P71FQ==
-Received: from sofa.misterjones.org ([185.219.108.64] helo=hot-poop.lan)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1n9UjD-000ynK-PY; Mon, 17 Jan 2022 16:19:31 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>, kernel-team@android.com,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jay Chen <jkchen@linux.alibaba.com>
-Subject: [PATCH] irqchip/gic-v3-its: Reset each ITS's BASERn register before probe
-Date:   Mon, 17 Jan 2022 16:19:10 +0000
-Message-Id: <20220117161910.2041761-1-maz@kernel.org>
-X-Mailer: git-send-email 2.30.2
+        Mon, 17 Jan 2022 11:21:56 -0500
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E63BAC06161C
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 08:21:55 -0800 (PST)
+Received: by mail-il1-x131.google.com with SMTP id x15so15189271ilc.5
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 08:21:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Sp+0eoECInU2wfkdrbVWkaKUDKICynVO7ICEtzkqDx8=;
+        b=G7gYml8dmiEYly+hsWDEJkbGtJsKpyLr2bmYQH7r+pHbSZBANaq3j/K1PRU8rlVMTG
+         zpOd1VFgDUX7J6RvXrbCyRUOO5bPURbgl18lr7YyP9y0LObLswmSte7COLutEbl1nkKo
+         mA9CAkIhzzh9JaSFgIRXG2Oc7mYX3yWSaj8wJLkmhYOhM3FwVwSSjaLSrtYTdm7BA2yF
+         YhVsTtT3j8D7IEQ8BYZBTnjdJTUN6jZB5nr7einp2i5em+F7zF/kMIT+enAwnnFT7U5I
+         fySbn8gjekMICzahIiA9HNkyz4TQ3erGhTI39hl6ehrKug2L2OQw5IZ8f7fLp2pRGcFL
+         5x8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Sp+0eoECInU2wfkdrbVWkaKUDKICynVO7ICEtzkqDx8=;
+        b=oP1wOE9jOfdn5DBQCOQhBZ1JQ2QGR+27az1eEpW2rdMd36h+RFyvqxUnAu73XIQ7Ay
+         tWrHdCsux5wlZv1ubRBFMUmpuQTzJ0Xhv5b+3cua1KteGN/4SXAGaG5vSskP0RCHVur4
+         6wpnk6TI/0tWc2P1iOjOp4fWKhOBRJeo5nPinU5VJDdbs98k2an8OPsLDn8Yx/jPjZQY
+         2Sl889dkbulDrqlKdSkspsBHn/5zoPCNWr9eaj/gXePN9ba6KMyvHB4ogt41shgksOTx
+         kZAwEIyt0I5w2OTH4HgzBd9wIOHEGOplb2ZXFS8CQkpFEf7Cb72/F/zgS1KwxXzm7rcC
+         B2iQ==
+X-Gm-Message-State: AOAM530HHAelqCaYHHw9AEIW/VNemceyt3rxCa+ohdm58U0AY/JqH1eI
+        MMRviNG4fXhJUCz02ot5L+OYfgx+CgCKqsnSbH2STw==
+X-Google-Smtp-Source: ABdhPJxveX9u51mv7LPmfFastALckkh2LfMODqyoJi+VTjmGfs3BSYZOA8O3DwAF3uqjWOfP8CxcKlinlIF/pdO11Y8=
+X-Received: by 2002:a05:6e02:19cd:: with SMTP id r13mr11713421ill.89.1642436515137;
+ Mon, 17 Jan 2022 08:21:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 185.219.108.64
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, tglx@linutronix.de, kernel-team@android.com, lorenzo.pieralisi@arm.com, jkchen@linux.alibaba.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
+References: <1642432215-234089-1-git-send-email-john.garry@huawei.com>
+In-Reply-To: <1642432215-234089-1-git-send-email-john.garry@huawei.com>
+From:   Ian Rogers <irogers@google.com>
+Date:   Mon, 17 Jan 2022 08:21:42 -0800
+Message-ID: <CAP-5=fXONfbx6GzWaT21XzDyCcPkSR2hjEOO0ARVhwiSY5oKjA@mail.gmail.com>
+Subject: Re: [PATCH 0/3] perf: Support event alias in form foo-bar-baz
+To:     John Garry <john.garry@huawei.com>
+Cc:     peterz@infradead.org, mingo@redhat.com, acme@kernel.org,
+        mark.rutland@arm.com, alexander.shishkin@linux.intel.com,
+        jolsa@redhat.com, namhyung@kernel.org, kjain@linux.ibm.com,
+        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linuxarm@huawei.com, liuqi115@huawei.com,
+        zhangshaokun@hisilicon.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-A recent bug report outlined that the way GICv4.1 is handled across
-kexec is pretty bad. We can end-up in a situation where ITSs share
-memory (this is the case when SVPEPT==1) and reprogram the base
-registers, creating a situation where ITSs that are part of a given
-affinity group see different pointers. Which is illegal. Boo.
+On Mon, Jan 17, 2022 at 7:15 AM John Garry <john.garry@huawei.com> wrote:
+>
+> Currently event aliases in the form foo-bar-baz are not supported.
+>
+> The HiSilicon D06 platform has uncore event aliases in that form, and
+> using those aliases fail:
+>
+> $ ./perf list sdir-home-migrate
+>
+> List of pre-defined events (to be used in -e):
+>
+> uncore hha:
+>   sdir-home-migrate
+>  [Unit: hisi_sccl,hha]
+>
+> $ sudo ./perf stat -e sdir-home-migrate
+> event syntax error: 'sdir-home-migrate'
+>                         \___ parser error
+> Run 'perf list' for a list of valid events
+>
+>  Usage: perf stat [<options>] [<command>]
+>
+>  -e, --event <event>event selector. use 'perf list' to list available events
+>
+> This series added support for such an event alias form.
+>
+> I am no expert on l+y, so any and all review here would be appreciated,
+> especially the last patch which is marked as RFC (for that same reason).
+>
+> The series is based on acme perf/core @ 9bce13ea88f8.
+>
+> John Garry (3):
+>   perf parse-events: Support event alias in form foo-bar-baz
+>   perf test: Add pmu-events test for aliases with hyphens
+>   perf test: Add parse-events test for aliases with hyphens
 
-In order to restore some sanity, reset the BASERn registers to 0
-*before* probing any ITS. Although this isn't optimised at all,
-this is only a once-per-boot cost, which shouldn't show up on
-anyone's radar.
+The whole set:
 
-Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: Jay Chen <jkchen@linux.alibaba.com>
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Link: https://lore.kernel.org/r/20211216190315.GA14220@lpieralisi
----
- drivers/irqchip/irq-gic-v3-its.c | 106 +++++++++++++++++++++++++------
- 1 file changed, 87 insertions(+), 19 deletions(-)
+Acked-by: Ian Rogers <irogers@google.com>
 
-diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
-index ee83eb377d7e..9d68afe9fa86 100644
---- a/drivers/irqchip/irq-gic-v3-its.c
-+++ b/drivers/irqchip/irq-gic-v3-its.c
-@@ -4856,6 +4856,38 @@ static struct syscore_ops its_syscore_ops = {
- 	.resume = its_restore_enable,
- };
- 
-+static void __init __iomem *its_map_one(struct resource *res, int *err)
-+{
-+	void __iomem *its_base;
-+	u32 val;
-+
-+	its_base = ioremap(res->start, SZ_64K);
-+	if (!its_base) {
-+		pr_warn("ITS@%pa: Unable to map ITS registers\n", &res->start);
-+		*err = -ENOMEM;
-+		return NULL;
-+	}
-+
-+	val = readl_relaxed(its_base + GITS_PIDR2) & GIC_PIDR2_ARCH_MASK;
-+	if (val != 0x30 && val != 0x40) {
-+		pr_warn("ITS@%pa: No ITS detected, giving up\n", &res->start);
-+		*err = -ENODEV;
-+		goto out_unmap;
-+	}
-+
-+	*err = its_force_quiescent(its_base);
-+	if (*err) {
-+		pr_warn("ITS@%pa: Failed to quiesce, giving up\n", &res->start);
-+		goto out_unmap;
-+	}
-+
-+	return its_base;
-+
-+out_unmap:
-+	iounmap(its_base);
-+	return NULL;
-+}
-+
- static int its_init_domain(struct fwnode_handle *handle, struct its_node *its)
- {
- 	struct irq_domain *inner_domain;
-@@ -4963,29 +4995,14 @@ static int __init its_probe_one(struct resource *res,
- {
- 	struct its_node *its;
- 	void __iomem *its_base;
--	u32 val, ctlr;
- 	u64 baser, tmp, typer;
- 	struct page *page;
-+	u32 ctlr;
- 	int err;
- 
--	its_base = ioremap(res->start, SZ_64K);
--	if (!its_base) {
--		pr_warn("ITS@%pa: Unable to map ITS registers\n", &res->start);
--		return -ENOMEM;
--	}
--
--	val = readl_relaxed(its_base + GITS_PIDR2) & GIC_PIDR2_ARCH_MASK;
--	if (val != 0x30 && val != 0x40) {
--		pr_warn("ITS@%pa: No ITS detected, giving up\n", &res->start);
--		err = -ENODEV;
--		goto out_unmap;
--	}
--
--	err = its_force_quiescent(its_base);
--	if (err) {
--		pr_warn("ITS@%pa: Failed to quiesce, giving up\n", &res->start);
--		goto out_unmap;
--	}
-+	its_base = its_map_one(res, &err);
-+	if (!its_base)
-+		return err;
- 
- 	pr_info("ITS %pR\n", res);
- 
-@@ -5248,6 +5265,22 @@ static int its_cpu_memreserve_lpi(unsigned int cpu)
- 	return ret;
- }
- 
-+/* Mark all the BASER registers as invalid before they get reprogrammed */
-+static void __init its_reset_one(struct resource *res)
-+{
-+	void __iomem *its_base;
-+	int err, i;
-+
-+	its_base = its_map_one(res, &err);
-+	if (!its_base)
-+		return;
-+
-+	for (i = 0; i < GITS_BASER_NR_REGS; i++)
-+		gits_write_baser(0, its_base + GITS_BASER + (i << 3));
-+
-+	iounmap(its_base);
-+}
-+
- static const struct of_device_id its_device_id[] = {
- 	{	.compatible	= "arm,gic-v3-its",	},
- 	{},
-@@ -5258,6 +5291,22 @@ static int __init its_of_probe(struct device_node *node)
- 	struct device_node *np;
- 	struct resource res;
- 
-+	/*
-+	 * Make sure *all* the ITS are reset before we probe any, as
-+	 * they may be sharing memory. Don't bother warning on the
-+	 * first iteration, as any error will be caught on the second
-+	 * one.
-+	 */
-+	for (np = of_find_matching_node(node, its_device_id); np;
-+	     np = of_find_matching_node(np, its_device_id)) {
-+		if (!of_device_is_available(np) ||
-+		    !of_property_read_bool(np, "msi-controller") ||
-+		    of_address_to_resource(np, 0, &res))
-+			continue;
-+
-+		its_reset_one(&res);
-+	}
-+
- 	for (np = of_find_matching_node(node, its_device_id); np;
- 	     np = of_find_matching_node(np, its_device_id)) {
- 		if (!of_device_is_available(np))
-@@ -5420,9 +5469,28 @@ static int __init gic_acpi_parse_madt_its(union acpi_subtable_headers *header,
- 	return err;
- }
- 
-+static int __init its_acpi_reset(union acpi_subtable_headers *header,
-+				 const unsigned long end)
-+{
-+	struct acpi_madt_generic_translator *its_entry;
-+	struct resource res;
-+
-+	its_entry = (struct acpi_madt_generic_translator *)header;
-+	res = (struct resource) {
-+		.start	= its_entry->base_address,
-+		.end	= its_entry->base_address + ACPI_GICV3_ITS_MEM_SIZE - 1,
-+		.flags	= IORESOURCE_MEM,
-+	};
-+
-+	its_reset_one(&res);
-+	return 0;
-+}
-+
- static void __init its_acpi_probe(void)
- {
- 	acpi_table_parse_srat_its();
-+	acpi_table_parse_madt(ACPI_MADT_TYPE_GENERIC_TRANSLATOR,
-+			      its_acpi_reset, 0);
- 	acpi_table_parse_madt(ACPI_MADT_TYPE_GENERIC_TRANSLATOR,
- 			      gic_acpi_parse_madt_its, 0);
- 	acpi_its_srat_maps_free();
--- 
-2.30.2
+The additional code is no worse than the existing code. The testing is
+a great addition!
 
+Thanks,
+Ian
+
+>  .../arch/test/test_soc/cpu/uncore.json        | 16 +++++
+>  tools/perf/tests/parse-events.c               | 49 ++++++++++++++
+>  tools/perf/tests/pmu-events.c                 | 32 +++++++++
+>  tools/perf/util/parse-events.c                | 67 ++++++++++++++++---
+>  tools/perf/util/parse-events.h                |  1 +
+>  tools/perf/util/parse-events.l                |  2 +
+>  tools/perf/util/parse-events.y                | 17 ++++-
+>  7 files changed, 171 insertions(+), 13 deletions(-)
+>
+> --
+> 2.26.2
+>
