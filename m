@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF4A7C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:11:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61AD7C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:11:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242819AbiAQRLr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:11:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46458 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242160AbiAQRGm (ORCPT
+        id S238892AbiAQRLx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:11:53 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53900 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242170AbiAQRGj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:06:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AD75C0612AF;
-        Mon, 17 Jan 2022 09:04:11 -0800 (PST)
+        Mon, 17 Jan 2022 12:06:39 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CAF7061258;
-        Mon, 17 Jan 2022 17:04:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 18047C36AED;
-        Mon, 17 Jan 2022 17:04:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6A13BB81147;
+        Mon, 17 Jan 2022 17:06:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D86BDC36AE3;
+        Mon, 17 Jan 2022 17:06:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439050;
-        bh=rB6Zg+CMwhJliJX6NAPO6qIY5v6Ys7TXXUv50Yzxacg=;
+        s=k20201202; t=1642439197;
+        bh=FpjEEp5qZAA2Ti4wiR35cwToImkcThW+7KWjliH3LY0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XW6fNDbb8631a2IF1/NlhUDHtjojHKCLFWvwnOXJlYiirmIRYghcxitVuw8Qh68Un
-         ULDrtHYC9grc4JqcZPJVeqH2cC9R1OcdUM40LrRSMfHCHGsPeriqNjy/7RCZgPfGeW
-         C+amosdE4Jjoo/TEequ8LPA2qpMGaVnxIPEOSGyLcKUHH9bf+DpQg2oUUwcPMF8GNl
-         y9xVDHbpw5XL2KaiS4cL9ACOfbJBnOB8Xn0M/9cqxmTe3jQ0Kp4yo7IxYmYfxvQazy
-         lidxKEgA2veUA5JMgXuUlLPT5R9TefuCpJjEU2EF4H1GaRjVoJqeTBvOWznzgyxJd+
-         0+DjAHfE6k0Tw==
+        b=txD10DxzgdUPqNXi9s1+/BZxeSOY5mn19OcCyCQ+eQhA1FGsbAkXHFDs3InWxQeqN
+         smxl5x0vNAHtbQIVOITL9E9zeUB7xZam/nQe+d9fQJGND3uOejdAkFv8JenFFk2VS8
+         dsq5kR20I2aYpUP/lueWRLFFHbzXgh++hbmGm1DTrehF8MibpK83bhhAeEhQhPCBod
+         L2qB660Tp/z+fPQ/L9ErKRPw3pwQl02ei29gJGzZCQeVF/qexu6qYNR11ovdVUjTFE
+         l+Qarpf+DLo174EZx9nik6Ku+QtN3pwDqN4Me2dgBZav9jhPF3AdFlICx8q2sWUMpc
+         jtAwqx46YZ5PQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nathan Chancellor <nathan@kernel.org>,
-        Ryutaroh Matsumoto <ryutaroh@ict.e.titech.ac.jp>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>, chenhuacai@kernel.org,
-        jiaxun.yang@flygoat.com, ndesaulniers@google.com,
-        linux-mips@vger.kernel.org, llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.10 20/34] MIPS: Loongson64: Use three arguments for slti
-Date:   Mon, 17 Jan 2022 12:03:10 -0500
-Message-Id: <20220117170326.1471712-20-sashal@kernel.org>
+Cc:     Tzung-Bi Shih <tzungbi@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, matthias.bgg@gmail.com,
+        jiaxin.yu@mediatek.com, angelogioacchino.delregno@collabora.com,
+        alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.19 17/17] ASoC: mediatek: mt8173: fix device_node leak
+Date:   Mon, 17 Jan 2022 12:05:51 -0500
+Message-Id: <20220117170551.1472640-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170326.1471712-1-sashal@kernel.org>
-References: <20220117170326.1471712-1-sashal@kernel.org>
+In-Reply-To: <20220117170551.1472640-1-sashal@kernel.org>
+References: <20220117170551.1472640-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,60 +52,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Tzung-Bi Shih <tzungbi@google.com>
 
-[ Upstream commit f2c6c22fa83ab2577619009057b3ebcb5305bb03 ]
+[ Upstream commit 493433785df0075afc0c106ab65f10a605d0b35d ]
 
-LLVM's integrated assembler does not support 'slti <reg>, <imm>':
+Fixes the device_node leak.
 
-<instantiation>:16:12: error: invalid operand for instruction
- slti $12, (0x6300 | 0x0008)
-           ^
-arch/mips/kernel/head.S:86:2: note: while in macro instantiation
- kernel_entry_setup # cpu specific setup
- ^
-<instantiation>:16:12: error: invalid operand for instruction
- slti $12, (0x6300 | 0x0008)
-           ^
-arch/mips/kernel/head.S:150:2: note: while in macro instantiation
- smp_slave_setup
- ^
-
-To increase compatibility with LLVM's integrated assembler, use the full
-form of 'slti <reg>, <reg>, <imm>', which matches the rest of
-arch/mips/. This does not result in any change for GNU as.
-
-Link: https://github.com/ClangBuiltLinux/linux/issues/1526
-Reported-by: Ryutaroh Matsumoto <ryutaroh@ict.e.titech.ac.jp>
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
+Link: https://lore.kernel.org/r/20211224064719.2031210-2-tzungbi@google.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/include/asm/mach-loongson64/kernel-entry-init.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ sound/soc/mediatek/mt8173/mt8173-max98090.c      | 3 +++
+ sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c | 2 ++
+ sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c | 2 ++
+ sound/soc/mediatek/mt8173/mt8173-rt5650.c        | 2 ++
+ 4 files changed, 9 insertions(+)
 
-diff --git a/arch/mips/include/asm/mach-loongson64/kernel-entry-init.h b/arch/mips/include/asm/mach-loongson64/kernel-entry-init.h
-index 87a5bfbf8cfe9..28572ddfb004a 100644
---- a/arch/mips/include/asm/mach-loongson64/kernel-entry-init.h
-+++ b/arch/mips/include/asm/mach-loongson64/kernel-entry-init.h
-@@ -36,7 +36,7 @@
- 	nop
- 	/* Loongson-3A R2/R3 */
- 	andi	t0, (PRID_IMP_MASK | PRID_REV_MASK)
--	slti	t0, (PRID_IMP_LOONGSON_64C | PRID_REV_LOONGSON3A_R2_0)
-+	slti	t0, t0, (PRID_IMP_LOONGSON_64C | PRID_REV_LOONGSON3A_R2_0)
- 	bnez	t0, 2f
- 	nop
- 1:
-@@ -71,7 +71,7 @@
- 	nop
- 	/* Loongson-3A R2/R3 */
- 	andi	t0, (PRID_IMP_MASK | PRID_REV_MASK)
--	slti	t0, (PRID_IMP_LOONGSON_64C | PRID_REV_LOONGSON3A_R2_0)
-+	slti	t0, t0, (PRID_IMP_LOONGSON_64C | PRID_REV_LOONGSON3A_R2_0)
- 	bnez	t0, 2f
- 	nop
- 1:
+diff --git a/sound/soc/mediatek/mt8173/mt8173-max98090.c b/sound/soc/mediatek/mt8173/mt8173-max98090.c
+index 902d111016d6f..431ba3db17594 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-max98090.c
++++ b/sound/soc/mediatek/mt8173/mt8173-max98090.c
+@@ -169,6 +169,9 @@ static int mt8173_max98090_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(codec_node);
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
+index 582174d98c6c9..cdb3940710379 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
+@@ -217,6 +217,8 @@ static int mt8173_rt5650_rt5514_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
+index b3670c8a5b8de..242f99716c619 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
+@@ -274,6 +274,8 @@ static int mt8173_rt5650_rt5676_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650.c b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
+index 7a89b4aad182f..14011a70bcc41 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
+@@ -301,6 +301,8 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
 -- 
 2.34.1
 
