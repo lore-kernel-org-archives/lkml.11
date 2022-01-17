@@ -2,91 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69444C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 12:24:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DD1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 12:25:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239921AbiAQMYj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 07:24:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38004 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239855AbiAQMYZ (ORCPT
+        id S237012AbiAQMZh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 07:25:37 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:37468 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S231537AbiAQMZf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 07:24:25 -0500
-Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D59E3C06161C
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 04:24:24 -0800 (PST)
-Date:   Mon, 17 Jan 2022 12:24:22 -0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1642422263;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AZVEXXyfBUrpTTBZNXwJvWy0L0Qx06oa77j1XLIg4ek=;
-        b=gF92KpQjLc/9+PCFXqwArY8boArWbqqOJg+kIqmB76psY41iG31SMSII/CM578fo8C6mEE
-        pg6EPw8xt/M/qGBp4XFqScq6qwrxydb4atqJBrGclo/TsXMHBwvzZ5yUG1CIKR7q5MBoVV
-        pK0QUei1cGZhg1uVPehut/K9Pcl3WWPMaot5q2g+6L2jejVBm0hXI4hzacmuT6Fc5GYdWC
-        VdH0VtS9HX8aXn8BZg5WlRVj3nR6GxWLKSMWjGagCEHIiqrMMZR+BUcO6BlRR/TIKxwgT/
-        ziuvxRpSHi6XMwLq8eABzZ+8iHqdtJC5MHoWSx9EkM5NHP3KvMDoaUYDp5myLA==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1642422263;
-        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=AZVEXXyfBUrpTTBZNXwJvWy0L0Qx06oa77j1XLIg4ek=;
-        b=2jqo5NmK3ZpuwKalZzFUHN4+h9ySf2hyAa6/mRwsW7F2gg4+YkrH8U61E1VFWK4JKuLgV6
-        sKJgvMMNtGuQxLAg==
-From:   "irqchip-bot for Marc Zyngier" <tip-bot2@linutronix.de>
-Sender: tip-bot2@linutronix.de
-Reply-to: linux-kernel@vger.kernel.org
-To:     linux-kernel@vger.kernel.org
-Subject: [irqchip: irq/irqchip-fixes] irqchip/apple-aic: Drop unused ipi_hwirq field
-Cc:     Marc Zyngier <maz@kernel.org>, Hector Martin <marcan@marcan.st>,
-        tglx@linutronix.de
-In-Reply-To: <20220108140118.3378937-1-maz@kernel.org>
-References: <20220108140118.3378937-1-maz@kernel.org>
+        Mon, 17 Jan 2022 07:25:35 -0500
+X-UUID: 0984eb39b4094fda8f758cd6e9dcc5da-20220117
+X-UUID: 0984eb39b4094fda8f758cd6e9dcc5da-20220117
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <yong.wu@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 728321395; Mon, 17 Jan 2022 20:25:31 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 17 Jan 2022 20:25:30 +0800
+Received: from mhfsdcap04 (10.17.3.154) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 17 Jan 2022 20:25:29 +0800
+Message-ID: <792f1119b9c848a01e8b8ddd196a1db7acc1f0ae.camel@mediatek.com>
+Subject: Re: [PATCH v3 5/7] memory: mtk-smi: Fix the return value for
+ clk_bulk_prepare_enable
+From:   Yong Wu <yong.wu@mediatek.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Tomasz Figa <tfiga@chromium.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <iommu@lists.linux-foundation.org>, <youlin.pei@mediatek.com>,
+        <anan.sun@mediatek.com>, <lc.kan@mediatek.com>,
+        <yi.kuo@mediatek.com>, <anthony.huang@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Joerg Roedel <jroedel@suse.de>
+Date:   Mon, 17 Jan 2022 20:25:28 +0800
+In-Reply-To: <7370f18b-e273-69f2-1cc9-a42495e04874@canonical.com>
+References: <20220113111057.29918-1-yong.wu@mediatek.com>
+         <20220113111057.29918-6-yong.wu@mediatek.com>
+         <7370f18b-e273-69f2-1cc9-a42495e04874@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-Message-ID: <164242226258.16921.4490894235029862313.tip-bot2@tip-bot2>
-Robot-ID: <tip-bot2@linutronix.de>
-Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
-Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following commit has been merged into the irq/irqchip-fixes branch of irqchip:
+On Mon, 2022-01-17 at 13:01 +0100, Krzysztof Kozlowski wrote:
+> On 13/01/2022 12:10, Yong Wu wrote:
+> > Function clk_bulk_prepare_enable() returns 0 for success or a
+> > negative
+> > number for error. Fix this code style issue.
+> 
+> The message does not really make sense. If negative is returned, then
+> the check (ret < 0) was correct.
+> 
+> I guess you wanted to say that common code style is to check for any
+> non-zero return value, just like it's implementation in clk.h does.
+> 
+> I'll adjust the commit msg when applying.
 
-Commit-ID:     45378cd33905966baf16d12ab0adbd56794ee075
-Gitweb:        https://git.kernel.org/pub/scm/linux/kernel/git/maz/arm-platforms/45378cd33905966baf16d12ab0adbd56794ee075
-Author:        Marc Zyngier <maz@kernel.org>
-AuthorDate:    Sat, 08 Jan 2022 14:01:18 
-Committer:     Marc Zyngier <maz@kernel.org>
-CommitterDate: Mon, 17 Jan 2022 12:12:26 
+Thanks for the help.
 
-irqchip/apple-aic: Drop unused ipi_hwirq field
+> 
+> > 
+> > Signed-off-by: Yong Wu <yong.wu@mediatek.com>
+> > Reviewed-by: AngeloGioacchino Del Regno <
+> > angelogioacchino.delregno@collabora.com>
+> > ---
+> >  drivers/memory/mtk-smi.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/memory/mtk-smi.c b/drivers/memory/mtk-smi.c
+> > index b883dcc0bbfa..e7b1a22b12ea 100644
+> > --- a/drivers/memory/mtk-smi.c
+> > +++ b/drivers/memory/mtk-smi.c
+> > @@ -480,7 +480,7 @@ static int __maybe_unused
+> > mtk_smi_larb_resume(struct device *dev)
+> >  	int ret;
+> >  
+> >  	ret = clk_bulk_prepare_enable(larb->smi.clk_num, larb-
+> > >smi.clks);
+> > -	if (ret < 0)
+> > +	if (ret)
+> >  		return ret;
+> >  
+> >  	/* Configure the basic setting for this larb */
+> 
+> Best regards,
+> Krzysztof
 
-This field was never used, remove it.
-
-Signed-off-by: Marc Zyngier <maz@kernel.org>
-Acked-by: Hector Martin <marcan@marcan.st>
-Link: https://lore.kernel.org/r/20220108140118.3378937-1-maz@kernel.org
----
- drivers/irqchip/irq-apple-aic.c | 1 -
- 1 file changed, 1 deletion(-)
-
-diff --git a/drivers/irqchip/irq-apple-aic.c b/drivers/irqchip/irq-apple-aic.c
-index 3759dc3..53c4783 100644
---- a/drivers/irqchip/irq-apple-aic.c
-+++ b/drivers/irqchip/irq-apple-aic.c
-@@ -178,7 +178,6 @@ struct aic_irq_chip {
- 	struct irq_domain *hw_domain;
- 	struct irq_domain *ipi_domain;
- 	int nr_hw;
--	int ipi_hwirq;
- };
- 
- static DEFINE_PER_CPU(uint32_t, aic_fiq_unmasked);
