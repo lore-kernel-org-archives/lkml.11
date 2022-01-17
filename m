@@ -2,298 +2,290 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F9E9C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 12:06:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A65CC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 12:06:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239615AbiAQMGr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 07:06:47 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:37034 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S239636AbiAQMGp (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 07:06:45 -0500
-X-UUID: 4231c94e96db4edf8439762bc09b432d-20220117
-X-UUID: 4231c94e96db4edf8439762bc09b432d-20220117
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <irui.wang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 813468978; Mon, 17 Jan 2022 20:06:41 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 17 Jan 2022 20:06:39 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 17 Jan 2022 20:06:38 +0800
-From:   Irui Wang <irui.wang@mediatek.com>
-To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Tzung-Bi Shih <tzungbi@chromium.org>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>, Yong Wu <yong.wu@mediatek.com>,
-        <angelogioacchino.delregno@collabora.com>
-CC:     Hsin-Yi Wang <hsinyi@chromium.org>,
-        Maoguang Meng <maoguang.meng@mediatek.com>,
-        Longfei Wang <longfei.wang@mediatek.com>,
-        Yunfei Dong <yunfei.dong@mediatek.com>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v2, 07/10] media: mtk-vcodec: Rewrite venc clock interface
-Date:   Mon, 17 Jan 2022 20:06:12 +0800
-Message-ID: <20220117120615.21687-8-irui.wang@mediatek.com>
+        id S239682AbiAQMGt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 07:06:49 -0500
+Received: from mail-co1nam11on2085.outbound.protection.outlook.com ([40.107.220.85]:60673
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S239659AbiAQMGq (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 07:06:46 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hY7cbUVRAvkXCcSIY0YwJdAo95kuYfX6Mjg4Zt/CuVsInwInWAHWfcza1S5T7+Y+/eVN6rHT816NxzoUs/KWE4au5pimgwlJizOc6ObiQjliEbkd1aRZcZBt5E0RzydVFcu7PNQNRa0zALSOlF4tNrUl4M8dWccW+ogpNwmWfTwG2sDwLc731jV8KE7mH+ETowLb3/IlCIkAkRdwUSC7TwXI5rIn1YPv5wOmAsjGPmcNBDkgelbu2NAF6O1hvuWyIS/LQOKBf5CMRPHMlA6lPE5uiFHSQnJotT+JFpV9ldeFOvriUR82kPQlor+QD8kGk6oa/wfNT38LqA6O43y1Pw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=ppHUfDUk+agPrmWRC0tuEquQUmFJfTzq6QJ8FNbIKZ4=;
+ b=Go6HLj5RZx5wFzUSXq8+brAMuzp2xemAzrSLcpBIKmBCYc4iRAEVySMLLD2O1ysmmiwJNsiIOf1zzl2lnuhhXwOz8XicjKDbXsR+CPUrORhi7rCNnUNA9gbm8OZUSGtAWZlrGWtfriQTMbviH7/nFgp2z/V3INsjAd5ERgWjnexBtp4vof+qEkP0qCPB5pKtrA9/UJ9BTGqKVffYT3ZPpoJCC+BxTefiiok4OOjCowqEopkzyS9coSfwaPo9UbNQkFRIkg7lJsIbS5AXk1V/ADX7g2ulmuU4QOfPAnley+KwX95sa0pVcFaYtTVeQV1cZ0Ku9YkYOc8j6esQ4MMm3A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ppHUfDUk+agPrmWRC0tuEquQUmFJfTzq6QJ8FNbIKZ4=;
+ b=GgkHPLoKVXR4tlbAa9z1ulsBFPtT0INhsZ8MsYUB1MGJbSYxq4a04VLq8ERJ8+qc07TzqZ3Kg+Bu9mISJSzzAk3WGcwUC2w/1L3OZ3wiIPpCv2Bwu86pcKQJfsyu6gDO2iFjsE7w+lpz3ECGpOQYrQm9UN3HPvJHiFdM4AA9PEM=
+Received: from MWHPR2001CA0016.namprd20.prod.outlook.com
+ (2603:10b6:301:15::26) by CY4PR1201MB0085.namprd12.prod.outlook.com
+ (2603:10b6:910:1c::8) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Mon, 17 Jan
+ 2022 12:06:42 +0000
+Received: from CO1NAM11FT032.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:301:15:cafe::47) by MWHPR2001CA0016.outlook.office365.com
+ (2603:10b6:301:15::26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.9 via Frontend
+ Transport; Mon, 17 Jan 2022 12:06:42 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com;
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ CO1NAM11FT032.mail.protection.outlook.com (10.13.174.218) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4888.9 via Frontend Transport; Mon, 17 Jan 2022 12:06:42 +0000
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 17 Jan
+ 2022 06:06:41 -0600
+Received: from sof-System-Product-Name.amd.com (10.180.168.240) by
+ SATLEXMB03.amd.com (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.18
+ via Frontend Transport; Mon, 17 Jan 2022 06:06:31 -0600
+From:   V sujith kumar Reddy <vsujithkumar.reddy@amd.com>
+To:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>
+CC:     <Vijendar.Mukunda@amd.com>, <Alexander.Deucher@amd.com>,
+        <Basavaraj.Hiregoudar@amd.com>, <Sunil-kumar.Dommati@amd.com>,
+        <ajitkumar.pandey@amd.com>,
+        V sujith kumar Reddy <vsujithkumar.reddy@amd.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        "Jaroslav Kysela" <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Julian Braha <julianbraha@gmail.com>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH] CHROMIUM:ASOC: amd: Add Machine driver Support for rt5682s codec
+Date:   Tue, 18 Jan 2022 01:48:52 +0530
+Message-ID: <20220117201856.3299086-1-vsujithkumar.reddy@amd.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220117120615.21687-1-irui.wang@mediatek.com>
-References: <20220117120615.21687-1-irui.wang@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2b92f251-75fc-49a0-6367-08d9d9b1d33f
+X-MS-TrafficTypeDiagnostic: CY4PR1201MB0085:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR1201MB00858876BF39F9F9425AB99492579@CY4PR1201MB0085.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:125;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: c6ufGReY978MhmUwT/XL3vtebQ3p1II5H1dir6L8L2f8sUDGyT1B30Ux4btz2TJ8jPVA4vK+YBguHLbIlwljWC7N8/MsKPYyTUVIcjjUBR4FQAcULTtJ5mwIJmIaluC9gqhWz8FctTzPtLrQVBX6f2br7emul+pwljhvPq5P0s3K7W2YM7TL+WAZJ/kLV+TkXXkNPT5JxUlcZgNEfGRCZKKEChrp/wdVCl0NqX9xpcSlpF6GqzWIXA2dZ6d284iISitbm/UJsMFD7qkqBhe/2paZD8zPtw76s7igddHbg/Mni7gVD2SwScpMFQ7wNrS8AGOJVJ5qa/IP0rLrwkmhE8L44jxNZPN/eBlJwqhySdhQjOEak+DksnOUiacEP7EJ0ZoFhGEaPLYUkI387hZ2XLAtlZ9PZ/bjx23mLsi3+LAmCRkfOE9zICc25sSp2S9s9GCZwGYZeCe14XJHrr7mQy8uodYFVmGvLUN066whWo11OKD6kvuZObheXAD8v/Rx7YI3JpVy6TxE9wzbgZ3F5JeOqKDQB0EnR/YmZ7QOScdX+6uBuu9AOBqwotdohK+d9eRmdLIocAwf4erQCnaQ8ct71d999Aq+dsRJ9rdXdOGykOToqum6xRzaJDzuZnCMS06Oll0eEv7rXhUOTk23n/5JHtTtk9eviqTzUcthvrEqyhIzQFZVjqea3FMAq6uvUsWbdrcK2cidsT77ZUpfQWsIN80hWx8yNH3BZCTaxYOuQ//HGk6LFqEjg6giU+eOulNflUnCILEMxpf59OvmJuSFPjuItjmag1AjNJODXIg=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(4636009)(40470700002)(36840700001)(46966006)(8676002)(70206006)(426003)(83380400001)(356005)(40460700001)(82310400004)(316002)(7696005)(36756003)(110136005)(86362001)(186003)(8936002)(1076003)(26005)(6666004)(2616005)(54906003)(336012)(36860700001)(7416002)(4326008)(47076005)(508600001)(5660300002)(70586007)(2906002)(81166007)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jan 2022 12:06:42.4659
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2b92f251-75fc-49a0-6367-08d9d9b1d33f
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT032.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB0085
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dual core mode need enable the specific core's clk, add an
-another param for clock_on/clock_off interface.
+Add sound card  support with rt5682s as headset codec and max98357 as
+speaker amp codec on Raven based chrome platform
 
-Signed-off-by: Irui Wang <irui.wang@mediatek.com>
+Signed-off-by: V sujith kumar Reddy <vsujithkumar.reddy@amd.com>
 ---
- .../platform/mtk-vcodec/mtk_vcodec_enc_pm.c   | 96 ++++++++++++++++---
- .../platform/mtk-vcodec/mtk_vcodec_enc_pm.h   |  4 +-
- .../media/platform/mtk-vcodec/venc_drv_if.c   | 10 +-
- 3 files changed, 86 insertions(+), 24 deletions(-)
+ sound/soc/amd/Kconfig                |   1 +
+ sound/soc/amd/acp3x-rt5682-max9836.c | 111 ++++++++++++++++++++++++++-
+ 2 files changed, 111 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.c
-index dfaef884e6e3..4e37d68f75dd 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.c
-@@ -83,17 +83,42 @@ int mtk_vcodec_init_enc_clk(struct platform_device *pdev,
- }
- EXPORT_SYMBOL_GPL(mtk_vcodec_init_enc_clk);
+diff --git a/sound/soc/amd/Kconfig b/sound/soc/amd/Kconfig
+index 7a9e45094f37..5eb855eb4b7e 100644
+--- a/sound/soc/amd/Kconfig
++++ b/sound/soc/amd/Kconfig
+@@ -36,6 +36,7 @@ config SND_SOC_AMD_RV_RT5682_MACH
+ 	select SND_SOC_MAX98357A
+ 	select SND_SOC_CROS_EC_CODEC
+ 	select I2C_CROS_EC_TUNNEL
++	select SND_SOC_RT5682S
+ 	select SND_SOC_RT1015
+ 	select SND_SOC_RT1015P
+ 	depends on SND_SOC_AMD_ACP3x && I2C && CROS_EC && GPIOLIB
+diff --git a/sound/soc/amd/acp3x-rt5682-max9836.c b/sound/soc/amd/acp3x-rt5682-max9836.c
+index dad70436d063..9b74b2a8da26 100644
+--- a/sound/soc/amd/acp3x-rt5682-max9836.c
++++ b/sound/soc/amd/acp3x-rt5682-max9836.c
+@@ -20,6 +20,7 @@
+ #include <linux/acpi.h>
  
--void mtk_vcodec_enc_clock_on(struct mtk_vcodec_pm *pm)
-+void mtk_vcodec_enc_clock_on(struct mtk_vcodec_dev *dev, int core_id)
- {
--	struct mtk_vcodec_clk *enc_clk = &pm->venc_clk;
-+	struct mtk_venc_core_dev *core;
-+	struct mtk_vcodec_pm *enc_pm;
-+	struct mtk_vcodec_clk *enc_clk;
-+	struct clk              *clk;
- 	int ret, i = 0;
+ #include "raven/acp3x.h"
++#include "../codecs/rt5682s.h"
+ #include "../codecs/rt5682.h"
+ #include "../codecs/rt1015.h"
  
--	for (i = 0; i < enc_clk->clk_num; i++) {
--		ret = clk_prepare_enable(enc_clk->clk_info[i].vcodec_clk);
--		if (ret) {
--			mtk_v4l2_err("venc clk_prepare_enable %d %s fail %d", i,
--				enc_clk->clk_info[i].clk_name, ret);
--			goto clkerr;
-+	if (dev->venc_pdata->core_mode == VENC_DUAL_CORE_MODE) {
-+		core = (struct mtk_venc_core_dev *)dev->enc_core_dev[core_id];
-+		enc_pm = &core->pm;
-+		enc_clk = &enc_pm->venc_clk;
-+
-+		for (i = 0; i < enc_clk->clk_num; i++) {
-+			clk = enc_clk->clk_info[i].vcodec_clk;
-+			ret = clk_enable(clk);
-+			if (ret) {
-+				mtk_v4l2_err("clk_enable %d %s fail %d", i,
-+					     enc_clk->clk_info[i].clk_name,
-+					     ret);
-+				goto core_clk_err;
-+			}
-+		}
-+	} else {
-+		enc_pm = &dev->pm;
-+		enc_clk = &enc_pm->venc_clk;
-+
-+		for (i = 0; i < enc_clk->clk_num; i++) {
-+			clk = enc_clk->clk_info[i].vcodec_clk;
-+			ret = clk_prepare_enable(clk);
-+			if (ret) {
-+				mtk_v4l2_err("clk_prepare %d %s fail %d",
-+					     i, enc_clk->clk_info[i].clk_name,
-+					     ret);
-+				goto clkerr;
-+			}
- 		}
- 	}
+@@ -39,6 +40,77 @@ enum {
+ 	EC,
+ };
  
-@@ -104,27 +129,49 @@ void mtk_vcodec_enc_clock_on(struct mtk_vcodec_pm *pm)
- 	}
- 	return;
- 
-+core_clk_err:
-+	for (i -= 1; i >= 0; i--)
-+		clk_disable(enc_clk->clk_info[i].vcodec_clk);
++static int acp3x_5682s_init(struct snd_soc_pcm_runtime *rtd)
++{
++	int ret;
++	struct snd_soc_card *card = rtd->card;
++	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
++	struct snd_soc_component *component = codec_dai->component;
 +
-+	return;
++	dev_info(rtd->dev, "codec dai name = %s\n", codec_dai->name);
 +
- clkerr:
- 	for (i -= 1; i >= 0; i--)
- 		clk_disable_unprepare(enc_clk->clk_info[i].vcodec_clk);
- }
- EXPORT_SYMBOL_GPL(mtk_vcodec_enc_clock_on);
- 
--void mtk_vcodec_enc_clock_off(struct mtk_vcodec_pm *pm)
-+void mtk_vcodec_enc_clock_off(struct mtk_vcodec_dev *dev, int core_id)
- {
--	struct mtk_vcodec_clk *enc_clk = &pm->venc_clk;
-+	struct mtk_venc_core_dev *core;
-+	struct mtk_vcodec_pm *enc_pm;
-+	struct mtk_vcodec_clk *enc_clk;
- 	int i = 0;
- 
- 	mtk_smi_larb_put(pm->larbvenc);
--	for (i = enc_clk->clk_num - 1; i >= 0; i--)
--		clk_disable_unprepare(enc_clk->clk_info[i].vcodec_clk);
-+
-+	if (dev->venc_pdata->core_mode == VENC_DUAL_CORE_MODE) {
-+		core = (struct mtk_venc_core_dev *)dev->enc_core_dev[core_id];
-+		enc_pm = &core->pm;
-+		enc_clk = &enc_pm->venc_clk;
-+
-+		for (i = enc_clk->clk_num - 1; i >= 0; i--)
-+			clk_disable(enc_clk->clk_info[i].vcodec_clk);
-+	} else {
-+		enc_pm = &dev->pm;
-+		enc_clk = &enc_pm->venc_clk;
-+
-+		for (i = enc_clk->clk_num - 1; i >= 0; i--)
-+			clk_disable_unprepare(enc_clk->clk_info[i].vcodec_clk);
++	/* set rt5682s dai fmt */
++	ret =  snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_I2S
++			| SND_SOC_DAIFMT_NB_NF
++			| SND_SOC_DAIFMT_CBM_CFM);
++	if (ret < 0) {
++		dev_err(rtd->card->dev,
++			"Failed to set rt5682s dai fmt: %d\n", ret);
++		return ret;
 +	}
++
++	/* set codec PLL */
++	ret = snd_soc_dai_set_pll(codec_dai, RT5682S_PLL2, RT5682S_PLL_S_MCLK,
++				  PCO_PLAT_CLK, RT5682_PLL_FREQ);
++	if (ret < 0) {
++		dev_err(rtd->dev, "can't set rt5682s PLL: %d\n", ret);
++		return ret;
++	}
++
++	/* Set codec sysclk */
++	ret = snd_soc_dai_set_sysclk(codec_dai, RT5682S_SCLK_S_PLL2,
++				     RT5682_PLL_FREQ, SND_SOC_CLOCK_IN);
++	if (ret < 0) {
++		dev_err(rtd->dev,
++			"Failed to set rt5682s SYSCLK: %d\n", ret);
++		return ret;
++	}
++
++	/* Set tdm/i2s1 master bclk ratio */
++	ret = snd_soc_dai_set_bclk_ratio(codec_dai, 64);
++	if (ret < 0) {
++		dev_err(rtd->dev,
++			"Failed to set rt5682s tdm bclk ratio: %d\n", ret);
++		return ret;
++	}
++
++	rt5682_dai_wclk = clk_get(component->dev, "rt5682-dai-wclk");
++	rt5682_dai_bclk = clk_get(component->dev, "rt5682-dai-bclk");
++
++	ret = snd_soc_card_jack_new(card, "Headset Jack",
++				    SND_JACK_HEADSET | SND_JACK_LINEOUT |
++				    SND_JACK_BTN_0 | SND_JACK_BTN_1 |
++				    SND_JACK_BTN_2 | SND_JACK_BTN_3,
++				    &pco_jack, NULL, 0);
++	if (ret) {
++		dev_err(card->dev, "HP jack creation failed %d\n", ret);
++		return ret;
++	}
++
++	snd_jack_set_key(pco_jack.jack, SND_JACK_BTN_0, KEY_PLAYPAUSE);
++	snd_jack_set_key(pco_jack.jack, SND_JACK_BTN_1, KEY_VOICECOMMAND);
++	snd_jack_set_key(pco_jack.jack, SND_JACK_BTN_2, KEY_VOLUMEUP);
++	snd_jack_set_key(pco_jack.jack, SND_JACK_BTN_3, KEY_VOLUMEDOWN);
++
++	ret = snd_soc_component_set_jack(component, &pco_jack, NULL);
++	if (ret) {
++		dev_err(rtd->dev, "Headset Jack call-back failed: %d\n", ret);
++		return ret;
++	}
++
++	return ret;
++}
++
+ static int acp3x_5682_init(struct snd_soc_pcm_runtime *rtd)
+ {
+ 	int ret;
+@@ -271,6 +343,8 @@ SND_SOC_DAILINK_DEF(acp3x_i2s,
+ SND_SOC_DAILINK_DEF(acp3x_bt,
+ 	DAILINK_COMP_ARRAY(COMP_CPU("acp3x_i2s_playcap.2")));
+ 
++SND_SOC_DAILINK_DEF(rt5682s,
++	DAILINK_COMP_ARRAY(COMP_CODEC("i2c-RTL5682:00", "rt5682s-aif1")));
+ SND_SOC_DAILINK_DEF(rt5682,
+ 	DAILINK_COMP_ARRAY(COMP_CODEC("i2c-10EC5682:00", "rt5682-aif1")));
+ SND_SOC_DAILINK_DEF(max,
+@@ -458,6 +532,19 @@ static struct snd_soc_card acp3x_1015p = {
+ 	.num_controls = ARRAY_SIZE(acp3x_mc_1015p_controls),
+ };
+ 
++static struct snd_soc_card acp3x_5682s = {
++	.name = "acp3xrt5682s98357",
++	.owner = THIS_MODULE,
++	.dai_link = acp3x_dai,
++	.num_links = ARRAY_SIZE(acp3x_dai),
++	.dapm_widgets = acp3x_1015p_widgets,
++	.num_dapm_widgets = ARRAY_SIZE(acp3x_1015p_widgets),
++	.dapm_routes = acp3x_1015p_route,
++	.num_dapm_routes = ARRAY_SIZE(acp3x_1015p_route),
++	.controls = acp3x_mc_1015p_controls,
++	.num_controls = ARRAY_SIZE(acp3x_mc_1015p_controls),
++};
++
+ void *soc_is_rltk_max(struct device *dev)
+ {
+ 	const struct acpi_device_id *match;
+@@ -468,6 +555,27 @@ void *soc_is_rltk_max(struct device *dev)
+ 	return (void *)match->driver_data;
  }
- EXPORT_SYMBOL_GPL(mtk_vcodec_enc_clock_off);
  
- int mtk_venc_core_pw_on(struct mtk_vcodec_dev *dev)
++static void card_hs_dai_link_present(struct snd_soc_dai_link *links,
++					const char *card_name)
++{
++	if (!strcmp(card_name, "acp3xrt5682s98357")) {
++		links[0].name = "acp3x-5682s-play";
++		links[0].stream_name = "Playback";
++		links[0].dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
++				   SND_SOC_DAIFMT_CBM_CFM;
++
++		links[0].codecs = rt5682s;
++		links[0].num_codecs = ARRAY_SIZE(rt5682s);
++		links[0].init = acp3x_5682s_init;
++		links[0].dpcm_playback = 1;
++		links[0].dpcm_capture = 1;
++		links[0].cpus = acp3x_i2s;
++		links[0].num_cpus = ARRAY_SIZE(acp3x_i2s);
++		links[0].platforms = platform;
++		links[0].num_platforms = ARRAY_SIZE(platform);
++	}
++}
++
+ static void card_spk_dai_link_present(struct snd_soc_dai_link *links,
+ 						const char *card_name)
  {
--	int i, ret;
-+	int i, ret, j = 0;
- 	struct mtk_venc_core_dev *core;
-+	struct mtk_vcodec_clk *clk;
- 
- 	/* power on all available venc cores */
- 	for (i = 0; i < MTK_VENC_CORE_MAX; i++) {
-@@ -137,12 +184,28 @@ int mtk_venc_core_pw_on(struct mtk_vcodec_dev *dev)
- 			mtk_v4l2_err("power on core[%d] fail %d", i, ret);
- 			goto pw_on_fail;
- 		}
-+
-+		clk = &core->pm.venc_clk;
-+		for (j = 0; j < clk->clk_num; j++) {
-+			ret = clk_prepare(clk->clk_info[j].vcodec_clk);
-+			if (ret) {
-+				mtk_v4l2_err("prepare clk [%s] fail %d",
-+					     clk->clk_info[j].clk_name,
-+					     ret);
-+				goto pw_on_fail;
-+			}
-+		}
- 	}
- 	return 0;
- 
- pw_on_fail:
- 	for (i -= 1; i >= 0; i--) {
- 		core = (struct mtk_venc_core_dev *)dev->enc_core_dev[i];
-+
-+		clk = &core->pm.venc_clk;
-+		for (j -= 1; j >= 0; j--)
-+			clk_unprepare(clk->clk_info[j].vcodec_clk);
-+
- 		pm_runtime_put_sync(&core->plat_dev->dev);
- 	}
- 	return ret;
-@@ -150,8 +213,9 @@ int mtk_venc_core_pw_on(struct mtk_vcodec_dev *dev)
- 
- int mtk_venc_core_pw_off(struct mtk_vcodec_dev *dev)
- {
--	int i, ret;
-+	int i, ret, j;
- 	struct mtk_venc_core_dev *core;
-+	struct mtk_vcodec_clk *clk;
- 
- 	/* power off all available venc cores */
- 	for (i = 0; i < MTK_VENC_CORE_MAX; i++) {
-@@ -159,6 +223,10 @@ int mtk_venc_core_pw_off(struct mtk_vcodec_dev *dev)
- 		if (!core)
- 			return 0;
- 
-+		clk = &core->pm.venc_clk;
-+		for (j = clk->clk_num - 1; j >= 0; j--)
-+			clk_unprepare(clk->clk_info[j].vcodec_clk);
-+
- 		ret = pm_runtime_put_sync(&core->plat_dev->dev);
- 		if (ret < 0)
- 			mtk_v4l2_err("power off core[%d] fail %d", i, ret);
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.h b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.h
-index 99b6b6e29e35..5113ed8a869e 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.h
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_pm.h
-@@ -11,8 +11,8 @@
- 
- int mtk_vcodec_init_enc_clk(struct platform_device *pdev,
- 			    struct mtk_vcodec_pm *pm);
--void mtk_vcodec_enc_clock_on(struct mtk_vcodec_pm *pm);
--void mtk_vcodec_enc_clock_off(struct mtk_vcodec_pm *pm);
-+void mtk_vcodec_enc_clock_on(struct mtk_vcodec_dev *dev, int core_id);
-+void mtk_vcodec_enc_clock_off(struct mtk_vcodec_dev *dev, int core_id);
- 
- int mtk_venc_core_pw_on(struct mtk_vcodec_dev *dev);
- int mtk_venc_core_pw_off(struct mtk_vcodec_dev *dev);
-diff --git a/drivers/media/platform/mtk-vcodec/venc_drv_if.c b/drivers/media/platform/mtk-vcodec/venc_drv_if.c
-index ce0bce811615..6cbdb7e30bb3 100644
---- a/drivers/media/platform/mtk-vcodec/venc_drv_if.c
-+++ b/drivers/media/platform/mtk-vcodec/venc_drv_if.c
-@@ -32,9 +32,7 @@ int venc_if_init(struct mtk_vcodec_ctx *ctx, unsigned int fourcc)
- 	}
- 
- 	mtk_venc_lock(ctx);
--	mtk_vcodec_enc_clock_on(&ctx->dev->pm);
- 	ret = ctx->enc_if->init(ctx);
--	mtk_vcodec_enc_clock_off(&ctx->dev->pm);
- 	mtk_venc_unlock(ctx);
- 
- 	return ret;
-@@ -46,9 +44,7 @@ int venc_if_set_param(struct mtk_vcodec_ctx *ctx,
- 	int ret = 0;
- 
- 	mtk_venc_lock(ctx);
--	mtk_vcodec_enc_clock_on(&ctx->dev->pm);
- 	ret = ctx->enc_if->set_param(ctx->drv_handle, type, in);
--	mtk_vcodec_enc_clock_off(&ctx->dev->pm);
- 	mtk_venc_unlock(ctx);
- 
- 	return ret;
-@@ -68,10 +64,10 @@ int venc_if_encode(struct mtk_vcodec_ctx *ctx,
- 	ctx->dev->curr_ctx = ctx;
- 	spin_unlock_irqrestore(&ctx->dev->irqlock, flags);
- 
--	mtk_vcodec_enc_clock_on(&ctx->dev->pm);
-+	mtk_vcodec_enc_clock_on(ctx->dev, 0);
- 	ret = ctx->enc_if->encode(ctx->drv_handle, opt, frm_buf,
- 				  bs_buf, result);
--	mtk_vcodec_enc_clock_off(&ctx->dev->pm);
-+	mtk_vcodec_enc_clock_off(ctx->dev, 0);
- 
- 	spin_lock_irqsave(&ctx->dev->irqlock, flags);
- 	ctx->dev->curr_ctx = NULL;
-@@ -89,9 +85,7 @@ int venc_if_deinit(struct mtk_vcodec_ctx *ctx)
- 		return 0;
- 
- 	mtk_venc_lock(ctx);
--	mtk_vcodec_enc_clock_on(&ctx->dev->pm);
- 	ret = ctx->enc_if->deinit(ctx->drv_handle);
--	mtk_vcodec_enc_clock_off(&ctx->dev->pm);
- 	mtk_venc_unlock(ctx);
- 
- 	ctx->drv_handle = NULL;
+@@ -497,7 +605,7 @@ static int acp3x_probe(struct platform_device *pdev)
+ 	machine = devm_kzalloc(&pdev->dev, sizeof(*machine), GFP_KERNEL);
+ 	if (!machine)
+ 		return -ENOMEM;
+-
++	card_hs_dai_link_present(card->dai_link, card->name);
+ 	card_spk_dai_link_present(card->dai_link, card->name);
+ 	card->dev = &pdev->dev;
+ 	platform_set_drvdata(pdev, card);
+@@ -523,6 +631,7 @@ static const struct acpi_device_id acp3x_audio_acpi_match[] = {
+ 	{ "AMDI5682", (unsigned long)&acp3x_5682},
+ 	{ "AMDI1015", (unsigned long)&acp3x_1015},
+ 	{ "10021015", (unsigned long)&acp3x_1015p},
++	{ "10029835", (unsigned long)&acp3x_5682s},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(acpi, acp3x_audio_acpi_match);
 -- 
-2.18.0
+2.25.1
 
