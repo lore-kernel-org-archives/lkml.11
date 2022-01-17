@@ -2,106 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23757C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 20:27:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65C1EC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 20:28:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243098AbiAQU1t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 15:27:49 -0500
-Received: from mga12.intel.com ([192.55.52.136]:55705 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235244AbiAQU1t (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 15:27:49 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642451269; x=1673987269;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=6J7EAmc3BVCdekV+9fAAd4SfvYLQlJjb0v5rHGXaptc=;
-  b=kN+7rvC3fpZ8sEv3gydCBFKLKWSGump5nd1C7PrhUP5/ZZMHWs0kekH8
-   j0myBaUgX/ytXYUH9W8Ovvs00JQ/lF/QsHb+1TklEmi4t18jOrv7TJJtg
-   OCo7PfHlt/J4dpq+hlyjL6nXECh+OEjSh10ovP9SkgQ5yaRFrR0RYayls
-   /k0IJNFRNVIbt92jrq4sPw+p+Hryxq1szJvfmcXH+Zquo3ndXsC/A2kww
-   dJBYkxZH9Ei0WYl4hIcS2OI3P8Efg/ZuGeeArq4MOC2ZyOufrqV912zz9
-   KH/JfOWPYjXVzOYwidjI99CirC22SySCae2Ul6yW6apLkjhIVEQeavX0Z
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="224669290"
-X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="224669290"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 12:27:48 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="625289742"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga004.jf.intel.com with ESMTP; 17 Jan 2022 12:27:47 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n9YbS-000Bqo-Nm; Mon, 17 Jan 2022 20:27:46 +0000
-Date:   Tue, 18 Jan 2022 04:26:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org
-Subject: [drm-misc:drm-misc-next 3/5] ld.lld: error: undefined symbol:
- drm_dp_calc_pbn_mode
-Message-ID: <202201180447.2T9OteXU-lkp@intel.com>
+        id S243120AbiAQU16 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 15:27:58 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:56420 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235244AbiAQU15 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 15:27:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642451276;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=7+lYxU3tVqA2sSSaMSI/HeSKHJBhjb7QNjws1JqnTIg=;
+        b=D0xUKo7JW/IUVOKgDRCcP8+8cKPjhXj7hYZtl2Uat8z2XdqAsbta/AqFMkDyz1Ki9Vw8Ps
+        SrGSxVem7ou8YtIVpql6rfWlfzE1blaqBZUgJ9LeiRFmVahtAD/Jrr3htWZk+hNStOIhLI
+        TCn3jyKKXJEFi3Sov7tKfU1uRLSbb9A=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-601-hNBY44byN7m84_IX3zZvTw-1; Mon, 17 Jan 2022 15:27:55 -0500
+X-MC-Unique: hNBY44byN7m84_IX3zZvTw-1
+Received: by mail-qv1-f69.google.com with SMTP id f7-20020a056214076700b0041c20941155so4354608qvz.15
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 12:27:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=7+lYxU3tVqA2sSSaMSI/HeSKHJBhjb7QNjws1JqnTIg=;
+        b=RTY5Afu9pl1S04htd4yIDDci5i58z97/V+lvpzbXViAe0tDqXAvKtCkpFCNdvJgh5b
+         BIYxjefbN2R2peSDAV+yDkxaiURe70H+jjWe/TyXO15q7F5bAPYkBCpgX7AqQiZbFvpc
+         UK4HWDNlfDRV3oAwyl3ttmpo0PCaSJX5PFQKSxRDJt/cOds+ohlUqruwdZtGWTPZu3Ns
+         2kMhhMW4R5wpQeeRL7wZDxEDApfBT5sPFS8jEqM5Y3SHLT8Z+WuISnfhwgUX0tfslopX
+         3GkueqV+Q1WyfcJ5URVgDju++TrAeAJP6Fru+Z/i3EnIKN58tu3UgYrgwTqQQsN5xJ1k
+         DVtA==
+X-Gm-Message-State: AOAM533m/eqr9zV89F30CoASqjL+lOgoWiE47NRk3pddmKO4J2BE1Ud5
+        MG7+POVfvi6HhfuSL6ZdR0aGzemSlqESnz/EEie9cJE4z2rdz/68Eg9GZVihPYRzJF8LvgPHevN
+        Ja0tmOnj8+KSkwxC6imQBqTj8
+X-Received: by 2002:a05:6214:f26:: with SMTP id iw6mr19691040qvb.67.1642451274761;
+        Mon, 17 Jan 2022 12:27:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw3XNICSdZNx6ynNTtHC90JL4P9Ip7fLcLdm1kojcwkjIVtaCVBn7LBIowiz1ljZavnrxt2tw==
+X-Received: by 2002:a05:6214:f26:: with SMTP id iw6mr19691027qvb.67.1642451274500;
+        Mon, 17 Jan 2022 12:27:54 -0800 (PST)
+Received: from treble ([2600:1700:6e32:6c00::c])
+        by smtp.gmail.com with ESMTPSA id r2sm2236608qkp.62.2022.01.17.12.27.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Jan 2022 12:27:53 -0800 (PST)
+Date:   Mon, 17 Jan 2022 12:27:51 -0800
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Kaiwan N Billimoria <kaiwan.billimoria@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Chi-Thanh Hoang <chithanh.hoang@gmail.com>
+Subject: Re: Issue using faddr2line on kernel modules
+Message-ID: <20220117202751.bmwvfsnqxokob6d2@treble>
+References: <CAPDLWs_iSrbXwfKa6CQ0f6H6GE4U88uRhaFgabRjMmSuSEpsiA@mail.gmail.com>
+ <20220117194836.vj2rxr3wocrtdx7k@treble>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220117194836.vj2rxr3wocrtdx7k@treble>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://anongit.freedesktop.org/drm/drm-misc drm-misc-next
-head:   032a125904995985334766911de9e26ee2bbd646
-commit: adb9d5a2cc77e8aefe98fe4c11656c5b7025c248 [3/5] drm/dp: Move DisplayPort helpers into separate helper module
-config: hexagon-randconfig-r041-20220116 (https://download.01.org/0day-ci/archive/20220118/202201180447.2T9OteXU-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 5f782d25a742302d25ef3c8b84b54f7483c2deb9)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add drm-misc git://anongit.freedesktop.org/drm/drm-misc
-        git fetch --no-tags drm-misc drm-misc-next
-        git checkout adb9d5a2cc77e8aefe98fe4c11656c5b7025c248
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash
+On Mon, Jan 17, 2022 at 11:48:39AM -0800, Josh Poimboeuf wrote:
+> On Mon, Jan 17, 2022 at 10:27:14AM +0530, Kaiwan N Billimoria wrote:
+> > Hi there,
+> > 
+> > Am researching using the cool faddr2line script to help debug Oops'es
+> > from kernel modules..
+> > I find it works just fine when used against the unstripped vmlinux
+> > with debug symbols.
+> > 
+> > My use case is for a kernel module which Oopses, though. Here's my scenario:
+> > I built a module on a custom debug kernel (5.10.60) with most debug
+> > options enabled...
+> > KASLR is enabled by default as well.
+> > 
+> > A test kernel module Oopses on my x86_64 guest running this kernel with:
+> > RIP: 0010:do_the_work+0x15b/0x174 [oops_tryv2]
+> > 
+> > So, i try this:
+> > 
+> > $ <...>/linux-5.10.60/scripts/faddr2line ./oops_tryv2.ko do_the_work+0x15b/0x174
+> > bad symbol size: base: 0x0000000000000000 end: 0x0000000000000000
+> > $
+> > 
+> > (It works fine with addr2line though!).
+> > Now I think I've traced the faddr2line script's failure to locate
+> > anything down to this:
+> > ...
+> > done < <(${NM} -n $objfile | awk -v fn=$func -v end=$file_end '$3 ==
+> > fn { found=1; line    =$0; start=$1; next } found == 1 { found=0;
+> > print line, "0x"$1 } END {if (found == 1) print     line, end; }')
+> > 
+> > The nm output is:
+> > $ nm -n ./oops_tryv2.ko |grep -i do_the_work
+> > 0000000000000000 t do_the_work
+> > $
+> > 
+> > nm shows the text addr as 0x0; this is obviously incorrect (same 0x0
+> > with objdump -d on the module).
+> > Am I missing something? Any suggestions as to what I can try, to get
+> > faddr2line working?
+> 
+> Hi Kaiwan,
+> 
+> Thanks for reporting this issue.  The module text address of 0x0 is not
+> necessarily incorrect, as the address is relative the the module, where
+> all text usually starts at zero.
+> 
+> I was able to recreate this problem using a module which only has a
+> single function in .text.  Does this fix it?
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Actually, that patch has other problems.  Try this one?
 
-All errors (new ones prefixed by >>):
+----
 
->> ld.lld: error: undefined symbol: drm_dp_calc_pbn_mode
-   >>> referenced by test-drm_dp_mst_helper.c
-   >>> gpu/drm/selftests/test-drm_dp_mst_helper.o:(igt_dp_mst_calc_pbn_mode) in archive drivers/built-in.a
-   >>> referenced by test-drm_dp_mst_helper.c
-   >>> gpu/drm/selftests/test-drm_dp_mst_helper.o:(igt_dp_mst_calc_pbn_mode) in archive drivers/built-in.a
-   >>> referenced by test-drm_dp_mst_helper.c
-   >>> gpu/drm/selftests/test-drm_dp_mst_helper.o:(igt_dp_mst_calc_pbn_mode) in archive drivers/built-in.a
-   >>> referenced 7 more times
---
->> ld.lld: error: undefined symbol: drm_dp_encode_sideband_req
-   >>> referenced by test-drm_dp_mst_helper.c
-   >>> gpu/drm/selftests/test-drm_dp_mst_helper.o:(sideband_msg_req_encode_decode) in archive drivers/built-in.a
-   >>> referenced by test-drm_dp_mst_helper.c
-   >>> gpu/drm/selftests/test-drm_dp_mst_helper.o:(sideband_msg_req_encode_decode) in archive drivers/built-in.a
---
->> ld.lld: error: undefined symbol: drm_dp_decode_sideband_req
-   >>> referenced by test-drm_dp_mst_helper.c
-   >>> gpu/drm/selftests/test-drm_dp_mst_helper.o:(sideband_msg_req_encode_decode) in archive drivers/built-in.a
-   >>> referenced by test-drm_dp_mst_helper.c
-   >>> gpu/drm/selftests/test-drm_dp_mst_helper.o:(sideband_msg_req_encode_decode) in archive drivers/built-in.a
---
->> ld.lld: error: undefined symbol: drm_dp_dump_sideband_msg_req_body
-   >>> referenced by test-drm_dp_mst_helper.c
-   >>> gpu/drm/selftests/test-drm_dp_mst_helper.o:(sideband_msg_req_encode_decode) in archive drivers/built-in.a
-   >>> referenced by test-drm_dp_mst_helper.c
-   >>> gpu/drm/selftests/test-drm_dp_mst_helper.o:(sideband_msg_req_encode_decode) in archive drivers/built-in.a
-   >>> referenced by test-drm_dp_mst_helper.c
-   >>> gpu/drm/selftests/test-drm_dp_mst_helper.o:(sideband_msg_req_encode_decode) in archive drivers/built-in.a
-   >>> referenced 1 more times
+From: Josh Poimboeuf <jpoimboe@redhat.com>
+Subject: [PATCH] scripts/faddr2line: Only look for text symbols when
+ calculating function size
 
+With the following commit:
+
+  efdb4167e676 ("scripts/faddr2line: Fix "size mismatch" error")
+
+... it was discovered that faddr2line can't just read a function's ELF
+size, because that wouldn't match the kallsyms function size which is
+printed in the stack trace.  The kallsyms size includes any padding
+after the function, whereas the ELF size does not.
+
+So faddr2line has to manually calculate the size of a function similar
+to how kallsyms does.  It does so by starting with a sorted list of
+symbols and subtracting the function address from the subsequent
+symbol's address.
+
+That calculation is broken in the case where the function is the last
+(or only) symbol in the .text section.  The next symbol in the sorted
+list might actually be a data symbol, which can break the function size
+detection:
+
+  $ scripts/faddr2line sound/soundcore.ko sound_devnode+0x5/0x35
+  bad symbol size: base: 0x0000000000000000 end: 0x0000000000000000
+
+Similar breakage can occur when reading from a .o file.
+
+Fix it by only looking for text symbols.
+
+Fixes: efdb4167e676 ("scripts/faddr2line: Fix "size mismatch" error")
+Reported-by: Kaiwan N Billimoria <kaiwan.billimoria@gmail.com>
+Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ scripts/faddr2line | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/scripts/faddr2line b/scripts/faddr2line
+index 6c6439f69a72..2a130134f1e6 100755
+--- a/scripts/faddr2line
++++ b/scripts/faddr2line
+@@ -189,7 +189,7 @@ __faddr2line() {
+ 
+ 		DONE=1
+ 
+-	done < <(${NM} -n $objfile | awk -v fn=$func -v end=$file_end '$3 == fn { found=1; line=$0; start=$1; next } found == 1 { found=0; print line, "0x"$1 } END {if (found == 1) print line, end; }')
++	done < <(${NM} -n $objfile | awk -v fn=$func -v end=$file_end '$2 !~ /[Tt]/ {next} $3 == fn { found=1; line=$0; start=$1; next } found == 1 { found=0; print line, "0x"$1 } END {if (found == 1) print line, end; }')
+ }
+ 
+ [[ $# -lt 2 ]] && usage
+-- 
+2.31.1
+
