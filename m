@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BDA7C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:13:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 794ACC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:13:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243148AbiAQRND (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:13:03 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:57780 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242547AbiAQRHi (ORCPT
+        id S243240AbiAQRNH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:13:07 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53986 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241509AbiAQRGn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:07:38 -0500
+        Mon, 17 Jan 2022 12:06:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C40E1612A4;
-        Mon, 17 Jan 2022 17:07:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5999EC36AEC;
-        Mon, 17 Jan 2022 17:07:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3F3F3B81131;
+        Mon, 17 Jan 2022 17:06:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA9DEC36AE3;
+        Mon, 17 Jan 2022 17:06:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439257;
-        bh=ztCq9ANAcBkHdS4/TOCP4mgItl7HAp3oyahqlUf+rPU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=llx0wWBx9ceVD2hDe0QY8iXCFR+vlvBkbH1WH82FCIwLX7yQTfJoPNlMJFSu96BxP
-         z48+6427qvFSdtf1WQAz1veQbVXPPGMSIZ7KE244+bmazmxDSEl+YHf4GaVrPZjF06
-         xCM3JMrFhdGJRe5oJ39jF2tQaGfTHvZLHsdk3shAGWDWcYwEpcg/GayK0YLUPZAUI9
-         /kQFoWvCkApGxpt7JJDGixYhiqH3HuP5O+K9+46iPQrM+WW9puEiC0yI8TFLrJlAIQ
-         rG2OG24D7KTOkUUbZcw4AeKJkwfzHIUl6KAlSGp4BZNAuZ3eX+BqsIE1gxG4QR0+l5
-         9I9paqL2Atqxw==
+        s=k20201202; t=1642439201;
+        bh=VXoP1pDXXdxKyJvKkkNho3VgJCeVldHfGQGr+ET3sW0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=tTwzhv4QfSw1DeYHeyIooOso2eUlgzVBngVgeX90WsksSA9w7gwxD9ygGranhVAg/
+         Jvhb4PNV42AHddo3iVd2LXiV/qiitvkZbjwc/GRQv7Ee47z90xQcVTuosDACzBj0PR
+         F0HAfCfBDMBTnGJ9p9p1WOLnWa7iwu3AqywCXQUM1xRlSCElfkXbVjR0USgqgqPzUV
+         PhrWP4dJ6o1IhFjqApUENDsqsYd1xrzWaFzbCx0j0KVVF1+0vArK8nFbsnhIQHgEcB
+         gfHjqALvd1KpOjOzIpD8ll930ee0qMLtq4hSgUbM4SKNTUMpLyHlBUVnx79Fgiy0ZU
+         sNU8jGHHm1nVw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Joakim Tjernlund <joakim.tjernlund@infinera.com>,
-        Scott Wood <oss@buserror.net>, Wolfram Sang <wsa@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        chris.packham@alliedtelesis.co.nz, linux-i2c@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 07/13] i2c: mpc: Correct I2C reset procedure
-Date:   Mon, 17 Jan 2022 12:07:15 -0500
-Message-Id: <20220117170722.1473137-7-sashal@kernel.org>
+Cc:     Changcheng Deng <deng.changcheng@zte.com.cn>,
+        Zeal Robot <zealci@zte.com.cn>, Abel Vesa <abel.vesa@nxp.com>,
+        Sasha Levin <sashal@kernel.org>, mturquette@baylibre.com,
+        sboyd@kernel.org, shawnguo@kernel.org, linux-clk@vger.kernel.org,
+        linux-imx@nxp.com, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.14 01/16] clk: imx: Use div64_ul instead of do_div
+Date:   Mon, 17 Jan 2022 12:06:23 -0500
+Message-Id: <20220117170638.1472900-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170722.1473137-1-sashal@kernel.org>
-References: <20220117170722.1473137-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -49,68 +48,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joakim Tjernlund <joakim.tjernlund@infinera.com>
+From: Changcheng Deng <deng.changcheng@zte.com.cn>
 
-[ Upstream commit ebe82cf92cd4825c3029434cabfcd2f1780e64be ]
+[ Upstream commit c1b6ad9a902539f9c037b6b3c35cb134c5724022 ]
 
-Current I2C reset procedure is broken in two ways:
-1) It only generate 1 START instead of 9 STARTs and STOP.
-2) It leaves the bus Busy so every I2C xfer after the first
-   fixup calls the reset routine again, for every xfer there after.
+do_div() does a 64-by-32 division. Here the divisor is an unsigned long
+which on some platforms is 64 bit wide. So use div64_ul instead of do_div
+to avoid a possible truncation.
 
-This fixes both errors.
-
-Signed-off-by: Joakim Tjernlund <joakim.tjernlund@infinera.com>
-Acked-by: Scott Wood <oss@buserror.net>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
+Reviewed-by: Abel Vesa <abel.vesa@nxp.com>
+Link: https://lore.kernel.org/r/20211118080634.165275-1-deng.changcheng@zte.com.cn
+Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-mpc.c | 23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+ drivers/clk/imx/clk-pllv3.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-mpc.c b/drivers/i2c/busses/i2c-mpc.c
-index 90e4f839eb1cb..d153fc28e6bfb 100644
---- a/drivers/i2c/busses/i2c-mpc.c
-+++ b/drivers/i2c/busses/i2c-mpc.c
-@@ -107,23 +107,30 @@ static irqreturn_t mpc_i2c_isr(int irq, void *dev_id)
- /* Sometimes 9th clock pulse isn't generated, and slave doesn't release
-  * the bus, because it wants to send ACK.
-  * Following sequence of enabling/disabling and sending start/stop generates
-- * the 9 pulses, so it's all OK.
-+ * the 9 pulses, each with a START then ending with STOP, so it's all OK.
-  */
- static void mpc_i2c_fixup(struct mpc_i2c *i2c)
- {
- 	int k;
--	u32 delay_val = 1000000 / i2c->real_clk + 1;
--
--	if (delay_val < 2)
--		delay_val = 2;
-+	unsigned long flags;
+diff --git a/drivers/clk/imx/clk-pllv3.c b/drivers/clk/imx/clk-pllv3.c
+index 9af62ee8f347a..325a03e89cf8d 100644
+--- a/drivers/clk/imx/clk-pllv3.c
++++ b/drivers/clk/imx/clk-pllv3.c
+@@ -252,7 +252,7 @@ static long clk_pllv3_av_round_rate(struct clk_hw *hw, unsigned long rate,
+ 	div = rate / parent_rate;
+ 	temp64 = (u64) (rate - div * parent_rate);
+ 	temp64 *= mfd;
+-	do_div(temp64, parent_rate);
++	temp64 = div64_ul(temp64, parent_rate);
+ 	mfn = temp64;
  
- 	for (k = 9; k; k--) {
- 		writeccr(i2c, 0);
--		writeccr(i2c, CCR_MSTA | CCR_MTX | CCR_MEN);
-+		writeb(0, i2c->base + MPC_I2C_SR); /* clear any status bits */
-+		writeccr(i2c, CCR_MEN | CCR_MSTA); /* START */
-+		readb(i2c->base + MPC_I2C_DR); /* init xfer */
-+		udelay(15); /* let it hit the bus */
-+		local_irq_save(flags); /* should not be delayed further */
-+		writeccr(i2c, CCR_MEN | CCR_MSTA | CCR_RSTA); /* delay SDA */
- 		readb(i2c->base + MPC_I2C_DR);
--		writeccr(i2c, CCR_MEN);
--		udelay(delay_val << 1);
-+		if (k != 1)
-+			udelay(5);
-+		local_irq_restore(flags);
+ 	temp64 = (u64)parent_rate;
+@@ -282,7 +282,7 @@ static int clk_pllv3_av_set_rate(struct clk_hw *hw, unsigned long rate,
+ 	div = rate / parent_rate;
+ 	temp64 = (u64) (rate - div * parent_rate);
+ 	temp64 *= mfd;
+-	do_div(temp64, parent_rate);
++	temp64 = div64_ul(temp64, parent_rate);
+ 	mfn = temp64;
+ 
+ 	val = readl_relaxed(pll->base);
+@@ -339,7 +339,7 @@ static struct clk_pllv3_vf610_mf clk_pllv3_vf610_rate_to_mf(
+ 		/* rate = parent_rate * (mfi + mfn/mfd) */
+ 		temp64 = rate - parent_rate * mf.mfi;
+ 		temp64 *= mf.mfd;
+-		do_div(temp64, parent_rate);
++		temp64 = div64_ul(temp64, parent_rate);
+ 		mf.mfn = temp64;
  	}
-+	writeccr(i2c, CCR_MEN); /* Initiate STOP */
-+	readb(i2c->base + MPC_I2C_DR);
-+	udelay(15); /* Let STOP propagate */
-+	writeccr(i2c, 0);
- }
  
- static int i2c_wait(struct mpc_i2c *i2c, unsigned timeout, int writing)
 -- 
 2.34.1
 
