@@ -2,75 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 708C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 12:45:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9049BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 12:47:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230235AbiAQMpc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 07:45:32 -0500
-Received: from foss.arm.com ([217.140.110.172]:57844 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240031AbiAQMp3 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 07:45:29 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id B918C6D;
-        Mon, 17 Jan 2022 04:45:28 -0800 (PST)
-Received: from e127744.arm.com (unknown [10.57.36.133])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPA id 78EA63F73D;
-        Mon, 17 Jan 2022 04:45:27 -0800 (PST)
-From:   German Gomez <german.gomez@arm.com>
-To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        will@kernel.org, mark.rutland@arm.com, james.clark@arm.com,
-        leo.yan@linaro.org
-Cc:     German Gomez <german.gomez@arm.com>
-Subject: [RFC PATCH 2/2] perf: arm_spe: Enable CONTEXT packets in SPE traces if the profiler runs in CPU mode.
-Date:   Mon, 17 Jan 2022 12:44:32 +0000
-Message-Id: <20220117124432.3119132-3-german.gomez@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220117124432.3119132-1-german.gomez@arm.com>
-References: <20220117124432.3119132-1-german.gomez@arm.com>
+        id S230116AbiAQMrw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 07:47:52 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58220 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229983AbiAQMrv (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 07:47:51 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62710611C6
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 12:47:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 87EFEC36AE7
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 12:47:50 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="jxTyPJoA"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1642423669;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=JIRLlbVVis5u8s0hBrGhQwKFxQSA77iBfFr7Eu67/zE=;
+        b=jxTyPJoApAb2wwdAMvRX38gK84AlsV4jgRx/9OXkT9ZaX0m2ju3hFF5YFDxe3ozFnwHXUh
+        HYByp7NB5AJGyRdlQiUJYZmwZzotilS17Cs7Yl0Ccez+4JLJ4evbSf3rEDPBPgWps/cUw9
+        MzDJ9nh5lDFtoev3nZeybWCD3bkwuSo=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 24ce9c37 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        for <linux-kernel@vger.kernel.org>;
+        Mon, 17 Jan 2022 12:47:48 +0000 (UTC)
+Received: by mail-yb1-f182.google.com with SMTP id m1so26783866ybo.5
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 04:47:48 -0800 (PST)
+X-Gm-Message-State: AOAM531GiyYkh8QnHKhersTot6hnZMOTgyAynLlaeWNNcUBAHPW9Sz2m
+        uoCTqFwZQyrcRePJXtz+OY8J4x5KtRhp/kePWBQ=
+X-Google-Smtp-Source: ABdhPJzaZNmwxxuqWu4tF/5mRi/0CTO+V2WgdmD482wuh5N9ux0BNnksYSLgLvldyyj3OXdMGZr+tP4oGTS4+t1hCXo=
+X-Received: by 2002:a25:e0d7:: with SMTP id x206mr9952050ybg.115.1642423667658;
+ Mon, 17 Jan 2022 04:47:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CAHmME9ofzanQTBD_WYBRW49d+gM77rCdh8Utdk4+PM9n_bmKwA@mail.gmail.com>
+ <CANiq72=hXXvzfYz-1EdgDNBVfYMiRp2RbjjNF=wwiiPVU+jmuQ@mail.gmail.com>
+ <3cbaf145ee577f017cf7aea953c9dd1eb88ed4b4.camel@perches.com>
+ <CANiq72=bfYHM6XjQZ9dG_auahA_w59naEXM+VZHGm0m=_7nOqA@mail.gmail.com> <CAHmME9pWGsc5wLzNK5pe4gVLPNb4uUWYF8AARK8_K=WYLwdGfQ@mail.gmail.com>
+In-Reply-To: <CAHmME9pWGsc5wLzNK5pe4gVLPNb4uUWYF8AARK8_K=WYLwdGfQ@mail.gmail.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Mon, 17 Jan 2022 13:47:37 +0100
+X-Gmail-Original-Message-ID: <CAHmME9p6q5MxLy-_1KaDWz8ksQYAUev1UvaQ-fHhetmy0sNHOg@mail.gmail.com>
+Message-ID: <CAHmME9p6q5MxLy-_1KaDWz8ksQYAUev1UvaQ-fHhetmy0sNHOg@mail.gmail.com>
+Subject: Re: list iterator spacing: clang-format vs checkpatch
+To:     Miguel Ojeda <miguel.ojeda.sandonis@gmail.com>
+Cc:     Joe Perches <joe@perches.com>, Andrew Lunn <andrew@lunn.ch>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Enable CONTEXT packets in SPE traces if the profiler runs in CPU mode.
-This is no less permissive than the existing behavior for the following
-reason:
+Hey again,
 
-If perf_event_paranoid <= 0, then non perfmon_capable() users can open
-a per-CPU event. With a per-CPU event, unpriviledged users are allowed
-to profile _all_ processes, even ones owned by root.
+Four years later I went through basically the same motions: "oh hey I
+should clean this up", "I'll start with clang format", "oh cool it
+adds spaces before the iterator paren so it looks like a normal for
+loop to me", "that seems so reasonable; I love clang format", "oh no
+checkpatch.pl complains; I hope it's wrong", "I wonder if anybody has
+thought about this before", "oh, look, I asked about this already in
+2018."
 
-Without this change, users could see kernel addresses, root processes,
-etc, but not gather the PIDs of those processes. The PID is probably the
-least sensitive of all the information.
+So, here we are again. I'm wondering:
+- Can we switch to spaces before iterator parens?
+- If not, is clang-format ever going to be fixed to quit adding them?
 
-It would be more idiomatic to check the perf_event_paranoid level with
-perf_allow_cpu(), but this function is not exported so cannot be used
-from a module. Looking for cpu != -1 is the indirect way of checking
-the same thing as it could never get to arm_spe_pmu_event_init() without
-perf_event_paranoid <= 0.
-
-Co-authored-by: James Clark <james.clark@arm.com>
-Signed-off-by: German Gomez <german.gomez@arm.com>
----
- drivers/perf/arm_spe_pmu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/perf/arm_spe_pmu.c b/drivers/perf/arm_spe_pmu.c
-index 8515bf85c..7d9a7fa4f 100644
---- a/drivers/perf/arm_spe_pmu.c
-+++ b/drivers/perf/arm_spe_pmu.c
-@@ -711,7 +711,7 @@ static int arm_spe_pmu_event_init(struct perf_event *event)
- 	    !(spe_pmu->features & SPE_PMU_FEAT_FILT_LAT))
- 		return -EOPNOTSUPP;
- 
--	spe_pmu->pmscr_cx = perfmon_capable();
-+	spe_pmu->pmscr_cx = perfmon_capable() || (event->cpu != -1);
- 	reg = arm_spe_event_to_pmscr(event);
- 	if (!perfmon_capable() &&
- 	    (reg & (BIT(SYS_PMSCR_EL1_PA_SHIFT) |
--- 
-2.25.1
-
+Regards,
+Jason
