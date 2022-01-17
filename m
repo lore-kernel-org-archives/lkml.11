@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5183CC43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 07:07:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9EC8C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 07:07:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237425AbiAQHHa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 02:07:30 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:47906 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S237350AbiAQHHP (ORCPT
+        id S237454AbiAQHHd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 02:07:33 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:34966 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S237362AbiAQHHU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 02:07:15 -0500
-X-UUID: a11f0ba067c94d599b676bfdcdaf970d-20220117
-X-UUID: a11f0ba067c94d599b676bfdcdaf970d-20220117
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        Mon, 17 Jan 2022 02:07:20 -0500
+X-UUID: c201c919b2b746eebadd01a0c71f8820-20220117
+X-UUID: c201c919b2b746eebadd01a0c71f8820-20220117
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
         (envelope-from <biao.huang@mediatek.com>)
         (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 734564802; Mon, 17 Jan 2022 15:07:10 +0800
+        with ESMTP id 489000300; Mon, 17 Jan 2022 15:07:16 +0800
 Received: from mtkcas11.mediatek.inc (172.21.101.40) by
  mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 17 Jan 2022 15:07:10 +0800
+ 15.2.792.15; Mon, 17 Jan 2022 15:07:14 +0800
 Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 17 Jan 2022 15:07:08 +0800
+ Transport; Mon, 17 Jan 2022 15:07:13 +0800
 From:   Biao Huang <biao.huang@mediatek.com>
 To:     <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -41,10 +41,12 @@ CC:     Matthias Brugger <matthias.bgg@gmail.com>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <srv_heupstream@mediatek.com>, <macpaul.lin@mediatek.com>,
         <dkirjanov@suse.de>
-Subject: [PATCH net-next v12 0/7] MediaTek Ethernet Patches on MT8195
-Date:   Mon, 17 Jan 2022 15:06:59 +0800
-Message-ID: <20220117070706.17853-1-biao.huang@mediatek.com>
+Subject: [PATCH net-next v12 4/7] arm64: dts: mt2712: update ethernet device node
+Date:   Mon, 17 Jan 2022 15:07:03 +0800
+Message-ID: <20220117070706.17853-5-biao.huang@mediatek.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220117070706.17853-1-biao.huang@mediatek.com>
+References: <20220117070706.17853-1-biao.huang@mediatek.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -53,107 +55,74 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Changes in v12:
-1. add a new patch "stmmac: dwmac-mediatek: re-arrange clock setting" to
-   this series, to simplify clock handling in driver, which benefits to
-   binding file mediatek-dwmac.yaml.
-2. modify dt-binding description in patch "net: dt-bindings: dwmac: add
-   support for mt8195" as Rob's comments in v10 series, put mac_cg to the
-   end of clock list.
-3. there are small changes in patch "stmmac: dwmac-mediatek: add support
-   for mt8195", @AngeloGioacchino, please review it kindly.
+Since there are some changes in ethernet driver:
+update ethernet device node in dts to accommodate to it.
 
-Changes in v11:
-1. add reivewed-by in "net: dt-bindings: dwmac: Convert mediatek-dwmac to
-   DT schema" as Rob's comments.
-2. fall back "net: dt-bindings: dwmac: add support for mt8195" to v8 version
-   as mentioned in previous reply(https://patchwork.ozlabs.org/project/devicetree-bindings/patch/20211216055328.15953-7-biao.huang@mediatek.com/):
-   2.1 there is already a special clock named "rmii_internal", which need to
-       be put to the end of the clock list(driver special handling),
-       so we can't simply put new "mac_cg" for mt8195 to the end of the clock
-       list.
-   2.2 we prefer the if-then schema, which will make mt8195 clock list clearer
-       with some duplicated information.
-   2.3 we expect the future IC will follow mt2712 or mt8195, so we only need
-       add new IC name to compatible list for future IC, and will not make the
-       clock list binding files worse.
+1. stmmac_probe_config_dt() in stmmac_platform.c will initialize specified
+   parameters according to compatible string "snps,dwmac-4.20a", then,
+   dwmac-mediatek.c can skip the initialization if add compatible string
+   "snps,dwmac-4.20a" in eth device node.
+2. commit 882007ed7832 ("net-next: dt-binding: dwmac-mediatek: add more
+   description for RMII") added rmii internal support, we should add
+   corresponding clocks/clocks-names in eth device node.
+3. add "snps,reset-delays-us = <0 10000 10000>;" to ensure reset delay
+   can meet PHY requirement.
 
-Changes in v10:
-1. add detailed description in "arm64: dts: mt2712: update ethernet
-   device node" to make the modifications clearer as Matthias's comments.
-2. modify dt-binding description as Rob's comments, and "make dtbs_check" runs
-   pass locally with "arm64: dts: mt2712: update ethernet device node"
-   in this series.
+Signed-off-by: Biao Huang <biao.huang@mediatek.com>
+---
+ arch/arm64/boot/dts/mediatek/mt2712-evb.dts |  1 +
+ arch/arm64/boot/dts/mediatek/mt2712e.dtsi   | 14 +++++++++-----
+ 2 files changed, 10 insertions(+), 5 deletions(-)
 
-Changes in v9:
-1. remove oneOf for 1 entry as Rob's comments.
-2. add new clocks to the end of existing clocks to simplify
-   the binding as Rob's comments.
-
-Changes in v8:
-1. add acked-by in "stmmac: dwmac-mediatek: add platform level clocks
-   management" patch
-
-Changes in v7:
-1. fix uninitialized warning as Jakub's comments.
-
-Changes in v6:
-1. update commit message as Jakub's comments.
-2. split mt8195 eth dts patch("arm64: dts: mt8195: add ethernet device
-   node") from this series, since mt8195 dtsi/dts basic patches is still
-   under reviewing.
-   https://patchwork.kernel.org/project/linux-mediatek/list/?series=579071
-   we'll resend mt8195 eth dts patch once all the dependent patches are
-   accepted.
-
-Changes in v5:
-1. remove useless inclusion in dwmac-mediatek.c as Angelo's comments.
-2. add acked-by in "net-next: stmmac: dwmac-mediatek: add support for
-   mt8195" patch
-
-Changes in v4:
-1. add changes in commit message in "net-next: dt-bindings: dwmac:
-   Convert mediatek-dwmac to DT schema" patch.
-2. remove ethernet-controller.yaml since snps,dwmac.yaml already include it.
-
-Changes in v3:
-1. Add prefix "net-next" to support new IC as Denis's suggestion.
-2. Split dt-bindings to two patches, one for conversion, and the other for
-   new IC.
-3. add a new patch to update device node in mt2712-evb.dts to accommodate to
-   changes in driver.
-4. remove unnecessary wrapper as Angelo's suggestion.
-5. Add acked-by in "net-next: stmmac: dwmac-mediatek: Reuse more common
-   features" patch.
-
-Changes in v2:
-1. fix errors/warnings in mediatek-dwmac.yaml with upgraded dtschema tools
-
-Changes in v1:
-This series include 5 patches:
-1. add platform level clocks management for dwmac-mediatek
-2. resue more common features defined in stmmac_platform.c
-3. add ethernet entry for mt8195
-
-Biao Huang (7):
-  stmmac: dwmac-mediatek: add platform level clocks management
-  stmmac: dwmac-mediatek: Reuse more common features
-  stmmac: dwmac-mediatek: re-arrange clock setting
-  arm64: dts: mt2712: update ethernet device node
-  net: dt-bindings: dwmac: Convert mediatek-dwmac to DT schema
-  stmmac: dwmac-mediatek: add support for mt8195
-  net: dt-bindings: dwmac: add support for mt8195
-
- .../bindings/net/mediatek-dwmac.txt           |  91 ----
- .../bindings/net/mediatek-dwmac.yaml          | 175 ++++++++
- arch/arm64/boot/dts/mediatek/mt2712-evb.dts   |   1 +
- arch/arm64/boot/dts/mediatek/mt2712e.dtsi     |  14 +-
- .../ethernet/stmicro/stmmac/dwmac-mediatek.c  | 389 +++++++++++++++---
- 5 files changed, 526 insertions(+), 144 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.txt
- create mode 100644 Documentation/devicetree/bindings/net/mediatek-dwmac.yaml
-
---
-2.18.0
-
+diff --git a/arch/arm64/boot/dts/mediatek/mt2712-evb.dts b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
+index 7d369fdd3117..11aa135aa0f3 100644
+--- a/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
++++ b/arch/arm64/boot/dts/mediatek/mt2712-evb.dts
+@@ -110,6 +110,7 @@ &eth {
+ 	phy-handle = <&ethernet_phy0>;
+ 	mediatek,tx-delay-ps = <1530>;
+ 	snps,reset-gpio = <&pio 87 GPIO_ACTIVE_LOW>;
++	snps,reset-delays-us = <0 10000 10000>;
+ 	pinctrl-names = "default", "sleep";
+ 	pinctrl-0 = <&eth_default>;
+ 	pinctrl-1 = <&eth_sleep>;
+diff --git a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+index a9cca9c146fd..9e850e04fffb 100644
+--- a/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt2712e.dtsi
+@@ -726,7 +726,7 @@ queue2 {
+ 	};
+ 
+ 	eth: ethernet@1101c000 {
+-		compatible = "mediatek,mt2712-gmac";
++		compatible = "mediatek,mt2712-gmac", "snps,dwmac-4.20a";
+ 		reg = <0 0x1101c000 0 0x1300>;
+ 		interrupts = <GIC_SPI 237 IRQ_TYPE_LEVEL_LOW>;
+ 		interrupt-names = "macirq";
+@@ -734,15 +734,19 @@ eth: ethernet@1101c000 {
+ 		clock-names = "axi",
+ 			      "apb",
+ 			      "mac_main",
+-			      "ptp_ref";
++			      "ptp_ref",
++			      "rmii_internal";
+ 		clocks = <&pericfg CLK_PERI_GMAC>,
+ 			 <&pericfg CLK_PERI_GMAC_PCLK>,
+ 			 <&topckgen CLK_TOP_ETHER_125M_SEL>,
+-			 <&topckgen CLK_TOP_ETHER_50M_SEL>;
++			 <&topckgen CLK_TOP_ETHER_50M_SEL>,
++			 <&topckgen CLK_TOP_ETHER_50M_RMII_SEL>;
+ 		assigned-clocks = <&topckgen CLK_TOP_ETHER_125M_SEL>,
+-				  <&topckgen CLK_TOP_ETHER_50M_SEL>;
++				  <&topckgen CLK_TOP_ETHER_50M_SEL>,
++				  <&topckgen CLK_TOP_ETHER_50M_RMII_SEL>;
+ 		assigned-clock-parents = <&topckgen CLK_TOP_ETHERPLL_125M>,
+-					 <&topckgen CLK_TOP_APLL1_D3>;
++					 <&topckgen CLK_TOP_APLL1_D3>,
++					 <&topckgen CLK_TOP_ETHERPLL_50M>;
+ 		power-domains = <&scpsys MT2712_POWER_DOMAIN_AUDIO>;
+ 		mediatek,pericfg = <&pericfg>;
+ 		snps,axi-config = <&stmmac_axi_setup>;
+-- 
+2.25.1
 
