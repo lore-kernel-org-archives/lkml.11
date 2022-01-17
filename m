@@ -2,116 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DF82C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 10:31:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 768C5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 10:31:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238643AbiAQKbb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 05:31:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40198 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233539AbiAQKb2 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 05:31:28 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E764C061574;
-        Mon, 17 Jan 2022 02:31:28 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id g81-20020a1c9d54000000b0034cd1acd9b5so481946wme.1;
-        Mon, 17 Jan 2022 02:31:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:subject:in-reply-to:content-transfer-encoding;
-        bh=drzE6YehBAfCGTYeantFOUyrCID0+zzbF12IY9CFxQU=;
-        b=UsHAOnftmCpjQS/OuNWUiYgvd7+GGI/3R5IkZpLRWZ8K7UCklqlJCeUomcEY44dnbt
-         NMgY/zUrPvahx3gssaevse2KppcEe+b19m1UfgYZh/tIcFztpd4mo6147HLRcx2kzZMW
-         C6fCjG6wzM3apbi+ayP2pvhlbcBZfS96FDE62pBoJX6vexu2r0QRlRauqzZ2sUqOLOSj
-         50IEoNuO7SHvH1hvgb96hjPjZITzaCX+g/D7f03uBs4WXoZeAwZouFNZP5ravrW6ojvx
-         hBQusJHloYz1q5Bk3bpVhZ31CYE4WivdbvW+h39rsWKKxkwBxMRXQKRGVnK1klcGoeBi
-         b5gg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=drzE6YehBAfCGTYeantFOUyrCID0+zzbF12IY9CFxQU=;
-        b=L9YHa2IeHZpmJeVmLI7jKlnFueeTnTf0cz2hesnvMVqxRlIJqQJ3IY2gkEggGx+3Oq
-         gQ79zfykJrkDRpjt83nOBI5CSgGUUDuENCXS+sJ4jSz/nkdaVaOlAfYqEJzAl+eEBtCu
-         LSvCVijZXQrOGeXh3xTrumXiBA7zebbLMsgOqSYKSGonbGF73xk7dI6vNwtATrsG5/Kg
-         qFfzKXxEqWlakCNoTlWhqnQ4o0QI7f2tG58QdMCAOBHoJLStdOpsAwYn4pSpdH7LdwSB
-         oOJZ+UqtNGMF6tshCL5rLfaiTQunvQ0ibdm3zY9aAPd2Utpe81afTBqHYLIh0mV8nnRE
-         9f/w==
-X-Gm-Message-State: AOAM532YksN7W+ikRd593JAFpv3V8wekQ9m1PyGT7yqFA1Gu1V+I2KbG
-        fsnOy41DK7r/hqPzEuoIVbPZPWIAbxk=
-X-Google-Smtp-Source: ABdhPJzPgzWevB3vn/b9crfzsgD7xhyUdvEZ8B8T4+GHOzdrlM6GpVQRKNrcl/xex+H0dhGUZ3EGfg==
-X-Received: by 2002:a5d:47ad:: with SMTP id 13mr19798499wrb.545.1642415486661;
-        Mon, 17 Jan 2022 02:31:26 -0800 (PST)
-Received: from [192.168.0.14] ([37.223.145.74])
-        by smtp.gmail.com with ESMTPSA id b15sm9890257wrr.50.2022.01.17.02.31.25
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Jan 2022 02:31:26 -0800 (PST)
-Message-ID: <9949a1f7-1ed5-a137-c7b9-2ef8d8e1caf8@gmail.com>
-Date:   Fri, 14 Jan 2022 16:46:41 +0100
+        id S238656AbiAQKbf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 05:31:35 -0500
+Received: from mga11.intel.com ([192.55.52.93]:31401 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233539AbiAQKbd (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 05:31:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642415493; x=1673951493;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=DLt/oq7kjKruuc4+LDlZyKeZllSdx75zWhl5DKre2hQ=;
+  b=JQG8kFM4nrvfAUr5gk2GZMl27YgW5tLfcX6dqEVedg8xzoSgaoEScxpg
+   LzEyzjru2/OxoQUaDYwUvJ3AdidF0PiATQvhN0PKUgzKMigSV9TeL07Hp
+   yCnKesyY2uDlLo7kO2D0lka5lWws/Z/IhZbXJq/DN83siUsZr/ML5rzk3
+   DCan76L0JArKYUV2CSuokljAMgkvYuRPn29yhG29YuGtLO20Jlw81IbEu
+   eFgyvzyehrYTupSmwaAR+K9DS8pZ1vkZ6lD1PuhYwuyxnIUY65EJGC2TK
+   IRcNlf75raZHZ/0lMabYF9FvNVs8sRNO8LOr8d4nX2rNQV+KZHlTd04ID
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10229"; a="242157240"
+X-IronPort-AV: E=Sophos;i="5.88,295,1635231600"; 
+   d="scan'208";a="242157240"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 02:31:32 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,295,1635231600"; 
+   d="scan'208";a="476601332"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 17 Jan 2022 02:31:31 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n9PIQ-000BTk-Is; Mon, 17 Jan 2022 10:31:30 +0000
+Date:   Mon, 17 Jan 2022 18:30:40 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [jirislaby:devel 28/30] drivers/tty/mxser.c:1745:30: warning: unused
+ variable 'mxser_ops'
+Message-ID: <202201171837.2mMV7e7n-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.2.0
-Content-Language: en-US
-To:     Johnson Wang <johnson.wang@mediatek.com>, robh+dt@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org,
-        angelogioacchino.delregno@collabora.com,
-        Project_Global_Chrome_Upstream_Group@mediatek.com
-References: <20220107104633.7500-1-johnson.wang@mediatek.com>
- <20220107104633.7500-2-johnson.wang@mediatek.com>
-From:   Matthias Brugger <matthias.bgg@gmail.com>
-Subject: Re: [PATCH v2 1/2] soc: mediatek: pwrap: add pwrap driver for MT8186
- SoC
-In-Reply-To: <20220107104633.7500-2-johnson.wang@mediatek.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git devel
+head:   f297a9ec220495933237083fbf2333eca65eb9b4
+commit: c2f304d1e4750e106a884544dfd7539b4853edf5 [28/30] mxser: switch to uart_driver
+config: arm-randconfig-r003-20220116 (https://download.01.org/0day-ci/archive/20220117/202201171837.2mMV7e7n-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 5f782d25a742302d25ef3c8b84b54f7483c2deb9)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?id=c2f304d1e4750e106a884544dfd7539b4853edf5
+        git remote add jirislaby https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git
+        git fetch --no-tags jirislaby devel
+        git checkout c2f304d1e4750e106a884544dfd7539b4853edf5
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/tty/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> drivers/tty/mxser.c:1745:30: warning: unused variable 'mxser_ops' [-Wunused-const-variable]
+   static const struct uart_ops mxser_ops = {
+                                ^
+   1 warning generated.
 
 
-On 07/01/2022 11:46, Johnson Wang wrote:
-> MT8186 are highly integrated SoC and use PMIC_MT6366 for
-> power management. This patch adds pwrap master driver to
-> access PMIC_MT6366.
-> 
+vim +/mxser_ops +1745 drivers/tty/mxser.c
 
-It seems this new arbiter is significantly different from the version 1. Please 
-explain that in the commit message.
+  1744	
+> 1745	static const struct uart_ops mxser_ops = {
+  1746		.tx_empty       = mxser_tx_empty,
+  1747		//.get_mctrl      = mxser_get_mctrl,
+  1748		//.set_mctrl      = mxser_set_mctrl,
+  1749		.stop_tx        = mxser_stop_tx,
+  1750		.start_tx       = mxser_start_tx,
+  1751		.stop_rx        = mxser_stop_rx,
+  1752		.break_ctl      = mxser_break_ctl,
+  1753		.startup        = mxser_startup,
+  1754		.shutdown       = mxser_shutdown,
+  1755		.set_termios    = mxser_set_termios,
+  1756		//.pm             = mxser_pm,
+  1757		//.type           = mxser_type,
+  1758		//.release_port   = mxser_release_port,
+  1759		//.request_port   = mxser_request_port,
+  1760		//.config_port    = mxser_config_port,
+  1761		//.verify_port    = mxser_verify_port,
+  1762	};
+  1763	
+  1764	
 
-> Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
-> ---
->   drivers/soc/mediatek/mtk-pmic-wrap.c | 72 ++++++++++++++++++++++++++++
->   1 file changed, 72 insertions(+)
-> 
-> diff --git a/drivers/soc/mediatek/mtk-pmic-wrap.c b/drivers/soc/mediatek/mtk-pmic-wrap.c
-> index 952bc554f443..78866ebf7f04 100644
-> --- a/drivers/soc/mediatek/mtk-pmic-wrap.c
-> +++ b/drivers/soc/mediatek/mtk-pmic-wrap.c
-> @@ -30,6 +30,7 @@
->   #define PWRAP_GET_WACS_REQ(x)		(((x) >> 19) & 0x00000001)
->   #define PWRAP_STATE_SYNC_IDLE0		BIT(20)
->   #define PWRAP_STATE_INIT_DONE0		BIT(21)
-> +#define PWRAP_STATE_INIT_DONE0_V2	BIT(22)
-
-That's a strange name, does it come from the datasheet description?
-
->   #define PWRAP_STATE_INIT_DONE1		BIT(15)
->   
->   /* macro for WACS FSM */
-> @@ -77,6 +78,8 @@
->   #define PWRAP_CAP_INT1_EN	BIT(3)
->   #define PWRAP_CAP_WDT_SRC1	BIT(4)
->   #define PWRAP_CAP_ARB		BIT(5)
-> +#define PWRAP_CAP_MONITOR_V2	BIT(6)
-
-Not used capability, please delete.
-
-
-Regards,
-Matthias
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
