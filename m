@@ -2,188 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13C6CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 07:19:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D8B7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 07:21:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233212AbiAQHTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 02:19:13 -0500
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:33981 "EHLO
-        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237514AbiAQHTL (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 02:19:11 -0500
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 20H7BSJ7074349;
-        Mon, 17 Jan 2022 15:11:28 +0800 (GMT-8)
-        (envelope-from jammy_huang@aspeedtech.com)
-Received: from [192.168.2.115] (192.168.2.115) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 17 Jan
- 2022 15:18:21 +0800
-Message-ID: <98096e97-68cc-18fd-d2b6-3477f57f05bd@aspeedtech.com>
-Date:   Mon, 17 Jan 2022 15:18:22 +0800
+        id S237246AbiAQHVV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 02:21:21 -0500
+Received: from mout.gmx.net ([212.227.17.20]:39569 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234961AbiAQHVU (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 02:21:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1642404066;
+        bh=5A44tv5RQl70N1VW//8mOPYezXRUVBJ6cE+c2TN+/sM=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=UmtSmI4awEpb/8dO5oKFyEbRZSwKn6IB7TIzhmwdgFM5VuC+C6Yq1P/fAg9qWW6qG
+         GRGoVdLKCdMNf9CE+Fr+uHsem3aqI28Bv9X9JNcqXUOfqepo3ZkTRv56NNYgE8rlMi
+         s+rXbo0k2s0wGN2AOyXfqrydfS12G7l5qbqn3L9A=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.167.237]) by mail.gmx.net (mrgmx105
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mv31c-1mIlfe2sb2-00r1lM; Mon, 17
+ Jan 2022 08:21:06 +0100
+Message-ID: <74ac7cb1-0c04-8eca-679e-5c58cc7c8d3d@gmx.de>
+Date:   Mon, 17 Jan 2022 08:19:59 +0100
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v8 1/4] media: v4l: Add definition for the Aspeed JPEG
- format
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: arch/parisc/kernel/toc.c:61:32: warning: no previous prototype
+ for 'toc_intr'
 Content-Language: en-US
-To:     Joel Stanley <joel@jms.id.au>
-CC:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        "sakari.ailus@linux.intel.com" <sakari.ailus@linux.intel.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "eajames@linux.ibm.com" <eajames@linux.ibm.com>,
-        "mchehab@kernel.org" <mchehab@kernel.org>,
-        "andrew@aj.id.au" <andrew@aj.id.au>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20211224012738.1551-1-jammy_huang@aspeedtech.com>
- <20211224012738.1551-2-jammy_huang@aspeedtech.com>
- <703ff71e-c76a-9df1-c644-04efed0199ca@xs4all.nl>
- <609cfe9e-2fd8-b31a-9d71-b83d61693f84@aspeedtech.com>
- <CACPK8XeJQHLWfVbBjArxV_QMDDnRXfccOeXdsn6aBEG7gd8yvw@mail.gmail.com>
-From:   Jammy Huang <jammy_huang@aspeedtech.com>
-In-Reply-To: <CACPK8XeJQHLWfVbBjArxV_QMDDnRXfccOeXdsn6aBEG7gd8yvw@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [192.168.2.115]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 20H7BSJ7074349
+To:     kernel test robot <lkp@intel.com>,
+        Sven Schnelle <svens@stackframe.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
+References: <202201171401.TSfnAVql-lkp@intel.com>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <202201171401.TSfnAVql-lkp@intel.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:fgDbrS2lOCOI80PTI//B9rVE4GoedJX0O4zAdZPKuJGgP1yIGJ9
+ ZpReiPDB+sms6uVzG+3jTeZ9B1y84VKrwU03StFZCQqjapT2sGg4662k1YHRuzNK/S7+8G6
+ m60aKqqPPPk2DGy8v7P5JHwB6nHEk7cQAIQngzDnsY2eogM1h/9GAKtdb5SsNYdHQ1zKpOd
+ uMg+WKI5gKOuk+An7nbXA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:d9ucwE9PQds=:3UNeD5IdlEWHt4m2k8bQQw
+ u58W4Vzxy9cDMvvQ0sOf/JvqCcH1JV6YinkNY8bllwWAELQsYKxOycmnVEtnGKnEzQdqbv1Ly
+ lNl9uBbcPMiFYA9ds6lnWo3XQYrJyyk45cAZXrfN9sKjRwFanRNhPdRgDcRiwLB3fOfu1QuMN
+ cD7H7UeUUpnGFgB6iM2GHLi5l17BEVHybUAeFqebt0oexylwyucr52tBFTbio654hzut+Me9G
+ zYFOkOH9D5vbfXqsB5Gy7KYj8QsInivGezULaFMFoeD2a7YJVrq6RFZRIeS/IXptS+qLrZD4e
+ H0FNt81yznJnjTF0pbnX01JpDfmtKZaa3QUq6LPK2+vi495E8MscX41L5kdiP1Izw9ztU2Ffc
+ tHQFC45wZX8/24xD3Ct1JeRXEf+B+m0ZFm9qIo3JEQNm3Yerjqbh15J2lg1eCgTS/mxH0joY6
+ 5XmCvOMg45Trm43OmOMbU2TEPu5FW2gj9d/vL0tyWx4AJMxPZRciyeItnIXK+EvJwZXfF8urm
+ wK+2Qw+Omeu8UdNmEGFz1vcZHrMGS1dhnh096kDRILfXiCNIdB4+YEEHjCPM5pHqzRjrGWtKX
+ aX9dONffs3qEb3sCMkTy+7Nxu4FYWT658an0Osmjwxcm0k8wKDodtQsbwqT2vGTJHccPhnppJ
+ uUSmyM8QCOnOysS4fekucBfGPEckUxw7XhZR7lNFqedAhW1v321jQFJN7VN4NzJIT3yWdBBCN
+ y+HQbjr5DI/9uJK0pekpoEjcrd9ObIR6D6Mm/ssezE6nClPR9yp70vw8MUNV3w+6HBkjaDVP5
+ iBq9PZPOWvt4u9frRkPzlOxiYEYiWBRIW5/ydnPvEebIeooTUnLAtGM70oyZPUFzbqlIfVmFK
+ UCsFiiGhipcPFsMq1lggRHQqZTBNsda57t+gNAuXSwnMSRX6qOE0WmCjBVuYizYOlEBW1Msqg
+ GDYrsTWdCGybuRLiUmBuPguh1PiICG4rkl1rbpuuvGFoG9STANupBA7fPAzHjIpoA/7xI6YSd
+ //DiffDklZVdoXT5ztqtP+k5BZraVwgcX4FP68kT5lhSpJp5AaKy3Ej0Oney/GCpie/6l++RX
+ B5oAMoFd1rvkUg=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022/1/17 上午 10:24, Joel Stanley wrote:
-> On Mon, 17 Jan 2022 at 02:00, Jammy Huang <jammy_huang@aspeedtech.com> wrote:
->> Hi Hans,
->>
->> On 2022/1/14 下午 04:11, Hans Verkuil wrote:
->>> On 24/12/2021 02:27, Jammy Huang wrote:
->>>> This introduces support for the Aspeed JPEG format, where the new frame
->>>> can refer to previous frame to reduce the amount of compressed data. The
->>>> concept is similar to I/P frame of video compression. It will compare the
->>>> new frame with previous one to decide which macroblock's data is
->>>> changed, and only the changed macroblocks will be compressed.
->>>>
->>>> This Aspeed JPEG format is used by the video engine on Aspeed platforms,
->>>> which is generally adapted for remote KVM.
->>>>
->>>> Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
->>>> ---
->>>> v8:
->>>>     - Add decoder information for aspeed-jpeg
->>>> v7:
->>>>     - Add more information for aspeed-jpeg
->>>> v6:
->>>>     - Update description for new format, aspeed-jpeg, in Documentation.
->>>> v5:
->>>>     - no update
->>>> v4:
->>>>     - new
->>>> ---
->>>>    .../media/uapi/v4l/pixfmt-reserved.rst          | 17 +++++++++++++++++
->>>>    drivers/media/v4l2-core/v4l2-ioctl.c            |  1 +
->>>>    include/uapi/linux/videodev2.h                  |  1 +
->>>>    3 files changed, 19 insertions(+)
->>>>
->>>> diff --git a/Documentation/media/uapi/v4l/pixfmt-reserved.rst b/Documentation/media/uapi/v4l/pixfmt-reserved.rst
->>> This is the wrong file! It should be:
->>>
->>> Documentation/userspace-api/media/v4l/pixfmt-reserved.rst
->> Thanks, I just used git format-patch to generate the cover-letter and
->> didn't notice this.
->>
->> It looks like the file, pixfmt-reserved.rst, has different path in
->> different Linux kernel,
->>
->> * 5.4:           Documentation/media/uapi/v4l/pixfmt-reserved.rst
->>
->> * 5.10/5.15: Documentation/userspace-api/media/v4l/pixfmt-reserved.rst
->>
->> 5.4 is the one I based to submit the patches.
->>
->> Could you suggest the kernel that I should based to submit these patches??
-> You should always submit based on the latest release.
+On 1/17/22 07:57, kernel test robot wrote:
+> Hi Sven,
 >
-> There are sometimes exceptions where you will base your patches on
-> something even newer, but generally you should grab the latest.
+> FYI, the error/warning still remains.
+
+I'll fix this.
+
+Helge
+
+
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.g=
+it master
+> head:   35ce8ae9ae2e471f92759f9d6880eab42cc1c3b6
+> commit: bc294838cc3443a2fbec58f8936ad4bd0a0b3055 parisc: add support for=
+ TOC (transfer of control)
+> date:   3 months ago
+> config: parisc-randconfig-r022-20220116 (https://download.01.org/0day-ci=
+/archive/20220117/202201171401.TSfnAVql-lkp@intel.com/config)
+> compiler: hppa-linux-gcc (GCC) 11.2.0
+> reproduce (this is a W=3D1 build):
+>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sb=
+in/make.cross -O ~/bin/make.cross
+>         chmod +x ~/bin/make.cross
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux=
+.git/commit/?id=3Dbc294838cc3443a2fbec58f8936ad4bd0a0b3055
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel=
+/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout bc294838cc3443a2fbec58f8936ad4bd0a0b3055
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         COMPILER_INSTALL_PATH=3D$HOME/0day COMPILER=3Dgcc-11.2.0 make.cr=
+oss O=3Dbuild_dir ARCH=3Dparisc SHELL=3D/bin/bash arch/parisc/kernel/
 >
-> Be sure to re-test on the latest kernel before submitting.
-OK, thank you.
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
 >
-> Cheers,
+> All warnings (new ones prefixed by >>):
 >
-> Joel
+>>> arch/parisc/kernel/toc.c:61:32: warning: no previous prototype for 'to=
+c_intr' [-Wmissing-prototypes]
+>       61 | void notrace __noreturn __cold toc_intr(struct pt_regs *regs)
+>          |                                ^~~~~~~~
 >
->> I will need to change the number of V4L2_CID_USER_ASPEED_BASE per different
->>
->> linux kernel as well.
->>
->>> Regards,
->>>
->>>        Hans
->>>
->>>> index b2cd155e691b..1d0dc8d86ed7 100644
->>>> --- a/Documentation/media/uapi/v4l/pixfmt-reserved.rst
->>>> +++ b/Documentation/media/uapi/v4l/pixfmt-reserved.rst
->>>> @@ -264,6 +264,23 @@ please make a proposal on the linux-media mailing list.
->>>>       of tiles, resulting in 32-aligned resolutions for the luminance plane
->>>>       and 16-aligned resolutions for the chrominance plane (with 2x2
->>>>       subsampling).
->>>> +    * .. _V4L2-PIX-FMT-AJPG:
->>>> +
->>>> +      - ``V4L2_PIX_FMT_AJPG``
->>>> +      - 'AJPG'
->>>> +      - ASPEED JPEG format used by the aspeed-video driver on Aspeed platforms,
->>>> +        which is generally adapted for remote KVM.
->>>> +        On each frame compression, I will compare the new frame with previous
->>>> +        one to decide which macroblock's data is changed, and only the changed
->>>> +        macroblocks will be compressed.
->>>> +
->>>> +        The implementation is based on AST2600 A3 datasheet, revision 0.9, which
->>>> +        is not publicly available. Or you can reference Video stream data format
->>>> +        – ASPEED mode compression of SDK_User_Guide which available on
->>>> +        AspeedTech-BMC/openbmc/releases.
->>>> +
->>>> +        Decoder's implementation can be found here,
->>>> +        `https://github.com/AspeedTech-BMC/aspeed_codec/ <https://github.com/AspeedTech-BMC/aspeed_codec/>`__
->>>>
->>>>    .. tabularcolumns:: |p{6.6cm}|p{2.2cm}|p{8.7cm}|
->>>>
->>>> diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
->>>> index 24db33f803c0..00dde01d2f97 100644
->>>> --- a/drivers/media/v4l2-core/v4l2-ioctl.c
->>>> +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
->>>> @@ -1378,6 +1378,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
->>>>               case V4L2_PIX_FMT_S5C_UYVY_JPG: descr = "S5C73MX interleaved UYVY/JPEG"; break;
->>>>               case V4L2_PIX_FMT_MT21C:        descr = "Mediatek Compressed Format"; break;
->>>>               case V4L2_PIX_FMT_SUNXI_TILED_NV12: descr = "Sunxi Tiled NV12 Format"; break;
->>>> +            case V4L2_PIX_FMT_AJPG:         descr = "Aspeed JPEG"; break;
->>>>               default:
->>>>                       if (fmt->description[0])
->>>>                               return;
->>>> diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
->>>> index 3210b3c82a4a..994eb6155ea9 100644
->>>> --- a/include/uapi/linux/videodev2.h
->>>> +++ b/include/uapi/linux/videodev2.h
->>>> @@ -726,6 +726,7 @@ struct v4l2_pix_format {
->>>>    #define V4L2_PIX_FMT_INZI     v4l2_fourcc('I', 'N', 'Z', 'I') /* Intel Planar Greyscale 10-bit and Depth 16-bit */
->>>>    #define V4L2_PIX_FMT_SUNXI_TILED_NV12 v4l2_fourcc('S', 'T', '1', '2') /* Sunxi Tiled NV12 Format */
->>>>    #define V4L2_PIX_FMT_CNF4     v4l2_fourcc('C', 'N', 'F', '4') /* Intel 4-bit packed depth confidence information */
->>>> +#define V4L2_PIX_FMT_AJPG     v4l2_fourcc('A', 'J', 'P', 'G') /* Aspeed JPEG */
->>>>
->>>>    /* 10bit raw bayer packed, 32 bytes for every 25 pixels, last LSB 6 bits unused */
->>>>    #define V4L2_PIX_FMT_IPU3_SBGGR10  v4l2_fourcc('i', 'p', '3', 'b') /* IPU3 packed 10-bit BGGR bayer */
->> --
->> Best Regards
->> Jammy
->>
--- 
-Best Regards
-Jammy
+>
+> vim +/toc_intr +61 arch/parisc/kernel/toc.c
+>
+>     60
+>   > 61	void notrace __noreturn __cold toc_intr(struct pt_regs *regs)
+>     62	{
+>     63		struct pdc_toc_pim_20 pim_data20;
+>     64		struct pdc_toc_pim_11 pim_data11;
+>     65
+>     66		nmi_enter();
+>     67
+>     68		if (boot_cpu_data.cpu_type >=3D pcxu) {
+>     69			if (pdc_pim_toc20(&pim_data20))
+>     70				panic("Failed to get PIM data");
+>     71			toc20_to_pt_regs(regs, &pim_data20);
+>     72		} else {
+>     73			if (pdc_pim_toc11(&pim_data11))
+>     74				panic("Failed to get PIM data");
+>     75			toc11_to_pt_regs(regs, &pim_data11);
+>     76		}
+>     77
+>
+> ---
+> 0-DAY CI Kernel Test Service, Intel Corporation
+> https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>
 
