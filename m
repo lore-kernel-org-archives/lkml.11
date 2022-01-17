@@ -2,150 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC3E3C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 09:23:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D1F2C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 09:25:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235609AbiAQJXc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 04:23:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52784 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233941AbiAQJXb (ORCPT
+        id S235619AbiAQJZh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 04:25:37 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:55124 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231292AbiAQJZg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 04:23:31 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 521DAC06173F
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 01:23:31 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id o12so38481186lfu.12
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 01:23:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ragnatech-se.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=k0cfcD39y/3sDNQaa30NikkTggeMzy9AFVo7QaPEGY8=;
-        b=zN7iolHQDgeWpC9OIhg9O5pif9q1PmcrogDzuDQPCXnVG8Aj6+uZVBD4Ck85XTIVYd
-         A+nUdoA8YUqvC2d7ZqrfWUi1GW7agod+xmVhGP69PKaH+sWNyV2qeE+mIzAy4uZ7bM1G
-         otdQdee9jUucSngD9djwupvyYuDvU0gRjf3k0LN6keNSXzSIXXEZTjb+LNCe0Yc+ZmOt
-         /PZvRMDqUgTJBkWKTnGBw5xRPfDrT0srdkFJhvGiVofwcDtYlIww9icseWmMbk9cUTLu
-         F3AWGAYoU0yP09U2Yc+cx4WeA+fYS7YPpAySHhccK5rzpuzX5aifcIwXfHyo4YZ538vm
-         Xtfg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=k0cfcD39y/3sDNQaa30NikkTggeMzy9AFVo7QaPEGY8=;
-        b=Q5aE6+GMgegGf3oevHbOoXBEPLiyKypnr9uufPgI3MKOzcamla87vdMWdsbFlvVbA3
-         GIDm9AXx5sAJYu/eWC/CuCMVQY5L3DJtMf1iRXelgJeJUin4BrTXl8Db8qFJuFx6hv3j
-         kaHh3eX/X2Ah3xdq324cZ/3uW+xPiTcI+oKbf4+MaCTeYoqtqBJy561ZGJtUCuCBXu3r
-         RBH6f+auNYaYTqth4qj+lQIyt/jnTJhcDlnl8BcL3wOS12MrRN7DNQw/Q8k7uHNLXryN
-         w1AA+p0aoSbBJSg8+K4L19DJ7efFhd13khJJ2vQaUzCyuCh9qGGvlvkwM6sxNcdkS3K4
-         afMA==
-X-Gm-Message-State: AOAM5300gqshp0OSz8+AQPcqp3H1m4pBAwDzvOmDzosWhpIzJgSm8Orv
-        l8B3Y9POSJlgw4GcokOD4f/jGQ==
-X-Google-Smtp-Source: ABdhPJzP68J0q8Zi3yeJQsgD0w1S5UKKr27gp4K3ZswRT06lTANaZdjqeTtT1emEMZIU1BPEle/Nrg==
-X-Received: by 2002:a05:6512:1597:: with SMTP id bp23mr15225015lfb.572.1642411409521;
-        Mon, 17 Jan 2022 01:23:29 -0800 (PST)
-Received: from localhost (h-85-24-188-65.A463.priv.bahnhof.se. [85.24.188.65])
-        by smtp.gmail.com with ESMTPSA id i36sm1334556lfv.201.2022.01.17.01.23.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 01:23:29 -0800 (PST)
-Date:   Mon, 17 Jan 2022 10:23:28 +0100
-From:   Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>
-To:     Jacopo Mondi <jacopo@jmondi.org>
-Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        linux-media@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] media: dt-bindings: media: renesas,csi2: Update
- data-lanes property
-Message-ID: <YeU1kDee7L26QJ86@oden.dyn.berto.se>
-References: <20220113103215.27080-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
- <20220117081110.bkwr3ttoexgr2wjt@uno.localdomain>
+        Mon, 17 Jan 2022 04:25:36 -0500
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20H6Oeva003557;
+        Mon, 17 Jan 2022 10:25:25 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=date : from : to :
+ cc : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=selector1; bh=4aF+FbveXGEATuFpjV4ru2bVr18YJoF4SWQIjjEfnys=;
+ b=aVsDpRfviKH0uYJF+jBc0JaYQEyAdWmo0X7o+xWtJu49MI1oyhAwALQ8116s/n5T7q4t
+ HPUvXpGj6sahFiaYyl/iCTwn0dDEBZpin3ENtkSiDoOVrtR0ySuUmsC4t8sAIrEs+LEK
+ W/aySLWvj/G8B0jkxc997D7Eq/GUe5wGu1HFyniMwI7Tp9XwQ1+7WM547lOHhM8FEPhE
+ GpONq+7rORNg3ci4ynl2UHPhNDm/mYq9jhB3oClh0YmRhLAf+1orQAUBc3tyMO456XU4
+ UzoDPdAQwSyK65QLTECgf60WeXRuexnqqbzNmDr0XRH9Liam/iV0LrRHh011jc419zSG 6w== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dmnse3qfc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 17 Jan 2022 10:25:25 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id DA4E110002A;
+        Mon, 17 Jan 2022 10:25:24 +0100 (CET)
+Received: from Webmail-eu.st.com (gpxdag2node5.st.com [10.75.127.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id D344A20E093;
+        Mon, 17 Jan 2022 10:25:24 +0100 (CET)
+Received: from gnbcxd0016.gnb.st.com (10.75.127.51) by GPXDAG2NODE5.st.com
+ (10.75.127.69) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Mon, 17 Jan
+ 2022 10:25:24 +0100
+Date:   Mon, 17 Jan 2022 10:25:16 +0100
+From:   Alain Volmat <alain.volmat@foss.st.com>
+To:     Amelie Delaunay <amelie.delaunay@foss.st.com>
+CC:     Vinod Koul <vkoul@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        <dmaengine@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] dmaengine: stm32-dma: set dma_device max_sg_burst
+Message-ID: <20220117092516.GA431169@gnbcxd0016.gnb.st.com>
+Mail-Followup-To: Amelie Delaunay <amelie.delaunay@foss.st.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        dmaengine@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <20220117091740.11064-1-amelie.delaunay@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset="us-ascii"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220117081110.bkwr3ttoexgr2wjt@uno.localdomain>
+In-Reply-To: <20220117091740.11064-1-amelie.delaunay@foss.st.com>
+X-Disclaimer: ce message est personnel / this message is private
+X-Originating-IP: [10.75.127.51]
+X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To GPXDAG2NODE5.st.com
+ (10.75.127.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-17_03,2022-01-14_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Jacopo,
+Hi,
 
-On 2022-01-17 09:11:10 +0100, Jacopo Mondi wrote:
-> Hello Prabhakar,
-> 
-> On Thu, Jan 13, 2022 at 10:32:14AM +0000, Lad Prabhakar wrote:
-> > CSI-2 (CSI4LNK0) on R-Car and RZ/G2 supports 4-lane mode which is already
-> > handled by rcar-csi2.c driver. This patch updates the data-lanes property
-> > to describe the same.
-> >
-> > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> > ---
-> >  .../devicetree/bindings/media/renesas,csi2.yaml          | 9 ++++++++-
-> >  1 file changed, 8 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/media/renesas,csi2.yaml b/Documentation/devicetree/bindings/media/renesas,csi2.yaml
-> > index e6a036721082..064a0a4c5737 100644
-> > --- a/Documentation/devicetree/bindings/media/renesas,csi2.yaml
-> > +++ b/Documentation/devicetree/bindings/media/renesas,csi2.yaml
-> > @@ -67,7 +67,14 @@ properties:
-> >                  maxItems: 1
-> >
-> >                data-lanes:
-> > -                maxItems: 1
-> > +                items:
-> > +                  minItems: 1
-> > +                  maxItems: 4
-> > +                  items:
-> > +                    - const: 1
-> > +                    - const: 2
-> > +                    - const: 3
-> > +                    - const: 4
-> 
-> Seeing "maxItems: 1" there confuses me too, as the property is an
-> array of data-lanes, but I'm afraid your change does not what you
-> intend as it would allow you to specify the number of data lanes as an
-> integer rather than as an array.
-> 
-> I think it would probably be correct to set
-> 
->                 data-lanes: true
-> 
-> (maybe maxItems: 1 is correct already)
-> 
-> And restrict the number of valid combinations in the board DTS file
-> with a construct like:
-> 
->     data-lanes:
->       oneOf:
->         - items:
->             - const: 1
->             - const: 2
->             - const: 3
->             - const: 4
->         - items:
->             - const: 1
->             - const: 2
+thanks Amelie.
 
-I don't think this is correct, what if data lanes 2 and 3 are used?
+Tested-by: Alain Volmat <alain.volmat@foss.st.com>
 
-> 
-> Thanks
->    j
-> 
-> >
-> >              required:
-> >                - clock-lanes
-> > --
-> > 2.17.1
-> >
+Alain
 
--- 
-Kind Regards,
-Niklas Söderlund
+On Mon, Jan 17, 2022 at 10:17:40AM +0100, Amelie Delaunay wrote:
+> Some stm32-dma consumers [1] rather use dma_get_slave_caps() to get
+> max_sg_burst of their DMA channel as dma_get_max_seg_size() is specific to
+> the DMA controller.
+> All stm32-dma channels have the same features so, don't need to implement
+> device_caps ops. Let dma_get_slave_caps() relies on dma_device
+> configuration.
+> That's why this patch sets dma_device max_sg_burst to the maximum segment
+> size, which is the maximum of data items that can be transferred without
+> software intervention.
+> 
+> [1] https://lore.kernel.org/lkml/20220110103739.118426-1-alain.volmat@foss.st.com/
+>     "media: stm32: dcmi: create a dma scatterlist based on DMA max_sg_burst value"
+> 
+> Signed-off-by: Amelie Delaunay <amelie.delaunay@foss.st.com>
+> ---
+>  drivers/dma/stm32-dma.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/dma/stm32-dma.c b/drivers/dma/stm32-dma.c
+> index 83a37a6955a3..d2365fab1b7a 100644
+> --- a/drivers/dma/stm32-dma.c
+> +++ b/drivers/dma/stm32-dma.c
+> @@ -1389,6 +1389,7 @@ static int stm32_dma_probe(struct platform_device *pdev)
+>  	dd->residue_granularity = DMA_RESIDUE_GRANULARITY_BURST;
+>  	dd->copy_align = DMAENGINE_ALIGN_32_BYTES;
+>  	dd->max_burst = STM32_DMA_MAX_BURST;
+> +	dd->max_sg_burst = STM32_DMA_ALIGNED_MAX_DATA_ITEMS;
+>  	dd->descriptor_reuse = true;
+>  	dd->dev = &pdev->dev;
+>  	INIT_LIST_HEAD(&dd->channels);
+> -- 
+> 2.25.1
+> 
