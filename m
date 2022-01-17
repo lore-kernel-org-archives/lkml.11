@@ -2,120 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBCEBC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:09:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F1BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:09:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240780AbiAQQJW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 11:09:22 -0500
-Received: from mx0a-001ae601.pphosted.com ([67.231.149.25]:52932 "EHLO
+        id S240811AbiAQQJ1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 11:09:27 -0500
+Received: from mx0a-001ae601.pphosted.com ([67.231.149.25]:46830 "EHLO
         mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S235180AbiAQQJU (ORCPT
+        by vger.kernel.org with ESMTP id S235180AbiAQQJX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 11:09:20 -0500
+        Mon, 17 Jan 2022 11:09:23 -0500
 Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20HFFYHE025138;
-        Mon, 17 Jan 2022 10:08:36 -0600
+        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20HFFYHC025138;
+        Mon, 17 Jan 2022 10:08:35 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding : content-type; s=PODMain02222019;
- bh=NqFmW4aYe7NQ0YXxt5Fa5KfR4HPhf3lNiliwkux8kLk=;
- b=MIyIeJSIPljG+M2IbdnLf1NRVmvY+Fppn5obR5gFeVM4GqLenth/rBbMIY9plT4by2yh
- wuKi3mpNCw0/MwgEa99peYNjbpU5xaWq4PSgjjc+ubuAprgiQVcDngh4HLnBadNeZQQ9
- Y4cO+N0HIkC0akZHfypJqmHU6YgVRT5tgJ3+gh5yxZ6CifcigO79yBf3sTSLndPVHZis
- Ze2BX+XgzmxsXosD0lm7B+2OBc3njV5hgvcGfvK/hIUIGo6IetSYHGMOPT5kCO93RtF+
- U40YEIdWd11l8Aym1eX7E/Eu2N51L0thr1H1YfLSgKsoijFLloBnlSq9CjswfpMnSKFR qQ== 
+ bh=bl5u1NTQ5L1xVZfZHeopeNSvmI7iSBTqrV2EHIRtC04=;
+ b=ABYlKoOylzmVdR60EJP8p8eXcFV4koeulRwpGDUtSRp3edJ3h5Nkv7TF9n7dsFmfaidQ
+ 3B/JYwppuhGlNN/71Le3Ov6yWNJxKtqPznrIq0TV3UDyBdFzLtZY5DMnCsJ15ka/nIVA
+ acd0NW1nL2Y5sCtwP8AY+Yl3inVYu3uKwIZSwH2xF5147LCd2DL7UvbA3vjav1uNZSdE
+ QLW4nhaRJU/k8m7Nn5LcGP4jy09l+kOlIRkFFa8BCsP0AsCC9skeEF26Zf3K+hZWqeTY
+ EbOFgPKJBxKRiP+KXnlMctHCdvBYmJxONNcUYY7SDKL8rBMhkTBXolJalCudwWGwy7d6 2A== 
 Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3dnaxhr22c-3
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3dnaxhr22c-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 17 Jan 2022 10:08:35 -0600
+        Mon, 17 Jan 2022 10:08:34 -0600
 Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Mon, 17 Jan
- 2022 16:08:33 +0000
+ 2022 16:08:32 +0000
 Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
  (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Mon, 17 Jan 2022 16:08:33 +0000
+ Transport; Mon, 17 Jan 2022 16:08:32 +0000
 Received: from aryzen.ad.cirrus.com (unknown [198.61.64.122])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id CA24911D7;
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 30A6646C;
         Mon, 17 Jan 2022 16:08:32 +0000 (UTC)
 From:   Lucas Tanure <tanureal@opensource.cirrus.com>
 To:     Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
         Mark Brown <broonie@kernel.org>
 CC:     <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
         <linux-kernel@vger.kernel.org>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
         Lucas Tanure <tanureal@opensource.cirrus.com>
-Subject: [PATCH v2 4/6] ALSA: hda: cs35l41: Add missing default cases
-Date:   Mon, 17 Jan 2022 16:08:28 +0000
-Message-ID: <20220117160830.709403-4-tanureal@opensource.cirrus.com>
+Subject: [PATCH v2 2/6] ALSA: hda: cs35l41: Add calls to newly added test key function
+Date:   Mon, 17 Jan 2022 16:08:26 +0000
+Message-ID: <20220117160830.709403-2-tanureal@opensource.cirrus.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117160830.709403-1-tanureal@opensource.cirrus.com>
 References: <20220117160830.709403-1-tanureal@opensource.cirrus.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Proofpoint-GUID: nkTHCk8YUaqFAqyB5i0hANWIX6iRwZDA
-X-Proofpoint-ORIG-GUID: nkTHCk8YUaqFAqyB5i0hANWIX6iRwZDA
+X-Proofpoint-GUID: ppEl2H72LnyX2_9CGX-V0GQJPYmIQdqP
+X-Proofpoint-ORIG-GUID: ppEl2H72LnyX2_9CGX-V0GQJPYmIQdqP
 X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add switch default cases at gpio pins configs
+From: Charles Keepax <ckeepax@opensource.cirrus.com>
 
+The test key now needs to be manually held when calling
+cs35l41_register_errata_patch, after patch:
+
+Add the missing function calls to this driver.
+
+Fixes: f517ba4924ad ("ASoC: cs35l41: Add support for hibernate memory retention mode")
+Signed-off-by: Charles Keepax <ckeepax@opensource.cirrus.com>
 Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
 ---
 
-V2: New patch with code split from Tidyup patch in this series
+V2: Add Fixes tag
 
 ---
- sound/pci/hda/cs35l41_hda.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ sound/pci/hda/cs35l41_hda.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
 diff --git a/sound/pci/hda/cs35l41_hda.c b/sound/pci/hda/cs35l41_hda.c
-index c4f25e48dcc0..82f982f574a9 100644
+index c47c5f0b4e59..509a380f9be7 100644
 --- a/sound/pci/hda/cs35l41_hda.c
 +++ b/sound/pci/hda/cs35l41_hda.c
-@@ -161,6 +161,9 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
- 		if (reg_seq->close)
- 			ret = regmap_multi_reg_write(reg, reg_seq->close, reg_seq->num_close);
- 		break;
-+	default:
-+		ret = -EINVAL;
-+		break;
+@@ -463,6 +463,10 @@ int cs35l41_hda_probe(struct device *dev, const char *device_name, int id, int i
+ 		goto err;
  	}
  
++	ret = cs35l41_test_key_unlock(cs35l41->dev, cs35l41->regmap);
++	if (ret)
++		goto err;
++
+ 	ret = cs35l41_register_errata_patch(cs35l41->dev, cs35l41->regmap, reg_revid);
  	if (ret)
-@@ -227,6 +230,8 @@ static int cs35l41_hda_apply_properties(struct cs35l41_hda *cs35l41,
- 		internal_boost = true;
- 
- 	switch (hw_cfg->gpio1_func) {
-+	case CS35L41_NOT_USED:
-+		break;
- 	case CS35l41_VSPK_SWITCH:
- 		regmap_update_bits(cs35l41->regmap, CS35L41_GPIO_PAD_CONTROL,
- 				   CS35L41_GPIO1_CTRL_MASK, 1 << CS35L41_GPIO1_CTRL_SHIFT);
-@@ -235,13 +240,21 @@ static int cs35l41_hda_apply_properties(struct cs35l41_hda *cs35l41,
- 		regmap_update_bits(cs35l41->regmap, CS35L41_GPIO_PAD_CONTROL,
- 				   CS35L41_GPIO1_CTRL_MASK, 2 << CS35L41_GPIO1_CTRL_SHIFT);
- 		break;
-+	default:
-+		dev_err(cs35l41->dev, "Invalid function %d for GPIO1\n", hw_cfg->gpio1_func);
-+		return -EINVAL;
+ 		goto err;
+@@ -473,6 +477,10 @@ int cs35l41_hda_probe(struct device *dev, const char *device_name, int id, int i
+ 		goto err;
  	}
  
- 	switch (hw_cfg->gpio2_func) {
-+	case CS35L41_NOT_USED:
-+		break;
- 	case CS35L41_INTERRUPT:
- 		regmap_update_bits(cs35l41->regmap, CS35L41_GPIO_PAD_CONTROL,
- 				   CS35L41_GPIO2_CTRL_MASK, 2 << CS35L41_GPIO2_CTRL_SHIFT);
- 		break;
-+	default:
-+		dev_err(cs35l41->dev, "Invalid function %d for GPIO2\n", hw_cfg->gpio2_func);
-+		return -EINVAL;
- 	}
- 
- 	if (internal_boost) {
++	ret = cs35l41_test_key_lock(cs35l41->dev, cs35l41->regmap);
++	if (ret)
++		goto err;
++
+ 	ret = cs35l41_hda_apply_properties(cs35l41, acpi_hw_cfg);
+ 	if (ret)
+ 		goto err;
 -- 
 2.34.1
 
