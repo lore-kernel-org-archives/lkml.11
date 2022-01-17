@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5830C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:13:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 547AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:13:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243579AbiAQRNK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:13:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242637AbiAQRHm (ORCPT
+        id S243253AbiAQRNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:13:17 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55978 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242991AbiAQRH5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:07:42 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9A8C06176F;
-        Mon, 17 Jan 2022 09:04:31 -0800 (PST)
+        Mon, 17 Jan 2022 12:07:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 89FF26125B;
-        Mon, 17 Jan 2022 17:04:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33C78C36AE7;
-        Mon, 17 Jan 2022 17:04:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 76EBD61287;
+        Mon, 17 Jan 2022 17:07:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72900C36AE3;
+        Mon, 17 Jan 2022 17:07:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439071;
-        bh=BWshRrCtXTPjXgm2ZsCn2D+lTq5Noo72zfMsLxKXsYU=;
+        s=k20201202; t=1642439275;
+        bh=/hdemuENqnf/jOGaiRcSiGH0J0G5zPzuLXuG/sxnf9g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PURs4sK6Ie0qGcvnsEpCavnWOCHq76z2ZcBrIu9ZF8jdfAAq6oZ35uqtGod4/8tfb
-         r5HZQZWpe5hBjAYV6F9NIR4iDucm2fHa1lRTzURDPMY61z9sexGTbQj/FFl1Kc96d7
-         a/jenuk4CCLLbj8PuTW3e/bxri4XpLg2uYHQCRq/4N/BGRt0pcUTzahhmikhi1j03h
-         Ia5f6mnwIcAMFoW0IBRhWmeTQEfpAXpnnlcwgtgTFQTY86Lz6OVpBHKvcQZfEqUVU8
-         PFm3Rnqif4iYN0wEbufTbM2okZCm+jbrfN/L2fptTA8ZYJTfdUBZ9esSso+hGkjTF9
-         bQSxE5vR5IHSA==
+        b=db1n6wy5A8U09z41Z+0R7+mV0nFfCnc4ya2Pr2kV3bwAdQlLQ45Z4jULyh9iGOPvD
+         f11dAc15mbwyz8UZGEpE+sbNauBdm7LpMfiy42HsllyQ+AfgzLLg7hqiodeaH8lbNJ
+         xYPRJKTzMatL6kWhvuCQ3SUZXgVwvaej6ZTeTASp+UxAL500FTxtq0juCFeoqfgvU9
+         M44NXMYFuMyFpC5ZyEmIRyUI2cpE4yPIOTeOfOFfWzh5dcyZ6g7nYbvWsZyber5Fw7
+         BySL5LDcSrFt8BthQ33e5106wQRnGMRuHaTkWlcVvJjnOlfnX2gAydwnpp+lWorGrf
+         R+M7bG7aMcAEw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>, linux-i2c@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 28/34] i2c: designware-pci: Fix to change data types of hcnt and lcnt parameters
-Date:   Mon, 17 Jan 2022 12:03:18 -0500
-Message-Id: <20220117170326.1471712-28-sashal@kernel.org>
+Cc:     Tzung-Bi Shih <tzungbi@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, matthias.bgg@gmail.com,
+        jiaxin.yu@mediatek.com, angelogioacchino.delregno@collabora.com,
+        alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.9 13/13] ASoC: mediatek: mt8173: fix device_node leak
+Date:   Mon, 17 Jan 2022 12:07:21 -0500
+Message-Id: <20220117170722.1473137-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170326.1471712-1-sashal@kernel.org>
-References: <20220117170326.1471712-1-sashal@kernel.org>
+In-Reply-To: <20220117170722.1473137-1-sashal@kernel.org>
+References: <20220117170722.1473137-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,41 +52,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>
+From: Tzung-Bi Shih <tzungbi@google.com>
 
-[ Upstream commit d52097010078c1844348dc0e467305e5f90fd317 ]
+[ Upstream commit 493433785df0075afc0c106ab65f10a605d0b35d ]
 
-The data type of hcnt and lcnt in the struct dw_i2c_dev is of type u16.
-It's better to have same data type in struct dw_scl_sda_cfg as well.
+Fixes the device_node leak.
 
-Reported-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
+Link: https://lore.kernel.org/r/20211224064719.2031210-2-tzungbi@google.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-designware-pcidrv.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ sound/soc/mediatek/mt8173/mt8173-max98090.c      | 3 +++
+ sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c | 2 ++
+ sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c | 2 ++
+ sound/soc/mediatek/mt8173/mt8173-rt5650.c        | 2 ++
+ 4 files changed, 9 insertions(+)
 
-diff --git a/drivers/i2c/busses/i2c-designware-pcidrv.c b/drivers/i2c/busses/i2c-designware-pcidrv.c
-index 55c83a7a24f36..56c87ade0e89d 100644
---- a/drivers/i2c/busses/i2c-designware-pcidrv.c
-+++ b/drivers/i2c/busses/i2c-designware-pcidrv.c
-@@ -37,10 +37,10 @@ enum dw_pci_ctl_id_t {
- };
+diff --git a/sound/soc/mediatek/mt8173/mt8173-max98090.c b/sound/soc/mediatek/mt8173/mt8173-max98090.c
+index 5524a2c727ec7..cab30cb48366d 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-max98090.c
++++ b/sound/soc/mediatek/mt8173/mt8173-max98090.c
+@@ -183,6 +183,9 @@ static int mt8173_max98090_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(codec_node);
++	of_node_put(platform_node);
+ 	return ret;
+ }
  
- struct dw_scl_sda_cfg {
--	u32 ss_hcnt;
--	u32 fs_hcnt;
--	u32 ss_lcnt;
--	u32 fs_lcnt;
-+	u16 ss_hcnt;
-+	u16 fs_hcnt;
-+	u16 ss_lcnt;
-+	u16 fs_lcnt;
- 	u32 sda_hold;
- };
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
+index 467f7049a2886..52fdd766ee82c 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
+@@ -228,6 +228,8 @@ static int mt8173_rt5650_rt5514_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
+index 1b8b2a7788450..5d75b04f074fe 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
+@@ -285,6 +285,8 @@ static int mt8173_rt5650_rt5676_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650.c b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
+index ba65f4157a7e0..d02a90201b13b 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
+@@ -317,6 +317,8 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
  
 -- 
 2.34.1
