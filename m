@@ -2,527 +2,201 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75802C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 13:45:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE762C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 13:47:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234381AbiAQNpM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 08:45:12 -0500
-Received: from mailout4.samsung.com ([203.254.224.34]:53794 "EHLO
-        mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232815AbiAQNpG (ORCPT
+        id S234396AbiAQNrK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 08:47:10 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:44622 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232312AbiAQNrI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 08:45:06 -0500
-Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
-        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20220117134505epoutp047b6ce01dfe5e13c82e0a793908316830~LEsAJxRkC0561705617epoutp04G
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 13:45:05 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20220117134505epoutp047b6ce01dfe5e13c82e0a793908316830~LEsAJxRkC0561705617epoutp04G
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1642427105;
-        bh=P9imqKvslcA+cZOU0mvTMWnovqPbsTO5Tpzlt9qvTYE=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=O+UcqK/3ojBidTUsXZHidqxlnS0Cb8akjN6nNRCuPeUAKSYaNMAPk96y8FdEa8pME
-         ZrxDy1bwFSMw0rOGQ7K2ezpo8P1ARdj71uGe2xybJJc3/q+uwrrlVzUyKbsgBIpUcU
-         QrIOPQsTTudPhJoU3+Rhnd2Hj1a/bP1/FVd374BY=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTP id
-        20220117134504epcas5p4d08d61bbc64bba85647bc65cfff27f41~LEr-fzVKy3152631526epcas5p4x;
-        Mon, 17 Jan 2022 13:45:04 +0000 (GMT)
-Received: from epsmges5p2new.samsung.com (unknown [182.195.38.174]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4JctSX6LJpz4x9Q1; Mon, 17 Jan
-        2022 13:45:00 +0000 (GMT)
-Received: from epcas5p1.samsung.com ( [182.195.41.39]) by
-        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        DC.49.46822.FA275E16; Mon, 17 Jan 2022 22:44:15 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220117134459epcas5p2f356d000f3a790c65926167cd6ddd7f5~LEr7Q97pr0193501935epcas5p2F;
-        Mon, 17 Jan 2022 13:44:59 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220117134459epsmtrp102d38f3fdbbb8f2b49831a85a9274104~LEr7P-Nps2968729687epsmtrp1a;
-        Mon, 17 Jan 2022 13:44:59 +0000 (GMT)
-X-AuditID: b6c32a4a-dfbff7000000b6e6-65-61e572af5bb8
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        01.BA.08738.BD275E16; Mon, 17 Jan 2022 22:44:59 +0900 (KST)
-Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220117134456epsmtip2096fdabe7eff909cc7028861c76650cf~LEr4IDtRX1286912869epsmtip2_;
-        Mon, 17 Jan 2022 13:44:56 +0000 (GMT)
-From:   "Alim Akhtar" <alim.akhtar@samsung.com>
-To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@canonical.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Cc:     <soc@kernel.org>, <linux-clk@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <olof@lixom.net>,
-        <linus.walleij@linaro.org>, <catalin.marinas@arm.com>,
-        <robh+dt@kernel.org>, <s.nawrocki@samsung.com>,
-        <linux-samsung-soc@vger.kernel.org>, <pankaj.dubey@samsung.com>,
-        <linux-fsd@tesla.com>,
-        "'Shashank Prashar'" <s.prashar@samsung.com>,
-        "'Aswani Reddy'" <aswani.reddy@samsung.com>
-In-Reply-To: <2927c34e-3259-4e9a-a657-aeeebf9089d2@canonical.com>
-Subject: RE: [PATCH 15/23] arm64: dts: fsd: Add initial pinctrl support
-Date:   Mon, 17 Jan 2022 19:14:53 +0530
-Message-ID: <00ca01d80ba8$6b9b9800$42d2c800$@samsung.com>
+        Mon, 17 Jan 2022 08:47:08 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 85B6B21122;
+        Mon, 17 Jan 2022 13:47:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1642427227; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=wOyNSE44kK6xC41+HeY9o5KMHdWeZPag8nufqG7r+kQ=;
+        b=a2pt+/qPhTSug69pW6RB6v4uzknMCkQhWVvqoHvVCncCefvImDNkaElNJ+HjVJshxFxXS6
+        208ptyY9gfUT9VwlFirdumwjt29oeZObXFMr6a/ndgWUhYbsbqa1vm8iZFMJo6SQNH0caX
+        x8Hqmewhq4/7WgAA0lTtRoBGgNeQunI=
+Received: from suse.cz (unknown [10.100.201.86])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 432B5A3B88;
+        Mon, 17 Jan 2022 13:47:07 +0000 (UTC)
+Date:   Mon, 17 Jan 2022 14:47:06 +0100
+From:   Michal Hocko <mhocko@suse.com>
+To:     Minchan Kim <minchan@kernel.org>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        David Hildenbrand <david@redhat.com>,
+        linux-mm <linux-mm@kvack.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        John Dias <joaodias@google.com>
+Subject: Re: [RESEND][PATCH v2] mm: don't call lru draining in the nested
+ lru_cache_disable
+Message-ID: <YeVzWlrojI1+buQx@dhcp22.suse.cz>
+References: <20211230193627.495145-1-minchan@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQKuNmZ/+9PJHbdzezyQqzGEXzr0sgJL1gp6AanHgoQCI2LlgqqKGQKQ
-Content-Language: en-us
-X-Brightmail-Tracker: H4sIAAAAAAAAA01Te0xTZxzN19veXnDFa4H4CXOrd8PXArY8ulsnwrYGrzImgSXE/TG4gZtC
-        KL1dH0yNmyiTl4DDMB8NomPCJmMbFhAsDg2t5eVgOp6JskEhBlxRXgEmc2u5bOO/8zs55/xy
-        vgeGiAdRPyxNY2B0GlpNoJ78G9Yd2wJrdeO01LqZbK1rEJJPqwoBednWLSCvOxd5ZOnyNzzS
-        7OgXkNOFwwJyZDKB/NVShpIXelp4ZOfALEpWNMwJyVM/2YSk9Y9cAVnedAmQjoFlNBKnaspr
-        AGXKKkIpc3U+Sj3sv4VSdVePU73tJwVUcX01oF6cvCSkZs2vxHp8mL4nlaFTGJ2E0SSzKWka
-        VTgRHZ/4bmKYXCoLlCnINwmJhs5gwgnle7GBUWlqVwlCkkmrjS4qltbriV179+hYo4GRpLJ6
-        QzjBaFPU2lBtkJ7O0Bs1qiANY9gtk0qDw1zCpPTUvhedQm1p/GGbbQRkgfF3CoAHBvFQmD9/
-        Hi0AnpgYbwZwsPkhjxtmAJzKLRBwwyyATmejS4atWIYe8zneAuBF6+cIN0wAWNrchrhzUTwQ
-        Nn2ds5Lrg+cD+N3C0kougp9C4P2WIb5b5YG/Dc/0FwN3rDe+D1puU26ajwfA3gdNQjcW4QrY
-        lX8f4fAG2HFxbMWK4G/Aqq+eIFwJCVwarxK4sQ8eBStv/ryq2Qgn7tqE7r0Qf4bBoW/NfM6g
-        hLMjc6vYG0621Qs57AcnzuQIuZrpsNASwtHHYGW5fVUeAe/0lvHdEgTfAX+07OJWecGi52M8
-        zimCeTliTh0As6f6Vp3+sOT0aQGHKfjo+z7kC7DFtKaYaU0x05oCpv+XXQH8arCJ0eozVIw+
-        TBusYT75776T2QwzWHniOw80gZHfnwW1Ah4GWgHEEMJHZF83RotFKfSRo4yOTdQZ1Yy+FYS5
-        TrsE8fNNZl1/RGNIlIUqpKFyuTxUESKXERtFXapaWoyraAOTzjBaRvevj4d5+GXxotdfT1pa
-        FxfDJtT+svdc93nPuGuR9rmaOwicf2urytntuNcT3PPysb+H7V7k4uvqUeWBEwdFdmq6eaa+
-        sXd7m+/63Qmx2+bhVPvBpufDn1rOsosf3Z1sDCiOwLwev1bhfIlpr5XqwrytC49y8zZZszqv
-        dj543yEu+/LyXzeVy+zy5jTU/4PtM6PK+bqI9Ns3DkllnYd9+5Js7LWt51izrTLybLzR/6ii
-        JfXQgjbbmfc0oLVjVJc2SjYwJySCwg0xkuhbRdoBx5Ut3iX5IeIgnk/HZ0P75QPiaZNfR2b2
-        YF9VlXH/n9EVrzriFL8dcdR33RvGTD9ExVyA+54ct8URmR8TfH0qLduJ6PT0PwUiASprBAAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrEIsWRmVeSWpSXmKPExsWy7bCSvO7toqeJBld/6lkc2ryV3eL9sh5G
-        i/lHzrFabHz7g8liyp/lTBabHl9jtfjYc4/V4uGrcIvLu+awWcw4v4/J4tT1z2wWi7Z+Ybdo
-        3XuE3eLwm3ZWi3k75jJaPL7+h81BwGPNvDWMHrMaetk8Nq3qZPO4c20Pm8fmJfUeV040sXr0
-        bVnF6PGvaS67x+dNcgGcUVw2Kak5mWWpRfp2CVwZk/9sZyzY6F/RuKiPsYGxxb6LkYNDQsBE
-        4uZzli5GLg4hgR2MEu1ne1m7GDmB4tIS1zdOYIewhSVW/nvODlH0nFFix9TnYEVsAroSOxa3
-        sYEkRAS6GSWu9MxkBEkwC0xmlmibpA/R8ZVR4tWu+2CjOAUcJfqv9TGCrBYWcJfYtd8DJMwi
-        oCpx5dIOsBJeAUuJ050XmSFsQYmTM5+wQMzUluh92MoIYy9b+JoZ4joFiZ9Pl4EdJCLgJrF0
-        51moenGJl0ePsE9gFJ6FZNQsJKNmIRk1C0nLAkaWVYySqQXFuem5xYYFRnmp5XrFibnFpXnp
-        esn5uZsYwdGspbWDcc+qD3qHGJk4GA8xSnAwK4nwHuN+kijEm5JYWZValB9fVJqTWnyIUZqD
-        RUmc90LXyXghgfTEktTs1NSC1CKYLBMHp1QD04x7XbqOaya9Kijt9YiS3TGhVK4j+0uc6+dQ
-        efuEF4bvrR4Xrt2RqXWgwvZNyf6CRck/Xj6497Ppq89znloGRs9LIlLBOntdlwZyVy38KrxR
-        IyXXd9mqqNDl6wotNp4JMFrwYaXVN6fJv9cWmTLeP/1mk+T50CwFpkUzNTacYxBVMPpvxZE2
-        Y9eiDSlGWzbGb2v9MDEvsimRWeXbWhnJ2ecCfBP+zfue36c4YVXAt9VZNSGn6vPPxCdx5rNN
-        +L80KoDpsqLG9pe6cUzXfN9KyV99bh9gdUS8Z+er3DR3i2YprQ1rlxTl9dcmhTlOldwiXFZw
-        rPv11+uJiWnVcQmmxfstN9QrfZl+95+60IHZSizFGYmGWsxFxYkAhodyOFUDAAA=
-X-CMS-MailID: 20220117134459epcas5p2f356d000f3a790c65926167cd6ddd7f5
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220113122417epcas5p47398a5190cdf4c574c6f1762918b549f
-References: <20220113121143.22280-1-alim.akhtar@samsung.com>
-        <CGME20220113122417epcas5p47398a5190cdf4c574c6f1762918b549f@epcas5p4.samsung.com>
-        <20220113121143.22280-16-alim.akhtar@samsung.com>
-        <2927c34e-3259-4e9a-a657-aeeebf9089d2@canonical.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211230193627.495145-1-minchan@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Krzysztof
+On Thu 30-12-21 11:36:27, Minchan Kim wrote:
+> lru_cache_disable involves IPIs to drain pagevec of each core,
+> which sometimes takes quite long time to complete depending
+> on cpu's business, which makes allocation too slow up to
+> sveral hundredth milliseconds. Furthermore, the repeated draining
+> in the alloc_contig_range makes thing worse considering caller
+> of alloc_contig_range usually tries multiple times in the loop.
+>
+> This patch makes the lru_cache_disable aware of the fact the
+> pagevec was already disabled. With that, user of alloc_contig_range
+> can disable the lru cache in advance in their context during the
+> repeated trial so they can avoid the multiple costly draining
+> in cma allocation.
 
->-----Original Message-----
->From: Krzysztof Kozlowski =5Bmailto:krzysztof.kozlowski=40canonical.com=5D
->Sent: Thursday, January 13, 2022 6:50 PM
->To: Alim Akhtar <alim.akhtar=40samsung.com>; linux-arm-
->kernel=40lists.infradead.org; linux-kernel=40vger.kernel.org
->Cc: soc=40kernel.org; linux-clk=40vger.kernel.org; devicetree=40vger.kerne=
-l.org;
->olof=40lixom.net; linus.walleij=40linaro.org; catalin.marinas=40arm.com;
->robh+dt=40kernel.org; s.nawrocki=40samsung.com; linux-samsung-
->soc=40vger.kernel.org; pankaj.dubey=40samsung.com; linux-fsd=40tesla.com;
->Shashank Prashar <s.prashar=40samsung.com>; Aswani Reddy
-><aswani.reddy=40samsung.com>
->Subject: Re: =5BPATCH 15/23=5D arm64: dts: fsd: Add initial pinctrl suppor=
-t
->
->On 13/01/2022 13:11, Alim Akhtar wrote:
->> Add initial pin configuration nodes for FSD SoC.
->>
->> Cc: linux-fsd=40tesla.com
->> Signed-off-by: Shashank Prashar <s.prashar=40samsung.com>
->> Signed-off-by: Aswani Reddy <aswani.reddy=40samsung.com>
->> Signed-off-by: Alim Akhtar <alim.akhtar=40samsung.com>
->> ---
->>  arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi =7C 338
->+++++++++++++++++++++
->>  arch/arm64/boot/dts/tesla/fsd.dtsi         =7C  22 ++
->>  2 files changed, 360 insertions(+)
->>  create mode 100644 arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi
->>
->> diff --git a/arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi
->> b/arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi
->> new file mode 100644
->> index 000000000000..ec8d944af636
->> --- /dev/null
->> +++ b/arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi
->> =40=40 -0,0 +1,338 =40=40
->> +// SPDX-License-Identifier: GPL-2.0
->> +/*
->> + * Tesla Full Self-Driving SoC device tree source
->> + *
->> + * Copyright (c) 2017-2021 Samsung Electronics Co., Ltd.
->> + *		https://www.samsung.com
->> + * Copyright (c) 2017-2021 Tesla, Inc.
->> + *		https://www.tesla.com
->> + */
->> +
->> +=23include <dt-bindings/pinctrl/samsung.h>
->> +
->> +&pinctrl_fsys0 =7B
->> +
->
->No need for empty line.
->
-Noted
+Do you have any numbers on any improvements?
 
->> +	gpf0: gpf0 =7B
->
->FYI:
->It's ok now, but the nodes will have to be renamed to =22xxx-gpio-bank=22 =
-later.
->
-Have rebased my v2 on your pinmux schema update, so these and below comment=
-s are addressed.
-Thanks
+Now to the change. I do not like this much to be honest. LRU cache
+disabling is a complex synchronization scheme implemented in
+__lru_add_drain_all now you are stacking another level on top of that.
 
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpf1: gpf1 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpf6: gpf6 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpf4: gpf4 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpf5: gpf5 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +=7D;
->> +
->> +&pinctrl_peric =7B
->> +
->
->No need for empty line.
->
->> +	gpc8: gpc8 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpf2: gpf2 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpf3: gpf3 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpd0: gpd0 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpb0: gpb0 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpb1: gpb1 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpb4: gpb4 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpb5: gpb5 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpb6: gpb6 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpb7: gpb7 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpd1: gpd1 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpd2: gpd2 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpd3: gpd3 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpg0: gpg0 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpg1: gpg1 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpg2: gpg2 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpg3: gpg3 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpg4: gpg4 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpg5: gpg5 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpg6: gpg6 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	gpg7: gpg7 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +
->> +		interrupt-controller;
->> +		=23interrupt-cells =3D <2>;
->> +	=7D;
->> +
->> +	pwm0_out: pwm0-out =7B
->
->All pin configuretion node names with =22-pins=22 suffix. Upcoming dtschem=
-a will
->require this.
->
->> +		samsung,pins =3D =22gpb6-1=22;
->> +		samsung,pin-function =3D <EXYNOS_PIN_FUNC_2>;
->> +		samsung,pin-pud =3D <EXYNOS_PIN_PULL_UP>;
->> +		samsung,pin-drv =3D <EXYNOS4_PIN_DRV_LV2>;
->> +	=7D;
->> +
->> +	pwm1_out: pwm1-out =7B
->> +		samsung,pins =3D =22gpb6-5=22;
->> +		samsung,pin-function =3D <EXYNOS_PIN_FUNC_2>;
->> +		samsung,pin-pud =3D <EXYNOS_PIN_PULL_UP>;
->> +		samsung,pin-drv =3D <EXYNOS4_PIN_DRV_LV2>;
->> +	=7D;
->> +
->> +	hs_i2c0_bus: hs-i2c0-bus =7B
->> +		samsung,pins =3D =22gpb0-0=22, =22gpb0-1=22;
->> +		samsung,pin-function =3D <EXYNOS_PIN_FUNC_2>;
->> +		samsung,pin-pud =3D <EXYNOS_PIN_PULL_UP>;
->> +		samsung,pin-drv =3D <EXYNOS4_PIN_DRV_LV1>;
->> +	=7D;
->> +
->> +	hs_i2c1_bus: hs-i2c1-bus =7B
->> +		samsung,pins =3D =22gpb0-2=22, =22gpb0-3=22;
->> +		samsung,pin-function =3D <EXYNOS_PIN_FUNC_2>;
->> +		samsung,pin-pud =3D <EXYNOS_PIN_PULL_UP>;
->> +		samsung,pin-drv =3D <EXYNOS4_PIN_DRV_LV1>;
->> +	=7D;
->> +
->> +	hs_i2c2_bus: hs-i2c2-bus =7B
->> +		samsung,pins =3D =22gpb0-4=22, =22gpb0-5=22;
->> +		samsung,pin-function =3D <EXYNOS_PIN_FUNC_2>;
->> +		samsung,pin-pud =3D <EXYNOS_PIN_PULL_UP>;
->> +		samsung,pin-drv =3D <EXYNOS4_PIN_DRV_LV1>;
->> +	=7D;
->> +
->> +	hs_i2c3_bus: hs-i2c3-bus =7B
->> +		samsung,pins =3D =22gpb0-6=22, =22gpb0-7=22;
->> +		samsung,pin-function =3D <EXYNOS_PIN_FUNC_2>;
->> +		samsung,pin-pud =3D <EXYNOS_PIN_PULL_UP>;
->> +		samsung,pin-drv =3D <EXYNOS4_PIN_DRV_LV1>;
->> +	=7D;
->> +
->> +	hs_i2c4_bus: hs-i2c4-bus =7B
->> +		samsung,pins =3D =22gpb1-0=22, =22gpb1-1=22;
->> +		samsung,pin-function =3D <EXYNOS_PIN_FUNC_2>;
->> +		samsung,pin-pud =3D <EXYNOS_PIN_PULL_UP>;
->> +		samsung,pin-drv =3D <EXYNOS4_PIN_DRV_LV1>;
->> +	=7D;
->> +
->> +	hs_i2c5_bus: hs-i2c5-bus =7B
->> +		samsung,pins =3D =22gpb1-2=22, =22gpb1-3=22;
->> +		samsung,pin-function =3D <EXYNOS_PIN_FUNC_2>;
->> +		samsung,pin-pud =3D <EXYNOS_PIN_PULL_UP>;
->> +		samsung,pin-drv =3D <EXYNOS4_PIN_DRV_LV1>;
->> +	=7D;
->> +
->> +	hs_i2c6_bus: hs-i2c6-bus =7B
->> +		samsung,pins =3D =22gpb1-4=22, =22gpb1-5=22;
->> +		samsung,pin-function =3D <EXYNOS_PIN_FUNC_2>;
->> +		samsung,pin-pud =3D <EXYNOS_PIN_PULL_UP>;
->> +		samsung,pin-drv =3D <EXYNOS4_PIN_DRV_LV1>;
->> +	=7D;
->> +
->> +	hs_i2c7_bus: hs-i2c7-bus =7B
->> +		samsung,pins =3D =22gpb1-6=22, =22gpb1-7=22;
->> +		samsung,pin-function =3D <EXYNOS_PIN_FUNC_2>;
->> +		samsung,pin-pud =3D <EXYNOS_PIN_PULL_UP>;
->> +		samsung,pin-drv =3D <EXYNOS4_PIN_DRV_LV1>;
->> +	=7D;
->> +
->> +	uart0_data: uart0-data =7B
->> +		samsung,pins =3D =22gpb7-0=22, =22gpb7-1=22;
->> +		samsung,pin-function =3D <EXYNOS_PIN_FUNC_2>;
->> +		samsung,pin-pud =3D <EXYNOS_PIN_PULL_NONE>;
->> +		samsung,pin-drv =3D <EXYNOS4_PIN_DRV_LV1>;
->> +	=7D;
->> +
->> +	uart1_data: uart1-data =7B
->> +		samsung,pins =3D =22gpb7-4=22, =22gpb7-5=22;
->> +		samsung,pin-function =3D <EXYNOS_PIN_FUNC_2>;
->> +		samsung,pin-pud =3D <EXYNOS_PIN_PULL_NONE>;
->> +		samsung,pin-drv =3D <EXYNOS4_PIN_DRV_LV1>;
->> +	=7D;
->> +
->> +	spi0_bus: spi0-bus =7B
->> +		samsung,pins =3D =22gpb4-0=22, =22gpb4-2=22, =22gpb4-3=22;
->> +		samsung,pin-function =3D <EXYNOS_PIN_FUNC_2>;
->> +		samsung,pin-pud =3D <EXYNOS_PIN_PULL_UP>;
->> +		samsung,pin-drv =3D <EXYNOS4_PIN_DRV_LV1>;
->> +	=7D;
->> +
->> +	spi1_bus: spi1-bus =7B
->> +		samsung,pins =3D =22gpb4-4=22, =22gpb4-6=22, =22gpb4-7=22;
->> +		samsung,pin-function =3D <EXYNOS_PIN_FUNC_2>;
->> +		samsung,pin-pud =3D <EXYNOS_PIN_PULL_UP>;
->> +		samsung,pin-drv =3D <EXYNOS4_PIN_DRV_LV1>;
->> +	=7D;
->> +
->> +	spi2_bus: spi2-bus =7B
->> +		samsung,pins =3D =22gpb5-0=22, =22gpb5-2=22, =22gpb5-3=22;
->> +		samsung,pin-function =3D <EXYNOS_PIN_FUNC_2>;
->> +		samsung,pin-pud =3D <EXYNOS_PIN_PULL_UP>;
->> +		samsung,pin-drv =3D <EXYNOS4_PIN_DRV_LV1>;
->> +	=7D;
->> +=7D;
->> +
->> +&pinctrl_pmu =7B
->> +
->
->No need for empty line.
->
->> +	gpq0: gpq0 =7B
->> +		gpio-controller;
->> +		=23gpio-cells =3D <2>;
->> +	=7D;
->
->
->
->
->Best regards,
->Krzysztof
+More fundamentally though. I am not sure I understand the problem TBH.
+What prevents you from calling lru_cache_disable at the cma level in the
+first place?
 
+> Signed-off-by: Minchan Kim <minchan@kernel.org>
+> ---
+>  * from v1 - https://lore.kernel.org/lkml/20211206221006.946661-1-minchan@kernel.org/
+>    * fix lru_cache_disable race - akpm
+> 
+>  include/linux/swap.h | 14 ++------------
+>  mm/cma.c             |  5 +++++
+>  mm/swap.c            | 30 ++++++++++++++++++++++++++++--
+>  3 files changed, 35 insertions(+), 14 deletions(-)
+> 
+> diff --git a/include/linux/swap.h b/include/linux/swap.h
+> index ba52f3a3478e..fe18e86a4f13 100644
+> --- a/include/linux/swap.h
+> +++ b/include/linux/swap.h
+> @@ -348,19 +348,9 @@ extern void lru_note_cost_page(struct page *);
+>  extern void lru_cache_add(struct page *);
+>  extern void mark_page_accessed(struct page *);
+>  
+> -extern atomic_t lru_disable_count;
+> -
+> -static inline bool lru_cache_disabled(void)
+> -{
+> -	return atomic_read(&lru_disable_count);
+> -}
+> -
+> -static inline void lru_cache_enable(void)
+> -{
+> -	atomic_dec(&lru_disable_count);
+> -}
+> -
+> +extern bool lru_cache_disabled(void);
+>  extern void lru_cache_disable(void);
+> +extern void lru_cache_enable(void);
+>  extern void lru_add_drain(void);
+>  extern void lru_add_drain_cpu(int cpu);
+>  extern void lru_add_drain_cpu_zone(struct zone *zone);
+> diff --git a/mm/cma.c b/mm/cma.c
+> index 995e15480937..60be555c5b95 100644
+> --- a/mm/cma.c
+> +++ b/mm/cma.c
+> @@ -30,6 +30,7 @@
+>  #include <linux/cma.h>
+>  #include <linux/highmem.h>
+>  #include <linux/io.h>
+> +#include <linux/swap.h>
+>  #include <linux/kmemleak.h>
+>  #include <trace/events/cma.h>
+>  
+> @@ -453,6 +454,8 @@ struct page *cma_alloc(struct cma *cma, unsigned long count,
+>  	if (bitmap_count > bitmap_maxno)
+>  		goto out;
+>  
+> +	lru_cache_disable();
+> +
+>  	for (;;) {
+>  		spin_lock_irq(&cma->lock);
+>  		bitmap_no = bitmap_find_next_zero_area_off(cma->bitmap,
+> @@ -492,6 +495,8 @@ struct page *cma_alloc(struct cma *cma, unsigned long count,
+>  		start = bitmap_no + mask + 1;
+>  	}
+>  
+> +	lru_cache_enable();
+> +
+>  	trace_cma_alloc_finish(cma->name, pfn, page, count, align);
+>  
+>  	/*
+> diff --git a/mm/swap.c b/mm/swap.c
+> index af3cad4e5378..5f89d7c9a54e 100644
+> --- a/mm/swap.c
+> +++ b/mm/swap.c
+> @@ -847,7 +847,17 @@ void lru_add_drain_all(void)
+>  }
+>  #endif /* CONFIG_SMP */
+>  
+> -atomic_t lru_disable_count = ATOMIC_INIT(0);
+> +static atomic_t lru_disable_count = ATOMIC_INIT(0);
+> +
+> +bool lru_cache_disabled(void)
+> +{
+> +	return atomic_read(&lru_disable_count) != 0;
+> +}
+> +
+> +void lru_cache_enable(void)
+> +{
+> +	atomic_dec(&lru_disable_count);
+> +}
+>  
+>  /*
+>   * lru_cache_disable() needs to be called before we start compiling
+> @@ -859,7 +869,21 @@ atomic_t lru_disable_count = ATOMIC_INIT(0);
+>   */
+>  void lru_cache_disable(void)
+>  {
+> -	atomic_inc(&lru_disable_count);
+> +	static DEFINE_MUTEX(lock);
+> +
+> +	/*
+> +	 * The lock gaurantees lru_cache is drained when the function
+> +	 * returned.
+> +	 */
+> +	mutex_lock(&lock);
+> +	/*
+> +	 * If someone is already disabled lru_cache, just return with
+> +	 * increasing the lru_disable_count.
+> +	 */
+> +	if (atomic_inc_not_zero(&lru_disable_count)) {
+> +		mutex_unlock(&lock);
+> +		return;
+> +	}
+>  #ifdef CONFIG_SMP
+>  	/*
+>  	 * lru_add_drain_all in the force mode will schedule draining on
+> @@ -873,6 +897,8 @@ void lru_cache_disable(void)
+>  #else
+>  	lru_add_and_bh_lrus_drain();
+>  #endif
+> +	atomic_inc(&lru_disable_count);
+> +	mutex_unlock(&lock);
+>  }
+>  
+>  /**
+> -- 
+> 2.34.1.448.ga2b2bfdf31-goog
+
+-- 
+Michal Hocko
+SUSE Labs
