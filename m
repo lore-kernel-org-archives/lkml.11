@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E8ADC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:12:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1B41C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:12:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243000AbiAQRMx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:12:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46234 "EHLO
+        id S242031AbiAQRMz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:12:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243474AbiAQRJu (ORCPT
+        with ESMTP id S243671AbiAQRKH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:09:50 -0500
+        Mon, 17 Jan 2022 12:10:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53999C0613AB;
-        Mon, 17 Jan 2022 09:05:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BD7AC061A7D;
+        Mon, 17 Jan 2022 09:05:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3586961277;
-        Mon, 17 Jan 2022 17:05:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BAD1AC36AE3;
-        Mon, 17 Jan 2022 17:05:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DE9F16126B;
+        Mon, 17 Jan 2022 17:05:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6F128C36AE3;
+        Mon, 17 Jan 2022 17:05:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439143;
-        bh=SO3cHiV5I28ThnTZPDoMcc4LPiomENv4E0MOcsvj+qg=;
+        s=k20201202; t=1642439157;
+        bh=jbFpHmEm0LhR9WntBAIKJZUHg3ZypDEqqJtUJca1zAo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sJcJIIEid/EfbanXpKggk1RfLS6WCNG3QHPJPvu5h0kksFHs7WLXae6R61PdkQvV4
-         h2n9lYsladeMdk8nMjPUcn0ZB/xEdUBUI3bSnwLqdEkpCbzONb1mTbzaKjBTdq+yx3
-         qznytfCbapKid+Td03P4qva5GUSDHjOBubUPenQstXohEwqgU2V4gcUgcB2ciTFFwj
-         fZgTK9VFt0E6zRirWtxuq9jOnEqSXNNLv+ERLJLevgdRzQJ2Ym/zrBiBli/H498ToU
-         mflEL16ilfrpxRA6cMMkYulTJA7XZDsIq+M9JdnitCOVf8YfoiBfUXhVRW1X6OnQTa
-         KC8AEUCoxnT2g==
+        b=kgeuHgvCXmlLOSVN9Ijl+nKgcyQodHITqeW//oiTzRH7SCXyjCmTFWHant2fhVMnk
+         Gh8TbaR0f3XXRlyq7K3zmtQhQoVVE27IvuxDeW16A52R2VYj95fR0AZCm9ogSss3wU
+         OYdx7YNDP9xWj0p43He4sVrvlf02RX90jOPnskLSdjkvjk92qYH6oAHuOsuGU9wzVH
+         9wqEOAmruJt9Ye1HPx9lF6TBgH+5EGFolfFFtkIwKLZZ+Jl4YP/wQ4Bo1YRsNt8pJ9
+         QGCpFQsHtp66B7ycg7xKcO47p3hKxjtmalQyKXFZI6stP08CQ1ZcgotxVnw7/79kY3
+         0jG9sNjK8uGWw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christoph Hellwig <hch@lst.de>, Baoquan He <bhe@redhat.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 20/21] scsi: sr: Don't use GFP_DMA
-Date:   Mon, 17 Jan 2022 12:04:52 -0500
-Message-Id: <20220117170454.1472347-20-sashal@kernel.org>
+Cc:     Julia Lawall <Julia.Lawall@lip6.fr>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, maz@kernel.org,
+        nick.child@ibm.com, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 4.19 02/17] powerpc/6xx: add missing of_node_put
+Date:   Mon, 17 Jan 2022 12:05:36 -0500
+Message-Id: <20220117170551.1472640-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170454.1472347-1-sashal@kernel.org>
-References: <20220117170454.1472347-1-sashal@kernel.org>
+In-Reply-To: <20220117170551.1472640-1-sashal@kernel.org>
+References: <20220117170551.1472640-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,59 +52,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-[ Upstream commit d94d94969a4ba07a43d62429c60372320519c391 ]
+[ Upstream commit f6e82647ff71d427d4148964b71f239fba9d7937 ]
 
-The allocated buffers are used as a command payload, for which the block
-layer and/or DMA API do the proper bounce buffering if needed.
+for_each_compatible_node performs an of_node_get on each iteration, so
+a break out of the loop requires an of_node_put.
 
-Link: https://lore.kernel.org/r/20211222090842.920724-1-hch@lst.de
-Reported-by: Baoquan He <bhe@redhat.com>
-Reviewed-by: Baoquan He <bhe@redhat.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+A simplified version of the semantic patch that fixes this problem is as
+follows (http://coccinelle.lip6.fr):
+
+// <smpl>
+@@
+expression e;
+local idexpression n;
+@@
+
+@@
+local idexpression n;
+expression e;
+@@
+
+ for_each_compatible_node(n,...) {
+   ...
+(
+   of_node_put(n);
+|
+   e = n
+|
++  of_node_put(n);
+?  break;
+)
+   ...
+ }
+... when != n
+// </smpl>
+
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/1448051604-25256-2-git-send-email-Julia.Lawall@lip6.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/sr.c        | 2 +-
- drivers/scsi/sr_vendor.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ arch/powerpc/platforms/embedded6xx/hlwd-pic.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
-index 279dea628620d..310da62cda263 100644
---- a/drivers/scsi/sr.c
-+++ b/drivers/scsi/sr.c
-@@ -887,7 +887,7 @@ static void get_capabilities(struct scsi_cd *cd)
- 
- 
- 	/* allocate transfer buffer */
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer) {
- 		sr_printk(KERN_ERR, cd, "out of memory.\n");
- 		return;
-diff --git a/drivers/scsi/sr_vendor.c b/drivers/scsi/sr_vendor.c
-index b9db2ec6d0361..996bccadd3866 100644
---- a/drivers/scsi/sr_vendor.c
-+++ b/drivers/scsi/sr_vendor.c
-@@ -113,7 +113,7 @@ int sr_set_blocklength(Scsi_CD *cd, int blocklength)
- 	if (cd->vendor == VENDOR_TOSHIBA)
- 		density = (blocklength > 2048) ? 0x81 : 0x83;
- 
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
- 
-@@ -161,7 +161,7 @@ int sr_cd_check(struct cdrom_device_info *cdi)
- 	if (cd->cdi.mask & CDC_MULTI_SESSION)
- 		return 0;
- 
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
- 
+diff --git a/arch/powerpc/platforms/embedded6xx/hlwd-pic.c b/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
+index 8112b39879d67..7b4edf1cb2c8d 100644
+--- a/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
++++ b/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
+@@ -220,6 +220,7 @@ void hlwd_pic_probe(void)
+ 			irq_set_chained_handler(cascade_virq,
+ 						hlwd_pic_irq_cascade);
+ 			hlwd_irq_host = host;
++			of_node_put(np);
+ 			break;
+ 		}
+ 	}
 -- 
 2.34.1
 
