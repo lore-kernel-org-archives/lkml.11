@@ -2,89 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA4BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 21:42:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39F7FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 21:44:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243333AbiAQVmY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 16:42:24 -0500
-Received: from mout.gmx.net ([212.227.15.19]:33383 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237515AbiAQVmW (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 16:42:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1642455732;
-        bh=CjO3Hio2OwEz3aLo79EY9u6+106RoCFGduZbE4yheTs=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=gALf5YeO661+wEDU/erTMhRoSmqHHshcrKiDy85NxOpCod8H3IgYNmmevWgf68Smi
-         APVc/5id2erWr1mS9B7fKGUczb2WjvvlhRUSpqIOCt7rWZfBpaJAWI27cnJh5RdadG
-         8lMLoyqw3ZytrZVrDSbM4ZRWt+w2mkAqoHBJilxQ=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.167.237]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N63Vi-1mGMdY2Jui-016Qb2; Mon, 17
- Jan 2022 22:42:12 +0100
-Message-ID: <c86bd360-a3d3-9aba-cd98-d1458b301787@gmx.de>
-Date:   Mon, 17 Jan 2022 22:41:07 +0100
+        id S243346AbiAQVo6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 16:44:58 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:56268 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235812AbiAQVo4 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 16:44:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642455894;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=0CyA4F2l4Ga8KW0MgR+7KYufjdXJ2AvOgHyksYubBhw=;
+        b=JcTpW353ACewlfGk0AXeiodWUjaI1Ru2vfp1UnCeUQYYYM26c4TvJK3YYKy9raj/HjBjiP
+        JID4CDBfedDyv7UhpC/FE/6HTfflNffVYuKNhRNO5M6XsuTbOuMrzzXHDHHm3uMi0PPgfn
+        6gJ2JZRZzzX0uGwM3eZ8gg/iwKPq+cQ=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-422-G1Y7Ym08MES-uANjNq1DYQ-1; Mon, 17 Jan 2022 16:44:53 -0500
+X-MC-Unique: G1Y7Ym08MES-uANjNq1DYQ-1
+Received: by mail-ed1-f70.google.com with SMTP id l14-20020aa7cace000000b003f7f8e1cbbdso15124672edt.20
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 13:44:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=0CyA4F2l4Ga8KW0MgR+7KYufjdXJ2AvOgHyksYubBhw=;
+        b=C8Rx+w69g9MKwMqFMowOP7zZsZRf9CObaJ8nASAS7JQHuyPQlZsffDJ740fcot0o0A
+         QTLK8ywBE6pBoKyr942LjoceHwQbYpm0PKSm3cFmzzKhWwMg/Ro1B0VKUan5wVZYJV84
+         T2GC/6Pjsj6XhfLE9qfC+u25UYkVD7hdw4QVhT5hU3ryRFHUstXozm7nE6l0sg8uWEHL
+         FFqiNvBJndEetFfi488VWYuXh0vLaChqismVAcbIxCYiDUyc0ncZ1s4V7yU3pKK0nKje
+         O0hhs+7b2P6Fa5+hjjET5YOBnQ8PA9oBi4PPe7GnrcHmfC5yyk/eArQ6pDdX66XMIiue
+         WwtQ==
+X-Gm-Message-State: AOAM532YZrTYjc2J+OgGSK/ex/L99PIzLrLcQHXQJ9/SYQkPHCC6cGO5
+        udav9GMtrUDr4ATkuESSb4zMk83dyO5EkF6IoVfPWyam7jBu5NWuG9yPpv0DCvddOVlLSg3W9Fr
+        seuWHCK7pPmQAP2gkrM3xcPql
+X-Received: by 2002:a17:907:62a3:: with SMTP id nd35mr18836045ejc.650.1642455892018;
+        Mon, 17 Jan 2022 13:44:52 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy/if0AA69UEdFPdjv36EaSPlb3X89ozwxa4kaHHPL/Xm4Ik082CAGiBTzwK/mjl2j6tlWgLw==
+X-Received: by 2002:a17:907:62a3:: with SMTP id nd35mr18836030ejc.650.1642455891787;
+        Mon, 17 Jan 2022 13:44:51 -0800 (PST)
+Received: from redhat.com ([2.55.154.241])
+        by smtp.gmail.com with ESMTPSA id s16sm6331099edt.30.2022.01.17.13.44.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Jan 2022 13:44:48 -0800 (PST)
+Date:   Mon, 17 Jan 2022 16:44:45 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH] virtio_mem: break device on remove
+Message-ID: <20220117164427-mutt-send-email-mst@kernel.org>
+References: <20220114214324.239444-1-mst@redhat.com>
+ <1f703ebf-0f78-e530-0fe1-163613397cad@redhat.com>
+ <20220117025341-mutt-send-email-mst@kernel.org>
+ <7ec8218e-9d76-a9b7-ccd0-b7c8ce257fe2@redhat.com>
+ <20220117033644-mutt-send-email-mst@kernel.org>
+ <44f4ee97-562c-ce37-a5af-9f58e052f3a9@redhat.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: linux-next: Fixes tag needs some work in the fbdev tree
-Content-Language: en-US
-To:     Stephen Rothwell <sfr@canb.auug.org.au>
-Cc:     "Z. Liu" <liuzx@knownsec.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-References: <20220118083336.25b0bcd6@canb.auug.org.au>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <20220118083336.25b0bcd6@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:pfFYL1ylQwNolxj51a/ex+/2d5RyUzhFaXO5cB2Ano5AQn030KM
- yY2w5Q24JkrKGnhLlL5i+M8SLC9iu/2xd+ckRByeoF4HqvAjaVltYqVDEdI7ntFmXPXkua/
- VWZE/2E0rpHFoLJrF9fxt8tnagZXdYHPfo/vJXN7fkw+TzL9N5zaoSsFObsYOcY7kG53gyc
- clQK5VIxDfx/EIpJU3h+Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:SHg2tCboBbc=:EGyRHHp3Uo/LowcHp10y/F
- C3ZxlsCGTToi3oWB+/7lGLmYfDd5wQ98bYhvyg6JleK9MQw6qgOY8BSAZE+qyxoDb05WQAhTB
- HJ0qxxrRd1ZhkgoiIeRxkbr/KVbxWv2+Os1MVkHSzl7Xe7wqNroiF7X7WRX6NgTG8vRFPKBod
- o4XAb42twHxGsAkqyECTP+OE8+PWpr9nXq0ztMhKUMvEMqntyQHmOLkpRSkR/7Hx/fDLG4ldv
- GeKAKucs8NuDdFtMiSbIfhbTY5Sm+HOeEaapK4gkp21BdCFODngcGYgv4yeTTOTxer3lL85Ot
- 4rMy8b9wsZ5tDx+PyaA2lkIvVZX5vlQP8iOd8yKQYVhFYQqlk9/amOeucoctq+VO8AuShfuNu
- GjvXdINEyygQJWBW3elkPGEem6/6Ub4RMgHEzzhyam28V2QPAaE9za2y98ZcTeXulfQ6Z5+lr
- ze+NjrUuDB6uttajMRlGckuE5Veqw5yrbk6epgyok/gervvBJsn9YRxwZaGImkmrDBJxTPO87
- k3iZh34osOWeJdAZFwcmL1aRID6vOcQO1sj8atmM0WpbJWj7LOYYaucMXz6JuF1xkhv6EYFQb
- aOtZ6AJ7zcb7bl0B1/oZBcOu3hjmdnsr3sdSD7yfQCIvMgxhFNcw+J+xJVi0X+EpgpVExRG0n
- g3blrsX46zml1fOT0YgIdxSk9fSUcsd0KfHFPa+hHOJDwPuUqzJW0uFUm9276fS27eTmzPdFs
- oXPo9aRB+j8S+oBg4AbAh/UBFHFlGxIuRGU7yN/D9zVQe5So31PTXC4VdgUhkb1Vzzorx5uTT
- 4oD/RAZ5G+/ZDMADHPrRMk878YhIENLng5ytIok49opflr7HK4C0upKw+AX6WFqXac2D9gsmC
- DG0pXIciKXxNy1RSnrva+5PvGj/mAbRxnceFTUlTkCwGrIgFYWlIaYjd5bEitKd/5bHupAckn
- fKcI68JwsJ+cY6Or+x7YOYvlqik9+LrT0A4fXSlwJ9O4Tk7N9tMoh4yf6VKWWMg9CGIxoY8QG
- Di2uFRzlwGoVMHUT6MlZNJieNCF1khmr3mj9a1gVSgjC2ylXSeh4v52Nh/d7v0w88/geDDy+D
- G5I2pV+Tnogskk=
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <44f4ee97-562c-ce37-a5af-9f58e052f3a9@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/17/22 22:33, Stephen Rothwell wrote:
-> Hi all,
->
-> In commit
->
->   a274f635669a ("matroxfb: set maxvram of vbG200eW to the same as vbG200=
- to avoid black screen")
->
-> Fixes tag
->
->   Fixes: 1be60bd66d54 ("matroxfb: add Matrox MGA-G200eW board support")
->
-> has these problem(s):
->
->   - Target SHA1 does not exist
->
-> Maybe you meant
->
-> Fixes: 11be60bd66d5 ("matroxfb: add Matrox MGA-G200eW board support")
+On Mon, Jan 17, 2022 at 11:25:12AM +0100, David Hildenbrand wrote:
+> On 17.01.22 09:40, Michael S. Tsirkin wrote:
+> > On Mon, Jan 17, 2022 at 09:31:56AM +0100, David Hildenbrand wrote:
+> >> On 17.01.22 08:55, Michael S. Tsirkin wrote:
+> >>> On Mon, Jan 17, 2022 at 02:40:11PM +0800, Jason Wang wrote:
+> >>>>
+> >>>> 在 2022/1/15 上午5:43, Michael S. Tsirkin 写道:
+> >>>>> A common pattern for device reset is currently:
+> >>>>> vdev->config->reset(vdev);
+> >>>>> .. cleanup ..
+> >>>>>
+> >>>>> reset prevents new interrupts from arriving and waits for interrupt
+> >>>>> handlers to finish.
+> >>>>>
+> >>>>> However if - as is common - the handler queues a work request which is
+> >>>>> flushed during the cleanup stage, we have code adding buffers / trying
+> >>>>> to get buffers while device is reset. Not good.
+> >>>>>
+> >>>>> This was reproduced by running
+> >>>>> 	modprobe virtio_console
+> >>>>> 	modprobe -r virtio_console
+> >>>>> in a loop, and this reasoning seems to apply to virtio mem though
+> >>>>> I could not reproduce it there.
+> >>>>>
+> >>>>> Fix this up by calling virtio_break_device + flush before reset.
+> >>>>>
+> >>>>> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+> >>>>> ---
+> >>>>>   drivers/virtio/virtio_mem.c | 2 ++
+> >>>>>   1 file changed, 2 insertions(+)
+> >>>>>
+> >>>>> diff --git a/drivers/virtio/virtio_mem.c b/drivers/virtio/virtio_mem.c
+> >>>>> index 38becd8d578c..33b8a118a3ae 100644
+> >>>>> --- a/drivers/virtio/virtio_mem.c
+> >>>>> +++ b/drivers/virtio/virtio_mem.c
+> >>>>> @@ -2888,6 +2888,8 @@ static void virtio_mem_remove(struct virtio_device *vdev)
+> >>>>>   		virtio_mem_deinit_hotplug(vm);
+> >>>>>   	/* reset the device and cleanup the queues */
+> >>>>> +	virtio_break_device(vdev);
+> >>>>> +	flush_work(&vm->wq);
+> >>>>
+> >>>>
+> >>>> We set vm->removing to true and call cancel_work_sync() in
+> >>>> virtio_mem_deinit_hotplug(). Isn't is sufficient?
+> >>>>
+> >>>> Thanks
+> >>>
+> >>>
+> >>> Hmm I think you are right. David, I will drop this for now.
+> >>> Up to you to consider whether some central capability will be
+> >>> helpful as a replacement for the virtio-mem specific "removing" flag.
+> >>
+> >> It's all a bit tricky because we also have to handle pending timers and
+> >> pending memory onlining/offlining operations in a controlled way. Maybe
+> >> we could convert to virtio_break_device() and use the
+> >> &dev->vqs_list_lock as a replacement for the removal_lock. However, I'm
+> >> not 100% sure if it's nice to use that lock from
+> >> drivers/virtio/virtio_mem.c directly.
+> > 
+> > We could add an API if you like. Or maybe it makes sense to add a
+> > separate one that lets you find out that removal started. Need to figure
+> > out how to handle suspend too then ...
+> > Generally we have these checks that device is not going away
+> > sprinkled over all drivers and I don't like it, but
+> > it's not easy to build a sane API to handle it, especially
+> > for high speed things when we can't take locks because performance.
+> 
+> The interesting case might be how to handle virtio_mem_retry(), whereby
+> we conditionally queue work if !removing.
+> 
+> Having that said, in an ideal world we could deny removal requests for
+> virtio_mem completely if there is still any memory added to the system ...
+> 
+> 
+> -- 
+> Thanks,
+> 
+> David / dhildenb
 
-Yes.
-Fixed up now.
 
-Thanks!
-Helge
+removal requests might come from guest admin.
+
+-- 
+MST
+
