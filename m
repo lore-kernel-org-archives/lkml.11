@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C02E9C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:59:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1618C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:59:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241433AbiAQQ7w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 11:59:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44606 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241317AbiAQQ7e (ORCPT
+        id S241386AbiAQQ7y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 11:59:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48622 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241264AbiAQQ7W (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 11:59:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F1CBC061746;
-        Mon, 17 Jan 2022 08:59:34 -0800 (PST)
+        Mon, 17 Jan 2022 11:59:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3346611EC;
-        Mon, 17 Jan 2022 16:59:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79F72C36AE3;
-        Mon, 17 Jan 2022 16:59:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 000A1611B9;
+        Mon, 17 Jan 2022 16:59:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 223C9C36AE3;
+        Mon, 17 Jan 2022 16:59:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642438773;
-        bh=6YKiuUS8IB5VXSiZrYfnABL7p33uLb807OzSPrmlgRY=;
+        s=k20201202; t=1642438761;
+        bh=lwk4z1qF/+7RF7Vl9dzFXszBwZQtFzeHpBCcrjjmNeI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SvZNXz2Aico5/U24kbj/oo/+VAFz6DzU44k/RMmZtrg0/Y5XRHyTSJYPeosvYexj1
-         r9q24oDgChXLYgwVzRO6HvhzCY18ficZAYbVdJPFhUpIN/DOWJizYjlgmfXR0ZTzMp
-         a3oCz7tdPM0VYb1Oicv5lQMX4+gFrYpx+1D0Zj/ooe1bRq7Gb90hEE9qzea8vfBTCw
-         PEJhk/+lBqcxcEfX8ldx58Mxt4FnYSbk7QgC064a6FOePM9dTErJtHVurnX+lAUP80
-         NQhHq1TTEMqi91rJ8Es3tcRbpcPQs/a7OUo2N61ESJUknwmuiSRQ0T+vA7DhDeoSfj
-         XOZ222501vBvw==
+        b=fqqvIy8tlFcmUrDGy8Wdogvdd/lR/vSCmO9uYF9FGiA6WdZCg6I5Mg1rtnSsRqO4Q
+         bZK4mxVyBAMXYn2fYMoK2p+hoqeRR8ZHoWTTC2lQ8vEh1Qkz0nSMv98JCsqlfp80/u
+         0NnyoMql9jsbzvN8vz1hhErbRsYUPa5egqDszTlcYCl345dvLIr9NFLBqJgK0Y5fio
+         Oh/EYUJyN1SvM65UtcPeiGQ+x7BnNDbSnB4xNkfhCx3idDP1cWszJAFBCzsrccdf/p
+         Vuf9GYY0lTDXSFXZMPMmRu8DhQXQlDFltqwB1QXTBOxPkhBXEvvH7AVxnAuTXTRbU9
+         HfwJsDYA0XRTw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        kernel test robot <lkp@intel.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, zbr@ioremap.net
-Subject: [PATCH AUTOSEL 5.16 16/52] w1: Misuse of get_user()/put_user() reported by sparse
-Date:   Mon, 17 Jan 2022 11:58:17 -0500
-Message-Id: <20220117165853.1470420-16-sashal@kernel.org>
+Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Christian Hewitt <christianshewitt@gmail.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>, narmstrong@baylibre.com,
+        mturquette@baylibre.com, sboyd@kernel.org, khilman@baylibre.com,
+        linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 12/52] clk: meson: gxbb: Fix the SDM_EN bit for MPLL0 on GXBB
+Date:   Mon, 17 Jan 2022 11:58:13 -0500
+Message-Id: <20220117165853.1470420-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117165853.1470420-1-sashal@kernel.org>
 References: <20220117165853.1470420-1-sashal@kernel.org>
@@ -52,84 +52,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[ Upstream commit 33dc3e3e99e626ce51f462d883b05856c6c30b1d ]
+[ Upstream commit ff54938dd190d85f740b9bf9dde59b550936b621 ]
 
-sparse warnings: (new ones prefixed by >>)
->> drivers/w1/slaves/w1_ds28e04.c:342:13: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected char [noderef] __user *_pu_addr @@     got char *buf @@
-   drivers/w1/slaves/w1_ds28e04.c:342:13: sparse:     expected char [noderef] __user *_pu_addr
-   drivers/w1/slaves/w1_ds28e04.c:342:13: sparse:     got char *buf
->> drivers/w1/slaves/w1_ds28e04.c:356:13: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected char const [noderef] __user *_gu_addr @@     got char const *buf @@
-   drivers/w1/slaves/w1_ds28e04.c:356:13: sparse:     expected char const [noderef] __user *_gu_addr
-   drivers/w1/slaves/w1_ds28e04.c:356:13: sparse:     got char const *buf
+There are reports that 48kHz audio does not work on the WeTek Play 2
+(which uses a GXBB SoC), while 44.1kHz audio works fine on the same
+board. There are also reports of 48kHz audio working fine on GXL and
+GXM SoCs, which are using an (almost) identical AIU (audio controller).
 
-The buffer buf is a failsafe buffer in kernel space, it's not user
-memory hence doesn't deserve the use of get_user() or put_user().
+Experimenting has shown that MPLL0 is causing this problem. In the .dts
+we have by default:
+	assigned-clocks = <&clkc CLKID_MPLL0>,
+			  <&clkc CLKID_MPLL1>,
+			  <&clkc CLKID_MPLL2>;
+	assigned-clock-rates = <294912000>,
+			       <270950400>,
+			       <393216000>;
+The MPLL0 rate is divisible by 48kHz without remainder and the MPLL1
+rate is divisible by 44.1kHz without remainder. Swapping these two clock
+rates "fixes" 48kHz audio but breaks 44.1kHz audio.
 
-Access 'buf' content directly.
+Everything looks normal when looking at the info provided by the common
+clock framework while playing 48kHz audio (via I2S with mclk-fs = 256):
+        mpll_prediv                 1        1        0  2000000000
+           mpll0_div                1        1        0   294909641
+              mpll0                 1        1        0   294909641
+                 cts_amclk_sel       1        1        0   294909641
+                    cts_amclk_div       1        1        0    12287902
+                       cts_amclk       1        1        0    12287902
 
-Link: https://lore.kernel.org/lkml/202111190526.K5vb7NWC-lkp@intel.com/T/
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Link: https://lore.kernel.org/r/d14ed8d71ad4372e6839ae427f91441d3ba0e94d.1637946316.git.christophe.leroy@csgroup.eu
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+meson-clk-msr however shows that the actual MPLL0 clock is off by more
+than 38MHz:
+        mp0_out               333322917    +/-10416Hz
+
+The rate seen by meson-clk-msr is very close to what we would get when
+SDM (the fractional part) was ignored:
+  (2000000000Hz * 16384) / ((16384 * 6) = 333.33MHz
+If SDM was considered the we should get close to:
+  (2000000000Hz * 16384) / ((16384 * 6) + 12808) = 294.9MHz
+
+Further experimenting shows that HHI_MPLL_CNTL7[15] does not have any
+effect on the rate of MPLL0 as seen my meson-clk-msr (regardless of
+whether that bit is zero or one the rate is always the same according to
+meson-clk-msr). Using HHI_MPLL_CNTL[25] on the other hand as SDM_EN
+results in SDM being considered for the rate output by the hardware. The
+rate - as seen by meson-clk-msr - matches with what we expect when
+SDM_EN is enabled (fractional part is being considered, resulting in a
+294.9MHz output) or disable (fractional part being ignored, resulting in
+a 333.33MHz output).
+
+Reported-by: Christian Hewitt <christianshewitt@gmail.com>
+Tested-by: Christian Hewitt <christianshewitt@gmail.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+Link: https://lore.kernel.org/r/20211031135006.1508796-1-martin.blumenstingl@googlemail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/w1/slaves/w1_ds28e04.c | 26 ++++++--------------------
- 1 file changed, 6 insertions(+), 20 deletions(-)
+ drivers/clk/meson/gxbb.c | 44 +++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 41 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/w1/slaves/w1_ds28e04.c b/drivers/w1/slaves/w1_ds28e04.c
-index e4f336111edc6..6cef6e2edb892 100644
---- a/drivers/w1/slaves/w1_ds28e04.c
-+++ b/drivers/w1/slaves/w1_ds28e04.c
-@@ -32,7 +32,7 @@ static int w1_strong_pullup = 1;
- module_param_named(strong_pullup, w1_strong_pullup, int, 0);
+diff --git a/drivers/clk/meson/gxbb.c b/drivers/clk/meson/gxbb.c
+index d6eed760327d0..608e0e8ca49a8 100644
+--- a/drivers/clk/meson/gxbb.c
++++ b/drivers/clk/meson/gxbb.c
+@@ -713,6 +713,35 @@ static struct clk_regmap gxbb_mpll_prediv = {
+ };
  
- /* enable/disable CRC checking on DS28E04-100 memory accesses */
--static char w1_enable_crccheck = 1;
-+static bool w1_enable_crccheck = true;
- 
- #define W1_EEPROM_SIZE		512
- #define W1_PAGE_COUNT		16
-@@ -339,32 +339,18 @@ static BIN_ATTR_RW(pio, 1);
- static ssize_t crccheck_show(struct device *dev, struct device_attribute *attr,
- 			     char *buf)
- {
--	if (put_user(w1_enable_crccheck + 0x30, buf))
--		return -EFAULT;
--
--	return sizeof(w1_enable_crccheck);
-+	return sysfs_emit(buf, "%d\n", w1_enable_crccheck);
- }
- 
- static ssize_t crccheck_store(struct device *dev, struct device_attribute *attr,
- 			      const char *buf, size_t count)
- {
--	char val;
--
--	if (count != 1 || !buf)
--		return -EINVAL;
-+	int err = kstrtobool(buf, &w1_enable_crccheck);
- 
--	if (get_user(val, buf))
--		return -EFAULT;
-+	if (err)
-+		return err;
- 
--	/* convert to decimal */
--	val = val - 0x30;
--	if (val != 0 && val != 1)
--		return -EINVAL;
--
--	/* set the new value */
--	w1_enable_crccheck = val;
--
--	return sizeof(w1_enable_crccheck);
-+	return count;
- }
- 
- static DEVICE_ATTR_RW(crccheck);
+ static struct clk_regmap gxbb_mpll0_div = {
++	.data = &(struct meson_clk_mpll_data){
++		.sdm = {
++			.reg_off = HHI_MPLL_CNTL7,
++			.shift   = 0,
++			.width   = 14,
++		},
++		.sdm_en = {
++			.reg_off = HHI_MPLL_CNTL,
++			.shift   = 25,
++			.width	 = 1,
++		},
++		.n2 = {
++			.reg_off = HHI_MPLL_CNTL7,
++			.shift   = 16,
++			.width   = 9,
++		},
++		.lock = &meson_clk_lock,
++	},
++	.hw.init = &(struct clk_init_data){
++		.name = "mpll0_div",
++		.ops = &meson_clk_mpll_ops,
++		.parent_hws = (const struct clk_hw *[]) {
++			&gxbb_mpll_prediv.hw
++		},
++		.num_parents = 1,
++	},
++};
++
++static struct clk_regmap gxl_mpll0_div = {
+ 	.data = &(struct meson_clk_mpll_data){
+ 		.sdm = {
+ 			.reg_off = HHI_MPLL_CNTL7,
+@@ -749,7 +778,16 @@ static struct clk_regmap gxbb_mpll0 = {
+ 	.hw.init = &(struct clk_init_data){
+ 		.name = "mpll0",
+ 		.ops = &clk_regmap_gate_ops,
+-		.parent_hws = (const struct clk_hw *[]) { &gxbb_mpll0_div.hw },
++		.parent_data = &(const struct clk_parent_data) {
++			/*
++			 * Note:
++			 * GXL and GXBB have different SDM_EN registers. We
++			 * fallback to the global naming string mechanism so
++			 * mpll0_div picks up the appropriate one.
++			 */
++			.name = "mpll0_div",
++			.index = -1,
++		},
+ 		.num_parents = 1,
+ 		.flags = CLK_SET_RATE_PARENT,
+ 	},
+@@ -3044,7 +3082,7 @@ static struct clk_hw_onecell_data gxl_hw_onecell_data = {
+ 		[CLKID_VAPB_1]		    = &gxbb_vapb_1.hw,
+ 		[CLKID_VAPB_SEL]	    = &gxbb_vapb_sel.hw,
+ 		[CLKID_VAPB]		    = &gxbb_vapb.hw,
+-		[CLKID_MPLL0_DIV]	    = &gxbb_mpll0_div.hw,
++		[CLKID_MPLL0_DIV]	    = &gxl_mpll0_div.hw,
+ 		[CLKID_MPLL1_DIV]	    = &gxbb_mpll1_div.hw,
+ 		[CLKID_MPLL2_DIV]	    = &gxbb_mpll2_div.hw,
+ 		[CLKID_MPLL_PREDIV]	    = &gxbb_mpll_prediv.hw,
+@@ -3439,7 +3477,7 @@ static struct clk_regmap *const gxl_clk_regmaps[] = {
+ 	&gxbb_mpll0,
+ 	&gxbb_mpll1,
+ 	&gxbb_mpll2,
+-	&gxbb_mpll0_div,
++	&gxl_mpll0_div,
+ 	&gxbb_mpll1_div,
+ 	&gxbb_mpll2_div,
+ 	&gxbb_cts_amclk_div,
 -- 
 2.34.1
 
