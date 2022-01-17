@@ -2,137 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 824F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 09:02:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A378DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 09:02:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233571AbiAQJCG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 04:02:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48072 "EHLO
+        id S233601AbiAQJCR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 04:02:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48094 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230189AbiAQJCF (ORCPT
+        with ESMTP id S233580AbiAQJCK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 04:02:05 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC216C061574
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 01:02:04 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id d3so54854176lfv.13
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 01:02:04 -0800 (PST)
+        Mon, 17 Jan 2022 04:02:10 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F860C06173F;
+        Mon, 17 Jan 2022 01:02:08 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id p18so18707740wmg.4;
+        Mon, 17 Jan 2022 01:02:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5eWNHkxEDcvDnOVa58vimxj0RFzSnZVX78Y15KWp4XE=;
-        b=F04iKpf55HWHZUfNd0MND3kcC57yHpdTxP2HADRAYHB8O1xd4GhvxL5ge//KS4A7TS
-         gpejjKDT3cDnZAclFrysE8oNstHYfFzAc9Xxt1Z6B96UtuI7T3RYhU56mMNBQZGcPJ1S
-         9NeSRFgzrZiCJ3BaQjQFBzJfWoY4POEB95y48=
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=pKQyE8WmRVKRRSfCnHXiQ2iVbjjWgAi/p8fAcfN9+Bw=;
+        b=YffBhN651/Z0BklBOyvA5ZOyGu8rIBJ8+YLlWg9M5uzMmi3n/Ak+YV9GY055jAmx71
+         jd/YTSomGNRGaf7STMxfmc+MUVl/vNg5HUCaqfi8thzuZvr08jlzhVo+ra2zq8ZTMhYX
+         0GaNUMsAh/p2ww0u5GsePmMY5qI5AQ0lSPDLNiMlg9cRqp7nYNUX+nENOeHvw0bKxEsU
+         1LpRSC0G0L1X8JsfrlTkHQ7Ib8bPiUuUzvlZP4L3R+F+o2QyyOqSSPjMSZ5wKmi8MPjE
+         ojYQVV/sbjRl9UGzxDug3wohHgwKdYsuCYgOHLAJIGasNTTX85gbMtJeKU7zv041mW8Y
+         EKXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5eWNHkxEDcvDnOVa58vimxj0RFzSnZVX78Y15KWp4XE=;
-        b=r3np+3zH/jaz50F//Syja0/bDjKfEZpY+n6e7Ma0Q8X+ialAGF0Q3rYcMdUS88Vl7v
-         VHq9UbOZO8z7QrcSfiOGwa+mPI1FxiDDkUVA2zM2EgB/Dsylv0SMrouR/CqF/LtfG7vA
-         8ndb4/FUCncmJPtczDB0RYw3KkMtM94mRT6thRh7iOgsuBKRynP1ZTgbZ5H32zFEOEDO
-         /QdMsAYKEfhmD1O9obhvp69lSt9DxraiW9mawheQSL6wTgoa2V1Kx8ZRwudlUCns6IhT
-         Mg5zEdvW4+nWzAoBsGcPftxniXHjVa5NTdEHaEiMmlGEReo4uF9++SQpBjEa7zXv6vfq
-         AWdA==
-X-Gm-Message-State: AOAM533VeYYCv1ndpJ/34FrkvjkfBaC418gCeX1/eghLFgQDzsKZkLxa
-        LCEDEEktLggxve/kw2PhnAE9zF4/sh9U09wE3tC2xg==
-X-Google-Smtp-Source: ABdhPJwK4naYaBZ+8GM/Ab9/Ixhagfb6WfeIhngfxmIkwTvUXsUhPQGr5I/x32U0ZdswDbRkgjWjQoAnUK/H9/TpoSc=
-X-Received: by 2002:a2e:b602:: with SMTP id r2mr3683300ljn.392.1642410123234;
- Mon, 17 Jan 2022 01:02:03 -0800 (PST)
-MIME-Version: 1.0
-References: <20220114230209.4091727-1-briannorris@chromium.org> <20220114150129.v2.3.I3c79b1466c14b02980071221e5b99283cd26ec77@changeid>
-In-Reply-To: <20220114150129.v2.3.I3c79b1466c14b02980071221e5b99283cd26ec77@changeid>
-From:   Chen-Yu Tsai <wenst@chromium.org>
-Date:   Mon, 17 Jan 2022 17:01:52 +0800
-Message-ID: <CAGXv+5HC00YU6ARtGDahxWLqivvUCowh7wDq5H5OzoGO9htB+g@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] ASoC: rk3399_gru_sound: Wire up DP jack detection
-To:     Brian Norris <briannorris@chromium.org>
-Cc:     Heiko Stuebner <heiko@sntech.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        linux-rockchip@lists.infradead.org, Lin Huang <hl@rock-chips.com>,
-        linux-arm-kernel@lists.infradead.org,
-        dri-devel@lists.freedesktop.org, Rob Herring <robh+dt@kernel.org>,
-        Sandy Huang <hjc@rock-chips.com>, linux-kernel@vger.kernel.org,
-        alsa-devel@alsa-project.org, devicetree@vger.kernel.org
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=pKQyE8WmRVKRRSfCnHXiQ2iVbjjWgAi/p8fAcfN9+Bw=;
+        b=KG0Q89WRqnbYUsBDWd0q76V5T3+U+BclrmUUtec2bmTIhj1+G4FIzeTqlsUo2mn64b
+         MBfHcRxZXUd+M5ig5tKFg5mDhb3XkXcJvdhjttyFHo/sKkkEzcAPlVnhve5/n5pFaztm
+         U39Ipir++clrnqbuIB78ZoUZPB37qCHJlUHo2pOSLqTkugy11D2EuVzcH7MLMWKGiqXi
+         VHpTHHXykuE1xiAY/FzY0TqIV8V3UD/Lan3jyfTOOc1NWTmxLoHzpto7losoSAauZpix
+         c7SCM4G/98NuUc2n3zCv02OqshK+RU5UV+1JP3xW/wTBW0KE59hDmwZ9VOJmRMnZy7Gv
+         cyJg==
+X-Gm-Message-State: AOAM5330SPNxl03FcDCUz7QIwe+qHdzpauIJMbEaQqdJnNFxd/ApfJAA
+        7tkhBo6ehyC0ujOn4YwOdKE=
+X-Google-Smtp-Source: ABdhPJzSDquw+wIa3NNFcJih60Yz+qeM+h3FbVeoZHjlghC05OVNb9akOnxnKBfuR2cLfo0iwApWcQ==
+X-Received: by 2002:a5d:6dd1:: with SMTP id d17mr19500538wrz.520.1642410127168;
+        Mon, 17 Jan 2022 01:02:07 -0800 (PST)
+Received: from ubuntu-laptop (p4fd59309.dip0.t-ipconnect.de. [79.213.147.9])
+        by smtp.googlemail.com with ESMTPSA id f9sm14810512wry.115.2022.01.17.01.02.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Jan 2022 01:02:06 -0800 (PST)
+Message-ID: <ea4c2c5b0495b3ee1a637a59f6ff5da754d8a8b3.camel@gmail.com>
+Subject: Re: [PATCH v2] scsi: ufs: ufshcd-pltfrm: check the return value of
+ devm_kstrdup()
+From:   Bean Huo <huobean@gmail.com>
+To:     xkernel.wang@foxmail.com, bvanassche@acm.org, jejb@linux.ibm.com,
+        martin.petersen@oracle.com
+Cc:     alim.akhtar@samsung.com, avri.altman@wdc.com,
+        linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Mon, 17 Jan 2022 10:02:05 +0100
+In-Reply-To: <tencent_4257E15D4A94FF9020DDCC4BB9B21C041408@qq.com>
+References: <tencent_4257E15D4A94FF9020DDCC4BB9B21C041408@qq.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5-0ubuntu1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Sun, 2022-01-16 at 11:06 +0800, xkernel.wang@foxmail.com wrote:
+> From: Xiaoke Wang <xkernel.wang@foxmail.com>
+> 
+> 
+> 
+> devm_kstrdup() returns pointer to allocated string on success,
+> 
+> NULL on failure. So it is better to check the return value of it.
+> 
+> 
+> 
+> Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Reviewed-by: Bean Huo <beanhuo@micron.com>
 
-On Sat, Jan 15, 2022 at 7:03 AM Brian Norris <briannorris@chromium.org> wrote:
->
-> Now that the cdn-dp driver supports plug-change callbacks, let's wire it
-> up.
->
-> Signed-off-by: Brian Norris <briannorris@chromium.org>
-> ---
->
-> (no changes since v1)
->
->  sound/soc/rockchip/rk3399_gru_sound.c | 20 ++++++++++++++++++++
->  1 file changed, 20 insertions(+)
->
-> diff --git a/sound/soc/rockchip/rk3399_gru_sound.c b/sound/soc/rockchip/rk3399_gru_sound.c
-> index e2d52d8d0ff9..eeef3ed70037 100644
-> --- a/sound/soc/rockchip/rk3399_gru_sound.c
-> +++ b/sound/soc/rockchip/rk3399_gru_sound.c
-> @@ -164,6 +164,25 @@ static int rockchip_sound_da7219_hw_params(struct snd_pcm_substream *substream,
->         return 0;
->  }
->
-> +static struct snd_soc_jack cdn_dp_card_jack;
-> +
-> +static int rockchip_sound_cdndp_init(struct snd_soc_pcm_runtime *rtd)
-> +{
-> +       struct snd_soc_component *component = asoc_rtd_to_codec(rtd, 0)->component;
-
-Using snd_soc_card_get_codec_dai() might be a better choice throughout this
-driver. While it will work for the cdn_dp case, because it is the first DAI
-in |rockchip_dais[]|, all the invocations for the other codecs are likely
-returning the wrong DAI.
-
-For this particular patch it works either way, so
-
-Reviewed-by: Chen-Yu Tsai <wenst@chromium.org>
-
-
-> +       struct snd_soc_card *card = rtd->card;
-> +       int ret;
-> +
-> +       /* Enable jack detection. */
-> +       ret = snd_soc_card_jack_new(card, "DP Jack", SND_JACK_LINEOUT,
-> +                                   &cdn_dp_card_jack, NULL, 0);
-> +       if (ret) {
-> +               dev_err(card->dev, "Can't create DP Jack %d\n", ret);
-> +               return ret;
-> +       }
-> +
-> +       return snd_soc_component_set_jack(component, &cdn_dp_card_jack, NULL);
-> +}
-> +
->  static int rockchip_sound_da7219_init(struct snd_soc_pcm_runtime *rtd)
->  {
->         struct snd_soc_component *component = asoc_rtd_to_codec(rtd, 0)->component;
-> @@ -315,6 +334,7 @@ static const struct snd_soc_dai_link rockchip_dais[] = {
->         [DAILINK_CDNDP] = {
->                 .name = "DP",
->                 .stream_name = "DP PCM",
-> +               .init = rockchip_sound_cdndp_init,
->                 .dai_fmt = SND_SOC_DAIFMT_I2S | SND_SOC_DAIFMT_NB_NF |
->                         SND_SOC_DAIFMT_CBS_CFS,
->                 SND_SOC_DAILINK_REG(cdndp),
-> --
-> 2.34.1.703.g22d0c6ccf7-goog
->
->
-> _______________________________________________
-> Linux-rockchip mailing list
-> Linux-rockchip@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-rockchip
