@@ -2,283 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42F04C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 21:08:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E52EC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 21:33:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243250AbiAQVIF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 16:08:05 -0500
-Received: from mail.skyhub.de ([5.9.137.197]:39160 "EHLO mail.skyhub.de"
+        id S243279AbiAQVdP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 16:33:15 -0500
+Received: from foss.arm.com ([217.140.110.172]:37478 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229641AbiAQVID (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 16:08:03 -0500
-Received: from zn.tnic (dslb-088-067-202-008.088.067.pools.vodafone-ip.de [88.67.202.8])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 8A55D1EC02DD;
-        Mon, 17 Jan 2022 22:07:57 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1642453677;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=x9mhOj3OPp7/NgS1SucK0b8bM2kZIWpEaBWAuEEfK7Q=;
-        b=OX/VTbG+FiU93UTSILFiausMlqvvqzxTUgh0Kj76IqmgR/Wy6aYQcr0wD46a1hc5INwd5V
-        4eg/6JP4DWLADsHqp4CoaG38ua8jQ/Jeq2Bju6aML1420SCC2A5w8uPfG2aUq9zTV2eSj3
-        QqqJKJ3A5ygnp2E3zCvzN+GKaLD23N8=
-Date:   Mon, 17 Jan 2022 22:08:00 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Alexander Lobakin <alexandr.lobakin@intel.com>
-Cc:     linux-hardening@vger.kernel.org, x86@kernel.org,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Kristen Carlson Accardi <kristen@linux.intel.com>,
-        Kees Cook <keescook@chromium.org>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Bruce Schlobohm <bruce.schlobohm@intel.com>,
-        Jessica Yu <jeyu@kernel.org>,
-        kernel test robot <lkp@intel.com>,
-        Miroslav Benes <mbenes@suse.cz>,
-        Evgenii Shatokhin <eshatokhin@virtuozzo.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>, Ingo Molnar <mingo@redhat.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Marios Pomonis <pomonis@google.com>,
-        Sami Tolvanen <samitolvanen@google.com>,
-        "H.J. Lu" <hjl.tools@gmail.com>, Nicolas Pitre <nico@fluxnic.net>,
-        linux-kernel@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-arch@vger.kernel.org, live-patching@vger.kernel.org,
-        llvm@lists.linux.dev
-Subject: Re: [PATCH v9 04/15] arch: introduce ASM function sections
-Message-ID: <YeXasIO5ArXxtw1J@zn.tnic>
-References: <20211223002209.1092165-1-alexandr.lobakin@intel.com>
- <20211223002209.1092165-5-alexandr.lobakin@intel.com>
+        id S243263AbiAQVdP (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 16:33:15 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 27D21ED1;
+        Mon, 17 Jan 2022 13:33:14 -0800 (PST)
+Received: from [192.168.0.5] (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 8A1873F774;
+        Mon, 17 Jan 2022 13:33:11 -0800 (PST)
+Subject: Re: [PATCH] perf record/arm-spe: Override attr->sample_period for
+ non-libpfm4 events
+To:     Ian Rogers <irogers@google.com>
+Cc:     James Clark <james.clark@arm.com>, linux-kernel@vger.kernel.org,
+        linux-perf-users@vger.kernel.org,
+        Chase Conklin <chase.conklin@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Stephane Eranian <eranian@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, "acme@kernel.org" <acme@kernel.org>
+References: <20220114212102.179209-1-german.gomez@arm.com>
+ <c2b960eb-a25e-7ce7-ee4b-2be557d8a213@arm.com>
+ <35a4f70f-d7ef-6e3c-dc79-aa09d87f0271@arm.com>
+ <CAP-5=fUHT29Z8Y5pMdTWK4mLKAXrNTtC5RBpet6UsAy4TLDfDw@mail.gmail.com>
+From:   German Gomez <german.gomez@arm.com>
+Message-ID: <10cc73f1-53fd-9c5a-7fe2-8cd3786fbe37@arm.com>
+Date:   Mon, 17 Jan 2022 21:32:55 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
+In-Reply-To: <CAP-5=fUHT29Z8Y5pMdTWK4mLKAXrNTtC5RBpet6UsAy4TLDfDw@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20211223002209.1092165-5-alexandr.lobakin@intel.com>
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Dec 23, 2021 at 01:21:58AM +0100, Alexander Lobakin wrote:
-> Sometimes it is useful to create a separate section for every
-> function (symbol in general) to be able then to selectively merge
-> them back into on or several others. This is how DCE and a part of
-		 ^^
+Hi Ian,
 
-"one"
+On 17/01/2022 16:28, Ian Rogers wrote:
+> [...]
+> Thanks for fixing this, I can add an acked-by for the v2 patch. Could
+> we add a test for this to avoid future regressions? There are similar
+> tests for frequency like:
+> https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/tests/attr/test-record-freq
+> based on the attr.py test:
+> https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/tests/attr.py
+> The test specifies a base type of event attribute and then what is
+> modified by the test. It takes a little to get your head around but
+> having a test for this would be a welcome addition.
 
-DCE == Dead Code Elimination?
+I agree I should have included a test for this fix. I'll look into this for the v2.
 
-In any case, write it out first please and then use the abbreviation.
+Other events such as "-p 10000 -e cycles//" worked fine. Only the ones with aux area tracing (arm_spe, cs_etm, intel_pt) were ignoring the global config flags.
 
-> LTO work.
+Thank you for the pointers, and the review,
+German
 
-I would've said that too but that one at least has a Kconfig entry which
-explains what it is so no need.
-
-/me looks further
-
-Aha there is LD_DEAD_CODE_DATA_ELIMINATION. So connect the two pls.
-
-> Currently, only C functions are in scope
-
-You mean, currently this is done only for C functions? The "in scope"
-formulation sounds weird.
-
-> and the compilers are able to do this automatically when
-> `-ffunction-section` is specified.
-
--ffunction-sections, plural.
-
-> Add a basic infra for supporting ASM function sections. If any of
-
-yah s/ASM/asm/g. It's not like it is an acronym or so.
-
-and also, you should explain that "asm function sections" means "put a
-function symbol defined in asm, into a separate section".
-
-> the required build options (DCE, LTO, FG-KASLR later) is on and
-> the target architecture claims it supports them, all ASM functions
-> and "code" will be placed into separate named sections by default.
-> This is achieved using --sectname-subst GAS flag which will then
-> substitute "%S" in a .pushsection or .section directive with the
-
-Thanks for explaining this. The gas manpage is very, hm, verbose
-<sarcarstic eyeroll> ;-\:
-
-"       --sectname-subst
-           Honor substitution sequences in section names.
-"
-
-
-...
-
-> diff --git a/include/linux/linkage.h b/include/linux/linkage.h
-> index dbf8506decca..0c0ddf4429dc 100644
-> --- a/include/linux/linkage.h
-> +++ b/include/linux/linkage.h
-> @@ -73,6 +73,37 @@
->  #define __ALIGN_STR	".align 4,0x90"
->  #endif
->  
-> +/*
-> + * Allow ASM symbols to have their own unique sections if they are being
-> + * generated by the compiler for C functions (DCE, LTO).
-> + */
-> +#if defined(CONFIG_HAVE_ASM_FUNCTION_SECTIONS) && \
-> +    ((defined(CONFIG_LD_DEAD_CODE_DATA_ELIMINATION) && !defined(MODULE)) || \
-> +     (defined(CONFIG_LTO_CLANG)))
-> +
-> +#define SYM_PUSH_SECTION(name)				\
-> +	.pushsection %S.name, "ax"
-> +
-> +#define SYM_POP_SECTION()				\
-> +	.popsection
-> +
-> +#define __ASM_PUSH_SECTION(name)			\
-> +	".pushsection %S." name ", \"ax\""
-> +
-> +#else /* Just .text */
-
-Just .text?
-
-> +
-> +#define SYM_PUSH_SECTION(name)
-> +#define SYM_POP_SECTION()
-> +#define __ASM_PUSH_SECTION(name)
-> +
-> +#endif /* Just .text */
-> +
-> +#define ASM_PUSH_SECTION(name)				\
-> +	__ASM_PUSH_SECTION(__stringify(name))
-> +
-> +#define ASM_POP_SECTION()				\
-> +	__stringify(SYM_POP_SECTION())
-> +
->  #ifdef __ASSEMBLY__
->  
->  /* SYM_T_FUNC -- type used by assembler to mark functions */
-> @@ -209,6 +240,15 @@
->  	SYM_START(name, SYM_L_LOCAL, SYM_A_ALIGN)
->  #endif
->  
-> +/*
-> + * SYM_FUNC_START_WEAK -- use where there are two global names for one
-
-SYM_FUNC_START_WEAK_ALIAS
-
-> + * function, and one of them is weak
-> + */
-> +#ifndef SYM_FUNC_START_WEAK_ALIAS
-> +#define SYM_FUNC_START_WEAK_ALIAS(name)			\
-> +	SYM_START(name, SYM_L_WEAK, SYM_A_ALIGN)
-> +#endif
-> +
->  /*
->   * SYM_FUNC_START_ALIAS -- use where there are two global names for one
->   * function
-> @@ -225,12 +265,24 @@
->   * later.
->   */
->  #define SYM_FUNC_START(name)				\
-> +	SYM_PUSH_SECTION(name) ASM_NL			\
-> +	SYM_START(name, SYM_L_GLOBAL, SYM_A_ALIGN)
-> +#endif
-> +
-> +/*
-> + * SYM_FUNC_START_SECT -- use for global functions, will be conditionally
-> + * placed into a section specified in the second argument
-> + */
-> +#ifndef SYM_FUNC_START_SECT
-> +#define SYM_FUNC_START_SECT(name, to)			\
-
-			      (name, sect)
-
-"to" reads kinda unclear what it is supposed to mean.
-
-
-> +	SYM_PUSH_SECTION(to) ASM_NL			\
->  	SYM_START(name, SYM_L_GLOBAL, SYM_A_ALIGN)
->  #endif
->  
->  /* SYM_FUNC_START_NOALIGN -- use for global functions, w/o alignment */
->  #ifndef SYM_FUNC_START_NOALIGN
->  #define SYM_FUNC_START_NOALIGN(name)			\
-> +	SYM_PUSH_SECTION(name) ASM_NL			\
->  	SYM_START(name, SYM_L_GLOBAL, SYM_A_NONE)
->  #endif
->  
-> @@ -238,24 +290,38 @@
->  #ifndef SYM_FUNC_START_LOCAL
->  /* the same as SYM_FUNC_START_LOCAL_ALIAS, see comment near SYM_FUNC_START */
->  #define SYM_FUNC_START_LOCAL(name)			\
-> +	SYM_PUSH_SECTION(name) ASM_NL			\
->  	SYM_START(name, SYM_L_LOCAL, SYM_A_ALIGN)
->  #endif
->  
->  /* SYM_FUNC_START_LOCAL_NOALIGN -- use for local functions, w/o alignment */
->  #ifndef SYM_FUNC_START_LOCAL_NOALIGN
->  #define SYM_FUNC_START_LOCAL_NOALIGN(name)		\
-> +	SYM_PUSH_SECTION(name) ASM_NL			\
-> +	SYM_START(name, SYM_L_LOCAL, SYM_A_NONE)
-> +#endif
-> +
-> +/*
-> + * SYM_FUNC_START_LOCAL_NOALIGN_SECT -- use for local functions, w/o alignment,
-> + * will be conditionally placed into a section specified in the second argument
-> + */
-> +#ifndef SYM_FUNC_START_LOCAL_NOALIGN_SECT
-> +#define SYM_FUNC_START_LOCAL_NOALIGN_SECT(name, to)	\
-
-Ditto. And so on below.
-
-...
-
-> diff --git a/init/Kconfig b/init/Kconfig
-> index 37926d19a74a..3babc0aeac61 100644
-> --- a/init/Kconfig
-> +++ b/init/Kconfig
-> @@ -1386,6 +1386,17 @@ config CC_OPTIMIZE_FOR_SIZE
->  
->  endchoice
->  
-> +config HAVE_ASM_FUNCTION_SECTIONS
-> +	depends on ARCH_SUPPORTS_ASM_FUNCTION_SECTIONS
-> +	depends on $(cc-option,-Wa$(comma)--sectname-subst)
-> +	def_bool y
-> +	help
-> +	  This enables ASM function sections if both architecture
-> +	  and toolchain supports that. It allows creating a separate
-
-"... support it."
-
-> +	  .text section for each ASM function in order to improve
-
-s/.text // - the section name is specified by the macro arg.
-
-> +	  DCE and LTO (works the same way as -ffunction-sections for
-> +	  C code).
-> +
-
-Thx.
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+>
+> Thanks!
+> Ian
+>
+>> Thanks for the review,
+>> German
