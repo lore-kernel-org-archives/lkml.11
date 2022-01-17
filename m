@@ -2,132 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17388C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 14:13:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F99FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 14:13:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236155AbiAQONY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 09:13:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34416 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235121AbiAQONR (ORCPT
+        id S236802AbiAQON2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 09:13:28 -0500
+Received: from linux.microsoft.com ([13.77.154.182]:54204 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235862AbiAQONU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 09:13:17 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58F67C061574;
-        Mon, 17 Jan 2022 06:13:17 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id m1so58135538lfq.4;
-        Mon, 17 Jan 2022 06:13:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=NhWmdpO0ww12Y4vGwaeCuxcyowg2Z3CLJR7KOrNG8jk=;
-        b=QmoQI9Z8TXMYgST+9tYxQ6hfHkjTRGgRV9hmU/MUre5kRFxbz4VB51FguhUf5PG910
-         Gt03+vL27lp+A1Q9dIy+RhFF5pEW4pXkULI4f5OCDNwQj9m7F39JVV8gXaAyEubSQxte
-         GqxxZ9nni3WyXzQuKvyziB/6ROMxPZn6FncT7W3LhgVDiSolkq8k5KR4lwPJUghslBW8
-         wBqX0Ld1ZAmOsb4zMXohNEhEzhmmiw1TpdV8Jpf8VOIqQekO3Y0JiuzxJVJk285dejA0
-         lJUqtIFXClBOmqzkqibUXZQ0mNFB6cJrw6ZA14cD1lQbXQHjoStH9FZxxoGSgMXkZWgX
-         WdOw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:subject:from:in-reply-to:date:cc
-         :content-transfer-encoding:message-id:references:to;
-        bh=NhWmdpO0ww12Y4vGwaeCuxcyowg2Z3CLJR7KOrNG8jk=;
-        b=fGBjPsRz9rnu+UrlS7NQrry2mbOeez9KRFfe2GPcHiovxtPE3OwSPBN5mKWoakN9IQ
-         GJY30b1dDQ8qUuBnnW2paSNs9axrViyNdsCtSdW22zE8VVkHsJZ3m6XPp6J8BbY0+hOp
-         99cMJLe0J84ElRI/6W5hi0MRhNh8YUbLN0l52MQDKOFyW3RTSbA+Nca/7/fqUQMnis4a
-         HJcHO0Wm5yTfDGkV7sYml+G5k+lBwu1/lU2lyjQs8DI4+BB78K63LViBgYZ/4Bc0PfMI
-         Ufak1CScjn/3xFKvKnNYyoOy8Fxfb3elDzROXS7gXNKRcys2ZtlszelZ/W0hw5x8vNGy
-         3+lA==
-X-Gm-Message-State: AOAM533EiRIH6bnwtBWVBkJqfucZMPyeRDvZud4PtKWq8CC9sGMp4036
-        awIyOT5CHFqSFqUXRSo3nQ8=
-X-Google-Smtp-Source: ABdhPJwlvEDpJUX3yDmk/G4z41azN6dgu1AcVgv8oPnyCIDyWNIHaVUS0GSW0lzwe6J1yfDX2JcS2g==
-X-Received: by 2002:a05:6512:606:: with SMTP id b6mr16460100lfe.396.1642428795695;
-        Mon, 17 Jan 2022 06:13:15 -0800 (PST)
-Received: from smtpclient.apple (31-178-191-245.dynamic.chello.pl. [31.178.191.245])
-        by smtp.gmail.com with ESMTPSA id r9sm484433lfi.38.2022.01.17.06.13.14
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 17 Jan 2022 06:13:15 -0800 (PST)
-Content-Type: text/plain;
-        charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.120.0.1.13\))
-Subject: Re: [PATCH 5/9] arm64: dts: rockchip: add rk3568 tsadc nodes
-From:   Piotr Oniszczuk <piotr.oniszczuk@gmail.com>
-In-Reply-To: <CAMdYzYo2gkNvNYjU9_kc4cTwNBFU+kg3bRwaS3yCCAsMdo-Tow@mail.gmail.com>
-Date:   Mon, 17 Jan 2022 15:13:14 +0100
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <E3AA167E-1E40-45CD-8CBB-3EB280856604@gmail.com>
-References: <20210728135534.703028-1-pgwipeout@gmail.com>
- <20210728135534.703028-6-pgwipeout@gmail.com>
- <C3AE0A81-A829-4241-A65E-EB28825E3C33@gmail.com>
- <CAMdYzYo2gkNvNYjU9_kc4cTwNBFU+kg3bRwaS3yCCAsMdo-Tow@mail.gmail.com>
-To:     Peter Geis <pgwipeout@gmail.com>
-X-Mailer: Apple Mail (2.3654.120.0.1.13)
+        Mon, 17 Jan 2022 09:13:20 -0500
+Received: from machine.home (lfbn-lyo-1-1484-111.w86-207.abo.wanadoo.fr [86.207.51.111])
+        by linux.microsoft.com (Postfix) with ESMTPSA id A02A020B9134;
+        Mon, 17 Jan 2022 06:13:18 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com A02A020B9134
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1642428799;
+        bh=kRp9obQlr94SEe0AopnqHM1DyfG1O8JSr4kv+y1GnCk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=o0pgi3TdERfvFhFTs2ffaSDuyI0RVhK881vfCqgae/k8fl1k+zqKfbHqlUEOyojFc
+         HCUJd6PqxX3UoFfyyOqdA/VYISdvvyEZurrpvsa46s6jqbbD82B89QzLF042ceie+J
+         d51+OG99mQsJnMLfg7B5e4kOiFRWOaJ/IxA/uFO0=
+From:   Francis Laniel <flaniel@linux.microsoft.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-security-module@vger.kernel.org,
+        Serge Hallyn <serge@hallyn.com>,
+        Casey Schaufler <casey@schaufler-ca.com>,
+        Francis Laniel <flaniel@linux.microsoft.com>
+Subject: [RFC PATCH v2 0/2] Add capabilities file to sysfs
+Date:   Mon, 17 Jan 2022 15:12:52 +0100
+Message-Id: <20220117141254.46278-1-flaniel@linux.microsoft.com>
+X-Mailer: git-send-email 2.30.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi.
 
 
-> Wiadomo=C5=9B=C4=87 napisana przez Peter Geis <pgwipeout@gmail.com> w =
-dniu 17.01.2022, o godz. 14:49:
->=20
->>=20
->> Peter,
->>=20
->> I'm trying to use this series to get thermal on rk3566 based tvbox =
-(x96-x6).
->> Driver loads but i'm getting following error:
->>=20
->> [  132.873979] rockchip-thermal fe710000.tsadc: failed to register =
-sensor 0: -517
->> [  132.874650] rockchip-thermal fe710000.tsadc: failed to register =
-sensor[0] : error =3D -517
->>=20
->> Maybe you have some hints here?
->=20
-> Error -517 means -EPROBE_DEFER, a device it relies on hasn't probed.
-> TSADC doesn't directly rely on anything that shouldn't already be
-> enabled. (Pinctrl, clocks, and grf all break a lot more than tsadc if
-> disabled)
-> Does your kernel config have all of the rockchip elements enabled?
->=20
+First, I hope you are fine and the same for your relatives.
 
-Peter,
-For sure I can't say 'yes' with 100% confidence.
-I'm trying do my best for rk3566 (currently have working: =
-SD/Eth/HDMI/Sound/USB2port0/BT).
+Capabilities are used to check if a thread has the right to perform a given
+action [1].
+For example, a thread with CAP_BPF set can use the bpf() syscall.
 
-Maybe you may point me pls for good reference of rk356x defconfig?
+Capabilities are used in the container world.
+In terms of code, several projects related to container maintain code where the
+capabilities are written alike include/uapi/linux/capability.h [2][3][4][5].
+For these projects, their codebase should be updated when a new capability is
+added to the kernel.
+Some other projects rely on <sys/capability.h> [6].
+In this case, this header file should reflect the capabilities offered by the
+kernel.
 
-btw: a bit of  context:
-In my application (https://github.com/warpme/minimyth2) i have target to =
-have single OS binary for all supported =
-Allwinner/Amlogic/Rockchip/Broadcom devices.
-By this kernel config i'm using is painfully assembled to have minimal =
-working kernel for all targets.
-It's a painful road....but still want to go this route for: minimal =
-image size; shortest build time & one-for-all binary.
-my current config: =
-https://github.com/warpme/minimyth2/blob/master/script/kernel/linux-5.16/f=
-iles/linux-5.16-arm64-armv8.config
+So, in this series, I added a new file to sysfs: /sys/kernel/capabilities.
+The goal of this file is to be used by "container world" software to know kernel
+capabilities at run time instead of compile time.
 
-btw2: for rk3566 i'm using majority of your patches!=20
-Great work of you!
-=20
+The underlying kernel attribute is read-only and its content is the capability
+number associated with the capability name:
+root@vm-amd64:~# cat /sys/kernel/capabilities
+0       CAP_CHOWN
+1       CAP_DAC_OVERRIDE
+...
+39      CAP_BPF
+
+The kernel already exposes the last capability number under:
+/proc/sys/kernel/cap_last_cap
+So, I think there should not be any issue exposing all the capabilities it
+offers.
+If there is any, please share it as I do not want to introduce issue with this
+series.
+
+Also, if you see any way to improve this series please share it as it would
+increase this contribution quality.
+
+Change since v1:
+* Use quotes for cap_strings values instead of __stringify().
+
+Francis Laniel (2):
+  capability: Add cap_strings.
+  kernel/ksysfs.c: Add capabilities attribute.
+
+ include/uapi/linux/capability.h |  1 +
+ kernel/capability.c             | 44 +++++++++++++++++++++++++++++++++
+ kernel/ksysfs.c                 | 18 ++++++++++++++
+ 3 files changed, 63 insertions(+)
 
 
- =20
+Best regards and thank you in advance for your reviews.
+---
+[1] man capabilities
+[2] https://github.com/containerd/containerd/blob/1a078e6893d07fec10a4940a5664fab21d6f7d1e/pkg/cap/cap_linux.go#L135
+[3] https://github.com/moby/moby/commit/485cf38d48e7111b3d1f584d5e9eab46a902aabc#diff-2e04625b209932e74c617de96682ed72fbd1bb0d0cb9fb7c709cf47a86b6f9c1
+moby relies on containerd code.
+[4] https://github.com/syndtr/gocapability/blob/42c35b4376354fd554efc7ad35e0b7f94e3a0ffb/capability/enum.go#L47
+[5] https://github.com/opencontainers/runc/blob/00f56786bb220b55b41748231880ba0e6380519a/libcontainer/capabilities/capabilities.go#L12
+runc relies on syndtr package.
+[6] https://github.com/containers/crun/blob/fafb556f09e6ffd4690c452ff51856b880c089f1/src/libcrun/linux.c#L35
+-- 
+2.30.2
 
-
-=20=
