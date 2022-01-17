@@ -2,96 +2,176 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2489C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:00:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D28AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:00:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241512AbiAQRAD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:00:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44680 "EHLO
+        id S241255AbiAQRAH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:00:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241391AbiAQQ7h (ORCPT
+        with ESMTP id S241421AbiAQQ7j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 11:59:37 -0500
-Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4F99C06175A
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 08:59:36 -0800 (PST)
-Received: by mail-qt1-x833.google.com with SMTP id f5so3307520qtp.11
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 08:59:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=M6FC+MGdL30gAj9EdPhED9cNHVQ32Hj7K3pOskYfkaQ=;
-        b=gFC9j7I+OFnRVrRKCqdjsZRVySxXC8NTHW8t3V9aTuiWzqpJznj15MWSJnC3BQJ5yi
-         DsjJAa3U/00tZlBlvC+ZG1Tq9QC05bJBvmG3irLwRsAOEmrhHo5Wcn89IW7rJu1+4V9z
-         MQodtJLk2SFX/ksqr0nvFOLHX7S8PEVe4Tass=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=M6FC+MGdL30gAj9EdPhED9cNHVQ32Hj7K3pOskYfkaQ=;
-        b=Rn4WJaWjygARUNewo7UUv1wAoRAqeeZpjahLPYXqMJmwsGbgf2fn5JIeDblEJX20Xj
-         UJkrimvdGy0J2BI5uVDd7Z50vu7tEOa3A09HIoZmcaM0CBe/zQ0lpUwzO1WYSGpu37+U
-         8iRkuAosZUMc7vzbB/iRzRzsXDT9hrelz2d7rUTDosO//WUD8I/I+iT70c5VcaeaUu+v
-         +P22v7URjFNBTVTiOmey5w11GXBbIJKKVBC7r0XtJfpXI2D8K/5tKsMCdK5QW7STsajH
-         UD11dVpb2M2MJ8tuCmSIn0lzgFT4K02MJ7XueWBDww7Em4ro+D8TVgQyZVkML/6QkPVk
-         UVlw==
-X-Gm-Message-State: AOAM532ne98wVMeU2ZeRePJMVt6kzkJf+8TyrR5OMdPasqPL0+suuni+
-        SEnLV6CTZewWfrg8jK0jOc+plA==
-X-Google-Smtp-Source: ABdhPJx/CVKfryDFmfdtXhpNB2rqUDRRelC/Mxp8ZUOQ+Sc2eRFkvkGtFT2jZ9Qq5aQk/5WlzY+R3w==
-X-Received: by 2002:ac8:5c4b:: with SMTP id j11mr18035483qtj.490.1642438775873;
-        Mon, 17 Jan 2022 08:59:35 -0800 (PST)
-Received: from meerkat.local (bras-base-mtrlpq5031w-grc-32-216-209-220-181.dsl.bell.ca. [216.209.220.181])
-        by smtp.gmail.com with ESMTPSA id bs34sm9118306qkb.57.2022.01.17.08.59.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 08:59:35 -0800 (PST)
-Date:   Mon, 17 Jan 2022 11:59:33 -0500
-From:   Konstantin Ryabitsev <konstantin@linuxfoundation.org>
-To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Cc:     Roberto Sassu <roberto.sassu@huawei.com>, dhowells@redhat.com,
-        dwmw2@infradead.org, herbert@gondor.apana.org.au,
-        davem@davemloft.net, keyrings@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org,
-        zohar@linux.ibm.com, ebiggers@kernel.org
-Subject: Re: [PATCH 00/14] KEYS: Add support for PGP keys and signatures
-Message-ID: <20220117165933.l3762ppcbj5jxicc@meerkat.local>
-References: <20220111180318.591029-1-roberto.sassu@huawei.com>
- <YeV+jkGg6mpQdRID@zx2c4.com>
+        Mon, 17 Jan 2022 11:59:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C24AC061762;
+        Mon, 17 Jan 2022 08:59:38 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BA45611DA;
+        Mon, 17 Jan 2022 16:59:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67F59C36AE7;
+        Mon, 17 Jan 2022 16:59:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642438777;
+        bh=wpeCaTchYmxiHGGB/zd+aYB5oc+l/iumejBoL0k8dtY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=vOhDwI+F2C8+Njl60v59+DK7IdjzTTXzYvkAwsnuS6b2qz+cFelGMPH5PvJAF2taT
+         X4dp1hHGWwKptbWU3TItIC94+u1JcYbty3Pvkqacn/4zf7Q35ZkPhpZjjTXLgc5j7m
+         bcX1R+gcwfDU+V6WKW0OBkEIi5srb7Hv26FagSPFxjdsvt2oOfBW5bxb9twyFBePXr
+         uPJR76dQH1HvaRyQpZxElcOAa+aXLx667ElvgYCnlk2l1tl3MNIuD1lvNMDFA0axce
+         lr99NiP1J8QVhTARCUw0q3tsfjI5/ykTR1wUy7IBj6bg5OY8fruRHn0KAMuoLafdv1
+         pZLFARRBefa0Q==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Christoph Hellwig <hch@lst.de>, Mike Snitzer <snitzer@redhat.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Sasha Levin <sashal@kernel.org>, vishal.l.verma@intel.com,
+        dave.jiang@intel.com, agk@redhat.com, dm-devel@redhat.com,
+        nvdimm@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.16 19/52] dm: make the DAX support depend on CONFIG_FS_DAX
+Date:   Mon, 17 Jan 2022 11:58:20 -0500
+Message-Id: <20220117165853.1470420-19-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220117165853.1470420-1-sashal@kernel.org>
+References: <20220117165853.1470420-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YeV+jkGg6mpQdRID@zx2c4.com>
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 03:34:54PM +0100, Jason A. Donenfeld wrote:
-> If you're looking for a simple signature mechanism to replace the use of
-> X.509 and all of that infrastructure, may I suggest just coming up with
-> something simple using ed25519, similar to signify or minisign? Very
-> minimal code in the kernel, in userspace, and very few moving parts to
-> break.
+From: Christoph Hellwig <hch@lst.de>
 
-I am concerned that ed25519 private key management is very rudimentary -- more
-often than not it is just kept somewhere on disk, often without any passphrase
-encryption.
+[ Upstream commit 5d2a228b9e1319ff188f9ea89006fbe575561921 ]
 
-With all its legacy warts, GnuPG at least has decent support for hardware
-off-load via OpenPGP smartcards or TPM integration in GnuPG 2.3, but the best
-we have with ed25519 is passhprase protection as implemented in minisign (and
-even that is rudimentary -- if you need to sign 10 things, you will need to
-type in your passphrase 10 times, as there is no passphrase agent of any
-kind).
+The device mapper DAX support is all hanging off a block device and thus
+can't be used with device dax.  Make it depend on CONFIG_FS_DAX instead
+of CONFIG_DAX_DRIVER.  This also means that bdev_dax_pgoff only needs to
+be built under CONFIG_FS_DAX now.
 
-The most promising non-PGP development of PKI signatures that I've seen lately
-is the openssh FIDO2 integration (the -sk keys) and support for
-signing/verifying arbitrary external content using `ssh-keygen -n`. It even
-does fairly sane things with identity/revocation/expiration via its
-allowed_signers implementation, even if I'm less excited about it all being in
-a single file.
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Acked-by: Mike Snitzer <snitzer@redhat.com>
+Link: https://lore.kernel.org/r/20211129102203.2243509-3-hch@lst.de
+Signed-off-by: Dan Williams <dan.j.williams@intel.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/dax/super.c        | 6 ++----
+ drivers/md/dm-linear.c     | 2 +-
+ drivers/md/dm-log-writes.c | 2 +-
+ drivers/md/dm-stripe.c     | 2 +-
+ drivers/md/dm-writecache.c | 2 +-
+ drivers/md/dm.c            | 2 +-
+ 6 files changed, 7 insertions(+), 9 deletions(-)
 
-Everything else is just treating key management as something out of scope, and
-I'm worried that it's going to result in a net loss in overall security.
+diff --git a/drivers/dax/super.c b/drivers/dax/super.c
+index b882cf8106ea3..e20d0cef10a18 100644
+--- a/drivers/dax/super.c
++++ b/drivers/dax/super.c
+@@ -63,7 +63,7 @@ static int dax_host_hash(const char *host)
+ 	return hashlen_hash(hashlen_string("DAX", host)) % DAX_HASH_SIZE;
+ }
+ 
+-#ifdef CONFIG_BLOCK
++#if defined(CONFIG_BLOCK) && defined(CONFIG_FS_DAX)
+ #include <linux/blkdev.h>
+ 
+ int bdev_dax_pgoff(struct block_device *bdev, sector_t sector, size_t size,
+@@ -80,7 +80,6 @@ int bdev_dax_pgoff(struct block_device *bdev, sector_t sector, size_t size,
+ }
+ EXPORT_SYMBOL(bdev_dax_pgoff);
+ 
+-#if IS_ENABLED(CONFIG_FS_DAX)
+ /**
+  * dax_get_by_host() - temporary lookup mechanism for filesystem-dax
+  * @host: alternate name for the device registered by a dax driver
+@@ -219,8 +218,7 @@ bool dax_supported(struct dax_device *dax_dev, struct block_device *bdev,
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(dax_supported);
+-#endif /* CONFIG_FS_DAX */
+-#endif /* CONFIG_BLOCK */
++#endif /* CONFIG_BLOCK && CONFIG_FS_DAX */
+ 
+ enum dax_device_flags {
+ 	/* !alive + rcu grace period == no new operations / mappings */
+diff --git a/drivers/md/dm-linear.c b/drivers/md/dm-linear.c
+index 66ba16713f696..0a260c35aeeed 100644
+--- a/drivers/md/dm-linear.c
++++ b/drivers/md/dm-linear.c
+@@ -162,7 +162,7 @@ static int linear_iterate_devices(struct dm_target *ti,
+ 	return fn(ti, lc->dev, lc->start, ti->len, data);
+ }
+ 
+-#if IS_ENABLED(CONFIG_DAX_DRIVER)
++#if IS_ENABLED(CONFIG_FS_DAX)
+ static long linear_dax_direct_access(struct dm_target *ti, pgoff_t pgoff,
+ 		long nr_pages, void **kaddr, pfn_t *pfn)
+ {
+diff --git a/drivers/md/dm-log-writes.c b/drivers/md/dm-log-writes.c
+index 0b3ef977ceeba..3155875d4e5b0 100644
+--- a/drivers/md/dm-log-writes.c
++++ b/drivers/md/dm-log-writes.c
+@@ -901,7 +901,7 @@ static void log_writes_io_hints(struct dm_target *ti, struct queue_limits *limit
+ 	limits->io_min = limits->physical_block_size;
+ }
+ 
+-#if IS_ENABLED(CONFIG_DAX_DRIVER)
++#if IS_ENABLED(CONFIG_FS_DAX)
+ static int log_dax(struct log_writes_c *lc, sector_t sector, size_t bytes,
+ 		   struct iov_iter *i)
+ {
+diff --git a/drivers/md/dm-stripe.c b/drivers/md/dm-stripe.c
+index 6660b6b53d5bf..f084607220293 100644
+--- a/drivers/md/dm-stripe.c
++++ b/drivers/md/dm-stripe.c
+@@ -300,7 +300,7 @@ static int stripe_map(struct dm_target *ti, struct bio *bio)
+ 	return DM_MAPIO_REMAPPED;
+ }
+ 
+-#if IS_ENABLED(CONFIG_DAX_DRIVER)
++#if IS_ENABLED(CONFIG_FS_DAX)
+ static long stripe_dax_direct_access(struct dm_target *ti, pgoff_t pgoff,
+ 		long nr_pages, void **kaddr, pfn_t *pfn)
+ {
+diff --git a/drivers/md/dm-writecache.c b/drivers/md/dm-writecache.c
+index 4b8991cde223d..4f31591d2d25e 100644
+--- a/drivers/md/dm-writecache.c
++++ b/drivers/md/dm-writecache.c
+@@ -38,7 +38,7 @@
+ #define BITMAP_GRANULARITY	PAGE_SIZE
+ #endif
+ 
+-#if IS_ENABLED(CONFIG_ARCH_HAS_PMEM_API) && IS_ENABLED(CONFIG_DAX_DRIVER)
++#if IS_ENABLED(CONFIG_ARCH_HAS_PMEM_API) && IS_ENABLED(CONFIG_FS_DAX)
+ #define DM_WRITECACHE_HAS_PMEM
+ #endif
+ 
+diff --git a/drivers/md/dm.c b/drivers/md/dm.c
+index acc84dc1bded5..b93fcc91176e5 100644
+--- a/drivers/md/dm.c
++++ b/drivers/md/dm.c
+@@ -1783,7 +1783,7 @@ static struct mapped_device *alloc_dev(int minor)
+ 	md->disk->private_data = md;
+ 	sprintf(md->disk->disk_name, "dm-%d", minor);
+ 
+-	if (IS_ENABLED(CONFIG_DAX_DRIVER)) {
++	if (IS_ENABLED(CONFIG_FS_DAX)) {
+ 		md->dax_dev = alloc_dax(md, md->disk->disk_name,
+ 					&dm_dax_ops, 0);
+ 		if (IS_ERR(md->dax_dev)) {
+-- 
+2.34.1
 
--K
