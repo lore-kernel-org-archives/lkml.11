@@ -2,111 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83D1DC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFF0FC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:16:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244170AbiAQROl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:14:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241464AbiAQRLP (ORCPT
+        id S244224AbiAQROr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:14:47 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:52680
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242898AbiAQRLV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:11:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 860A5C061781;
-        Mon, 17 Jan 2022 09:06:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 17 Jan 2022 12:11:21 -0500
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67C626128E;
-        Mon, 17 Jan 2022 17:06:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12C4EC36AED;
-        Mon, 17 Jan 2022 17:06:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439213;
-        bh=yNneMOoQvQQmJG7O7bWEOtcq/cm7Q7vMIAyMICcbcwk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rRFkKejf8vzrQns+XFd+4OXCtAgFQeCt5AA3yyFENsbhBeDNLWw5rZ+jGwGqZqo6b
-         6Mprh5kVTLMt+dee7y8kP/7/VEnXkEEZEehivoCvcn3XbcA4ipn881Zij8aE1pIlyU
-         89AIwxUvppjRTGtfbhR9MGFye1UO4s7SNbO/8nXxvxOMyWJ3UWU1c9/Z6gwMM/eAx2
-         qaLpuTiR4Auw1UTtUvOlxCzo5HvEfPfNT93JfBh29vq0d3Xz2h5ajR3VYz1H2/F4Up
-         Xoc4OhX9hw5xoxr7wXgnDhkwNSjcl6dAfKzCQ+6F8TuJqVfSwT2Puuw9n1SAYXS0LN
-         SzrUN8L4+F8eA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
-        Jean Delvare <jdelvare@suse.de>, Wolfram Sang <wsa@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, jdelvare@suse.com,
-        linux-i2c@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 07/16] i2c: i801: Don't silently correct invalid transfer size
-Date:   Mon, 17 Jan 2022 12:06:29 -0500
-Message-Id: <20220117170638.1472900-7-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170638.1472900-1-sashal@kernel.org>
-References: <20220117170638.1472900-1-sashal@kernel.org>
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id E5407407F2
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 17:11:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1642439478;
+        bh=rYVFCe9pl7AFup8bHTYfW3/P3SXGC/+nyEtQsAxutfY=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=Oac+hn9eUEvafikHjXR4nfWdTPZdIab1KyPdEB2QFpwtztZoIG/giJc6lXC2AJjsU
+         Ktqz/LAqJyLgDCdL83SEend9MBm16b49OoN01EYRTRW2VlCQ6eXdVpMDrvMx2A4ikL
+         0TI1nyzxC12/bgqXDuT7Lhg/bqAfl1I/S7VERyFM9iwpmbsX/U2MLqshK0QcNF6ybl
+         Kf2qTrI/fkPWsXlpRzuK6lg9j7Sk+LD7rVhe8M41xkApcac74af0K0EbCpCcacs+B7
+         ocqVWCl0+8E+dho1gKsALjBVEIQOitXwueJSK8kjtQN8JopStSX8ir8eE0O0vEWwTx
+         FIB9qiVgyqgZA==
+Received: by mail-ed1-f72.google.com with SMTP id bm21-20020a0564020b1500b00402c34373f9so2539480edb.2
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 09:11:18 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=rYVFCe9pl7AFup8bHTYfW3/P3SXGC/+nyEtQsAxutfY=;
+        b=V4KpsCouci8wMyBupRlltrui1GdsAVEq3ZZTlZC0ZrUN7M2XS30BrcGqKOeoCEexcn
+         eHzm7TAzqQxmrj8t7s5PrsrDoSbYvf1iBeA0s2bEb0CdUbv736rFQlX2RmjwS5561hPj
+         Eu/rCMdAW+OUhIhAZRd30cTD0ZTODrkRyzE+tkkm3JqaPmlw0rlnmAi2E2KIesXLb1r7
+         O3JHI8ztknHaHvjhPLRshkk1axdKVWRhNHj2pImy28dQWKck/CSvGhdGzu/ZxJITXsvH
+         HThMqDvtmOMBJASuvtUynu1S52SFkhBgP09QVRhW5BcQLOrlHrw3PA355sjGCRRepJtO
+         oBrQ==
+X-Gm-Message-State: AOAM532AjwlsIaMsGs0HT7gcDZwC2oWijVyy54F7xSp73lHMMYTxG3pf
+        vF2TqkhY+Ab1cEpvC7EOrDP0JwSu59Lf9MjuGCA90C4YMajCpR40BDH7qohkPnR/uOeEJU39bYp
+        dXNLC464m4IF1y+jSLT+8t3XQBDcT+WPBa/uaN+oNtA==
+X-Received: by 2002:a17:907:16a9:: with SMTP id hc41mr17077011ejc.706.1642439478473;
+        Mon, 17 Jan 2022 09:11:18 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwdCubmpUIIeWiYR7npGWGTb6d6igWjY9M7lKb/sdt4nQUU2xIQTqvtVmX1TQrgDksa1opr+A==
+X-Received: by 2002:a17:907:16a9:: with SMTP id hc41mr17076989ejc.706.1642439478199;
+        Mon, 17 Jan 2022 09:11:18 -0800 (PST)
+Received: from [192.168.0.40] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id i16sm6191119edu.29.2022.01.17.09.11.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Jan 2022 09:11:17 -0800 (PST)
+Message-ID: <b75a0bc9-0423-83cc-11e1-d5e08952cc93@canonical.com>
+Date:   Mon, 17 Jan 2022 18:11:16 +0100
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH AUTOSEL 5.16 02/52] clk: samsung: exynos850: Register
+ clocks early
+Content-Language: en-US
+To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Cc:     Sam Protsenko <semen.protsenko@linaro.org>,
+        Sylwester Nawrocki <s.nawrocki@samsung.com>,
+        tomasz.figa@gmail.com, cw00.choi@samsung.com,
+        mturquette@baylibre.com, sboyd@kernel.org, matthias.bgg@gmail.com,
+        linux-samsung-soc@vger.kernel.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+References: <20220117165853.1470420-1-sashal@kernel.org>
+ <20220117165853.1470420-2-sashal@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220117165853.1470420-2-sashal@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiner Kallweit <hkallweit1@gmail.com>
+On 17/01/2022 17:58, Sasha Levin wrote:
+> From: Sam Protsenko <semen.protsenko@linaro.org>
+> 
+> [ Upstream commit bcda841f9bf2cddcf2f000cba96f2e27f6f2bdbf ]
+> 
+> Some clocks must be registered before init calls. For example MCT clock
+> (from CMU_PERI) is needed for MCT timer driver, which is registered
+> with TIMER_OF_DECLARE(). By the time we get to core_initcall() used for
+> clk-exynos850 platform driver init, it's already too late. Inability to
+> get "mct" clock in MCT driver leads to kernel panic, as functions
+> registered with *_OF_DECLARE() can't do deferred calls. MCT timer driver
+> can't be fixed either, as it's acting as a clock source and it's
+> essential to register it in start_kernel() -> time_init().
+> 
+> Let's register CMU_PERI clocks early, using CLK_OF_DECLARE(). CMU_TOP
+> generates clocks needed for CMU_PERI, but it's already registered early.
+> 
+> While at it, let's cleanup the code a bit, by extracting everything
+> related to CMU initialization and registration to the separate function.
+> 
+> Similar issue was discussed at [1] and addressed in commit 1f7db7bbf031
+> ("clk: renesas: cpg-mssr: Add early clock support"), as well as in
+> drivers/clk/mediatek/clk-mt2712.c.
+> 
+> [1] https://patchwork.kernel.org/project/linux-renesas-soc/patch/20180829132954.64862-2-chris.brandt@renesas.com/
+> 
+> Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+> Signed-off-by: Sylwester Nawrocki <s.nawrocki@samsung.com>
+> Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> Link: https://lore.kernel.org/r/20211122144206.23134-1-semen.protsenko@linaro.org
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  drivers/clk/samsung/clk-exynos850.c | 70 ++++++++++++++++++++---------
+>  1 file changed, 49 insertions(+), 21 deletions(-)
+> 
 
-[ Upstream commit effa453168a7eeb8a562ff4edc1dbf9067360a61 ]
+I propose to skip this one.
 
-If an invalid block size is provided, reject it instead of silently
-changing it to a supported value. Especially critical I see the case of
-a write transfer with block length 0. In this case we have no guarantee
-that the byte we would write is valid. When silently reducing a read to
-32 bytes then we don't return an error and the caller may falsely
-assume that we returned the full requested data.
+Backporting it to v5.16 does not hurt but also does not bring any
+benefits for the upstream kernel users. There is no support for
+mentioned Exynos850 in v5.16.
 
-If this change should break any (broken) caller, then I think we should
-fix the caller.
+It could have only meaning for some downstream, out-of-tree kernels
+which apply Exynos850 support on top of v5.16, but then they can just
+take this patch as well.
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Reviewed-by: Jean Delvare <jdelvare@suse.de>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/i2c/busses/i2c-i801.c | 15 +++++----------
- 1 file changed, 5 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-i801.c b/drivers/i2c/busses/i2c-i801.c
-index 7b1654b0fb6db..c817e3d4b52b8 100644
---- a/drivers/i2c/busses/i2c-i801.c
-+++ b/drivers/i2c/busses/i2c-i801.c
-@@ -769,6 +769,11 @@ static int i801_block_transaction(struct i801_priv *priv,
- 	int result = 0;
- 	unsigned char hostc;
- 
-+	if (read_write == I2C_SMBUS_READ && command == I2C_SMBUS_BLOCK_DATA)
-+		data->block[0] = I2C_SMBUS_BLOCK_MAX;
-+	else if (data->block[0] < 1 || data->block[0] > I2C_SMBUS_BLOCK_MAX)
-+		return -EPROTO;
-+
- 	if (command == I2C_SMBUS_I2C_BLOCK_DATA) {
- 		if (read_write == I2C_SMBUS_WRITE) {
- 			/* set I2C_EN bit in configuration register */
-@@ -782,16 +787,6 @@ static int i801_block_transaction(struct i801_priv *priv,
- 		}
- 	}
- 
--	if (read_write == I2C_SMBUS_WRITE
--	 || command == I2C_SMBUS_I2C_BLOCK_DATA) {
--		if (data->block[0] < 1)
--			data->block[0] = 1;
--		if (data->block[0] > I2C_SMBUS_BLOCK_MAX)
--			data->block[0] = I2C_SMBUS_BLOCK_MAX;
--	} else {
--		data->block[0] = 32;	/* max for SMBus block reads */
--	}
--
- 	/* Experience has shown that the block buffer can only be used for
- 	   SMBus (not I2C) block transactions, even though the datasheet
- 	   doesn't mention this limitation. */
--- 
-2.34.1
-
+Best regards,
+Krzysztof
