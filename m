@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85C00C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:11:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E90D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:12:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243121AbiAQRL4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:11:56 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:57880 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242942AbiAQRHo (ORCPT
+        id S242296AbiAQRMA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:12:00 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55498 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242757AbiAQRHu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:07:44 -0500
+        Mon, 17 Jan 2022 12:07:50 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A2777612B9;
-        Mon, 17 Jan 2022 17:07:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21D7EC36AE3;
-        Mon, 17 Jan 2022 17:07:42 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 653C7B8115E;
+        Mon, 17 Jan 2022 17:07:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11B4EC36AEC;
+        Mon, 17 Jan 2022 17:07:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439263;
-        bh=1j7mayRmOuGQ+nRLdXsL59wVA+c5vHDalgnqM39ocY4=;
+        s=k20201202; t=1642439267;
+        bh=Qf6XnIzeElSZlaTPE0+w9iFReX52uTDmquC2axMPOMY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FNuuF847HKZ5OqbfIwVRpZFTEZAvNaDOlalm9cO/pk+ehdNyZWf1+5GCYcZAj6c/q
-         /2abN+7w0ouf2JaEDW/nF96/ys2DQRkN4dadbSKYB0jkTXqnJ3AgBXc9BPVm8VLCmE
-         kHc5Wf2GVIutOjBDi8onhz9LtGHTInEfGAEzBePH1nTcVqi/jwIPIZC/4lVXTVoilm
-         ioxBuvZbkI+JFzBi5YtVFuxEcZDnXMJcdaltSWAXp3XQERukqqrdb9yHaAm5tz3+0o
-         /qhLGMFKMDQ67361HB0sYbDDlHb4R7s+73OwKQsVUg7fmogql6KGzuKY7wRtFDSAgG
-         OvFHni8WS12wg==
+        b=lP4tWNZUugAsEkkmDkAS9RhB9+78B7ywxuTxAZW7oNml+sm6iFYH2uxo/1NT0Uic/
+         3aRg8J7IGZxra+iykCS8UVUmE7rikcXjVALkovLX6SRRG6ZNzndRHui0ZBFIh+zv3o
+         jaWUCjWTvluM7aggrrM9CFg5DMrr1C5t6ixUufbUrPaLZs+TmG5/I2725LiHLLhy55
+         +mIOSIGlsDch5LGjwPWLGUGbYA6+8sHhKNmEvJB8RyqtQmecjdTDduxM1LVQzQo8uG
+         cCasMOrsDnUs7WQ39XF5tf0ccQK3EfK/ae92ZF2kZK88l/VuTm/077JKjknj1cfjKI
+         Tao6+2RBBdAQQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Takashi Iwai <tiwai@suse.de>, Zqiang <qiang.zhang1211@gmail.com>,
-        syzbot+bb950e68b400ab4f65f8@syzkaller.appspotmail.com,
-        Sasha Levin <sashal@kernel.org>, perex@perex.cz,
-        tiwai@suse.com, alsa-devel@alsa-project.org
-Subject: [PATCH AUTOSEL 4.9 09/13] ALSA: seq: Set upper limit of processed events
-Date:   Mon, 17 Jan 2022 12:07:17 -0500
-Message-Id: <20220117170722.1473137-9-sashal@kernel.org>
+Cc:     Tianjia Zhang <tianjia.zhang@linux.alibaba.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        =?UTF-8?q?Philippe=20Mathieu-Daud=C3=A9?= <f4bug@amsat.org>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>, ndesaulniers@google.com,
+        freifunk@adrianschmutzler.de, linux-mips@vger.kernel.org,
+        llvm@lists.linux.dev
+Subject: [PATCH AUTOSEL 4.9 11/13] MIPS: Octeon: Fix build errors using clang
+Date:   Mon, 17 Jan 2022 12:07:19 -0500
+Message-Id: <20220117170722.1473137-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117170722.1473137-1-sashal@kernel.org>
 References: <20220117170722.1473137-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -49,85 +53,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
 
-[ Upstream commit 6fadb494a638d8b8a55864ecc6ac58194f03f327 ]
+[ Upstream commit 95339b70677dc6f9a2d669c4716058e71b8dc1c7 ]
 
-Currently ALSA sequencer core tries to process the queued events as
-much as possible when they become dispatchable.  If applications try
-to queue too massive events to be processed at the very same timing,
-the sequencer core would still try to process such all events, either
-in the interrupt context or via some notifier; in either away, it
-might be a cause of RCU stall or such problems.
+A large number of the following errors is reported when compiling
+with clang:
 
-As a potential workaround for those problems, this patch adds the
-upper limit of the amount of events to be processed.  The remaining
-events are processed in the next batch, so they won't be lost.
+  cvmx-bootinfo.h:326:3: error: adding 'int' to a string does not append to the string [-Werror,-Wstring-plus-int]
+                  ENUM_BRD_TYPE_CASE(CVMX_BOARD_TYPE_NULL)
+                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  cvmx-bootinfo.h:321:20: note: expanded from macro 'ENUM_BRD_TYPE_CASE'
+          case x: return(#x + 16);        /* Skip CVMX_BOARD_TYPE_ */
+                         ~~~^~~~
+  cvmx-bootinfo.h:326:3: note: use array indexing to silence this warning
+  cvmx-bootinfo.h:321:20: note: expanded from macro 'ENUM_BRD_TYPE_CASE'
+          case x: return(#x + 16);        /* Skip CVMX_BOARD_TYPE_ */
+                          ^
 
-For the time being, it's limited up to 1000 events per queue, which
-should be high enough for any normal usages.
+Follow the prompts to use the address operator '&' to fix this error.
 
-Reported-by: Zqiang <qiang.zhang1211@gmail.com>
-Reported-by: syzbot+bb950e68b400ab4f65f8@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20211102033222.3849-1-qiang.zhang1211@gmail.com
-Link: https://lore.kernel.org/r/20211207165146.2888-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+Reviewed-by: Philippe Mathieu-Daudé <f4bug@amsat.org>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/core/seq/seq_queue.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ arch/mips/include/asm/octeon/cvmx-bootinfo.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/sound/core/seq/seq_queue.c b/sound/core/seq/seq_queue.c
-index ea1aa07962761..b923059a22276 100644
---- a/sound/core/seq/seq_queue.c
-+++ b/sound/core/seq/seq_queue.c
-@@ -257,12 +257,15 @@ struct snd_seq_queue *snd_seq_queue_find_name(char *name)
+diff --git a/arch/mips/include/asm/octeon/cvmx-bootinfo.h b/arch/mips/include/asm/octeon/cvmx-bootinfo.h
+index 62787765575ef..ce6e5fddce0bf 100644
+--- a/arch/mips/include/asm/octeon/cvmx-bootinfo.h
++++ b/arch/mips/include/asm/octeon/cvmx-bootinfo.h
+@@ -315,7 +315,7 @@ enum cvmx_chip_types_enum {
  
- /* -------------------------------------------------------- */
- 
-+#define MAX_CELL_PROCESSES_IN_QUEUE	1000
-+
- void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
+ /* Functions to return string based on type */
+ #define ENUM_BRD_TYPE_CASE(x) \
+-	case x: return(#x + 16);	/* Skip CVMX_BOARD_TYPE_ */
++	case x: return (&#x[16]);	/* Skip CVMX_BOARD_TYPE_ */
+ static inline const char *cvmx_board_type_to_string(enum
+ 						    cvmx_board_types_enum type)
  {
- 	unsigned long flags;
- 	struct snd_seq_event_cell *cell;
- 	snd_seq_tick_time_t cur_tick;
- 	snd_seq_real_time_t cur_time;
-+	int processed = 0;
+@@ -404,7 +404,7 @@ static inline const char *cvmx_board_type_to_string(enum
+ }
  
- 	if (q == NULL)
- 		return;
-@@ -285,6 +288,8 @@ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
- 		if (!cell)
- 			break;
- 		snd_seq_dispatch_event(cell, atomic, hop);
-+		if (++processed >= MAX_CELL_PROCESSES_IN_QUEUE)
-+			goto out; /* the rest processed at the next batch */
- 	}
- 
- 	/* Process time queue... */
-@@ -294,14 +299,19 @@ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
- 		if (!cell)
- 			break;
- 		snd_seq_dispatch_event(cell, atomic, hop);
-+		if (++processed >= MAX_CELL_PROCESSES_IN_QUEUE)
-+			goto out; /* the rest processed at the next batch */
- 	}
- 
-+ out:
- 	/* free lock */
- 	spin_lock_irqsave(&q->check_lock, flags);
- 	if (q->check_again) {
- 		q->check_again = 0;
--		spin_unlock_irqrestore(&q->check_lock, flags);
--		goto __again;
-+		if (processed < MAX_CELL_PROCESSES_IN_QUEUE) {
-+			spin_unlock_irqrestore(&q->check_lock, flags);
-+			goto __again;
-+		}
- 	}
- 	q->check_blocked = 0;
- 	spin_unlock_irqrestore(&q->check_lock, flags);
+ #define ENUM_CHIP_TYPE_CASE(x) \
+-	case x: return(#x + 15);	/* Skip CVMX_CHIP_TYPE */
++	case x: return (&#x[15]);	/* Skip CVMX_CHIP_TYPE */
+ static inline const char *cvmx_chip_type_to_string(enum
+ 						   cvmx_chip_types_enum type)
+ {
 -- 
 2.34.1
 
