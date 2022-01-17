@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAF69C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:01:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8886C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:01:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241711AbiAQRBU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:01:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241653AbiAQRA1 (ORCPT
+        id S241274AbiAQRBY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:01:24 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48360 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241692AbiAQRAd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:00:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECBB1C06175D;
-        Mon, 17 Jan 2022 09:00:26 -0800 (PST)
+        Mon, 17 Jan 2022 12:00:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CF1626119C;
-        Mon, 17 Jan 2022 17:00:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C866C36AEC;
-        Mon, 17 Jan 2022 17:00:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BC91B81136;
+        Mon, 17 Jan 2022 17:00:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6FA8C36AE7;
+        Mon, 17 Jan 2022 17:00:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642438826;
-        bh=/4ymQkPm05sQ9np1VxxhcptsSvkId83WEA1PyJ18I4Y=;
+        s=k20201202; t=1642438831;
+        bh=L5fMBsQ4GFTUWDax+L1PtBdZ0vB16WfrrFYjYR1GER4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HsDpKa9e4km/mrTNZ6PehilJnGz9m4d1El91sWlK5dlS2aJo2jYk0d2D8UT4kyyNN
-         HBEC8ED6guoijnLM6I9G5um4HW6cAw8uka8u58OzeuCNnRzJwt/QCzWdqmSUiBjlLn
-         zmAYJwSqBel1qK2mGhKndgCXsaPyDH3L75LE56GuJACTIJ34Tr3FKtrKEYJpfBp4RX
-         YrKm8IKwqh3n4HGD+jPy9zISMYYjDSMQ0lrhsQXtcrBkCDtZimtGMvpKJkV/fRagaC
-         so8BoCjcrXFKzAPNm2wOvJK2OvFlxpuhrqazpc3CzjAJeeUTj4FJW97yoNtj9lbmch
-         RFw+cOdx+23/w==
+        b=c7jI1Ia6bczbyFVopt/bG+gLCDOU+MocDsP74/x54DeZwWES3hD2XVk4Zc8wfeYUc
+         sUYzq2upNamnlcSTuvba+oWp6HzEzForKtpulxYS9nernkl4200NQUbkBclnQJhY0J
+         9FXhNsbURzU7rgijV6C482VpV0TWTyVUuZWGS/TzC7L0tNDtnq6ywQFoGOXbL1qCzM
+         ni3nnwmkoTGSk+2hOcodcsgBDR8RWKElq6n+F36RWRqFEBCOH6inu+IrSPb7z7B2bd
+         cUcjjopr+KXpvxBBz6c1GT5xQN0VKLTnuQiEyRAa3jnxiElpDC1HJCLmsYhAQe/IsO
+         Q6LIAihaG/tUg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>,
-        Wolfram Sang <wsa@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Sasha Levin <sashal@kernel.org>, linux-i2c@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 35/52] i2c: designware-pci: Fix to change data types of hcnt and lcnt parameters
-Date:   Mon, 17 Jan 2022 11:58:36 -0500
-Message-Id: <20220117165853.1470420-35-sashal@kernel.org>
+Cc:     Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        kai.vehmanen@linux.intel.com, daniel.baluta@nxp.com,
+        perex@perex.cz, tiwai@suse.com,
+        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org
+Subject: [PATCH AUTOSEL 5.16 38/52] ASoC: SOF: ipc: Add null pointer check for substream->runtime
+Date:   Mon, 17 Jan 2022 11:58:39 -0500
+Message-Id: <20220117165853.1470420-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117165853.1470420-1-sashal@kernel.org>
 References: <20220117165853.1470420-1-sashal@kernel.org>
@@ -53,42 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>
+From: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
 
-[ Upstream commit d52097010078c1844348dc0e467305e5f90fd317 ]
+[ Upstream commit 182b682b9ab1348e07ea1bf9d8f2505cc67f9237 ]
 
-The data type of hcnt and lcnt in the struct dw_i2c_dev is of type u16.
-It's better to have same data type in struct dw_scl_sda_cfg as well.
+When pcm stream is stopped "substream->runtime" pointer will be set
+to NULL by ALSA core. In case host received an ipc msg from firmware
+of type IPC_STREAM_POSITION after pcm stream is stopped, there will
+be kernel NULL pointer exception in ipc_period_elapsed(). This patch
+fixes it by adding NULL pointer check for "substream->runtime".
 
-Reported-by: Wolfram Sang <wsa@kernel.org>
-Signed-off-by: Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Reviewed-by: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
+Signed-off-by: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
+Signed-off-by: Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Link: https://lore.kernel.org/r/20211216232422.345164-3-pierre-louis.bossart@linux.intel.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-designware-pcidrv.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ sound/soc/sof/ipc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/i2c/busses/i2c-designware-pcidrv.c b/drivers/i2c/busses/i2c-designware-pcidrv.c
-index 0f409a4c2da0d..5b45941bcbddc 100644
---- a/drivers/i2c/busses/i2c-designware-pcidrv.c
-+++ b/drivers/i2c/busses/i2c-designware-pcidrv.c
-@@ -39,10 +39,10 @@ enum dw_pci_ctl_id_t {
- };
+diff --git a/sound/soc/sof/ipc.c b/sound/soc/sof/ipc.c
+index e6c53c6c470e4..ca30c506a0fd6 100644
+--- a/sound/soc/sof/ipc.c
++++ b/sound/soc/sof/ipc.c
+@@ -547,7 +547,8 @@ static void ipc_period_elapsed(struct snd_sof_dev *sdev, u32 msg_id)
  
- struct dw_scl_sda_cfg {
--	u32 ss_hcnt;
--	u32 fs_hcnt;
--	u32 ss_lcnt;
--	u32 fs_lcnt;
-+	u16 ss_hcnt;
-+	u16 fs_hcnt;
-+	u16 ss_lcnt;
-+	u16 fs_lcnt;
- 	u32 sda_hold;
- };
- 
+ 	if (spcm->pcm.compress)
+ 		snd_sof_compr_fragment_elapsed(stream->cstream);
+-	else if (!stream->substream->runtime->no_period_wakeup)
++	else if (stream->substream->runtime &&
++		 !stream->substream->runtime->no_period_wakeup)
+ 		/* only inform ALSA for period_wakeup mode */
+ 		snd_sof_pcm_period_elapsed(stream->substream);
+ }
 -- 
 2.34.1
 
