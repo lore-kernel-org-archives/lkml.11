@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D53CAC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:59:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9ABAC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:59:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241328AbiAQQ7b (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 11:59:31 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48604 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241243AbiAQQ7U (ORCPT
+        id S237866AbiAQQ7n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 11:59:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44602 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241306AbiAQQ73 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 11:59:20 -0500
+        Mon, 17 Jan 2022 11:59:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FABBC061748;
+        Mon, 17 Jan 2022 08:59:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 400CF611C3;
-        Mon, 17 Jan 2022 16:59:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C16DDC36AF5;
-        Mon, 17 Jan 2022 16:59:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4B903B81055;
+        Mon, 17 Jan 2022 16:59:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A086C36AE7;
+        Mon, 17 Jan 2022 16:59:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642438759;
-        bh=VpOIpWuYU5r7PoaTzGcmVyr0EObttdwQ5irv2gBTbpo=;
+        s=k20201202; t=1642438767;
+        bh=lllL1+YSQOwmnLAGhKuxtgJRcS5EeLGylTj5nvLlLTA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a4ly/uY/d7OuVFxoxaPoodjEhYoQVuwBGXgomC8fiiI01hbvIfa8cX1d9Y4pjv5Ld
-         b4vPwNS8EUxXAx3LkT7KDDE2EKFEbGSphq+sI2iRX247glyopnrVYDbWkwPdEdUbZF
-         oZ7OzUW6XAxJRFMzP1HoMl1K+OMpesdd9/Lx53ucKRVC6T5+tbKxJJjSA+FSkDTm8/
-         0vj8vaApo1ACJIW2GTiA5LKSjHEvo6Uh5VSP6iR84iBYNR/5KVYIhNNQW76nGemsOt
-         OImhaB3bJLaJqt8ocTK2BcuSIyK6cIePnHJzt+Ia+zUKsoM1EJauFfIWujdsANBChF
-         USTyfEcpkrSNg==
+        b=s4Fk6jyb3MgtM/08rN3tW2yC7pROL0MdMCP4AsYx+FkP2inGI4W9gHJg1rMFEVAaH
+         br1tzFe5+xpWz7qXoP5707i2Oy8vXmONFGim7cnp2CLlg5IQzRfqWVGQU7oDHtG3SA
+         iJoPHXKdA+Xc4fDKHy+2NhLXiGvRIO8sMsSDYRcOPp8k+AenjYPIQ37z7LX1/JfNVl
+         2ag6bOnHhhIL2sJAQ7h56QkbD70QPqAlF8LPsPe6ZrYCTyQZhfFecZsiDwwdbicMY/
+         vUkM9mS2KnQAJbQoUBobZfhv4EYMbsk3JMesRAwX7wESdjGNDK272cQEya6qiF8K8+
+         u7KgO3BSFS6Zw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Joakim Tjernlund <joakim.tjernlund@infinera.com>,
-        Scott Wood <oss@buserror.net>, Wolfram Sang <wsa@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        chris.packham@alliedtelesis.co.nz, linux-i2c@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 11/52] i2c: mpc: Correct I2C reset procedure
-Date:   Mon, 17 Jan 2022 11:58:12 -0500
-Message-Id: <20220117165853.1470420-11-sashal@kernel.org>
+Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, npiggin@gmail.com,
+        farosas@linux.ibm.com, paulus@ozlabs.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.16 14/52] KVM: PPC: Book3S: Suppress warnings when allocating too big memory slots
+Date:   Mon, 17 Jan 2022 11:58:15 -0500
+Message-Id: <20220117165853.1470420-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117165853.1470420-1-sashal@kernel.org>
 References: <20220117165853.1470420-1-sashal@kernel.org>
@@ -49,68 +53,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joakim Tjernlund <joakim.tjernlund@infinera.com>
+From: Alexey Kardashevskiy <aik@ozlabs.ru>
 
-[ Upstream commit ebe82cf92cd4825c3029434cabfcd2f1780e64be ]
+[ Upstream commit 511d25d6b789fffcb20a3eb71899cf974a31bd9d ]
 
-Current I2C reset procedure is broken in two ways:
-1) It only generate 1 START instead of 9 STARTs and STOP.
-2) It leaves the bus Busy so every I2C xfer after the first
-   fixup calls the reset routine again, for every xfer there after.
+The userspace can trigger "vmalloc size %lu allocation failure: exceeds
+total pages" via the KVM_SET_USER_MEMORY_REGION ioctl.
 
-This fixes both errors.
+This silences the warning by checking the limit before calling vzalloc()
+and returns ENOMEM if failed.
 
-Signed-off-by: Joakim Tjernlund <joakim.tjernlund@infinera.com>
-Acked-by: Scott Wood <oss@buserror.net>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+This does not call underlying valloc helpers as __vmalloc_node() is only
+exported when CONFIG_TEST_VMALLOC_MODULE and __vmalloc_node_range() is
+not exported at all.
+
+Spotted by syzkaller.
+
+Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
+[mpe: Use 'size' for the variable rather than 'cb']
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20210901084512.1658628-1-aik@ozlabs.ru
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-mpc.c | 23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+ arch/powerpc/kvm/book3s_hv.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-mpc.c b/drivers/i2c/busses/i2c-mpc.c
-index db26cc36e13fe..6c698c10d3cdb 100644
---- a/drivers/i2c/busses/i2c-mpc.c
-+++ b/drivers/i2c/busses/i2c-mpc.c
-@@ -119,23 +119,30 @@ static inline void writeccr(struct mpc_i2c *i2c, u32 x)
- /* Sometimes 9th clock pulse isn't generated, and slave doesn't release
-  * the bus, because it wants to send ACK.
-  * Following sequence of enabling/disabling and sending start/stop generates
-- * the 9 pulses, so it's all OK.
-+ * the 9 pulses, each with a START then ending with STOP, so it's all OK.
-  */
- static void mpc_i2c_fixup(struct mpc_i2c *i2c)
- {
- 	int k;
--	u32 delay_val = 1000000 / i2c->real_clk + 1;
--
--	if (delay_val < 2)
--		delay_val = 2;
-+	unsigned long flags;
+diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
+index 7b74fc0a986b8..94da0d25eb125 100644
+--- a/arch/powerpc/kvm/book3s_hv.c
++++ b/arch/powerpc/kvm/book3s_hv.c
+@@ -4861,8 +4861,12 @@ static int kvmppc_core_prepare_memory_region_hv(struct kvm *kvm,
+ 	unsigned long npages = mem->memory_size >> PAGE_SHIFT;
  
- 	for (k = 9; k; k--) {
- 		writeccr(i2c, 0);
--		writeccr(i2c, CCR_MSTA | CCR_MTX | CCR_MEN);
-+		writeb(0, i2c->base + MPC_I2C_SR); /* clear any status bits */
-+		writeccr(i2c, CCR_MEN | CCR_MSTA); /* START */
-+		readb(i2c->base + MPC_I2C_DR); /* init xfer */
-+		udelay(15); /* let it hit the bus */
-+		local_irq_save(flags); /* should not be delayed further */
-+		writeccr(i2c, CCR_MEN | CCR_MSTA | CCR_RSTA); /* delay SDA */
- 		readb(i2c->base + MPC_I2C_DR);
--		writeccr(i2c, CCR_MEN);
--		udelay(delay_val << 1);
-+		if (k != 1)
-+			udelay(5);
-+		local_irq_restore(flags);
+ 	if (change == KVM_MR_CREATE) {
+-		slot->arch.rmap = vzalloc(array_size(npages,
+-					  sizeof(*slot->arch.rmap)));
++		unsigned long size = array_size(npages, sizeof(*slot->arch.rmap));
++
++		if ((size >> PAGE_SHIFT) > totalram_pages())
++			return -ENOMEM;
++
++		slot->arch.rmap = vzalloc(size);
+ 		if (!slot->arch.rmap)
+ 			return -ENOMEM;
  	}
-+	writeccr(i2c, CCR_MEN); /* Initiate STOP */
-+	readb(i2c->base + MPC_I2C_DR);
-+	udelay(15); /* Let STOP propagate */
-+	writeccr(i2c, 0);
- }
- 
- static int i2c_mpc_wait_sr(struct mpc_i2c *i2c, int mask)
 -- 
 2.34.1
 
