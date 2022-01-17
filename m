@@ -2,38 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1319DC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 05:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE054C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 05:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233025AbiAQFoZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 00:44:25 -0500
-Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:2481 "EHLO
-        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232449AbiAQFoY (ORCPT
+        id S234294AbiAQFoi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 00:44:38 -0500
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:55078 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234389AbiAQFoe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 00:44:24 -0500
+        Mon, 17 Jan 2022 00:44:34 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1642398264; x=1673934264;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=ORexfekDTETJk/q4623XGnH+VR9R4h8fqEYOUoS0J50=;
-  b=b5ESTi783O3A+U5CkPAP9X4C3490ms8tGkSuV6FfmkSNn14+Ar52j/eN
-   e7aYTmoCPRzcA+Hob45cAxyIjczegQQIDzsYg+9EupMeslspl7ACvOA4X
-   eSYHx1t9dF0DcU82bvBPGu7lcddP/uTMTx+QiyZ4kSZGUhVbNJcCO3X4o
-   0=;
-Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 16 Jan 2022 21:44:24 -0800
+  t=1642398274; x=1673934274;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=oWYE4/1jS4KcCIbk7ywm73OcI0RO6xPaxqB+PmdcKrY=;
+  b=nWg1kEAXkLyh3lGTeb30+hTAVXmGE01DRZ7qbb6WTWL6H4R5UDf4CwT3
+   1UmBMoJITUoKGcB1LxSEqCqa2HoOV+4vsDwUrVLpAvUeOWRUqiblZR6E+
+   asKN57IlTJ4adsGTiFFmrs6kNDoYHIs8B44VOIyaRFe3J1N7qbR9qN9ro
+   g=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 16 Jan 2022 21:44:34 -0800
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2022 21:44:24 -0800
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jan 2022 21:44:33 -0800
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Sun, 16 Jan 2022 21:44:24 -0800
+ 15.2.922.19; Sun, 16 Jan 2022 21:44:33 -0800
 Received: from c-sanm-linux.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Sun, 16 Jan 2022 21:44:19 -0800
+ 15.2.922.19; Sun, 16 Jan 2022 21:44:28 -0800
 From:   Sandeep Maheswaram <quic_c_sanm@quicinc.com>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Felipe Balbi <balbi@kernel.org>,
@@ -45,10 +46,12 @@ CC:     <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <quic_pkondeti@quicinc.com>,
         <quic_ppratap@quicinc.com>,
         Sandeep Maheswaram <quic_c_sanm@quicinc.com>
-Subject: [PATCH v10 0/6] USB DWC3 host wake up support from system suspend
-Date:   Mon, 17 Jan 2022 11:14:02 +0530
-Message-ID: <1642398248-21753-1-git-send-email-quic_c_sanm@quicinc.com>
+Subject: [PATCH v10 2/6] usb: dwc3: core: Host wake up support from system suspend
+Date:   Mon, 17 Jan 2022 11:14:04 +0530
+Message-ID: <1642398248-21753-3-git-send-email-quic_c_sanm@quicinc.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1642398248-21753-1-git-send-email-quic_c_sanm@quicinc.com>
+References: <1642398248-21753-1-git-send-email-quic_c_sanm@quicinc.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.80.80.8]
@@ -58,76 +61,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Avoiding phy powerdown in host mode when wakeup capable devices are 
-connected, so that it can be wake up by devices.
-Set GENPD_FLAG_ALWAYS_ON flag to keep usb30_prim gdsc active to retain
-controller status during suspend/resume.
+Avoiding phy powerdown when wakeup capable devices are connected
+by checking wakeup property of xhci plat device.
+Phy should be on to wake up the device from suspend using wakeup capable
+devices such as keyboard and mouse.
 
-Changes in v10:
-PATCH 1/6: Change device_set_wakeup_capable to device_set_wakeup_enable
-PATCH 2/6: Remove redundant else part in dwc3_resume_common
-PATCH 4/6: Change the irg flags
-PATCH 5/6: Set flag GENPD_FLAG_ALWAYS_ON
-PATCH 6/6: Remove remove disable interrupts function and enable
-interrupts in probe.
+Signed-off-by: Sandeep Maheswaram <quic_c_sanm@quicinc.com>
+Tested-by: Brian Norris <briannorris@chromium.org>
+---
+Remove redundant else part in dwc3_resume_common. This will not be
+required if GDSC is always on during suspend/resume.
 
 
-Changes in v9:
-Checking with device_may_makeup property instead of phy_power_off flag.
-Changed the IRQ flags and removed hs_phy_mode variable.
+ drivers/usb/dwc3/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Changes in v8:
-Moved the dwc3 suspend quirk code in dwc3/host.c to xhci-plat.c
-Checking phy_power_off flag instead of usb_wakeup_enabled_descendants 
-to keep gdsc active.
-
-Changes in v7:
-Change in commit text and message in PATCH 1/5 and PATCH 5/5
-as per Matthias suggestion.
-Added curly braces for if and else if sections in PATCH 4/5.
-
-Changes in v6:
-Addressed comments in host.c and core.c
-Separated the patches in dwc3-qcom.c to make it simple.
-Dropped wakeup-source change as it is not related to this series.
-
-Changes in v5:
-Added phy_power_off flag to check presence of wakeup capable devices.
-Dropped patch[v4,4/5] as it is present linux-next.
-Addressed comments in host.c and dwc3-qcom.c.
-
-Changes in v4:
-Addressed Matthias comments raised in v3.
-
-Changes in v3:
-Removed need_phy_for_wakeup flag and by default avoiding phy powerdown.
-Addressed Matthias comments and added entry for DEV_SUPERSPEED.
-Added suspend_quirk in dwc3 host and moved the dwc3_set_phy_speed_flags.
-Added wakeup-source dt entry and reading in dwc-qcom.c glue driver.
-
-Changes in v2:
-Dropped the patch in clock to set GENPD_FLAG_ACTIVE_WAKEUP flag and 
-setting in usb dwc3 driver.
-Separated the core patch and glue driver patch.
-Made need_phy_for_wakeup flag part of dwc structure and 
-hs_phy_flags as unsgined int.
-Adrressed the comment on device_init_wakeup call.
-Corrected offset for reading portsc register.
-Added pacth to support wakeup in xo shutdown case.
-
-Sandeep Maheswaram (6):
-  usb: host: xhci: plat: Add suspend quirk for dwc3 controller
-  usb: dwc3: core: Host wake up support from system suspend
-  usb: dwc3: qcom: Add helper functions to enable,disable wake irqs
-  usb: dwc3: qcom: Change the IRQ flag for DP/DM hs phy irq
-  usb: dwc3: qcom: Keep power domain on to retain controller status
-  usb: dwc3: qcom: Enable the interrupts during probe
-
- drivers/usb/dwc3/core.c      |  4 +--
- drivers/usb/dwc3/dwc3-qcom.c | 64 +++++++++++++++-----------------------------
- drivers/usb/host/xhci-plat.c | 12 +++++++++
- 3 files changed, 36 insertions(+), 44 deletions(-)
-
+diff --git a/drivers/usb/dwc3/core.c b/drivers/usb/dwc3/core.c
+index f4c0995..e7a5e3f 100644
+--- a/drivers/usb/dwc3/core.c
++++ b/drivers/usb/dwc3/core.c
+@@ -1789,7 +1789,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
+ 		dwc3_core_exit(dwc);
+ 		break;
+ 	case DWC3_GCTL_PRTCAP_HOST:
+-		if (!PMSG_IS_AUTO(msg)) {
++		if (!PMSG_IS_AUTO(msg) && !device_may_wakeup(&dwc->xhci->dev)) {
+ 			dwc3_core_exit(dwc);
+ 			break;
+ 		}
+@@ -1850,7 +1850,7 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
+ 		spin_unlock_irqrestore(&dwc->lock, flags);
+ 		break;
+ 	case DWC3_GCTL_PRTCAP_HOST:
+-		if (!PMSG_IS_AUTO(msg)) {
++		if (!PMSG_IS_AUTO(msg) && !device_may_wakeup(&dwc->xhci->dev)) {
+ 			ret = dwc3_core_init_for_resume(dwc);
+ 			if (ret)
+ 				return ret;
 -- 
 2.7.4
 
