@@ -2,213 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65BBDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 13:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 887C3C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 13:30:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233770AbiAQN2L (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 08:28:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52628 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233841AbiAQN2K (ORCPT
+        id S234120AbiAQNaC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 08:30:02 -0500
+Received: from mail-ua1-f53.google.com ([209.85.222.53]:33625 "EHLO
+        mail-ua1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233841AbiAQNaB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 08:28:10 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCAB5C061574;
-        Mon, 17 Jan 2022 05:28:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CC540CE13A5;
-        Mon, 17 Jan 2022 13:28:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DC87C36AE7;
-        Mon, 17 Jan 2022 13:28:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642426085;
-        bh=BtG7I84GvB/Sz35ndvv2QPjfdM9pekvFOFAZuOIgw9E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ghT0ducj8wxuhb3IMBgYpurbShrG1FYBjGCA8UPHzsGxWXafgT4FDlFIOipDvU48K
-         ViCgE1mDk87dtIZTI8lsPbl4NfC9yFi6buvAu1qZVwYsEwAazgj6KNWnUE8pV5oxiH
-         tKpLm13mWhiiXtQrA/OurFtfw8so+Zfqw4m7JeWYtyKGo+0JEJHONkdsQeG69aBGgf
-         0vw8bvp42Ke7ZAsJSlLV+5MsljtFD+HrRS7Oi07x5v1iVat0RmX5tM5Bl4124jl04t
-         DV1LA/+Hg9zGc236HzzpULRvh5gkWUxAxWaWe4B/csXJfDUro6KtAeIx/w8bqcM3IX
-         SXyyOkzeRArZg==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     linux-arch@vger.kernel.org, Michal Simek <monstr@monstr.eu>
-Cc:     linux-kernel@vger.kernel.org,
-        Christoph Hellwig <hch@infradead.org>, ebiederm@xmission.com,
-        viro@zeniv.linux.org.uk, torvalds@linux-foundation.org,
-        Arnd Bergmann <arnd@arndb.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Mark Rutland <mark.rutland@arm.com>
-Subject: [PATCH] microblaze: remove CONFIG_SET_FS
-Date:   Mon, 17 Jan 2022 14:27:03 +0100
-Message-Id: <20220117132757.1881981-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <CAK8P3a22ntk5fTuk6xjh1pyS-eVbGo7zDQSVkn2VG1xgp01D9g@mail.gmail.com>
-References: <CAK8P3a22ntk5fTuk6xjh1pyS-eVbGo7zDQSVkn2VG1xgp01D9g@mail.gmail.com>
+        Mon, 17 Jan 2022 08:30:01 -0500
+Received: by mail-ua1-f53.google.com with SMTP id u6so30503638uaq.0;
+        Mon, 17 Jan 2022 05:30:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aw/HNeVnfTRxU1ZQlE8UIYhuVJjuteUvt0Niy9Bfiz0=;
+        b=KnWbplvLSljCNRNiCCRHJ5K41GoWVGxg0ZKT2Zk5Zv6a1bfbDL4NXiHK/bxUI97u2A
+         PmPxp6//kL4Ki3IBCDI0BiwJ4S6jJ2F89Fthl57OdP/Bh9hM7Db4ZNKr+A25tGqq0P7d
+         ylBjyFrQH8iUj/9VMGsee8hsPD++I3Lju7LGdxi2pp3RCgU1vI2lYRWH1H0t2T/4p2NZ
+         g1JXl7r4HnT82FL7b2bXxPq0PTxAdSy5GSb/bIJEioqaU/fuwVEyku4qrzy64k7yA+rV
+         msQ0Hqgros7NhcZUH916UxohaJ7Tr2I6yndULKQgpf9pausPEs3S/3VaT8P9adIAFSRV
+         23ZA==
+X-Gm-Message-State: AOAM533CLI62sOU9V2ouxrNv3UNRNxSGESior0FktVykc7yAAFWbqpOM
+        lQPT7EnexyDwxPYbk+SNdu0wQ4YNqlQo2A==
+X-Google-Smtp-Source: ABdhPJxmxqUu4KEcgcj7zfNS5xmD58Wd8gVDwVrroulabAdvKck6ib/U6w55VqhYbk0Enjht+OUiiQ==
+X-Received: by 2002:a05:6102:ed5:: with SMTP id m21mr7381704vst.56.1642426200221;
+        Mon, 17 Jan 2022 05:30:00 -0800 (PST)
+Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com. [209.85.221.169])
+        by smtp.gmail.com with ESMTPSA id s32sm3526190uas.3.2022.01.17.05.29.59
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Jan 2022 05:29:59 -0800 (PST)
+Received: by mail-vk1-f169.google.com with SMTP id 191so10375349vkc.1;
+        Mon, 17 Jan 2022 05:29:59 -0800 (PST)
+X-Received: by 2002:ac5:c967:: with SMTP id t7mr8120473vkm.20.1642426198916;
+ Mon, 17 Jan 2022 05:29:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <YeG8ydoJNWWkGrTb@ls3530> <CAKMK7uGdJckdM+fg+576iJXsqzCOUg20etPBMwRLB9U7GcG01Q@mail.gmail.com>
+ <c80ed72c-2eb4-16dd-a7ad-57e9dde59ba1@gmx.de> <20220117125716.yjwxsze35j2ndn2i@sirius.home.kraxel.org>
+In-Reply-To: <20220117125716.yjwxsze35j2ndn2i@sirius.home.kraxel.org>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Mon, 17 Jan 2022 14:29:47 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdW=Zpp2mHbrBx7i0WN8PqY3XpK5qpyAyYxgf9n88edpug@mail.gmail.com>
+Message-ID: <CAMuHMdW=Zpp2mHbrBx7i0WN8PqY3XpK5qpyAyYxgf9n88edpug@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
+To:     Gerd Hoffmann <kraxel@redhat.com>
+Cc:     Helge Deller <deller@gmx.de>, Daniel Vetter <daniel@ffwll.ch>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        "airlied@gmail.com" <airlied@gmail.com>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Javier Martinez Canillas <javierm@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+Hi Gerd,
 
-I picked microblaze as one of the architectures that still
-use set_fs() and converted it not to.
+On Mon, Jan 17, 2022 at 1:57 PM Gerd Hoffmann <kraxel@redhat.com> wrote:
+> > b) to include new drivers (for old hardware) if they arrive (probably happens rarely but there can be).
+> >    I know of at least one driver which won't be able to support DRM....
+>
+> Hmm?  I seriously doubt that.  There is always the option to use a
+> shadow framebuffer, then convert from standard drm formats to whatever
+> esoteric pixel format your hardware expects.
+>
+> Been there, done that.  Have a look at the cirrus driver.  The physical
+> hardware was designed in the early 90-ies, almost 30 years ago.  These
+> days it exists in virtual form only (qemu emulates it).  Thanks to the
+> drm driver it runs wayland just fine even though it has a bunch of
+> constrains dictated by the hardware design.
 
-Link: https://lore.kernel.org/lkml/CAK8P3a22ntk5fTuk6xjh1pyS-eVbGo7zDQSVkn2VG1xgp01D9g@mail.gmail.com/
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-This is an old patch I found after Christoph asked about
-conversions for the remaining architectures. I have no idea
-about the state of this patch, but there is a reasonable
-chance that it works.
----
- arch/microblaze/Kconfig                   |  1 -
- arch/microblaze/include/asm/thread_info.h |  6 ---
- arch/microblaze/include/asm/uaccess.h     | 56 ++++++++++-------------
- arch/microblaze/kernel/asm-offsets.c      |  1 -
- 4 files changed, 25 insertions(+), 39 deletions(-)
+The Cirrus DRM driver supports TrueColor (RGB565/888 and ARGB8888)
+modes only.  The Cirrus fbdev driver also supports mochrome and 256
+color modes.
 
-diff --git a/arch/microblaze/Kconfig b/arch/microblaze/Kconfig
-index 59798e43cdb0..1fb1cec087b7 100644
---- a/arch/microblaze/Kconfig
-+++ b/arch/microblaze/Kconfig
-@@ -42,7 +42,6 @@ config MICROBLAZE
- 	select CPU_NO_EFFICIENT_FFS
- 	select MMU_GATHER_NO_RANGE
- 	select SPARSE_IRQ
--	select SET_FS
- 	select ZONE_DMA
- 	select TRACE_IRQFLAGS_SUPPORT
- 
-diff --git a/arch/microblaze/include/asm/thread_info.h b/arch/microblaze/include/asm/thread_info.h
-index 44f5ca331862..a0ddd2a36fb9 100644
---- a/arch/microblaze/include/asm/thread_info.h
-+++ b/arch/microblaze/include/asm/thread_info.h
-@@ -56,17 +56,12 @@ struct cpu_context {
- 	__u32	fsr;
- };
- 
--typedef struct {
--	unsigned long seg;
--} mm_segment_t;
--
- struct thread_info {
- 	struct task_struct	*task; /* main task structure */
- 	unsigned long		flags; /* low level flags */
- 	unsigned long		status; /* thread-synchronous flags */
- 	__u32			cpu; /* current CPU */
- 	__s32			preempt_count; /* 0 => preemptable,< 0 => BUG*/
--	mm_segment_t		addr_limit; /* thread address space */
- 
- 	struct cpu_context	cpu_context;
- };
-@@ -80,7 +75,6 @@ struct thread_info {
- 	.flags		= 0,			\
- 	.cpu		= 0,			\
- 	.preempt_count	= INIT_PREEMPT_COUNT,	\
--	.addr_limit	= KERNEL_DS,		\
- }
- 
- /* how to get the thread information struct from C */
-diff --git a/arch/microblaze/include/asm/uaccess.h b/arch/microblaze/include/asm/uaccess.h
-index d2a8ef9f8978..346fe4618b27 100644
---- a/arch/microblaze/include/asm/uaccess.h
-+++ b/arch/microblaze/include/asm/uaccess.h
-@@ -16,45 +16,20 @@
- #include <asm/extable.h>
- #include <linux/string.h>
- 
--/*
-- * On Microblaze the fs value is actually the top of the corresponding
-- * address space.
-- *
-- * The fs value determines whether argument validity checking should be
-- * performed or not. If get_fs() == USER_DS, checking is performed, with
-- * get_fs() == KERNEL_DS, checking is bypassed.
-- *
-- * For historical reasons, these macros are grossly misnamed.
-- *
-- * For non-MMU arch like Microblaze, KERNEL_DS and USER_DS is equal.
-- */
--# define MAKE_MM_SEG(s)       ((mm_segment_t) { (s) })
--
--#  define KERNEL_DS	MAKE_MM_SEG(0xFFFFFFFF)
--#  define USER_DS	MAKE_MM_SEG(TASK_SIZE - 1)
--
--# define get_fs()	(current_thread_info()->addr_limit)
--# define set_fs(val)	(current_thread_info()->addr_limit = (val))
--# define user_addr_max() get_fs().seg
--
--# define uaccess_kernel()	(get_fs().seg == KERNEL_DS.seg)
--
- static inline int access_ok(const void __user *addr, unsigned long size)
- {
- 	if (!size)
- 		goto ok;
- 
--	if ((get_fs().seg < ((unsigned long)addr)) ||
--			(get_fs().seg < ((unsigned long)addr + size - 1))) {
--		pr_devel("ACCESS fail at 0x%08x (size 0x%x), seg 0x%08x\n",
--			(__force u32)addr, (u32)size,
--			(u32)get_fs().seg);
-+	if ((((unsigned long)addr) > TASK_SIZE) ||
-+	    (((unsigned long)addr + size - 1) > TASK_SIZE)) {
-+		pr_devel("ACCESS fail at 0x%08x (size 0x%x)",
-+			(__force u32)addr, (u32)size);
- 		return 0;
- 	}
- ok:
--	pr_devel("ACCESS OK at 0x%08x (size 0x%x), seg 0x%08x\n",
--			(__force u32)addr, (u32)size,
--			(u32)get_fs().seg);
-+	pr_devel("ACCESS OK at 0x%08x (size 0x%x)\n",
-+			(__force u32)addr, (u32)size);
- 	return 1;
- }
- 
-@@ -280,6 +255,25 @@ extern long __user_bad(void);
- 	__gu_err;							\
- })
- 
-+#define __get_kernel_nofault(dst, src, type, label)	\
-+{							\
-+	type __user *p = (type __force __user *)(src);	\
-+	type data;					\
-+	if (__get_user(data, p))			\
-+		goto label;				\
-+	*(type *)dst = data;				\
-+}
-+
-+#define __put_kernel_nofault(dst, src, type, label)	\
-+{							\
-+	type __user *p = (type __force __user *)(dst);	\
-+	type data = *(type *)src;			\
-+	if (__put_user(data, p))			\
-+		goto label;				\
-+}
-+
-+#define HAVE_GET_KERNEL_NOFAULT
-+
- static inline unsigned long
- raw_copy_from_user(void *to, const void __user *from, unsigned long n)
- {
-diff --git a/arch/microblaze/kernel/asm-offsets.c b/arch/microblaze/kernel/asm-offsets.c
-index b77dd188dec4..47ee409508b1 100644
---- a/arch/microblaze/kernel/asm-offsets.c
-+++ b/arch/microblaze/kernel/asm-offsets.c
-@@ -86,7 +86,6 @@ int main(int argc, char *argv[])
- 	/* struct thread_info */
- 	DEFINE(TI_TASK, offsetof(struct thread_info, task));
- 	DEFINE(TI_FLAGS, offsetof(struct thread_info, flags));
--	DEFINE(TI_ADDR_LIMIT, offsetof(struct thread_info, addr_limit));
- 	DEFINE(TI_CPU_CONTEXT, offsetof(struct thread_info, cpu_context));
- 	DEFINE(TI_PREEMPT_COUNT, offsetof(struct thread_info, preempt_count));
- 	BLANK();
--- 
-2.29.2
+There exist some DRM drivers that do support DRM_FORMAT_C8, but none of
+the "tiny" ones do. Same for DRM_FORMAT_RGB{332,233}.  Using a shadow
+frame buffer to convert from truecolor to 256 colors would be doable,
+but would give bad results. And what about less colors?
+Adding support for e.g. DRM_FORMAT_C4 is not straight-forward, as
+the DRM core assumes in many places that a pixel is at least 1 byte,
+and would crash otherwise (yes I tried).  Other modes needed are
+DRM_FORMAT_Y4 and DRM_FORMAT_{BW,WB} (monochrome).
+This not only to support "old" hardware, but also modern small OLED
+and e-ink displays.
 
+On the positive side: DRM would force e.g. the Amiga and Atari
+bitplane formats to become internal to the kernel driver, with the
+kernel driver converting from packed pixels to bitplanes.  Hence
+userspace would no longer have to care about bitplanes.
+
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
