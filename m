@@ -2,147 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C3C7C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 09:37:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CDFCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 09:38:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235927AbiAQJhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 04:37:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235783AbiAQJhq (ORCPT
+        id S235781AbiAQJiW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 04:38:22 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58521 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235947AbiAQJiG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 04:37:46 -0500
-Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D533C061574;
-        Mon, 17 Jan 2022 01:37:46 -0800 (PST)
-Received: by mail-ua1-x92a.google.com with SMTP id p1so29263905uap.9;
-        Mon, 17 Jan 2022 01:37:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=uMQ1EIF4RSxPhUl0TWMfaZBTRoZ1vCSmX3Nwyu9qX8M=;
-        b=Xbqd782sX51xz52Pu4oPlcgnsZHNH7eODQEq10xb3SAyWtlnRFim3gCeMLGai3guzY
-         lB3XAo5tIXRvyZL2F7qjnu9uiiPB0k8R0av3D8RuZOUv91nh6HQCVLbrIhesbPRwrIei
-         DQTQLEzVK1bgfVM2t5WGY5+OpHvbAPGLyibVKrHrhL6k5ugYes+BcTXoDO4SyQVsFbKB
-         JkehUEXjihrc+Z+9lsZ2yvF6vdOAEgaNzSpkLPhDklxZoMpAFsn8QlMmsfZFD6CxtZwO
-         mVX3iQrp7t67upMpiEwELNGAA2y7Lbfv+bgXKg8Bof8j5ra1Jnknidm5WzhO7t0YbhXF
-         0Kzw==
+        Mon, 17 Jan 2022 04:38:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642412286;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=87TQKP21MvIUTnFRp1IlMrCnN3l9CJpODRDFyyIfhfE=;
+        b=jEuVqSk2f6TE2KlcTHfpNo+kxQymExMhJR9S65a7w3TW4R44KvXbq6dBVENRm6DSIgXaXL
+        uZNldEMY1vaozc/EfA3N6cXF2tDej9ntS8onqX0gGtFFlpyXxt21W4yAQeal2/+KxYwQg/
+        SgNSPC20d8hOFTfAZyLyoe4qaPunnVI=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-104-CsDmz-WPND-nQudKReXabw-1; Mon, 17 Jan 2022 04:38:03 -0500
+X-MC-Unique: CsDmz-WPND-nQudKReXabw-1
+Received: by mail-ed1-f72.google.com with SMTP id h11-20020a05640250cb00b003fa024f87c2so13712566edb.4
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 01:38:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=uMQ1EIF4RSxPhUl0TWMfaZBTRoZ1vCSmX3Nwyu9qX8M=;
-        b=4fnkgYaClp4vnW2vZJpQamAOCHa5NdmvAU78Po+YjPf0NayXR1KfGWuGjkr7iQ7c8u
-         5OStAW0mukTDQiaAJk4RvZwayB63xLh0SeLyVfWIlJYrnNpRbqSiEhFImtaFfTgCIU1L
-         wVdF+m2fY6+3SLwy7HAQ1Uvnh1nATcYKzSVa1dR7iTDGG3G8NQHtMaojaknxoqrrGgjG
-         /1iCorQE4MzXgX91O49XO7IpPBKd5SnJm89ki/sW5I78dJdqD1NqmO10PM9BjCe3z2zK
-         kE9P8wjuDie/FXB9MpzlaVf/jrWudOqP5PQOpnviFhIDjN3jFzCXOV1Aou5LQFCG6gQ/
-         d/mQ==
-X-Gm-Message-State: AOAM531Cc8H63mIQsooQ4UdJU1zV7QQ1RGYJ6ggeol9sHTShZ+IsZevF
-        EYhEHVUqC9VeZ4ZAvXLbkvLkVY7unR0F4Fxkiyg=
-X-Google-Smtp-Source: ABdhPJz1nOfG1fYXxt25g4Te+KL3K+cs+UqU3JBn/2jq8iRHbWUWaYCgU/42gNiIQaKxB3S9wpGa+K8sWP/RrsHh9o0=
-X-Received: by 2002:ab0:702a:: with SMTP id u10mr7066269ual.91.1642412264776;
- Mon, 17 Jan 2022 01:37:44 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=87TQKP21MvIUTnFRp1IlMrCnN3l9CJpODRDFyyIfhfE=;
+        b=4RzogqtIa0Al5nG2S4pIuPAZ2UoCL3rXTCmg2/KCoF3s5f5uzJd6Qse6H4hp/Ddsu+
+         uLGDbdhCxZVxoV6gHUGVNJ5hr6YTFgf+ioFrzFAwtSk/HJbo5z4hNjyOUIU/4Ig316FE
+         XNeDNd6mMlq2sy+SxUbVptefH8zConkE0QWummORbu1ngRgDiSEo9L/25eYf3eMYeRqJ
+         1MQ0DhI/ieGozBonbwddT0C6qXnOwX5EvjAKFYk7JOFuj5KS2comkSVfNcYSFqOz4ZeE
+         /rZXxk94P+RRuUY8l4NI2WbrPERq8rzgCfi93d/oES2nbFTmqwPlxRkyXl6q8R+J93Gs
+         C5+A==
+X-Gm-Message-State: AOAM530OvDEr/fOgrr7Q1ALRFyNQ5y/YbCU60cVL2MawMup6dRrl0FDu
+        WFEmhtWblJ4iEszRXWozRbCzlkRzIzK6ZG1s4H+iaboOsH5WLAQsIGViPmvT6qbJIWRvckrOBeR
+        FttuuY718eetc6yQSUUfhiB1P
+X-Received: by 2002:a17:906:b286:: with SMTP id q6mr11945526ejz.496.1642412282167;
+        Mon, 17 Jan 2022 01:38:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJz2KK/fmStojUMqn34rE0EHBYoqOqN0OB1KrIqmFJam0AvqPc5evTRU+IpJZucQ2ivN2RAQ+g==
+X-Received: by 2002:a17:906:b286:: with SMTP id q6mr11945515ejz.496.1642412281936;
+        Mon, 17 Jan 2022 01:38:01 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id y2sm5686084eda.45.2022.01.17.01.38.01
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Jan 2022 01:38:01 -0800 (PST)
+Message-ID: <a8bb5224-e77d-fc3e-4619-2ca5f46305a5@redhat.com>
+Date:   Mon, 17 Jan 2022 10:38:00 +0100
 MIME-Version: 1.0
-References: <20210715141742.15072-1-andrea.merello@gmail.com>
- <20211028101840.24632-1-andrea.merello@gmail.com> <20211028101840.24632-7-andrea.merello@gmail.com>
- <20211028120405.6ffb01d1@jic23-huawei> <CAN8YU5Orbbzq-eDxmrR00xHwXQ=0LU2G3_yEtHGMkbVhmdcqgg@mail.gmail.com>
- <20211114162032.425ab36d@jic23-huawei> <CAN8YU5NO5mcrPa5ZCB3XnAb=3N3cyXZUT=gH5G+EbnM-En0a3Q@mail.gmail.com>
- <20220115152749.173b7172@jic23-huawei>
-In-Reply-To: <20220115152749.173b7172@jic23-huawei>
-Reply-To: andrea.merello@gmail.com
-From:   Andrea Merello <andrea.merello@gmail.com>
-Date:   Mon, 17 Jan 2022 10:37:33 +0100
-Message-ID: <CAN8YU5OT44Wz813tKA62-Dvq3=VoTcoyVE__5UuRw+i7+B7i8w@mail.gmail.com>
-Subject: Re: [v2 06/10] iio: document bno055 private sysfs attributes
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Andrea Merello <andrea.merello@iit.it>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] platform/surface: Reinstate platform dependency
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Mark Gross <markgross@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Jarrett Schultz <jaschultz@microsoft.com>
+Cc:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220115140849.269479-1-geert@linux-m68k.org>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220115140849.269479-1-geert@linux-m68k.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Trivial inline comments below. Beside that, I've found another
-pleasing issue with this "range" thing on this device..
+Hi,
 
-One one hand, things seem to always work as we discussed for the
-accelerometer (i.e. range doesn't affect the scale; the HW always
-provides readings in the same scale, but with different range and
-precision) on the other hand, the gyroscope behavior depends by the
-internal IMU firmware version.. great..
+On 1/15/22 15:08, Geert Uytterhoeven wrote:
+> Microsoft Surface platform-specific devices are only present on
+> Microsoft Surface platforms, which are currently limited to arm64 and
+> x86.  Hence add a dependency on ARM64 || X86, to prevent asking the user
+> about drivers for these devices when configuring a kernel for an
+> architecture that does not support Microsoft Surface platforms.
+> 
+> Fixes: 272479928172edf0 ("platform: surface: Propagate ACPI Dependency")
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
 
-Stock firmware has a bug[0], so that the "range" gyroscope registers
-do change the scale indeed. AFAICT stock firmware is the one you find
-in most (all?) breakout boards, which are usually available (and which
-I'm using right now for this driver mainlining attempt). Upgrading
-firmware looks like a rather obscure process that AFAICT can be done
-only in some specific USB-stick demo-board ("shuttle board") or with
-maybe with FAE assistance on custom developed boards [1] (i.e. maybe
-can be done by some professional user; I would say not for most
-people).
+Thank you for your patch, I've applied this patch to my review-hans 
+branch:
+https://git.kernel.org/pub/scm/linux/kernel/git/pdx86/platform-drivers-x86.git/log/?h=review-hans
 
-So, I'm now wondering how to handle this... I really want to support
-the stock FW, which seems the most widespread, and the one I have
-right now; I'd say this means: the accelerometer thing will still work
-as we discussed (i.e. the range attribute thing), while the gyro will
-have writeable scale, and a (ro) scale_available attrib. But what
-about the gyro range thing? Should I drop it, or keep it as
-informative read-only?
+Note it will show up in my review-hans branch once I've pushed my
+local branch there, which might take a while.
 
-Then I could also support the new firmware (which I cannot test right
-now with my actual breakout board, but I might see whether I could get
-a board with an updated IMU), keeping also the current driver behavior
-(i.e. range stuff).
+Once I've run some tests on this branch the patches there will be
+added to the platform-drivers-x86/for-next branch and eventually
+will be included in the pdx86 pull-request to Linus for the next
+merge-window.
 
-But the question is: in either cases (new vs old fw) should the
-non-necessary attributes disappear or they may just be RO or locked
-(i.e. scale_available for new FW and range stuff for the old one)?
+Regards,
 
-Any thoughts and advice on this whole thing would be very welcome :)
-my current inclination anyway now tends to be: go on supporting only
-the stock FW (i.e. the board I have here now) and eventually add
-support for the new fw later on, after merge.
+Hans
 
-[0] https://community.bosch-sensortec.com/t5/MEMS-sensors-forum/BNO055-Wrong-sensitivity-resolution-in-datasheet/td-p/10266
-[1] https://community.bosch-sensortec.com/t5/MEMS-sensors-forum/BNO055-Software-Version/td-p/14001
 
-> > I've looked at other iio sysfs attributes in the DOC.  It seems  that
-> > "thesh" and "roc" attributes allows for both preprocessed and raw
-> > data: I found e.g. "<type>[Y][_name]_<raw|input>_thresh_value", but
-> > the related "what" entries written above all seem to omit both "_raw"
-> > and "_input"; I don't understand why.
->
-> Excellent point.  That documentation is garbage.  Events are meant
-> to pick it up implicitly from the related channel _raw or _input.
-> I don't remember them ever having raw or input in their naming but
-> it's possible they did right at the beginning before the ABI was anywhere
-> near stable.  Gah. I dread to think how long that that has been wrong.
+> ---
+>  drivers/platform/surface/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/platform/surface/Kconfig b/drivers/platform/surface/Kconfig
+> index 5f0578e25f718f14..463f1ec5c14e9fa9 100644
+> --- a/drivers/platform/surface/Kconfig
+> +++ b/drivers/platform/surface/Kconfig
+> @@ -5,6 +5,7 @@
+>  
+>  menuconfig SURFACE_PLATFORMS
+>  	bool "Microsoft Surface Platform-Specific Device Drivers"
+> +	depends on ARM64 || X86 || COMPILE_TEST
+>  	default y
+>  	help
+>  	  Say Y here to get to see options for platform-specific device drivers
+> 
 
-Ok, great :)
-
-> So I think range_raw postfix is the best bet.
-
-Will go with this, thanks.
-
-> Jonathan
->
->
->
->
->
-> >
->
-> >
-> > Andrea
->
