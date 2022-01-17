@@ -2,133 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B6F8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 10:45:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 689A0C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 10:45:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233723AbiAQKpr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 05:45:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232677AbiAQKpq (ORCPT
+        id S236191AbiAQKpz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 05:45:55 -0500
+Received: from unknown-3-146.windriver.com ([147.11.3.146]:10400 "EHLO
+        mail1.wrs.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S233757AbiAQKpy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 05:45:46 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53E84C061574
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 02:45:46 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id x11so30205813lfa.2
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 02:45:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UFnI2n344fEXDTpdsSUOjcKjWGnGBz/iToNlRmLPe7U=;
-        b=fuodsfLNn9z0V31KFyLWJdWRmLOJmd8d6qjy3nFUlF1g58zoZkoP7rywmgO4+FHbeE
-         nxQTvJT3gjWFrRHKJztDzSoaxZZg+Kg6YMpWzw0GiwiGBR3z0PjE8cN/cutnAVjqoasr
-         ajPDB6M4OXYfYKRTqgIwOCzUDufAInwT2EYKQkXO95uT0DIXiV+o/dNyt2VXdyAHMFaH
-         elxH92Hr3LhUhgYhf8PUNVBd/ojbWU0xENhlBtiDFRFZhShkd8ayelU7D9kkCJ2nboPx
-         mwVbCe+VXYpU2aI1nfzxNUGbMl1WNRCKYoX/D9wIZZgoOm1dv5q6dKawN+lwtrSzByOG
-         N2Cw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UFnI2n344fEXDTpdsSUOjcKjWGnGBz/iToNlRmLPe7U=;
-        b=0bWZaBPJbrjep6EYZ2MCo9HlsKXoHyTOjjk0/zD3zcEuy6BipGBkG0y31HkDTFTDqb
-         ehnKV29+XEgKa+hfulEsaql4PBRU99vg1L2BzvHLYM2ZfRSXAJyTpRufL2s3cQCW9U/J
-         biho7kLRhKsIqVqAqWnMPix0kKSntTTIJejsTO6jKsx+AQ2kJuFBIEH0pOh4Xh1M5K7k
-         jw7/PzJ/CIRzsRfZT4SitVJRdJHTc0R0Jeg2CThfubCp3rE9Egd7zcisrOgxtmeUhsKh
-         fOGMd7KZRE7CwCZwveAbcnkG+IPy5yNNS/xfPWIQY1ZeWgoi0BRCAeedy52T8JaYmqtK
-         ivCg==
-X-Gm-Message-State: AOAM532Kc1ucaXt90dkgb/wF/VlRYep/tGtT0olMXeWNyzhd4xEC7hUB
-        M/ey+DkrKALOuN2gO1x+kZh3ZzLScQMkvYixzfpB24q7XE1U3g==
-X-Google-Smtp-Source: ABdhPJx5K/lbq6A3g1jegxd5QCeeVa5zxQ9orXlH1mtKgkViXTNSc3JWjZe2RmXcaM0qs4zw+si+k1SAF1Z83zLeIaE=
-X-Received: by 2002:a2e:908e:: with SMTP id l14mr5020043ljg.266.1642416344654;
- Mon, 17 Jan 2022 02:45:44 -0800 (PST)
+        Mon, 17 Jan 2022 05:45:54 -0500
+X-Greylist: delayed 1571 seconds by postgrey-1.27 at vger.kernel.org; Mon, 17 Jan 2022 05:45:54 EST
+Received: from mail.windriver.com (mail.wrs.com [147.11.1.11])
+        by mail1.wrs.com (8.15.2/8.15.2) with ESMTPS id 20HALxbZ025167
+        (version=TLSv1.1 cipher=DHE-RSA-AES256-SHA bits=256 verify=FAIL);
+        Mon, 17 Jan 2022 02:21:59 -0800
+Received: from ala-exchng01.corp.ad.wrs.com (ala-exchng01.corp.ad.wrs.com [147.11.82.252])
+        by mail.windriver.com (8.15.2/8.15.2) with ESMTPS id 20HALowg008849
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 17 Jan 2022 02:21:51 -0800 (PST)
+Received: from pek-lpggp7.wrs.com (128.224.153.21) by
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Mon, 17 Jan 2022 02:21:47 -0800
+From:   Xiaolei Wang <xiaolei.wang@windriver.com>
+To:     <hongxing.zhu@nxp.com>, <l.stach@pengutronix.de>,
+        <lorenzo.pieralisi@arm.com>, <robh@kernel.org>, <kw@linux.com>,
+        <bhelgaas@google.com>, <shawnguo@kernel.org>,
+        <s.hauer@pengutronix.de>, <kernel@pengutronix.de>,
+        <festevam@gmail.com>
+CC:     <linux-imx@nxp.com>, <linux-pci@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] pci: imx: disable reglator when imx6_pcie_probe fails
+Date:   Mon, 17 Jan 2022 18:21:37 +0800
+Message-ID: <20220117102137.3513439-1-xiaolei.wang@windriver.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211220114323.22811-1-vincent.donnefort@arm.com>
- <20211220114323.22811-4-vincent.donnefort@arm.com> <CAKfTPtDjVdPimPbOes5Oix=3NYi3ZWY1dvQjZY3hoMfYbxXuDw@mail.gmail.com>
- <Ydxhe7wkHsq5U6Gk@FVFF7649Q05P>
-In-Reply-To: <Ydxhe7wkHsq5U6Gk@FVFF7649Q05P>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Mon, 17 Jan 2022 11:45:33 +0100
-Message-ID: <CAKfTPtBDh71zZ41M+p+8r2HQiNyaBNckTD2n8_1No-1pghZJaQ@mail.gmail.com>
-Subject: Re: [PATCH 3/3] sched/fair: Do not raise overutilized for idle CPUs
-To:     Vincent Donnefort <Vincent.Donnefort@arm.com>
-Cc:     peterz@infradead.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
-        Valentin.Schneider@arm.com, Morten.Rasmussen@arm.com,
-        qperret@google.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [128.224.153.21]
+X-ClientProxiedBy: ala-exchng01.corp.ad.wrs.com (147.11.82.252) To
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 10 Jan 2022 at 17:40, Vincent Donnefort
-<vincent.donnefort@arm.com> wrote:
->
-> On Wed, Dec 22, 2021 at 09:20:17AM +0100, Vincent Guittot wrote:
-> > On Mon, 20 Dec 2021 at 12:43, Vincent Donnefort
-> > <vincent.donnefort@arm.com> wrote:
-> > >
-> > > During a migration, the lock for the previous runqueue is not taken and
-> > > hence, the task contribution isn't directly removed from that runqueue
-> > > utilization but instead temporarily saved, until the next PELT signals
-> > > update where it would be accounted. There is then a window in which a
-> > > CPU can ben idle be nonetheless overutilized.
-> > >
-> > > The load balancer wouldn't be able to do anything to help a sleeping CPU,
-> > > it brings then no gain to raise overutilized there, only the risk of
-> > > spuriously doing it.
-> >
-> > But how do you make the difference between a very short idle time of
-> > an overutilized CPU and a idle cpu with outdated utilization
->
-> No distinction here, but if the CPU is idle there's nothing to pull, so the load
-> balance wouldn't do anything with this information.
+From: wrsadmin <wrsadmin@pek-xwang8-d1.corp.ad.wrs.com>
 
-The load balance has never done anything with this information. This
-information is only used to disable LB for EAS and as mentioned below,
-being idle is not a good reason for not being overutilized.
+disable reglator when imx6_pcie_probe fails,
+otherwise the following calltrace will appear
 
-Also this patch seems to be there just to fix a problem created by the
-previous one which triggers the costly new idle load balance without
-good reason
+[ 3.785075] ------------[ cut here ]------------
+[ 3.788142] Registering SWP/SWPB emulation handler
+[ 3.789853] WARNING: CPU: 0 PID: 7 at drivers/regulator/core.c:2257 _regulator_put.part.0+0x1bc/0x1e0
+[ 3.795680] Loading compiled-in X.509 certificates
+[ 3.803947] Modules linked in:
+[ 3.811922] CPU: 0 PID: 7 Comm: kworker/u8:0 Not tainted 5.16.0-10645-g3c750c7b6143-dirty #9
+[ 3.820393] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+[ 3.826945] Workqueue: events_unbound async_run_entry_fn
+[ 3.832304] unwind_backtrace from show_stack+0x10/0x14
+[ 3.837569] show_stack from dump_stack_lvl+0x58/0x70
+[ 3.842663] dump_stack_lvl from __warn+0xd8/0x114
+[ 3.847493] __warn from warn_slowpath_fmt+0x5c/0xc4
+[ 3.852490] warn_slowpath_fmt from _regulator_put.part.0+0x1bc/0x1e0
+[ 3.858968] _regulator_put.part.0 from regulator_put+0x2c/0x3c
+[ 3.864918] regulator_put from release_nodes+0x50/0x178
+[ 3.870270] release_nodes from devres_release_all+0x80/0xd0
+[ 3.875968] devres_release_all from really_probe+0xdc/0x30c
+[ 3.881661] really_probe from __driver_probe_device+0x80/0xe4
+[ 3.887522] __driver_probe_device from driver_probe_device+0x30/0xd4
+[ 3.893991] driver_probe_device from __driver_attach_async_helper+0x20/0x38
+[ 3.901068] __driver_attach_async_helper from async_run_entry_fn+0x20/0xb4
+[ 3.908059] async_run_entry_fn from process_one_work+0x298/0x7d0
+[ 3.914188] process_one_work from worker_thread+0x30/0x510
+[ 3.919792] worker_thread from kthread+0x128/0x14c
+[ 3.924705] kthread from ret_from_fork+0x14/0x38
+[ 3.929443] Exception stack(0xc20cbfb0 to 0xc20cbff8)
+[ 3.934521] bfa0: 00000000 00000000 00000000 00000000
+[ 3.942722] bfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[ 3.950922] bfe0: 00000000 00000000 00000000 00000000 00000013 00000000
+[ 3.957677] irq event stamp: 1207
+[ 3.961024] hardirqs last enabled at (1215): [<c0198270>] __up_console_sem+0x50/0x60
+[ 3.968974] hardirqs last disabled at (1224): [<c019825c>] __up_console_sem+0x3c/0x60
+[ 3.976911] softirqs last enabled at (1206): [<c010150c>] __do_softirq+0x2ec/0x5a4
+[ 3.984669] softirqs last disabled at (1197): [<c012ef08>] irq_exit+0x18c/0x20c
+[ 3.992021] ---[ end trace 45a52c023bf8fb33 ]---
 
->
-> >
-> > Being idle is not a good reason for not being overutilized (ie ~80% of
-> > average utilisation)
-> >
-> > >
-> > > Signed-off-by: Vincent Donnefort <vincent.donnefort@arm.com>
-> > >
-> > > diff --git a/kernel/sched/fair.c b/kernel/sched/fair.c
-> > > index 51f6f55abb37..37f737c5f0b8 100644
-> > > --- a/kernel/sched/fair.c
-> > > +++ b/kernel/sched/fair.c
-> > > @@ -8641,26 +8641,28 @@ static inline void update_sg_lb_stats(struct lb_env *env,
-> > >
-> > >                 nr_running = rq->nr_running;
-> > >                 sgs->sum_nr_running += nr_running;
-> > > -
-> > > -               if (nr_running > 1)
-> > > -                       *sg_status |= SG_OVERLOAD;
-> > > -
-> > > -               if (cpu_overutilized(i))
-> > > -                       *sg_status |= SG_OVERUTILIZED;
-> > > -
-> > >  #ifdef CONFIG_NUMA_BALANCING
-> > >                 sgs->nr_numa_running += rq->nr_numa_running;
-> > >                 sgs->nr_preferred_running += rq->nr_preferred_running;
-> > >  #endif
-> > > +               if (nr_running > 1)
-> > > +                       *sg_status |= SG_OVERLOAD;
-> >
-> > Why do you move this code related to overload ?
->
-> This was a cosmetic change to put the NUMA related stats next to the other ones.
+Signed-off-by: Xiaolei Wang <xiaolei.wang@windriver.com>
+---
+ drivers/pci/controller/dwc/pci-imx6.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-Please don't add unrelated cosmetic changes in a patch
+diff --git a/drivers/pci/controller/dwc/pci-imx6.c b/drivers/pci/controller/dwc/pci-imx6.c
+index 6974bd5aa116..f8279a15463b 100644
+--- a/drivers/pci/controller/dwc/pci-imx6.c
++++ b/drivers/pci/controller/dwc/pci-imx6.c
+@@ -1216,7 +1216,7 @@ static int imx6_pcie_probe(struct platform_device *pdev)
+ 
+ 	ret = dw_pcie_host_init(&pci->pp);
+ 	if (ret < 0)
+-		return ret;
++		goto err_vpcie;
+ 
+ 	if (pci_msi_enabled()) {
+ 		u8 offset = dw_pcie_find_capability(pci, PCI_CAP_ID_MSI);
+@@ -1226,6 +1226,11 @@ static int imx6_pcie_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	return 0;
++
++err_vpcie:
++	regulator_disable(imx6_pcie->vpcie);
++
++	return ret;
+ }
+ 
+ static void imx6_pcie_shutdown(struct platform_device *pdev)
+-- 
+2.25.1
 
->
-> [...]
