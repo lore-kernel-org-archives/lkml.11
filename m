@@ -2,49 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C472C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:08:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4210DC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:08:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242711AbiAQRIp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:08:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45184 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242799AbiAQRGB (ORCPT
+        id S243207AbiAQRIt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:08:49 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50320 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241816AbiAQRGC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:06:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 380CDC0617BB;
-        Mon, 17 Jan 2022 09:03:58 -0800 (PST)
+        Mon, 17 Jan 2022 12:06:02 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3E62B8113A;
-        Mon, 17 Jan 2022 17:03:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B975FC36AEC;
-        Mon, 17 Jan 2022 17:03:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E53AB8113E;
+        Mon, 17 Jan 2022 17:06:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08E0FC36AE7;
+        Mon, 17 Jan 2022 17:05:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439035;
-        bh=LxtqiCU/HnTQBi7Y6RaZ5mzfJ2enE8ac2ayAJ6KDquo=;
+        s=k20201202; t=1642439159;
+        bh=GLtLK6jPA6nPtqriz3ZVOeIfZ5OpRTdv6BTEh612+3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EBvTbbLMUaczfVQiZ/W2PWhDvqCjV+KYr1JYvqyiLPYpJER8qMYe932OIFpKFK/H5
-         XyJEdCLXYWZYMazxOMoB4anM7s427zoCDVqwO6ekLuj3Y4RYkMFwvCNVSQ3sj5JSAG
-         JcPplDgepmjGVxLkGuiPpUofykIa6khZAl+3mQi9iPjtCvaqJtAadcTZBxk3q1kkl3
-         DKa+q2dk6G59sF9KohlcPK/MDAlCvWgvbl4aoW+anzkLFee3u2Amir4O1Nm/hC0A15
-         YXwuU4pRELaByL9PLBJOjTqpA37AQ1Ofdw2OAqrHu2k0s7U0N4Bu2mI+Q0fOHs4x2q
-         +C1uBAvWxlKFQ==
+        b=TYKxXsbWFC5b0f/ekusOQv0hFnqgazfb9VHSNY0a3mhTQliyZkfPSuPqAv1n0MS3q
+         OoP+mq4LOfTvTizu1La5o/89hxbHq2kMEwsB/XtnaK3CntPPJ0bvxJGLz5r6mLn0bG
+         TCuZuo/dFD/A9k9ncuf98b4E9Mc/SKA+tcx9ZdcgFXJQXYn7nhMB21YRdZ+xxd5vcm
+         5L0vOpR9CM6HVTk8utJ2YLIBa2pt1RLny0NSCndhXyvuZaywDxsE0q1lvkwdF6HXov
+         HS7XmztAfyFP40FyQrZMiayl9krGvX9IR2N2ujVlcxq2qw8WS5Rfag/CHqWIoxHEBN
+         6cP9Mplywkz/w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>,
+Cc:     Julia Lawall <Julia.Lawall@lip6.fr>,
         Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, npiggin@gmail.com,
-        farosas@linux.ibm.com, paulus@ozlabs.org,
+        Sasha Levin <sashal@kernel.org>, aneesh.kumar@linux.ibm.com,
         linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.10 13/34] KVM: PPC: Book3S: Suppress warnings when allocating too big memory slots
-Date:   Mon, 17 Jan 2022 12:03:03 -0500
-Message-Id: <20220117170326.1471712-13-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 03/17] powerpc/powernv: add missing of_node_put
+Date:   Mon, 17 Jan 2022 12:05:37 -0500
+Message-Id: <20220117170551.1472640-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170326.1471712-1-sashal@kernel.org>
-References: <20220117170326.1471712-1-sashal@kernel.org>
+In-Reply-To: <20220117170551.1472640-1-sashal@kernel.org>
+References: <20220117170551.1472640-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,50 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-[ Upstream commit 511d25d6b789fffcb20a3eb71899cf974a31bd9d ]
+[ Upstream commit 7d405a939ca960162eb30c1475759cb2fdf38f8c ]
 
-The userspace can trigger "vmalloc size %lu allocation failure: exceeds
-total pages" via the KVM_SET_USER_MEMORY_REGION ioctl.
+for_each_compatible_node performs an of_node_get on each iteration, so
+a break out of the loop requires an of_node_put.
 
-This silences the warning by checking the limit before calling vzalloc()
-and returns ENOMEM if failed.
+A simplified version of the semantic patch that fixes this problem is as
+follows (http://coccinelle.lip6.fr):
 
-This does not call underlying valloc helpers as __vmalloc_node() is only
-exported when CONFIG_TEST_VMALLOC_MODULE and __vmalloc_node_range() is
-not exported at all.
+// <smpl>
+@@
+local idexpression n;
+expression e;
+@@
 
-Spotted by syzkaller.
+ for_each_compatible_node(n,...) {
+   ...
+(
+   of_node_put(n);
+|
+   e = n
+|
++  of_node_put(n);
+?  break;
+)
+   ...
+ }
+... when != n
+// </smpl>
 
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-[mpe: Use 'size' for the variable rather than 'cb']
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20210901084512.1658628-1-aik@ozlabs.ru
+Link: https://lore.kernel.org/r/1448051604-25256-4-git-send-email-Julia.Lawall@lip6.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kvm/book3s_hv.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ arch/powerpc/platforms/powernv/opal-lpc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/arch/powerpc/kvm/book3s_hv.c b/arch/powerpc/kvm/book3s_hv.c
-index 175967a195c44..527c205d5a5f5 100644
---- a/arch/powerpc/kvm/book3s_hv.c
-+++ b/arch/powerpc/kvm/book3s_hv.c
-@@ -4557,8 +4557,12 @@ static int kvmppc_core_prepare_memory_region_hv(struct kvm *kvm,
- 	unsigned long npages = mem->memory_size >> PAGE_SHIFT;
- 
- 	if (change == KVM_MR_CREATE) {
--		slot->arch.rmap = vzalloc(array_size(npages,
--					  sizeof(*slot->arch.rmap)));
-+		unsigned long size = array_size(npages, sizeof(*slot->arch.rmap));
-+
-+		if ((size >> PAGE_SHIFT) > totalram_pages())
-+			return -ENOMEM;
-+
-+		slot->arch.rmap = vzalloc(size);
- 		if (!slot->arch.rmap)
- 			return -ENOMEM;
+diff --git a/arch/powerpc/platforms/powernv/opal-lpc.c b/arch/powerpc/platforms/powernv/opal-lpc.c
+index 6c7ad1d8b32ed..21f0edcfb84ad 100644
+--- a/arch/powerpc/platforms/powernv/opal-lpc.c
++++ b/arch/powerpc/platforms/powernv/opal-lpc.c
+@@ -400,6 +400,7 @@ void __init opal_lpc_init(void)
+ 		if (!of_get_property(np, "primary", NULL))
+ 			continue;
+ 		opal_lpc_chip_id = of_get_ibm_chip_id(np);
++		of_node_put(np);
+ 		break;
  	}
+ 	if (opal_lpc_chip_id < 0)
 -- 
 2.34.1
 
