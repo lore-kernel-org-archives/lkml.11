@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4210DC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:08:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38ED1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:08:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243207AbiAQRIt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:08:49 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50320 "EHLO
+        id S242505AbiAQRIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:08:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50204 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241816AbiAQRGC (ORCPT
+        with ESMTP id S235553AbiAQRFy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:06:02 -0500
+        Mon, 17 Jan 2022 12:05:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E53AB8113E;
-        Mon, 17 Jan 2022 17:06:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08E0FC36AE7;
-        Mon, 17 Jan 2022 17:05:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 44AE5B8114E;
+        Mon, 17 Jan 2022 17:05:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 917E2C36AEC;
+        Mon, 17 Jan 2022 17:05:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439159;
-        bh=GLtLK6jPA6nPtqriz3ZVOeIfZ5OpRTdv6BTEh612+3M=;
+        s=k20201202; t=1642439151;
+        bh=IsB6GP+yJnWzUkvkzrdDk9FmxGEtrdhq6Spim46u5qY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TYKxXsbWFC5b0f/ekusOQv0hFnqgazfb9VHSNY0a3mhTQliyZkfPSuPqAv1n0MS3q
-         OoP+mq4LOfTvTizu1La5o/89hxbHq2kMEwsB/XtnaK3CntPPJ0bvxJGLz5r6mLn0bG
-         TCuZuo/dFD/A9k9ncuf98b4E9Mc/SKA+tcx9ZdcgFXJQXYn7nhMB21YRdZ+xxd5vcm
-         5L0vOpR9CM6HVTk8utJ2YLIBa2pt1RLny0NSCndhXyvuZaywDxsE0q1lvkwdF6HXov
-         HS7XmztAfyFP40FyQrZMiayl9krGvX9IR2N2ujVlcxq2qw8WS5Rfag/CHqWIoxHEBN
-         6cP9Mplywkz/w==
+        b=dCM8PrdFQlfwlPelzrZ4wK97kgGw+uFfgRcrFU/Dit5wgKPB1Ug4evcbli/H2F01e
+         z0XfuSzUnYaJIf2nsfSHsGESvt0ERsrxH2hfBgBMg5KYdVGeApadYFyhE60DVMt5WO
+         xnDbpVBZyA64p/DMbYR8V+ZlmqilwA6GCuI0NuZHKbFeOg9XkbxJjIomttSMYzUVjh
+         7rOe2NH6RWalMS9Zoi3SztnIKulOvXRqnb6Nt+C1KkvyG6gcvwgWwdjkr5nwr2TkeK
+         F/5UAUs1GfWU3yQtCcXI4tdbpyRtnRuL6QwZTji/vb4S2wwPkldy0govJKG4BmUkaW
+         /sLXSz5lSqeOQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Julia Lawall <Julia.Lawall@lip6.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, aneesh.kumar@linux.ibm.com,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 4.19 03/17] powerpc/powernv: add missing of_node_put
-Date:   Mon, 17 Jan 2022 12:05:37 -0500
-Message-Id: <20220117170551.1472640-3-sashal@kernel.org>
+Cc:     Tzung-Bi Shih <tzungbi@google.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
+        perex@perex.cz, tiwai@suse.com, matthias.bgg@gmail.com,
+        jiaxin.yu@mediatek.com, angelogioacchino.delregno@collabora.com,
+        alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 21/21] ASoC: mediatek: mt8173: fix device_node leak
+Date:   Mon, 17 Jan 2022 12:04:53 -0500
+Message-Id: <20220117170454.1472347-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170551.1472640-1-sashal@kernel.org>
-References: <20220117170551.1472640-1-sashal@kernel.org>
+In-Reply-To: <20220117170454.1472347-1-sashal@kernel.org>
+References: <20220117170454.1472347-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -49,57 +52,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+From: Tzung-Bi Shih <tzungbi@google.com>
 
-[ Upstream commit 7d405a939ca960162eb30c1475759cb2fdf38f8c ]
+[ Upstream commit 493433785df0075afc0c106ab65f10a605d0b35d ]
 
-for_each_compatible_node performs an of_node_get on each iteration, so
-a break out of the loop requires an of_node_put.
+Fixes the device_node leak.
 
-A simplified version of the semantic patch that fixes this problem is as
-follows (http://coccinelle.lip6.fr):
-
-// <smpl>
-@@
-local idexpression n;
-expression e;
-@@
-
- for_each_compatible_node(n,...) {
-   ...
-(
-   of_node_put(n);
-|
-   e = n
-|
-+  of_node_put(n);
-?  break;
-)
-   ...
- }
-... when != n
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1448051604-25256-4-git-send-email-Julia.Lawall@lip6.fr
+Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
+Link: https://lore.kernel.org/r/20211224064719.2031210-2-tzungbi@google.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/powernv/opal-lpc.c | 1 +
- 1 file changed, 1 insertion(+)
+ sound/soc/mediatek/mt8173/mt8173-max98090.c      | 3 +++
+ sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c | 2 ++
+ sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c | 2 ++
+ sound/soc/mediatek/mt8173/mt8173-rt5650.c        | 2 ++
+ 4 files changed, 9 insertions(+)
 
-diff --git a/arch/powerpc/platforms/powernv/opal-lpc.c b/arch/powerpc/platforms/powernv/opal-lpc.c
-index 6c7ad1d8b32ed..21f0edcfb84ad 100644
---- a/arch/powerpc/platforms/powernv/opal-lpc.c
-+++ b/arch/powerpc/platforms/powernv/opal-lpc.c
-@@ -400,6 +400,7 @@ void __init opal_lpc_init(void)
- 		if (!of_get_property(np, "primary", NULL))
- 			continue;
- 		opal_lpc_chip_id = of_get_ibm_chip_id(np);
-+		of_node_put(np);
- 		break;
- 	}
- 	if (opal_lpc_chip_id < 0)
+diff --git a/sound/soc/mediatek/mt8173/mt8173-max98090.c b/sound/soc/mediatek/mt8173/mt8173-max98090.c
+index 22c00600c999f..de1410c2c446f 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-max98090.c
++++ b/sound/soc/mediatek/mt8173/mt8173-max98090.c
+@@ -180,6 +180,9 @@ static int mt8173_max98090_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(codec_node);
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
+index 8717e87bfe264..6f8542329bab9 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
+@@ -218,6 +218,8 @@ static int mt8173_rt5650_rt5514_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
+index 9d4dd97211548..727ff0f7f20b1 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
+@@ -285,6 +285,8 @@ static int mt8173_rt5650_rt5676_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650.c b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
+index ef6f236752867..21e7d4d3ded5a 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
+@@ -309,6 +309,8 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
 -- 
 2.34.1
 
