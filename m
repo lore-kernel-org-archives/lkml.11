@@ -2,88 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F37EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 07:19:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13C6CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 07:19:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237506AbiAQHTC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 02:19:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52264 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237505AbiAQHS5 (ORCPT
+        id S233212AbiAQHTN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 02:19:13 -0500
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:33981 "EHLO
+        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237514AbiAQHTL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 02:18:57 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18676C061574;
-        Sun, 16 Jan 2022 23:18:57 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AA9D260F70;
-        Mon, 17 Jan 2022 07:18:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9473DC36AE3;
-        Mon, 17 Jan 2022 07:18:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642403936;
-        bh=cEn/0oLDLwZ9AQXhtlYi5yCVnah2Qcl+il8XKFnV8cE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Hainm2G0Z5lTZpIhzOJXBc8zI8KX9hMRAI3+GNeAY2x/okmuJ5oZDh5bLQVNTFixj
-         qmsYT2z8tUGessLiMK2wCFbc+qszX+3JVTFZNUU41IvtpeDadQQftdAEeZjSnwHVy4
-         QAyTn8Y+EQYPgOIRBY5KfjNAtmMnGEcBRBfVBBUI=
-Date:   Mon, 17 Jan 2022 08:18:53 +0100
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     stern@rowland.harvard.edu, mathias.nyman@linux.intel.com,
-        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        Bixuan Cui <cuibixuan@huawei.com>,
-        Rajat Jain <rajatja@google.com>, Andrew Lunn <andrew@lunn.ch>,
-        Chris Chiu <chris.chiu@canonical.com>,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] usb: core: Bail out when port is stuck in reset loop
-Message-ID: <YeUYXbIsZV1GY3wa@kroah.com>
-References: <20211230052811.650191-1-kai.heng.feng@canonical.com>
- <CAAd53p6ev+yQT+jf32UrTMWQXwDPYtmZSrW0zCQnKuUaBbtXUg@mail.gmail.com>
+        Mon, 17 Jan 2022 02:19:11 -0500
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 20H7BSJ7074349;
+        Mon, 17 Jan 2022 15:11:28 +0800 (GMT-8)
+        (envelope-from jammy_huang@aspeedtech.com)
+Received: from [192.168.2.115] (192.168.2.115) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 17 Jan
+ 2022 15:18:21 +0800
+Message-ID: <98096e97-68cc-18fd-d2b6-3477f57f05bd@aspeedtech.com>
+Date:   Mon, 17 Jan 2022 15:18:22 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAAd53p6ev+yQT+jf32UrTMWQXwDPYtmZSrW0zCQnKuUaBbtXUg@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v8 1/4] media: v4l: Add definition for the Aspeed JPEG
+ format
+Content-Language: en-US
+To:     Joel Stanley <joel@jms.id.au>
+CC:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        "sakari.ailus@linux.intel.com" <sakari.ailus@linux.intel.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "eajames@linux.ibm.com" <eajames@linux.ibm.com>,
+        "mchehab@kernel.org" <mchehab@kernel.org>,
+        "andrew@aj.id.au" <andrew@aj.id.au>,
+        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
+        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <20211224012738.1551-1-jammy_huang@aspeedtech.com>
+ <20211224012738.1551-2-jammy_huang@aspeedtech.com>
+ <703ff71e-c76a-9df1-c644-04efed0199ca@xs4all.nl>
+ <609cfe9e-2fd8-b31a-9d71-b83d61693f84@aspeedtech.com>
+ <CACPK8XeJQHLWfVbBjArxV_QMDDnRXfccOeXdsn6aBEG7gd8yvw@mail.gmail.com>
+From:   Jammy Huang <jammy_huang@aspeedtech.com>
+In-Reply-To: <CACPK8XeJQHLWfVbBjArxV_QMDDnRXfccOeXdsn6aBEG7gd8yvw@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [192.168.2.115]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 20H7BSJ7074349
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 11:00:05AM +0800, Kai-Heng Feng wrote:
-> On Thu, Dec 30, 2021 at 1:28 PM Kai-Heng Feng
-> <kai.heng.feng@canonical.com> wrote:
-> >
-> > Unplugging USB device may cause an incorrect warm reset loop and the
-> > port can no longer be used:
-> > [  143.039019] xhci_hcd 0000:00:14.0: Port change event, 2-3, id 19, portsc: 0x4202c0
-> > [  143.039025] xhci_hcd 0000:00:14.0: handle_port_status: starting usb2 port polling.
-> > [  143.039051] hub 2-0:1.0: state 7 ports 10 chg 0000 evt 0008
-> > [  143.039058] xhci_hcd 0000:00:14.0: Get port status 2-3 read: 0x4202c0, return 0x4102c0
-> > [  143.039092] xhci_hcd 0000:00:14.0: clear port3 connect change, portsc: 0x4002c0
-> > [  143.039096] usb usb2-port3: link state change
-> > [  143.039099] xhci_hcd 0000:00:14.0: clear port3 link state change, portsc: 0x2c0
-> > [  143.039101] usb usb2-port3: do warm reset
-> > [  143.096736] xhci_hcd 0000:00:14.0: Get port status 2-3 read: 0x2b0, return 0x2b0
-> > [  143.096751] usb usb2-port3: not warm reset yet, waiting 50ms
-> > [  143.131500] xhci_hcd 0000:00:14.0: Can't queue urb, port error, link inactive
-> > [  143.138260] xhci_hcd 0000:00:14.0: Port change event, 2-3, id 19, portsc: 0x2802a0
-> > [  143.138263] xhci_hcd 0000:00:14.0: handle_port_status: starting usb2 port polling.
-> > [  143.160756] xhci_hcd 0000:00:14.0: Get port status 2-3 read: 0x2802a0, return 0x3002a0
-> > [  143.160798] usb usb2-port3: not warm reset yet, waiting 200ms
-> >
-> > The port status is PP=1, CCS=0, PED=0, PLS=Inactive, which is Error
-> > state per "USB3 Root Hub Port State Machine". It's reasonable to perform
-> > warm reset several times, but if the port is still not enabled after
-> > many attempts, consider it's gone and treat it as disconnected.
-> >
-> > Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-> 
-> A gentle ping...
+On 2022/1/17 上午 10:24, Joel Stanley wrote:
+> On Mon, 17 Jan 2022 at 02:00, Jammy Huang <jammy_huang@aspeedtech.com> wrote:
+>> Hi Hans,
+>>
+>> On 2022/1/14 下午 04:11, Hans Verkuil wrote:
+>>> On 24/12/2021 02:27, Jammy Huang wrote:
+>>>> This introduces support for the Aspeed JPEG format, where the new frame
+>>>> can refer to previous frame to reduce the amount of compressed data. The
+>>>> concept is similar to I/P frame of video compression. It will compare the
+>>>> new frame with previous one to decide which macroblock's data is
+>>>> changed, and only the changed macroblocks will be compressed.
+>>>>
+>>>> This Aspeed JPEG format is used by the video engine on Aspeed platforms,
+>>>> which is generally adapted for remote KVM.
+>>>>
+>>>> Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
+>>>> ---
+>>>> v8:
+>>>>     - Add decoder information for aspeed-jpeg
+>>>> v7:
+>>>>     - Add more information for aspeed-jpeg
+>>>> v6:
+>>>>     - Update description for new format, aspeed-jpeg, in Documentation.
+>>>> v5:
+>>>>     - no update
+>>>> v4:
+>>>>     - new
+>>>> ---
+>>>>    .../media/uapi/v4l/pixfmt-reserved.rst          | 17 +++++++++++++++++
+>>>>    drivers/media/v4l2-core/v4l2-ioctl.c            |  1 +
+>>>>    include/uapi/linux/videodev2.h                  |  1 +
+>>>>    3 files changed, 19 insertions(+)
+>>>>
+>>>> diff --git a/Documentation/media/uapi/v4l/pixfmt-reserved.rst b/Documentation/media/uapi/v4l/pixfmt-reserved.rst
+>>> This is the wrong file! It should be:
+>>>
+>>> Documentation/userspace-api/media/v4l/pixfmt-reserved.rst
+>> Thanks, I just used git format-patch to generate the cover-letter and
+>> didn't notice this.
+>>
+>> It looks like the file, pixfmt-reserved.rst, has different path in
+>> different Linux kernel,
+>>
+>> * 5.4:           Documentation/media/uapi/v4l/pixfmt-reserved.rst
+>>
+>> * 5.10/5.15: Documentation/userspace-api/media/v4l/pixfmt-reserved.rst
+>>
+>> 5.4 is the one I based to submit the patches.
+>>
+>> Could you suggest the kernel that I should based to submit these patches??
+> You should always submit based on the latest release.
+>
+> There are sometimes exceptions where you will base your patches on
+> something even newer, but generally you should grab the latest.
+>
+> Be sure to re-test on the latest kernel before submitting.
+OK, thank you.
+>
+> Cheers,
+>
+> Joel
+>
+>> I will need to change the number of V4L2_CID_USER_ASPEED_BASE per different
+>>
+>> linux kernel as well.
+>>
+>>> Regards,
+>>>
+>>>        Hans
+>>>
+>>>> index b2cd155e691b..1d0dc8d86ed7 100644
+>>>> --- a/Documentation/media/uapi/v4l/pixfmt-reserved.rst
+>>>> +++ b/Documentation/media/uapi/v4l/pixfmt-reserved.rst
+>>>> @@ -264,6 +264,23 @@ please make a proposal on the linux-media mailing list.
+>>>>       of tiles, resulting in 32-aligned resolutions for the luminance plane
+>>>>       and 16-aligned resolutions for the chrominance plane (with 2x2
+>>>>       subsampling).
+>>>> +    * .. _V4L2-PIX-FMT-AJPG:
+>>>> +
+>>>> +      - ``V4L2_PIX_FMT_AJPG``
+>>>> +      - 'AJPG'
+>>>> +      - ASPEED JPEG format used by the aspeed-video driver on Aspeed platforms,
+>>>> +        which is generally adapted for remote KVM.
+>>>> +        On each frame compression, I will compare the new frame with previous
+>>>> +        one to decide which macroblock's data is changed, and only the changed
+>>>> +        macroblocks will be compressed.
+>>>> +
+>>>> +        The implementation is based on AST2600 A3 datasheet, revision 0.9, which
+>>>> +        is not publicly available. Or you can reference Video stream data format
+>>>> +        – ASPEED mode compression of SDK_User_Guide which available on
+>>>> +        AspeedTech-BMC/openbmc/releases.
+>>>> +
+>>>> +        Decoder's implementation can be found here,
+>>>> +        `https://github.com/AspeedTech-BMC/aspeed_codec/ <https://github.com/AspeedTech-BMC/aspeed_codec/>`__
+>>>>
+>>>>    .. tabularcolumns:: |p{6.6cm}|p{2.2cm}|p{8.7cm}|
+>>>>
+>>>> diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
+>>>> index 24db33f803c0..00dde01d2f97 100644
+>>>> --- a/drivers/media/v4l2-core/v4l2-ioctl.c
+>>>> +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
+>>>> @@ -1378,6 +1378,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
+>>>>               case V4L2_PIX_FMT_S5C_UYVY_JPG: descr = "S5C73MX interleaved UYVY/JPEG"; break;
+>>>>               case V4L2_PIX_FMT_MT21C:        descr = "Mediatek Compressed Format"; break;
+>>>>               case V4L2_PIX_FMT_SUNXI_TILED_NV12: descr = "Sunxi Tiled NV12 Format"; break;
+>>>> +            case V4L2_PIX_FMT_AJPG:         descr = "Aspeed JPEG"; break;
+>>>>               default:
+>>>>                       if (fmt->description[0])
+>>>>                               return;
+>>>> diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
+>>>> index 3210b3c82a4a..994eb6155ea9 100644
+>>>> --- a/include/uapi/linux/videodev2.h
+>>>> +++ b/include/uapi/linux/videodev2.h
+>>>> @@ -726,6 +726,7 @@ struct v4l2_pix_format {
+>>>>    #define V4L2_PIX_FMT_INZI     v4l2_fourcc('I', 'N', 'Z', 'I') /* Intel Planar Greyscale 10-bit and Depth 16-bit */
+>>>>    #define V4L2_PIX_FMT_SUNXI_TILED_NV12 v4l2_fourcc('S', 'T', '1', '2') /* Sunxi Tiled NV12 Format */
+>>>>    #define V4L2_PIX_FMT_CNF4     v4l2_fourcc('C', 'N', 'F', '4') /* Intel 4-bit packed depth confidence information */
+>>>> +#define V4L2_PIX_FMT_AJPG     v4l2_fourcc('A', 'J', 'P', 'G') /* Aspeed JPEG */
+>>>>
+>>>>    /* 10bit raw bayer packed, 32 bytes for every 25 pixels, last LSB 6 bits unused */
+>>>>    #define V4L2_PIX_FMT_IPU3_SBGGR10  v4l2_fourcc('i', 'p', '3', 'b') /* IPU3 packed 10-bit BGGR bayer */
+>> --
+>> Best Regards
+>> Jammy
+>>
+-- 
+Best Regards
+Jammy
 
-It's the merge window, I can't do anything, sorry.  Please wait until
-after 5.17-rc1 is out.
-
-thanks,
-
-greg k-h
