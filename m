@@ -2,75 +2,57 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B868C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 11:09:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B009FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 11:14:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233851AbiAQLJO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 06:09:14 -0500
-Received: from azure-sdnproxy.icoremail.net ([52.175.55.52]:46398 "HELO
-        azure-sdnproxy-2.icoremail.net" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with SMTP id S231462AbiAQLJN (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 06:09:13 -0500
-X-Greylist: delayed 106296 seconds by postgrey-1.27 at vger.kernel.org; Mon, 17 Jan 2022 06:09:12 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pku.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id; bh=A4rxap7D7W0NV3KRRx4mhrWTTta+gRdKYYvLiJ1kGq8=; b=n
-        4tPhhyShJi6eKZEk2nRR3lgWTWNLVtRNO8WhSnbnFCXeTz6Ze4yW04cG5BWvnauj
-        Eq8K9SUcivuOAtPpQSMvzz0gibMDmpaGuomSFlzZ8DVqJ6mcM0lKanRL6H+fF/oa
-        ejhPTcdPsGzKcyX//HIB4I+gB54pd6dfrHU8glC/Ks=
-Received: from localhost (unknown [10.129.21.144])
-        by front02 (Coremail) with SMTP id 54FpogBXXQHZTeVhvx1nAA--.43502S2;
-        Mon, 17 Jan 2022 19:07:05 +0800 (CST)
-From:   Yongzhi Liu <lyz_cs@pku.edu.cn>
-To:     gregkh@linuxfoundation.org, rafael@kernel.org
-Cc:     linux-kernel@vger.kernel.org, lyz_cs@pku.edu.cn
-Subject: [PATCH] driver core: Add missing pm_runtime_put_noidle
-Date:   Mon, 17 Jan 2022 03:07:03 -0800
-Message-Id: <1642417623-5393-1-git-send-email-lyz_cs@pku.edu.cn>
-X-Mailer: git-send-email 2.7.4
-X-CM-TRANSID: 54FpogBXXQHZTeVhvx1nAA--.43502S2
-X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
-        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYF7CY07I20VC2zVCF04k26cxKx2IYs7xG
-        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
-        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
-        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
-        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
-        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
-        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE-syl42xK
-        82IYc2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJV
-        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
-        1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
-        IIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvE
-        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnU
-        UI43ZEXa7VUbXdbUUUUUU==
-X-CM-SenderInfo: irzqijirqukmo6sn3hxhgxhubq/1tbiAwEEBlPy7t9+qgAWsS
+        id S236309AbiAQLO3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 06:14:29 -0500
+Received: from mx3.molgen.mpg.de ([141.14.17.11]:59005 "EHLO mx1.molgen.mpg.de"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S233906AbiAQLO2 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 06:14:28 -0500
+Received: from localhost.localdomain (ip5f5aeb79.dynamic.kabel-deutschland.de [95.90.235.121])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: pmenzel)
+        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 7A7EE61EA1922;
+        Mon, 17 Jan 2022 12:14:25 +0100 (CET)
+From:   Paul Menzel <pmenzel@molgen.mpg.de>
+To:     Pasha Tatashin <pasha.tatashin@soleen.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jonathan Corbet <corbet@lwn.net>
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>, linux-mm@kvack.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] docs/vm: Fix typo in *harden*
+Date:   Mon, 17 Jan 2022 12:13:37 +0100
+Message-Id: <20220117111338.115455-1-pmenzel@molgen.mpg.de>
+X-Mailer: git-send-email 2.34.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pm_runtime_get_noresume() in device_shutdown increments the
-runtime PM usage counter, thus a matching decrement is needed
-to keep the counter balanced.
-
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
+Fixes: df4e817b7108 ("mm: page table check")
+Signed-off-by: Paul Menzel <pmenzel@molgen.mpg.de>
 ---
- drivers/base/core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ Documentation/vm/page_table_check.rst | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index fd034d7..29950bd 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -4523,6 +4523,8 @@ void device_shutdown(void)
- 			dev->driver->shutdown(dev);
- 		}
+diff --git a/Documentation/vm/page_table_check.rst b/Documentation/vm/page_table_check.rst
+index 81f521ff7ea7..1a09472f10a3 100644
+--- a/Documentation/vm/page_table_check.rst
++++ b/Documentation/vm/page_table_check.rst
+@@ -9,7 +9,7 @@ Page Table Check
+ Introduction
+ ============
  
-+		pm_runtime_put_noidle(dev);
-+
- 		device_unlock(dev);
- 		if (parent)
- 			device_unlock(parent);
+-Page table check allows to hardern the kernel by ensuring that some types of
++Page table check allows to harden the kernel by ensuring that some types of
+ the memory corruptions are prevented.
+ 
+ Page table check performs extra verifications at the time when new pages become
 -- 
-2.7.4
+2.34.1
 
