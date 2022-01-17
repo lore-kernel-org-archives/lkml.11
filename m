@@ -2,276 +2,165 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2853C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 15:58:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5993C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 16:01:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240686AbiAQP6t (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 10:58:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58954 "EHLO
+        id S237555AbiAQQBv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 11:01:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237471AbiAQP6r (ORCPT
+        with ESMTP id S232617AbiAQQBu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 10:58:47 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA7DC06161C
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 07:58:47 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9UOz-00082y-3w; Mon, 17 Jan 2022 16:58:37 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9UOu-00AqhN-Uz; Mon, 17 Jan 2022 16:58:32 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n9UOt-0007Hq-G6; Mon, 17 Jan 2022 16:58:31 +0100
-Date:   Mon, 17 Jan 2022 16:58:17 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Nikita Travkin <nikita@trvn.ru>
-Cc:     thierry.reding@gmail.com, lee.jones@linaro.org, robh+dt@kernel.org,
-        sboyd@kernel.org, linus.walleij@linaro.org, masneyb@onstation.org,
-        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
-Subject: Re: [PATCH v2 2/2] pwm: Add clock based PWM output driver
-Message-ID: <20220117155817.4bu2zwpjijtwlfvi@pengutronix.de>
-References: <20211213150335.51888-1-nikita@trvn.ru>
- <20211213150335.51888-3-nikita@trvn.ru>
+        Mon, 17 Jan 2022 11:01:50 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDCA8C061574
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 08:01:49 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id c126-20020a1c9a84000000b00346f9ebee43so577507wme.4
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 08:01:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PDB6ZPHKwe/hrqwhjvJ+lqedINeLilxIqWASb1lAKsI=;
+        b=aM4VrHnZjsUNZ86EZ70fZigXQD9zdi2m4OqvA1hZllwluURgPkWQ8/P43mpv32ifER
+         TI62GnFfyvXNR0M40oTGJlmA9Se7kbEdjTfIXzR03OQRq7edFsUq9JdaCuzmW9at+jJU
+         7sNSrnpTFW7T8TSihE/9MxWj93vPZTGCZqik2UDfveFm+KfZqiNk+jBd9JLYSeIpnPzP
+         1m4GCkrjRhESFUJSELNUpt68nnno6W+wgiSOQCFZTEMEQRHmMMe0IWOVnLLGnKd/goxO
+         Xavmc2HENOCGBBoD+6okmM8THXG/7YsUnPxsNiRfHBYhpmKyR8oJX/DUB8YYvpMPrQI/
+         22/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PDB6ZPHKwe/hrqwhjvJ+lqedINeLilxIqWASb1lAKsI=;
+        b=drO3LO/szYwuM9wn5ksymc7SYMYtwdqC5THISQ5KmRR19W7u+pyVQwXDamqS+lmnA9
+         MQQ5Og2rGSjbRfGSgZS+AIQlxvIa6d9T/AydeJ/z+ouRollSoJ1zQfAdte95ung3s6qH
+         G3lKkkV24twsXYMQCTB2aGpG7NUwUKfeUdmEGsoBZ7zjKHDKiaha1t7f73mjGq2gllUm
+         PoP+KBs+YmR8H18PNaPJv5GlXtyNvqPXKCPcbug1o4bShDPeENmkGi+AcEbtQHXtU95s
+         kCaa3BTHmdZGujO61T98VoNR2WJ2EQww9Wf+QnKHC0sbFtNxqRPrwJMDZyDCjZ9zHkk4
+         zncA==
+X-Gm-Message-State: AOAM531s0+DhlXo2eDu6bD1iUJ/Xb+C/DOi4BBX+BFpXTURBmbuTlq0D
+        21E593wcaajIpeFBL0jydiacfsIwfiYiDTXUuqUqAaE1YPE=
+X-Google-Smtp-Source: ABdhPJxByHzLGB6dnZw9C3tyzWLClUbQFe7uPPVU11CNLm61xcUez9IRDmLOmL7g5c+giSDBct6MIrOtZ7FswfM6Zm0=
+X-Received: by 2002:a5d:584e:: with SMTP id i14mr5513557wrf.690.1642435308432;
+ Mon, 17 Jan 2022 08:01:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ja5m322vwhkhunoy"
-Content-Disposition: inline
-In-Reply-To: <20211213150335.51888-3-nikita@trvn.ru>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
+References: <20211225054647.1750577-1-atishp@rivosinc.com> <20211225054647.1750577-3-atishp@rivosinc.com>
+In-Reply-To: <20211225054647.1750577-3-atishp@rivosinc.com>
+From:   Anup Patel <anup@brainfault.org>
+Date:   Mon, 17 Jan 2022 21:31:37 +0530
+Message-ID: <CAAhSdy0Ja4HaHNvRL-bwJZTiiiFaP6M9d5m4ffgtZRgTmq9jvg@mail.gmail.com>
+Subject: Re: [v5 2/9] RISC-V: Add CSR encodings for all HPMCOUNTERS
+To:     Atish Patra <atishp@atishpatra.org>
+Cc:     "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
+        Atish Patra <atishp@rivosinc.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        DTML <devicetree@vger.kernel.org>,
+        Jisheng Zhang <jszhang@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Rob Herring <robh+dt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sat, Dec 25, 2021 at 11:17 AM Atish Patra <atishp@atishpatra.org> wrote:
+>
+> From: Atish Patra <atish.patra@wdc.com>
+>
+> Linux kernel can directly read these counters as the HPMCOUNTERS CSRs are
+> accessible in S-mode.
+>
+> Signed-off-by: Atish Patra <atish.patra@wdc.com>
+> Signed-off-by: Atish Patra <atishp@rivosinc.com>
 
---ja5m322vwhkhunoy
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Looks good to me.
 
-Hello,
+Reviewed-by: Anup Patel <anup@brainfault.org>
 
-On Mon, Dec 13, 2021 at 08:03:35PM +0500, Nikita Travkin wrote:
-> Some systems have clocks exposed to external devices. If the clock
-> controller supports duty-cycle configuration, such clocks can be used as
-> pwm outputs. In fact PWM and CLK subsystems are interfaced with in a
-> similar way and an "opposite" driver already exists (clk-pwm). Add a
-> driver that would enable pwm devices to be used via clk subsystem.
->=20
-> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
-> --
->=20
-> Changes in v2:
->  - Address Uwe's review comments:
->    - Round set clk rate up
->    - Add a description with limitations of the driver
->    - Disable and unprepare clock before removing pwmchip
+Regards,
+Anup
+
 > ---
->  drivers/pwm/Kconfig   |  10 +++
->  drivers/pwm/Makefile  |   1 +
->  drivers/pwm/pwm-clk.c | 143 ++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 154 insertions(+)
->  create mode 100644 drivers/pwm/pwm-clk.c
->=20
-> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> index 21e3b05a5153..daa2491a4054 100644
-> --- a/drivers/pwm/Kconfig
-> +++ b/drivers/pwm/Kconfig
-> @@ -140,6 +140,16 @@ config PWM_BRCMSTB
->  	  To compile this driver as a module, choose M Here: the module
->  	  will be called pwm-brcmstb.c.
-> =20
-> +config PWM_CLK
-> +	tristate "Clock based PWM support"
-> +	depends on HAVE_CLK || COMPILE_TEST
-> +	help
-> +	  Generic PWM framework driver for outputs that can be
-> +	  muxed to clocks.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called pwm-clk.
-> +
->  config PWM_CLPS711X
->  	tristate "CLPS711X PWM support"
->  	depends on ARCH_CLPS711X || COMPILE_TEST
-> diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
-> index 708840b7fba8..4a860103c470 100644
-> --- a/drivers/pwm/Makefile
-> +++ b/drivers/pwm/Makefile
-> @@ -10,6 +10,7 @@ obj-$(CONFIG_PWM_BCM_KONA)	+=3D pwm-bcm-kona.o
->  obj-$(CONFIG_PWM_BCM2835)	+=3D pwm-bcm2835.o
->  obj-$(CONFIG_PWM_BERLIN)	+=3D pwm-berlin.o
->  obj-$(CONFIG_PWM_BRCMSTB)	+=3D pwm-brcmstb.o
-> +obj-$(CONFIG_PWM_CLK)		+=3D pwm-clk.o
->  obj-$(CONFIG_PWM_CLPS711X)	+=3D pwm-clps711x.o
->  obj-$(CONFIG_PWM_CRC)		+=3D pwm-crc.o
->  obj-$(CONFIG_PWM_CROS_EC)	+=3D pwm-cros-ec.o
-> diff --git a/drivers/pwm/pwm-clk.c b/drivers/pwm/pwm-clk.c
-> new file mode 100644
-> index 000000000000..55fd320b9c19
-> --- /dev/null
-> +++ b/drivers/pwm/pwm-clk.c
-> @@ -0,0 +1,143 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Clock based PWM controller
-> + *
-> + * Copyright (c) 2021 Nikita Travkin <nikita@trvn.ru>
-> + *
-> + * This is an "adapter" driver that allows PWM consumers to use
-> + * system clocks with duty cycle control as PWM outputs.
-> + *
-> + * Limitations:
-> + * - There is no way to atomically set both clock rate and
-> + *   duty-cycle so glitches are possible when new pwm state
-> + *   is applied.
-> + * - Period depends on the underlying clock driver and,
-> + *   in general, not guaranteed.
-> + * - Underlying clock may not be able to give 100%
-> + *   duty cycle (constant on) and only set the closest
-> + *   possible duty cycle. (e.g. 99.9%)
-
-What about 0%?
-
- - Periods are not completed on changes in general.
- - Behaviour on disable depends on the underlaying clk, don't assume it
-   to provide the inactive level.
-
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/err.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/pwm.h>
-> +
-> +struct pwm_clk_chip {
-> +	struct pwm_chip chip;
-> +	struct clk *clk;
-> +	bool clk_enabled;
-> +};
-> +
-> +#define to_pwm_clk_chip(_chip) container_of(_chip, struct pwm_clk_chip, =
-chip)
-> +
-> +static int pwm_clk_apply(struct pwm_chip *pwm_chip, struct pwm_device *p=
-wm,
-> +			 const struct pwm_state *state)
-> +{
-> +	struct pwm_clk_chip *chip =3D to_pwm_clk_chip(pwm_chip);
-> +	int ret;
-> +	u32 rate;
-> +	u64 period =3D state->period;
-> +	u64 duty_cycle =3D state->duty_cycle;
-> +
-> +	if (!state->enabled) {
-> +		if (pwm->state.enabled) {
-> +			clk_disable(chip->clk);
-> +			chip->clk_enabled =3D false;
-> +		}
-> +		return 0;
-> +	} else if (!pwm->state.enabled) {
-> +		ret =3D clk_enable(chip->clk);
-> +		chip->clk_enabled =3D true;
-> +		if (ret)
-> +			return ret;
-
-if clk_enable() failed better don't set chip->clk_enabled =3D true;
-
-> +	}
-> +
-> +	rate =3D DIV_ROUND_UP(NSEC_PER_SEC, period);
-> +	ret =3D clk_set_rate(chip->clk, rate);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (state->polarity =3D=3D PWM_POLARITY_INVERSED)
-> +		duty_cycle =3D period - duty_cycle;
-> +
-> +	ret =3D clk_set_duty_cycle(chip->clk, duty_cycle, period);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return ret;
-
-This can be simplified to
-
-	return clk_set_duty_cycle(chip->clk, duty_cycle, period);
-
-> +}
-> +
-> +static const struct pwm_ops pwm_clk_ops =3D {
-> +	.apply =3D pwm_clk_apply,
-> +	.owner =3D THIS_MODULE,
-> +};
-> +
-> +static int pwm_clk_probe(struct platform_device *pdev)
-> +{
-> +	struct pwm_clk_chip *chip;
-> +	int ret;
-> +
-> +	chip =3D devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
-> +	if (!chip)
-> +		return -ENOMEM;
-> +
-> +	chip->clk =3D devm_clk_get(&pdev->dev, NULL);
-> +	if (IS_ERR(chip->clk))
-> +		return dev_err_probe(&pdev->dev, PTR_ERR(chip->clk), "Failed to get cl=
-ock\n");
-> +
-> +	chip->chip.dev =3D &pdev->dev;
-> +	chip->chip.ops =3D &pwm_clk_ops;
-> +	chip->chip.of_xlate =3D of_pwm_xlate_with_flags;
-> +	chip->chip.of_pwm_n_cells =3D 2;
-
-I'd just skip those two assignments. These are the default, anyhow.
-(Assuming you have #pwm-cells =3D <2> in the device tree.)
-
-> +	chip->chip.npwm =3D 1;
-> +
-> +	ret =3D clk_prepare(chip->clk);
-> +	if (ret < 0)
-> +		dev_err_probe(&pdev->dev, ret, "Failed to prepare clock\n");
-> +
-> +	ret =3D pwmchip_add(&chip->chip);
-> +	if (ret < 0)
-> +		dev_err_probe(&pdev->dev, ret, "Failed to add pwm chip\n");
-> +
-> +	platform_set_drvdata(pdev, chip);
-> +	return 0;
-> +}
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---ja5m322vwhkhunoy
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHlkhYACgkQwfwUeK3K
-7AmFvwf/V2onUpPqmPGzN4xLkicgCoA5Y68pvwsYlMrJMFgMu5TZ/QrzR19wZn9h
-ieyMD/btl6I4ohcahjMF443vXCS0jIamf68RPof/CPZzgi34buJwU8it9SxM5Nze
-QuLd583Ih1N1W3t3mWri4pvl1X6HlrwJFL7yOVG2nxKNCb1b+WAAIboDBePyfqX9
-HCOoU8Q4MxHTqbA7Kfg1jcvm2okLB0j7vRxKrFTIJ8R+T2ZL2s1/Pji5c/yo7nCH
-xDwXU21OQRww6uXFUVH6eUR2i11lRsi3qJUhMS1IjwhsYqT9YkyQyfxYwwCu7j9g
-BsvJ1nB0jmkOkxF84dJWD/a50WxaeQ==
-=qG5i
------END PGP SIGNATURE-----
-
---ja5m322vwhkhunoy--
+>  arch/riscv/include/asm/csr.h | 58 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 58 insertions(+)
+>
+> diff --git a/arch/riscv/include/asm/csr.h b/arch/riscv/include/asm/csr.h
+> index 87ac65696871..e4d369830af4 100644
+> --- a/arch/riscv/include/asm/csr.h
+> +++ b/arch/riscv/include/asm/csr.h
+> @@ -89,9 +89,67 @@
+>  #define CSR_CYCLE              0xc00
+>  #define CSR_TIME               0xc01
+>  #define CSR_INSTRET            0xc02
+> +#define CSR_HPMCOUNTER3                0xc03
+> +#define CSR_HPMCOUNTER4                0xc04
+> +#define CSR_HPMCOUNTER5                0xc05
+> +#define CSR_HPMCOUNTER6                0xc06
+> +#define CSR_HPMCOUNTER7                0xc07
+> +#define CSR_HPMCOUNTER8                0xc08
+> +#define CSR_HPMCOUNTER9                0xc09
+> +#define CSR_HPMCOUNTER10       0xc0a
+> +#define CSR_HPMCOUNTER11       0xc0b
+> +#define CSR_HPMCOUNTER12       0xc0c
+> +#define CSR_HPMCOUNTER13       0xc0d
+> +#define CSR_HPMCOUNTER14       0xc0e
+> +#define CSR_HPMCOUNTER15       0xc0f
+> +#define CSR_HPMCOUNTER16       0xc10
+> +#define CSR_HPMCOUNTER17       0xc11
+> +#define CSR_HPMCOUNTER18       0xc12
+> +#define CSR_HPMCOUNTER19       0xc13
+> +#define CSR_HPMCOUNTER20       0xc14
+> +#define CSR_HPMCOUNTER21       0xc15
+> +#define CSR_HPMCOUNTER22       0xc16
+> +#define CSR_HPMCOUNTER23       0xc17
+> +#define CSR_HPMCOUNTER24       0xc18
+> +#define CSR_HPMCOUNTER25       0xc19
+> +#define CSR_HPMCOUNTER26       0xc1a
+> +#define CSR_HPMCOUNTER27       0xc1b
+> +#define CSR_HPMCOUNTER28       0xc1c
+> +#define CSR_HPMCOUNTER29       0xc1d
+> +#define CSR_HPMCOUNTER30       0xc1e
+> +#define CSR_HPMCOUNTER31       0xc1f
+>  #define CSR_CYCLEH             0xc80
+>  #define CSR_TIMEH              0xc81
+>  #define CSR_INSTRETH           0xc82
+> +#define CSR_HPMCOUNTER3H       0xc83
+> +#define CSR_HPMCOUNTER4H       0xc84
+> +#define CSR_HPMCOUNTER5H       0xc85
+> +#define CSR_HPMCOUNTER6H       0xc86
+> +#define CSR_HPMCOUNTER7H       0xc87
+> +#define CSR_HPMCOUNTER8H       0xc88
+> +#define CSR_HPMCOUNTER9H       0xc89
+> +#define CSR_HPMCOUNTER10H      0xc8a
+> +#define CSR_HPMCOUNTER11H      0xc8b
+> +#define CSR_HPMCOUNTER12H      0xc8c
+> +#define CSR_HPMCOUNTER13H      0xc8d
+> +#define CSR_HPMCOUNTER14H      0xc8e
+> +#define CSR_HPMCOUNTER15H      0xc8f
+> +#define CSR_HPMCOUNTER16H      0xc90
+> +#define CSR_HPMCOUNTER17H      0xc91
+> +#define CSR_HPMCOUNTER18H      0xc92
+> +#define CSR_HPMCOUNTER19H      0xc93
+> +#define CSR_HPMCOUNTER20H      0xc94
+> +#define CSR_HPMCOUNTER21H      0xc95
+> +#define CSR_HPMCOUNTER22H      0xc96
+> +#define CSR_HPMCOUNTER23H      0xc97
+> +#define CSR_HPMCOUNTER24H      0xc98
+> +#define CSR_HPMCOUNTER25H      0xc99
+> +#define CSR_HPMCOUNTER26H      0xc9a
+> +#define CSR_HPMCOUNTER27H      0xc9b
+> +#define CSR_HPMCOUNTER28H      0xc9c
+> +#define CSR_HPMCOUNTER29H      0xc9d
+> +#define CSR_HPMCOUNTER30H      0xc9e
+> +#define CSR_HPMCOUNTER31H      0xc9f
+>
+>  #define CSR_SSTATUS            0x100
+>  #define CSR_SIE                        0x104
+> --
+> 2.33.1
+>
