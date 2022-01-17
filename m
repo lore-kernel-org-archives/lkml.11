@@ -2,68 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D1E2C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 07:03:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20CD0C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 07:03:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235102AbiAQHDG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 02:03:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48352 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234938AbiAQHDF (ORCPT
+        id S235119AbiAQHDy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 02:03:54 -0500
+Received: from mail-sz.amlogic.com ([211.162.65.117]:31416 "EHLO
+        mail-sz.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234938AbiAQHDs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 02:03:05 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92801C061574;
-        Sun, 16 Jan 2022 23:03:05 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 322CD60F56;
-        Mon, 17 Jan 2022 07:03:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16B29C36AE3;
-        Mon, 17 Jan 2022 07:03:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642402984;
-        bh=EOuHMV8XxtW8D0CDysAeuHMIwRnmgp+AsOXZ2U2pwSc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=st/fnT0XARZN3W7lvp3150yrMru/fIlbTOaAUhHY8Aw0/Y8axXpqR3IKS6ghT1Cj3
-         nehffgdTfyt+KD4BWFwDkfA+YR0JDYm8Bfwq8du9R+L5iiFMUChzmxDIY70DQExueB
-         tKlg0bSZ3GNE0w3JQz2wMCPxo9wJXYagWXtZ+nVuWzXUF1cAt0cqGDlZ5nt74k+CrY
-         SKgedDV9uecOznJNZoqCt9MWe7+LAX7mC2YKmxi0qiFW7YHPXqOm/I7xaTHsvMb6/C
-         jjm0BcrcvAO+e8MvaID2nXoA2v5rRzLAYvv3xsqtc9gBUg8aynAWFsr7QDNzJsGDzH
-         H9dw/rEdzvtYw==
-Date:   Mon, 17 Jan 2022 09:02:49 +0200
-From:   Jarkko Sakkinen <jarkko@kernel.org>
-To:     Tadeusz Struk <tstruk@gmail.com>
-Cc:     Shuah Khan <shuah@kernel.org>, linux-integrity@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] selftests: tpm: add async space test with
- noneexisting handle
-Message-ID: <YeUUmaShH0/obt3A@iki.fi>
-References: <20220116012627.2031-1-tstruk@gmail.com>
- <20220116012627.2031-2-tstruk@gmail.com>
- <YeQs7Fy5NaK6m6Ar@iki.fi>
- <YeR6Z9a4Z3Xz79Tp@iki.fi>
- <070044a5-5468-1095-334f-67cf98eb30b3@gmail.com>
- <YeTKG3qPxm2DJGCN@iki.fi>
- <ed1dc51a-8dfb-1179-3200-13669a25c845@gmail.com>
+        Mon, 17 Jan 2022 02:03:48 -0500
+Received: from [10.28.39.106] (10.28.39.106) by mail-sz.amlogic.com
+ (10.28.11.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 17 Jan
+ 2022 15:03:47 +0800
+Message-ID: <8783eb66-16ee-3b8b-5d55-73b49deab3a2@amlogic.com>
+Date:   Mon, 17 Jan 2022 15:03:47 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ed1dc51a-8dfb-1179-3200-13669a25c845@gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 6.1; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v9 3/4] clk: meson: add DT documentation for emmc clock
+ controller
+Content-Language: en-US
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+CC:     Stephen Boyd <sboyd@kernel.org>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Rob Herring <robh+dt@kernel.org>, <linux-clk@vger.kernel.org>,
+        Jianxin Pan <jianxin.pan@amlogic.com>,
+        Victor Wan <victor.wan@amlogic.com>,
+        XianWei Zhao <xianwei.zhao@amlogic.com>,
+        Kelvin Zhang <kelvin.zhang@amlogic.com>,
+        BiChao Zheng <bichao.zheng@amlogic.com>,
+        YongHui Yu <yonghui.yu@amlogic.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
+References: <20220113115745.45826-1-liang.yang@amlogic.com>
+ <20220113115745.45826-4-liang.yang@amlogic.com>
+ <20220113212957.768FFC36AE3@smtp.kernel.org>
+ <5d99ac02-a246-5bcc-2ecb-371b0d193537@amlogic.com>
+ <CAFBinCDkNk+Ba340vshhL2rE76U9qb_dZ5ZsgWnMgFYpL6i1jA@mail.gmail.com>
+From:   Liang Yang <liang.yang@amlogic.com>
+In-Reply-To: <CAFBinCDkNk+Ba340vshhL2rE76U9qb_dZ5ZsgWnMgFYpL6i1jA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.28.39.106]
+X-ClientProxiedBy: mail-sz.amlogic.com (10.28.11.5) To mail-sz.amlogic.com
+ (10.28.11.5)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 16, 2022 at 06:55:25PM -0800, Tadeusz Struk wrote:
-> On 1/16/22 17:44, Jarkko Sakkinen wrote:
-> > NP, Both are applied now.
+Hi Martin,
+
+On 2022/1/15 8:09, Martin Blumenstingl wrote:
+> [ EXTERNAL EMAIL ]
 > 
-> Looking at
-> https://git.kernel.org/pub/scm/linux/kernel/git/jarkko/linux-tpmdd.git/
-> I can see only the 2/2 selftest applied.
+> Hi Liang,
+> 
+> On Fri, Jan 14, 2022 at 4:06 AM Liang Yang <liang.yang@amlogic.com> wrote:
+> [...]
+>>>> +properties:
+>>>> +  compatible:
+>>>> +    enum:
+>>>> +      - "amlogic,axg-mmc-clkc", "syscon"
+>>>
+>>> Why is it a syscon?
+>>
+>> The register documented by reg is shared with SD/eMMC controller port C,
+>> and it need to be ops on NFC driver.
+> Can you please share an example how the .dts would look like in the
+> end for two example cases:
+> 1) using the sd_emmc_c MMC interface > 2) not using the MMC interface of sd_emmc_c but only using it's clocks
+> for the NFC
+I think both EMMC(although it is not implemented by 'axg-mmc-clkc'  yet) 
+and NAND clock have the same way in dts:
+		......
+		clocks = <&clkc CLKID_SD_EMMC_C>,
+			<&sd_emmc_c_clkc CLKID_MMC_DIV>,
+			<&sd_emmc_c_clkc CLKID_MMC_PHASE_RX>,
+			<&sd_emmc_c_clkc CLKID_MMC_PHASE_TX>;
+		clock-names = "core", "device", "rx", "tx";
+		amlogic,mmc-syscon = <&sd_emmc_c_clkc>;
+		......
 
-It was my bad, forgot the update the remote master. Now it should be
-good.
-
-BR, Jarkko
+> 
+> Initially I wanted to suggest the usage of a sub-node with compatible
+> = "mmc-slot" (see
+> Documentation/devicetree/bindings/mmc/amlogic,meson-mx-sdio.txt for an
+> example) to decide whether the MMC controller is registered or whether
+> just the clock controller is registered.
+> However, the mmc-slot compatible string is not documented in
+> Documentation/devicetree/bindings/mmc/mmc-controller.yaml currently.
+> Maybe the MMC maintainers have any suggestions if other IPs have
+> similar requirements (for IPs with shared parts).
+> 
+> 
+> Best regards,
+> Martin
+> 
+> .
