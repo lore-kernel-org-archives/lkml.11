@@ -2,143 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C1FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 09:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05DF6C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 09:40:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237274AbiAQJkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 04:40:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56684 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235884AbiAQJkA (ORCPT
+        id S237432AbiAQJkK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 04:40:10 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:41346 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S237305AbiAQJkI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 04:40:00 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613E8C061574
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 01:40:00 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id l21-20020a17090b079500b001b49df5c4dfso3077722pjz.2
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 01:40:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=SIgYGrN4LwQTs17+VXthu1/mXIG34ztGcllpOGCYBUY=;
-        b=xmwbCLYhEE9bYLZqv0I8ALMO0V7d/Xi97LrM068AbIRSOFBFz8JsLtB1mgWWNRGesf
-         N0fUx0p0QfouvE3r0dGowIIBaKql09cSLdkOlENedU7pO9TTq6mb6XQIWY/d2V9Ibp54
-         Wcd7sC9ZaSsMvkh2cPEcsaON2uKZeXtydaQi+g/ClzR+azMiZ/MtX74f+BTlsOkM0hfh
-         SUsr2LcUVDEQzDMYEtPRt+ZXyQKXGqjdFDJyZRiJUok3HnC4JHUSO3t4MNSNMyJ3rVh1
-         hdOOuhJ5NeumWzaHP39f+EMxIwoXU4BCws14SmywAt+3b2rfrdGYRfJkGU/9bP/JVUi1
-         ElcQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=SIgYGrN4LwQTs17+VXthu1/mXIG34ztGcllpOGCYBUY=;
-        b=qbs+LEHkgz5BMCHwrZnLg9oNiJjSOlN5ANwcFstfYGVet+x5DfgAAPCfoZU5YS1Rzm
-         oPxrDjs7hZKoxEJDhTQ3S4WI7eONKgupTmmnLmwSGPv5cdvWZQ2IybKEbpGpaB2yZncI
-         ry7X5UAlTXWRGZqrGV2fII3KcyELWec+wVcJSb63zleB+Iq0u6uICJchu37zBSh4Ld/e
-         zwvnHcfnpafiIMHx1EkLm4VMARUgXfauMatV9OuO5U8OSJK3EZEESP0evcB2f9WIR6jW
-         EwstSjy6HOZRu8qZQZ3XOWHm5RM5Qkcj9cyTjMz7pQf0i2l+ZxMAib6JsEgxICFkidCA
-         Fi4g==
-X-Gm-Message-State: AOAM532eutlhf4eNNjw6+SqaXZszjNe9DE6J6i4qDnOl+z3lqkwvq4Jr
-        mUMva3v3m1fh1e/SBrdn8VOY71oCsG2tJ1lD1450XA==
-X-Google-Smtp-Source: ABdhPJzKo2IbXPNzAcrx2/AE8zdZh33V97DTVPFXqTRHcM78M5VmIK/iUSHi57i+F5m2mfCvXcDIC4am/FsNxlj2aHI=
-X-Received: by 2002:a17:90b:3e8e:: with SMTP id rj14mr17892801pjb.179.1642412399902;
- Mon, 17 Jan 2022 01:39:59 -0800 (PST)
-MIME-Version: 1.0
-References: <20220113082918.2279347-1-hsinyi@chromium.org>
-In-Reply-To: <20220113082918.2279347-1-hsinyi@chromium.org>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Mon, 17 Jan 2022 10:39:48 +0100
-Message-ID: <CAG3jFytu8VpopWYHvGiSYRW2bcX-wHSoYgQ42u84WBQKGrnfZQ@mail.gmail.com>
-Subject: Re: [PATCH v3 1/3] drm/bridge: anx7625: Convert to use devm_kzalloc
-To:     Hsin-Yi Wang <hsinyi@chromium.org>
-Cc:     Rob Herring <robh+dt@kernel.org>, Xin Ji <xji@analogixsemi.com>,
-        David Airlie <airlied@linux.ie>,
+        Mon, 17 Jan 2022 04:40:08 -0500
+X-UUID: 6b819102e69b4197bb672c89dba08a31-20220117
+X-UUID: 6b819102e69b4197bb672c89dba08a31-20220117
+Received: from mtkmbs10n2.mediatek.inc [(172.21.101.183)] by mailgw01.mediatek.com
+        (envelope-from <yunfei.dong@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
+        with ESMTP id 1225553134; Mon, 17 Jan 2022 17:40:04 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n2.mediatek.inc (172.21.101.183) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.2.792.3;
+ Mon, 17 Jan 2022 17:40:03 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 17 Jan 2022 17:40:02 +0800
+From:   Yunfei Dong <yunfei.dong@mediatek.com>
+To:     Yunfei Dong <yunfei.dong@mediatek.com>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        "Tzung-Bi Shih" <tzungbi@chromium.org>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>
+CC:     George Sun <george.sun@mediatek.com>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
         Daniel Vetter <daniel@ffwll.ch>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Andrzej Hajda <a.hajda@samsung.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Maxime Ripard <maxime@cerno.tech>
-Content-Type: text/plain; charset="UTF-8"
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Irui Wang <irui.wang@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Steve Cho <stevecho@chromium.org>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v5, 00/15] media: mtk-vcodec: support for MT8192 decoder
+Date:   Mon, 17 Jan 2022 17:39:46 +0800
+Message-ID: <20220117094001.20049-1-yunfei.dong@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hey Hsin-Yi,
+This series adds support for mt8192 h264/vp8/vp9 decoder drivers. Firstly, refactor
+power/clock/interrupt interfaces for mt8192 is lat and core architecture.
 
+Secondly, add new functions to get frame buffer size and resolution according
+to decoder capability from scp side. Then add callback function to get/put
+capture buffer in order to enable lat and core decoder in parallel. 
 
-On Thu, 13 Jan 2022 at 09:29, Hsin-Yi Wang <hsinyi@chromium.org> wrote:
->
-> Use devm_kzalloc instead of kzalloc and drop kfree(). Let the memory
-> handled by driver detach.
->
-> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-> Reviewed-by: Xin Ji <xji@analogixsemi.com>
-> ---
-> v2->v3: remove kfree() in anx7625_i2c_remove().
-> ---
->  drivers/gpu/drm/bridge/analogix/anx7625.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
->
-> diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-> index 0b858c78abe8b6..d3661c78770a8f 100644
-> --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-> +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-> @@ -2515,7 +2515,7 @@ static int anx7625_i2c_probe(struct i2c_client *client,
->                 return -ENODEV;
->         }
->
-> -       platform = kzalloc(sizeof(*platform), GFP_KERNEL);
-> +       platform = devm_kzalloc(dev, sizeof(*platform), GFP_KERNEL);
->         if (!platform) {
->                 DRM_DEV_ERROR(dev, "fail to allocate driver data\n");
->                 return -ENOMEM;
-> @@ -2527,7 +2527,7 @@ static int anx7625_i2c_probe(struct i2c_client *client,
->         if (ret) {
->                 if (ret != -EPROBE_DEFER)
->                         DRM_DEV_ERROR(dev, "fail to parse DT : %d\n", ret);
-> -               goto free_platform;
-> +               return ret;
->         }
->
->         platform->client = client;
-> @@ -2552,7 +2552,7 @@ static int anx7625_i2c_probe(struct i2c_client *client,
->         if (!platform->hdcp_workqueue) {
->                 dev_err(dev, "fail to create work queue\n");
->                 ret = -ENOMEM;
-> -               goto free_platform;
-> +               return ret;
->         }
->
->         platform->pdata.intp_irq = client->irq;
-> @@ -2637,9 +2637,6 @@ static int anx7625_i2c_probe(struct i2c_client *client,
->         if (platform->hdcp_workqueue)
->                 destroy_workqueue(platform->hdcp_workqueue);
->
-> -free_platform:
-> -       kfree(platform);
-> -
->         return ret;
->  }
->
-> @@ -2666,7 +2663,6 @@ static int anx7625_i2c_remove(struct i2c_client *client)
->         if (platform->pdata.audio_en)
->                 anx7625_unregister_audio(platform);
->
-> -       kfree(platform);
->         return 0;
->  }
->
+Then add to support MT21C compressed mode and fix v4l2-compliance fail.
 
-I just had a look at applying this series, but it fails to apply on
-drm-misc-next today.
+Next, extract H264 request api driver to let mt8183 and mt8192 use the same
+code, and adds mt8192 frame based h264 driver for stateless decoder.
 
-Could you send a v4 that applies cleanly, and I'll try to be quick
-about applying it.
+Lastly, add vp8 and vp9 stateless decoder drivers.
 
+Patches 1 refactor power/clock/interrupt interface.
+Patches 2~4 get frame buffer size and resolution according to decoder capability.
+Patches 5~6 enable lat and core decode in parallel.
+Patch 7~10 add to support MT21C compressed mode and fix v4l2-compliance fail.
+patch 11 record capture queue format type.
+Patch 12~13 extract h264 driver and add mt8192 frame based driver for h264 decoder.
+Patch 14~15 add vp8 and vp9 stateless decoder drivers.
+---
+changes compared with v4:
+- fix checkpatch.pl fail.
+- fix kernel-doc fail.
+- rebase to the latest media codec driver.
+changes compared with v3:
+- remove enum mtk_chip for patch 2.
+- add vp8 stateless decoder drivers for patch 14.
+- add vp9 stateless decoder drivers for patch 15.
+changes compared with v2:
+- add new patch 11 to record capture queue format type.
+- separate patch 4 according to tzung-bi's suggestion.
+- re-write commit message for patch 5 according to tzung-bi's suggestion.
+changes compared with v1:
+- rewrite commit message for patch 12.
+- rewrite cover-letter message.
+---
+Yunfei Dong (15):
+  media: mtk-vcodec: Add vdec enable/disable hardware helpers
+  media: mtk-vcodec: Using firmware type to separate different firmware
+    architecture
+  media: mtk-vcodec: get capture queue buffer size from scp
+  media: mtk-vcodec: Read max resolution from dec_capability
+  media: mtk-vcodec: Call v4l2_m2m_set_dst_buffered() set capture buffer
+    buffered
+  media: mtk-vcodec: Refactor get and put capture buffer flow
+  media: mtk-vcodec: Refactor supported vdec formats and framesizes
+  media: mtk-vcodec: Add format to support MT21C
+  media: mtk-vcodec: disable vp8 4K capability
+  media: mtk-vcodec: Fix v4l2-compliance fail
+  media: mtk-vcodec: record capture queue format type
+  media: mtk-vcodec: Extract H264 common code
+  media: mtk-vcodec: support stateless H.264 decoding for mt8192
+  media: mtk-vcodec: support stateless VP8 decoding
+  media: mtk-vcodec: support stateless VP9 decoding
 
-Rob.
+ drivers/media/platform/mtk-vcodec/Makefile    |    4 +
+ .../platform/mtk-vcodec/mtk_vcodec_dec.c      |   47 +-
+ .../platform/mtk-vcodec/mtk_vcodec_dec_drv.c  |    5 -
+ .../platform/mtk-vcodec/mtk_vcodec_dec_pm.c   |  168 +-
+ .../platform/mtk-vcodec/mtk_vcodec_dec_pm.h   |    6 +-
+ .../mtk-vcodec/mtk_vcodec_dec_stateful.c      |   14 +-
+ .../mtk-vcodec/mtk_vcodec_dec_stateless.c     |  281 ++-
+ .../platform/mtk-vcodec/mtk_vcodec_drv.h      |   40 +-
+ .../platform/mtk-vcodec/mtk_vcodec_enc_drv.c  |    5 -
+ .../media/platform/mtk-vcodec/mtk_vcodec_fw.c |    6 +
+ .../media/platform/mtk-vcodec/mtk_vcodec_fw.h |    1 +
+ .../mtk-vcodec/vdec/vdec_h264_req_common.c    |  307 +++
+ .../mtk-vcodec/vdec/vdec_h264_req_common.h    |  253 +++
+ .../mtk-vcodec/vdec/vdec_h264_req_if.c        |  411 +---
+ .../mtk-vcodec/vdec/vdec_h264_req_multi_if.c  |  599 +++++
+ .../mtk-vcodec/vdec/vdec_vp8_req_if.c         |  440 ++++
+ .../mtk-vcodec/vdec/vdec_vp9_req_lat_if.c     | 1973 +++++++++++++++++
+ .../media/platform/mtk-vcodec/vdec_drv_if.c   |   36 +-
+ .../media/platform/mtk-vcodec/vdec_drv_if.h   |    3 +
+ .../media/platform/mtk-vcodec/vdec_ipi_msg.h  |   36 +
+ .../platform/mtk-vcodec/vdec_msg_queue.c      |    2 +
+ .../media/platform/mtk-vcodec/vdec_vpu_if.c   |   53 +-
+ .../media/platform/mtk-vcodec/vdec_vpu_if.h   |   15 +
+ .../media/platform/mtk-vcodec/venc_vpu_if.c   |    2 +-
+ include/linux/remoteproc/mtk_scp.h            |    2 +
+ 25 files changed, 4128 insertions(+), 581 deletions(-)
+ create mode 100644 drivers/media/platform/mtk-vcodec/vdec/vdec_h264_req_common.c
+ create mode 100644 drivers/media/platform/mtk-vcodec/vdec/vdec_h264_req_common.h
+ create mode 100644 drivers/media/platform/mtk-vcodec/vdec/vdec_h264_req_multi_if.c
+ create mode 100644 drivers/media/platform/mtk-vcodec/vdec/vdec_vp8_req_if.c
+ create mode 100644 drivers/media/platform/mtk-vcodec/vdec/vdec_vp9_req_lat_if.c
+
+-- 
+2.25.1
+
