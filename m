@@ -2,81 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC71C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 18:20:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1502CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 18:21:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242424AbiAQSUL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 13:20:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35922 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbiAQSUI (ORCPT
+        id S242460AbiAQSU7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 13:20:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45694 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229657AbiAQSUs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 13:20:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72279C061574;
-        Mon, 17 Jan 2022 10:20:08 -0800 (PST)
+        Mon, 17 Jan 2022 13:20:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3DE83B81151;
-        Mon, 17 Jan 2022 18:20:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE0C7C36AE7;
-        Mon, 17 Jan 2022 18:20:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A297060F93;
+        Mon, 17 Jan 2022 18:20:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B0A7C36AE7;
+        Mon, 17 Jan 2022 18:20:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642443606;
-        bh=XqlsuvsI2zGRiD3mhCiQ5ztRlavu05NdmDc6XNOtFlA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z82aMkICwVjCVqU9T+ZFcw0IScnG2g7WamSA3SO7CyTEtM/uqHFkDuAJDNLt3xvUK
-         VgfzmTM++WlEl+1iIx/+Fz5UitnafnO7L3eUWRbv15vSvibdTAei5wRB8Afcr82kdG
-         HNHUbMqaptkxlGfO4uZ6IHVK1tUp0nntQ1AFTFv6gi5mGDstLMVDw+tyQCqlkCcGan
-         eKqROs7nixGXj2Yx4XRuZWH+z4uQQ6xacw3BpUsgA/85MOhnpyMUyipxZd7rUlLL/a
-         DSXFgo21ZbYfeDsh2qvWSVWixVXDgcjAB5UF4DUfjwTiYnWaLYlHjJVY4lMny2DfVX
-         E6L392oEvjbaw==
-From:   Kalle Valo <kvalo@kernel.org>
-To:     linux-wireless@vger.kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        sfr@canb.auug.org.au, lkp@intel.com
-Subject: [PATCH wireless v2 2/2] MAINTAINERS: remove extra wireless section
-Date:   Mon, 17 Jan 2022 20:19:58 +0200
-Message-Id: <20220117181958.3509-2-kvalo@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20220117181958.3509-1-kvalo@kernel.org>
-References: <20220117181958.3509-1-kvalo@kernel.org>
+        s=k20201202; t=1642443646;
+        bh=fFtq/Zv2zqsZGJQryCmgrP6oBAx9jF38A8pLzZjLoOU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=lSFGVmfCZTKAXZMN10+INLBNdQYNxNzF/PteQVaosV9TUM1Q6PqGwdp8N+yie6j5T
+         CrZIiSkBiMWIkebX+3/NqoKRIinbOJWEOqevd5tq0/ZhyrxkJNFxcAIIUNnn4puNW6
+         xz087OcybIm8sgjvnjM0iabYnXE1er6jm3R9um8Z91dCWtIW9ngOJYhXhDUQhx2Mrc
+         9BGRDklnnI/YOvYBbzEQ7xGOFNpb3dOGKbD/t7QnnK8cg9P3HuKZaUiflzqzH4qUFT
+         PnqFmfRGwCdC2cm1xKccdf2Ro+NSODE3TMytQlXWDPxhJO6WDc75eQn2un466c/05A
+         c3aD1A0SNymwg==
+Date:   Mon, 17 Jan 2022 20:20:40 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     linux-kernel@vger.kernel.org, linux-rdma@vger.kernel.org,
+        syzbot+8fcbb77276d43cc8b693@syzkaller.appspotmail.com
+Subject: Re: [PATCH rdma-rc] RDMA/cma: Clear all multicast request fields
+Message-ID: <YeWzeA/8TgXalrD8@unreal>
+References: <1876bacbbcb6f82af3948e5c37a09da6ea3fcae5.1641474841.git.leonro@nvidia.com>
+ <20220106173941.GA2963550@nvidia.com>
+ <YdrTbNDTg7VdR2iu@unreal>
+ <20220110153619.GC2328285@nvidia.com>
+ <Ydx1dDSa1JDJGFdJ@unreal>
+ <20220117161621.GC84788@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220117161621.GC84788@nvidia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-There's an unneeded and almost empty wireless section in MAINTAINERS, seems to
-be leftovers from commit 0e324cf640fb ("MAINTAINERS: changes for wireless"). I
-don't see any need for that so let's remove it.
+On Mon, Jan 17, 2022 at 12:16:21PM -0400, Jason Gunthorpe wrote:
+> On Mon, Jan 10, 2022 at 08:05:40PM +0200, Leon Romanovsky wrote:
+> 
+> > > We should probably check the PS even earlier to prevent the IB side
+> > > from having the same issue.
+> > 
+> > What do you think about this?
+> 
+> IB is a bit different, it has a bunch of PS's that are UD compatible..
+> 
+> Probably what we really want here is to check/restrict the CM ID to
+> SIDR mode, which does have the qkey and is the only mode that makes
+> sense to be mixed with multicast, and then forget about port space
+> entirely.
+> 
+> It may be that port space indirectly restricts the CM ID to SIDR mode,
+> but the language here should be 'is in sidr mode', not some confusing
+> open coded port space check.
+> 
+> I'm also not sure of the lifecycle of the qkey, qkeys only exist in
+> SIDR mode so obviously anything that sets/gets a qkey should be
+> restriced to SIDR CM IDs..
+> 
+> > diff --git a/drivers/infiniband/core/cma.c b/drivers/infiniband/core/cma.c
+> > index 835ac54d4a24..0a1f008ca929 100644
+> > +++ b/drivers/infiniband/core/cma.c
+> > @@ -4669,12 +4669,8 @@ static int cma_join_ib_multicast(struct rdma_id_private *id_priv,
+> >         if (ret)
+> >                 return ret;
+> > 
+> > -       ret = cma_set_qkey(id_priv, 0);
+> > -       if (ret)
+> > -               return ret;
+> > -
+> >         cma_set_mgid(id_priv, (struct sockaddr *) &mc->addr, &rec.mgid);
+> > -       rec.qkey = cpu_to_be32(id_priv->qkey);
+> > +       rec.qkey = cpu_to_be32(RDMA_UDP_QKEY);
+> 
+> And I'm not sure this makes sense? The UD qkey should still be
+> negotiated right?
 
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
----
+Yes, I think so, it will be changed in SIDR phase.
 
-v2:
+The original code has "cma_set_qkey(id_priv, 0)" call, that in IB case will
+execute this switch anyway:
+   515         switch (id_priv->id.ps) {
+   516         case RDMA_PS_UDP:
+   517         case RDMA_PS_IB:
+   518                 id_priv->qkey = RDMA_UDP_QKEY;
 
-* new patch
+The difference is that we won't store RDMA_UDP_QKEY in id_priv->qkey,
+but I'm unsure that this is right.
 
- MAINTAINERS | 4 ----
- 1 file changed, 4 deletions(-)
+Thanks
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f67e7dae2c55..ae00e2b5e8dc 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13441,10 +13441,6 @@ F:	include/net/tls.h
- F:	include/uapi/linux/tls.h
- F:	net/tls/*
- 
--NETWORKING [WIRELESS]
--L:	linux-wireless@vger.kernel.org
--Q:	http://patchwork.kernel.org/project/linux-wireless/list/
--
- NETXEN (1/10) GbE SUPPORT
- M:	Manish Chopra <manishc@marvell.com>
- M:	Rahul Verma <rahulv@marvell.com>
--- 
-2.20.1
-
+> 
+> Jason
