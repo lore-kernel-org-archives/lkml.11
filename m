@@ -2,102 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B06AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 11:08:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B868C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 11:09:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239054AbiAQLH7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 06:07:59 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:32607 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239042AbiAQLHg (ORCPT
+        id S233851AbiAQLJO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 06:09:14 -0500
+Received: from azure-sdnproxy.icoremail.net ([52.175.55.52]:46398 "HELO
+        azure-sdnproxy-2.icoremail.net" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with SMTP id S231462AbiAQLJN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 06:07:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1642417656; x=1673953656;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=raOPInPiNpoFYNkwMgusjdwrbKTRJG+aT7u9K7/NxHA=;
-  b=PrRtaNyvB1l0h/lcVCJvnrTlfQojEUEG3/3WVP13yiUkZYua6HKlMj3G
-   5k9j746k6ArNA/hpHO56z8POyiqL4qCLYqbILpxDl3qGTd+3qp2I2s8X4
-   UEgZpgrmGqljag7zPqt8qcgM9rEQL2dX2YJzcO1C7mFsK66lMSkU9oCty
-   dtwz4eNWIcZSWNultub+amsX/ioOCe1cMYhVRY3IflYrcEy+9YR0gOLz3
-   trSIFZqeXijWZMF3LWG5eV7Pw6XrJGTioT5sAL0Ho5j9gE89v889+qNGw
-   I3nfrQGSmi3vtBbG2iJ1BvnvFZsKAVB/uBNqbR4tAyPgwQN7n1Ne0O7EI
-   Q==;
-IronPort-SDR: clx4kXulV/hl1fhZNSCkkRx6Q3CJkydF81k9mB8VgXBu8o/nVioQd0YPDB3T2liYtjdGP4jkgD
- NrsNtGRkZqGof2/nNmZfVkVoO8cJWE7nZZLi1iNMhuhQJscRA2E+OkcQHpFIaD27XQcEqJR+6R
- j8VUn5LJPybwtBqKGXFWmIhHCn/SwlN5cMKskRwhh5iVk/9wX/x582Mwo0IEzvuErdIDP+nN2g
- RgAhA9hDH/TivmO0dZvkP6xqdVaSb06gve7v7tV/TQCkWA9sA7m0Nxddyu5si7u5vJwYNgPvLK
- aTJtEiED40TZ84qJ/CInHeYb
-X-IronPort-AV: E=Sophos;i="5.88,295,1635231600"; 
-   d="scan'208";a="82713616"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 17 Jan 2022 04:07:35 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Mon, 17 Jan 2022 04:07:28 -0700
-Received: from wendy.microchip.com (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.2375.17 via Frontend
- Transport; Mon, 17 Jan 2022 04:07:23 -0700
-From:   <conor.dooley@microchip.com>
-To:     <linus.walleij@linaro.org>, <bgolaszewski@baylibre.com>,
-        <robh+dt@kernel.org>, <jassisinghbrar@gmail.com>,
-        <paul.walmsley@sifive.com>, <palmer@dabbelt.com>,
-        <aou@eecs.berkeley.edu>, <a.zummo@towertech.it>,
-        <alexandre.belloni@bootlin.com>, <broonie@kernel.org>,
-        <gregkh@linuxfoundation.org>, <thierry.reding@gmail.com>,
-        <u.kleine-koenig@pengutronix.de>, <lee.jones@linaro.org>,
-        <linux-gpio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>, <linux-riscv@lists.infradead.org>,
-        <linux-crypto@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-usb@vger.kernel.org>
-CC:     <krzysztof.kozlowski@canonical.com>, <geert@linux-m68k.org>,
-        <bin.meng@windriver.com>, <heiko@sntech.de>,
-        <lewis.hanly@microchip.com>, <conor.dooley@microchip.com>,
-        <daire.mcnamara@microchip.com>, <ivan.griffin@microchip.com>,
-        <atishp@rivosinc.com>
-Subject: [PATCH v4 14/14] MAINTAINERS: update riscv/microchip entry
-Date:   Mon, 17 Jan 2022 11:07:55 +0000
-Message-ID: <20220117110755.3433142-15-conor.dooley@microchip.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220117110755.3433142-1-conor.dooley@microchip.com>
-References: <20220117110755.3433142-1-conor.dooley@microchip.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+        Mon, 17 Jan 2022 06:09:13 -0500
+X-Greylist: delayed 106296 seconds by postgrey-1.27 at vger.kernel.org; Mon, 17 Jan 2022 06:09:12 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pku.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id; bh=A4rxap7D7W0NV3KRRx4mhrWTTta+gRdKYYvLiJ1kGq8=; b=n
+        4tPhhyShJi6eKZEk2nRR3lgWTWNLVtRNO8WhSnbnFCXeTz6Ze4yW04cG5BWvnauj
+        Eq8K9SUcivuOAtPpQSMvzz0gibMDmpaGuomSFlzZ8DVqJ6mcM0lKanRL6H+fF/oa
+        ejhPTcdPsGzKcyX//HIB4I+gB54pd6dfrHU8glC/Ks=
+Received: from localhost (unknown [10.129.21.144])
+        by front02 (Coremail) with SMTP id 54FpogBXXQHZTeVhvx1nAA--.43502S2;
+        Mon, 17 Jan 2022 19:07:05 +0800 (CST)
+From:   Yongzhi Liu <lyz_cs@pku.edu.cn>
+To:     gregkh@linuxfoundation.org, rafael@kernel.org
+Cc:     linux-kernel@vger.kernel.org, lyz_cs@pku.edu.cn
+Subject: [PATCH] driver core: Add missing pm_runtime_put_noidle
+Date:   Mon, 17 Jan 2022 03:07:03 -0800
+Message-Id: <1642417623-5393-1-git-send-email-lyz_cs@pku.edu.cn>
+X-Mailer: git-send-email 2.7.4
+X-CM-TRANSID: 54FpogBXXQHZTeVhvx1nAA--.43502S2
+X-Coremail-Antispam: 1UD129KBjDUn29KB7ZKAUJUUUUU529EdanIXcx71UUUUU7v73
+        VFW2AGmfu7bjvjm3AaLaJ3UjIYCTnIWjp_UUUYF7CY07I20VC2zVCF04k26cxKx2IYs7xG
+        6rWj6s0DM7CIcVAFz4kK6r1j6r18M28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8w
+        A2z4x0Y4vE2Ix0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Gr1j
+        6F4UJwA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oV
+        Cq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0
+        I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r
+        4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCY02Avz4vE-syl42xK
+        82IYc2Ij64vIr41l42xK82IY6x8ErcxFaVAv8VWkJr1UJwCFx2IqxVCFs4IE7xkEbVWUJV
+        W8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF
+        1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6x
+        IIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvE
+        x4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Jr0_GrUvcSsGvfC2KfnxnU
+        UI43ZEXa7VUbXdbUUUUUU==
+X-CM-SenderInfo: irzqijirqukmo6sn3hxhgxhubq/1tbiAwEEBlPy7t9+qgAWsS
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
+pm_runtime_get_noresume() in device_shutdown increments the
+runtime PM usage counter, thus a matching decrement is needed
+to keep the counter balanced.
 
-Update the RISC-V/Microchip entry by adding the microchip dts
-directory and myself as maintainer
-
-Reviewed-by: Lewis Hanly <lewis.hanly@microchip.com>
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
 ---
- MAINTAINERS | 2 ++
+ drivers/base/core.c | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7a2345ce8521..3b1d6be7bd56 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16348,8 +16348,10 @@ K:	riscv
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index fd034d7..29950bd 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -4523,6 +4523,8 @@ void device_shutdown(void)
+ 			dev->driver->shutdown(dev);
+ 		}
  
- RISC-V/MICROCHIP POLARFIRE SOC SUPPORT
- M:	Lewis Hanly <lewis.hanly@microchip.com>
-+M:	Conor Dooley <conor.dooley@microchip.com>
- L:	linux-riscv@lists.infradead.org
- S:	Supported
-+F:	arch/riscv/boot/dts/microchip/
- F:	drivers/mailbox/mailbox-mpfs.c
- F:	drivers/soc/microchip/
- F:	include/soc/microchip/mpfs.h
++		pm_runtime_put_noidle(dev);
++
+ 		device_unlock(dev);
+ 		if (parent)
+ 			device_unlock(parent);
 -- 
-2.32.0
+2.7.4
 
