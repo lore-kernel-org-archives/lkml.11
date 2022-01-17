@@ -2,207 +2,143 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A754C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 09:38:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C1FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 09:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235947AbiAQJia (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 04:38:30 -0500
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:52175 "EHLO
-        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235812AbiAQJi3 (ORCPT
+        id S237274AbiAQJkC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 04:40:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56684 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235884AbiAQJkA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 04:38:29 -0500
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 20H9UkAT086347;
-        Mon, 17 Jan 2022 17:30:46 +0800 (GMT-8)
-        (envelope-from jammy_huang@aspeedtech.com)
-Received: from [192.168.2.115] (192.168.2.115) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 17 Jan
- 2022 17:37:40 +0800
-Message-ID: <dbfebef8-89e6-c2e1-e81a-57640f6764e7@aspeedtech.com>
-Date:   Mon, 17 Jan 2022 17:37:41 +0800
+        Mon, 17 Jan 2022 04:40:00 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 613E8C061574
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 01:40:00 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id l21-20020a17090b079500b001b49df5c4dfso3077722pjz.2
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 01:40:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SIgYGrN4LwQTs17+VXthu1/mXIG34ztGcllpOGCYBUY=;
+        b=xmwbCLYhEE9bYLZqv0I8ALMO0V7d/Xi97LrM068AbIRSOFBFz8JsLtB1mgWWNRGesf
+         N0fUx0p0QfouvE3r0dGowIIBaKql09cSLdkOlENedU7pO9TTq6mb6XQIWY/d2V9Ibp54
+         Wcd7sC9ZaSsMvkh2cPEcsaON2uKZeXtydaQi+g/ClzR+azMiZ/MtX74f+BTlsOkM0hfh
+         SUsr2LcUVDEQzDMYEtPRt+ZXyQKXGqjdFDJyZRiJUok3HnC4JHUSO3t4MNSNMyJ3rVh1
+         hdOOuhJ5NeumWzaHP39f+EMxIwoXU4BCws14SmywAt+3b2rfrdGYRfJkGU/9bP/JVUi1
+         ElcQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SIgYGrN4LwQTs17+VXthu1/mXIG34ztGcllpOGCYBUY=;
+        b=qbs+LEHkgz5BMCHwrZnLg9oNiJjSOlN5ANwcFstfYGVet+x5DfgAAPCfoZU5YS1Rzm
+         oPxrDjs7hZKoxEJDhTQ3S4WI7eONKgupTmmnLmwSGPv5cdvWZQ2IybKEbpGpaB2yZncI
+         ry7X5UAlTXWRGZqrGV2fII3KcyELWec+wVcJSb63zleB+Iq0u6uICJchu37zBSh4Ld/e
+         zwvnHcfnpafiIMHx1EkLm4VMARUgXfauMatV9OuO5U8OSJK3EZEESP0evcB2f9WIR6jW
+         EwstSjy6HOZRu8qZQZ3XOWHm5RM5Qkcj9cyTjMz7pQf0i2l+ZxMAib6JsEgxICFkidCA
+         Fi4g==
+X-Gm-Message-State: AOAM532eutlhf4eNNjw6+SqaXZszjNe9DE6J6i4qDnOl+z3lqkwvq4Jr
+        mUMva3v3m1fh1e/SBrdn8VOY71oCsG2tJ1lD1450XA==
+X-Google-Smtp-Source: ABdhPJzKo2IbXPNzAcrx2/AE8zdZh33V97DTVPFXqTRHcM78M5VmIK/iUSHi57i+F5m2mfCvXcDIC4am/FsNxlj2aHI=
+X-Received: by 2002:a17:90b:3e8e:: with SMTP id rj14mr17892801pjb.179.1642412399902;
+ Mon, 17 Jan 2022 01:39:59 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v8 1/4] media: v4l: Add definition for the Aspeed JPEG
- format
-Content-Language: en-US
-To:     Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Joel Stanley <joel@jms.id.au>
-CC:     "sakari.ailus@linux.intel.com" <sakari.ailus@linux.intel.com>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "eajames@linux.ibm.com" <eajames@linux.ibm.com>,
-        "mchehab@kernel.org" <mchehab@kernel.org>,
-        "andrew@aj.id.au" <andrew@aj.id.au>,
-        "linux-media@vger.kernel.org" <linux-media@vger.kernel.org>,
-        "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-aspeed@lists.ozlabs.org" <linux-aspeed@lists.ozlabs.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20211224012738.1551-1-jammy_huang@aspeedtech.com>
- <20211224012738.1551-2-jammy_huang@aspeedtech.com>
- <703ff71e-c76a-9df1-c644-04efed0199ca@xs4all.nl>
- <609cfe9e-2fd8-b31a-9d71-b83d61693f84@aspeedtech.com>
- <CACPK8XeJQHLWfVbBjArxV_QMDDnRXfccOeXdsn6aBEG7gd8yvw@mail.gmail.com>
- <98096e97-68cc-18fd-d2b6-3477f57f05bd@aspeedtech.com>
- <d4ccf803-3736-d95d-19a9-f3593465b81e@xs4all.nl>
-From:   Jammy Huang <jammy_huang@aspeedtech.com>
-In-Reply-To: <d4ccf803-3736-d95d-19a9-f3593465b81e@xs4all.nl>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [192.168.2.115]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 20H9UkAT086347
+References: <20220113082918.2279347-1-hsinyi@chromium.org>
+In-Reply-To: <20220113082918.2279347-1-hsinyi@chromium.org>
+From:   Robert Foss <robert.foss@linaro.org>
+Date:   Mon, 17 Jan 2022 10:39:48 +0100
+Message-ID: <CAG3jFytu8VpopWYHvGiSYRW2bcX-wHSoYgQ42u84WBQKGrnfZQ@mail.gmail.com>
+Subject: Re: [PATCH v3 1/3] drm/bridge: anx7625: Convert to use devm_kzalloc
+To:     Hsin-Yi Wang <hsinyi@chromium.org>
+Cc:     Rob Herring <robh+dt@kernel.org>, Xin Ji <xji@analogixsemi.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andrzej Hajda <a.hajda@samsung.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Maxime Ripard <maxime@cerno.tech>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Hans,
+Hey Hsin-Yi,
 
-On 2022/1/17 下午 05:28, Hans Verkuil wrote:
-> Hi Jammy,
+
+On Thu, 13 Jan 2022 at 09:29, Hsin-Yi Wang <hsinyi@chromium.org> wrote:
 >
-> On 1/17/22 08:18, Jammy Huang wrote:
->> On 2022/1/17 上午 10:24, Joel Stanley wrote:
->>> On Mon, 17 Jan 2022 at 02:00, Jammy Huang <jammy_huang@aspeedtech.com> wrote:
->>>> Hi Hans,
->>>>
->>>> On 2022/1/14 下午 04:11, Hans Verkuil wrote:
->>>>> On 24/12/2021 02:27, Jammy Huang wrote:
->>>>>> This introduces support for the Aspeed JPEG format, where the new frame
->>>>>> can refer to previous frame to reduce the amount of compressed data. The
->>>>>> concept is similar to I/P frame of video compression. It will compare the
->>>>>> new frame with previous one to decide which macroblock's data is
->>>>>> changed, and only the changed macroblocks will be compressed.
->>>>>>
->>>>>> This Aspeed JPEG format is used by the video engine on Aspeed platforms,
->>>>>> which is generally adapted for remote KVM.
->>>>>>
->>>>>> Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
->>>>>> ---
->>>>>> v8:
->>>>>>      - Add decoder information for aspeed-jpeg
->>>>>> v7:
->>>>>>      - Add more information for aspeed-jpeg
->>>>>> v6:
->>>>>>      - Update description for new format, aspeed-jpeg, in Documentation.
->>>>>> v5:
->>>>>>      - no update
->>>>>> v4:
->>>>>>      - new
->>>>>> ---
->>>>>>     .../media/uapi/v4l/pixfmt-reserved.rst          | 17 +++++++++++++++++
->>>>>>     drivers/media/v4l2-core/v4l2-ioctl.c            |  1 +
->>>>>>     include/uapi/linux/videodev2.h                  |  1 +
->>>>>>     3 files changed, 19 insertions(+)
->>>>>>
->>>>>> diff --git a/Documentation/media/uapi/v4l/pixfmt-reserved.rst b/Documentation/media/uapi/v4l/pixfmt-reserved.rst
->>>>> This is the wrong file! It should be:
->>>>>
->>>>> Documentation/userspace-api/media/v4l/pixfmt-reserved.rst
->>>> Thanks, I just used git format-patch to generate the cover-letter and
->>>> didn't notice this.
->>>>
->>>> It looks like the file, pixfmt-reserved.rst, has different path in
->>>> different Linux kernel,
->>>>
->>>> * 5.4:           Documentation/media/uapi/v4l/pixfmt-reserved.rst
->>>>
->>>> * 5.10/5.15: Documentation/userspace-api/media/v4l/pixfmt-reserved.rst
->>>>
->>>> 5.4 is the one I based to submit the patches.
->>>>
->>>> Could you suggest the kernel that I should based to submit these patches??
->>> You should always submit based on the latest release.
->>>
->>> There are sometimes exceptions where you will base your patches on
->>> something even newer, but generally you should grab the latest.
->>>
->>> Be sure to re-test on the latest kernel before submitting.
->> OK, thank you.
-> I recommend waiting until later this week. I hope to have a PR for other outstanding
-> aspeed patches ready in a few days. It is easiest if you base your v9 on top of that
-> series, this to avoid merge conflicts.
-
-Sure, no problem. Thanks for your help.
-
-
-Regards,
-
-Jammy
-
+> Use devm_kzalloc instead of kzalloc and drop kfree(). Let the memory
+> handled by driver detach.
 >
-> Regards,
+> Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
+> Reviewed-by: Xin Ji <xji@analogixsemi.com>
+> ---
+> v2->v3: remove kfree() in anx7625_i2c_remove().
+> ---
+>  drivers/gpu/drm/bridge/analogix/anx7625.c | 10 +++-------
+>  1 file changed, 3 insertions(+), 7 deletions(-)
 >
-> 	Hans
+> diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> index 0b858c78abe8b6..d3661c78770a8f 100644
+> --- a/drivers/gpu/drm/bridge/analogix/anx7625.c
+> +++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
+> @@ -2515,7 +2515,7 @@ static int anx7625_i2c_probe(struct i2c_client *client,
+>                 return -ENODEV;
+>         }
 >
->>> Cheers,
->>>
->>> Joel
->>>
->>>> I will need to change the number of V4L2_CID_USER_ASPEED_BASE per different
->>>>
->>>> linux kernel as well.
->>>>
->>>>> Regards,
->>>>>
->>>>>         Hans
->>>>>
->>>>>> index b2cd155e691b..1d0dc8d86ed7 100644
->>>>>> --- a/Documentation/media/uapi/v4l/pixfmt-reserved.rst
->>>>>> +++ b/Documentation/media/uapi/v4l/pixfmt-reserved.rst
->>>>>> @@ -264,6 +264,23 @@ please make a proposal on the linux-media mailing list.
->>>>>>        of tiles, resulting in 32-aligned resolutions for the luminance plane
->>>>>>        and 16-aligned resolutions for the chrominance plane (with 2x2
->>>>>>        subsampling).
->>>>>> +    * .. _V4L2-PIX-FMT-AJPG:
->>>>>> +
->>>>>> +      - ``V4L2_PIX_FMT_AJPG``
->>>>>> +      - 'AJPG'
->>>>>> +      - ASPEED JPEG format used by the aspeed-video driver on Aspeed platforms,
->>>>>> +        which is generally adapted for remote KVM.
->>>>>> +        On each frame compression, I will compare the new frame with previous
->>>>>> +        one to decide which macroblock's data is changed, and only the changed
->>>>>> +        macroblocks will be compressed.
->>>>>> +
->>>>>> +        The implementation is based on AST2600 A3 datasheet, revision 0.9, which
->>>>>> +        is not publicly available. Or you can reference Video stream data format
->>>>>> +        – ASPEED mode compression of SDK_User_Guide which available on
->>>>>> +        AspeedTech-BMC/openbmc/releases.
->>>>>> +
->>>>>> +        Decoder's implementation can be found here,
->>>>>> +        `https://github.com/AspeedTech-BMC/aspeed_codec/ <https://github.com/AspeedTech-BMC/aspeed_codec/>`__
->>>>>>
->>>>>>     .. tabularcolumns:: |p{6.6cm}|p{2.2cm}|p{8.7cm}|
->>>>>>
->>>>>> diff --git a/drivers/media/v4l2-core/v4l2-ioctl.c b/drivers/media/v4l2-core/v4l2-ioctl.c
->>>>>> index 24db33f803c0..00dde01d2f97 100644
->>>>>> --- a/drivers/media/v4l2-core/v4l2-ioctl.c
->>>>>> +++ b/drivers/media/v4l2-core/v4l2-ioctl.c
->>>>>> @@ -1378,6 +1378,7 @@ static void v4l_fill_fmtdesc(struct v4l2_fmtdesc *fmt)
->>>>>>                case V4L2_PIX_FMT_S5C_UYVY_JPG: descr = "S5C73MX interleaved UYVY/JPEG"; break;
->>>>>>                case V4L2_PIX_FMT_MT21C:        descr = "Mediatek Compressed Format"; break;
->>>>>>                case V4L2_PIX_FMT_SUNXI_TILED_NV12: descr = "Sunxi Tiled NV12 Format"; break;
->>>>>> +            case V4L2_PIX_FMT_AJPG:         descr = "Aspeed JPEG"; break;
->>>>>>                default:
->>>>>>                        if (fmt->description[0])
->>>>>>                                return;
->>>>>> diff --git a/include/uapi/linux/videodev2.h b/include/uapi/linux/videodev2.h
->>>>>> index 3210b3c82a4a..994eb6155ea9 100644
->>>>>> --- a/include/uapi/linux/videodev2.h
->>>>>> +++ b/include/uapi/linux/videodev2.h
->>>>>> @@ -726,6 +726,7 @@ struct v4l2_pix_format {
->>>>>>     #define V4L2_PIX_FMT_INZI     v4l2_fourcc('I', 'N', 'Z', 'I') /* Intel Planar Greyscale 10-bit and Depth 16-bit */
->>>>>>     #define V4L2_PIX_FMT_SUNXI_TILED_NV12 v4l2_fourcc('S', 'T', '1', '2') /* Sunxi Tiled NV12 Format */
->>>>>>     #define V4L2_PIX_FMT_CNF4     v4l2_fourcc('C', 'N', 'F', '4') /* Intel 4-bit packed depth confidence information */
->>>>>> +#define V4L2_PIX_FMT_AJPG     v4l2_fourcc('A', 'J', 'P', 'G') /* Aspeed JPEG */
->>>>>>
->>>>>>     /* 10bit raw bayer packed, 32 bytes for every 25 pixels, last LSB 6 bits unused */
->>>>>>     #define V4L2_PIX_FMT_IPU3_SBGGR10  v4l2_fourcc('i', 'p', '3', 'b') /* IPU3 packed 10-bit BGGR bayer */
->>>> -- 
->>>> Best Regards
->>>> Jammy
->>>>
+> -       platform = kzalloc(sizeof(*platform), GFP_KERNEL);
+> +       platform = devm_kzalloc(dev, sizeof(*platform), GFP_KERNEL);
+>         if (!platform) {
+>                 DRM_DEV_ERROR(dev, "fail to allocate driver data\n");
+>                 return -ENOMEM;
+> @@ -2527,7 +2527,7 @@ static int anx7625_i2c_probe(struct i2c_client *client,
+>         if (ret) {
+>                 if (ret != -EPROBE_DEFER)
+>                         DRM_DEV_ERROR(dev, "fail to parse DT : %d\n", ret);
+> -               goto free_platform;
+> +               return ret;
+>         }
+>
+>         platform->client = client;
+> @@ -2552,7 +2552,7 @@ static int anx7625_i2c_probe(struct i2c_client *client,
+>         if (!platform->hdcp_workqueue) {
+>                 dev_err(dev, "fail to create work queue\n");
+>                 ret = -ENOMEM;
+> -               goto free_platform;
+> +               return ret;
+>         }
+>
+>         platform->pdata.intp_irq = client->irq;
+> @@ -2637,9 +2637,6 @@ static int anx7625_i2c_probe(struct i2c_client *client,
+>         if (platform->hdcp_workqueue)
+>                 destroy_workqueue(platform->hdcp_workqueue);
+>
+> -free_platform:
+> -       kfree(platform);
+> -
+>         return ret;
+>  }
+>
+> @@ -2666,7 +2663,6 @@ static int anx7625_i2c_remove(struct i2c_client *client)
+>         if (platform->pdata.audio_en)
+>                 anx7625_unregister_audio(platform);
+>
+> -       kfree(platform);
+>         return 0;
+>  }
+>
+
+I just had a look at applying this series, but it fails to apply on
+drm-misc-next today.
+
+Could you send a v4 that applies cleanly, and I'll try to be quick
+about applying it.
+
+
+Rob.
