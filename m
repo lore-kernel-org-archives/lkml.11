@@ -2,57 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 498FEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 03:15:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4821C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 03:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236899AbiAQDPX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 16 Jan 2022 22:15:23 -0500
-Received: from mwweb08oc.mail2world.com ([74.202.142.113]:49732 "EHLO
-        mwweb08oc.m2wprod.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S230324AbiAQDPV (ORCPT
+        id S236925AbiAQDSA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 16 Jan 2022 22:18:00 -0500
+Received: from out30-56.freemail.mail.aliyun.com ([115.124.30.56]:45337 "EHLO
+        out30-56.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230324AbiAQDR7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 16 Jan 2022 22:15:21 -0500
-X-Greylist: delayed 1082 seconds by postgrey-1.27 at vger.kernel.org; Sun, 16 Jan 2022 22:15:21 EST
-Received: from mail pickup service by mwweb08oc.m2wprod.com with Microsoft SMTPSVC;
-         Sun, 16 Jan 2022 18:59:00 -0800
-Received: from mail pickup service by mwweb08oc.mail2world.com with Microsoft SMTPSVC;
-         Sun, 16 Jan 2022 18:58:56 -0800
-auth-sender: gheskett@shentel.net
-Received: from 204.111.64.149 unverified ([204.111.64.149]) by mwweb08oc.mail2world.com with Mail2World SMTP Server; 
-        Sun, 16 Jan 2022 18:58:56 -0800
-From:   gene heskett <gheskett@shentel.net>
-To:     linux-kernel@vger.kernel.org
-Subject: What replaces the 4.19.y scripts/mkknlimg in 5.16-rc6-rt12?
-Date:   Sun, 16 Jan 2022 21:56:48 -0500
-Message-ID: <3003419.O0OFyGy2SB@coyote>
-Organization: only accidental
+        Sun, 16 Jan 2022 22:17:59 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R741e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=rongwei.wang@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V1zqFQx_1642389476;
+Received: from 30.240.98.42(mailfrom:rongwei.wang@linux.alibaba.com fp:SMTPD_---0V1zqFQx_1642389476)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Mon, 17 Jan 2022 11:17:57 +0800
+Message-ID: <d4ac99a0-6c45-e81b-c08a-56083c4cdd6e@linux.alibaba.com>
+Date:   Mon, 17 Jan 2022 11:17:55 +0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-CTCH-Spam: Unknown
-X-CTCH-RefID: str=0001.0A702F1B.61E4DAF1.001A,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0
-X-OriginalArrivalTime: 17 Jan 2022 02:58:56.0604 (UTC) FILETIME=[2B1C01C0:01D80B4E]
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:96.0)
+ Gecko/20100101 Thunderbird/96.0
+Subject: Re: [PATCH 09/12] mm/readahead: Align file mappings for non-DAX
+Content-Language: en-US
+To:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-fsdevel@vger.kernel.org
+Cc:     William Kucharski <william.kucharski@oracle.com>
+References: <20220116121822.1727633-1-willy@infradead.org>
+ <20220116121822.1727633-10-willy@infradead.org>
+From:   Rongwei Wang <rongwei.wang@linux.alibaba.com>
+In-Reply-To: <20220116121822.1727633-10-willy@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Greetings all;
-
-That script/mkknlimg is missing in v5.16-rc6-rt2. What replaces it?
-
-Or, can this script be copied to a v5.16-rc6-rt12 build and used?
-
-Thanks a bunch, I'm trying to build a v5.16-rc6-rt12 on a rpi4 for the 
-rpi4. The build itself was flawless.
-
-Cheers, Gene Heskett.
--- 
-"There are four boxes to be used in defense of liberty:
- soap, ballot, jury, and ammo. Please use in that order."
--Ed Howdershelt (Author, 1940)
-If we desire respect for the law, we must first make the law respectable.
- - Louis D. Brandeis
-Genes Web page <http://geneslinuxbox.net:6309/gene>
 
 
+On 1/16/22 8:18 PM, Matthew Wilcox (Oracle) wrote:
+> From: William Kucharski <william.kucharski@oracle.com>
+> 
+> When we have the opportunity to use PMDs to map a file, we want to follow
+> the same rules as DAX.
+> 
+> Signed-off-by: William Kucharski <william.kucharski@oracle.com>
+> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> ---
+>   mm/huge_memory.c | 5 +----
+>   1 file changed, 1 insertion(+), 4 deletions(-)
+> 
+> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
+> index f58524394dc1..28c29a0d854b 100644
+> --- a/mm/huge_memory.c
+> +++ b/mm/huge_memory.c
+> @@ -582,13 +582,10 @@ unsigned long thp_get_unmapped_area(struct file *filp, unsigned long addr,
+>   	unsigned long ret;
+>   	loff_t off = (loff_t)pgoff << PAGE_SHIFT;
+>   
+> -	if (!IS_DAX(filp->f_mapping->host) || !IS_ENABLED(CONFIG_FS_DAX_PMD))
+> -		goto out;
+> -
+>   	ret = __thp_get_unmapped_area(filp, addr, len, off, flags, PMD_SIZE);
+>   	if (ret)
+>   		return ret;
+> -out:
+> +
+>   	return current->mm->get_unmapped_area(filp, addr, len, pgoff, flags);
+Hi, Matthew
 
+It seems this patch will make all file mappings align with PMD_SIZE? And 
+support realize all file THP, not only executable file THP?
+
+Actually, what I want to say is we had merged a similar patch to only 
+align DSO mapping in glibc:
+
+"718fdd8 elf: Properly align PT_LOAD segments [BZ #28676]"
+
+
+>   }
+>   EXPORT_SYMBOL_GPL(thp_get_unmapped_area);
