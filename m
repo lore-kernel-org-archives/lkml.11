@@ -2,220 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9209FC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 13:41:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3D4CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 13:44:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232183AbiAQNl4 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 08:41:56 -0500
-Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:59700 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230190AbiAQNlz (ORCPT
+        id S232274AbiAQNoI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 08:44:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56124 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232656AbiAQNoH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 08:41:55 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-271-41QZaZ6cPQuaP92XkRhvvQ-1; Mon, 17 Jan 2022 08:41:52 -0500
-X-MC-Unique: 41QZaZ6cPQuaP92XkRhvvQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CD4B884BA59;
-        Mon, 17 Jan 2022 13:41:50 +0000 (UTC)
-Received: from sparkplug.usersys.redhat.com (unknown [10.40.192.57])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3C1D77C5AB;
-        Mon, 17 Jan 2022 13:41:23 +0000 (UTC)
-Received: by sparkplug.usersys.redhat.com (Postfix, from userid 1000)
-        id 42608160291; Thu, 17 Dec 2020 12:51:14 +0100 (CET)
-Date:   Thu, 17 Dec 2020 12:51:14 +0100
-From:   Artem Savkov <artem.savkov@gmail.com>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Joe Lawrence <joe.lawrence@redhat.com>,
-        WANG Chao <chao.wang@ucloud.cn>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
-Subject: Re: [PATCH] kbuild: add extra-y to targets-for-modules
-Message-ID: <20201217115114.GA673511@sparkplug.usersys.redhat.com>
-References: <20201103054425.59251-1-chao.wang@ucloud.cn>
- <CAK7LNARnmJRy1NPBDkgNsoe_TqpD=HJhmri4YHjXjscGZ-neWw@mail.gmail.com>
- <20201123150452.GA68187@MacBook-Pro-2>
- <CAK7LNASH7Pj9eUdxF-sp1_Ap+uA9jEtsXa--pUDDw_pNVLtviA@mail.gmail.com>
- <20201208092035.GA96434@MacBook-Pro-2.local>
- <20201208143117.GA3333762@wtfbox.lan>
- <CAK7LNAS=wdCObfX3x8CQmXf8HsrKAjz+v+XVUCxVg63pxy8MXg@mail.gmail.com>
- <f2d1888b-5b8e-a513-61c7-f41fc3f3f7a3@redhat.com>
- <CAK7LNATmfzt0kTF0BWkSRaZV3p01mvN4OSGPZsCp+KHghCWf0Q@mail.gmail.com>
+        Mon, 17 Jan 2022 08:44:07 -0500
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6211FC061574;
+        Mon, 17 Jan 2022 05:44:07 -0800 (PST)
+Received: by mail-qk1-x729.google.com with SMTP id o135so8651066qke.8;
+        Mon, 17 Jan 2022 05:44:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wcgdBMETg09EaIqnlllAs1b5H6LLPh/71QIKDM8zgoQ=;
+        b=aB4uPEUcyHIddyBjA09c1Ve85mosTSF4qF+8O1xymYerqPxVfWr3/YKiK62kzwU8bE
+         Sw5+sbvrsh7deGjMKqTomRo7c3uygv/DgWuHMhIS/jHIvKMNkD3LfKc2ewCOJcxxkeFy
+         joI1PqdJYlkwzdNvo4WQ5mKC8fkYJvkO03rzLT2fKw51Wz0Y5nLXDDDiwm849/K1FQ6R
+         4v0PmCVacEOP3k3t1wJWrAtNrk6Da+0dyUBesvecag4qDirawZNxHFq6/fxlvjxvAQ8C
+         mXMpNFRsmvnSGwdhV9pzynuuz7L8WnSemFB8BjFlXRcLXfGn8BZy/uc/v7LyDfyLnNoZ
+         AaUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wcgdBMETg09EaIqnlllAs1b5H6LLPh/71QIKDM8zgoQ=;
+        b=XL9vv2j3kYSJBJ8hGO+bvF3etbZro8P9ffoy+KVNNMinYv2+0hyM8FxYA4v3vN4u2Z
+         pTKVM7OF+RHMAcCEHhIMBZ0W0ExLzgICRgK2QGxsVdJ7lW02EhxMY/9APrUim0BMSj1z
+         DAZ0yK4PrIWjrmziW5Osps8PhK1M26K5wE09Ba7NVfBT7RT7xShAJw+3zgatTzkFQrDw
+         UV/kNL+PQ6sA54NBrL4ai/DWXNDhLaygjUNZUwMq2QOIDQBBL0UhwoWnFCwwdQxFHqYb
+         PRsHaGRtM2YsLAGE9Nu9FgwV3pjy/OR7UgN7+zHNMpQX0jptv7DfILWHugGPNYH9UKvi
+         m7jQ==
+X-Gm-Message-State: AOAM533VFoNjFktYCZPzE4SxtKlwvs91N80QIEe39UuqDgNmQ2BaWI0h
+        vOfTKFa+MCq9jeTizScMg1s=
+X-Google-Smtp-Source: ABdhPJzvafk1T1OUqBxHnB53261+ZqfPQG+SyFnzkux6s+4h35+3vQj53k6oFQCsvq83Ui9dpOXg2w==
+X-Received: by 2002:a05:620a:458c:: with SMTP id bp12mr3572279qkb.175.1642427046452;
+        Mon, 17 Jan 2022 05:44:06 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id s1sm9124073qtw.25.2022.01.17.05.43.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Jan 2022 05:44:05 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: zhang.yunkai@zte.com.cn
+To:     mhiramat@kernel.org
+Cc:     viro@zeniv.linux.org.uk, keescook@chromium.org,
+        samitolvanen@google.com, ojeda@kernel.org, johan@kernel.org,
+        bhelgaas@google.com, elver@google.com, masahiroy@kernel.org,
+        zhang.yunkai@zte.com.cn, axboe@kernel.dk, vgoyal@redhat.com,
+        jack@suse.cz, leon@kernel.org, akpm@linux-foundation.org,
+        rppt@kernel.org, linux@rasmusvillemoes.dk,
+        palmerdabbelt@google.com, f.fainelli@gmail.com,
+        wangkefeng.wang@huawei.com, rostedt@goodmis.org,
+        ahalaney@redhat.com, valentin.schneider@arm.com,
+        peterz@infradead.org, geert@linux-m68k.org,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v7 0/2] init/initramfs.c: make initramfs support pivot_root
+Date:   Mon, 17 Jan 2022 13:43:50 +0000
+Message-Id: <20220117134352.866706-1-zhang.yunkai@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <CAK7LNATmfzt0kTF0BWkSRaZV3p01mvN4OSGPZsCp+KHghCWf0Q@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=artem.savkov@gmail.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: gmail.com
-Content-Type: text/plain; charset=UTF-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Dec 17, 2020 at 05:26:07PM +0900, Masahiro Yamada wrote:
-> On Thu, Dec 17, 2020 at 8:04 AM Joe Lawrence <joe.lawrence@redhat.com> wrote:
-> >
-> > On 12/16/20 1:14 AM, Masahiro Yamada wrote:
-> > > On Tue, Dec 8, 2020 at 11:31 PM Artem Savkov <artem.savkov@gmail.com> wrote:
-> > >>
-> > >> On Tue, Dec 08, 2020 at 05:20:35PM +0800, WANG Chao wrote:
-> > >>> Sorry for the late reply.
-> > >>>
-> > >>> On 11/25/20 at 10:42P, Masahiro Yamada wrote:
-> > >>>> On Tue, Nov 24, 2020 at 12:05 AM WANG Chao <chao.wang@ucloud.cn> wrote:
-> > >>>>>
-> > >>>>> On 11/23/20 at 02:23P, Masahiro Yamada wrote:
-> > >>>>>> On Tue, Nov 3, 2020 at 3:23 PM WANG Chao <chao.wang@ucloud.cn> wrote:
-> > >>>>>>>
-> > >>>>>>> extra-y target doesn't build for 'make M=...' since commit 6212804f2d78
-> > >>>>>>> ("kbuild: do not create built-in objects for external module builds").
-> > >>>>>>>
-> > >>>>>>> This especially breaks kpatch, which is using 'extra-y := kpatch.lds'
-> > >>>>>>> and 'make M=...' to build livepatch patch module.
-> > >>>>>>>
-> > >>>>>>> Add extra-y to targets-for-modules so that such kind of build works
-> > >>>>>>> properly.
-> > >>>>>>>
-> > >>>>>>> Signed-off-by: WANG Chao <chao.wang@ucloud.cn>
-> > >>>>>>> ---
-> > >>>>>>>   scripts/Makefile.build | 2 +-
-> > >>>>>>>   1 file changed, 1 insertion(+), 1 deletion(-)
-> > >>>>>>>
-> > >>>>>>> diff --git a/scripts/Makefile.build b/scripts/Makefile.build
-> > >>>>>>> index ae647379b579..0113a042d643 100644
-> > >>>>>>> --- a/scripts/Makefile.build
-> > >>>>>>> +++ b/scripts/Makefile.build
-> > >>>>>>> @@ -86,7 +86,7 @@ ifdef need-builtin
-> > >>>>>>>   targets-for-builtin += $(obj)/built-in.a
-> > >>>>>>>   endif
-> > >>>>>>>
-> > >>>>>>> -targets-for-modules := $(patsubst %.o, %.mod, $(filter %.o, $(obj-m)))
-> > >>>>>>> +targets-for-modules := $(extra-y) $(patsubst %.o, %.mod, $(filter %.o, $(obj-m)))
-> > >>>>>>>
-> > >>>>>>>   ifdef need-modorder
-> > >>>>>>>   targets-for-modules += $(obj)/modules.order
-> > >>>>>>> --
-> > >>>>>>> 2.29.1
-> > >>>>>>>
-> > >>>>>>
-> > >>>>>> NACK.
-> > >>>>>>
-> > >>>>>> Please fix your Makefile.
-> > >>>>>>
-> > >>>>>> Hint:
-> > >>>>>> https://patchwork.kernel.org/project/linux-kbuild/patch/20201123045403.63402-6-masahiroy@kernel.org/
-> > >>>>>>
-> > >>>>>>
-> > >>>>>> Probably what you should use is 'targets'.
-> > >>>>>
-> > >>>>> I tried with 'targets' and 'always-y'. Both doesn't work for me.
-> > >>>>>
-> > >>>>> I narraw it down to the following example:
-> > >>>>>
-> > >>>>> cat > Makefile << _EOF_
-> > >>>>> obj-m += foo.o
-> > >>>>>
-> > >>>>> ldflags-y += -T $(src)/kpatch.lds
-> > >>>>> always-y += kpatch.lds
-> > >>>>>
-> > >>>>> foo-objs += bar.o
-> > >>>>>
-> > >>>>> all:
-> > >>>>>          make -C /lib/modules/$(shell uname -r)/build M=$(PWD)
-> > >>>>> clean:
-> > >>>>>          make -C /lib/modules/$(shell uname -r)/build M=$(PWD) clean
-> > >>>>> _EOF_
-> > >>>>>
-> > >>>>> Take a look into scripts/Makefile.build:488:
-> > >>>>>
-> > >>>>> __build: $(if $(KBUILD_BUILTIN), $(targets-for-builtin)) \
-> > >>>>>           $(if $(KBUILD_MODULES), $(targets-for-modules)) \
-> > >>>>>           $(subdir-ym) $(always-y)
-> > >>>>>          @:
-> > >>>>>
-> > >>>>> 'always-y' is built after 'targets-for-modules'. This makes
-> > >>>>> 'targets-for-modules' fails because kpatch.lds isn't there.
-> > >>>>
-> > >>>>
-> > >>>> Heh, you rely on the targets built from left to right,
-> > >>>> and you have never thought Make supports the parallel option -j.
-> > >>>
-> > >>> You're right. I missed that.
-> > >>>
-> > >>>>
-> > >>>>
-> > >>>> You need to specify the dependency if you expect objects
-> > >>>> are built in the particular order.
-> > >>>>
-> > >>>> However, in this case, using ldflags-y looks wrong
-> > >>>> in the first place.
-> > >>>>
-> > >>>> The linker script is used when combining the object
-> > >>>> as well as the final link of *.ko
-> > >>
-> > >> We want linker script to be used on both those steps, otherwise modpost
-> > >> fails.
-> > >
-> > >
-> > > In that case, does the following work?
-> > > (untested)
-> > >
-> > >
-> > >
-> > > diff --git a/kmod/patch/Makefile b/kmod/patch/Makefile
-> > > index e017b17..02d4c66 100644
-> > > --- a/kmod/patch/Makefile
-> > > +++ b/kmod/patch/Makefile
-> > > @@ -12,7 +12,9 @@ endif
-> > >
-> > >   obj-m += $(KPATCH_NAME).o
-> > >   ldflags-y += -T $(src)/kpatch.lds
-> > > -extra-y := kpatch.lds
-> > > +targets += kpatch.lds
-> > > +
-> > > +$(obj)/$(KPATCH_NAME).o: $(obj)/kpatch.lds
-> > >
-> > >   $(KPATCH_NAME)-objs += patch-hook.o output.o
-> > >
-> >
-> > Hi Masahiro,
-> >
-> > Yeah this is more or less what Artem came up with:
-> > https://github.com/dynup/kpatch/pull/1149
-> >
-> > though we hadn't added kpatch.lds to targets.  Is there documentation
-> > somewhere on what effect "targets" has for out-of-tree builds?
-> >
-> > Thanks,
-> >
-> > -- Joe
-> >
-> 
-> 
-> Please try the rebuild without changing any source code.
-> 
-> If kpatch.lds is needlessly rebuilt, you need to add
-> it to 'targets'.
-> 
-> 
-> In linux-next, this is documented.
-> 
-> Documentation/kbuild/makefile.rst:
-> 
->         Any target that utilizes if_changed must be listed in $(targets),
->         otherwise the command line check will fail, and the target will
->         always be built.
+From: Zhang Yunkai <zhang.yunkai@zte.com.cn>
 
-Ah yes, it did rebuild every time. Thank you for the pointer.
+As Luis Chamberlain suggested, I split the patch:
+[init/initramfs.c: make initramfs support pivot_root]
+(https://lore.kernel.org/linux-fsdevel/20210520154244.20209-1-dong.menglong@zte.com.cn/)
+into three.
+
+The goal of the series patches is to make pivot_root() support initramfs.
+
+In the first patch, I introduce the function ramdisk_exec_exist(), which
+is used to check the exist of 'ramdisk_execute_command' in LOOKUP_DOWN
+lookup mode.
+
+In the second patch, I create a second mount, which is called
+'user root', and make it become the root. Therefore, the root has a
+parent mount, and it can be umounted or pivot_root.
+
+In the third patch, I fix rootfs_fs_type with ramfs, as it is not used
+directly any more, and it make no sense to switch it between ramfs and
+tmpfs, just fix it with ramfs to simplify the code.
+
+Changes since V6:
+
+Fix some bugs by Zhang Yunkai.
+
+
+Changes since V5:
+
+Remove the third patch and make it combined with the second one.
+
+
+Changes since V4:                                                                                                                                                     
+                                                                                                                                                                      
+Do some more code cleanup for the second patch, include:                                                                                                              
+- move 'ramdisk_exec_exist()' to 'init.h'                                                                                                                             
+- remove unnecessary struct 'fs_rootfs_root'                                                                                                                          
+- introduce 'revert_mount_rootfs()'                                                                                                                                   
+- [...]                                                                                                                                                               
+
+
+Changes since V3:
+
+Do a code cleanup for the second patch, as Christian Brauner suggested:
+- remove the concept 'user root', which seems not suitable.
+- introduce inline function 'check_tmpfs_enabled()' to avoid duplicated
+  code.
+- rename function 'mount_user_root' to 'prepare_mount_rootfs'
+- rename function 'end_mount_user_root' to 'finish_mount_rootfs'
+- join 'init_user_rootfs()' with 'prepare_mount_rootfs()'
+
+Changes since V2:
+
+In the first patch, I use vfs_path_lookup() in init_eaccess() to make the
+path lookup follow the mount on '/'. After this, the problem reported by
+Masami Hiramatsu is solved. Thanks for your report :/
+
+
+Changes since V1:
+
+In the first patch, I add the flag LOOKUP_DOWN to init_eaccess(), to make
+it support the check of filesystem mounted on '/'.
+
+In the second patch, I control 'user root' with kconfig option
+'CONFIG_INITRAMFS_USER_ROOT', and add some comments, as Luis Chamberlain
+suggested.
+
+In the third patch, I make 'rootfs_fs_type' in control of
+'CONFIG_INITRAMFS_USER_ROOT'.
+
+
+Zhang Yunkai (2):
+  init/main.c: introduce function ramdisk_exec_exist()
+  init/do_mounts.c: create second mount for initramfs
+
+ fs/init.c            | 11 +++++++++--
+ include/linux/init.h |  1 +
+ init/do_mounts.c     | 45 ++++++++++++++++++++++++++++++++++++++++++++
+ init/do_mounts.h     | 17 ++++++++++++++++-
+ init/initramfs.c     | 12 +++++++++++-
+ init/main.c          |  7 ++++++-
+ usr/Kconfig          | 10 ++++++++++
+ 7 files changed, 98 insertions(+), 5 deletions(-)
 
 -- 
- Artem
+2.25.1
 
