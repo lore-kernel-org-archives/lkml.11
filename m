@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38ED1C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:08:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FE00C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:09:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242505AbiAQRIy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:08:54 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50204 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235553AbiAQRFy (ORCPT
+        id S237397AbiAQRI7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:08:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56292 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242051AbiAQRGL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:05:54 -0500
+        Mon, 17 Jan 2022 12:06:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 44AE5B8114E;
-        Mon, 17 Jan 2022 17:05:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 917E2C36AEC;
-        Mon, 17 Jan 2022 17:05:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A1AE61269;
+        Mon, 17 Jan 2022 17:06:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69805C36AE7;
+        Mon, 17 Jan 2022 17:06:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439151;
-        bh=IsB6GP+yJnWzUkvkzrdDk9FmxGEtrdhq6Spim46u5qY=;
+        s=k20201202; t=1642439170;
+        bh=cfgNBCaLfspusGGx3TWNkR2/M1NK5ZI0i2GmyN/yYHA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dCM8PrdFQlfwlPelzrZ4wK97kgGw+uFfgRcrFU/Dit5wgKPB1Ug4evcbli/H2F01e
-         z0XfuSzUnYaJIf2nsfSHsGESvt0ERsrxH2hfBgBMg5KYdVGeApadYFyhE60DVMt5WO
-         xnDbpVBZyA64p/DMbYR8V+ZlmqilwA6GCuI0NuZHKbFeOg9XkbxJjIomttSMYzUVjh
-         7rOe2NH6RWalMS9Zoi3SztnIKulOvXRqnb6Nt+C1KkvyG6gcvwgWwdjkr5nwr2TkeK
-         F/5UAUs1GfWU3yQtCcXI4tdbpyRtnRuL6QwZTji/vb4S2wwPkldy0govJKG4BmUkaW
-         /sLXSz5lSqeOQ==
+        b=o62rGmFN3AAhbFB2TO1vGUs753h6uIV5HZA4oROL4ihehfH2/BcFMN/7sl1YOhbz/
+         KdL07LbWQ0hJqnFT5pnDzIX+S2iM6nADQJN2q+3BUWDm5mQ4qWBG2sYcE0PxxRyjnx
+         c8BahYzSqHJMDcdAPURYPWiIh59+OAmV8ma944jDkquk06sedJlMSNlo2XinW/rmmg
+         E6/PNqsSQ9APkt48/FBtcA/6O8la+bATmE+KR2hdNim4TAjRGM2bq2BAKYs63wrrjb
+         Dmv0uXVLsFP9AogTdtO/H4Dd9/kH/nPTMi+kBW08GfVx+cfklQTHFzfQXgUINDYiQH
+         Vs60btbFshEPA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tzung-Bi Shih <tzungbi@google.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, lgirdwood@gmail.com,
-        perex@perex.cz, tiwai@suse.com, matthias.bgg@gmail.com,
-        jiaxin.yu@mediatek.com, angelogioacchino.delregno@collabora.com,
-        alsa-devel@alsa-project.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.4 21/21] ASoC: mediatek: mt8173: fix device_node leak
-Date:   Mon, 17 Jan 2022 12:04:53 -0500
-Message-Id: <20220117170454.1472347-21-sashal@kernel.org>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, srikar@linux.vnet.ibm.com,
+        ego@linux.vnet.ibm.com, clg@kaod.org, hbathini@linux.ibm.com,
+        parth@linux.ibm.com, npiggin@gmail.com, robh@kernel.org,
+        yukuai3@huawei.com, linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 4.19 08/17] powerpc/smp: Move setup_profiling_timer() under CONFIG_PROFILING
+Date:   Mon, 17 Jan 2022 12:05:42 -0500
+Message-Id: <20220117170551.1472640-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170454.1472347-1-sashal@kernel.org>
-References: <20220117170454.1472347-1-sashal@kernel.org>
+In-Reply-To: <20220117170551.1472640-1-sashal@kernel.org>
+References: <20220117170551.1472640-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -52,76 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tzung-Bi Shih <tzungbi@google.com>
+From: Michael Ellerman <mpe@ellerman.id.au>
 
-[ Upstream commit 493433785df0075afc0c106ab65f10a605d0b35d ]
+[ Upstream commit a4ac0d249a5db80e79d573db9e4ad29354b643a8 ]
 
-Fixes the device_node leak.
+setup_profiling_timer() is only needed when CONFIG_PROFILING is enabled.
 
-Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
-Link: https://lore.kernel.org/r/20211224064719.2031210-2-tzungbi@google.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Fixes the following W=1 warning when CONFIG_PROFILING=n:
+  linux/arch/powerpc/kernel/smp.c:1638:5: error: no previous prototype for ‘setup_profiling_timer’
+
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211124093254.1054750-5-mpe@ellerman.id.au
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/mediatek/mt8173/mt8173-max98090.c      | 3 +++
- sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c | 2 ++
- sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c | 2 ++
- sound/soc/mediatek/mt8173/mt8173-rt5650.c        | 2 ++
- 4 files changed, 9 insertions(+)
+ arch/powerpc/kernel/smp.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/sound/soc/mediatek/mt8173/mt8173-max98090.c b/sound/soc/mediatek/mt8173/mt8173-max98090.c
-index 22c00600c999f..de1410c2c446f 100644
---- a/sound/soc/mediatek/mt8173/mt8173-max98090.c
-+++ b/sound/soc/mediatek/mt8173/mt8173-max98090.c
-@@ -180,6 +180,9 @@ static int mt8173_max98090_dev_probe(struct platform_device *pdev)
- 	if (ret)
- 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
- 			__func__, ret);
-+
-+	of_node_put(codec_node);
-+	of_node_put(platform_node);
- 	return ret;
+diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
+index 14adfeacfa46e..4853ac67cf21f 100644
+--- a/arch/powerpc/kernel/smp.c
++++ b/arch/powerpc/kernel/smp.c
+@@ -1070,10 +1070,12 @@ void start_secondary(void *unused)
+ 	BUG();
  }
  
-diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
-index 8717e87bfe264..6f8542329bab9 100644
---- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
-+++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
-@@ -218,6 +218,8 @@ static int mt8173_rt5650_rt5514_dev_probe(struct platform_device *pdev)
- 	if (ret)
- 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
- 			__func__, ret);
-+
-+	of_node_put(platform_node);
- 	return ret;
++#ifdef CONFIG_PROFILING
+ int setup_profiling_timer(unsigned int multiplier)
+ {
+ 	return 0;
  }
++#endif
  
-diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
-index 9d4dd97211548..727ff0f7f20b1 100644
---- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
-+++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
-@@ -285,6 +285,8 @@ static int mt8173_rt5650_rt5676_dev_probe(struct platform_device *pdev)
- 	if (ret)
- 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
- 			__func__, ret);
-+
-+	of_node_put(platform_node);
- 	return ret;
- }
- 
-diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650.c b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
-index ef6f236752867..21e7d4d3ded5a 100644
---- a/sound/soc/mediatek/mt8173/mt8173-rt5650.c
-+++ b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
-@@ -309,6 +309,8 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
- 	if (ret)
- 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
- 			__func__, ret);
-+
-+	of_node_put(platform_node);
- 	return ret;
- }
- 
+ #ifdef CONFIG_SCHED_SMT
+ /* cpumask of CPUs with asymetric SMT dependancy */
 -- 
 2.34.1
 
