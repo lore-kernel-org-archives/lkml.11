@@ -2,102 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E9C3C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 21:56:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19409C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 21:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243414AbiAQV4C (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 16:56:02 -0500
-Received: from mail-io1-f51.google.com ([209.85.166.51]:45849 "EHLO
-        mail-io1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231401AbiAQVzx (ORCPT
+        id S243424AbiAQV4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 16:56:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55058 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243406AbiAQV4N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 16:55:53 -0500
-Received: by mail-io1-f51.google.com with SMTP id s11so15153112ioe.12;
-        Mon, 17 Jan 2022 13:55:53 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iq6XuonlfOcKR4C7CyNJxsO+5s/Hfb7aV3tDFA0gEZI=;
-        b=QFKnHq8U87cAj0Ze3W6PCEOe8eCb7In4/Qb14+v3Lb0ayakzL+ZM0kcQHp0ypyDVHE
-         gKjki8RLuropeK0L5AO9SB6MXDfW9pPEM1wEM2HjfW6ERqHoSl/agt0xEJv8AH4uTaf3
-         Td2PCxdYU6u48sxP+WqaOke2qJiBZRLj5nTpaLRvB/n7EwV+ViJud/q7yJz3bH3UxdTm
-         29Ot/0Abd3Bc621YGBzg9U78LHvBR1uHFmJ4p/VGykls3khfRskYuSL8Is66HQavleXs
-         dxa6SF2z1L9Gen9WTMZkBTN+l26lfh82x2PRJ8Z+NDQO9l5KicxV6wEAwv8YN7PiDhoI
-         hNnQ==
-X-Gm-Message-State: AOAM533i2uZ/A5oaI0Zupo5BT9GMIpiZ3ZPlA/t01yD3vO+Rnr3Z8hNx
-        oVacECmjndxf04Xh+7cCVhLQ8yAj1+TDT0ikP8Y=
-X-Google-Smtp-Source: ABdhPJxxA9k4MZckhnsZSeaXrceoVg6qNVBBjDPdSuqgeM5leXyBs8XmXDdISpGBE5qYe2hXdGaekksgj3MT3OVtZY0=
-X-Received: by 2002:a05:6638:c1:: with SMTP id w1mr4478075jao.113.1642456552694;
- Mon, 17 Jan 2022 13:55:52 -0800 (PST)
+        Mon, 17 Jan 2022 16:56:13 -0500
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A5D9C061574;
+        Mon, 17 Jan 2022 13:56:13 -0800 (PST)
+Received: from localhost (unknown [IPv6:2601:281:8300:104d::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 6CDEF37D;
+        Mon, 17 Jan 2022 21:56:12 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 6CDEF37D
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1642456572; bh=7yulRf+1yVRR69nokC8IcrGxd2577u/Uh5ZlrWl9hB8=;
+        h=From:To:Cc:Subject:In-Reply-To:References:Date:From;
+        b=gr+xCgrSoJcTg/ytKhrG0GBFVn1tY3nEFvGubzrFg3FuZlojtrogdO/NlJ4wyj75W
+         84rPpwtOxm9izeYalEUVLb+nS5heagjiIsbo2yu05NviDD7K/vLJRCxfYxCSvxVNru
+         TSl+FfYXCPisOliEOxEYYGaV8ZyUw6nJ5wNLDekInCvDZ/0UGLHCYidHvRimNTSIoo
+         tFHIkzGQZQoAdR8kx3oZLSxEmpw5E+m44B9tVVz60IdFS+1zWLE7+Xs89/L99U18L3
+         THI6mZAbtU7Mg5WIJ1PAz6ncnjP4yyw8tQgkqbdcFfaVLiTJSkSWmG4RTEoJ6iUsTK
+         n7AsLwLEf1zjQ==
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Huichun Feng <foxhoundsk.tw@gmail.com>
+Cc:     rostedt@goodmis.org, mingo@redhat.com, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Huichun Feng <foxhoundsk.tw@gmail.com>,
+        Ching-Chun Huang <jserv@ccns.ncku.edu.tw>,
+        Chun-Hung Tseng <henrybear327@gmail.com>
+Subject: Re: [PATCH] docs: ftrace: fix ambiguous sentence
+In-Reply-To: <20220111052000.2675944-1-foxhoundsk.tw@gmail.com>
+References: <20220111052000.2675944-1-foxhoundsk.tw@gmail.com>
+Date:   Mon, 17 Jan 2022 14:56:32 -0700
+Message-ID: <87fspm3u27.fsf@meer.lwn.net>
 MIME-Version: 1.0
-References: <YeG8ydoJNWWkGrTb@ls3530> <CAKMK7uGdJckdM+fg+576iJXsqzCOUg20etPBMwRLB9U7GcG01Q@mail.gmail.com>
- <c80ed72c-2eb4-16dd-a7ad-57e9dde59ba1@gmx.de> <CAKMK7uHVHn9apB6YYbLSwu+adEB2Fqp4FM0z582zf4F-v3_GnQ@mail.gmail.com>
- <cf21018b-f231-7538-169e-2ad450643cbf@gmx.de> <97d49bca-f5f7-dba4-b62d-b6fcdd4276ac@suse.de>
- <e19563aa-21a3-e13c-4143-847bd77a38c7@gmx.de> <e4242fe9-13b1-91b5-d254-992f48115589@gmx.de>
-In-Reply-To: <e4242fe9-13b1-91b5-d254-992f48115589@gmx.de>
-From:   Ilia Mirkin <imirkin@alum.mit.edu>
-Date:   Mon, 17 Jan 2022 16:55:41 -0500
-Message-ID: <CAKb7UvgXaeX7FRUK_Q35N=2zBms8WgCe=ZBKr3dHrixoJWtvqw@mail.gmail.com>
-Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
-To:     Helge Deller <deller@gmx.de>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        linux-fbdev <linux-fbdev@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 2:47 PM Helge Deller <deller@gmx.de> wrote:
->
-> On 1/17/22 17:21, Helge Deller wrote:
-> > On 1/17/22 16:58, Thomas Zimmermann wrote:
-> >> Hi
-> >>
-> >> Am 17.01.22 um 16:42 schrieb Helge Deller:
-> >>> [...]
-> >>>>> c) reintroduce the state where fbcon is fast on fbdev. This is important for non-DRM machines,
-> >>>>>     either when run on native hardware or in an emulator.
-> >>>>> d) not break DRM development
-> >>>>>
-> >>>>> Especially regarding c) I complained in [1] and got no feedback. I really would like to
-> >>>>> understand where the actual problems were and what's necessary to fix them.
-> >>>>>
-> >>>>> Helge
-> >>>>>
-> >>>>> [1] https://lore.kernel.org/r/feea8303-2b83-fc36-972c-4fc8ad723bde@gmx.de
-> >>
-> >> Seems like few people read linux-fbdev these days.
-> >> I suggest to partly revert the patch to the point were performance
-> >> gets better again.
-> > Yes, *please*!
-> > That would solve my biggest concern.
-> >
-> > As far as I can see that's only 2 commits to be reverted:
-> > b3ec8cdf457e - "fbdev: Garbage collect fbdev scrolling acceleration, part 1 (from TODO list)"
-> > 39aead8373b3 - "fbcon: Disable accelerated scrolling"for-next-next
-> >
-> > I think both were not related to any 0-day bug reports (but again, I might be wrong).
->
-> I did some more checking...
->
-> Both patches are not related to DRM, since no DRM driver sets the
-> FBINFO_HWACCEL_COPYAREA or FBINFO_HWACCEL_FILLRECT flags.
+Huichun Feng <foxhoundsk.tw@gmail.com> writes:
 
-These used to be set by, at least, nouveau (which is a drm driver).
-And yeah, console responsiveness is _way_ worse without that. People
-keep pushing the messaging that it's the same speed to do it as
-memcpy, but that's just not the case in my experience, on a pretty
-bog-standard x86 desktop. The support got dumped, and it felt pretty
-clear from the messaging at the time, "too bad". Would love to see it
-come back.
+> The sentence looks ambiguous, rephrase it by adding ", there".
+>
+> Signed-off-by: Huichun Feng <foxhoundsk.tw@gmail.com>
+> Signed-off-by: Ching-Chun (Jim) Huang <jserv@ccns.ncku.edu.tw>
+> Signed-off-by: Chun-Hung Tseng <henrybear327@gmail.com>
+> ---
+>  Documentation/trace/ftrace.rst | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/Documentation/trace/ftrace.rst b/Documentation/trace/ftrace.rst
+> index b3166c4a7..45b8c56af 100644
+> --- a/Documentation/trace/ftrace.rst
+> +++ b/Documentation/trace/ftrace.rst
+> @@ -3370,7 +3370,7 @@ one of the latency tracers, you will get the following results.
+>  
+>  Instances
+>  ---------
+> -In the tracefs tracing directory is a directory called "instances".
+> +In the tracefs tracing directory, there is a directory called "instances".
+>  This directory can have new directories created inside of it using
 
-Cheers,
+Applied, thanks.
 
-  -ilia
+jon
