@@ -2,89 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D2EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:35:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E32C0C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:35:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241387AbiAQRfC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:35:02 -0500
-Received: from isilmar-4.linta.de ([136.243.71.142]:47078 "EHLO
+        id S239356AbiAQRfF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:35:05 -0500
+Received: from isilmar-4.linta.de ([136.243.71.142]:47086 "EHLO
         isilmar-4.linta.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239356AbiAQRfA (ORCPT
+        with ESMTP id S239393AbiAQRfA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 17 Jan 2022 12:35:00 -0500
 X-isilmar-external: YES
 X-isilmar-external: YES
 Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
-        by isilmar-4.linta.de (Postfix) with ESMTPSA id D5DEA2000D7;
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id DC1E1200278;
         Mon, 17 Jan 2022 17:34:58 +0000 (UTC)
 Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
-        id C5C6C80740; Mon, 17 Jan 2022 18:31:16 +0100 (CET)
-Date:   Mon, 17 Jan 2022 18:31:16 +0100
+        id 3FE91807EA; Mon, 17 Jan 2022 18:34:30 +0100 (CET)
+Date:   Mon, 17 Jan 2022 18:34:30 +0100
 From:   Dominik Brodowski <linux@dominikbrodowski.net>
 To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
 Cc:     linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/4] random: cleanup fractional entropy shift constants
-Message-ID: <YeWn5PH1dVay2sg+@owl.dominikbrodowski.net>
+Subject: Re: [PATCH 4/4] random: selectively clang-format where it makes sense
+Message-ID: <YeWopoOFYaHfBgE2@owl.dominikbrodowski.net>
 References: <20220113154413.29513-1-Jason@zx2c4.com>
  <20220116163547.154991-1-Jason@zx2c4.com>
- <20220116163547.154991-2-Jason@zx2c4.com>
+ <20220116163547.154991-4-Jason@zx2c4.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220116163547.154991-2-Jason@zx2c4.com>
+In-Reply-To: <20220116163547.154991-4-Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Sun, Jan 16, 2022 at 05:35:45PM +0100 schrieb Jason A. Donenfeld:
-> The entropy estimator is calculated in terms of 1/8 bits, which means
-> there are various constants where things are shifted by 3. Move these
-> into our pool info enum with the other relevant constants. While we're
-> at it, move an English assertion about sizes into a proper BUILD_BUG_ON
-> so that the compiler can ensure this invariant.
+Am Sun, Jan 16, 2022 at 05:35:47PM +0100 schrieb Jason A. Donenfeld:
+> This is an old driver that has seen a lot of different eras of kernel
+> coding style. In an effort to make it easier to code for, unify the
+> coding style around the current norm, by accepting some of -- but
+> certainly not all of -- the suggestions from clang-format. This should
+> remove ambiguity in coding style, especially with regards to spacing,
+> when code is being changed or amended. Consequently it also makes code
+> review easier on the eyes, following one uniform style rather than
+> several.
 > 
 > Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-> ---
->  drivers/char/random.c | 28 +++++++++++++---------------
->  1 file changed, 13 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/char/random.c b/drivers/char/random.c
-> index de1c14787ae8..7343bff086c5 100644
-> --- a/drivers/char/random.c
-> +++ b/drivers/char/random.c
-> @@ -358,16 +358,6 @@
->  
->  /* #define ADD_INTERRUPT_BENCH */
->  
-> -/*
-> - * To allow fractional bits to be tracked, the entropy_count field is
-> - * denominated in units of 1/8th bits.
-> - *
-> - * 2*(POOL_ENTROPY_SHIFT + poolbitshift) must <= 31, or the multiply in
-> - * credit_entropy_bits() needs to be 64 bits wide.
-> - */
-> -#define POOL_ENTROPY_SHIFT 3
-> -#define POOL_ENTROPY_BITS() (input_pool.entropy_count >> POOL_ENTROPY_SHIFT)
-> -
->  /*
->   * If the entropy count falls under this number of bits, then we
->   * should wake up processes which are selecting or polling on write
-> @@ -425,8 +415,13 @@ enum poolinfo {
->  	POOL_WORDMASK = POOL_WORDS - 1,
->  	POOL_BYTES = POOL_WORDS * sizeof(u32),
->  	POOL_BITS = POOL_BYTES * 8,
-> -	POOL_BITSHIFT = ilog2(POOL_WORDS) + 5,
-> -	POOL_FRACBITS = POOL_WORDS << (POOL_ENTROPY_SHIFT + 5),
-> +	POOL_BITSHIFT = ilog2(POOL_BITS),
-> +
-> +	/* To allow fractional bits to be tracked, the entropy_count field is
-> +	 * denominated in units of 1/8th bits. */
-> +	POOL_ENTROPY_SHIFT = 3,
-> +#define POOL_ENTROPY_BITS() (input_pool.entropy_count >> POOL_ENTROPY_SHIFT)
-> +	POOL_FRACBITS = POOL_BITS << POOL_ENTROPY_SHIFT,
-
-
-the #define here confuses me a bit, as it is optically breaking the POOL
-enum. But that relates to coding style preferences only, so
 
 	Reviewed-by: Dominik Brodowski <linux@dominikbrodowski.net>
+
+Thanks,
+	Dominik
