@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C688C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:03:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 140F5C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:03:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242314AbiAQRDr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:03:47 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51812 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242021AbiAQRCB (ORCPT
+        id S238144AbiAQRDt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:03:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45110 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238325AbiAQRCC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:02:01 -0500
+        Mon, 17 Jan 2022 12:02:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07290C061781;
+        Mon, 17 Jan 2022 09:01:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id EFCFA6119C;
-        Mon, 17 Jan 2022 17:02:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B29EC36AE3;
-        Mon, 17 Jan 2022 17:01:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD0D36119C;
+        Mon, 17 Jan 2022 17:01:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 706D0C36AFA;
+        Mon, 17 Jan 2022 17:01:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642438920;
-        bh=e9qHwmWQeW+I8N/3hk78hKYr7tPj2scOY6Gr/oCbo4I=;
+        s=k20201202; t=1642438910;
+        bh=VpOIpWuYU5r7PoaTzGcmVyr0EObttdwQ5irv2gBTbpo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dXPzrl2fsmiwZeU4YLn8F6rF9I2f/Djey4zEzYgYU+N19q9bFiMb0QXRly8C0SDOF
-         F0V+uwVPTSNtDIpCF0/HnOLh8qvXfSkCqc/HQxM7wKTKkNF/NgkpyW/NNt55pAxVJC
-         clzAkBOl0glMrDPsa81WwSsTxbvQ+NWTU9JKJZoaiCADw0PSYnYIZAuIz2/0O8bpoa
-         pTUof3qksIhfKgtEk3Ucd+wL6e56q2UvJLdEVQ/ya/ljrW3NNORbvUTvZ4kywTAS6w
-         hOb4hnE062wOu/pNenQtvHIUwxk1/ejKF6je5b81/svWSYZKHbd1aW38O7ekgrf0sW
-         OMQjddDFm41Mw==
+        b=JZB7M0XmhfoxazwQ6vYwwzzhYOml0L9Qv87t5Yg3PodZL6SY8pumfzJ0zvyumSrkD
+         sQYTJXTzPAHyCvgi/IsAD6hAEUsR9M/Kd1hVVXedR1QwXV65dzuaAazdl5ifJdrdpC
+         6dhemsfWDl4UBGMain/SOYfyaqeB99opl0tdN/lZyZLtVluKpgwCHeKMBmz0Lvbh6R
+         BfPSfVtF+5ehBUhSoframe1QOzBYclbI+G2VnN/Jq2NfpLNh/dXJ0pUhAwF65CF5Bm
+         MOfAHx7fEUlVnj22mvCLr4JHvzF0adcVM+3k5aOm5+O2jDQ0kaGxlqE5on62aRXh/H
+         LGvTgPM7TWtUA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexey Kardashevskiy <aik@ozlabs.ru>,
-        Fabiano Rosas <farosas@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, npiggin@gmail.com,
-        paulus@ozlabs.org, ravi.bangoria@linux.ibm.com,
-        bharata@linux.ibm.com, linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.15 14/44] KVM: PPC: Book3S: Suppress failed alloc warning in H_COPY_TOFROM_GUEST
-Date:   Mon, 17 Jan 2022 12:00:57 -0500
-Message-Id: <20220117170127.1471115-14-sashal@kernel.org>
+Cc:     Joakim Tjernlund <joakim.tjernlund@infinera.com>,
+        Scott Wood <oss@buserror.net>, Wolfram Sang <wsa@kernel.org>,
+        Sasha Levin <sashal@kernel.org>,
+        chris.packham@alliedtelesis.co.nz, linux-i2c@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 10/44] i2c: mpc: Correct I2C reset procedure
+Date:   Mon, 17 Jan 2022 12:00:53 -0500
+Message-Id: <20220117170127.1471115-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117170127.1471115-1-sashal@kernel.org>
 References: <20220117170127.1471115-1-sashal@kernel.org>
@@ -51,41 +52,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexey Kardashevskiy <aik@ozlabs.ru>
+From: Joakim Tjernlund <joakim.tjernlund@infinera.com>
 
-[ Upstream commit 792020907b11c6f9246c21977cab3bad985ae4b6 ]
+[ Upstream commit ebe82cf92cd4825c3029434cabfcd2f1780e64be ]
 
-H_COPY_TOFROM_GUEST is an hcall for an upper level VM to access its nested
-VMs memory. The userspace can trigger WARN_ON_ONCE(!(gfp & __GFP_NOWARN))
-in __alloc_pages() by constructing a tiny VM which only does
-H_COPY_TOFROM_GUEST with a too big GPR9 (number of bytes to copy).
+Current I2C reset procedure is broken in two ways:
+1) It only generate 1 START instead of 9 STARTs and STOP.
+2) It leaves the bus Busy so every I2C xfer after the first
+   fixup calls the reset routine again, for every xfer there after.
 
-This silences the warning by adding __GFP_NOWARN.
+This fixes both errors.
 
-Spotted by syzkaller.
-
-Signed-off-by: Alexey Kardashevskiy <aik@ozlabs.ru>
-Reviewed-by: Fabiano Rosas <farosas@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20210901084550.1658699-1-aik@ozlabs.ru
+Signed-off-by: Joakim Tjernlund <joakim.tjernlund@infinera.com>
+Acked-by: Scott Wood <oss@buserror.net>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kvm/book3s_hv_nested.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-mpc.c | 23 +++++++++++++++--------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
-diff --git a/arch/powerpc/kvm/book3s_hv_nested.c b/arch/powerpc/kvm/book3s_hv_nested.c
-index ed8a2c9f56299..89295b52a97c3 100644
---- a/arch/powerpc/kvm/book3s_hv_nested.c
-+++ b/arch/powerpc/kvm/book3s_hv_nested.c
-@@ -582,7 +582,7 @@ long kvmhv_copy_tofrom_guest_nested(struct kvm_vcpu *vcpu)
- 	if (eaddr & (0xFFFUL << 52))
- 		return H_PARAMETER;
+diff --git a/drivers/i2c/busses/i2c-mpc.c b/drivers/i2c/busses/i2c-mpc.c
+index db26cc36e13fe..6c698c10d3cdb 100644
+--- a/drivers/i2c/busses/i2c-mpc.c
++++ b/drivers/i2c/busses/i2c-mpc.c
+@@ -119,23 +119,30 @@ static inline void writeccr(struct mpc_i2c *i2c, u32 x)
+ /* Sometimes 9th clock pulse isn't generated, and slave doesn't release
+  * the bus, because it wants to send ACK.
+  * Following sequence of enabling/disabling and sending start/stop generates
+- * the 9 pulses, so it's all OK.
++ * the 9 pulses, each with a START then ending with STOP, so it's all OK.
+  */
+ static void mpc_i2c_fixup(struct mpc_i2c *i2c)
+ {
+ 	int k;
+-	u32 delay_val = 1000000 / i2c->real_clk + 1;
+-
+-	if (delay_val < 2)
+-		delay_val = 2;
++	unsigned long flags;
  
--	buf = kzalloc(n, GFP_KERNEL);
-+	buf = kzalloc(n, GFP_KERNEL | __GFP_NOWARN);
- 	if (!buf)
- 		return H_NO_MEM;
+ 	for (k = 9; k; k--) {
+ 		writeccr(i2c, 0);
+-		writeccr(i2c, CCR_MSTA | CCR_MTX | CCR_MEN);
++		writeb(0, i2c->base + MPC_I2C_SR); /* clear any status bits */
++		writeccr(i2c, CCR_MEN | CCR_MSTA); /* START */
++		readb(i2c->base + MPC_I2C_DR); /* init xfer */
++		udelay(15); /* let it hit the bus */
++		local_irq_save(flags); /* should not be delayed further */
++		writeccr(i2c, CCR_MEN | CCR_MSTA | CCR_RSTA); /* delay SDA */
+ 		readb(i2c->base + MPC_I2C_DR);
+-		writeccr(i2c, CCR_MEN);
+-		udelay(delay_val << 1);
++		if (k != 1)
++			udelay(5);
++		local_irq_restore(flags);
+ 	}
++	writeccr(i2c, CCR_MEN); /* Initiate STOP */
++	readb(i2c->base + MPC_I2C_DR);
++	udelay(15); /* Let STOP propagate */
++	writeccr(i2c, 0);
+ }
  
+ static int i2c_mpc_wait_sr(struct mpc_i2c *i2c, int mask)
 -- 
 2.34.1
 
