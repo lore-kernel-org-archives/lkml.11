@@ -2,92 +2,95 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C80FC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 18:27:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B9B7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 18:32:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242703AbiAQS1V (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 13:27:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37532 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242535AbiAQS1E (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 13:27:04 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B0C2C061746
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 10:27:04 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id g22so22689003edu.1
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 10:27:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=eO3SarKuawfnSDlycroRnbnpPkYTlr8nD5yeqFUVHFc=;
-        b=O42iWlmqZFfrZT1YQH9NZLLqWeHsjrezFg0IKlF+MbOJe+MmgTCMTBO6BLj86ZhqgZ
-         Ktth5BBRygqea9NiPD3Du+Dp9tbZhmz4BgHQMpWRrgnxtjXP18bxvCJP0qh5SIp85N8t
-         En/NuGe+o1wwdA2DLdNhasLj4fF3Z4BBqsEuE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=eO3SarKuawfnSDlycroRnbnpPkYTlr8nD5yeqFUVHFc=;
-        b=WZy0EjaA3aikwcqcRLYtceOCQoU8qCXjYCylwNbqt40sZ8wXWrrhMjleZj80WMTb9t
-         QIwEjk+biRfW4Ob3sS549gUKMqt1JR9M49TmuDUtwdpu/n57Zjf/uyiSt7K8EVEauv6H
-         Ws8gQJYMT6U8nuBfxOVK84ti4d+5ja+SNzj2nTyX0crDuiOL6Vp3KtUfnEV5B+BRa3XL
-         kgWT2CP9KXhGbN/kLT7SM34RL82KCisKK4MfEOHXkC/4T+fwoyiSs7xGU2E/KCAuKsd3
-         MF0TFDxfbFiMkA+CkOyVSmFk+CRT/DiFC9xWp4fur3e8M0dk2jxIDVChr/CwpeCm+FPI
-         IxBg==
-X-Gm-Message-State: AOAM530qzZjMGLEpm9Spb1LrYBr2J+Rx4JdZFnmVl88OOv8x8L/B2U5e
-        GADFOdqjLi3daKg/vtuH8bO6Dw==
-X-Google-Smtp-Source: ABdhPJznsIxpLjJR/d/R7v1Oul8vJd4+xCZf+aPIqc6VC6qHoTTYJ7sDnbKhxaNfBngrSRolsMd80Q==
-X-Received: by 2002:a17:906:175b:: with SMTP id d27mr17982456eje.476.1642444023056;
-        Mon, 17 Jan 2022 10:27:03 -0800 (PST)
-Received: from alco.lan (80.71.134.83.ipv4.parknet.dk. [80.71.134.83])
-        by smtp.gmail.com with ESMTPSA id la10sm4657462ejc.22.2022.01.17.10.27.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 10:27:02 -0800 (PST)
-From:   Ricardo Ribalda <ribalda@chromium.org>
-To:     Nicolas Dufresne <nicolas@ndufresne.ca>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        linux-media@vger.kernel.org, linux-kernel@vger.kernel.org,
-        tfiga@chromium.org,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Ricardo Ribalda <ribalda@chromium.org>
-Subject: [PATCH v3 2/3] media: Documentation/driver-api: Document device name
-Date:   Mon, 17 Jan 2022 19:26:57 +0100
-Message-Id: <20220117182658.468993-3-ribalda@chromium.org>
-X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
-In-Reply-To: <20220117182658.468993-1-ribalda@chromium.org>
-References: <20220117182658.468993-1-ribalda@chromium.org>
+        id S242060AbiAQScz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 13:32:55 -0500
+Received: from mail.skyhub.de ([5.9.137.197]:46840 "EHLO mail.skyhub.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236207AbiAQScx (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 13:32:53 -0500
+Received: from zn.tnic (dslb-088-067-202-008.088.067.pools.vodafone-ip.de [88.67.202.8])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 9D6B11EC0531;
+        Mon, 17 Jan 2022 19:32:48 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1642444368;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=tMYLEKtwmKZnMDQqe7i5oMHWWonGj1KvrD1gDeyu4sQ=;
+        b=DD48inKHSf6nNdN24Lltg/F/tclIN08m5nZO3lL4pVJWodmJrKBqdWSw6Ec/RnW5EhOkax
+        jYMyYxxv03sWTWvT5knpRylIUrwLaz9cTCtF8B7E6HopMStP5E1aTXIMiPzhg6d0tbpq50
+        Nr0oLbTkjaxMRU+V0KxX+A+ujD0cSpA=
+Date:   Mon, 17 Jan 2022 19:32:51 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        tglx@linutronix.de, mingo@redhat.com, dave.hansen@intel.com,
+        luto@kernel.org, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
+        ak@linux.intel.com, dan.j.williams@intel.com, david@redhat.com,
+        hpa@zytor.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 10/26] x86/tdx: Support TDX guest port I/O at
+ decompression time
+Message-ID: <YeW2U9vH65NcLHtY@zn.tnic>
+References: <20211214150304.62613-1-kirill.shutemov@linux.intel.com>
+ <20211214150304.62613-11-kirill.shutemov@linux.intel.com>
+ <YeAuehoOEjUH3vZ3@zn.tnic>
+ <20220115010155.ss2hnyotw4a3nljf@black.fi.intel.com>
+ <YeK7AJXGN5GVGkRV@zn.tnic>
+ <20220117143920.3umnnlx7dl27cm5z@box.shutemov.name>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220117143920.3umnnlx7dl27cm5z@box.shutemov.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document how the name of the metadata devices is modified.
+On Mon, Jan 17, 2022 at 05:39:20PM +0300, Kirill A. Shutemov wrote:
+> arch/x86/boot and arch/x86/boot/compressed are separate linking domains.
+> boot/ uses own implementation while boot/compressed uses implementation
+> from <asm/io.h>. Decopliing boot/compressed from <asm/io.h> requires hack.
+> See #define _ACPI_IO_H_ below.
 
-Signed-off-by: Ricardo Ribalda <ribalda@chromium.org>
----
- Documentation/driver-api/media/v4l2-dev.rst | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+I am painfully aware. And the need to share code with kernel proper has
+grown quite the nasties in the meantime.
 
-diff --git a/Documentation/driver-api/media/v4l2-dev.rst b/Documentation/driver-api/media/v4l2-dev.rst
-index 99e3b5fa7444..935a46e29c5e 100644
---- a/Documentation/driver-api/media/v4l2-dev.rst
-+++ b/Documentation/driver-api/media/v4l2-dev.rst
-@@ -42,7 +42,9 @@ You should also set these fields of :c:type:`video_device`:
- - :c:type:`video_device`->v4l2_dev: must be set to the :c:type:`v4l2_device`
-   parent device.
- 
--- :c:type:`video_device`->name: set to something descriptive and unique.
-+- :c:type:`video_device`->name: set to something descriptive and unique. If the
-+  device has the `V4L2_CAP_META_CAPTURE` or `V4L2_CAP_META_OUTPUT` capabilities,
-+  the string `Meta:` will be inserted before the original name.
- 
- - :c:type:`video_device`->vfl_dir: set this to ``VFL_DIR_RX`` for capture
-   devices (``VFL_DIR_RX`` has value 0, so this is normally already the
+So, we talked about what to do here recently and the suggestion was to
+librarize common functionality so that
+
+1. it can be shared between the two.
+2. changes in the kernel proper headers do not break the boot stubs.
+
+So, instead of yet another duplication, I think what we should do is
+start growing a shared/ header namespace, i.e.,
+
+arch/x86/include/asm/shared/
+
+for example, and put there common, well, shared, functionality between
+boot stubs and kernel proper. Stuff which is basic and generic enough so
+that it can be shared by both.
+
+That would be a prepatch.
+
+Then, ontop, I'm wondering if it would be cleaner to have in/out
+function pointers in the boot stub which are assigned by default to
+those __in/__out generic shared handlers and then early_tdx_detect()
+would assign to them tdx_io_{in,out} when it detects it is running as a
+TDX guest.
+
+Hmmm...?
+
 -- 
-2.34.1.703.g22d0c6ccf7-goog
+Regards/Gruss,
+    Boris.
 
+https://people.kernel.org/tglx/notes-about-netiquette
