@@ -2,52 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E734C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CFE0C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:15:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244200AbiAQROp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:14:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46444 "EHLO
+        id S244100AbiAQROe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:14:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242753AbiAQRLR (ORCPT
+        with ESMTP id S244214AbiAQRLB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:11:17 -0500
+        Mon, 17 Jan 2022 12:11:01 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF274C08C5D7;
-        Mon, 17 Jan 2022 09:06:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A192AC0613F0;
+        Mon, 17 Jan 2022 09:06:53 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7E1E2611D9;
-        Mon, 17 Jan 2022 17:06:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 972D4C36AE7;
-        Mon, 17 Jan 2022 17:06:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 32FDE61248;
+        Mon, 17 Jan 2022 17:06:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79EEDC36AE3;
+        Mon, 17 Jan 2022 17:06:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439216;
-        bh=FRms4rYVIvN6iZnmgg6BThnJYfNtMZYW0Z7PMF+z5K0=;
+        s=k20201202; t=1642439212;
+        bh=1G5W5+597GyiCixdJ+b9k+vwhTT84W5MJH0OG6McupM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mVqVfnEJYnT/lamr1venE5VTY5GBfglcrg8afJdy1/XOurWUfbx18pHdc7YCX8+/u
-         uVAWVlbRI/1wER41p2ABXbkiC57LWxQZ+KCL+JdPIn/2MOfIgSTb9C0qkfgXX/noyq
-         GzkFEfgpN8HWKaAPxfCMGQ8qNFVOvBjZX1Po4QILPNTHNWHWEL5S2wadsTHXpWX3Lc
-         WukjGroCR0d7iRPhUliNAP6FZtCthnpCCfJSxuTHV3Lei1abuYde2JOCcRVXZYhxjx
-         kJxpuodUjo6TYFRVnVxe4+oP+0JSPemG6O8UTJP0UCmfQzBTvIVcK8XYrK4eAvkD+B
-         hebHrUaVcqKXw==
+        b=HUardsG514zSL1BFbVeqRvDu8e6HIbGr678Y4VawFfZjnLQjdBi1oy2AozJj1xQRp
+         8VEM7CZlZptX2TGCbRMUD13i4Reb8exJcD/0ZeRt4wC6I1li9FCh8At7/1WaK8ea7J
+         iAPH9jh/9JD5rqUYoXYIZs4BmRtF8YmbCgU4dpCEIBvKd9281qIZkqxYneHsyy3ByZ
+         4Jcid2uUEj3pur2IzoASaVLA5xUNZBeo6JdvVFGCYa486df5wjsdYp/VYx+36iny/W
+         W98MyH8mP2IvjX88dnyRzn/LqK6MRVWY0OBAxl6Th+APGiebKNSYmc9AH8Ut5MXA3k
+         SyngcFTdOM9ug==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, srikar@linux.vnet.ibm.com,
-        ego@linux.vnet.ibm.com, hbathini@linux.ibm.com,
-        valentin.schneider@arm.com, clg@kaod.org, parth@linux.ibm.com,
-        npiggin@gmail.com, robh@kernel.org, yukuai3@huawei.com,
+Cc:     Nicholas Piggin <npiggin@gmail.com>,
+        Laurent Dufour <ldufour@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>, pmladek@suse.com,
+        john.ogness@linutronix.de, clg@kaod.org, sudeep.holla@arm.com,
         linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 4.14 08/16] powerpc/smp: Move setup_profiling_timer() under CONFIG_PROFILING
-Date:   Mon, 17 Jan 2022 12:06:30 -0500
-Message-Id: <20220117170638.1472900-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 06/16] powerpc/watchdog: Fix missed watchdog reset due to memory ordering race
+Date:   Mon, 17 Jan 2022 12:06:28 -0500
+Message-Id: <20220117170638.1472900-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117170638.1472900-1-sashal@kernel.org>
 References: <20220117170638.1472900-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,39 +54,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Nicholas Piggin <npiggin@gmail.com>
 
-[ Upstream commit a4ac0d249a5db80e79d573db9e4ad29354b643a8 ]
+[ Upstream commit 5dad4ba68a2483fc80d70b9dc90bbe16e1f27263 ]
 
-setup_profiling_timer() is only needed when CONFIG_PROFILING is enabled.
+It is possible for all CPUs to miss the pending cpumask becoming clear,
+and then nobody resetting it, which will cause the lockup detector to
+stop working. It will eventually expire, but watchdog_smp_panic will
+avoid doing anything if the pending mask is clear and it will never be
+reset.
 
-Fixes the following W=1 warning when CONFIG_PROFILING=n:
-  linux/arch/powerpc/kernel/smp.c:1638:5: error: no previous prototype for ‘setup_profiling_timer’
+Order the cpumask clear vs the subsequent test to close this race.
 
+Add an extra check for an empty pending mask when the watchdog fires and
+finds its bit still clear, to try to catch any other possible races or
+bugs here and keep the watchdog working. The extra test in
+arch_touch_nmi_watchdog is required to prevent the new warning from
+firing off.
+
+Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
+Reviewed-by: Laurent Dufour <ldufour@linux.ibm.com>
+Debugged-by: Laurent Dufour <ldufour@linux.ibm.com>
 Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211124093254.1054750-5-mpe@ellerman.id.au
+Link: https://lore.kernel.org/r/20211110025056.2084347-2-npiggin@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/smp.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/powerpc/kernel/watchdog.c | 41 +++++++++++++++++++++++++++++++++-
+ 1 file changed, 40 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
-index 7c7aa7c98ba31..cf25b95ceee13 100644
---- a/arch/powerpc/kernel/smp.c
-+++ b/arch/powerpc/kernel/smp.c
-@@ -1009,10 +1009,12 @@ void start_secondary(void *unused)
- 	BUG();
- }
- 
-+#ifdef CONFIG_PROFILING
- int setup_profiling_timer(unsigned int multiplier)
+diff --git a/arch/powerpc/kernel/watchdog.c b/arch/powerpc/kernel/watchdog.c
+index ce848ff84eddf..1617767ebc9ae 100644
+--- a/arch/powerpc/kernel/watchdog.c
++++ b/arch/powerpc/kernel/watchdog.c
+@@ -106,6 +106,10 @@ static void set_cpumask_stuck(const struct cpumask *cpumask, u64 tb)
  {
- 	return 0;
- }
-+#endif
+ 	cpumask_or(&wd_smp_cpus_stuck, &wd_smp_cpus_stuck, cpumask);
+ 	cpumask_andnot(&wd_smp_cpus_pending, &wd_smp_cpus_pending, cpumask);
++	/*
++	 * See wd_smp_clear_cpu_pending()
++	 */
++	smp_mb();
+ 	if (cpumask_empty(&wd_smp_cpus_pending)) {
+ 		wd_smp_last_reset_tb = tb;
+ 		cpumask_andnot(&wd_smp_cpus_pending,
+@@ -177,13 +181,44 @@ static void wd_smp_clear_cpu_pending(int cpu, u64 tb)
+ 			wd_smp_lock(&flags);
+ 			cpumask_clear_cpu(cpu, &wd_smp_cpus_stuck);
+ 			wd_smp_unlock(&flags);
++		} else {
++			/*
++			 * The last CPU to clear pending should have reset the
++			 * watchdog so we generally should not find it empty
++			 * here if our CPU was clear. However it could happen
++			 * due to a rare race with another CPU taking the
++			 * last CPU out of the mask concurrently.
++			 *
++			 * We can't add a warning for it. But just in case
++			 * there is a problem with the watchdog that is causing
++			 * the mask to not be reset, try to kick it along here.
++			 */
++			if (unlikely(cpumask_empty(&wd_smp_cpus_pending)))
++				goto none_pending;
+ 		}
+ 		return;
+ 	}
++
+ 	cpumask_clear_cpu(cpu, &wd_smp_cpus_pending);
++
++	/*
++	 * Order the store to clear pending with the load(s) to check all
++	 * words in the pending mask to check they are all empty. This orders
++	 * with the same barrier on another CPU. This prevents two CPUs
++	 * clearing the last 2 pending bits, but neither seeing the other's
++	 * store when checking if the mask is empty, and missing an empty
++	 * mask, which ends with a false positive.
++	 */
++	smp_mb();
+ 	if (cpumask_empty(&wd_smp_cpus_pending)) {
+ 		unsigned long flags;
  
- #ifdef CONFIG_SCHED_SMT
- /* cpumask of CPUs with asymetric SMT dependancy */
++none_pending:
++		/*
++		 * Double check under lock because more than one CPU could see
++		 * a clear mask with the lockless check after clearing their
++		 * pending bits.
++		 */
+ 		wd_smp_lock(&flags);
+ 		if (cpumask_empty(&wd_smp_cpus_pending)) {
+ 			wd_smp_last_reset_tb = tb;
+@@ -276,8 +311,12 @@ void arch_touch_nmi_watchdog(void)
+ {
+ 	unsigned long ticks = tb_ticks_per_usec * wd_timer_period_ms * 1000;
+ 	int cpu = smp_processor_id();
+-	u64 tb = get_tb();
++	u64 tb;
++
++	if (!cpumask_test_cpu(cpu, &watchdog_cpumask))
++		return;
+ 
++	tb = get_tb();
+ 	if (tb - per_cpu(wd_timer_tb, cpu) >= ticks) {
+ 		per_cpu(wd_timer_tb, cpu) = tb;
+ 		wd_smp_clear_cpu_pending(cpu, tb);
 -- 
 2.34.1
 
