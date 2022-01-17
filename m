@@ -2,119 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4968C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 14:31:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02E6BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 14:31:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239699AbiAQOb1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 09:31:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38438 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239608AbiAQOav (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 09:30:51 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60DAEC06173F
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 06:30:51 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id 25-20020a05600c231900b003497473a9c4so24781143wmo.5
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 06:30:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=subject:to:references:from:organization:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=+iR+xqLn4ZA/GgQGnZu/dK+PUE+Bi1dnz/SKyfphrsw=;
-        b=YksXckYFme2RHIMHoHrPqpFRTQIn6dwj6tbKYWd0JJb20Y3P1MMFSu0ck4f4kDxJrq
-         IcIuDPplD6b3zCQChjSM2fnnBH3/DDCcPQ5dYEdRXzMlABv+UuH1NiuQEWV0Dr3/+MzC
-         E94+YE8ZQisz1rE2mbNWakLMrq7/VmY0VFRGlPiQ8Mr/kN2iJ7QiPM0C5/JWgqKP0pnN
-         Lc1G75IgbfoSEiTec6D0MQVG4WwcT9NVWfJg1t6DVUMHtNxLlP4H2dYr1L0S4nqI3dEv
-         3bZpYHh5kS4odyWB2GmYSOLof8n7Yq+hPnAR7j+XXLruY9akvQRYKnhmHeM6P1VrH7AH
-         Gtvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=+iR+xqLn4ZA/GgQGnZu/dK+PUE+Bi1dnz/SKyfphrsw=;
-        b=Uf2eIA76EhDfGzZYtvGRsNtw4zqDKQH4B2aCB5AdZHVRw+cimyBwL1CSJnMPbNpNVi
-         GF5UftvvqNAr6a+EmeCkQynjQt90agXleWwz/NQGAN8ptELgNuavCwX54GQ8zMIO3Srv
-         U2tUbkGaTt6NzgksxeN1SbkYvOczD1CxqFVMcXC4tU5/hN93QnEiooMBihKIPXAgMg1i
-         HfwSlAlmQV3lw2HunkDXnQV3ju7aLsvD8TMK0T/IBZsFAnHLWGxKQMbV16P0/Fx2jtE5
-         BELmkxezeGWYkHUkV+oDSC+OVnMZMqye/LlD4fqqUgTw1BCVyt5EiVN3FEiX0QaVk5kF
-         nOeA==
-X-Gm-Message-State: AOAM531uvbNH4x4Y6hfW1KPVn7JOXPuLGTv7Lxkja91VjIvRahUCk6mF
-        sjWjfddnNrZ9Tpc1I8rnVWuqzgBlgX0Ohg==
-X-Google-Smtp-Source: ABdhPJzRsacQaPlAcYkmmUq1iTAa0t7SHBvG/AXsT2UMm1nGzdbQK6xp6O3BzDQpBYliXghu7ZcNEg==
-X-Received: by 2002:a05:6000:110d:: with SMTP id z13mr19925997wrw.662.1642429849388;
-        Mon, 17 Jan 2022 06:30:49 -0800 (PST)
-Received: from ?IPv6:2001:861:44c0:66c0:c004:9fe1:fbda:2d0c? ([2001:861:44c0:66c0:c004:9fe1:fbda:2d0c])
-        by smtp.gmail.com with ESMTPSA id k31sm12542420wms.15.2022.01.17.06.30.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Jan 2022 06:30:48 -0800 (PST)
-Subject: Re: [PATCH 2/3] arm64: dts: meson: move pwm_ef node in P212 dtsi
-To:     Christian Hewitt <christianshewitt@gmail.com>,
+        id S240096AbiAQOb3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 09:31:29 -0500
+Received: from marcansoft.com ([212.63.210.85]:56010 "EHLO mail.marcansoft.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239211AbiAQObE (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 09:31:04 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: hector@marcansoft.com)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 15DCA41AC8;
+        Mon, 17 Jan 2022 14:30:54 +0000 (UTC)
+From:   Hector Martin <marcan@marcan.st>
+To:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-References: <20220113041746.16040-1-christianshewitt@gmail.com>
- <20220113041746.16040-3-christianshewitt@gmail.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-Message-ID: <d82549cf-01cc-68de-8af3-763b94ba6ef6@baylibre.com>
-Date:   Mon, 17 Jan 2022 15:30:47 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Dmitry Osipenko <digetx@gmail.com>
+Cc:     Hector Martin <marcan@marcan.st>, Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?q?Rafa=C5=82=20Mi=C5=82ecki?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-acpi@vger.kernel.org, brcm80211-dev-list.pdl@broadcom.com,
+        SHA-cyfmac-dev-list@infineon.com
+Subject: [PATCH v3 5/9] brcmfmac: pcie: Replace brcmf_pcie_copy_mem_todev with memcpy_toio
+Date:   Mon, 17 Jan 2022 23:29:15 +0900
+Message-Id: <20220117142919.207370-6-marcan@marcan.st>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220117142919.207370-1-marcan@marcan.st>
+References: <20220117142919.207370-1-marcan@marcan.st>
 MIME-Version: 1.0
-In-Reply-To: <20220113041746.16040-3-christianshewitt@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 13/01/2022 05:17, Christian Hewitt wrote:
-> Cosmetic-only change to move/alpha-sort the node.
-> 
-> Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
-> ---
->  .../boot/dts/amlogic/meson-gxl-s905x-p212.dtsi   | 16 ++++++++--------
->  1 file changed, 8 insertions(+), 8 deletions(-)
-> 
-> diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-p212.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-p212.dtsi
-> index c635e5858929..b3d7b8613d6d 100644
-> --- a/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-p212.dtsi
-> +++ b/arch/arm64/boot/dts/amlogic/meson-gxl-s905x-p212.dtsi
-> @@ -97,6 +97,14 @@
->  	pinctrl-names = "default";
->  };
->  
-> +&pwm_ef {
-> +	status = "okay";
-> +	pinctrl-0 = <&pwm_e_pins>;
-> +	pinctrl-names = "default";
-> +	clocks = <&clkc CLKID_FCLK_DIV4>;
-> +	clock-names = "clkin0";
-> +};
-> +
->  &saradc {
->  	status = "okay";
->  	vref-supply = <&vddio_ao18>;
-> @@ -170,14 +178,6 @@
->  	vqmmc-supply = <&vddio_boot>;
->  };
->  
-> -&pwm_ef {
-> -	status = "okay";
-> -	pinctrl-0 = <&pwm_e_pins>;
-> -	pinctrl-names = "default";
-> -	clocks = <&clkc CLKID_FCLK_DIV4>;
-> -	clock-names = "clkin0";
-> -};
-> -
->  /* This is connected to the Bluetooth module: */
->  &uart_A {
->  	status = "okay";
-> 
+The alignment check was wrong (e.g. & 4 instead of & 3), and the logic
+was also inefficient if the length was not a multiple of 4, since it
+would needlessly fall back to copying the entire buffer bytewise.
 
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
+We already have a perfectly good memcpy_toio function, so just call that
+instead of rolling our own copy logic here. brcmf_pcie_init_ringbuffers
+was already using it anyway.
+
+Fixes: 9e37f045d5e7 ("brcmfmac: Adding PCIe bus layer support.")
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+---
+ .../broadcom/brcm80211/brcmfmac/pcie.c        | 48 ++-----------------
+ 1 file changed, 4 insertions(+), 44 deletions(-)
+
+diff --git a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+index b1ae6c41013f..c25f48db1f60 100644
+--- a/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
++++ b/drivers/net/wireless/broadcom/brcm80211/brcmfmac/pcie.c
+@@ -12,6 +12,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/bcma/bcma.h>
+ #include <linux/sched.h>
++#include <linux/io.h>
+ #include <asm/unaligned.h>
+ 
+ #include <soc.h>
+@@ -454,47 +455,6 @@ brcmf_pcie_write_ram32(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
+ }
+ 
+ 
+-static void
+-brcmf_pcie_copy_mem_todev(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
+-			  void *srcaddr, u32 len)
+-{
+-	void __iomem *address = devinfo->tcm + mem_offset;
+-	__le32 *src32;
+-	__le16 *src16;
+-	u8 *src8;
+-
+-	if (((ulong)address & 4) || ((ulong)srcaddr & 4) || (len & 4)) {
+-		if (((ulong)address & 2) || ((ulong)srcaddr & 2) || (len & 2)) {
+-			src8 = (u8 *)srcaddr;
+-			while (len) {
+-				iowrite8(*src8, address);
+-				address++;
+-				src8++;
+-				len--;
+-			}
+-		} else {
+-			len = len / 2;
+-			src16 = (__le16 *)srcaddr;
+-			while (len) {
+-				iowrite16(le16_to_cpu(*src16), address);
+-				address += 2;
+-				src16++;
+-				len--;
+-			}
+-		}
+-	} else {
+-		len = len / 4;
+-		src32 = (__le32 *)srcaddr;
+-		while (len) {
+-			iowrite32(le32_to_cpu(*src32), address);
+-			address += 4;
+-			src32++;
+-			len--;
+-		}
+-	}
+-}
+-
+-
+ static void
+ brcmf_pcie_copy_dev_tomem(struct brcmf_pciedev_info *devinfo, u32 mem_offset,
+ 			  void *dstaddr, u32 len)
+@@ -1570,8 +1530,8 @@ static int brcmf_pcie_download_fw_nvram(struct brcmf_pciedev_info *devinfo,
+ 		return err;
+ 
+ 	brcmf_dbg(PCIE, "Download FW %s\n", devinfo->fw_name);
+-	brcmf_pcie_copy_mem_todev(devinfo, devinfo->ci->rambase,
+-				  (void *)fw->data, fw->size);
++	memcpy_toio(devinfo->tcm + devinfo->ci->rambase,
++		    (void *)fw->data, fw->size);
+ 
+ 	resetintr = get_unaligned_le32(fw->data);
+ 	release_firmware(fw);
+@@ -1585,7 +1545,7 @@ static int brcmf_pcie_download_fw_nvram(struct brcmf_pciedev_info *devinfo,
+ 		brcmf_dbg(PCIE, "Download NVRAM %s\n", devinfo->nvram_name);
+ 		address = devinfo->ci->rambase + devinfo->ci->ramsize -
+ 			  nvram_len;
+-		brcmf_pcie_copy_mem_todev(devinfo, address, nvram, nvram_len);
++		memcpy_toio(devinfo->tcm + address, nvram, nvram_len);
+ 		brcmf_fw_nvram_free(nvram);
+ 	} else {
+ 		brcmf_dbg(PCIE, "No matching NVRAM file found %s\n",
+-- 
+2.33.0
+
