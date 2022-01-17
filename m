@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52FE3C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:08:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A255C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241646AbiAQRIJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:08:09 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52742 "EHLO
+        id S241588AbiAQRIN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:08:13 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51416 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242182AbiAQRFV (ORCPT
+        with ESMTP id S242023AbiAQRF1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:05:21 -0500
+        Mon, 17 Jan 2022 12:05:27 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 65A8FB81157;
-        Mon, 17 Jan 2022 17:05:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3D600C36AE3;
-        Mon, 17 Jan 2022 17:05:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71784B8113A;
+        Mon, 17 Jan 2022 17:05:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FE3FC36AED;
+        Mon, 17 Jan 2022 17:05:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439119;
-        bh=pL5DlckTYc8ipxH4UEVjfwKGkrjZDg8g6YwWLt+WjKU=;
+        s=k20201202; t=1642439125;
+        bh=eIli/jZZdbrp+7cIzVhZHbCgnb9mpafPIXG0izMYOVw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fXOQjrlztgVReAyUi1KTAc3NNRf6GcuOyjYwQxwJng1uVGcbrrymePWCLYsoUXv3/
-         EmTGJPgCbJDzRg/N0R4K3+mWXNI/zIBGxPRyF9JPkTCr9aBGUoC5mTq6rIPwIpouok
-         zrean8h5yYU4iXOr0WuVJGnPGYCEhJO+sd83sHB0Rdc8BbnxjpBQd+/Q+l1wSJdUqc
-         bWmT503pxfAIO8vvlTo5TkzI6RPDYAWNpQ5Z/htX1rav+eZYl3bgg8YbXjeflfjX4h
-         x4MQ2p+joIcJTGZH4Vqn0GU6yYYsjLN3iceAO2ko5QX45mwPQIXX39XUDfPRupiVYx
-         bvzUHnf5brYIg==
+        b=N/COINfbZIxkCR2uVVwIMBSIiYUdWXhF+gkD/RoUtXuxtqGsBM5cBjfKWbTc6rfJQ
+         hXMoQF4dkjixjgZfGDdmx4uF5fSfVlIV9ToRffKe9sh4X/Xf/TqaF65rqXtpfsmSjQ
+         QfvjlDLcnoEzDaRx/1OTNLdxwLy/7IXbZDerwxjKzzc/uc1F6StlSrgCHAX+7ZibFJ
+         2Iz0G6LjZstBUDpvyfAk2+81FblfH9SZLOM+yy8s4KKJ3XnoQWuiZbMsJ0RO8WegT3
+         zc6fn2UqB8gQbdGsITJX5DfNLMCB2qfF+GjromPIAjQ4qfMtzglytQWVTOIzqd+eNf
+         rIvBWIfw4todA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Erhard Furtner <erhard_f@mailbox.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, benh@kernel.crashing.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.4 11/21] powerpc/powermac: Add missing lockdep_register_key()
-Date:   Mon, 17 Jan 2022 12:04:43 -0500
-Message-Id: <20220117170454.1472347-11-sashal@kernel.org>
+        kernel test robot <lkp@intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, zbr@ioremap.net
+Subject: [PATCH AUTOSEL 5.4 13/21] w1: Misuse of get_user()/put_user() reported by sparse
+Date:   Mon, 17 Jan 2022 12:04:45 -0500
+Message-Id: <20220117170454.1472347-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117170454.1472347-1-sashal@kernel.org>
 References: <20220117170454.1472347-1-sashal@kernel.org>
@@ -52,57 +51,82 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-[ Upstream commit df1f679d19edb9eeb67cc2f96b29375f21991945 ]
+[ Upstream commit 33dc3e3e99e626ce51f462d883b05856c6c30b1d ]
 
-KeyWest i2c @0xf8001003 irq 42 /uni-n@f8000000/i2c@f8001000
-BUG: key c2d00cbc has not been registered!
-------------[ cut here ]------------
-DEBUG_LOCKS_WARN_ON(1)
-WARNING: CPU: 0 PID: 1 at kernel/locking/lockdep.c:4801 lockdep_init_map_type+0x4c0/0xb4c
-Modules linked in:
-CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.15.5-gentoo-PowerMacG4 #9
-NIP:  c01a9428 LR: c01a9428 CTR: 00000000
-REGS: e1033cf0 TRAP: 0700   Not tainted  (5.15.5-gentoo-PowerMacG4)
-MSR:  00029032 <EE,ME,IR,DR,RI>  CR: 24002002  XER: 00000000
+sparse warnings: (new ones prefixed by >>)
+>> drivers/w1/slaves/w1_ds28e04.c:342:13: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected char [noderef] __user *_pu_addr @@     got char *buf @@
+   drivers/w1/slaves/w1_ds28e04.c:342:13: sparse:     expected char [noderef] __user *_pu_addr
+   drivers/w1/slaves/w1_ds28e04.c:342:13: sparse:     got char *buf
+>> drivers/w1/slaves/w1_ds28e04.c:356:13: sparse: sparse: incorrect type in initializer (different address spaces) @@     expected char const [noderef] __user *_gu_addr @@     got char const *buf @@
+   drivers/w1/slaves/w1_ds28e04.c:356:13: sparse:     expected char const [noderef] __user *_gu_addr
+   drivers/w1/slaves/w1_ds28e04.c:356:13: sparse:     got char const *buf
 
-GPR00: c01a9428 e1033db0 c2d1cf20 00000016 00000004 00000001 c01c0630 e1033a73
-GPR08: 00000000 00000000 00000000 e1033db0 24002004 00000000 f8729377 00000003
-GPR16: c1829a9c 00000000 18305357 c1416fc0 c1416f80 c006ac60 c2d00ca8 c1416f00
-GPR24: 00000000 c21586f0 c2160000 00000000 c2d00cbc c2170000 c216e1a0 c2160000
-NIP [c01a9428] lockdep_init_map_type+0x4c0/0xb4c
-LR [c01a9428] lockdep_init_map_type+0x4c0/0xb4c
-Call Trace:
-[e1033db0] [c01a9428] lockdep_init_map_type+0x4c0/0xb4c (unreliable)
-[e1033df0] [c1c177b8] kw_i2c_add+0x334/0x424
-[e1033e20] [c1c18294] pmac_i2c_init+0x9ec/0xa9c
-[e1033e80] [c1c1a790] smp_core99_probe+0xbc/0x35c
-[e1033eb0] [c1c03cb0] kernel_init_freeable+0x190/0x5a4
-[e1033f10] [c000946c] kernel_init+0x28/0x154
-[e1033f30] [c0035148] ret_from_kernel_thread+0x14/0x1c
+The buffer buf is a failsafe buffer in kernel space, it's not user
+memory hence doesn't deserve the use of get_user() or put_user().
 
-Add missing lockdep_register_key()
+Access 'buf' content directly.
 
-Reported-by: Erhard Furtner <erhard_f@mailbox.org>
+Link: https://lore.kernel.org/lkml/202111190526.K5vb7NWC-lkp@intel.com/T/
+Reported-by: kernel test robot <lkp@intel.com>
 Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/69e4f55565bb45ebb0843977801b245af0c666fe.1638264741.git.christophe.leroy@csgroup.eu
+Link: https://lore.kernel.org/r/d14ed8d71ad4372e6839ae427f91441d3ba0e94d.1637946316.git.christophe.leroy@csgroup.eu
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/powermac/low_i2c.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/w1/slaves/w1_ds28e04.c | 26 ++++++--------------------
+ 1 file changed, 6 insertions(+), 20 deletions(-)
 
-diff --git a/arch/powerpc/platforms/powermac/low_i2c.c b/arch/powerpc/platforms/powermac/low_i2c.c
-index bf4be4b53b44d..c93ba97b3cb67 100644
---- a/arch/powerpc/platforms/powermac/low_i2c.c
-+++ b/arch/powerpc/platforms/powermac/low_i2c.c
-@@ -582,6 +582,7 @@ static void __init kw_i2c_add(struct pmac_i2c_host_kw *host,
- 	bus->close = kw_i2c_close;
- 	bus->xfer = kw_i2c_xfer;
- 	mutex_init(&bus->mutex);
-+	lockdep_register_key(&bus->lock_key);
- 	lockdep_set_class(&bus->mutex, &bus->lock_key);
- 	if (controller == busnode)
- 		bus->flags = pmac_i2c_multibus;
+diff --git a/drivers/w1/slaves/w1_ds28e04.c b/drivers/w1/slaves/w1_ds28e04.c
+index 8a640f1590784..06a9966f8c933 100644
+--- a/drivers/w1/slaves/w1_ds28e04.c
++++ b/drivers/w1/slaves/w1_ds28e04.c
+@@ -32,7 +32,7 @@ static int w1_strong_pullup = 1;
+ module_param_named(strong_pullup, w1_strong_pullup, int, 0);
+ 
+ /* enable/disable CRC checking on DS28E04-100 memory accesses */
+-static char w1_enable_crccheck = 1;
++static bool w1_enable_crccheck = true;
+ 
+ #define W1_EEPROM_SIZE		512
+ #define W1_PAGE_COUNT		16
+@@ -339,32 +339,18 @@ static BIN_ATTR_RW(pio, 1);
+ static ssize_t crccheck_show(struct device *dev, struct device_attribute *attr,
+ 			     char *buf)
+ {
+-	if (put_user(w1_enable_crccheck + 0x30, buf))
+-		return -EFAULT;
+-
+-	return sizeof(w1_enable_crccheck);
++	return sysfs_emit(buf, "%d\n", w1_enable_crccheck);
+ }
+ 
+ static ssize_t crccheck_store(struct device *dev, struct device_attribute *attr,
+ 			      const char *buf, size_t count)
+ {
+-	char val;
+-
+-	if (count != 1 || !buf)
+-		return -EINVAL;
++	int err = kstrtobool(buf, &w1_enable_crccheck);
+ 
+-	if (get_user(val, buf))
+-		return -EFAULT;
++	if (err)
++		return err;
+ 
+-	/* convert to decimal */
+-	val = val - 0x30;
+-	if (val != 0 && val != 1)
+-		return -EINVAL;
+-
+-	/* set the new value */
+-	w1_enable_crccheck = val;
+-
+-	return sizeof(w1_enable_crccheck);
++	return count;
+ }
+ 
+ static DEVICE_ATTR_RW(crccheck);
 -- 
 2.34.1
 
