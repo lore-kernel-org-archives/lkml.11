@@ -2,172 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 303DEC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 08:19:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09FB5C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 08:22:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238024AbiAQITS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 03:19:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37934 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231253AbiAQITR (ORCPT
+        id S238043AbiAQIWO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 03:22:14 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51489 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238032AbiAQIWN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 03:19:17 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1092C061574;
-        Mon, 17 Jan 2022 00:19:16 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id x11so28842440lfa.2;
-        Mon, 17 Jan 2022 00:19:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CgFiE1xRseB0L65/zcK0C8WvrsrBuQCopXkVzsqfP4E=;
-        b=MIrL15KFbodb8dwAPOc2ReAWJ15S3kOthT8ICt7Rsbi6quFPKpogoZkcq+1E+2i3ZN
-         9SleM9zPMvTSG9kvV9w7CkMbyOCp5YNtsH9u+Ka2YKHQdL1HzziaC2evA3ETuexaTOJQ
-         OqYxtOxHD3TXo1FYuun10VrYN2t5R7IjPtb7a6JZF6otQEGBZ21Fd7/AqzUICjyWKUXq
-         w0YuA6WJ1DFyJnSSHzgq51qlO6tpDxtS5GhCmMBdpjtLbIhN4UjVlBLvb5SIa411+bFb
-         yWR1aCooUq+EBqchLWdDnmLNmXtZT4ZRwvlk9RWqgyOjlsOlMYjk/GMJHJV3VhtkEf4n
-         FV6Q==
+        Mon, 17 Jan 2022 03:22:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642407732;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sg8p8AHi3UJdK9z4yX9nhx3FRx/VOIBzKvjT8S0Q3JM=;
+        b=BLYO01mWMZQfbK88AihTaKEINUI0Y5nJMTwkvUxYoNJu0SV/XqZmrSH9azCjxeAQ6nOHG+
+        /9O8bkv0p3HRazOQtPFTtXoxNGSxi1I9ZNIcX+CTxfA6YEi2sQB5hzkB/Rad6fapoU/HfA
+        n3JWU3MXLfapU1AqRinE2hXJzeLgZBQ=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-288-AlQXLA8ZPUWP2WKVl-OGSQ-1; Mon, 17 Jan 2022 03:22:10 -0500
+X-MC-Unique: AlQXLA8ZPUWP2WKVl-OGSQ-1
+Received: by mail-wm1-f69.google.com with SMTP id x10-20020a7bc20a000000b0034c3d77f277so2708237wmi.3
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 00:22:10 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=CgFiE1xRseB0L65/zcK0C8WvrsrBuQCopXkVzsqfP4E=;
-        b=k2KlEFgjGGDI7g11MMfN5ZM29w5TKNZSRh8QlJIQ/rcq+38wOh2107OHPC3xCEKK9Q
-         P5Bx4t5+BLK+USrxE/vBrG+wCuwyt65ZebHdeVMwp+9ScFgBojuQxL7KPkpmCf3mKwB5
-         r7xiReMd/0s/SoooWnOhpNSjqlc5+pEVsY+U2/UHYg6lTUToi5HLIG2GauvsE2Ju2qJL
-         +mzoqLc88AIjwydYKK/vA5kCDOm0S8mqLe1LcU3WGFkFzAMWE2k9a1X6vgper7jUlG5e
-         QfpArloqfvg2F6nYfvEJtm250PtSQhoZUBb88ThHiMdU4nu1p0J2n1+7bqX7vYpW31LY
-         ma7w==
-X-Gm-Message-State: AOAM532rnot/mEq6MwsjaQkubSnimkCTIJpSXADABrEbu3SLgJ9yOEaD
-        XieWHSKzo4wCTv9wbA2H1F6/LN10eUX3yA==
-X-Google-Smtp-Source: ABdhPJwSTMtUkjOhIAUaA8niPZVsU4ZOP/r2y93VDyf6TzIZ5d4GZUGEWNMpOZygTAOvnzLH4O2h3A==
-X-Received: by 2002:a2e:8041:: with SMTP id p1mr15023917ljg.331.1642407555032;
-        Mon, 17 Jan 2022 00:19:15 -0800 (PST)
-Received: from localhost ([46.188.51.186])
-        by smtp.gmail.com with ESMTPSA id g15sm1321967lfv.113.2022.01.17.00.19.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 00:19:14 -0800 (PST)
-Date:   Mon, 17 Jan 2022 11:19:05 +0300
-From:   Alexander Fomichev <fomichev.ru@gmail.com>
-To:     Mel Gorman <mgorman@suse.de>
-Cc:     linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org,
-        linux@yadro.com, Peter Zijlstra <peterz@infradead.org>
-Subject: Re: [RFC] Scheduler: DMA Engine regression because of sched/fair
- changes
-Message-ID: <20220117081905.a4pwglxqj7dqpyql@yadro.com>
-References: <20220112152609.gg2boujeh5vv5cns@yadro.com>
- <20220112170512.GO3301@suse.de>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=sg8p8AHi3UJdK9z4yX9nhx3FRx/VOIBzKvjT8S0Q3JM=;
+        b=OtPgoBKlbLND2OzKbRK+exU7ojZn6dyeGpvWK4KVxPOjiXrzgTwPOJ90q7SNUbOPOg
+         879K6AictJhw9V4XoIHqY5z4DQv/12XPqOj4wWFiMvDP6IdFw4/JxBqQCe0w/zIgmVZw
+         L14q3g64olN6AinOUaJZ5NUq5Vn5wY7pilHoTNNcYriuGoDPZpsfYnBoXxAt26Dt+6ab
+         aFwOxgtjUAYuYyMbZpoobFaR9WpyJdif4XbJt/hqXVKSMi/9+J+pBJdx/xw5uLO1uZXi
+         i8O0Kct3V8BI26PxZaYAn9LfSkKAljW1aFyp197uwd+VSQWgKmaA4Q62grxfUvR0Ybhy
+         jZMA==
+X-Gm-Message-State: AOAM530JsiBsa/YxlOCpunRBbXq4Eq1D/8ceZIaH1F+m2Wznky1Tp2V/
+        yXwzZI4/LYgyn1kC4PjjtmmdgJRnIo+jhYEVMlXbbQ6KrsTA4e1b6m5kWoYqvc/LT9+378T61iA
+        eN+XxxaqLlYeoAKeOGZb5c74a
+X-Received: by 2002:adf:e78e:: with SMTP id n14mr18512276wrm.631.1642407729385;
+        Mon, 17 Jan 2022 00:22:09 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyfX6DyGdjNVfeccUpaF9Hfqtqa45OuD18xrFo42Uf+iDexJ9TwGxZgQm8IYyKvOJYF6w6HHw==
+X-Received: by 2002:adf:e78e:: with SMTP id n14mr18512267wrm.631.1642407729203;
+        Mon, 17 Jan 2022 00:22:09 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:63a7:c72e:ea0e:6045? ([2001:b07:6468:f312:63a7:c72e:ea0e:6045])
+        by smtp.googlemail.com with ESMTPSA id u1sm7671679wrs.97.2022.01.17.00.22.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Jan 2022 00:22:08 -0800 (PST)
+Message-ID: <b8c2663b-69df-913f-8da1-de6b7bd189ce@redhat.com>
+Date:   Mon, 17 Jan 2022 09:22:04 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220112170512.GO3301@suse.de>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: linux-next: manual merge of the kvm tree with the risc-v tree
+Content-Language: en-US
+To:     Anup Patel <anup@brainfault.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>
+Cc:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Paul Walmsley <paul@pwsan.com>, KVM <kvm@vger.kernel.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Atish Patra <atishp@rivosinc.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        linux-riscv <linux-riscv@lists.infradead.org>
+References: <20220112114024.7be8aac6@canb.auug.org.au>
+ <20220117085431.7bef9ebc@canb.auug.org.au>
+ <CAAhSdy3gEW+SC1GCH0V4iVA9h1sxeVV-V=x4kG7w_9tcVTtamw@mail.gmail.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <CAAhSdy3gEW+SC1GCH0V4iVA9h1sxeVV-V=x4kG7w_9tcVTtamw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 05:05:12PM +0000, Mel Gorman wrote:
-> On Wed, Jan 12, 2022 at 06:26:09PM +0300, Alexander Fomichev wrote:
-> > CC: Mel Gorman <mgorman@suse.de>
-> > CC: linux@yadro.com
-> > 
-> > Hi all,
-> > 
-> > There's a huge regression found, which affects Intel Xeon's DMA Engine
-> > performance between v4.14 LTS and modern kernels. In certain
-> > circumstances the speed in dmatest is more than 6 times lower.
-> > 
-> > 	- Hardware -
-> > I did testing on 2 systems:
-> > 1) Intel(R) Xeon(R) Gold 6132 CPU @ 2.60GHz (Supermicro X11DAi-N)
-> > 2) Intel(R) Xeon(R) Bronze 3204 CPU @ 1.90GHz (YADRO Vegman S220)
-> > 
-> > 	- Measurement -
-> > The dmatest result speed decreases with almost any test settings.
-> > Although the most significant impact is revealed with 64K transfers. The
-> > following parameters were used:
-> > 
-> > modprobe dmatest iterations=1000 timeout=2000 test_buf_size=0x100000 transfer_size=0x10000 norandom=1
-> > echo "dma0chan0" > /sys/module/dmatest/parameters/channel
-> > echo 1 > /sys/module/dmatest/parameters/run
-> > 
-> > Every test csse was performed at least 3 times. All detailed results are
-> > below.
-> > 
-> > 	- Analysis -
-> > Bisecting revealed 2 different bad commits for those 2 systems, but both
-> > change the same function/condition in the same file.
-> > For the system (1) the bad commit is:
-> > [7332dec055f2457c386032f7e9b2991eb05c2a0a] sched/fair: Only immediately migrate tasks due to interrupts if prev and target CPUs share cache
-> > For the system (2) the bad commit is:
-> > [806486c377e33ab662de6d47902e9e2a32b79368] sched/fair: Do not migrate if the prev_cpu is idle
-> > 
-> > 	- Additional check -
-> > Attempting to revert the changes above, a dirty patch for the (current)
-> > kernel v5.16.0-rc5 was tested too:
-> > 
+On 1/17/22 05:13, Anup Patel wrote:
+> The commit c62a76859723 ("RISC-V: KVM: Add SBI v0.2 base extension")
+> is already merged in Linus' tree.
 > 
-> The consequences of the patch is allowing interrupts to migrate tasks away
-> from potentially cache hot data -- L1 misses if the two CPUs share LLC
-> or incurring remote memory access if migrating cross-node. The secondary
-> concern is that excessive migration from interrupts that round-robin CPUs
-> will mean that the CPU does not increase frequency. Minimally, the RFC
-> patch introduces regressions of their own. The comments cover the two
-> scenarios of interest
+> Since you are yet to send PR for 5.17, we have two options:
+> 1) Rebase your for-next branch upon latest Linus' tree master branch
+> 2) Send "RISC-V: Use SBI SRST extension when available" in the
+> next batch of changes for 5.17 after 5.17-rc1
 > 
-> +        * If this_cpu is idle, it implies the wakeup is from interrupt
-> +        * context. Only allow the move if cache is shared. Otherwise an
-> +        * interrupt intensive workload could force all tasks onto one
-> +        * node depending on the IO topology or IRQ affinity settings.
+> Let me know if you want me to rebase and send v8 patch of
+> "RISC-V: Use SBI SRST extension when available"
 > 
-> (This one causes remote memory accesses and potentially overutilisation
-> of a subset of nodes)
-> 
-> +        * If the prev_cpu is idle and cache affine then avoid a migration.
-> +        * There is no guarantee that the cache hot data from an interrupt
-> +        * is more important than cache hot data on the prev_cpu and from
-> +        * a cpufreq perspective, it's better to have higher utilisation
-> +        * on one CPU.
-> 
-> (This one incurs L1/L2 misses due to a migration even though LLC may be
-> shared)
-> 
-> The tests don't say but what CPUs to the dmatest interrupts get
-> delivered to? dmatest appears to be an exception that the *only* hot
-> data of concern is also related to the interrupt as the DMA operation is
-> validated.
-> 
-> However, given that the point of a DMA engine is to transfer data without
-> the host CPU being involved and the interrupt is delivered on completion,
-> how realistic is it that the DMA data is immediately accessed on completion
-> by normal workloads that happen to use the DMA engine? What impact does
-> it have to tbe test is noverify or polling is used?
+> In future, we should coordinate and use a shared tag for such
+> conflicting changes.
 
-Thanks for the comment. Some additional notes regarding the issue.
+Palmer should just send it to Linus and note "enum sbi_ext_id has a 
+trivial conflict" in the pull request message.
 
-1) You're right. When options "noverify=1" and "polling=1" are used.
-then no performance reducing occurs.
+We'll sort it out better in the future, but it's such a minor conflict 
+that it is not even a nuisance.
 
-2) DMA Engine on certain devices, e.g. Switchtec DMA and AMD PTDMA, is
-used particularly for off-CPU data transfer via device's NTB to a remote
-host. In NTRDMA project, which I'm involved to, DMA Engine sends data to
-remote ring buffer and on data arrival CPU processes local ring buffers.
+Paolo
 
-3) I checked dmatest with noverify=0 on PTDMA dirver: AMD EPYC 7313 16-Core
-Processor/ASRock ROMED8-2T. The regression occurs on this hardware too.
-
-4) Do you mean that with noverify=N and dirty patch, data verification
-is performed on cached data and thus measured performance is fake?
-
-5) What DMA Engine enabled drivers (and dmatest) should use as design
-pattern to conform migration/cache behavior? Does scheduler optimisation
-conflict to DMA Engine performance in general?
-
-6) I didn't suggest RFC patch to real world usage. It was just a test
-case to find out a low speed cause.
-
-Comments/answers/suggestions are welcome.
-
--- 
-Regards,
-  Alexander
