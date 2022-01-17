@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE325C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:09:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0811C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:09:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233028AbiAQRJU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:09:20 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52218 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242835AbiAQRGc (ORCPT
+        id S243300AbiAQRJ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:09:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46396 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242467AbiAQRGc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 17 Jan 2022 12:06:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98935C0612F3;
+        Mon, 17 Jan 2022 09:04:03 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 54885B81160;
-        Mon, 17 Jan 2022 17:06:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B6AAC36AF2;
-        Mon, 17 Jan 2022 17:06:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7C0056119F;
+        Mon, 17 Jan 2022 17:04:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FBC3C36B07;
+        Mon, 17 Jan 2022 17:04:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439190;
-        bh=dPECgQQvYcxOo2hldr1cbm6OU4xhatPfSlbAjSYEegw=;
+        s=k20201202; t=1642439042;
+        bh=Y5jlLYsWFAHRggd1xo9Vqx2B9cfFo1Wl0XfIsTSkE0g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sY3pSK2Rpq3fHz5KAYMUOHvj3oDhLyBu9SHaqpp/mlZSXMTmzMTXmuabXoLcoRhBm
-         Y6yYOp+r+/pkaQjtlhg42ty0/QB3T01GopJRMzis8/nlaFpPuS6mW5kqE+EHJI0O0y
-         yUnWraDqjihNmHV4t6KB4p4u3lpMiKLcbBvtWiIDzwC3cOUkfr3/wPBzwWJaGcYbmV
-         llqZkdLHygM+sqnOpET/Co37jf2jB2hEqlvZOUbkKMp2fjBb3oOM+D3andCP0YmvYP
-         JAge4y42VWKaEcODQAxEKsmD0H5aRIS3AyDKP4zco35vMlJH6HkXv2Pgchd8OiUd9+
-         kcAFolaNGEIUg==
+        b=OjaBdLrQV+lNPtlIQRvn6AxNaz4c5Y7CsDmPmvsWWoKpNiLVnQBd4tN4FJVyKDx2j
+         u4k1pWkAZX3AV8lOTVcYNKt1jA7OKSaPGXBhEMErcPKffbw3NFyYdzvF5Hm42uuPFH
+         PlORhlL5ne3rQcePWUE7FkpmsQqvV27BNedtoZyGJyBeTbGZTjH7Cv1NQ3IZ1E24t6
+         lOmgD9aXC+SEKIOsfEBsie5Ntuccs+d46Q+G/eY9xHw7cI66Oo3Az3h7Q0iqR9sGSM
+         1R1H0ln0Ybjz8t21ZUDnM/+2tA0CUVXMVvlhqE8W2aMMsWbMflKm77od0FEWBbOl5l
+         nRNa4VkCfrDQw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christoph Hellwig <hch@lst.de>, Baoquan He <bhe@redhat.com>,
-        "Martin K . Petersen" <martin.petersen@oracle.com>,
-        Sasha Levin <sashal@kernel.org>, jejb@linux.ibm.com,
-        linux-scsi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 16/17] scsi: sr: Don't use GFP_DMA
-Date:   Mon, 17 Jan 2022 12:05:50 -0500
-Message-Id: <20220117170551.1472640-16-sashal@kernel.org>
+Cc:     Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
+        Gilles BULOZ <gilles.buloz@kontron.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 16/34] nvmem: core: set size for sysfs bin file
+Date:   Mon, 17 Jan 2022 12:03:06 -0500
+Message-Id: <20220117170326.1471712-16-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220117170551.1472640-1-sashal@kernel.org>
-References: <20220117170551.1472640-1-sashal@kernel.org>
+In-Reply-To: <20220117170326.1471712-1-sashal@kernel.org>
+References: <20220117170326.1471712-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -49,58 +52,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
 
-[ Upstream commit d94d94969a4ba07a43d62429c60372320519c391 ]
+[ Upstream commit 86192251033308bb42f1e9813c962989d8ed07ec ]
 
-The allocated buffers are used as a command payload, for which the block
-layer and/or DMA API do the proper bounce buffering if needed.
+For some reason we never set the size for nvmem sysfs binary file.
+Set this.
 
-Link: https://lore.kernel.org/r/20211222090842.920724-1-hch@lst.de
-Reported-by: Baoquan He <bhe@redhat.com>
-Reviewed-by: Baoquan He <bhe@redhat.com>
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Reported-by: Gilles BULOZ <gilles.buloz@kontron.com>
+Signed-off-by: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Link: https://lore.kernel.org/r/20211130133909.6154-1-srinivas.kandagatla@linaro.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/sr.c        | 2 +-
- drivers/scsi/sr_vendor.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/nvmem/core.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
-index 84dd776d36c33..fdbd5c691d333 100644
---- a/drivers/scsi/sr.c
-+++ b/drivers/scsi/sr.c
-@@ -885,7 +885,7 @@ static void get_capabilities(struct scsi_cd *cd)
+diff --git a/drivers/nvmem/core.c b/drivers/nvmem/core.c
+index 6b170083cd248..21d89d80d0838 100644
+--- a/drivers/nvmem/core.c
++++ b/drivers/nvmem/core.c
+@@ -222,6 +222,8 @@ static umode_t nvmem_bin_attr_is_visible(struct kobject *kobj,
+ 	struct device *dev = kobj_to_dev(kobj);
+ 	struct nvmem_device *nvmem = to_nvmem_device(dev);
  
- 
- 	/* allocate transfer buffer */
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer) {
- 		sr_printk(KERN_ERR, cd, "out of memory.\n");
- 		return;
-diff --git a/drivers/scsi/sr_vendor.c b/drivers/scsi/sr_vendor.c
-index b9db2ec6d0361..996bccadd3866 100644
---- a/drivers/scsi/sr_vendor.c
-+++ b/drivers/scsi/sr_vendor.c
-@@ -113,7 +113,7 @@ int sr_set_blocklength(Scsi_CD *cd, int blocklength)
- 	if (cd->vendor == VENDOR_TOSHIBA)
- 		density = (blocklength > 2048) ? 0x81 : 0x83;
- 
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
- 
-@@ -161,7 +161,7 @@ int sr_cd_check(struct cdrom_device_info *cdi)
- 	if (cd->cdi.mask & CDC_MULTI_SESSION)
- 		return 0;
- 
--	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
-+	buffer = kmalloc(512, GFP_KERNEL);
- 	if (!buffer)
- 		return -ENOMEM;
++	attr->size = nvmem->size;
++
+ 	return nvmem_bin_attr_get_umode(nvmem);
+ }
  
 -- 
 2.34.1
