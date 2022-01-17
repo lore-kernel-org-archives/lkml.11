@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CFE0C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94997C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:15:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244100AbiAQROe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:14:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46396 "EHLO
+        id S244250AbiAQROu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:14:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244214AbiAQRLB (ORCPT
+        with ESMTP id S243308AbiAQRLY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:11:01 -0500
+        Mon, 17 Jan 2022 12:11:24 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A192AC0613F0;
-        Mon, 17 Jan 2022 09:06:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26026C03544F;
+        Mon, 17 Jan 2022 09:07:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 32FDE61248;
-        Mon, 17 Jan 2022 17:06:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79EEDC36AE3;
-        Mon, 17 Jan 2022 17:06:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BAA2261248;
+        Mon, 17 Jan 2022 17:07:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 610F7C36AE3;
+        Mon, 17 Jan 2022 17:07:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439212;
-        bh=1G5W5+597GyiCixdJ+b9k+vwhTT84W5MJH0OG6McupM=;
+        s=k20201202; t=1642439229;
+        bh=XfvMCZS3irHfKeCkn05KQOEPPkpf/f2tJwSHwFj1Rh0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HUardsG514zSL1BFbVeqRvDu8e6HIbGr678Y4VawFfZjnLQjdBi1oy2AozJj1xQRp
-         8VEM7CZlZptX2TGCbRMUD13i4Reb8exJcD/0ZeRt4wC6I1li9FCh8At7/1WaK8ea7J
-         iAPH9jh/9JD5rqUYoXYIZs4BmRtF8YmbCgU4dpCEIBvKd9281qIZkqxYneHsyy3ByZ
-         4Jcid2uUEj3pur2IzoASaVLA5xUNZBeo6JdvVFGCYa486df5wjsdYp/VYx+36iny/W
-         W98MyH8mP2IvjX88dnyRzn/LqK6MRVWY0OBAxl6Th+APGiebKNSYmc9AH8Ut5MXA3k
-         SyngcFTdOM9ug==
+        b=DVH0nj56leZsP40eXQhzhQO2IFvNqobCGl27hP12+X/9xu1xdb1SgJxzOct43QTQB
+         zDXtJIksB4RpQ4SsHIabQaq3oXXh0N6inSEvWxQSCQMfEIiHPtSTGbiy6zBggUCBiY
+         xhyNst6y4J0n+co5h6JG0koJ9m+ifDAnLNql7gE6zOz7VNE2FVbVcqAb9h6CZK9RTX
+         dDVASyD+KT2XSALi39J6jZTplSgQ8cqm40muJPXsRpAztnKlEqMX1dDfrw/nMjUwvQ
+         qW9Yqe2GLrCGPWVgm//svyKe2B4YqMhnSIv2slCQJXZ9NLILBcFu9KdxioT2iUgq0p
+         4kcnqL1AQEtXQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nicholas Piggin <npiggin@gmail.com>,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, pmladek@suse.com,
-        john.ogness@linutronix.de, clg@kaod.org, sudeep.holla@arm.com,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 4.14 06/16] powerpc/watchdog: Fix missed watchdog reset due to memory ordering race
-Date:   Mon, 17 Jan 2022 12:06:28 -0500
-Message-Id: <20220117170638.1472900-6-sashal@kernel.org>
+Cc:     Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>,
+        Wolfram Sang <wsa@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>, linux-i2c@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 13/16] i2c: designware-pci: Fix to change data types of hcnt and lcnt parameters
+Date:   Mon, 17 Jan 2022 12:06:35 -0500
+Message-Id: <20220117170638.1472900-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117170638.1472900-1-sashal@kernel.org>
 References: <20220117170638.1472900-1-sashal@kernel.org>
@@ -54,108 +53,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Piggin <npiggin@gmail.com>
+From: Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>
 
-[ Upstream commit 5dad4ba68a2483fc80d70b9dc90bbe16e1f27263 ]
+[ Upstream commit d52097010078c1844348dc0e467305e5f90fd317 ]
 
-It is possible for all CPUs to miss the pending cpumask becoming clear,
-and then nobody resetting it, which will cause the lockup detector to
-stop working. It will eventually expire, but watchdog_smp_panic will
-avoid doing anything if the pending mask is clear and it will never be
-reset.
+The data type of hcnt and lcnt in the struct dw_i2c_dev is of type u16.
+It's better to have same data type in struct dw_scl_sda_cfg as well.
 
-Order the cpumask clear vs the subsequent test to close this race.
-
-Add an extra check for an empty pending mask when the watchdog fires and
-finds its bit still clear, to try to catch any other possible races or
-bugs here and keep the watchdog working. The extra test in
-arch_touch_nmi_watchdog is required to prevent the new warning from
-firing off.
-
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-Reviewed-by: Laurent Dufour <ldufour@linux.ibm.com>
-Debugged-by: Laurent Dufour <ldufour@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211110025056.2084347-2-npiggin@gmail.com
+Reported-by: Wolfram Sang <wsa@kernel.org>
+Signed-off-by: Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Signed-off-by: Wolfram Sang <wsa@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/watchdog.c | 41 +++++++++++++++++++++++++++++++++-
- 1 file changed, 40 insertions(+), 1 deletion(-)
+ drivers/i2c/busses/i2c-designware-pcidrv.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/powerpc/kernel/watchdog.c b/arch/powerpc/kernel/watchdog.c
-index ce848ff84eddf..1617767ebc9ae 100644
---- a/arch/powerpc/kernel/watchdog.c
-+++ b/arch/powerpc/kernel/watchdog.c
-@@ -106,6 +106,10 @@ static void set_cpumask_stuck(const struct cpumask *cpumask, u64 tb)
- {
- 	cpumask_or(&wd_smp_cpus_stuck, &wd_smp_cpus_stuck, cpumask);
- 	cpumask_andnot(&wd_smp_cpus_pending, &wd_smp_cpus_pending, cpumask);
-+	/*
-+	 * See wd_smp_clear_cpu_pending()
-+	 */
-+	smp_mb();
- 	if (cpumask_empty(&wd_smp_cpus_pending)) {
- 		wd_smp_last_reset_tb = tb;
- 		cpumask_andnot(&wd_smp_cpus_pending,
-@@ -177,13 +181,44 @@ static void wd_smp_clear_cpu_pending(int cpu, u64 tb)
- 			wd_smp_lock(&flags);
- 			cpumask_clear_cpu(cpu, &wd_smp_cpus_stuck);
- 			wd_smp_unlock(&flags);
-+		} else {
-+			/*
-+			 * The last CPU to clear pending should have reset the
-+			 * watchdog so we generally should not find it empty
-+			 * here if our CPU was clear. However it could happen
-+			 * due to a rare race with another CPU taking the
-+			 * last CPU out of the mask concurrently.
-+			 *
-+			 * We can't add a warning for it. But just in case
-+			 * there is a problem with the watchdog that is causing
-+			 * the mask to not be reset, try to kick it along here.
-+			 */
-+			if (unlikely(cpumask_empty(&wd_smp_cpus_pending)))
-+				goto none_pending;
- 		}
- 		return;
- 	}
-+
- 	cpumask_clear_cpu(cpu, &wd_smp_cpus_pending);
-+
-+	/*
-+	 * Order the store to clear pending with the load(s) to check all
-+	 * words in the pending mask to check they are all empty. This orders
-+	 * with the same barrier on another CPU. This prevents two CPUs
-+	 * clearing the last 2 pending bits, but neither seeing the other's
-+	 * store when checking if the mask is empty, and missing an empty
-+	 * mask, which ends with a false positive.
-+	 */
-+	smp_mb();
- 	if (cpumask_empty(&wd_smp_cpus_pending)) {
- 		unsigned long flags;
+diff --git a/drivers/i2c/busses/i2c-designware-pcidrv.c b/drivers/i2c/busses/i2c-designware-pcidrv.c
+index 86e1bd0b82e91..347d82dff67c0 100644
+--- a/drivers/i2c/busses/i2c-designware-pcidrv.c
++++ b/drivers/i2c/busses/i2c-designware-pcidrv.c
+@@ -50,10 +50,10 @@ enum dw_pci_ctl_id_t {
+ };
  
-+none_pending:
-+		/*
-+		 * Double check under lock because more than one CPU could see
-+		 * a clear mask with the lockless check after clearing their
-+		 * pending bits.
-+		 */
- 		wd_smp_lock(&flags);
- 		if (cpumask_empty(&wd_smp_cpus_pending)) {
- 			wd_smp_last_reset_tb = tb;
-@@ -276,8 +311,12 @@ void arch_touch_nmi_watchdog(void)
- {
- 	unsigned long ticks = tb_ticks_per_usec * wd_timer_period_ms * 1000;
- 	int cpu = smp_processor_id();
--	u64 tb = get_tb();
-+	u64 tb;
-+
-+	if (!cpumask_test_cpu(cpu, &watchdog_cpumask))
-+		return;
+ struct dw_scl_sda_cfg {
+-	u32 ss_hcnt;
+-	u32 fs_hcnt;
+-	u32 ss_lcnt;
+-	u32 fs_lcnt;
++	u16 ss_hcnt;
++	u16 fs_hcnt;
++	u16 ss_lcnt;
++	u16 fs_lcnt;
+ 	u32 sda_hold;
+ };
  
-+	tb = get_tb();
- 	if (tb - per_cpu(wd_timer_tb, cpu) >= ticks) {
- 		per_cpu(wd_timer_tb, cpu) = tb;
- 		wd_smp_clear_cpu_pending(cpu, tb);
 -- 
 2.34.1
 
