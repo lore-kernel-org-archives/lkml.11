@@ -2,27 +2,27 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5CF8C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 14:56:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8861DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 14:57:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240144AbiAQO45 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 09:56:57 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:59488 "EHLO
+        id S240367AbiAQO5E (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 09:57:04 -0500
+Received: from linux.microsoft.com ([13.77.154.182]:59516 "EHLO
         linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239983AbiAQO4b (ORCPT
+        with ESMTP id S240192AbiAQO4d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 09:56:31 -0500
+        Mon, 17 Jan 2022 09:56:33 -0500
 Received: from x64host.home (unknown [47.187.212.181])
-        by linux.microsoft.com (Postfix) with ESMTPSA id DFFED20B913A;
-        Mon, 17 Jan 2022 06:56:29 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com DFFED20B913A
+        by linux.microsoft.com (Postfix) with ESMTPSA id E005B20B9132;
+        Mon, 17 Jan 2022 06:56:31 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com E005B20B9132
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1642431390;
-        bh=2pCZVm8MtKA36IH8thLS7DpFXD0j/nj2Mxtd3QCoxKQ=;
+        s=default; t=1642431392;
+        bh=Gu/RiiXWRBLp+NeSXyYMhePY/Y68RWORmCeNAWcv3uE=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=rCer+V83dEQpthi9Cg459ZrRToi90T/9efdI9SsiNnY3oGwYq+jHVn1Ea4f0nP6Wp
-         l0Xr7Jr/1FzTl4uAoV95W35x1OudhGCfym/KFARfkD+BdDdT/TxSQZCexRc2kSI8Ho
-         JYoYU2L6FszLjyeS4Nsr7MEY2xCmGTgayB1HJ4FA=
+        b=Hlbw1O1WRSKKJdXQXYgsD8vj8ZdO0MtoFe2CmlOg2sJ8bXm8U+vKAkrIlzfjzrikN
+         zk6H5cDNDrMliL5T+9EfagreP5IwaaG/b92mp4m61pu7a1UanupbiDafz1Cx9eXf6A
+         cFm/RaeCISpCzj8UatjExxyWnkmYn8jP7pHfRtFo=
 From:   madvenka@linux.microsoft.com
 To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         ardb@kernel.org, nobuta.keiya@fujitsu.com,
@@ -30,9 +30,9 @@ To:     mark.rutland@arm.com, broonie@kernel.org, jpoimboe@redhat.com,
         jmorris@namei.org, linux-arm-kernel@lists.infradead.org,
         live-patching@vger.kernel.org, linux-kernel@vger.kernel.org,
         madvenka@linux.microsoft.com
-Subject: [PATCH v13 06/11] arm64: Use stack_trace_consume_fn and rename args to unwind()
-Date:   Mon, 17 Jan 2022 08:56:03 -0600
-Message-Id: <20220117145608.6781-7-madvenka@linux.microsoft.com>
+Subject: [PATCH v13 08/11] arm64: Introduce stack trace reliability checks in the unwinder
+Date:   Mon, 17 Jan 2022 08:56:05 -0600
+Message-Id: <20220117145608.6781-9-madvenka@linux.microsoft.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220117145608.6781-1-madvenka@linux.microsoft.com>
 References: <95691cae4f4504f33d0fc9075541b1e7deefe96f>
@@ -45,34 +45,106 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: "Madhavan T. Venkataraman" <madvenka@linux.microsoft.com>
 
-Rename the arguments to unwind() for better consistency. Also, use the
-typedef stack_trace_consume_fn for the consume_entry function as it is
-already defined in linux/stacktrace.h.
+There are some kernel features and conditions that make a stack trace
+unreliable. Callers may require the unwinder to detect these cases.
+E.g., livepatch.
+
+Introduce a new function called unwind_check_reliability() that will
+detect these cases and set a flag in the stack frame. Call
+unwind_check_reliability() for every frame in unwind().
+
+Introduce the first reliability check in unwind_check_reliability() - If
+a return PC is not a valid kernel text address, consider the stack
+trace unreliable. It could be some generated code. Other reliability checks
+will be added in the future.
+
+Let unwind() return a boolean to indicate if the stack trace is
+reliable.
 
 Signed-off-by: Madhavan T. Venkataraman <madvenka@linux.microsoft.com>
+Reviewed-by: Mark Brown <broonie@kernel.org>
 ---
- arch/arm64/kernel/stacktrace.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/arm64/include/asm/stacktrace.h |  3 +++
+ arch/arm64/kernel/stacktrace.c      | 28 ++++++++++++++++++++++++++--
+ 2 files changed, 29 insertions(+), 2 deletions(-)
 
+diff --git a/arch/arm64/include/asm/stacktrace.h b/arch/arm64/include/asm/stacktrace.h
+index c11b048ffd0e..26eba9d7e5c7 100644
+--- a/arch/arm64/include/asm/stacktrace.h
++++ b/arch/arm64/include/asm/stacktrace.h
+@@ -57,6 +57,8 @@ struct stack_info {
+  * @final_fp	 Pointer to the final frame.
+  *
+  * @failed:      Unwind failed.
++ *
++ * @reliable:    Stack trace is reliable.
+  */
+ struct unwind_state {
+ 	unsigned long fp;
+@@ -70,6 +72,7 @@ struct unwind_state {
+ 	struct task_struct *task;
+ 	unsigned long final_fp;
+ 	bool failed;
++	bool reliable;
+ };
+ 
+ extern void dump_backtrace(struct pt_regs *regs, struct task_struct *tsk,
 diff --git a/arch/arm64/kernel/stacktrace.c b/arch/arm64/kernel/stacktrace.c
-index 1b32e55735aa..f772dac78b11 100644
+index 73fc6b5ee6fd..3dc0374e83f7 100644
 --- a/arch/arm64/kernel/stacktrace.c
 +++ b/arch/arm64/kernel/stacktrace.c
-@@ -181,12 +181,12 @@ static int notrace unwind_next(struct unwind_state *state)
+@@ -18,6 +18,25 @@
+ #include <asm/stack_pointer.h>
+ #include <asm/stacktrace.h>
+ 
++/*
++ * Check the stack frame for conditions that make further unwinding unreliable.
++ */
++static void unwind_check_reliability(struct unwind_state *state)
++{
++	if (state->fp == state->final_fp) {
++		/* Final frame; no more unwind, no need to check reliability */
++		return;
++	}
++
++	/*
++	 * If the PC is not a known kernel text address, then we cannot
++	 * be sure that a subsequent unwind will be reliable, as we
++	 * don't know that the code follows our unwind requirements.
++	 */
++	if (!__kernel_text_address(state->pc))
++		state->reliable = false;
++}
++
+ /*
+  * AArch64 PCS assigns the frame pointer to x29.
+  *
+@@ -54,6 +73,7 @@ static void unwind_init_common(struct unwind_state *state,
+ 	state->prev_fp = 0;
+ 	state->prev_type = STACK_TYPE_UNKNOWN;
+ 	state->failed = false;
++	state->reliable = true;
+ 
+ 	/* Stack trace terminates here. */
+ 	state->final_fp = (unsigned long)task_pt_regs(task)->stackframe;
+@@ -207,11 +227,15 @@ static void notrace unwind_next(struct unwind_state *state)
+ }
  NOKPROBE_SYMBOL(unwind_next);
  
- static void notrace unwind(struct unwind_state *state,
--			   bool (*fn)(void *, unsigned long), void *data)
-+			   stack_trace_consume_fn consume_entry, void *cookie)
+-static void notrace unwind(struct unwind_state *state,
++static bool notrace unwind(struct unwind_state *state,
+ 			   stack_trace_consume_fn consume_entry, void *cookie)
  {
- 	while (1) {
- 		int ret;
+-	while (unwind_continue(state, consume_entry, cookie))
++	unwind_check_reliability(state);
++	while (unwind_continue(state, consume_entry, cookie)) {
+ 		unwind_next(state);
++		unwind_check_reliability(state);
++	}
++	return !state->failed && state->reliable;
+ }
+ NOKPROBE_SYMBOL(unwind);
  
--		if (!fn(data, state->pc))
-+		if (!consume_entry(cookie, state->pc))
- 			break;
- 		ret = unwind_next(state);
- 		if (ret < 0)
 -- 
 2.25.1
 
