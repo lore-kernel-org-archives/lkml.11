@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF223C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:08:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66EEEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 17:08:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243007AbiAQRH7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 12:07:59 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52640 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241920AbiAQRFL (ORCPT
+        id S243017AbiAQRIC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 12:08:02 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55296 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242161AbiAQRFS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 12:05:11 -0500
+        Mon, 17 Jan 2022 12:05:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 18F1BB81155;
-        Mon, 17 Jan 2022 17:05:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BDECEC36AEC;
-        Mon, 17 Jan 2022 17:05:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1900A611F2;
+        Mon, 17 Jan 2022 17:05:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CFF7C36AE3;
+        Mon, 17 Jan 2022 17:05:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642439108;
-        bh=fqghv2tM9KQdZtwnpamw7ZoE6favq2oByT6WYmfaJKk=;
+        s=k20201202; t=1642439116;
+        bh=m7JLj5kTr3Bfw//9CcyMcWKFqW+mZabH4MBRc9mSyek=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NMICP5C2JhMCkDum2exy3ULpggnKDdOulBc+6Cd3Mye+WYg6rzzfvZNiXqv2U/0UB
-         6JyFGmNh5hYbXWOcBA8na1IZjKzLl8GblDyliteWctkOWSQCTcTcNA6IUlP2F76y4W
-         F2II68sASqbhpUfd79QqIBzAWk7h7ESwTCWAIfpJ6XXBseZh4ZKE/88VobqtUXDXOK
-         bYfymhKD+qO8u2VNjSS0lW9xTy9POZ9cU9b3p5oJmRla0q5GBpLpGg5zgTv2KzE/zj
-         LjUrFnnQe4y6Dcg+nefeyN7kx9RpBMp3KuRMBQADS1zu3rPvueU+DuPNTN9JrBRzCD
-         AGjy6wvH7Jowg==
+        b=bMIUkxNByK6ji0jTSH7f6rt4CWgnuEOVuqw/SARLYJtJFAKParRpSbQikdbL7gG/m
+         uTF48nepdMGVbExnFTNi96SzVyyjomts+qpAiRN5KvDbjsmu/PKiS6EAnWwYSOYejm
+         YcUMDWmm2qzjqizS6PTx9EhrStQG8c/EnX/7QTs5rdCiBjUyxFUkilm+Tq0xUkAOa4
+         6R/jyWas0kzVB3ERqub8DSX9q9yLjvxjvd12SZJD7pGgPTgUYSWirKaNwSEQ9VWkGu
+         BF6S1SUFaAo2FEV7lnEoSA+dwlWTcO/Wd7ud4knWPg0pE+xNDtHfUS//045KwDafUb
+         A/qGEI5ftPmXw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nicholas Piggin <npiggin@gmail.com>,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>, pmladek@suse.com,
-        john.ogness@linutronix.de, sudeep.holla@arm.com, clg@kaod.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.4 06/21] powerpc/watchdog: Fix missed watchdog reset due to memory ordering race
-Date:   Mon, 17 Jan 2022 12:04:38 -0500
-Message-Id: <20220117170454.1472347-6-sashal@kernel.org>
+Cc:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Christian Hewitt <christianshewitt@gmail.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Sasha Levin <sashal@kernel.org>, narmstrong@baylibre.com,
+        mturquette@baylibre.com, sboyd@kernel.org, khilman@baylibre.com,
+        linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.4 10/21] clk: meson: gxbb: Fix the SDM_EN bit for MPLL0 on GXBB
+Date:   Mon, 17 Jan 2022 12:04:42 -0500
+Message-Id: <20220117170454.1472347-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220117170454.1472347-1-sashal@kernel.org>
 References: <20220117170454.1472347-1-sashal@kernel.org>
@@ -51,108 +52,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicholas Piggin <npiggin@gmail.com>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
-[ Upstream commit 5dad4ba68a2483fc80d70b9dc90bbe16e1f27263 ]
+[ Upstream commit ff54938dd190d85f740b9bf9dde59b550936b621 ]
 
-It is possible for all CPUs to miss the pending cpumask becoming clear,
-and then nobody resetting it, which will cause the lockup detector to
-stop working. It will eventually expire, but watchdog_smp_panic will
-avoid doing anything if the pending mask is clear and it will never be
-reset.
+There are reports that 48kHz audio does not work on the WeTek Play 2
+(which uses a GXBB SoC), while 44.1kHz audio works fine on the same
+board. There are also reports of 48kHz audio working fine on GXL and
+GXM SoCs, which are using an (almost) identical AIU (audio controller).
 
-Order the cpumask clear vs the subsequent test to close this race.
+Experimenting has shown that MPLL0 is causing this problem. In the .dts
+we have by default:
+	assigned-clocks = <&clkc CLKID_MPLL0>,
+			  <&clkc CLKID_MPLL1>,
+			  <&clkc CLKID_MPLL2>;
+	assigned-clock-rates = <294912000>,
+			       <270950400>,
+			       <393216000>;
+The MPLL0 rate is divisible by 48kHz without remainder and the MPLL1
+rate is divisible by 44.1kHz without remainder. Swapping these two clock
+rates "fixes" 48kHz audio but breaks 44.1kHz audio.
 
-Add an extra check for an empty pending mask when the watchdog fires and
-finds its bit still clear, to try to catch any other possible races or
-bugs here and keep the watchdog working. The extra test in
-arch_touch_nmi_watchdog is required to prevent the new warning from
-firing off.
+Everything looks normal when looking at the info provided by the common
+clock framework while playing 48kHz audio (via I2S with mclk-fs = 256):
+        mpll_prediv                 1        1        0  2000000000
+           mpll0_div                1        1        0   294909641
+              mpll0                 1        1        0   294909641
+                 cts_amclk_sel       1        1        0   294909641
+                    cts_amclk_div       1        1        0    12287902
+                       cts_amclk       1        1        0    12287902
 
-Signed-off-by: Nicholas Piggin <npiggin@gmail.com>
-Reviewed-by: Laurent Dufour <ldufour@linux.ibm.com>
-Debugged-by: Laurent Dufour <ldufour@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211110025056.2084347-2-npiggin@gmail.com
+meson-clk-msr however shows that the actual MPLL0 clock is off by more
+than 38MHz:
+        mp0_out               333322917    +/-10416Hz
+
+The rate seen by meson-clk-msr is very close to what we would get when
+SDM (the fractional part) was ignored:
+  (2000000000Hz * 16384) / ((16384 * 6) = 333.33MHz
+If SDM was considered the we should get close to:
+  (2000000000Hz * 16384) / ((16384 * 6) + 12808) = 294.9MHz
+
+Further experimenting shows that HHI_MPLL_CNTL7[15] does not have any
+effect on the rate of MPLL0 as seen my meson-clk-msr (regardless of
+whether that bit is zero or one the rate is always the same according to
+meson-clk-msr). Using HHI_MPLL_CNTL[25] on the other hand as SDM_EN
+results in SDM being considered for the rate output by the hardware. The
+rate - as seen by meson-clk-msr - matches with what we expect when
+SDM_EN is enabled (fractional part is being considered, resulting in a
+294.9MHz output) or disable (fractional part being ignored, resulting in
+a 333.33MHz output).
+
+Reported-by: Christian Hewitt <christianshewitt@gmail.com>
+Tested-by: Christian Hewitt <christianshewitt@gmail.com>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Signed-off-by: Jerome Brunet <jbrunet@baylibre.com>
+Link: https://lore.kernel.org/r/20211031135006.1508796-1-martin.blumenstingl@googlemail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/kernel/watchdog.c | 41 +++++++++++++++++++++++++++++++++-
- 1 file changed, 40 insertions(+), 1 deletion(-)
+ drivers/clk/meson/gxbb.c | 44 +++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 41 insertions(+), 3 deletions(-)
 
-diff --git a/arch/powerpc/kernel/watchdog.c b/arch/powerpc/kernel/watchdog.c
-index af3c15a1d41eb..75b2a6c4db5a5 100644
---- a/arch/powerpc/kernel/watchdog.c
-+++ b/arch/powerpc/kernel/watchdog.c
-@@ -132,6 +132,10 @@ static void set_cpumask_stuck(const struct cpumask *cpumask, u64 tb)
- {
- 	cpumask_or(&wd_smp_cpus_stuck, &wd_smp_cpus_stuck, cpumask);
- 	cpumask_andnot(&wd_smp_cpus_pending, &wd_smp_cpus_pending, cpumask);
-+	/*
-+	 * See wd_smp_clear_cpu_pending()
-+	 */
-+	smp_mb();
- 	if (cpumask_empty(&wd_smp_cpus_pending)) {
- 		wd_smp_last_reset_tb = tb;
- 		cpumask_andnot(&wd_smp_cpus_pending,
-@@ -217,13 +221,44 @@ static void wd_smp_clear_cpu_pending(int cpu, u64 tb)
+diff --git a/drivers/clk/meson/gxbb.c b/drivers/clk/meson/gxbb.c
+index 1f9c056e684ce..e8e36ec70b27f 100644
+--- a/drivers/clk/meson/gxbb.c
++++ b/drivers/clk/meson/gxbb.c
+@@ -712,6 +712,35 @@ static struct clk_regmap gxbb_mpll_prediv = {
+ };
  
- 			cpumask_clear_cpu(cpu, &wd_smp_cpus_stuck);
- 			wd_smp_unlock(&flags);
-+		} else {
+ static struct clk_regmap gxbb_mpll0_div = {
++	.data = &(struct meson_clk_mpll_data){
++		.sdm = {
++			.reg_off = HHI_MPLL_CNTL7,
++			.shift   = 0,
++			.width   = 14,
++		},
++		.sdm_en = {
++			.reg_off = HHI_MPLL_CNTL,
++			.shift   = 25,
++			.width	 = 1,
++		},
++		.n2 = {
++			.reg_off = HHI_MPLL_CNTL7,
++			.shift   = 16,
++			.width   = 9,
++		},
++		.lock = &meson_clk_lock,
++	},
++	.hw.init = &(struct clk_init_data){
++		.name = "mpll0_div",
++		.ops = &meson_clk_mpll_ops,
++		.parent_hws = (const struct clk_hw *[]) {
++			&gxbb_mpll_prediv.hw
++		},
++		.num_parents = 1,
++	},
++};
++
++static struct clk_regmap gxl_mpll0_div = {
+ 	.data = &(struct meson_clk_mpll_data){
+ 		.sdm = {
+ 			.reg_off = HHI_MPLL_CNTL7,
+@@ -748,7 +777,16 @@ static struct clk_regmap gxbb_mpll0 = {
+ 	.hw.init = &(struct clk_init_data){
+ 		.name = "mpll0",
+ 		.ops = &clk_regmap_gate_ops,
+-		.parent_hws = (const struct clk_hw *[]) { &gxbb_mpll0_div.hw },
++		.parent_data = &(const struct clk_parent_data) {
 +			/*
-+			 * The last CPU to clear pending should have reset the
-+			 * watchdog so we generally should not find it empty
-+			 * here if our CPU was clear. However it could happen
-+			 * due to a rare race with another CPU taking the
-+			 * last CPU out of the mask concurrently.
-+			 *
-+			 * We can't add a warning for it. But just in case
-+			 * there is a problem with the watchdog that is causing
-+			 * the mask to not be reset, try to kick it along here.
++			 * Note:
++			 * GXL and GXBB have different SDM_EN registers. We
++			 * fallback to the global naming string mechanism so
++			 * mpll0_div picks up the appropriate one.
 +			 */
-+			if (unlikely(cpumask_empty(&wd_smp_cpus_pending)))
-+				goto none_pending;
- 		}
- 		return;
- 	}
-+
- 	cpumask_clear_cpu(cpu, &wd_smp_cpus_pending);
-+
-+	/*
-+	 * Order the store to clear pending with the load(s) to check all
-+	 * words in the pending mask to check they are all empty. This orders
-+	 * with the same barrier on another CPU. This prevents two CPUs
-+	 * clearing the last 2 pending bits, but neither seeing the other's
-+	 * store when checking if the mask is empty, and missing an empty
-+	 * mask, which ends with a false positive.
-+	 */
-+	smp_mb();
- 	if (cpumask_empty(&wd_smp_cpus_pending)) {
- 		unsigned long flags;
- 
-+none_pending:
-+		/*
-+		 * Double check under lock because more than one CPU could see
-+		 * a clear mask with the lockless check after clearing their
-+		 * pending bits.
-+		 */
- 		wd_smp_lock(&flags);
- 		if (cpumask_empty(&wd_smp_cpus_pending)) {
- 			wd_smp_last_reset_tb = tb;
-@@ -314,8 +349,12 @@ void arch_touch_nmi_watchdog(void)
- {
- 	unsigned long ticks = tb_ticks_per_usec * wd_timer_period_ms * 1000;
- 	int cpu = smp_processor_id();
--	u64 tb = get_tb();
-+	u64 tb;
- 
-+	if (!cpumask_test_cpu(cpu, &watchdog_cpumask))
-+		return;
-+
-+	tb = get_tb();
- 	if (tb - per_cpu(wd_timer_tb, cpu) >= ticks) {
- 		per_cpu(wd_timer_tb, cpu) = tb;
- 		wd_smp_clear_cpu_pending(cpu, tb);
++			.name = "mpll0_div",
++			.index = -1,
++		},
+ 		.num_parents = 1,
+ 		.flags = CLK_SET_RATE_PARENT,
+ 	},
+@@ -3036,7 +3074,7 @@ static struct clk_hw_onecell_data gxl_hw_onecell_data = {
+ 		[CLKID_VAPB_1]		    = &gxbb_vapb_1.hw,
+ 		[CLKID_VAPB_SEL]	    = &gxbb_vapb_sel.hw,
+ 		[CLKID_VAPB]		    = &gxbb_vapb.hw,
+-		[CLKID_MPLL0_DIV]	    = &gxbb_mpll0_div.hw,
++		[CLKID_MPLL0_DIV]	    = &gxl_mpll0_div.hw,
+ 		[CLKID_MPLL1_DIV]	    = &gxbb_mpll1_div.hw,
+ 		[CLKID_MPLL2_DIV]	    = &gxbb_mpll2_div.hw,
+ 		[CLKID_MPLL_PREDIV]	    = &gxbb_mpll_prediv.hw,
+@@ -3430,7 +3468,7 @@ static struct clk_regmap *const gxl_clk_regmaps[] = {
+ 	&gxbb_mpll0,
+ 	&gxbb_mpll1,
+ 	&gxbb_mpll2,
+-	&gxbb_mpll0_div,
++	&gxl_mpll0_div,
+ 	&gxbb_mpll1_div,
+ 	&gxbb_mpll2_div,
+ 	&gxbb_cts_amclk_div,
 -- 
 2.34.1
 
