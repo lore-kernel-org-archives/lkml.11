@@ -2,74 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC49C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 06:24:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A21CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 06:24:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234640AbiAQGXu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 01:23:50 -0500
-Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:47771 "EHLO
-        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234620AbiAQGXs (ORCPT
+        id S234634AbiAQGXt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 01:23:49 -0500
+Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:35915 "EHLO
+        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234410AbiAQGXs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 17 Jan 2022 01:23:48 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R571e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=yinan@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0V2-m4ej_1642400624;
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R581e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=yinan@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0V2-m4ej_1642400624;
 Received: from localhost.localdomain(mailfrom:yinan@linux.alibaba.com fp:SMTPD_---0V2-m4ej_1642400624)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 17 Jan 2022 14:23:46 +0800
+          Mon, 17 Jan 2022 14:23:45 +0800
 From:   Yinan Liu <yinan@linux.alibaba.com>
 To:     rostedt@goodmis.org, nathan@kernel.org
 Cc:     mingo@kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] script/sorttable: fix some initialization problems
-Date:   Mon, 17 Jan 2022 14:23:44 +0800
-Message-Id: <20220117062344.15633-2-yinan@linux.alibaba.com>
+Subject: [PATCH 0/1] fix initialization problems 
+Date:   Mon, 17 Jan 2022 14:23:43 +0800
+Message-Id: <20220117062344.15633-1-yinan@linux.alibaba.com>
 X-Mailer: git-send-email 2.30.1 (Apple Git-130)
-In-Reply-To: <20220117062344.15633-1-yinan@linux.alibaba.com>
+In-Reply-To: <20220115225920.0e5939aa@gandalf.local.home>
 References: <20220115225920.0e5939aa@gandalf.local.home>
- <20220117062344.15633-1-yinan@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-elf_mcount_loc and mcount_sort_thread definitions are not
-initialized immediately within the function, which can cause
-the judgment logic to use uninitialized values when the
-initialization logic of subsequent code fails.
+Hi,steven and Nathan
 
-Link: https://lkml.kernel.org/r/20211212113358.34208-2-yinan@linux.alibaba.com
+Thanks to Nathan, I realize that there are some problems with initialization.
+Initialization of pthreads and mstructs may fail or be skipped, in which case 
+it is possible to use uninitialized values in "out" logic. I'm not sure if 
+such an error would happen, but it's certainly safe to initialize it.
+ 
+I use mcount_sort_pthread as a global variable, which is consistent with 
+orc_sort_pthread. And initialize the mstruct in function do_sort.
 
-Fixes:72b3942a173c (scripts: ftrace - move the sort-processing in ftrace_init)
-Signed-off-by: Yinan Liu <yinan@linux.alibaba.com>
----
+Yinan Liu (1):
+  script/sorttable: fix some initialization problems
+
  scripts/sorttable.h | 5 +++--
  1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/scripts/sorttable.h b/scripts/sorttable.h
-index 1e8b77928fa4..13ae3262ec96 100644
---- a/scripts/sorttable.h
-+++ b/scripts/sorttable.h
-@@ -199,6 +199,8 @@ static int compare_extable(const void *a, const void *b)
- 	return 0;
- }
- #ifdef MCOUNT_SORT_ENABLED
-+pthread_t mcount_sort_thread;
-+
- struct elf_mcount_loc {
- 	Elf_Ehdr *ehdr;
- 	Elf_Shdr *init_data_sec;
-@@ -282,10 +284,9 @@ static int do_sort(Elf_Ehdr *ehdr,
- 	unsigned int shnum;
- 	unsigned int shstrndx;
- #ifdef MCOUNT_SORT_ENABLED
--	struct elf_mcount_loc mstruct;
-+	struct elf_mcount_loc mstruct = {NULL, NULL, 0, 0};
- 	uint_t _start_mcount_loc = 0;
- 	uint_t _stop_mcount_loc = 0;
--	pthread_t mcount_sort_thread;
- #endif
- #if defined(SORTTABLE_64) && defined(UNWINDER_ORC_ENABLED)
- 	unsigned int orc_ip_size = 0;
 -- 
 2.19.1.6.gb485710b
 
