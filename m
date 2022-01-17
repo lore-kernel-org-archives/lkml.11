@@ -2,207 +2,292 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E515C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 15:15:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66151C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 17 Jan 2022 15:16:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240465AbiAQPPz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 10:15:55 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:4421 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240398AbiAQPPo (ORCPT
+        id S240389AbiAQPQl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 10:16:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49178 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233188AbiAQPQk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 10:15:44 -0500
-Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JcwPh0kmhz67fK4;
-        Mon, 17 Jan 2022 23:12:40 +0800 (CST)
-Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
- fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.21; Mon, 17 Jan 2022 16:15:42 +0100
-Received: from localhost.localdomain (10.69.192.58) by
- lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 17 Jan 2022 15:15:38 +0000
-From:   John Garry <john.garry@huawei.com>
-To:     <peterz@infradead.org>, <mingo@redhat.com>, <acme@kernel.org>,
-        <mark.rutland@arm.com>, <alexander.shishkin@linux.intel.com>,
-        <jolsa@redhat.com>, <namhyung@kernel.org>, <irogers@google.com>,
-        <kjain@linux.ibm.com>
-CC:     <linux-perf-users@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linuxarm@huawei.com>, <liuqi115@huawei.com>,
-        <zhangshaokun@hisilicon.com>, John Garry <john.garry@huawei.com>
-Subject: [PATCH 3/3] perf test: Add parse-events test for aliases with hyphens
-Date:   Mon, 17 Jan 2022 23:10:15 +0800
-Message-ID: <1642432215-234089-4-git-send-email-john.garry@huawei.com>
-X-Mailer: git-send-email 2.8.1
-In-Reply-To: <1642432215-234089-1-git-send-email-john.garry@huawei.com>
-References: <1642432215-234089-1-git-send-email-john.garry@huawei.com>
+        Mon, 17 Jan 2022 10:16:40 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A91C061574
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 07:16:40 -0800 (PST)
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1n9TkM-0002fX-Kj; Mon, 17 Jan 2022 16:16:38 +0100
+Received: from sha by ptx.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <sha@pengutronix.de>)
+        id 1n9TkJ-0004sF-U3; Mon, 17 Jan 2022 16:16:35 +0100
+Date:   Mon, 17 Jan 2022 16:16:35 +0100
+From:   Sascha Hauer <sha@pengutronix.de>
+To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Michael Trimarchi <michael@amarulasolutions.com>,
+        Han Xu <han.xu@nxp.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        linux-mtd@lists.infradead.org
+Subject: Re: [RFC PATCH v2 3/5] mtd: rawnand: gpmi: use a table to get EDO
+ mode setup
+Message-ID: <20220117151635.GB23490@pengutronix.de>
+References: <20220117111829.1811997-1-dario.binacchi@amarulasolutions.com>
+ <20220117111829.1811997-4-dario.binacchi@amarulasolutions.com>
+ <YeVsnQpOkyXaBk0+@pengutronix.de>
+ <CABGWkvruAWcOxX99U0jcK1sz+AoGKKJwHWbtn_kSO=SJsCO5Wg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.58]
-X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
- lhreml724-chm.china.huawei.com (10.201.108.75)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CABGWkvruAWcOxX99U0jcK1sz+AoGKKJwHWbtn_kSO=SJsCO5Wg@mail.gmail.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 15:16:11 up 37 days, 23:01, 81 users,  load average: 0.33, 0.20,
+ 0.20
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: sha@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a test which allows us to test parsing an event alias with hyphens.
+On Mon, Jan 17, 2022 at 03:08:30PM +0100, Dario Binacchi wrote:
+> Hi Sascha,
+> 
+> On Mon, Jan 17, 2022 at 2:18 PM Sascha Hauer <sha@pengutronix.de> wrote:
+> >
+> > Hi Dario,
+> >
+> > On Mon, Jan 17, 2022 at 12:18:27PM +0100, Dario Binacchi wrote:
+> > > +struct edo_mode {
+> > > +     u32 tRC_min;
+> > > +     long clk_rate;
+> > > +     u8 wrn_dly_sel;
+> > > +};
+> > > +
+> > > +static const struct edo_mode edo_modes[] = {
+> > > +     {.tRC_min = 30000, .clk_rate = 22000000,
+> > > +      .wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_4_TO_8NS},
+> > > +     {.tRC_min = 30000, .clk_rate = 22000000,
+> > > +      .wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_4_TO_8NS},
+> > > +     {.tRC_min = 30000, .clk_rate = 22000000,
+> > > +      .wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_4_TO_8NS},
+> > > +     {.tRC_min = 30000, .clk_rate = 22000000,
+> > > +      .wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_4_TO_8NS},
+> > > +     {.tRC_min = 25000, .clk_rate = 80000000,
+> > > +      .wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_NO_DELAY},
+> > > +     {.tRC_min = 20000, .clk_rate = 100000000,
+> > > +      .wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_NO_DELAY},
+> > > +};
+> > > +
+> > >  /*
+> > >   * <1> Firstly, we should know what's the GPMI-clock means.
+> > >   *     The GPMI-clock is the internal clock in the gpmi nand controller.
+> > > @@ -657,22 +678,18 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
+> > >       int sample_delay_ps, sample_delay_factor;
+> > >       u16 busy_timeout_cycles;
+> > >       u8 wrn_dly_sel;
+> > > +     int i, emode = ARRAY_SIZE(edo_modes) - 1;
+> > >
+> > > -     if (sdr->tRC_min >= 30000) {
+> > > -             /* ONFI non-EDO modes [0-3] */
+> > > -             hw->clk_rate = 22000000;
+> > > -             wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_4_TO_8NS;
+> > > -     } else if (sdr->tRC_min >= 25000) {
+> > > -             /* ONFI EDO mode 4 */
+> > > -             hw->clk_rate = 80000000;
+> > > -             wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_NO_DELAY;
+> > > -     } else {
+> > > -             /* ONFI EDO mode 5 */
+> > > -             hw->clk_rate = 100000000;
+> > > -             wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_NO_DELAY;
+> > > +     /* Search the required EDO mode */
+> > > +     for (i = 0; i < ARRAY_SIZE(edo_modes); i++) {
+> > > +             if (sdr->tRC_min >= edo_modes[i].tRC_min) {
+> > > +                     emode = i;
+> > > +                     break;
+> > > +             }
+> >
+> > The first four entries of edo_modes[] all have the same value, so this loop
+> > will never end on the second, third or fourth element. These eleqments are just
+> > there to match 'emode' with the existing ONFI mode numbers, but then 'emode' is
+> > never used as an ONFI mode number, instead it's only used as an index to the
+> > array. You could equally well remove the second till fourth array entries.
+> >
+> > Then with only three entries left in the array I wonder if you're not better
+> > off with the original code and change it to something like:
+> 
+> This implementation is justified by the next patch in the series ([RFC
+> PATCH v2 4/5] mtd: rawnand: gpmi: validate controller clock rate).
+> I thought that clock rate validation could be better implemented by
+> indexing a table. The replication of the second, third and fourth
+> elements
+> makes the index also the edo mode (used in the debug printout). Using
+> a less redundant table (three elements) requires the edo mode
+> to be stored in it if you want to keep the debug printing or remove
+> the debug message.
+> 
+> >
+> >         if (sdr->tRC_min >= 30000) {
+> >                 /* ONFI non-EDO modes [0-3] */
+> >                 hw->clk_rate = 22000000;
+> >                 min_rate = 0;
+> >                 wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_4_TO_8NS;
+> >         } else if (sdr->tRC_min >= 25000) {
+> >                 /* ONFI EDO mode 4 */
+> >                 hw->clk_rate = 80000000;
+> >                 min_rate = 22000000;
+> >                 wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_NO_DELAY;
+> >         } else {
+> >                 /* ONFI EDO mode 5 */
+> >                 hw->clk_rate = 100000000;
+> >                 min_rate = 80000000;
+> >                 wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_NO_DELAY;
+> >         }
+> >
+> >         hw->clk_rate = clk_round_rate(r->clock[0], hw->clk_rate);
+> >         if (hw->clk_rate < min_rate)
+> >                 return -EINVAL;
+> >
+> > I think this would be easier to follow.
+> 
+> I think the key point is to decide if the patch "[RFC PATCH v2 4/5]
+> mtd: rawnand: gpmi: validate controller clock rate" makes sense.
+> I thought of this patch to facilitate that implementation, since it
+> compares the real GPMI clock rate to that of the previous edo mode.
+> I thought it wasn't elegant to implement another switch case.
 
-Since these events typically do not exist on most host systems, add the
-alias to the fake pmu.
+You don't have to implement another switch/case. It's already there.
 
-Function perf_pmu__test_parse_init() has terms added to match known test
-aliases.
+To be more clear my suggestion was to replace 3/5 and 4/5 with the
+following.
 
-Signed-off-by: John Garry <john.garry@huawei.com>
+Sascha
+
+---------------------------8<--------------------------------
+
+From 879fb5daaf19524ae29eda84c75d08668ad06d42 Mon Sep 17 00:00:00 2001
+From: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Date: Mon, 17 Jan 2022 12:18:28 +0100
+Subject: [PATCH] mtd: rawnand: gpmi: validate controller clock rate
+
+What to do when the real rate of the gpmi clock is not equal to the
+required one? The solutions proposed in [1] did not lead to a conclusion
+on how to validate the clock rate, so, inspired by the document [2], I
+consider the rate correct only if not lower or equal to the rate of the
+previous edo mode. In fact, in chapter 4.16.2 (NV-DDR) of the document [2],
+it is written that "If the host selects timing mode n, then its clock
+period shall be faster than the clock period of timing mode n-1 and
+slower than or equal to the clock period of timing mode n.". I thought
+that it could therefore also be used in this case, without therefore
+having to define the valid rate ranges empirically.
+
+For example, suppose that gpmi_nfc_compute_timings() is called for edo
+mode 5 configuration (100MHz, from the `edo_modes' table) but the rate
+returned by clk_round_rate() is 80MHz (edo mode 4 from the `edo_modes'
+table). In this case gpmi_nfc_compute_timings() will return error, and
+will be called again for edo mode 4 configuration, which this time will
+be successful.
+
+[1] https://lore.kernel.org/r/20210702065350.209646-5-ebiggers@kernel.org
+[2] http://www.onfi.org/-/media/client/onfi/specs/onfi_3_0_gold.pdf?la=en
+
+Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
+Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
+Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
+Signed-off-by: Sascha Hauer <s.hauer@pengutronix.de>
 ---
- tools/perf/tests/parse-events.c | 49 +++++++++++++++++++++++++++++++++
- tools/perf/util/parse-events.c  | 42 ++++++++++++++++++++++------
- 2 files changed, 82 insertions(+), 9 deletions(-)
+ drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/tools/perf/tests/parse-events.c b/tools/perf/tests/parse-events.c
-index a508f1dbcb2a..e71efadb24f5 100644
---- a/tools/perf/tests/parse-events.c
-+++ b/tools/perf/tests/parse-events.c
-@@ -2069,6 +2069,31 @@ static int test_event(struct evlist_test *e)
- 	return ret;
- }
- 
-+static int test_event_fake_pmu(const char *str)
-+{
-+	struct parse_events_error err;
-+	struct evlist *evlist;
-+	int ret;
-+
-+	evlist = evlist__new();
-+	if (!evlist)
-+		return -ENOMEM;
-+
-+	parse_events_error__init(&err);
-+	perf_pmu__test_parse_init();
-+	ret = __parse_events(evlist, str, &err, &perf_pmu__fake);
-+	if (ret) {
-+		pr_debug("failed to parse event '%s', err %d, str '%s'\n",
-+			 str, ret, err.str);
-+		parse_events_error__print(&err, str);
-+	}
-+
-+	parse_events_error__exit(&err);
-+	evlist__delete(evlist);
-+
-+	return ret;
-+}
-+
- static int test_events(struct evlist_test *events, unsigned cnt)
- {
- 	int ret1, ret2 = 0;
-@@ -2276,6 +2301,26 @@ static int test_pmu_events_alias(char *event, char *alias)
- 	return test_event(&e);
- }
- 
-+static int test_pmu_events_alias2(void)
-+{
-+	static const char events[][30] = {
-+			"event-hyphen",
-+			"event-two-hyph",
-+	};
-+	unsigned long i;
-+	int ret = 0;
-+
-+	for (i = 0; i < ARRAY_SIZE(events); i++) {
-+		ret = test_event_fake_pmu(&events[i][0]);
-+		if (ret) {
-+			pr_err("check_parse_fake %s failed\n", &events[i][0]);
-+			break;
-+		}
-+	}
-+
-+	return ret;
-+}
-+
- static int test__parse_events(struct test_suite *test __maybe_unused, int subtest __maybe_unused)
- {
- 	int ret1, ret2 = 0;
-@@ -2313,6 +2358,10 @@ do {							\
- 			return ret;
- 	}
- 
-+	ret1 = test_pmu_events_alias2();
-+	if (!ret2)
-+		ret2 = ret1;
-+
- 	ret1 = test_terms(test__terms, ARRAY_SIZE(test__terms));
- 	if (!ret2)
- 		ret2 = ret1;
-diff --git a/tools/perf/util/parse-events.c b/tools/perf/util/parse-events.c
-index 879f606e07e6..9739b05b999e 100644
---- a/tools/perf/util/parse-events.c
-+++ b/tools/perf/util/parse-events.c
-@@ -1697,6 +1697,15 @@ int parse_events_multi_pmu_add(struct parse_events_state *parse_state,
- 			}
- 		}
- 	}
-+
-+	if (parse_state->fake_pmu) {
-+		if (!parse_events_add_pmu(parse_state, list, str, head,
-+					  true, true)) {
-+			pr_debug("%s -> %s/%s/\n", str, "fake_pmu", str);
-+			ok++;
-+		}
-+	}
-+
- out_err:
- 	if (ok)
- 		*listp = list;
-@@ -2168,23 +2177,38 @@ static void perf_pmu__parse_init(void)
+diff --git a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
+index 73c3bf59b55e..dcad7410d817 100644
+--- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
++++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
+@@ -644,8 +644,8 @@ static int bch_set_geometry(struct gpmi_nand_data *this)
+  *         RDN_DELAY = -----------------------     {3}
+  *                           RP
   */
- int perf_pmu__test_parse_init(void)
+-static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
+-				     const struct nand_sdr_timings *sdr)
++static int gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
++				    const struct nand_sdr_timings *sdr)
  {
--	struct perf_pmu_event_symbol *list;
-+	struct perf_pmu_event_symbol *list, *tmp, symbols[] = {
-+		{(char *)"read", PMU_EVENT_SYMBOL},
-+		{(char *)"event", PMU_EVENT_SYMBOL_PREFIX},
-+		{(char *)"two", PMU_EVENT_SYMBOL_SUFFIX},
-+		{(char *)"hyphen", PMU_EVENT_SYMBOL_SUFFIX},
-+		{(char *)"hyph", PMU_EVENT_SYMBOL_SUFFIX2},
-+	};
-+	unsigned long i, j;
- 
--	list = malloc(sizeof(*list) * 1);
-+	tmp = list = malloc(sizeof(*list) * ARRAY_SIZE(symbols));
- 	if (!list)
- 		return -ENOMEM;
- 
--	list->type   = PMU_EVENT_SYMBOL;
--	list->symbol = strdup("read");
--
--	if (!list->symbol) {
--		free(list);
--		return -ENOMEM;
-+	for (i = 0; i < ARRAY_SIZE(symbols); i++, tmp++) {
-+		tmp->type = symbols[i].type;
-+		tmp->symbol = strdup(symbols[i].symbol);
-+		if (!list->symbol)
-+			goto err_free;
+ 	struct gpmi_nfc_hardware_timing *hw = &this->hw;
+ 	struct resources *r = &this->resources;
+@@ -653,6 +653,7 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
+ 	unsigned int period_ps, reference_period_ps;
+ 	unsigned int data_setup_cycles, data_hold_cycles, addr_setup_cycles;
+ 	unsigned int tRP_ps;
++	unsigned int min_rate;
+ 	bool use_half_period;
+ 	int sample_delay_ps, sample_delay_factor;
+ 	u16 busy_timeout_cycles;
+@@ -661,18 +662,23 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
+ 	if (sdr->tRC_min >= 30000) {
+ 		/* ONFI non-EDO modes [0-3] */
+ 		hw->clk_rate = 22000000;
++		min_rate = 0;
+ 		wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_4_TO_8NS;
+ 	} else if (sdr->tRC_min >= 25000) {
+ 		/* ONFI EDO mode 4 */
+ 		hw->clk_rate = 80000000;
++		min_rate = 22000000;
+ 		wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_NO_DELAY;
+ 	} else {
+ 		/* ONFI EDO mode 5 */
+ 		hw->clk_rate = 100000000;
++		min_rate = 80000000;
+ 		wrn_dly_sel = BV_GPMI_CTRL1_WRN_DLY_SEL_NO_DELAY;
  	}
  
- 	perf_pmu_events_list = list;
--	perf_pmu_events_list_num = 1;
-+	perf_pmu_events_list_num = ARRAY_SIZE(symbols);
-+
-+	qsort(perf_pmu_events_list, ARRAY_SIZE(symbols),
-+	      sizeof(struct perf_pmu_event_symbol), comp_pmu);
- 	return 0;
-+
-+err_free:
-+	for (j = 0, tmp = list; j < i; j++, tmp++)
-+		free(tmp->symbol);
-+	free(list);
-+	return -ENOMEM;
+ 	hw->clk_rate = clk_round_rate(r->clock[0], hw->clk_rate);
++	if (hw->clk_rate < min_rate)
++		return -ENOTSUPP;
+ 
+ 	/* SDR core timings are given in picoseconds */
+ 	period_ps = div_u64((u64)NSEC_PER_SEC * 1000, hw->clk_rate);
+@@ -714,6 +720,7 @@ static void gpmi_nfc_compute_timings(struct gpmi_nand_data *this,
+ 		hw->ctrl1n |= BF_GPMI_CTRL1_RDN_DELAY(sample_delay_factor) |
+ 			      BM_GPMI_CTRL1_DLL_ENABLE |
+ 			      (use_half_period ? BM_GPMI_CTRL1_HALF_PERIOD : 0);
++	return 0;
  }
  
- enum perf_pmu_event_symbol_type
+ static int gpmi_nfc_apply_timings(struct gpmi_nand_data *this)
+@@ -769,6 +776,7 @@ static int gpmi_setup_interface(struct nand_chip *chip, int chipnr,
+ {
+ 	struct gpmi_nand_data *this = nand_get_controller_data(chip);
+ 	const struct nand_sdr_timings *sdr;
++	int ret;
+ 
+ 	/* Retrieve required NAND timings */
+ 	sdr = nand_get_sdr_timings(conf);
+@@ -784,7 +792,9 @@ static int gpmi_setup_interface(struct nand_chip *chip, int chipnr,
+ 		return 0;
+ 
+ 	/* Do the actual derivation of the controller timings */
+-	gpmi_nfc_compute_timings(this, sdr);
++	ret = gpmi_nfc_compute_timings(this, sdr);
++	if (ret)
++		return ret;
+ 
+ 	this->hw.must_apply_timings = true;
+ 
 -- 
-2.26.2
+2.30.2
 
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
