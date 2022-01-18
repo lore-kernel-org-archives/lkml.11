@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CFEBC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C4B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:48:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344209AbiARCsG (ORCPT
+        id S1343867AbiARCsI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:48:06 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50448 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244693AbiARCdR (ORCPT
+        Mon, 17 Jan 2022 21:48:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60182 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345496AbiARCjE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:33:17 -0500
+        Mon, 17 Jan 2022 21:39:04 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B630C0613E8;
+        Mon, 17 Jan 2022 18:35:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A1E6D61251;
-        Tue, 18 Jan 2022 02:33:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EC02C36AEB;
-        Tue, 18 Jan 2022 02:33:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 030C361278;
+        Tue, 18 Jan 2022 02:35:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D006C36AE3;
+        Tue, 18 Jan 2022 02:35:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473196;
-        bh=Fhv3mi1Mm8uNIIYwqjQOhdSly4zsT0G1KS4gJQ8MreU=;
+        s=k20201202; t=1642473353;
+        bh=Rkw3g01TUkhbxguTqpap1lKFkPkmErFrADVBGX68Kt4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Vo+ZnX33RbOO/TC2GPPU0bgyj8sJErxMVlgX/U5k3pRuL02NUZNuKc4cC5z7oINqM
-         BC+reprJzj6G/oxzjIxVwseEuvoPftWWeXh4lNM7U04zfnJVFZgfbpHzXf31iRm/Gy
-         Ayza1WM5x0wG7H20kFB/mvIwHolnKzeX+2muIdR4S0WOIKPle6sXGYWjW/AHbbeGt2
-         a6FQC4fzpcJjGyx80JlYjoCDqhPnw91+BdLnRKo1ZIBKAmiku5GizCRT0f5lZ4KALB
-         lzDvAKIuE6WPKuVtsWz7WOZjvS3HquJ9XqnUbs8lw+NHQvzwZofG8w1KNubiIOjvMR
-         2EbW0SwidDK3Q==
+        b=AaL47V/xOvd3xPwufxhORgwg5mDZ+VG+l0x+Ga9gwS7UakBMtHW59t3xJbU4rnRTu
+         ZZMM+fKchbtyU4yPk/ntgskWuNeCzxKds3/e07jEuMNwSB7jv8I+isAT9qirksmkuX
+         EsTr1OaVITK4lYkH1CH1IZgQNwixQ0tQT8ODgN3bMnp2UPUX+J0UP75WGnzXbRn+CB
+         rqWiH1dVJdpl+B3DBxgNZS2PBhN/iOffvnt7xj8MfCBh1iCapzK3EWmc2iVHpYxdS2
+         yUZUt9kx3/91wmBWb3kbS4oRZFDQCM5pEsxY4Le/jf9kRHUH4Lk0PGuma+bBquSFgr
+         oNyCJVOLC7NHg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, mchehab@kernel.org,
-        gregkh@linuxfoundation.org, ndesaulniers@google.com, drv@mailo.com,
-        abaci-bugfix@linux.alibaba.com, robert.foss@linaro.org,
-        dingxiang@cmss.chinamobile.com, colin.i.king@googlemail.com,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev,
-        llvm@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 021/188] media: atomisp: handle errors at sh_css_create_isp_params()
-Date:   Mon, 17 Jan 2022 21:29:05 -0500
-Message-Id: <20220118023152.1948105-21-sashal@kernel.org>
+Cc:     Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        Sasha Levin <sashal@kernel.org>,
+        laurent.pinchart@ideasonboard.com,
+        kieran.bingham+renesas@ideasonboard.com, airlied@linux.ie,
+        daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 082/188] drm: rcar-du: Fix CRTC timings when CMM is used
+Date:   Mon, 17 Jan 2022 21:30:06 -0500
+Message-Id: <20220118023152.1948105-82-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -54,51 +55,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 
-[ Upstream commit 58043dbf6d1ae9deab4f5aa1e039c70112017682 ]
+[ Upstream commit f0ce591dc9a97067c6e783a2eaccd22c5476144d ]
 
-The succ var tracks memory allocation erros on this function.
+When the CMM is enabled, an offset of 25 pixels must be subtracted from
+the HDS (horizontal display start) and HDE (horizontal display end)
+registers. Fix the timings calculation, and take this into account in
+the mode validation.
 
-Fix it, in order to stop this W=1 Werror in clang:
+This fixes a visible horizontal offset in the image with VGA monitors.
+HDMI monitors seem to be generally more tolerant to incorrect timings,
+but may be affected too.
 
-drivers/staging/media/atomisp/pci/sh_css_params.c:2430:7: error: variable 'succ' set but not used [-Werror,-Wunused-but-set-variable]
-        bool succ = true;
-             ^
-
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/atomisp/pci/sh_css_params.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/gpu/drm/rcar-du/rcar_du_crtc.c | 20 ++++++++++++++++----
+ 1 file changed, 16 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/sh_css_params.c b/drivers/staging/media/atomisp/pci/sh_css_params.c
-index dbd3bfe3d343c..ccc0078795648 100644
---- a/drivers/staging/media/atomisp/pci/sh_css_params.c
-+++ b/drivers/staging/media/atomisp/pci/sh_css_params.c
-@@ -2431,7 +2431,7 @@ sh_css_create_isp_params(struct ia_css_stream *stream,
- 	unsigned int i;
- 	struct sh_css_ddr_address_map *ddr_ptrs;
- 	struct sh_css_ddr_address_map_size *ddr_ptrs_size;
--	int err = 0;
-+	int err;
- 	size_t params_size;
- 	struct ia_css_isp_parameters *params =
- 	kvmalloc(sizeof(struct ia_css_isp_parameters), GFP_KERNEL);
-@@ -2473,7 +2473,11 @@ sh_css_create_isp_params(struct ia_css_stream *stream,
- 	succ &= (ddr_ptrs->macc_tbl != mmgr_NULL);
+diff --git a/drivers/gpu/drm/rcar-du/rcar_du_crtc.c b/drivers/gpu/drm/rcar-du/rcar_du_crtc.c
+index ea7e39d035457..ee7e375ee6724 100644
+--- a/drivers/gpu/drm/rcar-du/rcar_du_crtc.c
++++ b/drivers/gpu/drm/rcar-du/rcar_du_crtc.c
+@@ -215,6 +215,7 @@ static void rcar_du_crtc_set_display_timing(struct rcar_du_crtc *rcrtc)
+ 	const struct drm_display_mode *mode = &rcrtc->crtc.state->adjusted_mode;
+ 	struct rcar_du_device *rcdu = rcrtc->dev;
+ 	unsigned long mode_clock = mode->clock * 1000;
++	unsigned int hdse_offset;
+ 	u32 dsmr;
+ 	u32 escr;
  
- 	*isp_params_out = params;
--	return err;
-+
-+	if (!succ)
-+		return -ENOMEM;
-+
-+	return 0;
- }
+@@ -298,10 +299,15 @@ static void rcar_du_crtc_set_display_timing(struct rcar_du_crtc *rcrtc)
+ 	     | DSMR_DIPM_DISP | DSMR_CSPM;
+ 	rcar_du_crtc_write(rcrtc, DSMR, dsmr);
  
- static bool
++	hdse_offset = 19;
++	if (rcrtc->group->cmms_mask & BIT(rcrtc->index % 2))
++		hdse_offset += 25;
++
+ 	/* Display timings */
+-	rcar_du_crtc_write(rcrtc, HDSR, mode->htotal - mode->hsync_start - 19);
++	rcar_du_crtc_write(rcrtc, HDSR, mode->htotal - mode->hsync_start -
++					hdse_offset);
+ 	rcar_du_crtc_write(rcrtc, HDER, mode->htotal - mode->hsync_start +
+-					mode->hdisplay - 19);
++					mode->hdisplay - hdse_offset);
+ 	rcar_du_crtc_write(rcrtc, HSWR, mode->hsync_end -
+ 					mode->hsync_start - 1);
+ 	rcar_du_crtc_write(rcrtc, HCR,  mode->htotal - 1);
+@@ -836,6 +842,7 @@ rcar_du_crtc_mode_valid(struct drm_crtc *crtc,
+ 	struct rcar_du_crtc *rcrtc = to_rcar_crtc(crtc);
+ 	struct rcar_du_device *rcdu = rcrtc->dev;
+ 	bool interlaced = mode->flags & DRM_MODE_FLAG_INTERLACE;
++	unsigned int min_sync_porch;
+ 	unsigned int vbp;
+ 
+ 	if (interlaced && !rcar_du_has(rcdu, RCAR_DU_FEATURE_INTERLACED))
+@@ -843,9 +850,14 @@ rcar_du_crtc_mode_valid(struct drm_crtc *crtc,
+ 
+ 	/*
+ 	 * The hardware requires a minimum combined horizontal sync and back
+-	 * porch of 20 pixels and a minimum vertical back porch of 3 lines.
++	 * porch of 20 pixels (when CMM isn't used) or 45 pixels (when CMM is
++	 * used), and a minimum vertical back porch of 3 lines.
+ 	 */
+-	if (mode->htotal - mode->hsync_start < 20)
++	min_sync_porch = 20;
++	if (rcrtc->group->cmms_mask & BIT(rcrtc->index % 2))
++		min_sync_porch += 25;
++
++	if (mode->htotal - mode->hsync_start < min_sync_porch)
+ 		return MODE_HBLANK_NARROW;
+ 
+ 	vbp = (mode->vtotal - mode->vsync_end) / (interlaced ? 2 : 1);
 -- 
 2.34.1
 
