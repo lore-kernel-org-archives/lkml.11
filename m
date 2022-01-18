@@ -2,53 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC26EC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:16:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8059AC4167E
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:16:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356034AbiARDPC (ORCPT
+        id S1356059AbiARDPF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:15:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37500 "EHLO
+        Mon, 17 Jan 2022 22:15:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348471AbiARC6O (ORCPT
+        with ESMTP id S1345895AbiARC7b (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:58:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E890FC0612AC;
-        Mon, 17 Jan 2022 18:46:27 -0800 (PST)
+        Mon, 17 Jan 2022 21:59:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D0D0C061749;
+        Mon, 17 Jan 2022 18:34:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A29E3B81132;
-        Tue, 18 Jan 2022 02:46:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E9E7C36AEB;
-        Tue, 18 Jan 2022 02:46:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 266BE6125B;
+        Tue, 18 Jan 2022 02:34:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99ED9C36AE3;
+        Tue, 18 Jan 2022 02:34:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473985;
-        bh=YRtFLS33UvhcMXoutG1kpLoHx0Za8NOY2p3DeITTCGo=;
+        s=k20201202; t=1642473260;
+        bh=da7yra2sK83x182IbRNhsA3JLw2YPhWk5aj8Hqu+ro8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=grEDdYXqVLf/Zqiq6vhhkmP1Vn+lBjEinN10W26JcgEsmhmI9LjCRfX51JcgSNgxe
-         ieHgpMYrqzaBgSlt1G63+KnlWiFGy9eGhtm+SOu+vTtU7oyp5eJTJY6lW82C168x6t
-         qR96cAzmLj9YUToeP1ik0lbB/xd/5aggJhiGfBn3BQXOmNBm8kaxSsHGOLs4SYWOh4
-         zk8pwC5b1vYfFwNOh6UhtaEKApYiUyI9yq7CMzlNqjiylzOb2Mog3+vZcWxABQ+/HY
-         uEn3yEH+wupVnimkDNylvnEfmEVsonQOMvbJkoEtplc8EmkASA2ViMPXf8nXrKgUXq
-         b9Vp2bTmSqBag==
+        b=ijsLD3oO/hUCmr/KUvUjQ9UL219tTFkkO0CUGIUMdgYmISNminSY/vEfQTYYkqAc9
+         /GoEBzrr2tVIzucy8YdysX3C3t8udaAuYsNXZMyVHsu05oht5nYg53kJ6XN+Bo2L5k
+         DLCAtEVs8Bdl5ywdmQhPRhGOQOF6tnHWoU3QzrnwfD4M0ptCKGSBjNdulQmkOJeukZ
+         qWGM9uuHjBv7gXdCV2wrZetKe/rsx9ZgXUER7k2bGBkWmom9HnAyjYTakZVjX4MTTl
+         jK3bP4XYoa8ncMe19LF0JSB4PAuXLWk0uy01OWLC96C9I+Mkvg+W+yhAyzByV4Dv/h
+         0Dkb/KjjZG50g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        linux-um@lists.infradead.org, Sasha Levin <sashal@kernel.org>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        viro@zeniv.linux.org.uk
-Subject: [PATCH AUTOSEL 5.4 52/73] um: registers: Rename function names to avoid conflicts and build problems
-Date:   Mon, 17 Jan 2022 21:44:11 -0500
-Message-Id: <20220118024432.1952028-52-sashal@kernel.org>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, Jiri Olsa <jolsa@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 045/188] libbpf: Accommodate DWARF/compiler bug with duplicated structs
+Date:   Mon, 17 Jan 2022 21:29:29 -0500
+Message-Id: <20220118023152.1948105-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
-References: <20220118024432.1952028-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -57,101 +53,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Andrii Nakryiko <andrii@kernel.org>
 
-[ Upstream commit 077b7320942b64b0da182aefd83c374462a65535 ]
+[ Upstream commit efdd3eb8015e7447095f02a26eaabd164cd18004 ]
 
-The function names init_registers() and restore_registers() are used
-in several net/ethernet/ and gpu/drm/ drivers for other purposes (not
-calls to UML functions), so rename them.
+According to [0], compilers sometimes might produce duplicate DWARF
+definitions for exactly the same struct/union within the same
+compilation unit (CU). We've had similar issues with identical arrays
+and handled them with a similar workaround in 6b6e6b1d09aa ("libbpf:
+Accomodate DWARF/compiler bug with duplicated identical arrays"). Do the
+same for struct/union by ensuring that two structs/unions are exactly
+the same, down to the integer values of field referenced type IDs.
 
-This fixes multiple build errors.
+Solving this more generically (allowing referenced types to be
+equivalent, but using different type IDs, all within a single CU)
+requires a huge complexity increase to handle many-to-many mappings
+between canonidal and candidate type graphs. Before we invest in that,
+let's see if this approach handles all the instances of this issue in
+practice. Thankfully it's pretty rare, it seems.
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Jeff Dike <jdike@addtoit.com>
-Cc: Richard Weinberger <richard@nod.at>
-Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Cc: linux-um@lists.infradead.org
-Signed-off-by: Richard Weinberger <richard@nod.at>
+  [0] https://lore.kernel.org/bpf/YXr2NFlJTAhHdZqq@krava/
+
+Reported-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Link: https://lore.kernel.org/bpf/20211117194114.347675-1-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/include/shared/registers.h | 4 ++--
- arch/um/os-Linux/registers.c       | 4 ++--
- arch/um/os-Linux/start_up.c        | 2 +-
- arch/x86/um/syscalls_64.c          | 3 ++-
- 4 files changed, 7 insertions(+), 6 deletions(-)
+ tools/lib/bpf/btf.c | 45 +++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 41 insertions(+), 4 deletions(-)
 
-diff --git a/arch/um/include/shared/registers.h b/arch/um/include/shared/registers.h
-index 0c50fa6e8a55b..fbb709a222839 100644
---- a/arch/um/include/shared/registers.h
-+++ b/arch/um/include/shared/registers.h
-@@ -16,8 +16,8 @@ extern int restore_fp_registers(int pid, unsigned long *fp_regs);
- extern int save_fpx_registers(int pid, unsigned long *fp_regs);
- extern int restore_fpx_registers(int pid, unsigned long *fp_regs);
- extern int save_registers(int pid, struct uml_pt_regs *regs);
--extern int restore_registers(int pid, struct uml_pt_regs *regs);
--extern int init_registers(int pid);
-+extern int restore_pid_registers(int pid, struct uml_pt_regs *regs);
-+extern int init_pid_registers(int pid);
- extern void get_safe_registers(unsigned long *regs, unsigned long *fp_regs);
- extern unsigned long get_thread_reg(int reg, jmp_buf *buf);
- extern int get_fp_registers(int pid, unsigned long *regs);
-diff --git a/arch/um/os-Linux/registers.c b/arch/um/os-Linux/registers.c
-index 2d9270508e156..b123955be7acc 100644
---- a/arch/um/os-Linux/registers.c
-+++ b/arch/um/os-Linux/registers.c
-@@ -21,7 +21,7 @@ int save_registers(int pid, struct uml_pt_regs *regs)
- 	return 0;
+diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
+index 1b9341ef638b0..ddd51e6d3a761 100644
+--- a/tools/lib/bpf/btf.c
++++ b/tools/lib/bpf/btf.c
+@@ -3358,8 +3358,8 @@ static long btf_hash_struct(struct btf_type *t)
  }
  
--int restore_registers(int pid, struct uml_pt_regs *regs)
-+int restore_pid_registers(int pid, struct uml_pt_regs *regs)
- {
- 	int err;
- 
-@@ -36,7 +36,7 @@ int restore_registers(int pid, struct uml_pt_regs *regs)
- static unsigned long exec_regs[MAX_REG_NR];
- static unsigned long exec_fp_regs[FP_SIZE];
- 
--int init_registers(int pid)
-+int init_pid_registers(int pid)
- {
- 	int err;
- 
-diff --git a/arch/um/os-Linux/start_up.c b/arch/um/os-Linux/start_up.c
-index f79dc338279e6..b28373a2b8d2d 100644
---- a/arch/um/os-Linux/start_up.c
-+++ b/arch/um/os-Linux/start_up.c
-@@ -336,7 +336,7 @@ void __init os_early_checks(void)
- 	check_tmpexec();
- 
- 	pid = start_ptraced_child();
--	if (init_registers(pid))
-+	if (init_pid_registers(pid))
- 		fatal("Failed to initialize default registers");
- 	stop_ptraced_child(pid, 1, 1);
+ /*
+- * Check structural compatibility of two FUNC_PROTOs, ignoring referenced type
+- * IDs. This check is performed during type graph equivalence check and
++ * Check structural compatibility of two STRUCTs/UNIONs, ignoring referenced
++ * type IDs. This check is performed during type graph equivalence check and
+  * referenced types equivalence is checked separately.
+  */
+ static bool btf_shallow_equal_struct(struct btf_type *t1, struct btf_type *t2)
+@@ -3730,6 +3730,31 @@ static int btf_dedup_identical_arrays(struct btf_dedup *d, __u32 id1, __u32 id2)
+ 	return btf_equal_array(t1, t2);
  }
-diff --git a/arch/x86/um/syscalls_64.c b/arch/x86/um/syscalls_64.c
-index 58f51667e2e4b..8249685b40960 100644
---- a/arch/x86/um/syscalls_64.c
-+++ b/arch/x86/um/syscalls_64.c
-@@ -11,6 +11,7 @@
- #include <linux/uaccess.h>
- #include <asm/prctl.h> /* XXX This should get the constants from libc */
- #include <os.h>
-+#include <registers.h>
  
- long arch_prctl(struct task_struct *task, int option,
- 		unsigned long __user *arg2)
-@@ -35,7 +36,7 @@ long arch_prctl(struct task_struct *task, int option,
- 	switch (option) {
- 	case ARCH_SET_FS:
- 	case ARCH_SET_GS:
--		ret = restore_registers(pid, &current->thread.regs.regs);
-+		ret = restore_pid_registers(pid, &current->thread.regs.regs);
- 		if (ret)
- 			return ret;
- 		break;
++/* Check if given two types are identical STRUCT/UNION definitions */
++static bool btf_dedup_identical_structs(struct btf_dedup *d, __u32 id1, __u32 id2)
++{
++	const struct btf_member *m1, *m2;
++	struct btf_type *t1, *t2;
++	int n, i;
++
++	t1 = btf_type_by_id(d->btf, id1);
++	t2 = btf_type_by_id(d->btf, id2);
++
++	if (!btf_is_composite(t1) || btf_kind(t1) != btf_kind(t2))
++		return false;
++
++	if (!btf_shallow_equal_struct(t1, t2))
++		return false;
++
++	m1 = btf_members(t1);
++	m2 = btf_members(t2);
++	for (i = 0, n = btf_vlen(t1); i < n; i++, m1++, m2++) {
++		if (m1->type != m2->type)
++			return false;
++	}
++	return true;
++}
++
+ /*
+  * Check equivalence of BTF type graph formed by candidate struct/union (we'll
+  * call it "candidate graph" in this description for brevity) to a type graph
+@@ -3841,6 +3866,8 @@ static int btf_dedup_is_equiv(struct btf_dedup *d, __u32 cand_id,
+ 
+ 	hypot_type_id = d->hypot_map[canon_id];
+ 	if (hypot_type_id <= BTF_MAX_NR_TYPES) {
++		if (hypot_type_id == cand_id)
++			return 1;
+ 		/* In some cases compiler will generate different DWARF types
+ 		 * for *identical* array type definitions and use them for
+ 		 * different fields within the *same* struct. This breaks type
+@@ -3849,8 +3876,18 @@ static int btf_dedup_is_equiv(struct btf_dedup *d, __u32 cand_id,
+ 		 * types within a single CU. So work around that by explicitly
+ 		 * allowing identical array types here.
+ 		 */
+-		return hypot_type_id == cand_id ||
+-		       btf_dedup_identical_arrays(d, hypot_type_id, cand_id);
++		if (btf_dedup_identical_arrays(d, hypot_type_id, cand_id))
++			return 1;
++		/* It turns out that similar situation can happen with
++		 * struct/union sometimes, sigh... Handle the case where
++		 * structs/unions are exactly the same, down to the referenced
++		 * type IDs. Anything more complicated (e.g., if referenced
++		 * types are different, but equivalent) is *way more*
++		 * complicated and requires a many-to-many equivalence mapping.
++		 */
++		if (btf_dedup_identical_structs(d, hypot_type_id, cand_id))
++			return 1;
++		return 0;
+ 	}
+ 
+ 	if (btf_dedup_hypot_map_add(d, canon_id, cand_id))
 -- 
 2.34.1
 
