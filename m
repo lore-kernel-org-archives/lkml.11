@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1785CC2BA4C
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C53AC3526B
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352925AbiARDAr (ORCPT
+        id S1353049AbiARDA5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:00:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34812 "EHLO
+        Mon, 17 Jan 2022 22:00:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346407AbiARCtA (ORCPT
+        with ESMTP id S1346491AbiARCtG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:49:00 -0500
+        Mon, 17 Jan 2022 21:49:06 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99112C061756;
-        Mon, 17 Jan 2022 18:40:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1CEC06175C;
+        Mon, 17 Jan 2022 18:41:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5BA7FB81260;
-        Tue, 18 Jan 2022 02:40:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C00E0C36AEB;
-        Tue, 18 Jan 2022 02:40:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1E2CAB81239;
+        Tue, 18 Jan 2022 02:41:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 699D4C36AE3;
+        Tue, 18 Jan 2022 02:41:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473635;
-        bh=wIvNlmpifgpujICak+JLTgxCU2meCQ2EhSf6G7TR9lU=;
+        s=k20201202; t=1642473675;
+        bh=FMHYx2XBoKvpWK72As1cxGEVQ+XWXjh/vSjCyMexVUE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XWjVO4Q0aEOR3DZ5ZsNOSEX5jmeoxG5A2xLcxm6I5IeeZrZ8Q+wc7MtcJi1mvEM3G
-         xgtKpGtra/4fhZRPrw/g4A4Q9YjuTxvXE+PTTfPVxTpcCCAezqFU8N7Knq/G5ghcF7
-         E5+Mr+CCsWJuC3N/r/9YgVYdUv9b1wFqP+PyXOd4D5lvMdCSB17gdoNmU2r7piRqik
-         w27Oahgih+lkgDDKlwZbPbtKATeGOGALQnlGd2aDKdNCnHEQUleUOuZ0Gz789VRzdw
-         fm0wh4wCdovHs6Ml6kfmrSQpmrFIf2xHsyxrdMd9VPx9zeb8PAqfYUrN3wa9iYN/vL
-         T+5bzYs/kZIiw==
+        b=BJR4wLhK6QUwNXn5YpSr3wz61iOTSsjd/8wZZiSpKuQCkwZdYezR+5+JgJ2SRhzcj
+         sLyJJF909ljyOAM4Shz3s+KuSkB5faDQn19rOnRe1Ic7WbjIX17MFAlFcqPLCZJmMw
+         Wd5yLQ/K5d3SVNBLDscvfCn7MuFqEXidkBLBRllwoiIojgFD6Mk1VwIG04avAUnmIY
+         E36lcsWjMdiXW4e+Lnsxmt8k89eAOeX9VVQDSOBq0a9mVeYun+aK0rRxJMssrVpSBq
+         QeKlMIgfh7X7W+TzrdLxSZIeZKjL4YQJ8aP4M1tFo6A5DcK2ohMLedfv6JKMOASUq7
+         19mRlaIlVZnlw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, mchehab@kernel.org,
-        gregkh@linuxfoundation.org, kitakar@gmail.com,
-        peterz@infradead.org, dan.carpenter@oracle.com, mingo@kernel.org,
-        kaixuxia@tencent.com, arnd@arndb.de, linux-media@vger.kernel.org,
-        linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.10 009/116] media: atomisp: fix try_fmt logic
-Date:   Mon, 17 Jan 2022 21:38:20 -0500
-Message-Id: <20220118024007.1950576-9-sashal@kernel.org>
+Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        linus.walleij@linaro.org, avolmat@me.com, daniel@thingy.jp,
+        eugen.hristev@microchip.com, nathan@kernel.org,
+        romain.perier@gmail.com, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 021/116] ARM: imx: rename DEBUG_IMX21_IMX27_UART to DEBUG_IMX27_UART
+Date:   Mon, 17 Jan 2022 21:38:32 -0500
+Message-Id: <20220118024007.1950576-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
 References: <20220118024007.1950576-1-sashal@kernel.org>
@@ -55,113 +55,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-[ Upstream commit c9e9094c4e42124af909b2f5f6ded0498e0854ac ]
+[ Upstream commit b0100bce4ff82ec1ccd3c1f3d339fd2df6a81784 ]
 
-The internal try_fmt logic is not meant to provide everything
-that the V4L2 API should provide. Also, it doesn't decrement
-the pads that are used only internally by the driver, but aren't
-part of the device's output.
+Since commit 4b563a066611 ("ARM: imx: Remove imx21 support"), the config
+DEBUG_IMX21_IMX27_UART is really only debug support for IMX27.
 
-Fix it.
+So, rename this option to DEBUG_IMX27_UART and adjust dependencies in
+Kconfig and rename the definitions to IMX27 as further clean-up.
 
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+This issue was discovered with ./scripts/checkkconfigsymbols.py, which
+reported that DEBUG_IMX21_IMX27_UART depends on the non-existing config
+SOC_IMX21.
+
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../staging/media/atomisp/pci/atomisp_ioctl.c | 72 ++++++++++++++++++-
- 1 file changed, 71 insertions(+), 1 deletion(-)
+ arch/arm/Kconfig.debug            | 14 +++++++-------
+ arch/arm/include/debug/imx-uart.h | 18 +++++++++---------
+ 2 files changed, 16 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-index 9da82855552de..973012c6153e5 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-@@ -834,6 +834,72 @@ static int atomisp_g_fmt_file(struct file *file, void *fh,
- 	return 0;
- }
+diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+index 8986a91a6f31b..dd1cf70353986 100644
+--- a/arch/arm/Kconfig.debug
++++ b/arch/arm/Kconfig.debug
+@@ -400,12 +400,12 @@ choice
+ 		  Say Y here if you want kernel low-level debugging support
+ 		  on i.MX25.
  
-+static int atomisp_adjust_fmt(struct v4l2_format *f)
-+{
-+	const struct atomisp_format_bridge *format_bridge;
-+	u32 padded_width;
-+
-+	format_bridge = atomisp_get_format_bridge(f->fmt.pix.pixelformat);
-+
-+	padded_width = f->fmt.pix.width + pad_w;
-+
-+	if (format_bridge->planar) {
-+		f->fmt.pix.bytesperline = padded_width;
-+		f->fmt.pix.sizeimage = PAGE_ALIGN(f->fmt.pix.height *
-+						  DIV_ROUND_UP(format_bridge->depth *
-+						  padded_width, 8));
-+	} else {
-+		f->fmt.pix.bytesperline = DIV_ROUND_UP(format_bridge->depth *
-+						      padded_width, 8);
-+		f->fmt.pix.sizeimage = PAGE_ALIGN(f->fmt.pix.height * f->fmt.pix.bytesperline);
-+	}
-+
-+	if (f->fmt.pix.field == V4L2_FIELD_ANY)
-+		f->fmt.pix.field = V4L2_FIELD_NONE;
-+
-+	format_bridge = atomisp_get_format_bridge(f->fmt.pix.pixelformat);
-+	if (!format_bridge)
-+		return -EINVAL;
-+
-+	/* Currently, raw formats are broken!!! */
-+	if (format_bridge->sh_fmt == IA_CSS_FRAME_FORMAT_RAW) {
-+		f->fmt.pix.pixelformat = V4L2_PIX_FMT_YUV420;
-+
-+		format_bridge = atomisp_get_format_bridge(f->fmt.pix.pixelformat);
-+		if (!format_bridge)
-+			return -EINVAL;
-+	}
-+
-+	padded_width = f->fmt.pix.width + pad_w;
-+
-+	if (format_bridge->planar) {
-+		f->fmt.pix.bytesperline = padded_width;
-+		f->fmt.pix.sizeimage = PAGE_ALIGN(f->fmt.pix.height *
-+						  DIV_ROUND_UP(format_bridge->depth *
-+						  padded_width, 8));
-+	} else {
-+		f->fmt.pix.bytesperline = DIV_ROUND_UP(format_bridge->depth *
-+						      padded_width, 8);
-+		f->fmt.pix.sizeimage = PAGE_ALIGN(f->fmt.pix.height * f->fmt.pix.bytesperline);
-+	}
-+
-+	if (f->fmt.pix.field == V4L2_FIELD_ANY)
-+		f->fmt.pix.field = V4L2_FIELD_NONE;
-+
-+	/*
-+	 * FIXME: do we need to setup this differently, depending on the
-+	 * sensor or the pipeline?
-+	 */
-+	f->fmt.pix.colorspace = V4L2_COLORSPACE_REC709;
-+	f->fmt.pix.ycbcr_enc = V4L2_YCBCR_ENC_709;
-+	f->fmt.pix.xfer_func = V4L2_XFER_FUNC_709;
-+
-+	f->fmt.pix.width -= pad_w;
-+	f->fmt.pix.height -= pad_h;
-+
-+	return 0;
-+}
-+
- /* This function looks up the closest available resolution. */
- static int atomisp_try_fmt_cap(struct file *file, void *fh,
- 			       struct v4l2_format *f)
-@@ -845,7 +911,11 @@ static int atomisp_try_fmt_cap(struct file *file, void *fh,
- 	rt_mutex_lock(&isp->mutex);
- 	ret = atomisp_try_fmt(vdev, f, NULL);
- 	rt_mutex_unlock(&isp->mutex);
--	return ret;
-+
-+	if (ret)
-+		return ret;
-+
-+	return atomisp_adjust_fmt(f);
- }
+-	config DEBUG_IMX21_IMX27_UART
+-		bool "i.MX21 and i.MX27 Debug UART"
+-		depends on SOC_IMX21 || SOC_IMX27
++	config DEBUG_IMX27_UART
++		bool "i.MX27 Debug UART"
++		depends on SOC_IMX27
+ 		help
+ 		  Say Y here if you want kernel low-level debugging support
+-		  on i.MX21 or i.MX27.
++		  on i.MX27.
  
- static int atomisp_s_fmt_cap(struct file *file, void *fh,
+ 	config DEBUG_IMX28_UART
+ 		bool "i.MX28 Debug UART"
+@@ -1523,7 +1523,7 @@ config DEBUG_IMX_UART_PORT
+ 	int "i.MX Debug UART Port Selection"
+ 	depends on DEBUG_IMX1_UART || \
+ 		   DEBUG_IMX25_UART || \
+-		   DEBUG_IMX21_IMX27_UART || \
++		   DEBUG_IMX27_UART || \
+ 		   DEBUG_IMX31_UART || \
+ 		   DEBUG_IMX35_UART || \
+ 		   DEBUG_IMX50_UART || \
+@@ -1591,12 +1591,12 @@ config DEBUG_LL_INCLUDE
+ 	default "debug/icedcc.S" if DEBUG_ICEDCC
+ 	default "debug/imx.S" if DEBUG_IMX1_UART || \
+ 				 DEBUG_IMX25_UART || \
+-				 DEBUG_IMX21_IMX27_UART || \
++				 DEBUG_IMX27_UART || \
+ 				 DEBUG_IMX31_UART || \
+ 				 DEBUG_IMX35_UART || \
+ 				 DEBUG_IMX50_UART || \
+ 				 DEBUG_IMX51_UART || \
+-				 DEBUG_IMX53_UART ||\
++				 DEBUG_IMX53_UART || \
+ 				 DEBUG_IMX6Q_UART || \
+ 				 DEBUG_IMX6SL_UART || \
+ 				 DEBUG_IMX6SX_UART || \
+diff --git a/arch/arm/include/debug/imx-uart.h b/arch/arm/include/debug/imx-uart.h
+index c8eb83d4b8964..3edbb3c5b42bf 100644
+--- a/arch/arm/include/debug/imx-uart.h
++++ b/arch/arm/include/debug/imx-uart.h
+@@ -11,13 +11,6 @@
+ #define IMX1_UART_BASE_ADDR(n)	IMX1_UART##n##_BASE_ADDR
+ #define IMX1_UART_BASE(n)	IMX1_UART_BASE_ADDR(n)
+ 
+-#define IMX21_UART1_BASE_ADDR	0x1000a000
+-#define IMX21_UART2_BASE_ADDR	0x1000b000
+-#define IMX21_UART3_BASE_ADDR	0x1000c000
+-#define IMX21_UART4_BASE_ADDR	0x1000d000
+-#define IMX21_UART_BASE_ADDR(n)	IMX21_UART##n##_BASE_ADDR
+-#define IMX21_UART_BASE(n)	IMX21_UART_BASE_ADDR(n)
+-
+ #define IMX25_UART1_BASE_ADDR	0x43f90000
+ #define IMX25_UART2_BASE_ADDR	0x43f94000
+ #define IMX25_UART3_BASE_ADDR	0x5000c000
+@@ -26,6 +19,13 @@
+ #define IMX25_UART_BASE_ADDR(n)	IMX25_UART##n##_BASE_ADDR
+ #define IMX25_UART_BASE(n)	IMX25_UART_BASE_ADDR(n)
+ 
++#define IMX27_UART1_BASE_ADDR	0x1000a000
++#define IMX27_UART2_BASE_ADDR	0x1000b000
++#define IMX27_UART3_BASE_ADDR	0x1000c000
++#define IMX27_UART4_BASE_ADDR	0x1000d000
++#define IMX27_UART_BASE_ADDR(n)	IMX27_UART##n##_BASE_ADDR
++#define IMX27_UART_BASE(n)	IMX27_UART_BASE_ADDR(n)
++
+ #define IMX31_UART1_BASE_ADDR	0x43f90000
+ #define IMX31_UART2_BASE_ADDR	0x43f94000
+ #define IMX31_UART3_BASE_ADDR	0x5000c000
+@@ -112,10 +112,10 @@
+ 
+ #ifdef CONFIG_DEBUG_IMX1_UART
+ #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX1)
+-#elif defined(CONFIG_DEBUG_IMX21_IMX27_UART)
+-#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX21)
+ #elif defined(CONFIG_DEBUG_IMX25_UART)
+ #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX25)
++#elif defined(CONFIG_DEBUG_IMX27_UART)
++#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX27)
+ #elif defined(CONFIG_DEBUG_IMX31_UART)
+ #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX31)
+ #elif defined(CONFIG_DEBUG_IMX35_UART)
 -- 
 2.34.1
 
