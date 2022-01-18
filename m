@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 559F1C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:33:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AD5BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:34:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343928AbiARCd4 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:33:56 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42354 "EHLO
+        id S244542AbiARCd7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:33:59 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42462 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344290AbiARC3k (ORCPT
+        with ESMTP id S1344375AbiARC3v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:29:40 -0500
+        Mon, 17 Jan 2022 21:29:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CD70AB8123A;
-        Tue, 18 Jan 2022 02:29:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F189FC36AE3;
-        Tue, 18 Jan 2022 02:29:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98BCFB8124E;
+        Tue, 18 Jan 2022 02:29:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B98E6C36AF2;
+        Tue, 18 Jan 2022 02:29:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472977;
-        bh=Evjdvma7DpXHpludweJifTmE2JUT8KCAToNGDJW3x2k=;
+        s=k20201202; t=1642472988;
+        bh=zI6GycII7ZqdcccMhnvZf7pbAzNxjeMsL9gidccGsHY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eerbGhrlNLP1/Tud2Kbz0yribI4ym6EHqKcbPOTVKvZmz8NCkLshL108ayIw1FxFh
-         gbnvQwlmNATRb5IpfyKLQLeheRJUKRQlrst6QL7O1rafv/BOFjrJjX1nIbmtE5x21L
-         /EW+Veb8Ogt7H6FIBKQv9/tK1QU75lEo2vr/dJ0IGckEjbJ1bVoXdc2FAoVVbufdFq
-         nWlWmZa3cN5JUbWsshVtyBmTfyAb2d2wvpgtgNNlQbb0cNppSQ+dstoyI0jiLaqDPZ
-         leOHpDXW6qUcrnJdGgr7Uzham9iOzf/mfktw/nvNyMGqPW0LGNizVdui2Dq1L24tZM
-         zf09f3xmBT65Q==
+        b=AVYb2OjGxexQQI+93dqsjY2XIKdb2fVyHXuqYxRCL/Cpt2BMGbtXLNgO8mee3H0rX
+         J4CeqAVxxZbc4ik2ZPSrtBQIAHc5jbnetpEA1P9demhAXHGw/MZ7rSMDWUZCYTTKvx
+         VMWAUZrOhFlzSbDNGdAtiuckG8RVUA9PVZudiGHj7A2JJHiG18/Q/KUVs1YT4PeYqW
+         6ImHDY6rhk4gl8ntNVrMrPS5oAVdj8IAqHc6m5bhsjKzB3mAgD7Uf3NHx3BaqLy5yo
+         4PuTNoFhztAkkzL2T1imgo9bnDxW3VOKa1laEfuyWlV2ffpM2acRHdjw5LE2C9vKr/
+         9Iq05+2ysMcwg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zongmin Zhou <zhouzongmin@kylinos.cn>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        Felix.Kuehling@amd.com, evan.quan@amd.com, nirmoy.das@amd.com,
-        andrey.grodzovsky@amd.com, Oak.Zeng@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.16 186/217] drm/amdgpu: fixup bad vram size on gmc v8
-Date:   Mon, 17 Jan 2022 21:19:09 -0500
-Message-Id: <20220118021940.1942199-186-sashal@kernel.org>
+Cc:     Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>, clm@fb.com,
+        linux-btrfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 192/217] btrfs: remove BUG_ON() in find_parent_nodes()
+Date:   Mon, 17 Jan 2022 21:19:15 -0500
+Message-Id: <20220118021940.1942199-192-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -53,59 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zongmin Zhou <zhouzongmin@kylinos.cn>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit 11544d77e3974924c5a9c8a8320b996a3e9b2f8b ]
+[ Upstream commit fcba0120edf88328524a4878d1d6f4ad39f2ec81 ]
 
-Some boards(like RX550) seem to have garbage in the upper
-16 bits of the vram size register.  Check for
-this and clamp the size properly.  Fixes
-boards reporting bogus amounts of vram.
+We search for an extent entry with .offset = -1, which shouldn't be a
+thing, but corruption happens.  Add an ASSERT() for the developers,
+return -EUCLEAN for mortals.
 
-after add this patch,the maximum GPU VRAM size is 64GB,
-otherwise only 64GB vram size will be used.
-
-Signed-off-by: Zongmin Zhou<zhouzongmin@kylinos.cn>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ fs/btrfs/backref.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
-index 492ebed2915be..63b890f1e8afb 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
-@@ -515,10 +515,10 @@ static void gmc_v8_0_mc_program(struct amdgpu_device *adev)
- static int gmc_v8_0_mc_init(struct amdgpu_device *adev)
- {
- 	int r;
-+	u32 tmp;
- 
- 	adev->gmc.vram_width = amdgpu_atombios_get_vram_width(adev);
- 	if (!adev->gmc.vram_width) {
--		u32 tmp;
- 		int chansize, numchan;
- 
- 		/* Get VRAM informations */
-@@ -562,8 +562,15 @@ static int gmc_v8_0_mc_init(struct amdgpu_device *adev)
- 		adev->gmc.vram_width = numchan * chansize;
- 	}
- 	/* size in MB on si */
--	adev->gmc.mc_vram_size = RREG32(mmCONFIG_MEMSIZE) * 1024ULL * 1024ULL;
--	adev->gmc.real_vram_size = RREG32(mmCONFIG_MEMSIZE) * 1024ULL * 1024ULL;
-+	tmp = RREG32(mmCONFIG_MEMSIZE);
-+	/* some boards may have garbage in the upper 16 bits */
-+	if (tmp & 0xffff0000) {
-+		DRM_INFO("Probable bad vram size: 0x%08x\n", tmp);
-+		if (tmp & 0xffff)
-+			tmp &= 0xffff;
+diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
+index f735b8798ba12..6b4b0f105a572 100644
+--- a/fs/btrfs/backref.c
++++ b/fs/btrfs/backref.c
+@@ -1214,7 +1214,12 @@ static int find_parent_nodes(struct btrfs_trans_handle *trans,
+ 	ret = btrfs_search_slot(NULL, fs_info->extent_root, &key, path, 0, 0);
+ 	if (ret < 0)
+ 		goto out;
+-	BUG_ON(ret == 0);
++	if (ret == 0) {
++		/* This shouldn't happen, indicates a bug or fs corruption. */
++		ASSERT(ret != 0);
++		ret = -EUCLEAN;
++		goto out;
 +	}
-+	adev->gmc.mc_vram_size = tmp * 1024ULL * 1024ULL;
-+	adev->gmc.real_vram_size = adev->gmc.mc_vram_size;
  
- 	if (!(adev->flags & AMD_IS_APU)) {
- 		r = amdgpu_device_resize_fb_bar(adev);
+ #ifdef CONFIG_BTRFS_FS_RUN_SANITY_TESTS
+ 	if (trans && likely(trans->type != __TRANS_DUMMY) &&
 -- 
 2.34.1
 
