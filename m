@@ -2,84 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E23EAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 08:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 623C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 08:33:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344573AbiARI3U (ORCPT
+        id S1343691AbiARIdg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 03:29:20 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:46398 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344364AbiARI3R (ORCPT
+        Tue, 18 Jan 2022 03:33:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58848 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232184AbiARIdf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 03:29:17 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17D16613F9;
-        Tue, 18 Jan 2022 08:29:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46AF6C340E4;
-        Tue, 18 Jan 2022 08:29:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642494556;
-        bh=RAQ8U6MFEu51ITZP1wP47dn7g6hCRWOKwdwVbfE6DKQ=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=cNXthNkVcBk1bNhH1Xj0Fzri4j4JnM6FdfS61Eg79P6SNmA+esMC0Y4ygPJTzCP2/
-         uyaj/rLV21w4LJL6hF1NXC31+dnd9Llb29CoDSNWOyLXjg9Ezuvmh2WtxUhrN+n2pK
-         ALkPL2Ha6xE49ouHZkI5H5tIhvlr/nqRpR6/kGb24fg47K3GZ+NYJSohMIiySlMLGL
-         wsDEY5n2NxvUWzj70P2B1X8viAujg7n6LeyzTSrZ8V0Xez2x/hbSUP4M91Sfxt85wM
-         FxvHOKRZx4jJrbbxRE/SSPx765FPbM9WeHqxI4IVsxDJHoe6Z4A9PCpWkrnWSo7lEl
-         RrNKW57V+r43A==
-Date:   Tue, 18 Jan 2022 09:29:11 +0100
-From:   Christian Brauner <brauner@kernel.org>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Brian Foster <bfoster@redhat.com>, Ian Kent <raven@themaw.net>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        David Howells <dhowells@redhat.com>,
-        Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        xfs <linux-xfs@vger.kernel.org>
-Subject: Re: [PATCH] vfs: check dentry is still valid in get_link()
-Message-ID: <20220118082911.rsmv5m2pjeyt6wpg@wittgenstein>
-References: <164180589176.86426.501271559065590169.stgit@mickey.themaw.net>
- <YeJr7/E+9stwEb3t@zeniv-ca.linux.org.uk>
- <275358741c4ee64b5e4e008d514876ed4ec1071c.camel@themaw.net>
- <YeV+zseKGNqnSuKR@bfoster>
- <YeWZRL88KPtLWlkI@zeniv-ca.linux.org.uk>
- <YeWxHPDbdSfBDtyX@zeniv-ca.linux.org.uk>
+        Tue, 18 Jan 2022 03:33:35 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02D69C061574;
+        Tue, 18 Jan 2022 00:33:34 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id e3so64838697lfc.9;
+        Tue, 18 Jan 2022 00:33:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version;
+        bh=KLD+MloItQCMXbz2y5vOdZNej7yessFgYaQM/n3CvoM=;
+        b=ne353ukwDghnGnW3HPOF/4PSgN+McoDbmkJm9FMzmrZDcFAD7EK2OapuoSm1g5mwfm
+         I7RGL8DSO0iiq8skp4G3D8VJa+P5pdxQiHs25XFQ0gU70ulS8KccYJeOZG17GqXdSvnW
+         tOC+ubr92jCsHTSnYA5KMEXVmlUlHHzkcV4qfD9TuJUiusF+FyMTgZFUZ8/RXbOVfeok
+         XMDRgP3h+K/GxxW0pN+8nzDDQIQI3knLJVI31mXFW56MLkoQNlW7j9TUhEURlp7DwDzD
+         uRYGhhczkt3Fyrb5VDWqbH+ng5lcEYDCgGzbR/tZQZJPYECC4L4pNmauVOrVioyu6h3N
+         THkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version;
+        bh=KLD+MloItQCMXbz2y5vOdZNej7yessFgYaQM/n3CvoM=;
+        b=wOTCCf1CCMcPR9dWsv5bBG4zEKEC0pIuivuzF8ul6DK9p5Ox1jtH/M34zRhfBhk4w3
+         24q6zOPGguiRzYm2gHUVeyT9ntnjN/LcCVrDqzwxwRx0g0cGHHl516dgqAXLUB1xRMAE
+         aAV/QRJeo3ziudHRlR7+9SVtHw0oagKpZmEnnNKxL+tdAYNFwMolhtXtT2mQnxgX95fW
+         vv+fZi3DoZHYnY2f3VATm8XmdzpObm9gJ0C0RhqSD6smSGQOAZIf0ZOBIp/mhlZ+GYyn
+         2OH2H2B2Fhz0i7LV1LHDyf03kCrsZl2WKg18VKKAHDO9jx1idQSDDbdtjGHezIxqxQDN
+         wYXA==
+X-Gm-Message-State: AOAM530N0VqjWbZZJTdhJq5S3RCXy5kRtErfMJymrYaATEOH0ZPR2VRH
+        m41Hy57riOGn0dONagd1ydo=
+X-Google-Smtp-Source: ABdhPJzuSq/MUQlGIOzjU9G0ydbmSVmtEw8DKQdKcurbT9pZPqO7lteH/by5/VpQMde9PF0CTDn6ew==
+X-Received: by 2002:a05:6512:3249:: with SMTP id c9mr20011630lfr.355.1642494813232;
+        Tue, 18 Jan 2022 00:33:33 -0800 (PST)
+Received: from eldfell ([194.136.85.206])
+        by smtp.gmail.com with ESMTPSA id e23sm1617601lfj.64.2022.01.18.00.33.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Jan 2022 00:33:32 -0800 (PST)
+Date:   Tue, 18 Jan 2022 10:33:23 +0200
+From:   Pekka Paalanen <ppaalanen@gmail.com>
+To:     Sven Schnelle <svens@stackframe.org>
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Helge Deller <deller@gmx.de>, linux-fbdev@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
+Message-ID: <20220118103323.4bae3a7d@eldfell>
+In-Reply-To: <87bl0amc6s.fsf@x1.stackframe.org>
+References: <YeG8ydoJNWWkGrTb@ls3530>
+        <c48ad8ae-aea5-43fa-882f-dccb90dde9a4@suse.de>
+        <87bl0amc6s.fsf@x1.stackframe.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YeWxHPDbdSfBDtyX@zeniv-ca.linux.org.uk>
+Content-Type: multipart/signed; boundary="Sig_/pF3FTcxUDW+xdzSl3bV6P7H";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 06:10:36PM +0000, Al Viro wrote:
-> On Mon, Jan 17, 2022 at 04:28:52PM +0000, Al Viro wrote:
-> 
-> > IOW, ->free_inode() is RCU-delayed part of ->destroy_inode().  If both
-> > are present, ->destroy_inode() will be called synchronously, followed
-> > by ->free_inode() from RCU callback, so you can have both - moving just
-> > the "finally mark for reuse" part into ->free_inode() would be OK.
-> > Any blocking stuff (if any) can be left in ->destroy_inode()...
-> 
-> BTW, we *do* have a problem with ext4 fast symlinks.  Pathwalk assumes that
-> strings it parses are not changing under it.  There are rather delicate
-> dances in dcache lookups re possibility of ->d_name contents changing under
-> it, but the search key is assumed to be stable.
-> 
-> What's more, there's a correctness issue even if we do not oops.  Currently
-> we do not recheck ->d_seq of symlink dentry when we dismiss the symlink from
-> the stack.  After all, we'd just finished traversing what used to be the
-> contents of a symlink that used to be in the right place.  It might have been
-> unlinked while we'd been traversing it, but that's not a correctness issue.
-> 
-> But that critically depends upon the contents not getting mangled.  If it
-> *can* be screwed by such unlink, we risk successful lookup leading to the
+--Sig_/pF3FTcxUDW+xdzSl3bV6P7H
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Out of curiosity: whether or not it can get mangled depends on the
-filesystem and how it implements fast symlinks or do fast symlinks
-currently guarantee that contents are mangled?
+On Mon, 17 Jan 2022 19:47:39 +0100
+Sven Schnelle <svens@stackframe.org> wrote:
+
+> I also tested the speed on my Thinkpad X1 with Intel graphics, and there
+> a dmesg with 919 lines one the text console took about 2s to display. In
+> x11, i measure 22ms. This might be unfair because encoding might be
+> different, but i cannot confirm the 'memcpy' is faster than hardware
+> blitting' point. I think if that would be the case, no-one would care
+> about 2D acceleration.
+
+I think that is an extremely unfair comparison, because a graphical
+terminal app is not going to render every line of text streamed to it.
+It probably renders only the final view alone if you simply run
+'dmesg', skipping the first 800-900 lines completely.
+
+Maybe fbcon should do the same when presented with a flood of text,
+but I don't know how or why it works like it works. I assume in your
+two second test you actually see some scrolling (animation) rather than
+the final view? Or does it take 2 seconds just to update one screenful?
+
+I doubt your fbcon and terminal window had height of 919 lines?
+
+
+Thanks,
+pq
+
+--Sig_/pF3FTcxUDW+xdzSl3bV6P7H
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEJQjwWQChkWOYOIONI1/ltBGqqqcFAmHme1MACgkQI1/ltBGq
+qqdM2w//ZKh892gl5oVmYmmIi7+I4zQlFkWyR0zVRmm2TIInv/MNdEJglce4PXNX
+bfkq5wWZxDrtN/dm/uO165wehDzq4vn5WqhJPUckfmYvQyhCu959hDfPuqD6MZhA
+3FMmW44k5NkkSVA0Y9wlhD2s5Xt3SGPkabMuxLsLCFLHsHodW6wRdf3Ot/3TdN+0
+x7VK4M5KkBw74t2nGZpCd/Q+B1BlI9nrp7hpSwvqN1DYYH9+LCIrXrueKlA4Bkcz
+a/NxfH7M0eXUJiuMv25gyfdGGQrPwdd1poGMdF7UiAOgxXXUb/zWM6b5tZS4POLM
+9le017M5ZXMDVqp83XU1hukMAvt9O9QRwp+9C6CV/GD2II2rrKe74Fpvx4/CAycr
+vAaKrRSvH1qKZ+kLnITGHnSyqFIT3QkousXWd/3Ty656p5Q62IYOnM1TEy9Sb3xE
+5AIgB2wGUdjCl/lMn8DhTGFaTe/8rvTee9N1bqMVASfEyk63mVZHHb/1pcwSvspo
+NGh+6H9yHUF3X1yH+jYQVFELe+1w7KXdF24mUOvhJwcoNqcN+nrpm3UYPs3Q4DpN
+3lj+dzyUDg1esOBx3Q5DcwNcOXzJPE3h8EUN7+LKkIsr8Z7rFyQNM+y/7TfkK29O
+KVrUmyBJKoytMrLdbv411j1K/4vVi00byMtSxUiKcLY0hv9EblE=
+=Y0Ho
+-----END PGP SIGNATURE-----
+
+--Sig_/pF3FTcxUDW+xdzSl3bV6P7H--
