@@ -2,182 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 823CDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 11:07:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01C92C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 11:07:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238808AbiARLHK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 06:07:10 -0500
-Received: from mail-bn7nam10on2053.outbound.protection.outlook.com ([40.107.92.53]:27488
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238757AbiARLHE (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 06:07:04 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WniC4Kvp+xXlkKAPLA4qsmfbZRZjDEy0FDagskJYWJM3uMJ0klcjw6wxlbTrnN20JP9HbklnN2oJE/ii+EV+Q95bNcPf53RseSFFdt1D/1x5qIYXWm5XsqevGuFVU/qS+40YVwYqNPWHtQ9LMtRh3a5i2DoJokZ8Fg136gAcd0T+lpRKVzaJlDrdabi5vYz6oiU9ke3BRT9+4SArF1R4Uqct57ro7ub2qpY+aeXZCYBlN8yPwJ7k4dSucTPTG3eYw9VaA5YqI7KZS2xeRMVhqhkyYTVNXLRKvws0niAClh3K20QxsZqGe6cQ5gLq1kJQSzLgUwXWoi51ZaEY0cW3Xg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=DIjQgW+CjX+2R5ZsqvkdIeFD4XfzQrKHWkgE3XXhzA4=;
- b=JQzF7q8YFulzw9ldnG1ZxcdXGO9HXNjaDW6XwMwbz6YgoS7c9Ls3F4eO9hYV4u87CFznsuJQYp6etTqK7lMAKvjmtxVgEuCpZ88n4zmi78oK4Sg7cdsWaGmhOV0SEyI71+aSl25iCIGJNownQLOb/uE7f3I9BqguHyQ1mqzgM8py/eBpbhrSY8NGUSRBG8G6PmQPLvU4mSA8r5zu9YzdKpmLW7ggpUTbmGNUH+JG9xEZkam3FwS3YZ6RKmy9NgLtQq7oBsxsx6pi5R83cCNVe48lf3sj7wjbulKbE2AqjnOcykV8XzUXIRwbDPDj6USERlbZCEU/HGiT9DCA7aOlrw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
- (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
- dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=DIjQgW+CjX+2R5ZsqvkdIeFD4XfzQrKHWkgE3XXhzA4=;
- b=y8TnGxQSeqfu3R5iHbFlxcGuIvw0yadWNSC16PfsJXeWQoVSiXkoy678zbtwkXeLU4VNVZfK10uBYirSFNNVMay52z3zalJujc5a7c3iLva+kSqGaRNj1jTJk26DgJ+/acrsmAwr7MNYpshoPw0B0D/cn/2ScT8jI92cJ19N5HE=
-Received: from CO1PR15CA0077.namprd15.prod.outlook.com (2603:10b6:101:20::21)
- by BY5PR12MB4210.namprd12.prod.outlook.com (2603:10b6:a03:203::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7; Tue, 18 Jan
- 2022 11:07:02 +0000
-Received: from CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
- (2603:10b6:101:20:cafe::bf) by CO1PR15CA0077.outlook.office365.com
- (2603:10b6:101:20::21) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10 via Frontend
- Transport; Tue, 18 Jan 2022 11:07:02 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- CO1NAM11FT019.mail.protection.outlook.com (10.13.175.57) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4888.9 via Frontend Transport; Tue, 18 Jan 2022 11:07:02 +0000
-Received: from gomati.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 18 Jan
- 2022 05:06:57 -0600
-From:   Nikunj A Dadhania <nikunj@amd.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-CC:     Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Peter Gonda <pgonda@google.com>, <kvm@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, Nikunj A Dadhania <nikunj@amd.com>
-Subject: [RFC PATCH 4/6] KVM: x86/mmu: Introduce kvm_mmu_map_tdp_page() for use by SEV/TDX
-Date:   Tue, 18 Jan 2022 16:36:19 +0530
-Message-ID: <20220118110621.62462-5-nikunj@amd.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220118110621.62462-1-nikunj@amd.com>
-References: <20220118110621.62462-1-nikunj@amd.com>
+        id S238978AbiARLHQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 06:07:16 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:39870 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238725AbiARLHL (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 06:07:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1642504031; x=1674040031;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=OamxD9n2qOQlj3+w09xLq/5caocoDB1vCBarNOrYvtY=;
+  b=NbYkSAK+6MwVPk2+WDAnIod2iEBo07UkCfY+HDHu/+sq1dR911PVbYy1
+   AVdmtU7aq7a78rdjy3N5+t4g2plPCWgmJ4tc6dg79YZ2zaddj7/qIhdP4
+   NszR9P+ExGGfIcieZBGGPzxC0PGlY4gZkhxnnD0Vqu21yO5QgofRfWvgV
+   +wZg+rBjX/nxVMOPAzWroGCbDIvAb/jnEsgNurkU37nItozAfJmCbDaBj
+   BKO3hBczauSr6Qip9W8qp2+upCjy1qbrXuKCjfo3dvR2HIXc/PQCHxwvf
+   OEoBZkENE8Rb8TZuqIEedXXcSzDt4Cm+5LUb5T/w0oRVZMhkn45lPgdel
+   g==;
+IronPort-SDR: w4+WUTP6+Yh5so1gyotfVB5eR+RobV9+TzLBvuYJC69MyiJnDQOJ3fr3MaIwW5jDZyCbXbm1e4
+ 7P2IWYGoXqJmxuK9hR3kGCEaxJqvXKkUlJBbZGV8SCZCoMaPJYw9WA1FlgUX4TtQJO4CgSsH0M
+ 7C6zfQW9VJdUTBcO8r+MdWhtaLZA4XWR+lgZfv2SSTSOqpT371AvmYg99mJtSMKZ1yx9oVH6wO
+ EB/VMpi3n+RZfDBtlroYPtTwBx3taeUFTWL7vFs9wOuMugBdGMb7i7fhUYXvkjczJVb73LbMxZ
+ ZcoUiXIz9Go8eTklQp8YnHsr
+X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
+   d="scan'208";a="150001499"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Jan 2022 04:07:09 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.17; Tue, 18 Jan 2022 04:07:08 -0700
+Received: from localhost.localdomain (10.10.115.15) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server id
+ 15.1.2375.17 via Frontend Transport; Tue, 18 Jan 2022 04:07:06 -0700
+From:   Claudiu Beznea <claudiu.beznea@microchip.com>
+To:     <andrew@lunn.ch>, <hkallweit1@gmail.com>, <linux@armlinux.org.uk>,
+        <davem@davemloft.net>, <kuba@kernel.org>, <ioana.ciornei@nxp.com>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>
+Subject: [PATCH] net: phy: micrel: use kszphy_suspend()/kszphy_resume for irq aware devices
+Date:   Tue, 18 Jan 2022 13:08:12 +0200
+Message-ID: <20220118110812.1767997-1-claudiu.beznea@microchip.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8235127c-47c7-4af2-39ba-08d9da72a795
-X-MS-TrafficTypeDiagnostic: BY5PR12MB4210:EE_
-X-Microsoft-Antispam-PRVS: <BY5PR12MB42101F47B1D71507F5A7E631E2589@BY5PR12MB4210.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: qGA4X84u7BcxAz7pacm46ed0MlxmlTF+KXHJTJjjYQLgom9MpXgKkB+5We9HFMlGPrc2IigXoBoV2GbC8XBXzrMUf68q3Bhyw1dcaa/oHljR3isECSugVUEMWBdHvkyXAn8XjHUPhS8Jsp3yYrNsWySYjOibrD6XrpcrJeBN4HgpJE8+ghhz3X7um3cPzZ5BCnRC1vA8gpDNSt/fIDAcf/LbJ/NwHmiIZUGRKruzarbpEB9A//mV5VrGFFefY0v/3nvFD2//te3g282DU4umRW8Roq4tVdiKnE/iMbU5pSw5NluPv1aUps23tSSZ84YogqwqLLD8HWLNiiJtvXZ8kDkgwM2xn9RnEKCGqdV6tJTJBEGsMW4z5cRyqGRGfpTvBErxIGzbdhIaYb6n45dT8aLM21NGjUcITIq6NbZYHE6GOMZ31XYI6Lp89zrX7htFt9m89rz1YvZi487ruEDYfFuLdihuOtHxmfBLL9lU2bMtQrQiyr5946C+YyvW/IAiqt9TC8fDV1mJ9KOIayIhlenX3m+aXMI5cauWa/QceVBbpxNri1E8WqONZzFiVp7slY5/HD0v4mH8bggUEHkgeg4xXP3cCulW6CuF8EGmr2noBIv6F8BdzrW8B3LFTYZ10qNJp9HV5IX3WIvJKmemyow0f7KmIZWytES6GWu8ia2fGaHRHeVZwlenhSbVdLC2in+9iUzZDGO/1M6/NnI/0iEAp2X6i+zmJ5oFf/HZ+sNfe6xpWV+frSpHgZvEQP1FBBFzta+/llKnC+JhN11lkwZUqrl6Fw0+J1X2MbzYA4s=
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(4636009)(40470700002)(46966006)(36840700001)(6666004)(40460700001)(26005)(82310400004)(1076003)(16526019)(8936002)(426003)(6916009)(36756003)(8676002)(5660300002)(508600001)(4326008)(2616005)(70586007)(70206006)(336012)(81166007)(356005)(54906003)(47076005)(83380400001)(2906002)(316002)(7696005)(186003)(36860700001)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2022 11:07:02.0618
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8235127c-47c7-4af2-39ba-08d9da72a795
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB4210
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <sean.j.christopherson@intel.com>
+On a setup with KSZ9131 and MACB drivers it happens on suspend path, from
+time to time, that the PHY interrupt arrives after PHY and MACB were
+suspended (PHY via genphy_suspend(), MACB via macb_suspend()). In this
+case the phy_read() at the beginning of kszphy_handle_interrupt() will
+fail (as MACB driver is suspended at this time) leading to phy_error()
+being called and a stack trace being displayed on console. To solve this
+.suspend/.resume functions for all KSZ devices implementing
+.handle_interrupt were replaced with kszphy_suspend()/kszphy_resume()
+which disable/enable interrupt before/after calling
+genphy_suspend()/genphy_resume().
 
-Introduce a helper to directly (pun intended) fault-in a TDP page
-without having to go through the full page fault path. This allows
-SEV/TDX to pin pages before booting the guest, provides the resulting
-pfn to vendor code if should be needed in the future, and allows the
-RET_PF_* enums to stay in mmu.c where they belong.
+The fix has been adapted for all KSZ devices which implements
+.handle_interrupt but it has been tested only on KSZ9131.
 
-Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
-Signed-off-by: Isaku Yamahata <isaku.yamahata@intel.com>
-Signed-off-by: Nikunj A Dadhania <nikunj@amd.com>
+Fixes: 59ca4e58b917 ("net: phy: micrel: implement generic .handle_interrupt() callback")
+Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- arch/x86/kvm/mmu.h     |  3 +++
- arch/x86/kvm/mmu/mmu.c | 38 ++++++++++++++++++++++++++++++++++++++
- 2 files changed, 41 insertions(+)
+ drivers/net/phy/micrel.c | 36 ++++++++++++++++++------------------
+ 1 file changed, 18 insertions(+), 18 deletions(-)
 
-diff --git a/arch/x86/kvm/mmu.h b/arch/x86/kvm/mmu.h
-index e9fbb2c8bbe2..0595891dd834 100644
---- a/arch/x86/kvm/mmu.h
-+++ b/arch/x86/kvm/mmu.h
-@@ -202,6 +202,9 @@ static inline int kvm_mmu_do_page_fault(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
- 	return vcpu->arch.mmu->page_fault(vcpu, &fault);
- }
- 
-+kvm_pfn_t kvm_mmu_map_tdp_page(struct kvm_vcpu *vcpu, gpa_t gpa,
-+			       u32 error_code, int max_level);
-+
- /*
-  * Currently, we have two sorts of write-protection, a) the first one
-  * write-protects guest page to sync the guest modification, b) another one is
-diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
-index 62dda588eb99..de5d390e0dcc 100644
---- a/arch/x86/kvm/mmu/mmu.c
-+++ b/arch/x86/kvm/mmu/mmu.c
-@@ -4111,6 +4111,44 @@ int kvm_tdp_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault)
- 	return direct_page_fault(vcpu, fault);
- }
- 
-+kvm_pfn_t kvm_mmu_map_tdp_page(struct kvm_vcpu *vcpu, gpa_t gpa,
-+			       u32 error_code, int max_level)
-+{
-+	int r;
-+	struct kvm_page_fault fault = (struct kvm_page_fault) {
-+		.addr = gpa,
-+		.error_code = error_code,
-+		.exec = error_code & PFERR_FETCH_MASK,
-+		.write = error_code & PFERR_WRITE_MASK,
-+		.present = error_code & PFERR_PRESENT_MASK,
-+		.rsvd = error_code & PFERR_RSVD_MASK,
-+		.user = error_code & PFERR_USER_MASK,
-+		.prefetch = false,
-+		.is_tdp = true,
-+		.nx_huge_page_workaround_enabled = is_nx_huge_page_enabled(),
-+	};
-+
-+	if (mmu_topup_memory_caches(vcpu, false))
-+		return KVM_PFN_ERR_FAULT;
-+
-+	/*
-+	 * Loop on the page fault path to handle the case where an mmu_notifier
-+	 * invalidation triggers RET_PF_RETRY.  In the normal page fault path,
-+	 * KVM needs to resume the guest in case the invalidation changed any
-+	 * of the page fault properties, i.e. the gpa or error code.  For this
-+	 * path, the gpa and error code are fixed by the caller, and the caller
-+	 * expects failure if and only if the page fault can't be fixed.
-+	 */
-+	do {
-+		fault.max_level = max_level;
-+		fault.req_level = PG_LEVEL_4K;
-+		fault.goal_level = PG_LEVEL_4K;
-+		r = direct_page_fault(vcpu, &fault);
-+	} while (r == RET_PF_RETRY && !is_error_noslot_pfn(fault.pfn));
-+	return fault.pfn;
-+}
-+EXPORT_SYMBOL_GPL(kvm_mmu_map_tdp_page);
-+
- static void nonpaging_init_context(struct kvm_mmu *context)
- {
- 	context->page_fault = nonpaging_page_fault;
+diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+index aec0fcefdccd..e2ac61f44c94 100644
+--- a/drivers/net/phy/micrel.c
++++ b/drivers/net/phy/micrel.c
+@@ -1547,8 +1547,8 @@ static struct phy_driver ksphy_driver[] = {
+ 	.config_init	= kszphy_config_init,
+ 	.config_intr	= kszphy_config_intr,
+ 	.handle_interrupt = kszphy_handle_interrupt,
+-	.suspend	= genphy_suspend,
+-	.resume		= genphy_resume,
++	.suspend	= kszphy_suspend,
++	.resume		= kszphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ8021,
+ 	.phy_id_mask	= 0x00ffffff,
+@@ -1562,8 +1562,8 @@ static struct phy_driver ksphy_driver[] = {
+ 	.get_sset_count = kszphy_get_sset_count,
+ 	.get_strings	= kszphy_get_strings,
+ 	.get_stats	= kszphy_get_stats,
+-	.suspend	= genphy_suspend,
+-	.resume		= genphy_resume,
++	.suspend	= kszphy_suspend,
++	.resume		= kszphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ8031,
+ 	.phy_id_mask	= 0x00ffffff,
+@@ -1577,8 +1577,8 @@ static struct phy_driver ksphy_driver[] = {
+ 	.get_sset_count = kszphy_get_sset_count,
+ 	.get_strings	= kszphy_get_strings,
+ 	.get_stats	= kszphy_get_stats,
+-	.suspend	= genphy_suspend,
+-	.resume		= genphy_resume,
++	.suspend	= kszphy_suspend,
++	.resume		= kszphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ8041,
+ 	.phy_id_mask	= MICREL_PHY_ID_MASK,
+@@ -1609,8 +1609,8 @@ static struct phy_driver ksphy_driver[] = {
+ 	.get_sset_count = kszphy_get_sset_count,
+ 	.get_strings	= kszphy_get_strings,
+ 	.get_stats	= kszphy_get_stats,
+-	.suspend	= genphy_suspend,
+-	.resume		= genphy_resume,
++	.suspend	= kszphy_suspend,
++	.resume		= kszphy_resume,
+ }, {
+ 	.name		= "Micrel KSZ8051",
+ 	/* PHY_BASIC_FEATURES */
+@@ -1623,8 +1623,8 @@ static struct phy_driver ksphy_driver[] = {
+ 	.get_strings	= kszphy_get_strings,
+ 	.get_stats	= kszphy_get_stats,
+ 	.match_phy_device = ksz8051_match_phy_device,
+-	.suspend	= genphy_suspend,
+-	.resume		= genphy_resume,
++	.suspend	= kszphy_suspend,
++	.resume		= kszphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ8001,
+ 	.name		= "Micrel KSZ8001 or KS8721",
+@@ -1638,8 +1638,8 @@ static struct phy_driver ksphy_driver[] = {
+ 	.get_sset_count = kszphy_get_sset_count,
+ 	.get_strings	= kszphy_get_strings,
+ 	.get_stats	= kszphy_get_stats,
+-	.suspend	= genphy_suspend,
+-	.resume		= genphy_resume,
++	.suspend	= kszphy_suspend,
++	.resume		= kszphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ8081,
+ 	.name		= "Micrel KSZ8081 or KSZ8091",
+@@ -1669,8 +1669,8 @@ static struct phy_driver ksphy_driver[] = {
+ 	.config_init	= ksz8061_config_init,
+ 	.config_intr	= kszphy_config_intr,
+ 	.handle_interrupt = kszphy_handle_interrupt,
+-	.suspend	= genphy_suspend,
+-	.resume		= genphy_resume,
++	.suspend	= kszphy_suspend,
++	.resume		= kszphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ9021,
+ 	.phy_id_mask	= 0x000ffffe,
+@@ -1685,8 +1685,8 @@ static struct phy_driver ksphy_driver[] = {
+ 	.get_sset_count = kszphy_get_sset_count,
+ 	.get_strings	= kszphy_get_strings,
+ 	.get_stats	= kszphy_get_stats,
+-	.suspend	= genphy_suspend,
+-	.resume		= genphy_resume,
++	.suspend	= kszphy_suspend,
++	.resume		= kszphy_resume,
+ 	.read_mmd	= genphy_read_mmd_unsupported,
+ 	.write_mmd	= genphy_write_mmd_unsupported,
+ }, {
+@@ -1704,7 +1704,7 @@ static struct phy_driver ksphy_driver[] = {
+ 	.get_sset_count = kszphy_get_sset_count,
+ 	.get_strings	= kszphy_get_strings,
+ 	.get_stats	= kszphy_get_stats,
+-	.suspend	= genphy_suspend,
++	.suspend	= kszphy_suspend,
+ 	.resume		= kszphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_LAN8814,
+@@ -1732,7 +1732,7 @@ static struct phy_driver ksphy_driver[] = {
+ 	.get_sset_count = kszphy_get_sset_count,
+ 	.get_strings	= kszphy_get_strings,
+ 	.get_stats	= kszphy_get_stats,
+-	.suspend	= genphy_suspend,
++	.suspend	= kszphy_suspend,
+ 	.resume		= kszphy_resume,
+ }, {
+ 	.phy_id		= PHY_ID_KSZ8873MLL,
 -- 
 2.32.0
 
