@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B63C3525C
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:13:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D1AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355004AbiARDKr (ORCPT
+        id S1346987AbiARDMe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:10:47 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:51424 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245641AbiARCmp (ORCPT
+        Mon, 17 Jan 2022 22:12:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37608 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350744AbiARC6j (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:42:45 -0500
+        Mon, 17 Jan 2022 21:58:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5E8FC08E803;
+        Mon, 17 Jan 2022 18:46:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E4064B81136;
-        Tue, 18 Jan 2022 02:42:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E3E6C36AEB;
-        Tue, 18 Jan 2022 02:42:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A77E46130F;
+        Tue, 18 Jan 2022 02:46:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41476C36AF3;
+        Tue, 18 Jan 2022 02:46:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473762;
-        bh=NsNmxlzJcp4bHdt1JVI79chzoIVKauwC5RQte6uzHu4=;
+        s=k20201202; t=1642473992;
+        bh=9uKKf1TxxQAoHY6lccxjxThO6/omFi4B/f9YrJIJob0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=p7e7dOclAEb5V2RCMsebhnC4GdRINgiPTE/dDAvwVmecQn+nMR2APAdfAtEFXtxyq
-         wJ0HxS5zVqWHlXJT7zE/If8UQ0qwl4SukUyap4HTMES27w6Q0HZmBFPWkAN3mOkvKq
-         y5+aokr3691bByU5Ff5wLHjFaDx/S+PRu3X5jZNxT+jVInhyKh8cC33e3zccLb2TIr
-         im3TcRuovcvuYHlOjGQKSiWh2Be0wAfjODmGnWkaa0l8D/MNUl6hgp8CgndxMm8j7Z
-         Hhz9UKy7HvvjJdhf4r6id5mSUpuqZcPpFo4KltZdH1rH+ntHtliG+QSrteMlcMQgSC
-         LMY1ePMx/w0AA==
+        b=a/A6ubDJO9hxDJmp6l+4nG0/EN/HUMZ7a0oWuc0QFchyqp48QrAeboDKMgZO37d7X
+         fWN5UmqIRtLv33OlQmlYWEX6fRtHEtfKv4KEabxhGMirPc676wl4N6/sQrox/AyC66
+         ww+zPTJDnHiFkHz/8XIqRAGFmE9tuTGXOVmMEFcjoq2ekw911Z6H6bhy9tcAuNcNMG
+         fnJ5C1Ccz56Vl2kgCdaNdtbei91YlmDxZjAgI7g6891ua5pMtmT7Cm+A7GrCIYM9+j
+         QS0R83giPupwJU0MbuQQu0uqJ5utFWrW7SE62Pv8gaPr/6vvWJmBocffRq5kaZS+FQ
+         r9jT00hM9aKXw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Heiko Carstens <hca@linux.ibm.com>,
-        Alexander Egorenkov <egorenar@linux.ibm.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        Shuah Khan <skhan@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, rostedt@goodmis.org,
-        mingo@redhat.com, shuah@kernel.org, linux-kselftest@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 058/116] selftests/ftrace: make kprobe profile testcase description unique
-Date:   Mon, 17 Jan 2022 21:39:09 -0500
-Message-Id: <20220118024007.1950576-58-sashal@kernel.org>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Lenny Szubowicz <lszubowi@redhat.com>,
+        Bob Moore <robert.moore@intel.com>,
+        Sasha Levin <sashal@kernel.org>, linux-acpi@vger.kernel.org,
+        devel@acpica.org
+Subject: [PATCH AUTOSEL 5.4 56/73] ACPICA: Executer: Fix the REFCLASS_REFOF case in acpi_ex_opcode_1A_0T_1R()
+Date:   Mon, 17 Jan 2022 21:44:15 -0500
+Message-Id: <20220118024432.1952028-56-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
+In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
+References: <20220118024432.1952028-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,39 +54,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Heiko Carstens <hca@linux.ibm.com>
+From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 
-[ Upstream commit e5992f373c6eed6d09e5858e9623df1259b3ce30 ]
+[ Upstream commit 24ea5f90ec9548044a6209685c5010edd66ffe8f ]
 
-Commit 32f6e5da83c7 ("selftests/ftrace: Add kprobe profile testcase")
-added a new kprobes testcase, but has a description which does not
-describe what the test case is doing and is duplicating the description
-of another test case.
+ACPICA commit d984f12041392fa4156b52e2f7e5c5e7bc38ad9e
 
-Therefore change the test case description, so it is unique and then
-allows easily to tell which test case actually passed or failed.
+If Operand[0] is a reference of the ACPI_REFCLASS_REFOF class,
+acpi_ex_opcode_1A_0T_1R () calls acpi_ns_get_attached_object () to
+obtain return_desc which may require additional resolution with
+the help of acpi_ex_read_data_from_field (). If the latter fails,
+the reference counter of the original return_desc is decremented
+which is incorrect, because acpi_ns_get_attached_object () does not
+increment the reference counter of the object returned by it.
 
-Reported-by: Alexander Egorenkov <egorenar@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
-Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
-Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+This issue may lead to premature deletion of the attached object
+while it is still attached and a use-after-free and crash in the
+host OS.  For example, this may happen when on evaluation of ref_of()
+a local region field where there is no registered handler for the
+given Operation Region.
+
+Fix it by making acpi_ex_opcode_1A_0T_1R () return Status right away
+after a acpi_ex_read_data_from_field () failure.
+
+Link: https://github.com/acpica/acpica/commit/d984f120
+Link: https://github.com/acpica/acpica/pull/685
+Reported-by: Lenny Szubowicz <lszubowi@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/ftrace/test.d/kprobe/profile.tc | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/acpi/acpica/exoparg1.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc b/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc
-index 98166fa3eb91c..34fb89b0c61fa 100644
---- a/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc
-+++ b/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc
-@@ -1,6 +1,6 @@
- #!/bin/sh
- # SPDX-License-Identifier: GPL-2.0
--# description: Kprobe dynamic event - adding and removing
-+# description: Kprobe profile
- # requires: kprobe_events
+diff --git a/drivers/acpi/acpica/exoparg1.c b/drivers/acpi/acpica/exoparg1.c
+index 06e35ea098234..6d84618ba3871 100644
+--- a/drivers/acpi/acpica/exoparg1.c
++++ b/drivers/acpi/acpica/exoparg1.c
+@@ -1007,7 +1007,8 @@ acpi_status acpi_ex_opcode_1A_0T_1R(struct acpi_walk_state *walk_state)
+ 						    (walk_state, return_desc,
+ 						     &temp_desc);
+ 						if (ACPI_FAILURE(status)) {
+-							goto cleanup;
++							return_ACPI_STATUS
++							    (status);
+ 						}
  
- ! grep -q 'myevent' kprobe_profile
+ 						return_desc = temp_desc;
 -- 
 2.34.1
 
