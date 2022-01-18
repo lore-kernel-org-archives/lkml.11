@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60707C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:42:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B7CEC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:42:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345355AbiARDmD (ORCPT
+        id S1347245AbiARDmO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:42:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38864 "EHLO
+        Mon, 17 Jan 2022 22:42:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37754 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352663AbiARDEO (ORCPT
+        with ESMTP id S1353611AbiARDCI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:04:14 -0500
+        Mon, 17 Jan 2022 22:02:08 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD84CC02525B;
-        Mon, 17 Jan 2022 18:48:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB4CC03400D;
+        Mon, 17 Jan 2022 18:47:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6833FB811D6;
-        Tue, 18 Jan 2022 02:48:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24EB4C36AF6;
-        Tue, 18 Jan 2022 02:48:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D377BB811CF;
+        Tue, 18 Jan 2022 02:47:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3F71C36AF3;
+        Tue, 18 Jan 2022 02:47:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474083;
-        bh=mJzXnS1IcEmpxWvMgmaLHW9EGxrSV9VAOnlDQMkv5PE=;
+        s=k20201202; t=1642474054;
+        bh=0LzPtP+1imS3yKjOyhidBSJgXssfUSqeD1/ITevQIJ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=R1XBZ11A8oYnDXttzJYapr3Eus6cgjqaxRe6YzQLoSOTvReVmVkznZ586k9ly9TX/
-         eNUidxnoDLsJhdmN7QIxciDZDuTcMhNLzcW+c2+tUiayKPkie5sClDH5/5DljEKhWd
-         9BjRF7g9FA5B42wR36988IPK/tiT9rA1xzlqd27U4pdMEuXvCxR+xz6cyVwYCSU8GL
-         KidgZ0OPvfl41SRtyEcnRUIC8pLz4IOTrzS7/uRJpolqjdP/14OvBEWNlhWOKs4nPx
-         fEh3mEWeAgHG9I2bvtBoRJMAj9XxwmyVdMkrjr2H/Awr8iWo+WIhjTf9CGAp/R90yr
-         n75cEGZnOex/Q==
+        b=COfch7YApnw9QjbAHT4WxIVSuiguSGWdq4X8TlNldw9QdOm5Z+6wXPZpAU+v0Xkdq
+         A7lRmt9+SidlGvZs4+KnOufjxwLM8nPHbpVMhpTJyZoNUOEXRrr9DD5mhbAlg2TGt+
+         gbEnuDi0pilY99nKYzvv/IS7XFeNus4DqhM0JkM/IB1Dk9x14iiM3WT7R5X2iPRAGO
+         iccRX4c2dIOW+oRIX+OGTtZgjcmLzkfpAHhaSgC5wE77H0Y3UUD1boecqgYtwhVzuN
+         ptLt9/qDkfZRvIgEKeTfU7g6fkqqnyoEaLT8Ol1y6G3UFt3AhKbJCx5/J1THsMPxac
+         yoysia98wt5oA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Suresh Kumar <surkumar@redhat.com>,
-        Suresh Kumar <suresh2514@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 27/59] net: bonding: debug: avoid printing debug logs when bond is not notifying peers
-Date:   Mon, 17 Jan 2022 21:46:28 -0500
-Message-Id: <20220118024701.1952911-27-sashal@kernel.org>
+Cc:     Neal Liu <neal_liu@aspeedtech.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, stern@rowland.harvard.edu,
+        linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.19 15/59] usb: uhci: add aspeed ast2600 uhci support
+Date:   Mon, 17 Jan 2022 21:46:16 -0500
+Message-Id: <20220118024701.1952911-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
 References: <20220118024701.1952911-1-sashal@kernel.org>
@@ -55,66 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suresh Kumar <surkumar@redhat.com>
+From: Neal Liu <neal_liu@aspeedtech.com>
 
-[ Upstream commit fee32de284ac277ba434a2d59f8ce46528ff3946 ]
+[ Upstream commit 554abfe2eadec97d12c71d4a69da1518478f69eb ]
 
-Currently "bond_should_notify_peers: slave ..." messages are printed whenever
-"bond_should_notify_peers" function is called.
+Enable ast2600 uhci quirks.
 
-+++
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Received LACPDU on port 1
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Rx Machine: Port=1, Last State=6, Curr State=6
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): partner sync=1
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-...
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Received LACPDU on port 2
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Rx Machine: Port=2, Last State=6, Curr State=6
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): partner sync=1
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-+++
-
-This is confusing and can also clutter up debug logs.
-Print logs only when the peer notification happens.
-
-Signed-off-by: Suresh Kumar <suresh2514@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+Link: https://lore.kernel.org/r/20211126100021.2331024-1-neal_liu@aspeedtech.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/bonding/bond_main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/usb/host/uhci-platform.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index d6c5f41b17f7e..2d70cdd26f89d 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -782,14 +782,14 @@ static bool bond_should_notify_peers(struct bonding *bond)
- 	slave = rcu_dereference(bond->curr_active_slave);
- 	rcu_read_unlock();
- 
--	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
--		   slave ? slave->dev->name : "NULL");
--
- 	if (!slave || !bond->send_peer_notif ||
- 	    !netif_carrier_ok(bond->dev) ||
- 	    test_bit(__LINK_STATE_LINKWATCH_PENDING, &slave->dev->state))
- 		return false;
- 
-+	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
-+		   slave ? slave->dev->name : "NULL");
-+
- 	return true;
- }
- 
+diff --git a/drivers/usb/host/uhci-platform.c b/drivers/usb/host/uhci-platform.c
+index 89700e26fb296..813ff3660e9f1 100644
+--- a/drivers/usb/host/uhci-platform.c
++++ b/drivers/usb/host/uhci-platform.c
+@@ -113,7 +113,8 @@ static int uhci_hcd_platform_probe(struct platform_device *pdev)
+ 				num_ports);
+ 		}
+ 		if (of_device_is_compatible(np, "aspeed,ast2400-uhci") ||
+-		    of_device_is_compatible(np, "aspeed,ast2500-uhci")) {
++		    of_device_is_compatible(np, "aspeed,ast2500-uhci") ||
++		    of_device_is_compatible(np, "aspeed,ast2600-uhci")) {
+ 			uhci->is_aspeed = 1;
+ 			dev_info(&pdev->dev,
+ 				 "Enabled Aspeed implementation workarounds\n");
 -- 
 2.34.1
 
