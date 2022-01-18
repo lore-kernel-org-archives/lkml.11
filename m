@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02909C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BACCEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:48:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240533AbiARCsQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:48:16 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48350 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346467AbiARCjJ (ORCPT
+        id S240601AbiARCsS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:48:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60202 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245651AbiARCjI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:39:09 -0500
+        Mon, 17 Jan 2022 21:39:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AC50C0613EF;
+        Mon, 17 Jan 2022 18:35:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7176BB8124F;
-        Tue, 18 Jan 2022 02:39:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92769C36AF2;
-        Tue, 18 Jan 2022 02:39:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EF030B81247;
+        Tue, 18 Jan 2022 02:35:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DB006C36AEB;
+        Tue, 18 Jan 2022 02:35:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473546;
-        bh=Evjdvma7DpXHpludweJifTmE2JUT8KCAToNGDJW3x2k=;
+        s=k20201202; t=1642473354;
+        bh=FxcP2RgsoTRkS8NgbR8HIDQitWFPSxNhzfk712i6GBk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=r2GA96LNZI/Dn8wGmInW3pYk+QAkyyt6Bts6LNHJqpZkI2MQrsgAjyM0RA/mqMQw/
-         /2eSZomtmlP6glvIg6gTYFfom/aXMOtyo4zl0rkzp5B/IuH21N2tuY7vehEp4IFKtZ
-         sPJCOuRKYjukIMm7JdR/CVSpU/aT10CktEbVQy7pWIWWQpG//jXQRzUs5RoJu8hotP
-         APFuaFyfcC6jeCE7xylscxkY1pA/KSVsACCYr+QkDrtana6+o3N2B7asnTY9xgnsMb
-         gOH4w4PqQl5lXH52z45y3VhVWa1MT12Zmrqy2hDotKy9XB5vMS/XMwult+FWnXYxDH
-         w/boNu0wbTHig==
+        b=qg4NyHmMDUVTZneSgs+qF6lsltNjzIKyx/jWZb7Av4DaK0ZsyDGavkc+L+N4+V2KF
+         SUTPe5Zwgiizp/wI+7S4C8d8jjVZIr4pwpztbQa9lA0lrm2Ar5YJ6vkQvkOTSl4eW4
+         cgThZVs6cSuBUlO1Ly+431DeKBMrJ7+z2Ykj8dv5EWRcO01UlfmA9moOZy8JuptPsK
+         5N/k3wfBfvdqouKmnV9ju3vEu+CHNAGdM+7SUUsOutJI8NbD+vJflqUJSF9x4cnchR
+         8c9Ckm/3aQy3XU3bhh7YNPDQQ9i4tzMvd8fJ3xJZn1vp7jPECQ4uMgTAvT03STgVf9
+         xctq+vhsI5PKg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zongmin Zhou <zhouzongmin@kylinos.cn>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        Felix.Kuehling@amd.com, evan.quan@amd.com, nirmoy.das@amd.com,
-        Oak.Zeng@amd.com, andrey.grodzovsky@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 159/188] drm/amdgpu: fixup bad vram size on gmc v8
-Date:   Mon, 17 Jan 2022 21:31:23 -0500
-Message-Id: <20220118023152.1948105-159-sashal@kernel.org>
+Cc:     James Hilliard <james.hilliard1@gmail.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, mchehab@kernel.org,
+        linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 083/188] media: uvcvideo: Increase UVC_CTRL_CONTROL_TIMEOUT to 5 seconds.
+Date:   Mon, 17 Jan 2022 21:30:07 -0500
+Message-Id: <20220118023152.1948105-83-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -52,59 +53,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zongmin Zhou <zhouzongmin@kylinos.cn>
+From: James Hilliard <james.hilliard1@gmail.com>
 
-[ Upstream commit 11544d77e3974924c5a9c8a8320b996a3e9b2f8b ]
+[ Upstream commit c8ed7d2f614cd8b315981d116c7a2fb01829500d ]
 
-Some boards(like RX550) seem to have garbage in the upper
-16 bits of the vram size register.  Check for
-this and clamp the size properly.  Fixes
-boards reporting bogus amounts of vram.
+Some uvc devices appear to require the maximum allowed USB timeout
+for GET_CUR/SET_CUR requests.
 
-after add this patch,the maximum GPU VRAM size is 64GB,
-otherwise only 64GB vram size will be used.
+So lets just bump the UVC control timeout to 5 seconds which is the
+same as the usb ctrl get/set defaults:
+USB_CTRL_GET_TIMEOUT 5000
+USB_CTRL_SET_TIMEOUT 5000
 
-Signed-off-by: Zongmin Zhou<zhouzongmin@kylinos.cn>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+It fixes the following runtime warnings:
+   Failed to query (GET_CUR) UVC control 11 on unit 2: -110 (exp. 1).
+   Failed to query (SET_CUR) UVC control 3 on unit 2: -110 (exp. 2).
+
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c | 13 ++++++++++---
- 1 file changed, 10 insertions(+), 3 deletions(-)
+ drivers/media/usb/uvc/uvcvideo.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
-index 492ebed2915be..63b890f1e8afb 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v8_0.c
-@@ -515,10 +515,10 @@ static void gmc_v8_0_mc_program(struct amdgpu_device *adev)
- static int gmc_v8_0_mc_init(struct amdgpu_device *adev)
- {
- 	int r;
-+	u32 tmp;
+diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+index cce5e38133cd3..c3ea6a53869f5 100644
+--- a/drivers/media/usb/uvc/uvcvideo.h
++++ b/drivers/media/usb/uvc/uvcvideo.h
+@@ -189,7 +189,7 @@
+ /* Maximum status buffer size in bytes of interrupt URB. */
+ #define UVC_MAX_STATUS_SIZE	16
  
- 	adev->gmc.vram_width = amdgpu_atombios_get_vram_width(adev);
- 	if (!adev->gmc.vram_width) {
--		u32 tmp;
- 		int chansize, numchan;
+-#define UVC_CTRL_CONTROL_TIMEOUT	500
++#define UVC_CTRL_CONTROL_TIMEOUT	5000
+ #define UVC_CTRL_STREAMING_TIMEOUT	5000
  
- 		/* Get VRAM informations */
-@@ -562,8 +562,15 @@ static int gmc_v8_0_mc_init(struct amdgpu_device *adev)
- 		adev->gmc.vram_width = numchan * chansize;
- 	}
- 	/* size in MB on si */
--	adev->gmc.mc_vram_size = RREG32(mmCONFIG_MEMSIZE) * 1024ULL * 1024ULL;
--	adev->gmc.real_vram_size = RREG32(mmCONFIG_MEMSIZE) * 1024ULL * 1024ULL;
-+	tmp = RREG32(mmCONFIG_MEMSIZE);
-+	/* some boards may have garbage in the upper 16 bits */
-+	if (tmp & 0xffff0000) {
-+		DRM_INFO("Probable bad vram size: 0x%08x\n", tmp);
-+		if (tmp & 0xffff)
-+			tmp &= 0xffff;
-+	}
-+	adev->gmc.mc_vram_size = tmp * 1024ULL * 1024ULL;
-+	adev->gmc.real_vram_size = adev->gmc.mc_vram_size;
- 
- 	if (!(adev->flags & AMD_IS_APU)) {
- 		r = amdgpu_device_resize_fb_bar(adev);
+ /* Maximum allowed number of control mappings per device */
 -- 
 2.34.1
 
