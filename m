@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8855FC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:46:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9AF7C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:46:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348060AbiARCoq (ORCPT
+        id S1348118AbiARCow (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:44:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58650 "EHLO
+        Mon, 17 Jan 2022 21:44:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345790AbiARCcD (ORCPT
+        with ESMTP id S1345599AbiARCbp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:32:03 -0500
+        Mon, 17 Jan 2022 21:31:45 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 512EAC06173E;
-        Mon, 17 Jan 2022 18:31:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C212C035458;
+        Mon, 17 Jan 2022 18:29:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A0AFB61135;
-        Tue, 18 Jan 2022 02:31:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 162CAC36AF4;
-        Tue, 18 Jan 2022 02:31:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 94E2461157;
+        Tue, 18 Jan 2022 02:29:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 510E6C36AEB;
+        Tue, 18 Jan 2022 02:29:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473078;
-        bh=AouQkowWMbLpCiSc9HCHcAG0xZ3v+aO3HmXSlgFIZUU=;
+        s=k20201202; t=1642472995;
+        bh=+j/hF9KUbkWpVpF0TWD+CJhI+JZR0eec5rq0R+03JEU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sKeIK/OLNYsXcJ4AMGebFHFTiGAfCCHfy1aA6g9m/ETfa7u8Rih/KqhzGIX/1a0jd
-         BPdPqUeLnjcn25Ke8F9fWlV5yj9vzA+gmiW1XUwKLwHLZK8OEi6SBnL/JkA62aJf7Q
-         Bxis0mspmNxw2JQCxna3pz2POGIyw5sSJySXiYEhwv1o1CUTdsVz6F6GdK18MzbFwZ
-         rDk/HVQyXsjBvmnt58xkPWFUoIMhGnqUF3kgY78aNY47qy/yeV4LttN2e2XLZHeuMP
-         3qy1WRYQW/cxWhYTxFnb4TX/fiQycko/XfdlxETuizgDxHyMIFZd/ZvCM+4mah0RBf
-         rzyNNl+QJVw9g==
+        b=hSML/tv1yJ3UAC9SDyDzOeaMVnMTHDyDLJd8N+BZGTt1ZV2WNBvYjEwtGmbP7zz5K
+         oEOMAeE/ZsrjTQuW4afLPEyFDRygfAVIlMQ5RVN1jJV/2YrJ4k248c5YUnLdTh/NFB
+         b2+4vzo/aJC4ZoPrLTz+fA1gZcCMm5bvCFOy8RaHOzN82zGwDhHmYGh53Q9syyPU64
+         hajeiuvLSNM7iibPIuyog6dtPxQb9KjFX8YYPJ2kLtohvoSzN7ZQ21EGgT+SpcjtCR
+         o+a9sXR7tUYZNk5CCGDKWN+RbcMkmWv7oGNjJzeYscGM+2WXnuyHTsYt/HuvB8bicv
+         M+oxrfwrBY3eA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        jirislaby@kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 205/217] serial: pl010: Drop CR register reset on set_termios
-Date:   Mon, 17 Jan 2022 21:19:28 -0500
-Message-Id: <20220118021940.1942199-205-sashal@kernel.org>
+Cc:     Joe Thornber <ejt@redhat.com>, Mike Snitzer <snitzer@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, agk@redhat.com,
+        dm-devel@redhat.com
+Subject: [PATCH AUTOSEL 5.16 197/217] dm space map common: add bounds check to sm_ll_lookup_bitmap()
+Date:   Mon, 17 Jan 2022 21:19:20 -0500
+Message-Id: <20220118021940.1942199-197-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -54,56 +52,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Joe Thornber <ejt@redhat.com>
 
-[ Upstream commit 08a0c6dff91c965e39905cf200d22db989203ccb ]
+[ Upstream commit cba23ac158db7f3cd48a923d6861bee2eb7a2978 ]
 
-pl010_set_termios() briefly resets the CR register to zero.
+Corrupted metadata could warrant returning error from sm_ll_lookup_bitmap().
 
-Where does this register write come from?
-
-The PL010 driver's IRQ handler ambauart_int() originally modified the CR
-register without holding the port spinlock.  ambauart_set_termios() also
-modified that register.  To prevent concurrent read-modify-writes by the
-IRQ handler and to prevent transmission while changing baudrate,
-ambauart_set_termios() had to disable interrupts.  That is achieved by
-writing zero to the CR register.
-
-However in 2004 the PL010 driver was amended to acquire the port
-spinlock in the IRQ handler, obviating the need to disable interrupts in
-->set_termios():
-https://git.kernel.org/history/history/c/157c0342e591
-
-That rendered the CR register write obsolete.  Drop it.
-
-Cc: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/fcaff16e5b1abb4cc3da5a2879ac13f278b99ed0.1641128728.git.lukas@wunner.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Joe Thornber <ejt@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/amba-pl010.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/md/persistent-data/dm-space-map-common.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index e744b953ca346..47654073123d6 100644
---- a/drivers/tty/serial/amba-pl010.c
-+++ b/drivers/tty/serial/amba-pl010.c
-@@ -446,14 +446,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if ((termios->c_cflag & CREAD) == 0)
- 		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
+diff --git a/drivers/md/persistent-data/dm-space-map-common.c b/drivers/md/persistent-data/dm-space-map-common.c
+index 4a6a2a9b4eb49..bfbfa750e0160 100644
+--- a/drivers/md/persistent-data/dm-space-map-common.c
++++ b/drivers/md/persistent-data/dm-space-map-common.c
+@@ -283,6 +283,11 @@ int sm_ll_lookup_bitmap(struct ll_disk *ll, dm_block_t b, uint32_t *result)
+ 	struct disk_index_entry ie_disk;
+ 	struct dm_block *blk;
  
--	/* first, disable everything */
- 	old_cr = readb(uap->port.membase + UART010_CR) & ~UART010_CR_MSIE;
- 
- 	if (UART_ENABLE_MS(port, termios->c_cflag))
- 		old_cr |= UART010_CR_MSIE;
- 
--	writel(0, uap->port.membase + UART010_CR);
--
- 	/* Set baud rate */
- 	quot -= 1;
- 	writel((quot & 0xf00) >> 8, uap->port.membase + UART010_LCRM);
++	if (b >= ll->nr_blocks) {
++		DMERR_LIMIT("metadata block out of bounds");
++		return -EINVAL;
++	}
++
+ 	b = do_div(index, ll->entries_per_block);
+ 	r = ll->load_ie(ll, index, &ie_disk);
+ 	if (r < 0)
 -- 
 2.34.1
 
