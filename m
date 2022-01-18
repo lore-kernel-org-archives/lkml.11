@@ -2,50 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C864C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA558C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:26:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358736AbiARDZV (ORCPT
+        id S1358768AbiARDZ0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:25:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39040 "EHLO
+        Mon, 17 Jan 2022 22:25:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348458AbiARDIs (ORCPT
+        with ESMTP id S1346675AbiARDI7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:08:48 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 949DBC061757;
-        Mon, 17 Jan 2022 18:51:11 -0800 (PST)
+        Mon, 17 Jan 2022 22:08:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8612C06175C;
+        Mon, 17 Jan 2022 18:51:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A082B8124F;
-        Tue, 18 Jan 2022 02:51:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 243A2C36AEB;
-        Tue, 18 Jan 2022 02:51:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A9D36118D;
+        Tue, 18 Jan 2022 02:51:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AC9BC36AE3;
+        Tue, 18 Jan 2022 02:51:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474269;
-        bh=hw5tPyE8kHX89lNCtVM5IqttqugWcnXPGXZrXFBZadY=;
+        s=k20201202; t=1642474285;
+        bh=46ZQ2Ukvtqdel2YKeI9Beyu+coFEEPVZxoQUk1YKJUY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Flm27i2GD7QUbCFtjDI4RNjpPWlozXS63N45K0RFHy7/33iNbR0OWXlLChSHFwsLI
-         fLduHlqCmN1EBPlUskotBeKN6Cvi3mCW5Oco9H7KfVeeMx1g0no5gdX4V3DHzHvQkR
-         NAbZFh2tCjOU7O88E4yRWnPzotH+jTaUYINGTVYSmegZJNtzjKRAIHxB9Rw/+16FGe
-         RaTMyPENMlWQjL3ohLjL7vhsvNtiB35GZlretr87hhQhAPTxthY4xcC8EeQIDIdvW0
-         RRqSyulcKpE0CPCNQ1ISM61xVmXzSbPMYAvlH56hw62gBR/MJuehEDGieiL24G33nx
-         MizR8nj86LTNA==
+        b=d4lYVqFw6aGpGNN+0oqJHxCxpQ82tzcyTmWQDS64qh5clK5lIkSQLfZJVL6VEN9uu
+         a+9u6S+TWLIncBrgYPZO/oqcp3RXeksBklrYgaCaRAiyBsG/6G1l2vmDYM14LY+HFH
+         MevQPkK+e53kWgdr2037HGshrPxCpTUPkDrSRI8dHv/qdThU0BVO5WxR+qK9KssUaM
+         P2tY9gk3w8fTbIYQvUY5TGwCXHUTc0UMZm0LAX9Xv32JD6EWwuIBKDhM9SIEtLks0s
+         pIR2vfYIRPGggE+qyaXPeSLZP+/2T4YQ6x7u9IPjeJ8uf2mr6pnVNMDWTQ2mz8oiTe
+         EpS/zpyRv4DfA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 53/56] net: phy: marvell: configure RGMII delays for 88E1118
-Date:   Mon, 17 Jan 2022 21:49:05 -0500
-Message-Id: <20220118024908.1953673-53-sashal@kernel.org>
+Cc:     Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        John Keeping <john@metanate.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
+        axboe@kernel.dk, dean@sensoray.com, wcheng@codeaurora.org,
+        salah.triki@gmail.com, jj251510319013@gmail.com,
+        plr.vincent@gmail.com, andrew_gabbasov@mentor.com, lkp@intel.com,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 04/33] usb: gadget: f_fs: Use stream_open() for endpoint files
+Date:   Mon, 17 Jan 2022 21:50:46 -0500
+Message-Id: <20220118025116.1954375-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
-References: <20220118024908.1953673-1-sashal@kernel.org>
+In-Reply-To: <20220118025116.1954375-1-sashal@kernel.org>
+References: <20220118025116.1954375-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,53 +57,63 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
 
-[ Upstream commit f22725c95ececb703c3f741e8f946d23705630b7 ]
+[ Upstream commit c76ef96fc00eb398c8fc836b0eb2f82bcc619dc7 ]
 
-Corentin Labbe reports that the SSI 1328 does not work when allowing
-the PHY to operate at gigabit speeds, but does work with the generic
-PHY driver.
+Function fs endpoint file operations are synchronized via an interruptible
+mutex wait. However we see threads that do ep file operations concurrently
+are getting blocked for the mutex lock in __fdget_pos(). This is an
+uninterruptible wait and we see hung task warnings and kernel panic
+if hung_task_panic systcl is enabled if host does not send/receive
+the data for long time.
 
-This appears to be because m88e1118_config_init() writes a fixed value
-to the MSCR register, claiming that this is to enable 1G speeds.
-However, this always sets bits 4 and 5, enabling RGMII transmit and
-receive delays. The suspicion is that the original board this was
-added for required the delays to make 1G speeds work.
+The reason for threads getting blocked in __fdget_pos() is due to
+the file position protection introduced by the commit 9c225f2655e3
+("vfs: atomic f_pos accesses as per POSIX"). Since function fs
+endpoint files does not have the notion of the file position, switch
+to the stream mode. This will bypass the file position mutex and
+threads will be blocked in interruptible state for the function fs
+mutex.
 
-Add the necessary configuration for RGMII delays for the 88E1118 to
-bring this into line with the requirements for RGMII support, and thus
-make the SSI 1328 work.
+It should not affects user space as we are only changing the task state
+changes the task state from UNINTERRUPTIBLE to INTERRUPTIBLE while waiting
+for the USB transfers to be finished. However there is a slight change to
+the O_NONBLOCK behavior. Earlier threads that are using O_NONBLOCK are also
+getting blocked inside fdget_pos(). Now they reach to function fs and error
+code is returned. The non blocking behavior is actually honoured now.
 
-Corentin Labbe has tested this on gemini-ssi1328 and gemini-ns2502.
-
-Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reviewed-by: John Keeping <john@metanate.com>
+Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+Link: https://lore.kernel.org/r/1636712682-1226-1-git-send-email-quic_pkondeti@quicinc.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/marvell.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/usb/gadget/function/f_fs.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 727b991312a4e..3d8d765932934 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -938,6 +938,12 @@ static int m88e1118_config_init(struct phy_device *phydev)
- 	if (err < 0)
- 		return err;
+diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
+index 0336392686935..e4826454de1a7 100644
+--- a/drivers/usb/gadget/function/f_fs.c
++++ b/drivers/usb/gadget/function/f_fs.c
+@@ -608,7 +608,7 @@ static int ffs_ep0_open(struct inode *inode, struct file *file)
+ 	file->private_data = ffs;
+ 	ffs_data_opened(ffs);
  
-+	if (phy_interface_is_rgmii(phydev)) {
-+		err = m88e1121_config_aneg_rgmii_delays(phydev);
-+		if (err < 0)
-+			return err;
-+	}
-+
- 	/* Adjust LED Control */
- 	if (phydev->dev_flags & MARVELL_PHY_M1118_DNS323_LEDS)
- 		err = phy_write(phydev, 0x10, 0x1100);
+-	return 0;
++	return stream_open(inode, file);
+ }
+ 
+ static int ffs_ep0_release(struct inode *inode, struct file *file)
+@@ -1071,7 +1071,7 @@ ffs_epfile_open(struct inode *inode, struct file *file)
+ 	file->private_data = epfile;
+ 	ffs_data_opened(epfile->ffs);
+ 
+-	return 0;
++	return stream_open(inode, file);
+ }
+ 
+ static int ffs_aio_cancel(struct kiocb *kiocb)
 -- 
 2.34.1
 
