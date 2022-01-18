@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9432FC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:23:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C604CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:23:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245048AbiARCXs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:23:48 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37140 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244903AbiARCWk (ORCPT
+        id S245417AbiARCXy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:23:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57110 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245050AbiARCWs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:22:40 -0500
+        Mon, 17 Jan 2022 21:22:48 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02E8DC061773;
+        Mon, 17 Jan 2022 18:22:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 04BC9B81240;
-        Tue, 18 Jan 2022 02:22:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A057C36AE3;
-        Tue, 18 Jan 2022 02:22:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF4E7B8123A;
+        Tue, 18 Jan 2022 02:22:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8536EC36AF3;
+        Tue, 18 Jan 2022 02:22:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472557;
-        bh=oLdh2IIQhyz8/cfQ/4uNzzA2+eaqF5O7TwGmsi6SxmI=;
+        s=k20201202; t=1642472565;
+        bh=Md8Dqx+nRGL3CMsNgmIymZvqhFYYV4XirqyagqB0JFU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dYBNbqlC9W8U3TzYkHpuR2erQ/eQdByLloStEOfqG7vJQfizOxndINIO4MMsQIMzZ
-         vtcmS9hVii1zudZNSrawIFCFduERmTxpaH8EGtBDiualMhLn4Gi3bbB/PrRe+4OYsu
-         316znsywo5wc1jFKHXdzv1v3qMh9rngsHtj2FzwyuTQgcJaeRYKL03+zO57B7SbzEA
-         9BdSGGxJijMpJYqXSn6RQQSNP5la1NIv6qX8ZTzE+lgEBAq5VtON7uhb8nYrfKacK7
-         BxDqC/BzEUuQzHPNkdNtWWD3gmo2g2CTQLRbRPis34Uyi9ukULcwCIrzAlw13+unGY
-         yuQM3LjPay1Pg==
+        b=hf2O7R1DG1Bbyv9mj/5ZZn992AwX4zZ94s+n/r4p4qzuAXSULIq5+vqfEme6coMB/
+         UOb3boP2jAHcKy+V7MjPXW8dORfid1VE5zETGqROahw4llOooj2/qhu2mv/EWKKg5u
+         bQpBi9ETngIK7PAJGnbGtuf1IAkcjT3S0H0V3sl1rw9XOQ7cYQGSOUK5qcb4eUtqD9
+         /6aGnPblH7rOCWpJfomo+0NpHa7v4O081PXs0akLo05hULi8mg6L6b3dRsnzu2vVeG
+         TEgEesqootSBe/earWcJM+x30bfDkpXU8j2oH4b8KggYbUfSHSlLHs19zVq+67bWOi
+         y+Duify/4BLmw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        biju.das.jz@bp.renesas.com,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        yoshihiro.shimoda.uh@renesas.com, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 052/217] ethernet: renesas: Use div64_ul instead of do_div
-Date:   Mon, 17 Jan 2022 21:16:55 -0500
-Message-Id: <20220118021940.1942199-52-sashal@kernel.org>
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        robh+dt@kernel.org, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 056/217] arm64: dts: qcom: sm8350: Shorten camera-thermal-bottom name
+Date:   Mon, 17 Jan 2022 21:16:59 -0500
+Message-Id: <20220118021940.1942199-56-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -55,54 +53,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Li <yang.lee@linux.alibaba.com>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit d9f31aeaa1e5aefa68130878af3c3513d41c1e2d ]
+[ Upstream commit f52dd33943ca5f84ae76890f352f6d9e12512c3f ]
 
-do_div() does a 64-by-32 division. Here the divisor is an
-unsigned long which on some platforms is 64 bit wide. So use
-div64_ul instead of do_div to avoid a possible truncation.
+Thermal zone names should not be longer than 20 names, which is indicated by
+a message at boot. Change "camera-thermal-bottom" to "cam-thermal-bottom" to
+fix it.
 
-Eliminate the following coccicheck warning:
-./drivers/net/ethernet/renesas/ravb_main.c:2492:1-7: WARNING:
-do_div() does a 64-by-32 division, please consider using div64_ul
-instead.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Link: https://lore.kernel.org/r/1637228883-100100-1-git-send-email-yang.lee@linux.alibaba.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211114012755.112226-6-konrad.dybcio@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/renesas/ravb_main.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ arch/arm64/boot/dts/qcom/sm8350.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-index b4c597f4040c8..151cce2fe36d5 100644
---- a/drivers/net/ethernet/renesas/ravb_main.c
-+++ b/drivers/net/ethernet/renesas/ravb_main.c
-@@ -30,8 +30,7 @@
- #include <linux/spinlock.h>
- #include <linux/sys_soc.h>
- #include <linux/reset.h>
--
--#include <asm/div64.h>
-+#include <linux/math64.h>
+diff --git a/arch/arm64/boot/dts/qcom/sm8350.dtsi b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+index a8c040c564096..c13858cf50dd2 100644
+--- a/arch/arm64/boot/dts/qcom/sm8350.dtsi
++++ b/arch/arm64/boot/dts/qcom/sm8350.dtsi
+@@ -2447,7 +2447,7 @@ camera1_alert0: trip-point0 {
+ 			};
+ 		};
  
- #include "ravb.h"
+-		camera-thermal-bottom {
++		cam-thermal-bottom {
+ 			polling-delay-passive = <250>;
+ 			polling-delay = <1000>;
  
-@@ -2488,8 +2487,7 @@ static int ravb_set_gti(struct net_device *ndev)
- 	if (!rate)
- 		return -EINVAL;
- 
--	inc = 1000000000ULL << 20;
--	do_div(inc, rate);
-+	inc = div64_ul(1000000000ULL << 20, rate);
- 
- 	if (inc < GTI_TIV_MIN || inc > GTI_TIV_MAX) {
- 		dev_err(dev, "gti.tiv increment 0x%llx is outside the range 0x%x - 0x%x\n",
 -- 
 2.34.1
 
