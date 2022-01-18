@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98032C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E47BFC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:16:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356391AbiARDPo (ORCPT
+        id S1356429AbiARDPs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:15:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37506 "EHLO
+        Mon, 17 Jan 2022 22:15:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352602AbiARDAP (ORCPT
+        with ESMTP id S1347774AbiARC51 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:00:15 -0500
+        Mon, 17 Jan 2022 21:57:27 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6F96C029809;
-        Mon, 17 Jan 2022 18:46:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 294CAC061345;
+        Mon, 17 Jan 2022 18:45:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DB9B6093C;
-        Tue, 18 Jan 2022 02:46:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F2A5AC36AF3;
-        Tue, 18 Jan 2022 02:46:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0724F61302;
+        Tue, 18 Jan 2022 02:45:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A503FC36AF3;
+        Tue, 18 Jan 2022 02:45:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474003;
-        bh=kd999wTU3fAGULJUDrGvKzHoIuOBNt+L72OBcGIqlCE=;
+        s=k20201202; t=1642473917;
+        bh=Wz1PAbR8+iIe/jPfTcBbjPHkLNB0RxFEi0fK8+Aossk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LXD9d6ojTpOg3T4hvqJ9NG/9n6ZDMkU0YNezD59Rabff4Ig1AzCguZqCmGuVx6PuH
-         j5dcH/gPf/2OVnPSPm/oYGbHTNRR0bRPM7f6UDTeKKHe8LI4CZrbcX6rGcd7Otqy1y
-         P7cC97FmC8OnWlSZmKB89fqE1F9YaKkIEOHO9dAlKaBmKb7zlVreWuZRK/vK2fIcoB
-         hocvrAhTrfRX+5W3pIjpmJH6PII6IVROZgNCqkCM6z1TminMkciq3hP5xuoO9HwBgG
-         KgQ+NPMwhQiwwwMes0rWjwXqINJEe2MjW9/cIgi2CtkCwl8My9lAJdHbnLNgvdqRQC
-         sgvp3EB2TbnrQ==
+        b=JOgTj4aSHe8IPgszPpRP/LcLT2DJfdms4NhLYgFc0GGVBhBHCDUBHb8QlRBrArp2w
+         bEVtn/op/VMCO8gErpqrDJ1bJPzi3lFbovyrYS55w5hPnEEZlqXPu4+3pRObwcTwtK
+         PzjNRJf0+y7Gjhtg8xosIXrbCBmsXCB+HkpdPQNxWO7u2QFUsXxVbajuG0w3s52b0f
+         39+B48k7ON1YTRdIPVZfUT1nWY58BdRJte9CMFN+iVduBYXgJhjZt8RoXcIsT7D7Hh
+         pSHs0LH1LyJ7rKNy50mU+nNZCwhmQHOfOGXqQMITO2dikoB/TAZWPwoGzq+gtvH6/I
+         VXsGPG9DYqkcg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Maxime Bizon <mbizon@freebox.fr>, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 63/73] net: mdio: Demote probed message to debug print
-Date:   Mon, 17 Jan 2022 21:44:22 -0500
-Message-Id: <20220118024432.1952028-63-sashal@kernel.org>
+Cc:     Neal Liu <neal_liu@aspeedtech.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, stern@rowland.harvard.edu,
+        linux-arm-kernel@lists.infradead.org, linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 22/73] usb: uhci: add aspeed ast2600 uhci support
+Date:   Mon, 17 Jan 2022 21:43:41 -0500
+Message-Id: <20220118024432.1952028-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
 References: <20220118024432.1952028-1-sashal@kernel.org>
@@ -54,38 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Florian Fainelli <f.fainelli@gmail.com>
+From: Neal Liu <neal_liu@aspeedtech.com>
 
-[ Upstream commit 7590fc6f80ac2cbf23e6b42b668bbeded070850b ]
+[ Upstream commit 554abfe2eadec97d12c71d4a69da1518478f69eb ]
 
-On systems with large numbers of MDIO bus/muxes the message indicating
-that a given MDIO bus has been successfully probed is repeated for as
-many buses we have, which can eat up substantial boot time for no
-reason, demote to a debug print.
+Enable ast2600 uhci quirks.
 
-Reported-by: Maxime Bizon <mbizon@freebox.fr>
-Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Link: https://lore.kernel.org/r/20220103194024.2620-1-f.fainelli@gmail.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+Link: https://lore.kernel.org/r/20211126100021.2331024-1-neal_liu@aspeedtech.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/mdio_bus.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/usb/host/uhci-platform.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index bec73f0640d03..b0a439248ff69 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -433,7 +433,7 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
- 	mdiobus_setup_mdiodev_from_board_info(bus, mdiobus_create_device);
- 
- 	bus->state = MDIOBUS_REGISTERED;
--	pr_info("%s: probed\n", bus->name);
-+	dev_dbg(&bus->dev, "probed\n");
- 	return 0;
- 
- error:
+diff --git a/drivers/usb/host/uhci-platform.c b/drivers/usb/host/uhci-platform.c
+index 70dbd95c3f063..be9e9db7cad10 100644
+--- a/drivers/usb/host/uhci-platform.c
++++ b/drivers/usb/host/uhci-platform.c
+@@ -113,7 +113,8 @@ static int uhci_hcd_platform_probe(struct platform_device *pdev)
+ 				num_ports);
+ 		}
+ 		if (of_device_is_compatible(np, "aspeed,ast2400-uhci") ||
+-		    of_device_is_compatible(np, "aspeed,ast2500-uhci")) {
++		    of_device_is_compatible(np, "aspeed,ast2500-uhci") ||
++		    of_device_is_compatible(np, "aspeed,ast2600-uhci")) {
+ 			uhci->is_aspeed = 1;
+ 			dev_info(&pdev->dev,
+ 				 "Enabled Aspeed implementation workarounds\n");
 -- 
 2.34.1
 
