@@ -2,50 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D1AC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED2E2C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346987AbiARDMe (ORCPT
+        id S1347041AbiARDMj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:12:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37608 "EHLO
+        Mon, 17 Jan 2022 22:12:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350744AbiARC6j (ORCPT
+        with ESMTP id S1352247AbiARC71 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:58:39 -0500
+        Mon, 17 Jan 2022 21:59:27 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5E8FC08E803;
-        Mon, 17 Jan 2022 18:46:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC603C0619D0;
+        Mon, 17 Jan 2022 18:34:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A77E46130F;
-        Tue, 18 Jan 2022 02:46:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41476C36AF3;
-        Tue, 18 Jan 2022 02:46:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 39751611F2;
+        Tue, 18 Jan 2022 02:34:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97157C36AE3;
+        Tue, 18 Jan 2022 02:34:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473992;
-        bh=9uKKf1TxxQAoHY6lccxjxThO6/omFi4B/f9YrJIJob0=;
+        s=k20201202; t=1642473273;
+        bh=EQRRA9PuObldp87ocMm+5sG91qe7TgelMcXd6092xrw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a/A6ubDJO9hxDJmp6l+4nG0/EN/HUMZ7a0oWuc0QFchyqp48QrAeboDKMgZO37d7X
-         fWN5UmqIRtLv33OlQmlYWEX6fRtHEtfKv4KEabxhGMirPc676wl4N6/sQrox/AyC66
-         ww+zPTJDnHiFkHz/8XIqRAGFmE9tuTGXOVmMEFcjoq2ekw911Z6H6bhy9tcAuNcNMG
-         fnJ5C1Ccz56Vl2kgCdaNdtbei91YlmDxZjAgI7g6891ua5pMtmT7Cm+A7GrCIYM9+j
-         QS0R83giPupwJU0MbuQQu0uqJ5utFWrW7SE62Pv8gaPr/6vvWJmBocffRq5kaZS+FQ
-         r9jT00hM9aKXw==
+        b=lIdae4cov+x7nM+MeTuOF+7HeCw0ouM+NEF+ntzZf128evMB1m0/can4Vv0HrUtQa
+         pM43aSA1M/NU0JPzj+HeWnw0MldPVsiloKOr/bS6BS4xVTvIYnjhtNaXdD59Ib6bsn
+         5+a1639l9+JiSOgrnjai5mminSdgmgcqkWK4kMN0VpbrKLwyQzR0LsNLu02Udmn9YQ
+         ZiNJuAEVjJLPAbxd54rztY7EQqR/z10dGHjBozs5hu9RAd4oASZZGXYs45GalcezeZ
+         jXqc9WruyHImfEgTUNzCyHneSIjMozH7hdya0LeIoCpgS6gbT3+SvD7Y2v9sJHLEnd
+         yZroGUkHotgMw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Lenny Szubowicz <lszubowi@redhat.com>,
-        Bob Moore <robert.moore@intel.com>,
-        Sasha Levin <sashal@kernel.org>, linux-acpi@vger.kernel.org,
-        devel@acpica.org
-Subject: [PATCH AUTOSEL 5.4 56/73] ACPICA: Executer: Fix the REFCLASS_REFOF case in acpi_ex_opcode_1A_0T_1R()
-Date:   Mon, 17 Jan 2022 21:44:15 -0500
-Message-Id: <20220118024432.1952028-56-sashal@kernel.org>
+Cc:     Marek Vasut <marex@denx.de>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Peng Fan <peng.fan@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, aford173@gmail.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 050/188] soc: imx: gpcv2: Synchronously suspend MIX domains
+Date:   Mon, 17 Jan 2022 21:29:34 -0500
+Message-Id: <20220118023152.1948105-50-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
-References: <20220118024432.1952028-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,54 +56,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit 24ea5f90ec9548044a6209685c5010edd66ffe8f ]
+[ Upstream commit f756f435f7dd823f2d4bd593ce1bf3168def1308 ]
 
-ACPICA commit d984f12041392fa4156b52e2f7e5c5e7bc38ad9e
+In case the following power domain sequence happens, iMX8M Mini always hangs:
+  gpumix:on -> gpu:on -> gpu:off -> gpu:on
+This is likely due to another quirk of the GPC block. This situation can be
+prevented by always synchronously powering off both the domain and MIX domain.
+Make it so. This turns the aforementioned sequence into:
+  gpumix:on -> gpu:on -> gpu:off -> gpumix:off -> gpumix:on -> gpu:on
 
-If Operand[0] is a reference of the ACPI_REFCLASS_REFOF class,
-acpi_ex_opcode_1A_0T_1R () calls acpi_ns_get_attached_object () to
-obtain return_desc which may require additional resolution with
-the help of acpi_ex_read_data_from_field (). If the latter fails,
-the reference counter of the original return_desc is decremented
-which is incorrect, because acpi_ns_get_attached_object () does not
-increment the reference counter of the object returned by it.
-
-This issue may lead to premature deletion of the attached object
-while it is still attached and a use-after-free and crash in the
-host OS.  For example, this may happen when on evaluation of ref_of()
-a local region field where there is no registered handler for the
-given Operation Region.
-
-Fix it by making acpi_ex_opcode_1A_0T_1R () return Status right away
-after a acpi_ex_read_data_from_field () failure.
-
-Link: https://github.com/acpica/acpica/commit/d984f120
-Link: https://github.com/acpica/acpica/pull/685
-Reported-by: Lenny Szubowicz <lszubowi@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Bob Moore <robert.moore@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Frieder Schrempf <frieder.schrempf@kontron.de>
+Cc: Lucas Stach <l.stach@pengutronix.de>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Cc: Peng Fan <peng.fan@nxp.com>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Acked-by: Lucas Stach <l.stach@pengutronix.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/acpica/exoparg1.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/soc/imx/gpcv2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/acpica/exoparg1.c b/drivers/acpi/acpica/exoparg1.c
-index 06e35ea098234..6d84618ba3871 100644
---- a/drivers/acpi/acpica/exoparg1.c
-+++ b/drivers/acpi/acpica/exoparg1.c
-@@ -1007,7 +1007,8 @@ acpi_status acpi_ex_opcode_1A_0T_1R(struct acpi_walk_state *walk_state)
- 						    (walk_state, return_desc,
- 						     &temp_desc);
- 						if (ACPI_FAILURE(status)) {
--							goto cleanup;
-+							return_ACPI_STATUS
-+							    (status);
- 						}
+diff --git a/drivers/soc/imx/gpcv2.c b/drivers/soc/imx/gpcv2.c
+index 8b7a01773aec2..b4aa28420f2a8 100644
+--- a/drivers/soc/imx/gpcv2.c
++++ b/drivers/soc/imx/gpcv2.c
+@@ -369,7 +369,7 @@ static int imx_pgc_power_down(struct generic_pm_domain *genpd)
+ 		}
+ 	}
  
- 						return_desc = temp_desc;
+-	pm_runtime_put(domain->dev);
++	pm_runtime_put_sync_suspend(domain->dev);
+ 
+ 	return 0;
+ 
 -- 
 2.34.1
 
