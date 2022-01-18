@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68737C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:45:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC3AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:45:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345073AbiARDpw (ORCPT
+        id S1350100AbiARDp4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:45:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36058 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350710AbiARCwO (ORCPT
+        Mon, 17 Jan 2022 22:45:56 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48952 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346058AbiARCmQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:52:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FBBAC07E5FC;
-        Mon, 17 Jan 2022 18:42:53 -0800 (PST)
+        Mon, 17 Jan 2022 21:42:16 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id ED29CB81229;
-        Tue, 18 Jan 2022 02:42:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A124AC36AEF;
-        Tue, 18 Jan 2022 02:42:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75246B81263;
+        Tue, 18 Jan 2022 02:42:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 802B2C36AEB;
+        Tue, 18 Jan 2022 02:42:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473770;
-        bh=ehT1W02LPHHbQC4CpSx98mgh4CIOnT+AKMKHij0IAzI=;
+        s=k20201202; t=1642473733;
+        bh=ixHiAAhTeUJ3CTD9gpQ0BpOp0z4g1efWh7BF2ublt54=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TM8mSvH25ygAbWXSJu7522o0H7eWcxclcyB+Ha4SYk533o/JgUwP1fnU1+oO9g13o
-         qdLH38k9WHFa/V0WkyYlp+0viQjkyV9SAPjPyi6qRATuDDAlAlVocuxwCyxskaM2NC
-         42E9R5St1coC3HCrxeEVWfEAoCf4Xg8/vxQ2GYF3utdgnD8qPULjKugXbmDs1SdPx+
-         avn1/2FUHZxw0kjcvcJVLQqfkPr7txElsqtOfPUTUCGbNLfkBfJzVlxidOqnOH0qQs
-         kTEt1dzATV/9v4LcwbYi25NlaUsxbYyjWDJD7BilHSZ+UP48HGGmdpFrk7HOIF9eR5
-         yo+5hldwqM9wA==
+        b=cL1dQzgjQrXOIYXORx4q10YnjWZh18pFxR9ANEij+N/Tccb1e4JqQNWgUBLEkyjqL
+         ivHA4/XobCxbZ/N9OJ0UNt4OBeiS414U8i+d7yYGZtjw4ku0wxwKl8Coo9O/wj/Cfa
+         GFSWoGuFiaolO1vhTtK0Z8Ox/eUQwFiAQRhSnvAQJdOY6d5NQpQLTqX2kov2i4w+5v
+         R9BIGl5D5xsB4SS91/HjJ3khadY6J6bHA5St/flA6FzwyBKSxkYDaNpFYE+l0GaoXn
+         JpXajmC0eW/Ka6W9u7/3StjspwASTCebHsQog+xKJp79jmcZ1uKUcQv0wa+ZClBiwO
+         yOT2LpECfE6LA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
-        bp@alien8.de, tglx@linutronix.de, mingo@redhat.com,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        linux-edac@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 062/116] x86/mce: Mark mce_panic() noinstr
-Date:   Mon, 17 Jan 2022 21:39:13 -0500
-Message-Id: <20220118024007.1950576-62-sashal@kernel.org>
+Cc:     James Hilliard <james.hilliard1@gmail.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, mchehab@kernel.org,
+        linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 045/116] media: uvcvideo: Increase UVC_CTRL_CONTROL_TIMEOUT to 5 seconds.
+Date:   Mon, 17 Jan 2022 21:38:56 -0500
+Message-Id: <20220118024007.1950576-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
 References: <20220118024007.1950576-1-sashal@kernel.org>
@@ -53,67 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: James Hilliard <james.hilliard1@gmail.com>
 
-[ Upstream commit 3c7ce80a818fa7950be123cac80cd078e5ac1013 ]
+[ Upstream commit c8ed7d2f614cd8b315981d116c7a2fb01829500d ]
 
-And allow instrumentation inside it because it does calls to other
-facilities which will not be tagged noinstr.
+Some uvc devices appear to require the maximum allowed USB timeout
+for GET_CUR/SET_CUR requests.
 
-Fixes
+So lets just bump the UVC control timeout to 5 seconds which is the
+same as the usb ctrl get/set defaults:
+USB_CTRL_GET_TIMEOUT 5000
+USB_CTRL_SET_TIMEOUT 5000
 
-  vmlinux.o: warning: objtool: do_machine_check()+0xc73: call to mce_panic() leaves .noinstr.text section
+It fixes the following runtime warnings:
+   Failed to query (GET_CUR) UVC control 11 on unit 2: -110 (exp. 1).
+   Failed to query (SET_CUR) UVC control 3 on unit 2: -110 (exp. 2).
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-8-bp@alien8.de
+Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
+Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/core.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/media/usb/uvc/uvcvideo.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 34fffffaf8730..64d8a96a2bf1e 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -295,11 +295,17 @@ static void wait_for_panic(void)
- 	panic("Panicing machine check CPU died");
- }
+diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
+index a3dfacf069c44..c884020b28784 100644
+--- a/drivers/media/usb/uvc/uvcvideo.h
++++ b/drivers/media/usb/uvc/uvcvideo.h
+@@ -183,7 +183,7 @@
+ /* Maximum status buffer size in bytes of interrupt URB. */
+ #define UVC_MAX_STATUS_SIZE	16
  
--static void mce_panic(const char *msg, struct mce *final, char *exp)
-+static noinstr void mce_panic(const char *msg, struct mce *final, char *exp)
- {
--	int apei_err = 0;
- 	struct llist_node *pending;
- 	struct mce_evt_llist *l;
-+	int apei_err = 0;
-+
-+	/*
-+	 * Allow instrumentation around external facilities usage. Not that it
-+	 * matters a whole lot since the machine is going to panic anyway.
-+	 */
-+	instrumentation_begin();
+-#define UVC_CTRL_CONTROL_TIMEOUT	500
++#define UVC_CTRL_CONTROL_TIMEOUT	5000
+ #define UVC_CTRL_STREAMING_TIMEOUT	5000
  
- 	if (!fake_panic) {
- 		/*
-@@ -314,7 +320,7 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
- 	} else {
- 		/* Don't log too much for fake panic */
- 		if (atomic_inc_return(&mce_fake_panicked) > 1)
--			return;
-+			goto out;
- 	}
- 	pending = mce_gen_pool_prepare_records();
- 	/* First print corrected ones that are still unlogged */
-@@ -352,6 +358,9 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
- 		panic(msg);
- 	} else
- 		pr_emerg(HW_ERR "Fake kernel panic: %s\n", msg);
-+
-+out:
-+	instrumentation_end();
- }
- 
- /* Support code for software error injection */
+ /* Maximum allowed number of control mappings per device */
 -- 
 2.34.1
 
