@@ -2,50 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B22C5C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70D8DC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354282AbiARDFm (ORCPT
+        id S1354215AbiARDFb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:05:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35864 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350370AbiARCvi (ORCPT
+        Mon, 17 Jan 2022 22:05:31 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42956 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350160AbiARCvT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:51:38 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 356F5C094266;
-        Mon, 17 Jan 2022 18:42:36 -0800 (PST)
+        Mon, 17 Jan 2022 21:51:19 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DAF04B81243;
-        Tue, 18 Jan 2022 02:42:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 913F4C36AF5;
-        Tue, 18 Jan 2022 02:42:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 43B1E612E8;
+        Tue, 18 Jan 2022 02:51:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A53A6C36AEB;
+        Tue, 18 Jan 2022 02:51:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473753;
-        bh=HBx2Z0bo2vlrE7hqQN6Os7uEULxdugf4B9uv+P7rybc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rCwPVPN29lp49RVsu1TkrLdlUhZUJ24Y81+LKx/Z30DXJPkIeF2rhES/KbDGpvx9s
-         /rRbFvV5IR7MN32j2PJXVFLPFZuY9TjorRXaqBS3JKUo5FX57tKUiPJSiU+jgCA1pe
-         LxL6qURW6r+GuamDZZvy7vn7PX3dCFoQm6o4GfI/7a0vi0jHarN9WgeSsY6lSZkglF
-         +nAixBBXZvsU3Q7xpvXAywrY0PQVAz6p5capTl9U/DUWexmVlW9fnkrW3VY5Y9VX7x
-         afCyDlBVqOkO5fhxCdp4av2l5EnwUqKjj/WmIp9APEqOh1yU0X75bY4AgD84RkMfna
-         dmoATNO4pQXyg==
+        s=k20201202; t=1642474278;
+        bh=8HhqhLYUtzscszQjAX1dCUydahnbhPvnAe7pYo2zT+Y=;
+        h=From:To:Cc:Subject:Date:From;
+        b=tVKyNEnYdg5kKB2WyQxxJHE0smZvuRNvDJvMwLjGsKRdqTyJSkLFfGwXrfu5AVpqc
+         bUt8zuYAENjpuTKgrMqrrjOdT921TrjOj/9zLXuSf33f+nOB0HRoOQPW7WhG9iGAbw
+         8PbRF1AE3rtsxRWBsNxE26hwcyPA9MUvRKVWnW9qQlnq2S7cPrQA70yMRxrulLS5OA
+         nxShJU6eE72113DZrAe6U4BP9EK6sjclj0cnQoMfdOztYUtwXCokU/WRMmGyMZnY40
+         /tccl1T3d7Ljnug9EL4Hr6ByimanW4Ugi9ndBvYXK/wtr+P2ENcrGbPsel9h1ewxqY
+         vpC3uQdpoSgYQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sebastian Gottschall <s.gottschall@dd-wrt.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, ath10k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 054/116] ath10k: Fix tx hanging
-Date:   Mon, 17 Jan 2022 21:39:05 -0500
-Message-Id: <20220118024007.1950576-54-sashal@kernel.org>
+Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 01/33] Bluetooth: Fix debugfs entry leak in hci_register_dev()
+Date:   Mon, 17 Jan 2022 21:50:43 -0500
+Message-Id: <20220118025116.1954375-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,54 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Gottschall <s.gottschall@dd-wrt.com>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit e8a91863eba3966a447d2daa1526082d52b5db2a ]
+[ Upstream commit 5a4bb6a8e981d3d0d492aa38412ee80b21033177 ]
 
-While running stress tests in roaming scenarios (switching ap's every 5
-seconds, we discovered a issue which leads to tx hangings of exactly 5
-seconds while or after scanning for new accesspoints. We found out that
-this hanging is triggered by ath10k_mac_wait_tx_complete since the
-empty_tx_wq was not wake when the num_tx_pending counter reaches zero.
-To fix this, we simply move the wake_up call to htt_tx_dec_pending,
-since this call was missed on several locations within the ath10k code.
+Fault injection test report debugfs entry leak as follows:
 
-Signed-off-by: Sebastian Gottschall <s.gottschall@dd-wrt.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20210505085806.11474-1-s.gottschall@dd-wrt.com
+debugfs: Directory 'hci0' with parent 'bluetooth' already present!
+
+When register_pm_notifier() failed in hci_register_dev(), the debugfs
+create by debugfs_create_dir() do not removed in the error handing path.
+
+Add the remove debugfs code to fix it.
+
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath10k/htt_tx.c | 3 +++
- drivers/net/wireless/ath/ath10k/txrx.c   | 2 --
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ net/bluetooth/hci_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/ath/ath10k/htt_tx.c b/drivers/net/wireless/ath/ath10k/htt_tx.c
-index 1fc0a312ab587..5f67da47036cf 100644
---- a/drivers/net/wireless/ath/ath10k/htt_tx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_tx.c
-@@ -147,6 +147,9 @@ void ath10k_htt_tx_dec_pending(struct ath10k_htt *htt)
- 	htt->num_pending_tx--;
- 	if (htt->num_pending_tx == htt->max_num_pending_tx - 1)
- 		ath10k_mac_tx_unlock(htt->ar, ATH10K_TX_PAUSE_Q_FULL);
-+
-+	if (htt->num_pending_tx == 0)
-+		wake_up(&htt->empty_tx_wq);
- }
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index b43f31203a430..40e6e5feb1e06 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -3148,6 +3148,7 @@ int hci_register_dev(struct hci_dev *hdev)
+ 	return id;
  
- int ath10k_htt_tx_inc_pending(struct ath10k_htt *htt)
-diff --git a/drivers/net/wireless/ath/ath10k/txrx.c b/drivers/net/wireless/ath/ath10k/txrx.c
-index aefe1f7f906c0..f51f1cf2c6a40 100644
---- a/drivers/net/wireless/ath/ath10k/txrx.c
-+++ b/drivers/net/wireless/ath/ath10k/txrx.c
-@@ -82,8 +82,6 @@ int ath10k_txrx_tx_unref(struct ath10k_htt *htt,
- 	flags = skb_cb->flags;
- 	ath10k_htt_tx_free_msdu_id(htt, tx_done->msdu_id);
- 	ath10k_htt_tx_dec_pending(htt);
--	if (htt->num_pending_tx == 0)
--		wake_up(&htt->empty_tx_wq);
- 	spin_unlock_bh(&htt->tx_lock);
- 
- 	rcu_read_lock();
+ err_wqueue:
++	debugfs_remove_recursive(hdev->debugfs);
+ 	destroy_workqueue(hdev->workqueue);
+ 	destroy_workqueue(hdev->req_workqueue);
+ err:
 -- 
 2.34.1
 
