@@ -2,60 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58525C35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82911C35275
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 00:19:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244054AbiARATG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 19:19:06 -0500
-Received: from mail-bn7nam10on2087.outbound.protection.outlook.com ([40.107.92.87]:39169
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        id S244008AbiARATB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 19:19:01 -0500
+Received: from mail-mw2nam12on2073.outbound.protection.outlook.com ([40.107.244.73]:35457
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S243878AbiARASt (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 19:18:49 -0500
+        id S243885AbiARASu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 19:18:50 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=CStQ5fZn4tAE7eRGxTr55TsMHcJNiP16SY8x9ReY5FmLvoAPMRVo2PrbPKYW546efvccAM6h43H9JoHPaOqNnZ2rb992wO27iZQZQTup7ADbfUxnXJb8WYMMJGXOvu1I0ZWDpRieyKUJdBGYSPcqmYGTh83l+0nAuCpZ23N2JP2HHMDy72WE01R0MWGz7Ht6r2ZBwFwoSbDxlKnHxSIe5bPjNuY+tGpdIQVbo9znu2vCWPtXM0aK8ThIs1Uk14IipZaQ10lOSCz0VviRcDvOdkpnGtBUZ4bbgOHPQqfmYodNL3pp+nWD3ND54lI13PmOlpB5xT51GofATQzbBm/jJQ==
+ b=bsaNUdpNEYZ/LeXOBessITHDfD9TnEB1niJxLYuh7MnCOb3I1EAxrbsu5OdnT+7MlC6FnfZWWQbVGgdCk35b7u8Ku1XL2+ADVZFXEh48/lPpqUhi5qoJjnk2hoNR1bIYmJAkeiLar5d3g0x+s2ni5qxIjyuHP3YpvS5do93OpZK2khRSwLE6LmHyvtOqh7SmEWwUmS5h2Rgm8y+IQsGpeXKAq4blPf3QTwgFd3jBLwS141HzNN0cyJJ7sQjYK9QRRriaKNP5vHTqirUAK/vBLsUHHzpG8SIXHXm/l+WAnZHD8iq0LeLfFSopecCxeXvGS+3VZ39bMKA4Io0wxFEdjw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=arfCdPsLWsD+Wp0ypNL/XEOk0UeOVvq0Xn2HLNzr7i0=;
- b=TW0HM81P3J4fjKobIFsu5FZQ5CzG5Hc5hr1ObZPbC7JSFoomm9z5r35k7wcDcXjbRAmHQOwSMymhICbrDxCJ6Y3ifatV7GJawNbUHXQAQ/PLUeF9ubngESAVG4BxguQO69+eFPE9N9G/hylUh68ZFy1U/ctKCp+SHHby4IWX29oCx52RxJQLcki0YbXz8h0raF2k8MoaieMCWyV8ltIUAftr1WIhZVoL4T4Mwt7ZTC11ZEqixl8B/ElHbzp4n/weD8RKMGDE1eppCKFlrH2aBwfy14OBcUlIuMYIrsUIWYyLVvNApAdITlzg+oOBxeFjPPynfWeXAQUD+2s86hfQzg==
+ bh=NEN50aTUHlaLlLnQ1NrRVpulQhOGElpfUvPnItaoogE=;
+ b=Glakxeo3A0Q3uasrngvZ6dXDH5H4dvHuYlO/niQt1oYANFYEFZxWZ0PaG5z/eY4eP4CKDAQsHxCPXKEWGh+nVMaIUrtNHGWPLiyJc8a5U1EZbliDYsE1qtPOQa69wFO00NGq6VCFPAzh1zUwNdBzcZjcdem3JEnOB6bKh38fN96FsVR3ypcejkbMlEbnMOhyqr6KVL3WG7F1alHRBEVLsvzBm0AiIDywCRFjZ7w1ZQxG1MmeocAjBIK0m7g9PsNuPZPxYt0Q5rUyi2sBkvkdnXJ29OUWcuBW/QOxhtajvQmjN1IdPbx+ZycyBlJrulYVDZ+Zvnvjqqo2HKgn40Muvg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.235) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ 12.22.5.236) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
  (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
  (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=arfCdPsLWsD+Wp0ypNL/XEOk0UeOVvq0Xn2HLNzr7i0=;
- b=IqVHbA1fDwxW2QFzZTOy4fiyftL7poWAzzqsaucy4sXTE7TH2uyiP9dob2OgGZu0gMkLiBB8vkrUjymBuqh/9/xXZ2+9acUASGX82IZJElUnVxpLa0EoQzsZItQnuIUg6GZIWrTcfV+7cKbm+Tz9QFrpHruPoI+GiiP5D2A8CKlc4h/7mwITiP392snfpRIdf3ALE3eQhnTKl5O1zXQKH5cAf97hMG0k+/VyvZNuHJtQ65csCeyc76jFcGLbyJabiFPY4CFT27oTON/RRsinl/3nVyA/BA8VpUxw+xkiy5yTzvYVy+JKGVCp8KNFN7hLBtghKVXFINhjnDHwI1F7MQ==
-Received: from DM5PR15CA0065.namprd15.prod.outlook.com (2603:10b6:3:ae::27) by
- CH2PR12MB3910.namprd12.prod.outlook.com (2603:10b6:610:28::23) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4888.11; Tue, 18 Jan 2022 00:18:47 +0000
-Received: from DM6NAM11FT027.eop-nam11.prod.protection.outlook.com
- (2603:10b6:3:ae:cafe::65) by DM5PR15CA0065.outlook.office365.com
- (2603:10b6:3:ae::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10 via Frontend
- Transport; Tue, 18 Jan 2022 00:18:47 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.235)
+ bh=NEN50aTUHlaLlLnQ1NrRVpulQhOGElpfUvPnItaoogE=;
+ b=fE1IzKWIe3zJE4k/HLYI7Ehol4wuVexk2hdah8wXWDlYFas9j7Q18DgwC64vB9lW/Qviac2IlNTNF2CSI9n9oMtDLSaczlMyQ90VhzovRCLID56gfXfeXHy+nwGIgHcmJe7fs99IIAYVbTbJgcPtMXlw0QDxLyJ1yTzCgteXOy/codC9BufHCV/v2FisKjyr4/M1WNPDOpDZH/q4lTsiJp7oNoXz95rY99/2u4NQi3Sk0Vhsa5hj4Ti05jeCgUj/5cawWizcZNj6Mj+Xwx5IybCNHJcCp0Vs+F7gB8HnOD75oI+/VCJT6l/WV7Qb9VHLB8t6kAHA2IiqDsHkjiKRzg==
+Received: from MW4PR03CA0300.namprd03.prod.outlook.com (2603:10b6:303:b5::35)
+ by MN2PR12MB3805.namprd12.prod.outlook.com (2603:10b6:208:15a::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Tue, 18 Jan
+ 2022 00:18:45 +0000
+Received: from CO1NAM11FT010.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b5:cafe::67) by MW4PR03CA0300.outlook.office365.com
+ (2603:10b6:303:b5::35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.9 via Frontend
+ Transport; Tue, 18 Jan 2022 00:18:45 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.235 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.235; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.235) by
- DM6NAM11FT027.mail.protection.outlook.com (10.13.172.205) with Microsoft SMTP
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1NAM11FT010.mail.protection.outlook.com (10.13.175.88) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4888.9 via Frontend Transport; Tue, 18 Jan 2022 00:18:46 +0000
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by DRHQMAIL107.nvidia.com
- (10.27.9.16) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 18 Jan
- 2022 00:18:46 +0000
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 17 Jan
- 2022 16:18:46 -0800
+ 15.20.4888.9 via Frontend Transport; Tue, 18 Jan 2022 00:18:45 +0000
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 18 Jan
+ 2022 00:18:44 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 18 Jan
+ 2022 00:18:44 +0000
 Received: from dipenp.nvidia.com (10.127.8.14) by mail.nvidia.com
  (172.20.187.12) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Tue, 18 Jan 2022 00:18:46 +0000
+ Transport; Tue, 18 Jan 2022 00:18:44 +0000
 From:   Dipen Patel <dipenp@nvidia.com>
 To:     <smangipudi@nvidia.com>, <thierry.reding@gmail.com>,
         <jonathanh@nvidia.com>, <linux-kernel@vger.kernel.org>,
@@ -64,9 +65,9 @@ To:     <smangipudi@nvidia.com>, <thierry.reding@gmail.com>,
         <warthog618@gmail.com>, <devicetree@vger.kernel.org>,
         <linux-doc@vger.kernel.org>, <robh+dt@kernel.org>
 CC:     Dipen Patel <dipenp@nvidia.com>
-Subject: [RFC v4 09/11] tools: gpio: Add new hardware clock type
-Date:   Mon, 17 Jan 2022 16:22:12 -0800
-Message-ID: <20220118002214.18271-10-dipenp@nvidia.com>
+Subject: [RFC v4 07/11] gpio: tegra186: Add HTE in gpio-tegra186 driver
+Date:   Mon, 17 Jan 2022 16:22:10 -0800
+Message-ID: <20220118002214.18271-8-dipenp@nvidia.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220118002214.18271-1-dipenp@nvidia.com>
 References: <20220118002214.18271-1-dipenp@nvidia.com>
@@ -75,69 +76,179 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7afcbb89-0f0b-41a0-faac-08d9da181834
-X-MS-TrafficTypeDiagnostic: CH2PR12MB3910:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR12MB391061FCAC0D7D66F4DA002EAE589@CH2PR12MB3910.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-MS-Office365-Filtering-Correlation-Id: 60c32265-16fd-4414-c4b6-08d9da181726
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3805:EE_
+X-Microsoft-Antispam-PRVS: <MN2PR12MB3805C689C4BA2807133D4B1AAE589@MN2PR12MB3805.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: aVE6Klb3Dsq/zgt7j2UALMpif3AZUb62lBXViMfzJg0JPcNIvpktilCkd3eTPHAklcP+/8H1JvX7FbgLPBvl4kLw62L6uDGdb9uIIdxVx05AF8N4q0GIyT0/U8gllaibe1quhltABiBinaR/ol0/6VUBuzf6NLZbo4egfULzhwCPVhruyQodPHohlQPVWtWUPqSMhTR827OsEVaB96JYLbiDqo/Y3K7k8+uXSBflBOLQg8+cM6KXivLhoEXcr4t2YH+T0McHd1PdRPtqSA2mFyTVbEJTS29VeCOXKELj+pEKNnEnS/vHcdf6ObbcDuo9L4taWcFD5Jy9Ty6YiOOGhgpMtel5GC/YEVdXU8FFK/x8Jk5wXPzEgQ1s0JJGJOiDeu2ci+60bYoDJMf4rzDM/sCK1rARWWdEjdQQPsOH9Gz/nt5WfZzPc6b4krZB2BAQ15dU/IrBOAVifOVHtNF6yK2syy20f41Eb8exeLLK6ZHUtpbMqebPGrSrMeTj+Fmmmp8JVvx79K9pHYLB+97qEalXOnl/cXvdS3fpgIJArjVCO06ryamrgwvDA9luYBFI0dC8l4zhtm6OZS7ICoMt2dATaD9wsD66EqTpbY3oeg28ITFwu7wn42To5h6ujlOIoCfB0SNYqjCbFsUO/jXLljkB7LMhWncy2P16tQIyvcjiIvdCRltfV+g0oppSHMfSof45gTfk53gA/7HETDfe1UrjhArhkVuQ43+NJg6QIrELfuChr37rCTEo5UFf88I0EJ2Ww2FsHAxhv6211m2Y/pWryG0VPJ6w+SXvGHf8nO9jNPPsUHyJN8Q98VzSPD/e5QOg4AOHobiosFwZVyFlUer1nULRvcV1OSLclF+bppI=
-X-Forefront-Antispam-Report: CIP:12.22.5.235;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(40470700002)(36840700001)(46966006)(26005)(36860700001)(82310400004)(426003)(110136005)(8676002)(1076003)(6666004)(336012)(2616005)(86362001)(40460700001)(5660300002)(36756003)(7416002)(47076005)(356005)(508600001)(70206006)(7696005)(8936002)(186003)(83380400001)(107886003)(81166007)(316002)(70586007)(2906002)(4326008)(921005)(83996005)(2101003)(36900700001);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: HPEti6OM4YK/S1Z98n2+Dafy0EWNf6KJr3g1jdcmI8fQtTZEX8dC6ssFd/up9GUPm/zI4xAg5mf1QSt1GAgOUwKN+4DMnJdXXm4sKAl5pAKqooGzGurlFMj8yBE+tV0t2Yn6lMku+CVb2ycfCO5lxn/m4WLC0aFyl7fnjoYxTVrB5U8vv+4ekD/BWZNP9sfDgOomvSUa7FxDbHOrJAzdkfvtu/VeJ9mm7YAf8g3gt6scszWQjJmttp9FW+PDtdD0LlKQjBFbelTvS/3JlM4G50l4TXT7DJn2thiPqGc9xFayvhIengwT9gKijyWJ/2FhriWV1iCdRILurE3u9uyex9O8/T288UVFLqFb6MYKDUBGJInAVeWzCJIN8Yi8HfylgZcc7UIT9JOeDtGQklPdLHP4rwOGocuDDiE0p6MWpiFQwR+Xps9AepOKLtVREp6Iur0NtP7m37qRYmCe17x40augMwwm5P40vvk1PXPZOIhSmT8sihfdFyCR4uxWyEO1Bilyl8F3UZjP0v2FyGRHgNmtf7GzG+wYtVFhmd8V91i0U0l3VYsWJz2WohzwCtno16zldVWFjiDXbNHgIbQW7GUvi6V1d2AfzJeJSYOuuXN/F94uSZF6BiLhi/y/fbWEJEGxjDsexq7t0IkpJFb9KQlVAk7HjsG2De18CE0WeN6WLUPJuMqT4lS3FEUw7XDNcORoTcLztI9G7htJ31wR9BMWBYPfRTY/Sok5c1ja/x4FD/1j9m7e7n5O8DSlVX0eM35oHZbveYmq1uNa+iKWpFa3ap59H6W0cmjVEYNJ8mKh2D/+tSfzQDWAS7CZlBuvNBGN+fMgxd/+kqaRhygnwdu34rOXg6EYcap1/fr7MzE=
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(40470700002)(46966006)(36840700001)(70206006)(70586007)(5660300002)(426003)(40460700001)(356005)(186003)(36860700001)(83380400001)(86362001)(4326008)(2906002)(110136005)(82310400004)(2616005)(7416002)(81166007)(1076003)(921005)(316002)(26005)(7696005)(336012)(107886003)(47076005)(508600001)(8676002)(6666004)(8936002)(36756003)(36900700001)(2101003)(83996005);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2022 00:18:46.8581
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2022 00:18:45.1029
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7afcbb89-0f0b-41a0-faac-08d9da181834
+X-MS-Exchange-CrossTenant-Network-Message-Id: 60c32265-16fd-4414-c4b6-08d9da181726
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.235];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT027.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT010.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB3910
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3805
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-gpiolib-cdev is extended to support hardware clock type, this
-patch reflects that fact.
+Tegra194 AON GPIO controller with the use of its internal hardware
+timestamping engine (HTE) also known as GTE can timestamp GPIO
+lines through system counter. This patch implements enable/disable
+callbacks for the GPIO controller. In enable call, it will set
+timestamp function bit and GPIO line rising/falling edges in the
+config register. In disable call, it restores the state.
 
 Signed-off-by: Dipen Patel <dipenp@nvidia.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- tools/gpio/gpio-event-mon.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+Changes in v4:
+- Added edge setup and hardware timestamping enable/disable APIs.
 
-diff --git a/tools/gpio/gpio-event-mon.c b/tools/gpio/gpio-event-mon.c
-index a2b233fdb572..6c122952c589 100644
---- a/tools/gpio/gpio-event-mon.c
-+++ b/tools/gpio/gpio-event-mon.c
-@@ -149,6 +149,7 @@ void print_usage(void)
- 		"  -r         Listen for rising edges\n"
- 		"  -f         Listen for falling edges\n"
- 		"  -w         Report the wall-clock time for events\n"
-+		"  -t         Report the hardware timestamp for events\n"
- 		"  -b <n>     Debounce the line with period n microseconds\n"
- 		" [-c <n>]    Do <n> loops (optional, infinite loop if not stated)\n"
- 		"  -?         This helptext\n"
-@@ -174,7 +175,7 @@ int main(int argc, char **argv)
+ drivers/gpio/gpio-tegra186.c | 81 +++++++++++++++++++++++++++++++++++-
+ 1 file changed, 80 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/gpio/gpio-tegra186.c b/drivers/gpio/gpio-tegra186.c
+index 91c77fccc1e6..3bf6f7e18dcc 100644
+--- a/drivers/gpio/gpio-tegra186.c
++++ b/drivers/gpio/gpio-tegra186.c
+@@ -1,8 +1,9 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+- * Copyright (c) 2016-2017 NVIDIA Corporation
++ * Copyright (c) 2016-2022 NVIDIA Corporation
+  *
+  * Author: Thierry Reding <treding@nvidia.com>
++ *	   Dipen Patel <dpatel@nvidia.com>
+  */
  
- 	memset(&config, 0, sizeof(config));
- 	config.flags = GPIO_V2_LINE_FLAG_INPUT;
--	while ((c = getopt(argc, argv, "c:n:o:b:dsrfw?")) != -1) {
-+	while ((c = getopt(argc, argv, "c:n:o:b:dsrfwt?")) != -1) {
- 		switch (c) {
- 		case 'c':
- 			loops = strtoul(optarg, NULL, 10);
-@@ -208,6 +209,9 @@ int main(int argc, char **argv)
- 		case 'w':
- 			config.flags |= GPIO_V2_LINE_FLAG_EVENT_CLOCK_REALTIME;
- 			break;
-+		case 't':
-+			config.flags |= GPIO_V2_LINE_FLAG_EVENT_CLOCK_HTE;
-+			break;
- 		case '?':
- 			print_usage();
- 			return -1;
+ #include <linux/gpio/driver.h>
+@@ -11,6 +12,7 @@
+ #include <linux/module.h>
+ #include <linux/of_device.h>
+ #include <linux/platform_device.h>
++#include <linux/hte.h>
+ 
+ #include <dt-bindings/gpio/tegra186-gpio.h>
+ #include <dt-bindings/gpio/tegra194-gpio.h>
+@@ -35,6 +37,7 @@
+ #define  TEGRA186_GPIO_ENABLE_CONFIG_TRIGGER_LEVEL BIT(4)
+ #define  TEGRA186_GPIO_ENABLE_CONFIG_DEBOUNCE BIT(5)
+ #define  TEGRA186_GPIO_ENABLE_CONFIG_INTERRUPT BIT(6)
++#define  TEGRA186_GPIO_ENABLE_CONFIG_TIMESTAMP_FUNC BIT(7)
+ 
+ #define TEGRA186_GPIO_DEBOUNCE_CONTROL 0x04
+ #define  TEGRA186_GPIO_DEBOUNCE_CONTROL_THRESHOLD(x) ((x) & 0xff)
+@@ -75,6 +78,7 @@ struct tegra_gpio_soc {
+ 	const struct tegra186_pin_range *pin_ranges;
+ 	unsigned int num_pin_ranges;
+ 	const char *pinmux;
++	bool has_gte;
+ };
+ 
+ struct tegra_gpio {
+@@ -193,6 +197,76 @@ static int tegra186_gpio_direction_output(struct gpio_chip *chip,
+ 	return 0;
+ }
+ 
++#define HTE_BOTH_EDGES	(HTE_RISING_EDGE_TS | HTE_FALLING_EDGE_TS)
++
++static int tegra186_gpio_en_hw_ts(struct gpio_chip *gc, u32 offset,
++				  unsigned long flags)
++{
++	struct tegra_gpio *gpio;
++	void __iomem *base;
++	int value;
++
++	if (!gc)
++		return -EINVAL;
++
++	gpio = gpiochip_get_data(gc);
++	if (!gpio)
++		return -ENODEV;
++
++	base = tegra186_gpio_get_base(gpio, offset);
++	if (WARN_ON(base == NULL))
++		return -EINVAL;
++
++	value = readl(base + TEGRA186_GPIO_ENABLE_CONFIG);
++	value |= TEGRA186_GPIO_ENABLE_CONFIG_TIMESTAMP_FUNC;
++
++	if (flags == HTE_BOTH_EDGES) {
++		value |= TEGRA186_GPIO_ENABLE_CONFIG_TRIGGER_TYPE_DOUBLE_EDGE;
++	} else if (flags == HTE_RISING_EDGE_TS) {
++		value |= TEGRA186_GPIO_ENABLE_CONFIG_TRIGGER_TYPE_SINGLE_EDGE;
++		value |= TEGRA186_GPIO_ENABLE_CONFIG_TRIGGER_LEVEL;
++	} else if (flags == HTE_FALLING_EDGE_TS) {
++		value |= TEGRA186_GPIO_ENABLE_CONFIG_TRIGGER_TYPE_SINGLE_EDGE;
++	}
++
++	writel(value, base + TEGRA186_GPIO_ENABLE_CONFIG);
++
++	return 0;
++}
++
++static int tegra186_gpio_dis_hw_ts(struct gpio_chip *gc, u32 offset,
++				   unsigned long flags)
++{
++	struct tegra_gpio *gpio;
++	void __iomem *base;
++	int value;
++
++	if (!gc)
++		return -EINVAL;
++
++	gpio = gpiochip_get_data(gc);
++	if (!gpio)
++		return -ENODEV;
++
++	base = tegra186_gpio_get_base(gpio, offset);
++	if (WARN_ON(base == NULL))
++		return -EINVAL;
++
++	value = readl(base + TEGRA186_GPIO_ENABLE_CONFIG);
++	value &= ~TEGRA186_GPIO_ENABLE_CONFIG_TIMESTAMP_FUNC;
++	if (flags == HTE_BOTH_EDGES) {
++		value &= ~TEGRA186_GPIO_ENABLE_CONFIG_TRIGGER_TYPE_DOUBLE_EDGE;
++	} else if (flags == HTE_RISING_EDGE_TS) {
++		value &= ~TEGRA186_GPIO_ENABLE_CONFIG_TRIGGER_TYPE_SINGLE_EDGE;
++		value &= ~TEGRA186_GPIO_ENABLE_CONFIG_TRIGGER_LEVEL;
++	} else if (flags == HTE_FALLING_EDGE_TS) {
++		value &= ~TEGRA186_GPIO_ENABLE_CONFIG_TRIGGER_TYPE_SINGLE_EDGE;
++	}
++	writel(value, base + TEGRA186_GPIO_ENABLE_CONFIG);
++
++	return 0;
++}
++
+ static int tegra186_gpio_get(struct gpio_chip *chip, unsigned int offset)
+ {
+ 	struct tegra_gpio *gpio = gpiochip_get_data(chip);
+@@ -719,6 +793,10 @@ static int tegra186_gpio_probe(struct platform_device *pdev)
+ 	gpio->gpio.set = tegra186_gpio_set;
+ 	gpio->gpio.set_config = tegra186_gpio_set_config;
+ 	gpio->gpio.add_pin_ranges = tegra186_gpio_add_pin_ranges;
++	if (gpio->soc->has_gte) {
++		gpio->gpio.en_hw_timestamp = tegra186_gpio_en_hw_ts;
++		gpio->gpio.dis_hw_timestamp = tegra186_gpio_dis_hw_ts;
++	}
+ 
+ 	gpio->gpio.base = -1;
+ 
+@@ -971,6 +1049,7 @@ static const struct tegra_gpio_soc tegra194_aon_soc = {
+ 	.name = "tegra194-gpio-aon",
+ 	.instance = 1,
+ 	.num_irqs_per_bank = 8,
++	.has_gte = true,
+ };
+ 
+ #define TEGRA234_MAIN_GPIO_PORT(_name, _bank, _port, _pins)	\
 -- 
 2.17.1
 
