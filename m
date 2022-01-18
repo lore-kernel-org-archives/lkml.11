@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12434C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A754C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:06:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354020AbiARDFG (ORCPT
+        id S1354072AbiARDFM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:05:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344608AbiARCq6 (ORCPT
+        Mon, 17 Jan 2022 22:05:12 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55770 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344858AbiARCq6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 17 Jan 2022 21:46:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A04F0C06127B;
-        Mon, 17 Jan 2022 18:38:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57706B81232;
-        Tue, 18 Jan 2022 02:38:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13C28C36B04;
-        Tue, 18 Jan 2022 02:38:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D757B812A8;
+        Tue, 18 Jan 2022 02:46:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 535ADC36AF8;
+        Tue, 18 Jan 2022 02:46:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473521;
-        bh=k1sPTXp/OUsKfF7bCMnLd5fIDVSHA+u/eKcXEsG0V5c=;
+        s=k20201202; t=1642474015;
+        bh=3/QdR6SGlH1mYgnJ4NwJ66sQHw5xtbVGngxoo/WjW6Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DHxgp+HPWrblSg3RVCi5LgTzR1IdgRLKWEJ4BOCeZJB6GTQbRCfiBSqda48Q/7q2V
-         Efb/Ml375lZWDC/tl7rgOnEyDhbjX7yOq1utoUvJgggvPT8QBYPjeG4Y4ynQLQ2/4O
-         8SJYvinJER3rPbM+dwlFE0+3jJM0GhO/1TxU/zbvxDphp2isA0gxeYTELC+70jduuZ
-         a8Z/GjZsLHMtZ08TaSJnn4SZho3ICmFo7Hf2itnu3aDGUFxn/3br19jpV9iSwyDUsE
-         889uHFEFEZwo2Wftdv4/N8mqT0Kim6TzqJasKVgDw+i7ZVxLkxsYbQM1YJdbxH1nRV
-         ibIbsubMgP0ig==
+        b=SAu79wltTsU6A8cCPfX4KxefygQs4+jHZUUfr5iS/DNAGVkCLHN4+mgI89us7ptK8
+         1cca1+3ogqsrIgIqoaWfhHMA0BUXZQ29Wz7O7npJJ0vyXKq0+XnMWNgIH6+2IKOhuZ
+         FQLbiwY/gVPjQw0JiYJGmN9fvFySEcDgFoT+hJKYfHd2E6E17rZxm61soIHKbX671M
+         EX4MUGWye/STUk12z+WbXxDINKwidiwBYXgHgyN9ySIajoTHjFhqM6zhGqqTAS0HqH
+         VHmskWO2lMOUfkYcpEmj4TRB+0m5R0jlA8/gklFdLhe4nh5OIPJf9skTPFmO4V64mE
+         HKKUWJvfZCeLQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ben Greear <greearb@candelatech.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 146/188] ath11k: Fix napi related hang
-Date:   Mon, 17 Jan 2022 21:31:10 -0500
-Message-Id: <20220118023152.1948105-146-sashal@kernel.org>
+Cc:     Lukas Wunner <lukas@wunner.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
+        linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 71/73] serial: core: Keep mctrl register state and cached copy in sync
+Date:   Mon, 17 Jan 2022 21:44:30 -0500
+Message-Id: <20220118024432.1952028-71-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
+References: <20220118024432.1952028-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,107 +50,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Greear <greearb@candelatech.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit d943fdad7589653065be0e20aadc6dff37725ed4 ]
+[ Upstream commit 93a770b7e16772530196674ffc79bb13fa927dc6 ]
 
-Similar to the same bug in ath10k, a napi disable w/out it being enabled
-will hang forever.  I believe I saw this while trying rmmod after driver
-had some failure on startup.  Fix it by keeping state on whether napi is
-enabled or not.
+struct uart_port contains a cached copy of the Modem Control signals.
+It is used to skip register writes in uart_update_mctrl() if the new
+signal state equals the old signal state.  It also avoids a register
+read to obtain the current state of output signals.
 
-And, remove un-used napi pointer in ath11k driver base struct.
+When a uart_port is registered, uart_configure_port() changes signal
+state but neglects to keep the cached copy in sync.  That may cause
+a subsequent register write to be incorrectly skipped.  Fix it before
+it trips somebody up.
 
-Signed-off-by: Ben Greear <greearb@candelatech.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20200903195254.29379-1-greearb@candelatech.com
+This behavior has been present ever since the serial core was introduced
+in 2002:
+https://git.kernel.org/history/history/c/33c0d1b0c3eb
+
+So far it was never an issue because the cached copy is initialized to 0
+by kzalloc() and when uart_configure_port() is executed, at most DTR has
+been set by uart_set_options() or sunsu_console_setup().  Therefore,
+a stable designation seems unnecessary.
+
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/bceeaba030b028ed810272d55d5fc6f3656ddddb.1641129752.git.lukas@wunner.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/ahb.c  | 12 +++++++++---
- drivers/net/wireless/ath/ath11k/core.h |  2 +-
- drivers/net/wireless/ath/ath11k/pci.c  | 12 +++++++++---
- 3 files changed, 19 insertions(+), 7 deletions(-)
+ drivers/tty/serial/serial_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
-index 8c9c781afc3e5..b9939057b7baf 100644
---- a/drivers/net/wireless/ath/ath11k/ahb.c
-+++ b/drivers/net/wireless/ath/ath11k/ahb.c
-@@ -175,8 +175,11 @@ static void __ath11k_ahb_ext_irq_disable(struct ath11k_base *ab)
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index aad640b9e3f4b..c8a047ba76ebe 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2395,7 +2395,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 		 * We probably don't need a spinlock around this, but
+ 		 */
+ 		spin_lock_irqsave(&port->lock, flags);
+-		port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
++		port->mctrl &= TIOCM_DTR;
++		port->ops->set_mctrl(port, port->mctrl);
+ 		spin_unlock_irqrestore(&port->lock, flags);
  
- 		ath11k_ahb_ext_grp_disable(irq_grp);
- 
--		napi_synchronize(&irq_grp->napi);
--		napi_disable(&irq_grp->napi);
-+		if (irq_grp->napi_enabled) {
-+			napi_synchronize(&irq_grp->napi);
-+			napi_disable(&irq_grp->napi);
-+			irq_grp->napi_enabled = false;
-+		}
- 	}
- }
- 
-@@ -300,7 +303,10 @@ static void ath11k_ahb_ext_irq_enable(struct ath11k_base *ab)
- 	for (i = 0; i < ATH11K_EXT_IRQ_GRP_NUM_MAX; i++) {
- 		struct ath11k_ext_irq_grp *irq_grp = &ab->ext_irq_grp[i];
- 
--		napi_enable(&irq_grp->napi);
-+		if (!irq_grp->napi_enabled) {
-+			napi_enable(&irq_grp->napi);
-+			irq_grp->napi_enabled = true;
-+		}
- 		ath11k_ahb_ext_grp_enable(irq_grp);
- 	}
- }
-diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
-index 018fb2385f2a3..10d2436f553f6 100644
---- a/drivers/net/wireless/ath/ath11k/core.h
-+++ b/drivers/net/wireless/ath/ath11k/core.h
-@@ -132,6 +132,7 @@ struct ath11k_ext_irq_grp {
- 	u32 num_irq;
- 	u32 grp_id;
- 	u64 timestamp;
-+	bool napi_enabled;
- 	struct napi_struct napi;
- 	struct net_device napi_ndev;
- };
-@@ -701,7 +702,6 @@ struct ath11k_base {
- 	u32 wlan_init_status;
- 	int irq_num[ATH11K_IRQ_NUM_MAX];
- 	struct ath11k_ext_irq_grp ext_irq_grp[ATH11K_EXT_IRQ_GRP_NUM_MAX];
--	struct napi_struct *napi;
- 	struct ath11k_targ_cap target_caps;
- 	u32 ext_service_bitmap[WMI_SERVICE_EXT_BM_SIZE];
- 	bool pdevs_macaddr_valid;
-diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
-index 5abb38cc3b55f..81d0eaa13adeb 100644
---- a/drivers/net/wireless/ath/ath11k/pci.c
-+++ b/drivers/net/wireless/ath/ath11k/pci.c
-@@ -632,8 +632,11 @@ static void __ath11k_pci_ext_irq_disable(struct ath11k_base *sc)
- 
- 		ath11k_pci_ext_grp_disable(irq_grp);
- 
--		napi_synchronize(&irq_grp->napi);
--		napi_disable(&irq_grp->napi);
-+		if (irq_grp->napi_enabled) {
-+			napi_synchronize(&irq_grp->napi);
-+			napi_disable(&irq_grp->napi);
-+			irq_grp->napi_enabled = false;
-+		}
- 	}
- }
- 
-@@ -652,7 +655,10 @@ static void ath11k_pci_ext_irq_enable(struct ath11k_base *ab)
- 	for (i = 0; i < ATH11K_EXT_IRQ_GRP_NUM_MAX; i++) {
- 		struct ath11k_ext_irq_grp *irq_grp = &ab->ext_irq_grp[i];
- 
--		napi_enable(&irq_grp->napi);
-+		if (!irq_grp->napi_enabled) {
-+			napi_enable(&irq_grp->napi);
-+			irq_grp->napi_enabled = true;
-+		}
- 		ath11k_pci_ext_grp_enable(irq_grp);
- 	}
- }
+ 		/*
 -- 
 2.34.1
 
