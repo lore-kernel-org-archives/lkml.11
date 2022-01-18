@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C6FFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B7A8C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348666AbiARDDg (ORCPT
+        id S1345221AbiARDDp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:03:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34414 "EHLO
+        Mon, 17 Jan 2022 22:03:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345190AbiARCtd (ORCPT
+        with ESMTP id S1349368AbiARCte (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:49:33 -0500
+        Mon, 17 Jan 2022 21:49:34 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89383C0613E8;
-        Mon, 17 Jan 2022 18:42:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B794C0613EF;
+        Mon, 17 Jan 2022 18:42:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 46390B81132;
-        Tue, 18 Jan 2022 02:42:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41EF3C36AEB;
-        Tue, 18 Jan 2022 02:41:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1165CB8124F;
+        Tue, 18 Jan 2022 02:42:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22486C36AEB;
+        Tue, 18 Jan 2022 02:42:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473720;
-        bh=YnzVyzVF2gyXnAhBU7QgCxTIBetL5S/Hebevk1xn7XQ=;
+        s=k20201202; t=1642473722;
+        bh=Wz1PAbR8+iIe/jPfTcBbjPHkLNB0RxFEi0fK8+Aossk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=L+omVfOQxIv8w65gRL7N4ZBnZYlhZSQqQ2zmvb+tpFM/qHxMCByCT6Bgp7G1dTwcZ
-         1q2xFmvDu31HW/TJkXPWMbye9xmEVJ30+215Ha4CP0bbYD5g/GymiOAIUEOE8RrQ6g
-         Z/KtLJkrVOTM7DrO/HufheyXyI08FVUvm6MJRcGsRU6vUJknRFPPcJJQ0tcx3xE2UM
-         gaBUPj/CgMi4s7OjGdcqzrXhvzg4avQvXQPGHn2dUSWONc7YeAH5yMvUAbbbTepqpY
-         zYv1LLDYU+Q6DXxPWZ3OfvBclLijvAAQ/ZG13a583tRKyYH/7Ir301ciCULoz9SGXQ
-         gCtqFGl3kPjgQ==
+        b=nbKitrq1ciyk2uwlLdQ/WRrWJeP7goABdUeNDwY5EnwmbOABXAe8jrMr7fbJ9i1EN
+         4Dpn7jzGrYDvorsgSCvvIiUj81svPSFTWqLhof9n6alE4gOn7SzDKwSKA7hNvcq7uw
+         wJnKA1jWiLzm4hih1w0WzrNn6LBsK4a35ldPNqYtRQJfMuTfKR5QUQo7qNBo8KQqt5
+         j/0h2XOCmv+fxKHDYMUylOJU0tWG+iI4D9sYHnsyw4TDuY4SLMuloDkOpvUix7zEER
+         lqrYKxrrBq9td68bzjbbY/ElWvv1cHRVsRxzJY2KQqC2Vj6b9fGBsmgq2OCQB1s2qZ
+         2AJ/OqyyOq6Tg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        mario.limonciello@amd.com, linux-acpi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 039/116] ACPI / x86: Add not-present quirk for the PCI0.SDHB.BRC1 device on the GPD win
-Date:   Mon, 17 Jan 2022 21:38:50 -0500
-Message-Id: <20220118024007.1950576-39-sashal@kernel.org>
+Cc:     Neal Liu <neal_liu@aspeedtech.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, stern@rowland.harvard.edu,
+        linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 041/116] usb: uhci: add aspeed ast2600 uhci support
+Date:   Mon, 17 Jan 2022 21:38:52 -0500
+Message-Id: <20220118024007.1950576-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
 References: <20220118024007.1950576-1-sashal@kernel.org>
@@ -53,72 +53,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Neal Liu <neal_liu@aspeedtech.com>
 
-[ Upstream commit 57d2dbf710d832841872fb15ebb79429cab90fae ]
+[ Upstream commit 554abfe2eadec97d12c71d4a69da1518478f69eb ]
 
-The GPD win and its sibling the GPD pocket (99% the same electronics in a
-different case) use a PCI wifi card. But the ACPI tables on both variants
-contain a bug where the SDIO MMC controller for SDIO wifi cards is enabled
-despite this. This SDIO MMC controller has a PCI0.SDHB.BRC1 child-device
-which _PS3 method sets a GPIO causing the PCI wifi card to turn off.
+Enable ast2600 uhci quirks.
 
-At the moment there is a pretty ugly kludge in the sdhci-acpi.c code,
-just to work around the bug in the DSDT of this single design. This can
-be solved cleaner/simply with a quirk overriding the _STA return of the
-broken PCI0.SDHB.BRC1 PCI0.SDHB.BRC1 child with a status value of 0,
-so that its power_manageable flag gets cleared, avoiding this problem.
-
-Note that even though it is not used, the _STA method for the MMC
-controller is deliberately not overridden. If the status of the MMC
-controller were forced to 0 it would never get suspended, which would
-cause these mini-laptops to not reach S0i3 level when suspended.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+Link: https://lore.kernel.org/r/20211126100021.2331024-1-neal_liu@aspeedtech.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/x86/utils.c | 20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+ drivers/usb/host/uhci-platform.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/x86/utils.c b/drivers/acpi/x86/utils.c
-index 91bbc4b6b8035..3f9a162be84e3 100644
---- a/drivers/acpi/x86/utils.c
-+++ b/drivers/acpi/x86/utils.c
-@@ -94,9 +94,10 @@ static const struct override_status_id override_status_ids[] = {
- 	/*
- 	 * The GPD win BIOS dated 20170221 has disabled the accelerometer, the
- 	 * drivers sometimes cause crashes under Windows and this is how the
--	 * manufacturer has solved this :| Note that the the DMI data is less
--	 * generic then it seems, a board_vendor of "AMI Corporation" is quite
--	 * rare and a board_name of "Default String" also is rare.
-+	 * manufacturer has solved this :|  The DMI match may not seem unique,
-+	 * but it is. In the 67000+ DMI decode dumps from linux-hardware.org
-+	 * only 116 have board_vendor set to "AMI Corporation" and of those 116
-+	 * only the GPD win and pocket entries' board_name is "Default string".
- 	 *
- 	 * Unfortunately the GPD pocket also uses these strings and its BIOS
- 	 * was copy-pasted from the GPD win, so it has a disabled KIOX000A
-@@ -120,6 +121,19 @@ static const struct override_status_id override_status_ids[] = {
- 		DMI_MATCH(DMI_PRODUCT_NAME, "Default string"),
- 		DMI_MATCH(DMI_BIOS_DATE, "05/25/2017")
- 	      }),
-+
-+	/*
-+	 * The GPD win/pocket have a PCI wifi card, but its DSDT has the SDIO
-+	 * mmc controller enabled and that has a child-device which _PS3
-+	 * method sets a GPIO causing the PCI wifi card to turn off.
-+	 * See above remark about uniqueness of the DMI match.
-+	 */
-+	NOT_PRESENT_ENTRY_PATH("\\_SB_.PCI0.SDHB.BRC1", ATOM_AIRMONT, {
-+		DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
-+		DMI_EXACT_MATCH(DMI_BOARD_NAME, "Default string"),
-+		DMI_EXACT_MATCH(DMI_BOARD_SERIAL, "Default string"),
-+		DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Default string"),
-+	      }),
- };
- 
- bool acpi_device_override_status(struct acpi_device *adev, unsigned long long *status)
+diff --git a/drivers/usb/host/uhci-platform.c b/drivers/usb/host/uhci-platform.c
+index 70dbd95c3f063..be9e9db7cad10 100644
+--- a/drivers/usb/host/uhci-platform.c
++++ b/drivers/usb/host/uhci-platform.c
+@@ -113,7 +113,8 @@ static int uhci_hcd_platform_probe(struct platform_device *pdev)
+ 				num_ports);
+ 		}
+ 		if (of_device_is_compatible(np, "aspeed,ast2400-uhci") ||
+-		    of_device_is_compatible(np, "aspeed,ast2500-uhci")) {
++		    of_device_is_compatible(np, "aspeed,ast2500-uhci") ||
++		    of_device_is_compatible(np, "aspeed,ast2600-uhci")) {
+ 			uhci->is_aspeed = 1;
+ 			dev_info(&pdev->dev,
+ 				 "Enabled Aspeed implementation workarounds\n");
 -- 
 2.34.1
 
