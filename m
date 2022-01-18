@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 744E8C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B02FC4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:23:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357393AbiARDU5 (ORCPT
+        id S1357412AbiARDVB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:20:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38884 "EHLO
+        Mon, 17 Jan 2022 22:21:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38908 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350241AbiARDIU (ORCPT
+        with ESMTP id S245560AbiARDIZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:08:20 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBE8CC06176F;
-        Mon, 17 Jan 2022 18:49:40 -0800 (PST)
+        Mon, 17 Jan 2022 22:08:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68C81C061772;
+        Mon, 17 Jan 2022 18:49:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 44DC5612CE;
-        Tue, 18 Jan 2022 02:49:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 175E4C36AEB;
-        Tue, 18 Jan 2022 02:49:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2CF3DB811CE;
+        Tue, 18 Jan 2022 02:49:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DBEDC36AEB;
+        Tue, 18 Jan 2022 02:49:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474179;
-        bh=MW15zVATQ0dCI6mJllBbFO3W70MaQcw1V1EXmb2mNIQ=;
+        s=k20201202; t=1642474186;
+        bh=8JYy8KLrdmJzlsmiDpIK0DRnY+qIHzoKESt35xIokH8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=X0egMBMwnp/Fg5rmLanjUlbgyVr+cse3cRf/vlPB0N7G3P61EJ8D8ZM2njjdBaOEi
-         Qn2hzsV8a+jkbzx0gDrD51PE5mUXN1p4mILXu/rcX5/eZ6+53mJvSbdZf2AScnsy0Y
-         SE7NUi7V+C0/OqZdBivZakKpp78CLchIDsZ80Z8vm3Scw5VHAZceGN7kI6OGSuUBJg
-         CRqnuSoxhKmbQc9EqoBQ9GT/4HbM1Pv57S73McjBoIxwTOuJl6xE6syQ+WnZVPJEAc
-         gTjDsByChpGAlETBz9YzOKrCOovwxtGzVxS4zWs/DE4Fmprmrwa5oIRM8zbO6FFJm3
-         yUIdjmGtIaUvA==
+        b=eim4IWhe1hyYT3drzlDuyb7ohixIwf1jUI+54jZpHZgAv6WV9H5dQEHn3pbVTh5Zu
+         n3zc6IrKTSI19HlEoN9BIzon6uhHiHhY4ey8QAsKoT5JZbnPjYlX4Gg7ai+aRyQW6e
+         oeWeApMZGfkYDaePVE4hk6rwZ4EoHnpP7WmkQ1yseNdBb20aiV8xPhdYuM2jCmjwKl
+         FRcwpf+QvxCoPgs3jjZCIewOCTZB8YJz3+eBupC4Iv/yR1kuVWiPmyKM/olTunNuJp
+         fLrd1szGSbVL6eEex3LAt4kqKbivb54g1f6VpYvy2Dk4/cWWe9XJEJtjHEAS1lmj2G
+         1liz00r2Q/gvw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 10/56] 8390: hydra: use eth_hw_addr_set()
-Date:   Mon, 17 Jan 2022 21:48:22 -0500
-Message-Id: <20220118024908.1953673-10-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 12/56] cirrus: mac89x0: use eth_hw_addr_set()
+Date:   Mon, 17 Jan 2022 21:48:24 -0500
+Message-Id: <20220118024908.1953673-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
 References: <20220118024908.1953673-1-sashal@kernel.org>
@@ -54,41 +54,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit d7d28e90e229a8af0472421015c5828f5cd1ad2e ]
+[ Upstream commit 9a962aedd30f7fceb828d3161a80e0526e358eb5 ]
 
-Loop with offsetting to every second byte, so use a temp buffer.
+Byte by byte assignments.
 
-Fixes m68k build.
+Fixes build on m68k.
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/8390/hydra.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/cirrus/mac89x0.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/8390/hydra.c b/drivers/net/ethernet/8390/hydra.c
-index 8ae2491953019..ac452a370f239 100644
---- a/drivers/net/ethernet/8390/hydra.c
-+++ b/drivers/net/ethernet/8390/hydra.c
-@@ -117,6 +117,7 @@ static int hydra_init(struct zorro_dev *z)
-     unsigned long ioaddr = board+HYDRA_NIC_BASE;
-     const char name[] = "NE2000";
-     int start_page, stop_page;
-+    u8 macaddr[ETH_ALEN];
-     int j;
-     int err;
-     struct ei_device *ei_local;
-@@ -131,7 +132,8 @@ static int hydra_init(struct zorro_dev *z)
- 	return -ENOMEM;
+diff --git a/drivers/net/ethernet/cirrus/mac89x0.c b/drivers/net/ethernet/cirrus/mac89x0.c
+index f910f0f386d63..fae97ebb4ba07 100644
+--- a/drivers/net/ethernet/cirrus/mac89x0.c
++++ b/drivers/net/ethernet/cirrus/mac89x0.c
+@@ -268,12 +268,15 @@ struct net_device * __init mac89x0_probe(int unit)
+ 		printk("\nmac89x0: No EEPROM, giving up now.\n");
+ 		goto out1;
+         } else {
++		u8 addr[ETH_ALEN];
++
+                 for (i = 0; i < ETH_ALEN; i += 2) {
+ 			/* Big-endian (why??!) */
+ 			unsigned short s = readreg(dev, PP_IA + i);
+-                        dev->dev_addr[i] = s >> 8;
+-                        dev->dev_addr[i+1] = s & 0xff;
++			addr[i] = s >> 8;
++			addr[i+1] = s & 0xff;
+                 }
++		eth_hw_addr_set(dev, addr);
+         }
  
-     for (j = 0; j < ETH_ALEN; j++)
--	dev->dev_addr[j] = *((u8 *)(board + HYDRA_ADDRPROM + 2*j));
-+	macaddr[j] = *((u8 *)(board + HYDRA_ADDRPROM + 2*j));
-+    eth_hw_addr_set(dev, macaddr);
- 
-     /* We must set the 8390 for word mode. */
-     z_writeb(0x4b, ioaddr + NE_EN0_DCFG);
+ 	dev->irq = SLOT2IRQ(slot);
 -- 
 2.34.1
 
