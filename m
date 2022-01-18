@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4EF9C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:53:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB4A3C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:53:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349919AbiARCuo (ORCPT
+        id S1350045AbiARCvF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:50:44 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:57794 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346914AbiARCkO (ORCPT
+        Mon, 17 Jan 2022 21:51:05 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48350 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347301AbiARClI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:40:14 -0500
+        Mon, 17 Jan 2022 21:41:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 377F9612CF;
-        Tue, 18 Jan 2022 02:40:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC99EC36AEB;
-        Tue, 18 Jan 2022 02:40:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4FA1B81260;
+        Tue, 18 Jan 2022 02:41:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 568C2C36AEF;
+        Tue, 18 Jan 2022 02:41:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473612;
-        bh=FWtbtmARrt7YCzY3o9axlqB5+rkW6kVoS11LNDSwnWU=;
+        s=k20201202; t=1642473665;
+        bh=dxlHkkDhrDWGJRS2ZBt0S7lqBxv/VVktAClM8xc6FqM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ai9Y0sAWJu3rqtMgHU5Mqyc2FQqe5Z4IpBxn8Q7YrTCgg+u8KWcuHRMbihNDCsZEN
-         Ua7hkTVY02gkiP2F3eKIFUe35KbHbimhsG1RxYqn78ShieO+BI7yemTAejKF7w30nf
-         CLd4sFGZ7+Fymep3Fw/OWow6tmL6xGn1vRJRfDxhMhVuB/QBZehpoQL+vdjYEggY64
-         2hDSuyq/+xlw9oDZoaLu9r7N40On5Ns2GOCIsiwaapXBnlGAEHwvkm7f/Q1pfJOV7S
-         Y60afBo/pzlzeOaORgI/5Z3xsqn6zDg1hbgvkzfq7qgI3bG8D6PiLyBQTXSS7xTe52
-         R5Tq/HDFY2ADw==
+        b=UDSs/lxUGoSMJdQRfaFS7WN59eBP36ixrfn9VHYvY7674g3Rwa67cOLwXA4380BiB
+         /i8drzbrp5/Y/h3qr3mnnNhfxmTKAsn01gfLfQ1rjCtAqfOb5d80FGtpsbyCLhS8TP
+         a9CYmCV65UO1g8FmKmynT6GGaqD2tUJXuM3hwOmZZHZP50AZ/g7q20SAH5jzmecMT7
+         tsxLvJbwJWPmq0r6yZJSOa5KgWe1NArE8CfLMOcFmdAMdJN6wMj2yNrh+KuLu2Rwl3
+         BYQH8qpN1wyio86Y3hS2t9gUOJR/ilnHrk7NfbAbVQBYCQIicaSYofHypzd6p/Vj2+
+         fjqJQA0Ch82gg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>,
-        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 003/116] libbpf: Validate that .BTF and .BTF.ext sections contain data
-Date:   Mon, 17 Jan 2022 21:38:14 -0500
-Message-Id: <20220118024007.1950576-3-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Yauhen Kharuzhy <jekhor@gmail.com>,
+        Simon Ser <contact@emersion.fr>,
+        Sasha Levin <sashal@kernel.org>,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.10 017/116] drm: panel-orientation-quirks: Add quirk for the Lenovo Yoga Book X91F/L
+Date:   Mon, 17 Jan 2022 21:38:28 -0500
+Message-Id: <20220118024007.1950576-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
 References: <20220118024007.1950576-1-sashal@kernel.org>
@@ -50,41 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 62554d52e71797eefa3fc15b54008038837bb2d4 ]
+[ Upstream commit bc30c3b0c8a1904d83d5f0d60fb8650a334b207b ]
 
-.BTF and .BTF.ext ELF sections should have SHT_PROGBITS type and contain
-data. If they are not, ELF is invalid or corrupted, so bail out.
-Otherwise this can lead to data->d_buf being NULL and SIGSEGV later on.
-Reported by oss-fuzz project.
+The Lenovo Yoga Book X91F/L uses a panel which has been mounted
+90 degrees rotated. Add a quirk for this.
 
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20211103173213.1376990-4-andrii@kernel.org
+Cc: Yauhen Kharuzhy <jekhor@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Simon Ser <contact@emersion.fr>
+Tested-by: Yauhen Kharuzhy <jekhor@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211106130227.11927-1-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/gpu/drm/drm_panel_orientation_quirks.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index b337d6f29098b..e8ad53d31044a 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -2870,8 +2870,12 @@ static int bpf_object__elf_collect(struct bpf_object *obj)
- 		} else if (strcmp(name, MAPS_ELF_SEC) == 0) {
- 			obj->efile.btf_maps_shndx = idx;
- 		} else if (strcmp(name, BTF_ELF_SEC) == 0) {
-+			if (sh->sh_type != SHT_PROGBITS)
-+				return -LIBBPF_ERRNO__FORMAT;
- 			btf_data = data;
- 		} else if (strcmp(name, BTF_EXT_ELF_SEC) == 0) {
-+			if (sh->sh_type != SHT_PROGBITS)
-+				return -LIBBPF_ERRNO__FORMAT;
- 			btf_ext_data = data;
- 		} else if (sh.sh_type == SHT_SYMTAB) {
- 			/* already processed during the first pass above */
+diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+index a950d5db211c5..9d1bd8f491ad7 100644
+--- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
++++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+@@ -248,6 +248,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_VERSION, "Lenovo ideapad D330-10IGM"),
+ 		},
+ 		.driver_data = (void *)&lcd1200x1920_rightside_up,
++	}, {	/* Lenovo Yoga Book X90F / X91F / X91L */
++		.matches = {
++		  /* Non exact match to match all versions */
++		  DMI_MATCH(DMI_PRODUCT_NAME, "Lenovo YB1-X9"),
++		},
++		.driver_data = (void *)&lcd1200x1920_rightside_up,
+ 	}, {	/* OneGX1 Pro */
+ 		.matches = {
+ 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "SYSTEM_MANUFACTURER"),
 -- 
 2.34.1
 
