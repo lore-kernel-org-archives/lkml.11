@@ -2,156 +2,173 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF34AC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 15:02:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65D4DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 15:02:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346060AbiARPCN (ORCPT
+        id S1345390AbiARPCO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 10:02:13 -0500
-Received: from mailout2.samsung.com ([203.254.224.25]:46253 "EHLO
-        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242440AbiARPBM (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 10:01:12 -0500
-Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220118150110epoutp026e886c8bc37286d179c99a2ae52800c9~LZXug44Ho2334523345epoutp02a
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 15:01:10 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220118150110epoutp026e886c8bc37286d179c99a2ae52800c9~LZXug44Ho2334523345epoutp02a
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1642518070;
-        bh=PcTt3YGY6vlwG4bvYuXrG16kgcqDBN+pACJzHGsq8jA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=igIKdxkVAIwNFzSFA34ERNbQOBVl8B5lcy7LbfBrx3VC8KK9grJnUpX+96iqswDvp
-         X9uO4xLK4sI+il14LoU+JDCP+evNO4qryI4ZTdpqDR46pbc1BVLtAOhmanF3OmKuf5
-         41b5wFlVL/DJCPUNejUhTQPU7MfWKPwM5/ykAm7Y=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
-        20220118150109epcas5p3b34fbe47c918c913db9362faffea6be1~LZXtuwGZd0440604406epcas5p3z;
-        Tue, 18 Jan 2022 15:01:09 +0000 (GMT)
-Received: from epsmges5p2new.samsung.com (unknown [182.195.38.178]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4JdX5r4HqMz4x9Pr; Tue, 18 Jan
-        2022 15:01:04 +0000 (GMT)
-Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
-        epsmges5p2new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        50.BE.46822.6D5D6E16; Tue, 18 Jan 2022 23:59:34 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220118150104epcas5p4ac6fdc739d21c7d7eb2e53e469466487~LZXoYVAkG1990519905epcas5p4o;
-        Tue, 18 Jan 2022 15:01:04 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220118150104epsmtrp16096523196d77ea9c9a284bb77f756fa~LZXoSxuew2079320793epsmtrp16;
-        Tue, 18 Jan 2022 15:01:04 +0000 (GMT)
-X-AuditID: b6c32a4a-de5ff7000000b6e6-45-61e6d5d68a88
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        1A.F0.08738.F26D6E16; Wed, 19 Jan 2022 00:01:03 +0900 (KST)
-Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
-        [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20220118150101epsmtip118c18c0e2437615766410e9afc8bd305~LZXmEuoqH0520405204epsmtip1X;
-        Tue, 18 Jan 2022 15:01:01 +0000 (GMT)
-From:   Alim Akhtar <alim.akhtar@samsung.com>
-To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     soc@kernel.org, linux-clk@vger.kernel.org,
-        devicetree@vger.kernel.org, olof@lixom.net, arnd@arndb.de,
-        linus.walleij@linaro.org, catalin.marinas@arm.com,
-        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
-        s.nawrocki@samsung.com, linux-samsung-soc@vger.kernel.org,
-        pankaj.dubey@samsung.com, Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-fsd@tesla.com
-Subject: [PATCH v2 13/16] dt-bindings: arm: add Tesla FSD ARM SoC
-Date:   Tue, 18 Jan 2022 20:18:48 +0530
-Message-Id: <20220118144851.69537-14-alim.akhtar@samsung.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220118144851.69537-1-alim.akhtar@samsung.com>
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprGJsWRmVeSWpSXmKPExsWy7bCmhu61q88SDX7t5rB4MG8bm8XfScfY
-        Ld4v62G0mH/kHKvFxrc/mCym/FnOZLHp8TVWi48991gtHr4Kt7i8aw6bxYzz+5gsTl3/zGax
-        aOsXdovWvUfYLQ6/aWe1eHz9D5uDgMeaeWsYPX7/msToMauhl81j06pONo871/aweWxeUu9x
-        5UQTq0ffllWMHv+a5rJ7fN4kF8AVlW2TkZqYklqkkJqXnJ+SmZduq+QdHO8cb2pmYKhraGlh
-        rqSQl5ibaqvk4hOg65aZA/SKkkJZYk4pUCggsbhYSd/Opii/tCRVISO/uMRWKbUgJafApECv
-        ODG3uDQvXS8vtcTK0MDAyBSoMCE7Y+nqQ6wFxzkrbj+7yNrAeIe9i5GTQ0LAROJfywrmLkYu
-        DiGB3YwS+34cZYJwPjFKvP91kwXC+cwosXzRPCaYlp2HtrJBJHYxSny8vYUNJCEk0MIkcXOD
-        MYjNJqAtcXf6FrAGEQE3iRuNHWBjmQXeMklM3/cdrEFYwFGi9e0jFhCbRUBVYsqfZqAiDg5e
-        AVuJvrtqEMvkJVZvOMAMYnMChac2TAVbLCGwlkNi/ur/LBBFLhIPfhxnhLCFJV4d3wL1nJTE
-        y/42dpCZEgLZEj27jCHCNRJL5x2DarWXOHBlDgtICbOApsT6XfogYWYBPone30+YIDp5JTra
-        hCCqVSWa312F6pSWmNjdzQphe0hc7O9ghwTJBEaJbwcXsE1glJ2FMHUBI+MqRsnUguLc9NRi
-        0wKjvNRyeDwl5+duYgQnUC2vHYwPH3zQO8TIxMF4iFGCg1lJhFeq/lmiEG9KYmVValF+fFFp
-        TmrxIUZTYIhNZJYSTc4HpvC8knhDE0sDEzMzMxNLYzNDJXHe0+kbEoUE0hNLUrNTUwtSi2D6
-        mDg4pRqYvGpOmFUkTb0kkHp67cu5vNNjNri8sV8ZbPbOlFVmhcO7ni313VbqK7pZ5Iy+J0Z5
-        Nl+NCNRYkP57lvgspk27rY8XhQvfa/p/NXRae9dLu/u7xfncDkQebN11JKdUOmy9ktm3VUEH
-        HqVmlD0Nr1Hs+Xp4Yl1c1Pmtf5NzC8qlLxwVjVD7OX3SnQb5xMAPizOObdRtfjj9wanyWVXz
-        gzT/quZ1tx7VF53y3JX/fZKF5Zf+pqkCZ9f9bLLYxssdm23WvTSf4cKnWf5sfUvZhB4eLu/0
-        PB2i4Gr37EKg7OLeT0k2vzp2fHzA5NPfGJ/I/GorV/bNWI7/O/j6Njr8OtZ21W32af9Wu28e
-        whIzN2kpsRRnJBpqMRcVJwIAkC+5kykEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrNLMWRmVeSWpSXmKPExsWy7bCSnK7+tWeJBqeWWFs8mLeNzeLvpGPs
-        Fu+X9TBazD9yjtVi49sfTBZT/ixnstj0+Bqrxceee6wWD1+FW1zeNYfNYsb5fUwWp65/ZrNY
-        tPULu0Xr3iPsFofftLNaPL7+h81BwGPNvDWMHr9/TWL0mNXQy+axaVUnm8eda3vYPDYvqfe4
-        cqKJ1aNvyypGj39Nc9k9Pm+SC+CK4rJJSc3JLEst0rdL4MpYuvoQa8Fxzorbzy6yNjDeYe9i
-        5OSQEDCR2HloK1sXIxeHkMAORomTc09AJaQlrm+cAGULS6z895wdoqiJSWLjzz+MIAk2AW2J
-        u9O3MIHYIgIeEm3/7jGDFDEL/GWS+Pr6IViRsICjROvbRywgNouAqsSUP81ADRwcvAK2En13
-        1SAWyEus3nCAGcTmBApPbZjKBmILCdhIXFw5jXkCI98CRoZVjJKpBcW56bnFhgVGeanlesWJ
-        ucWleel6yfm5mxjB4a+ltYNxz6oPeocYmTgYDzFKcDArifBK1T9LFOJNSaysSi3Kjy8qzUkt
-        PsQozcGiJM57oetkvJBAemJJanZqakFqEUyWiYNTqoEp6kpfq3nphbTTn18473MO2WTTHdbG
-        bvbGUp3v19IYjXRmbj7GtGf7nubbh/59NO+AxOMYlU0xF5dFTPHmUyi17OZan3pruXx2c1Ou
-        Y3vi6TURq4U9Xu1/xTgp1flZwcn7nxJeqbpM1HK7vG/mqbCFYf+NH+1bXH2ssu4Vu9umZa+j
-        6vZO2/m2quZlhFRBRFFoH0PEqtB5xw9ozFVP3nvgjXXEmhnvLvs03jPszfqx28NVYVFG1oeA
-        FMY13Q5O23iaDvMLaj+99Fx6o7n3SmbVwz5bGTtEO9dWz7HLaHYVLTtwRtplj8yiqO45Jg7f
-        Dt29Z7VOcvLFvYFJLc08W49JXq07m3LevFQs4vNLoS4lluKMREMt5qLiRACr6EO97gIAAA==
-X-CMS-MailID: 20220118150104epcas5p4ac6fdc739d21c7d7eb2e53e469466487
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220118150104epcas5p4ac6fdc739d21c7d7eb2e53e469466487
-References: <20220118144851.69537-1-alim.akhtar@samsung.com>
-        <CGME20220118150104epcas5p4ac6fdc739d21c7d7eb2e53e469466487@epcas5p4.samsung.com>
+        Tue, 18 Jan 2022 10:02:14 -0500
+Received: from vps-vb.mhejs.net ([37.28.154.113]:35652 "EHLO vps-vb.mhejs.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1345850AbiARPB0 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 10:01:26 -0500
+Received: from MUA
+        by vps-vb.mhejs.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <mail@maciej.szmigiero.name>)
+        id 1n9pyn-00084x-Lw; Tue, 18 Jan 2022 16:01:01 +0100
+Message-ID: <010ef70c-31a2-2831-a2a7-950db14baf23@maciej.szmigiero.name>
+Date:   Tue, 18 Jan 2022 16:00:55 +0100
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Content-Language: en-US
+To:     Nikunj A Dadhania <nikunj@amd.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Peter Gonda <pgonda@google.com>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
+References: <20220118110621.62462-1-nikunj@amd.com>
+ <20220118110621.62462-7-nikunj@amd.com>
+From:   "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
+Subject: Re: [RFC PATCH 6/6] KVM: SVM: Pin SEV pages in MMU during
+ sev_launch_update_data()
+In-Reply-To: <20220118110621.62462-7-nikunj@amd.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add device tree bindings for the Tesla FSD ARM SoC.
+Hi Nikunj,
 
-Cc: linux-fsd@tesla.com
-Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
----
- .../devicetree/bindings/arm/tesla.yaml        | 27 +++++++++++++++++++
- 1 file changed, 27 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/arm/tesla.yaml
+On 18.01.2022 12:06, Nikunj A Dadhania wrote:
+> From: Sean Christopherson <sean.j.christopherson@intel.com>
+> 
+> Pin the memory for the data being passed to launch_update_data()
+> because it gets encrypted before the guest is first run and must
+> not be moved which would corrupt it.
+> 
+> Signed-off-by: Sean Christopherson <sean.j.christopherson@intel.com>
+> [ * Changed hva_to_gva() to take an extra argument and return gpa_t.
+>    * Updated sev_pin_memory_in_mmu() error handling.
+>    * As pinning/unpining pages is handled within MMU, removed
+>      {get,put}_user(). ]
+> Signed-off-by: Nikunj A Dadhania <nikunj@amd.com>
+> ---
+>   arch/x86/kvm/svm/sev.c | 122 ++++++++++++++++++++++++++++++++++++++++-
+>   1 file changed, 119 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
+> index 14aeccfc500b..1ae714e83a3c 100644
+> --- a/arch/x86/kvm/svm/sev.c
+> +++ b/arch/x86/kvm/svm/sev.c
+> @@ -22,6 +22,7 @@
+>   #include <asm/trapnr.h>
+>   #include <asm/fpu/xcr.h>
+>   
+> +#include "mmu.h"
+>   #include "x86.h"
+>   #include "svm.h"
+>   #include "svm_ops.h"
+> @@ -490,6 +491,110 @@ static unsigned long get_num_contig_pages(unsigned long idx,
+>   	return pages;
+>   }
+>   
+> +#define SEV_PFERR_RO (PFERR_USER_MASK)
+> +#define SEV_PFERR_RW (PFERR_WRITE_MASK | PFERR_USER_MASK)
+> +
+> +static struct kvm_memory_slot *hva_to_memslot(struct kvm *kvm,
+> +					      unsigned long hva)
+> +{
+> +	struct kvm_memslots *slots = kvm_memslots(kvm);
+> +	struct kvm_memory_slot *memslot;
+> +	int bkt;
+> +
+> +	kvm_for_each_memslot(memslot, bkt, slots) {
+> +		if (hva >= memslot->userspace_addr &&
+> +		    hva < memslot->userspace_addr +
+> +		    (memslot->npages << PAGE_SHIFT))
+> +			return memslot;
+> +	}
+> +
+> +	return NULL;
+> +}
 
-diff --git a/Documentation/devicetree/bindings/arm/tesla.yaml b/Documentation/devicetree/bindings/arm/tesla.yaml
-new file mode 100644
-index 000000000000..09856da657dc
---- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/tesla.yaml
-@@ -0,0 +1,27 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/arm/tesla.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Tesla Full Self Driving(FSD) platforms device tree bindings
-+
-+maintainers:
-+  - Alim Akhtar <alim.akhtar@samsung.com>
-+  - linux-fsd@tesla.com
-+
-+properties:
-+  $nodename:
-+    const: '/'
-+  compatible:
-+    oneOf:
-+
-+      - description: FSD SoC board
-+        items:
-+          - enum:
-+              - tesla,fsd-evb   # Tesla FSD Evaluation
-+          - const: tesla,fsd
-+
-+additionalProperties: true
-+
-+...
--- 
-2.25.1
+We have kvm_for_each_memslot_in_hva_range() now, please don't do a linear
+search through memslots.
+You might need to move the aforementioned macro from kvm_main.c to some
+header file, though.
 
+> +static gpa_t hva_to_gpa(struct kvm *kvm, unsigned long hva, bool *ro)
+> +{
+> +	struct kvm_memory_slot *memslot;
+> +	gpa_t gpa_offset;
+> +
+> +	memslot = hva_to_memslot(kvm, hva);
+> +	if (!memslot)
+> +		return UNMAPPED_GVA;
+> +
+> +	*ro = !!(memslot->flags & KVM_MEM_READONLY);
+> +	gpa_offset = hva - memslot->userspace_addr;
+> +	return ((memslot->base_gfn << PAGE_SHIFT) + gpa_offset);
+> +}
+> +
+> +static struct page **sev_pin_memory_in_mmu(struct kvm *kvm, unsigned long addr,
+> +					   unsigned long size,
+> +					   unsigned long *npages)
+> +{
+> +	struct kvm_sev_info *sev = &to_kvm_svm(kvm)->sev_info;
+> +	struct kvm_vcpu *vcpu;
+> +	struct page **pages;
+> +	unsigned long i;
+> +	u32 error_code;
+> +	kvm_pfn_t pfn;
+> +	int idx, ret = 0;
+> +	gpa_t gpa;
+> +	bool ro;
+> +
+> +	pages = sev_alloc_pages(sev, addr, size, npages);
+> +	if (IS_ERR(pages))
+> +		return pages;
+> +
+> +	vcpu = kvm_get_vcpu(kvm, 0);
+> +	if (mutex_lock_killable(&vcpu->mutex)) {
+> +		kvfree(pages);
+> +		return ERR_PTR(-EINTR);
+> +	}
+> +
+> +	vcpu_load(vcpu);
+> +	idx = srcu_read_lock(&kvm->srcu);
+> +
+> +	kvm_mmu_load(vcpu);
+> +
+> +	for (i = 0; i < *npages; i++, addr += PAGE_SIZE) {
+> +		if (signal_pending(current)) {
+> +			ret = -ERESTARTSYS;
+> +			break;
+> +		}
+> +
+> +		if (need_resched())
+> +			cond_resched();
+> +
+> +		gpa = hva_to_gpa(kvm, addr, &ro);
+> +		if (gpa == UNMAPPED_GVA) {
+> +			ret = -EFAULT;
+> +			break;
+> +		}
+
+This function is going to have worst case O(n²) complexity if called with
+the whole VM memory (or O(n * log(n)) when hva_to_memslot() is modified
+to use kvm_for_each_memslot_in_hva_range()).
+
+That's really bad for something that can be done in O(n) time - look how
+kvm_for_each_memslot_in_gfn_range() does it over gfns.
+
+Thanks,
+Maciej
