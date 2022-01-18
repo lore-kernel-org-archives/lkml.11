@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79217C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:16:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1813FC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:16:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356123AbiARDPO (ORCPT
+        id S1356198AbiARDPT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:15:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37326 "EHLO
+        Mon, 17 Jan 2022 22:15:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352274AbiARC7h (ORCPT
+        with ESMTP id S1352292AbiARC7k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:59:37 -0500
+        Mon, 17 Jan 2022 21:59:40 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7118AC0612FD;
-        Mon, 17 Jan 2022 18:34:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D57BC061751;
+        Mon, 17 Jan 2022 18:34:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9CAC4B81250;
-        Tue, 18 Jan 2022 02:33:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C68D5C36AE3;
-        Tue, 18 Jan 2022 02:33:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 352D5B8123A;
+        Tue, 18 Jan 2022 02:34:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1633C36AEB;
+        Tue, 18 Jan 2022 02:34:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473219;
-        bh=UmX2nlXkaOkWexEcFV10+goTcCTrpnTdiU5pNGjw6w8=;
+        s=k20201202; t=1642473278;
+        bh=S72zmxOG0k3L7U4zKehJLaSpMyumIyBnV8FZbTgUH0Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YR9FaH+YrRuBzatEVLjRM4ApaE5acfBeaSY1hVeFp8hLwDC1QAsZV158FFgv5SAZG
-         hrW9IN3UwGNM+bUjrFc9YZ37XQNvft+nF8zkrNJeCM1hdh7J4PcR+Baurdu/M+G/f8
-         qQwwcxSRYaWOsKGtUqxG10aqk/HqMMg0A6q6PDkbHn0HqWFWGcxlKWG/vO+NnfsErl
-         z+nPtw9tX5tFDeihNfaz2a/h/ASBo1xfgcxAe0Dv8XEa1jPHI7aqfTlrrqBnbd4U5z
-         7Le1jZMACu1HvF9alrUOuSsQgFFyXWJhfSDmpE73wWQCstjgCCyKUKP9I2WIB8roBG
-         hf9gYCzeZEYFg==
+        b=tBy6OD3BoS3+LBgLCCxjjXIelRMCVCibVkUMtIfJwC4yvLXvbvezMb0Piz144h0OD
+         btC43XFYm09hy4SsMNpiHQXS+cIAYfDgtPq5M+41QwzweVWx6e8eAXrCL93dehicGv
+         a+pDzCJRDSgZLFA0rCaZCg/aGXa2RAbLn9De71vGv9bqKXuz7xOSAKYhgHmD8hQ5U1
+         bVYgl14JEo0/WXqzBijU0uuL6e09UKGpU0K8r0YsUjfoxhlqHTTmeH4fMjcHLis/yQ
+         uchcmWS1/3hEfrUTQiYpOMOwx/rLrdhO1fPyzdaNY5fl7EKR78Nk27pQFNcnIjaIOb
+         zSJ6qD893c5Vw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 030/188] amd: a2065/ariadne: use eth_hw_addr_set()
-Date:   Mon, 17 Jan 2022 21:29:14 -0500
-Message-Id: <20220118023152.1948105-30-sashal@kernel.org>
+Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        linus.walleij@linaro.org, daniel@thingy.jp, avolmat@me.com,
+        romain.perier@gmail.com, eugen.hristev@microchip.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 051/188] ARM: imx: rename DEBUG_IMX21_IMX27_UART to DEBUG_IMX27_UART
+Date:   Mon, 17 Jan 2022 21:29:35 -0500
+Message-Id: <20220118023152.1948105-51-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -52,108 +55,119 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-[ Upstream commit 285e4c664d6461b175b4613fc77126b5006a1912 ]
+[ Upstream commit b0100bce4ff82ec1ccd3c1f3d339fd2df6a81784 ]
 
-dev_addr is initialized byte by byte from series.
+Since commit 4b563a066611 ("ARM: imx: Remove imx21 support"), the config
+DEBUG_IMX21_IMX27_UART is really only debug support for IMX27.
 
-Fixes build on x86 (32bit).
+So, rename this option to DEBUG_IMX27_UART and adjust dependencies in
+Kconfig and rename the definitions to IMX27 as further clean-up.
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+This issue was discovered with ./scripts/checkkconfigsymbols.py, which
+reported that DEBUG_IMX21_IMX27_UART depends on the non-existing config
+SOC_IMX21.
+
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Reviewed-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/amd/a2065.c   | 18 ++++++++++--------
- drivers/net/ethernet/amd/ariadne.c | 20 +++++++++++---------
- 2 files changed, 21 insertions(+), 17 deletions(-)
+ arch/arm/Kconfig.debug            | 14 +++++++-------
+ arch/arm/include/debug/imx-uart.h | 18 +++++++++---------
+ 2 files changed, 16 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/ethernet/amd/a2065.c b/drivers/net/ethernet/amd/a2065.c
-index 2f808dbc8b0ed..3a351d3396bfe 100644
---- a/drivers/net/ethernet/amd/a2065.c
-+++ b/drivers/net/ethernet/amd/a2065.c
-@@ -680,6 +680,7 @@ static int a2065_init_one(struct zorro_dev *z,
- 	unsigned long base_addr = board + A2065_LANCE;
- 	unsigned long mem_start = board + A2065_RAM;
- 	struct resource *r1, *r2;
-+	u8 addr[ETH_ALEN];
- 	u32 serial;
- 	int err;
+diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+index 98436702e0c7e..644875d73ba15 100644
+--- a/arch/arm/Kconfig.debug
++++ b/arch/arm/Kconfig.debug
+@@ -410,12 +410,12 @@ choice
+ 		  Say Y here if you want kernel low-level debugging support
+ 		  on i.MX25.
  
-@@ -706,17 +707,18 @@ static int a2065_init_one(struct zorro_dev *z,
- 	r2->name = dev->name;
+-	config DEBUG_IMX21_IMX27_UART
+-		bool "i.MX21 and i.MX27 Debug UART"
+-		depends on SOC_IMX21 || SOC_IMX27
++	config DEBUG_IMX27_UART
++		bool "i.MX27 Debug UART"
++		depends on SOC_IMX27
+ 		help
+ 		  Say Y here if you want kernel low-level debugging support
+-		  on i.MX21 or i.MX27.
++		  on i.MX27.
  
- 	serial = be32_to_cpu(z->rom.er_SerialNumber);
--	dev->dev_addr[0] = 0x00;
-+	addr[0] = 0x00;
- 	if (z->id != ZORRO_PROD_AMERISTAR_A2065) {	/* Commodore */
--		dev->dev_addr[1] = 0x80;
--		dev->dev_addr[2] = 0x10;
-+		addr[1] = 0x80;
-+		addr[2] = 0x10;
- 	} else {					/* Ameristar */
--		dev->dev_addr[1] = 0x00;
--		dev->dev_addr[2] = 0x9f;
-+		addr[1] = 0x00;
-+		addr[2] = 0x9f;
- 	}
--	dev->dev_addr[3] = (serial >> 16) & 0xff;
--	dev->dev_addr[4] = (serial >> 8) & 0xff;
--	dev->dev_addr[5] = serial & 0xff;
-+	addr[3] = (serial >> 16) & 0xff;
-+	addr[4] = (serial >> 8) & 0xff;
-+	addr[5] = serial & 0xff;
-+	eth_hw_addr_set(dev, addr);
- 	dev->base_addr = (unsigned long)ZTWO_VADDR(base_addr);
- 	dev->mem_start = (unsigned long)ZTWO_VADDR(mem_start);
- 	dev->mem_end = dev->mem_start + A2065_RAM_SIZE;
-diff --git a/drivers/net/ethernet/amd/ariadne.c b/drivers/net/ethernet/amd/ariadne.c
-index 5e0f645f5bde7..4ea7b9f3c4249 100644
---- a/drivers/net/ethernet/amd/ariadne.c
-+++ b/drivers/net/ethernet/amd/ariadne.c
-@@ -441,11 +441,11 @@ static int ariadne_open(struct net_device *dev)
+ 	config DEBUG_IMX28_UART
+ 		bool "i.MX28 Debug UART"
+@@ -1481,7 +1481,7 @@ config DEBUG_IMX_UART_PORT
+ 	int "i.MX Debug UART Port Selection"
+ 	depends on DEBUG_IMX1_UART || \
+ 		   DEBUG_IMX25_UART || \
+-		   DEBUG_IMX21_IMX27_UART || \
++		   DEBUG_IMX27_UART || \
+ 		   DEBUG_IMX31_UART || \
+ 		   DEBUG_IMX35_UART || \
+ 		   DEBUG_IMX50_UART || \
+@@ -1540,12 +1540,12 @@ config DEBUG_LL_INCLUDE
+ 	default "debug/icedcc.S" if DEBUG_ICEDCC
+ 	default "debug/imx.S" if DEBUG_IMX1_UART || \
+ 				 DEBUG_IMX25_UART || \
+-				 DEBUG_IMX21_IMX27_UART || \
++				 DEBUG_IMX27_UART || \
+ 				 DEBUG_IMX31_UART || \
+ 				 DEBUG_IMX35_UART || \
+ 				 DEBUG_IMX50_UART || \
+ 				 DEBUG_IMX51_UART || \
+-				 DEBUG_IMX53_UART ||\
++				 DEBUG_IMX53_UART || \
+ 				 DEBUG_IMX6Q_UART || \
+ 				 DEBUG_IMX6SL_UART || \
+ 				 DEBUG_IMX6SX_UART || \
+diff --git a/arch/arm/include/debug/imx-uart.h b/arch/arm/include/debug/imx-uart.h
+index c8eb83d4b8964..3edbb3c5b42bf 100644
+--- a/arch/arm/include/debug/imx-uart.h
++++ b/arch/arm/include/debug/imx-uart.h
+@@ -11,13 +11,6 @@
+ #define IMX1_UART_BASE_ADDR(n)	IMX1_UART##n##_BASE_ADDR
+ #define IMX1_UART_BASE(n)	IMX1_UART_BASE_ADDR(n)
  
- 	/* Set the Ethernet Hardware Address */
- 	lance->RAP = CSR12;		/* Physical Address Register, PADR[15:0] */
--	lance->RDP = ((u_short *)&dev->dev_addr[0])[0];
-+	lance->RDP = ((const u_short *)&dev->dev_addr[0])[0];
- 	lance->RAP = CSR13;		/* Physical Address Register, PADR[31:16] */
--	lance->RDP = ((u_short *)&dev->dev_addr[0])[1];
-+	lance->RDP = ((const u_short *)&dev->dev_addr[0])[1];
- 	lance->RAP = CSR14;		/* Physical Address Register, PADR[47:32] */
--	lance->RDP = ((u_short *)&dev->dev_addr[0])[2];
-+	lance->RDP = ((const u_short *)&dev->dev_addr[0])[2];
+-#define IMX21_UART1_BASE_ADDR	0x1000a000
+-#define IMX21_UART2_BASE_ADDR	0x1000b000
+-#define IMX21_UART3_BASE_ADDR	0x1000c000
+-#define IMX21_UART4_BASE_ADDR	0x1000d000
+-#define IMX21_UART_BASE_ADDR(n)	IMX21_UART##n##_BASE_ADDR
+-#define IMX21_UART_BASE(n)	IMX21_UART_BASE_ADDR(n)
+-
+ #define IMX25_UART1_BASE_ADDR	0x43f90000
+ #define IMX25_UART2_BASE_ADDR	0x43f94000
+ #define IMX25_UART3_BASE_ADDR	0x5000c000
+@@ -26,6 +19,13 @@
+ #define IMX25_UART_BASE_ADDR(n)	IMX25_UART##n##_BASE_ADDR
+ #define IMX25_UART_BASE(n)	IMX25_UART_BASE_ADDR(n)
  
- 	/* Set the Init Block Mode */
- 	lance->RAP = CSR15;		/* Mode Register */
-@@ -717,6 +717,7 @@ static int ariadne_init_one(struct zorro_dev *z,
- 	unsigned long mem_start = board + ARIADNE_RAM;
- 	struct resource *r1, *r2;
- 	struct net_device *dev;
-+	u8 addr[ETH_ALEN];
- 	u32 serial;
- 	int err;
++#define IMX27_UART1_BASE_ADDR	0x1000a000
++#define IMX27_UART2_BASE_ADDR	0x1000b000
++#define IMX27_UART3_BASE_ADDR	0x1000c000
++#define IMX27_UART4_BASE_ADDR	0x1000d000
++#define IMX27_UART_BASE_ADDR(n)	IMX27_UART##n##_BASE_ADDR
++#define IMX27_UART_BASE(n)	IMX27_UART_BASE_ADDR(n)
++
+ #define IMX31_UART1_BASE_ADDR	0x43f90000
+ #define IMX31_UART2_BASE_ADDR	0x43f94000
+ #define IMX31_UART3_BASE_ADDR	0x5000c000
+@@ -112,10 +112,10 @@
  
-@@ -740,12 +741,13 @@ static int ariadne_init_one(struct zorro_dev *z,
- 	r2->name = dev->name;
- 
- 	serial = be32_to_cpu(z->rom.er_SerialNumber);
--	dev->dev_addr[0] = 0x00;
--	dev->dev_addr[1] = 0x60;
--	dev->dev_addr[2] = 0x30;
--	dev->dev_addr[3] = (serial >> 16) & 0xff;
--	dev->dev_addr[4] = (serial >> 8) & 0xff;
--	dev->dev_addr[5] = serial & 0xff;
-+	addr[0] = 0x00;
-+	addr[1] = 0x60;
-+	addr[2] = 0x30;
-+	addr[3] = (serial >> 16) & 0xff;
-+	addr[4] = (serial >> 8) & 0xff;
-+	addr[5] = serial & 0xff;
-+	eth_hw_addr_set(dev, addr);
- 	dev->base_addr = (unsigned long)ZTWO_VADDR(base_addr);
- 	dev->mem_start = (unsigned long)ZTWO_VADDR(mem_start);
- 	dev->mem_end = dev->mem_start + ARIADNE_RAM_SIZE;
+ #ifdef CONFIG_DEBUG_IMX1_UART
+ #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX1)
+-#elif defined(CONFIG_DEBUG_IMX21_IMX27_UART)
+-#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX21)
+ #elif defined(CONFIG_DEBUG_IMX25_UART)
+ #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX25)
++#elif defined(CONFIG_DEBUG_IMX27_UART)
++#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX27)
+ #elif defined(CONFIG_DEBUG_IMX31_UART)
+ #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX31)
+ #elif defined(CONFIG_DEBUG_IMX35_UART)
 -- 
 2.34.1
 
