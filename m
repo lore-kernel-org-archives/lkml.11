@@ -2,279 +2,301 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B4C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 07:27:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD1C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 07:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245400AbiARH1j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 02:27:39 -0500
-Received: from mailout3.samsung.com ([203.254.224.33]:56144 "EHLO
-        mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245157AbiARH0x (ORCPT
+        id S245504AbiARH1n (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 02:27:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43560 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245414AbiARH1F (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 02:26:53 -0500
-Received: from epcas5p2.samsung.com (unknown [182.195.41.40])
-        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220118072648epoutp03884f0f0ab06c47d986ef23821355f563~LTLAYokpv2005820058epoutp03F
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 07:26:48 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220118072648epoutp03884f0f0ab06c47d986ef23821355f563~LTLAYokpv2005820058epoutp03F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1642490808;
-        bh=Zg0RU9t5W1nXKXsU2UNw4q6sL2viMGbVEqOgjrgpgsY=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=CNcB8ZoMoTnViy3OSGV6mMlqNTWjxffp9cQHpMPYzPKgebMx4MGbrnVEpZe68WaBN
-         M3u4hpsVOS5/8BBcKABoec0RwBXdjvJEwRdFims87SDPeCA7wcg3MGhdBZtYxjX7bA
-         3ThQrAm736d36D4TWi8dyJmSmqVMWX7dF4YIIiX0=
-Received: from epsnrtp1.localdomain (unknown [182.195.42.162]) by
-        epcas5p1.samsung.com (KnoxPortal) with ESMTP id
-        20220118072647epcas5p1419e8d3f15254d71568b1e88edca0923~LTK-3cT3s0182301823epcas5p17;
-        Tue, 18 Jan 2022 07:26:47 +0000 (GMT)
-Received: from epsmges5p1new.samsung.com (unknown [182.195.38.183]) by
-        epsnrtp1.localdomain (Postfix) with ESMTP id 4JdL1T2mZ1z4x9Q5; Tue, 18 Jan
-        2022 07:26:37 +0000 (GMT)
-Received: from epcas5p4.samsung.com ( [182.195.41.42]) by
-        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        15.F2.06423.AAB66E16; Tue, 18 Jan 2022 16:26:34 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas5p4.samsung.com (KnoxPortal) with ESMTPA id
-        20220118072633epcas5p484d86503f12b803cfb83cd20954b3626~LTKyyh9UU2404324043epcas5p4Y;
-        Tue, 18 Jan 2022 07:26:33 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220118072633epsmtrp19d54e1f50077be4c8e6b0ee62780545a~LTKyxqVGq1052610526epsmtrp17;
-        Tue, 18 Jan 2022 07:26:33 +0000 (GMT)
-X-AuditID: b6c32a49-b13ff70000001917-0f-61e66baa8d47
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        52.BD.08738.9AB66E16; Tue, 18 Jan 2022 16:26:33 +0900 (KST)
-Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip2.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20220118072631epsmtip213571a9cbf9be5f39b0a6df5f2326652~LTKwsg1SV0825508255epsmtip2f;
-        Tue, 18 Jan 2022 07:26:31 +0000 (GMT)
-From:   "Alim Akhtar" <alim.akhtar@samsung.com>
-To:     "'Henrik Grimler'" <henrik@grimler.se>
-Cc:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@canonical.com>,
-        <semen.protsenko@linaro.org>, <virag.david003@gmail.com>,
-        <martin.juecker@gmail.com>, <cw00.choi@samsung.com>,
-        <m.szyprowski@samsung.com>, <robh+dt@kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-samsung-soc@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <~postmarketos/upstreaming@lists.sr.ht>
-In-Reply-To: <YeWgNJaDHxKROpQs@grimlerstat>
-Subject: RE: [PATCH v3 3/3] ARM: dts: Add support for Samsung Chagall WiFi
-Date:   Tue, 18 Jan 2022 12:56:30 +0530
-Message-ID: <01c501d80c3c$b820fb90$2862f2b0$@samsung.com>
+        Tue, 18 Jan 2022 02:27:05 -0500
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 833B8C061755;
+        Mon, 17 Jan 2022 23:26:46 -0800 (PST)
+Received: by mail-pf1-x42e.google.com with SMTP id i17so12301368pfk.11;
+        Mon, 17 Jan 2022 23:26:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=NshJlE4fbQHE7g31yBf1Bf/x2G6pGiGg+SM9MONafno=;
+        b=DoeAfJgfEOOlwisvdc5WFl1pMOl9L2Wpvx+nmurtEu0Bn0RxUk7KHaYPn8HONZV2/w
+         BfseDLL3gVFVgiKcd2h/tvGEHyM+u0bzEGFEx7WAzRbxE88Bl55ytRXQqO4biSb+dc3z
+         nup2PTCU7GQ5kyo0UbQ4IStnAy5D5n8XsT7XsOg+SSg0KSCrshXIrBlaK/r6jS3TEqP/
+         oYgGAZKowVX3Rjy4wa8vkG3StjTlBFJNiwIMRVEm0c74wne0LL9nB/nIbyUOu7joQw+X
+         q6XWNJq08dycDw7I/MvtyshxWTAq47uEVawHyyHOl8wJx9MMuI/EGIlY9yyzzg8hKyfU
+         EmQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=NshJlE4fbQHE7g31yBf1Bf/x2G6pGiGg+SM9MONafno=;
+        b=hLyJGV5BV7v91hTBK2niCM/wxKoQI+Zk9SH9U0bwcBtzNp/zhbVXuflJRwC5PXmD5O
+         Aq0nGMVvNC4tUGkMC/ZsenRA9NtrE89aS9UkuX8Cj9ryi+PPAHhSWVvTRHCZh0MwdA2u
+         oBGYfhJZ4akSbg2JsR+oSUkJEIxuIDhznsF2rdLXxXksFXHYG7pHCxc10iFgDrRQ3wNX
+         wjHMpAF1P6BeWXmpZ5wAFhZlt7pZUS7AdHo4gj5X2KVnDb3K4LQ/KIPv8n3QXpbqDxjc
+         It8gSytq0FHZbYgzemlQqLEvkL9nP+wc29UuxIoWnB69/uf7p2D6x/oXM9Fe6S8xxhhJ
+         Fdnw==
+X-Gm-Message-State: AOAM533JmT1VWJOKfBCzjyedqA40Sdj/lu3AMSEPTiFLbOu7amZSK5zP
+        ArweT0aJhdPK5rpT7g3DW3E=
+X-Google-Smtp-Source: ABdhPJyRY0j3v5h0gMb2ouP6F3Fqv+k/gqBodjtKLEk5TvrXajU1Vg9I6BQxypgv3Lhb10aG7J8BDw==
+X-Received: by 2002:a63:be0a:: with SMTP id l10mr22316301pgf.542.1642490805914;
+        Mon, 17 Jan 2022 23:26:45 -0800 (PST)
+Received: from dtor-ws.mtv.corp.google.com ([2620:15c:202:201:bf2e:59:5029:f4c5])
+        by smtp.gmail.com with ESMTPSA id y18sm11079816pfl.156.2022.01.17.23.26.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Jan 2022 23:26:44 -0800 (PST)
+From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To:     Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Cc:     Angela Czubak <acz@semihalf.com>, linux-input@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 09/12] HID: i2c-hid: rework i2c_hid_get_report() to use i2c_hid_xfer()
+Date:   Mon, 17 Jan 2022 23:26:25 -0800
+Message-Id: <20220118072628.1617172-10-dmitry.torokhov@gmail.com>
+X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
+In-Reply-To: <20220118072628.1617172-1-dmitry.torokhov@gmail.com>
+References: <20220118072628.1617172-1-dmitry.torokhov@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQKTrlzLhJbN5e22s0Ks3rGJhMIi0gCNReXFAo1zs98Cp4BzmQGZbeD4AaJ5xbYBhx1hmaqc71SA
-Content-Language: en-us
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrDJsWRmVeSWpSXmKPExsWy7bCmlu6q7GeJBhtP8Fhc//Kc1WL+kXOs
-        Fm+X7GK02Pj2B5PFpsfXWC0u75rDZjHj/D4mi7VH7rJbnPk3lcWide8RdovnfUCx4+8fM1ps
-        /v6X0YHXY1ZDL5vHzll32T2OXrnH6rFpVSebx51re9g8Ni+p9/h/Zy27R9+WVYwenzfJBXBG
-        ZdtkpCampBYppOYl56dk5qXbKnkHxzvHm5oZGOoaWlqYKynkJeam2iq5+AToumXmAN2tpFCW
-        mFMKFApILC5W0rezKcovLUlVyMgvLrFVSi1IySkwKdArTswtLs1L18tLLbEyNDAwMgUqTMjO
-        +Pqlh7Xgp0nF2vY+1gbGqZpdjJwcEgImEk877zJ3MXJxCAnsZpS4uewLO4TziVHi+NbJrBDO
-        Z0aJV/fOs8C03P5ylQUisYtR4sv2/1DOS0aJJd1NjCBVbAK6EjsWt7GB2CICWhJTN3wAW8Is
-        sIBZ4k3HfLAEp4C2xJVVp5lBbGEBL4mfd3+zgtgsAqoSK05uAFvHK2Ap0d1wjhnCFpQ4OfMJ
-        WJxZQF5i+9s5zBAnKUj8fLqMFWJZlETrx5WsEDXiEi+PHgF7SELgAYfE28b9TBANLhL9l46y
-        QtjCEq+Ob2GHsKUkXva3AdkcQHa2RM8uY4hwjcTSeceg3reXOHBlDgtICbOApsT6XfoQq/gk
-        en8/YYLo5JXoaBOCqFaVaH53FapTWmJidzfUUg+Jly07WSYwKs5C8tgsJI/NQvLALIRlCxhZ
-        VjFKphYU56anFpsWGOallsMjPDk/dxMjOFlree5gvPvgg94hRiYOxkOMEhzMSiK8x7ifJArx
-        piRWVqUW5ccXleakFh9iNAWG9kRmKdHkfGC+yCuJNzSxNDAxMzMzsTQ2M1QS5z2dviFRSCA9
-        sSQ1OzW1ILUIpo+Jg1OqgcmL/05zL59rs1DZ+dbemmXiO4+HRvZfWmWjOoH5kVwYo+5dycMn
-        Hb83bFZay7DeJ71U6HTfXLujic9/zr/GxDbj2dxLnUrno56svTThNKts1oTXLX7pm3Oub2U8
-        9OrLVxujI+dXlij/8D8rJMrqIZ4x0d0yu/9wfxZHxmLtI43flU69+XHM7ebqmPnWanl9bxkz
-        rr9+LMRrFXL42KTdbw1+Zs54HGuaOnWlzYyrF4OXFDWznS9jzrt1qcl5H19E0Z2ru/JnLlld
-        aWgyvVClM7U08fy20ryftbIpBjyJ12UnqLz4cEosvlekWfhLuFRJ8N6bJWpzHd48X3Sk0IY5
-        7HOYYPchb76DizKiFf1usCqxFGckGmoxFxUnAgCw6mfJXwQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrCIsWRmVeSWpSXmKPExsWy7bCSvO7K7GeJBgsPqllc//Kc1WL+kXOs
-        Fm+X7GK02Pj2B5PFpsfXWC0u75rDZjHj/D4mi7VH7rJbnPk3lcWide8RdovnfUCx4+8fM1ps
-        /v6X0YHXY1ZDL5vHzll32T2OXrnH6rFpVSebx51re9g8Ni+p9/h/Zy27R9+WVYwenzfJBXBG
-        cdmkpOZklqUW6dslcGV8/dLDWvDTpGJtex9rA+NUzS5GTg4JAROJ21+usnQxcnEICexglGjc
-        co0NIiEtcX3jBHYIW1hi5b/n7BBFzxklLrTvZwZJsAnoSuxY3AbWICKgJTF1wwdmkCJmgVXM
-        EmtvTYLquMQkcWbhO1aQKk4BbYkrq06DdQsLeEn8vPsbLM4ioCqx4uQGFhCbV8BSorvhHDOE
-        LShxcuYToDgH0FQ9ibaNjCBhZgF5ie1v5zBDXKcg8fPpMlaII6IkWj+uZIWoEZd4efQI+wRG
-        4VlIJs1CmDQLyaRZSDoWMLKsYpRMLSjOTc8tNiwwykst1ytOzC0uzUvXS87P3cQIjlgtrR2M
-        e1Z90DvEyMTBeIhRgoNZSYT3GPeTRCHelMTKqtSi/Pii0pzU4kOM0hwsSuK8F7pOxgsJpCeW
-        pGanphakFsFkmTg4pRqYrO+tP1qb6rnVKIvPJlrx9XdJhRvTp5gyzxe/Okdw62atL3tyX91k
-        OVG3/pvGum1hRlcbxP/+bGNW//ruV96796uPFzwzVt4yWbXz2et9xWYndlcs33pj5Q3zgBDu
-        9VfCvNfq1uvoZAj5LLr1rWlS1I/8YN0n4bNeGvlnFuwyu7bmj8OygjUR56ulk/Q6zA56skhv
-        qFpzQEws9Z6m2MJTf/fNdOTp/dNwtu/Ur7PsfHVN1SGHHKakx+eq58bO+vmjWf+kx2q17NMv
-        3F/v137ufDnJ9NDLsqfPI24kzHktEbLBYN+KFz/9lonPyhSw2hldvu2gy8437S12T8+EiTG3
-        vm1/96ZiaR1r3dO19iZNS5RYijMSDbWYi4oTASmEpy9HAwAA
-X-CMS-MailID: 20220118072633epcas5p484d86503f12b803cfb83cd20954b3626
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-CMS-TYPE: 105P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220116205940epcas5p3dbab01fb6bb7a4af76169231e6d94469
-References: <20220116165035.437274-1-henrik@grimler.se>
-        <20220116165035.437274-4-henrik@grimler.se>
-        <ca8c4613-a058-6cde-f9e6-8530f142a821@canonical.com>
-        <CGME20220116205940epcas5p3dbab01fb6bb7a4af76169231e6d94469@epcas5p3.samsung.com>
-        <YeSHNCywXhp8gHC7@L14.lan> <001301d80b66$190901a0$4b1b04e0$@samsung.com>
-        <YeWgNJaDHxKROpQs@grimlerstat>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Henrik
+Explicitly prepare command for i2c_hid_get_report() which makes the logic
+clearer and allows us to get rid of __i2c_hid_command() and related command
+definitions.
 
->-----Original Message-----
->From: Henrik Grimler [mailto:henrik@grimler.se]
->Sent: Monday, January 17, 2022 10:28 PM
->To: Alim Akhtar <alim.akhtar@samsung.com>
->Cc: 'Krzysztof Kozlowski' <krzysztof.kozlowski@canonical.com>;
->semen.protsenko@linaro.org; virag.david003@gmail.com;
->martin.juecker@gmail.com; cw00.choi@samsung.com;
->m.szyprowski@samsung.com; robh+dt@kernel.org;
->devicetree@vger.kernel.org; linux-samsung-soc@vger.kernel.org; linux-arm-
->kernel@lists.infradead.org; linux-kernel@vger.kernel.org;
->~postmarketos/upstreaming@lists.sr.ht
->Subject: Re: [PATCH v3 3/3] ARM: dts: Add support for Samsung Chagall WiFi
->
->Hi Alim,
->
->> >> > +/* External sdcard */
->> >> > +&mmc_2 {
->> >> > +	status = "okay";
->> >> > +	bus-width = <4>;
->> >> > +	cap-sd-highspeed;
->> >> > +	card-detect-delay = <200>;
->> >> > +	pinctrl-0 = <&sd2_clk &sd2_cmd &mmc2_cd &sd2_bus1
->&sd2_bus4>;
->> >> > +	pinctrl-names = "default";
->> >> > +	samsung,dw-mshc-ciu-div = <3>;
->> >> > +	samsung,dw-mshc-ddr-timing = <0 2>;
->> >> > +	samsung,dw-mshc-sdr-timing = <0 4>;
->> >> > +	sd-uhs-sdr50;
->> >> > +	vmmc-supply = <&ldo19_reg>;
->> >> > +	vqmmc-supply = <&ldo13_reg>;
->> >> > +};
->> >> > +
->> >> > +&pinctrl_0 {
->> >> > +	mmc2_cd: sd2-cd-pins {
->> >> > +		samsung,pins = "gpx2-4";
->> >>
->> >> Interesting... I looked at vendor sources to board-chagall and
->> >> standard pin gpc2-2 is mentioned as PULL down and not-connected
->> >comment.
->> >>
->> >> gpx2-4 seems not mentioned at all, unless other board files are
->> >> actually used.
->> >
->> >Gpio seems to be spread out. GPIO_T_FLASH_DETECT is defined as gpx2-4
->> >in board-universal5420-mmc.c, and then used for card detection.
->> >(Looking at it now again I see that write protection through sd2_wp
->> >should also be supported for mmc_2, can add that in next patch set.)
->> >
->> Card detect pin is generally a special function (dedicated pin) pin,
->> directly connected from SoC to card external slot.
->> And for exynos5420 it is gpc2-2 as pointed by Krzysztof.
->
->gpio/pinctrl is still not my area of expertise so your feedback is greatly
->appreciated!
->
->gpc2-2 does not seem to be the card-detect pin for these tablets.  If I add
->sd2_cd to pinctrl-0 above I am unable to use the sdcard at all, instead
-dmesg is
->filled with repeating messages like:
->
->[  18.669050] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req
->300000Hz, actual 297619HZ div = 84) [  18.703711] mmc_host mmc1: Bus speed
->(slot 0) = 50000000Hz (slot req 200000Hz, actual 200000HZ div = 125) [
->18.737167] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req
->100000Hz, actual 100000HZ div = 250) [  19.058352] mmc_host mmc1: Bus
->speed (slot 0) = 50000000Hz (slot req 400000Hz, actual 396825HZ div = 63) [
->19.093037] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req
->300000Hz, actual 297619HZ div = 84) [  19.127701] mmc_host mmc1: Bus speed
->(slot 0) = 50000000Hz (slot req 200000Hz, actual 200000HZ div = 125) [
->19.162380] mmc_host mmc1: Bus speed (slot 0) = 50000000Hz (slot req
->100000Hz, actual 100000HZ div = 250)
->
->gpx2-4 on the other hand switches state when an sdcard is inserted or
->removed.  After exporting relevant pins I have, with the card
->inserted:
->
-># grep -A 2 gpx2 /sys/kernel/debug/gpio
->gpiochip3: GPIOs 24-31, parent: platform/13400000.pinctrl, gpx2:
-> gpio-26  (                    |Power               ) in  hi IRQ ACTIVE LOW
-> gpio-28  (                    |sysfs               ) in  lo
->
->and when removed gpx2-4 changes to high:
->
->gpiochip3: GPIOs 24-31, parent: platform/13400000.pinctrl, gpx2:
-> gpio-26  (                    |Power               ) in  hi IRQ ACTIVE LOW
-> gpio-28  (                    |sysfs               ) in  hi
->
->All the gpc2 pins are low no matter if sdcard is inserted or removed:
->
->gpiochip7: GPIOs 56-62, parent: platform/13410000.pinctrl, gpc2:
-> gpio-56  (                    |sysfs               ) in  lo
-> gpio-57  (                    |sysfs               ) in  lo
-> gpio-58  (                    |sysfs               ) in  lo
-> gpio-59  (                    |sysfs               ) in  lo
-> gpio-60  (                    |sysfs               ) in  lo
-> gpio-61  (                    |sysfs               ) in  lo
-> gpio-62  (                    |sysfs               ) in  lo
->
->That being said, I am not sure if it is working properly:
->
->> Also PIN_FUNC_2 for gpx2-4 indicate that it is wakeup_int2 function.
->> Do you get a card detect interrupt when removing and inserting the
->> card to the card slot?
-> 
-This is the confirmation that this board does not uses gpc2-2 but gpx2-4. 
-Thanks for detailed log.
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+---
+ drivers/hid/i2c-hid/i2c-hid-core.c | 150 ++++++++++++-----------------
+ 1 file changed, 59 insertions(+), 91 deletions(-)
 
->(What is the best way to check this?) I don't get any irq related messages
-in
-
-Probably if you are interested, you can enable few debug in dw-mmc driver to
-check a message like "card is present" etc.
-
->dmesg, and I don't see any changes in /proc/interrupts if tracked with
->something like `watch -n1 "cat /proc/interrupts"` when card is removed or
->inserted, so seems likely that pin config is wrong.
->All I can find in vendor kernel for this device is that pull config is set
-to
->S3C_GPIO_PULL_NONE [1].  For some of the sibling tablets the pin is
->configured as {S3C_GPIO_INPUT, GPIO_LV_N, S3C_GPIO_PULL_NONE} [2]
->though, which I think should correspond to having:
->
->mmc2_cd: mmc2-cd-pins {
->  samsung,pins = "gpx2-4";
->  samsung,pin-function = <EXYNOS_PIN_FUNC_INPUT>;
->  samsung,pin-pud = <EXYNOS_PIN_PULL_NONE>;
->  samsung,pin-drv = <EXYNOS5420_PIN_DRV_LV3>; };
->
->Changing to that does not seem to change anything though, I don't get any
->interrupt, or any messages in dmesg, when inserting or removing the sdcard.
->
->> Also to avoid confusion, probably you can change the node name as
->"mmc2_cd:
->> mmc2-cd-pins"
->> (as sd2-cd-pins is gpc2-2 for this SoC)
->
->Thanks, will fix in a v4 (after discussions here are settled).
->
-I am convinced that gpc2-2 is not used for card detect for this board.
-So no other query on this patch.
-Thanks
-
->[1] https://protect2.fireeye.com/v1/url?k=bba823ae-dad5cbe9-bba9a8e1-
->74fe485fff30-b4ccbbe9776f501d&q=1&e=9951c78c-16c8-449e-913b-
->d4d1f1f9bb6b&u=https%3A%2F%2Fgithub.com%2Fexynos5420%2Fandroid_k
->ernel_samsung_exynos5420%2Fblob%2Flineage-
->17.1%2Farch%2Farm%2Fmach-exynos%2Fboard-universal5420-
->mmc.c%23L388
->[2] https://protect2.fireeye.com/v1/url?k=97465c6e-f63bb429-9747d721-
->74fe485fff30-4111389a6d2b68b4&q=1&e=9951c78c-16c8-449e-913b-
->d4d1f1f9bb6b&u=https%3A%2F%2Fgithub.com%2Fexynos5420%2Fandroid_k
->ernel_samsung_exynos5420%2Fblob%2Flineage-
->17.1%2Farch%2Farm%2Fmach-exynos%2Fboard-n1-gpio.c%23L119
->
->Best regards,
->Henrik Grimler
+diff --git a/drivers/hid/i2c-hid/i2c-hid-core.c b/drivers/hid/i2c-hid/i2c-hid-core.c
+index 1515fc892e61..433b6692f277 100644
+--- a/drivers/hid/i2c-hid/i2c-hid-core.c
++++ b/drivers/hid/i2c-hid/i2c-hid-core.c
+@@ -94,29 +94,6 @@ struct i2c_hid_desc {
+ 	__le32 reserved;
+ } __packed;
+ 
+-struct i2c_hid_cmd {
+-	unsigned int registerIndex;
+-	__u8 opcode;
+-	unsigned int length;
+-};
+-
+-#define I2C_HID_CMD(opcode_) \
+-	.opcode = opcode_, .length = 4, \
+-	.registerIndex = offsetof(struct i2c_hid_desc, wCommandRegister)
+-
+-/* commands */
+-static const struct i2c_hid_cmd hid_get_report_cmd =	{ I2C_HID_CMD(0x02) };
+-
+-/*
+- * These definitions are not used here, but are defined by the spec.
+- * Keeping them here for documentation purposes.
+- *
+- * static const struct i2c_hid_cmd hid_get_idle_cmd = { I2C_HID_CMD(0x04) };
+- * static const struct i2c_hid_cmd hid_set_idle_cmd = { I2C_HID_CMD(0x05) };
+- * static const struct i2c_hid_cmd hid_get_protocol_cmd = { I2C_HID_CMD(0x06) };
+- * static const struct i2c_hid_cmd hid_set_protocol_cmd = { I2C_HID_CMD(0x07) };
+- */
+-
+ /* The main device structure */
+ struct i2c_hid {
+ 	struct i2c_client	*client;	/* i2c client */
+@@ -258,52 +235,62 @@ static size_t i2c_hid_encode_command(u8 *buf, u8 opcode,
+ 	return length;
+ }
+ 
+-static int __i2c_hid_command(struct i2c_hid *ihid,
+-		const struct i2c_hid_cmd *command, u8 reportID,
+-		u8 reportType, u8 *args, int args_len,
+-		unsigned char *buf_recv, int data_len)
++static int i2c_hid_get_report(struct i2c_hid *ihid,
++			      u8 report_type, u8 report_id,
++			      u8 *recv_buf, size_t recv_len)
+ {
+-	int length = command->length;
+-	unsigned int registerIndex = command->registerIndex;
+-
+-	ihid->cmdbuf[0] = ihid->hdesc_buffer[registerIndex];
+-	ihid->cmdbuf[1] = ihid->hdesc_buffer[registerIndex + 1];
++	size_t length = 0;
++	size_t ret_count;
++	int error;
+ 
+-	if (length > 2) {
+-		length = sizeof(__le16) + /* register */
+-			 i2c_hid_encode_command(ihid->cmdbuf + sizeof(__le16),
+-						command->opcode,
+-						reportType, reportID);
+-	}
++	i2c_hid_dbg(ihid, "%s\n", __func__);
+ 
+-	memcpy(ihid->cmdbuf + length, args, args_len);
+-	length += args_len;
++	/* Command register goes first */
++	*(__le16 *)ihid->cmdbuf = ihid->hdesc.wCommandRegister;
++	length += sizeof(__le16);
++	/* Next is GET_REPORT command */
++	length += i2c_hid_encode_command(ihid->cmdbuf + length,
++					 I2C_HID_OPCODE_GET_REPORT,
++					 report_type, report_id);
++	/*
++	 * Device will send report data through data register. Because
++	 * command can be either 2 or 3 bytes destination for the data
++	 * register may be not aligned.
++	 */
++	put_unaligned_le16(le16_to_cpu(ihid->hdesc.wDataRegister),
++			   ihid->cmdbuf + length);
++	length += sizeof(__le16);
+ 
+-	return i2c_hid_xfer(ihid, ihid->cmdbuf, length, buf_recv, data_len);
+-}
++	/*
++	 * In addition to report data device will supply data length
++	 * in the first 2 bytes of the response, so adjust .
++	 */
++	error = i2c_hid_xfer(ihid, ihid->cmdbuf, length,
++			     ihid->rawbuf, recv_len + sizeof(__le16));
++	if (error) {
++		dev_err(&ihid->client->dev,
++			"failed to set a report to device: %d\n", error);
++		return error;
++	}
+ 
+-static int i2c_hid_get_report(struct i2c_hid *ihid, u8 reportType,
+-		u8 reportID, unsigned char *buf_recv, int data_len)
+-{
+-	u8 args[2];
+-	int ret;
+-	int args_len = 0;
+-	u16 readRegister = le16_to_cpu(ihid->hdesc.wDataRegister);
++	/* The buffer is sufficiently aligned */
++	ret_count = le16_to_cpup((__le16 *)ihid->rawbuf);
+ 
+-	i2c_hid_dbg(ihid, "%s\n", __func__);
++	/* Check for empty report response */
++	if (ret_count <= sizeof(__le16))
++		return 0;
+ 
+-	args[args_len++] = readRegister & 0xFF;
+-	args[args_len++] = readRegister >> 8;
++	recv_len = min(recv_len, ret_count - sizeof(__le16));
++	memcpy(recv_buf, ihid->rawbuf + sizeof(__le16), recv_len);
+ 
+-	ret = __i2c_hid_command(ihid, &hid_get_report_cmd, reportID,
+-		reportType, args, args_len, buf_recv, data_len);
+-	if (ret) {
++	if (report_id && recv_len != 0 && recv_buf[0] != report_id) {
+ 		dev_err(&ihid->client->dev,
+-			"failed to retrieve report from device.\n");
+-		return ret;
++			"device returned incorrect report (%d vs %d expected)\n",
++			recv_buf[0], report_id);
++		return -EINVAL;
+ 	}
+ 
+-	return 0;
++	return recv_len;
+ }
+ 
+ static size_t i2c_hid_format_report(u8 *buf, int report_id,
+@@ -651,13 +638,12 @@ static int i2c_hid_alloc_buffers(struct i2c_hid *ihid, size_t report_size)
+ }
+ 
+ static int i2c_hid_get_raw_report(struct hid_device *hid,
+-		unsigned char report_number, __u8 *buf, size_t count,
+-		unsigned char report_type)
++				  u8 report_type, u8 report_id,
++				  u8 *buf, size_t count)
+ {
+ 	struct i2c_client *client = hid->driver_data;
+ 	struct i2c_hid *ihid = i2c_get_clientdata(client);
+-	size_t ret_count, ask_count;
+-	int ret;
++	int ret_count;
+ 
+ 	if (report_type == HID_OUTPUT_REPORT)
+ 		return -EINVAL;
+@@ -667,42 +653,24 @@ static int i2c_hid_get_raw_report(struct hid_device *hid,
+ 	 * not have the report ID that the upper layers expect, so we need
+ 	 * to stash it the buffer ourselves and adjust the data size.
+ 	 */
+-	if (!report_number) {
++	if (!report_id) {
+ 		buf[0] = 0;
+ 		buf++;
+ 		count--;
+ 	}
+ 
+-	/* +2 bytes to include the size of the reply in the query buffer */
+-	ask_count = min(count + 2, (size_t)ihid->bufsize);
+-
+-	ret = i2c_hid_get_report(ihid,
++	ret_count = i2c_hid_get_report(ihid,
+ 			report_type == HID_FEATURE_REPORT ? 0x03 : 0x01,
+-			report_number, ihid->rawbuf, ask_count);
+-
+-	if (ret < 0)
+-		return ret;
+-
+-	ret_count = ihid->rawbuf[0] | (ihid->rawbuf[1] << 8);
+-
+-	if (ret_count <= 2)
+-		return 0;
+-
+-	ret_count = min(ret_count, ask_count);
+-
+-	/* The query buffer contains the size, dropping it in the reply */
+-	count = min(count, ret_count - 2);
+-	memcpy(buf, ihid->rawbuf + 2, count);
++			report_id, buf, count);
+ 
+-	if (!report_number)
+-		count++;
++	if (ret_count > 0 && !report_id)
++		ret_count++;
+ 
+-	return count;
++	return ret_count;
+ }
+ 
+-static int i2c_hid_output_raw_report(struct hid_device *hid,
+-				     const u8 *buf, size_t count,
+-				     u8 report_type, bool do_set)
++static int i2c_hid_output_raw_report(struct hid_device *hid, u8 report_type,
++				     const u8 *buf, size_t count, bool do_set)
+ {
+ 	struct i2c_client *client = hid->driver_data;
+ 	struct i2c_hid *ihid = i2c_get_clientdata(client);
+@@ -735,7 +703,7 @@ static int i2c_hid_output_raw_report(struct hid_device *hid,
+ 
+ static int i2c_hid_output_report(struct hid_device *hid, u8 *buf, size_t count)
+ {
+-	return i2c_hid_output_raw_report(hid, buf, count, HID_OUTPUT_REPORT,
++	return i2c_hid_output_raw_report(hid, HID_OUTPUT_REPORT, buf, count,
+ 					 false);
+ }
+ 
+@@ -745,11 +713,11 @@ static int i2c_hid_raw_request(struct hid_device *hid, unsigned char reportnum,
+ {
+ 	switch (reqtype) {
+ 	case HID_REQ_GET_REPORT:
+-		return i2c_hid_get_raw_report(hid, reportnum, buf, len, rtype);
++		return i2c_hid_get_raw_report(hid, rtype, reportnum, buf, len);
+ 	case HID_REQ_SET_REPORT:
+ 		if (buf[0] != reportnum)
+ 			return -EINVAL;
+-		return i2c_hid_output_raw_report(hid, buf, len, rtype, true);
++		return i2c_hid_output_raw_report(hid, rtype, buf, len, true);
+ 	default:
+ 		return -EIO;
+ 	}
+-- 
+2.34.1.703.g22d0c6ccf7-goog
 
