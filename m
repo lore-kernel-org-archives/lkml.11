@@ -2,96 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B232C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 19:54:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8522C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 19:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245576AbiARTy2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 14:54:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48154 "EHLO
+        id S245715AbiARTye (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 14:54:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245187AbiARTyO (ORCPT
+        with ESMTP id S1348974AbiARTyT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 14:54:14 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D1C5C06173E;
-        Tue, 18 Jan 2022 11:54:14 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id c3so25439442pls.5;
-        Tue, 18 Jan 2022 11:54:14 -0800 (PST)
+        Tue, 18 Jan 2022 14:54:19 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59487C06161C
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 11:54:18 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id e3so72436091lfc.9
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 11:54:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=eNrUscqw42vLCLOdKXjI6TJU5eZpO8qMPR9+8nKvO3Q=;
-        b=kO/gnSMVnrPVYeFCn5YxhGGu9m4tsz2aQGARdUmcxVy/BZweaFos0DQUxJLsuaHfW5
-         syVVuyzN8Au7CK/+nrMCDV3e2SMt26rDMJdibWWI/FdI5wvVwTGhRYGO9mj9uzWC2DRt
-         3umPsyOBnglQ4XC/+IMdeL49245F1MnHwHKzWPTUSkaUCZf2nnwcgpL2oxuzf4VJhaZx
-         3LKfS4E9r0i8SlyywxQLILxBgS3gM0u+v+wRu/xeSek3bN3raOuXVPdzaxDGWuNePbGc
-         LXfaZafRKiyiGg37l/bNM+Ug9FK/EpikrEnl1jwwRy/tOtD/GrYNqn/pquHm4Olzri6w
-         L82Q==
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hLG3IDzGCmMuTJ6Lo7fCzvTJqI3hQH1J7qtya62FFTI=;
+        b=FBf0wEoEZmYrfY/6yOjBzgydEx8VKqwZ8Ch024JkOhYKPMTXZB+t8YyjAURKEhqryK
+         JN+VJ2NZigyahygOqJOGPDF/OmkyCI4BjOvNzGmnDmAfzUJVOodUutd9oqYw1AllHdEd
+         jACTBytbhyPlqIQ4hYKIl96SBtUPCZix9Gbo0MUlRZmWis8a8xywWSmu3m6i+kmjrmuz
+         t4LICgPw4Tb3O17gcn5o7I176EivuuydQKXTKooOxhMHJ94PoDUAxJuZYnigi201uoXq
+         7f9XQQBHzAOvBB4PpEeWDjfOnw/UTG4F5Y5Dz6c3yFfHoq8npWj/4KkzcseYO1x+G1bE
+         RXpg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=eNrUscqw42vLCLOdKXjI6TJU5eZpO8qMPR9+8nKvO3Q=;
-        b=4rkmOFf5mIDbSdhHeb8Xk3Ow1cz7fWwM/yekVwh92B/PViMAiW1PRv1RHDgcTH/8dL
-         kX9IS/N3dCU1o8Brm5xtPxkdlRiKjObBcMOHvCdzcC0Ec3WOs7ns4hK36bpDxvhf8Wpk
-         wWD0VPvbRssR9QjrXx+99NQ088dut9LNOvSfG38z/CIlu8cV1L3pqozNdpKR5mkRg9jf
-         qwJ/TcMNRx7zYyWvGfHLg+OUyelRKEwyXRa0EqCpIY+wWohitHDkpEvNRkHMN1Lb9B65
-         IfjjlLZPvLFHSIb9vmBfRREeO9whQNet7lavTjWhoOS/YWjyWbF44FQa51dq+07UEZgB
-         ecLQ==
-X-Gm-Message-State: AOAM531Q1VZsgH1b2hNwCv/ay1Mib1DcbYpvuDDscvdo++ZCTPaZ4Q+q
-        vmHCxF+453NOjg21g2P9fm0rAlN2IeM=
-X-Google-Smtp-Source: ABdhPJzNy8j7oUotixQfP2cRtqQ46pbEnG7KjFTrVX4VgsXlz7zwiyDUd2ndaGNRAbzuiI7yKnQeGg==
-X-Received: by 2002:a17:902:aa84:b0:149:711b:258f with SMTP id d4-20020a170902aa8400b00149711b258fmr28872735plr.170.1642535653754;
-        Tue, 18 Jan 2022 11:54:13 -0800 (PST)
-Received: from [10.67.48.245] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id g2sm19258083pfc.54.2022.01.18.11.54.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Jan 2022 11:54:13 -0800 (PST)
-Subject: Re: [PATCH 5.16 00/28] 5.16.2-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        stable@vger.kernel.org
-References: <20220118160452.384322748@linuxfoundation.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <72179daf-7242-bff3-9a1c-ae3e11a95dcb@gmail.com>
-Date:   Tue, 18 Jan 2022 11:54:11 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hLG3IDzGCmMuTJ6Lo7fCzvTJqI3hQH1J7qtya62FFTI=;
+        b=Sj8UQeDtF4EsidrHtxQ5vCn1C+k33Yskta2VSjILXbFJvyfBpNwjEK3N6NhhZNzlsJ
+         VJQ2ZxlOQTADx2QRZ28f7foyt6wcdpGytDmG8OIQdr6Z4raKslZXa4HqfyO6bn6Khp0L
+         N7P4FuEZ54FbuSp/K5NIuWplQMvxuzFeEcyxB3XHIo38+yGsqDTBCa5QTxmsSwPaE9bA
+         aSQfrXPKSlArZ7A/XHHbf8/iD8tvZRbYXumQnHahePNOQC93LW9xTZafZj+KFG7qtEYm
+         ZBZyBvCfcULa/2uArqQt5CUuCUHmYB7pS8UdjBpoA8VIhpSl1UAE1X+uBMQlig/DFPFz
+         54dw==
+X-Gm-Message-State: AOAM530jO+5a+4PC9ifYBZJ/RHdcIAetxYsaju5vrkMx5vxuMSN5ojkE
+        m+3F12ovZ+gBTbGJ+NXy0Ym2OYwhWw8U4WMHxk7uow==
+X-Google-Smtp-Source: ABdhPJy85EozpNsEzXaqWw1SJGpLYcfi+KrRxRAWUx2xP8iVyiAyVo7E1yNxSzwYpnYpYkYmWzOAwckjZixuHl9F+YM=
+X-Received: by 2002:a2e:9093:: with SMTP id l19mr20391335ljg.231.1642535655048;
+ Tue, 18 Jan 2022 11:54:15 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220118160452.384322748@linuxfoundation.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20211222225350.1912249-1-vipinsh@google.com> <YctGtWzYcNP2iTaN@google.com>
+In-Reply-To: <YctGtWzYcNP2iTaN@google.com>
+From:   Vipin Sharma <vipinsh@google.com>
+Date:   Tue, 18 Jan 2022 11:53:39 -0800
+Message-ID: <CAHVum0czVQqugNs4BhwJpUx-+f6GZQHFRkTpH01Mmsu0FXSd+w@mail.gmail.com>
+Subject: Re: [PATCH v2] KVM: Move VM's worker kthreads back to the original
+ cgroups before exiting.
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     pbonzini@redhat.com, tj@kernel.org, lizefan.x@bytedance.com,
+        hannes@cmpxchg.org, dmatlack@google.com, jiangshanlai@gmail.com,
+        kvm@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/18/22 8:05 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.16.2 release.
-> There are 28 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 20 Jan 2022 16:04:42 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.2-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
+On Tue, Dec 28, 2021 at 9:17 AM Sean Christopherson <seanjc@google.com> wrote:
+>
+> On Wed, Dec 22, 2021, Vipin Sharma wrote:
+> > diff --git a/kernel/cgroup/cgroup-v1.c b/kernel/cgroup/cgroup-v1.c
+> > index 81c9e0685948..81d4b2f2acf0 100644
+> > --- a/kernel/cgroup/cgroup-v1.c
+> > +++ b/kernel/cgroup/cgroup-v1.c
+> >  int cgroup_attach_task_all(struct task_struct *from, struct task_struct *tsk)
+> > @@ -58,6 +60,9 @@ int cgroup_attach_task_all(struct task_struct *from, struct task_struct *tsk)
+> >       struct cgroup_root *root;
+> >       int retval = 0;
+> >
+> > +     if (!from)
+> > +             from = kthreadd_task;
+>
+> Rather than sully cgroup_attach_task_all() with this behavior, can't KVM do
+>
+>         cgroup_attach_task_all(current->real_parent, current)
+>
+> since AFAICT real_parent is guaranteed to point at kthreadd_task.
+>
 
-On ARCH_BRCMSTB using 32-bit and 64-bit ARM kernels:
+Thanks for the "real_parent" suggestion. This is much cleaner and
+better than changing cgroup logic. I will make this change.
 
-Tested-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+> > diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+> > index b0f7e6eb00ff..f7504578c374 100644
+> > --- a/virt/kvm/kvm_main.c
+> > +++ b/virt/kvm/kvm_main.c
+> > @@ -5793,6 +5793,19 @@ static int kvm_vm_worker_thread(void *context)
+> >       if (!kthread_should_stop())
+> >               err = thread_fn(kvm, data);
+> >
+> > +out:
+> > +     /*
+> > +      * We need to move the kthread back to its original cgroups, so that it
+>
+> Please state what is being done, not what "needs" to be done.  The need to do
+> something is implicit, otherwise we wouldn't be doing it.
+>
+
+I will update the statement. Thanks.
+
+> > +      * doesn't linger in the cgroups of the user process after the user
+> > +      * process has already terminated.
+> > +      *
+> > +      * kthread_stop() waits on 'exited' completion condition which is set
+> > +      * in exit_mm(), via mm_release(), in do_exit(). However, kthread
+> > +      * is removed from cgroups in the cgroup_exit() which is called after
+> > +      * exit_mm(). This causes lingering of kthreads in cgroups after main
+> > +      * VM process has finished.
+> > +      */
+> > +     WARN_ON(cgroup_attach_task_all(NULL, current));
+>
+> This should not WARN, cgroup_attach_task_all() needs to perform allocations and
+> will fail with -ENOMEM even in the absense of kernel bugs.
+>
+
+I will remove WARN_ON and print an error using kvm_err(), it will be
+similar to the earlier call of cgroup_attach_task_all() in the same
+function.
+
+Thanks
