@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52996C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:57:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D5AFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:57:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350165AbiARC5h (ORCPT
+        id S1350183AbiARC5j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:57:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348506AbiARCpc (ORCPT
+        Mon, 17 Jan 2022 21:57:39 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35086 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348529AbiARCpg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:45:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E15C08EBAF;
-        Mon, 17 Jan 2022 18:38:16 -0800 (PST)
+        Mon, 17 Jan 2022 21:45:36 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 41A38612CE;
-        Tue, 18 Jan 2022 02:38:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F55DC36AF3;
-        Tue, 18 Jan 2022 02:38:14 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 452F860AB1;
+        Tue, 18 Jan 2022 02:45:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 489CDC36AEB;
+        Tue, 18 Jan 2022 02:45:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473495;
-        bh=HhDQ5gUAkE/Ixxh28y5d77/aIlgKWeORJlSTctk8v88=;
+        s=k20201202; t=1642473934;
+        bh=42VGfcpCsuLzDqmi2gYeSLUCwjK3nu0k10kgmKeHXME=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RwuG33M/eo3e4uoBwVs6MFBTfRpSqzEgsk60sXt/SRl90+Pn54TeLunnAlr7OMbOY
-         msuZeyo/rqqNeAK/gQiBBwiE4evxIYtOgfHsmCG/6WBIHpSwZlM8QIyozm/0uApMZf
-         UO6Y+kV41vhQYSszo/LNYdHibaltSY9NSmevx828F6cjvujW7hWuh97+HIQ15/z+MT
-         aimeovH1RcsTjXNJzW0Le5jU2x0w4lEAjMTp1nJlrReJAQANB0b2oQVMTXzH69LoVO
-         xmsEBsWzpOp1JlBXdM9UrK74WLEXDKQ7fHS9AiDJIapdVKFrWXs1Usm/AuzWUzDVxU
-         jIG03+oeX9UbQ==
+        b=hMLdkRc7wvDeCxyDwmyuVJ8yT6KMWXcw+X/jczQYFLF0uipTITzn1Fsepx/SxPs+T
+         X0HgvIUZINrCD2q4SGsVs3nLjLJjSrFq+ivWpJsQhLZJ6Z+xLwIlTn28Qovmqgdm/U
+         Lla49EtBQy8f/enQkTd7vpS9pZcYtmnb481du/cqQYVR+90VK3zKRrz/O2UlIfxrna
+         txaeOfG7iLT5Zm0FWV9DGvl4wKZIiK1eYMxmLqzNfpTpN16hSlyUxOwqQPNYdPiVzR
+         zRJsR38sX7+j87PIRLcB3jAl0qg0o+qZXNqafqBIxslefbvj0L/WaMycWmTfzosC7I
+         37PJP5jIQLwrA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Po-Hao Huang <phhuang@realtek.com>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        tony0620emma@gmail.com, davem@davemloft.net, kuba@kernel.org,
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Maximilian Ernestus <maximilian@ernestus.de>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org,
+        mordechay.goodstein@intel.com, miriam.rachel.korenblit@intel.com,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 136/188] rtw88: 8822c: update rx settings to prevent potential hw deadlock
-Date:   Mon, 17 Jan 2022 21:31:00 -0500
-Message-Id: <20220118023152.1948105-136-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 28/73] iwlwifi: mvm: synchronize with FW after multicast commands
+Date:   Mon, 17 Jan 2022 21:43:47 -0500
+Message-Id: <20220118024432.1952028-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
+References: <20220118024432.1952028-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,77 +54,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Po-Hao Huang <phhuang@realtek.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit c1afb26727d9e507d3e17a9890e7aaf7fc85cd55 ]
+[ Upstream commit db66abeea3aefed481391ecc564fb7b7fb31d742 ]
 
-These settings enables mac to detect and recover when rx fifo
-circuit deadlock occurs. Previous version missed this, so we fix it.
+If userspace installs a lot of multicast groups very quickly, then
+we may run out of command queue space as we send the updates in an
+asynchronous fashion (due to locking concerns), and the CPU can
+create them faster than the firmware can process them. This is true
+even when mac80211 has a work struct that gets scheduled.
 
-Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20211217012708.8623-1-pkshih@realtek.com
+Fix this by synchronizing with the firmware after sending all those
+commands - outside of the iteration we can send a synchronous echo
+command that just has the effect of the CPU waiting for the prior
+asynchronous commands to finish. This also will cause fewer of the
+commands to be sent to the firmware overall, because the work will
+only run once when rescheduled multiple times while it's running.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=213649
+Suggested-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Reported-by: Maximilian Ernestus <maximilian@ernestus.de>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211204083238.51aea5b79ea4.I88a44798efda16e9fe480fb3e94224931d311b29@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtw88/main.c     | 2 +-
- drivers/net/wireless/realtek/rtw88/rtw8821c.h | 2 +-
- drivers/net/wireless/realtek/rtw88/rtw8822b.c | 2 +-
- drivers/net/wireless/realtek/rtw88/rtw8822c.c | 2 +-
- 4 files changed, 4 insertions(+), 4 deletions(-)
+ .../net/wireless/intel/iwlwifi/mvm/mac80211.c   | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
-index 6bb55e663fc36..69512856bb462 100644
---- a/drivers/net/wireless/realtek/rtw88/main.c
-+++ b/drivers/net/wireless/realtek/rtw88/main.c
-@@ -1859,7 +1859,7 @@ int rtw_core_init(struct rtw_dev *rtwdev)
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+index c942255aa1dbc..29ad7804d77aa 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
+@@ -1696,6 +1696,7 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
+ 	struct iwl_mvm_mc_iter_data iter_data = {
+ 		.mvm = mvm,
+ 	};
++	int ret;
  
- 	/* default rx filter setting */
- 	rtwdev->hal.rcr = BIT_APP_FCS | BIT_APP_MIC | BIT_APP_ICV |
--			  BIT_HTC_LOC_CTRL | BIT_APP_PHYSTS |
-+			  BIT_PKTCTL_DLEN | BIT_HTC_LOC_CTRL | BIT_APP_PHYSTS |
- 			  BIT_AB | BIT_AM | BIT_APM;
+ 	lockdep_assert_held(&mvm->mutex);
  
- 	ret = rtw_load_firmware(rtwdev, RTW_NORMAL_FW);
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.h b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
-index 112faa60f653e..d9fbddd7b0f35 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8821c.h
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
-@@ -131,7 +131,7 @@ _rtw_write32s_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u32 data)
- #define WLAN_TX_FUNC_CFG2		0x30
- #define WLAN_MAC_OPT_NORM_FUNC1		0x98
- #define WLAN_MAC_OPT_LB_FUNC1		0x80
--#define WLAN_MAC_OPT_FUNC2		0x30810041
-+#define WLAN_MAC_OPT_FUNC2		0xb0810041
+@@ -1705,6 +1706,22 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
+ 	ieee80211_iterate_active_interfaces_atomic(
+ 		mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
+ 		iwl_mvm_mc_iface_iterator, &iter_data);
++
++	/*
++	 * Send a (synchronous) ech command so that we wait for the
++	 * multiple asynchronous MCAST_FILTER_CMD commands sent by
++	 * the interface iterator. Otherwise, we might get here over
++	 * and over again (by userspace just sending a lot of these)
++	 * and the CPU can send them faster than the firmware can
++	 * process them.
++	 * Note that the CPU is still faster - but with this we'll
++	 * actually send fewer commands overall because the CPU will
++	 * not schedule the work in mac80211 as frequently if it's
++	 * still running when rescheduled (possibly multiple times).
++	 */
++	ret = iwl_mvm_send_cmd_pdu(mvm, ECHO_CMD, 0, 0, NULL);
++	if (ret)
++		IWL_ERR(mvm, "Failed to synchronize multicast groups update\n");
+ }
  
- #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
- 			(WLAN_SIFS_OFDM_CONT_TX << BIT_SHIFT_SIFS_OFDM_CTX) | \
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822b.c b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
-index f1789155e9016..247f26e3e8192 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8822b.c
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
-@@ -204,7 +204,7 @@ static void rtw8822b_phy_set_param(struct rtw_dev *rtwdev)
- #define WLAN_TX_FUNC_CFG2		0x30
- #define WLAN_MAC_OPT_NORM_FUNC1		0x98
- #define WLAN_MAC_OPT_LB_FUNC1		0x80
--#define WLAN_MAC_OPT_FUNC2		0x30810041
-+#define WLAN_MAC_OPT_FUNC2		0xb0810041
- 
- #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
- 			(WLAN_SIFS_OFDM_CONT_TX << BIT_SHIFT_SIFS_OFDM_CTX) | \
-diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822c.c b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-index f3ad079967a68..bc87e3cb9cdce 100644
---- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-+++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
-@@ -1962,7 +1962,7 @@ static void rtw8822c_phy_set_param(struct rtw_dev *rtwdev)
- #define WLAN_TX_FUNC_CFG2		0x30
- #define WLAN_MAC_OPT_NORM_FUNC1		0x98
- #define WLAN_MAC_OPT_LB_FUNC1		0x80
--#define WLAN_MAC_OPT_FUNC2		0x30810041
-+#define WLAN_MAC_OPT_FUNC2		0xb0810041
- #define WLAN_MAC_INT_MIG_CFG		0x33330000
- 
- #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
+ static u64 iwl_mvm_prepare_multicast(struct ieee80211_hw *hw,
 -- 
 2.34.1
 
