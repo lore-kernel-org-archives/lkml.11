@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 625DCC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53490C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346802AbiARCj4 (ORCPT
+        id S1346775AbiARCjw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:39:56 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52298 "EHLO
+        Mon, 17 Jan 2022 21:39:52 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52160 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344852AbiARCfE (ORCPT
+        with ESMTP id S1344569AbiARCez (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:35:04 -0500
+        Mon, 17 Jan 2022 21:34:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F0120611D6;
-        Tue, 18 Jan 2022 02:35:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54D8FC36AE3;
-        Tue, 18 Jan 2022 02:35:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A2ED3611E2;
+        Tue, 18 Jan 2022 02:34:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C0D5C36AF2;
+        Tue, 18 Jan 2022 02:34:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473303;
-        bh=6ftHw2PhpvyqVOJfiLYzxPb74sRaD6npgzQ7/f5plLI=;
+        s=k20201202; t=1642473294;
+        bh=udChFAOK6Mu/2axyC3InlsNabDd0Alqgds7LNRaJXn0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Alz6ds3MtNrwN+jO2q2nyHTJQmqRWOHdI51ZZn5fZDxNpWYjqeWbPt7XTVMisKmND
-         qHZpDY8xBspZlDp8RHoUs81tu6CTUUlb6LPEEMBDTXdzYuX4MAoi//gHJiPZolS2XL
-         Psi1+8YwESGWF404gJRxquvn+62BuycT5SuEwiUg24Fe0AtR5SvQuLRTGmMCCBKZ1f
-         V6L6jieQY62KOo00movX+J57EYnJ2DEDc0WFOPEs/CFP4qqy8NHH0allKHFjJdD2VS
-         NKvcu7HwhPSXDD/scbIPibgY8oYYFpk0Rh+ys0Ki1IBm1CYEC/4EOzrcm3XjVGutu/
-         z5AXGFYE+oW1Q==
+        b=l9gxMXQCUqEkVGq2XMwV461pll2SJ2rOr7h2eVDB7hXseT7g0GHtNI3dV3z2LGVY/
+         RAW1akmxF8cxOh3c0aNMNdfHUGbzHSA+3KMIEyVMHG6DmxOWfKqUiQpjkcX1Tr1NWv
+         x3ozcH6ASOtjlakXrVzGzsVvHmu6eoGhsw9w6A7kKUJW56Gmk7l/NQvDi3sqly88bv
+         u8CHOxHtasfn4RWMcTGpkLScfAIp3JaScr+h0wgfz5r1REdwWflf7JbbYJcaY1fVh7
+         1Gtq6jNXMbv346sy5PK6c9sfsVET7dpMSbHwiPaQRSn/lVdSztr5EopkenUSyf8WWm
+         gpy6EYQPcpYjg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fugang Duan <fugang.duan@nxp.com>, Sherry Sun <sherry.sun@nxp.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        shawnguo@kernel.org, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 059/188] tty: serial: imx: disable UCR4_OREN in .stop_rx() instead of .shutdown()
-Date:   Mon, 17 Jan 2022 21:29:43 -0500
-Message-Id: <20220118023152.1948105-59-sashal@kernel.org>
+Cc:     Danielle Ratson <danieller@nvidia.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, petrm@nvidia.com,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 055/188] mlxsw: pci: Add shutdown method in PCI driver
+Date:   Mon, 17 Jan 2022 21:29:39 -0500
+Message-Id: <20220118023152.1948105-55-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -51,67 +52,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fugang Duan <fugang.duan@nxp.com>
+From: Danielle Ratson <danieller@nvidia.com>
 
-[ Upstream commit 028e083832b06fdeeb290e1e57dc1f6702c4c215 ]
+[ Upstream commit c1020d3cf4752f61a6a413f632ea2ce2370e150d ]
 
-The UCR4_OREN should be disabled before disabling the uart receiver in
-.stop_rx() instead of in the .shutdown().
+On an arm64 platform with the Spectrum ASIC, after loading and executing
+a new kernel via kexec, the following trace [1] is observed. This seems
+to be caused by the fact that the device is not properly shutdown before
+executing the new kernel.
 
-Otherwise, if we have the overrun error during the receiver disable
-process, the overrun interrupt will keep trigging until we disable the
-OREN interrupt in the .shutdown(), because the ORE status can only be
-cleared when read the rx FIFO or reset the controller.  Although the
-called time between the receiver disable and OREN disable in .shutdown()
-is very short, there is still the risk of endless interrupt during this
-short period of time. So here change to disable OREN before the receiver
-been disabled in .stop_rx().
+Fix this by implementing a shutdown method which mirrors the remove
+method, as recommended by the kexec maintainer [2][3].
 
-Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
-Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
-Link: https://lore.kernel.org/r/20211125020349.4980-1-sherry.sun@nxp.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+[1]
+BUG: Bad page state in process devlink pfn:22f73d
+page:fffffe00089dcf40 refcount:-1 mapcount:0 mapping:0000000000000000 index:0x0
+flags: 0x2ffff00000000000()
+raw: 2ffff00000000000 0000000000000000 ffffffff089d0201 0000000000000000
+raw: 0000000000000000 0000000000000000 ffffffffffffffff 0000000000000000
+page dumped because: nonzero _refcount
+Modules linked in:
+CPU: 1 PID: 16346 Comm: devlink Tainted: G B 5.8.0-rc6-custom-273020-gac6b365b1bf5 #44
+Hardware name: Marvell Armada 7040 TX4810M (DT)
+Call trace:
+ dump_backtrace+0x0/0x1d0
+ show_stack+0x1c/0x28
+ dump_stack+0xbc/0x118
+ bad_page+0xcc/0xf8
+ check_free_page_bad+0x80/0x88
+ __free_pages_ok+0x3f8/0x418
+ __free_pages+0x38/0x60
+ kmem_freepages+0x200/0x2a8
+ slab_destroy+0x28/0x68
+ slabs_destroy+0x60/0x90
+ ___cache_free+0x1b4/0x358
+ kfree+0xc0/0x1d0
+ skb_free_head+0x2c/0x38
+ skb_release_data+0x110/0x1a0
+ skb_release_all+0x2c/0x38
+ consume_skb+0x38/0x130
+ __dev_kfree_skb_any+0x44/0x50
+ mlxsw_pci_rdq_fini+0x8c/0xb0
+ mlxsw_pci_queue_fini.isra.0+0x28/0x58
+ mlxsw_pci_queue_group_fini+0x58/0x88
+ mlxsw_pci_aqs_fini+0x2c/0x60
+ mlxsw_pci_fini+0x34/0x50
+ mlxsw_core_bus_device_unregister+0x104/0x1d0
+ mlxsw_devlink_core_bus_device_reload_down+0x2c/0x48
+ devlink_reload+0x44/0x158
+ devlink_nl_cmd_reload+0x270/0x290
+ genl_rcv_msg+0x188/0x2f0
+ netlink_rcv_skb+0x5c/0x118
+ genl_rcv+0x3c/0x50
+ netlink_unicast+0x1bc/0x278
+ netlink_sendmsg+0x194/0x390
+ __sys_sendto+0xe0/0x158
+ __arm64_sys_sendto+0x2c/0x38
+ el0_svc_common.constprop.0+0x70/0x168
+ do_el0_svc+0x28/0x88
+ el0_sync_handler+0x88/0x190
+ el0_sync+0x140/0x180
+
+[2]
+https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1195432.html
+
+[3]
+https://patchwork.kernel.org/project/linux-scsi/patch/20170212214920.28866-1-anton@ozlabs.org/#20116693
+
+Cc: Eric Biederman <ebiederm@xmission.com>
+Signed-off-by: Danielle Ratson <danieller@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/imx.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlxsw/pci.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
-index 51a9f9423b1a6..7820049aba5af 100644
---- a/drivers/tty/serial/imx.c
-+++ b/drivers/tty/serial/imx.c
-@@ -486,18 +486,21 @@ static void imx_uart_stop_tx(struct uart_port *port)
- static void imx_uart_stop_rx(struct uart_port *port)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+index fcace73eae40f..01c3235ab2bdf 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+@@ -1973,6 +1973,7 @@ int mlxsw_pci_driver_register(struct pci_driver *pci_driver)
  {
- 	struct imx_port *sport = (struct imx_port *)port;
--	u32 ucr1, ucr2;
-+	u32 ucr1, ucr2, ucr4;
- 
- 	ucr1 = imx_uart_readl(sport, UCR1);
- 	ucr2 = imx_uart_readl(sport, UCR2);
-+	ucr4 = imx_uart_readl(sport, UCR4);
- 
- 	if (sport->dma_is_enabled) {
- 		ucr1 &= ~(UCR1_RXDMAEN | UCR1_ATDMAEN);
- 	} else {
- 		ucr1 &= ~UCR1_RRDYEN;
- 		ucr2 &= ~UCR2_ATEN;
-+		ucr4 &= ~UCR4_OREN;
- 	}
- 	imx_uart_writel(sport, ucr1, UCR1);
-+	imx_uart_writel(sport, ucr4, UCR4);
- 
- 	ucr2 &= ~UCR2_RXEN;
- 	imx_uart_writel(sport, ucr2, UCR2);
-@@ -1544,7 +1547,7 @@ static void imx_uart_shutdown(struct uart_port *port)
- 	imx_uart_writel(sport, ucr1, UCR1);
- 
- 	ucr4 = imx_uart_readl(sport, UCR4);
--	ucr4 &= ~(UCR4_OREN | UCR4_TCEN);
-+	ucr4 &= ~UCR4_TCEN;
- 	imx_uart_writel(sport, ucr4, UCR4);
- 
- 	spin_unlock_irqrestore(&sport->port.lock, flags);
+ 	pci_driver->probe = mlxsw_pci_probe;
+ 	pci_driver->remove = mlxsw_pci_remove;
++	pci_driver->shutdown = mlxsw_pci_remove;
+ 	return pci_register_driver(pci_driver);
+ }
+ EXPORT_SYMBOL(mlxsw_pci_driver_register);
 -- 
 2.34.1
 
