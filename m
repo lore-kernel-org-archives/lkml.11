@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FBF8C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:07:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C4CEC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:07:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346231AbiARQG4 (ORCPT
+        id S1346260AbiARQHA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:06:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51032 "EHLO
+        Tue, 18 Jan 2022 11:07:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346237AbiARQGz (ORCPT
+        with ESMTP id S1346285AbiARQG6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:06:55 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD4A9C061574;
-        Tue, 18 Jan 2022 08:06:54 -0800 (PST)
+        Tue, 18 Jan 2022 11:06:58 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F1ABC06161C;
+        Tue, 18 Jan 2022 08:06:58 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 0A83FCE1A2D;
-        Tue, 18 Jan 2022 16:06:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4D1AC00446;
-        Tue, 18 Jan 2022 16:06:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E395361295;
+        Tue, 18 Jan 2022 16:06:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE451C00446;
+        Tue, 18 Jan 2022 16:06:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522011;
-        bh=+KDz16PgXGFJjDUD7XqTJPiBtSbrcQFJUFu5hSBafbM=;
+        s=korg; t=1642522017;
+        bh=LR2kLMcR+apjYWyEcYPnLl/7WPX0fK4eUt1AbzTwVcs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xvHEBe6gAgpbP9cIi+Eil8vYqrMaek+RYMHs9cdOpTJVDDQLjZVtmrRf9AI4G00MM
-         peLS1cQsxIfrNylx5gxl6t43uprkKEveNlhWxMtjCRz1RGci90NTPAyT3ZpCjGzEAw
-         mCOHVFIIf11jVu3p7I2V1bDIAPCYNPOMQ+XScTyM=
+        b=NnYkmJAs1wNqEQwXZ+KP1eZjqa+UOgM1/OvUpsWsLmxsfPIx1/2XV5sxeam5TwQDO
+         3KY3clBTZlvIFhwXY7wx2RHFZXNuJDy33S7V/GGHRdQ9yCmgZeG5PJCqjH5pS2Mhx0
+         d7AOmNE0I4pLZCt6QHDiZkzmuSnqBkHNrO2DwMrs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wei Wang <wei.w.wang@intel.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.4 12/15] KVM: x86: remove PMU FIXED_CTR3 from msrs_to_save_all
-Date:   Tue, 18 Jan 2022 17:05:51 +0100
-Message-Id: <20220118160450.451898047@linuxfoundation.org>
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Anders Roxell <anders.roxell@linaro.org>
+Subject: [PATCH 5.4 14/15] mtd: fixup CFI on ixp4xx
+Date:   Tue, 18 Jan 2022 17:05:53 +0100
+Message-Id: <20220118160450.523058120@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118160450.062004175@linuxfoundation.org>
 References: <20220118160450.062004175@linuxfoundation.org>
@@ -49,46 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Wang <wei.w.wang@intel.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-commit 9fb12fe5b93b94b9e607509ba461e17f4cc6a264 upstream.
+commit 603362b4a58393061dcfed1c7f0d0fd4aba61126 upstream.
 
-The fixed counter 3 is used for the Topdown metrics, which hasn't been
-enabled for KVM guests. Userspace accessing to it will fail as it's not
-included in get_fixed_pmc(). This breaks KVM selftests on ICX+ machines,
-which have this counter.
+drivers/mtd/maps/ixp4xx.c requires MTD_CFI_BE_BYTE_SWAP to be set
+in order to compile.
 
-To reproduce it on ICX+ machines, ./state_test reports:
-==== Test Assertion Failure ====
-lib/x86_64/processor.c:1078: r == nmsrs
-pid=4564 tid=4564 - Argument list too long
-1  0x000000000040b1b9: vcpu_save_state at processor.c:1077
-2  0x0000000000402478: main at state_test.c:209 (discriminator 6)
-3  0x00007fbe21ed5f92: ?? ??:0
-4  0x000000000040264d: _start at ??:?
- Unexpected result from KVM_GET_MSRS, r: 17 (failed MSR was 0x30c)
+drivers/mtd/maps/ixp4xx.c:57:4: error: #error CONFIG_MTD_CFI_BE_BYTE_SWAP required
 
-With this patch, it works well.
+This patch avoids the #error output by enforcing the policy in
+Kconfig. Not sure if this is the right approach, but it helps doing
+randconfig builds.
 
-Signed-off-by: Wei Wang <wei.w.wang@intel.com>
-Message-Id: <20211217124934.32893-1-wei.w.wang@intel.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Fixes: e2ada66ec418 ("kvm: x86: Add Intel PMU MSRs to msrs_to_save[]")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20210927141045.1597593-1-arnd@kernel.org
+Cc: Anders Roxell <anders.roxell@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/x86.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mtd/chips/Kconfig |    2 ++
+ drivers/mtd/maps/Kconfig  |    2 +-
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -1218,7 +1218,7 @@ static const u32 msrs_to_save_all[] = {
- 	MSR_IA32_UMWAIT_CONTROL,
+--- a/drivers/mtd/chips/Kconfig
++++ b/drivers/mtd/chips/Kconfig
+@@ -55,12 +55,14 @@ choice
+ 	  LITTLE_ENDIAN_BYTE, if the bytes are reversed.
  
- 	MSR_ARCH_PERFMON_FIXED_CTR0, MSR_ARCH_PERFMON_FIXED_CTR1,
--	MSR_ARCH_PERFMON_FIXED_CTR0 + 2, MSR_ARCH_PERFMON_FIXED_CTR0 + 3,
-+	MSR_ARCH_PERFMON_FIXED_CTR0 + 2,
- 	MSR_CORE_PERF_FIXED_CTR_CTRL, MSR_CORE_PERF_GLOBAL_STATUS,
- 	MSR_CORE_PERF_GLOBAL_CTRL, MSR_CORE_PERF_GLOBAL_OVF_CTRL,
- 	MSR_ARCH_PERFMON_PERFCTR0, MSR_ARCH_PERFMON_PERFCTR1,
+ config MTD_CFI_NOSWAP
++	depends on !ARCH_IXP4XX || CPU_BIG_ENDIAN
+ 	bool "NO"
+ 
+ config MTD_CFI_BE_BYTE_SWAP
+ 	bool "BIG_ENDIAN_BYTE"
+ 
+ config MTD_CFI_LE_BYTE_SWAP
++	depends on !ARCH_IXP4XX
+ 	bool "LITTLE_ENDIAN_BYTE"
+ 
+ endchoice
+--- a/drivers/mtd/maps/Kconfig
++++ b/drivers/mtd/maps/Kconfig
+@@ -303,7 +303,7 @@ config MTD_DC21285
+ 
+ config MTD_IXP4XX
+ 	tristate "CFI Flash device mapped on Intel IXP4xx based systems"
+-	depends on MTD_CFI && MTD_COMPLEX_MAPPINGS && ARCH_IXP4XX
++	depends on MTD_CFI && MTD_COMPLEX_MAPPINGS && ARCH_IXP4XX && MTD_CFI_ADV_OPTIONS
+ 	help
+ 	  This enables MTD access to flash devices on platforms based
+ 	  on Intel's IXP4xx family of network processors such as the
 
 
