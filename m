@@ -2,130 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8442FC35270
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08DDAC35272
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352872AbiARDAo (ORCPT
+        id S1353002AbiARDAy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:00:44 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57578 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345277AbiARCsv (ORCPT
+        Mon, 17 Jan 2022 22:00:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34810 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346426AbiARCtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:48:51 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82FCBB8124F;
-        Tue, 18 Jan 2022 02:48:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C31AC36AEF;
-        Tue, 18 Jan 2022 02:48:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474128;
-        bh=fvew88oc9rXfBgGTAJEf7GitKFB3blNqbg6pMgytd3s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oUacF1rlNOrcGLq+nEqZqaivhNuMbKk+Sv52OvJSpgLye0njLadu+U/roPPt3RhwZ
-         nXrc1mDDGUB2ZzWtq7vr4hWCAsF6uLgfUjhTB7TkCLVmi/HdXR3cm6aCWQuvkY4fp1
-         o3fk2ShXa/DXLDlpGlyTblJtI+QfAFB9J2qqIH1lKc0DMpp3IpNM7GVZZk5AqAY1nQ
-         IJrHObzv85iAnlXP9o5XAK9Q9T1+SWPqX/XgeP30/9lEluHUBpIakJXuuuCqShiXQw
-         sxX3kphN/xZtm9kQYMU/9x/klY7P9vNA+az/qMGqfCxpDKh86SBUvCgIPBaLclcCGu
-         GNF7LjjNOKCbQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        linux-acpi@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 47/59] ACPI: battery: Add the ThinkPad "Not Charging" quirk
-Date:   Mon, 17 Jan 2022 21:46:48 -0500
-Message-Id: <20220118024701.1952911-47-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
-References: <20220118024701.1952911-1-sashal@kernel.org>
+        Mon, 17 Jan 2022 21:49:01 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276B0C061757
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 18:40:46 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id a18so73396361edj.7
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 18:40:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=O6Qv2WKh0hCkWoVHwCGvcaqbsi7gpIChCPsK64rh30M=;
+        b=azwTj/cRumZPDXhNC4y3XzIj2U5fMu5ZwhmjXXIFWRk73S9De2kMng227tZPuwVdVB
+         ZU+zjybXapusyiwVvDw7Fr6tzV8DXI8il0nOvRF+nY/O36B0JZg0UA2qAzABOKL+HScx
+         05yy1gh/5lvXVKzaEaL+dgd9tTAvx+/CVVETjVaxvi5JYgEq06CbHJML9F9OzeNDOq34
+         wu6tMbk5hseQ0mB++4YtMhM6XUcjQFwSmrs3XajDdR5xm1gO+H447WUB4fiiD4Nehkl1
+         wK236VWl6KGnlOik7Z+SUsBNOnW5oEa7jYU/hX+ijFjwt0Kdk2YMcF4gJkC1SQtUp/QW
+         I6Tw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=O6Qv2WKh0hCkWoVHwCGvcaqbsi7gpIChCPsK64rh30M=;
+        b=3K+SDY/N3LF4bS7ZxXuYQ2v/J3VeTyJQwdcNgnI/3lZbWVY4ga1B/bsHi519m0S0W4
+         Em+nm1zv5eGGCVaZR5xnz2wC9gduxdiOsrsB7eEiF/WZwwcaqJRRlhhbFjWyvBXStd49
+         AkfScnK/A5YihJ2yccOIX+FNl3mQCuXNw5jhnj5IUDEI+5HtuYqY5xhFc4T3eHXv0Vrp
+         J+M5DQHDcctkYoy7eTDOIYEEA7HRWRcdppFgHWa9z5XRUS2Wxtk/2QcVxEAW8dXaLK69
+         eBATlHSCKuXMhXEQlQ8cUhbgNcRAkjC7BNIQF15PY4Hib9R7gvQ9m5d2JWsZxF9r/uyP
+         Jj0A==
+X-Gm-Message-State: AOAM531ldftIyTHpFHYsAAVvYhKAkMqPmDp187Ru8cUnipIznA3R2uLk
+        14HQMFkZYBc8iidVWzq3BtHCeKlbaPEF7EHp82A=
+X-Google-Smtp-Source: ABdhPJwul/yH7lfmy1JEzJ0KnwXHz8q6/QzxbvvONP+nE0jgGPcBx/TT115UGbxek2zkVgIYrLlUgw4/KTKXSf3dnn8=
+X-Received: by 2002:a17:907:94ce:: with SMTP id dn14mr15772344ejc.225.1642473644549;
+ Mon, 17 Jan 2022 18:40:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+References: <CAPDLWs_iSrbXwfKa6CQ0f6H6GE4U88uRhaFgabRjMmSuSEpsiA@mail.gmail.com>
+ <20220117194836.vj2rxr3wocrtdx7k@treble> <20220117202751.bmwvfsnqxokob6d2@treble>
+In-Reply-To: <20220117202751.bmwvfsnqxokob6d2@treble>
+From:   Kaiwan N Billimoria <kaiwan.billimoria@gmail.com>
+Date:   Tue, 18 Jan 2022 08:10:28 +0530
+Message-ID: <CAPDLWs-yX4FNrmnF3rHrEoHNktcw2Yi8X6qidss-qKpdw=r4RQ@mail.gmail.com>
+Subject: Re: Issue using faddr2line on kernel modules
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Chi-Thanh Hoang <chithanh.hoang@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Weißschuh <linux@weissschuh.net>
+Hi Josh,
 
-[ Upstream commit e96c1197aca628f7d2480a1cc3214912b40b3414 ]
+Actually your first patch - the one you mentioned had other issues -
+worked perfectly when applied:
 
-The EC/ACPI firmware on Lenovo ThinkPads used to report a status
-of "Unknown" when the battery is between the charge start and
-charge stop thresholds. On Windows, it reports "Not Charging"
-so the quirk has been added to also report correctly.
+scripts/faddr2line ./oops_tryv2.ko do_the_work+0x16f/0x194
+do_the_work+0x16f/0x0000000000000194:
+do_the_work at <...>/oops_tryv2/oops_tryv2.c:62
 
-Now the "status" attribute returns "Not Charging" when the
-battery on ThinkPads is not physicaly charging.
+The second one still failed in the same manner:
 
-Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/acpi/battery.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+scripts/faddr2line ./oops_tryv2.ko do_the_work+0x16f/0x194
+bad symbol size: base: 0x0000000000000000 end: 0x0000000000000000
 
-diff --git a/drivers/acpi/battery.c b/drivers/acpi/battery.c
-index 0bbf8b453ebf2..d4e42a578e186 100644
---- a/drivers/acpi/battery.c
-+++ b/drivers/acpi/battery.c
-@@ -78,6 +78,7 @@ static int battery_bix_broken_package;
- static int battery_notification_delay_ms;
- static int battery_ac_is_broken;
- static int battery_check_pmic = 1;
-+static int battery_quirk_notcharging;
- static unsigned int cache_time = 1000;
- module_param(cache_time, uint, 0644);
- MODULE_PARM_DESC(cache_time, "cache time in milliseconds");
-@@ -246,6 +247,8 @@ static int acpi_battery_get_property(struct power_supply *psy,
- 			val->intval = POWER_SUPPLY_STATUS_CHARGING;
- 		else if (acpi_battery_is_charged(battery))
- 			val->intval = POWER_SUPPLY_STATUS_FULL;
-+		else if (battery_quirk_notcharging)
-+			val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
- 		else
- 			val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
- 		break;
-@@ -1350,6 +1353,12 @@ battery_do_not_check_pmic_quirk(const struct dmi_system_id *d)
- 	return 0;
- }
- 
-+static int __init battery_quirk_not_charging(const struct dmi_system_id *d)
-+{
-+	battery_quirk_notcharging = 1;
-+	return 0;
-+}
-+
- static const struct dmi_system_id bat_dmi_table[] __initconst = {
- 	{
- 		/* NEC LZ750/LS */
-@@ -1394,6 +1403,19 @@ static const struct dmi_system_id bat_dmi_table[] __initconst = {
- 		  DMI_EXACT_MATCH(DMI_PRODUCT_VERSION, "Lenovo MIIX 320-10ICR"),
- 		},
- 	},
-+	{
-+		/*
-+		 * On Lenovo ThinkPads the BIOS specification defines
-+		 * a state when the bits for charging and discharging
-+		 * are both set to 0. That state is "Not Charging".
-+		 */
-+		.callback = battery_quirk_not_charging,
-+		.ident = "Lenovo ThinkPad",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad"),
-+		},
-+	},
- 	{},
- };
- 
--- 
-2.34.1
+So, is it possible to fixup issues with the first version?
+What are these issues?
 
+Thanks,
+Kaiwan.
+
+
+
+On Tue, Jan 18, 2022 at 1:57 AM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+>
+> On Mon, Jan 17, 2022 at 11:48:39AM -0800, Josh Poimboeuf wrote:
+> > On Mon, Jan 17, 2022 at 10:27:14AM +0530, Kaiwan N Billimoria wrote:
+> > > Hi there,
+> > >
+> > > Am researching using the cool faddr2line script to help debug Oops'es
+> > > from kernel modules..
+> > > I find it works just fine when used against the unstripped vmlinux
+> > > with debug symbols.
+> > >
+> > > My use case is for a kernel module which Oopses, though. Here's my scenario:
+> > > I built a module on a custom debug kernel (5.10.60) with most debug
+> > > options enabled...
+> > > KASLR is enabled by default as well.
+> > >
+> > > A test kernel module Oopses on my x86_64 guest running this kernel with:
+> > > RIP: 0010:do_the_work+0x15b/0x174 [oops_tryv2]
+> > >
+> > > So, i try this:
+> > >
+> > > $ <...>/linux-5.10.60/scripts/faddr2line ./oops_tryv2.ko do_the_work+0x15b/0x174
+> > > bad symbol size: base: 0x0000000000000000 end: 0x0000000000000000
+> > > $
+> > >
+> > > (It works fine with addr2line though!).
+> > > Now I think I've traced the faddr2line script's failure to locate
+> > > anything down to this:
+> > > ...
+> > > done < <(${NM} -n $objfile | awk -v fn=$func -v end=$file_end '$3 ==
+> > > fn { found=1; line    =$0; start=$1; next } found == 1 { found=0;
+> > > print line, "0x"$1 } END {if (found == 1) print     line, end; }')
+> > >
+> > > The nm output is:
+> > > $ nm -n ./oops_tryv2.ko |grep -i do_the_work
+> > > 0000000000000000 t do_the_work
+> > > $
+> > >
+> > > nm shows the text addr as 0x0; this is obviously incorrect (same 0x0
+> > > with objdump -d on the module).
+> > > Am I missing something? Any suggestions as to what I can try, to get
+> > > faddr2line working?
+> >
+> > Hi Kaiwan,
+> >
+> > Thanks for reporting this issue.  The module text address of 0x0 is not
+> > necessarily incorrect, as the address is relative the the module, where
+> > all text usually starts at zero.
+> >
+> > I was able to recreate this problem using a module which only has a
+> > single function in .text.  Does this fix it?
+>
+> Actually, that patch has other problems.  Try this one?
+>
+> ----
+>
+> From: Josh Poimboeuf <jpoimboe@redhat.com>
+> Subject: [PATCH] scripts/faddr2line: Only look for text symbols when
+>  calculating function size
+>
+> With the following commit:
+>
+>   efdb4167e676 ("scripts/faddr2line: Fix "size mismatch" error")
+>
+> ... it was discovered that faddr2line can't just read a function's ELF
+> size, because that wouldn't match the kallsyms function size which is
+> printed in the stack trace.  The kallsyms size includes any padding
+> after the function, whereas the ELF size does not.
+>
+> So faddr2line has to manually calculate the size of a function similar
+> to how kallsyms does.  It does so by starting with a sorted list of
+> symbols and subtracting the function address from the subsequent
+> symbol's address.
+>
+> That calculation is broken in the case where the function is the last
+> (or only) symbol in the .text section.  The next symbol in the sorted
+> list might actually be a data symbol, which can break the function size
+> detection:
+>
+>   $ scripts/faddr2line sound/soundcore.ko sound_devnode+0x5/0x35
+>   bad symbol size: base: 0x0000000000000000 end: 0x0000000000000000
+>
+> Similar breakage can occur when reading from a .o file.
+>
+> Fix it by only looking for text symbols.
+>
+> Fixes: efdb4167e676 ("scripts/faddr2line: Fix "size mismatch" error")
+> Reported-by: Kaiwan N Billimoria <kaiwan.billimoria@gmail.com>
+> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> ---
+>  scripts/faddr2line | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/scripts/faddr2line b/scripts/faddr2line
+> index 6c6439f69a72..2a130134f1e6 100755
+> --- a/scripts/faddr2line
+> +++ b/scripts/faddr2line
+> @@ -189,7 +189,7 @@ __faddr2line() {
+>
+>                 DONE=1
+>
+> -       done < <(${NM} -n $objfile | awk -v fn=$func -v end=$file_end '$3 == fn { found=1; line=$0; start=$1; next } found == 1 { found=0; print line, "0x"$1 } END {if (found == 1) print line, end; }')
+> +       done < <(${NM} -n $objfile | awk -v fn=$func -v end=$file_end '$2 !~ /[Tt]/ {next} $3 == fn { found=1; line=$0; start=$1; next } found == 1 { found=0; print line, "0x"$1 } END {if (found == 1) print line, end; }')
+>  }
+>
+>  [[ $# -lt 2 ]] && usage
+> --
+> 2.31.1
+>
