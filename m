@@ -2,53 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72FE9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:06:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CD0FC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:06:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349301AbiARDEh (ORCPT
+        id S1353852AbiARDEp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:04:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34692 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345808AbiARCsj (ORCPT
+        Mon, 17 Jan 2022 22:04:45 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58426 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349736AbiARCuK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:48:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ACE6C0612E1;
-        Mon, 17 Jan 2022 18:39:28 -0800 (PST)
+        Mon, 17 Jan 2022 21:50:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D6ADC611F1;
-        Tue, 18 Jan 2022 02:39:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96B29C36AE3;
-        Tue, 18 Jan 2022 02:39:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 97C58B81132;
+        Tue, 18 Jan 2022 02:50:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8684AC36AE3;
+        Tue, 18 Jan 2022 02:50:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473567;
-        bh=TElkjlzuCBV3Gc3JqGNMR1z/jwiZxTMPgmvaZtwLM8E=;
+        s=k20201202; t=1642474207;
+        bh=hX05DE8qEpcQDsWFeRFg+CgRqppCEqZHdVOmfan5VdQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EBezdbPkcVrepUvg7wRmaMzioOrSPHTCiI45/LtOdQG5561V7l6bX79TJJt/meVn/
-         cB1QJO+esTevI8jMONtAcYzET7vNIR+89fBvgH7hXTsGUXsPc8Lm9cUz8pKanwZYbk
-         3by+pLYSjIGILaKPdxxGQ/ay/MxKBGPDfA5HA/qr3O8EHVC6VgpI7OxZ/SFFI4hN1q
-         vmsooVRB3sdfGnktPArJB8nA+lWiKa4zo5kUNd43HMVej7QW1A3z0DpWJcS//DISD7
-         F62yQBbpIjwCktSZ+0Fklp49Enbjrj2Cyeew9bY6k9SlAry18ImLPTMViQraO9pliX
-         mkM1ecMVjAWFA==
+        b=rqavVZqmmCfFJ5jzljXN3/2sYEMFLTy8YVyv4D0itT89sGhehthCMFS8dsfcHgtxO
+         6xgYB3OdCrRpN/d9DdOsLPOmtcmFiTbwQedTA6UfTa/AG+kk3UNQLnBpe4G5aDC9Dx
+         6HLC6oT6MQwBvpt6oujVKH3Npp6FrZFMparkiNTXmik/m7k/25BJ1rEhfM0PzWb+yK
+         RTxOqKob8WVG2wLQ3ewPacakgrK+h8P1ZUl84JnGlU30wNrNBkOvpVDvjYxxxhYXcV
+         qMEPbMZD21B2emrGo/4LytX977Bxd8BFXOWXgsDQCIK3p6euT25w7AqiOlfmcQyVPO
+         gD7KQpIerUf3g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiri Olsa <jolsa@redhat.com>, Hangbin Liu <haliu@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jussi Maki <joamaki@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        ast@kernel.org, andrii@kernel.org, yhs@fb.com, sdf@google.com,
-        sunyucong@gmail.com, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 170/188] bpf/selftests: Fix namespace mount setup in tc_redirect
-Date:   Mon, 17 Jan 2022 21:31:34 -0500
-Message-Id: <20220118023152.1948105-170-sashal@kernel.org>
+Cc:     Neal Liu <neal_liu@aspeedtech.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, stern@rowland.harvard.edu,
+        linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.14 22/56] usb: uhci: add aspeed ast2600 uhci support
+Date:   Mon, 17 Jan 2022 21:48:34 -0500
+Message-Id: <20220118024908.1953673-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
+References: <20220118024908.1953673-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -57,63 +50,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Olsa <jolsa@redhat.com>
+From: Neal Liu <neal_liu@aspeedtech.com>
 
-[ Upstream commit 5e22dd18626726028a93ff1350a8a71a00fd843d ]
+[ Upstream commit 554abfe2eadec97d12c71d4a69da1518478f69eb ]
 
-The tc_redirect umounts /sys in the new namespace, which can be
-mounted as shared and cause global umount. The lazy umount also
-takes down mounted trees under /sys like debugfs, which won't be
-available after sysfs mounts again and could cause fails in other
-tests.
+Enable ast2600 uhci quirks.
 
-  # cat /proc/self/mountinfo | grep debugfs
-  34 23 0:7 / /sys/kernel/debug rw,nosuid,nodev,noexec,relatime shared:14 - debugfs debugfs rw
-  # cat /proc/self/mountinfo | grep sysfs
-  23 86 0:22 / /sys rw,nosuid,nodev,noexec,relatime shared:2 - sysfs sysfs rw
-  # mount | grep debugfs
-  debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
-
-  # ./test_progs -t tc_redirect
-  #164 tc_redirect:OK
-  Summary: 1/4 PASSED, 0 SKIPPED, 0 FAILED
-
-  # mount | grep debugfs
-  # cat /proc/self/mountinfo | grep debugfs
-  # cat /proc/self/mountinfo | grep sysfs
-  25 86 0:22 / /sys rw,relatime shared:2 - sysfs sysfs rw
-
-Making the sysfs private under the new namespace so the umount won't
-trigger the global sysfs umount.
-
-Reported-by: Hangbin Liu <haliu@redhat.com>
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jussi Maki <joamaki@gmail.com>
-Link: https://lore.kernel.org/bpf/20220104121030.138216-1-jolsa@kernel.org
+Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+Link: https://lore.kernel.org/r/20211126100021.2331024-1-neal_liu@aspeedtech.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/prog_tests/tc_redirect.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/usb/host/uhci-platform.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-index e7201ba29ccd6..47e3159729d21 100644
---- a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-@@ -105,6 +105,13 @@ static int setns_by_fd(int nsfd)
- 	if (!ASSERT_OK(err, "unshare"))
- 		return err;
- 
-+	/* Make our /sys mount private, so the following umount won't
-+	 * trigger the global umount in case it's shared.
-+	 */
-+	err = mount("none", "/sys", NULL, MS_PRIVATE, NULL);
-+	if (!ASSERT_OK(err, "remount private /sys"))
-+		return err;
-+
- 	err = umount2("/sys", MNT_DETACH);
- 	if (!ASSERT_OK(err, "umount2 /sys"))
- 		return err;
+diff --git a/drivers/usb/host/uhci-platform.c b/drivers/usb/host/uhci-platform.c
+index 6cb16d4b22578..4e91f7b21a796 100644
+--- a/drivers/usb/host/uhci-platform.c
++++ b/drivers/usb/host/uhci-platform.c
+@@ -113,7 +113,8 @@ static int uhci_hcd_platform_probe(struct platform_device *pdev)
+ 				num_ports);
+ 		}
+ 		if (of_device_is_compatible(np, "aspeed,ast2400-uhci") ||
+-		    of_device_is_compatible(np, "aspeed,ast2500-uhci")) {
++		    of_device_is_compatible(np, "aspeed,ast2500-uhci") ||
++		    of_device_is_compatible(np, "aspeed,ast2600-uhci")) {
+ 			uhci->is_aspeed = 1;
+ 			dev_info(&pdev->dev,
+ 				 "Enabled Aspeed implementation workarounds\n");
 -- 
 2.34.1
 
