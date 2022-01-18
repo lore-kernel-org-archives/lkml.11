@@ -2,200 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65A12C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 22:52:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAFF1C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 22:54:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350104AbiARWwj (ORCPT
+        id S1350116AbiARWya (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 17:52:39 -0500
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:37270 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240919AbiARWwh (ORCPT
+        Tue, 18 Jan 2022 17:54:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60480 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231467AbiARWyZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 17:52:37 -0500
-Received: from pps.filterd (m0246632.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20IKEkuO007941;
-        Tue, 18 Jan 2022 22:52:20 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=K7tPZwjTf7dA1Hp8GJYrrVI5AfcCPpl1oqy1ETjUzFM=;
- b=jZgvgVM9ALLfX+nrd2ClAVgGigzMPXP5XsUWSx3E3/bqCEf+TJcYXZCIjGSiUXRpGSvd
- zSYR2YaE8PW7zDASui6HBb59VSyGqI3qSMeNvx0j7Mla5slGnBVy0q8n9/zYKVn/Gmsy
- 7zpaa2zhJUnA1b1jnmxkNt3mVlUd4nCPa5XjeZKQkDTVdtKjfa4v5Ko/Tzrsjb0RZ3Fa
- /U8da+EiIgQ3SgQRPXif5Oli5lc7SIIKoSy5uMOttoGIytXi9qnVE48FlEGxxFH8L+vn
- XDhbt5HxENiW9M+U3KLQ8/p7ajC18BSyArCmGifcP91qD6te9JEN1eRv/Tl8u44e6ik0 8g== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dnc4vkexg-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 18 Jan 2022 22:52:20 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20IMoPr1131171;
-        Tue, 18 Jan 2022 22:52:19 GMT
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2175.outbound.protection.outlook.com [104.47.55.175])
-        by aserp3020.oracle.com with ESMTP id 3dkp34yd44-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 18 Jan 2022 22:52:19 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GX0U1HB/SSR3jK4afaaoynIaNpke6MEA5fA/KcgO50EV/cL/QyzLUIq7ChiQ7YeehbVyzLOFwA8b10NIgiaRxNXS4zp4sIOeKxRYchc6UZSvU9oW7ocoONHEnrFwI9MECTXb2593lmSc3giXwfv4l0+5nmsBEvKhhg78wgVRbxbIQwehDXLT7MsSClm/d6F7+MjwTBtMhJq4ida49G8GK61ydvM4PW4PyeMMdj0WO+ceO6kLfh1a8N9kzFm9SXtXTZFosU8lqwU/0Hw6ajGMJutjjx5RlSA148Ldk9JreE1MtTHzGEuyIUzxgA3pJy+BLXL8MwfPWo5dRZb1IMvjow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=K7tPZwjTf7dA1Hp8GJYrrVI5AfcCPpl1oqy1ETjUzFM=;
- b=csaX0PrPZUF0TAGULG3FVIpZi8i/SPsXTdXYVo5jRr6XQuiVHFpNQCQpv12ZTKWxL3AZInBtAMP56Had6QDW2dwSnAbtxSh3aFkPCxD6A6EwYG6Bo4AR6/oCkl7kQF4LyxGr7aPmTq8EG1UP2liop0lKbNKCNvmNF2xdFEEWhbqBqMp0JZCtwz9/bE5nilhaDhx9gNZYnvvOXdOY6kUR2ZRKKhYo1YHwkgq44U9YylPzyAegkST2uTd73bACmU9cNL+YVcwVPowwT3o4XWL8rTV3KPrePn0Vs/wKOld03sU4la2kzAlzFnc4QSOC77v5BH+R2OHVb4u+OOe6Z5IgqA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
+        Tue, 18 Jan 2022 17:54:25 -0500
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65431C06161C
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 14:54:25 -0800 (PST)
+Received: by mail-yb1-xb32.google.com with SMTP id z22so1467869ybi.11
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 14:54:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=K7tPZwjTf7dA1Hp8GJYrrVI5AfcCPpl1oqy1ETjUzFM=;
- b=frLNBbytyHbJ+CWkDiBDS6qkK04t5Xl+7a8wbqRKBZiGxkh6X2JAHmwBx0FzoSIYE4q3jzP+m1I9+Jssk6yKRlk1GuQVr7UYMQx+Ul8VGQahobxLvljlI6iMPBaV6SmobI5jd8lVH8Lze2EGd5TTxDFzMcFWY19DMO8nye2yJuM=
-Received: from BN8PR10MB3220.namprd10.prod.outlook.com (2603:10b6:408:c8::18)
- by MWHPR1001MB2398.namprd10.prod.outlook.com (2603:10b6:301:2f::37) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.13; Tue, 18 Jan
- 2022 22:52:16 +0000
-Received: from BN8PR10MB3220.namprd10.prod.outlook.com
- ([fe80::104f:849b:6a11:c5c2]) by BN8PR10MB3220.namprd10.prod.outlook.com
- ([fe80::104f:849b:6a11:c5c2%6]) with mapi id 15.20.4888.014; Tue, 18 Jan 2022
- 22:52:16 +0000
-Message-ID: <20b93ac5-dd98-172e-505f-094aa6b0df92@oracle.com>
-Date:   Tue, 18 Jan 2022 15:52:12 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [RFC PATCH 0/6] Add support for shared PTEs across processes
-Content-Language: en-US
-To:     Dave Hansen <dave.hansen@intel.com>, akpm@linux-foundation.org,
-        willy@infradead.org, longpeng2@huawei.com, arnd@arndb.de,
-        dave.hansen@linux.intel.com, david@redhat.com, rppt@kernel.org,
-        surenb@google.com, linux-kernel@vger.kernel.org, linux-mm@kvack.org
-References: <cover.1642526745.git.khalid.aziz@oracle.com>
- <e0196efb-9c55-c0f8-c663-b4af44b8ffa4@intel.com>
-From:   Khalid Aziz <khalid.aziz@oracle.com>
-In-Reply-To: <e0196efb-9c55-c0f8-c663-b4af44b8ffa4@intel.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: SN2PR01CA0063.prod.exchangelabs.com (2603:10b6:800::31) To
- BN8PR10MB3220.namprd10.prod.outlook.com (2603:10b6:408:c8::18)
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=2A0o9RStrnIxmL11KBIrT0fGYmNaZT0XLIaxHQF5rjs=;
+        b=dag6jxRDJUEiQYlvYUtjYS/OfkScCbS15kuV1kOlQvrem03MJYgdAwaEHsk7xkMGTO
+         kFHIj3pxg2l26Gamk9bynAV2Zfontn1hV5i3Z18gq3jN3xjnwhxB20CVOjA4+vlA0R02
+         ceyCS6rF1ci0H0IzntFxCa97kN3hwPwH9Z5sBLk8kMfM4ZECEp0lNsPAGgF1rYgVCvUR
+         PGkIyNBVj8eZ5YoiH4PXKb+AZcWt0b511F2zYUm4g2+HsrQfl/5+64z1s3gsYWingZHi
+         WN++EpOE6AguKoOdixg8BZ9R5wasNuqelZQvKvhUyQa3VDRdqhnIkSRieTj99s3sWzle
+         ku3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2A0o9RStrnIxmL11KBIrT0fGYmNaZT0XLIaxHQF5rjs=;
+        b=AnLsTnGpm7cQk7mNX4jjQjiQhadshOyjGlJcRDVxtUgq6CldASa2yHwezWvBYjYbbM
+         R7rBSVG9bXHFTuTiZ4ecDqZhH9tE2E4L3UOX3YQxyl9Rnily+RS5Wc1k1x0fylnVCOuE
+         FXSBBhmHzSv2w4w83MGFX9a740s1gC+3WLVgSw4xVGtUNBBE+cMXzGtePEprImxdaDbf
+         WlDVrwzrHbQho35L34ia7rUhPsWF4a4tE7xndh5Pk1s2XHBwZmHko4KIL8DbyS0JJISM
+         Xk2JL005OIbNI7ggYfSfrNh4o1/NS1qk4YMPU+YZSUp0KtlvymDlZkavPYY2HXXIg69q
+         0FXg==
+X-Gm-Message-State: AOAM530HcafGvVk9aAuyiHRVr6ksS5FNvqmrmFaNKxePRhQOQWV3j8mj
+        +0yqklmCk19S9YykfTtMHaYI38zXUmPvkgozliE5/NtC81iLYQ==
+X-Google-Smtp-Source: ABdhPJwKhpxDqzsHYaDrecYU3+cgHLkJME7T1oocecMclqJnaqy7jDJK7leekDDAezlwQk6RPUBfNaub4qT6EIgRDRI=
+X-Received: by 2002:a25:d055:: with SMTP id h82mr6237602ybg.543.1642546464435;
+ Tue, 18 Jan 2022 14:54:24 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 77b0336b-8bb9-45e2-e0e5-08d9dad52ce0
-X-MS-TrafficTypeDiagnostic: MWHPR1001MB2398:EE_
-X-Microsoft-Antispam-PRVS: <MWHPR1001MB2398504E91AE36A04207730B86589@MWHPR1001MB2398.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: W8SWQDH4pZ25rbiMDKJQCi0YXlsnwSX3ffdOm+iDjlKhX6C748Ms0VNpJD8zNh4ZuAnBj4OhUu1Va2okn8cjPTVb4CQrAZ3WePs2XAJ54aSXaYSWhSZT3rIBnXn2myGulEvBFBPfDntivgWtkHHt9yyfTGE7H8egcrRLxs8+o5qCTmQo1eus/6jIKa7O6NQnKPjBFxtNCDrYiptpM4ah7OZfXF1vPOFZcDbBjPdFonzHoF5mRy2tXpEvWI/NE6t5JJ0rGu+181st1eheWxiFuyggpWrvms31x2D0gRGra68HFoeme1gL79Bh/QsqTGh5Qcharo256W073v+W3HXUYFlzCNLprjMLC0TPHAZOJt/ucp+xrrJnaTiPpsLctex/riS93scWlhjnbnsEnURvSceoc+Mj5gCkavlEq0uOGlX4qhcIR//sv6U6KZHBplKZFvu8VJDl/mPtEsSo2Hs85vLBEtdz9ondbHFVoUy60vQMTHXmT9bhYK9dO/5hPfsTkCiecgzZ+7XiIVmjUc4AJ9awNRMkO9jhn7L6N1UYa+8Hk0cqJk3Ubp6Mrs9oh5W1a55e6J+P144xGA0zEw2mjlUOTDDU0YnmwvxAhwZonZ2AUD4rTN8ugCaxy4Dhm5GHa13bEdBvqurxRFVlsz4jdLSQn/gsX5UI14LP3jIO3ixeqlsTIfAeWCI4oxfwT1DLHamjZfXD6o9ZF38Tm+VrGV8tL/TuJ66u40doKMNwRwMdYFfU7az/7gRcw09NFS79
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN8PR10MB3220.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(2906002)(8676002)(38100700002)(8936002)(186003)(53546011)(6506007)(36756003)(508600001)(86362001)(6666004)(2616005)(66556008)(7416002)(66946007)(66476007)(6486002)(5660300002)(316002)(44832011)(921005)(6512007)(31686004)(83380400001)(31696002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?U3JZUGV4YjhraDRiYUlqdWQzODNwSmV0cVV0d0NBQW02MGZhWjRTTHg5Wmpq?=
- =?utf-8?B?TVZjRWUwSDFITzRsMVc4RGNsQzViTENUU2h3LzczTVRqQ3NKamFRNVdZbUhh?=
- =?utf-8?B?cVgxYnZMSE4zRUpMVjhUUjgrTVZrbElsT3BaK1FaMnptOHJ4bkN3eWU0SklG?=
- =?utf-8?B?bWxNWnZWY0VTTW1EOWphRXpPdnMxSC9KZlM4VHo5MENRQWhaZDd0M3E0bkVl?=
- =?utf-8?B?UDQrS3hNbGcrbU9xbklNOVRJTVRHZ200NXdQUlluVnVra01LSmtTYVNBc1o0?=
- =?utf-8?B?WTNjWlBvbVRkV01nMTJiU3laVlhYU2M1LzRSajY2Vm56TE9SM0FXZEk3R04x?=
- =?utf-8?B?NHlrOEwraDhhajFnWEx1bHBVdVk0aEFUWitCQVdOd2piLytDRjNhSkpTVG9k?=
- =?utf-8?B?VHdlZEZzTTJUM1dxa1FWNHF1cjhDZGdOOVhCbUZ1UDRjd2gwbkQ5ejdBbm0z?=
- =?utf-8?B?YW1EbTQvMk9hMU42emc2ZDRpM240SmszNU8vZU1uWGpsRFpXSmVwSmxtbXMz?=
- =?utf-8?B?UTJyQnVXSWtXR3BmeEpIVGY2bytFVFlZTFlSYmlpWlVSRDhwQ0xXaHRTMWpH?=
- =?utf-8?B?WXZRYUl1SVpVbzVJV1BTSjdpOFhsU0hMRm8wNUJtdVFYdWd0Y21iY0VTRyt0?=
- =?utf-8?B?ZmhpSTJtQWIvUGw5b0JKN0FxeDl1VExRbDhMWmNoVmZ5OEkzRXhIVjVxaWo0?=
- =?utf-8?B?UG4yOXhwY2VYMm9UVEs0WU1jY0JDNTBuejZvWFVPc2lKNFg0Y3lOSGIrYXRW?=
- =?utf-8?B?c2pNeXpoSVJUOG92RUEvVFE2ejlWTmh5d2Vhc3ZsOHVLQXZVQk44TzFHNTdM?=
- =?utf-8?B?eTBKT21oc2FsSzEvV1FFQTBNdmYra095OWt4UWt2SUkwZ25JbVhXS3lUZmxn?=
- =?utf-8?B?R0tSVlFXSis4Vm1ibVJ1dHIzZGd4dXc3d1Z3NUNBUkFzSzMzcTNwb095aHdq?=
- =?utf-8?B?Q1EzTDNncVpHMTFmc1BPZjVxdnpKMWdTWnp1a01oem5JWUNEZHdaRDF4L21n?=
- =?utf-8?B?dFIxcnVaTGRDVUprd3VqQVVLY0ZwTndFL0xrT3hwbEJIamZmdU1zY2tEemVI?=
- =?utf-8?B?Z0g5bW8xM2lLSlV4SWttNnU2SC9oT2w1M2lnVzFxUklJZjk0S0R3UVBsZzND?=
- =?utf-8?B?Q20vNS9Sb3hMRkdneUpWVGtFWURvdytkZUpYWmdoUUY2TC9sYW90SzVpWERq?=
- =?utf-8?B?OXZxd0VHS2N1S3lYdU8yNEY1cFZZdER1MS9nb2MzUHpJdlR3ekNQbU8zNndS?=
- =?utf-8?B?WFpXTEdzLzk0aHZaekxobi9ycE9OZitwWnJVdEdQSUZ1TXNnNFB0Ny9rdzQ4?=
- =?utf-8?B?NVRVQ2lWNkR6WStCZmtwb0lITzFJeW5yaExRZFB1aktxUzdvbmp6YmVodUxJ?=
- =?utf-8?B?V09NK0pCOFcwVzJtcS9HVVZnWXNOTU8rSTIrRUhZeWZWVlRnZVh5QjBZNGh5?=
- =?utf-8?B?aTBDZW1lSkovQnZoSnU1Tnk1WkJ5QXYwYlZDTkhic1RQaWY1R1BRZWN5b3dp?=
- =?utf-8?B?OW1GTjIwQVJRNmVyLzlhWUFwcHpmQldTNzkzSEx4NUxGaysyaGZ6aVRZWEVQ?=
- =?utf-8?B?RWpLN0NwUlhDUG9hZ1BMM2ZjQlQvcFR3N2lINFhOYzJFRjcxcTAvL2Q3ak05?=
- =?utf-8?B?Y1M0YTFnekM0KzVGZ1pUbE50YWFDM0NURzYxcnhzamJyYmM5cmNBT1RwV3V4?=
- =?utf-8?B?dlpHS2NkMmZTNnlQK2FkWDZWdUtvT3NaWHlNQ1Q5WFpUVS91U2dmWlZ2MXc3?=
- =?utf-8?B?ZDMyK1ZTQndWQW9McERlaDBuTy83dlF6dEl5cXZMN3ZFRmhFZ1NCemp3RHFn?=
- =?utf-8?B?TkFnc0E4QXBDZVJCZTZtQ3MvaFJqSHloRVNLWGlJU2JFMGpTRmJKZkl6c05l?=
- =?utf-8?B?NFBiZ2JMMkFISC90RCtIK3dJa3I0R0RvT0N6YmNqamZEV1hnREc2cmRuSzQy?=
- =?utf-8?B?eUZNVjFNdHVxQ2FXeEk3Y0hnZkN4bUh1TGRHc0draWVPTU0wbGdCSzBwbUtH?=
- =?utf-8?B?VTN6WWQzK2JERGFVcU5FbUwxdDl5S0pvUkpnblVnVzAxSTJ5c2MvRWMwWHRj?=
- =?utf-8?B?NWR4RXcvZWdNOWhuZ3Q2TnMxTFRkdzFTdHdrY1FjR1pVd0JIYUk1azlTbGdC?=
- =?utf-8?B?YVl5VGF3d0JTWERaN09QSnpVRVNCeDRGakJmbUxQTkdoMWNUN0hpZzhvNHdn?=
- =?utf-8?B?TVZ2WUhPZ0RJOG56Q1k2TDB3eUJMdldKeHRoN2xhQTBmV1JyTHNQUmdFTWEy?=
- =?utf-8?B?cWMwSXVnTnNYY052V1FaaGhoZ2pRPT0=?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 77b0336b-8bb9-45e2-e0e5-08d9dad52ce0
-X-MS-Exchange-CrossTenant-AuthSource: BN8PR10MB3220.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2022 22:52:16.6710
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: ifVH2PbYnEvjLwC+vzvzoiTUAKlpNc0DA1Ttx1GrNBt++qMvKK23QgadLZ20BKMxnByCIcy+CaDgRvGnmscd4g==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1001MB2398
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10231 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 bulkscore=0
- mlxlogscore=999 adultscore=0 suspectscore=0 malwarescore=0 mlxscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201180128
-X-Proofpoint-GUID: XcLtW0aQpFp6ZsUhzdyqh_VnXi7iDFky
-X-Proofpoint-ORIG-GUID: XcLtW0aQpFp6ZsUhzdyqh_VnXi7iDFky
+References: <20220104194918.373612-1-rananta@google.com> <20220104194918.373612-2-rananta@google.com>
+ <CAAeT=Fxyct=WLUvfbpROKwB9huyt+QdJnKTaj8c5NKk+UY51WQ@mail.gmail.com>
+ <CAJHc60za+E-zEO5v2QeKuifoXznPnt5n--g1dAN5jgsuq+SxrA@mail.gmail.com>
+ <CALMp9eQDzqoJMck=_agEZNU9FJY9LB=iW-8hkrRc20NtqN=gDA@mail.gmail.com>
+ <CAJHc60xZ9emY9Rs9ZbV+AH-Mjmkyg4JZU7V16TF48C-HJn+n4A@mail.gmail.com>
+ <CALMp9eTPJZDtMiHZ5XRiYw2NR9EBKSfcP5CYddzyd2cgWsJ9hw@mail.gmail.com>
+ <CAJHc60xD2U36pM4+Dq3yZw6Cokk-16X83JHMPXj4aFnxOJ3BUQ@mail.gmail.com>
+ <CALMp9eR+evJ+w9VTSvR2KHciQDgTsnS=bh=1OUL4yy8gG6O51A@mail.gmail.com>
+ <CAJHc60zw1o=JdUJ+sNNtv3mc_JTRMKG3kPp=-cchWkHm74hUYA@mail.gmail.com>
+ <YeBfj89mIf8SezfD@google.com> <CAAeT=Fz2q4PfJMXes3A9f+c01NnyORbvUrzJZO=ew-LsjPq2jQ@mail.gmail.com>
+In-Reply-To: <CAAeT=Fz2q4PfJMXes3A9f+c01NnyORbvUrzJZO=ew-LsjPq2jQ@mail.gmail.com>
+From:   Raghavendra Rao Ananta <rananta@google.com>
+Date:   Tue, 18 Jan 2022 14:54:13 -0800
+Message-ID: <CAJHc60zcwNskA7JCg9nQc4YhmLdziHVauf1gQQ48GHYtby_aYg@mail.gmail.com>
+Subject: Re: [RFC PATCH v3 01/11] KVM: Capture VM start
+To:     Reiji Watanabe <reijiw@google.com>
+Cc:     Sean Christopherson <seanjc@google.com>, kvm@vger.kernel.org,
+        Marc Zyngier <maz@kernel.org>, Peter Shier <pshier@google.com>,
+        linux-kernel@vger.kernel.org,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        Will Deacon <will@kernel.org>, kvmarm@lists.cs.columbia.edu,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Jim Mattson <jmattson@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/18/22 15:06, Dave Hansen wrote:
-> On 1/18/22 1:19 PM, Khalid Aziz wrote:
->> This is a proposal to implement a mechanism in kernel to allow
->> userspace processes to opt into sharing PTEs. The proposal is to add
->> a new system call - mshare(), which can be used by a process to
->> create a region (we will call it mshare'd region) which can be used
->> by other processes to map same pages using shared PTEs. Other
->> process(es), assuming they have the right permissions, can then make
->> the mashare() system call to map the shared pages into their address
->> space using the shared PTEs.
-> 
-> One thing that went over my head here was that this allowing sharing of
-> relatively arbitrary *EXISTING* regions.  The mshared'd region might be
-> anonymous or an plain mmap()'d file.  It can even be a filesystem or
-> device DAX mmap().
-> 
-> In other words, donors can (ideally) share anything.  Consumers have
-> must use msharefs to access the donated areas.
-> 
-> Right?
-> 
-> ( btw... thanks to willy for the correction on IRC.)
-> 
+On Fri, Jan 14, 2022 at 1:51 PM Reiji Watanabe <reijiw@google.com> wrote:
+>
+> On Thu, Jan 13, 2022 at 9:21 AM Sean Christopherson <seanjc@google.com> wrote:
+> >
+> > On Wed, Jan 12, 2022, Raghavendra Rao Ananta wrote:
+> > > On Tue, Jan 11, 2022 at 11:16 AM Jim Mattson <jmattson@google.com> wrote:
+> > > > Perhaps it would help if you explained *why* you are doing this. It
+> > > > sounds like you are either trying to protect against a malicious
+> > > > userspace, or you are trying to keep userspace from doing something
+> > > > stupid. In general, kvm only enforces constraints that are necessary
+> > > > to protect the host. If that's what you're doing, I don't understand
+> > > > why live migration doesn't provide an end-run around your protections.
+> > > It's mainly to safeguard the guests. With respect to migration, KVM
+> > > and the userspace are collectively playing a role here. It's up to the
+> > > userspace to ensure that the registers are configured the same across
+> > > migrations and KVM ensures that the userspace doesn't modify the
+> > > registers after KVM_RUN so that they don't see features turned OFF/ON
+> > > during execution. I'm not sure if it falls into the definition of
+> > > protecting the host. Do you see a value in adding this extra
+> > > protection from KVM?
+> >
+> > Short answer: probably not?
+> >
+> > There is precedent for disallowing userspace from doing stupid things, but that's
+> > either for KVM's protection (as Jim pointed out), or because KVM can't honor the
+> > change, e.g. x86 is currently in the process of disallowing most CPUID changes
+> > after KVM_RUN because KVM itself consumes the CPUID information and KVM doesn't
+> > support updating some of it's own internal state (because removing features like
+> > GB hugepage support is nonsensical and would require a large pile of complicated,
+> > messy code).
+> >
+> > Restricing CPUID changes does offer some "protection" to the guest, but that's
+> > not the goal.  E.g. KVM won't detect CPUID misconfiguration in the migration
+> > case, and trying to do so is a fool's errand.
+> >
+> > If restricting updates in the arm64 is necessary to ensure KVM provides sane
+> > behavior, then it could be justified.  But if it's purely a sanity check on
+> > behalf of the guest, then it's not justified.
+>
+> The pseudo firmware hvc registers, which this series are adding, are
+> used by KVM to identify available hvc features for the guest, and not
+> directly exposed to the guest as registers.
+> The ways the KVM code in the series consumes the registers' values are
+> very limited, and no KVM data/state is created based on their values.
+> But, as the code that consumes the registers grows in the future,
+> I wouldn't be surprised if KVM consumes them differently than it does
+> now (e.g. create another data structure based on the register values).
+> I'm not sure though :)
+>
+> The restriction, with which KVM doesn't need to worry about the changes
+> in the registers after KVM_RUN, could potentially protect or be useful
+> to protect KVM and simplify future changes/maintenance of the KVM codes
+> that consumes the values.
+> I thought this was one of the reasons for having the restriction.
+>
+Well, that wasn't the original intention of the patch, but just to
+protect the guests from the userspace's dynamic updates. Having said
+that, and based on what Sean mentioned in his last reply, it could be
+inconsistent from what KVM has been doing so far and would be
+difficult to cover all the scenarios that userspace can mess things up
+for guests.
+I'll plan to drop this patch in the next version, and bring it back
+back to arm64 if we really need it.
 
-Hi Dave,
+Thanks Sean, Jim, and Reiji for the comments and discussion.
 
-Consumers use msharefs only to get information on address and size of shared region. Access to the donated are does not 
-go through msharefs. So the consumer opens the file in msharefs to read starting address and size:
-
-         fd = open("testregion", O_RDONLY);
-
-         if ((count = read(fd, &mshare_info, sizeof(mshare_info)) > 0))
-                 printf("INFO: %ld bytes shared at addr %lx \n",
-                                 mshare_info[1], mshare_info[0]);
-         else
-                 perror("read failed");
-
-         close(fd);
-
-It then uses that information to map in the donated region:
-
-         addr = (char *)mshare_info[0];
-         err = syscall(MSHARE_SYSCALL, "testregion", (void *)mshare_info[0],
-                         mshare_info[1], O_RDWR, 600);
-
-Makes sense?
-
-Thanks,
-Khalid
+Regards,
+Raghavendra
+> Thanks,
+> Reiji
