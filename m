@@ -2,132 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2708AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 12:44:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F1AFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 12:45:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237719AbiARMoT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 07:44:19 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:10334 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237441AbiARMoR (ORCPT
+        id S238380AbiARMpL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 07:45:11 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:47129 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232927AbiARMpA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 07:44:17 -0500
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20ICYsYb035744;
-        Tue, 18 Jan 2022 12:42:36 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=m12V+yXH4hlsiZwa8i+pDOp/j8Cs7qgKrlgEwxXj7L4=;
- b=RnlpiRvsUmkTWbjkruFslYg1tMFQEJuByDNn/0YTdV7DSI138NX40q5meitQdeZeW1Yu
- k5EjYZWjx9qzdO56Aja0MBuq7X6zydGGr2b/7ryqUtGTk+0pWv0/UvAgzDo9tFZTnhCq
- 1k2P5DRAR2BQ79VW7//cIBf0CxghnC0wU7poxz2X0XDJ+Vk3dmGawcG8O7VEddXlyFql
- fQXA8mYfg7MLeFtLfrvIuBe06ReGD+eoc2oj85gI0N8OiMxaxJZBX8t0doppb8oWBua3
- dpD1zfzbh0R9xrycvwLTF86PosVpuQlw0XDwCxxcVroA7CfX9Kdvjs34WHLCN5M0NDdM Yw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dnv93anyn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 18 Jan 2022 12:42:35 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20ICgYjv023877;
-        Tue, 18 Jan 2022 12:42:35 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dnv93anxp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 18 Jan 2022 12:42:34 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20ICbc3T000483;
-        Tue, 18 Jan 2022 12:42:32 GMT
-Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
-        by ppma03ams.nl.ibm.com with ESMTP id 3dknw9m9cc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 18 Jan 2022 12:42:32 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20ICgT1r44761424
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 18 Jan 2022 12:42:29 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3B548AE134;
-        Tue, 18 Jan 2022 12:42:29 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 85CDBAE143;
-        Tue, 18 Jan 2022 12:42:26 +0000 (GMT)
-Received: from [9.171.19.84] (unknown [9.171.19.84])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 18 Jan 2022 12:42:26 +0000 (GMT)
-Message-ID: <6b6b8a2b-202c-8966-b3f7-5ce35cf40a7e@linux.ibm.com>
-Date:   Tue, 18 Jan 2022 13:42:26 +0100
+        Tue, 18 Jan 2022 07:45:00 -0500
+Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
+ relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ uk-mta-230-d_QmobujNXmDT8znvK2f3A-1; Tue, 18 Jan 2022 12:44:58 +0000
+X-MC-Unique: d_QmobujNXmDT8znvK2f3A-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
+ Server (TLS) id 15.0.1497.28; Tue, 18 Jan 2022 12:44:57 +0000
+Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
+ AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
+ 15.00.1497.028; Tue, 18 Jan 2022 12:44:57 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     "'Jason A. Donenfeld'" <Jason@zx2c4.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+CC:     "geert@linux-m68k.org" <geert@linux-m68k.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "wireguard@lists.zx2c4.com" <wireguard@lists.zx2c4.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
+        "tytso@mit.edu" <tytso@mit.edu>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jeanphilippe.aumasson@gmail.com" <jeanphilippe.aumasson@gmail.com>,
+        "ardb@kernel.org" <ardb@kernel.org>
+Subject: RE: [PATCH crypto v3 0/2] reduce code size from blake2s on m68k and
+ other small platforms
+Thread-Topic: [PATCH crypto v3 0/2] reduce code size from blake2s on m68k and
+ other small platforms
+Thread-Index: AQHYDGCZ1hhaA5g8jUud5pQLYuQbPqxotdeQ
+Date:   Tue, 18 Jan 2022 12:44:57 +0000
+Message-ID: <ad862f5ad048404ab452e25bba074824@AcuMS.aculab.com>
+References: <CAHmME9rxdksVZkN4DF_GabsEPrSDrKbo1cVQs77B_s-e2jZ64A@mail.gmail.com>
+ <YeZhVGczxcBl0sI9@gondor.apana.org.au>
+ <CAHmME9ogAW0o2PReNtsD+fFgwp28q2kP7WADtbd8kA7GsnKBpg@mail.gmail.com>
+In-Reply-To: <CAHmME9ogAW0o2PReNtsD+fFgwp28q2kP7WADtbd8kA7GsnKBpg@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH 0/5] kvm: fix latent guest entry/exit bugs
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-To:     Mark Rutland <mark.rutland@arm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, aleksandar.qemu.devel@gmail.com,
-        alexandru.elisei@arm.com, anup.patel@wdc.com,
-        aou@eecs.berkeley.edu, atish.patra@wdc.com,
-        benh@kernel.crashing.org, bp@alien8.de, catalin.marinas@arm.com,
-        chenhuacai@kernel.org, dave.hansen@linux.intel.com,
-        david@redhat.com, frankja@linux.ibm.com, frederic@kernel.org,
-        gor@linux.ibm.com, hca@linux.ibm.com, imbrenda@linux.ibm.com,
-        james.morse@arm.com, jmattson@google.com, joro@8bytes.org,
-        kvm@vger.kernel.org, maz@kernel.org, mingo@redhat.com,
-        mpe@ellerman.id.au, nsaenzju@redhat.com, palmer@dabbelt.com,
-        paulmck@kernel.org, paulus@samba.org, paul.walmsley@sifive.com,
-        seanjc@google.com, suzuki.poulose@arm.com, tglx@linutronix.de,
-        tsbogend@alpha.franken.de, vkuznets@redhat.com,
-        wanpengli@tencent.com, will@kernel.org
-References: <20220111153539.2532246-1-mark.rutland@arm.com>
- <127a6117-85fb-7477-983c-daf09e91349d@linux.ibm.com>
- <YeFqUlhqY+7uzUT1@FVFF77S0Q05N>
- <ae1a42ab-f719-4a4e-8d2a-e2b4fa6e9580@linux.ibm.com>
- <YeF7Wvz05JhyCx0l@FVFF77S0Q05N>
- <b66c4856-7826-9cff-83f3-007d7ed5635c@linux.ibm.com>
- <YeGUnwhbSvwJz5pD@FVFF77S0Q05N>
- <8aa0cada-7f00-47b3-41e4-8a9e7beaae47@redhat.com>
- <20220118120154.GA17938@C02TD0UTHF1T.local>
-From:   Christian Borntraeger <borntraeger@linux.ibm.com>
-In-Reply-To: <20220118120154.GA17938@C02TD0UTHF1T.local>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: kBuNuBs-U6Vi15T0uagzyQoDh0iT-1MZ
-X-Proofpoint-GUID: ryNn6W6_ACAD_AcE88cXBjk0KElOYo9l
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-18_03,2022-01-18_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 mlxlogscore=999
- suspectscore=0 malwarescore=0 spamscore=0 priorityscore=1501
- lowpriorityscore=0 impostorscore=0 adultscore=0 phishscore=0 bulkscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201180077
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+RnJvbTogSmFzb24gQS4gRG9uZW5mZWxkDQo+IFNlbnQ6IDE4IEphbnVhcnkgMjAyMiAxMTo0Mw0K
+PiANCj4gT24gMS8xOC8yMiwgSGVyYmVydCBYdSA8aGVyYmVydEBnb25kb3IuYXBhbmEub3JnLmF1
+PiB3cm90ZToNCj4gPiBBcyB0aGUgcGF0Y2hlcyB0aGF0IHRyaWdnZXJlZCB0aGlzIHdlcmVuJ3Qg
+cGFydCBvZiB0aGUgY3J5cHRvDQo+ID4gdHJlZSwgdGhpcyB3aWxsIGhhdmUgdG8gZ28gdGhyb3Vn
+aCB0aGUgcmFuZG9tIHRyZWUgaWYgeW91IHdhbnQNCj4gPiB0aGVtIGZvciA1LjE3Lg0KPiANCj4g
+U3VyZSwgd2lsbCBkby4NCg0KSSd2ZSByYW1tZWQgdGhlIGNvZGUgdGhyb3VnaCBnb2Rib2x0Li4u
+IGh0dHBzOi8vZ29kYm9sdC5vcmcvei9XdjY0ejl6RzgNCg0KU29tZSB0aGluZ3MgSSd2ZSBub3Rp
+Y2VkOw0KDQoxKSBUaGVyZSBpcyBubyBwb2ludCBoYXZpbmcgYWxsIHRoZSBpbmxpbmUgZnVuY3Rp
+b25zLg0KICAgRmFyIGJldHRlciB0byBoYXZlIHJlYWwgZnVuY3Rpb25zIHRvIGRvIHRoZSB3b3Jr
+Lg0KICAgR2l2ZW4gdGhlIGNvc3Qgb2YgaGFzaGluZyA2NCBieXRlcyBvZiBkYXRhIHRoZSBleHRy
+YQ0KICAgZnVuY3Rpb24gY2FsbCB3b24ndCBtYXR0ZXIuDQogICBJbmRlZWQgZm9yIHJlcGVhdGVk
+IGNhbGxzIGl0IHdpbGwgaGVscCBiZWNhdXNlIHRoZSByZXF1aXJlZA0KICAgY29kZSB3aWxsIGJl
+IGluIHRoZSBJLWNhY2hlLg0KDQoyKSBUaGUgY29tcGlsZXMgSSB0cmllZCBkbyBtYW5hZ2UgdG8g
+cmVtb3ZlIHRoZSBibGFrZTJfc2lnbWFbXVtdDQogICB3aGVuIHVucm9sbGluZyBldmVyeXRoaW5n
+IC0gd2hpY2ggaXMgYSBzbGlnaHQgZ2FpbiBmb3IgdGhlIGZ1bGwNCiAgIHVucm9sbC4gQnV0IEkg
+ZG91YnQgaXQgaXMgdGhhdCBzaWduaWZpY2FudCBpZiB0aGUgYWNjZXNzIGNhbg0KICAgZ2V0IHNl
+bnNpYmx5IG9wdGltaXNlZC4NCiAgIEZvciBub24teDg2IHRoYXQgbWlnaHQgcmVxdWlyZSBhbGwg
+dGhlIHZhbHVlcyBieSBtdWx0aXBsaWVkIGJ5IDQuDQoNCjMpIEFsdGhvdWdoIEcoKSBpcyBhIG1h
+c3NpdmUgcmVnaXN0ZXIgZGVwZW5kZW5jeSBjaGFpbiB0aGUgY29tcGlsZXINCiAgIGtub3dzIHRo
+YXQgRygsWzAtM10sKSBhcmUgaW5kZXBlbmRlbnQgYW5kIGNhbiBleGVjdXRlIGluIHBhcmFsbGVs
+Lg0KICAgVGhpcyBkb2VzIGhlbHAgZXhlY3V0aW9uIHRpbWUgb24gbXVsdGktaXNzdWUgY3B1IChs
+aWtlIHg4NikuDQogICBXaXRoIGNhcmUgaXQgb3VnaHQgdG8gYmUgcG9zc2libGUgdG8gdXNlIHRo
+ZSBzYW1lIGNvZGUgZm9yIEcoLFs0LTddLCkNCiAgIHdpdGhvdXQgc3RvcHBpbmcgdGhlIGNvbXBp
+bGVyIGludGVybGVhdmluZyBhbGwgdGhlIGluc3RydWN0aW9ucy4NCg0KNCkgSSBzdHJvbmdseSBz
+dXNwZWN0IHRoYXQgdXNpbmcgYSBsb29wIGZvciB0aGUgcm91bmRzIHdpbGwgaGF2ZQ0KICAgbWlu
+aW1hbCBpbXBhY3Qgb24gcGVyZm9ybWFuY2UgLSBlc3BlY2lhbGx5IGlmIHRoZSBmaXJzdCBjYWxs
+IGlzDQogICAnY29sZCBjYWNoZScuDQogICBCdXQgSSd2ZSBub3QgZ290IHRpbWUgdG8gdGVzdCB0
+aGUgY29kZS4NCg0KCURhdmlkDQoNCi0NClJlZ2lzdGVyZWQgQWRkcmVzcyBMYWtlc2lkZSwgQnJh
+bWxleSBSb2FkLCBNb3VudCBGYXJtLCBNaWx0b24gS2V5bmVzLCBNSzEgMVBULCBVSw0KUmVnaXN0
+cmF0aW9uIE5vOiAxMzk3Mzg2IChXYWxlcykNCg==
 
-
-Am 18.01.22 um 13:02 schrieb Mark Rutland:
-> On Mon, Jan 17, 2022 at 06:45:36PM +0100, Paolo Bonzini wrote:
->> On 1/14/22 16:19, Mark Rutland wrote:
->>> I also think there is another issue here. When an IRQ is taken from SIE, will
->>> user_mode(regs) always be false, or could it be true if the guest userspace is
->>> running? If it can be true I think tha context tracking checks can complain,
->>> and it*might*  be possible to trigger a panic().
->>
->> I think that it would be false, because the guest PSW is in the SIE block
->> and switched on SIE entry and exit, but I might be incorrect.
-> 
-> Ah; that's the crux of my confusion: I had thought the guest PSW would
-> be placed in the regular lowcore *_old_psw slots. From looking at the
-> entry asm it looks like the host PSW (around the invocation of SIE) is
-> stored there, since that's what the OUTSIDE + SIEEXIT handling is
-> checking for.
-> 
-> Assuming that's correct, I agree this problem doesn't exist, and there's
-> only the common RCU/tracing/lockdep management to fix.
-
-Will you provide an s390 patch in your next iteration or shall we then do
-one as soon as there is a v2? We also need to look into vsie.c where we
-also call sie64a
