@@ -2,51 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 822C8C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:41:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D328C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:42:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347145AbiARDlr (ORCPT
+        id S1346438AbiARDl7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:41:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39038 "EHLO
+        Mon, 17 Jan 2022 22:41:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353842AbiARDEo (ORCPT
+        with ESMTP id S1352911AbiARDER (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:04:44 -0500
+        Mon, 17 Jan 2022 22:04:17 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1E23C021987;
-        Mon, 17 Jan 2022 18:48:14 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56E89C02525E;
+        Mon, 17 Jan 2022 18:48:06 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A964612E8;
-        Tue, 18 Jan 2022 02:48:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADB61C36AF2;
-        Tue, 18 Jan 2022 02:48:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE6E6612CE;
+        Tue, 18 Jan 2022 02:48:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7DD8C36AEF;
+        Tue, 18 Jan 2022 02:48:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474093;
-        bh=BiDawCDCR9XnHyP+jduSugMt5j1biVVhOqB9aUPbh90=;
+        s=k20201202; t=1642474085;
+        bh=xAngeKfXCJtF/25f0h8+pSD9XBwTu6oIqZSVUBcS/cQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lpbc3MlOMtPU1yqEaK5S3n43dd6xmakvVcNn8Pj1DzJxQScWuvfIPSApy/DRAZBs4
-         8A8lV2SDmVYgzpocDbXra6BTScMC2weQdIQ/DN8n8Hiit/TnFE3tlP4AOa3Selg9lk
-         yMuuJpxL13AdJ54UzLNzHLyzRVi5RYofNRupNKoyTtYvGcyoQOe2Ntw4bPDOBvvFHo
-         MTrsl1KdeiDzKkylqKvzIqzNRNvLL0QODmogVCSKsmBcX2UpcUW61UPsVAAY9HXwsh
-         rnBelCdjoQC3ChJnOtiblliyJjCV6KM2htXtFr5dBef0DzrWUp8vcVVJnhK8OXzgyl
-         Dt7nJqdMUzKTA==
+        b=YGAzQC4hAK+kjM5cpXtld1hcnXg9d+GSMnRqYXnN+w+yjdeo+Ex/jGlni3/8qyi3n
+         PWX+KgGOAqy7ThKvGwzNCr5eOopUz61ePsRXYKeT1aEIsASYCAxcailZu7iY+5JmhG
+         +wiq/TSNqYEDEBc/nLs0SJpWthVwKa1M7Ts53ChmT0NjFBmMfzQtESrkHiiql5WHLt
+         DkZ6zwIFmq87e9BpvGF6vn85Er7LJm4llCZw3ZMJXXTQ1CopRv8yjWjgJn34/Xflt5
+         CWuIUhgsCOi11pG4rfBlfzdDrAiAj3xz97mQy3RZ93aZcO4NvXNnYliDgqlPidQ+UV
+         1zcdx3c1EU3VQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Paul Moore <paul@paul-moore.com>,
-        Gaosheng Cui <cuigaosheng1@huawei.com>,
-        Richard Guy Briggs <rgb@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, eparis@redhat.com,
-        linux-audit@redhat.com
-Subject: [PATCH AUTOSEL 4.19 33/59] audit: ensure userspace is penalized the same as the kernel when under pressure
-Date:   Mon, 17 Jan 2022 21:46:34 -0500
-Message-Id: <20220118024701.1952911-33-sashal@kernel.org>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        hawk@kernel.org, john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 28/59] bpf: Do not WARN in bpf_warn_invalid_xdp_action()
+Date:   Mon, 17 Jan 2022 21:46:29 -0500
+Message-Id: <20220118024701.1952911-28-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
 References: <20220118024701.1952911-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,67 +57,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paul Moore <paul@paul-moore.com>
+From: Paolo Abeni <pabeni@redhat.com>
 
-[ Upstream commit 8f110f530635af44fff1f4ee100ecef0bac62510 ]
+[ Upstream commit 2cbad989033bff0256675c38f96f5faab852af4b ]
 
-Due to the audit control mutex necessary for serializing audit
-userspace messages we haven't been able to block/penalize userspace
-processes that attempt to send audit records while the system is
-under audit pressure.  The result is that privileged userspace
-applications have a priority boost with respect to audit as they are
-not bound by the same audit queue throttling as the other tasks on
-the system.
+The WARN_ONCE() in bpf_warn_invalid_xdp_action() can be triggered by
+any bugged program, and even attaching a correct program to a NIC
+not supporting the given action.
 
-This patch attempts to restore some balance to the system when under
-audit pressure by blocking these privileged userspace tasks after
-they have finished their audit processing, and dropped the audit
-control mutex, but before they return to userspace.
+The resulting splat, beyond polluting the logs, fouls automated tools:
+e.g. a syzkaller reproducers using an XDP program returning an
+unsupported action will never pass validation.
 
-Reported-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-Tested-by: Gaosheng Cui <cuigaosheng1@huawei.com>
-Reviewed-by: Richard Guy Briggs <rgb@redhat.com>
-Signed-off-by: Paul Moore <paul@paul-moore.com>
+Replace the WARN_ONCE with a less intrusive pr_warn_once().
+
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Link: https://lore.kernel.org/bpf/016ceec56e4817ebb2a9e35ce794d5c917df572c.1638189075.git.pabeni@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/audit.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
+ net/core/filter.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/kernel/audit.c b/kernel/audit.c
-index 968921d376b98..c5e034fe14bbb 100644
---- a/kernel/audit.c
-+++ b/kernel/audit.c
-@@ -1528,6 +1528,20 @@ static void audit_receive(struct sk_buff  *skb)
- 		nlh = nlmsg_next(nlh, &len);
- 	}
- 	audit_ctl_unlock();
-+
-+	/* can't block with the ctrl lock, so penalize the sender now */
-+	if (audit_backlog_limit &&
-+	    (skb_queue_len(&audit_queue) > audit_backlog_limit)) {
-+		DECLARE_WAITQUEUE(wait, current);
-+
-+		/* wake kauditd to try and flush the queue */
-+		wake_up_interruptible(&kauditd_wait);
-+
-+		add_wait_queue_exclusive(&audit_backlog_wait, &wait);
-+		set_current_state(TASK_UNINTERRUPTIBLE);
-+		schedule_timeout(audit_backlog_wait_time);
-+		remove_wait_queue(&audit_backlog_wait, &wait);
-+	}
- }
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 01496c7cb42d7..7d68c98a00aa8 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -5534,9 +5534,9 @@ void bpf_warn_invalid_xdp_action(u32 act)
+ {
+ 	const u32 act_max = XDP_REDIRECT;
  
- /* Run custom bind function on netlink socket group connect or bind requests. */
-@@ -1772,7 +1786,9 @@ struct audit_buffer *audit_log_start(struct audit_context *ctx, gfp_t gfp_mask,
- 	 *    task_tgid_vnr() since auditd_pid is set in audit_receive_msg()
- 	 *    using a PID anchored in the caller's namespace
- 	 * 2. generator holding the audit_cmd_mutex - we don't want to block
--	 *    while holding the mutex */
-+	 *    while holding the mutex, although we do penalize the sender
-+	 *    later in audit_receive() when it is safe to block
-+	 */
- 	if (!(auditd_test_task(current) || audit_ctl_owner_current())) {
- 		long stime = audit_backlog_wait_time;
+-	WARN_ONCE(1, "%s XDP return value %u, expect packet loss!\n",
+-		  act > act_max ? "Illegal" : "Driver unsupported",
+-		  act);
++	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
++		     act > act_max ? "Illegal" : "Driver unsupported",
++		     act);
+ }
+ EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
  
 -- 
 2.34.1
