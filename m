@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E235C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 18:48:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB59FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 18:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348348AbiARSsP (ORCPT
+        id S1348319AbiARSsS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 13:48:15 -0500
-Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:43836 "EHLO
-        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1348294AbiARSrr (ORCPT
+        Tue, 18 Jan 2022 13:48:18 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:3879 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348356AbiARSrs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 13:47:47 -0500
+        Tue, 18 Jan 2022 13:47:48 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
   d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1642531667; x=1674067667;
+  t=1642531668; x=1674067668;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version;
-  bh=/g2ZATrUo6mt07qWvvuEMbH4ZzVYX8IksyWJq5PpQ8Y=;
-  b=LIXin1Iu7qjhMwW60P2Zx1WyLwo7ouw0w9arjigCvNcGMKPA/ZGOqs2I
-   uIjY4vq2XvsMlfv6G4qo3hQhl26k629kGlncAlVlsLUsxKOP67Mi6j6Su
-   cZyabHhRQUIvmn60r1FT5mxCEaUSZxYbfNfPJjtHDeNZt1xGshOsGVavN
-   g=;
-Received: from unknown (HELO ironmsg05-sd.qualcomm.com) ([10.53.140.145])
-  by alexa-out-sd-01.qualcomm.com with ESMTP; 18 Jan 2022 10:47:45 -0800
+  bh=pfoQ5BboI4iWma110GILo0a/QjTbyn8jZoAt2MIZDP8=;
+  b=PCGFgEcLPzmfHiuScFW83u1hvTJJi8qs3seY9PFh0Eu7ch57CWB6WCBg
+   Ll6m6oWJjwnFmMjwQV4BEaN132oheOKaycFZoD2ryN3QuAHj5gtXqZ6eZ
+   /pS/p9MRbKkNxcJWDK+H/HNPUiZhg+MTZtrLCJyDSMMjOA7rGFZBzJHqx
+   E=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 18 Jan 2022 10:47:48 -0800
 X-QCInternal: smtphost
 Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg05-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 10:47:44 -0800
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 10:47:47 -0800
 Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
  nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 18 Jan 2022 10:47:44 -0800
+ 15.2.922.19; Tue, 18 Jan 2022 10:47:47 -0800
 Received: from khsieh-linux1.qualcomm.com (10.80.80.8) by
  nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Tue, 18 Jan 2022 10:47:43 -0800
+ 15.2.922.19; Tue, 18 Jan 2022 10:47:46 -0800
 From:   Kuogee Hsieh <quic_khsieh@quicinc.com>
 To:     <dri-devel@lists.freedesktop.org>, <robdclark@gmail.com>,
         <sean@poorly.run>, <swboyd@chromium.org>, <vkoul@kernel.org>,
         <daniel@ffwll.ch>, <airlied@linux.ie>, <agross@kernel.org>,
         <dmitry.baryshkov@linaro.org>, <bjorn.andersson@linaro.org>
-CC:     Kuogee Hsieh <quic_khsieh@quicinc.com>,
-        <quic_abhinavk@quicinc.com>, <aravindh@codeaurora.org>,
+CC:     Kuogee Hsieh <khsieh@codeaurora.org>, <quic_abhinavk@quicinc.com>,
+        <aravindh@codeaurora.org>, <quic_khsieh@quicinc.com>,
         <quic_sbillaka@quicinc.com>, <freedreno@lists.freedesktop.org>,
         <linux-arm-msm@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v18 1/4] drm/msm/dp: do not initialize phy until plugin interrupt received
-Date:   Tue, 18 Jan 2022 10:47:25 -0800
-Message-ID: <1642531648-8448-2-git-send-email-quic_khsieh@quicinc.com>
+Subject: [PATCH v18 3/4] drm/msm/dp: add support of tps4 (training pattern 4) for HBR3
+Date:   Tue, 18 Jan 2022 10:47:27 -0800
+Message-ID: <1642531648-8448-4-git-send-email-quic_khsieh@quicinc.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1642531648-8448-1-git-send-email-quic_khsieh@quicinc.com>
 References: <1642531648-8448-1-git-send-email-quic_khsieh@quicinc.com>
@@ -60,486 +60,131 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Current DP drivers have regulators, clocks, irq and phy are grouped
-together within a function and executed not in a symmetric manner.
-This increase difficulty of code maintenance and limited code scalability.
-This patch divides the driver life cycle of operation into four states,
-resume (including booting up), dongle plugin, dongle unplugged and suspend.
-Regulators, core clocks and irq are grouped together and enabled at resume
-(or booting up) so that the DP controller is armed and ready to receive HPD
-plugin interrupts. HPD plugin interrupt is generated when a dongle plugs
-into DUT (device under test). Once HPD plugin interrupt is received, DP
-controller will initialize phy so that dpcd read/write will function and
-following link training can be proceeded successfully. DP phy will be
-disabled after main link is teared down at end of unplugged HPD interrupt
-handle triggered by dongle unplugged out of DUT. Finally regulators, code
-clocks and irq are disabled at corresponding suspension.
+From: Kuogee Hsieh <khsieh@codeaurora.org>
+
+Some DP sinkers prefer to use tps4 instead of tps3 during training #2.
+This patch will use tps4 to perform link training #2 if sinker's DPCD
+supports it.
 
 Changes in V2:
--- removed unnecessary dp_ctrl NULL check
--- removed unnecessary phy init_count and power_count DRM_DEBUG_DP logs
--- remove flip parameter out of dp_ctrl_irq_enable()
--- add fixes tag
+-- replace  dp_catalog_ctrl_set_pattern() with  dp_catalog_ctrl_set_pattern_state_bit()
 
 Changes in V3:
--- call dp_display_host_phy_init() instead of dp_ctrl_phy_init() at
-        dp_display_host_init() for eDP
+-- change state_ctrl_bits type to u32 and pattern type to u8
 
 Changes in V4:
--- rewording commit text to match this commit changes
-
-Changes in V5:
--- rebase on top of msm-next branch
-
-Changes in V6:
--- delete flip variable
-
-Changes in V7:
--- dp_ctrl_irq_enable/disabe() merged into dp_ctrl_reset_irq_ctrl()
-
-Changes in V8:
--- add more detail comment regrading dp phy at dp_display_host_init()
-
-Changes in V9:
--- remove set phy_initialized to false when -ECONNRESET detected
+-- align } else if { and } else {
 
 Changes in v10:
 --  group into one series
 
 Changes in v11:
--- drop drm/msm/dp: dp_link_parse_sink_count() return immediately
-	if aux read
+-- drop drm/msm/dp: dp_link_parse_sink_count() return immediately if aux read
 
-Changes in v12:
--- move dp_display_host_phy_exit() after dp_display_host_deinit()
-
-Changes in v13:
--- do not execute phy_init until plugged_in interrupt for edp, same as DP.
-
-Changes in v14:
--- remove redundant dp->core_initialized = false form dp_pm_suspend.
-
-Changes in v15:
--- remove core_initialized flag check at both host_init and host_deinit
-
-Changes in v16:
--- remove dp_display_host_phy_exit core_initialized=false at dp_pm_suspend
-
-Changes in v17:
--- remove core_initialized checking before execute attention_cb()
-
-Changes in v18:
--- remove core_initialized checking at dp_pm_suspend
-
-Fixes: 8ede2ecc3e5e ("drm/msm/dp: Add DP compliance tests on Snapdragon Chipsets")
 Signed-off-by: Kuogee Hsieh <quic_khsieh@quicinc.com>
----
- drivers/gpu/drm/msm/dp/dp_ctrl.c    |  80 ++++++++++----------------
- drivers/gpu/drm/msm/dp/dp_ctrl.h    |   8 ++-
- drivers/gpu/drm/msm/dp/dp_display.c | 111 ++++++++++++++++++------------------
- 3 files changed, 92 insertions(+), 107 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-index c724cb0..9c80b49 100644
---- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
-+++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
-@@ -1365,60 +1365,44 @@ static int dp_ctrl_enable_stream_clocks(struct dp_ctrl_private *ctrl)
- 	return ret;
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+---
+ drivers/gpu/drm/msm/dp/dp_catalog.c | 12 ++++++------
+ drivers/gpu/drm/msm/dp/dp_catalog.h |  2 +-
+ drivers/gpu/drm/msm/dp/dp_ctrl.c    | 17 ++++++++++++-----
+ 3 files changed, 19 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.c b/drivers/gpu/drm/msm/dp/dp_catalog.c
+index 6ae9b29..64f0b26 100644
+--- a/drivers/gpu/drm/msm/dp/dp_catalog.c
++++ b/drivers/gpu/drm/msm/dp/dp_catalog.c
+@@ -456,19 +456,19 @@ void dp_catalog_ctrl_config_msa(struct dp_catalog *dp_catalog,
+ 	dp_write_p0(catalog, MMSS_DP_DSC_DTO, 0x0);
  }
  
--int dp_ctrl_host_init(struct dp_ctrl *dp_ctrl, bool flip, bool reset)
-+void dp_ctrl_reset_irq_ctrl(struct dp_ctrl *dp_ctrl, bool enable)
-+{
-+	struct dp_ctrl_private *ctrl;
-+
-+	ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
-+
-+	dp_catalog_ctrl_reset(ctrl->catalog);
-+
-+	if (enable)
-+		dp_catalog_ctrl_enable_irq(ctrl->catalog, enable);
-+}
-+
-+void dp_ctrl_phy_init(struct dp_ctrl *dp_ctrl)
+-int dp_catalog_ctrl_set_pattern(struct dp_catalog *dp_catalog,
+-					u32 pattern)
++int dp_catalog_ctrl_set_pattern_state_bit(struct dp_catalog *dp_catalog,
++					u32 state_bit)
  {
- 	struct dp_ctrl_private *ctrl;
- 	struct dp_io *dp_io;
- 	struct phy *phy;
+ 	int bit, ret;
+ 	u32 data;
+ 	struct dp_catalog_private *catalog = container_of(dp_catalog,
+ 				struct dp_catalog_private, dp_catalog);
  
--	if (!dp_ctrl) {
--		DRM_ERROR("Invalid input data\n");
--		return -EINVAL;
--	}
--
- 	ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
- 	dp_io = &ctrl->parser->io;
- 	phy = dp_io->phy;
+-	bit = BIT(pattern - 1);
+-	DRM_DEBUG_DP("hw: bit=%d train=%d\n", bit, pattern);
++	bit = BIT(state_bit - 1);
++	DRM_DEBUG_DP("hw: bit=%d train=%d\n", bit, state_bit);
+ 	dp_catalog_ctrl_state_ctrl(dp_catalog, bit);
  
--	ctrl->dp_ctrl.orientation = flip;
--
--	if (reset)
--		dp_catalog_ctrl_reset(ctrl->catalog);
--
--	DRM_DEBUG_DP("flip=%d\n", flip);
- 	dp_catalog_ctrl_phy_reset(ctrl->catalog);
- 	phy_init(phy);
--	dp_catalog_ctrl_enable_irq(ctrl->catalog, true);
--
--	return 0;
- }
+-	bit = BIT(pattern - 1) << DP_MAINLINK_READY_LINK_TRAINING_SHIFT;
++	bit = BIT(state_bit - 1) << DP_MAINLINK_READY_LINK_TRAINING_SHIFT;
  
--/**
-- * dp_ctrl_host_deinit() - Uninitialize DP controller
-- * @dp_ctrl: Display Port Driver data
-- *
-- * Perform required steps to uninitialize DP controller
-- * and its resources.
-- */
--void dp_ctrl_host_deinit(struct dp_ctrl *dp_ctrl)
-+void dp_ctrl_phy_exit(struct dp_ctrl *dp_ctrl)
- {
- 	struct dp_ctrl_private *ctrl;
- 	struct dp_io *dp_io;
- 	struct phy *phy;
- 
--	if (!dp_ctrl) {
--		DRM_ERROR("Invalid input data\n");
--		return;
--	}
--
- 	ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
- 	dp_io = &ctrl->parser->io;
- 	phy = dp_io->phy;
- 
--	dp_catalog_ctrl_enable_irq(ctrl->catalog, false);
-+	dp_catalog_ctrl_phy_reset(ctrl->catalog);
- 	phy_exit(phy);
--
--	DRM_DEBUG_DP("Host deinitialized successfully\n");
- }
- 
- static bool dp_ctrl_use_fixed_nvid(struct dp_ctrl_private *ctrl)
-@@ -1488,7 +1472,10 @@ static int dp_ctrl_deinitialize_mainlink(struct dp_ctrl_private *ctrl)
- 	}
- 
- 	phy_power_off(phy);
-+
-+	/* aux channel down, reinit phy */
- 	phy_exit(phy);
-+	phy_init(phy);
- 
- 	return 0;
- }
-@@ -1893,8 +1880,14 @@ int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl)
+ 	/* Poll for mainlink ready status */
+ 	ret = readx_poll_timeout(readl, catalog->io->dp_controller.link.base +
+@@ -476,7 +476,7 @@ int dp_catalog_ctrl_set_pattern(struct dp_catalog *dp_catalog,
+ 					data, data & bit,
+ 					POLLING_SLEEP_US, POLLING_TIMEOUT_US);
+ 	if (ret < 0) {
+-		DRM_ERROR("set pattern for link_train=%d failed\n", pattern);
++		DRM_ERROR("set state_bit for link_train=%d failed\n", state_bit);
  		return ret;
  	}
+ 	return 0;
+diff --git a/drivers/gpu/drm/msm/dp/dp_catalog.h b/drivers/gpu/drm/msm/dp/dp_catalog.h
+index 6965afa..7dea101 100644
+--- a/drivers/gpu/drm/msm/dp/dp_catalog.h
++++ b/drivers/gpu/drm/msm/dp/dp_catalog.h
+@@ -94,7 +94,7 @@ void dp_catalog_ctrl_mainlink_ctrl(struct dp_catalog *dp_catalog, bool enable);
+ void dp_catalog_ctrl_config_misc(struct dp_catalog *dp_catalog, u32 cc, u32 tb);
+ void dp_catalog_ctrl_config_msa(struct dp_catalog *dp_catalog, u32 rate,
+ 				u32 stream_rate_khz, bool fixed_nvid);
+-int dp_catalog_ctrl_set_pattern(struct dp_catalog *dp_catalog, u32 pattern);
++int dp_catalog_ctrl_set_pattern_state_bit(struct dp_catalog *dp_catalog, u32 pattern);
+ void dp_catalog_ctrl_reset(struct dp_catalog *dp_catalog);
+ bool dp_catalog_ctrl_mainlink_ready(struct dp_catalog *dp_catalog);
+ void dp_catalog_ctrl_enable_irq(struct dp_catalog *dp_catalog, bool enable);
+diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.c b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+index 9c80b49..f98df93 100644
+--- a/drivers/gpu/drm/msm/dp/dp_ctrl.c
++++ b/drivers/gpu/drm/msm/dp/dp_ctrl.c
+@@ -1083,7 +1083,7 @@ static int dp_ctrl_link_train_1(struct dp_ctrl_private *ctrl,
  
-+	DRM_DEBUG_DP("Before, phy=%x init_count=%d power_on=%d\n",
-+		(u32)(uintptr_t)phy, phy->init_count, phy->power_count);
-+
- 	phy_power_off(phy);
+ 	*training_step = DP_TRAINING_1;
  
-+	DRM_DEBUG_DP("After, phy=%x init_count=%d power_on=%d\n",
-+		(u32)(uintptr_t)phy, phy->init_count, phy->power_count);
-+
- 	/* aux channel down, reinit phy */
- 	phy_exit(phy);
- 	phy_init(phy);
-@@ -1903,23 +1896,6 @@ int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl)
- 	return ret;
- }
- 
--void dp_ctrl_off_phy(struct dp_ctrl *dp_ctrl)
--{
--	struct dp_ctrl_private *ctrl;
--	struct dp_io *dp_io;
--	struct phy *phy;
--
--	ctrl = container_of(dp_ctrl, struct dp_ctrl_private, dp_ctrl);
--	dp_io = &ctrl->parser->io;
--	phy = dp_io->phy;
--
--	dp_catalog_ctrl_reset(ctrl->catalog);
--
--	phy_exit(phy);
--
--	DRM_DEBUG_DP("DP off phy done\n");
--}
--
- int dp_ctrl_off(struct dp_ctrl *dp_ctrl)
+-	ret = dp_catalog_ctrl_set_pattern(ctrl->catalog, DP_TRAINING_PATTERN_1);
++	ret = dp_catalog_ctrl_set_pattern_state_bit(ctrl->catalog, 1);
+ 	if (ret)
+ 		return ret;
+ 	dp_ctrl_train_pattern_set(ctrl, DP_TRAINING_PATTERN_1 |
+@@ -1181,7 +1181,8 @@ static int dp_ctrl_link_train_2(struct dp_ctrl_private *ctrl,
+ 			int *training_step)
  {
- 	struct dp_ctrl_private *ctrl;
-@@ -1947,10 +1923,14 @@ int dp_ctrl_off(struct dp_ctrl *dp_ctrl)
- 		DRM_ERROR("Failed to disable link clocks. ret=%d\n", ret);
- 	}
+ 	int tries = 0, ret = 0;
+-	char pattern;
++	u8 pattern;
++	u32 state_ctrl_bit;
+ 	int const maximum_retries = 5;
+ 	u8 link_status[DP_LINK_STATUS_SIZE];
  
-+	DRM_DEBUG_DP("Before, phy=%x init_count=%d power_on=%d\n",
-+		(u32)(uintptr_t)phy, phy->init_count, phy->power_count);
-+
- 	phy_power_off(phy);
--	phy_exit(phy);
+@@ -1189,12 +1190,18 @@ static int dp_ctrl_link_train_2(struct dp_ctrl_private *ctrl,
  
--	DRM_DEBUG_DP("DP off done\n");
-+	DRM_DEBUG_DP("After, phy=%x init_count=%d power_on=%d\n",
-+		(u32)(uintptr_t)phy, phy->init_count, phy->power_count);
-+
- 	return ret;
- }
+ 	*training_step = DP_TRAINING_2;
  
-diff --git a/drivers/gpu/drm/msm/dp/dp_ctrl.h b/drivers/gpu/drm/msm/dp/dp_ctrl.h
-index 2363a2d..2433edb 100644
---- a/drivers/gpu/drm/msm/dp/dp_ctrl.h
-+++ b/drivers/gpu/drm/msm/dp/dp_ctrl.h
-@@ -19,12 +19,9 @@ struct dp_ctrl {
- 	u32 pixel_rate;
- };
- 
--int dp_ctrl_host_init(struct dp_ctrl *dp_ctrl, bool flip, bool reset);
--void dp_ctrl_host_deinit(struct dp_ctrl *dp_ctrl);
- int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl);
- int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl);
- int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl);
--void dp_ctrl_off_phy(struct dp_ctrl *dp_ctrl);
- int dp_ctrl_off(struct dp_ctrl *dp_ctrl);
- void dp_ctrl_push_idle(struct dp_ctrl *dp_ctrl);
- void dp_ctrl_isr(struct dp_ctrl *dp_ctrl);
-@@ -34,4 +31,9 @@ struct dp_ctrl *dp_ctrl_get(struct device *dev, struct dp_link *link,
- 			struct dp_power *power, struct dp_catalog *catalog,
- 			struct dp_parser *parser);
- 
-+void dp_ctrl_reset_irq_ctrl(struct dp_ctrl *dp_ctrl, bool enable);
-+void dp_ctrl_phy_init(struct dp_ctrl *dp_ctrl);
-+void dp_ctrl_phy_exit(struct dp_ctrl *dp_ctrl);
-+void dp_ctrl_irq_phy_exit(struct dp_ctrl *dp_ctrl);
-+
- #endif /* _DP_CTRL_H_ */
-diff --git a/drivers/gpu/drm/msm/dp/dp_display.c b/drivers/gpu/drm/msm/dp/dp_display.c
-index 7cc4d21..3059023 100644
---- a/drivers/gpu/drm/msm/dp/dp_display.c
-+++ b/drivers/gpu/drm/msm/dp/dp_display.c
-@@ -83,6 +83,7 @@ struct dp_display_private {
- 
- 	/* state variables */
- 	bool core_initialized;
-+	bool phy_initialized;
- 	bool hpd_irq_on;
- 	bool audio_supported;
- 
-@@ -372,36 +373,45 @@ static int dp_display_process_hpd_high(struct dp_display_private *dp)
- 	return rc;
- }
- 
--static void dp_display_host_init(struct dp_display_private *dp, int reset)
-+static void dp_display_host_phy_init(struct dp_display_private *dp)
- {
--	bool flip = false;
-+	DRM_DEBUG_DP("core_init=%d phy_init=%d\n",
-+			dp->core_initialized, dp->phy_initialized);
- 
--	DRM_DEBUG_DP("core_initialized=%d\n", dp->core_initialized);
--	if (dp->core_initialized) {
--		DRM_DEBUG_DP("DP core already initialized\n");
--		return;
-+	if (!dp->phy_initialized) {
-+		dp_ctrl_phy_init(dp->ctrl);
-+		dp->phy_initialized = true;
- 	}
-+}
-+
-+static void dp_display_host_phy_exit(struct dp_display_private *dp)
-+{
-+	DRM_DEBUG_DP("core_init=%d phy_init=%d\n",
-+			dp->core_initialized, dp->phy_initialized);
- 
--	if (dp->usbpd->orientation == ORIENTATION_CC2)
--		flip = true;
-+	if (dp->phy_initialized) {
-+		dp_ctrl_phy_exit(dp->ctrl);
-+		dp->phy_initialized = false;
+-	if (drm_dp_tps3_supported(ctrl->panel->dpcd))
++	if (drm_dp_tps4_supported(ctrl->panel->dpcd)) {
++		pattern = DP_TRAINING_PATTERN_4;
++		state_ctrl_bit = 4;
++	} else if (drm_dp_tps3_supported(ctrl->panel->dpcd)) {
+ 		pattern = DP_TRAINING_PATTERN_3;
+-	else
++		state_ctrl_bit = 3;
++	} else {
+ 		pattern = DP_TRAINING_PATTERN_2;
++		state_ctrl_bit = 2;
 +	}
-+}
-+
-+static void dp_display_host_init(struct dp_display_private *dp)
-+{
-+	DRM_DEBUG_DP("core_initialized=%d\n", dp->core_initialized);
  
--	dp_power_init(dp->power, flip);
--	dp_ctrl_host_init(dp->ctrl, flip, reset);
-+	dp_power_init(dp->power, false);
-+	dp_ctrl_reset_irq_ctrl(dp->ctrl, true);
- 	dp_aux_init(dp->aux);
- 	dp->core_initialized = true;
- }
- 
- static void dp_display_host_deinit(struct dp_display_private *dp)
- {
--	if (!dp->core_initialized) {
--		DRM_DEBUG_DP("DP core not initialized\n");
--		return;
--	}
-+	DRM_DEBUG_DP("core_initialized=%d\n", dp->core_initialized);
- 
--	dp_ctrl_host_deinit(dp->ctrl);
-+	dp_ctrl_reset_irq_ctrl(dp->ctrl, false);
- 	dp_aux_deinit(dp->aux);
- 	dp_power_deinit(dp->power);
--
- 	dp->core_initialized = false;
- }
- 
-@@ -409,7 +419,7 @@ static int dp_display_usbpd_configure_cb(struct device *dev)
- {
- 	struct dp_display_private *dp = dev_get_dp_display_private(dev);
- 
--	dp_display_host_init(dp, false);
-+	dp_display_host_phy_init(dp);
- 
- 	return dp_display_process_hpd_high(dp);
- }
-@@ -530,11 +540,6 @@ static int dp_hpd_plug_handle(struct dp_display_private *dp, u32 data)
- 	ret = dp_display_usbpd_configure_cb(&dp->pdev->dev);
- 	if (ret) {	/* link train failed */
- 		dp->hpd_state = ST_DISCONNECTED;
--
--		if (ret == -ECONNRESET) { /* cable unplugged */
--			dp->core_initialized = false;
--		}
--
- 	} else {
- 		/* start sentinel checking in case of missing uevent */
- 		dp_add_event(dp, EV_CONNECT_PENDING_TIMEOUT, 0, tout);
-@@ -604,8 +609,7 @@ static int dp_hpd_unplug_handle(struct dp_display_private *dp, u32 data)
- 	if (state == ST_DISCONNECTED) {
- 		/* triggered by irq_hdp with sink_count = 0 */
- 		if (dp->link->sink_count == 0) {
--			dp_ctrl_off_phy(dp->ctrl);
--			dp->core_initialized = false;
-+			dp_display_host_phy_exit(dp);
- 		}
- 		mutex_unlock(&dp->event_mutex);
- 		return 0;
-@@ -667,7 +671,6 @@ static int dp_disconnect_pending_timeout(struct dp_display_private *dp, u32 data
- static int dp_irq_hpd_handle(struct dp_display_private *dp, u32 data)
- {
- 	u32 state;
--	int ret;
- 
- 	mutex_lock(&dp->event_mutex);
- 
-@@ -692,16 +695,8 @@ static int dp_irq_hpd_handle(struct dp_display_private *dp, u32 data)
- 		return 0;
- 	}
- 
--	/*
--	 * dp core (ahb/aux clks) must be initialized before
--	 * irq_hpd be handled
--	 */
--	if (dp->core_initialized) {
--		ret = dp_display_usbpd_attention_cb(&dp->pdev->dev);
--		if (ret == -ECONNRESET) { /* cable unplugged */
--			dp->core_initialized = false;
--		}
--	}
-+	dp_display_usbpd_attention_cb(&dp->pdev->dev);
-+
- 	DRM_DEBUG_DP("hpd_state=%d\n", state);
- 
- 	mutex_unlock(&dp->event_mutex);
-@@ -892,12 +887,19 @@ static int dp_display_disable(struct dp_display_private *dp, u32 data)
- 
- 	dp_display->audio_enabled = false;
- 
--	/* triggered by irq_hpd with sink_count = 0 */
- 	if (dp->link->sink_count == 0) {
-+		/*
-+		 * irq_hpd with sink_count = 0
-+		 * hdmi unplugged out of dongle
-+		 */
- 		dp_ctrl_off_link_stream(dp->ctrl);
- 	} else {
-+		/*
-+		 * unplugged interrupt
-+		 * dongle unplugged out of DUT
-+		 */
- 		dp_ctrl_off(dp->ctrl);
--		dp->core_initialized = false;
-+		dp_display_host_phy_exit(dp);
- 	}
- 
- 	dp_display->power_on = false;
-@@ -1027,7 +1029,7 @@ void msm_dp_snapshot(struct msm_disp_state *disp_state, struct msm_dp *dp)
- static void dp_display_config_hpd(struct dp_display_private *dp)
- {
- 
--	dp_display_host_init(dp, true);
-+	dp_display_host_init(dp);
- 	dp_catalog_ctrl_hpd_config(dp->catalog);
- 
- 	/* Enable interrupt first time
-@@ -1306,20 +1308,23 @@ static int dp_pm_resume(struct device *dev)
- 	dp->hpd_state = ST_DISCONNECTED;
- 
- 	/* turn on dp ctrl/phy */
--	dp_display_host_init(dp, true);
-+	dp_display_host_init(dp);
- 
- 	dp_catalog_ctrl_hpd_config(dp->catalog);
- 
--	/*
--	 * set sink to normal operation mode -- D0
--	 * before dpcd read
--	 */
--	dp_link_psm_config(dp->link, &dp->panel->link_info, false);
- 
- 	if (dp_catalog_link_is_connected(dp->catalog)) {
-+		/*
-+		 * set sink to normal operation mode -- D0
-+		 * before dpcd read
-+		 */
-+		dp_display_host_phy_init(dp);
-+		dp_link_psm_config(dp->link, &dp->panel->link_info, false);
- 		sink_count = drm_dp_read_sink_count(dp->aux);
- 		if (sink_count < 0)
- 			sink_count = 0;
-+
-+		dp_display_host_phy_exit(dp);
- 	}
- 
- 	dp->link->sink_count = sink_count;
-@@ -1358,18 +1363,16 @@ static int dp_pm_suspend(struct device *dev)
- 	DRM_DEBUG_DP("Before, core_inited=%d power_on=%d\n",
- 			dp->core_initialized, dp_display->power_on);
- 
--	if (dp->core_initialized == true) {
--		/* mainlink enabled */
--		if (dp_power_clk_status(dp->power, DP_CTRL_PM))
--			dp_ctrl_off_link_stream(dp->ctrl);
-+	/* mainlink enabled */
-+	if (dp_power_clk_status(dp->power, DP_CTRL_PM))
-+		dp_ctrl_off_link_stream(dp->ctrl);
- 
--		dp_display_host_deinit(dp);
--	}
--
--	dp->hpd_state = ST_SUSPENDED;
-+	dp_display_host_phy_exit(dp);
- 
- 	/* host_init will be called at pm_resume */
--	dp->core_initialized = false;
-+	dp_display_host_deinit(dp);
-+
-+	dp->hpd_state = ST_SUSPENDED;
- 
- 	DRM_DEBUG_DP("After, core_inited=%d power_on=%d\n",
- 			dp->core_initialized, dp_display->power_on);
-@@ -1535,7 +1538,7 @@ int msm_dp_display_enable(struct msm_dp *dp, struct drm_encoder *encoder)
- 	state =  dp_display->hpd_state;
- 
- 	if (state == ST_DISPLAY_OFF)
--		dp_display_host_init(dp_display, true);
-+		dp_display_host_phy_init(dp_display);
- 
- 	dp_display_enable(dp_display, 0);
+-	ret = dp_catalog_ctrl_set_pattern(ctrl->catalog, pattern);
++	ret = dp_catalog_ctrl_set_pattern_state_bit(ctrl->catalog, state_ctrl_bit);
+ 	if (ret)
+ 		return ret;
  
 -- 
 The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
