@@ -2,48 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C5AFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:23:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5685C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:23:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357480AbiARDVF (ORCPT
+        id S1357734AbiARDVZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:21:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38906 "EHLO
+        Mon, 17 Jan 2022 22:21:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348476AbiARDI1 (ORCPT
+        with ESMTP id S1352437AbiARDIk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:08:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F88DC0617AF;
-        Mon, 17 Jan 2022 18:50:00 -0800 (PST)
+        Mon, 17 Jan 2022 22:08:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DB80C061747;
+        Mon, 17 Jan 2022 18:51:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 52B94B811CE;
-        Tue, 18 Jan 2022 02:49:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF2FBC36AE3;
-        Tue, 18 Jan 2022 02:49:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D92B56133E;
+        Tue, 18 Jan 2022 02:51:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 986DAC36AEB;
+        Tue, 18 Jan 2022 02:51:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474198;
-        bh=uDx30uAgUcsN7K0VNe2fp8EuYvLg5djITcl6kF56cWw=;
+        s=k20201202; t=1642474261;
+        bh=gAdR1OM5DyzXldaoTGerOPYk5Q5HS47XdNIAaB8QhhY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CFLEyGmrrKWAUqT0EvwPt3Twk/EQdMBK3hdI0Qb568TZ44BTUa6rBiOugnGjafT0H
-         pC7eXpfP8Z8s0Sw7M01d2J3pm4dF6ZvpBkm5o/KDsNBX/hdLs/Tjp8xefXeO5S/dls
-         eiqqZzxYBuTUXCrZubfqsnCnZ9MSJ8FJO+X2OXIr4Nbd2wbaquKBz4VrNkiF3muxsL
-         qUW6bN2W7GXUEsth/U/iHatabwEvsg4QVHW5RJ7ly4q4GY1ECD0SgeEBGZNOvDsZei
-         t2KOLVhpGfI7twmiXxyTX5WgIqx5se/N/KU1Nl3+Dec0Q/lCp1xx5Sg7HaGIske8FH
-         rKt0UbJY+tjJA==
+        b=aN7hgv5eD3xtN9pR0wddgdteEuI1gMBl6y20f9sVP8mgvciYM06BhmXThh2vpleb+
+         9wiJd3xzibGUqucGB0we2/oWICgysWqRjlqD13x00QQFIEt5ISqF6FZqWmC9dxvO5z
+         WhsuZmBU0U/84bPVxBhQEIQCkWe0MVet21/N74bvab5zFWEYoKa9IX/yFUfWzXQxnD
+         W8k0isA9Tg4rUCXsPRUf84UT9Ew0Uum+dwIPgWoH/j/hQ3XXy9yqQOl4eK+f+G3xWp
+         3KQfwPktGMJ0fHvCK1CuZ8fStDhRp3oKDMAKzd51vsWHGR8+fblYOZfsszrrDn//VY
+         B0e/Iv4BRh+Kw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        linus.walleij@linaro.org, avolmat@me.com, daniel@thingy.jp,
-        eugen.hristev@microchip.com, romain.perier@gmail.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.14 16/56] ARM: imx: rename DEBUG_IMX21_IMX27_UART to DEBUG_IMX27_UART
-Date:   Mon, 17 Jan 2022 21:48:28 -0500
-Message-Id: <20220118024908.1953673-16-sashal@kernel.org>
+Cc:     Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>, clm@fb.com,
+        linux-btrfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 47/56] btrfs: remove BUG_ON() in find_parent_nodes()
+Date:   Mon, 17 Jan 2022 21:48:59 -0500
+Message-Id: <20220118024908.1953673-47-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
 References: <20220118024908.1953673-1-sashal@kernel.org>
@@ -55,119 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit b0100bce4ff82ec1ccd3c1f3d339fd2df6a81784 ]
+[ Upstream commit fcba0120edf88328524a4878d1d6f4ad39f2ec81 ]
 
-Since commit 4b563a066611 ("ARM: imx: Remove imx21 support"), the config
-DEBUG_IMX21_IMX27_UART is really only debug support for IMX27.
+We search for an extent entry with .offset = -1, which shouldn't be a
+thing, but corruption happens.  Add an ASSERT() for the developers,
+return -EUCLEAN for mortals.
 
-So, rename this option to DEBUG_IMX27_UART and adjust dependencies in
-Kconfig and rename the definitions to IMX27 as further clean-up.
-
-This issue was discovered with ./scripts/checkkconfigsymbols.py, which
-reported that DEBUG_IMX21_IMX27_UART depends on the non-existing config
-SOC_IMX21.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/Kconfig.debug            | 14 +++++++-------
- arch/arm/include/debug/imx-uart.h | 18 +++++++++---------
- 2 files changed, 16 insertions(+), 16 deletions(-)
+ fs/btrfs/backref.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-index d6cf18a0cb0a9..b70ed4c7691e5 100644
---- a/arch/arm/Kconfig.debug
-+++ b/arch/arm/Kconfig.debug
-@@ -363,12 +363,12 @@ choice
- 		  Say Y here if you want kernel low-level debugging support
- 		  on i.MX25.
+diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
+index 1cf75d1032e17..f2c2ac3343bac 100644
+--- a/fs/btrfs/backref.c
++++ b/fs/btrfs/backref.c
+@@ -1163,7 +1163,12 @@ static int find_parent_nodes(struct btrfs_trans_handle *trans,
+ 	ret = btrfs_search_slot(trans, fs_info->extent_root, &key, path, 0, 0);
+ 	if (ret < 0)
+ 		goto out;
+-	BUG_ON(ret == 0);
++	if (ret == 0) {
++		/* This shouldn't happen, indicates a bug or fs corruption. */
++		ASSERT(ret != 0);
++		ret = -EUCLEAN;
++		goto out;
++	}
  
--	config DEBUG_IMX21_IMX27_UART
--		bool "i.MX21 and i.MX27 Debug UART"
--		depends on SOC_IMX21 || SOC_IMX27
-+	config DEBUG_IMX27_UART
-+		bool "i.MX27 Debug UART"
-+		depends on SOC_IMX27
- 		help
- 		  Say Y here if you want kernel low-level debugging support
--		  on i.MX21 or i.MX27.
-+		  on i.MX27.
- 
- 	config DEBUG_IMX28_UART
- 		bool "i.MX28 Debug UART"
-@@ -1398,7 +1398,7 @@ config DEBUG_IMX_UART_PORT
- 	int "i.MX Debug UART Port Selection"
- 	depends on DEBUG_IMX1_UART || \
- 		   DEBUG_IMX25_UART || \
--		   DEBUG_IMX21_IMX27_UART || \
-+		   DEBUG_IMX27_UART || \
- 		   DEBUG_IMX31_UART || \
- 		   DEBUG_IMX35_UART || \
- 		   DEBUG_IMX50_UART || \
-@@ -1451,12 +1451,12 @@ config DEBUG_LL_INCLUDE
- 	default "debug/icedcc.S" if DEBUG_ICEDCC
- 	default "debug/imx.S" if DEBUG_IMX1_UART || \
- 				 DEBUG_IMX25_UART || \
--				 DEBUG_IMX21_IMX27_UART || \
-+				 DEBUG_IMX27_UART || \
- 				 DEBUG_IMX31_UART || \
- 				 DEBUG_IMX35_UART || \
- 				 DEBUG_IMX50_UART || \
- 				 DEBUG_IMX51_UART || \
--				 DEBUG_IMX53_UART ||\
-+				 DEBUG_IMX53_UART || \
- 				 DEBUG_IMX6Q_UART || \
- 				 DEBUG_IMX6SL_UART || \
- 				 DEBUG_IMX6SX_UART || \
-diff --git a/arch/arm/include/debug/imx-uart.h b/arch/arm/include/debug/imx-uart.h
-index bce58e975ad1f..c750cc9876f6d 100644
---- a/arch/arm/include/debug/imx-uart.h
-+++ b/arch/arm/include/debug/imx-uart.h
-@@ -14,13 +14,6 @@
- #define IMX1_UART_BASE_ADDR(n)	IMX1_UART##n##_BASE_ADDR
- #define IMX1_UART_BASE(n)	IMX1_UART_BASE_ADDR(n)
- 
--#define IMX21_UART1_BASE_ADDR	0x1000a000
--#define IMX21_UART2_BASE_ADDR	0x1000b000
--#define IMX21_UART3_BASE_ADDR	0x1000c000
--#define IMX21_UART4_BASE_ADDR	0x1000d000
--#define IMX21_UART_BASE_ADDR(n)	IMX21_UART##n##_BASE_ADDR
--#define IMX21_UART_BASE(n)	IMX21_UART_BASE_ADDR(n)
--
- #define IMX25_UART1_BASE_ADDR	0x43f90000
- #define IMX25_UART2_BASE_ADDR	0x43f94000
- #define IMX25_UART3_BASE_ADDR	0x5000c000
-@@ -29,6 +22,13 @@
- #define IMX25_UART_BASE_ADDR(n)	IMX25_UART##n##_BASE_ADDR
- #define IMX25_UART_BASE(n)	IMX25_UART_BASE_ADDR(n)
- 
-+#define IMX27_UART1_BASE_ADDR	0x1000a000
-+#define IMX27_UART2_BASE_ADDR	0x1000b000
-+#define IMX27_UART3_BASE_ADDR	0x1000c000
-+#define IMX27_UART4_BASE_ADDR	0x1000d000
-+#define IMX27_UART_BASE_ADDR(n)	IMX27_UART##n##_BASE_ADDR
-+#define IMX27_UART_BASE(n)	IMX27_UART_BASE_ADDR(n)
-+
- #define IMX31_UART1_BASE_ADDR	0x43f90000
- #define IMX31_UART2_BASE_ADDR	0x43f94000
- #define IMX31_UART3_BASE_ADDR	0x5000c000
-@@ -115,10 +115,10 @@
- 
- #ifdef CONFIG_DEBUG_IMX1_UART
- #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX1)
--#elif defined(CONFIG_DEBUG_IMX21_IMX27_UART)
--#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX21)
- #elif defined(CONFIG_DEBUG_IMX25_UART)
- #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX25)
-+#elif defined(CONFIG_DEBUG_IMX27_UART)
-+#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX27)
- #elif defined(CONFIG_DEBUG_IMX31_UART)
- #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX31)
- #elif defined(CONFIG_DEBUG_IMX35_UART)
+ #ifdef CONFIG_BTRFS_FS_RUN_SANITY_TESTS
+ 	if (trans && likely(trans->type != __TRANS_DUMMY) &&
 -- 
 2.34.1
 
