@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B59E2C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:55:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0A20C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:55:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347613AbiARCzl (ORCPT
+        id S1351841AbiARCzr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:55:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34048 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347788AbiARCm6 (ORCPT
+        Mon, 17 Jan 2022 21:55:47 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48350 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347841AbiARCnJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:42:58 -0500
+        Mon, 17 Jan 2022 21:43:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5EDF612E2;
-        Tue, 18 Jan 2022 02:42:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B978EC36AF5;
-        Tue, 18 Jan 2022 02:42:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 484F9B81229;
+        Tue, 18 Jan 2022 02:43:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13048C36AEF;
+        Tue, 18 Jan 2022 02:43:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473777;
-        bh=yAqAZHiaUVsSKWYcyJbT5Pw4juaXoBzS3wlC3RLGxvU=;
+        s=k20201202; t=1642473787;
+        bh=sq+/c+27RULh7sJI51nuEHDdxzkROw5z/xLPcrOmHWU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WmJ81s1bEOXyyWiWPLlv21RvlP0/aiBn8nmanfTHsKbpLOG9cK5Xv9z6F08VNEM1c
-         CHCANjR0KHj2shQqsoUGoZpVoIASL8hpAskdwfXSVff+LwSEZOw/GjZU+aKQd8DD3u
-         uIh0R9QbHr7r1rVQyROP+l4TiIBcm6a6X6fe90GMiyiKfTAVMKQt6+r0E3pog0YDes
-         NBVDDqdVcAXi8GFMN6tJKlQ8XsXN98fpoCLzBezxUzymr26eo+JnTWQpvrVaFfXfS9
-         6vG8Uof4pvb886yMBtl9FDzX0HJVdnnG2AJ/EqBz88ZRecBGERulXjdvI81ZC/0Rbz
-         0mJMnKNipfL/g==
+        b=Nd8tmEu7kiBOvJY4YjVOdKfW8uBbd1j2pqLgHKI9PT4qUnQhnbAw1wVidKiDSxCvi
+         pJXj1f3GsDg74Sii58hqnkbYpBRl38ac75PI+5fpM2mO1sJ3WqBPy2AxyGHqH/B8Rn
+         KtUc08lI8B4L/dZ5i4BspvrJA2KV5ApgEpbJwVFfTqZSJfLXtY019eVLR4G3qCMd3D
+         M3nOe6xDdqNU9mTS5REdGcN644qxzOWCayfTvFHK5iUhPJ+pEk9ojWTBNVrJcU74oB
+         lmklyDND44DI6Xb7/SNu9xfCHsPzPN3J/YoJ2ztJPHbE4g+UzL84lCYrV+BHkuBq/t
+         KxzbaS5nH/mDg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
-        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, john.fastabend@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 066/116] bpf: Do not WARN in bpf_warn_invalid_xdp_action()
-Date:   Mon, 17 Jan 2022 21:39:17 -0500
-Message-Id: <20220118024007.1950576-66-sashal@kernel.org>
+Cc:     Biwen Li <biwen.li@nxp.com>, Li Yang <leoyang.lil@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, leoyang.li@nxp.com,
+        robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 072/116] arm64: dts: ls1028a-qds: move rtc node to the correct i2c bus
+Date:   Mon, 17 Jan 2022 21:39:23 -0500
+Message-Id: <20220118024007.1950576-72-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
 References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,46 +51,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Biwen Li <biwen.li@nxp.com>
 
-[ Upstream commit 2cbad989033bff0256675c38f96f5faab852af4b ]
+[ Upstream commit cbe9d948eadfe352ad45495a7cc5bf20a1b29d90 ]
 
-The WARN_ONCE() in bpf_warn_invalid_xdp_action() can be triggered by
-any bugged program, and even attaching a correct program to a NIC
-not supporting the given action.
+The i2c rtc is on i2c2 bus not i2c1 bus, so fix it in dts.
 
-The resulting splat, beyond polluting the logs, fouls automated tools:
-e.g. a syzkaller reproducers using an XDP program returning an
-unsupported action will never pass validation.
-
-Replace the WARN_ONCE with a less intrusive pr_warn_once().
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Link: https://lore.kernel.org/bpf/016ceec56e4817ebb2a9e35ce794d5c917df572c.1638189075.git.pabeni@redhat.com
+Signed-off-by: Biwen Li <biwen.li@nxp.com>
+Signed-off-by: Li Yang <leoyang.lil@nxp.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/filter.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index abd58dce49bbc..578b0bc78ac10 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -7919,9 +7919,9 @@ void bpf_warn_invalid_xdp_action(u32 act)
- {
- 	const u32 act_max = XDP_REDIRECT;
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
+index 13cdc958ba3ea..71858c9376c25 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
+@@ -261,11 +261,6 @@ temperature-sensor@4c {
+ 				vcc-supply = <&sb_3v3>;
+ 			};
  
--	WARN_ONCE(1, "%s XDP return value %u, expect packet loss!\n",
--		  act > act_max ? "Illegal" : "Driver unsupported",
--		  act);
-+	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
-+		     act > act_max ? "Illegal" : "Driver unsupported",
-+		     act);
- }
- EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
+-			rtc@51 {
+-				compatible = "nxp,pcf2129";
+-				reg = <0x51>;
+-			};
+-
+ 			eeprom@56 {
+ 				compatible = "atmel,24c512";
+ 				reg = <0x56>;
+@@ -307,6 +302,15 @@ mux: mux-controller {
  
+ };
+ 
++&i2c1 {
++	status = "okay";
++
++	rtc@51 {
++		compatible = "nxp,pcf2129";
++		reg = <0x51>;
++	};
++};
++
+ &enetc_port1 {
+ 	phy-handle = <&qds_phy1>;
+ 	phy-connection-type = "rgmii-id";
 -- 
 2.34.1
 
