@@ -2,154 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9801C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:49:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39D96C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:49:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349320AbiARCt2 (ORCPT
+        id S1349347AbiARCta (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:49:28 -0500
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:51353 "EHLO
-        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1345807AbiARCcE (ORCPT
+        Mon, 17 Jan 2022 21:49:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58632 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345785AbiARCcC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:32:04 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id D682C3200946;
-        Mon, 17 Jan 2022 21:32:02 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Mon, 17 Jan 2022 21:32:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=themaw.net; h=
-        message-id:subject:from:to:cc:date:in-reply-to:references
-        :content-type:mime-version:content-transfer-encoding; s=fm2; bh=
-        3mRA+fAp1gnVKZsZvkvI9SKUFhnHcen/USfAGlZMD/8=; b=J1u9Ac5VDXG/UgfA
-        F8k48UeRsyAyOn/Y50lgKLzHMDZI+ShW7HwAVKNSeugYAhLsjh0BPxpo4JwDF2pg
-        WsMLL8f78+K643A5XY4XJ08C0Qf+w6HqXYlEXsxdiGkwScq5s/aYjuvmvzuropJt
-        fMkQeb1ceDG4lpxiTrkJFfYaQE6M6JekrwgAdCEutgAhGu8h2W613VZYncd7FGpp
-        oKf7kXK0nHAYljf/n7RFFS/DPUiev4r8WaLzCN6suPwbInNAZ8iyYqu8IB+qIRxz
-        dqUpXsr8BQfBjRaFPixaCT3VqjLWiKQCwMd0vLQwG0gw8iRMHrBkZKAfb8nwEJd3
-        d17PVA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=3mRA+fAp1gnVKZsZvkvI9SKUFhnHcen/USfAGlZMD
-        /8=; b=ITwNEwhut6PP8iq1nNC8XPTdHIXmjj5o8W3zahgmGmZWysKwg2DduJy/V
-        GwT5UF0fD2l2i6k0WrygOK4G2VwKEN49L1J5WauKkKDJQtliqirfUVbRMn56wxFi
-        Ho1OiO0SCM49WtBBCm3toZQk98Z3Iscp4XSICloQ2qKxvjkFa8YPgh6m+jWe/nQh
-        /uuPg3WeGDBUG/hDmA3cXs9FYBrHF0P//ah2NeVN8qoSx9ZCLkZ5pQacVcb51IP8
-        wvCcPgbhvS12RFAZQ6HFhQUAsNAVxEAuwX3rWBgL29DIKA0ezSmy3XDxAVrrYGzB
-        sRjXjFUa9XoU72Iy4uwDsFwjov4Gw==
-X-ME-Sender: <xms:oSbmYbj_qZA5piY38Id3KBaazhhP5VptdlLDwYRIuX5hZSh9DhFeaQ>
-    <xme:oSbmYYBNt-nwe24mh5If3Q6mBAsczYBwW_Q7CEUzauxuONvxr4xduNE6OHO8UJc95
-    xjVJtaeX0oz>
-X-ME-Received: <xmr:oSbmYbFXDZytBiBBL_Cw7tSauEo0Uznr7bA0zBNINPlfPqZfXiOnF7an2HhUTMZ0P-Kj5RAMzKFpApBrh2PTE_tRBpPnoqryV35TUk-y1Dc9Vtrl9HC1Ag>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddvgdegkecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefkuffhvfffjghftggfggfgsehtkeertddtredunecuhfhrohhmpefkrghnucfm
-    vghnthcuoehrrghvvghnsehthhgvmhgrfidrnhgvtheqnecuggftrfgrthhtvghrnhepff
-    elvddtleehveduvefhkeejfedvkeetffeujedtudevfedtveehueeviefhleffnecuvehl
-    uhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprhgrvhgvnhesth
-    hhvghmrgifrdhnvght
-X-ME-Proxy: <xmx:oSbmYYTIhggIrp71O7yWw-TQ6b5xK0kAeKGYw1rH_MMcrJ4YapDk8A>
-    <xmx:oSbmYYy8fUfoQGXXEPpCZW9FRH8vuaDoUkxCw2MSqJ0k6pxPgkLPOA>
-    <xmx:oSbmYe6r5SE_V0WaSMcXu2xkqbgDd2LYHt-RSAy4vi8gjFYNRnND4w>
-    <xmx:oibmYbw3j9aiq0OZdyFolqdDMoGwTI4RfeniaHfHt_GCmyBQdzqCOA>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 17 Jan 2022 21:31:58 -0500 (EST)
-Message-ID: <0f6c2348dae2c47ea46a986884a75fc7d44bb6fb.camel@themaw.net>
-Subject: Re: [PATCH] vfs: check dentry is still valid in get_link()
-From:   Ian Kent <raven@themaw.net>
-To:     Al Viro <viro@zeniv.linux.org.uk>,
-        Brian Foster <bfoster@redhat.com>
-Cc:     "Darrick J. Wong" <djwong@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        David Howells <dhowells@redhat.com>,
-        Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        xfs <linux-xfs@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Tue, 18 Jan 2022 10:31:53 +0800
-In-Reply-To: <YeYYp89adipRN64k@zeniv-ca.linux.org.uk>
-References: <164180589176.86426.501271559065590169.stgit@mickey.themaw.net>
-         <YeJr7/E+9stwEb3t@zeniv-ca.linux.org.uk>
-         <275358741c4ee64b5e4e008d514876ed4ec1071c.camel@themaw.net>
-         <YeV+zseKGNqnSuKR@bfoster> <YeWZRL88KPtLWlkI@zeniv-ca.linux.org.uk>
-         <YeWxHPDbdSfBDtyX@zeniv-ca.linux.org.uk>
-         <YeXIIf6/jChv7JN6@zeniv-ca.linux.org.uk>
-         <YeYYp89adipRN64k@zeniv-ca.linux.org.uk>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4 (3.40.4-2.fc34) 
+        Mon, 17 Jan 2022 21:32:02 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24622C061574;
+        Mon, 17 Jan 2022 18:31:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D3282B81235;
+        Tue, 18 Jan 2022 02:31:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07862C36AE3;
+        Tue, 18 Jan 2022 02:31:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642473068;
+        bh=UD6Ht1hPoWlejkDH/Gzpu/erG3jhCpBQYjkRtuiDRoM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=YY2PPF1YKEL1WvF4w9OqHK/Lz1WYGHSDwlrlbyGBNs7UQI9sMB7j/+iicMgcexGTt
+         trvanExfZ7CGL51fdRsxXf91AnOeIMogVDJ1rd5CuwRV3PwBJRgypS6V9dY4aCpcNr
+         Qbu4yZWST0gxt2go+aqglQ33rrRWsvqA0AlFdRded8mclpE/nGCHP4EsUXIuzLkuB8
+         mtKUWoVTfTAOGriDKynt1VVP4nKX8rFwY8EvAnHEAEncb3vmv7Dd+2Q7BjxkZtq7lF
+         NgZVvxrV1SOsgXgWiG59N3A6cL5I0kghaVWc+FeKEJMX8GcijNLEzvKHGwXJ9Ij33a
+         kB3JMCXGA+UIw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Jiri Olsa <jolsa@redhat.com>, Hangbin Liu <haliu@redhat.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jussi Maki <joamaki@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        ast@kernel.org, andrii@kernel.org, yhs@fb.com, sunyucong@gmail.com,
+        sdf@google.com, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 199/217] bpf/selftests: Fix namespace mount setup in tc_redirect
+Date:   Mon, 17 Jan 2022 21:19:22 -0500
+Message-Id: <20220118021940.1942199-199-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
+References: <20220118021940.1942199-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-01-18 at 01:32 +0000, Al Viro wrote:
-> On Mon, Jan 17, 2022 at 07:48:49PM +0000, Al Viro wrote:
-> > > But that critically depends upon the contents not getting
-> > > mangled.  If it
-> > > *can* be screwed by such unlink, we risk successful lookup
-> > > leading to the
-> > > wrong place, with nothing to tell us that it's happening.  We
-> > > could handle
-> > > that by adding a check to fs/namei.c:put_link(), and propagating
-> > > the error
-> > > to callers.  It's not impossible, but it won't be pretty.
-> > > 
-> > > And that assumes we avoid oopsen on string changing under us in
-> > > the first
-> > > place.  Which might or might not be true - I hadn't finished the
-> > > audit yet.
-> > > Note that it's *NOT* just fs/namei.c + fs/dcache.c + some fs
-> > > methods -
-> > > we need to make sure that e.g. everything called by ->d_hash()
-> > > instances
-> > > is OK with strings changing right under them.  Including
-> > > utf8_to_utf32(),
-> > > crc32_le(), utf8_casefold_hash(), etc.
-> > 
-> > And AFAICS, ext4, xfs and possibly ubifs (I'm unfamiliar with that
-> > one and
-> > the call chains there are deep enough for me to miss something)
-> > have the
-> > "bugger the contents of string returned by RCU ->get_link() if
-> > unlink()
-> > happens" problem.
-> > 
-> > I would very much prefer to have them deal with that crap,
-> > especially
-> > since I don't see why does ext4_evict_inode() need to do that
-> > memset() -
-> > can't we simply check ->i_op in ext4_can_truncate() and be done
-> > with
-> > that?
-> 
-> This reuse-without-delay has another fun side, AFAICS.  Suppose the
-> new use
-> for inode comes with the same ->i_op (i.e. it's a symlink again) and
-> it
-> happens right after ->get_link() has returned the pointer to body.
-> 
-> We are already past whatever checks we might add in pick_link().  And
-> the
-> pointer is still valid.  So we end up quietly traversing the body of
-> completely unrelated symlink that never had been anywhere near any
-> directory
-> we might be looking at.  With no indication of anything going wrong -
-> just
-> a successful resolution with bogus result.
+From: Jiri Olsa <jolsa@redhat.com>
 
-Wouldn't that case be caught by the unlazy call since ->get_link()
-needs to return -ECHILD for the rcu case now (in xfs anyway)?
+[ Upstream commit 5e22dd18626726028a93ff1350a8a71a00fd843d ]
 
-> 
-> Could XFS folks explain what exactly goes wrong if we make actual
-> marking
-> inode as ready for reuse RCU-delayed, by shifting just that into
-> ->free_inode()?  Why would we need any extra synchronize_rcu()
-> anywhere?
+The tc_redirect umounts /sys in the new namespace, which can be
+mounted as shared and cause global umount. The lazy umount also
+takes down mounted trees under /sys like debugfs, which won't be
+available after sysfs mounts again and could cause fails in other
+tests.
 
+  # cat /proc/self/mountinfo | grep debugfs
+  34 23 0:7 / /sys/kernel/debug rw,nosuid,nodev,noexec,relatime shared:14 - debugfs debugfs rw
+  # cat /proc/self/mountinfo | grep sysfs
+  23 86 0:22 / /sys rw,nosuid,nodev,noexec,relatime shared:2 - sysfs sysfs rw
+  # mount | grep debugfs
+  debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
+
+  # ./test_progs -t tc_redirect
+  #164 tc_redirect:OK
+  Summary: 1/4 PASSED, 0 SKIPPED, 0 FAILED
+
+  # mount | grep debugfs
+  # cat /proc/self/mountinfo | grep debugfs
+  # cat /proc/self/mountinfo | grep sysfs
+  25 86 0:22 / /sys rw,relatime shared:2 - sysfs sysfs rw
+
+Making the sysfs private under the new namespace so the umount won't
+trigger the global sysfs umount.
+
+Reported-by: Hangbin Liu <haliu@redhat.com>
+Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Cc: Jussi Maki <joamaki@gmail.com>
+Link: https://lore.kernel.org/bpf/20220104121030.138216-1-jolsa@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/testing/selftests/bpf/prog_tests/tc_redirect.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
+index 4b18b73df10b6..c2426df58e172 100644
+--- a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
++++ b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
+@@ -105,6 +105,13 @@ static int setns_by_fd(int nsfd)
+ 	if (!ASSERT_OK(err, "unshare"))
+ 		return err;
+ 
++	/* Make our /sys mount private, so the following umount won't
++	 * trigger the global umount in case it's shared.
++	 */
++	err = mount("none", "/sys", NULL, MS_PRIVATE, NULL);
++	if (!ASSERT_OK(err, "remount private /sys"))
++		return err;
++
+ 	err = umount2("/sys", MNT_DETACH);
+ 	if (!ASSERT_OK(err, "umount2 /sys"))
+ 		return err;
+-- 
+2.34.1
 
