@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B7A8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F59DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345221AbiARDDp (ORCPT
+        id S1349120AbiARDDx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:03:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34416 "EHLO
+        Mon, 17 Jan 2022 22:03:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349368AbiARCte (ORCPT
+        with ESMTP id S1349503AbiARCtn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:49:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B794C0613EF;
-        Mon, 17 Jan 2022 18:42:05 -0800 (PST)
+        Mon, 17 Jan 2022 21:49:43 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D056BC061794;
+        Mon, 17 Jan 2022 18:42:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1165CB8124F;
-        Tue, 18 Jan 2022 02:42:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22486C36AEB;
-        Tue, 18 Jan 2022 02:42:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 24A51612F3;
+        Tue, 18 Jan 2022 02:42:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B452AC36AEB;
+        Tue, 18 Jan 2022 02:42:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473722;
-        bh=Wz1PAbR8+iIe/jPfTcBbjPHkLNB0RxFEi0fK8+Aossk=;
+        s=k20201202; t=1642473730;
+        bh=zfEYjZPtuQKLUiQd334jkr6Im+SBhh1cinJVAghTffk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nbKitrq1ciyk2uwlLdQ/WRrWJeP7goABdUeNDwY5EnwmbOABXAe8jrMr7fbJ9i1EN
-         4Dpn7jzGrYDvorsgSCvvIiUj81svPSFTWqLhof9n6alE4gOn7SzDKwSKA7hNvcq7uw
-         wJnKA1jWiLzm4hih1w0WzrNn6LBsK4a35ldPNqYtRQJfMuTfKR5QUQo7qNBo8KQqt5
-         j/0h2XOCmv+fxKHDYMUylOJU0tWG+iI4D9sYHnsyw4TDuY4SLMuloDkOpvUix7zEER
-         lqrYKxrrBq9td68bzjbbY/ElWvv1cHRVsRxzJY2KQqC2Vj6b9fGBsmgq2OCQB1s2qZ
-         2AJ/OqyyOq6Tg==
+        b=BynXSYCa+Dd2TEks3LZVfmF1sw/6yhuHELAGAW97JLxe/oBdIgoPaIfAgVwZp68aa
+         i4Ptrcc/F5YSDgy56VHNTfpuQpMaG6QW4XbSUiIAlGoIPgF8958gD04ihgG+Q8xJCq
+         sC0bGglIsI1oz6T6bNj6Ikw/nXgMaS51/GM9CzyhLmeSDjAgI1jAMeUCB2xL4KWZnW
+         xRteIp5hAUxkHwUY/VzzuM7Vz3YpLadc+9iudo44aEkxkGIS6nFwXBRbuaP0Yyt0fA
+         ZhvYE/b5zmrlP6nSL+O7JFCIXHpM8DuhBUf7N3fZV8Rn98ph6rXZQgt+huLslp98aA
+         qwgjAqrjmcGXg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Neal Liu <neal_liu@aspeedtech.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, stern@rowland.harvard.edu,
-        linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 041/116] usb: uhci: add aspeed ast2600 uhci support
-Date:   Mon, 17 Jan 2022 21:38:52 -0500
-Message-Id: <20220118024007.1950576-41-sashal@kernel.org>
+Cc:     Joerg Roedel <jroedel@suse.de>, Borislav Petkov <bp@suse.de>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, dpreed@deepplum.com, hpa@zytor.com,
+        paul.gortmaker@windriver.com, pbonzini@redhat.com,
+        seanjc@google.com, thomas.lendacky@amd.com, rppt@kernel.org,
+        mick@ics.forth.gr, brijesh.singh@amd.com
+Subject: [PATCH AUTOSEL 5.10 043/116] x86/mm: Flush global TLB when switching to trampoline page-table
+Date:   Mon, 17 Jan 2022 21:38:54 -0500
+Message-Id: <20220118024007.1950576-43-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
 References: <20220118024007.1950576-1-sashal@kernel.org>
@@ -53,34 +56,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neal Liu <neal_liu@aspeedtech.com>
+From: Joerg Roedel <jroedel@suse.de>
 
-[ Upstream commit 554abfe2eadec97d12c71d4a69da1518478f69eb ]
+[ Upstream commit 71d5049b053876afbde6c3273250b76935494ab2 ]
 
-Enable ast2600 uhci quirks.
+Move the switching code into a function so that it can be re-used and
+add a global TLB flush. This makes sure that usage of memory which is
+not mapped in the trampoline page-table is reliably caught.
 
-Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-Link: https://lore.kernel.org/r/20211126100021.2331024-1-neal_liu@aspeedtech.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Also move the clearing of CR4.PCIDE before the CR3 switch because the
+cr4_clear_bits() function will access data not mapped into the
+trampoline page-table.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20211202153226.22946-4-joro@8bytes.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/uhci-platform.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/x86/include/asm/realmode.h |  1 +
+ arch/x86/kernel/reboot.c        | 12 ++----------
+ arch/x86/realmode/init.c        | 26 ++++++++++++++++++++++++++
+ 3 files changed, 29 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/usb/host/uhci-platform.c b/drivers/usb/host/uhci-platform.c
-index 70dbd95c3f063..be9e9db7cad10 100644
---- a/drivers/usb/host/uhci-platform.c
-+++ b/drivers/usb/host/uhci-platform.c
-@@ -113,7 +113,8 @@ static int uhci_hcd_platform_probe(struct platform_device *pdev)
- 				num_ports);
- 		}
- 		if (of_device_is_compatible(np, "aspeed,ast2400-uhci") ||
--		    of_device_is_compatible(np, "aspeed,ast2500-uhci")) {
-+		    of_device_is_compatible(np, "aspeed,ast2500-uhci") ||
-+		    of_device_is_compatible(np, "aspeed,ast2600-uhci")) {
- 			uhci->is_aspeed = 1;
- 			dev_info(&pdev->dev,
- 				 "Enabled Aspeed implementation workarounds\n");
+diff --git a/arch/x86/include/asm/realmode.h b/arch/x86/include/asm/realmode.h
+index 5db5d083c8732..331474b150f16 100644
+--- a/arch/x86/include/asm/realmode.h
++++ b/arch/x86/include/asm/realmode.h
+@@ -89,6 +89,7 @@ static inline void set_real_mode_mem(phys_addr_t mem)
+ }
+ 
+ void reserve_real_mode(void);
++void load_trampoline_pgtable(void);
+ 
+ #endif /* __ASSEMBLY__ */
+ 
+diff --git a/arch/x86/kernel/reboot.c b/arch/x86/kernel/reboot.c
+index 798a6f73f8946..df3514835b356 100644
+--- a/arch/x86/kernel/reboot.c
++++ b/arch/x86/kernel/reboot.c
+@@ -113,17 +113,9 @@ void __noreturn machine_real_restart(unsigned int type)
+ 	spin_unlock(&rtc_lock);
+ 
+ 	/*
+-	 * Switch back to the initial page table.
++	 * Switch to the trampoline page table.
+ 	 */
+-#ifdef CONFIG_X86_32
+-	load_cr3(initial_page_table);
+-#else
+-	write_cr3(real_mode_header->trampoline_pgd);
+-
+-	/* Exiting long mode will fail if CR4.PCIDE is set. */
+-	if (boot_cpu_has(X86_FEATURE_PCID))
+-		cr4_clear_bits(X86_CR4_PCIDE);
+-#endif
++	load_trampoline_pgtable();
+ 
+ 	/* Jump to the identity-mapped low memory code */
+ #ifdef CONFIG_X86_32
+diff --git a/arch/x86/realmode/init.c b/arch/x86/realmode/init.c
+index 3313bffbecd4d..1a702c6a226ec 100644
+--- a/arch/x86/realmode/init.c
++++ b/arch/x86/realmode/init.c
+@@ -17,6 +17,32 @@ u32 *trampoline_cr4_features;
+ /* Hold the pgd entry used on booting additional CPUs */
+ pgd_t trampoline_pgd_entry;
+ 
++void load_trampoline_pgtable(void)
++{
++#ifdef CONFIG_X86_32
++	load_cr3(initial_page_table);
++#else
++	/*
++	 * This function is called before exiting to real-mode and that will
++	 * fail with CR4.PCIDE still set.
++	 */
++	if (boot_cpu_has(X86_FEATURE_PCID))
++		cr4_clear_bits(X86_CR4_PCIDE);
++
++	write_cr3(real_mode_header->trampoline_pgd);
++#endif
++
++	/*
++	 * The CR3 write above will not flush global TLB entries.
++	 * Stale, global entries from previous page tables may still be
++	 * present.  Flush those stale entries.
++	 *
++	 * This ensures that memory accessed while running with
++	 * trampoline_pgd is *actually* mapped into trampoline_pgd.
++	 */
++	__flush_tlb_all();
++}
++
+ void __init reserve_real_mode(void)
+ {
+ 	phys_addr_t mem;
 -- 
 2.34.1
 
