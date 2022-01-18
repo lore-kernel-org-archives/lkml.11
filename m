@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA249C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C18F2C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:35:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345528AbiARCfW (ORCPT
+        id S1346137AbiARCf1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:35:22 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41716 "EHLO
+        Mon, 17 Jan 2022 21:35:27 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40436 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343684AbiARC2y (ORCPT
+        with ESMTP id S245655AbiARC3D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:28:54 -0500
+        Mon, 17 Jan 2022 21:29:03 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D6B3B81239;
-        Tue, 18 Jan 2022 02:28:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00665C36AEB;
-        Tue, 18 Jan 2022 02:28:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91BB9B81253;
+        Tue, 18 Jan 2022 02:29:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83365C36AF4;
+        Tue, 18 Jan 2022 02:29:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472931;
-        bh=slkzV2uCi161ff2FMYKOSO9pXjF+rfhmk/CRWGQotis=;
+        s=k20201202; t=1642472941;
+        bh=xsfclcnth22emOhXnExQDbZEHeQPjA9k8JwPqBUjW/I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VW7lUoeEhbJiHwEZ1FSTMAuEsOs5/qThkAi973P8zkYoZUzcbREaju7P0OUu+ymqq
-         ytnG7aheSaRvbrRD8fQ+ZfBlZuXsgrtjaa2gFlbb0Eh2kxhtNsa9QWIvtcweGvs2PO
-         J5g4pDEk+WhuQyrn1qVobNEzmBdcSAF+U3XkgZydyR4eWqhqUN34KAGNniiyloBUKk
-         l6GpCZkAPmhKg1Cv8/ATjJ2zAfrjeXCCGGPeOSWTCw0D7LKHQ1kFeeFN5ZqtStHpeq
-         NkFSfM2LJJq781N72CasyYTfZ61+3iC0kMDUBDS191TEBcqe1i6mcc+EYNOzMwu0mA
-         0wm+gQYrdEIwg==
+        b=b2oh9ayRpf4MxDWfq/+vVzR1aR64v2/7EqWF0oN6f+SPg6qkP4xhs+Mypm1m2iWwJ
+         9ETgpG9XETKJN8/cDlhS528FLQBpVkxlb52zg8OygbEs4goRJ7zC72OTrUg+ovnbLC
+         LpwGkl+jRQI1EOaBDBFgN53/6WQUGrwXpw65lWJf0yh9A5RFZO4uE70YnJbeHMaj8g
+         /0KI9tfwEMPPFUOY+ia5n4aw8Ag1BMX0/8sXRwZKqTjSVkKrLtU5oTl4Yco7MGWbUv
+         lh2SyjoIGH7kLRviFMcnVSRS4QKVXZL0fz3i8fhzztMxwg8J1dlOP8euX2LluJ6uuG
+         rgitUb6cqOX0Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, johannes.berg@intel.com,
-        miriam.rachel.korenblit@intel.com, avraham.stern@intel.com,
-        emmanuel.grumbach@intel.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 166/217] iwlwifi: mvm: Fix calculation of frame length
-Date:   Mon, 17 Jan 2022 21:18:49 -0500
-Message-Id: <20220118021940.1942199-166-sashal@kernel.org>
+Cc:     Hector Martin <marcan@marcan.st>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, linux-mmc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 169/217] mmc: sdhci-pci-gli: GL9755: Support for CD/WP inversion on OF platforms
+Date:   Mon, 17 Jan 2022 21:18:52 -0500
+Message-Id: <20220118021940.1942199-169-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -53,70 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit 40a0b38d7a7f91a6027287e0df54f5f547e8d27e ]
+[ Upstream commit 189f1d9bc3a5ea3e442e119e4a5deda63da8c462 ]
 
-The RADA might include in the Rx frame the MIC and CRC bytes.
-These bytes should be removed for non monitor interfaces and
-should not be passed to mac80211.
+This is required on some Apple ARM64 laptops using this controller.
+As is typical on DT platforms, pull these quirks from the device tree
+using the standard mmc bindings.
 
-Fix the Rx processing to remove the extra bytes on non monitor
-cases.
+See Documentation/devicetree/bindings/mmc/mmc-controller.yaml
 
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211219121514.098be12c801e.I1d81733d8a75b84c3b20eb6e0d14ab3405ca6a86@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Link: https://lore.kernel.org/r/20211215161045.38843-2-marcan@marcan.st
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c | 27 +++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ drivers/mmc/host/sdhci-pci-gli.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
-index e0601f802628c..1e2a55ccf1926 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
-@@ -121,12 +121,39 @@ static int iwl_mvm_create_skb(struct iwl_mvm *mvm, struct sk_buff *skb,
- 	struct iwl_rx_mpdu_desc *desc = (void *)pkt->data;
- 	unsigned int headlen, fraglen, pad_len = 0;
- 	unsigned int hdrlen = ieee80211_hdrlen(hdr->frame_control);
-+	u8 mic_crc_len = u8_get_bits(desc->mac_flags1,
-+				     IWL_RX_MPDU_MFLG1_MIC_CRC_LEN_MASK) << 1;
+diff --git a/drivers/mmc/host/sdhci-pci-gli.c b/drivers/mmc/host/sdhci-pci-gli.c
+index 4fd99c1e82ba3..ad50f16658fe2 100644
+--- a/drivers/mmc/host/sdhci-pci-gli.c
++++ b/drivers/mmc/host/sdhci-pci-gli.c
+@@ -12,6 +12,7 @@
+ #include <linux/pci.h>
+ #include <linux/mmc/mmc.h>
+ #include <linux/delay.h>
++#include <linux/of.h>
+ #include "sdhci.h"
+ #include "sdhci-pci.h"
+ #include "cqhci.h"
+@@ -116,6 +117,8 @@
+ #define PCI_GLI_9755_PECONF   0x44
+ #define   PCI_GLI_9755_LFCLK    GENMASK(14, 12)
+ #define   PCI_GLI_9755_DMACLK   BIT(29)
++#define   PCI_GLI_9755_INVERT_CD  BIT(30)
++#define   PCI_GLI_9755_INVERT_WP  BIT(31)
  
- 	if (desc->mac_flags2 & IWL_RX_MPDU_MFLG2_PAD) {
- 		len -= 2;
- 		pad_len = 2;
- 	}
+ #define PCI_GLI_9755_CFG2          0x48
+ #define   PCI_GLI_9755_CFG2_L1DLY    GENMASK(28, 24)
+@@ -570,6 +573,14 @@ static void gl9755_hw_setting(struct sdhci_pci_slot *slot)
+ 	gl9755_wt_on(pdev);
  
+ 	pci_read_config_dword(pdev, PCI_GLI_9755_PECONF, &value);
 +	/*
-+	 * For non monitor interface strip the bytes the RADA might not have
-+	 * removed. As monitor interface cannot exist with other interfaces
-+	 * this removal is safe.
++	 * Apple ARM64 platforms using these chips may have
++	 * inverted CD/WP detection.
 +	 */
-+	if (mic_crc_len && !ieee80211_hw_check(mvm->hw, RX_INCLUDES_FCS)) {
-+		u32 pkt_flags = le32_to_cpu(pkt->len_n_flags);
-+
-+		/*
-+		 * If RADA was not enabled then decryption was not performed so
-+		 * the MIC cannot be removed.
-+		 */
-+		if (!(pkt_flags & FH_RSCSR_RADA_EN)) {
-+			if (WARN_ON(crypt_len > mic_crc_len))
-+				return -EINVAL;
-+
-+			mic_crc_len -= crypt_len;
-+		}
-+
-+		if (WARN_ON(mic_crc_len > len))
-+			return -EINVAL;
-+
-+		len -= mic_crc_len;
-+	}
-+
- 	/* If frame is small enough to fit in skb->head, pull it completely.
- 	 * If not, only pull ieee80211_hdr (including crypto if present, and
- 	 * an additional 8 bytes for SNAP/ethertype, see below) so that
++	if (of_property_read_bool(pdev->dev.of_node, "cd-inverted"))
++		value |= PCI_GLI_9755_INVERT_CD;
++	if (of_property_read_bool(pdev->dev.of_node, "wp-inverted"))
++		value |= PCI_GLI_9755_INVERT_WP;
+ 	value &= ~PCI_GLI_9755_LFCLK;
+ 	value &= ~PCI_GLI_9755_DMACLK;
+ 	pci_write_config_dword(pdev, PCI_GLI_9755_PECONF, value);
 -- 
 2.34.1
 
