@@ -2,47 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D036FC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D50C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351267AbiARCyE (ORCPT
+        id S1344370AbiARCyH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:54:04 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34546 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245507AbiARCnO (ORCPT
+        Mon, 17 Jan 2022 21:54:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33490 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347876AbiARCnT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:43:14 -0500
+        Mon, 17 Jan 2022 21:43:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD1B9C08E86E;
+        Mon, 17 Jan 2022 18:37:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2DB5161269;
-        Tue, 18 Jan 2022 02:43:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89B11C36B04;
-        Tue, 18 Jan 2022 02:43:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9306EB8122D;
+        Tue, 18 Jan 2022 02:37:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84706C36AE3;
+        Tue, 18 Jan 2022 02:37:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473791;
-        bh=lMEBuMlvnB1Pwb+Tnv2fUmVQFddWQ68uoefQrCW//Rg=;
+        s=k20201202; t=1642473435;
+        bh=zzwXETvO8DRgU0B6/KjTgVdtgOFdMCxyOYkTNdKrc3I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rKujjtFabwLhlY+x96Ww23TWMGxQPpEBZwySAdALSrZbneAax2YnI6fFOwIVnkPKl
-         WwpN0iQ9BBaofs4OBVfPKXUfEdarbDNFnAakbevmGR+fBv2YAUxPzqP1DbtEBsmueO
-         LQuuJCtOqRTXfYcHclPPtJyB3h53Id1oEibQOGHDsiFpwFlqDq6voyiYOilFfOHJ/P
-         TDpjxQVWWmYliO/SlbzU1adlyGQNgO+LknCGvUS8vyjh7l9aixhOwROK73UdFdROOJ
-         KyW3rtdAAjfvNjjD0AzERrbRYRcGUk6X+MUXzyaxINGRVS4CpTcPxtktKvwTdBj6CZ
-         ZNd+ks1OJMCag==
+        b=Msn1pebCcqhyA5yF95bYr8/oINVOOmAM6JpUS9dmW+eP2KxBqbSjq8ZKBPEr2XvxP
+         r830yowV4k4ZfsN7bcpZ3Wt47XHbrQbvv4JLNLsHKBOL7wNiCusFf+BpzorUWJE1gi
+         5xxAtIDPhlufVPUHMxg4l0YKNcsEZyobTy6NZqTU2KsbICcJ2tY7GGskVNRpkfjrwq
+         XInFAwEYiV3+OC21OZIWlETI/Lr/iDm4+DwU9hu+2K0Dx8nNIsm+Y/oTZb4E++oxAT
+         XVFu309y1I4/hlgvcx0qBDs5WA818cInlSCEqRBArH8xDSCIIvjEAOLEaljGe9dhVd
+         I8F9MgHXPXprw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        pavel@ucw.cz, len.brown@intel.com, linux-pm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 074/116] PM: runtime: Add safety net to supplier device release
-Date:   Mon, 17 Jan 2022 21:39:25 -0500
-Message-Id: <20220118024007.1950576-74-sashal@kernel.org>
+Cc:     Zhou Qingyang <zhou1615@umn.edu>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
+        mchehab@kernel.org, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 116/188] media: saa7146: hexium_gemini: Fix a NULL pointer dereference in hexium_attach()
+Date:   Mon, 17 Jan 2022 21:30:40 -0500
+Message-Id: <20220118023152.1948105-116-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,135 +53,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit d1579e61192e0e686faa4208500ef4c3b529b16c ]
+[ Upstream commit 3af86b046933ba513d08399dba0d4d8b50d607d0 ]
 
-Because refcount_dec_not_one() returns true if the target refcount
-becomes saturated, it is generally unsafe to use its return value as
-a loop termination condition, but that is what happens when a device
-link's supplier device is released during runtime PM suspend
-operations and on device link removal.
+In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
+a new memory for dev->vv_data. saa7146_vv_release() will be called on
+failure of saa7146_register_device(). There is a dereference of
+dev->vv_data in saa7146_vv_release(), which could lead to a NULL
+pointer dereference on failure of saa7146_vv_init().
 
-To address this, introduce pm_runtime_release_supplier() to be used
-in the above cases which will check the supplier device's runtime
-PM usage counter in addition to the refcount_dec_not_one() return
-value, so the loop can be terminated in case the rpm_active refcount
-value becomes invalid, and update the code in question to use it as
-appropriate.
+Fix this bug by adding a check of saa7146_vv_init().
 
-This change is not expected to have any visible functional impact.
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
 
-Reported-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
+
+Builds with CONFIG_VIDEO_HEXIUM_GEMINI=m show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Link: https://lore.kernel.org/linux-media/20211203154030.111210-1-zhou1615@umn.edu
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/core.c          |  3 +--
- drivers/base/power/runtime.c | 41 ++++++++++++++++++++++++++----------
- include/linux/pm_runtime.h   |  3 +++
- 3 files changed, 34 insertions(+), 13 deletions(-)
+ drivers/media/common/saa7146/saa7146_fops.c | 2 +-
+ drivers/media/pci/saa7146/hexium_gemini.c   | 7 ++++++-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 389d13616d1df..c0566aff53551 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -348,8 +348,7 @@ static void device_link_release_fn(struct work_struct *work)
- 	/* Ensure that all references to the link object have been dropped. */
- 	device_link_synchronize_removal();
+diff --git a/drivers/media/common/saa7146/saa7146_fops.c b/drivers/media/common/saa7146/saa7146_fops.c
+index baf5772c52a96..be32159777142 100644
+--- a/drivers/media/common/saa7146/saa7146_fops.c
++++ b/drivers/media/common/saa7146/saa7146_fops.c
+@@ -521,7 +521,7 @@ int saa7146_vv_init(struct saa7146_dev* dev, struct saa7146_ext_vv *ext_vv)
+ 		ERR("out of memory. aborting.\n");
+ 		kfree(vv);
+ 		v4l2_ctrl_handler_free(hdl);
+-		return -1;
++		return -ENOMEM;
+ 	}
  
--	while (refcount_dec_not_one(&link->rpm_active))
--		pm_runtime_put(link->supplier);
-+	pm_runtime_release_supplier(link, true);
+ 	saa7146_video_uops.init(dev,vv);
+diff --git a/drivers/media/pci/saa7146/hexium_gemini.c b/drivers/media/pci/saa7146/hexium_gemini.c
+index 2214c74bbbf15..3947701cd6c7e 100644
+--- a/drivers/media/pci/saa7146/hexium_gemini.c
++++ b/drivers/media/pci/saa7146/hexium_gemini.c
+@@ -284,7 +284,12 @@ static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_d
+ 	hexium_set_input(hexium, 0);
+ 	hexium->cur_input = 0;
  
- 	put_device(link->consumer);
- 	put_device(link->supplier);
-diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
-index bc649da4899a0..1573319404888 100644
---- a/drivers/base/power/runtime.c
-+++ b/drivers/base/power/runtime.c
-@@ -305,19 +305,40 @@ static int rpm_get_suppliers(struct device *dev)
- 	return 0;
- }
+-	saa7146_vv_init(dev, &vv_data);
++	ret = saa7146_vv_init(dev, &vv_data);
++	if (ret) {
++		i2c_del_adapter(&hexium->i2c_adapter);
++		kfree(hexium);
++		return ret;
++	}
  
-+/**
-+ * pm_runtime_release_supplier - Drop references to device link's supplier.
-+ * @link: Target device link.
-+ * @check_idle: Whether or not to check if the supplier device is idle.
-+ *
-+ * Drop all runtime PM references associated with @link to its supplier device
-+ * and if @check_idle is set, check if that device is idle (and so it can be
-+ * suspended).
-+ */
-+void pm_runtime_release_supplier(struct device_link *link, bool check_idle)
-+{
-+	struct device *supplier = link->supplier;
-+
-+	/*
-+	 * The additional power.usage_count check is a safety net in case
-+	 * the rpm_active refcount becomes saturated, in which case
-+	 * refcount_dec_not_one() would return true forever, but it is not
-+	 * strictly necessary.
-+	 */
-+	while (refcount_dec_not_one(&link->rpm_active) &&
-+	       atomic_read(&supplier->power.usage_count) > 0)
-+		pm_runtime_put_noidle(supplier);
-+
-+	if (check_idle)
-+		pm_request_idle(supplier);
-+}
-+
- static void __rpm_put_suppliers(struct device *dev, bool try_to_suspend)
- {
- 	struct device_link *link;
- 
- 	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
--				device_links_read_lock_held()) {
--
--		while (refcount_dec_not_one(&link->rpm_active))
--			pm_runtime_put_noidle(link->supplier);
--
--		if (try_to_suspend)
--			pm_request_idle(link->supplier);
--	}
-+				device_links_read_lock_held())
-+		pm_runtime_release_supplier(link, try_to_suspend);
- }
- 
- static void rpm_put_suppliers(struct device *dev)
-@@ -1755,9 +1776,7 @@ void pm_runtime_drop_link(struct device_link *link)
- 		return;
- 
- 	pm_runtime_drop_link_count(link->consumer);
--
--	while (refcount_dec_not_one(&link->rpm_active))
--		pm_runtime_put(link->supplier);
-+	pm_runtime_release_supplier(link, true);
- }
- 
- static bool pm_runtime_need_not_resume(struct device *dev)
-diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
-index 161acd4ede448..30091ab5de287 100644
---- a/include/linux/pm_runtime.h
-+++ b/include/linux/pm_runtime.h
-@@ -58,6 +58,7 @@ extern void pm_runtime_get_suppliers(struct device *dev);
- extern void pm_runtime_put_suppliers(struct device *dev);
- extern void pm_runtime_new_link(struct device *dev);
- extern void pm_runtime_drop_link(struct device_link *link);
-+extern void pm_runtime_release_supplier(struct device_link *link, bool check_idle);
- 
- /**
-  * pm_runtime_get_if_in_use - Conditionally bump up runtime PM usage counter.
-@@ -279,6 +280,8 @@ static inline void pm_runtime_get_suppliers(struct device *dev) {}
- static inline void pm_runtime_put_suppliers(struct device *dev) {}
- static inline void pm_runtime_new_link(struct device *dev) {}
- static inline void pm_runtime_drop_link(struct device_link *link) {}
-+static inline void pm_runtime_release_supplier(struct device_link *link,
-+					       bool check_idle) {}
- 
- #endif /* !CONFIG_PM */
- 
+ 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
+ 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
 -- 
 2.34.1
 
