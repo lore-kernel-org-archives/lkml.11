@@ -2,45 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B8AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57DD3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241428AbiARDX7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:23:59 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42572 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348263AbiARDJf (ORCPT
+        id S1348352AbiARDYC (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 22:24:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38988 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352904AbiARDIi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:09:35 -0500
+        Mon, 17 Jan 2022 22:08:38 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36E81C06161C;
+        Mon, 17 Jan 2022 18:50:40 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8E64AB81229;
-        Tue, 18 Jan 2022 03:09:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DF59C36AE3;
-        Tue, 18 Jan 2022 03:09:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EECFEB811CF;
+        Tue, 18 Jan 2022 02:50:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C023AC36AE3;
+        Tue, 18 Jan 2022 02:50:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642475366;
-        bh=jxzl+T9Tmow7LV9piaMJ7WdRrbsfKDF/gIFVJ4zgETs=;
+        s=k20201202; t=1642474237;
+        bh=bm+Rd7qexeD5Drlqz+BMs3kGsfMPTU5l5sG13qlHO/w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RSurrgJ6IKukXAlXjfZi1QnKMonpFuJrxTxDE4y6zX0g19QO1DcsfqTpwBxuKbCdt
-         Si6/wP4WnnQaybmQ7juLZLFKhzB4PQgX36Fyp8JUUCkpL4ANtJwTXbWrAMGscMz3IS
-         LxCCaCHR144aaXsUWSHajmQpkLeICXbIlK8l53WF6P2hAHNbQbMXYoVTuKOpO5d3za
-         wo8DBPT14+gp2vGlFcpXY6rz3UGL7iEUqSfk/6BzWXAGloEchefwFwBBGxe3u3z7HK
-         rs0Haqs+Nz6WmD+SPFxRrVet4Gdhv0AfOBuoXbh0ZfLn2gJRvUnL8D15G5pmgXZdPI
-         Jv9W4+Fe+wIxg==
+        b=dZ9cwAf/uLVw3I7EPnU3DqYyuK/mzSFSriP+IQ5NWIuexGZfwjUFykTqV/Q+lwy4q
+         Fh7dibqRDjEZ3uE5/DZ6LA+KkIuRSiZvk85bgSOa09DyoenqSNXxMiOIu7TNQC7ok0
+         mVXQ/4gdkN8YIqNebE9m1zd34KVNxFd2FUx2iJPGduDVu7zBhJ6/kH6u2c8gRdJ234
+         /NXyFtSBb4+wGprRic1ig5DUa6s1142EjB8L6/JIh5V0ahzGISa9V29STITBrC1eqs
+         4866L+/Ax4IPLO6wWMaGidlDY/GNcKTZhGJj8i3SABtVV/tcnL2ApxTVq2todUhyvo
+         BfLpU2p8jDfxQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>, clm@fb.com,
-        linux-btrfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 23/29] btrfs: remove BUG_ON(!eie) in find_parent_nodes
-Date:   Mon, 17 Jan 2022 22:08:16 -0500
-Message-Id: <20220118030822.1955469-23-sashal@kernel.org>
+Cc:     Thierry Reding <treding@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        thierry.reding@gmail.com, jonathanh@nvidia.com, spujar@nvidia.com,
+        mperttunen@nvidia.com, devicetree@vger.kernel.org,
+        linux-tegra@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 36/56] arm64: tegra: Adjust length of CCPLEX cluster MMIO region
+Date:   Mon, 17 Jan 2022 21:48:48 -0500
+Message-Id: <20220118024908.1953673-36-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118030822.1955469-1-sashal@kernel.org>
-References: <20220118030822.1955469-1-sashal@kernel.org>
+In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
+References: <20220118024908.1953673-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -49,52 +54,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Thierry Reding <treding@nvidia.com>
 
-[ Upstream commit 9f05c09d6baef789726346397438cca4ec43c3ee ]
+[ Upstream commit 2b14cbd643feea5fc17c6e8bead4e71088c69acd ]
 
-If we're looking for leafs that point to a data extent we want to record
-the extent items that point at our bytenr.  At this point we have the
-reference and we know for a fact that this leaf should have a reference
-to our bytenr.  However if there's some sort of corruption we may not
-find any references to our leaf, and thus could end up with eie == NULL.
-Replace this BUG_ON() with an ASSERT() and then return -EUCLEAN for the
-mortals.
+The Tegra186 CCPLEX cluster register region is 4 MiB is length, not 4
+MiB - 1. This was likely presumed to be the "limit" rather than length.
+Fix it up.
 
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Thierry Reding <treding@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/backref.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ arch/arm64/boot/dts/nvidia/tegra186.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
-index c59a13a53b1cc..00c9a9e719ece 100644
---- a/fs/btrfs/backref.c
-+++ b/fs/btrfs/backref.c
-@@ -1109,10 +1109,18 @@ static int find_parent_nodes(struct btrfs_trans_handle *trans,
- 				goto out;
- 			if (!ret && extent_item_pos) {
- 				/*
--				 * we've recorded that parent, so we must extend
--				 * its inode list here
-+				 * We've recorded that parent, so we must extend
-+				 * its inode list here.
-+				 *
-+				 * However if there was corruption we may not
-+				 * have found an eie, return an error in this
-+				 * case.
- 				 */
--				BUG_ON(!eie);
-+				ASSERT(eie);
-+				if (!eie) {
-+					ret = -EUCLEAN;
-+					goto out;
-+				}
- 				while (eie->next)
- 					eie = eie->next;
- 				eie->next = ref->inode_list;
+diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
+index a9c3eef6c4e09..3307d816050fe 100644
+--- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
++++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
+@@ -351,7 +351,7 @@ pmc@c360000 {
+ 
+ 	ccplex@e000000 {
+ 		compatible = "nvidia,tegra186-ccplex-cluster";
+-		reg = <0x0 0x0e000000 0x0 0x3fffff>;
++		reg = <0x0 0x0e000000 0x0 0x400000>;
+ 
+ 		nvidia,bpmp = <&bpmp>;
+ 	};
 -- 
 2.34.1
 
