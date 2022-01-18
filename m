@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12421C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:27:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08FCAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:27:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244827AbiARC1H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:27:07 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41760 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244839AbiARCZD (ORCPT
+        id S244502AbiARC1J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:27:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57462 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245162AbiARCY5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:25:03 -0500
+        Mon, 17 Jan 2022 21:24:57 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B162C0613A6;
+        Mon, 17 Jan 2022 18:24:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 54C3160C89;
-        Tue, 18 Jan 2022 02:25:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E9A3C36AE3;
-        Tue, 18 Jan 2022 02:25:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3B71B8122C;
+        Tue, 18 Jan 2022 02:24:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9CC4C36AE3;
+        Tue, 18 Jan 2022 02:24:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472702;
-        bh=02LVYUDW/mrOuwuMTZ8bCkojsOTTzLhDWhfOpPkpTUw=;
+        s=k20201202; t=1642472649;
+        bh=a3dFkuC1B1onUYYjOCkI8tMCtX9oDS/YpYKObjKeaao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QQHUmlFokZfzJe+mTsad4Yhw6ptWSoNjewMdQPFWVuYbBKdOYkpdfzkcmc1oHYhuE
-         H+y6JEGeWS1y7zqJkGSkLa+62iIgtsBVif++lGrex94r/+5mG776jmtb47TWCWLoLE
-         YAqBF0hIB9RO+HKz2dEVHrbC3Tht0M4Jg+VFuxW/fE3vOOY/vqhmAwoDPM8JBJzo11
-         1Lh9+ZugPvx+Aa1F+blcrdIOAHZg3jbmKj/84TqForRiAl0n2sqoTh0IxjvrSkVNJ5
-         O48+KnYuoZwQ58vDvQuWpvZ2NmRHuXwunsRwI4UoJ68Q35TGhiconFAXymZWGw5yZr
-         9rRhzcneo3dGg==
+        b=OL50hDnG8zzk+vWIq0wUxkzufTqoWXkFI9G5oyz1EYpQ3Bh5Sxoa127DEvkamtZjp
+         zPpXdMZXdzeBZRu/J/pMhKEQFEukJqF7mdJ32oEw74ZAUrNjTBSK/q5ZjpOIJVoH7M
+         iAfOju4tsaQmtcD/qipI7qacIo3yBAK7XkZceeRBh9M8Jg0UlsMeeojvorv2tfdAEy
+         zipGFLl7nps9HXTsS70bqcV+4QcVT31RdvneLQ5lFbPiZ+gE5YlJ1+iCbYWLe94B2r
+         DIDwntqn8iGcM1rhPQKMCWsAgX1JUbrJMKSHH8HfTX+hIeXNlDZj0053FkKpGwjTGS
+         vwS2ebbCCrmMw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Maximilian Ernestus <maximilian@ernestus.de>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        mordechay.goodstein@intel.com, miriam.rachel.korenblit@intel.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 104/217] iwlwifi: mvm: synchronize with FW after multicast commands
-Date:   Mon, 17 Jan 2022 21:17:47 -0500
-Message-Id: <20220118021940.1942199-104-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        mario.limonciello@amd.com, linux-acpi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 087/217] ACPI / x86: Add not-present quirk for the PCI0.SDHB.BRC1 device on the GPD win
+Date:   Mon, 17 Jan 2022 21:17:30 -0500
+Message-Id: <20220118021940.1942199-87-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -53,70 +52,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit db66abeea3aefed481391ecc564fb7b7fb31d742 ]
+[ Upstream commit 57d2dbf710d832841872fb15ebb79429cab90fae ]
 
-If userspace installs a lot of multicast groups very quickly, then
-we may run out of command queue space as we send the updates in an
-asynchronous fashion (due to locking concerns), and the CPU can
-create them faster than the firmware can process them. This is true
-even when mac80211 has a work struct that gets scheduled.
+The GPD win and its sibling the GPD pocket (99% the same electronics in a
+different case) use a PCI wifi card. But the ACPI tables on both variants
+contain a bug where the SDIO MMC controller for SDIO wifi cards is enabled
+despite this. This SDIO MMC controller has a PCI0.SDHB.BRC1 child-device
+which _PS3 method sets a GPIO causing the PCI wifi card to turn off.
 
-Fix this by synchronizing with the firmware after sending all those
-commands - outside of the iteration we can send a synchronous echo
-command that just has the effect of the CPU waiting for the prior
-asynchronous commands to finish. This also will cause fewer of the
-commands to be sent to the firmware overall, because the work will
-only run once when rescheduled multiple times while it's running.
+At the moment there is a pretty ugly kludge in the sdhci-acpi.c code,
+just to work around the bug in the DSDT of this single design. This can
+be solved cleaner/simply with a quirk overriding the _STA return of the
+broken PCI0.SDHB.BRC1 PCI0.SDHB.BRC1 child with a status value of 0,
+so that its power_manageable flag gets cleared, avoiding this problem.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=213649
-Suggested-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Reported-by: Maximilian Ernestus <maximilian@ernestus.de>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211204083238.51aea5b79ea4.I88a44798efda16e9fe480fb3e94224931d311b29@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Note that even though it is not used, the _STA method for the MMC
+controller is deliberately not overridden. If the status of the MMC
+controller were forced to 0 it would never get suspended, which would
+cause these mini-laptops to not reach S0i3 level when suspended.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/intel/iwlwifi/mvm/mac80211.c   | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/acpi/x86/utils.c | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index 897e3b91ddb2f..9c5c10908f013 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -1688,6 +1688,7 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	struct iwl_mvm_mc_iter_data iter_data = {
- 		.mvm = mvm,
- 	};
-+	int ret;
- 
- 	lockdep_assert_held(&mvm->mutex);
- 
-@@ -1697,6 +1698,22 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	ieee80211_iterate_active_interfaces_atomic(
- 		mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
- 		iwl_mvm_mc_iface_iterator, &iter_data);
+diff --git a/drivers/acpi/x86/utils.c b/drivers/acpi/x86/utils.c
+index 190bfc2ab3f26..b3fb428461c6f 100644
+--- a/drivers/acpi/x86/utils.c
++++ b/drivers/acpi/x86/utils.c
+@@ -94,9 +94,10 @@ static const struct override_status_id override_status_ids[] = {
+ 	/*
+ 	 * The GPD win BIOS dated 20170221 has disabled the accelerometer, the
+ 	 * drivers sometimes cause crashes under Windows and this is how the
+-	 * manufacturer has solved this :| Note that the the DMI data is less
+-	 * generic then it seems, a board_vendor of "AMI Corporation" is quite
+-	 * rare and a board_name of "Default String" also is rare.
++	 * manufacturer has solved this :|  The DMI match may not seem unique,
++	 * but it is. In the 67000+ DMI decode dumps from linux-hardware.org
++	 * only 116 have board_vendor set to "AMI Corporation" and of those 116
++	 * only the GPD win and pocket entries' board_name is "Default string".
+ 	 *
+ 	 * Unfortunately the GPD pocket also uses these strings and its BIOS
+ 	 * was copy-pasted from the GPD win, so it has a disabled KIOX000A
+@@ -120,6 +121,19 @@ static const struct override_status_id override_status_ids[] = {
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "Default string"),
+ 		DMI_MATCH(DMI_BIOS_DATE, "05/25/2017")
+ 	      }),
 +
 +	/*
-+	 * Send a (synchronous) ech command so that we wait for the
-+	 * multiple asynchronous MCAST_FILTER_CMD commands sent by
-+	 * the interface iterator. Otherwise, we might get here over
-+	 * and over again (by userspace just sending a lot of these)
-+	 * and the CPU can send them faster than the firmware can
-+	 * process them.
-+	 * Note that the CPU is still faster - but with this we'll
-+	 * actually send fewer commands overall because the CPU will
-+	 * not schedule the work in mac80211 as frequently if it's
-+	 * still running when rescheduled (possibly multiple times).
++	 * The GPD win/pocket have a PCI wifi card, but its DSDT has the SDIO
++	 * mmc controller enabled and that has a child-device which _PS3
++	 * method sets a GPIO causing the PCI wifi card to turn off.
++	 * See above remark about uniqueness of the DMI match.
 +	 */
-+	ret = iwl_mvm_send_cmd_pdu(mvm, ECHO_CMD, 0, 0, NULL);
-+	if (ret)
-+		IWL_ERR(mvm, "Failed to synchronize multicast groups update\n");
- }
++	NOT_PRESENT_ENTRY_PATH("\\_SB_.PCI0.SDHB.BRC1", ATOM_AIRMONT, {
++		DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
++		DMI_EXACT_MATCH(DMI_BOARD_NAME, "Default string"),
++		DMI_EXACT_MATCH(DMI_BOARD_SERIAL, "Default string"),
++		DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Default string"),
++	      }),
+ };
  
- static u64 iwl_mvm_prepare_multicast(struct ieee80211_hw *hw,
+ bool acpi_device_override_status(struct acpi_device *adev, unsigned long long *status)
 -- 
 2.34.1
 
