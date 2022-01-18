@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1BD7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 01:39:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C69C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 01:39:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238991AbiARBjm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 20:39:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47166 "EHLO
+        id S244370AbiARBjo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 20:39:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244293AbiARBi3 (ORCPT
+        with ESMTP id S244272AbiARBiZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 20:38:29 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F33AC06173F;
-        Mon, 17 Jan 2022 17:38:29 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id 30so72951616edv.3;
-        Mon, 17 Jan 2022 17:38:29 -0800 (PST)
+        Mon, 17 Jan 2022 20:38:25 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4771C06173E;
+        Mon, 17 Jan 2022 17:38:24 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id u21so72857248edd.5;
+        Mon, 17 Jan 2022 17:38:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=yq6uO2vAiuohupuAuJSXxHBEg2PcebW3PTJtMbsfnEk=;
-        b=I5joL5GXCAlVOdaciFwFpLYC6GKkAt0ZnSwGZKS1C8X2qEmhyf4QwWL0iY8ONOXFEB
-         HJS8WCZuwYfajwqkBpbA3Hn5br8DSY4aSME6gJuiQfyqhPuwncAAbnELYhYEXHkPmtZZ
-         IszVrBMm3HfihPjLOIKOsgmL6Njkjk1U29sRR1Ve9RPXmuw1NaaWvpDhLqyFeKG46s0Y
-         Oo5tqG8nE7vY4MEyySrrXuxktw84RipmO3HpbVhWkafpPCEnsxpQOn/Z+IKB/l6Ry3/t
-         AJ8ZpTKRERQOYvQXT20NIqJT4erLlk4X3/SqBiLtSM40ZffoO+ZSQQLTSqpvoNVoBFzb
-         O28w==
+        bh=FK6u2FLB6MoMO+1EQ+GjM1uvRkKVrC3suh/EkaZcZyo=;
+        b=DTSaOzdwCqLa3dYnPwoPmAfnGkes37NcsdLA0D846Pug4ADJ1nXOKxV66vUvhzykNv
+         rj+0SgrPE80eKKb5ZbZfKuc0z6nDiZLsRUGAa3FCY4YrBfKw9Y1jyEvUHVGfq/vgQKsI
+         da+fmxH/2N3qoJRr/kg49VPzdEud2FAGaxBg8aOO+of0zGqQpksoJ+V9/KwyMYnSOH3k
+         mJkgZucJXDiEbt9VFSkMH717zksedwM3n+gjBeZ6VeBjzZPO3BvpnGZ/evH93rA9Jzwx
+         isfCNkwECx5/CDhdLxfINFT3YRQnW+rI6AHhs5E2oFwEr1W3d+JMU2R12K1Z/ZCotlGw
+         8Yeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=yq6uO2vAiuohupuAuJSXxHBEg2PcebW3PTJtMbsfnEk=;
-        b=qgdU7XsV/oV/5vjEiaztUvwpVxGkIRD4FUfyiitLAdAlz0tjBYLcugJ3aXXnF8QDQB
-         jdHFAJx7icPjN/vV/ZHXmwaVL2Tl+cTG3ev2EmSHiEJ9rCBBFp+mAoZiRh/Q05ud49XA
-         42ctYoihaPiubZV9q9PR1SgUAddUbKe6lD9WStPb1om+Mp4MvOif5hkjll6mHT1tTTL2
-         c3LTddWxr6Jls+UWidqpW8ASM+a2fCf3RNnTlYbhfnqJGwskPPyy3+TGH1Yt0PVrrayl
-         VKUvKagYUNTJnE4+5HWXWBH0KvionUpY5a52KyROv6kns0cozQDJnCcx8DAp3LFdDrVQ
-         iinA==
-X-Gm-Message-State: AOAM533ALnQLG90dDQCjOqX0x9BY0RRZTHz3aiCOL4ZReC0xd+iB/5yK
-        pyUfaXJls2LZ2QAhyxqu2no=
-X-Google-Smtp-Source: ABdhPJxFpMZkANvax5+ymg2Ulb7JFuSzMN8Vq/jQl0CoBy1CSb2Cl6R19w9J0onuZMf2JgGHZOnwhQ==
-X-Received: by 2002:a05:6402:43ca:: with SMTP id p10mr22254842edc.74.1642469907570;
-        Mon, 17 Jan 2022 17:38:27 -0800 (PST)
+        bh=FK6u2FLB6MoMO+1EQ+GjM1uvRkKVrC3suh/EkaZcZyo=;
+        b=fmLmBkO01rnsx1d2k9P8LTYeADPhimnvGP+crxcKw6fHp+QEBEyJKzL5tHPbIbH+tm
+         stWNgbR2cXvc+NImmi92585F5SfZfK9Vwe3lhkomi2i7cHYyICik5d4O66oWJDkE0Zfd
+         t3KkJGJplNaxcL+LMSXtD0cuZHBTyLc3u2nvdAn4Z06D1L2lNn9c3t3pdfC8czhT/DyV
+         3wxAYEtEEx1FO446WO6IAU4iQrd84zyO2LG6gT9Qk8gsLIgY0tfMumZDEgM1sh7PvNaq
+         hIRQaoLtim54T3hsyN0NJSHrxg8sbLEY+QTN0obVFBiGaf3jrIilImglgjyflRiMCwkn
+         /qFA==
+X-Gm-Message-State: AOAM530tsJRUZ+RCK22v8nQXmFu9vHHhhY5oPWDn9sICsOCfYrkjY0vB
+        YheSD6KmVtp1rv+qIoj5JA4=
+X-Google-Smtp-Source: ABdhPJzWmAGRoDNfTvQ65SOZ9KtqLEzamMPTTYfCq4O5jBw7ZFp7VAkgQRSDOlk1XOaTfu5tV1IEuA==
+X-Received: by 2002:a50:a452:: with SMTP id v18mr23846797edb.55.1642469903332;
+        Mon, 17 Jan 2022 17:38:23 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id kj18sm3990675ejc.139.2022.01.17.17.38.26
+        by smtp.googlemail.com with ESMTPSA id kj18sm3990675ejc.139.2022.01.17.17.38.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 17:38:27 -0800 (PST)
+        Mon, 17 Jan 2022 17:38:22 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -55,9 +55,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [PATCH 16/16] ARM: dts: qcom: add ipq8065 dtsi
-Date:   Tue, 18 Jan 2022 02:20:50 +0100
-Message-Id: <20220118012051.21691-21-ansuelsmth@gmail.com>
+Subject: [PATCH 14/17] ARM: dts: qcom: add multiple missing binding for cpu and l2 for ipq8064
+Date:   Tue, 18 Jan 2022 02:20:45 +0100
+Message-Id: <20220118012051.21691-16-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220118012051.21691-1-ansuelsmth@gmail.com>
 References: <20220118012051.21691-1-ansuelsmth@gmail.com>
@@ -67,193 +67,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Many device are based on ipq8065 SoC. Ipq8065 is an evolution of the
-ipq8064 SoC (also named ipq8064-v3.0 from qsdk) that has all the
-improvement from ipq8064-v2.0 with the addition of a more powerful CPU
-that can now be clocked to 1.7Ghz, a quicker L2 cache that can be
-clocked to 1.4Ghz. It also shipped with more powerful regulators to
-provide the required voltage to the CPUs and L2.
+Add multiple binding for cpu node, l2 node and add idle-states
+definition for ipq8064 dtsi.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- arch/arm/boot/dts/qcom-ipq8065.dtsi | 168 ++++++++++++++++++++++++++++
- 1 file changed, 168 insertions(+)
- create mode 100644 arch/arm/boot/dts/qcom-ipq8065.dtsi
+ arch/arm/boot/dts/qcom-ipq8064.dtsi | 36 +++++++++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
 
-diff --git a/arch/arm/boot/dts/qcom-ipq8065.dtsi b/arch/arm/boot/dts/qcom-ipq8065.dtsi
-new file mode 100644
-index 000000000000..817d723b0c88
---- /dev/null
-+++ b/arch/arm/boot/dts/qcom-ipq8065.dtsi
-@@ -0,0 +1,168 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include "qcom-ipq8064.dtsi"
-+
-+/ {
-+	model = "Qualcomm IPQ8065";
-+	compatible = "qcom,ipq8065", "qcom,ipq8064";
-+
-+	aliases {
-+		serial0 = &gsbi4_serial;
-+	};
-+
-+	chosen {
-+		stdout-path = "serial0:115200n8";
-+	};
-+
-+	reserved-memory {
-+		#address-cells = <1>;
-+		#size-cells = <1>;
-+		ranges;
-+
-+		rsvd@41200000 {
-+			reg = <0x41200000 0x300000>;
-+			no-map;
+diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+index a1a809134d9e..e4a2b95699c7 100644
+--- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
++++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+@@ -30,6 +30,16 @@ cpu0: cpu@0 {
+ 			next-level-cache = <&L2>;
+ 			qcom,acc = <&acc0>;
+ 			qcom,saw = <&saw0>;
++			clocks = <&kraitcc 0>, <&kraitcc 4>;
++			clock-names = "cpu", "l2";
++			clock-latency = <100000>;
++			cpu-supply = <&smb208_s2a>;
++			operating-points-v2 = <&opp_table0>;
++			voltage-tolerance = <5>;
++			cooling-min-state = <0>;
++			cooling-max-state = <10>;
++			#cooling-cells = <2>;
++			cpu-idle-states = <&CPU_SPC>;
+ 		};
+ 
+ 		cpu1: cpu@1 {
+@@ -40,11 +50,37 @@ cpu1: cpu@1 {
+ 			next-level-cache = <&L2>;
+ 			qcom,acc = <&acc1>;
+ 			qcom,saw = <&saw1>;
++			clocks = <&kraitcc 1>, <&kraitcc 4>;
++			clock-names = "cpu", "l2";
++			clock-latency = <100000>;
++			cpu-supply = <&smb208_s2b>;
++			operating-points-v2 = <&opp_table0>;
++			voltage-tolerance = <5>;
++			cooling-min-state = <0>;
++			cooling-max-state = <10>;
++			#cooling-cells = <2>;
++			cpu-idle-states = <&CPU_SPC>;
 +		};
-+	};
-+};
 +
-+&gsbi4 {
-+	qcom,mode = <GSBI_PROT_I2C_UART>;
-+	status = "okay";
++		idle-states {
++			CPU_SPC: spc {
++				compatible = "qcom,idle-state-spc";
++				status = "disabled";
++				entry-latency-us = <400>;
++				exit-latency-us = <900>;
++				min-residency-us = <3000>;
++			};
+ 		};
+ 
+ 		L2: l2-cache {
+ 			compatible = "cache";
+ 			cache-level = <2>;
++			qcom,saw = <&saw_l2>;
 +
-+	serial@16340000 {
-+		status = "okay";
-+	};
-+	/*
-+	 * The i2c device on gsbi4 should not be enabled.
-+	 * On ipq806x designs gsbi4 i2c is meant for exclusive
-+	 * RPM usage. Turning this on in kernel manifests as
-+	 * i2c failure for the RPM.
-+	 */
-+};
-+
-+&pcie0 {
-+	compatible = "qcom,pcie-ipq8064-v2";
-+};
-+
-+&pcie1 {
-+	compatible = "qcom,pcie-ipq8064-v2";
-+};
-+
-+&pcie2 {
-+	compatible = "qcom,pcie-ipq8064-v2";
-+};
-+
-+&sata {
-+	ports-implemented = <0x1>;
-+};
-+
-+&smb208_s2a {
-+	regulator-min-microvolt = <775000>;
-+	regulator-max-microvolt = <1275000>;
-+};
-+
-+&smb208_s2b {
-+	regulator-min-microvolt = <775000>;
-+	regulator-max-microvolt = <1275000>;
-+};
-+
-+&ss_phy_0 {
-+	qcom,rx-eq = <2>;
-+	qcom,tx-deamp_3_5db = <32>;
-+	qcom,mpll = <5>;
-+};
-+
-+&ss_phy_1 {
-+	qcom,rx-eq = <2>;
-+	qcom,tx-deamp_3_5db = <32>;
-+	qcom,mpll = <5>;
-+};
-+
-+&opp_table_l2 {
-+	/delete-node/opp-1200000000;
-+
-+	opp-1400000000 {
-+		opp-hz = /bits/ 64 <1400000000>;
-+		opp-microvolt = <1150000>;
-+		clock-latency-ns = <100000>;
-+		opp-level = <2>;
-+	};
-+};
-+
-+&opp_table0 {
-+	/*
-+	 * On ipq8065 1.2 ghz freq is not present
-+	 * Remove it to make cpufreq work and not
-+	 * complain for missing definition
-+	 */
-+
-+	/delete-node/opp-1200000000;
-+
-+	/*
-+	 * Voltage thresholds are <target min max>
-+	 */
-+	opp-384000000 {
-+		opp-microvolt-speed0-pvs0-v0 = <975000 926250 1023750>;
-+		opp-microvolt-speed0-pvs1-v0 = <950000 902500 997500>;
-+		opp-microvolt-speed0-pvs2-v0 = <925000 878750 971250>;
-+		opp-microvolt-speed0-pvs3-v0 = <900000 855000 945000>;
-+		opp-microvolt-speed0-pvs4-v0 = <875000 831250 918750>;
-+		opp-microvolt-speed0-pvs5-v0 = <825000 783750 866250>;
-+		opp-microvolt-speed0-pvs6-v0 = <775000 736250 813750>;
-+	};
-+
-+	opp-600000000 {
-+		opp-microvolt-speed0-pvs0-v0 = <1000000 950000 1050000>;
-+		opp-microvolt-speed0-pvs1-v0 = <975000 926250 1023750>;
-+		opp-microvolt-speed0-pvs2-v0 = <950000 902500 997500>;
-+		opp-microvolt-speed0-pvs3-v0 = <925000 878750 971250>;
-+		opp-microvolt-speed0-pvs4-v0 = <900000 855000 945000>;
-+		opp-microvolt-speed0-pvs5-v0 = <850000 807500 892500>;
-+		opp-microvolt-speed0-pvs6-v0 = <800000 760000 840000>;
-+	};
-+
-+	opp-800000000 {
-+		opp-microvolt-speed0-pvs0-v0 = <1050000 997500 1102500>;
-+		opp-microvolt-speed0-pvs1-v0 = <1025000 973750 1076250>;
-+		opp-microvolt-speed0-pvs2-v0 = <1000000 950000 1050000>;
-+		opp-microvolt-speed0-pvs3-v0 = <975000 926250 1023750>;
-+		opp-microvolt-speed0-pvs4-v0 = <950000 902500 997500>;
-+		opp-microvolt-speed0-pvs5-v0 = <900000 855000 945000>;
-+		opp-microvolt-speed0-pvs6-v0 = <850000 807500 892500>;
-+	};
-+
-+	opp-1000000000 {
-+		opp-microvolt-speed0-pvs0-v0 = <1100000 1045000 1155000>;
-+		opp-microvolt-speed0-pvs1-v0 = <1075000 1021250 1128750>;
-+		opp-microvolt-speed0-pvs2-v0 = <1050000 997500 1102500>;
-+		opp-microvolt-speed0-pvs3-v0 = <1025000 973750 1076250>;
-+		opp-microvolt-speed0-pvs4-v0 = <1000000 950000 1050000>;
-+		opp-microvolt-speed0-pvs5-v0 = <950000 902500 997500>;
-+		opp-microvolt-speed0-pvs6-v0 = <900000 855000 945000>;
-+	};
-+
-+	opp-1400000000 {
-+		opp-microvolt-speed0-pvs0-v0 = <1175000 1116250 1233750>;
-+		opp-microvolt-speed0-pvs1-v0 = <1150000 1092500 1207500>;
-+		opp-microvolt-speed0-pvs2-v0 = <1125000 1068750 1181250>;
-+		opp-microvolt-speed0-pvs3-v0 = <1100000 1045000 1155000>;
-+		opp-microvolt-speed0-pvs4-v0 = <1075000 1021250 1128750>;
-+		opp-microvolt-speed0-pvs5-v0 = <1025000 973750 1076250>;
-+		opp-microvolt-speed0-pvs6-v0 = <975000 926250 1023750>;
-+		opp-level = <1>;
-+	};
-+
-+	opp-1725000000 {
-+		opp-hz = /bits/ 64 <1725000000>;
-+		opp-microvolt-speed0-pvs0-v0 = <1262500 1199375 1325625>;
-+		opp-microvolt-speed0-pvs1-v0 = <1225000 1163750 1286250>;
-+		opp-microvolt-speed0-pvs2-v0 = <1200000 1140000 1260000>;
-+		opp-microvolt-speed0-pvs3-v0 = <1175000 1116250 1233750>;
-+		opp-microvolt-speed0-pvs4-v0 = <1150000 1092500 1207500>;
-+		opp-microvolt-speed0-pvs5-v0 = <1100000 1045000 1155000>;
-+		opp-microvolt-speed0-pvs6-v0 = <1050000 997500 1102500>;
-+		opp-supported-hw = <0x1>;
-+		clock-latency-ns = <100000>;
-+		opp-level = <2>;
-+	};
-+};
++			clocks = <&kraitcc 4>;
++			clock-names = "l2";
++			l2-supply = <&smb208_s1a>;
++			operating-points-v2 = <&opp_table_l2>;
+ 		};
+ 	};
+ 
 -- 
 2.33.1
 
