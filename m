@@ -2,192 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9123EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:49:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 623DAC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:53:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243015AbiARNto (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 08:49:44 -0500
-Received: from foss.arm.com ([217.140.110.172]:57264 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239731AbiARNtm (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 08:49:42 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 0EAE11FB;
-        Tue, 18 Jan 2022 05:49:42 -0800 (PST)
-Received: from [10.57.67.190] (unknown [10.57.67.190])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E25EB3F766;
-        Tue, 18 Jan 2022 05:49:40 -0800 (PST)
-Message-ID: <9913d026-fddd-c188-0873-0f7a66fb2c3c@arm.com>
-Date:   Tue, 18 Jan 2022 13:49:36 +0000
+        id S243257AbiARNxF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 08:53:05 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:31516 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235780AbiARNxD (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 08:53:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642513982;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=pXij1A1UndEUt7HP7zwNeasuXhEJIKez5EOEb9nfLFg=;
+        b=B5SIMdt/QaDk0WHIN46fU8/XinYP7/iC+bjQ6VW1Q00gQgYz0p0D93fNrOYYlVdjbHF5OU
+        AhGZzC3pJDR9QUgQQF/d/kRv7ULefUjx5FsBvyggWEap+5RGko1LB+eo4875JjkogqTokB
+        8nt1P+s4vSbvm4OjvTjjd9BvhDYbsm4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-527-JlXrDARYNMW5NYWotQtA7w-1; Tue, 18 Jan 2022 08:52:59 -0500
+X-MC-Unique: JlXrDARYNMW5NYWotQtA7w-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D2FCD64097;
+        Tue, 18 Jan 2022 13:52:54 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.165])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 54B1F8049C;
+        Tue, 18 Jan 2022 13:52:50 +0000 (UTC)
+Subject: [PATCH 00/11] fscache, cachefiles: Rewrite fixes/updates
+From:   David Howells <dhowells@redhat.com>
+To:     linux-cachefs@redhat.com
+Cc:     Shyam Prasad N <nspmangalore@gmail.com>,
+        Jeff Layton <jlayton@kernel.org>, linux-cifs@vger.kernel.org,
+        Steve French <smfrench@gmail.com>,
+        Jeffle Xu <jefflexu@linux.alibaba.com>, dhowells@redhat.com,
+        Trond Myklebust <trondmy@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Steve French <smfrench@gmail.com>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Jeff Layton <jlayton@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Omar Sandoval <osandov@osandov.com>,
+        JeffleXu <jefflexu@linux.alibaba.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-cifs@vger.kernel.org, ceph-devel@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 18 Jan 2022 13:52:49 +0000
+Message-ID: <164251396932.3435901.344517748027321142.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3] iommu: Fix potential use-after-free during probe
-Content-Language: en-GB
-To:     Vijayanand Jitta <quic_vjitta@quicinc.com>, joro@8bytes.org,
-        will@kernel.org, iommu@lists.linux-foundation.org,
-        linux-kernel@vger.kernel.org
-Cc:     vjitta@codeaurora.org, kernel-team@android.com
-References: <1641993184-1232-1-git-send-email-quic_vjitta@quicinc.com>
-From:   Robin Murphy <robin.murphy@arm.com>
-In-Reply-To: <1641993184-1232-1-git-send-email-quic_vjitta@quicinc.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-12 13:13, Vijayanand Jitta wrote:
-> Kasan has reported the following use after free on dev->iommu.
-> when a device probe fails and it is in process of freeing dev->iommu
-> in dev_iommu_free function, a deferred_probe_work_func runs in parallel
-> and tries to access dev->iommu->fwspec in of_iommu_configure path thus
-> causing use after free.
-> 
-> BUG: KASAN: use-after-free in of_iommu_configure+0xb4/0x4a4
-> Read of size 8 at addr ffffff87a2f1acb8 by task kworker/u16:2/153
-> 
-> Workqueue: events_unbound deferred_probe_work_func
-> Call trace:
->   dump_backtrace+0x0/0x33c
->   show_stack+0x18/0x24
->   dump_stack_lvl+0x16c/0x1e0
->   print_address_description+0x84/0x39c
->   __kasan_report+0x184/0x308
->   kasan_report+0x50/0x78
->   __asan_load8+0xc0/0xc4
->   of_iommu_configure+0xb4/0x4a4
->   of_dma_configure_id+0x2fc/0x4d4
->   platform_dma_configure+0x40/0x5c
->   really_probe+0x1b4/0xb74
->   driver_probe_device+0x11c/0x228
->   __device_attach_driver+0x14c/0x304
->   bus_for_each_drv+0x124/0x1b0
->   __device_attach+0x25c/0x334
->   device_initial_probe+0x24/0x34
->   bus_probe_device+0x78/0x134
->   deferred_probe_work_func+0x130/0x1a8
->   process_one_work+0x4c8/0x970
->   worker_thread+0x5c8/0xaec
->   kthread+0x1f8/0x220
->   ret_from_fork+0x10/0x18
-> 
-> Allocated by task 1:
->   ____kasan_kmalloc+0xd4/0x114
->   __kasan_kmalloc+0x10/0x1c
->   kmem_cache_alloc_trace+0xe4/0x3d4
->   __iommu_probe_device+0x90/0x394
->   probe_iommu_group+0x70/0x9c
->   bus_for_each_dev+0x11c/0x19c
->   bus_iommu_probe+0xb8/0x7d4
->   bus_set_iommu+0xcc/0x13c
->   arm_smmu_bus_init+0x44/0x130 [arm_smmu]
->   arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
->   platform_drv_probe+0xe4/0x13c
->   really_probe+0x2c8/0xb74
->   driver_probe_device+0x11c/0x228
->   device_driver_attach+0xf0/0x16c
->   __driver_attach+0x80/0x320
->   bus_for_each_dev+0x11c/0x19c
->   driver_attach+0x38/0x48
->   bus_add_driver+0x1dc/0x3a4
->   driver_register+0x18c/0x244
->   __platform_driver_register+0x88/0x9c
->   init_module+0x64/0xff4 [arm_smmu]
->   do_one_initcall+0x17c/0x2f0
->   do_init_module+0xe8/0x378
->   load_module+0x3f80/0x4a40
->   __se_sys_finit_module+0x1a0/0x1e4
->   __arm64_sys_finit_module+0x44/0x58
->   el0_svc_common+0x100/0x264
->   do_el0_svc+0x38/0xa4
->   el0_svc+0x20/0x30
->   el0_sync_handler+0x68/0xac
->   el0_sync+0x160/0x180
-> 
-> Freed by task 1:
->   kasan_set_track+0x4c/0x84
->   kasan_set_free_info+0x28/0x4c
->   ____kasan_slab_free+0x120/0x15c
->   __kasan_slab_free+0x18/0x28
->   slab_free_freelist_hook+0x204/0x2fc
->   kfree+0xfc/0x3a4
->   __iommu_probe_device+0x284/0x394
->   probe_iommu_group+0x70/0x9c
->   bus_for_each_dev+0x11c/0x19c
->   bus_iommu_probe+0xb8/0x7d4
->   bus_set_iommu+0xcc/0x13c
->   arm_smmu_bus_init+0x44/0x130 [arm_smmu]
->   arm_smmu_device_probe+0xb88/0xc54 [arm_smmu]
->   platform_drv_probe+0xe4/0x13c
->   really_probe+0x2c8/0xb74
->   driver_probe_device+0x11c/0x228
->   device_driver_attach+0xf0/0x16c
->   __driver_attach+0x80/0x320
->   bus_for_each_dev+0x11c/0x19c
->   driver_attach+0x38/0x48
->   bus_add_driver+0x1dc/0x3a4
->   driver_register+0x18c/0x244
->   __platform_driver_register+0x88/0x9c
->   init_module+0x64/0xff4 [arm_smmu]
->   do_one_initcall+0x17c/0x2f0
->   do_init_module+0xe8/0x378
->   load_module+0x3f80/0x4a40
->   __se_sys_finit_module+0x1a0/0x1e4
->   __arm64_sys_finit_module+0x44/0x58
->   el0_svc_common+0x100/0x264
->   do_el0_svc+0x38/0xa4
->   el0_svc+0x20/0x30
->   el0_sync_handler+0x68/0xac
->   el0_sync+0x160/0x180
-> 
-> Fix this by taking device_lock during probe_iommu_group.
-> 
-> Signed-off-by: Vijayanand Jitta <quic_vjitta@quicinc.com>
-> ---
->   drivers/iommu/iommu.c | 12 ++++++++----
->   1 file changed, 8 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iommu/iommu.c b/drivers/iommu/iommu.c
-> index dd7863e..261792d 100644
-> --- a/drivers/iommu/iommu.c
-> +++ b/drivers/iommu/iommu.c
-> @@ -1617,7 +1617,7 @@ static int probe_iommu_group(struct device *dev, void *data)
->   {
->   	struct list_head *group_list = data;
->   	struct iommu_group *group;
-> -	int ret;
-> +	int ret = 0;
->   
->   	/* Device is probed already if in a group */
->   	group = iommu_group_get(dev);
-> @@ -1626,9 +1626,13 @@ static int probe_iommu_group(struct device *dev, void *data)
->   		return 0;
->   	}
->   
-> -	ret = __iommu_probe_device(dev, group_list);
-> -	if (ret == -ENODEV)
-> -		ret = 0;
-> +	ret = device_trylock(dev);
-> +	if (ret) {
 
-This doesn't seem right - we can't have a non-deterministic situation 
-where __iommu_probe_device() may or may not be called depending on what 
-anyone else might be doing with the device at the same time.
+Here's a set of fixes and minor updates for the fscache rewrite[1]:
 
-I don't fully understand how __iommu_probe_device() and 
-of_iommu_configure() can be running for the same device at the same 
-time, but if that's not a race which can be fixed in its own right, then 
-I think adding a refcount to dev_iommu would be a more sensible way to 
-mitigate it.
+ (1) Fix mishandling of volume collisions (the wait condition is inverted
+     and so it was only waiting if the volume collision was already
+     resolved).
 
-Robin.
+And for cachefiles, including addressing some of Jeff Layton's review
+comments:
 
-> +		ret = __iommu_probe_device(dev, group_list);
-> +		if (ret == -ENODEV)
-> +			ret = 0;
-> +		device_unlock(dev);
-> +	}
->   
->   	return ret;
->   }
+ (2) Fix miscalculation of whether there's space available.
+
+ (3) Make sure a default cache name is set on a cache if the user hasn't
+     set one by the time they bind the cache.
+
+ (4) Adjust the way the backing inode is presented in tracepoints, add a
+     tracepoint for mkdir and trace directory lookup.
+
+ (5) Trace failure to set the active file mark.
+
+ (6) Add explanation of the checks made on the backing filesystem.
+
+ (7) Check that the backing filesystem supports tmpfile.
+
+ (8) Document how the page-release cancellation of the read-skip
+     optimisation works.
+
+ (9) Add an IS_KERNEL_FILE() check macro for the S_KERNEL_FILE inode flag.
+
+And I've included a change for netfslib:
+
+(10) Make ops->init_rreq() optional.
+
+I've also added the patch to rewrite cifs's fscache indexing.
+
+
+Link: https://lore.kernel.org/r/164021479106.640689.17404516570194656552.stgit@warthog.procyon.org.uk/ [1]
+
+---
+David Howells (9):
+      fscache: Fix the volume collision wait condition
+      cachefiles: Calculate the blockshift in terms of bytes, not pages
+      cachefiles: Make some tracepoint adjustments
+      cachefiles: Trace active-mark failure
+      cachefiles: Explain checks in a comment
+      cachefiles: Check that the backing filesystem supports tmpfiles
+      fscache: Add a comment explaining how page-release optimisation works
+      vfs, fscache: Add an IS_KERNEL_FILE() macro for the S_KERNEL_FILE flag
+      cifs: Support fscache indexing rewrite
+
+Jeffle Xu (2):
+      cachefiles: set default tag name if it's unspecified
+      netfs: Make ops->init_rreq() optional
+
+
+ fs/cachefiles/cache.c             |  17 +-
+ fs/cachefiles/daemon.c            |  11 +
+ fs/cachefiles/internal.h          |   2 +-
+ fs/cachefiles/io.c                |   2 +-
+ fs/cachefiles/namei.c             |  18 +-
+ fs/ceph/addr.c                    |   5 -
+ fs/cifs/Kconfig                   |   2 +-
+ fs/cifs/Makefile                  |   2 +-
+ fs/cifs/cache.c                   | 105 ----------
+ fs/cifs/cifsfs.c                  |  19 +-
+ fs/cifs/cifsglob.h                |   5 +-
+ fs/cifs/connect.c                 |  15 +-
+ fs/cifs/dir.c                     |   5 +
+ fs/cifs/file.c                    |  70 ++++---
+ fs/cifs/fscache.c                 | 333 +++++++-----------------------
+ fs/cifs/fscache.h                 | 126 ++++-------
+ fs/cifs/inode.c                   |  19 +-
+ fs/namei.c                        |   2 +-
+ fs/netfs/read_helper.c            |   3 +-
+ include/linux/fs.h                |   1 +
+ include/linux/fscache.h           |   5 +
+ include/trace/events/cachefiles.h | 103 ++++++---
+ 22 files changed, 313 insertions(+), 557 deletions(-)
+ delete mode 100644 fs/cifs/cache.c
+
+
