@@ -2,138 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89E40C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:12:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDA58C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:12:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241937AbiARNML (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 08:12:11 -0500
-Received: from mga17.intel.com ([192.55.52.151]:18381 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241895AbiARNMK (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 08:12:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642511530; x=1674047530;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=haAtT0qnhMnxuzbQjHYujPfMm8bzq9m+bN5pE/BEwjs=;
-  b=euBOaAa6H2IkCM7zl7QYSlPvHAazjL5H6qZW0KGMRCKrshdrVt+j5e6N
-   XyIQRNZoleP2dB0lWAG9Y2MZiHI7k1PfR4Z/fNB4QZOdoUMJ9OEDw7uNO
-   BqyP1j+GgRks1agyNLn7Vnd7EQL0SsGCV4/HPdg8PK/vt47cCHTlkDDat
-   9Sm7CEC9cOPpLjVBKfEzR3cvU4LNwyGX8vGx7+3j631q3kO25FzLz03AO
-   tc/BaL4Lr3cXCmVa9zG/3sFkxYZCTO6fbwWF6UfBeAfYT+B0oT2DQND/e
-   Ik5RanTd1xP88IKg6mgj9Sk8OyFa4ePYxT73yf7JSHaU1SpZ8v8f0Coar
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="225489371"
-X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="225489371"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 05:12:10 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="671834293"
-Received: from kuha.fi.intel.com ([10.237.72.185])
-  by fmsmga001.fm.intel.com with SMTP; 18 Jan 2022 05:12:07 -0800
-Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Tue, 18 Jan 2022 15:12:07 +0200
-Date:   Tue, 18 Jan 2022 15:12:07 +0200
-From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
-To:     Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
-Cc:     Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
-        rafael.j.wysocki@intel.com, linux-usb@vger.kernel.org
-Subject: Re: [Bug][5.17-rc0] Between commits daadb3bd0e8d and 455e73a07f6e,
- the kernel stops loading on my devices.
-Message-ID: <Yea8p1b/sZYKNGaB@kuha.fi.intel.com>
-References: <CABXGCsNb22JCJ4AyR1sYqFtF4QUnvM3B2zQcc1svcm2mquWxoA@mail.gmail.com>
- <YeUvvIaVJnJrrpYe@kuha.fi.intel.com>
- <CABXGCsO5PYBuZ11YR16NLLa0H07Jom1JQhWHFuETfotfBfzkMw@mail.gmail.com>
- <YeVQsRp7aDMcQKs7@kuha.fi.intel.com>
- <CABXGCsMWXFFQY3L8ixK9K-gYX41_gTjqHRBXNp6gDpUgdnvFfg@mail.gmail.com>
- <YeVfYOhxGTgg8VpZ@kuha.fi.intel.com>
- <CABXGCsOwsP7NJ67oyK3HPs2EarSJKLB9EVW7oEh+8bAFihSa8g@mail.gmail.com>
+        id S241955AbiARNM0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 08:12:26 -0500
+Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:58730 "EHLO
+        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242009AbiARNMT (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 08:12:19 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R421e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0V2C1owk_1642511536;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V2C1owk_1642511536)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 18 Jan 2022 21:12:17 +0800
+From:   Jeffle Xu <jefflexu@linux.alibaba.com>
+To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
+        chao@kernel.org, linux-erofs@lists.ozlabs.org
+Cc:     linux-fsdevel@vger.kernel.org, joseph.qi@linux.alibaba.com,
+        bo.liu@linux.alibaba.com, tao.peng@linux.alibaba.com,
+        gerry@linux.alibaba.com, eguan@linux.alibaba.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 00/20] fscache,erofs: fscache-based demand-read semantics
+Date:   Tue, 18 Jan 2022 21:11:56 +0800
+Message-Id: <20220118131216.85338-1-jefflexu@linux.alibaba.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABXGCsOwsP7NJ67oyK3HPs2EarSJKLB9EVW7oEh+8bAFihSa8g@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mikhail,
+changes since v1:
+- rebase to v5.17
+- erofs: In chunk based layout, since the logical file offset has the
+  same remainder over PAGE_SIZE with the corresponding physical address
+  inside the data blob file, the file page cache can be directly
+  transferred to netfs library to contain the data from data blob file.
+  (patch 15) (Gao Xiang)
+- netfs,cachefiles: manage logical/physical offset separately. (patch 2)
+  (It is used by erofs_begin_cache_operation() in patch 15.)
+- cachefiles: introduce a new devnode specificaly for on-demand reading.
+  (patch 6)
+- netfs,fscache,cachefiles: add new CONFIG_* for on-demand reading.
+  (patch 3/5)
+- You could start a quick test by
+  https://github.com/lostjeffle/demand-read-cachefilesd
+- add more background information (mainly introduction to nydus) in the
+  "Background" part of this cover letter
 
-On Tue, Jan 18, 2022 at 04:26:27PM +0500, Mikhail Gavrilov wrote:
-> On Mon, 17 Jan 2022 at 17:21, Heikki Krogerus
-> <heikki.krogerus@linux.intel.com> wrote:
-> >
-> > Have you modified the file, or something else that you have not
-> > committed yet?
-> >
-> >         % git status
-> >
-> > Checkout the file, and then try to apply the patch:
-> >
-> >         % git checkout drivers/usb/typec/port-mapper.c
-> >         % git apply -v 0001-usb-typec-Test-fix.patch
-> >
-> 
-> I understood why the patch was not applied. The "Window line endings"
-> in the attached file were.
-> 
-> $ dos2unix 0001-usb-typec-Test-fix.patch
-> dos2unix: converting file 0001-usb-typec-Test-fix.patch to Unix format...
-> $ git apply -v 0001-usb-typec-Test-fix.patch
-> Checking patch drivers/usb/typec/port-mapper.c...
-> Applied patch drivers/usb/typec/port-mapper.c cleanly.
+[Important Issues]
+The following issues still need further discussion. Thanks for your time
+and patience.
 
-Oh, I'm sorry. Something corrupted the patch, which is a bit alarming,
-but good that you managed to test it in any case.
+1. I noticed that there's refactoring of netfs library[1], and patch 1
+is not needed since [2].
 
-> Unfortunately the attached patch didn't fix the issue.
-> 
->  BUG: kernel NULL pointer dereference, address: 0000000000000008
->  #PF: supervisor read access in kernel mode
->  #PF: error_code(0x0000) - not-present page
->  PGD 0 P4D 0
->  Oops: 0000 [#1] PREEMPT SMP NOPTI
->  CPU: 10 PID: 459 Comm: kworker/10:2 Not tainted
-> 5.16.0-patched-455e73a07f6e+ #26
->  Hardware name: ASUSTeK COMPUTER INC. ROG Strix G513QY_G513QY/G513QY,
-> BIOS G513QY.316 11/29/2021
->  Workqueue: events_long ucsi_init_work [typec_ucsi]
->  RIP: 0010:component_master_add_with_match+0x14/0x110
->  Code: 72 d7 48 89 ef 5b 5d e9 1a 5c 9f ff 66 2e 0f 1f 84 00 00 00 00
-> 00 0f 1f 44 00 00 41 55 49 89 fd 41 54 49 89 f4 55 53 48 89 d3 <48> 8b
-> 72 08 48 3b 32 74 10 48 89 d7 e8 4b fd ff ff 85 c0 0f 85 bb
->  RSP: 0018:ffffba4581837d90 EFLAGS: 00010282
->  RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
->  RDX: 0000000000000000 RSI: ffffffffc04f58d0 RDI: ffff9c5afe43a808
->  RBP: ffff9c5a81076358 R08: 0000000000000001 R09: 0000000000000001
->  R10: 0000000000000001 R11: 0000000000000000 R12: ffffffffc04f58d0
->  R13: ffff9c5afe43a808 R14: ffff9c5afe43a808 R15: ffff9c5a832c4010
->  FS:  0000000000000000(0000) GS:ffff9c5d88a00000(0000) knlGS:0000000000000000
->  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
->  CR2: 0000000000000008 CR3: 00000002e5028000 CR4: 0000000000750ee0
->  PKRU: 55555554
->  Call Trace:
->   <TASK>
->   typec_link_ports+0x5d/0x70 [typec]
->   typec_register_port+0x1e6/0x2e0 [typec]
->   ucsi_init_work+0x463/0x840 [typec_ucsi]
->   process_one_work+0x2bb/0x600
->   worker_thread+0x55/0x3b0
->   ? process_one_work+0x600/0x600
->   kthread+0x17c/0x1a0
->   ? set_kthread_struct+0x40/0x40
->   ret_from_fork+0x22/0x30
->   </TASK>
+2. The current implementation will severely conflict with the
+refactoring of netfs library[1][2]. The assumption of 'struct
+netfs_i_context' [2] is that, every file in the upper netfs will
+correspond to only one backing file. While in our scenario, one file in
+erofs can correspond to multiple backing files. That is, the content of
+one file can be divided into multiple chunks, and are distrubuted over
+multiple blob files, i.e. multiple backing files. Currently I have no
+good idea solving this conflic.
 
-This is not the same issue, this is another bug :-(. The original
-issue does seem to be fixed.
+Besides there are still two quetions:
+- What's the plan of [1]? When is it planned to be merged?
+- It seems that all upper fs using fscache is going to use netfs API,
+  while the APIs like fscache_read_or_alloc_page() are deprecated. Is
+  that true?
 
-I can reproduce this one by simply not creating the component list in
-the code. That function - component_master_add_with_match() - can't
-handle situation where the list is empty. I'll prepare the fix.
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=netfs-lib
+[2] https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/commit/?h=netfs-lib&id=087d913752522fb9aa6d3effdb9a8c7908c779dd
 
-Thanks,
+
+RFC: https://lore.kernel.org/all/YbRL2glGzjfZkVbH@B-P7TQMD6M-0146.local/t/
+v1: https://lore.kernel.org/lkml/47831875-4bdd-8398-9f2d-0466b31a4382@linux.alibaba.com/T/
+
+
+[Background]
+============
+Nydus is a remote container snapthotter specially optimised for container
+images distribution over network. It has recently been accepted as a
+sub-project of containerd[1]. Nydus is an excellent container image
+acceleration solution, since it only pulls data from remote when it's
+really needed, a.k.a. on-demand reading.
+
+erofs (Enhanced Read-Only File System) is a filesystem specially
+optimised for read-only scenarios. (Documentation/filesystem/erofs.rst)
+
+Recently we are focusing on erofs in container images distribution
+scenario [2], trying to combine it with nydus. In this case, erofs can
+be mounted from one bootstrap file (metadata) with (optional) multiple
+data blob files (data) stored on another local filesystem. (All these
+files are actually image files in erofs disk format.)
+
+To accelerate the container startup (fetching container image from remote
+and then start the container), we do hope that the bootstrap blob file
+could support demand read. That is, erofs can be mounted and accessed
+even when the bootstrap/data blob files have not been fully downloaded.
+
+That means we have to manage the cache state of the bootstrap/data blob
+files (if cache hit, read directly from the local cache; if cache miss,
+fetch the data somehow). It would be painful and may be dumb for erofs to
+implement the cache management itself. Thus we prefer fscache/cachefiles
+to do the cache management. Besides, the demand-read feature shall be
+general and it can benefit other using scenarios if it can be implemented
+in fscache level.
+
+[1] https://d7y.io/en-us/blog/containerd_accepted_nydus-snapshotter.html
+[2] https://sched.co/pcdL
+
+
+[Overall Design]
+================
+The upper fs uses a backing file on the local fs as the local cache
+(exactly the "cachefiles" way), and relies on fscache to detect if data
+is ready or not (cache hit/miss). Since currently fscache detects cache
+hit/miss by detecting the hole of the backing files, our demand-read
+mechanism also relies on the hole detecting.
+
+1. initial phase
+On the first beginning, the user daemon will touch the backing files
+(bootstrap/data blob files) under corresponding directory (under
+<root>/cache/<volume>/<fan>/) in advance. These backing files are
+completely sparse files (with zero disk usage). Since these backing
+files are all read-only and the file size is known prior mounting, user
+daemon will set corresponding file size and thus create all these sparse
+backing files in advance.
+
+2. cache miss
+When a file range (of bootstrap/data blob file) is accessed for the
+first time, a cache miss will be triggered and then .issue_op() will be
+called to fetch the data somehow.
+
+In the demand-read case, we relies on a user daemon to fetch the data
+from local/remote. In this case, .issue_op() just packages the file
+range into a message and informs the user daemon. User daemon needs to
+poll and wait on the devnode (/dev/cachefiles_demand). Once awaken, the
+user daemon will read the devnode to get the file range information, and
+then fetch the data corresponding to the file range somehow, e.g.
+download from remote through network. Once data ready, the user daemon
+will write the fetched data into the backing file and then inform
+cachefiles backend by writing to the devnode. Cachefiles backend getting
+blocked on the previous .issue_op() calling will be awaken then. By then
+the data has been ready in the backing file, and the netfs API will
+re-initiate a read request from the backing file.
+
+3. cache hit
+Once data is already ready in the backing file, netfs API will read from
+the backing file directly.
+
+
+[Advantage of fscache-based demand-read]
+========================================
+1. Asynchronous Prefetch
+In current mechanism, fscache is responsible for cache state management,
+while the data plane (fetch data from local/remote on cache miss) is
+done on the user daemon side.
+
+If data has already been ready in the backing file, netfs API will read
+from the backing file directly and won't be trapped to user space anymore.
+Thus the user daemon could fetch data (from remote) asynchronously on the
+background, and thus accelerate the backing file accessing in some degree.
+
+2. Support massive blob files
+Besides this mechanism supports a large amount of backing files, and
+thus can benefit the densely employed scenario.
+
+In our using scenario, one container image can correspond to one
+bootstrap file (required) and multiple data blob files (optional). For
+example, one container image for node.js will corresponds to ~20 files
+in total. In densely employed environment, there could be as many as
+hundreds of containers and thus thousands of backing files on one
+machine.
+
+[Test]
+You could start a quick test by
+https://github.com/lostjeffle/demand-read-cachefilesd
+
+
+Jeffle Xu (20):
+  netfs: make @file optional in netfs_alloc_read_request()
+  netfs,cachefiles: manage logical/physical offset separately
+  netfs,fscache: support on-demand reading
+  cachefiles: extract generic daemon write function
+  cachefiles: detect backing file size in on-demand read mode
+  cachefiles: introduce new devnode for on-demand read mode
+  erofs: use meta buffers for erofs_read_superblock()
+  erofs: export erofs_map_blocks()
+  erofs: add mode checking helper
+  erofs: register global fscache volume
+  erofs: add cookie context helper functions
+  erofs: add anonymous inode managing page cache of blob file
+  erofs: register cookie context for bootstrap blob
+  erofs: implement fscache-based metadata read
+  erofs: implement fscache-based data read for non-inline layout
+  erofs: implement fscache-based data read for inline layout
+  erofs: register cookie context for data blobs
+  erofs: implement fscache-based data read for data blobs
+  erofs: add 'uuid' mount option
+  erofs: support on-demand reading
+
+ fs/cachefiles/Kconfig    |   8 +
+ fs/cachefiles/daemon.c   | 147 ++++++++++++++++-
+ fs/cachefiles/internal.h |  23 +++
+ fs/cachefiles/io.c       |  82 +++++++++-
+ fs/cachefiles/main.c     |  27 ++++
+ fs/cachefiles/namei.c    |  60 ++++++-
+ fs/erofs/Kconfig         |   2 +-
+ fs/erofs/Makefile        |   3 +-
+ fs/erofs/data.c          |  18 ++-
+ fs/erofs/fscache.c       | 339 +++++++++++++++++++++++++++++++++++++++
+ fs/erofs/inode.c         |   6 +-
+ fs/erofs/internal.h      |  30 ++++
+ fs/erofs/super.c         | 101 +++++++++---
+ fs/fscache/Kconfig       |   8 +
+ fs/netfs/Kconfig         |   8 +
+ fs/netfs/read_helper.c   |  65 ++++++--
+ include/linux/netfs.h    |  10 ++
+ 17 files changed, 886 insertions(+), 51 deletions(-)
+ create mode 100644 fs/erofs/fscache.c
 
 -- 
-heikki
+2.27.0
+
