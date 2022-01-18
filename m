@@ -2,124 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDE5BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:14:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:17:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241467AbiARNO3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 08:14:29 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:43993 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242181AbiARNOX (ORCPT
+        id S242266AbiARNRu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 08:17:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40028 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236141AbiARNRl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 08:14:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642511662;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=UfPcLWqi6SZLWlgUKc6INmjHHY/xRBa8vL1E7Hp3TMk=;
-        b=NqRW7ef9O0rUP6VyQ/6Yjagv0YybtEmcLYf8FJ6NlDSvtv6cWG5bhSdyawsBFWOIyEfZ/v
-        GC/DH/QrLlmOdVTRRc8YnpB9coe7pN76uVMtlKPGmk5IEdU2xn2TRbMuoi1NijesMaf8u3
-        uHNVUwE1HrdG1ajADVDfa1SOadCbZRY=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-55-HrvKear9P5qRb7Z9xrWqvw-1; Tue, 18 Jan 2022 08:14:21 -0500
-X-MC-Unique: HrvKear9P5qRb7Z9xrWqvw-1
-Received: by mail-ed1-f69.google.com with SMTP id h11-20020a05640250cb00b003fa024f87c2so16980758edb.4
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 05:14:20 -0800 (PST)
+        Tue, 18 Jan 2022 08:17:41 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 046EBC061574;
+        Tue, 18 Jan 2022 05:17:41 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id j5-20020a05600c1c0500b0034d2e956aadso4743657wms.4;
+        Tue, 18 Jan 2022 05:17:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=Q7VK09hbhq9EF54NXn3wG/WGVYjtOlKUjjiSI8lz1ck=;
+        b=dGRXIOV4goUxOIaWV646IpZ8F1nDyXNUH/J3l5cyAa9AB5BDE96BztzhhahUYB3BIL
+         jlGpO8yZnafBRe6gFpFy94a+OwASwyI9BOyMwuucVNHWjxgNjcUAC6FbVaveZwJJSuzl
+         BTVqJDrDh9X8BaS/TqAd8SlAazmgFHpsbcpBeCDoOERQHqlETvSeDuttPLMzml0UyTTx
+         7c3RRFEfSoj55Orxijj/drBvI/BqtV5USJrqhVSoLcTsl4zkYl8SH2bREz30Kgy6TM0+
+         UfrpNLDnFm4YDLpJ3SGVpoF1ZWlrmmt5ny7kNpOmpHuD3Z62qKn2sJk2XX0Vlw0W7RE9
+         QwIg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
          :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=UfPcLWqi6SZLWlgUKc6INmjHHY/xRBa8vL1E7Hp3TMk=;
-        b=1iwREgAEhKSCBRJIMFh4sE9MC/zHh2wMs7X/HZehCLRUbERP3Ef8x/3aiMVKjpM+4P
-         cYtHPYXcCP8QLx8uKQFf3UEUq1BsBKse82IkDon6AnjdKhydXKoR5kaGCfnXwrMJ+1QA
-         0T1vb1ivVC9ze73TSdluCVYpEqsvvP2TV+GhU7VThqYRUXSw+pJxi7YDxCfMkulpy0wj
-         NN02escPx4Zdx+HABlXjVPQz+LPpOxim81dStQjWJD9PYMidiDrcCIxPGeZc412iKD0T
-         VmWvEesFTW/sfn+vNjB7wGilQ0cNXbCkZ4Dx3PLD58I/H6C4TkKswmVD5mLMUCH0iklg
-         wV9w==
-X-Gm-Message-State: AOAM533wheV8xJxAfghc9JGhy1TR9hMqNy4LcwVuzVttulBXkwIMz4Dl
-        3WOlr+0MmOn6jfLsaRKMgnk9jtcDI3Vv4Fp03LbG6VVcKOHFycvKrTD1hmeGzLh+l5lTduPA34a
-        z9eKc/32CfKs3MsDDMnwq0f35
-X-Received: by 2002:aa7:c6c1:: with SMTP id b1mr25552635eds.172.1642511660069;
-        Tue, 18 Jan 2022 05:14:20 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwVXPBkyZaCbHIx/HBCeq3N73EccAH4eC6n2rvzGk7A3reUfBMaU6vShbC6aQz7gJjmFLNErw==
-X-Received: by 2002:aa7:c6c1:: with SMTP id b1mr25552617eds.172.1642511659862;
-        Tue, 18 Jan 2022 05:14:19 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? ([2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.gmail.com with ESMTPSA id 24sm5351050ejg.47.2022.01.18.05.14.19
+        bh=Q7VK09hbhq9EF54NXn3wG/WGVYjtOlKUjjiSI8lz1ck=;
+        b=SBb/RRv+8WWyR17XhHc64icjWlbChOxjfRjwD15mbwALe2B4qK9+Ln9jNI+lODj2MP
+         3uQTeVeN/TeU9DMPUgtzC2YX5F3gI+Jt5kddaT5/e2Yf9zK30V/pLYzDITum+PQFIFSQ
+         fYFWTRrIS7ERFYtIqKuOtfQ+AFuctWardYwBWczBssKBw2H9yWbon95dJmqTz2uJ85LC
+         4pPxOSC3PmNeITL3kvtgd1dC9yHj2xVaebIyQEHGSY+QxmzrfxwDS2EKAKPJMantk5C4
+         rnvpeFGZiiFJbd5s0VUQqxASLsZ/XJbK4oulhZokvHOt8Orx/V5ItCsbl45IJWpO19qD
+         sKPg==
+X-Gm-Message-State: AOAM532FfGZZfGN/GqKEtFogIxe1GuJYmAKllWbVbqx1fFIQXbiHtZzY
+        YylWRnkzmpgvxSIaGb6sXYY=
+X-Google-Smtp-Source: ABdhPJw1UPBVre/JNKUC+L4E+4ziUHkUgPD9UeI112aZ+x3y/3f7KSt7xQVyvz+AmxisjpUlbcMjwg==
+X-Received: by 2002:adf:ffc7:: with SMTP id x7mr23088441wrs.623.1642511859529;
+        Tue, 18 Jan 2022 05:17:39 -0800 (PST)
+Received: from [192.168.1.145] ([207.188.161.251])
+        by smtp.gmail.com with ESMTPSA id c8sm2938627wmq.34.2022.01.18.05.17.38
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Jan 2022 05:14:19 -0800 (PST)
-Message-ID: <d8542235-01ff-e04f-84c6-53259ab845b9@redhat.com>
-Date:   Tue, 18 Jan 2022 14:14:14 +0100
+        Tue, 18 Jan 2022 05:17:38 -0800 (PST)
+Message-ID: <f5486d12-b048-c062-e571-cf39da7e4c1b@gmail.com>
+Date:   Tue, 18 Jan 2022 14:17:37 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH -next] power: supply: fix table problem in
- sysfs-class-power
+ Thunderbird/91.2.0
+Subject: Re: [PATCH v2 1/2] soc: mediatek: pwrap: add pwrap driver for MT8186
+ SoC
 Content-Language: en-US
-To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?Q?Thomas_Wei=c3=9fschuh?= <linux@weissschuh.net>,
-        Sebastian Reichel <sre@kernel.org>, linux-pm@vger.kernel.org,
-        Stephen Rothwell <sfr@canb.auug.org.au>
-References: <20220118021522.1672-1-rdunlap@infradead.org>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220118021522.1672-1-rdunlap@infradead.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+To:     Johnson Wang <johnson.wang@mediatek.com>, robh+dt@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        angelogioacchino.delregno@collabora.com,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220107104633.7500-1-johnson.wang@mediatek.com>
+ <20220107104633.7500-2-johnson.wang@mediatek.com>
+ <9949a1f7-1ed5-a137-c7b9-2ef8d8e1caf8@gmail.com>
+ <544f5085fc8597ce9ce3eb7dc1b5d08fb1ac8755.camel@mediatek.com>
+From:   Matthias Brugger <matthias.bgg@gmail.com>
+In-Reply-To: <544f5085fc8597ce9ce3eb7dc1b5d08fb1ac8755.camel@mediatek.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
 
-On 1/18/22 03:15, Randy Dunlap wrote:
-> Add a bottom table border to complete the table format and prevent
-> a documentation build warning.
+
+On 18/01/2022 10:25, Johnson Wang wrote:
+> Hi Matthias,
 > 
-> Documentation/ABI/testing/sysfs-class-power:459: WARNING: Malformed table.
-> No bottom table border found.
+> On Fri, 2022-01-14 at 16:46 +0100, Matthias Brugger wrote:
+>>
+>> On 07/01/2022 11:46, Johnson Wang wrote:
+>>> MT8186 are highly integrated SoC and use PMIC_MT6366 for
+>>> power management. This patch adds pwrap master driver to
+>>> access PMIC_MT6366.
+>>>
+>>
+>> It seems this new arbiter is significantly different from the version
+>> 1. Please
+>> explain that in the commit message.
+>>
+>>> Signed-off-by: Johnson Wang <johnson.wang@mediatek.com>
+>>> ---
+>>>    drivers/soc/mediatek/mtk-pmic-wrap.c | 72
+>>> ++++++++++++++++++++++++++++
+>>>    1 file changed, 72 insertions(+)
+>>>
+>>> diff --git a/drivers/soc/mediatek/mtk-pmic-wrap.c
+>>> b/drivers/soc/mediatek/mtk-pmic-wrap.c
+>>> index 952bc554f443..78866ebf7f04 100644
+>>> --- a/drivers/soc/mediatek/mtk-pmic-wrap.c
+>>> +++ b/drivers/soc/mediatek/mtk-pmic-wrap.c
+>>> @@ -30,6 +30,7 @@
+>>>    #define PWRAP_GET_WACS_REQ(x)		(((x) >> 19) &
+>>> 0x00000001)
+>>>    #define PWRAP_STATE_SYNC_IDLE0		BIT(20)
+>>>    #define PWRAP_STATE_INIT_DONE0		BIT(21)
+>>> +#define PWRAP_STATE_INIT_DONE0_V2	BIT(22)
+>>
+>> That's a strange name, does it come from the datasheet description?
 > 
-> Fixes: 1b0b6cc8030d0 ("power: supply: add charge_behaviour attributes")
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: Thomas Weißschuh <linux@weissschuh.net>
-> Cc: Hans de Goede <hdegoede@redhat.com>
-> Cc: Sebastian Reichel <sre@kernel.org>
-> Cc: linux-pm@vger.kernel.org
-> Cc: Stephen Rothwell <sfr@canb.auug.org.au>
-
-Randy, thank you for the patch.
-
-Sebastian, assuming you will merge 5.17-rc1 into your tree, this could
-be merged through your tree (since this is a psy patch).
-
-Since I've merged the original patch introducing this; and since I've
-a bunch of other fixed lined up for 5.17 already, I would also
-be happy to merge this through the pdx86 tree. Sebastian, please let
-me know how you want to proceed with this ?
-
-Regards,
-
-Hans
-
-
-
-> ---
->  Documentation/ABI/testing/sysfs-class-power |    1 +
->  1 file changed, 1 insertion(+)
+> Thanks for your review.
 > 
-> --- linux-next-20220117.orig/Documentation/ABI/testing/sysfs-class-power
-> +++ linux-next-20220117/Documentation/ABI/testing/sysfs-class-power
-> @@ -468,6 +468,7 @@ Description:
->  			auto:            Charge normally, respect thresholds
->  			inhibit-charge:  Do not charge while AC is attached
->  			force-discharge: Force discharge while AC is attached
-> +			================ ====================================
->  
->  What:		/sys/class/power_supply/<supply_name>/technology
->  Date:		May 2007
+> No, there is only PWRAP_STATE_INIT_DONE0 in MT8186 datasheet.
+> However, it's the 22nd bit in MT8186 and the 21st bit in other SoCs.
+> So we changed its name to avoid redefinition of PWRAP_STATE_INIT_DONE0.
+> 
+> Could you give us some suggestion on proper definition naming?
+> Do you think PWRAP_STATE_INIT_DONE0_MT8186 will be a better choice?
 > 
 
+Is this a difference that only will show up on the PMIC-wrapper of MT8186 or 
+will other SoCs include the same IP? If not, then PWRAP_STATE_INIT_DONE0_MT8186 
+should be fine. Otherwise we would need a better name.
+
+>>
+>>>    #define PWRAP_STATE_INIT_DONE1		BIT(15)
+>>>    
+>>>    /* macro for WACS FSM */
+>>> @@ -77,6 +78,8 @@
+>>>    #define PWRAP_CAP_INT1_EN	BIT(3)
+>>>    #define PWRAP_CAP_WDT_SRC1	BIT(4)
+>>>    #define PWRAP_CAP_ARB		BIT(5)
+>>> +#define PWRAP_CAP_MONITOR_V2	BIT(6)
+>>
+>> Not used capability, please delete.
+>>
+>>
+>> Regards,
+>> Matthias
+> 
+> PWRAP_CAP_MONITOR_V2 is not used right now.
+> We can remove it in next version.
+> But this capability will be added when we need it.
+> 
+
+That's OK, we should add capability definitions once they are added to the 
+driver, not before that.
+
+Thanks,
+Matthias
