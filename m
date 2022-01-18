@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 487D3C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:08:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AC784C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:08:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242375AbiARQIZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:08:25 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38964 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346431AbiARQHf (ORCPT
+        id S1346450AbiARQI1 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 11:08:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51254 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346355AbiARQHi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:07:35 -0500
+        Tue, 18 Jan 2022 11:07:38 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2282AC061759;
+        Tue, 18 Jan 2022 08:07:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E327E612C8;
-        Tue, 18 Jan 2022 16:07:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5F37C00446;
-        Tue, 18 Jan 2022 16:07:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5B7E612D8;
+        Tue, 18 Jan 2022 16:07:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90896C00446;
+        Tue, 18 Jan 2022 16:07:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522054;
-        bh=E0fzpSVzymH84+ockhMIJNAw8yP85J4Ded4qGqhWmmk=;
+        s=korg; t=1642522045;
+        bh=N8Rgi53AUy+5nlRNc2Il+oQgNwWJTC8Or3+tDrNCYHM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dzpPdyx6WaSJ9WmkECMzqfR3hAiXoFv/L539rp5BJHJvdIXhos/P7mOBN9+oYvxxf
-         Iwkez41Udx17L/qMpiXklE7WLNGdnRx5DB4jY13NukFCIIKf5n0R/g10v7vzU1RiYD
-         idqr3hqaJrMsz7dzovvkkYNWkfzGxmI09H6IlJ5g=
+        b=eKgqgJIy/YMfRbVRClCiKY0hc42EOs/m+pY5RgOrMchXuvAvAuassskQfk22iltOA
+         OXWgkA7Eu7ahmI3hBJluJv5Zvb7pt4ZMAH9QGpu/8eh4j6nJyT1lLb9LToCrdpfT5W
+         MLwtdi9R3kSoR8WyRwQkxT4W8OQc0cRHYZJKO3rs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        Al Viro <viro@zeniv.linux.org.uk>, NeilBrown <neilb@suse.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: [PATCH 5.10 02/23] devtmpfs regression fix: reconfigure on each mount
-Date:   Tue, 18 Jan 2022 17:05:42 +0100
-Message-Id: <20220118160451.327507632@linuxfoundation.org>
+        stable@vger.kernel.org, Gabriel Somlo <somlo@cmu.edu>,
+        Johan Hovold <johan@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 5.4 09/15] firmware: qemu_fw_cfg: fix sysfs information leak
+Date:   Tue, 18 Jan 2022 17:05:48 +0100
+Message-Id: <20220118160450.361050153@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118160451.233828401@linuxfoundation.org>
-References: <20220118160451.233828401@linuxfoundation.org>
+In-Reply-To: <20220118160450.062004175@linuxfoundation.org>
+References: <20220118160450.062004175@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,73 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: NeilBrown <neilb@suse.de>
+From: Johan Hovold <johan@kernel.org>
 
-commit a6097180d884ddab769fb25588ea8598589c218c upstream.
+commit 1b656e9aad7f4886ed466094d1dc5ee4dd900d20 upstream.
 
-Prior to Linux v5.4 devtmpfs used mount_single() which treats the given
-mount options as "remount" options, so it updates the configuration of
-the single super_block on each mount.
+Make sure to always NUL-terminate file names retrieved from the firmware
+to avoid accessing data beyond the entry slab buffer and exposing it
+through sysfs in case the firmware data is corrupt.
 
-Since that was changed, the mount options used for devtmpfs are ignored.
-This is a regression which affect systemd - which mounts devtmpfs with
-"-o mode=755,size=4m,nr_inodes=1m".
-
-This patch restores the "remount" effect by calling reconfigure_single()
-
-Fixes: d401727ea0d7 ("devtmpfs: don't mix {ramfs,shmem}_fill_super() with mount_single()")
-Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
-Cc: Al Viro <viro@zeniv.linux.org.uk>
-Signed-off-by: NeilBrown <neilb@suse.de>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 75f3e8e47f38 ("firmware: introduce sysfs driver for QEMU's fw_cfg device")
+Cc: stable@vger.kernel.org      # 4.6
+Cc: Gabriel Somlo <somlo@cmu.edu>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Link: https://lore.kernel.org/r/20211201132528.30025-4-johan@kernel.org
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/base/devtmpfs.c    |    7 +++++++
- fs/super.c                 |    4 ++--
- include/linux/fs_context.h |    2 ++
- 3 files changed, 11 insertions(+), 2 deletions(-)
+ drivers/firmware/qemu_fw_cfg.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/base/devtmpfs.c
-+++ b/drivers/base/devtmpfs.c
-@@ -59,8 +59,15 @@ static struct dentry *public_dev_mount(s
- 		      const char *dev_name, void *data)
- {
- 	struct super_block *s = mnt->mnt_sb;
-+	int err;
-+
- 	atomic_inc(&s->s_active);
- 	down_write(&s->s_umount);
-+	err = reconfigure_single(s, flags, data);
-+	if (err < 0) {
-+		deactivate_locked_super(s);
-+		return ERR_PTR(err);
-+	}
- 	return dget(s->s_root);
- }
+--- a/drivers/firmware/qemu_fw_cfg.c
++++ b/drivers/firmware/qemu_fw_cfg.c
+@@ -598,7 +598,7 @@ static int fw_cfg_register_file(const st
+ 	/* set file entry information */
+ 	entry->size = be32_to_cpu(f->size);
+ 	entry->select = be16_to_cpu(f->select);
+-	memcpy(entry->name, f->name, FW_CFG_MAX_FILE_PATH);
++	strscpy(entry->name, f->name, FW_CFG_MAX_FILE_PATH);
  
---- a/fs/super.c
-+++ b/fs/super.c
-@@ -1472,8 +1472,8 @@ struct dentry *mount_nodev(struct file_s
- }
- EXPORT_SYMBOL(mount_nodev);
- 
--static int reconfigure_single(struct super_block *s,
--			      int flags, void *data)
-+int reconfigure_single(struct super_block *s,
-+		       int flags, void *data)
- {
- 	struct fs_context *fc;
- 	int ret;
---- a/include/linux/fs_context.h
-+++ b/include/linux/fs_context.h
-@@ -140,6 +140,8 @@ extern int generic_parse_monolithic(stru
- extern int vfs_get_tree(struct fs_context *fc);
- extern void put_fs_context(struct fs_context *fc);
- extern void fc_drop_locked(struct fs_context *fc);
-+int reconfigure_single(struct super_block *s,
-+		       int flags, void *data);
- 
- /*
-  * sget() wrappers to be called from the ->get_tree() op.
+ 	/* register entry under "/sys/firmware/qemu_fw_cfg/by_key/" */
+ 	err = kobject_init_and_add(&entry->kobj, &fw_cfg_sysfs_entry_ktype,
 
 
