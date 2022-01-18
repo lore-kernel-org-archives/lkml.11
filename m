@@ -2,40 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDC4CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:07:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96E58C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:08:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346468AbiARQHw (ORCPT
+        id S1346345AbiARQIQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:07:52 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:40314 "EHLO
+        Tue, 18 Jan 2022 11:08:16 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:40326 "EHLO
         sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346380AbiARQHT (ORCPT
+        with ESMTP id S235624AbiARQHW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:07:19 -0500
+        Tue, 18 Jan 2022 11:07:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A2651CE1A2C;
-        Tue, 18 Jan 2022 16:07:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74AA3C340E0;
-        Tue, 18 Jan 2022 16:07:15 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A690CCE1A2F;
+        Tue, 18 Jan 2022 16:07:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B6BFC00446;
+        Tue, 18 Jan 2022 16:07:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522036;
-        bh=EI+oyhCyXzwd/u6PX2bA+0veUSeSN5jqvJw+x/ms5gY=;
+        s=korg; t=1642522039;
+        bh=TJP4eG+EUgISouMu2lc/Sy2XQA+4SDvaoiKuJBPSd0Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HFn781NKkAE5F4ubf8MEvV3fgNTt5OqqqkYNjKzg4sFJKPY+wmqEP8X+yOywR9b5e
-         YCx/pXrle08BxSCI3uc5qPKhfHAEnMdKp6JpnAuOb1t7/ZF4gzuKTYjjvyD3kBwTqU
-         QOqwkq0yqUiVbGAvYizZ//ysc6J75oO96e6lqBcg=
+        b=dd9Dn3HASUOToTNNJAdMDxXeb8BOI+ZZRc7KfPYNolsSpuHgg7jtb9XELN8IWEALZ
+         3LfMgi0Ch5qmyMvNPRJbAIgBayuFpuXscKpG/FO67SpT7cY9LXbh2ssJn/s7KjfaYS
+         NT3UGGkRd5Gp1qIk1md1vwUzpnIVWg1gnQpwaaB8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, David Hildenbrand <david@redhat.com>,
-        Eric Farman <farman@linux.ibm.com>,
-        Christian Borntraeger <borntraeger@linux.ibm.com>
-Subject: [PATCH 5.4 06/15] KVM: s390: Clarify SIGP orders versus STOP/RESTART
-Date:   Tue, 18 Jan 2022 17:05:45 +0100
-Message-Id: <20220118160450.270454516@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.4 07/15] media: uvcvideo: fix division by zero at stream start
+Date:   Tue, 18 Jan 2022 17:05:46 +0100
+Message-Id: <20220118160450.300427847@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118160450.062004175@linuxfoundation.org>
 References: <20220118160450.062004175@linuxfoundation.org>
@@ -47,121 +48,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric Farman <farman@linux.ibm.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit 812de04661c4daa7ac385c0dfd62594540538034 upstream.
+commit 8aa637bf6d70d2fb2ad4d708d8b9dd02b1c095df upstream.
 
-With KVM_CAP_S390_USER_SIGP, there are only five Signal Processor
-orders (CONDITIONAL EMERGENCY SIGNAL, EMERGENCY SIGNAL, EXTERNAL CALL,
-SENSE, and SENSE RUNNING STATUS) which are intended for frequent use
-and thus are processed in-kernel. The remainder are sent to userspace
-with the KVM_CAP_S390_USER_SIGP capability. Of those, three orders
-(RESTART, STOP, and STOP AND STORE STATUS) have the potential to
-inject work back into the kernel, and thus are asynchronous.
+Add the missing bulk-endpoint max-packet sanity check to
+uvc_video_start_transfer() to avoid division by zero in
+uvc_alloc_urb_buffers() in case a malicious device has broken
+descriptors (or when doing descriptor fuzz testing).
 
-Let's look for those pending IRQs when processing one of the in-kernel
-SIGP orders, and return BUSY (CC2) if one is in process. This is in
-agreement with the Principles of Operation, which states that only one
-order can be "active" on a CPU at a time.
+Note that USB core will reject URBs submitted for endpoints with zero
+wMaxPacketSize but that drivers doing packet-size calculations still
+need to handle this (cf. commit 2548288b4fb0 ("USB: Fix: Don't skip
+endpoint descriptors with maxpacket=0")).
 
-Cc: stable@vger.kernel.org
-Suggested-by: David Hildenbrand <david@redhat.com>
-Signed-off-by: Eric Farman <farman@linux.ibm.com>
-Reviewed-by: Christian Borntraeger <borntraeger@linux.ibm.com>
-Acked-by: David Hildenbrand <david@redhat.com>
-Link: https://lore.kernel.org/r/20211213210550.856213-2-farman@linux.ibm.com
-[borntraeger@linux.ibm.com: add stable tag]
-Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+Fixes: c0efd232929c ("V4L/DVB (8145a): USB Video Class driver")
+Cc: stable@vger.kernel.org      # 2.6.26
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/kvm/interrupt.c |    7 +++++++
- arch/s390/kvm/kvm-s390.c  |    9 +++++++--
- arch/s390/kvm/kvm-s390.h  |    1 +
- arch/s390/kvm/sigp.c      |   28 ++++++++++++++++++++++++++++
- 4 files changed, 43 insertions(+), 2 deletions(-)
+ drivers/media/usb/uvc/uvc_video.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/arch/s390/kvm/interrupt.c
-+++ b/arch/s390/kvm/interrupt.c
-@@ -1982,6 +1982,13 @@ int kvm_s390_is_stop_irq_pending(struct
- 	return test_bit(IRQ_PEND_SIGP_STOP, &li->pending_irqs);
- }
+--- a/drivers/media/usb/uvc/uvc_video.c
++++ b/drivers/media/usb/uvc/uvc_video.c
+@@ -1915,6 +1915,10 @@ static int uvc_video_start_transfer(stru
+ 		if (ep == NULL)
+ 			return -EIO;
  
-+int kvm_s390_is_restart_irq_pending(struct kvm_vcpu *vcpu)
-+{
-+	struct kvm_s390_local_interrupt *li = &vcpu->arch.local_int;
++		/* Reject broken descriptors. */
++		if (usb_endpoint_maxp(&ep->desc) == 0)
++			return -EIO;
 +
-+	return test_bit(IRQ_PEND_RESTART, &li->pending_irqs);
-+}
-+
- void kvm_s390_clear_stop_irq(struct kvm_vcpu *vcpu)
- {
- 	struct kvm_s390_local_interrupt *li = &vcpu->arch.local_int;
---- a/arch/s390/kvm/kvm-s390.c
-+++ b/arch/s390/kvm/kvm-s390.c
-@@ -4205,10 +4205,15 @@ void kvm_s390_vcpu_stop(struct kvm_vcpu
- 	spin_lock(&vcpu->kvm->arch.start_stop_lock);
- 	online_vcpus = atomic_read(&vcpu->kvm->online_vcpus);
+ 		ret = uvc_init_video_bulk(stream, ep, gfp_flags);
+ 	}
  
--	/* SIGP STOP and SIGP STOP AND STORE STATUS has been fully processed */
-+	/*
-+	 * Set the VCPU to STOPPED and THEN clear the interrupt flag,
-+	 * now that the SIGP STOP and SIGP STOP AND STORE STATUS orders
-+	 * have been fully processed. This will ensure that the VCPU
-+	 * is kept BUSY if another VCPU is inquiring with SIGP SENSE.
-+	 */
-+	kvm_s390_set_cpuflags(vcpu, CPUSTAT_STOPPED);
- 	kvm_s390_clear_stop_irq(vcpu);
- 
--	kvm_s390_set_cpuflags(vcpu, CPUSTAT_STOPPED);
- 	__disable_ibs_on_vcpu(vcpu);
- 
- 	for (i = 0; i < online_vcpus; i++) {
---- a/arch/s390/kvm/kvm-s390.h
-+++ b/arch/s390/kvm/kvm-s390.h
-@@ -373,6 +373,7 @@ void kvm_s390_destroy_adapters(struct kv
- int kvm_s390_ext_call_pending(struct kvm_vcpu *vcpu);
- extern struct kvm_device_ops kvm_flic_ops;
- int kvm_s390_is_stop_irq_pending(struct kvm_vcpu *vcpu);
-+int kvm_s390_is_restart_irq_pending(struct kvm_vcpu *vcpu);
- void kvm_s390_clear_stop_irq(struct kvm_vcpu *vcpu);
- int kvm_s390_set_irq_state(struct kvm_vcpu *vcpu,
- 			   void __user *buf, int len);
---- a/arch/s390/kvm/sigp.c
-+++ b/arch/s390/kvm/sigp.c
-@@ -288,6 +288,34 @@ static int handle_sigp_dst(struct kvm_vc
- 	if (!dst_vcpu)
- 		return SIGP_CC_NOT_OPERATIONAL;
- 
-+	/*
-+	 * SIGP RESTART, SIGP STOP, and SIGP STOP AND STORE STATUS orders
-+	 * are processed asynchronously. Until the affected VCPU finishes
-+	 * its work and calls back into KVM to clear the (RESTART or STOP)
-+	 * interrupt, we need to return any new non-reset orders "busy".
-+	 *
-+	 * This is important because a single VCPU could issue:
-+	 *  1) SIGP STOP $DESTINATION
-+	 *  2) SIGP SENSE $DESTINATION
-+	 *
-+	 * If the SIGP SENSE would not be rejected as "busy", it could
-+	 * return an incorrect answer as to whether the VCPU is STOPPED
-+	 * or OPERATING.
-+	 */
-+	if (order_code != SIGP_INITIAL_CPU_RESET &&
-+	    order_code != SIGP_CPU_RESET) {
-+		/*
-+		 * Lockless check. Both SIGP STOP and SIGP (RE)START
-+		 * properly synchronize everything while processing
-+		 * their orders, while the guest cannot observe a
-+		 * difference when issuing other orders from two
-+		 * different VCPUs.
-+		 */
-+		if (kvm_s390_is_stop_irq_pending(dst_vcpu) ||
-+		    kvm_s390_is_restart_irq_pending(dst_vcpu))
-+			return SIGP_CC_BUSY;
-+	}
-+
- 	switch (order_code) {
- 	case SIGP_SENSE:
- 		vcpu->stat.instruction_sigp_sense++;
 
 
