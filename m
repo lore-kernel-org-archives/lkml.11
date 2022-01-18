@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 542E1C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 758F4C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:46:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348688AbiARCpt (ORCPT
+        id S1348713AbiARCpw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:45:49 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54188 "EHLO
+        Mon, 17 Jan 2022 21:45:52 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56008 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344518AbiARCgq (ORCPT
+        with ESMTP id S239896AbiARCid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:36:46 -0500
+        Mon, 17 Jan 2022 21:38:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BC8E961278;
-        Tue, 18 Jan 2022 02:36:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28460C36AF3;
-        Tue, 18 Jan 2022 02:36:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 147DB61291;
+        Tue, 18 Jan 2022 02:38:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8D5FC36AF3;
+        Tue, 18 Jan 2022 02:38:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473405;
-        bh=KqJWQTmFk9FLzV5wiYGqRA933hMUNPXcAJjCtVK8aWE=;
+        s=k20201202; t=1642473512;
+        bh=xsfclcnth22emOhXnExQDbZEHeQPjA9k8JwPqBUjW/I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=myNI62RaPpKz5f2lS/j9HjF5Zv6/I2Iy9iMni6T1PHXhx2T2VnO/cuDnVoKcC4Z4p
-         9sJ3r3/1ggnWqOYhi4erC0trMitAg0z/H0qhis2FyII41Fc6klPtoB+dTaPZqqdWHh
-         mm4NpvvXBDVittGIXl2Mljt3im/61GiLOXng/xAkjoTlDgXUV/kafbbpZwKv/8sUz8
-         t7hsN17FKT5b9xzpf/wPy6wkw8TGPCAAOBu5gIuAI63dBBvD4lkaO5mfHHLq9BqUhy
-         klQkWDnXcx2Dp8TzP/hVyI9gG7i0NpS7J6/UZ+BO7qOp3l117QrOqSq1FxiFUwppIm
-         l3FhU3RnKCN9Q==
+        b=DiH2120Roex9uNV4zrMSXP6w7UAnR096Csr5RSJVpHhoRJ6Pw5pMdT2gg0NkEotOF
+         vNBiWO90RlknVl34w9opYU+EEVTO+cz95zXLcx7dJAndNE0iF1lK30W8K//nQgYXs1
+         Pgqx/g8SXj9TMijz9QoEMQi//On1aDhqEa1Ak0TgRnLRV+roREq3zf+T0BVk0RvYM+
+         b8+kPb5DFygRGr0OZYEhI9qD22GJztQMs4i+8XOqzY/X8GKwaxYVkYSBsNJmHW7Z5g
+         SvEniROPKoIpNgHk/7i8uWoXAkuCG2j8D/n8WRWB7eQ6eksC0QTc5F1/Vx0JJXw6Z1
+         UYJrFduYNdXQw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
-        bp@alien8.de, tglx@linutronix.de, mingo@redhat.com,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        linux-edac@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 106/188] x86/mce: Mark mce_end() noinstr
-Date:   Mon, 17 Jan 2022 21:30:30 -0500
-Message-Id: <20220118023152.1948105-106-sashal@kernel.org>
+Cc:     Hector Martin <marcan@marcan.st>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, linux-mmc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 143/188] mmc: sdhci-pci-gli: GL9755: Support for CD/WP inversion on OF platforms
+Date:   Mon, 17 Jan 2022 21:31:07 -0500
+Message-Id: <20220118023152.1948105-143-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -50,64 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit b4813539d37fa31fed62cdfab7bd2dd8929c5b2e ]
+[ Upstream commit 189f1d9bc3a5ea3e442e119e4a5deda63da8c462 ]
 
-It is called by the #MC handler which is noinstr.
+This is required on some Apple ARM64 laptops using this controller.
+As is typical on DT platforms, pull these quirks from the device tree
+using the standard mmc bindings.
 
-Fixes
+See Documentation/devicetree/bindings/mmc/mmc-controller.yaml
 
-  vmlinux.o: warning: objtool: do_machine_check()+0xbd6: call to memset() leaves .noinstr.text section
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-9-bp@alien8.de
+Acked-by: Adrian Hunter <adrian.hunter@intel.com>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Link: https://lore.kernel.org/r/20211215161045.38843-2-marcan@marcan.st
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/core.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/mmc/host/sdhci-pci-gli.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index c5a1022463bcc..c37a0bcf2744b 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -1081,10 +1081,13 @@ static int mce_start(int *no_way_out)
-  * Synchronize between CPUs after main scanning loop.
-  * This invokes the bulk of the Monarch processing.
-  */
--static int mce_end(int order)
-+static noinstr int mce_end(int order)
- {
--	int ret = -1;
- 	u64 timeout = (u64)mca_cfg.monarch_timeout * NSEC_PER_USEC;
-+	int ret = -1;
-+
-+	/* Allow instrumentation around external facilities. */
-+	instrumentation_begin();
+diff --git a/drivers/mmc/host/sdhci-pci-gli.c b/drivers/mmc/host/sdhci-pci-gli.c
+index 4fd99c1e82ba3..ad50f16658fe2 100644
+--- a/drivers/mmc/host/sdhci-pci-gli.c
++++ b/drivers/mmc/host/sdhci-pci-gli.c
+@@ -12,6 +12,7 @@
+ #include <linux/pci.h>
+ #include <linux/mmc/mmc.h>
+ #include <linux/delay.h>
++#include <linux/of.h>
+ #include "sdhci.h"
+ #include "sdhci-pci.h"
+ #include "cqhci.h"
+@@ -116,6 +117,8 @@
+ #define PCI_GLI_9755_PECONF   0x44
+ #define   PCI_GLI_9755_LFCLK    GENMASK(14, 12)
+ #define   PCI_GLI_9755_DMACLK   BIT(29)
++#define   PCI_GLI_9755_INVERT_CD  BIT(30)
++#define   PCI_GLI_9755_INVERT_WP  BIT(31)
  
- 	if (!timeout)
- 		goto reset;
-@@ -1128,7 +1131,8 @@ static int mce_end(int order)
- 		/*
- 		 * Don't reset anything. That's done by the Monarch.
- 		 */
--		return 0;
-+		ret = 0;
-+		goto out;
- 	}
+ #define PCI_GLI_9755_CFG2          0x48
+ #define   PCI_GLI_9755_CFG2_L1DLY    GENMASK(28, 24)
+@@ -570,6 +573,14 @@ static void gl9755_hw_setting(struct sdhci_pci_slot *slot)
+ 	gl9755_wt_on(pdev);
  
- 	/*
-@@ -1144,6 +1148,10 @@ static int mce_end(int order)
- 	 * Let others run again.
- 	 */
- 	atomic_set(&mce_executing, 0);
-+
-+out:
-+	instrumentation_end();
-+
- 	return ret;
- }
- 
+ 	pci_read_config_dword(pdev, PCI_GLI_9755_PECONF, &value);
++	/*
++	 * Apple ARM64 platforms using these chips may have
++	 * inverted CD/WP detection.
++	 */
++	if (of_property_read_bool(pdev->dev.of_node, "cd-inverted"))
++		value |= PCI_GLI_9755_INVERT_CD;
++	if (of_property_read_bool(pdev->dev.of_node, "wp-inverted"))
++		value |= PCI_GLI_9755_INVERT_WP;
+ 	value &= ~PCI_GLI_9755_LFCLK;
+ 	value &= ~PCI_GLI_9755_DMACLK;
+ 	pci_write_config_dword(pdev, PCI_GLI_9755_PECONF, value);
 -- 
 2.34.1
 
