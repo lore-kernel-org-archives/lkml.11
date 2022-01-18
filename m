@@ -2,108 +2,101 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53BC3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:27:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 580A3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:27:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352831AbiARD1d (ORCPT
+        id S1357460AbiARD1s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:27:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39106 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349269AbiARDG7 (ORCPT
+        Mon, 17 Jan 2022 22:27:48 -0500
+Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:58215 "EHLO
+        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1348467AbiARDXV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:06:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C3D3C014F34;
-        Mon, 17 Jan 2022 18:49:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 241E161336;
-        Tue, 18 Jan 2022 02:49:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90223C36AF4;
-        Tue, 18 Jan 2022 02:49:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474142;
-        bh=ybTUdVpSs4tP9fA30UA8SByCPb6Bm5xSjfuBftAAKl0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CRBRXqP6gBr33YzF5xvfpL9kxaZ5IjdaPl5t0k3V2Lkcz+6flDT4xoJj/madINaFD
-         CZ7HYIlVp05TWCYH4W+j44xW9wQjnyXX2qNYERozI5Ai38AsNqUgcLJQw141d7spl7
-         TMhDFzIvXoFuO/ptfThFCoWsl8IwfMPAKWQuX14QC9xKJF1YemDqz+R8zbhGJvUvOo
-         B5lFV6vWYJmQdiEESCNFdxKq/aOy0Mdt88Zy73S1QEnG70XHBlLsdAAz6MAKGEvOD6
-         kxMrzd1eJ6TYkKPJpkMw5NFXeF+gfT2h6/Zzl1nI/hQYtHa3DQleCbCqEjsjutaTZB
-         AF90kW4mVy4Dg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        jirislaby@kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 57/59] serial: pl010: Drop CR register reset on set_termios
-Date:   Mon, 17 Jan 2022 21:46:58 -0500
-Message-Id: <20220118024701.1952911-57-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
-References: <20220118024701.1952911-1-sashal@kernel.org>
+        Mon, 17 Jan 2022 22:23:21 -0500
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.west.internal (Postfix) with ESMTP id EDE4732007F9;
+        Mon, 17 Jan 2022 22:23:18 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute2.internal (MEProxy); Mon, 17 Jan 2022 22:23:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=turner.link; h=
+        references:from:to:cc:subject:date:in-reply-to:message-id
+        :mime-version:content-type; s=fm1; bh=GzsJPLk0WQC7EG+Ldejqutyl0x
+        GDNSzs8Fui0V7sUQo=; b=fs3Daa+DjKJ6E50ffeCnCe0frj8Ykq5LYCzvt6gisF
+        YhtuVVtoJPFegxI6IeYp4BPcvPPiOwrlCFY57AwVg5A26q4uzjAx8lMURK1//ftO
+        ESuB7BxODj3kZcpcXqv+bSxlPXF3/7vzX6GYbWPGUMQoJ/8vlybiZ8S2exg5aspw
+        ZNkuyLHFus6hTlMFCZd1tVsgGrwiS/flmqQYf2cConVPeCvGFuGCjTv6at2wOxCH
+        vQBR3fg4+V97O0TnmbKaPk3tLs7Ja7Jyr6jrqab/00w24nSiRGco9+CtOhCkFrlu
+        iVv+iSGXkoZugfjBwLJSBFjVUjTsGOgUzNjrT5gmpVZg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=GzsJPL
+        k0WQC7EG+Ldejqutyl0xGDNSzs8Fui0V7sUQo=; b=WwZGFHf2grx6ZmEe0xmZOV
+        sfxvZTYjW3SfWujBY8QxA1y+vvuT/QZglOsHRDSev7UCMynLPHFEGVW20abvPGOt
+        HHsjlLjLrTwOuNTuH3hwG1HvUyr9fAW+U0aEwuGb0Kw3hNVFpduE+cuMVJrf1s9n
+        kQQtpYOAWgFYZXRE6T7V2kpIA1mn15V1sNCg6aTDQhKpkszWd2RaX1ULgUN/5VMS
+        6x+IFXYgdmHN0dl3Beg3TCcyiYyBcvasXpXkmSV3F267ZM+OnwepO1u531jmUmEp
+        VUMucD56QomHP6SeWi8eevWiCsV1yFeTeWvBWgB1a3O0wTuCNEiNeHwr7KgrEiQQ
+        ==
+X-ME-Sender: <xms:pjLmYWfyMSdP0UrPHoxdjFok6pnhj9g_4T0tqSxZKhNdY67xiiHmEQ>
+    <xme:pjLmYQPc9qBJb1q6A6GVdldxqXxQb8FOf5EPtJ4J_NkCjHShkN_U3blXwCBtWfGdy
+    cFd_e10yC6gSycwmQ>
+X-ME-Received: <xmr:pjLmYXi36rYWy7DZBsD-qVNiq9RZOGmywwq-_2bJNB7el89EROyO1_bcGkm4>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddvgdehkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpehfhffvufffjgfkgggtsehttdertddttddtnecuhfhrohhmpeflrghmvghsucfv
+    uhhrnhgvrhcuoehlihhnuhigkhgvrhhnvghlrdhfohhsshesughmrghrtgdqnhhonhgvrd
+    htuhhrnhgvrhdrlhhinhhkqeenucggtffrrghtthgvrhhnpefhkeehvdevfeeiteeitdeh
+    jeejgfegffduuefhveehhfelgefgteejuefhieetjeenucffohhmrghinhepfhhrvggvug
+    gvshhkthhophdrohhrghdpkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgep
+    tdenucfrrghrrghmpehmrghilhhfrhhomheplhhinhhugihkvghrnhgvlhdrfhhoshhsse
+    gumhgrrhgtqdhnohhnvgdrthhurhhnvghrrdhlihhnkh
+X-ME-Proxy: <xmx:pjLmYT9aSTo3EeqXIQs4Zt000vybDbPZJugOCABfYt1AzWERO9aYuA>
+    <xmx:pjLmYSvLp8jiDhmTQRuYCHaOHb39Z11qOouwZYHP4dK7inTGJwYhIA>
+    <xmx:pjLmYaG_hEZehwevx4Uv8QYuaNxlGgIXySN7guW8UW-NPN7YgALpIg>
+    <xmx:pjLmYWi_rHmnWh5wIwZ0hs6h30hu7YxAE6UpiDR4UICf0piXYcBsiw>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 17 Jan 2022 22:23:17 -0500 (EST)
+References: <87ee57c8fu.fsf@turner.link>
+ <acd2fd5e-d622-948c-82ef-629a8030c9d8@leemhuis.info>
+From:   James Turner <linuxkernel.foss@dmarc-none.turner.link>
+To:     Thorsten Leemhuis <regressions@leemhuis.info>
+Cc:     Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
+        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
+Subject: Re: [REGRESSION] Too-low frequency limit for AMD GPU
+ PCI-passed-through to Windows VM
+Date:   Mon, 17 Jan 2022 22:14:19 -0500
+In-reply-to: <acd2fd5e-d622-948c-82ef-629a8030c9d8@leemhuis.info>
+Message-ID: <87a6ftk9qy.fsf@dmarc-none.turner.link>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+I finished about half of the bisection process today. The log so far is
+below. I'll follow up again once I've narrowed it down to a single
+commit.
 
-[ Upstream commit 08a0c6dff91c965e39905cf200d22db989203ccb ]
+git bisect start
+# bad: [e73f0f0ee7541171d89f2e2491130c7771ba58d3] Linux 5.14-rc1
+git bisect bad e73f0f0ee7541171d89f2e2491130c7771ba58d3
+# good: [62fb9874f5da54fdb243003b386128037319b219] Linux 5.13
+git bisect good 62fb9874f5da54fdb243003b386128037319b219
+# bad: [e058a84bfddc42ba356a2316f2cf1141974625c9] Merge tag 'drm-next-2021-07-01' of git://anongit.freedesktop.org/drm/drm
+git bisect bad e058a84bfddc42ba356a2316f2cf1141974625c9
+# good: [a6eaf3850cb171c328a8b0db6d3c79286a1eba9d] Merge tag 'sched-urgent-2021-06-30' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
+git bisect good a6eaf3850cb171c328a8b0db6d3c79286a1eba9d
+# good: [007b312c6f294770de01fbc0643610145012d244] Merge tag 'mac80211-next-for-net-next-2021-06-25' of git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next
+git bisect good 007b312c6f294770de01fbc0643610145012d244
+# bad: [18703923a66aecf6f7ded0e16d22eb412ddae72f] drm/amdgpu: Fix incorrect register offsets for Sienna Cichlid
+git bisect bad 18703923a66aecf6f7ded0e16d22eb412ddae72f
+# good: [c99c4d0ca57c978dcc2a2f41ab8449684ea154cc] Merge tag 'amd-drm-next-5.14-2021-05-19' of https://gitlab.freedesktop.org/agd5f/linux into drm-next
+git bisect good c99c4d0ca57c978dcc2a2f41ab8449684ea154cc
+# good: [43ed3c6c786d996a264fcde68dbb36df6f03b965] Merge tag 'drm-misc-next-2021-06-01' of git://anongit.freedesktop.org/drm/drm-misc into drm-next
+git bisect good 43ed3c6c786d996a264fcde68dbb36df6f03b965
+# bad: [050cd3d616d96c3a04f4877842a391c0a4fdcc7a] drm/amd/display: Add support for SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616.
+git bisect bad 050cd3d616d96c3a04f4877842a391c0a4fdcc7a
 
-pl010_set_termios() briefly resets the CR register to zero.
-
-Where does this register write come from?
-
-The PL010 driver's IRQ handler ambauart_int() originally modified the CR
-register without holding the port spinlock.  ambauart_set_termios() also
-modified that register.  To prevent concurrent read-modify-writes by the
-IRQ handler and to prevent transmission while changing baudrate,
-ambauart_set_termios() had to disable interrupts.  That is achieved by
-writing zero to the CR register.
-
-However in 2004 the PL010 driver was amended to acquire the port
-spinlock in the IRQ handler, obviating the need to disable interrupts in
-->set_termios():
-https://git.kernel.org/history/history/c/157c0342e591
-
-That rendered the CR register write obsolete.  Drop it.
-
-Cc: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/fcaff16e5b1abb4cc3da5a2879ac13f278b99ed0.1641128728.git.lukas@wunner.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/amba-pl010.c | 3 ---
- 1 file changed, 3 deletions(-)
-
-diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index 2c37d11726aba..13f882e5e7b76 100644
---- a/drivers/tty/serial/amba-pl010.c
-+++ b/drivers/tty/serial/amba-pl010.c
-@@ -452,14 +452,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if ((termios->c_cflag & CREAD) == 0)
- 		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
- 
--	/* first, disable everything */
- 	old_cr = readb(uap->port.membase + UART010_CR) & ~UART010_CR_MSIE;
- 
- 	if (UART_ENABLE_MS(port, termios->c_cflag))
- 		old_cr |= UART010_CR_MSIE;
- 
--	writel(0, uap->port.membase + UART010_CR);
--
- 	/* Set baud rate */
- 	quot -= 1;
- 	writel((quot & 0xf00) >> 8, uap->port.membase + UART010_LCRM);
--- 
-2.34.1
-
+James
