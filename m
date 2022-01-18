@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E2F5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:37:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4092C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:38:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344948AbiARChy (ORCPT
+        id S1344089AbiARCiA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:37:54 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:43710 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239774AbiARCcZ (ORCPT
+        Mon, 17 Jan 2022 21:38:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58698 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244739AbiARCcp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:32:25 -0500
+        Mon, 17 Jan 2022 21:32:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E1D9C061753;
+        Mon, 17 Jan 2022 18:31:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BAE02B8123A;
-        Tue, 18 Jan 2022 02:32:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 61D43C36AF4;
-        Tue, 18 Jan 2022 02:32:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B466610A3;
+        Tue, 18 Jan 2022 02:31:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60882C36AEF;
+        Tue, 18 Jan 2022 02:31:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473141;
-        bh=z9Xl0iPAzJD3iaKf5VYmbyxLHCGM/Ya1QMtZ25AxyiM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GNN5+k6hiI/xuPB2sU/nFT2HzhBbnnQpmZtetfgTZGdxNB6lOc6/nKSB580Pn4WYC
-         oNpBsliTbgzijNZ8pt4jzgvMjGM5/bcKTIZwsS8Sm1FHNWvheuUmz4I3WPNgfbHHGl
-         Yskkc4iyry1c7WgxUQLS6ZwKBX8xcUwvRn4dbQt7ERLZO2LPk462WPKpFxq0j7zScD
-         xxxBx72o8PUh5ORMysEQGvWQvHpKmXzzVTgdrz8G+AZv84GSDFDF92JmopCLElZCcV
-         alaAQ7T05yoyp5HiSPl2lwWAeJHco8G6Q8SRI3xdu36Bk4ngLQebZOTZQxdvpI5PNY
-         ABOQT9PlTmZSA==
+        s=k20201202; t=1642473115;
+        bh=qF8ieuqvtPKzf5F6Iy6umtwvPPj1Fasnh7HBJ0ETD+0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=pfSGbkIzsAnfm80fqFmGgtCGlhPxedJFRGOvb+ugvowauizpUm/yOXFJ3F1P97sAU
+         pHPUnsTsd/hmNvRdB2elD+7WWlMKQ/3n+sFMNGIusPUvblV4V+Ysz0sGr7EMzwzdUc
+         x0WfYu6X4+S1gNIIKLs3tspyaDd6LMqno5rk0eIGPEeRZG4laiGDpeyaGQQ9fKxuIO
+         G0hgHLLn+5iH816FjwiD0RcigsKNFtBGjiibgdrzNQPtM5FpAPAUG9nJReRUtUzNiz
+         t9IXeIaijG6Ntj6aaz5fnIPVOTnz9u9tyKBbvoxDCjss2xAAnPz9VSkwqiLwNmrNM+
+         dlNzihoUOb37g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, pontus.fuchs@gmail.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 011/188] ar5523: Fix null-ptr-deref with unexpected WDCMSG_TARGET_START reply
-Date:   Mon, 17 Jan 2022 21:28:55 -0500
-Message-Id: <20220118023152.1948105-11-sashal@kernel.org>
+Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 001/188] Bluetooth: Fix debugfs entry leak in hci_register_dev()
+Date:   Mon, 17 Jan 2022 21:28:45 -0500
+Message-Id: <20220118023152.1948105-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,61 +52,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit ae80b6033834342601e99f74f6a62ff5092b1cee ]
+[ Upstream commit 5a4bb6a8e981d3d0d492aa38412ee80b21033177 ]
 
-Unexpected WDCMSG_TARGET_START replay can lead to null-ptr-deref
-when ar->tx_cmd->odata is NULL. The patch adds a null check to
-prevent such case.
+Fault injection test report debugfs entry leak as follows:
 
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
- ar5523_cmd+0x46a/0x581 [ar5523]
- ar5523_probe.cold+0x1b7/0x18da [ar5523]
- ? ar5523_cmd_rx_cb+0x7a0/0x7a0 [ar5523]
- ? __pm_runtime_set_status+0x54a/0x8f0
- ? _raw_spin_trylock_bh+0x120/0x120
- ? pm_runtime_barrier+0x220/0x220
- ? __pm_runtime_resume+0xb1/0xf0
- usb_probe_interface+0x25b/0x710
- really_probe+0x209/0x5d0
- driver_probe_device+0xc6/0x1b0
- device_driver_attach+0xe2/0x120
+debugfs: Directory 'hci0' with parent 'bluetooth' already present!
 
-I found the bug using a custome USBFuzz port. It's a research work
-to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
-providing hand-crafted usb descriptors to QEMU.
+When register_pm_notifier() failed in hci_register_dev(), the debugfs
+create by debugfs_create_dir() do not removed in the error handing path.
 
-After fixing the code (fourth byte in usb packet) to WDCMSG_TARGET_START,
-I got the null-ptr-deref bug. I believe the bug is triggerable whenever
-cmd->odata is NULL. After patching, I tested with the same input and no
-longer see the KASAN report.
+Add the remove debugfs code to fix it.
 
-This was NOT tested on a real device.
-
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/YXsmPQ3awHFLuAj2@10-18-43-117.dynapool.wireless.nyu.edu
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ar5523/ar5523.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ net/bluetooth/hci_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
-index 49cc4b7ed5163..1baec4b412c8d 100644
---- a/drivers/net/wireless/ath/ar5523/ar5523.c
-+++ b/drivers/net/wireless/ath/ar5523/ar5523.c
-@@ -153,6 +153,10 @@ static void ar5523_cmd_rx_cb(struct urb *urb)
- 			ar5523_err(ar, "Invalid reply to WDCMSG_TARGET_START");
- 			return;
- 		}
-+		if (!cmd->odata) {
-+			ar5523_err(ar, "Unexpected WDCMSG_TARGET_START reply");
-+			return;
-+		}
- 		memcpy(cmd->odata, hdr + 1, sizeof(u32));
- 		cmd->olen = sizeof(u32);
- 		cmd->res = 0;
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 8a47a3017d61d..cc48a8a9901c0 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -3998,6 +3998,7 @@ int hci_register_dev(struct hci_dev *hdev)
+ 	return id;
+ 
+ err_wqueue:
++	debugfs_remove_recursive(hdev->debugfs);
+ 	destroy_workqueue(hdev->workqueue);
+ 	destroy_workqueue(hdev->req_workqueue);
+ err:
 -- 
 2.34.1
 
