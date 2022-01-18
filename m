@@ -2,100 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2CE4C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 11:23:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B376C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 11:30:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239352AbiARLXD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 06:23:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41722 "EHLO
+        id S239772AbiARLam (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 06:30:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231157AbiARLXC (ORCPT
+        with ESMTP id S234741AbiARLak (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 06:23:02 -0500
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93739C061574
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 03:23:02 -0800 (PST)
-Received: by mail-oi1-x22b.google.com with SMTP id bx18so9481837oib.7
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 03:23:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0vxu12L1jZfPH/n8U6n3NYOUika1PiHRFgnFfE0mqac=;
-        b=FQcI04UjT4EjGUadFs3tu4NgXPGRJOKF4fVamISkg3N+HpvnrRY052ydvNoRCdWVsm
-         DQxKsojVYpQZ/lVhyUlZE4dzcOtYQ5HqNZMtdFoOtzS/mNtFbLcdBrCAKyHdQGtrcNb+
-         Dv/SZjYB0cET4g9ABzGbEN0f28Ox80038d3ls=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0vxu12L1jZfPH/n8U6n3NYOUika1PiHRFgnFfE0mqac=;
-        b=g5fwfu+AvRE6fNKIK0pVZPiGdrtYV632uk/sDnTCxWU0rEaDuMtN3r7vrH5O93JLeL
-         P+kO5blPglnGSI4X//j/M3Ys8CIlQfrSzOW7NSNlj6nX+Wt8Q/DmrjuQyLyOOFFQE7Ep
-         5OMl9acy+oOQhw0tSzAumckDEXVfUkwJv+e7fzVlpdpD3FYTPGWn2/WhTybpyRJRaEqK
-         xEpKCBhgFzijrBfDSKevK3yn/4EM2GnGxW3+gPmjvLq+NF7jPqIFUs0/h1WeE5BAO4QR
-         Y/pBn9WH5rS3a6U1l8/2EXz+8HEkN73Wa2gTKyhNnuKJ3J8FkpPrb4bbWvwgdzDLE22D
-         IWgA==
-X-Gm-Message-State: AOAM530KugOlJMCq9o/Z6GeNWjwntqvDbIcZNwg1qMGFfw+HtR/eWv64
-        o4cBHsM30P8XBHzi4pA5mLyHg2Rw8ZWyMqZ3D5T/+g==
-X-Google-Smtp-Source: ABdhPJx04xf4KFu7cR9PzSZ5lOKeBxnc/JEG/KJ4kgQu+iPUN6I304Hyiv0+IwlQnk/spVK2x5FoB5/tKvzavEUuFvo=
-X-Received: by 2002:aca:b103:: with SMTP id a3mr26125595oif.14.1642504981992;
- Tue, 18 Jan 2022 03:23:01 -0800 (PST)
+        Tue, 18 Jan 2022 06:30:40 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49E1CC061574;
+        Tue, 18 Jan 2022 03:30:39 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id AB34C1F43D80
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1642505437;
+        bh=kufMAm/Wj7x6dHVgPDUeMEIq4cSzNUAHqpKv5RBtfqA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=C33nW21CxUr8A/lfefxHALgekm+lwm2zEx8Ka923Q5wBad9MKwb1Pt/OJnFd2+OuB
+         q+yY/27655wkmswBdVwEfZmhxhlUHW5rxIeIg/RrPGhNG8cBRVLzCxLDAXIY9X1+nb
+         S/v5i9xsCw+FWX909Qxv9be0n0/AcvdIAgf1COCymXW5VqMp5vDVcIs1GqPtwZG8HK
+         I3EL70KqLGNkhwGDpzGN5kOcT77gDWobyEAr4DtaN/NE5G4+4rAIAWDr0gcACuryfE
+         iZEzQjIPcd/ro4WInQOt+Vvm5aW6QtlLOd5NveR6EvNMvqAIfZfodbM7R4QxNnUVHt
+         6mUTXEk1gKFIg==
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
+To:     Shuah Khan <shuah@kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Darren Hart <dvhart@infradead.org>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        =?UTF-8?q?Andr=C3=A9=20Almeida?= <andrealmeid@collabora.com>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        =?UTF-8?q?Micka=C3=ABl=20Sala=C3=BCn?= <mic@digikod.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Mat Martineau <mathew.j.martineau@linux.intel.com>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        chiminghao <chi.minghao@zte.com.cn>,
+        linux-kselftest@vger.kernel.org (open list:KERNEL SELFTEST FRAMEWORK),
+        linux-kernel@vger.kernel.org (open list),
+        kvm@vger.kernel.org (open list:KERNEL VIRTUAL MACHINE (KVM)),
+        linux-security-module@vger.kernel.org (open list:LANDLOCK SECURITY
+        MODULE), netdev@vger.kernel.org (open list:NETWORKING [GENERAL]),
+        mptcp@lists.linux.dev (open list:NETWORKING [MPTCP]),
+        linux-mm@kvack.org (open list:MEMORY MANAGEMENT)
+Cc:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
+        kernel@collabora.com
+Subject: [PATCH 00/10] selftests: Fix separate output directory builds
+Date:   Tue, 18 Jan 2022 16:28:59 +0500
+Message-Id: <20220118112909.1885705-1-usama.anjum@collabora.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-References: <YeG8ydoJNWWkGrTb@ls3530> <c48ad8ae-aea5-43fa-882f-dccb90dde9a4@suse.de>
- <87bl0amc6s.fsf@x1.stackframe.org> <20220118103323.4bae3a7d@eldfell> <20220118095352.xsb6fqacw4p276c5@sirius.home.kraxel.org>
-In-Reply-To: <20220118095352.xsb6fqacw4p276c5@sirius.home.kraxel.org>
-From:   Daniel Vetter <daniel@ffwll.ch>
-Date:   Tue, 18 Jan 2022 12:22:50 +0100
-Message-ID: <CAKMK7uGQ=pGHv+LcRxZqb_jV0fqzUZtd+tZCr7aatoMDF4hyvw@mail.gmail.com>
-Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
-To:     Gerd Hoffmann <kraxel@redhat.com>
-Cc:     Pekka Paalanen <ppaalanen@gmail.com>, linux-fbdev@vger.kernel.org,
-        Helge Deller <deller@gmx.de>, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sven Schnelle <svens@stackframe.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 10:54 AM Gerd Hoffmann <kraxel@redhat.com> wrote:
->
-> On Tue, Jan 18, 2022 at 10:33:23AM +0200, Pekka Paalanen wrote:
-> > On Mon, 17 Jan 2022 19:47:39 +0100
-> > Sven Schnelle <svens@stackframe.org> wrote:
-> >
-> > > I also tested the speed on my Thinkpad X1 with Intel graphics, and there
-> > > a dmesg with 919 lines one the text console took about 2s to display. In
-> > > x11, i measure 22ms. This might be unfair because encoding might be
-> > > different, but i cannot confirm the 'memcpy' is faster than hardware
-> > > blitting' point. I think if that would be the case, no-one would care
-> > > about 2D acceleration.
-> >
-> > I think that is an extremely unfair comparison, because a graphical
-> > terminal app is not going to render every line of text streamed to it.
-> > It probably renders only the final view alone if you simply run
-> > 'dmesg', skipping the first 800-900 lines completely.
->
-> Probably more like "render on every vblank", but yes, unlike fbcon it
-> surely wouldn't render every single character sent to the terminal.
->
-> Also acceleration on modern hardware is more like "compose window
-> content using the 3d engine" than "use 2d blitter to scroll the window".
->
-> > Maybe fbcon should do the same when presented with a flood of text,
-> > but I don't know how or why it works like it works.
->
-> fbcon could do the same, i.e. render to fbdev in a 60Hz timer instead of
-> doing it synchronously.
+Build of several selftests fail if separate output directory is
+specified by the following methods:
+1) make -C tools/testing/selftests O=<build_dir>
+2) export KBUILD_OUTPUT="build_dir"; make -C tools/testing/selftests
 
-Yeah, and if you use the shadow fb support in drm fbdev helpers,
-that's what you get. Maybe we should just make that the default, since
-that would also greatly simply stuff like modesetting support for
-fbdev.
--Daniel
+Build fails because of several reasons:
+1) The kernel headers aren't found.
+2) The path of output objects is wrong and hence unaccessible.
+
+These problems can be solved by:
+1) Including the correct path of uapi header files
+2) By setting the BUILD variable correctly inside Makefile
+
+Following different build scnerios have been tested after making these
+changes:
+make -C tools/testing/selftests
+make -C tools/testing/selftests O=build
+make -C tools/testing/selftests o=/opt/build
+export KBUILD_OUTPUT="/opt/build"; make -C tools/testing/selftests
+export KBUILD_OUTPUT="build"; make -C tools/testing/selftests
+cd <any_dir>; make -C <src_path>/tools/testing/selftests
+cd <any_dir>; make -C <src_path>/tools/testing/selftests O=build
+
+Muhammad Usama Anjum (10):
+  selftests: set the BUILD variable to absolute path
+  selftests: Add and export a kernel uapi headers path
+  selftests: Correct the headers install path
+  selftests: futex: Add the uapi headers include variable
+  selftests: kvm: Add the uapi headers include variable
+  selftests: landlock: Add the uapi headers include variable
+  selftests: net: Add the uapi headers include variable
+  selftests: mptcp: Add the uapi headers include variable
+  selftests: vm: Add the uapi headers include variable
+  selftests: vm: remove dependecy from internal kernel macros
+
+ tools/testing/selftests/Makefile              | 32 +++++++++++++------
+ .../selftests/futex/functional/Makefile       |  5 ++-
+ tools/testing/selftests/kvm/Makefile          |  6 ++--
+ tools/testing/selftests/landlock/Makefile     | 11 ++-----
+ tools/testing/selftests/net/Makefile          |  2 +-
+ tools/testing/selftests/net/mptcp/Makefile    |  3 +-
+ tools/testing/selftests/vm/Makefile           |  2 +-
+ tools/testing/selftests/vm/userfaultfd.c      |  3 ++
+ 8 files changed, 35 insertions(+), 29 deletions(-)
+
 -- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+2.30.2
+
