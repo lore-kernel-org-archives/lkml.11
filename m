@@ -2,99 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C61C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 14:20:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC7C0C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 14:21:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244668AbiAROUS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 09:20:18 -0500
-Received: from smtp2.axis.com ([195.60.68.18]:65353 "EHLO smtp2.axis.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244543AbiAROUP (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 09:20:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1642515615;
-  x=1674051615;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=7HEsqUOVIqJxWzG7yXKFcL4CIP6bJXoVqpmVdtkc+xk=;
-  b=CEJ622vrIARQkJY+wIfSE8GUjjBZ7pqiQVRlWS7y2p+uju3JLmbEqvKd
-   FqXb21PaPW8bo1qLOrzzaFKgbU/UpSZOedgh7G6Lt981mDUrI9m6mF5xi
-   hV5281r3boHEtsaC2xFO/KW8gCesUWejI/AhUThc8IcTKtEq3ofGq5Mtj
-   atO7/2TPFQ+SITZbpK4LOWoDezMi2f1/kLqAsRJVFuTYg92J4KuX/q5PM
-   hCWuZUXpCKVb1kMBXeUnGvENlCcCxCe35iMbeTud5Vn42QHeA7y9x0fTK
-   4G7GodLmqIddQXYUXbFCFuV1fj8BQe1X4a/NscH6iqBfS628eOr/GxlU1
-   w==;
-Date:   Tue, 18 Jan 2022 15:20:13 +0100
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     "jdike@addtoit.com" <jdike@addtoit.com>,
-        "richard@nod.at" <richard@nod.at>,
-        "anton.ivanov@cambridgegreys.com" <anton.ivanov@cambridgegreys.com>,
-        kernel <kernel@axis.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH 2/2] um: Add devicetree support
-Message-ID: <20220118142013.GA556@axis.com>
-References: <20211208151123.29313-1-vincent.whitchurch@axis.com>
- <20211208151123.29313-3-vincent.whitchurch@axis.com>
- <YeF/Vbxo6fAt0WLp@robh.at.kernel.org>
+        id S244808AbiAROVB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 09:21:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244543AbiAROUw (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 09:20:52 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E59EFC061574
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 06:20:49 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 46353CE19F2
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 14:20:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60690C00446;
+        Tue, 18 Jan 2022 14:20:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642515646;
+        bh=LQnVNXXFkBGvBwIEYlzUC8mACRKwyF7PmpnrofVDnmE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=khXMs8nOsMDKs5MbBbUOYqR0A/rLczE6TVnUebuvjd1p/2kox9EI8UHHK3/EjV30Z
+         ohxTVi74dxt8DMuc247yuDL7XlpUTU0Zx8h9nonZxWsId6kYqmpHC0XIVOLA3xeXAW
+         eLxJcJWMsST1k9ztnKqcMMcgjxgmKJ1NGTpgYlI8lE/i+uFAOa1rMuu5RoDEDEz6wo
+         SSUb1DBt8Hrs4qjX8iLFIZWLnncgw7TBwix/+xt7cI42bgjDT8OXg7e7JtRjocepJ3
+         oxCpVtpas1q4P4rbAkfT+tu3MbIqUJlCCTdjPERSM3/oTW+JZf6DSlaAj1WDwvVpDO
+         ZU5KAaVkdPuvw==
+Date:   Tue, 18 Jan 2022 22:13:03 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Baoquan He <bhe@redhat.com>
+Cc:     Russell King <linux@armlinux.org.uk>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
+        hpa@zytor.com, Eric Biederman <ebiederm@xmission.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-riscv@lists.infradead.org, kexec@lists.infradead.org,
+        Alexandre ghiti <alex@ghiti.fr>
+Subject: Re: [PATCH v2 0/5] kexec: use IS_ENABLED(CONFIG_KEXEC_CORE) instead
+ of #ifdef
+Message-ID: <YebK70Sx4w8zLfj/@xhacker>
+References: <20211206160514.2000-1-jszhang@kernel.org>
+ <20220116133847.GE2388@MiWiFi-R3L-srv>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <YeF/Vbxo6fAt0WLp@robh.at.kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220116133847.GE2388@MiWiFi-R3L-srv>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 14, 2022 at 02:49:09PM +0100, Rob Herring wrote:
-> On Wed, Dec 08, 2021 at 04:11:23PM +0100, Vincent Whitchurch wrote:
-> > --- /dev/null
-> > +++ b/arch/um/kernel/dtb.c
-> > @@ -0,0 +1,41 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +
-> > +#include <linux/init.h>
-> > +#include <linux/of_fdt.h>
-> > +#include <linux/printk.h>
-> > +#include <linux/memblock.h>
-> > +#include <init.h>
-> > +
-> > +#include "um_arch.h"
-> > +
-> > +static char *dtb __initdata;
-> > +
-> > +void uml_dtb_init(void)
-> > +{
-> > +	long long size;
-> > +	void *area;
-> > +
-> > +	area = uml_load_file(dtb, &size);
-> > +	if (!area)
-> > +		return;
-> > +
-> > +	if (!early_init_dt_scan(area)) {
-> > +		pr_err("invalid DTB %s\n", dtb);
-> > +		memblock_free(area, size);
-> > +		return;
-> > +	}
-> > +
-> > +	unflatten_device_tree();
-> > +	early_init_fdt_scan_reserved_mem();
+On Sun, Jan 16, 2022 at 09:38:47PM +0800, Baoquan He wrote:
+> Hi Jisheng,
+
+Hi Baoquan,
+
 > 
-> These should be reversed. early_init_fdt_scan_reserved_mem() works on 
-> the flat tree. Reserved memory needs to be reserved before 
-> unflatten_device_tree() starts allocating memory. Though I imagine that 
-> doesn't really matter for UML.
+> On 12/07/21 at 12:05am, Jisheng Zhang wrote:
+> > Replace the conditional compilation using "#ifdef CONFIG_KEXEC_CORE"
+> > by a check for "IS_ENABLED(CONFIG_KEXEC_CORE)", to simplify the code
+> > and increase compile coverage.
+> 
+> I go through this patchset, You mention the benefits it brings are
+> 1) simplity the code;
+> 2) increase compile coverage;
+> 
+> For benefit 1), it mainly removes the dummy function in x86, arm and
+> arm64, right?
 
-I only tested dynamic allocation of reserved memory, and that,
-unsuprisingly, works regardless of the order.  But I'll send a patch to
-change it.
+Another benefit: remove those #ifdef #else #endif usage. Recently, I
+fixed a bug due to lots of "#ifdefs":
+http://lists.infradead.org/pipermail/linux-riscv/2021-December/010607.html
 
-> Also, does the dtb end up in permanently allocated memory (i.e. not 
-> init)? It needs to be if not.
+> 
+> For benefit 2), increasing compile coverage, could you tell more how it
+> achieves and why it matters? What if people disables CONFIG_KEXEC_CORE in
+> purpose? Please forgive my poor compiling knowledge.
 
-The dtb is allocated with memblock_alloc() in arch/um/kernel/load_file.c
-and is never freed (except on an error from early_init_dt_scan() as in
-the above hunk), so I think this is already taken care of.
+Just my humble opinion, let's compare the code::
+
+#ifdef CONFIG_KEXEC_CORE
+
+code block A;
+
+#endif
+
+If KEXEC_CORE is disabled, code block A won't be compiled at all, the
+preprocessor will remove code block A;
+
+If we convert the code to:
+
+if (IS_ENABLED(CONFIG_KEXEC_CORE)) {
+	code block A;
+}
+
+Even if KEXEC_CORE is disabled, code block A is still compiled.
+
+Thanks
