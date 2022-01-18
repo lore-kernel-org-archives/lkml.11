@@ -2,53 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EBD5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:23:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1769DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:23:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245245AbiARCXW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:23:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56888 "EHLO
+        id S245295AbiARCX2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:23:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244767AbiARCVd (ORCPT
+        with ESMTP id S245026AbiARCWa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:21:33 -0500
+        Mon, 17 Jan 2022 21:22:30 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A093DC06175E;
-        Mon, 17 Jan 2022 18:21:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F010C061747;
+        Mon, 17 Jan 2022 18:22:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 28120612CD;
-        Tue, 18 Jan 2022 02:21:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F219BC36AEF;
-        Tue, 18 Jan 2022 02:21:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BBED60B01;
+        Tue, 18 Jan 2022 02:22:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FD20C36AF2;
+        Tue, 18 Jan 2022 02:22:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472492;
-        bh=/8vqTdehX2rFsIR81hlKJ31cDN856d4O4/Em5efcq6Q=;
+        s=k20201202; t=1642472549;
+        bh=wgi+j8udB1hBs2lDS+VQzIfA/QubZozAoFQHsIgrftA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eXHZOYRGB5I/f92r8KVs7lNZYJxG6yjZCUxJDRPqsTcpteXZGnAAhKh64EkNAQaQg
-         kc1Q28rtNrSokCmih1XGfWoZdNV1BxOTpJD52ok1ECYxty2/McEXsJVjL2KKfM/JqE
-         +nMItY0j8/MSGzBeKv+UvlyqCiPqkNexZzshkV2mh92qw8VS0micMx4yiDwCeugSda
-         V4JSc6XJLiPUbxfcqWZR+T8b6lsHHfZ1JYkuXIx4tOzlZcvLu/P/3VK6PWAZUB828V
-         6KhoGtzi8jhW2DwTeCq1cu/BbLGIOyz5yKF+8UzVKytCioK+F+mmTHge9l3nbe1LIM
-         T87aSp2r5AYZA==
+        b=ud/NZGx7lWL2w+K16fNEZ5oXmewVO71XNp2sHdLnOChKaVMEpWtjCOF2YKmmJm0yG
+         R7xFFB3OmZMvDNt54D+Fab3DN1k2d9avFe/3zCm8AHzaD8t4dRtXhKr6OB1ZYqpI0C
+         ukA3tFhi0n4C/Jzu/PFyMWxJpFOwXLDfGE+nZJ6NKJdUIWug0t1mTC07d/7Sc7ejmb
+         jB8eYisjkMEwdqjOiMYr5e2X27mduFDZgcDvUBoR9nLLH5YZEzzreq/D2AcQLckn+r
+         4i3/baFcDBHCMuIin3v3AV2knqCIF3zXkW7cB3dzvKmofrakJLTSe4owzML30FINWL
+         rggpz+roTDCuQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-        John Keeping <john@metanate.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
-        axboe@kernel.dk, wcheng@codeaurora.org, djwong@kernel.org,
-        dean@sensoray.com, andrew_gabbasov@mentor.com,
-        salah.triki@gmail.com, plr.vincent@gmail.com, lkp@intel.com,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 031/217] usb: gadget: f_fs: Use stream_open() for endpoint files
-Date:   Mon, 17 Jan 2022 21:16:34 -0500
-Message-Id: <20220118021940.1942199-31-sashal@kernel.org>
+Cc:     =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>,
+        jikos@kernel.org, benjamin.tissoires@redhat.com,
+        linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 049/217] HID: apple: Do not reset quirks when the Fn key is not found
+Date:   Mon, 17 Jan 2022 21:16:52 -0500
+Message-Id: <20220118021940.1942199-49-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -56,63 +53,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit c76ef96fc00eb398c8fc836b0eb2f82bcc619dc7 ]
+[ Upstream commit a5fe7864d8ada170f19cc47d176bf8260ffb4263 ]
 
-Function fs endpoint file operations are synchronized via an interruptible
-mutex wait. However we see threads that do ep file operations concurrently
-are getting blocked for the mutex lock in __fdget_pos(). This is an
-uninterruptible wait and we see hung task warnings and kernel panic
-if hung_task_panic systcl is enabled if host does not send/receive
-the data for long time.
+When a keyboard without a function key is detected, instead of removing
+all quirks, remove only the APPLE_HAS_FN quirk.
 
-The reason for threads getting blocked in __fdget_pos() is due to
-the file position protection introduced by the commit 9c225f2655e3
-("vfs: atomic f_pos accesses as per POSIX"). Since function fs
-endpoint files does not have the notion of the file position, switch
-to the stream mode. This will bypass the file position mutex and
-threads will be blocked in interruptible state for the function fs
-mutex.
-
-It should not affects user space as we are only changing the task state
-changes the task state from UNINTERRUPTIBLE to INTERRUPTIBLE while waiting
-for the USB transfers to be finished. However there is a slight change to
-the O_NONBLOCK behavior. Earlier threads that are using O_NONBLOCK are also
-getting blocked inside fdget_pos(). Now they reach to function fs and error
-code is returned. The non blocking behavior is actually honoured now.
-
-Reviewed-by: John Keeping <john@metanate.com>
-Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-Link: https://lore.kernel.org/r/1636712682-1226-1-git-send-email-quic_pkondeti@quicinc.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/function/f_fs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/hid/hid-apple.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
-index a7e069b185448..25ad1e97a4585 100644
---- a/drivers/usb/gadget/function/f_fs.c
-+++ b/drivers/usb/gadget/function/f_fs.c
-@@ -614,7 +614,7 @@ static int ffs_ep0_open(struct inode *inode, struct file *file)
- 	file->private_data = ffs;
- 	ffs_data_opened(ffs);
+diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
+index 2c9c5faa74a97..a4ca5ed00e5f5 100644
+--- a/drivers/hid/hid-apple.c
++++ b/drivers/hid/hid-apple.c
+@@ -428,7 +428,7 @@ static int apple_input_configured(struct hid_device *hdev,
  
--	return 0;
-+	return stream_open(inode, file);
- }
+ 	if ((asc->quirks & APPLE_HAS_FN) && !asc->fn_found) {
+ 		hid_info(hdev, "Fn key not found (Apple Wireless Keyboard clone?), disabling Fn key handling\n");
+-		asc->quirks = 0;
++		asc->quirks &= ~APPLE_HAS_FN;
+ 	}
  
- static int ffs_ep0_release(struct inode *inode, struct file *file)
-@@ -1154,7 +1154,7 @@ ffs_epfile_open(struct inode *inode, struct file *file)
- 	file->private_data = epfile;
- 	ffs_data_opened(epfile->ffs);
- 
--	return 0;
-+	return stream_open(inode, file);
- }
- 
- static int ffs_aio_cancel(struct kiocb *kiocb)
+ 	return 0;
 -- 
 2.34.1
 
