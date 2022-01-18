@@ -2,110 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7535BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 12:05:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D727C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 12:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241245AbiARMF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 07:05:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51636 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238833AbiARMFz (ORCPT
+        id S241256AbiARMGq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 07:06:46 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:59048 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231260AbiARMGp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 07:05:55 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C40BC061574
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 04:05:54 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id x22so69620943lfd.10
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 04:05:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=I53vlq5TczLCh/qDkdRQCtzn+r6orw5CjLVZN9/i/Fk=;
-        b=yzC/4mAHnosV28AneVuC6T2g1CizSk8ZZ1Q5tErVt2Jynub2M/9tYfdGosNOKrcG01
-         vwJaZ787EPZuy/xS7Of/6X7UG4PWmOMc+W9opa/jlGSdwLNjMBgG7I9/TOiEe8Tntvk9
-         z9YOmzBFCgHMw+/ZLjE2morB5lPTRPL8S7rJvmXpNWafP5DosyI0/yhtM4eza66JjkoY
-         MjW6Zw1JKUCsww4wCnDJjYNOCyUa9oDU2ONJbjoCy4q7shr/SumwiG6jTR6qiRKGnjAV
-         g2acwVhIiKgKgZNVXSyyv5CrgqdlLkyhpz/zrMHsgAujbv8L/97b55ZQ5EVz2jwT8HGc
-         6Y/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=I53vlq5TczLCh/qDkdRQCtzn+r6orw5CjLVZN9/i/Fk=;
-        b=Aw2fLdiyFqVZw+SSRWnWkDh4q+SFXtauQE2in43FK78pYvBvgFvrSK0ShZOn+dtC+2
-         kcbYZ81rtXKyX6xTU2ke1z2hcyn8jmmsSpo7fgjeNP6GqK4riQWUiR5aaAEaInfi0e95
-         zoF9J3M7LOqw9JnYJjs902RO0ITADKr9JOpw/a+6cLDEiUXwYZB7ITOlvQE7cQzPShjM
-         fDPPNao1X39Gwqvtg57F/Mewj2CixIzIaxLCtJcjKudWnRfyy6jaNAgq1ZLSsi6xTh7I
-         0vMljK3j2DiJlyg/z7O6pyOE0vYWHGblrajXqtjVeFtv+PKy5DjPYML3+fUwVT3A4eoC
-         2Tdg==
-X-Gm-Message-State: AOAM53306xCUQzkHaFd9zvAjoK1/ksq+DEXwPQJOlfHKs7ntbtsKb/2h
-        z/IEawJE1r+wknTObIT6zCnkwSVGFO13haNF4yyCOD2Wqgt8/sEB
-X-Google-Smtp-Source: ABdhPJwlFYXHXFnhZgIpQA33Z4468p+QpZ1jNsGt3fxkjpWaxO0upYtBoneJX2dklUWnvAqcJMRxnJzmVj1C/ONZ31E=
-X-Received: by 2002:a05:6512:34d3:: with SMTP id w19mr2147034lfr.253.1642507552369;
- Tue, 18 Jan 2022 04:05:52 -0800 (PST)
+        Tue, 18 Jan 2022 07:06:45 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 565762170E;
+        Tue, 18 Jan 2022 12:06:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1642507604; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=t2xKgPhezzRuZwYQ+n4efRtt2KvBOTUDARMY7HE84mQ=;
+        b=xSZPxN9I4xP8ssF45/LUEbesbGAIzMEz2GAVafLG2gtsMVBLgyclySdRY5DiOxyhTxNsKV
+        ipaJ4kBxSY4yaogGK/kfE6QmY55RBTbgninHzGQEC2ehXszDpXrC/MjVnhyhcLga1x34Di
+        moVhDDHz+ARXF8H6KcNJhXBpYscTU0w=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1642507604;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=t2xKgPhezzRuZwYQ+n4efRtt2KvBOTUDARMY7HE84mQ=;
+        b=yibk3U/hzzDq41kFWWL0X3EGWaztjgPSaO5rT2TEKTecyuE/13IJDyE8BGQuDCZecnzTrb
+        Vib+PDgA4MrESkBg==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 0CF2013B26;
+        Tue, 18 Jan 2022 12:06:44 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id qOJXAlSt5mErZgAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Tue, 18 Jan 2022 12:06:44 +0000
+Message-ID: <89288cbb-2a54-a35b-785e-2b9f71da604b@suse.cz>
+Date:   Tue, 18 Jan 2022 13:06:43 +0100
 MIME-Version: 1.0
-References: <a4e48364368cce3c91005a3bd4fdacee086ef00d.1642087405.git.jerome@forissier.org>
-In-Reply-To: <a4e48364368cce3c91005a3bd4fdacee086ef00d.1642087405.git.jerome@forissier.org>
-From:   Sumit Garg <sumit.garg@linaro.org>
-Date:   Tue, 18 Jan 2022 17:35:41 +0530
-Message-ID: <CAFA6WYM94k7n3mXA7UpGxL=J5TYJFXSa6KWhqjHPzS63SrNCpg@mail.gmail.com>
-Subject: Re: [PATCH] tee: optee: do not check memref size on return from
- Secure World
-To:     Jerome Forissier <jerome@forissier.org>
-Cc:     Jens Wiklander <jens.wiklander@linaro.org>,
-        op-tee@lists.trustedfirmware.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v4 29/66] parisc: Remove mmap linked list from cache
+ handling
+Content-Language: en-US
+To:     Liam Howlett <liam.howlett@oracle.com>,
+        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Song Liu <songliubraving@fb.com>,
+        Davidlohr Bueso <dave@stgolabs.net>,
+        "Paul E . McKenney" <paulmck@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Laurent Dufour <ldufour@linux.ibm.com>,
+        David Rientjes <rientjes@google.com>,
+        Axel Rasmussen <axelrasmussen@google.com>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Rik van Riel <riel@surriel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Michel Lespinasse <walken.cr@gmail.com>,
+        Jerome Glisse <jglisse@redhat.com>,
+        Minchan Kim <minchan@google.com>,
+        Joel Fernandes <joelaf@google.com>,
+        Rom Lemarchand <romlem@google.com>
+References: <20211201142918.921493-1-Liam.Howlett@oracle.com>
+ <20211201142918.921493-30-Liam.Howlett@oracle.com>
+From:   Vlastimil Babka <vbabka@suse.cz>
+In-Reply-To: <20211201142918.921493-30-Liam.Howlett@oracle.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jerome,
+On 12/1/21 15:30, Liam Howlett wrote:
+> From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
+> 
+> Use the VMA iterator instead.
+> 
+> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+> Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
 
-On Thu, 13 Jan 2022 at 20:57, Jerome Forissier <jerome@forissier.org> wrote:
->
-> Commit c650b8dc7a79 ("tee: optee: do not check memref size on return
-> from Secure World") was mistakenly lost in commit 4602c5842f64 ("optee:
-> refactor driver with internal callbacks"). Remove the unwanted code
-> again.
->
+Acked-by: Vlastimil Babka <vbabka@suse.cz>
 
-Ah, that's unfortunate. The refactoring that OP-TEE driver has gone
-through to support multiple ABIs (SMC and FF-A) was huge and I missed
-it during review.
-
-> Fixes: 4602c5842f64 ("optee: refactor driver with internal callbacks")
-> Signed-off-by: Jerome Forissier <jerome@forissier.org>
 > ---
->  drivers/tee/optee/smc_abi.c | 10 ----------
->  1 file changed, 10 deletions(-)
->
-
-Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
-
--Sumit
-
-> diff --git a/drivers/tee/optee/smc_abi.c b/drivers/tee/optee/smc_abi.c
-> index cf2e3293567d..09e7ec673bb6 100644
-> --- a/drivers/tee/optee/smc_abi.c
-> +++ b/drivers/tee/optee/smc_abi.c
-> @@ -71,16 +71,6 @@ static int from_msg_param_tmp_mem(struct tee_param *p, u32 attr,
->         p->u.memref.shm_offs = mp->u.tmem.buf_ptr - pa;
->         p->u.memref.shm = shm;
->
-> -       /* Check that the memref is covered by the shm object */
-> -       if (p->u.memref.size) {
-> -               size_t o = p->u.memref.shm_offs +
-> -                          p->u.memref.size - 1;
-> -
-> -               rc = tee_shm_get_pa(shm, o, NULL);
-> -               if (rc)
-> -                       return rc;
-> -       }
-> -
->         return 0;
+>  arch/parisc/kernel/cache.c | 9 ++++++---
+>  1 file changed, 6 insertions(+), 3 deletions(-)
+> 
+> diff --git a/arch/parisc/kernel/cache.c b/arch/parisc/kernel/cache.c
+> index 94150b91c96f..c3a8d29b6f9f 100644
+> --- a/arch/parisc/kernel/cache.c
+> +++ b/arch/parisc/kernel/cache.c
+> @@ -519,9 +519,11 @@ static inline unsigned long mm_total_size(struct mm_struct *mm)
+>  {
+>  	struct vm_area_struct *vma;
+>  	unsigned long usize = 0;
+> +	VMA_ITERATOR(vmi, mm, 0);
+>  
+> -	for (vma = mm->mmap; vma; vma = vma->vm_next)
+> +	for_each_vma(vmi, vma)
+>  		usize += vma->vm_end - vma->vm_start;
+> +
+>  	return usize;
 >  }
->
-> --
-> 2.32.0
->
+>  
+> @@ -570,6 +572,7 @@ static void flush_user_cache_tlb(struct vm_area_struct *vma,
+>  void flush_cache_mm(struct mm_struct *mm)
+>  {
+>  	struct vm_area_struct *vma;
+> +	VMA_ITERATOR(vmi, mm, 0);
+>  
+>  	/* Flushing the whole cache on each cpu takes forever on
+>  	   rp3440, etc.  So, avoid it if the mm isn't too big.  */
+> @@ -583,13 +586,13 @@ void flush_cache_mm(struct mm_struct *mm)
+>  
+>  	preempt_disable();
+>  	if (mm->context == mfsp(3)) {
+> -		for (vma = mm->mmap; vma; vma = vma->vm_next)
+> +		for_each_vma(vmi, vma)
+>  			flush_user_cache_tlb(vma, vma->vm_start, vma->vm_end);
+>  		preempt_enable();
+>  		return;
+>  	}
+>  
+> -	for (vma = mm->mmap; vma; vma = vma->vm_next)
+> +	for_each_vma(vmi, vma)
+>  		flush_cache_pages(vma, mm, vma->vm_start, vma->vm_end);
+>  	preempt_enable();
+>  }
+
