@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C99FBC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A749EC433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:26:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358869AbiARDZg (ORCPT
+        id S1358817AbiARDZa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:25:36 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:60870 "EHLO
+        Mon, 17 Jan 2022 22:25:30 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60802 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234974AbiARDJH (ORCPT
+        with ESMTP id S1346742AbiARDJF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:09:07 -0500
+        Mon, 17 Jan 2022 22:09:05 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CDC25601E3;
-        Tue, 18 Jan 2022 03:09:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83149C36AF2;
-        Tue, 18 Jan 2022 03:09:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BBE760B21;
+        Tue, 18 Jan 2022 03:09:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80816C36AE3;
+        Tue, 18 Jan 2022 03:09:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642475346;
-        bh=jfkLL6rXolBMxv55YyFzWn2CWtcA4vLhtAVsUilZUhY=;
+        s=k20201202; t=1642475343;
+        bh=uz+sFAOqm75FhNpUA2N+PL8DYvHxXueU0RzYswR/X/0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PBUpNlHtIyQUu5GtuD3QE3CWdgAnYmcqDnUPNhhpfq4RX5qGCFrGZGWUknnUA5GwV
-         1H97FICqbwZR6x7Bc+gQd8s3/FXaTD1QtWOyAOWWl5jFZRAeZ5TQYCBpE3pkePAiCG
-         zi3MO6+uh1Y90LGuHmBa2wjptllZZyn77sdSnl33cJ1qEJGdYZzlQDP0EYKKrCQ8Xj
-         9kZI/OdyL6K5uaj9OMA7qDmqDlPANk0cJBzRTjmGR8iFFk5Nq3seAgwOjYsY0lrwzp
-         f0FefceVrphkV8mHA9CsLDpdRhpFbcDTSCezj14Zyzuad885b5RcC2oR3OdM9v3fQp
-         U5epQ5d9/8hIg==
+        b=pmd6gT7GcQRrfYlp2EF0JvpUPUmTbQAiVLUK3yF8Eo8r5RW1+5+phoadW+TcNJxUO
+         duSZSogiRpZRP01ok7hrKdnQ6GLCgU9YsvNt3+c7yg9yaVxZJfmaK3VvNWjibo5iaG
+         6xr6V3WpFPtrZuGtdxVUj6AZe+f5JfmvaZvXIKmbSqZspY/gCX4A2xv7x0wOqKOGZf
+         3tC3tokMqjiwis+ZtdON0lmq5uE8tJ6DjsRvluCD0GpZYXWYF/xcIRGK63RPlefx0+
+         iIVba5ZNVI5rD+bKXIjn70Ctbxc/ido3oOrWlhoTnQ5fUvYYVBh35QIlrZGo3O/Oo2
+         5dvN9qi1GanLg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sean Young <sean@mess.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, mchehab@kernel.org,
-        linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 15/29] media: igorplugusb: receiver overflow should be reported
-Date:   Mon, 17 Jan 2022 22:08:08 -0500
-Message-Id: <20220118030822.1955469-15-sashal@kernel.org>
+Cc:     xu xin <xu.xin16@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        Joanne Koong <joannekoong@fb.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        daniel@iogearbox.net, dsahern@kernel.org, edumazet@google.com,
+        yajun.deng@linux.dev, chinagar@codeaurora.org, roopa@nvidia.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 13/29] net: Enable neighbor sysctls that is save for userns root
+Date:   Mon, 17 Jan 2022 22:08:06 -0500
+Message-Id: <20220118030822.1955469-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118030822.1955469-1-sashal@kernel.org>
 References: <20220118030822.1955469-1-sashal@kernel.org>
@@ -50,37 +53,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Young <sean@mess.org>
+From: xu xin <xu.xin16@zte.com.cn>
 
-[ Upstream commit 8fede658e7ddb605bbd68ed38067ddb0af033db4 ]
+[ Upstream commit 8c8b7aa7fb0cf9e1cc9204e6bc6e1353b8393502 ]
 
-Without this, some IR will be missing mid-stream and we might decode
-something which never really occurred.
+Inside netns owned by non-init userns, sysctls about ARP/neighbor is
+currently not visible and configurable.
 
-Signed-off-by: Sean Young <sean@mess.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+For the attributes these sysctls correspond to, any modifications make
+effects on the performance of networking(ARP, especilly) only in the
+scope of netns, which does not affect other netns.
+
+Actually, some tools via netlink can modify these attribute. iproute2 is
+an example. see as follows:
+
+$ unshare -ur -n
+$ cat /proc/sys/net/ipv4/neigh/lo/retrans_time
+cat: can't open '/proc/sys/net/ipv4/neigh/lo/retrans_time': No such file
+or directory
+$ ip ntable show dev lo
+inet arp_cache
+    dev lo
+    refcnt 1 reachable 19494 base_reachable 30000 retrans 1000
+    gc_stale 60000 delay_probe 5000 queue 101
+    app_probes 0 ucast_probes 3 mcast_probes 3
+    anycast_delay 1000 proxy_delay 800 proxy_queue 64 locktime 1000
+
+inet6 ndisc_cache
+    dev lo
+    refcnt 1 reachable 42394 base_reachable 30000 retrans 1000
+    gc_stale 60000 delay_probe 5000 queue 101
+    app_probes 0 ucast_probes 3 mcast_probes 3
+    anycast_delay 1000 proxy_delay 800 proxy_queue 64 locktime 0
+$ ip ntable change name arp_cache dev <if> retrans 2000
+inet arp_cache
+    dev lo
+    refcnt 1 reachable 22917 base_reachable 30000 retrans 2000
+    gc_stale 60000 delay_probe 5000 queue 101
+    app_probes 0 ucast_probes 3 mcast_probes 3
+    anycast_delay 1000 proxy_delay 800 proxy_queue 64 locktime 1000
+
+inet6 ndisc_cache
+    dev lo
+    refcnt 1 reachable 35524 base_reachable 30000 retrans 1000
+    gc_stale 60000 delay_probe 5000 queue 101
+    app_probes 0 ucast_probes 3 mcast_probes 3
+    anycast_delay 1000 proxy_delay 800 proxy_queue 64 locktime 0
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: xu xin <xu.xin16@zte.com.cn>
+Acked-by: Joanne Koong <joannekoong@fb.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/rc/igorplugusb.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ net/core/neighbour.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/media/rc/igorplugusb.c b/drivers/media/rc/igorplugusb.c
-index b36e51576f8e4..645ea00c472ab 100644
---- a/drivers/media/rc/igorplugusb.c
-+++ b/drivers/media/rc/igorplugusb.c
-@@ -73,9 +73,11 @@ static void igorplugusb_irdata(struct igorplugusb *ir, unsigned len)
- 	if (start >= len) {
- 		dev_err(ir->dev, "receive overflow invalid: %u", overflow);
- 	} else {
--		if (overflow > 0)
-+		if (overflow > 0) {
- 			dev_warn(ir->dev, "receive overflow, at least %u lost",
- 								overflow);
-+			ir_raw_event_reset(ir->rc);
-+		}
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index b55306e7edd4a..dc308658d38e7 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -3210,10 +3210,6 @@ int neigh_sysctl_register(struct net_device *dev, struct neigh_parms *p,
+ 			neigh_proc_base_reachable_time;
+ 	}
  
- 		do {
- 			rawir.duration = ir->buf_in[i] * 85333;
+-	/* Don't export sysctls to unprivileged users */
+-	if (neigh_parms_net(p)->user_ns != &init_user_ns)
+-		t->neigh_vars[0].procname = NULL;
+-
+ 	switch (neigh_parms_family(p)) {
+ 	case AF_INET:
+ 	      p_name = "ipv4";
 -- 
 2.34.1
 
