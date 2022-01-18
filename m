@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF34AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:23:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02C4CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:23:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243262AbiARNXK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 08:23:10 -0500
-Received: from mga06.intel.com ([134.134.136.31]:48497 "EHLO mga06.intel.com"
+        id S243873AbiARNXS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 08:23:18 -0500
+Received: from mga14.intel.com ([192.55.52.115]:49861 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243192AbiARNWt (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 08:22:49 -0500
+        id S243476AbiARNXE (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 08:23:04 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642512169; x=1674048169;
+  t=1642512184; x=1674048184;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=wc/HrL4JpEiPy0hOw1D7+yU1U6huBzVxxSt7KzpRO+o=;
-  b=B04TtwMI8Z6Q0OSb5WaB8avjVN4KkBlKNKP8mKDlAZs/VIJNh2sM7HzA
-   3D53A5/bmI9KxAdg0mRf/kgVQ5lJhqjTcpDztbh4fSV8ag4T+r4PFGElC
-   1JWdamiGyqyQfLVIoWToGuZSyKF/BJred/xV655tgtt7xx3QON44ATjPo
-   J2Jqx9oTpP31Xn58oLEqekiR9++9GQpkwlrXCDLEUWpqn07d3P4nCVQVy
-   AU2WlkOCwOoJaoWP5wV2LH5MM9VlLMCHeWbKCGAp2hWLG/l25RVnQiivE
-   kSMfrj6ktoxYUCCrnsu4Xe4TWqjQ/IpjPe5GZez88B4e3J+hrSEMBFgta
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="305545836"
+  bh=0KmAtoYc2KWHMVvjIOKZFm1pJUtWiDFa3f+h5iULyg8=;
+  b=B/3iZAbYC0myLNjGsCEtWlXSji+ILdzMMSxbDyP9//mDDIjYJ36g733v
+   IR+Gcqt0N2DLgN1hA0VStsFhxkVw4IB2ClyqzJagWktwQ6rkw5pMve7kv
+   gTu5FJn5G1ATaFiq90xcI4XP4kRzOdd4LjaLbjJ9O9YFEWJloJ0XaFRsY
+   UvTIp+fIaJQhjugU2k/DgpNe9snNl2f3GhFAe8jGxCivkSLdv+ZuJQjPz
+   SsT2fu37ben6etOX/DpJ5dfwg6OzhXqIPO4iAJyKdSk2zlPuuc+ia5q2h
+   EFCpXxg4p+ZcBaFDif6cGmByKsQ2XCn92YGqKDK4dDdchI5YbD/ajIb+Q
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="245007968"
 X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="305545836"
+   d="scan'208";a="245007968"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 05:22:49 -0800
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 05:23:04 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="531791841"
+   d="scan'208";a="531791885"
 Received: from chaop.bj.intel.com ([10.240.192.101])
-  by orsmga008.jf.intel.com with ESMTP; 18 Jan 2022 05:22:42 -0800
+  by orsmga008.jf.intel.com with ESMTP; 18 Jan 2022 05:22:56 -0800
 From:   Chao Peng <chao.p.peng@linux.intel.com>
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc:     Paolo Bonzini <pbonzini@redhat.com>,
         "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
         luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
         ak@linux.intel.com, david@redhat.com
-Subject: [PATCH v4 07/12] KVM: Add KVM_EXIT_MEMORY_ERROR exit
-Date:   Tue, 18 Jan 2022 21:21:16 +0800
-Message-Id: <20220118132121.31388-8-chao.p.peng@linux.intel.com>
+Subject: [PATCH v4 09/12] KVM: Handle page fault for private memory
+Date:   Tue, 18 Jan 2022 21:21:18 +0800
+Message-Id: <20220118132121.31388-10-chao.p.peng@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
 References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
@@ -67,62 +67,202 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This new KVM exit allows userspace to handle memory-related errors. It
-indicates an error happens in KVM at guest memory range [gpa, gpa+size).
-The flags includes additional information for userspace to handle the
-error. Currently bit 0 is defined as 'private memory' where '1'
-indicates error happens due to private memory access and '0' indicates
-error happens due to shared memory access.
+When page fault happens for a memslot with KVM_MEM_PRIVATE, we use
+kvm_memfile_get_pfn() which further calls into memfile_pfn_ops callbacks
+defined for each memslot to request the pfn from the memory backing store.
 
-After private memory is enabled, this new exit will be used for KVM to
-exit to userspace for shared memory <-> private memory conversion in
-memory encryption usage.
+One assumption is that private pages are persistent and pre-allocated in
+the private memory fd (backing store) so KVM uses this information as an
+indicator for a page is private or shared (i.e. the private fd is the
+final source of truth as to whether or not a GPA is private).
 
-In such usage, typically there are two kind of memory conversions:
-  - explicit conversion: happens when guest explicitly calls into KVM to
-    map a range (as private or shared), KVM then exits to userspace to
-    do the map/unmap operations.
-  - implicit conversion: happens in KVM page fault handler.
-    * if the fault is due to a private memory access then causes a
-      userspace exit for a shared->private conversion request when the
-      page has not been allocated in the private memory backend.
-    * If the fault is due to a shared memory access then causes a
-      userspace exit for a private->shared conversion request when the
-      page has already been allocated in the private memory backend.
+Depending on the access is private or shared, we go different paths:
+  - For private access, KVM checks if the page is already allocated in
+    the memory backing store, if yes KVM establishes the mapping,
+    otherwise exits to userspace to convert a shared page to private one.
+
+  - For shared access, KVM also checks if the page is already allocated
+    in the memory backing store, if yes then exit to userspace to
+    convert a private page to shared one, otherwise it's treated as a
+    traditional hva-based shared memory, KVM lets existing code to obtain
+    a pfn with get_user_pages() and establish the mapping.
 
 Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
 Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
 ---
- include/uapi/linux/kvm.h | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/x86/kvm/mmu/mmu.c         | 73 ++++++++++++++++++++++++++++++++--
+ arch/x86/kvm/mmu/paging_tmpl.h | 11 +++--
+ 2 files changed, 77 insertions(+), 7 deletions(-)
 
-diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
-index 5d6dceb1b93e..52d8938a4ba1 100644
---- a/include/uapi/linux/kvm.h
-+++ b/include/uapi/linux/kvm.h
-@@ -278,6 +278,7 @@ struct kvm_xen_exit {
- #define KVM_EXIT_X86_BUS_LOCK     33
- #define KVM_EXIT_XEN              34
- #define KVM_EXIT_RISCV_SBI        35
-+#define KVM_EXIT_MEMORY_ERROR     36
+diff --git a/arch/x86/kvm/mmu/mmu.c b/arch/x86/kvm/mmu/mmu.c
+index 1d275e9d76b5..df526ab7e657 100644
+--- a/arch/x86/kvm/mmu/mmu.c
++++ b/arch/x86/kvm/mmu/mmu.c
+@@ -2873,6 +2873,9 @@ int kvm_mmu_max_mapping_level(struct kvm *kvm,
+ 	if (max_level == PG_LEVEL_4K)
+ 		return PG_LEVEL_4K;
  
- /* For KVM_EXIT_INTERNAL_ERROR */
- /* Emulate instruction failed. */
-@@ -495,6 +496,14 @@ struct kvm_run {
- 			unsigned long args[6];
- 			unsigned long ret[2];
- 		} riscv_sbi;
-+		/* KVM_EXIT_MEMORY_ERROR */
-+		struct {
-+#define KVM_MEMORY_EXIT_FLAG_PRIVATE	(1 << 0)
-+			__u32 flags;
-+			__u32 padding;
-+			__u64 gpa;
-+			__u64 size;
-+		} memory;
- 		/* Fix the size of the union. */
- 		char padding[256];
- 	};
++	if (kvm_slot_is_private(slot))
++		return max_level;
++
+ 	host_level = host_pfn_mapping_level(kvm, gfn, pfn, slot);
+ 	return min(host_level, max_level);
+ }
+@@ -3903,7 +3906,59 @@ static bool kvm_arch_setup_async_pf(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
+ 				  kvm_vcpu_gfn_to_hva(vcpu, gfn), &arch);
+ }
+ 
+-static bool kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault, int *r)
++static bool kvm_vcpu_is_private_gfn(struct kvm_vcpu *vcpu, gfn_t gfn)
++{
++	/*
++	 * At this time private gfn has not been supported yet. Other patch
++	 * that enables it should change this.
++	 */
++	return false;
++}
++
++static bool kvm_faultin_pfn_private(struct kvm_vcpu *vcpu,
++				    struct kvm_page_fault *fault,
++				    bool *is_private_pfn, int *r)
++{
++	int order;
++	unsigned int flags = 0;
++	struct kvm_memory_slot *slot = fault->slot;
++	long pfn = kvm_memfile_get_pfn(slot, fault->gfn, &order);
++
++	if (kvm_vcpu_is_private_gfn(vcpu, fault->addr >> PAGE_SHIFT)) {
++		if (pfn < 0)
++			flags |= KVM_MEMORY_EXIT_FLAG_PRIVATE;
++		else {
++			fault->pfn = pfn;
++			if (slot->flags & KVM_MEM_READONLY)
++				fault->map_writable = false;
++			else
++				fault->map_writable = true;
++
++			if (order == 0)
++				fault->max_level = PG_LEVEL_4K;
++			*is_private_pfn = true;
++			*r = RET_PF_FIXED;
++			return true;
++		}
++	} else {
++		if (pfn < 0)
++			return false;
++
++		kvm_memfile_put_pfn(slot, pfn);
++	}
++
++	vcpu->run->exit_reason = KVM_EXIT_MEMORY_ERROR;
++	vcpu->run->memory.flags = flags;
++	vcpu->run->memory.padding = 0;
++	vcpu->run->memory.gpa = fault->gfn << PAGE_SHIFT;
++	vcpu->run->memory.size = PAGE_SIZE;
++	fault->pfn = -1;
++	*r = -1;
++	return true;
++}
++
++static bool kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
++			    bool *is_private_pfn, int *r)
+ {
+ 	struct kvm_memory_slot *slot = fault->slot;
+ 	bool async;
+@@ -3937,6 +3992,10 @@ static bool kvm_faultin_pfn(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault,
+ 		}
+ 	}
+ 
++	if (kvm_slot_is_private(slot) &&
++	    kvm_faultin_pfn_private(vcpu, fault, is_private_pfn, r))
++		return *r == RET_PF_FIXED ? false : true;
++
+ 	async = false;
+ 	fault->pfn = __gfn_to_pfn_memslot(slot, fault->gfn, false, &async,
+ 					  fault->write, &fault->map_writable,
+@@ -3997,6 +4056,7 @@ static int direct_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
+ 	bool is_tdp_mmu_fault = is_tdp_mmu(vcpu->arch.mmu);
+ 
+ 	unsigned long mmu_seq;
++	bool is_private_pfn = false;
+ 	int r;
+ 
+ 	fault->gfn = fault->addr >> PAGE_SHIFT;
+@@ -4016,7 +4076,7 @@ static int direct_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
+ 	mmu_seq = vcpu->kvm->mmu_notifier_seq;
+ 	smp_rmb();
+ 
+-	if (kvm_faultin_pfn(vcpu, fault, &r))
++	if (kvm_faultin_pfn(vcpu, fault, &is_private_pfn, &r))
+ 		return r;
+ 
+ 	if (handle_abnormal_pfn(vcpu, fault, ACC_ALL, &r))
+@@ -4029,7 +4089,7 @@ static int direct_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
+ 	else
+ 		write_lock(&vcpu->kvm->mmu_lock);
+ 
+-	if (is_page_fault_stale(vcpu, fault, mmu_seq))
++	if (!is_private_pfn && is_page_fault_stale(vcpu, fault, mmu_seq))
+ 		goto out_unlock;
+ 
+ 	r = make_mmu_pages_available(vcpu);
+@@ -4046,7 +4106,12 @@ static int direct_page_fault(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
+ 		read_unlock(&vcpu->kvm->mmu_lock);
+ 	else
+ 		write_unlock(&vcpu->kvm->mmu_lock);
+-	kvm_release_pfn_clean(fault->pfn);
++
++	if (is_private_pfn)
++		kvm_memfile_put_pfn(fault->slot, fault->pfn);
++	else
++		kvm_release_pfn_clean(fault->pfn);
++
+ 	return r;
+ }
+ 
+diff --git a/arch/x86/kvm/mmu/paging_tmpl.h b/arch/x86/kvm/mmu/paging_tmpl.h
+index 5b5bdac97c7b..a1d26b50a5ec 100644
+--- a/arch/x86/kvm/mmu/paging_tmpl.h
++++ b/arch/x86/kvm/mmu/paging_tmpl.h
+@@ -825,6 +825,8 @@ static int FNAME(page_fault)(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
+ 	int r;
+ 	unsigned long mmu_seq;
+ 	bool is_self_change_mapping;
++	bool is_private_pfn = false;
++
+ 
+ 	pgprintk("%s: addr %lx err %x\n", __func__, fault->addr, fault->error_code);
+ 	WARN_ON_ONCE(fault->is_tdp);
+@@ -873,7 +875,7 @@ static int FNAME(page_fault)(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
+ 	mmu_seq = vcpu->kvm->mmu_notifier_seq;
+ 	smp_rmb();
+ 
+-	if (kvm_faultin_pfn(vcpu, fault, &r))
++	if (kvm_faultin_pfn(vcpu, fault, &is_private_pfn, &r))
+ 		return r;
+ 
+ 	if (handle_abnormal_pfn(vcpu, fault, walker.pte_access, &r))
+@@ -901,7 +903,7 @@ static int FNAME(page_fault)(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
+ 	r = RET_PF_RETRY;
+ 	write_lock(&vcpu->kvm->mmu_lock);
+ 
+-	if (is_page_fault_stale(vcpu, fault, mmu_seq))
++	if (!is_private_pfn && is_page_fault_stale(vcpu, fault, mmu_seq))
+ 		goto out_unlock;
+ 
+ 	kvm_mmu_audit(vcpu, AUDIT_PRE_PAGE_FAULT);
+@@ -913,7 +915,10 @@ static int FNAME(page_fault)(struct kvm_vcpu *vcpu, struct kvm_page_fault *fault
+ 
+ out_unlock:
+ 	write_unlock(&vcpu->kvm->mmu_lock);
+-	kvm_release_pfn_clean(fault->pfn);
++	if (is_private_pfn)
++		kvm_memfile_put_pfn(fault->slot, fault->pfn);
++	else
++		kvm_release_pfn_clean(fault->pfn);
+ 	return r;
+ }
+ 
 -- 
 2.17.1
 
