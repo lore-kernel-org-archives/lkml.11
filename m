@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E95FC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:53:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC49C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:53:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345546AbiARCxt (ORCPT
+        id S1346164AbiARCxy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:53:49 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:51556 "EHLO
+        Mon, 17 Jan 2022 21:53:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51720 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235059AbiARCmy (ORCPT
+        with ESMTP id S1347833AbiARCnI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:42:54 -0500
+        Mon, 17 Jan 2022 21:43:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5C2C8B81249;
-        Tue, 18 Jan 2022 02:42:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B922C36AE3;
-        Tue, 18 Jan 2022 02:42:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A23FEB811CF;
+        Tue, 18 Jan 2022 02:43:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 48122C36AE3;
+        Tue, 18 Jan 2022 02:43:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473772;
-        bh=xkO1nvKt4O3YteSpK5taGaQFmGOjDPnXJi8Tu8UR6g4=;
+        s=k20201202; t=1642473784;
+        bh=B2YGg1HiTboR3+vNlNEgYYE4wVzcEZ6wXCmA6wwvLOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iAeqf7FYbaIxbud2L98+ds6hTumPq1zH2OiszCHV98Jil0pMZDUNqJq5zHWOM98sh
-         6JJjh1ScOp1xJCz6IBhxKf/ZlUHuTXOVTjPkbdYDShqm10lxzaux6njor3DDyAEEMC
-         BZrINsMvzBF+zAoq3e2fCX70RDWLaAAPHpv2wdxzD/dhS5TXMaVGXiR2z9K0ljLkDm
-         ws2jFjx66tQlFhBIwdodbeA2Zo3bZTkj6F5WhI1F3MpqBiAAbPCeJGggfu3uJHvyVy
-         HYFTa0wOJvS6jNblGkHSaDjWe0O3f2L/ZWjjlfE6io+rXD4+Za5ILg0Wn3R7dNa/or
-         /sMog17VuN67Q==
+        b=uGYH2riCg4VFVBItBV8J6aZvKLtcy37vQzHVCvJM4aPaK+r0Uuxi+msoiShlwbR80
+         bb732f09gQNPzhLYse5o5S9XoVJ8iENhjOx9GxesCD1IZkMENJa2NKiZQbxLNwM29Y
+         A/WLPZeyVjf68LEnY9aMCPFisWQqUxZ9p3f3EOjCvcCF9DsUUkmzRXQ/D4dArBVNli
+         Jy302qYSnS6F1nHSb8E2ojlHjkLVSE1MNJUaYMEq5/lqEVAnr0DXV7KDG5d/eNCUgW
+         pVs1auOGRSQFhz1/d3WiIDLKKVMu94ngg3TAM4RMVG/Anh1Fv14y9ENWrG2tzvi3jU
+         SXeYOhGoMeedw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
-        bp@alien8.de, tglx@linutronix.de, mingo@redhat.com,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        linux-edac@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 063/116] x86/mce: Mark mce_end() noinstr
-Date:   Mon, 17 Jan 2022 21:39:14 -0500
-Message-Id: <20220118024007.1950576-63-sashal@kernel.org>
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
+        "H . Nikolaus Schaller" <hns@goldelico.com>,
+        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
+        tiantao6@hisilicon.com, kwmad.kim@samsung.com, huyue2@yulong.com,
+        linux-mmc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 070/116] mmc: core: Fixup storing of OCR for MMC_QUIRK_NONSTD_SDIO
+Date:   Mon, 17 Jan 2022 21:39:21 -0500
+Message-Id: <20220118024007.1950576-70-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
 References: <20220118024007.1950576-1-sashal@kernel.org>
@@ -50,64 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit b4813539d37fa31fed62cdfab7bd2dd8929c5b2e ]
+[ Upstream commit 8c3e5b74b9e2146f564905e50ca716591c76d4f1 ]
 
-It is called by the #MC handler which is noinstr.
+The mmc core takes a specific path to support initializing of a
+non-standard SDIO card. This is triggered by looking for the card-quirk,
+MMC_QUIRK_NONSTD_SDIO.
 
-Fixes
+In mmc_sdio_init_card() this gets rather messy, as it causes the code to
+bail out earlier, compared to the usual path. This leads to that the OCR
+doesn't get saved properly in card->ocr. Fortunately, only omap_hsmmc has
+been using the MMC_QUIRK_NONSTD_SDIO and is dealing with the issue, by
+assigning a hardcoded value (0x80) to card->ocr from an ->init_card() ops.
 
-  vmlinux.o: warning: objtool: do_machine_check()+0xbd6: call to memset() leaves .noinstr.text section
+To make the behaviour consistent, let's instead rely on the core to save
+the OCR in card->ocr during initialization.
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-9-bp@alien8.de
+Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Link: https://lore.kernel.org/r/e7936cff7fc24d187ef2680d3b4edb0ade58f293.1636564631.git.hns@goldelico.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/core.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/mmc/core/sdio.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 64d8a96a2bf1e..2a608f0819765 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -1070,10 +1070,13 @@ static int mce_start(int *no_way_out)
-  * Synchronize between CPUs after main scanning loop.
-  * This invokes the bulk of the Monarch processing.
-  */
--static int mce_end(int order)
-+static noinstr int mce_end(int order)
- {
--	int ret = -1;
- 	u64 timeout = (u64)mca_cfg.monarch_timeout * NSEC_PER_USEC;
-+	int ret = -1;
+diff --git a/drivers/mmc/core/sdio.c b/drivers/mmc/core/sdio.c
+index 1b0853a82189a..99a4ce68d82f1 100644
+--- a/drivers/mmc/core/sdio.c
++++ b/drivers/mmc/core/sdio.c
+@@ -708,6 +708,8 @@ static int mmc_sdio_init_card(struct mmc_host *host, u32 ocr,
+ 	if (host->ops->init_card)
+ 		host->ops->init_card(host, card);
+ 
++	card->ocr = ocr_card;
 +
-+	/* Allow instrumentation around external facilities. */
-+	instrumentation_begin();
- 
- 	if (!timeout)
- 		goto reset;
-@@ -1117,7 +1120,8 @@ static int mce_end(int order)
- 		/*
- 		 * Don't reset anything. That's done by the Monarch.
- 		 */
--		return 0;
-+		ret = 0;
-+		goto out;
- 	}
- 
  	/*
-@@ -1132,6 +1136,10 @@ static int mce_end(int order)
- 	 * Let others run again.
- 	 */
- 	atomic_set(&mce_executing, 0);
+ 	 * If the host and card support UHS-I mode request the card
+ 	 * to switch to 1.8V signaling level.  No 1.8v signalling if
+@@ -820,7 +822,7 @@ static int mmc_sdio_init_card(struct mmc_host *host, u32 ocr,
+ 			goto mismatch;
+ 		}
+ 	}
+-	card->ocr = ocr_card;
 +
-+out:
-+	instrumentation_end();
-+
- 	return ret;
- }
+ 	mmc_fixup_device(card, sdio_fixup_methods);
  
+ 	if (card->type == MMC_TYPE_SD_COMBO) {
 -- 
 2.34.1
 
