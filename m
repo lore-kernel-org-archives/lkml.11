@@ -2,145 +2,205 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB9DBC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A6E7C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:26:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358896AbiARDZh (ORCPT
+        id S1349441AbiARD0D (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:25:37 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42398 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348143AbiARDJR (ORCPT
+        Mon, 17 Jan 2022 22:26:03 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:43161 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1354720AbiARDKK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:09:17 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BCA59B80932;
-        Tue, 18 Jan 2022 03:09:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ADD2C36AEF;
-        Tue, 18 Jan 2022 03:09:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642475352;
-        bh=zSkZappaJtuwv/bZPtL8x6NlRSEZ+4OEZLu9qlnKwxw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UhWvwOVqeuO/9xD6/gHlBu+OJmboZKMNTEEd60lpBf5Z2jLayvMBX+OBzCxuMjEY5
-         q++EjJLAYc7TfxvC/Tpa2Sn2905zKWZqpnT9irIOUG0ralCXlfONeunayKfYcZaJXN
-         +QH5nHEVK+DQpGz7u0BghHDuiUf05d1Q/xJZBG+xDUKdx6wcY6KiAqxCnyerrOkQ7D
-         wOqFK1NWb5MfImzxpVD9vezfaEsT0it4n0IJy14zLuHjQfWCFvD/n43FU0h8odPP9X
-         YPRbWkTn51nawd0n1Iijuy+gTjixQYP8lUf9w1bJuvdWNipzBBDEHTQIQpMvSS0gsA
-         l5k5CAcRG2WMA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, mathias.nyman@linux.intel.com,
-        Thinh.Nguyen@synopsys.com, dan.carpenter@oracle.com,
-        rajatja@google.com, cuibixuan@huawei.com, chris.chiu@canonical.com,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 17/29] usb: hub: Add delay for SuperSpeed hub resume to let links transit to U0
-Date:   Mon, 17 Jan 2022 22:08:10 -0500
-Message-Id: <20220118030822.1955469-17-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118030822.1955469-1-sashal@kernel.org>
-References: <20220118030822.1955469-1-sashal@kernel.org>
+        Mon, 17 Jan 2022 22:10:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642475409;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=VHROM3H3Gj1zTOOoCmnC85BRDlwA1UmiYl4rywuZ64M=;
+        b=erIsXcinnURjoPtlvg8d7i17BlGOcjCoXm6Zjnc8gWxAlv0b+nGzhDLasL0ZDIMFZE82SV
+        5ivvuvyxDEKH5D5QXWO8+xKToYzY6TJ5HVOyjhgTcsJJ75XRmtfdZ35fU6Hi4k1EGD3f89
+        Fm03mhbOIL4afpA0x9PwHFXULp8Cf+8=
+Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
+ [209.85.215.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-604-W-qaiSfJMkeOxzd6f6fKTg-1; Mon, 17 Jan 2022 22:10:07 -0500
+X-MC-Unique: W-qaiSfJMkeOxzd6f6fKTg-1
+Received: by mail-pg1-f197.google.com with SMTP id t27-20020a63461b000000b00342c204e4f3so8708227pga.11
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 19:10:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=VHROM3H3Gj1zTOOoCmnC85BRDlwA1UmiYl4rywuZ64M=;
+        b=QF6J8xW5EUa9ts7SZUpP4kL8ItaIVryO3G7Bpqk6CA+ahCETeRmvDH1vidGCNs6NiM
+         Mp6bTt1JDFBhRmKLHSejvS2N3HdhJMndNSTyaFKlj7DIM+BvSVDeIN+npalhpuRwqja9
+         rt3EeVmfnofnSpwTEEidfJHxvdhnpMHTc46GV5wV45S9AfZYqAU8t3ESqxQ2nJAa5+oI
+         wKyKtWAPcAFFTIGP/7GExg976qaJpTbMSFOfSeam81MIGe+QNhQC3GW/BBRjhyv0dohC
+         8iFTfK4ftSEFyZcSi3Y4bk5M19orsgSkhFI0zERTQYfmjPX1ES3ApHIskKJXjwBCAgpQ
+         cLxQ==
+X-Gm-Message-State: AOAM533anxO2aLhmcmhXx288rUq1Qcf0t8FHLlmyiTQBNMOL7JAQRt56
+        07bwuW2SLplNSOCrOylDVh2f2BGwVuOVm/894+W1PS+MRfPtVmheohAxhrKZFO0NdjwPuhtC4hr
+        j1gO2c8U+JR6ihmmLcokzZx3Y
+X-Received: by 2002:a63:2210:: with SMTP id i16mr14992533pgi.532.1642475406807;
+        Mon, 17 Jan 2022 19:10:06 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzpr917B1MdxpHfy21aTB02UTG9DuJi4ylO0bN/YcI+iiqs3Cv0o2sHKTxbfK+NwUV144Z2mw==
+X-Received: by 2002:a63:2210:: with SMTP id i16mr14992512pgi.532.1642475406468;
+        Mon, 17 Jan 2022 19:10:06 -0800 (PST)
+Received: from [10.72.13.83] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id m3sm14672061pfa.183.2022.01.17.19.10.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Jan 2022 19:10:05 -0800 (PST)
+Message-ID: <545d11f3-0b4e-da61-91f3-595ed5608334@redhat.com>
+Date:   Tue, 18 Jan 2022 11:09:58 +0800
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [RFC 3/3] vdpasim_net: control virtqueue support
+Content-Language: en-US
+To:     "Longpeng(Mike)" <longpeng2@huawei.com>, mst@redhat.com,
+        sgarzare@redhat.com, stefanha@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        arei.gonglei@huawei.com, yechuan@huawei.com,
+        huangzhichao@huawei.com
+References: <20220117092921.1573-1-longpeng2@huawei.com>
+ <20220117092921.1573-4-longpeng2@huawei.com>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220117092921.1573-4-longpeng2@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-[ Upstream commit 00558586382891540c59c9febc671062425a6e47 ]
+在 2022/1/17 下午5:29, Longpeng(Mike) 写道:
+> From: Longpeng <longpeng2@huawei.com>
+>
+> Introduces the control virtqueue support for vdpasim_net, based on
+> Jason's RFC [1].
+>
+> [1] https://patchwork.kernel.org/project/kvm/patch/20200924032125.18619-25-jasowang@redhat.com/
 
-When a new USB device gets plugged to nested hubs, the affected hub,
-which connects to usb 2-1.4-port2, doesn't report there's any change,
-hence the nested hubs go back to runtime suspend like nothing happened:
-[  281.032951] usb usb2: usb wakeup-resume
-[  281.032959] usb usb2: usb auto-resume
-[  281.032974] hub 2-0:1.0: hub_resume
-[  281.033011] usb usb2-port1: status 0263 change 0000
-[  281.033077] hub 2-0:1.0: state 7 ports 4 chg 0000 evt 0000
-[  281.049797] usb 2-1: usb wakeup-resume
-[  281.069800] usb 2-1: Waited 0ms for CONNECT
-[  281.069810] usb 2-1: finish resume
-[  281.070026] hub 2-1:1.0: hub_resume
-[  281.070250] usb 2-1-port4: status 0203 change 0000
-[  281.070272] usb usb2-port1: resume, status 0
-[  281.070282] hub 2-1:1.0: state 7 ports 4 chg 0010 evt 0000
-[  281.089813] usb 2-1.4: usb wakeup-resume
-[  281.109792] usb 2-1.4: Waited 0ms for CONNECT
-[  281.109801] usb 2-1.4: finish resume
-[  281.109991] hub 2-1.4:1.0: hub_resume
-[  281.110147] usb 2-1.4-port2: status 0263 change 0000
-[  281.110234] usb 2-1-port4: resume, status 0
-[  281.110239] usb 2-1-port4: status 0203, change 0000, 10.0 Gb/s
-[  281.110266] hub 2-1.4:1.0: state 7 ports 4 chg 0000 evt 0000
-[  281.110426] hub 2-1.4:1.0: hub_suspend
-[  281.110565] usb 2-1.4: usb auto-suspend, wakeup 1
-[  281.130998] hub 2-1:1.0: hub_suspend
-[  281.137788] usb 2-1: usb auto-suspend, wakeup 1
-[  281.142935] hub 2-0:1.0: state 7 ports 4 chg 0000 evt 0000
-[  281.177828] usb 2-1: usb wakeup-resume
-[  281.197839] usb 2-1: Waited 0ms for CONNECT
-[  281.197850] usb 2-1: finish resume
-[  281.197984] hub 2-1:1.0: hub_resume
-[  281.198203] usb 2-1-port4: status 0203 change 0000
-[  281.198228] usb usb2-port1: resume, status 0
-[  281.198237] hub 2-1:1.0: state 7 ports 4 chg 0010 evt 0000
-[  281.217835] usb 2-1.4: usb wakeup-resume
-[  281.237834] usb 2-1.4: Waited 0ms for CONNECT
-[  281.237845] usb 2-1.4: finish resume
-[  281.237990] hub 2-1.4:1.0: hub_resume
-[  281.238067] usb 2-1.4-port2: status 0263 change 0000
-[  281.238148] usb 2-1-port4: resume, status 0
-[  281.238152] usb 2-1-port4: status 0203, change 0000, 10.0 Gb/s
-[  281.238166] hub 2-1.4:1.0: state 7 ports 4 chg 0000 evt 0000
-[  281.238385] hub 2-1.4:1.0: hub_suspend
-[  281.238523] usb 2-1.4: usb auto-suspend, wakeup 1
-[  281.258076] hub 2-1:1.0: hub_suspend
-[  281.265744] usb 2-1: usb auto-suspend, wakeup 1
-[  281.285976] hub 2-0:1.0: hub_suspend
-[  281.285988] usb usb2: bus auto-suspend, wakeup 1
 
-USB 3.2 spec, 9.2.5.4 "Changing Function Suspend State" says that "If
-the link is in a non-U0 state, then the device must transition the link
-to U0 prior to sending the remote wake message", but the hub only
-transits the link to U0 after signaling remote wakeup.
+I'd expect to implement the receive filter as well[1]. This gives us a 
+chance to test this.
 
-So be more forgiving and use a 20ms delay to let the link transit to U0
-for remote wakeup.
+Thanks
 
-Suggested-by: Alan Stern <stern@rowland.harvard.edu>
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Link: https://lore.kernel.org/r/20211215120108.336597-1-kai.heng.feng@canonical.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/usb/core/hub.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+[1] https://lkml.org/lkml/2020/9/23/1269
 
-diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 66dda8d018caf..6097977f83a31 100644
---- a/drivers/usb/core/hub.c
-+++ b/drivers/usb/core/hub.c
-@@ -1054,7 +1054,10 @@ static void hub_activate(struct usb_hub *hub, enum hub_activation_type type)
- 		} else {
- 			hub_power_on(hub, true);
- 		}
--	}
-+	/* Give some time on remote wakeup to let links to transit to U0 */
-+	} else if (hub_is_superspeed(hub->hdev))
-+		msleep(20);
-+
-  init2:
- 
- 	/*
--- 
-2.34.1
+
+>
+> Signed-off-by: Longpeng <longpeng2@huawei.com>
+> ---
+>   drivers/vdpa/vdpa_sim/vdpa_sim_net.c | 83 +++++++++++++++++++++++++++-
+>   1 file changed, 81 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
+> index 76dd24abc791..e9e388fd3cff 100644
+> --- a/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
+> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim_net.c
+> @@ -26,9 +26,85 @@
+>   #define DRV_LICENSE  "GPL v2"
+>   
+>   #define VDPASIM_NET_FEATURES	(VDPASIM_FEATURES | \
+> -				 (1ULL << VIRTIO_NET_F_MAC))
+> +				 (1ULL << VIRTIO_NET_F_MAC) | \
+> +				 (1ULL << VIRTIO_NET_F_CTRL_VQ) | \
+> +				 (1ULL << VIRTIO_NET_F_CTRL_MAC_ADDR))
+>   
+> -#define VDPASIM_NET_VQ_NUM	2
+> +#define VDPASIM_NET_VQ_NUM	3
+> +
+> +virtio_net_ctrl_ack vdpasim_net_handle_ctrl_mac(struct vdpasim *vdpasim,
+> +						u8 cmd)
+> +{
+> +	struct vdpasim_virtqueue *cvq = &vdpasim->vqs[2];
+> +	virtio_net_ctrl_ack status = VIRTIO_NET_ERR;
+> +	struct virtio_net_config *config = vdpasim->config;
+> +	size_t read;
+> +
+> +	switch (cmd) {
+> +	case VIRTIO_NET_CTRL_MAC_ADDR_SET:
+> +		read = vringh_iov_pull_iotlb(&cvq->vring, &cvq->out_iov,
+> +					     (void *)config->mac, ETH_ALEN);
+> +		if (read == ETH_ALEN)
+> +			status = VIRTIO_NET_OK;
+> +		break;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return status;
+> +}
+> +
+> +static void vdpasim_net_handle_cvq(struct vdpasim *vdpasim)
+> +{
+> +	struct vdpasim_virtqueue *cvq = &vdpasim->vqs[2];
+> +	virtio_net_ctrl_ack status = VIRTIO_NET_ERR;
+> +	struct virtio_net_ctrl_hdr ctrl;
+> +	size_t read, write;
+> +	int err;
+> +
+> +	if (!(vdpasim->features & (1ULL << VIRTIO_NET_F_CTRL_VQ)))
+> +		return;
+> +
+> +	if (!cvq->ready)
+> +		return;
+> +
+> +	while (true) {
+> +		err = vringh_getdesc_iotlb(&cvq->vring, &cvq->out_iov, &cvq->in_iov,
+> +					   &cvq->head, GFP_ATOMIC);
+> +		if (err <= 0)
+> +			break;
+> +
+> +		read = vringh_iov_pull_iotlb(&cvq->vring, &cvq->in_iov, &ctrl,
+> +					     sizeof(ctrl));
+> +		if (read != sizeof(ctrl))
+> +			break;
+> +
+> +		switch (ctrl.class) {
+> +		case VIRTIO_NET_CTRL_MAC:
+> +			status = vdpasim_net_handle_ctrl_mac(vdpasim, ctrl.cmd);
+> +			break;
+> +		default:
+> +			break;
+> +		}
+> +
+> +		/* Make sure data is wrote before advancing index */
+> +		smp_wmb();
+> +
+> +		write = vringh_iov_push_iotlb(&cvq->vring, &cvq->out_iov,
+> +					      &status, sizeof (status));
+> +		vringh_complete_iotlb(&cvq->vring, cvq->head, write);
+> +		vringh_kiov_cleanup(&cvq->in_iov);
+> +		vringh_kiov_cleanup(&cvq->out_iov);
+> +
+> +		/* Make sure used is visible before rasing the interrupt. */
+> +		smp_wmb();
+> +
+> +		local_bh_disable();
+> +		if (vringh_need_notify_iotlb(&cvq->vring) > 0)
+> +			vringh_notify(&cvq->vring);
+> +		local_bh_enable();
+> +	}
+> +}
+>   
+>   static void vdpasim_net_work(struct work_struct *work)
+>   {
+> @@ -42,6 +118,9 @@ static void vdpasim_net_work(struct work_struct *work)
+>   
+>   	spin_lock(&vdpasim->lock);
+>   
+> +	/* process ctrl vq first */
+> +	vdpasim_net_handle_cvq(vdpasim);
+> +
+>   	if (!(vdpasim->status & VIRTIO_CONFIG_S_DRIVER_OK))
+>   		goto out;
+>   
 
