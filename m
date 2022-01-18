@@ -2,48 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F7C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 11:15:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BA0DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 11:15:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239401AbiARLPS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 06:15:18 -0500
-Received: from mga03.intel.com ([134.134.136.65]:21274 "EHLO mga03.intel.com"
+        id S239430AbiARLPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 06:15:20 -0500
+Received: from mga11.intel.com ([192.55.52.93]:28111 "EHLO mga11.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239073AbiARLOg (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 06:14:36 -0500
+        id S239081AbiARLOh (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 06:14:37 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1642504476; x=1674040476;
   h=date:from:to:cc:subject:message-id:mime-version;
-  bh=vCIEMO8vnt+m4PzofXMvxSmuR6Gq6JalXfmkabBSbPM=;
-  b=bx40uoOos6zO95W9D2qRVT2ni3X2MocYwKl8IIN9Oal4SrSeDeUzcgcK
-   FiwcjiO5gd7dDNyIF2bWwgHbO4TLf16G/ikPbSm/0lBoWLX3CISEpUoKf
-   F85Fb3pw6IXppkZCHW2TxJTGdGpIqsrjF5bkZ79OCt4rXX5UVE9mc4rmQ
-   OlNyq6OwXxEGCm6NKloq+aonMu9hWtPsw2V4I+d7KkKd7aa3NnIua1R18
-   9rnAUDJKxBq+EhzOpKh+msnKYqc2hT/iNg5BMuFuLP04uc+6B+h7QkJKe
-   jVT10qbAun+qm9mVp1TX5TFTCpFe49kiXJxILwOEQA4TSflqEmOQ6sloy
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="244751317"
+  bh=xQi163KJjlYgR18//Jlrzf8p7hvZ8Mx+IeaBZ6jNBM4=;
+  b=cl0viiWgHHqm0qa9WKUAW09/a5gMpqzfWTJZNiBWJcuny1Zf8UfgGcOR
+   8R/DaqeUyDoLuwk6BPeWApgn7Xnv8cQwyVljR45akVnS2cdDACJNNG/h0
+   kthzGWIXzsZ4RFvlo1r8cFEKjsCMAguwwIUupIDBY6/miF9jXjgYBXmkz
+   dUj8ubm1Xahvi2GH9Oa8Aek3NEQwF+Fvj5CQRsdTP5wgZ01hcGntrpKL9
+   YoTEzXSGyIzpniVjeLhZvZIcatVExxePgUAxpF3iBcWv+KE/pLqhGAHl0
+   /eVyalsKfVFAIWsS4s3I/PlhJ5rNczs65TJU2AApNasz7EmQXaWbuYq5c
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="242352802"
 X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="244751317"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 03:14:32 -0800
+   d="scan'208";a="242352802"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 03:14:32 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="517728747"
+   d="scan'208";a="474733049"
 Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 18 Jan 2022 03:14:30 -0800
+  by orsmga003.jf.intel.com with ESMTP; 18 Jan 2022 03:14:30 -0800
 Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
         (envelope-from <lkp@intel.com>)
-        id 1n9mRa-000CVM-4A; Tue, 18 Jan 2022 11:14:30 +0000
-Date:   Tue, 18 Jan 2022 19:14:10 +0800
+        id 1n9mRa-000CVC-19; Tue, 18 Jan 2022 11:14:30 +0000
+Date:   Tue, 18 Jan 2022 19:14:24 +0800
 From:   kernel test robot <lkp@intel.com>
-To:     Amir Goldstein <amir73il@gmail.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Jan Kara <jack@suse.cz>
-Subject: fs/notify/fanotify/fanotify_user.c:154:24: warning: variable 'info'
- set but not used
-Message-ID: <202201181811.egJXbMCF-lkp@intel.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Sebastian Reichel <sebastian.reichel@collabora.com>
+Subject: drivers/power/supply/ab8500_fg.c:2243:75: warning: variable 'b' set
+ but not used
+Message-ID: <202201181843.hXuoA1vS-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
@@ -54,79 +54,158 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
 head:   e3a8b6a1e70c37702054ae3c7c07ed828435d8ee
-commit: 7326e382c21e9c23c89c88369afdc90b82a14da8 fanotify: report old and/or new parent+name in FAN_RENAME event
-date:   5 weeks ago
-config: hexagon-randconfig-r045-20220117 (https://download.01.org/0day-ci/archive/20220118/202201181811.egJXbMCF-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project c10cbb243cafc0cf42c3e922cb29183279444432)
+commit: 2a5f41830aadc2d7f4145eae49381133da5df2a3 power: supply: ab8500: Standardize voltages
+date:   8 weeks ago
+config: arm-allyesconfig (https://download.01.org/0day-ci/archive/20220118/202201181843.hXuoA1vS-lkp@intel.com/config)
+compiler: arm-linux-gnueabi-gcc (GCC) 11.2.0
 reproduce (this is a W=1 build):
         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
         chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7326e382c21e9c23c89c88369afdc90b82a14da8
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2a5f41830aadc2d7f4145eae49381133da5df2a3
         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
         git fetch --no-tags linus master
-        git checkout 7326e382c21e9c23c89c88369afdc90b82a14da8
+        git checkout 2a5f41830aadc2d7f4145eae49381133da5df2a3
         # save the config file to linux build tree
         mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash fs/notify/fanotify/
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arm SHELL=/bin/bash drivers/power/supply/ drivers/usb/gadget/udc/
 
 If you fix the issue, kindly add following tag as appropriate
 Reported-by: kernel test robot <lkp@intel.com>
 
 All warnings (new ones prefixed by >>):
 
->> fs/notify/fanotify/fanotify_user.c:154:24: warning: variable 'info' set but not used [-Wunused-but-set-variable]
-           struct fanotify_info *info;
-                                 ^
-   1 warning generated.
+   drivers/power/supply/ab8500_fg.c: In function 'ab8500_fg_get_ext_psy_data':
+>> drivers/power/supply/ab8500_fg.c:2243:75: warning: variable 'b' set but not used [-Wunused-but-set-variable]
+    2243 |                                         const struct ab8500_battery_type *b;
+         |                                                                           ^
 
 
-vim +/info +154 fs/notify/fanotify/fanotify_user.c
+vim +/b +2243 drivers/power/supply/ab8500_fg.c
 
-7326e382c21e9c Amir Goldstein          2021-11-29  149  
-b9928e80dda84b Gabriel Krisman Bertazi 2021-10-25  150  static size_t fanotify_event_len(unsigned int info_mode,
-929943b38daf81 Amir Goldstein          2020-07-16  151  				 struct fanotify_event *event)
-5e469c830fdb5a Amir Goldstein          2019-01-10  152  {
-b9928e80dda84b Gabriel Krisman Bertazi 2021-10-25  153  	size_t event_len = FAN_EVENT_METADATA_LEN;
-b9928e80dda84b Gabriel Krisman Bertazi 2021-10-25 @154  	struct fanotify_info *info;
-b9928e80dda84b Gabriel Krisman Bertazi 2021-10-25  155  	int fh_len;
-929943b38daf81 Amir Goldstein          2020-07-16  156  	int dot_len = 0;
-f454fa610a69b9 Amir Goldstein          2020-07-16  157  
-b9928e80dda84b Gabriel Krisman Bertazi 2021-10-25  158  	if (!info_mode)
-b9928e80dda84b Gabriel Krisman Bertazi 2021-10-25  159  		return event_len;
-b9928e80dda84b Gabriel Krisman Bertazi 2021-10-25  160  
-130a3c742107ac Gabriel Krisman Bertazi 2021-10-25  161  	if (fanotify_is_error_event(event->mask))
-130a3c742107ac Gabriel Krisman Bertazi 2021-10-25  162  		event_len += FANOTIFY_ERROR_INFO_LEN;
-130a3c742107ac Gabriel Krisman Bertazi 2021-10-25  163  
-b9928e80dda84b Gabriel Krisman Bertazi 2021-10-25  164  	info = fanotify_event_info(event);
-b9928e80dda84b Gabriel Krisman Bertazi 2021-10-25  165  
-7326e382c21e9c Amir Goldstein          2021-11-29  166  	if (fanotify_event_has_any_dir_fh(event)) {
-7326e382c21e9c Amir Goldstein          2021-11-29  167  		event_len += fanotify_dir_name_info_len(event);
-d3424c9bac893b Matthew Bobrowski       2021-08-08  168  	} else if ((info_mode & FAN_REPORT_NAME) &&
-d3424c9bac893b Matthew Bobrowski       2021-08-08  169  		   (event->mask & FAN_ONDIR)) {
-929943b38daf81 Amir Goldstein          2020-07-16  170  		/*
-929943b38daf81 Amir Goldstein          2020-07-16  171  		 * With group flag FAN_REPORT_NAME, if name was not recorded in
-929943b38daf81 Amir Goldstein          2020-07-16  172  		 * event on a directory, we will report the name ".".
-929943b38daf81 Amir Goldstein          2020-07-16  173  		 */
-929943b38daf81 Amir Goldstein          2020-07-16  174  		dot_len = 1;
-929943b38daf81 Amir Goldstein          2020-07-16  175  	}
-afc894c784c84c Jan Kara                2020-03-24  176  
-af579beb666aef Matthew Bobrowski       2021-08-08  177  	if (info_mode & FAN_REPORT_PIDFD)
-b9928e80dda84b Gabriel Krisman Bertazi 2021-10-25  178  		event_len += FANOTIFY_PIDFD_INFO_HDR_LEN;
-af579beb666aef Matthew Bobrowski       2021-08-08  179  
-4bd5a5c8e6e5cd Gabriel Krisman Bertazi 2021-10-25  180  	if (fanotify_event_has_object_fh(event)) {
-4bd5a5c8e6e5cd Gabriel Krisman Bertazi 2021-10-25  181  		fh_len = fanotify_event_object_fh_len(event);
-b9928e80dda84b Gabriel Krisman Bertazi 2021-10-25  182  		event_len += fanotify_fid_info_len(fh_len, dot_len);
-4bd5a5c8e6e5cd Gabriel Krisman Bertazi 2021-10-25  183  	}
-5e469c830fdb5a Amir Goldstein          2019-01-10  184  
-b9928e80dda84b Gabriel Krisman Bertazi 2021-10-25  185  	return event_len;
-5e469c830fdb5a Amir Goldstein          2019-01-10  186  }
-5e469c830fdb5a Amir Goldstein          2019-01-10  187  
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2167  
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2168  static int ab8500_fg_get_ext_psy_data(struct device *dev, void *data)
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2169  {
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2170  	struct power_supply *psy;
+ea32cea140f644 drivers/power/ab8500_fg.c        Andy Shevchenko     2016-03-17  2171  	struct power_supply *ext = dev_get_drvdata(dev);
+ea32cea140f644 drivers/power/ab8500_fg.c        Andy Shevchenko     2016-03-17  2172  	const char **supplicants = (const char **)ext->supplied_to;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2173  	struct ab8500_fg *di;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2174  	union power_supply_propval ret;
+ea32cea140f644 drivers/power/ab8500_fg.c        Andy Shevchenko     2016-03-17  2175  	int j;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2176  
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2177  	psy = (struct power_supply *)data;
+297d716f6260cc drivers/power/ab8500_fg.c        Krzysztof Kozlowski 2015-03-12  2178  	di = power_supply_get_drvdata(psy);
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2179  
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2180  	/*
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2181  	 * For all psy where the name of your driver
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2182  	 * appears in any supplied_to
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2183  	 */
+ea32cea140f644 drivers/power/ab8500_fg.c        Andy Shevchenko     2016-03-17  2184  	j = match_string(supplicants, ext->num_supplicants, psy->desc->name);
+ea32cea140f644 drivers/power/ab8500_fg.c        Andy Shevchenko     2016-03-17  2185  	if (j < 0)
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2186  		return 0;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2187  
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2188  	/* Go through all properties for the psy */
+297d716f6260cc drivers/power/ab8500_fg.c        Krzysztof Kozlowski 2015-03-12  2189  	for (j = 0; j < ext->desc->num_properties; j++) {
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2190  		enum power_supply_property prop;
+297d716f6260cc drivers/power/ab8500_fg.c        Krzysztof Kozlowski 2015-03-12  2191  		prop = ext->desc->properties[j];
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2192  
+15077fc1f78488 drivers/power/ab8500_fg.c        Krzysztof Kozlowski 2015-03-12  2193  		if (power_supply_get_property(ext, prop, &ret))
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2194  			continue;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2195  
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2196  		switch (prop) {
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2197  		case POWER_SUPPLY_PROP_STATUS:
+297d716f6260cc drivers/power/ab8500_fg.c        Krzysztof Kozlowski 2015-03-12  2198  			switch (ext->desc->type) {
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2199  			case POWER_SUPPLY_TYPE_BATTERY:
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2200  				switch (ret.intval) {
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2201  				case POWER_SUPPLY_STATUS_UNKNOWN:
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2202  				case POWER_SUPPLY_STATUS_DISCHARGING:
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2203  				case POWER_SUPPLY_STATUS_NOT_CHARGING:
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2204  					if (!di->flags.charging)
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2205  						break;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2206  					di->flags.charging = false;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2207  					di->flags.fully_charged = false;
+ea4024017831d6 drivers/power/ab8500_fg.c        Marcus Cooper       2013-01-11  2208  					if (di->bm->capacity_scaling)
+ea4024017831d6 drivers/power/ab8500_fg.c        Marcus Cooper       2013-01-11  2209  						ab8500_fg_update_cap_scalers(di);
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2210  					queue_work(di->fg_wq, &di->fg_work);
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2211  					break;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2212  				case POWER_SUPPLY_STATUS_FULL:
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2213  					if (di->flags.fully_charged)
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2214  						break;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2215  					di->flags.fully_charged = true;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2216  					di->flags.force_full = true;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2217  					/* Save current capacity as maximum */
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2218  					di->bat_cap.max_mah = di->bat_cap.mah;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2219  					queue_work(di->fg_wq, &di->fg_work);
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2220  					break;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2221  				case POWER_SUPPLY_STATUS_CHARGING:
+ea4024017831d6 drivers/power/ab8500_fg.c        Marcus Cooper       2013-01-11  2222  					if (di->flags.charging &&
+ea4024017831d6 drivers/power/ab8500_fg.c        Marcus Cooper       2013-01-11  2223  						!di->flags.fully_charged)
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2224  						break;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2225  					di->flags.charging = true;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2226  					di->flags.fully_charged = false;
+ea4024017831d6 drivers/power/ab8500_fg.c        Marcus Cooper       2013-01-11  2227  					if (di->bm->capacity_scaling)
+ea4024017831d6 drivers/power/ab8500_fg.c        Marcus Cooper       2013-01-11  2228  						ab8500_fg_update_cap_scalers(di);
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2229  					queue_work(di->fg_wq, &di->fg_work);
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2230  					break;
+c6ef5234efc076 drivers/power/supply/ab8500_fg.c Ma Feng             2019-12-19  2231  				}
+b51883d47d37c3 drivers/power/supply/ab8500_fg.c Gustavo A. R. Silva 2021-07-13  2232  				break;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2233  			default:
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2234  				break;
+c6ef5234efc076 drivers/power/supply/ab8500_fg.c Ma Feng             2019-12-19  2235  			}
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2236  			break;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2237  		case POWER_SUPPLY_PROP_TECHNOLOGY:
+297d716f6260cc drivers/power/ab8500_fg.c        Krzysztof Kozlowski 2015-03-12  2238  			switch (ext->desc->type) {
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2239  			case POWER_SUPPLY_TYPE_BATTERY:
+1a793a10899487 drivers/power/ab8500_fg.c        Rajkumar Kasirajan  2012-05-30  2240  				if (!di->flags.batt_id_received &&
+2d3559a50ad6d2 drivers/power/supply/ab8500_fg.c Linus Walleij       2021-11-20  2241  				    (di->bm->bi.technology !=
+e5dff305ab5c53 drivers/power/supply/ab8500_fg.c Linus Walleij       2021-11-20  2242  				     POWER_SUPPLY_TECHNOLOGY_UNKNOWN)) {
+484a9cc3dcb867 drivers/power/supply/ab8500_fg.c Linus Walleij       2021-07-13 @2243  					const struct ab8500_battery_type *b;
+c34a61b4e7a996 drivers/power/ab8500_fg.c        Anton Vorontsov     2012-03-14  2244  
+e5dff305ab5c53 drivers/power/supply/ab8500_fg.c Linus Walleij       2021-11-20  2245  					b = di->bm->bat_type;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2246  
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2247  					di->flags.batt_id_received = true;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2248  
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2249  					di->bat_cap.max_mah_design =
+22be8d77c80dca drivers/power/supply/ab8500_fg.c Linus Walleij       2021-11-20  2250  						di->bm->bi.charge_full_design_uah;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2251  
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2252  					di->bat_cap.max_mah =
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2253  						di->bat_cap.max_mah_design;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2254  
+2a5f41830aadc2 drivers/power/supply/ab8500_fg.c Linus Walleij       2021-11-20  2255  					di->vbat_nom_uv =
+2a5f41830aadc2 drivers/power/supply/ab8500_fg.c Linus Walleij       2021-11-20  2256  						di->bm->bi.voltage_max_design_uv;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2257  				}
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2258  
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2259  				if (ret.intval)
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2260  					di->flags.batt_unknown = false;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2261  				else
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2262  					di->flags.batt_unknown = true;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2263  				break;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2264  			default:
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2265  				break;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2266  			}
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2267  			break;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2268  		case POWER_SUPPLY_PROP_TEMP:
+297d716f6260cc drivers/power/ab8500_fg.c        Krzysztof Kozlowski 2015-03-12  2269  			switch (ext->desc->type) {
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2270  			case POWER_SUPPLY_TYPE_BATTERY:
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2271  				if (di->flags.batt_id_received)
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2272  					di->bat_temp = ret.intval;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2273  				break;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2274  			default:
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2275  				break;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2276  			}
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2277  			break;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2278  		default:
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2279  			break;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2280  		}
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2281  	}
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2282  	return 0;
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2283  }
+13151631b5bd06 drivers/power/ab8500_fg.c        Arun Murthy         2012-02-29  2284  
 
-:::::: The code at line 154 was first introduced by commit
-:::::: b9928e80dda84b349ba8de01780b9bef2fc36ffa fanotify: Fold event size calculation to its own function
+:::::: The code at line 2243 was first introduced by commit
+:::::: 484a9cc3dcb867813fca62f6443c1e77a1ae3c27 power: supply: ab8500: Drop abx500 concept
 
-:::::: TO: Gabriel Krisman Bertazi <krisman@collabora.com>
-:::::: CC: Jan Kara <jack@suse.cz>
+:::::: TO: Linus Walleij <linus.walleij@linaro.org>
+:::::: CC: Sebastian Reichel <sebastian.reichel@collabora.com>
 
 ---
 0-DAY CI Kernel Test Service, Intel Corporation
