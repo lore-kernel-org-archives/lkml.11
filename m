@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F6FDC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26F82C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:23:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357927AbiARDVt (ORCPT
+        id S1357902AbiARDVq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:21:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39096 "EHLO
+        Mon, 17 Jan 2022 22:21:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346671AbiARDI7 (ORCPT
+        with ESMTP id S1346680AbiARDJA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:08:59 -0500
+        Mon, 17 Jan 2022 22:09:00 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B5ECC06175B;
-        Mon, 17 Jan 2022 18:51:22 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC616C06175F;
+        Mon, 17 Jan 2022 18:51:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DCCB6118D;
-        Tue, 18 Jan 2022 02:51:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DE9EC36AEB;
-        Tue, 18 Jan 2022 02:51:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5972961346;
+        Tue, 18 Jan 2022 02:51:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B34CEC36AEF;
+        Tue, 18 Jan 2022 02:51:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474281;
-        bh=X2HMSLWSypMHKIOh7Y660kYKewFTYjIlF/6xNVgEuFs=;
+        s=k20201202; t=1642474295;
+        bh=mt14UD5wwUsEVPzv/slcZn+yEj+oYq8IMyN2ZD3IgCw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mJLA1n39YSC4fe+DlUgf98q5mjwESp6/kWI8Tg/G7ESBLBilaql5sBCD1fxXQ+uPO
-         Quq3npVeSq9aVXINkxqj/CcvYEuhp2a71eAl/WFoFuFuFfoWWFzts68WLHva4N1RGj
-         way/J4DLe+3zfbMGtMooQv9BeALdwxhtsoFWJKUrKYseMZeG/gULRojn5c5c6yb3J8
-         4X4DyyLegbfZT+Y7r0Jotsb8eCEGpkwv4Sr6W0Civ8sJP3vDbC07lAiOJl2Gm7vgs+
-         xQgTa4xOSOUY+tBAzqEN20bbeENSrHTlNHdxWwr7aNQJsbdalDw7I1sLFCA9AKHHoX
-         +lIaCT79FbMFA==
+        b=OPo4NdP//Mb/q2CjpD0SJMa2bxSuuawiq+J3svp10euBFCaGtsjfPWoe1KCDAJ1mg
+         42+D/2/3MG/xK0aE76C9f4qN0iPzZiA66I4UamHRFHnsahGKJZJYusPbmcowqtMbMG
+         XjkVhWLDDnasA8mZKS7+2CafjufzQRH0tOf8dmLuy44962Woid53CjLXtzBk3Do0Ke
+         Z44b3LioOsZ+i4MaiisM/MvBfbO4QB/yu7qUHV7ZbQKlD4zO5eVAcogNp1c0jX2uKx
+         4UfeGIsuBhQolax8/ACEvH6oiyMfJBwR1UMnhFX5oIhoR9UjyYzWucotUs67Rq3Q+Q
+         UcE3ogFjREMrg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, pontus.fuchs@gmail.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 03/33] ar5523: Fix null-ptr-deref with unexpected WDCMSG_TARGET_START reply
-Date:   Mon, 17 Jan 2022 21:50:45 -0500
-Message-Id: <20220118025116.1954375-3-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>,
+        mika.westerberg@linux.intel.com, linus.walleij@linaro.org,
+        brgl@bgdev.pl, linux-gpio@vger.kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 08/33] gpiolib: acpi: Do not set the IRQ type if the IRQ is already in use
+Date:   Mon, 17 Jan 2022 21:50:50 -0500
+Message-Id: <20220118025116.1954375-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118025116.1954375-1-sashal@kernel.org>
 References: <20220118025116.1954375-1-sashal@kernel.org>
@@ -54,61 +55,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit ae80b6033834342601e99f74f6a62ff5092b1cee ]
+[ Upstream commit bdfd6ab8fdccd8b138837efff66f4a1911496378 ]
 
-Unexpected WDCMSG_TARGET_START replay can lead to null-ptr-deref
-when ar->tx_cmd->odata is NULL. The patch adds a null check to
-prevent such case.
+If the IRQ is already in use, then acpi_dev_gpio_irq_get_by() really
+should not change the type underneath the current owner.
 
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
- ar5523_cmd+0x46a/0x581 [ar5523]
- ar5523_probe.cold+0x1b7/0x18da [ar5523]
- ? ar5523_cmd_rx_cb+0x7a0/0x7a0 [ar5523]
- ? __pm_runtime_set_status+0x54a/0x8f0
- ? _raw_spin_trylock_bh+0x120/0x120
- ? pm_runtime_barrier+0x220/0x220
- ? __pm_runtime_resume+0xb1/0xf0
- usb_probe_interface+0x25b/0x710
- really_probe+0x209/0x5d0
- driver_probe_device+0xc6/0x1b0
- device_driver_attach+0xe2/0x120
+I specifically hit an issue with this an a Chuwi Hi8 Super (CWI509) Bay
+Trail tablet, when the Boot OS selection in the BIOS is set to Android.
+In this case _STA for a MAX17047 ACPI I2C device wrongly returns 0xf and
+the _CRS resources for this device include a GpioInt pointing to a GPIO
+already in use by an _AEI handler, with a different type then specified
+in the _CRS for the MAX17047 device. Leading to the acpi_dev_gpio_irq_get()
+call done by the i2c-core-acpi.c code changing the type breaking the
+_AEI handler.
 
-I found the bug using a custome USBFuzz port. It's a research work
-to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
-providing hand-crafted usb descriptors to QEMU.
+Now this clearly is a bug in the DSDT of this tablet (in Android mode),
+but in general calling irq_set_irq_type() on an IRQ which already is
+in use seems like a bad idea.
 
-After fixing the code (fourth byte in usb packet) to WDCMSG_TARGET_START,
-I got the null-ptr-deref bug. I believe the bug is triggerable whenever
-cmd->odata is NULL. After patching, I tested with the same input and no
-longer see the KASAN report.
-
-This was NOT tested on a real device.
-
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/YXsmPQ3awHFLuAj2@10-18-43-117.dynapool.wireless.nyu.edu
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ar5523/ar5523.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/gpio/gpiolib-acpi.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
-index 9f4ee1d125b68..0c6b33c464cd9 100644
---- a/drivers/net/wireless/ath/ar5523/ar5523.c
-+++ b/drivers/net/wireless/ath/ar5523/ar5523.c
-@@ -153,6 +153,10 @@ static void ar5523_cmd_rx_cb(struct urb *urb)
- 			ar5523_err(ar, "Invalid reply to WDCMSG_TARGET_START");
- 			return;
+diff --git a/drivers/gpio/gpiolib-acpi.c b/drivers/gpio/gpiolib-acpi.c
+index 986248f7011aa..c479280590e42 100644
+--- a/drivers/gpio/gpiolib-acpi.c
++++ b/drivers/gpio/gpiolib-acpi.c
+@@ -675,10 +675,17 @@ int acpi_dev_gpio_irq_get(struct acpi_device *adev, int index)
+ 			irq_flags = acpi_dev_get_irq_type(info.triggering,
+ 							  info.polarity);
+ 
+-			/* Set type if specified and different than the current one */
+-			if (irq_flags != IRQ_TYPE_NONE &&
+-			    irq_flags != irq_get_trigger_type(irq))
+-				irq_set_irq_type(irq, irq_flags);
++			/*
++			 * If the IRQ is not already in use then set type
++			 * if specified and different than the current one.
++			 */
++			if (can_request_irq(irq, irq_flags)) {
++				if (irq_flags != IRQ_TYPE_NONE &&
++				    irq_flags != irq_get_trigger_type(irq))
++					irq_set_irq_type(irq, irq_flags);
++			} else {
++				dev_dbg(&adev->dev, "IRQ %d already in use\n", irq);
++			}
+ 
+ 			return irq;
  		}
-+		if (!cmd->odata) {
-+			ar5523_err(ar, "Unexpected WDCMSG_TARGET_START reply");
-+			return;
-+		}
- 		memcpy(cmd->odata, hdr + 1, sizeof(u32));
- 		cmd->olen = sizeof(u32);
- 		cmd->res = 0;
 -- 
 2.34.1
 
