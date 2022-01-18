@@ -2,367 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B4B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:35:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B62DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:35:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347500AbiARRfY (ORCPT
+        id S1347576AbiARRfc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 12:35:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229568AbiARRfQ (ORCPT
+        Tue, 18 Jan 2022 12:35:32 -0500
+Received: from jabberwock.ucw.cz ([46.255.230.98]:47514 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347463AbiARRf0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 12:35:16 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35FF8C061574;
-        Tue, 18 Jan 2022 09:35:16 -0800 (PST)
-Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 5B6AB223F0;
-        Tue, 18 Jan 2022 18:35:13 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1642527313;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SaRjF3aKy7nvEXJA79ob2nQ4o0KkaCOlFWANqghvig0=;
-        b=ZCAUM2QbwodYsdptvfL1yBoGlOiOkgAT5gaQ76U6dIAY6klnINujoQ+OEULFQ4RyjiQURW
-        +e6kj+/DpJZPTKDf7HTGlwRoRhFPEr+e8fKHCTIbQEkZkih9W9Yk1+zK6DZiUyLtnr6iiM
-        +yf2uDLEp3ox/T48BkqS73WTs39/UhY=
-From:   Michael Walle <michael@walle.cc>
-To:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>,
-        Michael Walle <michael@walle.cc>
-Subject: [PATCH v3 2/3] of: property: define of_property_read_u{8,16,32,64}_array() unconditionally
-Date:   Tue, 18 Jan 2022 18:35:03 +0100
-Message-Id: <20220118173504.2867523-3-michael@walle.cc>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220118173504.2867523-1-michael@walle.cc>
-References: <20220118173504.2867523-1-michael@walle.cc>
+        Tue, 18 Jan 2022 12:35:26 -0500
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id 1321E1C0B80; Tue, 18 Jan 2022 18:35:25 +0100 (CET)
+Date:   Tue, 18 Jan 2022 18:35:24 +0100
+From:   Pavel Machek <pavel@denx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
+        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
+        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
+        jonathanh@nvidia.com, f.fainelli@gmail.com, stable@vger.kernel.org
+Subject: Re: [PATCH 5.10 00/23] 5.10.93-rc1 review
+Message-ID: <20220118173524.GA17462@duo.ucw.cz>
+References: <20220118160451.233828401@linuxfoundation.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="yrj/dFKFPuw6o+aM"
+Content-Disposition: inline
+In-Reply-To: <20220118160451.233828401@linuxfoundation.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We can get rid of all the empty stubs because all these functions call
-of_property_read_variable_u{8,16,32,64}_array() which already have an
-empty stub if CONFIG_OF is not defined.
 
-Signed-off-by: Michael Walle <michael@walle.cc>
----
-changes since v2:
- - none
+--yrj/dFKFPuw6o+aM
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-changes since v1:
- - new patch
+Hi!
 
- include/linux/of.h | 274 ++++++++++++++++++++-------------------------
- 1 file changed, 124 insertions(+), 150 deletions(-)
+> This is the start of the stable review cycle for the 5.10.93 release.
+> There are 23 patches in this series, all will be posted as a response
+> to this one.  If anyone has any issues with these being applied, please
+> let me know.
 
-diff --git a/include/linux/of.h b/include/linux/of.h
-index 9106eced1ee1..c64af2efbc3a 100644
---- a/include/linux/of.h
-+++ b/include/linux/of.h
-@@ -410,130 +410,6 @@ extern int of_detach_node(struct device_node *);
- 
- #define of_match_ptr(_ptr)	(_ptr)
- 
--/**
-- * of_property_read_u8_array - Find and read an array of u8 from a property.
-- *
-- * @np:		device node from which the property value is to be read.
-- * @propname:	name of the property to be searched.
-- * @out_values:	pointer to return value, modified only if return value is 0.
-- * @sz:		number of array elements to read
-- *
-- * Search for a property in a device node and read 8-bit value(s) from
-- * it.
-- *
-- * dts entry of array should be like:
-- *  ``property = /bits/ 8 <0x50 0x60 0x70>;``
-- *
-- * Return: 0 on success, -EINVAL if the property does not exist,
-- * -ENODATA if property does not have a value, and -EOVERFLOW if the
-- * property data isn't large enough.
-- *
-- * The out_values is modified only if a valid u8 value can be decoded.
-- */
--static inline int of_property_read_u8_array(const struct device_node *np,
--					    const char *propname,
--					    u8 *out_values, size_t sz)
--{
--	int ret = of_property_read_variable_u8_array(np, propname, out_values,
--						     sz, 0);
--	if (ret >= 0)
--		return 0;
--	else
--		return ret;
--}
--
--/**
-- * of_property_read_u16_array - Find and read an array of u16 from a property.
-- *
-- * @np:		device node from which the property value is to be read.
-- * @propname:	name of the property to be searched.
-- * @out_values:	pointer to return value, modified only if return value is 0.
-- * @sz:		number of array elements to read
-- *
-- * Search for a property in a device node and read 16-bit value(s) from
-- * it.
-- *
-- * dts entry of array should be like:
-- *  ``property = /bits/ 16 <0x5000 0x6000 0x7000>;``
-- *
-- * Return: 0 on success, -EINVAL if the property does not exist,
-- * -ENODATA if property does not have a value, and -EOVERFLOW if the
-- * property data isn't large enough.
-- *
-- * The out_values is modified only if a valid u16 value can be decoded.
-- */
--static inline int of_property_read_u16_array(const struct device_node *np,
--					     const char *propname,
--					     u16 *out_values, size_t sz)
--{
--	int ret = of_property_read_variable_u16_array(np, propname, out_values,
--						      sz, 0);
--	if (ret >= 0)
--		return 0;
--	else
--		return ret;
--}
--
--/**
-- * of_property_read_u32_array - Find and read an array of 32 bit integers
-- * from a property.
-- *
-- * @np:		device node from which the property value is to be read.
-- * @propname:	name of the property to be searched.
-- * @out_values:	pointer to return value, modified only if return value is 0.
-- * @sz:		number of array elements to read
-- *
-- * Search for a property in a device node and read 32-bit value(s) from
-- * it.
-- *
-- * Return: 0 on success, -EINVAL if the property does not exist,
-- * -ENODATA if property does not have a value, and -EOVERFLOW if the
-- * property data isn't large enough.
-- *
-- * The out_values is modified only if a valid u32 value can be decoded.
-- */
--static inline int of_property_read_u32_array(const struct device_node *np,
--					     const char *propname,
--					     u32 *out_values, size_t sz)
--{
--	int ret = of_property_read_variable_u32_array(np, propname, out_values,
--						      sz, 0);
--	if (ret >= 0)
--		return 0;
--	else
--		return ret;
--}
--
--/**
-- * of_property_read_u64_array - Find and read an array of 64 bit integers
-- * from a property.
-- *
-- * @np:		device node from which the property value is to be read.
-- * @propname:	name of the property to be searched.
-- * @out_values:	pointer to return value, modified only if return value is 0.
-- * @sz:		number of array elements to read
-- *
-- * Search for a property in a device node and read 64-bit value(s) from
-- * it.
-- *
-- * Return: 0 on success, -EINVAL if the property does not exist,
-- * -ENODATA if property does not have a value, and -EOVERFLOW if the
-- * property data isn't large enough.
-- *
-- * The out_values is modified only if a valid u64 value can be decoded.
-- */
--static inline int of_property_read_u64_array(const struct device_node *np,
--					     const char *propname,
--					     u64 *out_values, size_t sz)
--{
--	int ret = of_property_read_variable_u64_array(np, propname, out_values,
--						      sz, 0);
--	if (ret >= 0)
--		return 0;
--	else
--		return ret;
--}
--
- /*
-  * struct property *prop;
-  * const __be32 *p;
-@@ -728,32 +604,6 @@ static inline int of_property_count_elems_of_size(const struct device_node *np,
- 	return -ENOSYS;
- }
- 
--static inline int of_property_read_u8_array(const struct device_node *np,
--			const char *propname, u8 *out_values, size_t sz)
--{
--	return -ENOSYS;
--}
--
--static inline int of_property_read_u16_array(const struct device_node *np,
--			const char *propname, u16 *out_values, size_t sz)
--{
--	return -ENOSYS;
--}
--
--static inline int of_property_read_u32_array(const struct device_node *np,
--					     const char *propname,
--					     u32 *out_values, size_t sz)
--{
--	return -ENOSYS;
--}
--
--static inline int of_property_read_u64_array(const struct device_node *np,
--					     const char *propname,
--					     u64 *out_values, size_t sz)
--{
--	return -ENOSYS;
--}
--
- static inline int of_property_read_u32_index(const struct device_node *np,
- 			const char *propname, u32 index, u32 *out_value)
- {
-@@ -1337,6 +1187,130 @@ static inline bool of_property_read_bool(const struct device_node *np,
- 	return prop ? true : false;
- }
- 
-+/**
-+ * of_property_read_u8_array - Find and read an array of u8 from a property.
-+ *
-+ * @np:		device node from which the property value is to be read.
-+ * @propname:	name of the property to be searched.
-+ * @out_values:	pointer to return value, modified only if return value is 0.
-+ * @sz:		number of array elements to read
-+ *
-+ * Search for a property in a device node and read 8-bit value(s) from
-+ * it.
-+ *
-+ * dts entry of array should be like:
-+ *  ``property = /bits/ 8 <0x50 0x60 0x70>;``
-+ *
-+ * Return: 0 on success, -EINVAL if the property does not exist,
-+ * -ENODATA if property does not have a value, and -EOVERFLOW if the
-+ * property data isn't large enough.
-+ *
-+ * The out_values is modified only if a valid u8 value can be decoded.
-+ */
-+static inline int of_property_read_u8_array(const struct device_node *np,
-+					    const char *propname,
-+					    u8 *out_values, size_t sz)
-+{
-+	int ret = of_property_read_variable_u8_array(np, propname, out_values,
-+						     sz, 0);
-+	if (ret >= 0)
-+		return 0;
-+	else
-+		return ret;
-+}
-+
-+/**
-+ * of_property_read_u16_array - Find and read an array of u16 from a property.
-+ *
-+ * @np:		device node from which the property value is to be read.
-+ * @propname:	name of the property to be searched.
-+ * @out_values:	pointer to return value, modified only if return value is 0.
-+ * @sz:		number of array elements to read
-+ *
-+ * Search for a property in a device node and read 16-bit value(s) from
-+ * it.
-+ *
-+ * dts entry of array should be like:
-+ *  ``property = /bits/ 16 <0x5000 0x6000 0x7000>;``
-+ *
-+ * Return: 0 on success, -EINVAL if the property does not exist,
-+ * -ENODATA if property does not have a value, and -EOVERFLOW if the
-+ * property data isn't large enough.
-+ *
-+ * The out_values is modified only if a valid u16 value can be decoded.
-+ */
-+static inline int of_property_read_u16_array(const struct device_node *np,
-+					     const char *propname,
-+					     u16 *out_values, size_t sz)
-+{
-+	int ret = of_property_read_variable_u16_array(np, propname, out_values,
-+						      sz, 0);
-+	if (ret >= 0)
-+		return 0;
-+	else
-+		return ret;
-+}
-+
-+/**
-+ * of_property_read_u32_array - Find and read an array of 32 bit integers
-+ * from a property.
-+ *
-+ * @np:		device node from which the property value is to be read.
-+ * @propname:	name of the property to be searched.
-+ * @out_values:	pointer to return value, modified only if return value is 0.
-+ * @sz:		number of array elements to read
-+ *
-+ * Search for a property in a device node and read 32-bit value(s) from
-+ * it.
-+ *
-+ * Return: 0 on success, -EINVAL if the property does not exist,
-+ * -ENODATA if property does not have a value, and -EOVERFLOW if the
-+ * property data isn't large enough.
-+ *
-+ * The out_values is modified only if a valid u32 value can be decoded.
-+ */
-+static inline int of_property_read_u32_array(const struct device_node *np,
-+					     const char *propname,
-+					     u32 *out_values, size_t sz)
-+{
-+	int ret = of_property_read_variable_u32_array(np, propname, out_values,
-+						      sz, 0);
-+	if (ret >= 0)
-+		return 0;
-+	else
-+		return ret;
-+}
-+
-+/**
-+ * of_property_read_u64_array - Find and read an array of 64 bit integers
-+ * from a property.
-+ *
-+ * @np:		device node from which the property value is to be read.
-+ * @propname:	name of the property to be searched.
-+ * @out_values:	pointer to return value, modified only if return value is 0.
-+ * @sz:		number of array elements to read
-+ *
-+ * Search for a property in a device node and read 64-bit value(s) from
-+ * it.
-+ *
-+ * Return: 0 on success, -EINVAL if the property does not exist,
-+ * -ENODATA if property does not have a value, and -EOVERFLOW if the
-+ * property data isn't large enough.
-+ *
-+ * The out_values is modified only if a valid u64 value can be decoded.
-+ */
-+static inline int of_property_read_u64_array(const struct device_node *np,
-+					     const char *propname,
-+					     u64 *out_values, size_t sz)
-+{
-+	int ret = of_property_read_variable_u64_array(np, propname, out_values,
-+						      sz, 0);
-+	if (ret >= 0)
-+		return 0;
-+	else
-+		return ret;
-+}
-+
- static inline int of_property_read_u8(const struct device_node *np,
- 				       const char *propname,
- 				       u8 *out_value)
--- 
-2.30.2
+CIP testing did not find any new kernel problems here (but we still
+hit the gmp.h compilation issue):
 
+https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
+5.10.y
+
+Tested-by: Pavel Machek (CIP) <pavel@denx.de>
+
+Best regards,
+                                                                Pavel
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--yrj/dFKFPuw6o+aM
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYeb6XAAKCRAw5/Bqldv6
+8iQcAJ0eDo/vTp0YjCy7aKxBMUQ+viyWSwCgrtg4ZwZYHwu/FtREZ8R/0cy1w50=
+=Sgcs
+-----END PGP SIGNATURE-----
+
+--yrj/dFKFPuw6o+aM--
