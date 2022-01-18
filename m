@@ -2,137 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 192B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 06:44:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9E8C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 06:47:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242700AbiARGoD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 01:44:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33912 "EHLO
+        id S231367AbiARGrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 01:47:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230021AbiARGoC (ORCPT
+        with ESMTP id S231146AbiARGrK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 01:44:02 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8057C061574;
-        Mon, 17 Jan 2022 22:44:01 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id z17-20020a17090ab11100b001b4d8817e04so581347pjq.2;
-        Mon, 17 Jan 2022 22:44:01 -0800 (PST)
+        Tue, 18 Jan 2022 01:47:10 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A57C06161C
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 22:47:10 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id p27so55005157lfa.1
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 22:47:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:content-language:to:cc
-         :references:from:organization:subject:in-reply-to
-         :content-transfer-encoding;
-        bh=4bpmOgt/gpV18xC/Lm4YqnmxGFHSfA78GgSMRQgOC0Q=;
-        b=QMDE+zLbbWV9VXClaXW49hbPjeTklNYmL0y+iH2a329EX3pXjHZmdpg0YqapUJ47KH
-         HmzQmTFBFBXQ6lZjwCwaJGqiWkF+hH0iSjr/6W9Fn+do6HM1Dnz0CPZF6R9AYQZvMmUA
-         Q/8qTRl/95oXSBRJqLAkYBHNP72vA+uoxx3YTdgKaGFxxKgDIFnXE/XdpjSXgQ1iHY8E
-         mPZDy3TQC6lQjOS3zjI3tw4Sml2bdPlwtmDrPXyIkaNCoIwfBdaFh+o6svr/mgP4ClfW
-         TQ6EXfwfameHLAE6uyUBpcKXTTf5EPJzevOm1EarUy1x2yeyKL6hVppUCyjYbRHng1WQ
-         EEYQ==
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ndRmdqMdJ9799j8PWgE96Wh//o3D2hfldSG13u5SeAM=;
+        b=YB+Kge9lFu1w7LVUa5FlGUi7PZaLnS8FNV8sMwK0FPqqG0Lk2PUL7PRgao61YZQSU8
+         3/JPbrKoffRa3xJh3qPEuFRzwkbTeYnhZK0i3jHv7Q7X2waL25oHJU1p6im42FbswCSs
+         Ug69yVzHk9/Wmztwy3F8QTh8w2X6tZjB36qmOuzjwqEg4ZdDg1m2wZWDLniLM00kGvDN
+         7tTN5RWg6e9J+S9w5Cc2SEcm7/jA6zzRdoUnhJNiSN7hO/EyjynW9TVag9qAp2VVtfE4
+         wj4QBzzIlAqEZb63Nh++4Y9PPsElMmAn3PShGpukX0PibdcmJlXUdOqIb9oLyi9WcFXd
+         5T0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent
-         :content-language:to:cc:references:from:organization:subject
-         :in-reply-to:content-transfer-encoding;
-        bh=4bpmOgt/gpV18xC/Lm4YqnmxGFHSfA78GgSMRQgOC0Q=;
-        b=CvQCq8Onh9e5f513Ob3Cg3wnAcU5lajhlaJcM2Blxmy38bThlLMuQ9p5CTl7bPQgLH
-         k7j6s8KGTzVQqKvSMvtHW1o8V80SKD9m78SAtEzxJF3ePVeDvYrvaFo/hBgV9FfSH8o8
-         Hh5pJ3pHeLYm4NLPuXsj2rvsRDyEurap/hlN0nXAq/U8fcQCLtcWuYqVRFR4OTVWjZEf
-         DjY2Xs0+KQNhX5dOXHwpNMVup/tm9KjO/+DpXgrZ17ZQ1JlU3STzjMU4Lvsrwijb931y
-         OAbHq0UGfU6+2KppMmo63hScYNS6Fc6k5gDU4q3j8z2D4gShSxnCHo8dAE3WbB7pj15e
-         AlZQ==
-X-Gm-Message-State: AOAM533ge6cYi6NM3IF/5BlLkd3LmU1WlsYB+uOIZNGRIBsr/lbApigu
-        IoY5qMmCyVlK0M7UZckPThQ=
-X-Google-Smtp-Source: ABdhPJxLbxSlwatC2rPK8Tosko3CojWB7nKuF/CHqa0jqe+VsRsjIYM97owLiMR4dmycBco+DGEixA==
-X-Received: by 2002:a17:902:8c96:b0:149:88bb:ac54 with SMTP id t22-20020a1709028c9600b0014988bbac54mr26289859plo.18.1642488241515;
-        Mon, 17 Jan 2022 22:44:01 -0800 (PST)
-Received: from [192.168.255.10] ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id n26sm13608139pgb.91.2022.01.17.22.43.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Jan 2022 22:44:01 -0800 (PST)
-Message-ID: <5ca97b8f-facd-b1dc-f671-51569ad17284@gmail.com>
-Date:   Tue, 18 Jan 2022 14:43:51 +0800
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ndRmdqMdJ9799j8PWgE96Wh//o3D2hfldSG13u5SeAM=;
+        b=hepMAVRixRPzg9yEsGLJQBRByETQKU6y01OtcYD2Usv7tU0aNHr3+xWVx2X70twBaR
+         5Qpw2IfAreVo165CpDlZZnwJlpZE4BBD94SjKWAp49YiH7Zx2878cv0sEDDPeUaKcvfE
+         shh0EOVE8Kln0GgvduGWG4zejh96hHQkpcqYM3ptXa1gGup310HQRY/UgdXsDy0yTmVK
+         sWZ9NpI4K6kKfqX9195uC3IPtSe2wNtbhwxTSC+2vWwkRfvoDYq1E7kYbA9Jx3iYzDHV
+         ZcgdN/WRckinIWsOdautV6jdwyLPCXuMqmzmrItKG5Mga6zcYDujigR/1q9ACrL2EXfF
+         K32w==
+X-Gm-Message-State: AOAM5334jV7UJ+nEJrV6kENZWcyUhFtKCknCBZnZFvj+8j3VpxbRDb4A
+        CAdEme3FUTM/MNbyggDlU9jwELYRHCCBAs8DJOIs/g==
+X-Google-Smtp-Source: ABdhPJzjbz4/fCjr33TO7htvx9gliX688kTeU0cO2lulCwM/tQ2dIG+ra+iboLhNbvF1fx0/jEaSHO1aZFb/EfqXukY=
+X-Received: by 2002:a2e:bf01:: with SMTP id c1mr18353250ljr.511.1642488428506;
+ Mon, 17 Jan 2022 22:47:08 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.0
-Content-Language: en-US
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Jing Liu <jing2.liu@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220117074531.76925-1-likexu@tencent.com>
- <301d4800-5eab-6e21-e8c1-2f87789fc4b9@redhat.com>
-From:   Like Xu <like.xu.linux@gmail.com>
-Organization: Tencent
-Subject: Re: [PATCH] KVM: x86/cpuid: Clear XFD for component i if the base
- feature is missing
-In-Reply-To: <301d4800-5eab-6e21-e8c1-2f87789fc4b9@redhat.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+References: <20211229215330.4134835-1-yaelt@google.com> <CAFA6WYPuPHgcnzt6j+Q-EA2Dos6vBDukrjpheo5srLVXFrifEg@mail.gmail.com>
+ <5a38824152eeee0fc9ba0a4fd2308bb6e0970059.camel@linux.ibm.com>
+ <CAFA6WYOJt3=YMTt_QQSq6Z-MK42hwWspgSpasw2fuPtVFcP3uA@mail.gmail.com>
+ <CAKoutNvW1c7MkTaFwyrD7MjUVXvTtcBOGFULMittJ5vzjMN0mg@mail.gmail.com>
+ <CAFA6WYPQRagZF8-grn_LC8_SAaxBzh=cSgHhFAQQOYK+L2KuBQ@mail.gmail.com>
+ <CAKoutNtuY0+L29d6xzn6BgEKBytFsBHZ_kgkCOJZuicb_uNPHg@mail.gmail.com>
+ <CAFA6WYPxogLMk1EDqvM_mwgCmU1s_yDwYFPjq6wurnQGhG=-_w@mail.gmail.com> <CAKoutNtj8nxvGyZu=m1_7+rGck9dm76E=O93333Yfb5En+8HNQ@mail.gmail.com>
+In-Reply-To: <CAKoutNtj8nxvGyZu=m1_7+rGck9dm76E=O93333Yfb5En+8HNQ@mail.gmail.com>
+From:   Sumit Garg <sumit.garg@linaro.org>
+Date:   Tue, 18 Jan 2022 12:16:56 +0530
+Message-ID: <CAFA6WYNr5L+=Hz8JGztLH5AZs3+5BwtN4rTF=CmyRdi0CjkRqA@mail.gmail.com>
+Subject: Re: [PATCH v4] KEYS: encrypted: Instantiate key with user-provided
+ decrypted data
+To:     Yael Tiomkin <yaelt@google.com>
+Cc:     Mimi Zohar <zohar@linux.ibm.com>, linux-integrity@vger.kernel.org,
+        jejb@linux.ibm.com, Jarkko Sakkinen <jarkko@kernel.org>,
+        corbet@lwn.net, dhowells@redhat.com, jmorris@namei.org,
+        serge@hallyn.com, keyrings@vger.kernel.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-security-module <linux-security-module@vger.kernel.org>,
+        =?UTF-8?Q?Jan_L=C3=BCbbe?= <jlu@pengutronix.de>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 18/1/2022 1:31 am, Paolo Bonzini wrote:
-> On 1/17/22 08:45, Like Xu wrote:
->> From: Like Xu <likexu@tencent.com>
->>
->> According to Intel extended feature disable (XFD) spec, the sub-function i
->> (i > 1) of CPUID function 0DH enumerates "details for state component i.
->> ECX[2] enumerates support for XFD support for this state component."
->>
->> If KVM does not report F(XFD) feature (e.g. due to CONFIG_X86_64),
->> then the corresponding XFD support for any state component i
->> should also be removed. Translate this dependency into KVM terms.
->>
->> Fixes: 690a757d610e ("kvm: x86: Add CPUID support for Intel AMX")
->> Signed-off-by: Like Xu <likexu@tencent.com>
->> ---
->>   arch/x86/kvm/cpuid.c | 3 +++
->>   1 file changed, 3 insertions(+)
->>
->> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
->> index c55e57b30e81..e96efef4f048 100644
->> --- a/arch/x86/kvm/cpuid.c
->> +++ b/arch/x86/kvm/cpuid.c
->> @@ -886,6 +886,9 @@ static inline int __do_cpuid_func(struct kvm_cpuid_array 
->> *array, u32 function)
->>                   --array->nent;
->>                   continue;
->>               }
->> +
->> +            if (!kvm_cpu_cap_has(X86_FEATURE_XFD))
->> +                entry->ecx &= ~BIT_ULL(2);
->>               entry->edx = 0;
->>           }
->>           break;
-> 
-> Generally this is something that is left to userspace.  Apart from the usecase 
-> of "call KVM_GET_SUPPORTED_CPUID and pass it to KVM_SET_CPUID2", userspace 
-> should know what any changed bits mean.
-> 
-> Paolo
-> 
+On Fri, 14 Jan 2022 at 00:45, Yael Tiomkin <yaelt@google.com> wrote:
+>
+> On Fri, Jan 7, 2022 at 8:32 AM Sumit Garg <sumit.garg@linaro.org> wrote:
+> >
+> > On Fri, 7 Jan 2022 at 18:23, Yael Tiomkin <yaelt@google.com> wrote:
+> > >
+> > > Hi Sumit,
+> > >
+> > > On Fri, Jan 7, 2022 at 12:15 AM Sumit Garg <sumit.garg@linaro.org> wrote:
+> > > >
+> > > > Hi Yael,
+> > > >
+> > > > On Thu, 6 Jan 2022 at 01:48, Yael Tiomkin <yaelt@google.com> wrote:
+> > > > >
+> > > > > Hi Sumit,
+> > > > >
+> > > > > On Mon, Jan 3, 2022 at 1:51 AM Sumit Garg <sumit.garg@linaro.org> wrote:
+> > > > > >
+> > > > > > Hi Mimi,
+> > > > > >
+> > > > > > Apologies for the delayed reply as I was on leave for a long new year weekend.
+> > > > > >
+> > > > > > On Thu, 30 Dec 2021 at 18:59, Mimi Zohar <zohar@linux.ibm.com> wrote:
+> > > > > > >
+> > > > > > > Hi Sumit,
+> > > > > > >
+> > > > > > > On Thu, 2021-12-30 at 15:37 +0530, Sumit Garg wrote:
+> > > > > > > > + Jan, Ahmad
+> > > > > > > >
+> > > > > > > > On Thu, 30 Dec 2021 at 03:24, Yael Tiomkin <yaelt@google.com> wrote:
+> > > > > > > > >
+> > > > > > > > > The encrypted.c class supports instantiation of encrypted keys with
+> > > > > > > > > either an already-encrypted key material, or by generating new key
+> > > > > > > > > material based on random numbers. This patch defines a new datablob
+> > > > > > > > > format: [<format>] <master-key name> <decrypted data length>
+> > > > > > > > > <decrypted data> that allows to instantiate encrypted keys using
+> > > > > > > > > user-provided decrypted data, and therefore allows to perform key
+> > > > > > > > > encryption from userspace. The decrypted key material will be
+> > > > > > > > > inaccessible from userspace.
+> > > > > > > >
+> > > > > > > > This type of user-space key import feature has already been discussed
+> > > > > > > > at large in the context of trusted keys here [1]. So what makes it
+> > > > > > > > special in case of encrypted keys such that it isn't a "UNSAFE_IMPORT"
+> > > > > > > > or "DEBUGGING_IMPORT" or "DEVELOPMENT_IMPORT", ...?
+> > > > > > > >
+> > > > > > > > [1] https://lore.kernel.org/linux-integrity/74830d4f-5a76-8ba8-aad0-0d79f7c01af9@pengutronix.de/
+> > > > > > > >
+> > > > > > > > -Sumit
+> > > > > > > >
+> > > > > > > > >
+> > > > > > > > > Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
+> > > > > > > > > Signed-off-by: Yael Tiomkin <yaelt@google.com>
+> > > > > > >
+> > > > > > > There is a difference between trusted and encrypted keys.
+> > > > > >
+> > > > > > Yeah I understand the implementation differences.
+> > > > > >
+> > > > > > >  So in
+> > > > > > > addition to pointing to the rather long discussion thread, please
+> > > > > > > summarize the conclusion and, assuming you agree, include why in once
+> > > > > > > case it was acceptable and in the other it wasn't to provide userspace
+> > > > > > > key data.
+> > > > > >
+> > > > > > My major concern with importing user-space key data in *plain* format
+> > > > > > is that if import is *not* done in a safe (manufacturing or
+> > > > > > production) environment then the plain key data is susceptible to
+> > > > > > user-space compromises when the device is in the field.
+> > > > >
+> > > > > I agree this can happen. Key distribution in any scenario needs to be
+> > > > > secure and this could also potentially be an issue if the key is first
+> > > > > encrypted and then imported.
+> > > >
+> > > > Currently its not the case with encrypted keys. These are random keys
+> > > > generated within the kernel and encrypted with master key within the
+> > > > kernel and then exposed to user-space as encrypted blob only.
+> > >
+> > >
+> > > There are two different ways to create encrypted keys. One is to have
+> > > them generated within the kernel using random numbers, and the other
+> > > is by importing them in their encrypted form from user-space.
+> > > I was referring to the latter in my previous statement.
+> > >
+> >
+> > So, from a key distribution security point of view, encrypted key
+> > user-space import is **not equal to** plain key user-space import.
+> > That's why we need to have a separate compile time option as every
+> > device may come with its own threat model and may choose to enable or
+> > disable this user-space plain key import feature.
+> >
+> > -Sumit
+> >
+> > > >
+> > > > > We can make sure the documentation
+> > > > > highlights the safety requirement.
+> > > > >
+> > > >
+> > > > IMO, you should enable this feature as a compile time option. The help
+> > > > text for that config option should highlight the use-case along with a
+> > > > safety warning.
+> > > >
+> > > > -Sumit
+> > > >
+> > > > > >
+> > > > > > And it sounds like we are diverting from basic definition [1] of encrypted keys:
+> > > > > >
+> > > > > > "Trusted and Encrypted Keys are two new key types added to the
+> > > > > > existing kernel key ring service. Both of these new types are variable
+> > > > > > length symmetric keys, and in both cases all keys are created in the
+> > > > > > kernel, and **user space sees, stores, and loads** only encrypted
+> > > > > > blobs."
+> > > > > >
+> > > > > > Also, as Jarrko mentioned earlier the use-case is still not clear to
+> > > > > > me as well. Isn't user logon keys an alternative option for
+> > > > > > non-readable user-space keys?
+> > > > >
+> > > > > The goal in this change is to allow key encryption from userspace,
+> > > > > using user-provided decrypted data. This cannot be achieved in logon
+> > > > > keys, which as you mentioned, are simply non-readable user type keys.
+> > > > >
+> > > > >
+> > > > > >
+> > > > > > [1] https://www.kernel.org/doc/html/v4.13/security/keys/trusted-encrypted.html
+> > > > > >
+> > > > > > -Sumit
+> > > > > >
+> > > > > > >
+> > > > > > > thanks,
+> > > > > > >
+> > > > > > > Mimi
+> > > > > > >
+> > > > >
+> > > > > Yael
+>
+> Hi Sumit,
+> The encrypted-keys module is already controlled by the
+> CONFIG_ENCRYPTED_KEYS option, which I think might give sufficient
+> granularity to control the behavior. Do you still think a feature
+> dedicated option is needed?
+>
 
-I totally agree that setting the appropriate CPUID bits for a feature is a user 
-space thing.
+Since this feature will change security properties for encrypted keys
+which can be considered as a regression for existing users during
+uprev. So it needs to be an optional key import feature with a clear
+user visible warning. Thinking more about this, you can even have a
+module param to turn it on with a runtime warning as well.
 
-But this patch is more focused on fixing a different type of problem, which is
-that the capabilities exposed by KVM should not *contradict each other* :
+-Sumit
 
-	a user space may be confused with the current code base :
-	- why KVM does not have F(XFD) feature (MSR_IA32_XFD and XFD_ERR non-exit),
-	- but KVM reports XFD support for state component i individually;
-
-This is like KVM reporting PEBS when no PMU capacity is reported (due to module 
-param).
-
-Does this clarification help ?
-
-Thanks,
-Like Xu
-
+> Yael
