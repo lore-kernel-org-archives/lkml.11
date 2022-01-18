@@ -2,50 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B7C7C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:23:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A712C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:23:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244862AbiARCXM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:23:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56896 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244774AbiARCVf (ORCPT
+        id S245222AbiARCXU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:23:20 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39016 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244864AbiARCW2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:21:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D894C06175F;
-        Mon, 17 Jan 2022 18:21:35 -0800 (PST)
+        Mon, 17 Jan 2022 21:22:28 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A8AF7612EE;
-        Tue, 18 Jan 2022 02:21:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2718FC36AE3;
-        Tue, 18 Jan 2022 02:21:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5839B60A6B;
+        Tue, 18 Jan 2022 02:22:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD179C36AEF;
+        Tue, 18 Jan 2022 02:22:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472494;
-        bh=SfqMuc3aiXwjjvVxKLQUhZJjbDkbq19eOpNOriETP+g=;
+        s=k20201202; t=1642472547;
+        bh=1EyoLpH3u/C9VtsMId1mXlNNHGrLClCkoMSf0/DC940=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gJ3hdjv7v5BUEiZuopHZKe34PYbsDw4sFHJDOHBGJhoLT9lTiPMNB11kU/sQ4vk5+
-         cyHXcW/WOZ20XKIb2+zXD3QiKw43hh4qv5ac3enhCgK0tN5SGfNBGMlXghHcfzqwZA
-         iQMGaBMaENSg8ktGL2LsVrzTjRWNJiXiBHukGb+Z4OKKlBa603fs2p/ww/Kgp5fXOI
-         hgeD4UDyC5TazKwVcpCQmxRWkfSZvEWDq69gP5PhAuVROyodXcQg6BSOmL1Xqh4dTG
-         VTxGubr2xuETuEYNBqD47thKUkhbIDmpEesI0QzrcFceLL+rjhM++PSS7xH1+x0hq1
-         pbiaJXM7wVwuA==
+        b=hNkTQqXuYgVeFdMG8aVRz/PbIoxCFufQJAN/cZrncaETkooaUxzVbaUcMYKildpcP
+         pxeryes58xIx+WecBMZtpP2wFqmBBkUPSn4Ag6tetUbyxn8NP7clXyYPkDA7dZc36F
+         b9HDwlULvspeZrU6g/AvDisppJYacWYjkDfRWpn3zcOmXil8Rekdo5qD5SYSm6e1sY
+         sajZqVfOQrBXV0zBRh8jMkCxRqQHMmTylhC5XKIi32Y98JAOqaENBc9//aI9uJpmSn
+         iQQ9GCTZ2U2kn4wOWjTjMwacAwmwANZfErR/A4WSPCS/zXFwNsrpFwlRhJqnpgLRkw
+         NGm7SG/C4nsGg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Brian Chen <brianchen118@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Sasha Levin <sashal@kernel.org>, mingo@redhat.com,
-        juri.lelli@redhat.com, vincent.guittot@linaro.org
-Subject: [PATCH AUTOSEL 5.16 032/217] psi: Fix PSI_MEM_FULL state when tasks are in memstall and doing reclaim
-Date:   Mon, 17 Jan 2022 21:16:35 -0500
-Message-Id: <20220118021940.1942199-32-sashal@kernel.org>
+Cc:     =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>,
+        jikos@kernel.org, benjamin.tissoires@redhat.com,
+        linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 048/217] HID: magicmouse: Report battery level over USB
+Date:   Mon, 17 Jan 2022 21:16:51 -0500
+Message-Id: <20220118021940.1942199-48-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,218 +50,184 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Chen <brianchen118@gmail.com>
+From: José Expósito <jose.exposito89@gmail.com>
 
-[ Upstream commit cb0e52b7748737b2cf6481fdd9b920ce7e1ebbdf ]
+[ Upstream commit 0b91b4e4dae63cd43871fc2012370b86ee588f91 ]
 
-We've noticed cases where tasks in a cgroup are stalled on memory but
-there is little memory FULL pressure since tasks stay on the runqueue
-in reclaim.
+When connected over USB, the Apple Magic Mouse 2 and the Apple Magic
+Trackpad 2 register multiple interfaces, one of them is used to report
+the battery level.
 
-A simple example involves a single threaded program that keeps leaking
-and touching large amounts of memory. It runs in a cgroup with swap
-enabled, memory.high set at 10M and cpu.max ratio set at 5%. Though
-there is significant CPU pressure and memory SOME, there is barely any
-memory FULL since the task enters reclaim and stays on the runqueue.
-However, this memory-bound task is effectively stalled on memory and
-we expect memory FULL to match memory SOME in this scenario.
+However, unlike when connected over Bluetooth, the battery level is not
+reported automatically and it is required to fetch it manually.
 
-The code is confused about memstall && running, thinking there is a
-stalled task and a productive task when there's only one task: a
-reclaimer that's counted as both. To fix this, we redefine the
-condition for PSI_MEM_FULL to check that all running tasks are in an
-active memstall instead of checking that there are no running tasks.
+Fix the battery report descriptor and add a timer to fetch the battery
+level.
 
-        case PSI_MEM_FULL:
--               return unlikely(tasks[NR_MEMSTALL] && !tasks[NR_RUNNING]);
-+               return unlikely(tasks[NR_MEMSTALL] &&
-+                       tasks[NR_RUNNING] == tasks[NR_MEMSTALL_RUNNING]);
-
-This will capture reclaimers. It will also capture tasks that called
-psi_memstall_enter() and are about to sleep, but this should be
-negligible noise.
-
-Signed-off-by: Brian Chen <brianchen118@gmail.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
-Link: https://lore.kernel.org/r/20211110213312.310243-1-brianchen118@gmail.com
+Signed-off-by: José Expósito <jose.exposito89@gmail.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/linux/psi_types.h | 13 ++++++++++-
- kernel/sched/psi.c        | 45 ++++++++++++++++++++++++---------------
- kernel/sched/stats.h      |  5 ++++-
- 3 files changed, 44 insertions(+), 19 deletions(-)
+ drivers/hid/hid-magicmouse.c | 94 +++++++++++++++++++++++++++++++++---
+ 1 file changed, 88 insertions(+), 6 deletions(-)
 
-diff --git a/include/linux/psi_types.h b/include/linux/psi_types.h
-index 0a23300d49af7..0819c82dba920 100644
---- a/include/linux/psi_types.h
-+++ b/include/linux/psi_types.h
-@@ -21,7 +21,17 @@ enum psi_task_count {
- 	 * don't have to special case any state tracking for it.
- 	 */
- 	NR_ONCPU,
--	NR_PSI_TASK_COUNTS = 4,
-+	/*
-+	 * For IO and CPU stalls the presence of running/oncpu tasks
-+	 * in the domain means a partial rather than a full stall.
-+	 * For memory it's not so simple because of page reclaimers:
-+	 * they are running/oncpu while representing a stall. To tell
-+	 * whether a domain has productivity left or not, we need to
-+	 * distinguish between regular running (i.e. productive)
-+	 * threads and memstall ones.
-+	 */
-+	NR_MEMSTALL_RUNNING,
-+	NR_PSI_TASK_COUNTS = 5,
+diff --git a/drivers/hid/hid-magicmouse.c b/drivers/hid/hid-magicmouse.c
+index d7687ce706144..eba1e8087bfd1 100644
+--- a/drivers/hid/hid-magicmouse.c
++++ b/drivers/hid/hid-magicmouse.c
+@@ -57,6 +57,8 @@ MODULE_PARM_DESC(report_undeciphered, "Report undeciphered multi-touch state fie
+ #define MOUSE_REPORT_ID    0x29
+ #define MOUSE2_REPORT_ID   0x12
+ #define DOUBLE_REPORT_ID   0xf7
++#define USB_BATTERY_TIMEOUT_MS 60000
++
+ /* These definitions are not precise, but they're close enough.  (Bits
+  * 0x03 seem to indicate the aspect ratio of the touch, bits 0x70 seem
+  * to be some kind of bit mask -- 0x20 may be a near-field reading,
+@@ -140,6 +142,7 @@ struct magicmouse_sc {
+ 
+ 	struct hid_device *hdev;
+ 	struct delayed_work work;
++	struct timer_list battery_timer;
  };
  
- /* Task state bitmasks */
-@@ -29,6 +39,7 @@ enum psi_task_count {
- #define TSK_MEMSTALL	(1 << NR_MEMSTALL)
- #define TSK_RUNNING	(1 << NR_RUNNING)
- #define TSK_ONCPU	(1 << NR_ONCPU)
-+#define TSK_MEMSTALL_RUNNING	(1 << NR_MEMSTALL_RUNNING)
- 
- /* Resources that workloads could be stalled on */
- enum psi_res {
-diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
-index 1652f2bb54b79..69b19d3af690f 100644
---- a/kernel/sched/psi.c
-+++ b/kernel/sched/psi.c
-@@ -34,13 +34,19 @@
-  * delayed on that resource such that nobody is advancing and the CPU
-  * goes idle. This leaves both workload and CPU unproductive.
-  *
-- * Naturally, the FULL state doesn't exist for the CPU resource at the
-- * system level, but exist at the cgroup level, means all non-idle tasks
-- * in a cgroup are delayed on the CPU resource which used by others outside
-- * of the cgroup or throttled by the cgroup cpu.max configuration.
-- *
-  *	SOME = nr_delayed_tasks != 0
-- *	FULL = nr_delayed_tasks != 0 && nr_running_tasks == 0
-+ *	FULL = nr_delayed_tasks != 0 && nr_productive_tasks == 0
-+ *
-+ * What it means for a task to be productive is defined differently
-+ * for each resource. For IO, productive means a running task. For
-+ * memory, productive means a running task that isn't a reclaimer. For
-+ * CPU, productive means an oncpu task.
-+ *
-+ * Naturally, the FULL state doesn't exist for the CPU resource at the
-+ * system level, but exist at the cgroup level. At the cgroup level,
-+ * FULL means all non-idle tasks in the cgroup are delayed on the CPU
-+ * resource which is being used by others outside of the cgroup or
-+ * throttled by the cgroup cpu.max configuration.
-  *
-  * The percentage of wallclock time spent in those compound stall
-  * states gives pressure numbers between 0 and 100 for each resource,
-@@ -81,13 +87,13 @@
-  *
-  *	threads = min(nr_nonidle_tasks, nr_cpus)
-  *	   SOME = min(nr_delayed_tasks / threads, 1)
-- *	   FULL = (threads - min(nr_running_tasks, threads)) / threads
-+ *	   FULL = (threads - min(nr_productive_tasks, threads)) / threads
-  *
-  * For the 257 number crunchers on 256 CPUs, this yields:
-  *
-  *	threads = min(257, 256)
-  *	   SOME = min(1 / 256, 1)             = 0.4%
-- *	   FULL = (256 - min(257, 256)) / 256 = 0%
-+ *	   FULL = (256 - min(256, 256)) / 256 = 0%
-  *
-  * For the 1 out of 4 memory-delayed tasks, this yields:
-  *
-@@ -112,7 +118,7 @@
-  * For each runqueue, we track:
-  *
-  *	   tSOME[cpu] = time(nr_delayed_tasks[cpu] != 0)
-- *	   tFULL[cpu] = time(nr_delayed_tasks[cpu] && !nr_running_tasks[cpu])
-+ *	   tFULL[cpu] = time(nr_delayed_tasks[cpu] && !nr_productive_tasks[cpu])
-  *	tNONIDLE[cpu] = time(nr_nonidle_tasks[cpu] != 0)
-  *
-  * and then periodically aggregate:
-@@ -233,7 +239,8 @@ static bool test_state(unsigned int *tasks, enum psi_states state)
- 	case PSI_MEM_SOME:
- 		return unlikely(tasks[NR_MEMSTALL]);
- 	case PSI_MEM_FULL:
--		return unlikely(tasks[NR_MEMSTALL] && !tasks[NR_RUNNING]);
-+		return unlikely(tasks[NR_MEMSTALL] &&
-+			tasks[NR_RUNNING] == tasks[NR_MEMSTALL_RUNNING]);
- 	case PSI_CPU_SOME:
- 		return unlikely(tasks[NR_RUNNING] > tasks[NR_ONCPU]);
- 	case PSI_CPU_FULL:
-@@ -710,10 +717,11 @@ static void psi_group_change(struct psi_group *group, int cpu,
- 		if (groupc->tasks[t]) {
- 			groupc->tasks[t]--;
- 		} else if (!psi_bug) {
--			printk_deferred(KERN_ERR "psi: task underflow! cpu=%d t=%d tasks=[%u %u %u %u] clear=%x set=%x\n",
-+			printk_deferred(KERN_ERR "psi: task underflow! cpu=%d t=%d tasks=[%u %u %u %u %u] clear=%x set=%x\n",
- 					cpu, t, groupc->tasks[0],
- 					groupc->tasks[1], groupc->tasks[2],
--					groupc->tasks[3], clear, set);
-+					groupc->tasks[3], groupc->tasks[4],
-+					clear, set);
- 			psi_bug = 1;
- 		}
- 	}
-@@ -854,12 +862,15 @@ void psi_task_switch(struct task_struct *prev, struct task_struct *next,
- 		int clear = TSK_ONCPU, set = 0;
- 
- 		/*
--		 * When we're going to sleep, psi_dequeue() lets us handle
--		 * TSK_RUNNING and TSK_IOWAIT here, where we can combine it
--		 * with TSK_ONCPU and save walking common ancestors twice.
-+		 * When we're going to sleep, psi_dequeue() lets us
-+		 * handle TSK_RUNNING, TSK_MEMSTALL_RUNNING and
-+		 * TSK_IOWAIT here, where we can combine it with
-+		 * TSK_ONCPU and save walking common ancestors twice.
- 		 */
- 		if (sleep) {
- 			clear |= TSK_RUNNING;
-+			if (prev->in_memstall)
-+				clear |= TSK_MEMSTALL_RUNNING;
- 			if (prev->in_iowait)
- 				set |= TSK_IOWAIT;
- 		}
-@@ -908,7 +919,7 @@ void psi_memstall_enter(unsigned long *flags)
- 	rq = this_rq_lock_irq(&rf);
- 
- 	current->in_memstall = 1;
--	psi_task_change(current, 0, TSK_MEMSTALL);
-+	psi_task_change(current, 0, TSK_MEMSTALL | TSK_MEMSTALL_RUNNING);
- 
- 	rq_unlock_irq(rq, &rf);
+ static int magicmouse_firm_touch(struct magicmouse_sc *msc)
+@@ -738,6 +741,44 @@ static void magicmouse_enable_mt_work(struct work_struct *work)
+ 		hid_err(msc->hdev, "unable to request touch data (%d)\n", ret);
  }
-@@ -937,7 +948,7 @@ void psi_memstall_leave(unsigned long *flags)
- 	rq = this_rq_lock_irq(&rf);
  
- 	current->in_memstall = 0;
--	psi_task_change(current, TSK_MEMSTALL, 0);
-+	psi_task_change(current, TSK_MEMSTALL | TSK_MEMSTALL_RUNNING, 0);
- 
- 	rq_unlock_irq(rq, &rf);
- }
-diff --git a/kernel/sched/stats.h b/kernel/sched/stats.h
-index cfb0893a83d45..3a3c826dd83a7 100644
---- a/kernel/sched/stats.h
-+++ b/kernel/sched/stats.h
-@@ -118,6 +118,9 @@ static inline void psi_enqueue(struct task_struct *p, bool wakeup)
- 	if (static_branch_likely(&psi_disabled))
- 		return;
- 
-+	if (p->in_memstall)
-+		set |= TSK_MEMSTALL_RUNNING;
++static int magicmouse_fetch_battery(struct hid_device *hdev)
++{
++#ifdef CONFIG_HID_BATTERY_STRENGTH
++	struct hid_report_enum *report_enum;
++	struct hid_report *report;
 +
- 	if (!wakeup || p->sched_psi_wake_requeue) {
- 		if (p->in_memstall)
- 			set |= TSK_MEMSTALL;
-@@ -148,7 +151,7 @@ static inline void psi_dequeue(struct task_struct *p, bool sleep)
- 		return;
++	if (!hdev->battery || hdev->vendor != USB_VENDOR_ID_APPLE ||
++	    (hdev->product != USB_DEVICE_ID_APPLE_MAGICMOUSE2 &&
++	     hdev->product != USB_DEVICE_ID_APPLE_MAGICTRACKPAD2))
++		return -1;
++
++	report_enum = &hdev->report_enum[hdev->battery_report_type];
++	report = report_enum->report_id_hash[hdev->battery_report_id];
++
++	if (!report || report->maxfield < 1)
++		return -1;
++
++	if (hdev->battery_capacity == hdev->battery_max)
++		return -1;
++
++	hid_hw_request(hdev, report, HID_REQ_GET_REPORT);
++	return 0;
++#else
++	return -1;
++#endif
++}
++
++static void magicmouse_battery_timer_tick(struct timer_list *t)
++{
++	struct magicmouse_sc *msc = from_timer(msc, t, battery_timer);
++	struct hid_device *hdev = msc->hdev;
++
++	if (magicmouse_fetch_battery(hdev) == 0) {
++		mod_timer(&msc->battery_timer,
++			  jiffies + msecs_to_jiffies(USB_BATTERY_TIMEOUT_MS));
++	}
++}
++
+ static int magicmouse_probe(struct hid_device *hdev,
+ 	const struct hid_device_id *id)
+ {
+@@ -745,11 +786,6 @@ static int magicmouse_probe(struct hid_device *hdev,
+ 	struct hid_report *report;
+ 	int ret;
  
- 	if (p->in_memstall)
--		clear |= TSK_MEMSTALL;
-+		clear |= (TSK_MEMSTALL | TSK_MEMSTALL_RUNNING);
+-	if (id->vendor == USB_VENDOR_ID_APPLE &&
+-	    id->product == USB_DEVICE_ID_APPLE_MAGICTRACKPAD2 &&
+-	    hdev->type != HID_TYPE_USBMOUSE)
+-		return -ENODEV;
+-
+ 	msc = devm_kzalloc(&hdev->dev, sizeof(*msc), GFP_KERNEL);
+ 	if (msc == NULL) {
+ 		hid_err(hdev, "can't alloc magicmouse descriptor\n");
+@@ -775,6 +811,16 @@ static int magicmouse_probe(struct hid_device *hdev,
+ 		return ret;
+ 	}
  
- 	psi_task_change(p, clear, 0);
++	timer_setup(&msc->battery_timer, magicmouse_battery_timer_tick, 0);
++	mod_timer(&msc->battery_timer,
++		  jiffies + msecs_to_jiffies(USB_BATTERY_TIMEOUT_MS));
++	magicmouse_fetch_battery(hdev);
++
++	if (id->vendor == USB_VENDOR_ID_APPLE &&
++	    (id->product == USB_DEVICE_ID_APPLE_MAGICMOUSE2 ||
++	     (id->product == USB_DEVICE_ID_APPLE_MAGICTRACKPAD2 && hdev->type != HID_TYPE_USBMOUSE)))
++		return 0;
++
+ 	if (!msc->input) {
+ 		hid_err(hdev, "magicmouse input not registered\n");
+ 		ret = -ENOMEM;
+@@ -835,17 +881,52 @@ static void magicmouse_remove(struct hid_device *hdev)
+ {
+ 	struct magicmouse_sc *msc = hid_get_drvdata(hdev);
+ 
+-	if (msc)
++	if (msc) {
+ 		cancel_delayed_work_sync(&msc->work);
++		del_timer_sync(&msc->battery_timer);
++	}
+ 
+ 	hid_hw_stop(hdev);
  }
+ 
++static __u8 *magicmouse_report_fixup(struct hid_device *hdev, __u8 *rdesc,
++				     unsigned int *rsize)
++{
++	/*
++	 * Change the usage from:
++	 *   0x06, 0x00, 0xff, // Usage Page (Vendor Defined Page 1)  0
++	 *   0x09, 0x0b,       // Usage (Vendor Usage 0x0b)           3
++	 * To:
++	 *   0x05, 0x01,       // Usage Page (Generic Desktop)        0
++	 *   0x09, 0x02,       // Usage (Mouse)                       2
++	 */
++	if (hdev->vendor == USB_VENDOR_ID_APPLE &&
++	    (hdev->product == USB_DEVICE_ID_APPLE_MAGICMOUSE2 ||
++	     hdev->product == USB_DEVICE_ID_APPLE_MAGICTRACKPAD2) &&
++	    *rsize == 83 && rdesc[46] == 0x84 && rdesc[58] == 0x85) {
++		hid_info(hdev,
++			 "fixing up magicmouse battery report descriptor\n");
++		*rsize = *rsize - 1;
++		rdesc = kmemdup(rdesc + 1, *rsize, GFP_KERNEL);
++		if (!rdesc)
++			return NULL;
++
++		rdesc[0] = 0x05;
++		rdesc[1] = 0x01;
++		rdesc[2] = 0x09;
++		rdesc[3] = 0x02;
++	}
++
++	return rdesc;
++}
++
+ static const struct hid_device_id magic_mice[] = {
+ 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE,
+ 		USB_DEVICE_ID_APPLE_MAGICMOUSE), .driver_data = 0 },
+ 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE,
+ 		USB_DEVICE_ID_APPLE_MAGICMOUSE2), .driver_data = 0 },
++	{ HID_USB_DEVICE(USB_VENDOR_ID_APPLE,
++		USB_DEVICE_ID_APPLE_MAGICMOUSE2), .driver_data = 0 },
+ 	{ HID_BLUETOOTH_DEVICE(USB_VENDOR_ID_APPLE,
+ 		USB_DEVICE_ID_APPLE_MAGICTRACKPAD), .driver_data = 0 },
+ 	{ HID_BLUETOOTH_DEVICE(BT_VENDOR_ID_APPLE,
+@@ -861,6 +942,7 @@ static struct hid_driver magicmouse_driver = {
+ 	.id_table = magic_mice,
+ 	.probe = magicmouse_probe,
+ 	.remove = magicmouse_remove,
++	.report_fixup = magicmouse_report_fixup,
+ 	.raw_event = magicmouse_raw_event,
+ 	.event = magicmouse_event,
+ 	.input_mapping = magicmouse_input_mapping,
 -- 
 2.34.1
 
