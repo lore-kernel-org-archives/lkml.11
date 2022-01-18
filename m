@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 443DDC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:09:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 055D2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:09:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347069AbiARQJc (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:09:32 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:40788 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243152AbiARQIi (ORCPT
+        id S243344AbiARQJs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 11:09:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51540 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346739AbiARQIm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:08:38 -0500
+        Tue, 18 Jan 2022 11:08:42 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EFE4C061760;
+        Tue, 18 Jan 2022 08:08:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id D8409CE1A38;
-        Tue, 18 Jan 2022 16:08:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83761C340E2;
-        Tue, 18 Jan 2022 16:08:34 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 1B70FCE1A45;
+        Tue, 18 Jan 2022 16:08:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C471CC36AF3;
+        Tue, 18 Jan 2022 16:08:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522115;
-        bh=kQOy95IhZSZw5cFxZAIB00jh2ltD6YlMb16JXwiYEjQ=;
+        s=korg; t=1642522118;
+        bh=9OtNLgBZCevG6a5ICRwisDy1q+BlBNTtwsIeLoU+79w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dMaUvOMz2Qr9J0rkShvOHqaWZzZ2wYWVab1R7HjRxRpTLkM0pweD5rs8MUY8+X29B
-         Dg6Y+B5ADoifCAbkXEPA77HLcGdD2PW1vjVQLnHUMe9ORhiAninEIgSWULkrO1i6Vt
-         S/lp5VcosYa34VwHLZZUE/mB0Vs+MLcyEbzjHpuU=
+        b=0tJiT5fIDJhVF9B4aGOghOjzOOzgs7uVH9NVxRFEvfqX6Lh5lfSSneME4sZFycwgR
+         bZlJcdPjxf95nxsK737PN/q+sBpdYvBQ/dcH6AUKEYSEM/tTuSyesGJqme3ozZo+pE
+         4tiFHir94IQwlWaGuwDNyjma//M9QeMwAH9mO/o8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        syzbot+cce1ee31614c171f5595@syzkaller.appspotmail.com,
-        Larry Finger <Larry.Finger@lwfinger.net>,
-        Kalle Valo <kvalo@kernel.org>
-Subject: [PATCH 5.10 12/23] rtlwifi: rtl8192cu: Fix WARNING when calling local_irq_restore() with interrupts enabled
-Date:   Tue, 18 Jan 2022 17:05:52 +0100
-Message-Id: <20220118160451.654037780@linuxfoundation.org>
+        stable@vger.kernel.org, Gabriel Somlo <somlo@cmu.edu>,
+        Johan Hovold <johan@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 5.10 13/23] firmware: qemu_fw_cfg: fix sysfs information leak
+Date:   Tue, 18 Jan 2022 17:05:53 +0100
+Message-Id: <20220118160451.683176709@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118160451.233828401@linuxfoundation.org>
 References: <20220118160451.233828401@linuxfoundation.org>
@@ -48,45 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Larry Finger <Larry.Finger@lwfinger.net>
+From: Johan Hovold <johan@kernel.org>
 
-commit 8b144dedb928e4e2f433a328d58f44c3c098d63e upstream.
+commit 1b656e9aad7f4886ed466094d1dc5ee4dd900d20 upstream.
 
-Syzbot reports the following WARNING:
+Make sure to always NUL-terminate file names retrieved from the firmware
+to avoid accessing data beyond the entry slab buffer and exposing it
+through sysfs in case the firmware data is corrupt.
 
-[200~raw_local_irq_restore() called with IRQs enabled
-WARNING: CPU: 1 PID: 1206 at kernel/locking/irqflag-debug.c:10
-   warn_bogus_irq_restore+0x1d/0x20 kernel/locking/irqflag-debug.c:10
-
-Hardware initialization for the rtl8188cu can run for as long as 350 ms,
-and the routine may be called with interrupts disabled. To avoid locking
-the machine for this long, the current routine saves the interrupt flags
-and enables local interrupts. The problem is that it restores the flags
-at the end without disabling local interrupts first.
-
-This patch fixes commit a53268be0cb9 ("rtlwifi: rtl8192cu: Fix too long
-disable of IRQs").
-
-Reported-by: syzbot+cce1ee31614c171f5595@syzkaller.appspotmail.com
-Cc: stable@vger.kernel.org
-Fixes: a53268be0cb9 ("rtlwifi: rtl8192cu: Fix too long disable of IRQs")
-Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/20211215171105.20623-1-Larry.Finger@lwfinger.net
+Fixes: 75f3e8e47f38 ("firmware: introduce sysfs driver for QEMU's fw_cfg device")
+Cc: stable@vger.kernel.org      # 4.6
+Cc: Gabriel Somlo <somlo@cmu.edu>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Link: https://lore.kernel.org/r/20211201132528.30025-4-johan@kernel.org
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/firmware/qemu_fw_cfg.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c
-@@ -1000,6 +1000,7 @@ int rtl92cu_hw_init(struct ieee80211_hw
- 	_initpabias(hw);
- 	rtl92c_dm_init(hw);
- exit:
-+	local_irq_disable();
- 	local_irq_restore(flags);
- 	return err;
- }
+--- a/drivers/firmware/qemu_fw_cfg.c
++++ b/drivers/firmware/qemu_fw_cfg.c
+@@ -601,7 +601,7 @@ static int fw_cfg_register_file(const st
+ 	/* set file entry information */
+ 	entry->size = be32_to_cpu(f->size);
+ 	entry->select = be16_to_cpu(f->select);
+-	memcpy(entry->name, f->name, FW_CFG_MAX_FILE_PATH);
++	strscpy(entry->name, f->name, FW_CFG_MAX_FILE_PATH);
+ 
+ 	/* register entry under "/sys/firmware/qemu_fw_cfg/by_key/" */
+ 	err = kobject_init_and_add(&entry->kobj, &fw_cfg_sysfs_entry_ktype,
 
 
