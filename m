@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0385DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:13:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B422C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:13:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347219AbiARQNs (ORCPT
+        id S1347712AbiARQNt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:13:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51494 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242800AbiARQLx (ORCPT
+        Tue, 18 Jan 2022 11:13:49 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42712 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347035AbiARQLy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:11:53 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D51FC061760;
-        Tue, 18 Jan 2022 08:11:15 -0800 (PST)
+        Tue, 18 Jan 2022 11:11:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id CE27CCE1A3C;
-        Tue, 18 Jan 2022 16:11:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95E4FC340E2;
-        Tue, 18 Jan 2022 16:11:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C97576135B;
+        Tue, 18 Jan 2022 16:11:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C17CC00446;
+        Tue, 18 Jan 2022 16:11:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522272;
-        bh=QGUxhGBilWf2yzYAsZvkl/FNKNHY8OjYtLqgw6U6rB0=;
+        s=korg; t=1642522313;
+        bh=kQOy95IhZSZw5cFxZAIB00jh2ltD6YlMb16JXwiYEjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=I1B5/BpAGMN33CTUSnhdG21JFTrSCiWp/wbYS+Q7T06MLDZpvMgnDL6b578ZXdK1t
-         4wGuL0ttqF/AwznJB43LDB8hsZtn6stL3Uyzyi7mf3ZyzbwLrg+7bpihzqmPhmg4v6
-         Vo5/LvlhIGDrvDJdqHZRzJ5xgptJPwgrv/5pzbHM=
+        b=vSZmbHVxueVJvCaE8+2o9+hdcwJrxBgAxO6oXd3lWCiGy53B8bOFN07D+1i0FfMdA
+         QCaSwW0qzrOps5YjPLQDdxGj9Xv1UVAKopj7h0p6CO7xrzvNoEQnIWqwS0zzNmlA2Z
+         pj0V8pKR0Tx4JTCMw1JPtSrcSxxApkdSmCAwNkag=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Li RongQing <lirongqing@baidu.com>, stable@kernel.org,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 09/28] KVM: x86: dont print when fail to read/write pv eoi memory
-Date:   Tue, 18 Jan 2022 17:06:04 +0100
-Message-Id: <20220118160452.720746488@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+cce1ee31614c171f5595@syzkaller.appspotmail.com,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.16 17/28] rtlwifi: rtl8192cu: Fix WARNING when calling local_irq_restore() with interrupts enabled
+Date:   Tue, 18 Jan 2022 17:06:12 +0100
+Message-Id: <20220118160452.975975968@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118160452.384322748@linuxfoundation.org>
 References: <20220118160452.384322748@linuxfoundation.org>
@@ -50,64 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Li RongQing <lirongqing@baidu.com>
+From: Larry Finger <Larry.Finger@lwfinger.net>
 
-commit ce5977b181c1613072eafbc7546bcb6c463ea68c upstream.
+commit 8b144dedb928e4e2f433a328d58f44c3c098d63e upstream.
 
-If guest gives MSR_KVM_PV_EOI_EN a wrong value, this printk() will
-be trigged, and kernel log is spammed with the useless message
+Syzbot reports the following WARNING:
 
-Fixes: 0d88800d5472 ("kvm: x86: ioapic and apic debug macros cleanup")
-Reported-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Reviewed-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
-Cc: stable@kernel.org
-Message-Id: <1636026974-50555-1-git-send-email-lirongqing@baidu.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+[200~raw_local_irq_restore() called with IRQs enabled
+WARNING: CPU: 1 PID: 1206 at kernel/locking/irqflag-debug.c:10
+   warn_bogus_irq_restore+0x1d/0x20 kernel/locking/irqflag-debug.c:10
+
+Hardware initialization for the rtl8188cu can run for as long as 350 ms,
+and the routine may be called with interrupts disabled. To avoid locking
+the machine for this long, the current routine saves the interrupt flags
+and enables local interrupts. The problem is that it restores the flags
+at the end without disabling local interrupts first.
+
+This patch fixes commit a53268be0cb9 ("rtlwifi: rtl8192cu: Fix too long
+disable of IRQs").
+
+Reported-by: syzbot+cce1ee31614c171f5595@syzkaller.appspotmail.com
+Cc: stable@vger.kernel.org
+Fixes: a53268be0cb9 ("rtlwifi: rtl8192cu: Fix too long disable of IRQs")
+Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20211215171105.20623-1-Larry.Finger@lwfinger.net
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/lapic.c |   18 ++++++------------
- 1 file changed, 6 insertions(+), 12 deletions(-)
+ drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/arch/x86/kvm/lapic.c
-+++ b/arch/x86/kvm/lapic.c
-@@ -676,31 +676,25 @@ static inline bool pv_eoi_enabled(struct
- static bool pv_eoi_get_pending(struct kvm_vcpu *vcpu)
- {
- 	u8 val;
--	if (pv_eoi_get_user(vcpu, &val) < 0) {
--		printk(KERN_WARNING "Can't read EOI MSR value: 0x%llx\n",
--			   (unsigned long long)vcpu->arch.pv_eoi.msr_val);
-+	if (pv_eoi_get_user(vcpu, &val) < 0)
- 		return false;
--	}
-+
- 	return val & KVM_PV_EOI_ENABLED;
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c
+@@ -1000,6 +1000,7 @@ int rtl92cu_hw_init(struct ieee80211_hw
+ 	_initpabias(hw);
+ 	rtl92c_dm_init(hw);
+ exit:
++	local_irq_disable();
+ 	local_irq_restore(flags);
+ 	return err;
  }
- 
- static void pv_eoi_set_pending(struct kvm_vcpu *vcpu)
- {
--	if (pv_eoi_put_user(vcpu, KVM_PV_EOI_ENABLED) < 0) {
--		printk(KERN_WARNING "Can't set EOI MSR value: 0x%llx\n",
--			   (unsigned long long)vcpu->arch.pv_eoi.msr_val);
-+	if (pv_eoi_put_user(vcpu, KVM_PV_EOI_ENABLED) < 0)
- 		return;
--	}
-+
- 	__set_bit(KVM_APIC_PV_EOI_PENDING, &vcpu->arch.apic_attention);
- }
- 
- static void pv_eoi_clr_pending(struct kvm_vcpu *vcpu)
- {
--	if (pv_eoi_put_user(vcpu, KVM_PV_EOI_DISABLED) < 0) {
--		printk(KERN_WARNING "Can't clear EOI MSR value: 0x%llx\n",
--			   (unsigned long long)vcpu->arch.pv_eoi.msr_val);
-+	if (pv_eoi_put_user(vcpu, KVM_PV_EOI_DISABLED) < 0)
- 		return;
--	}
-+
- 	__clear_bit(KVM_APIC_PV_EOI_PENDING, &vcpu->arch.apic_attention);
- }
- 
 
 
