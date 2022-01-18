@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00A39C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:37:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9B97C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:38:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353988AbiARDh0 (ORCPT
+        id S1345998AbiARDh4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:37:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46248 "EHLO
+        Mon, 17 Jan 2022 22:37:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352902AbiARDee (ORCPT
+        with ESMTP id S1353203AbiARDek (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:34:34 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A5A1C061343;
-        Mon, 17 Jan 2022 18:45:13 -0800 (PST)
+        Mon, 17 Jan 2022 22:34:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55550C02B751;
+        Mon, 17 Jan 2022 18:44:26 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C2D25B81132;
-        Tue, 18 Jan 2022 02:45:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E952DC36AE3;
-        Tue, 18 Jan 2022 02:45:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AAEAE6130B;
+        Tue, 18 Jan 2022 02:44:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68211C36AF3;
+        Tue, 18 Jan 2022 02:44:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473910;
-        bh=SR6/RHYzbaW8Yv7fuCZxeBV3M2Vgut2hDG7UGkgolbU=;
+        s=k20201202; t=1642473865;
+        bh=EFtw07ghmDhsLRYEMt7OcljBkB5I335EQOUAD3LHu60=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oj+HrotMFU0Izy8vgxHM3QcbWjNS5yFh4cxH8iPjPfO0TxnCUHQkVgFcjW1llrX95
-         +8QkNOrPu3NLNROxlUEAcKbIfhjA5Vxuq/StNt5FBUZLoO3mEmeg6PrBw1O6vQwz1v
-         tICxucivHSESycGkwxXvLaHnjc2aZ+PMWmWDJ7yhpkuXkReoq3i8COnpg2EXTsd3xe
-         Ht8Meq9yCbPmx3g5+wpq79NJZrMr0IoBW3cPC/c4zEGwq3RsJS1FCgxkbJSImuEbzD
-         gCAZIQYU/bCUTx0LxapsmSnsD+TKqU30hSkWajKAL7o3+spgzBb3DDlvPyh2dnM4Jz
-         +RhQd8bRCEFVw==
+        b=hS7FHgnQp6Bv90KyG2+5MyQBrfl7Zb0kUxf8e2aErVI744szuVlr/SP0YSiyaUdRl
+         eDWaIJlLqocaHXB1QllXmVa2Kgao1IqiLpcYQ3xLkyDs384r3eFY8FD+qr9kSAVkwr
+         B4b0ad+boQDhprNh/eSN8IrXq+H01b/b7qdgzteVnxcLbPBvwjcx4LPyxD89TKk6TS
+         ZTCijMCu381oxAEywZ9wmb9Ez4WZxSfvmafMbQ5QxPHYqCHnQGCDxSns3Vl5HF9Owk
+         lTS9g1kQjHAgWCWUbw26lmXW6XUCAyzh2SHvXwY7h8nJpWqPmvyeYYPEue2LBiouiy
+         Xd4dxZaez4Usw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chengfeng Ye <cyeaa@connect.ust.hk>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>, sre@kernel.org
-Subject: [PATCH AUTOSEL 5.4 18/73] HSI: core: Fix return freed object in hsi_new_client
-Date:   Mon, 17 Jan 2022 21:43:37 -0500
-Message-Id: <20220118024432.1952028-18-sashal@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Sasha Levin <sashal@kernel.org>, linux-doc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 114/116] scripts: sphinx-pre-install: Fix ctex support on Debian
+Date:   Mon, 17 Jan 2022 21:40:05 -0500
+Message-Id: <20220118024007.1950576-114-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
-References: <20220118024432.1952028-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,33 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengfeng Ye <cyeaa@connect.ust.hk>
+From: Mauro Carvalho Chehab <mchehab@kernel.org>
 
-[ Upstream commit a1ee1c08fcd5af03187dcd41dcab12fd5b379555 ]
+[ Upstream commit 87d6576ddf8ac25f36597bc93ca17f6628289c16 ]
 
-cl is freed on error of calling device_register, but this
-object is return later, which will cause uaf issue. Fix it
-by return NULL on error.
+The name of the package with ctexhook.sty is different on
+Debian/Ubuntu.
 
-Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Reported-by: Akira Yokosawa <akiyks@gmail.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab@kernel.org>
+Tested-by: Akira Yokosawa <akiyks@gmail.com>
+Link: https://lore.kernel.org/r/63882425609a2820fac78f5e94620abeb7ed5f6f.1641429634.git.mchehab@kernel.org
+Signed-off-by: Jonathan Corbet <corbet@lwn.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hsi/hsi_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ scripts/sphinx-pre-install | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/hsi/hsi_core.c b/drivers/hsi/hsi_core.c
-index a5f92e2889cb8..a330f58d45fc6 100644
---- a/drivers/hsi/hsi_core.c
-+++ b/drivers/hsi/hsi_core.c
-@@ -102,6 +102,7 @@ struct hsi_client *hsi_new_client(struct hsi_port *port,
- 	if (device_register(&cl->device) < 0) {
- 		pr_err("hsi: failed to register client: %s\n", info->name);
- 		put_device(&cl->device);
-+		goto err;
- 	}
+diff --git a/scripts/sphinx-pre-install b/scripts/sphinx-pre-install
+index 828a8615a9181..b32a20782c851 100755
+--- a/scripts/sphinx-pre-install
++++ b/scripts/sphinx-pre-install
+@@ -370,6 +370,9 @@ sub give_debian_hints()
+ 	);
  
- 	return cl;
+ 	if ($pdf) {
++		check_missing_file(["/usr/share/texlive/texmf-dist/tex/latex/ctex/ctexhook.sty"],
++				   "texlive-lang-chinese", 2);
++
+ 		check_missing_file(["/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"],
+ 				   "fonts-dejavu", 2);
+ 
 -- 
 2.34.1
 
