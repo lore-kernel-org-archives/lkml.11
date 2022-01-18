@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29C13C3526B
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:13:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B63C3525C
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:13:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355606AbiARDL5 (ORCPT
+        id S1355004AbiARDKr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:11:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37346 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350213AbiARC5k (ORCPT
+        Mon, 17 Jan 2022 22:10:47 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51424 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245641AbiARCmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:57:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F74C061366;
-        Mon, 17 Jan 2022 18:45:57 -0800 (PST)
+        Mon, 17 Jan 2022 21:42:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CB23E61302;
-        Tue, 18 Jan 2022 02:45:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DCA2C36AEB;
-        Tue, 18 Jan 2022 02:45:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4064B81136;
+        Tue, 18 Jan 2022 02:42:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E3E6C36AEB;
+        Tue, 18 Jan 2022 02:42:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473957;
-        bh=PwjgCXsxBBNDaqdajnAiUXq66v/vFynQ/z8Ps+IVHK4=;
+        s=k20201202; t=1642473762;
+        bh=NsNmxlzJcp4bHdt1JVI79chzoIVKauwC5RQte6uzHu4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SZVlJl9prVUTWqBi3YwwopFleSHRKZhyuLFF3dJXvpwUNPTTuMywNILRQ0ykkw7bb
-         Vv17St4ActiaFr3CJPgYB4LMTuX0eQe+E+wStD8mgEEKzgRWm66y89TMtX8m4YmRiP
-         KXS2rmTf9yxD6pnfi56+rbK6TfxaHG9OGx7U0ru4OAwOa8tUxw71ZXO9wr+myRemaT
-         LHMHO2OqIwLN7wFN1BID9DjYo4twBXFtBkT7EkJgzmDJOt1pR9GSvkucSXtt40wIEO
-         i0IekBcyiq9Cjttu+UsyMoUSjc1RmrvPdSYxYz/TzErnLy4cLdymgDBpT43vbK/gsQ
-         JtFOEGKcCXG1A==
+        b=p7e7dOclAEb5V2RCMsebhnC4GdRINgiPTE/dDAvwVmecQn+nMR2APAdfAtEFXtxyq
+         wJ0HxS5zVqWHlXJT7zE/If8UQ0qwl4SukUyap4HTMES27w6Q0HZmBFPWkAN3mOkvKq
+         y5+aokr3691bByU5Ff5wLHjFaDx/S+PRu3X5jZNxT+jVInhyKh8cC33e3zccLb2TIr
+         im3TcRuovcvuYHlOjGQKSiWh2Be0wAfjODmGnWkaa0l8D/MNUl6hgp8CgndxMm8j7Z
+         Hhz9UKy7HvvjJdhf4r6id5mSUpuqZcPpFo4KltZdH1rH+ntHtliG+QSrteMlcMQgSC
+         LMY1ePMx/w0AA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhou Qingyang <zhou1615@umn.edu>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
-        mchehab@kernel.org, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 41/73] media: saa7146: hexium_gemini: Fix a NULL pointer dereference in hexium_attach()
-Date:   Mon, 17 Jan 2022 21:44:00 -0500
-Message-Id: <20220118024432.1952028-41-sashal@kernel.org>
+Cc:     Heiko Carstens <hca@linux.ibm.com>,
+        Alexander Egorenkov <egorenar@linux.ibm.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, rostedt@goodmis.org,
+        mingo@redhat.com, shuah@kernel.org, linux-kselftest@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 058/116] selftests/ftrace: make kprobe profile testcase description unique
+Date:   Mon, 17 Jan 2022 21:39:09 -0500
+Message-Id: <20220118024007.1950576-58-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
-References: <20220118024432.1952028-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,71 +52,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Heiko Carstens <hca@linux.ibm.com>
 
-[ Upstream commit 3af86b046933ba513d08399dba0d4d8b50d607d0 ]
+[ Upstream commit e5992f373c6eed6d09e5858e9623df1259b3ce30 ]
 
-In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
-a new memory for dev->vv_data. saa7146_vv_release() will be called on
-failure of saa7146_register_device(). There is a dereference of
-dev->vv_data in saa7146_vv_release(), which could lead to a NULL
-pointer dereference on failure of saa7146_vv_init().
+Commit 32f6e5da83c7 ("selftests/ftrace: Add kprobe profile testcase")
+added a new kprobes testcase, but has a description which does not
+describe what the test case is doing and is duplicating the description
+of another test case.
 
-Fix this bug by adding a check of saa7146_vv_init().
+Therefore change the test case description, so it is unique and then
+allows easily to tell which test case actually passed or failed.
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_VIDEO_HEXIUM_GEMINI=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Link: https://lore.kernel.org/linux-media/20211203154030.111210-1-zhou1615@umn.edu
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Reported-by: Alexander Egorenkov <egorenar@linux.ibm.com>
+Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/common/saa7146/saa7146_fops.c | 2 +-
- drivers/media/pci/saa7146/hexium_gemini.c   | 7 ++++++-
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ tools/testing/selftests/ftrace/test.d/kprobe/profile.tc | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/common/saa7146/saa7146_fops.c b/drivers/media/common/saa7146/saa7146_fops.c
-index aabb830e74689..4b332ea986168 100644
---- a/drivers/media/common/saa7146/saa7146_fops.c
-+++ b/drivers/media/common/saa7146/saa7146_fops.c
-@@ -525,7 +525,7 @@ int saa7146_vv_init(struct saa7146_dev* dev, struct saa7146_ext_vv *ext_vv)
- 		ERR("out of memory. aborting.\n");
- 		kfree(vv);
- 		v4l2_ctrl_handler_free(hdl);
--		return -1;
-+		return -ENOMEM;
- 	}
+diff --git a/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc b/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc
+index 98166fa3eb91c..34fb89b0c61fa 100644
+--- a/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc
++++ b/tools/testing/selftests/ftrace/test.d/kprobe/profile.tc
+@@ -1,6 +1,6 @@
+ #!/bin/sh
+ # SPDX-License-Identifier: GPL-2.0
+-# description: Kprobe dynamic event - adding and removing
++# description: Kprobe profile
+ # requires: kprobe_events
  
- 	saa7146_video_uops.init(dev,vv);
-diff --git a/drivers/media/pci/saa7146/hexium_gemini.c b/drivers/media/pci/saa7146/hexium_gemini.c
-index f962269306707..86d4e2abed82a 100644
---- a/drivers/media/pci/saa7146/hexium_gemini.c
-+++ b/drivers/media/pci/saa7146/hexium_gemini.c
-@@ -284,7 +284,12 @@ static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_d
- 	hexium_set_input(hexium, 0);
- 	hexium->cur_input = 0;
- 
--	saa7146_vv_init(dev, &vv_data);
-+	ret = saa7146_vv_init(dev, &vv_data);
-+	if (ret) {
-+		i2c_del_adapter(&hexium->i2c_adapter);
-+		kfree(hexium);
-+		return ret;
-+	}
- 
- 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
- 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
+ ! grep -q 'myevent' kprobe_profile
 -- 
 2.34.1
 
