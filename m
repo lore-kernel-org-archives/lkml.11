@@ -2,105 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BFB7C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:26:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB9DBC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:26:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359000AbiARDZs (ORCPT
+        id S1358896AbiARDZh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:25:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40158 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349986AbiARDJn (ORCPT
+        Mon, 17 Jan 2022 22:25:37 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42398 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348143AbiARDJR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:09:43 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C426BC06177B;
-        Mon, 17 Jan 2022 18:53:04 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id j64so949180pgd.6;
-        Mon, 17 Jan 2022 18:53:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:subject:to:cc:references:in-reply-to:mime-version
-         :message-id:content-transfer-encoding;
-        bh=+dXow2D6kovl8GlAwap0AWMuajUQM5lAihY8qrTDEBQ=;
-        b=Uv5L+1MPSrZqYe6Y8HG3UarPEcwEh0vkALvNOq2xAcgsltUatlSZhvAu4ZkCRlnxRP
-         FG+LVXfusldaMUz7UqtURH52quTwxGC4/yimq+EOUpXqGwqor+DRCSsIvtYOcwN5QHl5
-         W0R7HB/qG+3G2BxsGHl3Nt2xl43WRVP2gKUNTM1deSRo/DtHOwmzXiqK7q8tBs2HSebO
-         pWYwrS/JgPs0ZJX5DjKnNjoEiljdIijhBH8X5esopzUOPtLubpjKOZixwwD4k2cn7/xZ
-         xKKuycvIHwFIBOdVyt2yBQlZk3YaT50+wDcE8ANxk8CcAe3Avs5rNQ0FcOr7XVPi1ovc
-         soLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:subject:to:cc:references:in-reply-to
-         :mime-version:message-id:content-transfer-encoding;
-        bh=+dXow2D6kovl8GlAwap0AWMuajUQM5lAihY8qrTDEBQ=;
-        b=gAFgnmpcQT1OztvzzvkDSFRT3bONZmZf1XfTN7NnVTcsLd6hts+D0CB+/RkbdopkP2
-         2jMlEpfHbp5b71XRXH1rY5rrAvufsRj/O954OT4xf4cXVg1+tbsBOINuD55lnMyrnPrf
-         J3llr4whsEhCv//N0/2D3YElykPvYlc4yVr7hDCMe3SKJVHmSJJ20cbUUfNLArXchJSa
-         Z06fwlJK+xITK7CPDr9n/kL+LB++f0SyLO4MHvVjZx9rlshh5azdGdB6e5k7wC5Ogv1A
-         K561637vzr05qwhJzmxIXSptJblalifN3XBspaKpIzNsMfEzxsUYsCdxKokzmL5x2uJy
-         5idQ==
-X-Gm-Message-State: AOAM5314dax8JK3pGW9lzXf9E81dr1xMx0z5Sv4mKwsic5LbM7i9r21R
-        pLVzuWWAbchbm5QBP/OBpdE=
-X-Google-Smtp-Source: ABdhPJwyL7zGIsi9bIicvksHnAC4wjZ/DiXJE76/NAwmIpYKT6kHX1pZelN6IF0T1eLHS2LvHWGV5g==
-X-Received: by 2002:a05:6a00:23c8:b0:4c2:6a7:95c5 with SMTP id g8-20020a056a0023c800b004c206a795c5mr21194442pfc.53.1642474382328;
-        Mon, 17 Jan 2022 18:53:02 -0800 (PST)
-Received: from localhost (124-171-74-95.tpgi.com.au. [124.171.74.95])
-        by smtp.gmail.com with ESMTPSA id i4sm617438pjj.30.2022.01.17.18.53.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 18:53:01 -0800 (PST)
-Date:   Tue, 18 Jan 2022 12:52:56 +1000
-From:   Nicholas Piggin <npiggin@gmail.com>
-Subject: Re: [PATCH v2 1/3] mm: vmalloc: Let user to control huge vmalloc
- default behavior
-To:     Andrew Morton <akpm@linux-foundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linuxppc-dev@lists.ozlabs.org,
-        Kefeng Wang <wangkefeng.wang@huawei.com>, x86@kernel.org
-Cc:     =?iso-8859-1?q?Benjamin=0A?= Herrenschmidt 
-        <benh@kernel.crashing.org>, Borislav Petkov <bp@alien8.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>
-References: <20211227145903.187152-1-wangkefeng.wang@huawei.com>
-        <20211227145903.187152-2-wangkefeng.wang@huawei.com>
-In-Reply-To: <20211227145903.187152-2-wangkefeng.wang@huawei.com>
+        Mon, 17 Jan 2022 22:09:17 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BCA59B80932;
+        Tue, 18 Jan 2022 03:09:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1ADD2C36AEF;
+        Tue, 18 Jan 2022 03:09:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642475352;
+        bh=zSkZappaJtuwv/bZPtL8x6NlRSEZ+4OEZLu9qlnKwxw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=UhWvwOVqeuO/9xD6/gHlBu+OJmboZKMNTEEd60lpBf5Z2jLayvMBX+OBzCxuMjEY5
+         q++EjJLAYc7TfxvC/Tpa2Sn2905zKWZqpnT9irIOUG0ralCXlfONeunayKfYcZaJXN
+         +QH5nHEVK+DQpGz7u0BghHDuiUf05d1Q/xJZBG+xDUKdx6wcY6KiAqxCnyerrOkQ7D
+         wOqFK1NWb5MfImzxpVD9vezfaEsT0it4n0IJy14zLuHjQfWCFvD/n43FU0h8odPP9X
+         YPRbWkTn51nawd0n1Iijuy+gTjixQYP8lUf9w1bJuvdWNipzBBDEHTQIQpMvSS0gsA
+         l5k5CAcRG2WMA==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, mathias.nyman@linux.intel.com,
+        Thinh.Nguyen@synopsys.com, dan.carpenter@oracle.com,
+        rajatja@google.com, cuibixuan@huawei.com, chris.chiu@canonical.com,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 17/29] usb: hub: Add delay for SuperSpeed hub resume to let links transit to U0
+Date:   Mon, 17 Jan 2022 22:08:10 -0500
+Message-Id: <20220118030822.1955469-17-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220118030822.1955469-1-sashal@kernel.org>
+References: <20220118030822.1955469-1-sashal@kernel.org>
 MIME-Version: 1.0
-Message-Id: <1642473992.qrnqczjfna.astroid@bobo.none>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Excerpts from Kefeng Wang's message of December 28, 2021 12:59 am:
-> Introduce HUGE_VMALLOC_DEFAULT_ENABLED and make it default y, this
-> let user to choose whether or not enable huge vmalloc mappings by
-> default.
->=20
-> Meanwhile, add new hugevmalloc=3Don/off parameter to enable or disable
-> this feature at boot time, nohugevmalloc is still supported and
-> equivalent to hugevmalloc=3Doff.
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-Runtime options are bad enough, Kconfig and boot options are even worse.
+[ Upstream commit 00558586382891540c59c9febc671062425a6e47 ]
 
-The 'nohugevmalloc' option mirrors 'nohugeiomap' and is not expected to
-ever be understood by an administrator unless a kernel developer is=20
-working with them to hunt down a regression.
+When a new USB device gets plugged to nested hubs, the affected hub,
+which connects to usb 2-1.4-port2, doesn't report there's any change,
+hence the nested hubs go back to runtime suspend like nothing happened:
+[  281.032951] usb usb2: usb wakeup-resume
+[  281.032959] usb usb2: usb auto-resume
+[  281.032974] hub 2-0:1.0: hub_resume
+[  281.033011] usb usb2-port1: status 0263 change 0000
+[  281.033077] hub 2-0:1.0: state 7 ports 4 chg 0000 evt 0000
+[  281.049797] usb 2-1: usb wakeup-resume
+[  281.069800] usb 2-1: Waited 0ms for CONNECT
+[  281.069810] usb 2-1: finish resume
+[  281.070026] hub 2-1:1.0: hub_resume
+[  281.070250] usb 2-1-port4: status 0203 change 0000
+[  281.070272] usb usb2-port1: resume, status 0
+[  281.070282] hub 2-1:1.0: state 7 ports 4 chg 0010 evt 0000
+[  281.089813] usb 2-1.4: usb wakeup-resume
+[  281.109792] usb 2-1.4: Waited 0ms for CONNECT
+[  281.109801] usb 2-1.4: finish resume
+[  281.109991] hub 2-1.4:1.0: hub_resume
+[  281.110147] usb 2-1.4-port2: status 0263 change 0000
+[  281.110234] usb 2-1-port4: resume, status 0
+[  281.110239] usb 2-1-port4: status 0203, change 0000, 10.0 Gb/s
+[  281.110266] hub 2-1.4:1.0: state 7 ports 4 chg 0000 evt 0000
+[  281.110426] hub 2-1.4:1.0: hub_suspend
+[  281.110565] usb 2-1.4: usb auto-suspend, wakeup 1
+[  281.130998] hub 2-1:1.0: hub_suspend
+[  281.137788] usb 2-1: usb auto-suspend, wakeup 1
+[  281.142935] hub 2-0:1.0: state 7 ports 4 chg 0000 evt 0000
+[  281.177828] usb 2-1: usb wakeup-resume
+[  281.197839] usb 2-1: Waited 0ms for CONNECT
+[  281.197850] usb 2-1: finish resume
+[  281.197984] hub 2-1:1.0: hub_resume
+[  281.198203] usb 2-1-port4: status 0203 change 0000
+[  281.198228] usb usb2-port1: resume, status 0
+[  281.198237] hub 2-1:1.0: state 7 ports 4 chg 0010 evt 0000
+[  281.217835] usb 2-1.4: usb wakeup-resume
+[  281.237834] usb 2-1.4: Waited 0ms for CONNECT
+[  281.237845] usb 2-1.4: finish resume
+[  281.237990] hub 2-1.4:1.0: hub_resume
+[  281.238067] usb 2-1.4-port2: status 0263 change 0000
+[  281.238148] usb 2-1-port4: resume, status 0
+[  281.238152] usb 2-1-port4: status 0203, change 0000, 10.0 Gb/s
+[  281.238166] hub 2-1.4:1.0: state 7 ports 4 chg 0000 evt 0000
+[  281.238385] hub 2-1.4:1.0: hub_suspend
+[  281.238523] usb 2-1.4: usb auto-suspend, wakeup 1
+[  281.258076] hub 2-1:1.0: hub_suspend
+[  281.265744] usb 2-1: usb auto-suspend, wakeup 1
+[  281.285976] hub 2-0:1.0: hub_suspend
+[  281.285988] usb usb2: bus auto-suspend, wakeup 1
 
-IMO there should be no new options. You could switch it off for=20
-CONFIG_BASE_SMALL perhaps, and otherwise just try to work on heuristics
-first. Bring in new options once it's proven they're needed.
+USB 3.2 spec, 9.2.5.4 "Changing Function Suspend State" says that "If
+the link is in a non-U0 state, then the device must transition the link
+to U0 prior to sending the remote wake message", but the hub only
+transits the link to U0 after signaling remote wakeup.
 
-Aside from that, thanks for working on these ports, great work.
+So be more forgiving and use a 20ms delay to let the link transit to U0
+for remote wakeup.
 
-Thanks,
-Nick
+Suggested-by: Alan Stern <stern@rowland.harvard.edu>
+Acked-by: Alan Stern <stern@rowland.harvard.edu>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Link: https://lore.kernel.org/r/20211215120108.336597-1-kai.heng.feng@canonical.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/usb/core/hub.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
+index 66dda8d018caf..6097977f83a31 100644
+--- a/drivers/usb/core/hub.c
++++ b/drivers/usb/core/hub.c
+@@ -1054,7 +1054,10 @@ static void hub_activate(struct usb_hub *hub, enum hub_activation_type type)
+ 		} else {
+ 			hub_power_on(hub, true);
+ 		}
+-	}
++	/* Give some time on remote wakeup to let links to transit to U0 */
++	} else if (hub_is_superspeed(hub->hdev))
++		msleep(20);
++
+  init2:
+ 
+ 	/*
+-- 
+2.34.1
+
