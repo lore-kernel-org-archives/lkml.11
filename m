@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05CD9C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:23:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A030C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:23:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244572AbiARCXE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:23:04 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38972 "EHLO
+        id S239372AbiARCXG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:23:06 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38332 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244995AbiARCWY (ORCPT
+        with ESMTP id S244586AbiARCVj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:22:24 -0500
+        Mon, 17 Jan 2022 21:21:39 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 18EA66093C;
-        Tue, 18 Jan 2022 02:22:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C370DC36B03;
-        Tue, 18 Jan 2022 02:22:22 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 89A32612B2;
+        Tue, 18 Jan 2022 02:21:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24E34C36AEB;
+        Tue, 18 Jan 2022 02:21:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472543;
-        bh=HUX8zC8VUF7r0QnJ6B/WpuRDXY8O4kCl6za7Ycf6cyQ=;
+        s=k20201202; t=1642472499;
+        bh=u5JUJtJGtwEbGCXg5DoXmcteX+k+OBcOtiqBHR/BRvE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RbwJ/7iSNHGal8TsV2kSJ8UuFPFU8HfIofzSF8EBQoOmp5l16oU2xH+EpIwuRaR7W
-         Wn/78ypJo6wVThMfoLvSHjSzYrK4hW+Nhg5VwyFkup7oM8sfaDbJj/2rD4knzj9+/F
-         KJA93ydPjhVcFa988wiMpWsPHilTAWqrSpv0k925kdOKnR/LkMqXq7U98Jc8hn/nzr
-         vV1ZPs9XVaodrw46HoUtRD9HoEuxFSBQ4dv6casAqxfJqiKhkRhij8ZUHa0GDNzfGh
-         Jb91zA2SBXmivzqA6vInSfp6lHRpn0D/W2C7NHlhas5nwF4fo3K7rcKWLdOfv/R7S7
-         Ma7pWtenpuaAg==
+        b=hCmdShSw82FtJp1SAO0j+CbZ5ywYAQNl0n0dL1mCju/prCU2UYjvP11SvbQaaksf+
+         zGaKbO58R1pRDKSBcSULq3ARnLsTUCAkkv7dP9wULsIIUfAvGfKMO5lzz6Rta4O2g6
+         qU5Ubqqe5mJFeXh7DN68rvJ3LJ7fVVm4GptPh63UVMj+R41LTk5Cw0jJk9gsulOiLe
+         adHAyF5rHlDWyFbdaUSYg765JLHfYFZQQhezgPCDRKC23mQ1KO6XE0IF/Or/vpvpSU
+         XDwzhlVzWv7R12Fg47fVz2LsVQSW2mE/erJy8mgZU19HFYsfqEUusVWOLlohbpnmZi
+         fqxG3M4AwrZyA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Jakub Kicinski <kuba@kernel.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 046/217] apple: macmace: use eth_hw_addr_set()
-Date:   Mon, 17 Jan 2022 21:16:49 -0500
-Message-Id: <20220118021940.1942199-46-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, tanghui20@huawei.com,
+        arnd@arndb.de, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 034/217] amd: lance: use eth_hw_addr_set()
+Date:   Mon, 17 Jan 2022 21:16:37 -0500
+Message-Id: <20220118021940.1942199-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -50,76 +51,41 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit e217fc4affc8c7392e4db48488b36d2a5d446e9d ]
+[ Upstream commit 0222ee53c483df7572eea7ba8585dda59328d46e ]
 
-Byte by byte assignments.
+IO reads, so save to an array then eth_hw_addr_set().
 
-Fixes build on m68k.
+Fixes build on x86 (32bit).
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/apple/macmace.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/amd/lance.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/apple/macmace.c b/drivers/net/ethernet/apple/macmace.c
-index 95d3061c61be9..8fcaf16399201 100644
---- a/drivers/net/ethernet/apple/macmace.c
-+++ b/drivers/net/ethernet/apple/macmace.c
-@@ -92,7 +92,7 @@ static void mace_reset(struct net_device *dev);
- static irqreturn_t mace_interrupt(int irq, void *dev_id);
- static irqreturn_t mace_dma_intr(int irq, void *dev_id);
- static void mace_tx_timeout(struct net_device *dev, unsigned int txqueue);
--static void __mace_set_address(struct net_device *dev, void *addr);
-+static void __mace_set_address(struct net_device *dev, const void *addr);
+diff --git a/drivers/net/ethernet/amd/lance.c b/drivers/net/ethernet/amd/lance.c
+index 945bf1d875072..462016666752c 100644
+--- a/drivers/net/ethernet/amd/lance.c
++++ b/drivers/net/ethernet/amd/lance.c
+@@ -480,6 +480,7 @@ static int __init lance_probe1(struct net_device *dev, int ioaddr, int irq, int
+ 	unsigned long flags;
+ 	int err = -ENOMEM;
+ 	void __iomem *bios;
++	u8 addr[ETH_ALEN];
  
- /*
-  * Load a receive DMA channel with a base address and ring length
-@@ -197,6 +197,7 @@ static int mace_probe(struct platform_device *pdev)
- 	unsigned char *addr;
- 	struct net_device *dev;
- 	unsigned char checksum = 0;
-+	u8 macaddr[ETH_ALEN];
- 	int err;
+ 	/* First we look for special cases.
+ 	   Check for HP's on-board ethernet by looking for 'HP' in the BIOS.
+@@ -541,7 +542,8 @@ static int __init lance_probe1(struct net_device *dev, int ioaddr, int irq, int
+ 	/* There is a 16 byte station address PROM at the base address.
+ 	   The first six bytes are the station address. */
+ 	for (i = 0; i < 6; i++)
+-		dev->dev_addr[i] = inb(ioaddr + i);
++		addr[i] = inb(ioaddr + i);
++	eth_hw_addr_set(dev, addr);
+ 	printk("%pM", dev->dev_addr);
  
- 	dev = alloc_etherdev(PRIV_BYTES);
-@@ -229,8 +230,9 @@ static int mace_probe(struct platform_device *pdev)
- 	for (j = 0; j < 6; ++j) {
- 		u8 v = bitrev8(addr[j<<4]);
- 		checksum ^= v;
--		dev->dev_addr[j] = v;
-+		macaddr[j] = v;
- 	}
-+	eth_hw_addr_set(dev, macaddr);
- 	for (; j < 8; ++j) {
- 		checksum ^= bitrev8(addr[j<<4]);
- 	}
-@@ -315,11 +317,12 @@ static void mace_reset(struct net_device *dev)
-  * Load the address on a mace controller.
-  */
- 
--static void __mace_set_address(struct net_device *dev, void *addr)
-+static void __mace_set_address(struct net_device *dev, const void *addr)
- {
- 	struct mace_data *mp = netdev_priv(dev);
- 	volatile struct mace *mb = mp->mace;
--	unsigned char *p = addr;
-+	const unsigned char *p = addr;
-+	u8 macaddr[ETH_ALEN];
- 	int i;
- 
- 	/* load up the hardware address */
-@@ -331,7 +334,8 @@ static void __mace_set_address(struct net_device *dev, void *addr)
- 			;
- 	}
- 	for (i = 0; i < 6; ++i)
--		mb->padr = dev->dev_addr[i] = p[i];
-+		mb->padr = macaddr[i] = p[i];
-+	eth_hw_addr_set(dev, macaddr);
- 	if (mp->chipid != BROKEN_ADDRCHG_REV)
- 		mb->iac = 0;
- }
+ 	dev->base_addr = ioaddr;
 -- 
 2.34.1
 
