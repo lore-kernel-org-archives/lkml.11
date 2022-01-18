@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E27BC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB17EC4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:46:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348598AbiARCpj (ORCPT
+        id S1348624AbiARCpo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:45:39 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54372 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344555AbiARCgx (ORCPT
+        Mon, 17 Jan 2022 21:45:44 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44883 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345158AbiARCi1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:36:53 -0500
+        Mon, 17 Jan 2022 21:38:27 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 01B2860C74;
-        Tue, 18 Jan 2022 02:36:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D0EFC36AEF;
-        Tue, 18 Jan 2022 02:36:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1EF5EB8123F;
+        Tue, 18 Jan 2022 02:38:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6500FC36AE3;
+        Tue, 18 Jan 2022 02:38:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473411;
-        bh=1bzbEAAFm21L9jXeESXKCyS8PVw9Jan6NDFmLe8rQxk=;
+        s=k20201202; t=1642473503;
+        bh=Jd9oFnu1UwqtGlIyClGK8Td1CpNta7zjTC6uatIv4MY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AaIdGPGKW38Z7KeGwLgPeldSwlXBt0aGtMDrTOrLgC7bowQ4oy0dDdsLu3A98bbwA
-         KQzOz7Hk3wMf4ClSFhzENbaCTMxJRyWUCBPHNwg1DPKDAjCcoJLnKyW3VjX8KYAaF0
-         o9chVobPvnL46EFJJLFPw+uc6GV+GXuo2zIRdV6JFwaY0iFx+/9uQBlL84L0ZiVJBd
-         4cRIRfvR9MctQagojHd7fPGXBtTG+1EH6q4xaRPdRIuXuhKQ/Ir62ZOQN6w/jk6tqn
-         r0iYtFhbaloR8FRsjpAzzju7P9iAPSs3dKvo4Rrjn79rBev2z4W6rc7JTvrnthYB/6
-         iW09e2ttVHHNQ==
+        b=XpBirb09OGqdd0fWmh7kZrDp/c8tPlQTDL2E5t5D0mkfUbXSNSqPpNJ/WB5LEOBUC
+         jIX/J0t3KmgXvEOvw93Myw2tV0XS42drHmvZmAIgYGfq7VP/Jn9ERwypZ5VYlMBYLa
+         G+/87luqjs7DVuKxD7rYvvhMGQuov6ebd+FUvVMJE9GO/YC/5TnStbC5R082npTtMb
+         3rbbBCfut4U1gnMb0qlbueEp6+0P+OO3oGWVvfHStc/tK4HQz6Uhp145NHj/SfdPCu
+         klhO/Uo94wCh/JOx6VuzHCF6ltAzMimpF6QauRqtohUrSQdn6Zz6Y9t5F8SJ+sLuxn
+         rpL3wMPS73lLw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
-        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, john.fastabend@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 110/188] bpf: Do not WARN in bpf_warn_invalid_xdp_action()
-Date:   Mon, 17 Jan 2022 21:30:34 -0500
-Message-Id: <20220118023152.1948105-110-sashal@kernel.org>
+Cc:     Ilan Peer <ilan.peer@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, johannes.berg@intel.com,
+        miriam.rachel.korenblit@intel.com, emmanuel.grumbach@intel.com,
+        dan.carpenter@oracle.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 140/188] iwlwifi: mvm: Fix calculation of frame length
+Date:   Mon, 17 Jan 2022 21:31:04 -0500
+Message-Id: <20220118023152.1948105-140-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,46 +53,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Ilan Peer <ilan.peer@intel.com>
 
-[ Upstream commit 2cbad989033bff0256675c38f96f5faab852af4b ]
+[ Upstream commit 40a0b38d7a7f91a6027287e0df54f5f547e8d27e ]
 
-The WARN_ONCE() in bpf_warn_invalid_xdp_action() can be triggered by
-any bugged program, and even attaching a correct program to a NIC
-not supporting the given action.
+The RADA might include in the Rx frame the MIC and CRC bytes.
+These bytes should be removed for non monitor interfaces and
+should not be passed to mac80211.
 
-The resulting splat, beyond polluting the logs, fouls automated tools:
-e.g. a syzkaller reproducers using an XDP program returning an
-unsupported action will never pass validation.
+Fix the Rx processing to remove the extra bytes on non monitor
+cases.
 
-Replace the WARN_ONCE with a less intrusive pr_warn_once().
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Link: https://lore.kernel.org/bpf/016ceec56e4817ebb2a9e35ce794d5c917df572c.1638189075.git.pabeni@redhat.com
+Signed-off-by: Ilan Peer <ilan.peer@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211219121514.098be12c801e.I1d81733d8a75b84c3b20eb6e0d14ab3405ca6a86@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/filter.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c | 27 +++++++++++++++++++
+ 1 file changed, 27 insertions(+)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 1e6831880d1fd..96dfae85c9ace 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -8176,9 +8176,9 @@ void bpf_warn_invalid_xdp_action(u32 act)
- {
- 	const u32 act_max = XDP_REDIRECT;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
+index c12f303cf652c..efccdd3f33773 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/rxmq.c
+@@ -121,12 +121,39 @@ static int iwl_mvm_create_skb(struct iwl_mvm *mvm, struct sk_buff *skb,
+ 	struct iwl_rx_mpdu_desc *desc = (void *)pkt->data;
+ 	unsigned int headlen, fraglen, pad_len = 0;
+ 	unsigned int hdrlen = ieee80211_hdrlen(hdr->frame_control);
++	u8 mic_crc_len = u8_get_bits(desc->mac_flags1,
++				     IWL_RX_MPDU_MFLG1_MIC_CRC_LEN_MASK) << 1;
  
--	WARN_ONCE(1, "%s XDP return value %u, expect packet loss!\n",
--		  act > act_max ? "Illegal" : "Driver unsupported",
--		  act);
-+	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
-+		     act > act_max ? "Illegal" : "Driver unsupported",
-+		     act);
- }
- EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
+ 	if (desc->mac_flags2 & IWL_RX_MPDU_MFLG2_PAD) {
+ 		len -= 2;
+ 		pad_len = 2;
+ 	}
  
++	/*
++	 * For non monitor interface strip the bytes the RADA might not have
++	 * removed. As monitor interface cannot exist with other interfaces
++	 * this removal is safe.
++	 */
++	if (mic_crc_len && !ieee80211_hw_check(mvm->hw, RX_INCLUDES_FCS)) {
++		u32 pkt_flags = le32_to_cpu(pkt->len_n_flags);
++
++		/*
++		 * If RADA was not enabled then decryption was not performed so
++		 * the MIC cannot be removed.
++		 */
++		if (!(pkt_flags & FH_RSCSR_RADA_EN)) {
++			if (WARN_ON(crypt_len > mic_crc_len))
++				return -EINVAL;
++
++			mic_crc_len -= crypt_len;
++		}
++
++		if (WARN_ON(mic_crc_len > len))
++			return -EINVAL;
++
++		len -= mic_crc_len;
++	}
++
+ 	/* If frame is small enough to fit in skb->head, pull it completely.
+ 	 * If not, only pull ieee80211_hdr (including crypto if present, and
+ 	 * an additional 8 bytes for SNAP/ethertype, see below) so that
 -- 
 2.34.1
 
