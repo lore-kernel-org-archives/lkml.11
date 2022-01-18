@@ -2,104 +2,259 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5491C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 14:44:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9458CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 14:45:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343801AbiAROoZ (ORCPT
+        id S1343832AbiAROp3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 09:44:25 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.54]:46759 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235735AbiAROoX (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 09:44:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1642517059;
-    s=strato-dkim-0002; d=hartkopp.net;
-    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
-    From:Subject:Sender;
-    bh=/aiPUdZU/NMvB9CFhXaRDgauYeoCZM/hElRYJqOCGPU=;
-    b=tTfs86GijTsVM2iql/rm7HIjPdFK4x+gL8s7MKTJlle5wnzM6GHNKcmuPnKWqfM1yQ
-    7I+ReggBXVSIlTPUM3JiuMXj/FA6S/tCoENnAZoead8+iAi61LOdBFZ3DDZD2kXjPbFm
-    vpXVDDqNlTzqsPv+0mtnDDgwwfwCu8sE2j3uEIikvrkiVIqOPXTMInDDjXNfJ9NteVDx
-    gQpNlmaQ4ZJXQy1OIZRJX/27MUmdvNt6Q2DNO5SBavvCrZh1jU+VfH42bexofeJaF/qs
-    4mVJvDFFP6oNJM99poTmgrbRAa/4Cru12RJn+fVe87kLopOBtjYPY1Qx3TbfAebCk42S
-    445A==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
-X-RZG-CLASS-ID: mo00
-Received: from [IPV6:2a00:6020:1cfa:f900::b82]
-    by smtp.strato.de (RZmta 47.37.6 AUTH)
-    with ESMTPSA id Rb080by0IEiJWDH
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Tue, 18 Jan 2022 15:44:19 +0100 (CET)
-Message-ID: <eaafaca3-f003-ca56-c04c-baf6cf4f7627@hartkopp.net>
-Date:   Tue, 18 Jan 2022 15:44:13 +0100
+        Tue, 18 Jan 2022 09:45:29 -0500
+Received: from ip-94-112-206-30.net.upcbroadband.cz ([94.112.206.30]:49250
+        "EHLO ixit.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241144AbiAROp1 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 09:45:27 -0500
+X-Greylist: delayed 491 seconds by postgrey-1.27 at vger.kernel.org; Tue, 18 Jan 2022 09:45:26 EST
+Received: from [10.0.0.139] (_gateway [10.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ixit.cz (Postfix) with ESMTPSA id 1E5612005E;
+        Tue, 18 Jan 2022 15:37:10 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ixit.cz; s=dkim;
+        t=1642516629;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+4whwaOsPH0/UfN7RFCyHS+ItnYg48fRwxO6IFphqFI=;
+        b=rEg8WspxgirCsDw+FoG1rfzWPwoZ4txGptVdrYwbaqylFbzKmsiswNt4ZXjE4fqobb4+g7
+        f4TYXtFE85Sk6wsxRXe/sjgCs4fDoANy9bT+RqQD4JBq7BK+gym9pMEUVgJJd8l4aMHTG9
+        /KgbPUOLjQc/LDgFVndTxZKpP95pMxc=
+Date:   Tue, 18 Jan 2022 15:37:04 +0100
+From:   David Heidelberg <david@ixit.cz>
+Subject: Re: [PATCH] powerpc/fsl: fix the schema check errors for
+ fsl,tmu-calibration
+To:     Rob Herring <robh+dt@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>
+Cc:     ~okias/devicetree@lists.sr.ht, devicetree@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Message-Id: <SXTW5R.DQG57Y1RMSI9@ixit.cz>
+In-Reply-To: <20211029121733.46849-1-david@ixit.cz>
+References: <20211029121733.46849-1-david@ixit.cz>
+X-Mailer: geary/40.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH net] can: isotp: isotp_rcv_cf(): fix so->rx race problem
-Content-Language: en-US
-To:     "Ziyang Xuan (William)" <william.xuanziyang@huawei.com>,
-        mkl@pengutronix.de
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220117120102.2395157-1-william.xuanziyang@huawei.com>
- <53279d6d-298c-5a85-4c16-887c95447825@hartkopp.net>
- <280e10c1-d1f4-f39e-fa90-debd56f1746d@huawei.com>
-From:   Oliver Hartkopp <socketcan@hartkopp.net>
-In-Reply-To: <280e10c1-d1f4-f39e-fa90-debd56f1746d@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hello, can I ask for review please? Thanks.
+David Heidelberg
 
-
-On 18.01.22 13:46, Ziyang Xuan (William) wrote:
->> Hi,
->>
->> the referenced syzbot issue has already been fixed in upstream here:
->>
->> https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=5f33a09e769a9da0482f20a6770a342842443776
->>
->> ("can: isotp: convert struct tpcon::{idx,len} to unsigned int")
->>
->> Additionally this fix changes some behaviour that is required by the ISO 16765-2 specification (see below).
->>
->> On 17.01.22 13:01, Ziyang Xuan wrote:
->>> When receive a FF, the current code logic does not consider the real
->>> so->rx.state but set so->rx.state to ISOTP_IDLE directly. That will
->>> make so->rx accessed by multiple receiving processes concurrently.
->>
->> This is intentionally. "multiple receiving processes" are not allowed resp. specified by ISO 15765-2.
+On Fri, Oct 29 2021 at 14:17:33 +0200, David Heidelberg <david@ixit.cz> 
+wrote:
+> fsl,tmu-calibration is in u32-matrix format. Use matching property 
+> syntax.
+> No functional changes. Fixes warnings as:
+> $ make dtbs_check
+> ...
+> arch/arm64/boot/dts/freescale/imx8mq-librem5-r3.dt.yaml: 
+> tmu@30260000: fsl,tmu-calibration:0: Additional items are not allowed 
+> (1, 41, 2, 47, 3, 53, 4, 61, 5, 67, 6, 75, 7, 81, 8, 87, 9, 95, 10, 
+> 103, 11, 111
+> , 65536, 27, 65537, 35, 65538, 43, 65539, 51, 65540, 59, 65541, 67, 
+> 65542, 75, 65543, 85, 65544, 93, 65545, 103, 65546, 112, 131072, 23, 
+> 131073, 35, 131074, 45, 131075, 55, 131076, 65, 131077, 75, 131078, 
+> 87, 13
+> 1079, 99, 131080, 111, 196608, 21, 196609, 33, 196610, 45, 196611, 
+> 57, 196612, 69, 196613, 83, 196614, 95, 196615, 113 were unexpected)
+>         From schema: 
+> Documentation/devicetree/bindings/thermal/qoriq-thermal.yaml
+> ...
 > 
-> Does it can be a network attack?
+> Signed-off-by: David Heidelberg <david@ixit.cz>
+> ---
+>  arch/powerpc/boot/dts/fsl/t1023si-post.dtsi | 79 
+> +++++++++++----------
+>  arch/powerpc/boot/dts/fsl/t1040si-post.dtsi | 71 +++++++++---------
+>  2 files changed, 76 insertions(+), 74 deletions(-)
+> 
+> diff --git a/arch/powerpc/boot/dts/fsl/t1023si-post.dtsi 
+> b/arch/powerpc/boot/dts/fsl/t1023si-post.dtsi
+> index d552044c5afc..aa5152ca8120 100644
+> --- a/arch/powerpc/boot/dts/fsl/t1023si-post.dtsi
+> +++ b/arch/powerpc/boot/dts/fsl/t1023si-post.dtsi
+> @@ -367,45 +367,46 @@ tmu: tmu@f0000 {
+>  		reg = <0xf0000 0x1000>;
+>  		interrupts = <18 2 0 0>;
+>  		fsl,tmu-range = <0xb0000 0xa0026 0x80048 0x30061>;
+> -		fsl,tmu-calibration = <0x00000000 0x0000000f
+> -				       0x00000001 0x00000017
+> -				       0x00000002 0x0000001e
+> -				       0x00000003 0x00000026
+> -				       0x00000004 0x0000002e
+> -				       0x00000005 0x00000035
+> -				       0x00000006 0x0000003d
+> -				       0x00000007 0x00000044
+> -				       0x00000008 0x0000004c
+> -				       0x00000009 0x00000053
+> -				       0x0000000a 0x0000005b
+> -				       0x0000000b 0x00000064
+> -
+> -				       0x00010000 0x00000011
+> -				       0x00010001 0x0000001c
+> -				       0x00010002 0x00000024
+> -				       0x00010003 0x0000002b
+> -				       0x00010004 0x00000034
+> -				       0x00010005 0x00000039
+> -				       0x00010006 0x00000042
+> -				       0x00010007 0x0000004c
+> -				       0x00010008 0x00000051
+> -				       0x00010009 0x0000005a
+> -				       0x0001000a 0x00000063
+> -
+> -				       0x00020000 0x00000013
+> -				       0x00020001 0x00000019
+> -				       0x00020002 0x00000024
+> -				       0x00020003 0x0000002c
+> -				       0x00020004 0x00000035
+> -				       0x00020005 0x0000003d
+> -				       0x00020006 0x00000046
+> -				       0x00020007 0x00000050
+> -				       0x00020008 0x00000059
+> -
+> -				       0x00030000 0x00000002
+> -				       0x00030001 0x0000000d
+> -				       0x00030002 0x00000019
+> -				       0x00030003 0x00000024>;
+> +		fsl,tmu-calibration =
+> +				<0x00000000 0x0000000f>,
+> +				<0x00000001 0x00000017>,
+> +				<0x00000002 0x0000001e>,
+> +				<0x00000003 0x00000026>,
+> +				<0x00000004 0x0000002e>,
+> +				<0x00000005 0x00000035>,
+> +				<0x00000006 0x0000003d>,
+> +				<0x00000007 0x00000044>,
+> +				<0x00000008 0x0000004c>,
+> +				<0x00000009 0x00000053>,
+> +				<0x0000000a 0x0000005b>,
+> +				<0x0000000b 0x00000064>,
+> +
+> +				<0x00010000 0x00000011>,
+> +				<0x00010001 0x0000001c>,
+> +				<0x00010002 0x00000024>,
+> +				<0x00010003 0x0000002b>,
+> +				<0x00010004 0x00000034>,
+> +				<0x00010005 0x00000039>,
+> +				<0x00010006 0x00000042>,
+> +				<0x00010007 0x0000004c>,
+> +				<0x00010008 0x00000051>,
+> +				<0x00010009 0x0000005a>,
+> +				<0x0001000a 0x00000063>,
+> +
+> +				<0x00020000 0x00000013>,
+> +				<0x00020001 0x00000019>,
+> +				<0x00020002 0x00000024>,
+> +				<0x00020003 0x0000002c>,
+> +				<0x00020004 0x00000035>,
+> +				<0x00020005 0x0000003d>,
+> +				<0x00020006 0x00000046>,
+> +				<0x00020007 0x00000050>,
+> +				<0x00020008 0x00000059>,
+> +
+> +				<0x00030000 0x00000002>,
+> +				<0x00030001 0x0000000d>,
+> +				<0x00030002 0x00000019>,
+> +				<0x00030003 0x00000024>;
+>  		#thermal-sensor-cells = <1>;
+>  	};
+> 
+> diff --git a/arch/powerpc/boot/dts/fsl/t1040si-post.dtsi 
+> b/arch/powerpc/boot/dts/fsl/t1040si-post.dtsi
+> index f58eb820eb5e..27e6985d8bde 100644
+> --- a/arch/powerpc/boot/dts/fsl/t1040si-post.dtsi
+> +++ b/arch/powerpc/boot/dts/fsl/t1040si-post.dtsi
+> @@ -447,41 +447,42 @@ tmu: tmu@f0000 {
+>  		reg = <0xf0000 0x1000>;
+>  		interrupts = <18 2 0 0>;
+>  		fsl,tmu-range = <0xa0000 0x90026 0x8004a 0x1006a>;
+> -		fsl,tmu-calibration = <0x00000000 0x00000025
+> -				       0x00000001 0x00000028
+> -				       0x00000002 0x0000002d
+> -				       0x00000003 0x00000031
+> -				       0x00000004 0x00000036
+> -				       0x00000005 0x0000003a
+> -				       0x00000006 0x00000040
+> -				       0x00000007 0x00000044
+> -				       0x00000008 0x0000004a
+> -				       0x00000009 0x0000004f
+> -				       0x0000000a 0x00000054
+> -
+> -				       0x00010000 0x0000000d
+> -				       0x00010001 0x00000013
+> -				       0x00010002 0x00000019
+> -				       0x00010003 0x0000001f
+> -				       0x00010004 0x00000025
+> -				       0x00010005 0x0000002d
+> -				       0x00010006 0x00000033
+> -				       0x00010007 0x00000043
+> -				       0x00010008 0x0000004b
+> -				       0x00010009 0x00000053
+> -
+> -				       0x00020000 0x00000010
+> -				       0x00020001 0x00000017
+> -				       0x00020002 0x0000001f
+> -				       0x00020003 0x00000029
+> -				       0x00020004 0x00000031
+> -				       0x00020005 0x0000003c
+> -				       0x00020006 0x00000042
+> -				       0x00020007 0x0000004d
+> -				       0x00020008 0x00000056
+> -
+> -				       0x00030000 0x00000012
+> -				       0x00030001 0x0000001d>;
+> +		fsl,tmu-calibration =
+> +				<0x00000000 0x00000025>,
+> +				<0x00000001 0x00000028>,
+> +				<0x00000002 0x0000002d>,
+> +				<0x00000003 0x00000031>,
+> +				<0x00000004 0x00000036>,
+> +				<0x00000005 0x0000003a>,
+> +				<0x00000006 0x00000040>,
+> +				<0x00000007 0x00000044>,
+> +				<0x00000008 0x0000004a>,
+> +				<0x00000009 0x0000004f>,
+> +				<0x0000000a 0x00000054>,
+> +
+> +				<0x00010000 0x0000000d>,
+> +				<0x00010001 0x00000013>,
+> +				<0x00010002 0x00000019>,
+> +				<0x00010003 0x0000001f>,
+> +				<0x00010004 0x00000025>,
+> +				<0x00010005 0x0000002d>,
+> +				<0x00010006 0x00000033>,
+> +				<0x00010007 0x00000043>,
+> +				<0x00010008 0x0000004b>,
+> +				<0x00010009 0x00000053>,
+> +
+> +				<0x00020000 0x00000010>,
+> +				<0x00020001 0x00000017>,
+> +				<0x00020002 0x0000001f>,
+> +				<0x00020003 0x00000029>,
+> +				<0x00020004 0x00000031>,
+> +				<0x00020005 0x0000003c>,
+> +				<0x00020006 0x00000042>,
+> +				<0x00020007 0x0000004d>,
+> +				<0x00020008 0x00000056>,
+> +
+> +				<0x00030000 0x00000012>,
+> +				<0x00030001 0x0000001d>;
+>  		#thermal-sensor-cells = <1>;
+>  	};
+> 
+> --
+> 2.33.0
+> 
 
-Yes. You can see it like this. The ISO 15765-2 protocol is an unreliable 
-UDP-like datagram protocol and the session layer takes care about 
-timeouts and packet lost.
 
-If you want to disturb that protocol you can also send PDUs with 
-out-of-sync packet counters which will make the receiver drop the 
-communication attempt.
-
-This is 'CAN-style' ... as usually the bus is very reliable. Security 
-and reliable communication is done on top of these protocols.
-
-> It receives packets from network, but unexpected packets order make server panic.
-
-Haha, no :-)
-
-Unexpected packets should not make the server panic but only drop the 
-communication process.
-
-In the case pointed out by syzbot the unsigned 32 bit length information 
-was stored in a signed 32 bit integer which caused a sanity check to fail.
-
-This is now fixed with the patch from Marc.
-
-Regards,
-Oliver
