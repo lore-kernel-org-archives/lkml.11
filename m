@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A705CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:36:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75E42C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:36:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346108AbiARCfY (ORCPT
+        id S1345483AbiARCfq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:35:24 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:41800 "EHLO
+        Mon, 17 Jan 2022 21:35:46 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42390 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344142AbiARC3C (ORCPT
+        with ESMTP id S1344315AbiARC3n (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:29:02 -0500
+        Mon, 17 Jan 2022 21:29:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D916B81247;
-        Tue, 18 Jan 2022 02:29:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78C0BC36AE3;
-        Tue, 18 Jan 2022 02:28:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E8F96B81244;
+        Tue, 18 Jan 2022 02:29:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 606A6C36AE3;
+        Tue, 18 Jan 2022 02:29:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472940;
-        bh=t24xaTbX/YPgqubRwPSZulUBEsrmp1dBDxvvqQabvmg=;
+        s=k20201202; t=1642472980;
+        bh=o+qYG+ML9wHDSqQvfw0/Rdn3tY3nA8lbroLnq/hiesA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q09BT3mn9ihBwqKcdQ66m9+xpiFb0TD3rlk4WTorJmUBxJvLq/mj35hNgVzFXsRSB
-         m60Bu9Svd/8kdZqjHvJHbGKfhkxU1ltsiZEckCc3Q7MFVQKph+TnQ+rzLc0JhJyX/l
-         UYqvb/AJ5TMtkUyxUIzaA/cst7C4hZd81JGR6AmycJjTHUayJSl2uEm6tV1kDNS1Ee
-         umW0c+ptsF6jEQeyXuIDoVRvb/JFlP2El/DYlfZbqukFluLWqoHYHw2dGEbEEaZoOp
-         jKR1mNpoDOxK6HdPCskrJP8NO2Y3Dyy2fP8iIsiiPX6O7P5ir3VJWZ4wmvydTqRtpc
-         IlRShcDBemOow==
+        b=MkdzJxjbGu4pDkLYjH8nvC07Ei5kuKHFfWOoUhYfsYa4sVbv2HLNPhCijROJnc2wN
+         w3alVI4upquEH9K9WlWiR4LmhYmPB1fDjvRmWaOjwNd1CXZRWb0BmFzh1YYh2582eF
+         7Te4Xdt6ci55sGiEJd87M/+nqA+9tCP4P6unSIp7UhxnYpY1fXeLSgO97cYUmTCcW5
+         E7KxEcNTxI1z+895k/e/BQN/9gQ4oSjpC8asrtSRrcUq/N6XVL7fsgiI9WZFP6i0w4
+         TgGZbRqYqp3J+ezMeC+Ur5Ltc1xu0z4ra1WOe4fQ5/aacxXpHgAR3by3hYAJC2W69Y
+         Ldh7f1JFoKchw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, johannes.berg@intel.com,
-        mordechay.goodstein@intel.com, emmanuel.grumbach@intel.com,
-        michael.golant@intel.com, jkosina@suse.cz, ilan.peer@intel.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 168/217] iwlwifi: pcie: make sure prph_info is set when treating wakeup IRQ
-Date:   Mon, 17 Jan 2022 21:18:51 -0500
-Message-Id: <20220118021940.1942199-168-sashal@kernel.org>
+Cc:     Marina Nikolic <Marina.Nikolic@amd.com>,
+        Evan Quan <evan.quan@amd.com>, Lijo Lazar <lijo.lazar@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.16 188/217] amdgpu/pm: Make sysfs pm attributes as read-only for VFs
+Date:   Mon, 17 Jan 2022 21:19:11 -0500
+Message-Id: <20220118021940.1942199-188-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -52,43 +52,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Coelho <luciano.coelho@intel.com>
+From: Marina Nikolic <Marina.Nikolic@amd.com>
 
-[ Upstream commit 459fc0f2c6b0f6e280bfa0f230c100c9dfe3a199 ]
+[ Upstream commit 11c9cc95f818f0f187e9b579a7f136f532b42445 ]
 
-In some rare cases when the HW is in a bad state, we may get this
-interrupt when prph_info is not set yet.  Then we will try to
-dereference it to check the sleep_notif element, which will cause an
-oops.
+== Description ==
+Setting values of pm attributes through sysfs
+should not be allowed in SRIOV mode.
+These calls will not be processed by FW anyway,
+but error handling on sysfs level should be improved.
 
-Fix that by ignoring the interrupt if prph_info is not set yet.
+== Changes ==
+This patch prohibits performing of all set commands
+in SRIOV mode on sysfs level.
+It offers better error handling as calls that are
+not allowed will not be propagated further.
 
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211219132536.0537aa562313.I183bb336345b9b3da196ba9e596a6f189fbcbd09@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+== Test ==
+Writing to any sysfs file in passthrough mode will succeed.
+Writing to any sysfs file in ONEVF mode will yield error:
+"calling process does not have sufficient permission to execute a command".
+
+Signed-off-by: Marina Nikolic <Marina.Nikolic@amd.com>
+Acked-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/pcie/rx.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/pm/amdgpu_pm.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-index 14602d6d6699f..8247014278f30 100644
---- a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-+++ b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
-@@ -2266,7 +2266,12 @@ irqreturn_t iwl_pcie_irq_msix_handler(int irq, void *dev_id)
+diff --git a/drivers/gpu/drm/amd/pm/amdgpu_pm.c b/drivers/gpu/drm/amd/pm/amdgpu_pm.c
+index 41472ed992530..f8370d54100e8 100644
+--- a/drivers/gpu/drm/amd/pm/amdgpu_pm.c
++++ b/drivers/gpu/drm/amd/pm/amdgpu_pm.c
+@@ -2123,6 +2123,12 @@ static int default_attr_update(struct amdgpu_device *adev, struct amdgpu_device_
  		}
  	}
  
--	if (inta_hw & MSIX_HW_INT_CAUSES_REG_WAKEUP) {
-+	/*
-+	 * In some rare cases when the HW is in a bad state, we may
-+	 * get this interrupt too early, when prph_info is still NULL.
-+	 * So make sure that it's not NULL to prevent crashing.
-+	 */
-+	if (inta_hw & MSIX_HW_INT_CAUSES_REG_WAKEUP && trans_pcie->prph_info) {
- 		u32 sleep_notif =
- 			le32_to_cpu(trans_pcie->prph_info->sleep_notif);
- 		if (sleep_notif == IWL_D3_SLEEP_STATUS_SUSPEND ||
++	/* setting should not be allowed from VF */
++	if (amdgpu_sriov_vf(adev)) {
++		dev_attr->attr.mode &= ~S_IWUGO;
++		dev_attr->store = NULL;
++	}
++
+ #undef DEVICE_ATTR_IS
+ 
+ 	return 0;
 -- 
 2.34.1
 
