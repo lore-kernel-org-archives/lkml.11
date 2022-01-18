@@ -2,110 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 290C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 07:57:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E932C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 08:01:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343760AbiARH5S (ORCPT
+        id S1343801AbiARIBG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 02:57:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50480 "EHLO
+        Tue, 18 Jan 2022 03:01:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231722AbiARH5M (ORCPT
+        with ESMTP id S244429AbiARIBE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 02:57:12 -0500
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C80DC061574
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 23:57:12 -0800 (PST)
-Received: by mail-qt1-x82e.google.com with SMTP id l17so21390279qtk.7
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 23:57:12 -0800 (PST)
+        Tue, 18 Jan 2022 03:01:04 -0500
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECFD2C061574
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 00:01:03 -0800 (PST)
+Received: by mail-oi1-x22c.google.com with SMTP id q186so27282816oih.8
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 00:01:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oVASYcnUzo//aC4Lo3/46A3KtVN0oXM5tvWTeJ4jCZ8=;
-        b=dFYGMojLFUBw1OMQjj6HwqnFRyARImliTcO5d7rybcEcORxWEfUGG7jjQtc9PHvOhb
-         FTa0uKEgRc18PNWHHcixKTxZa+PX1QMKX20DuT5ma1QOhCgYVM22WgljjR4LB6SlXNYp
-         jif/sq0cmvxhBSQ0kOaqsHsd3B+bEeDTxG7Chlz4Zd5FUfDSSeCgGJLCJ9l2AYOlGAPM
-         6TzP+9gN33/WW2NlNFUROaL87ApVOyv1AgPoG5yMDqSOPrbMz3ES6zeZ12yOapBa7nk4
-         I+IxRKwRqZYxPiW7qZNqrvhv1zLwawkF9wvs2u2JyItB1A8c2cCboH1TPGHCDcV8cShI
-         a05Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Al3F+2ViLnm9/9qxjHoxeFPrd9kF19aHZnlQsAdIPRg=;
+        b=FCysJPty2mrcMf6v3VRjTFbhweCJRR3WyXaxWMp3y2v3HgQYlh1B9roeLBgjjTLRrF
+         q0EveM9wLKiqTMkN1DW5Bwx6oBRbVXaR3Yor5+pZHw/GeYeVfg7jaml0nA3ZTYTbDPf8
+         /M5uRa5UkC50Ris5+mVE2ymR7zWkKQSwm1M6tEpnSjw+FA+oE8BdNjJc5IU+QJ45WFS1
+         1eYPiEg8mweB/z9UP6dqcOFv/DMTLw15D/CbD2dDV5ue9EUg5bCwcw/h3jULi4lZQdms
+         qsgFgsm0r2f8iqGy0dIX/Ep+vHUUwgup0pUjPtXrxHk/w8ZNsQE+Ez0HsgQDhj6KnjWf
+         h9hw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oVASYcnUzo//aC4Lo3/46A3KtVN0oXM5tvWTeJ4jCZ8=;
-        b=s3qijnV5ydZtp3rtJEUmlbvmGwgj0/K53OSKw4xIXrWYFZEcguyFwGn9qGqzyOIq1G
-         VQoiWKdQAeql5GPNOtpLaC+abXqHaZVwWlYJEm9PqcrU3ifHchS63P0soF6GKvB4doH3
-         SLiu+sS81UOcdKGH8OYXnueCQd0dAb2vQ46yNmsYZzvDY+WneaxLfau3fnXUumgjN9Dt
-         7HZF2IWMtUja+x4mM9PByK1Ru70Ip2pspPXsNusnvPeWKn7EUPZvkPqGL2Jm2cb+3PBE
-         J3RsykAKJQWKxqtDjeANghGX054kEe5e/3x68End9EPYR5HD4eCKtu0Srs+F9/Thm56k
-         sAPA==
-X-Gm-Message-State: AOAM532JqFbIUAX/Lq2WpUrqa93KxVO37noRd2C0SbYf4jLmw2oJL5/S
-        KhSDIkQyf7xxHq4XPdq3JRk=
-X-Google-Smtp-Source: ABdhPJzTOFGF33TPzBo+kbuXuIEVovrBBhmGDVuKZqsKz3S+0IG70LLGvd0QdY8yw99+kVf8vs/r8g==
-X-Received: by 2002:a05:622a:2d1:: with SMTP id a17mr18608482qtx.196.1642492631252;
-        Mon, 17 Jan 2022 23:57:11 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id o7sm10070549qke.44.2022.01.17.23.57.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 23:57:10 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: chi.minghao@zte.com.cn
-To:     alexander.deucher@amd.com
-Cc:     christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
-        daniel@ffwll.ch, Hawking.Zhang@amd.com, john.clements@amd.com,
-        candice.li@amd.com, lijo.lazar@amd.com, lang.yu@amd.com,
-        Oak.Zeng@amd.com, jonathan.kim@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>, CGEL ZTE <cgel.zte@gmail.com>
-Subject: [PATCH] amdgpu/amdgpu_psp: remove unneeded ret variable
-Date:   Tue, 18 Jan 2022 07:57:02 +0000
-Message-Id: <20220118075702.925929-1-chi.minghao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Al3F+2ViLnm9/9qxjHoxeFPrd9kF19aHZnlQsAdIPRg=;
+        b=aHN27QEB4+4UX3kMuAlRjzz7IkFeo7nPNJeaomv3xz85kZn5wsRO6+ZOhNGKXU5Z/Q
+         eNoVYXXrqAnIYSc6vNKO0zti+Q+RGeAGyEurCQtL9doOg1zuVSpIw+sJGNEaTl1+GOem
+         4xNtL4fIDrlDFOMqZV6FkENHVgs+j5yoTMwpwABJMP6gZWBaFvYBt7fXiWqt34MNAI/Q
+         odq8krMMMQk7ddRY1jvFD4/0LPcqvuGZikF0g4jxnYABA1r7PY3lmLW+xpxWSoehAfZ3
+         BzhMsL2TaBsHdfBRkbFzWXMuED5nTc09RKak4CK1LUTajza0FXq15WYTpLWKUkAiJ4SX
+         Koiw==
+X-Gm-Message-State: AOAM531XhHEa6YDTnIlz9PmpkV1zQ7tPYLuvGoh4pgRvuVsUJbefl9HA
+        /IByxpEPmkZdDgug9F8MKWR1ycv/uPA3w+tF+qY=
+X-Google-Smtp-Source: ABdhPJzvGwPY3OUJ5cr+YDP3ryIKCL5St1eOUXqyHiBMdGlYGVftPHZ71UYHtXtQprVP0IFc5O3S9yOgkr3fuXzNLkU=
+X-Received: by 2002:aca:2802:: with SMTP id 2mr7601418oix.23.1642492863253;
+ Tue, 18 Jan 2022 00:01:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <388098b2c03fbf0a732834fc01b2d875c335bc49.1642170196.git.lucien.xin@gmail.com>
+ <YeO8pcs866Iu2iJX@ip-172-31-30-232.ap-northeast-1.compute.internal>
+ <CADvbK_eY=3Gf79MkvK72Nh86ysN4eoFei0k1jg0frg22GgToGA@mail.gmail.com>
+ <YeU4B46F+oFUBRLE@linutronix.de> <39a3470f-06ab-cf41-32e4-80edb249c7d3@suse.cz>
+ <20220117131304.pdc3mfdowkzovw6q@localhost.localdomain>
+In-Reply-To: <20220117131304.pdc3mfdowkzovw6q@localhost.localdomain>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 18 Jan 2022 16:00:51 +0800
+Message-ID: <CADvbK_eKRNpE7PkdFLQgmfEme5LgEVDK7WakUc-Rj4XTRSpdiQ@mail.gmail.com>
+Subject: Re: [PATCH] mm: slub: fix a deadlock warning in kmem_cache_destroy
+To:     Juri Lelli <juri.lelli@redhat.com>
+Cc:     Vlastimil Babka <vbabka@suse.cz>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
+        Christoph Lameter <cl@linux.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Antoine Tenart <atenart@kernel.org>,
+        Clark Williams <williams@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Minghao Chi <chi.minghao@zte.com.cn>
+On Mon, Jan 17, 2022 at 9:13 PM Juri Lelli <juri.lelli@redhat.com> wrote:
+>
+> Hi,
+>
+> On 17/01/22 13:40, Vlastimil Babka wrote:
+> > +CC Clark
+> >
+> > On 1/17/22 10:33, Sebastian Andrzej Siewior wrote:
+> > > On 2022-01-17 16:32:46 [+0800], Xin Long wrote:
+> > >> another issue. From the code analysis, this issue does exist on the
+> > >> upstream kernel, though I couldn't build an upstream RT kernel for the
+> > >> testing.
+> > >
+> > > This should also reproduce in v5.16 since the commit in question is
+> > > there.
+> >
+> > Yeah. I remember we had some issues with the commit during development, but
+> > I'd hope those were resolved and the commit that's ultimately merged got the
+> > fixes, see this subthread:
+> >
+> > https://lore.kernel.org/all/0b36128c-3e12-77df-85fe-a153a714569b@quicinc.com/
+> >
+> > >> > >         CPU0                        CPU1
+> > >> > >         ----                        ----
+> > >> > >   cpus_read_lock()
+> > >> > >                                    kn->active++
+> > >> > >                                    cpus_read_lock() [a]
+> > >> > >   wait until kn->active == 0
+> > >> > >
+> > >> > > Although cpu_hotplug_lock is a RWSEM, [a] will not block in there. But as
+> > >> > > lockdep annotations are added for cpu_hotplug_lock, a deadlock warning
+> > >> > > would be detected:
+> > >
+> > > The cpu_hotplug_lock is a per-CPU RWSEM. The lock in [a] will block if
+> > > there is a writer pending.
+> > >
+> > >> > >   ======================================================
+> > >> > >   WARNING: possible circular locking dependency detected
+> > >> > >   ------------------------------------------------------
+> > >> > >   dmsetup/1832 is trying to acquire lock:
+> > >> > >   ffff986f5a0f9f20 (kn->count#144){++++}-{0:0}, at: kernfs_remove+0x1d/0x30
+> > >> > >
+> > >> > >   but task is already holding lock:
+> > >> > >   ffffffffa43817c0 (slab_mutex){+.+.}-{3:3}, at: kmem_cache_destroy+0x2a/0x120
+> > >> > >
+> > >
+> > > I tried to create & destroy a cryptarget which creates/destroy a cache
+> > > via bio_put_slab(). Either the callchain is different or something else
+> > > is but I didn't see a lockdep warning.
+> >
+> > RHEL-8 kernel seems to be 4.18, unless RT uses a newer one. Could be some
+> > silently relevant backport is missing? How about e.g. 59450bbc12be ("mm,
+> > slab, slub: stop taking cpu hotplug lock") ?
+>
+> Hummm, looks like we have backported commit 59450bbc12be in RHEL-8.
+>
+> Xin Long, would you be able to check if you still see the lockdep splat
+> with latest upstream RT?
+>
+> git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git linux-5.16.y-rt
+Hi, Juri,
 
-Return value from amdgpu_bo_create_kernel() directly instead
-of taking this in another redundant variable.
+Thanks for sharing the RT kernel repo.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Minghao Chi <chi.minghao@zte.com.cn>
-Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
----
- drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
+I just tried with this kernel, and I couldn't reproduce it on my env.
+But I don't see how the upstream RT kernel can avoid the call trace.
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-index dee17a0e1187..ac2b87f81ef9 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-@@ -914,19 +914,15 @@ static void psp_prep_ta_load_cmd_buf(struct psp_gfx_cmd_resp *cmd,
- static int psp_ta_init_shared_buf(struct psp_context *psp,
- 				  struct ta_mem_context *mem_ctx)
- {
--	int ret;
--
- 	/*
- 	* Allocate 16k memory aligned to 4k from Frame Buffer (local
- 	* physical) for ta to host memory
- 	*/
--	ret = amdgpu_bo_create_kernel(psp->adev, mem_ctx->shared_mem_size,
-+	return amdgpu_bo_create_kernel(psp->adev, mem_ctx->shared_mem_size,
- 				      PAGE_SIZE, AMDGPU_GEM_DOMAIN_VRAM,
- 				      &mem_ctx->shared_bo,
- 				      &mem_ctx->shared_mc_addr,
- 				      &mem_ctx->shared_buf);
--
--	return ret;
- }
- 
- static void psp_ta_free_shared_buf(struct ta_mem_context *mem_ctx)
--- 
-2.25.1
+As this warning was triggered when the system was shutting down, it might
+not be reproduced on it due to some timing change.
 
+>
+> Thanks!
+> Juri
+>
