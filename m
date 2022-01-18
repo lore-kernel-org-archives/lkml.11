@@ -2,145 +2,227 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6683C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 08:42:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A04C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 08:43:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344776AbiARImv (ORCPT
+        id S1344852AbiARInT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 03:42:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:35715 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1344780AbiARIms (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 03:42:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642495367;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TarkNDGLeLClM9Er8y1qKxBwUxhfzivs6AuUpW/f/WM=;
-        b=J9Y+41iJq49KLOOWhrkhRCMVuLEnYAvWgL8I+Qp+0RagEqemg/QeA9DNzHaMXTCZzlFhhU
-        MnNQyGqxFyCdiIdvYiber+1/HB+gio+FnNYtAFj5lZgB1YVjsqm8jQrNmnxKx+2qK9Z4cR
-        G2CJIqvJCz3g6J8zy4QsmRv4FK4N6kM=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-107-H4b2OaVbNS-hgSFsk6OjrQ-1; Tue, 18 Jan 2022 03:42:46 -0500
-X-MC-Unique: H4b2OaVbNS-hgSFsk6OjrQ-1
-Received: by mail-wm1-f70.google.com with SMTP id z2-20020a05600c220200b0034d2eb95f27so878846wml.1
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 00:42:45 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=TarkNDGLeLClM9Er8y1qKxBwUxhfzivs6AuUpW/f/WM=;
-        b=0zWArnVfEQceFe1ImwjWgas18xlgJQTb/K13p9VV7hduSVDMrihYyuBRaVms1JiLhs
-         b1ngORFpHC14wkSLO5UArdnPRNhyKkPF/fKJY1X4zN9EBAsLp008403PRSLFLkS6mNib
-         5vNnPGvvbPtRDBJsxcZlA8bZhw20kdc79xLYAMbM3Ok2vcZKrJH49bM6PaU6qjSbRHJx
-         zjJVUIfkTR7TSuq8Pd1OvlAf6oDOlQjkVCVZwq2VOi1p0+RVETeREwJcqzBmDXevqDA6
-         ZknTThVm6NMEApOzpp1TKBzPXmc/dI1eWFU1df1C5CfAlBnlbc0opHsY/mEJKEFi32mS
-         N8LQ==
-X-Gm-Message-State: AOAM531adebEc2WgMnTgAB80hr33AmTaJbfpAaIvNW41etB0ZCLvsCdV
-        hK4FHVZbZ02uL3tpoXv3fOyrI9iaV5k92v2ILmri/e2492RKAavYP7Aw+ynFkf2vZbD0BATOaXf
-        TXEIreiiraBcgUGPo5h9FrKgY
-X-Received: by 2002:a05:6000:1543:: with SMTP id 3mr18770609wry.98.1642495364881;
-        Tue, 18 Jan 2022 00:42:44 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwAyGvXU5HDKLWFwFpIrTCSK9QY6AaJIsN90njgmJzG/VSlbLny/iJ4sPFZNRRBlJuknO62zg==
-X-Received: by 2002:a05:6000:1543:: with SMTP id 3mr18770585wry.98.1642495364639;
-        Tue, 18 Jan 2022 00:42:44 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id i8sm7620259wry.33.2022.01.18.00.42.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Jan 2022 00:42:44 -0800 (PST)
-Message-ID: <98424056-829b-ed80-73f3-ead0bef1e7ab@redhat.com>
-Date:   Tue, 18 Jan 2022 09:42:41 +0100
+        Tue, 18 Jan 2022 03:43:19 -0500
+Received: from mout.gmx.net ([212.227.15.18]:37319 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1344801AbiARInH (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 03:43:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1642495375;
+        bh=SedghP5JapOAs2pJB1DLV4296xvTjJCK4XoFLMWApjo=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=jw3xsIhxBFYh6g8WtOp9mTKLY6qTDNjIhgPTxeRU/5tzat6rUfDf3NnY3vWjPxJe7
+         k9VGvHOxwPb/iMw3NHvY6N4djbQISurV9Cyo6PsQuR2VCrPsKq731qk+ABq7sabEHK
+         U+MBPZF2uRqxrhI0lis7IgezBDgnzvVgKzSpIguI=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.155.155]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MbAh0-1mcsAJ2F1U-00bYa6; Tue, 18
+ Jan 2022 09:42:55 +0100
+Message-ID: <4009cf14-2bb0-a63a-1936-4ac4d757777a@gmx.de>
+Date:   Tue, 18 Jan 2022 09:41:50 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: [PATCH] KVM: x86/cpuid: Clear XFD for component i if the base
- feature is missing
+ Thunderbird/91.3.0
+Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
 Content-Language: en-US
-To:     Like Xu <like.xu.linux@gmail.com>
-Cc:     Jing Liu <jing2.liu@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220117074531.76925-1-likexu@tencent.com>
- <301d4800-5eab-6e21-e8c1-2f87789fc4b9@redhat.com>
- <5ca97b8f-facd-b1dc-f671-51569ad17284@gmail.com>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <5ca97b8f-facd-b1dc-f671-51569ad17284@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+To:     Daniel Vetter <daniel@ffwll.ch>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        "airlied@gmail.com" <airlied@gmail.com>,
+        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>
+References: <YeG8ydoJNWWkGrTb@ls3530>
+ <CAKMK7uGdJckdM+fg+576iJXsqzCOUg20etPBMwRLB9U7GcG01Q@mail.gmail.com>
+ <c80ed72c-2eb4-16dd-a7ad-57e9dde59ba1@gmx.de>
+ <CAKMK7uHVHn9apB6YYbLSwu+adEB2Fqp4FM0z582zf4F-v3_GnQ@mail.gmail.com>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <CAKMK7uHVHn9apB6YYbLSwu+adEB2Fqp4FM0z582zf4F-v3_GnQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:Vw5Y8Ukxx+E+/vPqCkQYPUnaTtWM1BJ50QjjdAWjvvb1RETIG8u
+ hDvvDSSFPXXEMNCEnGEEDVsc5xc8DGNqBYfqRvjsRArdmqnkTRK588TuS93fIMCoYwmyP3c
+ fAWFTt0qfAvOPHy3BvuQUx9SoXcS0JQPg15uIM3EcQcOjFAAo3jP9V5v0m8CSveu25G2v1h
+ oSNDgsqSz6Iv1o0gy1grA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:W8m+MGP2rXo=:dHowt1gesn8TSdGNPXRQlC
+ n0zDMpR079YGvttuGR+F6X5XPwVUVXxgLCny7pZNIfEia/gWG0wGq6nTOosmsSL6A6Uzm5WKv
+ xN59Bqr4n9TIsH7rbebwUinIVjouNznl8YUXJGEvZbG45aYKUqqaYJ/nBvGmVDuYF3rs+Skrf
+ 5Durjf3wbd9pyLHKHXieE17P2pPPAhdINPeSi+bRdfqZw/xTpepv3veT7dKnWQduG62oXyfYu
+ R3KkTNIO+Qi7z/x6Gt444UdWJNZD8FpWM8eIK1RkMQ/c4amtgiWCx3zXX47vAS/BfoCUhkPY9
+ WreOy5rAREm8crzuwlOXTsvpbmyupBAWR33Xr4v53Ht9GRGB8elWEms5mbqaiOZmH9HH+XJoN
+ 5fDidzCxzmohrKgltrJocx98BMr7/htFVVJDLutp44wWANjG/YNk83BL4M5Ln788jdL+KbsKE
+ 5SOcHWXOUwNE0uFFQJfuaYGXYnQKaOM4h7AEjvw9/kxaNWEIjWsrwKTNpwlJqh2XHOChKLMtY
+ eqJYmAACgQNfQCBtz9ql0lYVDNBWfuywsGMzYQaeC5HVOeaoNAqUxtXxnS8jJ+RL0w+4K2DqR
+ qekQ6DmUFIliXG/zOAd4w+CwfNK83kRnybiY2QiY+c+yjl67S/p8HJ3hB4ngMweTouY2KIU/Q
+ r6t7yuIyeQG5lfTYQAThzI7Pc/D2aX3ktPTxWJHSaMUUuvlqLF3n1BekuZ/wjLiIBt4YzImVu
+ PeK+jl3uUj5GF/9jwzkkSuJR67wIiovqavhapnxs98wkYyilD4x+1hduZdVAGkxydKVLcpwAf
+ dVQLFKCrSJ0jifnhPy0poCZjwYiVJ9rAp+2NRSQoI2AtuJSYyuDuWoHB6Canx8e6D/vwdIE5B
+ xdOS+ECZjbjZzRU777uRVQWPwrm3XHiGPQyE9XdAFtnPuuTf/v9X/BprLBktdA8DcPQEUaMz3
+ CnzRDU6WPIejj4AQX6SYK7n5GIUXbLmJ01M4qs14ZtHwbAmx3D0Il9sAnat+EqhZ8gJShiq5f
+ Rhh42yl+mtfv5ZLoktcRGvoqEkrEw7n0HGTOBhVxt5WyIxOiGxcdoZeAh0DOHEaONvtTWMImm
+ RMHKavNxd9NVTY=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/18/22 07:43, Like Xu wrote:
-> On 18/1/2022 1:31 am, Paolo Bonzini wrote:
->> On 1/17/22 08:45, Like Xu wrote:
->>> From: Like Xu <likexu@tencent.com>
+Hello Daniel,
+
+On 1/17/22 16:00, Daniel Vetter wrote:
+> On Mon, Jan 17, 2022 at 1:16 PM Helge Deller <deller@gmx.de> wrote:
+>> On 1/17/22 11:02, Daniel Vetter wrote:
+>>> On Fri, Jan 14, 2022 at 7:18 PM Helge Deller <deller@gmx.de> wrote:
+>>>>
+>>>> The fbdev layer is orphaned, but seems to need some care.
+>>>> So I'd like to step up as new maintainer.
+>>>>
+>>>> Signed-off-by: Helge Deller <deller@gmx.de>
+>>>>
+>>>> diff --git a/MAINTAINERS b/MAINTAINERS
+>>>> index 5d0cd537803a..ce47dbc467cc 100644
+>>>> --- a/MAINTAINERS
+>>>> +++ b/MAINTAINERS
+>>>> @@ -7583,11 +7583,12 @@ W:      http://floatingpoint.sourceforge.net/=
+emulator/index.html
+>>>>  F:     arch/x86/math-emu/
+>>>>
+>>>>  FRAMEBUFFER LAYER
+>>>> -L:     dri-devel@lists.freedesktop.org
+>>>> +M:     Helge Deller <deller@gmx.de>
+>>>>  L:     linux-fbdev@vger.kernel.org
+>>>> -S:     Orphan
 >>>
->>> According to Intel extended feature disable (XFD) spec, the 
->>> sub-function i
->>> (i > 1) of CPUID function 0DH enumerates "details for state component i.
->>> ECX[2] enumerates support for XFD support for this state component."
+>>> Maybe don't rush maintainer changes in over the w/e without even bothe=
+ring
+>>> to get any input from the people who've been maintaining it before.
 >>>
->>> If KVM does not report F(XFD) feature (e.g. due to CONFIG_X86_64),
->>> then the corresponding XFD support for any state component i
->>> should also be removed. Translate this dependency into KVM terms.
+>>> Because the status isn't entirely correct, fbdev core code and fbcon a=
+nd
+>>> all that has been maintained, but in bugfixes only mode. And there's v=
+ery
+>>> solid&important reasons to keep merging these patches through a drm tr=
+ee,
+>>> because that's where all the driver development happens, and hence als=
+o
+>>> all the testing (e.g. the drm test suite has some fbdev tests - the on=
+ly
+>>> automated ones that exist to my knowledge - and we run them in CI). So
+>>> moving that into an obscure new tree which isn't even in linux-next ye=
+t is
+>>> no good at all.
 >>>
->>> Fixes: 690a757d610e ("kvm: x86: Add CPUID support for Intel AMX")
->>> Signed-off-by: Like Xu <likexu@tencent.com>
->>> ---
->>>   arch/x86/kvm/cpuid.c | 3 +++
->>>   1 file changed, 3 insertions(+)
+>>> Now fbdev driver bugfixes is indeed practically orphaned and I very mu=
+ch
+>>> welcome anyone stepping up for that, but the simplest approach there w=
+ould
+>>> be to just get drm-misc commit rights and push the oddball bugfix in t=
+here
+>>> directly. But also if you want to do your own pull requests to Linus f=
+or
+>>> that I don't care and there's really no interference I think, so
+>>> whatever floats.
 >>>
->>> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
->>> index c55e57b30e81..e96efef4f048 100644
->>> --- a/arch/x86/kvm/cpuid.c
->>> +++ b/arch/x86/kvm/cpuid.c
->>> @@ -886,6 +886,9 @@ static inline int __do_cpuid_func(struct 
->>> kvm_cpuid_array *array, u32 function)
->>>                   --array->nent;
->>>                   continue;
->>>               }
->>> +
->>> +            if (!kvm_cpu_cap_has(X86_FEATURE_XFD))
->>> +                entry->ecx &= ~BIT_ULL(2);
->>>               entry->edx = 0;
->>>           }
->>>           break;
+>>> But any code that is relevant for drm drivers really needs to go in th=
+rough
+>>> drm trees, nothing else makes much sense.
+>>>
+>>> I guess you're first action as newly minted fbdev maintainer is going =
+to be to
+>>> clean up the confusion you just created.
 >>
->> Generally this is something that is left to userspace.  Apart from the 
->> usecase of "call KVM_GET_SUPPORTED_CPUID and pass it to 
->> KVM_SET_CPUID2", userspace should know what any changed bits mean.
+>> Most of my machines depend on a working fbdev layer since drm isn't (an=
+d probably
+>> -due to technical requirements of DRM- won't be) available for those.
+>> So, since the fbdev drivers were marked orphaned, I decided to step up =
+as maintainer.
 >>
->> Paolo
+>> I see your point that at least the fbdev core code and fbcon are shared=
+ between DRM and fbdev.
+>> For me it's really not important to drive any patches through a seperat=
+e tree, so
+>> I'd be happy to join the drm-misc tree if you feel it's necessary. (By =
+the way,
+>> adding my tree to for-next was on my todo list...)
 >>
-> 
-> I totally agree that setting the appropriate CPUID bits for a feature is 
-> a user space thing.
-> 
-> But this patch is more focused on fixing a different type of problem, 
-> which is
-> that the capabilities exposed by KVM should not *contradict each other* :
-> 
->      a user space may be confused with the current code base :
->      - why KVM does not have F(XFD) feature (MSR_IA32_XFD and XFD_ERR 
-> non-exit),
->      - but KVM reports XFD support for state component i individually;
+>> What's important for me though is, to keep fbdev actively maintained, w=
+hich means:
+>> a) to get fixes which were posted to fbdev mailing list applied if they=
+ are useful & correct,
+>
+> Yeah it'd be great if we have that, for a while Bart took care of
+> these, but had to step down again. drm-misc is maintained with the dim
+> scrip suite, which comes with docs and bash completion and everything.
+> Good starting pointer is here:
+>
+> https://drm.pages.freedesktop.org/maintainer-tools/getting-started.html
+>
+> Process for getting commit rights is documented here:
+>
+> https://drm.pages.freedesktop.org/maintainer-tools/commit-access.html#dr=
+m-misc
+>
+> But there's a pile more. I think once we've set that up and got it
+> going we can look at the bigger items. Some of them are fairly
+> low-hanging fruit, but the past 5+ years absolutely no one bothered to
+> step up and sort them out. Other problem areas in fbdev are extremely
+> hard to fix properly, without only doing minimal security-fixes only
+> support, so fair warning there. I think a good starting point would be
+> to read the patches and discussions for some of the things you've
+> reverted in your tree.
+>
+> Anyway I hope this gets you started, and hopefully after a minor
+> detour: Welcome to dri-devel, we're happy to take any help we can get,
+> there's lots to do!
 
-Got it.  Yeah, the patch makes sense for the sake of CONFIG_X86_64.
+Thanks for this info, Daniel!
 
-Paolo
+After reading those docs I've decided not to join dri-devel and keep
+my existing linux-fbdev tree at:
 
-> This is like KVM reporting PEBS when no PMU capacity is reported (due to 
-> module param).
+https://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git
 
+The linux-fbdev is a low-volume mailing list with mostly small bug fixes
+or enhancements for the fbdev drivers. Those patches usually don't affect =
+DRM.
+
+I'm expecting that non-trivial changes which may affect fbdev will be sent=
+ to the
+linux-fbdev mailing list, same way as I will of course send any patches wh=
+ich
+might affect DRM to dri-devel.
+
+My git tree is wired up to the for-next pull chain, so in any way we would=
+ notice
+merge conflicts (which I believe will not happen).
+
+Cheers,
+
+Helge
+
+>> b) to include new drivers (for old hardware) if they arrive (probably h=
+appens rarely but there can be).
+>>    I know of at least one driver which won't be able to support DRM....
+>>    Of course, if the hardware is capable to support DRM, it should be w=
+ritten for DRM and not applied for fbdev.
+>> c) reintroduce the state where fbcon is fast on fbdev. This is importan=
+t for non-DRM machines,
+>>    either when run on native hardware or in an emulator.
+>> d) not break DRM development
+>>
+>> Especially regarding c) I complained in [1] and got no feedback. I real=
+ly would like to
+>> understand where the actual problems were and what's necessary to fix t=
+hem.
+>>
+>> Helge
+>>
+>> [1] https://lore.kernel.org/r/feea8303-2b83-fc36-972c-4fc8ad723bde@gmx.=
+de
+>
+>
+>
 
