@@ -2,97 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 642C0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 21:51:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7849CC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 22:01:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349802AbiARVvV (ORCPT
+        id S1349710AbiARWBA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 16:51:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46328 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349696AbiARVvN (ORCPT
+        Tue, 18 Jan 2022 17:01:00 -0500
+Received: from sibelius.xs4all.nl ([83.163.83.176]:50797 "EHLO
+        sibelius.xs4all.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234970AbiARWAz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 16:51:13 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA107C06161C
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 13:51:12 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id m1so959041lfq.4
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 13:51:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:organization:content-transfer-encoding;
-        bh=JeYoWwfchvNJOmrZgHyYDokoWzu/xjtZKfF1uxEPiY0=;
-        b=4PrA+f6BhxoJRVWv4pzCCp7JcgyL+SZ4Hx2xPu+iqc8A34u9z7lX/pHyhw4ZVJ3DFt
-         LbGrgWmC0g5mCDQAsOWOHwNYYYp4ADtFkqWRqC8zNoEACrugXDGqcCFbslSeGmaphapc
-         VRoLdYETqUAuQ6ftH02tRJRcbUE7gh+LqMqgt8vHBSTJFJV1cWDRXYf5wWXhg4X66fMf
-         yj7kyBw7Oei15CA4t4gjSgqEgim/yFU+OvSCLec/OdteG/CEtvdVKo6BJ6ihGUbBElNR
-         XrQKNfC8Yn2lDXitCsoixlImwxs1QuCIdhPEceXSmTQz4ql/JsKktrwvbGP/aPIptWbj
-         PaTw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:organization:content-transfer-encoding;
-        bh=JeYoWwfchvNJOmrZgHyYDokoWzu/xjtZKfF1uxEPiY0=;
-        b=qGdR6lxPUWRoLv0VbVHHTXzEMrgiWB8KKHgfzVuNjZgvwuT3UPltK4kiWa5+tzJGSO
-         ymhLyNdAkGUxZ5QMlH5CXCP9Sv68BfwKGkwR8/m8yMFJLXtKA08cDWH7q2hqOLw5le66
-         fzDEJVnoYtf42vZk9z4YDBKut9mHkgQfSum91aR57ge9EnPCVKth8mpp1e7VlGI7eZgW
-         ygfHAqzF4S7hvMYgnG1yraSU9Eo1QDpgpiDck0QRZ1V1IClgm1d46qiPhI2TfvqIIg+o
-         D1L+ox79ZwlFdw8ZrUKpBuy8YAtBg/CtKLCxbH9kqJ7YbjksuTkbyTnwQWM8LLxvI0OG
-         kL8Q==
-X-Gm-Message-State: AOAM530SeY5WdbxK+zybpKsqMqsWX8AzeWpi/GOeS7nPe9Vh0f6PTomi
-        gGEeoljHq2CvkWPnGGuxiwCwXA==
-X-Google-Smtp-Source: ABdhPJwG2GbqbOuxYvUygDn3T+Khl6cMcmtGwzlWfulo6HUOsG2urxLos90dWacYQlHql3n4YGYpag==
-X-Received: by 2002:ac2:531a:: with SMTP id c26mr22724055lfh.356.1642542671173;
-        Tue, 18 Jan 2022 13:51:11 -0800 (PST)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id w5sm1704808ljm.55.2022.01.18.13.51.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 13:51:10 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Timur Tabi <timur@freescale.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 net 4/4] net/fsl: xgmac_mdio: Fix incorrect iounmap when removing module
-Date:   Tue, 18 Jan 2022 22:50:53 +0100
-Message-Id: <20220118215054.2629314-5-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220118215054.2629314-1-tobias@waldekranz.com>
-References: <20220118215054.2629314-1-tobias@waldekranz.com>
-MIME-Version: 1.0
-Organization: Westermo
+        Tue, 18 Jan 2022 17:00:55 -0500
+Received: from localhost (bloch.sibelius.xs4all.nl [local])
+        by bloch.sibelius.xs4all.nl (OpenSMTPD) with ESMTPA id 4cdc8265;
+        Tue, 18 Jan 2022 23:00:52 +0100 (CET)
+Date:   Tue, 18 Jan 2022 23:00:52 +0100 (CET)
+From:   Mark Kettenis <mark.kettenis@xs4all.nl>
+To:     Martin =?utf-8?Q?Povi=C5=A1er?= <povik+lin@protonmail.com>
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, robh+dt@kernel.org,
+        marcan@marcan.st, sven@svenpeter.dev, alyssa@rosenzweig.io,
+        linux-clk@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kettenis@openbsd.org,
+        povik+lin@protonmail.com
+In-Reply-To: <20220118191839.64086-2-povik+lin@protonmail.com> (message from
+        Martin =?utf-8?Q?Povi=C5=A1er?= on Tue, 18 Jan 2022 19:21:03 +0000)
+Subject: Re: [PATCH v2 1/3] dt-bindings: clock: Add Apple NCO
+References: <20220118191839.64086-1-povik+lin@protonmail.com> <20220118191839.64086-2-povik+lin@protonmail.com>
+MIME-version: 1.0
+Content-type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
+Message-ID: <d3cbbeb0d20fbd64@bloch.sibelius.xs4all.nl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-As reported by sparse: In the remove path, the driver would attempt to
-unmap its own priv pointer - instead of the io memory that it mapped
-in probe.
+> Date: Tue, 18 Jan 2022 19:21:03 +0000
+> From: Martin Povišer <povik+lin@protonmail.com>
+> 
+> The NCO block found on Apple SoCs is a programmable clock generator
+> performing fractional division of a high frequency input clock.
+> 
+> Signed-off-by: Martin Povišer <povik+lin@protonmail.com>
 
-Fixes: 9f35a7342cff ("net/fsl: introduce Freescale 10G MDIO driver")
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/ethernet/freescale/xgmac_mdio.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Reviewed-by: Mark Kettenis <kettenis@openbsd.org>
 
-diff --git a/drivers/net/ethernet/freescale/xgmac_mdio.c b/drivers/net/ethernet/freescale/xgmac_mdio.c
-index bf566ac3195b..266e562bd67a 100644
---- a/drivers/net/ethernet/freescale/xgmac_mdio.c
-+++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
-@@ -331,9 +331,10 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
- static int xgmac_mdio_remove(struct platform_device *pdev)
- {
- 	struct mii_bus *bus = platform_get_drvdata(pdev);
-+	struct mdio_fsl_priv *priv = bus->priv;
- 
- 	mdiobus_unregister(bus);
--	iounmap(bus->priv);
-+	iounmap(priv->mdio_base);
- 	mdiobus_free(bus);
- 
- 	return 0;
--- 
-2.25.1
-
+> ---
+>  .../devicetree/bindings/clock/apple,nco.yaml  | 62 +++++++++++++++++++
+>  1 file changed, 62 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/clock/apple,nco.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/clock/apple,nco.yaml b/Documentation/devicetree/bindings/clock/apple,nco.yaml
+> new file mode 100644
+> index 000000000000..da56b64b8fff
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/clock/apple,nco.yaml
+> @@ -0,0 +1,62 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/clock/apple,nco.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Apple SoCs' NCO block
+> +
+> +maintainers:
+> +  - Martin Povišer <povik+lin@protonmail.com>
+> +
+> +description: |
+> +  The NCO (Numerically Controlled Oscillator) block found on Apple SoCs
+> +  such as the t8103 (M1) is a programmable clock generator performing
+> +  fractional division of a high frequency input clock.
+> +
+> +  It carries a number of independent channels and is typically used for
+> +  generation of audio bitclocks.
+> +
+> +properties:
+> +  compatible:
+> +    items:
+> +      - enum:
+> +        - apple,t6000-nco
+> +        - apple,t8103-nco
+> +      - const: apple,nco
+> +
+> +  clocks:
+> +    description:
+> +      Specifies the reference clock from which the output clocks
+> +      are derived through fractional division.
+> +    maxItems: 1
+> +
+> +  '#clock-cells':
+> +    const: 1
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - clocks
+> +  - '#clock-cells'
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    nco_clkref: clock-ref {
+> +      compatible = "fixed-clock";
+> +      #clock-cells = <0>;
+> +      clock-frequency = <900000000>;
+> +      clock-output-names = "nco-ref";
+> +    };
+> +
+> +    nco: clock-controller@23b044000 {
+> +      compatible = "apple,t8103-nco", "apple,nco";
+> +      reg = <0x3b044000 0x14000>;
+> +      #clock-cells = <1>;
+> +      clocks = <&nco_clkref>;
+> +    };
+> --
+> 2.33.0
+> 
+> 
+> 
