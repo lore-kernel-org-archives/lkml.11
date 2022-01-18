@@ -2,152 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0230CC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 12:07:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65339C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 12:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241291AbiARMHb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 07:07:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51998 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241260AbiARMH3 (ORCPT
+        id S241308AbiARMIO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 07:08:14 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:30131 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239283AbiARMIL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 07:07:29 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5838C06161C
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 04:07:28 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id v186so55068142ybg.1
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 04:07:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=OC5quY8+bzQ7YwLxGQW1P7Vgcog//q1EsjQWuTsPZiA=;
-        b=c3af9NXfUtTV/ISsfNREopmBIAf8fT4PPP17qdILfbQoqvb1yfMa+D0XLlYT6JoNjU
-         ePaLArNrWW5zLYdpo1aCAVvBM7NZdg3qoad2pIpBpn+dKX2qpHWbIzeTo/ZWGlUzG9m6
-         hdWzHLZgMHYc+km3yxBo/4gsymQJh83zgMLiF405qZowaqIxM7BnTJJFnGp2/q35ZIA6
-         maVqxHfZSqMXQDeOLAlQCpQMgLny1kM6wpQgjMqc1MgA20REMRU1Kyb60DSCWB1/YGt0
-         nmM29RNua0k7xFUkauKHhL0GFjcs9AX976BwT6xrQiJmMLPjBfkMK40ffRMoWetReJqm
-         /lFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=OC5quY8+bzQ7YwLxGQW1P7Vgcog//q1EsjQWuTsPZiA=;
-        b=iXo70MOhdE5p2LxFivhRW1dMmcfSYZkZfesXtVPBhA33ydrDTaYevv63J9ezYfGc/p
-         mgEMayXKuWO12RPzc5LiApq6zQMX4vqsQ83k1b/P5YjR/hcJMzaKVEukNPoWRbby8dz9
-         sofVJHroIC7kmuQ0XK229PnvWx3NIKCP71MB6MsPPGG3b0YWuNq8nH3W/Yhf02hKYp5G
-         O0IaWMjUJSSIk/DUXyNqJrNY8sh2qFP0ASHZOm49/fyd+8qwIbcCkKhGOtUCfRl/m4/g
-         WQzV2v/rjz0PArcRCXBtNfDjf7fGSFy4/M100QPcwLFps9G3jRtAAugKHIOFNrbDGJb/
-         jLJw==
-X-Gm-Message-State: AOAM530+YLlNeKcHqcnC3JYYBP+9eAEfwjolwVM73QHYpYGHvTa9tfSR
-        wpjylKYipjLXQSSvHZYhmg+ZbpSQ1TcEH3YVp8ZECA==
-X-Google-Smtp-Source: ABdhPJxNFvL/SkKU6juzzW+raWlteR7gaAX3pdOhU7lWwwCB3tPpMz6t5NIUds1vo4+A7k0YLFoYLeZ3JS1yM7GxpMg=
-X-Received: by 2002:a25:8806:: with SMTP id c6mr31085871ybl.199.1642507648082;
- Tue, 18 Jan 2022 04:07:28 -0800 (PST)
+        Tue, 18 Jan 2022 07:08:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642507691;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=mTJ9EtX5N2EhF9Fqj6aj3AMNHvKTNUztMryd3miPWg0=;
+        b=ACFuaVr7qQIuo3UBSE+hwgkdsDDcS73XmSo9qGkmOlor1suU5kNyARgFW1eExDt75WfBVN
+        fhV+SYTAkWTEDYNRAnGU3X+24QNi1rtUlr7xbS/aIj6SbmZHBHom/vIcb2I3AIMjsObaqQ
+        zd/QQX8fkeiAXsb3TP544blvD2k5EZ0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-10-xzNf8PU0MQ2T7-v6zwQeDg-1; Tue, 18 Jan 2022 07:08:08 -0500
+X-MC-Unique: xzNf8PU0MQ2T7-v6zwQeDg-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 69E781030C22;
+        Tue, 18 Jan 2022 12:08:06 +0000 (UTC)
+Received: from sirius.home.kraxel.org (unknown [10.39.192.49])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 21B2F105916D;
+        Tue, 18 Jan 2022 12:08:05 +0000 (UTC)
+Received: by sirius.home.kraxel.org (Postfix, from userid 1000)
+        id 2815418000A6; Tue, 18 Jan 2022 13:07:59 +0100 (CET)
+Date:   Tue, 18 Jan 2022 13:07:59 +0100
+From:   Gerd Hoffmann <kraxel@redhat.com>
+To:     Daniel Vetter <daniel@ffwll.ch>
+Cc:     Pekka Paalanen <ppaalanen@gmail.com>, linux-fbdev@vger.kernel.org,
+        Helge Deller <deller@gmx.de>, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Sven Schnelle <svens@stackframe.org>
+Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
+Message-ID: <20220118120759.qobqonhonej3vnqw@sirius.home.kraxel.org>
+References: <YeG8ydoJNWWkGrTb@ls3530>
+ <c48ad8ae-aea5-43fa-882f-dccb90dde9a4@suse.de>
+ <87bl0amc6s.fsf@x1.stackframe.org>
+ <20220118103323.4bae3a7d@eldfell>
+ <20220118095352.xsb6fqacw4p276c5@sirius.home.kraxel.org>
+ <CAKMK7uGQ=pGHv+LcRxZqb_jV0fqzUZtd+tZCr7aatoMDF4hyvw@mail.gmail.com>
 MIME-Version: 1.0
-References: <20211220085649.8196-1-songmuchun@bytedance.com>
- <20211220085649.8196-11-songmuchun@bytedance.com> <20220106110051.GA470@blackbody.suse.cz>
- <CAMZfGtXZA+rLMUw5yLSW=eUncT0BjH++Dpi1EzKwXvV9zwqF1w@mail.gmail.com> <20220113133213.GA28468@blackbody.suse.cz>
-In-Reply-To: <20220113133213.GA28468@blackbody.suse.cz>
-From:   Muchun Song <songmuchun@bytedance.com>
-Date:   Tue, 18 Jan 2022 20:05:44 +0800
-Message-ID: <CAMZfGtWJeov9XD_MEkDJwTK5b73OKPYxJBQi=D5-NSyNSSKLCw@mail.gmail.com>
-Subject: Re: [PATCH v5 10/16] mm: list_lru: allocate list_lru_one only when needed
-To:     =?UTF-8?Q?Michal_Koutn=C3=BD?= <mkoutny@suse.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <guro@fb.com>, Yang Shi <shy828301@gmail.com>,
-        Alex Shi <alexs@kernel.org>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Dave Chinner <david@fromorbit.com>,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        jaegeuk@kernel.org, chao@kernel.org,
-        Kari Argillander <kari.argillander@gmail.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-nfs@vger.kernel.org, Qi Zheng <zhengqi.arch@bytedance.com>,
-        Xiongchun duan <duanxiongchun@bytedance.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        Muchun Song <smuchun@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKMK7uGQ=pGHv+LcRxZqb_jV0fqzUZtd+tZCr7aatoMDF4hyvw@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 13, 2022 at 9:32 PM Michal Koutn=C3=BD <mkoutny@suse.com> wrote=
-:
->
-> On Wed, Jan 12, 2022 at 09:22:36PM +0800, Muchun Song <songmuchun@bytedan=
-ce.com> wrote:
-> >   root(-1) -> A(0) -> B(1) -> C(2)
-> >
-> > CPU0:                                   CPU1:
-> > memcg_list_lru_alloc(C)
-> >                                         memcg_drain_all_list_lrus(C)
-> >                                         memcg_drain_all_list_lrus(B)
-> >                                         // Now C and B are offline. The
-> >                                         // kmemcg_id becomes the follow=
-ing if
-> >                                         // we do not the kmemcg_id of i=
-ts
-> >                                         // descendants in
-> >                                         // memcg_drain_all_list_lrus().
-> >                                         //
-> >                                         // root(-1) -> A(0) -> B(0) -> =
-C(1)
-> >
-> >   for (i =3D 0; memcg; memcg =3D parent_mem_cgroup(memcg), i++) {
-> >       // allocate struct list_lru_per_memcg for memcg C
-> >       table[i].mlru =3D memcg_init_list_lru_one(gfp);
-> >   }
-> >
-> >   spin_lock_irqsave(&lru->lock, flags);
-> >   while (i--) {
-> >       // here index =3D 1
-> >       int index =3D table[i].memcg->kmemcg_id;
-> >
-> >       struct list_lru_per_memcg *mlru =3D table[i].mlru;
-> >       if (index < 0 || rcu_dereference_protected(mlrus->mlru[index], tr=
-ue))
-> >           kfree(mlru);
-> >       else
-> >           // mlrus->mlru[index] will be assigned a new value regardless
-> >           // memcg C is already offline.
-> >           rcu_assign_pointer(mlrus->mlru[index], mlru);
-> >   }
-> >   spin_unlock_irqrestore(&lru->lock, flags);
-> >
->
-> > So changing ->kmemcg_id of all its descendants can prevent
-> > memcg_list_lru_alloc() from allocating list lrus for the offlined
-> > cgroup after memcg_list_lru_free() calling.
->
-> Thanks for the illustrative example. I can see how this can be a problem
-> in a general call of memcg_list_lru_alloc(C).
->
-> However, the code, as I understand it, resolves the memcg to which lru
-> allocation should be associated via get_mem_cgroup_from_objcg() and
-> memcg_reparent_list_lrus(C) comes after memcg_reparent_objcgs(C, B),
-> i.e. the allocation would target B (or even A if after
-> memcg_reparent_objcgs(B, A))?
->
-> It seems to me like "wasting" the existing objcg reparenting mechanism.
-> Or what do you think could be a problem relying on it?
->
+  Hi,
 
-I have thought about this. It's a little different to rely on objcg
-reparenting since the user can get memcg from objcg and
-then does not realize the memcg has reparented. Although it
-can check memcg->objcg to know whether the memcg is
-reparented, it should also prevent this memcg from being
-reparented throughout memcg_list_lru_alloc(). Maybe
-holding css_set_lock can do that. I do not think this
-is a good choice. Do you have any thoughts about this?
+> > fbcon could do the same, i.e. render to fbdev in a 60Hz timer instead of
+> > doing it synchronously.
+> 
+> Yeah, and if you use the shadow fb support in drm fbdev helpers,
+> that's what you get. Maybe we should just make that the default, since
+> that would also greatly simply stuff like modesetting support for
+> fbdev.
 
-Thanks.
+Yep, that helps of course.  I was thinking more about the chars + attrs
++ font -> framebuffer step in the fbcon rendering pipeline though where
+one could do something simliar to save even more cpu cycles.
+
+take care,
+  Gerd
+
