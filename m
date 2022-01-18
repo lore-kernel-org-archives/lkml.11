@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0746EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:39:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 136F0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:39:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345646AbiARCjN (ORCPT
+        id S1344911AbiARCjS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:39:13 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:43710 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344078AbiARCe0 (ORCPT
+        Mon, 17 Jan 2022 21:39:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58798 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245407AbiARCdD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:34:26 -0500
+        Mon, 17 Jan 2022 21:33:03 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052C8C0613E5;
+        Mon, 17 Jan 2022 18:32:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D38D9B8124F;
-        Tue, 18 Jan 2022 02:33:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7FA2C36AEB;
-        Tue, 18 Jan 2022 02:33:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B60B2B81243;
+        Tue, 18 Jan 2022 02:32:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80406C36AF4;
+        Tue, 18 Jan 2022 02:32:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473214;
-        bh=dARacxu/D/r3/qAKRLXt0JAPblqXXdVmv79AzCb4CkQ=;
+        s=k20201202; t=1642473127;
+        bh=xSjM7sQ/q68pyXWnObsGO6CNownTJ0gLgJiruFyMyig=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZO1B/rKmDLIt1rTPQh1rlwmxTUFEqnpntEgWgCKPMYV0IhfEoc7ccOT4ID9O5aROW
-         4enmomqW+pqXRc9V/qP1x3fshoYo4tehrzArxz9TMLb/jCliY8E62Z4qWzJZxiN5NK
-         RPYpKC/Hs5Q0MwdnnLFVoEkhkSIZ0s8ViIS6ITvQK+V7mtLgJUPmtvv+D8xJ7a/BGO
-         Q6BKsSB2cjkVJk0fBXeu549udWXFJ+jT7BiSVI4g3ldmHDVWZt9VCmGUNVWKQdrhDz
-         oiV+m42XqpMK+ds/uLZ3/czbyWPofL5iCT4SvXoRNd6PrLJQPdR/pARdBXzu7mFVJG
-         opMwoxD8UHkTw==
+        b=nfE+eNaxxDTiLpnNkUd624XK2awAfpgu5nUpBb4+Qyfr88JK/8oBNyANPEMOna+UZ
+         2tsn3ZdDfXa/DHRi8C656Re5P4sgFVLi9e4YWG7EEJlxNyENHOd0mop/uTDxnfa4VV
+         fjwX5IhYzmGB1vDAMCdX9k1C6vISzru4wjUz11WDUc+CTmp7m04mbme6jhQjSi78ly
+         wrtn4i0a6thyKdv7WZxHIlQSAeuT9Vk5gPi6lrq/A95G2KBKK1a51pEmQHzU6lQ85k
+         fwscyOoPEojDaotlDs0BYenKy58ti5PX+xZy6Kj00apDALvEbGuANf2OQ/51SNwrhV
+         cprOt5iDDaNew==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, arnd@arndb.de,
-        linux@roeck-us.net, tanghui20@huawei.com, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 029/188] amd: ni65: use eth_hw_addr_set()
-Date:   Mon, 17 Jan 2022 21:29:13 -0500
-Message-Id: <20220118023152.1948105-29-sashal@kernel.org>
+Cc:     Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Hengqi Chen <hengqi.chen@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
+        daniel@iogearbox.net, linux-kselftest@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 008/188] selftests/bpf: Fix memory leaks in btf_type_c_dump() helper
+Date:   Mon, 17 Jan 2022 21:28:52 -0500
+Message-Id: <20220118023152.1948105-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -50,61 +55,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Andrii Nakryiko <andrii@kernel.org>
 
-[ Upstream commit 69ede3097b871dbc793dd6e21f38fde56d273963 ]
+[ Upstream commit 8ba285874913da21ca39a46376e9cc5ce0f45f94 ]
 
-IO reads, so save to an array then eth_hw_addr_set().
+Free up memory and resources used by temporary allocated memstream and
+btf_dump instance.
 
-Fixes build on x86 (32bit).
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Hengqi Chen <hengqi.chen@gmail.com>
+Link: https://lore.kernel.org/bpf/20211107165521.9240-4-andrii@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/amd/ni65.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ tools/testing/selftests/bpf/btf_helpers.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/amd/ni65.c b/drivers/net/ethernet/amd/ni65.c
-index 032e8922b4829..8ba579b89b758 100644
---- a/drivers/net/ethernet/amd/ni65.c
-+++ b/drivers/net/ethernet/amd/ni65.c
-@@ -251,7 +251,7 @@ static void ni65_recv_intr(struct net_device *dev,int);
- static void ni65_xmit_intr(struct net_device *dev,int);
- static int  ni65_open(struct net_device *dev);
- static int  ni65_lance_reinit(struct net_device *dev);
--static void ni65_init_lance(struct priv *p,unsigned char*,int,int);
-+static void ni65_init_lance(struct priv *p,const unsigned char*,int,int);
- static netdev_tx_t ni65_send_packet(struct sk_buff *skb,
- 				    struct net_device *dev);
- static void  ni65_timeout(struct net_device *dev, unsigned int txqueue);
-@@ -418,6 +418,7 @@ static int __init ni65_probe1(struct net_device *dev,int ioaddr)
- {
- 	int i,j;
- 	struct priv *p;
-+	u8 addr[ETH_ALEN];
- 	unsigned long flags;
+diff --git a/tools/testing/selftests/bpf/btf_helpers.c b/tools/testing/selftests/bpf/btf_helpers.c
+index b692e6ead9b55..0a4ad7cb2c200 100644
+--- a/tools/testing/selftests/bpf/btf_helpers.c
++++ b/tools/testing/selftests/bpf/btf_helpers.c
+@@ -246,18 +246,23 @@ const char *btf_type_c_dump(const struct btf *btf)
+ 	d = btf_dump__new(btf, NULL, &opts, btf_dump_printf);
+ 	if (libbpf_get_error(d)) {
+ 		fprintf(stderr, "Failed to create btf_dump instance: %ld\n", libbpf_get_error(d));
+-		return NULL;
++		goto err_out;
+ 	}
  
- 	dev->irq = irq;
-@@ -444,7 +445,8 @@ static int __init ni65_probe1(struct net_device *dev,int ioaddr)
- 		return -ENODEV;
+ 	for (i = 1; i <= btf__get_nr_types(btf); i++) {
+ 		err = btf_dump__dump_type(d, i);
+ 		if (err) {
+ 			fprintf(stderr, "Failed to dump type [%d]: %d\n", i, err);
+-			return NULL;
++			goto err_out;
+ 		}
+ 	}
  
- 	for(j=0;j<6;j++)
--		dev->dev_addr[j] = inb(ioaddr+cards[i].addr_offset+j);
-+		addr[j] = inb(ioaddr+cards[i].addr_offset+j);
-+	eth_hw_addr_set(dev, addr);
- 
- 	if( (j=ni65_alloc_buffer(dev)) < 0) {
- 		release_region(ioaddr, cards[i].total_size);
-@@ -566,7 +568,7 @@ static int __init ni65_probe1(struct net_device *dev,int ioaddr)
- /*
-  * set lance register and trigger init
-  */
--static void ni65_init_lance(struct priv *p,unsigned char *daddr,int filter,int mode)
-+static void ni65_init_lance(struct priv *p,const unsigned char *daddr,int filter,int mode)
- {
- 	int i;
- 	u32 pib;
++	btf_dump__free(d);
+ 	fflush(buf_file);
+ 	fclose(buf_file);
+ 	return buf;
++err_out:
++	btf_dump__free(d);
++	fclose(buf_file);
++	return NULL;
+ }
 -- 
 2.34.1
 
