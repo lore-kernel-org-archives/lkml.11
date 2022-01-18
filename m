@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C709C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C6FFC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348383AbiARDDX (ORCPT
+        id S1348666AbiARDDg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:03:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34788 "EHLO
+        Mon, 17 Jan 2022 22:03:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345654AbiARCs5 (ORCPT
+        with ESMTP id S1345190AbiARCtd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:48:57 -0500
+        Mon, 17 Jan 2022 21:49:33 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4E34C061775;
-        Mon, 17 Jan 2022 18:39:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89383C0613E8;
+        Mon, 17 Jan 2022 18:42:02 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 802B4B81243;
-        Tue, 18 Jan 2022 02:39:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9028BC36AEB;
-        Tue, 18 Jan 2022 02:39:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 46390B81132;
+        Tue, 18 Jan 2022 02:42:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41EF3C36AEB;
+        Tue, 18 Jan 2022 02:41:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473580;
-        bh=vKWSGVyBRIU9roEq5H7rCjwRia1zNgCJtd+b+NSXZ9Y=;
+        s=k20201202; t=1642473720;
+        bh=YnzVyzVF2gyXnAhBU7QgCxTIBetL5S/Hebevk1xn7XQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cUL/yybnWJS6nHVwK8GTZnnBQK5pMUUoe5ZUiyGziThaQsujfyshXI6UQcnxI//TN
-         0yU+3lJQZhm7AjByxWzaJUsyIs9jPdWHHbbwy7rEEdzz2QmdjE3r5e6lFJ44mwEmMs
-         dEWk6LhqHq00dS0w0iGLnZ/yX1voxv9ZjmqbEYhDyHaxZ2G8GWhpkmpjiSEdKRP7v6
-         U81M07PppeDd/0s7UamwTNAuPR3JCOhE4rqk9Fip2mheWIchCZbc/tj8ER2kRXNr8i
-         fDXk8QIzTtjoHbMzw3bQ9wkj2ys1Vr/tD56TFQB8J6iD7hyKV4JYNEfJaxdFUXPCX6
-         juIPaA8muLoLQ==
+        b=L+omVfOQxIv8w65gRL7N4ZBnZYlhZSQqQ2zmvb+tpFM/qHxMCByCT6Bgp7G1dTwcZ
+         1q2xFmvDu31HW/TJkXPWMbye9xmEVJ30+215Ha4CP0bbYD5g/GymiOAIUEOE8RrQ6g
+         Z/KtLJkrVOTM7DrO/HufheyXyI08FVUvm6MJRcGsRU6vUJknRFPPcJJQ0tcx3xE2UM
+         gaBUPj/CgMi4s7OjGdcqzrXhvzg4avQvXQPGHn2dUSWONc7YeAH5yMvUAbbbTepqpY
+         zYv1LLDYU+Q6DXxPWZ3OfvBclLijvAAQ/ZG13a583tRKyYH/7Ir301ciCULoz9SGXQ
+         gCtqFGl3kPjgQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        Sasha Levin <sashal@kernel.org>, tytso@mit.edu
-Subject: [PATCH AUTOSEL 5.15 179/188] random: do not throw away excess input to crng_fast_load
-Date:   Mon, 17 Jan 2022 21:31:43 -0500
-Message-Id: <20220118023152.1948105-179-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        mario.limonciello@amd.com, linux-acpi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 039/116] ACPI / x86: Add not-present quirk for the PCI0.SDHB.BRC1 device on the GPD win
+Date:   Mon, 17 Jan 2022 21:38:50 -0500
+Message-Id: <20220118024007.1950576-39-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,93 +53,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Jason A. Donenfeld" <Jason@zx2c4.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 73c7733f122e8d0107f88655a12011f68f69e74b ]
+[ Upstream commit 57d2dbf710d832841872fb15ebb79429cab90fae ]
 
-When crng_fast_load() is called by add_hwgenerator_randomness(), we
-currently will advance to crng_init==1 once we've acquired 64 bytes, and
-then throw away the rest of the buffer. Usually, that is not a problem:
-When add_hwgenerator_randomness() gets called via EFI or DT during
-setup_arch(), there won't be any IRQ randomness. Therefore, the 64 bytes
-passed by EFI exactly matches what is needed to advance to crng_init==1.
-Usually, DT seems to pass 64 bytes as well -- with one notable exception
-being kexec, which hands over 128 bytes of entropy to the kexec'd kernel.
-In that case, we'll advance to crng_init==1 once 64 of those bytes are
-consumed by crng_fast_load(), but won't continue onward feeding in bytes
-to progress to crng_init==2. This commit fixes the issue by feeding
-any leftover bytes into the next phase in add_hwgenerator_randomness().
+The GPD win and its sibling the GPD pocket (99% the same electronics in a
+different case) use a PCI wifi card. But the ACPI tables on both variants
+contain a bug where the SDIO MMC controller for SDIO wifi cards is enabled
+despite this. This SDIO MMC controller has a PCI0.SDHB.BRC1 child-device
+which _PS3 method sets a GPIO causing the PCI wifi card to turn off.
 
-[linux@dominikbrodowski.net: rewrite commit message]
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+At the moment there is a pretty ugly kludge in the sdhci-acpi.c code,
+just to work around the bug in the DSDT of this single design. This can
+be solved cleaner/simply with a quirk overriding the _STA return of the
+broken PCI0.SDHB.BRC1 PCI0.SDHB.BRC1 child with a status value of 0,
+so that its power_manageable flag gets cleared, avoiding this problem.
+
+Note that even though it is not used, the _STA method for the MMC
+controller is deliberately not overridden. If the status of the MMC
+controller were forced to 0 it would never get suspended, which would
+cause these mini-laptops to not reach S0i3 level when suspended.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ drivers/acpi/x86/utils.c | 20 +++++++++++++++++---
+ 1 file changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 605969ed0f965..9c403bbb21a1f 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -863,12 +863,14 @@ static void numa_crng_init(void) {}
+diff --git a/drivers/acpi/x86/utils.c b/drivers/acpi/x86/utils.c
+index 91bbc4b6b8035..3f9a162be84e3 100644
+--- a/drivers/acpi/x86/utils.c
++++ b/drivers/acpi/x86/utils.c
+@@ -94,9 +94,10 @@ static const struct override_status_id override_status_ids[] = {
+ 	/*
+ 	 * The GPD win BIOS dated 20170221 has disabled the accelerometer, the
+ 	 * drivers sometimes cause crashes under Windows and this is how the
+-	 * manufacturer has solved this :| Note that the the DMI data is less
+-	 * generic then it seems, a board_vendor of "AMI Corporation" is quite
+-	 * rare and a board_name of "Default String" also is rare.
++	 * manufacturer has solved this :|  The DMI match may not seem unique,
++	 * but it is. In the 67000+ DMI decode dumps from linux-hardware.org
++	 * only 116 have board_vendor set to "AMI Corporation" and of those 116
++	 * only the GPD win and pocket entries' board_name is "Default string".
+ 	 *
+ 	 * Unfortunately the GPD pocket also uses these strings and its BIOS
+ 	 * was copy-pasted from the GPD win, so it has a disabled KIOX000A
+@@ -120,6 +121,19 @@ static const struct override_status_id override_status_ids[] = {
+ 		DMI_MATCH(DMI_PRODUCT_NAME, "Default string"),
+ 		DMI_MATCH(DMI_BIOS_DATE, "05/25/2017")
+ 	      }),
++
++	/*
++	 * The GPD win/pocket have a PCI wifi card, but its DSDT has the SDIO
++	 * mmc controller enabled and that has a child-device which _PS3
++	 * method sets a GPIO causing the PCI wifi card to turn off.
++	 * See above remark about uniqueness of the DMI match.
++	 */
++	NOT_PRESENT_ENTRY_PATH("\\_SB_.PCI0.SDHB.BRC1", ATOM_AIRMONT, {
++		DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
++		DMI_EXACT_MATCH(DMI_BOARD_NAME, "Default string"),
++		DMI_EXACT_MATCH(DMI_BOARD_SERIAL, "Default string"),
++		DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Default string"),
++	      }),
+ };
  
- /*
-  * crng_fast_load() can be called by code in the interrupt service
-- * path.  So we can't afford to dilly-dally.
-+ * path.  So we can't afford to dilly-dally. Returns the number of
-+ * bytes processed from cp.
-  */
--static int crng_fast_load(const char *cp, size_t len)
-+static size_t crng_fast_load(const char *cp, size_t len)
- {
- 	unsigned long flags;
- 	char *p;
-+	size_t ret = 0;
- 
- 	if (!spin_trylock_irqsave(&primary_crng.lock, flags))
- 		return 0;
-@@ -879,7 +881,7 @@ static int crng_fast_load(const char *cp, size_t len)
- 	p = (unsigned char *) &primary_crng.state[4];
- 	while (len > 0 && crng_init_cnt < CRNG_INIT_CNT_THRESH) {
- 		p[crng_init_cnt % CHACHA_KEY_SIZE] ^= *cp;
--		cp++; crng_init_cnt++; len--;
-+		cp++; crng_init_cnt++; len--; ret++;
- 	}
- 	spin_unlock_irqrestore(&primary_crng.lock, flags);
- 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
-@@ -887,7 +889,7 @@ static int crng_fast_load(const char *cp, size_t len)
- 		crng_init = 1;
- 		pr_notice("fast init done\n");
- 	}
--	return 1;
-+	return ret;
- }
- 
- /*
-@@ -1269,7 +1271,7 @@ void add_interrupt_randomness(int irq, int irq_flags)
- 	if (unlikely(crng_init == 0)) {
- 		if ((fast_pool->count >= 64) &&
- 		    crng_fast_load((char *) fast_pool->pool,
--				   sizeof(fast_pool->pool))) {
-+				   sizeof(fast_pool->pool)) > 0) {
- 			fast_pool->count = 0;
- 			fast_pool->last = now;
- 		}
-@@ -2275,8 +2277,11 @@ void add_hwgenerator_randomness(const char *buffer, size_t count,
- 	struct entropy_store *poolp = &input_pool;
- 
- 	if (unlikely(crng_init == 0)) {
--		crng_fast_load(buffer, count);
--		return;
-+		size_t ret = crng_fast_load(buffer, count);
-+		count -= ret;
-+		buffer += ret;
-+		if (!count || crng_init == 0)
-+			return;
- 	}
- 
- 	/* Suspend writing if we're above the trickle threshold.
+ bool acpi_device_override_status(struct acpi_device *adev, unsigned long long *status)
 -- 
 2.34.1
 
