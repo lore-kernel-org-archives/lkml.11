@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AAD0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:26:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9816BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:26:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245566AbiARC0r (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:26:47 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37778 "EHLO
+        id S245632AbiARC0s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:26:48 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38684 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245276AbiARCX1 (ORCPT
+        with ESMTP id S245545AbiARCYf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:23:27 -0500
+        Mon, 17 Jan 2022 21:24:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F0EB1B81247;
-        Tue, 18 Jan 2022 02:23:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8E76C36AE3;
-        Tue, 18 Jan 2022 02:23:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9AAC3B8124E;
+        Tue, 18 Jan 2022 02:24:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE33CC36AE3;
+        Tue, 18 Jan 2022 02:24:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472604;
-        bh=iJWsnEH3EqlFoyUdRdRa/2WUrAEJb4H3pNL5VUzpUbM=;
+        s=k20201202; t=1642472673;
+        bh=8viDxICTwBj3X3U5m2jJ0FeAwvjTGlqTSlf2o/uWmFo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RWsFXEZCMdZw3YBq0Jh02BqE7vF3uwtO5M5GkrYvdQ4B0NNN+EXhlT+/g/nJdD992
-         ad4qcPUmotWIo1rzd4tzd+LmxVdgTAd6BtkeU3hvq+PC/rK8zDVpQU6Z3pQjwh7U8F
-         OkUFQi4J/Pp5Txl+jTs4j5V+xBupfzJRRi/wy/QVFBSuog7iANghTUm8K32tXl+ssX
-         ynVV2GY/A7f5Wd53IhFsRf6ZYtNp4o16OEFJBTfxRt65/OcllS5kwMk/USNFGnPOB7
-         /vEBx4d0OqoyUZRny/DqXckvrvux73XklhYniejwXst7K3O4QKFzE/znV9IAZQ56GG
-         GnLwp6hH7WcGQ==
+        b=YgMzVon5S4Cyy3WWCvCy+8IVnSKcfEn8Ch49qhnT85Ma9CFOajiCyHV32JLGv6GBu
+         PkoqHmTk3n9i7hVREa3S2/5E5eVvFyXWT6e0Jj10vMbNma1iI6CwKpiiQ2RwuNukcx
+         ktUGPSAvos8rGiryxxJTTd/sgfXN5cgqJIWBD5gQqkmdBMPiFNJe+lTw8Fqbc3eWrB
+         eeqkUFHxVzesT9Wmr4GnQkBrgWz61rQAYtmJFxu/5pQi5DQrC7KLq1NvW1Cmotzog4
+         4O19pLIN8k6MgfToIRIwRAPSn5klcnbbf1t/IveDMMzDP7oPRlB6PFwlp8vDKxvH5u
+         w/2/czAQTj9Fg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiri Slaby <jslaby@suse.cz>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        shawnguo@kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.16 068/217] mxser: increase buf_overrun if tty_insert_flip_char() fails
-Date:   Mon, 17 Jan 2022 21:17:11 -0500
-Message-Id: <20220118021940.1942199-68-sashal@kernel.org>
+Cc:     Joerg Roedel <jroedel@suse.de>, Borislav Petkov <bp@suse.de>,
+        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
+        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
+        x86@kernel.org, seanjc@google.com, hpa@zytor.com,
+        paul.gortmaker@windriver.com, rppt@kernel.org,
+        thomas.lendacky@amd.com, mick@ics.forth.gr, brijesh.singh@amd.com
+Subject: [PATCH AUTOSEL 5.16 094/217] x86/mm: Flush global TLB when switching to trampoline page-table
+Date:   Mon, 17 Jan 2022 21:17:37 -0500
+Message-Id: <20220118021940.1942199-94-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -49,47 +51,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Slaby <jslaby@suse.cz>
+From: Joerg Roedel <jroedel@suse.de>
 
-[ Upstream commit eb68ac0462bffc2ceb63b3a76737d6c9f186e6de ]
+[ Upstream commit 71d5049b053876afbde6c3273250b76935494ab2 ]
 
-mxser doesn't increase port->icount.buf_overrun at all. Do so if overrun
-happens, so that it can be read from the stats.
+Move the switching code into a function so that it can be re-used and
+add a global TLB flush. This makes sure that usage of memory which is
+not mapped in the trampoline page-table is reliably caught.
 
-Signed-off-by: Jiri Slaby <jslaby@suse.cz>
-Link: https://lore.kernel.org/r/20211118073125.12283-17-jslaby@suse.cz
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Also move the clearing of CR4.PCIDE before the CR3 switch because the
+cr4_clear_bits() function will access data not mapped into the
+trampoline page-table.
+
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20211202153226.22946-4-joro@8bytes.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/mxser.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/realmode.h |  1 +
+ arch/x86/kernel/reboot.c        | 12 ++----------
+ arch/x86/realmode/init.c        | 26 ++++++++++++++++++++++++++
+ 3 files changed, 29 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/tty/mxser.c b/drivers/tty/mxser.c
-index 3b5d193b7f245..39458b42df7b0 100644
---- a/drivers/tty/mxser.c
-+++ b/drivers/tty/mxser.c
-@@ -1536,7 +1536,8 @@ static bool mxser_receive_chars_new(struct tty_struct *tty,
+diff --git a/arch/x86/include/asm/realmode.h b/arch/x86/include/asm/realmode.h
+index 5db5d083c8732..331474b150f16 100644
+--- a/arch/x86/include/asm/realmode.h
++++ b/arch/x86/include/asm/realmode.h
+@@ -89,6 +89,7 @@ static inline void set_real_mode_mem(phys_addr_t mem)
+ }
  
- 	while (gdl--) {
- 		u8 ch = inb(port->ioaddr + UART_RX);
--		tty_insert_flip_char(&port->port, ch, 0);
-+		if (!tty_insert_flip_char(&port->port, ch, 0))
-+			port->icount.buf_overrun++;
- 	}
+ void reserve_real_mode(void);
++void load_trampoline_pgtable(void);
  
- 	return true;
-@@ -1582,8 +1583,10 @@ static u8 mxser_receive_chars_old(struct tty_struct *tty,
- 					port->icount.overrun++;
- 				}
- 			}
--			if (!tty_insert_flip_char(&port->port, ch, flag))
-+			if (!tty_insert_flip_char(&port->port, ch, flag)) {
-+				port->icount.buf_overrun++;
- 				break;
-+			}
- 		}
+ #endif /* __ASSEMBLY__ */
  
- 		if (hwid)
+diff --git a/arch/x86/kernel/reboot.c b/arch/x86/kernel/reboot.c
+index 0a40df66a40de..fa700b46588e0 100644
+--- a/arch/x86/kernel/reboot.c
++++ b/arch/x86/kernel/reboot.c
+@@ -113,17 +113,9 @@ void __noreturn machine_real_restart(unsigned int type)
+ 	spin_unlock(&rtc_lock);
+ 
+ 	/*
+-	 * Switch back to the initial page table.
++	 * Switch to the trampoline page table.
+ 	 */
+-#ifdef CONFIG_X86_32
+-	load_cr3(initial_page_table);
+-#else
+-	write_cr3(real_mode_header->trampoline_pgd);
+-
+-	/* Exiting long mode will fail if CR4.PCIDE is set. */
+-	if (boot_cpu_has(X86_FEATURE_PCID))
+-		cr4_clear_bits(X86_CR4_PCIDE);
+-#endif
++	load_trampoline_pgtable();
+ 
+ 	/* Jump to the identity-mapped low memory code */
+ #ifdef CONFIG_X86_32
+diff --git a/arch/x86/realmode/init.c b/arch/x86/realmode/init.c
+index 38d24d2ab38b3..c5e29db02a469 100644
+--- a/arch/x86/realmode/init.c
++++ b/arch/x86/realmode/init.c
+@@ -17,6 +17,32 @@ u32 *trampoline_cr4_features;
+ /* Hold the pgd entry used on booting additional CPUs */
+ pgd_t trampoline_pgd_entry;
+ 
++void load_trampoline_pgtable(void)
++{
++#ifdef CONFIG_X86_32
++	load_cr3(initial_page_table);
++#else
++	/*
++	 * This function is called before exiting to real-mode and that will
++	 * fail with CR4.PCIDE still set.
++	 */
++	if (boot_cpu_has(X86_FEATURE_PCID))
++		cr4_clear_bits(X86_CR4_PCIDE);
++
++	write_cr3(real_mode_header->trampoline_pgd);
++#endif
++
++	/*
++	 * The CR3 write above will not flush global TLB entries.
++	 * Stale, global entries from previous page tables may still be
++	 * present.  Flush those stale entries.
++	 *
++	 * This ensures that memory accessed while running with
++	 * trampoline_pgd is *actually* mapped into trampoline_pgd.
++	 */
++	__flush_tlb_all();
++}
++
+ void __init reserve_real_mode(void)
+ {
+ 	phys_addr_t mem;
 -- 
 2.34.1
 
