@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EB98EC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E92C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:38:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345202AbiARCi1 (ORCPT
+        id S1345274AbiARCii (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:38:27 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50158 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230234AbiARCdF (ORCPT
+        Mon, 17 Jan 2022 21:38:38 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44224 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343591AbiARCdP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:33:05 -0500
+        Mon, 17 Jan 2022 21:33:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7349A6122E;
-        Tue, 18 Jan 2022 02:33:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BF99C36AF5;
-        Tue, 18 Jan 2022 02:33:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 615F6B8122C;
+        Tue, 18 Jan 2022 02:33:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A8B9C36AEF;
+        Tue, 18 Jan 2022 02:33:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473184;
-        bh=oXLBzOz/hkAg5gBd5Fy/0nL79/vChLwPGP35T3oMc8g=;
+        s=k20201202; t=1642473190;
+        bh=k/Lz/Zo8RSedFrd/Cb57u0V3RMctMpavMVRb8b8/edc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PCHbYUi+kHXgcOwAeocUgjgWt3OH26V6oqAIy+KWIK6jtLUcegEC1DlXjrO/JkO/F
-         D5mV1npOaXC6O09ZsXxzREe6F3emuGUqiNe6EiK5krVYIg5o31nfm+tOjJFI8ZB5/+
-         fD5miAxF9N0hW45IowEpw+k+F+THnjBz7cl4UyWPKPxlrzwd1IluIgHPxpBgOUjYcF
-         9ZM4SPxWwOJ1fI1sbeByAxScuzykx4k9+X1pA3kAJNAlKsf9AvI9aG66dokf1HcutB
-         q0qWcbHoLOUFrEQ2nPTH4zVUf/+vklRtuRpDpFQfmhSUIB7jG2EiBVk4j7Zv0d2K7/
-         AgTVdicfdOZTw==
+        b=qxKI45CCdzDYMKOMSgcCz8EzOIiy3ygAYjSHReFs9Lau2FD8gfqei+JS5H7He+20X
+         D2oMghzeIW2Ng69j3GM/T7J9vPuw1k+psu5es64h+jrB/egxF0PtbtBckFsMBkYF5u
+         LgdGGlJyTxaKDQxbUr4trUYEwmxQVo9cRZXVCA01Llfw2s46vieGgQVsmk1dERvKMU
+         EZx2+w0oUZl80Gi3uc43KpKvYoW3LgiWEHZ/iRjx2tmA4seJZNcnOF+VWA6811/hKP
+         rLhOkcIPXnkxYNYbtExt6bIZuPIbAXdm3U1RcJBHPDmFXMcsjM2YOmAEesj+YDSDpP
+         Ti47EFVwxpoAQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, mchehab@kernel.org,
-        gregkh@linuxfoundation.org, rdunlap@infradead.org,
-        unixbhaskar@gmail.com, drv@mailo.com, linux-media@vger.kernel.org,
-        linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.15 017/188] media: atomisp-ov2680: Fix ov2680_set_fmt() clobbering the exposure
-Date:   Mon, 17 Jan 2022 21:29:01 -0500
-Message-Id: <20220118023152.1948105-17-sashal@kernel.org>
+Cc:     Wan Jiabing <wanjiabing@vivo.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sasha Levin <sashal@kernel.org>, magnus.damm@gmail.com,
+        linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 019/188] ARM: shmobile: rcar-gen2: Add missing of_node_put()
+Date:   Mon, 17 Jan 2022 21:29:03 -0500
+Message-Id: <20220118023152.1948105-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -52,137 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Wan Jiabing <wanjiabing@vivo.com>
 
-[ Upstream commit 4492289c31364d28c2680b43b18883385a5d216c ]
+[ Upstream commit 85744f2d938c5f3cfc44cb6533c157469634da93 ]
 
-Now that we restore the default or last user set exposure setting on
-power_up() there is no need for the registers written by ov2680_set_fmt()
-to write to the exposure register.
+Fix following coccicheck warning:
+./arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c:156:1-33: Function
+for_each_matching_node_and_match should have of_node_put() before break
+and goto.
 
-Not doing so fixes the exposure always being reset to the value from
-the res->regs array after a set_fmt().
+Early exits from for_each_matching_node_and_match() should decrement the
+node reference counter.
 
-Link: https://lore.kernel.org/linux-media/20211107171549.267583-11-hdegoede@redhat.com
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+Link: https://lore.kernel.org/r/20211018014503.7598-1-wanjiabing@vivo.com
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/atomisp/i2c/ov2680.h | 24 ----------------------
- 1 file changed, 24 deletions(-)
+ arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/staging/media/atomisp/i2c/ov2680.h b/drivers/staging/media/atomisp/i2c/ov2680.h
-index 874115f35fcad..798b28e134b64 100644
---- a/drivers/staging/media/atomisp/i2c/ov2680.h
-+++ b/drivers/staging/media/atomisp/i2c/ov2680.h
-@@ -289,8 +289,6 @@ static struct ov2680_reg const ov2680_global_setting[] = {
-  */
- static struct ov2680_reg const ov2680_QCIF_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x24},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -334,8 +332,6 @@ static struct ov2680_reg const ov2680_QCIF_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_CIF_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x24},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -377,8 +373,6 @@ static struct ov2680_reg const ov2680_CIF_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_QVGA_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x24},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -420,8 +414,6 @@ static struct ov2680_reg const ov2680_QVGA_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_656x496_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x24},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -463,8 +455,6 @@ static struct ov2680_reg const ov2680_656x496_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_720x592_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x26},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0x00}, // X_ADDR_START;
- 	{0x3802, 0x00},
-@@ -508,8 +498,6 @@ static struct ov2680_reg const ov2680_720x592_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_800x600_30fps[] = {
- 	{0x3086, 0x01},
--	{0x3501, 0x26},
--	{0x3502, 0x40},
- 	{0x370a, 0x23},
- 	{0x3801, 0x00},
- 	{0x3802, 0x00},
-@@ -551,8 +539,6 @@ static struct ov2680_reg const ov2680_800x600_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_720p_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -594,8 +580,6 @@ static struct ov2680_reg const ov2680_720p_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_1296x976_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0xa0},
- 	{0x3802, 0x00},
-@@ -637,8 +621,6 @@ static struct ov2680_reg const ov2680_1296x976_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_1456x1096_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0x90},
- 	{0x3802, 0x00},
-@@ -682,8 +664,6 @@ static struct ov2680_reg const ov2680_1456x1096_30fps[] = {
+diff --git a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
+index ee949255ced3f..09ef73b99dd86 100644
+--- a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
++++ b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
+@@ -154,8 +154,10 @@ static int __init rcar_gen2_regulator_quirk(void)
+ 		return -ENODEV;
  
- static struct ov2680_reg const ov2680_1616x916_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0x00},
- 	{0x3802, 0x00},
-@@ -726,8 +706,6 @@ static struct ov2680_reg const ov2680_1616x916_30fps[] = {
- #if 0
- static struct ov2680_reg const ov2680_1616x1082_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0x00},
- 	{0x3802, 0x00},
-@@ -769,8 +747,6 @@ static struct ov2680_reg const ov2680_1616x1082_30fps[] = {
-  */
- static struct ov2680_reg const ov2680_1616x1216_30fps[] = {
- 	{0x3086, 0x00},
--	{0x3501, 0x48},
--	{0x3502, 0xe0},
- 	{0x370a, 0x21},
- 	{0x3801, 0x00},
- 	{0x3802, 0x00},
+ 	for_each_matching_node_and_match(np, rcar_gen2_quirk_match, &id) {
+-		if (!of_device_is_available(np))
++		if (!of_device_is_available(np)) {
++			of_node_put(np);
+ 			break;
++		}
+ 
+ 		ret = of_property_read_u32(np, "reg", &addr);
+ 		if (ret)	/* Skip invalid entry and continue */
+@@ -164,6 +166,7 @@ static int __init rcar_gen2_regulator_quirk(void)
+ 		quirk = kzalloc(sizeof(*quirk), GFP_KERNEL);
+ 		if (!quirk) {
+ 			ret = -ENOMEM;
++			of_node_put(np);
+ 			goto err_mem;
+ 		}
+ 
 -- 
 2.34.1
 
