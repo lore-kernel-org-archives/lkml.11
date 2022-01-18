@@ -2,104 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 007AEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:51:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C5E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:51:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347558AbiARRvF (ORCPT
+        id S1347565AbiARRvW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 12:51:05 -0500
-Received: from foss.arm.com ([217.140.110.172]:34458 "EHLO foss.arm.com"
+        Tue, 18 Jan 2022 12:51:22 -0500
+Received: from mga17.intel.com ([192.55.52.151]:59946 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229934AbiARRvE (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 12:51:04 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 34280D6E;
-        Tue, 18 Jan 2022 09:51:04 -0800 (PST)
-Received: from C02TD0UTHF1T.local (unknown [10.57.37.52])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4186C3F774;
-        Tue, 18 Jan 2022 09:50:55 -0800 (PST)
-Date:   Tue, 18 Jan 2022 17:50:51 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Sven Schnelle <svens@linux.ibm.com>
-Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org, aleksandar.qemu.devel@gmail.com,
-        alexandru.elisei@arm.com, anup.patel@wdc.com,
-        aou@eecs.berkeley.edu, atish.patra@wdc.com,
-        benh@kernel.crashing.org, bp@alien8.de, catalin.marinas@arm.com,
-        chenhuacai@kernel.org, dave.hansen@linux.intel.com,
-        david@redhat.com, frankja@linux.ibm.com, frederic@kernel.org,
-        gor@linux.ibm.com, hca@linux.ibm.com, imbrenda@linux.ibm.com,
-        james.morse@arm.com, jmattson@google.com, joro@8bytes.org,
-        kvm@vger.kernel.org, maz@kernel.org, mingo@redhat.com,
-        mpe@ellerman.id.au, nsaenzju@redhat.com, palmer@dabbelt.com,
-        paulmck@kernel.org, paulus@samba.org, paul.walmsley@sifive.com,
-        seanjc@google.com, suzuki.poulose@arm.com, tglx@linutronix.de,
-        tsbogend@alpha.franken.de, vkuznets@redhat.com,
-        wanpengli@tencent.com, will@kernel.org
-Subject: Re: [PATCH 0/5] kvm: fix latent guest entry/exit bugs
-Message-ID: <20220118175051.GE17938@C02TD0UTHF1T.local>
-References: <YeFqUlhqY+7uzUT1@FVFF77S0Q05N>
- <ae1a42ab-f719-4a4e-8d2a-e2b4fa6e9580@linux.ibm.com>
- <YeF7Wvz05JhyCx0l@FVFF77S0Q05N>
- <b66c4856-7826-9cff-83f3-007d7ed5635c@linux.ibm.com>
- <YeGUnwhbSvwJz5pD@FVFF77S0Q05N>
- <8aa0cada-7f00-47b3-41e4-8a9e7beaae47@redhat.com>
- <20220118120154.GA17938@C02TD0UTHF1T.local>
- <6b6b8a2b-202c-8966-b3f7-5ce35cf40a7e@linux.ibm.com>
- <20220118131223.GC17938@C02TD0UTHF1T.local>
- <yt9dfsplc9fu.fsf@linux.ibm.com>
+        id S229934AbiARRvV (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 12:51:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642528281; x=1674064281;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=qFCgYk2DElcIeAwc1zdq0CzYHz9lRa1g5BLMWxbDp8g=;
+  b=jLf0i/QXSj9kjaCeO5rRm/x4BEvND3Nj+KdNGRGSdPYAXhj1trdx+IKt
+   MjIAKzhxW9z8Fim5ybXSsAsWw2IDlWci6KSR4reuUsYCGzav/Wl7JuUsS
+   DZW6VNLuM3DbJOHJBkkJND4NvKxj34xNBMERiv1XUjEsvI8FNlUcHV0GT
+   Vk6UGROaza0lHuy5cifnIA35qMqb+cVBmckv1rduv7CAhm34+iV31SCCB
+   BvWgffel4xR0Ktcv4pboUqZhed1ATj0rp6XN+o0Brggl9QU3eYY86i566
+   x0XMuqd0k3sw1rKrMZE3Yew5ziRbrIi+c2aShiHT83tGeS/VBM/pOJIS2
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="225550865"
+X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
+   d="scan'208";a="225550865"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 09:51:05 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
+   d="scan'208";a="477069871"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 18 Jan 2022 09:51:03 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n9sdK-000Cnn-OW; Tue, 18 Jan 2022 17:51:02 +0000
+Date:   Wed, 19 Jan 2022 01:50:22 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Heiko Stuebner <heiko@sntech.de>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Guo Ren <guoren@linux.alibaba.com>
+Subject: [csky-linux:riscv_compat_v2_sv48_v3_mmind_pbmt 31/44]
+ kernel/locking/locktorture.c:918:39: error: use of undeclared identifier
+ '_PAGE_MTMASK'
+Message-ID: <202201190125.dGN7taEZ-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <yt9dfsplc9fu.fsf@linux.ibm.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 05:09:25PM +0100, Sven Schnelle wrote:
-> Hi Mark,
+tree:   https://github.com/c-sky/csky-linux riscv_compat_v2_sv48_v3_mmind_pbmt
+head:   b28a50c03a72c48d3895320bdd0757e0a8acb881
+commit: a8a0c8f014166b1e95e223240632fd0baac50ea7 [31/44] hack in a debug output in freeinitmem
+config: i386-randconfig-a002 (https://download.01.org/0day-ci/archive/20220119/202201190125.dGN7taEZ-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project c10cbb243cafc0cf42c3e922cb29183279444432)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/c-sky/csky-linux/commit/a8a0c8f014166b1e95e223240632fd0baac50ea7
+        git remote add csky-linux https://github.com/c-sky/csky-linux
+        git fetch --no-tags csky-linux riscv_compat_v2_sv48_v3_mmind_pbmt
+        git checkout a8a0c8f014166b1e95e223240632fd0baac50ea7
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash kernel/locking/
 
-Hi Sven,
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> Mark Rutland <mark.rutland@arm.com> writes:
-> > On Tue, Jan 18, 2022 at 01:42:26PM +0100, Christian Borntraeger wrote:
-> >> Will you provide an s390 patch in your next iteration or shall we then do
-> >> one as soon as there is a v2? We also need to look into vsie.c where we
-> >> also call sie64a
-> >
-> > I'm having a go at that now; my plan is to try to have an s390 patch as
-> > part of v2 in the next day or so.
-> >
-> > Now that I have a rough idea of how SIE and exception handling works on
-> > s390, I think the structural changes to kvm-s390.c:__vcpu_run() and
-> > vsie.c:do_vsie_run() are fairly simple.
-> >
-> > The only open bit is exactly how/where to identify when the interrupt
-> > entry code needs to wake RCU. I can add a per-cpu variable or thread
-> > flag to indicate that we're inside that EQS, or or I could move the irq
-> > enable/disable into the sie64a asm and identify that as with the OUTSIDE
-> > macro in the entry asm.
-> 
-> I wonder whether the code in irqentry_enter() should call a function
-> is_eqs() instead of is_idle_task(). The default implementation would
-> be just a
-> 
-> #ifndef is_eqs
-> #define is_eqs is_idle_task
-> #endif
-> 
-> and if an architecture has special requirements, it could just define
-> is_eqs() and do the required checks there. This way the architecture
-> could define whether it's a percpu bit, a cpu flag or something else.
+All errors (new ones prefixed by >>):
 
-I had come to almost the same approach: I've added an arch_in_rcu_eqs()
-which is checked in addition to the existing is_idle_thread() check.
+>> kernel/locking/locktorture.c:918:39: error: use of undeclared identifier '_PAGE_MTMASK'
+   printk("%s: -----> %llx\n", __func__, _PAGE_MTMASK);
+                                         ^
+   1 error generated.
 
-In the case of checking is_idle_thread() and checking for PF_VCPU, I'm
-assuming the compiler can merge the loads of current->flags, and there's
-little gain by making this entirely architecture specific, but we can
-always check that and/or reconsider in future.
 
-Thanks,
-Mark.
+vim +/_PAGE_MTMASK +918 kernel/locking/locktorture.c
+
+   899	
+   900	static int __init lock_torture_init(void)
+   901	{
+   902		int i, j;
+   903		int firsterr = 0;
+   904		static struct lock_torture_ops *torture_ops[] = {
+   905			&lock_busted_ops,
+   906			&spin_lock_ops, &spin_lock_irq_ops,
+   907			&rw_lock_ops, &rw_lock_irq_ops,
+   908			&mutex_lock_ops,
+   909			&ww_mutex_lock_ops,
+   910	#ifdef CONFIG_RT_MUTEXES
+   911			&rtmutex_lock_ops,
+   912	#endif
+   913			&rwsem_lock_ops,
+   914			&percpu_rwsem_lock_ops,
+   915		};
+   916	
+   917	
+ > 918	printk("%s: -----> %llx\n", __func__, _PAGE_MTMASK);
+   919	
+   920	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
