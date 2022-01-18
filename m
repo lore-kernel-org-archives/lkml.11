@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8B82C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:35:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAAE0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:35:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347416AbiARRfS (ORCPT
+        id S1347431AbiARRfU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 12:35:18 -0500
-Received: from ssl.serverraum.org ([176.9.125.105]:43689 "EHLO
+        Tue, 18 Jan 2022 12:35:20 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:36771 "EHLO
         ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234343AbiARRfO (ORCPT
+        with ESMTP id S1346912AbiARRfP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 12:35:14 -0500
+        Tue, 18 Jan 2022 12:35:15 -0500
 Received: from mwalle01.kontron.local. (unknown [213.135.10.150])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 79F94223EF;
-        Tue, 18 Jan 2022 18:35:12 +0100 (CET)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id AC90B223F6;
+        Tue, 18 Jan 2022 18:35:13 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1642527312;
+        t=1642527313;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=p7F+whQiSepttEHv2BNHtcV2bSaZxu0JkgufwCRr8Ew=;
-        b=K8M10zNns5eMwEZamZslUzCAmJOzg21LOD+LDLUGV7Zfha+mENeV+IGC5P37Q3mTtD8cOn
-        JLbgtj/AspWx5nZAPK4w0snbt7vs3/6zctNNEtIiFBqVBxBeUSOL2EpgpIza+4l5NdSAU1
-        iESvP570wGJ3NYnArwheIoOJ6nrKJco=
+        bh=E7u3bW2JrZRjIUX82K4eJKjrr9Yp7IpGI/5ky9C3x8w=;
+        b=WfdoMHiDUh24X4gp1I+oyZtPBmatt+zXZn052cVGoQVJjCcoDGUgEjD9jEHfvZDXKUcS3r
+        uJwfyY1THl2BEmA8XRQ0IoLb8GwqtE3iXaMkDiS9GkqtRPq69EiYAQMXn9V7zoLAtEnOCt
+        VySx36gwez+twDu5cazmD0d8AAy9+Bs=
 From:   Michael Walle <michael@walle.cc>
 To:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Rob Herring <robh+dt@kernel.org>,
         Frank Rowand <frowand.list@gmail.com>,
-        Michael Walle <michael@walle.cc>, Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 1/3] of: base: make small of_parse_phandle() variants static inline
-Date:   Tue, 18 Jan 2022 18:35:02 +0100
-Message-Id: <20220118173504.2867523-2-michael@walle.cc>
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH v3 3/3] of: base: add of_parse_phandle_with_optional_args()
+Date:   Tue, 18 Jan 2022 18:35:04 +0100
+Message-Id: <20220118173504.2867523-4-michael@walle.cc>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220118173504.2867523-1-michael@walle.cc>
 References: <20220118173504.2867523-1-michael@walle.cc>
@@ -46,363 +46,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make all the smaller variants of the of_parse_phandle() static inline.
-This also let us remove the empty function stubs if CONFIG_OF is not
-defined.
+Add a new variant of the of_parse_phandle_with_args() which treats the
+cells name as optional. If it's missing, it is assumed that the phandle
+has no arguments.
 
-Suggested-by: Rob Herring <robh@kernel.org>
+Up until now, a nvmem node didn't have any arguments, so all the device
+trees haven't any '#*-cells' property. But there is a need for an
+additional argument for the phandle, for which we need a '#*-cells'
+property. Therefore, we need to support nvmem nodes with and without
+this property.
+
 Signed-off-by: Michael Walle <michael@walle.cc>
 ---
-changes since v3:
- - rebased due to now signed index parameter
-
 changes since v2:
+ - make index signed
+ - add missing function parameter doc
+
+changes since v1:
  - new patch
 
- drivers/of/base.c  | 128 ++----------------------------------
- include/linux/of.h | 157 +++++++++++++++++++++++++++++++++++++--------
- 2 files changed, 135 insertions(+), 150 deletions(-)
+ include/linux/of.h | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-diff --git a/drivers/of/base.c b/drivers/of/base.c
-index 8a24d37153b4..b108600b8296 100644
---- a/drivers/of/base.c
-+++ b/drivers/of/base.c
-@@ -1420,11 +1420,11 @@ int of_phandle_iterator_args(struct of_phandle_iterator *it,
- 	return count;
- }
- 
--static int __of_parse_phandle_with_args(const struct device_node *np,
--					const char *list_name,
--					const char *cells_name,
--					int cell_count, int index,
--					struct of_phandle_args *out_args)
-+int __of_parse_phandle_with_args(const struct device_node *np,
-+				 const char *list_name,
-+				 const char *cells_name,
-+				 int cell_count, int index,
-+				 struct of_phandle_args *out_args)
- {
- 	struct of_phandle_iterator it;
- 	int rc, cur_index = 0;
-@@ -1471,82 +1471,7 @@ static int __of_parse_phandle_with_args(const struct device_node *np,
- 	of_node_put(it.node);
- 	return rc;
- }
--
--/**
-- * of_parse_phandle - Resolve a phandle property to a device_node pointer
-- * @np: Pointer to device node holding phandle property
-- * @phandle_name: Name of property holding a phandle value
-- * @index: For properties holding a table of phandles, this is the index into
-- *         the table
-- *
-- * Return: The device_node pointer with refcount incremented.  Use
-- * of_node_put() on it when done.
-- */
--struct device_node *of_parse_phandle(const struct device_node *np,
--				     const char *phandle_name, int index)
--{
--	struct of_phandle_args args;
--
--	if (index < 0)
--		return NULL;
--
--	if (__of_parse_phandle_with_args(np, phandle_name, NULL, 0,
--					 index, &args))
--		return NULL;
--
--	return args.np;
--}
--EXPORT_SYMBOL(of_parse_phandle);
--
--/**
-- * of_parse_phandle_with_args() - Find a node pointed by phandle in a list
-- * @np:		pointer to a device tree node containing a list
-- * @list_name:	property name that contains a list
-- * @cells_name:	property name that specifies phandles' arguments count
-- * @index:	index of a phandle to parse out
-- * @out_args:	optional pointer to output arguments structure (will be filled)
-- *
-- * This function is useful to parse lists of phandles and their arguments.
-- * Returns 0 on success and fills out_args, on error returns appropriate
-- * errno value.
-- *
-- * Caller is responsible to call of_node_put() on the returned out_args->np
-- * pointer.
-- *
-- * Example::
-- *
-- *  phandle1: node1 {
-- *	#list-cells = <2>;
-- *  };
-- *
-- *  phandle2: node2 {
-- *	#list-cells = <1>;
-- *  };
-- *
-- *  node3 {
-- *	list = <&phandle1 1 2 &phandle2 3>;
-- *  };
-- *
-- * To get a device_node of the ``node2`` node you may call this:
-- * of_parse_phandle_with_args(node3, "list", "#list-cells", 1, &args);
-- */
--int of_parse_phandle_with_args(const struct device_node *np, const char *list_name,
--				const char *cells_name, int index,
--				struct of_phandle_args *out_args)
--{
--	int cell_count = -1;
--
--	if (index < 0)
--		return -EINVAL;
--
--	/* If cells_name is NULL we assume a cell count of 0 */
--	if (!cells_name)
--		cell_count = 0;
--
--	return __of_parse_phandle_with_args(np, list_name, cells_name,
--					    cell_count, index, out_args);
--}
--EXPORT_SYMBOL(of_parse_phandle_with_args);
-+EXPORT_SYMBOL(__of_parse_phandle_with_args);
- 
- /**
-  * of_parse_phandle_with_args_map() - Find a node pointed by phandle in a list and remap it
-@@ -1732,47 +1657,6 @@ int of_parse_phandle_with_args_map(const struct device_node *np,
- }
- EXPORT_SYMBOL(of_parse_phandle_with_args_map);
- 
--/**
-- * of_parse_phandle_with_fixed_args() - Find a node pointed by phandle in a list
-- * @np:		pointer to a device tree node containing a list
-- * @list_name:	property name that contains a list
-- * @cell_count: number of argument cells following the phandle
-- * @index:	index of a phandle to parse out
-- * @out_args:	optional pointer to output arguments structure (will be filled)
-- *
-- * This function is useful to parse lists of phandles and their arguments.
-- * Returns 0 on success and fills out_args, on error returns appropriate
-- * errno value.
-- *
-- * Caller is responsible to call of_node_put() on the returned out_args->np
-- * pointer.
-- *
-- * Example::
-- *
-- *  phandle1: node1 {
-- *  };
-- *
-- *  phandle2: node2 {
-- *  };
-- *
-- *  node3 {
-- *  	list = <&phandle1 0 2 &phandle2 2 3>;
-- *  };
-- *
-- * To get a device_node of the ``node2`` node you may call this:
-- * of_parse_phandle_with_fixed_args(node3, "list", 2, 1, &args);
-- */
--int of_parse_phandle_with_fixed_args(const struct device_node *np,
--				const char *list_name, int cell_count,
--				int index, struct of_phandle_args *out_args)
--{
--	if (index < 0)
--		return -EINVAL;
--	return __of_parse_phandle_with_args(np, list_name, NULL, cell_count,
--					   index, out_args);
--}
--EXPORT_SYMBOL(of_parse_phandle_with_fixed_args);
--
- /**
-  * of_count_phandle_with_args() - Find the number of phandles references in a property
-  * @np:		pointer to a device tree node containing a list
 diff --git a/include/linux/of.h b/include/linux/of.h
-index ff143a027abc..9106eced1ee1 100644
+index c64af2efbc3a..a0880c43d435 100644
 --- a/include/linux/of.h
 +++ b/include/linux/of.h
-@@ -364,18 +364,12 @@ extern const struct of_device_id *of_match_node(
- 	const struct of_device_id *matches, const struct device_node *node);
- extern int of_modalias_node(struct device_node *node, char *modalias, int len);
- extern void of_print_phandle_args(const char *msg, const struct of_phandle_args *args);
--extern struct device_node *of_parse_phandle(const struct device_node *np,
--					    const char *phandle_name,
--					    int index);
--extern int of_parse_phandle_with_args(const struct device_node *np,
--	const char *list_name, const char *cells_name, int index,
--	struct of_phandle_args *out_args);
-+extern int __of_parse_phandle_with_args(const struct device_node *np,
-+	const char *list_name, const char *cells_name, int cell_count,
-+	int index, struct of_phandle_args *out_args);
- extern int of_parse_phandle_with_args_map(const struct device_node *np,
- 	const char *list_name, const char *stem_name, int index,
- 	struct of_phandle_args *out_args);
--extern int of_parse_phandle_with_fixed_args(const struct device_node *np,
--	const char *list_name, int cells_count, int index,
--	struct of_phandle_args *out_args);
- extern int of_count_phandle_with_args(const struct device_node *np,
- 	const char *list_name, const char *cells_name);
- 
-@@ -865,18 +859,12 @@ static inline int of_property_read_string_helper(const struct device_node *np,
- 	return -ENOSYS;
- }
- 
--static inline struct device_node *of_parse_phandle(const struct device_node *np,
--						   const char *phandle_name,
--						   int index)
--{
--	return NULL;
--}
--
--static inline int of_parse_phandle_with_args(const struct device_node *np,
--					     const char *list_name,
--					     const char *cells_name,
--					     int index,
--					     struct of_phandle_args *out_args)
-+static inline int __of_parse_phandle_with_args(const struct device_node *np,
-+					       const char *list_name,
-+					       const char *cells_name,
-+					       int cell_count,
-+					       int index,
-+					       struct of_phandle_args *out_args)
- {
- 	return -ENOSYS;
- }
-@@ -890,13 +878,6 @@ static inline int of_parse_phandle_with_args_map(const struct device_node *np,
- 	return -ENOSYS;
- }
- 
--static inline int of_parse_phandle_with_fixed_args(const struct device_node *np,
--	const char *list_name, int cells_count, int index,
--	struct of_phandle_args *out_args)
--{
--	return -ENOSYS;
--}
--
- static inline int of_count_phandle_with_args(const struct device_node *np,
- 					     const char *list_name,
- 					     const char *cells_name)
-@@ -1077,6 +1058,126 @@ static inline bool of_node_is_type(const struct device_node *np, const char *typ
- 	return np && match && type && !strcmp(match, type);
+@@ -1028,6 +1028,31 @@ static inline int of_parse_phandle_with_fixed_args(const struct device_node *np,
+ 					    index, out_args);
  }
  
 +/**
-+ * of_parse_phandle - Resolve a phandle property to a device_node pointer
-+ * @np: Pointer to device node holding phandle property
-+ * @phandle_name: Name of property holding a phandle value
-+ * @index: For properties holding a table of phandles, this is the index into
-+ *         the table
-+ *
-+ * Return: The device_node pointer with refcount incremented.  Use
-+ * of_node_put() on it when done.
-+ */
-+static inline struct device_node *of_parse_phandle(const struct device_node *np,
-+						   const char *phandle_name,
-+						   int index)
-+{
-+	struct of_phandle_args args;
-+
-+	if (index < 0)
-+		return NULL;
-+
-+	if (__of_parse_phandle_with_args(np, phandle_name, NULL, 0,
-+					 index, &args))
-+		return NULL;
-+
-+	return args.np;
-+}
-+
-+/**
-+ * of_parse_phandle_with_args() - Find a node pointed by phandle in a list
++ * of_parse_phandle_with_optional_args() - Find a node pointed by phandle in a list
 + * @np:		pointer to a device tree node containing a list
 + * @list_name:	property name that contains a list
 + * @cells_name:	property name that specifies phandles' arguments count
 + * @index:	index of a phandle to parse out
 + * @out_args:	optional pointer to output arguments structure (will be filled)
 + *
-+ * This function is useful to parse lists of phandles and their arguments.
-+ * Returns 0 on success and fills out_args, on error returns appropriate
-+ * errno value.
++ * Same as of_parse_phandle_with_args() except that if the cells_name property
++ * is not found, cell_count of 0 is assumed.
 + *
-+ * Caller is responsible to call of_node_put() on the returned out_args->np
-+ * pointer.
-+ *
-+ * Example::
-+ *
-+ *  phandle1: node1 {
-+ *	#list-cells = <2>;
-+ *  };
-+ *
-+ *  phandle2: node2 {
-+ *	#list-cells = <1>;
-+ *  };
-+ *
-+ *  node3 {
-+ *	list = <&phandle1 1 2 &phandle2 3>;
-+ *  };
-+ *
-+ * To get a device_node of the ``node2`` node you may call this:
-+ * of_parse_phandle_with_args(node3, "list", "#list-cells", 1, &args);
++ * This is used to useful, if you have a phandle which didn't have arguments
++ * before and thus doesn't have a '#*-cells' property but is now migrated to
++ * having arguments while retaining backwards compatibility.
 + */
-+static inline int of_parse_phandle_with_args(const struct device_node *np,
-+					     const char *list_name,
-+					     const char *cells_name,
-+					     int index,
-+					     struct of_phandle_args *out_args)
++static inline int of_parse_phandle_with_optional_args(const struct device_node *np,
++						      const char *list_name,
++						      const char *cells_name,
++						      int index,
++						      struct of_phandle_args *out_args)
 +{
-+	int cell_count = -1;
-+
-+	if (index < 0)
-+		return -EINVAL;
-+
-+	/* If cells_name is NULL we assume a cell count of 0 */
-+	if (!cells_name)
-+		cell_count = 0;
-+
 +	return __of_parse_phandle_with_args(np, list_name, cells_name,
-+					    cell_count, index, out_args);
-+}
-+
-+/**
-+ * of_parse_phandle_with_fixed_args() - Find a node pointed by phandle in a list
-+ * @np:		pointer to a device tree node containing a list
-+ * @list_name:	property name that contains a list
-+ * @cell_count: number of argument cells following the phandle
-+ * @index:	index of a phandle to parse out
-+ * @out_args:	optional pointer to output arguments structure (will be filled)
-+ *
-+ * This function is useful to parse lists of phandles and their arguments.
-+ * Returns 0 on success and fills out_args, on error returns appropriate
-+ * errno value.
-+ *
-+ * Caller is responsible to call of_node_put() on the returned out_args->np
-+ * pointer.
-+ *
-+ * Example::
-+ *
-+ *  phandle1: node1 {
-+ *  };
-+ *
-+ *  phandle2: node2 {
-+ *  };
-+ *
-+ *  node3 {
-+ *	list = <&phandle1 0 2 &phandle2 2 3>;
-+ *  };
-+ *
-+ * To get a device_node of the ``node2`` node you may call this:
-+ * of_parse_phandle_with_fixed_args(node3, "list", 2, 1, &args);
-+ */
-+static inline int of_parse_phandle_with_fixed_args(const struct device_node *np,
-+						   const char *list_name,
-+						   int cell_count,
-+						   int index,
-+						   struct of_phandle_args *out_args)
-+{
-+	if (index < 0)
-+		return -EINVAL;
-+
-+	return __of_parse_phandle_with_args(np, list_name, NULL, cell_count,
-+					    index, out_args);
++					    0, index, out_args);
 +}
 +
  /**
