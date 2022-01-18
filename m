@@ -2,41 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30D94C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:13:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A86F3C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:13:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347159AbiARQN0 (ORCPT
+        id S1346963AbiARQN2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:13:26 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:41480 "EHLO
+        Tue, 18 Jan 2022 11:13:28 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:42182 "EHLO
         sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347201AbiARQLa (ORCPT
+        with ESMTP id S243870AbiARQLh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:11:30 -0500
+        Tue, 18 Jan 2022 11:11:37 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4B494CE1A38;
-        Tue, 18 Jan 2022 16:11:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25A49C00446;
-        Tue, 18 Jan 2022 16:11:26 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id A3782CE1A3C;
+        Tue, 18 Jan 2022 16:11:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6274FC00446;
+        Tue, 18 Jan 2022 16:11:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522287;
-        bh=s3CsI5MmGWZgzICs6nkaVvUohwmFXDbrC1qDtryJsvw=;
+        s=korg; t=1642522294;
+        bh=u20GRXqdFoWwdO0HLqYOO3U5SYterS/PKJI/gjDF68E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wtWTtkr0CkAUNxBIY5eK5n37A1cWXbwp5vlOt7/ym6PeeClnUyHqzY9b7jlc5rAMr
-         c0KxVUyy4PlGE2LDE7I/VuIU701nCcLr9CpWodF+8nA0MOLzmodzfnaBOs5Shf+6JQ
-         OM63sFq6GXFyE8/alKM7HWx7Hfz5x639xGJG8NRc=
+        b=SQzgclor7tl7gih8vgUG76HuFxB7fxcysdUntdUFGDpi+e42BJu0jlgrEVoiS4/5a
+         0m11ps1lWnELS9koMhJER2w+ShJxshLeWhgnWNs4sIVQDFQ4TwsaSoLyQ43Ahmcmhq
+         40YogZfO5bq2KmkZdEFP1DvqS5DdIKjfqf7HM+vg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qiushi Wu <wu000273@umn.edu>,
-        Kees Cook <keescook@chromium.org>,
-        Johan Hovold <johan@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 5.16 19/28] firmware: qemu_fw_cfg: fix NULL-pointer deref on duplicate entries
-Date:   Tue, 18 Jan 2022 17:06:14 +0100
-Message-Id: <20220118160453.040564319@linuxfoundation.org>
+        stable@vger.kernel.org, Dario Petrillo <dario.pk1@gmail.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>, stable@kernel.org
+Subject: [PATCH 5.16 21/28] perf annotate: Avoid TUI crash when navigating in the annotation of recursive functions
+Date:   Tue, 18 Jan 2022 17:06:16 +0100
+Message-Id: <20220118160453.100853747@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118160452.384322748@linuxfoundation.org>
 References: <20220118160452.384322748@linuxfoundation.org>
@@ -48,60 +51,108 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Dario Petrillo <dario.pk1@gmail.com>
 
-commit d3e305592d69e21e36b76d24ca3c01971a2d09be upstream.
+commit d5962fb7d69073bf68fb647531cfd4f0adf84be3 upstream.
 
-Commit fe3c60684377 ("firmware: Fix a reference count leak.") "fixed"
-a kobject leak in the file registration helper by properly calling
-kobject_put() for the entry in case registration of the object fails
-(e.g. due to a name collision).
+In 'perf report', entering a recursive function from inside of itself
+(either directly of indirectly through some other function) results in
+calling symbol__annotate2 multiple() times, and freeing the whole
+disassembly when exiting from the innermost instance.
 
-This would however result in a NULL pointer dereference when the
-release function tries to remove the never added entry from the
-fw_cfg_entry_cache list.
+The first issue causes the function's disassembly to be duplicated, and
+the latter a heap use-after-free (and crash) when trying to access the
+disassembly again.
 
-Fix this by moving the list-removal out of the release function.
+I reproduced the bug on perf 5.11.22 (Ubuntu 20.04.3 LTS) and 5.16.rc8
+with the following testcase (compile with gcc recursive.c -o recursive).
+To reproduce:
 
-Note that the offending commit was one of the benign looking umn.edu
-fixes which was reviewed but not reverted. [1][2]
+- perf record ./recursive
+- perf report
+- enter fibonacci and annotate it
+- move the cursor on one of the "callq fibonacci" instructions and press enter
+  - at this point there will be two copies of the function in the disassembly
+- go back by pressing q, and perf will crash
 
-[1] https://lore.kernel.org/r/202105051005.49BFABCE@keescook
-[2] https://lore.kernel.org/all/YIg7ZOZvS3a8LjSv@kroah.com
+  #include <stdio.h>
 
-Fixes: fe3c60684377 ("firmware: Fix a reference count leak.")
-Cc: stable@vger.kernel.org      # 5.8
-Cc: Qiushi Wu <wu000273@umn.edu>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Link: https://lore.kernel.org/r/20211201132528.30025-2-johan@kernel.org
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+  int fibonacci(int n)
+  {
+      if(n <= 2) return 1;
+      return fibonacci(n-1) + fibonacci(n-2);
+  }
+
+  int main()
+  {
+      printf("%d\n", fibonacci(40));
+  }
+
+This patch addresses the issue by annotating a function and freeing the
+associated memory on exit only if no annotation is already present, so
+that a recursive function is only annotated on entry.
+
+Signed-off-by: Dario Petrillo <dario.pk1@gmail.com>
+Tested-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: stable@kernel.org
+Link: http://lore.kernel.org/lkml/20220109234441.325106-1-dario.pk1@gmail.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/qemu_fw_cfg.c |    5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ tools/perf/ui/browsers/annotate.c |   23 ++++++++++++++---------
+ 1 file changed, 14 insertions(+), 9 deletions(-)
 
---- a/drivers/firmware/qemu_fw_cfg.c
-+++ b/drivers/firmware/qemu_fw_cfg.c
-@@ -388,9 +388,7 @@ static void fw_cfg_sysfs_cache_cleanup(v
- 	struct fw_cfg_sysfs_entry *entry, *next;
+--- a/tools/perf/ui/browsers/annotate.c
++++ b/tools/perf/ui/browsers/annotate.c
+@@ -966,6 +966,7 @@ int symbol__tui_annotate(struct map_symb
+ 		.opts = opts,
+ 	};
+ 	int ret = -1, err;
++	int not_annotated = list_empty(&notes->src->source);
  
- 	list_for_each_entry_safe(entry, next, &fw_cfg_entry_cache, list) {
--		/* will end up invoking fw_cfg_sysfs_cache_delist()
--		 * via each object's release() method (i.e. destructor)
--		 */
-+		fw_cfg_sysfs_cache_delist(entry);
- 		kobject_put(&entry->kobj);
+ 	if (sym == NULL)
+ 		return -1;
+@@ -973,13 +974,15 @@ int symbol__tui_annotate(struct map_symb
+ 	if (ms->map->dso->annotate_warned)
+ 		return -1;
+ 
+-	err = symbol__annotate2(ms, evsel, opts, &browser.arch);
+-	if (err) {
+-		char msg[BUFSIZ];
+-		ms->map->dso->annotate_warned = true;
+-		symbol__strerror_disassemble(ms, err, msg, sizeof(msg));
+-		ui__error("Couldn't annotate %s:\n%s", sym->name, msg);
+-		goto out_free_offsets;
++	if (not_annotated) {
++		err = symbol__annotate2(ms, evsel, opts, &browser.arch);
++		if (err) {
++			char msg[BUFSIZ];
++			ms->map->dso->annotate_warned = true;
++			symbol__strerror_disassemble(ms, err, msg, sizeof(msg));
++			ui__error("Couldn't annotate %s:\n%s", sym->name, msg);
++			goto out_free_offsets;
++		}
  	}
- }
-@@ -448,7 +446,6 @@ static void fw_cfg_sysfs_release_entry(s
- {
- 	struct fw_cfg_sysfs_entry *entry = to_entry(kobj);
  
--	fw_cfg_sysfs_cache_delist(entry);
- 	kfree(entry);
- }
+ 	ui_helpline__push("Press ESC to exit");
+@@ -994,9 +997,11 @@ int symbol__tui_annotate(struct map_symb
  
+ 	ret = annotate_browser__run(&browser, evsel, hbt);
+ 
+-	annotated_source__purge(notes->src);
++	if(not_annotated)
++		annotated_source__purge(notes->src);
+ 
+ out_free_offsets:
+-	zfree(&notes->offsets);
++	if(not_annotated)
++		zfree(&notes->offsets);
+ 	return ret;
+ }
 
 
