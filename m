@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D46D0C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 01:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86F00C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 01:38:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244258AbiARBi1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 20:38:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47080 "EHLO
+        id S244308AbiARBia (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 20:38:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244052AbiARBiR (ORCPT
+        with ESMTP id S244236AbiARBiV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 20:38:17 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD080C061574;
-        Mon, 17 Jan 2022 17:38:16 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id 15so39678607edx.9;
-        Mon, 17 Jan 2022 17:38:16 -0800 (PST)
+        Mon, 17 Jan 2022 20:38:21 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6289EC061747;
+        Mon, 17 Jan 2022 17:38:18 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id j7so24461118edr.4;
+        Mon, 17 Jan 2022 17:38:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=g+sL8MJUVFSLlqzbEi0bJU0Ptqral5tkM/Cwy/Wus0w=;
-        b=TqhRWDBXx1AJ0WLjQ2JwHldaVFPN2aV0Fc8CPWq/YoQrnz8dkZbqUuSvUIKhg00EQa
-         01/8YOxMwTK+8SqTvGEvxWIbYgrlPk8raumJJg8EiaWkxTUEkIpgXHtdI4i09hz/RtDi
-         qJnyg6xoq0QCJCTuDipcieJZCFeyM9uuCUQMUjJLyy3mxIZq/HVjQ1/43NCrIEh6N4Rt
-         rkA/fFG/r1a7t0k7r3iQ/yxcbNuiuChrDuVRrzhVl6vmgRfmbwIs+aK+/CWMTdfxrqEw
-         jiz3B2usPGxvHaIuYAF6rnToKcOuJqwE41aKM7kvdrMrvpbEiPdeKztDVk5eD6HzADvz
-         0SpA==
+        bh=UsIFc41NyVxBMgdnBu1qnW2vSm6Sfxs1oXcb1leBi3Q=;
+        b=Z06EZP9zR2KV5pxvjrJS24JD/93CtQ8caQaIjCV6A8MS27S1M5N19G8eaHP6XmT7gF
+         Z9nBitbj33e3oVgwcCabDqvqQXWZByQNFHE3l3DCwAnhFepb0y/GVf46rvbmLG/auAmg
+         bUw18oz1ZuBBoekedLz8X1GNPtrcnHTjKc9r3PKtNqj0xXxkkm1fv9cbAYMzhuXnIpNv
+         6Upizv0BEAEwm7rbRIlmlaiC1PMio3gmFjH9hu7oKdUMk/6oyZ6kEK4aZlGXO8R2U045
+         PVD6I6SE5cH/Py6qZJjmsgOxkB5vusVfzspMi5rSWVry8DtU1tqLCp2IgJFh7L2H6Owf
+         CdnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=g+sL8MJUVFSLlqzbEi0bJU0Ptqral5tkM/Cwy/Wus0w=;
-        b=uuPPGDLtK9Fl/LPQRj8a1XWtrywpO1GMNbcdxdxRRh+NRaGcZnF1gtSmxUHCzdykgJ
-         ZXeqwfAOVneNfuvAGTlsO64YhKuUEfz+qjUkWwofuKVTjHhC/0OKVtDpPEjvoC2AVdZW
-         OtLYu4skPMxcOZRGyIbtwMeBsfk3nLiB6V9kxFsJ9DWDTmNLTTrk+H4qhmMnoG2nhJrH
-         pYWnorRxq3/k4890lZnQU1KLoQSf/j/ObcynUGNfMz/m4dONezQc+eHKtndIWVwJC7J5
-         D6wrCG+HP8dz/qYJJdE6NyIXtNZCtCEbX0/l//Ou3EcnDAaAo6MJQ9w8Yy01uS4Nfdey
-         Gr7Q==
-X-Gm-Message-State: AOAM533TAoHMY5avbogQJq0QXWKtE646kOGW5TkxceZ4AzFxN+WPf0Gp
-        BcAZLxOXdwJ4/FNO8x/FUgE=
-X-Google-Smtp-Source: ABdhPJwVfOeRDyedDBCNhuYt2BfBiKHrYOzTXqbX6s+Vv5LXLMFaRHidceTn+jFhYLS33cXBKXqmPg==
-X-Received: by 2002:a17:906:c08c:: with SMTP id f12mr18458734ejz.419.1642469895160;
-        Mon, 17 Jan 2022 17:38:15 -0800 (PST)
+        bh=UsIFc41NyVxBMgdnBu1qnW2vSm6Sfxs1oXcb1leBi3Q=;
+        b=zol3vqb8m9/d4JGBoXOnbIVIatrkYwZUY6a8dHtnqm4yAxoiLSA5h8/6fzw/3HhbUk
+         +l0mhf8wqp/ZFAa6KaK0kMrLC0x2jGpfcLYzvEC5rTlCmFF/olHM/d3HPJf9IuHT17qH
+         NsFDoIOULMXq17HEZPTsJrURxSWZTPjhiOWxe6iBhlg8sbXx9D5IfvgSvbxLe00aNkcg
+         XIjbfn+JlY3Wk41/lJP5q7omsPoSw2Pt+fDVttgk8Br+nDVYtsCIi75NL0XqRKphi9MA
+         X/jqcTuMop6E30U4R8gy6fzQBLXy9Rzb/Y6f0y0bXZos8bEC4aTZYxnZlhAexgcs2zzp
+         SD/g==
+X-Gm-Message-State: AOAM530c8KFd32BxIGFOotd7++Mwht4wcP+xh4D5x+q0mEliWOAjLIUz
+        1QdN2sELWJ5MfbU1QoPy/tY=
+X-Google-Smtp-Source: ABdhPJxg6+CynD7BFXcKFSw4ZXQHSZuV10OL0+lkGZntXpXKv5MybDqePJDXpWz/nSPmGOF7fA/Afw==
+X-Received: by 2002:aa7:dd56:: with SMTP id o22mr24160660edw.73.1642469896869;
+        Mon, 17 Jan 2022 17:38:16 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id kj18sm3990675ejc.139.2022.01.17.17.38.14
+        by smtp.googlemail.com with ESMTPSA id kj18sm3990675ejc.139.2022.01.17.17.38.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 17:38:14 -0800 (PST)
+        Mon, 17 Jan 2022 17:38:16 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -55,9 +55,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [PATCH 06/17] ARM: dts: qcom: reduce pci IO size to 64K for ipq8064
-Date:   Tue, 18 Jan 2022 02:20:36 +0100
-Message-Id: <20220118012051.21691-7-ansuelsmth@gmail.com>
+Subject: [PATCH 08/17] ARM: dts: qcom: add smem node for ipq8064
+Date:   Tue, 18 Jan 2022 02:20:38 +0100
+Message-Id: <20220118012051.21691-9-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220118012051.21691-1-ansuelsmth@gmail.com>
 References: <20220118012051.21691-1-ansuelsmth@gmail.com>
@@ -67,51 +67,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The current value for pci IO is problematic for ath10k wifi card
-commonly connected to ipq8064 SoC.
-The current value is probably a typo and is actually uncommon to find
-1MB IO space even on a x86 arch. Also with recent changes to the pci
-driver, pci1 and pci2 now fails to function as any connected device
-fails any reg read/write. Reduce this to 64K as it should be more than
-enough and 3 * 64K of total IO space doesn't exceed the IO_SPACE_LIMIT
-hardcoded for the ARM arch.
+Add missing smem node for ipq8064.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- arch/arm/boot/dts/qcom-ipq8064.dtsi | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/qcom-ipq8064.dtsi | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
 diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-index 441309bb64c8..c8763997e0f7 100644
+index 856968a96498..8c2d4dac0ebd 100644
 --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
 +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-@@ -904,7 +904,7 @@ pcie0: pci@1b500000 {
- 			#address-cells = <3>;
- 			#size-cells = <2>;
+@@ -892,6 +892,11 @@ lcc: clock-controller@28000000 {
+ 			#reset-cells = <1>;
+ 		};
  
--			ranges = <0x81000000 0 0x0fe00000 0x0fe00000 0 0x00100000   /* downstream I/O */
-+			ranges = <0x81000000 0 0x0fe00000 0x0fe00000 0 0x00010000   /* downstream I/O */
- 				  0x82000000 0 0x08000000 0x08000000 0 0x07e00000>; /* non-prefetchable memory */
- 
- 			interrupts = <GIC_SPI 35 IRQ_TYPE_LEVEL_HIGH>;
-@@ -955,7 +955,7 @@ pcie1: pci@1b700000 {
- 			#address-cells = <3>;
- 			#size-cells = <2>;
- 
--			ranges = <0x81000000 0 0x31e00000 0x31e00000 0 0x00100000   /* downstream I/O */
-+			ranges = <0x81000000 0 0x31e00000 0x31e00000 0 0x00010000   /* downstream I/O */
- 				  0x82000000 0 0x2e000000 0x2e000000 0 0x03e00000>; /* non-prefetchable memory */
- 
- 			interrupts = <GIC_SPI 57 IRQ_TYPE_LEVEL_HIGH>;
-@@ -1006,7 +1006,7 @@ pcie2: pci@1b900000 {
- 			#address-cells = <3>;
- 			#size-cells = <2>;
- 
--			ranges = <0x81000000 0 0x35e00000 0x35e00000 0 0x00100000   /* downstream I/O */
-+			ranges = <0x81000000 0 0x35e00000 0x35e00000 0 0x00010000   /* downstream I/O */
- 				  0x82000000 0 0x32000000 0x32000000 0 0x03e00000>; /* non-prefetchable memory */
- 
- 			interrupts = <GIC_SPI 71 IRQ_TYPE_LEVEL_HIGH>;
++		sfpb_mutex_block: syscon@1200600 {
++			compatible = "syscon";
++			reg = <0x01200600 0x100>;
++		};
++
+ 		pcie0: pci@1b500000 {
+ 			compatible = "qcom,pcie-ipq8064";
+ 			reg = <0x1b500000 0x1000
+@@ -1316,4 +1321,17 @@ sdcc3: mmc@12180000 {
+ 			};
+ 		};
+ 	};
++
++	sfpb_mutex: sfpb-mutex {
++		compatible = "qcom,sfpb-mutex";
++		syscon = <&sfpb_mutex_block 4 4>;
++
++		#hwlock-cells = <1>;
++	};
++
++	smem {
++		compatible = "qcom,smem";
++		memory-region = <&smem>;
++		hwlocks = <&sfpb_mutex 3>;
++	};
+ };
 -- 
 2.33.1
 
