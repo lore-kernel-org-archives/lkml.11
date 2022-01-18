@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB195C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:09:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B947FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:10:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346580AbiARQJ5 (ORCPT
+        id S1346944AbiARQJ7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:09:57 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:39512 "EHLO
+        Tue, 18 Jan 2022 11:09:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39964 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346846AbiARQIw (ORCPT
+        with ESMTP id S1346886AbiARQIz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:08:52 -0500
+        Tue, 18 Jan 2022 11:08:55 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 427836128A;
-        Tue, 18 Jan 2022 16:08:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04418C00446;
-        Tue, 18 Jan 2022 16:08:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6526D612C8;
+        Tue, 18 Jan 2022 16:08:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 304C8C00446;
+        Tue, 18 Jan 2022 16:08:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522131;
-        bh=qju8o6XoyuGz22CvsF0euEAzaQbEcSDw/wMlTLltAoI=;
+        s=korg; t=1642522134;
+        bh=bKimfoQ1gskIREFUdIgvDX+yOxQ8Y2Lm3TDY/b8xxzM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VSOffEJqdtvc9WAWxlkK5Mbh3IWPDViFye/0Ly7rDbYHO1OVfZBc16e2fbkHeTdkL
-         9l83sFs9/IPWpDt4PP2Flcccks3XwDAnaB7MXTPCCEHrPpcyZHIvVb9WFc8td4cL2P
-         dEKGCQdT6FtfAuKkJysMId89R5VWBSAa1oLi5V5A=
+        b=VkDzrZkYVH3b5IKeiv7XREUbp7TKpMME09q1CF5qoxfMGLuKOPWSkZRfL95QB5yKt
+         zw4KneB9YL8v/ZatnSO04faQ+4CfPg/LQCZ/NITxy6TSGJf608dLefuU30rx3qcgDz
+         t1qRAvLXSgsGkJdi6CK18lRbATdvOOQZVf5263Ks=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Mario Limonciello <mario.limonciello@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.15 02/28] drm/amd/display: explicitly set is_dsc_supported to false before use
-Date:   Tue, 18 Jan 2022 17:05:48 +0100
-Message-Id: <20220118160451.957799245@linuxfoundation.org>
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        Mike Marshall <hubcap@omnibond.com>
+Subject: [PATCH 5.15 03/28] orangefs: Fix the size of a memory allocation in orangefs_bufmap_alloc()
+Date:   Tue, 18 Jan 2022 17:05:49 +0100
+Message-Id: <20220118160451.986308939@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118160451.879092022@linuxfoundation.org>
 References: <20220118160451.879092022@linuxfoundation.org>
@@ -47,32 +47,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mario Limonciello <mario.limonciello@amd.com>
+From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 
-commit 63ad5371cd1e379519395c49a4b6a652c36c98e5 upstream.
+commit 40a74870b2d1d3d44e13b3b73c6571dd34f5614d upstream.
 
-When UBSAN is enabled a case is shown on unplugging the display that
-this variable hasn't been initialized by `update_dsc_caps`, presumably
-when the display was unplugged it wasn't copied from the DPCD.
+'buffer_index_array' really looks like a bitmap. So it should be allocated
+as such.
+When kzalloc is called, a number of bytes is expected, but a number of
+longs is passed instead.
 
-Link: https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1956497
-Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
-Acked-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+In get(), if not enough memory is allocated, un-allocated memory may be
+read or written.
+
+So use bitmap_zalloc() to safely allocate the correct memory size and
+avoid un-expected behavior.
+
+While at it, change the corresponding kfree() into bitmap_free() to keep
+the semantic.
+
+Fixes: ea2c9c9f6574 ("orangefs: bufmap rewrite")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Mike Marshall <hubcap@omnibond.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/orangefs/orangefs-bufmap.c |    7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -5604,6 +5604,7 @@ static void update_dsc_caps(struct amdgp
- 							struct dsc_dec_dpcd_caps *dsc_caps)
+--- a/fs/orangefs/orangefs-bufmap.c
++++ b/fs/orangefs/orangefs-bufmap.c
+@@ -176,7 +176,7 @@ orangefs_bufmap_free(struct orangefs_buf
  {
- 	stream->timing.flags.DSC = 0;
-+	dsc_caps->is_dsc_supported = false;
+ 	kfree(bufmap->page_array);
+ 	kfree(bufmap->desc_array);
+-	kfree(bufmap->buffer_index_array);
++	bitmap_free(bufmap->buffer_index_array);
+ 	kfree(bufmap);
+ }
  
- 	if (aconnector->dc_link && sink->sink_signal == SIGNAL_TYPE_DISPLAY_PORT) {
- 		dc_dsc_parse_dsc_dpcd(aconnector->dc_link->ctx->dc,
+@@ -226,8 +226,7 @@ orangefs_bufmap_alloc(struct ORANGEFS_de
+ 	bufmap->desc_size = user_desc->size;
+ 	bufmap->desc_shift = ilog2(bufmap->desc_size);
+ 
+-	bufmap->buffer_index_array =
+-		kzalloc(DIV_ROUND_UP(bufmap->desc_count, BITS_PER_LONG), GFP_KERNEL);
++	bufmap->buffer_index_array = bitmap_zalloc(bufmap->desc_count, GFP_KERNEL);
+ 	if (!bufmap->buffer_index_array)
+ 		goto out_free_bufmap;
+ 
+@@ -250,7 +249,7 @@ orangefs_bufmap_alloc(struct ORANGEFS_de
+ out_free_desc_array:
+ 	kfree(bufmap->desc_array);
+ out_free_index_array:
+-	kfree(bufmap->buffer_index_array);
++	bitmap_free(bufmap->buffer_index_array);
+ out_free_bufmap:
+ 	kfree(bufmap);
+ out:
 
 
