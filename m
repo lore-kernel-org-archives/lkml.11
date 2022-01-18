@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0270AC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:43:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D15CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:43:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244638AbiARDn1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:43:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36038 "EHLO
+        id S1349081AbiARDnh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 22:43:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241988AbiARCzT (ORCPT
+        with ESMTP id S1351793AbiARCzL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:55:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71BBDC02B860;
-        Mon, 17 Jan 2022 18:44:04 -0800 (PST)
+        Mon, 17 Jan 2022 21:55:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E77EC02B85D;
+        Mon, 17 Jan 2022 18:44:01 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 14509B81261;
-        Tue, 18 Jan 2022 02:44:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C9E0C36AF6;
-        Tue, 18 Jan 2022 02:44:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD53F60C96;
+        Tue, 18 Jan 2022 02:44:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0E07CC36AE3;
+        Tue, 18 Jan 2022 02:43:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473842;
-        bh=TduZyZ0ghcIaAcEEXlYQaCTkJBtGHHywni40Kmh8Jh4=;
+        s=k20201202; t=1642473840;
+        bh=Csfys2uwM396iME7raG1/d7q99Qkj/wQ1zHtdVop2hQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=prnBF0clEaSNT3eqYKWRzQ7ix8wtX1erwGcc6JLVQoaIP0wEPMLFWl+TsILrcuao5
-         Zw1KWb1nLHRZvYJ+L2nNSuAjunG5ym/uz0kryF+yvlrbnZpJ/e7nNa8Lm7n4YNH4ir
-         Q3Bqy03YkHplJjoLE9w1wjcUpM6XLXmHcLT5ZplZ2JB8e5WHQIdWOKd9qfev/taqZp
-         OSTLSsl/HKL7cSuWcUN0EFAyBsbD/t3cF2pstYI65p9q34pWcZoIBjaD+FiiYGE6yU
-         85BiHVW2pCb6Jgt0xJrFf8TJb6ovPgnR2iWsWXICrVa1jSO1fVy9JXTymWNm3pK7Dc
-         iJf/Cw2+5jbpQ==
+        b=QeRI8wpRcZ9uvu3Wn3EVNiy30l7dl8sVJLjxDFlOfu150dnr5sar5EUKfZyJ3VXPa
+         eMCNNOQtHJgE7NDurPDETfYHx45fQjcIltYNh0mA7dh41HIFoVAb0RKzSyIa2j0fms
+         sPuggJ/EeTmQPCbehIIN8hMeAO7T5RF/Ubztgmc9buMLyQj3+V+FAU4S4my88Snxei
+         8hU5G0hQlA16zJS1S+ckVIxSRvRs+bFnuizQTF1TVsp/fJu0w5htuMvKCecRwRmgrk
+         gV18F/aLqqEsmekVp2sosOnJ3fQGFXck8hm+lTiZb9WNpJYXfbfaOWkgSTAo01wRZq
+         3rn38p+/QaYhQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>, clm@fb.com,
-        linux-btrfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 099/116] btrfs: remove BUG_ON() in find_parent_nodes()
-Date:   Mon, 17 Jan 2022 21:39:50 -0500
-Message-Id: <20220118024007.1950576-99-sashal@kernel.org>
+Cc:     Marina Nikolic <Marina.Nikolic@amd.com>,
+        Evan Quan <evan.quan@amd.com>, Lijo Lazar <lijo.lazar@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.10 097/116] amdgpu/pm: Make sysfs pm attributes as read-only for VFs
+Date:   Mon, 17 Jan 2022 21:39:48 -0500
+Message-Id: <20220118024007.1950576-97-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
 References: <20220118024007.1950576-1-sashal@kernel.org>
@@ -52,40 +55,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Marina Nikolic <Marina.Nikolic@amd.com>
 
-[ Upstream commit fcba0120edf88328524a4878d1d6f4ad39f2ec81 ]
+[ Upstream commit 11c9cc95f818f0f187e9b579a7f136f532b42445 ]
 
-We search for an extent entry with .offset = -1, which shouldn't be a
-thing, but corruption happens.  Add an ASSERT() for the developers,
-return -EUCLEAN for mortals.
+== Description ==
+Setting values of pm attributes through sysfs
+should not be allowed in SRIOV mode.
+These calls will not be processed by FW anyway,
+but error handling on sysfs level should be improved.
 
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+== Changes ==
+This patch prohibits performing of all set commands
+in SRIOV mode on sysfs level.
+It offers better error handling as calls that are
+not allowed will not be propagated further.
+
+== Test ==
+Writing to any sysfs file in passthrough mode will succeed.
+Writing to any sysfs file in ONEVF mode will yield error:
+"calling process does not have sufficient permission to execute a command".
+
+Signed-off-by: Marina Nikolic <Marina.Nikolic@amd.com>
+Acked-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/backref.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/amd/pm/amdgpu_pm.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
-index 6e447bdaf9ec8..8b471579e26e1 100644
---- a/fs/btrfs/backref.c
-+++ b/fs/btrfs/backref.c
-@@ -1213,7 +1213,12 @@ static int find_parent_nodes(struct btrfs_trans_handle *trans,
- 	ret = btrfs_search_slot(trans, fs_info->extent_root, &key, path, 0, 0);
- 	if (ret < 0)
- 		goto out;
--	BUG_ON(ret == 0);
-+	if (ret == 0) {
-+		/* This shouldn't happen, indicates a bug or fs corruption. */
-+		ASSERT(ret != 0);
-+		ret = -EUCLEAN;
-+		goto out;
-+	}
+diff --git a/drivers/gpu/drm/amd/pm/amdgpu_pm.c b/drivers/gpu/drm/amd/pm/amdgpu_pm.c
+index 9f383b9041d28..49109614510b8 100644
+--- a/drivers/gpu/drm/amd/pm/amdgpu_pm.c
++++ b/drivers/gpu/drm/amd/pm/amdgpu_pm.c
+@@ -2098,6 +2098,12 @@ static int default_attr_update(struct amdgpu_device *adev, struct amdgpu_device_
+ 		}
+ 	}
  
- #ifdef CONFIG_BTRFS_FS_RUN_SANITY_TESTS
- 	if (trans && likely(trans->type != __TRANS_DUMMY) &&
++	/* setting should not be allowed from VF */
++	if (amdgpu_sriov_vf(adev)) {
++		dev_attr->attr.mode &= ~S_IWUGO;
++		dev_attr->store = NULL;
++	}
++
+ #undef DEVICE_ATTR_IS
+ 
+ 	return 0;
 -- 
 2.34.1
 
