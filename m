@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9388CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:12:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8978EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355185AbiARDLN (ORCPT
+        id S1355202AbiARDLP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:11:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36086 "EHLO
+        Mon, 17 Jan 2022 22:11:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350745AbiARCwR (ORCPT
+        with ESMTP id S1350897AbiARCwb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:52:17 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 595E4C08C5C3;
-        Mon, 17 Jan 2022 18:43:12 -0800 (PST)
+        Mon, 17 Jan 2022 21:52:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97562C02C30A;
+        Mon, 17 Jan 2022 18:43:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 20190B81132;
-        Tue, 18 Jan 2022 02:43:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDFB7C36AE3;
-        Tue, 18 Jan 2022 02:43:08 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7290C612F3;
+        Tue, 18 Jan 2022 02:43:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B151EC36AE3;
+        Tue, 18 Jan 2022 02:43:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473790;
-        bh=/74ibrcK+ISIoJTWLGejVQLxnzs2mu57MYjpIyvlIbg=;
+        s=k20201202; t=1642473799;
+        bh=ND1OzIQ4qqHezNqKTpq1HofiiNOFrdx989O0rs0C+SM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EmKSGDA0OBpPAY6Zy1qUR/gcMc14NjPSVkitWVQ6lwFwbjtwQKfSiOQydnXCgtR4w
-         U9BldKPGiVZu4QeVF29NI+tDutTp+TEhmovjYzFQ+XlMKYUlQjB6m5UTDvlKStF+ww
-         8yH94JLHIJgp4Nd0Mor7ZJ7jW0bPMhqH9AbkF40ovxb389+bvYNEvFUUyEZK7DDyoK
-         iMtxvqezfQr85ZEHyQPduWeWdKLC70/m1TXMq0EUmBAZ+vhC6+EJFr5yHCu5310wcV
-         tCFdAqZi0a3a5szsM9LRFbUPpKwNP+1TY66q9J2wKwgmeeIlIIFtqXwPd9wxzm367x
-         NoX1rtdGWPwgQ==
+        b=OY7xyKNwAHj7LXAXKoA5jkVgp+648FGNq50yI0LQ/jCx9DWVgirOIUDKOZyl8RWbk
+         1w0j8nbUSrgujea2uoXez6OY6L6xWH8ZQvV1aShUoWg1+I5LpNb54uVQU/ftwbi6+9
+         vbXFncRW/CNtlFxfr03BJs42mCQEEC8Tk0WlsQRquzRZEl12AYmVXwZwmsLLC1MOuI
+         E9QPDlg3XafWMfN8ybZisuILhG5RrPAfluxtZlECNen3gt+dIFRJYiZcE0wjAsL9kR
+         vf9eeSaWWy2QxisN5kpYmlX6ezGiEkyNc9cM3iVha6nXGucz7BdQMlBNef0bjCx9M/
+         ACBrhLRBV1n7Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thierry Reding <treding@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com, spujar@nvidia.com,
-        mperttunen@nvidia.com, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 073/116] arm64: tegra: Adjust length of CCPLEX cluster MMIO region
-Date:   Mon, 17 Jan 2022 21:39:24 -0500
-Message-Id: <20220118024007.1950576-73-sashal@kernel.org>
+Cc:     Po-Hao Huang <phhuang@realtek.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        tony0620emma@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 078/116] rtw88: 8822c: update rx settings to prevent potential hw deadlock
+Date:   Mon, 17 Jan 2022 21:39:29 -0500
+Message-Id: <20220118024007.1950576-78-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
 References: <20220118024007.1950576-1-sashal@kernel.org>
@@ -54,33 +54,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
+From: Po-Hao Huang <phhuang@realtek.com>
 
-[ Upstream commit 2b14cbd643feea5fc17c6e8bead4e71088c69acd ]
+[ Upstream commit c1afb26727d9e507d3e17a9890e7aaf7fc85cd55 ]
 
-The Tegra186 CCPLEX cluster register region is 4 MiB is length, not 4
-MiB - 1. This was likely presumed to be the "limit" rather than length.
-Fix it up.
+These settings enables mac to detect and recover when rx fifo
+circuit deadlock occurs. Previous version missed this, so we fix it.
 
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20211217012708.8623-1-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/nvidia/tegra186.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/realtek/rtw88/main.c     | 2 +-
+ drivers/net/wireless/realtek/rtw88/rtw8821c.h | 2 +-
+ drivers/net/wireless/realtek/rtw88/rtw8822b.c | 2 +-
+ drivers/net/wireless/realtek/rtw88/rtw8822c.c | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-index 0c46ab7bbbf37..eec6418ecdb1a 100644
---- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-@@ -985,7 +985,7 @@ sdmmc3_1v8: sdmmc3-1v8 {
+diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+index 565efd8806247..2ef1416899f03 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -1652,7 +1652,7 @@ int rtw_core_init(struct rtw_dev *rtwdev)
  
- 	ccplex@e000000 {
- 		compatible = "nvidia,tegra186-ccplex-cluster";
--		reg = <0x0 0x0e000000 0x0 0x3fffff>;
-+		reg = <0x0 0x0e000000 0x0 0x400000>;
+ 	/* default rx filter setting */
+ 	rtwdev->hal.rcr = BIT_APP_FCS | BIT_APP_MIC | BIT_APP_ICV |
+-			  BIT_HTC_LOC_CTRL | BIT_APP_PHYSTS |
++			  BIT_PKTCTL_DLEN | BIT_HTC_LOC_CTRL | BIT_APP_PHYSTS |
+ 			  BIT_AB | BIT_AM | BIT_APM;
  
- 		nvidia,bpmp = <&bpmp>;
- 	};
+ 	ret = rtw_load_firmware(rtwdev, RTW_NORMAL_FW);
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.h b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+index bd01e82b6bcd0..8d1e8ff71d7ef 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+@@ -131,7 +131,7 @@ _rtw_write32s_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u32 data)
+ #define WLAN_TX_FUNC_CFG2		0x30
+ #define WLAN_MAC_OPT_NORM_FUNC1		0x98
+ #define WLAN_MAC_OPT_LB_FUNC1		0x80
+-#define WLAN_MAC_OPT_FUNC2		0x30810041
++#define WLAN_MAC_OPT_FUNC2		0xb0810041
+ 
+ #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
+ 			(WLAN_SIFS_OFDM_CONT_TX << BIT_SHIFT_SIFS_OFDM_CTX) | \
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822b.c b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+index 22d0dd640ac94..dbfd67c3f598c 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822b.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+@@ -204,7 +204,7 @@ static void rtw8822b_phy_set_param(struct rtw_dev *rtwdev)
+ #define WLAN_TX_FUNC_CFG2		0x30
+ #define WLAN_MAC_OPT_NORM_FUNC1		0x98
+ #define WLAN_MAC_OPT_LB_FUNC1		0x80
+-#define WLAN_MAC_OPT_FUNC2		0x30810041
++#define WLAN_MAC_OPT_FUNC2		0xb0810041
+ 
+ #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
+ 			(WLAN_SIFS_OFDM_CONT_TX << BIT_SHIFT_SIFS_OFDM_CTX) | \
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822c.c b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+index 79ad6232dce83..cee586335552d 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+@@ -1248,7 +1248,7 @@ static void rtw8822c_phy_set_param(struct rtw_dev *rtwdev)
+ #define WLAN_TX_FUNC_CFG2		0x30
+ #define WLAN_MAC_OPT_NORM_FUNC1		0x98
+ #define WLAN_MAC_OPT_LB_FUNC1		0x80
+-#define WLAN_MAC_OPT_FUNC2		0x30810041
++#define WLAN_MAC_OPT_FUNC2		0xb0810041
+ #define WLAN_MAC_INT_MIG_CFG		0x33330000
+ 
+ #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
 -- 
 2.34.1
 
