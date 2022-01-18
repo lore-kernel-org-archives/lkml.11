@@ -2,408 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F76AC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:05:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23F01C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:10:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240546AbiARJFB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 04:05:01 -0500
-Received: from mail-eopbgr130042.outbound.protection.outlook.com ([40.107.13.42]:38037
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S237269AbiARJE7 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 04:04:59 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Y4Ib4/b+u+pnKQ+DHnGY/NSbRtLhJGgPS5JGG4duhbhO3grePFG9/9Cgnq9NTiYskayK/PprXgvF3sLki1sT8NcW6rCwyQAkSgSf1noUBanFubaB76mT7U5Y8myHStbvo6kAg4IxYO6MWCaOuBeAUYNnZgYZ6Qxk8lY/8GR9TIHXZEC1YEvnWffNGP7G0aZgRv3Rv6d+KRfKfIhOp0gEUNbz/HHYBYFAvtu/hOALILc8Elcs0583be+JbBWXm5n9QoOCX/fIZtOHDUjK/kf9zFOLvA+rqM9hPsJhsofbpraKrs991Wd5KDmGUWtPu7RXhpga8Hf1n1k1hbyMnUEiRQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=15Wf18LQlGhw2bECG2vFy7wIFRk/r/L1bz+1PBkMNF0=;
- b=gN/KbKPfJHcuqClp8SFc7ICi5AUITHcPQw3Irlk0jNYacoiyHPir6Ek0Nv4agK5E+IZG5NSL92vGLYux6epKkEE8jslisE7OkHe2SsbpBSAqwiveUvb/3SrZJWkKdE+ad5NZ6+5uusR6UsjL2NcOELdSYnvZEuNlTCJxXElcoMBntkdx65+mIjeSXeXBh3vSWb1Y28AxmPOGYJdl7Yq0v68ATb2xEs8OaOjC/gzP3g5Z+7W7Dc+gqROET9miT5tsjcTkLqmTN7T7V5W9UWNP5cAEo4wngDVMTtp2v6MluW1OVer0GlsSF6Lvkm6YK95Lz52iF1ljTZL/tpr9o2IwiA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=15Wf18LQlGhw2bECG2vFy7wIFRk/r/L1bz+1PBkMNF0=;
- b=Q1+TJ4MjaQCOBkIY/AWiXPRa8CdtQwOvnRJuQ6Rwgbz8aOc8ka2Ew8vjadHfHHzNDvlAUxTdV4Kv6l2fNHzG8xFA7NuQPWCJYzEGuSHK3WstdX4XgVtIAA+LQq2fpFopDrd0aX9f4pHjS0RvQeHgHDRbCfRhW2U5YjKXPEkIw20=
-Received: from VI1PR04MB5342.eurprd04.prod.outlook.com (2603:10a6:803:46::16)
- by VI1PR04MB3072.eurprd04.prod.outlook.com (2603:10a6:802:b::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.12; Tue, 18 Jan
- 2022 09:04:56 +0000
-Received: from VI1PR04MB5342.eurprd04.prod.outlook.com
- ([fe80::ceb:f79:2700:ba2a]) by VI1PR04MB5342.eurprd04.prod.outlook.com
- ([fe80::ceb:f79:2700:ba2a%3]) with mapi id 15.20.4888.013; Tue, 18 Jan 2022
- 09:04:55 +0000
-From:   Gaurav Jain <gaurav.jain@nxp.com>
-To:     Petr Benes <petrben@gmail.com>
-CC:     Horia Geanta <horia.geanta@nxp.com>,
-        Pankaj Gupta <pankaj.gupta@nxp.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        =?iso-8859-2?Q?Michal_Vok=E1=E8?= <michal.vokac@ysoft.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Petr Benes <petr.benes@ysoft.com>,
-        "l.stach@pengutronix.de" <l.stach@pengutronix.de>,
-        "robert.hancock@calian.com" <robert.hancock@calian.com>,
-        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Varun Sethi <V.Sethi@nxp.com>,
-        Vabhav Sharma <vabhav.sharma@nxp.com>
-Subject: RE: [EXT] [RFC PATCH] crypto: caam - restore retry count after HW RNG
- failure
-Thread-Topic: [EXT] [RFC PATCH] crypto: caam - restore retry count after HW
- RNG failure
-Thread-Index: AQHX19neHowqaTNf00Kheozf5e35Yqxg5qfggAAANICABsDngIABF+/w
-Date:   Tue, 18 Jan 2022 09:04:55 +0000
-Message-ID: <VI1PR04MB5342501C1EC2AFDC4447122DE7589@VI1PR04MB5342.eurprd04.prod.outlook.com>
-References: <ea3906acc2c8d6fb56eacd94b9531c18fa7cb4dc.camel@calian.com>
- <20211112152705.90513-1-michal.vokac@ysoft.com>
- <DU2PR04MB863088F218774551FA254EB795539@DU2PR04MB8630.eurprd04.prod.outlook.com>
- <VI1PR04MB5342237C91A2ADF239B05711E7539@VI1PR04MB5342.eurprd04.prod.outlook.com>
- <CAPwXO5aPNLSWiOgUCh7D_MwgeE8+4LO6Q6U1yVjTT9GukCCzDw@mail.gmail.com>
-In-Reply-To: <CAPwXO5aPNLSWiOgUCh7D_MwgeE8+4LO6Q6U1yVjTT9GukCCzDw@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: a5da55b9-55d3-4555-34ea-08d9da6198cd
-x-ms-traffictypediagnostic: VI1PR04MB3072:EE_
-x-microsoft-antispam-prvs: <VI1PR04MB3072036A45A95FB8F53712B7E7589@VI1PR04MB3072.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 3GYPHfoUnooPtXd2ztPMEznA2wn2FzuJhWroVyE5uN4XHQOo94mq73wffkOgVbQTFPEvaxk4KEl08tHXale/bjtCmfZCd1NGON3QM7hjvNWyi7JoFqR1Bk864SZxYhgUHVUDZ9YvwMZucBVTyq9qDK48CvGo0eAFhT3vIbrHM5P67s7+Xq6xJGyrrzeaTDXeCILqHbF0dren3sqvZpAmfz1Xs2tNLm+0Zhirl8O1EdXstOHSNVuoPip7aRHavRVJYp9RFEO0HSERMYvrtAuVgoEcT5/w4trYotp+6MpILdrm6rwzBWuvmhmeXhfhp3GpSooTrRjgBAgzd84Y6ZwE1L+1V2MDtPeoEggnkw1C30+FHVPPsKB4uJz80lPjnUln08/bg/UJkgZTIsge8+PllvYWdzI/Rs9lFLVjG/VjIFWl9qSJpW/wmYRIjRqXvmMRzTBuTXuJZUCb+UvmURXUCg/VCsu+8vGOdlf4muyZJBXKeOn7TLfivlBIK3r2Jgv+3bjnEL7sbWuGrba2mJZvVkisoLCYX0AEeQGorBgQL7+AqwepWBBdqR1fCpjQRgteS83mp4XNRDAOXTPUf2/VCwetxpupK7lxK61+MjPX+K677aW0CU6ixSgZ6aDw2i+NpDRCn3V/2BikranL0bDvbJ2P0QJJlJNzHrRBnaQbUoLQVKA6umZWSFagh3nSQFPLBE8faXBXolULiGBDdqbnClKn0wJNAo3wxcBZGl9Yt8BEsoX7khbj6A1c6PCq8vNfwgEPteS/RJKwfR9mB+p9fcapw66AQ1jaEqWxELtJsI62dHQRp7ScPEPaLCBoY5IZUvVOzGjHoL5W0SOVSsnIdg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5342.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(45080400002)(38100700002)(966005)(2906002)(6916009)(508600001)(44832011)(55016003)(186003)(71200400001)(26005)(66446008)(66946007)(66556008)(66476007)(64756008)(9686003)(76116006)(122000001)(6506007)(52536014)(83380400001)(7696005)(54906003)(5660300002)(33656002)(8936002)(8676002)(4326008)(86362001)(53546011)(316002)(55236004)(38070700005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-2?Q?pjsv1LcNhubRnEcOsFkzv6ktf+oCXzoR2AKio9JpXVrb4YwKAkbShyx3yr?=
- =?iso-8859-2?Q?pUhtCisTJib1tdPptXB/gsnfX7MyHRaqGZgo7GCEguhB0dz8bizp6++qjD?=
- =?iso-8859-2?Q?7r1Q5ya2FVNxi/rWKRz4W/aAWFiJf/7yH+L2QyP5zW1RfcZAJGmBQBFBuo?=
- =?iso-8859-2?Q?baxXO4SmVGLUR4bBd/HGKunqOIF9shFE1de6ljk/ISO4o0EACnyz1q8Eup?=
- =?iso-8859-2?Q?mklzLu1h5/Bh3Pd0dq6Bw7/p7PJGql5CrV7rvu38Wm/ofoW2Bt3QQK5lF8?=
- =?iso-8859-2?Q?zZ960mgf4bT6okqEgm5EL48hrxZZ48inaOmQj1ycYBiLBNSlEsCarzGQD6?=
- =?iso-8859-2?Q?QuXDo54tM7lUUuqFdGapkhA/XnXQW8/ZCe0qVWEXMZuHjlWp546BFgafC7?=
- =?iso-8859-2?Q?XObFlB66L/VCvzYb4OcYZQe0i334afcD9bki3CTZ/jSfoH3gXjO6vwi2l+?=
- =?iso-8859-2?Q?r+CP4Q/xgzZqc0wdcBf2Fu810V7m/YUm3BdD486wBlppecQ80JARQzgoji?=
- =?iso-8859-2?Q?PLCPwbf/Z8WhwS9OU6OmjO0/QgOwcocpRWg5lJ6eBAKQBOUYI/+bGk+EQH?=
- =?iso-8859-2?Q?rEGWlRnjTq9BG5qHnlGv64c9M4z1CA94jlTx8XYJQrlBeQrn9bOWFK1zcA?=
- =?iso-8859-2?Q?z2xtyhnBO9/NSCK6BCpnSRh1MxIH7CGoW4i5oQbjUJNi8l6bvCWAINoC1v?=
- =?iso-8859-2?Q?x+esnxNnK3wHFWYHZacTR0EHE9l2VQreEXrrgXf72NQZXOUhCBa9bT9tv5?=
- =?iso-8859-2?Q?AUPCgNKbTVe+VSJzZeC20Qb5C7Asszr+Ns0GwWhW3z4NHz5mbT0ge2YGlr?=
- =?iso-8859-2?Q?rkcfF7FWLJM/3HcvId4FUR82+tbTlgVraHvZMztfzavT03LnFV1ya8NB8f?=
- =?iso-8859-2?Q?rONVvVwgJZXXfA5pHIUmEwq6S97+Yedq0IGphNDwGy3UZKVwf4Twug9Upg?=
- =?iso-8859-2?Q?O627nTPChNsGSC+vAcm6b45UHLCzEbwuqcI6fDszvLCH0gZawzbXip6F6r?=
- =?iso-8859-2?Q?wHatBzJzRoaXYglrhkC7PNJ2264VY9tPBCl9fXUMewK+31ZJxVQ++EOSle?=
- =?iso-8859-2?Q?hTmG8g7ESd+i+Hrrwjr6kwgYLVZbLp+YBWKzixRkTU+XswimJaZZWH/ZHj?=
- =?iso-8859-2?Q?+ab0EfidTz1DAJJ+Q1hO2SG8l1R6wR5beVez8iul8H2iy2wvegyvSHY8WA?=
- =?iso-8859-2?Q?cb1Sot5KUT4txdjHFaVZXftANpThBrN1YrmZJcJJbRUsQbds8FeNacMwZw?=
- =?iso-8859-2?Q?gIwWSZiQDs+E0Cp41n7MV4EkyDrkep1xgKpSp9z//I+siBerPKA2jd/083?=
- =?iso-8859-2?Q?5EK2G7si1hIZtw9gvfTMttLgUwC12hupUdnp6f1EDMRrCWI36/Sazuze6R?=
- =?iso-8859-2?Q?V0QvSYJ9XjWQJDzIsE5p5lQ39ugJ4wtOx8e7rHFxpaNmX9LkEYERcxZEOF?=
- =?iso-8859-2?Q?6OM7tQc08xuhdcpjgmq3LL/tseWLop4o+tVlYGgcTubKrkoDIdp4DpaxUL?=
- =?iso-8859-2?Q?mhI1wAeUB41p+nbd/JHjr7Be263WBB5G5fDdwys7g08KBye7p3Uta/+V2d?=
- =?iso-8859-2?Q?uL6bxenTHZmfYf2DmZy3oeP9OGYL82SZe1hHzJdc9aSe93s4B8IwGJf+qL?=
- =?iso-8859-2?Q?Qd4PVaTMj0NTvYuwKK4YwGcOHhYwnGUtYJksJTMh8qQmxVMKoz3HSrxESM?=
- =?iso-8859-2?Q?YUwkuWFVVlFisfSazjA=3D?=
-Content-Type: text/plain; charset="iso-8859-2"
-Content-Transfer-Encoding: quoted-printable
+        id S240591AbiARJKh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 04:10:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39396 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240529AbiARJKf (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 04:10:35 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD5E3C061401
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 01:10:34 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n9kUa-0004vq-CT; Tue, 18 Jan 2022 10:09:28 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n9kUO-00AyFG-5e; Tue, 18 Jan 2022 10:09:15 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n9kUN-0002sb-15; Tue, 18 Jan 2022 10:09:15 +0100
+Date:   Tue, 18 Jan 2022 10:09:13 +0100
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Geert Uytterhoeven <geert@linux-m68k.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        KVM list <kvm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-phy@lists.infradead.org, netdev <netdev@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        openipmi-developer@lists.sourceforge.net,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Corey Minyard <minyard@acm.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        John Garry <john.garry@huawei.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        Borislav Petkov <bp@alien8.de>,
+        Sebastian Reichel <sre@kernel.org>,
+        Eric Auger <eric.auger@redhat.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        platform-driver-x86@vger.kernel.org,
+        Benson Leung <bleung@chromium.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Richard Weinberger <richard@nod.at>,
+        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        linux-mediatek@lists.infradead.org,
+        Brian Norris <computersforpeace@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
+Message-ID: <20220118090913.pjumkq4zf4iqtlha@pengutronix.de>
+References: <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru>
+ <20220114202226.ugzklxv4wzr6egwj@pengutronix.de>
+ <c9026f17-2b3f-ee94-0ea3-5630f981fbc1@omp.ru>
+ <CAMuHMdXVbRudGs69f9ZzaP1PXhteDNZiXA658eMFAwP4nr9r3w@mail.gmail.com>
+ <20220117092444.opoedfcf5k5u6otq@pengutronix.de>
+ <CAMuHMdUgZUeraHadRAi2Z=DV+NuNBrKPkmAKsvFvir2MuquVoA@mail.gmail.com>
+ <20220117114923.d5vajgitxneec7j7@pengutronix.de>
+ <CAMuHMdWCKERO20R2iVHq8P=BaoauoBAtiampWzfMRYihi3Sb0g@mail.gmail.com>
+ <20220117170609.yxaamvqdkivs56ju@pengutronix.de>
+ <CAMuHMdXbuZqEpYivyS6hkaRN+CwTOGaHq_OROwVAWvDD6OXODQ@mail.gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5342.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: a5da55b9-55d3-4555-34ea-08d9da6198cd
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jan 2022 09:04:55.8029
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: mEoSs9nXwmwlZRsONqh8CTYY9SizTbQNj6VdaTGCea786Ll/MHxfr1DhG/zaI7tA7i4Qeti2ohGX041ovqPkOg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3072
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="bm2t43tlpbmr2x5i"
+Content-Disposition: inline
+In-Reply-To: <CAMuHMdXbuZqEpYivyS6hkaRN+CwTOGaHq_OROwVAWvDD6OXODQ@mail.gmail.com>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Petr
 
-Recently I have sent patches in upstream uboot for adding caam driver suppo=
-rt.
-http://patchwork.ozlabs.org/project/uboot/list/?series=3D280725
+--bm2t43tlpbmr2x5i
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-if possible pls add this series in uboot and try to reproduce the problem.
+Hello Geert,
 
-Problem with armv8:
-ERROR: modpost: "caam_reinstantiate_rng" [drivers/crypto/caam/caam_jr.ko] u=
-ndefined!
-make[1]: *** [scripts/Makefile.modpost:134: modules-only.symvers] Error 1
-make[1]: *** Deleting file 'modules-only.symvers'
-make: *** [Makefile:1755: modules] Error 2
+On Tue, Jan 18, 2022 at 09:25:01AM +0100, Geert Uytterhoeven wrote:
+> On Mon, Jan 17, 2022 at 6:06 PM Uwe Kleine-K=F6nig
+> <u.kleine-koenig@pengutronix.de> wrote:
+> > On Mon, Jan 17, 2022 at 02:08:19PM +0100, Geert Uytterhoeven wrote:
+> > > On Mon, Jan 17, 2022 at 12:49 PM Uwe Kleine-K=F6nig
+> > > <u.kleine-koenig@pengutronix.de> wrote:
+> > > > > So there are three reasons: because the absence of an optional IRQ
+> > > > > is not an error, and thus that should not cause (a) an error code
+> > > > > to be returned, and (b) an error message to be printed, and (c)
+> > > > > because it can simplify the logic in device drivers.
+> > > >
+> > > > I don't agree to (a). If the value signaling not-found is -ENXIO or=
+ 0
+> > > > (or -ENODEV) doesn't matter much. I wouldn't deviate from the return
+> > > > code semantics of platform_get_irq() just for having to check again=
+st 0
+> > > > instead of -ENXIO. Zero is then just another magic value.
+> > >
+> > > Zero is a natural magic value (also for pointers).
+> > > Errors are always negative.
+> > > Positive values are cookies (or pointers) associated with success.
+> >
+> > Yeah, the issue where we don't agree is if "not-found" is special enough
+> > to deserve the natural magic value. For me -ENXIO is magic enough to
+> > handle the absence of an irq line. I consider it even the better magic
+> > value.
+>=20
+> It differs from other subsystems (clk, gpio, reset), which do return
+> zero on not found.
 
-Regards
-Gaurav Jain
+IMHO it doesn't matter at all that the return value is zero, relevant is
+the semantic of the returned value. For clk, gpio, reset and regulator
+NULL is a usable dummy, for irqs it's not. So what you do with the value
+returned by platform_get_irq_whatever() is: you compare it with the
+(magic?) not-found value, and if it matches, you enter a suitable
+if-block.
 
-> -----Original Message-----
-> From: Petr Benes <petrben@gmail.com>
-> Sent: Monday, January 17, 2022 7:39 PM
-> To: Gaurav Jain <gaurav.jain@nxp.com>
-> Cc: Horia Geanta <horia.geanta@nxp.com>; Pankaj Gupta
-> <pankaj.gupta@nxp.com>; Herbert Xu <herbert@gondor.apana.org.au>; Michal
-> Vok=E1=E8 <michal.vokac@ysoft.com>; David S. Miller <davem@davemloft.net>=
-;
-> Petr Benes <petr.benes@ysoft.com>; l.stach@pengutronix.de;
-> robert.hancock@calian.com; linux-crypto@vger.kernel.org; linux-
-> kernel@vger.kernel.org; Varun Sethi <V.Sethi@nxp.com>; Vabhav Sharma
-> <vabhav.sharma@nxp.com>
-> Subject: Re: [EXT] [RFC PATCH] crypto: caam - restore retry count after H=
-W RNG
-> failure
->=20
-> Caution: EXT Email
->=20
-> Hi Gaurav,
->=20
-> I've resumed work on this issue. I hope I'll get RTSTATUS and RTMCTL soon=
-.
-> Meanwhile, what is the problem with armv8? I'll try some build for armv8,=
- but it
-> will take time.
->=20
-> Regards,
-> Petr
->=20
-> On Thu, 13 Jan 2022 at 08:23, Gaurav Jain <gaurav.jain@nxp.com> wrote:
-> >
-> > Hello Michal
-> >
-> > >
-> > > -----Original Message-----
-> > > From: Michal Vok=E1=E8 <michal.vokac@ysoft.com>
-> > > Sent: Friday, November 12, 2021 8:57 PM
-> > > To: Horia Geanta <horia.geanta@nxp.com>; Pankaj Gupta
-> > > <pankaj.gupta@nxp.com>; Herbert Xu <herbert@gondor.apana.org.au>
-> > > Cc: David S. Miller <davem@davemloft.net>;
-> > > linux-crypto@vger.kernel.org; linux-kernel@vger.kernel.org;
-> > > l.stach@pengutronix.de; robert.hancock@calian.com; Petr Benes
-> > > <petr.benes@ysoft.com>; petrben@gmail.com; Michal Vok=E1=E8
-> > > <michal.vokac@ysoft.com>
-> > > Subject: [EXT] [RFC PATCH] crypto: caam - restore retry count after
-> > > HW RNG failure
-> > >
-> > > Caution: EXT Email
-> > >
-> > > From: Petr Benes <petr.benes@ysoft.com>
-> > >
-> > > Each time TRNG generates entropy, statistical tests are run.
-> > > If they fail, RETRY_COUNT value is decremented. Once it reaches 0,
-> > > HW RNG returns an error, and needs to be reset.
-> >
-> > The least-significant 16 bits of the RTSTATUS register reflect the resu=
-lt of each
-> of statistical tests.
-> > Can you dump RTSTATUS to see which test has failed? Please dump RTMCTL =
-as
-> well.
-> >
-> > Have you tried to build this patch for armv8? For me it is failing.
-> >
-> > Regards
-> > Gaurav Jain
-> >
-> > > RETRY_COUNT could be programmed in RTSCMISC register and is set to 1
-> > > by default. Hence, we are left without hwrng after the first error,
-> > > which could happen even under normal conditions.
-> > >
-> > > Cc: petrben@gmail.com
-> > > Signed-off-by: Petr Benes <petr.benes@ysoft.com>
-> > > Signed-off-by: Michal Vok=E1=E8 <michal.vokac@ysoft.com>
-> > > ---
-> > > Hi,
-> > > we are also experiencing this issue:
-> > >
-> > > caam_jr 2101000.jr0: 20003c5b: CCB: desc idx 60: RNG: Hardware error.
-> > >
-> > > It is happening on both i.MX6S and i.MX6DL SoCs we use.
-> > > On Solo I can reproduce it really fast. Sometimes it happens right
-> > > after the board is NFS booted, sometimes I need to stress the HWRNG
-> > > for a while (generate few hundred KBs of random data). On some
-> > > DualLite SoCs it is happening at least once a day.
-> > >
-> > > We are using the v5.10 LTS branch but I can confirm that this is
-> > > happening on all kernels since v5.7 to the latest linux-next.
-> > >
-> > > We also tried to increase the RTSDCTL_ENT_DLY_MIN delay as suggested
-> > > in this thread [1]. It helped and the issue never occurred since
-> > > then but we are looking for more universal and permanent solution
-> > > suitable for upstream, hence we came up with this patch.
-> > >
-> > > Any comments will be appreciated.
-> > > Thanks, Michal
-> > >
-> > > [1]
-> > > https://eur01.safelinks.protection.outlook.com/?url=3Dhttps%3A%2F%2Fl=
-k
-> > >
-> ml.org%2F&amp;data=3D04%7C01%7Cgaurav.jain%40nxp.com%7Cbda11e9702e1
-> 428
-> > >
-> 1fc3608d9d9c2e529%7C686ea1d3bc2b4c6fa92cd99c5c301635%7C0%7C0%7C6
-> 3778
-> > >
-> 0253361778015%7CUnknown%7CTWFpbGZsb3d8eyJWIjoiMC4wLjAwMDAiLCJQ
-> IjoiV2
-> > >
-> luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0%3D%7C3000&amp;sdata=3DPe0skMXk%2F
-> epS
-> > > AnqjZRZ6tLKqO4SKbDvX3ysA0w7W6y4%3D&amp;reserved=3D0
-> > > %2Flkml%2F2021%2F8%2F30%2F296&amp;data=3D04%7C01%7Cpankaj.gupta
-> %40
-> > >
-> nxp.com%7C5d6bf460b260415aeda008d9a5f0ffab%7C686ea1d3bc2b4c6fa92cd
-> > >
-> 99c5c301635%7C0%7C0%7C637723276775699794%7CUnknown%7CTWFpbGZs
-> > >
-> b3d8eyJWIjoiMC4wLjAwMDAiLCJQIjoiV2luMzIiLCJBTiI6Ik1haWwiLCJXVCI6Mn0
-> > > %3D%7C1000&amp;sdata=3DVxN9MqDFbISptW3OX9XTtZ%2FwQTsEbF6dETxX
-> B%2
-> > > BHrywg%3D&amp;reserved=3D0
-> > >
-> > >  drivers/crypto/caam/caamrng.c | 42
-> ++++++++++++++++++++++++++++++++---
-> > >  drivers/crypto/caam/ctrl.c    | 13 +++++++++++
-> > >  drivers/crypto/caam/ctrl.h    |  2 ++
-> > >  3 files changed, 54 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/drivers/crypto/caam/caamrng.c
-> > > b/drivers/crypto/caam/caamrng.c index 77d048dfe5d0..2be5584ae591
-> > > 100644
-> > > --- a/drivers/crypto/caam/caamrng.c
-> > > +++ b/drivers/crypto/caam/caamrng.c
-> > > @@ -21,6 +21,7 @@
-> > >  #include "desc_constr.h"
-> > >  #include "jr.h"
-> > >  #include "error.h"
-> > > +#include "ctrl.h"
-> > >
-> > >  #define CAAM_RNG_MAX_FIFO_STORE_SIZE   16
-> > >
-> > > @@ -113,6 +114,35 @@ static int caam_rng_read_one(struct device *jrde=
-v,
-> > >         return err ?: (ret ?: len);
-> > >  }
-> > >
-> > > +static void caam_rng_retry_reset(struct caam_rng_ctx *context) {
-> > > +       struct device *ctrldev =3D context->ctrldev;
-> > > +       struct caam_drv_private *ctrlpriv =3D dev_get_drvdata(ctrldev=
-);
-> > > +       struct caam_ctrl __iomem *ctrl;
-> > > +       struct rng4tst __iomem *r4tst;
-> > > +       u32 __iomem *rtstatus;
-> > > +       u32 retry_count;
-> > > +
-> > > +       ctrl =3D (struct caam_ctrl __iomem *)ctrlpriv->ctrl;
-> > > +       r4tst =3D &ctrl->r4tst[0];
-> > > +
-> > > +       /*
-> > > +        * There is unfortunately no member for RTSTATUS register in
-> > > +        * struct rng4tst and the structure doesn't look stable
-> > > +        */
-> > > +       rtstatus =3D (u32 *)((char *)&ctrl->r4tst[0] + 0x3C);
-> > > +       retry_count =3D (rd_reg32(rtstatus) >> 16) & 0xf;
-> > > +       dev_dbg(ctrldev, "CAAM RNG retry count %d\n", retry_count);
-> > > +       if (retry_count =3D=3D 0) {
-> > > +               dev_err(ctrldev, "CAAM RNG resetting retry count to 1=
-\n");
-> > > +               clrsetbits_32(&r4tst->rtmctl, 0, RTMCTL_PRGM | RTMCTL=
-_ACC);
-> > > +               wr_reg32(&r4tst->rtscmisc,
-> > > + (rd_reg32(&r4tst->rtscmisc) & 0x7f) | (1 <<
-> > > 16));
-> > > +               clrsetbits_32(&r4tst->rtmctl, RTMCTL_PRGM | RTMCTL_AC=
-C,
-> > > +                               RTMCTL_SAMP_MODE_RAW_ES_SC);
-> > > +               caam_reinstantiate_rng(ctrldev);
-> > > +       }
-> > > +}
-> > > +
-> > >  static void caam_rng_fill_async(struct caam_rng_ctx *ctx)  {
-> > >         struct scatterlist sg[1];
-> > > @@ -129,8 +159,10 @@ static void caam_rng_fill_async(struct
-> > > caam_rng_ctx
-> > > *ctx)
-> > >                                 sg[0].length,
-> > >                                 ctx->desc_async,
-> > >                                 &done);
-> > > -       if (len < 0)
-> > > +       if (len < 0) {
-> > > +               caam_rng_retry_reset(ctx);
-> > >                 return;
-> > > +       }
-> > >
-> > >         kfifo_dma_in_finish(&ctx->fifo, len);  } @@ -145,13 +177,17
-> > > @@ static void caam_rng_worker(struct work_struct *work)  static int
-> > > caam_read(struct hwrng *rng, void *dst, size_t max, bool wait)  {
-> > >         struct caam_rng_ctx *ctx =3D to_caam_rng_ctx(rng);
-> > > -       int out;
-> > > +       int out, ret;
-> > >
-> > >         if (wait) {
-> > >                 struct completion done;
-> > >
-> > > -               return caam_rng_read_one(ctx->jrdev, dst, max,
-> > > +               ret =3D caam_rng_read_one(ctx->jrdev, dst, max,
-> > >                                          ctx->desc_sync, &done);
-> > > +               if (ret < 0)
-> > > +                       caam_rng_retry_reset(ctx);
-> > > +
-> > > +               return ret;
-> > >         }
-> > >
-> > >         out =3D kfifo_out(&ctx->fifo, dst, max); diff --git
-> > > a/drivers/crypto/caam/ctrl.c b/drivers/crypto/caam/ctrl.c index
-> > > ca0361b2dbb0..e421f8d1982b 100644
-> > > --- a/drivers/crypto/caam/ctrl.c
-> > > +++ b/drivers/crypto/caam/ctrl.c
-> > > @@ -339,6 +339,19 @@ static int instantiate_rng(struct device
-> > > *ctrldev, int state_handle_mask,
-> > >         return devm_add_action_or_reset(ctrldev,
-> > > devm_deinstantiate_rng, ctrldev);  }
-> > >
-> > > +/*
-> > > + * caam_reinstantiate_rng - reinstantiates RNG. Intended for a case
-> > > +when RNG
-> > > falls into
-> > > + *                         HW error condition. That happens if TRNG =
-fails statistical
-> > > + *                         check and RTY_CNT value set in RTSCMISC d=
-ecrements to
-> zero.
-> > > + *                         It is exported to caamrng.c
-> > > + * @ctrldev - pointer to device
-> > > + */
-> > > +
-> > > +int caam_reinstantiate_rng(struct device *ctrldev) {
-> > > +       return instantiate_rng(ctrldev, 0, 0); }
-> > > +
-> > >  /*
-> > >   * kick_trng - sets the various parameters for enabling the initiali=
-zation
-> > >   *            of the RNG4 block in CAAM
-> > > diff --git a/drivers/crypto/caam/ctrl.h b/drivers/crypto/caam/ctrl.h
-> > > index
-> > > f3ecd67922a7..26ff5a49a865 100644
-> > > --- a/drivers/crypto/caam/ctrl.h
-> > > +++ b/drivers/crypto/caam/ctrl.h
-> > > @@ -8,6 +8,8 @@
-> > >  #ifndef CTRL_H
-> > >  #define CTRL_H
-> > >
-> > > +int caam_reinstantiate_rng(struct device *ctrldev);
-> > > +
-> > >  /* Prototypes for backend-level services exposed to APIs */  extern
-> > > bool caam_dpaa2;
-> > >
-> > > --
-> > > 2.25.1
-> >
+For the (clk|gpiod|regulator)_get_optional() you don't have to check
+against the magic not-found value (so no implementation detail magic
+leaks into the caller code) and just pass it to the next API function.
+(And my expectation would be that if you chose to represent not-found by
+(void *)66 instead of NULL, you won't have to adapt any user, just the
+framework internal checks. This is a good thing!)
+
+> What's the point in having *_optional() APIs if they just return the
+> same values as the non-optional ones?
+
+The upside is that functions with a similar name have similar semantics.
+But I agree, having platform_get_irq_optional() with the same return
+value for not-found is bad. Changing the return semantic is only one way
+to cope with that, renaming such the actual semantic difference is
+obvious from the function name is another (IMHO better one).=20
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--bm2t43tlpbmr2x5i
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHmg7YACgkQwfwUeK3K
+7Amhogf/dAjmJCBciWgz5NV3TfnJ8zBdFusKYKkLMRX6hggDS981lVDd/+0J/CXt
+OTZ/mg6pMVEdM4ZgmE7oLUUXSj26rQAXG0Tn0LElJNjNi2w6+jApwXacf1NIrjdY
+xuNSbiN94DwWHsG5fgK6ij9XQ1Y0VM23PBPhfBFJUBh2uwTWa/N2akSLPpO4xpcI
+qRk9h8QiaRxs+68qmLL5RA1wkp7oyAigMEUcgBr3qUFhTdSGAENP2ZWfgy1ONoFr
+ajWgfvPfJ0DAwLiGwyrLebtzFgmd1NwSqNEVsBLdDSkGDq1ysDF6kccVIYnJmWdD
+ioq82+vTregbKeZC6dz5wBLZ/E1KSA==
+=u/8Z
+-----END PGP SIGNATURE-----
+
+--bm2t43tlpbmr2x5i--
