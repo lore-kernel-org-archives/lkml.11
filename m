@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFEFAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:47:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B615C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:47:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343910AbiARDrb (ORCPT
+        id S1350363AbiARDrl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:47:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33366 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347203AbiARCk4 (ORCPT
+        Mon, 17 Jan 2022 22:47:41 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58368 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347167AbiARCkw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:40:56 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A715C08C5C3;
-        Mon, 17 Jan 2022 18:36:33 -0800 (PST)
+        Mon, 17 Jan 2022 21:40:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A4A2FB81249;
-        Tue, 18 Jan 2022 02:36:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D4BEC36AEF;
-        Tue, 18 Jan 2022 02:36:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A1652608C0;
+        Tue, 18 Jan 2022 02:40:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1455C36AEB;
+        Tue, 18 Jan 2022 02:40:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473391;
-        bh=zrGN/H7rq5Xkf0os/FChXmYJJlBZX3zxIDFjOnOwKh8=;
+        s=k20201202; t=1642473651;
+        bh=enBE6ig5rLsNPHOkyfXqmaui5X7hjG1/VviCzIM8hng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=plEAq1EnARKYrlWXuqV+fAQVkxSPITA0CI/HXZvv1u/B6S8sngbJc49j254vB3Rm+
-         D18TSzdZU3dzrSwwD74fdijnJDoNFUcJ/01nS1qGscRrHF7Sg1afe8tk2Tx2glC3/v
-         PoEgtc/oVznQ4HSoOCEOr00He+33fRNRGCPo01TH66gLwxm/LWnJw8qiI2vHfi5Q/B
-         999Z45zWtG947QJ3jZ/nQzQki82YEJ/eChA+kdpDAegJ46vBMzqqOubmLeYfP1rVP6
-         k7F7HJhqdO8/AoQaSw3VWA7iouSr5gBiBJBmc0zYzX7hKU2mGeBakFyX1Zogu1tm4I
-         DC8jIzD+sXtMQ==
+        b=oTFoXy4kwuV5RmSCCjjTMXwhW4vddbrVD16fWGLf7+bexfgtfoY9s8g2k1uKN27B+
+         fWne5eS+2UTbZ+KO1JaPYkykEfMbjtIl2u5+rlEeaPmeQptMhWFxWRJdvP8IQYgMe4
+         kU+w+rBAv+eYcG/YN45rJ4u2+3hIO/QWUS+x9KqteQJVBjPoDl3CU5e//6/4ilaBUR
+         yYMbbea4aAlBGAWoNPPny13zOXJnw+ZTRRsek7LGF23ueOohFl/YyDV4t+dWsSNkpR
+         AHd+PETulhaRlym3LEY5P+zUWIKj9HB+llM4L2ulG+8YRRBJhtDP0NCcL4Ag54eF/O
+         AD4aZKUr/QITw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Iwona Winiarska <iwona.winiarska@intel.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
-        joel@jms.id.au, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.15 099/188] gpio: aspeed-sgpio: Convert aspeed_sgpio.lock to raw_spinlock
-Date:   Mon, 17 Jan 2022 21:30:23 -0500
-Message-Id: <20220118023152.1948105-99-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, mchehab@kernel.org,
+        gregkh@linuxfoundation.org, unixbhaskar@gmail.com, drv@mailo.com,
+        hverkuil-cisco@xs4all.nl, linux-media@vger.kernel.org,
+        linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.10 011/116] media: atomisp-ov2680: Fix ov2680_set_fmt() clobbering the exposure
+Date:   Mon, 17 Jan 2022 21:38:22 -0500
+Message-Id: <20220118024007.1950576-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,158 +52,137 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Iwona Winiarska <iwona.winiarska@intel.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit ab39d6988dd53f354130438d8afa5596a2440fed ]
+[ Upstream commit 4492289c31364d28c2680b43b18883385a5d216c ]
 
-The gpio-aspeed-sgpio driver implements an irq_chip which need to be
-invoked from hardirq context. Since spin_lock() can sleep with
-PREEMPT_RT, it is no longer legal to invoke it while interrupts are
-disabled.
-This also causes lockdep to complain about:
-[   25.919465] [ BUG: Invalid wait context ]
-because aspeed_sgpio.lock (spin_lock_t) is taken under irq_desc.lock
-(raw_spinlock_t).
-Let's use of raw_spinlock_t instead of spinlock_t.
+Now that we restore the default or last user set exposure setting on
+power_up() there is no need for the registers written by ov2680_set_fmt()
+to write to the exposure register.
 
-Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Not doing so fixes the exposure always being reset to the value from
+the res->regs array after a set_fmt().
+
+Link: https://lore.kernel.org/linux-media/20211107171549.267583-11-hdegoede@redhat.com
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpio-aspeed-sgpio.c | 32 ++++++++++++++++----------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
+ drivers/staging/media/atomisp/i2c/ov2680.h | 24 ----------------------
+ 1 file changed, 24 deletions(-)
 
-diff --git a/drivers/gpio/gpio-aspeed-sgpio.c b/drivers/gpio/gpio-aspeed-sgpio.c
-index b3a9b8488f11d..454cefbeecf0e 100644
---- a/drivers/gpio/gpio-aspeed-sgpio.c
-+++ b/drivers/gpio/gpio-aspeed-sgpio.c
-@@ -31,7 +31,7 @@ struct aspeed_sgpio {
- 	struct gpio_chip chip;
- 	struct irq_chip intc;
- 	struct clk *pclk;
--	spinlock_t lock;
-+	raw_spinlock_t lock;
- 	void __iomem *base;
- 	int irq;
- };
-@@ -173,12 +173,12 @@ static int aspeed_sgpio_get(struct gpio_chip *gc, unsigned int offset)
- 	enum aspeed_sgpio_reg reg;
- 	int rc = 0;
+diff --git a/drivers/staging/media/atomisp/i2c/ov2680.h b/drivers/staging/media/atomisp/i2c/ov2680.h
+index 49920245e0647..cafb798a71abe 100644
+--- a/drivers/staging/media/atomisp/i2c/ov2680.h
++++ b/drivers/staging/media/atomisp/i2c/ov2680.h
+@@ -289,8 +289,6 @@ static struct ov2680_reg const ov2680_global_setting[] = {
+  */
+ static struct ov2680_reg const ov2680_QCIF_30fps[] = {
+ 	{0x3086, 0x01},
+-	{0x3501, 0x24},
+-	{0x3502, 0x40},
+ 	{0x370a, 0x23},
+ 	{0x3801, 0xa0},
+ 	{0x3802, 0x00},
+@@ -334,8 +332,6 @@ static struct ov2680_reg const ov2680_QCIF_30fps[] = {
+  */
+ static struct ov2680_reg const ov2680_CIF_30fps[] = {
+ 	{0x3086, 0x01},
+-	{0x3501, 0x24},
+-	{0x3502, 0x40},
+ 	{0x370a, 0x23},
+ 	{0x3801, 0xa0},
+ 	{0x3802, 0x00},
+@@ -377,8 +373,6 @@ static struct ov2680_reg const ov2680_CIF_30fps[] = {
+  */
+ static struct ov2680_reg const ov2680_QVGA_30fps[] = {
+ 	{0x3086, 0x01},
+-	{0x3501, 0x24},
+-	{0x3502, 0x40},
+ 	{0x370a, 0x23},
+ 	{0x3801, 0xa0},
+ 	{0x3802, 0x00},
+@@ -420,8 +414,6 @@ static struct ov2680_reg const ov2680_QVGA_30fps[] = {
+  */
+ static struct ov2680_reg const ov2680_656x496_30fps[] = {
+ 	{0x3086, 0x01},
+-	{0x3501, 0x24},
+-	{0x3502, 0x40},
+ 	{0x370a, 0x23},
+ 	{0x3801, 0xa0},
+ 	{0x3802, 0x00},
+@@ -463,8 +455,6 @@ static struct ov2680_reg const ov2680_656x496_30fps[] = {
+ */
+ static struct ov2680_reg const ov2680_720x592_30fps[] = {
+ 	{0x3086, 0x01},
+-	{0x3501, 0x26},
+-	{0x3502, 0x40},
+ 	{0x370a, 0x23},
+ 	{0x3801, 0x00}, // X_ADDR_START;
+ 	{0x3802, 0x00},
+@@ -508,8 +498,6 @@ static struct ov2680_reg const ov2680_720x592_30fps[] = {
+ */
+ static struct ov2680_reg const ov2680_800x600_30fps[] = {
+ 	{0x3086, 0x01},
+-	{0x3501, 0x26},
+-	{0x3502, 0x40},
+ 	{0x370a, 0x23},
+ 	{0x3801, 0x00},
+ 	{0x3802, 0x00},
+@@ -551,8 +539,6 @@ static struct ov2680_reg const ov2680_800x600_30fps[] = {
+  */
+ static struct ov2680_reg const ov2680_720p_30fps[] = {
+ 	{0x3086, 0x00},
+-	{0x3501, 0x48},
+-	{0x3502, 0xe0},
+ 	{0x370a, 0x21},
+ 	{0x3801, 0xa0},
+ 	{0x3802, 0x00},
+@@ -594,8 +580,6 @@ static struct ov2680_reg const ov2680_720p_30fps[] = {
+  */
+ static struct ov2680_reg const ov2680_1296x976_30fps[] = {
+ 	{0x3086, 0x00},
+-	{0x3501, 0x48},
+-	{0x3502, 0xe0},
+ 	{0x370a, 0x21},
+ 	{0x3801, 0xa0},
+ 	{0x3802, 0x00},
+@@ -637,8 +621,6 @@ static struct ov2680_reg const ov2680_1296x976_30fps[] = {
+ */
+ static struct ov2680_reg const ov2680_1456x1096_30fps[] = {
+ 	{0x3086, 0x00},
+-	{0x3501, 0x48},
+-	{0x3502, 0xe0},
+ 	{0x370a, 0x21},
+ 	{0x3801, 0x90},
+ 	{0x3802, 0x00},
+@@ -682,8 +664,6 @@ static struct ov2680_reg const ov2680_1456x1096_30fps[] = {
  
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	reg = aspeed_sgpio_is_input(offset) ? reg_val : reg_rdata;
- 	rc = !!(ioread32(bank_reg(gpio, bank, reg)) & GPIO_BIT(offset));
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return rc;
- }
-@@ -215,11 +215,11 @@ static void aspeed_sgpio_set(struct gpio_chip *gc, unsigned int offset, int val)
- 	struct aspeed_sgpio *gpio = gpiochip_get_data(gc);
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	sgpio_set_value(gc, offset, val);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- }
- 
- static int aspeed_sgpio_dir_in(struct gpio_chip *gc, unsigned int offset)
-@@ -236,9 +236,9 @@ static int aspeed_sgpio_dir_out(struct gpio_chip *gc, unsigned int offset, int v
- 	/* No special action is required for setting the direction; we'll
- 	 * error-out in sgpio_set_value if this isn't an output GPIO */
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	rc = sgpio_set_value(gc, offset, val);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return rc;
- }
-@@ -277,11 +277,11 @@ static void aspeed_sgpio_irq_ack(struct irq_data *d)
- 
- 	status_addr = bank_reg(gpio, bank, reg_irq_status);
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	iowrite32(bit, status_addr);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- }
- 
- static void aspeed_sgpio_irq_set_mask(struct irq_data *d, bool set)
-@@ -296,7 +296,7 @@ static void aspeed_sgpio_irq_set_mask(struct irq_data *d, bool set)
- 	irqd_to_aspeed_sgpio_data(d, &gpio, &bank, &bit, &offset);
- 	addr = bank_reg(gpio, bank, reg_irq_enable);
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	reg = ioread32(addr);
- 	if (set)
-@@ -306,7 +306,7 @@ static void aspeed_sgpio_irq_set_mask(struct irq_data *d, bool set)
- 
- 	iowrite32(reg, addr);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- }
- 
- static void aspeed_sgpio_irq_mask(struct irq_data *d)
-@@ -355,7 +355,7 @@ static int aspeed_sgpio_set_type(struct irq_data *d, unsigned int type)
- 		return -EINVAL;
- 	}
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	addr = bank_reg(gpio, bank, reg_irq_type0);
- 	reg = ioread32(addr);
-@@ -372,7 +372,7 @@ static int aspeed_sgpio_set_type(struct irq_data *d, unsigned int type)
- 	reg = (reg & ~bit) | type2;
- 	iowrite32(reg, addr);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	irq_set_handler_locked(d, handler);
- 
-@@ -467,7 +467,7 @@ static int aspeed_sgpio_reset_tolerance(struct gpio_chip *chip,
- 
- 	reg = bank_reg(gpio, to_bank(offset), reg_tolerance);
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	val = readl(reg);
- 
-@@ -478,7 +478,7 @@ static int aspeed_sgpio_reset_tolerance(struct gpio_chip *chip,
- 
- 	writel(val, reg);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return 0;
- }
-@@ -575,7 +575,7 @@ static int __init aspeed_sgpio_probe(struct platform_device *pdev)
- 	iowrite32(FIELD_PREP(ASPEED_SGPIO_CLK_DIV_MASK, sgpio_clk_div) | gpio_cnt_regval |
- 		  ASPEED_SGPIO_ENABLE, gpio->base + ASPEED_SGPIO_CTRL);
- 
--	spin_lock_init(&gpio->lock);
-+	raw_spin_lock_init(&gpio->lock);
- 
- 	gpio->chip.parent = &pdev->dev;
- 	gpio->chip.ngpio = nr_gpios * 2;
+ static struct ov2680_reg const ov2680_1616x916_30fps[] = {
+ 	{0x3086, 0x00},
+-	{0x3501, 0x48},
+-	{0x3502, 0xe0},
+ 	{0x370a, 0x21},
+ 	{0x3801, 0x00},
+ 	{0x3802, 0x00},
+@@ -726,8 +706,6 @@ static struct ov2680_reg const ov2680_1616x916_30fps[] = {
+ #if 0
+ static struct ov2680_reg const ov2680_1616x1082_30fps[] = {
+ 	{0x3086, 0x00},
+-	{0x3501, 0x48},
+-	{0x3502, 0xe0},
+ 	{0x370a, 0x21},
+ 	{0x3801, 0x00},
+ 	{0x3802, 0x00},
+@@ -769,8 +747,6 @@ static struct ov2680_reg const ov2680_1616x1082_30fps[] = {
+  */
+ static struct ov2680_reg const ov2680_1616x1216_30fps[] = {
+ 	{0x3086, 0x00},
+-	{0x3501, 0x48},
+-	{0x3502, 0xe0},
+ 	{0x370a, 0x21},
+ 	{0x3801, 0x00},
+ 	{0x3802, 0x00},
 -- 
 2.34.1
 
