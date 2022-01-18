@@ -2,247 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 800DAC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 11:04:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ED04C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 11:06:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238532AbiARLEV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 06:04:21 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:52652 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S238467AbiARLES (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 06:04:18 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20I93Idc009646;
-        Tue, 18 Jan 2022 12:04:14 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=RnzBcJkwn9+YhSqc0hY7vDRWf1fQflevXV2FqDpbpEM=;
- b=uNACs/CFWZr8UrsclxSvYEfM+tWpOkhLB4h5osJ/cboEtbhDb12mTcdcVNSN/X3v++jR
- tntX7O2AuJXk7oz3A5X9CtDt6/oHoGv8VB2Xh/u9IiZYiay2KP1F/cYo/8jKG3Pj8Jhq
- CUJHiKUa139ABHiQa7F+S3X6gRcLYPCVi6+u7CBByzkzZXm2uRhHcVn+TW4dlDhlZhOd
- rwvUTOyBu60cExxM/LAiSyfQvS8pnWvTmagTlPCvWFZjxlk5w6n2isqVdxo/thL0gt4s
- c1Fg2ECRIbzuLKqhFtVQGsVPFrmQEebdUnoTLPxEMoWDUFB2rE8g3Y1UskQOr5Nc9XeL iQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dnkesjs07-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 18 Jan 2022 12:04:14 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5BC8810002A;
-        Tue, 18 Jan 2022 12:04:14 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node1.st.com [10.75.127.4])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 5278321279B;
-        Tue, 18 Jan 2022 12:04:14 +0100 (CET)
-Received: from lmecxl0889.lme.st.com (10.75.127.51) by SFHDAG2NODE1.st.com
- (10.75.127.4) with Microsoft SMTP Server (TLS) id 15.0.1497.26; Tue, 18 Jan
- 2022 12:04:13 +0100
-Subject: Re: [PATCH v8 11/13] rpmsg: char: Introduce the "rpmsg-raw" channel
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-CC:     Mathieu Poirier <mathieu.poirier@linaro.org>,
-        <linux-remoteproc@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>, <julien.massot@iot.bzh>
-References: <20211207080843.21222-1-arnaud.pouliquen@foss.st.com>
- <20211207080843.21222-12-arnaud.pouliquen@foss.st.com>
- <YeX13cUAerjCM5Li@builder.lan>
-From:   Arnaud POULIQUEN <arnaud.pouliquen@foss.st.com>
-Message-ID: <6db32381-6615-3916-088a-d1cd27e3443a@foss.st.com>
-Date:   Tue, 18 Jan 2022 12:04:13 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S238545AbiARLGx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 06:06:53 -0500
+Received: from mail-dm6nam10on2089.outbound.protection.outlook.com ([40.107.93.89]:17036
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S238467AbiARLGw (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 06:06:52 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=i8ucB/q0xIRdNcq61b0okoSIDz4cC6qaYr3/GPun3hiJMDoAW5M+z1LsvBppObpr+I7N25/nj8LWptbKf9UevezosgFPZj9SBzazGdPwO8rCopanURArGFpTrdlSLeSMMCVW26MmQzzW1CpY0B/6E3nlWyHt7ILzNCjnpcRWvcmjURMXQbwJnkjNGXIWpu27YMrkuYRaqBON8RkPZYPtz5pbttHrDuWizdSDIABE4Z7uakVquWLjWn8pnsj67+4AL7zIGggsEoU14K63BqA7y+8zNg7eqClbwZKcQxeP9lyCl6YNeCl4YTbFB9UkR400biWQrcRGgWb4PMnkhC/B3w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=+cnsaWB5zBna2H46/nY9T+x59sv4GSJ27EDkRkj4UYg=;
+ b=SfAgFT+Orpnp0qZZ7f2GIhDawjQ01yn9ES8vkyWvBIzFSMz/yojhQ8RTCMlH2Pz83hQcn4L6REFCS1vJEPcv2BUTvAqAC4PDHHnTzMUQ1CaZTSYKE8qKh3mdVApti0NxOtCDilBJ6INkKgU2ERorkW5mzgFg1LW0O6Cme2ObiI7cVyJmCm09TmbO509Jiihfb6GArWlBgLmK1LdMKz8bi1qezcIZEnN05BvgxDjiYm8DWwrJ79r/Ei4nVnopvYfrvtI703ZcAjncYOKy1Rse4hk5gkxanJdtCXZBokKfgVFQSw8GBYGMVFkVNh8MmcJ/NTf3a00XmAD6mzIUoiJxbA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 165.204.84.17) smtp.rcpttodomain=redhat.com smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=+cnsaWB5zBna2H46/nY9T+x59sv4GSJ27EDkRkj4UYg=;
+ b=VDgrHdwIN2yshnszy7paaPQGEjq1YYgY0FNTiOy5RllA8MMKwVoIdW28uZRo0xX5S+F5ayRqNrUDuIYKx3yGlrrilw1YCOY6b2q3gC8mqcYHt27n/pfLsoCFDQtgADOwZhYx6XSifHvvxBFdlRPRS4wNK3yuHOZSg/mp6XYKPeI=
+Received: from CO1PR15CA0071.namprd15.prod.outlook.com (2603:10b6:101:20::15)
+ by CY4PR12MB1173.namprd12.prod.outlook.com (2603:10b6:903:41::20) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Tue, 18 Jan
+ 2022 11:06:50 +0000
+Received: from CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:101:20:cafe::36) by CO1PR15CA0071.outlook.office365.com
+ (2603:10b6:101:20::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11 via Frontend
+ Transport; Tue, 18 Jan 2022 11:06:50 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
+Received: from SATLEXMB04.amd.com (165.204.84.17) by
+ CO1NAM11FT019.mail.protection.outlook.com (10.13.175.57) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4888.9 via Frontend Transport; Tue, 18 Jan 2022 11:06:49 +0000
+Received: from gomati.amd.com (10.180.168.240) by SATLEXMB04.amd.com
+ (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 18 Jan
+ 2022 05:06:40 -0600
+From:   Nikunj A Dadhania <nikunj@amd.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+CC:     Sean Christopherson <seanjc@google.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Peter Gonda <pgonda@google.com>, <kvm@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, Nikunj A Dadhania <nikunj@amd.com>
+Subject: [RFC PATCH 0/6] KVM: SVM: Defer page pinning for SEV guests
+Date:   Tue, 18 Jan 2022 16:36:15 +0530
+Message-ID: <20220118110621.62462-1-nikunj@amd.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-In-Reply-To: <YeX13cUAerjCM5Li@builder.lan>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.51]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE1.st.com
- (10.75.127.4)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-18_03,2022-01-18_01,2021-12-02_01
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.180.168.240]
+X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
+ (10.181.40.145)
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f36799a7-a3d1-4ed2-95b7-08d9da72a05d
+X-MS-TrafficTypeDiagnostic: CY4PR12MB1173:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR12MB1173A943A6AE225D5C831064E2589@CY4PR12MB1173.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Kz1hBfz1nQXTCHX1HX2uat6aqedcRZNokrqmWqaMX8nGjSvEUZ/OJW9AkuEx9YDEyJKMKW2NOG0RLvueM+JDJkxCqZLl5lWzpFL5exvNr2/jofhWg+/tuPaIVwenA+flFhXL06dF9jVDSrqL8j5UxDMLVppYZ2UTACNxylinKRb7EccqyWXR3k9kqMSnKfNWIxrmu37X9CaHACsZE1MsAfRXNzXG9KS5t1ueSxkDaWZGVUfDOOSc6vSQ8uOMKSmtUApvJCH5XTptEAiuYo2I38XnJV3qwY9eO51TNCQOY7k3jRSUofG/X0G0+Q87gDLSsGmyRoUfAKjoJfQSkz6bHhy69Qr89Ep3vle597GQp7yll1Xpmj4QGiAqe3eGRtxsjKrsIcNOtBtYvk/Ox4tNzuBoozbtCg9qe9YsSZlyBQRMWDEOR0qeTHJW/+89g1y52ssisNYl1+Yd2vPH75gW8u9Ta1N+6wbGM4UoGD/oG/6X7BLH/5IwGgkHnGf079MN8F38e1C/snfrmlnyIrdfFm7CuFkuDzWqAU65M7dQGuxnETDlkFBCZzrUN3plgx4BGglqYskHhH15+4nRUUXCehB8QXfiXB4uJmKjoAH1LvbKqIGhBQUOZqBB+8bjDsFW0GiAQAulLwPHhc3ZEek5AmNFBu1geZ0suQzllmlsNgvUrUsz/qaq33IScPP3w5oFgkIikMZ94CvopNHhTvfSBZgqwP1oVu0LDK1NYAWIFe8Mt9LoWi74IVgRB4zrbmOcMRHSA/+O7II70iRtCLWDp3idO9kcU+FBVOe6NKXkObu0Khb3CRu7pLkKTHehudes1pH9agKyafRs6Bzpa5cuGWU4aMDhKTGRKETarkOS064Krje+32Qy/cCVhvAuNMI3
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(4636009)(40470700002)(36840700001)(46966006)(186003)(426003)(6916009)(966005)(356005)(47076005)(2906002)(70586007)(54906003)(81166007)(336012)(16526019)(8676002)(4326008)(82310400004)(6666004)(2616005)(83380400001)(36756003)(7696005)(40460700001)(316002)(26005)(8936002)(36860700001)(5660300002)(508600001)(1076003)(70206006)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2022 11:06:49.9688
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f36799a7-a3d1-4ed2-95b7-08d9da72a05d
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT019.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR12MB1173
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+SEV guest requires the guest's pages to be pinned in host physical
+memory as migration of encrypted pages is not supported. The memory
+encryption scheme uses the physical address of the memory being
+encrypted. If guest pages are moved by the host, content decrypted in
+the guest would be incorrect thereby corrupting guest's memory.
 
+For SEV/SEV-ES guests, the hypervisor doesn't know which pages are
+encrypted and when the guest is done using those pages. Hypervisor
+should treat all the guest pages as encrypted until the guest is
+destroyed.
 
-On 1/18/22 12:03 AM, Bjorn Andersson wrote:
-> On Tue 07 Dec 02:08 CST 2021, Arnaud Pouliquen wrote:
-> 
->> Allows to probe the endpoint device on a remote name service announcement,
->> by registering a rpmsg_driverfor the "rpmsg-raw" channel.
->>
->> With this patch the /dev/rpmsgX interface can be instantiated by the remote
->> firmware.
->>
->> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
->> ---
->>   drivers/rpmsg/rpmsg_char.c | 64 ++++++++++++++++++++++++++++++++++++++
->>   drivers/rpmsg/rpmsg_ctrl.c |  7 +++--
->>   2 files changed, 69 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/rpmsg/rpmsg_char.c b/drivers/rpmsg/rpmsg_char.c
->> index cf97839f5833..92b44630e03a 100644
->> --- a/drivers/rpmsg/rpmsg_char.c
->> +++ b/drivers/rpmsg/rpmsg_char.c
->> @@ -435,6 +435,58 @@ int rpmsg_chrdev_eptdev_create(struct rpmsg_device *rpdev, struct device *parent
->>   }
->>   EXPORT_SYMBOL(rpmsg_chrdev_eptdev_create);
->>   
->> +static int rpmsg_chrdev_probe(struct rpmsg_device *rpdev)
->> +{
->> +	struct rpmsg_channel_info chinfo;
->> +	struct rpmsg_eptdev *eptdev;
->> +	struct device *dev = &rpdev->dev;
->> +
->> +	memcpy(chinfo.name, rpdev->id.name, RPMSG_NAME_SIZE);
->> +	chinfo.src = rpdev->src;
->> +	chinfo.dst = rpdev->dst;
->> +
->> +	eptdev = rpmsg_chrdev_eptdev_alloc(rpdev, dev);
->> +	if (IS_ERR(eptdev))
->> +		return PTR_ERR(eptdev);
->> +
->> +	/*
->> +	 * Create the default endpoint associated to the rpmsg device and provide rpmsg_eptdev
->> +	 * structure as callback private data.
-> 
-> If the only this the probe function does is to create a new endpoint
-> with the same properties as the rpdev, why can't you just specify a
-> callback on the rpmsg_chrdev_driver?
-> 
-> As this isn't the typical way you create a default endpoint I think the
-> reasoning behind this warrants a proper explanation in the commit
-> message.
-> 
+Actual pinning management is handled by vendor code via new
+kvm_x86_ops hooks. MMU calls in to vendor code to pin the page on
+demand. Metadata of the pinning is stored in architecture specific
+memslot area. During the memslot freeing path guest pages are
+unpinned.
 
-As mentioned in [PATCH v8 09/13] rpmsg: Introduce rpmsg_create_default_ept function
-"This helper function allows rpmsg drivers to create a default endpoint
-on runtime with an associated private context."
+Initially started with [1], where the idea was to store the pinning
+information using the software bit in the SPTE to track the pinned
+page. That is not feasible for the following reason:
 
-Here the private context is the eptdev structure. I need to create the structure 
-first, before
-the endpoint.
-I will add more details in the commit message as you suggest.
+The pinned SPTE information gets stored in the shadow pages(SP). The
+way current MMU is designed, the full MMU context gets dropped
+multiple number of times even when CR0.WP bit gets flipped. Due to
+dropping of the MMU context (aka roots), there is a huge amount of SP
+alloc/remove churn. Pinned information stored in the SP gets lost
+during the dropping of the root and subsequent SP at the child levels.
+Without this information making decisions about re-pinnning page or
+unpinning during the guest shutdown will not be possible
 
-An alternative could be to directly set default_ept->priv but as the 
-rpmsg_create_default_ept
-"priv" parameter is forwarded to the rpmsg backend (using create_ept ops).
-This could introduces unexpected side effect.
+[1] https://patchwork.kernel.org/project/kvm/cover/20200731212323.21746-1-sean.j.christopherson@intel.com/ 
 
->> +	 * Do not allow the creation and release of an endpoint on /dev/rpmsgX open and close,
->> +	 * reuse the default endpoint instead
-> 
-> This sentence doesn't tell me anything about this code snippet and
-> doesn't indicate that it relates to the snippet added elsewhere in this
-> file by the previous patch.
-> 
->> +	 */
->> +	eptdev->default_ept = rpmsg_create_default_ept(rpdev, rpmsg_ept_cb, eptdev, chinfo);
->> +	if (!eptdev->default_ept) {
->> +		dev_err(&rpdev->dev, "failed to create %s\n", chinfo.name);
->> +		put_device(dev);
->> +		kfree(eptdev);
->> +		return -EINVAL;
->> +	}
->> +
->> +	return rpmsg_chrdev_eptdev_add(eptdev, chinfo);
->> +}
->> +
->> +static void rpmsg_chrdev_remove(struct rpmsg_device *rpdev)
->> +{
->> +	int ret;
->> +
->> +	ret = device_for_each_child(&rpdev->dev, NULL, rpmsg_chrdev_eptdev_destroy);
->> +	if (ret)
->> +		dev_warn(&rpdev->dev, "failed to destroy endpoints: %d\n", ret);
->> +}
->> +
->> +static struct rpmsg_device_id rpmsg_chrdev_id_table[] = {
->> +	{ .name	= "rpmsg-raw" },
->> +	{ },
->> +};
->> +
->> +static struct rpmsg_driver rpmsg_chrdev_driver = {
->> +	.probe = rpmsg_chrdev_probe,
->> +	.remove = rpmsg_chrdev_remove,
->> +	.id_table = rpmsg_chrdev_id_table,
->> +	.drv.name = "rpmsg_chrdev",
->> +};
->> +
->>   static int rpmsg_chrdev_init(void)
->>   {
->>   	int ret;
->> @@ -445,12 +497,24 @@ static int rpmsg_chrdev_init(void)
->>   		return ret;
->>   	}
->>   
->> +	ret = register_rpmsg_driver(&rpmsg_chrdev_driver);
->> +	if (ret < 0) {
->> +		pr_err("rpmsg: failed to register rpmsg raw driver\n");
->> +		goto free_region;
->> +	}
->> +
->>   	return 0;
->> +
->> +free_region:
->> +	unregister_chrdev_region(rpmsg_major, RPMSG_DEV_MAX);
->> +
->> +	return ret;
->>   }
->>   postcore_initcall(rpmsg_chrdev_init);
->>   
->>   static void rpmsg_chrdev_exit(void)
->>   {
->> +	unregister_rpmsg_driver(&rpmsg_chrdev_driver);
->>   	unregister_chrdev_region(rpmsg_major, RPMSG_DEV_MAX);
->>   }
->>   module_exit(rpmsg_chrdev_exit);
->> diff --git a/drivers/rpmsg/rpmsg_ctrl.c b/drivers/rpmsg/rpmsg_ctrl.c
->> index 59d2bd264fdb..298e75dc7774 100644
->> --- a/drivers/rpmsg/rpmsg_ctrl.c
->> +++ b/drivers/rpmsg/rpmsg_ctrl.c
->> @@ -10,6 +10,9 @@
->>    * Based on rpmsg performance statistics driver by Michal Simek, which in turn
->>    * was based on TI & Google OMX rpmsg driver.
->>    */
->> +
->> +#define pr_fmt(fmt)		KBUILD_MODNAME ": " fmt
-> 
-> These changes seems unrelated to above.
+Nikunj A Dadhania (4):
+  KVM: x86/mmu: Add hook to pin PFNs on demand in MMU
+  KVM: SVM: Add pinning metadata in the arch memslot
+  KVM: SVM: Implement demand page pinning
+  KVM: SEV: Carve out routine for allocation of pages
 
-I apparently broke something in my patchset here during a rebase. The previous
-irrelevant comment you pointed out to me is also a consequence. My apologies for 
-this dirty patch...
+Sean Christopherson (2):
+  KVM: x86/mmu: Introduce kvm_mmu_map_tdp_page() for use by SEV/TDX
+  KVM: SVM: Pin SEV pages in MMU during sev_launch_update_data()
 
-Thanks,
-Arnaud
+ arch/x86/include/asm/kvm-x86-ops.h |   3 +
+ arch/x86/include/asm/kvm_host.h    |   9 +
+ arch/x86/kvm/mmu.h                 |   3 +
+ arch/x86/kvm/mmu/mmu.c             |  41 +++
+ arch/x86/kvm/mmu/tdp_mmu.c         |   7 +
+ arch/x86/kvm/svm/sev.c             | 423 +++++++++++++++++++----------
+ arch/x86/kvm/svm/svm.c             |   4 +
+ arch/x86/kvm/svm/svm.h             |   9 +-
+ arch/x86/kvm/x86.c                 |  11 +-
+ 9 files changed, 359 insertions(+), 151 deletions(-)
 
-> 
-> Regards,
-> Bjorn
-> 
->> +
->>   #include <linux/cdev.h>
->>   #include <linux/device.h>
->>   #include <linux/fs.h>
->> @@ -193,13 +196,13 @@ static int rpmsg_ctrldev_init(void)
->>   
->>   	ret = alloc_chrdev_region(&rpmsg_major, 0, RPMSG_DEV_MAX, "rpmsg_ctrl");
->>   	if (ret < 0) {
->> -		pr_err("rpmsg: failed to allocate char dev region\n");
->> +		pr_err("failed to allocate char dev region\n");
->>   		return ret;
->>   	}
->>   
->>   	ret = register_rpmsg_driver(&rpmsg_ctrldev_driver);
->>   	if (ret < 0) {
->> -		pr_err("rpmsg ctrl: failed to register rpmsg driver\n");
->> +		pr_err("failed to register rpmsg driver\n");
->>   		unregister_chrdev_region(rpmsg_major, RPMSG_DEV_MAX);
->>   	}
->>   
->> -- 
->> 2.17.1
->>
+-- 
+2.32.0
+
