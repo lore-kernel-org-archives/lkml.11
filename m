@@ -2,201 +2,199 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6CA6C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 20:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67611C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 20:59:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349367AbiARU5t (ORCPT
+        id S1349450AbiARU70 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 15:57:49 -0500
-Received: from chameleon.vennard.ch ([37.35.107.252]:52638 "EHLO
-        chameleon.vennard.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245609AbiARU5q (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 15:57:46 -0500
-X-Greylist: delayed 422 seconds by postgrey-1.27 at vger.kernel.org; Tue, 18 Jan 2022 15:57:44 EST
-Received: from localhost (localhost [IPv6:::1])
-        by chameleon.vennard.ch (Postfix) with ESMTP id BA7F9120BBF;
-        Tue, 18 Jan 2022 20:50:37 +0000 (GMT)
-Received: from chameleon.vennard.ch ([IPv6:::1])
-        by localhost (chameleon.vennard.ch [IPv6:::1]) (amavisd-new, port 10032)
-        with ESMTP id ooQvYuX_Bke6; Tue, 18 Jan 2022 20:50:32 +0000 (GMT)
-Received: from localhost (localhost [IPv6:::1])
-        by chameleon.vennard.ch (Postfix) with ESMTP id 6A7B2120BF2;
-        Tue, 18 Jan 2022 20:50:32 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.10.3 chameleon.vennard.ch 6A7B2120BF2
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=vennard.ch;
-        s=9ECFC226-3425-11E4-849C-FD7C69C5B08C; t=1642539032;
-        bh=h9L8ml/Dr+9Otc4vSQsu7LfWauQMaE0fP0OWB1a411E=;
-        h=From:To:Message-ID:Date:MIME-Version;
-        b=fVEfEhlpeNjsHYFnpFu3wB4XxSwlSACTv2MSWsmmDB92fE0zvL8m9j+/gw3Y4+HgZ
-         eG8K1weO39zugC808b8Dd0jM/h5egUD6NKoqptNcDksDs6KvS4MvpAV0SqA1eWSrD2
-         XkCrGKKOjbFpQYYzX/CVpukf3eEW3t6vp4+D8Ijz/Tg0HRxuTGOckh7zbpToAw6Zwk
-         b1Chf3ONUzVqQ83gitdTkDmzmIUjSZJdCoYMmATpRYPZYOxqwclgxPOKY+v//yPUA0
-         hvxXijEwlJEs/z/CAmRQay9qr0xs2u3y1m+VYbCnkDLDSz8heX9AWCCWv8MzKpgGPw
-         ERz40MpvfIYxW+ieirDsP7Txxn6dnGa/e7le5RqFU/oLcX5tvdvNblybTj4soB+XeU
-         27IiONqAwA38Otq+sLwnrv4eD5hMEgGKmEqHZimbtTX4fDlgLHHXZXqCn6oSHwb0r9
-         G1Chq9PVUxXsIwr0oSyjEmM9E5EhErGrUIQzS1JhhteRz/L8dJiinu0LXplJfHpDQy
-         +8V2UILXIm9pNdhENzSHVywRYd1l8VUBXZMDM43NgwfSq73LzqO2ZhX5jBet1yF2u6
-         LJkkkHza4DsVu8HauHhGqzU9agMt2GO5xcGzTYRWVSf0pqdyC3qdbgTziUnIhjKcqg
-         yheNz5YbYIAbPRekG6fYSSoQ=
-X-Virus-Scanned: amavisd-new at vennard.ch
-Received: from chameleon.vennard.ch ([IPv6:::1])
-        by localhost (chameleon.vennard.ch [IPv6:::1]) (amavisd-new, port 10026)
-        with ESMTP id xHHYNI3omkmN; Tue, 18 Jan 2022 20:50:23 +0000 (GMT)
-Received: from [IPV6:2001:470:26:1b7::8a8a] (unknown [IPv6:2001:470:26:1b7::8a8a])
-        by chameleon.vennard.ch (Postfix) with ESMTPSA id 249EE120BBF;
-        Tue, 18 Jan 2022 20:50:20 +0000 (GMT)
-Authentication-Results: chameleon.vennard.ch; dkim=none
-From:   Antony Vennard <antony@vennard.ch>
-Subject: Re: [PATCH 00/14] KEYS: Add support for PGP keys and signatures
-To:     James Bottomley <James.Bottomley@HansenPartnership.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Roberto Sassu <roberto.sassu@huawei.com>
-Cc:     dhowells@redhat.com, dwmw2@infradead.org,
-        herbert@gondor.apana.org.au, davem@davemloft.net,
-        keyrings@vger.kernel.org, linux-crypto@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-fscrypt@vger.kernel.org,
-        linux-kernel@vger.kernel.org, zohar@linux.ibm.com,
-        ebiggers@kernel.org
-References: <20220111180318.591029-1-roberto.sassu@huawei.com>
- <YeV+jkGg6mpQdRID@zx2c4.com>
- <d92912bba61ee37e42d04b64073b9031604acc0f.camel@HansenPartnership.com>
-Message-ID: <079f10b9-060b-3a36-2224-fa1b483cbad5@vennard.ch>
-Date:   Tue, 18 Jan 2022 21:50:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
+        Tue, 18 Jan 2022 15:59:26 -0500
+Received: from mail-eopbgr150083.outbound.protection.outlook.com ([40.107.15.83]:13869
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S245609AbiARU7Y (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 15:59:24 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XOZXLbDMVyrsxPk+ldew4MRwHIPcjQGat9PsjkIjRPNpbcySolNfHld5Qvv3sy27rJxQUu6ZNbS43qiG+WFBIfNPR/T7sqe/rt6TZzJn++rSztq+QtI3uO5HtMV9jjWT7vhOS4l9N1/ANlzPvB+CZsy1N4negcKFoEI6fm1Y7MB5Mbw7kPTfyrGTSIS8Oi2lQWkEKgUY2r+IgoCiLJR1yo0b5vG0qis00DfU9qhkTWfDrJDwPuAJtNTId4q/rS42HtVRyvajwq1jGWODdPLDyQ8Cgd1tBHGSWsEZiwRQraA7IrTcA+AWo20RrXhDiYPhq5ASz7qh9uwX2S/ph21qWA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=79TGy9gydQNsHShFPNzG1ZRI4flEDZA2/JTil5PfN4M=;
+ b=GQDzG8x1/E78gkMO2V095IfkG4RDtwwOESiUlh2QhRiZsaHsw/lq20JqDIz2q+P/asuPF3HuD8+G5V+kd8yGm06H5GJNhfdn9P/nsR5ocGhFtCJRZZwkZCyYU/VSIlMQHJ7r83JwkJwuCVwxFHAgxipfRxddx1SuxaCse+6NZHCSDSG0A7xdSAcdXAkfr4TZT0ESk02mlWm/82XrGRrOKpKwP5kQjXtabdmgI3/r/yFjTWTIfjvgjlC87JZcP7ry2ewKm5GaPOd12QW/+t1ByMOeeL7a2lct05J5oj24FZR53BjEciEQRUYL5IHKJvIQvDpWhv3jib26uyzCGmthMA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=seco.com; dmarc=pass action=none header.from=seco.com;
+ dkim=pass header.d=seco.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=79TGy9gydQNsHShFPNzG1ZRI4flEDZA2/JTil5PfN4M=;
+ b=coTlpMeausd21Y2NXHnu+1M1bSJEsJkUXb9S4bpDsNMg1crH6iAB3XWFZ04Cdmrv0xEmbpN2JxsxWZuAuBdPS9flJDhyoFglqwO9RtvVr8d/K0kFKu415P2wEQrPQ0Bhqmt3SNtLSuOOsPH2kr1xqTR9uiqq/MLaP6XwUevq1cGW9XnmSh0yU/FqVtqqjPwvi/uLdrDv3E6s/wKA9FdZubEdqMp1xpTd4T7X5xSk7R2q+TXJ9gd56uWIvf6UtHYDnYp2K7oyXwOwjfxFSVTR/NxIp8GyToAAtyoiSv1gbFI1WojCkG1qnv5fFHSZcuAs6qYHnzBEdTp62wFdEAv8Tw==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
+ by AM9PR03MB6818.eurprd03.prod.outlook.com (2603:10a6:20b:2db::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Tue, 18 Jan
+ 2022 20:59:21 +0000
+Received: from DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::d47e:81b0:256:3005]) by DB7PR03MB4523.eurprd03.prod.outlook.com
+ ([fe80::d47e:81b0:256:3005%4]) with mapi id 15.20.4888.014; Tue, 18 Jan 2022
+ 20:59:21 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+Subject: Re: [PATCH 0/6] usb: dwc3: Calculate REFCLKPER et. al. from reference
+ clock
+To:     Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        Baruch Siach <baruch@tkos.co.il>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-usb@vger.kernel.org" <linux-usb@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Balaji Prakash J <bjagadee@codeaurora.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        Rob Herring <robh@kernel.org>
+References: <20220114233904.907918-1-sean.anderson@seco.com>
+ <87iluifxy1.fsf@tarshish> <7831a4f7-7c3f-4a2a-be73-38f2c40a123c@synopsys.com>
+ <f28052d9-5dea-a05b-8745-09e4d237b539@seco.com>
+ <f53ba815-f2ee-a558-73f3-06c5a43f5c5e@synopsys.com>
+Message-ID: <0aaeb0e3-1e10-df41-0b61-c10249ea5faa@seco.com>
+Date:   Tue, 18 Jan 2022 15:59:16 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <f53ba815-f2ee-a558-73f3-06c5a43f5c5e@synopsys.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MN2PR01CA0034.prod.exchangelabs.com (2603:10b6:208:10c::47)
+ To DB7PR03MB4523.eurprd03.prod.outlook.com (2603:10a6:10:19::27)
 MIME-Version: 1.0
-In-Reply-To: <d92912bba61ee37e42d04b64073b9031604acc0f.camel@HansenPartnership.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Language: en-GB
-Content-Transfer-Encoding: quoted-printable
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 40e72eb7-6555-4937-1511-08d9dac566b0
+X-MS-TrafficTypeDiagnostic: AM9PR03MB6818:EE_
+X-Microsoft-Antispam-PRVS: <AM9PR03MB681874BFF6B0360C3BDD729796589@AM9PR03MB6818.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: LAu4h4rYs0JoWVKTYy9sFoO7zCYe9F+cwEyygNLsjha9zvqGiChxFwO8v6qkpiahctBjlHlR593vZow2PiFVBN0a7xjSLNHHLb8OnVmWTogWN8MIk0HCbQzHYLoFiJqpk4bBRTYbju1pVjvbfPWKLJjLkNzo7ECNib+65yOMaP1mZtMgnT0AZQkZZPQd58Ew/f3JECWT0In+JPmYzW6TO8DhwYxPE46NmxOnnIm5ye8wBAQMCAELknhDJg8usLtIhXJBfkdeGKaV9NKLj3a/mlrYu74GW0EZRdfSkJCEfDFnJXCiPorEWVmfukz5BbUAKy9gVnTVJQCfKl75bovjpIY1AusunnB6m49UJoKQYBYldjSOG/gA7U9RlLlBjv8fxYtogwtae5UxodUghFGWr3313uGPiULn2sqpwOfOi2LOdNjLF5FjAbctVFHnSYSq2Oj34JXrDu8Kx6dis0vzTJKkWitBYDJXszfQBOgHz+qA/CG52Bj2mR4OfR22DQ6ZPhPTAjEX4Y1duJq5wKldH3K/y8kQQxRYiWCuCq4f94MTAL2Veyv3Gwlur1+QyfroRFoD5wWBsG00f/0wgkMLwPBkZKzrEZKzCnC9UjNcYnAghKBUtqdW4HunWjRtEbtXz7SX1jXLv8C1yryZ0KcudQ7ZxkWYL9jSwNEY3N+YRDNfblvE9EEBjyOOxAI2xFkO1rloDLuouPGeydNE+nL386vr/SC+aa0Y6LkVI58l0NBRwgCgmvZ/hCYGUzdEZOFWIwRivPej3JmgLAZnifrGw0nfsbr1fwcMeFQ1K5JQLXJXANVADDE5LwAWGZM9KVOIzOJIbBECScDH5+jCXmnf4LT6M+6mH6aWRfLsVcZ1Rtc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB7PR03MB4523.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(31696002)(86362001)(83380400001)(66556008)(2906002)(966005)(4326008)(7416002)(38100700002)(38350700002)(44832011)(5660300002)(54906003)(6486002)(31686004)(110136005)(508600001)(316002)(8676002)(6666004)(66946007)(26005)(186003)(66476007)(53546011)(6506007)(6512007)(52116002)(36756003)(8936002)(2616005)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?VDl3REJWSU9LNlpjSHBOMFBxYzBmOFMzaGtEUHRwZmVrMUlldkRBamJqalJj?=
+ =?utf-8?B?d3lwTHYrd2FFL1pVWVZTWjZHTlBpYlZLbXIwU1ovT0twN1dsalhFaU9rU251?=
+ =?utf-8?B?bVQ2NURBeWNnUVRhUlA4aENvckg4andyYVViTjlLK1hWcXZUMnVqeUUvVjJF?=
+ =?utf-8?B?cXhZYWVUUFRIRllVVGhQb0tvVDZXQ0dtcnQwcUtXQi9yK29BbmI5alpLWW1S?=
+ =?utf-8?B?dUVHQU10NGQ3ZVpIOS9BUGc3V2h0cEdERkZRbExSRnBEYjdoa0lQQndZQWNZ?=
+ =?utf-8?B?a0tKQUw5cjg3OFVwdm9vekpOYjh6SmhZaGVsbjVKZ0xQcjlUUCtOVTNOa1l6?=
+ =?utf-8?B?cEZja2hDUHk1dEtLaTJ1Y05PODY5QVh6bTUvYUpvd0RTaWpFcnNLM212R2do?=
+ =?utf-8?B?NUNiR3ErRCtqdmQ2K0VFSXRPc3dwT1htc3B6Q1FaR1cyZ2RSZUk3STNlS04z?=
+ =?utf-8?B?RUN0L3owQUMxUW01YXhIdUN6cXNxQ0phVHk4bHd2NTMyNFZvejBzNndqZWlR?=
+ =?utf-8?B?ZmhQSnVtUU1oQXh3SThYNjZpR1dDUkErczhWdFRERXN5ZGw3Z0JudXcwaUVI?=
+ =?utf-8?B?aTJvcGtscFhsVlRKdVpCUEhwZEIwZjdlQS92T2RSQURTbjVXazlwKzg2Zmx2?=
+ =?utf-8?B?cFlHb3VCZTB4QVJNY3Q3NFBZTTlPY3V6UDJBOW1weTdNZmEvNTZnQmZNZlRL?=
+ =?utf-8?B?SWEybTNNZEROdXZMSVYrTUNNUFNzMllpRDA2UlBkYXFYRFR1MEVjaVdIUXZU?=
+ =?utf-8?B?blQ1Wng0L0p0eWs5YWlseVJVSnh1RHgzWnY3eVR0VHRFZmZ2RjlKcVdXMzJT?=
+ =?utf-8?B?d01XeCtnL0EvK3RxWVNCMGdaTTFUNVNQb0phS0dlSTZmODNkdHI5YmJ1OU1Z?=
+ =?utf-8?B?UUozL2d5d1dTYUN1bzI0YWorL2p1dFdDTG95S3lCQ1BPZlY3UHh4SkZzYm81?=
+ =?utf-8?B?d1pRWnlkSkNUaGd1YVJEMU5QUGJOcFR0OVZHcDl1TmdlVE5xeVEvaTRBUVFQ?=
+ =?utf-8?B?UU1sVFppWkIxZmQvM3YwNnFwVk5RL1BGbEJ3dmdFM1QrMC9kYlkxeGttNFlt?=
+ =?utf-8?B?cEYvUE5TU2k4aHY5U1hCME16MVJ0Qys0RXg0MWErcldRSVVIVnZiTllLZFU1?=
+ =?utf-8?B?QmxEWEJ0ekMzS0crZzc2SmJIcGJMMGNpQU9teGVwVXJyUzRybVpzZnlxUXlG?=
+ =?utf-8?B?VzhQcWNjUFpXVHVKRUoyUE14SXkxT1lRbkNLMFFhd3U2WDlTaWk2RE1MVXpw?=
+ =?utf-8?B?Rkc5aXN0cFBWZkFiblo3MVBLZnR2M0FEOUp5aHVuQ3dWWWVVQkF2V2NvSTNr?=
+ =?utf-8?B?b3MxYndDc2krMDdsa3k1SmpZVVZtbmFJS2sxRmJJLzZwdmhkN24wbG04MDAz?=
+ =?utf-8?B?aTFkdW1HajlNUlRFWnV0Y2dJZ3F1Tzdxd0ZFVFd3aGpQbTRYNVZ5a1FYSzVi?=
+ =?utf-8?B?cUVUcmdCb2p1R3k2NGJYUWRlRFprektzVnJucWJCYVZZWUF1VkNZYzBCL213?=
+ =?utf-8?B?TkFEQkFMM3FUK3NWTFBpOWgxN0JLL0hLQ3VwNEh1NElFNzlxSDZScEtXOE5p?=
+ =?utf-8?B?eVZ0Z1NRQjdadHlUQWwzeXNIK0Z4MGgvU1lDR0owbzJ3NVJZdCtzdnAyK1RV?=
+ =?utf-8?B?OGFqYnE5eDFSK3RvVHo0UXVxWmNMV1ZiZGthNjNLZUp2S25CWkdsVTVvYzNj?=
+ =?utf-8?B?RVVRMW9ZcjYyR2lPZTNrZk9aYWo1SysxaFlhOEZkU2N1dWtrTmJ6WVBJK0ZU?=
+ =?utf-8?B?c2xJNHZXUjdkaTFlcDFlZWwzdUNOYmc2anRYc3FzNTZFRjZRZzVVeU1YUmdh?=
+ =?utf-8?B?ZWNqUi9aNDBMSmMxRkdqKzJSTkZRaWRuZEo5OGRielNIam0zNDh5UWlPWnZo?=
+ =?utf-8?B?cE1udU5oSlZlclZ1aGR4QUtkR0tXcDRxOFlDSkxBU2drNXI2L0FSRFl4UVZJ?=
+ =?utf-8?B?RnhDVThUS1hwV2VwSlVSTzRpZkVqSE1MZHBidC8xeS9Rcjg4czVnK2hYbXFR?=
+ =?utf-8?B?TlYzRDlxcjV0WFlETnN1T3BsNzM0Q01UcVBseXVLQ1M0a3VJMzZla3BsRmQr?=
+ =?utf-8?B?elhJTFF6anFzVDQ3c2p5ak5ibkdzUkxCcHZzWkZjdEJZbUVFNU9lcyt5MWVB?=
+ =?utf-8?B?UE5TT3o1VCtRTVNDc1ZSUHdOd3Z1eks1Q1ljSEg2Yk1FK1JGczVnaTFkWGho?=
+ =?utf-8?Q?lgbw1Mcfyq6UBfi5Xz/55aU=3D?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 40e72eb7-6555-4937-1511-08d9dac566b0
+X-MS-Exchange-CrossTenant-AuthSource: DB7PR03MB4523.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2022 20:59:21.7582
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: XE4B8l8l2C4NOkMnppJ8gOlbjBrwkEjWfYSbVzjvSBQqyVSNPKmIqTqMgdsepimJUBQ+jrG5Z5grdJ1oyGdBGA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9PR03MB6818
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Thinh,
 
-Hi All,
-
-On 17/01/2022 16:02, James Bottomley wrote:
-> On Mon, 2022-01-17 at 15:34 +0100, Jason A. Donenfeld wrote:
->> Hi,
+On 1/18/22 3:00 PM, Thinh Nguyen wrote:
+> Sean Anderson wrote:
+>> Hi Thinh,
 >>
->> While it looks like you put a lot of work into this patchset, I think
->> the general idea of adding PGP *to the kernel* is a pretty daunting
->> proposition. The general consensus in the crypto engineering world is
->> that PGP ought to be on its way out. We definitely don't want to
->> perpetuate this project-on-life-support into the permanence of kernel
->> code. Some quick Google searches will reveal a litany of blog posts
->> to the tune of, "why oh why are people still using this?" Here's one
->> from 2019:
->> https://latacora.micro.blog/2019/07/16/the-pgp-problem.html . I
->> think these are arguments to take seriously. And even if you disagree
->> with some parts, you may want to consider whether the remaining parts
->> warrant a bit of pause before adding this to the kernel and
->> perpetuating PGP's design further.
+>> On 1/18/22 2:46 PM, Thinh Nguyen wrote:
+>>> Hi Sean,
+>>>
+>>> Baruch Siach wrote:
+>>>> Hi Sean, Thinh,
+>>>>
+>>>> On Fri, Jan 14 2022, Sean Anderson wrote:
+>>>>> This is a rework of patches 3-5 of [1]. It attempts to correctly
+>>>>> program
+>>>>> REFCLKPER and REFCLK_FLADJ based on the reference clock frequency.
+>>>>> Since
+>>>>> we no longer need a special property duplicating this configuration,
+>>>>> snps,ref-clock-period-ns is deprecated.
+>>>>>
+>>>>> Please test this! Patches 3/4 in this series have the effect of
+>>>>> programming REFCLKPER and REFCLK_FLADJ on boards which already
+>>>>> configure
+>>>>> the "ref" clock. I have build tested, but not much else.
+>>>>>
+>>>>> [1]
+>>>>> https://urldefense.com/v3/__https://lore.kernel.org/linux-usb/20220114044230.2677283-1-robert.hancock@calian.com/__;!!A4F2R9G_pg!M3zKxDZC9a_etqzXo7GSEMTHRWfc1wR_84wwM4-fShiA35CsGcxcTEffHPbprbdC4d2R$
+>>>>>
+>>>>
+>>>> Thinh, you suggested the dedicated DT property for the reference clock:
+>>>>
+>>>>
+>>>> https://urldefense.com/v3/__https://lore.kernel.org/all/d5acb192-80b9-36f7-43f5-81f21c4e6ba0@synopsys.com/__;!!A4F2R9G_pg!M3zKxDZC9a_etqzXo7GSEMTHRWfc1wR_84wwM4-fShiA35CsGcxcTEffHPbprbpOFmvX$
+>>>>
+>>>>
+>>>> Can you comment on this series?
+>>>>
+>>>
+>>> Unless there's a good way to pass this information for PCI devices, my
+>>> opinion hasn't changed. (Btw, I don't think creating a dummy clock
+>>> provider and its dummy ops is a good solution as seems to complicate and
+>>> bloat the PCI glue drivers).
+>>
+>> Can you explain your situation a bit more? I'm not sure how you can
+>> access a device tree property but not add a fixed-rate clock.
+>>
+>> --Sean
+>
+> Currently for dwc3 pci devices, we have glue drivers that create a
+> platform_device with specific properties to pass to the dwc3 core
+> driver. Without a ref clock property, we would need another way to pass
+> this information to the core driver or another way for the dwc3 core
+> driver to check for specific pci device's properties and quirks.
 
-So while I understand why this is being proposed and clearly effort has=20
-gone into it, I also think it is not the right approach. It seems this=20
-proposal is to include a full PGP packet parser and verification logic=20
-in the kernel as an equivalent to allow PGP signatures to be submitted=20
-via FS_IOC_ENABLE_VERITY:
+The primary problem with the existing binding is that it does not
+contain enough information to calculate the fractional period. With the
+frequency, we can calculate the correct values for the registers without
+needing an additional binding. So we need to transition to some kind of
+frequency-based system. So perhaps we should add a "ref-clock-frequency"
+property and use that as a default for when the clock is missing.
 
-"FS_IOC_ENABLE_VERITY accepts a pointer to a PKCS#7 formatted detached=20
-signature in DER format of the file=E2=80=99s fs-verity digest."
-
-I may be misinterpreting, but as I understand it logic for X.509/PKCS=20
-validation already exists in-kernel because of UEFI and module signing,=20
-so this signature would be verified up to trusted roots. The proposal is=20
-to duplicate all of this logic but in terms of PGP-formatted keys.
-
-I believe this is unnecessary. Since it seems to require both a=20
-signature and verification up to a root, and distributions like Fedora=20
-already deal with x509 module signing keys for their kernel modules, I=20
-can't see the merit in including the full PGP system too. The=20
-least-effort approach, I would suggest, is to include an x509=20
-representation of the signature in the RPM and use the existing API to=20
-push that up into the kernel, with the trust anchor the same as is used=20
-for module signing keys, or whatever distributions prefer (they, after=20
-all, control the kernel trust anchors).
-
-I understand this requires some effort, but so too does maintaining a=20
-fully fledged PGP packet parser as privileged code for all time, and I=20
-think maintaining this in userspace is a) easier and b) less costly than=20
-doing it in kernel. As an added bonus, a PGP-parsing library in a=20
-memory-safe language could be used in userspace.
-
-A slightly more drastic step would be to wholesale move to PKCS=20
-signatures for packaging. Linux distributions could be their own trusted=20
-roots for this purpose if they so desired, and since they control=20
-certificate bundles anyway they've no need to add them to the browser=20
-list if that is a concern, and can issue certs without SSL Client/SSL=20
-Server types and OIDs.
-
-> The reason is simple though: for all the detractors and whining, no-
-> one's actually been able to come up with a more usable replacement.
-> Very few people who complain about GPG actually submit patches to fix
-> it.  A few come up with their own infrastructure which tends to have
-> even more problems.
-
-Probably replacing with PKCS is a non-starter, but it is at least=20
-possible and it is highly likely distros package one or more tools=20
-capable of validating such signatures in their base installs.
-
-There are multiple problems with PGP that receive complaints. They are:
-
-  1) No forward secrecy in messaging-based crypto.
-  2) The data format.
-  3) Outdated cryptography still supported.
-  4) UX.
-
-Of these, all four could be levelled against PKCS standards and related=20
-tools too (except TLS protocols for the first point), and only 2 and 3=20
-are relevant here since we are concerned with signature validation only.
-
-I'm not "against" PGP per se, but I'm not convinced by the idea of=20
-adding PGP support just for fs-verity.
-
->> If you're looking for a simple signature mechanism to replace the use
->> of X.509 and all of that infrastructure, may I suggest just coming up
->> with something simple using ed25519,
->=20
-> Please, no, use universally supported crypto that we can use TPM
-> hardware for, which for EC currently means P-256.  It may be possible
-> to get the TCG and the other security bodies to add Edwards signatures
-> but the rate of progression of quantum means that Grover's Algorithm
-> will likely get there first and we'll need P-521 or X448.
-
-I agree: whatever is chosen should in my view have decent support for=20
-hardware-backed keys, because I strongly hope that is what distribution=20
-key storage looks like. If not I might need to move to Gentoo.
-
-The current RPM signing keys for Fedora are RSA-4096, which in my=20
-opinion does not actually meet the bar for "good hardware support for=20
-algorithm". RSA-2048 tokens are common, but 4096 much less so.
-
-Unfortunately for this reason signify/minisign is not ideal as tools: so=20
-far as I can see it has no support for hardware-backed keys. That's not=20
-to say they couldn't, although they both use ed25519.
-
-I am not sure if we'll end up in the situation where Grover's algorithm=20
-is efficient but Shor is not, but this is all guesswork until we get=20
-closer to a quantum computer with enough logical Qubits. But your=20
-substantive point I think is valid: hardware vendors are disappointingly=20
-slow at adopting edwards curves.
-
->>   similar to signify or minisign? Very minimal code in the kernel, in
->> userspace, and very few moving parts to break.
->=20
-> Heh, this is the classic cryptographers dilemma: go for something
-> pejorative which can be minimal but which has only a relatively small
-> set of possible use cases and no future proofing or go for something
-> extensible which ends up more complex and others then criticize as
-> being a "swiss army knife".
-
-I think this is the wrong framing for the problem. We already have one=20
-extensible system that is complicated in the kernel. This patch proposes=20
-to add a second one achieving the same purpose instead of a userspace=20
-solution to take advantage of the existing code, which I think would be=20
-preferable and safer.
-
-Antony
+--Sean
