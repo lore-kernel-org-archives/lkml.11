@@ -2,38 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A0ABC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:22:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DC2AC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:22:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242926AbiARNWj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 08:22:39 -0500
-Received: from mga09.intel.com ([134.134.136.24]:39173 "EHLO mga09.intel.com"
+        id S243180AbiARNWt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 08:22:49 -0500
+Received: from mga12.intel.com ([192.55.52.136]:1542 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242770AbiARNWZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 08:22:25 -0500
+        id S243067AbiARNWf (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 08:22:35 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642512145; x=1674048145;
+  t=1642512155; x=1674048155;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references;
-  bh=2dspJZW+Fb695a/O+SFc/x1OjrhtU2wFDKh4IAY6Z+0=;
-  b=Ur9EbbS9kRJk3v/TllxHENI9vfURgz3Avs/eDlnVR0r2RXOKEbYxWMmu
-   48n/YIFEEgEda8WDrF/S49UrXP/oHYHvcbo3mTRG/4IpDzrvRk/ANH0Tk
-   IRpxw8nrMmyKGflB1wYvpCqs7rgILSPkdr3k8wt7rWrNpoYYnbhDHI1pK
-   pN19u58VVxPcwJkwJQL6Y7Bdd/sHo/H8otp5fzSQxGj29Tzewoom3PNxL
-   lpJ7l+IaNVQPESv4mSD2g57xZrz+/sZ8qzVHOur6ErScKDEyZCWysUF9E
-   LlO8YWnW9PEnOtkxyeTqyGC8IE55Ivqa8Idbb45TEBZni8dFMrCSwboOt
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="244609329"
+  bh=7+c1sXkb+YZ1mlaZZMzVLTAk9/05+2xQQ6wigpDTqW0=;
+  b=P7Fz1SZWXfY7pJCjSoYMJzwT7zc/N5iFarJDQnJMx4E52hnyV9OCJDh+
+   jXtW9643sl+ckOXcH4EObUEcRFnjLmhX8oiivYMycSBIFO72DUY3d5jWw
+   sIFiIfyofPtGd3/xecpWwf70SN03VRmUFdCbqd/OFlA90wfmOwkVN+5cB
+   xj1I7GkZez/Filt2NCMzJ2Zkl1Yo5O31O8c7mbXqLoZLLqwGM63gIhDub
+   HOgVCTf2b7auiWM0JHA42LTW0OobQttrxFAzQP2ewvTagakWyEptyFZ1k
+   v/AlUgLkunqk1RXbyBmr84NpEMriWrlaAgYHgopqTudTqobUwXpCMM4kk
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="224791034"
 X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="244609329"
+   d="scan'208";a="224791034"
 Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 05:22:20 -0800
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 05:22:34 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="531791700"
+   d="scan'208";a="531791785"
 Received: from chaop.bj.intel.com ([10.240.192.101])
-  by orsmga008.jf.intel.com with ESMTP; 18 Jan 2022 05:22:13 -0800
+  by orsmga008.jf.intel.com with ESMTP; 18 Jan 2022 05:22:27 -0800
 From:   Chao Peng <chao.p.peng@linux.intel.com>
 To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc:     Paolo Bonzini <pbonzini@redhat.com>,
         "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
         luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
         ak@linux.intel.com, david@redhat.com
-Subject: [PATCH v4 03/12] mm: Introduce memfile_notifier
-Date:   Tue, 18 Jan 2022 21:21:12 +0800
-Message-Id: <20220118132121.31388-4-chao.p.peng@linux.intel.com>
+Subject: [PATCH v4 05/12] KVM: Extend the memslot to support fd-based private memory
+Date:   Tue, 18 Jan 2022 21:21:14 +0800
+Message-Id: <20220118132121.31388-6-chao.p.peng@linux.intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
 References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
@@ -67,223 +67,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch introduces memfile_notifier facility so existing memory file
-subsystems (e.g. tmpfs/hugetlbfs) can provide memory pages to allow a
-third kernel component to make use of memory bookmarked in the memory
-file and gets notified when the pages in the memory file become
-allocated/invalidated.
+Extend the memslot definition to provide fd-based private memory support
+by adding two new fields (private_fd/private_offset). The memslot then
+can maintain memory for both shared pages and private pages in a single
+memslot. Shared pages are provided by existing userspace_addr(hva) field
+and private pages are provided through the new private_fd/private_offset
+fields.
 
-It will be used for KVM to use a file descriptor as the guest memory
-backing store and KVM will use this memfile_notifier interface to
-interact with memory file subsystems. In the future there might be other
-consumers (e.g. VFIO with encrypted device memory).
+Since there is no 'hva' concept anymore for private memory so we cannot
+rely on get_user_pages() to get a pfn, instead we use the newly added
+memfile_notifier to complete the same job.
 
-It consists two sets of callbacks:
-  - memfile_notifier_ops: callbacks for memory backing store to notify
-    KVM when memory gets allocated/invalidated.
-  - memfile_pfn_ops: callbacks for KVM to call into memory backing store
-    to request memory pages for guest private memory.
+This new extension is indicated by a new flag KVM_MEM_PRIVATE.
 
-Userspace is in charge of guest memory lifecycle: it first allocates
-pages in memory backing store and then passes the fd to KVM and lets KVM
-register each memory slot to memory backing store via
-memfile_register_notifier.
-
-The supported memory backing store should maintain a memfile_notifier list
-and provide routine for memfile_notifier to get the list head address and
-memfile_pfn_ops callbacks for memfile_register_notifier. It also should call
-memfile_notifier_fallocate/memfile_notifier_invalidate when the bookmarked
-memory gets allocated/invalidated.
-
-Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
 Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
 ---
- include/linux/memfile_notifier.h | 53 +++++++++++++++++++
- mm/Kconfig                       |  4 ++
- mm/Makefile                      |  1 +
- mm/memfile_notifier.c            | 89 ++++++++++++++++++++++++++++++++
- 4 files changed, 147 insertions(+)
- create mode 100644 include/linux/memfile_notifier.h
- create mode 100644 mm/memfile_notifier.c
+ include/linux/kvm_host.h | 7 +++++++
+ include/uapi/linux/kvm.h | 8 ++++++++
+ 2 files changed, 15 insertions(+)
 
-diff --git a/include/linux/memfile_notifier.h b/include/linux/memfile_notifier.h
-new file mode 100644
-index 000000000000..a03bebdd1322
---- /dev/null
-+++ b/include/linux/memfile_notifier.h
-@@ -0,0 +1,53 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+#ifndef _LINUX_MEMFILE_NOTIFIER_H
-+#define _LINUX_MEMFILE_NOTIFIER_H
-+
-+#include <linux/rculist.h>
-+#include <linux/spinlock.h>
-+#include <linux/srcu.h>
-+#include <linux/fs.h>
-+
-+struct memfile_notifier;
-+
-+struct memfile_notifier_ops {
-+	void (*invalidate)(struct memfile_notifier *notifier,
-+			   pgoff_t start, pgoff_t end);
-+	void (*fallocate)(struct memfile_notifier *notifier,
-+			  pgoff_t start, pgoff_t end);
-+};
-+
-+struct memfile_pfn_ops {
-+	long (*get_lock_pfn)(struct inode *inode, pgoff_t offset, int *order);
-+	void (*put_unlock_pfn)(unsigned long pfn);
-+};
-+
-+struct memfile_notifier {
-+	struct list_head list;
-+	struct memfile_notifier_ops *ops;
-+};
-+
-+struct memfile_notifier_list {
-+	struct list_head head;
-+	spinlock_t lock;
-+};
-+
-+#ifdef CONFIG_MEMFILE_NOTIFIER
-+static inline void memfile_notifier_list_init(struct memfile_notifier_list *list)
-+{
-+	INIT_LIST_HEAD(&list->head);
-+	spin_lock_init(&list->lock);
-+}
-+
-+extern void memfile_notifier_invalidate(struct memfile_notifier_list *list,
-+					pgoff_t start, pgoff_t end);
-+extern void memfile_notifier_fallocate(struct memfile_notifier_list *list,
-+				       pgoff_t start, pgoff_t end);
-+extern int memfile_register_notifier(struct inode *inode,
-+				     struct memfile_notifier *notifier,
-+				     struct memfile_pfn_ops **pfn_ops);
-+extern void memfile_unregister_notifier(struct inode *inode,
-+					struct memfile_notifier *notifier);
-+
-+#endif /* CONFIG_MEMFILE_NOTIFIER */
-+
-+#endif /* _LINUX_MEMFILE_NOTIFIER_H */
-diff --git a/mm/Kconfig b/mm/Kconfig
-index 28edafc820ad..fa31eda3c895 100644
---- a/mm/Kconfig
-+++ b/mm/Kconfig
-@@ -900,6 +900,10 @@ config IO_MAPPING
- config SECRETMEM
- 	def_bool ARCH_HAS_SET_DIRECT_MAP && !EMBEDDED
+diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
+index f079820f52b5..5011ac35bc50 100644
+--- a/include/linux/kvm_host.h
++++ b/include/linux/kvm_host.h
+@@ -458,8 +458,15 @@ struct kvm_memory_slot {
+ 	u32 flags;
+ 	short id;
+ 	u16 as_id;
++	struct file *private_file;
++	loff_t private_offset;
+ };
  
-+config MEMFILE_NOTIFIER
-+	bool
-+	select SRCU
++static inline bool kvm_slot_is_private(const struct kvm_memory_slot *slot)
++{
++	return slot && (slot->flags & KVM_MEM_PRIVATE);
++}
 +
- source "mm/damon/Kconfig"
+ static inline bool kvm_slot_dirty_track_enabled(const struct kvm_memory_slot *slot)
+ {
+ 	return slot->flags & KVM_MEM_LOG_DIRTY_PAGES;
+diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+index fbfd70d965c6..5d6dceb1b93e 100644
+--- a/include/uapi/linux/kvm.h
++++ b/include/uapi/linux/kvm.h
+@@ -103,6 +103,13 @@ struct kvm_userspace_memory_region {
+ 	__u64 userspace_addr; /* start of the userspace allocated memory */
+ };
  
- endmenu
-diff --git a/mm/Makefile b/mm/Makefile
-index d6c0042e3aa0..80588f7c3bc2 100644
---- a/mm/Makefile
-+++ b/mm/Makefile
-@@ -130,3 +130,4 @@ obj-$(CONFIG_PAGE_REPORTING) += page_reporting.o
- obj-$(CONFIG_IO_MAPPING) += io-mapping.o
- obj-$(CONFIG_HAVE_BOOTMEM_INFO_NODE) += bootmem_info.o
- obj-$(CONFIG_GENERIC_IOREMAP) += ioremap.o
-+obj-$(CONFIG_MEMFILE_NOTIFIER) += memfile_notifier.o
-diff --git a/mm/memfile_notifier.c b/mm/memfile_notifier.c
-new file mode 100644
-index 000000000000..8171d4601a04
---- /dev/null
-+++ b/mm/memfile_notifier.c
-@@ -0,0 +1,89 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ *  linux/mm/memfile_notifier.c
-+ *
-+ *  Copyright (C) 2022  Intel Corporation.
-+ *             Chao Peng <chao.p.peng@linux.intel.com>
-+ */
++struct kvm_userspace_memory_region_ext {
++	struct kvm_userspace_memory_region region;
++	__u64 private_offset;
++	__u32 private_fd;
++	__u32 padding[5];
++};
 +
-+#include <linux/memfile_notifier.h>
-+#include <linux/srcu.h>
-+
-+DEFINE_STATIC_SRCU(srcu);
-+
-+void memfile_notifier_invalidate(struct memfile_notifier_list *list,
-+				 pgoff_t start, pgoff_t end)
-+{
-+	struct memfile_notifier *notifier;
-+	int id;
-+
-+	id = srcu_read_lock(&srcu);
-+	list_for_each_entry_srcu(notifier, &list->head, list,
-+				 srcu_read_lock_held(&srcu)) {
-+		if (notifier->ops && notifier->ops->invalidate)
-+			notifier->ops->invalidate(notifier, start, end);
-+	}
-+	srcu_read_unlock(&srcu, id);
-+}
-+
-+void memfile_notifier_fallocate(struct memfile_notifier_list *list,
-+				pgoff_t start, pgoff_t end)
-+{
-+	struct memfile_notifier *notifier;
-+	int id;
-+
-+	id = srcu_read_lock(&srcu);
-+	list_for_each_entry_srcu(notifier, &list->head, list,
-+				 srcu_read_lock_held(&srcu)) {
-+		if (notifier->ops && notifier->ops->fallocate)
-+			notifier->ops->fallocate(notifier, start, end);
-+	}
-+	srcu_read_unlock(&srcu, id);
-+}
-+
-+static int memfile_get_notifier_info(struct inode *inode,
-+				     struct memfile_notifier_list **list,
-+				     struct memfile_pfn_ops **ops)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
-+int memfile_register_notifier(struct inode *inode,
-+			      struct memfile_notifier *notifier,
-+			      struct memfile_pfn_ops **pfn_ops)
-+{
-+	struct memfile_notifier_list *list;
-+	int ret;
-+
-+	if (!inode || !notifier | !pfn_ops)
-+		return -EINVAL;
-+
-+	ret = memfile_get_notifier_info(inode, &list, pfn_ops);
-+	if (ret)
-+		return ret;
-+
-+	spin_lock(&list->lock);
-+	list_add_rcu(&notifier->list, &list->head);
-+	spin_unlock(&list->lock);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(memfile_register_notifier);
-+
-+void memfile_unregister_notifier(struct inode *inode,
-+				 struct memfile_notifier *notifier)
-+{
-+	struct memfile_notifier_list *list;
-+
-+	if (!inode || !notifier)
-+		return;
-+
-+	BUG_ON(memfile_get_notifier_info(inode, &list, NULL));
-+
-+	spin_lock(&list->lock);
-+	list_del_rcu(&notifier->list);
-+	spin_unlock(&list->lock);
-+
-+	synchronize_srcu(&srcu);
-+}
-+EXPORT_SYMBOL_GPL(memfile_unregister_notifier);
+ /*
+  * The bit 0 ~ bit 15 of kvm_memory_region::flags are visible for userspace,
+  * other bits are reserved for kvm internal use which are defined in
+@@ -110,6 +117,7 @@ struct kvm_userspace_memory_region {
+  */
+ #define KVM_MEM_LOG_DIRTY_PAGES	(1UL << 0)
+ #define KVM_MEM_READONLY	(1UL << 1)
++#define KVM_MEM_PRIVATE		(1UL << 2)
+ 
+ /* for KVM_IRQ_LINE */
+ struct kvm_irq_level {
 -- 
 2.17.1
 
