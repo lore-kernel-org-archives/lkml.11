@@ -2,76 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 794A9C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 22:06:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28370C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 22:06:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349477AbiARWGX (ORCPT
+        id S1349729AbiARWG4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 17:06:23 -0500
-Received: from mga11.intel.com ([192.55.52.93]:44801 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233791AbiARWGW (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 17:06:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642543582; x=1674079582;
-  h=to:references:from:subject:message-id:date:mime-version:
-   in-reply-to:content-transfer-encoding;
-  bh=Ewi5p/l47EcBj4eeeaDbN5CQqDZhKqbM07MsfSAesJM=;
-  b=HuKCM/lI+c7+eMIY15XjzZEdXBGqR825cloYWvG5V610nQxh3L9qswAj
-   7u0+RTHO5/OIKJgJfUiNuTMshGP6rsyG6ZC2VbI5uTd334b4qJPj05ArF
-   XGjjsEzC3FSACYnY2ws5/wjf3MmOHMJYj3cPh5KeMemmrE8JHVp7H+5xn
-   a3pTwCuEgBxv/ufzt5Bx3QgdtPhxJ/mMION6mIXI70yyk8pf60Lmhg7qI
-   S/zfChFiXvGE07oHsJVpjt/vmjJZGPOJsgqiex4X49TsGwalY0JhUmJFt
-   f4qW8GZDqduubhbBiqrLONq5YiboFQhJiU8XqCzrmSlIGpNm2ZjSIiwYy
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="242487294"
-X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="242487294"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 14:06:22 -0800
-X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="764732546"
-Received: from ssrikan2-mobl2.amr.corp.intel.com (HELO [10.209.52.128]) ([10.209.52.128])
-  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 14:06:21 -0800
-To:     Khalid Aziz <khalid.aziz@oracle.com>, akpm@linux-foundation.org,
-        willy@infradead.org, longpeng2@huawei.com, arnd@arndb.de,
-        dave.hansen@linux.intel.com, david@redhat.com, rppt@kernel.org,
-        surenb@google.com, linux-kernel@vger.kernel.org, linux-mm@kvack.org
-References: <cover.1642526745.git.khalid.aziz@oracle.com>
-From:   Dave Hansen <dave.hansen@intel.com>
-Subject: Re: [RFC PATCH 0/6] Add support for shared PTEs across processes
-Message-ID: <e0196efb-9c55-c0f8-c663-b4af44b8ffa4@intel.com>
-Date:   Tue, 18 Jan 2022 14:06:20 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Tue, 18 Jan 2022 17:06:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49786 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233791AbiARWGy (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 17:06:54 -0500
+X-Greylist: delayed 392 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 18 Jan 2022 14:06:53 PST
+Received: from forward105p.mail.yandex.net (forward105p.mail.yandex.net [IPv6:2a02:6b8:0:1472:2741:0:8b7:108])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2CD2C061574
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 14:06:53 -0800 (PST)
+Received: from myt5-bc23fd5efdaf.qloud-c.yandex.net (myt5-bc23fd5efdaf.qloud-c.yandex.net [IPv6:2a02:6b8:c12:3ca5:0:640:bc23:fd5e])
+        by forward105p.mail.yandex.net (Yandex) with ESMTP id 43EF12FD90E3;
+        Wed, 19 Jan 2022 01:00:18 +0300 (MSK)
+Received: from myt5-aad1beefab42.qloud-c.yandex.net (myt5-aad1beefab42.qloud-c.yandex.net [2a02:6b8:c12:128:0:640:aad1:beef])
+        by myt5-bc23fd5efdaf.qloud-c.yandex.net (mxback/Yandex) with ESMTP id bKW5jXpdf8-0HfuKpqi;
+        Wed, 19 Jan 2022 01:00:18 +0300
+Authentication-Results: myt5-bc23fd5efdaf.qloud-c.yandex.net; dkim=pass
+Received: by myt5-aad1beefab42.qloud-c.yandex.net (smtp/Yandex) with ESMTPSA id feV44VOHqO-0FQCUuPl;
+        Wed, 19 Jan 2022 01:00:16 +0300
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (Client certificate not present)
+X-Yandex-Fwd: 2
+From:   Yaroslav Bolyukin <iam@lach.pw>
+To:     linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org
+Cc:     Daniel Vetter <daniel@ffwll.ch>, David Airlie <airlied@linux.ie>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Yaroslav Bolyukin <iam@lach.pw>
+Subject: [PATCH] drm/edid: Support type 7 timings
+Date:   Wed, 19 Jan 2022 00:59:56 +0300
+Message-Id: <20220118215956.17229-1-iam@lach.pw>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <cover.1642526745.git.khalid.aziz@oracle.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/18/22 1:19 PM, Khalid Aziz wrote:
-> This is a proposal to implement a mechanism in kernel to allow
-> userspace processes to opt into sharing PTEs. The proposal is to add
-> a new system call - mshare(), which can be used by a process to
-> create a region (we will call it mshare'd region) which can be used
-> by other processes to map same pages using shared PTEs. Other
-> process(es), assuming they have the right permissions, can then make
-> the mashare() system call to map the shared pages into their address
-> space using the shared PTEs.
+Per VESA DisplayID Standard v2.0: Type VII Timing – Detailed Timing Data
 
-One thing that went over my head here was that this allowing sharing of
-relatively arbitrary *EXISTING* regions.  The mshared'd region might be
-anonymous or an plain mmap()'d file.  It can even be a filesystem or
-device DAX mmap().
+Definitions were already provided as type I, but not used
 
-In other words, donors can (ideally) share anything.  Consumers have
-must use msharefs to access the donated areas.
+Signed-off-by: Yaroslav Bolyukin <iam@lach.pw>
+---
+ drivers/gpu/drm/drm_edid.c  | 26 +++++++++++++++++---------
+ include/drm/drm_displayid.h |  6 +++---
+ 2 files changed, 20 insertions(+), 12 deletions(-)
 
-Right?
+diff --git a/drivers/gpu/drm/drm_edid.c b/drivers/gpu/drm/drm_edid.c
+index 12893e7be..5fcefd9b5 100644
+--- a/drivers/gpu/drm/drm_edid.c
++++ b/drivers/gpu/drm/drm_edid.c
+@@ -5404,13 +5404,17 @@ u32 drm_add_display_info(struct drm_connector *connector, const struct edid *edi
+ 	return quirks;
+ }
+ 
+-static struct drm_display_mode *drm_mode_displayid_detailed(struct drm_device *dev,
+-							    struct displayid_detailed_timings_1 *timings)
++static struct drm_display_mode *drm_mode_displayid_detailed_1_7(struct drm_device *dev,
++								struct displayid_detailed_timings_1_7 *timings,
++								bool type_7)
+ {
+ 	struct drm_display_mode *mode;
+ 	unsigned pixel_clock = (timings->pixel_clock[0] |
+ 				(timings->pixel_clock[1] << 8) |
+ 				(timings->pixel_clock[2] << 16)) + 1;
++	// type 7 allows higher precision pixel clock
++	if (!type_7)
++		pixel_clock *= 10;
+ 	unsigned hactive = (timings->hactive[0] | timings->hactive[1] << 8) + 1;
+ 	unsigned hblank = (timings->hblank[0] | timings->hblank[1] << 8) + 1;
+ 	unsigned hsync = (timings->hsync[0] | (timings->hsync[1] & 0x7f) << 8) + 1;
+@@ -5426,7 +5430,7 @@ static struct drm_display_mode *drm_mode_displayid_detailed(struct drm_device *d
+ 	if (!mode)
+ 		return NULL;
+ 
+-	mode->clock = pixel_clock * 10;
++	mode->clock = pixel_clock;
+ 	mode->hdisplay = hactive;
+ 	mode->hsync_start = mode->hdisplay + hsync;
+ 	mode->hsync_end = mode->hsync_start + hsync_width;
+@@ -5449,10 +5453,12 @@ static struct drm_display_mode *drm_mode_displayid_detailed(struct drm_device *d
+ 	return mode;
+ }
+ 
+-static int add_displayid_detailed_1_modes(struct drm_connector *connector,
+-					  const struct displayid_block *block)
++static int add_displayid_detailed_1_7_modes(struct drm_connector *connector,
++					    const struct displayid_block *block,
++					    bool type_7)
+ {
+-	struct displayid_detailed_timing_block *det = (struct displayid_detailed_timing_block *)block;
++	struct displayid_detailed_timing_1_7_block *det =
++		(struct displayid_detailed_timing_1_7_block *)block;
+ 	int i;
+ 	int num_timings;
+ 	struct drm_display_mode *newmode;
+@@ -5463,9 +5469,9 @@ static int add_displayid_detailed_1_modes(struct drm_connector *connector,
+ 
+ 	num_timings = block->num_bytes / 20;
+ 	for (i = 0; i < num_timings; i++) {
+-		struct displayid_detailed_timings_1 *timings = &det->timings[i];
++		struct displayid_detailed_timings_1_7 *timings = &det->timings[i];
+ 
+-		newmode = drm_mode_displayid_detailed(connector->dev, timings);
++		newmode = drm_mode_displayid_detailed_1_7(connector->dev, timings, type_7);
+ 		if (!newmode)
+ 			continue;
+ 
+@@ -5485,7 +5491,9 @@ static int add_displayid_detailed_modes(struct drm_connector *connector,
+ 	displayid_iter_edid_begin(edid, &iter);
+ 	displayid_iter_for_each(block, &iter) {
+ 		if (block->tag == DATA_BLOCK_TYPE_1_DETAILED_TIMING)
+-			num_modes += add_displayid_detailed_1_modes(connector, block);
++			num_modes += add_displayid_detailed_1_7_modes(connector, block, false);
++		else if (block->tag == DATA_BLOCK_2_TYPE_7_DETAILED_TIMING)
++			num_modes += add_displayid_detailed_1_7_modes(connector, block, true);
+ 	}
+ 	displayid_iter_end(&iter);
+ 
+diff --git a/include/drm/drm_displayid.h b/include/drm/drm_displayid.h
+index 7ffbd9f7b..268ff5e1f 100644
+--- a/include/drm/drm_displayid.h
++++ b/include/drm/drm_displayid.h
+@@ -111,7 +111,7 @@ struct displayid_tiled_block {
+ 	u8 topology_id[8];
+ } __packed;
+ 
+-struct displayid_detailed_timings_1 {
++struct displayid_detailed_timings_1_7 {
+ 	u8 pixel_clock[3];
+ 	u8 flags;
+ 	u8 hactive[2];
+@@ -124,9 +124,9 @@ struct displayid_detailed_timings_1 {
+ 	u8 vsw[2];
+ } __packed;
+ 
+-struct displayid_detailed_timing_block {
++struct displayid_detailed_timing_1_7_block {
+ 	struct displayid_block base;
+-	struct displayid_detailed_timings_1 timings[];
++	struct displayid_detailed_timings_1_7 timings[];
+ };
+ 
+ #define DISPLAYID_VESA_MSO_OVERLAP	GENMASK(3, 0)
 
-( btw... thanks to willy for the correction on IRC.)
+base-commit: 99613159ad749543621da8238acf1a122880144e
+-- 
+2.34.1
+
