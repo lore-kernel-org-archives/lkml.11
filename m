@@ -2,148 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA98DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:53:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E938EC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:54:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347753AbiARRxt (ORCPT
+        id S1347672AbiARRyR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 12:53:49 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:39860 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347631AbiARRxk (ORCPT
+        Tue, 18 Jan 2022 12:54:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:28537 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244366AbiARRyN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 12:53:40 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: bbeckett)
-        with ESMTPSA id E3C891F43F91
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642528419;
-        bh=ZPlwOY+VgFIW9bHeyG/JUeeqGePchWBvBOtEUiWKy3I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DyPU9PXksdffKxY7Ta1zW9QlKCUVAuJ4P+lcAriv5Hy0Udy9vRrEsQAjWaGAoWlPO
-         NbaBGQ3pLb/MDcBqEQUtkfhnzQnZ3NinU0Je2UG+uUGcTyiWRP0rRCSfmbeBeFVkUO
-         Jm2/J3xzCIJuKvI4Ot3+GDKD86+3OCBJ4zPXyuAZ+gBn1jaU7HpnlkICEObwclIGQp
-         rRK1J526JtjSdELf2QqOdTyAFWxSZTGg5UlNXfX63xMyxkh0m0OG9ryWlN4hpx62AW
-         8T+cHr8WKoB3nJd466j7xUTRbClW5cYXQZT+eVEBQGmwna17Adp/rwRjh8KtDn2mF8
-         bmWcUp5MkRgVg==
-From:   Robert Beckett <bob.beckett@collabora.com>
-To:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>
-Cc:     Matthew Auld <matthew.auld@intel.com>,
-        Ramalingam C <ramalingam.c@intel.com>,
-        Robert Beckett <bob.beckett@collabora.com>,
-        Simon Ser <contact@emersion.fr>,
-        Pekka Paalanen <ppaalanen@gmail.com>,
-        Jordan Justen <jordan.l.justen@intel.com>,
-        Kenneth Graunke <kenneth@whitecape.org>,
-        mesa-dev@lists.freedesktop.org, Tony Ye <tony.ye@intel.com>,
-        Slawomir Milczarek <slawomir.milczarek@intel.com>,
-        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/4] drm/i915/uapi: document behaviour for DG2 64K support
-Date:   Tue, 18 Jan 2022 17:50:37 +0000
-Message-Id: <20220118175036.3840934-5-bob.beckett@collabora.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220118175036.3840934-1-bob.beckett@collabora.com>
-References: <20220118175036.3840934-1-bob.beckett@collabora.com>
+        Tue, 18 Jan 2022 12:54:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642528452;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=nPPBU7fRyyAQC3IqAePmc/y5C5VKzN6r/ufwnOhkpIs=;
+        b=dlSGAkhzfpDZol/WYYE7Ym3qY5/T48qtMvkYnjNAQWewp4pdK+23EO/R86IA8Y6saB5/aV
+        g8n85DFzVa3zLWwovG/jR7I+2ZjArgm/HN5jXh/f1Z+EYhfXO9IWgL4eMS07nOu9XxS4B3
+        FLXNQxIxVR48djPPOWF/i7IjH9GIZyU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-654-dYizNdE7Pt6DN4j2koeeug-1; Tue, 18 Jan 2022 12:54:08 -0500
+X-MC-Unique: dYizNdE7Pt6DN4j2koeeug-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B8231109455A;
+        Tue, 18 Jan 2022 17:40:23 +0000 (UTC)
+Received: from warthog.procyon.org.uk (unknown [10.33.36.165])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id A82257ED93;
+        Tue, 18 Jan 2022 17:40:15 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <YebpktrcUZOlBHkZ@infradead.org>
+References: <YebpktrcUZOlBHkZ@infradead.org> <164251396932.3435901.344517748027321142.stgit@warthog.procyon.org.uk> <164251409447.3435901.10092442643336534999.stgit@warthog.procyon.org.uk>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     dhowells@redhat.com, linux-cachefs@redhat.com,
+        Jeff Layton <jlayton@kernel.org>,
+        Trond Myklebust <trondmy@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Steve French <smfrench@gmail.com>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Omar Sandoval <osandov@osandov.com>,
+        JeffleXu <jefflexu@linux.alibaba.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-cifs@vger.kernel.org, ceph-devel@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 09/11] vfs, fscache: Add an IS_KERNEL_FILE() macro for the S_KERNEL_FILE flag
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <3613680.1642527614.1@warthog.procyon.org.uk>
+Date:   Tue, 18 Jan 2022 17:40:14 +0000
+Message-ID: <3613681.1642527614@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Matthew Auld <matthew.auld@intel.com>
+Christoph Hellwig <hch@infradead.org> wrote:
 
-On discrete platforms like DG2, we need to support a minimum page size
-of 64K when dealing with device local-memory. This is quite tricky for
-various reasons, so try to document the new implicit uapi for this.
+> On Tue, Jan 18, 2022 at 01:54:54PM +0000, David Howells wrote:
+> > Add an IS_KERNEL_FILE() macro to test the S_KERNEL_FILE inode flag as is
+> > common practice for the other inode flags[1].
+> 
+> Please fix the flag to have a sensible name first, as the naming of the
+> flag and this new helper is utterly wrong as we already discussed.
 
-v2: Fixed suggestions on formatting [Daniel]
+And I suggested a new name, which you didn't comment on.
 
-Signed-off-by: Matthew Auld <matthew.auld@intel.com>
-Signed-off-by: Ramalingam C <ramalingam.c@intel.com>
-Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
-cc: Simon Ser <contact@emersion.fr>
-cc: Pekka Paalanen <ppaalanen@gmail.com>
-Cc: Jordan Justen <jordan.l.justen@intel.com>
-Cc: Kenneth Graunke <kenneth@whitecape.org>
-Cc: mesa-dev@lists.freedesktop.org
-Cc: Tony Ye <tony.ye@intel.com>
-Cc: Slawomir Milczarek <slawomir.milczarek@intel.com>
----
- include/uapi/drm/i915_drm.h | 44 ++++++++++++++++++++++++++++++++-----
- 1 file changed, 39 insertions(+), 5 deletions(-)
-
-diff --git a/include/uapi/drm/i915_drm.h b/include/uapi/drm/i915_drm.h
-index 5e678917da70..486b7b96291e 100644
---- a/include/uapi/drm/i915_drm.h
-+++ b/include/uapi/drm/i915_drm.h
-@@ -1118,10 +1118,16 @@ struct drm_i915_gem_exec_object2 {
- 	/**
- 	 * When the EXEC_OBJECT_PINNED flag is specified this is populated by
- 	 * the user with the GTT offset at which this object will be pinned.
-+	 *
- 	 * When the I915_EXEC_NO_RELOC flag is specified this must contain the
- 	 * presumed_offset of the object.
-+	 *
- 	 * During execbuffer2 the kernel populates it with the value of the
- 	 * current GTT offset of the object, for future presumed_offset writes.
-+	 *
-+	 * See struct drm_i915_gem_create_ext for the rules when dealing with
-+	 * alignment restrictions with I915_MEMORY_CLASS_DEVICE, on devices with
-+	 * minimum page sizes, like DG2.
- 	 */
- 	__u64 offset;
- 
-@@ -3145,11 +3151,39 @@ struct drm_i915_gem_create_ext {
- 	 *
- 	 * The (page-aligned) allocated size for the object will be returned.
- 	 *
--	 * Note that for some devices we have might have further minimum
--	 * page-size restrictions(larger than 4K), like for device local-memory.
--	 * However in general the final size here should always reflect any
--	 * rounding up, if for example using the I915_GEM_CREATE_EXT_MEMORY_REGIONS
--	 * extension to place the object in device local-memory.
-+	 *
-+	 * **DG2 64K min page size implications:**
-+	 *
-+	 * On discrete platforms, starting from DG2, we have to contend with GTT
-+	 * page size restrictions when dealing with I915_MEMORY_CLASS_DEVICE
-+	 * objects.  Specifically the hardware only supports 64K or larger GTT
-+	 * page sizes for such memory. The kernel will already ensure that all
-+	 * I915_MEMORY_CLASS_DEVICE memory is allocated using 64K or larger page
-+	 * sizes underneath.
-+	 *
-+	 * Note that the returned size here will always reflect any required
-+	 * rounding up done by the kernel, i.e 4K will now become 64K on devices
-+	 * such as DG2.
-+	 *
-+	 * **Special DG2 GTT address alignment requirement:**
-+	 *
-+	 * The GTT alignment will also need be at least 2M for  such objects.
-+	 *
-+	 * Note that due to how the hardware implements 64K GTT page support, we
-+	 * have some further complications:
-+	 *
-+	 *   1) The entire PDE(which covers a 2MB virtual address range), must
-+	 *   contain only 64K PTEs, i.e mixing 4K and 64K PTEs in the same
-+	 *   PDE is forbidden by the hardware.
-+	 *
-+	 *   2) We still need to support 4K PTEs for I915_MEMORY_CLASS_SYSTEM
-+	 *   objects.
-+	 *
-+	 * To keep things simple for userland, we mandate that any GTT mappings
-+	 * must be aligned to and rounded up to 2MB. As this only wastes virtual
-+	 * address space and avoids userland having to copy any needlessly
-+	 * complicated PDE sharing scheme (coloring) and only affects GD2, this
-+	 * id deemed to be a good compromise.
- 	 */
- 	__u64 size;
- 	/**
--- 
-2.25.1
+David
 
