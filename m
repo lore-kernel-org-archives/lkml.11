@@ -2,272 +2,125 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C273C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 19:09:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FD33C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 19:12:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348631AbiARTJo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 14:09:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37744 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348647AbiARTJl (ORCPT
+        id S244811AbiARTMk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 14:12:40 -0500
+Received: from out03.mta.xmission.com ([166.70.13.233]:34890 "EHLO
+        out03.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244548AbiARTMi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 14:09:41 -0500
-Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648B2C06161C
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 11:09:40 -0800 (PST)
-Received: by mail-qv1-xf49.google.com with SMTP id g2-20020a0562141cc200b004123b0abe18so269069qvd.2
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 11:09:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=lD6lqWX8EnRHxX0zLj6k1wGPtoB3tiWy/CWZlAPTJDU=;
-        b=an/AD+StigzlDSBcUsrKyiMtniDABtx3FjPV3LX+S/5cfZuxEjADmiINc5hsUJqS1j
-         vFTjb4Ul52P09yJ6XxYKzttKNQ/Ib5uuHg4qFDgBDYNo86P9mOJoDPOczuLV4qWlS/cN
-         8AwBpDQpXYBuR9DHbP0IUyr71FTya6jMiTjSlMTpVq0YP8uyPpVphvD53fCM4EJNPWvr
-         applchaagucZGm05aYWFSks7whPkdUYXEkxL9gvpAPI1Iz4Jc52x6C3LMNniWqH/nOih
-         PE9dXI5P/Lgx5sqNYkPQbUOobP11U+lBaR4ev71T4cEN0g2Cj5VyyBe21F2b/nbEO4CM
-         Ombw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=lD6lqWX8EnRHxX0zLj6k1wGPtoB3tiWy/CWZlAPTJDU=;
-        b=lxSav32munmvOtG8AOtWVk/0NTpOX9+HN7YMBi7480om38GvBuBhUZJFqXXBrgv06b
-         uDCOqzDN9sb3+q7unQDTRGks/AXw/ZH5BVrfi2dE1JNoQpi7j7VFf3fWZhMm/NlBUDJ6
-         AwpGIFmNKROc8gdkJZhW6q8cMH16m37NBOJNETZDITw+p2jBPd3BQoyqgA2zfigaixmv
-         W5gtucEhAnjKfmuGlwCN8xzG9SP3UC5z8Oh5UCY65tBxbnWHGEXXR+tnrvyFJ/hWlDJw
-         vw08CK9vmRDh6I7QE5zK7bqCXbNLI6eoC3f1SDK3rz8/89wQ1HCkmiRslBSzxF9+8MYn
-         vwSw==
-X-Gm-Message-State: AOAM5323F9NQfqpIGSG3SdTelQdHqzrnHjXqnpEnSiRylG3O+mefR4jT
-        bscnVS/hBMnsPkyl5kGxAC63AiuizjS+bQ==
-X-Google-Smtp-Source: ABdhPJyIvRFzYjNHUfdXdKwTrT/HLKTC2twyg8uViC+rjfEei3/hOjHQj+ZJiX9u9n5Ps/sLbCQj8EpQA+WuJQ==
-X-Received: from dlatypov.svl.corp.google.com ([2620:15c:2cd:202:7fc9:5977:ab73:1d36])
- (user=dlatypov job=sendgmr) by 2002:ac8:5e4e:: with SMTP id
- i14mr21505830qtx.221.1642532979560; Tue, 18 Jan 2022 11:09:39 -0800 (PST)
-Date:   Tue, 18 Jan 2022 11:09:22 -0800
-In-Reply-To: <20220118190922.1557074-1-dlatypov@google.com>
-Message-Id: <20220118190922.1557074-5-dlatypov@google.com>
-Mime-Version: 1.0
-References: <20220118190922.1557074-1-dlatypov@google.com>
-X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
-Subject: [PATCH 5/5] kunit: tool: simplify code since build_dir can't be None
-From:   Daniel Latypov <dlatypov@google.com>
-To:     brendanhiggins@google.com, davidgow@google.com
-Cc:     linux-kernel@vger.kernel.org, kunit-dev@googlegroups.com,
-        linux-kselftest@vger.kernel.org, skhan@linuxfoundation.org,
-        Daniel Latypov <dlatypov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Tue, 18 Jan 2022 14:12:38 -0500
+Received: from in01.mta.xmission.com ([166.70.13.51]:46696)
+        by out03.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1n9tuF-007YVI-6b; Tue, 18 Jan 2022 12:12:35 -0700
+Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:33802 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in01.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1n9tuE-007hWo-1S; Tue, 18 Jan 2022 12:12:34 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Mike Christie <michael.christie@oracle.com>
+Cc:     geert@linux-m68k.org, vverma@digitalocean.com, hdanton@sina.com,
+        hch@infradead.org, stefanha@redhat.com, jasowang@redhat.com,
+        mst@redhat.com, sgarzare@redhat.com,
+        virtualization@lists.linux-foundation.org,
+        christian.brauner@ubuntu.com, axboe@kernel.dk,
+        linux-kernel@vger.kernel.org
+References: <20211129194707.5863-1-michael.christie@oracle.com>
+        <87tuf79gni.fsf@email.froward.int.ebiederm.org>
+        <a171238e-d731-1c22-af72-0f7faf7f4bea@oracle.com>
+        <87tuf11oe6.fsf@email.froward.int.ebiederm.org>
+        <a3bd6fe7-1775-6fdd-3a02-e779c4d4e498@oracle.com>
+        <87pmpoxzuf.fsf@email.froward.int.ebiederm.org>
+        <783145b7-243b-b85e-e274-44ef6c0696b9@oracle.com>
+        <874k62b76d.fsf@email.froward.int.ebiederm.org>
+        <68ba89ae-108e-c14a-02a0-db72b169c9b1@oracle.com>
+Date:   Tue, 18 Jan 2022 13:12:26 -0600
+In-Reply-To: <68ba89ae-108e-c14a-02a0-db72b169c9b1@oracle.com> (Mike
+        Christie's message of "Tue, 18 Jan 2022 12:51:27 -0600")
+Message-ID: <87a6fs3lk5.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+MIME-Version: 1.0
+Content-Type: text/plain
+X-XM-SPF: eid=1n9tuE-007hWo-1S;;;mid=<87a6fs3lk5.fsf@email.froward.int.ebiederm.org>;;;hst=in01.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX1/xrXBIFZmCO/AVkFA8G1d01MrUM6jLen4=
+X-SA-Exim-Connect-IP: 68.110.24.146
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH V6 01/10] Use copy_process in vhost layer
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in01.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
---build_dir is set to a default of '.kunit' since commit ddbd60c779b4
-("kunit: use --build_dir=.kunit as default"), but even before then it
-was explicitly set to ''.
+Mike Christie <michael.christie@oracle.com> writes:
 
-So outside of one unit test, there was no way for the build_dir to be
-ever be None, and we can simplify code by fixing the unit test and
-enforcing that via updated type annotations.
+> On 1/17/22 11:31 AM, Eric W. Biederman wrote:
+>> Mike Christie <michael.christie@oracle.com> writes:
+>> 
+>>> On 12/22/21 12:24 PM, Eric W. Biederman wrote:
+>>>> All I am certain of is that you need to set
+>>>> "args->exit_signal = -1;".  This prevents having to play games with
+>>>> do_notify_parent.
+>>>
+>>> Hi Eric,
+>>>
+>>> I have all your review comments handled except this one. It's looking like it's
+>>> more difficult than just setting the exit_signal=-1, so I wanted to check that
+>>> I understood you.
+>> 
+>> [snip problems with exit_signal = -1]
+>> 
+>>>
+>>> What do you think?
+>> 
+>> I was wrong.  I appear to have confused the thread and the non-thread
+>> cases.
+>> 
+>> Perhaps I meant "args->exit_signal = 0".  That looks like
+>> do_notify_parent won't send it, and thread_group_leader continues to do
+>> the right thing.
+>
+> That doesn't work too. exit_notify will call do_notify_parent but 
+> our parent, qemu, does not ignore SIGCHILD so we will not drop
+> down in into this chunk:
+>
+>         psig = tsk->parent->sighand;
+>         spin_lock_irqsave(&psig->siglock, flags);
+>         if (!tsk->ptrace && sig == SIGCHLD &&
+>             (psig->action[SIGCHLD-1].sa.sa_handler == SIG_IGN ||
+>              (psig->action[SIGCHLD-1].sa.sa_flags & SA_NOCLDWAIT))) {
+>
+> do_notify_parent will return false and so autoreap in exit_notify will
+> be false.
 
-E.g. this lets us drop `get_file_path()` since it's now exactly
-equivalent to os.path.join().
+Bah good point.  We won't send the signal but you won't autoreap either.
 
-Note: there's some `if build_dir` checks that also fail if build_dir is
-explicitly set to '' that just guard against passing "O=" to make.
-But running `make O=` works just fine, so drop these checks.
+I think we could legitimately change this bit:
 
-Signed-off-by: Daniel Latypov <dlatypov@google.com>
----
- tools/testing/kunit/kunit_json.py      |  8 ++--
- tools/testing/kunit/kunit_kernel.py    | 51 ++++++++++----------------
- tools/testing/kunit/kunit_tool_test.py |  2 +-
- 3 files changed, 24 insertions(+), 37 deletions(-)
+	/*
+	 * Send with __send_signal as si_pid and si_uid are in the
+	 * parent's namespaces.
+	 */
+	if (valid_signal(sig) && sig)
+		__send_signal(sig, &info, tsk->parent, PIDTYPE_TGID, false);
 
-diff --git a/tools/testing/kunit/kunit_json.py b/tools/testing/kunit/kunit_json.py
-index 61091878f51e..24d103049bca 100644
---- a/tools/testing/kunit/kunit_json.py
-+++ b/tools/testing/kunit/kunit_json.py
-@@ -12,12 +12,11 @@ import os
- import kunit_parser
- 
- from kunit_parser import Test, TestStatus
--from typing import Any, Dict, Optional
-+from typing import Any, Dict
- 
- JsonObj = Dict[str, Any]
- 
--def _get_group_json(test: Test, def_config: str,
--		build_dir: Optional[str]) -> JsonObj:
-+def _get_group_json(test: Test, def_config: str, build_dir: str) -> JsonObj:
- 	sub_groups = []  # List[JsonObj]
- 	test_cases = []  # List[JsonObj]
- 
-@@ -50,8 +49,7 @@ def _get_group_json(test: Test, def_config: str,
- 	}
- 	return test_group
- 
--def get_json_result(test: Test, def_config: str,
--		build_dir: Optional[str]) -> str:
-+def get_json_result(test: Test, def_config: str, build_dir: str) -> str:
- 	test_group = _get_group_json(test, def_config, build_dir)
- 	test_group["name"] = "KUnit Test Group"
- 	return json.dumps(test_group, indent=4)
-diff --git a/tools/testing/kunit/kunit_kernel.py b/tools/testing/kunit/kunit_kernel.py
-index 44bbe54f25f1..fe159e7ff697 100644
---- a/tools/testing/kunit/kunit_kernel.py
-+++ b/tools/testing/kunit/kunit_kernel.py
-@@ -28,11 +28,6 @@ OUTFILE_PATH = 'test.log'
- ABS_TOOL_PATH = os.path.abspath(os.path.dirname(__file__))
- QEMU_CONFIGS_DIR = os.path.join(ABS_TOOL_PATH, 'qemu_configs')
- 
--def get_file_path(build_dir, default):
--	if build_dir:
--		default = os.path.join(build_dir, default)
--	return default
--
- class ConfigError(Exception):
- 	"""Represents an error trying to configure the Linux kernel."""
- 
-@@ -59,17 +54,15 @@ class LinuxSourceTreeOperations(object):
- 	def make_arch_qemuconfig(self, kconfig: kunit_config.Kconfig) -> None:
- 		pass
- 
--	def make_allyesconfig(self, build_dir, make_options) -> None:
-+	def make_allyesconfig(self, build_dir: str, make_options) -> None:
- 		raise ConfigError('Only the "um" arch is supported for alltests')
- 
--	def make_olddefconfig(self, build_dir, make_options) -> None:
--		command = ['make', 'ARCH=' + self._linux_arch, 'olddefconfig']
-+	def make_olddefconfig(self, build_dir: str, make_options) -> None:
-+		command = ['make', 'ARCH=' + self._linux_arch, 'O=' + build_dir, 'olddefconfig']
- 		if self._cross_compile:
- 			command += ['CROSS_COMPILE=' + self._cross_compile]
- 		if make_options:
- 			command.extend(make_options)
--		if build_dir:
--			command += ['O=' + build_dir]
- 		print('Populating config with:\n$', ' '.join(command))
- 		try:
- 			subprocess.check_output(command, stderr=subprocess.STDOUT)
-@@ -78,14 +71,12 @@ class LinuxSourceTreeOperations(object):
- 		except subprocess.CalledProcessError as e:
- 			raise ConfigError(e.output.decode())
- 
--	def make(self, jobs, build_dir, make_options) -> None:
--		command = ['make', 'ARCH=' + self._linux_arch, '--jobs=' + str(jobs)]
-+	def make(self, jobs, build_dir: str, make_options) -> None:
-+		command = ['make', 'ARCH=' + self._linux_arch, 'O=' + build_dir, '--jobs=' + str(jobs)]
- 		if make_options:
- 			command.extend(make_options)
- 		if self._cross_compile:
- 			command += ['CROSS_COMPILE=' + self._cross_compile]
--		if build_dir:
--			command += ['O=' + build_dir]
- 		print('Building with:\n$', ' '.join(command))
- 		try:
- 			proc = subprocess.Popen(command,
-@@ -143,14 +134,12 @@ class LinuxSourceTreeOperationsUml(LinuxSourceTreeOperations):
- 	def __init__(self, cross_compile=None):
- 		super().__init__(linux_arch='um', cross_compile=cross_compile)
- 
--	def make_allyesconfig(self, build_dir, make_options) -> None:
-+	def make_allyesconfig(self, build_dir: str, make_options) -> None:
- 		kunit_parser.print_with_timestamp(
- 			'Enabling all CONFIGs for UML...')
--		command = ['make', 'ARCH=um', 'allyesconfig']
-+		command = ['make', 'ARCH=um', 'O=' + build_dir, 'allyesconfig']
- 		if make_options:
- 			command.extend(make_options)
--		if build_dir:
--			command += ['O=' + build_dir]
- 		process = subprocess.Popen(
- 			command,
- 			stdout=subprocess.DEVNULL,
-@@ -167,24 +156,24 @@ class LinuxSourceTreeOperationsUml(LinuxSourceTreeOperations):
- 
- 	def start(self, params: List[str], build_dir: str) -> subprocess.Popen:
- 		"""Runs the Linux UML binary. Must be named 'linux'."""
--		linux_bin = get_file_path(build_dir, 'linux')
-+		linux_bin = os.path.join(build_dir, 'linux')
- 		return subprocess.Popen([linux_bin] + params,
- 					   stdin=subprocess.PIPE,
- 					   stdout=subprocess.PIPE,
- 					   stderr=subprocess.STDOUT,
- 					   text=True, errors='backslashreplace')
- 
--def get_kconfig_path(build_dir) -> str:
--	return get_file_path(build_dir, KCONFIG_PATH)
-+def get_kconfig_path(build_dir: str) -> str:
-+	return os.path.join(build_dir, KCONFIG_PATH)
- 
--def get_kunitconfig_path(build_dir) -> str:
--	return get_file_path(build_dir, KUNITCONFIG_PATH)
-+def get_kunitconfig_path(build_dir: str) -> str:
-+	return os.path.join(build_dir, KUNITCONFIG_PATH)
- 
--def get_old_kunitconfig_path(build_dir) -> str:
--	return get_file_path(build_dir, OLD_KUNITCONFIG_PATH)
-+def get_old_kunitconfig_path(build_dir: str) -> str:
-+	return os.path.join(build_dir, OLD_KUNITCONFIG_PATH)
- 
--def get_outfile_path(build_dir) -> str:
--	return get_file_path(build_dir, OUTFILE_PATH)
-+def get_outfile_path(build_dir: str) -> str:
-+	return os.path.join(build_dir, OUTFILE_PATH)
- 
- def get_source_tree_ops(arch: str, cross_compile: Optional[str]) -> LinuxSourceTreeOperations:
- 	config_path = os.path.join(QEMU_CONFIGS_DIR, arch + '.py')
-@@ -268,7 +257,7 @@ class LinuxSourceTree(object):
- 			return False
- 		return True
- 
--	def validate_config(self, build_dir) -> bool:
-+	def validate_config(self, build_dir: str) -> bool:
- 		kconfig_path = get_kconfig_path(build_dir)
- 		validated_kconfig = kunit_config.parse_file(kconfig_path)
- 		if self._kconfig.is_subset_of(validated_kconfig):
-@@ -283,7 +272,7 @@ class LinuxSourceTree(object):
- 		logging.error(message)
- 		return False
- 
--	def build_config(self, build_dir, make_options) -> bool:
-+	def build_config(self, build_dir: str, make_options) -> bool:
- 		kconfig_path = get_kconfig_path(build_dir)
- 		if build_dir and not os.path.exists(build_dir):
- 			os.mkdir(build_dir)
-@@ -311,7 +300,7 @@ class LinuxSourceTree(object):
- 		old_kconfig = kunit_config.parse_file(old_path)
- 		return old_kconfig.entries() != self._kconfig.entries()
- 
--	def build_reconfig(self, build_dir, make_options) -> bool:
-+	def build_reconfig(self, build_dir: str, make_options) -> bool:
- 		"""Creates a new .config if it is not a subset of the .kunitconfig."""
- 		kconfig_path = get_kconfig_path(build_dir)
- 		if not os.path.exists(kconfig_path):
-@@ -326,7 +315,7 @@ class LinuxSourceTree(object):
- 		os.remove(kconfig_path)
- 		return self.build_config(build_dir, make_options)
- 
--	def build_kernel(self, alltests, jobs, build_dir, make_options) -> bool:
-+	def build_kernel(self, alltests, jobs, build_dir: str, make_options) -> bool:
- 		try:
- 			if alltests:
- 				self._ops.make_allyesconfig(build_dir, make_options)
-diff --git a/tools/testing/kunit/kunit_tool_test.py b/tools/testing/kunit/kunit_tool_test.py
-index f7cbc248a405..a3c036a620b2 100755
---- a/tools/testing/kunit/kunit_tool_test.py
-+++ b/tools/testing/kunit/kunit_tool_test.py
-@@ -469,7 +469,7 @@ class KUnitJsonTest(unittest.TestCase):
- 			json_obj = kunit_json.get_json_result(
- 				test=test_result,
- 				def_config='kunit_defconfig',
--				build_dir=None)
-+				build_dir='.kunit')
- 		return json.loads(json_obj)
- 
- 	def test_failed_test_json(self):
--- 
-2.34.1.703.g22d0c6ccf7-goog
+To add:
+	else
+        	/* We don't notify the parent so just autoreap */
+        	autoreap = true;
 
+
+I expect we could make that change all on it's own, it sort of breaks my
+head that requesting not signaling a parent does not also trigger
+autoreap behavior.
+
+We certainly need some mechanism to trigger autoreap behavior or the
+technical details of being an extra thread of the process need to be
+solved.
+
+Eric
