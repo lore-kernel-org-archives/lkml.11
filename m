@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A06C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:53:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D67D5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:53:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349670AbiARCt7 (ORCPT
+        id S1349829AbiARCu1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:49:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58722 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345482AbiARCbf (ORCPT
+        Mon, 17 Jan 2022 21:50:27 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48790 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346766AbiARCjx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:31:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE77FC061763;
-        Mon, 17 Jan 2022 18:29:25 -0800 (PST)
+        Mon, 17 Jan 2022 21:39:53 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DC556117D;
-        Tue, 18 Jan 2022 02:29:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1096DC36AEB;
-        Tue, 18 Jan 2022 02:29:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BC6D6B81243;
+        Tue, 18 Jan 2022 02:39:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2CB3AC36AE3;
+        Tue, 18 Jan 2022 02:39:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472964;
-        bh=/nQm1xNgpdAOTxyswTWsS/Qa079KxmX+Nz2TBRcCI6s=;
+        s=k20201202; t=1642473589;
+        bh=Py0Utb8K/TKDOXRe9hLUxo0KxcgvtJEQobvTI9y/7YQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=clDhxAnGr4ayCHX+ZNSThf6MkW9Rbad4DQEfPCQSlrvbY5f8Mjj986Yp9rKUXaXKK
-         0BwPmA//OhJZA5LCTdcqRtQXAlwOF5kNKORcp5tC2+crY6VfXk+YtbEINVkVknAhAX
-         tULUqc7Ad0M5pnDD3+rqjPPQpQBhJy0XXLVaf9/M0XDSmLOLPQahnjFno3/z2f78un
-         BgOLr0jaTZ0Y41NlCaaFF6Nzp4YxLTlI5QQ7WdXEvRvZn3tV2p8mG2Skl7/NHqWh+E
-         +tyvLlpqDOuRAVj7nLHjOiyJG3x9pd+vNdfAMQ80wf8V+jtcFcK46WoADkl9AsCofu
-         x4pukWzU5Ze/w==
+        b=ti2jo+omzDNzRBCnSR2srz9zmjLce1COAPEhwq7p+WSJ5NRBpzAbf5jXsTS9pHdFd
+         eCT+Urfp3J92PJkVwsWAO7J3CTPMX5gi4fFJl23EJ6gQxAlhe1jwXTGmqygvlprak/
+         ArCPhfdVoB7fLtFwg7jCK6aznh0ZyIwE45NfjWYdtSlzxVBXi02YOsyYTOUG1ciOeN
+         8EDtX/XYOJ6SbDEkyfrjLEl7eE+BKpNjVCxl0eXn/J9Hm6Oq1ow0kT+TioAW4ZGWZb
+         loNucTkySGJyKkvTFz/Y8AcfuZIKTPAXZX0Bsiqpj3L9Exwde/lxhUAixC5TZzVhn9
+         ERR/WiGLbYUEA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Lenny Szubowicz <lszubowi@redhat.com>,
-        Bob Moore <robert.moore@intel.com>,
-        Sasha Levin <sashal@kernel.org>, linux-acpi@vger.kernel.org,
-        devel@acpica.org
-Subject: [PATCH AUTOSEL 5.16 181/217] ACPICA: Executer: Fix the REFCLASS_REFOF case in acpi_ex_opcode_1A_0T_1R()
-Date:   Mon, 17 Jan 2022 21:19:04 -0500
-Message-Id: <20220118021940.1942199-181-sashal@kernel.org>
+Cc:     Maor Dickman <maord@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        kuba@kernel.org, parav@nvidia.com, dlinkin@nvidia.com,
+        mbloch@nvidia.com, huyn@nvidia.com, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 181/188] net/mlx5e: Unblock setting vid 0 for VF in case PF isn't eswitch manager
+Date:   Mon, 17 Jan 2022 21:31:45 -0500
+Message-Id: <20220118023152.1948105-181-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
-References: <20220118021940.1942199-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,54 +53,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+From: Maor Dickman <maord@nvidia.com>
 
-[ Upstream commit 24ea5f90ec9548044a6209685c5010edd66ffe8f ]
+[ Upstream commit 7846665d3504812acaebf920d1141851379a7f37 ]
 
-ACPICA commit d984f12041392fa4156b52e2f7e5c5e7bc38ad9e
+When using libvirt to passthrough VF to VM it will always set the VF vlan
+to 0 even if user didn’t request it, this will cause libvirt to fail to
+boot in case the PF isn't eswitch owner.
 
-If Operand[0] is a reference of the ACPI_REFCLASS_REFOF class,
-acpi_ex_opcode_1A_0T_1R () calls acpi_ns_get_attached_object () to
-obtain return_desc which may require additional resolution with
-the help of acpi_ex_read_data_from_field (). If the latter fails,
-the reference counter of the original return_desc is decremented
-which is incorrect, because acpi_ns_get_attached_object () does not
-increment the reference counter of the object returned by it.
+Example of such case is the DPU host PF which isn't eswitch manager, so
+any attempt to passthrough VF of it using libvirt will fail.
 
-This issue may lead to premature deletion of the attached object
-while it is still attached and a use-after-free and crash in the
-host OS.  For example, this may happen when on evaluation of ref_of()
-a local region field where there is no registered handler for the
-given Operation Region.
+Fix it by not returning error in case set VF vlan is called with vid 0.
 
-Fix it by making acpi_ex_opcode_1A_0T_1R () return Status right away
-after a acpi_ex_read_data_from_field () failure.
-
-Link: https://github.com/acpica/acpica/commit/d984f120
-Link: https://github.com/acpica/acpica/pull/685
-Reported-by: Lenny Szubowicz <lszubowi@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Bob Moore <robert.moore@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Maor Dickman <maord@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/acpica/exoparg1.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/acpica/exoparg1.c b/drivers/acpi/acpica/exoparg1.c
-index b639e930d6429..44b7c350ed5ca 100644
---- a/drivers/acpi/acpica/exoparg1.c
-+++ b/drivers/acpi/acpica/exoparg1.c
-@@ -1007,7 +1007,8 @@ acpi_status acpi_ex_opcode_1A_0T_1R(struct acpi_walk_state *walk_state)
- 						    (walk_state, return_desc,
- 						     &temp_desc);
- 						if (ACPI_FAILURE(status)) {
--							goto cleanup;
-+							return_ACPI_STATUS
-+							    (status);
- 						}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c
+index df277a6cddc0b..0c4c743ca31e1 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/legacy.c
+@@ -431,7 +431,7 @@ int mlx5_eswitch_set_vport_vlan(struct mlx5_eswitch *esw,
+ 	int err = 0;
  
- 						return_desc = temp_desc;
+ 	if (!mlx5_esw_allowed(esw))
+-		return -EPERM;
++		return vlan ? -EPERM : 0;
+ 
+ 	if (vlan || qos)
+ 		set_flags = SET_VLAN_STRIP | SET_VLAN_INSERT;
 -- 
 2.34.1
 
