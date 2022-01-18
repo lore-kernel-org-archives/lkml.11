@@ -2,45 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6F5FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:09:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17C61C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:09:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243422AbiARQJ0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:09:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51152 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346507AbiARQIe (ORCPT
+        id S1347061AbiARQJ3 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 11:09:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39588 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346383AbiARQI3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:08:34 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC4EEC061774;
-        Tue, 18 Jan 2022 08:08:28 -0800 (PST)
+        Tue, 18 Jan 2022 11:08:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 258E0CE1A3C;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20CAF612BE;
+        Tue, 18 Jan 2022 16:08:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE637C00446;
         Tue, 18 Jan 2022 16:08:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC3F3C36AEB;
-        Tue, 18 Jan 2022 16:08:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522105;
-        bh=gvUxZARKEA7blLGcXUCH0UzgL0xjrlfD3qlywtFqa+0=;
+        s=korg; t=1642522108;
+        bh=7XGP7dG6+EC/xkmA/isIOueTBCAE1QOZz3FGPl9MwmM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g5uqvC1wowmUlK9JL/XBMYwn3RVk8UiybRdg/PFYacAi9xEri1DKdX5Q7qCWRdW0a
-         XuvW3S+/4+HgTQQHGqHMO53pIn8q/2iMUMLyRGMNFlLt91iXCF7jehCaZQAoEc+qyP
-         Z6b4MqtKNr9BHL9j4657oLkcC8Zi0sCSCrJXrr+U=
+        b=LmY5XbGPAVDVjXjQ0CuqNK5tI8hAXTbFfeY5vlb8CTLgwmFgc/vlOKK5ApOixQoud
+         F4rchZHIRI+jxGVC4nvExLkI9xXbKDq1pV61rLTXLexbXow6aL1fvPymiq5Y4EKZpz
+         n8HMu3wqgWxwprZ1IdzgzRoQTVKEwEaJqfPMwjTg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Eric Van Hensbergen <ericvh@gmail.com>,
-        Latchesar Ionkov <lucho@ionkov.net>,
-        Dominique Martinet <asmadeus@codewreck.org>, stable@kernel.org,
-        v9fs-developer@lists.sourceforge.net,
-        syzbot+dfac92a50024b54acaa4@syzkaller.appspotmail.com,
-        Christian Brauner <christian.brauner@ubuntu.com>
-Subject: [PATCH 5.10 09/23] 9p: only copy valid iattrs in 9P2000.L setattr implementation
-Date:   Tue, 18 Jan 2022 17:05:49 +0100
-Message-Id: <20220118160451.552456292@linuxfoundation.org>
+        stable@vger.kernel.org, Kris Karas <bugs-a21@moonlit-rail.com>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Maxime Ripard <maxime@cerno.tech>
+Subject: [PATCH 5.10 10/23] video: vga16fb: Only probe for EGA and VGA 16 color graphic cards
+Date:   Tue, 18 Jan 2022 17:05:50 +0100
+Message-Id: <20220118160451.593058388@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118160451.233828401@linuxfoundation.org>
 References: <20220118160451.233828401@linuxfoundation.org>
@@ -52,79 +47,82 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christian Brauner <christian.brauner@ubuntu.com>
+From: Javier Martinez Canillas <javierm@redhat.com>
 
-commit 3cb6ee991496b67ee284c6895a0ba007e2d7bac3 upstream.
+commit 0499f419b76f94ede08304aad5851144813ac55c upstream.
 
-The 9P2000.L setattr method v9fs_vfs_setattr_dotl() copies struct iattr
-values without checking whether they are valid causing unitialized
-values to be copied. The 9P2000 setattr method v9fs_vfs_setattr() method
-gets this right. Check whether struct iattr fields are valid first
-before copying in v9fs_vfs_setattr_dotl() too and make sure that all
-other fields are set to 0 apart from {g,u}id which should be set to
-INVALID_{G,U}ID. This ensure that they can be safely sent over the wire
-or printed for debugging later on.
+The vga16fb framebuffer driver only supports Enhanced Graphics Adapter
+(EGA) and Video Graphics Array (VGA) 16 color graphic cards.
 
-Link: https://lkml.kernel.org/r/20211129114434.3637938-1-brauner@kernel.org
-Link: https://lkml.kernel.org/r/000000000000a0d53f05d1c72a4c%40google.com
-Cc: Eric Van Hensbergen <ericvh@gmail.com>
-Cc: Latchesar Ionkov <lucho@ionkov.net>
-Cc: Dominique Martinet <asmadeus@codewreck.org>
-Cc: stable@kernel.org
-Cc: v9fs-developer@lists.sourceforge.net
-Reported-by: syzbot+dfac92a50024b54acaa4@syzkaller.appspotmail.com
-Signed-off-by: Christian Brauner <christian.brauner@ubuntu.com>
-[Dominique: do not set a/mtime with just ATTR_A/MTIME as discussed]
-Signed-off-by: Dominique Martinet <asmadeus@codewreck.org>
+But it doesn't check if the adapter is one of those or if a VGA16 mode
+is used. This means that the driver will be probed even if a VESA BIOS
+Extensions (VBE) or Graphics Output Protocol (GOP) interface is used.
+
+This issue has been present for a long time but it was only exposed by
+commit d391c5827107 ("drivers/firmware: move x86 Generic System
+Framebuffers support") since the platform device registration to match
+the {vesa,efi}fb drivers is done later as a consequence of that change.
+
+All non-x86 architectures though treat orig_video_isVGA as a boolean so
+only do the supported video mode check for x86 and not for other arches.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=215001
+Fixes: d391c5827107 ("drivers/firmware: move x86 Generic System Framebuffers support")
+Reported-by: Kris Karas <bugs-a21@moonlit-rail.com>
+Cc: <stable@vger.kernel.org> # 5.15.x
+Signed-off-by: Javier Martinez Canillas <javierm@redhat.com>
+Tested-by: Kris Karas <bugs-a21@moonlit-rail.com>
+Acked-by: Maxime Ripard <maxime@cerno.tech>
+Link: https://patchwork.freedesktop.org/patch/msgid/20220110095625.278836-3-javierm@redhat.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/9p/vfs_inode_dotl.c |   29 ++++++++++++++++++++---------
- 1 file changed, 20 insertions(+), 9 deletions(-)
+ drivers/video/fbdev/vga16fb.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
---- a/fs/9p/vfs_inode_dotl.c
-+++ b/fs/9p/vfs_inode_dotl.c
-@@ -541,7 +541,10 @@ int v9fs_vfs_setattr_dotl(struct dentry
+diff --git a/drivers/video/fbdev/vga16fb.c b/drivers/video/fbdev/vga16fb.c
+index e2757ff1c23d..96e312a3eac7 100644
+--- a/drivers/video/fbdev/vga16fb.c
++++ b/drivers/video/fbdev/vga16fb.c
+@@ -184,6 +184,25 @@ static inline void setindex(int index)
+ 	vga_io_w(VGA_GFX_I, index);
+ }
+ 
++/* Check if the video mode is supported by the driver */
++static inline int check_mode_supported(void)
++{
++	/* non-x86 architectures treat orig_video_isVGA as a boolean flag */
++#if defined(CONFIG_X86)
++	/* only EGA and VGA in 16 color graphic mode are supported */
++	if (screen_info.orig_video_isVGA != VIDEO_TYPE_EGAC &&
++	    screen_info.orig_video_isVGA != VIDEO_TYPE_VGAC)
++		return -ENODEV;
++
++	if (screen_info.orig_video_mode != 0x0D &&	/* 320x200/4 (EGA) */
++	    screen_info.orig_video_mode != 0x0E &&	/* 640x200/4 (EGA) */
++	    screen_info.orig_video_mode != 0x10 &&	/* 640x350/4 (EGA) */
++	    screen_info.orig_video_mode != 0x12)	/* 640x480/4 (VGA) */
++		return -ENODEV;
++#endif
++	return 0;
++}
++
+ static void vga16fb_pan_var(struct fb_info *info, 
+ 			    struct fb_var_screeninfo *var)
  {
- 	int retval;
- 	struct p9_fid *fid = NULL;
--	struct p9_iattr_dotl p9attr;
-+	struct p9_iattr_dotl p9attr = {
-+		.uid = INVALID_UID,
-+		.gid = INVALID_GID,
-+	};
- 	struct inode *inode = d_inode(dentry);
+@@ -1422,6 +1441,11 @@ static int __init vga16fb_init(void)
  
- 	p9_debug(P9_DEBUG_VFS, "\n");
-@@ -551,14 +554,22 @@ int v9fs_vfs_setattr_dotl(struct dentry
- 		return retval;
+ 	vga16fb_setup(option);
+ #endif
++
++	ret = check_mode_supported();
++	if (ret)
++		return ret;
++
+ 	ret = platform_driver_register(&vga16fb_driver);
  
- 	p9attr.valid = v9fs_mapped_iattr_valid(iattr->ia_valid);
--	p9attr.mode = iattr->ia_mode;
--	p9attr.uid = iattr->ia_uid;
--	p9attr.gid = iattr->ia_gid;
--	p9attr.size = iattr->ia_size;
--	p9attr.atime_sec = iattr->ia_atime.tv_sec;
--	p9attr.atime_nsec = iattr->ia_atime.tv_nsec;
--	p9attr.mtime_sec = iattr->ia_mtime.tv_sec;
--	p9attr.mtime_nsec = iattr->ia_mtime.tv_nsec;
-+	if (iattr->ia_valid & ATTR_MODE)
-+		p9attr.mode = iattr->ia_mode;
-+	if (iattr->ia_valid & ATTR_UID)
-+		p9attr.uid = iattr->ia_uid;
-+	if (iattr->ia_valid & ATTR_GID)
-+		p9attr.gid = iattr->ia_gid;
-+	if (iattr->ia_valid & ATTR_SIZE)
-+		p9attr.size = iattr->ia_size;
-+	if (iattr->ia_valid & ATTR_ATIME_SET) {
-+		p9attr.atime_sec = iattr->ia_atime.tv_sec;
-+		p9attr.atime_nsec = iattr->ia_atime.tv_nsec;
-+	}
-+	if (iattr->ia_valid & ATTR_MTIME_SET) {
-+		p9attr.mtime_sec = iattr->ia_mtime.tv_sec;
-+		p9attr.mtime_nsec = iattr->ia_mtime.tv_nsec;
-+	}
- 
- 	if (iattr->ia_valid & ATTR_FILE) {
- 		fid = iattr->ia_file->private_data;
+ 	if (!ret) {
+-- 
+2.34.1
+
 
 
