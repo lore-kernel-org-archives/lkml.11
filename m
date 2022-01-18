@@ -2,122 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0948C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:43:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D106C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:45:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232628AbiARJnk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 04:43:40 -0500
-Received: from my.chaos-reins.com ([104.248.178.247]:48486 "EHLO
-        my.chaos-reins.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229620AbiARJni (ORCPT
+        id S233186AbiARJpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 04:45:13 -0500
+Received: from mailgw01.mediatek.com ([60.244.123.138]:35964 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S229620AbiARJpM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 04:43:38 -0500
-X-Greylist: delayed 455 seconds by postgrey-1.27 at vger.kernel.org; Tue, 18 Jan 2022 04:43:38 EST
-Received: (Haraka outbound); Tue, 18 Jan 2022 09:36:01 +0000
-Authentication-Results: my.chaos-reins.com;
-        auth=pass (login)
-Received: from m.chaos-reins.com (21d594ba-beef-4400-bc88-b496d6dacd5a.cloudron [172.18.16.1])
-        by my.chaos-reins.com (Haraka/2.8.28) with ESMTPA id 8630A604-7CDC-4F56-BC02-9865974B8D06.1
-        envelope-from <d@chaos-reins.com> (authenticated bits=0);
-        Tue, 18 Jan 2022 09:36:01 +0000
+        Tue, 18 Jan 2022 04:45:12 -0500
+X-UUID: 173ced852dfb4436b434d8522dc5dc95-20220118
+X-UUID: 173ced852dfb4436b434d8522dc5dc95-20220118
+Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw01.mediatek.com
+        (envelope-from <lecopzer.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 2103710147; Tue, 18 Jan 2022 17:45:09 +0800
+Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Tue, 18 Jan 2022 17:45:08 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
+ (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 18 Jan
+ 2022 17:45:07 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Tue, 18 Jan 2022 17:45:07 +0800
+From:   Lecopzer Chen <lecopzer.chen@mediatek.com>
+To:     <linux-kernel@vger.kernel.org>
+CC:     Russell King <linux@armlinux.org.uk>,
+        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
+        Alexander Potapenko <glider@google.com>,
+        "Andrey Konovalov" <andreyknvl@gmail.com>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        <rmk+kernel@armlinux.org.uk>,
+        "Geert Uytterhoeven" <geert+renesas@glider.be>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Anshuman Khandual <anshuman.khandual@arm.com>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <kasan-dev@googlegroups.com>, <yj.chiang@mediatek.com>,
+        Lecopzer Chen <lecopzer@gmail.com>
+Subject: [PATCH 0/2] arm: kasan: support CONFIG_KASAN_VMALLOC
+Date:   Tue, 18 Jan 2022 17:44:48 +0800
+Message-ID: <20220118094450.7730-1-lecopzer.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Date:   Tue, 18 Jan 2022 09:36:01 +0000
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-Mailer: RainLoop/1.16.0
-From:   "Donald Carr" <d@chaos-reins.com>
-Message-ID: <e2db335efc02c61f4a4035dd2270e256@chaos-reins.com>
-Subject: Re: [PATCH v6 0/9] Multigenerational LRU Framework
-To:     "Yu Zhao" <yuzhao@google.com>
-Cc:     "Andi Kleen" <ak@linux.intel.com>,
-        "Catalin Marinas" <catalin.marinas@arm.com>,
-        "Dave Hansen" <dave.hansen@linux.intel.com>,
-        "Hillf Danton" <hdanton@sina.com>, "Jens Axboe" <axboe@kernel.dk>,
-        "Jesse Barnes" <jsbarnes@google.com>,
-        "Johannes Weiner" <hannes@cmpxchg.org>,
-        "Jonathan Corbet" <corbet@lwn.net>,
-        "Matthew Wilcox" <willy@infradead.org>,
-        "Mel Gorman" <mgorman@suse.de>,
-        "Michael Larabel" <Michael@michaellarabel.com>,
-        "Michal Hocko" <mhocko@kernel.org>,
-        "Rik van Riel" <riel@surriel.com>,
-        "Vlastimil Babka" <vbabka@suse.cz>,
-        "Will Deacon" <will@kernel.org>,
-        "Ying Huang" <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        page-reclaim@google.com, x86@kernel.org,
-        "Andrew Morton" <akpm@linux-foundation.org>,
-        "Linus Torvalds" <torvalds@linux-foundation.org>
-In-Reply-To: <YeaGkZ50n7/mDuJX@google.com>
-References: <YeaGkZ50n7/mDuJX@google.com>
- <20220104202227.2903605-1-yuzhao@google.com> <YdSuSHa/Vjl6bPkg@google.com>
- <Yd1Css8+jsspeZHh@google.com>
-DKIM-Signature: v=1;a=rsa-sha256;bh=hOtzxRssqC3l7oqL8Wf80/oCWxDs7JXspEQpiCwzMik=;c=relaxed/simple;d=chaos-reins.com;h=from:subject:date:message-id:to:cc:mime-version;s=cloudron;b=IgaPi/pt7BRp7bjlfgUvPiJN7/YwMQCMwsmNETelA7tikFfLy570SUa2bNHmc4quqjevtpMhwUDXzURBvYqJNzY1ROqcKc2c6ZLQ04ELbm4JAkFFawva0U7U81kmDAYKFrN4lAY/5PPvwisV1HrpK4vOvwuSe45R9CPeWA44Hpw=
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-January 18, 2022 1:21 AM, "Yu Zhao" <yuzhao@google.com> wrote:
+From: Lecopzer Chen <lecopzer@gmail.com>
 
-> On Tue, Jan 11, 2022 at 01:41:22AM -0700, Yu Zhao wrote:
->=20
->>=20On Tue, Jan 04, 2022 at 01:30:00PM -0700, Yu Zhao wrote:
->> On Tue, Jan 04, 2022 at 01:22:19PM -0700, Yu Zhao wrote:
->>> TLDR
->>> =3D=3D=3D=3D
->>> The current page reclaim is too expensive in terms of CPU usage and i=
-t
->>> often makes poor choices about what to evict. This patchset offers an
->>> alternative solution that is performant, versatile and
->>> straightforward.
->>=20
->>=20<snipped>
->>=20
->>>=20Summery
->>> =3D=3D=3D=3D=3D=3D=3D
->>> The facts are:
->>> 1. The independent lab results and the real-world applications
->>> indicate substantial improvements; there are no known regressions.
->>> 2. Thrashing prevention, working set estimation and proactive reclaim
->>> work out of the box; there are no equivalent solutions.
->>> 3. There is a lot of new code; nobody has demonstrated smaller change=
-s
->>> with similar effects.
->>>=20
->>>=20Our options, accordingly, are:
->>> 1. Given the amount of evidence, the reported improvements will likel=
-y
->>> materialize for a wide range of workloads.
->>> 2. Gauging the interest from the past discussions [14][15][16], the
->>> new features will likely be put to use for both personal computers
->>> and data centers.
->>> 3. Based on Google's track record, the new code will likely be well
->>> maintained in the long term. It'd be more difficult if not
->>> impossible to achieve similar effects on top of the existing
->>> design.
->>=20
->>=20Hi Andrew, Linus,
->>=20
->>=20Can you please take a look at this patchset and let me know if it's
->> 5.17 material?
->>=20
->>=20My goal is to get it merged asap so that users can reap the benefits
->> and I can push the sequels. Please examine the data provided -- I
->> think the unprecedented coverage and the magnitude of the improvements
->> warrant a green light.
->=20
->=20My gratitude to Donald who has been helping test MGLRU since v2:
->=20
->=20Donald Carr (d@chaos-reins.com)
->=20
->=20Founder of Chaos Reins (http://chaos-reins.com), an SF based
-> consultancy company specializing in designing/creating embedded
-> Linux appliances.
+Since the framework of KASAN_VMALLOC is well-developed,
+It's easy to support for ARM that simply not to map shadow of VMALLOC
+area on kasan_init.
 
-Tested-by: Donald Carr <d@chaos-reins.com>
+This can fix ARM_MODULE_PLTS with KASAN and provide first step
+to support CONFIG_VMAP_STACK in ARM.
+    
 
-> Can you please provide your Tested-by tags? This will ensure the credit
-> for your contributions.
->=20
->=20Thanks!
+Patch base on v5.16
+
+Test on
+1. Qemu with memory 2G and vmalloc=500M for 3G/1G mapping.
+2. Qemu with memory 2G and vmalloc=500M for 3G/1G mapping + LPAE.
+3. Qemu with memory 2G and vmalloc=500M for 2G/2G mapping.
+
+
+Lecopzer Chen (2):
+  arm: kasan: support CONFIG_KASAN_VMALLOC
+  arm: kconfig: fix MODULE_PLTS for KASAN with KASAN_VMALLOC
+
+ arch/arm/Kconfig         | 2 ++
+ arch/arm/mm/kasan_init.c | 6 +++++-
+ 2 files changed, 7 insertions(+), 1 deletion(-)
+
+-- 
+2.25.1
+
