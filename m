@@ -2,118 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 677D9C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:39:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54227C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:39:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245760AbiARDjv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:39:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45024 "EHLO
+        id S1346751AbiARDjx (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 22:39:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353379AbiARDdS (ORCPT
+        with ESMTP id S1376503AbiARDce (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:33:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B9BC037009;
-        Mon, 17 Jan 2022 19:09:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Mon, 17 Jan 2022 22:32:34 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 711CDC014F27;
+        Mon, 17 Jan 2022 19:08:42 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28922B811CE;
-        Tue, 18 Jan 2022 03:09:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AE2BCC36AF4;
-        Tue, 18 Jan 2022 03:09:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642475344;
-        bh=YK2Gn4itlikwVgKPl0phpcidOiyoXHP8xusJ1dRVh8U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z64wF2ZYXGr5xVM6ndDULjsS22c5XYDup9ryxbRTj1A9EHRqcmYi5j1mjKzsuIZhC
-         l/Wf+e2L5HXK/qiRcD/2XsDfc8dYK9BpXW9f24XDvUyHLaRYBOFpnZegznkSANWBYx
-         VVInr/ehOi0PrI/qBQ4y8zeYI3ype39Y19IThF7JgdDP6t5MTXCF8qdG+eduopbMgh
-         NH5qYndWWdS0U+0nHQpsZhUASqXlwabDOQuE+PC+lGpuUv2nSm3elNrH11jRpvH/+k
-         BgfkpSMSB7IoCBKP9v3+Ky3Msj6dFcI2YjyNlYlPxZmN+ubt03vuiYyUAqLrzoHEnL
-         rMZMg589hcYPg==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Suresh Kumar <surkumar@redhat.com>,
-        Suresh Kumar <suresh2514@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, j.vosburgh@gmail.com,
-        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 14/29] net: bonding: debug: avoid printing debug logs when bond is not notifying peers
-Date:   Mon, 17 Jan 2022 22:08:07 -0500
-Message-Id: <20220118030822.1955469-14-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118030822.1955469-1-sashal@kernel.org>
-References: <20220118030822.1955469-1-sashal@kernel.org>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JdDHr1Dqhz4y7k;
+        Tue, 18 Jan 2022 14:08:40 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canb.auug.org.au;
+        s=201702; t=1642475320;
+        bh=IEzbkjnLCSmDBFUOIpbhnHqWY1VZmR7u3ufGX8iAuu8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ECE59ixmvwezSMh82RTR/PB4nRqOfcL3KIeq7hgI8U7D5I4lW9+iVHp+dKqYiuaMp
+         RNnQK8amiA6Na2s1ySWfWGDOQXle/kDYFiXKBlnnnhIA1Qa7MqrGfF8c6PF2F+rb1R
+         nAvc4rtO0qZ3z4h01EiKFSoC9R086orCCBIPYHzMxgCRqhItjtzi4ZIT5vu1ht/awM
+         yh35E8dF0BXqlDL2SWExe98SrTo5his7B/nZ93C0oJlNv42266GJgUd07lU2H7JevH
+         VLbLDjCCIk51+z+n5yGv4OaQj0E4tfhDmeN1JNOq0fo4wciScnNYBw07xLJLprdhb8
+         U3d3NWBx6IrVw==
+Date:   Tue, 18 Jan 2022 14:08:39 +1100
+From:   Stephen Rothwell <sfr@canb.auug.org.au>
+To:     Linux Next Mailing List <linux-next@vger.kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: linux-next: Tree for Jan 18
+Message-ID: <20220118140839.121087df@canb.auug.org.au>
+In-Reply-To: <20220118135924.6bae0ae0@canb.auug.org.au>
+References: <20220118135924.6bae0ae0@canb.auug.org.au>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="Sig_/xJxWf0YqhwkuvLA8YFQoE86";
+ protocol="application/pgp-signature"; micalg=pgp-sha256
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Suresh Kumar <surkumar@redhat.com>
+--Sig_/xJxWf0YqhwkuvLA8YFQoE86
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-[ Upstream commit fee32de284ac277ba434a2d59f8ce46528ff3946 ]
+Hi all,
 
-Currently "bond_should_notify_peers: slave ..." messages are printed whenever
-"bond_should_notify_peers" function is called.
+On Tue, 18 Jan 2022 13:59:24 +1100 Stephen Rothwell <sfr@canb.auug.org.au> =
+wrote:
+>
+> Changes since 20220117:
 
-+++
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Received LACPDU on port 1
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Rx Machine: Port=1, Last State=6, Curr State=6
-Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): partner sync=1
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-...
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Received LACPDU on port 2
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Rx Machine: Port=2, Last State=6, Curr State=6
-Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): partner sync=1
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
-+++
+I forgot to say that there will be no linux-next release tomorrow.
 
-This is confusing and can also clutter up debug logs.
-Print logs only when the peer notification happens.
+--=20
+Cheers,
+Stephen Rothwell
 
-Signed-off-by: Suresh Kumar <suresh2514@gmail.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/bonding/bond_main.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+--Sig_/xJxWf0YqhwkuvLA8YFQoE86
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
 
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index d6363ae220526..bbf18d6e4f677 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -785,14 +785,14 @@ static bool bond_should_notify_peers(struct bonding *bond)
- 	slave = rcu_dereference(bond->curr_active_slave);
- 	rcu_read_unlock();
- 
--	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
--		   slave ? slave->dev->name : "NULL");
--
- 	if (!slave || !bond->send_peer_notif ||
- 	    !netif_carrier_ok(bond->dev) ||
- 	    test_bit(__LINK_STATE_LINKWATCH_PENDING, &slave->dev->state))
- 		return false;
- 
-+	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
-+		   slave ? slave->dev->name : "NULL");
-+
- 	return true;
- }
- 
--- 
-2.34.1
+-----BEGIN PGP SIGNATURE-----
 
+iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmHmLzcACgkQAVBC80lX
+0GzQ0ggAjdpf5y99McaxmXCMJ7wToowh4enMCm+pt48o1R0eJjpvM2h6U8TEiADv
+wIF/nA+/8LDTKxfy0+aA/Z5V2PvmisFTw57mh+3nxbSA/h5Yq9/jNtAIiIC0QlFi
+2HiDuHgQ0A45kjbEP5q0xxSypY1eG9EiBQsEflDfoL9S3N/76D8JUI09xbeM9bS+
+HmfmFetHmOEfKvpEycdxfXb0K63oyfJIpiH7QnBT962/FjVbmUmnfa73M+BkDe3D
+y/Po2kdvgN9Jh4oJO3Yl5ewGfLH6euucPveg+/2nHteP3CemHl8gsht/dAnTqPAC
+FwVX84FHUYev3iuj+ISfJbjUsNvnVQ==
+=muM2
+-----END PGP SIGNATURE-----
+
+--Sig_/xJxWf0YqhwkuvLA8YFQoE86--
