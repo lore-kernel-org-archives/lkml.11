@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3885AC4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:52:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF84C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:52:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349556AbiARCtr (ORCPT
+        id S1349627AbiARCtv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:49:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58912 "EHLO
+        Mon, 17 Jan 2022 21:49:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58910 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345577AbiARCbn (ORCPT
+        with ESMTP id S1345575AbiARCbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 17 Jan 2022 21:31:43 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53900C061771;
-        Mon, 17 Jan 2022 18:29:51 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 070A1C0612DF;
+        Mon, 17 Jan 2022 18:29:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9040B8124F;
-        Tue, 18 Jan 2022 02:29:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E44D8C36AEB;
-        Tue, 18 Jan 2022 02:29:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BE578B8125A;
+        Tue, 18 Jan 2022 02:29:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C062C36AF3;
+        Tue, 18 Jan 2022 02:29:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472989;
-        bh=h1gG3QeHnOPLatdWZB69RHtn1t68ZwkJIf+iuILpzcA=;
+        s=k20201202; t=1642472983;
+        bh=g46A/5qUCfI59y4i02SYj+GUKatopABI5zCyp83hnhs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lMTKvjnrWk4HKdxX9paYqIbVNQ1atbgpoGLeGykyCA90cxcTB/8FG2qVPIZGBC0/0
-         02FF0llWXY4j4x/9zvq11TZJ2FifebY32IL2fahKQPt69A/E8dB0IW33veo/4vYgta
-         Rtpb1iqImieTKSSot6mZUtAF6KtumACnTJ+Z6QLKRVdJ4UufanSeVQ0rQIyd5tt//5
-         o2TmEOv6R+/U1iBRCA1aRpjQHWOoQRQcLNaY83lFK20z9928mH/EiCSegEgdNAW4ax
-         3l2w7SVbIqPMY5UX6fESoS3/16Ah1rIqTRZrSoDFN32+hz+TsOwiSG+TYHnUBDSqal
-         VdxBBNC4ngdDA==
+        b=YE+cJ6/5CDUYG4o61pP8WvSkt4zkzwd/SbvqmWdheIZsF2Sa+4LxJjDIef0cTCBuK
+         g82bp6qyrz2WPKJh4NwJR11L9gcE/BL+2hZH1MzuZMMra1tbjPgvscJPbemxY+f4Fa
+         mNdZU0yFQMi8Jx6XBVl8uLdvuFNA81eld/DOz9lFBAtC3pWTT31bqlEmYE8El/UvKj
+         Yz1uTdcRG1nNtD9/7yFsTqPMBPApGLBHggBnvYsy3cptNL9RYnltq4B/fRHw9jx0gm
+         UICzLADprn2mHUIcb3i4HlKPF5o6KEIZDgtOPMYFgdC0Uvrt5OVXiD2g5VOIzf7of5
+         Mt/3BavCTw2zg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>, clm@fb.com,
-        linux-btrfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 193/217] btrfs: remove BUG_ON(!eie) in find_parent_nodes
-Date:   Mon, 17 Jan 2022 21:19:16 -0500
-Message-Id: <20220118021940.1942199-193-sashal@kernel.org>
+Cc:     Mario Limonciello <mario.limonciello@amd.com>,
+        Jinzhou Su <Jinzhou.Su@amd.com>, Huang Rui <ray.huang@amd.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        linux-acpi@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 190/217] ACPI: CPPC: Check present CPUs for determining _CPC is valid
+Date:   Mon, 17 Jan 2022 21:19:13 -0500
+Message-Id: <20220118021940.1942199-190-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -53,52 +54,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-[ Upstream commit 9f05c09d6baef789726346397438cca4ec43c3ee ]
+[ Upstream commit 2aeca6bd02776d7f56a49a32be0dd184f204d888 ]
 
-If we're looking for leafs that point to a data extent we want to record
-the extent items that point at our bytenr.  At this point we have the
-reference and we know for a fact that this leaf should have a reference
-to our bytenr.  However if there's some sort of corruption we may not
-find any references to our leaf, and thus could end up with eie == NULL.
-Replace this BUG_ON() with an ASSERT() and then return -EUCLEAN for the
-mortals.
+As this is a static check, it should be based upon what is currently
+present on the system. This makes probeing more deterministic.
 
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+While local APIC flags field (lapic_flags) of cpu core in MADT table is
+0, then the cpu core won't be enabled. In this case, _CPC won't be found
+in this core, and return back to _CPC invalid with walking through
+possible cpus (include disable cpus). This is not expected, so switch to
+check present CPUs instead.
+
+Reported-by: Jinzhou Su <Jinzhou.Su@amd.com>
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Signed-off-by: Huang Rui <ray.huang@amd.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/backref.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/acpi/cppc_acpi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
-index 6b4b0f105a572..8b090c40daf77 100644
---- a/fs/btrfs/backref.c
-+++ b/fs/btrfs/backref.c
-@@ -1365,10 +1365,18 @@ static int find_parent_nodes(struct btrfs_trans_handle *trans,
- 				goto out;
- 			if (!ret && extent_item_pos) {
- 				/*
--				 * we've recorded that parent, so we must extend
--				 * its inode list here
-+				 * We've recorded that parent, so we must extend
-+				 * its inode list here.
-+				 *
-+				 * However if there was corruption we may not
-+				 * have found an eie, return an error in this
-+				 * case.
- 				 */
--				BUG_ON(!eie);
-+				ASSERT(eie);
-+				if (!eie) {
-+					ret = -EUCLEAN;
-+					goto out;
-+				}
- 				while (eie->next)
- 					eie = eie->next;
- 				eie->next = ref->inode_list;
+diff --git a/drivers/acpi/cppc_acpi.c b/drivers/acpi/cppc_acpi.c
+index b62c87b8ce4a9..12a156d8283e6 100644
+--- a/drivers/acpi/cppc_acpi.c
++++ b/drivers/acpi/cppc_acpi.c
+@@ -411,7 +411,7 @@ bool acpi_cpc_valid(void)
+ 	struct cpc_desc *cpc_ptr;
+ 	int cpu;
+ 
+-	for_each_possible_cpu(cpu) {
++	for_each_present_cpu(cpu) {
+ 		cpc_ptr = per_cpu(cpc_desc_ptr, cpu);
+ 		if (!cpc_ptr)
+ 			return false;
 -- 
 2.34.1
 
