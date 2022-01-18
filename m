@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EECECC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B59E2C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:55:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346556AbiARCzh (ORCPT
+        id S1347613AbiARCzl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:55:37 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:51348 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343548AbiARCmm (ORCPT
+        Mon, 17 Jan 2022 21:55:41 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34048 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347788AbiARCm6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:42:42 -0500
+        Mon, 17 Jan 2022 21:42:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6238AB81239;
-        Tue, 18 Jan 2022 02:42:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3AF8C36AF3;
-        Tue, 18 Jan 2022 02:42:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5EDF612E2;
+        Tue, 18 Jan 2022 02:42:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B978EC36AF5;
+        Tue, 18 Jan 2022 02:42:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473758;
-        bh=RyW+SmIx7B5XRnPeWB2gA4lLDKVVpIflvrlvyxK0gro=;
+        s=k20201202; t=1642473777;
+        bh=yAqAZHiaUVsSKWYcyJbT5Pw4juaXoBzS3wlC3RLGxvU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qHbp1wbLLWEexSBSEdBdW0NMGQprnGWRUEeGGKAkB8XqhLVJNdYI+SrQhn4luPXMk
-         UpAzGgCJwGko0koNYO/YOtJAPuoPOsjHtbawxnUt33bba892VCY+4cPnIBCjlc+Pwq
-         w4jYqEHqhYLgBNzhVfj+ryv4Bu/Y2i1ITc1CtgW9cC/Brq3BYelp6/KGpPDZZMfYRY
-         eQAJ5J5d1DJXob8/GtjHLSylf5CjiNVMFe+7ODTqDg81F1C2yxUAIr2Wf2cgRApO9u
-         W/bHh146iGNMO00BqS0/ltbKJGHsjd540700Gwh/wjdp5hKXtdEBbtjSE1ZXVYk4z5
-         gT00gGQyv6M8g==
+        b=WmJ81s1bEOXyyWiWPLlv21RvlP0/aiBn8nmanfTHsKbpLOG9cK5Xv9z6F08VNEM1c
+         CHCANjR0KHj2shQqsoUGoZpVoIASL8hpAskdwfXSVff+LwSEZOw/GjZU+aKQd8DD3u
+         uIh0R9QbHr7r1rVQyROP+l4TiIBcm6a6X6fe90GMiyiKfTAVMKQt6+r0E3pog0YDes
+         NBVDDqdVcAXi8GFMN6tJKlQ8XsXN98fpoCLzBezxUzymr26eo+JnTWQpvrVaFfXfS9
+         6vG8Uof4pvb886yMBtl9FDzX0HJVdnnG2AJ/EqBz88ZRecBGERulXjdvI81ZC/0Rbz
+         0mJMnKNipfL/g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 056/116] net: phy: prefer 1000baseT over 1000baseKX
-Date:   Mon, 17 Jan 2022 21:39:07 -0500
-Message-Id: <20220118024007.1950576-56-sashal@kernel.org>
+Cc:     Paolo Abeni <pabeni@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
+        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        hawk@kernel.org, john.fastabend@gmail.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 066/116] bpf: Do not WARN in bpf_warn_invalid_xdp_action()
+Date:   Mon, 17 Jan 2022 21:39:17 -0500
+Message-Id: <20220118024007.1950576-66-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
 References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -53,56 +54,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+From: Paolo Abeni <pabeni@redhat.com>
 
-[ Upstream commit f20f94f7f52c4685c81754f489ffcc72186e8bdb ]
+[ Upstream commit 2cbad989033bff0256675c38f96f5faab852af4b ]
 
-The PHY settings table is supposed to be sorted by descending match
-priority - in other words, earlier entries are preferred over later
-entries.
+The WARN_ONCE() in bpf_warn_invalid_xdp_action() can be triggered by
+any bugged program, and even attaching a correct program to a NIC
+not supporting the given action.
 
-The order of 1000baseKX/Full and 1000baseT/Full is such that we
-prefer 1000baseKX/Full over 1000baseT/Full, but 1000baseKX/Full is
-a lot rarer than 1000baseT/Full, and thus is much less likely to
-be preferred.
+The resulting splat, beyond polluting the logs, fouls automated tools:
+e.g. a syzkaller reproducers using an XDP program returning an
+unsupported action will never pass validation.
 
-This causes phylink problems - it means a fixed link specifying a
-speed of 1G and full duplex gets an ethtool linkmode of 1000baseKX/Full
-rather than 1000baseT/Full as would be expected - and since we offer
-userspace a software emulation of a conventional copper PHY, we want
-to offer copper modes in preference to anything else. However, we do
-still want to allow the rarer modes as well.
+Replace the WARN_ONCE with a less intrusive pr_warn_once().
 
-Hence, let's reorder these two modes to prefer copper.
-
-Tested-by: Tom Lendacky <thomas.lendacky@amd.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reported-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/E1muvFO-00F6jY-1K@rmk-PC.armlinux.org.uk
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Link: https://lore.kernel.org/bpf/016ceec56e4817ebb2a9e35ce794d5c917df572c.1638189075.git.pabeni@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/phy-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/filter.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index 8d333d3084ed3..cccb83dae673b 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -161,11 +161,11 @@ static const struct phy_setting settings[] = {
- 	PHY_SETTING(   2500, FULL,   2500baseT_Full		),
- 	PHY_SETTING(   2500, FULL,   2500baseX_Full		),
- 	/* 1G */
--	PHY_SETTING(   1000, FULL,   1000baseKX_Full		),
- 	PHY_SETTING(   1000, FULL,   1000baseT_Full		),
- 	PHY_SETTING(   1000, HALF,   1000baseT_Half		),
- 	PHY_SETTING(   1000, FULL,   1000baseT1_Full		),
- 	PHY_SETTING(   1000, FULL,   1000baseX_Full		),
-+	PHY_SETTING(   1000, FULL,   1000baseKX_Full		),
- 	/* 100M */
- 	PHY_SETTING(    100, FULL,    100baseT_Full		),
- 	PHY_SETTING(    100, FULL,    100baseT1_Full		),
+diff --git a/net/core/filter.c b/net/core/filter.c
+index abd58dce49bbc..578b0bc78ac10 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -7919,9 +7919,9 @@ void bpf_warn_invalid_xdp_action(u32 act)
+ {
+ 	const u32 act_max = XDP_REDIRECT;
+ 
+-	WARN_ONCE(1, "%s XDP return value %u, expect packet loss!\n",
+-		  act > act_max ? "Illegal" : "Driver unsupported",
+-		  act);
++	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
++		     act > act_max ? "Illegal" : "Driver unsupported",
++		     act);
+ }
+ EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
+ 
 -- 
 2.34.1
 
