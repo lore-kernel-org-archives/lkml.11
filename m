@@ -2,56 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01453C41535
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:55:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60685C3525C
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351674AbiARCyz (ORCPT
+        id S1351770AbiARCzI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:54:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32984 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347934AbiARCna (ORCPT
+        Mon, 17 Jan 2022 21:55:08 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35356 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344765AbiARCnm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:43:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08A1FC06135F;
-        Mon, 17 Jan 2022 18:37:33 -0800 (PST)
+        Mon, 17 Jan 2022 21:43:42 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4268B811CF;
-        Tue, 18 Jan 2022 02:37:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 153E8C36AE3;
-        Tue, 18 Jan 2022 02:37:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 22F02612E8;
+        Tue, 18 Jan 2022 02:43:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67338C36AEF;
+        Tue, 18 Jan 2022 02:43:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473450;
-        bh=LSCFijlqwDVH3dQEdv7hVOW/AfBT0FrxVmDG8/uNt/8=;
+        s=k20201202; t=1642473819;
+        bh=Rcuhfr3EhMSupVSrIEOucmPjHZuZ3iXMiHbm6mHJ26g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BGpJz0F5FZTcld4v89CCiHmtg8fNx4IYGUl/BzGahDGp2jm/0rbXxjtXWXO8UIZYz
-         COuLszTnsMl5OZZIcWLUbNt9Gd5Firxbi45uOGeU160/qst7YCvPnXbLUmBK8CMWCj
-         ai1C3cfBQwy8tn0aZfgoePwIdCPbapW+dqnic88GlmX4rc3I+mmKwc44VLIznRjHd8
-         j6q9cGVGX5+5PQJVTZknqOuYr96z++YW8A8hbqeGlnL83oFVtNJYmsvArizBmDmY4r
-         fT3yR2Ik2hkmlrPqU0pQX8qYD/tA7toAI/V3mna6wWCAh9sqPibi6s8Rt6Rd/rYrhv
-         O9wdrjJBGuT0w==
+        b=fEVZk/Ti2K0VaehFjMhMc7WO3rkfw2KtdT+W1AMVkFV5HgWOb4fCWlCunhhESgA0a
+         qxIRaCiGGZ3blR/Q6OiyFE/HNoUi9Ey7gLkvYkCrGOQsVmfXUXOfphN7Zxz8sz5f4v
+         0oqFkpa1BDcep/KAt/ha6HPOx8GqS6790+S1cNAThGFXPMMZQ5LidrwmM1zKQfL5TE
+         sfxV0MwyqSCsAlhN7C5wE4fObZj/SuprPhpAg91SDY8DWVNYVmQ7gUA4dghsHhy7FB
+         WORBXW+ORcec2KK66ZSGxUhCNU3kCVi3WvaeRee0QqV98liAXMqJdD8p6k/+QLc1Lv
+         KoHQ/mokXOR8w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jingwen Chen <Jingwen.Chen2@amd.com>,
-        Horace Chen <horace.chen@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        Hawking.Zhang@amd.com, ray.huang@amd.com, Felix.Kuehling@amd.com,
-        Yuliang.Shi@amd.com, PengJu.Zhou@amd.com, Philip.Yang@amd.com,
-        Jack.Gui@amd.com, Xiaomeng.Hou@amd.com, aaron.liu@amd.com,
-        victor.skvortsov@amd.com, John.Clements@amd.com, Oak.Zeng@amd.com,
-        alex.sierra@amd.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 120/188] drm/amd/amdgpu: fix gmc bo pin count leak in SRIOV
-Date:   Mon, 17 Jan 2022 21:30:44 -0500
-Message-Id: <20220118023152.1948105-120-sashal@kernel.org>
+Cc:     Ben Greear <greearb@candelatech.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 085/116] ath11k: Fix napi related hang
+Date:   Mon, 17 Jan 2022 21:39:36 -0500
+Message-Id: <20220118024007.1950576-85-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -60,66 +51,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jingwen Chen <Jingwen.Chen2@amd.com>
+From: Ben Greear <greearb@candelatech.com>
 
-[ Upstream commit 948e7ce01413b71395723aaf846015062aea3a43 ]
+[ Upstream commit d943fdad7589653065be0e20aadc6dff37725ed4 ]
 
-[Why]
-gmc bo will be pinned during loading amdgpu and reset in SRIOV while
-only unpinned in unload amdgpu
+Similar to the same bug in ath10k, a napi disable w/out it being enabled
+will hang forever.  I believe I saw this while trying rmmod after driver
+had some failure on startup.  Fix it by keeping state on whether napi is
+enabled or not.
 
-[How]
-add amdgpu_in_reset and sriov judgement to skip pin bo
+And, remove un-used napi pointer in ath11k driver base struct.
 
-v2: fix wrong judgement
-
-Signed-off-by: Jingwen Chen <Jingwen.Chen2@amd.com>
-Reviewed-by: Horace Chen <horace.chen@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Ben Greear <greearb@candelatech.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20200903195254.29379-1-greearb@candelatech.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c | 4 ++++
- drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c  | 4 ++++
- 2 files changed, 8 insertions(+)
+ drivers/net/wireless/ath/ath11k/ahb.c  | 12 +++++++++---
+ drivers/net/wireless/ath/ath11k/core.h |  2 +-
+ drivers/net/wireless/ath/ath11k/pci.c  | 12 +++++++++---
+ 3 files changed, 19 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-index e47104a1f5596..3c01be6610144 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-@@ -1021,10 +1021,14 @@ static int gmc_v10_0_gart_enable(struct amdgpu_device *adev)
- 		return -EINVAL;
+diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
+index 430723c64adce..a17d10f5e355a 100644
+--- a/drivers/net/wireless/ath/ath11k/ahb.c
++++ b/drivers/net/wireless/ath/ath11k/ahb.c
+@@ -175,8 +175,11 @@ static void __ath11k_ahb_ext_irq_disable(struct ath11k_base *ab)
+ 
+ 		ath11k_ahb_ext_grp_disable(irq_grp);
+ 
+-		napi_synchronize(&irq_grp->napi);
+-		napi_disable(&irq_grp->napi);
++		if (irq_grp->napi_enabled) {
++			napi_synchronize(&irq_grp->napi);
++			napi_disable(&irq_grp->napi);
++			irq_grp->napi_enabled = false;
++		}
  	}
+ }
  
-+	if (amdgpu_sriov_vf(adev) && amdgpu_in_reset(adev))
-+		goto skip_pin_bo;
-+
- 	r = amdgpu_gart_table_vram_pin(adev);
- 	if (r)
- 		return r;
+@@ -300,7 +303,10 @@ static void ath11k_ahb_ext_irq_enable(struct ath11k_base *ab)
+ 	for (i = 0; i < ATH11K_EXT_IRQ_GRP_NUM_MAX; i++) {
+ 		struct ath11k_ext_irq_grp *irq_grp = &ab->ext_irq_grp[i];
  
-+skip_pin_bo:
- 	r = adev->gfxhub.funcs->gart_enable(adev);
- 	if (r)
- 		return r;
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-index 5551359d5dfdc..b5d93247237b1 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-@@ -1708,10 +1708,14 @@ static int gmc_v9_0_gart_enable(struct amdgpu_device *adev)
- 		return -EINVAL;
+-		napi_enable(&irq_grp->napi);
++		if (!irq_grp->napi_enabled) {
++			napi_enable(&irq_grp->napi);
++			irq_grp->napi_enabled = true;
++		}
+ 		ath11k_ahb_ext_grp_enable(irq_grp);
  	}
+ }
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index c8e36251068c9..d2f2898d17b49 100644
+--- a/drivers/net/wireless/ath/ath11k/core.h
++++ b/drivers/net/wireless/ath/ath11k/core.h
+@@ -124,6 +124,7 @@ struct ath11k_ext_irq_grp {
+ 	u32 num_irq;
+ 	u32 grp_id;
+ 	u64 timestamp;
++	bool napi_enabled;
+ 	struct napi_struct napi;
+ 	struct net_device napi_ndev;
+ };
+@@ -687,7 +688,6 @@ struct ath11k_base {
+ 	u32 wlan_init_status;
+ 	int irq_num[ATH11K_IRQ_NUM_MAX];
+ 	struct ath11k_ext_irq_grp ext_irq_grp[ATH11K_EXT_IRQ_GRP_NUM_MAX];
+-	struct napi_struct *napi;
+ 	struct ath11k_targ_cap target_caps;
+ 	u32 ext_service_bitmap[WMI_SERVICE_EXT_BM_SIZE];
+ 	bool pdevs_macaddr_valid;
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index d7eb6b7160bb4..105e344240c10 100644
+--- a/drivers/net/wireless/ath/ath11k/pci.c
++++ b/drivers/net/wireless/ath/ath11k/pci.c
+@@ -416,8 +416,11 @@ static void __ath11k_pci_ext_irq_disable(struct ath11k_base *sc)
  
-+	if (amdgpu_sriov_vf(adev) && amdgpu_in_reset(adev))
-+		goto skip_pin_bo;
-+
- 	r = amdgpu_gart_table_vram_pin(adev);
- 	if (r)
- 		return r;
+ 		ath11k_pci_ext_grp_disable(irq_grp);
  
-+skip_pin_bo:
- 	r = adev->gfxhub.funcs->gart_enable(adev);
- 	if (r)
- 		return r;
+-		napi_synchronize(&irq_grp->napi);
+-		napi_disable(&irq_grp->napi);
++		if (irq_grp->napi_enabled) {
++			napi_synchronize(&irq_grp->napi);
++			napi_disable(&irq_grp->napi);
++			irq_grp->napi_enabled = false;
++		}
+ 	}
+ }
+ 
+@@ -436,7 +439,10 @@ static void ath11k_pci_ext_irq_enable(struct ath11k_base *ab)
+ 	for (i = 0; i < ATH11K_EXT_IRQ_GRP_NUM_MAX; i++) {
+ 		struct ath11k_ext_irq_grp *irq_grp = &ab->ext_irq_grp[i];
+ 
+-		napi_enable(&irq_grp->napi);
++		if (!irq_grp->napi_enabled) {
++			napi_enable(&irq_grp->napi);
++			irq_grp->napi_enabled = true;
++		}
+ 		ath11k_pci_ext_grp_enable(irq_grp);
+ 	}
+ }
 -- 
 2.34.1
 
