@@ -2,144 +2,307 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01E7FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:17:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 085ABC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:18:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242333AbiARNR5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 08:17:57 -0500
-Received: from mail-db8eur05on2057.outbound.protection.outlook.com ([40.107.20.57]:54336
-        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S241959AbiARNRq (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 08:17:46 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=R8pvC+q2QH5+pE0HJ9hvJJYv2BXdmZbPfwrrQlf1nuKxlYdJuaXQx2/cjH03pLa1eokUo2Lf6vrPoBm+86BZI1CBVfYFCX+HVUh9YSiIJGbuDMF4yWnAqdDtLZyJ2wMz7/jyPZ3auasdVTHkT512r1VIVV45Fp0M/UxA4xcgz2dEy14e/zKP/pj7/sEZlTMyBt12U0V4ymslcOWVlIaiBm+hQVMrMl3XDTq5uOvfHkGayBDt1gZe6+vKvs+yZZLJ5m7x3YWZS1htXGJtzBMsN+U8d9gcHJApUdBLaO9W2KzTdCHXGkqMbhpNpgTXFm441WV5/JHrKXBHcUWtMI85zA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=uSpx/wXee1QgkA1OCkDNObFPBz9DBnirUDrqiu7AB4I=;
- b=J4ZuoYWwtkBft9z8iDhzK7gd6PgfAstf7TBZ9oLeMrXf3D32ru4SXjygE+kXsHoULig3wihVR1jCxdaQ+5yrXUmJXY8UNl5mndygRbljY69yMKSgf/pbYjc90qrseLtKu9FgxmqiiC+AUEzBntlY131NxHzLAGaxfCsf/S+WyH9nBvJo5iuemNZXKPO0kpJY0NVU1Ie6U7dsC9lvOO3dV9fZU9HFqX11vQESi3dZFvS2W3vNh4bNrkqy+kJqBwPbL32nJ+oDIghJ1ozLv5F6L2UvCZYtmt9akSQ+L2sbPbZ4hrv5nYgQWPbiDT1ahfGcL6c/FByCY77NHh7cHQmkpA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=uSpx/wXee1QgkA1OCkDNObFPBz9DBnirUDrqiu7AB4I=;
- b=k/jW9w1buoCya2mob3Cf14W9IdPJfzdva8bvJeFoa5eFyBwrtsRdokOVACj2IWmNvk1UBE349k7vBqo7LsRbgp7dBjGqSKIwMs55tyOORnI3fRgG3rkcJTKKJ+0NkHlmWafCZ75MRawVYDGTzrF9ciMCKzritHOsClEhYzBACoE=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from VI1PR04MB4688.eurprd04.prod.outlook.com (2603:10a6:803:6a::30)
- by AM6PR04MB4053.eurprd04.prod.outlook.com (2603:10a6:209:50::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.9; Tue, 18 Jan
- 2022 13:17:42 +0000
-Received: from VI1PR04MB4688.eurprd04.prod.outlook.com
- ([fe80::f853:4e9a:7ab6:dbf7]) by VI1PR04MB4688.eurprd04.prod.outlook.com
- ([fe80::f853:4e9a:7ab6:dbf7%6]) with mapi id 15.20.4888.014; Tue, 18 Jan 2022
- 13:17:41 +0000
-From:   Abel Vesa <abel.vesa@nxp.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh@kernel.org>,
-        Fugang Duan <fugang.duan@nxp.com>
-Cc:     Peng Fan <peng.fan@nxp.com>,
-        Alexander Stein <alexander.stein@ew.tq-group.com>,
-        linux-serial@vger.kernel.org, devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        NXP Linux Team <linux-imx@nxp.com>
-Subject: [PATCH v2] dt-bindings: serial: fsl-lpuart: Add i.MX8DXL compatible
-Date:   Tue, 18 Jan 2022 15:17:15 +0200
-Message-Id: <20220118131715.2051965-1-abel.vesa@nxp.com>
-X-Mailer: git-send-email 2.31.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: VI1PR0102CA0014.eurprd01.prod.exchangelabs.com
- (2603:10a6:802::27) To VI1PR04MB4688.eurprd04.prod.outlook.com
- (2603:10a6:803:6a::30)
+        id S242292AbiARNS5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 08:18:57 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:39218 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241917AbiARNSs (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 08:18:48 -0500
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20ICexgF016137;
+        Tue, 18 Jan 2022 13:18:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Vqn8Hhf6zsUPy9ecE3s9tcqpA6927yqIg+jU15ebVu4=;
+ b=FTDBAlYDFMRADYbwIDqeJrg2NWkSv8edZZTIRjoXNjkeSFiuRnbiKLVsM0mk8FW+osq2
+ XaGsl6crq7PYGZwsI53uDM0Aw61DpbKg7gZfWBnsS8bbfUosPIl7bByZZt+Kk62Y8B1i
+ l7Dr59ChDKwS2SJLVulgLjFb97NJzIhvNKLVJ8dKchdQc1ahDBCVJYQ87YA9HyTwsCnF
+ dytkxBytMgxbKBAbWrURIJENOFl7DFSLObJjnFK9mroLszQSsz1Z4ZCofRMRcNMjBukJ
+ BqX+E8IFCV4t99BCwCDy6InESbK9vInT8O6JFKf3JRxWdSZuqLpKaVnMNl1SmMi9ON/p lw== 
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dnr9ssnht-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 18 Jan 2022 13:18:47 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20IDDjv8010640;
+        Tue, 18 Jan 2022 13:18:45 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma06ams.nl.ibm.com with ESMTP id 3dknhjcp3j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 18 Jan 2022 13:18:44 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20IDIfcC18547062
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 18 Jan 2022 13:18:41 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A9DA5AE04D;
+        Tue, 18 Jan 2022 13:18:41 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 28448AE055;
+        Tue, 18 Jan 2022 13:18:41 +0000 (GMT)
+Received: from [9.145.64.253] (unknown [9.145.64.253])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 18 Jan 2022 13:18:41 +0000 (GMT)
+Message-ID: <cb563fbc-3f16-2d41-ab88-5c83e7d484ec@linux.ibm.com>
+Date:   Tue, 18 Jan 2022 14:18:40 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e268656c-7290-4a44-39a7-08d9da84e83c
-X-MS-TrafficTypeDiagnostic: AM6PR04MB4053:EE_
-X-Microsoft-Antispam-PRVS: <AM6PR04MB4053E605F0E7A95E483C2C31F6589@AM6PR04MB4053.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1122;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: KTpGwuy7vrfSjweInUDF7ywHCEvw5TdppNaRUTBB20dtL+uw4+vP28d/riz60XxFnvUblaMK1lVqEcAylh+0Q9hCBhC8THXL8lEodZowJ0so9vdPIucCD33RNj/w+tyr6mQuLkULv6sj4ooWCSQALRbrSKioOgQ/+N6u/1+dI03W1eUPn9Pzgu47R0Z4zrdLLAzwgv8fLJlET3+W832JCBE5PEDA9zgBA7+TGkaUQnLWXxINCGCOqVUvbq3N8qMjt9yMQ1r5xEKLyfrihl8w1Ha1O5260OcvuuPDhX8+CjEfAWS4vGyf4wWpOKWfj85OcPDeoM7yBvFyg13HeAsphZ1N82BGg8HsJYdoR45Eho4SgTUuCCqSCun3jf9KuApH6htVx9GQbhPd45BI11ochJgOisqrAPVHxW/XNqT2RdtXLIGvrk889kCzWbSgjdQN+WJnsGflOI3KntD3kBtKoiyzL5hFEyjnO9ynud48GxL3xNYKmZpgr0AzZ/cTkKdkOSrKXrpR10SNk/c3LVXDbnURMmxJRXx3rRBi7WAXNnc7Y2/hKRo9GHl7YKpsrh7FT9muuQfyu2nMtIsTKDUjvLkDyBi9RwuVAFJKTuAMwtyjFHZdCmaXnv56JRzO5WAj2VmhUpGs3/9GlRIOrf937ngt1nhhbk9kMeQMr+fIJ63mYc/DN3QBjKdZBWItTMpm/1fx339AejqmWq/vkpEGM6um6TxQa519iCPdoC/1VvDGVxuogEu6SafUz7HBo4g2phdlLiMMMqDdwCmMrVuy3ROKSevDORUw1WZsVWBPSyw=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB4688.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(8936002)(66476007)(83380400001)(66946007)(316002)(54906003)(6636002)(4744005)(1076003)(44832011)(2616005)(508600001)(4326008)(5660300002)(6512007)(6486002)(6666004)(26005)(8676002)(6506007)(966005)(38350700002)(36756003)(186003)(86362001)(52116002)(38100700002)(110136005)(2906002)(66556008);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?PSR1PEh5nwfxtHA7PQ4gocPC+ABHXQLGKheRncFSWVSNZRi2GMMQze3uPKPa?=
- =?us-ascii?Q?j8zUQJMXrGUxGeaMGJDwJJlQq2qH4FG9rvEQ4h1gMcAO6zKahqudHTE1YsfR?=
- =?us-ascii?Q?UQCtI/eVmmoli573NYSjh9+0emuY16uLvDFs/eDO3g/I9vpE7VovLGqzAuEl?=
- =?us-ascii?Q?j/tC4MWkMExBbQnXcaoOlY6tUSUL4NI+yqqGxQOKicXAdFdUsTnBlpZMWwRB?=
- =?us-ascii?Q?+YvRvVnpbYPhjmx69dvv12kacuLP3wsTs1Jg93guqFOoa2Q5YMWKrEBiyQMH?=
- =?us-ascii?Q?l/39syZyVV62IVO3HQ5NYxapZd5j0iQ5eHVR967v02BcfJ3RbdSAAf4kaWFq?=
- =?us-ascii?Q?mJotnm+8FGGyp5qOz+YWL7KEsl01g5tQIgqYNf0bWDmLIOW7otnYW9+hd+NS?=
- =?us-ascii?Q?KAvbtoPT1PHLquu3ykm5wPEDOlLK9TACqBL8vzWb64c3oX/2/FVJ+3hMEzVV?=
- =?us-ascii?Q?eX70yauoKlii9SJshPkVi0wVBOYvVio+uWtV7oyrbYMTM3Bnd2UOBiBQTLUO?=
- =?us-ascii?Q?VXJ/dCHwcxUAez4ykO8P+cVJgZHx6d1vqM2dkhQbBXJvocggCQtcvlpJiJ3O?=
- =?us-ascii?Q?ntmrU8q5ZP1vsexEHNudistCd+W723m75wEKcsYnegZFhJ+233qnaa1EOPgq?=
- =?us-ascii?Q?lksAef77otK+E1hG26/klhjAkiGp/9L0CbkrzQfi8vNuxnVdQe/pdtPoEM6V?=
- =?us-ascii?Q?x0d3vdDCXVPorzLgSUVJPrhxvq+V10CW5gWpCrL8qINGkU/YaiKWFd8pmi9J?=
- =?us-ascii?Q?Ou81bwZqfi/CSXQSs4t/3aXshBwdon1sHJ6irc7mRil/oMpCX+2W5Z0kJuJy?=
- =?us-ascii?Q?YQIcrrWKABn0pTxGXr1lkktx1te5st/sqG7uXTsunVwr/8Q9pDOmvj0ALDw8?=
- =?us-ascii?Q?1QYWgHnI+Rr9dlEJevmzseMDF4fj2pTfILx6HuHLUeFvxbhF4+iik7lCQ2Tn?=
- =?us-ascii?Q?zkLA6+wUruKF7HWH/8TMFuAeyKJDU1Ijg7yVXgAbpu6EMK/2aco7d5BpL5pb?=
- =?us-ascii?Q?F7/5G2DAJDgX5Nj9OTlB7B2penKm5uYQ+zLvTBKP4M/GIgjx+29D4Fmf/Nk2?=
- =?us-ascii?Q?MtQSVH7LYSLn88940qbHQkni2uPD5lYln0B4uoDY+njxKeypjJYkLh+JypWM?=
- =?us-ascii?Q?vTf8ktcBm+VXPWPHfgGlqnHaXiyUJcTc3p6+qkRHNmeX/toYWLKIsI84+mcK?=
- =?us-ascii?Q?AyruwznskhvmqHWUbd3ID+hG/nNaBaBIAnYWyHb/rms2jRCHcC1lZWMfK9mW?=
- =?us-ascii?Q?p3RR3++V4FWYwWUNbJgjLvnXYqJPHfYj5StoOiLglSxr7vb3WPugEy8pdSiT?=
- =?us-ascii?Q?OZI4QbzZz2oc41b5kSSTsazALYkq8naS4a/A6fMbX8kZOJinBRcjqA56pU4t?=
- =?us-ascii?Q?Gd1Q3Q5Bjgv2NdTWeNw1bGnkBuKCtBtZeS7J3+U1ZLyTNr6pnVw1348OMQUy?=
- =?us-ascii?Q?ZDIOmCa+My0BFrwW+Y8Aog1cdpcK+BjehDdoGi57i0Dzao9fsPQ2G2jzm2fT?=
- =?us-ascii?Q?bbdIaMCe8DUdqD1tNIbot2hrcbeKeDB1djfNYIODSmyWz/j8t4Qu+Jk1g7H9?=
- =?us-ascii?Q?JLwcPmpf7yx05tyYYciTMtYcvlvACrdM/Nw6rc5MqROfjGDlk+EkG/AIQs3O?=
- =?us-ascii?Q?DD8KhB1F22wbr08aKpdFUT4=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: e268656c-7290-4a44-39a7-08d9da84e83c
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB4688.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2022 13:17:41.8153
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: IiOQx/WHXG9+noYwjfLdTlUPMyP3LjRkADXgrUksMydLmtXMP7FPP0Mzrcnit2d5+3qw7P/2056nEYz6tSJszw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR04MB4053
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [RFC PATCH v1 01/10] s390/uaccess: Add storage key checked access
+ to user memory
+Content-Language: en-US
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Nico Boehr <nrb@linux.ibm.com>
+Cc:     Alexander Gordeev <agordeev@linux.ibm.com>,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220118095210.1651483-1-scgl@linux.ibm.com>
+ <20220118095210.1651483-2-scgl@linux.ibm.com>
+From:   Janosch Frank <frankja@linux.ibm.com>
+In-Reply-To: <20220118095210.1651483-2-scgl@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: VFL91AE36OKyZ0PGMKFRjfptgU1TXiHI
+X-Proofpoint-ORIG-GUID: VFL91AE36OKyZ0PGMKFRjfptgU1TXiHI
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-18_03,2022-01-18_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 spamscore=0
+ malwarescore=0 suspectscore=0 impostorscore=0 mlxscore=0
+ priorityscore=1501 adultscore=0 lowpriorityscore=0 clxscore=1015
+ bulkscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201180081
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add i.MX8DXL lpuart compatible to the bindings documentation.
+On 1/18/22 10:52, Janis Schoetterl-Glausch wrote:
+> KVM needs a mechanism to do accesses to guest memory that honor
+> storage key protection.
+> Since the copy_to/from_user implementation makes use of move
+> instructions that support having an additional access key supplied,
+> we can implement __copy_from/to_user_with_key by enhancing the
+> existing implementation.
+> 
+> Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
 
-Signed-off-by: Abel Vesa <abel.vesa@nxp.com>
----
+For this I'd like to have buy-in from the kernel maintainers.
+The patch looks good to me but currently I don't understand all of the 
+background so:
 
-Changes since v1:
- * imx8dxl will only be backwards compatible with imx8qxp now,
-   like imx8qm
+Acked-by: Janosch Frank <frankja@linux.ibm.com>
 
-Here is the last version of this patch:
-https://lore.kernel.org/all/1640085372-1972-1-git-send-email-abel.vesa@nxp.com/
-
- Documentation/devicetree/bindings/serial/fsl-lpuart.yaml | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
-
-diff --git a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-index 6e04e3848261..c33e3af1b5ea 100644
---- a/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-+++ b/Documentation/devicetree/bindings/serial/fsl-lpuart.yaml
-@@ -28,7 +28,9 @@ properties:
-               - fsl,imx8ulp-lpuart
-           - const: fsl,imx7ulp-lpuart
-       - items:
--          - const: fsl,imx8qm-lpuart
-+          - enum:
-+              - fsl,imx8qm-lpuart
-+              - fsl,imx8dxl-lpuart
-           - const: fsl,imx8qxp-lpuart
- 
-   reg:
--- 
-2.31.1
+> ---
+>   arch/s390/include/asm/uaccess.h | 32 ++++++++++++++++++
+>   arch/s390/lib/uaccess.c         | 57 +++++++++++++++++++++++----------
+>   2 files changed, 72 insertions(+), 17 deletions(-)
+> 
+> diff --git a/arch/s390/include/asm/uaccess.h b/arch/s390/include/asm/uaccess.h
+> index 02b467461163..5138040348cc 100644
+> --- a/arch/s390/include/asm/uaccess.h
+> +++ b/arch/s390/include/asm/uaccess.h
+> @@ -33,6 +33,38 @@ static inline int __range_ok(unsigned long addr, unsigned long size)
+>   
+>   #define access_ok(addr, size) __access_ok(addr, size)
+>   
+> +unsigned long __must_check
+> +raw_copy_from_user_with_key(void *to, const void __user *from, unsigned long n,
+> +			    char key);
+> +
+> +unsigned long __must_check
+> +raw_copy_to_user_with_key(void __user *to, const void *from, unsigned long n,
+> +			  char key);
+> +
+> +static __always_inline __must_check unsigned long
+> +__copy_from_user_with_key(void *to, const void __user *from, unsigned long n,
+> +			  char key)
+> +{
+> +	might_fault();
+> +	if (should_fail_usercopy())
+> +		return n;
+> +	instrument_copy_from_user(to, from, n);
+> +	check_object_size(to, n, false);
+> +	return raw_copy_from_user_with_key(to, from, n, key);
+> +}
+> +
+> +static __always_inline __must_check unsigned long
+> +__copy_to_user_with_key(void __user *to, const void *from, unsigned long n,
+> +			char key)
+> +{
+> +	might_fault();
+> +	if (should_fail_usercopy())
+> +		return n;
+> +	instrument_copy_to_user(to, from, n);
+> +	check_object_size(from, n, true);
+> +	return raw_copy_to_user_with_key(to, from, n, key);
+> +}
+> +
+>   unsigned long __must_check
+>   raw_copy_from_user(void *to, const void __user *from, unsigned long n);
+>   
+> diff --git a/arch/s390/lib/uaccess.c b/arch/s390/lib/uaccess.c
+> index d3a700385875..ce7a150dd93a 100644
+> --- a/arch/s390/lib/uaccess.c
+> +++ b/arch/s390/lib/uaccess.c
+> @@ -59,11 +59,13 @@ static inline int copy_with_mvcos(void)
+>   #endif
+>   
+>   static inline unsigned long copy_from_user_mvcos(void *x, const void __user *ptr,
+> -						 unsigned long size)
+> +						 unsigned long size, char key)
+>   {
+>   	unsigned long tmp1, tmp2;
+>   	union oac spec = {
+> +		.oac2.key = key,
+>   		.oac2.as = PSW_BITS_AS_SECONDARY,
+> +		.oac2.k = 1,
+>   		.oac2.a = 1,
+>   	};
+>   
+> @@ -94,19 +96,19 @@ static inline unsigned long copy_from_user_mvcos(void *x, const void __user *ptr
+>   }
+>   
+>   static inline unsigned long copy_from_user_mvcp(void *x, const void __user *ptr,
+> -						unsigned long size)
+> +						unsigned long size, char key)
+>   {
+>   	unsigned long tmp1, tmp2;
+>   
+>   	tmp1 = -256UL;
+>   	asm volatile(
+>   		"   sacf  0\n"
+> -		"0: mvcp  0(%0,%2),0(%1),%3\n"
+> +		"0: mvcp  0(%0,%2),0(%1),%[key]\n"
+>   		"7: jz    5f\n"
+>   		"1: algr  %0,%3\n"
+>   		"   la    %1,256(%1)\n"
+>   		"   la    %2,256(%2)\n"
+> -		"2: mvcp  0(%0,%2),0(%1),%3\n"
+> +		"2: mvcp  0(%0,%2),0(%1),%[key]\n"
+>   		"8: jnz   1b\n"
+>   		"   j     5f\n"
+>   		"3: la    %4,255(%1)\n"	/* %4 = ptr + 255 */
+> @@ -115,7 +117,7 @@ static inline unsigned long copy_from_user_mvcp(void *x, const void __user *ptr,
+>   		"   slgr  %4,%1\n"
+>   		"   clgr  %0,%4\n"	/* copy crosses next page boundary? */
+>   		"   jnh   6f\n"
+> -		"4: mvcp  0(%4,%2),0(%1),%3\n"
+> +		"4: mvcp  0(%4,%2),0(%1),%[key]\n"
+>   		"9: slgr  %0,%4\n"
+>   		"   j     6f\n"
+>   		"5: slgr  %0,%0\n"
+> @@ -123,24 +125,36 @@ static inline unsigned long copy_from_user_mvcp(void *x, const void __user *ptr,
+>   		EX_TABLE(0b,3b) EX_TABLE(2b,3b) EX_TABLE(4b,6b)
+>   		EX_TABLE(7b,3b) EX_TABLE(8b,3b) EX_TABLE(9b,6b)
+>   		: "+a" (size), "+a" (ptr), "+a" (x), "+a" (tmp1), "=a" (tmp2)
+> -		: : "cc", "memory");
+> +		: [key] "d" (key << 4)
+> +		: "cc", "memory");
+>   	return size;
+>   }
+>   
+>   unsigned long raw_copy_from_user(void *to, const void __user *from, unsigned long n)
+>   {
+>   	if (copy_with_mvcos())
+> -		return copy_from_user_mvcos(to, from, n);
+> -	return copy_from_user_mvcp(to, from, n);
+> +		return copy_from_user_mvcos(to, from, n, 0);
+> +	return copy_from_user_mvcp(to, from, n, 0);
+>   }
+>   EXPORT_SYMBOL(raw_copy_from_user);
+>   
+> -static inline unsigned long copy_to_user_mvcos(void __user *ptr, const void *x,
+> -					       unsigned long size)
+> +unsigned long raw_copy_from_user_with_key(void *to, const void __user *from,
+> +					  unsigned long n, char key)
+> +{
+> +	if (copy_with_mvcos())
+> +		return copy_from_user_mvcos(to, from, n, key);
+> +	return copy_from_user_mvcp(to, from, n, key);
+> +}
+> +EXPORT_SYMBOL(raw_copy_from_user_with_key);
+> +
+> +inline unsigned long copy_to_user_mvcos(void __user *ptr, const void *x,
+> +					unsigned long size, char key)
+>   {
+>   	unsigned long tmp1, tmp2;
+>   	union oac spec = {
+> +		.oac1.key = key,
+>   		.oac1.as = PSW_BITS_AS_SECONDARY,
+> +		.oac1.k = 1,
+>   		.oac1.a = 1,
+>   	};
+>   
+> @@ -171,19 +185,19 @@ static inline unsigned long copy_to_user_mvcos(void __user *ptr, const void *x,
+>   }
+>   
+>   static inline unsigned long copy_to_user_mvcs(void __user *ptr, const void *x,
+> -					      unsigned long size)
+> +					      unsigned long size, char key)
+>   {
+>   	unsigned long tmp1, tmp2;
+>   
+>   	tmp1 = -256UL;
+>   	asm volatile(
+>   		"   sacf  0\n"
+> -		"0: mvcs  0(%0,%1),0(%2),%3\n"
+> +		"0: mvcs  0(%0,%1),0(%2),%[key]\n"
+>   		"7: jz    5f\n"
+>   		"1: algr  %0,%3\n"
+>   		"   la    %1,256(%1)\n"
+>   		"   la    %2,256(%2)\n"
+> -		"2: mvcs  0(%0,%1),0(%2),%3\n"
+> +		"2: mvcs  0(%0,%1),0(%2),%[key]\n"
+>   		"8: jnz   1b\n"
+>   		"   j     5f\n"
+>   		"3: la    %4,255(%1)\n" /* %4 = ptr + 255 */
+> @@ -192,7 +206,7 @@ static inline unsigned long copy_to_user_mvcs(void __user *ptr, const void *x,
+>   		"   slgr  %4,%1\n"
+>   		"   clgr  %0,%4\n"	/* copy crosses next page boundary? */
+>   		"   jnh   6f\n"
+> -		"4: mvcs  0(%4,%1),0(%2),%3\n"
+> +		"4: mvcs  0(%4,%1),0(%2),%[key]\n"
+>   		"9: slgr  %0,%4\n"
+>   		"   j     6f\n"
+>   		"5: slgr  %0,%0\n"
+> @@ -200,17 +214,26 @@ static inline unsigned long copy_to_user_mvcs(void __user *ptr, const void *x,
+>   		EX_TABLE(0b,3b) EX_TABLE(2b,3b) EX_TABLE(4b,6b)
+>   		EX_TABLE(7b,3b) EX_TABLE(8b,3b) EX_TABLE(9b,6b)
+>   		: "+a" (size), "+a" (ptr), "+a" (x), "+a" (tmp1), "=a" (tmp2)
+> -		: : "cc", "memory");
+> +		: [key] "d" (key << 4)
+> +		: "cc", "memory");
+>   	return size;
+>   }
+>   
+>   unsigned long raw_copy_to_user(void __user *to, const void *from, unsigned long n)
+>   {
+>   	if (copy_with_mvcos())
+> -		return copy_to_user_mvcos(to, from, n);
+> -	return copy_to_user_mvcs(to, from, n);
+> +		return copy_to_user_mvcos(to, from, n, 0);
+> +	return copy_to_user_mvcs(to, from, n, 0);
+>   }
+>   EXPORT_SYMBOL(raw_copy_to_user);
+> +unsigned long raw_copy_to_user_with_key(void __user *to, const void *from,
+> +					unsigned long n, char key)
+> +{
+> +	if (copy_with_mvcos())
+> +		return copy_to_user_mvcos(to, from, n, key);
+> +	return copy_to_user_mvcs(to, from, n, key);
+> +}
+> +EXPORT_SYMBOL(raw_copy_to_user_with_key);
+>   
+>   static inline unsigned long clear_user_mvcos(void __user *to, unsigned long size)
+>   {
+> 
 
