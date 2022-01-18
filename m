@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 285D5C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:31:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D75EC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:32:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345707AbiARCbz (ORCPT
+        id S1345723AbiARCb5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:31:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57258 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343869AbiARC1f (ORCPT
+        Mon, 17 Jan 2022 21:31:57 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44732 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343854AbiARC1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:27:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CBA7C0612DE;
-        Mon, 17 Jan 2022 18:25:31 -0800 (PST)
+        Mon, 17 Jan 2022 21:27:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5AE6260A6B;
-        Tue, 18 Jan 2022 02:25:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B03FDC36AEF;
-        Tue, 18 Jan 2022 02:25:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 49C0C6093C;
+        Tue, 18 Jan 2022 02:27:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED67AC36AE3;
+        Tue, 18 Jan 2022 02:27:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472727;
-        bh=zrGN/H7rq5Xkf0os/FChXmYJJlBZX3zxIDFjOnOwKh8=;
+        s=k20201202; t=1642472850;
+        bh=ziNTfB6MFkrrpKUiqMSsH39v3XYf+3hqHdG+XYLv7Ng=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OulLmAYY5D50LCIrvJKMfMkcUEUE+45WLiPsSsC+0TOGX570eLDA9n8d7CxLIes7w
-         TlSZyFdFqABmhC73i+4AYUuZnFC6RXkVaRLrD0rhJjRijW8fUpmM2GOfGOcFRLSf0G
-         cdH/cbCjYIqRTZV8Br1qXxoUBal0QHsy1uRixYgxSs95ULS/fbmeY0a8oVACpoA+64
-         bRLdS58ehTKStsbOpNdvfD7JaLiNCRJStdQylWzTTZszQW9cIoP1DrnOvqM5qTsSKK
-         pqDGvn4NllapEVR2sAf49NDdICDj7EmwmOF16QuoaA21XpqmXtlSOL4UDhvlmUxg67
-         h6XVS3DcGCfdw==
+        b=Jp7omHedPjHYkzqf0U/OfyOuRe4iYMJ13hc+tDjhIdktuQZB+9xTJPLYfQCNgrFqw
+         zGsfJ6z5GVlaDiCMh7FuSwnuAPWtODay6H+x+KOH2IfAzlLw1rqM8ZjNkwLRyWQYc+
+         q9ox+p09xBOlVKzyQfioUfLkRMJ+H6IG/xwExphuL9MXkCbyXEO8h0Nf/0aoSME4g2
+         TIrY4c9RdY09s0qWPdaCAcwokGtuUoG/JvOiKbZ89dv62Oa9LwWTOp0r559nmSdjK8
+         mmQFdD+o4QsWdgj4Yle2PlSGvlOlHY7yOeAqtEGUXJOlbXWoXNTcyPtm903D6WA4RT
+         3a6R29QzXMl6w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Iwona Winiarska <iwona.winiarska@intel.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
-        joel@jms.id.au, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.16 116/217] gpio: aspeed-sgpio: Convert aspeed_sgpio.lock to raw_spinlock
-Date:   Mon, 17 Jan 2022 21:17:59 -0500
-Message-Id: <20220118021940.1942199-116-sashal@kernel.org>
+Cc:     Ryder Lee <ryder.lee@mediatek.com>,
+        Fang Zhao <fang.zhao@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        lorenzo.bianconi83@gmail.com, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, matthias.bgg@gmail.com,
+        shayne.chen@mediatek.com, Bo.Jiao@mediatek.com,
+        meichia.chiu@mediatek.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 153/217] mt76: mt7915: fix SMPS operation fail
+Date:   Mon, 17 Jan 2022 21:18:36 -0500
+Message-Id: <20220118021940.1942199-153-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -54,158 +55,162 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Iwona Winiarska <iwona.winiarska@intel.com>
+From: Ryder Lee <ryder.lee@mediatek.com>
 
-[ Upstream commit ab39d6988dd53f354130438d8afa5596a2440fed ]
+[ Upstream commit 8f05835425ce3f669e4b6d7c2c39a9aa22e1506c ]
 
-The gpio-aspeed-sgpio driver implements an irq_chip which need to be
-invoked from hardirq context. Since spin_lock() can sleep with
-PREEMPT_RT, it is no longer legal to invoke it while interrupts are
-disabled.
-This also causes lockdep to complain about:
-[   25.919465] [ BUG: Invalid wait context ]
-because aspeed_sgpio.lock (spin_lock_t) is taken under irq_desc.lock
-(raw_spinlock_t).
-Let's use of raw_spinlock_t instead of spinlock_t.
+TGn fails sending SM power save mode action frame to the AP to switch
+from dynamic SMPS mode to static mode.
 
-Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Reported-by: Fang Zhao <fang.zhao@mediatek.com>
+Signed-off-by: Fang Zhao <fang.zhao@mediatek.com>
+Signed-off-by: Ryder Lee <ryder.lee@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpio-aspeed-sgpio.c | 32 ++++++++++++++++----------------
- 1 file changed, 16 insertions(+), 16 deletions(-)
+ .../net/wireless/mediatek/mt76/mt7915/mcu.c   | 81 ++++++++++++-------
+ .../net/wireless/mediatek/mt76/mt7915/mcu.h   |  8 ++
+ 2 files changed, 61 insertions(+), 28 deletions(-)
 
-diff --git a/drivers/gpio/gpio-aspeed-sgpio.c b/drivers/gpio/gpio-aspeed-sgpio.c
-index b3a9b8488f11d..454cefbeecf0e 100644
---- a/drivers/gpio/gpio-aspeed-sgpio.c
-+++ b/drivers/gpio/gpio-aspeed-sgpio.c
-@@ -31,7 +31,7 @@ struct aspeed_sgpio {
- 	struct gpio_chip chip;
- 	struct irq_chip intc;
- 	struct clk *pclk;
--	spinlock_t lock;
-+	raw_spinlock_t lock;
- 	void __iomem *base;
- 	int irq;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+index 852d5d97c70b1..8215b3d79bbdc 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.c
+@@ -1752,33 +1752,6 @@ int mt7915_mcu_sta_update_hdr_trans(struct mt7915_dev *dev,
+ 				     true);
+ }
+ 
+-int mt7915_mcu_add_smps(struct mt7915_dev *dev, struct ieee80211_vif *vif,
+-			struct ieee80211_sta *sta)
+-{
+-	struct mt7915_vif *mvif = (struct mt7915_vif *)vif->drv_priv;
+-	struct mt7915_sta *msta = (struct mt7915_sta *)sta->drv_priv;
+-	struct wtbl_req_hdr *wtbl_hdr;
+-	struct tlv *sta_wtbl;
+-	struct sk_buff *skb;
+-
+-	skb = mt7915_mcu_alloc_sta_req(dev, mvif, msta,
+-				       MT7915_STA_UPDATE_MAX_SIZE);
+-	if (IS_ERR(skb))
+-		return PTR_ERR(skb);
+-
+-	sta_wtbl = mt7915_mcu_add_tlv(skb, STA_REC_WTBL, sizeof(struct tlv));
+-
+-	wtbl_hdr = mt7915_mcu_alloc_wtbl_req(dev, msta, WTBL_SET, sta_wtbl,
+-					     &skb);
+-	if (IS_ERR(wtbl_hdr))
+-		return PTR_ERR(wtbl_hdr);
+-
+-	mt7915_mcu_wtbl_smps_tlv(skb, sta, sta_wtbl, wtbl_hdr);
+-
+-	return mt76_mcu_skb_send_msg(&dev->mt76, skb,
+-				     MCU_EXT_CMD(STA_REC_UPDATE), true);
+-}
+-
+ static inline bool
+ mt7915_is_ebf_supported(struct mt7915_phy *phy, struct ieee80211_vif *vif,
+ 			struct ieee80211_sta *sta, bool bfee)
+@@ -2049,6 +2022,21 @@ mt7915_mcu_sta_bfee_tlv(struct mt7915_dev *dev, struct sk_buff *skb,
+ 	bfee->fb_identity_matrix = (nrow == 1 && tx_ant == 2);
+ }
+ 
++static enum mcu_mmps_mode
++mt7915_mcu_get_mmps_mode(enum ieee80211_smps_mode smps)
++{
++	switch (smps) {
++	case IEEE80211_SMPS_OFF:
++		return MCU_MMPS_DISABLE;
++	case IEEE80211_SMPS_STATIC:
++		return MCU_MMPS_STATIC;
++	case IEEE80211_SMPS_DYNAMIC:
++		return MCU_MMPS_DYNAMIC;
++	default:
++		return MCU_MMPS_DISABLE;
++	}
++}
++
+ int mt7915_mcu_set_fixed_rate_ctrl(struct mt7915_dev *dev,
+ 				   struct ieee80211_vif *vif,
+ 				   struct ieee80211_sta *sta,
+@@ -2076,7 +2064,11 @@ int mt7915_mcu_set_fixed_rate_ctrl(struct mt7915_dev *dev,
+ 	case RATE_PARAM_FIXED_MCS:
+ 	case RATE_PARAM_FIXED_GI:
+ 	case RATE_PARAM_FIXED_HE_LTF:
+-		ra->phy = *phy;
++		if (phy)
++			ra->phy = *phy;
++		break;
++	case RATE_PARAM_MMPS_UPDATE:
++		ra->mmps_mode = mt7915_mcu_get_mmps_mode(sta->smps_mode);
+ 		break;
+ 	default:
+ 		break;
+@@ -2087,6 +2079,39 @@ int mt7915_mcu_set_fixed_rate_ctrl(struct mt7915_dev *dev,
+ 				     MCU_EXT_CMD(STA_REC_UPDATE), true);
+ }
+ 
++int mt7915_mcu_add_smps(struct mt7915_dev *dev, struct ieee80211_vif *vif,
++			struct ieee80211_sta *sta)
++{
++	struct mt7915_vif *mvif = (struct mt7915_vif *)vif->drv_priv;
++	struct mt7915_sta *msta = (struct mt7915_sta *)sta->drv_priv;
++	struct wtbl_req_hdr *wtbl_hdr;
++	struct tlv *sta_wtbl;
++	struct sk_buff *skb;
++	int ret;
++
++	skb = mt7915_mcu_alloc_sta_req(dev, mvif, msta,
++				       MT7915_STA_UPDATE_MAX_SIZE);
++	if (IS_ERR(skb))
++		return PTR_ERR(skb);
++
++	sta_wtbl = mt7915_mcu_add_tlv(skb, STA_REC_WTBL, sizeof(struct tlv));
++
++	wtbl_hdr = mt7915_mcu_alloc_wtbl_req(dev, msta, WTBL_SET, sta_wtbl,
++					     &skb);
++	if (IS_ERR(wtbl_hdr))
++		return PTR_ERR(wtbl_hdr);
++
++	mt7915_mcu_wtbl_smps_tlv(skb, sta, sta_wtbl, wtbl_hdr);
++
++	ret = mt76_mcu_skb_send_msg(&dev->mt76, skb,
++				    MCU_EXT_CMD(STA_REC_UPDATE), true);
++	if (ret)
++		return ret;
++
++	return mt7915_mcu_set_fixed_rate_ctrl(dev, vif, sta, NULL,
++					      RATE_PARAM_MMPS_UPDATE);
++}
++
+ static int
+ mt7915_mcu_add_rate_ctrl_fixed(struct mt7915_dev *dev,
+ 			       struct ieee80211_vif *vif,
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.h b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.h
+index 1f5a64ba9b59d..628e90d0c394e 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mcu.h
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mcu.h
+@@ -365,6 +365,13 @@ enum {
+ 	MCU_PHY_STATE_OFDMLQ_CNINFO,
  };
-@@ -173,12 +173,12 @@ static int aspeed_sgpio_get(struct gpio_chip *gc, unsigned int offset)
- 	enum aspeed_sgpio_reg reg;
- 	int rc = 0;
  
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
++enum mcu_mmps_mode {
++	MCU_MMPS_STATIC,
++	MCU_MMPS_DYNAMIC,
++	MCU_MMPS_RSV,
++	MCU_MMPS_DISABLE,
++};
++
+ #define STA_TYPE_STA			BIT(0)
+ #define STA_TYPE_AP			BIT(1)
+ #define STA_TYPE_ADHOC			BIT(2)
+@@ -960,6 +967,7 @@ struct sta_rec_ra_fixed {
  
- 	reg = aspeed_sgpio_is_input(offset) ? reg_val : reg_rdata;
- 	rc = !!(ioread32(bank_reg(gpio, bank, reg)) & GPIO_BIT(offset));
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return rc;
- }
-@@ -215,11 +215,11 @@ static void aspeed_sgpio_set(struct gpio_chip *gc, unsigned int offset, int val)
- 	struct aspeed_sgpio *gpio = gpiochip_get_data(gc);
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	sgpio_set_value(gc, offset, val);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- }
- 
- static int aspeed_sgpio_dir_in(struct gpio_chip *gc, unsigned int offset)
-@@ -236,9 +236,9 @@ static int aspeed_sgpio_dir_out(struct gpio_chip *gc, unsigned int offset, int v
- 	/* No special action is required for setting the direction; we'll
- 	 * error-out in sgpio_set_value if this isn't an output GPIO */
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	rc = sgpio_set_value(gc, offset, val);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return rc;
- }
-@@ -277,11 +277,11 @@ static void aspeed_sgpio_irq_ack(struct irq_data *d)
- 
- 	status_addr = bank_reg(gpio, bank, reg_irq_status);
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	iowrite32(bit, status_addr);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- }
- 
- static void aspeed_sgpio_irq_set_mask(struct irq_data *d, bool set)
-@@ -296,7 +296,7 @@ static void aspeed_sgpio_irq_set_mask(struct irq_data *d, bool set)
- 	irqd_to_aspeed_sgpio_data(d, &gpio, &bank, &bit, &offset);
- 	addr = bank_reg(gpio, bank, reg_irq_enable);
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	reg = ioread32(addr);
- 	if (set)
-@@ -306,7 +306,7 @@ static void aspeed_sgpio_irq_set_mask(struct irq_data *d, bool set)
- 
- 	iowrite32(reg, addr);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- }
- 
- static void aspeed_sgpio_irq_mask(struct irq_data *d)
-@@ -355,7 +355,7 @@ static int aspeed_sgpio_set_type(struct irq_data *d, unsigned int type)
- 		return -EINVAL;
- 	}
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	addr = bank_reg(gpio, bank, reg_irq_type0);
- 	reg = ioread32(addr);
-@@ -372,7 +372,7 @@ static int aspeed_sgpio_set_type(struct irq_data *d, unsigned int type)
- 	reg = (reg & ~bit) | type2;
- 	iowrite32(reg, addr);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	irq_set_handler_locked(d, handler);
- 
-@@ -467,7 +467,7 @@ static int aspeed_sgpio_reset_tolerance(struct gpio_chip *chip,
- 
- 	reg = bank_reg(gpio, to_bank(offset), reg_tolerance);
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	val = readl(reg);
- 
-@@ -478,7 +478,7 @@ static int aspeed_sgpio_reset_tolerance(struct gpio_chip *chip,
- 
- 	writel(val, reg);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return 0;
- }
-@@ -575,7 +575,7 @@ static int __init aspeed_sgpio_probe(struct platform_device *pdev)
- 	iowrite32(FIELD_PREP(ASPEED_SGPIO_CLK_DIV_MASK, sgpio_clk_div) | gpio_cnt_regval |
- 		  ASPEED_SGPIO_ENABLE, gpio->base + ASPEED_SGPIO_CTRL);
- 
--	spin_lock_init(&gpio->lock);
-+	raw_spin_lock_init(&gpio->lock);
- 
- 	gpio->chip.parent = &pdev->dev;
- 	gpio->chip.ngpio = nr_gpios * 2;
+ enum {
+ 	RATE_PARAM_FIXED = 3,
++	RATE_PARAM_MMPS_UPDATE = 5,
+ 	RATE_PARAM_FIXED_HE_LTF = 7,
+ 	RATE_PARAM_FIXED_MCS,
+ 	RATE_PARAM_FIXED_GI = 11,
 -- 
 2.34.1
 
