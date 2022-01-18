@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 896C0C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:42:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1324DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:42:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245497AbiARCmE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:42:04 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:46562 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344515AbiARCgr (ORCPT
+        id S1343635AbiARCmH (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:42:07 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52132 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245151AbiARCgy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:36:47 -0500
+        Mon, 17 Jan 2022 21:36:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EAE0DB81239;
-        Tue, 18 Jan 2022 02:36:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3359C36AE3;
-        Tue, 18 Jan 2022 02:36:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C9BEA61286;
+        Tue, 18 Jan 2022 02:36:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3EE6C36AEB;
+        Tue, 18 Jan 2022 02:36:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473403;
-        bh=sUaXfDJ9Sn5dKwepOQtj6siD2em1urOqxKMAIkUatHY=;
+        s=k20201202; t=1642473413;
+        bh=NYbdov5jCOu8Otv7CpPd5VLYAMvpLPKa4kYFzhO6B5I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n8wy0OdQLDoSZKkO/aDclWAM3QEEwmAxytOIzO3w9RfTr0CjzU3XDtCW8WJh7bfWp
-         Ajuv/dbReXjIvbWetp346bIZcdPMkRrQaN8bYvZkZ0UL9pJa44mzFNVE9w1ZPhx12t
-         /xUFaHDN05dXNYDUv69LU0sSReGET1xbU6ExchRGxT3Z3A3Jg/lwdRJM9s7X9V0Aqb
-         spbmBNrM3m0nFO+AlRKlRsAB5Yzdf/rGY0+rowOxRN51MRFbxd5gxVzKkI5Xh7dx7L
-         /zD+6VZhYTfPkk/zfbBZWP+Lt1uydQRVoITTzVeSHlULVKqLhpvvchqI+Sb6Jp43vF
-         qtKipxRVQqh9w==
+        b=C9cAoW6JKpkpgJZu8PVMuPdRna02RkShIXcsrTi4jcbuT6JLLiuXJ7dL1quULLcgs
+         KN/zw/FCRbiChuH4o6TCxKzPoRYE5rc1Vf/6L+MhUNiYe9FFNpj13v+U8Jm/iamoYf
+         LVORExaLajgm8jyPIMoX1zBWdviCe/d+o75P4yDcZ2F2R8JChY0YJyLMzcFAPpqCXL
+         eaZYKAI4l51/8yakgbSw5ZcE7K8pxaeQUmjlOUu63lAXo4Ay+QBpCfKYgVj3ULEqP0
+         qy2AqT2HkUuie6hGjZ9hd0ZvBkQhOeC1tM86tth18+ie+89om5dtdGKtVokOktg8xI
+         f8iGQ20BpCYHw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
-        bp@alien8.de, tglx@linutronix.de, mingo@redhat.com,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        linux-edac@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 105/188] x86/mce: Mark mce_panic() noinstr
-Date:   Mon, 17 Jan 2022 21:30:29 -0500
-Message-Id: <20220118023152.1948105-105-sashal@kernel.org>
+Cc:     Felix Kuehling <Felix.Kuehling@amd.com>,
+        Zhou Qingyang <zhou1615@umn.edu>,
+        Philip Yang <Philip.Yang@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 111/188] drm/amdkfd: Fix error handling in svm_range_add
+Date:   Mon, 17 Jan 2022 21:30:35 -0500
+Message-Id: <20220118023152.1948105-111-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -49,67 +53,237 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Felix Kuehling <Felix.Kuehling@amd.com>
 
-[ Upstream commit 3c7ce80a818fa7950be123cac80cd078e5ac1013 ]
+[ Upstream commit 726be40607264b180a2b336c81e1dcff941de618 ]
 
-And allow instrumentation inside it because it does calls to other
-facilities which will not be tagged noinstr.
+Add null-pointer check after the last svm_range_new call. This was
+originally reported by Zhou Qingyang <zhou1615@umn.edu> based on a
+static analyzer.
 
-Fixes
+To avoid duplicating the unwinding code from svm_range_handle_overlap,
+I merged the two functions into one.
 
-  vmlinux.o: warning: objtool: do_machine_check()+0xc73: call to mce_panic() leaves .noinstr.text section
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-8-bp@alien8.de
+Signed-off-by: Felix Kuehling <Felix.Kuehling@amd.com>
+Cc: Zhou Qingyang <zhou1615@umn.edu>
+Reviewed-by: Philip Yang <Philip.Yang@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/core.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/amd/amdkfd/kfd_svm.c | 138 ++++++++++-----------------
+ 1 file changed, 49 insertions(+), 89 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index c8d121085c8f7..c5a1022463bcc 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -295,11 +295,17 @@ static void wait_for_panic(void)
- 	panic("Panicing machine check CPU died");
+diff --git a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+index 5a674235ae41a..830809b694dd9 100644
+--- a/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
++++ b/drivers/gpu/drm/amd/amdkfd/kfd_svm.c
+@@ -936,7 +936,7 @@ svm_range_split(struct svm_range *prange, uint64_t start, uint64_t last,
  }
  
--static void mce_panic(const char *msg, struct mce *final, char *exp)
-+static noinstr void mce_panic(const char *msg, struct mce *final, char *exp)
+ static int
+-svm_range_split_tail(struct svm_range *prange, struct svm_range *new,
++svm_range_split_tail(struct svm_range *prange,
+ 		     uint64_t new_last, struct list_head *insert_list)
  {
--	int apei_err = 0;
- 	struct llist_node *pending;
- 	struct mce_evt_llist *l;
-+	int apei_err = 0;
-+
-+	/*
-+	 * Allow instrumentation around external facilities usage. Not that it
-+	 * matters a whole lot since the machine is going to panic anyway.
-+	 */
-+	instrumentation_begin();
- 
- 	if (!fake_panic) {
- 		/*
-@@ -314,7 +320,7 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
- 	} else {
- 		/* Don't log too much for fake panic */
- 		if (atomic_inc_return(&mce_fake_panicked) > 1)
--			return;
-+			goto out;
- 	}
- 	pending = mce_gen_pool_prepare_records();
- 	/* First print corrected ones that are still unlogged */
-@@ -352,6 +358,9 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
- 		panic(msg);
- 	} else
- 		pr_emerg(HW_ERR "Fake kernel panic: %s\n", msg);
-+
-+out:
-+	instrumentation_end();
+ 	struct svm_range *tail;
+@@ -948,7 +948,7 @@ svm_range_split_tail(struct svm_range *prange, struct svm_range *new,
  }
  
- /* Support code for software error injection */
+ static int
+-svm_range_split_head(struct svm_range *prange, struct svm_range *new,
++svm_range_split_head(struct svm_range *prange,
+ 		     uint64_t new_start, struct list_head *insert_list)
+ {
+ 	struct svm_range *head;
+@@ -1755,49 +1755,54 @@ static struct svm_range *svm_range_clone(struct svm_range *old)
+ }
+ 
+ /**
+- * svm_range_handle_overlap - split overlap ranges
+- * @svms: svm range list header
+- * @new: range added with this attributes
+- * @start: range added start address, in pages
+- * @last: range last address, in pages
+- * @update_list: output, the ranges attributes are updated. For set_attr, this
+- *               will do validation and map to GPUs. For unmap, this will be
+- *               removed and unmap from GPUs
+- * @insert_list: output, the ranges will be inserted into svms, attributes are
+- *               not changes. For set_attr, this will add into svms.
+- * @remove_list:output, the ranges will be removed from svms
+- * @left: the remaining range after overlap, For set_attr, this will be added
+- *        as new range.
++ * svm_range_add - add svm range and handle overlap
++ * @p: the range add to this process svms
++ * @start: page size aligned
++ * @size: page size aligned
++ * @nattr: number of attributes
++ * @attrs: array of attributes
++ * @update_list: output, the ranges need validate and update GPU mapping
++ * @insert_list: output, the ranges need insert to svms
++ * @remove_list: output, the ranges are replaced and need remove from svms
+  *
+- * Total have 5 overlap cases.
++ * Check if the virtual address range has overlap with any existing ranges,
++ * split partly overlapping ranges and add new ranges in the gaps. All changes
++ * should be applied to the range_list and interval tree transactionally. If
++ * any range split or allocation fails, the entire update fails. Therefore any
++ * existing overlapping svm_ranges are cloned and the original svm_ranges left
++ * unchanged.
+  *
+- * This function handles overlap of an address interval with existing
+- * struct svm_ranges for applying new attributes. This may require
+- * splitting existing struct svm_ranges. All changes should be applied to
+- * the range_list and interval tree transactionally. If any split operation
+- * fails, the entire update fails. Therefore the existing overlapping
+- * svm_ranges are cloned and the original svm_ranges left unchanged. If the
+- * transaction succeeds, the modified clones are added and the originals
+- * freed. Otherwise the clones are removed and the old svm_ranges remain.
++ * If the transaction succeeds, the caller can update and insert clones and
++ * new ranges, then free the originals.
+  *
+- * Context: The caller must hold svms->lock
++ * Otherwise the caller can free the clones and new ranges, while the old
++ * svm_ranges remain unchanged.
++ *
++ * Context: Process context, caller must hold svms->lock
++ *
++ * Return:
++ * 0 - OK, otherwise error code
+  */
+ static int
+-svm_range_handle_overlap(struct svm_range_list *svms, struct svm_range *new,
+-			 unsigned long start, unsigned long last,
+-			 struct list_head *update_list,
+-			 struct list_head *insert_list,
+-			 struct list_head *remove_list,
+-			 unsigned long *left)
++svm_range_add(struct kfd_process *p, uint64_t start, uint64_t size,
++	      uint32_t nattr, struct kfd_ioctl_svm_attribute *attrs,
++	      struct list_head *update_list, struct list_head *insert_list,
++	      struct list_head *remove_list)
+ {
++	unsigned long last = start + size - 1UL;
++	struct svm_range_list *svms = &p->svms;
+ 	struct interval_tree_node *node;
++	struct svm_range new = {0};
+ 	struct svm_range *prange;
+ 	struct svm_range *tmp;
+ 	int r = 0;
+ 
++	pr_debug("svms 0x%p [0x%llx 0x%lx]\n", &p->svms, start, last);
++
+ 	INIT_LIST_HEAD(update_list);
+ 	INIT_LIST_HEAD(insert_list);
+ 	INIT_LIST_HEAD(remove_list);
++	svm_range_apply_attrs(p, &new, nattr, attrs);
+ 
+ 	node = interval_tree_iter_first(&svms->objects, start, last);
+ 	while (node) {
+@@ -1825,14 +1830,14 @@ svm_range_handle_overlap(struct svm_range_list *svms, struct svm_range *new,
+ 
+ 			if (node->start < start) {
+ 				pr_debug("change old range start\n");
+-				r = svm_range_split_head(prange, new, start,
++				r = svm_range_split_head(prange, start,
+ 							 insert_list);
+ 				if (r)
+ 					goto out;
+ 			}
+ 			if (node->last > last) {
+ 				pr_debug("change old range last\n");
+-				r = svm_range_split_tail(prange, new, last,
++				r = svm_range_split_tail(prange, last,
+ 							 insert_list);
+ 				if (r)
+ 					goto out;
+@@ -1844,7 +1849,7 @@ svm_range_handle_overlap(struct svm_range_list *svms, struct svm_range *new,
+ 			prange = old;
+ 		}
+ 
+-		if (!svm_range_is_same_attrs(prange, new))
++		if (!svm_range_is_same_attrs(prange, &new))
+ 			list_add(&prange->update_list, update_list);
+ 
+ 		/* insert a new node if needed */
+@@ -1864,8 +1869,16 @@ svm_range_handle_overlap(struct svm_range_list *svms, struct svm_range *new,
+ 		start = next_start;
+ 	}
+ 
+-	if (left && start <= last)
+-		*left = last - start + 1;
++	/* add a final range at the end if needed */
++	if (start <= last) {
++		prange = svm_range_new(svms, start, last);
++		if (!prange) {
++			r = -ENOMEM;
++			goto out;
++		}
++		list_add(&prange->insert_list, insert_list);
++		list_add(&prange->update_list, update_list);
++	}
+ 
+ out:
+ 	if (r)
+@@ -2693,59 +2706,6 @@ svm_range_is_valid(struct mm_struct *mm, uint64_t start, uint64_t size)
+ 	return true;
+ }
+ 
+-/**
+- * svm_range_add - add svm range and handle overlap
+- * @p: the range add to this process svms
+- * @start: page size aligned
+- * @size: page size aligned
+- * @nattr: number of attributes
+- * @attrs: array of attributes
+- * @update_list: output, the ranges need validate and update GPU mapping
+- * @insert_list: output, the ranges need insert to svms
+- * @remove_list: output, the ranges are replaced and need remove from svms
+- *
+- * Check if the virtual address range has overlap with the registered ranges,
+- * split the overlapped range, copy and adjust pages address and vram nodes in
+- * old and new ranges.
+- *
+- * Context: Process context, caller must hold svms->lock
+- *
+- * Return:
+- * 0 - OK, otherwise error code
+- */
+-static int
+-svm_range_add(struct kfd_process *p, uint64_t start, uint64_t size,
+-	      uint32_t nattr, struct kfd_ioctl_svm_attribute *attrs,
+-	      struct list_head *update_list, struct list_head *insert_list,
+-	      struct list_head *remove_list)
+-{
+-	uint64_t last = start + size - 1UL;
+-	struct svm_range_list *svms;
+-	struct svm_range new = {0};
+-	struct svm_range *prange;
+-	unsigned long left = 0;
+-	int r = 0;
+-
+-	pr_debug("svms 0x%p [0x%llx 0x%llx]\n", &p->svms, start, last);
+-
+-	svm_range_apply_attrs(p, &new, nattr, attrs);
+-
+-	svms = &p->svms;
+-
+-	r = svm_range_handle_overlap(svms, &new, start, last, update_list,
+-				     insert_list, remove_list, &left);
+-	if (r)
+-		return r;
+-
+-	if (left) {
+-		prange = svm_range_new(svms, last - left + 1, last);
+-		list_add(&prange->insert_list, insert_list);
+-		list_add(&prange->update_list, update_list);
+-	}
+-
+-	return 0;
+-}
+-
+ /**
+  * svm_range_best_prefetch_location - decide the best prefetch location
+  * @prange: svm range structure
 -- 
 2.34.1
 
