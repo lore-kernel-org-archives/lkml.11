@@ -2,50 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B931C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A4ECC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349730AbiARDRt (ORCPT
+        id S1349753AbiARDRx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:17:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37232 "EHLO
+        Mon, 17 Jan 2022 22:17:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353138AbiARDBN (ORCPT
+        with ESMTP id S1348012AbiARC4H (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:01:13 -0500
+        Mon, 17 Jan 2022 21:56:07 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 121B7C08E87B;
-        Mon, 17 Jan 2022 18:46:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D28BDC02B87E;
+        Mon, 17 Jan 2022 18:44:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7280561311;
-        Tue, 18 Jan 2022 02:46:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF65AC36B05;
-        Tue, 18 Jan 2022 02:46:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9F199612F2;
+        Tue, 18 Jan 2022 02:44:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EA58EC36AE3;
+        Tue, 18 Jan 2022 02:44:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474013;
-        bh=ybTUdVpSs4tP9fA30UA8SByCPb6Bm5xSjfuBftAAKl0=;
+        s=k20201202; t=1642473854;
+        bh=RBR40zL5v8l5xsj1plNYFusmEwDEVsxc+OZRydxSLnA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aw7JRu10KH61hsQwq8/KEKWhH21O3+Jf7NaMM0AnvgqR0VNPE8+SfkYwyzAy+QuaE
-         GCXhH7AWejxTSd/sorgeOY/P0ZhlbTTk08y0LZ7fbN0MwRgOYFxp8oXHaizgsuN7IZ
-         IQBitUZK2SDbDmyhKbNTIM2YKbnNYpY8T+jBH7oZJTCMsOsPp6xrnI7/MVRxCAdNP0
-         U5K6vbQLlPM2KiHlvY946AbaIoIZUNpHGgj8lmsyHlCKtQD0LjtIpJTKIDgQXrNN5z
-         2BgY+bxfBhiU77h6ejLOAUbsiPzfGK9F7TDgxJ94wRB4z1A2uPeQVBsXbTYJOWCqGM
-         RslgDP+4U9S1Q==
+        b=KffthBuxTtMOnosqq0wPAsvWmH0sL1nGgFkNFOD3oN7ESZ7ZE+VVc32Gk/qTcwW+d
+         b4upR+mv4CZCFycOQ/lR2dwJK7H03VYYCi1EEEpoFG97mnBXld4GnWAcL2qlRqNpwr
+         MBYYvvsfRJ6WZYW9NLBrxxGcSYSlOXC//eHz+CztTfazs7g9qJEmSgpeIYj5pePM7p
+         O8wd6ql771cuTdRymL2PXitUuaha5mPM801OV2a6h0DxzQ+dTB6BH4F98qzb/R27pn
+         iR+EYkEvmO2Rn3yfhsaeTy7kHKeJMfOEVmqfO4uaL4MgpsfRGrHLBgeCixrzeMKLd/
+         HzAlqe3zXi/xQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        jirislaby@kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 70/73] serial: pl010: Drop CR register reset on set_termios
-Date:   Mon, 17 Jan 2022 21:44:29 -0500
-Message-Id: <20220118024432.1952028-70-sashal@kernel.org>
+Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, ulli.kroll@googlemail.com,
+        davem@davemloft.net, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 107/116] net: gemini: allow any RGMII interface mode
+Date:   Mon, 17 Jan 2022 21:39:58 -0500
+Message-Id: <20220118024007.1950576-107-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
-References: <20220118024432.1952028-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,56 +56,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 
-[ Upstream commit 08a0c6dff91c965e39905cf200d22db989203ccb ]
+[ Upstream commit 4e4f325a0a55907b14f579e6b1a38c53755e3de2 ]
 
-pl010_set_termios() briefly resets the CR register to zero.
+The four RGMII interface modes take care of the required RGMII delay
+configuration at the PHY and should not be limited by the network MAC
+driver. Sadly, gemini was only permitting RGMII mode with no delays,
+which would require the required delay to be inserted via PCB tracking
+or by the MAC.
 
-Where does this register write come from?
+However, there are designs that require the PHY to add the delay, which
+is impossible without Gemini permitting the other three PHY interface
+modes. Fix the driver to allow these.
 
-The PL010 driver's IRQ handler ambauart_int() originally modified the CR
-register without holding the port spinlock.  ambauart_set_termios() also
-modified that register.  To prevent concurrent read-modify-writes by the
-IRQ handler and to prevent transmission while changing baudrate,
-ambauart_set_termios() had to disable interrupts.  That is achieved by
-writing zero to the CR register.
-
-However in 2004 the PL010 driver was amended to acquire the port
-spinlock in the IRQ handler, obviating the need to disable interrupts in
-->set_termios():
-https://git.kernel.org/history/history/c/157c0342e591
-
-That rendered the CR register write obsolete.  Drop it.
-
-Cc: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/fcaff16e5b1abb4cc3da5a2879ac13f278b99ed0.1641128728.git.lukas@wunner.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Link: https://lore.kernel.org/r/E1n4mpT-002PLd-Ha@rmk-PC.armlinux.org.uk
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/amba-pl010.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/ethernet/cortina/gemini.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index 2c37d11726aba..13f882e5e7b76 100644
---- a/drivers/tty/serial/amba-pl010.c
-+++ b/drivers/tty/serial/amba-pl010.c
-@@ -452,14 +452,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if ((termios->c_cflag & CREAD) == 0)
- 		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
- 
--	/* first, disable everything */
- 	old_cr = readb(uap->port.membase + UART010_CR) & ~UART010_CR_MSIE;
- 
- 	if (UART_ENABLE_MS(port, termios->c_cflag))
- 		old_cr |= UART010_CR_MSIE;
- 
--	writel(0, uap->port.membase + UART010_CR);
--
- 	/* Set baud rate */
- 	quot -= 1;
- 	writel((quot & 0xf00) >> 8, uap->port.membase + UART010_LCRM);
+diff --git a/drivers/net/ethernet/cortina/gemini.c b/drivers/net/ethernet/cortina/gemini.c
+index 8df6f081f2447..d11fcfd927c0b 100644
+--- a/drivers/net/ethernet/cortina/gemini.c
++++ b/drivers/net/ethernet/cortina/gemini.c
+@@ -305,21 +305,21 @@ static void gmac_speed_set(struct net_device *netdev)
+ 	switch (phydev->speed) {
+ 	case 1000:
+ 		status.bits.speed = GMAC_SPEED_1000;
+-		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
++		if (phy_interface_mode_is_rgmii(phydev->interface))
+ 			status.bits.mii_rmii = GMAC_PHY_RGMII_1000;
+ 		netdev_dbg(netdev, "connect %s to RGMII @ 1Gbit\n",
+ 			   phydev_name(phydev));
+ 		break;
+ 	case 100:
+ 		status.bits.speed = GMAC_SPEED_100;
+-		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
++		if (phy_interface_mode_is_rgmii(phydev->interface))
+ 			status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
+ 		netdev_dbg(netdev, "connect %s to RGMII @ 100 Mbit\n",
+ 			   phydev_name(phydev));
+ 		break;
+ 	case 10:
+ 		status.bits.speed = GMAC_SPEED_10;
+-		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
++		if (phy_interface_mode_is_rgmii(phydev->interface))
+ 			status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
+ 		netdev_dbg(netdev, "connect %s to RGMII @ 10 Mbit\n",
+ 			   phydev_name(phydev));
+@@ -389,6 +389,9 @@ static int gmac_setup_phy(struct net_device *netdev)
+ 		status.bits.mii_rmii = GMAC_PHY_GMII;
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII:
++	case PHY_INTERFACE_MODE_RGMII_ID:
++	case PHY_INTERFACE_MODE_RGMII_TXID:
++	case PHY_INTERFACE_MODE_RGMII_RXID:
+ 		netdev_dbg(netdev,
+ 			   "RGMII: set GMAC0 and GMAC1 to MII/RGMII mode\n");
+ 		status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
 -- 
 2.34.1
 
