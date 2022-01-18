@@ -2,85 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8888EC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 01:32:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B286C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 01:36:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238951AbiARBc6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 20:32:58 -0500
-Received: from mail-ot1-f46.google.com ([209.85.210.46]:38790 "EHLO
-        mail-ot1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238891AbiARBcx (ORCPT
+        id S238921AbiARBgg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 20:36:36 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:35849 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231266AbiARBgf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 20:32:53 -0500
-Received: by mail-ot1-f46.google.com with SMTP id g1-20020a9d6481000000b00592d01f2b6eso18162960otl.5;
-        Mon, 17 Jan 2022 17:32:53 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=oEIoapL8xzQ/CNjfq2UGe67vWBp5fLU9YTddyRNF7D4=;
-        b=GNfQplyF1rLc8HJLS/qQAdEJqtOomWbdk5Cbhq1JqmFXgO6bnVlUFvwuPH3TI2ilcF
-         YtZZ4p/0DERPNY/15DTrKnvihPuO+eLf6tpeR8fMYk/hvk3DIJ87awwKALLKC+flnnEc
-         UnDL5T+4a2KGc6sm0jfh3caanWCw4OtO4Fp4KCKke6ykk5xe5TTNkgYkD2W2Pleo2kgE
-         92Lsx1oyastJEIjsgbNtfgEKhOjvpq32D2hl36H1zByI9oqIKfcQ4c4shvbS83HeXHgy
-         AIXGH+oWnwZ7SNbbaRYCkBk8t92sgt3opOA4wQtUQtufG8o8XeMe9ubmJui/5ukf7nAB
-         lF9w==
-X-Gm-Message-State: AOAM531X/7gPi+TO+YVR7OFVwAtGM22BmiYbh25Nn5qnCSIelB11N4T6
-        qUpIHWlrQIgoGt5eWP0hrA==
-X-Google-Smtp-Source: ABdhPJxOcSm7CNH2As9w3aynJ/Eeqk3Ioa3pKfpotJB614dy5Nud1iEbQPEcyuCYuwFps9Ymm1QLMQ==
-X-Received: by 2002:a9d:4106:: with SMTP id o6mr11937606ote.139.1642469573136;
-        Mon, 17 Jan 2022 17:32:53 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id c26sm6300180otr.65.2022.01.17.17.32.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 17:32:52 -0800 (PST)
-Received: (nullmailer pid 545747 invoked by uid 1000);
-        Tue, 18 Jan 2022 01:32:47 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Cristian Pop <cristian.pop@analog.com>
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        jic23@kernel.org, linux-iio@vger.kernel.org, robh+dt@kernel.org
-In-Reply-To: <20220117165247.15718-1-cristian.pop@analog.com>
-References: <20220117165247.15718-1-cristian.pop@analog.com>
-Subject: Re: [PATCH v1 1/2] dt:bindings:iio:frequency: Add ADMV4420 doc
-Date:   Mon, 17 Jan 2022 19:32:47 -0600
-Message-Id: <1642469567.789557.545746.nullmailer@robh.at.kernel.org>
+        Mon, 17 Jan 2022 20:36:35 -0500
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JdBDh6bKwzccS2;
+        Tue, 18 Jan 2022 09:35:48 +0800 (CST)
+Received: from [10.67.110.112] (10.67.110.112) by
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Tue, 18 Jan 2022 09:36:32 +0800
+Subject: Re: [PATCH -next, v2] sched: Use struct_size() helper in
+ task_numa_group()
+To:     Kees Cook <keescook@chromium.org>,
+        Peter Zijlstra <peterz@infradead.org>
+CC:     Steven Rostedt <rostedt@goodmis.org>, <mingo@redhat.com>,
+        <juri.lelli@redhat.com>, <vincent.guittot@linaro.org>,
+        <dietmar.eggemann@arm.com>, <bsegall@google.com>,
+        <mgorman@suse.de>, <bristot@redhat.com>, <gustavoars@kernel.org>,
+        <linux-kernel@vger.kernel.org>, <linux-hardening@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+References: <20220110012354.144394-1-xiujianfeng@huawei.com>
+ <Ydy3N577YD0JJr2N@hirez.programming.kicks-ass.net>
+ <20220110193158.31e1eaea@gandalf.local.home>
+ <Yd1qYsFcgcp/uHSa@hirez.programming.kicks-ass.net>
+ <20220111101425.7c59de5b@rorschach.local.home>
+ <Yd/ugQ8kUmcceuex@hirez.programming.kicks-ass.net>
+ <202201141935.A3F2ED1CF@keescook>
+From:   xiujianfeng <xiujianfeng@huawei.com>
+Message-ID: <81169efd-66bc-8cb3-c61a-f3ac30f089da@huawei.com>
+Date:   Tue, 18 Jan 2022 09:36:32 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.1
+MIME-Version: 1.0
+In-Reply-To: <202201141935.A3F2ED1CF@keescook>
+Content-Type: text/plain; charset="gbk"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.110.112]
+X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
+ dggpeml500023.china.huawei.com (7.185.36.114)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 17 Jan 2022 18:52:46 +0200, Cristian Pop wrote:
-> Add device tree bindings for the ADMV4420 K band downconverter.
-> 
-> Signed-off-by: Cristian Pop <cristian.pop@analog.com>
-> ---
->  .../bindings/iio/frequency/adi,admv4420.yaml  | 54 +++++++++++++++++++
->  1 file changed, 54 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
-> 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
-
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml:10:1: [warning] wrong indentation: expected 2 but found 0 (indentation)
-./Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml:36:1: [warning] wrong indentation: expected 2 but found 0 (indentation)
-./Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml:42:1: [warning] wrong indentation: expected 2 but found 0 (indentation)
-
-dtschema/dtc warnings/errors:
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1580930
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+ÔÚ 2022/1/15 11:50, Kees Cook Ð´µÀ:
+> On Thu, Jan 13, 2022 at 10:18:57AM +0100, Peter Zijlstra wrote:
+>> On Tue, Jan 11, 2022 at 10:14:25AM -0500, Steven Rostedt wrote:
+>>> On Tue, 11 Jan 2022 12:30:42 +0100
+>>> Peter Zijlstra <peterz@infradead.org> wrote:
+>>>
+>>>>>>>   	if (unlikely(!deref_curr_numa_group(p))) {
+>>>>>>> -		unsigned int size = sizeof(struct numa_group) +
+>>>>>>> -				    NR_NUMA_HINT_FAULT_STATS *
+>>>>>>> -				    nr_node_ids * sizeof(unsigned long);
+>>>>>>> +		unsigned int size = struct_size(grp, faults,
+>>>>>>> +						NR_NUMA_HINT_FAULT_STATS * nr_node_ids);
+>>>>>> Again, why?! The old code was perfectly readable, this, not so much.
+>>>>> Because it is unsafe,
+>>>> Unsafe how? Changelog doesn't mention anything, nor do you. In fact,
+>>>> Changelog says there is no functional change, which makes me hate the
+>>>> thing for obscuring something that was simple.
+>>> If for some reason faults changes in size, the original code must be
+>>> updated whereas the new code is robust enough to not need changing.
+> I think this alone is reason enough. :)
+>
+>> Then I would still much prefer something like:
+>>
+>> 	unsigned int size = sizeof(*grp) +
+>> 			    NR_NUMA_HINT_FAULT_STATS * numa_node_ids * sizeof(gfp->faults);
+>>
+>> Which is still far more readable than some obscure macro. But again, the
+> I'm not sure it's _obscure_, but it is relatively new. It's even
+> documented. ;)
+> https://www.kernel.org/doc/html/latest/process/deprecated.html#open-coded-arithmetic-in-allocator-arguments
+>
+> That said, the original patch is incomplete: it should be using size_t
+> for "size".
+thanks, I will send a v3 patch with this change and more detailed commit 
+message.
+>> It is a fairly useful and common pattern to have a small structure and
+>> an array in the same memory allocation.
+>>
+>> Think hash-tables, the structure contains the size of the table and some
+>> other things, like for example a seed for the hash function or a lock,
+>> and then the table itself as an array.
+> Right, the use of flexible arrays is very common in the kernel. So much
+> so that we've spent years fixing all the ancient "fake flexible arrays"
+> scattered around the kernel messing up all kinds of compile-time and
+> run-time flaw mitigations. Flexible array manipulations are notoriously
+> prone to mistakes (overflows in allocation, mismatched bounds storage
+> sizes, array index overflows, etc). These helpers (with more to come)
+> help remove some of the foot-guns that C would normally impart to them.
+>
+>> I can't, nor do I want to, remember all these stupid little macros. Esp.
+>> not for trivial things like this.
+> Well, the good news is that other folks will (and are) fixing them for
+> you. :) Even if you never make mistakes with flexible arrays, other
+> people do, and so we need to take on some improvements to the robustness
+> of the kernel source tree-wide.
+>
+> -Kees
+>
