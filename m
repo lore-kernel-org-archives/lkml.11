@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADC30C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:35:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13742C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:35:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344643AbiARCe5 (ORCPT
+        id S1344864AbiARCfE (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:34:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57228 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343824AbiARC1S (ORCPT
+        Mon, 17 Jan 2022 21:35:04 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44988 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343546AbiARC1s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:27:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A79BAC0617AB;
-        Mon, 17 Jan 2022 18:25:28 -0800 (PST)
+        Mon, 17 Jan 2022 21:27:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67676B81244;
-        Tue, 18 Jan 2022 02:25:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0F190C36AE3;
-        Tue, 18 Jan 2022 02:25:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EFCFC60A6B;
+        Tue, 18 Jan 2022 02:27:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F4B4C36AEB;
+        Tue, 18 Jan 2022 02:27:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472726;
-        bh=JRwEwaQ2ghXjEgsdO+LW6h97cIMvCsKA8iS5G29TpR4=;
+        s=k20201202; t=1642472867;
+        bh=7JbDH43R22WIYcejg9OsHen3b334vpramCtRrgY9ViA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PLc0DTi7QQyqExaAx/h+6cP4053GdtVLRSigT843GESdWSl9v2W7CJWb2Pr6/ohST
-         9FJFCNOWQPLpZbKUZjzV75X5o024vRU8qaOnjJGyO3vwRITiNPmAPw5hCmjHTmxN5Y
-         cqjloGbEiWvFnlOZkxgcBK5RnsDQ6srzGNXtZ8h+h+caQs565ofZ+J2sIq3UmBaYtJ
-         VmO2hdrkx92tbWoH2W6WFlFuoJPpHwxXRbC4IBzgtGZlkukvH91a2IqLaG9hPZmIe+
-         qzDlWufAWiRkMVEfK1YJ/mTRQKGzsOu/WVVETwSu94sw70175A8POsr2gWQwOiu1KQ
-         duhiND18fsLsw==
+        b=EWpwYfx1VphEqJY2UECHvwCfcOYXYN2KWVgLUfEQUGAAy8axX/Sc/rDGEFyrx4NYa
+         BsGrCqabgASyEM+yLFKLXLecMjKD+Buwf43FcycgoIHsgO1x31BW/szCPBfJOx8jWY
+         JdCMhCO4p75r0Q3Mm23hA/Jij1lAEOuYZcYRP3encmNWjuzX2GgDI92R58PrIcD2VZ
+         qP5dmFHlNhnKg/JIOzdwFMb3lSmU67arUlBa8AjtsFU2ypSoO22eopguH04KeG1wjm
+         OV111mZDo/vPsWQDwAUnGuzUMNjTn15yo9KO2z6gvDRflCcJjyHvbB8oADQwIEJ6FP
+         fOlGorAIpBoOw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Iwona Winiarska <iwona.winiarska@intel.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
-        joel@jms.id.au, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.16 115/217] gpio: aspeed: Convert aspeed_gpio.lock to raw_spinlock
-Date:   Mon, 17 Jan 2022 21:17:58 -0500
-Message-Id: <20220118021940.1942199-115-sashal@kernel.org>
+Cc:     Xing Song <xing.song@mediatek.com>, Felix Fietkau <nbd@nbd.name>,
+        Sasha Levin <sashal@kernel.org>, lorenzo.bianconi83@gmail.com,
+        ryder.lee@mediatek.com, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, matthias.bgg@gmail.com, sean.wang@mediatek.com,
+        shayne.chen@mediatek.com, greearb@candelatech.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 155/217] mt76: do not pass the received frame with decryption error
+Date:   Mon, 17 Jan 2022 21:18:38 -0500
+Message-Id: <20220118021940.1942199-155-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -54,256 +54,113 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Iwona Winiarska <iwona.winiarska@intel.com>
+From: Xing Song <xing.song@mediatek.com>
 
-[ Upstream commit 61a7904b6ace99b1bde0d0e867fa3097f5c8cee2 ]
+[ Upstream commit dd28dea52ad9376d2b243a8981726646e1f60b1a ]
 
-The gpio-aspeed driver implements an irq_chip which need to be invoked
-from hardirq context. Since spin_lock() can sleep with PREEMPT_RT, it is
-no longer legal to invoke it while interrupts are disabled.
-This also causes lockdep to complain about:
-[    0.649797] [ BUG: Invalid wait context ]
-because aspeed_gpio.lock (spin_lock_t) is taken under irq_desc.lock
-(raw_spinlock_t).
-Let's use of raw_spinlock_t instead of spinlock_t.
+MAC80211 doesn't care any decryption error in 802.3 path, so received
+frame will be dropped if HW tell us that the cipher configuration is not
+matched as well as the header has been translated to 802.3. This case only
+appears when IEEE80211_FCTL_PROTECTED is 0 and cipher suit is not none in
+the corresponding HW entry.
 
-Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+The received frame is only reported to monitor interface if HW decryption
+block tell us there is ICV error or CCMP/BIP/WPI MIC error. Note in this
+case the reported frame is decrypted 802.11 frame and the payload may be
+malformed due to mismatched key.
+
+Signed-off-by: Xing Song <xing.song@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpio-aspeed.c | 52 +++++++++++++++++++-------------------
- 1 file changed, 26 insertions(+), 26 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7603/mac.c | 4 ++++
+ drivers/net/wireless/mediatek/mt76/mt7615/mac.c | 9 ++++++++-
+ drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 9 ++++++++-
+ drivers/net/wireless/mediatek/mt76/mt7921/mac.c | 9 ++++++++-
+ 4 files changed, 28 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpio/gpio-aspeed.c b/drivers/gpio/gpio-aspeed.c
-index 3c8f20c57695f..318a7d95a1a8b 100644
---- a/drivers/gpio/gpio-aspeed.c
-+++ b/drivers/gpio/gpio-aspeed.c
-@@ -53,7 +53,7 @@ struct aspeed_gpio_config {
- struct aspeed_gpio {
- 	struct gpio_chip chip;
- 	struct irq_chip irqc;
--	spinlock_t lock;
-+	raw_spinlock_t lock;
- 	void __iomem *base;
- 	int irq;
- 	const struct aspeed_gpio_config *config;
-@@ -413,14 +413,14 @@ static void aspeed_gpio_set(struct gpio_chip *gc, unsigned int offset,
- 	unsigned long flags;
- 	bool copro;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7603/mac.c b/drivers/net/wireless/mediatek/mt76/mt7603/mac.c
+index fe03e31989bb1..a9ac61b9f854a 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7603/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7603/mac.c
+@@ -525,6 +525,10 @@ mt7603_mac_fill_rx(struct mt7603_dev *dev, struct sk_buff *skb)
+ 	if (rxd2 & MT_RXD2_NORMAL_TKIP_MIC_ERR)
+ 		status->flag |= RX_FLAG_MMIC_ERROR;
  
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	copro = aspeed_gpio_copro_request(gpio, offset);
- 
- 	__aspeed_gpio_set(gc, offset, val);
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- }
- 
- static int aspeed_gpio_dir_in(struct gpio_chip *gc, unsigned int offset)
-@@ -435,7 +435,7 @@ static int aspeed_gpio_dir_in(struct gpio_chip *gc, unsigned int offset)
- 	if (!have_input(gpio, offset))
- 		return -ENOTSUPP;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	reg = ioread32(addr);
- 	reg &= ~GPIO_BIT(offset);
-@@ -445,7 +445,7 @@ static int aspeed_gpio_dir_in(struct gpio_chip *gc, unsigned int offset)
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return 0;
- }
-@@ -463,7 +463,7 @@ static int aspeed_gpio_dir_out(struct gpio_chip *gc,
- 	if (!have_output(gpio, offset))
- 		return -ENOTSUPP;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	reg = ioread32(addr);
- 	reg |= GPIO_BIT(offset);
-@@ -474,7 +474,7 @@ static int aspeed_gpio_dir_out(struct gpio_chip *gc,
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return 0;
- }
-@@ -492,11 +492,11 @@ static int aspeed_gpio_get_direction(struct gpio_chip *gc, unsigned int offset)
- 	if (!have_output(gpio, offset))
- 		return GPIO_LINE_DIRECTION_IN;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	val = ioread32(bank_reg(gpio, bank, reg_dir)) & GPIO_BIT(offset);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return val ? GPIO_LINE_DIRECTION_OUT : GPIO_LINE_DIRECTION_IN;
- }
-@@ -539,14 +539,14 @@ static void aspeed_gpio_irq_ack(struct irq_data *d)
- 
- 	status_addr = bank_reg(gpio, bank, reg_irq_status);
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	copro = aspeed_gpio_copro_request(gpio, offset);
- 
- 	iowrite32(bit, status_addr);
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- }
- 
- static void aspeed_gpio_irq_set_mask(struct irq_data *d, bool set)
-@@ -565,7 +565,7 @@ static void aspeed_gpio_irq_set_mask(struct irq_data *d, bool set)
- 
- 	addr = bank_reg(gpio, bank, reg_irq_enable);
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	copro = aspeed_gpio_copro_request(gpio, offset);
- 
- 	reg = ioread32(addr);
-@@ -577,7 +577,7 @@ static void aspeed_gpio_irq_set_mask(struct irq_data *d, bool set)
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- }
- 
- static void aspeed_gpio_irq_mask(struct irq_data *d)
-@@ -629,7 +629,7 @@ static int aspeed_gpio_set_type(struct irq_data *d, unsigned int type)
++	/* ICV error or CCMP/BIP/WPI MIC error */
++	if (rxd2 & MT_RXD2_NORMAL_ICV_ERR)
++		status->flag |= RX_FLAG_ONLY_MONITOR;
++
+ 	if (FIELD_GET(MT_RXD2_NORMAL_SEC_MODE, rxd2) != 0 &&
+ 	    !(rxd2 & (MT_RXD2_NORMAL_CLM | MT_RXD2_NORMAL_CM))) {
+ 		status->flag |= RX_FLAG_DECRYPTED;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+index 423f69015e3ec..c79abce543f3b 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/mac.c
+@@ -286,9 +286,16 @@ static int mt7615_mac_fill_rx(struct mt7615_dev *dev, struct sk_buff *skb)
+ 	if (rxd2 & MT_RXD2_NORMAL_AMSDU_ERR)
  		return -EINVAL;
- 	}
  
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	copro = aspeed_gpio_copro_request(gpio, offset);
++	hdr_trans = rxd1 & MT_RXD1_NORMAL_HDR_TRANS;
++	if (hdr_trans && (rxd2 & MT_RXD2_NORMAL_CM))
++		return -EINVAL;
++
++	/* ICV error or CCMP/BIP/WPI MIC error */
++	if (rxd2 & MT_RXD2_NORMAL_ICV_ERR)
++		status->flag |= RX_FLAG_ONLY_MONITOR;
++
+ 	unicast = (rxd1 & MT_RXD1_NORMAL_ADDR_TYPE) == MT_RXD1_NORMAL_U2M;
+ 	idx = FIELD_GET(MT_RXD2_NORMAL_WLAN_IDX, rxd2);
+-	hdr_trans = rxd1 & MT_RXD1_NORMAL_HDR_TRANS;
+ 	status->wcid = mt7615_rx_get_wcid(dev, idx, unicast);
  
- 	addr = bank_reg(gpio, bank, reg_irq_type0);
-@@ -649,7 +649,7 @@ static int aspeed_gpio_set_type(struct irq_data *d, unsigned int type)
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	irq_set_handler_locked(d, handler);
- 
-@@ -716,7 +716,7 @@ static int aspeed_gpio_reset_tolerance(struct gpio_chip *chip,
- 
- 	treg = bank_reg(gpio, to_bank(offset), reg_tolerance);
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	copro = aspeed_gpio_copro_request(gpio, offset);
- 
- 	val = readl(treg);
-@@ -730,7 +730,7 @@ static int aspeed_gpio_reset_tolerance(struct gpio_chip *chip,
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return 0;
- }
-@@ -856,7 +856,7 @@ static int enable_debounce(struct gpio_chip *chip, unsigned int offset,
- 		return rc;
- 	}
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	if (timer_allocation_registered(gpio, offset)) {
- 		rc = unregister_allocated_timer(gpio, offset);
-@@ -916,7 +916,7 @@ static int enable_debounce(struct gpio_chip *chip, unsigned int offset,
- 	configure_timer(gpio, offset, i);
- 
- out:
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return rc;
- }
-@@ -927,13 +927,13 @@ static int disable_debounce(struct gpio_chip *chip, unsigned int offset)
- 	unsigned long flags;
- 	int rc;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	rc = unregister_allocated_timer(gpio, offset);
- 	if (!rc)
- 		configure_timer(gpio, offset, 0);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return rc;
- }
-@@ -1015,7 +1015,7 @@ int aspeed_gpio_copro_grab_gpio(struct gpio_desc *desc,
+ 	if (status->wcid) {
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+index 809dc18e5083c..38d66411444a1 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+@@ -426,9 +426,16 @@ mt7915_mac_fill_rx(struct mt7915_dev *dev, struct sk_buff *skb)
+ 	if (rxd2 & MT_RXD2_NORMAL_AMSDU_ERR)
  		return -EINVAL;
- 	bindex = offset >> 3;
  
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
++	hdr_trans = rxd2 & MT_RXD2_NORMAL_HDR_TRANS;
++	if (hdr_trans && (rxd1 & MT_RXD1_NORMAL_CM))
++		return -EINVAL;
++
++	/* ICV error or CCMP/BIP/WPI MIC error */
++	if (rxd1 & MT_RXD1_NORMAL_ICV_ERR)
++		status->flag |= RX_FLAG_ONLY_MONITOR;
++
+ 	unicast = FIELD_GET(MT_RXD3_NORMAL_ADDR_TYPE, rxd3) == MT_RXD3_NORMAL_U2M;
+ 	idx = FIELD_GET(MT_RXD1_NORMAL_WLAN_IDX, rxd1);
+-	hdr_trans = rxd2 & MT_RXD2_NORMAL_HDR_TRANS;
+ 	status->wcid = mt7915_rx_get_wcid(dev, idx, unicast);
  
- 	/* Sanity check, this shouldn't happen */
- 	if (gpio->cf_copro_bankmap[bindex] == 0xff) {
-@@ -1036,7 +1036,7 @@ int aspeed_gpio_copro_grab_gpio(struct gpio_desc *desc,
- 	if (bit)
- 		*bit = GPIO_OFFSET(offset);
-  bail:
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 	return rc;
- }
- EXPORT_SYMBOL_GPL(aspeed_gpio_copro_grab_gpio);
-@@ -1060,7 +1060,7 @@ int aspeed_gpio_copro_release_gpio(struct gpio_desc *desc)
+ 	if (status->wcid) {
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
+index db3302b1576a0..27550385c35f9 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7921/mac.c
+@@ -428,10 +428,17 @@ mt7921_mac_fill_rx(struct mt7921_dev *dev, struct sk_buff *skb)
+ 	if (rxd2 & MT_RXD2_NORMAL_AMSDU_ERR)
  		return -EINVAL;
- 	bindex = offset >> 3;
  
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
++	hdr_trans = rxd2 & MT_RXD2_NORMAL_HDR_TRANS;
++	if (hdr_trans && (rxd1 & MT_RXD1_NORMAL_CM))
++		return -EINVAL;
++
++	/* ICV error or CCMP/BIP/WPI MIC error */
++	if (rxd1 & MT_RXD1_NORMAL_ICV_ERR)
++		status->flag |= RX_FLAG_ONLY_MONITOR;
++
+ 	chfreq = FIELD_GET(MT_RXD3_NORMAL_CH_FREQ, rxd3);
+ 	unicast = FIELD_GET(MT_RXD3_NORMAL_ADDR_TYPE, rxd3) == MT_RXD3_NORMAL_U2M;
+ 	idx = FIELD_GET(MT_RXD1_NORMAL_WLAN_IDX, rxd1);
+-	hdr_trans = rxd2 & MT_RXD2_NORMAL_HDR_TRANS;
+ 	status->wcid = mt7921_rx_get_wcid(dev, idx, unicast);
  
- 	/* Sanity check, this shouldn't happen */
- 	if (gpio->cf_copro_bankmap[bindex] == 0) {
-@@ -1074,7 +1074,7 @@ int aspeed_gpio_copro_release_gpio(struct gpio_desc *desc)
- 		aspeed_gpio_change_cmd_source(gpio, bank, bindex,
- 					      GPIO_CMDSRC_ARM);
-  bail:
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 	return rc;
- }
- EXPORT_SYMBOL_GPL(aspeed_gpio_copro_release_gpio);
-@@ -1148,7 +1148,7 @@ static int __init aspeed_gpio_probe(struct platform_device *pdev)
- 	if (IS_ERR(gpio->base))
- 		return PTR_ERR(gpio->base);
- 
--	spin_lock_init(&gpio->lock);
-+	raw_spin_lock_init(&gpio->lock);
- 
- 	gpio_id = of_match_node(aspeed_gpio_of_table, pdev->dev.of_node);
- 	if (!gpio_id)
+ 	if (status->wcid) {
 -- 
 2.34.1
 
