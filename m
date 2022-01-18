@@ -2,46 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E35C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:46:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A28C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:46:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348804AbiARCqI (ORCPT
+        id S1348824AbiARCqO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:46:08 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51560 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344322AbiARCgS (ORCPT
+        Mon, 17 Jan 2022 21:46:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60060 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345303AbiARCim (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:36:18 -0500
+        Mon, 17 Jan 2022 21:38:42 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D164FC061779;
+        Mon, 17 Jan 2022 18:35:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B5BB61291;
-        Tue, 18 Jan 2022 02:36:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C08BC36AEB;
-        Tue, 18 Jan 2022 02:36:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E8F7861216;
+        Tue, 18 Jan 2022 02:35:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17FCBC36AEB;
+        Tue, 18 Jan 2022 02:35:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473377;
-        bh=22TBzvVqrxec+4D1GlxVLaO6klk4pPbSwURl8EjB0iY=;
+        s=k20201202; t=1642473312;
+        bh=H31agwLA2ruQQdN8omOAcWslyTlbPI1GX1Gde+iH0M8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FIMGJ+FLZlAFKchi1C6SefhH0HxVfTbsBCjfTQ/Uo1NE0EHuuiWeul6yaix/imS5e
-         sycdeCxjLLL6R6DNuTjo3XzPDEDaDOkdH+C22q9zqiePa5qVF2N1oH2p55AU6/GdXY
-         uEF+k68SnHgXvnp9yxYwEQO1kK1/tjCgSDZ8XGoOWWM0VnVRi2oTRoWie/ddSwFGyO
-         sKBdsLh1SlSvTtIYUJlq95WEjCm3ph7ELh8dHnRPC0D0yhoJ8yuHBvo/bHHzS7WRJ/
-         rAUW7Eq+FG0B17Yz6Xvteh5y1FQBEpjQIDgZjly/7BOPoGHYQ405H8KqCk8i4azBoj
-         rNBxDmQ4QGVhA==
+        b=dI5+XpKMAscYkQ1jOwkYrJKIdMhQEGAORpLLEtOYdzYe7kJikZHXEzLhChPwsMJ+f
+         6DmuUNmP3OGL2KWh+m4m6jVTAowgP5IPszWS+zzHyM/duCHl1NTj7kSIelgsSZkN6q
+         rpVLrTH+uGMmSyAMZnlgHC8wmgqcNP+e5bSVFo2BUKLS+m0H6HB5wWY+UAYUkjwRuX
+         h2PPdMsUglXl3ewF8WXVl4zUyuVy7NVY4C4Y+XFxxSX60VN3lPZ58gttaC9n1pH0l6
+         fKipaOd3+1il/v0gLaKjnqMzqO07DMAIKFQaZFIRXyIhssfV/GSvI9l0xQNlHZj/Qp
+         KbzBV848Dgmng==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Shaul Triebitz <shaul.triebitz@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, ilan.peer@intel.com,
-        avraham.stern@intel.com, emmanuel.grumbach@intel.com,
-        sara.sharon@intel.com, nathan.errera@intel.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 091/188] iwlwifi: mvm: avoid clearing a just saved session protection id
-Date:   Mon, 17 Jan 2022 21:30:15 -0500
-Message-Id: <20220118023152.1948105-91-sashal@kernel.org>
+Cc:     Zekun Shen <bruceshenzk@gmail.com>,
+        Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, amitkarwar@gmail.com,
+        siva8118@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 065/188] rsi: Fix use-after-free in rsi_rx_done_handler()
+Date:   Mon, 17 Jan 2022 21:29:49 -0500
+Message-Id: <20220118023152.1948105-65-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -53,57 +56,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Shaul Triebitz <shaul.triebitz@intel.com>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit 8e967c137df3b236d2075f9538cb888129425d1a ]
+[ Upstream commit b07e3c6ebc0c20c772c0f54042e430acec2945c3 ]
 
-When scheduling a session protection the id is saved but
-then it may be cleared when calling iwl_mvm_te_clear_data
-(if a previous session protection is currently active).
-Fix it by saving the id after calling iwl_mvm_te_clear_data.
+When freeing rx_cb->rx_skb, the pointer is not set to NULL,
+a later rsi_rx_done_handler call will try to read the freed
+address.
+This bug will very likley lead to double free, although
+detected early as use-after-free bug.
 
-Signed-off-by: Shaul Triebitz <shaul.triebitz@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211204130722.b0743a588d14.I098fef6677d0dab3ef1b6183ed206a10bab01eb2@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+The bug is triggerable with a compromised/malfunctional usb
+device. After applying the patch, the same input no longer
+triggers the use-after-free.
+
+Attached is the kasan report from fuzzing.
+
+BUG: KASAN: use-after-free in rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+Read of size 4 at addr ffff8880188e5930 by task modprobe/231
+Call Trace:
+ <IRQ>
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+ ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+ __kasan_report.cold+0x37/0x7c
+ ? dma_direct_unmap_page+0x90/0x110
+ ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+ kasan_report+0xe/0x20
+ rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+ __usb_hcd_giveback_urb+0x1e4/0x380
+ usb_giveback_urb_bh+0x241/0x4f0
+ ? __usb_hcd_giveback_urb+0x380/0x380
+ ? apic_timer_interrupt+0xa/0x20
+ tasklet_action_common.isra.0+0x135/0x330
+ __do_softirq+0x18c/0x634
+ ? handle_irq_event+0xcd/0x157
+ ? handle_edge_irq+0x1eb/0x7b0
+ irq_exit+0x114/0x140
+ do_IRQ+0x91/0x1e0
+ common_interrupt+0xf/0xf
+ </IRQ>
+
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/YXxQL/vIiYcZUu/j@10-18-43-117.dynapool.wireless.nyu.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/time-event.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/wireless/rsi/rsi_91x_usb.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
-index e91f8e889df70..e6813317edf35 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
-@@ -1158,15 +1158,10 @@ void iwl_mvm_schedule_session_protection(struct iwl_mvm *mvm,
- 			cpu_to_le32(FW_CMD_ID_AND_COLOR(mvmvif->id,
- 							mvmvif->color)),
- 		.action = cpu_to_le32(FW_CTXT_ACTION_ADD),
-+		.conf_id = cpu_to_le32(SESSION_PROTECT_CONF_ASSOC),
- 		.duration_tu = cpu_to_le32(MSEC_TO_TU(duration)),
- 	};
+diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
+index 6821ea9918956..3cca1823c458a 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_usb.c
++++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
+@@ -269,8 +269,12 @@ static void rsi_rx_done_handler(struct urb *urb)
+ 	struct rsi_91x_usbdev *dev = (struct rsi_91x_usbdev *)rx_cb->data;
+ 	int status = -EINVAL;
  
--	/* The time_event_data.id field is reused to save session
--	 * protection's configuration.
--	 */
--	mvmvif->time_event_data.id = SESSION_PROTECT_CONF_ASSOC;
--	cmd.conf_id = cpu_to_le32(mvmvif->time_event_data.id);
--
- 	lockdep_assert_held(&mvm->mutex);
- 
- 	spin_lock_bh(&mvm->time_event_lock);
-@@ -1180,6 +1175,11 @@ void iwl_mvm_schedule_session_protection(struct iwl_mvm *mvm,
++	if (!rx_cb->rx_skb)
++		return;
++
+ 	if (urb->status) {
+ 		dev_kfree_skb(rx_cb->rx_skb);
++		rx_cb->rx_skb = NULL;
+ 		return;
  	}
  
- 	iwl_mvm_te_clear_data(mvm, te_data);
-+	/*
-+	 * The time_event_data.id field is reused to save session
-+	 * protection's configuration.
-+	 */
-+	te_data->id = le32_to_cpu(cmd.conf_id);
- 	te_data->duration = le32_to_cpu(cmd.duration_tu);
- 	te_data->vif = vif;
- 	spin_unlock_bh(&mvm->time_event_lock);
+@@ -294,8 +298,10 @@ static void rsi_rx_done_handler(struct urb *urb)
+ 	if (rsi_rx_urb_submit(dev->priv, rx_cb->ep_num, GFP_ATOMIC))
+ 		rsi_dbg(ERR_ZONE, "%s: Failed in urb submission", __func__);
+ 
+-	if (status)
++	if (status) {
+ 		dev_kfree_skb(rx_cb->rx_skb);
++		rx_cb->rx_skb = NULL;
++	}
+ }
+ 
+ static void rsi_rx_urb_kill(struct rsi_hw *adapter, u8 ep_num)
 -- 
 2.34.1
 
