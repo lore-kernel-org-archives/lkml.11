@@ -2,51 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC15C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:38:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD1DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:39:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345236AbiARCic (ORCPT
+        id S1345521AbiARCjB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:38:32 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50344 "EHLO
+        Mon, 17 Jan 2022 21:39:01 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51370 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239896AbiARCdP (ORCPT
+        with ESMTP id S1343672AbiARCeF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:33:15 -0500
+        Mon, 17 Jan 2022 21:34:05 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9B3B461118;
-        Tue, 18 Jan 2022 02:33:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0CFFC36AEB;
-        Tue, 18 Jan 2022 02:33:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6B1761268;
+        Tue, 18 Jan 2022 02:34:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DA79C36AEB;
+        Tue, 18 Jan 2022 02:34:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473192;
-        bh=eSOZJjsod7JXBVDUOGZX0mGYhD7AX7qWZXKijpCydxQ=;
+        s=k20201202; t=1642473244;
+        bh=Eia1I/7kXiGFDysXVFjJwEP3xWDF4EvGMO70qbMvXbQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RPJFwAuZ7F+/LjAeqkrnjjbjjMKAH1kSxhZp+u5sp0qQTYKnEtdXaiQzalM2JJ1Eq
-         Aup88MLe++ky2Dw/9DEv0C2dKvfIU+aoTW7PtnJdkcR/s66wADgj/8lEZIj+aZPGza
-         UvP2NShWoxAaMPJ9Ak5jGF+ei3V4Nxz+OgdLo6N1ubGNNLQXFZanHppjBldIbM4q+p
-         Hc9pU5xUNQ4AB98/yRUHz9V0TMGjlNgk1ORIqXGd2FKTu4gmev+y8k8Yzbk2MusXoZ
-         CiT5iat8SePcfGf4e4SfB6YWJle9J863wOdqZ0Kvb93VWGG/uNzj2uUhqxD0uDz1b9
-         ePfOT4dcr0DIw==
+        b=Vn/M1ESlGoayUwMPh1va3lIdzWYfvkJOu/WYfN5dszdhbYuPbLrShZO85m4KUfMzK
+         DhYYzX8U6GNODAUj6E/kPWu1uORwBlTF9qxtWta1W1gnIWdvYQAhadqiCgAxCy7EqZ
+         cks9pgt6vtU/QX61t+ctW37LKkM5JJpSN3hQPmMCzKD26eeO6j3fMVle2CK3RDLbUw
+         3FqRhkvKCwrWBGBChYn+pTBePTZQQGqAG34Nnnhftdnlw4E/Rvg7QNPEZBTehctN/W
+         Yu6u33JBNN3c+GAmcnuOvKBJvwnVTKxGJR62xKWRFexNwQXbLEBygrw+p/xFMLGAUQ
+         E3VYMJ83zsm0Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Linus=20L=C3=BCssing?= <linus.luessing@c0d3.blue>,
-        Tycho Andersen <tycho@tycho.pizza>,
-        Sven Eckelmann <sven@narfation.org>,
-        Simon Wunderlich <sw@simonwunderlich.de>,
-        Sasha Levin <sashal@kernel.org>, mareklindner@neomailbox.ch,
-        a@unstable.cc, davem@davemloft.net, kuba@kernel.org,
-        b.a.t.m.a.n@lists.open-mesh.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 020/188] batman-adv: allow netlink usage in unprivileged containers
-Date:   Mon, 17 Jan 2022 21:29:04 -0500
-Message-Id: <20220118023152.1948105-20-sashal@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, tanghui20@huawei.com,
+        arnd@arndb.de, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 038/188] smc9194: use eth_hw_addr_set()
+Date:   Mon, 17 Jan 2022 21:29:22 -0500
+Message-Id: <20220118023152.1948105-38-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,169 +50,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Linus Lüssing <linus.luessing@c0d3.blue>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 9057d6c23e7388ee9d037fccc9a7bc8557ce277b ]
+[ Upstream commit 80db345e7df0c507a83bd12ac7766fb054443804 ]
 
-Currently, creating a batman-adv interface in an unprivileged LXD
-container and attaching secondary interfaces to it with "ip" or "batctl"
-works fine. However all batctl debug and configuration commands
-fail:
+dev_addr is set from IO reads, and broken from a u16 value.
 
-  root@container:~# batctl originators
-  Error received: Operation not permitted
-  root@container:~# batctl orig_interval
-  1000
-  root@container:~# batctl orig_interval 2000
-  root@container:~# batctl orig_interval
-  1000
+Fixes build on Alpha.
 
-To fix this change the generic netlink permissions from GENL_ADMIN_PERM
-to GENL_UNS_ADMIN_PERM. This way a batman-adv interface is fully
-maintainable as root from within a user namespace, from an unprivileged
-container.
-
-All except one batman-adv netlink setting are per interface and do not
-leak information or change settings from the host system and are
-therefore save to retrieve or modify as root from within an unprivileged
-container.
-
-"batctl routing_algo" / BATADV_CMD_GET_ROUTING_ALGOS is the only
-exception: It provides the batman-adv kernel module wide default routing
-algorithm. However it is read-only from netlink and an unprivileged
-container is still not allowed to modify
-/sys/module/batman_adv/parameters/routing_algo. Instead it is advised to
-use the newly introduced "batctl if create routing_algo RA_NAME" /
-IFLA_BATADV_ALGO_NAME to set the routing algorithm on interface
-creation, which already works fine in an unprivileged container.
-
-Cc: Tycho Andersen <tycho@tycho.pizza>
-Signed-off-by: Linus Lüssing <linus.luessing@c0d3.blue>
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Simon Wunderlich <sw@simonwunderlich.de>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/batman-adv/netlink.c | 30 +++++++++++++++---------------
- 1 file changed, 15 insertions(+), 15 deletions(-)
+ drivers/net/ethernet/smsc/smc9194.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/net/batman-adv/netlink.c b/net/batman-adv/netlink.c
-index 29276284d281c..00875e1d8c44c 100644
---- a/net/batman-adv/netlink.c
-+++ b/net/batman-adv/netlink.c
-@@ -1368,21 +1368,21 @@ static const struct genl_small_ops batadv_netlink_ops[] = {
- 	{
- 		.cmd = BATADV_CMD_TP_METER,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.doit = batadv_netlink_tp_meter_start,
- 		.internal_flags = BATADV_FLAG_NEED_MESH,
- 	},
- 	{
- 		.cmd = BATADV_CMD_TP_METER_CANCEL,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.doit = batadv_netlink_tp_meter_cancel,
- 		.internal_flags = BATADV_FLAG_NEED_MESH,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_ROUTING_ALGOS,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_algo_dump,
- 	},
- 	{
-@@ -1397,68 +1397,68 @@ static const struct genl_small_ops batadv_netlink_ops[] = {
- 	{
- 		.cmd = BATADV_CMD_GET_TRANSTABLE_LOCAL,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_tt_local_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_TRANSTABLE_GLOBAL,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_tt_global_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_ORIGINATORS,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_orig_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_NEIGHBORS,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_hardif_neigh_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_GATEWAYS,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_gw_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_BLA_CLAIM,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_bla_claim_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_BLA_BACKBONE,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_bla_backbone_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_DAT_CACHE,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_dat_cache_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_GET_MCAST_FLAGS,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.dumpit = batadv_mcast_flags_dump,
- 	},
- 	{
- 		.cmd = BATADV_CMD_SET_MESH,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.doit = batadv_netlink_set_mesh,
- 		.internal_flags = BATADV_FLAG_NEED_MESH,
- 	},
- 	{
- 		.cmd = BATADV_CMD_SET_HARDIF,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.doit = batadv_netlink_set_hardif,
- 		.internal_flags = BATADV_FLAG_NEED_MESH |
- 				  BATADV_FLAG_NEED_HARDIF,
-@@ -1474,7 +1474,7 @@ static const struct genl_small_ops batadv_netlink_ops[] = {
- 	{
- 		.cmd = BATADV_CMD_SET_VLAN,
- 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
--		.flags = GENL_ADMIN_PERM,
-+		.flags = GENL_UNS_ADMIN_PERM,
- 		.doit = batadv_netlink_set_vlan,
- 		.internal_flags = BATADV_FLAG_NEED_MESH |
- 				  BATADV_FLAG_NEED_VLAN,
+diff --git a/drivers/net/ethernet/smsc/smc9194.c b/drivers/net/ethernet/smsc/smc9194.c
+index 0ce403fa5f1a4..af661c65ffe2f 100644
+--- a/drivers/net/ethernet/smsc/smc9194.c
++++ b/drivers/net/ethernet/smsc/smc9194.c
+@@ -856,6 +856,7 @@ static int __init smc_probe(struct net_device *dev, int ioaddr)
+ 	word configuration_register;
+ 	word memory_info_register;
+ 	word memory_cfg_register;
++	u8 addr[ETH_ALEN];
+ 
+ 	/* Grab the region so that no one else tries to probe our ioports. */
+ 	if (!request_region(ioaddr, SMC_IO_EXTENT, DRV_NAME))
+@@ -924,9 +925,10 @@ static int __init smc_probe(struct net_device *dev, int ioaddr)
+ 		word	address;
+ 
+ 		address = inw( ioaddr + ADDR0 + i  );
+-		dev->dev_addr[ i + 1] = address >> 8;
+-		dev->dev_addr[ i ] = address & 0xFF;
++		addr[i + 1] = address >> 8;
++		addr[i] = address & 0xFF;
+ 	}
++	eth_hw_addr_set(dev, addr);
+ 
+ 	/* get the memory information */
+ 
 -- 
 2.34.1
 
