@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 608E2C4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:19:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD67C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:19:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244352AbiARCTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:19:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56316 "EHLO
+        id S244414AbiARCT6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:19:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56342 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231611AbiARCTp (ORCPT
+        with ESMTP id S244343AbiARCTu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:19:45 -0500
+        Mon, 17 Jan 2022 21:19:50 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF981C061574;
-        Mon, 17 Jan 2022 18:19:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0AECC06173E;
+        Mon, 17 Jan 2022 18:19:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 360E6612BE;
-        Tue, 18 Jan 2022 02:19:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55668C36AEB;
-        Tue, 18 Jan 2022 02:19:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 60B51612CD;
+        Tue, 18 Jan 2022 02:19:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5466C36AF3;
+        Tue, 18 Jan 2022 02:19:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472383;
-        bh=ePBaW9YD9SIwvLA46ELgC5rC7fjkynIpw6UKXVSMxew=;
-        h=From:To:Cc:Subject:Date:From;
-        b=PYHkxLtkipoa2E6HucbExx9mFwwJ951fWgG9pgCl9/kpovqMGWqAVlHVSoiX5VtPA
-         E5T/8wYB6K0BSkB3Pb4iSS61UcxjnRppneHNS7ztptpZPT8/Tkd5C0GVNHv72nHulN
-         Ot61ANhQomBsuFxv24JbiHpKrl3PupMPrjlsxcyjbFCuqpTaLxPJZWvPm4WUXt30qR
-         07sYJW7oTFlJ5jV1UEFLyTHT/4HWfz0L0plpmZnt2V4X3G/6pT1MZ7HnQZbyTBWG/P
-         oG5tO/ZiYv0cZ1qUm4WnUMvUohAPNu4sBaB/hOMIPbCNhaBAFjrxbfjwB/zRTGxJHX
-         +dehexyopM7Lw==
+        s=k20201202; t=1642472388;
+        bh=FWew8kSA0PCwrUkOdUPtZ3rD8Vs0Xt6T0HP/cCKVwJM=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Wzc3eJNLixafRolNgvkGXQstCaolP7toR98BMEa1/akRVgL56CE0D1++f5O4CjJIo
+         vxrR2qY5qFp51hO3fnAI7VqU5f2DTaJhpq5A7ij0kt40ZYN5in7G/6wtXAbOxdsJIP
+         Fp9K0M32bw0LnMsAGW9U3pemySll/DUzepaXHd2vBiXZpAsZl4yETFkxSKHm5XvFnp
+         CrvssIEUYdeWXgrGYzj8V/DzFKNvyi9kJm5F7ltUo+MZAeSd7bYBlKhhaXu6HgW6QF
+         mybztwKNe4fcS+x81UBmNGzc1hWo9nYW8GydR0F/YK3mwulioxrQyamrS3+WZi1TeC
+         4eLoFeRy0hPkw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Nguyen Dinh Phi <phind.uet@gmail.com>,
-        syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 001/217] Bluetooth: hci_sock: purge socket queues in the destruct() callback
-Date:   Mon, 17 Jan 2022 21:16:04 -0500
-Message-Id: <20220118021940.1942199-1-sashal@kernel.org>
+Cc:     Brian Norris <briannorris@chromium.org>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Sasha Levin <sashal@kernel.org>, jagan@amarulasolutions.com,
+        thierry.reding@gmail.com, airlied@linux.ie, daniel@ffwll.ch,
+        sumit.semwal@linaro.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.16 004/217] drm/panel: Delete panel on mipi_dsi_attach() failure
+Date:   Mon, 17 Jan 2022 21:16:07 -0500
+Message-Id: <20220118021940.1942199-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
+References: <20220118021940.1942199-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,62 +53,170 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nguyen Dinh Phi <phind.uet@gmail.com>
+From: Brian Norris <briannorris@chromium.org>
 
-[ Upstream commit 709fca500067524381e28a5f481882930eebac88 ]
+[ Upstream commit 9bf7123bb07f98dc76acb5daa91248e6f95713cb ]
 
-The receive path may take the socket right before hci_sock_release(),
-but it may enqueue the packets to the socket queues after the call to
-skb_queue_purge(), therefore the socket can be destroyed without clear
-its queues completely.
+Many DSI panel drivers fail to clean up their panel references on
+mipi_dsi_attach() failure, so we're leaving a dangling drm_panel
+reference to freed memory. Clean that up on failure.
 
-Moving these skb_queue_purge() to the hci_sock_destruct() will fix this
-issue, because nothing is referencing the socket at this point.
+Noticed by inspection, after seeing similar problems on other drivers.
+Therefore, I'm not marking Fixes/stable.
 
-Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
-Reported-by: syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Brian Norris <briannorris@chromium.org>
+Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210923173336.3.If9e74fa9b1d6eaa9e0e5b95b2b957b992740251c@changeid
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_sock.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/panel/panel-feiyang-fy07024di26a30d.c    | 8 +++++++-
+ drivers/gpu/drm/panel/panel-jdi-lt070me05000.c           | 8 +++++++-
+ drivers/gpu/drm/panel/panel-novatek-nt36672a.c           | 8 +++++++-
+ drivers/gpu/drm/panel/panel-panasonic-vvx10f034n00.c     | 8 +++++++-
+ drivers/gpu/drm/panel/panel-ronbo-rb070d30.c             | 8 +++++++-
+ drivers/gpu/drm/panel/panel-samsung-s6e88a0-ams452ef01.c | 1 +
+ drivers/gpu/drm/panel/panel-samsung-sofef00.c            | 1 +
+ drivers/gpu/drm/panel/panel-sharp-ls043t1le01.c          | 8 +++++++-
+ 8 files changed, 44 insertions(+), 6 deletions(-)
 
-diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
-index d0dad1fafe079..446573a125711 100644
---- a/net/bluetooth/hci_sock.c
-+++ b/net/bluetooth/hci_sock.c
-@@ -889,10 +889,6 @@ static int hci_sock_release(struct socket *sock)
- 	}
+diff --git a/drivers/gpu/drm/panel/panel-feiyang-fy07024di26a30d.c b/drivers/gpu/drm/panel/panel-feiyang-fy07024di26a30d.c
+index 581661b506f81..f9c1f7bc8218c 100644
+--- a/drivers/gpu/drm/panel/panel-feiyang-fy07024di26a30d.c
++++ b/drivers/gpu/drm/panel/panel-feiyang-fy07024di26a30d.c
+@@ -227,7 +227,13 @@ static int feiyang_dsi_probe(struct mipi_dsi_device *dsi)
+ 	dsi->format = MIPI_DSI_FMT_RGB888;
+ 	dsi->lanes = 4;
  
- 	sock_orphan(sk);
--
--	skb_queue_purge(&sk->sk_receive_queue);
--	skb_queue_purge(&sk->sk_write_queue);
--
- 	release_sock(sk);
- 	sock_put(sk);
- 	return 0;
-@@ -2058,6 +2054,12 @@ static int hci_sock_getsockopt(struct socket *sock, int level, int optname,
- 	return err;
+-	return mipi_dsi_attach(dsi);
++	ret = mipi_dsi_attach(dsi);
++	if (ret < 0) {
++		drm_panel_remove(&ctx->panel);
++		return ret;
++	}
++
++	return 0;
  }
  
-+static void hci_sock_destruct(struct sock *sk)
-+{
-+	skb_queue_purge(&sk->sk_receive_queue);
-+	skb_queue_purge(&sk->sk_write_queue);
-+}
+ static int feiyang_dsi_remove(struct mipi_dsi_device *dsi)
+diff --git a/drivers/gpu/drm/panel/panel-jdi-lt070me05000.c b/drivers/gpu/drm/panel/panel-jdi-lt070me05000.c
+index 733010b5e4f53..3c86ad262d5e0 100644
+--- a/drivers/gpu/drm/panel/panel-jdi-lt070me05000.c
++++ b/drivers/gpu/drm/panel/panel-jdi-lt070me05000.c
+@@ -473,7 +473,13 @@ static int jdi_panel_probe(struct mipi_dsi_device *dsi)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	return mipi_dsi_attach(dsi);
++	ret = mipi_dsi_attach(dsi);
++	if (ret < 0) {
++		jdi_panel_del(jdi);
++		return ret;
++	}
 +
- static const struct proto_ops hci_sock_ops = {
- 	.family		= PF_BLUETOOTH,
- 	.owner		= THIS_MODULE,
-@@ -2111,6 +2113,7 @@ static int hci_sock_create(struct net *net, struct socket *sock, int protocol,
++	return 0;
+ }
  
- 	sock->state = SS_UNCONNECTED;
- 	sk->sk_state = BT_OPEN;
-+	sk->sk_destruct = hci_sock_destruct;
+ static int jdi_panel_remove(struct mipi_dsi_device *dsi)
+diff --git a/drivers/gpu/drm/panel/panel-novatek-nt36672a.c b/drivers/gpu/drm/panel/panel-novatek-nt36672a.c
+index 533cd3934b8b7..839b263fb3c0f 100644
+--- a/drivers/gpu/drm/panel/panel-novatek-nt36672a.c
++++ b/drivers/gpu/drm/panel/panel-novatek-nt36672a.c
+@@ -656,7 +656,13 @@ static int nt36672a_panel_probe(struct mipi_dsi_device *dsi)
+ 	if (err < 0)
+ 		return err;
  
- 	bt_sock_link(&hci_sk_list, sk);
- 	return 0;
+-	return mipi_dsi_attach(dsi);
++	err = mipi_dsi_attach(dsi);
++	if (err < 0) {
++		drm_panel_remove(&pinfo->base);
++		return err;
++	}
++
++	return 0;
+ }
+ 
+ static int nt36672a_panel_remove(struct mipi_dsi_device *dsi)
+diff --git a/drivers/gpu/drm/panel/panel-panasonic-vvx10f034n00.c b/drivers/gpu/drm/panel/panel-panasonic-vvx10f034n00.c
+index 3c20beeb17819..3991f5d950af4 100644
+--- a/drivers/gpu/drm/panel/panel-panasonic-vvx10f034n00.c
++++ b/drivers/gpu/drm/panel/panel-panasonic-vvx10f034n00.c
+@@ -241,7 +241,13 @@ static int wuxga_nt_panel_probe(struct mipi_dsi_device *dsi)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	return mipi_dsi_attach(dsi);
++	ret = mipi_dsi_attach(dsi);
++	if (ret < 0) {
++		wuxga_nt_panel_del(wuxga_nt);
++		return ret;
++	}
++
++	return 0;
+ }
+ 
+ static int wuxga_nt_panel_remove(struct mipi_dsi_device *dsi)
+diff --git a/drivers/gpu/drm/panel/panel-ronbo-rb070d30.c b/drivers/gpu/drm/panel/panel-ronbo-rb070d30.c
+index a3782830ae3c4..1fb579a574d9f 100644
+--- a/drivers/gpu/drm/panel/panel-ronbo-rb070d30.c
++++ b/drivers/gpu/drm/panel/panel-ronbo-rb070d30.c
+@@ -199,7 +199,13 @@ static int rb070d30_panel_dsi_probe(struct mipi_dsi_device *dsi)
+ 	dsi->format = MIPI_DSI_FMT_RGB888;
+ 	dsi->lanes = 4;
+ 
+-	return mipi_dsi_attach(dsi);
++	ret = mipi_dsi_attach(dsi);
++	if (ret < 0) {
++		drm_panel_remove(&ctx->panel);
++		return ret;
++	}
++
++	return 0;
+ }
+ 
+ static int rb070d30_panel_dsi_remove(struct mipi_dsi_device *dsi)
+diff --git a/drivers/gpu/drm/panel/panel-samsung-s6e88a0-ams452ef01.c b/drivers/gpu/drm/panel/panel-samsung-s6e88a0-ams452ef01.c
+index ea63799ff2a1e..29fde3823212b 100644
+--- a/drivers/gpu/drm/panel/panel-samsung-s6e88a0-ams452ef01.c
++++ b/drivers/gpu/drm/panel/panel-samsung-s6e88a0-ams452ef01.c
+@@ -247,6 +247,7 @@ static int s6e88a0_ams452ef01_probe(struct mipi_dsi_device *dsi)
+ 	ret = mipi_dsi_attach(dsi);
+ 	if (ret < 0) {
+ 		dev_err(dev, "Failed to attach to DSI host: %d\n", ret);
++		drm_panel_remove(&ctx->panel);
+ 		return ret;
+ 	}
+ 
+diff --git a/drivers/gpu/drm/panel/panel-samsung-sofef00.c b/drivers/gpu/drm/panel/panel-samsung-sofef00.c
+index 8cb1853574bb8..6d107e14fcc55 100644
+--- a/drivers/gpu/drm/panel/panel-samsung-sofef00.c
++++ b/drivers/gpu/drm/panel/panel-samsung-sofef00.c
+@@ -302,6 +302,7 @@ static int sofef00_panel_probe(struct mipi_dsi_device *dsi)
+ 	ret = mipi_dsi_attach(dsi);
+ 	if (ret < 0) {
+ 		dev_err(dev, "Failed to attach to DSI host: %d\n", ret);
++		drm_panel_remove(&ctx->panel);
+ 		return ret;
+ 	}
+ 
+diff --git a/drivers/gpu/drm/panel/panel-sharp-ls043t1le01.c b/drivers/gpu/drm/panel/panel-sharp-ls043t1le01.c
+index b937e24dac8e0..25829a0a8e801 100644
+--- a/drivers/gpu/drm/panel/panel-sharp-ls043t1le01.c
++++ b/drivers/gpu/drm/panel/panel-sharp-ls043t1le01.c
+@@ -296,7 +296,13 @@ static int sharp_nt_panel_probe(struct mipi_dsi_device *dsi)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	return mipi_dsi_attach(dsi);
++	ret = mipi_dsi_attach(dsi);
++	if (ret < 0) {
++		sharp_nt_panel_del(sharp_nt);
++		return ret;
++	}
++
++	return 0;
+ }
+ 
+ static int sharp_nt_panel_remove(struct mipi_dsi_device *dsi)
 -- 
 2.34.1
 
