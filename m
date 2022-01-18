@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42686C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D6EAC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:14:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344414AbiARDOR (ORCPT
+        id S1348061AbiARDOW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:14:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37748 "EHLO
+        Mon, 17 Jan 2022 22:14:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37274 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353075AbiARDBC (ORCPT
+        with ESMTP id S1353208AbiARDBV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:01:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7339C028C15;
-        Mon, 17 Jan 2022 18:46:53 -0800 (PST)
+        Mon, 17 Jan 2022 22:01:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 044B3C08E87E;
+        Mon, 17 Jan 2022 18:46:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FE04B8125D;
-        Tue, 18 Jan 2022 02:46:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 739FFC36AE3;
-        Tue, 18 Jan 2022 02:46:51 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DA0EF61312;
+        Tue, 18 Jan 2022 02:46:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91514C36AF6;
+        Tue, 18 Jan 2022 02:46:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474012;
-        bh=TXPLGBjX08lx8iCQganWvEMrURi0yL0ybuyo+NimSgg=;
+        s=k20201202; t=1642474016;
+        bh=qtr5avAJSnRhKUpyTvJyRJlGaOx2L1q0VJR95o+tj7k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nZVpXfBCmMUAsXdAV215GmTxeFajPLpV+BNLQWdQsb3MBE4A83f6I10Lka0srMTAj
-         eFbJ2/fwCxqk0vHThqtxyfW8Gpbp3VGtkrEl3690nA75Zve1PZyuyqaxHDeyVR39XC
-         LpF6YqSwPzFj/CNkHqomLoGQ1qtkAFuLxNeGxKpwJCzagYKGyfQogHmUaZDHPDElW0
-         K2d0k2GUpI0pAQNDvlQQBtunB9j8AkDXF/vsNg20pyUmgtzi7IQW4uEqSTbqIN00ou
-         8daKALCTZtb9YMU9EtN/n8NR3RJO9BaPLkm4DL7NZlSO+qcMeLTNci1oPuruJcu3+W
-         OyLwSM56qlh/Q==
+        b=oJW2z5s3tjKgp6MQNWUoot/x3Keo+6zMh5yWB0N46pMEVkqJ46ECYEePkmKTxB3vi
+         gh9GPy0L8UKaGSifrhhyUBItAnOs0lQdwB7BpdVnyV2pAtq8Z2ed/JMfpazPQcctyH
+         xPtM2dp0qlG3SJBgcY11WxLdvMINEkEHTJNh38/yPWJm98Bk5A6NIrzM3UXb1ZUoQ4
+         8stgmbGVjvro69R/XdKRCb5SCzVyEiX6/jsmix9DALiXM4L15zA/TOM9z7vWbr5PsO
+         PqTgc445u8I4kg+QlQ+3gVlpN2j9OvY97Edf1YkQTbBxl9PoLqf2F4EVCCXPZk34dV
+         SIZWM2rwqQUrg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        bjorn.andersson@linaro.org, lgirdwood@gmail.com,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 69/73] regulator: qcom_smd: Align probe function with rpmh-regulator
-Date:   Mon, 17 Jan 2022 21:44:28 -0500
-Message-Id: <20220118024432.1952028-69-sashal@kernel.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Sasha Levin <sashal@kernel.org>, tytso@mit.edu
+Subject: [PATCH AUTOSEL 5.4 72/73] random: do not throw away excess input to crng_fast_load
+Date:   Mon, 17 Jan 2022 21:44:31 -0500
+Message-Id: <20220118024432.1952028-72-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
 References: <20220118024432.1952028-1-sashal@kernel.org>
@@ -54,169 +52,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit 14e2976fbabdacb01335d7f91eeebbc89c67ddb1 ]
+[ Upstream commit 73c7733f122e8d0107f88655a12011f68f69e74b ]
 
-The RPMh regulator driver is much newer and gets more attention, which in
-consequence makes it do a few things better. Update qcom_smd-regulator's
-probe function to mimic what rpmh-regulator does to address a couple of
-issues:
+When crng_fast_load() is called by add_hwgenerator_randomness(), we
+currently will advance to crng_init==1 once we've acquired 64 bytes, and
+then throw away the rest of the buffer. Usually, that is not a problem:
+When add_hwgenerator_randomness() gets called via EFI or DT during
+setup_arch(), there won't be any IRQ randomness. Therefore, the 64 bytes
+passed by EFI exactly matches what is needed to advance to crng_init==1.
+Usually, DT seems to pass 64 bytes as well -- with one notable exception
+being kexec, which hands over 128 bytes of entropy to the kexec'd kernel.
+In that case, we'll advance to crng_init==1 once 64 of those bytes are
+consumed by crng_fast_load(), but won't continue onward feeding in bytes
+to progress to crng_init==2. This commit fixes the issue by feeding
+any leftover bytes into the next phase in add_hwgenerator_randomness().
 
-- Probe defer now works correctly, before it used to, well,
-  kinda just die.. This fixes reliable probing on (at least) PM8994,
-  because Linux apparently cannot deal with supply map dependencies yet..
-
-- Regulator data is now matched more sanely: regulator data is matched
-  against each individual regulator node name and throwing an -EINVAL if
-  data is missing, instead of just assuming everything is fine and
-  iterating over all subsequent array members.
-
-- status = "disabled" will now work for disabling individual regulators in
-  DT. Previously it didn't seem to do much if anything at all.
-
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Link: https://lore.kernel.org/r/20211230023442.1123424-1-konrad.dybcio@somainline.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+[linux@dominikbrodowski.net: rewrite commit message]
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/qcom_smd-regulator.c | 100 +++++++++++++++++--------
- 1 file changed, 70 insertions(+), 30 deletions(-)
+ drivers/char/random.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/regulator/qcom_smd-regulator.c b/drivers/regulator/qcom_smd-regulator.c
-index 3b0828c79e2b5..e6601c28ab431 100644
---- a/drivers/regulator/qcom_smd-regulator.c
-+++ b/drivers/regulator/qcom_smd-regulator.c
-@@ -9,6 +9,7 @@
- #include <linux/of_device.h>
- #include <linux/platform_device.h>
- #include <linux/regulator/driver.h>
-+#include <linux/regulator/of_regulator.h>
- #include <linux/soc/qcom/smd-rpm.h>
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index ffd61aadb7614..a094704033062 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -924,12 +924,14 @@ static void numa_crng_init(void) {}
  
- struct qcom_rpm_reg {
-@@ -776,52 +777,91 @@ static const struct of_device_id rpm_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, rpm_of_match);
- 
--static int rpm_reg_probe(struct platform_device *pdev)
-+/**
-+ * rpm_regulator_init_vreg() - initialize all attributes of a qcom_smd-regulator
-+ * @vreg:		Pointer to the individual qcom_smd-regulator resource
-+ * @dev:		Pointer to the top level qcom_smd-regulator PMIC device
-+ * @node:		Pointer to the individual qcom_smd-regulator resource
-+ *			device node
-+ * @rpm:		Pointer to the rpm bus node
-+ * @pmic_rpm_data:	Pointer to a null-terminated array of qcom_smd-regulator
-+ *			resources defined for the top level PMIC device
-+ *
-+ * Return: 0 on success, errno on failure
-+ */
-+static int rpm_regulator_init_vreg(struct qcom_rpm_reg *vreg, struct device *dev,
-+				   struct device_node *node, struct qcom_smd_rpm *rpm,
-+				   const struct rpm_regulator_data *pmic_rpm_data)
+ /*
+  * crng_fast_load() can be called by code in the interrupt service
+- * path.  So we can't afford to dilly-dally.
++ * path.  So we can't afford to dilly-dally. Returns the number of
++ * bytes processed from cp.
+  */
+-static int crng_fast_load(const char *cp, size_t len)
++static size_t crng_fast_load(const char *cp, size_t len)
  {
--	const struct rpm_regulator_data *reg;
--	const struct of_device_id *match;
--	struct regulator_config config = { };
-+	struct regulator_config config = {};
-+	const struct rpm_regulator_data *rpm_data;
- 	struct regulator_dev *rdev;
-+	int ret;
-+
-+	for (rpm_data = pmic_rpm_data; rpm_data->name; rpm_data++)
-+		if (of_node_name_eq(node, rpm_data->name))
-+			break;
-+
-+	if (!rpm_data->name) {
-+		dev_err(dev, "Unknown regulator %pOFn\n", node);
-+		return -EINVAL;
-+	}
-+
-+	vreg->dev	= dev;
-+	vreg->rpm	= rpm;
-+	vreg->type	= rpm_data->type;
-+	vreg->id	= rpm_data->id;
-+
-+	memcpy(&vreg->desc, rpm_data->desc, sizeof(vreg->desc));
-+	vreg->desc.name = rpm_data->name;
-+	vreg->desc.supply_name = rpm_data->supply;
-+	vreg->desc.owner = THIS_MODULE;
-+	vreg->desc.type = REGULATOR_VOLTAGE;
-+	vreg->desc.of_match = rpm_data->name;
-+
-+	config.dev		= dev;
-+	config.of_node		= node;
-+	config.driver_data	= vreg;
-+
-+	rdev = devm_regulator_register(dev, &vreg->desc, &config);
-+	if (IS_ERR(rdev)) {
-+		ret = PTR_ERR(rdev);
-+		dev_err(dev, "%pOFn: devm_regulator_register() failed, ret=%d\n", node, ret);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int rpm_reg_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	const struct rpm_regulator_data *vreg_data;
-+	struct device_node *node;
- 	struct qcom_rpm_reg *vreg;
- 	struct qcom_smd_rpm *rpm;
-+	int ret;
+ 	unsigned long flags;
+ 	char *p;
++	size_t ret = 0;
  
- 	rpm = dev_get_drvdata(pdev->dev.parent);
- 	if (!rpm) {
--		dev_err(&pdev->dev, "unable to retrieve handle to rpm\n");
-+		dev_err(&pdev->dev, "Unable to retrieve handle to rpm\n");
- 		return -ENODEV;
+ 	if (!spin_trylock_irqsave(&primary_crng.lock, flags))
+ 		return 0;
+@@ -940,7 +942,7 @@ static int crng_fast_load(const char *cp, size_t len)
+ 	p = (unsigned char *) &primary_crng.state[4];
+ 	while (len > 0 && crng_init_cnt < CRNG_INIT_CNT_THRESH) {
+ 		p[crng_init_cnt % CHACHA_KEY_SIZE] ^= *cp;
+-		cp++; crng_init_cnt++; len--;
++		cp++; crng_init_cnt++; len--; ret++;
  	}
+ 	spin_unlock_irqrestore(&primary_crng.lock, flags);
+ 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+@@ -949,7 +951,7 @@ static int crng_fast_load(const char *cp, size_t len)
+ 		wake_up_interruptible(&crng_init_wait);
+ 		pr_notice("random: fast init done\n");
+ 	}
+-	return 1;
++	return ret;
+ }
  
--	match = of_match_device(rpm_of_match, &pdev->dev);
--	if (!match) {
--		dev_err(&pdev->dev, "failed to match device\n");
-+	vreg_data = of_device_get_match_data(dev);
-+	if (!vreg_data)
- 		return -ENODEV;
--	}
- 
--	for (reg = match->data; reg->name; reg++) {
-+	for_each_available_child_of_node(dev->of_node, node) {
- 		vreg = devm_kzalloc(&pdev->dev, sizeof(*vreg), GFP_KERNEL);
- 		if (!vreg)
- 			return -ENOMEM;
- 
--		vreg->dev = &pdev->dev;
--		vreg->type = reg->type;
--		vreg->id = reg->id;
--		vreg->rpm = rpm;
--
--		memcpy(&vreg->desc, reg->desc, sizeof(vreg->desc));
--
--		vreg->desc.id = -1;
--		vreg->desc.owner = THIS_MODULE;
--		vreg->desc.type = REGULATOR_VOLTAGE;
--		vreg->desc.name = reg->name;
--		vreg->desc.supply_name = reg->supply;
--		vreg->desc.of_match = reg->name;
--
--		config.dev = &pdev->dev;
--		config.driver_data = vreg;
--		rdev = devm_regulator_register(&pdev->dev, &vreg->desc, &config);
--		if (IS_ERR(rdev)) {
--			dev_err(&pdev->dev, "failed to register %s\n", reg->name);
--			return PTR_ERR(rdev);
-+		ret = rpm_regulator_init_vreg(vreg, dev, node, rpm, vreg_data);
-+
-+		if (ret < 0) {
-+			of_node_put(node);
-+			return ret;
+ /*
+@@ -1334,7 +1336,7 @@ void add_interrupt_randomness(int irq, int irq_flags)
+ 	if (unlikely(crng_init == 0)) {
+ 		if ((fast_pool->count >= 64) &&
+ 		    crng_fast_load((char *) fast_pool->pool,
+-				   sizeof(fast_pool->pool))) {
++				   sizeof(fast_pool->pool)) > 0) {
+ 			fast_pool->count = 0;
+ 			fast_pool->last = now;
  		}
+@@ -2480,8 +2482,11 @@ void add_hwgenerator_randomness(const char *buffer, size_t count,
+ 	struct entropy_store *poolp = &input_pool;
+ 
+ 	if (unlikely(crng_init == 0)) {
+-		crng_fast_load(buffer, count);
+-		return;
++		size_t ret = crng_fast_load(buffer, count);
++		count -= ret;
++		buffer += ret;
++		if (!count || crng_init == 0)
++			return;
  	}
  
+ 	/* Suspend writing if we're above the trickle threshold.
 -- 
 2.34.1
 
