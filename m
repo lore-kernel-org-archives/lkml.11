@@ -2,136 +2,237 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61B43C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 14:56:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF81C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 14:58:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344977AbiARO4n (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 09:56:43 -0500
-Received: from mx0a-001ae601.pphosted.com ([67.231.149.25]:14718 "EHLO
-        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1344980AbiAROyd (ORCPT
+        id S235706AbiARO6u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 09:58:50 -0500
+Received: from mailout2.samsung.com ([203.254.224.25]:44709 "EHLO
+        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233365AbiARO6s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 09:54:33 -0500
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20I6SNEE013849;
-        Tue, 18 Jan 2022 08:53:50 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=6+/rANZdRrEfJUZ4alDuEZX8fBBnd5Scc+NJ3tIuJJc=;
- b=awgKG5YwMnl+EnZ4Kcqo0ouhel6wo81CXmHGXha1esHm2ZY6DMzL8YRvblG4HXFkA/JL
- hCN0JgJ7+HFU/QWFSVaNKlkG2+xirMLYY4R5+yFGJ8Nnd4Q3JGIndUW5yavt20Luzr1D
- Kd7mK0qLwDuCMZUfd5laJgdQya4ZNIrdzd4ZUIW7AcTuVamHNimN6kqGLflapBOckO6e
- a4yWc3kyJWIyQOVbIUam+JhfVCGI8udgpEn86h65ynwLO7sfePOM6QmEV1PB16TqrKoB
- aPN0VHw71tQ8iE0iPh/qYmtOntfWR/KWV8WB6MTpq1VwLUzWDqpKng53Or6L5pnroXHi 6g== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3dnaxhs9nn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 18 Jan 2022 08:53:50 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 18 Jan
- 2022 14:53:48 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Tue, 18 Jan 2022 14:53:48 +0000
-Received: from LONN2DGDQ73.ad.cirrus.com (unknown [198.90.238.138])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id D4E50B13;
-        Tue, 18 Jan 2022 14:53:46 +0000 (UTC)
-From:   Stefan Binding <sbinding@opensource.cirrus.com>
-To:     Mark Brown <broonie@kernel.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-        <platform-driver-x86@vger.kernel.org>,
-        <patches@opensource.cirrus.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v3 10/10] ACPI / scan: Create platform device for CS35L41
-Date:   Tue, 18 Jan 2022 14:52:51 +0000
-Message-ID: <20220118145251.1548-11-sbinding@opensource.cirrus.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220118145251.1548-1-sbinding@opensource.cirrus.com>
-References: <20220118145251.1548-1-sbinding@opensource.cirrus.com>
+        Tue, 18 Jan 2022 09:58:48 -0500
+Received: from epcas5p3.samsung.com (unknown [182.195.41.41])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220118145846epoutp02dbe474b8999a9d5f384bcfd796b93cb9~LZVoKSWjg1521415214epoutp02H
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 14:58:46 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220118145846epoutp02dbe474b8999a9d5f384bcfd796b93cb9~LZVoKSWjg1521415214epoutp02H
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1642517926;
+        bh=Ylg0WEtaGPUko2HnNeH/2l42ssyOWCRP7SXhWjcIBCI=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=vf98O4cVRJu66uDSVgNUVBpwRyci/LpP5XEXpXuXLdtOx9svGEYDK5qp0taQnxVIB
+         4F9CLht/mwluAZE86C1vcQbExY64JmQOAKsld3JwtN5ZcazYHIq7X5q23D1sqnVN24
+         zx/fV1vd+lBaX1QfugJB76iQD37966tuaAzd8D0o=
+Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
+        20220118145845epcas5p34a7c1141a3120245ba46d074f0d29f7a~LZVm3AXtM2789827898epcas5p3I;
+        Tue, 18 Jan 2022 14:58:45 +0000 (GMT)
+Received: from epsmges5p3new.samsung.com (unknown [182.195.38.182]) by
+        epsnrtp3.localdomain (Postfix) with ESMTP id 4JdX360ND1z4x9Pp; Tue, 18 Jan
+        2022 14:58:42 +0000 (GMT)
+Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
+        epsmges5p3new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        6A.58.05590.2A5D6E16; Tue, 18 Jan 2022 23:58:42 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220118145841epcas5p2fe64a99bc7698802f9cc4fb0bf5d5a32~LZVjPMJ0H3245132451epcas5p25;
+        Tue, 18 Jan 2022 14:58:41 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220118145841epsmtrp161165c22075efbe8cb1f2bb29d64661a~LZVjOL2JZ1656016560epsmtrp1U;
+        Tue, 18 Jan 2022 14:58:41 +0000 (GMT)
+X-AuditID: b6c32a4b-723ff700000015d6-31-61e6d5a2f3c4
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        D7.D0.08738.0A5D6E16; Tue, 18 Jan 2022 23:58:41 +0900 (KST)
+Received: from alimakhtar03 (unknown [107.122.12.5]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20220118145838epsmtip12e7842009f9befb8d78339274dce5a40~LZVg8C29q0468004680epsmtip1G;
+        Tue, 18 Jan 2022 14:58:38 +0000 (GMT)
+From:   "Alim Akhtar" <alim.akhtar@samsung.com>
+To:     "'Krzysztof Kozlowski'" <krzysztof.kozlowski@canonical.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Cc:     <soc@kernel.org>, <linux-clk@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <olof@lixom.net>,
+        <linus.walleij@linaro.org>, <catalin.marinas@arm.com>,
+        <robh+dt@kernel.org>, <s.nawrocki@samsung.com>,
+        <linux-samsung-soc@vger.kernel.org>, <pankaj.dubey@samsung.com>,
+        <linux-fsd@tesla.com>,
+        "'Shashank Prashar'" <s.prashar@samsung.com>,
+        "'Aswani Reddy'" <aswani.reddy@samsung.com>
+In-Reply-To: <b8040d39-cd4d-e5b0-8aec-f03c5257d63e@canonical.com>
+Subject: RE: [PATCH 15/23] arm64: dts: fsd: Add initial pinctrl support
+Date:   Tue, 18 Jan 2022 20:28:37 +0530
+Message-ID: <023d01d80c7b$e14d4d40$a3e7e7c0$@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: kwBsGPyxvH_suD7jNMUkws3PVo4gMDXu
-X-Proofpoint-ORIG-GUID: kwBsGPyxvH_suD7jNMUkws3PVo4gMDXu
-X-Proofpoint-Spam-Reason: safe
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQKuNmZ/+9PJHbdzezyQqzGEXzr0sgJL1gp6AanHgoQCI2LlggH1bO0EAd3QJpGqbSOWAA==
+Content-Language: en-us
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrBJsWRmVeSWpSXmKPExsWy7bCmhu6iq88SDXZvZbM4tHkru8X7ZT2M
+        FvOPnGO12Pj2B5PFlD/LmSw2Pb7GavGx5x6rxcNX4RaXd81hs5hxfh+Txanrn9ksFm39wm7R
+        uvcIu8XhN+2sFvN2zGW0eHz9D5uDgMeaeWsYPWY19LJ5bFrVyeZx59oeNo/NS+o9rpxoYvXo
+        27KK0eNf01x2j8+b5AI4o7JtMlITU1KLFFLzkvNTMvPSbZW8g+Od403NDAx1DS0tzJUU8hJz
+        U22VXHwCdN0yc4C+UFIoS8wpBQoFJBYXK+nb2RTll5akKmTkF5fYKqUWpOQUmBToFSfmFpfm
+        pevlpZZYGRoYGJkCFSZkZxz7+5q1oEOh4sTRFrYGxhnSXYycHBICJhLtHTtYQWwhgd2MEu93
+        CHQxcgHZnxglLux7zwLhfGaUeNa/lBWm487qn2wQiV2MEk0Tl7FCOC8ZJU5tec8IUsUmoCux
+        Y3EbWJWIQCejxOrvP5lAHGaBVmaJM03TmUGqOAUcJXpeT2bvYuTgEBZwl9i13wMkzCKgKnHs
+        zX12EJtXwFJi2/WpLBC2oMTJmU/AbGYBbYllC18zQ5ykIPHz6TKw80QEwiR23r/BDFEjLvHy
+        6BF2kL0SAj84JDYvXcACsktCwEVi1hIliF5hiVfHt7BD2FISL/vb2CFKsiV6dhlDhGskls47
+        xgJh20scuDIHbAqzgKbE+l36EJv4JHp/P2GC6OSV6GgTgqhWlWh+dxWqU1piYnc3NAw9JO6u
+        vco8gVFxFpK/ZiH5axaS+2chLFvAyLKKUTK1oDg3PbXYtMA4L7UcHt3J+bmbGMFJXMt7B+Oj
+        Bx/0DjEycTAeYpTgYFYS4ZWqf5YoxJuSWFmVWpQfX1Sak1p8iNEUGNgTmaVEk/OBeSSvJN7Q
+        xNLAxMzMzMTS2MxQSZz3VPqGRCGB9MSS1OzU1ILUIpg+Jg5OqQamZUL++mcudPia5N3nZM/h
+        5uvPXPa3+PgLwSi70jUSdyfnZES3VC5kX9Qyr0qwOJRPaaW49SyrIydK1BwPJ2y0SD+9Q+du
+        T/a/vZ/3vRTj82OTXJGY9O3jqw2nJohFR1yPnKdo8OnIvIj6y6oBkSuDw595PAgwfvjtsJue
+        WIPAnrzTATEzV01/5NxZpHZpUcNOt5O6W45Uid/2l7nk2CV4MeV1a/3HTj3XGxrPptyKV+Qr
+        sm2a+/0Lk1Kwvn/JxdvPDj75Zp++60haz58tLlqN/Zvrk67tuX5qx7L2UGdpty7dhzcfTnv/
+        SLo55mvKlN7DpxRWPSx+fHVSm6AG22eZG4Zz33r7f4mZoNPEt1JLiaU4I9FQi7moOBEA72uG
+        X2sEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrMIsWRmVeSWpSXmKPExsWy7bCSnO7Cq88SDU79ZLI4tHkru8X7ZT2M
+        FvOPnGO12Pj2B5PFlD/LmSw2Pb7GavGx5x6rxcNX4RaXd81hs5hxfh+Txanrn9ksFm39wm7R
+        uvcIu8XhN+2sFvN2zGW0eHz9D5uDgMeaeWsYPWY19LJ5bFrVyeZx59oeNo/NS+o9rpxoYvXo
+        27KK0eNf01x2j8+b5AI4o7hsUlJzMstSi/TtErgy2m9cZy1ola84tGsmSwPjbKkuRk4OCQET
+        iTurf7J1MXJxCAnsYJTovtnIBJGQlri+cQI7hC0ssfLfczBbSOA5o8TPlzwgNpuArsSOxW1g
+        zSIC3YwSV3pmMoI4zAKTmSVeXG5kgRh7g0lixc0FbCAtnAKOEj2vJwON4uAQFnCX2LXfAyTM
+        IqAqcezNfbANvAKWEtuuT2WBsAUlTs58AmYzC2hL9D5sZYSxly18zQxxnYLEz6fLWEFsEYEw
+        iZ33bzBD1IhLvDx6hH0Co/AsJKNmIRk1C8moWUhaFjCyrGKUTC0ozk3PLTYsMMpLLdcrTswt
+        Ls1L10vOz93ECI5nLa0djHtWfdA7xMjEwXiIUYKDWUmEV6r+WaIQb0piZVVqUX58UWlOavEh
+        RmkOFiVx3gtdJ+OFBNITS1KzU1MLUotgskwcnFINTNyhrRzzfj2J51Bf8NU2/teszPZ5OvN6
+        N2+dKT2b3/6/rdPLp/OXvjBZaqBqu+Br3lehw6uMvuqKrLn5+u7MG3vc5dZo/5/73LNj5vyG
+        oJ5JxxpDgjna7PgbDVh7Pyxd4La7is94+fGUHf/96/LeXO5lX2kW+Ccl0udH0Clm+Z83N9/u
+        mPGwo3NT/P4JvM/KVm196l5y9caEbhervshfbxwu5Jlq7rcoWf5dS/3+GXat204PnnUKXJaK
+        b3sSz3D61MqLchsOe0jdastb+jFHfW/UXDs+lmdHew//CjRm/rI0O51D5LaNjMKKLSvOtfzo
+        SPPjdWgo2HPKYHfPvlnMtxZKVckpru0T9b9aF8bevkKJpTgj0VCLuag4EQATUZ1GVgMAAA==
+X-CMS-MailID: 20220118145841epcas5p2fe64a99bc7698802f9cc4fb0bf5d5a32
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220113122417epcas5p47398a5190cdf4c574c6f1762918b549f
+References: <20220113121143.22280-1-alim.akhtar@samsung.com>
+        <CGME20220113122417epcas5p47398a5190cdf4c574c6f1762918b549f@epcas5p4.samsung.com>
+        <20220113121143.22280-16-alim.akhtar@samsung.com>
+        <2927c34e-3259-4e9a-a657-aeeebf9089d2@canonical.com>
+        <00ca01d80ba8$6b9b9800$42d2c800$@samsung.com>
+        <b8040d39-cd4d-e5b0-8aec-f03c5257d63e@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Tanure <tanureal@opensource.cirrus.com>
 
-The ACPI device with CSC3551 or CLSA0100 are sound cards
-with multiple instances of CS35L41 connectec by I2C or SPI
-to the main CPU.
 
-We add an ID to the ignore_serial_bus_ids list to enumerate
-all I2C or SPI devices correctly.
+>-----Original Message-----
+>From: Krzysztof Kozlowski =5Bmailto:krzysztof.kozlowski=40canonical.com=5D
+>Sent: Monday, January 17, 2022 7:20 PM
+>To: Alim Akhtar <alim.akhtar=40samsung.com>; linux-arm-
+>kernel=40lists.infradead.org; linux-kernel=40vger.kernel.org
+>Cc: soc=40kernel.org; linux-clk=40vger.kernel.org; devicetree=40vger.kerne=
+l.org;
+>olof=40lixom.net; linus.walleij=40linaro.org; catalin.marinas=40arm.com;
+>robh+dt=40kernel.org; s.nawrocki=40samsung.com; linux-samsung-
+>soc=40vger.kernel.org; pankaj.dubey=40samsung.com; linux-fsd=40tesla.com;
+>'Shashank Prashar' <s.prashar=40samsung.com>; 'Aswani Reddy'
+><aswani.reddy=40samsung.com>
+>Subject: Re: =5BPATCH 15/23=5D arm64: dts: fsd: Add initial pinctrl suppor=
+t
+>
+>On 17/01/2022 14:44, Alim Akhtar wrote:
+>> Hi Krzysztof
+>>
+>>> -----Original Message-----
+>>> From: Krzysztof Kozlowski =5Bmailto:krzysztof.kozlowski=40canonical.com=
+=5D
+>>> Sent: Thursday, January 13, 2022 6:50 PM
+>>> To: Alim Akhtar <alim.akhtar=40samsung.com>; linux-arm-
+>>> kernel=40lists.infradead.org; linux-kernel=40vger.kernel.org
+>>> Cc: soc=40kernel.org; linux-clk=40vger.kernel.org;
+>>> devicetree=40vger.kernel.org; olof=40lixom.net; linus.walleij=40linaro.=
+org;
+>>> catalin.marinas=40arm.com;
+>>> robh+dt=40kernel.org; s.nawrocki=40samsung.com; linux-samsung-
+>>> soc=40vger.kernel.org; pankaj.dubey=40samsung.com; linux-fsd=40tesla.co=
+m;
+>>> Shashank Prashar <s.prashar=40samsung.com>; Aswani Reddy
+>>> <aswani.reddy=40samsung.com>
+>>> Subject: Re: =5BPATCH 15/23=5D arm64: dts: fsd: Add initial pinctrl
+>>> support
+>>>
+>>> On 13/01/2022 13:11, Alim Akhtar wrote:
+>>>> Add initial pin configuration nodes for FSD SoC.
+>>>>
+>>>> Cc: linux-fsd=40tesla.com
+>>>> Signed-off-by: Shashank Prashar <s.prashar=40samsung.com>
+>>>> Signed-off-by: Aswani Reddy <aswani.reddy=40samsung.com>
+>>>> Signed-off-by: Alim Akhtar <alim.akhtar=40samsung.com>
+>>>> ---
+>>>>  arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi =7C 338
+>>> +++++++++++++++++++++
+>>>>  arch/arm64/boot/dts/tesla/fsd.dtsi         =7C  22 ++
+>>>>  2 files changed, 360 insertions(+)
+>>>>  create mode 100644 arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi
+>>>>
+>>>> diff --git a/arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi
+>>>> b/arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi
+>>>> new file mode 100644
+>>>> index 000000000000..ec8d944af636
+>>>> --- /dev/null
+>>>> +++ b/arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi
+>>>> =40=40 -0,0 +1,338 =40=40
+>>>> +// SPDX-License-Identifier: GPL-2.0
+>>>> +/*
+>>>> + * Tesla Full Self-Driving SoC device tree source
+>>>> + *
+>>>> + * Copyright (c) 2017-2021 Samsung Electronics Co., Ltd.
+>>>> + *		https://www.samsung.com
+>>>> + * Copyright (c) 2017-2021 Tesla, Inc.
+>>>> + *		https://www.tesla.com
+>>>> + */
+>>>> +
+>>>> +=23include <dt-bindings/pinctrl/samsung.h>
+>>>> +
+>>>> +&pinctrl_fsys0 =7B
+>>>> +
+>>>
+>>> No need for empty line.
+>>>
+>> Noted
+>>
+>>>> +	gpf0: gpf0 =7B
+>>>
+>>> FYI:
+>>> It's ok now, but the nodes will have to be renamed to =22xxx-gpio-bank=
+=22
+>later.
+>>>
+>> Have rebased my v2 on your pinmux schema update, so these and below
+>comments are addressed.
+>> Thanks
+>>
+>
+>OK, but have in mind that -gpio-bank suffix is not needed now. This depend=
+s
+>on support in the pinctrl driver, which will be applied after the merge wi=
+ndow
+>to different tree or branches than DTS is going to.
+>Therefore if I apply your DTS with =22-gpio-bank=22 to my next/dt64, the k=
+ernel
+>won't find GPIo banks and won't properly boot. The linux-next will be fine=
+,
+>just my next/dt64 won't be.
+>
+Thanks, got it, for now let me send v2 on linux-next (as of today).
+As required I will rebase to your next/dt64 and send again.
+Which also means that my v2 will not be based on your new pinmux schema.
+Probably we will move to that after the merge window.
 
-Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
-Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
----
- drivers/acpi/bus-multi-instantiate.c | 14 ++++++++++++++
- drivers/acpi/scan.c                  |  3 +++
- 2 files changed, 17 insertions(+)
-
-diff --git a/drivers/acpi/bus-multi-instantiate.c b/drivers/acpi/bus-multi-instantiate.c
-index 05bc941a38fd..7a394b671f5a 100644
---- a/drivers/acpi/bus-multi-instantiate.c
-+++ b/drivers/acpi/bus-multi-instantiate.c
-@@ -328,6 +328,17 @@ static const struct bmi_node int3515_data = {
- 	.bus_type = BMI_I2C,
- };
- 
-+static const struct bmi_node cs35l41_hda = {
-+	.instances = {
-+		{ "cs35l41-hda", IRQ_RESOURCE_GPIO, 0 },
-+		{ "cs35l41-hda", IRQ_RESOURCE_GPIO, 0 },
-+		{ "cs35l41-hda", IRQ_RESOURCE_GPIO, 0 },
-+		{ "cs35l41-hda", IRQ_RESOURCE_GPIO, 0 },
-+		{}
-+	},
-+	.bus_type = BMI_AUTO_DETECT,
-+};
-+
- /*
-  * Note new device-ids must also be added to bus_multi_instantiate_ids in
-  * drivers/acpi/scan.c: acpi_device_enumeration_by_parent().
-@@ -336,6 +347,9 @@ static const struct acpi_device_id bmi_acpi_ids[] = {
- 	{ "BSG1160", (unsigned long)&bsg1160_data },
- 	{ "BSG2150", (unsigned long)&bsg2150_data },
- 	{ "INT3515", (unsigned long)&int3515_data },
-+	{ "CSC3551", (unsigned long)&cs35l41_hda },
-+	/* Non-conforming _HID for Cirrus Logic already released */
-+	{ "CLSA0100", (unsigned long)&cs35l41_hda },
- 	{ }
- };
- MODULE_DEVICE_TABLE(acpi, bmi_acpi_ids);
-diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
-index 3a92b7bdb91d..6cab6465558d 100644
---- a/drivers/acpi/scan.c
-+++ b/drivers/acpi/scan.c
-@@ -1744,8 +1744,11 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
- 	 */
- 		{"BSG1160", },
- 		{"BSG2150", },
-+		{"CSC3551", },
- 		{"INT33FE", },
- 		{"INT3515", },
-+	/* Non-conforming _HID for Cirrus Logic already released */
-+		{"CLSA0100", },
- 	/*
- 	 * HIDs of device with an UartSerialBusV2 resource for which userspace
- 	 * expects a regular tty cdev to be created (instead of the in kernel
--- 
-2.25.1
+>If you're fine with it - use =22-gpio-bank=22 suffix. If you prefer my
+>next/dt64 to have a fully working Tesla SoC DTS, then stick to old node na=
+ming
+>and let's replace it later.
+>
+>Best regards,
+>Krzysztof
 
