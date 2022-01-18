@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4A6BC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:09:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CA85C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346855AbiARDJS (ORCPT
+        id S1348631AbiARDJe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:09:18 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57488 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349921AbiARCup (ORCPT
+        Mon, 17 Jan 2022 22:09:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34774 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349986AbiARCu4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:50:45 -0500
+        Mon, 17 Jan 2022 21:50:56 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D394BC0612F2;
+        Mon, 17 Jan 2022 18:42:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 527D9B80932;
-        Tue, 18 Jan 2022 02:50:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A775C36AEF;
-        Tue, 18 Jan 2022 02:50:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77C4DB81239;
+        Tue, 18 Jan 2022 02:42:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CBE5C36AE3;
+        Tue, 18 Jan 2022 02:42:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474243;
-        bh=TJQQhk+LtbsaVOiLRJNVbeEVkSaz5diuewmKJ4vB+uI=;
+        s=k20201202; t=1642473739;
+        bh=aXgAlWjFhuTYaGo0IQrs5NxFaBkHUtQAgDjh1OBwC9o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=siIk2nqyuSOTl/rRESQS3eG9Nn2lf73Uc3qISIMST5H9dg/XgJ50eU8E93er738CD
-         Z67u226JCnLqYd9U5dhPWI1KJyJsNxwugM+peQnB7Q0Zrw5rV9kVw00NlcDgmOTQAb
-         /mYm7bgllVmqt+V8RtsWwe3NwoXUGQNFM4DbSO0h7BGUVOVptC94JUDPKJJeuoG/vX
-         iuCnzLHvFOogikzFKl17+OJ2ZmTWCOwadzHX1fh4h6EE2wHJsxEk2Y4N2DdRqN6YH7
-         9vWXl1fzIudABk8JaYm2Qdkw+utOR5FRn0yqxOznPU4u9AUUfxNZXuldNOc0jthxxn
-         MstNPuARwRgHw==
+        b=hYCHrDzBxZ9qglb6td11QuVUphzMLZ7YYTXo7PmXcu9Hri/gmiW/lQ9xHd+ec15EN
+         IfZ0tX+mzxvN3R9TxWjySqGuSCvMV8ixEfLnr+P2vgEylXjvpZqOtG+QCUt7JKBYBu
+         gUE75Z1IJEBLPKOZnwwpUK0cN+Kkb9dM+M8DM2qRk57Vyh4m2fCjEIz9YYiB4pnQhL
+         PwuN1zyzBvPMe3at/CspP14OJvjLEPgfdYZVkKj3wW/VOzMzGFzmS9UJw4EzzbquuR
+         P8nWzdXJagCPhfQWPqqHATKb4+ZWspsgKiMj+7J+onmHUn2s8bmVBJz2nU+i/MywMn
+         20i3dF4rCECHw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, ath9k-devel@qca.qualcomm.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 38/56] ath9k: Fix out-of-bound memcpy in ath9k_hif_usb_rx_stream
-Date:   Mon, 17 Jan 2022 21:48:50 -0500
-Message-Id: <20220118024908.1953673-38-sashal@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        rkardell@mida.se, Sasha Levin <sashal@kernel.org>,
+        mchehab@kernel.org, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 048/116] media: m920x: don't use stack on USB reads
+Date:   Mon, 17 Jan 2022 21:38:59 -0500
+Message-Id: <20220118024007.1950576-48-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
-References: <20220118024908.1953673-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,88 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
-[ Upstream commit 6ce708f54cc8d73beca213cec66ede5ce100a781 ]
+[ Upstream commit a2ab06d7c4d6bfd0b545a768247a70463e977e27 ]
 
-Large pkt_len can lead to out-out-bound memcpy. Current
-ath9k_hif_usb_rx_stream allows combining the content of two urb
-inputs to one pkt. The first input can indicate the size of the
-pkt. Any remaining size is saved in hif_dev->rx_remain_len.
-While processing the next input, memcpy is used with rx_remain_len.
+Using stack-allocated pointers for USB message data don't work.
+This driver is almost OK with that, except for the I2C read
+logic.
 
-4-byte pkt_len can go up to 0xffff, while a single input is 0x4000
-maximum in size (MAX_RX_BUF_SIZE). Thus, the patch adds a check for
-pkt_len which must not exceed 2 * MAX_RX_BUG_SIZE.
+Fix it by using a temporary read buffer, just like on all other
+calls to m920x_read().
 
-BUG: KASAN: slab-out-of-bounds in ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
-Read of size 46393 at addr ffff888018798000 by task kworker/0:1/23
-
-CPU: 0 PID: 23 Comm: kworker/0:1 Not tainted 5.6.0 #63
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-BIOS rel-1.10.2-0-g5f4c7b1-prebuilt.qemu-project.org 04/01/2014
-Workqueue: events request_firmware_work_func
-Call Trace:
- <IRQ>
- dump_stack+0x76/0xa0
- print_address_description.constprop.0+0x16/0x200
- ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- __kasan_report.cold+0x37/0x7c
- ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- kasan_report+0xe/0x20
- check_memory_region+0x15a/0x1d0
- memcpy+0x20/0x50
- ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- ? hif_usb_mgmt_cb+0x2d9/0x2d9 [ath9k_htc]
- ? _raw_spin_lock_irqsave+0x7b/0xd0
- ? _raw_spin_trylock_bh+0x120/0x120
- ? __usb_unanchor_urb+0x12f/0x210
- __usb_hcd_giveback_urb+0x1e4/0x380
- usb_giveback_urb_bh+0x241/0x4f0
- ? __hrtimer_run_queues+0x316/0x740
- ? __usb_hcd_giveback_urb+0x380/0x380
- tasklet_action_common.isra.0+0x135/0x330
- __do_softirq+0x18c/0x634
- irq_exit+0x114/0x140
- smp_apic_timer_interrupt+0xde/0x380
- apic_timer_interrupt+0xf/0x20
-
-I found the bug using a custome USBFuzz port. It's a research work
-to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
-providing hand-crafted usb descriptors to QEMU.
-
-After fixing the value of pkt_tag to ATH_USB_RX_STREAM_MODE_TAG in QEMU
-emulation, I found the KASAN report. The bug is triggerable whenever
-pkt_len is above two MAX_RX_BUG_SIZE. I used the same input that crashes
-to test the driver works when applying the patch.
-
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/YXsidrRuK6zBJicZ@10-18-43-117.dynapool.wireless.nyu.edu
+Link: https://lore.kernel.org/all/ccc99e48-de4f-045e-0fe4-61e3118e3f74@mida.se/
+Reported-by: rkardell@mida.se
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/hif_usb.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/media/usb/dvb-usb/m920x.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
-index ce3a785212740..8125f17526519 100644
---- a/drivers/net/wireless/ath/ath9k/hif_usb.c
-+++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
-@@ -588,6 +588,13 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
- 			return;
+diff --git a/drivers/media/usb/dvb-usb/m920x.c b/drivers/media/usb/dvb-usb/m920x.c
+index 4bb5b82599a79..691e05833db19 100644
+--- a/drivers/media/usb/dvb-usb/m920x.c
++++ b/drivers/media/usb/dvb-usb/m920x.c
+@@ -274,6 +274,13 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
+ 			/* Should check for ack here, if we knew how. */
  		}
- 
-+		if (pkt_len > 2 * MAX_RX_BUF_SIZE) {
-+			dev_err(&hif_dev->udev->dev,
-+				"ath9k_htc: invalid pkt_len (%x)\n", pkt_len);
-+			RX_STAT_INC(skb_dropped);
-+			return;
-+		}
+ 		if (msg[i].flags & I2C_M_RD) {
++			char *read = kmalloc(1, GFP_KERNEL);
++			if (!read) {
++				ret = -ENOMEM;
++				kfree(read);
++				goto unlock;
++			}
 +
- 		pad_len = 4 - (pkt_len & 0x3);
- 		if (pad_len == 4)
- 			pad_len = 0;
+ 			for (j = 0; j < msg[i].len; j++) {
+ 				/* Last byte of transaction?
+ 				 * Send STOP, otherwise send ACK. */
+@@ -281,9 +288,12 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
+ 
+ 				if ((ret = m920x_read(d->udev, M9206_I2C, 0x0,
+ 						      0x20 | stop,
+-						      &msg[i].buf[j], 1)) != 0)
++						      read, 1)) != 0)
+ 					goto unlock;
++				msg[i].buf[j] = read[0];
+ 			}
++
++			kfree(read);
+ 		} else {
+ 			for (j = 0; j < msg[i].len; j++) {
+ 				/* Last byte of transaction? Then send STOP. */
 -- 
 2.34.1
 
