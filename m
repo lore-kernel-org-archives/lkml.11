@@ -2,54 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E6DC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 994EBC4167E
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:55:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351485AbiARCyf (ORCPT
+        id S1351539AbiARCym (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:54:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32962 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347922AbiARCn2 (ORCPT
+        Mon, 17 Jan 2022 21:54:42 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50332 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347881AbiARCn3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:43:28 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 604BCC061768;
-        Mon, 17 Jan 2022 18:37:26 -0800 (PST)
+        Mon, 17 Jan 2022 21:43:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1A7A5B811CC;
-        Tue, 18 Jan 2022 02:37:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 352E7C36AE3;
-        Tue, 18 Jan 2022 02:37:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77147B811CC;
+        Tue, 18 Jan 2022 02:43:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5761EC36AF2;
+        Tue, 18 Jan 2022 02:43:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473443;
-        bh=vtWjHQg35ZYsG3cvoxDYlP7bz7YRDF4DFA/Z3UcxwWw=;
+        s=k20201202; t=1642473804;
+        bh=/dLmxP0k5YulXdYMfs2D5bBa+Ba737FmT5TgawM3dGg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=InFRHjm59dc2eNa7HdL0UYgetFBd7Prk39lzU3HDeSCHdcxTR7onVA06309ReXa/G
-         ngHXNXQGeSuijfw8WKGjBV5omGYEgKuguxxENvcwmUkBaxGzuX+pWWoQyziWTSSs3+
-         HIpYWo5uGIjoskgPloKtwW6IXuzpOBiVWZiJwSesb3lxdpLwYWhmWihdwF9XLJ1DlW
-         pO1cJQTaqvwbJFKrjmlm1U1MRJm8fjF9bdef/bHjPVUDNXu8Cefcj4ZXw3EkJyxoHI
-         dmUEevkFvh/qUU6JDyBxQGnFjNeCJprr9TeUVlxFY33xPkO1b+bvDuQtsARI7WhLAQ
-         f8XuS+nWsgujw==
+        b=uVgP0IXut0fzgvA7bK5nkIy5VRbhoq7kG9DowQ4RgHkcvty8x/LjmXOF6GqMtz3/E
+         JOvhLKRdrBUZy3dCuIjPoYL3IdGj2k2fI1T4utvLDPpfOGw2KAX54HUyO7XAFc/qyD
+         XP/WoF9BVbffFb+q+zDMxj5IorWackP6107XKlC1YoVSsoDpskA+k/ap4f1WD2uKX0
+         Dhvom4BYL8Lu2Rf0qHAr4nSL8U1XScszLJOWmbUS7JSzVvYoRPRUXxmBsM1ffpSz+B
+         0p5+BLHwYeNKP/lZzupuhbo48dn/tCoKEb0xNTyB9JPBFVHI1cR5vX1La32FFG9cu1
+         gDmv8jhGiURAw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jingwen Chen <Jingwen.Chen2@amd.com>,
-        Horace Chen <horace.chen@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        Hawking.Zhang@amd.com, john.clements@amd.com, candice.li@amd.com,
-        lijo.lazar@amd.com, lang.yu@amd.com, Oak.Zeng@amd.com,
-        jonathan.kim@amd.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 119/188] drm/amd/amdgpu: fix psp tmr bo pin count leak in SRIOV
-Date:   Mon, 17 Jan 2022 21:30:43 -0500
-Message-Id: <20220118023152.1948105-119-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 081/116] iwlwifi: remove module loading failure message
+Date:   Mon, 17 Jan 2022 21:39:32 -0500
+Message-Id: <20220118024007.1950576-81-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -58,48 +51,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jingwen Chen <Jingwen.Chen2@amd.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 85dfc1d692c9434c37842e610be37cd4ae4e0081 ]
+[ Upstream commit 6518f83ffa51131daaf439b66094f684da3fb0ae ]
 
-[Why]
-psp tmr bo will be pinned during loading amdgpu and reset in SRIOV while
-only unpinned in unload amdgpu
+When CONFIG_DEBUG_TEST_DRIVER_REMOVE is set, iwlwifi crashes
+when the opmode module cannot be loaded, due to completing
+the completion before using drv->dev, which can then already
+be freed.
 
-[How]
-add amdgpu_in_reset and sriov judgement to skip pin bo
+Fix this by removing the (fairly useless) message. Moving the
+completion later causes a deadlock instead, so that's not an
+option.
 
-v2: fix wrong judgement
-
-Signed-off-by: Jingwen Chen <Jingwen.Chen2@amd.com>
-Reviewed-by: Horace Chen <horace.chen@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/20211210091245.289008-2-luca@coelho.fi
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-index 9b41cb8c3de54..86e2090bbd6e0 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_psp.c
-@@ -2207,12 +2207,16 @@ static int psp_hw_start(struct psp_context *psp)
- 		return ret;
- 	}
+diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+index 4bdfd6afa7324..30c6d7b18599a 100644
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
+@@ -1629,15 +1629,8 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
+ 	 * else from proceeding if the module fails to load
+ 	 * or hangs loading.
+ 	 */
+-	if (load_module) {
++	if (load_module)
+ 		request_module("%s", op->name);
+-#ifdef CONFIG_IWLWIFI_OPMODE_MODULAR
+-		if (err)
+-			IWL_ERR(drv,
+-				"failed to load module %s (error %d), is dynamic loading enabled?\n",
+-				op->name, err);
+-#endif
+-	}
+ 	failure = false;
+ 	goto free;
  
-+	if (amdgpu_sriov_vf(adev) && amdgpu_in_reset(adev))
-+		goto skip_pin_bo;
-+
- 	ret = psp_tmr_init(psp);
- 	if (ret) {
- 		DRM_ERROR("PSP tmr init failed!\n");
- 		return ret;
- 	}
- 
-+skip_pin_bo:
- 	/*
- 	 * For ASICs with DF Cstate management centralized
- 	 * to PMFW, TMR setup should be performed after PMFW
 -- 
 2.34.1
 
