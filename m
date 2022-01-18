@@ -2,220 +2,215 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E93FDC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:52:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4163C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:52:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347585AbiARRwp (ORCPT
+        id S1347612AbiARRws (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 12:52:45 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:41290 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237208AbiARRwn (ORCPT
+        Tue, 18 Jan 2022 12:52:48 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:23448 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1347579AbiARRwr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 12:52:43 -0500
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20IFveV7032467;
-        Tue, 18 Jan 2022 17:52:42 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=uCUxBqDyR2tolxbZOcuhtf45ykrVGQr2zUHl3ocZUBs=;
- b=PoUsG/cVkMi3OHsjWeH+YTmatAmH0z7++673Gihjri3jwlt1m9WeFvjmJLNN4ARQsiga
- AQnPs5c/QlqCDUr4pPO+Adxt9a3ZXzh2u80Bsm6T+sYWALYUZqnjfRbanagCHWmTf1PS
- +1GYaU2fYFNKs+6DrM5IYarBxWFhcbliS/E3k5owOaeZ9a+iQFSLGrCvgVO0hXOF9FHR
- jYfsWzTxThCSVSt8BNW7NSrnAxROBINwFEBGcNA9zCSzW8ept6V+SCANa3k9mKISxRqU
- UYxH3fMg0NdKkRaoSyHQ0xHPX/3tYWrXhK3yGtBq5MwEXC74vaYrdmc8Y8888aaV1o0D kw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dp0ncjgxp-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 18 Jan 2022 17:52:42 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20IHgQMu021120;
-        Tue, 18 Jan 2022 17:52:42 GMT
-Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dp0ncjgwv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 18 Jan 2022 17:52:42 +0000
-Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
-        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20IHlsSi011311;
-        Tue, 18 Jan 2022 17:52:39 GMT
-Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
-        by ppma03ams.nl.ibm.com with ESMTP id 3dknw9pumc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 18 Jan 2022 17:52:39 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20IHqaeY46924272
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 18 Jan 2022 17:52:36 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 780F5AE059;
-        Tue, 18 Jan 2022 17:52:36 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 5E78BAE053;
-        Tue, 18 Jan 2022 17:52:35 +0000 (GMT)
-Received: from [9.171.70.230] (unknown [9.171.70.230])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 18 Jan 2022 17:52:35 +0000 (GMT)
-Message-ID: <05a6d673-df46-3d0e-9b20-a935f294e4c3@linux.ibm.com>
-Date:   Tue, 18 Jan 2022 18:54:18 +0100
+        Tue, 18 Jan 2022 12:52:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642528366;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=xHlvo7QWK5LPEIMsgEhcwsrS7X3dVRtPwrg1PSoq2kI=;
+        b=H/ncG+j3+X5fwOYAPYKHsRaqxSQezkd1OM/4BYaUdaBMKecg4h2n4SK33reXzkoJ1h4hVP
+        Gux8AlDzdzSJVZbEMDjMUTiR96U2fmNr7qW+EMZJwEjx/X9LFtQd1Zboj++nCbpq0NSjJw
+        N1fAAOR/RHk6/lgkoWSvosF9TFDMUIY=
+Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com
+ [209.85.167.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-520-v9XVSt2MPi-YQfXUAhUwTg-1; Tue, 18 Jan 2022 12:52:44 -0500
+X-MC-Unique: v9XVSt2MPi-YQfXUAhUwTg-1
+Received: by mail-oi1-f199.google.com with SMTP id s131-20020acac289000000b002c6a61fd43fso13969590oif.23
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 09:52:43 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=xHlvo7QWK5LPEIMsgEhcwsrS7X3dVRtPwrg1PSoq2kI=;
+        b=r+RbInHhW/McxTQYIeHmJqgv3PvHzxuxXRcTXLeMTEfEXBCJxHzUE1/kRL0zMb+i2D
+         hFCvpmNj/dSHU+tzH8gETytbcgR5gA9QDQZ60d+wa7vZxpvTpjmAKCNBQojCmTbUDits
+         ZQrjW5M4+lGDnm+IOJjAIAu+fB5SXLklh929d++GQmN9Uf96NsZnco18rN9ZKPaSnrYB
+         mSTLQbG7QrJ4ANpZWMN+n5vHQFIAYA/7VwO4vcuIbwFN8Nkykt2+dIeIbvAVlKjIpnmh
+         uSbTi9Fcm6uzvL+SOLCT+4Ks4uMPasCEDHyyJ3TrOSsJJguCwbx4ox+eEXtA6tAoaPiy
+         42/Q==
+X-Gm-Message-State: AOAM532V9L9sWBazE7Tjo3K2nFTjb7sPvg8HegaJH+FzI9piqVtXKMr0
+        90ZsMpF/EZx8NKg/eSoP0htF7oipvNWM2PAWTtIVUr9dGzCk7e3C95fFTy6t9JZPaoBocM7H/r3
+        UEgr0vIJ0xsPlZJnNCJ8cLGXp
+X-Received: by 2002:a05:6808:358:: with SMTP id j24mr14202760oie.134.1642528362475;
+        Tue, 18 Jan 2022 09:52:42 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzvVcNmkskHyhTreEEzS9pNPBANVdlgKxVDSDUChABCQT/JWSRNCjaMFTZjLIpxYA1SbT7TbQ==
+X-Received: by 2002:a05:6808:358:: with SMTP id j24mr14202741oie.134.1642528362174;
+        Tue, 18 Jan 2022 09:52:42 -0800 (PST)
+Received: from treble ([2600:1700:6e32:6c00::c])
+        by smtp.gmail.com with ESMTPSA id c15sm6758402ooq.30.2022.01.18.09.52.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Jan 2022 09:52:41 -0800 (PST)
+Date:   Tue, 18 Jan 2022 09:52:39 -0800
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Kaiwan N Billimoria <kaiwan.billimoria@gmail.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Chi-Thanh Hoang <chithanh.hoang@gmail.com>
+Subject: Re: Issue using faddr2line on kernel modules
+Message-ID: <20220118175239.lqxi2ycgeusk5pxl@treble>
+References: <CAPDLWs_iSrbXwfKa6CQ0f6H6GE4U88uRhaFgabRjMmSuSEpsiA@mail.gmail.com>
+ <20220117194836.vj2rxr3wocrtdx7k@treble>
+ <20220117202751.bmwvfsnqxokob6d2@treble>
+ <CAPDLWs-yX4FNrmnF3rHrEoHNktcw2Yi8X6qidss-qKpdw=r4RQ@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v2 22/30] KVM: s390: intercept the rpcit instruction
-Content-Language: en-US
-To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
-        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
-        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220114203145.242984-1-mjrosato@linux.ibm.com>
- <20220114203145.242984-23-mjrosato@linux.ibm.com>
- <6eb0b596-c8b7-3529-55af-f3101821c74b@linux.ibm.com>
- <e474b7a1-66de-1ede-3bbf-ccd7eff9eb7c@linux.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <e474b7a1-66de-1ede-3bbf-ccd7eff9eb7c@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: U-8gveMCLpJjalyLCe0Limz-BUWVYZJf
-X-Proofpoint-GUID: RtatWE7pdKFA9oRW2fGxsgBzdlcLAfNT
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-18_05,2022-01-18_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0 mlxscore=0
- impostorscore=0 malwarescore=0 priorityscore=1501 mlxlogscore=999
- bulkscore=0 suspectscore=0 phishscore=0 clxscore=1015 spamscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201180105
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAPDLWs-yX4FNrmnF3rHrEoHNktcw2Yi8X6qidss-qKpdw=r4RQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 1/18/22 18:27, Matthew Rosato wrote:
-> On 1/18/22 6:05 AM, Pierre Morel wrote:
->>
->>
->> On 1/14/22 21:31, Matthew Rosato wrote:
->>> For faster handling of PCI translation refreshes, intercept in KVM
->>> and call the associated handler.
->>>
->>> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
->>> ---
->>>   arch/s390/kvm/priv.c | 46 ++++++++++++++++++++++++++++++++++++++++++++
->>>   1 file changed, 46 insertions(+)
->>>
->>> diff --git a/arch/s390/kvm/priv.c b/arch/s390/kvm/priv.c
->>> index 417154b314a6..5b65c1830de2 100644
->>> --- a/arch/s390/kvm/priv.c
->>> +++ b/arch/s390/kvm/priv.c
->>> @@ -29,6 +29,7 @@
->>>   #include <asm/ap.h>
->>>   #include "gaccess.h"
->>>   #include "kvm-s390.h"
->>> +#include "pci.h"
->>>   #include "trace.h"
->>>   static int handle_ri(struct kvm_vcpu *vcpu)
->>> @@ -335,6 +336,49 @@ static int handle_rrbe(struct kvm_vcpu *vcpu)
->>>       return 0;
->>>   }
->>> +static int handle_rpcit(struct kvm_vcpu *vcpu)
->>> +{
->>> +    int reg1, reg2;
->>> +    u8 status;
->>> +    int rc;
->>> +
->>> +    if (vcpu->arch.sie_block->gpsw.mask & PSW_MASK_PSTATE)
->>> +        return kvm_s390_inject_program_int(vcpu, PGM_PRIVILEGED_OP);
->>> +
->>> +    /* If the host doesn't support PCI, it must be an emulated 
->>> device */
->>> +    if (!IS_ENABLED(CONFIG_PCI))
->>> +        return -EOPNOTSUPP;
->>
->> AFAIU this makes also sure that the following code is not compiled in 
->> case PCI is not supported.
->>
->> I am not very used to compilation options, is it true with all our 
->> compilers and options?
->> Or do we have to specify a compiler version?
->>
->> Another concern is, shouldn't we use IS_ENABLED(CONFIG_VFIO_PCI) ?
+On Tue, Jan 18, 2022 at 08:10:28AM +0530, Kaiwan N Billimoria wrote:
+> Hi Josh,
 > 
-> Same idea as in the other thread -- What we are trying to protect 
-> against here is referencing symbols that won't be linked (like 
-> zpci_refresh_trans, or the aift->mdd a few lines below)
+> Actually your first patch - the one you mentioned had other issues -
+> worked perfectly when applied:
 > 
-> It is indeed true that we should never need to handle the rpcit 
-> intercept in KVM if CONFIG_VFIO_PCI=n -- but the necessary symbols/code 
-> are linked at least, so we can just let the SHM logic sort this out. 
-> When CONFIG_PCI=y|m, arch/s390/kvm/pci.o will be linked and so we can 
-> compare the function handle against afit->mdd (check to see if the 
-> device is emulated) and use this to determine whether or not to 
-> immediately send to userspace -- And if CONFIG_VFIO_PCI=n, a SHM bit 
-> will always be on and so we'll always go to userspace via this check.
-
-So we agree.
-But as I I said somewhere else I wonder if CONFIG_VFIO_PCI_ZDEV would 
-not even be better here.
-
+> scripts/faddr2line ./oops_tryv2.ko do_the_work+0x16f/0x194
+> do_the_work+0x16f/0x0000000000000194:
+> do_the_work at <...>/oops_tryv2/oops_tryv2.c:62
 > 
->>
->>
->>
->>> +
->>> +    kvm_s390_get_regs_rre(vcpu, &reg1, &reg2);
->>> +
->>> +    /* If the device has a SHM bit on, let userspace take care of 
->>> this */
->>> +    if (((vcpu->run->s.regs.gprs[reg1] >> 32) & aift->mdd) != 0)
->>> +        return -EOPNOTSUPP;
->>> +
->>> +    rc = kvm_s390_pci_refresh_trans(vcpu, vcpu->run->s.regs.gprs[reg1],
->>> +                    vcpu->run->s.regs.gprs[reg2],
->>> +                    vcpu->run->s.regs.gprs[reg2+1],
->>> +                    &status);
->>> +
->>> +    switch (rc) {
->>> +    case 0:
->>> +        kvm_s390_set_psw_cc(vcpu, 0);
->>> +        break;
->>> +    case -EOPNOTSUPP:
->>> +        return -EOPNOTSUPP;
->>> +    default:
->>> +        vcpu->run->s.regs.gprs[reg1] &= 0xffffffff00ffffffUL;
->>> +        vcpu->run->s.regs.gprs[reg1] |= (u64) status << 24;
->>> +        if (status != 0)
->>> +            kvm_s390_set_psw_cc(vcpu, 1);
->>> +        else
->>> +            kvm_s390_set_psw_cc(vcpu, 3);
->>> +        break;
->>> +    }
->>> +
->>> +    return 0;
->>> +}
->>> +
->>>   #define SSKE_NQ 0x8
->>>   #define SSKE_MR 0x4
->>>   #define SSKE_MC 0x2
->>> @@ -1275,6 +1319,8 @@ int kvm_s390_handle_b9(struct kvm_vcpu *vcpu)
->>>           return handle_essa(vcpu);
->>>       case 0xaf:
->>>           return handle_pfmf(vcpu);
->>> +    case 0xd3:
->>> +        return handle_rpcit(vcpu);
->>>       default:
->>>           return -EOPNOTSUPP;
->>>       }
->>>
->>
+> The second one still failed in the same manner:
+> 
+> scripts/faddr2line ./oops_tryv2.ko do_the_work+0x16f/0x194
+> bad symbol size: base: 0x0000000000000000 end: 0x0000000000000000
+> 
+> So, is it possible to fixup issues with the first version?
+> What are these issues?
+
+The first patch basically reverts the fix in commit efdb4167e676
+("scripts/faddr2line: Fix "size mismatch" error").  That would be nice
+as it's simpler and more robust, but unfortunately it would cause a lot
+of "size mismatch" errors with vmlinux symbols.
+
+Can you give the output of 'nm -n ./oops_tryv2.ko'?  There must be some
+text symbol immediately after the do_the_work() symbol which is either
+out of order, or part of another section.
+
+Is do_the_work() in the .text section?
+
+> On Tue, Jan 18, 2022 at 1:57 AM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
+> >
+> > On Mon, Jan 17, 2022 at 11:48:39AM -0800, Josh Poimboeuf wrote:
+> > > On Mon, Jan 17, 2022 at 10:27:14AM +0530, Kaiwan N Billimoria wrote:
+> > > > Hi there,
+> > > >
+> > > > Am researching using the cool faddr2line script to help debug Oops'es
+> > > > from kernel modules..
+> > > > I find it works just fine when used against the unstripped vmlinux
+> > > > with debug symbols.
+> > > >
+> > > > My use case is for a kernel module which Oopses, though. Here's my scenario:
+> > > > I built a module on a custom debug kernel (5.10.60) with most debug
+> > > > options enabled...
+> > > > KASLR is enabled by default as well.
+> > > >
+> > > > A test kernel module Oopses on my x86_64 guest running this kernel with:
+> > > > RIP: 0010:do_the_work+0x15b/0x174 [oops_tryv2]
+> > > >
+> > > > So, i try this:
+> > > >
+> > > > $ <...>/linux-5.10.60/scripts/faddr2line ./oops_tryv2.ko do_the_work+0x15b/0x174
+> > > > bad symbol size: base: 0x0000000000000000 end: 0x0000000000000000
+> > > > $
+> > > >
+> > > > (It works fine with addr2line though!).
+> > > > Now I think I've traced the faddr2line script's failure to locate
+> > > > anything down to this:
+> > > > ...
+> > > > done < <(${NM} -n $objfile | awk -v fn=$func -v end=$file_end '$3 ==
+> > > > fn { found=1; line    =$0; start=$1; next } found == 1 { found=0;
+> > > > print line, "0x"$1 } END {if (found == 1) print     line, end; }')
+> > > >
+> > > > The nm output is:
+> > > > $ nm -n ./oops_tryv2.ko |grep -i do_the_work
+> > > > 0000000000000000 t do_the_work
+> > > > $
+> > > >
+> > > > nm shows the text addr as 0x0; this is obviously incorrect (same 0x0
+> > > > with objdump -d on the module).
+> > > > Am I missing something? Any suggestions as to what I can try, to get
+> > > > faddr2line working?
+> > >
+> > > Hi Kaiwan,
+> > >
+> > > Thanks for reporting this issue.  The module text address of 0x0 is not
+> > > necessarily incorrect, as the address is relative the the module, where
+> > > all text usually starts at zero.
+> > >
+> > > I was able to recreate this problem using a module which only has a
+> > > single function in .text.  Does this fix it?
+> >
+> > Actually, that patch has other problems.  Try this one?
+> >
+> > ----
+> >
+> > From: Josh Poimboeuf <jpoimboe@redhat.com>
+> > Subject: [PATCH] scripts/faddr2line: Only look for text symbols when
+> >  calculating function size
+> >
+> > With the following commit:
+> >
+> >   efdb4167e676 ("scripts/faddr2line: Fix "size mismatch" error")
+> >
+> > ... it was discovered that faddr2line can't just read a function's ELF
+> > size, because that wouldn't match the kallsyms function size which is
+> > printed in the stack trace.  The kallsyms size includes any padding
+> > after the function, whereas the ELF size does not.
+> >
+> > So faddr2line has to manually calculate the size of a function similar
+> > to how kallsyms does.  It does so by starting with a sorted list of
+> > symbols and subtracting the function address from the subsequent
+> > symbol's address.
+> >
+> > That calculation is broken in the case where the function is the last
+> > (or only) symbol in the .text section.  The next symbol in the sorted
+> > list might actually be a data symbol, which can break the function size
+> > detection:
+> >
+> >   $ scripts/faddr2line sound/soundcore.ko sound_devnode+0x5/0x35
+> >   bad symbol size: base: 0x0000000000000000 end: 0x0000000000000000
+> >
+> > Similar breakage can occur when reading from a .o file.
+> >
+> > Fix it by only looking for text symbols.
+> >
+> > Fixes: efdb4167e676 ("scripts/faddr2line: Fix "size mismatch" error")
+> > Reported-by: Kaiwan N Billimoria <kaiwan.billimoria@gmail.com>
+> > Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
+> > ---
+> >  scripts/faddr2line | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/scripts/faddr2line b/scripts/faddr2line
+> > index 6c6439f69a72..2a130134f1e6 100755
+> > --- a/scripts/faddr2line
+> > +++ b/scripts/faddr2line
+> > @@ -189,7 +189,7 @@ __faddr2line() {
+> >
+> >                 DONE=1
+> >
+> > -       done < <(${NM} -n $objfile | awk -v fn=$func -v end=$file_end '$3 == fn { found=1; line=$0; start=$1; next } found == 1 { found=0; print line, "0x"$1 } END {if (found == 1) print line, end; }')
+> > +       done < <(${NM} -n $objfile | awk -v fn=$func -v end=$file_end '$2 !~ /[Tt]/ {next} $3 == fn { found=1; line=$0; start=$1; next } found == 1 { found=0; print line, "0x"$1 } END {if (found == 1) print line, end; }')
+> >  }
+> >
+> >  [[ $# -lt 2 ]] && usage
+> > --
+> > 2.31.1
+> >
 > 
 
 -- 
-Pierre Morel
-IBM Lab Boeblingen
+Josh
+
