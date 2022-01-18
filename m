@@ -2,43 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E2A8C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B39FC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:41:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346948AbiARCkS (ORCPT
+        id S1346754AbiARCju (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:40:18 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52598 "EHLO
+        Mon, 17 Jan 2022 21:39:50 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52132 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346130AbiARCf0 (ORCPT
+        with ESMTP id S1344535AbiARCew (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:35:26 -0500
+        Mon, 17 Jan 2022 21:34:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6501F610E8;
-        Tue, 18 Jan 2022 02:35:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED29FC36AE3;
-        Tue, 18 Jan 2022 02:35:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04667611D8;
+        Tue, 18 Jan 2022 02:34:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9ABDC36AEB;
+        Tue, 18 Jan 2022 02:34:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473325;
-        bh=PJa9pJriew9OaMlnsA9qTXusUtpxB4DAsf4xRVD7nJw=;
+        s=k20201202; t=1642473291;
+        bh=GRm6ZQaFJ60OS35Q/7OIBpWXiFjDg3ePGtx1dzEBxsM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=egjI/03TIILP20HQkE8Ea+7/TcqiHjY/xeselIgtYv1R5jNoq1AFI8OPHtAsDN7nY
-         1aJmIthfuhFHjKurMPt4a9NS1N7ilhdRgFLM3hK1S18odSZ++lLaf2OCk7SvXn6i3y
-         AD/2RHOIuKCccn7Q/62eJQWAVWfyN54jz+nmuhlCZO1Ow1wdOnpCDYljhcTypBuD/z
-         oON3cLdEfikmcNMso7V+WLrctlDrHOfC/Vw9o3dbZuKb+tr/LQPeu3ff87SlRkcFvq
-         VqHegRpQDvvXy1T9qpxmWly3NqA0PrXr3YaFKCbj3+l/Wi6mOmF1pDDLYnDT/ieAgE
-         3qRqb4SUIfWaw==
+        b=dBmUSdlF4C0nh7+cpcvrXMYA84Hdowzi1RC8ZVf4J4zYWoKLJcrmPHMd/0h3QWv5l
+         4UJk0tY8Doig7ZTHeOi+IUOHTmwRg4BuW2weTblHJ8TPcPZSID3tmiV9XN9Q4qAqlC
+         S3umtI6Xn2Wsd7CbkHxFRet64/lfzazmMQgOqNs9MH0hVxnwkEzwoBfuM0Q2ISgp8L
+         2XxvlM7wONVYr6a05SXYXiFCnkZ7qp4dziXp7yrJixC2PnK4bOtqHLppVsAasEUIuj
+         /7itDwHMKdcJ9SzLZlsm1ipB6LdgEFAC+6JFaU3Bkk53P/6GGHQzfxB35fsAYzvpgG
+         hKJu2frMLxsPg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        mario.limonciello@amd.com, linux-acpi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 072/188] ACPI / x86: Drop PWM2 device on Lenovo Yoga Book from always present table
-Date:   Mon, 17 Jan 2022 21:29:56 -0500
-Message-Id: <20220118023152.1948105-72-sashal@kernel.org>
+Cc:     Alex Deucher <alexander.deucher@amd.com>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
+        Felix.Kuehling@amd.com, Hawking.Zhang@amd.com, Emily.Deng@amd.com,
+        andrey.grodzovsky@amd.com, tzimmermann@suse.de,
+        Philip.Yang@amd.com, maz@kernel.org, Yong.Zhao@amd.com,
+        nicholas.kazlauskas@amd.com, qingqing.zhuo@amd.com,
+        Anson.Jacob@amd.com, shenshih@amd.com, aurabindo.pillai@amd.com,
+        nikola.cornij@amd.com, Wayne.Lin@amd.com, Roman.Li@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 053/188] drm/amdgpu/display: set vblank_disable_immediate for DC
+Date:   Mon, 17 Jan 2022 21:29:37 -0500
+Message-Id: <20220118023152.1948105-53-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -50,46 +58,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Alex Deucher <alexander.deucher@amd.com>
 
-[ Upstream commit d431dfb764b145369be820fcdfd50f2159b9bbc2 ]
+[ Upstream commit 92020e81ddbeac351ea4a19bcf01743f32b9c800 ]
 
-It turns out that there is a WMI object which controls the PWM2 device
-used for the keyboard backlight and that WMI object also provides some
-other useful functionality.
+Disable vblanks immediately to save power.  I think this was
+missed when we merged DC support.
 
-The upcoming lenovo-yogabook-wmi driver will offer both backlight
-control and the other functionality, so there no longer is a need
-to have the lpss-pwm driver binding to PWM2 for backlight control;
-and this is now actually undesirable because this will cause both
-the WMI code and the lpss-pwm driver to poke at the same PWM
-controller.
-
-Drop the always-present quirk for the PWM2 ACPI-device, so that the
- lpss-pwm controller will no longer bind to it.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1781
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/x86/utils.c | 4 ----
- 1 file changed, 4 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c           | 1 -
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 3 +++
+ 2 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/x86/utils.c b/drivers/acpi/x86/utils.c
-index f22f23933063b..3bcac98f6eca6 100644
---- a/drivers/acpi/x86/utils.c
-+++ b/drivers/acpi/x86/utils.c
-@@ -54,10 +54,6 @@ static const struct always_present_id always_present_ids[] = {
- 	ENTRY("80860F09", "1", X86_MATCH(ATOM_SILVERMONT), {}),
- 	ENTRY("80862288", "1", X86_MATCH(ATOM_AIRMONT), {}),
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c
+index cc2e0c9cfe0a1..4f3c62adccbde 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c
+@@ -333,7 +333,6 @@ int amdgpu_irq_init(struct amdgpu_device *adev)
+ 	if (!amdgpu_device_has_dc_support(adev)) {
+ 		if (!adev->enable_virtual_display)
+ 			/* Disable vblank IRQs aggressively for power-saving */
+-			/* XXX: can this be enabled for DC? */
+ 			adev_to_drm(adev)->vblank_disable_immediate = true;
  
--	/* Lenovo Yoga Book uses PWM2 for keyboard backlight control */
--	ENTRY("80862289", "2", X86_MATCH(ATOM_AIRMONT), {
--			DMI_MATCH(DMI_PRODUCT_NAME, "Lenovo YB1-X9"),
--		}),
- 	/*
- 	 * The INT0002 device is necessary to clear wakeup interrupt sources
- 	 * on Cherry Trail devices, without it we get nobody cared IRQ msgs.
+ 		r = drm_vblank_init(adev_to_drm(adev), adev->mode_info.num_crtc);
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index fef13e93a99fd..cbc67477a9a1f 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -1279,6 +1279,9 @@ static int amdgpu_dm_init(struct amdgpu_device *adev)
+ 	adev_to_drm(adev)->mode_config.cursor_width = adev->dm.dc->caps.max_cursor_size;
+ 	adev_to_drm(adev)->mode_config.cursor_height = adev->dm.dc->caps.max_cursor_size;
+ 
++	/* Disable vblank IRQs aggressively for power-saving */
++	adev_to_drm(adev)->vblank_disable_immediate = true;
++
+ 	if (drm_vblank_init(adev_to_drm(adev), adev->dm.display_indexes_num)) {
+ 		DRM_ERROR(
+ 		"amdgpu: failed to initialize sw for display support.\n");
 -- 
 2.34.1
 
