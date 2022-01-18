@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3380C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:09:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB195C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:09:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346428AbiARQJu (ORCPT
+        id S1346580AbiARQJ5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:09:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51544 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346751AbiARQIn (ORCPT
+        Tue, 18 Jan 2022 11:09:57 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39512 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346846AbiARQIw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:08:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE286C061762;
-        Tue, 18 Jan 2022 08:08:42 -0800 (PST)
+        Tue, 18 Jan 2022 11:08:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6BB3A612B9;
-        Tue, 18 Jan 2022 16:08:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 117D7C340E0;
-        Tue, 18 Jan 2022 16:08:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 427836128A;
+        Tue, 18 Jan 2022 16:08:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04418C00446;
+        Tue, 18 Jan 2022 16:08:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522121;
-        bh=s3CsI5MmGWZgzICs6nkaVvUohwmFXDbrC1qDtryJsvw=;
+        s=korg; t=1642522131;
+        bh=qju8o6XoyuGz22CvsF0euEAzaQbEcSDw/wMlTLltAoI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yP9uhP+RoS/FoX0VeVtKVEnbxBoNJDWXVuIF2XLB27+ILVO3IiuoeT7GL3hFqxh8H
-         BH4nzwxpNAd6zE7QWKGnkn/eezJCUWn/h4KL1x7XOHTbYbD+dmVJoMikm60uc2U1Kd
-         99F6n4pK/7aKFd3I/UtAk8+/I8CUPz1aYbVIlwfs=
+        b=VSOffEJqdtvc9WAWxlkK5Mbh3IWPDViFye/0Ly7rDbYHO1OVfZBc16e2fbkHeTdkL
+         9l83sFs9/IPWpDt4PP2Flcccks3XwDAnaB7MXTPCCEHrPpcyZHIvVb9WFc8td4cL2P
+         dEKGCQdT6FtfAuKkJysMId89R5VWBSAa1oLi5V5A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Qiushi Wu <wu000273@umn.edu>,
-        Kees Cook <keescook@chromium.org>,
-        Johan Hovold <johan@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 5.10 14/23] firmware: qemu_fw_cfg: fix NULL-pointer deref on duplicate entries
-Date:   Tue, 18 Jan 2022 17:05:54 +0100
-Message-Id: <20220118160451.723590076@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Mario Limonciello <mario.limonciello@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>
+Subject: [PATCH 5.15 02/28] drm/amd/display: explicitly set is_dsc_supported to false before use
+Date:   Tue, 18 Jan 2022 17:05:48 +0100
+Message-Id: <20220118160451.957799245@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118160451.233828401@linuxfoundation.org>
-References: <20220118160451.233828401@linuxfoundation.org>
+In-Reply-To: <20220118160451.879092022@linuxfoundation.org>
+References: <20220118160451.879092022@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,60 +47,32 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Mario Limonciello <mario.limonciello@amd.com>
 
-commit d3e305592d69e21e36b76d24ca3c01971a2d09be upstream.
+commit 63ad5371cd1e379519395c49a4b6a652c36c98e5 upstream.
 
-Commit fe3c60684377 ("firmware: Fix a reference count leak.") "fixed"
-a kobject leak in the file registration helper by properly calling
-kobject_put() for the entry in case registration of the object fails
-(e.g. due to a name collision).
+When UBSAN is enabled a case is shown on unplugging the display that
+this variable hasn't been initialized by `update_dsc_caps`, presumably
+when the display was unplugged it wasn't copied from the DPCD.
 
-This would however result in a NULL pointer dereference when the
-release function tries to remove the never added entry from the
-fw_cfg_entry_cache list.
-
-Fix this by moving the list-removal out of the release function.
-
-Note that the offending commit was one of the benign looking umn.edu
-fixes which was reviewed but not reverted. [1][2]
-
-[1] https://lore.kernel.org/r/202105051005.49BFABCE@keescook
-[2] https://lore.kernel.org/all/YIg7ZOZvS3a8LjSv@kroah.com
-
-Fixes: fe3c60684377 ("firmware: Fix a reference count leak.")
-Cc: stable@vger.kernel.org      # 5.8
-Cc: Qiushi Wu <wu000273@umn.edu>
-Cc: Kees Cook <keescook@chromium.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Link: https://lore.kernel.org/r/20211201132528.30025-2-johan@kernel.org
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Link: https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1956497
+Signed-off-by: Mario Limonciello <mario.limonciello@amd.com>
+Acked-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/qemu_fw_cfg.c |    5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/firmware/qemu_fw_cfg.c
-+++ b/drivers/firmware/qemu_fw_cfg.c
-@@ -388,9 +388,7 @@ static void fw_cfg_sysfs_cache_cleanup(v
- 	struct fw_cfg_sysfs_entry *entry, *next;
- 
- 	list_for_each_entry_safe(entry, next, &fw_cfg_entry_cache, list) {
--		/* will end up invoking fw_cfg_sysfs_cache_delist()
--		 * via each object's release() method (i.e. destructor)
--		 */
-+		fw_cfg_sysfs_cache_delist(entry);
- 		kobject_put(&entry->kobj);
- 	}
- }
-@@ -448,7 +446,6 @@ static void fw_cfg_sysfs_release_entry(s
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -5604,6 +5604,7 @@ static void update_dsc_caps(struct amdgp
+ 							struct dsc_dec_dpcd_caps *dsc_caps)
  {
- 	struct fw_cfg_sysfs_entry *entry = to_entry(kobj);
+ 	stream->timing.flags.DSC = 0;
++	dsc_caps->is_dsc_supported = false;
  
--	fw_cfg_sysfs_cache_delist(entry);
- 	kfree(entry);
- }
- 
+ 	if (aconnector->dc_link && sink->sink_signal == SIGNAL_TYPE_DISPLAY_PORT) {
+ 		dc_dsc_parse_dsc_dpcd(aconnector->dc_link->ctx->dc,
 
 
