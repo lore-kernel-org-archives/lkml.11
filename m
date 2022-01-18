@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C91B3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E456FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:11:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243787AbiARQLS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:11:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51544 "EHLO
+        id S1346787AbiARQLV (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 11:11:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347107AbiARQJh (ORCPT
+        with ESMTP id S1347188AbiARQJp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:09:37 -0500
-Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA32C0613E3;
-        Tue, 18 Jan 2022 08:09:33 -0800 (PST)
+        Tue, 18 Jan 2022 11:09:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93AD5C061763;
+        Tue, 18 Jan 2022 08:09:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id AB457CE1A32;
-        Tue, 18 Jan 2022 16:09:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FACEC340E0;
-        Tue, 18 Jan 2022 16:09:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BE4F7612B5;
+        Tue, 18 Jan 2022 16:09:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99DA9C00446;
+        Tue, 18 Jan 2022 16:09:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522170;
-        bh=jvgy58p5NNQDL1d44rsCcECEHTpB8jcJZ4tD6xqJeU0=;
+        s=korg; t=1642522183;
+        bh=0vB1H25OI3Yw/WCtWkmX5VziWIgyf4dBHyMNGFhu9Y8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S+PKZ0JhqHt65S0gVKxGeSZiZ1LmhdGeAeEDWd9tmpHZn66EjXz+UT8tX5S9b8ZKx
-         OTijbw/Y85Qj1x9XSE9/vjf6gDxIW88cGuNcO03/fqGYxpdH2wFXE6GKvzDkq52Vk+
-         CoOkc2JUkB1o6PC/3pV+78+J7LazQfNvhGVlmXtk=
+        b=naoeYBa9LYVo5I/YXjksV+Wc6FRdsnfwESQT3Dgwq2DQFZQzXotvKvNpfRglWp8Nu
+         j8vP1hLSU2dWjZBAcjBC+aJndJ19c3hta0CsfHSqs0cTrSmRJq4xSDTNAapTR1bITp
+         phifA2q9dMT1EH0TJR3VPhmEllpzc/IxreWXNl1s=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        stable@vger.kernel.org, Baole Fang <fbl718@163.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 22/28] ALSA: hda/realtek: Use ALC285_FIXUP_HP_GPIO_LED on another HP laptop
-Date:   Tue, 18 Jan 2022 17:06:08 +0100
-Message-Id: <20220118160452.614874048@linuxfoundation.org>
+Subject: [PATCH 5.15 26/28] ALSA: hda/realtek: Add quirk for Legion Y9000X 2020
+Date:   Tue, 18 Jan 2022 17:06:12 +0100
+Message-Id: <20220118160452.749671399@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118160451.879092022@linuxfoundation.org>
 References: <20220118160451.879092022@linuxfoundation.org>
@@ -49,31 +49,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: Baole Fang <fbl718@163.com>
 
-commit 08977fe8cfb7d9fe9337470eec4843081cf3a76d upstream.
+commit 8f4c90427a8f0ca0fcdd89d8966fcdab35fb2d4c upstream.
 
-The audio mute and mic mute LEDs don't work, so use the quirk to make
-them work.
+Legion Y9000X 2020 has a speaker, but the speaker doesn't work.
+This can be fixed by applying alc285_fixup_ideapad_s740_coef
+to fix the speaker's coefficients.
+Besides, to support the transition between the speaker and the headphone,
+alc287_fixup_legion_15imhg05_speakers needs to be run.
 
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Signed-off-by: Baole Fang <fbl718@163.com>
 Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/20211224035015.310068-1-kai.heng.feng@canonical.com
+Link: https://lore.kernel.org/r/20220105140856.4855-1-fbl718@163.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ sound/pci/hda/patch_realtek.c |   15 +++++++++++++++
+ 1 file changed, 15 insertions(+)
 
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -8730,6 +8730,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x103c, 0x8896, "HP EliteBook 855 G8 Notebook PC", ALC285_FIXUP_HP_MUTE_LED),
- 	SND_PCI_QUIRK(0x103c, 0x8898, "HP EliteBook 845 G8 Notebook PC", ALC285_FIXUP_HP_LIMIT_INT_MIC_BOOST),
- 	SND_PCI_QUIRK(0x103c, 0x88d0, "HP Pavilion 15-eh1xxx (mainboard 88D0)", ALC287_FIXUP_HP_GPIO_LED),
-+	SND_PCI_QUIRK(0x103c, 0x89c3, "HP", ALC285_FIXUP_HP_GPIO_LED),
- 	SND_PCI_QUIRK(0x103c, 0x89ca, "HP", ALC236_FIXUP_HP_MUTE_LED_MICMUTE_VREF),
- 	SND_PCI_QUIRK(0x1043, 0x103e, "ASUS X540SA", ALC256_FIXUP_ASUS_MIC),
- 	SND_PCI_QUIRK(0x1043, 0x103f, "ASUS TX300", ALC282_FIXUP_ASUS_TX300),
+@@ -6812,6 +6812,8 @@ enum {
+ 	ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE,
+ 	ALC233_FIXUP_NO_AUDIO_JACK,
+ 	ALC256_FIXUP_MIC_NO_PRESENCE_AND_RESUME,
++	ALC285_FIXUP_LEGION_Y9000X_SPEAKERS,
++	ALC285_FIXUP_LEGION_Y9000X_AUTOMUTE,
+ };
+ 
+ static const struct hda_fixup alc269_fixups[] = {
+@@ -8408,6 +8410,18 @@ static const struct hda_fixup alc269_fix
+ 		.chained = true,
+ 		.chain_id = ALC236_FIXUP_HP_MUTE_LED_MICMUTE_VREF,
+ 	},
++	[ALC285_FIXUP_LEGION_Y9000X_SPEAKERS] = {
++		.type = HDA_FIXUP_FUNC,
++		.v.func = alc285_fixup_ideapad_s740_coef,
++		.chained = true,
++		.chain_id = ALC285_FIXUP_LEGION_Y9000X_AUTOMUTE,
++	},
++	[ALC285_FIXUP_LEGION_Y9000X_AUTOMUTE] = {
++		.type = HDA_FIXUP_FUNC,
++		.v.func = alc287_fixup_legion_15imhg05_speakers,
++		.chained = true,
++		.chain_id = ALC269_FIXUP_THINKPAD_ACPI,
++	},
+ 	[ALC287_FIXUP_LEGION_15IMHG05_SPEAKERS] = {
+ 		.type = HDA_FIXUP_VERBS,
+ 		//.v.verbs = legion_15imhg05_coefs,
+@@ -8952,6 +8966,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x17aa, 0x31af, "ThinkCentre Station", ALC623_FIXUP_LENOVO_THINKSTATION_P340),
+ 	SND_PCI_QUIRK(0x17aa, 0x3818, "Lenovo C940", ALC298_FIXUP_LENOVO_SPK_VOLUME),
+ 	SND_PCI_QUIRK(0x17aa, 0x3827, "Ideapad S740", ALC285_FIXUP_IDEAPAD_S740_COEF),
++	SND_PCI_QUIRK(0x17aa, 0x3824, "Legion Y9000X 2020", ALC285_FIXUP_LEGION_Y9000X_SPEAKERS),
+ 	SND_PCI_QUIRK(0x17aa, 0x3834, "Lenovo IdeaPad Slim 9i 14ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
+ 	SND_PCI_QUIRK(0x17aa, 0x3843, "Yoga 9i", ALC287_FIXUP_IDEAPAD_BASS_SPK_AMP),
+ 	SND_PCI_QUIRK(0x17aa, 0x3813, "Legion 7i 15IMHG05", ALC287_FIXUP_LEGION_15IMHG05_SPEAKERS),
 
 
