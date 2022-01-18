@@ -2,52 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C371C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:42:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52891C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:42:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347617AbiARCmT (ORCPT
+        id S1347632AbiARCmZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:42:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59890 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346375AbiARChk (ORCPT
+        Mon, 17 Jan 2022 21:42:25 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45732 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344667AbiARChq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:37:40 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F97BC0612F1;
-        Mon, 17 Jan 2022 18:34:25 -0800 (PST)
+        Mon, 17 Jan 2022 21:37:46 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E69666120D;
-        Tue, 18 Jan 2022 02:34:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 01409C36AF3;
-        Tue, 18 Jan 2022 02:34:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E4080B81233;
+        Tue, 18 Jan 2022 02:37:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0913AC36AF2;
+        Tue, 18 Jan 2022 02:37:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473264;
-        bh=nWfx+5I8ePLDtAMpHsHpCuInFeM3n1fhygFY6A3KG1I=;
+        s=k20201202; t=1642473463;
+        bh=pPw5cqi3vaScQsJmozSNEe1jYl0Dhr9g/WHQQQq/ucI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oaYstL0ilpalZ1BYqTkOnFK8s9gRNIw2aJyDZ/jsXazbJhToGtcxn9Ncxa8E9Ftlg
-         S8iISKIHtPrc3gQCPPk9pfXFWKlrlFR968cjzBhjj6V19aLVYsU4PPq2PHV8TXj+4P
-         wviW796d/gWtcml6yZ5Tcwuwi/OAPx0Kk2Wzufq2FXqOXAvJ7JdzpdhOfRAw8pJ4JU
-         R9H7aZaLmO6gfPlc/t/65KcfoM/GlNGjFOc/VHyCE8juyj1aal/Z2DcLqNewAIDiun
-         lnZj+QJrm8Yy+gLYNzt3J6Yi74g97a0qRSc95AvGkSTzbq/HeZSAHKmpWs32Bioc+t
-         jz5YhX74rSFng==
+        b=uJRXDVYHxcGu0qoIaVIVIm0G0i8rOuXPpmTVGFM0xA+rIrmfu4WY5vi4lz5HOaMGT
+         D5BvvQKdatFAh8+Zc/+YNE/DfbNV62TOqrDOO/wONvbizLYwb+y6+QWdjAL4AMFYyc
+         LqN8hj+o73GW6rHfuHXl2FtqQ5mrDqMSqxAUnlbBn1kn8JBYAMvhgh2AQofBG8P6po
+         tjgsqOPhNPcfMe0l9id+lEgzXnIVetiw3Y4zqLB4Wrg5HPfGbzjQy7+XxuPobeZR5v
+         q1rdDEjDvlHZ01yo6LfrpA7qxKwVcFBfqNUEWwIEyTXT3KZ/1PXN/cZ1TqPV5diKWr
+         mL8EKWB3iBOyg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yang Li <yang.lee@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        biju.das.jz@bp.renesas.com,
-        prabhakar.mahadev-lad.rj@bp.renesas.com,
-        yoshihiro.shimoda.uh@renesas.com, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 046/188] ethernet: renesas: Use div64_ul instead of do_div
-Date:   Mon, 17 Jan 2022 21:29:30 -0500
-Message-Id: <20220118023152.1948105-46-sashal@kernel.org>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 128/188] cpufreq: Fix initialization of min and max frequency QoS requests
+Date:   Mon, 17 Jan 2022 21:30:52 -0500
+Message-Id: <20220118023152.1948105-128-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -59,54 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Li <yang.lee@linux.alibaba.com>
+From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 
-[ Upstream commit d9f31aeaa1e5aefa68130878af3c3513d41c1e2d ]
+[ Upstream commit 521223d8b3ec078f670c7c35a1a04b1b2af07966 ]
 
-do_div() does a 64-by-32 division. Here the divisor is an
-unsigned long which on some platforms is 64 bit wide. So use
-div64_ul instead of do_div to avoid a possible truncation.
+The min and max frequency QoS requests in the cpufreq core are
+initialized to whatever the current min and max frequency values are
+at the init time, but if any of these values change later (for
+example, cpuinfo.max_freq is updated by the driver), these initial
+request values will be limiting the CPU frequency unnecessarily
+unless they are changed by user space via sysfs.
 
-Eliminate the following coccicheck warning:
-./drivers/net/ethernet/renesas/ravb_main.c:2492:1-7: WARNING:
-do_div() does a 64-by-32 division, please consider using div64_ul
-instead.
+To address this, initialize min_freq_req and max_freq_req to
+FREQ_QOS_MIN_DEFAULT_VALUE and FREQ_QOS_MAX_DEFAULT_VALUE,
+respectively, so they don't really limit anything until user
+space updates them.
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
-Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Link: https://lore.kernel.org/r/1637228883-100100-1-git-send-email-yang.lee@linux.alibaba.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Reported-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Tested-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/renesas/ravb_main.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/cpufreq/cpufreq.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-index 0f85f2d97b18d..4e08b7219403c 100644
---- a/drivers/net/ethernet/renesas/ravb_main.c
-+++ b/drivers/net/ethernet/renesas/ravb_main.c
-@@ -30,8 +30,7 @@
- #include <linux/spinlock.h>
- #include <linux/sys_soc.h>
- #include <linux/reset.h>
--
--#include <asm/div64.h>
-+#include <linux/math64.h>
+diff --git a/drivers/cpufreq/cpufreq.c b/drivers/cpufreq/cpufreq.c
+index fcb44352623ee..eeac6d8092298 100644
+--- a/drivers/cpufreq/cpufreq.c
++++ b/drivers/cpufreq/cpufreq.c
+@@ -1402,7 +1402,7 @@ static int cpufreq_online(unsigned int cpu)
  
- #include "ravb.h"
+ 		ret = freq_qos_add_request(&policy->constraints,
+ 					   policy->min_freq_req, FREQ_QOS_MIN,
+-					   policy->min);
++					   FREQ_QOS_MIN_DEFAULT_VALUE);
+ 		if (ret < 0) {
+ 			/*
+ 			 * So we don't call freq_qos_remove_request() for an
+@@ -1422,7 +1422,7 @@ static int cpufreq_online(unsigned int cpu)
  
-@@ -2061,8 +2060,7 @@ static int ravb_set_gti(struct net_device *ndev)
- 	if (!rate)
- 		return -EINVAL;
- 
--	inc = 1000000000ULL << 20;
--	do_div(inc, rate);
-+	inc = div64_ul(1000000000ULL << 20, rate);
- 
- 	if (inc < GTI_TIV_MIN || inc > GTI_TIV_MAX) {
- 		dev_err(dev, "gti.tiv increment 0x%llx is outside the range 0x%x - 0x%x\n",
+ 		ret = freq_qos_add_request(&policy->constraints,
+ 					   policy->max_freq_req, FREQ_QOS_MAX,
+-					   policy->max);
++					   FREQ_QOS_MAX_DEFAULT_VALUE);
+ 		if (ret < 0) {
+ 			policy->max_freq_req = NULL;
+ 			goto out_destroy_policy;
 -- 
 2.34.1
 
