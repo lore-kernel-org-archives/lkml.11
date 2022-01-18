@@ -2,48 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2004BC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:53:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6371C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:53:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349944AbiARCur (ORCPT
+        id S1349774AbiARCuR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:50:47 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:55986 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347038AbiARCkc (ORCPT
+        Mon, 17 Jan 2022 21:50:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58636 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345406AbiARCbb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:40:32 -0500
+        Mon, 17 Jan 2022 21:31:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B226AC06175D;
+        Mon, 17 Jan 2022 18:29:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DDE6061127;
-        Tue, 18 Jan 2022 02:40:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FA76C36AE3;
-        Tue, 18 Jan 2022 02:40:30 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 521516114D;
+        Tue, 18 Jan 2022 02:29:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57983C36AEF;
+        Tue, 18 Jan 2022 02:29:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473631;
-        bh=N+xAuBNrumYAwKdpAGtW0TSvVD1arLgbiAIJ/iqPfH8=;
+        s=k20201202; t=1642472948;
+        bh=SwHp8z8g4fBVnumYsGHPVujRk5tCwr58kzWwwIKJFhQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ap6SszjwUFCxNiG2/oHXaOLCnm9Crze4tcFsaJqqczDgLp2jqkhlzjsguy33kZtqf
-         D/+i8WhZCcHQ5RsdI3FdSo+y6awCnMucEgVtkfUlOhZEwUUE9d0dIJODhXiT1lI6gU
-         BE6bBEphq+vb7DHEWTLZo/LzsRiRtnyNltNZ5U0+m8/tgJKuPylVlfPOM5QfvRtzTp
-         ++jWgoPYb/9qWCbgnNKe3y/uwoKTElgaqyHDeJB6LfPddZdAZP6dnnXmXGESKXW3Y+
-         GwJAtaIEdOy1eFoDWzFfzgT5ZDavefcS4hhFtnwH5bQ37fTckE61hok0TK0O6UABFi
-         KbwjaCN3ladig==
+        b=FFquYUukTAjIn3vWR3lQlNliqi3kEfKhB6S4FiPrtWXSWzkl9zd1tEYBbeFqELzcv
+         V0DunSeWE2F4xHzCvvaMnCveSjpDmnzx106iyngWjvwWOJNpREzGUd3zUTYwNeB0ga
+         HMcm7PHvUa1wkJeFbd8Gpj7i+wNo3ECt5gevfbLyELtvDkd35S62Rulm5z/pfqTeS/
+         yniTdiXfKR/B4Ng7MGw3RAdgfisC2T+Iv3sdxvIt51hOwYInkFaeD8BoMLz/UaS73d
+         +NiEmsu36X3X+0Cob+exOfFxSm2Oxkqr5XrWxhD4PeDeKImeFNkXYnqceMU/J/malT
+         +XFwY+LK2qxgA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ben Skeggs <bskeggs@redhat.com>,
-        Diego Viola <diego.viola@gmail.com>,
-        Karol Herbst <kherbst@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, lyude@redhat.com,
-        airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
-        nouveau@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.10 008/116] drm/nouveau/pmu/gm200-: avoid touching PMU outside of DEVINIT/PREOS/ACR
-Date:   Mon, 17 Jan 2022 21:38:19 -0500
-Message-Id: <20220118024007.1950576-8-sashal@kernel.org>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        linux-um@lists.infradead.org, Sasha Levin <sashal@kernel.org>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org,
+        viro@zeniv.linux.org.uk
+Subject: [PATCH AUTOSEL 5.16 171/217] um: registers: Rename function names to avoid conflicts and build problems
+Date:   Mon, 17 Jan 2022 21:18:54 -0500
+Message-Id: <20220118021940.1942199-171-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
+In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
+References: <20220118021940.1942199-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,101 +57,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ben Skeggs <bskeggs@redhat.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit 1d2271d2fb85e54bfc9630a6c30ac0feb9ffb983 ]
+[ Upstream commit 077b7320942b64b0da182aefd83c374462a65535 ]
 
-There have been reports of the WFI timing out on some boards, and a
-patch was proposed to just remove it.  This stuff is rather fragile,
-and I believe the WFI might be needed with our FW prior to GM200.
+The function names init_registers() and restore_registers() are used
+in several net/ethernet/ and gpu/drm/ drivers for other purposes (not
+calls to UML functions), so rename them.
 
-However, we probably should not be touching PMU during init on GPUs
-where we depend on NVIDIA FW, outside of limited circumstances, so
-this should be a somewhat safer change that achieves the desired
-result.
+This fixes multiple build errors.
 
-Reported-by: Diego Viola <diego.viola@gmail.com>
-Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
-Reviewed-by: Karol Herbst <kherbst@redhat.com>
-Signed-off-by: Karol Herbst <kherbst@redhat.com>
-Link: https://gitlab.freedesktop.org/drm/nouveau/-/merge_requests/10
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Jeff Dike <jdike@addtoit.com>
+Cc: Richard Weinberger <richard@nod.at>
+Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Cc: linux-um@lists.infradead.org
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../gpu/drm/nouveau/nvkm/subdev/pmu/base.c    | 37 +++++++++++--------
- 1 file changed, 21 insertions(+), 16 deletions(-)
+ arch/um/include/shared/registers.h | 4 ++--
+ arch/um/os-Linux/registers.c       | 4 ++--
+ arch/um/os-Linux/start_up.c        | 2 +-
+ arch/x86/um/syscalls_64.c          | 3 ++-
+ 4 files changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
-index a0fe607c9c07f..3bfc55c571b5e 100644
---- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
-+++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
-@@ -94,20 +94,13 @@ nvkm_pmu_fini(struct nvkm_subdev *subdev, bool suspend)
+diff --git a/arch/um/include/shared/registers.h b/arch/um/include/shared/registers.h
+index 0c50fa6e8a55b..fbb709a222839 100644
+--- a/arch/um/include/shared/registers.h
++++ b/arch/um/include/shared/registers.h
+@@ -16,8 +16,8 @@ extern int restore_fp_registers(int pid, unsigned long *fp_regs);
+ extern int save_fpx_registers(int pid, unsigned long *fp_regs);
+ extern int restore_fpx_registers(int pid, unsigned long *fp_regs);
+ extern int save_registers(int pid, struct uml_pt_regs *regs);
+-extern int restore_registers(int pid, struct uml_pt_regs *regs);
+-extern int init_registers(int pid);
++extern int restore_pid_registers(int pid, struct uml_pt_regs *regs);
++extern int init_pid_registers(int pid);
+ extern void get_safe_registers(unsigned long *regs, unsigned long *fp_regs);
+ extern unsigned long get_thread_reg(int reg, jmp_buf *buf);
+ extern int get_fp_registers(int pid, unsigned long *regs);
+diff --git a/arch/um/os-Linux/registers.c b/arch/um/os-Linux/registers.c
+index 2d9270508e156..b123955be7acc 100644
+--- a/arch/um/os-Linux/registers.c
++++ b/arch/um/os-Linux/registers.c
+@@ -21,7 +21,7 @@ int save_registers(int pid, struct uml_pt_regs *regs)
  	return 0;
  }
  
--static int
-+static void
- nvkm_pmu_reset(struct nvkm_pmu *pmu)
+-int restore_registers(int pid, struct uml_pt_regs *regs)
++int restore_pid_registers(int pid, struct uml_pt_regs *regs)
  {
- 	struct nvkm_device *device = pmu->subdev.device;
+ 	int err;
  
- 	if (!pmu->func->enabled(pmu))
--		return 0;
--
--	/* Inhibit interrupts, and wait for idle. */
--	nvkm_wr32(device, 0x10a014, 0x0000ffff);
--	nvkm_msec(device, 2000,
--		if (!nvkm_rd32(device, 0x10a04c))
--			break;
--	);
-+		return;
+@@ -36,7 +36,7 @@ int restore_registers(int pid, struct uml_pt_regs *regs)
+ static unsigned long exec_regs[MAX_REG_NR];
+ static unsigned long exec_fp_regs[FP_SIZE];
  
- 	/* Reset. */
- 	if (pmu->func->reset)
-@@ -118,25 +111,37 @@ nvkm_pmu_reset(struct nvkm_pmu *pmu)
- 		if (!(nvkm_rd32(device, 0x10a10c) & 0x00000006))
- 			break;
- 	);
--
--	return 0;
- }
- 
- static int
- nvkm_pmu_preinit(struct nvkm_subdev *subdev)
+-int init_registers(int pid)
++int init_pid_registers(int pid)
  {
- 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
--	return nvkm_pmu_reset(pmu);
-+	nvkm_pmu_reset(pmu);
-+	return 0;
- }
+ 	int err;
  
- static int
- nvkm_pmu_init(struct nvkm_subdev *subdev)
- {
- 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
--	int ret = nvkm_pmu_reset(pmu);
--	if (ret == 0 && pmu->func->init)
--		ret = pmu->func->init(pmu);
--	return ret;
-+	struct nvkm_device *device = pmu->subdev.device;
-+
-+	if (!pmu->func->init)
-+		return 0;
-+
-+	if (pmu->func->enabled(pmu)) {
-+		/* Inhibit interrupts, and wait for idle. */
-+		nvkm_wr32(device, 0x10a014, 0x0000ffff);
-+		nvkm_msec(device, 2000,
-+			if (!nvkm_rd32(device, 0x10a04c))
-+				break;
-+		);
-+
-+		nvkm_pmu_reset(pmu);
-+	}
-+
-+	return pmu->func->init(pmu);
- }
+diff --git a/arch/um/os-Linux/start_up.c b/arch/um/os-Linux/start_up.c
+index 8a72c99994eb1..e3ee4db58b40d 100644
+--- a/arch/um/os-Linux/start_up.c
++++ b/arch/um/os-Linux/start_up.c
+@@ -368,7 +368,7 @@ void __init os_early_checks(void)
+ 	check_tmpexec();
  
- static void *
+ 	pid = start_ptraced_child();
+-	if (init_registers(pid))
++	if (init_pid_registers(pid))
+ 		fatal("Failed to initialize default registers");
+ 	stop_ptraced_child(pid, 1, 1);
+ }
+diff --git a/arch/x86/um/syscalls_64.c b/arch/x86/um/syscalls_64.c
+index 58f51667e2e4b..8249685b40960 100644
+--- a/arch/x86/um/syscalls_64.c
++++ b/arch/x86/um/syscalls_64.c
+@@ -11,6 +11,7 @@
+ #include <linux/uaccess.h>
+ #include <asm/prctl.h> /* XXX This should get the constants from libc */
+ #include <os.h>
++#include <registers.h>
+ 
+ long arch_prctl(struct task_struct *task, int option,
+ 		unsigned long __user *arg2)
+@@ -35,7 +36,7 @@ long arch_prctl(struct task_struct *task, int option,
+ 	switch (option) {
+ 	case ARCH_SET_FS:
+ 	case ARCH_SET_GS:
+-		ret = restore_registers(pid, &current->thread.regs.regs);
++		ret = restore_pid_registers(pid, &current->thread.regs.regs);
+ 		if (ret)
+ 			return ret;
+ 		break;
 -- 
 2.34.1
 
