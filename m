@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F04C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFEAFC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:58:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245673AbiARC5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:57:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33384 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348196AbiARCo7 (ORCPT
+        id S1344578AbiARC6G (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:58:06 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:54866 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348720AbiARCpy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:44:59 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD59C06124D;
-        Mon, 17 Jan 2022 18:37:52 -0800 (PST)
+        Mon, 17 Jan 2022 21:45:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD3A66120D;
-        Tue, 18 Jan 2022 02:37:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A929BC36AE3;
-        Tue, 18 Jan 2022 02:37:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E70A7B8123F;
+        Tue, 18 Jan 2022 02:45:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82C9BC36AF2;
+        Tue, 18 Jan 2022 02:45:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473471;
-        bh=syKAXgGkNN/cd6e1sptDYNJgaiCH3RcEKn5+Joj72mU=;
+        s=k20201202; t=1642473951;
+        bh=qGh2KMC0KjqVZsHyFocmreJrZNAvnD7Xei2FC+o7QDQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oez/vXLaSeLvXzcRh+Afy/jWXdBgOdGA792VFRJFtssreaHwUAAMYX54IPgGeN8iG
-         Z180qCKOYhY0Iom1y9uQo76hfnqHpbnG5pe502p/PufeesF/KtXsoT08eY6PCgoGox
-         Z6k1OLeXXMvMGwe4vzMo2kUPHNjlcqJAdGVjXwcpk16dU6ifGVzMTl94dsnKNocx0e
-         aPAW1dFJIyhLEJ/KFlkvavXM46VSwcP7ic4mYVtjWH0qhlBvVkLIWkL14z5jZyUpdn
-         rPIqMEq7B6FFKl+tE56IUcDiSOhKcy372mSEaD7bX6qFBMS9XGiLuXKdpHeWiuVad4
-         bbKqgsSkNm8aA==
+        b=NY5ll3kj2VaFCGMKiCpvtgUttCQM2z/Qi+LjVK+K5vLFMG89SRjspenrYgmbrpVzZ
+         4K8kvwipWtP0ylwUvWz3uT2B1uYqaK4TGr+Gg0ihqTnQ5q1N+zr5x6bQ7TRv+QVfL2
+         qiRjALPvvbjEVIhJebfC8RFSMYKxEwctfwRLs498IG/AOSVvBvPG6YfeL58Iye9PId
+         us9cC3K0m13wlD4VSvgRbCJ7fOpWUmok86cCQWv64DrCuQ8XPcWz/BMSdxUIF7g8aQ
+         TRyOWQFC6B/HhMwapvHap9PrPMs5nCLWIEySbgA92RAR4OI1JNXaVZ4BXoudlfV8K2
+         9Fg09L6l0XBlg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Chiu <chui-hao.chiu@mediatek.com>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
-        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        matthias.bgg@gmail.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 130/188] mt76: mt7615: fix possible deadlock while mt7615_register_ext_phy()
-Date:   Mon, 17 Jan 2022 21:30:54 -0500
-Message-Id: <20220118023152.1948105-130-sashal@kernel.org>
+Cc:     Suresh Kumar <surkumar@redhat.com>,
+        Suresh Kumar <suresh2514@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 37/73] net: bonding: debug: avoid printing debug logs when bond is not notifying peers
+Date:   Mon, 17 Jan 2022 21:43:56 -0500
+Message-Id: <20220118024432.1952028-37-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
+References: <20220118024432.1952028-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,47 +52,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Chiu <chui-hao.chiu@mediatek.com>
+From: Suresh Kumar <surkumar@redhat.com>
 
-[ Upstream commit 8c55516de3f9b76b9d9444e7890682ec2efc809f ]
+[ Upstream commit fee32de284ac277ba434a2d59f8ce46528ff3946 ]
 
-ieee80211_register_hw() is called with rtnl_lock held, and this could be
-caused lockdep from a work item that's on a workqueue that is flushed
-with the rtnl held.
+Currently "bond_should_notify_peers: slave ..." messages are printed whenever
+"bond_should_notify_peers" function is called.
 
-Move mt7615_register_ext_phy() outside the init_work().
++++
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Received LACPDU on port 1
+Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Rx Machine: Port=1, Last State=6, Curr State=6
+Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): partner sync=1
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+...
+Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Received LACPDU on port 2
+Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Rx Machine: Port=2, Last State=6, Curr State=6
+Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): partner sync=1
+Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
++++
 
-Signed-off-by: Peter Chiu <chui-hao.chiu@mediatek.com>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+This is confusing and can also clutter up debug logs.
+Print logs only when the peer notification happens.
+
+Signed-off-by: Suresh Kumar <suresh2514@gmail.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/net/bonding/bond_main.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c b/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c
-index a2465b49ecd0c..87b4aa52ee0f9 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c
-@@ -28,8 +28,6 @@ static void mt7615_pci_init_work(struct work_struct *work)
- 		return;
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index a7eaf80f500c0..ff50ccc7dceb1 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -792,9 +792,6 @@ static bool bond_should_notify_peers(struct bonding *bond)
+ 	slave = rcu_dereference(bond->curr_active_slave);
+ 	rcu_read_unlock();
  
- 	mt7615_init_work(dev);
--	if (dev->dbdc_support)
--		mt7615_register_ext_phy(dev);
- }
+-	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
+-		   slave ? slave->dev->name : "NULL");
+-
+ 	if (!slave || !bond->send_peer_notif ||
+ 	    bond->send_peer_notif %
+ 	    max(1, bond->params.peer_notif_delay) != 0 ||
+@@ -802,6 +799,9 @@ static bool bond_should_notify_peers(struct bonding *bond)
+ 	    test_bit(__LINK_STATE_LINKWATCH_PENDING, &slave->dev->state))
+ 		return false;
  
- static int mt7615_init_hardware(struct mt7615_dev *dev)
-@@ -160,6 +158,12 @@ int mt7615_register_device(struct mt7615_dev *dev)
- 	mt7615_init_txpower(dev, &dev->mphy.sband_2g.sband);
- 	mt7615_init_txpower(dev, &dev->mphy.sband_5g.sband);
- 
-+	if (dev->dbdc_support) {
-+		ret = mt7615_register_ext_phy(dev);
-+		if (ret)
-+			return ret;
-+	}
++	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
++		   slave ? slave->dev->name : "NULL");
 +
- 	return mt7615_init_debugfs(dev);
+ 	return true;
  }
  
 -- 
