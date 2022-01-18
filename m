@@ -2,48 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D10DC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:48:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AE6DC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:48:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346940AbiARDsu (ORCPT
+        id S1355477AbiARDsy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:48:50 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:57822 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346920AbiARCkP (ORCPT
+        Mon, 17 Jan 2022 22:48:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48952 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346905AbiARCkO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:40:15 -0500
+        Mon, 17 Jan 2022 21:40:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9213E61118;
-        Tue, 18 Jan 2022 02:40:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10150C36AF2;
-        Tue, 18 Jan 2022 02:40:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2AC35B81249;
+        Tue, 18 Jan 2022 02:40:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E61B6C36AE3;
+        Tue, 18 Jan 2022 02:40:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473614;
-        bh=FpFOz55NDArr1D4SGMUr6c5B/Pd266OUahPpfqk8l5Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kp25L5MkUWx3hczBhr6hO8r0vcM83BqmkVmpojRd34lUmOjBUax+RERJdwWOCmGXd
-         wpeLrMkFQJ70H5otUxJUvzTFfRR1q5W2ZgHi8ls4jNuWycN3FWxcy557smKA1NW8tg
-         CKBKTCWcMTncytPVUXk08ez5U2bcKbKREHhrguvyTOeOjPlhKw+vOMJEp5GYOb5BER
-         sfbMZrVeWfhIMjVJErzOkpv8B/TCtkdnKp3T8L1NA/Vo8vB2lBmjNsqa+NLA7DHaP/
-         Z2mS8gsbc4WEeCDNGlNuRDxyKOYKisEGKJWAwBCQM25mptS2Fg1W0aW5lOvDyE/iTt
-         MM+vF8t9OJpOw==
+        s=k20201202; t=1642473610;
+        bh=Am4JlF+3LE3QNxnbCrz5BtyOYey+mHZ/4iNz2HgS+MY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=OCaEpAVNKI7gdWm/RXd3AwrNXZeG+YICH5zPVU6R3gCfQJ6sP9FiwddJrcGfqoCeq
+         mQo28gN0FPwKyXeo092BZRlm+KdFtCnQJFrKcC991yburB+XTbAa1K+yb+7PLIYq+I
+         l4YbSVzINKNlveaq/71RHSvGOpgjaAJMBAgTIlMsay5cVwxoFI5BqEoPBXyCpsAbgk
+         /2IgZeptpMSkfOjxifpukWueEZ2p5gNxLNByGddSs3Oa8oblFHF92Tf3FyLKb8M5Vp
+         25gt4LvQdjYPpA0Np4aiJXo8w7Q2ULqnx/u5wgKxhv1BsJ5lHV3+/r8gYZY/of6z+f
+         BRSttpaZ1MZPA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Qiang Yu <yuq825@gmail.com>,
-        Vasily Khoruzhick <anarsoul@gmail.com>,
-        Roman Stratiienko <r.stratiienko@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
-        daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
-        lima@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.10 004/116] drm/lima: fix warning when CONFIG_DEBUG_SG=y & CONFIG_DMA_API_DEBUG=y
-Date:   Mon, 17 Jan 2022 21:38:15 -0500
-Message-Id: <20220118024007.1950576-4-sashal@kernel.org>
+Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 001/116] Bluetooth: Fix debugfs entry leak in hci_register_dev()
+Date:   Mon, 17 Jan 2022 21:38:12 -0500
+Message-Id: <20220118024007.1950576-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,37 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Qiang Yu <yuq825@gmail.com>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit 89636a06fa2ee7826a19c39c19a9bc99ab9340a9 ]
+[ Upstream commit 5a4bb6a8e981d3d0d492aa38412ee80b21033177 ]
 
-Otherwise get following warning:
+Fault injection test report debugfs entry leak as follows:
 
-DMA-API: lima 1c40000.gpu: mapping sg segment longer than device claims to support [len=4149248] [max=65536]
+debugfs: Directory 'hci0' with parent 'bluetooth' already present!
 
-See: https://gitlab.freedesktop.org/mesa/mesa/-/issues/5496
+When register_pm_notifier() failed in hci_register_dev(), the debugfs
+create by debugfs_create_dir() do not removed in the error handing path.
 
-Reviewed-by: Vasily Khoruzhick <anarsoul@gmail.com>
-Reported-by: Roman Stratiienko <r.stratiienko@gmail.com>
-Signed-off-by: Qiang Yu <yuq825@gmail.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211031041604.187216-1-yuq825@gmail.com
+Add the remove debugfs code to fix it.
+
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/lima/lima_device.c | 1 +
+ net/bluetooth/hci_core.c | 1 +
  1 file changed, 1 insertion(+)
 
-diff --git a/drivers/gpu/drm/lima/lima_device.c b/drivers/gpu/drm/lima/lima_device.c
-index 65fdca366e41f..36c9905894278 100644
---- a/drivers/gpu/drm/lima/lima_device.c
-+++ b/drivers/gpu/drm/lima/lima_device.c
-@@ -357,6 +357,7 @@ int lima_device_init(struct lima_device *ldev)
- 	int err, i;
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 2ad66f64879f1..2e7998bad133b 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -3810,6 +3810,7 @@ int hci_register_dev(struct hci_dev *hdev)
+ 	return id;
  
- 	dma_set_coherent_mask(ldev->dev, DMA_BIT_MASK(32));
-+	dma_set_max_seg_size(ldev->dev, UINT_MAX);
- 
- 	err = lima_clk_init(ldev);
- 	if (err)
+ err_wqueue:
++	debugfs_remove_recursive(hdev->debugfs);
+ 	destroy_workqueue(hdev->workqueue);
+ 	destroy_workqueue(hdev->req_workqueue);
+ err:
 -- 
 2.34.1
 
