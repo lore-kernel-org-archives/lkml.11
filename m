@@ -2,44 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92BBEC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:11:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E74C4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347040AbiARQLt (ORCPT
+        id S1347241AbiARQL7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:11:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51922 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346991AbiARQKD (ORCPT
+        Tue, 18 Jan 2022 11:11:59 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41304 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347225AbiARQKO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:10:03 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09FC2C06176D;
-        Tue, 18 Jan 2022 08:10:03 -0800 (PST)
+        Tue, 18 Jan 2022 11:10:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BC86612B9;
-        Tue, 18 Jan 2022 16:10:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EBD2C00446;
-        Tue, 18 Jan 2022 16:10:01 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B3F0612E7;
+        Tue, 18 Jan 2022 16:10:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5EDE1C00446;
+        Tue, 18 Jan 2022 16:10:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522202;
-        bh=ZpxzqyGk0enEkeCFGufI22JctAJCEWyCIz2MyxLNIcQ=;
+        s=korg; t=1642522213;
+        bh=s3CsI5MmGWZgzICs6nkaVvUohwmFXDbrC1qDtryJsvw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MXi/M0SBA747rvxYFO15pESsYrPSS01Fp/caeF4tIRYQ+833XcO972/ckhj5Dcip3
-         O413Egsc0/9xabTNpNNTL2sY/E48xODI+PmI6J/XDRUOMkXiqY67e+vyOCFcE8WGte
-         MNFSH/ZywfXVR8VOCII3sC6aNrdCo80K0KmgvzF8=
+        b=WbD5eV5AUvrP/3Z1mCm6i5fw4nv8jLH9zouN4IWX1sXNwiYQ5LC2G5UJBHxRGqg2R
+         DzwMaxsqC/15EHSac4cEYKTuJqX5nKcNiUjPEfEqDTxi7dXc4/pMgW7rAEWEpF5aNK
+         ISFschLWFK09UfrD8G/qQfAsinFPG/umJ2JsOD48=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.15 14/28] media: uvcvideo: fix division by zero at stream start
-Date:   Tue, 18 Jan 2022 17:06:00 +0100
-Message-Id: <20220118160452.350367433@linuxfoundation.org>
+        stable@vger.kernel.org, Qiushi Wu <wu000273@umn.edu>,
+        Kees Cook <keescook@chromium.org>,
+        Johan Hovold <johan@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Subject: [PATCH 5.15 17/28] firmware: qemu_fw_cfg: fix NULL-pointer deref on duplicate entries
+Date:   Tue, 18 Jan 2022 17:06:03 +0100
+Message-Id: <20220118160452.450455334@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118160451.879092022@linuxfoundation.org>
 References: <20220118160451.879092022@linuxfoundation.org>
@@ -53,41 +50,58 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Johan Hovold <johan@kernel.org>
 
-commit 8aa637bf6d70d2fb2ad4d708d8b9dd02b1c095df upstream.
+commit d3e305592d69e21e36b76d24ca3c01971a2d09be upstream.
 
-Add the missing bulk-endpoint max-packet sanity check to
-uvc_video_start_transfer() to avoid division by zero in
-uvc_alloc_urb_buffers() in case a malicious device has broken
-descriptors (or when doing descriptor fuzz testing).
+Commit fe3c60684377 ("firmware: Fix a reference count leak.") "fixed"
+a kobject leak in the file registration helper by properly calling
+kobject_put() for the entry in case registration of the object fails
+(e.g. due to a name collision).
 
-Note that USB core will reject URBs submitted for endpoints with zero
-wMaxPacketSize but that drivers doing packet-size calculations still
-need to handle this (cf. commit 2548288b4fb0 ("USB: Fix: Don't skip
-endpoint descriptors with maxpacket=0")).
+This would however result in a NULL pointer dereference when the
+release function tries to remove the never added entry from the
+fw_cfg_entry_cache list.
 
-Fixes: c0efd232929c ("V4L/DVB (8145a): USB Video Class driver")
-Cc: stable@vger.kernel.org      # 2.6.26
+Fix this by moving the list-removal out of the release function.
+
+Note that the offending commit was one of the benign looking umn.edu
+fixes which was reviewed but not reverted. [1][2]
+
+[1] https://lore.kernel.org/r/202105051005.49BFABCE@keescook
+[2] https://lore.kernel.org/all/YIg7ZOZvS3a8LjSv@kroah.com
+
+Fixes: fe3c60684377 ("firmware: Fix a reference count leak.")
+Cc: stable@vger.kernel.org      # 5.8
+Cc: Qiushi Wu <wu000273@umn.edu>
+Cc: Kees Cook <keescook@chromium.org>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Johan Hovold <johan@kernel.org>
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Link: https://lore.kernel.org/r/20211201132528.30025-2-johan@kernel.org
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/uvc/uvc_video.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/firmware/qemu_fw_cfg.c |    5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
---- a/drivers/media/usb/uvc/uvc_video.c
-+++ b/drivers/media/usb/uvc/uvc_video.c
-@@ -1963,6 +1963,10 @@ static int uvc_video_start_transfer(stru
- 		if (ep == NULL)
- 			return -EIO;
+--- a/drivers/firmware/qemu_fw_cfg.c
++++ b/drivers/firmware/qemu_fw_cfg.c
+@@ -388,9 +388,7 @@ static void fw_cfg_sysfs_cache_cleanup(v
+ 	struct fw_cfg_sysfs_entry *entry, *next;
  
-+		/* Reject broken descriptors. */
-+		if (usb_endpoint_maxp(&ep->desc) == 0)
-+			return -EIO;
-+
- 		ret = uvc_init_video_bulk(stream, ep, gfp_flags);
+ 	list_for_each_entry_safe(entry, next, &fw_cfg_entry_cache, list) {
+-		/* will end up invoking fw_cfg_sysfs_cache_delist()
+-		 * via each object's release() method (i.e. destructor)
+-		 */
++		fw_cfg_sysfs_cache_delist(entry);
+ 		kobject_put(&entry->kobj);
  	}
+ }
+@@ -448,7 +446,6 @@ static void fw_cfg_sysfs_release_entry(s
+ {
+ 	struct fw_cfg_sysfs_entry *entry = to_entry(kobj);
+ 
+-	fw_cfg_sysfs_cache_delist(entry);
+ 	kfree(entry);
+ }
  
 
 
