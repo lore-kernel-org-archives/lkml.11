@@ -2,20 +2,20 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C459C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80272C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:13:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243428AbiARNNP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 08:13:15 -0500
-Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:33659 "EHLO
-        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242296AbiARNMg (ORCPT
+        id S243641AbiARNNR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 08:13:17 -0500
+Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:56252 "EHLO
+        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242680AbiARNMp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 08:12:36 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0V2C1oyZ_1642511553;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V2C1oyZ_1642511553)
+        Tue, 18 Jan 2022 08:12:45 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0V2C2ayE_1642511560;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V2C2ayE_1642511560)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 18 Jan 2022 21:12:33 +0800
+          Tue, 18 Jan 2022 21:12:41 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -23,9 +23,9 @@ Cc:     linux-fsdevel@vger.kernel.org, joseph.qi@linux.alibaba.com,
         bo.liu@linux.alibaba.com, tao.peng@linux.alibaba.com,
         gerry@linux.alibaba.com, eguan@linux.alibaba.com,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 14/20] erofs: implement fscache-based metadata read
-Date:   Tue, 18 Jan 2022 21:12:10 +0800
-Message-Id: <20220118131216.85338-15-jefflexu@linux.alibaba.com>
+Subject: [PATCH v2 20/20] erofs: support on-demand reading
+Date:   Tue, 18 Jan 2022 21:12:16 +0800
+Message-Id: <20220118131216.85338-21-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220118131216.85338-1-jefflexu@linux.alibaba.com>
 References: <20220118131216.85338-1-jefflexu@linux.alibaba.com>
@@ -35,111 +35,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch implements the data plane of reading metadata from bootstrap
-blob file over fscache.
-
-Be noted that currently it only supports the scenario where the backing
-file has no hole. Once it hits a hole of the backing file, erofs will
-fail the IO with -EOPNOTSUPP for now. The following patch will fix this
-issue, i.e. implementing the demand reading mode.
+Implement the .issue_op() callback, and all work is done by
+netfs_ondemand_read().
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- fs/erofs/data.c     | 11 +++++++++--
- fs/erofs/fscache.c  | 33 +++++++++++++++++++++++++++++++++
- fs/erofs/internal.h |  3 +++
- 3 files changed, 45 insertions(+), 2 deletions(-)
+ fs/erofs/fscache.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/fs/erofs/data.c b/fs/erofs/data.c
-index f3aa133866e5..51ccbc02dd73 100644
---- a/fs/erofs/data.c
-+++ b/fs/erofs/data.c
-@@ -31,15 +31,22 @@ void erofs_put_metabuf(struct erofs_buf *buf)
- void *erofs_read_metabuf(struct erofs_buf *buf, struct super_block *sb,
- 			erofs_blk_t blkaddr, enum erofs_kmap_type type)
- {
--	struct address_space *const mapping = sb->s_bdev->bd_inode->i_mapping;
-+	struct address_space *mapping;
-+	struct erofs_sb_info *sbi = EROFS_SB(sb);
- 	erofs_off_t offset = blknr_to_addr(blkaddr);
- 	pgoff_t index = offset >> PAGE_SHIFT;
- 	struct page *page = buf->page;
- 
- 	if (!page || page->index != index) {
- 		erofs_put_metabuf(buf);
--		page = read_cache_page_gfp(mapping, index,
-+		if (erofs_bdev_mode(sb)) {
-+			mapping = sb->s_bdev->bd_inode->i_mapping;
-+			page = read_cache_page_gfp(mapping, index,
- 				mapping_gfp_constraint(mapping, ~__GFP_FS));
-+		} else {
-+			page = erofs_fscache_read_cache_page(sbi->bootstrap,
-+				index);
-+		}
- 		if (IS_ERR(page))
- 			return page;
- 		/* should already be PageUptodate, no need to lock page */
 diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
-index 74683df6144d..5a25ae523e5e 100644
+index e8df35ee4ba8..9ba668c42098 100644
 --- a/fs/erofs/fscache.c
 +++ b/fs/erofs/fscache.c
-@@ -6,9 +6,42 @@
+@@ -28,9 +28,15 @@ static void erofs_noop_cleanup(struct address_space *mapping, void *netfs_priv)
+ {
+ }
  
- static struct fscache_volume *volume;
- 
-+static int erofs_blob_begin_cache_operation(struct netfs_read_request *rreq)
++static void erofs_issue_op(struct netfs_read_subrequest *subreq)
 +{
-+	return fscache_begin_read_operation(&rreq->cache_resources,
-+					    rreq->netfs_priv);
++	netfs_ondemand_read(subreq);
 +}
 +
-+/* .cleanup() is needed if rreq->netfs_priv is non-NULL */
-+static void erofs_noop_cleanup(struct address_space *mapping, void *netfs_priv)
-+{
-+}
-+
-+static const struct netfs_read_request_ops erofs_blob_req_ops = {
-+	.begin_cache_operation  = erofs_blob_begin_cache_operation,
-+	.cleanup		= erofs_noop_cleanup,
-+};
-+
-+static int erofs_fscache_blob_readpage(struct file *data, struct page *page)
-+{
-+	struct folio *folio = page_folio(page);
-+	struct erofs_fscache_context *ctx =
-+		(struct erofs_fscache_context *)data;
-+
-+	return netfs_readpage(NULL, folio, &erofs_blob_req_ops, ctx->cookie);
-+}
-+
- static const struct address_space_operations erofs_fscache_blob_aops = {
-+	.readpage = erofs_fscache_blob_readpage,
+ static const struct netfs_read_request_ops erofs_blob_req_ops = {
+ 	.begin_cache_operation  = erofs_blob_begin_cache_operation,
+ 	.cleanup		= erofs_noop_cleanup,
++	.issue_op		= erofs_issue_op,
  };
  
-+struct page *erofs_fscache_read_cache_page(struct erofs_fscache_context *ctx,
-+					   pgoff_t index)
-+{
-+	DBG_BUGON(!ctx->inode);
-+	return read_mapping_page(ctx->inode->i_mapping, index, ctx);
-+}
-+
- static int erofs_fscache_init_cookie(struct erofs_fscache_context *ctx,
- 				     char *path)
- {
-diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-index 277dcd5888ea..fca706cfaf72 100644
---- a/fs/erofs/internal.h
-+++ b/fs/erofs/internal.h
-@@ -633,6 +633,9 @@ struct erofs_fscache_context *erofs_fscache_get_ctx(struct super_block *sb,
- 						char *path, bool need_inode);
- void erofs_fscache_put_ctx(struct erofs_fscache_context *ctx);
+ static int erofs_begin_cache_operation(struct netfs_read_request *rreq)
+@@ -58,6 +64,7 @@ static const struct netfs_read_request_ops erofs_req_ops = {
+ 	.begin_cache_operation  = erofs_begin_cache_operation,
+ 	.cleanup		= erofs_noop_cleanup,
+ 	.clamp_length		= erofs_clamp_length,
++	.issue_op		= erofs_issue_op,
+ };
  
-+struct page *erofs_fscache_read_cache_page(struct erofs_fscache_context *ctx,
-+					   pgoff_t index);
-+
- #define EFSCORRUPTED    EUCLEAN         /* Filesystem is corrupted */
- 
- #endif	/* __EROFS_INTERNAL_H */
+ static int erofs_fscache_blob_readpage(struct file *data, struct page *page)
 -- 
 2.27.0
 
