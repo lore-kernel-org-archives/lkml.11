@@ -2,91 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9996C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:54:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8003BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:54:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234856AbiARJyK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 04:54:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27577 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234223AbiARJyB (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 04:54:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642499641;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XDuwTuoJ9YB+ODFSUsA012oaBLCLX1OTiYl269u+isg=;
-        b=arOdvwWHy4kJOh1rizv+F/bHVdVX8Gfsjm1QBX+kvfKJjkdDv82Jy12di+ZIjth6zomnS6
-        BQzodwJqNlaznfHqLW4m4H/xYcDX2VP80C44aCWNKNuzi53urHIWxIm/WRHhbaraWkEQij
-        QYTgbNWeminCgv9u7lO7oKqCCdAYYSg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-654-pOEjfmZ9PQSzXe8hW18vow-1; Tue, 18 Jan 2022 04:53:56 -0500
-X-MC-Unique: pOEjfmZ9PQSzXe8hW18vow-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B944B3E743;
-        Tue, 18 Jan 2022 09:53:54 +0000 (UTC)
-Received: from sirius.home.kraxel.org (unknown [10.39.192.49])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 6E38F6F129;
-        Tue, 18 Jan 2022 09:53:54 +0000 (UTC)
-Received: by sirius.home.kraxel.org (Postfix, from userid 1000)
-        id B94AD18000A6; Tue, 18 Jan 2022 10:53:52 +0100 (CET)
-Date:   Tue, 18 Jan 2022 10:53:52 +0100
-From:   Gerd Hoffmann <kraxel@redhat.com>
-To:     Pekka Paalanen <ppaalanen@gmail.com>
-Cc:     Sven Schnelle <svens@stackframe.org>,
-        dri-devel@lists.freedesktop.org, Helge Deller <deller@gmx.de>,
-        linux-fbdev@vger.kernel.org,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
-Message-ID: <20220118095352.xsb6fqacw4p276c5@sirius.home.kraxel.org>
-References: <YeG8ydoJNWWkGrTb@ls3530>
- <c48ad8ae-aea5-43fa-882f-dccb90dde9a4@suse.de>
- <87bl0amc6s.fsf@x1.stackframe.org>
- <20220118103323.4bae3a7d@eldfell>
+        id S235664AbiARJyl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 04:54:41 -0500
+Received: from mx1.cqplus1.com ([113.204.237.245]:46608 "EHLO mx1.cqplus1.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233071AbiARJyj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 04:54:39 -0500
+X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
+        LIVER,40,3)
+Received: from 172.28.114.216
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(24948:0:AUTH_RELAY)
+        (envelope-from <xt.hu@cqplus1.com>); Tue, 18 Jan 2022 17:53:40 +0800 (CST)
+From:   Xiantao Hu <xt.hu@cqplus1.com>
+To:     wim@linux-watchdog.org, p.zabel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        linux@roeck-us.net, robh+dt@kernel.org, devicetree@vger.kernel.org
+Cc:     wells.lu@sunplus.com, qinjian@cqplus1.com,
+        Xiantao Hu <xt.hu@cqplus1.com>
+Subject: [PATCH v5 0/2] Add watchdog driver for Sunplus SP7021 SoC
+Date:   Tue, 18 Jan 2022 17:53:40 +0800
+Message-Id: <20220118095342.186612-1-xt.hu@cqplus1.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220118103323.4bae3a7d@eldfell>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 10:33:23AM +0200, Pekka Paalanen wrote:
-> On Mon, 17 Jan 2022 19:47:39 +0100
-> Sven Schnelle <svens@stackframe.org> wrote:
-> 
-> > I also tested the speed on my Thinkpad X1 with Intel graphics, and there
-> > a dmesg with 919 lines one the text console took about 2s to display. In
-> > x11, i measure 22ms. This might be unfair because encoding might be
-> > different, but i cannot confirm the 'memcpy' is faster than hardware
-> > blitting' point. I think if that would be the case, no-one would care
-> > about 2D acceleration.
-> 
-> I think that is an extremely unfair comparison, because a graphical
-> terminal app is not going to render every line of text streamed to it.
-> It probably renders only the final view alone if you simply run
-> 'dmesg', skipping the first 800-900 lines completely.
+This is a patch series for watchdog driver for Sunplus SP7021 SoC.
 
-Probably more like "render on every vblank", but yes, unlike fbcon it
-surely wouldn't render every single character sent to the terminal.
+Sunplus SP7021 is an ARM Cortex A7 (4 cores) based SoC. It integrates
+many peripherals (ex: UART, I2C, SPI, SDIO, eMMC, USB, SD card and
+etc.) into a single chip. It is designed for industrial control.
 
-Also acceleration on modern hardware is more like "compose window
-content using the 3d engine" than "use 2d blitter to scroll the window".
+Refer to:
+https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+https://tibbo.com/store/plus1.html
 
-> Maybe fbcon should do the same when presented with a flood of text,
-> but I don't know how or why it works like it works.
+Xiantao Hu (2):
+  watchdog: Add Sunplus SP7021 WDT devicetree bindings documentation
+  watchdog: Add watchdog driver for Sunplus SP7021
 
-fbcon could do the same, i.e. render to fbdev in a 60Hz timer instead of
-doing it synchronously.
+ .../bindings/watchdog/sunplus,sp7021-wdt.yaml |  47 +++
+ MAINTAINERS                                   |   7 +
+ drivers/watchdog/Kconfig                      |  11 +
+ drivers/watchdog/Makefile                     |   1 +
+ drivers/watchdog/sunplus_wdt.c                | 268 ++++++++++++++++++
+ 5 files changed, 334 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/watchdog/sunplus,sp7021-wdt.yaml
+ create mode 100644 drivers/watchdog/sunplus_wdt.c
 
-take care,
-  Gerd
+-- 
+2.33.1
 
