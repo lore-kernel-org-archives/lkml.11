@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F6A2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:38:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B1CAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:38:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351983AbiARDiQ (ORCPT
+        id S1345234AbiARDiV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:38:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46242 "EHLO
+        Mon, 17 Jan 2022 22:38:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352815AbiARDed (ORCPT
+        with ESMTP id S1352407AbiARDe0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:34:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E553BC02B75E;
-        Mon, 17 Jan 2022 18:44:31 -0800 (PST)
+        Mon, 17 Jan 2022 22:34:26 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4E3C03702D;
+        Mon, 17 Jan 2022 19:09:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 831A1612CE;
-        Tue, 18 Jan 2022 02:44:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03420C36AEF;
-        Tue, 18 Jan 2022 02:44:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 18588B8122C;
+        Tue, 18 Jan 2022 03:09:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 94CAAC36AEB;
+        Tue, 18 Jan 2022 03:09:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473871;
-        bh=Wse5B2ZVLpuMQSQR80fU4FTD+9DQlvoY7bQqMuUOALU=;
+        s=k20201202; t=1642475376;
+        bh=nF1g3TlmBQAjvdwYb0PgfScODMcjqpRH4mw4fHaeTBE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HDrnSb1eH3XfQY/30fuSWZ6QxiOVXWZAj9ZKdbGPjIm4NXdD77WCjNTwh4hSNBOMv
-         VmoQGnjxE7E+eDPHn9Wzl0ekkD3M55K61C7QzPWenNNJTrLHMw+pELLKcqoUpjTXsP
-         cXkkb1HUpbfE86qWo9PKJUP+LxLvIvG3ncaN3HvJCm0kcSgJD6/PLhFnJMIxqxzbbD
-         Aa0sN6kYf6yGIABCqSIa2VEvOpaMq6+WjyJL6+LSJuMz1t6Syv4Q/va0HK1AgZIGKP
-         8WUDAIWCRwKa7NuJfhMcLJC18qusoTIqhRQAyeRpjZmIVwR8fRfmfAh1Qa6E4R7QjR
-         F3O0nDx3jYVuw==
+        b=KcV4w/8eq8uQzKUw11VpKr2IT/9JDtD956qHlhRQJ4WS+vG/F+FlgFp2JbGJJP4yQ
+         lYhQNXYnhiGXBfA88El/TpPLt6kxaF9ypNG6GtWB921iBIeXQB0cxoOAJ3jpK/YgJr
+         fWCY4oTEZwE4xAPe5KOpW4i/HVL4wf8cTUI8BmHtZUPC7Llg7GwhUa3QVDP0gUvJPp
+         YTI7YVJCp79OHDDi4WsYFC+KZCKhfIag5BL8AQwj/3fHo3+1zJjOfDPFzuFyYkGjyI
+         wKF/nkjwpybtWfutHDba7kw4AgOtPNp9WKmcF/mq3Iml4WIMY+ucnbaIcrX6aeBekj
+         M6XjjR4dvLP1A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Czerner <lczerner@redhat.com>,
-        Laurent GUERBY <laurent@guerby.net>,
-        Andreas Dilger <adilger@dilger.ca>,
-        Theodore Ts'o <tytso@mit.edu>, Sasha Levin <sashal@kernel.org>,
-        adilger.kernel@dilger.ca, linux-ext4@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 116/116] ext4: allow to change s_last_trim_minblks via sysfs
-Date:   Mon, 17 Jan 2022 21:40:07 -0500
-Message-Id: <20220118024007.1950576-116-sashal@kernel.org>
+Cc:     John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        James.Bottomley@HansenPartnership.com, svens@stackframe.org,
+        akpm@linux-foundation.org, mpe@ellerman.id.au,
+        rmk+kernel@armlinux.org.uk, wangkefeng.wang@huawei.com,
+        ebiederm@xmission.com, linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 29/29] parisc: Avoid calling faulthandler_disabled() twice
+Date:   Mon, 17 Jan 2022 22:08:22 -0500
+Message-Id: <20220118030822.1955469-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
+In-Reply-To: <20220118030822.1955469-1-sashal@kernel.org>
+References: <20220118030822.1955469-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,64 +55,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Czerner <lczerner@redhat.com>
+From: John David Anglin <dave.anglin@bell.net>
 
-[ Upstream commit 4a69aecbfb30a3fc85bf8028386c047d5607a97a ]
+[ Upstream commit 9e9d4b460f23bab61672eae397417d03917d116c ]
 
-Ext4 has an optimization mechanism for batched disacrd (FITRIM) that
-should help speed up subsequent calls of FITRIM ioctl by skipping the
-groups that were previously trimmed. However because the FITRIM allows
-to set the minimum size of an extent to trim, ext4 stores the last
-minimum extent size and only avoids trimming the group if it was
-previously trimmed with minimum extent size equal to, or smaller than
-the current call.
+In handle_interruption(), we call faulthandler_disabled() to check whether the
+fault handler is not disabled. If the fault handler is disabled, we immediately
+call do_page_fault(). It then calls faulthandler_disabled(). If disabled,
+do_page_fault() attempts to fixup the exception by jumping to no_context:
 
-There is currently no way to bypass the optimization without
-umount/mount cycle. This becomes a problem when the file system is
-live migrated to a different storage, because the optimization will
-prevent possibly useful discard calls to the storage.
+no_context:
 
-Fix it by exporting the s_last_trim_minblks via sysfs interface which
-will allow us to set the minimum size to the number of blocks larger
-than subsequent FITRIM call, effectively bypassing the optimization.
+        if (!user_mode(regs) && fixup_exception(regs)) {
+                return;
+        }
 
-By setting the s_last_trim_minblks to ULONG_MAX the optimization will be
-effectively cleared regardless of the previous state, or file system
-configuration.
+        parisc_terminate("Bad Address (null pointer deref?)", regs, code, address);
 
-For example:
-getconf ULONG_MAX > /sys/fs/ext4/dm-1/last_trim_minblks
+Apart from the error messages, the two blocks of code perform the same
+function.
 
-Signed-off-by: Lukas Czerner <lczerner@redhat.com>
-Reported-by: Laurent GUERBY <laurent@guerby.net>
-Reviewed-by: Andreas Dilger <adilger@dilger.ca>
-Link: https://lore.kernel.org/r/20211103145122.17338-2-lczerner@redhat.com
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+We can avoid two calls to faulthandler_disabled() by a simple revision
+to the code in handle_interruption().
+
+Note: I didn't try to fix the formatting of this code block.
+
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/sysfs.c | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/parisc/kernel/traps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/ext4/sysfs.c b/fs/ext4/sysfs.c
-index f24bef3be48a3..4192b4af10602 100644
---- a/fs/ext4/sysfs.c
-+++ b/fs/ext4/sysfs.c
-@@ -250,6 +250,7 @@ EXT4_ATTR(last_error_time, 0444, last_error_time);
- EXT4_ATTR(journal_task, 0444, journal_task);
- EXT4_RW_ATTR_SBI_UI(mb_prefetch, s_mb_prefetch);
- EXT4_RW_ATTR_SBI_UI(mb_prefetch_limit, s_mb_prefetch_limit);
-+EXT4_RW_ATTR_SBI_UL(last_trim_minblks, s_last_trim_minblks);
+diff --git a/arch/parisc/kernel/traps.c b/arch/parisc/kernel/traps.c
+index 6f61a17e2485a..55e7ba06511df 100644
+--- a/arch/parisc/kernel/traps.c
++++ b/arch/parisc/kernel/traps.c
+@@ -796,7 +796,7 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
+ 	     * unless pagefault_disable() was called before.
+ 	     */
  
- static unsigned int old_bump_val = 128;
- EXT4_ATTR_PTR(max_writeback_mb_bump, 0444, pointer_ui, &old_bump_val);
-@@ -299,6 +300,7 @@ static struct attribute *ext4_attrs[] = {
- #endif
- 	ATTR_LIST(mb_prefetch),
- 	ATTR_LIST(mb_prefetch_limit),
-+	ATTR_LIST(last_trim_minblks),
- 	NULL,
- };
- ATTRIBUTE_GROUPS(ext4);
+-	    if (fault_space == 0 && !faulthandler_disabled())
++	    if (faulthandler_disabled() || fault_space == 0)
+ 	    {
+ 		/* Clean up and return if in exception table. */
+ 		if (fixup_exception(regs))
 -- 
 2.34.1
 
