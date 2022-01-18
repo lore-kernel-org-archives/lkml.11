@@ -2,126 +2,196 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8522C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 19:54:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 044A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 19:59:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245715AbiARTye (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 14:54:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48170 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348974AbiARTyT (ORCPT
+        id S1343795AbiART7h (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 14:59:37 -0500
+Received: from gateway34.websitewelcome.com ([192.185.148.109]:14202 "EHLO
+        gateway34.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1348986AbiART7f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 14:54:19 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59487C06161C
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 11:54:18 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id e3so72436091lfc.9
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 11:54:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hLG3IDzGCmMuTJ6Lo7fCzvTJqI3hQH1J7qtya62FFTI=;
-        b=FBf0wEoEZmYrfY/6yOjBzgydEx8VKqwZ8Ch024JkOhYKPMTXZB+t8YyjAURKEhqryK
-         JN+VJ2NZigyahygOqJOGPDF/OmkyCI4BjOvNzGmnDmAfzUJVOodUutd9oqYw1AllHdEd
-         jACTBytbhyPlqIQ4hYKIl96SBtUPCZix9Gbo0MUlRZmWis8a8xywWSmu3m6i+kmjrmuz
-         t4LICgPw4Tb3O17gcn5o7I176EivuuydQKXTKooOxhMHJ94PoDUAxJuZYnigi201uoXq
-         7f9XQQBHzAOvBB4PpEeWDjfOnw/UTG4F5Y5Dz6c3yFfHoq8npWj/4KkzcseYO1x+G1bE
-         RXpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hLG3IDzGCmMuTJ6Lo7fCzvTJqI3hQH1J7qtya62FFTI=;
-        b=Sj8UQeDtF4EsidrHtxQ5vCn1C+k33Yskta2VSjILXbFJvyfBpNwjEK3N6NhhZNzlsJ
-         VJQ2ZxlOQTADx2QRZ28f7foyt6wcdpGytDmG8OIQdr6Z4raKslZXa4HqfyO6bn6Khp0L
-         N7P4FuEZ54FbuSp/K5NIuWplQMvxuzFeEcyxB3XHIo38+yGsqDTBCa5QTxmsSwPaE9bA
-         aSQfrXPKSlArZ7A/XHHbf8/iD8tvZRbYXumQnHahePNOQC93LW9xTZafZj+KFG7qtEYm
-         ZBZyBvCfcULa/2uArqQt5CUuCUHmYB7pS8UdjBpoA8VIhpSl1UAE1X+uBMQlig/DFPFz
-         54dw==
-X-Gm-Message-State: AOAM530jO+5a+4PC9ifYBZJ/RHdcIAetxYsaju5vrkMx5vxuMSN5ojkE
-        m+3F12ovZ+gBTbGJ+NXy0Ym2OYwhWw8U4WMHxk7uow==
-X-Google-Smtp-Source: ABdhPJy85EozpNsEzXaqWw1SJGpLYcfi+KrRxRAWUx2xP8iVyiAyVo7E1yNxSzwYpnYpYkYmWzOAwckjZixuHl9F+YM=
-X-Received: by 2002:a2e:9093:: with SMTP id l19mr20391335ljg.231.1642535655048;
- Tue, 18 Jan 2022 11:54:15 -0800 (PST)
+        Tue, 18 Jan 2022 14:59:35 -0500
+X-Greylist: delayed 1498 seconds by postgrey-1.27 at vger.kernel.org; Tue, 18 Jan 2022 14:59:35 EST
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway34.websitewelcome.com (Postfix) with ESMTP id 026D51A6F4D
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 13:11:41 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 9tnVndUiQRnrr9tnVn1CpC; Tue, 18 Jan 2022 13:05:37 -0600
+X-Authority-Reason: nr=8
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=embeddedor.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=62lwA313ylYvMl776J0nmotREsLRnHNHGefb4h0dvoo=; b=PyiVKsPlAhwkbLzznyg+KBOywd
+        sR3mIPwqE3E0G8CInbrV9M3G8iCwH7MqbVJGhkNV18tD8re3JjQ35Yw5iT63N8odXWGXNt4w2E7Qp
+        R12bj3nDKnKpeUy6nnpQEv72BYa4D2F0GXLwSs/jytZy6I1cdm55pDlIN6bh7y0t2P9ZTFSYAXAjY
+        QgLeAfhlb5TVG6fv+A+JHfKuJslOWE0B0sqm/ZVJi5LQzt6krt9sHb1aHrwMJ22IyotWi6ryzadzD
+        WoRUs4BQGpRp038/cCAQKZC6sLgtAMbEFHpR3CgG71r4m3yhYcip64XkEkz60EMir+GyJFXu2QEQ4
+        f/FC+yGw==;
+Received: from [187.184.156.46] (port=26621 helo=[192.168.0.21])
+        by gator4166.hostgator.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.94.2)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1n9tnV-001SJO-46; Tue, 18 Jan 2022 13:05:37 -0600
+Subject: Re: [PATCH] drm/dp: Remove common Post Cursor2 register handling
+To:     Kees Cook <keescook@chromium.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+Cc:     Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel@lists.freedesktop.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Lyude Paul <lyude@redhat.com>, linux-kernel@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-hardening@vger.kernel.org
+References: <20220105173507.2420910-1-keescook@chromium.org>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Message-ID: <cae904f1-21f4-426f-8831-e122d965b131@embeddedor.com>
+Date:   Tue, 18 Jan 2022 13:11:48 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <20211222225350.1912249-1-vipinsh@google.com> <YctGtWzYcNP2iTaN@google.com>
-In-Reply-To: <YctGtWzYcNP2iTaN@google.com>
-From:   Vipin Sharma <vipinsh@google.com>
-Date:   Tue, 18 Jan 2022 11:53:39 -0800
-Message-ID: <CAHVum0czVQqugNs4BhwJpUx-+f6GZQHFRkTpH01Mmsu0FXSd+w@mail.gmail.com>
-Subject: Re: [PATCH v2] KVM: Move VM's worker kthreads back to the original
- cgroups before exiting.
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     pbonzini@redhat.com, tj@kernel.org, lizefan.x@bytedance.com,
-        hannes@cmpxchg.org, dmatlack@google.com, jiangshanlai@gmail.com,
-        kvm@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220105173507.2420910-1-keescook@chromium.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 187.184.156.46
+X-Source-L: No
+X-Exim-ID: 1n9tnV-001SJO-46
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: ([192.168.0.21]) [187.184.156.46]:26621
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 13
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Dec 28, 2021 at 9:17 AM Sean Christopherson <seanjc@google.com> wrote:
->
-> On Wed, Dec 22, 2021, Vipin Sharma wrote:
-> > diff --git a/kernel/cgroup/cgroup-v1.c b/kernel/cgroup/cgroup-v1.c
-> > index 81c9e0685948..81d4b2f2acf0 100644
-> > --- a/kernel/cgroup/cgroup-v1.c
-> > +++ b/kernel/cgroup/cgroup-v1.c
-> >  int cgroup_attach_task_all(struct task_struct *from, struct task_struct *tsk)
-> > @@ -58,6 +60,9 @@ int cgroup_attach_task_all(struct task_struct *from, struct task_struct *tsk)
-> >       struct cgroup_root *root;
-> >       int retval = 0;
-> >
-> > +     if (!from)
-> > +             from = kthreadd_task;
->
-> Rather than sully cgroup_attach_task_all() with this behavior, can't KVM do
->
->         cgroup_attach_task_all(current->real_parent, current)
->
-> since AFAICT real_parent is guaranteed to point at kthreadd_task.
->
 
-Thanks for the "real_parent" suggestion. This is much cleaner and
-better than changing cgroup logic. I will make this change.
 
-> > diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-> > index b0f7e6eb00ff..f7504578c374 100644
-> > --- a/virt/kvm/kvm_main.c
-> > +++ b/virt/kvm/kvm_main.c
-> > @@ -5793,6 +5793,19 @@ static int kvm_vm_worker_thread(void *context)
-> >       if (!kthread_should_stop())
-> >               err = thread_fn(kvm, data);
-> >
-> > +out:
-> > +     /*
-> > +      * We need to move the kthread back to its original cgroups, so that it
->
-> Please state what is being done, not what "needs" to be done.  The need to do
-> something is implicit, otherwise we wouldn't be doing it.
->
+On 1/5/22 11:35, Kees Cook wrote:
+> The link_status array was not large enough to read the Adjust Request
+> Post Cursor2 register, so remove the common helper function to avoid
+> an OOB read, found with a -Warray-bounds build:
+> 
+> drivers/gpu/drm/drm_dp_helper.c: In function 'drm_dp_get_adjust_request_post_cursor':
+> drivers/gpu/drm/drm_dp_helper.c:59:27: error: array subscript 10 is outside array bounds of 'const u8[6]' {aka 'const unsigned char[6]'} [-Werror=array-bounds]
+>    59 |         return link_status[r - DP_LANE0_1_STATUS];
+>       |                ~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+> drivers/gpu/drm/drm_dp_helper.c:147:51: note: while referencing 'link_status'
+>   147 | u8 drm_dp_get_adjust_request_post_cursor(const u8 link_status[DP_LINK_STATUS_SIZE],
+>       |                                          ~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+> 
+> Replace the only user of the helper with an open-coded fetch and decode,
+> similar to drivers/gpu/drm/amd/display/dc/core/dc_link_dp.c.
+> 
+> Fixes: 79465e0ffeb9 ("drm/dp: Add helper to get post-cursor adjustments")
 
-I will update the statement. Thanks.
+This should be tagged for -stable:
 
-> > +      * doesn't linger in the cgroups of the user process after the user
-> > +      * process has already terminated.
-> > +      *
-> > +      * kthread_stop() waits on 'exited' completion condition which is set
-> > +      * in exit_mm(), via mm_release(), in do_exit(). However, kthread
-> > +      * is removed from cgroups in the cgroup_exit() which is called after
-> > +      * exit_mm(). This causes lingering of kthreads in cgroups after main
-> > +      * VM process has finished.
-> > +      */
-> > +     WARN_ON(cgroup_attach_task_all(NULL, current));
->
-> This should not WARN, cgroup_attach_task_all() needs to perform allocations and
-> will fail with -ENOMEM even in the absense of kernel bugs.
->
+Cc: stable@vger.kernel.org
 
-I will remove WARN_ON and print an error using kvm_err(), it will be
-similar to the earlier call of cgroup_attach_task_all() in the same
-function.
+> Cc: Maarten Lankhorst <maarten.lankhorst@linux.intel.com>
+> Cc: Maxime Ripard <mripard@kernel.org>
+> Cc: Thomas Zimmermann <tzimmermann@suse.de>
+> Cc: David Airlie <airlied@linux.ie>
+> Cc: Daniel Vetter <daniel@ffwll.ch>
+> Cc: dri-devel@lists.freedesktop.org
+> Signed-off-by: Kees Cook <keescook@chromium.org>
+
+Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 
 Thanks
+--
+Gustavo
+
+> ---
+> This is the alternative to:
+> https://lore.kernel.org/lkml/20211203084354.3105253-1-keescook@chromium.org/
+> ---
+>  drivers/gpu/drm/drm_dp_helper.c | 10 ----------
+>  drivers/gpu/drm/tegra/dp.c      | 11 ++++++++++-
+>  include/drm/drm_dp_helper.h     |  2 --
+>  3 files changed, 10 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/drm_dp_helper.c b/drivers/gpu/drm/drm_dp_helper.c
+> index 23f9073bc473..c9528aa62c9c 100644
+> --- a/drivers/gpu/drm/drm_dp_helper.c
+> +++ b/drivers/gpu/drm/drm_dp_helper.c
+> @@ -144,16 +144,6 @@ u8 drm_dp_get_adjust_tx_ffe_preset(const u8 link_status[DP_LINK_STATUS_SIZE],
+>  }
+>  EXPORT_SYMBOL(drm_dp_get_adjust_tx_ffe_preset);
+>  
+> -u8 drm_dp_get_adjust_request_post_cursor(const u8 link_status[DP_LINK_STATUS_SIZE],
+> -					 unsigned int lane)
+> -{
+> -	unsigned int offset = DP_ADJUST_REQUEST_POST_CURSOR2;
+> -	u8 value = dp_link_status(link_status, offset);
+> -
+> -	return (value >> (lane << 1)) & 0x3;
+> -}
+> -EXPORT_SYMBOL(drm_dp_get_adjust_request_post_cursor);
+> -
+>  static int __8b10b_clock_recovery_delay_us(const struct drm_dp_aux *aux, u8 rd_interval)
+>  {
+>  	if (rd_interval > 4)
+> diff --git a/drivers/gpu/drm/tegra/dp.c b/drivers/gpu/drm/tegra/dp.c
+> index 70dfb7d1dec5..f5535eb04c6b 100644
+> --- a/drivers/gpu/drm/tegra/dp.c
+> +++ b/drivers/gpu/drm/tegra/dp.c
+> @@ -549,6 +549,15 @@ static void drm_dp_link_get_adjustments(struct drm_dp_link *link,
+>  {
+>  	struct drm_dp_link_train_set *adjust = &link->train.adjust;
+>  	unsigned int i;
+> +	u8 post_cursor;
+> +	int err;
+> +
+> +	err = drm_dp_dpcd_read(link->aux, DP_ADJUST_REQUEST_POST_CURSOR2,
+> +			       &post_cursor, sizeof(post_cursor));
+> +	if (err < 0) {
+> +		DRM_ERROR("failed to read post_cursor2: %d\n", err);
+> +		post_cursor = 0;
+> +	}
+>  
+>  	for (i = 0; i < link->lanes; i++) {
+>  		adjust->voltage_swing[i] =
+> @@ -560,7 +569,7 @@ static void drm_dp_link_get_adjustments(struct drm_dp_link *link,
+>  				DP_TRAIN_PRE_EMPHASIS_SHIFT;
+>  
+>  		adjust->post_cursor[i] =
+> -			drm_dp_get_adjust_request_post_cursor(status, i);
+> +			(post_cursor >> (i << 1)) & 0x3;
+>  	}
+>  }
+>  
+> diff --git a/include/drm/drm_dp_helper.h b/include/drm/drm_dp_helper.h
+> index 472dac376284..fdf3cf6ccc02 100644
+> --- a/include/drm/drm_dp_helper.h
+> +++ b/include/drm/drm_dp_helper.h
+> @@ -1528,8 +1528,6 @@ u8 drm_dp_get_adjust_request_pre_emphasis(const u8 link_status[DP_LINK_STATUS_SI
+>  					  int lane);
+>  u8 drm_dp_get_adjust_tx_ffe_preset(const u8 link_status[DP_LINK_STATUS_SIZE],
+>  				   int lane);
+> -u8 drm_dp_get_adjust_request_post_cursor(const u8 link_status[DP_LINK_STATUS_SIZE],
+> -					 unsigned int lane);
+>  
+>  #define DP_BRANCH_OUI_HEADER_SIZE	0xc
+>  #define DP_RECEIVER_CAP_SIZE		0xf
+> 
