@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5147FC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:12:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7001C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354932AbiARDKi (ORCPT
+        id S1355037AbiARDKv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:10:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35910 "EHLO
+        Mon, 17 Jan 2022 22:10:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350465AbiARCvo (ORCPT
+        with ESMTP id S1347704AbiARCmi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:51:44 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12B54C09426A;
-        Mon, 17 Jan 2022 18:42:40 -0800 (PST)
+        Mon, 17 Jan 2022 21:42:38 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC05CC0613AF;
+        Mon, 17 Jan 2022 18:36:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E765612E9;
-        Tue, 18 Jan 2022 02:42:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2AB8C36AE3;
-        Tue, 18 Jan 2022 02:42:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 943C1B81258;
+        Tue, 18 Jan 2022 02:36:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B657EC36AEF;
+        Tue, 18 Jan 2022 02:36:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473759;
-        bh=9LNPEI3vU+GgQ06ospyNK/ywpFLeKxPrJ2gMNjRDkLg=;
+        s=k20201202; t=1642473414;
+        bh=0aMDBuj6ZlSu13MWg/s4a1z77NewLu9gY9a/TM7cMwg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iLdMyBmf5vREW8xbg5fEpbLjp8rY/md7n1vrEt2I0yhD+bMNQFPfZp/ny/JeitVZw
-         e2/7EMsJVxbrDVlFG2AWkUfXD7EBlU1HaA03TK/917DFrH1acrletU6/SYGu0vq1O3
-         L2J5AN5mO1vmu0Za6Jxa2SFDJKNkPROTJ9wU0LoBFD4cMYfu6kOkYn0gC5tPNCIBxE
-         M+sWXuDTyRW3jXFD8+0bVgcFlIr26qvPftIKu9yfCqgrGiLEVT9XRRKh0NtSAMO/UL
-         FRmXZs9KNR5i90KwrqcSXydILoWUXD6sFENYQEatKk2ZEvxo/iM9XcvXYFVE1Tvxfs
-         Ib/g9s2Ok6cyA==
+        b=liGtp+wvqGPOL4t5yqHOplr4kNR9pk6WRPSBb8aKHmveXwWLYCfGEHxx4rjwDqF1A
+         WI/0LUsv6dBQTd6LdE3of6Px01dctxxN8xL/hv2ruRM0Il8gBjlUYYk5XEaUh4x/iK
+         Ne0bmgHkHy0jGEGxzFHAaeUMlp/1XT+HweXjfqhXqsjvDqZIHzTSIAQD3T3VOXULXG
+         rVn6TY3zNK5K3R8bskGIH4dVqnUCP6yhx6/ZaBeX8/x6Vm7qsHXOUQPLkKS0iCVcKc
+         zhjGP96FOw9E1ZcmroZrnhNFC3nuAV5hgWEnviyWHZXurGY2sd5pYA+X2UvSnbf3cd
+         oAvF67V1grm2g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Iwona Winiarska <iwona.winiarska@intel.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
-        joel@jms.id.au, linux-gpio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-aspeed@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.10 057/116] gpio: aspeed: Convert aspeed_gpio.lock to raw_spinlock
-Date:   Mon, 17 Jan 2022 21:39:08 -0500
-Message-Id: <20220118024007.1950576-57-sashal@kernel.org>
+Cc:     Alistair Francis <alistair@alistair23.me>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, jikos@kernel.org,
+        linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 112/188] HID: quirks: Allow inverting the absolute X/Y values
+Date:   Mon, 17 Jan 2022 21:30:36 -0500
+Message-Id: <20220118023152.1948105-112-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,256 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Iwona Winiarska <iwona.winiarska@intel.com>
+From: Alistair Francis <alistair@alistair23.me>
 
-[ Upstream commit 61a7904b6ace99b1bde0d0e867fa3097f5c8cee2 ]
+[ Upstream commit fd8d135b2c5e88662f2729e034913f183455a667 ]
 
-The gpio-aspeed driver implements an irq_chip which need to be invoked
-from hardirq context. Since spin_lock() can sleep with PREEMPT_RT, it is
-no longer legal to invoke it while interrupts are disabled.
-This also causes lockdep to complain about:
-[    0.649797] [ BUG: Invalid wait context ]
-because aspeed_gpio.lock (spin_lock_t) is taken under irq_desc.lock
-(raw_spinlock_t).
-Let's use of raw_spinlock_t instead of spinlock_t.
+Add a HID_QUIRK_X_INVERT/HID_QUIRK_Y_INVERT quirk that can be used
+to invert the X/Y values.
 
-Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
+Signed-off-by: Alistair Francis <alistair@alistair23.me>
+[bentiss: silence checkpatch warning]
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Link: https://lore.kernel.org/r/20211208124045.61815-2-alistair@alistair23.me
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpio/gpio-aspeed.c | 52 +++++++++++++++++++-------------------
- 1 file changed, 26 insertions(+), 26 deletions(-)
+ drivers/hid/hid-input.c | 6 ++++++
+ include/linux/hid.h     | 2 ++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/drivers/gpio/gpio-aspeed.c b/drivers/gpio/gpio-aspeed.c
-index b966f5e28ebff..e0d5d80ec8e0f 100644
---- a/drivers/gpio/gpio-aspeed.c
-+++ b/drivers/gpio/gpio-aspeed.c
-@@ -53,7 +53,7 @@ struct aspeed_gpio_config {
- struct aspeed_gpio {
- 	struct gpio_chip chip;
- 	struct irq_chip irqc;
--	spinlock_t lock;
-+	raw_spinlock_t lock;
- 	void __iomem *base;
- 	int irq;
- 	const struct aspeed_gpio_config *config;
-@@ -413,14 +413,14 @@ static void aspeed_gpio_set(struct gpio_chip *gc, unsigned int offset,
- 	unsigned long flags;
- 	bool copro;
+diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
+index 55017db98d896..69a0a290327a7 100644
+--- a/drivers/hid/hid-input.c
++++ b/drivers/hid/hid-input.c
+@@ -1330,6 +1330,12 @@ void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct
  
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	copro = aspeed_gpio_copro_request(gpio, offset);
+ 	input = field->hidinput->input;
  
- 	__aspeed_gpio_set(gc, offset, val);
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- }
- 
- static int aspeed_gpio_dir_in(struct gpio_chip *gc, unsigned int offset)
-@@ -435,7 +435,7 @@ static int aspeed_gpio_dir_in(struct gpio_chip *gc, unsigned int offset)
- 	if (!have_input(gpio, offset))
- 		return -ENOTSUPP;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	reg = ioread32(addr);
- 	reg &= ~GPIO_BIT(offset);
-@@ -445,7 +445,7 @@ static int aspeed_gpio_dir_in(struct gpio_chip *gc, unsigned int offset)
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return 0;
- }
-@@ -463,7 +463,7 @@ static int aspeed_gpio_dir_out(struct gpio_chip *gc,
- 	if (!have_output(gpio, offset))
- 		return -ENOTSUPP;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	reg = ioread32(addr);
- 	reg |= GPIO_BIT(offset);
-@@ -474,7 +474,7 @@ static int aspeed_gpio_dir_out(struct gpio_chip *gc,
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return 0;
- }
-@@ -492,11 +492,11 @@ static int aspeed_gpio_get_direction(struct gpio_chip *gc, unsigned int offset)
- 	if (!have_output(gpio, offset))
- 		return GPIO_LINE_DIRECTION_IN;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	val = ioread32(bank_reg(gpio, bank, reg_dir)) & GPIO_BIT(offset);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return val ? GPIO_LINE_DIRECTION_OUT : GPIO_LINE_DIRECTION_IN;
- }
-@@ -539,14 +539,14 @@ static void aspeed_gpio_irq_ack(struct irq_data *d)
- 
- 	status_addr = bank_reg(gpio, bank, reg_irq_status);
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	copro = aspeed_gpio_copro_request(gpio, offset);
- 
- 	iowrite32(bit, status_addr);
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- }
- 
- static void aspeed_gpio_irq_set_mask(struct irq_data *d, bool set)
-@@ -565,7 +565,7 @@ static void aspeed_gpio_irq_set_mask(struct irq_data *d, bool set)
- 
- 	addr = bank_reg(gpio, bank, reg_irq_enable);
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	copro = aspeed_gpio_copro_request(gpio, offset);
- 
- 	reg = ioread32(addr);
-@@ -577,7 +577,7 @@ static void aspeed_gpio_irq_set_mask(struct irq_data *d, bool set)
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- }
- 
- static void aspeed_gpio_irq_mask(struct irq_data *d)
-@@ -629,7 +629,7 @@ static int aspeed_gpio_set_type(struct irq_data *d, unsigned int type)
- 		return -EINVAL;
- 	}
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	copro = aspeed_gpio_copro_request(gpio, offset);
- 
- 	addr = bank_reg(gpio, bank, reg_irq_type0);
-@@ -649,7 +649,7 @@ static int aspeed_gpio_set_type(struct irq_data *d, unsigned int type)
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	irq_set_handler_locked(d, handler);
- 
-@@ -719,7 +719,7 @@ static int aspeed_gpio_reset_tolerance(struct gpio_chip *chip,
- 
- 	treg = bank_reg(gpio, to_bank(offset), reg_tolerance);
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	copro = aspeed_gpio_copro_request(gpio, offset);
- 
- 	val = readl(treg);
-@@ -733,7 +733,7 @@ static int aspeed_gpio_reset_tolerance(struct gpio_chip *chip,
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return 0;
- }
-@@ -859,7 +859,7 @@ static int enable_debounce(struct gpio_chip *chip, unsigned int offset,
- 		return rc;
- 	}
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	if (timer_allocation_registered(gpio, offset)) {
- 		rc = unregister_allocated_timer(gpio, offset);
-@@ -919,7 +919,7 @@ static int enable_debounce(struct gpio_chip *chip, unsigned int offset,
- 	configure_timer(gpio, offset, i);
- 
- out:
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return rc;
- }
-@@ -930,13 +930,13 @@ static int disable_debounce(struct gpio_chip *chip, unsigned int offset)
- 	unsigned long flags;
- 	int rc;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	rc = unregister_allocated_timer(gpio, offset);
- 	if (!rc)
- 		configure_timer(gpio, offset, 0);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return rc;
- }
-@@ -1018,7 +1018,7 @@ int aspeed_gpio_copro_grab_gpio(struct gpio_desc *desc,
- 		return -EINVAL;
- 	bindex = offset >> 3;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	/* Sanity check, this shouldn't happen */
- 	if (gpio->cf_copro_bankmap[bindex] == 0xff) {
-@@ -1039,7 +1039,7 @@ int aspeed_gpio_copro_grab_gpio(struct gpio_desc *desc,
- 	if (bit)
- 		*bit = GPIO_OFFSET(offset);
-  bail:
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 	return rc;
- }
- EXPORT_SYMBOL_GPL(aspeed_gpio_copro_grab_gpio);
-@@ -1063,7 +1063,7 @@ int aspeed_gpio_copro_release_gpio(struct gpio_desc *desc)
- 		return -EINVAL;
- 	bindex = offset >> 3;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	/* Sanity check, this shouldn't happen */
- 	if (gpio->cf_copro_bankmap[bindex] == 0) {
-@@ -1077,7 +1077,7 @@ int aspeed_gpio_copro_release_gpio(struct gpio_desc *desc)
- 		aspeed_gpio_change_cmd_source(gpio, bank, bindex,
- 					      GPIO_CMDSRC_ARM);
-  bail:
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 	return rc;
- }
- EXPORT_SYMBOL_GPL(aspeed_gpio_copro_release_gpio);
-@@ -1151,7 +1151,7 @@ static int __init aspeed_gpio_probe(struct platform_device *pdev)
- 	if (IS_ERR(gpio->base))
- 		return PTR_ERR(gpio->base);
- 
--	spin_lock_init(&gpio->lock);
-+	raw_spin_lock_init(&gpio->lock);
- 
- 	gpio_id = of_match_node(aspeed_gpio_of_table, pdev->dev.of_node);
- 	if (!gpio_id)
++	if (usage->type == EV_ABS &&
++	    (((*quirks & HID_QUIRK_X_INVERT) && usage->code == ABS_X) ||
++	     ((*quirks & HID_QUIRK_Y_INVERT) && usage->code == ABS_Y))) {
++		value = field->logical_maximum - value;
++	}
++
+ 	if (usage->hat_min < usage->hat_max || usage->hat_dir) {
+ 		int hat_dir = usage->hat_dir;
+ 		if (!hat_dir)
+diff --git a/include/linux/hid.h b/include/linux/hid.h
+index f453be385bd47..26742ca14609a 100644
+--- a/include/linux/hid.h
++++ b/include/linux/hid.h
+@@ -349,6 +349,8 @@ struct hid_item {
+ /* BIT(9) reserved for backward compatibility, was NO_INIT_INPUT_REPORTS */
+ #define HID_QUIRK_ALWAYS_POLL			BIT(10)
+ #define HID_QUIRK_INPUT_PER_APP			BIT(11)
++#define HID_QUIRK_X_INVERT			BIT(12)
++#define HID_QUIRK_Y_INVERT			BIT(13)
+ #define HID_QUIRK_SKIP_OUTPUT_REPORTS		BIT(16)
+ #define HID_QUIRK_SKIP_OUTPUT_REPORT_ID		BIT(17)
+ #define HID_QUIRK_NO_OUTPUT_REPORTS_ON_INTR_EP	BIT(18)
 -- 
 2.34.1
 
