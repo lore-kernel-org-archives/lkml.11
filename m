@@ -2,155 +2,233 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFFA9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:47:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C2FAC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:48:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230116AbiARJrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 04:47:08 -0500
-Received: from mga17.intel.com ([192.55.52.151]:1355 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232981AbiARJrF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 04:47:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642499225; x=1674035225;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=L+OPdNsaU2FY8wr/SJr9DyBE7V4Xr+Q/OlCWELomdhA=;
-  b=nTY0FFD9zDnkccdxOlHdWX1x4/kl+E/yxDMzCRgeZGiVZcd0pyNagA6m
-   VsRmag6NO73/3kQKCbXRSZ5otOcn52ScoE8anWDj3VVmNR8g47uDLSNBW
-   PQPlSNfM80/T90XuIkoYJiqHHm1O5ZHZWR8MJWsjOdHyDFWVAcUC2ekd5
-   8t0S9PS7NeexulONalq4sTFEHciy9D8LFSKt1kUQUQarcw+wEYP8GoN6s
-   HrcBa+uvvyRY9KIhfs7ufja0J+5zaD5uXYDMY3RGDXgB4TzqThlryyanT
-   w0wxKc2+aXpKfdtPpkWjAdPs2CIS81yYCNjzp8kOQ4fqSlRP64coaWuLy
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="225455430"
-X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="225455430"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 01:47:04 -0800
-X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="622085988"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 01:46:57 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n9l3i-00BnjX-K9;
-        Tue, 18 Jan 2022 11:45:46 +0200
-Date:   Tue, 18 Jan 2022 11:45:46 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Tomohito Esaki <etom@igel.co.jp>
-Cc:     dri-devel@lists.freedesktop.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Michel =?iso-8859-1?Q?D=E4nzer?= <mdaenzer@redhat.com>,
-        Simon Ser <contact@emersion.fr>,
-        Qingqing Zhuo <qingqing.zhuo@amd.com>,
-        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
-        Mark Yacoub <markyacoub@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Evan Quan <evan.quan@amd.com>, Petr Mladek <pmladek@suse.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Abhinav Kumar <abhinavk@codeaurora.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Rob Clark <robdclark@chromium.org>,
-        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        nouveau@lists.freedesktop.org, Daniel Stone <daniel@fooishbar.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Damian Hobson-Garcia <dhobsong@igel.co.jp>,
-        Takanari Hayama <taki@igel.co.jp>
-Subject: Re: [RFC PATCH v4 0/3] Add support modifiers for drivers whose
- planes only support linear layout
-Message-ID: <YeaMSguM7hTN/I2B@smile.fi.intel.com>
-References: <20220118083652.16335-1-etom@igel.co.jp>
+        id S233726AbiARJsf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 04:48:35 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:53992 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232585AbiARJse (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 04:48:34 -0500
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20I6QqHq016393;
+        Tue, 18 Jan 2022 09:48:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=EdPwNuQrqAvTuWVT0ODa8mxO+y2WE/frrmMVg5Z8hIA=;
+ b=Z2PMnoz0cg90e4GtGlC9Ptm2XKQkQfh7+MH00WhAJ96Y863vK1FJnyNMa8HBb2UFUlA7
+ rInuz2IovZoF0VNJ+zX+pC7JDCCffyhVYZFFh6A5wkKuPsdy2DDERuZG4adhACrYLFsf
+ vw6vUquFWGvhwElSBAHIqfcRPExWL9vVyfVvG8ljJFCyR+nxAo6WTQpnOgoLp+v0aEbn
+ aULm34S1v1SwWkO+DICDxsEzR4HhXxmarYfuddWWmkVxZ1+iuWB91UIcGOkuKhVzJFWd
+ XX8JXPWW2LbVZUvPMOHxpT99MXTkZMJqmTPKPC31xmU11rGKi5OXMd4DoaU4znNrPFlS OQ== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dnr9sm7xt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 18 Jan 2022 09:48:33 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20I9bM83014697;
+        Tue, 18 Jan 2022 09:48:33 GMT
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dnr9sm7wt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 18 Jan 2022 09:48:32 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20I9m4qS005709;
+        Tue, 18 Jan 2022 09:48:30 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma04fra.de.ibm.com with ESMTP id 3dknw99ej8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 18 Jan 2022 09:48:30 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20I9mPfY28180822
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 18 Jan 2022 09:48:25 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CCFFDAE045;
+        Tue, 18 Jan 2022 09:48:25 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id DE9FDAE04D;
+        Tue, 18 Jan 2022 09:48:24 +0000 (GMT)
+Received: from [9.171.70.230] (unknown [9.171.70.230])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 18 Jan 2022 09:48:24 +0000 (GMT)
+Message-ID: <8a1ca4cf-a51a-9d45-0ed4-b48f6d8fb4a2@linux.ibm.com>
+Date:   Tue, 18 Jan 2022 10:50:07 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220118083652.16335-1-etom@igel.co.jp>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v2 06/30] s390/airq: allow for airq structure that uses an
+ input vector
+Content-Language: en-US
+To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
+        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
+        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220114203145.242984-1-mjrosato@linux.ibm.com>
+ <20220114203145.242984-7-mjrosato@linux.ibm.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <20220114203145.242984-7-mjrosato@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: qB1WlVRsqgjGOTP_b6IfGDHdJ_gKI3S7
+X-Proofpoint-ORIG-GUID: rCzn2GvFPO6DyN4L_G_K8di86xPVJirz
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-18_02,2022-01-14_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 spamscore=0
+ malwarescore=0 suspectscore=0 impostorscore=0 mlxscore=0
+ priorityscore=1501 adultscore=0 lowpriorityscore=0 clxscore=1015
+ bulkscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201180057
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 05:36:49PM +0900, Tomohito Esaki wrote:
-> Some drivers whose planes only support linear layout fb do not support format
-> modifiers.
-> These drivers should support modifiers, however the DRM core should handle this
-> rather than open-coding in every driver.
-> 
-> In this patch series, these drivers expose format modifiers based on the
-> following suggestion[1].
-> 
-> On Thu, Nov 18, 2021 at 01:02:11PM +0000, Daniel Stone wrote:
-> > I think the best way forward here is:
-> >   - add a new mode_config.cannot_support_modifiers flag, and enable
-> > this in radeon (plus any other drivers in the same boat)
-> >   - change drm_universal_plane_init() to advertise the LINEAR modifier
-> > when NULL is passed as the modifier list (including installing a
-> > default .format_mod_supported hook)
-> >   - remove the mode_config.allow_fb_modifiers hook and always
-> > advertise modifier support, unless
-> > mode_config.cannot_support_modifiers is set
 
-FWIW,
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-> [1] https://patchwork.kernel.org/project/linux-renesas-soc/patch/20190509054518.10781-1-etom@igel.co.jp/#24602575
+On 1/14/22 21:31, Matthew Rosato wrote:
+> When doing device passthrough where interrupts are being forwarded
+> from host to guest, we wish to use a pinned section of guest memory
+> as the vector (the same memory used by the guest as the vector).
 > 
-> v4:
-> * modify documentation for fb_modifiers_not_supported flag in kerneldoc
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+
+
+Reviewed-by: Pierre Morel <pmorel@linux.ibm.com>
+
+
+> ---
+>   arch/s390/include/asm/airq.h     |  4 +++-
+>   arch/s390/pci/pci_irq.c          |  8 ++++----
+>   drivers/s390/cio/airq.c          | 10 +++++++---
+>   drivers/s390/virtio/virtio_ccw.c |  2 +-
+>   4 files changed, 15 insertions(+), 9 deletions(-)
 > 
-> v3: https://www.spinics.net/lists/dri-devel/msg329102.html
-> * change the order as follows:
->    1. add fb_modifiers_not_supported flag
->    2. add default modifiers
->    3. remove allow_fb_modifiers flag
-> * add a conditional disable in amdgpu_dm_plane_init()
-> 
-> v2: https://www.spinics.net/lists/dri-devel/msg328939.html
-> * rebase to the latest master branch (5.16.0+)
->       + "drm/plane: Make format_mod_supported truly optional" patch [2]
->   [2] https://patchwork.freedesktop.org/patch/467940/?series=98255&rev=3
-> 
-> v1: https://www.spinics.net/lists/dri-devel/msg327352.html
-> * The initial patch set
-> 
-> Tomohito Esaki (3):
->   drm: introduce fb_modifiers_not_supported flag in mode_config
->   drm: add support modifiers for drivers whose planes only support
->     linear layout
->   drm: remove allow_fb_modifiers
-> 
->  drivers/gpu/drm/amd/amdgpu/amdgpu_display.c   |  6 ++---
->  drivers/gpu/drm/amd/amdgpu/dce_v10_0.c        |  2 ++
->  drivers/gpu/drm/amd/amdgpu/dce_v11_0.c        |  2 ++
->  drivers/gpu/drm/amd/amdgpu/dce_v6_0.c         |  1 +
->  drivers/gpu/drm/amd/amdgpu/dce_v8_0.c         |  2 ++
->  .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |  3 +++
->  drivers/gpu/drm/drm_framebuffer.c             |  6 ++---
->  drivers/gpu/drm/drm_ioctl.c                   |  2 +-
->  drivers/gpu/drm/drm_plane.c                   | 22 +++++++++----------
->  drivers/gpu/drm/nouveau/nouveau_display.c     |  6 +++--
->  drivers/gpu/drm/radeon/radeon_display.c       |  2 ++
->  .../gpu/drm/selftests/test-drm_framebuffer.c  |  1 -
->  include/drm/drm_mode_config.h                 | 18 +++++----------
->  include/drm/drm_plane.h                       |  3 +++
->  14 files changed, 43 insertions(+), 33 deletions(-)
-> 
-> -- 
-> 2.25.1
+> diff --git a/arch/s390/include/asm/airq.h b/arch/s390/include/asm/airq.h
+> index 7918a7d09028..e82e5626e139 100644
+> --- a/arch/s390/include/asm/airq.h
+> +++ b/arch/s390/include/asm/airq.h
+> @@ -47,8 +47,10 @@ struct airq_iv {
+>   #define AIRQ_IV_PTR		4	/* Allocate the ptr array */
+>   #define AIRQ_IV_DATA		8	/* Allocate the data array */
+>   #define AIRQ_IV_CACHELINE	16	/* Cacheline alignment for the vector */
+> +#define AIRQ_IV_GUESTVEC	32	/* Vector is a pinned guest page */
+>   
+> -struct airq_iv *airq_iv_create(unsigned long bits, unsigned long flags);
+> +struct airq_iv *airq_iv_create(unsigned long bits, unsigned long flags,
+> +			       unsigned long *vec);
+>   void airq_iv_release(struct airq_iv *iv);
+>   unsigned long airq_iv_alloc(struct airq_iv *iv, unsigned long num);
+>   void airq_iv_free(struct airq_iv *iv, unsigned long bit, unsigned long num);
+> diff --git a/arch/s390/pci/pci_irq.c b/arch/s390/pci/pci_irq.c
+> index cc4c8d7c8f5c..0d0a02a9fbbf 100644
+> --- a/arch/s390/pci/pci_irq.c
+> +++ b/arch/s390/pci/pci_irq.c
+> @@ -296,7 +296,7 @@ int arch_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
+>   		zdev->aisb = bit;
+>   
+>   		/* Create adapter interrupt vector */
+> -		zdev->aibv = airq_iv_create(msi_vecs, AIRQ_IV_DATA | AIRQ_IV_BITLOCK);
+> +		zdev->aibv = airq_iv_create(msi_vecs, AIRQ_IV_DATA | AIRQ_IV_BITLOCK, NULL);
+>   		if (!zdev->aibv)
+>   			return -ENOMEM;
+>   
+> @@ -419,7 +419,7 @@ static int __init zpci_directed_irq_init(void)
+>   	union zpci_sic_iib iib = {{0}};
+>   	unsigned int cpu;
+>   
+> -	zpci_sbv = airq_iv_create(num_possible_cpus(), 0);
+> +	zpci_sbv = airq_iv_create(num_possible_cpus(), 0, NULL);
+>   	if (!zpci_sbv)
+>   		return -ENOMEM;
+>   
+> @@ -441,7 +441,7 @@ static int __init zpci_directed_irq_init(void)
+>   		zpci_ibv[cpu] = airq_iv_create(cache_line_size() * BITS_PER_BYTE,
+>   					       AIRQ_IV_DATA |
+>   					       AIRQ_IV_CACHELINE |
+> -					       (!cpu ? AIRQ_IV_ALLOC : 0));
+> +					       (!cpu ? AIRQ_IV_ALLOC : 0), NULL);
+>   		if (!zpci_ibv[cpu])
+>   			return -ENOMEM;
+>   	}
+> @@ -458,7 +458,7 @@ static int __init zpci_floating_irq_init(void)
+>   	if (!zpci_ibv)
+>   		return -ENOMEM;
+>   
+> -	zpci_sbv = airq_iv_create(ZPCI_NR_DEVICES, AIRQ_IV_ALLOC);
+> +	zpci_sbv = airq_iv_create(ZPCI_NR_DEVICES, AIRQ_IV_ALLOC, NULL);
+>   	if (!zpci_sbv)
+>   		goto out_free;
+>   
+> diff --git a/drivers/s390/cio/airq.c b/drivers/s390/cio/airq.c
+> index 2f2226786319..375a58b1c838 100644
+> --- a/drivers/s390/cio/airq.c
+> +++ b/drivers/s390/cio/airq.c
+> @@ -122,10 +122,12 @@ static inline unsigned long iv_size(unsigned long bits)
+>    * airq_iv_create - create an interrupt vector
+>    * @bits: number of bits in the interrupt vector
+>    * @flags: allocation flags
+> + * @vec: pointer to pinned guest memory if AIRQ_IV_GUESTVEC
+>    *
+>    * Returns a pointer to an interrupt vector structure
+>    */
+> -struct airq_iv *airq_iv_create(unsigned long bits, unsigned long flags)
+> +struct airq_iv *airq_iv_create(unsigned long bits, unsigned long flags,
+> +			       unsigned long *vec)
+>   {
+>   	struct airq_iv *iv;
+>   	unsigned long size;
+> @@ -146,6 +148,8 @@ struct airq_iv *airq_iv_create(unsigned long bits, unsigned long flags)
+>   					     &iv->vector_dma);
+>   		if (!iv->vector)
+>   			goto out_free;
+> +	} else if (flags & AIRQ_IV_GUESTVEC) {
+> +		iv->vector = vec;
+>   	} else {
+>   		iv->vector = cio_dma_zalloc(size);
+>   		if (!iv->vector)
+> @@ -185,7 +189,7 @@ struct airq_iv *airq_iv_create(unsigned long bits, unsigned long flags)
+>   	kfree(iv->avail);
+>   	if (iv->flags & AIRQ_IV_CACHELINE && iv->vector)
+>   		dma_pool_free(airq_iv_cache, iv->vector, iv->vector_dma);
+> -	else
+> +	else if (!(iv->flags & AIRQ_IV_GUESTVEC))
+>   		cio_dma_free(iv->vector, size);
+>   	kfree(iv);
+>   out:
+> @@ -204,7 +208,7 @@ void airq_iv_release(struct airq_iv *iv)
+>   	kfree(iv->bitlock);
+>   	if (iv->flags & AIRQ_IV_CACHELINE)
+>   		dma_pool_free(airq_iv_cache, iv->vector, iv->vector_dma);
+> -	else
+> +	else if (!(iv->flags & AIRQ_IV_GUESTVEC))
+>   		cio_dma_free(iv->vector, iv_size(iv->bits));
+>   	kfree(iv->avail);
+>   	kfree(iv);
+> diff --git a/drivers/s390/virtio/virtio_ccw.c b/drivers/s390/virtio/virtio_ccw.c
+> index 52c376d15978..410498d693f8 100644
+> --- a/drivers/s390/virtio/virtio_ccw.c
+> +++ b/drivers/s390/virtio/virtio_ccw.c
+> @@ -241,7 +241,7 @@ static struct airq_info *new_airq_info(int index)
+>   		return NULL;
+>   	rwlock_init(&info->lock);
+>   	info->aiv = airq_iv_create(VIRTIO_IV_BITS, AIRQ_IV_ALLOC | AIRQ_IV_PTR
+> -				   | AIRQ_IV_CACHELINE);
+> +				   | AIRQ_IV_CACHELINE, NULL);
+>   	if (!info->aiv) {
+>   		kfree(info);
+>   		return NULL;
 > 
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+Pierre Morel
+IBM Lab Boeblingen
