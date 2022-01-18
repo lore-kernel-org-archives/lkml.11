@@ -2,144 +2,153 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D70F9C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 07:52:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89D3DC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 07:52:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343612AbiARHwh (ORCPT
+        id S1343650AbiARHw6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 02:52:37 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:40002
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1343536AbiARHwg (ORCPT
+        Tue, 18 Jan 2022 02:52:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49482 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343594AbiARHw5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 02:52:36 -0500
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 6E030407F5
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 07:52:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642492355;
-        bh=aNtiM+Mkd9efU1H0Wh+stfJIqfRGDAuGYHwSDx2cIxk=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=pUEsfnD4G8rzpPF1W6GCucVZvTUXP6TTMslAC6eB+nKtKLpTmsIBtPdM435v3YobL
-         CJ/Rca7bY4fKXDP6LlNt0ipz/hfM2wS9TVqiDyCI/2tY0f0TRFta1XdEPUETKQ8HeV
-         nXVme2Ec83QCAVlAO04ADZRvpjFesLr+Yy8AknVRTywmm50MlASnea40Gc9NAtO/l6
-         SjoF7a0i2oXG7AtQzQUTqFMYpCFmTts48mcC9IFElg1tmcFGBSZUMsw/0yVZP6EPo3
-         TR+vj5cZA8+FIPC4Twcf5KmKpvnv+uqsk2SlDNbjWkLrgZNsFLSl9tYFN01VAg+rD3
-         IdbmZ4IigM5HQ==
-Received: by mail-ed1-f70.google.com with SMTP id h11-20020a05640250cb00b003fa024f87c2so16243123edb.4
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 23:52:35 -0800 (PST)
+        Tue, 18 Jan 2022 02:52:57 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19461C061574;
+        Mon, 17 Jan 2022 23:52:57 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id az27-20020a05600c601b00b0034d2956eb04so2683134wmb.5;
+        Mon, 17 Jan 2022 23:52:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=44gDUy5K3yK/LK4CWy+8U+XmfAKikin5v6yugPO1Ses=;
+        b=ahdRawPXnNwZHQJ7XdWYHeN8ha0g7ktxwX4TqGc1Q96DuaKS9IIZGSt/GQwRtlRzgz
+         jY2TU0FA6Pau7F/lSiiQ758/fXd/GgdWrT6hpk6+E0nK47CsoyUhd6uRM8+imohlV2pW
+         mnBdC6TE9/abfA3PxXSRt05p8pAVlLtK7vbfjkEScjBJfHmE6GovLpxL3m9/y/9S8LAU
+         NxGKtC5FQVSsl4hrkMQO5XtG397tcMFM1CrSXHWDQPYA3cbTBjq+1mz+3vTZUchV+t6Q
+         2AFvMB5K43jqXI9UIQ96zrgdA/2ZirZAmwPgaDdt0cUptzKVUJulgWblRiwsD3qvHMvU
+         1J2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=aNtiM+Mkd9efU1H0Wh+stfJIqfRGDAuGYHwSDx2cIxk=;
-        b=DnGth58G0Xh1k5VOD3QmaHsf0E7h8qytNdLgR7pX+WAQ2KP8iAzXMnxYS/MenZyDE3
-         daFD8T8zRD5bZ+R6iz2so+ndIpPLrY/S76qAzCEdqw26uDTBnhLuWiPTavqJbRONdT1q
-         FZgfHur3amK8ddkDxngbQu2jpQM7GeNX7bKs+pC0y1mT0pCPMH1r+HXrn1atFG2Tnt8V
-         QRFmgpqNl4WwGjaod3Nk+aDD8Qu5iXGXSL7m/UcGqrkxSt5YSu7mTe93Di2+MzgCm4ez
-         cb3L4qZrB0OjMvvnhEIJxH/R3TPvNiuggSqun49mVRmwFV+HqXwC52SkaAIgFc9pBgOU
-         SFew==
-X-Gm-Message-State: AOAM532Cn6aH4aZRJP8VeGZjDQ/69Gcrm8rihoVIFqPiKqyMrd3laUJA
-        XK1+INhlHkwKfs9wx7+zGvyK3123a2UlcRhsA18BaMIfiDp0ALKYXw/sGdoOkotw14PxD11EWG7
-        wW/TaMDyBPhAGM2SNXIkl+4dieszqTQW9Ez9PJOCN8g==
-X-Received: by 2002:a17:907:1b0d:: with SMTP id mp13mr19153541ejc.29.1642492354935;
-        Mon, 17 Jan 2022 23:52:34 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwBxln2AY6zvpOpDMIrbY3pJ2WqNGAK6xMIm4ZKaNEKJULRafQ8SSXBijKpYwqfIhylcmfhEA==
-X-Received: by 2002:a17:907:1b0d:: with SMTP id mp13mr19153526ejc.29.1642492354785;
-        Mon, 17 Jan 2022 23:52:34 -0800 (PST)
-Received: from [192.168.0.40] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id a3sm5071801ejd.34.2022.01.17.23.52.33
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Jan 2022 23:52:34 -0800 (PST)
-Message-ID: <794f39ed-3436-432c-767d-8fa60779d510@canonical.com>
-Date:   Tue, 18 Jan 2022 08:52:33 +0100
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=44gDUy5K3yK/LK4CWy+8U+XmfAKikin5v6yugPO1Ses=;
+        b=sieuU/LGC0iykw4KTclYKleZqhqVVDQ/+0P/r0xk6STH2IU8wYHxjaEXjl2JygxQ1G
+         MDod0w9Lgvd8zwbpmLy0th3oLy1Yg+ijJUiGKHyahMhKuqodNqca1xQHOABMpddX9NEc
+         u3+OcDwiIzR4JAj+jUyzvduL7wvTnIKc2HW0X0nA1OPR9qlzHWoiANLjElc0AfTNB2dj
+         3J0wE9R76ZynYSLtCLKO3XKC4mCvR7DfOhyhGFu4hufJWso9De7fgwSrSAuFOs4d5kgk
+         Lw/aX/sSS6j2CUvgiiF7Zf76t/EoNU/rY5miRSLxnP5AkmYspZsPWuzsHeUa4k9PRBUi
+         GIRw==
+X-Gm-Message-State: AOAM532mBvBpHLSoHfLyHkUmjE7J860uW9sf4pq4HWsK0uflg9S0vbhO
+        5/EsxzQcLoLyhp8Ke0Yv1mm9KgRPTNM=
+X-Google-Smtp-Source: ABdhPJxuyCwEFsb4U7fwu4plIZDcfgaLFcVBLRDOZi4dnWLUdxTtxoKSOwiT8sVgD2qQgVIpkihQsA==
+X-Received: by 2002:a05:600c:2113:: with SMTP id u19mr23489123wml.16.1642492375722;
+        Mon, 17 Jan 2022 23:52:55 -0800 (PST)
+Received: from Red ([2a01:cb1d:3d5:a100:264b:feff:fe03:2806])
+        by smtp.googlemail.com with ESMTPSA id r19sm1542277wmh.42.2022.01.17.23.52.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Jan 2022 23:52:55 -0800 (PST)
+Date:   Tue, 18 Jan 2022 08:52:53 +0100
+From:   Corentin Labbe <clabbe.montjoie@gmail.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     davem@davemloft.net, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: crypto: BUG: spinlock recursion when doing iperf over ipsec with
+ crypto hardware device
+Message-ID: <YeZx1aVL0HnT9tCB@Red>
+References: <Yd1SIHUNdLIvKhzz@Red>
+ <YeD4rt1OVnEMBr+A@gondor.apana.org.au>
+ <YeD6vt47+pAl0SxG@gondor.apana.org.au>
+ <YeEiWmkyNwfgQgmn@Red>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH v2 24/28] dt-bindings: pinctrl: samsung: convert to
- dtschema
-Content-Language: en-US
-To:     Olof Johansson <olof@lixom.net>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Tomasz Figa <tomasz.figa@gmail.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Linux ARM Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
-        <linux-samsung-soc@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        DTML <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Sam Protsenko <semen.protsenko@linaro.org>,
-        Chanho Park <chanho61.park@samsung.com>,
-        Alim Akhtar <alim.akhtar@gmail.com>,
-        Rob Herring <robh@kernel.org>
-References: <20220111201426.326777-1-krzysztof.kozlowski@canonical.com>
- <20220111201722.327219-18-krzysztof.kozlowski@canonical.com>
- <CACRpkdYTXSOW+sOX3wVtF4jj6xm0jr-F3HKQPGHOdAVjbasP3A@mail.gmail.com>
- <5047da7c-d3a6-5472-b0ca-7ed3dbe8a5fe@canonical.com>
- <CACRpkdbhmJ91EW395C5F2WYjWJQdJ-SBHaDm7XnQsxMuyoMmLg@mail.gmail.com>
- <77bd8fa4-2b35-352c-da07-ef91fcbed454@canonical.com>
- <CAOesGMg2eH1B94h+etPBDW3B1LMeHBytz0v2e0GfVRDv8gU0YA@mail.gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <CAOesGMg2eH1B94h+etPBDW3B1LMeHBytz0v2e0GfVRDv8gU0YA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <YeEiWmkyNwfgQgmn@Red>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 17/01/2022 21:26, Olof Johansson wrote:
-> On Sun, Jan 16, 2022 at 11:45 PM Krzysztof Kozlowski
-> <krzysztof.kozlowski@canonical.com> wrote:
->>
->> On 16/01/2022 22:38, Linus Walleij wrote:
->>> On Sun, Jan 16, 2022 at 6:10 PM Krzysztof Kozlowski
->>> <krzysztof.kozlowski@canonical.com> wrote:
->>>
->>>> Anyway DTS and dtschema will have to wait for one release, because they
->>>> depend on samsung pinctrl driver change (patch #2).
->>>
->>> What about I put that (and maybe this schema) on an immutable
->>> branch so you can pull the commit into your for-arm-soc branch and
->>> put the DTS changes on top?
->>
->> That would be a solution if not a policy for arm-soc of keeping DTS
->> separate. Arnd and Olof since some time are not happy when DTS branch
->> receives any driver updates.
->>
->> Arnd, Olof,
->> This is a set of dtschema conversion + DTS alignment with new schema:
->> 1. Driver change necessary to accept new DTS (driver depends on node
->> names and this has to change because of dtschema),
->> 2. DTS commits depending on above, which convert node name to new format,
->> 3. Finally dtschema requiring new naming of the GPIO nodes.
->>
->> If I got correctly, the policy of not mixing drivers and DTS requires
->> that #2 above (DTS changes) will wait for one more release. During the
->> time, if dtschema (#3 above) is applied, there will be new warnings
->> about non-compliant DTS.
->>
->> Do you see any chance of merging driver + DTS + dtschema via same tree
->> in same release?
+Le Fri, Jan 14, 2022 at 08:12:26AM +0100, Corentin Labbe a écrit :
+> Le Fri, Jan 14, 2022 at 03:23:26PM +1100, Herbert Xu a écrit :
+> > On Fri, Jan 14, 2022 at 03:14:38PM +1100, Herbert Xu wrote:
+> > > On Tue, Jan 11, 2022 at 10:47:12AM +0100, Corentin Labbe wrote:
+> > > >
+> > > > [   44.646050] [<c0100afc>] (__irq_svc) from [<c080b9d4>] (xfrm_replay_advance+0x11c/0x3dc)
+> > > > [   44.654143] [<c080b9d4>] (xfrm_replay_advance) from [<c0809388>] (xfrm_input+0x4d0/0x1304)
+> > > > [   44.662408] [<c0809388>] (xfrm_input) from [<c03a3d88>] (crypto_finalize_request+0x5c/0xc4)
+> > > > [   44.670766] [<c03a3d88>] (crypto_finalize_request) from [<c06a0888>] (sun8i_ce_cipher_run+0x34/0x3c)
+> > > > [   44.679900] [<c06a0888>] (sun8i_ce_cipher_run) from [<c03a4264>] (crypto_pump_work+0x1a8/0x330)
+> > > 
+> > > So did sun8i_ce_cipher_run ensure that BH is disabled before
+> > > invoking xfrm_input? If not then this explains the dead-lock.
+> > 
+> > The issue appears to be with crypto_engine.  It needs to ensure
+> > that completion functions are called with BH disabled, not IRQ
+> > disabled and definitely not BH enabled.
+> > 
 > 
-> Our general guidance to separate DTS and driver changes is to avoid
-> large entangled changes between the two, and to discourage a developer
-> mentality of "the implementation is the binding".
+> Hello
 > 
-> I think this is a good example of when it makes sense to bring in what
-> is a fairly small and clean driver change to deal with this. So the
-> right answer here is to stage such a stable branch and merge into both
-> arm-soc and the pinctrl subsystem trees as proposed.
+> This minimal patch fix my issue, does it is the rigth way ?
+> 
+> Thanks for your help
+> Regards
+> 
+> diff --git a/crypto/crypto_engine.c b/crypto/crypto_engine.c
+> index fb07da9920ee..b3844f6d98a3 100644
+> --- a/crypto/crypto_engine.c
+> +++ b/crypto/crypto_engine.c
+> @@ -7,6 +7,7 @@
+>   * Author: Baolin Wang <baolin.wang@linaro.org>
+>   */
+>  
+> +#include <linux/bottom_half.h>
+>  #include <linux/err.h>
+>  #include <linux/delay.h>
+>  #include <linux/device.h>
+> @@ -53,7 +54,9 @@ static void crypto_finalize_request(struct crypto_engine *engine,
+>                                 dev_err(engine->dev, "failed to unprepare request\n");
+>                 }
+>         }
+> +       local_bh_disable();
+>         req->complete(req, err);
+> +       local_bh_enable();
+>  
+>         kthread_queue_work(engine->kworker, &engine->pump_requests);
+>  }
+> 
 
-Thanks for clarification, I'll go with this approach.
+Hello
 
-Best regards,
-Krzysztof
+With my patch, I got:
+[   38.515668] BUG: sleeping function called from invalid context at crypto/skcipher.c:482
+[   38.523708] in_atomic(): 1, irqs_disabled(): 0, non_block: 0, pid: 84, name: 1c15000.crypto-
+[   38.532176] preempt_count: 200, expected: 0
+[   38.536381] CPU: 6 PID: 84 Comm: 1c15000.crypto- Not tainted 5.16.0-next-20220115-00124-g13473e8fac33-dirty #116
+[   38.546551] Hardware name: Allwinner A83t board
+[   38.551100]  unwind_backtrace from show_stack+0x10/0x14
+[   38.556358]  show_stack from dump_stack_lvl+0x40/0x4c
+[   38.561428]  dump_stack_lvl from __might_resched+0x118/0x154
+[   38.567107]  __might_resched from skcipher_walk_virt+0xe8/0xec
+[   38.572955]  skcipher_walk_virt from crypto_cbc_decrypt+0x2c/0x170
+[   38.579147]  crypto_cbc_decrypt from crypto_skcipher_decrypt+0x38/0x5c
+[   38.585680]  crypto_skcipher_decrypt from authenc_verify_ahash_done+0x18/0x34
+[   38.592825]  authenc_verify_ahash_done from crypto_finalize_request+0x6c/0xe4
+[   38.599974]  crypto_finalize_request from sun8i_ss_hash_run+0x73c/0xb98
+[   38.606602]  sun8i_ss_hash_run from crypto_pump_work+0x1a8/0x330
+[   38.612616]  crypto_pump_work from kthread_worker_fn+0xa8/0x1c4
+[   38.618550]  kthread_worker_fn from kthread+0xf0/0x110
+[   38.623701]  kthread from ret_from_fork+0x14/0x2c
+[   38.628414] Exception stack(0xc2247fb0 to 0xc2247ff8)
+[   38.633468] 7fa0:                                     00000000 00000000 00000000 00000000
+[   38.641640] 7fc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+[   38.649809] 7fe0:i 00000000 00000000 00000000 00000000 00000013 00000000
+
+This is when testing hmac(sha1) on my crypto driver sun8i-ss and crypto testing authenc(hmac-sha1-sun8i-ss,cbc(aes-generic)).
+
+Do you have any idea to better fix my issue ?
+
+Regards
