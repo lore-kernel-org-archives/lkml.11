@@ -2,49 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51F36C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41740C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:35:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344413AbiARCer (ORCPT
+        id S1344337AbiARCep (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:34:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58892 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345262AbiARCbY (ORCPT
+        Mon, 17 Jan 2022 21:34:45 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48364 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345235AbiARCbW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:31:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D281C08C5DA;
-        Mon, 17 Jan 2022 18:28:46 -0800 (PST)
+        Mon, 17 Jan 2022 21:31:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1DE94B81247;
-        Tue, 18 Jan 2022 02:28:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 63672C36AE3;
-        Tue, 18 Jan 2022 02:28:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 81CA7611A5;
+        Tue, 18 Jan 2022 02:31:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A0DAC36AE3;
+        Tue, 18 Jan 2022 02:31:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472923;
-        bh=3JX4NxME83wn+3Sx/vJIXU37WPkZe9zA5CufjNXYz9A=;
+        s=k20201202; t=1642473081;
+        bh=vKWSGVyBRIU9roEq5H7rCjwRia1zNgCJtd+b+NSXZ9Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BGc7xV2JDH9Zsg4XJvY8+s3iXOtWjbu4+Qf4aUuaZlAss0mgKO3Mz5tpg4+xEeDKd
-         rX+zyQTCQeca5V97JHZGp01cpNDt9GLWKsQYTZp8rs9qfBRDW8hzvbTlChNopxsyRQ
-         xyl/eJLly2bVtO3ZhK08z14iHbJxh3O3IbSDo9/KQ5pRCdxPSdLo5tYP2MOade+Wgx
-         M2wcHghMhDUNeqvtC1NacxfhkrKLruwACR4N/fG4n3T8brOcIS/ICW8C+dZlIKUqlp
-         08+nIZfq9eywBHJTAcJjC9HB0P+HgR0/R9zkz3G0oEPLamCCZ9nI+VpHav3g1EXRiH
-         yc9gT1tgosTgA==
+        b=cT8SWl5pf/3HHRTe6iUFUdHfIVPp9zYKJAMDmpKXNBC+qP9iYWyYokWS1DXO2xEc0
+         RrcnQZZ+6LfPt/QgzL16gnL2y41FmZm5ltSM8RRHMSZXuOzoI/WnJnCYyxoDpEAjGb
+         SWPrSRCluMD5S6RfPotDinT+AkMI6CppOYupzSSvVQfeSbxSDoVgQldjFRh9dBpv3I
+         UjiUc9LhqzAdNWNrhiAO5GRIkqivqqN+oCttDQNl4JoytGveFu9BHSS+tu3lZQEVTu
+         L0/RvsQ8cV8FdO7lotLbE2B+HSzsDE/4e6AvQ0Hx6wr1hw7DtTlFrzQLhqhgwNwg+z
+         M+mL+N4phVn2g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luca Coelho <luciano.coelho@intel.com>,
-        Sam Edwards <CFSworks@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, johannes.berg@intel.com,
-        matti.gottlieb@intel.com, roee.h.goldfiner@intel.com,
-        drorx.moshe@intel.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 163/217] iwlwifi: recognize missing PNVM data and then log filename
-Date:   Mon, 17 Jan 2022 21:18:46 -0500
-Message-Id: <20220118021940.1942199-163-sashal@kernel.org>
+Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        Sasha Levin <sashal@kernel.org>, tytso@mit.edu
+Subject: [PATCH AUTOSEL 5.16 208/217] random: do not throw away excess input to crng_fast_load
+Date:   Mon, 17 Jan 2022 21:19:31 -0500
+Message-Id: <20220118021940.1942199-208-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -56,108 +49,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luca Coelho <luciano.coelho@intel.com>
+From: "Jason A. Donenfeld" <Jason@zx2c4.com>
 
-[ Upstream commit 1db385c668d3ccb04ccdb5f0f190fd17b2db29c6 ]
+[ Upstream commit 73c7733f122e8d0107f88655a12011f68f69e74b ]
 
-We can detect that a FW SYSASSERT is due to missing PNVM data by
-checking the assertion code.  When this happens, it's is useful for
-the user if we print the filename where the driver is looking for the
-data.
+When crng_fast_load() is called by add_hwgenerator_randomness(), we
+currently will advance to crng_init==1 once we've acquired 64 bytes, and
+then throw away the rest of the buffer. Usually, that is not a problem:
+When add_hwgenerator_randomness() gets called via EFI or DT during
+setup_arch(), there won't be any IRQ randomness. Therefore, the 64 bytes
+passed by EFI exactly matches what is needed to advance to crng_init==1.
+Usually, DT seems to pass 64 bytes as well -- with one notable exception
+being kexec, which hands over 128 bytes of entropy to the kexec'd kernel.
+In that case, we'll advance to crng_init==1 once 64 of those bytes are
+consumed by crng_fast_load(), but won't continue onward feeding in bytes
+to progress to crng_init==2. This commit fixes the issue by feeding
+any leftover bytes into the next phase in add_hwgenerator_randomness().
 
-Add the PNVM missing assertion code to the dump list and print out the
-name of the file we're looking for when this happens.
-
-Reported-by: Sam Edwards <CFSworks@gmail.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211210090244.1d8725b7518a.I0c36617a7282bd445cda484d97ac4a83022706ee@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+[linux@dominikbrodowski.net: rewrite commit message]
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/fw/dump.c | 9 +++++++++
- drivers/net/wireless/intel/iwlwifi/fw/img.c  | 6 +++---
- drivers/net/wireless/intel/iwlwifi/fw/img.h  | 4 ++++
- 3 files changed, 16 insertions(+), 3 deletions(-)
+ drivers/char/random.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/dump.c b/drivers/net/wireless/intel/iwlwifi/fw/dump.c
-index 016b3a4c5f513..6a37933a02169 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/dump.c
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/dump.c
-@@ -12,6 +12,7 @@
- #include "iwl-io.h"
- #include "iwl-prph.h"
- #include "iwl-csr.h"
-+#include "pnvm.h"
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 605969ed0f965..9c403bbb21a1f 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -863,12 +863,14 @@ static void numa_crng_init(void) {}
  
  /*
-  * Note: This structure is read from the device with IO accesses,
-@@ -147,6 +148,7 @@ static void iwl_fwrt_dump_umac_error_log(struct iwl_fw_runtime *fwrt)
- 	struct iwl_trans *trans = fwrt->trans;
- 	struct iwl_umac_error_event_table table = {};
- 	u32 base = fwrt->trans->dbg.umac_error_event_table;
-+	char pnvm_name[MAX_PNVM_NAME];
+  * crng_fast_load() can be called by code in the interrupt service
+- * path.  So we can't afford to dilly-dally.
++ * path.  So we can't afford to dilly-dally. Returns the number of
++ * bytes processed from cp.
+  */
+-static int crng_fast_load(const char *cp, size_t len)
++static size_t crng_fast_load(const char *cp, size_t len)
+ {
+ 	unsigned long flags;
+ 	char *p;
++	size_t ret = 0;
  
- 	if (!base &&
- 	    !(fwrt->trans->dbg.error_event_table_tlv_status &
-@@ -164,6 +166,13 @@ static void iwl_fwrt_dump_umac_error_log(struct iwl_fw_runtime *fwrt)
- 			fwrt->trans->status, table.valid);
+ 	if (!spin_trylock_irqsave(&primary_crng.lock, flags))
+ 		return 0;
+@@ -879,7 +881,7 @@ static int crng_fast_load(const char *cp, size_t len)
+ 	p = (unsigned char *) &primary_crng.state[4];
+ 	while (len > 0 && crng_init_cnt < CRNG_INIT_CNT_THRESH) {
+ 		p[crng_init_cnt % CHACHA_KEY_SIZE] ^= *cp;
+-		cp++; crng_init_cnt++; len--;
++		cp++; crng_init_cnt++; len--; ret++;
+ 	}
+ 	spin_unlock_irqrestore(&primary_crng.lock, flags);
+ 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+@@ -887,7 +889,7 @@ static int crng_fast_load(const char *cp, size_t len)
+ 		crng_init = 1;
+ 		pr_notice("fast init done\n");
+ 	}
+-	return 1;
++	return ret;
+ }
+ 
+ /*
+@@ -1269,7 +1271,7 @@ void add_interrupt_randomness(int irq, int irq_flags)
+ 	if (unlikely(crng_init == 0)) {
+ 		if ((fast_pool->count >= 64) &&
+ 		    crng_fast_load((char *) fast_pool->pool,
+-				   sizeof(fast_pool->pool))) {
++				   sizeof(fast_pool->pool)) > 0) {
+ 			fast_pool->count = 0;
+ 			fast_pool->last = now;
+ 		}
+@@ -2275,8 +2277,11 @@ void add_hwgenerator_randomness(const char *buffer, size_t count,
+ 	struct entropy_store *poolp = &input_pool;
+ 
+ 	if (unlikely(crng_init == 0)) {
+-		crng_fast_load(buffer, count);
+-		return;
++		size_t ret = crng_fast_load(buffer, count);
++		count -= ret;
++		buffer += ret;
++		if (!count || crng_init == 0)
++			return;
  	}
  
-+	if ((table.error_id & ~FW_SYSASSERT_CPU_MASK) ==
-+	    FW_SYSASSERT_PNVM_MISSING) {
-+		iwl_pnvm_get_fs_name(trans, pnvm_name, sizeof(pnvm_name));
-+		IWL_ERR(fwrt, "PNVM data is missing, please install %s\n",
-+			pnvm_name);
-+	}
-+
- 	IWL_ERR(fwrt, "0x%08X | %s\n", table.error_id,
- 		iwl_fw_lookup_assert_desc(table.error_id));
- 	IWL_ERR(fwrt, "0x%08X | umac branchlink1\n", table.blink1);
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/img.c b/drivers/net/wireless/intel/iwlwifi/fw/img.c
-index 24a9666736913..530674a35eeb2 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/img.c
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/img.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
- /*
-- * Copyright(c) 2019 - 2020 Intel Corporation
-+ * Copyright(c) 2019 - 2021 Intel Corporation
-  */
- 
- #include "img.h"
-@@ -49,10 +49,9 @@ u8 iwl_fw_lookup_notif_ver(const struct iwl_fw *fw, u8 grp, u8 cmd, u8 def)
- }
- EXPORT_SYMBOL_GPL(iwl_fw_lookup_notif_ver);
- 
--#define FW_SYSASSERT_CPU_MASK 0xf0000000
- static const struct {
- 	const char *name;
--	u8 num;
-+	u32 num;
- } advanced_lookup[] = {
- 	{ "NMI_INTERRUPT_WDG", 0x34 },
- 	{ "SYSASSERT", 0x35 },
-@@ -73,6 +72,7 @@ static const struct {
- 	{ "NMI_INTERRUPT_ACTION_PT", 0x7C },
- 	{ "NMI_INTERRUPT_UNKNOWN", 0x84 },
- 	{ "NMI_INTERRUPT_INST_ACTION_PT", 0x86 },
-+	{ "PNVM_MISSING", FW_SYSASSERT_PNVM_MISSING },
- 	{ "ADVANCED_SYSASSERT", 0 },
- };
- 
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/img.h b/drivers/net/wireless/intel/iwlwifi/fw/img.h
-index 993bda17fa309..fa7b1780064c2 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/img.h
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/img.h
-@@ -279,4 +279,8 @@ u8 iwl_fw_lookup_cmd_ver(const struct iwl_fw *fw, u8 grp, u8 cmd, u8 def);
- 
- u8 iwl_fw_lookup_notif_ver(const struct iwl_fw *fw, u8 grp, u8 cmd, u8 def);
- const char *iwl_fw_lookup_assert_desc(u32 num);
-+
-+#define FW_SYSASSERT_CPU_MASK		0xf0000000
-+#define FW_SYSASSERT_PNVM_MISSING	0x0010070d
-+
- #endif  /* __iwl_fw_img_h__ */
+ 	/* Suspend writing if we're above the trickle threshold.
 -- 
 2.34.1
 
