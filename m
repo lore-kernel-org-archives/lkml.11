@@ -2,361 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 195F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C5ABC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:20:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345649AbiARJU0 (ORCPT
+        id S1345665AbiARJUe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 04:20:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41744 "EHLO
+        Tue, 18 Jan 2022 04:20:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345605AbiARJUO (ORCPT
+        with ESMTP id S1345637AbiARJTf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 04:20:14 -0500
-Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E6AC061401
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 01:20:13 -0800 (PST)
-Received: by mail-pl1-x62c.google.com with SMTP id b3so14723357plc.7
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 01:20:13 -0800 (PST)
+        Tue, 18 Jan 2022 04:19:35 -0500
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63FE4C06161C;
+        Tue, 18 Jan 2022 01:19:35 -0800 (PST)
+Received: by mail-ed1-x52d.google.com with SMTP id c71so76602059edf.6;
+        Tue, 18 Jan 2022 01:19:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=WSMhOoiARwkqk597NY6ErdBYXUfK7ckPlJOXjnj6hEM=;
-        b=Ne3CfbJRckbYz5EruMAJwsc4UPVPI2vGU2+ERtksYz7/5eY3Cbh2FrYS5oynmyXaJa
-         r5EPAICS76xG4ap5FkHHxlb7i2PMwDdAhi8/NZuziiZjWtqt/XjH10fker4mMI+kPEjX
-         6zW9gJX0+FKEwLIu45Ygb3EWQGBaudfovU09A=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=SB0wh1JvYuxb1nJDI7PyGganrQILU5xtGUXZvsW6ko0=;
+        b=Eb3i4SvXu8XdwLGqOWL+zhPFAIwvhYqMVIWvCZjfeZ5ZrgYQD20Lhib1bopL3XrTDl
+         YRO+tDpWXFKJmz+2BkS0nLE4ds0vw8VwIQblDXUFEDBghIwU93IgPJ5g8rXupxy2Wh2u
+         NQfas8Nf0ifp3WNIDFayWkEArYkMRkZ3Rg+hab33gvawGk3aYLJDkfjrZtwqVsSohRkQ
+         MbVlMgd+APnIHBIVW4drs9yPcKC9Fq5Z2axKha6s2Q/zUly2ttNFau2Ze08+VZyS4OHp
+         2PiRK8RbKEPnCZUwEYIkOE5cun6lc2SmJTZ+9eRdXHaC2yFnmBl3Q1ZSnBsaujANHhuL
+         jiig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=WSMhOoiARwkqk597NY6ErdBYXUfK7ckPlJOXjnj6hEM=;
-        b=Q+1szlNsjYc1xBp9FD/IRqtw8UAM8+mnQ5RvflnSJvY72dhbK7IFOlthzD7uOCCPKL
-         Dww/3I8reeM1NKyW11vENAGVtdb3SuLuU1CiqkApqC5nvpM5O2p8YW9MWqB1MWekROMz
-         SGzFV4nUjcpyXJ47EXdvphqMNaVnJvOP1TIFO1JeY6YXOlgeIpjXJDp+sXTbQE8vBf2O
-         WTIlaOS0nfokPWLh1crU6uJQelUUJq2+2r21cas/Lqi8YC6nehBLabfcUKZzfIzSqXea
-         9A8zrIFYhXv/97yeGp8zzFzuY/gBj5kKNM7aVwHwM4eetxjyALK81hBzKdP5pvDJf+Dy
-         DK6A==
-X-Gm-Message-State: AOAM533ipIKBY83oyiHHXZvV52cNUZdJXPMNc47JCrtr7aZomeOgJEc0
-        wL0EM0ki5J11Q1K8oZIZWxGgBQ==
-X-Google-Smtp-Source: ABdhPJwTfgf0gS9vrDAkbPg8pUTqDlTvi21f62WDSx1UrwDT5CqhWGbhcyErNcmccagKMMJykWR8hQ==
-X-Received: by 2002:a17:902:6901:b0:149:4e89:2d45 with SMTP id j1-20020a170902690100b001494e892d45mr26031107plk.22.1642497613360;
-        Tue, 18 Jan 2022 01:20:13 -0800 (PST)
-Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:4448:8072:97f1:64dd])
-        by smtp.gmail.com with ESMTPSA id y1sm14691501pgs.4.2022.01.18.01.20.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 01:20:13 -0800 (PST)
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-To:     Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, Xin Ji <xji@analogixsemi.com>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Andrzej Hajda <a.hajda@samsung.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Maxime Ripard <maxime@cerno.tech>
-Subject: [PATCH v4 3/4] drm/bridge: anx7625: Support reading edid through aux channel
-Date:   Tue, 18 Jan 2022 17:20:01 +0800
-Message-Id: <20220118092002.4267-3-hsinyi@chromium.org>
-X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
-In-Reply-To: <20220118092002.4267-1-hsinyi@chromium.org>
-References: <20220118092002.4267-1-hsinyi@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=SB0wh1JvYuxb1nJDI7PyGganrQILU5xtGUXZvsW6ko0=;
+        b=HNWbRh+T8p/gqUp1gRazEL5bPor4/EtUnQF2QkOFXCybXROWUuGPiI7TZ3mEyQSy5P
+         Morq0aFT4Zp257YsGzikV1Sd1sgGJPD5KfWKhYzik+bYIw5WjnQzU3mAp7VU0G3Vr2ti
+         XBfC0ykw0IQAEp2L7iVw4sTZSXh5N1+C9Wn9dBp4QubctWZgRRjRR0ZA4owZGF+eP+a9
+         +8LDvrMtrfQLy2+5ZG/0S5U/MtG2v+Nn+6GGXveKwk0TEWQIVIVOGI9sIwFBJeMFa5HD
+         sCR1dzadMRLYI33RiBrWnkoxANRl8Atc+7zJ2jaJ2iD0kZd3RY7PZWqArtzODvCLjwJl
+         MrvA==
+X-Gm-Message-State: AOAM531X3B3has92CqqO4i16yYat2cppxGpmI5aNV89g4U8s1Hq5wZJk
+        ghWqvPxeCB7ot4yWN1y+/je0gCQlBu1Sa0hC0Go=
+X-Google-Smtp-Source: ABdhPJxSbMd+HQ6M+bgVFr1+OvobdOGajiL40zRQ24757+JEdYZ/E9oYJtr25sD0StBm4K7Oyl/FGS1x2frkSyRibbQ=
+X-Received: by 2002:a17:907:6ea3:: with SMTP id sh35mr5517133ejc.497.1642497573955;
+ Tue, 18 Jan 2022 01:19:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220117082539.18713-1-axe.yang@mediatek.com> <20220117082539.18713-4-axe.yang@mediatek.com>
+In-Reply-To: <20220117082539.18713-4-axe.yang@mediatek.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 18 Jan 2022 11:18:57 +0200
+Message-ID: <CAHp75VdkKYujGZOdGkLK-tzC9q+RjkX59fFZe5cHajGOnDdL2w@mail.gmail.com>
+Subject: Re: [RESEND v3 3/3] mmc: mediatek: add support for SDIO eint IRQ
+To:     Axe Yang <axe.yang@mediatek.com>
+Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Chaotian Jing <chaotian.jing@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Adrian Hunter <adrian.hunter@intel.com>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Satya Tangirala <satyat@google.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Lucas Stach <dev@lynxeye.de>,
+        Eric Biggers <ebiggers@google.com>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Kiwoong Kim <kwmad.kim@samsung.com>,
+        Yue Hu <huyue2@yulong.com>, Tian Tao <tiantao6@hisilicon.com>,
+        angelogioacchino.delregno@collabora.com, linux-mmc@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Yong Mao <yong.mao@mediatek.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Support reading edid through aux channel if panel is connected to aux
-bus. Extend anx7625_aux_dpcd_trans() to implement aux transfer function:
+On Mon, Jan 17, 2022 at 7:33 PM Axe Yang <axe.yang@mediatek.com> wrote:
+>
+> Add support for eint IRQ when MSDC is used as an SDIO host. This
+> feature requires SDIO device support async IRQ function. With this
+> feature, SDIO host can be awakened by SDIO card in suspend state,
+> without additional pin.
+>
+> MSDC driver will time-share the SDIO DAT1 pin. During suspend, MSDC
+> turn off clock and switch SDIO DAT1 pin to GPIO mode. And during
+> resume, switch GPIO function back to DAT1 mode then turn on clock.
+>
+> Some device tree property should be added or modified in MSDC node
+> to support SDIO eint IRQ. Pinctrls named state_dat1 and state_eint
+> are mandatory. And cap-sdio-async-irq flag is necessary since this
+> feature depends on asynchronous interrupt:
+>         &mmcX {
+>                 ...
+>                 pinctrl-names = "default", "state_uhs", "state_eint",
+>                                 "state_dat1";
+>                 ...
+>                 pinctrl-2 = <&mmc2_pins_eint>;
+>                 pinctrl-3 = <&mmc2_pins_dat1>;
+>                 ...
+>                 cap-sdio-async-irq;
+>                 ...
+>         };
 
-1. panel is populated in devm_of_dp_aux_populate_ep_devices(), so move
-   anx7625_parse_dt() after.
-2. Use pm runtime autosuspend since aux transfer function is called
-   multiple times when reading edid.
-3. No-op if aux transfer length is 0.
+...
 
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-Reviewed-by: Xin Ji <xji@analogixsemi.com>
----
-v3->v4:
-rebase to latest drm-misc-next
----
- drivers/gpu/drm/bridge/analogix/anx7625.c | 120 ++++++++++++++++++----
- drivers/gpu/drm/bridge/analogix/anx7625.h |   1 +
- 2 files changed, 103 insertions(+), 18 deletions(-)
+> +static irqreturn_t msdc_sdio_eint_irq(int irq, void *dev_id)
+> +{
+> +       struct msdc_host *host = dev_id;
+> +       struct mmc_host *mmc = mmc_from_priv(host);
 
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.c b/drivers/gpu/drm/bridge/analogix/anx7625.c
-index b7e3373994b480..50b9c98277f0d7 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.c
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.c
-@@ -24,6 +24,7 @@
- #include <drm/drm_atomic_helper.h>
- #include <drm/drm_bridge.h>
- #include <drm/drm_crtc_helper.h>
-+#include <drm/drm_dp_aux_bus.h>
- #include <drm/dp/drm_dp_helper.h>
- #include <drm/drm_edid.h>
- #include <drm/drm_hdcp.h>
-@@ -231,19 +232,23 @@ static int wait_aux_op_finish(struct anx7625_data *ctx)
- 	return 0;
- }
- 
--static int anx7625_aux_dpcd_trans(struct anx7625_data *ctx, u8 op,
--				  u32 address, u8 len, u8 *buf)
-+static int anx7625_aux_trans(struct anx7625_data *ctx, u8 op, u32 address,
-+			     u8 len, u8 *buf)
- {
- 	struct device *dev = &ctx->client->dev;
- 	int ret;
- 	u8 addrh, addrm, addrl;
- 	u8 cmd;
-+	bool is_write = !(op & DP_AUX_I2C_READ);
- 
--	if (len > MAX_DPCD_BUFFER_SIZE) {
-+	if (len > DP_AUX_MAX_PAYLOAD_BYTES) {
- 		dev_err(dev, "exceed aux buffer len.\n");
- 		return -EINVAL;
- 	}
- 
-+	if (!len)
-+		return len;
-+
- 	addrl = address & 0xFF;
- 	addrm = (address >> 8) & 0xFF;
- 	addrh = (address >> 16) & 0xFF;
-@@ -262,7 +267,7 @@ static int anx7625_aux_dpcd_trans(struct anx7625_data *ctx, u8 op,
- 	ret |= anx7625_reg_write(ctx, ctx->i2c.rx_p0_client,
- 				 AP_AUX_ADDR_19_16, addrh);
- 
--	if (op == DP_AUX_NATIVE_WRITE)
-+	if (is_write)
- 		ret |= anx7625_reg_block_write(ctx, ctx->i2c.rx_p0_client,
- 					       AP_AUX_BUFF_START, len, buf);
- 	/* Enable aux access */
-@@ -275,14 +280,14 @@ static int anx7625_aux_dpcd_trans(struct anx7625_data *ctx, u8 op,
- 	}
- 
- 	ret = wait_aux_op_finish(ctx);
--	if (ret) {
-+	if (ret < 0) {
- 		dev_err(dev, "aux IO error: wait aux op finish.\n");
- 		return ret;
- 	}
- 
- 	/* Write done */
--	if (op == DP_AUX_NATIVE_WRITE)
--		return 0;
-+	if (is_write)
-+		return len;
- 
- 	/* Read done, read out dpcd data */
- 	ret = anx7625_reg_block_read(ctx, ctx->i2c.rx_p0_client,
-@@ -292,7 +297,7 @@ static int anx7625_aux_dpcd_trans(struct anx7625_data *ctx, u8 op,
- 		return -EIO;
- 	}
- 
--	return 0;
-+	return len;
- }
- 
- static int anx7625_video_mute_control(struct anx7625_data *ctx,
-@@ -867,7 +872,7 @@ static int anx7625_hdcp_enable(struct anx7625_data *ctx)
- 	}
- 
- 	/* Read downstream capability */
--	anx7625_aux_dpcd_trans(ctx, DP_AUX_NATIVE_READ, 0x68028, 1, &bcap);
-+	anx7625_aux_trans(ctx, DP_AUX_NATIVE_READ, 0x68028, 1, &bcap);
- 	if (!(bcap & 0x01)) {
- 		pr_warn("downstream not support HDCP 1.4, cap(%x).\n", bcap);
- 		return 0;
-@@ -956,7 +961,7 @@ static void anx7625_dp_stop(struct anx7625_data *ctx)
- 	dev_dbg(dev, "notify downstream enter into standby\n");
- 	/* Downstream monitor enter into standby mode */
- 	data = 2;
--	ret |= anx7625_aux_dpcd_trans(ctx, DP_AUX_NATIVE_WRITE, 0x000600, 1, &data);
-+	ret |= anx7625_aux_trans(ctx, DP_AUX_NATIVE_WRITE, 0x000600, 1, &data);
- 	if (ret < 0)
- 		DRM_DEV_ERROR(dev, "IO error : mute video fail\n");
- 
-@@ -1655,11 +1660,56 @@ static int anx7625_parse_dt(struct device *dev,
- 	return 0;
- }
- 
-+static bool anx7625_of_panel_on_aux_bus(struct device *dev)
-+{
-+	struct device_node *bus, *panel;
-+
-+	bus = of_get_child_by_name(dev->of_node, "aux-bus");
-+	if (!bus)
-+		return false;
-+
-+	panel = of_get_child_by_name(bus, "panel");
-+	of_node_put(bus);
-+	if (!panel)
-+		return false;
-+	of_node_put(panel);
-+
-+	return true;
-+}
-+
- static inline struct anx7625_data *bridge_to_anx7625(struct drm_bridge *bridge)
- {
- 	return container_of(bridge, struct anx7625_data, bridge);
- }
- 
-+static ssize_t anx7625_aux_transfer(struct drm_dp_aux *aux,
-+                                    struct drm_dp_aux_msg *msg)
-+{
-+	struct anx7625_data *ctx = container_of(aux, struct anx7625_data, aux);
-+	struct device *dev = &ctx->client->dev;
-+	u8 request = msg->request & ~DP_AUX_I2C_MOT;
-+	int ret = 0;
-+
-+	pm_runtime_get_sync(dev);
-+	msg->reply = 0;
-+	switch (request) {
-+	case DP_AUX_NATIVE_WRITE:
-+	case DP_AUX_I2C_WRITE:
-+	case DP_AUX_NATIVE_READ:
-+	case DP_AUX_I2C_READ:
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+	if (!ret)
-+		ret = anx7625_aux_trans(ctx, msg->request, msg->address,
-+					msg->size, msg->buffer);
-+	pm_runtime_mark_last_busy(dev);
-+	pm_runtime_put_autosuspend(dev);
-+
-+	return ret;
-+}
-+
- static struct edid *anx7625_get_edid(struct anx7625_data *ctx)
- {
- 	struct device *dev = &ctx->client->dev;
-@@ -2066,6 +2116,13 @@ static int anx7625_bridge_attach(struct drm_bridge *bridge,
- 		return -ENODEV;
- 	}
- 
-+	ctx->aux.drm_dev = bridge->dev;
-+	err = drm_dp_aux_register(&ctx->aux);
-+	if (err) {
-+		dev_err(dev, "failed to register aux channel: %d\n", err);
-+		return err;
-+	}
-+
- 	if (ctx->pdata.panel_bridge) {
- 		err = drm_bridge_attach(bridge->encoder,
- 					ctx->pdata.panel_bridge,
-@@ -2079,6 +2136,13 @@ static int anx7625_bridge_attach(struct drm_bridge *bridge,
- 	return 0;
- }
- 
-+static void anx7625_bridge_detach(struct drm_bridge *bridge)
-+{
-+	struct anx7625_data *ctx = bridge_to_anx7625(bridge);
-+
-+	drm_dp_aux_unregister(&ctx->aux);
-+}
-+
- static enum drm_mode_status
- anx7625_bridge_mode_valid(struct drm_bridge *bridge,
- 			  const struct drm_display_info *info,
-@@ -2344,6 +2408,7 @@ static struct edid *anx7625_bridge_get_edid(struct drm_bridge *bridge,
- 
- static const struct drm_bridge_funcs anx7625_bridge_funcs = {
- 	.attach = anx7625_bridge_attach,
-+	.detach = anx7625_bridge_detach,
- 	.mode_valid = anx7625_bridge_mode_valid,
- 	.mode_set = anx7625_bridge_mode_set,
- 	.atomic_check = anx7625_bridge_atomic_check,
-@@ -2501,6 +2566,12 @@ static const struct dev_pm_ops anx7625_pm_ops = {
- 			   anx7625_runtime_pm_resume, NULL)
- };
- 
-+static void anx7625_runtime_disable(void *data)
-+{
-+	pm_runtime_dont_use_autosuspend(data);
-+	pm_runtime_disable(data);
-+}
-+
- static int anx7625_i2c_probe(struct i2c_client *client,
- 			     const struct i2c_device_id *id)
- {
-@@ -2523,13 +2594,6 @@ static int anx7625_i2c_probe(struct i2c_client *client,
- 
- 	pdata = &platform->pdata;
- 
--	ret = anx7625_parse_dt(dev, pdata);
--	if (ret) {
--		if (ret != -EPROBE_DEFER)
--			DRM_DEV_ERROR(dev, "fail to parse DT : %d\n", ret);
--		return ret;
--	}
--
- 	platform->client = client;
- 	i2c_set_clientdata(client, platform);
- 
-@@ -2577,6 +2641,19 @@ static int anx7625_i2c_probe(struct i2c_client *client,
- 		}
- 	}
- 
-+	platform->aux.name = "anx7625-aux";
-+	platform->aux.dev = dev;
-+	platform->aux.transfer = anx7625_aux_transfer;
-+	drm_dp_aux_init(&platform->aux);
-+	devm_of_dp_aux_populate_ep_devices(&platform->aux);
-+
-+	ret = anx7625_parse_dt(dev, pdata);
-+	if (ret) {
-+		if (ret != -EPROBE_DEFER)
-+			DRM_DEV_ERROR(dev, "fail to parse DT : %d\n", ret);
-+		return ret;
-+	}
-+
- 	if (anx7625_register_i2c_dummy_clients(platform, client) != 0) {
- 		ret = -ENOMEM;
- 		DRM_DEV_ERROR(dev, "fail to reserve I2C bus.\n");
-@@ -2584,6 +2661,12 @@ static int anx7625_i2c_probe(struct i2c_client *client,
- 	}
- 
- 	pm_runtime_enable(dev);
-+	pm_runtime_set_autosuspend_delay(dev, 1000);
-+	pm_runtime_use_autosuspend(dev);
-+	pm_suspend_ignore_children(dev, true);
-+	ret = devm_add_action_or_reset(dev, anx7625_runtime_disable, dev);
-+	if (ret)
-+		return ret;
- 
- 	if (!platform->pdata.low_power_mode) {
- 		anx7625_disable_pd_protocol(platform);
-@@ -2596,7 +2679,8 @@ static int anx7625_i2c_probe(struct i2c_client *client,
- 
- 	platform->bridge.funcs = &anx7625_bridge_funcs;
- 	platform->bridge.of_node = client->dev.of_node;
--	platform->bridge.ops = DRM_BRIDGE_OP_EDID;
-+	if (!anx7625_of_panel_on_aux_bus(&client->dev))
-+		platform->bridge.ops |= DRM_BRIDGE_OP_EDID;
- 	if (!platform->pdata.panel_bridge)
- 		platform->bridge.ops |= DRM_BRIDGE_OP_HPD |
- 					DRM_BRIDGE_OP_DETECT;
-diff --git a/drivers/gpu/drm/bridge/analogix/anx7625.h b/drivers/gpu/drm/bridge/analogix/anx7625.h
-index 64a8ab56529404..edbbfe410a56e8 100644
---- a/drivers/gpu/drm/bridge/analogix/anx7625.h
-+++ b/drivers/gpu/drm/bridge/analogix/anx7625.h
-@@ -472,6 +472,7 @@ struct anx7625_data {
- 	u8 bridge_attached;
- 	struct drm_connector *connector;
- 	struct mipi_dsi_device *dsi;
-+	struct drm_dp_aux aux;
- };
- 
- #endif  /* __ANX7625_H__ */
+> +       unsigned long flags;
+
+Same Q as per v2. Why do you need this?
+
+Yes, you did the first step to the answer, but I want you to go deeper
+and tell me why you need the spin_lock_irqsave() variant.
+
+> +       spin_lock_irqsave(&host->lock, flags);
+> +       if (likely(host->sdio_irq_cnt > 0)) {
+> +               disable_irq_nosync(host->eint_irq);
+> +               disable_irq_wake(host->eint_irq);
+> +               host->sdio_irq_cnt--;
+> +       }
+> +       spin_unlock_irqrestore(&host->lock, flags);
+> +
+> +       sdio_signal_irq(mmc);
+> +
+> +       return IRQ_HANDLED;
+> +}
+
 -- 
-2.34.1.703.g22d0c6ccf7-goog
-
+With Best Regards,
+Andy Shevchenko
