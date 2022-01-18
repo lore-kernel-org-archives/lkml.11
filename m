@@ -2,202 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77741C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 21:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA73C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 21:20:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349477AbiARVS2 (ORCPT
+        id S1349529AbiARVUo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 16:18:28 -0500
-Received: from mga01.intel.com ([192.55.52.88]:25857 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234887AbiARVS1 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 16:18:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642540707; x=1674076707;
-  h=message-id:date:subject:to:cc:references:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=W3a7hL9N9KBWr3ArgNsbGkJAnN9kZKoYILXHfXU3XFc=;
-  b=hyn5LwhWsnKAyqEm1T3IHy+ZkRi8k5ndofh0Up0s60Nu60LCzW9wX2Vl
-   Hv2BoCh3VLLRGEmMMxeCVshZxChv44//rn7Kmqf2lmXJNgNiCnckNHv/0
-   Hd7GdDVw7jeR+JZv6KflzAQfM8Le6oRSKVQqcld4ATa8ynsQuTQoJHfu4
-   87W1y0+oDPCs508yLQw/F7FffuaZp9I/3+uZ/vv9hwGYxBHFREYEatKjY
-   hAxGTf8qYKEvDgzXQWpX/PwRqExC/c5JKQRNHcsuzFYS9uab8Co2Q6+L1
-   5V+hkmBBReCFMFm5d787UX3vJNEznnbtcLNlAaVjyIhxsFX6XXLUNvYBX
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="269303389"
-X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="269303389"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 13:18:27 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="474900521"
-Received: from orsmsx602.amr.corp.intel.com ([10.22.229.15])
-  by orsmga003.jf.intel.com with ESMTP; 18 Jan 2022 13:18:23 -0800
-Received: from orsmsx601.amr.corp.intel.com (10.22.229.14) by
- ORSMSX602.amr.corp.intel.com (10.22.229.15) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Tue, 18 Jan 2022 13:18:22 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx601.amr.corp.intel.com (10.22.229.14) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20 via Frontend Transport; Tue, 18 Jan 2022 13:18:22 -0800
-Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.44) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Tue, 18 Jan 2022 13:18:22 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=WJ2umz4in0UAc1SQa8oz9yxeYaUJosRokswn7qFsZbLoPe0wnROBEbEIkP4/qgLiRrFUN4wTlAoTfnrUVE75c6TjsSkeSfEnepfWLhdJVvwoHgZVqR60FxxhLSCL8I2htVUb8O1l1HgML3KCNqM1PIK3slmfD0zMByFHKZH+VHCPCjmQrQ4aq8O61cQ2S5X8x43nPAUR78H/f1wE8hLt67TCOaFOMpdT3pGaR+6tFIL8n51m1vWzZ0pXgiFZ3Hq+ihj/2iKbEiohaneX3HzIDem5uBXOxca+szvce/mzMcK/kA7hTL4o3roh/FImwnfz8XAEGayAdJ0j3i/SDeMyeQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=jKILgtBkXABO8omeobelLwd+t1TWFCGsKQuwDDwOetg=;
- b=javROnEqVa3LjJcofykMobV3KMQdYztKGWYdtEWy0S4UAWjiDNVUYZlvefE+MqFlHP0MpWS1b9n9ELNdXXgFbRBOWJ0c++QAnWrqYI6erzSUdWs9uy4RmTfkV/XNEvxNh26nhLf0QgmpiA+xWUdz7BdWD0Zsc26Tf4BrEFs0QgPwNmx5O/A2iWq2bg/r6Fwxh9YKQ1QAJGQ59HOhKadzLnctOf4XKGVv1Kj9X+cBu/0VqyWKsriS+dRKiROPqzbbWdknNXb8lw0rDbyowQcAWvA7U9s2/eGvX4+mIvkqDkflNSraf1+4exLHjT3x1f7sQ2lx5DRM+/SO4wJFgKILAg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from BN0PR11MB5744.namprd11.prod.outlook.com (2603:10b6:408:166::16)
- by CY4PR1101MB2168.namprd11.prod.outlook.com (2603:10b6:910:18::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7; Tue, 18 Jan
- 2022 21:18:20 +0000
-Received: from BN0PR11MB5744.namprd11.prod.outlook.com
- ([fe80::a113:192a:3201:1e0]) by BN0PR11MB5744.namprd11.prod.outlook.com
- ([fe80::a113:192a:3201:1e0%9]) with mapi id 15.20.4909.007; Tue, 18 Jan 2022
- 21:18:20 +0000
-Message-ID: <6e249d49-eb03-e435-697d-8006c308b8ba@intel.com>
-Date:   Tue, 18 Jan 2022 13:18:14 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH 05/25] x86/sgx: Introduce runtime protection bits
-Content-Language: en-US
-To:     Jarkko Sakkinen <jarkko@kernel.org>
-CC:     Nathaniel McCallum <nathaniel@profian.com>,
-        Haitao Huang <haitao.huang@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        <dave.hansen@linux.intel.com>, <tglx@linutronix.de>,
-        <bp@alien8.de>, <mingo@redhat.com>, <linux-sgx@vger.kernel.org>,
-        <x86@kernel.org>, <seanjc@google.com>, <kai.huang@intel.com>,
-        <cathy.zhang@intel.com>, <cedric.xing@intel.com>,
-        <haitao.huang@intel.com>, <mark.shanahan@intel.com>,
-        <hpa@zytor.com>, <linux-kernel@vger.kernel.org>
-References: <op.1fsvkfiwwjvjmi@hhuan26-mobl1.mshome.net>
- <YdzjEzjF0YKn+pZ6@iki.fi> <4195402f-cbf9-bc75-719d-22cea8e36e60@intel.com>
- <Yd9pMq4lUy56B+50@iki.fi> <Yd9qmMx7NO450mzZ@iki.fi>
- <CAHAy0tRi2q+wG+yBttq0FYeK-5wUAoK_=ZCtWsfQf0m8oPc1-w@mail.gmail.com>
- <168fb2c9-de3f-384a-bb17-ab84db2cf533@intel.com> <YeHwzwnfsUcxiNbw@iki.fi>
- <b0e5c1fc-aa6d-4e26-c18b-d93d93c2131a@intel.com> <YeIEKayEUidj0Dlb@iki.fi>
- <YeL7ID70Wg22MGCY@iki.fi>
-From:   Reinette Chatre <reinette.chatre@intel.com>
-In-Reply-To: <YeL7ID70Wg22MGCY@iki.fi>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: MWHPR2201CA0044.namprd22.prod.outlook.com
- (2603:10b6:301:16::18) To BN0PR11MB5744.namprd11.prod.outlook.com
- (2603:10b6:408:166::16)
+        Tue, 18 Jan 2022 16:20:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39496 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234887AbiARVUm (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 16:20:42 -0500
+Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5752EC061574
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 13:20:42 -0800 (PST)
+Received: by mail-pf1-x431.google.com with SMTP id i17so494220pfk.11
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 13:20:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1XFeP6RNPzLCJfqoUd76H+t40KtDQUNh5VVtLJcfmgc=;
+        b=juf7aPxwbqkK8/wuz96AC4A0W28SqhpeNYDqxYbiBbaCuRGzw/TBmB1qm6vp5AD29q
+         lxE9BbV0e1nZzGeJ5Vkz6TuDMKG+2yOvphO7bGYFn3KIe1LD/IqOGMQgQhcdt3RYpdMe
+         mCZD2WHIGDjr2qfKff1r0Mb5+Dj9+kvt3m9fc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=1XFeP6RNPzLCJfqoUd76H+t40KtDQUNh5VVtLJcfmgc=;
+        b=dMq33es5BebKhdGJ5ayslgmtKKFuqbVsrYfsQ/FSAu/rvnxUxTQex2g804tiG1Lb6/
+         yG+ZVxNCW+OfPGg0FJfXqJ1PsDZnHUXK8Q2KOMhNTI5LVaFbmPJD+UjTnSqDK5ePSyOT
+         uVHwkz4583Q382zTPAt9chsEMIjwqC6IsYC+Yr0khmQDzgF/4J0TvE1OzP6Hc/sbhQb9
+         9pzuQbTUUKgy9dsoy4DFlkHZCBZHG/iYH6tC3Lcxt30AxNwlHGLd7I9Gqk3pH3YzyX41
+         AUb60c2MLC9LIygZBRHGujY8sKbCtu8Zj20/APiJkTPoZ4z/sp5wxrBzZHgZIN09Ir6Z
+         ZiUg==
+X-Gm-Message-State: AOAM532oBA3jZfUzaLuK5+6yqbWcKjraH9UG78JrtvWbst5DJ0B2xAEy
+        LbpFwVIFTIaRfdDYbL/xWPk/ie5G6kqCaA==
+X-Google-Smtp-Source: ABdhPJxj+QSfdAHHN0VP1WhOiT2/VnJC+AhAou/jI85HXTaB9Qu4NMHkHAdZM4jHGj/R76eqkD4hrQ==
+X-Received: by 2002:a05:6a00:16c7:b0:4a4:edfe:4625 with SMTP id l7-20020a056a0016c700b004a4edfe4625mr27409471pfc.58.1642540841797;
+        Tue, 18 Jan 2022 13:20:41 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id m14sm12363450pfh.129.2022.01.18.13.20.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Jan 2022 13:20:41 -0800 (PST)
+Date:   Tue, 18 Jan 2022 13:20:40 -0800
+From:   Kees Cook <keescook@chromium.org>
+To:     Jason Gunthorpe <jgg@ziepe.ca>
+Cc:     Jann Horn <jannh@google.com>, Peter Huewe <peterhuewe@gmx.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        linux-integrity@vger.kernel.org,
+        Stefan Berger <stefanb@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
+Subject: Re: [PATCH v2] tpm: vtpm_proxy: Double-check to avoid buffer overflow
+Message-ID: <202201181255.DB5D38F6AA@keescook>
+References: <20220118183650.3386989-1-keescook@chromium.org>
+ <CAG48ez00FFW-n_Pi=+ya1xY5QuB3q2mPr8++scVe3h3ROeF_mg@mail.gmail.com>
+ <20220118193931.GH8034@ziepe.ca>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 16335d59-0a76-473c-fca2-08d9dac80cf8
-X-MS-TrafficTypeDiagnostic: CY4PR1101MB2168:EE_
-X-LD-Processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-X-Microsoft-Antispam-PRVS: <CY4PR1101MB2168C11689FB29A9757B8A86F8589@CY4PR1101MB2168.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: ehz8oeNXSQ7ZruyhBgfMq/ZHLW74LiX0eIRDKfmaantXf5W+tXgVjyeCyMC54lpihThe4aHpcDlYnF9lmqUGGlwezLIZhz/ntMdISgTi+D1NZgoKdDeOaHIsDKhf47J09mmQAdaq453Vfx9aLc3cXnnW+OnfD+uIg2Lk/48Afz8+CbnnNhAcpx+8EFvCL2/Gx6VfCjDOXGmR8hSLLBNzVRCEf4hLFBLcq6i0vJeRRzCKfl5j7s+99QVeTPr4vycJFrSqN4gO26o5HJO+ohcnMn30hrGRyIIMGuF5mCSAO2GWp0oYMz64Qs/KLKLm6E+8MYYgK30gcfYtyH7xCflFegGGCuywtzCB77LVzkxYcwrb40F/iWV6+Tlshm0xNPSdXPhCVO0Lrt1taElqjOKl0tgSb1V5il6kGJxWws2RwybfMv4hE+vZdlUAlnHtQYIdEifry4aDGOoEUEPwG5RzwJqGxR0XzY64A3MfWUwAp5h9RN6rjkMH/lwmRKNOEj2VvCXF6atZE3NoeMbcWTclgksqNYDGFUceXiCvIK2IITwNh8StSUAjgFSPSjE2PJSaxn6k5rx73O7a5W6qFBO4/WbTjlu1rZskqpa8UZ20HTOesJVyilee6mO++8SynKlpRi172wSGCiZp/WeQHzaY3AQH0ODcC/vt7GNOkO8bRZ3AQMOIIUWspqrBnXSHthcT1xRcp/6lGSkdYa+O3bNRNHU718u8BE7EckpP+1j8JGGQd/BwyJg46ktEOb+9DeZpiSmSH6WpaTTbWYL1NgMfs2TQm28bAg1Cuktzi0KjNApGKaqHmOJLHXTBbC7QyP+D
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BN0PR11MB5744.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(31696002)(966005)(316002)(83380400001)(4326008)(36756003)(186003)(54906003)(2906002)(86362001)(31686004)(8676002)(6486002)(508600001)(7416002)(8936002)(6916009)(2616005)(26005)(82960400001)(53546011)(6506007)(5660300002)(44832011)(66556008)(38100700002)(66476007)(6512007)(6666004)(66946007)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?RlIrOGJwaVRUQUR6QmRyZnVPUWR6QTMyYzZhVFFMMjFaTzJ2c3EweGMrWVFv?=
- =?utf-8?B?clE3eUsvVDBxaS9Qb202OWV5UDJoZmN0SEdFd0pOaVFXSkNOamtSSW5FWkpq?=
- =?utf-8?B?RVdsaVV2elBDZUUyU1R1SExaeVVJU0xTa2ZZemF6amx4VkZ0ZU1SZXAwZ3FY?=
- =?utf-8?B?Yzd5S1dKVDdYMHNFcTZpaTJIZWFLcWtxM1NEWGJuRXpTUyt1aU5TNkZsN1RM?=
- =?utf-8?B?dDI4UjJ3bmk0WnpZYTdVYnluN01YMzFNUWdRS0FqSUZ4UWpXaC9EVXlpS09M?=
- =?utf-8?B?ZHpLNVY0elpMR0Jpb3RmZWluNG5XNVgwby9EUkxCRUhpYmJUSWFYN1BEcVlz?=
- =?utf-8?B?NkxwMllRMHkrbk11emlIbDJ0YkNPVkgralpOQ2FscmJ0REQyQkVJMDJOZzFG?=
- =?utf-8?B?MU9nMTlVbCt2V3oxdmdhMFRHckhqYmhXQldaeVR4bFg5NXNoK1FEdDdxS0dR?=
- =?utf-8?B?amJGMEoxOUdzV0grMERsK0xDQTJScFM1M0FjZ1huenIzTnN2Vk9oYUVWTkpS?=
- =?utf-8?B?Ulg1NkxKUDZFNTNPTUdTMXhTUktLYzFpWUhRanJadWtDbDRrNi9uS3dmcFVi?=
- =?utf-8?B?cEVWc2tScTZmOHZVNUd2dXZDVE5iZVBFRnUxNGlUaTAvcnlubUJ1UVJxSFE0?=
- =?utf-8?B?U3VHQXdtMnpkS0txZE93VUlzL3FmaG1nK1AzdmZheWNKV3JPWGZMTWQzNTlW?=
- =?utf-8?B?M2gwV2xnNDlmM1ZXN1VCTFFKSUMwYmhVcFV3aDN1VlA1STFVK01Fekp2OU9L?=
- =?utf-8?B?NUd5UDB2ayttMjRrZTNvQnJ2VUV6QklQMjBkenpOK2MxN08zK3pwTGs0bndO?=
- =?utf-8?B?N1VGSmFPT2dWa2FoUnJpckRHUlRHejNjTkZkL0lDbmJXT2RWN0tBYkJTcThE?=
- =?utf-8?B?T2hsUktBTW1LcW1yVTNoSjFzMHZjVlJlZGx3S21pTWprUitoU2VMUU9yYkpn?=
- =?utf-8?B?bjlkYmhKZ3VPUFV1YWF6LytxM0wxWjhXLzRVVnYzREJSelRnNzBJSmErVGFT?=
- =?utf-8?B?eG1oZmRFV3dZd0JaZGQyZTNHU0dXT2xMNUs5MWI5RlNySTFQeEZCcVcrakxH?=
- =?utf-8?B?SEFhajZyYVY3OVllWkw4TFMvdzFwUFdiejh4dVVwbGRRbDkwSUQzbDQycTQz?=
- =?utf-8?B?Uy90cFhIMWZKVUJkeGhVQTNxOFR0S1ROOVEwRmhZSnR2YUhhdEVpRUxrcGtC?=
- =?utf-8?B?cHpDaXpwK3FUVlJNSEU3MnZERWt2dkRDeko3eGl1QW1YYXo0QVo2L3pGWGwz?=
- =?utf-8?B?M2NRanVaYmZtUnNFejJRY0Vtczh1YWw5ellJNG1LaGx6S3RZYTJqNi90Qk9l?=
- =?utf-8?B?TC82NnlxWWE5bFRwZi9Ib1dUbFlBYmJ2dVBrZHNwcEs5MVdjcDMwbG9OdU5t?=
- =?utf-8?B?VjM5c3UvYlE0QTdMSTcyTThxaEYybk1xUEhHbkt3RHViSjhkU0luWjlVY3dt?=
- =?utf-8?B?UjN2bDQrQjJoSWJGSy80ODdqK0dVNXI2eVpLMllXL1dJK1JMSU51enRDTkpC?=
- =?utf-8?B?SzRMYkJVR0U1d01WOFVnMlZpM1RqSGtmdms4M0dGdTB6cUpFSHhXNXBQRERj?=
- =?utf-8?B?Mlk0TWdvOGZmMEhxMTlvUkFVRUhqeVNpbGhEcmYwblVCUFBDRHk4MUgxbHlL?=
- =?utf-8?B?L3VFdmRCa1FCMGl6WC9tVWx6d3dlV05VVFBGTklQaHVuNTNWTEUycEw0UlYr?=
- =?utf-8?B?Q01iWmhHVXplbHUrOUVDdldicWcvckNjeUpEZlpWQytreWp1T1ZjeEpxZUVS?=
- =?utf-8?B?NlVYanJCNUo0MnphejErTVIwN0NKaE93Si9sZWRoSHRTMTJFdjBlTWxLOTB6?=
- =?utf-8?B?eTl1REczR0k5ZldsOThVSnYyakZvMVMvY2xXRzJIanpJQ0FQanpZNERQamZi?=
- =?utf-8?B?NWh0RVhBaUpDb0gyUkpRdkJEcFZvRzBSNndtS2ZhbWlVSVRMRGNTVmNySUR4?=
- =?utf-8?B?TE1aOEtBbzRNWVJFSXU5c3F2UUZHN1MxV01PejlSRXhWSEtRaXRKOWZGWERh?=
- =?utf-8?B?Y0ZONmVtMytZT1hTbHBMTkpjUElyWGpwNE1NTm9DVkV5RUdrWDZOZ2t5cXRR?=
- =?utf-8?B?WnBOT0pkNkRHN1RzVTNQZjlqekpPc2wraFR6R3VCL3dOL2RudVZKWHZOWFJU?=
- =?utf-8?B?aEVFUVptMG1UWU9TQUR4bHA4YW5JekZsY0grZTdFVHliNzlHR1JMMEM3d3RM?=
- =?utf-8?B?OEV2L2h2MkRMMXkxVFpHb21sQ1dqNElPaFJZN0NPczRjM0hzS2g0d1RYRWx1?=
- =?utf-8?Q?T6TAu/rgqNkQ77/5NDQfgDCAUavM18My6CUpO6f5Cg=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 16335d59-0a76-473c-fca2-08d9dac80cf8
-X-MS-Exchange-CrossTenant-AuthSource: BN0PR11MB5744.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2022 21:18:19.9656
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: e7BqNPQ5kCB8ulDv9nvMiWTFxm4XbBocF3p1a9NCk9PwvCw+eWYyL18eo8n3rElxJbxtqjZPkPnAU/FQzTknFXkWak561iOykO6Z6SWpqXk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1101MB2168
-X-OriginatorOrg: intel.com
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220118193931.GH8034@ziepe.ca>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jarkko,
+On Tue, Jan 18, 2022 at 03:39:31PM -0400, Jason Gunthorpe wrote:
+> On Tue, Jan 18, 2022 at 08:32:43PM +0100, Jann Horn wrote:
+> > On Tue, Jan 18, 2022 at 7:37 PM Kees Cook <keescook@chromium.org> wrote:
+> > > When building with -Warray-bounds, this warning was emitted:
+> > >
+> > > In function 'memset',
+> > >     inlined from 'vtpm_proxy_fops_read' at drivers/char/tpm/tpm_vtpm_proxy.c:102:2:
+> > > ./include/linux/fortify-string.h:43:33: warning: '__builtin_memset' pointer overflow between offset 164 and size [2147483648, 4294967295]
+> > > [-Warray-bounds]
+> > >    43 | #define __underlying_memset     __builtin_memset
+> > >       |                                 ^
+> > 
+> > Can you explain what that compiler warning actually means, and which
+> > compiler it is from? Is this from a 32-bit or a 64-bit architecture?
 
-On 1/15/2022 8:49 AM, Jarkko Sakkinen wrote:
-> On Sat, Jan 15, 2022 at 01:15:53AM +0200, Jarkko Sakkinen wrote:
->>> After running ENCLU[EMODPE] user space uses SGX_IOC_ENCLAVE_MOD_PROTECTIONS
->>
->> OK, great.
->>
->> A minor nit: please call it SGX_IOC_ENCLAVE_MODIFY_PROTECTIONS. 
+This is from ARCH=i386
+
+> > 
+> > It sounds like the compiler (GCC?) is hallucinating a codepath on
+
+Yes, GCC 11.2.
+
+> > which "len" is guaranteed to be >=2147483648, right? Why is it doing
+> > that? Is this some kinda side effect from the fortify code?
+
+Right; I don't know what triggered it. I assume the "count" comparison.
+The warning is generated with or without CONFIG_FORTIFY_SOURCE. It is
+from adding -Warray-bounds. This is one of the last places in the kernel
+where a warning is being thrown for this option, and it has found a lot
+of real bugs, so Gustavo and I have been working to get the build
+warning-clean so we can enable it globally.
+
+> I agree, this looks bogus, or at least the commit message neeeds alot
+> more explaining.
 > 
-> I'm not confident after looking through the test case and ioctl
-> about EMODPE support but I do not want disturb this anymore. Bunch
-> of things have been nailed and I'm now running the code, which is
-> great.
+> static int vtpm_proxy_tpm_op_send(struct tpm_chip *chip, u8 *buf, size_t count)
 > 
-> The obviously wrong implementation choice in this ioctl is that
-> it is multi-function. It should be just split it into two ioctls:
-> sgx_restrict_page_permissions and sgx_extend_page_permissions.
-
-Sure, I can move it to two ioctls.
-
-To keep the naming consistent, what do you think of:
-SGX_IOC_ENCLAVE_RESTRICT_PERMISSIONS
-SGX_IOC_ENCLAVE_RELAX_PERMISSIONS
-
-Please refer to message below as motivation for the "relax" term:
-https://lore.kernel.org/lkml/24447a03-139a-c7e0-9ad5-34e2019c4df5@intel.com/
-
+>         if (count > sizeof(proxy_dev->buffer))
+>             [...]
+>         proxy_dev->req_len = count;
 > 
-> They are conceptually different flows and I'm also basing this on earlier
-> discussion in this mailing list from which I conclude that it is also
-> consensus to not have such ioctls.
-> 
-> Might sound clanky but it is much easier to comprehend what is going
-> on "in the blackbox" by doing that split.
+> Not clear how req_len can be larger than sizeof(buffer)?
 
-Reinette
+Given the current code, I agree: it's not possible.
+
+As for the cause of the warning, my assumption is that since the compiler
+only has visibility into vtpm_proxy_fops_read(), and sees size_t len set
+from ((struct proxy_dev *)filp->private_data)->req_len, and it performs
+range checking perhaps triggered by the "count" comparison:
+
+
+static ssize_t vtpm_proxy_fops_read(struct file *filp, char __user *buf,
+                                    size_t count, loff_t *off)
+{
+        struct proxy_dev *proxy_dev = filp->private_data;
+        size_t len;
+	...
+        len = proxy_dev->req_len;
+
+        if (count < len) {
+		...
+                return -EIO;
+        }
+
+        rc = copy_to_user(buf, proxy_dev->buffer, len);
+        memset(proxy_dev->buffer, 0, len);
+
+
+I haven't been able to reproduce the specific cause of why GCC decided to
+do the bounds checking, but it's not an unreasonable thing to check for,
+just for robustness.
+
+-- 
+Kees Cook
