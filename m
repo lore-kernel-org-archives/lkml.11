@@ -2,98 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB618C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:21:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24660C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:22:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347161AbiARRVd (ORCPT
+        id S1347174AbiARRWj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 12:21:33 -0500
-Received: from mga07.intel.com ([134.134.136.100]:39099 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347151AbiARRVc (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 12:21:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642526492; x=1674062492;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=QHTl9o5Gs3pPX65V4raS2341N/gKD8noQB/ZI9pdSX8=;
-  b=kMMZt0S0o9xLiP5lx6YIVO/tKxdiIEwjBVpEPxQKKLjYHlCQwitZT6J+
-   ysFF6+iPlq3lVsXXhQXxIsSsA9u+qAHiT5IrCbXPxuYi4q3WQvaGGl7yP
-   7WDNWvHE0FtiFdeLkr3Ox5cnsrnshJ82V1l7kaOqbZeO5EXPr3HtKp32i
-   HXq9BVb9mRL/kKk5pQvBwyFKGgT7AjDxXfIysDaunRhBLT1+DQGoO4Wlb
-   eOz8c22x31dfeUciVCATEsqMyMqOP2+AoQXh86bl8hfAOhnTgRP3F2NS0
-   ftWJmi2omn9061HTO5370/TgJtg/pbJxl+iVu80lAh3WHvAdk+A+IqnO7
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="308205930"
-X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="308205930"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 09:20:04 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="477060502"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 18 Jan 2022 09:20:03 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n9s9K-000Cmq-D0; Tue, 18 Jan 2022 17:20:02 +0000
-Date:   Wed, 19 Jan 2022 01:19:36 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Jiri Slaby <jslaby@suse.cz>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [jirislaby:devel 10/31] drivers/tty/serial/sunzilog.c:103:13:
- warning: 'sunzilog_putchar' used but never defined
-Message-ID: <202201190151.92tNhDTm-lkp@intel.com>
+        Tue, 18 Jan 2022 12:22:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40750 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232878AbiARRWh (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 12:22:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C719C061574;
+        Tue, 18 Jan 2022 09:22:37 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1B806149C;
+        Tue, 18 Jan 2022 17:22:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 824F7C340E0;
+        Tue, 18 Jan 2022 17:22:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642526556;
+        bh=nprtLpXrRfvglwbXoOGOQ6/KtgrFZDOqeMJxXlz0s0A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=TK4R4ujoiynCj4SK6WpD8pNaaMAAg1E7afe4kJAjp/SwXXskZVB7P7pfm42MyyhU5
+         zIR+LqYy9RKz7cG08fXze2SfdT9cnp9J2oz2wPB9mCyUUg7L7QCaPn//bArAzOupZ1
+         OLCNvKWWAJg3oRcBLCSgxFBP9D4uGmY8SNKv0aGbNen/jPdgpWVoHUe5ETbT3IHm7P
+         SHe4/F0ZYGmohxfI7SiUlH/oSQDAnnz+tuvYj7uVFwBYtOxUqiSgwtUbgnryk+P/ct
+         9FUdHcNrkvGhrezFy1ZTRL7bOQ5eF7jhOQA90iMfVUwGWu7kTRNDmszkU+QVa/L+R8
+         4oAq7e+qRmxFw==
+Date:   Tue, 18 Jan 2022 17:22:29 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Ariel D'Alessandro <ariel.dalessandro@collabora.com>
+Cc:     alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, Xiubo.Lee@gmail.com,
+        bcousson@baylibre.com, festevam@gmail.com,
+        kuninori.morimoto.gx@renesas.com, lgirdwood@gmail.com,
+        michael@amarulasolutions.com, nicoleotsuka@gmail.com,
+        perex@perex.cz, robh+dt@kernel.org, shengjiu.wang@gmail.com,
+        tiwai@suse.com, tony@atomide.com
+Subject: Re: [PATCH v2 2/5] dt-bindings: tlv320aic31xx: Define PLL clock
+ inputs
+Message-ID: <Yeb3VVmrUDIYw3AK@sirena.org.uk>
+References: <20220117132109.283365-1-ariel.dalessandro@collabora.com>
+ <20220117132109.283365-3-ariel.dalessandro@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="tabkMTr0FaHh+1SV"
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220117132109.283365-3-ariel.dalessandro@collabora.com>
+X-Cookie: Do YOU have redeeming social value?
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git devel
-head:   0ecc0cdeaabd6b08ef3ec6dfaf724139031c00b8
-commit: 2258e16ea4fe67f9700294b439b7aa1669aef643 [10/31] serial: make uart_console_write->putchar's character a char
-config: sparc-allyesconfig (https://download.01.org/0day-ci/archive/20220119/202201190151.92tNhDTm-lkp@intel.com/config)
-compiler: sparc64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?id=2258e16ea4fe67f9700294b439b7aa1669aef643
-        git remote add jirislaby https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git
-        git fetch --no-tags jirislaby devel
-        git checkout 2258e16ea4fe67f9700294b439b7aa1669aef643
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=sparc SHELL=/bin/bash drivers/tty/serial/
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+--tabkMTr0FaHh+1SV
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-All warnings (new ones prefixed by >>):
+On Mon, Jan 17, 2022 at 10:21:06AM -0300, Ariel D'Alessandro wrote:
+> Add constants for the different PLL clock inputs in tlv320aic31xx.
 
-   drivers/tty/serial/sunzilog.c:1128:28: error: conflicting types for 'sunzilog_putchar'; have 'void(struct uart_port *, char)'
-    1128 | static void __maybe_unused sunzilog_putchar(struct uart_port *port, char ch)
-         |                            ^~~~~~~~~~~~~~~~
-   drivers/tty/serial/sunzilog.c:103:13: note: previous declaration of 'sunzilog_putchar' with type 'void(struct uart_port *, int)'
-     103 | static void sunzilog_putchar(struct uart_port *port, int ch);
-         |             ^~~~~~~~~~~~~~~~
->> drivers/tty/serial/sunzilog.c:103:13: warning: 'sunzilog_putchar' used but never defined
+Please submit patches using subject lines reflecting the style for the
+subsystem, this makes it easier for people to identify relevant patches.
+Look at what existing commits in the area you're changing are doing and
+make sure your subject lines visually resemble what they're doing.
+There's no need to resubmit to fix this alone.
 
+--tabkMTr0FaHh+1SV
+Content-Type: application/pgp-signature; name="signature.asc"
 
-vim +/sunzilog_putchar +103 drivers/tty/serial/sunzilog.c
+-----BEGIN PGP SIGNATURE-----
 
-^1da177e4c3f41 drivers/serial/sunzilog.c Linus Torvalds 2005-04-16  102  
-6d45a1aed34b0c drivers/serial/sunzilog.c Jason Wessel   2010-05-20 @103  static void sunzilog_putchar(struct uart_port *port, int ch);
-6d45a1aed34b0c drivers/serial/sunzilog.c Jason Wessel   2010-05-20  104  
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmHm91QACgkQJNaLcl1U
+h9Culwf/RPr3IjTPjy4XtWKgvBrp1Pai0Yj0+dMs5dFSjw/0kFwL+B1+1VUoq3vI
+h4UkHtRogVAXjQ+ciJgSGz6NRlSjg6rJbuZ3DcYse48EWDrbZj8y1MNwI4Y1AIkm
+QjXhSubuj/ahL+jWDJD3R4hXmdP3HrJJehztN73R1/chIwJDmJAXg1zSgU2NBsXy
+DXKQRc4meJcv8Poq9gtebfbz2prqrfbBc+GyJsPYPjMVwvC8JSJA0GYGJJG9vmj2
+OvRKjjRymO4WEawTzpCydcMlPtnZjUwmPl2u/TE9JamAxFxJC5CCaeybLOOET8kp
+Pww0euG+OUvlDiGuAyJ4du3StSJ5Mg==
+=v5Cq
+-----END PGP SIGNATURE-----
 
-:::::: The code at line 103 was first introduced by commit
-:::::: 6d45a1aed34b0cd7b298967eb9cb72b77afcb33b sparc,sunzilog: Add console polling support for sunzilog serial driver
-
-:::::: TO: Jason Wessel <jason.wessel@windriver.com>
-:::::: CC: Jason Wessel <jason.wessel@windriver.com>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+--tabkMTr0FaHh+1SV--
