@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF6FC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:26:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF48AC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:26:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244525AbiARC0d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:26:33 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38594 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244620AbiARCY3 (ORCPT
+        id S245238AbiARC0o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:26:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57422 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245237AbiARCXV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:24:29 -0500
+        Mon, 17 Jan 2022 21:23:21 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28939C061786;
+        Mon, 17 Jan 2022 18:23:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id DBD05B8123A;
-        Tue, 18 Jan 2022 02:24:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E70B7C36AF4;
-        Tue, 18 Jan 2022 02:24:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8AAD360ABB;
+        Tue, 18 Jan 2022 02:23:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6724C36AF5;
+        Tue, 18 Jan 2022 02:23:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472665;
-        bh=Wz1PAbR8+iIe/jPfTcBbjPHkLNB0RxFEi0fK8+Aossk=;
+        s=k20201202; t=1642472593;
+        bh=y1BrdKWyVxffW81kGbIO98I+Zu2GchAttOjh6y8BlKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=efLhCs86g7JVqdrXXFUWBNP5Yh4Lb+WPajhwTFz29Lei+w3vUpLaL9+fI2+TP+zkS
-         +SxlzKlh9zQcOq4DqiQAV5JG1f3o8g5EFrXD9gSVBML0lZga4ouZXhor/36rJFuPUX
-         gGtMGsS0cqTh+vyi4aDezuPlpOqcsDTe+m8e9YVYxMECsxoOlujzYNSeswH6BxYpJ1
-         WLtkvcvp/sg1MSO0JdDmV2951+A6BBxnyudHX5SHC4QP6+AxFxdrBP+4zbIsy15Ak/
-         qSvyGlXMeF497PYU77eKiBrvm6isI9rfuijBxVtwxF0ZYV0ZOOMRXEU2an0BozzvAp
-         owWHDHnA1yl1Q==
+        b=ITS7+JPKDCBJT2zQoNRejnJJns7zEAU5E4jJU4ubrT8zF8PLjUOAbW7NdmlFmnlCo
+         peZPy+9UFlat9Sv/a9CLC8rJTL0kobc7zRCZDN6u6u5Rv8NNQkiT7ymsLmbk9mM7vd
+         AXfVCyXFynXoVbBHfIckqS5ES/wWRqDCjZhUwwbsmpU54Mro6oQ7gZs28paKisYEsQ
+         U0f+htq/cwPq8klQ69WHH7NR5eFmEAJwqcW3nz2aLTBKsSKJ/lkVJOU6h/nY0Cn10e
+         r/IUEeqsPKU4D7wTfwo+KKZ2qVBR0/ySaAOz/BirZq8/+GimQecbyMcF9zAdbXrQvg
+         K5vW69X1lwoKA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Neal Liu <neal_liu@aspeedtech.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, stern@rowland.harvard.edu,
-        linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.16 092/217] usb: uhci: add aspeed ast2600 uhci support
-Date:   Mon, 17 Jan 2022 21:17:35 -0500
-Message-Id: <20220118021940.1942199-92-sashal@kernel.org>
+Cc:     Danielle Ratson <danieller@nvidia.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, petrm@nvidia.com,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 063/217] mlxsw: pci: Add shutdown method in PCI driver
+Date:   Mon, 17 Jan 2022 21:17:06 -0500
+Message-Id: <20220118021940.1942199-63-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -49,34 +54,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neal Liu <neal_liu@aspeedtech.com>
+From: Danielle Ratson <danieller@nvidia.com>
 
-[ Upstream commit 554abfe2eadec97d12c71d4a69da1518478f69eb ]
+[ Upstream commit c1020d3cf4752f61a6a413f632ea2ce2370e150d ]
 
-Enable ast2600 uhci quirks.
+On an arm64 platform with the Spectrum ASIC, after loading and executing
+a new kernel via kexec, the following trace [1] is observed. This seems
+to be caused by the fact that the device is not properly shutdown before
+executing the new kernel.
 
-Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-Link: https://lore.kernel.org/r/20211126100021.2331024-1-neal_liu@aspeedtech.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix this by implementing a shutdown method which mirrors the remove
+method, as recommended by the kexec maintainer [2][3].
+
+[1]
+BUG: Bad page state in process devlink pfn:22f73d
+page:fffffe00089dcf40 refcount:-1 mapcount:0 mapping:0000000000000000 index:0x0
+flags: 0x2ffff00000000000()
+raw: 2ffff00000000000 0000000000000000 ffffffff089d0201 0000000000000000
+raw: 0000000000000000 0000000000000000 ffffffffffffffff 0000000000000000
+page dumped because: nonzero _refcount
+Modules linked in:
+CPU: 1 PID: 16346 Comm: devlink Tainted: G B 5.8.0-rc6-custom-273020-gac6b365b1bf5 #44
+Hardware name: Marvell Armada 7040 TX4810M (DT)
+Call trace:
+ dump_backtrace+0x0/0x1d0
+ show_stack+0x1c/0x28
+ dump_stack+0xbc/0x118
+ bad_page+0xcc/0xf8
+ check_free_page_bad+0x80/0x88
+ __free_pages_ok+0x3f8/0x418
+ __free_pages+0x38/0x60
+ kmem_freepages+0x200/0x2a8
+ slab_destroy+0x28/0x68
+ slabs_destroy+0x60/0x90
+ ___cache_free+0x1b4/0x358
+ kfree+0xc0/0x1d0
+ skb_free_head+0x2c/0x38
+ skb_release_data+0x110/0x1a0
+ skb_release_all+0x2c/0x38
+ consume_skb+0x38/0x130
+ __dev_kfree_skb_any+0x44/0x50
+ mlxsw_pci_rdq_fini+0x8c/0xb0
+ mlxsw_pci_queue_fini.isra.0+0x28/0x58
+ mlxsw_pci_queue_group_fini+0x58/0x88
+ mlxsw_pci_aqs_fini+0x2c/0x60
+ mlxsw_pci_fini+0x34/0x50
+ mlxsw_core_bus_device_unregister+0x104/0x1d0
+ mlxsw_devlink_core_bus_device_reload_down+0x2c/0x48
+ devlink_reload+0x44/0x158
+ devlink_nl_cmd_reload+0x270/0x290
+ genl_rcv_msg+0x188/0x2f0
+ netlink_rcv_skb+0x5c/0x118
+ genl_rcv+0x3c/0x50
+ netlink_unicast+0x1bc/0x278
+ netlink_sendmsg+0x194/0x390
+ __sys_sendto+0xe0/0x158
+ __arm64_sys_sendto+0x2c/0x38
+ el0_svc_common.constprop.0+0x70/0x168
+ do_el0_svc+0x28/0x88
+ el0_sync_handler+0x88/0x190
+ el0_sync+0x140/0x180
+
+[2]
+https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1195432.html
+
+[3]
+https://patchwork.kernel.org/project/linux-scsi/patch/20170212214920.28866-1-anton@ozlabs.org/#20116693
+
+Cc: Eric Biederman <ebiederm@xmission.com>
+Signed-off-by: Danielle Ratson <danieller@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/uhci-platform.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlxsw/pci.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/usb/host/uhci-platform.c b/drivers/usb/host/uhci-platform.c
-index 70dbd95c3f063..be9e9db7cad10 100644
---- a/drivers/usb/host/uhci-platform.c
-+++ b/drivers/usb/host/uhci-platform.c
-@@ -113,7 +113,8 @@ static int uhci_hcd_platform_probe(struct platform_device *pdev)
- 				num_ports);
- 		}
- 		if (of_device_is_compatible(np, "aspeed,ast2400-uhci") ||
--		    of_device_is_compatible(np, "aspeed,ast2500-uhci")) {
-+		    of_device_is_compatible(np, "aspeed,ast2500-uhci") ||
-+		    of_device_is_compatible(np, "aspeed,ast2600-uhci")) {
- 			uhci->is_aspeed = 1;
- 			dev_info(&pdev->dev,
- 				 "Enabled Aspeed implementation workarounds\n");
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+index a15c95a10bae4..cd3331a077bbf 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+@@ -1973,6 +1973,7 @@ int mlxsw_pci_driver_register(struct pci_driver *pci_driver)
+ {
+ 	pci_driver->probe = mlxsw_pci_probe;
+ 	pci_driver->remove = mlxsw_pci_remove;
++	pci_driver->shutdown = mlxsw_pci_remove;
+ 	return pci_register_driver(pci_driver);
+ }
+ EXPORT_SYMBOL(mlxsw_pci_driver_register);
 -- 
 2.34.1
 
