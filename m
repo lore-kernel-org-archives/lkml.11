@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0E35C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:43:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F23B8C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:43:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344553AbiARCne (ORCPT
+        id S1348004AbiARCni (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:43:34 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:47832 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345110AbiARCiT (ORCPT
+        Mon, 17 Jan 2022 21:43:38 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55986 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241070AbiARCid (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:38:19 -0500
+        Mon, 17 Jan 2022 21:38:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D219B81132;
-        Tue, 18 Jan 2022 02:38:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27388C36AE3;
-        Tue, 18 Jan 2022 02:38:16 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D1B8061269;
+        Tue, 18 Jan 2022 02:38:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE44DC36AE3;
+        Tue, 18 Jan 2022 02:38:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473497;
-        bh=VjeGrVWKUxuNF7cBz0+iP8hkmF9ifj/wPGSoiuV5FjM=;
+        s=k20201202; t=1642473511;
+        bh=+2CGRR58hyrC+e0/rwMd7vvHpmue7xOZCLaTjHMreKA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jIcSZV+O7c5G8YPXRtNpGa3ArKtjfCHe2VAMLz2JXfsAMKZ/WCjgEqoOLAo8lX9Wa
-         RCWdlMVcLeA9DvBIctRGaY4Elzfvr40+AD5+jXhRacqvlO31TbUfow4nxCip4ld+nV
-         tid8HX2OvsGxuk2prl4342PyBxuJcI784SFlaVXAvG0VkgQMajzZ3D4G/wmkIGNXtA
-         uIkWxBYLzfJSdpzHirIxXLC/8MaT5W6qo1FyLsr+EvRgeQLXmttJQlRpjZxqDVUvyV
-         80/iLlQXTeaEmSujxFOD4TIk4YmHipn3fNIved4Od2owOS3VrjwNf+QqN/vvO8ZQXo
-         /bTRFRm5IOioA==
+        b=CTqQMdaINpSBKX5WTEaFrZlIpHMqyHVzCKCrcD60oI3Wz2IBKAdnnJDx0pcdeICKg
+         i+avOlVG7HBmoPjGl8vNnbsAOzPjKuAYZ+NOk3XWAUjS/wuTgx1joPETq7LErGh9E1
+         1OICg7RTxZnp2XFXf8LtKjlaXf3dlPUHoHIIG8cm7upIPxMHug2HYAmnT9O5yPDP0d
+         wFeoymbY1V2LFOK42vGlomUFT0aa9ANNuCBrswWtJWVqNookhnSeLxuv94EgmcoTay
+         ksk/SYO6Tn1GgCuig6s1C8IuNO4APaJ7272xmyAy5ZtV0plCURDGEQnJqfJ72REm0f
+         bxhdJrJN5OBHA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Changcheng Deng <deng.changcheng@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, nks@flawful.org,
-        agross@kernel.org, linux-pm@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 137/188] PM: AVS: qcom-cpr: Use div64_ul instead of do_div
-Date:   Mon, 17 Jan 2022 21:31:01 -0500
-Message-Id: <20220118023152.1948105-137-sashal@kernel.org>
+Cc:     Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, johannes.berg@intel.com,
+        mordechay.goodstein@intel.com, emmanuel.grumbach@intel.com,
+        jkosina@suse.cz, ilan.peer@intel.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 142/188] iwlwifi: pcie: make sure prph_info is set when treating wakeup IRQ
+Date:   Mon, 17 Jan 2022 21:31:06 -0500
+Message-Id: <20220118023152.1948105-142-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -52,36 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Changcheng Deng <deng.changcheng@zte.com.cn>
+From: Luca Coelho <luciano.coelho@intel.com>
 
-[ Upstream commit 92c550f9ffd2884bb5def52b5c0485a35e452784 ]
+[ Upstream commit 459fc0f2c6b0f6e280bfa0f230c100c9dfe3a199 ]
 
-do_div() does a 64-by-32 division. Here the divisor is an unsigned long
-which on some platforms is 64 bit wide. So use div64_ul instead of do_div
-to avoid a possible truncation.
+In some rare cases when the HW is in a bad state, we may get this
+interrupt when prph_info is not set yet.  Then we will try to
+dereference it to check the sleep_notif element, which will cause an
+oops.
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211125014311.45942-1-deng.changcheng@zte.com.cn
+Fix that by ignoring the interrupt if prph_info is not set yet.
+
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211219132536.0537aa562313.I183bb336345b9b3da196ba9e596a6f189fbcbd09@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/qcom/cpr.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlwifi/pcie/rx.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/soc/qcom/cpr.c b/drivers/soc/qcom/cpr.c
-index 4ce8e816154f9..84dd93472a252 100644
---- a/drivers/soc/qcom/cpr.c
-+++ b/drivers/soc/qcom/cpr.c
-@@ -1010,7 +1010,7 @@ static int cpr_interpolate(const struct corner *corner, int step_volt,
- 		return corner->uV;
+diff --git a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
+index 8e45eb38304b2..fea89330f692c 100644
+--- a/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
++++ b/drivers/net/wireless/intel/iwlwifi/pcie/rx.c
+@@ -2261,7 +2261,12 @@ irqreturn_t iwl_pcie_irq_msix_handler(int irq, void *dev_id)
+ 		}
+ 	}
  
- 	temp = f_diff * (uV_high - uV_low);
--	do_div(temp, f_high - f_low);
-+	temp = div64_ul(temp, f_high - f_low);
- 
- 	/*
- 	 * max_volt_scale has units of uV/MHz while freq values
+-	if (inta_hw & MSIX_HW_INT_CAUSES_REG_WAKEUP) {
++	/*
++	 * In some rare cases when the HW is in a bad state, we may
++	 * get this interrupt too early, when prph_info is still NULL.
++	 * So make sure that it's not NULL to prevent crashing.
++	 */
++	if (inta_hw & MSIX_HW_INT_CAUSES_REG_WAKEUP && trans_pcie->prph_info) {
+ 		u32 sleep_notif =
+ 			le32_to_cpu(trans_pcie->prph_info->sleep_notif);
+ 		if (sleep_notif == IWL_D3_SLEEP_STATUS_SUSPEND ||
 -- 
 2.34.1
 
