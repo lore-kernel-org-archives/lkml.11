@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39D96C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:49:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3885AC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:52:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349347AbiARCta (ORCPT
+        id S1349556AbiARCtr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:49:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58632 "EHLO
+        Mon, 17 Jan 2022 21:49:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58912 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345785AbiARCcC (ORCPT
+        with ESMTP id S1345577AbiARCbn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:32:02 -0500
+        Mon, 17 Jan 2022 21:31:43 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24622C061574;
-        Mon, 17 Jan 2022 18:31:11 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53900C061771;
+        Mon, 17 Jan 2022 18:29:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D3282B81235;
-        Tue, 18 Jan 2022 02:31:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07862C36AE3;
-        Tue, 18 Jan 2022 02:31:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E9040B8124F;
+        Tue, 18 Jan 2022 02:29:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E44D8C36AEB;
+        Tue, 18 Jan 2022 02:29:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473068;
-        bh=UD6Ht1hPoWlejkDH/Gzpu/erG3jhCpBQYjkRtuiDRoM=;
+        s=k20201202; t=1642472989;
+        bh=h1gG3QeHnOPLatdWZB69RHtn1t68ZwkJIf+iuILpzcA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YY2PPF1YKEL1WvF4w9OqHK/Lz1WYGHSDwlrlbyGBNs7UQI9sMB7j/+iicMgcexGTt
-         trvanExfZ7CGL51fdRsxXf91AnOeIMogVDJ1rd5CuwRV3PwBJRgypS6V9dY4aCpcNr
-         Qbu4yZWST0gxt2go+aqglQ33rrRWsvqA0AlFdRded8mclpE/nGCHP4EsUXIuzLkuB8
-         mtKUWoVTfTAOGriDKynt1VVP4nKX8rFwY8EvAnHEAEncb3vmv7Dd+2Q7BjxkZtq7lF
-         NgZVvxrV1SOsgXgWiG59N3A6cL5I0kghaVWc+FeKEJMX8GcijNLEzvKHGwXJ9Ij33a
-         kB3JMCXGA+UIw==
+        b=lMTKvjnrWk4HKdxX9paYqIbVNQ1atbgpoGLeGykyCA90cxcTB/8FG2qVPIZGBC0/0
+         02FF0llWXY4j4x/9zvq11TZJ2FifebY32IL2fahKQPt69A/E8dB0IW33veo/4vYgta
+         Rtpb1iqImieTKSSot6mZUtAF6KtumACnTJ+Z6QLKRVdJ4UufanSeVQ0rQIyd5tt//5
+         o2TmEOv6R+/U1iBRCA1aRpjQHWOoQRQcLNaY83lFK20z9928mH/EiCSegEgdNAW4ax
+         3l2w7SVbIqPMY5UX6fESoS3/16Ah1rIqTRZrSoDFN32+hz+TsOwiSG+TYHnUBDSqal
+         VdxBBNC4ngdDA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jiri Olsa <jolsa@redhat.com>, Hangbin Liu <haliu@redhat.com>,
-        Jiri Olsa <jolsa@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jussi Maki <joamaki@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, shuah@kernel.org,
-        ast@kernel.org, andrii@kernel.org, yhs@fb.com, sunyucong@gmail.com,
-        sdf@google.com, linux-kselftest@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 199/217] bpf/selftests: Fix namespace mount setup in tc_redirect
-Date:   Mon, 17 Jan 2022 21:19:22 -0500
-Message-Id: <20220118021940.1942199-199-sashal@kernel.org>
+Cc:     Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>, clm@fb.com,
+        linux-btrfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 193/217] btrfs: remove BUG_ON(!eie) in find_parent_nodes
+Date:   Mon, 17 Jan 2022 21:19:16 -0500
+Message-Id: <20220118021940.1942199-193-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -57,63 +53,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiri Olsa <jolsa@redhat.com>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit 5e22dd18626726028a93ff1350a8a71a00fd843d ]
+[ Upstream commit 9f05c09d6baef789726346397438cca4ec43c3ee ]
 
-The tc_redirect umounts /sys in the new namespace, which can be
-mounted as shared and cause global umount. The lazy umount also
-takes down mounted trees under /sys like debugfs, which won't be
-available after sysfs mounts again and could cause fails in other
-tests.
+If we're looking for leafs that point to a data extent we want to record
+the extent items that point at our bytenr.  At this point we have the
+reference and we know for a fact that this leaf should have a reference
+to our bytenr.  However if there's some sort of corruption we may not
+find any references to our leaf, and thus could end up with eie == NULL.
+Replace this BUG_ON() with an ASSERT() and then return -EUCLEAN for the
+mortals.
 
-  # cat /proc/self/mountinfo | grep debugfs
-  34 23 0:7 / /sys/kernel/debug rw,nosuid,nodev,noexec,relatime shared:14 - debugfs debugfs rw
-  # cat /proc/self/mountinfo | grep sysfs
-  23 86 0:22 / /sys rw,nosuid,nodev,noexec,relatime shared:2 - sysfs sysfs rw
-  # mount | grep debugfs
-  debugfs on /sys/kernel/debug type debugfs (rw,nosuid,nodev,noexec,relatime)
-
-  # ./test_progs -t tc_redirect
-  #164 tc_redirect:OK
-  Summary: 1/4 PASSED, 0 SKIPPED, 0 FAILED
-
-  # mount | grep debugfs
-  # cat /proc/self/mountinfo | grep debugfs
-  # cat /proc/self/mountinfo | grep sysfs
-  25 86 0:22 / /sys rw,relatime shared:2 - sysfs sysfs rw
-
-Making the sysfs private under the new namespace so the umount won't
-trigger the global sysfs umount.
-
-Reported-by: Hangbin Liu <haliu@redhat.com>
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Jussi Maki <joamaki@gmail.com>
-Link: https://lore.kernel.org/bpf/20220104121030.138216-1-jolsa@kernel.org
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/bpf/prog_tests/tc_redirect.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ fs/btrfs/backref.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-index 4b18b73df10b6..c2426df58e172 100644
---- a/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-+++ b/tools/testing/selftests/bpf/prog_tests/tc_redirect.c
-@@ -105,6 +105,13 @@ static int setns_by_fd(int nsfd)
- 	if (!ASSERT_OK(err, "unshare"))
- 		return err;
- 
-+	/* Make our /sys mount private, so the following umount won't
-+	 * trigger the global umount in case it's shared.
-+	 */
-+	err = mount("none", "/sys", NULL, MS_PRIVATE, NULL);
-+	if (!ASSERT_OK(err, "remount private /sys"))
-+		return err;
-+
- 	err = umount2("/sys", MNT_DETACH);
- 	if (!ASSERT_OK(err, "umount2 /sys"))
- 		return err;
+diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
+index 6b4b0f105a572..8b090c40daf77 100644
+--- a/fs/btrfs/backref.c
++++ b/fs/btrfs/backref.c
+@@ -1365,10 +1365,18 @@ static int find_parent_nodes(struct btrfs_trans_handle *trans,
+ 				goto out;
+ 			if (!ret && extent_item_pos) {
+ 				/*
+-				 * we've recorded that parent, so we must extend
+-				 * its inode list here
++				 * We've recorded that parent, so we must extend
++				 * its inode list here.
++				 *
++				 * However if there was corruption we may not
++				 * have found an eie, return an error in this
++				 * case.
+ 				 */
+-				BUG_ON(!eie);
++				ASSERT(eie);
++				if (!eie) {
++					ret = -EUCLEAN;
++					goto out;
++				}
+ 				while (eie->next)
+ 					eie = eie->next;
+ 				eie->next = ref->inode_list;
 -- 
 2.34.1
 
