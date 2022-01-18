@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87AA8C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:02:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F48CC4707E
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:02:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352368AbiARC7t (ORCPT
+        id S1352410AbiARC74 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:59:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34510 "EHLO
+        Mon, 17 Jan 2022 21:59:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345250AbiARCrx (ORCPT
+        with ESMTP id S1349225AbiARCrn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:47:53 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79205C094252;
-        Mon, 17 Jan 2022 18:39:20 -0800 (PST)
+        Mon, 17 Jan 2022 21:47:43 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71F0BC09424E;
+        Mon, 17 Jan 2022 18:39:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17A646115F;
-        Tue, 18 Jan 2022 02:39:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D0832C36AEF;
-        Tue, 18 Jan 2022 02:39:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E27D0B81261;
+        Tue, 18 Jan 2022 02:39:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC5DBC36AF3;
+        Tue, 18 Jan 2022 02:39:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473559;
-        bh=+j/hF9KUbkWpVpF0TWD+CJhI+JZR0eec5rq0R+03JEU=;
+        s=k20201202; t=1642473555;
+        bh=KlFSF0j8veL8md7Y4b+Dz13W2sUnpa2l1Ey6l6J/GRo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lzMBmL3CFL/3d8vAn/2AfphcVAk4CIWXgU3CzhDHfF6Dycsx4MXqJ77sMoDuigTKM
-         qzwrt7OQ4p4LFgrdUmYCnnIqde0a7402H9PBL4n6wrgo+CPts+YV0SWO+XoBMPmG66
-         WOLxyj6ST+a8KCzRCRn/5UR4ik4ONi1BYuwdPwSN8AsvjW4kaaZl3G70o5Wn7QPj7s
-         VuwOb/P/5PvbPaxre+NMWsuUQwXBysmw2C5wlVh6cXWaHCd3rHpzW1iCiRjGh5p5JE
-         58mR1MsMHdHvRetvKlYnuhhcUFkHXGF+D9Wkqt7nVM9EteBunDUw4aKnrel5TOSIzk
-         D6qbIKRqH5FqQ==
+        b=aYMPx+Ag9mN72nN70/PNXSxzxzK3cwxhp+WFfYfASPu9+nKECWyzRWqbtsiyHYsZM
+         MbCjPcAdxyt8EKxf3zFK/JsjsSkaL8joPhuPZOIXW4fW4HczcUUeiLGH7oPtTodZvr
+         nyG8Xt0B7s4zAWtPG1R5OcjGo0vvusra+bkyABFSsy//dhJWmpL05rsQVcFMPe065M
+         2NtGcnlS1oiU0ULoY/+Qi6AaD5cfU1DVdMrDmwGLHJyf7ia/iPN8VQarrtuAZLx5Om
+         tTnY3xRM4zSwxEyyD28xk2DtOeSLcnQqfHXJ9/vwjrsjwJ6uuBkwe6ArakL4Z9TnE4
+         W2QqHfVsLcEJg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Joe Thornber <ejt@redhat.com>, Mike Snitzer <snitzer@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, agk@redhat.com,
-        dm-devel@redhat.com
-Subject: [PATCH AUTOSEL 5.15 169/188] dm space map common: add bounds check to sm_ll_lookup_bitmap()
-Date:   Mon, 17 Jan 2022 21:31:33 -0500
-Message-Id: <20220118023152.1948105-169-sashal@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Maxime Bizon <mbizon@freebox.fr>, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 166/188] net: mdio: Demote probed message to debug print
+Date:   Mon, 17 Jan 2022 21:31:30 -0500
+Message-Id: <20220118023152.1948105-166-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -52,35 +54,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joe Thornber <ejt@redhat.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit cba23ac158db7f3cd48a923d6861bee2eb7a2978 ]
+[ Upstream commit 7590fc6f80ac2cbf23e6b42b668bbeded070850b ]
 
-Corrupted metadata could warrant returning error from sm_ll_lookup_bitmap().
+On systems with large numbers of MDIO bus/muxes the message indicating
+that a given MDIO bus has been successfully probed is repeated for as
+many buses we have, which can eat up substantial boot time for no
+reason, demote to a debug print.
 
-Signed-off-by: Joe Thornber <ejt@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Reported-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220103194024.2620-1-f.fainelli@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/persistent-data/dm-space-map-common.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/phy/mdio_bus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/md/persistent-data/dm-space-map-common.c b/drivers/md/persistent-data/dm-space-map-common.c
-index 4a6a2a9b4eb49..bfbfa750e0160 100644
---- a/drivers/md/persistent-data/dm-space-map-common.c
-+++ b/drivers/md/persistent-data/dm-space-map-common.c
-@@ -283,6 +283,11 @@ int sm_ll_lookup_bitmap(struct ll_disk *ll, dm_block_t b, uint32_t *result)
- 	struct disk_index_entry ie_disk;
- 	struct dm_block *blk;
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 6865d9319197f..8dc6e6269c65e 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -591,7 +591,7 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+ 	mdiobus_setup_mdiodev_from_board_info(bus, mdiobus_create_device);
  
-+	if (b >= ll->nr_blocks) {
-+		DMERR_LIMIT("metadata block out of bounds");
-+		return -EINVAL;
-+	}
-+
- 	b = do_div(index, ll->entries_per_block);
- 	r = ll->load_ie(ll, index, &ie_disk);
- 	if (r < 0)
+ 	bus->state = MDIOBUS_REGISTERED;
+-	pr_info("%s: probed\n", bus->name);
++	dev_dbg(&bus->dev, "probed\n");
+ 	return 0;
+ 
+ error:
 -- 
 2.34.1
 
