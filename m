@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 430E7C35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0376C47084
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345792AbiARDCh (ORCPT
+        id S1348356AbiARDCt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:02:37 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:57852 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346659AbiARCtO (ORCPT
+        Mon, 17 Jan 2022 22:02:49 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42956 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344894AbiARCtS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:49:14 -0500
+        Mon, 17 Jan 2022 21:49:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B12A5B8124B;
-        Tue, 18 Jan 2022 02:49:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 450C7C36AEF;
-        Tue, 18 Jan 2022 02:49:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38E226134A;
+        Tue, 18 Jan 2022 02:49:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79FB0C36AE3;
+        Tue, 18 Jan 2022 02:49:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474151;
-        bh=Sh+M3L0lB9KpZ1YUcJstaGMEojTqMlUaXuswNPJ9dYg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Po0v9JmXoitMEyXPOmCNTJ1uB3lcNsotODQVyKBcqVJVPlEFqAmYAx9C6LTjZnmhT
-         lEYDnRFfjUXI9sPiuyc3boKBrc2ATgTMmsDgWO6lhBXxHs1ZI4IabTTsbBEJvu2tb4
-         O4QLodqt2PeJlHFoFwe29lWaxOP9cFLfPthDE8YUDJhEul3ykJnEyKJBMIMc0EKQRE
-         +m8z62FEPYVaRYK7ynL77psculXaRfCRHaJeDBM0zk3Ql6dtbuXgpRC3vv1u969yZn
-         6fmgFfS+B1WJ4YUChsYKzFlGWZV/QSOmTbbTJz9DEDMXaKR0cH/GpfKSYRv4fNIeCU
-         pswOZOz3lZ2nQ==
+        s=k20201202; t=1642474157;
+        bh=42cKnB73ycwsYbytnMtn+m7ZqxOi3VaJu09BCcgAuRU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JCCNcrnERTv9qv6aqBQ2JvOjihd72HgFsRPZKyQHJ9R5jZ/0TmmlLk2PjJr5yNuRv
+         m3YUqZ1wDjW7x/8ZihEyepCLGDU1zneFQ0eaNu4TY64uPXIEQTL2T6vquNWge/r8gi
+         PKeXmPodBmCnJPjIopQvczJk+q9y7zip2NTCdhTkAq4h2ibYwuVT07dfm3xenKNwOz
+         g79ehxQE0SqCsfJgEQTcE6KfMkA7+pE2vVIpLPfwOeSWbAUzIQhKrFpsMAdMlC9oMQ
+         K3Jt6VibBQwovQ7aoJ6nDTMsfBjUvW4cKn9OM2G8ds94PDqTzLbn79c83OuwEIWF/d
+         e/dS5DFeqSu0A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 01/56] Bluetooth: Fix debugfs entry leak in hci_register_dev()
-Date:   Mon, 17 Jan 2022 21:48:13 -0500
-Message-Id: <20220118024908.1953673-1-sashal@kernel.org>
+Cc:     Ben Skeggs <bskeggs@redhat.com>,
+        Diego Viola <diego.viola@gmail.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, lyude@redhat.com,
+        airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        nouveau@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 4.14 04/56] drm/nouveau/pmu/gm200-: avoid touching PMU outside of DEVINIT/PREOS/ACR
+Date:   Mon, 17 Jan 2022 21:48:16 -0500
+Message-Id: <20220118024908.1953673-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
+References: <20220118024908.1953673-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -49,38 +52,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Ben Skeggs <bskeggs@redhat.com>
 
-[ Upstream commit 5a4bb6a8e981d3d0d492aa38412ee80b21033177 ]
+[ Upstream commit 1d2271d2fb85e54bfc9630a6c30ac0feb9ffb983 ]
 
-Fault injection test report debugfs entry leak as follows:
+There have been reports of the WFI timing out on some boards, and a
+patch was proposed to just remove it.  This stuff is rather fragile,
+and I believe the WFI might be needed with our FW prior to GM200.
 
-debugfs: Directory 'hci0' with parent 'bluetooth' already present!
+However, we probably should not be touching PMU during init on GPUs
+where we depend on NVIDIA FW, outside of limited circumstances, so
+this should be a somewhat safer change that achieves the desired
+result.
 
-When register_pm_notifier() failed in hci_register_dev(), the debugfs
-create by debugfs_create_dir() do not removed in the error handing path.
-
-Add the remove debugfs code to fix it.
-
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Reported-by: Diego Viola <diego.viola@gmail.com>
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Link: https://gitlab.freedesktop.org/drm/nouveau/-/merge_requests/10
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ .../gpu/drm/nouveau/nvkm/subdev/pmu/base.c    | 37 +++++++++++--------
+ 1 file changed, 21 insertions(+), 16 deletions(-)
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 1906adfd553ad..687b4d0e4c673 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3183,6 +3183,7 @@ int hci_register_dev(struct hci_dev *hdev)
- 	return id;
+diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
+index ce70a193caa7f..8cf3d1b4662de 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
+@@ -70,20 +70,13 @@ nvkm_pmu_fini(struct nvkm_subdev *subdev, bool suspend)
+ 	return 0;
+ }
  
- err_wqueue:
-+	debugfs_remove_recursive(hdev->debugfs);
- 	destroy_workqueue(hdev->workqueue);
- 	destroy_workqueue(hdev->req_workqueue);
- err:
+-static int
++static void
+ nvkm_pmu_reset(struct nvkm_pmu *pmu)
+ {
+ 	struct nvkm_device *device = pmu->subdev.device;
+ 
+ 	if (!pmu->func->enabled(pmu))
+-		return 0;
+-
+-	/* Inhibit interrupts, and wait for idle. */
+-	nvkm_wr32(device, 0x10a014, 0x0000ffff);
+-	nvkm_msec(device, 2000,
+-		if (!nvkm_rd32(device, 0x10a04c))
+-			break;
+-	);
++		return;
+ 
+ 	/* Reset. */
+ 	if (pmu->func->reset)
+@@ -94,25 +87,37 @@ nvkm_pmu_reset(struct nvkm_pmu *pmu)
+ 		if (!(nvkm_rd32(device, 0x10a10c) & 0x00000006))
+ 			break;
+ 	);
+-
+-	return 0;
+ }
+ 
+ static int
+ nvkm_pmu_preinit(struct nvkm_subdev *subdev)
+ {
+ 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
+-	return nvkm_pmu_reset(pmu);
++	nvkm_pmu_reset(pmu);
++	return 0;
+ }
+ 
+ static int
+ nvkm_pmu_init(struct nvkm_subdev *subdev)
+ {
+ 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
+-	int ret = nvkm_pmu_reset(pmu);
+-	if (ret == 0 && pmu->func->init)
+-		ret = pmu->func->init(pmu);
+-	return ret;
++	struct nvkm_device *device = pmu->subdev.device;
++
++	if (!pmu->func->init)
++		return 0;
++
++	if (pmu->func->enabled(pmu)) {
++		/* Inhibit interrupts, and wait for idle. */
++		nvkm_wr32(device, 0x10a014, 0x0000ffff);
++		nvkm_msec(device, 2000,
++			if (!nvkm_rd32(device, 0x10a04c))
++				break;
++		);
++
++		nvkm_pmu_reset(pmu);
++	}
++
++	return pmu->func->init(pmu);
+ }
+ 
+ static int
 -- 
 2.34.1
 
