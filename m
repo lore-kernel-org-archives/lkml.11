@@ -2,227 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A04C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 08:43:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2745C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 08:44:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344852AbiARInT (ORCPT
+        id S1344832AbiARIoR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 03:43:19 -0500
-Received: from mout.gmx.net ([212.227.15.18]:37319 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1344801AbiARInH (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 03:43:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1642495375;
-        bh=SedghP5JapOAs2pJB1DLV4296xvTjJCK4XoFLMWApjo=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=jw3xsIhxBFYh6g8WtOp9mTKLY6qTDNjIhgPTxeRU/5tzat6rUfDf3NnY3vWjPxJe7
-         k9VGvHOxwPb/iMw3NHvY6N4djbQISurV9Cyo6PsQuR2VCrPsKq731qk+ABq7sabEHK
-         U+MBPZF2uRqxrhI0lis7IgezBDgnzvVgKzSpIguI=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.155.155]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MbAh0-1mcsAJ2F1U-00bYa6; Tue, 18
- Jan 2022 09:42:55 +0100
-Message-ID: <4009cf14-2bb0-a63a-1936-4ac4d757777a@gmx.de>
-Date:   Tue, 18 Jan 2022 09:41:50 +0100
+        Tue, 18 Jan 2022 03:44:17 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:50525 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235174AbiARIoQ (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 03:44:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642495455;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZTb5A3HHYcL7QYMP1DncJCS6Mg4uIaaBO9xs0b1g8Ck=;
+        b=RMUAYXDluKwRBsszpeQQw3LmAqxC76zzjAU1Z6eel2OVMHdDCvjIAijaGgiKbx5mA7g1Yb
+        QfoiAklEOrOq346DEy4KyoJ6u9E8LIx4jJJ74mgm2FgnOUZDUdr6gn814vyw8TAPBTBcHw
+        Zx29QwxLmHEu24iFfBnl+zDI2Z640Cg=
+Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
+ [209.85.128.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-94-WAekAxwIOJKxV9pzX72oQA-1; Tue, 18 Jan 2022 03:44:14 -0500
+X-MC-Unique: WAekAxwIOJKxV9pzX72oQA-1
+Received: by mail-wm1-f71.google.com with SMTP id a3-20020a05600c348300b0034a0dfc86aaso1281559wmq.6
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 00:44:14 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=ZTb5A3HHYcL7QYMP1DncJCS6Mg4uIaaBO9xs0b1g8Ck=;
+        b=5RLy0dZ1M3CWioWdnjDtAgCa9HISSnoL6s5j1MTY/2EOqkWdzG8XVz7KRrCpzQlhpB
+         I8Lh8ygend6ttN+xVSuroHR8nvYX0Pa4bHWs+bnis1v6IDKonV/qzpA4Ot2/gdS4VDWK
+         c0mB1aQD+ywQ44X7Qj+kxJUQTe3aFjEE6x0sLEfVcfq5BcVxdKnzlgKKdTVUQY5gFBJ8
+         YGcJ+rmsSJq9+fAMPR3509TJvlD4Lce32/iC2FXzd+sWr+jJty3bza6QXKRxL/uo3/Fg
+         7aM8GStgxsuQYKvCEPAx4UxXYYxz3Jvz5XiODRRupwG9j5a6b7obZYG8N/cUMgz2IxdK
+         2Jnw==
+X-Gm-Message-State: AOAM531L2ZyewrrNwkvNuuGV/DD9P+T75HV1AKn/LTvBOva0W9rSkyAx
+        /2CflonuYM0TEHTkLnmMO45OXJuJtpp51F9qQJAdevgUOP0gATKQqSEMy5Lb8vvE7rLjb6Mikxr
+        BEUxn3YRXLMaSa0OBPjWpWK5u
+X-Received: by 2002:adf:f287:: with SMTP id k7mr23717210wro.417.1642495453015;
+        Tue, 18 Jan 2022 00:44:13 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwsEzNoEoc0eFP+TA8V5x9IFLr/G4qA07meB3SE7UDlgrs0z3BBio1q/NSa5JHE1ZldCfj0zQ==
+X-Received: by 2002:adf:f287:: with SMTP id k7mr23717186wro.417.1642495452833;
+        Tue, 18 Jan 2022 00:44:12 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id n15sm14269604wrf.79.2022.01.18.00.44.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 18 Jan 2022 00:44:12 -0800 (PST)
+Message-ID: <14380a1b-669f-8f0f-139b-7c89fabd4276@redhat.com>
+Date:   Tue, 18 Jan 2022 09:44:11 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] KVM: avoid warning on s390 in mark_page_dirty
 Content-Language: en-US
-To:     Daniel Vetter <daniel@ffwll.ch>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        "airlied@gmail.com" <airlied@gmail.com>,
-        linux-fbdev@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-References: <YeG8ydoJNWWkGrTb@ls3530>
- <CAKMK7uGdJckdM+fg+576iJXsqzCOUg20etPBMwRLB9U7GcG01Q@mail.gmail.com>
- <c80ed72c-2eb4-16dd-a7ad-57e9dde59ba1@gmx.de>
- <CAKMK7uHVHn9apB6YYbLSwu+adEB2Fqp4FM0z582zf4F-v3_GnQ@mail.gmail.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <CAKMK7uHVHn9apB6YYbLSwu+adEB2Fqp4FM0z582zf4F-v3_GnQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:Vw5Y8Ukxx+E+/vPqCkQYPUnaTtWM1BJ50QjjdAWjvvb1RETIG8u
- hDvvDSSFPXXEMNCEnGEEDVsc5xc8DGNqBYfqRvjsRArdmqnkTRK588TuS93fIMCoYwmyP3c
- fAWFTt0qfAvOPHy3BvuQUx9SoXcS0JQPg15uIM3EcQcOjFAAo3jP9V5v0m8CSveu25G2v1h
- oSNDgsqSz6Iv1o0gy1grA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:W8m+MGP2rXo=:dHowt1gesn8TSdGNPXRQlC
- n0zDMpR079YGvttuGR+F6X5XPwVUVXxgLCny7pZNIfEia/gWG0wGq6nTOosmsSL6A6Uzm5WKv
- xN59Bqr4n9TIsH7rbebwUinIVjouNznl8YUXJGEvZbG45aYKUqqaYJ/nBvGmVDuYF3rs+Skrf
- 5Durjf3wbd9pyLHKHXieE17P2pPPAhdINPeSi+bRdfqZw/xTpepv3veT7dKnWQduG62oXyfYu
- R3KkTNIO+Qi7z/x6Gt444UdWJNZD8FpWM8eIK1RkMQ/c4amtgiWCx3zXX47vAS/BfoCUhkPY9
- WreOy5rAREm8crzuwlOXTsvpbmyupBAWR33Xr4v53Ht9GRGB8elWEms5mbqaiOZmH9HH+XJoN
- 5fDidzCxzmohrKgltrJocx98BMr7/htFVVJDLutp44wWANjG/YNk83BL4M5Ln788jdL+KbsKE
- 5SOcHWXOUwNE0uFFQJfuaYGXYnQKaOM4h7AEjvw9/kxaNWEIjWsrwKTNpwlJqh2XHOChKLMtY
- eqJYmAACgQNfQCBtz9ql0lYVDNBWfuywsGMzYQaeC5HVOeaoNAqUxtXxnS8jJ+RL0w+4K2DqR
- qekQ6DmUFIliXG/zOAd4w+CwfNK83kRnybiY2QiY+c+yjl67S/p8HJ3hB4ngMweTouY2KIU/Q
- r6t7yuIyeQG5lfTYQAThzI7Pc/D2aX3ktPTxWJHSaMUUuvlqLF3n1BekuZ/wjLiIBt4YzImVu
- PeK+jl3uUj5GF/9jwzkkSuJR67wIiovqavhapnxs98wkYyilD4x+1hduZdVAGkxydKVLcpwAf
- dVQLFKCrSJ0jifnhPy0poCZjwYiVJ9rAp+2NRSQoI2AtuJSYyuDuWoHB6Canx8e6D/vwdIE5B
- xdOS+ECZjbjZzRU777uRVQWPwrm3XHiGPQyE9XdAFtnPuuTf/v9X/BprLBktdA8DcPQEUaMz3
- CnzRDU6WPIejj4AQX6SYK7n5GIUXbLmJ01M4qs14ZtHwbAmx3D0Il9sAnat+EqhZ8gJShiq5f
- Rhh42yl+mtfv5ZLoktcRGvoqEkrEw7n0HGTOBhVxt5WyIxOiGxcdoZeAh0DOHEaONvtTWMImm
- RMHKavNxd9NVTY=
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        dwmw2@infradead.org
+Cc:     butterflyhuangxx@gmail.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, seanjc@google.com,
+        Cornelia Huck <cohuck@redhat.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Thomas Huth <thuth@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>
+References: <e9e5521d-21e5-8f6f-902c-17b0516b9839@redhat.com>
+ <20220113122924.740496-1-borntraeger@linux.ibm.com>
+ <eda019b1-8e1d-5d2b-4be4-2725e5814b23@linux.ibm.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <eda019b1-8e1d-5d2b-4be4-2725e5814b23@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Daniel,
-
-On 1/17/22 16:00, Daniel Vetter wrote:
-> On Mon, Jan 17, 2022 at 1:16 PM Helge Deller <deller@gmx.de> wrote:
->> On 1/17/22 11:02, Daniel Vetter wrote:
->>> On Fri, Jan 14, 2022 at 7:18 PM Helge Deller <deller@gmx.de> wrote:
->>>>
->>>> The fbdev layer is orphaned, but seems to need some care.
->>>> So I'd like to step up as new maintainer.
->>>>
->>>> Signed-off-by: Helge Deller <deller@gmx.de>
->>>>
->>>> diff --git a/MAINTAINERS b/MAINTAINERS
->>>> index 5d0cd537803a..ce47dbc467cc 100644
->>>> --- a/MAINTAINERS
->>>> +++ b/MAINTAINERS
->>>> @@ -7583,11 +7583,12 @@ W:      http://floatingpoint.sourceforge.net/=
-emulator/index.html
->>>>  F:     arch/x86/math-emu/
->>>>
->>>>  FRAMEBUFFER LAYER
->>>> -L:     dri-devel@lists.freedesktop.org
->>>> +M:     Helge Deller <deller@gmx.de>
->>>>  L:     linux-fbdev@vger.kernel.org
->>>> -S:     Orphan
->>>
->>> Maybe don't rush maintainer changes in over the w/e without even bothe=
-ring
->>> to get any input from the people who've been maintaining it before.
->>>
->>> Because the status isn't entirely correct, fbdev core code and fbcon a=
-nd
->>> all that has been maintained, but in bugfixes only mode. And there's v=
-ery
->>> solid&important reasons to keep merging these patches through a drm tr=
-ee,
->>> because that's where all the driver development happens, and hence als=
-o
->>> all the testing (e.g. the drm test suite has some fbdev tests - the on=
-ly
->>> automated ones that exist to my knowledge - and we run them in CI). So
->>> moving that into an obscure new tree which isn't even in linux-next ye=
-t is
->>> no good at all.
->>>
->>> Now fbdev driver bugfixes is indeed practically orphaned and I very mu=
-ch
->>> welcome anyone stepping up for that, but the simplest approach there w=
-ould
->>> be to just get drm-misc commit rights and push the oddball bugfix in t=
-here
->>> directly. But also if you want to do your own pull requests to Linus f=
-or
->>> that I don't care and there's really no interference I think, so
->>> whatever floats.
->>>
->>> But any code that is relevant for drm drivers really needs to go in th=
-rough
->>> drm trees, nothing else makes much sense.
->>>
->>> I guess you're first action as newly minted fbdev maintainer is going =
-to be to
->>> clean up the confusion you just created.
+On 1/18/22 09:37, Christian Borntraeger wrote:
+> Am 13.01.22 um 13:29 schrieb Christian Borntraeger:
+>> Avoid warnings on s390 like
+>> [ 1801.980931] CPU: 12 PID: 117600 Comm: kworker/12:0 Tainted: 
+>> G            E     
+>> 5.17.0-20220113.rc0.git0.32ce2abb03cf.300.fc35.s390x+next #1
+>> [ 1801.980938] Workqueue: events irqfd_inject [kvm]
+>> [...]
+>> [ 1801.981057] Call Trace:
+>> [ 1801.981060]  [<000003ff805f0f5c>] mark_page_dirty_in_slot+0xa4/0xb0 
+>> [kvm]
+>> [ 1801.981083]  [<000003ff8060e9fe>] adapter_indicators_set+0xde/0x268 
+>> [kvm]
+>> [ 1801.981104]  [<000003ff80613c24>] set_adapter_int+0x64/0xd8 [kvm]
+>> [ 1801.981124]  [<000003ff805fb9aa>] kvm_set_irq+0xc2/0x130 [kvm]
+>> [ 1801.981144]  [<000003ff805f8d86>] irqfd_inject+0x76/0xa0 [kvm]
+>> [ 1801.981164]  [<0000000175e56906>] process_one_work+0x1fe/0x470
+>> [ 1801.981173]  [<0000000175e570a4>] worker_thread+0x64/0x498
+>> [ 1801.981176]  [<0000000175e5ef2c>] kthread+0x10c/0x110
+>> [ 1801.981180]  [<0000000175de73c8>] __ret_from_fork+0x40/0x58
+>> [ 1801.981185]  [<000000017698440a>] ret_from_fork+0xa/0x40
 >>
->> Most of my machines depend on a working fbdev layer since drm isn't (an=
-d probably
->> -due to technical requirements of DRM- won't be) available for those.
->> So, since the fbdev drivers were marked orphaned, I decided to step up =
-as maintainer.
+>> when writing to a guest from an irqfd worker as long as we do not have
+>> the dirty ring.
 >>
->> I see your point that at least the fbdev core code and fbcon are shared=
- between DRM and fbdev.
->> For me it's really not important to drive any patches through a seperat=
-e tree, so
->> I'd be happy to join the drm-misc tree if you feel it's necessary. (By =
-the way,
->> adding my tree to for-next was on my todo list...)
+>> Signed-off-by: Christian Borntraeger <borntraeger@linux.ibm.com>
+>> ---
+>>   virt/kvm/kvm_main.c | 2 ++
+>>   1 file changed, 2 insertions(+)
 >>
->> What's important for me though is, to keep fbdev actively maintained, w=
-hich means:
->> a) to get fixes which were posted to fbdev mailing list applied if they=
- are useful & correct,
->
-> Yeah it'd be great if we have that, for a while Bart took care of
-> these, but had to step down again. drm-misc is maintained with the dim
-> scrip suite, which comes with docs and bash completion and everything.
-> Good starting pointer is here:
->
-> https://drm.pages.freedesktop.org/maintainer-tools/getting-started.html
->
-> Process for getting commit rights is documented here:
->
-> https://drm.pages.freedesktop.org/maintainer-tools/commit-access.html#dr=
-m-misc
->
-> But there's a pile more. I think once we've set that up and got it
-> going we can look at the bigger items. Some of them are fairly
-> low-hanging fruit, but the past 5+ years absolutely no one bothered to
-> step up and sort them out. Other problem areas in fbdev are extremely
-> hard to fix properly, without only doing minimal security-fixes only
-> support, so fair warning there. I think a good starting point would be
-> to read the patches and discussions for some of the things you've
-> reverted in your tree.
->
-> Anyway I hope this gets you started, and hopefully after a minor
-> detour: Welcome to dri-devel, we're happy to take any help we can get,
-> there's lots to do!
+>> diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
+>> index 504158f0e131..1a682d3e106d 100644
+>> --- a/virt/kvm/kvm_main.c
+>> +++ b/virt/kvm/kvm_main.c
+>> @@ -3163,8 +3163,10 @@ void mark_page_dirty_in_slot(struct kvm *kvm,
+>>   {
+>>       struct kvm_vcpu *vcpu = kvm_get_running_vcpu();
+>> +#ifdef CONFIG_HAVE_KVM_DIRTY_RING
+>>       if (WARN_ON_ONCE(!vcpu) || WARN_ON_ONCE(vcpu->kvm != kvm))
+>>           return;
+>> +#endif
+>>       if (memslot && kvm_slot_dirty_track_enabled(memslot)) {
+>>           unsigned long rel_gfn = gfn - memslot->base_gfn;
+> 
+> Paolo, are you going to pick this for next for the time being?
+> 
 
-Thanks for this info, Daniel!
+Yep, done now.
 
-After reading those docs I've decided not to join dri-devel and keep
-my existing linux-fbdev tree at:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbdev.git
-
-The linux-fbdev is a low-volume mailing list with mostly small bug fixes
-or enhancements for the fbdev drivers. Those patches usually don't affect =
-DRM.
-
-I'm expecting that non-trivial changes which may affect fbdev will be sent=
- to the
-linux-fbdev mailing list, same way as I will of course send any patches wh=
-ich
-might affect DRM to dri-devel.
-
-My git tree is wired up to the for-next pull chain, so in any way we would=
- notice
-merge conflicts (which I believe will not happen).
-
-Cheers,
-
-Helge
-
->> b) to include new drivers (for old hardware) if they arrive (probably h=
-appens rarely but there can be).
->>    I know of at least one driver which won't be able to support DRM....
->>    Of course, if the hardware is capable to support DRM, it should be w=
-ritten for DRM and not applied for fbdev.
->> c) reintroduce the state where fbcon is fast on fbdev. This is importan=
-t for non-DRM machines,
->>    either when run on native hardware or in an emulator.
->> d) not break DRM development
->>
->> Especially regarding c) I complained in [1] and got no feedback. I real=
-ly would like to
->> understand where the actual problems were and what's necessary to fix t=
-hem.
->>
->> Helge
->>
->> [1] https://lore.kernel.org/r/feea8303-2b83-fc36-972c-4fc8ad723bde@gmx.=
-de
->
->
->
+Paolo
 
