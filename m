@@ -2,168 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78CD3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 06:49:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92EF2C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 06:51:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243178AbiARGt4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 01:49:56 -0500
-Received: from mga07.intel.com ([134.134.136.100]:32573 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243988AbiARGtz (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 01:49:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642488595; x=1674024595;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=MRlNCZ1rQT5dO9BKVcb4/9RCOl9rnCzSJkTuTsJPPF4=;
-  b=PQVsXh2SIhAuVOxJ0TruaeSgXsh3Zwdmr+cITJW81QpVgw2FBfcpg1hV
-   wBLpybfmMbr7/6jeQuMt2iVU9sHsWALbX0To1tQWmgmb3pevtQYZWzceT
-   V7atTS9oN80joOgNRVrmQ98sCUp9J3siFaRSP0cQJFxpPVrtJ/E8JHWJ0
-   6IEPty0pGbjzofH1zX38wiyB2EH+MGxVo0XSkWfTTF05L2TE4lcxKEmNR
-   ZeTqW0DI0rQc+T88wY5X7SE0Tpyl5jtq1bCKfuzt/MIdRG+CrimZkreOI
-   SLDyIzuUiqZG3FqLsorobgs/PXlUGd4r33rl68AYZ4r5CYLeo/R6If9nf
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="308090449"
-X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="308090449"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 22:49:55 -0800
-X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="531648675"
-Received: from hyperv-sh4.sh.intel.com ([10.239.48.22])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 22:49:51 -0800
-From:   Chao Gao <chao.gao@intel.com>
-To:     kvm@vger.kernel.org, seanjc@google.com, pbonzini@redhat.com,
-        kevin.tian@intel.com, tglx@linutronix.de
-Cc:     Chao Gao <chao.gao@intel.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, Ingo Molnar <mingo@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>, x86@kernel.org,
-        "H. Peter Anvin" <hpa@zytor.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 4/4] KVM: Do compatibility checks on hotplugged CPUs
-Date:   Tue, 18 Jan 2022 14:44:27 +0800
-Message-Id: <20220118064430.3882337-5-chao.gao@intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220118064430.3882337-1-chao.gao@intel.com>
-References: <20220118064430.3882337-1-chao.gao@intel.com>
+        id S240095AbiARGvV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 01:51:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35594 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229486AbiARGvU (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 01:51:20 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77892C06173E
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 22:51:20 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id n16-20020a17090a091000b001b46196d572so1905120pjn.5
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 22:51:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=werjgtfLJkCP6XvKlLZntqYlamvXmge4L1VauqJtNeY=;
+        b=HagPAQv1Ulr0Q1aSVtQ+foapRIoRkSmyUk8RzGOS12R7ORrBCZqyr2Eju+pun2M/Hy
+         pROOjIXbfjcJSJgJfoCevcoM237fiSrl0rDX+wNPtoECDCA/19JL7xF5di4a2pPy4Hp+
+         DcheRu/b7G7ED2VnFJBP6yENS35azMfzs30oFltv7G6Kfs/9pycaQGwoQ6bSRfybsKPB
+         0PDRoF8mFXZzlgo9B6MsEqYOw+IWmFr7mnL3dOw40b9HYbobDhfVxjo9z+vUaAn4hjJQ
+         lcxcdgvcF042RhSjhFtW/Z0Y0h4qOZyZ+KuPMQ5ne1+Ivra0D+e/x7MG1EhdwrMcFCkl
+         7dgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=werjgtfLJkCP6XvKlLZntqYlamvXmge4L1VauqJtNeY=;
+        b=8FYnPP7h3QNhJ+Hy46VUu4JSRY0yczvOhuNG5lBzbtjFzChX9YztWkHn6zxFe/DG0V
+         0+Rueg1lSuIIZ6YUfDzUhsuUGXEJMebGYm4bhyHl7ddZucpmonhCAzqqAcrVHuiEezXD
+         3SmQShz0ZkgOfJ/XTnD7Vdl2FMWtSFhDXRkxP36r7J+7ET+q0Om97wIMwdTYepQTIuer
+         nLuP7hMlc7IdC5a9rPX55YBpkV3ecuMEdSIscZj4dNZ0Pl/UaBa6DlO46JqTtKo1U44p
+         +gWol/zKW++OH7OytfmOfb7iIo4pibR7dBCmxc6d0Nm5W0qr+ubJNovwgIkdrBpqFVaw
+         JyPw==
+X-Gm-Message-State: AOAM533mGPtNnNmEubgnh66/5WIDcIoLRClOS07gryJKIo2RItWqebh+
+        PRY7bzlVimicLD5lDxjOFkGl9KRDFsYaM2P3+biqtw==
+X-Google-Smtp-Source: ABdhPJzIXVX7xNxzFzJpP0oBNgMI7a26OOC9KLGvwG4LcrItLCbHlO5/9AdqOQ2EnURmF7liRfqyT87olQGAXtDgErI=
+X-Received: by 2002:a17:90b:1095:: with SMTP id gj21mr33900113pjb.121.1642488679407;
+ Mon, 17 Jan 2022 22:51:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211229112551.3483931-1-pumahsu@google.com> <Yd1tUKhyZf26OVNQ@kroah.com>
+ <CAGCq0LZb8nQDvcz=LswWi4qKd-65ys6iPjTKh=46dVtYLDEUVw@mail.gmail.com>
+ <Yd/g/ywBWZG7gF8v@kroah.com> <CAGCq0LZ3i8VaMfRWNKvH_-ms0TgNqKA6f+Zx7M=iz1t_-smW+g@mail.gmail.com>
+ <fe411488-c67c-62ab-4709-98621b9f199b@linux.intel.com>
+In-Reply-To: <fe411488-c67c-62ab-4709-98621b9f199b@linux.intel.com>
+From:   Puma Hsu <pumahsu@google.com>
+Date:   Tue, 18 Jan 2022 14:50:43 +0800
+Message-ID: <CAGCq0LYwrkCe4X77x__CC6qUPaSvRXoO3grKODfP+eSGZfNm7w@mail.gmail.com>
+Subject: Re: [PATCH v3] xhci: re-initialize the HC during resume if HCE was set
+To:     Mathias Nyman <mathias.nyman@linux.intel.com>
+Cc:     Greg KH <gregkh@linuxfoundation.org>, mathias.nyman@intel.com,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Albert Wang <albertccwang@google.com>,
+        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-At init time, KVM does compatibility checks to ensure that all online
-CPUs support hardware virtualization and a common set of features. But
-KVM uses hotplugged CPUs without such compatibility checks. On Intel
-CPUs, this leads to #GP if the hotplugged CPU doesn't support VMX or
-vmentry failure if the hotplugged CPU doesn't meet minimal feature
-requirements.
+On Mon, Jan 17, 2022 at 8:20 PM Mathias Nyman
+<mathias.nyman@linux.intel.com> wrote:
+>
+>
+> >>> This seems like a big hammer for when the host controller throws an
+> >>>> error.  Why is this the only place that it should be checked for?  W=
+hat
+> >>>> caused the error that can now allow it to be fixed?
+> >>>
+> >>> I believe this is not the only place that the host controller may set
+> >>> HCE, the host controller may set HCE anytime it sees an error in my
+> >>> opinion, not only in suspend or resume.
+> >>
+> >> Then where else should it be checked?  Where else will your silicon se=
+t
+> >> this bit as part of the normal operating process?
+> >
+> > We observed this flag while resume in our silicon so far. According to =
+the XHCI
+> > specification 4.24.1, =E2=80=9CSoftware should implement an algorithm f=
+or checking the
+> > HCE flag if the xHC is not responding.=E2=80=9D, so maybe it would be b=
+etter
+> > to implement
+> > a new API to recover host controller whenever the driver side finds no =
+response
+> > from host controller in the future.
+> >
+>
+> As all the code to reset the host during resume already exists, and is we=
+ll tried
+> due to issues in resume being so common, I think it makes sense to add th=
+e HCE case
+> here as well. It's a simple fix that makes the life of users better.
+>
+> That said we shouldn't hide the reason for reset like this.
+> Print a debug message telling about the HCE so that everybody working wit=
+h xHCI
+> can see it and start fixing the rootcause.
 
-Do compatibility checks when onlining a CPU and abort the online process
-if the hotplugged CPU is incompatible with online CPUs.
+I will print a debug message in next patch version.
 
-CPU hotplug is disabled during hardware_enable_all() to prevent the corner
-case as shown below. A hotplugged CPU marks itself online in
-cpu_online_mask (1) and enables interrupt (2) before invoking callbacks
-registered in ONLINE section (3). So, if hardware_enable_all() is invoked
-on another CPU right after (2), then on_each_cpu() in hardware_enable_all()
-invokes hardware_enable_nolock() on the hotplugged CPU before
-kvm_online_cpu() is called. This makes the CPU escape from compatibility
-checks, which is risky.
+> Another HCE check could be added to command timeout code, but just to sho=
+w a
+> warning for now.
+> Reset might not always clear HCE, and we don't want to be stuck in a rese=
+t loop.
+> This check  could be a separate patch
 
-	start_secondary { ...
-		set_cpu_online(smp_processor_id(), true); <- 1
-		...
-		local_irq_enable();  <- 2
-		...
-		cpu_startup_entry(CPUHP_AP_ONLINE_IDLE); <- 3
-	}
+Maybe I can try to make this in the future. Thank you for advising.
 
-Keep compatibility checks at KVM init time. It can help to find
-incompatibility issues earlier and refuse to load arch KVM module
-(e.g., kvm-intel).
-
-Loosen the WARN_ON in kvm_arch_check_processor_compat so that it
-can be invoked from KVM's CPU hotplug callback (i.e., kvm_online_cpu).
-
-Signed-off-by: Chao Gao <chao.gao@intel.com>
----
- arch/x86/kvm/x86.c  | 11 +++++++++--
- virt/kvm/kvm_main.c | 20 +++++++++++++++++++-
- 2 files changed, 28 insertions(+), 3 deletions(-)
-
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 6f3bf78afb29..21bdb5783f71 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -11472,9 +11472,16 @@ void kvm_arch_hardware_unsetup(void)
- 
- int kvm_arch_check_processor_compat(void)
- {
--	struct cpuinfo_x86 *c = &cpu_data(smp_processor_id());
-+	int cpu = smp_processor_id();
-+	struct cpuinfo_x86 *c = &cpu_data(cpu);
- 
--	WARN_ON(!irqs_disabled());
-+	/*
-+	 * Compatibility checks are done when loading KVM or in KVM's CPU
-+	 * hotplug callback. It ensures all online CPUs are compatible to run
-+	 * vCPUs. For other cases, compatibility checks are unnecessary or
-+	 * even problematic. Try to detect improper usages here.
-+	 */
-+	WARN_ON(!irqs_disabled() && cpu_active(cpu));
- 
- 	if (__cr4_reserved_bits(cpu_has, c) !=
- 	    __cr4_reserved_bits(cpu_has, &boot_cpu_data))
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 528741601122..83f87fb1fa0a 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -4858,7 +4858,13 @@ static void hardware_enable_nolock(void *junk)
- 
- static int kvm_online_cpu(unsigned int cpu)
- {
--	int ret = 0;
-+	int ret;
-+
-+	ret = kvm_arch_check_processor_compat();
-+	if (ret) {
-+		pr_warn("kvm: CPU%d is incompatible with online CPUs", cpu);
-+		return ret;
-+	}
- 
- 	raw_spin_lock(&kvm_count_lock);
- 	/*
-@@ -4916,6 +4922,17 @@ static int hardware_enable_all(void)
- {
- 	int r = 0;
- 
-+	/*
-+	 * During onlining a CPU, cpu_online_mask is set before kvm_online_cpu()
-+	 * is called. on_each_cpu() between them includes the CPU. As a result,
-+	 * hardware_enable_nolock() may get invoked before kvm_online_cpu().
-+	 * This would enable hardware virtualization on that cpu without
-+	 * compatibility checks, which can potentially crash system or break
-+	 * running VMs.
-+	 *
-+	 * Disable CPU hotplug to prevent this case from happening.
-+	 */
-+	cpus_read_lock();
- 	raw_spin_lock(&kvm_count_lock);
- 
- 	kvm_usage_count++;
-@@ -4930,6 +4947,7 @@ static int hardware_enable_all(void)
- 	}
- 
- 	raw_spin_unlock(&kvm_count_lock);
-+	cpus_read_unlock();
- 
- 	return r;
- }
--- 
-2.25.1
-
+> -Mathias
