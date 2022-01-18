@@ -2,52 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2425CC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:47:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 844F9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:47:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355175AbiARDrj (ORCPT
+        id S1355153AbiARDrh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:47:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33356 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347192AbiARCkz (ORCPT
+        Mon, 17 Jan 2022 22:47:37 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50064 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347181AbiARCkz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 17 Jan 2022 21:40:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CD0C08C5C1;
-        Mon, 17 Jan 2022 18:36:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9DE6BB8124E;
-        Tue, 18 Jan 2022 02:36:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AE8EC36AF6;
-        Tue, 18 Jan 2022 02:36:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B8D13B811D6;
+        Tue, 18 Jan 2022 02:40:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 841E4C36AEF;
+        Tue, 18 Jan 2022 02:40:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473388;
-        bh=oApYUgwpm7sP2/MB1uTCxP0eGg8ajqHEVrPO6uprhBs=;
+        s=k20201202; t=1642473652;
+        bh=k/Lz/Zo8RSedFrd/Cb57u0V3RMctMpavMVRb8b8/edc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GkcP/gRbphPahqK0mY9WGv7bdyD3QuzbQ+U3cbaOq/aA7XyA4jCbywamJM1LcOjMA
-         oiZ/aCOWdpcB2auof3LK1gPM6US55+loivfXEtp8Sa1QpC5yWMF0aOuAqbVtjjOev6
-         crmDIvns+I7HraBOWMbjPIi4MyNFBJU+7ue9Z4i6lRLyq7BaVNBDyFBHGz87YR+NDa
-         ButnGDgdDcSvWE5tiX4NFACA65laPzlpqU6w9j6vYeA8RQZxJenc66zic/IMMdVW/V
-         dWTcthKYJHs2BXsTpsE89i5cXDG5xRvXZ3Dpgo2L9VSYu4C+71wPkzeCgEowr2RyVu
-         pvrWKqadwBGSA==
+        b=ezn2DdYM0M9srU2XJ8dHOC5UAZ1VipoXDgDOc+Wi6uNDHIRnQGga4PEtR7Ea1zwFh
+         O9aCOCLEo+EX21eCQR6z/T9zuE3T9Zx7Hs42ddrvcTxyZYInatFtK04OugKbDnWir4
+         gsbtMtIoEpwHaed6KNg8QLlqTU0TA+ufi7RqX2EZZMUh/y0pfMidVPc782cuD7H0Re
+         VBDagUW3+etNBTpgKq9OWtjr03KhZYY64ySn3pzXJseqYM5QFyCI1t6BVFkK9pLS0d
+         XHUBVVrLGGmoWWrvzVFgD0iCGX7l28pZpuXBY4lImceaovSElD27oFPF8jUl+qGVAV
+         5hpnfGjjfPh5A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 097/188] net: phy: prefer 1000baseT over 1000baseKX
-Date:   Mon, 17 Jan 2022 21:30:21 -0500
-Message-Id: <20220118023152.1948105-97-sashal@kernel.org>
+Cc:     Wan Jiabing <wanjiabing@vivo.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sasha Levin <sashal@kernel.org>, magnus.damm@gmail.com,
+        linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 012/116] ARM: shmobile: rcar-gen2: Add missing of_node_put()
+Date:   Mon, 17 Jan 2022 21:38:23 -0500
+Message-Id: <20220118024007.1950576-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,56 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+From: Wan Jiabing <wanjiabing@vivo.com>
 
-[ Upstream commit f20f94f7f52c4685c81754f489ffcc72186e8bdb ]
+[ Upstream commit 85744f2d938c5f3cfc44cb6533c157469634da93 ]
 
-The PHY settings table is supposed to be sorted by descending match
-priority - in other words, earlier entries are preferred over later
-entries.
+Fix following coccicheck warning:
+./arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c:156:1-33: Function
+for_each_matching_node_and_match should have of_node_put() before break
+and goto.
 
-The order of 1000baseKX/Full and 1000baseT/Full is such that we
-prefer 1000baseKX/Full over 1000baseT/Full, but 1000baseKX/Full is
-a lot rarer than 1000baseT/Full, and thus is much less likely to
-be preferred.
+Early exits from for_each_matching_node_and_match() should decrement the
+node reference counter.
 
-This causes phylink problems - it means a fixed link specifying a
-speed of 1G and full duplex gets an ethtool linkmode of 1000baseKX/Full
-rather than 1000baseT/Full as would be expected - and since we offer
-userspace a software emulation of a conventional copper PHY, we want
-to offer copper modes in preference to anything else. However, we do
-still want to allow the rarer modes as well.
-
-Hence, let's reorder these two modes to prefer copper.
-
-Tested-by: Tom Lendacky <thomas.lendacky@amd.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reported-by: Florian Fainelli <f.fainelli@gmail.com>
-Link: https://lore.kernel.org/r/E1muvFO-00F6jY-1K@rmk-PC.armlinux.org.uk
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
+Link: https://lore.kernel.org/r/20211018014503.7598-1-wanjiabing@vivo.com
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/phy-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/phy/phy-core.c b/drivers/net/phy/phy-core.c
-index 2870c33b8975d..271fc01f7f7fd 100644
---- a/drivers/net/phy/phy-core.c
-+++ b/drivers/net/phy/phy-core.c
-@@ -162,11 +162,11 @@ static const struct phy_setting settings[] = {
- 	PHY_SETTING(   2500, FULL,   2500baseT_Full		),
- 	PHY_SETTING(   2500, FULL,   2500baseX_Full		),
- 	/* 1G */
--	PHY_SETTING(   1000, FULL,   1000baseKX_Full		),
- 	PHY_SETTING(   1000, FULL,   1000baseT_Full		),
- 	PHY_SETTING(   1000, HALF,   1000baseT_Half		),
- 	PHY_SETTING(   1000, FULL,   1000baseT1_Full		),
- 	PHY_SETTING(   1000, FULL,   1000baseX_Full		),
-+	PHY_SETTING(   1000, FULL,   1000baseKX_Full		),
- 	/* 100M */
- 	PHY_SETTING(    100, FULL,    100baseT_Full		),
- 	PHY_SETTING(    100, FULL,    100baseT1_Full		),
+diff --git a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
+index ee949255ced3f..09ef73b99dd86 100644
+--- a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
++++ b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
+@@ -154,8 +154,10 @@ static int __init rcar_gen2_regulator_quirk(void)
+ 		return -ENODEV;
+ 
+ 	for_each_matching_node_and_match(np, rcar_gen2_quirk_match, &id) {
+-		if (!of_device_is_available(np))
++		if (!of_device_is_available(np)) {
++			of_node_put(np);
+ 			break;
++		}
+ 
+ 		ret = of_property_read_u32(np, "reg", &addr);
+ 		if (ret)	/* Skip invalid entry and continue */
+@@ -164,6 +166,7 @@ static int __init rcar_gen2_regulator_quirk(void)
+ 		quirk = kzalloc(sizeof(*quirk), GFP_KERNEL);
+ 		if (!quirk) {
+ 			ret = -ENOMEM;
++			of_node_put(np);
+ 			goto err_mem;
+ 		}
+ 
 -- 
 2.34.1
 
