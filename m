@@ -2,81 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0171C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 07:42:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D3AC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 07:48:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343509AbiARHl7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 02:41:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47010 "EHLO
+        id S234415AbiARHsO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 02:48:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245675AbiARHly (ORCPT
+        with ESMTP id S229683AbiARHsL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 02:41:54 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D3BAC06161C;
-        Mon, 17 Jan 2022 23:41:54 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 18 Jan 2022 02:48:11 -0500
+Received: from mout-y-111.mailbox.org (mout-y-111.mailbox.org [IPv6:2001:67c:2050:1::465:111])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89924C061574;
+        Mon, 17 Jan 2022 23:48:11 -0800 (PST)
+Received: from smtp202.mailbox.org (smtp202.mailbox.org [IPv6:2001:67c:2050:105:465:1:4:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CAF17B81259;
-        Tue, 18 Jan 2022 07:41:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 829DEC340E7;
-        Tue, 18 Jan 2022 07:41:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642491711;
-        bh=t+hI1YW0i9jZ35nCwHD9ZCKmd5tDavoMIhojnVV/ROg=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=XewTIp2GEF6HYWk9E18NP7Z1Cbg4riZCKlpZul/+OMmO4raGD5DVlUVr+Qw3xx01t
-         XIgIzGfRW6bJp1EPh4WtgW5daPxNUj53Uzk+S7J8XSO32s0ZT+ARMUq49X8PgIOMYt
-         5ouAzIh5vpdDw8PESjdHRudYwdZSC/L0hrdwWqvYIXTR+VNlFB/vpdDa654lKK2J9K
-         GQPtMvKoZ6jZZNSmy/0eCuc8ph19pNHt5whGk3jN/YFq626Dy3E6iQlP4LHbrRlz8Q
-         Ti6HDQSS8bHJf3Sumf3nDBY5tKD6epF1sMWF75OcAedpi2UveDsvSdyWPwVoZHMKEx
-         Z28Ueflfsp8wg==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 6E89EF60794;
-        Tue, 18 Jan 2022 07:41:51 +0000 (UTC)
-Subject: Re: [GIT PULL] remoteproc updates for v5.17
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220117221027.1695011-1-bjorn.andersson@linaro.org>
-References: <20220117221027.1695011-1-bjorn.andersson@linaro.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220117221027.1695011-1-bjorn.andersson@linaro.org>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/remoteproc/linux.git tags/rproc-v5.17
-X-PR-Tracked-Commit-Id: cfcabbb24d5f4e52ce2e7797cbcfacd8fe932fb6
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 46a10fc3a2beddd79dafc3cd800f14bde0844387
-Message-Id: <164249171144.10229.12296458512542955577.pr-tracker-bot@kernel.org>
-Date:   Tue, 18 Jan 2022 07:41:51 +0000
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Julien Massot <julien.massot@iot.bzh>,
-        Hari Nagalla <hnagalla@ti.com>,
-        Luca Weiss <luca.weiss@fairphone.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Mathieu Poirier <mathieu.poirier@linaro.org>,
-        Peng Fan <peng.fan@nxp.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Mark-PK Tsai <mark-pk.tsai@mediatek.com>,
-        Sibi Sankar <sibis@codeaurora.org>,
-        Stephen Boyd <swboyd@chromium.org>
+        by mout-y-111.mailbox.org (Postfix) with ESMTPS id 4JdLVK1jB8zQkJY;
+        Tue, 18 Jan 2022 08:48:09 +0100 (CET)
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sylv.io; s=MBO0001;
+        t=1642492085;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=jdrh7JMMskk1D7DPn1o6UnDg1e908QjhDspXyheNBpE=;
+        b=HA8K9SBBTtJi3LI6KacVw+7w9v3AOesGgibSpBq0fIJzulWfySF8gJuDInz0l1yX5rxKZy
+        Rfqr+B8aHhh6KHFvWdvbmG1p36GN7ok1jOIZY2G5EVpadzykUHv9XZxQyKdZk/lQqJ6Yzi
+        mK3s4/xZMIjWAGKaog+erOJvUxL0Rj6vXecvcnIGphejWhnb66E/dsshDyb6FB8VTGRrDh
+        ACvBJ7iIuqIZtMc/zF2XIZaRlRmaXcL2XCeTAAzjgVQbxyUf4XlM7IsDr3K1yRnWEsPpev
+        XfotI29fe31IUp6xna43PtMRFFMf4f/zNSYZJzyhF7sDclwk8h2tcGsNTI/y3w==
+Message-ID: <b486698dd93e5056db397d5ae0da31b0e82bec88.camel@sylv.io>
+Subject: Re: [PATCH v1 2/4] dt-bindings: hwmon/pmbus: Add vicor,bcm6123 Bus
+ Converter
+From:   sylv <sylv@sylv.io>
+To:     Guenter Roeck <linux@roeck-us.net>, linux-hwmon@vger.kernel.org
+Cc:     Jean Delvare <jdelvare@suse.com>, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Tue, 18 Jan 2022 08:48:01 +0100
+In-Reply-To: <e5ddd3f1-61c9-862d-8973-484c91b7718e@roeck-us.net>
+References: <cover.1642434222.git.sylv@sylv.io>
+         <ba6346942dfed14440e0243a6da510581389fbdd.1642434222.git.sylv@sylv.io>
+         <e5ddd3f1-61c9-862d-8973-484c91b7718e@roeck-us.net>
+Content-Type: text/plain; charset="UTF-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Mon, 17 Jan 2022 16:10:27 -0600:
+On Mon, 2022-01-17 at 09:06 -0800, Guenter Roeck wrote:
+> On 1/17/22 8:12 AM, Marcello Sylvester Bauer wrote:
+> > Add bindings for BCM6123 Bus Converter from Vicor Corporation.
+> > 
+> > Signed-off-by: Marcello Sylvester Bauer <sylv@sylv.io>
+> 
+> Can this be added to trivial devices instead ?
+> 
+> Guenter
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/remoteproc/linux.git tags/rproc-v5.17
+Indeed. Thanks.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/46a10fc3a2beddd79dafc3cd800f14bde0844387
+Marcello
 
-Thank you!
+> 
+> > ---
+> >   .../bindings/hwmon/pmbus/vicor,bcm6123.yaml   | 41 +++++++++++++++++++
+> >   1 file changed, 41 insertions(+)
+> >   create mode 100644 Documentation/devicetree/bindings/hwmon/pmbus/vicor,bcm6123.yaml
+> > 
+> > diff --git a/Documentation/devicetree/bindings/hwmon/pmbus/vicor,bcm6123.yaml b/Documentation/devicetree/bindings/hwmon/pmbus/vicor,bcm6123.yaml
+> > new file mode 100644
+> > index 000000000000..5559d22e00f1
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/hwmon/pmbus/vicor,bcm6123.yaml
+> > @@ -0,0 +1,41 @@
+> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +
+> > +$id: http://devicetree.org/schemas/hwmon/pmbus/vicor,bcm6123.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Vicor Corporation BCM6123 Bus Converter
+> > +
+> > +description: |
+> > +  The BCM6123 is an isolated Fixed-Ratio DC-DC Converter,
+> > +  operating from a 260V to 410V primary bus to deliver an unregulated
+> > +  ratiometric secondary voltage.
+> > +
+> > +  Datasheet: https://www.vicorpower.com/documents/datasheets/ds_BCM6123xD1E5135yzz.pdf
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - vicor,bcm6123
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +
+> > +additionalProperties: false
+> > +
+> > +examples:
+> > +  - |
+> > +    i2c {
+> > +        #address-cells = <1>;
+> > +        #size-cells = <0>;
+> > +
+> > +        bcm6123@5f {
+> > +            compatible = "vicor,bcm6123";
+> > +            reg = <0x5f>;
+> > +        };
+> > +    };
+> > 
+> 
 
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
