@@ -2,198 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BBE6C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:22:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9316C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:22:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242948AbiARNW5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 08:22:57 -0500
-Received: from mga01.intel.com ([192.55.52.88]:23096 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243074AbiARNWo (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 08:22:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642512164; x=1674048164;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references;
-  bh=sOy+oj7x4sTMI5lpkFFnOHPfnLg7BWRRkoBuCyEaorQ=;
-  b=Np55LppTq3hrMiib1ebcFrdgnNG6ARsO+QT8TrGwq2Pd50apOenwWbC9
-   9qM6yJ8n/sk+4uxJY8L6PgjBrq74KH4Lwqyz5VSvbLqEct0JUo1vISQ7d
-   A/mpKy0/WF10OGJqcOK8cAN90lkeJBeZsWB9YQaOP68tbsLzLAKsTAAqa
-   kQs0LpxoU/9XpCsXL8M7o2YKT35dnHxEsuVeuefifDydZYhDNWcEZnRZ6
-   gFkhH2G/sYLL2wrqTg1uiSxvMqb/g0cRNQQ07jEnmHParMyCC/WaKWVne
-   JtEdBrNXkNbLiZiALi/sJ1nJXcXCcKThx6eoS30D5rgA4sF6yWuJ8W6j8
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="269193667"
-X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="269193667"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 05:22:42 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="531791806"
-Received: from chaop.bj.intel.com ([10.240.192.101])
-  by orsmga008.jf.intel.com with ESMTP; 18 Jan 2022 05:22:35 -0800
-From:   Chao Peng <chao.p.peng@linux.intel.com>
-To:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
-        qemu-devel@nongnu.org
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        x86@kernel.org, "H . Peter Anvin" <hpa@zytor.com>,
-        Hugh Dickins <hughd@google.com>,
-        Jeff Layton <jlayton@kernel.org>,
-        "J . Bruce Fields" <bfields@fieldses.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Yu Zhang <yu.c.zhang@linux.intel.com>,
-        Chao Peng <chao.p.peng@linux.intel.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        luto@kernel.org, jun.nakajima@intel.com, dave.hansen@intel.com,
-        ak@linux.intel.com, david@redhat.com
-Subject: [PATCH v4 06/12] KVM: Use kvm_userspace_memory_region_ext
-Date:   Tue, 18 Jan 2022 21:21:15 +0800
-Message-Id: <20220118132121.31388-7-chao.p.peng@linux.intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
-References: <20220118132121.31388-1-chao.p.peng@linux.intel.com>
+        id S243043AbiARNWy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 08:22:54 -0500
+Received: from fanzine2.igalia.com ([213.97.179.56]:50602 "EHLO
+        fanzine2.igalia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242130AbiARNWi (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 08:22:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
+        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
+        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=6iWnYS8XyWG1DmjmjynBSZoQD6FN7rBC0D+KrV9pXxs=; b=gqtGY+8TNLjzSStOy86qX5veBf
+        1umoXON+XEO3cNpFPaODa8bGLsy1lffQqop0bM6TwtPyJMV7Sugdz1DFZnJmOdoCx8cxaZVjPXxpW
+        2g7BZ844a00hvO5h8LJ+Mf8YpBnyYnRGJIWFFJVj0/VFflMgoz4/NhsC8Xufn1S2s9Ad81UBKk0Sc
+        8cQwHgYhngAKne64ksCo7YmNWPcmBiTvvVJjXBI9XY68UG6dB5/nLeWVQJ8aGmll2Kmun4Tcb7Zhp
+        79YLNcSH9Y5UWnLiyLciOs0mTC3Pouo9iwvEKxCZr+8/1fV//UosomEDbPNvruX3b6Sn9kiicfgF2
+        FS1vOYUA==;
+Received: from [179.98.77.138] (helo=[192.168.1.60])
+        by fanzine2.igalia.com with esmtpsa 
+        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
+        id 1n9oRO-000CJp-SN; Tue, 18 Jan 2022 14:22:27 +0100
+Message-ID: <0651945b-ade2-c8b6-9963-df995049fcd6@igalia.com>
+Date:   Tue, 18 Jan 2022 10:22:09 -0300
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH V4] notifier/panic: Introduce panic_notifier_filter
+Content-Language: en-US
+To:     Dave Young <dyoung@redhat.com>
+Cc:     kexec@lists.infradead.org,
+        "open list:X86 ARCHITECTURE (32-BIT AND 64-BIT)" 
+        <linux-kernel@vger.kernel.org>, linux-doc@vger.kernel.org,
+        bhe <bhe@redhat.com>, "Goyal, Vivek" <vgoyal@redhat.com>,
+        stern@rowland.harvard.edu, akpm <akpm@linux-foundation.org>,
+        andriy.shevchenko@linux.intel.com, corbet@lwn.net,
+        halves@canonical.com, kernel@gpiccoli.net
+References: <20220108153451.195121-1-gpiccoli@igalia.com>
+ <16f01572-7d23-9455-ef52-67fc87f73730@igalia.com>
+ <CALu+AoR+GrCpf0gqsx_XYETBGUAfRyP+SPNarK179hT7iQmCqQ@mail.gmail.com>
+From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+In-Reply-To: <CALu+AoR+GrCpf0gqsx_XYETBGUAfRyP+SPNarK179hT7iQmCqQ@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the new extended memslot structure kvm_userspace_memory_region_ext.
-The extended part (private_fd/ private_offset) will be copied from
-userspace only when KVM_MEM_PRIVATE is set. Internally old
-kvm_userspace_memory_region will still be used for places where the
-extended fields are not needed.
+On 17/01/2022 23:31, Dave Young wrote:
+> [...]
+> Hi Guilherme,  thank you for making it a formal patch!  Yes, it is a
+> nice improvement.
+> I'm sorry I did not get time to review the code,  I will leave it to
+> other people to review :)
 
-Signed-off-by: Yu Zhang <yu.c.zhang@linux.intel.com>
-Signed-off-by: Chao Peng <chao.p.peng@linux.intel.com>
----
- arch/x86/kvm/x86.c       | 12 ++++++------
- include/linux/kvm_host.h |  4 ++--
- virt/kvm/kvm_main.c      | 30 ++++++++++++++++++++----------
- 3 files changed, 28 insertions(+), 18 deletions(-)
+Hi Dave, no worries - thanks for your opinion, much appreciated!
+Cheers,
 
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index c194a8cbd25f..7f8d87463391 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -11572,13 +11572,13 @@ void __user * __x86_set_memory_region(struct kvm *kvm, int id, gpa_t gpa,
- 	}
- 
- 	for (i = 0; i < KVM_ADDRESS_SPACE_NUM; i++) {
--		struct kvm_userspace_memory_region m;
-+		struct kvm_userspace_memory_region_ext m;
- 
--		m.slot = id | (i << 16);
--		m.flags = 0;
--		m.guest_phys_addr = gpa;
--		m.userspace_addr = hva;
--		m.memory_size = size;
-+		m.region.slot = id | (i << 16);
-+		m.region.flags = 0;
-+		m.region.guest_phys_addr = gpa;
-+		m.region.userspace_addr = hva;
-+		m.region.memory_size = size;
- 		r = __kvm_set_memory_region(kvm, &m);
- 		if (r < 0)
- 			return ERR_PTR_USR(r);
-diff --git a/include/linux/kvm_host.h b/include/linux/kvm_host.h
-index 5011ac35bc50..26118a45f0bb 100644
---- a/include/linux/kvm_host.h
-+++ b/include/linux/kvm_host.h
-@@ -977,9 +977,9 @@ enum kvm_mr_change {
- };
- 
- int kvm_set_memory_region(struct kvm *kvm,
--			  const struct kvm_userspace_memory_region *mem);
-+		const struct kvm_userspace_memory_region_ext *region_ext);
- int __kvm_set_memory_region(struct kvm *kvm,
--			    const struct kvm_userspace_memory_region *mem);
-+		const struct kvm_userspace_memory_region_ext *region_ext);
- void kvm_arch_free_memslot(struct kvm *kvm, struct kvm_memory_slot *slot);
- void kvm_arch_memslots_updated(struct kvm *kvm, u64 gen);
- int kvm_arch_prepare_memory_region(struct kvm *kvm,
-diff --git a/virt/kvm/kvm_main.c b/virt/kvm/kvm_main.c
-index 168d0ab93c88..ecf94e2548f7 100644
---- a/virt/kvm/kvm_main.c
-+++ b/virt/kvm/kvm_main.c
-@@ -1815,8 +1815,9 @@ static bool kvm_check_memslot_overlap(struct kvm_memslots *slots, int id,
-  * Must be called holding kvm->slots_lock for write.
-  */
- int __kvm_set_memory_region(struct kvm *kvm,
--			    const struct kvm_userspace_memory_region *mem)
-+		const struct kvm_userspace_memory_region_ext *region_ext)
- {
-+	const struct kvm_userspace_memory_region *mem = &region_ext->region;
- 	struct kvm_memory_slot *old, *new;
- 	struct kvm_memslots *slots;
- 	enum kvm_mr_change change;
-@@ -1919,24 +1920,24 @@ int __kvm_set_memory_region(struct kvm *kvm,
- EXPORT_SYMBOL_GPL(__kvm_set_memory_region);
- 
- int kvm_set_memory_region(struct kvm *kvm,
--			  const struct kvm_userspace_memory_region *mem)
-+		const struct kvm_userspace_memory_region_ext *region_ext)
- {
- 	int r;
- 
- 	mutex_lock(&kvm->slots_lock);
--	r = __kvm_set_memory_region(kvm, mem);
-+	r = __kvm_set_memory_region(kvm, region_ext);
- 	mutex_unlock(&kvm->slots_lock);
- 	return r;
- }
- EXPORT_SYMBOL_GPL(kvm_set_memory_region);
- 
- static int kvm_vm_ioctl_set_memory_region(struct kvm *kvm,
--					  struct kvm_userspace_memory_region *mem)
-+			struct kvm_userspace_memory_region_ext *region_ext)
- {
--	if ((u16)mem->slot >= KVM_USER_MEM_SLOTS)
-+	if ((u16)region_ext->region.slot >= KVM_USER_MEM_SLOTS)
- 		return -EINVAL;
- 
--	return kvm_set_memory_region(kvm, mem);
-+	return kvm_set_memory_region(kvm, region_ext);
- }
- 
- #ifndef CONFIG_KVM_GENERIC_DIRTYLOG_READ_PROTECT
-@@ -4482,14 +4483,23 @@ static long kvm_vm_ioctl(struct file *filp,
- 		break;
- 	}
- 	case KVM_SET_USER_MEMORY_REGION: {
--		struct kvm_userspace_memory_region kvm_userspace_mem;
-+		struct kvm_userspace_memory_region_ext region_ext;
- 
- 		r = -EFAULT;
--		if (copy_from_user(&kvm_userspace_mem, argp,
--						sizeof(kvm_userspace_mem)))
-+		if (copy_from_user(&region_ext, argp,
-+				sizeof(struct kvm_userspace_memory_region)))
- 			goto out;
-+		if (region_ext.region.flags & KVM_MEM_PRIVATE) {
-+			int offset = offsetof(
-+				struct kvm_userspace_memory_region_ext,
-+				private_offset);
-+			if (copy_from_user(&region_ext.private_offset,
-+					   argp + offset,
-+					   sizeof(region_ext) - offset))
-+				goto out;
-+		}
- 
--		r = kvm_vm_ioctl_set_memory_region(kvm, &kvm_userspace_mem);
-+		r = kvm_vm_ioctl_set_memory_region(kvm, &region_ext);
- 		break;
- 	}
- 	case KVM_GET_DIRTY_LOG: {
--- 
-2.17.1
 
+Guilherme
