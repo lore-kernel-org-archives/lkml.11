@@ -2,92 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B38FC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:27:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53BC3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:27:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356773AbiARD1i (ORCPT
+        id S1352831AbiARD1d (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:27:38 -0500
-Received: from mout.gmx.net ([212.227.15.19]:38321 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358030AbiARDWB (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:22:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1642476115;
-        bh=5Qq2p5W2JibUj3VnfM9qhlcyuLRttlCtXprUMQmQXP8=;
-        h=X-UI-Sender-Class:Subject:From:To:Cc:Date:In-Reply-To:References;
-        b=bj/v7NoGJ48DIogvAZtggMQL5toQPJz4DkBo9Kxx4UI2CIWHhfKmLzE+SC2lopj5o
-         exNoWCfAzqUMjq9V8/+V9CthAQsmGeJmYQb3WW0c3vRihbqz/A3z3LRlywRWHgzTx7
-         BKZu1tbbL246kOwmQSkURUBuB+a01IS8nfd+ZzYY=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from homer.fritz.box ([185.191.218.34]) by mail.gmx.net (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MowKi-1mWi9l1fH4-00qQA7; Tue, 18
- Jan 2022 04:21:55 +0100
-Message-ID: <0a1c1464e40e4c60687bc715c0b78c9124e456f8.camel@gmx.de>
-Subject: Re: regression: LTP isofs testcase failure - bisection fingers
- "loop: make autoclear operation asynchronous"
-From:   Mike Galbraith <efault@gmx.de>
-To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Cc:     lkml <linux-kernel@vger.kernel.org>
-Date:   Tue, 18 Jan 2022 04:21:54 +0100
-In-Reply-To: <c53285e4-cbd4-5fd0-cbc9-93e2e3d3d88d@I-love.SAKURA.ne.jp>
-References: <4eb771d2b48ee94ba2e3aa8706bce8117d398e80.camel@gmx.de>
-         <c53285e4-cbd4-5fd0-cbc9-93e2e3d3d88d@I-love.SAKURA.ne.jp>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.2 
+        Mon, 17 Jan 2022 22:27:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39106 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349269AbiARDG7 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 22:06:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C3D3C014F34;
+        Mon, 17 Jan 2022 18:49:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 241E161336;
+        Tue, 18 Jan 2022 02:49:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90223C36AF4;
+        Tue, 18 Jan 2022 02:49:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642474142;
+        bh=ybTUdVpSs4tP9fA30UA8SByCPb6Bm5xSjfuBftAAKl0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=CRBRXqP6gBr33YzF5xvfpL9kxaZ5IjdaPl5t0k3V2Lkcz+6flDT4xoJj/madINaFD
+         CZ7HYIlVp05TWCYH4W+j44xW9wQjnyXX2qNYERozI5Ai38AsNqUgcLJQw141d7spl7
+         TMhDFzIvXoFuO/ptfThFCoWsl8IwfMPAKWQuX14QC9xKJF1YemDqz+R8zbhGJvUvOo
+         B5lFV6vWYJmQdiEESCNFdxKq/aOy0Mdt88Zy73S1QEnG70XHBlLsdAAz6MAKGEvOD6
+         kxMrzd1eJ6TYkKPJpkMw5NFXeF+gfT2h6/Zzl1nI/hQYtHa3DQleCbCqEjsjutaTZB
+         AF90kW4mVy4Dg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Lukas Wunner <lukas@wunner.de>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        jirislaby@kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 57/59] serial: pl010: Drop CR register reset on set_termios
+Date:   Mon, 17 Jan 2022 21:46:58 -0500
+Message-Id: <20220118024701.1952911-57-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
+References: <20220118024701.1952911-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:jPTabahKRVhBNOutTVLWwgUTAD/OU6OXKmHOJNdxhKA+/AHqbCY
- 0iAbji0zvSFtTRoscm5OMLXMu+4SGlL8bS45i8c+NuHTDVUscCTqIH562vLAhM6WAGrmNol
- mN4Pid6a/bd038rrM98Ke65Lmn+iS9mRAhY9W9vXi6YwjXpUVJItHBZQsVwcY0m9i7pi344
- shu1+gtNApxxIx3lHNMsA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:cUH10lS9UJs=:xqFcs24r5cIenB9Vwbgz1d
- hWf/3LRZ83ZD4DDOCv2yuR0klkm/dJe/K3LZC/WK6A1XcWBK0nviY9ml3Z8wkT55ciSruOZo/
- R4R+rbF/3tca5tu6r95wXzJK6Ar4Ro8ChvY+Vte+f+UgLjUmipRvEyCoMHzNQaFOL+WyhPgne
- LYcGP8tUata7XNbGkro9nWOQ3emmXjsH6QuQGkgtKrvR7YKarDRPZBC3vUFl3nAEqF9OujgCK
- jTn0YuuYs/TEJ0zIi/hqRfsQgnesuvS16DBU0GP5E8nyiZ0N6jiG1ABPn4mxA1zjlVdszLfcx
- UmZ7/JxL7QAwwnvump88SpBpeAGhLR8YzhR0yKU1YBvt6/ASk6kpwRt4cKak6hqee8O3Soq7q
- 1XIUcNKv8tZ1zgNTzYxPKOO4HpmRkw5LeFKi9WmGm72/tQdtWZ+NxwJ6Ek48HtkJsQ2cCmW77
- I7jYK6VnaCqOqH0EHJjnssUPfQZ6TnBKP837Z+2hD+W6d8gkmgEC8kOYxsGsKlviWjQpg1wJ3
- xg6ZeL+p+Iq9+71IxAQGrVi9muGyO7dFgOMVj3SfFsWPRTSzvjzfjRLAtnT2avGv5Wrm5d2Gn
- QQUd7qmEas71MkeeSYBs+0V68aPAW9H8dUqYHgwAkvO8Gbz+i4c7C7GMqLjoPc7MT8AaqdiVn
- WdrIFKgw9z1wWx2pTvhVKxIDzeWei3Bv+XRq9XswN9/oc+YI+xOIRk6seeY9NTJDabqm5UyHz
- OmUBxjhT5viN5qeSUzrUhWpyJnMfmexJ7lWtx31OSx65c9tAeHEw+sGMMBWSv1PSmagTiZk0l
- wIxYg9nH2IS/GGUC2J4qvPSVkkA9rviCG0l8a6Okh7hZ8kulSIj9CNJSYP4Z3ye1U20kz4TRm
- F29X6ZY2VpQw9dHj/ml+M9vErG6cn5+HvfpfXGqdItFw24B6XY+jGGFSO6qjsTHTf4PTwAZ0b
- 1RzVWQSjSrDdABbUZi9SCe/jCpAQQr/ghjjOOa4wH1OMYTsgDiTdCyxQas2T2PEQZWzFpS1AG
- 0RsQqVflnylC7dVcDc+MWVpkr6UxnBixxoZXyDZnTNPpEgCUshKeoSu7+WlsAx17Vg==
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-01-18 at 06:57 +0900, Tetsuo Handa wrote:
-> On 2022/01/18 0:34, Mike Galbraith wrote:
-> > Greetings,
-> >
-> > LTP's isofs testcase began failing this cycle, and bisected as below,
-> > which a revert then confirmed.=C2=A0 Full testcase output attached.
-> >
->
-> Thanks for reporting.
-> Discussion is continued at https://lkml.kernel.org/r/cdaf1346-2885-f0da-=
-8878-12264bd48348@I-love.SAKURA.ne.jp=C2=A0.
+From: Lukas Wunner <lukas@wunner.de>
 
-FWIW, simply immediately flushing that shiny new rundown_work turned
-LTP's thumb back to upward pointing.
+[ Upstream commit 08a0c6dff91c965e39905cf200d22db989203ccb ]
 
-=2D--
- drivers/block/loop.c |    1 +
- 1 file changed, 1 insertion(+)
+pl010_set_termios() briefly resets the CR register to zero.
 
-=2D-- a/drivers/block/loop.c
-+++ b/drivers/block/loop.c
-@@ -1197,6 +1197,7 @@ static void loop_schedule_rundown(struct
- 	kobject_get(&bdev->bd_device.kobj);
- 	INIT_WORK(&lo->rundown_work, loop_rundown_workfn);
- 	queue_work(system_long_wq, &lo->rundown_work);
-+	flush_work(&lo->rundown_work);
- }
+Where does this register write come from?
 
- static int loop_clr_fd(struct loop_device *lo)
+The PL010 driver's IRQ handler ambauart_int() originally modified the CR
+register without holding the port spinlock.  ambauart_set_termios() also
+modified that register.  To prevent concurrent read-modify-writes by the
+IRQ handler and to prevent transmission while changing baudrate,
+ambauart_set_termios() had to disable interrupts.  That is achieved by
+writing zero to the CR register.
+
+However in 2004 the PL010 driver was amended to acquire the port
+spinlock in the IRQ handler, obviating the need to disable interrupts in
+->set_termios():
+https://git.kernel.org/history/history/c/157c0342e591
+
+That rendered the CR register write obsolete.  Drop it.
+
+Cc: Russell King <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/fcaff16e5b1abb4cc3da5a2879ac13f278b99ed0.1641128728.git.lukas@wunner.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/tty/serial/amba-pl010.c | 3 ---
+ 1 file changed, 3 deletions(-)
+
+diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
+index 2c37d11726aba..13f882e5e7b76 100644
+--- a/drivers/tty/serial/amba-pl010.c
++++ b/drivers/tty/serial/amba-pl010.c
+@@ -452,14 +452,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	if ((termios->c_cflag & CREAD) == 0)
+ 		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
+ 
+-	/* first, disable everything */
+ 	old_cr = readb(uap->port.membase + UART010_CR) & ~UART010_CR_MSIE;
+ 
+ 	if (UART_ENABLE_MS(port, termios->c_cflag))
+ 		old_cr |= UART010_CR_MSIE;
+ 
+-	writel(0, uap->port.membase + UART010_CR);
+-
+ 	/* Set baud rate */
+ 	quot -= 1;
+ 	writel((quot & 0xf00) >> 8, uap->port.membase + UART010_LCRM);
+-- 
+2.34.1
 
