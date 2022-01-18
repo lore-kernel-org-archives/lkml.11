@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CD0FC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:06:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ABC1C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:06:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353852AbiARDEp (ORCPT
+        id S1353889AbiARDEs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:04:45 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58426 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349736AbiARCuK (ORCPT
+        Mon, 17 Jan 2022 22:04:48 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44364 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349849AbiARCuc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:50:10 -0500
+        Mon, 17 Jan 2022 21:50:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97C58B81132;
-        Tue, 18 Jan 2022 02:50:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8684AC36AE3;
-        Tue, 18 Jan 2022 02:50:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5D190612CC;
+        Tue, 18 Jan 2022 02:50:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9A24C36AE3;
+        Tue, 18 Jan 2022 02:50:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474207;
-        bh=hX05DE8qEpcQDsWFeRFg+CgRqppCEqZHdVOmfan5VdQ=;
+        s=k20201202; t=1642474231;
+        bh=iMVmUcIEnhx1/dyD/Ep+9ykJlQn0RTzeVgSkysfS/jI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rqavVZqmmCfFJ5jzljXN3/2sYEMFLTy8YVyv4D0itT89sGhehthCMFS8dsfcHgtxO
-         6xgYB3OdCrRpN/d9DdOsLPOmtcmFiTbwQedTA6UfTa/AG+kk3UNQLnBpe4G5aDC9Dx
-         6HLC6oT6MQwBvpt6oujVKH3Npp6FrZFMparkiNTXmik/m7k/25BJ1rEhfM0PzWb+yK
-         RTxOqKob8WVG2wLQ3ewPacakgrK+h8P1ZUl84JnGlU30wNrNBkOvpVDvjYxxxhYXcV
-         qMEPbMZD21B2emrGo/4LytX977Bxd8BFXOWXgsDQCIK3p6euT25w7AqiOlfmcQyVPO
-         gD7KQpIerUf3g==
+        b=b/8jO2KJqmBGXJDpAKvTLdeFMSLUPyBkoPTUMErXAuRuhtqLzvOyhyP0abukqz0+M
+         rHzEUAHlqjM1SeTumz+AxEm70AUk4ynPfJD3+dYAhdMfL9Mt/eZnOQwWwJMjTh8g8q
+         /ITTaJL8FOM4IYE2qRPuzxxH+H7EaYPS/sVLcF98hGQAnBtNysQU5Omdq1CD8bzWi6
+         KyvmO3Wnp54lvpX8+VsOxhJ8/poI2ssu/MFtvNQA1Tl0dvL1OB310oVmWE6a307zxY
+         Zv56gEaZrz10bic4w0Ndt7k28qR9Dq082ze043wrdW2/zH2zg78aD+0Yx7YVUOHjyi
+         YkFNUa2gkjB2A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Neal Liu <neal_liu@aspeedtech.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, stern@rowland.harvard.edu,
-        linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.14 22/56] usb: uhci: add aspeed ast2600 uhci support
-Date:   Mon, 17 Jan 2022 21:48:34 -0500
-Message-Id: <20220118024908.1953673-22-sashal@kernel.org>
+Cc:     Zhou Qingyang <zhou1615@umn.edu>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
+        mchehab@kernel.org, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 34/56] media: saa7146: hexium_gemini: Fix a NULL pointer dereference in hexium_attach()
+Date:   Mon, 17 Jan 2022 21:48:46 -0500
+Message-Id: <20220118024908.1953673-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
 References: <20220118024908.1953673-1-sashal@kernel.org>
@@ -50,34 +50,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Neal Liu <neal_liu@aspeedtech.com>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit 554abfe2eadec97d12c71d4a69da1518478f69eb ]
+[ Upstream commit 3af86b046933ba513d08399dba0d4d8b50d607d0 ]
 
-Enable ast2600 uhci quirks.
+In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
+a new memory for dev->vv_data. saa7146_vv_release() will be called on
+failure of saa7146_register_device(). There is a dereference of
+dev->vv_data in saa7146_vv_release(), which could lead to a NULL
+pointer dereference on failure of saa7146_vv_init().
 
-Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
-Link: https://lore.kernel.org/r/20211126100021.2331024-1-neal_liu@aspeedtech.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix this bug by adding a check of saa7146_vv_init().
+
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
+
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
+
+Builds with CONFIG_VIDEO_HEXIUM_GEMINI=m show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Link: https://lore.kernel.org/linux-media/20211203154030.111210-1-zhou1615@umn.edu
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/host/uhci-platform.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/media/common/saa7146/saa7146_fops.c | 2 +-
+ drivers/media/pci/saa7146/hexium_gemini.c   | 7 ++++++-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/usb/host/uhci-platform.c b/drivers/usb/host/uhci-platform.c
-index 6cb16d4b22578..4e91f7b21a796 100644
---- a/drivers/usb/host/uhci-platform.c
-+++ b/drivers/usb/host/uhci-platform.c
-@@ -113,7 +113,8 @@ static int uhci_hcd_platform_probe(struct platform_device *pdev)
- 				num_ports);
- 		}
- 		if (of_device_is_compatible(np, "aspeed,ast2400-uhci") ||
--		    of_device_is_compatible(np, "aspeed,ast2500-uhci")) {
-+		    of_device_is_compatible(np, "aspeed,ast2500-uhci") ||
-+		    of_device_is_compatible(np, "aspeed,ast2600-uhci")) {
- 			uhci->is_aspeed = 1;
- 			dev_info(&pdev->dev,
- 				 "Enabled Aspeed implementation workarounds\n");
+diff --git a/drivers/media/common/saa7146/saa7146_fops.c b/drivers/media/common/saa7146/saa7146_fops.c
+index 930d2c94d5d30..2c9365a39270a 100644
+--- a/drivers/media/common/saa7146/saa7146_fops.c
++++ b/drivers/media/common/saa7146/saa7146_fops.c
+@@ -524,7 +524,7 @@ int saa7146_vv_init(struct saa7146_dev* dev, struct saa7146_ext_vv *ext_vv)
+ 		ERR("out of memory. aborting.\n");
+ 		kfree(vv);
+ 		v4l2_ctrl_handler_free(hdl);
+-		return -1;
++		return -ENOMEM;
+ 	}
+ 
+ 	saa7146_video_uops.init(dev,vv);
+diff --git a/drivers/media/pci/saa7146/hexium_gemini.c b/drivers/media/pci/saa7146/hexium_gemini.c
+index a527d86b93a77..7f498aebb4112 100644
+--- a/drivers/media/pci/saa7146/hexium_gemini.c
++++ b/drivers/media/pci/saa7146/hexium_gemini.c
+@@ -296,7 +296,12 @@ static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_d
+ 	hexium_set_input(hexium, 0);
+ 	hexium->cur_input = 0;
+ 
+-	saa7146_vv_init(dev, &vv_data);
++	ret = saa7146_vv_init(dev, &vv_data);
++	if (ret) {
++		i2c_del_adapter(&hexium->i2c_adapter);
++		kfree(hexium);
++		return ret;
++	}
+ 
+ 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
+ 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
 -- 
 2.34.1
 
