@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B610EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:04:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6665FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:04:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353684AbiARDES (ORCPT
+        id S1345312AbiARDEa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:04:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34776 "EHLO
+        Mon, 17 Jan 2022 22:04:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345845AbiARCsz (ORCPT
+        with ESMTP id S1345901AbiARCsk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:48:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2520C061748;
-        Mon, 17 Jan 2022 18:39:38 -0800 (PST)
+        Mon, 17 Jan 2022 21:48:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B5E2C06173E;
+        Mon, 17 Jan 2022 18:39:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9B60AB81243;
-        Tue, 18 Jan 2022 02:39:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F986C36AF4;
-        Tue, 18 Jan 2022 02:39:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DBB52611F1;
+        Tue, 18 Jan 2022 02:39:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DB46C36AF3;
+        Tue, 18 Jan 2022 02:39:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473576;
-        bh=AouQkowWMbLpCiSc9HCHcAG0xZ3v+aO3HmXSlgFIZUU=;
+        s=k20201202; t=1642473570;
+        bh=n7a3E2WcJQekIfeKdS2oq9HUz82e5Ru+YKJv+aqsPn8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QaJdDKyMo2Ev+RHCFtBec7hjb9eyP5OQ2Jph3Y1Bx0vZpzVG1ls0U2Z5OmOQLC+LS
-         4yOKH9H0/rsrJHW4JhQIdn6QdZLGP4iKujm1pxZXcOfC1bahFsRZztWLdoZfGOE+9N
-         HoFGWPzd/l2NHlEUCdpMDmYStbIZemvr8hyeMUWKEcaXQntjasp4xaEZiU9n9Skm4Z
-         nmnFYXpXnRvFX0bUYugGZJwo5aDwrQZBh9LNIZNJwiT6rw1SIrkyr1hqLEs5a8lmnt
-         Eqvh72qxtZXJR4dn2C/CXgeUolSMpKcTDhahKxc3sBYQmxviVq8ClqsSZImMuE+bfT
-         KZf/TAFq75ZxA==
+        b=Nj9oqQGt5drDGIBIyOY0Feb+D5peevdgqrft6yQbshUOIApIK/afe76aUlq5F6b+q
+         HyhW4kqAtqbGQfgYv6HVZo4jdJhIaD4zAJ8E6LG5SpwVvZYz3Hi5G4LRKR1TZFYsU9
+         u0H2/sVFpnAVGRX9HvDXKrANBvSDvVlD0VJxUJh2G6Lkqt1p7BUF/LRsGTK0Dzr7X8
+         7leSeAt5pkJ+luWbRKFUFM+K6JJHP/3Z7AeCNiRnpUxg011BN6PJgNFjRlGxhENbwh
+         7K5Rze8Qr+OA7lI9OJTLmcgdmVINoDMK/n5G7BO1kPNXNkq8SQWSurkHHPmHUH7WAA
+         H53sPD/xlKyiA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        jirislaby@kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 176/188] serial: pl010: Drop CR register reset on set_termios
-Date:   Mon, 17 Jan 2022 21:31:40 -0500
-Message-Id: <20220118023152.1948105-176-sashal@kernel.org>
+Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 172/188] net: phy: marvell: configure RGMII delays for 88E1118
+Date:   Mon, 17 Jan 2022 21:31:36 -0500
+Message-Id: <20220118023152.1948105-172-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -54,56 +54,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 
-[ Upstream commit 08a0c6dff91c965e39905cf200d22db989203ccb ]
+[ Upstream commit f22725c95ececb703c3f741e8f946d23705630b7 ]
 
-pl010_set_termios() briefly resets the CR register to zero.
+Corentin Labbe reports that the SSI 1328 does not work when allowing
+the PHY to operate at gigabit speeds, but does work with the generic
+PHY driver.
 
-Where does this register write come from?
+This appears to be because m88e1118_config_init() writes a fixed value
+to the MSCR register, claiming that this is to enable 1G speeds.
+However, this always sets bits 4 and 5, enabling RGMII transmit and
+receive delays. The suspicion is that the original board this was
+added for required the delays to make 1G speeds work.
 
-The PL010 driver's IRQ handler ambauart_int() originally modified the CR
-register without holding the port spinlock.  ambauart_set_termios() also
-modified that register.  To prevent concurrent read-modify-writes by the
-IRQ handler and to prevent transmission while changing baudrate,
-ambauart_set_termios() had to disable interrupts.  That is achieved by
-writing zero to the CR register.
+Add the necessary configuration for RGMII delays for the 88E1118 to
+bring this into line with the requirements for RGMII support, and thus
+make the SSI 1328 work.
 
-However in 2004 the PL010 driver was amended to acquire the port
-spinlock in the IRQ handler, obviating the need to disable interrupts in
-->set_termios():
-https://git.kernel.org/history/history/c/157c0342e591
+Corentin Labbe has tested this on gemini-ssi1328 and gemini-ns2502.
 
-That rendered the CR register write obsolete.  Drop it.
-
-Cc: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/fcaff16e5b1abb4cc3da5a2879ac13f278b99ed0.1641128728.git.lukas@wunner.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/amba-pl010.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/phy/marvell.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index e744b953ca346..47654073123d6 100644
---- a/drivers/tty/serial/amba-pl010.c
-+++ b/drivers/tty/serial/amba-pl010.c
-@@ -446,14 +446,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if ((termios->c_cflag & CREAD) == 0)
- 		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index 4fcfca4e17021..b02491f7dd957 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -1242,6 +1242,12 @@ static int m88e1118_config_init(struct phy_device *phydev)
+ 	if (err < 0)
+ 		return err;
  
--	/* first, disable everything */
- 	old_cr = readb(uap->port.membase + UART010_CR) & ~UART010_CR_MSIE;
- 
- 	if (UART_ENABLE_MS(port, termios->c_cflag))
- 		old_cr |= UART010_CR_MSIE;
- 
--	writel(0, uap->port.membase + UART010_CR);
--
- 	/* Set baud rate */
- 	quot -= 1;
- 	writel((quot & 0xf00) >> 8, uap->port.membase + UART010_LCRM);
++	if (phy_interface_is_rgmii(phydev)) {
++		err = m88e1121_config_aneg_rgmii_delays(phydev);
++		if (err < 0)
++			return err;
++	}
++
+ 	/* Adjust LED Control */
+ 	if (phydev->dev_flags & MARVELL_PHY_M1118_DNS323_LEDS)
+ 		err = phy_write(phydev, 0x10, 0x1100);
 -- 
 2.34.1
 
