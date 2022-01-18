@@ -2,51 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C53AC3526B
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0711CC3526C
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353049AbiARDA5 (ORCPT
+        id S1352451AbiARDAA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:00:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34848 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346491AbiARCtG (ORCPT
+        Mon, 17 Jan 2022 22:00:00 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:56404 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345210AbiARCrl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:49:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1CEC06175C;
-        Mon, 17 Jan 2022 18:41:18 -0800 (PST)
+        Mon, 17 Jan 2022 21:47:41 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E2CAB81239;
-        Tue, 18 Jan 2022 02:41:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 699D4C36AE3;
-        Tue, 18 Jan 2022 02:41:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4BBAB811CE;
+        Tue, 18 Jan 2022 02:47:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD420C36AEB;
+        Tue, 18 Jan 2022 02:47:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473675;
-        bh=FMHYx2XBoKvpWK72As1cxGEVQ+XWXjh/vSjCyMexVUE=;
+        s=k20201202; t=1642474058;
+        bh=IgOmWKurGb8OpPoy0PJCtd1kBOIPTV6l0o9s3riMki8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BJR4wLhK6QUwNXn5YpSr3wz61iOTSsjd/8wZZiSpKuQCkwZdYezR+5+JgJ2SRhzcj
-         sLyJJF909ljyOAM4Shz3s+KuSkB5faDQn19rOnRe1Ic7WbjIX17MFAlFcqPLCZJmMw
-         Wd5yLQ/K5d3SVNBLDscvfCn7MuFqEXidkBLBRllwoiIojgFD6Mk1VwIG04avAUnmIY
-         E36lcsWjMdiXW4e+Lnsxmt8k89eAOeX9VVQDSOBq0a9mVeYun+aK0rRxJMssrVpSBq
-         QeKlMIgfh7X7W+TzrdLxSZIeZKjL4YQJ8aP4M1tFo6A5DcK2ohMLedfv6JKMOASUq7
-         19mRlaIlVZnlw==
+        b=HD0/za9sITI9ZhZDbqBjvMe1Hzmm1J2MST4gSzdc/U5207F3IJBRvGTzgn7CfYxqZ
+         k44jB5UJ+Bz124i01++a19h7CdE/mQi2tTmOVqlYLxJRJ3Ux96J5XZ6KojDlXWeo7U
+         1olZYH0kf7Exsedozz8Xj8gafEAO+1NEzpo+qwRdCzZTTxewhxr7t/yPAj5svghYxC
+         IMW9MmGIUbP0FiCRc0MW+dz0o91KIYMfuTRkCEuXOlNbMYL8/b+FuIgSkzdy8YkuYF
+         CXTGJlpx1DajpMD6yL4YVJkhZ8sr07PJUwf0o4wqf8UM70LGUSihqa/nWapAcCzxtK
+         I5U2RTszg9exQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        linus.walleij@linaro.org, avolmat@me.com, daniel@thingy.jp,
-        eugen.hristev@microchip.com, nathan@kernel.org,
-        romain.perier@gmail.com, linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 021/116] ARM: imx: rename DEBUG_IMX21_IMX27_UART to DEBUG_IMX27_UART
-Date:   Mon, 17 Jan 2022 21:38:32 -0500
-Message-Id: <20220118024007.1950576-21-sashal@kernel.org>
+Cc:     Zhou Qingyang <zhou1615@umn.edu>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
+        mchehab@kernel.org, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 18/59] media: saa7146: hexium_orion: Fix a NULL pointer dereference in hexium_attach()
+Date:   Mon, 17 Jan 2022 21:46:19 -0500
+Message-Id: <20220118024701.1952911-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
+In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
+References: <20220118024701.1952911-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,119 +51,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit b0100bce4ff82ec1ccd3c1f3d339fd2df6a81784 ]
+[ Upstream commit 348df8035301dd212e3cc2860efe4c86cb0d3303 ]
 
-Since commit 4b563a066611 ("ARM: imx: Remove imx21 support"), the config
-DEBUG_IMX21_IMX27_UART is really only debug support for IMX27.
+In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
+a new memory for dev->vv_data. In hexium_detach(), saa7146_vv_release()
+will be called and there is a dereference of dev->vv_data in
+saa7146_vv_release(), which could lead to a NULL pointer dereference
+on failure of saa7146_vv_init() according to the following logic.
 
-So, rename this option to DEBUG_IMX27_UART and adjust dependencies in
-Kconfig and rename the definitions to IMX27 as further clean-up.
+Both hexium_attach() and hexium_detach() are callback functions of
+the variable 'extension', so there exists a possible call chain directly
+from hexium_attach() to hexium_detach():
 
-This issue was discovered with ./scripts/checkkconfigsymbols.py, which
-reported that DEBUG_IMX21_IMX27_UART depends on the non-existing config
-SOC_IMX21.
+hexium_attach(dev, info) -- fail to alloc memory to dev->vv_data
+	|		    		in saa7146_vv_init().
+	|
+	|
+hexium_detach() -- a dereference of dev->vv_data in saa7146_vv_release()
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Fix this bug by adding a check of saa7146_vv_init().
+
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
+
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
+
+Builds with CONFIG_VIDEO_HEXIUM_ORION=m show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/Kconfig.debug            | 14 +++++++-------
- arch/arm/include/debug/imx-uart.h | 18 +++++++++---------
- 2 files changed, 16 insertions(+), 16 deletions(-)
+ drivers/media/pci/saa7146/hexium_orion.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-index 8986a91a6f31b..dd1cf70353986 100644
---- a/arch/arm/Kconfig.debug
-+++ b/arch/arm/Kconfig.debug
-@@ -400,12 +400,12 @@ choice
- 		  Say Y here if you want kernel low-level debugging support
- 		  on i.MX25.
+diff --git a/drivers/media/pci/saa7146/hexium_orion.c b/drivers/media/pci/saa7146/hexium_orion.c
+index a794f9e5f9908..b88aa1feb7df2 100644
+--- a/drivers/media/pci/saa7146/hexium_orion.c
++++ b/drivers/media/pci/saa7146/hexium_orion.c
+@@ -367,10 +367,16 @@ static struct saa7146_ext_vv vv_data;
+ static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_data *info)
+ {
+ 	struct hexium *hexium = (struct hexium *) dev->ext_priv;
++	int ret;
  
--	config DEBUG_IMX21_IMX27_UART
--		bool "i.MX21 and i.MX27 Debug UART"
--		depends on SOC_IMX21 || SOC_IMX27
-+	config DEBUG_IMX27_UART
-+		bool "i.MX27 Debug UART"
-+		depends on SOC_IMX27
- 		help
- 		  Say Y here if you want kernel low-level debugging support
--		  on i.MX21 or i.MX27.
-+		  on i.MX27.
+ 	DEB_EE("\n");
  
- 	config DEBUG_IMX28_UART
- 		bool "i.MX28 Debug UART"
-@@ -1523,7 +1523,7 @@ config DEBUG_IMX_UART_PORT
- 	int "i.MX Debug UART Port Selection"
- 	depends on DEBUG_IMX1_UART || \
- 		   DEBUG_IMX25_UART || \
--		   DEBUG_IMX21_IMX27_UART || \
-+		   DEBUG_IMX27_UART || \
- 		   DEBUG_IMX31_UART || \
- 		   DEBUG_IMX35_UART || \
- 		   DEBUG_IMX50_UART || \
-@@ -1591,12 +1591,12 @@ config DEBUG_LL_INCLUDE
- 	default "debug/icedcc.S" if DEBUG_ICEDCC
- 	default "debug/imx.S" if DEBUG_IMX1_UART || \
- 				 DEBUG_IMX25_UART || \
--				 DEBUG_IMX21_IMX27_UART || \
-+				 DEBUG_IMX27_UART || \
- 				 DEBUG_IMX31_UART || \
- 				 DEBUG_IMX35_UART || \
- 				 DEBUG_IMX50_UART || \
- 				 DEBUG_IMX51_UART || \
--				 DEBUG_IMX53_UART ||\
-+				 DEBUG_IMX53_UART || \
- 				 DEBUG_IMX6Q_UART || \
- 				 DEBUG_IMX6SL_UART || \
- 				 DEBUG_IMX6SX_UART || \
-diff --git a/arch/arm/include/debug/imx-uart.h b/arch/arm/include/debug/imx-uart.h
-index c8eb83d4b8964..3edbb3c5b42bf 100644
---- a/arch/arm/include/debug/imx-uart.h
-+++ b/arch/arm/include/debug/imx-uart.h
-@@ -11,13 +11,6 @@
- #define IMX1_UART_BASE_ADDR(n)	IMX1_UART##n##_BASE_ADDR
- #define IMX1_UART_BASE(n)	IMX1_UART_BASE_ADDR(n)
- 
--#define IMX21_UART1_BASE_ADDR	0x1000a000
--#define IMX21_UART2_BASE_ADDR	0x1000b000
--#define IMX21_UART3_BASE_ADDR	0x1000c000
--#define IMX21_UART4_BASE_ADDR	0x1000d000
--#define IMX21_UART_BASE_ADDR(n)	IMX21_UART##n##_BASE_ADDR
--#define IMX21_UART_BASE(n)	IMX21_UART_BASE_ADDR(n)
--
- #define IMX25_UART1_BASE_ADDR	0x43f90000
- #define IMX25_UART2_BASE_ADDR	0x43f94000
- #define IMX25_UART3_BASE_ADDR	0x5000c000
-@@ -26,6 +19,13 @@
- #define IMX25_UART_BASE_ADDR(n)	IMX25_UART##n##_BASE_ADDR
- #define IMX25_UART_BASE(n)	IMX25_UART_BASE_ADDR(n)
- 
-+#define IMX27_UART1_BASE_ADDR	0x1000a000
-+#define IMX27_UART2_BASE_ADDR	0x1000b000
-+#define IMX27_UART3_BASE_ADDR	0x1000c000
-+#define IMX27_UART4_BASE_ADDR	0x1000d000
-+#define IMX27_UART_BASE_ADDR(n)	IMX27_UART##n##_BASE_ADDR
-+#define IMX27_UART_BASE(n)	IMX27_UART_BASE_ADDR(n)
+-	saa7146_vv_init(dev, &vv_data);
++	ret = saa7146_vv_init(dev, &vv_data);
++	if (ret) {
++		pr_err("Error in saa7146_vv_init()\n");
++		return ret;
++	}
 +
- #define IMX31_UART1_BASE_ADDR	0x43f90000
- #define IMX31_UART2_BASE_ADDR	0x43f94000
- #define IMX31_UART3_BASE_ADDR	0x5000c000
-@@ -112,10 +112,10 @@
- 
- #ifdef CONFIG_DEBUG_IMX1_UART
- #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX1)
--#elif defined(CONFIG_DEBUG_IMX21_IMX27_UART)
--#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX21)
- #elif defined(CONFIG_DEBUG_IMX25_UART)
- #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX25)
-+#elif defined(CONFIG_DEBUG_IMX27_UART)
-+#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX27)
- #elif defined(CONFIG_DEBUG_IMX31_UART)
- #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX31)
- #elif defined(CONFIG_DEBUG_IMX35_UART)
+ 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
+ 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
+ 	vv_data.vid_ops.vidioc_s_input = vidioc_s_input;
 -- 
 2.34.1
 
