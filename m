@@ -2,222 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9E8C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 06:47:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FA15C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 06:49:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231367AbiARGrN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 01:47:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34598 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231146AbiARGrK (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 01:47:10 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42A57C06161C
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 22:47:10 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id p27so55005157lfa.1
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 22:47:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ndRmdqMdJ9799j8PWgE96Wh//o3D2hfldSG13u5SeAM=;
-        b=YB+Kge9lFu1w7LVUa5FlGUi7PZaLnS8FNV8sMwK0FPqqG0Lk2PUL7PRgao61YZQSU8
-         3/JPbrKoffRa3xJh3qPEuFRzwkbTeYnhZK0i3jHv7Q7X2waL25oHJU1p6im42FbswCSs
-         Ug69yVzHk9/Wmztwy3F8QTh8w2X6tZjB36qmOuzjwqEg4ZdDg1m2wZWDLniLM00kGvDN
-         7tTN5RWg6e9J+S9w5Cc2SEcm7/jA6zzRdoUnhJNiSN7hO/EyjynW9TVag9qAp2VVtfE4
-         wj4QBzzIlAqEZb63Nh++4Y9PPsElMmAn3PShGpukX0PibdcmJlXUdOqIb9oLyi9WcFXd
-         5T0Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ndRmdqMdJ9799j8PWgE96Wh//o3D2hfldSG13u5SeAM=;
-        b=hepMAVRixRPzg9yEsGLJQBRByETQKU6y01OtcYD2Usv7tU0aNHr3+xWVx2X70twBaR
-         5Qpw2IfAreVo165CpDlZZnwJlpZE4BBD94SjKWAp49YiH7Zx2878cv0sEDDPeUaKcvfE
-         shh0EOVE8Kln0GgvduGWG4zejh96hHQkpcqYM3ptXa1gGup310HQRY/UgdXsDy0yTmVK
-         sWZ9NpI4K6kKfqX9195uC3IPtSe2wNtbhwxTSC+2vWwkRfvoDYq1E7kYbA9Jx3iYzDHV
-         ZcgdN/WRckinIWsOdautV6jdwyLPCXuMqmzmrItKG5Mga6zcYDujigR/1q9ACrL2EXfF
-         K32w==
-X-Gm-Message-State: AOAM5334jV7UJ+nEJrV6kENZWcyUhFtKCknCBZnZFvj+8j3VpxbRDb4A
-        CAdEme3FUTM/MNbyggDlU9jwELYRHCCBAs8DJOIs/g==
-X-Google-Smtp-Source: ABdhPJzjbz4/fCjr33TO7htvx9gliX688kTeU0cO2lulCwM/tQ2dIG+ra+iboLhNbvF1fx0/jEaSHO1aZFb/EfqXukY=
-X-Received: by 2002:a2e:bf01:: with SMTP id c1mr18353250ljr.511.1642488428506;
- Mon, 17 Jan 2022 22:47:08 -0800 (PST)
+        id S243167AbiARGtc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 01:49:32 -0500
+Received: from mga06.intel.com ([134.134.136.31]:49404 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231146AbiARGta (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 01:49:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642488570; x=1674024570;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=Qle7iYX0bWtMWgGrX9XT60FWnCJkJa+OHVP1jvUZDP4=;
+  b=Rsow8Wi8jaU5B7KucTCVKEeTuY2+OLQbIDTjtUmxp3PSsGhqsRqnTsvL
+   AzKkjMTQpKd/VExxHiQSWqTEmi1vid7Jr/XiCjWQB/j9TkvuBeL7xGUX/
+   drBkvXrbBAn10z68XMekAnFfY2u3J7h3RR+Fgrn7XM6L3Gw8l5YSYuZgv
+   QZRyFQ7+HsT0i6xH8gYvDPPizMcP7b8vbUbwgr/VfYL2EfX3mN8ahz5Nk
+   XrahR7zPGnScGKfWsY5wQfk/hardyUcu9WFZsNFMTowJu14mXcEiffhz9
+   MZmZquge3Ly61dc5b/of3ND4ulq/fxRlzB7vVK3aXT54LLLVCQyKb+ipN
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="305484638"
+X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
+   d="scan'208";a="305484638"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 22:49:29 -0800
+X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
+   d="scan'208";a="531648541"
+Received: from hyperv-sh4.sh.intel.com ([10.239.48.22])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 22:49:17 -0800
+From:   Chao Gao <chao.gao@intel.com>
+To:     kvm@vger.kernel.org, seanjc@google.com, pbonzini@redhat.com,
+        kevin.tian@intel.com, tglx@linutronix.de
+Cc:     Chao Gao <chao.gao@intel.com>, Albert Ou <aou@eecs.berkeley.edu>,
+        Aleksandar Markovic <aleksandar.qemu.devel@gmail.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@atishpatra.org>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Bharata B Rao <bharata@linux.ibm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        =?UTF-8?q?C=C3=A9dric=20Le=20Goater?= <clg@kaod.org>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        David Hildenbrand <david@redhat.com>,
+        Fabiano Rosas <farosas@linux.ibm.com>,
+        Hector Martin <marcan@marcan.st>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>,
+        John Garry <john.garry@huawei.com>,
+        kvmarm@lists.cs.columbia.edu, kvm-riscv@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-riscv@lists.infradead.org, linux-s390@vger.kernel.org,
+        "Maciej S. Szmigiero" <maciej.szmigiero@oracle.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Paul Mackerras <paulus@samba.org>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
+        Shaokun Zhang <zhangshaokun@hisilicon.com>,
+        Sumanth Korikkar <sumanthk@linux.ibm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Will Deacon <will@kernel.org>, x86@kernel.org
+Subject: [PATCH v2 0/4] Improve KVM's interaction with CPU hotplug
+Date:   Tue, 18 Jan 2022 14:44:23 +0800
+Message-Id: <20220118064430.3882337-1-chao.gao@intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20211229215330.4134835-1-yaelt@google.com> <CAFA6WYPuPHgcnzt6j+Q-EA2Dos6vBDukrjpheo5srLVXFrifEg@mail.gmail.com>
- <5a38824152eeee0fc9ba0a4fd2308bb6e0970059.camel@linux.ibm.com>
- <CAFA6WYOJt3=YMTt_QQSq6Z-MK42hwWspgSpasw2fuPtVFcP3uA@mail.gmail.com>
- <CAKoutNvW1c7MkTaFwyrD7MjUVXvTtcBOGFULMittJ5vzjMN0mg@mail.gmail.com>
- <CAFA6WYPQRagZF8-grn_LC8_SAaxBzh=cSgHhFAQQOYK+L2KuBQ@mail.gmail.com>
- <CAKoutNtuY0+L29d6xzn6BgEKBytFsBHZ_kgkCOJZuicb_uNPHg@mail.gmail.com>
- <CAFA6WYPxogLMk1EDqvM_mwgCmU1s_yDwYFPjq6wurnQGhG=-_w@mail.gmail.com> <CAKoutNtj8nxvGyZu=m1_7+rGck9dm76E=O93333Yfb5En+8HNQ@mail.gmail.com>
-In-Reply-To: <CAKoutNtj8nxvGyZu=m1_7+rGck9dm76E=O93333Yfb5En+8HNQ@mail.gmail.com>
-From:   Sumit Garg <sumit.garg@linaro.org>
-Date:   Tue, 18 Jan 2022 12:16:56 +0530
-Message-ID: <CAFA6WYNr5L+=Hz8JGztLH5AZs3+5BwtN4rTF=CmyRdi0CjkRqA@mail.gmail.com>
-Subject: Re: [PATCH v4] KEYS: encrypted: Instantiate key with user-provided
- decrypted data
-To:     Yael Tiomkin <yaelt@google.com>
-Cc:     Mimi Zohar <zohar@linux.ibm.com>, linux-integrity@vger.kernel.org,
-        jejb@linux.ibm.com, Jarkko Sakkinen <jarkko@kernel.org>,
-        corbet@lwn.net, dhowells@redhat.com, jmorris@namei.org,
-        serge@hallyn.com, keyrings@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-security-module <linux-security-module@vger.kernel.org>,
-        =?UTF-8?Q?Jan_L=C3=BCbbe?= <jlu@pengutronix.de>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 14 Jan 2022 at 00:45, Yael Tiomkin <yaelt@google.com> wrote:
->
-> On Fri, Jan 7, 2022 at 8:32 AM Sumit Garg <sumit.garg@linaro.org> wrote:
-> >
-> > On Fri, 7 Jan 2022 at 18:23, Yael Tiomkin <yaelt@google.com> wrote:
-> > >
-> > > Hi Sumit,
-> > >
-> > > On Fri, Jan 7, 2022 at 12:15 AM Sumit Garg <sumit.garg@linaro.org> wrote:
-> > > >
-> > > > Hi Yael,
-> > > >
-> > > > On Thu, 6 Jan 2022 at 01:48, Yael Tiomkin <yaelt@google.com> wrote:
-> > > > >
-> > > > > Hi Sumit,
-> > > > >
-> > > > > On Mon, Jan 3, 2022 at 1:51 AM Sumit Garg <sumit.garg@linaro.org> wrote:
-> > > > > >
-> > > > > > Hi Mimi,
-> > > > > >
-> > > > > > Apologies for the delayed reply as I was on leave for a long new year weekend.
-> > > > > >
-> > > > > > On Thu, 30 Dec 2021 at 18:59, Mimi Zohar <zohar@linux.ibm.com> wrote:
-> > > > > > >
-> > > > > > > Hi Sumit,
-> > > > > > >
-> > > > > > > On Thu, 2021-12-30 at 15:37 +0530, Sumit Garg wrote:
-> > > > > > > > + Jan, Ahmad
-> > > > > > > >
-> > > > > > > > On Thu, 30 Dec 2021 at 03:24, Yael Tiomkin <yaelt@google.com> wrote:
-> > > > > > > > >
-> > > > > > > > > The encrypted.c class supports instantiation of encrypted keys with
-> > > > > > > > > either an already-encrypted key material, or by generating new key
-> > > > > > > > > material based on random numbers. This patch defines a new datablob
-> > > > > > > > > format: [<format>] <master-key name> <decrypted data length>
-> > > > > > > > > <decrypted data> that allows to instantiate encrypted keys using
-> > > > > > > > > user-provided decrypted data, and therefore allows to perform key
-> > > > > > > > > encryption from userspace. The decrypted key material will be
-> > > > > > > > > inaccessible from userspace.
-> > > > > > > >
-> > > > > > > > This type of user-space key import feature has already been discussed
-> > > > > > > > at large in the context of trusted keys here [1]. So what makes it
-> > > > > > > > special in case of encrypted keys such that it isn't a "UNSAFE_IMPORT"
-> > > > > > > > or "DEBUGGING_IMPORT" or "DEVELOPMENT_IMPORT", ...?
-> > > > > > > >
-> > > > > > > > [1] https://lore.kernel.org/linux-integrity/74830d4f-5a76-8ba8-aad0-0d79f7c01af9@pengutronix.de/
-> > > > > > > >
-> > > > > > > > -Sumit
-> > > > > > > >
-> > > > > > > > >
-> > > > > > > > > Reviewed-by: Mimi Zohar <zohar@linux.ibm.com>
-> > > > > > > > > Signed-off-by: Yael Tiomkin <yaelt@google.com>
-> > > > > > >
-> > > > > > > There is a difference between trusted and encrypted keys.
-> > > > > >
-> > > > > > Yeah I understand the implementation differences.
-> > > > > >
-> > > > > > >  So in
-> > > > > > > addition to pointing to the rather long discussion thread, please
-> > > > > > > summarize the conclusion and, assuming you agree, include why in once
-> > > > > > > case it was acceptable and in the other it wasn't to provide userspace
-> > > > > > > key data.
-> > > > > >
-> > > > > > My major concern with importing user-space key data in *plain* format
-> > > > > > is that if import is *not* done in a safe (manufacturing or
-> > > > > > production) environment then the plain key data is susceptible to
-> > > > > > user-space compromises when the device is in the field.
-> > > > >
-> > > > > I agree this can happen. Key distribution in any scenario needs to be
-> > > > > secure and this could also potentially be an issue if the key is first
-> > > > > encrypted and then imported.
-> > > >
-> > > > Currently its not the case with encrypted keys. These are random keys
-> > > > generated within the kernel and encrypted with master key within the
-> > > > kernel and then exposed to user-space as encrypted blob only.
-> > >
-> > >
-> > > There are two different ways to create encrypted keys. One is to have
-> > > them generated within the kernel using random numbers, and the other
-> > > is by importing them in their encrypted form from user-space.
-> > > I was referring to the latter in my previous statement.
-> > >
-> >
-> > So, from a key distribution security point of view, encrypted key
-> > user-space import is **not equal to** plain key user-space import.
-> > That's why we need to have a separate compile time option as every
-> > device may come with its own threat model and may choose to enable or
-> > disable this user-space plain key import feature.
-> >
-> > -Sumit
-> >
-> > > >
-> > > > > We can make sure the documentation
-> > > > > highlights the safety requirement.
-> > > > >
-> > > >
-> > > > IMO, you should enable this feature as a compile time option. The help
-> > > > text for that config option should highlight the use-case along with a
-> > > > safety warning.
-> > > >
-> > > > -Sumit
-> > > >
-> > > > > >
-> > > > > > And it sounds like we are diverting from basic definition [1] of encrypted keys:
-> > > > > >
-> > > > > > "Trusted and Encrypted Keys are two new key types added to the
-> > > > > > existing kernel key ring service. Both of these new types are variable
-> > > > > > length symmetric keys, and in both cases all keys are created in the
-> > > > > > kernel, and **user space sees, stores, and loads** only encrypted
-> > > > > > blobs."
-> > > > > >
-> > > > > > Also, as Jarrko mentioned earlier the use-case is still not clear to
-> > > > > > me as well. Isn't user logon keys an alternative option for
-> > > > > > non-readable user-space keys?
-> > > > >
-> > > > > The goal in this change is to allow key encryption from userspace,
-> > > > > using user-provided decrypted data. This cannot be achieved in logon
-> > > > > keys, which as you mentioned, are simply non-readable user type keys.
-> > > > >
-> > > > >
-> > > > > >
-> > > > > > [1] https://www.kernel.org/doc/html/v4.13/security/keys/trusted-encrypted.html
-> > > > > >
-> > > > > > -Sumit
-> > > > > >
-> > > > > > >
-> > > > > > > thanks,
-> > > > > > >
-> > > > > > > Mimi
-> > > > > > >
-> > > > >
-> > > > > Yael
->
-> Hi Sumit,
-> The encrypted-keys module is already controlled by the
-> CONFIG_ENCRYPTED_KEYS option, which I think might give sufficient
-> granularity to control the behavior. Do you still think a feature
-> dedicated option is needed?
->
+Changes from v1->v2: (all comments/suggestions on v1 are from Sean, thanks)
+ - Merged v1's patch 2 into patch 1, and v1's patch 5 into patch 6.
+ - Use static_call for check_processor_compatibility().
+ - Generate patch 2 with "git revert" and do manual changes based on that.
+ - Loosen the WARN_ON() in kvm_arch_check_processor_compat() instead of
+   removing it.
+ - KVM always prevent incompatible CPUs from being brought up regardless of
+   running VMs.
+ - Use pr_warn instead of pr_info to emit logs when KVM finds offending
+   CPUs.
 
-Since this feature will change security properties for encrypted keys
-which can be considered as a regression for existing users during
-uprev. So it needs to be an optional key import feature with a clear
-user visible warning. Thinking more about this, you can even have a
-module param to turn it on with a runtime warning as well.
+KVM registers its CPU hotplug callback to CPU starting section. And in the
+callback, KVM enables hardware virtualization on hotplugged CPUs if any VM
+is running on existing CPUs.
 
--Sumit
+There are two problems in the process:
+1. KVM doesn't do compatibility checks before enabling hardware
+virtualization on hotplugged CPUs. This may cause #GP if VMX isn't
+supported or vmentry failure if some in-use VMX features are missing on
+hotplugged CPUs. Both break running VMs.
+2. Callbacks in CPU STARTING section cannot fail. So, even if KVM finds
+some incompatible CPUs, its callback cannot block CPU hotplug.
 
-> Yael
+This series improves KVM's interaction with CPU hotplug to avoid
+incompatible CPUs breaking running VMs. Following changes are made:
+
+1. move KVM's CPU hotplug callback to ONLINE section (suggested by Thomas)
+2. do compatibility checks on hotplugged CPUs.
+3. abort onlining incompatible CPUs
+
+This series is a follow-up to the discussion about KVM and CPU hotplug
+https://lore.kernel.org/lkml/3d3296f0-9245-40f9-1b5a-efffdb082de9@redhat.com/T/
+
+Note: this series is tested only on Intel systems.
+
+Chao Gao (4):
+  KVM: x86: Move check_processor_compatibility from init ops to runtime
+    ops
+  Partially revert "KVM: Pass kvm_init()'s opaque param to additional
+    arch funcs"
+  KVM: Rename and move CPUHP_AP_KVM_STARTING to ONLINE section
+  KVM: Do compatibility checks on hotplugged CPUs
+
+ arch/arm64/kvm/arm.c               |  2 +-
+ arch/mips/kvm/mips.c               |  2 +-
+ arch/powerpc/kvm/powerpc.c         |  2 +-
+ arch/riscv/kvm/main.c              |  2 +-
+ arch/s390/kvm/kvm-s390.c           |  2 +-
+ arch/x86/include/asm/kvm-x86-ops.h |  1 +
+ arch/x86/include/asm/kvm_host.h    |  2 +-
+ arch/x86/kvm/svm/svm.c             |  4 +-
+ arch/x86/kvm/vmx/evmcs.c           |  2 +-
+ arch/x86/kvm/vmx/evmcs.h           |  2 +-
+ arch/x86/kvm/vmx/vmx.c             | 12 +++---
+ arch/x86/kvm/x86.c                 | 16 +++++---
+ include/linux/cpuhotplug.h         |  2 +-
+ include/linux/kvm_host.h           |  2 +-
+ virt/kvm/kvm_main.c                | 62 ++++++++++++++++++++----------
+ 15 files changed, 71 insertions(+), 44 deletions(-)
+
+-- 
+2.25.1
+
