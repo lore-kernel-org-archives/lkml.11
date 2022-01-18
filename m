@@ -2,103 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C45C2C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:37:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDA84C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:38:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345754AbiARJh4 (ORCPT
+        id S1345777AbiARJiF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 04:37:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45850 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240557AbiARJhy (ORCPT
+        Tue, 18 Jan 2022 04:38:05 -0500
+Received: from unknown-3-146.windriver.com ([147.11.3.146]:10400 "EHLO
+        mail1.wrs.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S230172AbiARJiE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 04:37:54 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430EFC061574;
-        Tue, 18 Jan 2022 01:37:54 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id o12so51511669lfu.12;
-        Tue, 18 Jan 2022 01:37:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=DeGHxvOkcbTC/3aO1jG67yYJNY+X5JLaHOHG742whjc=;
-        b=j289bUD6/nRw1kvMteOz/gAeSpGxqR1YbsBSM35IwtNK3cz53ODPP2U0Gpitwhg0Vy
-         Vd82mJsuKN1LIVSf+xzNofaKd7D1zKuUjsNZjHHmCMYy5/zpdme25+/uW30plHWI5ShL
-         up+MqI9j/Ksd3B4JHZCVF+MrbXycXG87IsDBRS2kN+dzIKeZiThlm2MV8ZEiJraHY6HM
-         oUSQUf0RgyTUX+3S/2uTazv1X7wEEJR6R6NNyrI4kNnnTjnEzs02mNuA1Gs5+9xDWu05
-         jBmPbwnqf8cXOMxnBwARL3zcUZxLJUAmKd6ANbdOK4/zuwJdbRqbTcvgdbiK1bQiaU81
-         +eDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=DeGHxvOkcbTC/3aO1jG67yYJNY+X5JLaHOHG742whjc=;
-        b=4WZ5N2xxoHgphGnNEwdn5+9XEH3kOpY7xJAr8V44e6J6oj90hSSZxDYLGvD1i92KCX
-         F4glxldqIXTueVWofvTsfdT9k0buYo//xSCFdvaJiE3Hd1r9QDEedyWpiqu/ktqT9BHc
-         onohCCIlTCYl5YGyA2mFw9fawGqmz0F5HOt16eohRXTzjhn5QU7rFTs9Qve1OYo/fqKZ
-         8Zh7zUWTBjYCx8P5sus4u8FUZ9dASpNUOQEYTND3XPLgweX8tMNo+vPL0VfeXRxyGVhh
-         Hfh2q7VyNhPYrBZEX1iz3a7LtSqwfErc+SnJsK8gUHBwDhSDM/SBaBGgW08pK1+ppQ83
-         AbHw==
-X-Gm-Message-State: AOAM532nMMGerhhlMPS3N8LtTIBGYghuyA4G4ZZpxIf0zw9bvKUg4YdJ
-        D633vwl0ZbqxEBTTFZacPW0=
-X-Google-Smtp-Source: ABdhPJwTHY46PIQGIjoqtqIH7KsMzep7tLv9PsCznK/890ApCoT/rYMS/bG85Zy7ncA3FY3KkVpWrw==
-X-Received: by 2002:a2e:a413:: with SMTP id p19mr19853738ljn.12.1642498672632;
-        Tue, 18 Jan 2022 01:37:52 -0800 (PST)
-Received: from [192.168.2.145] (46-138-227-157.dynamic.spd-mgts.ru. [46.138.227.157])
-        by smtp.googlemail.com with ESMTPSA id n14sm1585857ljg.47.2022.01.18.01.37.51
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Jan 2022 01:37:52 -0800 (PST)
-Message-ID: <1fa23a4d-f647-c3ae-df8c-4cbd91f5a4c6@gmail.com>
-Date:   Tue, 18 Jan 2022 12:37:51 +0300
+        Tue, 18 Jan 2022 04:38:04 -0500
+X-Greylist: delayed 1051 seconds by postgrey-1.27 at vger.kernel.org; Tue, 18 Jan 2022 04:38:04 EST
+Received: from mail.windriver.com (mail.wrs.com [147.11.1.11])
+        by mail1.wrs.com (8.15.2/8.15.2) with ESMTPS id 20I9Jttq032351
+        (version=TLSv1.1 cipher=DHE-RSA-AES256-SHA bits=256 verify=FAIL);
+        Tue, 18 Jan 2022 01:19:56 -0800
+Received: from ala-exchng01.corp.ad.wrs.com (ala-exchng01.corp.ad.wrs.com [147.11.82.252])
+        by mail.windriver.com (8.15.2/8.15.2) with ESMTPS id 20I9JtAZ010520
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 18 Jan 2022 01:19:55 -0800 (PST)
+Received: from ALA-EXCHNG02.corp.ad.wrs.com (147.11.82.254) by
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2242.12; Tue, 18 Jan 2022 01:19:54 -0800
+Received: from ala-exchng01.corp.ad.wrs.com (147.11.82.252) by
+ ALA-EXCHNG02.corp.ad.wrs.com (147.11.82.254) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Tue, 18 Jan 2022 01:19:54 -0800
+Received: from pek-lpd-ccm3.wrs.com (128.224.156.163) by
+ ala-exchng01.corp.ad.wrs.com (147.11.82.252) with Microsoft SMTP Server id
+ 15.1.2242.12 via Frontend Transport; Tue, 18 Jan 2022 01:19:53 -0800
+From:   Dongyang Wang <dongyang.wang@windriver.com>
+To:     <christian.brauner@ubuntu.com>, <akpm@linux-foundation.org>,
+        <ebiederm@xmission.com>, <legion@kernel.org>,
+        <varad.gautam@suse.com>
+CC:     <linux-kernel@vger.kernel.org>
+Subject: [PATCH] To fix the below failure of handling page fault caused by the invalid input from user.
+Date:   Tue, 18 Jan 2022 17:19:52 +0800
+Message-ID: <20220118091952.37001-1-dongyang.wang@windriver.com>
+X-Mailer: git-send-email 2.26.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH AUTOSEL 5.15 123/188] drm/tegra: dc: rgb: Allow changing
- PLLD rate on Tegra30+
-Content-Language: en-US
-To:     Sasha Levin <sashal@kernel.org>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org
-Cc:     Maxim Schwalm <maxim.schwalm@gmail.com>,
-        Thierry Reding <treding@nvidia.com>, thierry.reding@gmail.com,
-        airlied@linux.ie, daniel@ffwll.ch, jonathanh@nvidia.com,
-        dri-devel@lists.freedesktop.org, linux-tegra@vger.kernel.org
-References: <20220118023152.1948105-1-sashal@kernel.org>
- <20220118023152.1948105-123-sashal@kernel.org>
-From:   Dmitry Osipenko <digetx@gmail.com>
-In-Reply-To: <20220118023152.1948105-123-sashal@kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-18.01.2022 05:30, Sasha Levin пишет:
-> From: Dmitry Osipenko <digetx@gmail.com>
-> 
-> [ Upstream commit 0c921b6d4ba06bc899fd84d3ce1c1afd3d00bc1c ]
-> 
-> Asus Transformer TF700T is a Tegra30 tablet device which uses RGB->DSI
-> bridge that requires a precise clock rate in order to operate properly.
-> Tegra30 has a dedicated PLL for each display controller, hence the PLL
-> rate can be changed freely. Allow PLL rate changes on Tegra30+ for RGB
-> output. Configure the clock rate before display controller is enabled
-> since DC itself may be running off this PLL and it's not okay to change
-> the rate of the active PLL that doesn't support dynamic frequency
-> switching since hardware will hang.
-> 
-> Tested-by: Maxim Schwalm <maxim.schwalm@gmail.com> #TF700T
-> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
-> Signed-off-by: Thierry Reding <treding@nvidia.com>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  drivers/gpu/drm/tegra/dc.c  | 27 ++++++++++++--------
->  drivers/gpu/drm/tegra/dc.h  |  1 +
->  drivers/gpu/drm/tegra/rgb.c | 49 +++++++++++++++++++++++++++++++++++--
->  3 files changed, 65 insertions(+), 12 deletions(-)
+[786058.308965] Unable to handle kernel paging request at virtual address 01000004
+[786058.316286] pgd = 38a99693
+[786058.319080] [01000004] *pgd=07800003, *pmd=00000000
+[786058.324056] Internal error: Oops: 206 [#1] PREEMPT SMP ARM
+[786058.324100] CPU:  PID: Comm:  Tainted: G         C
+[786058.324102] Hardware name:
+[786058.324114] PC is at __copy_to_user_std+0x4c/0x3c4
+[786058.324120] LR is at store_msg+0xc0/0xe8
+[786058.324124] pc : [<c0c0587c>]    lr : [<c0871d04>]    psr: 20010013
+[786058.324126] sp : c3503ec4  ip : 00000000  fp : b4c9a660
+[786058.324129] r10: c4228dc0  r9 : c3502000  r8 : 00000ffc
+[786058.324132] r7 : 01000000  r6 : 546d3f8b  r5 : b4911690  r4 : 00000ffc
+[786058.324134] r3 : 00000000  r2 : 00000f7c  r1 : 01000004  r0 : b4911690
+[786058.324139] Flags: nzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment user
+[786058.324142] Control: 30c5387d  Table: 0edc2040  DAC: 55555555
+[786058.324145] Process  (pid: , stack limit = 0x25018bdf)
+[786058.324148] Stack: (0xc3503ec4 to 0xc3504000)
+[786058.324153] 3ec0:          b4911690 546d3f8b 01000000 00000ffc b4911690 00000ffc 00000000
+[786058.324157] 3ee0: 00000ffc c0871d04 546d4f73 c3407801 c3503f28 c3407800 00000000 b49106a8
+[786058.324161] 3f00: c4228dc0 c087abd4 00000002 b49106a8 617b9d03 00000000 00000000 c121d508
+[786058.324165] 3f20: 00000000 bf06a1a8 d1b634cc 16b26e77 c5af5280 00000100 00000200 db806540
+[786058.324170] 3f40: 00000001 c121d508 00000008 0000005c 00000000 00010008 b49106a8 c0601208
+[786058.324173] 3f60: c3502000 00000040 b4c9a660 c087b474 c3503f78 c121d508 617b9d03 00000000
+[786058.324177] 3f80: 2303d6cc 00000115 c0601208 c121d508 b4c9a660 b4c9a660 00000001 b49106a8
+[786058.324181] 3fa0: 00000115 c06011dc b4c9a660 00000001 0000005c b49106a8 00010008 00000000
+[786058.324185] 3fc0: b4c9a660 00000001 b49106a8 00000115 00000000 b4c9b400 00000000 b4c9a660
+[786058.324189] 3fe0: 00000115 b4c9a650 b6b253bd b6b254b6 800d0030 0000005c 00000000 00000000
+[786058.324201] [<c0c0587c>] (__copy_to_user_std) from [<c0871d04>] (store_msg+0xc0/0xe8)
+[786058.324211] [<c0871d04>] (store_msg) from [<c087abd4>] (do_mq_timedreceive+0x29c/0x484)
+[786058.324218] [<c087abd4>] (do_mq_timedreceive) from [<c087b474>] (sys_mq_timedreceive+0x88/0xbc)
+[786058.324226] [<c087b474>] (sys_mq_timedreceive) from [<c06011dc>] (__sys_trace_return+0x0/0x10)
+[786058.324229] Exception stack(0xc3503fa8 to 0xc3503ff0)
+[786058.324233] 3fa0:                   b4c9a660 00000001 0000005c b49106a8 00010008 00000000
+[786058.324236] 3fc0: b4c9a660 00000001 b49106a8 00000115 00000000 b4c9b400 00000000 b4c9a660
+[786058.324239] 3fe0: 00000115 b4c9a650 b6b253bd b6b254b6
+[786058.324247] Code: ba000002 f5d1f03c f5d1f05c f5d1f07c (e8b151f8)
+[786058.601808] ---[ end trace 0000000000000002 ]---
 
-Hi,
+Signed-off-by: Fuchun Sun <fuchun.sun@windriver.com>
+Signed-off-by: Lizhi Xu <lizhi.xu@windriver.com>
+Signed-off-by: Jing Zhang <Jing.Zhang@windriver.com>
+Signed-off-by: Dongyang Wang <dongyang.wang@windriver.com>
+---
+ ipc/mqueue.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-This patch shouldn't be ported to any stable kernel because h/w that
-needs this patch was just merged to the 5.17.
+diff --git a/ipc/mqueue.c b/ipc/mqueue.c
+index 5becca9be867c..c904400f8fd9f 100644
+--- a/ipc/mqueue.c
++++ b/ipc/mqueue.c
+@@ -1211,6 +1211,12 @@ static int do_mq_timedreceive(mqd_t mqdes, char __user *u_msg_ptr,
+ 		goto out_fput;
+ 	}
+ 
++	/* checks if buffer is invalid */
++	if ((unsigned long) u_msg_ptr < PAGE_SIZE) {
++		ret = -EINVAL;
++		goto out_fput;
++	}
++
+ 	/*
+ 	 * msg_insert really wants us to have a valid, spare node struct so
+ 	 * it doesn't have to kmalloc a GFP_ATOMIC allocation, but it will
+@@ -1262,6 +1268,10 @@ static int do_mq_timedreceive(mqd_t mqdes, char __user *u_msg_ptr,
+ 			store_msg(u_msg_ptr, msg_ptr, msg_ptr->m_ts)) {
+ 			ret = -EFAULT;
+ 		}
++
++		if (msg_len < ret)
++			ret = -EMSGSIZE;
++
+ 		free_msg(msg_ptr);
+ 	}
+ out_fput:
+-- 
+2.26.1
+
