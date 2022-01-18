@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD29C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:32:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0119BC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345887AbiARCcK (ORCPT
+        id S1345944AbiARCcQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:32:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57062 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245101AbiARC0P (ORCPT
+        Mon, 17 Jan 2022 21:32:16 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:39212 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244979AbiARCZZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:26:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA22C06136A;
-        Mon, 17 Jan 2022 18:24:46 -0800 (PST)
+        Mon, 17 Jan 2022 21:25:25 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B201610AB;
-        Tue, 18 Jan 2022 02:24:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89E3DC36AF5;
-        Tue, 18 Jan 2022 02:24:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B893B81247;
+        Tue, 18 Jan 2022 02:25:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA130C36AE3;
+        Tue, 18 Jan 2022 02:25:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472685;
-        bh=JjoTPxcrsm13yYDz2X0aCGOrakWj/cvM4DjQzFBa75A=;
+        s=k20201202; t=1642472722;
+        bh=sdOOB4UKo5fjVxrk5O+5GVl9Uq6JG4ZrtYrtaSgng6U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qENeY61fHWgB76s7sAo7GLnyzm0oQtXGKOPCRSAAlrVp8WbRUa44v8Z1oKWN8+OJ9
-         XTHhWQc6PyP/qixHuo29VbgplPyxSljEqKZ5rEARBan5FiT2nLUURFOFGcIiyIUiO3
-         BdXuOsqtisg+g8cu3XJxdYsqbyY8ue1YE0KitLipvhIn7Lv+a5/cWrELL95vPccAnp
-         j/XwO7T00OuDhcGLQKwte9/FeTtD2WFKDwIsqY6Xm03rMdhM0tihI1IVWmhLxqJsEQ
-         1a2rxF8cFDYKuPhdobFJZyuu0AYZijUnFKADYYOKp27QnWLRhomQwHLPcH4Zk8qvH8
-         pdKOx4BgfnWjQ==
+        b=gFfOelCrT4nQIYBGyn98lI97BcFpU432QKUXlV+zan+2XA5Dm58hcjqMS+4ItNGJs
+         +Czh5dQMI2fSt1f5+qcVbepymyFFwhJrY5WVFUpFC59vKM1f2ykOJ7NDRfL+A6em+Q
+         doH1WQsncQSFuA7orFQDXzcCHzeZEXTicHbA6FuHcs7iyyCIwhXobvyUkIhPzxzJez
+         GZJ2D8bvGjGHXMOBvUnsVz2BJAnCX5z6cwu6z3VY75A0+Af6DMQHiuAufMArnM5RYY
+         WRTa4zA0DKVBL3VemlJiyJ/GhnR3noRprb/OVtwAtvfXXbY+n0OX4PznRF5s5iZQtC
+         eMe9cLs6R7kVA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhou Qingyang <zhou1615@umn.edu>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
-        mchehab@kernel.org, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 099/217] media: saa7146: hexium_orion: Fix a NULL pointer dereference in hexium_attach()
-Date:   Mon, 17 Jan 2022 21:17:42 -0500
-Message-Id: <20220118021940.1942199-99-sashal@kernel.org>
+Cc:     Wen Gong <quic_wgong@quicinc.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 113/217] ath10k: drop beacon and probe response which leak from other channel
+Date:   Mon, 17 Jan 2022 21:17:56 -0500
+Message-Id: <20220118021940.1942199-113-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -54,71 +51,75 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Wen Gong <quic_wgong@quicinc.com>
 
-[ Upstream commit 348df8035301dd212e3cc2860efe4c86cb0d3303 ]
+[ Upstream commit 3bf2537ec2e33310b431b53fd84be8833736c256 ]
 
-In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
-a new memory for dev->vv_data. In hexium_detach(), saa7146_vv_release()
-will be called and there is a dereference of dev->vv_data in
-saa7146_vv_release(), which could lead to a NULL pointer dereference
-on failure of saa7146_vv_init() according to the following logic.
+When scan request on channel 1, it also receive beacon from other
+channels, and the beacon also indicate to mac80211 and wpa_supplicant,
+and then the bss info appears in radio measurement report of radio
+measurement sent from wpa_supplicant, thus lead RRM case fail.
 
-Both hexium_attach() and hexium_detach() are callback functions of
-the variable 'extension', so there exists a possible call chain directly
-from hexium_attach() to hexium_detach():
+This is to drop the beacon and probe response which is not the same
+channel of scanning.
 
-hexium_attach(dev, info) -- fail to alloc memory to dev->vv_data
-	|		    		in saa7146_vv_init().
-	|
-	|
-hexium_detach() -- a dereference of dev->vv_data in saa7146_vv_release()
+Tested-on: QCA6174 hw3.2 SDIO WLAN.RMH.4.4.1-00049
 
-Fix this bug by adding a check of saa7146_vv_init().
-
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_VIDEO_HEXIUM_ORION=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20211208061752.16564-1-quic_wgong@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/saa7146/hexium_orion.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath10k/wmi.c | 27 ++++++++++++++++++++++++++-
+ 1 file changed, 26 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/pci/saa7146/hexium_orion.c b/drivers/media/pci/saa7146/hexium_orion.c
-index 39d14c179d229..2eb4bee16b71f 100644
---- a/drivers/media/pci/saa7146/hexium_orion.c
-+++ b/drivers/media/pci/saa7146/hexium_orion.c
-@@ -355,10 +355,16 @@ static struct saa7146_ext_vv vv_data;
- static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_data *info)
- {
- 	struct hexium *hexium = (struct hexium *) dev->ext_priv;
-+	int ret;
+diff --git a/drivers/net/wireless/ath/ath10k/wmi.c b/drivers/net/wireless/ath/ath10k/wmi.c
+index 7c1c2658cb5f8..4733fd7fb169e 100644
+--- a/drivers/net/wireless/ath/ath10k/wmi.c
++++ b/drivers/net/wireless/ath/ath10k/wmi.c
+@@ -2611,9 +2611,30 @@ int ath10k_wmi_event_mgmt_rx(struct ath10k *ar, struct sk_buff *skb)
+ 		ath10k_mac_handle_beacon(ar, skb);
  
- 	DEB_EE("\n");
+ 	if (ieee80211_is_beacon(hdr->frame_control) ||
+-	    ieee80211_is_probe_resp(hdr->frame_control))
++	    ieee80211_is_probe_resp(hdr->frame_control)) {
++		struct ieee80211_mgmt *mgmt = (void *)skb->data;
++		u8 *ies;
++		int ies_ch;
++
+ 		status->boottime_ns = ktime_get_boottime_ns();
  
--	saa7146_vv_init(dev, &vv_data);
-+	ret = saa7146_vv_init(dev, &vv_data);
-+	if (ret) {
-+		pr_err("Error in saa7146_vv_init()\n");
-+		return ret;
++		if (!ar->scan_channel)
++			goto drop;
++
++		ies = mgmt->u.beacon.variable;
++
++		ies_ch = cfg80211_get_ies_channel_number(mgmt->u.beacon.variable,
++							 skb_tail_pointer(skb) - ies,
++							 sband->band);
++
++		if (ies_ch > 0 && ies_ch != channel) {
++			ath10k_dbg(ar, ATH10K_DBG_MGMT,
++				   "channel mismatched ds channel %d scan channel %d\n",
++				   ies_ch, channel);
++			goto drop;
++		}
 +	}
 +
- 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
- 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
- 	vv_data.vid_ops.vidioc_s_input = vidioc_s_input;
+ 	ath10k_dbg(ar, ATH10K_DBG_MGMT,
+ 		   "event mgmt rx skb %pK len %d ftype %02x stype %02x\n",
+ 		   skb, skb->len,
+@@ -2627,6 +2648,10 @@ int ath10k_wmi_event_mgmt_rx(struct ath10k *ar, struct sk_buff *skb)
+ 	ieee80211_rx_ni(ar->hw, skb);
+ 
+ 	return 0;
++
++drop:
++	dev_kfree_skb(skb);
++	return 0;
+ }
+ 
+ static int freq_to_idx(struct ath10k *ar, int freq)
 -- 
 2.34.1
 
