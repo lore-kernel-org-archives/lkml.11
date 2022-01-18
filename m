@@ -2,41 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5702EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:25:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD35DC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:25:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245055AbiARCZe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:25:34 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:37908 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245321AbiARCXh (ORCPT
+        id S244702AbiARCZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:25:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57208 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245350AbiARCXk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:23:37 -0500
+        Mon, 17 Jan 2022 21:23:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54975C06175E;
+        Mon, 17 Jan 2022 18:23:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A207B81238;
-        Tue, 18 Jan 2022 02:23:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 660C1C36AEB;
-        Tue, 18 Jan 2022 02:23:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 15A43B8122C;
+        Tue, 18 Jan 2022 02:23:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85947C36AE3;
+        Tue, 18 Jan 2022 02:23:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472615;
-        bh=hEOXtMUwE/45Nh6ai1hbQxYP2KFHIOMKiavrEhac3jM=;
+        s=k20201202; t=1642472610;
+        bh=P0K1qFpXW6iZLb8fx18FKgzSyX5CF/f0E9RlLpHqlc0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P8eYJUbd/jEF0mO1uZJ7rgl+TTrEq53jm9MGkJXqkF752OY2LyHu6RsNNar8Lq73l
-         BVX405gG02xN2WB0C8IStRI7ys2uyhfP43Zv1gpQHBhDV7gQXVE+fJodtwfLovRNQY
-         EfAGYF1M/ASmv+wN+rCNaBdvrS4Rtz1UY5Uh++wEEhlKI5W2K0bMCKT9YKEph4L/5n
-         KYRDMIMBRQv7EaAxo67bFfXMhevc6bOpVcbDJ2u9Zihyqw2zXrAi2LZ6FVuSn2ZHcY
-         rq2T/I3D745HDPqn5OM9r2ZSwbBDfCBj1DtRwi1pl7h4cM8grtA72juiMe31DnaYV5
-         SHqCJ86LYmGYA==
+        b=jZkYDOM3OCn1TkZesEC7cCdWVe38bJ4hXTreIM3uoTfgWhlFYHwEQmeTLWkZ9unkF
+         22Kf6gkxcigrJ31DhBzz1Tli0LstM3rK6tyf1+A3b2/SNn40vD98FClPeySjKdyoVt
+         wVF6ANaRLIMqHjPI2OfFhI1VapYTBLpG1wYFclQoOC2HD6InCMgLVyUiuPKz4RZZQR
+         u/MvAmq4kOTDl5etFyvhLgirGNJKMHBMXo/YMKe6rzO9SzC/qiPx/3lX0C92Da3G/Q
+         u1PURoDXY2KD4cLmMFLdQD081gIYKblEHYO6AlPG0mjqNlQV1wg52T7qcVIUKwOPCk
+         jCqck6JNj1jBQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chengfeng Ye <cyeaa@connect.ust.hk>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>, sre@kernel.org
-Subject: [PATCH AUTOSEL 5.16 072/217] HSI: core: Fix return freed object in hsi_new_client
-Date:   Mon, 17 Jan 2022 21:17:15 -0500
-Message-Id: <20220118021940.1942199-72-sashal@kernel.org>
+Cc:     Emil Renner Berthing <kernel@esmil.dk>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
+        andriy.shevchenko@linux.intel.com, johan@kernel.org,
+        luzmaximilian@gmail.com, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 069/217] serial: 8250_dw: Add StarFive JH7100 quirk
+Date:   Mon, 17 Jan 2022 21:17:12 -0500
+Message-Id: <20220118021940.1942199-69-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -48,33 +55,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chengfeng Ye <cyeaa@connect.ust.hk>
+From: Emil Renner Berthing <kernel@esmil.dk>
 
-[ Upstream commit a1ee1c08fcd5af03187dcd41dcab12fd5b379555 ]
+[ Upstream commit 57dcb6ec85d59e04285b7dcf10924bb819c8e46f ]
 
-cl is freed on error of calling device_register, but this
-object is return later, which will cause uaf issue. Fix it
-by return NULL on error.
+On the StarFive JH7100 RISC-V SoC the UART core clocks can't be set to
+exactly 16 * 115200Hz and many other common bitrates. Trying this will
+only result in a higher input clock, but low enough that the UART's
+internal divisor can't come close enough to the baud rate target.
+So rather than try to set the input clock it's better to skip the
+clk_set_rate call and rely solely on the UART's internal divisor.
 
-Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Link: https://lore.kernel.org/r/20211116150119.2171-15-kernel@esmil.dk
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hsi/hsi_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/8250/8250_dw.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/hsi/hsi_core.c b/drivers/hsi/hsi_core.c
-index ec90713564e32..884066109699c 100644
---- a/drivers/hsi/hsi_core.c
-+++ b/drivers/hsi/hsi_core.c
-@@ -102,6 +102,7 @@ struct hsi_client *hsi_new_client(struct hsi_port *port,
- 	if (device_register(&cl->device) < 0) {
- 		pr_err("hsi: failed to register client: %s\n", info->name);
- 		put_device(&cl->device);
-+		goto err;
- 	}
+diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
+index 53f57c3b9f42c..1769808031c52 100644
+--- a/drivers/tty/serial/8250/8250_dw.c
++++ b/drivers/tty/serial/8250/8250_dw.c
+@@ -414,6 +414,8 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
  
- 	return cl;
+ 		if (of_device_is_compatible(np, "marvell,armada-38x-uart"))
+ 			p->serial_out = dw8250_serial_out38x;
++		if (of_device_is_compatible(np, "starfive,jh7100-uart"))
++			p->set_termios = dw8250_do_set_termios;
+ 
+ 	} else if (acpi_dev_present("APMC0D08", NULL, -1)) {
+ 		p->iotype = UPIO_MEM32;
+@@ -696,6 +698,7 @@ static const struct of_device_id dw8250_of_match[] = {
+ 	{ .compatible = "cavium,octeon-3860-uart" },
+ 	{ .compatible = "marvell,armada-38x-uart" },
+ 	{ .compatible = "renesas,rzn1-uart" },
++	{ .compatible = "starfive,jh7100-uart" },
+ 	{ /* Sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, dw8250_of_match);
 -- 
 2.34.1
 
