@@ -2,182 +2,190 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D7E7C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 20:42:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FDF3C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 20:43:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344261AbiARUmp (ORCPT
+        id S1349302AbiARUne (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 15:42:45 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:51282 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238061AbiARUmo (ORCPT
+        Tue, 18 Jan 2022 15:43:34 -0500
+Received: from linux.microsoft.com ([13.77.154.182]:43808 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343795AbiARUnb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 15:42:44 -0500
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20IKXnZb010509;
-        Tue, 18 Jan 2022 20:42:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : subject :
- from : to : cc : date : in-reply-to : references : content-type :
- mime-version : content-transfer-encoding; s=pp1;
- bh=lvufmgSXOhEp4NlWXuaPh3W+jRMNCuZZX8/ntPvQvVI=;
- b=pu436hMjywVVSLJwjtkLxPZOWnlS1Uu7IiwBqN7Bfs/lte//72xml62x/yvIDat6PmmE
- up0fpZniwGmgUGDm+R33HzgRUFQtkzcTTe4xv/ceiyffmBDw+B0gn+AY5NPA8qubfirb
- JSankqI7Br9HLcgsrSXgAtZGTyUtZXtR9XySk9c6Esv/SDV2nQb759aeJ++NJo4A25JZ
- txwMOg98zch+FOv0A5b3MkHjTDUCF6+BcCNZDbbQoukixyMK2nNfGOHZrI2O514rG3vc
- m8zRj8l2XRmj9rSvtTROwTPiIMz/FIhcyroDXdGva1DKJKRSwFVVdT58M0Irhx59CX3h dw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dp1yaw30b-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 18 Jan 2022 20:42:30 +0000
-Received: from m0127361.ppops.net (m0127361.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20IKSxjg024911;
-        Tue, 18 Jan 2022 20:42:30 GMT
-Received: from ppma02fra.de.ibm.com (47.49.7a9f.ip4.static.sl-reverse.com [159.122.73.71])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dp1yaw2yt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 18 Jan 2022 20:42:30 +0000
-Received: from pps.filterd (ppma02fra.de.ibm.com [127.0.0.1])
-        by ppma02fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20IKIspn015708;
-        Tue, 18 Jan 2022 20:42:28 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma02fra.de.ibm.com with ESMTP id 3dknw96f6d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 18 Jan 2022 20:42:27 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20IKgMmB45351302
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 18 Jan 2022 20:42:22 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AB25E42041;
-        Tue, 18 Jan 2022 20:42:22 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CA2B942042;
-        Tue, 18 Jan 2022 20:42:19 +0000 (GMT)
-Received: from sig-9-65-88-194.ibm.com (unknown [9.65.88.194])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 18 Jan 2022 20:42:19 +0000 (GMT)
-Message-ID: <fbdade37017dd836881c5ecd98fae7313de5b5bb.camel@linux.ibm.com>
-Subject: Re: [PATCH v8 07/19] ima: Move dentry into ima_namespace and others
- onto stack
-From:   Mimi Zohar <zohar@linux.ibm.com>
-To:     Stefan Berger <stefanb@linux.ibm.com>,
-        Stefan Berger <stefanb@linux.vnet.ibm.com>,
-        linux-integrity@vger.kernel.org
-Cc:     serge@hallyn.com, christian.brauner@ubuntu.com,
-        containers@lists.linux.dev, dmitry.kasatkin@gmail.com,
-        ebiederm@xmission.com, krzysztof.struczynski@huawei.com,
-        roberto.sassu@huawei.com, mpeters@redhat.com, lhinds@redhat.com,
-        lsturman@redhat.com, puiterwi@redhat.com, jejb@linux.ibm.com,
-        jamjoom@us.ibm.com, linux-kernel@vger.kernel.org,
-        paul@paul-moore.com, rgb@redhat.com,
-        linux-security-module@vger.kernel.org, jmorris@namei.org
-Date:   Tue, 18 Jan 2022 15:42:14 -0500
-In-Reply-To: <d53a66a2-17e2-54b3-f115-efd7c58080a7@linux.ibm.com>
-References: <20220104170416.1923685-1-stefanb@linux.vnet.ibm.com>
-         <20220104170416.1923685-8-stefanb@linux.vnet.ibm.com>
-         <a7c5ac94b4c4d87b407353f74ff87bc0b13542a4.camel@linux.ibm.com>
-         <d53a66a2-17e2-54b3-f115-efd7c58080a7@linux.ibm.com>
-Content-Type: text/plain; charset="ISO-8859-15"
-X-Mailer: Evolution 3.28.5 (3.28.5-18.el8) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: LvMK1ZdIpXV8z_-FIzzNIlCq2_7mh-63
-X-Proofpoint-GUID: pwL3tbWKXN8GnY3Csceck8Rfk-pxqGjB
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-18_05,2022-01-18_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 malwarescore=0 phishscore=0 mlxlogscore=999 bulkscore=0
- priorityscore=1501 clxscore=1015 impostorscore=0 suspectscore=0 mlxscore=0
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201180120
+        Tue, 18 Jan 2022 15:43:31 -0500
+Received: from localhost.localdomain (c-73-140-2-214.hsd1.wa.comcast.net [73.140.2.214])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 17B2F20B927A;
+        Tue, 18 Jan 2022 12:43:31 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 17B2F20B927A
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1642538611;
+        bh=vu/vJHWme19QraNNv1lNg+FIaAp6zN63Emht5YXcox8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Uh/uP7s7OwpoZnpLPF9VPv1QvBVFJAiNtCjmudYZ3CmQQDiIfrwYygVWJ+GTXtvl0
+         hVWyDHDv3Of9fJkZz37tW0IsDYDX2VbxohmJ8YRraxC1o35/h4Ny8QCfLyOXq+vFdl
+         QYcSbkLodtNEwCQufZk7s5hjY9g3xf2EozGH4voI=
+From:   Beau Belgrave <beaub@linux.microsoft.com>
+To:     rostedt@goodmis.org, mhiramat@kernel.org
+Cc:     linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        beaub@linux.microsoft.com
+Subject: [PATCH v10 02/12] user_events: Add print_fmt generation support for basic types
+Date:   Tue, 18 Jan 2022 12:43:16 -0800
+Message-Id: <20220118204326.2169-3-beaub@linux.microsoft.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220118204326.2169-1-beaub@linux.microsoft.com>
+References: <20220118204326.2169-1-beaub@linux.microsoft.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-01-18 at 15:12 -0500, Stefan Berger wrote:
-> On 1/13/22 15:28, Mimi Zohar wrote:
-> > Hi Stefan,
-> >
-> > Nobody refers to the IMA securityfs files as dentries.  The Subject
-> > line is suppose to provide a hint about the patch.  How about changing
-> > the "Subject" line to "ima: Move IMA securityfs files into
-> > ima_namespaces or onto stack".
-> >
-> > On Tue, 2022-01-04 at 12:04 -0500, Stefan Berger wrote:
-> >> From: Stefan Berger <stefanb@linux.ibm.com>
-> >>
-> >> Move the policy file dentry into the ima_namespace for reuse by
-> >> virtualized SecurityFS and for being able to remove it from
-> >> the filesystem. Move the other dentries onto the stack.
-> > Missing is an explanation why the other IMA securityfs files can be on
-> > the stack.  Maybe start out by saying that the ns_ima_init securityfs
-> > files are never deleted.  Then transition into the IMA namespaced
-> > securityfs files and how they will be deleted.
-> 
-> How about this:
-> 
-> ima: Move IMA securityfs files into ima_namespace or onto stack
-> 
-> Move the IMA policy file's dentry into the ima_namespace for reuse by
-> virtualized securityfs and for being able to remove the file from the
-> filesystem using securityfs_remove().
+Addes print_fmt format generation for basic types that are supported for
+user processes. Only supports sizes that are the same on 32 and 64 bit.
 
-How about "Move the IMA securityfs policy file ..."
+Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
+---
+ kernel/trace/trace_events_user.c | 115 ++++++++++++++++++++++++++++++-
+ 1 file changed, 113 insertions(+), 2 deletions(-)
 
-> Move the other files' dentries onto the stack since they are not needed
-
-How about "Move the other IMA securityfs files ..."
-
-> outside the function where they are created in. Also, their cleanup is
-> automatically handled by the filesystem upon umount of a virtualized
-> secruityfs instance, so they don't need to be explicitly freed anymore.
-> 
-> When moving the dentry 'ima_policy' into ima_namespace rename it to
-> 'policy_dentry' to clarify its datatype and avoid a name clash with
-> 'int ima_policy' from ima_policy.c.
-
-To prevent namespace pollution, static variables need to be prefixed
-(e.g. "ima_").  This is not a concern with variables inside the
-ima_namespace structure.  Why not just rename the variable "policy".
-
-Refer to the section on "Naming" in Documentation/process/coding-
-style.rst.
-
-thanks,
-
-Mimi
-
-> 
-> 
-> 
-> >> Signed-off-by: Stefan Berger <stefanb@linux.ibm.com>
-> >> ---
-> >>   security/integrity/ima/ima.h    |  2 ++
-> >>   security/integrity/ima/ima_fs.c | 32 ++++++++++++++++++--------------
-> >>   2 files changed, 20 insertions(+), 14 deletions(-)
-> >>
-> >> diff --git a/security/integrity/ima/ima.h b/security/integrity/ima/ima.h
-> >> index 82b3f6a98320..224b09617c52 100644
-> >> --- a/security/integrity/ima/ima.h
-> >> +++ b/security/integrity/ima/ima.h
-> >> @@ -140,6 +140,8 @@ struct ima_namespace {
-> >>   	struct mutex ima_write_mutex;
-> >>   	unsigned long ima_fs_flags;
-> >>   	int valid_policy;
-> >> +
-> >> +	struct dentry *policy_dentry;
-> > None of the other securityfs files are renamed.  Why is "ima_policy"
-> > being renamed to "policy_dentry"?  If there is a need, it should be
-> > documented in the patch description.
-> >
-> > thanks,
-> >
-> > Mimi
-> >
-> >>   } __randomize_layout;
-> >>   extern struct ima_namespace init_ima_ns;
-> >>
-
+diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
+index 77105233115e..ddc5c3cf1bf8 100644
+--- a/kernel/trace/trace_events_user.c
++++ b/kernel/trace/trace_events_user.c
+@@ -359,6 +359,114 @@ static int user_event_parse_fields(struct user_event *user, char *args)
+ 
+ static struct trace_event_fields user_event_fields_array[1];
+ 
++static const char *user_field_format(const char *type)
++{
++	if (strcmp(type, "s64") == 0)
++		return "%lld";
++	if (strcmp(type, "u64") == 0)
++		return "%llu";
++	if (strcmp(type, "s32") == 0)
++		return "%d";
++	if (strcmp(type, "u32") == 0)
++		return "%u";
++	if (strcmp(type, "int") == 0)
++		return "%d";
++	if (strcmp(type, "unsigned int") == 0)
++		return "%u";
++	if (strcmp(type, "s16") == 0)
++		return "%d";
++	if (strcmp(type, "u16") == 0)
++		return "%u";
++	if (strcmp(type, "short") == 0)
++		return "%d";
++	if (strcmp(type, "unsigned short") == 0)
++		return "%u";
++	if (strcmp(type, "s8") == 0)
++		return "%d";
++	if (strcmp(type, "u8") == 0)
++		return "%u";
++	if (strcmp(type, "char") == 0)
++		return "%d";
++	if (strcmp(type, "unsigned char") == 0)
++		return "%u";
++	if (strstr(type, "char[") != 0)
++		return "%s";
++
++	/* Unknown, likely struct, allowed treat as 64-bit */
++	return "%llu";
++}
++
++static bool user_field_is_dyn_string(const char *type, const char **str_func)
++{
++	if (str_has_prefix(type, "__data_loc ")) {
++		*str_func = "__get_str";
++		goto check;
++	}
++
++	if (str_has_prefix(type, "__rel_loc ")) {
++		*str_func = "__get_rel_str";
++		goto check;
++	}
++
++	return false;
++check:
++	return strstr(type, "char") != 0;
++}
++
++#define LEN_OR_ZERO (len ? len - pos : 0)
++static int user_event_set_print_fmt(struct user_event *user, char *buf, int len)
++{
++	struct ftrace_event_field *field, *next;
++	struct list_head *head = &user->fields;
++	int pos = 0, depth = 0;
++	const char *str_func;
++
++	pos += snprintf(buf + pos, LEN_OR_ZERO, "\"");
++
++	list_for_each_entry_safe_reverse(field, next, head, link) {
++		if (depth != 0)
++			pos += snprintf(buf + pos, LEN_OR_ZERO, " ");
++
++		pos += snprintf(buf + pos, LEN_OR_ZERO, "%s=%s",
++				field->name, user_field_format(field->type));
++
++		depth++;
++	}
++
++	pos += snprintf(buf + pos, LEN_OR_ZERO, "\"");
++
++	list_for_each_entry_safe_reverse(field, next, head, link) {
++		if (user_field_is_dyn_string(field->type, &str_func))
++			pos += snprintf(buf + pos, LEN_OR_ZERO,
++					", %s(%s)", str_func, field->name);
++		else
++			pos += snprintf(buf + pos, LEN_OR_ZERO,
++					", REC->%s", field->name);
++	}
++
++	return pos + 1;
++}
++#undef LEN_OR_ZERO
++
++static int user_event_create_print_fmt(struct user_event *user)
++{
++	char *print_fmt;
++	int len;
++
++	len = user_event_set_print_fmt(user, NULL, 0);
++
++	print_fmt = kmalloc(len, GFP_KERNEL);
++
++	if (!print_fmt)
++		return -ENOMEM;
++
++	user_event_set_print_fmt(user, print_fmt, len);
++
++	user->call.print_fmt = print_fmt;
++
++	return 0;
++}
++
+ static enum print_line_t user_event_print_trace(struct trace_iterator *iter,
+ 						int flags,
+ 						struct trace_event *event)
+@@ -392,6 +500,7 @@ static int destroy_user_event(struct user_event *user)
+ 	clear_bit(user->index, page_bitmap);
+ 	hash_del(&user->node);
+ 
++	kfree(user->call.print_fmt);
+ 	kfree(EVENT_NAME(user));
+ 	kfree(user);
+ 
+@@ -669,8 +778,10 @@ static int user_event_parse(char *name, char *args, char *flags,
+ 	if (ret)
+ 		goto put_user;
+ 
+-	/* Minimal print format */
+-	user->call.print_fmt = "\"\"";
++	ret = user_event_create_print_fmt(user);
++
++	if (ret)
++		goto put_user;
+ 
+ 	user->call.data = user;
+ 	user->call.class = &user->class;
+-- 
+2.17.1
 
