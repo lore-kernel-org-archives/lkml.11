@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC784C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:08:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DEBBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:08:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346450AbiARQI1 (ORCPT
+        id S1346380AbiARQI3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:08:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51254 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346355AbiARQHi (ORCPT
+        Tue, 18 Jan 2022 11:08:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39034 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346359AbiARQHl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:07:38 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2282AC061759;
-        Tue, 18 Jan 2022 08:07:26 -0800 (PST)
+        Tue, 18 Jan 2022 11:07:41 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B5B7E612D8;
-        Tue, 18 Jan 2022 16:07:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90896C00446;
-        Tue, 18 Jan 2022 16:07:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 618D9612D1;
+        Tue, 18 Jan 2022 16:07:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FB21C00446;
+        Tue, 18 Jan 2022 16:07:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522045;
-        bh=N8Rgi53AUy+5nlRNc2Il+oQgNwWJTC8Or3+tDrNCYHM=;
+        s=korg; t=1642522060;
+        bh=euUqpoJamjbQtoMt2wX7hkoWVdt15chwwxCFqoDKJu8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eKgqgJIy/YMfRbVRClCiKY0hc42EOs/m+pY5RgOrMchXuvAvAuassskQfk22iltOA
-         OXWgkA7Eu7ahmI3hBJluJv5Zvb7pt4ZMAH9QGpu/8eh4j6nJyT1lLb9LToCrdpfT5W
-         MLwtdi9R3kSoR8WyRwQkxT4W8OQc0cRHYZJKO3rs=
+        b=vAWGSBeVbabiSC94S6MSanfjc4UXKmUQLnpl1wAbP5C7D5JR4V3q0Hlzk8tk1bWaE
+         2v5J7j1qIZywTC9maR+uB/paNpGYX68SWKeqxuvPZ3N2lQBfjk0Lgt6Bh3liUts9/3
+         EZ5zfxYwGnuNmhfipJA17knEWeRo/xQ4TNrOusIA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Gabriel Somlo <somlo@cmu.edu>,
-        Johan Hovold <johan@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>
-Subject: [PATCH 5.4 09/15] firmware: qemu_fw_cfg: fix sysfs information leak
-Date:   Tue, 18 Jan 2022 17:05:48 +0100
-Message-Id: <20220118160450.361050153@linuxfoundation.org>
+        stable@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 5.10 04/23] remoteproc: qcom: pil_info: Dont memcpy_toio more than is provided
+Date:   Tue, 18 Jan 2022 17:05:44 +0100
+Message-Id: <20220118160451.390365897@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118160450.062004175@linuxfoundation.org>
-References: <20220118160450.062004175@linuxfoundation.org>
+In-Reply-To: <20220118160451.233828401@linuxfoundation.org>
+References: <20220118160451.233828401@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,35 +46,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Stephen Boyd <swboyd@chromium.org>
 
-commit 1b656e9aad7f4886ed466094d1dc5ee4dd900d20 upstream.
+commit fdc12231d885119cc2e2b4f3e0fbba3155f37a56 upstream.
 
-Make sure to always NUL-terminate file names retrieved from the firmware
-to avoid accessing data beyond the entry slab buffer and exposing it
-through sysfs in case the firmware data is corrupt.
+If the string passed into qcom_pil_info_store() isn't as long as
+PIL_RELOC_NAME_LEN we'll try to copy the string assuming the length is
+PIL_RELOC_NAME_LEN to the io space and go beyond the bounds of the
+string. Let's only copy as many byes as the string is long, ignoring the
+NUL terminator.
 
-Fixes: 75f3e8e47f38 ("firmware: introduce sysfs driver for QEMU's fw_cfg device")
-Cc: stable@vger.kernel.org      # 4.6
-Cc: Gabriel Somlo <somlo@cmu.edu>
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Link: https://lore.kernel.org/r/20211201132528.30025-4-johan@kernel.org
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+This fixes the following KASAN error:
+
+ BUG: KASAN: global-out-of-bounds in __memcpy_toio+0x124/0x140
+ Read of size 1 at addr ffffffd35086e386 by task rmtfs/2392
+
+ CPU: 2 PID: 2392 Comm: rmtfs Tainted: G        W         5.16.0-rc1-lockdep+ #10
+ Hardware name: Google Lazor (rev3+) with KB Backlight (DT)
+ Call trace:
+  dump_backtrace+0x0/0x410
+  show_stack+0x24/0x30
+  dump_stack_lvl+0x7c/0xa0
+  print_address_description+0x78/0x2bc
+  kasan_report+0x160/0x1a0
+  __asan_report_load1_noabort+0x44/0x50
+  __memcpy_toio+0x124/0x140
+  qcom_pil_info_store+0x298/0x358 [qcom_pil_info]
+  q6v5_start+0xdf0/0x12e0 [qcom_q6v5_mss]
+  rproc_start+0x178/0x3a0
+  rproc_boot+0x5f0/0xb90
+  state_store+0x78/0x1bc
+  dev_attr_store+0x70/0x90
+  sysfs_kf_write+0xf4/0x118
+  kernfs_fop_write_iter+0x208/0x300
+  vfs_write+0x55c/0x804
+  ksys_pwrite64+0xc8/0x134
+  __arm64_compat_sys_aarch32_pwrite64+0xc4/0xdc
+  invoke_syscall+0x78/0x20c
+  el0_svc_common+0x11c/0x1f0
+  do_el0_svc_compat+0x50/0x60
+  el0_svc_compat+0x5c/0xec
+  el0t_32_sync_handler+0xc0/0xf0
+  el0t_32_sync+0x1a4/0x1a8
+
+ The buggy address belongs to the variable:
+  .str.59+0x6/0xffffffffffffec80 [qcom_q6v5_mss]
+
+ Memory state around the buggy address:
+  ffffffd35086e280: 00 00 00 00 02 f9 f9 f9 f9 f9 f9 f9 00 00 00 00
+  ffffffd35086e300: 00 02 f9 f9 f9 f9 f9 f9 00 00 00 06 f9 f9 f9 f9
+ >ffffffd35086e380: 06 f9 f9 f9 05 f9 f9 f9 00 00 00 00 00 06 f9 f9
+                    ^
+  ffffffd35086e400: f9 f9 f9 f9 01 f9 f9 f9 04 f9 f9 f9 00 00 01 f9
+  ffffffd35086e480: f9 f9 f9 f9 00 00 00 00 00 00 00 01 f9 f9 f9 f9
+
+Fixes: 549b67da660d ("remoteproc: qcom: Introduce helper to store pil info in IMEM")
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211117065454.4142936-1-swboyd@chromium.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/firmware/qemu_fw_cfg.c |    2 +-
+ drivers/remoteproc/qcom_pil_info.c |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/firmware/qemu_fw_cfg.c
-+++ b/drivers/firmware/qemu_fw_cfg.c
-@@ -598,7 +598,7 @@ static int fw_cfg_register_file(const st
- 	/* set file entry information */
- 	entry->size = be32_to_cpu(f->size);
- 	entry->select = be16_to_cpu(f->select);
--	memcpy(entry->name, f->name, FW_CFG_MAX_FILE_PATH);
-+	strscpy(entry->name, f->name, FW_CFG_MAX_FILE_PATH);
+--- a/drivers/remoteproc/qcom_pil_info.c
++++ b/drivers/remoteproc/qcom_pil_info.c
+@@ -104,7 +104,7 @@ int qcom_pil_info_store(const char *imag
+ 	return -ENOMEM;
  
- 	/* register entry under "/sys/firmware/qemu_fw_cfg/by_key/" */
- 	err = kobject_init_and_add(&entry->kobj, &fw_cfg_sysfs_entry_ktype,
+ found_unused:
+-	memcpy_toio(entry, image, PIL_RELOC_NAME_LEN);
++	memcpy_toio(entry, image, strnlen(image, PIL_RELOC_NAME_LEN));
+ found_existing:
+ 	/* Use two writel() as base is only aligned to 4 bytes on odd entries */
+ 	writel(base, entry + PIL_RELOC_NAME_LEN);
 
 
