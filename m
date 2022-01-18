@@ -2,100 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9585C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:53:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0073AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:53:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346781AbiARQxt (ORCPT
+        id S1346947AbiARQxz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:53:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33954 "EHLO
+        Tue, 18 Jan 2022 11:53:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33962 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346658AbiARQxk (ORCPT
+        with ESMTP id S1346699AbiARQxm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:53:40 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11D7C06161C;
-        Tue, 18 Jan 2022 08:53:39 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id c2so23544756wml.1;
-        Tue, 18 Jan 2022 08:53:39 -0800 (PST)
+        Tue, 18 Jan 2022 11:53:42 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6E2EC06173E
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 08:53:41 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id s61-20020a17090a69c300b001b4d0427ea2so2792119pjj.4
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 08:53:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=lRAWtfjjgO5udN5+BKSAfe9dAH85zJZw/J7zjuoQ9nM=;
-        b=Dqb8O6GEYwt8HCmaHuN1I+GcjxznFBzwxuZuQSEgO3bTJaokbixGAe8kgncdkE/VNz
-         bryh8WKSu10Jtncf2jG+g3DTXhINZ0XjLePrs70VSDJ86Nbo/OxIjWo6bnDqSow/fwxY
-         Hmu9bk5Cl8No5EvWiWvenUCcadbzXsGvzdUsWmO5Bh/juNwxmjVPTgB42Rf4uGysVR/+
-         jiYxH79KncyeO7ewBOtdgkgTYGjW9M0uWNMyQSaolx3YpxzCvLw6xoqSqLw0ffhvPSan
-         oGxwmiHDbhrJZUSn5b0dtXBwZj8xxJHbDJICT8v7DHbz17FqQVk3PAGsxQE/JyzfW2cu
-         RXDg==
+        d=google.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=17ero+JmYY0rlZzqUnRpiJFjxd5WooY484e7ezxJnGg=;
+        b=nA/EqyokxQDh0Z6iSAsPN5gQz3pg9mc1HDd1NqsDnOLJ0ePnZX9vLIR+TpvO90ouFb
+         83kv0wR+ZnAvt2FkLIUIXPak0/x8jA69CLCvG50Ju+i4dPisAGOcFOSdlWbYjCvhAoki
+         NJPqZIWUj+XsXsvdE8ZgHZcqXg6CEuMbXgGAttGCl/99d7pdibE58+iPNYh2qViVV67V
+         TIx9WiVpq+r33DZ6nhx2L5IQTLtLJvW2m08s0Fdhw4TqXZH+R0i7JKzEDf9zhqvbhtk6
+         gdKf/heJtyMIXLAgNiEdCmGGmdE5xVWL2KrU0PdSvdcIiEp2WAarLHnuXkbgMSUkDCwq
+         ZqyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=lRAWtfjjgO5udN5+BKSAfe9dAH85zJZw/J7zjuoQ9nM=;
-        b=A7F0fHRlCcosnuLSBU2VsEtjRssrvZ2ZdCxcKEi24etD3iCPWT6pP3u2jfJafVcMn0
-         M+bjolBq8yZmYU2WRGtzpHHtLBURjVjIzvu5WnZY0C8INTrpj5GRXSWHm5osy2IQxTXB
-         0gG+rP0iPGan4/kw/D51I9S7Dc+tgVyibVoXAXMBAPPXXzHkOtNanELLX35r2Wz0AA47
-         r3TebEORpbW7mpx/zzpLT1so3Y6Vre0AakItBDkrD1fzo9Jm8iZy0++xcM4HPgWiTrfv
-         NR1ei0Vpe3V70nxvPHOyWkBahLejILVM16VO3dn9mXZAKOTikDr4gzTOH6PuNWJ+HKrA
-         YiNQ==
-X-Gm-Message-State: AOAM530HOUk8R0PHUEDdZ4RSSx8y3JZPxr3zKA8rrTRw3ahPeq1CnGEY
-        LB+B7ry4soRULQL3F5nSB50=
-X-Google-Smtp-Source: ABdhPJwjm8rQCg0TKQgSjD4CWMm1aJAlhnlKVN716sTW6eCvfVZJFwlYsQUwAPUrNNgYjymzLCCbjA==
-X-Received: by 2002:a5d:59ac:: with SMTP id p12mr13734859wrr.9.1642524818602;
-        Tue, 18 Jan 2022 08:53:38 -0800 (PST)
-Received: from tiger.museclub.art (p200300cf9f235800e668694710673d4b.dip0.t-ipconnect.de. [2003:cf:9f23:5800:e668:6947:1067:3d4b])
-        by smtp.googlemail.com with ESMTPSA id o12sm10634141wrc.51.2022.01.18.08.53.37
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=17ero+JmYY0rlZzqUnRpiJFjxd5WooY484e7ezxJnGg=;
+        b=8JSRCKkWJvWG8sTTxUVAQn1DyR3XpnWqHQ4Kd8Ao4bCI8UNefkjYEE1gtNiAjBnSv0
+         osomcxs0+2pETGn7XicIKjw7W6sWUMqTntcAWz78JpH1p6qrmX9U2MZndILuqI0HcbWS
+         OP6nzBFfK9DgZZLdFXYPfkYjw1iRsetSBdKtyjiACwc1Fmmv3vtO/Qv7O5VCoUzinPw4
+         qcMB5wBgpoeOSVYzChYdYSNLCmXU3qc59YZ0HtcIrqCMdhSK7lJHAc/m61D35sO1YnL3
+         Z+PuUfBsV3pPn9RBdm5slArtl5857R2ok9VsAi9szGzmT9l4hgOHMHNcdwl8gX34V3sL
+         0Tcw==
+X-Gm-Message-State: AOAM533IQ75QEtPpRIDyF0QmmJacLCRlWXv/eUc3hqZ2+7dPn9QXjCqS
+        S2EhmtEg49usiwXtZ7SLfOdpdw==
+X-Google-Smtp-Source: ABdhPJz0fVRfWk8EqtTK8SitT8n+5BnP/3ULo+oRVr/GFzb5/kUW6Uoe1TU6AMmp5qrYVPJT31K2rA==
+X-Received: by 2002:a17:90a:e618:: with SMTP id j24mr2791720pjy.40.1642524821267;
+        Tue, 18 Jan 2022 08:53:41 -0800 (PST)
+Received: from google.com (157.214.185.35.bc.googleusercontent.com. [35.185.214.157])
+        by smtp.gmail.com with ESMTPSA id y13sm15552465pgi.53.2022.01.18.08.53.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 08:53:38 -0800 (PST)
-From:   Eugene Shalygin <eugene.shalygin@gmail.com>
-To:     eugene.shalygin@gmail.com
-Cc:     andy.shevchenko@gmail.com, pauk.denis@gmail.com,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org
-Subject: [ASUS EC Sensors v7 3/3] hwmon: deprecate asis_wmi_ec_sensors driver
-Date:   Tue, 18 Jan 2022 17:53:09 +0100
-Message-Id: <20220118165316.412735-4-eugene.shalygin@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118165316.412735-1-eugene.shalygin@gmail.com>
-References: <20220118165316.412735-1-eugene.shalygin@gmail.com>
+        Tue, 18 Jan 2022 08:53:40 -0800 (PST)
+Date:   Tue, 18 Jan 2022 16:53:37 +0000
+From:   Sean Christopherson <seanjc@google.com>
+To:     Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Igor Mammedov <imammedo@redhat.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/4] KVM: x86: Partially allow KVM_SET_CPUID{,2} after
+ KVM_RUN for CPU hotplug
+Message-ID: <YebwkcAgszlyTzJ+@google.com>
+References: <20220117150542.2176196-1-vkuznets@redhat.com>
+ <20220118153531.11e73048@redhat.com>
+ <498eb39c-c50a-afef-4d46-5c6753489d7e@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <498eb39c-c50a-afef-4d46-5c6753489d7e@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Deprecate the asus_wmi_ec_sensors driver in favor of the asus_ec_sensors
+On Tue, Jan 18, 2022, Paolo Bonzini wrote:
+> On 1/18/22 15:35, Igor Mammedov wrote:
+> > Can you check following scenario:
+> >   * on host that has IA32_TSX_CTRL and TSX enabled (RTM/HLE cpuid bits present)
+> >   * boot 2 vcpus VM with TSX enabled on VMM side but with tsx=off on kernel CLI
+> > 
+> >       that should cause kernel to set MSR_IA32_TSX_CTRL to 3H from initial 0H
+> >       and clear RTM+HLE bits in CPUID, check that RTM/HLE cpuid it cleared
+> > 
+> >   * hotunplug a VCPU and then replug it again
+> >      if IA32_TSX_CTRL is reset to initial state, that should re-enable
+> >      RTM/HLE cpuid bits and KVM_SET_CPUID2 might fail due to difference
+> > 
+> > and as Sean pointed out there might be other non constant leafs,
+> > where exact match check could leave userspace broken.
+> 
+> 
+> MSR_IA32_TSX_CTRL is handled differently straight during the CPUID call:
+> 
+>                 if (function == 7 && index == 0) {
+>                         u64 data;
+>                         if (!__kvm_get_msr(vcpu, MSR_IA32_TSX_CTRL, &data, true) &&
+>                             (data & TSX_CTRL_CPUID_CLEAR))
+>                                 *ebx &= ~(F(RTM) | F(HLE));
+>                 }
+> 
+> 
+> and I think we should redo all or most of kvm_update_cpuid_runtime
+> the same way.
 
-Signed-off-by: Eugene Shalygin <eugene.shalygin@gmail.com>
----
- drivers/hwmon/Kconfig | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/hwmon/Kconfig b/drivers/hwmon/Kconfig
-index 2c16b19d2c03..38094c702e4d 100644
---- a/drivers/hwmon/Kconfig
-+++ b/drivers/hwmon/Kconfig
-@@ -2243,13 +2243,16 @@ config SENSORS_ASUS_WMI
- 
- config SENSORS_ASUS_WMI_EC
- 	tristate "ASUS WMI B550/X570"
--	depends on ACPI_WMI
-+	depends on ACPI_WMI && SENSORS_ASUS_EC=n
- 	help
- 	  If you say yes here you get support for the ACPI embedded controller
- 	  hardware monitoring interface found in B550/X570 ASUS motherboards.
- 	  This driver will provide readings of fans, voltages and temperatures
- 	  through the system firmware.
- 
-+	  This driver is deprecated in favor of the ASUS EC Sensors driver
-+	  which provides fully compatible output.
-+
- 	  This driver can also be built as a module. If so, the module
- 	  will be called asus_wmi_sensors_ec.
- 
--- 
-2.34.1
-
+Please no.  xstate_required_size() requires multiple host CPUID calls, and glibc
+does CPUID.0xD.0x0 and CPUID.0xD.0x1 as part of its initialization, i.e. launching
+a new userspace process in the guest will see additional performance overhread due
+to KVM dynamically computing the XSAVE size instead of caching it based on vCPU
+state.  Nested virtualization would be especially painful as every one of those
+"host" CPUID invocations will trigger and exit from L1=>L0.
