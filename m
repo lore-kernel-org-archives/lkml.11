@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61B24C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6FA3C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:12:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349448AbiARDJn (ORCPT
+        id S1354391AbiARDKH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:09:43 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58986 "EHLO
+        Mon, 17 Jan 2022 22:10:07 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57852 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349988AbiARCu5 (ORCPT
+        with ESMTP id S1350130AbiARCvR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:50:57 -0500
+        Mon, 17 Jan 2022 21:51:17 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EACE4B811D7;
-        Tue, 18 Jan 2022 02:50:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E81CFC36AEB;
-        Tue, 18 Jan 2022 02:50:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EC91DB811D6;
+        Tue, 18 Jan 2022 02:51:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9387FC36AEB;
+        Tue, 18 Jan 2022 02:51:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474254;
-        bh=NWZwtIg3tmBBM8P4IdY6qZLM6UCm8Zt9XReei62OV98=;
+        s=k20201202; t=1642474274;
+        bh=qbuJzMLstbf2L54xjwrmp0834IdyaWQYNr1ugUCfyB4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WBoKw9tbtXYkaQ33WPdS9KNyxVQc8rTJuW5PwMHjyPhbBEb6h77WROZAlgH4idqqL
-         2h0mBxSlFQNNeGyaeUKkINBCtRkHQWR9+aYfdBGUCQzSnIS7Wl3Z+QOTn7jVJi2qim
-         atVUmqzBKcly3VYviSGiA8kCNWptbCozR04j7Ho96pkRqd6PcUnlPAVjDfsehLMDoQ
-         lyxmtt+ccyV2Wr8r9U4zmXYvMUNFUakQ/i4N340k2HE++1OA3FOnq1dvv0h6/qjdnl
-         G6b4naNYQmA4HaxQ8uutBE/8XcwrpxpMEVKbOnawxR8FiwBL6JE2p5ELfR4KB1XKdb
-         QTGKc7gZR/tSQ==
+        b=pvORHCm/K7I5NC8DhO35LSXDiBRskp71Vmgx7tHM5i8SxCyTXy81KFlVy0JeCPVVa
+         71eS3bKglknTyzgOAYx4iU9e3qoh5Y8mFyDo+bUaPMtUO7Gg8cIzj4LcWEVqPlyMEi
+         0+186b2YcDbB0M5cFIUC5ftnEvekZbfpW89GfjNFFWf5MX/4dFZOODBgMJFHpJd29A
+         gXi2/BCho1yciPFdfDOLt5izzDaM7jG51NvmWwu7Ni1NMrsOQ1A3Sat9jE/F8c/QiX
+         rMvqcvFaX5Y85ID/WkHZkpZfw495Un46gZa8peF+gRT83E4/bJSNtzwiEWrSCHkIyx
+         Opala18dNYShg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>,
-        Richard Weinberger <richard@nod.at>,
-        Sasha Levin <sashal@kernel.org>, dwmw2@infradead.org,
-        joel@jms.id.au, linux-mtd@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.14 42/56] jffs2: GC deadlock reading a page that is used in jffs2_write_begin()
-Date:   Mon, 17 Jan 2022 21:48:54 -0500
-Message-Id: <20220118024908.1953673-42-sashal@kernel.org>
+Cc:     John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        James.Bottomley@HansenPartnership.com, svens@stackframe.org,
+        wangkefeng.wang@huawei.com, rmk+kernel@armlinux.org.uk,
+        akpm@linux-foundation.org, ebiederm@xmission.com,
+        linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 56/56] parisc: Avoid calling faulthandler_disabled() twice
+Date:   Mon, 17 Jan 2022 21:49:08 -0500
+Message-Id: <20220118024908.1953673-56-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
 References: <20220118024908.1953673-1-sashal@kernel.org>
@@ -50,131 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>
+From: John David Anglin <dave.anglin@bell.net>
 
-[ Upstream commit aa39cc675799bc92da153af9a13d6f969c348e82 ]
+[ Upstream commit 9e9d4b460f23bab61672eae397417d03917d116c ]
 
-GC task can deadlock in read_cache_page() because it may attempt
-to release a page that is actually allocated by another task in
-jffs2_write_begin().
-The reason is that in jffs2_write_begin() there is a small window
-a cache page is allocated for use but not set Uptodate yet.
+In handle_interruption(), we call faulthandler_disabled() to check whether the
+fault handler is not disabled. If the fault handler is disabled, we immediately
+call do_page_fault(). It then calls faulthandler_disabled(). If disabled,
+do_page_fault() attempts to fixup the exception by jumping to no_context:
 
-This ends up with a deadlock between two tasks:
-1) A task (e.g. file copy)
-   - jffs2_write_begin() locks a cache page
-   - jffs2_write_end() tries to lock "alloc_sem" from
-	 jffs2_reserve_space() <-- STUCK
-2) GC task (jffs2_gcd_mtd3)
-   - jffs2_garbage_collect_pass() locks "alloc_sem"
-   - try to lock the same cache page in read_cache_page() <-- STUCK
+no_context:
 
-So to avoid this deadlock, hold "alloc_sem" in jffs2_write_begin()
-while reading data in a cache page.
+        if (!user_mode(regs) && fixup_exception(regs)) {
+                return;
+        }
 
-Signed-off-by: Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>
-Signed-off-by: Richard Weinberger <richard@nod.at>
+        parisc_terminate("Bad Address (null pointer deref?)", regs, code, address);
+
+Apart from the error messages, the two blocks of code perform the same
+function.
+
+We can avoid two calls to faulthandler_disabled() by a simple revision
+to the code in handle_interruption().
+
+Note: I didn't try to fix the formatting of this code block.
+
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/jffs2/file.c | 40 +++++++++++++++++++++++++---------------
- 1 file changed, 25 insertions(+), 15 deletions(-)
+ arch/parisc/kernel/traps.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/jffs2/file.c b/fs/jffs2/file.c
-index bd0428bebe9b7..221eb2bd205e4 100644
---- a/fs/jffs2/file.c
-+++ b/fs/jffs2/file.c
-@@ -135,20 +135,15 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 	struct page *pg;
- 	struct inode *inode = mapping->host;
- 	struct jffs2_inode_info *f = JFFS2_INODE_INFO(inode);
-+	struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
- 	pgoff_t index = pos >> PAGE_SHIFT;
- 	uint32_t pageofs = index << PAGE_SHIFT;
- 	int ret = 0;
+diff --git a/arch/parisc/kernel/traps.c b/arch/parisc/kernel/traps.c
+index 9a898d68f4a0d..346456c43aa0b 100644
+--- a/arch/parisc/kernel/traps.c
++++ b/arch/parisc/kernel/traps.c
+@@ -795,7 +795,7 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
+ 	     * unless pagefault_disable() was called before.
+ 	     */
  
--	pg = grab_cache_page_write_begin(mapping, index, flags);
--	if (!pg)
--		return -ENOMEM;
--	*pagep = pg;
--
- 	jffs2_dbg(1, "%s()\n", __func__);
- 
- 	if (pageofs > inode->i_size) {
- 		/* Make new hole frag from old EOF to new page */
--		struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
- 		struct jffs2_raw_inode ri;
- 		struct jffs2_full_dnode *fn;
- 		uint32_t alloc_len;
-@@ -159,7 +154,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 		ret = jffs2_reserve_space(c, sizeof(ri), &alloc_len,
- 					  ALLOC_NORMAL, JFFS2_SUMMARY_INODE_SIZE);
- 		if (ret)
--			goto out_page;
-+			goto out_err;
- 
- 		mutex_lock(&f->sem);
- 		memset(&ri, 0, sizeof(ri));
-@@ -189,7 +184,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 			ret = PTR_ERR(fn);
- 			jffs2_complete_reservation(c);
- 			mutex_unlock(&f->sem);
--			goto out_page;
-+			goto out_err;
- 		}
- 		ret = jffs2_add_full_dnode_to_inode(c, f, fn);
- 		if (f->metadata) {
-@@ -204,13 +199,26 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 			jffs2_free_full_dnode(fn);
- 			jffs2_complete_reservation(c);
- 			mutex_unlock(&f->sem);
--			goto out_page;
-+			goto out_err;
- 		}
- 		jffs2_complete_reservation(c);
- 		inode->i_size = pageofs;
- 		mutex_unlock(&f->sem);
- 	}
- 
-+	/*
-+	 * While getting a page and reading data in, lock c->alloc_sem until
-+	 * the page is Uptodate. Otherwise GC task may attempt to read the same
-+	 * page in read_cache_page(), which causes a deadlock.
-+	 */
-+	mutex_lock(&c->alloc_sem);
-+	pg = grab_cache_page_write_begin(mapping, index, flags);
-+	if (!pg) {
-+		ret = -ENOMEM;
-+		goto release_sem;
-+	}
-+	*pagep = pg;
-+
- 	/*
- 	 * Read in the page if it wasn't already present. Cannot optimize away
- 	 * the whole page write case until jffs2_write_end can handle the
-@@ -220,15 +228,17 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
- 		mutex_lock(&f->sem);
- 		ret = jffs2_do_readpage_nolock(inode, pg);
- 		mutex_unlock(&f->sem);
--		if (ret)
--			goto out_page;
-+		if (ret) {
-+			unlock_page(pg);
-+			put_page(pg);
-+			goto release_sem;
-+		}
- 	}
- 	jffs2_dbg(1, "end write_begin(). pg->flags %lx\n", pg->flags);
--	return ret;
- 
--out_page:
--	unlock_page(pg);
--	put_page(pg);
-+release_sem:
-+	mutex_unlock(&c->alloc_sem);
-+out_err:
- 	return ret;
- }
- 
+-	    if (fault_space == 0 && !faulthandler_disabled())
++	    if (faulthandler_disabled() || fault_space == 0)
+ 	    {
+ 		/* Clean up and return if in exception table. */
+ 		if (fixup_exception(regs))
 -- 
 2.34.1
 
