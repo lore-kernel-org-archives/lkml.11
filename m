@@ -2,48 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8C65C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:36:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A953C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:36:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353241AbiARDer (ORCPT
+        id S1353641AbiARDg0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:34:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45176 "EHLO
+        Mon, 17 Jan 2022 22:36:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44996 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359845AbiARDb7 (ORCPT
+        with ESMTP id S1353473AbiARDdF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:31:59 -0500
+        Mon, 17 Jan 2022 22:33:05 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E29CCC0219B3;
-        Mon, 17 Jan 2022 19:08:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47FD7C037005;
+        Mon, 17 Jan 2022 19:08:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8A413601E3;
-        Tue, 18 Jan 2022 03:08:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C53DBC36AEB;
-        Tue, 18 Jan 2022 03:08:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DACA860BC5;
+        Tue, 18 Jan 2022 03:08:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED9ABC36AEB;
+        Tue, 18 Jan 2022 03:08:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642475306;
-        bh=i5PnfJ5ACF12zxhZM9oXbHuElB0dKR9hdwAK0CLrRJE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=epguTbfMd7zM9GfUIx0lkN2XEQApTuvwPQhNFaeNehuWpv5l+H4ea5DXGhIe3MrYO
-         bDqu3H2AtosYOqrCoknUnRaZGw/d7MZkFAERAflCcwRWFmgz3BXiJ5JlVGYTMIdT5P
-         +jrd4gC6UfN5gWVB6ft2u70ggJxl6iTAVwNWzqbNbu0IY/ltUWAHovVU7dRWwi4Lrc
-         Y1+sK6hPtzR3nq2fpNSLuwn5EGxKJanA1ryvSKcRLp+z311uPXrICMZYX3JAgb9q8z
-         diRDkYKAuFi9lRrUFbPPQuiQnKDSFixH2BL4Dlpr9LeeaI311MHbgol5cpIZRigVbA
-         1RteFe9RFySuQ==
+        s=k20201202; t=1642475338;
+        bh=x0GDq5/TGahdJpi0k1BZhKdPLlEVphD7FM3LYcMZxcg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VO2/kE4vWzapmNvQSJEzdrvsXSFNEh90pW7IfPSvVtYK2h2BMk2fI8kiTTvogATYv
+         sCkMs+BzYSD4DvHZpfQe2x4c9b5tI/MbXBGGXzx8IhJAKltWjM1jaGuyXrfvrqvpMg
+         c9l1bezs2xxKEsgE37mdR2EJmZbDxBvJgK6p92qcn8CLR6Un2pi1HcsiiYtqWyqbQ5
+         +XR1m+/bD6PJFzxththNDoajxBMpLHaq0/ZDfsdAHR6l5zSBM9LItXJkIkqBeasVpN
+         Rd2aRIy5M9/kWobeXeHC7eszTsiSnxryWVBzYNCeh72jMK9bt4H5B0Fh1HgyuFGftD
+         d1EtUHjn6otlQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wei Yongjun <weiyongjun1@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 01/29] Bluetooth: Fix debugfs entry leak in hci_register_dev()
-Date:   Mon, 17 Jan 2022 22:07:54 -0500
-Message-Id: <20220118030822.1955469-1-sashal@kernel.org>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Maximilian Ernestus <maximilian@ernestus.de>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 12/29] iwlwifi: mvm: synchronize with FW after multicast commands
+Date:   Mon, 17 Jan 2022 22:08:05 -0500
+Message-Id: <20220118030822.1955469-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220118030822.1955469-1-sashal@kernel.org>
+References: <20220118030822.1955469-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,38 +56,70 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-[ Upstream commit 5a4bb6a8e981d3d0d492aa38412ee80b21033177 ]
+[ Upstream commit db66abeea3aefed481391ecc564fb7b7fb31d742 ]
 
-Fault injection test report debugfs entry leak as follows:
+If userspace installs a lot of multicast groups very quickly, then
+we may run out of command queue space as we send the updates in an
+asynchronous fashion (due to locking concerns), and the CPU can
+create them faster than the firmware can process them. This is true
+even when mac80211 has a work struct that gets scheduled.
 
-debugfs: Directory 'hci0' with parent 'bluetooth' already present!
+Fix this by synchronizing with the firmware after sending all those
+commands - outside of the iteration we can send a synchronous echo
+command that just has the effect of the CPU waiting for the prior
+asynchronous commands to finish. This also will cause fewer of the
+commands to be sent to the firmware overall, because the work will
+only run once when rescheduled multiple times while it's running.
 
-When register_pm_notifier() failed in hci_register_dev(), the debugfs
-create by debugfs_create_dir() do not removed in the error handing path.
-
-Add the remove debugfs code to fix it.
-
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=213649
+Suggested-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Reported-by: Maximilian Ernestus <maximilian@ernestus.de>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211204083238.51aea5b79ea4.I88a44798efda16e9fe480fb3e94224931d311b29@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/hci_core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/iwlwifi/mvm/mac80211.c | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index eefaa10c74dbb..1cc78b88a0d9f 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3459,6 +3459,7 @@ int hci_register_dev(struct hci_dev *hdev)
- 	return id;
+diff --git a/drivers/net/wireless/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/iwlwifi/mvm/mac80211.c
+index ca498b1f1f568..6417fda88733c 100644
+--- a/drivers/net/wireless/iwlwifi/mvm/mac80211.c
++++ b/drivers/net/wireless/iwlwifi/mvm/mac80211.c
+@@ -1957,6 +1957,7 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
+ 	struct iwl_mvm_mc_iter_data iter_data = {
+ 		.mvm = mvm,
+ 	};
++	int ret;
  
- err_wqueue:
-+	debugfs_remove_recursive(hdev->debugfs);
- 	destroy_workqueue(hdev->workqueue);
- 	destroy_workqueue(hdev->req_workqueue);
- err:
+ 	lockdep_assert_held(&mvm->mutex);
+ 
+@@ -1966,6 +1967,22 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
+ 	ieee80211_iterate_active_interfaces_atomic(
+ 		mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
+ 		iwl_mvm_mc_iface_iterator, &iter_data);
++
++	/*
++	 * Send a (synchronous) ech command so that we wait for the
++	 * multiple asynchronous MCAST_FILTER_CMD commands sent by
++	 * the interface iterator. Otherwise, we might get here over
++	 * and over again (by userspace just sending a lot of these)
++	 * and the CPU can send them faster than the firmware can
++	 * process them.
++	 * Note that the CPU is still faster - but with this we'll
++	 * actually send fewer commands overall because the CPU will
++	 * not schedule the work in mac80211 as frequently if it's
++	 * still running when rescheduled (possibly multiple times).
++	 */
++	ret = iwl_mvm_send_cmd_pdu(mvm, ECHO_CMD, 0, 0, NULL);
++	if (ret)
++		IWL_ERR(mvm, "Failed to synchronize multicast groups update\n");
+ }
+ 
+ static u64 iwl_mvm_prepare_multicast(struct ieee80211_hw *hw,
 -- 
 2.34.1
 
