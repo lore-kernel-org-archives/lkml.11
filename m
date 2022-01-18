@@ -2,165 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E127C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 11:43:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8168CC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 11:44:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237441AbiARLnn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 06:43:43 -0500
-Received: from mout.gmx.net ([212.227.17.21]:53893 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236427AbiARLnk (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 06:43:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1642506205;
-        bh=OVZiZdDalsKRTw9Oarq8Z2Q9xU7mGMuBV/zpzi+L3EY=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=B+cqK2Xst/aEu85PHlKOm/GE1ByaoMeUS1bwEzxwJ/YjoMl7eBvmqreyFJRUbY2c4
-         LkK/Q+eTMdQKRnZg8cZUoi28QGG/aWsgX3I5EynBA4CYuKkHxjfjLRHKhrxBkLjB+w
-         Bj1q/wGDVJ9WT8RsE8QcdALcUZA6be2zeBQ+SnNE=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.155.155]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mqb1c-1mW2EX25uS-00mZVq; Tue, 18
- Jan 2022 12:43:25 +0100
-Message-ID: <1400f204-9dd0-585b-d58f-be98977d40b4@gmx.de>
-Date:   Tue, 18 Jan 2022 12:42:20 +0100
+        id S241014AbiARLo0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 06:44:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:37752 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236427AbiARLoP (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 06:44:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642506255;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=8U3jGh8wUjHRYKJpJBPp8vZAQ/5jxuWNA7E7/BWluDg=;
+        b=WnEc6rPKrnXBmdh6mt26i/gnR50ucrNyfZjKWduhJOW7jSdVxeFumuWNoNCpgXOBf7sNKV
+        zZT5Be1GkGQ4qPRj7AgycEoJiIsMyUf7DYA8zQMsUDi9t0cqOpui1dp4DlfT3QLTfJiWf5
+        PeVW8G6c7c1zm0WR6Z6P1JY+H7QezSE=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-588-V4jlgDatNmK7Xj5fNxsOOg-1; Tue, 18 Jan 2022 06:44:14 -0500
+X-MC-Unique: V4jlgDatNmK7Xj5fNxsOOg-1
+Received: by mail-wm1-f72.google.com with SMTP id v185-20020a1cacc2000000b0034906580813so1657164wme.1
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 03:44:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=8U3jGh8wUjHRYKJpJBPp8vZAQ/5jxuWNA7E7/BWluDg=;
+        b=zjK5P5RaVydOVyz2bnA/anCZ2D4brYvTBdcrW7bPgb9HvCO7xuBcIZaD/9tkW9P0Mr
+         3Y+u0/8DT36lBZlRFLfWzsS2xG7863mahjYya18f0FAMsEe0QwZIQ/i+SZgA5AVQAc7P
+         GpQENi7FqzAG04u1WiR2bPvmK3e3LqP5V4r0sVRrVSthv49RGT2fePsuWDCEcOPOkr6B
+         Rg/9ms72z71gi6GoOxSTxszSkqe5Mm/K+7Vxh3ErKjuRpLXi98XMSs6sRsZ7gkny0isf
+         L2O3SSoLgmgrbjt5etJD6zcELKvZBa9nx+RpAxT5lghMVjfsaLkZ45kWEQslUqYYi/rO
+         hgDQ==
+X-Gm-Message-State: AOAM533KUHJbKXRDGx+Pdp36vPvMJtj6rhTzVHeqWtaA++WEXgY8Jjgl
+        80D3ULCD89pB3KDkFbQL5WwHyu6X5o4tReH46XgNgNKuC0rz8kizv7NMAVJLLU7HJIUqtoOpDgW
+        RPcKLK+JtDx8nef3AFzHnswfZ
+X-Received: by 2002:a1c:19c1:: with SMTP id 184mr31261631wmz.61.1642506252864;
+        Tue, 18 Jan 2022 03:44:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyD4snZ3GPjXyCXaZbanPrNUOhbLbnXgN4NvXzdfnk1YTr19HNCsUmm/J3AjYWPohJ93Xh+QA==
+X-Received: by 2002:a1c:19c1:: with SMTP id 184mr31261606wmz.61.1642506252638;
+        Tue, 18 Jan 2022 03:44:12 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id m20sm2390928wms.4.2022.01.18.03.44.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 18 Jan 2022 03:44:12 -0800 (PST)
+Message-ID: <073cdc28-6dbb-a2d1-ee1b-f3b53d5b7c81@redhat.com>
+Date:   Tue, 18 Jan 2022 12:44:10 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] KVM: avoid warning on s390 in mark_page_dirty
 Content-Language: en-US
-To:     Daniel Vetter <daniel@ffwll.ch>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        linux-fbdev@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-References: <YeG8ydoJNWWkGrTb@ls3530>
- <CAKMK7uGdJckdM+fg+576iJXsqzCOUg20etPBMwRLB9U7GcG01Q@mail.gmail.com>
- <c80ed72c-2eb4-16dd-a7ad-57e9dde59ba1@gmx.de>
- <CAKMK7uHVHn9apB6YYbLSwu+adEB2Fqp4FM0z582zf4F-v3_GnQ@mail.gmail.com>
- <cf21018b-f231-7538-169e-2ad450643cbf@gmx.de>
- <97d49bca-f5f7-dba4-b62d-b6fcdd4276ac@suse.de> <87ee5659dt.fsf@intel.com>
- <4f1d6018-d74e-8e62-ea4d-0ca79c6bbbc5@gmx.de> <87a6ft5thv.fsf@intel.com>
- <5ba33e10-7d75-9f9a-dfd6-c04608d230a4@gmx.de>
- <CAKMK7uG48Due9Tv_78BJT52hvC5JcbT6-7S6_Qt7FiZ-GrTRzw@mail.gmail.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <CAKMK7uG48Due9Tv_78BJT52hvC5JcbT6-7S6_Qt7FiZ-GrTRzw@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:lDiZyS6g5iqJz/lN9mJZPXs48v72kiI5GG1vLQMF+5g7E7UcP5W
- W132AflH+PH8BskWgqJOMlJGq8JRlpP64ztE/HUnCdnutuZ5F5S4AvJM6rSm3a6CoZu3Ame
- zVfdObBXs6czmVHm07XDhq8rus84QFLaVCm/fJZDVH+IhCW3lRLj5ZWLTf0sgr3pu5e/Nh+
- vsyFO4CRqgTZpl0zYm1Zw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:3y58DFp/irM=:aIMj5d47/jhwtJ4ZreUTEN
- rGvLjc2e2YAucN5fWH5xFh9a96DIz+97wCPg0Krd1ahoKzZ7OyI/DNYdHRHLctSlM9FNXo/eg
- baeLaWlpE069ulOemkXaflxC2N0Ce6vYzIwT8fAm2LbulBLTwF7wFwhEMESxmWRQI6OrKwbS4
- c8Lef07488MLToiAg0NV+7Q/DQL8lCPxvQq7QWD8KMplQbKrtACLGUJTFtJYKmoQ3uu45GH8P
- qy9ruCVWQ91EV8kco6n72I6vW4sHwSbwUK5EYyEvrP0vxxSP5r/sBuIdn66ITnw6XvRzWAVAK
- 387gOPt9MbGUCOyzmfXoRrDmBI+oXL+i/aby6ryOSgYbpFwrXwhL4ZaCc4dpvfnwOuhcNmz9J
- STk2DFYtvOmPz/gPOFlUeBPF2s9d8UzauBvzjN4makRdFDHUpEfBSbWsmQdvHpkAcHHFcFTYU
- mmJET6MML0gm7AeAUO8Z101/ZVPdjI9LH0vTZPN6EP9HYT2Jdbd1B/yq8cdIwXBMoS6mS73Vy
- +L9F7CeuQOBNXuYn4auoW/W+Z0Fw0JgWByXVtf7xnKm4oblVzD/QiPzGhc4eXfr3Q5HJvxgJN
- 5YbPBj9gIRffSnaypYgYopbyL2e21ZMTtwGv+waZrr3oJkvH1YyXtbFDgLYyKtirIyz/OmZGu
- KyaJKrsMvc8Gvcs6qFPmaelnCwZtosmZjTIJHEVCm/BrBQj4MsSme6M+janml9g/BZIS6HV1i
- dQPxvksDf5hqZBjyh2WcsRAt0s3NpBw9TG9mGFXM+xA+WdVOtMQPUhgBL36mXsCpC348bJs4h
- E8XJ6qIMoR5mB740oOFK6y7D4Y2qK5S5h3EIt6iYyxOrP8nSchsrgbTCbzdBgb4OLP5Ytw10u
- Ktfddx206+9N3+CXukD4yQa5B75XzP4uR5nCOGmMr5zp/4HrHaYv45l1mB7Gt51KU8xfk9lnX
- dcOYSm3un6jqNJgXNhkSNJn6gSU0FsJfol3kp++7H0RREnoGVB4EOPvlOu7X9q5vmn8e0TDmh
- YCfQoPCOjx+lgTiYRUxmt5Qw1APwxl0+3iZyxq6sn8dwm1yy3qJcoK19l0xd8qTVqYx+/UPxX
- H2gBnUhHH/7JKA=
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        dwmw2@infradead.org
+Cc:     butterflyhuangxx@gmail.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, seanjc@google.com,
+        Cornelia Huck <cohuck@redhat.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        David Hildenbrand <david@redhat.com>,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        Thomas Huth <thuth@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>
+References: <e9e5521d-21e5-8f6f-902c-17b0516b9839@redhat.com>
+ <20220113122924.740496-1-borntraeger@linux.ibm.com>
+ <eda019b1-8e1d-5d2b-4be4-2725e5814b23@linux.ibm.com>
+ <14380a1b-669f-8f0f-139b-7c89fabd4276@redhat.com>
+ <d39d9a13-e797-b7d3-6240-db3957b6ff53@linux.ibm.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <d39d9a13-e797-b7d3-6240-db3957b6ff53@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-	On 1/18/22 12:18, Daniel Vetter wrote:
-> On Tue, Jan 18, 2022 at 9:56 AM Helge Deller <deller@gmx.de> wrote:
->>
->> On 1/18/22 09:38, Jani Nikula wrote:
->>> On Mon, 17 Jan 2022, Helge Deller <deller@gmx.de> wrote:
->>>> On 1/17/22 22:40, Jani Nikula wrote:
->>>>> On Mon, 17 Jan 2022, Thomas Zimmermann <tzimmermann@suse.de> wrote:
->>>>>> Seems like few people read linux-fbdev these days.
->>>>>
->>>>> How much traffic is there to linux-fbdev that is *not* Cc'd to dri-d=
-evel
->>>>> also?
->>>>
->>>> Doesn't seem like much traffic - which IMHO is OK for such a tree wit=
-h
->>>> mostly just maintenance patches.
->>>>
->>>>> Do we still need a separate linux-fbdev mailing list at all?
->>>>
->>>> Yes. I want to have it seperate of dri-devel.
->>>> Actually I'd prefer to drop dri-devel from the list where patches
->>>> for fbdev are sent...
+On 1/18/22 09:53, Christian Borntraeger wrote:
 >>>
->>> Disagreed. If anything, this thread shows we can't have fbdev and drm =
-in
->>> silos of their own.
+>>> Paolo, are you going to pick this for next for the time being?
+>>>
 >>
->> Patches to fbdev usually don't affect DRM.
->> Patches which affect DRM needs to through to dri-devel.
->> In addition this would take the burden of the dri-developers to receive
->> unrelated fbdev driver updates and patches.
->
-> I added dri-devel for fbdev because stuff landed that shouldn't have.
-> Let's not remove that, because the amount of patches for fbdev which
-> arent relevant for drm drivers is pretty much nothing.
-
-I'm fine with keeping both lists mentioned in the MAINTAINERS file.
-It was a proposal and I understand you want to keep it. Ok for me.
-
-> I really don't like the idea that fbdev goes off again becoming a
-> silo, just because it's too hard to wire through low-bit greyscale
-> support. Which no I can't type for you, because I don't have such hw
-> here.
->
-> Everything where people cared enough for adding fbdev compat support
-> for to actually write a patch is supported.
->
-> If you do want a silo  for fbdev then I think the only reasonable
-> option is that we create a copy of the fbdev/fbcon code for drm
-> (somewhat renamed), so that you can do the reverts without impacting
-> drm drivers.
-
-I don't see *any impact* on drm drivers at all if both patches would be
-reverted now.
-
-> But there will still be some overlap and minimal
-> coordination, plus I'm not seeing anyone from the drm side
-> volunteering for the sizeable amount of work.
-
-I wonder why you don't want to give it a try?
-My current proposal is to revert those two changes.
-Reverting them does not affect DRM code.
-
-Both DRM and some fbdev drivers still share excactly the same code paths i=
-n the SCROLL_REDRAW case.
-In addition there are some fbdev drivers which provide 2D support and inst=
-ead allow SCROLL_MOVE.
-That's it.
-
-Currently I don't know which other cleanups or refactorings of fbcon are
-planned from DRM side, but I'm sure there is a easy way to keep both suppo=
-rted.
-
-If it then really turns out that it's not possible we can decide then how
-to continue.
-
-Helge
-
-> -Daniel
->
->>> Also, if the patches continue to get merged through drm-misc, they nee=
-d
->>> to be sent to dri-devel.
+>> Yep, done now.
 >>
->> Helge
->
->
->
+>> Paolo
+> 
+> Thanks. I just realized that Davids patch meanwhile landed in Linus 
+> tree. So better
+> take this via master and not next.
+
+Yeah, I understood what you meant. :)  In fact, "master" right now is 
+still on 5.16 (for patches that are destined to stable, but have 
+conflicts merge window changes; those are pushed to master and merged 
+from there into next).  There will be another pull request this week and 
+it will have this patch.
+
+> Maybe also add
+> Fixes: 2efd61a608b0 ("KVM: Warn if mark_page_dirty() is called without 
+> an active vCPU")
+> in case the patch is picked for stable
+
+Ok, will do.
+
+Paolo
 
