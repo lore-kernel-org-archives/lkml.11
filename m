@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C56C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:23:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 897A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:23:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356850AbiARDTv (ORCPT
+        id S1356974AbiARDUM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:19:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38724 "EHLO
+        Mon, 17 Jan 2022 22:20:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354268AbiARDFl (ORCPT
+        with ESMTP id S1343826AbiARDG1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:05:41 -0500
+        Mon, 17 Jan 2022 22:06:27 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A3D7C0219A9;
-        Mon, 17 Jan 2022 18:48:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DCF7C08EDC7;
+        Mon, 17 Jan 2022 18:48:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBF52612E8;
-        Tue, 18 Jan 2022 02:48:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EF4CFC36AE3;
-        Tue, 18 Jan 2022 02:48:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 125616130A;
+        Tue, 18 Jan 2022 02:48:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96B41C36AF2;
+        Tue, 18 Jan 2022 02:48:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474100;
-        bh=PIyLa4ELjeI5QQK5WZvLFj1ibfHS6JGeQe6jFV3Gj2g=;
+        s=k20201202; t=1642474121;
+        bh=HXBz4iIj6SssWXxb0Jk5bHyZF6LEh0NLFm3vPNBODT0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kuw1Nd8oLRLH0QGGLYOQfRNFvMK/zUyLwHG5Bt7iovTL7nCxhxzqOxyRTLmfLVsze
-         TJ6J2agveEfDREjxXaAQQyc8ZnArymkyy3UbFM2Awgr8IFf0sngXbo4VbCay/02I+Y
-         Y6iD2fm38L/2PpOllJDYnY7IArS5Y8cDpNbk2D9dgRTYODbPY5sCd95UsQFTUYR7kj
-         RooAezxTtMH6QO57XZqcYK9mCw3nw9tss5I36b17ivIziCc1uKCZxdUV4Pej+h0RDQ
-         5Zh1ipZV6GzYLiaOFbjzfALayBYblVGRkK8yqRzY+GoOwTHhn8wMh3IkR+W0n713sL
-         6K/JqFRy74UWA==
+        b=dma4SAeSva9obi5FbhyeZ2IB5I/hzXfbPeQ3Su7FvkZVCFyBO3+BtAmWAc64OlpC0
+         cauRWz+46o0vBM82J5JBwcbyJltsaexFsSz+FuNfJR0+o4GiSQGi9hWOoeERAOBr29
+         ckCW97cVsMMfj28GXqn9rOriBvJxiV3O6YpVNMeMMtxT/ZeCWG7jleMUrUTl5wcitF
+         sveC/8P3IKK7OrycY5eisZe7WL+vFg11sT3EfsaDHXX5ha30V6gl+78jPQd8ILtYR2
+         UWaCVfGAoEIYi743HzMEytaYYJmCs+8xXMZrBp7w5E2jW8RoInR7CnHr9hRHBccTBY
+         +0EaR0eS5kHLw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Alan Stern <stern@rowland.harvard.edu>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, mathias.nyman@linux.intel.com,
-        Thinh.Nguyen@synopsys.com, chris.chiu@canonical.com,
-        cuibixuan@huawei.com, rajatja@google.com, linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 35/59] usb: hub: Add delay for SuperSpeed hub resume to let links transit to U0
-Date:   Mon, 17 Jan 2022 21:46:36 -0500
-Message-Id: <20220118024701.1952911-35-sashal@kernel.org>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Lenny Szubowicz <lszubowi@redhat.com>,
+        Bob Moore <robert.moore@intel.com>,
+        Sasha Levin <sashal@kernel.org>, linux-acpi@vger.kernel.org,
+        devel@acpica.org
+Subject: [PATCH AUTOSEL 4.19 44/59] ACPICA: Executer: Fix the REFCLASS_REFOF case in acpi_ex_opcode_1A_0T_1R()
+Date:   Mon, 17 Jan 2022 21:46:45 -0500
+Message-Id: <20220118024701.1952911-44-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
 References: <20220118024701.1952911-1-sashal@kernel.org>
@@ -55,94 +54,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kai-Heng Feng <kai.heng.feng@canonical.com>
+From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 00558586382891540c59c9febc671062425a6e47 ]
+[ Upstream commit 24ea5f90ec9548044a6209685c5010edd66ffe8f ]
 
-When a new USB device gets plugged to nested hubs, the affected hub,
-which connects to usb 2-1.4-port2, doesn't report there's any change,
-hence the nested hubs go back to runtime suspend like nothing happened:
-[  281.032951] usb usb2: usb wakeup-resume
-[  281.032959] usb usb2: usb auto-resume
-[  281.032974] hub 2-0:1.0: hub_resume
-[  281.033011] usb usb2-port1: status 0263 change 0000
-[  281.033077] hub 2-0:1.0: state 7 ports 4 chg 0000 evt 0000
-[  281.049797] usb 2-1: usb wakeup-resume
-[  281.069800] usb 2-1: Waited 0ms for CONNECT
-[  281.069810] usb 2-1: finish resume
-[  281.070026] hub 2-1:1.0: hub_resume
-[  281.070250] usb 2-1-port4: status 0203 change 0000
-[  281.070272] usb usb2-port1: resume, status 0
-[  281.070282] hub 2-1:1.0: state 7 ports 4 chg 0010 evt 0000
-[  281.089813] usb 2-1.4: usb wakeup-resume
-[  281.109792] usb 2-1.4: Waited 0ms for CONNECT
-[  281.109801] usb 2-1.4: finish resume
-[  281.109991] hub 2-1.4:1.0: hub_resume
-[  281.110147] usb 2-1.4-port2: status 0263 change 0000
-[  281.110234] usb 2-1-port4: resume, status 0
-[  281.110239] usb 2-1-port4: status 0203, change 0000, 10.0 Gb/s
-[  281.110266] hub 2-1.4:1.0: state 7 ports 4 chg 0000 evt 0000
-[  281.110426] hub 2-1.4:1.0: hub_suspend
-[  281.110565] usb 2-1.4: usb auto-suspend, wakeup 1
-[  281.130998] hub 2-1:1.0: hub_suspend
-[  281.137788] usb 2-1: usb auto-suspend, wakeup 1
-[  281.142935] hub 2-0:1.0: state 7 ports 4 chg 0000 evt 0000
-[  281.177828] usb 2-1: usb wakeup-resume
-[  281.197839] usb 2-1: Waited 0ms for CONNECT
-[  281.197850] usb 2-1: finish resume
-[  281.197984] hub 2-1:1.0: hub_resume
-[  281.198203] usb 2-1-port4: status 0203 change 0000
-[  281.198228] usb usb2-port1: resume, status 0
-[  281.198237] hub 2-1:1.0: state 7 ports 4 chg 0010 evt 0000
-[  281.217835] usb 2-1.4: usb wakeup-resume
-[  281.237834] usb 2-1.4: Waited 0ms for CONNECT
-[  281.237845] usb 2-1.4: finish resume
-[  281.237990] hub 2-1.4:1.0: hub_resume
-[  281.238067] usb 2-1.4-port2: status 0263 change 0000
-[  281.238148] usb 2-1-port4: resume, status 0
-[  281.238152] usb 2-1-port4: status 0203, change 0000, 10.0 Gb/s
-[  281.238166] hub 2-1.4:1.0: state 7 ports 4 chg 0000 evt 0000
-[  281.238385] hub 2-1.4:1.0: hub_suspend
-[  281.238523] usb 2-1.4: usb auto-suspend, wakeup 1
-[  281.258076] hub 2-1:1.0: hub_suspend
-[  281.265744] usb 2-1: usb auto-suspend, wakeup 1
-[  281.285976] hub 2-0:1.0: hub_suspend
-[  281.285988] usb usb2: bus auto-suspend, wakeup 1
+ACPICA commit d984f12041392fa4156b52e2f7e5c5e7bc38ad9e
 
-USB 3.2 spec, 9.2.5.4 "Changing Function Suspend State" says that "If
-the link is in a non-U0 state, then the device must transition the link
-to U0 prior to sending the remote wake message", but the hub only
-transits the link to U0 after signaling remote wakeup.
+If Operand[0] is a reference of the ACPI_REFCLASS_REFOF class,
+acpi_ex_opcode_1A_0T_1R () calls acpi_ns_get_attached_object () to
+obtain return_desc which may require additional resolution with
+the help of acpi_ex_read_data_from_field (). If the latter fails,
+the reference counter of the original return_desc is decremented
+which is incorrect, because acpi_ns_get_attached_object () does not
+increment the reference counter of the object returned by it.
 
-So be more forgiving and use a 20ms delay to let the link transit to U0
-for remote wakeup.
+This issue may lead to premature deletion of the attached object
+while it is still attached and a use-after-free and crash in the
+host OS.  For example, this may happen when on evaluation of ref_of()
+a local region field where there is no registered handler for the
+given Operation Region.
 
-Suggested-by: Alan Stern <stern@rowland.harvard.edu>
-Acked-by: Alan Stern <stern@rowland.harvard.edu>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
-Link: https://lore.kernel.org/r/20211215120108.336597-1-kai.heng.feng@canonical.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix it by making acpi_ex_opcode_1A_0T_1R () return Status right away
+after a acpi_ex_read_data_from_field () failure.
+
+Link: https://github.com/acpica/acpica/commit/d984f120
+Link: https://github.com/acpica/acpica/pull/685
+Reported-by: Lenny Szubowicz <lszubowi@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/core/hub.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/acpi/acpica/exoparg1.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/core/hub.c b/drivers/usb/core/hub.c
-index 73ad4af487039..5db778ed0b437 100644
---- a/drivers/usb/core/hub.c
-+++ b/drivers/usb/core/hub.c
-@@ -1082,7 +1082,10 @@ static void hub_activate(struct usb_hub *hub, enum hub_activation_type type)
- 		} else {
- 			hub_power_on(hub, true);
- 		}
--	}
-+	/* Give some time on remote wakeup to let links to transit to U0 */
-+	} else if (hub_is_superspeed(hub->hdev))
-+		msleep(20);
-+
-  init2:
+diff --git a/drivers/acpi/acpica/exoparg1.c b/drivers/acpi/acpica/exoparg1.c
+index ba9fbae0cf91f..319f4bc6a8394 100644
+--- a/drivers/acpi/acpica/exoparg1.c
++++ b/drivers/acpi/acpica/exoparg1.c
+@@ -1007,7 +1007,8 @@ acpi_status acpi_ex_opcode_1A_0T_1R(struct acpi_walk_state *walk_state)
+ 						    (walk_state, return_desc,
+ 						     &temp_desc);
+ 						if (ACPI_FAILURE(status)) {
+-							goto cleanup;
++							return_ACPI_STATUS
++							    (status);
+ 						}
  
- 	/*
+ 						return_desc = temp_desc;
 -- 
 2.34.1
 
