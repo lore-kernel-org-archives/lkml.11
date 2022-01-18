@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A754C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E712C43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:06:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354072AbiARDFM (ORCPT
+        id S1354126AbiARDFT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:05:12 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55770 "EHLO
+        Mon, 17 Jan 2022 22:05:19 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59028 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344858AbiARCq6 (ORCPT
+        with ESMTP id S1350010AbiARCu7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:46:58 -0500
+        Mon, 17 Jan 2022 21:50:59 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D757B812A8;
-        Tue, 18 Jan 2022 02:46:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 535ADC36AF8;
-        Tue, 18 Jan 2022 02:46:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91DCBB81250;
+        Tue, 18 Jan 2022 02:50:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A30D7C36AF4;
+        Tue, 18 Jan 2022 02:50:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474015;
-        bh=3/QdR6SGlH1mYgnJ4NwJ66sQHw5xtbVGngxoo/WjW6Q=;
+        s=k20201202; t=1642474257;
+        bh=ZzK+2SGE79mfIfB99YLPe0DxQhuLsDGpW7dwz+d8KhM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SAu79wltTsU6A8cCPfX4KxefygQs4+jHZUUfr5iS/DNAGVkCLHN4+mgI89us7ptK8
-         1cca1+3ogqsrIgIqoaWfhHMA0BUXZQ29Wz7O7npJJ0vyXKq0+XnMWNgIH6+2IKOhuZ
-         FQLbiwY/gVPjQw0JiYJGmN9fvFySEcDgFoT+hJKYfHd2E6E17rZxm61soIHKbX671M
-         EX4MUGWye/STUk12z+WbXxDINKwidiwBYXgHgyN9ySIajoTHjFhqM6zhGqqTAS0HqH
-         VHmskWO2lMOUfkYcpEmj4TRB+0m5R0jlA8/gklFdLhe4nh5OIPJf9skTPFmO4V64mE
-         HKKUWJvfZCeLQ==
+        b=bEJAxU5bHc/4bmyaLIugwFpBoVSzWtLc+xB4mzkPlcQRkIqivV4fze0vuj9rOGboc
+         iT7shkmZkiqPs8oGjCCSJ+8PU/Und/PoFzEKl9dBJ/ey3CSdPzUUNrqcrnC04Nj9JQ
+         WiPMctynN3v8kJZ/EIlwe22fuY5fmpZcsZRwxbv6ylVn0kyrxDBxkD6H2VPsXFrjCT
+         mdip+EZQjtmc/06m9EzGzZI9w9nSKd2TDtW6RA6Rc5djMcGC3P4xd4tCOoLuhnLkj1
+         3n1ajkrhAUhWzHOR6zvtrcr8j+VZXkCod7SYFzNuZkhrHldKw9Tdanmoccv7u6VDJx
+         d2CZlGLo9xf6w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 71/73] serial: core: Keep mctrl register state and cached copy in sync
-Date:   Mon, 17 Jan 2022 21:44:30 -0500
-Message-Id: <20220118024432.1952028-71-sashal@kernel.org>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Mark Asselstine <mark.asselstine@windriver.com>,
+        Bob Moore <robert.moore@intel.com>,
+        Sasha Levin <sashal@kernel.org>, linux-acpi@vger.kernel.org,
+        devel@acpica.org
+Subject: [PATCH AUTOSEL 4.14 44/56] ACPICA: Utilities: Avoid deleting the same object twice in a row
+Date:   Mon, 17 Jan 2022 21:48:56 -0500
+Message-Id: <20220118024908.1953673-44-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
-References: <20220118024432.1952028-1-sashal@kernel.org>
+In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
+References: <20220118024908.1953673-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,51 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 93a770b7e16772530196674ffc79bb13fa927dc6 ]
+[ Upstream commit 1cdfe9e346b4c5509ffe19ccde880fd259d9f7a3 ]
 
-struct uart_port contains a cached copy of the Modem Control signals.
-It is used to skip register writes in uart_update_mctrl() if the new
-signal state equals the old signal state.  It also avoids a register
-read to obtain the current state of output signals.
+ACPICA commit c11af67d8f7e3d381068ce7771322f2b5324d687
 
-When a uart_port is registered, uart_configure_port() changes signal
-state but neglects to keep the cached copy in sync.  That may cause
-a subsequent register write to be incorrectly skipped.  Fix it before
-it trips somebody up.
+If original_count is 0 in acpi_ut_update_ref_count (),
+acpi_ut_delete_internal_obj () is invoked for the target object, which is
+incorrect, because that object has been deleted once already and the
+memory allocated to store it may have been reclaimed and allocated
+for a different purpose by the host OS.  Moreover, a confusing debug
+message following the "Reference Count is already zero, cannot
+decrement" warning is printed in that case.
 
-This behavior has been present ever since the serial core was introduced
-in 2002:
-https://git.kernel.org/history/history/c/33c0d1b0c3eb
+To fix this issue, make acpi_ut_update_ref_count () return after finding
+that original_count is 0 and printing the above warning.
 
-So far it was never an issue because the cached copy is initialized to 0
-by kzalloc() and when uart_configure_port() is executed, at most DTR has
-been set by uart_set_options() or sunsu_console_setup().  Therefore,
-a stable designation seems unnecessary.
-
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/bceeaba030b028ed810272d55d5fc6f3656ddddb.1641129752.git.lukas@wunner.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://github.com/acpica/acpica/commit/c11af67d
+Link: https://github.com/acpica/acpica/pull/652
+Reported-by: Mark Asselstine <mark.asselstine@windriver.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/serial_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/acpi/acpica/utdelete.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index aad640b9e3f4b..c8a047ba76ebe 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2395,7 +2395,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 		 * We probably don't need a spinlock around this, but
- 		 */
- 		spin_lock_irqsave(&port->lock, flags);
--		port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
-+		port->mctrl &= TIOCM_DTR;
-+		port->ops->set_mctrl(port, port->mctrl);
- 		spin_unlock_irqrestore(&port->lock, flags);
+diff --git a/drivers/acpi/acpica/utdelete.c b/drivers/acpi/acpica/utdelete.c
+index 61a979d0fbc5a..64a90ba71f18c 100644
+--- a/drivers/acpi/acpica/utdelete.c
++++ b/drivers/acpi/acpica/utdelete.c
+@@ -442,6 +442,7 @@ acpi_ut_update_ref_count(union acpi_operand_object *object, u32 action)
+ 			ACPI_WARNING((AE_INFO,
+ 				      "Obj %p, Reference Count is already zero, cannot decrement\n",
+ 				      object));
++			return;
+ 		}
  
- 		/*
+ 		ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS,
 -- 
 2.34.1
 
