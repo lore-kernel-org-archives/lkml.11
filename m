@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F52C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D8E4C43217
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353916AbiARDEx (ORCPT
+        id S1353939AbiARDE5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:04:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34900 "EHLO
+        Mon, 17 Jan 2022 22:04:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348958AbiARCrT (ORCPT
+        with ESMTP id S1349903AbiARCuk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:47:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0358FC03327A;
-        Mon, 17 Jan 2022 18:38:52 -0800 (PST)
+        Mon, 17 Jan 2022 21:50:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3EE2C0612ED;
+        Mon, 17 Jan 2022 18:42:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 95B746093C;
-        Tue, 18 Jan 2022 02:38:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25AC9C36AEF;
-        Tue, 18 Jan 2022 02:38:50 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7A7CEB8129F;
+        Tue, 18 Jan 2022 02:42:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 40F5AC36AF2;
+        Tue, 18 Jan 2022 02:42:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473531;
-        bh=GyS828HD/W5brWBjztyF7pzethTmRJ7htmn28hD2mHA=;
+        s=k20201202; t=1642473736;
+        bh=JjoTPxcrsm13yYDz2X0aCGOrakWj/cvM4DjQzFBa75A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AExYOn0hN0JgHXM3GCvDZ/SakpC2qw5m2gQKfJabOVDKmVLE9bzzhG706tGiKsyVg
-         uTsD5pNnpsoJUxPURzZL+8eNhEdygzFwEaml1b8bsxbRbFQ2q/6vvrD41rzkQo3gmA
-         5JRXQ7lq0q3q8mGDhxkIGusfSAxttG4ZvwY4gczlmWfZnzfvX6AlKHfC30zjtEsOyP
-         kEGrPpgVtQee0/liX3BMwPbHau++vYlFvUWJqDpR/cgPzOz/83ycBUZDAf1W5OzUmF
-         W8bN7MX9/pyvSk8pG3AgNOgaz8raYbPghOtpjoJR9zR7yMh8bSK2mOjYRmbhLX3e4N
-         i19ZE3H1dMEoQ==
+        b=o7a2LDRThOubua/irxyPmuGXv6Uv/s5GJnITvUHLVq/9o7D+iQ5GO1Sks1Wmp5GEO
+         WPJH/0P+r6iHbUBYUm5ZjyvnmhKMXdFeuPT1FZAsZvH2hSWvRX8q8to4JmRq3bt9/H
+         Ho5HvSn5yk+5+wNBDrxWe4xUVdU8w/FsFBsuVfLEWCeSaBHakCuhHubcpKtd7QlLg5
+         K/bBJYUqDgebMIypZDrbcXj1br1Vsd/DoGjOomB7QQEGghRExdYJJKm42O84dRI96c
+         a6F8WL1VydYnlsk8db7iJbsHhq2QYJtFfDXazXTUmG4MVnORlY9zF4v3EaWf8nEVDz
+         8N3GgpqFrEo5g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mark Langsdorf <mlangsdo@redhat.com>,
-        Bob Moore <robert.moore@intel.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, linux-acpi@vger.kernel.org,
-        devel@acpica.org
-Subject: [PATCH AUTOSEL 5.15 152/188] ACPICA: actypes.h: Expand the ACPI_ACCESS_ definitions
-Date:   Mon, 17 Jan 2022 21:31:16 -0500
-Message-Id: <20220118023152.1948105-152-sashal@kernel.org>
+Cc:     Zhou Qingyang <zhou1615@umn.edu>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
+        mchehab@kernel.org, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 047/116] media: saa7146: hexium_orion: Fix a NULL pointer dereference in hexium_attach()
+Date:   Mon, 17 Jan 2022 21:38:58 -0500
+Message-Id: <20220118024007.1950576-47-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,54 +54,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mark Langsdorf <mlangsdo@redhat.com>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit f81bdeaf816142e0729eea0cc84c395ec9673151 ]
+[ Upstream commit 348df8035301dd212e3cc2860efe4c86cb0d3303 ]
 
-ACPICA commit bc02c76d518135531483dfc276ed28b7ee632ce1
+In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
+a new memory for dev->vv_data. In hexium_detach(), saa7146_vv_release()
+will be called and there is a dereference of dev->vv_data in
+saa7146_vv_release(), which could lead to a NULL pointer dereference
+on failure of saa7146_vv_init() according to the following logic.
 
-The current ACPI_ACCESS_*_WIDTH defines do not provide a way to
-test that size is small enough to not cause an overflow when
-applied to a 32-bit integer.
+Both hexium_attach() and hexium_detach() are callback functions of
+the variable 'extension', so there exists a possible call chain directly
+from hexium_attach() to hexium_detach():
 
-Rather than adding more magic numbers, add ACPI_ACCESS_*_SHIFT,
-ACPI_ACCESS_*_MAX, and ACPI_ACCESS_*_DEFAULT #defines and
-redefine ACPI_ACCESS_*_WIDTH in terms of the new #defines.
+hexium_attach(dev, info) -- fail to alloc memory to dev->vv_data
+	|		    		in saa7146_vv_init().
+	|
+	|
+hexium_detach() -- a dereference of dev->vv_data in saa7146_vv_release()
 
-This was inititally reported on Linux where a size of 102 in
-ACPI_ACCESS_BIT_WIDTH caused an overflow error in the SPCR
-initialization code.
+Fix this bug by adding a check of saa7146_vv_init().
 
-Link: https://github.com/acpica/acpica/commit/bc02c76d
-Signed-off-by: Mark Langsdorf <mlangsdo@redhat.com>
-Signed-off-by: Bob Moore <robert.moore@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
+
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
+
+Builds with CONFIG_VIDEO_HEXIUM_ORION=m show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- include/acpi/actypes.h | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/media/pci/saa7146/hexium_orion.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/include/acpi/actypes.h b/include/acpi/actypes.h
-index 92c71dfce0d5d..cefbb7ad253e0 100644
---- a/include/acpi/actypes.h
-+++ b/include/acpi/actypes.h
-@@ -536,8 +536,14 @@ typedef u64 acpi_integer;
-  * Can be used with access_width of struct acpi_generic_address and access_size of
-  * struct acpi_resource_generic_register.
-  */
--#define ACPI_ACCESS_BIT_WIDTH(size)     (1 << ((size) + 2))
--#define ACPI_ACCESS_BYTE_WIDTH(size)    (1 << ((size) - 1))
-+#define ACPI_ACCESS_BIT_SHIFT		2
-+#define ACPI_ACCESS_BYTE_SHIFT		-1
-+#define ACPI_ACCESS_BIT_MAX		(31 - ACPI_ACCESS_BIT_SHIFT)
-+#define ACPI_ACCESS_BYTE_MAX		(31 - ACPI_ACCESS_BYTE_SHIFT)
-+#define ACPI_ACCESS_BIT_DEFAULT		(8 - ACPI_ACCESS_BIT_SHIFT)
-+#define ACPI_ACCESS_BYTE_DEFAULT	(8 - ACPI_ACCESS_BYTE_SHIFT)
-+#define ACPI_ACCESS_BIT_WIDTH(size)	(1 << ((size) + ACPI_ACCESS_BIT_SHIFT))
-+#define ACPI_ACCESS_BYTE_WIDTH(size)	(1 << ((size) + ACPI_ACCESS_BYTE_SHIFT))
+diff --git a/drivers/media/pci/saa7146/hexium_orion.c b/drivers/media/pci/saa7146/hexium_orion.c
+index 39d14c179d229..2eb4bee16b71f 100644
+--- a/drivers/media/pci/saa7146/hexium_orion.c
++++ b/drivers/media/pci/saa7146/hexium_orion.c
+@@ -355,10 +355,16 @@ static struct saa7146_ext_vv vv_data;
+ static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_data *info)
+ {
+ 	struct hexium *hexium = (struct hexium *) dev->ext_priv;
++	int ret;
  
- /*******************************************************************************
-  *
+ 	DEB_EE("\n");
+ 
+-	saa7146_vv_init(dev, &vv_data);
++	ret = saa7146_vv_init(dev, &vv_data);
++	if (ret) {
++		pr_err("Error in saa7146_vv_init()\n");
++		return ret;
++	}
++
+ 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
+ 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
+ 	vv_data.vid_ops.vidioc_s_input = vidioc_s_input;
 -- 
 2.34.1
 
