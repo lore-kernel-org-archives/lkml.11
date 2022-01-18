@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 144C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:08:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C337C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:08:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348905AbiARDIF (ORCPT
+        id S1344680AbiARDIM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:08:05 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56216 "EHLO
+        Mon, 17 Jan 2022 22:08:12 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58614 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349036AbiARCr1 (ORCPT
+        with ESMTP id S1349831AbiARCu2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:47:27 -0500
+        Mon, 17 Jan 2022 21:50:28 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 26C25B81236;
-        Tue, 18 Jan 2022 02:47:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D94A9C36AF2;
-        Tue, 18 Jan 2022 02:47:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 06305B8124E;
+        Tue, 18 Jan 2022 02:50:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 636C8C36AE3;
+        Tue, 18 Jan 2022 02:50:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474044;
-        bh=teqJf60VfZfCyKR10hz8RbabCK/klAXvLnO3Vng0KDM=;
+        s=k20201202; t=1642474225;
+        bh=dbUaQiNtbtTcNYZvPSk/yK+SDopfTfCtM8ynIvkfl9Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sicew5hm5eyyPKlc0QKqYdx1xOVyOOVdSJRp1Nqq2cK9TdXbqxtoOw2xJAV8FwhVM
-         5dPKMpHDWIYun4nidLQWT/X+ijSKhoM576hfR9KCq4X78QzjxpqfcVwyqlxGOzQlv9
-         PHm/d0O/IcEWfQ5VkcNkvv6Gb4sJUCIIbWFUiVOnqykMbW/zTLhj8BuSHGqGeRmdDK
-         vEWVsojU6tdCOrZVNnwiQSl7H8H37YwC1ymqyLN59DbF4ZHaEuR1aEFCwj/xWKAxnj
-         ug2mlwrcRrp3e2IZllthkNG6wVeUdc0bBqWQQi/kiohWXRQHKAm5NeOdr+WVKr5TNO
-         1ucjLlNtpI4BQ==
+        b=gVnIXjFMIi0jDT9Vyc3/28Ip5F2rXtYxxu0PlLvG0YU38lC6Ewy6RHqT2ydJpbLPz
+         S/DKayPYF3XsIUy0mti8UIdsVZtSg5f7j8Dvy0/PSeUdiytZ9PMo+O+XtUa8r/MMRU
+         sWJxOX8STFiEih9rqTyWq0hNqYW6JU6hRf7YPPAITmBZTHOP/AkMtHeYWjr50CWxp/
+         WxXLQZ/0fqY8QYDZHIDtjLerjrZ5uRAvjGKJGmpDmR8TdKADdwmgj/oLxltWXO6Yg1
+         ahiJrI+GW6iDpeerve/iKU+F48z6aSGYnVjfWTXOSyHEeOiPgBil3EhGxrs1FyBo0w
+         3woEI0OmB2OXA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Danielle Ratson <danieller@nvidia.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Ido Schimmel <idosch@nvidia.com>,
+Cc:     xu xin <xu.xin16@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>,
+        Joanne Koong <joannekoong@fb.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, petrm@nvidia.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 09/59] mlxsw: pci: Add shutdown method in PCI driver
-Date:   Mon, 17 Jan 2022 21:46:10 -0500
-Message-Id: <20220118024701.1952911-9-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, kuba@kernel.org,
+        daniel@iogearbox.net, dsahern@kernel.org, edumazet@google.com,
+        yajun.deng@linux.dev, chinagar@codeaurora.org, roopa@nvidia.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 30/56] net: Enable neighbor sysctls that is save for userns root
+Date:   Mon, 17 Jan 2022 21:48:42 -0500
+Message-Id: <20220118024908.1953673-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
-References: <20220118024701.1952911-1-sashal@kernel.org>
+In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
+References: <20220118024908.1953673-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,94 +53,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Danielle Ratson <danieller@nvidia.com>
+From: xu xin <xu.xin16@zte.com.cn>
 
-[ Upstream commit c1020d3cf4752f61a6a413f632ea2ce2370e150d ]
+[ Upstream commit 8c8b7aa7fb0cf9e1cc9204e6bc6e1353b8393502 ]
 
-On an arm64 platform with the Spectrum ASIC, after loading and executing
-a new kernel via kexec, the following trace [1] is observed. This seems
-to be caused by the fact that the device is not properly shutdown before
-executing the new kernel.
+Inside netns owned by non-init userns, sysctls about ARP/neighbor is
+currently not visible and configurable.
 
-Fix this by implementing a shutdown method which mirrors the remove
-method, as recommended by the kexec maintainer [2][3].
+For the attributes these sysctls correspond to, any modifications make
+effects on the performance of networking(ARP, especilly) only in the
+scope of netns, which does not affect other netns.
 
-[1]
-BUG: Bad page state in process devlink pfn:22f73d
-page:fffffe00089dcf40 refcount:-1 mapcount:0 mapping:0000000000000000 index:0x0
-flags: 0x2ffff00000000000()
-raw: 2ffff00000000000 0000000000000000 ffffffff089d0201 0000000000000000
-raw: 0000000000000000 0000000000000000 ffffffffffffffff 0000000000000000
-page dumped because: nonzero _refcount
-Modules linked in:
-CPU: 1 PID: 16346 Comm: devlink Tainted: G B 5.8.0-rc6-custom-273020-gac6b365b1bf5 #44
-Hardware name: Marvell Armada 7040 TX4810M (DT)
-Call trace:
- dump_backtrace+0x0/0x1d0
- show_stack+0x1c/0x28
- dump_stack+0xbc/0x118
- bad_page+0xcc/0xf8
- check_free_page_bad+0x80/0x88
- __free_pages_ok+0x3f8/0x418
- __free_pages+0x38/0x60
- kmem_freepages+0x200/0x2a8
- slab_destroy+0x28/0x68
- slabs_destroy+0x60/0x90
- ___cache_free+0x1b4/0x358
- kfree+0xc0/0x1d0
- skb_free_head+0x2c/0x38
- skb_release_data+0x110/0x1a0
- skb_release_all+0x2c/0x38
- consume_skb+0x38/0x130
- __dev_kfree_skb_any+0x44/0x50
- mlxsw_pci_rdq_fini+0x8c/0xb0
- mlxsw_pci_queue_fini.isra.0+0x28/0x58
- mlxsw_pci_queue_group_fini+0x58/0x88
- mlxsw_pci_aqs_fini+0x2c/0x60
- mlxsw_pci_fini+0x34/0x50
- mlxsw_core_bus_device_unregister+0x104/0x1d0
- mlxsw_devlink_core_bus_device_reload_down+0x2c/0x48
- devlink_reload+0x44/0x158
- devlink_nl_cmd_reload+0x270/0x290
- genl_rcv_msg+0x188/0x2f0
- netlink_rcv_skb+0x5c/0x118
- genl_rcv+0x3c/0x50
- netlink_unicast+0x1bc/0x278
- netlink_sendmsg+0x194/0x390
- __sys_sendto+0xe0/0x158
- __arm64_sys_sendto+0x2c/0x38
- el0_svc_common.constprop.0+0x70/0x168
- do_el0_svc+0x28/0x88
- el0_sync_handler+0x88/0x190
- el0_sync+0x140/0x180
+Actually, some tools via netlink can modify these attribute. iproute2 is
+an example. see as follows:
 
-[2]
-https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1195432.html
+$ unshare -ur -n
+$ cat /proc/sys/net/ipv4/neigh/lo/retrans_time
+cat: can't open '/proc/sys/net/ipv4/neigh/lo/retrans_time': No such file
+or directory
+$ ip ntable show dev lo
+inet arp_cache
+    dev lo
+    refcnt 1 reachable 19494 base_reachable 30000 retrans 1000
+    gc_stale 60000 delay_probe 5000 queue 101
+    app_probes 0 ucast_probes 3 mcast_probes 3
+    anycast_delay 1000 proxy_delay 800 proxy_queue 64 locktime 1000
 
-[3]
-https://patchwork.kernel.org/project/linux-scsi/patch/20170212214920.28866-1-anton@ozlabs.org/#20116693
+inet6 ndisc_cache
+    dev lo
+    refcnt 1 reachable 42394 base_reachable 30000 retrans 1000
+    gc_stale 60000 delay_probe 5000 queue 101
+    app_probes 0 ucast_probes 3 mcast_probes 3
+    anycast_delay 1000 proxy_delay 800 proxy_queue 64 locktime 0
+$ ip ntable change name arp_cache dev <if> retrans 2000
+inet arp_cache
+    dev lo
+    refcnt 1 reachable 22917 base_reachable 30000 retrans 2000
+    gc_stale 60000 delay_probe 5000 queue 101
+    app_probes 0 ucast_probes 3 mcast_probes 3
+    anycast_delay 1000 proxy_delay 800 proxy_queue 64 locktime 1000
 
-Cc: Eric Biederman <ebiederm@xmission.com>
-Signed-off-by: Danielle Ratson <danieller@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+inet6 ndisc_cache
+    dev lo
+    refcnt 1 reachable 35524 base_reachable 30000 retrans 1000
+    gc_stale 60000 delay_probe 5000 queue 101
+    app_probes 0 ucast_probes 3 mcast_probes 3
+    anycast_delay 1000 proxy_delay 800 proxy_queue 64 locktime 0
+
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: xu xin <xu.xin16@zte.com.cn>
+Acked-by: Joanne Koong <joannekoong@fb.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/pci.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/core/neighbour.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-index a903e97793f9a..addd5765576d9 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-@@ -1825,6 +1825,7 @@ int mlxsw_pci_driver_register(struct pci_driver *pci_driver)
- {
- 	pci_driver->probe = mlxsw_pci_probe;
- 	pci_driver->remove = mlxsw_pci_remove;
-+	pci_driver->shutdown = mlxsw_pci_remove;
- 	return pci_register_driver(pci_driver);
- }
- EXPORT_SYMBOL(mlxsw_pci_driver_register);
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 358e84af0210b..48bd9f4002b4e 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -3251,10 +3251,6 @@ int neigh_sysctl_register(struct net_device *dev, struct neigh_parms *p,
+ 			neigh_proc_base_reachable_time;
+ 	}
+ 
+-	/* Don't export sysctls to unprivileged users */
+-	if (neigh_parms_net(p)->user_ns != &init_user_ns)
+-		t->neigh_vars[0].procname = NULL;
+-
+ 	switch (neigh_parms_family(p)) {
+ 	case AF_INET:
+ 	      p_name = "ipv4";
 -- 
 2.34.1
 
