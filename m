@@ -2,102 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3093CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:26:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E8C1C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:27:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245156AbiARJ0R (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 04:26:17 -0500
-Received: from mga17.intel.com ([192.55.52.151]:64332 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234638AbiARJ0Q (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 04:26:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642497976; x=1674033976;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Ripv7PKf8AE+DZencjgRj4jyC+vbpn4HOU9gpa3R3nI=;
-  b=N6L8sQ5GOJhf+6lBVyMCtBMVZCYom3YibpEoo3im5j6pnMtxqQs068Sx
-   FZ0tT/tsKfaKTtvnUKoacwGCSN04ay3JU4DO8AfMD/nw6sn04dxDIsePU
-   BlXatHnvVZpDRhuHZB23lK/rdGJju4ienoaJHgUPB5CR4r3tct15zDKDR
-   Q7geReaWrx56jKw+GZxWs0KYPm++A0fKyf0G1B4bV0xA1mR0E55was4zZ
-   ClljJnCIg1Pi7eRjg19fYJjwZYPzCAEVrT3WBZ7jQvRxfnuHtgXZ+jFAC
-   MA7TGe7+uKjaIdWIyJaas8Dmc4zkEo5q4Dkbqp1XvV5iCnlfTgBlyXEco
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="225452482"
-X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="225452482"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 01:26:11 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="578339881"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 18 Jan 2022 01:26:09 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n9kkj-000CPD-AO; Tue, 18 Jan 2022 09:26:09 +0000
-Date:   Tue, 18 Jan 2022 17:25:31 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Hannes Reinecke <hare@suse.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        linux-nvme@lists.infradead.org
-Subject: [PATCH] nvme-fabrics: fix returnvar.cocci warnings
-Message-ID: <20220118092531.GA25410@95126676e75f>
-References: <202201181710.TjfwKXN9-lkp@intel.com>
+        id S1344085AbiARJ1R (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 04:27:17 -0500
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:46151 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234638AbiARJ1Q (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 04:27:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1642498036; x=1674034036;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=pBpAdki5wF5bxKDytfc9sD9oUt2UYpuMdypcx78WBtM=;
+  b=Ier3qBJOMHQ4oQxfLsfiJ1nEGTQztqkg+2xZPFoxR5mzS7E3+9/CHni8
+   cHSVfn5PLYz+UlHsqBzcm0jIM7VHhhT4J9DCmsR3mHA6BHHUER/uu1yVa
+   HIQxsvhltMt+bxNrt6wvqaVA0XVZqqdSXYC3yWy/OVmAQkaAvQpnBapSO
+   8=;
+Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 18 Jan 2022 01:27:16 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 01:27:16 -0800
+Received: from [10.216.2.106] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.47.97.222) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Tue, 18 Jan
+ 2022 01:27:13 -0800
+Subject: Re: Query on moving Recovery remoteproc work to a separate wq instead
+ of system freezable wq
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+CC:     <linux-remoteproc@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>
+References: <ea64436c-3d9b-9ac1-d4e8-38f15142a764@quicinc.com>
+ <YeXrtuQglDwhNvLm@builder.lan>
+From:   Mukesh Ojha <quic_mojha@quicinc.com>
+Message-ID: <03bde95c-dfd3-cdf6-2b0f-afa6a0ec036d@quicinc.com>
+Date:   Tue, 18 Jan 2022 14:57:08 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202201181710.TjfwKXN9-lkp@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <YeXrtuQglDwhNvLm@builder.lan>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.47.97.222)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
 
-drivers/nvme/host/fabrics.c:1095:5-8: Unneeded variable: "ret". Return "0" on line 1109
+On 1/18/2022 3:50 AM, Bjorn Andersson wrote:
+> On Mon 17 Jan 09:09 CST 2022, Mukesh Ojha wrote:
+>
+>> Hi,
+>>
+>> There could be a situation there is too much load(of tasks which is affined
+> As in "it's theoretically possible" or "we run into this issue all the
+> time"?
 
+During recovery we notify all the remoteproc kernel clients about the 
+crash and if one of the notification gets stuck
 
- Remove unneeded variable used to store return value.
+for more than 20-30s we ideally inject panic . During analysis, We saw 
+that just because of the load(stress testing) on the
 
-Generated by: scripts/coccinelle/misc/returnvar.cocci
+core we are not able to proceed. would be good to avail this work to run 
+on different CPU.
 
-Fixes: f18ee3d98815 ("nvme-fabrics: print out valid arguments when reading from /dev/nvme-fabrics")
-CC: Hannes Reinecke <hare@suse.de>
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
+>
+>> to particular core) on a core on which  rproc
+>> recovery thread will not get a chance to run with no reason but the load. If
+>> we make this queue unbound, then this work
+>> can run on any core.
+>>
+>> Kindly Let me if i can post a proper patch for this like below.
+>>
+>> --- a/drivers/remoteproc/remoteproc_core.c
+>> +++ b/drivers/remoteproc/remoteproc_core.c
+>> @@ -59,6 +59,7 @@ static int rproc_release_carveout(struct rproc *rproc,
+>>
+>>   /* Unique indices for remoteproc devices */
+>>   static DEFINE_IDA(rproc_dev_index);
+>> +static struct workqueue_struct *rproc_recovery_wq;
+>>
+>>   static const char * const rproc_crash_names[] = {
+>>          [RPROC_MMUFAULT]        = "mmufault",
+>> @@ -2487,7 +2488,7 @@ void rproc_report_crash(struct rproc *rproc, enum
+>> rproc_crash_type type)
+>>                  rproc->name, rproc_crash_to_string(type));
+>>
+>>          /* Have a worker handle the error; ensure system is not suspended */
+>> -       queue_work(system_freezable_wq, &rproc->crash_handler);
+>> +       queue_work(rproc_recovery_wq, &rproc->crash_handler);
+>>   }
+>>   EXPORT_SYMBOL(rproc_report_crash);
+>>
+>> @@ -2532,6 +2533,12 @@ static void __exit rproc_exit_panic(void)
+>>
+>>   static int __init remoteproc_init(void)
+>>   {
+>> +       rproc_recovery_wq = alloc_workqueue("rproc_recovery_wq", WQ_UNBOUND
+>> |
+>> +                               WQ_HIGHPRI | WQ_FREEZABLE |
+>> WQ_CPU_INTENSIVE, 0);
+> Afaict this is not only a separate work queue, but a high priority, "cpu
+> intensive" work queue. Does that really represent the urgency of getting
+> the recovery under way?
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   e3a8b6a1e70c37702054ae3c7c07ed828435d8ee
-commit: f18ee3d988157ebcadc9b7e5fd34811938f50223 nvme-fabrics: print out valid arguments when reading from /dev/nvme-fabrics
-:::::: branch date: 5 hours ago
-:::::: commit date: 4 weeks ago
+Adding a WQ_CPU_INTENSIVE(no use) here is a blunder from my end, will 
+remove this.
 
- fabrics.c |    3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+Thanks,
+-Mukesh
 
---- a/drivers/nvme/host/fabrics.c
-+++ b/drivers/nvme/host/fabrics.c
-@@ -1092,7 +1092,6 @@ static void __nvmf_concat_opt_tokens(str
- static int nvmf_dev_show(struct seq_file *seq_file, void *private)
- {
- 	struct nvme_ctrl *ctrl;
--	int ret = 0;
- 
- 	mutex_lock(&nvmf_dev_mutex);
- 	ctrl = seq_file->private;
-@@ -1106,7 +1105,7 @@ static int nvmf_dev_show(struct seq_file
- 
- out_unlock:
- 	mutex_unlock(&nvmf_dev_mutex);
--	return ret;
-+	return 0;
- }
- 
- static int nvmf_dev_open(struct inode *inode, struct file *file)
+> Regards,
+> Bjorn
+>
+>> +       if (!rproc_recovery_wq) {
+>> +               pr_err("creation of rproc_recovery_wq failed\n");
+>> +       }
+>> +
+>>
+>> Thanks,
+>> Mukesh
