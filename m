@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 413B3C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9432FC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:23:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245044AbiARCXn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:23:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56480 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244566AbiARCVa (ORCPT
+        id S245048AbiARCXs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:23:48 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37140 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244903AbiARCWk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:21:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B96C06175C;
-        Mon, 17 Jan 2022 18:21:29 -0800 (PST)
+        Mon, 17 Jan 2022 21:22:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4DCF8B81236;
-        Tue, 18 Jan 2022 02:21:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9749C36AE3;
-        Tue, 18 Jan 2022 02:21:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04BC9B81240;
+        Tue, 18 Jan 2022 02:22:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A057C36AE3;
+        Tue, 18 Jan 2022 02:22:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472487;
-        bh=KuDx/9P+Wps9AtzStWZ2hI77/d8sYbhn6+5ghzmQjp0=;
+        s=k20201202; t=1642472557;
+        bh=oLdh2IIQhyz8/cfQ/4uNzzA2+eaqF5O7TwGmsi6SxmI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UWKdolORwwfQVXdJfYNLLmeAVgZ7i1HAwEUO3EfuT1EnALSjd+Whw2cZv3uBv/XQy
-         LnDCS2ai1HRjFaj2RPlI91aPMStiCH5j7Ipf9FKCpo/u/jjEeFqGpptxabBgPOpIjv
-         HUCGwZ9V/Bl+ZvAJtbIVbOGEl1ruc3m94GheNvcgpXyZEBnXQgBCz/JIS/BYKM49X+
-         qx0xAxut7kNPs2Sdx/pyuUHGZvdBEYHAinD/onjL0KcVh4tooatsKWOIdvO8HjXmWM
-         hbjOdN9Ke7Fto1h7uyxwyVznn0nJd6V2mlZHYNc0EjMdz4hUnxpKSt3NgXEe5JuiFD
-         R9O/ysKyIbUZA==
+        b=dYBNbqlC9W8U3TzYkHpuR2erQ/eQdByLloStEOfqG7vJQfizOxndINIO4MMsQIMzZ
+         vtcmS9hVii1zudZNSrawIFCFduERmTxpaH8EGtBDiualMhLn4Gi3bbB/PrRe+4OYsu
+         316znsywo5wc1jFKHXdzv1v3qMh9rngsHtj2FzwyuTQgcJaeRYKL03+zO57B7SbzEA
+         9BdSGGxJijMpJYqXSn6RQQSNP5la1NIv6qX8ZTzE+lgEBAq5VtON7uhb8nYrfKacK7
+         BxDqC/BzEUuQzHPNkdNtWWD3gmo2g2CTQLRbRPis34Uyi9ukULcwCIrzAlw13+unGY
+         yuQM3LjPay1Pg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Amjad Ouled-Ameur <aouledameur@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
-        narmstrong@baylibre.com, khilman@baylibre.com,
-        p.zabel@pengutronix.de, linux-usb@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.16 029/217] usb: dwc3: meson-g12a: fix shared reset control use
-Date:   Mon, 17 Jan 2022 21:16:32 -0500
-Message-Id: <20220118021940.1942199-29-sashal@kernel.org>
+Cc:     Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        biju.das.jz@bp.renesas.com,
+        prabhakar.mahadev-lad.rj@bp.renesas.com,
+        yoshihiro.shimoda.uh@renesas.com, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 052/217] ethernet: renesas: Use div64_ul instead of do_div
+Date:   Mon, 17 Jan 2022 21:16:55 -0500
+Message-Id: <20220118021940.1942199-52-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -56,95 +55,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amjad Ouled-Ameur <aouledameur@baylibre.com>
+From: Yang Li <yang.lee@linux.alibaba.com>
 
-[ Upstream commit 4ce3b45704d5ef46fb4b28083c8aba6716fabf3b ]
+[ Upstream commit d9f31aeaa1e5aefa68130878af3c3513d41c1e2d ]
 
-reset_control_(de)assert() calls are called on a shared reset line when
-reset_control_reset has been used. This is not allowed by the reset
-framework.
+do_div() does a 64-by-32 division. Here the divisor is an
+unsigned long which on some platforms is 64 bit wide. So use
+div64_ul instead of do_div to avoid a possible truncation.
 
-Use reset_control_rearm() call in suspend() and remove() as a way to state
-that the resource is no longer used, hence the shared reset line
-may be triggered again by other devices. Use reset_control_rearm() also in
-case probe fails after reset() has been called.
+Eliminate the following coccicheck warning:
+./drivers/net/ethernet/renesas/ravb_main.c:2492:1-7: WARNING:
+do_div() does a 64-by-32 division, please consider using div64_ul
+instead.
 
-reset_control_rearm() keeps use of triggered_count sane in the reset
-framework, use of reset_control_reset() on shared reset line should be
-balanced with reset_control_rearm().
-
-Signed-off-by: Amjad Ouled-Ameur <aouledameur@baylibre.com>
-Reported-by: Jerome Brunet <jbrunet@baylibre.com>
-Link: https://lore.kernel.org/r/20211112162827.128319-3-aouledameur@baylibre.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Reviewed-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Link: https://lore.kernel.org/r/1637228883-100100-1-git-send-email-yang.lee@linux.alibaba.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/dwc3/dwc3-meson-g12a.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ drivers/net/ethernet/renesas/ravb_main.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/usb/dwc3/dwc3-meson-g12a.c b/drivers/usb/dwc3/dwc3-meson-g12a.c
-index d0f9b7c296b0d..bd814df3bf8b8 100644
---- a/drivers/usb/dwc3/dwc3-meson-g12a.c
-+++ b/drivers/usb/dwc3/dwc3-meson-g12a.c
-@@ -755,16 +755,16 @@ static int dwc3_meson_g12a_probe(struct platform_device *pdev)
+diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
+index b4c597f4040c8..151cce2fe36d5 100644
+--- a/drivers/net/ethernet/renesas/ravb_main.c
++++ b/drivers/net/ethernet/renesas/ravb_main.c
+@@ -30,8 +30,7 @@
+ #include <linux/spinlock.h>
+ #include <linux/sys_soc.h>
+ #include <linux/reset.h>
+-
+-#include <asm/div64.h>
++#include <linux/math64.h>
  
- 	ret = dwc3_meson_g12a_get_phys(priv);
- 	if (ret)
--		goto err_disable_clks;
-+		goto err_rearm;
+ #include "ravb.h"
  
- 	ret = priv->drvdata->setup_regmaps(priv, base);
- 	if (ret)
--		goto err_disable_clks;
-+		goto err_rearm;
+@@ -2488,8 +2487,7 @@ static int ravb_set_gti(struct net_device *ndev)
+ 	if (!rate)
+ 		return -EINVAL;
  
- 	if (priv->vbus) {
- 		ret = regulator_enable(priv->vbus);
- 		if (ret)
--			goto err_disable_clks;
-+			goto err_rearm;
- 	}
+-	inc = 1000000000ULL << 20;
+-	do_div(inc, rate);
++	inc = div64_ul(1000000000ULL << 20, rate);
  
- 	/* Get dr_mode */
-@@ -825,6 +825,9 @@ static int dwc3_meson_g12a_probe(struct platform_device *pdev)
- 	if (priv->vbus)
- 		regulator_disable(priv->vbus);
- 
-+err_rearm:
-+	reset_control_rearm(priv->reset);
-+
- err_disable_clks:
- 	clk_bulk_disable_unprepare(priv->drvdata->num_clks,
- 				   priv->drvdata->clks);
-@@ -852,6 +855,8 @@ static int dwc3_meson_g12a_remove(struct platform_device *pdev)
- 	pm_runtime_put_noidle(dev);
- 	pm_runtime_set_suspended(dev);
- 
-+	reset_control_rearm(priv->reset);
-+
- 	clk_bulk_disable_unprepare(priv->drvdata->num_clks,
- 				   priv->drvdata->clks);
- 
-@@ -892,7 +897,7 @@ static int __maybe_unused dwc3_meson_g12a_suspend(struct device *dev)
- 		phy_exit(priv->phys[i]);
- 	}
- 
--	reset_control_assert(priv->reset);
-+	reset_control_rearm(priv->reset);
- 
- 	return 0;
- }
-@@ -902,7 +907,9 @@ static int __maybe_unused dwc3_meson_g12a_resume(struct device *dev)
- 	struct dwc3_meson_g12a *priv = dev_get_drvdata(dev);
- 	int i, ret;
- 
--	reset_control_deassert(priv->reset);
-+	ret = reset_control_reset(priv->reset);
-+	if (ret)
-+		return ret;
- 
- 	ret = priv->drvdata->usb_init(priv);
- 	if (ret)
+ 	if (inc < GTI_TIV_MIN || inc > GTI_TIV_MAX) {
+ 		dev_err(dev, "gti.tiv increment 0x%llx is outside the range 0x%x - 0x%x\n",
 -- 
 2.34.1
 
