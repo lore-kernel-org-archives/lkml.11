@@ -2,180 +2,187 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8063C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 14:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95BE7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 14:28:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245350AbiAROZd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 09:25:33 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52422 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233969AbiAROZb (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 09:25:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642515930;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=N0j/fQ4PflVYGPy/bLo8LyJo0AEkhVcyeqzgco+GTv8=;
-        b=VF8b9qOtBTViUT6+Slp36CzezAcdTXWL4olQown8KqKoP8K6N8gehy6fRjSepVu8G/p9JY
-        WsKdYZUwgHcGXSGHu3hbfxteNvpimitwxLCtdGyGXYg4inQ8JfdeDozdqAtEWUfnUeoADL
-        ltRSI3JuA1tBw8a50y2kPixXvjY2Lo8=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-570-JSLZuKm6OPmWEa-XEdhMsA-1; Tue, 18 Jan 2022 09:25:29 -0500
-X-MC-Unique: JSLZuKm6OPmWEa-XEdhMsA-1
-Received: by mail-ed1-f71.google.com with SMTP id cf15-20020a0564020b8f00b0040284b671c6so6031381edb.22
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 06:25:29 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=N0j/fQ4PflVYGPy/bLo8LyJo0AEkhVcyeqzgco+GTv8=;
-        b=2/p0K361DMZ7Ut9BAx0Ewl38aNjmGXapHBf9fjbOvUAXh3Ev2ZQPwhd1ct63wEEc4v
-         LauAuyeQRw1YACSkg7a6batBqOWNP/L3OdjQ+pEF4abmV40vFSRrPHtyAKeTwk0c/opY
-         MBEwDzjt0Oi9Q2DB/Hr8250FKUoXcXb4WbQyt5Z27o4BBUNpXu6tuYu45KvL4NEW/CWd
-         qyzvuJf4Ul9Dk1Z8Qh0hieccMpBwHhnzd2FlnD9yWsKhchj2xFZw50qsjlrO5DSGiiD5
-         JW29ep7EI7e4voJ0+8n2bxcUjPOWwRxsfE4+M45V3AZTCeczysMGAqPyVW05tYl3AfNB
-         SPOA==
-X-Gm-Message-State: AOAM533INEhh8AyNx0nYsHF8XWjx7VnHJojvfGfOt3MzQ8st76g73kAS
-        G5QClCTes5fyV5JmG1StoMNTGGb232Kvi/fW9G9Yq+kQt4CgdYID1EXytQWAidsWu+62MHSyj3c
-        CXcqz1+dVU26p3GKyUnCFRCvQ
-X-Received: by 2002:a17:907:6d22:: with SMTP id sa34mr19840876ejc.635.1642515928025;
-        Tue, 18 Jan 2022 06:25:28 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxt7mNYuWcPmCyBDWs9bQTDMSJk3irHRnoPYop007C8xxpW8ahyJvriCHSEP50GE/m7CBOxBQ==
-X-Received: by 2002:a17:907:6d22:: with SMTP id sa34mr19840848ejc.635.1642515927724;
-        Tue, 18 Jan 2022 06:25:27 -0800 (PST)
-Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
-        by smtp.gmail.com with ESMTPSA id cw6sm7205493edb.11.2022.01.18.06.25.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 06:25:27 -0800 (PST)
-Date:   Tue, 18 Jan 2022 15:25:25 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [RFC PATCH v2 0/8] fprobe: Introduce fprobe function entry/exit
- probe
-Message-ID: <YebN1TIRxMX0sgs4@krava>
-References: <164199616622.1247129.783024987490980883.stgit@devnote2>
- <Yd77SYWgtrkhFIYz@krava>
- <YeAatqQTKsrxmUkS@krava>
- <20220115135219.64ef1cc6482d5de8a3bce9b0@kernel.org>
+        id S245449AbiARO2H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 09:28:07 -0500
+Received: from uho.ysoft.cz ([81.19.3.130]:58091 "EHLO uho.ysoft.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233969AbiARO2G (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 09:28:06 -0500
+X-Greylist: delayed 538 seconds by postgrey-1.27 at vger.kernel.org; Tue, 18 Jan 2022 09:28:06 EST
+Received: from vokac-Latitude-7410.ysoft.local (unknown [10.0.30.196])
+        by uho.ysoft.cz (Postfix) with ESMTP id 77EFFAB680;
+        Tue, 18 Jan 2022 15:19:05 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ysoft.com;
+        s=20160406-ysoft-com; t=1642515545;
+        bh=63fEdM9tEtwcmcsewPLa0Aa7XJVKM4JY5ED6EPbMk3E=;
+        h=From:To:Cc:Subject:Date:From;
+        b=UzwwaPRGi/HhVI8nKyJxu5nQo5wUbsajHMo7bpI9c/aHpJ9RisJzDEOWo+JbACgcZ
+         1tPJccfYtUeFFrI3H2VlIYSJMIaBeUCaBGTXpujczhlYjuObkpW+vpfeHuA1ZEWHFk
+         minsPuufAQCQbotyEFOzaIopbWDl4vs0Ks68kzhU=
+From:   =?UTF-8?q?Michal=20Vok=C3=A1=C4=8D?= <michal.vokac@ysoft.com>
+To:     Gaurav Jain <gaurav.jain@nxp.com>,
+        =?UTF-8?q?Horia=20Geant=C4=83?= <horia.geanta@nxp.com>,
+        Pankaj Gupta <pankaj.gupta@nxp.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
+        l.stach@pengutronix.de, robert.hancock@calian.com,
+        Petr Benes <petr.benes@ysoft.com>, petrben@gmail.com,
+        =?UTF-8?q?Michal=20Vok=C3=A1=C4=8D?= <michal.vokac@ysoft.com>
+Subject: [RFC PATCH v2] crypto: caam - restore retry count after HW RNG failure
+Date:   Tue, 18 Jan 2022 15:18:11 +0100
+Message-Id: <20220118141811.110618-1-michal.vokac@ysoft.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220115135219.64ef1cc6482d5de8a3bce9b0@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 15, 2022 at 01:52:19PM +0900, Masami Hiramatsu wrote:
-> On Thu, 13 Jan 2022 13:27:34 +0100
-> Jiri Olsa <jolsa@redhat.com> wrote:
-> 
-> > On Wed, Jan 12, 2022 at 05:01:15PM +0100, Jiri Olsa wrote:
-> > > On Wed, Jan 12, 2022 at 11:02:46PM +0900, Masami Hiramatsu wrote:
-> > > > Hi Jiri and Alexei,
-> > > > 
-> > > > Here is the 2nd version of fprobe. This version uses the
-> > > > ftrace_set_filter_ips() for reducing the registering overhead.
-> > > > Note that this also drops per-probe point private data, which
-> > > > is not used anyway.
-> > > > 
-> > > > This introduces the fprobe, the function entry/exit probe with
-> > > > multiple probe point support. This also introduces the rethook
-> > > > for hooking function return as same as kretprobe does. This
-> > > 
-> > > nice, I was going through the multi-user-graph support 
-> > > and was wondering that this might be a better way
-> > > 
-> > > > abstraction will help us to generalize the fgraph tracer,
-> > > > because we can just switch it from rethook in fprobe, depending
-> > > > on the kernel configuration.
-> > > > 
-> > > > The patch [1/8] and [7/8] are from your series[1]. Other libbpf
-> > > > patches will not be affected by this change.
-> > > 
-> > > I'll try the bpf selftests on top of this
-> > 
-> > I'm getting crash and stall when running bpf selftests,
-> > the fprobe sample module works fine, I'll check on that
-> 
-> OK, I got a kernel stall. I missed to enable CONFIG_FPROBE.
-> I think vmtest.sh should support menuconfig option.
-> 
-> #6 bind_perm:OK
-> #7 bloom_filter_map:OK
-> [  107.282403] clocksource: timekeeping watchdog on CPU0: Marking clocksource 'tsc' as unstable because the skew is too large:
-> [  107.283240] clocksource:                       'hpet' wd_nsec: 496216090 wd_now: 7ddc7120 wd_last: 7ae746b7 mask: ffffffff
-> [  107.284045] clocksource:                       'tsc' cs_nsec: 495996979 cs_now: 31fdb69b39 cs_last: 31c2d29219 mask: ffffffffffffffff
-> [  107.284926] clocksource:                       'tsc' is current clocksource.
-> [  107.285487] tsc: Marking TSC unstable due to clocksource watchdog
-> [  107.285973] TSC found unstable after boot, most likely due to broken BIOS. Use 'tsc=unstable'.
-> [  107.286616] sched_clock: Marking unstable (107240582544, 45390230)<-(107291410145, -5437339)
-> [  107.290408] clocksource: Not enough CPUs to check clocksource 'tsc'.
-> [  107.290879] clocksource: Switched to clocksource hpet
-> [  604.210415] INFO: rcu_tasks detected stalls on tasks:
-> [  604.210830] (____ptrval____): .. nvcsw: 86/86 holdout: 1 idle_cpu: -1/0
-> [  604.211314] task:test_progs      state:R  running task     stack:    0 pid:   87 ppid:    85 flags:0x00004000
-> [  604.212058] Call Trace:
-> [  604.212246]  <TASK>
-> [  604.212452]  __schedule+0x362/0xbb0
-> [  604.212723]  ? preempt_schedule_notrace_thunk+0x16/0x18
-> [  604.213107]  preempt_schedule_notrace+0x48/0x80
-> [  604.217403]  ? asm_sysvec_apic_timer_interrupt+0x12/0x20
-> [  604.217790]  ? ftrace_regs_call+0xd/0x52
-> [  604.218087]  ? bpf_test_finish.isra.0+0x190/0x190
-> [  604.218461]  ? bpf_fentry_test1+0x5/0x10
-> [  604.218750]  ? trace_clock_x86_tsc+0x10/0x10
-> [  604.219064]  ? __sys_bpf+0x8b1/0x2970
-> [  604.219337]  ? lock_is_held_type+0xd7/0x130
-> [  604.219680]  ? __x64_sys_bpf+0x1c/0x20
-> [  604.219957]  ? do_syscall_64+0x35/0x80
-> [  604.220237]  ? entry_SYSCALL_64_after_hwframe+0x44/0xae
-> [  604.220653]  </TASK>
-> 
-> Jiri, is that what you had seen? 
+From: Petr Benes <petr.benes@ysoft.com>
 
-hi,
-sorry for late response
+Each time TRNG generates entropy, statistical tests are run.
+If they fail, RETRY_COUNT value is decremented. Once it
+reaches 0, HW RNG returns an error, and needs to be reset.
+RETRY_COUNT could be programmed in RTSCMISC register and is
+set to 1 by default. Hence, we are left without hwrng after
+the first error, which could happen even under normal
+conditions.
 
-I did not get any backtrace for the stall, debugging showed 
-that the first probed function was called over and over for
-some reason
-
-as for the crash I used the small fix below
-
-do you have any newer version I could play with?
-
-jirka
-
-
+Cc: petrben@gmail.com
+Signed-off-by: Petr Benes <petr.benes@ysoft.com>
+Signed-off-by: Michal Vokáč <michal.vokac@ysoft.com>
 ---
-diff --git a/kernel/trace/fprobe.c b/kernel/trace/fprobe.c
-index 3333893e5217..883151275892 100644
---- a/kernel/trace/fprobe.c
-+++ b/kernel/trace/fprobe.c
-@@ -157,7 +157,8 @@ int unregister_fprobe(struct fprobe *fp)
- 	ret = unregister_ftrace_function(&fp->ftrace);
+v2:
+- Export caam_reinstantiate_rng to fix build error.
+
+ drivers/crypto/caam/caamrng.c | 42 ++++++++++++++++++++++++++++++++---
+ drivers/crypto/caam/ctrl.c    | 14 ++++++++++++
+ drivers/crypto/caam/ctrl.h    |  2 ++
+ 3 files changed, 55 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/crypto/caam/caamrng.c b/drivers/crypto/caam/caamrng.c
+index 77d048dfe5d0..2be5584ae591 100644
+--- a/drivers/crypto/caam/caamrng.c
++++ b/drivers/crypto/caam/caamrng.c
+@@ -21,6 +21,7 @@
+ #include "desc_constr.h"
+ #include "jr.h"
+ #include "error.h"
++#include "ctrl.h"
  
- 	if (!ret) {
--		rethook_free(fp->rethook);
-+		if (fp->rethook)
-+			rethook_free(fp->rethook);
- 		if (fp->syms) {
- 			kfree(fp->addrs);
- 			fp->addrs = NULL;
+ #define CAAM_RNG_MAX_FIFO_STORE_SIZE	16
+ 
+@@ -113,6 +114,35 @@ static int caam_rng_read_one(struct device *jrdev,
+ 	return err ?: (ret ?: len);
+ }
+ 
++static void caam_rng_retry_reset(struct caam_rng_ctx *context)
++{
++	struct device *ctrldev = context->ctrldev;
++	struct caam_drv_private *ctrlpriv = dev_get_drvdata(ctrldev);
++	struct caam_ctrl __iomem *ctrl;
++	struct rng4tst __iomem *r4tst;
++	u32 __iomem *rtstatus;
++	u32 retry_count;
++
++	ctrl = (struct caam_ctrl __iomem *)ctrlpriv->ctrl;
++	r4tst = &ctrl->r4tst[0];
++
++	/*
++	 * There is unfortunately no member for RTSTATUS register in
++	 * struct rng4tst and the structure doesn't look stable
++	 */
++	rtstatus = (u32 *)((char *)&ctrl->r4tst[0] + 0x3C);
++	retry_count = (rd_reg32(rtstatus) >> 16) & 0xf;
++	dev_dbg(ctrldev, "CAAM RNG retry count %d\n", retry_count);
++	if (retry_count == 0) {
++		dev_err(ctrldev, "CAAM RNG resetting retry count to 1\n");
++		clrsetbits_32(&r4tst->rtmctl, 0, RTMCTL_PRGM | RTMCTL_ACC);
++		wr_reg32(&r4tst->rtscmisc, (rd_reg32(&r4tst->rtscmisc) & 0x7f) | (1 << 16));
++		clrsetbits_32(&r4tst->rtmctl, RTMCTL_PRGM | RTMCTL_ACC,
++				RTMCTL_SAMP_MODE_RAW_ES_SC);
++		caam_reinstantiate_rng(ctrldev);
++	}
++}
++
+ static void caam_rng_fill_async(struct caam_rng_ctx *ctx)
+ {
+ 	struct scatterlist sg[1];
+@@ -129,8 +159,10 @@ static void caam_rng_fill_async(struct caam_rng_ctx *ctx)
+ 				sg[0].length,
+ 				ctx->desc_async,
+ 				&done);
+-	if (len < 0)
++	if (len < 0) {
++		caam_rng_retry_reset(ctx);
+ 		return;
++	}
+ 
+ 	kfifo_dma_in_finish(&ctx->fifo, len);
+ }
+@@ -145,13 +177,17 @@ static void caam_rng_worker(struct work_struct *work)
+ static int caam_read(struct hwrng *rng, void *dst, size_t max, bool wait)
+ {
+ 	struct caam_rng_ctx *ctx = to_caam_rng_ctx(rng);
+-	int out;
++	int out, ret;
+ 
+ 	if (wait) {
+ 		struct completion done;
+ 
+-		return caam_rng_read_one(ctx->jrdev, dst, max,
++		ret = caam_rng_read_one(ctx->jrdev, dst, max,
+ 					 ctx->desc_sync, &done);
++		if (ret < 0)
++			caam_rng_retry_reset(ctx);
++
++		return ret;
+ 	}
+ 
+ 	out = kfifo_out(&ctx->fifo, dst, max);
+diff --git a/drivers/crypto/caam/ctrl.c b/drivers/crypto/caam/ctrl.c
+index ca0361b2dbb0..6feb828b6a56 100644
+--- a/drivers/crypto/caam/ctrl.c
++++ b/drivers/crypto/caam/ctrl.c
+@@ -339,6 +339,20 @@ static int instantiate_rng(struct device *ctrldev, int state_handle_mask,
+ 	return devm_add_action_or_reset(ctrldev, devm_deinstantiate_rng, ctrldev);
+ }
+ 
++/*
++ * caam_reinstantiate_rng - reinstantiates RNG. Intended for a case when RNG falls into
++ *			    HW error condition. That happens if TRNG fails statistical
++ *			    check and RTY_CNT value set in RTSCMISC decrements to zero.
++ *			    It is exported to caamrng.c
++ * @ctrldev - pointer to device
++ */
++
++int caam_reinstantiate_rng(struct device *ctrldev)
++{
++	return instantiate_rng(ctrldev, 0, 0);
++}
++EXPORT_SYMBOL(caam_reinstantiate_rng);
++
+ /*
+  * kick_trng - sets the various parameters for enabling the initialization
+  *	       of the RNG4 block in CAAM
+diff --git a/drivers/crypto/caam/ctrl.h b/drivers/crypto/caam/ctrl.h
+index f3ecd67922a7..26ff5a49a865 100644
+--- a/drivers/crypto/caam/ctrl.h
++++ b/drivers/crypto/caam/ctrl.h
+@@ -8,6 +8,8 @@
+ #ifndef CTRL_H
+ #define CTRL_H
+ 
++int caam_reinstantiate_rng(struct device *ctrldev);
++
+ /* Prototypes for backend-level services exposed to APIs */
+ extern bool caam_dpaa2;
+ 
+-- 
+2.25.1
 
