@@ -2,125 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:55:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1F6C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:55:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234332AbiARJzD (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 04:55:03 -0500
-Received: from mga04.intel.com ([192.55.52.120]:10568 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235911AbiARJyy (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 04:54:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642499694; x=1674035694;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=iCK4/KbCsLlMc5j0Y8eHw+xQocZMcWu5acqJbztI50s=;
-  b=k3jgwShbIZUiAiw1s/gcq6ZZB8KZ2t420StYpNyCMDcyx2+wl+Notlcc
-   BPszJMqFA7vvH8ukwJpb6neQmhGHusLCWKNbv4tpJeXEEvUF/P0Q4lwPm
-   /K9S7I8eIYTfzSMJfr7GqnYiaAzDrJmyH3gZqKzt/nRslMnR9pRxeHLne
-   gUTBlctvJLkU1Jvg+IBa/IhOgC4BbVCj+smIJtzcWlTKS8UuA+y9oFaZN
-   HAYSP8OM4nLX5jBrsLNPlxsOMlJn+uikpDi5aZ/kLC19azDLI595rM3HB
-   1OhVv/+veFPcwj/dJrp24Byngw9aPAaPWKHwmpWA7bs3hmMTuiEXnF73K
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="243602768"
-X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="243602768"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 01:54:52 -0800
-X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="595015751"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 01:54:46 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n9lBG-00Bnof-PN;
-        Tue, 18 Jan 2022 11:53:34 +0200
-Date:   Tue, 18 Jan 2022 11:53:34 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Esaki Tomohito <etom@igel.co.jp>
-Cc:     dri-devel@lists.freedesktop.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Michel =?iso-8859-1?Q?D=E4nzer?= <mdaenzer@redhat.com>,
-        Simon Ser <contact@emersion.fr>,
-        Qingqing Zhuo <qingqing.zhuo@amd.com>,
-        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
-        Mark Yacoub <markyacoub@chromium.org>,
-        Sean Paul <seanpaul@chromium.org>,
-        Evan Quan <evan.quan@amd.com>, Petr Mladek <pmladek@suse.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Abhinav Kumar <abhinavk@codeaurora.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Rob Clark <robdclark@chromium.org>,
-        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        nouveau@lists.freedesktop.org, Daniel Stone <daniel@fooishbar.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Damian Hobson-Garcia <dhobsong@igel.co.jp>,
-        Takanari Hayama <taki@igel.co.jp>
-Subject: Re: [RFC PATCH v3 2/3] drm: add support modifiers for drivers whose
- planes only support linear layout
-Message-ID: <YeaOHqfTcf+evbVC@smile.fi.intel.com>
-References: <20220114101753.24996-1-etom@igel.co.jp>
- <20220114101753.24996-3-etom@igel.co.jp>
- <YeGFugZvwbF7l2I/@smile.fi.intel.com>
- <0cf405a1-0d2d-ed5e-abdf-be645e7a9209@igel.co.jp>
+        id S235280AbiARJzK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 04:55:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50012 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234614AbiARJzI (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 04:55:08 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6214BC06173E
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 01:55:08 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id c71so76963926edf.6
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 01:55:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=amarulasolutions.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Mceqks5nzf+eeOlYMRRw9uStF9uGFlchw0VEVd71PNE=;
+        b=gPYLtv4I3fkdCGWvfnnq5fZwtxkXwUSfcWEIelAqAAoqlMyHtS5+lMkxf4CFTrDKO2
+         EEi1eSnV+84JN549IbLO7idLHZ3C3WRiQX4orsnch2n8XVYgGfg0PlY/jXEXVb+W6x3t
+         Kl/TGleX6RXP9oV69e3gejA2FUp0UcV2m1dFI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Mceqks5nzf+eeOlYMRRw9uStF9uGFlchw0VEVd71PNE=;
+        b=U0CHqMtNA2XrovNluaeZGnoQCzF9a/iUCnuQKrPgRO8KKAsOAGtu2tK962n6szzU5f
+         bgx5iPSM7CMzB9nMqLTF9XBzzz8RUShzyJKV3Ad/cT8M7d1VFbjg50IxfpmDHSNi7o9u
+         8HaqE5VrEK0dvqkvl8JOn/43rSfexDVaR5FOxyH7naYnBCqyLLzFDnbsgD7RYrd4SrAP
+         CMygnHmWxNEt0DK8BL0wXnPuxiQZZXD0sKtXoVRHA1E9gcP+MP4gTRIxrQLg0HiKyriN
+         5jWJ8UvdXekEIzSwf7FahNgF6fvak6q9kqBfb4d6DQLpo4CFTVbwVpqx0XjVKXbZK/NT
+         hQLg==
+X-Gm-Message-State: AOAM530EQHb+i8T1lLAUHvyePHNTq0fyKjdproEcRKL8auNDD9TkFm2z
+        iDrv97FtWNXeI2jFsnzYUyMBOPRqYQhZ8Q==
+X-Google-Smtp-Source: ABdhPJzj8gexQMhBbeU9RNli6B1Vexv4bSMZZ3vsSVZ884D8NY7eN6Rp1vUyRj0kGUSh+affuud+jA==
+X-Received: by 2002:a05:6402:2712:: with SMTP id y18mr10734301edd.26.1642499706803;
+        Tue, 18 Jan 2022 01:55:06 -0800 (PST)
+Received: from dario-ThinkPad-T14s-Gen-2i.homenet.telecomitalia.it (host-82-52-8-210.retail.telecomitalia.it. [82.52.8.210])
+        by smtp.gmail.com with ESMTPSA id w3sm5173520eji.134.2022.01.18.01.55.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Jan 2022 01:55:06 -0800 (PST)
+From:   Dario Binacchi <dario.binacchi@amarulasolutions.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Michael Trimarchi <michael@amarulasolutions.com>,
+        Dario Binacchi <dario.binacchi@amarulasolutions.com>,
+        Boris Brezillon <bbrezillon@kernel.org>,
+        Fabio Estevam <festevam@gmail.com>, Han Xu <han.xu@nxp.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Richard Weinberger <richard@nod.at>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mtd@lists.infradead.org
+Subject: [PATCH 0/4] Fix and improve gpmi nand on mx28
+Date:   Tue, 18 Jan 2022 10:54:30 +0100
+Message-Id: <20220118095434.35081-1-dario.binacchi@amarulasolutions.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <0cf405a1-0d2d-ed5e-abdf-be645e7a9209@igel.co.jp>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 02:15:48PM +0900, Esaki Tomohito wrote:
-> On 2022/01/14 23:16, Andy Shevchenko wrote:
-> > On Fri, Jan 14, 2022 at 07:17:52PM +0900, Tomohito Esaki wrote:
-> > > The LINEAR modifier is advertised as default if a driver doesn't specify
-> > > modifiers.
-> > 
-> > ...
-> > 
-> > > +	const uint64_t default_modifiers[] = {
-> > > +		DRM_FORMAT_MOD_LINEAR,
-> > > +		DRM_FORMAT_MOD_INVALID
-> > 
-> > + Comma?
-> 
-> There is no mention in the coding style about adding/removing a comma to the
-> last element of an array. Is there a policy in drm driver?
-> 
-> I think the advantage of adding a comma to the last element of an array is
-> that diff is only one line when an element is added to the end.
-> However since INVALID is always the last element in the modifiers array, I
-> think it can be either in this case.
-> If there is a policy, I will match it.
+Starting from [1], the series fixes the timings setting of the gpmi
+controller for the mx28 architecture, also adding support for fast
+edo mode timings. The whole series has been heavily tested with the
+mtd kernel test modules, and with repeated write cycles on nand.
 
-Indeed, but there is a common sense. The idea behind (multi-line) definitions
-that when next time somebody will add an element in the array, there are will
-be:
+The whole series has been tested and reviewed by Sascha Hauer <s.hauer@pengutronix.de>,
+so I removed the RFC prefix and re-submitted it as a regular patch
+set by adding the 'Tested-by' and 'Review-by' tags to every single patch.
 
-a) no additional churn (like in case of this patch, if the item will be added
-   at the bottom;
+[1] https://lore.kernel.org/r/20210702065350.209646-5-ebiggers@kernel.org
 
-b) an element that may not be added behind the terminator, which will look
-   weird.
 
-That said, the question is if the element is terminator one or not, if not,
-comma is better than no comma and vise versa.
+Dario Binacchi (4):
+  ARM: dts: imx28: reparent gpmi clock to ref_gpmi
+  mtd: rawnand: gpmi: fix controller timings setting
+  mtd: rawnand: gpmi: validate controller clock rate
+  mtd: rawnand: gpmi: support fast edo timings for mx28
+
+ arch/arm/boot/dts/imx28.dtsi               |  2 ++
+ drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c | 27 ++++++++++++++++++----
+ 2 files changed, 24 insertions(+), 5 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.32.0
 
