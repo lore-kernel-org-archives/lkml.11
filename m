@@ -2,42 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 202BAC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 062B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:20:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244432AbiARCUO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:20:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34802 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244399AbiARCT5 (ORCPT
+        id S244597AbiARCUR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:20:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56392 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244361AbiARCUA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:19:57 -0500
+        Mon, 17 Jan 2022 21:20:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C61A8C061574;
+        Mon, 17 Jan 2022 18:19:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BE56CB811FF;
-        Tue, 18 Jan 2022 02:19:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B021BC36AEB;
-        Tue, 18 Jan 2022 02:19:53 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 63643612CF;
+        Tue, 18 Jan 2022 02:19:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB938C36AF2;
+        Tue, 18 Jan 2022 02:19:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472394;
-        bh=D2F65sZ8+SV9pkPLBU9T9VYQyZJtdJT8brhvmr+qFZo=;
+        s=k20201202; t=1642472398;
+        bh=KHJX1CBivhLoDwFSvdl5GVShspbncmIWqtKSQBbrEYo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G0JMM8HtWyOGSaDPtHkPGvf49tiMZtL8JymoI/Vf74ALq73JbgmvzfaVTRaMSNM6b
-         nwZJ1aWyjRYfdaoVwZ5UfBF0Lg+iZckKLJeBpTR8QzPWY8ZnFwGMsTMJgrprXmG9aC
-         Xnt0mK9bhLxGPFU5EpiLZBPh4D1bwbDcp7F0RkJ0kMs4icwsTmFpMf+SOShZNc4rA+
-         TV1JHYu33wPjhmct4Dn0JEQAmwz8S7dyVLYoEtaR1KNQOeL79yZheRQRp/wxH2M1/u
-         FbI32OZtsZSDpsqTIGS+UGlwhM2Dl/WSfgaHKSVSIQ6++tjEmm1hY47UB406QS9Xkx
-         EOA++R8E2Ybkw==
+        b=YlEGAf6kl2fq43DOFQJsApfFj2OcaZBizmh8xVv81gzYsfndo4pK0ieDZ7CvRPXBO
+         913etGF93KD8uv4AKUtkwU4xAp4vnnaMBH+KZiVHAG+64C9/AtD4z+nqgR4FglwCSx
+         EY3kBcECa5Ny0ObmgEw8ndkt0KG7rKJ/LTjERESGItTI/R+Sc0FzPeZF1uOSkytzpv
+         F19e2WdDEkdPmDozf37H9bwFrPi1hxMYV3ypR/uctQAjpQPT4Tjzx1soX6owx7Ykvt
+         j0D/GPf2SCSlnrfEWaamZ5X9q/4ObHaG4eu8yti74UeUp1bAYi7M77KaifsZoMPiI8
+         /zRasjYXNvOCw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>,
-        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 008/217] libbpf: Detect corrupted ELF symbols section
-Date:   Mon, 17 Jan 2022 21:16:11 -0500
-Message-Id: <20220118021940.1942199-8-sashal@kernel.org>
+Cc:     Qiang Yu <yuq825@gmail.com>,
+        Vasily Khoruzhick <anarsoul@gmail.com>,
+        Roman Stratiienko <r.stratiienko@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
+        daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        lima@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.16 011/217] drm/lima: fix warning when CONFIG_DEBUG_SG=y & CONFIG_DMA_API_DEBUG=y
+Date:   Mon, 17 Jan 2022 21:16:14 -0500
+Message-Id: <20220118021940.1942199-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -49,35 +54,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Qiang Yu <yuq825@gmail.com>
 
-[ Upstream commit 833907876be55205d0ec153dcd819c014404ee16 ]
+[ Upstream commit 89636a06fa2ee7826a19c39c19a9bc99ab9340a9 ]
 
-Prevent divide-by-zero if ELF is corrupted and has zero sh_entsize.
-Reported by oss-fuzz project.
+Otherwise get following warning:
 
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20211103173213.1376990-2-andrii@kernel.org
+DMA-API: lima 1c40000.gpu: mapping sg segment longer than device claims to support [len=4149248] [max=65536]
+
+See: https://gitlab.freedesktop.org/mesa/mesa/-/issues/5496
+
+Reviewed-by: Vasily Khoruzhick <anarsoul@gmail.com>
+Reported-by: Roman Stratiienko <r.stratiienko@gmail.com>
+Signed-off-by: Qiang Yu <yuq825@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211031041604.187216-1-yuq825@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/lima/lima_device.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 7c74342bb6680..b5bf1c074832e 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -3555,7 +3555,7 @@ static int bpf_object__collect_externs(struct bpf_object *obj)
+diff --git a/drivers/gpu/drm/lima/lima_device.c b/drivers/gpu/drm/lima/lima_device.c
+index f74f8048af8f2..02cef0cea6572 100644
+--- a/drivers/gpu/drm/lima/lima_device.c
++++ b/drivers/gpu/drm/lima/lima_device.c
+@@ -358,6 +358,7 @@ int lima_device_init(struct lima_device *ldev)
+ 	int err, i;
  
- 	scn = elf_sec_by_idx(obj, obj->efile.symbols_shndx);
- 	sh = elf_sec_hdr(obj, scn);
--	if (!sh)
-+	if (!sh || sh->sh_entsize != sizeof(Elf64_Sym))
- 		return -LIBBPF_ERRNO__FORMAT;
+ 	dma_set_coherent_mask(ldev->dev, DMA_BIT_MASK(32));
++	dma_set_max_seg_size(ldev->dev, UINT_MAX);
  
- 	dummy_var_btf_id = add_dummy_ksym_var(obj->btf);
+ 	err = lima_clk_init(ldev);
+ 	if (err)
 -- 
 2.34.1
 
