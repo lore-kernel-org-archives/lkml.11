@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C1CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:38:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DFE4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:39:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353437AbiARDit (ORCPT
+        id S1354269AbiARDjI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:38:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45276 "EHLO
+        Mon, 17 Jan 2022 22:39:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351864AbiARDeS (ORCPT
+        with ESMTP id S1348938AbiARDeO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:34:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C11E7C037029;
-        Mon, 17 Jan 2022 19:09:34 -0800 (PST)
+        Mon, 17 Jan 2022 22:34:14 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF284C037020;
+        Mon, 17 Jan 2022 19:09:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 86127B811C4;
-        Tue, 18 Jan 2022 03:09:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FA5BC36AEF;
-        Tue, 18 Jan 2022 03:09:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4CB0060B3A;
+        Tue, 18 Jan 2022 03:09:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4EC5C36AEB;
+        Tue, 18 Jan 2022 03:09:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642475372;
-        bh=mOa3viRnCiyugN9lsjwtjitWUVuvU+gNzpDpjLjWNzE=;
+        s=k20201202; t=1642475367;
+        bh=ohSD3H6PwcHAXjnc8cPnR0pRDWhhFXJoW7p+x+J3LEw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PGnKZIIFDJwwqsU80Zp6EhSzqeKxoOOh5mWmWM4/ekTaOiaO9UR/bx7At8NE+5U1n
-         HHpTApGyM2tsuRC6u4BZp155eip8Da1PX4Z+iFGziYLWSeUluoXH2o82Kog2FRRDJj
-         bPwzhpdzSFL5v8eKFA2LuwQhabA1y5gFRPHhiBXTOJnZpjc95cpZMOkYhgYzUVh7WP
-         KlzijziV+yln+QL1IRjKn0CRXyrl/tMf/Mtb7zAlWJI9DtE/tnc7yZoTv9pxUEnsDN
-         3OfrU/kic2nXeREYAgTVU87yv2LlfkWEOcu/kbfLtvcfQq4d9iIHOCORFPqsPczIef
-         ClpucDrtbDJwA==
+        b=WbZWDQubEmq2HGcsQn5+9lxcmwReMcifSP49FrlP5ZlStWrLN0ouU658AujcHhmHe
+         OKOXY2WP7BHvtnM3MDc7DoYmu7TbGvJZ2wFoYpzWilGe9lykRhH8KMoHNxD0NqJguv
+         QaFk+pmEuyVXEemdRw6MwvwGKeFpCZXOjOpfaHLMvYT5pkL2ml/aa1bOu9QwkSNa7s
+         z6+KwaUGAQd4eFWgyvCkaXnMscT6+gIYbA5vPfh2IF+I58k7/xC3uw1TylkAJawXNv
+         ey0nhpubucck3wojkFpMhnKV1LDtWonfodBkPY7fWjShQoUPcAR3bqWlwBiUDIxUk/
+         kWeiuLS62Z+Fg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        jirislaby@kernel.org, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 27/29] serial: pl010: Drop CR register reset on set_termios
-Date:   Mon, 17 Jan 2022 22:08:20 -0500
-Message-Id: <20220118030822.1955469-27-sashal@kernel.org>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        Maxime Bizon <mbizon@freebox.fr>, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 24/29] net: mdio: Demote probed message to debug print
+Date:   Mon, 17 Jan 2022 22:08:17 -0500
+Message-Id: <20220118030822.1955469-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118030822.1955469-1-sashal@kernel.org>
 References: <20220118030822.1955469-1-sashal@kernel.org>
@@ -54,56 +54,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 08a0c6dff91c965e39905cf200d22db989203ccb ]
+[ Upstream commit 7590fc6f80ac2cbf23e6b42b668bbeded070850b ]
 
-pl010_set_termios() briefly resets the CR register to zero.
+On systems with large numbers of MDIO bus/muxes the message indicating
+that a given MDIO bus has been successfully probed is repeated for as
+many buses we have, which can eat up substantial boot time for no
+reason, demote to a debug print.
 
-Where does this register write come from?
-
-The PL010 driver's IRQ handler ambauart_int() originally modified the CR
-register without holding the port spinlock.  ambauart_set_termios() also
-modified that register.  To prevent concurrent read-modify-writes by the
-IRQ handler and to prevent transmission while changing baudrate,
-ambauart_set_termios() had to disable interrupts.  That is achieved by
-writing zero to the CR register.
-
-However in 2004 the PL010 driver was amended to acquire the port
-spinlock in the IRQ handler, obviating the need to disable interrupts in
-->set_termios():
-https://git.kernel.org/history/history/c/157c0342e591
-
-That rendered the CR register write obsolete.  Drop it.
-
-Cc: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/fcaff16e5b1abb4cc3da5a2879ac13f278b99ed0.1641128728.git.lukas@wunner.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Reported-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220103194024.2620-1-f.fainelli@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/amba-pl010.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/phy/mdio_bus.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
-index 5d41d5b92619a..7f4ba92739663 100644
---- a/drivers/tty/serial/amba-pl010.c
-+++ b/drivers/tty/serial/amba-pl010.c
-@@ -465,14 +465,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
- 	if ((termios->c_cflag & CREAD) == 0)
- 		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 4066fb5a935a7..2fb95cca33183 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -295,7 +295,7 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+ 	}
  
--	/* first, disable everything */
- 	old_cr = readb(uap->port.membase + UART010_CR) & ~UART010_CR_MSIE;
+ 	bus->state = MDIOBUS_REGISTERED;
+-	pr_info("%s: probed\n", bus->name);
++	dev_dbg(&bus->dev, "probed\n");
+ 	return 0;
  
- 	if (UART_ENABLE_MS(port, termios->c_cflag))
- 		old_cr |= UART010_CR_MSIE;
- 
--	writel(0, uap->port.membase + UART010_CR);
--
- 	/* Set baud rate */
- 	quot -= 1;
- 	writel((quot & 0xf00) >> 8, uap->port.membase + UART010_LCRM);
+ error:
 -- 
 2.34.1
 
