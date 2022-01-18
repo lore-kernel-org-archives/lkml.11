@@ -2,161 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFAE4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:35:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C20C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:35:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229825AbiARDfi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:35:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:50662 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1354554AbiARDGy (ORCPT
+        id S1346323AbiARDfs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 22:35:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39042 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349485AbiARDGr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:06:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642475213;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=m/T+xqeUAypi/EBSYpJv9W0hZEqvgrZKwX4x1rH2s4Q=;
-        b=XUPA0c9D1oZmlMbfU411dL7GElI8BEZ+GCMtCL3hilyuo1ESjaLyLB0D5n3LhuzJzhmkqK
-        hB7VXBRF7aYs3k8FGuP+Jh7NkT9OK8IrP4o9W2RG0yPxZXnKaF1rtKAz+xa2DKKAzIrH5Q
-        Ms/ddpcOn2JRPtQGhz5pFYIrjvtT1jE=
-Received: from mail-pg1-f197.google.com (mail-pg1-f197.google.com
- [209.85.215.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-156-HVhlt4s7NnSHygj2GsuG8w-1; Mon, 17 Jan 2022 22:06:52 -0500
-X-MC-Unique: HVhlt4s7NnSHygj2GsuG8w-1
-Received: by mail-pg1-f197.google.com with SMTP id u6-20020a63ef06000000b00341c8aa06d8so8695578pgh.2
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 19:06:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=m/T+xqeUAypi/EBSYpJv9W0hZEqvgrZKwX4x1rH2s4Q=;
-        b=iR9U1Ln2Nuxvt/nuNTOFaf62aJ877naGsp5Dkf0nFFfNQhqd8W1/UN7DFqUBi2ROcx
-         bEK1Ta8ABO6aeXI2XVBV+fzSPGFC7DxfC4fz48kCMLiE2dWCJWXDueJ0RIyzrVNqLz1y
-         VBmaTjEHFyPKzIR35wGmxiau/gh+MtQR4EfPg710fK/seaY+uA3NUw4SvZyGKvvYg41l
-         3Glc2I6fsaFKRrlYS3ihipvU+noATT9hzQpetPs3S7b0PLsFxCU8k6o/kuZaZGcyMIhi
-         qZuXb9/5V3ITL0cHAqxjqvJ9pemZCO9xoPio+P+VioeUt1FSpIbzFY5gCwuIvPFdaNXR
-         jNDg==
-X-Gm-Message-State: AOAM533yI238QZtPGJuAD2GK0Bn+1LJWtJahlK39V56yJShs2XNv0kk5
-        S2ZtGRTo3vJ49xMzA0r8i3NjFYjPFo0FEZnRsABCkOFUmqMk3ePX514TRcTrcyUsWxDkkeMx+4d
-        Abm1F4/qlcwBdjL7KmRFRLMBR
-X-Received: by 2002:a17:902:d505:b0:14a:77ac:1e8b with SMTP id b5-20020a170902d50500b0014a77ac1e8bmr25111376plg.1.1642475211594;
-        Mon, 17 Jan 2022 19:06:51 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzoQYXGFOiuE7DE7WvP6A/zKMhsh+2K8vED7mN/UdEi/ZVq6aYj54hRESwmfzpInEWZa5o65A==
-X-Received: by 2002:a17:902:d505:b0:14a:77ac:1e8b with SMTP id b5-20020a170902d50500b0014a77ac1e8bmr25111367plg.1.1642475211348;
-        Mon, 17 Jan 2022 19:06:51 -0800 (PST)
-Received: from [10.72.13.83] ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id c19sm15280757pfo.91.2022.01.17.19.06.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Jan 2022 19:06:50 -0800 (PST)
-Message-ID: <ce3890b8-8f48-847d-b029-e29cc9261f18@redhat.com>
-Date:   Tue, 18 Jan 2022 11:06:42 +0800
+        Mon, 17 Jan 2022 22:06:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33023C06127F;
+        Mon, 17 Jan 2022 18:49:00 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 14FFF611B4;
+        Tue, 18 Jan 2022 02:49:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52BAAC36AF3;
+        Tue, 18 Jan 2022 02:48:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642474139;
+        bh=hM9QQrNzF5LQck2DeZndr4LqpSIt1lSzwfvrSpnTOkE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dFvzEzAH6HJ41G1sVvzrlKMlCQ+qDfpEnZbKOsVo2N731ruiAGZwNKsU7HuFDp6+G
+         wJ1Pa7/kY/25x8goEa3SAU0qSisT/8KfcjRQdKk4Hd0Zlala3gRv7dYDTOXepqJ3ub
+         rDfkB6wzauaRx7ks1g16KlXLXnWgkzuiUp2j7O3fejJ2JRAkkv18jngN0UnZs4SSX4
+         C/FZW9wU9YfBg6RBpZJxGJyB1cI8FiBcqTOY0TynRWd6twg5TnoWV6HetdBnr1X3A5
+         nWpCisFgEYKSgh5Qi7W3EIA5chxrC4+gnrzr42qkyuK05kWUlDiND5uoxL/r7Dasfq
+         MUlx4nYuMNylQ==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, ulli.kroll@googlemail.com,
+        davem@davemloft.net, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 55/59] net: gemini: allow any RGMII interface mode
+Date:   Mon, 17 Jan 2022 21:46:56 -0500
+Message-Id: <20220118024701.1952911-55-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
+References: <20220118024701.1952911-1-sashal@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
- Gecko/20100101 Thunderbird/91.5.0
-Subject: Re: [RFC 1/3] vdpa: support exposing the config size to userspace
-Content-Language: en-US
-To:     "Longpeng(Mike)" <longpeng2@huawei.com>, mst@redhat.com,
-        sgarzare@redhat.com, stefanha@redhat.com
-Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        arei.gonglei@huawei.com, yechuan@huawei.com,
-        huangzhichao@huawei.com
-References: <20220117092921.1573-1-longpeng2@huawei.com>
- <20220117092921.1573-2-longpeng2@huawei.com>
-From:   Jason Wang <jasowang@redhat.com>
-In-Reply-To: <20220117092921.1573-2-longpeng2@huawei.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 
-在 2022/1/17 下午5:29, Longpeng(Mike) 写道:
-> From: Longpeng <longpeng2@huawei.com>
->
-> - GET_CONFIG_SIZE: the size of the virtio config space
+[ Upstream commit 4e4f325a0a55907b14f579e6b1a38c53755e3de2 ]
 
+The four RGMII interface modes take care of the required RGMII delay
+configuration at the PHY and should not be limited by the network MAC
+driver. Sadly, gemini was only permitting RGMII mode with no delays,
+which would require the required delay to be inserted via PCB tracking
+or by the MAC.
 
-I think we need to be verbose here. And it would be better to quote what 
-spec said:
+However, there are designs that require the PHY to add the delay, which
+is impossible without Gemini permitting the other three PHY interface
+modes. Fix the driver to allow these.
 
-"
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Link: https://lore.kernel.org/r/E1n4mpT-002PLd-Ha@rmk-PC.armlinux.org.uk
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/cortina/gemini.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-The device MUST allow reading of any device-specific configuration field 
-before FEATURES_OK is set by the driver. This includes fields which are 
-conditional on feature bits, as long as those feature bits are offered 
-by the device.
-
-"
-
-I guess the size should contain the conditional on features bits.
-
-(Or maybe we need to tweak the comment for get_config_size as well).
-
-Other looks good.
-
-Thanks
-
-
->
-> Signed-off-by: Longpeng <longpeng2@huawei.com>
-> ---
->   drivers/vhost/vdpa.c       | 17 +++++++++++++++++
->   include/uapi/linux/vhost.h |  4 ++++
->   2 files changed, 21 insertions(+)
->
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 29cced1cd277..1eea14a4ea56 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -355,6 +355,20 @@ static long vhost_vdpa_get_iova_range(struct vhost_vdpa *v, u32 __user *argp)
->   	return 0;
->   }
->   
-> +static long vhost_vdpa_get_config_size(struct vhost_vdpa *v, u32 __user *argp)
-> +{
-> +	struct vdpa_device *vdpa = v->vdpa;
-> +	const struct vdpa_config_ops *ops = vdpa->config;
-> +	u32 size;
-> +
-> +	size = ops->get_config_size(vdpa);
-> +
-> +	if (copy_to_user(argp, &size, sizeof(size)))
-> +		return -EFAULT;
-> +
-> +	return 0;
-> +}
-> +
->   static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
->   				   void __user *argp)
->   {
-> @@ -492,6 +506,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
->   	case VHOST_VDPA_GET_IOVA_RANGE:
->   		r = vhost_vdpa_get_iova_range(v, argp);
->   		break;
-> +	case VHOST_VDPA_GET_CONFIG_SIZE:
-> +		r = vhost_vdpa_get_config_size(v, argp);
-> +		break;
->   	default:
->   		r = vhost_dev_ioctl(&v->vdev, cmd, argp);
->   		if (r == -ENOIOCTLCMD)
-> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
-> index c998860d7bbc..bc74e95a273a 100644
-> --- a/include/uapi/linux/vhost.h
-> +++ b/include/uapi/linux/vhost.h
-> @@ -150,4 +150,8 @@
->   /* Get the valid iova range */
->   #define VHOST_VDPA_GET_IOVA_RANGE	_IOR(VHOST_VIRTIO, 0x78, \
->   					     struct vhost_vdpa_iova_range)
-> +
-> +/* Get the config size */
-> +#define VHOST_VDPA_GET_CONFIG_SIZE	_IOR(VHOST_VIRTIO, 0x79, __u32)
-> +
->   #endif
+diff --git a/drivers/net/ethernet/cortina/gemini.c b/drivers/net/ethernet/cortina/gemini.c
+index 5242687060b44..f8a3d1fecb0a5 100644
+--- a/drivers/net/ethernet/cortina/gemini.c
++++ b/drivers/net/ethernet/cortina/gemini.c
+@@ -304,21 +304,21 @@ static void gmac_speed_set(struct net_device *netdev)
+ 	switch (phydev->speed) {
+ 	case 1000:
+ 		status.bits.speed = GMAC_SPEED_1000;
+-		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
++		if (phy_interface_mode_is_rgmii(phydev->interface))
+ 			status.bits.mii_rmii = GMAC_PHY_RGMII_1000;
+ 		netdev_dbg(netdev, "connect %s to RGMII @ 1Gbit\n",
+ 			   phydev_name(phydev));
+ 		break;
+ 	case 100:
+ 		status.bits.speed = GMAC_SPEED_100;
+-		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
++		if (phy_interface_mode_is_rgmii(phydev->interface))
+ 			status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
+ 		netdev_dbg(netdev, "connect %s to RGMII @ 100 Mbit\n",
+ 			   phydev_name(phydev));
+ 		break;
+ 	case 10:
+ 		status.bits.speed = GMAC_SPEED_10;
+-		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
++		if (phy_interface_mode_is_rgmii(phydev->interface))
+ 			status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
+ 		netdev_dbg(netdev, "connect %s to RGMII @ 10 Mbit\n",
+ 			   phydev_name(phydev));
+@@ -389,6 +389,9 @@ static int gmac_setup_phy(struct net_device *netdev)
+ 		status.bits.mii_rmii = GMAC_PHY_GMII;
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII:
++	case PHY_INTERFACE_MODE_RGMII_ID:
++	case PHY_INTERFACE_MODE_RGMII_TXID:
++	case PHY_INTERFACE_MODE_RGMII_RXID:
+ 		netdev_dbg(netdev,
+ 			   "RGMII: set GMAC0 and GMAC1 to MII/RGMII mode\n");
+ 		status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
+-- 
+2.34.1
 
