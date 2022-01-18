@@ -2,113 +2,141 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA88C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:23:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02465C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:23:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357243AbiARDUj (ORCPT
+        id S1357215AbiARDUh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:20:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39802 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348884AbiARDIF (ORCPT
+        Mon, 17 Jan 2022 22:20:37 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:20497 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344909AbiARDHt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:08:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB1BFC033278;
-        Mon, 17 Jan 2022 18:49:16 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7FCE6B8123F;
-        Tue, 18 Jan 2022 02:49:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B33BC36AE3;
-        Tue, 18 Jan 2022 02:49:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474154;
-        bh=Rl+seFCLIEA6ePAQhBWREbLa9pE10jUp93g1f8T3wvk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JeDz6yH3p8OTDAnw3bEvCErzbza99TMXnrZNU6ucHDvAsysqHoO3J1OFhfpLjmsU9
-         F2mOm1PoO4BUpwShOcniXoiDScWpctvXgnzQhwd00c8rXdQ83O75eX2a8H94P0zair
-         Jyc6dA8iKsokAQkwTTDbOiyEdtlFvPDdmpHjbPDUArMUvz8UKB8zRxKu+ry8QSdno1
-         awqQ6HOCahwr7hSScHQOXZmtBovW0pGaHDE490oERz8XdV1C9faNQV0XzP/MUMYilA
-         z63QjcU3+UXufVuxPNN6a2aLrWbp9HpKlYF1iRSYE63r/nqQG65dxZcfOMfSARvLPn
-         GX9MO8cwVzAVA==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, pontus.fuchs@gmail.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 03/56] ar5523: Fix null-ptr-deref with unexpected WDCMSG_TARGET_START reply
-Date:   Mon, 17 Jan 2022 21:48:15 -0500
-Message-Id: <20220118024908.1953673-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
-References: <20220118024908.1953673-1-sashal@kernel.org>
+        Mon, 17 Jan 2022 22:07:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642475268;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=9CQmErdVbSRr9mtW1+GyxSplP9tubMADIUUmh9Y+ayg=;
+        b=RRs87RMkYCJl+mUZsopuZkbmBCLWShGxMcq3HiFwVU3BbaoXLrXpVHmWY09WUOXYY+W0cw
+        wtsopjdvkYnRnzJRWHv2k54tW6JDDFT3kQPKc1GO1eUg7zc2hOUwMgAn0lYWClXTsDw8Nf
+        /jYQBjHw0Z0fxtq8eBUPM87CY8UEvvg=
+Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
+ [209.85.210.199]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-622-jAzbXKuuO5e0qbI83MfkKQ-1; Mon, 17 Jan 2022 22:07:47 -0500
+X-MC-Unique: jAzbXKuuO5e0qbI83MfkKQ-1
+Received: by mail-pf1-f199.google.com with SMTP id o189-20020a625ac6000000b004be3e78847dso7289153pfb.14
+        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 19:07:46 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=9CQmErdVbSRr9mtW1+GyxSplP9tubMADIUUmh9Y+ayg=;
+        b=LRR7/TCAYPFFn5ijZgHEIBKa1TEYOO719toC/r4mDAV7ld3oBmVMr87Z54c3AM3MwA
+         3VIJS1uT2U8iGkWgxOOzcAgI6F3UI1ERC3//Ow8sieDrTTnVsvvA8hq5yBuXSe4EWjX/
+         +LZC95XNQcMiouPd4WQJ77lc8ohoiwnJbXrJYN+uCa841QptFAsx66kNNGphHsnOhdzF
+         y2t1V4qihwd3n89Ifikl/XJSKLvWHutbYq5DU9Dfbw02DJ/iX7Tj6K9hpz9Lcas+pVYn
+         v0YpK7ARz1gElJI94Us1npmIlrhYCq8WRD3JJznr9piPCcQMycPlSYORsE3+Se0UpMFA
+         4HHQ==
+X-Gm-Message-State: AOAM530VKi13lmXkqlEj7N+KjJr66a10dA0FgIQnWJariSnIC6/VnoQY
+        y1QD/WUzvCBJ/EBoOp2j7cunxYS78N5fih/1HUjH6Mp995aIpL+cDsZSPhmfGJvdMJ7s6EsVsFY
+        lEnAkWM1Nesl07jj6qwh+Ww3e
+X-Received: by 2002:a63:9dc8:: with SMTP id i191mr21688276pgd.601.1642475265999;
+        Mon, 17 Jan 2022 19:07:45 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyGn88ixeCz13kpjGb4SysE+JIuenybALI9UvqarO/71VSQGXiBlHPncz3hIYzN/LcoVqqxiA==
+X-Received: by 2002:a63:9dc8:: with SMTP id i191mr21688268pgd.601.1642475265770;
+        Mon, 17 Jan 2022 19:07:45 -0800 (PST)
+Received: from [10.72.13.83] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id a19sm4801961pfh.198.2022.01.17.19.07.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 17 Jan 2022 19:07:45 -0800 (PST)
+Message-ID: <1a26d7b3-1020-50c5-f0a3-ebc645cdcddf@redhat.com>
+Date:   Tue, 18 Jan 2022 11:07:36 +0800
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [RFC 2/3] vdpa: support exposing the count of vqs to userspace
+Content-Language: en-US
+To:     "Longpeng(Mike)" <longpeng2@huawei.com>, mst@redhat.com,
+        sgarzare@redhat.com, stefanha@redhat.com
+Cc:     virtualization@lists.linux-foundation.org, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        arei.gonglei@huawei.com, yechuan@huawei.com,
+        huangzhichao@huawei.com
+References: <20220117092921.1573-1-longpeng2@huawei.com>
+ <20220117092921.1573-3-longpeng2@huawei.com>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220117092921.1573-3-longpeng2@huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit ae80b6033834342601e99f74f6a62ff5092b1cee ]
+在 2022/1/17 下午5:29, Longpeng(Mike) 写道:
+> From: Longpeng <longpeng2@huawei.com>
+>
+> - GET_VQS_COUNT: the count of virtqueues that exposed
+>
+> Signed-off-by: Longpeng <longpeng2@huawei.com>
+> ---
+>   drivers/vhost/vdpa.c       | 13 +++++++++++++
+>   include/uapi/linux/vhost.h |  3 +++
+>   2 files changed, 16 insertions(+)
+>
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 1eea14a4ea56..c1074278fc6b 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -369,6 +369,16 @@ static long vhost_vdpa_get_config_size(struct vhost_vdpa *v, u32 __user *argp)
+>   	return 0;
+>   }
+>   
+> +static long vhost_vdpa_get_vqs_count(struct vhost_vdpa *v, u32 __user *argp)
+> +{
+> +	struct vdpa_device *vdpa = v->vdpa;
 
-Unexpected WDCMSG_TARGET_START replay can lead to null-ptr-deref
-when ar->tx_cmd->odata is NULL. The patch adds a null check to
-prevent such case.
 
-KASAN: null-ptr-deref in range [0x0000000000000000-0x0000000000000007]
- ar5523_cmd+0x46a/0x581 [ar5523]
- ar5523_probe.cold+0x1b7/0x18da [ar5523]
- ? ar5523_cmd_rx_cb+0x7a0/0x7a0 [ar5523]
- ? __pm_runtime_set_status+0x54a/0x8f0
- ? _raw_spin_trylock_bh+0x120/0x120
- ? pm_runtime_barrier+0x220/0x220
- ? __pm_runtime_resume+0xb1/0xf0
- usb_probe_interface+0x25b/0x710
- really_probe+0x209/0x5d0
- driver_probe_device+0xc6/0x1b0
- device_driver_attach+0xe2/0x120
+While at it, I think it's better to change vdpa->nvqs to use u32?
 
-I found the bug using a custome USBFuzz port. It's a research work
-to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
-providing hand-crafted usb descriptors to QEMU.
+Thanks
 
-After fixing the code (fourth byte in usb packet) to WDCMSG_TARGET_START,
-I got the null-ptr-deref bug. I believe the bug is triggerable whenever
-cmd->odata is NULL. After patching, I tested with the same input and no
-longer see the KASAN report.
 
-This was NOT tested on a real device.
-
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/YXsmPQ3awHFLuAj2@10-18-43-117.dynapool.wireless.nyu.edu
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/wireless/ath/ar5523/ar5523.c | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/drivers/net/wireless/ath/ar5523/ar5523.c b/drivers/net/wireless/ath/ar5523/ar5523.c
-index e1a1d27427cc9..bf43244f051c5 100644
---- a/drivers/net/wireless/ath/ar5523/ar5523.c
-+++ b/drivers/net/wireless/ath/ar5523/ar5523.c
-@@ -153,6 +153,10 @@ static void ar5523_cmd_rx_cb(struct urb *urb)
- 			ar5523_err(ar, "Invalid reply to WDCMSG_TARGET_START");
- 			return;
- 		}
-+		if (!cmd->odata) {
-+			ar5523_err(ar, "Unexpected WDCMSG_TARGET_START reply");
-+			return;
-+		}
- 		memcpy(cmd->odata, hdr + 1, sizeof(u32));
- 		cmd->olen = sizeof(u32);
- 		cmd->res = 0;
--- 
-2.34.1
+> +
+> +	if (copy_to_user(argp, &vdpa->nvqs, sizeof(vdpa->nvqs)))
+> +		return -EFAULT;
+> +
+> +	return 0;
+> +}
+> +
+>   static long vhost_vdpa_vring_ioctl(struct vhost_vdpa *v, unsigned int cmd,
+>   				   void __user *argp)
+>   {
+> @@ -509,6 +519,9 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+>   	case VHOST_VDPA_GET_CONFIG_SIZE:
+>   		r = vhost_vdpa_get_config_size(v, argp);
+>   		break;
+> +	case VHOST_VDPA_GET_VQS_COUNT:
+> +		r = vhost_vdpa_get_vqs_count(v, argp);
+> +		break;
+>   	default:
+>   		r = vhost_dev_ioctl(&v->vdev, cmd, argp);
+>   		if (r == -ENOIOCTLCMD)
+> diff --git a/include/uapi/linux/vhost.h b/include/uapi/linux/vhost.h
+> index bc74e95a273a..5d99e7c242a2 100644
+> --- a/include/uapi/linux/vhost.h
+> +++ b/include/uapi/linux/vhost.h
+> @@ -154,4 +154,7 @@
+>   /* Get the config size */
+>   #define VHOST_VDPA_GET_CONFIG_SIZE	_IOR(VHOST_VIRTIO, 0x79, __u32)
+>   
+> +/* Get the count of all virtqueues */
+> +#define VHOST_VDPA_GET_VQS_COUNT	_IOR(VHOST_VIRTIO, 0x80, __u32)
+> +
+>   #endif
 
