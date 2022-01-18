@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BE0CC35268
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:16:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60254C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:16:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350270AbiARDQN (ORCPT
+        id S1348159AbiARDQ1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:16:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37292 "EHLO
+        Mon, 17 Jan 2022 22:16:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37502 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347952AbiARC5a (ORCPT
+        with ESMTP id S1352606AbiARDAQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:57:30 -0500
+        Mon, 17 Jan 2022 22:00:16 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79E7BC06135C;
-        Mon, 17 Jan 2022 18:45:28 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47765C02980C;
+        Mon, 17 Jan 2022 18:46:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5B9D161302;
-        Tue, 18 Jan 2022 02:45:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CB61CC36AE3;
-        Tue, 18 Jan 2022 02:45:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 294AB61315;
+        Tue, 18 Jan 2022 02:46:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A59DC36AEB;
+        Tue, 18 Jan 2022 02:46:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473927;
-        bh=stwyFcwrHvk0WqGjAaEa8Do+lR1jsqKuLO+DyPAgQIg=;
+        s=k20201202; t=1642474005;
+        bh=ETlyL1vGfKy3FMGxoeXWr/m02+CklHI/tETSSripquc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qAvD7WOYQU31tvGgbqwcYSzZ0eEg9wSKypZz4T5eiPvuMojtJmMI6vqXuVFHl6qs5
-         II22bXoUlHFN9LtKDR0IOpPRuDA5Oa2b6bwb7lFjwRft+FRIOtzNNnopeB3BGoMhM2
-         w6YOLfaeL9Gl2cqFtxT6RfE6pzJ3gmmYfowJVZxZaKxle4+IHvzPpJVM71l7u8DuWA
-         +ZVnln0N+2XF2r1h5+fOaAMJrJKFI943ydqAzQdRHs7ieA3FJd5jbuiG2ozxLjm/HL
-         FbUC3yUa0sQU6WZGyUtC0tKo09xBUPJlPvl5QcWdhuCq0oD9qAfta3k6CId9ilQ7fn
-         wJAckMZ/QARqg==
+        b=jCq1PszaAw1NJaRvIpPUboQTAZ1TuYlRynJ98/dAJWh+mboee9/ZvjERx/wr2QnGf
+         05/eNcEhStRsgkLnuv8c9ll/lbcISTQX3KEZUlB/kX7oYd8Mrpom3cfPVoh5rZ3abD
+         QS7U9/xQQVaVzuR3FwNhHjqWsLP69Juz+1ox2gOUPFAGpowGLsiGspY2Ll38hxGAJT
+         BA7YieP3cDvpP1LRzuMm9oUf0uKLbfvHpcUZPFEMT7t4YXbnyeBh8wx1WkhgUbVrK8
+         qLBHz6td2ElO5YqMte9T9eOMY5z9ebjwqdRDHaf9DIG57k6B3Ebjnp/5uv/dpvmKm9
+         ut4hiERdpP20Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhou Qingyang <zhou1615@umn.edu>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
-        mchehab@kernel.org, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 26/73] media: saa7146: hexium_orion: Fix a NULL pointer dereference in hexium_attach()
-Date:   Mon, 17 Jan 2022 21:43:45 -0500
-Message-Id: <20220118024432.1952028-26-sashal@kernel.org>
+Cc:     Ping-Ke Shih <pkshih@realtek.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 64/73] mac80211: allow non-standard VHT MCS-10/11
+Date:   Mon, 17 Jan 2022 21:44:23 -0500
+Message-Id: <20220118024432.1952028-64-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
 References: <20220118024432.1952028-1-sashal@kernel.org>
@@ -54,71 +55,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Ping-Ke Shih <pkshih@realtek.com>
 
-[ Upstream commit 348df8035301dd212e3cc2860efe4c86cb0d3303 ]
+[ Upstream commit 04be6d337d37400ad5b3d5f27ca87645ee5a18a3 ]
 
-In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
-a new memory for dev->vv_data. In hexium_detach(), saa7146_vv_release()
-will be called and there is a dereference of dev->vv_data in
-saa7146_vv_release(), which could lead to a NULL pointer dereference
-on failure of saa7146_vv_init() according to the following logic.
+Some AP can possibly try non-standard VHT rate and mac80211 warns and drops
+packets, and leads low TCP throughput.
 
-Both hexium_attach() and hexium_detach() are callback functions of
-the variable 'extension', so there exists a possible call chain directly
-from hexium_attach() to hexium_detach():
+    Rate marked as a VHT rate but data is invalid: MCS: 10, NSS: 2
+    WARNING: CPU: 1 PID: 7817 at net/mac80211/rx.c:4856 ieee80211_rx_list+0x223/0x2f0 [mac8021
 
-hexium_attach(dev, info) -- fail to alloc memory to dev->vv_data
-	|		    		in saa7146_vv_init().
-	|
-	|
-hexium_detach() -- a dereference of dev->vv_data in saa7146_vv_release()
+Since commit c27aa56a72b8 ("cfg80211: add VHT rate entries for MCS-10 and MCS-11")
+has added, mac80211 adds this support as well.
 
-Fix this bug by adding a check of saa7146_vv_init().
+After this patch, throughput is good and iw can get the bitrate:
+    rx bitrate:	975.1 MBit/s VHT-MCS 10 80MHz short GI VHT-NSS 2
+or
+    rx bitrate:	1083.3 MBit/s VHT-MCS 11 80MHz short GI VHT-NSS 2
 
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_VIDEO_HEXIUM_ORION=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Buglink: https://bugzilla.suse.com/show_bug.cgi?id=1192891
+Reported-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Link: https://lore.kernel.org/r/20220103013623.17052-1-pkshih@realtek.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/saa7146/hexium_orion.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ net/mac80211/rx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/pci/saa7146/hexium_orion.c b/drivers/media/pci/saa7146/hexium_orion.c
-index bf5e55348f159..31388597386aa 100644
---- a/drivers/media/pci/saa7146/hexium_orion.c
-+++ b/drivers/media/pci/saa7146/hexium_orion.c
-@@ -355,10 +355,16 @@ static struct saa7146_ext_vv vv_data;
- static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_data *info)
- {
- 	struct hexium *hexium = (struct hexium *) dev->ext_priv;
-+	int ret;
- 
- 	DEB_EE("\n");
- 
--	saa7146_vv_init(dev, &vv_data);
-+	ret = saa7146_vv_init(dev, &vv_data);
-+	if (ret) {
-+		pr_err("Error in saa7146_vv_init()\n");
-+		return ret;
-+	}
-+
- 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
- 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
- 	vv_data.vid_ops.vidioc_s_input = vidioc_s_input;
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index 282bf336b15a4..464029892478f 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -4693,7 +4693,7 @@ void ieee80211_rx_napi(struct ieee80211_hw *hw, struct ieee80211_sta *pubsta,
+ 				goto drop;
+ 			break;
+ 		case RX_ENC_VHT:
+-			if (WARN_ONCE(status->rate_idx > 9 ||
++			if (WARN_ONCE(status->rate_idx > 11 ||
+ 				      !status->nss ||
+ 				      status->nss > 8,
+ 				      "Rate marked as a VHT rate but data is invalid: MCS: %d, NSS: %d\n",
 -- 
 2.34.1
 
