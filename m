@@ -2,117 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E86EC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 20:55:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3EDCC4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 20:58:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349397AbiARUz4 (ORCPT
+        id S1349442AbiARU6M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 15:55:56 -0500
-Received: from mga12.intel.com ([192.55.52.136]:55240 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245609AbiARUzz (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 15:55:55 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642539355; x=1674075355;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=c0Wx0qMDMQrNOCbtVuALSnZvEEoaR+sAHxwWQ9xljOY=;
-  b=PyYVt85rkSQ/wLabSKTDrSk0yw6Rotjbe5x7qbIWjKMOqn6g6gO8jMTx
-   etdd11VaJxnvMy77uWjNAWmyNrM74vuph6fB2wah86HFA0bdPf4y7KyAT
-   VAGGpUEkup60GIqPS9fMYCBvVs2xi07rnPl19P/EYFwjlbcQDOYfkTiRG
-   tkQkV27iycZB4WOAIP7shFLYebuvGOV2FuNhVhdfwiAEdnbvpQpBoipi+
-   NgSFvFKHQogYuJP7OdB/jTa6qQYy8mBdS1itc4YdkGHYucTecNpagPFtj
-   J5paC7B4fjzWLrznIQcxQAP7RGajFXeb+l5b43LX92Gy7M3kKAChDqeXt
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="224890633"
-X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="224890633"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 12:55:09 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="474893151"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 18 Jan 2022 12:55:07 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n9vVT-000Cx3-9D; Tue, 18 Jan 2022 20:55:07 +0000
-Date:   Wed, 19 Jan 2022 04:54:23 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Matteo Croce <mcroce@microsoft.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org,
-        Emil Renner Berthing <kernel@esmil.dk>
-Subject: [esmil:visionfive-5.16.y 22/80] mm/kasan/shadow.c:42:7: warning: no
- previous prototype for function 'memset'
-Message-ID: <202201190447.MTj18zPA-lkp@intel.com>
+        Tue, 18 Jan 2022 15:58:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:49536 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1349276AbiARU6J (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 15:58:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642539489;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=b9WqescKjIAzil7l6cr9HCVfXjlyRssVLY+HORpld6I=;
+        b=PwBnb0Egc7pTUBTaL2QM9J7a1MnoZd9pL1LL8FwGUs0+Pcq/Rq70Nklro/A9Xgb/mkxsHz
+        XEEwgvzjC0k01D+INW1le0D4oreCsh/LsQCoN/jh6HVYZag3+BOGHAcgPA7AmfaR1GQFNW
+        Kh2ewv3iMss/QxPy1IJ8Qg15fIJuVD8=
+Received: from mail-qv1-f71.google.com (mail-qv1-f71.google.com
+ [209.85.219.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-270-9gCoO90WMWmLdkxF8K4O0A-1; Tue, 18 Jan 2022 15:58:07 -0500
+X-MC-Unique: 9gCoO90WMWmLdkxF8K4O0A-1
+Received: by mail-qv1-f71.google.com with SMTP id a10-20020a056214062a00b0041f0242eb11so522543qvx.4
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 12:58:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=b9WqescKjIAzil7l6cr9HCVfXjlyRssVLY+HORpld6I=;
+        b=HoSY2Ge0j978YDI+JWAhUZ70fsUJ+CafkE+Yc14hpF3BzqUw0Z+TTSOGcKW1oXxH2U
+         PL5MtF560ffshU9cyYT1DtiMevLZt6UCLbtDGLIpcUCoc5jnsoSbpooQYnYpLLNqzILz
+         KrEE0ozc5Iit6R02OKvIAtbSE3QqUtDPRxryFWxTqGVDnPOTOpRdgE2dvA4WeBOttkXS
+         cEhJJsJU4/b6QS5s8wvRyvtLwQDZAbn1g1/j42HJVPDqodkgwyZ2lRqC/3Bdoj7GWXaa
+         nT+bbabtqRtvE8Ks1mt/jUiaCb7P/8LUpMyBzbn+y7Z/3V3QAnukhmDTF51ffLt3RMMr
+         Rj4A==
+X-Gm-Message-State: AOAM533bS3YO9hHApeVF8scfXcnGVTKVU4+M5VBNt2Jtrc3EnN2RSwI7
+        is3KgT0rIjA5XIiodt6q0KAvxo2Nj+WAAekdfoVrhwOu9IaX/J+V8abmLOQjTAYTvWO2PuXv96Z
+        Jg09mbirLnjUmCnxGIHfI2Rna
+X-Received: by 2002:a05:620a:2448:: with SMTP id h8mr4958217qkn.231.1642539487281;
+        Tue, 18 Jan 2022 12:58:07 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxq3Ndqgu/1eSPl8H1/GfW4nW+qGmp6SP+v18upZ87Y6BP23e5HdqaD5fVe/w9z/YJHEmEHtw==
+X-Received: by 2002:a05:620a:2448:: with SMTP id h8mr4958206qkn.231.1642539487045;
+        Tue, 18 Jan 2022 12:58:07 -0800 (PST)
+Received: from bfoster (c-24-61-119-116.hsd1.ma.comcast.net. [24.61.119.116])
+        by smtp.gmail.com with ESMTPSA id az15sm5128276qkb.124.2022.01.18.12.58.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Jan 2022 12:58:06 -0800 (PST)
+Date:   Tue, 18 Jan 2022 15:58:04 -0500
+From:   Brian Foster <bfoster@redhat.com>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Ian Kent <raven@themaw.net>, "Darrick J. Wong" <djwong@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        David Howells <dhowells@redhat.com>,
+        Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        xfs <linux-xfs@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH] vfs: check dentry is still valid in get_link()
+Message-ID: <Yecp3DspJOkhaDGV@bfoster>
+References: <YeJr7/E+9stwEb3t@zeniv-ca.linux.org.uk>
+ <275358741c4ee64b5e4e008d514876ed4ec1071c.camel@themaw.net>
+ <YeV+zseKGNqnSuKR@bfoster>
+ <YeWZRL88KPtLWlkI@zeniv-ca.linux.org.uk>
+ <YeWxHPDbdSfBDtyX@zeniv-ca.linux.org.uk>
+ <YeXIIf6/jChv7JN6@zeniv-ca.linux.org.uk>
+ <YeYYp89adipRN64k@zeniv-ca.linux.org.uk>
+ <YebFCeLcbziyMjbA@bfoster>
+ <YecGC06UrGrfonS0@bfoster>
+ <YecTA9nclOowdDEu@zeniv-ca.linux.org.uk>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <YecTA9nclOowdDEu@zeniv-ca.linux.org.uk>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/esmil/linux visionfive-5.16.y
-head:   eeeb46a916e77aecbe1699537a5592746f3130f6
-commit: 6348ed9f5269d38acf552123e96766aa2eb0fd7e [22/80] riscv: optimized memset
-config: riscv-randconfig-c006-20220118 (https://download.01.org/0day-ci/archive/20220119/202201190447.MTj18zPA-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project c10cbb243cafc0cf42c3e922cb29183279444432)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/esmil/linux/commit/6348ed9f5269d38acf552123e96766aa2eb0fd7e
-        git remote add esmil https://github.com/esmil/linux
-        git fetch --no-tags esmil visionfive-5.16.y
-        git checkout 6348ed9f5269d38acf552123e96766aa2eb0fd7e
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash mm/kasan/
+On Tue, Jan 18, 2022 at 07:20:35PM +0000, Al Viro wrote:
+> On Tue, Jan 18, 2022 at 01:25:15PM -0500, Brian Foster wrote:
+> 
+> > If I go back to the inactive -> reclaimable grace period variant and
+> > also insert a start_poll_synchronize_rcu() and
+> > poll_state_synchronize_rcu() pair across the inactive processing
+> > sequence, I start seeing numbers closer to ~36k cycles. IOW, the
+> > xfs_inodegc_inactivate() helper looks something like this:
+> > 
+> >         if (poll_state_synchronize_rcu(ip->i_destroy_gp))
+> >                 xfs_inodegc_set_reclaimable(ip);
+> >         else
+> >                 call_rcu(&VFS_I(ip)->i_rcu, xfs_inodegc_set_reclaimable_callback);
+> > 
+> > ... to skip the rcu grace period if one had already passed while the
+> > inode sat on the inactivation queue and was processed.
+> > 
+> > However my box went haywire shortly after with rcu stall reports or
+> > something if I let that continue to run longer, so I'll probably have to
+> > look into that lockdep splat (complaining about &pag->pag_ici_lock in
+> > rcu context, perhaps needs to become irq safe?) or see if something else
+> > is busted..
+> 
+> Umm...  Could you (or Dave) describe where does the mainline do the
+> RCU delay mentioned several times in these threads, in case of
+> 	* unlink()
+> 	* overwriting rename()
+> 	* open() + unlink() + close() (that one, obviously, for regular files)
+> 
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+If you're referring to the existing rcu delay in XFS, I suspect that
+refers to xfs_reclaim_inode(). The last bits of that function remove the
+inode from the perag tree and then calls __xfs_inode_free(), which frees
+the inode via rcu callback.
 
-All warnings (new ones prefixed by >>):
+BTW, I think the experiment above is either going to require an audit to
+make the various _set_reclaimable() locks irq safe or something a bit
+more ugly like putting the inode back on a workqueue after the rcu delay
+to make the state transition. Given the incremental improvement from
+using start_poll_synchronize_rcu(), I replaced the above destroy side
+code with a cond_synchronize_rcu(ip->i_destroy_gp) call on the
+iget/recycle side and see similar results (~36k cycles per 60s, but so
+far without any explosions).
 
->> mm/kasan/shadow.c:42:7: warning: no previous prototype for function 'memset' [-Wmissing-prototypes]
-   void *memset(void *addr, int c, size_t len)
-         ^
-   mm/kasan/shadow.c:42:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void *memset(void *addr, int c, size_t len)
-   ^
-   static 
-   mm/kasan/shadow.c:63:7: warning: no previous prototype for function 'memcpy' [-Wmissing-prototypes]
-   void *memcpy(void *dest, const void *src, size_t len)
-         ^
-   mm/kasan/shadow.c:63:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   void *memcpy(void *dest, const void *src, size_t len)
-   ^
-   static 
-   2 warnings generated.
+Brian
 
+> The thing is, if we already do have an RCU delay in there, there might be
+> a better solution - making sure it happens downstream of d_drop() (in case
+> when dentry has other references) or dentry going negative (in case we are
+> holding the sole reference to it).
+> 
+> If we can do that, RCU'd dcache lookups won't run into inode reuse at all.
+> Sure, right now d_delete() comes last *and* we want the target inode to stay
+> around past the call of ->unlink().  But if you look at do_unlinkat() you'll
+> see an interesting-looking wart with ihold/iput around vfs_unlink().  Not
+> sure if you remember the story on that one; basically, it's "we'd rather
+> have possible IO on inode freeing to happen outside of the lock on parent".
+> 
+> nfsd and mqueue do the same thing; ksmbd does not.  OTOH, ksmbd appears to
+> force the "make victim go unhashed, sole reference or not".  ecryptfs
+> definitely does that forcing (deliberately so).
+> 
+> That area could use some rethinking, and if we can deal with the inode reuse
+> delay while we are at it...
+> 
+> Overwriting rename() is also interesting in that respect, of course.
+> 
+> I can go and try to RTFS my way through xfs iget-related code, but I'd
+> obviously prefer to do so with at least some overview of that thing
+> from the folks familiar with it.  Seeing that it's a lockless search
+> structure, missing something subtle there is all too easy, especially
+> with the lookup-by-fhandle stuff in the mix...
+> 
 
-vim +/memset +42 mm/kasan/shadow.c
-
-bb359dbcb70085 Andrey Konovalov 2020-12-22  40  
-bb359dbcb70085 Andrey Konovalov 2020-12-22  41  #undef memset
-bb359dbcb70085 Andrey Konovalov 2020-12-22 @42  void *memset(void *addr, int c, size_t len)
-bb359dbcb70085 Andrey Konovalov 2020-12-22  43  {
-f00748bfa0246c Andrey Konovalov 2021-02-24  44  	if (!kasan_check_range((unsigned long)addr, len, true, _RET_IP_))
-bb359dbcb70085 Andrey Konovalov 2020-12-22  45  		return NULL;
-bb359dbcb70085 Andrey Konovalov 2020-12-22  46  
-bb359dbcb70085 Andrey Konovalov 2020-12-22  47  	return __memset(addr, c, len);
-bb359dbcb70085 Andrey Konovalov 2020-12-22  48  }
-bb359dbcb70085 Andrey Konovalov 2020-12-22  49  
-
-:::::: The code at line 42 was first introduced by commit
-:::::: bb359dbcb70085a63e8bdbf14837a900750f0cf7 kasan: split out shadow.c from common.c
-
-:::::: TO: Andrey Konovalov <andreyknvl@google.com>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
