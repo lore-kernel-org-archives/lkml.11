@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC3CBC4167D
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:23:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA105C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:23:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357590AbiARDVM (ORCPT
+        id S1357687AbiARDVU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:21:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38910 "EHLO
+        Mon, 17 Jan 2022 22:21:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348531AbiARDI1 (ORCPT
+        with ESMTP id S1350274AbiARDIc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:08:27 -0500
+        Mon, 17 Jan 2022 22:08:32 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF353C0617B0;
-        Mon, 17 Jan 2022 18:50:00 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98A82C0619C1;
+        Mon, 17 Jan 2022 18:50:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 235AD612E8;
-        Tue, 18 Jan 2022 02:50:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86A1DC36AEB;
-        Tue, 18 Jan 2022 02:49:58 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20EAC612E8;
+        Tue, 18 Jan 2022 02:50:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97D62C36AEF;
+        Tue, 18 Jan 2022 02:50:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474199;
-        bh=r2THuKnuQVqhnIIIAeI4Ysw+zPZeZ6LgfJ05ILhjZvQ=;
+        s=k20201202; t=1642474222;
+        bh=KtF8oSM/+IKrGVbzVycVUSpCGeY9eu9K95vEuK2pHRE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V63hUQPT/O+8BdleChim0DduGCsdyfU2NJdx2ew8J8k2PZLB+ZqhxnMk6G/GTcEVr
-         XUu3/Fkq9RxYC6GVqs0QxF4Un1fLWc5qDrOioKAGXuOQgocdbYMLNIsFPQ0wgAiHqU
-         fmUJXbxwq8a8crZKpJOFIdffoKjOkyTjM3re3CK+EoYBGFjzRsSO250ixEyS2hWVo7
-         gfT8nCnfh6ZC9r2ejXdVuu/skFvlxoKO8ldj6KHrf4F0/IuufadUJueBN9zfjGgNfB
-         bPcV/EfxEEGxQFs9WM0LyjU6CZByUuUtZuEn9rmzJ8aa+XoTXzFwcaENZBHW6RnG/5
-         qvNdUfgA+LfRw==
+        b=UrjX5zAjBqKaDRiIAxoAIbOcN6nJ69pd0QXxVD0phTVAc4t8oz+KcqRpr8HLfuM0W
+         XcItdrY/H5F2Hw2/TBPkCOrSmreihelh2dzW43LxCbgRjgd8958EPoWOw865Ow9ooK
+         TpDiQlRYDbKRQ0eC2sst5HT5VAh/PgilKPulYqCiZh47WOcLyv6xsxdKP2868om1Gy
+         Ec9G18odSe+UsG8DT58FKBMa4bXe98p6TF9y9J6g1Po88U7yQqHUZijYXEPQVSgv36
+         AhDuz+s5DVcbbYtxdCPERlf34nxtn3r9Vftj4NSGASqKI4nBObLMNiSb6espLAdHiy
+         26s85omYKaCfQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Danielle Ratson <danieller@nvidia.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, petrm@nvidia.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 17/56] mlxsw: pci: Add shutdown method in PCI driver
-Date:   Mon, 17 Jan 2022 21:48:29 -0500
-Message-Id: <20220118024908.1953673-17-sashal@kernel.org>
+Cc:     Antoine Tenart <atenart@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, weiwan@google.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 29/56] net-sysfs: update the queue counts in the unregistration path
+Date:   Mon, 17 Jan 2022 21:48:41 -0500
+Message-Id: <20220118024908.1953673-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
 References: <20220118024908.1953673-1-sashal@kernel.org>
@@ -55,94 +54,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Danielle Ratson <danieller@nvidia.com>
+From: Antoine Tenart <atenart@kernel.org>
 
-[ Upstream commit c1020d3cf4752f61a6a413f632ea2ce2370e150d ]
+[ Upstream commit d7dac083414eb5bb99a6d2ed53dc2c1b405224e5 ]
 
-On an arm64 platform with the Spectrum ASIC, after loading and executing
-a new kernel via kexec, the following trace [1] is observed. This seems
-to be caused by the fact that the device is not properly shutdown before
-executing the new kernel.
+When updating Rx and Tx queue kobjects, the queue count should always be
+updated to match the queue kobjects count. This was not done in the net
+device unregistration path, fix it. Tracking all queue count updates
+will allow in a following up patch to detect illegal updates.
 
-Fix this by implementing a shutdown method which mirrors the remove
-method, as recommended by the kexec maintainer [2][3].
-
-[1]
-BUG: Bad page state in process devlink pfn:22f73d
-page:fffffe00089dcf40 refcount:-1 mapcount:0 mapping:0000000000000000 index:0x0
-flags: 0x2ffff00000000000()
-raw: 2ffff00000000000 0000000000000000 ffffffff089d0201 0000000000000000
-raw: 0000000000000000 0000000000000000 ffffffffffffffff 0000000000000000
-page dumped because: nonzero _refcount
-Modules linked in:
-CPU: 1 PID: 16346 Comm: devlink Tainted: G B 5.8.0-rc6-custom-273020-gac6b365b1bf5 #44
-Hardware name: Marvell Armada 7040 TX4810M (DT)
-Call trace:
- dump_backtrace+0x0/0x1d0
- show_stack+0x1c/0x28
- dump_stack+0xbc/0x118
- bad_page+0xcc/0xf8
- check_free_page_bad+0x80/0x88
- __free_pages_ok+0x3f8/0x418
- __free_pages+0x38/0x60
- kmem_freepages+0x200/0x2a8
- slab_destroy+0x28/0x68
- slabs_destroy+0x60/0x90
- ___cache_free+0x1b4/0x358
- kfree+0xc0/0x1d0
- skb_free_head+0x2c/0x38
- skb_release_data+0x110/0x1a0
- skb_release_all+0x2c/0x38
- consume_skb+0x38/0x130
- __dev_kfree_skb_any+0x44/0x50
- mlxsw_pci_rdq_fini+0x8c/0xb0
- mlxsw_pci_queue_fini.isra.0+0x28/0x58
- mlxsw_pci_queue_group_fini+0x58/0x88
- mlxsw_pci_aqs_fini+0x2c/0x60
- mlxsw_pci_fini+0x34/0x50
- mlxsw_core_bus_device_unregister+0x104/0x1d0
- mlxsw_devlink_core_bus_device_reload_down+0x2c/0x48
- devlink_reload+0x44/0x158
- devlink_nl_cmd_reload+0x270/0x290
- genl_rcv_msg+0x188/0x2f0
- netlink_rcv_skb+0x5c/0x118
- genl_rcv+0x3c/0x50
- netlink_unicast+0x1bc/0x278
- netlink_sendmsg+0x194/0x390
- __sys_sendto+0xe0/0x158
- __arm64_sys_sendto+0x2c/0x38
- el0_svc_common.constprop.0+0x70/0x168
- do_el0_svc+0x28/0x88
- el0_sync_handler+0x88/0x190
- el0_sync+0x140/0x180
-
-[2]
-https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1195432.html
-
-[3]
-https://patchwork.kernel.org/project/linux-scsi/patch/20170212214920.28866-1-anton@ozlabs.org/#20116693
-
-Cc: Eric Biederman <ebiederm@xmission.com>
-Signed-off-by: Danielle Ratson <danieller@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/pci.c | 1 +
- 1 file changed, 1 insertion(+)
+ net/core/net-sysfs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-index 6ef20e5cc77dd..de93c77148684 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-@@ -1772,6 +1772,7 @@ int mlxsw_pci_driver_register(struct pci_driver *pci_driver)
- {
- 	pci_driver->probe = mlxsw_pci_probe;
- 	pci_driver->remove = mlxsw_pci_remove;
-+	pci_driver->shutdown = mlxsw_pci_remove;
- 	return pci_register_driver(pci_driver);
- }
- EXPORT_SYMBOL(mlxsw_pci_driver_register);
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 7d8c6ba5cbd22..3a5903f942e18 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -1449,6 +1449,9 @@ static void remove_queue_kobjects(struct net_device *dev)
+ 
+ 	net_rx_queue_update_kobjects(dev, real_rx, 0);
+ 	netdev_queue_update_kobjects(dev, real_tx, 0);
++
++	dev->real_num_rx_queues = 0;
++	dev->real_num_tx_queues = 0;
+ #ifdef CONFIG_SYSFS
+ 	kset_unregister(dev->queues_kset);
+ #endif
 -- 
 2.34.1
 
