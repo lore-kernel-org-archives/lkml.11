@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 884D1C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:53:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2004BC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349868AbiARCuh (ORCPT
+        id S1349944AbiARCur (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:50:37 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48872 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346818AbiARCkB (ORCPT
+        Mon, 17 Jan 2022 21:50:47 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55986 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347038AbiARCkc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:40:01 -0500
+        Mon, 17 Jan 2022 21:40:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60B45B81233;
-        Tue, 18 Jan 2022 02:39:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DCDDC36AEF;
-        Tue, 18 Jan 2022 02:39:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DDE6061127;
+        Tue, 18 Jan 2022 02:40:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2FA76C36AE3;
+        Tue, 18 Jan 2022 02:40:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473598;
-        bh=sovLNmWwA9wnuElnBirZEn7t7GuDTXFhhWCtO7yz5rQ=;
+        s=k20201202; t=1642473631;
+        bh=N+xAuBNrumYAwKdpAGtW0TSvVD1arLgbiAIJ/iqPfH8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pJQnoGSwK004v2zChY2IrrhA/+pQ+go8B+xPbBhLoNcVLbENv1u8CiX+zpdQTsqMl
-         0IO9+8a/bSIxcomeBq9pHXJyUCbO0JIXEfTPLfqq0uw31VxI1xQbiu6bpOPCsT3PuO
-         /zHaPK2rR0SmocJPM7dn5JuNdKwqvYL9qkSM6++d5ffr0hUFJl/yvyx0eRTGFVMGNH
-         rlMp2z3jJ6D/px5zxP1jVEyjEK/S55QDlIuVHKR1U3lcMe371rh8IvcuSopGNu/yTp
-         7IVKkOTEQMBtOEAax+bCNKojFe7/Gfw0m7nzUDvu2JpOEev30WHY8K4L5tRwmAH6Zi
-         dETI8s7I6PqWQ==
+        b=ap6SszjwUFCxNiG2/oHXaOLCnm9Crze4tcFsaJqqczDgLp2jqkhlzjsguy33kZtqf
+         D/+i8WhZCcHQ5RsdI3FdSo+y6awCnMucEgVtkfUlOhZEwUUE9d0dIJODhXiT1lI6gU
+         BE6bBEphq+vb7DHEWTLZo/LzsRiRtnyNltNZ5U0+m8/tgJKuPylVlfPOM5QfvRtzTp
+         ++jWgoPYb/9qWCbgnNKe3y/uwoKTElgaqyHDeJB6LfPddZdAZP6dnnXmXGESKXW3Y+
+         GwJAtaIEdOy1eFoDWzFfzgT5ZDavefcS4hhFtnwH5bQ37fTckE61hok0TK0O6UABFi
+         KbwjaCN3ladig==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        Sasha Levin <sashal@kernel.org>, wg@grandegger.com,
-        davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 186/188] can: flexcan: add more quirks to describe RX path capabilities
-Date:   Mon, 17 Jan 2022 21:31:50 -0500
-Message-Id: <20220118023152.1948105-186-sashal@kernel.org>
+Cc:     Ben Skeggs <bskeggs@redhat.com>,
+        Diego Viola <diego.viola@gmail.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, lyude@redhat.com,
+        airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        nouveau@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.10 008/116] drm/nouveau/pmu/gm200-: avoid touching PMU outside of DEVINIT/PREOS/ACR
+Date:   Mon, 17 Jan 2022 21:38:19 -0500
+Message-Id: <20220118024007.1950576-8-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,163 +52,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Ben Skeggs <bskeggs@redhat.com>
 
-[ Upstream commit c5c88591040ee7d84d037328eed9019d3ffab821 ]
+[ Upstream commit 1d2271d2fb85e54bfc9630a6c30ac0feb9ffb983 ]
 
-Most flexcan IP cores support 2 RX modes:
-- FIFO
-- mailbox
+There have been reports of the WFI timing out on some boards, and a
+patch was proposed to just remove it.  This stuff is rather fragile,
+and I believe the WFI might be needed with our FW prior to GM200.
 
-Some IP core versions cannot receive CAN RTR messages via mailboxes.
-This patch adds quirks to document this.
+However, we probably should not be touching PMU during init on GPUs
+where we depend on NVIDIA FW, outside of limited circumstances, so
+this should be a somewhat safer change that achieves the desired
+result.
 
-This information will be used in a later patch to switch from FIFO to
-more performant mailbox mode at the expense of losing the ability to
-receive RTR messages. This trade off is beneficial in certain use
-cases.
-
-Link: https://lore.kernel.org/all/20220107193105.1699523-5-mkl@pengutronix.de
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Reported-by: Diego Viola <diego.viola@gmail.com>
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Link: https://gitlab.freedesktop.org/drm/nouveau/-/merge_requests/10
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/flexcan.c | 66 ++++++++++++++++++++++++++++++++-------
- 1 file changed, 54 insertions(+), 12 deletions(-)
+ .../gpu/drm/nouveau/nvkm/subdev/pmu/base.c    | 37 +++++++++++--------
+ 1 file changed, 21 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
-index 02299befe2852..18d7bb99ec1bd 100644
---- a/drivers/net/can/flexcan.c
-+++ b/drivers/net/can/flexcan.c
-@@ -252,6 +252,12 @@
- #define FLEXCAN_QUIRK_NR_IRQ_3 BIT(12)
- /* Setup 16 mailboxes */
- #define FLEXCAN_QUIRK_NR_MB_16 BIT(13)
-+/* Device supports RX via mailboxes */
-+#define FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX BIT(14)
-+/* Device supports RTR reception via mailboxes */
-+#define FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR BIT(15)
-+/* Device supports RX via FIFO */
-+#define FLEXCAN_QUIRK_SUPPPORT_RX_FIFO BIT(16)
+diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
+index a0fe607c9c07f..3bfc55c571b5e 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
+@@ -94,20 +94,13 @@ nvkm_pmu_fini(struct nvkm_subdev *subdev, bool suspend)
+ 	return 0;
+ }
  
- /* Structure of the message buffer */
- struct flexcan_mb {
-@@ -382,59 +388,78 @@ struct flexcan_priv {
+-static int
++static void
+ nvkm_pmu_reset(struct nvkm_pmu *pmu)
+ {
+ 	struct nvkm_device *device = pmu->subdev.device;
  
- static const struct flexcan_devtype_data fsl_mcf5441x_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_BROKEN_PERR_STATE |
--		FLEXCAN_QUIRK_NR_IRQ_3 | FLEXCAN_QUIRK_NR_MB_16,
-+		FLEXCAN_QUIRK_NR_IRQ_3 | FLEXCAN_QUIRK_NR_MB_16 |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_FIFO,
- };
+ 	if (!pmu->func->enabled(pmu))
+-		return 0;
+-
+-	/* Inhibit interrupts, and wait for idle. */
+-	nvkm_wr32(device, 0x10a014, 0x0000ffff);
+-	nvkm_msec(device, 2000,
+-		if (!nvkm_rd32(device, 0x10a04c))
+-			break;
+-	);
++		return;
  
- static const struct flexcan_devtype_data fsl_p1010_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_BROKEN_WERR_STATE |
- 		FLEXCAN_QUIRK_BROKEN_PERR_STATE |
--		FLEXCAN_QUIRK_DEFAULT_BIG_ENDIAN,
-+		FLEXCAN_QUIRK_DEFAULT_BIG_ENDIAN |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_FIFO,
- };
+ 	/* Reset. */
+ 	if (pmu->func->reset)
+@@ -118,25 +111,37 @@ nvkm_pmu_reset(struct nvkm_pmu *pmu)
+ 		if (!(nvkm_rd32(device, 0x10a10c) & 0x00000006))
+ 			break;
+ 	);
+-
+-	return 0;
+ }
  
- static const struct flexcan_devtype_data fsl_imx25_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_BROKEN_WERR_STATE |
--		FLEXCAN_QUIRK_BROKEN_PERR_STATE,
-+		FLEXCAN_QUIRK_BROKEN_PERR_STATE |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_FIFO,
- };
+ static int
+ nvkm_pmu_preinit(struct nvkm_subdev *subdev)
+ {
+ 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
+-	return nvkm_pmu_reset(pmu);
++	nvkm_pmu_reset(pmu);
++	return 0;
+ }
  
- static const struct flexcan_devtype_data fsl_imx28_devtype_data = {
--	.quirks = FLEXCAN_QUIRK_BROKEN_PERR_STATE,
-+	.quirks = FLEXCAN_QUIRK_BROKEN_PERR_STATE |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_FIFO,
- };
- 
- static const struct flexcan_devtype_data fsl_imx6q_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
- 		FLEXCAN_QUIRK_USE_RX_MAILBOX | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
--		FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR,
-+		FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
- };
- 
- static const struct flexcan_devtype_data fsl_imx8qm_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
- 		FLEXCAN_QUIRK_USE_RX_MAILBOX | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
--		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW,
-+		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
- };
- 
- static struct flexcan_devtype_data fsl_imx8mp_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
- 		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_USE_RX_MAILBOX |
- 		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR |
--		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SUPPORT_ECC,
-+		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SUPPORT_ECC |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
- };
- 
- static const struct flexcan_devtype_data fsl_vf610_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
- 		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_USE_RX_MAILBOX |
--		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_SUPPORT_ECC,
-+		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_SUPPORT_ECC |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
- };
- 
- static const struct flexcan_devtype_data fsl_ls1021a_r2_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
--		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_USE_RX_MAILBOX,
-+		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_USE_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
- };
- 
- static const struct flexcan_devtype_data fsl_lx2160a_r1_devtype_data = {
- 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
- 		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
- 		FLEXCAN_QUIRK_USE_RX_MAILBOX | FLEXCAN_QUIRK_SUPPORT_FD |
--		FLEXCAN_QUIRK_SUPPORT_ECC,
-+		FLEXCAN_QUIRK_SUPPORT_ECC |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
- };
- 
- static const struct can_bittiming_const flexcan_bittiming_const = {
-@@ -2164,8 +2189,25 @@ static int flexcan_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 
- 	if ((devtype_data->quirks & FLEXCAN_QUIRK_SUPPORT_FD) &&
--	    !(devtype_data->quirks & FLEXCAN_QUIRK_USE_RX_MAILBOX)) {
--		dev_err(&pdev->dev, "CAN-FD mode doesn't work with FIFO mode!\n");
-+	    !((devtype_data->quirks &
-+	       (FLEXCAN_QUIRK_USE_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR |
-+		FLEXCAN_QUIRK_SUPPPORT_RX_FIFO)) ==
-+	      (FLEXCAN_QUIRK_USE_RX_MAILBOX |
-+	       FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+	       FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR))) {
-+		dev_err(&pdev->dev, "CAN-FD mode doesn't work in RX-FIFO mode!\n");
-+		return -EINVAL;
+ static int
+ nvkm_pmu_init(struct nvkm_subdev *subdev)
+ {
+ 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
+-	int ret = nvkm_pmu_reset(pmu);
+-	if (ret == 0 && pmu->func->init)
+-		ret = pmu->func->init(pmu);
+-	return ret;
++	struct nvkm_device *device = pmu->subdev.device;
++
++	if (!pmu->func->init)
++		return 0;
++
++	if (pmu->func->enabled(pmu)) {
++		/* Inhibit interrupts, and wait for idle. */
++		nvkm_wr32(device, 0x10a014, 0x0000ffff);
++		nvkm_msec(device, 2000,
++			if (!nvkm_rd32(device, 0x10a04c))
++				break;
++		);
++
++		nvkm_pmu_reset(pmu);
 +	}
 +
-+	if ((devtype_data->quirks &
-+	     (FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
-+	      FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR)) ==
-+	    FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR) {
-+		dev_err(&pdev->dev,
-+			"Quirks (0x%08x) inconsistent: RX_MAILBOX_RX supported but not RX_MAILBOX\n",
-+			devtype_data->quirks);
- 		return -EINVAL;
- 	}
++	return pmu->func->init(pmu);
+ }
  
+ static void *
 -- 
 2.34.1
 
