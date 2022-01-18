@@ -2,44 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF706C4167E
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:06:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D235C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:06:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354366AbiARDFz (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:05:55 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48952 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240679AbiARCoT (ORCPT
+        id S238509AbiARDG3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 22:06:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34854 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346543AbiARCtJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:44:19 -0500
+        Mon, 17 Jan 2022 21:49:09 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5FADC061762;
+        Mon, 17 Jan 2022 18:41:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 622B6B81235;
-        Tue, 18 Jan 2022 02:44:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3BDACC36AF3;
-        Tue, 18 Jan 2022 02:44:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96514B81261;
+        Tue, 18 Jan 2022 02:41:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5198C36AF2;
+        Tue, 18 Jan 2022 02:41:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473857;
-        bh=oxD4SZxbk/IfGdi8uub6L4h5OJsot3+ZJKCvxuH8tI8=;
+        s=k20201202; t=1642473701;
+        bh=mMVMuisXCIt+zCi8F5XYc+fsmSAixmNaldXMRbfRe4I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kvZlvwQ9t6mxZmdX+La1COxn62bORErXpbgfrpKlgMxdmpvkrIDatVHjzUYi5XycR
-         EYWDMj6Wgrt/DmTi8lFi861hhuiFwFR2wFNGdlrNtpkt1nTAKeIV1v6s+06xTZwqRm
-         xCdEtlGUyBc3/V9f71wyUf6kKu7NYM1EISyth27E+NRvJsZjot3PONspAONikU6Sf5
-         U6j5jPww2t9N1UE4DPgrnu4ULUqgSxzmo+t6uCVkBogRQ01ylZE+wcWIwtJhuZSjYU
-         b0Bn/Lb3XC170h4CGPKCI14Q9YBPMIAbO56/Qat+m+HiLhW90sLPYNrAG9VFrMfzrQ
-         ypprgNhOyLc3Q==
+        b=uNczL+gIxOZj8WvuS6EdSjeA/Q74XvQCmG1KzrJjqUFEKw1CxrEraND6zGvHbmHE/
+         S4/G78vAyUbHq3TOpigD6npzrT2j68kcWtPfr83tj6XRnjOoQNCRxQRaLSf7+Q9guu
+         IUCxlBB/NBeUk3YKC/AXun8xEqMEuAiNEU+LTf4WcBZjpPA/vcKZDSEhD6bZdcP/so
+         Ht9mZvyVzR2QDcCI0szsYz1FHCxP8P0Wfo/wB5UirH7g6zI4tX7qQBYSD3nGzj5IKR
+         Dm08pj27VTSmbuQRwz9CaPrWq5vAwmv2Gr+QmQT7AzhNzxjjN2w+m18HW152T99ieC
+         1vhbKw6e/0yZw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        bjorn.andersson@linaro.org, lgirdwood@gmail.com,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 109/116] regulator: qcom_smd: Align probe function with rpmh-regulator
-Date:   Mon, 17 Jan 2022 21:40:00 -0500
-Message-Id: <20220118024007.1950576-109-sashal@kernel.org>
+Cc:     Zekun Shen <bruceshenzk@gmail.com>,
+        Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, amitkarwar@gmail.com,
+        ganapathi017@gmail.com, sharvari.harisangam@nxp.com,
+        huxinming820@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 031/116] mwifiex: Fix skb_over_panic in mwifiex_usb_recv()
+Date:   Mon, 17 Jan 2022 21:38:42 -0500
+Message-Id: <20220118024007.1950576-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
 References: <20220118024007.1950576-1-sashal@kernel.org>
@@ -51,169 +56,66 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit 14e2976fbabdacb01335d7f91eeebbc89c67ddb1 ]
+[ Upstream commit 04d80663f67ccef893061b49ec8a42ff7045ae84 ]
 
-The RPMh regulator driver is much newer and gets more attention, which in
-consequence makes it do a few things better. Update qcom_smd-regulator's
-probe function to mimic what rpmh-regulator does to address a couple of
-issues:
+Currently, with an unknown recv_type, mwifiex_usb_recv
+just return -1 without restoring the skb. Next time
+mwifiex_usb_rx_complete is invoked with the same skb,
+calling skb_put causes skb_over_panic.
 
-- Probe defer now works correctly, before it used to, well,
-  kinda just die.. This fixes reliable probing on (at least) PM8994,
-  because Linux apparently cannot deal with supply map dependencies yet..
+The bug is triggerable with a compromised/malfunctioning
+usb device. After applying the patch, skb_over_panic
+no longer shows up with the same input.
 
-- Regulator data is now matched more sanely: regulator data is matched
-  against each individual regulator node name and throwing an -EINVAL if
-  data is missing, instead of just assuming everything is fine and
-  iterating over all subsequent array members.
+Attached is the panic report from fuzzing.
+skbuff: skb_over_panic: text:000000003bf1b5fa
+ len:2048 put:4 head:00000000dd6a115b data:000000000a9445d8
+ tail:0x844 end:0x840 dev:<NULL>
+kernel BUG at net/core/skbuff.c:109!
+invalid opcode: 0000 [#1] SMP KASAN NOPTI
+CPU: 0 PID: 198 Comm: in:imklog Not tainted 5.6.0 #60
+RIP: 0010:skb_panic+0x15f/0x161
+Call Trace:
+ <IRQ>
+ ? mwifiex_usb_rx_complete+0x26b/0xfcd [mwifiex_usb]
+ skb_put.cold+0x24/0x24
+ mwifiex_usb_rx_complete+0x26b/0xfcd [mwifiex_usb]
+ __usb_hcd_giveback_urb+0x1e4/0x380
+ usb_giveback_urb_bh+0x241/0x4f0
+ ? __hrtimer_run_queues+0x316/0x740
+ ? __usb_hcd_giveback_urb+0x380/0x380
+ tasklet_action_common.isra.0+0x135/0x330
+ __do_softirq+0x18c/0x634
+ irq_exit+0x114/0x140
+ smp_apic_timer_interrupt+0xde/0x380
+ apic_timer_interrupt+0xf/0x20
+ </IRQ>
 
-- status = "disabled" will now work for disabling individual regulators in
-  DT. Previously it didn't seem to do much if anything at all.
-
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Link: https://lore.kernel.org/r/20211230023442.1123424-1-konrad.dybcio@somainline.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/YX4CqjfRcTa6bVL+@Zekuns-MBP-16.fios-router.home
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/qcom_smd-regulator.c | 100 +++++++++++++++++--------
- 1 file changed, 70 insertions(+), 30 deletions(-)
+ drivers/net/wireless/marvell/mwifiex/usb.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/regulator/qcom_smd-regulator.c b/drivers/regulator/qcom_smd-regulator.c
-index bb944ee5fe3b1..03e146e98abd5 100644
---- a/drivers/regulator/qcom_smd-regulator.c
-+++ b/drivers/regulator/qcom_smd-regulator.c
-@@ -9,6 +9,7 @@
- #include <linux/of_device.h>
- #include <linux/platform_device.h>
- #include <linux/regulator/driver.h>
-+#include <linux/regulator/of_regulator.h>
- #include <linux/soc/qcom/smd-rpm.h>
- 
- struct qcom_rpm_reg {
-@@ -1107,52 +1108,91 @@ static const struct of_device_id rpm_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, rpm_of_match);
- 
--static int rpm_reg_probe(struct platform_device *pdev)
-+/**
-+ * rpm_regulator_init_vreg() - initialize all attributes of a qcom_smd-regulator
-+ * @vreg:		Pointer to the individual qcom_smd-regulator resource
-+ * @dev:		Pointer to the top level qcom_smd-regulator PMIC device
-+ * @node:		Pointer to the individual qcom_smd-regulator resource
-+ *			device node
-+ * @rpm:		Pointer to the rpm bus node
-+ * @pmic_rpm_data:	Pointer to a null-terminated array of qcom_smd-regulator
-+ *			resources defined for the top level PMIC device
-+ *
-+ * Return: 0 on success, errno on failure
-+ */
-+static int rpm_regulator_init_vreg(struct qcom_rpm_reg *vreg, struct device *dev,
-+				   struct device_node *node, struct qcom_smd_rpm *rpm,
-+				   const struct rpm_regulator_data *pmic_rpm_data)
- {
--	const struct rpm_regulator_data *reg;
--	const struct of_device_id *match;
--	struct regulator_config config = { };
-+	struct regulator_config config = {};
-+	const struct rpm_regulator_data *rpm_data;
- 	struct regulator_dev *rdev;
-+	int ret;
-+
-+	for (rpm_data = pmic_rpm_data; rpm_data->name; rpm_data++)
-+		if (of_node_name_eq(node, rpm_data->name))
-+			break;
-+
-+	if (!rpm_data->name) {
-+		dev_err(dev, "Unknown regulator %pOFn\n", node);
-+		return -EINVAL;
-+	}
-+
-+	vreg->dev	= dev;
-+	vreg->rpm	= rpm;
-+	vreg->type	= rpm_data->type;
-+	vreg->id	= rpm_data->id;
-+
-+	memcpy(&vreg->desc, rpm_data->desc, sizeof(vreg->desc));
-+	vreg->desc.name = rpm_data->name;
-+	vreg->desc.supply_name = rpm_data->supply;
-+	vreg->desc.owner = THIS_MODULE;
-+	vreg->desc.type = REGULATOR_VOLTAGE;
-+	vreg->desc.of_match = rpm_data->name;
-+
-+	config.dev		= dev;
-+	config.of_node		= node;
-+	config.driver_data	= vreg;
-+
-+	rdev = devm_regulator_register(dev, &vreg->desc, &config);
-+	if (IS_ERR(rdev)) {
-+		ret = PTR_ERR(rdev);
-+		dev_err(dev, "%pOFn: devm_regulator_register() failed, ret=%d\n", node, ret);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int rpm_reg_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	const struct rpm_regulator_data *vreg_data;
-+	struct device_node *node;
- 	struct qcom_rpm_reg *vreg;
- 	struct qcom_smd_rpm *rpm;
-+	int ret;
- 
- 	rpm = dev_get_drvdata(pdev->dev.parent);
- 	if (!rpm) {
--		dev_err(&pdev->dev, "unable to retrieve handle to rpm\n");
-+		dev_err(&pdev->dev, "Unable to retrieve handle to rpm\n");
- 		return -ENODEV;
- 	}
- 
--	match = of_match_device(rpm_of_match, &pdev->dev);
--	if (!match) {
--		dev_err(&pdev->dev, "failed to match device\n");
-+	vreg_data = of_device_get_match_data(dev);
-+	if (!vreg_data)
- 		return -ENODEV;
--	}
- 
--	for (reg = match->data; reg->name; reg++) {
-+	for_each_available_child_of_node(dev->of_node, node) {
- 		vreg = devm_kzalloc(&pdev->dev, sizeof(*vreg), GFP_KERNEL);
- 		if (!vreg)
- 			return -ENOMEM;
- 
--		vreg->dev = &pdev->dev;
--		vreg->type = reg->type;
--		vreg->id = reg->id;
--		vreg->rpm = rpm;
--
--		memcpy(&vreg->desc, reg->desc, sizeof(vreg->desc));
--
--		vreg->desc.id = -1;
--		vreg->desc.owner = THIS_MODULE;
--		vreg->desc.type = REGULATOR_VOLTAGE;
--		vreg->desc.name = reg->name;
--		vreg->desc.supply_name = reg->supply;
--		vreg->desc.of_match = reg->name;
--
--		config.dev = &pdev->dev;
--		config.driver_data = vreg;
--		rdev = devm_regulator_register(&pdev->dev, &vreg->desc, &config);
--		if (IS_ERR(rdev)) {
--			dev_err(&pdev->dev, "failed to register %s\n", reg->name);
--			return PTR_ERR(rdev);
-+		ret = rpm_regulator_init_vreg(vreg, dev, node, rpm, vreg_data);
-+
-+		if (ret < 0) {
-+			of_node_put(node);
-+			return ret;
+diff --git a/drivers/net/wireless/marvell/mwifiex/usb.c b/drivers/net/wireless/marvell/mwifiex/usb.c
+index 9736aa0ab7fd4..8f01fcbe93961 100644
+--- a/drivers/net/wireless/marvell/mwifiex/usb.c
++++ b/drivers/net/wireless/marvell/mwifiex/usb.c
+@@ -130,7 +130,8 @@ static int mwifiex_usb_recv(struct mwifiex_adapter *adapter,
+ 		default:
+ 			mwifiex_dbg(adapter, ERROR,
+ 				    "unknown recv_type %#x\n", recv_type);
+-			return -1;
++			ret = -1;
++			goto exit_restore_skb;
  		}
- 	}
- 
+ 		break;
+ 	case MWIFIEX_USB_EP_DATA:
 -- 
 2.34.1
 
