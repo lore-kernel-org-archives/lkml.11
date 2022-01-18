@@ -2,174 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D5FC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 18:21:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62F77C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 18:24:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347746AbiARSVr (ORCPT
+        id S1347968AbiARSYR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 13:21:47 -0500
-Received: from conssluserg-05.nifty.com ([210.131.2.90]:33809 "EHLO
-        conssluserg-05.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244323AbiARSVp (ORCPT
+        Tue, 18 Jan 2022 13:24:17 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:42914
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S244482AbiARSYQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 13:21:45 -0500
-Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170]) (authenticated)
-        by conssluserg-05.nifty.com with ESMTP id 20IILSee011882;
-        Wed, 19 Jan 2022 03:21:29 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 20IILSee011882
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1642530089;
-        bh=RDC2Fjwcdz1UygYpDoeHxvqZCWGtSgJ9ZjIXI8tV+ew=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=mfFin+KCmPBqKmbXzoh3r93wOV+yaxUedaMyO9+I3TG8tVz0NoUmSUaInWEyg/QnG
-         0/CNliD0nNuOqCUuIi116VSprw7PMXnGPst2kARVqhpf1o1xvkC2PFql1Ggk9Jc7Vx
-         hbvOgnd16yMyMsNQqCjjwbjSidwSOvjrcedWxTe3Fi5RqGR1QSEYcnFnMx3i6xq2Aw
-         7wEZYCHlYZrQXJGMvS5LiETzLMTRpRDj78uYOWN0ZB8+FJB1/6I5T4MNZt/wDYK7eD
-         PpAwlw8Gvrh4hlhGU7iUKA0jnSivKf3s3+2f/QwvlAKekEpH6hHswrx2MqPJ9jJkjj
-         pNUfU04PtzOcw==
-X-Nifty-SrcIP: [209.85.215.170]
-Received: by mail-pg1-f170.google.com with SMTP id r11so2038420pgr.6;
-        Tue, 18 Jan 2022 10:21:28 -0800 (PST)
-X-Gm-Message-State: AOAM533WSndfyBPrWtLYCZGT26aw4w02jXB5x44k00xy6CNP/GATFrkW
-        Be2326zhhdqx5goIjIUabdDq/rpwRXUxzBr91lM=
-X-Google-Smtp-Source: ABdhPJxppakuZNPZqJ8qO8K8ZnlZedADMwxwZPJWvK53Cb26njShi1VOp3FVrSTverXM6Z5OxoMeUzwigo4tAEzELgU=
-X-Received: by 2002:a63:7148:: with SMTP id b8mr24532460pgn.616.1642530087928;
- Tue, 18 Jan 2022 10:21:27 -0800 (PST)
+        Tue, 18 Jan 2022 13:24:16 -0500
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com [209.85.208.72])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id A13DA3F313
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 18:24:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1642530255;
+        bh=mLcBql6ry0uXjx6vo+gnKoiWq+07y5Vfuzwy6oiJwJQ=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=T1+tO+WzYP/hN3IfHh0xrxU+2xOYeJ8ECvPIHhA3y6uijtmsk7tY2O6AEvKD90q35
+         7tEYTbmP3NvsQDp+T1LsL9xZWySVty9n95pUYagwn9hcBTsx+5ncw4p0QQ6bt24vd1
+         W5/NTcyByVE+dHR5b3zTaREinoUZN9KwaAYkBeEJQOnfiFh+ZTzRFMuypcDv1ZrEia
+         xFF8ipGqPQAGeLiOvfMGYmhWHr/9bFu7wPwLHWqSAsSjXZWUjD5uOEcjfcyKJ02+wD
+         bA+OyfPRnn6KPrU34hCJghOgFl312wneUS8R0osd803fBB7zGO+1VxrN8kUxdrXk7n
+         5TwHoVqBjvWcg==
+Received: by mail-ed1-f72.google.com with SMTP id h11-20020a05640250cb00b003fa024f87c2so17835609edb.4
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 10:24:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=mLcBql6ry0uXjx6vo+gnKoiWq+07y5Vfuzwy6oiJwJQ=;
+        b=cAmCax4f+8qFYIAQJ1G0QX8MePmYmM418uZKVhFf+ugcf1kvw8/k18Jk9VJdi5M3zM
+         pHayXZyEDkIKzP8tSww3hPQ2wSpjDyfrlN8L3ClIbwBM4kgMnJ3qFrR1bEe2YMLLgiBo
+         9u3Ih12n0FQDosuJGIcoKOZ3AveKpXuZpp4khaUuhEgqwd0YRsT6cMcz+d6XL5uKA17h
+         5nmhPr/hwQusfsKBDHJN1lpjp8yqCvDyF7VEslyY/4fjSTjKVE2UhvSEw6J2xPi0/ybn
+         GYs9YM1Lpb/HU5nY5l6IIss4o6sffOeAsxtmK3Ne3lNHzg04kwklB4p0Ok4T7/ysaX5N
+         7UDw==
+X-Gm-Message-State: AOAM532HeU+OjWOSNX3k3pZWdDtsGEcbOGhiXEPEjxVWHInLJboHeX2Y
+        bU/oFs+LUxGdIJX5sI6y8qyhNWj6JJ8vPNnBmErmTw1hPXnkKzAlyhF9CzpqgJTshFuIazlzJwi
+        2tlbxIueAzUy3ztgR2ci3n0N+n49kCADnuW1SZp+0Gw==
+X-Received: by 2002:a50:fe90:: with SMTP id d16mr26971835edt.361.1642530252980;
+        Tue, 18 Jan 2022 10:24:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJztrE0/iDUvJZuDQ5B9d9jHRgMofzZ3cOcTTHrRpyH4UXtBTQXBgCc7/qL6dnTKZQKwt/9lDg==
+X-Received: by 2002:a50:fe90:: with SMTP id d16mr26971820edt.361.1642530252835;
+        Tue, 18 Jan 2022 10:24:12 -0800 (PST)
+Received: from [192.168.0.42] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id b2sm191457edv.37.2022.01.18.10.24.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 18 Jan 2022 10:24:11 -0800 (PST)
+Message-ID: <735d1001-abcb-67d1-75a6-17db11cdec40@canonical.com>
+Date:   Tue, 18 Jan 2022 19:24:11 +0100
 MIME-Version: 1.0
-References: <20211213100043.45645-1-arielmarcovitch@gmail.com> <20211213100043.45645-2-arielmarcovitch@gmail.com>
-In-Reply-To: <20211213100043.45645-2-arielmarcovitch@gmail.com>
-From:   Masahiro Yamada <masahiroy@kernel.org>
-Date:   Wed, 19 Jan 2022 03:20:50 +0900
-X-Gmail-Original-Message-ID: <CAK7LNAS+Df_V-B9Qy_39hgUZF1b6UeiHQ5m-25JekiVYSQ67dQ@mail.gmail.com>
-Message-ID: <CAK7LNAS+Df_V-B9Qy_39hgUZF1b6UeiHQ5m-25JekiVYSQ67dQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] kconfig: Show menuconfigs as menus in the .config file
-To:     Ariel Marcovitch <arielmarcovitch@gmail.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH v2 03/16] dt-bindings: clock: Document FSD CMU bindings
+Content-Language: en-US
+To:     Alim Akhtar <alim.akhtar@samsung.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     soc@kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, olof@lixom.net, arnd@arndb.de,
+        linus.walleij@linaro.org, catalin.marinas@arm.com,
+        robh+dt@kernel.org, s.nawrocki@samsung.com,
+        linux-samsung-soc@vger.kernel.org, pankaj.dubey@samsung.com,
+        linux-fsd@tesla.com
+References: <20220118144851.69537-1-alim.akhtar@samsung.com>
+ <CGME20220118150022epcas5p21912423606220552a78c7e22e4133a05@epcas5p2.samsung.com>
+ <20220118144851.69537-4-alim.akhtar@samsung.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220118144851.69537-4-alim.akhtar@samsung.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Dec 13, 2021 at 7:01 PM Ariel Marcovitch
-<arielmarcovitch@gmail.com> wrote:
->
-> Until now, menuconfigs were considered configs because they had non-zero
-> sym attribute. This meant that instead of having the nice menu comment
-> block in the .config output file, they were merely shown as single
-> configs.
->
-> For example:
-> ```Kconfig
-> menu "Foo"
-> endmenu
->
-> menuconfig BAR
->         bool "Bar"
->
-> config OTHER
->         bool "Other"
->         depends on BAR
-> ```
->
-> Will be shown as:
-> ```.config
->  #
->  # Foo
->  #
->  # end of Foo
-
-
-I am OK with this patch.
-
-Just a nit.
-
-As far as I tested your sample code (without applying this patch),
-I did not see the line "# end of Foo".
-
-The line "# end of ..." is printed when the last child gets back to
-its parent, but the "Foo" menu has no child menu here.
-
-This is out of scope of this patch, but can you update the
-commit log so it matches the current behavior?
-
-(or add one config into the "Foo" menu)
-
-
-
-
-
-
-
->
->  CONFIG_BAR=y
->  CONFIG_OTHER=y
-> ```
->
-> Instead of using the sym attribute to decide whether or not to print the
-> menu block comment, check menu->prompt->type explicitly (after checking
-> that menu_is_visible(menu) which means menu->prompt is not none). The
-> only prompt types we actually show as menus are P_MENU and P_COMMENT. At
-> the end of the menu we need to show the end of block only for P_MENU
-> (although P_COMMENT prompts will not get to this flow because they don't
-> have children).
->
-> Signed-off-by: Ariel Marcovitch <arielmarcovitch@gmail.com>
+On 18/01/2022 15:48, Alim Akhtar wrote:
+> Add dt-schema documentation for Tesla FSD SoC clock controller.
+> 
+> Cc: linux-fsd@tesla.com
+> Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
 > ---
->  scripts/kconfig/confdata.c | 28 +++++++++++++++++-----------
->  1 file changed, 17 insertions(+), 11 deletions(-)
->
-> diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
-> index 42bc56ee238c..9f2c22f46ee0 100644
-> --- a/scripts/kconfig/confdata.c
-> +++ b/scripts/kconfig/confdata.c
-> @@ -874,16 +874,21 @@ int conf_write(const char *name)
->         menu = rootmenu.list;
->         while (menu) {
->                 sym = menu->sym;
-> -               if (!sym) {
-> -                       if (!menu_is_visible(menu))
-> -                               goto next;
-> -                       str = menu_get_prompt(menu);
-> -                       fprintf(out, "\n"
-> -                                    "#\n"
-> -                                    "# %s\n"
-> -                                    "#\n", str);
-> -                       need_newline = false;
-> -               } else if (!(sym->flags & SYMBOL_CHOICE) &&
+>  .../bindings/clock/tesla,fsd-clock.yaml       | 198 ++++++++++++++++++
+>  1 file changed, 198 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/clock/tesla,fsd-clock.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/clock/tesla,fsd-clock.yaml b/Documentation/devicetree/bindings/clock/tesla,fsd-clock.yaml
+> new file mode 100644
+> index 000000000000..dc808e2f8327
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/clock/tesla,fsd-clock.yaml
+> @@ -0,0 +1,198 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/clock/tesla,fsd-clock.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +               if (menu_is_visible(menu)) {
-> +                       enum prop_type type = menu->prompt->type;
+> +title: Tesla FSD (Full Self-Driving) SoC clock controller
 > +
-> +                       if (type == P_MENU || type == P_COMMENT) {
-> +                               str = menu_get_prompt(menu);
-> +                               fprintf(out, "\n"
-> +                                       "#\n"
-> +                                       "# %s\n"
-> +                                       "#\n", str);
-> +                               need_newline = false;
-> +                       }
-> +               }
+> +maintainers:
+> +  - Alim Akhtar <alim.akhtar@samsung.com>
+> +  - linux-fsd@tesla.com
 > +
-> +               if (sym && !(sym->flags & SYMBOL_CHOICE) &&
->                            !(sym->flags & SYMBOL_WRITTEN)) {
->                         sym_calc_value(sym);
->                         if (!(sym->flags & SYMBOL_WRITE))
-> @@ -904,7 +909,8 @@ int conf_write(const char *name)
->                 if (menu->next)
->                         menu = menu->next;
->                 else while ((menu = menu->parent)) {
-> -                       if (!menu->sym && menu_is_visible(menu) &&
-> +                       if (menu_is_visible(menu) &&
-> +                           menu->prompt->type == P_MENU &&
->                             menu != &rootmenu) {
->                                 str = menu_get_prompt(menu);
->                                 fprintf(out, "# end of %s\n", str);
-> --
-> 2.25.1
->
+> +description: |
+> +  FSD clock controller consist of several clock management unit
+> +  (CMU), which generates clocks for various inteernal SoC blocks.
+> +  The root clock comes from external OSC clock (24 MHz).
+> +
+> +  All available clocks are defined as preprocessor macros in
+> +  'dt-bindings/clock/fsd-clk.h' header.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - tesla,fsd-clock-cmu
+> +      - tesla,fsd-clock-imem
+> +      - tesla,fsd-clock-peric
+> +      - tesla,fsd-clock-fsys0
+> +      - tesla,fsd-clock-fsys1
+> +      - tesla,fsd-clock-mfc
+> +      - tesla,fsd-clock-cam_csi
+> +
+
+I am not particularly happy about FSD naming (so SoC name, sub-arch
+name), but Olof was fine with it, so I won't oppose. Bindings look ok.
 
 
--- 
-Best Regards
-Masahiro Yamada
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+
+
+Best regards,
+Krzysztof
