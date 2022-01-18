@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 092BBC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E388C4321E
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:56:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351917AbiARC4N (ORCPT
+        id S1352017AbiARC4a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:56:13 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59528 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344829AbiARCni (ORCPT
+        Mon, 17 Jan 2022 21:56:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32978 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344178AbiARCnb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:43:38 -0500
+        Mon, 17 Jan 2022 21:43:31 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2C9C061362;
+        Mon, 17 Jan 2022 18:37:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6808B612E9;
-        Tue, 18 Jan 2022 02:43:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68E91C36AE3;
-        Tue, 18 Jan 2022 02:43:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CBEA861118;
+        Tue, 18 Jan 2022 02:37:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38A57C36AE3;
+        Tue, 18 Jan 2022 02:37:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473817;
-        bh=YRtFLS33UvhcMXoutG1kpLoHx0Za8NOY2p3DeITTCGo=;
+        s=k20201202; t=1642473453;
+        bh=ur1uTg26JAtW18zo++dv5HAU7FydlVrdUh9v3fur3Ko=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TtQ2KyOyxQNMikrnVCavNprS4OZhsOeaoTifDCWwxvrM9j0dgw0nOQepLeKuwogUX
-         itjO4E3G0RaRz3CK3kMdqT1pQ61k4/rS2ZYFBqL4zBddM/qsJ/aGbFV5JBjin1tjql
-         e3Gll1ctqNZxtHJIQv9dmqdhCVI+G/MPgb+Kli315FoebXgw6JUeRwaSpWOtIqhwga
-         RNbVdQmudo3OOOA7EhpHoBD/KjvY737H6xK2mbIuTrqtK+CbOE5uR5yd572TIazm20
-         pLg2gssXTpoN4ZCsPmRt/IDFg/otVR7VcP+Epos6Pjve9whr3KuLJpSn+6BHThii7u
-         8dBpaQgjpMiUA==
+        b=dxoafKYWWheQZtKd1io70iIF37FNoMSLCfCGPnRoIx/pfhnk78C+T/K60eMQHuwRz
+         bhIQPnlBp4uvPpxib7+oxtasZsK6ZzgjI3fs/LfaAHr2A+B0CHtdvsrbnGyH+txWhn
+         f975mM+CKMTczr2RK/FXqD28akDtXJ1oYy8aWNBbZhj8PgdEck/ocxOa65BSi5rES8
+         aQ1iKbiONAKiqG+kecjdX7RmH7cf0IFa6NJI18mH461r1sSPvh97VoJtpT+Pu7dZl8
+         fXR2ZIJj67qTFXtyFZIHnd85aBbUeEFH/XpL6/RHfcgNOmiAHpudjeQrZiWSSQlxJm
+         BTTrTi8a4q2mA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        linux-um@lists.infradead.org, Sasha Levin <sashal@kernel.org>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        viro@zeniv.linux.org.uk
-Subject: [PATCH AUTOSEL 5.10 084/116] um: registers: Rename function names to avoid conflicts and build problems
-Date:   Mon, 17 Jan 2022 21:39:35 -0500
-Message-Id: <20220118024007.1950576-84-sashal@kernel.org>
+Cc:     Biwen Li <biwen.li@nxp.com>, Li Yang <leoyang.lil@nxp.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, leoyang.li@nxp.com,
+        robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 122/188] arm64: dts: ls1028a-qds: move rtc node to the correct i2c bus
+Date:   Mon, 17 Jan 2022 21:30:46 -0500
+Message-Id: <20220118023152.1948105-122-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,101 +54,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Biwen Li <biwen.li@nxp.com>
 
-[ Upstream commit 077b7320942b64b0da182aefd83c374462a65535 ]
+[ Upstream commit cbe9d948eadfe352ad45495a7cc5bf20a1b29d90 ]
 
-The function names init_registers() and restore_registers() are used
-in several net/ethernet/ and gpu/drm/ drivers for other purposes (not
-calls to UML functions), so rename them.
+The i2c rtc is on i2c2 bus not i2c1 bus, so fix it in dts.
 
-This fixes multiple build errors.
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Jeff Dike <jdike@addtoit.com>
-Cc: Richard Weinberger <richard@nod.at>
-Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Cc: linux-um@lists.infradead.org
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Biwen Li <biwen.li@nxp.com>
+Signed-off-by: Li Yang <leoyang.lil@nxp.com>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/include/shared/registers.h | 4 ++--
- arch/um/os-Linux/registers.c       | 4 ++--
- arch/um/os-Linux/start_up.c        | 2 +-
- arch/x86/um/syscalls_64.c          | 3 ++-
- 4 files changed, 7 insertions(+), 6 deletions(-)
+ arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts | 14 +++++++++-----
+ 1 file changed, 9 insertions(+), 5 deletions(-)
 
-diff --git a/arch/um/include/shared/registers.h b/arch/um/include/shared/registers.h
-index 0c50fa6e8a55b..fbb709a222839 100644
---- a/arch/um/include/shared/registers.h
-+++ b/arch/um/include/shared/registers.h
-@@ -16,8 +16,8 @@ extern int restore_fp_registers(int pid, unsigned long *fp_regs);
- extern int save_fpx_registers(int pid, unsigned long *fp_regs);
- extern int restore_fpx_registers(int pid, unsigned long *fp_regs);
- extern int save_registers(int pid, struct uml_pt_regs *regs);
--extern int restore_registers(int pid, struct uml_pt_regs *regs);
--extern int init_registers(int pid);
-+extern int restore_pid_registers(int pid, struct uml_pt_regs *regs);
-+extern int init_pid_registers(int pid);
- extern void get_safe_registers(unsigned long *regs, unsigned long *fp_regs);
- extern unsigned long get_thread_reg(int reg, jmp_buf *buf);
- extern int get_fp_registers(int pid, unsigned long *regs);
-diff --git a/arch/um/os-Linux/registers.c b/arch/um/os-Linux/registers.c
-index 2d9270508e156..b123955be7acc 100644
---- a/arch/um/os-Linux/registers.c
-+++ b/arch/um/os-Linux/registers.c
-@@ -21,7 +21,7 @@ int save_registers(int pid, struct uml_pt_regs *regs)
- 	return 0;
- }
+diff --git a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
+index bfd14b64567e4..2f92e62ecafe9 100644
+--- a/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
++++ b/arch/arm64/boot/dts/freescale/fsl-ls1028a-qds.dts
+@@ -272,11 +272,6 @@ temperature-sensor@4c {
+ 				vcc-supply = <&sb_3v3>;
+ 			};
  
--int restore_registers(int pid, struct uml_pt_regs *regs)
-+int restore_pid_registers(int pid, struct uml_pt_regs *regs)
- {
- 	int err;
+-			rtc@51 {
+-				compatible = "nxp,pcf2129";
+-				reg = <0x51>;
+-			};
+-
+ 			eeprom@56 {
+ 				compatible = "atmel,24c512";
+ 				reg = <0x56>;
+@@ -318,6 +313,15 @@ mux: mux-controller {
  
-@@ -36,7 +36,7 @@ int restore_registers(int pid, struct uml_pt_regs *regs)
- static unsigned long exec_regs[MAX_REG_NR];
- static unsigned long exec_fp_regs[FP_SIZE];
+ };
  
--int init_registers(int pid)
-+int init_pid_registers(int pid)
- {
- 	int err;
- 
-diff --git a/arch/um/os-Linux/start_up.c b/arch/um/os-Linux/start_up.c
-index f79dc338279e6..b28373a2b8d2d 100644
---- a/arch/um/os-Linux/start_up.c
-+++ b/arch/um/os-Linux/start_up.c
-@@ -336,7 +336,7 @@ void __init os_early_checks(void)
- 	check_tmpexec();
- 
- 	pid = start_ptraced_child();
--	if (init_registers(pid))
-+	if (init_pid_registers(pid))
- 		fatal("Failed to initialize default registers");
- 	stop_ptraced_child(pid, 1, 1);
- }
-diff --git a/arch/x86/um/syscalls_64.c b/arch/x86/um/syscalls_64.c
-index 58f51667e2e4b..8249685b40960 100644
---- a/arch/x86/um/syscalls_64.c
-+++ b/arch/x86/um/syscalls_64.c
-@@ -11,6 +11,7 @@
- #include <linux/uaccess.h>
- #include <asm/prctl.h> /* XXX This should get the constants from libc */
- #include <os.h>
-+#include <registers.h>
- 
- long arch_prctl(struct task_struct *task, int option,
- 		unsigned long __user *arg2)
-@@ -35,7 +36,7 @@ long arch_prctl(struct task_struct *task, int option,
- 	switch (option) {
- 	case ARCH_SET_FS:
- 	case ARCH_SET_GS:
--		ret = restore_registers(pid, &current->thread.regs.regs);
-+		ret = restore_pid_registers(pid, &current->thread.regs.regs);
- 		if (ret)
- 			return ret;
- 		break;
++&i2c1 {
++	status = "okay";
++
++	rtc@51 {
++		compatible = "nxp,pcf2129";
++		reg = <0x51>;
++	};
++};
++
+ &enetc_port1 {
+ 	phy-handle = <&qds_phy1>;
+ 	phy-connection-type = "rgmii-id";
 -- 
 2.34.1
 
