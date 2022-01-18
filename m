@@ -2,163 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A6B1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 12:41:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C6E6C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 12:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236660AbiARMlJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 07:41:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59712 "EHLO
+        id S237210AbiARMny (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 07:43:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234111AbiARMlH (ORCPT
+        with ESMTP id S234111AbiARMnw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 07:41:07 -0500
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D0B2C061574;
-        Tue, 18 Jan 2022 04:41:07 -0800 (PST)
-Received: by mail-qk1-x732.google.com with SMTP id a21so8011212qkn.0;
-        Tue, 18 Jan 2022 04:41:07 -0800 (PST)
+        Tue, 18 Jan 2022 07:43:52 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7833C061574
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 04:43:51 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id m4so78735641edb.10
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 04:43:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aTab+jiF9JQUXlYtyRf6lOH1unQ6BdWfkpXxrhfccsg=;
-        b=ZZ2u0eGtx7FdFPCguOedcfsxwA/XpXnDtj3SPvzlfVHtndhQqLVstpuluFoJGcFWgn
-         dw4k8OHceOdWT+KerVi2A/l1jmi0s+9w8B0sfIOmuB7qVshLHpjP5C9Pq8+JyqXpO5Qh
-         SDun3PUBAVV4t1TNVrgRGnzJIGH76f+acAl8az6+I8ZKaAqW5GG1FVOyWRfsO1MAL3kG
-         ZQ9As5QwGBXk5OdZMhYrDb+1nNhnjAj2QL+wVTcKS/ah16rK1viF4bgbGu1BvSyl+7S9
-         m6mfB0q8DSJaeouCog1nAReM1h8JciOU47lwpualO3unxceYLbLrMzwCA4Shc0Ff/kDz
-         sOzA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rTGN2etA9k5qiSP7ZrVqfOL8gvgrJ9M1T4KKkJp0QWM=;
+        b=GgxT31tFLd4a+OUKWDBAd70k8Yeeis6kDp5b2gHUS0rGPxK22UFqKkvQHm0U5/YGny
+         WAI5UQZMbjfqyfhFAt3GUf5SW/PEDJsiYw9N45rxF6tP6Nh4J+6RNR/2alpDopSkfSN5
+         RcCdPiKochKA+ids16pdZwSQcj+xwNyCSwtpYaGzUTt7zdlLTEcvMm+itvOKBadIBs1C
+         SN3Gf7iQ9Hcld3vlEWzY64gJGltq3voMpToPLBCArLOUrq4cgEzzjVDZvnFrgRvmwASO
+         fY40TU7it9R2XzyyGOKm4uZft57FbbxvdnfMULLZTfa4jjfoJoBfeGtJAbQtw1czcSDM
+         PsdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aTab+jiF9JQUXlYtyRf6lOH1unQ6BdWfkpXxrhfccsg=;
-        b=SM3ikcsmwaMGDUfQ06JOpjtGVe0V/SBxHbugYJvBbYwyaJRWcquU3hQRrsn3LBTu7L
-         d0Wqat7wFtwExP8Qr09KEMsZYO/js7gwJXPm/QOuhzI6vASX38A0qwWxxjCBoettmgcl
-         6KfQVgGZuvZjcD4Od+oS0AmzRHVkc0ciSEJQ76XzlwpoRKwUO2l9Tggw0h8DxtTTkWgK
-         yvhJOQHWpoZkhLN2d4RSOKQNIyJ5jAk3feiuFVujCIVsMx6urjQFNVG9cvSXkZvgicnx
-         XTUTIt87FuM1EV3lFU0wnuM8DS9mm60KYJ6G0JP3scfBie1sk2dJ64aTs/dq+yjwvizg
-         RI1A==
-X-Gm-Message-State: AOAM532+3u//K80qJ5g5wdHfCqHkS8eXGJYS/eWsqQ8SDFOTUoyOi5Nz
-        XasYwT1RPdYSHGTd0wbrtmM=
-X-Google-Smtp-Source: ABdhPJy++U5VH5STgYpoQJOwqGjdqIs/SsFw7B2OwDvzHU2g83Zm2MdVWULY2wv41UhffR87JX5HOg==
-X-Received: by 2002:ae9:dc07:: with SMTP id q7mr11457411qkf.63.1642509666215;
-        Tue, 18 Jan 2022 04:41:06 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id o6sm9801510qtk.50.2022.01.18.04.41.02
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rTGN2etA9k5qiSP7ZrVqfOL8gvgrJ9M1T4KKkJp0QWM=;
+        b=d6guCgo330gJXK0sI2+ukSz/MVuvrgIxHBzGF6Fnu4GKExlAipPMff3Oo10voPOThC
+         4dB8fGhRUgOrGgORC3u4p/+TccN4A/+G0qkMvfqipjF2gwWoRRo0prBDusMKYFAOuMe4
+         M7hznjlQsfJAXQlzxRNt234pa42HXz8yQzIOgW2gDybYJqBmETD/+DthYYsLyvjYa5eX
+         FtBCnONQ2VKGz6glkX1CC6kvqOGCRVqas/Iq/cVKBMQQVO51F8e3HAaLH368ZOx6JT0d
+         gZglQbQGqJl7M14nbL4b3TDwkU4C/xrDU2gKAlUXpkNhWMEKYedXdOoDjaxqrk4tfP+o
+         512Q==
+X-Gm-Message-State: AOAM530Qow9JTRuKoyxsFddHwtlJbCGfbqym8WwUn099g/ybi+oAUGig
+        RUvjh2VuOd8ImpqQ0VXf+xsLsg==
+X-Google-Smtp-Source: ABdhPJz18wxKnoCux8+DSsMS7vloPGlf4s5356a/BEFnwnKL4xDDaTm/Qma52lDPuXb9GXYfzIVi+w==
+X-Received: by 2002:a17:906:9b87:: with SMTP id dd7mr19839112ejc.178.1642509830140;
+        Tue, 18 Jan 2022 04:43:50 -0800 (PST)
+Received: from leoy-ThinkPad-X240s ([104.245.96.239])
+        by smtp.gmail.com with ESMTPSA id r27sm2379066ejc.42.2022.01.18.04.43.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 04:41:05 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: xu.xin16@zte.com.cn
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, yoshfuji@linux-ipv6.org, edumazet@google.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        xu xin <xu.xin16@zte.com.cn>, CGEL ZTE <cgel.zte@gmail.com>
-Subject: [PATCH] ipv4: Namespaceify min_adv_mss sysctl knob
-Date:   Tue, 18 Jan 2022 12:40:55 +0000
-Message-Id: <20220118124055.927605-1-xu.xin16@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        Tue, 18 Jan 2022 04:43:49 -0800 (PST)
+Date:   Tue, 18 Jan 2022 20:43:43 +0800
+From:   Leo Yan <leo.yan@linaro.org>
+To:     Marco Elver <elver@google.com>
+Cc:     John Garry <john.garry@huawei.com>,
+        Thomas Richter <tmricht@linux.ibm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        acme@kernel.org, svens@linux.ibm.com, gor@linux.ibm.com,
+        sumanthk@linux.ibm.com, hca@linux.ibm.com,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH] perf test: Test 73 Sig_trap fails on s390
+Message-ID: <20220118124343.GC98966@leoy-ThinkPad-X240s>
+References: <20211216151454.752066-1-tmricht@linux.ibm.com>
+ <CANpmjNNMWtjcKa961SjEvRbbPXyw5M5SkrXbb3tnyL3_XyniCw@mail.gmail.com>
+ <90efb5a9-612a-919e-cf2f-c528692d61e2@huawei.com>
+ <20220118091827.GA98966@leoy-ThinkPad-X240s>
+ <CANpmjNMPoU+1b1fKFuYDYwisW2YfjQHxGt5hgLp1tioG7C2jmg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CANpmjNMPoU+1b1fKFuYDYwisW2YfjQHxGt5hgLp1tioG7C2jmg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: xu xin <xu.xin16@zte.com.cn>
+On Tue, Jan 18, 2022 at 12:40:04PM +0100, Marco Elver wrote:
 
-Different netns have different requirement on the setting of min_adv_mss
-sysctl that the advertised MSS will be never lower than. The sysctl
-min_adv_mss can indirectly affects the segmentation efficiency of TCP.
+[...]
 
-So enable min_adv_mss to be visible and configurable inside the netns.
+> > Both Arm and Arm64 platforms cannot support signal handler with
+> > breakpoint, please see the details in [1].  So I think we need
+> > something like below:
+> >
+> > static int test__sigtrap(struct test_suite *test __maybe_unused, int subtest __maybe_unused)
+> > {
+> >         ...
+> >
+> >         if (!BP_SIGNAL_IS_SUPPORTED) {
+> >                 pr_debug("Test not supported on this architecture");
+> >                 return TEST_SKIP;
+> >         }
+> >
+> >         ...
+> > }
+> >
+> > Since we have defined BP_SIGNAL_IS_SUPPORTED, I think we can reuse it at
+> > here.
+> >
+> > [1] https://lore.kernel.org/lkml/157169993406.29376.12473771029179755767.tip-bot2@tip-bot2/
+> 
+> Does this limitation also exist for address watchpoints? The sigtrap
+> test does not make use of instruction breakpoints, but instead just
+> sets up a watchpoint on access to a data address.
 
-Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
-Signed-off-by: xu xin <xu.xin16@zte.com.cn>
----
- include/net/netns/ipv4.h |  1 +
- net/ipv4/route.c         | 21 +++++++++++----------
- 2 files changed, 12 insertions(+), 10 deletions(-)
+Yes, after reading the code, the flow for either instrution breakpoint
+or watchpoint both use the single step [1], thus the signal handler will
+take the single step execution and lead to the infinite loop.
 
-diff --git a/include/net/netns/ipv4.h b/include/net/netns/ipv4.h
-index 7855764..8fea3cb 100644
---- a/include/net/netns/ipv4.h
-+++ b/include/net/netns/ipv4.h
-@@ -87,6 +87,7 @@ struct netns_ipv4 {
- 
- 	u32 ip_rt_min_pmtu;
- 	int ip_rt_mtu_expires;
-+	int ip_rt_min_advmss;
- 
- 	struct local_ports ip_local_ports;
- 
-diff --git a/net/ipv4/route.c b/net/ipv4/route.c
-index ff6f91c..e42e283 100644
---- a/net/ipv4/route.c
-+++ b/net/ipv4/route.c
-@@ -112,14 +112,13 @@
- 
- #define DEFAULT_MIN_PMTU (512 + 20 + 20)
- #define DEFAULT_MTU_EXPIRES (10 * 60 * HZ)
--
-+#define DEFAULT_MIN_ADVMSS 256
- static int ip_rt_max_size;
- static int ip_rt_redirect_number __read_mostly	= 9;
- static int ip_rt_redirect_load __read_mostly	= HZ / 50;
- static int ip_rt_redirect_silence __read_mostly	= ((HZ / 50) << (9 + 1));
- static int ip_rt_error_cost __read_mostly	= HZ;
- static int ip_rt_error_burst __read_mostly	= 5 * HZ;
--static int ip_rt_min_advmss __read_mostly	= 256;
- 
- static int ip_rt_gc_timeout __read_mostly	= RT_GC_TIMEOUT;
- 
-@@ -1298,9 +1297,10 @@ static void set_class_tag(struct rtable *rt, u32 tag)
- 
- static unsigned int ipv4_default_advmss(const struct dst_entry *dst)
- {
-+	struct net *net = dev_net(dst->dev);
- 	unsigned int header_size = sizeof(struct tcphdr) + sizeof(struct iphdr);
- 	unsigned int advmss = max_t(unsigned int, ipv4_mtu(dst) - header_size,
--				    ip_rt_min_advmss);
-+				    net->ipv4.ip_rt_min_advmss);
- 
- 	return min(advmss, IPV4_MAX_PMTU - header_size);
- }
-@@ -3535,13 +3535,6 @@ static struct ctl_table ipv4_route_table[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec,
- 	},
--	{
--		.procname	= "min_adv_mss",
--		.data		= &ip_rt_min_advmss,
--		.maxlen		= sizeof(int),
--		.mode		= 0644,
--		.proc_handler	= proc_dointvec,
--	},
- 	{ }
- };
- 
-@@ -3569,6 +3562,13 @@ static struct ctl_table ipv4_route_netns_table[] = {
- 		.mode           = 0644,
- 		.proc_handler   = proc_dointvec_jiffies,
- 	},
-+	{
-+		.procname   = "min_adv_mss",
-+		.data       = &init_net.ipv4.ip_rt_min_advmss,
-+		.maxlen     = sizeof(int),
-+		.mode       = 0644,
-+		.proc_handler   = proc_dointvec,
-+	},
- 	{ },
- };
- 
-@@ -3631,6 +3631,7 @@ static __net_init int netns_ip_rt_init(struct net *net)
- 	/* Set default value for namespaceified sysctls */
- 	net->ipv4.ip_rt_min_pmtu = DEFAULT_MIN_PMTU;
- 	net->ipv4.ip_rt_mtu_expires = DEFAULT_MTU_EXPIRES;
-+	net->ipv4.ip_rt_min_advmss = DEFAULT_MIN_ADVMSS;
- 	return 0;
- }
- 
--- 
-2.15.2
+I am not the best person to answer this question; @Will, could you
+confirm for this?  Thanks!
 
+Leo
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/arch/arm64/kernel/hw_breakpoint.c
