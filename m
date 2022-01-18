@@ -2,46 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC6C6C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:23:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C3F0C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:23:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357539AbiARDVJ (ORCPT
+        id S1357653AbiARDVS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:21:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38902 "EHLO
+        Mon, 17 Jan 2022 22:21:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348330AbiARDI1 (ORCPT
+        with ESMTP id S1350289AbiARDIc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:08:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F681C0617AE;
-        Mon, 17 Jan 2022 18:49:54 -0800 (PST)
+        Mon, 17 Jan 2022 22:08:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9CBCC0619C2;
+        Mon, 17 Jan 2022 18:50:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3DC4D6131D;
-        Tue, 18 Jan 2022 02:49:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C85C4C36AE3;
-        Tue, 18 Jan 2022 02:49:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 918D2B81250;
+        Tue, 18 Jan 2022 02:50:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D4DEC36AF4;
+        Tue, 18 Jan 2022 02:50:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474193;
-        bh=XVsmnyv4Ulff/NO0DZllEzHOmfrnZ5ncioGnDKZqoAE=;
+        s=k20201202; t=1642474227;
+        bh=Vk903Ehecft00WxikSEHVggSSpBxZ6zdw122CcEELU4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uM+glBQaytPesDZwf9lAyO1paaq0OXOEFJantRB5TqsGm3eTH8Fu0jewPYHgQ5Jkk
-         HMIh9HUBxUXrheMMsv75qiLgVuAtk9J8RvRZSE7jM2kv9wW7KvHaEXRAn0eKEG8JUJ
-         O9dAiiyOu4oDquEaz4HT0fydEHkkL/0PPfvgMHBtCK6cmJz7oqGf4EoAw+omvHueXE
-         PfD+tVJsX9NSTF1iTjmxeNWwpkAVt8+0nodbzrxbsg3NBEw44gC3U2yGV7ksGbdDvf
-         ho8N28cf6CQzqdwvs+VUDRAitNJ5q0B0HD5CNZbPMkxWbya2ApqBlTcq4LPUotWJwf
-         aQEZJU2Wo7sKA==
+        b=eTWaqkLnHuYPNwax9/V+yRdAeg0JjWzCG4Dn84rWrUpH2YN+fRlgi3GNSeNgQYmJW
+         4CEsVdDQG0/ZUHyLl4jLG5eHeQ78HDpfzQmqDH3YPmmOQG6AyxVJ6nCZt+8OHt/yw5
+         k24Y6zFDRXm2G9x/q0LRKr+tiZDTJczfBzxTx4ivMGWxe9uSTZZWGNQGxKMm0kB2+z
+         +FyAtYxmM5eZRLCWjcq4Gqq4GOGB2yXC2N87GjRdLuGIUTst9xUjba0XuHIky82G5H
+         qVhPFxhsBX1TrtQgIpiBFl7Qt0r7YqCEuDQKgfm+QKI/eDLEB0jbRl44oYh8FMntlV
+         Eg/NLZqaV7gsA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
+Cc:     Suresh Kumar <surkumar@redhat.com>,
+        Suresh Kumar <suresh2514@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, geert@linux-m68k.org,
-        arnd@arndb.de, linux@roeck-us.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 15/56] 82596: use eth_hw_addr_set()
-Date:   Mon, 17 Jan 2022 21:48:27 -0500
-Message-Id: <20220118024908.1953673-15-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, j.vosburgh@gmail.com,
+        vfalico@gmail.com, andy@greyhouse.net, kuba@kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 31/56] net: bonding: debug: avoid printing debug logs when bond is not notifying peers
+Date:   Mon, 17 Jan 2022 21:48:43 -0500
+Message-Id: <20220118024908.1953673-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
 References: <20220118024908.1953673-1-sashal@kernel.org>
@@ -53,34 +55,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Suresh Kumar <surkumar@redhat.com>
 
-[ Upstream commit 0f98d7e478430b64d9520a23585e02be5f8b1b2a ]
+[ Upstream commit fee32de284ac277ba434a2d59f8ce46528ff3946 ]
 
-Byte by byte assignments.
+Currently "bond_should_notify_peers: slave ..." messages are printed whenever
+"bond_should_notify_peers" function is called.
 
-Fixes build on m68k.
++++
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Received LACPDU on port 1
+Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): Rx Machine: Port=1, Last State=6, Curr State=6
+Dec 12 12:33:26 node1 kernel: bond0: (slave enp0s25): partner sync=1
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:26 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+...
+Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Received LACPDU on port 2
+Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): Rx Machine: Port=2, Last State=6, Curr State=6
+Dec 12 12:33:30 node1 kernel: bond0: (slave enp4s3): partner sync=1
+Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
+Dec 12 12:33:30 node1 kernel: bond0: bond_should_notify_peers: slave enp0s25
++++
 
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+This is confusing and can also clutter up debug logs.
+Print logs only when the peer notification happens.
+
+Signed-off-by: Suresh Kumar <suresh2514@gmail.com>
 Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/i825xx/82596.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/bonding/bond_main.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/i825xx/82596.c b/drivers/net/ethernet/i825xx/82596.c
-index 8efcec305fc54..78ba704b2dad7 100644
---- a/drivers/net/ethernet/i825xx/82596.c
-+++ b/drivers/net/ethernet/i825xx/82596.c
-@@ -1189,7 +1189,8 @@ struct net_device * __init i82596_probe(int unit)
- 	DEB(DEB_PROBE,printk(KERN_INFO "%s: 82596 at %#3lx,", dev->name, dev->base_addr));
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 340e7bf6463ec..7096fcbf699c0 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -782,14 +782,14 @@ static bool bond_should_notify_peers(struct bonding *bond)
+ 	slave = rcu_dereference(bond->curr_active_slave);
+ 	rcu_read_unlock();
  
- 	for (i = 0; i < 6; i++)
--		DEB(DEB_PROBE,printk(" %2.2X", dev->dev_addr[i] = eth_addr[i]));
-+		DEB(DEB_PROBE,printk(" %2.2X", eth_addr[i]));
-+	eth_hw_addr_set(dev, eth_addr);
+-	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
+-		   slave ? slave->dev->name : "NULL");
+-
+ 	if (!slave || !bond->send_peer_notif ||
+ 	    !netif_carrier_ok(bond->dev) ||
+ 	    test_bit(__LINK_STATE_LINKWATCH_PENDING, &slave->dev->state))
+ 		return false;
  
- 	DEB(DEB_PROBE,printk(" IRQ %d.\n", dev->irq));
++	netdev_dbg(bond->dev, "bond_should_notify_peers: slave %s\n",
++		   slave ? slave->dev->name : "NULL");
++
+ 	return true;
+ }
  
 -- 
 2.34.1
