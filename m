@@ -2,106 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10A47C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 18:20:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38F21C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 18:21:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347953AbiARSUw (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 13:20:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54344 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347657AbiARSUv (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 13:20:51 -0500
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65B61C06161C
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 10:20:50 -0800 (PST)
-Received: by mail-pf1-x434.google.com with SMTP id a5so91591pfo.5
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 10:20:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=j8PJ3CA01N/X1/qckVtP/PWbEwqc7I1+Jp5YHt/2gH4=;
-        b=k1thwlLR5q4ADZAX5xsSmO/pCwwAe/6FE8vkgTArIgZNoVpSqbXshhc1pPRL5XMc20
-         KYQPO21jJyqR/h0gQmDsJ3JNgCSixYm2FlufblLy7y7YBbgAw3F3fgwl2HEk9u53EERb
-         gURp1FOPtzkM5qKijfwsQAcV/6KIb9J2hH2y0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=j8PJ3CA01N/X1/qckVtP/PWbEwqc7I1+Jp5YHt/2gH4=;
-        b=YQjSmYr5gQWeESTwWzVXYMHvPQOz+hposRrauOeh6ZPdcFQwxWZCmQV8Q0PGOC3ik1
-         CfMulBTMUyOwfDlXmGirSiQpoLGbnKSOR3xZ0cTjonTHGcDcjbH2fqCzZpE+1cqsbJ14
-         o2+nYzPeHh6ZsUqF+A6dcVY9fuxdYGEwCOgXExnu5933ZRbgg0BijVVroGs4EKUZdjRT
-         UT1zhn8zdN17dWfCV2YXuwsHF9kCUt7bZN9yiPSRbrHu50yT4D1ZR9kSgJPBojHC26eS
-         CfvWd5NYBSzUjQSykGlM5mMYzDzouDr4MSCdh9/aBzd0K0OcoWiGQfzJsHDkrhrLQB8q
-         CoiQ==
-X-Gm-Message-State: AOAM531ZVrxl2jwfFCURVge/p2D6tIOnrT6i7+bH89I6cCpm+3+yNM2K
-        tZy94hTcA/D4CxZgwWYokHkGJA==
-X-Google-Smtp-Source: ABdhPJxSFoMYhB81+XsCGwYCMdjfAwo8XS2qbyKlSShgx99DPp5VlGHUTxK5pEEK6VUbelvndIeWmQ==
-X-Received: by 2002:a63:5512:: with SMTP id j18mr11257199pgb.597.1642530049965;
-        Tue, 18 Jan 2022 10:20:49 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id h2sm3346701pjc.31.2022.01.18.10.20.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 10:20:49 -0800 (PST)
-From:   Kees Cook <keescook@chromium.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Kees Cook <keescook@chromium.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Jiri Prchal <jiri.prchal@aksignal.cz>,
-        Mark Brown <broonie@kernel.org>,
-        Ralph Siemsen <ralph.siemsen@linaro.org>,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: [PATCH -next] eeprom: at25: Replace strncpy() with strscpy()
-Date:   Tue, 18 Jan 2022 10:20:47 -0800
-Message-Id: <20220118182047.3385295-1-keescook@chromium.org>
-X-Mailer: git-send-email 2.30.2
+        id S237288AbiARSVh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 13:21:37 -0500
+Received: from mga05.intel.com ([192.55.52.43]:62782 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1347997AbiARSVG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 13:21:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642530066; x=1674066066;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=mDfn1FpOw7NLcGoQ7zlzVgfDXagzmr6ntkFGvUWdi6U=;
+  b=QWBV/R9msggTLeEZFArFNu8/Gx4kkSN/rmU95y5VMI6PFHDAMgH3/iQj
+   Y69lIOrSqiAAVIdLX/HYYh3CnIwJ25XuQSz9IODzGlRMBx9zAPPPIaW3l
+   JRrLUNA5idWVJfUFNmbqJTCZZNYPEEJry966WjpHRnfVG4x32cvvUCBqx
+   8bQ8DMOcPH7qfUz7poesHe4CvkN0Su7EE1EHGPXwtAhz2dbQ3QwUqS3aj
+   fjeLXT0q8oyR9uWLtcX99pt/f+PoJd43MpRTZ2KyclezEB7vSd1VhO4Lk
+   Quwod9sO/bp6XYCHwfr4NcE7uI5wrIGXpnDklze9v6jhHZR0MG8WSmTZ6
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="331234111"
+X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
+   d="scan'208";a="331234111"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 10:21:05 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
+   d="scan'208";a="531905962"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga008.jf.intel.com with ESMTP; 18 Jan 2022 10:21:04 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n9t6N-000CpT-Cy; Tue, 18 Jan 2022 18:21:03 +0000
+Date:   Wed, 19 Jan 2022 02:20:53 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Jiri Slaby <jslaby@suse.cz>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [jirislaby:devel 10/31] drivers/tty/serial/uartlite.c:508:37: error:
+ incompatible function pointer types passing 'void (struct uart_port *, int)'
+ to parameter of type 'void (*)(struct uart_port *, char)'
+Message-ID: <202201190250.HH3mpoB9-lkp@intel.com>
 MIME-Version: 1.0
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1313; h=from:subject; bh=m22y2cfKr9juupzmdSZGqyAluEE356lhJNzIX3EGraE=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBh5wT+wB3EE/QJe+rIEMIVBUGYFcXpI7g12KiRvcfz pbexTyaJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYecE/gAKCRCJcvTf3G3AJkPQD/ wMLSN22Voejzdv0hbVyxHw0RGE/REN5L/+BZKGzMMt8Rh3aA7rx0dvk+p3mYzj5tO23faotngqY/9z o578ZTfyRiMIxVFku+zc+VlEWePHThQipVZ5DXb+YawBJavm9R5ElYrv2L8/zPmInyOQRWt+1msbJ8 VqnhANkzbSuBD+h1hVJesOyr7p+6AJKGMCfOLhgtSIfQ/d2cSvMCt0J6c5gMn626OcKO0G/PGpFbd2 mc01zg9R02gpkjKJQ4gdl9mS7OIBQvRnqkDFhsGNo2jNxMiIAlzZ9TPW1gt7q8LEeq73qbH3beAi+p 02msL222EQVhaFODGzHK7RcJYJiNjT6L8qoErftpjLHmMKh1EA28yTrF6ZNLAeDPw3ZdvnkvkNk979 1wPyu4AOwsvlRrbpT5v/l86FS2xnHf3K7nSFEi3D6s4YCVruEL+QAazNuCOfCkgUa0EddHsPBHefSk HQY1Y99Z0T5a1F53AJ86qxBjiBtRs3KCafM2lhaLnlcLUd/xtM/5FMNqu8xRXpZBHCWwRe0wyFTfvf eiNvabEik2jkysjMYQDyVeAYHpSwXvDXSNuk0xlSVCyQEO/tAAKM5gVu/tZNzEsf1pgbZI9ampayvc hlOMC+XQXhLDrpUE6DR/S9VoLf+AtYyoC706vwQjDgk3bWqtpEqqX5A0tkLA==
-X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use strscpy() instead of strncpy(), since its use has been deprecated[1].
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git devel
+head:   0ecc0cdeaabd6b08ef3ec6dfaf724139031c00b8
+commit: 2258e16ea4fe67f9700294b439b7aa1669aef643 [10/31] serial: make uart_console_write->putchar's character a char
+config: i386-randconfig-a002-20220117 (https://download.01.org/0day-ci/archive/20220119/202201190250.HH3mpoB9-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project c10cbb243cafc0cf42c3e922cb29183279444432)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git/commit/?id=2258e16ea4fe67f9700294b439b7aa1669aef643
+        git remote add jirislaby https://git.kernel.org/pub/scm/linux/kernel/git/jirislaby/linux.git
+        git fetch --no-tags jirislaby devel
+        git checkout 2258e16ea4fe67f9700294b439b7aa1669aef643
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-[1] https://www.kernel.org/doc/html/latest/process/deprecated.html#strncpy-on-nul-terminated-strings
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: Jiri Prchal <jiri.prchal@aksignal.cz>
-Signed-off-by: Kees Cook <keescook@chromium.org>
+All errors (new ones prefixed by >>):
+
+>> drivers/tty/serial/uartlite.c:508:37: error: incompatible function pointer types passing 'void (struct uart_port *, int)' to parameter of type 'void (*)(struct uart_port *, char)' [-Werror,-Wincompatible-function-pointer-types]
+           uart_console_write(port, s, count, ulite_console_putchar);
+                                              ^~~~~~~~~~~~~~~~~~~~~
+   include/linux/serial_core.h:402:11: note: passing argument to parameter 'putchar' here
+                           void (*putchar)(struct uart_port *, char));
+                                  ^
+   1 error generated.
+
+
+vim +508 drivers/tty/serial/uartlite.c
+
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  490  
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  491  static void ulite_console_write(struct console *co, const char *s,
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  492  				unsigned int count)
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  493  {
+deeb33e8fdd834 drivers/tty/serial/uartlite.c Shubhrajyoti Datta 2018-08-06  494  	struct uart_port *port = console_port;
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  495  	unsigned long flags;
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  496  	unsigned int ier;
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  497  	int locked = 1;
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  498  
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  499  	if (oops_in_progress) {
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  500  		locked = spin_trylock_irqsave(&port->lock, flags);
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  501  	} else
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  502  		spin_lock_irqsave(&port->lock, flags);
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  503  
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  504  	/* save and disable interrupt */
+6d53c3b71d32da drivers/tty/serial/uartlite.c Michal Simek       2013-02-11  505  	ier = uart_in32(ULITE_STATUS, port) & ULITE_STATUS_IE;
+6d53c3b71d32da drivers/tty/serial/uartlite.c Michal Simek       2013-02-11  506  	uart_out32(0, ULITE_CONTROL, port);
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  507  
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06 @508  	uart_console_write(port, s, count, ulite_console_putchar);
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  509  
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  510  	ulite_console_wait_tx(port);
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  511  
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  512  	/* restore interrupt state */
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  513  	if (ier)
+6d53c3b71d32da drivers/tty/serial/uartlite.c Michal Simek       2013-02-11  514  		uart_out32(ULITE_CONTROL_IE, ULITE_CONTROL, port);
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  515  
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  516  	if (locked)
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  517  		spin_unlock_irqrestore(&port->lock, flags);
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  518  }
+238b8721a554a3 drivers/serial/uartlite.c     Peter Korsgaard    2006-12-06  519  
+
+:::::: The code at line 508 was first introduced by commit
+:::::: 238b8721a554a33a451a3f13bdb5be8fe5cfc927 [PATCH] serial uartlite driver
+
+:::::: TO: Peter Korsgaard <jacmet@sunsite.dk>
+:::::: CC: Linus Torvalds <torvalds@woody.osdl.org>
+
 ---
- drivers/misc/eeprom/at25.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/misc/eeprom/at25.c b/drivers/misc/eeprom/at25.c
-index bee727ed98db..91f96abbb3f9 100644
---- a/drivers/misc/eeprom/at25.c
-+++ b/drivers/misc/eeprom/at25.c
-@@ -309,7 +309,7 @@ static int at25_fw_to_chip(struct device *dev, struct spi_eeprom *chip)
- 	u32 val;
- 	int err;
- 
--	strncpy(chip->name, "at25", sizeof(chip->name));
-+	strscpy(chip->name, "at25", sizeof(chip->name));
- 
- 	err = device_property_read_u32(dev, "size", &val);
- 	if (err)
-@@ -370,7 +370,7 @@ static int at25_fram_to_chip(struct device *dev, struct spi_eeprom *chip)
- 	u8 id[FM25_ID_LEN];
- 	int i;
- 
--	strncpy(chip->name, "fm25", sizeof(chip->name));
-+	strscpy(chip->name, "fm25", sizeof(chip->name));
- 
- 	/* Get ID of chip */
- 	fm25_aux_read(at25, id, FM25_RDID, FM25_ID_LEN);
--- 
-2.30.2
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
