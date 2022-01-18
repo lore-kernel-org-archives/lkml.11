@@ -2,49 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 364A5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:46:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 095EBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:46:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346171AbiARDq0 (ORCPT
+        id S1351112AbiARDqb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:46:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33480 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347376AbiARClS (ORCPT
+        Mon, 17 Jan 2022 22:46:31 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50332 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347408AbiARClX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:41:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CDC2C08C5D7;
-        Mon, 17 Jan 2022 18:36:43 -0800 (PST)
+        Mon, 17 Jan 2022 21:41:23 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BE706612C8;
-        Tue, 18 Jan 2022 02:36:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2D225C36AF4;
-        Tue, 18 Jan 2022 02:36:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5DA3DB81253;
+        Tue, 18 Jan 2022 02:41:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B988C36AEB;
+        Tue, 18 Jan 2022 02:41:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473402;
-        bh=XzhNkZxyer8awJv+RVsKsH09udznovulrHjfciVCME4=;
+        s=k20201202; t=1642473681;
+        bh=mzszewQvu+rH1A9pS5GqxEif5yWkdOeZ53lYTxnWPLc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eKID1t2cgl/J6Alu3PFKMKIFSDEZmixC4GSEqEpT9yiCVEueBeRktwl5GNi8eKLhD
-         hNDHcvJCqyqf/cB5wMjfb52PtxouygL/tu4nUPRhNRn4ODK3Y136aHeL3NN17FBVdr
-         axU1/z6ZWtIRd2uEDHcUZTAY+rTRROYdwRobP5f44+KEwydOWzuzn9tz+wVTXnSAkb
-         HsOS+g0Z6qwdAGA1uCUZd16lEXpifkbSQBtWpo53DeZb7uthwT34PgkDR1/mYmy9vP
-         8dxcugT2GLJwvJQL/+Oa9O0fO7kYNwD3TtmKfyYpCLaFgw3VVcA8j19b36KuSx1/OU
-         a6wQHa9VWctHQ==
+        b=lwNaKyShSdlYmTqnSFm0gI5JxDr9IaPwNEEHQwOaCAOCJdx/QRpSDNXIK4lYdKioi
+         2VbZ9P2Ga2tdYk9wNat/3TwTqedhDKPpY5CgFO5j58wDUkDk/W5zUP7SLi3lD6vf2h
+         tnX/ved8PfZusEmI7ovVm6DSJMrPe3Ml4E9uz8NyS3Oc7bZRyhYhCiiOMSl16RDPfs
+         Bsx71oaPbAxuEDqTAQ8VFtRTtGHRI8qHIn5OsoonfZHdwk6xl36DPlkJeTIv6D6P2L
+         wuSgzrsv9n1exD/4QKWLPCIQtAZFMsGia0R34jjJa6Du0TVbRqEu+ThuAGT3vcx23/
+         59EbJIdEy2GBg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
-        bp@alien8.de, tglx@linutronix.de, mingo@redhat.com,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        linux-edac@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 104/188] x86/mce: Allow instrumentation during task work queueing
-Date:   Mon, 17 Jan 2022 21:30:28 -0500
-Message-Id: <20220118023152.1948105-104-sashal@kernel.org>
+Cc:     Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, harry.wentland@amd.com,
+        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
+        christian.koenig@amd.com, Xinhui.Pan@amd.com, airlied@linux.ie,
+        daniel@ffwll.ch, nathan@kernel.org, ndesaulniers@google.com,
+        nicholas.kazlauskas@amd.com, Anson.Jacob@amd.com, aric.cyr@amd.com,
+        Wayne.Lin@amd.com, michael.strauss@amd.com,
+        meenakshikumar.somasundaram@amd.com, haonan.wang2@amd.com,
+        Martin.Leung@amd.com, Jimmy.Kizito@amd.com, Eric.Yang2@amd.com,
+        lee.jones@linaro.org, Lewis.Huang@amd.com, roy.chan@amd.com,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        llvm@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.10 022/116] drm/amd/display: check top_pipe_to_program pointer
+Date:   Mon, 17 Jan 2022 21:38:33 -0500
+Message-Id: <20220118024007.1950576-22-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,50 +60,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Yang Li <yang.lee@linux.alibaba.com>
 
-[ Upstream commit 4fbce464db81a42f9a57ee242d6150ec7f996415 ]
+[ Upstream commit a689e8d1f80012f90384ebac9dcfac4201f9f77e ]
 
-Fixes
+Clang static analysis reports this error
 
-  vmlinux.o: warning: objtool: do_machine_check()+0xdb1: call to queue_task_work() leaves .noinstr.text section
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc.c:2870:7: warning:
+Dereference of null pointer [clang-analyzer-core.NullDereference]
+                if
+(top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
+                    ^
 
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-6-bp@alien8.de
+top_pipe_to_program being NULL is caught as an error
+But then it is used to report the error.
+
+So add a check before using it.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/core.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/gpu/drm/amd/display/dc/core/dc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 193204aee8801..c8d121085c8f7 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -1454,6 +1454,14 @@ noinstr void do_machine_check(struct pt_regs *regs)
- 	if (worst != MCE_AR_SEVERITY && !kill_current_task)
- 		goto out;
- 
-+	/*
-+	 * Enable instrumentation around the external facilities like
-+	 * task_work_add() (via queue_task_work()), fixup_exception() etc.
-+	 * For now, that is. Fixing this properly would need a lot more involved
-+	 * reorganization.
-+	 */
-+	instrumentation_begin();
-+
- 	/* Fault was in user mode and we need to take some action */
- 	if ((m.cs & 3) == 3) {
- 		/* If this triggers there is no way to recover. Die hard. */
-@@ -1479,6 +1487,9 @@ noinstr void do_machine_check(struct pt_regs *regs)
- 		if (m.kflags & MCE_IN_KERNEL_COPYIN)
- 			queue_task_work(&m, msg, kill_current_task);
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
+index 284ed1c8a35ac..93f5229c303e7 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
+@@ -2436,7 +2436,8 @@ static void commit_planes_for_stream(struct dc *dc,
  	}
-+
-+	instrumentation_end();
-+
- out:
- 	mce_wrmsrl(MSR_IA32_MCG_STATUS, 0);
- }
+ 
+ 	if ((update_type != UPDATE_TYPE_FAST) && stream->update_flags.bits.dsc_changed)
+-		if (top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
++		if (top_pipe_to_program &&
++			top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
+ 			if (should_use_dmub_lock(stream->link)) {
+ 				union dmub_hw_lock_flags hw_locks = { 0 };
+ 				struct dmub_hw_lock_inst_flags inst_flags = { 0 };
 -- 
 2.34.1
 
