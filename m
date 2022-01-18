@@ -2,332 +2,423 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 178B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 11:15:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F195C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 11:17:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239356AbiARLP2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 06:15:28 -0500
-Received: from mga05.intel.com ([192.55.52.43]:8844 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239448AbiARLOr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 06:14:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642504487; x=1674040487;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=xsyC27XkD+QKX/ADefo2g/TIgEPRUlUOJBv3K++OuSI=;
-  b=gpDFRpL06IAfbpYfgeHep2MgOJeE24JEC06XNF6vaJznHFyxP5mm2pn1
-   /6ZIUzJv00TNODGDELrSGR/iEuJBRK05HWJKqyeYrMXOZ3nxVgZoJbx9N
-   l4iXZYlMUWGkFP562exTx39TudN5BmGi3EiLopkWZRCIs/+ekR1edLqAC
-   rjAvJymb8TFMLmgL6wUqBrcS28NHiNk1rE2WgUfdWlS0ZwxP1pHNxE3Rk
-   QAfzfyd6TGlJPyE9DaqygB7IUko+t/c2tib07j96qtnq65QFc3G/9oaQL
-   F6k9ojwlJntMo5mB6HqegvuQioCXzgIj28SvRGhaFeSEu3d60yFYsgV2B
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="331143426"
-X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="331143426"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 03:14:32 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="622107672"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga002.fm.intel.com with ESMTP; 18 Jan 2022 03:14:30 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n9mRZ-000CV3-U8; Tue, 18 Jan 2022 11:14:29 +0000
-Date:   Tue, 18 Jan 2022 19:13:37 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Yinan Liu <yinan@linux.alibaba.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Steven Rostedt <rostedt@goodmis.org>
-Subject: scripts/sorttable.h:380:6: warning: variable 'mcount_sort_thread' is
- used uninitialized whenever 'if' condition is true
-Message-ID: <202201181730.mj1jL8Vy-lkp@intel.com>
+        id S239117AbiARLRx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 06:17:53 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:34992 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235362AbiARLRw (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 06:17:52 -0500
+Date:   Tue, 18 Jan 2022 11:17:49 -0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1642504670;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gpz27nfKACYRUaIYip2+IdJ6LpoPtBsrfT14g5rL/0w=;
+        b=kHy2O5jtoehScTssy/QpZx3YdEbNbxWa1PfdN+hJsxGKN2XS2wXuz5gQz8G1ZRhIdCzf/g
+        FOeYZ4XtoIPeqj3l67xBDjU3TyhUaPS8TZFN8oNNo/fL4cs0K70tnJD8vXmbx+VLw0Y1Kw
+        nU0hjsFUSTInSidfbNiaWGjCr+gt6O8lbfYO688nUDYUjFpXp4YP/i+ICv2dgyDkVG5dRq
+        MY95wGEbKgJ/tk/jxqcRtCjwz5/WKOVHj65V6FbrCT9vJIr62IVu0VOkrBpwtz9p0jyDRi
+        V1QeiTrKGDoRAPVyY6HWN8hd/74CpTEGrXk8qXUMTpGFw022cE1/DjeSYHp7sQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1642504670;
+        h=from:from:sender:sender:reply-to:reply-to:subject:subject:date:date:
+         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
+         content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=gpz27nfKACYRUaIYip2+IdJ6LpoPtBsrfT14g5rL/0w=;
+        b=lwhE1ahzA5D2px5WSBnqfYUYOM6GOdH4RQDgbEuNrXtENpzw1zdo4iDMtpDB+82MXaJNYP
+        0mBRjGXwzgB8YpAg==
+From:   "tip-bot2 for Kan Liang" <tip-bot2@linutronix.de>
+Sender: tip-bot2@linutronix.de
+Reply-to: linux-kernel@vger.kernel.org
+To:     linux-tip-commits@vger.kernel.org
+Subject: [tip: perf/urgent] perf/x86/intel/uncore: Add IMC uncore support for ADL
+Cc:     Kan Liang <kan.liang@linux.intel.com>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <1642111554-118524-1-git-send-email-kan.liang@linux.intel.com>
+References: <1642111554-118524-1-git-send-email-kan.liang@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Message-ID: <164250466988.16921.3231510959947282979.tip-bot2@tip-bot2>
+Robot-ID: <tip-bot2@linutronix.de>
+Robot-Unsubscribe: Contact <mailto:tglx@linutronix.de> to get blacklisted from these emails
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   e3a8b6a1e70c37702054ae3c7c07ed828435d8ee
-commit: 72b3942a173c387b27860ba1069636726e208777 scripts: ftrace - move the sort-processing in ftrace_init
-date:   5 days ago
-config: s390-randconfig-r044-20220116 (https://download.01.org/0day-ci/archive/20220118/202201181730.mj1jL8Vy-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project c10cbb243cafc0cf42c3e922cb29183279444432)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install s390 cross compiling tool for clang build
-        # apt-get install binutils-s390x-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=72b3942a173c387b27860ba1069636726e208777
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 72b3942a173c387b27860ba1069636726e208777
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 prepare
+The following commit has been merged into the perf/urgent branch of tip:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Commit-ID:     5a4487f9ef5ef2fdb3215cadf0a9c3e5e8678634
+Gitweb:        https://git.kernel.org/tip/5a4487f9ef5ef2fdb3215cadf0a9c3e5e8678634
+Author:        Kan Liang <kan.liang@linux.intel.com>
+AuthorDate:    Thu, 13 Jan 2022 14:05:54 -08:00
+Committer:     Peter Zijlstra <peterz@infradead.org>
+CommitterDate: Tue, 18 Jan 2022 12:09:49 +01:00
 
-All warnings (new ones prefixed by >>):
+perf/x86/intel/uncore: Add IMC uncore support for ADL
 
-   In file included from scripts/sorttable.c:195:
->> scripts/sorttable.h:380:6: warning: variable 'mcount_sort_thread' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-           if (!mstruct.init_data_sec || !_start_mcount_loc || !_stop_mcount_loc) {
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   scripts/sorttable.h:479:6: note: uninitialized use occurs here
-           if (mcount_sort_thread) {
-               ^~~~~~~~~~~~~~~~~~
-   scripts/sorttable.h:380:2: note: remove the 'if' if its condition is always false
-           if (!mstruct.init_data_sec || !_start_mcount_loc || !_stop_mcount_loc) {
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> scripts/sorttable.h:380:6: warning: variable 'mcount_sort_thread' is used uninitialized whenever '||' condition is true [-Wsometimes-uninitialized]
-           if (!mstruct.init_data_sec || !_start_mcount_loc || !_stop_mcount_loc) {
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   scripts/sorttable.h:479:6: note: uninitialized use occurs here
-           if (mcount_sort_thread) {
-               ^~~~~~~~~~~~~~~~~~
-   scripts/sorttable.h:380:6: note: remove the '||' if its condition is always false
-           if (!mstruct.init_data_sec || !_start_mcount_loc || !_stop_mcount_loc) {
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> scripts/sorttable.h:380:6: warning: variable 'mcount_sort_thread' is used uninitialized whenever '||' condition is true [-Wsometimes-uninitialized]
-           if (!mstruct.init_data_sec || !_start_mcount_loc || !_stop_mcount_loc) {
-               ^~~~~~~~~~~~~~~~~~~~~~
-   scripts/sorttable.h:479:6: note: uninitialized use occurs here
-           if (mcount_sort_thread) {
-               ^~~~~~~~~~~~~~~~~~
-   scripts/sorttable.h:380:6: note: remove the '||' if its condition is always false
-           if (!mstruct.init_data_sec || !_start_mcount_loc || !_stop_mcount_loc) {
-               ^~~~~~~~~~~~~~~~~~~~~~~~~
-   scripts/sorttable.h:288:30: note: initialize the variable 'mcount_sort_thread' to silence this warning
-           pthread_t mcount_sort_thread;
-                                       ^
-                                        = 0
-   In file included from scripts/sorttable.c:197:
->> scripts/sorttable.h:380:6: warning: variable 'mcount_sort_thread' is used uninitialized whenever 'if' condition is true [-Wsometimes-uninitialized]
-           if (!mstruct.init_data_sec || !_start_mcount_loc || !_stop_mcount_loc) {
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   scripts/sorttable.h:479:6: note: uninitialized use occurs here
-           if (mcount_sort_thread) {
-               ^~~~~~~~~~~~~~~~~~
-   scripts/sorttable.h:380:2: note: remove the 'if' if its condition is always false
-           if (!mstruct.init_data_sec || !_start_mcount_loc || !_stop_mcount_loc) {
-           ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> scripts/sorttable.h:380:6: warning: variable 'mcount_sort_thread' is used uninitialized whenever '||' condition is true [-Wsometimes-uninitialized]
-           if (!mstruct.init_data_sec || !_start_mcount_loc || !_stop_mcount_loc) {
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   scripts/sorttable.h:479:6: note: uninitialized use occurs here
-           if (mcount_sort_thread) {
-               ^~~~~~~~~~~~~~~~~~
-   scripts/sorttable.h:380:6: note: remove the '||' if its condition is always false
-           if (!mstruct.init_data_sec || !_start_mcount_loc || !_stop_mcount_loc) {
-               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> scripts/sorttable.h:380:6: warning: variable 'mcount_sort_thread' is used uninitialized whenever '||' condition is true [-Wsometimes-uninitialized]
-           if (!mstruct.init_data_sec || !_start_mcount_loc || !_stop_mcount_loc) {
-               ^~~~~~~~~~~~~~~~~~~~~~
-   scripts/sorttable.h:479:6: note: uninitialized use occurs here
-           if (mcount_sort_thread) {
-               ^~~~~~~~~~~~~~~~~~
-   scripts/sorttable.h:380:6: note: remove the '||' if its condition is always false
-           if (!mstruct.init_data_sec || !_start_mcount_loc || !_stop_mcount_loc) {
-               ^~~~~~~~~~~~~~~~~~~~~~~~~
-   scripts/sorttable.h:288:30: note: initialize the variable 'mcount_sort_thread' to silence this warning
-           pthread_t mcount_sort_thread;
-                                       ^
-                                        = 0
-   6 warnings generated.
-   In file included from arch/s390/kernel/asm-offsets.c:11:
-   In file included from include/linux/kvm_host.h:35:
-   In file included from include/linux/kvm_para.h:5:
-   In file included from include/uapi/linux/kvm_para.h:37:
-   In file included from arch/s390/include/asm/kvm_para.h:25:
-   In file included from arch/s390/include/asm/diag.h:12:
-   In file included from include/linux/if_ether.h:19:
-   In file included from include/linux/skbuff.h:31:
-   In file included from include/linux/dma-mapping.h:10:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __raw_readb(PCI_IOBASE + addr);
-                             ~~~~~~~~~~ ^
-   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:36:59: note: expanded from macro '__le16_to_cpu'
-   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
-                                                             ^
-   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
-   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
-                                                        ^
-   In file included from arch/s390/kernel/asm-offsets.c:11:
-   In file included from include/linux/kvm_host.h:35:
-   In file included from include/linux/kvm_para.h:5:
-   In file included from include/uapi/linux/kvm_para.h:37:
-   In file included from arch/s390/include/asm/kvm_para.h:25:
-   In file included from arch/s390/include/asm/diag.h:12:
-   In file included from include/linux/if_ether.h:19:
-   In file included from include/linux/skbuff.h:31:
-   In file included from include/linux/dma-mapping.h:10:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
-                                                           ~~~~~~~~~~ ^
-   include/uapi/linux/byteorder/big_endian.h:34:59: note: expanded from macro '__le32_to_cpu'
-   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
-                                                             ^
-   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
-   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
-                                                        ^
-   In file included from arch/s390/kernel/asm-offsets.c:11:
-   In file included from include/linux/kvm_host.h:35:
-   In file included from include/linux/kvm_para.h:5:
-   In file included from include/uapi/linux/kvm_para.h:37:
-   In file included from arch/s390/include/asm/kvm_para.h:25:
-   In file included from arch/s390/include/asm/diag.h:12:
-   In file included from include/linux/if_ether.h:19:
-   In file included from include/linux/skbuff.h:31:
-   In file included from include/linux/dma-mapping.h:10:
-   In file included from include/linux/scatterlist.h:9:
-   In file included from arch/s390/include/asm/io.h:75:
-   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writeb(value, PCI_IOBASE + addr);
-                               ~~~~~~~~~~ ^
-   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
-                                                         ~~~~~~~~~~ ^
-   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsb(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsw(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           readsl(PCI_IOBASE + addr, buffer, count);
-                  ~~~~~~~~~~ ^
-   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesb(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesw(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-           writesl(PCI_IOBASE + addr, buffer, count);
-                   ~~~~~~~~~~ ^
-   12 warnings generated.
+Current ADL uncore code only supports the legacy IMC (memory controller)
+free-running counters. Besides the free-running counters, ADL also
+supports several general purpose-counters.
 
+The general-purpose counters can also be accessed via MMIO but in a
+different location. Factor out __uncore_imc_init_box() with offset as a
+parameter. The function can be shared between ADL and TGL.
 
-vim +380 scripts/sorttable.h
+The event format and the layout of the control registers are a little
+bit different from other uncore counters.
 
-   378	
-   379	#ifdef MCOUNT_SORT_ENABLED
- > 380		if (!mstruct.init_data_sec || !_start_mcount_loc || !_stop_mcount_loc) {
-   381			fprintf(stderr,
-   382				"incomplete mcount's sort in file: %s\n",
-   383				fname);
-   384			goto out;
-   385		}
-   386	
-   387		/* create thread to sort mcount_loc concurrently */
-   388		if (pthread_create(&mcount_sort_thread, NULL, &sort_mcount_loc, &mstruct)) {
-   389			fprintf(stderr,
-   390				"pthread_create mcount_sort_thread failed '%s': %s\n",
-   391				strerror(errno), fname);
-   392			goto out;
-   393		}
-   394	#endif
-   395		if (!extab_sec) {
-   396			fprintf(stderr,	"no __ex_table in file: %s\n", fname);
-   397			goto out;
-   398		}
-   399	
-   400		if (!symtab_sec) {
-   401			fprintf(stderr,	"no .symtab in file: %s\n", fname);
-   402			goto out;
-   403		}
-   404	
-   405		if (!strtab_sec) {
-   406			fprintf(stderr,	"no .strtab in file: %s\n", fname);
-   407			goto out;
-   408		}
-   409	
-   410		extab_image = (void *)ehdr + _r(&extab_sec->sh_offset);
-   411		strtab = (const char *)ehdr + _r(&strtab_sec->sh_offset);
-   412		symtab = (const Elf_Sym *)((const char *)ehdr +
-   413							  _r(&symtab_sec->sh_offset));
-   414	
-   415		if (custom_sort) {
-   416			custom_sort(extab_image, _r(&extab_sec->sh_size));
-   417		} else {
-   418			int num_entries = _r(&extab_sec->sh_size) / extable_ent_size;
-   419			qsort(extab_image, num_entries,
-   420			      extable_ent_size, compare_extable);
-   421		}
-   422	
-   423		/* If there were relocations, we no longer need them. */
-   424		if (relocs)
-   425			memset(relocs, 0, relocs_size);
-   426	
-   427		/* find the flag main_extable_sort_needed */
-   428		for (sym = (void *)ehdr + _r(&symtab_sec->sh_offset);
-   429		     sym < sym + _r(&symtab_sec->sh_size) / sizeof(Elf_Sym);
-   430		     sym++) {
-   431			if (ELF_ST_TYPE(sym->st_info) != STT_OBJECT)
-   432				continue;
-   433			if (!strcmp(strtab + r(&sym->st_name),
-   434				    "main_extable_sort_needed")) {
-   435				sort_needed_sym = sym;
-   436				break;
-   437			}
-   438		}
-   439	
-   440		if (!sort_needed_sym) {
-   441			fprintf(stderr,
-   442				"no main_extable_sort_needed symbol in file: %s\n",
-   443				fname);
-   444			goto out;
-   445		}
-   446	
-   447		sort_needed_sec = &shdr[get_secindex(r2(&sym->st_shndx),
-   448						     sort_needed_sym - symtab,
-   449						     symtab_shndx)];
-   450		sort_needed_loc = (void *)ehdr +
-   451			_r(&sort_needed_sec->sh_offset) +
-   452			_r(&sort_needed_sym->st_value) -
-   453			_r(&sort_needed_sec->sh_addr);
-   454	
-   455		/* extable has been sorted, clear the flag */
-   456		w(0, sort_needed_loc);
-   457		rc = 0;
-   458	
-   459	out:
-   460	#if defined(SORTTABLE_64) && defined(UNWINDER_ORC_ENABLED)
-   461		if (orc_sort_thread) {
-   462			void *retval = NULL;
-   463			/* wait for ORC tables sort done */
-   464			rc = pthread_join(orc_sort_thread, &retval);
-   465			if (rc) {
-   466				fprintf(stderr,
-   467					"pthread_join failed '%s': %s\n",
-   468					strerror(errno), fname);
-   469			} else if (retval) {
-   470				rc = -1;
-   471				fprintf(stderr,
-   472					"failed to sort ORC tables '%s': %s\n",
-   473					(char *)retval, fname);
-   474			}
-   475		}
-   476	#endif
-   477	
+The intel_generic_uncore_mmio_enable_event() can be shared with client
+IMC uncore. Expose the function.
 
+Add more PCI IDs for ADL machines.
+
+Fixes: 772ed05f3c5c ("perf/x86/intel/uncore: Add Alder Lake support")
+Signed-off-by: Kan Liang <kan.liang@linux.intel.com>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Link: https://lkml.kernel.org/r/1642111554-118524-1-git-send-email-kan.liang@linux.intel.com
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ arch/x86/events/intel/uncore.c           |   2 +-
+ arch/x86/events/intel/uncore.h           |   3 +-
+ arch/x86/events/intel/uncore_discovery.c |   4 +-
+ arch/x86/events/intel/uncore_discovery.h |   2 +-
+ arch/x86/events/intel/uncore_snb.c       | 214 +++++++++++++++++++++-
+ 5 files changed, 220 insertions(+), 5 deletions(-)
+
+diff --git a/arch/x86/events/intel/uncore.c b/arch/x86/events/intel/uncore.c
+index f1ba6ab..e497da9 100644
+--- a/arch/x86/events/intel/uncore.c
++++ b/arch/x86/events/intel/uncore.c
+@@ -1762,7 +1762,7 @@ static const struct intel_uncore_init_fun rkl_uncore_init __initconst = {
+ 
+ static const struct intel_uncore_init_fun adl_uncore_init __initconst = {
+ 	.cpu_init = adl_uncore_cpu_init,
+-	.mmio_init = tgl_uncore_mmio_init,
++	.mmio_init = adl_uncore_mmio_init,
+ };
+ 
+ static const struct intel_uncore_init_fun icx_uncore_init __initconst = {
+diff --git a/arch/x86/events/intel/uncore.h b/arch/x86/events/intel/uncore.h
+index b968798..2adeaf4 100644
+--- a/arch/x86/events/intel/uncore.h
++++ b/arch/x86/events/intel/uncore.h
+@@ -584,10 +584,11 @@ void snb_uncore_cpu_init(void);
+ void nhm_uncore_cpu_init(void);
+ void skl_uncore_cpu_init(void);
+ void icl_uncore_cpu_init(void);
+-void adl_uncore_cpu_init(void);
+ void tgl_uncore_cpu_init(void);
++void adl_uncore_cpu_init(void);
+ void tgl_uncore_mmio_init(void);
+ void tgl_l_uncore_mmio_init(void);
++void adl_uncore_mmio_init(void);
+ int snb_pci2phy_map_init(int devid);
+ 
+ /* uncore_snbep.c */
+diff --git a/arch/x86/events/intel/uncore_discovery.c b/arch/x86/events/intel/uncore_discovery.c
+index 3049c64..6ddadb4 100644
+--- a/arch/x86/events/intel/uncore_discovery.c
++++ b/arch/x86/events/intel/uncore_discovery.c
+@@ -494,8 +494,8 @@ void intel_generic_uncore_mmio_enable_box(struct intel_uncore_box *box)
+ 	writel(0, box->io_addr);
+ }
+ 
+-static void intel_generic_uncore_mmio_enable_event(struct intel_uncore_box *box,
+-					     struct perf_event *event)
++void intel_generic_uncore_mmio_enable_event(struct intel_uncore_box *box,
++					    struct perf_event *event)
+ {
+ 	struct hw_perf_event *hwc = &event->hw;
+ 
+diff --git a/arch/x86/events/intel/uncore_discovery.h b/arch/x86/events/intel/uncore_discovery.h
+index 6d73561..cfaf558 100644
+--- a/arch/x86/events/intel/uncore_discovery.h
++++ b/arch/x86/events/intel/uncore_discovery.h
+@@ -139,6 +139,8 @@ void intel_generic_uncore_mmio_disable_box(struct intel_uncore_box *box);
+ void intel_generic_uncore_mmio_enable_box(struct intel_uncore_box *box);
+ void intel_generic_uncore_mmio_disable_event(struct intel_uncore_box *box,
+ 					     struct perf_event *event);
++void intel_generic_uncore_mmio_enable_event(struct intel_uncore_box *box,
++					    struct perf_event *event);
+ 
+ void intel_generic_uncore_pci_init_box(struct intel_uncore_box *box);
+ void intel_generic_uncore_pci_disable_box(struct intel_uncore_box *box);
+diff --git a/arch/x86/events/intel/uncore_snb.c b/arch/x86/events/intel/uncore_snb.c
+index 0f63706..f698a55 100644
+--- a/arch/x86/events/intel/uncore_snb.c
++++ b/arch/x86/events/intel/uncore_snb.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
+ /* Nehalem/SandBridge/Haswell/Broadwell/Skylake uncore support */
+ #include "uncore.h"
++#include "uncore_discovery.h"
+ 
+ /* Uncore IMC PCI IDs */
+ #define PCI_DEVICE_ID_INTEL_SNB_IMC		0x0100
+@@ -64,6 +65,20 @@
+ #define PCI_DEVICE_ID_INTEL_RKL_2_IMC		0x4c53
+ #define PCI_DEVICE_ID_INTEL_ADL_1_IMC		0x4660
+ #define PCI_DEVICE_ID_INTEL_ADL_2_IMC		0x4641
++#define PCI_DEVICE_ID_INTEL_ADL_3_IMC		0x4601
++#define PCI_DEVICE_ID_INTEL_ADL_4_IMC		0x4602
++#define PCI_DEVICE_ID_INTEL_ADL_5_IMC		0x4609
++#define PCI_DEVICE_ID_INTEL_ADL_6_IMC		0x460a
++#define PCI_DEVICE_ID_INTEL_ADL_7_IMC		0x4621
++#define PCI_DEVICE_ID_INTEL_ADL_8_IMC		0x4623
++#define PCI_DEVICE_ID_INTEL_ADL_9_IMC		0x4629
++#define PCI_DEVICE_ID_INTEL_ADL_10_IMC		0x4637
++#define PCI_DEVICE_ID_INTEL_ADL_11_IMC		0x463b
++#define PCI_DEVICE_ID_INTEL_ADL_12_IMC		0x4648
++#define PCI_DEVICE_ID_INTEL_ADL_13_IMC		0x4649
++#define PCI_DEVICE_ID_INTEL_ADL_14_IMC		0x4650
++#define PCI_DEVICE_ID_INTEL_ADL_15_IMC		0x4668
++#define PCI_DEVICE_ID_INTEL_ADL_16_IMC		0x4670
+ 
+ /* SNB event control */
+ #define SNB_UNC_CTL_EV_SEL_MASK			0x000000ff
+@@ -155,6 +170,7 @@
+ 
+ DEFINE_UNCORE_FORMAT_ATTR(event, event, "config:0-7");
+ DEFINE_UNCORE_FORMAT_ATTR(umask, umask, "config:8-15");
++DEFINE_UNCORE_FORMAT_ATTR(chmask, chmask, "config:8-11");
+ DEFINE_UNCORE_FORMAT_ATTR(edge, edge, "config:18");
+ DEFINE_UNCORE_FORMAT_ATTR(inv, inv, "config:23");
+ DEFINE_UNCORE_FORMAT_ATTR(cmask5, cmask, "config:24-28");
+@@ -1334,6 +1350,62 @@ static const struct pci_device_id tgl_uncore_pci_ids[] = {
+ 		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_2_IMC),
+ 		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
+ 	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_3_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_4_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_5_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_6_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_7_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_8_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_9_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_10_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_11_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_12_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_13_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_14_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_15_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
++	{ /* IMC */
++		PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ADL_16_IMC),
++		.driver_data = UNCORE_PCI_DEV_DATA(SNB_PCI_UNCORE_IMC, 0),
++	},
+ 	{ /* end: all zeroes */ }
+ };
+ 
+@@ -1390,7 +1462,8 @@ static struct pci_dev *tgl_uncore_get_mc_dev(void)
+ #define TGL_UNCORE_MMIO_IMC_MEM_OFFSET		0x10000
+ #define TGL_UNCORE_PCI_IMC_MAP_SIZE		0xe000
+ 
+-static void tgl_uncore_imc_freerunning_init_box(struct intel_uncore_box *box)
++static void __uncore_imc_init_box(struct intel_uncore_box *box,
++				  unsigned int base_offset)
+ {
+ 	struct pci_dev *pdev = tgl_uncore_get_mc_dev();
+ 	struct intel_uncore_pmu *pmu = box->pmu;
+@@ -1417,11 +1490,17 @@ static void tgl_uncore_imc_freerunning_init_box(struct intel_uncore_box *box)
+ 	addr |= ((resource_size_t)mch_bar << 32);
+ #endif
+ 
++	addr += base_offset;
+ 	box->io_addr = ioremap(addr, type->mmio_map_size);
+ 	if (!box->io_addr)
+ 		pr_warn("perf uncore: Failed to ioremap for %s.\n", type->name);
+ }
+ 
++static void tgl_uncore_imc_freerunning_init_box(struct intel_uncore_box *box)
++{
++	__uncore_imc_init_box(box, 0);
++}
++
+ static struct intel_uncore_ops tgl_uncore_imc_freerunning_ops = {
+ 	.init_box	= tgl_uncore_imc_freerunning_init_box,
+ 	.exit_box	= uncore_mmio_exit_box,
+@@ -1469,3 +1548,136 @@ void tgl_uncore_mmio_init(void)
+ }
+ 
+ /* end of Tiger Lake MMIO uncore support */
++
++/* Alder Lake MMIO uncore support */
++#define ADL_UNCORE_IMC_BASE			0xd900
++#define ADL_UNCORE_IMC_MAP_SIZE			0x200
++#define ADL_UNCORE_IMC_CTR			0xe8
++#define ADL_UNCORE_IMC_CTRL			0xd0
++#define ADL_UNCORE_IMC_GLOBAL_CTL		0xc0
++#define ADL_UNCORE_IMC_BOX_CTL			0xc4
++#define ADL_UNCORE_IMC_FREERUNNING_BASE		0xd800
++#define ADL_UNCORE_IMC_FREERUNNING_MAP_SIZE	0x100
++
++#define ADL_UNCORE_IMC_CTL_FRZ			(1 << 0)
++#define ADL_UNCORE_IMC_CTL_RST_CTRL		(1 << 1)
++#define ADL_UNCORE_IMC_CTL_RST_CTRS		(1 << 2)
++#define ADL_UNCORE_IMC_CTL_INT			(ADL_UNCORE_IMC_CTL_RST_CTRL | \
++						ADL_UNCORE_IMC_CTL_RST_CTRS)
++
++static void adl_uncore_imc_init_box(struct intel_uncore_box *box)
++{
++	__uncore_imc_init_box(box, ADL_UNCORE_IMC_BASE);
++
++	/* The global control in MC1 can control both MCs. */
++	if (box->io_addr && (box->pmu->pmu_idx == 1))
++		writel(ADL_UNCORE_IMC_CTL_INT, box->io_addr + ADL_UNCORE_IMC_GLOBAL_CTL);
++}
++
++static void adl_uncore_mmio_disable_box(struct intel_uncore_box *box)
++{
++	if (!box->io_addr)
++		return;
++
++	writel(ADL_UNCORE_IMC_CTL_FRZ, box->io_addr + uncore_mmio_box_ctl(box));
++}
++
++static void adl_uncore_mmio_enable_box(struct intel_uncore_box *box)
++{
++	if (!box->io_addr)
++		return;
++
++	writel(0, box->io_addr + uncore_mmio_box_ctl(box));
++}
++
++static struct intel_uncore_ops adl_uncore_mmio_ops = {
++	.init_box	= adl_uncore_imc_init_box,
++	.exit_box	= uncore_mmio_exit_box,
++	.disable_box	= adl_uncore_mmio_disable_box,
++	.enable_box	= adl_uncore_mmio_enable_box,
++	.disable_event	= intel_generic_uncore_mmio_disable_event,
++	.enable_event	= intel_generic_uncore_mmio_enable_event,
++	.read_counter	= uncore_mmio_read_counter,
++};
++
++#define ADL_UNC_CTL_CHMASK_MASK			0x00000f00
++#define ADL_UNC_IMC_EVENT_MASK			(SNB_UNC_CTL_EV_SEL_MASK | \
++						 ADL_UNC_CTL_CHMASK_MASK | \
++						 SNB_UNC_CTL_EDGE_DET)
++
++static struct attribute *adl_uncore_imc_formats_attr[] = {
++	&format_attr_event.attr,
++	&format_attr_chmask.attr,
++	&format_attr_edge.attr,
++	NULL,
++};
++
++static const struct attribute_group adl_uncore_imc_format_group = {
++	.name		= "format",
++	.attrs		= adl_uncore_imc_formats_attr,
++};
++
++static struct intel_uncore_type adl_uncore_imc = {
++	.name		= "imc",
++	.num_counters   = 5,
++	.num_boxes	= 2,
++	.perf_ctr_bits	= 64,
++	.perf_ctr	= ADL_UNCORE_IMC_CTR,
++	.event_ctl	= ADL_UNCORE_IMC_CTRL,
++	.event_mask	= ADL_UNC_IMC_EVENT_MASK,
++	.box_ctl	= ADL_UNCORE_IMC_BOX_CTL,
++	.mmio_offset	= 0,
++	.mmio_map_size	= ADL_UNCORE_IMC_MAP_SIZE,
++	.ops		= &adl_uncore_mmio_ops,
++	.format_group	= &adl_uncore_imc_format_group,
++};
++
++enum perf_adl_uncore_imc_freerunning_types {
++	ADL_MMIO_UNCORE_IMC_DATA_TOTAL,
++	ADL_MMIO_UNCORE_IMC_DATA_READ,
++	ADL_MMIO_UNCORE_IMC_DATA_WRITE,
++	ADL_MMIO_UNCORE_IMC_FREERUNNING_TYPE_MAX
++};
++
++static struct freerunning_counters adl_uncore_imc_freerunning[] = {
++	[ADL_MMIO_UNCORE_IMC_DATA_TOTAL]	= { 0x40, 0x0, 0x0, 1, 64 },
++	[ADL_MMIO_UNCORE_IMC_DATA_READ]		= { 0x58, 0x0, 0x0, 1, 64 },
++	[ADL_MMIO_UNCORE_IMC_DATA_WRITE]	= { 0xA0, 0x0, 0x0, 1, 64 },
++};
++
++static void adl_uncore_imc_freerunning_init_box(struct intel_uncore_box *box)
++{
++	__uncore_imc_init_box(box, ADL_UNCORE_IMC_FREERUNNING_BASE);
++}
++
++static struct intel_uncore_ops adl_uncore_imc_freerunning_ops = {
++	.init_box	= adl_uncore_imc_freerunning_init_box,
++	.exit_box	= uncore_mmio_exit_box,
++	.read_counter	= uncore_mmio_read_counter,
++	.hw_config	= uncore_freerunning_hw_config,
++};
++
++static struct intel_uncore_type adl_uncore_imc_free_running = {
++	.name			= "imc_free_running",
++	.num_counters		= 3,
++	.num_boxes		= 2,
++	.num_freerunning_types	= ADL_MMIO_UNCORE_IMC_FREERUNNING_TYPE_MAX,
++	.mmio_map_size		= ADL_UNCORE_IMC_FREERUNNING_MAP_SIZE,
++	.freerunning		= adl_uncore_imc_freerunning,
++	.ops			= &adl_uncore_imc_freerunning_ops,
++	.event_descs		= tgl_uncore_imc_events,
++	.format_group		= &tgl_uncore_imc_format_group,
++};
++
++static struct intel_uncore_type *adl_mmio_uncores[] = {
++	&adl_uncore_imc,
++	&adl_uncore_imc_free_running,
++	NULL
++};
++
++void adl_uncore_mmio_init(void)
++{
++	uncore_mmio_uncores = adl_mmio_uncores;
++}
++
++/* end of Alder Lake MMIO uncore support */
