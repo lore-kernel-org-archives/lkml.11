@@ -2,116 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E039C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:02:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0378C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346976AbiARRCQ (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 12:02:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35974 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236675AbiARRCM (ORCPT
+        id S243633AbiARRDt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 12:03:49 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:46595 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236454AbiARRDs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 12:02:12 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D20F7C061574;
-        Tue, 18 Jan 2022 09:02:11 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id c71so82458649edf.6;
-        Tue, 18 Jan 2022 09:02:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=t4VS+844/s3c/SVFK110m3TmMIP45+ZI1bs8dsZpnqA=;
-        b=DiE/Sx5EKcVRYBuu3GI1maZ8+9DrRUOTbO4kj8L8v3drZQ5vDYcebnD2l8rkk+kUPu
-         85jbhNWfQ7NY3u3o0oXE2mMpb5OH0aKMKhNFVegsAkqJGXcgzuG725NiSrOdsjN8IpWz
-         5HLr/HZ21d7LhvPEql6WqrVepEk1Kcx8n7HrEUNacLIdCDx0262YYUDrC7cjf2BJpuiq
-         3h1KmitzhGbJGeBI7vhSmf/ywbiS5Ia+FJkuIQDqL9VwqLWxeV+6iYSD+9e/AudXvm5M
-         wlzKx1m0Y1bh4S3kmcnMkiEmZ3q8HE13PeSvWAtkW1Pj5JjjY0GmenYv++/jwk3c0l7I
-         qvOA==
+        Tue, 18 Jan 2022 12:03:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642525427;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=xeHoR1Km3Ot/QwwgnNEtsDvDGwANoK5Acc9epKDxSQU=;
+        b=Xpijj9Fn5Fr4+2bNwTB8g315xzQZG21M3KKrF3BAl0DVvR5vliAT9eMangZMF1CxW/mEhn
+        dC2meVhuDo7OXwcB0W7QUg6genoVCYpo21lQ7k+D6YpH+4WErtqhRG167gRCyKGSdyOvsg
+        C2nkwsNjXUmA28cspAryht5K3lG8JwA=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-124-9vX1mWFnPD6rZNjjZsnxUQ-1; Tue, 18 Jan 2022 12:03:44 -0500
+X-MC-Unique: 9vX1mWFnPD6rZNjjZsnxUQ-1
+Received: by mail-ed1-f69.google.com with SMTP id t5-20020aa7db05000000b00402670daeb9so6660531eds.5
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 09:03:43 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=t4VS+844/s3c/SVFK110m3TmMIP45+ZI1bs8dsZpnqA=;
-        b=VGx0bZi4XUOmeKtCuBaku7kcr1UllEj3yGhOXzKyi+qyw6zUIcwy7WZMmuv+RNGUrg
-         2PVradYGz/RVGkjj+k648qBYMVc8FRu4CyvBQI3aH7MIoUa3D+sTrZROCaeb/bmHGSGO
-         xvPABRqpJX7VU/ZWZfn2dZkbz6TLeBmlEq3mPRhbrO9GTcUV4K4M125r0Sjf1EpC5xcB
-         NqgnQrgDud11rSRgk2EXgWAJ7x/97+MZ4RTAfSPCHUD5RIKLMlrWPLm0JGBsDAf6bC7k
-         LzDTl+uVfriHRHgw5epTSbXv0l0Rkvulg82HwUqTsrEm6JOsUlsPiIVa1L3YPXipQ8GZ
-         gzCg==
-X-Gm-Message-State: AOAM531QoUh30nQYnq0EYA4dxC8kJEluafrr/vHnb8OsxMo5NMvvufXv
-        2XE505RtQnzdsAuoXUORl/l88fK+f+5wds5oyfw=
-X-Google-Smtp-Source: ABdhPJwjL5/U9atRUwKah1nVHi2Tz36ttxQPPKgTZStjY2ox97/ZV7PBDQj4lMISk2cYHqzmlBfYCAWRqklRfGUGPpI=
-X-Received: by 2002:a17:907:6e0b:: with SMTP id sd11mr21916858ejc.132.1642525330273;
- Tue, 18 Jan 2022 09:02:10 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=xeHoR1Km3Ot/QwwgnNEtsDvDGwANoK5Acc9epKDxSQU=;
+        b=U0vRTDh5KXAtFEOv2VmVGmwdlP2zA+Dk1iHoHxSObt9gqgY9s0zGEdhab1eJx47Y9U
+         3dIwCQ6+6sz+yyHYgk6uQmQhjVW/nJ49IciBl5HVqlDKKTKXOozjETosGfhVIgOexwtg
+         zEHmkMx+SAvJsNxQotL7EauKkCwQtXU30r4oJqs8xXBQ45RONlozZBcur293LklfdOJi
+         yb1EWTjQ6378fFduRZI+AT/FROs/zLm95wxHqnHZPtJs7gta03LU3WjE0r7C/+I32/0y
+         OGMN4wN4rnnsWn6H/Na781cieTW4KlcCl/NKKZFZ4IBvdP6xZJM9JjZ8GnY3jb/Kwh+A
+         CJVQ==
+X-Gm-Message-State: AOAM531fSgfTjLt/Nvg21OBzKFEeISzX6pOpGzbbi25ZzD/pBhPYWWkd
+        IP3HLiG+AfQHrvtwOZfnxen4EssXOGejPbBYbURaBsKxkFg/R6Or5lzgtfNy6ybalR59K7b2qQm
+        VkPO2Sj1za20JCcVScZ13qrH6adJA1k/826IbFDDtvBp3dubwir030QO60e5VUwBmwVNE2A==
+X-Received: by 2002:a05:6402:399:: with SMTP id o25mr25929996edv.70.1642525421662;
+        Tue, 18 Jan 2022 09:03:41 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJysFKMueDijbw2+fxPnfDwyfRixXRfg11cODmIZFCXfCeIojgPJErkMskMdbICWuCYRvZZVkg==
+X-Received: by 2002:a05:6402:399:: with SMTP id o25mr25929978edv.70.1642525421403;
+        Tue, 18 Jan 2022 09:03:41 -0800 (PST)
+Received: from redhat.com ([2.55.154.241])
+        by smtp.gmail.com with ESMTPSA id i22sm5559325ejw.75.2022.01.18.09.03.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Jan 2022 09:03:38 -0800 (PST)
+Date:   Tue, 18 Jan 2022 12:03:29 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Cornelia Huck <cohuck@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        virtualization@lists.linux-foundation.org
+Subject: [PATCH v2 1/2] virtio: unexport virtio_finalize_features
+Message-ID: <20220118170225.30620-1-mst@redhat.com>
 MIME-Version: 1.0
-References: <20220117142919.207370-1-marcan@marcan.st> <CAHp75VfRiFokdTQ9cnEEH596mM7cb4FXQk4eXVt37cG4FcFMyA@mail.gmail.com>
- <e956e500-a59a-a03b-6be1-c7eca85c8741@marcan.st>
-In-Reply-To: <e956e500-a59a-a03b-6be1-c7eca85c8741@marcan.st>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 18 Jan 2022 19:01:32 +0200
-Message-ID: <CAHp75Vcp_cFEDZC4LoqVkNBypX1R74MVOhKKw8-2iRCF-MuYTg@mail.gmail.com>
-Subject: Re: [PATCH v3 0/9] misc brcmfmac fixes (M1/T2 series spin-off)
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        SHA-cyfmac-dev-list@infineon.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email 2.27.0.106.g8ac3dc51b1
+X-Mutt-Fcc: =sent
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 5:32 PM Hector Martin <marcan@marcan.st> wrote:
-> On 18/01/2022 19.43, Andy Shevchenko wrote:
-> > On Mon, Jan 17, 2022 at 4:30 PM Hector Martin <marcan@marcan.st> wrote:
-> >>
-> >> Hi everyone,
-> >>
-> >> This series contains just the fixes / misc improvements from the
-> >> previously submitted series:
-> >>
-> >> brcmfmac: Support Apple T2 and M1 platforms
-> >>
-> >> Patches 8-9 aren't strictly bugfixes but rather just general
-> >> improvements; they can be safely skipped, although patch 8 will be a
-> >> dependency of the subsequent series to avoid a compile warning.
-> >
-> > Have I given you a tag? If so, I do not see it applied in the patches...
->
-> I didn't see any review tags from you in the previous thread. Did I miss
-> any?
+virtio_finalize_features is only used internally within virtio.
+No reason to export it.
 
-I checked myself and indeed it seems my memory is about something
-else, I'll check v3, last time I remember I found no (big) issues with
-the fixes patches, I believe they are in shape.
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+---
+ drivers/virtio/virtio.c | 3 +--
+ include/linux/virtio.h  | 1 -
+ 2 files changed, 1 insertion(+), 3 deletions(-)
 
+diff --git a/drivers/virtio/virtio.c b/drivers/virtio/virtio.c
+index 00ac9db792a4..d891b0a354b0 100644
+--- a/drivers/virtio/virtio.c
++++ b/drivers/virtio/virtio.c
+@@ -166,7 +166,7 @@ void virtio_add_status(struct virtio_device *dev, unsigned int status)
+ }
+ EXPORT_SYMBOL_GPL(virtio_add_status);
+ 
+-int virtio_finalize_features(struct virtio_device *dev)
++static int virtio_finalize_features(struct virtio_device *dev)
+ {
+ 	int ret = dev->config->finalize_features(dev);
+ 	unsigned status;
+@@ -202,7 +202,6 @@ int virtio_finalize_features(struct virtio_device *dev)
+ 	}
+ 	return 0;
+ }
+-EXPORT_SYMBOL_GPL(virtio_finalize_features);
+ 
+ void virtio_reset_device(struct virtio_device *dev)
+ {
+diff --git a/include/linux/virtio.h b/include/linux/virtio.h
+index 72292a62cd90..5464f398912a 100644
+--- a/include/linux/virtio.h
++++ b/include/linux/virtio.h
+@@ -133,7 +133,6 @@ bool is_virtio_device(struct device *dev);
+ void virtio_break_device(struct virtio_device *dev);
+ 
+ void virtio_config_changed(struct virtio_device *dev);
+-int virtio_finalize_features(struct virtio_device *dev);
+ #ifdef CONFIG_PM_SLEEP
+ int virtio_device_freeze(struct virtio_device *dev);
+ int virtio_device_restore(struct virtio_device *dev);
 -- 
-With Best Regards,
-Andy Shevchenko
+MST
+
