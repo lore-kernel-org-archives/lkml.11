@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BCA5C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:37:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B07FC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:37:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345531AbiARChS (ORCPT
+        id S1344773AbiARCh1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:37:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58892 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345570AbiARCbn (ORCPT
+        Mon, 17 Jan 2022 21:37:27 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48594 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345597AbiARCbp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:31:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E90C061770;
-        Mon, 17 Jan 2022 18:29:40 -0800 (PST)
+        Mon, 17 Jan 2022 21:31:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7461A61157;
-        Tue, 18 Jan 2022 02:29:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07188C36AEB;
-        Tue, 18 Jan 2022 02:29:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 76266611E1;
+        Tue, 18 Jan 2022 02:31:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8550BC36AE3;
+        Tue, 18 Jan 2022 02:31:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472978;
-        bh=WrmovBE7B/LPgIOvuDDD6clEs9gOydREBb19a2g3R1w=;
+        s=k20201202; t=1642473103;
+        bh=5ND4c0WFizvbyzJNtRy1VuRdoEZMvxVRqMNu9KAXCrQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZoI1CCFSAUdkqkZ2N0eekZo6rUWz00fdUyloXh+h5YiJQ5N8+m+9MU3p2jY6OvM6u
-         jY/H6GbJ1Z/FEg/Ohi/TOP72rheARnMOEx85g6DwlaUX0gLQPROVjKTahqZbQ0Xwzn
-         5pZdWodNMzHkDkzQuBZCwS1I7hlggyzVP4f37TCnsQf4GmX+S+LxJSTTUjTRH7761S
-         vtTM6bC0rVEC/6y49QMHeqRF8t2XAlkOqjtcNbXUSZCh07hCqVnQavfJgoKZjyRJB+
-         UmxLx7wuuh0SYY5XvPYALGmHztcwN4gKzEdv7P5enSXuKCPGv1BgL08ZVcmJga0O59
-         egRBeetyNwy8Q==
+        b=ISSoVre16h32FAxpRerE1LQ6auJ1eeaiSEhH5WzPiQyWvxqUOLNAwkWZRPfLCuFeC
+         u2xevMEFSldeNiTJyTMgRH0M+Sz/UKQRAECFFcwpK4IY8sDG7xOpBCJvgA7Bd1V5A4
+         9oO7899vrK2piRX6fb2i/VdOJkhHxy9N3ejVfghlAjQwsbAIFY8EzJT3pSkRHILZ2M
+         qzvvYlKbmFy9fnMdq+t3ZxGq3Q1emHfYShJy62C1UQEXw4cPmATDCipu8ozYFjJNEz
+         8W+waxhSBnOfCucFgRj4sTAZ+fBZ+m57biWhR0sCjSqR2o13At2p0ev4l7EKc24h+7
+         bVCaE8plIOkRA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Tsuchiya Yuto <kitakar@gmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, andy@kernel.org
-Subject: [PATCH AUTOSEL 5.16 187/217] mfd: intel_soc_pmic: Use CPU-id check instead of _HRV check to differentiate variants
-Date:   Mon, 17 Jan 2022 21:19:10 -0500
-Message-Id: <20220118021940.1942199-187-sashal@kernel.org>
+Cc:     Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org, yuzenghui@huawei.com,
+        akpm@linux-foundation.org, mbenes@suse.cz,
+        emil.l.velikov@gmail.com, jeyu@kernel.org
+Subject: [PATCH AUTOSEL 5.16 216/217] x86/kbuild: Enable CONFIG_KALLSYMS_ALL=y in the defconfigs
+Date:   Mon, 17 Jan 2022 21:19:39 -0500
+Message-Id: <20220118021940.1942199-216-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -54,85 +51,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Ingo Molnar <mingo@kernel.org>
 
-[ Upstream commit 5b78223f55a0f516a1639dbe11cd4324d4aaee20 ]
+[ Upstream commit b6aa86cff44cf099299d3a5e66348cb709cd7964 ]
 
-The Intel Crystal Cove PMIC has 2 different variants, one for use with
-Bay Trail (BYT) SoCs and one for use with Cherry Trail (CHT) SoCs.
+Most distro kernels have this option enabled, to improve debug output.
 
-So far we have been using an ACPI _HRV check to differentiate between
-the 2, but at least on the Microsoft Surface 3, which is a CHT device,
-the wrong _HRV value is reported by ACPI.
+Lockdep also selects it.
 
-So instead switch to a CPU-ID check which prevents us from relying on
-the possibly wrong ACPI _HRV value.
+Enable this in the defconfig kernel as well, to make it more
+representative of what people are using on x86.
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Reported-by: Tsuchiya Yuto <kitakar@gmail.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Link: https://lore.kernel.org/r/20211206174806.197772-2-hdegoede@redhat.com
+Signed-off-by: Ingo Molnar <mingo@kernel.org>
+Link: https://lore.kernel.org/r/YdTn7gssoMVDMgMw@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mfd/intel_soc_pmic_core.c | 28 +++-------------------------
- 1 file changed, 3 insertions(+), 25 deletions(-)
+ arch/x86/configs/i386_defconfig   | 1 +
+ arch/x86/configs/x86_64_defconfig | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/mfd/intel_soc_pmic_core.c b/drivers/mfd/intel_soc_pmic_core.c
-index ddd64f9e3341e..47cb7f00dfcfc 100644
---- a/drivers/mfd/intel_soc_pmic_core.c
-+++ b/drivers/mfd/intel_soc_pmic_core.c
-@@ -14,15 +14,12 @@
- #include <linux/module.h>
- #include <linux/mfd/core.h>
- #include <linux/mfd/intel_soc_pmic.h>
-+#include <linux/platform_data/x86/soc.h>
- #include <linux/pwm.h>
- #include <linux/regmap.h>
- 
- #include "intel_soc_pmic_core.h"
- 
--/* Crystal Cove PMIC shares same ACPI ID between different platforms */
--#define BYT_CRC_HRV		2
--#define CHT_CRC_HRV		3
--
- /* PWM consumed by the Intel GFX */
- static struct pwm_lookup crc_pwm_lookup[] = {
- 	PWM_LOOKUP("crystal_cove_pwm", 0, "0000:00:02.0", "pwm_pmic_backlight", 0, PWM_POLARITY_NORMAL),
-@@ -34,31 +31,12 @@ static int intel_soc_pmic_i2c_probe(struct i2c_client *i2c,
- 	struct device *dev = &i2c->dev;
- 	struct intel_soc_pmic_config *config;
- 	struct intel_soc_pmic *pmic;
--	unsigned long long hrv;
--	acpi_status status;
- 	int ret;
- 
--	/*
--	 * There are 2 different Crystal Cove PMICs a Bay Trail and Cherry
--	 * Trail version, use _HRV to differentiate between the 2.
--	 */
--	status = acpi_evaluate_integer(ACPI_HANDLE(dev), "_HRV", NULL, &hrv);
--	if (ACPI_FAILURE(status)) {
--		dev_err(dev, "Failed to get PMIC hardware revision\n");
--		return -ENODEV;
--	}
--
--	switch (hrv) {
--	case BYT_CRC_HRV:
-+	if (soc_intel_is_byt())
- 		config = &intel_soc_pmic_config_byt_crc;
--		break;
--	case CHT_CRC_HRV:
-+	else
- 		config = &intel_soc_pmic_config_cht_crc;
--		break;
--	default:
--		dev_warn(dev, "Unknown hardware rev %llu, assuming BYT\n", hrv);
--		config = &intel_soc_pmic_config_byt_crc;
--	}
- 
- 	pmic = devm_kzalloc(dev, sizeof(*pmic), GFP_KERNEL);
- 	if (!pmic)
+diff --git a/arch/x86/configs/i386_defconfig b/arch/x86/configs/i386_defconfig
+index e81885384f604..99398cbdae434 100644
+--- a/arch/x86/configs/i386_defconfig
++++ b/arch/x86/configs/i386_defconfig
+@@ -262,3 +262,4 @@ CONFIG_BLK_DEV_IO_TRACE=y
+ CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
+ CONFIG_EARLY_PRINTK_DBGP=y
+ CONFIG_DEBUG_BOOT_PARAMS=y
++CONFIG_KALLSYMS_ALL=y
+diff --git a/arch/x86/configs/x86_64_defconfig b/arch/x86/configs/x86_64_defconfig
+index e8a7a0af2bdaa..d7298b104a456 100644
+--- a/arch/x86/configs/x86_64_defconfig
++++ b/arch/x86/configs/x86_64_defconfig
+@@ -258,3 +258,4 @@ CONFIG_BLK_DEV_IO_TRACE=y
+ CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
+ CONFIG_EARLY_PRINTK_DBGP=y
+ CONFIG_DEBUG_BOOT_PARAMS=y
++CONFIG_KALLSYMS_ALL=y
 -- 
 2.34.1
 
