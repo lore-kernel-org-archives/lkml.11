@@ -2,41 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B3DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1DA0C433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:42:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244966AbiARCll (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:41:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53330 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245551AbiARCgJ (ORCPT
+        id S245449AbiARClt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:41:49 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44883 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245697AbiARCgX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:36:09 -0500
+        Mon, 17 Jan 2022 21:36:23 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51CF2612C7;
-        Tue, 18 Jan 2022 02:36:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0E09C36AEB;
-        Tue, 18 Jan 2022 02:36:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F072BB81235;
+        Tue, 18 Jan 2022 02:36:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69EE2C36AE3;
+        Tue, 18 Jan 2022 02:36:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473366;
-        bh=aXgAlWjFhuTYaGo0IQrs5NxFaBkHUtQAgDjh1OBwC9o=;
+        s=k20201202; t=1642473380;
+        bh=5TKGjYZF/0sSNgit4j+Xa+PtizIl2rZCLXH/GcNoZ00=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FDwiQYEBieKEqf4Nc1SKtNB2N5AKE8NJ65bez4QWtFIvITO10eRptILvGqCueoD4Y
-         CRW7LsOcAx55ChIZrsu+KJudhM4mBz3GWS+uEedxJH8Nbts5Ujw76EgFs1vJfkQ3qH
-         j5Q/AYoKF0aTzmmD2fUgZSFK7zvzU5JiQG4uB58/nd46EpA3zOGGiU+hPjztl0Bd93
-         2YqJQ506HE6mDbYgcUzz+VbYy87zWrH9hpXoUb5vrc5xdPlGnLyPLkZqeOCiYlKFqK
-         nyVM5kQ5ddBjQ4WrHrK9CrT+wx84LjIbdbYmJqTLKcyn570l1Z/PXwUJVid3c8RnVE
-         Q1WlhgUkpYq7g==
+        b=lWfu4rOCCZHdkhXDrBwgaHKS2YFkhIdvidQNi69wd1zYx3zLsyrMoeBgA+xix6bI/
+         o9rZZoTqdJeDOOiqgIEhMF7ebl7mxCCziGjoGxSBlIBhy3kdzKXkkK7+NChUuR2v7x
+         vtLHbKeK5eLTr3IU67MeItXiTRBLIGOpaGTXG9vG9uG7JdBqj19iJMFwFuJYTo2ANe
+         l/qN2DczEpKkGCyPmrMLTFe0wg38n/jALJYEezoCG5lpBIma+tUnHj3v7/eMYLN/vq
+         FLKUG6q9HlDv6EujIJEf+SICToyJ+jXq7s/6IKaYoYcwCd18j86KcmFpKYZ8TkcqEl
+         TVGhJeERJAJPw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        rkardell@mida.se, Sasha Levin <sashal@kernel.org>,
-        mchehab@kernel.org, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 087/188] media: m920x: don't use stack on USB reads
-Date:   Mon, 17 Jan 2022 21:30:11 -0500
-Message-Id: <20220118023152.1948105-87-sashal@kernel.org>
+Cc:     Colin Foster <colin.foster@in-advantage.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, claudiu.manoil@nxp.com,
+        alexandre.belloni@bootlin.com, UNGLinuxDriver@microchip.com,
+        andrew@lunn.ch, vivien.didelot@gmail.com, davem@davemloft.net,
+        linux@armlinux.org.uk, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 093/188] net: dsa: ocelot: felix: Remove requirement for PCS in felix devices
+Date:   Mon, 17 Jan 2022 21:30:17 -0500
+Message-Id: <20220118023152.1948105-93-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -48,57 +53,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Colin Foster <colin.foster@in-advantage.com>
 
-[ Upstream commit a2ab06d7c4d6bfd0b545a768247a70463e977e27 ]
+[ Upstream commit 49af6a7620c53b779572abfbfd7778e113154330 ]
 
-Using stack-allocated pointers for USB message data don't work.
-This driver is almost OK with that, except for the I2C read
-logic.
+Existing felix devices all have an initialized pcs array. Future devices
+might not, so running a NULL check on the array before dereferencing it
+will allow those future drivers to not crash at this point
 
-Fix it by using a temporary read buffer, just like on all other
-calls to m920x_read().
-
-Link: https://lore.kernel.org/all/ccc99e48-de4f-045e-0fe4-61e3118e3f74@mida.se/
-Reported-by: rkardell@mida.se
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/dvb-usb/m920x.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/net/dsa/ocelot/felix.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/usb/dvb-usb/m920x.c b/drivers/media/usb/dvb-usb/m920x.c
-index 4bb5b82599a79..691e05833db19 100644
---- a/drivers/media/usb/dvb-usb/m920x.c
-+++ b/drivers/media/usb/dvb-usb/m920x.c
-@@ -274,6 +274,13 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
- 			/* Should check for ack here, if we knew how. */
- 		}
- 		if (msg[i].flags & I2C_M_RD) {
-+			char *read = kmalloc(1, GFP_KERNEL);
-+			if (!read) {
-+				ret = -ENOMEM;
-+				kfree(read);
-+				goto unlock;
-+			}
-+
- 			for (j = 0; j < msg[i].len; j++) {
- 				/* Last byte of transaction?
- 				 * Send STOP, otherwise send ACK. */
-@@ -281,9 +288,12 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 1513dfb523de7..20338d5fa9170 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -823,7 +823,7 @@ static void felix_phylink_mac_config(struct dsa_switch *ds, int port,
+ 	struct felix *felix = ocelot_to_felix(ocelot);
+ 	struct dsa_port *dp = dsa_to_port(ds, port);
  
- 				if ((ret = m920x_read(d->udev, M9206_I2C, 0x0,
- 						      0x20 | stop,
--						      &msg[i].buf[j], 1)) != 0)
-+						      read, 1)) != 0)
- 					goto unlock;
-+				msg[i].buf[j] = read[0];
- 			}
-+
-+			kfree(read);
- 		} else {
- 			for (j = 0; j < msg[i].len; j++) {
- 				/* Last byte of transaction? Then send STOP. */
+-	if (felix->pcs[port])
++	if (felix->pcs && felix->pcs[port])
+ 		phylink_set_pcs(dp->pl, &felix->pcs[port]->pcs);
+ }
+ 
 -- 
 2.34.1
 
