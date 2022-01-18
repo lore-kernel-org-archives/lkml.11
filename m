@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCDA6C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0231C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:23:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356864AbiARDT6 (ORCPT
+        id S1356813AbiARDTr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:19:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
+        Mon, 17 Jan 2022 22:19:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354127AbiARDFT (ORCPT
+        with ESMTP id S1353716AbiARDEZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:05:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B83DC021992;
-        Mon, 17 Jan 2022 18:48:17 -0800 (PST)
+        Mon, 17 Jan 2022 22:04:25 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45593C0219F3;
+        Mon, 17 Jan 2022 18:48:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CBBE6130A;
-        Tue, 18 Jan 2022 02:48:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5C915C36AE3;
-        Tue, 18 Jan 2022 02:48:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B12CEB81255;
+        Tue, 18 Jan 2022 02:48:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A596BC36AF6;
+        Tue, 18 Jan 2022 02:48:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474096;
-        bh=x+VaJ/8Bhk9YBGBufy5sI3aIsySA7PsMp6c05L2SEDM=;
+        s=k20201202; t=1642474086;
+        bh=FSpJDSpfVsJcYGFNZhFJVzsi85MzAyRlNh/wIUlnzeE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DFmf+a9Ea8WYVliExPjUOi1sjJMDwbdVOkd7Cj/XkP3bGxAPjGkK4YAvHD7JVHY1G
-         FUDO+tZwEQDDng8Y4J7TtX/nrKhXFLWjarnkrUBQOHwdofhVUe4ZrqOUmRzP5jDv2p
-         ACj3MIJM7sxcWLHSQCKPvxIh0kINIl4X2ADy+XkiD5zJVF9q9P53Z88BUpR5EI/nNh
-         ycUULpSKC/HIxFZnciwKq1VhKMlsqItIzYLT//ydl8W0GDs8QwZe21CMxS+JPakyQD
-         3HFSk65YZPff3IgNDMGHZlfCQQR9So24SoqVrB6B7EB6tka70uqWkAtHZVRxtyssLh
-         gDujp1HWs1T2w==
+        b=YgIADfwSLVdBZ3OCvOWD0a0287UFTVpgEsHktJSgbJv8Uj+ttbBo6IXECZDp+0KAp
+         leSaCCjxB/v7IhCKI0VnwzfzoPbEKU5wOZ2nhibyJj3us8maljy51tsOIdmGQ7Bbr+
+         QmlVDXSJet12YSUgb6FauIaLp7dne4kj38M2rI5HaoeZN7eOelL18OWlkwHWe9dXtX
+         SD9TuO8Xtl4aVrLhoydmdCqlppgVzo0Cfd4vd3H3bQN7ZuIGTSRj1mkf2ppO8IYRfg
+         mYbrgWM5fuLPBcj+UxHPoB+YPyRsSiXre8A0/+8hU+qbEe/Hu4gpwtVGDIxDEW1OT7
+         C8NwIsiQczOXQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thierry Reding <treding@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com, spujar@nvidia.com,
-        mperttunen@nvidia.com, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 34/59] arm64: tegra: Adjust length of CCPLEX cluster MMIO region
-Date:   Mon, 17 Jan 2022 21:46:35 -0500
-Message-Id: <20220118024701.1952911-34-sashal@kernel.org>
+Cc:     Alistair Francis <alistair@alistair23.me>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, jikos@kernel.org,
+        linux-input@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 29/59] HID: quirks: Allow inverting the absolute X/Y values
+Date:   Mon, 17 Jan 2022 21:46:30 -0500
+Message-Id: <20220118024701.1952911-29-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
 References: <20220118024701.1952911-1-sashal@kernel.org>
@@ -54,33 +53,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
+From: Alistair Francis <alistair@alistair23.me>
 
-[ Upstream commit 2b14cbd643feea5fc17c6e8bead4e71088c69acd ]
+[ Upstream commit fd8d135b2c5e88662f2729e034913f183455a667 ]
 
-The Tegra186 CCPLEX cluster register region is 4 MiB is length, not 4
-MiB - 1. This was likely presumed to be the "limit" rather than length.
-Fix it up.
+Add a HID_QUIRK_X_INVERT/HID_QUIRK_Y_INVERT quirk that can be used
+to invert the X/Y values.
 
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Alistair Francis <alistair@alistair23.me>
+[bentiss: silence checkpatch warning]
+Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Link: https://lore.kernel.org/r/20211208124045.61815-2-alistair@alistair23.me
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/nvidia/tegra186.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/hid/hid-input.c | 6 ++++++
+ include/linux/hid.h     | 2 ++
+ 2 files changed, 8 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-index b762227f6aa18..fc5d047ca50bc 100644
---- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-@@ -372,7 +372,7 @@ pmc@c360000 {
+diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
+index d56ef395eb693..dd3f4aa052980 100644
+--- a/drivers/hid/hid-input.c
++++ b/drivers/hid/hid-input.c
+@@ -1246,6 +1246,12 @@ void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct
  
- 	ccplex@e000000 {
- 		compatible = "nvidia,tegra186-ccplex-cluster";
--		reg = <0x0 0x0e000000 0x0 0x3fffff>;
-+		reg = <0x0 0x0e000000 0x0 0x400000>;
+ 	input = field->hidinput->input;
  
- 		nvidia,bpmp = <&bpmp>;
- 	};
++	if (usage->type == EV_ABS &&
++	    (((*quirks & HID_QUIRK_X_INVERT) && usage->code == ABS_X) ||
++	     ((*quirks & HID_QUIRK_Y_INVERT) && usage->code == ABS_Y))) {
++		value = field->logical_maximum - value;
++	}
++
+ 	if (usage->hat_min < usage->hat_max || usage->hat_dir) {
+ 		int hat_dir = usage->hat_dir;
+ 		if (!hat_dir)
+diff --git a/include/linux/hid.h b/include/linux/hid.h
+index da824ba9fb9a2..c51ebce2197e0 100644
+--- a/include/linux/hid.h
++++ b/include/linux/hid.h
+@@ -353,6 +353,8 @@ struct hid_item {
+ /* BIT(9) reserved for backward compatibility, was NO_INIT_INPUT_REPORTS */
+ #define HID_QUIRK_ALWAYS_POLL			BIT(10)
+ #define HID_QUIRK_INPUT_PER_APP			BIT(11)
++#define HID_QUIRK_X_INVERT			BIT(12)
++#define HID_QUIRK_Y_INVERT			BIT(13)
+ #define HID_QUIRK_SKIP_OUTPUT_REPORTS		BIT(16)
+ #define HID_QUIRK_SKIP_OUTPUT_REPORT_ID		BIT(17)
+ #define HID_QUIRK_NO_OUTPUT_REPORTS_ON_INTR_EP	BIT(18)
 -- 
 2.34.1
 
