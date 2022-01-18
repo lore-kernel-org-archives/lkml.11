@@ -2,46 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5FDFC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:06:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E6AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354188AbiARDF3 (ORCPT
+        id S1354261AbiARDFk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:05:29 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:39242 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348902AbiARCqo (ORCPT
+        Mon, 17 Jan 2022 22:05:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34918 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350217AbiARCvY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:46:44 -0500
+        Mon, 17 Jan 2022 21:51:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81C6EC061A82;
+        Mon, 17 Jan 2022 18:42:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D38506130F;
-        Tue, 18 Jan 2022 02:46:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8FED5C36AE3;
-        Tue, 18 Jan 2022 02:46:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 20B4B612D5;
+        Tue, 18 Jan 2022 02:42:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 066DCC36AEF;
+        Tue, 18 Jan 2022 02:42:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474001;
-        bh=AA9YYFjl/q1mqv9RbvGD8amx10J1e3sqEDSaIOLxGfI=;
+        s=k20201202; t=1642473748;
+        bh=qGUA5Sjaby0CcmdyL1x0eQfhorlxZK98VIp5iNaJCp8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=obVOE5n8yTrsF5d79qnFYenRH9A0z2plQAo6FTnROhZdIej1n6jsfveOho/up4jyF
-         h+7KXrhkOXpOKP56/FpI8v41VfsDPjQtSa9h+vXGhF8Jx9KJE0aDD5lviIUdXXGt/z
-         raw3TVRcdEnjZKia5ANr9IImIo14bP1CoOTMBNfooFGulZyZ6X9kWGJ8P3cNwBWeBJ
-         nF2g4OXYlSK/UJDQH1ShSai8jzc8GSpZ32dMUxluEmUWPN77hMfFMvcM+Ic8oQZU3l
-         OS0wq+edPpKmlYeJILbYys04f0Ci+TBRs5EJZCuH4v5GlnvWWeS2wLdSYgVHTr2HR+
-         e6t9lNWfpOkWA==
+        b=nhX2CSQ9KCix0bo4dIfSRKxeV89gTDTERfamUal2MF6f0tuxOwZ6FG3sqEiZln5Gb
+         2fxvfaRw8wWrCnpRruvhC4q1Ez96pcphbKyqX2+TsVTm9olEXRIj7EdOA9T9L40qUo
+         25flFAsk6GX+uGR71Xo0i5vHGRrARwTLgTa+mgnWTmVfa3Ub26xz5Rslw2jhXo9Mnq
+         E6+rnF6e/iNBOGLf9PFNxrg+P0OUNKPieFtOSHtOLOumW4gCY+p4VARRFpRAgkNeZA
+         0NVNX1q+/5sDW6Z5/8RKw1iKU9QbLME4xaKk+g9vamiLT01zfTwveCc9kT5BI9D2XY
+         Sye8vF8cAwlgA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>, clm@fb.com,
-        linux-btrfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 61/73] btrfs: remove BUG_ON() in find_parent_nodes()
-Date:   Mon, 17 Jan 2022 21:44:20 -0500
-Message-Id: <20220118024432.1952028-61-sashal@kernel.org>
+Cc:     Shaul Triebitz <shaul.triebitz@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, emmanuel.grumbach@intel.com,
+        avraham.stern@intel.com, ilan.peer@intel.com,
+        sara.sharon@intel.com, nathan.errera@intel.com,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 051/116] iwlwifi: mvm: avoid clearing a just saved session protection id
+Date:   Mon, 17 Jan 2022 21:39:02 -0500
+Message-Id: <20220118024007.1950576-51-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
-References: <20220118024432.1952028-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,40 +56,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Shaul Triebitz <shaul.triebitz@intel.com>
 
-[ Upstream commit fcba0120edf88328524a4878d1d6f4ad39f2ec81 ]
+[ Upstream commit 8e967c137df3b236d2075f9538cb888129425d1a ]
 
-We search for an extent entry with .offset = -1, which shouldn't be a
-thing, but corruption happens.  Add an ASSERT() for the developers,
-return -EUCLEAN for mortals.
+When scheduling a session protection the id is saved but
+then it may be cleared when calling iwl_mvm_te_clear_data
+(if a previous session protection is currently active).
+Fix it by saving the id after calling iwl_mvm_te_clear_data.
 
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Signed-off-by: Shaul Triebitz <shaul.triebitz@intel.com>
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211204130722.b0743a588d14.I098fef6677d0dab3ef1b6183ed206a10bab01eb2@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/backref.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/time-event.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
-index 7f644a58db511..9044e7282d0b2 100644
---- a/fs/btrfs/backref.c
-+++ b/fs/btrfs/backref.c
-@@ -1208,7 +1208,12 @@ static int find_parent_nodes(struct btrfs_trans_handle *trans,
- 	ret = btrfs_search_slot(trans, fs_info->extent_root, &key, path, 0, 0);
- 	if (ret < 0)
- 		goto out;
--	BUG_ON(ret == 0);
-+	if (ret == 0) {
-+		/* This shouldn't happen, indicates a bug or fs corruption. */
-+		ASSERT(ret != 0);
-+		ret = -EUCLEAN;
-+		goto out;
-+	}
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
+index 394598b14a173..6e6e5dd1b30d2 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/time-event.c
+@@ -1157,15 +1157,10 @@ void iwl_mvm_schedule_session_protection(struct iwl_mvm *mvm,
+ 			cpu_to_le32(FW_CMD_ID_AND_COLOR(mvmvif->id,
+ 							mvmvif->color)),
+ 		.action = cpu_to_le32(FW_CTXT_ACTION_ADD),
++		.conf_id = cpu_to_le32(SESSION_PROTECT_CONF_ASSOC),
+ 		.duration_tu = cpu_to_le32(MSEC_TO_TU(duration)),
+ 	};
  
- #ifdef CONFIG_BTRFS_FS_RUN_SANITY_TESTS
- 	if (trans && likely(trans->type != __TRANS_DUMMY) &&
+-	/* The time_event_data.id field is reused to save session
+-	 * protection's configuration.
+-	 */
+-	mvmvif->time_event_data.id = SESSION_PROTECT_CONF_ASSOC;
+-	cmd.conf_id = cpu_to_le32(mvmvif->time_event_data.id);
+-
+ 	lockdep_assert_held(&mvm->mutex);
+ 
+ 	spin_lock_bh(&mvm->time_event_lock);
+@@ -1179,6 +1174,11 @@ void iwl_mvm_schedule_session_protection(struct iwl_mvm *mvm,
+ 	}
+ 
+ 	iwl_mvm_te_clear_data(mvm, te_data);
++	/*
++	 * The time_event_data.id field is reused to save session
++	 * protection's configuration.
++	 */
++	te_data->id = le32_to_cpu(cmd.conf_id);
+ 	te_data->duration = le32_to_cpu(cmd.duration_tu);
+ 	spin_unlock_bh(&mvm->time_event_lock);
+ 
 -- 
 2.34.1
 
