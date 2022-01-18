@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54DF4C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:13:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FB00C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:14:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347404AbiARDNp (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:13:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37598 "EHLO
+        id S244997AbiARDN4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 22:13:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352781AbiARDAi (ORCPT
+        with ESMTP id S1344449AbiARC5K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:00:38 -0500
+        Mon, 17 Jan 2022 21:57:10 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F720C029822;
-        Mon, 17 Jan 2022 18:46:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A49A1C035419;
+        Mon, 17 Jan 2022 18:44:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 424C0612D1;
-        Tue, 18 Jan 2022 02:46:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06EBBC36AE3;
-        Tue, 18 Jan 2022 02:46:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 44C2E612DE;
+        Tue, 18 Jan 2022 02:44:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92B0DC36AEF;
+        Tue, 18 Jan 2022 02:44:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474006;
-        bh=Up/mfvhONYj+Dx9dzEmZmji4FSEdxlZp4ge0yxhkITo=;
+        s=k20201202; t=1642473893;
+        bh=dxlHkkDhrDWGJRS2ZBt0S7lqBxv/VVktAClM8xc6FqM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dXySLThaNX82GXN3q02FTqZg1LkSoSOwZIRURce5qs120eoT3gJcV7Sm6Y3QXabtu
-         ZPwaPOoMAgG5uhXVWuERgYD45SsPgspw18HbhVLKDjdEL7qaCJG/COZQwzIywjyKbt
-         +nY7K+4BFc2kD1qhjkvPV+KovFlaPbuFpCYBX4Er+nQXsHPh20e2b4ZSjgIS1mibp2
-         C+eX/c//wwGzRshOjZaiuYnK3PCvxx/ktRvglZR7JZivZLShEzrNNHlHF2pFk/AlIf
-         yxK9MWVxbVFJ1pQuGOtLXQyfgJFers+9y7sGed4hB7uljOiV+6sWREW/5bEhQ+RLp7
-         hKVwHy5oAZE7g==
+        b=iTEHS6TZihmRPOMfQpa0sCgyWW73XDJlscZ4sALae6o59yFWve1ncBdcGU3TsIzID
+         WqmQbjqlfcdYRGMq6j7cNhzFjJYRKiQ8JTJrhZjdmUuqBjRQ6bfajrdE7ZYdvuUyaA
+         zlJrNkqg75qC0Na6U0vloO0+54M4sS9GUAOjPwm4P9xuuzoo64iPPP6M5aZDz1ztFC
+         Kkej+LLfzXAj1pahaMw7Y0mvUdYUpu4disKVEXcIHYwS9bLWlqSoo1gmocnLSHJP7a
+         ETf4A3ZjuNr1yg3cjpfSXL+lsyJETeFZR3M3A4/DzwljuIXeEt6JA3iRiN+CN8ckQl
+         bIwJHW5UJNfMg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Joe Thornber <ejt@redhat.com>, Mike Snitzer <snitzer@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, agk@redhat.com,
-        dm-devel@redhat.com
-Subject: [PATCH AUTOSEL 5.4 65/73] dm btree: add a defensive bounds check to insert_at()
-Date:   Mon, 17 Jan 2022 21:44:24 -0500
-Message-Id: <20220118024432.1952028-65-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Yauhen Kharuzhy <jekhor@gmail.com>,
+        Simon Ser <contact@emersion.fr>,
+        Sasha Levin <sashal@kernel.org>,
+        maarten.lankhorst@linux.intel.com, mripard@kernel.org,
+        tzimmermann@suse.de, airlied@linux.ie, daniel@ffwll.ch,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.4 10/73] drm: panel-orientation-quirks: Add quirk for the Lenovo Yoga Book X91F/L
+Date:   Mon, 17 Jan 2022 21:43:29 -0500
+Message-Id: <20220118024432.1952028-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
 References: <20220118024432.1952028-1-sashal@kernel.org>
@@ -52,43 +55,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joe Thornber <ejt@redhat.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 85bca3c05b6cca31625437eedf2060e846c4bbad ]
+[ Upstream commit bc30c3b0c8a1904d83d5f0d60fb8650a334b207b ]
 
-Corrupt metadata could trigger an out of bounds write.
+The Lenovo Yoga Book X91F/L uses a panel which has been mounted
+90 degrees rotated. Add a quirk for this.
 
-Signed-off-by: Joe Thornber <ejt@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Cc: Yauhen Kharuzhy <jekhor@gmail.com>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Acked-by: Simon Ser <contact@emersion.fr>
+Tested-by: Yauhen Kharuzhy <jekhor@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211106130227.11927-1-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/persistent-data/dm-btree.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/drm_panel_orientation_quirks.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/md/persistent-data/dm-btree.c b/drivers/md/persistent-data/dm-btree.c
-index 8aae0624a2971..6383afb88f319 100644
---- a/drivers/md/persistent-data/dm-btree.c
-+++ b/drivers/md/persistent-data/dm-btree.c
-@@ -83,14 +83,16 @@ void inc_children(struct dm_transaction_manager *tm, struct btree_node *n,
- }
- 
- static int insert_at(size_t value_size, struct btree_node *node, unsigned index,
--		      uint64_t key, void *value)
--		      __dm_written_to_disk(value)
-+		     uint64_t key, void *value)
-+	__dm_written_to_disk(value)
- {
- 	uint32_t nr_entries = le32_to_cpu(node->header.nr_entries);
-+	uint32_t max_entries = le32_to_cpu(node->header.max_entries);
- 	__le64 key_le = cpu_to_le64(key);
- 
- 	if (index > nr_entries ||
--	    index >= le32_to_cpu(node->header.max_entries)) {
-+	    index >= max_entries ||
-+	    nr_entries >= max_entries) {
- 		DMERR("too many entries in btree node for insert");
- 		__dm_unbless_for_disk(value);
- 		return -ENOMEM;
+diff --git a/drivers/gpu/drm/drm_panel_orientation_quirks.c b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+index a950d5db211c5..9d1bd8f491ad7 100644
+--- a/drivers/gpu/drm/drm_panel_orientation_quirks.c
++++ b/drivers/gpu/drm/drm_panel_orientation_quirks.c
+@@ -248,6 +248,12 @@ static const struct dmi_system_id orientation_data[] = {
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_VERSION, "Lenovo ideapad D330-10IGM"),
+ 		},
+ 		.driver_data = (void *)&lcd1200x1920_rightside_up,
++	}, {	/* Lenovo Yoga Book X90F / X91F / X91L */
++		.matches = {
++		  /* Non exact match to match all versions */
++		  DMI_MATCH(DMI_PRODUCT_NAME, "Lenovo YB1-X9"),
++		},
++		.driver_data = (void *)&lcd1200x1920_rightside_up,
+ 	}, {	/* OneGX1 Pro */
+ 		.matches = {
+ 		  DMI_EXACT_MATCH(DMI_SYS_VENDOR, "SYSTEM_MANUFACTURER"),
 -- 
 2.34.1
 
