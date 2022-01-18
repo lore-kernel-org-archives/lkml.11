@@ -2,50 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F4BC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61B24C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:12:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354100AbiARDKA (ORCPT
+        id S1349448AbiARDJn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:10:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344834AbiARCqx (ORCPT
+        Mon, 17 Jan 2022 22:09:43 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58986 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349988AbiARCu5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:46:53 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39AE0C08EE6E;
-        Mon, 17 Jan 2022 18:38:36 -0800 (PST)
+        Mon, 17 Jan 2022 21:50:57 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F39E1B811D6;
-        Tue, 18 Jan 2022 02:38:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EBD61C36AE3;
-        Tue, 18 Jan 2022 02:38:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EACE4B811D7;
+        Tue, 18 Jan 2022 02:50:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E81CFC36AEB;
+        Tue, 18 Jan 2022 02:50:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473513;
-        bh=xAG+LIB8TdYti0WM8UY5bA4LxYwoy1xNB6UpM8EvH/c=;
+        s=k20201202; t=1642474254;
+        bh=NWZwtIg3tmBBM8P4IdY6qZLM6UCm8Zt9XReei62OV98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mNwj0u4tsQJwDLnRF7VjepdN6RFrDwyNLW39imDzGkqkKXw227+KRdWsl4FGP6Vhc
-         8kz0Fm/dF/RMhdto8ULAJeSOUW5h6hK8zM3uoDS5H9iZLesGAxGM+IkIFtveg7SqE9
-         4mPy8n2wsjl/3JH5a4/iU4Bhp3Lp1bAC9Re16Eo1fq51avoByR0lFR3C0GyExPbJS/
-         sK/X5gArSc0JDpMikQqmO81iI+1+bvSM+KIyOICcbFs+SoxD/noEmHUGHDwjGggu2N
-         HcG5g4UjiZ0ZcujDm7MtPFqjpHWcQFmrzKPHUPGSOU8iMiJR3NLVpxRJep/t4LPwWg
-         /5IEYOMDsaLwg==
+        b=WBoKw9tbtXYkaQ33WPdS9KNyxVQc8rTJuW5PwMHjyPhbBEb6h77WROZAlgH4idqqL
+         2h0mBxSlFQNNeGyaeUKkINBCtRkHQWR9+aYfdBGUCQzSnIS7Wl3Z+QOTn7jVJi2qim
+         atVUmqzBKcly3VYviSGiA8kCNWptbCozR04j7Ho96pkRqd6PcUnlPAVjDfsehLMDoQ
+         lyxmtt+ccyV2Wr8r9U4zmXYvMUNFUakQ/i4N340k2HE++1OA3FOnq1dvv0h6/qjdnl
+         G6b4naNYQmA4HaxQ8uutBE/8XcwrpxpMEVKbOnawxR8FiwBL6JE2p5ELfR4KB1XKdb
+         QTGKc7gZR/tSQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
-        wangyangbo <wangyangbo@uniontech.com>,
-        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>, linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 144/188] block: check minor range in device_add_disk()
-Date:   Mon, 17 Jan 2022 21:31:08 -0500
-Message-Id: <20220118023152.1948105-144-sashal@kernel.org>
+Cc:     Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>,
+        Richard Weinberger <richard@nod.at>,
+        Sasha Levin <sashal@kernel.org>, dwmw2@infradead.org,
+        joel@jms.id.au, linux-mtd@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.14 42/56] jffs2: GC deadlock reading a page that is used in jffs2_write_begin()
+Date:   Mon, 17 Jan 2022 21:48:54 -0500
+Message-Id: <20220118024908.1953673-42-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
+References: <20220118024908.1953673-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,41 +50,131 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+From: Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>
 
-[ Upstream commit e338924bd05d6e71574bc13e310c89e10e49a8a5 ]
+[ Upstream commit aa39cc675799bc92da153af9a13d6f969c348e82 ]
 
-ioctl(fd, LOOP_CTL_ADD, 1048576) causes
+GC task can deadlock in read_cache_page() because it may attempt
+to release a page that is actually allocated by another task in
+jffs2_write_begin().
+The reason is that in jffs2_write_begin() there is a small window
+a cache page is allocated for use but not set Uptodate yet.
 
-  sysfs: cannot create duplicate filename '/dev/block/7:0'
+This ends up with a deadlock between two tasks:
+1) A task (e.g. file copy)
+   - jffs2_write_begin() locks a cache page
+   - jffs2_write_end() tries to lock "alloc_sem" from
+	 jffs2_reserve_space() <-- STUCK
+2) GC task (jffs2_gcd_mtd3)
+   - jffs2_garbage_collect_pass() locks "alloc_sem"
+   - try to lock the same cache page in read_cache_page() <-- STUCK
 
-message because such request is treated as if ioctl(fd, LOOP_CTL_ADD, 0)
-due to MINORMASK == 1048575. Verify that all minor numbers for that device
-fit in the minor range.
+So to avoid this deadlock, hold "alloc_sem" in jffs2_write_begin()
+while reading data in a cache page.
 
-Reported-by: wangyangbo <wangyangbo@uniontech.com>
-Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/b1b19379-23ee-5379-0eb5-94bf5f79f1b4@i-love.sakura.ne.jp
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/genhd.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/jffs2/file.c | 40 +++++++++++++++++++++++++---------------
+ 1 file changed, 25 insertions(+), 15 deletions(-)
 
-diff --git a/block/genhd.c b/block/genhd.c
-index f091a60dcf1ea..2eabe4c459fe1 100644
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -420,6 +420,8 @@ int device_add_disk(struct device *parent, struct gendisk *disk,
- 				DISK_MAX_PARTS);
- 			disk->minors = DISK_MAX_PARTS;
+diff --git a/fs/jffs2/file.c b/fs/jffs2/file.c
+index bd0428bebe9b7..221eb2bd205e4 100644
+--- a/fs/jffs2/file.c
++++ b/fs/jffs2/file.c
+@@ -135,20 +135,15 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 	struct page *pg;
+ 	struct inode *inode = mapping->host;
+ 	struct jffs2_inode_info *f = JFFS2_INODE_INFO(inode);
++	struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
+ 	pgoff_t index = pos >> PAGE_SHIFT;
+ 	uint32_t pageofs = index << PAGE_SHIFT;
+ 	int ret = 0;
+ 
+-	pg = grab_cache_page_write_begin(mapping, index, flags);
+-	if (!pg)
+-		return -ENOMEM;
+-	*pagep = pg;
+-
+ 	jffs2_dbg(1, "%s()\n", __func__);
+ 
+ 	if (pageofs > inode->i_size) {
+ 		/* Make new hole frag from old EOF to new page */
+-		struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
+ 		struct jffs2_raw_inode ri;
+ 		struct jffs2_full_dnode *fn;
+ 		uint32_t alloc_len;
+@@ -159,7 +154,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 		ret = jffs2_reserve_space(c, sizeof(ri), &alloc_len,
+ 					  ALLOC_NORMAL, JFFS2_SUMMARY_INODE_SIZE);
+ 		if (ret)
+-			goto out_page;
++			goto out_err;
+ 
+ 		mutex_lock(&f->sem);
+ 		memset(&ri, 0, sizeof(ri));
+@@ -189,7 +184,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 			ret = PTR_ERR(fn);
+ 			jffs2_complete_reservation(c);
+ 			mutex_unlock(&f->sem);
+-			goto out_page;
++			goto out_err;
  		}
-+		if (disk->first_minor + disk->minors > MINORMASK + 1)
-+			return -EINVAL;
- 	} else {
- 		if (WARN_ON(disk->minors))
- 			return -EINVAL;
+ 		ret = jffs2_add_full_dnode_to_inode(c, f, fn);
+ 		if (f->metadata) {
+@@ -204,13 +199,26 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 			jffs2_free_full_dnode(fn);
+ 			jffs2_complete_reservation(c);
+ 			mutex_unlock(&f->sem);
+-			goto out_page;
++			goto out_err;
+ 		}
+ 		jffs2_complete_reservation(c);
+ 		inode->i_size = pageofs;
+ 		mutex_unlock(&f->sem);
+ 	}
+ 
++	/*
++	 * While getting a page and reading data in, lock c->alloc_sem until
++	 * the page is Uptodate. Otherwise GC task may attempt to read the same
++	 * page in read_cache_page(), which causes a deadlock.
++	 */
++	mutex_lock(&c->alloc_sem);
++	pg = grab_cache_page_write_begin(mapping, index, flags);
++	if (!pg) {
++		ret = -ENOMEM;
++		goto release_sem;
++	}
++	*pagep = pg;
++
+ 	/*
+ 	 * Read in the page if it wasn't already present. Cannot optimize away
+ 	 * the whole page write case until jffs2_write_end can handle the
+@@ -220,15 +228,17 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 		mutex_lock(&f->sem);
+ 		ret = jffs2_do_readpage_nolock(inode, pg);
+ 		mutex_unlock(&f->sem);
+-		if (ret)
+-			goto out_page;
++		if (ret) {
++			unlock_page(pg);
++			put_page(pg);
++			goto release_sem;
++		}
+ 	}
+ 	jffs2_dbg(1, "end write_begin(). pg->flags %lx\n", pg->flags);
+-	return ret;
+ 
+-out_page:
+-	unlock_page(pg);
+-	put_page(pg);
++release_sem:
++	mutex_unlock(&c->alloc_sem);
++out_err:
+ 	return ret;
+ }
+ 
 -- 
 2.34.1
 
