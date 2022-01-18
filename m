@@ -2,51 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B39FC4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:41:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62B3DC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:42:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346754AbiARCju (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:39:50 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52132 "EHLO
+        id S244966AbiARCll (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:41:41 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53330 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344535AbiARCew (ORCPT
+        with ESMTP id S245551AbiARCgJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:34:52 -0500
+        Mon, 17 Jan 2022 21:36:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 04667611D8;
-        Tue, 18 Jan 2022 02:34:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C9ABDC36AEB;
-        Tue, 18 Jan 2022 02:34:48 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51CF2612C7;
+        Tue, 18 Jan 2022 02:36:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0E09C36AEB;
+        Tue, 18 Jan 2022 02:36:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473291;
-        bh=GRm6ZQaFJ60OS35Q/7OIBpWXiFjDg3ePGtx1dzEBxsM=;
+        s=k20201202; t=1642473366;
+        bh=aXgAlWjFhuTYaGo0IQrs5NxFaBkHUtQAgDjh1OBwC9o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dBmUSdlF4C0nh7+cpcvrXMYA84Hdowzi1RC8ZVf4J4zYWoKLJcrmPHMd/0h3QWv5l
-         4UJk0tY8Doig7ZTHeOi+IUOHTmwRg4BuW2weTblHJ8TPcPZSID3tmiV9XN9Q4qAqlC
-         S3umtI6Xn2Wsd7CbkHxFRet64/lfzazmMQgOqNs9MH0hVxnwkEzwoBfuM0Q2ISgp8L
-         2XxvlM7wONVYr6a05SXYXiFCnkZ7qp4dziXp7yrJixC2PnK4bOtqHLppVsAasEUIuj
-         /7itDwHMKdcJ9SzLZlsm1ipB6LdgEFAC+6JFaU3Bkk53P/6GGHQzfxB35fsAYzvpgG
-         hKJu2frMLxsPg==
+        b=FDwiQYEBieKEqf4Nc1SKtNB2N5AKE8NJ65bez4QWtFIvITO10eRptILvGqCueoD4Y
+         CRW7LsOcAx55ChIZrsu+KJudhM4mBz3GWS+uEedxJH8Nbts5Ujw76EgFs1vJfkQ3qH
+         j5Q/AYoKF0aTzmmD2fUgZSFK7zvzU5JiQG4uB58/nd46EpA3zOGGiU+hPjztl0Bd93
+         2YqJQ506HE6mDbYgcUzz+VbYy87zWrH9hpXoUb5vrc5xdPlGnLyPLkZqeOCiYlKFqK
+         nyVM5kQ5ddBjQ4WrHrK9CrT+wx84LjIbdbYmJqTLKcyn570l1Z/PXwUJVid3c8RnVE
+         Q1WlhgUkpYq7g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        sunpeng.li@amd.com, Rodrigo.Siqueira@amd.com,
-        Felix.Kuehling@amd.com, Hawking.Zhang@amd.com, Emily.Deng@amd.com,
-        andrey.grodzovsky@amd.com, tzimmermann@suse.de,
-        Philip.Yang@amd.com, maz@kernel.org, Yong.Zhao@amd.com,
-        nicholas.kazlauskas@amd.com, qingqing.zhuo@amd.com,
-        Anson.Jacob@amd.com, shenshih@amd.com, aurabindo.pillai@amd.com,
-        nikola.cornij@amd.com, Wayne.Lin@amd.com, Roman.Li@amd.com,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 053/188] drm/amdgpu/display: set vblank_disable_immediate for DC
-Date:   Mon, 17 Jan 2022 21:29:37 -0500
-Message-Id: <20220118023152.1948105-53-sashal@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        rkardell@mida.se, Sasha Levin <sashal@kernel.org>,
+        mchehab@kernel.org, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 087/188] media: m920x: don't use stack on USB reads
+Date:   Mon, 17 Jan 2022 21:30:11 -0500
+Message-Id: <20220118023152.1948105-87-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -58,48 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Deucher <alexander.deucher@amd.com>
+From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
-[ Upstream commit 92020e81ddbeac351ea4a19bcf01743f32b9c800 ]
+[ Upstream commit a2ab06d7c4d6bfd0b545a768247a70463e977e27 ]
 
-Disable vblanks immediately to save power.  I think this was
-missed when we merged DC support.
+Using stack-allocated pointers for USB message data don't work.
+This driver is almost OK with that, except for the I2C read
+logic.
 
-Bug: https://gitlab.freedesktop.org/drm/amd/-/issues/1781
-Reviewed-by: Harry Wentland <harry.wentland@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Fix it by using a temporary read buffer, just like on all other
+calls to m920x_read().
+
+Link: https://lore.kernel.org/all/ccc99e48-de4f-045e-0fe4-61e3118e3f74@mida.se/
+Reported-by: rkardell@mida.se
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c           | 1 -
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 3 +++
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ drivers/media/usb/dvb-usb/m920x.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c
-index cc2e0c9cfe0a1..4f3c62adccbde 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_irq.c
-@@ -333,7 +333,6 @@ int amdgpu_irq_init(struct amdgpu_device *adev)
- 	if (!amdgpu_device_has_dc_support(adev)) {
- 		if (!adev->enable_virtual_display)
- 			/* Disable vblank IRQs aggressively for power-saving */
--			/* XXX: can this be enabled for DC? */
- 			adev_to_drm(adev)->vblank_disable_immediate = true;
- 
- 		r = drm_vblank_init(adev_to_drm(adev), adev->mode_info.num_crtc);
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index fef13e93a99fd..cbc67477a9a1f 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -1279,6 +1279,9 @@ static int amdgpu_dm_init(struct amdgpu_device *adev)
- 	adev_to_drm(adev)->mode_config.cursor_width = adev->dm.dc->caps.max_cursor_size;
- 	adev_to_drm(adev)->mode_config.cursor_height = adev->dm.dc->caps.max_cursor_size;
- 
-+	/* Disable vblank IRQs aggressively for power-saving */
-+	adev_to_drm(adev)->vblank_disable_immediate = true;
+diff --git a/drivers/media/usb/dvb-usb/m920x.c b/drivers/media/usb/dvb-usb/m920x.c
+index 4bb5b82599a79..691e05833db19 100644
+--- a/drivers/media/usb/dvb-usb/m920x.c
++++ b/drivers/media/usb/dvb-usb/m920x.c
+@@ -274,6 +274,13 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
+ 			/* Should check for ack here, if we knew how. */
+ 		}
+ 		if (msg[i].flags & I2C_M_RD) {
++			char *read = kmalloc(1, GFP_KERNEL);
++			if (!read) {
++				ret = -ENOMEM;
++				kfree(read);
++				goto unlock;
++			}
 +
- 	if (drm_vblank_init(adev_to_drm(adev), adev->dm.display_indexes_num)) {
- 		DRM_ERROR(
- 		"amdgpu: failed to initialize sw for display support.\n");
+ 			for (j = 0; j < msg[i].len; j++) {
+ 				/* Last byte of transaction?
+ 				 * Send STOP, otherwise send ACK. */
+@@ -281,9 +288,12 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
+ 
+ 				if ((ret = m920x_read(d->udev, M9206_I2C, 0x0,
+ 						      0x20 | stop,
+-						      &msg[i].buf[j], 1)) != 0)
++						      read, 1)) != 0)
+ 					goto unlock;
++				msg[i].buf[j] = read[0];
+ 			}
++
++			kfree(read);
+ 		} else {
+ 			for (j = 0; j < msg[i].len; j++) {
+ 				/* Last byte of transaction? Then send STOP. */
 -- 
 2.34.1
 
