@@ -2,50 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEDBFC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:56:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50443C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:56:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347548AbiARC4k (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:56:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33276 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346336AbiARCoj (ORCPT
+        id S240700AbiARC44 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:56:56 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37094 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348059AbiARCoq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:44:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B097C061244;
-        Mon, 17 Jan 2022 18:37:43 -0800 (PST)
+        Mon, 17 Jan 2022 21:44:46 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2883F6120D;
-        Tue, 18 Jan 2022 02:37:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77337C36AEB;
-        Tue, 18 Jan 2022 02:37:41 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77F4D6130E;
+        Tue, 18 Jan 2022 02:44:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BE1B7C36AEB;
+        Tue, 18 Jan 2022 02:44:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473462;
-        bh=CnrwTehG9YW6BhiZw6t6jc8f53zGWef6UsPNAyd9KW8=;
+        s=k20201202; t=1642473884;
+        bh=1VvY1q6ys+z/nxaqazZx6mlkGoBLdE1pBlUsSpD+yXA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=U5jwyL7F+uGrSI7rKjbvBgEOqH0EB7IF2QfqUqp2oDw2W75ZnW1B6pIYpzkJWbJFU
-         Ez0E3HIASxNJUokCD9Wu735AUYAL9cRj5GQPIj3W1zhWy46D92UhMNm+2LAsRC6Ro/
-         4Ju5tzbfz/DN0nH8req6bBOMaVfdFMVMwJMOFk+4lLs/2mZIjrYniNazgLQVJ4Cqjx
-         u3ZWoRBCOCFkTYJFWvzH6rBBcQFSFU/jGEw6m5joWCE43lVw4mUk+7GmYLdNmwHCto
-         mjcArfkOo1qct/2lyGhZJjQiLvxiHp2C4zqyk4yf0/NkeTm2yxT+a+lunfRFZNvOxJ
-         BdqjYDomIcPzQ==
+        b=BfJeXRh3MbkPVxXhX7pv74ylIB1a1j/YkuSeyvfRIdNv7kmfg3kDNCFc525SJp+Rj
+         SI10lI1eKnCKaI5Mesd8f5/xOLdH9upNJWnUEBFdejccmL4Wah5LcWMaEY8Jqoe0il
+         P/718e7APCmd/reXrmQR798ZaS01oEfOzFJ06RRKCwm971xK/WZhlkSDmwuk7Jwvrz
+         9O4IJ9qXlG6sJu5NjsqBDe/2TwU18cjH1GylCuIYGlTjsIRT9EAV3zk1wbixgOUT83
+         XMZuz3d5308Xt+qx0hwbXMKDEKOKK8YtB6b7EyXTEqh0gRLhvo2nM80o6SAYG1o+Np
+         jnVVC5zi8nwUw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        len.brown@intel.com, pavel@ucw.cz, linux-pm@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 127/188] PM: runtime: Add safety net to supplier device release
-Date:   Mon, 17 Jan 2022 21:30:51 -0500
-Message-Id: <20220118023152.1948105-127-sashal@kernel.org>
+Cc:     Ben Skeggs <bskeggs@redhat.com>,
+        Diego Viola <diego.viola@gmail.com>,
+        Karol Herbst <kherbst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, lyude@redhat.com,
+        airlied@linux.ie, daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        nouveau@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.4 06/73] drm/nouveau/pmu/gm200-: avoid touching PMU outside of DEVINIT/PREOS/ACR
+Date:   Mon, 17 Jan 2022 21:43:25 -0500
+Message-Id: <20220118024432.1952028-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
+References: <20220118024432.1952028-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,135 +51,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+From: Ben Skeggs <bskeggs@redhat.com>
 
-[ Upstream commit d1579e61192e0e686faa4208500ef4c3b529b16c ]
+[ Upstream commit 1d2271d2fb85e54bfc9630a6c30ac0feb9ffb983 ]
 
-Because refcount_dec_not_one() returns true if the target refcount
-becomes saturated, it is generally unsafe to use its return value as
-a loop termination condition, but that is what happens when a device
-link's supplier device is released during runtime PM suspend
-operations and on device link removal.
+There have been reports of the WFI timing out on some boards, and a
+patch was proposed to just remove it.  This stuff is rather fragile,
+and I believe the WFI might be needed with our FW prior to GM200.
 
-To address this, introduce pm_runtime_release_supplier() to be used
-in the above cases which will check the supplier device's runtime
-PM usage counter in addition to the refcount_dec_not_one() return
-value, so the loop can be terminated in case the rpm_active refcount
-value becomes invalid, and update the code in question to use it as
-appropriate.
+However, we probably should not be touching PMU during init on GPUs
+where we depend on NVIDIA FW, outside of limited circumstances, so
+this should be a somewhat safer change that achieves the desired
+result.
 
-This change is not expected to have any visible functional impact.
-
-Reported-by: Peter Zijlstra <peterz@infradead.org>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
+Reported-by: Diego Viola <diego.viola@gmail.com>
+Signed-off-by: Ben Skeggs <bskeggs@redhat.com>
+Reviewed-by: Karol Herbst <kherbst@redhat.com>
+Signed-off-by: Karol Herbst <kherbst@redhat.com>
+Link: https://gitlab.freedesktop.org/drm/nouveau/-/merge_requests/10
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/base/core.c          |  3 +--
- drivers/base/power/runtime.c | 41 ++++++++++++++++++++++++++----------
- include/linux/pm_runtime.h   |  3 +++
- 3 files changed, 34 insertions(+), 13 deletions(-)
+ .../gpu/drm/nouveau/nvkm/subdev/pmu/base.c    | 37 +++++++++++--------
+ 1 file changed, 21 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/base/core.c b/drivers/base/core.c
-index 63577de268565..8e73a34e10055 100644
---- a/drivers/base/core.c
-+++ b/drivers/base/core.c
-@@ -485,8 +485,7 @@ static void device_link_release_fn(struct work_struct *work)
- 	/* Ensure that all references to the link object have been dropped. */
- 	device_link_synchronize_removal();
- 
--	while (refcount_dec_not_one(&link->rpm_active))
--		pm_runtime_put(link->supplier);
-+	pm_runtime_release_supplier(link, true);
- 
- 	put_device(link->consumer);
- 	put_device(link->supplier);
-diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
-index ec94049442b99..44ae3909e64bb 100644
---- a/drivers/base/power/runtime.c
-+++ b/drivers/base/power/runtime.c
-@@ -305,19 +305,40 @@ static int rpm_get_suppliers(struct device *dev)
+diff --git a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
+index ea2e11771bca5..105b4be467a3e 100644
+--- a/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
++++ b/drivers/gpu/drm/nouveau/nvkm/subdev/pmu/base.c
+@@ -88,20 +88,13 @@ nvkm_pmu_fini(struct nvkm_subdev *subdev, bool suspend)
  	return 0;
  }
  
-+/**
-+ * pm_runtime_release_supplier - Drop references to device link's supplier.
-+ * @link: Target device link.
-+ * @check_idle: Whether or not to check if the supplier device is idle.
-+ *
-+ * Drop all runtime PM references associated with @link to its supplier device
-+ * and if @check_idle is set, check if that device is idle (and so it can be
-+ * suspended).
-+ */
-+void pm_runtime_release_supplier(struct device_link *link, bool check_idle)
-+{
-+	struct device *supplier = link->supplier;
-+
-+	/*
-+	 * The additional power.usage_count check is a safety net in case
-+	 * the rpm_active refcount becomes saturated, in which case
-+	 * refcount_dec_not_one() would return true forever, but it is not
-+	 * strictly necessary.
-+	 */
-+	while (refcount_dec_not_one(&link->rpm_active) &&
-+	       atomic_read(&supplier->power.usage_count) > 0)
-+		pm_runtime_put_noidle(supplier);
-+
-+	if (check_idle)
-+		pm_request_idle(supplier);
-+}
-+
- static void __rpm_put_suppliers(struct device *dev, bool try_to_suspend)
+-static int
++static void
+ nvkm_pmu_reset(struct nvkm_pmu *pmu)
  {
- 	struct device_link *link;
+ 	struct nvkm_device *device = pmu->subdev.device;
  
- 	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
--				device_links_read_lock_held()) {
+ 	if (!pmu->func->enabled(pmu))
+-		return 0;
 -
--		while (refcount_dec_not_one(&link->rpm_active))
--			pm_runtime_put_noidle(link->supplier);
+-	/* Inhibit interrupts, and wait for idle. */
+-	nvkm_wr32(device, 0x10a014, 0x0000ffff);
+-	nvkm_msec(device, 2000,
+-		if (!nvkm_rd32(device, 0x10a04c))
+-			break;
+-	);
++		return;
+ 
+ 	/* Reset. */
+ 	if (pmu->func->reset)
+@@ -112,25 +105,37 @@ nvkm_pmu_reset(struct nvkm_pmu *pmu)
+ 		if (!(nvkm_rd32(device, 0x10a10c) & 0x00000006))
+ 			break;
+ 	);
 -
--		if (try_to_suspend)
--			pm_request_idle(link->supplier);
--	}
-+				device_links_read_lock_held())
-+		pm_runtime_release_supplier(link, try_to_suspend);
+-	return 0;
  }
  
- static void rpm_put_suppliers(struct device *dev)
-@@ -1770,9 +1791,7 @@ void pm_runtime_drop_link(struct device_link *link)
- 		return;
- 
- 	pm_runtime_drop_link_count(link->consumer);
--
--	while (refcount_dec_not_one(&link->rpm_active))
--		pm_runtime_put(link->supplier);
-+	pm_runtime_release_supplier(link, true);
+ static int
+ nvkm_pmu_preinit(struct nvkm_subdev *subdev)
+ {
+ 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
+-	return nvkm_pmu_reset(pmu);
++	nvkm_pmu_reset(pmu);
++	return 0;
  }
  
- static bool pm_runtime_need_not_resume(struct device *dev)
-diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
-index eddd66d426caf..016de5776b6db 100644
---- a/include/linux/pm_runtime.h
-+++ b/include/linux/pm_runtime.h
-@@ -58,6 +58,7 @@ extern void pm_runtime_get_suppliers(struct device *dev);
- extern void pm_runtime_put_suppliers(struct device *dev);
- extern void pm_runtime_new_link(struct device *dev);
- extern void pm_runtime_drop_link(struct device_link *link);
-+extern void pm_runtime_release_supplier(struct device_link *link, bool check_idle);
+ static int
+ nvkm_pmu_init(struct nvkm_subdev *subdev)
+ {
+ 	struct nvkm_pmu *pmu = nvkm_pmu(subdev);
+-	int ret = nvkm_pmu_reset(pmu);
+-	if (ret == 0 && pmu->func->init)
+-		ret = pmu->func->init(pmu);
+-	return ret;
++	struct nvkm_device *device = pmu->subdev.device;
++
++	if (!pmu->func->init)
++		return 0;
++
++	if (pmu->func->enabled(pmu)) {
++		/* Inhibit interrupts, and wait for idle. */
++		nvkm_wr32(device, 0x10a014, 0x0000ffff);
++		nvkm_msec(device, 2000,
++			if (!nvkm_rd32(device, 0x10a04c))
++				break;
++		);
++
++		nvkm_pmu_reset(pmu);
++	}
++
++	return pmu->func->init(pmu);
+ }
  
- extern int devm_pm_runtime_enable(struct device *dev);
- 
-@@ -283,6 +284,8 @@ static inline void pm_runtime_get_suppliers(struct device *dev) {}
- static inline void pm_runtime_put_suppliers(struct device *dev) {}
- static inline void pm_runtime_new_link(struct device *dev) {}
- static inline void pm_runtime_drop_link(struct device_link *link) {}
-+static inline void pm_runtime_release_supplier(struct device_link *link,
-+					       bool check_idle) {}
- 
- #endif /* !CONFIG_PM */
- 
+ static int
 -- 
 2.34.1
 
