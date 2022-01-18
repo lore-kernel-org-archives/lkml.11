@@ -2,46 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5CB7C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:08:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0884FC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:08:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235807AbiARDIu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:08:50 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41988 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349866AbiARCug (ORCPT
+        id S1343622AbiARDI5 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 22:08:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348957AbiARCrT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:50:36 -0500
+        Mon, 17 Jan 2022 21:47:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7796C03327D;
+        Mon, 17 Jan 2022 18:38:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D09460C41;
-        Tue, 18 Jan 2022 02:50:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BF5EC36AE3;
-        Tue, 18 Jan 2022 02:50:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CA57D612D4;
+        Tue, 18 Jan 2022 02:38:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76D69C36AE3;
+        Tue, 18 Jan 2022 02:38:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474235;
-        bh=kw73XIG6NLQUBFBdk9cnkGcu9RvWgb4ZUByxLPUXsyo=;
+        s=k20201202; t=1642473532;
+        bh=Pmo6IF4IBwL5Qx1rzocHFg+51u517NDJnuUHyGjU8H4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S5syCwjd5uA5EfQ7K4VivZe1l9rK4E0Fu9/b0XgtS5UNpGUT4sNAMbwYy6tlQuPLK
-         NVs0j6DY++mKU2ZB5xy133ELEJloV5s2tuICaAF7D0wryeam/36XyZVsvg3BSO8t81
-         sT6Tdoyrdp6Ax/+E62eLaPmINF+AQyMf02fS/AFRrZ4bBqFux0+zFu/veTFIcK5eam
-         VN8doWKhd5zHrEXFFd0b4oM71EUIJ7PcKpCIbhx3GpAoYoagADui3yBwIJKbS3BPus
-         TBalwcCLyIK6CSjiNNvn/Mk4TliTeY4w2lPDwDS2craU8CotGjhx9h8rm4tjG/+Frv
-         b5Mex919GOopQ==
+        b=rLp6Ae2jjhQkHuq/yUGDcoD4omuxqlxpvVX93sogRyw7l6BjOjCwP4XDT+b0zRrnU
+         uX/LuiwNH5vLE1Fs0XRfDs5mLC2GKI+kHSqWLhoH66YfcUEHw5XG/joHuPKp5GVkDt
+         Hz1HhmtDbNUoqzrZ+U195Pqa2DNMTleTfkQf0gn+amGZ7uAHdwIMI+Mkdw+E0+Ht3V
+         SgWzACjdGs5kmeITZgKN+YDpTeKBOccWLUQW04fAn40lZYPHT909IdwSU/KLQhB2bP
+         zAZuhPnbtSkN9K6x+0xpvMb4uH/IN4GieIAbu/nV5lORGcmeABU+xYGVzFeSNoKwXJ
+         dPs0c3YKvmArw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ulf Hansson <ulf.hansson@linaro.org>,
-        "H . Nikolaus Schaller" <hns@goldelico.com>,
-        Sasha Levin <sashal@kernel.org>, huyue2@yulong.com,
-        tiantao6@hisilicon.com, linus.walleij@linaro.org,
-        linux-mmc@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 35/56] mmc: core: Fixup storing of OCR for MMC_QUIRK_NONSTD_SDIO
-Date:   Mon, 17 Jan 2022 21:48:47 -0500
-Message-Id: <20220118024908.1953673-35-sashal@kernel.org>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Mark Asselstine <mark.asselstine@windriver.com>,
+        Bob Moore <robert.moore@intel.com>,
+        Sasha Levin <sashal@kernel.org>, linux-acpi@vger.kernel.org,
+        devel@acpica.org
+Subject: [PATCH AUTOSEL 5.15 153/188] ACPICA: Utilities: Avoid deleting the same object twice in a row
+Date:   Mon, 17 Jan 2022 21:31:17 -0500
+Message-Id: <20220118023152.1948105-153-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
-References: <20220118024908.1953673-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,55 +54,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ulf Hansson <ulf.hansson@linaro.org>
+From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 8c3e5b74b9e2146f564905e50ca716591c76d4f1 ]
+[ Upstream commit 1cdfe9e346b4c5509ffe19ccde880fd259d9f7a3 ]
 
-The mmc core takes a specific path to support initializing of a
-non-standard SDIO card. This is triggered by looking for the card-quirk,
-MMC_QUIRK_NONSTD_SDIO.
+ACPICA commit c11af67d8f7e3d381068ce7771322f2b5324d687
 
-In mmc_sdio_init_card() this gets rather messy, as it causes the code to
-bail out earlier, compared to the usual path. This leads to that the OCR
-doesn't get saved properly in card->ocr. Fortunately, only omap_hsmmc has
-been using the MMC_QUIRK_NONSTD_SDIO and is dealing with the issue, by
-assigning a hardcoded value (0x80) to card->ocr from an ->init_card() ops.
+If original_count is 0 in acpi_ut_update_ref_count (),
+acpi_ut_delete_internal_obj () is invoked for the target object, which is
+incorrect, because that object has been deleted once already and the
+memory allocated to store it may have been reclaimed and allocated
+for a different purpose by the host OS.  Moreover, a confusing debug
+message following the "Reference Count is already zero, cannot
+decrement" warning is printed in that case.
 
-To make the behaviour consistent, let's instead rely on the core to save
-the OCR in card->ocr during initialization.
+To fix this issue, make acpi_ut_update_ref_count () return after finding
+that original_count is 0 and printing the above warning.
 
-Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Link: https://lore.kernel.org/r/e7936cff7fc24d187ef2680d3b4edb0ade58f293.1636564631.git.hns@goldelico.com
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Link: https://github.com/acpica/acpica/commit/c11af67d
+Link: https://github.com/acpica/acpica/pull/652
+Reported-by: Mark Asselstine <mark.asselstine@windriver.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/core/sdio.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/acpi/acpica/utdelete.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/mmc/core/sdio.c b/drivers/mmc/core/sdio.c
-index 7568cea559220..bf0a0ef60d6b4 100644
---- a/drivers/mmc/core/sdio.c
-+++ b/drivers/mmc/core/sdio.c
-@@ -631,6 +631,8 @@ static int mmc_sdio_init_card(struct mmc_host *host, u32 ocr,
- 	if (host->ops->init_card)
- 		host->ops->init_card(host, card);
+diff --git a/drivers/acpi/acpica/utdelete.c b/drivers/acpi/acpica/utdelete.c
+index e5ba9795ec696..8d7736d2d2699 100644
+--- a/drivers/acpi/acpica/utdelete.c
++++ b/drivers/acpi/acpica/utdelete.c
+@@ -422,6 +422,7 @@ acpi_ut_update_ref_count(union acpi_operand_object *object, u32 action)
+ 			ACPI_WARNING((AE_INFO,
+ 				      "Obj %p, Reference Count is already zero, cannot decrement\n",
+ 				      object));
++			return;
+ 		}
  
-+	card->ocr = ocr_card;
-+
- 	/*
- 	 * If the host and card support UHS-I mode request the card
- 	 * to switch to 1.8V signaling level.  No 1.8v signalling if
-@@ -737,7 +739,7 @@ static int mmc_sdio_init_card(struct mmc_host *host, u32 ocr,
- 
- 		card = oldcard;
- 	}
--	card->ocr = ocr_card;
-+
- 	mmc_fixup_device(card, sdio_fixup_methods);
- 
- 	if (card->type == MMC_TYPE_SD_COMBO) {
+ 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_ALLOCATIONS,
 -- 
 2.34.1
 
