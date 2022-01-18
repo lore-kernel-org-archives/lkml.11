@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F671C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:08:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D0F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:09:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346559AbiARQI5 (ORCPT
+        id S1346583AbiARQI7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:08:57 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:39272 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346502AbiARQIE (ORCPT
+        Tue, 18 Jan 2022 11:08:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51402 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346414AbiARQIR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:08:04 -0500
+        Tue, 18 Jan 2022 11:08:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFFDC061762;
+        Tue, 18 Jan 2022 08:07:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CC51061295;
-        Tue, 18 Jan 2022 16:08:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 893ADC00446;
-        Tue, 18 Jan 2022 16:08:02 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B49C612D5;
+        Tue, 18 Jan 2022 16:07:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF47DC00446;
+        Tue, 18 Jan 2022 16:07:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522083;
-        bh=ooeCTXbsV8TK6eaXLbRZtrYYQnam86g0dB0LpTyoBqI=;
+        s=korg; t=1642522070;
+        bh=UYYUMo1mUrFFL/7scIcn9NFrEorA5XJbOgmC+sLMyaE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HLamsNEwvYUE7duix9oUK41QQfoCFXh2WALp64CBHYXEQFVlmbxMkLjYoZgUBV23p
-         isKPOxrxXQhYKEWRlKDm8Ub4rL+mYp808pK81i4ryeyJn3qFIHpqxd74pplql+CrLt
-         IJ45EQoIB/dNNNSwk5GJXBtZgI9LYwLe0+3aH0ig=
+        b=fxjLqzUvvDnkXU2+Yn6yAA+bnu34tE3u9Jd58wRIYXACjzCtLKz/X3GhoyGqEDoKS
+         ZHP5As6iObcwf4wTjM6ygAVgpquDaZ9p48r/Er7fgvWaR3IFfsbZ+YN4wrvrTTuOg1
+         iCx5M0YnCgIk8Scjte6zhTVR8Obg+0swee/3d7eo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bart Kroon <bart@tarmack.eu>,
-        Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.10 19/23] ALSA: hda: ALC287: Add Lenovo IdeaPad Slim 9i 14ITL5 speaker quirk
-Date:   Tue, 18 Jan 2022 17:05:59 +0100
-Message-Id: <20220118160451.894324845@linuxfoundation.org>
+        stable@vger.kernel.org, Gabriel Somlo <somlo@cmu.edu>,
+        Johan Hovold <johan@kernel.org>
+Subject: [PATCH 5.10 15/23] firmware: qemu_fw_cfg: fix kobject leak in probe error path
+Date:   Tue, 18 Jan 2022 17:05:55 +0100
+Message-Id: <20220118160451.753639278@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118160451.233828401@linuxfoundation.org>
 References: <20220118160451.233828401@linuxfoundation.org>
@@ -46,36 +49,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Kroon <bart@tarmack.eu>
+From: Johan Hovold <johan@kernel.org>
 
-commit b81e9e5c723de936652653241d3dc4f33ae05e8c upstream.
+commit 47a1db8e797da01a1309bf42e0c0d771d4e4d4f3 upstream.
 
-The speaker fixup that is used for the Yoga 7 14ITL5 also applies to
-the IdeaPad Slim 9i 14ITL5. The attached patch applies the quirk to
-initialise the amplifier on the IdeaPad Slim 9i as well.
+An initialised kobject must be freed using kobject_put() to avoid
+leaking associated resources (e.g. the object name).
 
-This is validated to work on my laptop.
+Commit fe3c60684377 ("firmware: Fix a reference count leak.") "fixed"
+the leak in the first error path of the file registration helper but
+left the second one unchanged. This "fix" would however result in a NULL
+pointer dereference due to the release function also removing the never
+added entry from the fw_cfg_entry_cache list. This has now been
+addressed.
 
-[ corrected the quirk entry position by tiwai ]
+Fix the remaining kobject leak by restoring the common error path and
+adding the missing kobject_put().
 
-Signed-off-by: Bart Kroon <bart@tarmack.eu>
-Cc: <stable@vger.kernel.org>
-Link: https://lore.kernel.org/r/JAG24R.7NLJGWBF4G8U@tarmack.eu
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: 75f3e8e47f38 ("firmware: introduce sysfs driver for QEMU's fw_cfg device")
+Cc: stable@vger.kernel.org      # 4.6
+Cc: Gabriel Somlo <somlo@cmu.edu>
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Link: https://lore.kernel.org/r/20211201132528.30025-3-johan@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/patch_realtek.c |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/firmware/qemu_fw_cfg.c |   13 ++++++-------
+ 1 file changed, 6 insertions(+), 7 deletions(-)
 
---- a/sound/pci/hda/patch_realtek.c
-+++ b/sound/pci/hda/patch_realtek.c
-@@ -8887,6 +8887,7 @@ static const struct snd_pci_quirk alc269
- 	SND_PCI_QUIRK(0x17aa, 0x31af, "ThinkCentre Station", ALC623_FIXUP_LENOVO_THINKSTATION_P340),
- 	SND_PCI_QUIRK(0x17aa, 0x3818, "Lenovo C940", ALC298_FIXUP_LENOVO_SPK_VOLUME),
- 	SND_PCI_QUIRK(0x17aa, 0x3827, "Ideapad S740", ALC285_FIXUP_IDEAPAD_S740_COEF),
-+	SND_PCI_QUIRK(0x17aa, 0x3834, "Lenovo IdeaPad Slim 9i 14ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3843, "Yoga 9i", ALC287_FIXUP_IDEAPAD_BASS_SPK_AMP),
- 	SND_PCI_QUIRK(0x17aa, 0x3813, "Legion 7i 15IMHG05", ALC287_FIXUP_LEGION_15IMHG05_SPEAKERS),
- 	SND_PCI_QUIRK(0x17aa, 0x3852, "Lenovo Yoga 7 14ITL5", ALC287_FIXUP_YOGA7_14ITL_SPEAKERS),
+--- a/drivers/firmware/qemu_fw_cfg.c
++++ b/drivers/firmware/qemu_fw_cfg.c
+@@ -603,15 +603,13 @@ static int fw_cfg_register_file(const st
+ 	/* register entry under "/sys/firmware/qemu_fw_cfg/by_key/" */
+ 	err = kobject_init_and_add(&entry->kobj, &fw_cfg_sysfs_entry_ktype,
+ 				   fw_cfg_sel_ko, "%d", entry->select);
+-	if (err) {
+-		kobject_put(&entry->kobj);
+-		return err;
+-	}
++	if (err)
++		goto err_put_entry;
+ 
+ 	/* add raw binary content access */
+ 	err = sysfs_create_bin_file(&entry->kobj, &fw_cfg_sysfs_attr_raw);
+ 	if (err)
+-		goto err_add_raw;
++		goto err_del_entry;
+ 
+ 	/* try adding "/sys/firmware/qemu_fw_cfg/by_name/" symlink */
+ 	fw_cfg_build_symlink(fw_cfg_fname_kset, &entry->kobj, entry->name);
+@@ -620,9 +618,10 @@ static int fw_cfg_register_file(const st
+ 	fw_cfg_sysfs_cache_enlist(entry);
+ 	return 0;
+ 
+-err_add_raw:
++err_del_entry:
+ 	kobject_del(&entry->kobj);
+-	kfree(entry);
++err_put_entry:
++	kobject_put(&entry->kobj);
+ 	return err;
+ }
+ 
 
 
