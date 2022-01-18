@@ -2,57 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D3B2C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:37:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02DACC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:37:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344634AbiARCg6 (ORCPT
+        id S1344655AbiARChG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:36:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58824 "EHLO
+        Mon, 17 Jan 2022 21:37:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58820 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345531AbiARCbi (ORCPT
+        with ESMTP id S1345519AbiARCbh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:31:38 -0500
+        Mon, 17 Jan 2022 21:31:37 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC4BC061768;
-        Mon, 17 Jan 2022 18:29:36 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B54CC035455;
+        Mon, 17 Jan 2022 18:29:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2BCAB8123A;
-        Tue, 18 Jan 2022 02:29:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9B01C36AE3;
-        Tue, 18 Jan 2022 02:29:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F085DB81244;
+        Tue, 18 Jan 2022 02:29:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1B7FC36AE3;
+        Tue, 18 Jan 2022 02:29:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472973;
-        bh=35lOTX6cm3m1nD+3sw8XpEL6aINTmKJuCTuO6dclzwU=;
+        s=k20201202; t=1642472967;
+        bh=8XswGL3EkarOX4C4hCvhOy/b4kDH7Y+uJGPB3muNXRI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XUpoT09WMnww8FSzJFmKYdwDgYaKnRjjdwSLhsGPXizsEA6RmRww1ShDnXgoXU56z
-         /HAo96TGK3Y07dxCQbBpcJs6TJvwo4/cvPjHcveDE/wNJ1ntvqCXp+YNkn+/pKEFHU
-         m8pKd4VtC211ItgWnvTQsPMCgIBa98j/vG6rOueeo/KxjHjadQ2O5yaRkDZpA7XxMF
-         9rypR/mdL/7uKkth/PYlLzjyKETA+YbyyQD+dcKvBqad3rYKU20eZ0lM6piF7kmuz5
-         oJycPR/A5O3bVKXESHH4iKdBzPMelgSziWll9Z7wM/LVAsSrA2u1UKbh6hpbyOJ6rm
-         DFFRHPUMTpbRQ==
+        b=aKvvTBOUk4FDGbMPCBflmg8OeQqxs5cZ24nSAbPXj/cXo6w53DeDJdWUuz/9hy47B
+         bJTL3BArKRL9vZ8kXJKfQ0peBv72t0oKSivNEXklYpc0o8gmIRu9ekrxqnxT+StJll
+         9C8pnrtzUoVcXfaTMn/d97oQvuwK5uRCNdc8a43jM/TYPMw2BZZ6wVr/O3sbKn2Wfh
+         5OKi4JCoCMsTMzwMA4TVXd/aPQnok+3k/TswBZp5OcoVXzbNBgG+FtTrVho/ipgrdk
+         Qa4I+pRCPc+vp8+nImndOOKpEL4SOBlhuuTKkr9Rz/mOsG/O0bYBNpquIuBxQl0i6+
+         L9BscuxjeE+oA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>,
-        Felix Kuehling <Felix.Kuehling@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        David Yat Sin <david.yatsin@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, Xinhui.Pan@amd.com,
-        airlied@linux.ie, daniel@ffwll.ch, JinhuiEric.Huang@amd.com,
-        nirmoy.das@amd.com, evan.quan@amd.com, tzimmermann@suse.de,
-        colin.king@intel.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.16 185/217] drm/amdgpu: Don't inherit GEM object VMAs in child process
-Date:   Mon, 17 Jan 2022 21:19:08 -0500
-Message-Id: <20220118021940.1942199-185-sashal@kernel.org>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Bob Moore <robert.moore@intel.com>,
+        Sasha Levin <sashal@kernel.org>, linux-acpi@vger.kernel.org,
+        devel@acpica.org
+Subject: [PATCH AUTOSEL 5.16 183/217] ACPICA: Hardware: Do not flush CPU cache when entering S4 and S5
+Date:   Mon, 17 Jan 2022 21:19:06 -0500
+Message-Id: <20220118021940.1942199-183-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -60,55 +54,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
+From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 
-[ Upstream commit fbcdbfde87509d523132b59f661a355c731139d0 ]
+[ Upstream commit 1d4e0b3abb168b2ee1eca99c527cffa1b80b6161 ]
 
-When an application having open file access to a node forks, its shared
-mappings also get reflected in the address space of child process even
-though it cannot access them with the object permissions applied. With the
-existing permission checks on the gem objects, it might be reasonable to
-also create the VMAs with VM_DONTCOPY flag so a user space application
-doesn't need to explicitly call the madvise(addr, len, MADV_DONTFORK)
-system call to prevent the pages in the mapped range to appear in the
-address space of the child process. It also prevents the memory leaks
-due to additional reference counts on the mapped BOs in the child
-process that prevented freeing the memory in the parent for which we had
-worked around earlier in the user space inside the thunk library.
+ACPICA commit 3dd7e1f3996456ef81bfe14cba29860e8d42949e
 
-Additionally, we faced this issue when using CRIU to checkpoint restore
-an application that had such inherited mappings in the child which
-confuse CRIU when it mmaps on restore. Having this flag set for the
-render node VMAs helps. VMAs mapped via KFD already take care of this so
-this is needed only for the render nodes.
+According to ACPI 6.4, Section 16.2, the CPU cache flushing is
+required on entering to S1, S2, and S3, but the ACPICA code
+flushes the CPU cache regardless of the sleep state.
 
-To limit the impact of the change to user space consumers such as OpenGL
-etc, limit it to KFD BOs only.
+Blind cache flush on entering S5 causes problems for TDX.
 
-Acked-by: Felix Kuehling <Felix.Kuehling@amd.com>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Signed-off-by: David Yat Sin <david.yatsin@amd.com>
-Signed-off-by: Rajneesh Bhardwaj <rajneesh.bhardwaj@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Flushing happens with WBINVD that is not supported in the TDX
+environment.
+
+TDX only supports S5 and adjusting ACPICA code to conform to the
+spec more strictly fixes the issue.
+
+Link: https://github.com/acpica/acpica/commit/3dd7e1f3
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+[ rjw: Subject and changelog edits ]
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/acpi/acpica/hwesleep.c  | 4 +++-
+ drivers/acpi/acpica/hwsleep.c   | 4 +++-
+ drivers/acpi/acpica/hwxfsleep.c | 2 --
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
-index a1e63ba4c54a5..630dc99e49086 100644
---- a/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
-+++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_gem.c
-@@ -264,6 +264,9 @@ static int amdgpu_gem_object_mmap(struct drm_gem_object *obj, struct vm_area_str
- 	    !(vma->vm_flags & (VM_READ | VM_WRITE | VM_EXEC)))
- 		vma->vm_flags &= ~VM_MAYWRITE;
+diff --git a/drivers/acpi/acpica/hwesleep.c b/drivers/acpi/acpica/hwesleep.c
+index 808fdf54aeebf..7ee2939c08cd4 100644
+--- a/drivers/acpi/acpica/hwesleep.c
++++ b/drivers/acpi/acpica/hwesleep.c
+@@ -104,7 +104,9 @@ acpi_status acpi_hw_extended_sleep(u8 sleep_state)
  
-+	if (bo->kfd_bo)
-+		vma->vm_flags |= VM_DONTCOPY;
-+
- 	return drm_gem_ttm_mmap(obj, vma);
- }
+ 	/* Flush caches, as per ACPI specification */
  
+-	ACPI_FLUSH_CPU_CACHE();
++	if (sleep_state < ACPI_STATE_S4) {
++		ACPI_FLUSH_CPU_CACHE();
++	}
+ 
+ 	status = acpi_os_enter_sleep(sleep_state, sleep_control, 0);
+ 	if (status == AE_CTRL_TERMINATE) {
+diff --git a/drivers/acpi/acpica/hwsleep.c b/drivers/acpi/acpica/hwsleep.c
+index 34a3825f25d37..5efa3d8e483e0 100644
+--- a/drivers/acpi/acpica/hwsleep.c
++++ b/drivers/acpi/acpica/hwsleep.c
+@@ -110,7 +110,9 @@ acpi_status acpi_hw_legacy_sleep(u8 sleep_state)
+ 
+ 	/* Flush caches, as per ACPI specification */
+ 
+-	ACPI_FLUSH_CPU_CACHE();
++	if (sleep_state < ACPI_STATE_S4) {
++		ACPI_FLUSH_CPU_CACHE();
++	}
+ 
+ 	status = acpi_os_enter_sleep(sleep_state, pm1a_control, pm1b_control);
+ 	if (status == AE_CTRL_TERMINATE) {
+diff --git a/drivers/acpi/acpica/hwxfsleep.c b/drivers/acpi/acpica/hwxfsleep.c
+index e4cde23a29061..ba77598ee43e8 100644
+--- a/drivers/acpi/acpica/hwxfsleep.c
++++ b/drivers/acpi/acpica/hwxfsleep.c
+@@ -162,8 +162,6 @@ acpi_status acpi_enter_sleep_state_s4bios(void)
+ 		return_ACPI_STATUS(status);
+ 	}
+ 
+-	ACPI_FLUSH_CPU_CACHE();
+-
+ 	status = acpi_hw_write_port(acpi_gbl_FADT.smi_command,
+ 				    (u32)acpi_gbl_FADT.s4_bios_request, 8);
+ 	if (ACPI_FAILURE(status)) {
 -- 
 2.34.1
 
