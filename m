@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69190C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:53:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72A06C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:53:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349589AbiARCtt (ORCPT
+        id S1349670AbiARCt7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:49:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58916 "EHLO
+        Mon, 17 Jan 2022 21:49:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345576AbiARCbn (ORCPT
+        with ESMTP id S1345482AbiARCbf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:31:43 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9694C0612E7;
-        Mon, 17 Jan 2022 18:29:49 -0800 (PST)
+        Mon, 17 Jan 2022 21:31:35 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE77FC061763;
+        Mon, 17 Jan 2022 18:29:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 77BF3B81256;
-        Tue, 18 Jan 2022 02:29:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EB30C36AE3;
-        Tue, 18 Jan 2022 02:29:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DC556117D;
+        Tue, 18 Jan 2022 02:29:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1096DC36AEB;
+        Tue, 18 Jan 2022 02:29:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472987;
-        bh=Olda3xnyzFmTBKB+lZPphr0MT+lJCGKeeR1LSDGOpVA=;
+        s=k20201202; t=1642472964;
+        bh=/nQm1xNgpdAOTxyswTWsS/Qa079KxmX+Nz2TBRcCI6s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tYrjW6LkrndfNG2CDIZthdIS6etGCsiZ/5rynyG2nxAiz3o9Uy6jJuOw2DbI92o0x
-         MXWGx85Dq6HXhKHG7ggLp0nfxTpU7d9rMjs1oEfFMtMSQsb2BK3Ff14PYNmZskLSsq
-         B1hK1EDA0LjsYmzYzG5J1RcuL5GqHQoWbE0wA8b8bOC8B9FMkMnaDyQER7+PPGgDX8
-         kasUoGrgbTUWdNRWM0DgF+3BTM3OAHgKphjFRuQZkqdN/plRLanCFQBhRoPNAoALPX
-         d1k7mB+kqWjLjGLLD3LfrBEk/TXGAy6EoWMIxXc8SYRMMWpdVWjSvUyLHFffKp/nYj
-         s4Pk08nO8yZtw==
+        b=clDhxAnGr4ayCHX+ZNSThf6MkW9Rbad4DQEfPCQSlrvbY5f8Mjj986Yp9rKUXaXKK
+         0BwPmA//OhJZA5LCTdcqRtQXAlwOF5kNKORcp5tC2+crY6VfXk+YtbEINVkVknAhAX
+         tULUqc7Ad0M5pnDD3+rqjPPQpQBhJy0XXLVaf9/M0XDSmLOLPQahnjFno3/z2f78un
+         BgOLr0jaTZ0Y41NlCaaFF6Nzp4YxLTlI5QQ7WdXEvRvZn3tV2p8mG2Skl7/NHqWh+E
+         +tyvLlpqDOuRAVj7nLHjOiyJG3x9pd+vNdfAMQ80wf8V+jtcFcK46WoADkl9AsCofu
+         x4pukWzU5Ze/w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Yevgeny Kliteynik <kliteyn@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, saeedm@nvidia.com,
-        davem@davemloft.net, kuba@kernel.org, muhammads@nvidia.com,
-        valex@nvidia.com, paulb@nvidia.com, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 191/217] net/mlx5: DR, Fix error flow in creating matcher
-Date:   Mon, 17 Jan 2022 21:19:14 -0500
-Message-Id: <20220118021940.1942199-191-sashal@kernel.org>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Lenny Szubowicz <lszubowi@redhat.com>,
+        Bob Moore <robert.moore@intel.com>,
+        Sasha Levin <sashal@kernel.org>, linux-acpi@vger.kernel.org,
+        devel@acpica.org
+Subject: [PATCH AUTOSEL 5.16 181/217] ACPICA: Executer: Fix the REFCLASS_REFOF case in acpi_ex_opcode_1A_0T_1R()
+Date:   Mon, 17 Jan 2022 21:19:04 -0500
+Message-Id: <20220118021940.1942199-181-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -54,105 +54,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yevgeny Kliteynik <kliteyn@nvidia.com>
+From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 
-[ Upstream commit 84dfac39c61fde04126e23723138128b50cd036f ]
+[ Upstream commit 24ea5f90ec9548044a6209685c5010edd66ffe8f ]
 
-The error code of nic matcher init functions wasn't checked.
-This patch improves the matcher init function and fix error flow bug:
-the handling of match parameter is moved into a separate function
-and error flow is simplified.
+ACPICA commit d984f12041392fa4156b52e2f7e5c5e7bc38ad9e
 
-Signed-off-by: Yevgeny Kliteynik <kliteyn@nvidia.com>
+If Operand[0] is a reference of the ACPI_REFCLASS_REFOF class,
+acpi_ex_opcode_1A_0T_1R () calls acpi_ns_get_attached_object () to
+obtain return_desc which may require additional resolution with
+the help of acpi_ex_read_data_from_field (). If the latter fails,
+the reference counter of the original return_desc is decremented
+which is incorrect, because acpi_ns_get_attached_object () does not
+increment the reference counter of the object returned by it.
+
+This issue may lead to premature deletion of the attached object
+while it is still attached and a use-after-free and crash in the
+host OS.  For example, this may happen when on evaluation of ref_of()
+a local region field where there is no registered handler for the
+given Operation Region.
+
+Fix it by making acpi_ex_opcode_1A_0T_1R () return Status right away
+after a acpi_ex_read_data_from_field () failure.
+
+Link: https://github.com/acpica/acpica/commit/d984f120
+Link: https://github.com/acpica/acpica/pull/685
+Reported-by: Lenny Szubowicz <lszubowi@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../mellanox/mlx5/core/steering/dr_matcher.c  | 53 +++++++++++--------
- 1 file changed, 32 insertions(+), 21 deletions(-)
+ drivers/acpi/acpica/exoparg1.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-index 793365242e852..3d0cdc36a91ab 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/steering/dr_matcher.c
-@@ -872,13 +872,12 @@ static int dr_matcher_init_fdb(struct mlx5dr_matcher *matcher)
- 	return ret;
- }
+diff --git a/drivers/acpi/acpica/exoparg1.c b/drivers/acpi/acpica/exoparg1.c
+index b639e930d6429..44b7c350ed5ca 100644
+--- a/drivers/acpi/acpica/exoparg1.c
++++ b/drivers/acpi/acpica/exoparg1.c
+@@ -1007,7 +1007,8 @@ acpi_status acpi_ex_opcode_1A_0T_1R(struct acpi_walk_state *walk_state)
+ 						    (walk_state, return_desc,
+ 						     &temp_desc);
+ 						if (ACPI_FAILURE(status)) {
+-							goto cleanup;
++							return_ACPI_STATUS
++							    (status);
+ 						}
  
--static int dr_matcher_init(struct mlx5dr_matcher *matcher,
--			   struct mlx5dr_match_parameters *mask)
-+static int dr_matcher_copy_param(struct mlx5dr_matcher *matcher,
-+				 struct mlx5dr_match_parameters *mask)
- {
-+	struct mlx5dr_domain *dmn = matcher->tbl->dmn;
- 	struct mlx5dr_match_parameters consumed_mask;
--	struct mlx5dr_table *tbl = matcher->tbl;
--	struct mlx5dr_domain *dmn = tbl->dmn;
--	int i, ret;
-+	int i, ret = 0;
- 
- 	if (matcher->match_criteria >= DR_MATCHER_CRITERIA_MAX) {
- 		mlx5dr_err(dmn, "Invalid match criteria attribute\n");
-@@ -898,10 +897,36 @@ static int dr_matcher_init(struct mlx5dr_matcher *matcher,
- 		consumed_mask.match_sz = mask->match_sz;
- 		memcpy(consumed_mask.match_buf, mask->match_buf, mask->match_sz);
- 		mlx5dr_ste_copy_param(matcher->match_criteria,
--				      &matcher->mask, &consumed_mask,
--				      true);
-+				      &matcher->mask, &consumed_mask, true);
-+
-+		/* Check that all mask data was consumed */
-+		for (i = 0; i < consumed_mask.match_sz; i++) {
-+			if (!((u8 *)consumed_mask.match_buf)[i])
-+				continue;
-+
-+			mlx5dr_dbg(dmn,
-+				   "Match param mask contains unsupported parameters\n");
-+			ret = -EOPNOTSUPP;
-+			break;
-+		}
-+
-+		kfree(consumed_mask.match_buf);
- 	}
- 
-+	return ret;
-+}
-+
-+static int dr_matcher_init(struct mlx5dr_matcher *matcher,
-+			   struct mlx5dr_match_parameters *mask)
-+{
-+	struct mlx5dr_table *tbl = matcher->tbl;
-+	struct mlx5dr_domain *dmn = tbl->dmn;
-+	int ret;
-+
-+	ret = dr_matcher_copy_param(matcher, mask);
-+	if (ret)
-+		return ret;
-+
- 	switch (dmn->type) {
- 	case MLX5DR_DOMAIN_TYPE_NIC_RX:
- 		matcher->rx.nic_tbl = &tbl->rx;
-@@ -919,22 +944,8 @@ static int dr_matcher_init(struct mlx5dr_matcher *matcher,
- 	default:
- 		WARN_ON(true);
- 		ret = -EINVAL;
--		goto free_consumed_mask;
--	}
--
--	/* Check that all mask data was consumed */
--	for (i = 0; i < consumed_mask.match_sz; i++) {
--		if (!((u8 *)consumed_mask.match_buf)[i])
--			continue;
--
--		mlx5dr_dbg(dmn, "Match param mask contains unsupported parameters\n");
--		ret = -EOPNOTSUPP;
--		goto free_consumed_mask;
- 	}
- 
--	ret =  0;
--free_consumed_mask:
--	kfree(consumed_mask.match_buf);
- 	return ret;
- }
- 
+ 						return_desc = temp_desc;
 -- 
 2.34.1
 
