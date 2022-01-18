@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 475BEC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:27:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E307C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:27:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245264AbiARC1O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:27:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:39016 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236727AbiARCZN (ORCPT
+        id S1343832AbiARC1T (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:27:19 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41576 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244545AbiARCY4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:25:13 -0500
+        Mon, 17 Jan 2022 21:24:56 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A844EB81239;
-        Tue, 18 Jan 2022 02:25:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19702C36AE3;
-        Tue, 18 Jan 2022 02:25:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BC70E60AAF;
+        Tue, 18 Jan 2022 02:24:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6585CC36AEB;
+        Tue, 18 Jan 2022 02:24:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472710;
-        bh=+ssm34GG7w4RratDitFIfpR8USrSyhcfbr2ppoi86JE=;
+        s=k20201202; t=1642472695;
+        bh=aXgAlWjFhuTYaGo0IQrs5NxFaBkHUtQAgDjh1OBwC9o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WvDBI1lAd2XUXiyRGasAF93buxMtWr2ChGAIdDz0LjOU2r1ojlTijMzcfrx05HSwS
-         k16DFcAdz4vxQsgWwA3olMX3790t0yyJWZqjEDSgzOMpZL6UyqojZ3nyZZa4ObFH+G
-         THl3CYW5PB+pvzxlV7SNvlPaDbTcRoVX8PliV1oblaaZNZ1+5TuTL5qs4ywDzHbrM6
-         gk3NFRJbktjbZIzzLauopOhgSs+srjEpa1mFOkrbZgOaB7/lSMHubCZLjBlSoPLz1/
-         syEp5ZpGWKMPqGSbu8iMPiHIAEjLcZxU66VptGF4PVvuFDq7lAM0ThzlU3uvZHJnla
-         npwXV0MTOMNrw==
+        b=KQxVg9bd00pHTluwK/WTOgoeXgHTSYxRoti4kkVFvmKHZI2H8bacqo5TlDrnxP6sp
+         26DZNfDYGRAAfhCOItrEp20Mr2m7EGxGebsUnQwCDwsLoFq4lNR3TIcy+j6n0pQeR5
+         SgrWArqnpfjOz+iEEIrre/SuumhdAD7IKLbvicqbX0kiQgxHlD+7DegE70RGSL8512
+         c+WKOAT1cC4/TlYqsknFxuYnN87lTPiezNjeeuDnvAE6Qo1kn1uhbjg3i6NlYXsu2I
+         HDajKN9YpUe4Sok6PzbvmWIQiuFsZoAr/WEhG5yObQ6t0gPrFn7Q1q2G2wqfmv23qB
+         LNrbZPMUPpA4Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miri Korenblit <miriam.rachel.korenblit@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, ayala.barazani@intel.com,
-        harish.mitty@intel.com, matt.chen@intel.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 106/217] iwlwifi: acpi: fix wgds rev 3 size
-Date:   Mon, 17 Jan 2022 21:17:49 -0500
-Message-Id: <20220118021940.1942199-106-sashal@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        rkardell@mida.se, Sasha Levin <sashal@kernel.org>,
+        mchehab@kernel.org, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 101/217] media: m920x: don't use stack on USB reads
+Date:   Mon, 17 Jan 2022 21:17:44 -0500
+Message-Id: <20220118021940.1942199-101-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -51,35 +49,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miri Korenblit <miriam.rachel.korenblit@intel.com>
+From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
-[ Upstream commit dc276ffd0754e94080565c10b964f3c211879fdd ]
+[ Upstream commit a2ab06d7c4d6bfd0b545a768247a70463e977e27 ]
 
-The exact size of WGDS revision 3 was calculated using the wrong
-parameters. Fix it.
+Using stack-allocated pointers for USB message data don't work.
+This driver is almost OK with that, except for the I2C read
+logic.
 
-Signed-off-by: Miri Korenblit <miriam.rachel.korenblit@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211204130722.12c5b0cffe52.I7f342502f628f43a7e000189a699484bcef0f562@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Fix it by using a temporary read buffer, just like on all other
+calls to m920x_read().
+
+Link: https://lore.kernel.org/all/ccc99e48-de4f-045e-0fe4-61e3118e3f74@mida.se/
+Reported-by: rkardell@mida.se
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/fw/acpi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/usb/dvb-usb/m920x.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/fw/acpi.c b/drivers/net/wireless/intel/iwlwifi/fw/acpi.c
-index bf431fa4fe81f..2e4590876bc33 100644
---- a/drivers/net/wireless/intel/iwlwifi/fw/acpi.c
-+++ b/drivers/net/wireless/intel/iwlwifi/fw/acpi.c
-@@ -789,7 +789,7 @@ int iwl_sar_get_wgds_table(struct iwl_fw_runtime *fwrt)
- 				 * looking up in ACPI
- 				 */
- 				if (wifi_pkg->package.count !=
--				    min_size + profile_size * num_profiles) {
-+				    hdr_size + profile_size * num_profiles) {
- 					ret = -EINVAL;
- 					goto out_free;
- 				}
+diff --git a/drivers/media/usb/dvb-usb/m920x.c b/drivers/media/usb/dvb-usb/m920x.c
+index 4bb5b82599a79..691e05833db19 100644
+--- a/drivers/media/usb/dvb-usb/m920x.c
++++ b/drivers/media/usb/dvb-usb/m920x.c
+@@ -274,6 +274,13 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
+ 			/* Should check for ack here, if we knew how. */
+ 		}
+ 		if (msg[i].flags & I2C_M_RD) {
++			char *read = kmalloc(1, GFP_KERNEL);
++			if (!read) {
++				ret = -ENOMEM;
++				kfree(read);
++				goto unlock;
++			}
++
+ 			for (j = 0; j < msg[i].len; j++) {
+ 				/* Last byte of transaction?
+ 				 * Send STOP, otherwise send ACK. */
+@@ -281,9 +288,12 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
+ 
+ 				if ((ret = m920x_read(d->udev, M9206_I2C, 0x0,
+ 						      0x20 | stop,
+-						      &msg[i].buf[j], 1)) != 0)
++						      read, 1)) != 0)
+ 					goto unlock;
++				msg[i].buf[j] = read[0];
+ 			}
++
++			kfree(read);
+ 		} else {
+ 			for (j = 0; j < msg[i].len; j++) {
+ 				/* Last byte of transaction? Then send STOP. */
 -- 
 2.34.1
 
