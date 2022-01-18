@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1170EC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62EFEC433EF
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 01:39:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244523AbiARBjf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 20:39:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47142 "EHLO
+        id S244544AbiARBjg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 20:39:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244153AbiARBi0 (ORCPT
+        with ESMTP id S244300AbiARBi2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 20:38:26 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CB73C061746;
-        Mon, 17 Jan 2022 17:38:25 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id f21so15809421eds.11;
-        Mon, 17 Jan 2022 17:38:25 -0800 (PST)
+        Mon, 17 Jan 2022 20:38:28 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22488C06173E;
+        Mon, 17 Jan 2022 17:38:28 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id m4so72773926edb.10;
+        Mon, 17 Jan 2022 17:38:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=q0OwDpW3SXPApRGgUCRLy02IG26qd83+5ZiAXOatBVA=;
-        b=Sx4tP2lIsrC3FSrqq+aRf3l4O/x66Ky3Lp8uOzU+vgd8vz71ZOUMgvr5UBxlaySELC
-         tlIlSfh1iLwYDtcW9hG0EZ2ODvfGvvw5Hy22Xp6PXpUCFWkDwtyhjTnyi2i4EztdZXRg
-         6LoHFkO6osuP7KXPxfnm/D+noS1VgzFNcoFRLDRmugFpLWcI1OGm5g+HBPO8moI/9ouy
-         9GD8Q6f2x8BYin0T+XY9U8fnBsuBWY5mfPmYXgl6WKNhHW7Tj8eU7Yu5ODwfU/jsdSfT
-         vwkAoYp0tStQqDGCPyD+iobTBzwXnEGGFRxvnl2gx89KbrXZSqS0mNlpuDjJyCFnaNkh
-         tVSQ==
+        bh=VSVdYqZu+t7n9C8goCLOO4CRPlINCB2udmlWCoWNckw=;
+        b=Iw6R40fP3dkSgSlhAPTtaF00jNPOfCL5VGlZYjK03IeaMF2BLK3vaS8wUyFQGCz+VT
+         cBgTI4OZBNPVFBelwT1eJO1+KqMKFheVCsrobbT1u2A/YxSO4O+e5W2Ob2JaA7pwcRV3
+         2T0m7dl9oCKlzJbQG6jxq868QHu8DI2k6sny0PHD/7DOYNnAvrklvimnfuHvLM6Pfuin
+         oKxayTnnoqIjHqfTzr1Xy6+EkM7Wm/mFVdJUgQn96BdR2z541XuY9485KObYP845wi64
+         CCa79GTLLJ5DgaaO23Q/gnTj8cammfejLX81CYCAGAprhrQe9Kd7lq3Lp9eIq6X9moU3
+         Npbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=q0OwDpW3SXPApRGgUCRLy02IG26qd83+5ZiAXOatBVA=;
-        b=5ppx2pzYIBS43s8Eb5aehWnypPxVbH5vOgYX9+FZ/8hLBY4NY/6gEoeGHmR6zUp06F
-         GKR70GSJWIXBe+A4SMGPWfaNses3SfvVLRkcxlmCO/YseX4dgfH50eG+gzrj9b5MXTD3
-         I5pYJXGouYso2A29k22jemG4XbYoEnslcmv4sZPqVK+WO/T3loa7LyNDldOSvfX+rVHz
-         zA8DDNOAtUcgZO2rv0LLkhR90ATaQMDpqx55PF1/VBfgTPsLZPr1XddziHfZ828lV5Pl
-         hYuwdD6vNFrv3PkK1PDmKA6Dhtg4UcI8c3IKp3A2F0O88nthF9kM6DxEqdRxsjMLXjbM
-         f5+A==
-X-Gm-Message-State: AOAM530rvkiy7tWOsCJQ73yZb59Ahv+7K0Sykt2+IZGTXXfmSPMHPILG
-        OR482W7XVP/YSIAdhITqYwj9zKz3YM4=
-X-Google-Smtp-Source: ABdhPJxHDqK2bfbP5/1Et0TUTldtTYEaliiLmjOKBIsOsVrKJ0MEr1RCPuNomdCq6cOHDqWKHSC3OQ==
-X-Received: by 2002:a05:6402:502:: with SMTP id m2mr21920012edv.273.1642469904094;
-        Mon, 17 Jan 2022 17:38:24 -0800 (PST)
+        bh=VSVdYqZu+t7n9C8goCLOO4CRPlINCB2udmlWCoWNckw=;
+        b=bmRSKW1yyPKI8Y/ZdoC9eMpUo7f5hwQvT++7RJjGWmROPYiWLStBOck57PQceJJQfU
+         cAB62byzX+qrSWN6N/g2zse6rhOCT57vhBf9i3IKNZcGYcUt7QUCYcO+DYSPaUj5jM0D
+         RiEQ8A/Gcq2BME6ki0yPlHApW3RQ1fgose1yxnsFauMK3SZrueRRZuwUvMUQQDM2bKsw
+         jS9jd3UqBis1jjWe26EifT7XE6DIvNiuCYQTAEXCqB98z4npG4qkiFtOcVtNP/1p1xqg
+         MfOc3UuXWlncIDlT6EyHhtLOLMQxVxAVqukDidp1TLNXGjjmxlW43ZG0roJY0a2cx62k
+         bNsA==
+X-Gm-Message-State: AOAM531WPI/nF13pdp1G6I4rdfM3ltPR8hLXyyJvM6I92qxBbI4+MIcf
+        saBvhof8tUHiH4RsAsiTfOI=
+X-Google-Smtp-Source: ABdhPJy8FgXYuNYM+kI+n9wq1fX34UI9qUsX6/Iu30R6gaimebHDFgZzRI5QUD+rzoUpJzmoIG7X7Q==
+X-Received: by 2002:aa7:c30f:: with SMTP id l15mr22772398edq.310.1642469906553;
+        Mon, 17 Jan 2022 17:38:26 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id kj18sm3990675ejc.139.2022.01.17.17.38.23
+        by smtp.googlemail.com with ESMTPSA id kj18sm3990675ejc.139.2022.01.17.17.38.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 17:38:23 -0800 (PST)
+        Mon, 17 Jan 2022 17:38:26 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -55,9 +55,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [PATCH 14/16] ARM: dts: qcom: remove redundant binding from ipq8064 rb3011 dts
-Date:   Tue, 18 Jan 2022 02:20:46 +0100
-Message-Id: <20220118012051.21691-17-ansuelsmth@gmail.com>
+Subject: [PATCH 16/17] ARM: dts: qcom: add ipq8064-v2.0 dtsi
+Date:   Tue, 18 Jan 2022 02:20:49 +0100
+Message-Id: <20220118012051.21691-20-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220118012051.21691-1-ansuelsmth@gmail.com>
 References: <20220118012051.21691-1-ansuelsmth@gmail.com>
@@ -67,56 +67,92 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mdio0_pins are now declared in ipq8064 dtsi. Usb phy are enabled by
-default.
+Many devices are based on the v2.0 of the ipq8064 SoC. Main difference
+is a change in the pci compatible and different way to configre the usb
+phy.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- arch/arm/boot/dts/qcom-ipq8064-rb3011.dts | 17 -----------------
- 1 file changed, 17 deletions(-)
+ arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi | 70 ++++++++++++++++++++++++
+ 1 file changed, 70 insertions(+)
+ create mode 100644 arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi
 
-diff --git a/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts b/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
-index 596d129d4a95..d495b81b587b 100644
---- a/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
-+++ b/arch/arm/boot/dts/qcom-ipq8064-rb3011.dts
-@@ -255,10 +255,6 @@ &gsbi7_serial {
- 	status = "okay";
- };
- 
--&hs_phy_1 {
--	status = "okay";
--};
--
- &nand {
- 	status = "okay";
- 
-@@ -305,15 +301,6 @@ mux {
- 		};
- 	};
- 
--	mdio0_pins: mdio0_pins {
--		mux {
--			pins = "gpio0", "gpio1";
--			function = "gpio";
--			drive-strength = <8>;
--			bias-disable;
--		};
--	};
--
- 	mdio1_pins: mdio1_pins {
- 		mux {
- 			pins = "gpio10", "gpio11";
-@@ -354,10 +341,6 @@ mux {
- 	};
- };
- 
--&ss_phy_1 {
--	status = "okay";
--};
--
- &usb3_1 {
- 	pinctrl-0 = <&usb1_pwr_en_pins>;
- 	pinctrl-names = "default";
+diff --git a/arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi b/arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi
+new file mode 100644
+index 000000000000..c082c3cd1a19
+--- /dev/null
++++ b/arch/arm/boot/dts/qcom-ipq8064-v2.0.dtsi
+@@ -0,0 +1,70 @@
++// SPDX-License-Identifier: GPL-2.0
++#include "qcom-ipq8064.dtsi"
++
++/ {
++	aliases {
++		serial0 = &gsbi4_serial;
++	};
++
++	chosen {
++		stdout-path = "serial0:115200n8";
++	};
++
++	reserved-memory {
++		#address-cells = <1>;
++		#size-cells = <1>;
++		ranges;
++
++		rsvd@41200000 {
++			reg = <0x41200000 0x300000>;
++			no-map;
++		};
++	};
++};
++
++&gsbi4 {
++	qcom,mode = <GSBI_PROT_I2C_UART>;
++	status = "okay";
++
++	serial@16340000 {
++		status = "okay";
++	};
++	/*
++	 * The i2c device on gsbi4 should not be enabled.
++	 * On ipq806x designs gsbi4 i2c is meant for exclusive
++	 * RPM usage. Turning this on in kernel manifests as
++	 * i2c failure for the RPM.
++	 */
++};
++
++&CPU_SPC {
++	status = "okay";
++};
++
++&pcie0 {
++	compatible = "qcom,pcie-ipq8064-v2";
++};
++
++&pcie1 {
++	compatible = "qcom,pcie-ipq8064-v2";
++};
++
++&pcie2 {
++	compatible = "qcom,pcie-ipq8064-v2";
++};
++
++&sata {
++	ports-implemented = <0x1>;
++};
++
++&ss_phy_0 {
++	qcom,rx-eq = <2>;
++	qcom,tx-deamp_3_5db = <32>;
++	qcom,mpll = <5>;
++};
++
++&ss_phy_1 {
++	qcom,rx-eq = <2>;
++	qcom,tx-deamp_3_5db = <32>;
++	qcom,mpll = <5>;
++};
 -- 
 2.33.1
 
