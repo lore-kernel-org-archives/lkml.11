@@ -2,51 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6097CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:21:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 295F3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:21:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244592AbiARCVs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:21:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56752 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244675AbiARCVJ (ORCPT
+        id S244699AbiARCVv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:21:51 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:37838 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244686AbiARCVK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:21:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FCA6C061769;
-        Mon, 17 Jan 2022 18:21:08 -0800 (PST)
+        Mon, 17 Jan 2022 21:21:10 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57A9CB8122C;
-        Tue, 18 Jan 2022 02:21:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3CFBC36AEB;
-        Tue, 18 Jan 2022 02:21:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C73D961163;
+        Tue, 18 Jan 2022 02:21:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E5CAC36AF2;
+        Tue, 18 Jan 2022 02:21:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472466;
-        bh=oN+riz2KPBpT4JWOx2X4OywlB2pWHJD4t8/cTC9SMSQ=;
+        s=k20201202; t=1642472469;
+        bh=VbjM88vfkzibxjmt+y58uIpvisAVC02ljgpwkY+7PCM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HvZ44EzXkUAJDymBLi0xca+pVRZjoSLL7CslTwxTTYEySkGqt+Ye5SUxZ6aA0roTX
-         SGXMIQSQnfnVdT2/vhe6GdT1qWprevH1nYEgG723diX5q4lUgMXfUO+/o0NDvLOFev
-         BeXxJqIhUsp+/kkVVLcSrK/cdI2Z4RPVfugwFQ1E8+XSQrASqKwq6Yw3xFGQ8nJ1a/
-         1BOd8ydNpNUR9au2BT6tPDJbsof+lZip4zh36ELB6VsohIVHx4ka+tZmsz3BpuxwRB
-         aznhBPt7yTsyIAaX6xLUyAQPX2lY5j1VR0HDttUMZ+ZA+OMHDz1Duxcmo4/Awy9dep
-         0WOEQmOpBs/pw==
+        b=IyIqOvMJqL7RaoEbzRxRgUDtWsbYLmZquDAk1r1YUi3abPpS4Rk5WRFB17kDXL8Hi
+         xCDivf4R3oaw613eqz3sXdXVM4IQG96lHeHeI5jVDHSqInVLlEj27ym/okj7o05KkB
+         X7Gnwmz8SvkmdG9tl5jxUynZ3VFmKrTF6iffT2iPJvI3uru8eqADfrIyNfKUDmzlA8
+         kZxYppO0vKJM3jgwkm+FUejK8MkvEdMagrWA5Pi+dFabkrufg8QdKp5JyJfuWxsLN8
+         GgFIh/7kSHPidd3ZR93i8AiaMkYVkgW8qrNI2q5sjJt35MctfT7pJ5jl3BnYjJPXrx
+         Y+R0mBthx2h6g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, mchehab@kernel.org,
-        gregkh@linuxfoundation.org, hverkuil-cisco@xs4all.nl,
-        kitakar@gmail.com, arnd@arndb.de, tomi.valkeinen@ideasonboard.com,
-        alex.dewar90@gmail.com, alinesantanacordeiro@gmail.com,
-        linux-media@vger.kernel.org, linux-staging@lists.linux.dev
-Subject: [PATCH AUTOSEL 5.16 022/217] media: atomisp: check before deference asd variable
-Date:   Mon, 17 Jan 2022 21:16:25 -0500
-Message-Id: <20220118021940.1942199-22-sashal@kernel.org>
+Cc:     Wen Gong <wgong@codeaurora.org>, Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 024/217] ath11k: enable IEEE80211_VHT_EXT_NSS_BW_CAPABLE if NSS ratio enabled
+Date:   Mon, 17 Jan 2022 21:16:27 -0500
+Message-Id: <20220118021940.1942199-24-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,57 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Wen Gong <wgong@codeaurora.org>
 
-[ Upstream commit 71665d816214124d6bc4eb80314ac8f84ecacd78 ]
+[ Upstream commit 78406044bdd0cc8987bc082b76867c63ab1c6af8 ]
 
-The asd->isp was referenced before checking if asd is not
-NULL.
+When NSS ratio enabled reported by firmware, SUPPORTS_VHT_EXT_NSS_BW
+is set in ath11k, meanwhile IEEE80211_VHT_EXT_NSS_BW_CAPABLE also
+need to be set, otherwise it is invalid because spec in IEEE Std
+802.11™‐2020 as below.
 
-This fixes this warning:
+Table 9-273-Supported VHT-MCS and NSS Set subfields, it has subfield
+VHT Extended NSS BW Capable, its definition is:
+Indicates whether the STA is capable of interpreting the Extended NSS
+BW Support subfield of the VHT Capabilities Information field.
 
-	../drivers/staging/media/atomisp/pci/atomisp_cmd.c:5548 atomisp_set_fmt_to_snr() warn: variable dereferenced before check 'asd' (see line 5540)
+dmesg have a message without this patch:
 
-While here, avoid getting the pipe pointer twice.
+ieee80211 phy0: copying sband (band 1) due to VHT EXT NSS BW flag
 
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+It means mac80211 will set IEEE80211_VHT_EXT_NSS_BW_CAPABLE if ath11k not
+set it in ieee80211_register_hw(). So it is better to set it in ath11k.
+
+Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-01720.1-QCAHSPSWPL_V1_V2_SILICONZ_LITE-1
+
+Signed-off-by: Wen Gong <wgong@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211013073704.15888-1-wgong@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/media/atomisp/pci/atomisp_cmd.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/net/wireless/ath/ath11k/mac.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_cmd.c b/drivers/staging/media/atomisp/pci/atomisp_cmd.c
-index 75a531667d743..1ddb9c815a3cb 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_cmd.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_cmd.c
-@@ -5529,8 +5529,8 @@ static int atomisp_set_fmt_to_snr(struct video_device *vdev,
- 				  unsigned int padding_w, unsigned int padding_h,
- 				  unsigned int dvs_env_w, unsigned int dvs_env_h)
- {
--	struct atomisp_sub_device *asd = atomisp_to_video_pipe(vdev)->asd;
- 	struct atomisp_video_pipe *pipe = atomisp_to_video_pipe(vdev);
-+	struct atomisp_sub_device *asd = pipe->asd;
- 	const struct atomisp_format_bridge *format;
- 	struct v4l2_subdev_pad_config pad_cfg;
- 	struct v4l2_subdev_state pad_state = {
-@@ -5541,7 +5541,7 @@ static int atomisp_set_fmt_to_snr(struct video_device *vdev,
- 	};
- 	struct v4l2_mbus_framefmt *ffmt = &vformat.format;
- 	struct v4l2_mbus_framefmt *req_ffmt;
--	struct atomisp_device *isp = asd->isp;
-+	struct atomisp_device *isp;
- 	struct atomisp_input_stream_info *stream_info =
- 	    (struct atomisp_input_stream_info *)ffmt->reserved;
- 	u16 stream_index = ATOMISP_INPUT_STREAM_GENERAL;
-@@ -5555,6 +5555,8 @@ static int atomisp_set_fmt_to_snr(struct video_device *vdev,
- 		return -EINVAL;
- 	}
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 1cc55602787bb..0a196fb3df9fd 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -4561,6 +4561,10 @@ ath11k_create_vht_cap(struct ath11k *ar, u32 rate_cap_tx_chainmask,
+ 	vht_cap.vht_supported = 1;
+ 	vht_cap.cap = ar->pdev->cap.vht_cap;
  
-+	isp = asd->isp;
++	if (ar->pdev->cap.nss_ratio_enabled)
++		vht_cap.vht_mcs.tx_highest |=
++			cpu_to_le16(IEEE80211_VHT_EXT_NSS_BW_CAPABLE);
 +
- 	v4l2_fh_init(&fh.vfh, vdev);
+ 	ath11k_set_vht_txbf_cap(ar, &vht_cap.cap);
  
- 	stream_index = atomisp_source_pad_to_stream_id(asd, source_pad);
+ 	rxmcs_map = 0;
 -- 
 2.34.1
 
