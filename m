@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B6BAC4321E
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8544C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:12:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355388AbiARDLg (ORCPT
+        id S1355323AbiARDL3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:11:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35982 "EHLO
+        Mon, 17 Jan 2022 22:11:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240359AbiARC46 (ORCPT
+        with ESMTP id S1351550AbiARCyo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:56:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1276C0613AD;
-        Mon, 17 Jan 2022 18:44:40 -0800 (PST)
+        Mon, 17 Jan 2022 21:54:44 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A425EC02B84C;
+        Mon, 17 Jan 2022 18:43:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 88980B8125F;
-        Tue, 18 Jan 2022 02:44:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 79901C36AEB;
-        Tue, 18 Jan 2022 02:44:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8593C612E5;
+        Tue, 18 Jan 2022 02:43:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C498C36AF2;
+        Tue, 18 Jan 2022 02:43:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473878;
-        bh=heTk60CDtiDxyRuaYkCe/Cwdp8eX4YXc3TH7vtDBWIo=;
+        s=k20201202; t=1642473827;
+        bh=l0GpjSvIxki+YLVBG10eC3DNjPlwaQrzUJ48btOsIBc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pKyk3GF2avIvEl8R6l8e9ybJWkMHCnHfPQMfka9Upq/MdvrmcSlMAz9x8CvQ/wze1
-         4kvm1skQzs3qZpRJhOJ639KVFFclUXfCzK3JyNZUMSkKSwZ6SvyvhUKNcKWTv9MxDV
-         /wHmfVeMMUWkPCn02yqrl/QPwASdkqNg8qBD8v0b/ri9BrnE5y+zmchr70pYLE1l1d
-         HoxyTMT5VuPj4kgFEYm5E0Aj9oO1se7Yx7sZyML+TDnfF9/Pp+kcssYUWCgBDZe0XC
-         g30zlXhQKmCapIHqC5hMcljmd5rTrWMgcedwhjhinXXcoUb2EtfhOh0ca5Yhxvu0aq
-         +kPbMVi6pMS+Q==
+        b=lHKTCkzCcdInh7odJ62WB2nHSqtxPO6IO8daynrtxuehVyBsSVmpyD9tdeZajHZ41
+         TYb7U1hdYOa9cRZ0fTvIrl2UdMw8moRXpqZJE6bhcaXEG4948TgUiTga2PLuxACRzQ
+         VlZJeBwnNRvQ4zC8j/NlF6XLRR9qV/9P5nS1/aTcmIn6nJC0P1jcDp//XnLUnzqfYP
+         EHwK5qDB6HfBmeEDvqZGLfQVeWKay75op5boTGzdUiRl19MO0DfAV/06m0La1TXPzp
+         cwqHKbgp/vWLvtXBazQMeQ74mMqXimeplbu3Ze9eDHBT7YeHEZevFoMaqT+v4Y4Pxd
+         qz3UbZrWhvPjg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Yonghong Song <yhs@fb.com>, Sasha Levin <sashal@kernel.org>,
-        daniel@iogearbox.net, netdev@vger.kernel.org, bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 03/73] libbpf: Validate that .BTF and .BTF.ext sections contain data
-Date:   Mon, 17 Jan 2022 21:43:22 -0500
-Message-Id: <20220118024432.1952028-3-sashal@kernel.org>
+Cc:     Mark Langsdorf <mlangsdo@redhat.com>,
+        Bob Moore <robert.moore@intel.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, linux-acpi@vger.kernel.org,
+        devel@acpica.org
+Subject: [PATCH AUTOSEL 5.10 090/116] ACPICA: actypes.h: Expand the ACPI_ACCESS_ definitions
+Date:   Mon, 17 Jan 2022 21:39:41 -0500
+Message-Id: <20220118024007.1950576-90-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
-References: <20220118024432.1952028-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,41 +54,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Mark Langsdorf <mlangsdo@redhat.com>
 
-[ Upstream commit 62554d52e71797eefa3fc15b54008038837bb2d4 ]
+[ Upstream commit f81bdeaf816142e0729eea0cc84c395ec9673151 ]
 
-.BTF and .BTF.ext ELF sections should have SHT_PROGBITS type and contain
-data. If they are not, ELF is invalid or corrupted, so bail out.
-Otherwise this can lead to data->d_buf being NULL and SIGSEGV later on.
-Reported by oss-fuzz project.
+ACPICA commit bc02c76d518135531483dfc276ed28b7ee632ce1
 
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Yonghong Song <yhs@fb.com>
-Link: https://lore.kernel.org/bpf/20211103173213.1376990-4-andrii@kernel.org
+The current ACPI_ACCESS_*_WIDTH defines do not provide a way to
+test that size is small enough to not cause an overflow when
+applied to a 32-bit integer.
+
+Rather than adding more magic numbers, add ACPI_ACCESS_*_SHIFT,
+ACPI_ACCESS_*_MAX, and ACPI_ACCESS_*_DEFAULT #defines and
+redefine ACPI_ACCESS_*_WIDTH in terms of the new #defines.
+
+This was inititally reported on Linux where a size of 102 in
+ACPI_ACCESS_BIT_WIDTH caused an overflow error in the SPCR
+initialization code.
+
+Link: https://github.com/acpica/acpica/commit/bc02c76d
+Signed-off-by: Mark Langsdorf <mlangsdo@redhat.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/lib/bpf/libbpf.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ include/acpi/actypes.h | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 2a1dbf52fc9a5..54e776886bf1e 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -1578,8 +1578,12 @@ static int bpf_object__elf_collect(struct bpf_object *obj, int flags)
- 		} else if (strcmp(name, MAPS_ELF_SEC) == 0) {
- 			obj->efile.btf_maps_shndx = idx;
- 		} else if (strcmp(name, BTF_ELF_SEC) == 0) {
-+			if (sh->sh_type != SHT_PROGBITS)
-+				return -LIBBPF_ERRNO__FORMAT;
- 			btf_data = data;
- 		} else if (strcmp(name, BTF_EXT_ELF_SEC) == 0) {
-+			if (sh->sh_type != SHT_PROGBITS)
-+				return -LIBBPF_ERRNO__FORMAT;
- 			btf_ext_data = data;
- 		} else if (sh.sh_type == SHT_SYMTAB) {
- 			if (obj->efile.symbols) {
+diff --git a/include/acpi/actypes.h b/include/acpi/actypes.h
+index 647cb11d0a0a3..7334037624c5c 100644
+--- a/include/acpi/actypes.h
++++ b/include/acpi/actypes.h
+@@ -536,8 +536,14 @@ typedef u64 acpi_integer;
+  * Can be used with access_width of struct acpi_generic_address and access_size of
+  * struct acpi_resource_generic_register.
+  */
+-#define ACPI_ACCESS_BIT_WIDTH(size)     (1 << ((size) + 2))
+-#define ACPI_ACCESS_BYTE_WIDTH(size)    (1 << ((size) - 1))
++#define ACPI_ACCESS_BIT_SHIFT		2
++#define ACPI_ACCESS_BYTE_SHIFT		-1
++#define ACPI_ACCESS_BIT_MAX		(31 - ACPI_ACCESS_BIT_SHIFT)
++#define ACPI_ACCESS_BYTE_MAX		(31 - ACPI_ACCESS_BYTE_SHIFT)
++#define ACPI_ACCESS_BIT_DEFAULT		(8 - ACPI_ACCESS_BIT_SHIFT)
++#define ACPI_ACCESS_BYTE_DEFAULT	(8 - ACPI_ACCESS_BYTE_SHIFT)
++#define ACPI_ACCESS_BIT_WIDTH(size)	(1 << ((size) + ACPI_ACCESS_BIT_SHIFT))
++#define ACPI_ACCESS_BYTE_WIDTH(size)	(1 << ((size) + ACPI_ACCESS_BYTE_SHIFT))
+ 
+ /*******************************************************************************
+  *
 -- 
 2.34.1
 
