@@ -2,60 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE542C4707E
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 00:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DFD6C35270
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 00:19:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243919AbiARASx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 19:18:53 -0500
-Received: from mail-co1nam11on2040.outbound.protection.outlook.com ([40.107.220.40]:47488
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        id S244029AbiARATE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 19:19:04 -0500
+Received: from mail-dm6nam11on2080.outbound.protection.outlook.com ([40.107.223.80]:44309
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S243852AbiARASp (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 19:18:45 -0500
+        id S243881AbiARASu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 19:18:50 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZCu8mxRonhDuZpCZAOsowpI3NzQWUJa1BJQss5OUP1XkntxG5KN1JoS1/UtNXT40K5XthSgGxaiy/n/z8o+0oZuy6sO0wyluYMgTwJ813VASzdUvXarNhCH3LDsUmNBH7UKN7oDoWFW8WRAQzjzgk3A4GLcU81sZ+HHlI+BnD3RF6rkM8Tf2fXC6ROktQO4+8Ct1RXMXzphKGvrKsfT54JlMOdcqVOENJAUhbb78okM96yKeqHGjmdCEL+Q7SQUh6SNft4bjONDZxXWgfoV8EOjMJF3LcsFkOijdm60H2sOqww8sowXZcGAlneOnhCTFARTQ9GbpmZrttdOmnrMatg==
+ b=MBgw12IcA2s5GQB+5wkkaFaKRs1M3bQcLVbbEv2VmJUbI5djSUKd6dddVLmKPjXiZX4LuBZ3TOz2BIEqlnjBGb4EIfanYMThxuucgM+BxOZ7lLIzj9r8IvVRs2ZfBB8ZWKU3r3TeUpQGWP+YzS0YsbY8N0Jo0mCPrUZBMVGeec+AWce7SZ0Ib0+jqbry8sxAbsore/WacpwBzdZScun7YrjM0m8IYWQ3Q9PacKgeByvEIEWQALyv+Oe2Xs9D1NshyYU+1KsqIEnx/BF2nV7aGdGD1Gk6YDjzTdNOH0lmeIn1c9jVZl9lRpgPQPuh6u0lZL0n3GM4TATOoibJu6AVdg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Uz89TBnmFTkwRmW7eNIGKhuILuCwd4iot43QXR+JWeQ=;
- b=jq8CxlY+FAxjhfBz34HrfZOvkSt2MWrNw7Ih9jkTxFjCqgiA7YNXHtrrlgsFgcg/Sv3daUEVfE70WMsDf75AgFLxV5n9Raze9+DCfKFGx+jj03l1qcxlmyXpiqdl0a6y3CjJoAhTHB2GVP4WMG1bxV7Esc4ZgwApsOvV2JbKsMKhqt5yZ2qZyXne/p655TlzlxL485WaCk6EYTibedm3jtgrdg5hzD1U1Jhe5y98qjbGkipLH9o1HLVHoevWAf47nbeKJqrICRe7z0nMpQ9/sFjIUZsndEhxCXfgmRXrZDRTZ1yMNv0C2VYqM0Q7qwrN4hD5i6vm7NJHzROfKx2JiQ==
+ bh=D3R2i4wriZq45cwcl1HhTgnbevEaFjfJ3BdvABtlWSw=;
+ b=AYxWTkbe4ITU+/bp6ZIQW3yGOjtGrnPQE7jZzUJGSBR1hzVCHcDrnDy40fA8rLmPpTtUbFWdrxNp0xhhJDpnI04QUZBMKTK+qZv1cZqvfOanmMWsHhHeF4rXTt1a2WbJIWKstnl3AtP8SqNnguqwhI2feKPCL1kt0aWDIv/cAEknBcGJzYLgPn3IK/9l1bSacsh2cKk5D0aXpXEpQdO/vakRYKFq9uuXmRuD8bp4K7b35UyDD5DabwrJadFBYAyQ5iuNX9NXU7lPXwNcGNBffB+CPX6twJ+PI2OujiYz/L0zC8rCl3+JhUADncd3qfIS2oXwWAgduy8uE61O9w1TDA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.234) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
+ 12.22.5.236) smtp.rcpttodomain=gmail.com smtp.mailfrom=nvidia.com; dmarc=pass
  (p=reject sp=reject pct=100) action=none header.from=nvidia.com; dkim=none
  (message not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
  s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Uz89TBnmFTkwRmW7eNIGKhuILuCwd4iot43QXR+JWeQ=;
- b=R/lz1RRV6Z8WjRqVgPcDb6UtbYCgWaqxs5opuxG4M0aJ19uW4gR3R56ojgokQ3hNVZQgN3zlS46l+IRX5TUvjrveztfobwtM0UuFIdcq1Tpr76a6DAv4ahyqTxkC0i6D9TMo8aQArWcveaS7W6PUk5nmi9iupGUWBZ11sIi+oFVNGh/FaIUvNVpAlc9NAZZ5jJvBxYdt/ElIFq4EWW0MzLhC6s3kZrNh4eBEHJWklnqRV9S+AkD9yhAFdSGL7QWYUJc5uv3MxroAA3TwG8c5/yu1uWwJDFRAfSjUIdCqkEXKekJvML8qkJL2uy2FdUnDdT0aC8muSjMnR0lhWXvrXA==
-Received: from DM6PR06CA0060.namprd06.prod.outlook.com (2603:10b6:5:54::37) by
- DM6PR12MB3113.namprd12.prod.outlook.com (2603:10b6:5:11b::28) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4888.11; Tue, 18 Jan 2022 00:18:42 +0000
-Received: from DM6NAM11FT040.eop-nam11.prod.protection.outlook.com
- (2603:10b6:5:54:cafe::cf) by DM6PR06CA0060.outlook.office365.com
- (2603:10b6:5:54::37) with Microsoft SMTP Server (version=TLS1_2,
+ bh=D3R2i4wriZq45cwcl1HhTgnbevEaFjfJ3BdvABtlWSw=;
+ b=nHQjJQGYfIHgFmXhsk2MD3xKY3MCph+ATu8nO+Gy3KAnpx1WJ2RkkgE7bQVJZsaDITDyw6chzYszxzsWU0xI3xcFFNlahoir/S0j0OJR9RqTy5SUcfyf6YDigeJFAwtz5BVFFYFBQzZPZK28a8nMWdGe+5KZAa6GMcSvUzrw4IeIiZ7F3Vi3tmDG8GDx0/AY97y79hotip01voSp6cyQSjBLl4iWzy5tcZzk5q1uOGeEHnfoVvVrdtQ85fMBUKGmp3PDxGUJ9gJ0rAe6y4MzUOI04riJ++eQmlO+doQIQPky35f6YcvPKxrOQwhyA3IjSFF3S+TgS66VemZRiXGElg==
+Received: from MW4PR03CA0283.namprd03.prod.outlook.com (2603:10b6:303:b5::18)
+ by CY4PR1201MB0151.namprd12.prod.outlook.com (2603:10b6:910:1e::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.10; Tue, 18 Jan
+ 2022 00:18:46 +0000
+Received: from CO1NAM11FT010.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:303:b5:cafe::c5) by MW4PR03CA0283.outlook.office365.com
+ (2603:10b6:303:b5::18) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11 via Frontend
- Transport; Tue, 18 Jan 2022 00:18:42 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.234)
+ Transport; Tue, 18 Jan 2022 00:18:46 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.236)
  smtp.mailfrom=nvidia.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=nvidia.com;
 Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.234 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.234; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.234) by
- DM6NAM11FT040.mail.protection.outlook.com (10.13.173.133) with Microsoft SMTP
+ 12.22.5.236 as permitted sender) receiver=protection.outlook.com;
+ client-ip=12.22.5.236; helo=mail.nvidia.com;
+Received: from mail.nvidia.com (12.22.5.236) by
+ CO1NAM11FT010.mail.protection.outlook.com (10.13.175.88) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4888.9 via Frontend Transport; Tue, 18 Jan 2022 00:18:41 +0000
-Received: from HQMAIL101.nvidia.com (172.20.187.10) by DRHQMAIL101.nvidia.com
- (10.27.9.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 18 Jan
- 2022 00:18:41 +0000
-Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 18 Jan
- 2022 00:18:40 +0000
+ 15.20.4888.9 via Frontend Transport; Tue, 18 Jan 2022 00:18:46 +0000
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by DRHQMAIL109.nvidia.com
+ (10.27.9.19) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 18 Jan
+ 2022 00:18:45 +0000
+Received: from HQMAIL105.nvidia.com (172.20.187.12) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 18 Jan
+ 2022 00:18:45 +0000
 Received: from dipenp.nvidia.com (10.127.8.14) by mail.nvidia.com
  (172.20.187.12) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Tue, 18 Jan 2022 00:18:40 +0000
+ Transport; Tue, 18 Jan 2022 00:18:45 +0000
 From:   Dipen Patel <dipenp@nvidia.com>
 To:     <smangipudi@nvidia.com>, <thierry.reding@gmail.com>,
         <jonathanh@nvidia.com>, <linux-kernel@vger.kernel.org>,
@@ -64,9 +65,9 @@ To:     <smangipudi@nvidia.com>, <thierry.reding@gmail.com>,
         <warthog618@gmail.com>, <devicetree@vger.kernel.org>,
         <linux-doc@vger.kernel.org>, <robh+dt@kernel.org>
 CC:     Dipen Patel <dipenp@nvidia.com>
-Subject: [RFC v4 03/11] hte: Add tegra194 HTE kernel provider
-Date:   Mon, 17 Jan 2022 16:22:06 -0800
-Message-ID: <20220118002214.18271-4-dipenp@nvidia.com>
+Subject: [RFC v4 08/11] gpiolib: cdev: Add hardware timestamp clock type
+Date:   Mon, 17 Jan 2022 16:22:11 -0800
+Message-ID: <20220118002214.18271-9-dipenp@nvidia.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220118002214.18271-1-dipenp@nvidia.com>
 References: <20220118002214.18271-1-dipenp@nvidia.com>
@@ -75,884 +76,517 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d315961a-d8ea-4aa3-1a51-08d9da18152e
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3113:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB31136FB818B87348D68702CAAE589@DM6PR12MB3113.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1002;
+X-MS-Office365-Filtering-Correlation-Id: 97905a27-2199-4258-54af-08d9da1817fd
+X-MS-TrafficTypeDiagnostic: CY4PR1201MB0151:EE_
+X-Microsoft-Antispam-PRVS: <CY4PR1201MB0151B8CCC034C348C3BB0121AE589@CY4PR1201MB0151.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VwzSv5Tsz3jcc3NOoT7pLcCork21R3gxBRGZ0+qIE9QH7r6hvWMVHgbjmdJnzLs98Yf7luzdaKShUpb0xWLYqWcuagqEeNrL8f1evzv/QwZmprj6jRpil2MyZqRc8jDDoJriv8GZSaZSQ7gLs59IWTtXEeSjcqS0zt/DnXhvxrMwmbEMK8jfc9Bswir+3dvULhDK1j6YqSLcRjik8qq4C/Tkq0m+3BNZrFD2sk6ddpQSzQJmQX+bQQeB9GBA0l2oYPvG2bV+2mHoNvUZUYW17RidEMcmjuTXwh6vToahYj8nkUP7nEsaU1iKctSXKO5E7Utv6XGs+a3BZZvoOqjFRu4haZt6ssnGxgQ9zb2qwA/DtQGXNM3s8OJ9pCqyEMdMM7DAyY7H2KjG2LI/Ek0fTHSjIGmOh/Er7wE57v0UzTE8IpIqibponW/phOd2veZGO7r3yz3vmLHv4BzjCg74WSyQCVFZvi3jVb87hUoP2Xdyy7wco5x+2IMDGct64T8dOPYbYbkWvOTbjx+05zrdGIXWglRKqDQt7IEzf45aPWvknbHkzhR1CR9PoXecXjofPPi/umOEpHL4XnPVhxwshTyA3v54+Wj+HTmKJDwbYhsXpuD5NzztnBBKQVrhI6dofRmQs8/OcZLJAMA8NA0CGLFJ79ckASP9ycC3xt7hUf5H4hkHaVJkE8GqTBJPXLHmfa8PIWWvswg0lle+mk8T+oUFF8fVNJu+GOd0uDO0GmEWeQwiizhhbSd/jdt02IqUAwVltqTR9ELFUTVGhCLz8tql+hL0SKoOmDAfQZ70qa+GWgeKiJyj+F6qPqMtT6567UNKJKPHT2ct0GKkeDj26OSY/DW7t8YLz16b6Xw9r04=
-X-Forefront-Antispam-Report: CIP:12.22.5.234;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(40470700002)(46966006)(36840700001)(86362001)(36860700001)(186003)(2616005)(40460700001)(8936002)(70206006)(2906002)(4326008)(426003)(5660300002)(30864003)(7696005)(7416002)(1076003)(36756003)(70586007)(83380400001)(26005)(8676002)(47076005)(336012)(82310400004)(921005)(107886003)(110136005)(6666004)(508600001)(356005)(81166007)(316002)(36900700001)(83996005)(2101003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: fGGASSkZxhDuCqOxWwTjx9NvxP2ALfWmH1sYFh7+DEawsaTBBxeRASbNDIDOOH/vyCM4xLHHGhrau/PnT87u0R8A6lGlPhF+w1levyXix1XgqVIQ1Jz/ep/u1rLOE+GIOLhOXrw1fnQNDyhZVEZ1U1/gYqAXhcgoTQzuzJFdj4dAW4tHQdjHZoWpkwD6XSci+SXvltOY5+WejgsWhmKZfs7Nl/ETUH6gC2CBjs6vW0tFL1xGPIUwOFkNHIyrCjX0qui6zKlUy2vm0PyagfchzwI1IwG80oSfDQUK3tUNc5d7U3qkXYLNOeMEbr7/TjLLpx0zCP+9KWSJAQfscW+F75+YfYT1vlfYvFWidAofk14x53spSTFXWBNPKj3xKPsQSy6WKA2UDeahJ/JYUsV5/sp9nKNd4C8OVM4EpcBDGAwHIOuOP0xmG4i2SprReO3dGfSLFgxSe+sDU4D2nhuT72ytKHPTwOuNXOAmp2ta+/EGOxZlK9Pzj+qYKjYB6Ylt1OclNGrHuv8v2WGFo414DKEIQIa12P6U02OfIFfOMzNwHK7Yg6kSpERyhj7C2h6xJcivcyzYwqRcqtdaAYq5G3jK8721W/U4slKwDlOwUmF59twh2wYZBpmWcU2wO+imNMakaSsry4W6knpIUkVxQq9ON0E8ZhphZv8At9V6/vd6PH6hd38ZjHNeB6qG6oAmlaodPwshls8Ltk/KNZvKygjKe94H8zX+//qA06WuOSzywRoEWh/L84fzGTfOXyLC8itVBL4MNmBfUw321WbT5OX/vLQHCK0OUeVwOXFrB4JnYL4gLpU4Fj0MfPMmq1IJmclLxZVChS8n1ksZp1TlFn2LJD8oxwj4MjKCXPzTCnftdKGF+8mjFpX/isRSqenZ/JXG5GwhndF+k9h1hWbo7w==
+X-Forefront-Antispam-Report: CIP:12.22.5.236;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(40470700002)(36840700001)(46966006)(110136005)(2906002)(316002)(8936002)(70586007)(7416002)(70206006)(426003)(921005)(36860700001)(26005)(47076005)(36756003)(186003)(508600001)(86362001)(1076003)(82310400004)(4326008)(40460700001)(356005)(8676002)(83380400001)(30864003)(2616005)(5660300002)(336012)(6666004)(7696005)(107886003)(81166007)(83996005)(2101003)(36900700001)(309714004);DIR:OUT;SFP:1101;
 X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2022 00:18:41.7330
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2022 00:18:46.4934
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: d315961a-d8ea-4aa3-1a51-08d9da18152e
+X-MS-Exchange-CrossTenant-Network-Message-Id: 97905a27-2199-4258-54af-08d9da1817fd
 X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.234];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT040.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.236];Helo=[mail.nvidia.com]
+X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT010.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3113
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1201MB0151
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Tegra194 device has multiple HTE instances also known as GTE
-(Generic hardware Timestamping Engine) which can timestamp subset of
-SoC lines/signals. This provider driver focuses on IRQ and GPIO lines
-and exposes timestamping ability on those lines to the consumers
-through HTE subsystem.
-
-Also, with this patch, added:
-- documentation about this provider and its capabilities at
-Documentation/hte.
-- Compilation support in Makefile and Kconfig
+This patch adds new clock type for the GPIO controller which can
+timestamp gpio lines in using hardware means. To expose such
+functionalities to the userspace, code has been added where
+during line create or set config API calls, it checks for new
+clock type and if requested, calls HTE API. During line change
+event, the HTE subsystem pushes timestamp data to userspace
+through gpiolib-cdev.
 
 Signed-off-by: Dipen Patel <dipenp@nvidia.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 ---
-Changes in v3:
-- Addressed grammatical/spelling errors.
+Changes in v2:
+- Added hte_dir and static structure hte_ts_desc.
+- Added callbacks which get invoked by HTE when new data is available.
+- Better use of hte_dir and seq from hte_ts_desc.
+- Modified sw debounce function to accommodate hardware timestamping.
 
 Changes in v4:
-- Added gpio line level detection.
-- Added edge setup for GPIO lines if requested.
-- Added match_from_linedata callback to help hte_req_ts_by_linedata_ns
-HTE API.
+- Correced line level and event sequence counter handling.
+- Added hte edge setup functionality.
 
- Documentation/hte/index.rst        |  22 +
- Documentation/hte/tegra194-hte.rst |  52 +++
- Documentation/index.rst            |   1 +
- drivers/hte/Kconfig                |  12 +
- drivers/hte/Makefile               |   1 +
- drivers/hte/hte-tegra194.c         | 690 +++++++++++++++++++++++++++++
- 6 files changed, 778 insertions(+)
- create mode 100644 Documentation/hte/index.rst
- create mode 100644 Documentation/hte/tegra194-hte.rst
- create mode 100644 drivers/hte/hte-tegra194.c
+ drivers/gpio/gpiolib-cdev.c | 247 +++++++++++++++++++++++++++++++-----
+ include/uapi/linux/gpio.h   |   3 +
+ 2 files changed, 217 insertions(+), 33 deletions(-)
 
-diff --git a/Documentation/hte/index.rst b/Documentation/hte/index.rst
-new file mode 100644
-index 000000000000..9f43301c05dc
---- /dev/null
-+++ b/Documentation/hte/index.rst
-@@ -0,0 +1,22 @@
-+.. SPDX-License-Identifier: GPL-2.0
-+
-+============================================
-+The Linux Hardware Timestamping Engine (HTE)
-+============================================
-+
-+The HTE Subsystem
-+=================
-+
-+.. toctree::
-+   :maxdepth: 1
-+
-+   hte
-+
-+HTE Tegra Provider
-+==================
-+
-+.. toctree::
-+   :maxdepth: 1
-+
-+   tegra194-hte
-+
-diff --git a/Documentation/hte/tegra194-hte.rst b/Documentation/hte/tegra194-hte.rst
-new file mode 100644
-index 000000000000..5f8889accf00
---- /dev/null
-+++ b/Documentation/hte/tegra194-hte.rst
-@@ -0,0 +1,52 @@
-+HTE Kernel provider driver
-+==========================
-+
-+Description
-+-----------
-+The Nvidia tegra194 HTE provider driver implements two GTE
-+(Generic Timestamping Engine) instances: 1) GPIO GTE and 2) LIC
-+(Legacy Interrupt Controller) IRQ GTE. Both GTE instances get the
-+timestamp from the system counter TSC which has 31.25MHz clock rate, and the
-+driver converts clock tick rate to nanoseconds before storing it as timestamp
-+value.
-+
-+GPIO GTE
-+--------
-+
-+This GTE instance timestamps GPIO in real time. For that to happen GPIO
-+needs to be configured as input. The always on (AON) GPIO controller instance
-+supports timestamping GPIOs in real time and it has 39 GPIO lines. The GPIO GTE
-+and AON GPIO controller are tightly coupled as it requires very specific bits
-+to be set in GPIO config register before GPIO GTE can be used, for that GPIOLIB
-+adds two optional APIs as below. The GPIO GTE code supports both kernel
-+and userspace consumers. The kernel space consumers can directly talk to HTE
-+subsytem while userspace consumers timestamp requests go through GPIOLIB CDEV
-+framework to HTE subsystem.
-+
-+.. kernel-doc:: drivers/gpio/gpiolib.c
-+   :functions: gpiod_enable_hw_timestamp gpiod_disable_hw_timestamp
-+
-+There is hte-tegra194-gpio-test.c, located in ``drivers/hte/`` directory, test
-+driver which demonstrates GPIO GTE functionality in kenel space and code added
-+in gpiolib-cdev.c demonstrates userspace example.
-+
-+For userspace consumers, GPIO_V2_LINE_FLAG_EVENT_CLOCK_HTE flag must be
-+specified during IOCTL calls. Refer to ``tools/gpio/gpio-event-mon.c``, which
-+returns the timestamp in nanoseconds.
-+
-+LIC (Legacy Interrupt Controller) IRQ GTE
-+-----------------------------------------
-+
-+This GTE instance timestamps LIC IRQ lines in real time. There are 352 IRQ
-+lines which this instance can add timestamps to in real time. The hte
-+devicetree binding described at ``Documentation/devicetree/bindings/hte/``
-+provides an example of how a consumer can request an IRQ line. Since it is a
-+one-to-one mapping with IRQ GTE provider, consumers can simply specify the IRQ
-+number that they are interested in. There is no userspace consumer support for
-+this GTE instance in the hte framework. The sample test code
-+hte-tegra194-irq-test.c, located in the ``drivers/hte/`` directory,
-+demonstrates how to use an IRQ GTE instance.
-+
-+The provider source code of both IRQ and GPIO GTE instances is located at
-+``drivers/hte/hte-tegra194.c``.
-+
-diff --git a/Documentation/index.rst b/Documentation/index.rst
-index 2f99cedc95cd..2e42b439bf63 100644
---- a/Documentation/index.rst
-+++ b/Documentation/index.rst
-@@ -139,6 +139,7 @@ needed).
-    scheduler/index
-    mhi/index
-    tty/index
-+   hte/index
- 
- Architecture-agnostic documentation
- -----------------------------------
-diff --git a/drivers/hte/Kconfig b/drivers/hte/Kconfig
-index 1fcfe17cf28a..ebd9817651c2 100644
---- a/drivers/hte/Kconfig
-+++ b/drivers/hte/Kconfig
-@@ -20,3 +20,15 @@ menuconfig HTE
- 
- 	  If unsure, say no.
- 
-+if HTE
-+
-+config HTE_TEGRA194
-+	tristate "NVIDIA Tegra194 HTE Support"
-+	depends on ARCH_TEGRA_194_SOC
-+	help
-+	  Enable this option for integrated hardware timestamping engine also
-+	  known as generic timestamping engine (GTE) support on NVIDIA Tegra194
-+	  systems-on-chip. The driver supports 352 LIC IRQs and 39 AON GPIOs
-+	  lines for timestamping in realtime.
-+
-+endif
-diff --git a/drivers/hte/Makefile b/drivers/hte/Makefile
-index fc03bdf44427..3ae7c4029991 100644
---- a/drivers/hte/Makefile
-+++ b/drivers/hte/Makefile
-@@ -1,2 +1,3 @@
- obj-$(CONFIG_HTE)		+= hte.o
-+obj-$(CONFIG_HTE_TEGRA194)	+= hte-tegra194.o
- 
-diff --git a/drivers/hte/hte-tegra194.c b/drivers/hte/hte-tegra194.c
-new file mode 100644
-index 000000000000..3c09f761ca0c
---- /dev/null
-+++ b/drivers/hte/hte-tegra194.c
-@@ -0,0 +1,690 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (c) 2021-2022 NVIDIA Corporation
-+ *
-+ * Author: Dipen Patel <dipenp@nvidia.com>
-+ */
-+
-+#include <linux/err.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/stat.h>
-+#include <linux/interrupt.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
+diff --git a/drivers/gpio/gpiolib-cdev.c b/drivers/gpio/gpiolib-cdev.c
+index c7b5446d01fd..a4f2de229e6c 100644
+--- a/drivers/gpio/gpiolib-cdev.c
++++ b/drivers/gpio/gpiolib-cdev.c
+@@ -24,6 +24,7 @@
+ #include <linux/timekeeping.h>
+ #include <linux/uaccess.h>
+ #include <linux/workqueue.h>
 +#include <linux/hte.h>
-+#include <linux/uaccess.h>
-+#include <linux/gpio/driver.h>
-+#include <linux/gpio/consumer.h>
-+
-+#define HTE_SUSPEND	0
-+
-+/* HTE source clock TSC is 31.25MHz */
-+#define HTE_TS_CLK_RATE_HZ	31250000ULL
-+#define HTE_CLK_RATE_NS		32
-+#define HTE_TS_NS_SHIFT	__builtin_ctz(HTE_CLK_RATE_NS)
-+
-+#define NV_AON_SLICE_INVALID	-1
-+#define NV_LINES_IN_SLICE	32
-+
-+/* AON HTE line map For slice 1 */
-+#define NV_AON_HTE_SLICE1_IRQ_GPIO_28	12
-+#define NV_AON_HTE_SLICE1_IRQ_GPIO_29	13
-+
-+/* AON HTE line map For slice 2 */
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_0	0
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_1	1
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_2	2
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_3	3
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_4	4
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_5	5
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_6	6
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_7	7
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_8	8
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_9	9
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_10	10
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_11	11
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_12	12
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_13	13
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_14	14
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_15	15
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_16	16
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_17	17
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_18	18
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_19	19
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_20	20
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_21	21
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_22	22
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_23	23
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_24	24
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_25	25
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_26	26
-+#define NV_AON_HTE_SLICE2_IRQ_GPIO_27	27
-+
-+/* AON GPIO port AA pins */
-+#define NV_AON_GPIO_PORT_AA_0		0
-+#define NV_AON_GPIO_PORT_AA_1		1
-+#define NV_AON_GPIO_PORT_AA_2		2
-+#define NV_AON_GPIO_PORT_AA_3		3
-+#define NV_AON_GPIO_PORT_AA_4		4
-+#define NV_AON_GPIO_PORT_AA_5		5
-+#define NV_AON_GPIO_PORT_AA_6		6
-+#define NV_AON_GPIO_PORT_AA_7		7
-+
-+/* AON GPIO port BB pins */
-+#define NV_AON_GPIO_PORT_BB_0		8
-+#define NV_AON_GPIO_PORT_BB_1		9
-+#define NV_AON_GPIO_PORT_BB_2		10
-+#define NV_AON_GPIO_PORT_BB_3		11
-+
-+/* AON GPIO port CC pins */
-+#define NV_AON_GPIO_PORT_CC_0		12
-+#define NV_AON_GPIO_PORT_CC_1		13
-+#define NV_AON_GPIO_PORT_CC_2		14
-+#define NV_AON_GPIO_PORT_CC_3		15
-+#define NV_AON_GPIO_PORT_CC_4		16
-+#define NV_AON_GPIO_PORT_CC_5		17
-+#define NV_AON_GPIO_PORT_CC_6		18
-+#define NV_AON_GPIO_PORT_CC_7		19
-+
-+/* AON GPIO port DD pins */
-+#define NV_AON_GPIO_PORT_DD_0		20
-+#define NV_AON_GPIO_PORT_DD_1		21
-+#define NV_AON_GPIO_PORT_DD_2		22
-+
-+/* AON GPIO port EE pins */
-+#define NV_AON_GPIO_PORT_EE_0		23
-+#define NV_AON_GPIO_PORT_EE_1		24
-+#define NV_AON_GPIO_PORT_EE_2		25
-+#define NV_AON_GPIO_PORT_EE_3		26
-+#define NV_AON_GPIO_PORT_EE_4		27
-+#define NV_AON_GPIO_PORT_EE_5		28
-+#define NV_AON_GPIO_PORT_EE_6		29
-+
-+
-+#define HTE_TECTRL		0x0
-+#define HTE_TETSCH		0x4
-+#define HTE_TETSCL		0x8
-+#define HTE_TESRC		0xC
-+#define HTE_TECCV		0x10
-+#define HTE_TEPCV		0x14
-+#define HTE_TECMD		0x1C
-+#define HTE_TESTATUS		0x20
-+#define HTE_SLICE0_TETEN	0x40
-+#define HTE_SLICE1_TETEN	0x60
-+
-+#define HTE_SLICE_SIZE		(HTE_SLICE1_TETEN - HTE_SLICE0_TETEN)
-+
-+#define HTE_TECTRL_ENABLE_ENABLE	0x1
-+
-+#define HTE_TECTRL_OCCU_SHIFT		0x8
-+#define HTE_TECTRL_INTR_SHIFT		0x1
-+#define HTE_TECTRL_INTR_ENABLE		0x1
-+
-+#define HTE_TESRC_SLICE_SHIFT		16
-+#define HTE_TESRC_SLICE_DEFAULT_MASK	0xFF
-+
-+#define HTE_TECMD_CMD_POP		0x1
-+
-+#define HTE_TESTATUS_OCCUPANCY_SHIFT	8
-+#define HTE_TESTATUS_OCCUPANCY_MASK	0xFF
-+
-+enum tegra_hte_type {
-+	HTE_TEGRA_TYPE_GPIO = 1U << 0,
-+	HTE_TEGRA_TYPE_LIC = 1U << 1,
-+};
-+
-+struct hte_slices {
-+	u32 r_val;
-+	unsigned long flags;
-+	/* to prevent lines mapped to same slice updating its register */
-+	spinlock_t s_lock;
-+};
-+
-+struct tegra_hte_line_mapped {
-+	int slice;
-+	u32 bit_index;
-+};
-+
-+struct tegra_hte_line_data {
-+	unsigned long flags;
-+	void *data;
-+};
-+
-+struct tegra_hte_data {
-+	enum tegra_hte_type type;
-+	u32 map_sz;
-+	const struct tegra_hte_line_mapped *map;
-+};
-+
-+struct tegra_hte_soc {
-+	int hte_irq;
-+	u32 itr_thrshld;
-+	u32 conf_rval;
-+	struct hte_slices *sl;
-+	const struct tegra_hte_data *prov_data;
-+	struct tegra_hte_line_data *line_data;
-+	struct hte_chip *chip;
-+	struct gpio_chip *c;
-+	void __iomem *regs;
-+};
-+
-+static const struct tegra_hte_line_mapped tegra194_aon_gpio_map[] = {
-+	/* gpio, slice, bit_index */
-+	[NV_AON_GPIO_PORT_AA_0]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_11},
-+	[NV_AON_GPIO_PORT_AA_1]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_10},
-+	[NV_AON_GPIO_PORT_AA_2]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_9},
-+	[NV_AON_GPIO_PORT_AA_3]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_8},
-+	[NV_AON_GPIO_PORT_AA_4]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_7},
-+	[NV_AON_GPIO_PORT_AA_5]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_6},
-+	[NV_AON_GPIO_PORT_AA_6]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_5},
-+	[NV_AON_GPIO_PORT_AA_7]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_4},
-+	[NV_AON_GPIO_PORT_BB_0]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_3},
-+	[NV_AON_GPIO_PORT_BB_1]  = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_2},
-+	[NV_AON_GPIO_PORT_BB_2] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_1},
-+	[NV_AON_GPIO_PORT_BB_3] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_0},
-+	[NV_AON_GPIO_PORT_CC_0] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_22},
-+	[NV_AON_GPIO_PORT_CC_1] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_21},
-+	[NV_AON_GPIO_PORT_CC_2] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_20},
-+	[NV_AON_GPIO_PORT_CC_3] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_19},
-+	[NV_AON_GPIO_PORT_CC_4] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_18},
-+	[NV_AON_GPIO_PORT_CC_5] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_17},
-+	[NV_AON_GPIO_PORT_CC_6] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_16},
-+	[NV_AON_GPIO_PORT_CC_7] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_15},
-+	[NV_AON_GPIO_PORT_DD_0] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_14},
-+	[NV_AON_GPIO_PORT_DD_1] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_13},
-+	[NV_AON_GPIO_PORT_DD_2] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_12},
-+	[NV_AON_GPIO_PORT_EE_0] = {1, NV_AON_HTE_SLICE1_IRQ_GPIO_29},
-+	[NV_AON_GPIO_PORT_EE_1] = {1, NV_AON_HTE_SLICE1_IRQ_GPIO_28},
-+	[NV_AON_GPIO_PORT_EE_2] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_27},
-+	[NV_AON_GPIO_PORT_EE_3] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_26},
-+	[NV_AON_GPIO_PORT_EE_4] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_25},
-+	[NV_AON_GPIO_PORT_EE_5] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_24},
-+	[NV_AON_GPIO_PORT_EE_6] = {2, NV_AON_HTE_SLICE2_IRQ_GPIO_23},
-+};
-+
-+static const struct tegra_hte_data aon_hte = {
-+	.map_sz = ARRAY_SIZE(tegra194_aon_gpio_map),
-+	.map = tegra194_aon_gpio_map,
-+	.type = HTE_TEGRA_TYPE_GPIO,
-+};
-+
-+static const struct tegra_hte_data lic_hte = {
-+	.map_sz = 0,
-+	.map = NULL,
-+	.type = HTE_TEGRA_TYPE_LIC,
-+};
-+
-+static inline u32 tegra_hte_readl(struct tegra_hte_soc *hte, u32 reg)
-+{
-+	return readl(hte->regs + reg);
-+}
-+
-+static inline void tegra_hte_writel(struct tegra_hte_soc *hte, u32 reg,
-+				    u32 val)
-+{
-+	writel(val, hte->regs + reg);
-+}
-+
-+static inline int tegra_hte_map_to_line_id(u32 eid, struct tegra_hte_soc *gs,
-+					  u32 *mapped)
-+{
-+	const struct tegra_hte_line_mapped *m;
-+
-+	if (gs->prov_data && gs->prov_data->map) {
-+		m = gs->prov_data->map;
-+		if (eid > gs->prov_data->map_sz)
-+			return -EINVAL;
-+		if (m[eid].slice == NV_AON_SLICE_INVALID)
-+			return -EINVAL;
-+
-+		*mapped = (m[eid].slice << 5) + m[eid].bit_index;
-+	} else {
-+		*mapped = eid;
-+	}
-+
-+	return 0;
-+}
-+
-+static int tegra_hte_line_xlate(struct hte_chip *gc,
-+				const struct of_phandle_args *args,
-+				struct hte_ts_desc *desc, u32 *xlated_id)
-+{
-+	int ret = 0;
-+	u32 line_id;
-+	struct tegra_hte_soc *gs;
-+
-+	if (!gc || !desc || !xlated_id)
-+		return -EINVAL;
-+
-+	if (args) {
-+		if (gc->of_hte_n_cells < 1)
-+			return -EINVAL;
-+
-+		if (args->args_count != gc->of_hte_n_cells)
-+			return -EINVAL;
-+
-+		desc->attr.line_id = args->args[0];
-+	}
-+
-+	gs = gc->data;
-+	if (!gs)
-+		return -EINVAL;
-+
+ #include <uapi/linux/gpio.h>
+ 
+ #include "gpiolib.h"
+@@ -464,6 +465,25 @@ struct line {
+ 	 * stale value.
+ 	 */
+ 	unsigned int level;
 +	/*
-+	 * GPIO consumers send base + offset as line id which is a GPIO
-+	 * logical id in GPIO namespace, convert it into the hardware GPIO
-+	 * number before mapping it into HTE/GTE namespace.
++	 * -- hte specific fields --
 +	 */
-+	if (gs->prov_data->type == HTE_TEGRA_TYPE_GPIO)
-+		line_id = desc->attr.line_id - gs->c->base;
-+	else
-+		line_id = desc->attr.line_id;
-+
-+	ret = tegra_hte_map_to_line_id(line_id, gc->data,
-+				       xlated_id);
-+	if (ret < 0) {
-+		dev_dbg(gc->dev, "line_id:%u mapping failed\n",
-+			desc->attr.line_id);
-+		return ret;
-+	}
-+
-+	if (*xlated_id > gc->nlines)
-+		return -EINVAL;
-+
-+	dev_dbg(gc->dev, "requested id:%u, xlated id:%u\n",
-+		desc->attr.line_id, *xlated_id);
-+
-+	return 0;
-+}
-+
-+static int tegra_hte_en_dis_common(struct hte_chip *chip, u32 line_id, bool en)
++	struct hte_ts_desc hdesc;
++	/*
++	 * HTE provider sets line level at the time of event. The valid
++	 * value is 0 or 1 and negative value for an error.
++	 */
++	int raw_level;
++	/*
++	 * when sw_debounce is set on HTE enabled line, this is running
++	 * counter of the discarded events.
++	 */
++	u32 total_discard_seq;
++	/*
++	 * when sw_debounce is set on HTE enabled line, this variable records
++	 * last sequence number before debounce period expires.
++	 */
++	u32 last_seqno;
+ };
+ 
+ /**
+@@ -518,6 +538,7 @@ struct linereq {
+ 	 GPIO_V2_LINE_DRIVE_FLAGS | \
+ 	 GPIO_V2_LINE_EDGE_FLAGS | \
+ 	 GPIO_V2_LINE_FLAG_EVENT_CLOCK_REALTIME | \
++	 GPIO_V2_LINE_FLAG_EVENT_CLOCK_HTE | \
+ 	 GPIO_V2_LINE_BIAS_FLAGS)
+ 
+ static void linereq_put_event(struct linereq *lr,
+@@ -542,10 +563,98 @@ static u64 line_event_timestamp(struct line *line)
+ {
+ 	if (test_bit(FLAG_EVENT_CLOCK_REALTIME, &line->desc->flags))
+ 		return ktime_get_real_ns();
++	else if (test_bit(FLAG_EVENT_CLOCK_HTE, &line->desc->flags))
++		return line->timestamp_ns;
+ 
+ 	return ktime_get_ns();
+ }
+ 
++static hte_return_t process_hw_ts_thread(void *p)
 +{
-+	u32 slice, sl_bit_shift, line_bit, val, reg;
-+	struct tegra_hte_soc *gs;
++	struct line *line;
++	struct linereq *lr;
++	struct gpio_v2_line_event le;
++	int level;
++	u64 eflags;
 +
-+	sl_bit_shift = __builtin_ctz(HTE_SLICE_SIZE);
++	if (!p)
++		return HTE_CB_HANDLED;
 +
-+	if (!chip)
-+		return -EINVAL;
++	line = p;
++	lr = line->req;
 +
-+	gs = chip->data;
++	memset(&le, 0, sizeof(le));
 +
-+	if (line_id > chip->nlines) {
-+		dev_err(chip->dev,
-+			"line id: %u is not supported by this controller\n",
-+			line_id);
-+		return -EINVAL;
-+	}
++	le.timestamp_ns = line->timestamp_ns;
++	eflags = READ_ONCE(line->eflags);
 +
-+	slice = line_id >> sl_bit_shift;
-+	line_bit = line_id & (HTE_SLICE_SIZE - 1);
-+	reg = (slice << sl_bit_shift) + HTE_SLICE0_TETEN;
-+
-+	spin_lock(&gs->sl[slice].s_lock);
-+
-+	if (test_bit(HTE_SUSPEND, &gs->sl[slice].flags)) {
-+		spin_unlock(&gs->sl[slice].s_lock);
-+		dev_dbg(chip->dev, "device suspended");
-+		return -EBUSY;
-+	}
-+
-+	val = tegra_hte_readl(gs, reg);
-+	if (en)
-+		val = val | (1 << line_bit);
-+	else
-+		val = val & (~(1 << line_bit));
-+	tegra_hte_writel(gs, reg, val);
-+
-+	spin_unlock(&gs->sl[slice].s_lock);
-+
-+	dev_dbg(chip->dev, "line: %u, slice %u, line_bit %u, reg:0x%x\n",
-+		line_id, slice, line_bit, reg);
-+
-+	return 0;
-+}
-+
-+static int tegra_hte_enable(struct hte_chip *chip, u32 line_id)
-+{
-+	if (!chip)
-+		return -EINVAL;
-+
-+	return tegra_hte_en_dis_common(chip, line_id, true);
-+}
-+
-+static int tegra_hte_disable(struct hte_chip *chip, u32 line_id)
-+{
-+	if (!chip)
-+		return -EINVAL;
-+
-+	return tegra_hte_en_dis_common(chip, line_id, false);
-+}
-+
-+static int tegra_hte_request(struct hte_chip *chip, struct hte_ts_desc *desc,
-+			     u32 line_id)
-+{
-+	int ret;
-+	struct tegra_hte_soc *gs;
-+	struct hte_line_attr *attr;
-+
-+	if (!chip || !chip->data || !desc)
-+		return -EINVAL;
-+
-+	gs = chip->data;
-+	attr = &desc->attr;
-+
-+	if (gs->prov_data->type == HTE_TEGRA_TYPE_GPIO) {
-+		ret = gpiod_enable_hw_timestamp(attr->line_data,
-+						attr->edge_flags);
-+		if (ret)
-+			return ret;
-+
-+		gs->line_data[line_id].data = attr->line_data;
-+		gs->line_data[line_id].flags = attr->edge_flags;
-+	}
-+
-+	return tegra_hte_en_dis_common(chip, line_id, true);
-+}
-+
-+static int tegra_hte_release(struct hte_chip *chip, struct hte_ts_desc *desc,
-+			     u32 line_id)
-+{
-+	struct tegra_hte_soc *gs;
-+	struct hte_line_attr *attr;
-+	int ret;
-+
-+	if (!chip || !chip->data || !desc)
-+		return -EINVAL;
-+
-+	gs = chip->data;
-+	attr = &desc->attr;
-+
-+	if (gs->prov_data->type == HTE_TEGRA_TYPE_GPIO) {
-+		ret = gpiod_disable_hw_timestamp(attr->line_data,
-+						 gs->line_data[line_id].flags);
-+		if (ret)
-+			return ret;
-+
-+		gs->line_data[line_id].data = NULL;
-+		gs->line_data[line_id].flags = 0;
-+	}
-+
-+	return tegra_hte_en_dis_common(chip, line_id, false);
-+}
-+
-+static int tegra_hte_clk_src_info(struct hte_chip *chip,
-+				  struct hte_clk_info *ci)
-+{
-+	(void)chip;
-+
-+	if (!ci)
-+		return -EINVAL;
-+
-+	ci->hz = HTE_TS_CLK_RATE_HZ;
-+	ci->type = CLOCK_MONOTONIC;
-+
-+	return 0;
-+}
-+
-+int tegra_hte_get_level(struct tegra_hte_soc *gs, u32 line_id)
-+{
-+	struct gpio_desc *desc;
-+
-+	if (gs->prov_data->type == HTE_TEGRA_TYPE_GPIO) {
-+		desc = gs->line_data[line_id].data;
-+		if (desc)
-+			return gpiod_get_raw_value(desc);
-+	}
-+
-+	return -1;
-+}
-+
-+static void tegra_hte_read_fifo(struct tegra_hte_soc *gs)
-+{
-+	u32 tsh, tsl, src, pv, cv, acv, slice, bit_index, line_id;
-+	u64 tsc;
-+	struct hte_ts_data el;
-+
-+	while ((tegra_hte_readl(gs, HTE_TESTATUS) >>
-+		HTE_TESTATUS_OCCUPANCY_SHIFT) &
-+		HTE_TESTATUS_OCCUPANCY_MASK) {
-+		tsh = tegra_hte_readl(gs, HTE_TETSCH);
-+		tsl = tegra_hte_readl(gs, HTE_TETSCL);
-+		tsc = (((u64)tsh << 32) | tsl);
-+
-+		src = tegra_hte_readl(gs, HTE_TESRC);
-+		slice = (src >> HTE_TESRC_SLICE_SHIFT) &
-+			    HTE_TESRC_SLICE_DEFAULT_MASK;
-+
-+		pv = tegra_hte_readl(gs, HTE_TEPCV);
-+		cv = tegra_hte_readl(gs, HTE_TECCV);
-+		acv = pv ^ cv;
-+		while (acv) {
-+			bit_index = __builtin_ctz(acv);
-+			line_id = bit_index + (slice << 5);
-+			el.tsc = tsc << HTE_TS_NS_SHIFT;
-+			el.raw_level = tegra_hte_get_level(gs, line_id);
-+			hte_push_ts_ns(gs->chip, line_id, &el);
-+			acv &= ~BIT(bit_index);
++	if (eflags == GPIO_V2_LINE_FLAG_EDGE_BOTH) {
++		if (line->raw_level >= 0) {
++			if (test_bit(FLAG_ACTIVE_LOW, &line->desc->flags))
++				level = !line->raw_level;
++			else
++				level = line->raw_level;
++		} else {
++			level = gpiod_get_value_cansleep(line->desc);
 +		}
-+		tegra_hte_writel(gs, HTE_TECMD, HTE_TECMD_CMD_POP);
++
++		if (level)
++			le.id = GPIO_V2_LINE_EVENT_RISING_EDGE;
++		else
++			le.id = GPIO_V2_LINE_EVENT_FALLING_EDGE;
++	} else if (eflags == GPIO_V2_LINE_FLAG_EDGE_RISING) {
++		/* Emit low-to-high event */
++		le.id = GPIO_V2_LINE_EVENT_RISING_EDGE;
++	} else if (eflags == GPIO_V2_LINE_FLAG_EDGE_FALLING) {
++		/* Emit high-to-low event */
++		le.id = GPIO_V2_LINE_EVENT_FALLING_EDGE;
++	} else {
++		return HTE_CB_HANDLED;
 +	}
++	le.line_seqno = line->line_seqno;
++	le.seqno = (lr->num_lines == 1) ? le.line_seqno : line->req_seqno;
++	le.offset = gpio_chip_hwgpio(line->desc);
++
++	linereq_put_event(lr, &le);
++
++	return HTE_CB_HANDLED;
 +}
 +
-+static irqreturn_t tegra_hte_isr(int irq, void *dev_id)
++static hte_return_t process_hw_ts(struct hte_ts_data *ts, void *p)
 +{
-+	struct tegra_hte_soc *gs = dev_id;
-+	(void)irq;
++	struct line *line;
++	struct linereq *lr;
++	int diff_seqno = 0;
 +
-+	tegra_hte_read_fifo(gs);
++	if (!ts || !p)
++		return HTE_CB_HANDLED;
 +
-+	return IRQ_HANDLED;
++	line = p;
++	line->timestamp_ns = ts->tsc;
++	line->raw_level = ts->raw_level;
++	lr = line->req;
++
++	if (READ_ONCE(line->sw_debounced)) {
++		line->total_discard_seq++;
++		line->last_seqno = ts->seq;
++		mod_delayed_work(system_wq, &line->work,
++		  usecs_to_jiffies(READ_ONCE(line->desc->debounce_period_us)));
++	} else {
++		if (unlikely(ts->seq < line->line_seqno))
++			return HTE_CB_HANDLED;
++
++		diff_seqno = ts->seq - line->line_seqno;
++		line->line_seqno = ts->seq;
++		if (lr->num_lines != 1)
++			line->req_seqno = atomic_add_return(diff_seqno,
++							    &lr->seqno);
++
++		return HTE_RUN_THREADED_CB;
++	}
++
++	return HTE_CB_HANDLED;
 +}
 +
-+bool tegra_hte_match_from_linedata(const struct hte_chip *chip,
-+				   const struct hte_ts_desc *hdesc)
+ static irqreturn_t edge_irq_thread(int irq, void *p)
+ {
+ 	struct line *line = p;
+@@ -651,10 +760,16 @@ static void debounce_work_func(struct work_struct *work)
+ 	struct gpio_v2_line_event le;
+ 	struct line *line = container_of(work, struct line, work.work);
+ 	struct linereq *lr;
+-	int level;
++	int level, diff_seqno;
+ 	u64 eflags;
+ 
+-	level = gpiod_get_raw_value_cansleep(line->desc);
++	if (test_bit(FLAG_EVENT_CLOCK_HTE, &line->desc->flags)) {
++		level = line->raw_level;
++		if (level < 0)
++			level = gpiod_get_raw_value_cansleep(line->desc);
++	} else {
++		level = gpiod_get_raw_value_cansleep(line->desc);
++	}
+ 	if (level < 0) {
+ 		pr_debug_ratelimited("debouncer failed to read line value\n");
+ 		return;
+@@ -685,10 +800,21 @@ static void debounce_work_func(struct work_struct *work)
+ 	lr = line->req;
+ 	le.timestamp_ns = line_event_timestamp(line);
+ 	le.offset = gpio_chip_hwgpio(line->desc);
+-	line->line_seqno++;
+-	le.line_seqno = line->line_seqno;
+-	le.seqno = (lr->num_lines == 1) ?
+-		le.line_seqno : atomic_inc_return(&lr->seqno);
++	if (test_bit(FLAG_EVENT_CLOCK_HTE, &line->desc->flags)) {
++		/* discard events except the last one */
++		line->total_discard_seq -= 1;
++		diff_seqno = line->last_seqno - line->total_discard_seq -
++				line->line_seqno;
++		line->line_seqno = line->last_seqno - line->total_discard_seq;
++		le.line_seqno = line->line_seqno;
++		le.seqno = (lr->num_lines == 1) ?
++			le.line_seqno : atomic_add_return(diff_seqno, &lr->seqno);
++	} else {
++		line->line_seqno++;
++		le.line_seqno = line->line_seqno;
++		le.seqno = (lr->num_lines == 1) ?
++			le.line_seqno : atomic_inc_return(&lr->seqno);
++	}
+ 
+ 	if (level)
+ 		/* Emit low-to-high event */
+@@ -700,8 +826,29 @@ static void debounce_work_func(struct work_struct *work)
+ 	linereq_put_event(lr, &le);
+ }
+ 
++static int hte_edge_setup(struct line *line, u64 eflags)
 +{
-+	struct tegra_hte_soc *hte_dev = chip->data;
++	unsigned long flags;
++	struct hte_ts_desc *hdesc = &line->hdesc;
 +
-+	if (!hte_dev || (hte_dev->prov_data->type != HTE_TEGRA_TYPE_GPIO))
-+		return false;
++	if (eflags & GPIO_V2_LINE_FLAG_EDGE_RISING)
++		flags |= test_bit(FLAG_ACTIVE_LOW, &line->desc->flags) ?
++				  HTE_FALLING_EDGE_TS : HTE_RISING_EDGE_TS;
++	if (eflags & GPIO_V2_LINE_FLAG_EDGE_FALLING)
++		flags |= test_bit(FLAG_ACTIVE_LOW, &line->desc->flags) ?
++				  HTE_RISING_EDGE_TS : HTE_FALLING_EDGE_TS;
 +
-+	return hte_dev->c == gpiod_to_chip(hdesc->attr.line_data);
++	hdesc->attr.edge_flags = flags;
++	hdesc->attr.line_data = line->desc;
++	hdesc->attr.line_id = desc_to_gpio(line->desc);
++	line->total_discard_seq = 0;
++
++	return hte_req_ts_by_linedata_ns(hdesc, process_hw_ts,
++					 process_hw_ts_thread, line);
 +}
 +
-+static const struct of_device_id tegra_hte_of_match[] = {
-+	{ .compatible = "nvidia,tegra194-gte-lic", .data = &lic_hte},
-+	{ .compatible = "nvidia,tegra194-gte-aon", .data = &aon_hte},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, tegra_hte_of_match);
+ static int debounce_setup(struct line *line,
+-			  unsigned int debounce_period_us)
++			  unsigned int debounce_period_us, bool hte_req)
+ {
+ 	unsigned long irqflags;
+ 	int ret, level, irq;
+@@ -721,19 +868,27 @@ static int debounce_setup(struct line *line,
+ 		if (level < 0)
+ 			return level;
+ 
+-		irq = gpiod_to_irq(line->desc);
+-		if (irq < 0)
+-			return -ENXIO;
++		if (!hte_req) {
++			irq = gpiod_to_irq(line->desc);
++			if (irq < 0)
++				return -ENXIO;
+ 
+-		WRITE_ONCE(line->level, level);
+-		irqflags = IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING;
+-		ret = request_irq(irq, debounce_irq_handler, irqflags,
+-				  line->req->label, line);
+-		if (ret)
+-			return ret;
++			irqflags = IRQF_TRIGGER_FALLING | IRQF_TRIGGER_RISING;
++			ret = request_irq(irq, debounce_irq_handler, irqflags,
++					  line->req->label, line);
++			if (ret)
++				return ret;
++			line->irq = irq;
++		} else {
++			ret = hte_edge_setup(line,
++					     GPIO_V2_LINE_FLAG_EDGE_RISING |
++					     GPIO_V2_LINE_FLAG_EDGE_FALLING);
++			if (ret)
++				return ret;
++		}
+ 
++		WRITE_ONCE(line->level, level);
+ 		WRITE_ONCE(line->sw_debounced, 1);
+-		line->irq = irq;
+ 	}
+ 	return 0;
+ }
+@@ -766,13 +921,16 @@ static u32 gpio_v2_line_config_debounce_period(struct gpio_v2_line_config *lc,
+ 	return 0;
+ }
+ 
+-static void edge_detector_stop(struct line *line)
++static void edge_detector_stop(struct line *line, bool hte_en)
+ {
+-	if (line->irq) {
++	if (line->irq && !hte_en) {
+ 		free_irq(line->irq, line);
+ 		line->irq = 0;
+ 	}
+ 
++	if (hte_en)
++		hte_release_ts(&line->hdesc);
 +
-+static const struct hte_ops g_ops = {
-+	.request = tegra_hte_request,
-+	.release = tegra_hte_release,
-+	.enable = tegra_hte_enable,
-+	.disable = tegra_hte_disable,
-+	.get_clk_src_info = tegra_hte_clk_src_info,
-+};
+ 	cancel_delayed_work_sync(&line->work);
+ 	WRITE_ONCE(line->sw_debounced, 0);
+ 	WRITE_ONCE(line->eflags, 0);
+@@ -784,7 +942,7 @@ static void edge_detector_stop(struct line *line)
+ static int edge_detector_setup(struct line *line,
+ 			       struct gpio_v2_line_config *lc,
+ 			       unsigned int line_idx,
+-			       u64 eflags)
++			       u64 eflags, bool hte_req)
+ {
+ 	u32 debounce_period_us;
+ 	unsigned long irqflags = 0;
+@@ -799,7 +957,7 @@ static int edge_detector_setup(struct line *line,
+ 	WRITE_ONCE(line->eflags, eflags);
+ 	if (gpio_v2_line_config_debounced(lc, line_idx)) {
+ 		debounce_period_us = gpio_v2_line_config_debounce_period(lc, line_idx);
+-		ret = debounce_setup(line, debounce_period_us);
++		ret = debounce_setup(line, debounce_period_us, hte_req);
+ 		if (ret)
+ 			return ret;
+ 		WRITE_ONCE(line->desc->debounce_period_us, debounce_period_us);
+@@ -809,6 +967,9 @@ static int edge_detector_setup(struct line *line,
+ 	if (!eflags || READ_ONCE(line->sw_debounced))
+ 		return 0;
+ 
++	if (hte_req)
++		return hte_edge_setup(line, eflags);
 +
-+static void tegra_gte_disable(void *data)
-+{
-+	struct platform_device *pdev = data;
-+	struct tegra_hte_soc *gs = dev_get_drvdata(&pdev->dev);
-+
-+	tegra_hte_writel(gs, HTE_TECTRL, 0);
-+}
-+
-+static int tegra_get_gpiochip_from_name(struct gpio_chip *chip, void *data)
-+{
-+	return !strcmp(chip->label, data);
-+}
-+
-+static int tegra_hte_probe(struct platform_device *pdev)
-+{
-+	int ret;
-+	u32 i, slices, val = 0;
-+	u32 nlines;
-+	struct device *dev;
-+	struct tegra_hte_soc *hte_dev;
-+	struct hte_chip *gc;
-+
-+	dev = &pdev->dev;
-+
-+	ret = of_property_read_u32(dev->of_node, "nvidia,slices", &slices);
-+	if (ret != 0) {
-+		dev_err(dev, "Could not read slices\n");
+ 	irq = gpiod_to_irq(line->desc);
+ 	if (irq < 0)
+ 		return -ENXIO;
+@@ -834,13 +995,18 @@ static int edge_detector_setup(struct line *line,
+ static int edge_detector_update(struct line *line,
+ 				struct gpio_v2_line_config *lc,
+ 				unsigned int line_idx,
+-				u64 eflags, bool polarity_change)
++				u64 flags, bool polarity_change,
++				bool prev_hte_flag)
+ {
++	u64 eflags = flags & GPIO_V2_LINE_EDGE_FLAGS;
+ 	unsigned int debounce_period_us =
+-		gpio_v2_line_config_debounce_period(lc, line_idx);
++			gpio_v2_line_config_debounce_period(lc, line_idx);
++	bool hte_change = (prev_hte_flag !=
++		      ((flags & GPIO_V2_LINE_FLAG_EVENT_CLOCK_HTE) != 0));
+ 
+ 	if ((READ_ONCE(line->eflags) == eflags) && !polarity_change &&
+-	    (READ_ONCE(line->desc->debounce_period_us) == debounce_period_us))
++	    (READ_ONCE(line->desc->debounce_period_us) == debounce_period_us)
++	    && !hte_change)
+ 		return 0;
+ 
+ 	/* sw debounced and still will be...*/
+@@ -851,11 +1017,12 @@ static int edge_detector_update(struct line *line,
+ 	}
+ 
+ 	/* reconfiguring edge detection or sw debounce being disabled */
+-	if ((line->irq && !READ_ONCE(line->sw_debounced)) ||
++	if ((line->irq && !READ_ONCE(line->sw_debounced)) || prev_hte_flag ||
+ 	    (!debounce_period_us && READ_ONCE(line->sw_debounced)))
+-		edge_detector_stop(line);
++		edge_detector_stop(line, prev_hte_flag);
+ 
+-	return edge_detector_setup(line, lc, line_idx, eflags);
++	return edge_detector_setup(line, lc, line_idx, eflags,
++				   flags & GPIO_V2_LINE_FLAG_EVENT_CLOCK_HTE);
+ }
+ 
+ static u64 gpio_v2_line_config_flags(struct gpio_v2_line_config *lc,
+@@ -891,7 +1058,6 @@ static int gpio_v2_line_flags_validate(u64 flags)
+ 	/* Return an error if an unknown flag is set */
+ 	if (flags & ~GPIO_V2_LINE_VALID_FLAGS)
+ 		return -EINVAL;
+-
+ 	/*
+ 	 * Do not allow both INPUT and OUTPUT flags to be set as they are
+ 	 * contradictory.
+@@ -900,6 +1066,11 @@ static int gpio_v2_line_flags_validate(u64 flags)
+ 	    (flags & GPIO_V2_LINE_FLAG_OUTPUT))
+ 		return -EINVAL;
+ 
++	/* Only allow one event clock source */
++	if ((flags & GPIO_V2_LINE_FLAG_EVENT_CLOCK_REALTIME) &&
++	    (flags & GPIO_V2_LINE_FLAG_EVENT_CLOCK_HTE))
 +		return -EINVAL;
-+	}
-+	nlines = slices << 5;
 +
-+	hte_dev = devm_kzalloc(dev, sizeof(*hte_dev), GFP_KERNEL);
-+	if (!hte_dev)
-+		return -ENOMEM;
+ 	/* Edge detection requires explicit input. */
+ 	if ((flags & GPIO_V2_LINE_EDGE_FLAGS) &&
+ 	    !(flags & GPIO_V2_LINE_FLAG_INPUT))
+@@ -992,6 +1163,8 @@ static void gpio_v2_line_config_flags_to_desc_flags(u64 flags,
+ 
+ 	assign_bit(FLAG_EVENT_CLOCK_REALTIME, flagsp,
+ 		   flags & GPIO_V2_LINE_FLAG_EVENT_CLOCK_REALTIME);
++	assign_bit(FLAG_EVENT_CLOCK_HTE, flagsp,
++		   flags & GPIO_V2_LINE_FLAG_EVENT_CLOCK_HTE);
+ }
+ 
+ static long linereq_get_values(struct linereq *lr, void __user *ip)
+@@ -1121,6 +1294,7 @@ static long linereq_set_config_unlocked(struct linereq *lr,
+ 	unsigned int i;
+ 	u64 flags;
+ 	bool polarity_change;
++	bool prev_hte_flag;
+ 	int ret;
+ 
+ 	for (i = 0; i < lr->num_lines; i++) {
+@@ -1130,6 +1304,8 @@ static long linereq_set_config_unlocked(struct linereq *lr,
+ 			(!!test_bit(FLAG_ACTIVE_LOW, &desc->flags) !=
+ 			 ((flags & GPIO_V2_LINE_FLAG_ACTIVE_LOW) != 0));
+ 
++		prev_hte_flag = !!test_bit(FLAG_EVENT_CLOCK_HTE, &desc->flags);
 +
-+	gc = devm_kzalloc(dev, sizeof(*gc), GFP_KERNEL);
-+	if (!gc)
-+		return -ENOMEM;
-+
-+	dev_set_drvdata(&pdev->dev, hte_dev);
-+	hte_dev->prov_data = of_device_get_match_data(&pdev->dev);
-+
-+	hte_dev->regs = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(hte_dev->regs))
-+		return PTR_ERR(hte_dev->regs);
-+
-+	ret = of_property_read_u32(dev->of_node, "nvidia,int-threshold",
-+				   &hte_dev->itr_thrshld);
-+	if (ret != 0)
-+		hte_dev->itr_thrshld = 1;
-+
-+	hte_dev->sl = devm_kcalloc(dev, slices, sizeof(*hte_dev->sl),
-+				   GFP_KERNEL);
-+	if (!hte_dev->sl)
-+		return -ENOMEM;
-+
-+	ret = platform_get_irq(pdev, 0);
-+	if (ret < 0) {
-+		dev_err_probe(dev, ret, "failed to get irq\n");
-+		return ret;
-+	}
-+	hte_dev->hte_irq = ret;
-+	ret = devm_request_irq(dev, hte_dev->hte_irq, tegra_hte_isr, 0,
-+			       dev_name(dev), hte_dev);
-+	if (ret < 0) {
-+		dev_err(dev, "request irq failed.\n");
-+		return ret;
-+	}
-+
-+	gc->nlines = nlines;
-+	gc->ops = &g_ops;
-+	gc->dev = dev;
-+	gc->data = hte_dev;
-+	gc->xlate = tegra_hte_line_xlate;
-+	gc->of_hte_n_cells = 1;
-+
-+	if (hte_dev->prov_data &&
-+	    hte_dev->prov_data->type == HTE_TEGRA_TYPE_GPIO) {
-+		hte_dev->line_data = devm_kcalloc(dev, nlines,
-+						  sizeof(*hte_dev->line_data),
-+						  GFP_KERNEL);
-+		if (!hte_dev->line_data)
-+			return -ENOMEM;
-+
-+		gc->match_from_linedata = tegra_hte_match_from_linedata;
-+
-+		hte_dev->c = gpiochip_find("tegra194-gpio-aon",
-+					   tegra_get_gpiochip_from_name);
-+		if (!hte_dev->c)
-+			return dev_err_probe(dev, -EPROBE_DEFER,
-+					     "wait for gpio controller\n");
-+	}
-+
-+	hte_dev->chip = gc;
-+
-+	ret = devm_hte_register_chip(hte_dev->chip);
-+	if (ret) {
-+		dev_err(gc->dev, "hte chip register failed");
-+		return ret;
-+	}
-+
-+	for (i = 0; i < slices; i++) {
-+		hte_dev->sl[i].flags = 0;
-+		spin_lock_init(&hte_dev->sl[i].s_lock);
-+	}
-+
-+	val = HTE_TECTRL_ENABLE_ENABLE |
-+	      (HTE_TECTRL_INTR_ENABLE << HTE_TECTRL_INTR_SHIFT) |
-+	      (hte_dev->itr_thrshld << HTE_TECTRL_OCCU_SHIFT);
-+	tegra_hte_writel(hte_dev, HTE_TECTRL, val);
-+
-+	ret = devm_add_action_or_reset(&pdev->dev, tegra_gte_disable, pdev);
-+	if (ret)
-+		return ret;
-+
-+	dev_dbg(gc->dev, "lines: %d, slices:%d", gc->nlines, slices);
-+
-+	return 0;
-+}
-+
-+static int __maybe_unused tegra_hte_resume_early(struct device *dev)
-+{
-+	u32 i;
-+	struct tegra_hte_soc *gs = dev_get_drvdata(dev);
-+	u32 slices = gs->chip->nlines / NV_LINES_IN_SLICE;
-+	u32 sl_bit_shift = __builtin_ctz(HTE_SLICE_SIZE);
-+
-+	tegra_hte_writel(gs, HTE_TECTRL, gs->conf_rval);
-+
-+	for (i = 0; i < slices; i++) {
-+		spin_lock(&gs->sl[i].s_lock);
-+		tegra_hte_writel(gs,
-+				 ((i << sl_bit_shift) + HTE_SLICE0_TETEN),
-+				 gs->sl[i].r_val);
-+		clear_bit(HTE_SUSPEND, &gs->sl[i].flags);
-+		spin_unlock(&gs->sl[i].s_lock);
-+	}
-+
-+	return 0;
-+}
-+
-+static int __maybe_unused tegra_hte_suspend_late(struct device *dev)
-+{
-+	u32 i;
-+	struct tegra_hte_soc *gs = dev_get_drvdata(dev);
-+	u32 slices = gs->chip->nlines / NV_LINES_IN_SLICE;
-+	u32 sl_bit_shift = __builtin_ctz(HTE_SLICE_SIZE);
-+
-+	gs->conf_rval = tegra_hte_readl(gs, HTE_TECTRL);
-+	for (i = 0; i < slices; i++) {
-+		spin_lock(&gs->sl[i].s_lock);
-+		gs->sl[i].r_val = tegra_hte_readl(gs,
-+				((i << sl_bit_shift) + HTE_SLICE0_TETEN));
-+		set_bit(HTE_SUSPEND, &gs->sl[i].flags);
-+		spin_unlock(&gs->sl[i].s_lock);
-+	}
-+
-+	return 0;
-+}
-+
-+static const struct dev_pm_ops tegra_hte_pm = {
-+	SET_LATE_SYSTEM_SLEEP_PM_OPS(tegra_hte_suspend_late,
-+				     tegra_hte_resume_early)
-+};
-+
-+static struct platform_driver tegra_hte_driver = {
-+	.probe = tegra_hte_probe,
-+	.driver = {
-+		.name = "tegra_hte",
-+		.pm = &tegra_hte_pm,
-+		.of_match_table = tegra_hte_of_match,
-+	},
-+};
-+
-+module_platform_driver(tegra_hte_driver);
-+
-+MODULE_AUTHOR("Dipen Patel <dipenp@nvidia.com>");
-+MODULE_DESCRIPTION("NVIDIA Tegra HTE (Hardware Timestamping Engine) driver");
-+MODULE_LICENSE("GPL v2");
+ 		gpio_v2_line_config_flags_to_desc_flags(flags, &desc->flags);
+ 		/*
+ 		 * Lines have to be requested explicitly for input
+@@ -1138,7 +1314,7 @@ static long linereq_set_config_unlocked(struct linereq *lr,
+ 		if (flags & GPIO_V2_LINE_FLAG_OUTPUT) {
+ 			int val = gpio_v2_line_config_output_value(lc, i);
+ 
+-			edge_detector_stop(&lr->lines[i]);
++			edge_detector_stop(&lr->lines[i], prev_hte_flag);
+ 			ret = gpiod_direction_output(desc, val);
+ 			if (ret)
+ 				return ret;
+@@ -1148,8 +1324,7 @@ static long linereq_set_config_unlocked(struct linereq *lr,
+ 				return ret;
+ 
+ 			ret = edge_detector_update(&lr->lines[i], lc, i,
+-					flags & GPIO_V2_LINE_EDGE_FLAGS,
+-					polarity_change);
++					flags, polarity_change, prev_hte_flag);
+ 			if (ret)
+ 				return ret;
+ 		}
+@@ -1278,9 +1453,12 @@ static ssize_t linereq_read(struct file *file,
+ static void linereq_free(struct linereq *lr)
+ {
+ 	unsigned int i;
++	bool hte;
+ 
+ 	for (i = 0; i < lr->num_lines; i++) {
+-		edge_detector_stop(&lr->lines[i]);
++		hte = !!test_bit(FLAG_EVENT_CLOCK_HTE,
++				 &lr->lines[i].desc->flags);
++		edge_detector_stop(&lr->lines[i], hte);
+ 		if (lr->lines[i].desc)
+ 			gpiod_free(lr->lines[i].desc);
+ 	}
+@@ -1406,7 +1584,8 @@ static int linereq_create(struct gpio_device *gdev, void __user *ip)
+ 				goto out_free_linereq;
+ 
+ 			ret = edge_detector_setup(&lr->lines[i], lc, i,
+-					flags & GPIO_V2_LINE_EDGE_FLAGS);
++				flags & GPIO_V2_LINE_EDGE_FLAGS,
++				flags & GPIO_V2_LINE_FLAG_EVENT_CLOCK_HTE);
+ 			if (ret)
+ 				goto out_free_linereq;
+ 		}
+@@ -1959,6 +2138,8 @@ static void gpio_desc_to_lineinfo(struct gpio_desc *desc,
+ 
+ 	if (test_bit(FLAG_EVENT_CLOCK_REALTIME, &desc->flags))
+ 		info->flags |= GPIO_V2_LINE_FLAG_EVENT_CLOCK_REALTIME;
++	else if (test_bit(FLAG_EVENT_CLOCK_HTE, &desc->flags))
++		info->flags |= GPIO_V2_LINE_FLAG_EVENT_CLOCK_HTE;
+ 
+ 	debounce_period_us = READ_ONCE(desc->debounce_period_us);
+ 	if (debounce_period_us) {
+diff --git a/include/uapi/linux/gpio.h b/include/uapi/linux/gpio.h
+index eaaea3d8e6b4..cb9966d49a16 100644
+--- a/include/uapi/linux/gpio.h
++++ b/include/uapi/linux/gpio.h
+@@ -66,6 +66,8 @@ struct gpiochip_info {
+  * @GPIO_V2_LINE_FLAG_BIAS_PULL_DOWN: line has pull-down bias enabled
+  * @GPIO_V2_LINE_FLAG_BIAS_DISABLED: line has bias disabled
+  * @GPIO_V2_LINE_FLAG_EVENT_CLOCK_REALTIME: line events contain REALTIME timestamps
++ * @GPIO_V2_LINE_FLAG_EVENT_CLOCK_HTE: line events contain timestamps from
++ * hardware timestamp engine
+  */
+ enum gpio_v2_line_flag {
+ 	GPIO_V2_LINE_FLAG_USED			= _BITULL(0),
+@@ -80,6 +82,7 @@ enum gpio_v2_line_flag {
+ 	GPIO_V2_LINE_FLAG_BIAS_PULL_DOWN	= _BITULL(9),
+ 	GPIO_V2_LINE_FLAG_BIAS_DISABLED		= _BITULL(10),
+ 	GPIO_V2_LINE_FLAG_EVENT_CLOCK_REALTIME	= _BITULL(11),
++	GPIO_V2_LINE_FLAG_EVENT_CLOCK_HTE	= _BITULL(12),
+ };
+ 
+ /**
 -- 
 2.17.1
 
