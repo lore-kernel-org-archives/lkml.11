@@ -2,101 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 580A3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:27:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83E77C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:34:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357460AbiARD1s (ORCPT
+        id S1351996AbiARDeV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:27:48 -0500
-Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:58215 "EHLO
-        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1348467AbiARDXV (ORCPT
+        Mon, 17 Jan 2022 22:34:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39016 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235935AbiARDGm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:23:21 -0500
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id EDE4732007F9;
-        Mon, 17 Jan 2022 22:23:18 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute2.internal (MEProxy); Mon, 17 Jan 2022 22:23:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=turner.link; h=
-        references:from:to:cc:subject:date:in-reply-to:message-id
-        :mime-version:content-type; s=fm1; bh=GzsJPLk0WQC7EG+Ldejqutyl0x
-        GDNSzs8Fui0V7sUQo=; b=fs3Daa+DjKJ6E50ffeCnCe0frj8Ykq5LYCzvt6gisF
-        YhtuVVtoJPFegxI6IeYp4BPcvPPiOwrlCFY57AwVg5A26q4uzjAx8lMURK1//ftO
-        ESuB7BxODj3kZcpcXqv+bSxlPXF3/7vzX6GYbWPGUMQoJ/8vlybiZ8S2exg5aspw
-        ZNkuyLHFus6hTlMFCZd1tVsgGrwiS/flmqQYf2cConVPeCvGFuGCjTv6at2wOxCH
-        vQBR3fg4+V97O0TnmbKaPk3tLs7Ja7Jyr6jrqab/00w24nSiRGco9+CtOhCkFrlu
-        iVv+iSGXkoZugfjBwLJSBFjVUjTsGOgUzNjrT5gmpVZg==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=GzsJPL
-        k0WQC7EG+Ldejqutyl0xGDNSzs8Fui0V7sUQo=; b=WwZGFHf2grx6ZmEe0xmZOV
-        sfxvZTYjW3SfWujBY8QxA1y+vvuT/QZglOsHRDSev7UCMynLPHFEGVW20abvPGOt
-        HHsjlLjLrTwOuNTuH3hwG1HvUyr9fAW+U0aEwuGb0Kw3hNVFpduE+cuMVJrf1s9n
-        kQQtpYOAWgFYZXRE6T7V2kpIA1mn15V1sNCg6aTDQhKpkszWd2RaX1ULgUN/5VMS
-        6x+IFXYgdmHN0dl3Beg3TCcyiYyBcvasXpXkmSV3F267ZM+OnwepO1u531jmUmEp
-        VUMucD56QomHP6SeWi8eevWiCsV1yFeTeWvBWgB1a3O0wTuCNEiNeHwr7KgrEiQQ
-        ==
-X-ME-Sender: <xms:pjLmYWfyMSdP0UrPHoxdjFok6pnhj9g_4T0tqSxZKhNdY67xiiHmEQ>
-    <xme:pjLmYQPc9qBJb1q6A6GVdldxqXxQb8FOf5EPtJ4J_NkCjHShkN_U3blXwCBtWfGdy
-    cFd_e10yC6gSycwmQ>
-X-ME-Received: <xmr:pjLmYXi36rYWy7DZBsD-qVNiq9RZOGmywwq-_2bJNB7el89EROyO1_bcGkm4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddvgdehkecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpehfhffvufffjgfkgggtsehttdertddttddtnecuhfhrohhmpeflrghmvghsucfv
-    uhhrnhgvrhcuoehlihhnuhigkhgvrhhnvghlrdhfohhsshesughmrghrtgdqnhhonhgvrd
-    htuhhrnhgvrhdrlhhinhhkqeenucggtffrrghtthgvrhhnpefhkeehvdevfeeiteeitdeh
-    jeejgfegffduuefhveehhfelgefgteejuefhieetjeenucffohhmrghinhepfhhrvggvug
-    gvshhkthhophdrohhrghdpkhgvrhhnvghlrdhorhhgnecuvehluhhsthgvrhfuihiivgep
-    tdenucfrrghrrghmpehmrghilhhfrhhomheplhhinhhugihkvghrnhgvlhdrfhhoshhsse
-    gumhgrrhgtqdhnohhnvgdrthhurhhnvghrrdhlihhnkh
-X-ME-Proxy: <xmx:pjLmYT9aSTo3EeqXIQs4Zt000vybDbPZJugOCABfYt1AzWERO9aYuA>
-    <xmx:pjLmYSvLp8jiDhmTQRuYCHaOHb39Z11qOouwZYHP4dK7inTGJwYhIA>
-    <xmx:pjLmYaG_hEZehwevx4Uv8QYuaNxlGgIXySN7guW8UW-NPN7YgALpIg>
-    <xmx:pjLmYWi_rHmnWh5wIwZ0hs6h30hu7YxAE6UpiDR4UICf0piXYcBsiw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
- 17 Jan 2022 22:23:17 -0500 (EST)
-References: <87ee57c8fu.fsf@turner.link>
- <acd2fd5e-d622-948c-82ef-629a8030c9d8@leemhuis.info>
-From:   James Turner <linuxkernel.foss@dmarc-none.turner.link>
-To:     Thorsten Leemhuis <regressions@leemhuis.info>
-Cc:     Alex Williamson <alex.williamson@redhat.com>, kvm@vger.kernel.org,
-        regressions@lists.linux.dev, linux-kernel@vger.kernel.org
-Subject: Re: [REGRESSION] Too-low frequency limit for AMD GPU
- PCI-passed-through to Windows VM
-Date:   Mon, 17 Jan 2022 22:14:19 -0500
-In-reply-to: <acd2fd5e-d622-948c-82ef-629a8030c9d8@leemhuis.info>
-Message-ID: <87a6ftk9qy.fsf@dmarc-none.turner.link>
+        Mon, 17 Jan 2022 22:06:42 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8FBC06127C;
+        Mon, 17 Jan 2022 18:48:58 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CE25611B4;
+        Tue, 18 Jan 2022 02:48:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8F9AC36AF2;
+        Tue, 18 Jan 2022 02:48:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642474137;
+        bh=CEdO8M38elb+TwdxQlBYqa49sSc8fF+qL7qx0yZugNY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MiVxVvq7Ll3jlUqHsrz0ACo5Jsk471U8QBuFcyTyVqyq75RoYTuEl4jG5ymQUhVz1
+         Q0pjJoKEj2Duds9K92qC2hIm5ek+o4l1m2sIoGG8WgcmID+CRwqcDKEcGLyovJX2C1
+         KlB1GwT6Jot4wrzTRja8bctD9Ph6agttTHs82W4KixF3EcIKw6ZgwPQLlc2IWEf3sH
+         ZHzU6FlgZeDLpvRNwfvA9qK0NGyypK5H3R9AeOmrgRiNQ5nGHtpAT2H7a4/L6y1G1H
+         vtl1JLYcrz0saCePYmucqv39WakY1GHSAY+OAe7fEwtvY8wCObj01vlpQp1Pxdv/NE
+         dxRrEttFpKQig==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
+        davem@davemloft.net, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 54/59] net: phy: marvell: configure RGMII delays for 88E1118
+Date:   Mon, 17 Jan 2022 21:46:55 -0500
+Message-Id: <20220118024701.1952911-54-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
+References: <20220118024701.1952911-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I finished about half of the bisection process today. The log so far is
-below. I'll follow up again once I've narrowed it down to a single
-commit.
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 
-git bisect start
-# bad: [e73f0f0ee7541171d89f2e2491130c7771ba58d3] Linux 5.14-rc1
-git bisect bad e73f0f0ee7541171d89f2e2491130c7771ba58d3
-# good: [62fb9874f5da54fdb243003b386128037319b219] Linux 5.13
-git bisect good 62fb9874f5da54fdb243003b386128037319b219
-# bad: [e058a84bfddc42ba356a2316f2cf1141974625c9] Merge tag 'drm-next-2021-07-01' of git://anongit.freedesktop.org/drm/drm
-git bisect bad e058a84bfddc42ba356a2316f2cf1141974625c9
-# good: [a6eaf3850cb171c328a8b0db6d3c79286a1eba9d] Merge tag 'sched-urgent-2021-06-30' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip
-git bisect good a6eaf3850cb171c328a8b0db6d3c79286a1eba9d
-# good: [007b312c6f294770de01fbc0643610145012d244] Merge tag 'mac80211-next-for-net-next-2021-06-25' of git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next
-git bisect good 007b312c6f294770de01fbc0643610145012d244
-# bad: [18703923a66aecf6f7ded0e16d22eb412ddae72f] drm/amdgpu: Fix incorrect register offsets for Sienna Cichlid
-git bisect bad 18703923a66aecf6f7ded0e16d22eb412ddae72f
-# good: [c99c4d0ca57c978dcc2a2f41ab8449684ea154cc] Merge tag 'amd-drm-next-5.14-2021-05-19' of https://gitlab.freedesktop.org/agd5f/linux into drm-next
-git bisect good c99c4d0ca57c978dcc2a2f41ab8449684ea154cc
-# good: [43ed3c6c786d996a264fcde68dbb36df6f03b965] Merge tag 'drm-misc-next-2021-06-01' of git://anongit.freedesktop.org/drm/drm-misc into drm-next
-git bisect good 43ed3c6c786d996a264fcde68dbb36df6f03b965
-# bad: [050cd3d616d96c3a04f4877842a391c0a4fdcc7a] drm/amd/display: Add support for SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616.
-git bisect bad 050cd3d616d96c3a04f4877842a391c0a4fdcc7a
+[ Upstream commit f22725c95ececb703c3f741e8f946d23705630b7 ]
 
-James
+Corentin Labbe reports that the SSI 1328 does not work when allowing
+the PHY to operate at gigabit speeds, but does work with the generic
+PHY driver.
+
+This appears to be because m88e1118_config_init() writes a fixed value
+to the MSCR register, claiming that this is to enable 1G speeds.
+However, this always sets bits 4 and 5, enabling RGMII transmit and
+receive delays. The suspicion is that the original board this was
+added for required the delays to make 1G speeds work.
+
+Add the necessary configuration for RGMII delays for the 88E1118 to
+bring this into line with the requirements for RGMII support, and thus
+make the SSI 1328 work.
+
+Corentin Labbe has tested this on gemini-ssi1328 and gemini-ns2502.
+
+Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/phy/marvell.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
+index 832a401c5fa56..484f6691b9c9f 100644
+--- a/drivers/net/phy/marvell.c
++++ b/drivers/net/phy/marvell.c
+@@ -930,6 +930,12 @@ static int m88e1118_config_init(struct phy_device *phydev)
+ 	if (err < 0)
+ 		return err;
+ 
++	if (phy_interface_is_rgmii(phydev)) {
++		err = m88e1121_config_aneg_rgmii_delays(phydev);
++		if (err < 0)
++			return err;
++	}
++
+ 	/* Adjust LED Control */
+ 	if (phydev->dev_flags & MARVELL_PHY_M1118_DNS323_LEDS)
+ 		err = phy_write(phydev, 0x10, 0x1100);
+-- 
+2.34.1
+
