@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0525FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC07EC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:28:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244515AbiARC23 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:28:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57340 "EHLO
+        id S1343974AbiARC2f (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:28:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244935AbiARC0O (ORCPT
+        with ESMTP id S245077AbiARC0T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:26:14 -0500
+        Mon, 17 Jan 2022 21:26:19 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DA22C061366;
-        Mon, 17 Jan 2022 18:24:45 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55259C061746;
+        Mon, 17 Jan 2022 18:24:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BB5DFB81244;
-        Tue, 18 Jan 2022 02:24:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B36B6C36AF2;
-        Tue, 18 Jan 2022 02:24:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 07C43B81240;
+        Tue, 18 Jan 2022 02:24:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4A2EC36B07;
+        Tue, 18 Jan 2022 02:24:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472682;
-        bh=5l4Rfm2PSSLWqX7qktkfzNpaICyo5Ne2QJRlsa438hU=;
+        s=k20201202; t=1642472696;
+        bh=b1kuycPtIuGNh9eiV5SiIWKNRLWLaFZgezxgdv7TYmM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=keBMEofbuKaZpYbAxCjjdkM/s40MKBm84RHUpgs+3TtYV4dMsDBwhyFmlG/0QeFMt
-         EtDCEDwioMvnPHIAsZNUNmol1bDeicex50KFyw1+kJkbfCCY83aNCXe8hAQeceR+Rb
-         XW9vSHOcBHHehc0qvUPpEyvh+dp0VyHi7rsJwubGeevmxHKkFeILqKT1j/lr7EjXYW
-         DjCqk6scA5BIVjghvXqRFMbHzZtWjbg/9TwOuot/JTYpE0Uh9XRZ4ocqyeAZjGtBr+
-         9c+eZ7INMPN3tlBW3VITQ0RVkZuzGwxyr4hy48vKPLYq5XDqDpnW6s1UK0zYxz8G/6
-         KAcDF2Z13m0Qg==
+        b=UCq9Ii7DF17MTy1CUpmn+ABB15uxiQeiYnHffoj5pWMFrbL7OD+bkgNwKcylAp1FZ
+         LuJnOWAlrwzNN8w2NpK4bwq+0+ihDd3hYrR4HUooLlc6AIF0u4WNuVRjH6hn5wkEVE
+         Tb4jhqRrENpMciXDlNkN4jca/aYurZLGEaqIQRk15mifyr1G+KMoxeL3Z5KQtDiIv+
+         Y2bAiPxrj4yh1ta2YbDG3J5TW3kSvILPMr0cuZcTO9vDdOOYV4to4oB4BxVcJsuejt
+         FBD3r9jpDeTVdl6TFNAlAGsMHkMq3M3XacpyyIKWSsdV/YZthCvmgT96SpkcJJVZ4p
+         z7ppp9n+gQ/FQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     James Hilliard <james.hilliard1@gmail.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, mchehab@kernel.org,
-        linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 097/217] media: uvcvideo: Increase UVC_CTRL_CONTROL_TIMEOUT to 5 seconds.
-Date:   Mon, 17 Jan 2022 21:17:40 -0500
-Message-Id: <20220118021940.1942199-97-sashal@kernel.org>
+Cc:     Mika Westerberg <mika.westerberg@linux.intel.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, andreas.noever@gmail.com,
+        michael.jamet@intel.com, YehezkelShB@gmail.com,
+        linux-usb@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 102/217] thunderbolt: Runtime PM activate both ends of the device link
+Date:   Mon, 17 Jan 2022 21:17:45 -0500
+Message-Id: <20220118021940.1942199-102-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -53,43 +54,72 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Hilliard <james.hilliard1@gmail.com>
+From: Mika Westerberg <mika.westerberg@linux.intel.com>
 
-[ Upstream commit c8ed7d2f614cd8b315981d116c7a2fb01829500d ]
+[ Upstream commit f3380cac0c0b3a6f49ab161e2a057c363962f48d ]
 
-Some uvc devices appear to require the maximum allowed USB timeout
-for GET_CUR/SET_CUR requests.
+If protocol tunnels are already up when the driver is loaded, for
+instance if the boot firmware implements connection manager of its own,
+runtime PM reference count of the consumer devices behind the tunnel
+might have been increased already before the device link is created but
+the supplier device runtime PM reference count is not. This leads to a
+situation where the supplier (the Thunderbolt driver) can runtime
+suspend even if it should not because the corresponding protocol tunnel
+needs to be up causing the devices to be removed from the corresponding
+native bus.
 
-So lets just bump the UVC control timeout to 5 seconds which is the
-same as the usb ctrl get/set defaults:
-USB_CTRL_GET_TIMEOUT 5000
-USB_CTRL_SET_TIMEOUT 5000
+Prevent this from happening by making both sides of the link runtime PM
+active briefly. The pm_runtime_put() for the consumer (PCIe
+root/downstream port, xHCI) then allows it to runtime suspend again but
+keeps the supplier runtime resumed the whole time it is runtime active.
 
-It fixes the following runtime warnings:
-   Failed to query (GET_CUR) UVC control 11 on unit 2: -110 (exp. 1).
-   Failed to query (SET_CUR) UVC control 3 on unit 2: -110 (exp. 2).
-
-Signed-off-by: James Hilliard <james.hilliard1@gmail.com>
-Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Reviewed-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/uvc/uvcvideo.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/thunderbolt/acpi.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-diff --git a/drivers/media/usb/uvc/uvcvideo.h b/drivers/media/usb/uvc/uvcvideo.h
-index 2e5366143b814..143230b3275b3 100644
---- a/drivers/media/usb/uvc/uvcvideo.h
-+++ b/drivers/media/usb/uvc/uvcvideo.h
-@@ -189,7 +189,7 @@
- /* Maximum status buffer size in bytes of interrupt URB. */
- #define UVC_MAX_STATUS_SIZE	16
+diff --git a/drivers/thunderbolt/acpi.c b/drivers/thunderbolt/acpi.c
+index b67e72d5644b3..7c9597a339295 100644
+--- a/drivers/thunderbolt/acpi.c
++++ b/drivers/thunderbolt/acpi.c
+@@ -7,6 +7,7 @@
+  */
  
--#define UVC_CTRL_CONTROL_TIMEOUT	500
-+#define UVC_CTRL_CONTROL_TIMEOUT	5000
- #define UVC_CTRL_STREAMING_TIMEOUT	5000
+ #include <linux/acpi.h>
++#include <linux/pm_runtime.h>
  
- /* Maximum allowed number of control mappings per device */
+ #include "tb.h"
+ 
+@@ -74,8 +75,18 @@ static acpi_status tb_acpi_add_link(acpi_handle handle, u32 level, void *data,
+ 		 pci_pcie_type(pdev) == PCI_EXP_TYPE_DOWNSTREAM))) {
+ 		const struct device_link *link;
+ 
++		/*
++		 * Make them both active first to make sure the NHI does
++		 * not runtime suspend before the consumer. The
++		 * pm_runtime_put() below then allows the consumer to
++		 * runtime suspend again (which then allows NHI runtime
++		 * suspend too now that the device link is established).
++		 */
++		pm_runtime_get_sync(&pdev->dev);
++
+ 		link = device_link_add(&pdev->dev, &nhi->pdev->dev,
+ 				       DL_FLAG_AUTOREMOVE_SUPPLIER |
++				       DL_FLAG_RPM_ACTIVE |
+ 				       DL_FLAG_PM_RUNTIME);
+ 		if (link) {
+ 			dev_dbg(&nhi->pdev->dev, "created link from %s\n",
+@@ -84,6 +95,8 @@ static acpi_status tb_acpi_add_link(acpi_handle handle, u32 level, void *data,
+ 			dev_warn(&nhi->pdev->dev, "device link creation from %s failed\n",
+ 				 dev_name(&pdev->dev));
+ 		}
++
++		pm_runtime_put(&pdev->dev);
+ 	}
+ 
+ out_put:
 -- 
 2.34.1
 
