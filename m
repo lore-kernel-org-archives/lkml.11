@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE49BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:29:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50342C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:29:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343763AbiARC3N (ORCPT
+        id S1344151AbiARC3R (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:29:13 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40436 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239994AbiARC1C (ORCPT
+        Mon, 17 Jan 2022 21:29:17 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44380 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244607AbiARC1L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:27:02 -0500
+        Mon, 17 Jan 2022 21:27:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2CBCBB81232;
-        Tue, 18 Jan 2022 02:27:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7423AC36AE3;
-        Tue, 18 Jan 2022 02:26:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0CD616119A;
+        Tue, 18 Jan 2022 02:27:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1949BC36AEB;
+        Tue, 18 Jan 2022 02:27:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472819;
-        bh=I1V/IFg+vIvu92mF4fyATCy5Y+5SKhi/PFtWjx0XmD8=;
+        s=k20201202; t=1642472829;
+        bh=gN8e4n+344COSfz2qoEkyox0kd95ormBrbUV3mZwg6g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iSFN+b1lLjiwOHxCBjHLqLNui1ULIlNsizdPhN1fEmX9zl2Y1Vy7QyJs2VZAyjOfC
-         6D259GlBhQmvBGDJoqq5luWK4l8JDTzhjOr61jSD+OldXvmHCLjsKAiaKVyjepFyDw
-         h0V1tzFX0LPPfuq0orfNzVD5KRSnm2RvLpDFHk/w45RaumYVvHzqxC3Izbv4UnzfrC
-         onUen+AE/ptKjXJA1t30oF7fUYMyKN16IxV9CBz13ZDNl8UOcgWnRB9azJUA945nAf
-         FTgmcIS77Fg/06tcvevFL63b4WOLNmnlVouXE2t7jMbFW3SLeHIijY8aWDZqCjhcsh
-         exzi74DObR2Bw==
+        b=ALAvjHlOIoaFOfQ3hycuGCTISRnlAOfixyyQ6rvv3EfKpSwLlYQVjKIPaPpLt5slP
+         nLsadwu0K2w4YM6EnbOKJ9a/MfhunpxA5g+JD4yW/CUNA5edAMgJ7FClY4DtcgnK3t
+         mSw44LUmNv26YXtroUF9kCRwkD3m/cQI54AjSaFiTWHU/Qk2rwlpuf11R1W+R5nAeO
+         GFLgNgj/G+qP1BX/4dO6cP2FlA2q7ZpJB5w+aO78Ev5UPiYNLN/8y2dMIalX5UREaE
+         g/+qQ7ZEA5UCjw3n+TK0qHPWmBXo9AOuFJttzCm3PNlut0ishxVStjH1Hf+8hyub5V
+         KCBhqSVD0XPiQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jingwen Chen <Jingwen.Chen2@amd.com>,
-        Horace Chen <horace.chen@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
-        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
-        Hawking.Zhang@amd.com, ray.huang@amd.com, Felix.Kuehling@amd.com,
-        Jack.Gui@amd.com, PengJu.Zhou@amd.com, Philip.Yang@amd.com,
-        Yuliang.Shi@amd.com, Xiaomeng.Hou@amd.com, aaron.liu@amd.com,
-        victor.skvortsov@amd.com, John.Clements@amd.com, Oak.Zeng@amd.com,
-        alex.sierra@amd.com, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.16 141/217] drm/amd/amdgpu: fix gmc bo pin count leak in SRIOV
-Date:   Mon, 17 Jan 2022 21:18:24 -0500
-Message-Id: <20220118021940.1942199-141-sashal@kernel.org>
+Cc:     Peter Gonda <pgonda@google.com>, Marc Orr <marcorr@google.com>,
+        David Rientjes <rientjes@google.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        Brijesh Singh <brijesh.singh@amd.com>,
+        Joerg Roedel <jroedel@suse.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        John Allen <john.allen@amd.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Paolo Bonzini <pbonzini@redhat.com>,
+        linux-crypto@vger.kernel.org, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.16 146/217] crypto: ccp - Move SEV_INIT retry for corrupted data
+Date:   Mon, 17 Jan 2022 21:18:29 -0500
+Message-Id: <20220118021940.1942199-146-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -57,66 +56,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jingwen Chen <Jingwen.Chen2@amd.com>
+From: Peter Gonda <pgonda@google.com>
 
-[ Upstream commit 948e7ce01413b71395723aaf846015062aea3a43 ]
+[ Upstream commit e423b9d75e779d921e6adf5ac3d0b59400d6ba7e ]
 
-[Why]
-gmc bo will be pinned during loading amdgpu and reset in SRIOV while
-only unpinned in unload amdgpu
+Move the data corrupted retry of SEV_INIT into the
+__sev_platform_init_locked() function. This is for upcoming INIT_EX
+support as well as helping direct callers of
+__sev_platform_init_locked() which currently do not support the
+retry.
 
-[How]
-add amdgpu_in_reset and sriov judgement to skip pin bo
-
-v2: fix wrong judgement
-
-Signed-off-by: Jingwen Chen <Jingwen.Chen2@amd.com>
-Reviewed-by: Horace Chen <horace.chen@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Signed-off-by: Peter Gonda <pgonda@google.com>
+Reviewed-by: Marc Orr <marcorr@google.com>
+Acked-by: David Rientjes <rientjes@google.com>
+Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
+Acked-by: Brijesh Singh <brijesh.singh@amd.com>
+Cc: Tom Lendacky <thomas.lendacky@amd.com>
+Cc: Brijesh Singh <brijesh.singh@amd.com>
+Cc: Marc Orr <marcorr@google.com>
+Cc: Joerg Roedel <jroedel@suse.de>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: David Rientjes <rientjes@google.com>
+Cc: John Allen <john.allen@amd.com>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Paolo Bonzini <pbonzini@redhat.com>
+Cc: linux-crypto@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c | 4 ++++
- drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c  | 4 ++++
- 2 files changed, 8 insertions(+)
+ drivers/crypto/ccp/sev-dev.c | 30 ++++++++++++++++--------------
+ 1 file changed, 16 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-index 3ec5ff5a6dbe6..61ec6145bbb16 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v10_0.c
-@@ -992,10 +992,14 @@ static int gmc_v10_0_gart_enable(struct amdgpu_device *adev)
- 		return -EINVAL;
+diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
+index e09925d86bf36..581a1b13d5c3d 100644
+--- a/drivers/crypto/ccp/sev-dev.c
++++ b/drivers/crypto/ccp/sev-dev.c
+@@ -241,7 +241,7 @@ static int __sev_platform_init_locked(int *error)
+ 	struct psp_device *psp = psp_master;
+ 	struct sev_data_init data;
+ 	struct sev_device *sev;
+-	int rc = 0;
++	int psp_ret, rc = 0;
+ 
+ 	if (!psp || !psp->sev_data)
+ 		return -ENODEV;
+@@ -266,7 +266,21 @@ static int __sev_platform_init_locked(int *error)
+ 		data.tmr_len = SEV_ES_TMR_SIZE;
  	}
  
-+	if (amdgpu_sriov_vf(adev) && amdgpu_in_reset(adev))
-+		goto skip_pin_bo;
+-	rc = __sev_do_cmd_locked(SEV_CMD_INIT, &data, error);
++	rc = __sev_do_cmd_locked(SEV_CMD_INIT, &data, &psp_ret);
++	if (rc && psp_ret == SEV_RET_SECURE_DATA_INVALID) {
++		/*
++		 * Initialization command returned an integrity check failure
++		 * status code, meaning that firmware load and validation of SEV
++		 * related persistent data has failed. Retrying the
++		 * initialization function should succeed by replacing the state
++		 * with a reset state.
++		 */
++		dev_dbg(sev->dev, "SEV: retrying INIT command");
++		rc = __sev_do_cmd_locked(SEV_CMD_INIT, &data, &psp_ret);
++	}
++	if (error)
++		*error = psp_ret;
 +
- 	r = amdgpu_gart_table_vram_pin(adev);
- 	if (r)
- 		return r;
+ 	if (rc)
+ 		return rc;
  
-+skip_pin_bo:
- 	r = adev->gfxhub.funcs->gart_enable(adev);
- 	if (r)
- 		return r;
-diff --git a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-index d84523cf5f759..4420c264c554c 100644
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-@@ -1714,10 +1714,14 @@ static int gmc_v9_0_gart_enable(struct amdgpu_device *adev)
- 		return -EINVAL;
- 	}
+@@ -1091,18 +1105,6 @@ void sev_pci_init(void)
  
-+	if (amdgpu_sriov_vf(adev) && amdgpu_in_reset(adev))
-+		goto skip_pin_bo;
-+
- 	r = amdgpu_gart_table_vram_pin(adev);
- 	if (r)
- 		return r;
- 
-+skip_pin_bo:
- 	r = adev->gfxhub.funcs->gart_enable(adev);
- 	if (r)
- 		return r;
+ 	/* Initialize the platform */
+ 	rc = sev_platform_init(&error);
+-	if (rc && (error == SEV_RET_SECURE_DATA_INVALID)) {
+-		/*
+-		 * INIT command returned an integrity check failure
+-		 * status code, meaning that firmware load and
+-		 * validation of SEV related persistent data has
+-		 * failed and persistent state has been erased.
+-		 * Retrying INIT command here should succeed.
+-		 */
+-		dev_dbg(sev->dev, "SEV: retrying INIT command");
+-		rc = sev_platform_init(&error);
+-	}
+-
+ 	if (rc) {
+ 		dev_err(sev->dev, "SEV: failed to INIT error %#x\n", error);
+ 		return;
 -- 
 2.34.1
 
