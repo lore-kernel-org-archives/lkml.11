@@ -2,53 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4A91C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:12:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8805C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:12:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354760AbiARDKO (ORCPT
+        id S1354797AbiARDKS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:10:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34906 "EHLO
+        Mon, 17 Jan 2022 22:10:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350172AbiARCvU (ORCPT
+        with ESMTP id S1348488AbiARCpb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:51:20 -0500
+        Mon, 17 Jan 2022 21:45:31 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29F14C061A7F;
-        Mon, 17 Jan 2022 18:42:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C93D3C03400C;
+        Mon, 17 Jan 2022 18:38:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E22E1B81244;
-        Tue, 18 Jan 2022 02:42:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3C54BC36AE3;
-        Tue, 18 Jan 2022 02:42:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 912BBB81229;
+        Tue, 18 Jan 2022 02:38:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21438C36AE3;
+        Tue, 18 Jan 2022 02:38:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473744;
-        bh=hhcJmuN2kWlMk96NPFUrqTDWUoSgBnttal2l50VDvZ0=;
+        s=k20201202; t=1642473492;
+        bh=XOsj6tMeo3byH1VXmZp4CqHcytz5W+S7VP6NCTNikdo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dh5HEAsf+mcalT78LvKyI8CfCzDYneBFOJG3Y/Y1eyupAS8kD7AasesYx2DWMiNzm
-         79V6i6Ad65OBGYNxlVyu8CvoCfZrxtpgHaE6dV2AZH+9x9mJvbD71eUy6ekULTq9Fa
-         87RmoFN4NeLSwWAliJKryBOlMIxERMXl/frB8VmO/5P65wrkb/+BtRmw9p097GZK5S
-         DPba5FJizb2v0iz48mBSTWMNlBEiG95yhpF8lkDMgk7LJp5y4JZQoqTQRb/6iAOAGE
-         9d4daJ1ZDBQsiWgshXGBuTLmg9mYEqFkuLjzG03dxZVn4fKEEmRKpudv73favzcGqm
-         CE6mCl8YjIUcA==
+        b=E0P4wmm7zI/vaiT0nW6pru0UiZspsP0j+cvJ2bGvWhhUCZd2/yBITWoj1SCRZvwso
+         tOaCujn7m3UJiCq15ZZJvVwYsw9Qh3RwpebrupNalrxn3M4o84scg9K2JYSdiXsR/R
+         s9KY/ZOXwsrQISoL9+u4rsZMrD6bgwwXTB/6Pm+wod6yKV1P2m2s2SxIXa2TdmmO7u
+         eYKM2mF+ufVYJ6NYXP6Ue7DqnJH9DT3bviTHUQ5T2xwzkDwZe8hYr+e6cJImeHDK2L
+         lDU81HfM4hp8QePYTANMf5bwP8ccgJtJHzZs5sCO6q3krdnp/hT8gN5KEgC9Iwvelv
+         Ejsj3Yz4qCcGA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Maximilian Ernestus <maximilian@ernestus.de>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        mordechay.goodstein@intel.com, miriam.rachel.korenblit@intel.com,
+Cc:     Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>,
+        syzbot <syzbot+31d54c60c5b254d6f75b@syzkaller.appspotmail.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, ath9k-devel@qca.qualcomm.com,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 050/116] iwlwifi: mvm: synchronize with FW after multicast commands
-Date:   Mon, 17 Jan 2022 21:39:01 -0500
-Message-Id: <20220118024007.1950576-50-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.15 134/188] ath9k_htc: fix NULL pointer dereference at ath9k_htc_tx_get_packet()
+Date:   Mon, 17 Jan 2022 21:30:58 -0500
+Message-Id: <20220118023152.1948105-134-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -57,70 +56,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
 
-[ Upstream commit db66abeea3aefed481391ecc564fb7b7fb31d742 ]
+[ Upstream commit 8b3046abc99eefe11438090bcc4ec3a3994b55d0 ]
 
-If userspace installs a lot of multicast groups very quickly, then
-we may run out of command queue space as we send the updates in an
-asynchronous fashion (due to locking concerns), and the CPU can
-create them faster than the firmware can process them. This is true
-even when mac80211 has a work struct that gets scheduled.
+syzbot is reporting lockdep warning at ath9k_wmi_event_tasklet() followed
+by kernel panic at get_htc_epid_queue() from ath9k_htc_tx_get_packet() from
+ath9k_htc_txstatus() [1], for ath9k_wmi_event_tasklet(WMI_TXSTATUS_EVENTID)
+depends on spin_lock_init() from ath9k_init_priv() being already completed.
 
-Fix this by synchronizing with the firmware after sending all those
-commands - outside of the iteration we can send a synchronous echo
-command that just has the effect of the CPU waiting for the prior
-asynchronous commands to finish. This also will cause fewer of the
-commands to be sent to the firmware overall, because the work will
-only run once when rescheduled multiple times while it's running.
+Since ath9k_wmi_event_tasklet() is set by ath9k_init_wmi() from
+ath9k_htc_probe_device(), it is possible that ath9k_wmi_event_tasklet() is
+called via tasklet interrupt before spin_lock_init() from ath9k_init_priv()
+ from ath9k_init_device() from ath9k_htc_probe_device() is called.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=213649
-Suggested-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Reported-by: Maximilian Ernestus <maximilian@ernestus.de>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211204083238.51aea5b79ea4.I88a44798efda16e9fe480fb3e94224931d311b29@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Let's hold ath9k_wmi_event_tasklet(WMI_TXSTATUS_EVENTID) no-op until
+ath9k_tx_init() completes.
+
+Link: https://syzkaller.appspot.com/bug?extid=31d54c60c5b254d6f75b [1]
+Reported-by: syzbot <syzbot+31d54c60c5b254d6f75b@syzkaller.appspotmail.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Tested-by: syzbot <syzbot+31d54c60c5b254d6f75b@syzkaller.appspotmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/77b76ac8-2bee-6444-d26c-8c30858b8daa@i-love.sakura.ne.jp
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/intel/iwlwifi/mvm/mac80211.c   | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ drivers/net/wireless/ath/ath9k/htc.h          | 1 +
+ drivers/net/wireless/ath/ath9k/htc_drv_txrx.c | 5 +++++
+ drivers/net/wireless/ath/ath9k/wmi.c          | 4 ++++
+ 3 files changed, 10 insertions(+)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index 81cc85a97eb20..922a7ea0cd24e 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -1739,6 +1739,7 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	struct iwl_mvm_mc_iter_data iter_data = {
- 		.mvm = mvm,
- 	};
-+	int ret;
+diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
+index 4f71e962279af..6b45e63fae4ba 100644
+--- a/drivers/net/wireless/ath/ath9k/htc.h
++++ b/drivers/net/wireless/ath/ath9k/htc.h
+@@ -306,6 +306,7 @@ struct ath9k_htc_tx {
+ 	DECLARE_BITMAP(tx_slot, MAX_TX_BUF_NUM);
+ 	struct timer_list cleanup_timer;
+ 	spinlock_t tx_lock;
++	bool initialized;
+ };
  
- 	lockdep_assert_held(&mvm->mutex);
- 
-@@ -1748,6 +1749,22 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	ieee80211_iterate_active_interfaces_atomic(
- 		mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
- 		iwl_mvm_mc_iface_iterator, &iter_data);
+ struct ath9k_htc_tx_ctl {
+diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+index e7a21eaf3a68d..6a850a0bfa8ad 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
++++ b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+@@ -813,6 +813,11 @@ int ath9k_tx_init(struct ath9k_htc_priv *priv)
+ 	skb_queue_head_init(&priv->tx.data_vi_queue);
+ 	skb_queue_head_init(&priv->tx.data_vo_queue);
+ 	skb_queue_head_init(&priv->tx.tx_failed);
 +
-+	/*
-+	 * Send a (synchronous) ech command so that we wait for the
-+	 * multiple asynchronous MCAST_FILTER_CMD commands sent by
-+	 * the interface iterator. Otherwise, we might get here over
-+	 * and over again (by userspace just sending a lot of these)
-+	 * and the CPU can send them faster than the firmware can
-+	 * process them.
-+	 * Note that the CPU is still faster - but with this we'll
-+	 * actually send fewer commands overall because the CPU will
-+	 * not schedule the work in mac80211 as frequently if it's
-+	 * still running when rescheduled (possibly multiple times).
-+	 */
-+	ret = iwl_mvm_send_cmd_pdu(mvm, ECHO_CMD, 0, 0, NULL);
-+	if (ret)
-+		IWL_ERR(mvm, "Failed to synchronize multicast groups update\n");
++	/* Allow ath9k_wmi_event_tasklet(WMI_TXSTATUS_EVENTID) to operate. */
++	smp_wmb();
++	priv->tx.initialized = true;
++
+ 	return 0;
  }
  
- static u64 iwl_mvm_prepare_multicast(struct ieee80211_hw *hw,
+diff --git a/drivers/net/wireless/ath/ath9k/wmi.c b/drivers/net/wireless/ath/ath9k/wmi.c
+index fe29ad4b9023c..f315c54bd3ac0 100644
+--- a/drivers/net/wireless/ath/ath9k/wmi.c
++++ b/drivers/net/wireless/ath/ath9k/wmi.c
+@@ -169,6 +169,10 @@ void ath9k_wmi_event_tasklet(struct tasklet_struct *t)
+ 					     &wmi->drv_priv->fatal_work);
+ 			break;
+ 		case WMI_TXSTATUS_EVENTID:
++			/* Check if ath9k_tx_init() completed. */
++			if (!data_race(priv->tx.initialized))
++				break;
++
+ 			spin_lock_bh(&priv->tx.tx_lock);
+ 			if (priv->tx.flags & ATH9K_HTC_OP_TX_DRAIN) {
+ 				spin_unlock_bh(&priv->tx.tx_lock);
 -- 
 2.34.1
 
