@@ -2,50 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 41DF7C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E319BC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:48:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348548AbiARDsP (ORCPT
+        id S1349817AbiARDsW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:48:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33330 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347164AbiARCkv (ORCPT
+        Mon, 17 Jan 2022 22:48:22 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50022 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347148AbiARCku (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:40:51 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60CD5C07E5FB;
-        Mon, 17 Jan 2022 18:36:23 -0800 (PST)
+        Mon, 17 Jan 2022 21:40:50 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F372360C74;
-        Tue, 18 Jan 2022 02:36:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DD83C36AEF;
-        Tue, 18 Jan 2022 02:36:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B3D97B8123F;
+        Tue, 18 Jan 2022 02:40:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DA44C36AE3;
+        Tue, 18 Jan 2022 02:40:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473382;
-        bh=aCvZ7FsAPHlMvu1OlKxK/77h6I1jNP5DRmsbS14Xduc=;
+        s=k20201202; t=1642473647;
+        bh=2HZ//l6ZZASULAgTOySxr6tdQz+9UK0q6U9iSiEL530=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bHNe9UfoNPaLohfYBJXIgKAD4XZ8UZFoivxGuFf5GT9MFAQPTVC7OEumSdPsP91rB
-         VQjnHZkXB3OCbufYU2yhWBVIr0cbafoSj1rlz9zYpkp1MT2xw/eD2FDbdEi1JgLti7
-         keNM6J8lfNW/Tk8jagbqmhazwt437cf8j5v60KwqjX2lktP9UkaIb/m2K0MuE2/V6Y
-         0sW2El+dE5Nwl8vkWywVbEUnn7P40CTU8g+n2x/T0XYJQ/U7wR0DE7xL4CAUTaE/TL
-         hVH+4SMDLw7zY7qeC4Onazd5nYZaxIcYyGlFvEtpvRO6SaKyFO9JrxAPAXmV5ppWx8
-         gvpznKf0Idozg==
+        b=rdtsTjy0YFzF+3kJtOCQcsH9NZohVyVdoKMe5t212HZ5uaTl26NrsZ600ZiZV9TYV
+         vHB0EAZ/b9vXNbLqQHCqrSEa6VzoQYqxJj7EWt1FvBCCqvRbS/YJPrzLHyU13PuQf5
+         astunhqHDDp4Nr6StPfkWdgqRmDjn5L3dWXj3gnYfO8Ivm/6cBqNtAFNA72k4IxUzD
+         MvEzBLmMgUsOjfPKhqri6/WCYUC6uMEDTc1e0fC4zyTNVMuTgkntGT7MM1fXHTFVag
+         aT4F3aftaIJEcYJuPR0h65pY5yv8Puq+ySxw1q3vnrxfQHa/YtuHvuyxy1aB8khkf7
+         c5IsNXNqvlKbg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wen Gong <quic_wgong@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 094/188] ath11k: avoid deadlock by change ieee80211_queue_work for regd_update_work
-Date:   Mon, 17 Jan 2022 21:30:18 -0500
-Message-Id: <20220118023152.1948105-94-sashal@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, mchehab@kernel.org,
+        gregkh@linuxfoundation.org, sakari.ailus@linux.intel.com,
+        laurent.pinchart@ideasonboard.com, hverkuil-cisco@xs4all.nl,
+        tomi.valkeinen@ideasonboard.com, alan@linux.intel.com,
+        arnd@arndb.de, dan.carpenter@oracle.com,
+        alinesantanacordeiro@gmail.com, yangyingliang@huawei.com,
+        linux-media@vger.kernel.org, linux-staging@lists.linux.dev
+Subject: [PATCH AUTOSEL 5.10 010/116] media: atomisp: set per-device's default mode
+Date:   Mon, 17 Jan 2022 21:38:21 -0500
+Message-Id: <20220118024007.1950576-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,202 +55,156 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wen Gong <quic_wgong@quicinc.com>
+From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
-[ Upstream commit ed05c7cf1286d7e31e7623bce55ff135723591bf ]
+[ Upstream commit 2c45e343c581091835c9047ed5298518aa133163 ]
 
-When enable debug config, it print below warning while shut down wlan
-interface shuh as run "ifconfig wlan0 down".
+The atomisp driver originally used the s_parm command to
+initialize the run_mode type to the driver. So, before start
+setting up the streaming, s_parm should be called.
 
-The reason is because ar->regd_update_work is ran once, and it is will
-call wiphy_lock(ar->hw->wiphy) in function ath11k_regd_update() which
-is running in workqueue of ieee80211_local queued by ieee80211_queue_work().
-Another thread from "ifconfig wlan0 down" will also accuqire the lock
-by wiphy_lock(sdata->local->hw.wiphy) in function ieee80211_stop(), and
-then it call ieee80211_stop_device() to flush_workqueue(local->workqueue),
-this will wait the workqueue of ieee80211_local finished. Then deadlock
-will happen easily if the two thread run meanwhile.
+So, even having 5 "normal" video devices, one meant to be used
+for each type, the run_mode was actually selected when
+s_parm is called.
 
-Below warning disappeared after this change.
+Without setting the run mode, applications that don't call
+VIDIOC_SET_PARM with a custom atomisp parameters won't work, as
+the pipeline won't be set:
 
-[  914.088798] ath11k_pci 0000:05:00.0: mac remove interface (vdev 0)
-[  914.088806] ath11k_pci 0000:05:00.0: mac stop 11d scan
-[  914.088810] ath11k_pci 0000:05:00.0: mac stop 11d vdev id 0
-[  914.088827] ath11k_pci 0000:05:00.0: htc ep 2 consumed 1 credits (total 0)
-[  914.088841] ath11k_pci 0000:05:00.0: send 11d scan stop vdev id 0
-[  914.088849] ath11k_pci 0000:05:00.0: htc insufficient credits ep 2 required 1 available 0
-[  914.088856] ath11k_pci 0000:05:00.0: htc insufficient credits ep 2 required 1 available 0
-[  914.096434] ath11k_pci 0000:05:00.0: rx ce pipe 2 len 16
-[  914.096442] ath11k_pci 0000:05:00.0: htc ep 2 got 1 credits (total 1)
-[  914.096481] ath11k_pci 0000:05:00.0: htc ep 2 consumed 1 credits (total 0)
-[  914.096491] ath11k_pci 0000:05:00.0: WMI vdev delete id 0
-[  914.111598] ath11k_pci 0000:05:00.0: rx ce pipe 2 len 16
-[  914.111628] ath11k_pci 0000:05:00.0: htc ep 2 got 1 credits (total 1)
-[  914.114659] ath11k_pci 0000:05:00.0: rx ce pipe 2 len 20
-[  914.114742] ath11k_pci 0000:05:00.0: htc rx completion ep 2 skb         pK-error
-[  914.115977] ath11k_pci 0000:05:00.0: vdev delete resp for vdev id 0
-[  914.116685] ath11k_pci 0000:05:00.0: vdev 00:03:7f:29:61:11 deleted, vdev_id 0
+	atomisp-isp2 0000:00:03.0: can't create streams
+	atomisp-isp2 0000:00:03.0: __get_frame_info 1600x1200 (padded to 0) returned -22
 
-[  914.117583] ======================================================
-[  914.117592] WARNING: possible circular locking dependency detected
-[  914.117600] 5.16.0-rc1-wt-ath+ #1 Tainted: G           OE
-[  914.117611] ------------------------------------------------------
-[  914.117618] ifconfig/2805 is trying to acquire lock:
-[  914.117628] ffff9c00a62bb548 ((wq_completion)phy0){+.+.}-{0:0}, at: flush_workqueue+0x87/0x470
-[  914.117674]
-               but task is already holding lock:
-[  914.117682] ffff9c00baea07d0 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: ieee80211_stop+0x38/0x180 [mac80211]
-[  914.117872]
-               which lock already depends on the new lock.
+However, commit 8a7c5594c020 ("media: v4l2-ioctl: clear fields in s_parm")
+broke support for it, with a good reason, as drivers shoudn't be
+extending the API for their own purposes.
 
-[  914.117880]
-               the existing dependency chain (in reverse order) is:
-[  914.117888]
-               -> #3 (&rdev->wiphy.mtx){+.+.}-{4:4}:
-[  914.117910]        __mutex_lock+0xa0/0x9c0
-[  914.117930]        mutex_lock_nested+0x1b/0x20
-[  914.117944]        reg_process_self_managed_hints+0x3a/0xb0 [cfg80211]
-[  914.118093]        wiphy_regulatory_register+0x47/0x80 [cfg80211]
-[  914.118229]        wiphy_register+0x84f/0x9c0 [cfg80211]
-[  914.118353]        ieee80211_register_hw+0x6b1/0xd90 [mac80211]
-[  914.118486]        ath11k_mac_register+0x6af/0xb60 [ath11k]
-[  914.118550]        ath11k_core_qmi_firmware_ready+0x383/0x4a0 [ath11k]
-[  914.118598]        ath11k_qmi_driver_event_work+0x347/0x4a0 [ath11k]
-[  914.118656]        process_one_work+0x228/0x670
-[  914.118669]        worker_thread+0x4d/0x440
-[  914.118680]        kthread+0x16d/0x1b0
-[  914.118697]        ret_from_fork+0x22/0x30
-[  914.118714]
-               -> #2 (rtnl_mutex){+.+.}-{4:4}:
-[  914.118736]        __mutex_lock+0xa0/0x9c0
-[  914.118751]        mutex_lock_nested+0x1b/0x20
-[  914.118767]        rtnl_lock+0x17/0x20
-[  914.118783]        ath11k_regd_update+0x15a/0x260 [ath11k]
-[  914.118841]        ath11k_regd_update_work+0x15/0x20 [ath11k]
-[  914.118897]        process_one_work+0x228/0x670
-[  914.118909]        worker_thread+0x4d/0x440
-[  914.118920]        kthread+0x16d/0x1b0
-[  914.118934]        ret_from_fork+0x22/0x30
-[  914.118948]
-               -> #1 ((work_completion)(&ar->regd_update_work)){+.+.}-{0:0}:
-[  914.118972]        process_one_work+0x1fa/0x670
-[  914.118984]        worker_thread+0x4d/0x440
-[  914.118996]        kthread+0x16d/0x1b0
-[  914.119010]        ret_from_fork+0x22/0x30
-[  914.119023]
-               -> #0 ((wq_completion)phy0){+.+.}-{0:0}:
-[  914.119045]        __lock_acquire+0x146d/0x1cf0
-[  914.119057]        lock_acquire+0x19b/0x360
-[  914.119067]        flush_workqueue+0xae/0x470
-[  914.119084]        ieee80211_stop_device+0x3b/0x50 [mac80211]
-[  914.119260]        ieee80211_do_stop+0x5d7/0x830 [mac80211]
-[  914.119409]        ieee80211_stop+0x45/0x180 [mac80211]
-[  914.119557]        __dev_close_many+0xb3/0x120
-[  914.119573]        __dev_change_flags+0xc3/0x1d0
-[  914.119590]        dev_change_flags+0x29/0x70
-[  914.119605]        devinet_ioctl+0x653/0x810
-[  914.119620]        inet_ioctl+0x193/0x1e0
-[  914.119631]        sock_do_ioctl+0x4d/0xf0
-[  914.119649]        sock_ioctl+0x262/0x340
-[  914.119665]        __x64_sys_ioctl+0x96/0xd0
-[  914.119678]        do_syscall_64+0x3d/0xd0
-[  914.119694]        entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  914.119709]
-               other info that might help us debug this:
+So, as an step to allow generic apps to use this driver, put
+the device's run_mode in preview after open.
 
-[  914.119717] Chain exists of:
-                 (wq_completion)phy0 --> rtnl_mutex --> &rdev->wiphy.mtx
+After this patch, using v4l2grab starts to work on preview
+mode (/dev/video2):
 
-[  914.119745]  Possible unsafe locking scenario:
+	$ v4l2grab -f YUYV -x 1600 -y 1200 -d /dev/video2 -n 1 -u
+	$ feh out000.pnm
 
-[  914.119752]        CPU0                    CPU1
-[  914.119758]        ----                    ----
-[  914.119765]   lock(&rdev->wiphy.mtx);
-[  914.119778]                                lock(rtnl_mutex);
-[  914.119792]                                lock(&rdev->wiphy.mtx);
-[  914.119807]   lock((wq_completion)phy0);
-[  914.119819]
-                *** DEADLOCK ***
+So, let's just setup the default run_mode that each video devnode
+should assume, setting it at open() time.
 
-[  914.119827] 2 locks held by ifconfig/2805:
-[  914.119837]  #0: ffffffffba3dc010 (rtnl_mutex){+.+.}-{4:4}, at: rtnl_lock+0x17/0x20
-[  914.119872]  #1: ffff9c00baea07d0 (&rdev->wiphy.mtx){+.+.}-{4:4}, at: ieee80211_stop+0x38/0x180 [mac80211]
-[  914.120039]
-               stack backtrace:
-[  914.120048] CPU: 0 PID: 2805 Comm: ifconfig Tainted: G           OE     5.16.0-rc1-wt-ath+ #1
-[  914.120064] Hardware name: LENOVO 418065C/418065C, BIOS 83ET63WW (1.33 ) 07/29/2011
-[  914.120074] Call Trace:
-[  914.120084]  <TASK>
-[  914.120094]  dump_stack_lvl+0x73/0xa4
-[  914.120119]  dump_stack+0x10/0x12
-[  914.120135]  print_circular_bug.isra.44+0x221/0x2e0
-[  914.120165]  check_noncircular+0x106/0x150
-[  914.120203]  __lock_acquire+0x146d/0x1cf0
-[  914.120215]  ? __lock_acquire+0x146d/0x1cf0
-[  914.120245]  lock_acquire+0x19b/0x360
-[  914.120259]  ? flush_workqueue+0x87/0x470
-[  914.120286]  ? lockdep_init_map_type+0x6b/0x250
-[  914.120310]  flush_workqueue+0xae/0x470
-[  914.120327]  ? flush_workqueue+0x87/0x470
-[  914.120344]  ? lockdep_hardirqs_on+0xd7/0x150
-[  914.120391]  ieee80211_stop_device+0x3b/0x50 [mac80211]
-[  914.120565]  ? ieee80211_stop_device+0x3b/0x50 [mac80211]
-[  914.120736]  ieee80211_do_stop+0x5d7/0x830 [mac80211]
-[  914.120906]  ieee80211_stop+0x45/0x180 [mac80211]
-[  914.121060]  __dev_close_many+0xb3/0x120
-[  914.121081]  __dev_change_flags+0xc3/0x1d0
-[  914.121109]  dev_change_flags+0x29/0x70
-[  914.121131]  devinet_ioctl+0x653/0x810
-[  914.121149]  ? __might_fault+0x77/0x80
-[  914.121179]  inet_ioctl+0x193/0x1e0
-[  914.121194]  ? inet_ioctl+0x193/0x1e0
-[  914.121218]  ? __might_fault+0x77/0x80
-[  914.121238]  ? _copy_to_user+0x68/0x80
-[  914.121266]  sock_do_ioctl+0x4d/0xf0
-[  914.121283]  ? inet_stream_connect+0x60/0x60
-[  914.121297]  ? sock_do_ioctl+0x4d/0xf0
-[  914.121329]  sock_ioctl+0x262/0x340
-[  914.121347]  ? sock_ioctl+0x262/0x340
-[  914.121362]  ? exit_to_user_mode_prepare+0x13b/0x280
-[  914.121388]  ? syscall_enter_from_user_mode+0x20/0x50
-[  914.121416]  __x64_sys_ioctl+0x96/0xd0
-[  914.121430]  ? br_ioctl_call+0x90/0x90
-[  914.121445]  ? __x64_sys_ioctl+0x96/0xd0
-[  914.121465]  do_syscall_64+0x3d/0xd0
-[  914.121482]  entry_SYSCALL_64_after_hwframe+0x44/0xae
-[  914.121497] RIP: 0033:0x7f0ed051737b
-[  914.121513] Code: 0f 1e fa 48 8b 05 15 3b 0d 00 64 c7 00 26 00 00 00 48 c7 c0 ff ff ff ff c3 66 0f 1f 44 00 00 f3 0f 1e fa b8 10 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d e5 3a 0d 00 f7 d8 64 89 01 48
-[  914.121527] RSP: 002b:00007fff7be38b98 EFLAGS: 00000202 ORIG_RAX: 0000000000000010
-[  914.121544] RAX: ffffffffffffffda RBX: 00007fff7be38ba0 RCX: 00007f0ed051737b
-[  914.121555] RDX: 00007fff7be38ba0 RSI: 0000000000008914 RDI: 0000000000000004
-[  914.121566] RBP: 00007fff7be38c60 R08: 000000000000000a R09: 0000000000000001
-[  914.121576] R10: 0000000000000000 R11: 0000000000000202 R12: 00000000fffffffe
-[  914.121586] R13: 0000000000000004 R14: 0000000000000000 R15: 0000000000000000
-[  914.121620]  </TASK>
-
-Tested-on: WCN6855 hw2.0 PCI WLAN.HSP.1.1-01720.1-QCAHSPSWPL_V1_V2_SILICONZ_LITE-1
-
-Signed-off-by: Wen Gong <quic_wgong@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20211201071745.17746-2-quic_wgong@quicinc.com
+Reported-by: Tsuchiya Yuto <kitakar@gmail.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/wmi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/media/atomisp/pci/atomisp_fops.c  |  5 +++++
+ .../staging/media/atomisp/pci/atomisp_subdev.c    | 15 ++++++++++-----
+ .../staging/media/atomisp/pci/atomisp_subdev.h    |  3 +++
+ drivers/staging/media/atomisp/pci/atomisp_v4l2.c  |  4 +++-
+ drivers/staging/media/atomisp/pci/atomisp_v4l2.h  |  3 ++-
+ 5 files changed, 23 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index 99c0b81e496bf..cd86e25636884 100644
---- a/drivers/net/wireless/ath/ath11k/wmi.c
-+++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -5852,7 +5852,7 @@ static int ath11k_reg_chan_list_event(struct ath11k_base *ab, struct sk_buff *sk
- 		ar = ab->pdevs[pdev_idx].ar;
- 		kfree(ab->new_regd[pdev_idx]);
- 		ab->new_regd[pdev_idx] = regd;
--		ieee80211_queue_work(ar->hw, &ar->regd_update_work);
-+		queue_work(ab->workqueue, &ar->regd_update_work);
- 	} else {
- 		/* This regd would be applied during mac registration and is
- 		 * held constant throughout for regd intersection purpose
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_fops.c b/drivers/staging/media/atomisp/pci/atomisp_fops.c
+index f1e6b25978534..e097a91444d7e 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_fops.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_fops.c
+@@ -877,6 +877,11 @@ static int atomisp_open(struct file *file)
+ 	else
+ 		pipe->users++;
+ 	rt_mutex_unlock(&isp->mutex);
++
++	/* Ensure that a mode is set */
++	if (asd)
++		v4l2_ctrl_s_ctrl(asd->run_mode, pipe->default_run_mode);
++
+ 	return 0;
+ 
+ css_error:
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_subdev.c b/drivers/staging/media/atomisp/pci/atomisp_subdev.c
+index dcc2dd981ca60..628e85799274d 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_subdev.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_subdev.c
+@@ -1178,23 +1178,28 @@ static int isp_subdev_init_entities(struct atomisp_sub_device *asd)
+ 
+ 	atomisp_init_acc_pipe(asd, &asd->video_acc);
+ 
+-	ret = atomisp_video_init(&asd->video_in, "MEMORY");
++	ret = atomisp_video_init(&asd->video_in, "MEMORY",
++				 ATOMISP_RUN_MODE_SDV);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = atomisp_video_init(&asd->video_out_capture, "CAPTURE");
++	ret = atomisp_video_init(&asd->video_out_capture, "CAPTURE",
++				 ATOMISP_RUN_MODE_STILL_CAPTURE);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = atomisp_video_init(&asd->video_out_vf, "VIEWFINDER");
++	ret = atomisp_video_init(&asd->video_out_vf, "VIEWFINDER",
++				 ATOMISP_RUN_MODE_CONTINUOUS_CAPTURE);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = atomisp_video_init(&asd->video_out_preview, "PREVIEW");
++	ret = atomisp_video_init(&asd->video_out_preview, "PREVIEW",
++				 ATOMISP_RUN_MODE_PREVIEW);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = atomisp_video_init(&asd->video_out_video_capture, "VIDEO");
++	ret = atomisp_video_init(&asd->video_out_video_capture, "VIDEO",
++				 ATOMISP_RUN_MODE_VIDEO);
+ 	if (ret < 0)
+ 		return ret;
+ 
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_subdev.h b/drivers/staging/media/atomisp/pci/atomisp_subdev.h
+index 330a77eed8aa6..12215d7406169 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_subdev.h
++++ b/drivers/staging/media/atomisp/pci/atomisp_subdev.h
+@@ -81,6 +81,9 @@ struct atomisp_video_pipe {
+ 	/* the link list to store per_frame parameters */
+ 	struct list_head per_frame_params;
+ 
++	/* Store here the initial run mode */
++	unsigned int default_run_mode;
++
+ 	unsigned int buffers_in_css;
+ 
+ 	/* irq_lock is used to protect video buffer state change operations and
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_v4l2.c b/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
+index fa1bd99cd6f17..3234d8d198045 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_v4l2.c
+@@ -447,7 +447,8 @@ const struct atomisp_dfs_config dfs_config_cht_soc = {
+ 	.dfs_table_size = ARRAY_SIZE(dfs_rules_cht_soc),
+ };
+ 
+-int atomisp_video_init(struct atomisp_video_pipe *video, const char *name)
++int atomisp_video_init(struct atomisp_video_pipe *video, const char *name,
++		       unsigned int run_mode)
+ {
+ 	int ret;
+ 	const char *direction;
+@@ -478,6 +479,7 @@ int atomisp_video_init(struct atomisp_video_pipe *video, const char *name)
+ 		 "ATOMISP ISP %s %s", name, direction);
+ 	video->vdev.release = video_device_release_empty;
+ 	video_set_drvdata(&video->vdev, video->isp);
++	video->default_run_mode = run_mode;
+ 
+ 	return 0;
+ }
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_v4l2.h b/drivers/staging/media/atomisp/pci/atomisp_v4l2.h
+index 81bb356b81720..72611b8286a4a 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_v4l2.h
++++ b/drivers/staging/media/atomisp/pci/atomisp_v4l2.h
+@@ -27,7 +27,8 @@ struct v4l2_device;
+ struct atomisp_device;
+ struct firmware;
+ 
+-int atomisp_video_init(struct atomisp_video_pipe *video, const char *name);
++int atomisp_video_init(struct atomisp_video_pipe *video, const char *name,
++		       unsigned int run_mode);
+ void atomisp_acc_init(struct atomisp_acc_pipe *video, const char *name);
+ void atomisp_video_unregister(struct atomisp_video_pipe *video);
+ void atomisp_acc_unregister(struct atomisp_acc_pipe *video);
 -- 
 2.34.1
 
