@@ -2,55 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76F9DC35263
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E5C8C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351805AbiARCzM (ORCPT
+        id S1351824AbiARCzP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:55:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34036 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345121AbiARCnv (ORCPT
+        Mon, 17 Jan 2022 21:55:15 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52406 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345319AbiARCn4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:43:51 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AC54C0612AC;
-        Mon, 17 Jan 2022 18:37:41 -0800 (PST)
+        Mon, 17 Jan 2022 21:43:56 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CE727B81236;
-        Tue, 18 Jan 2022 02:37:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47978C36B05;
-        Tue, 18 Jan 2022 02:37:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8D4A0B81244;
+        Tue, 18 Jan 2022 02:43:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 849C4C36AE3;
+        Tue, 18 Jan 2022 02:43:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473459;
-        bh=IWsJn1qUltswEzZQyGwVZ4QpIXfIN5nldvNPVenoV+E=;
+        s=k20201202; t=1642473833;
+        bh=W4vO2I1fnhLAb6jmcOKXq7ONe4xieMWUVjIcSEy6PV0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nUZrHvN3XXNqZXZG+FZlUGNrH2zy8NPit/vVESpX8yIPvVkhFMExvrAKYGNWAEt1h
-         Jgxxcd9gaJnXzajCIVhNCsR+Ln/3wwnwr+NpgB/2MEOELShd3Sz8urQHceJM9qqL+W
-         mpeKgd6lE6F97IQk0+El1w4bfR4ag8pzP0kz+d1YmJyTpiaADy8JkNnH/cXdOc7ij8
-         fHns9pbvMncvJ5vyPfcULQgwNLXFeKkZYrns4WAOIsVhGx6Og9smbmLPn6EWcZBXfh
-         nlYnyJqRYgqbYgDQzNOrjV+XN6aMvPjuZPUIdZkckwVOPJunXh8sb9PPeO4QxgcUnx
-         XwwjvBSEnr1dA==
+        b=nQOEDfPBxkgFy5WwNZ0Kf6UjuAVclldUgS6/iCdgBdBAFEZk3Ro60JVP/Z28qU3B3
+         nCwQh4wB1dYDb/7CbOHF3fTILJU0b9m+jHaZo8cm5NnFB8ve2PqG74Beiy3S5qzT1Q
+         m6I8je52/+OOPkB9G/VZvaXjdUugYbaAB9iG+PJmwCJBUbSdGimAQte7bSBy1bxiEY
+         ntPqc7zJLx3pWAdD+/44sVG2rdmcwrVj3GuYVrPaooInRVQJjbLGjKlaIAj9JDJsLc
+         o6SeLKWvSt+tUZVh6r6qS7MxrQwe1xifgCZwt3FbXbzQd1l7czQ81ZK9k7fqvziZeT
+         09hzAHyNOwGZw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Peter Gonda <pgonda@google.com>, Marc Orr <marcorr@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Joerg Roedel <jroedel@suse.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        John Allen <john.allen@amd.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-crypto@vger.kernel.org, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH AUTOSEL 5.15 125/188] crypto: ccp - Move SEV_INIT retry for corrupted data
-Date:   Mon, 17 Jan 2022 21:30:49 -0500
-Message-Id: <20220118023152.1948105-125-sashal@kernel.org>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Bob Moore <robert.moore@intel.com>,
+        Sasha Levin <sashal@kernel.org>, linux-acpi@vger.kernel.org,
+        devel@acpica.org
+Subject: [PATCH AUTOSEL 5.10 094/116] ACPICA: Hardware: Do not flush CPU cache when entering S4 and S5
+Date:   Mon, 17 Jan 2022 21:39:45 -0500
+Message-Id: <20220118024007.1950576-94-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -59,93 +51,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Gonda <pgonda@google.com>
+From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 
-[ Upstream commit e423b9d75e779d921e6adf5ac3d0b59400d6ba7e ]
+[ Upstream commit 1d4e0b3abb168b2ee1eca99c527cffa1b80b6161 ]
 
-Move the data corrupted retry of SEV_INIT into the
-__sev_platform_init_locked() function. This is for upcoming INIT_EX
-support as well as helping direct callers of
-__sev_platform_init_locked() which currently do not support the
-retry.
+ACPICA commit 3dd7e1f3996456ef81bfe14cba29860e8d42949e
 
-Signed-off-by: Peter Gonda <pgonda@google.com>
-Reviewed-by: Marc Orr <marcorr@google.com>
-Acked-by: David Rientjes <rientjes@google.com>
-Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
-Acked-by: Brijesh Singh <brijesh.singh@amd.com>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: Brijesh Singh <brijesh.singh@amd.com>
-Cc: Marc Orr <marcorr@google.com>
-Cc: Joerg Roedel <jroedel@suse.de>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: David Rientjes <rientjes@google.com>
-Cc: John Allen <john.allen@amd.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: linux-crypto@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+According to ACPI 6.4, Section 16.2, the CPU cache flushing is
+required on entering to S1, S2, and S3, but the ACPICA code
+flushes the CPU cache regardless of the sleep state.
+
+Blind cache flush on entering S5 causes problems for TDX.
+
+Flushing happens with WBINVD that is not supported in the TDX
+environment.
+
+TDX only supports S5 and adjusting ACPICA code to conform to the
+spec more strictly fixes the issue.
+
+Link: https://github.com/acpica/acpica/commit/3dd7e1f3
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+[ rjw: Subject and changelog edits ]
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/ccp/sev-dev.c | 30 ++++++++++++++++--------------
- 1 file changed, 16 insertions(+), 14 deletions(-)
+ drivers/acpi/acpica/hwesleep.c  | 4 +++-
+ drivers/acpi/acpica/hwsleep.c   | 4 +++-
+ drivers/acpi/acpica/hwxfsleep.c | 2 --
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
-index 2ecb0e1f65d8d..e2806ca3300a8 100644
---- a/drivers/crypto/ccp/sev-dev.c
-+++ b/drivers/crypto/ccp/sev-dev.c
-@@ -241,7 +241,7 @@ static int __sev_platform_init_locked(int *error)
- 	struct psp_device *psp = psp_master;
- 	struct sev_data_init data;
- 	struct sev_device *sev;
--	int rc = 0;
-+	int psp_ret, rc = 0;
+diff --git a/drivers/acpi/acpica/hwesleep.c b/drivers/acpi/acpica/hwesleep.c
+index 4836a4b8b38b8..142a755be6881 100644
+--- a/drivers/acpi/acpica/hwesleep.c
++++ b/drivers/acpi/acpica/hwesleep.c
+@@ -104,7 +104,9 @@ acpi_status acpi_hw_extended_sleep(u8 sleep_state)
  
- 	if (!psp || !psp->sev_data)
- 		return -ENODEV;
-@@ -266,7 +266,21 @@ static int __sev_platform_init_locked(int *error)
- 		data.tmr_len = SEV_ES_TMR_SIZE;
+ 	/* Flush caches, as per ACPI specification */
+ 
+-	ACPI_FLUSH_CPU_CACHE();
++	if (sleep_state < ACPI_STATE_S4) {
++		ACPI_FLUSH_CPU_CACHE();
++	}
+ 
+ 	status = acpi_os_enter_sleep(sleep_state, sleep_control, 0);
+ 	if (status == AE_CTRL_TERMINATE) {
+diff --git a/drivers/acpi/acpica/hwsleep.c b/drivers/acpi/acpica/hwsleep.c
+index fcc84d196238a..6a20bb5059c1d 100644
+--- a/drivers/acpi/acpica/hwsleep.c
++++ b/drivers/acpi/acpica/hwsleep.c
+@@ -110,7 +110,9 @@ acpi_status acpi_hw_legacy_sleep(u8 sleep_state)
+ 
+ 	/* Flush caches, as per ACPI specification */
+ 
+-	ACPI_FLUSH_CPU_CACHE();
++	if (sleep_state < ACPI_STATE_S4) {
++		ACPI_FLUSH_CPU_CACHE();
++	}
+ 
+ 	status = acpi_os_enter_sleep(sleep_state, pm1a_control, pm1b_control);
+ 	if (status == AE_CTRL_TERMINATE) {
+diff --git a/drivers/acpi/acpica/hwxfsleep.c b/drivers/acpi/acpica/hwxfsleep.c
+index f1645d87864c3..3948c34d85830 100644
+--- a/drivers/acpi/acpica/hwxfsleep.c
++++ b/drivers/acpi/acpica/hwxfsleep.c
+@@ -162,8 +162,6 @@ acpi_status acpi_enter_sleep_state_s4bios(void)
+ 		return_ACPI_STATUS(status);
  	}
  
--	rc = __sev_do_cmd_locked(SEV_CMD_INIT, &data, error);
-+	rc = __sev_do_cmd_locked(SEV_CMD_INIT, &data, &psp_ret);
-+	if (rc && psp_ret == SEV_RET_SECURE_DATA_INVALID) {
-+		/*
-+		 * Initialization command returned an integrity check failure
-+		 * status code, meaning that firmware load and validation of SEV
-+		 * related persistent data has failed. Retrying the
-+		 * initialization function should succeed by replacing the state
-+		 * with a reset state.
-+		 */
-+		dev_dbg(sev->dev, "SEV: retrying INIT command");
-+		rc = __sev_do_cmd_locked(SEV_CMD_INIT, &data, &psp_ret);
-+	}
-+	if (error)
-+		*error = psp_ret;
-+
- 	if (rc)
- 		return rc;
- 
-@@ -1091,18 +1105,6 @@ void sev_pci_init(void)
- 
- 	/* Initialize the platform */
- 	rc = sev_platform_init(&error);
--	if (rc && (error == SEV_RET_SECURE_DATA_INVALID)) {
--		/*
--		 * INIT command returned an integrity check failure
--		 * status code, meaning that firmware load and
--		 * validation of SEV related persistent data has
--		 * failed and persistent state has been erased.
--		 * Retrying INIT command here should succeed.
--		 */
--		dev_dbg(sev->dev, "SEV: retrying INIT command");
--		rc = sev_platform_init(&error);
--	}
+-	ACPI_FLUSH_CPU_CACHE();
 -
- 	if (rc) {
- 		dev_err(sev->dev, "SEV: failed to INIT error %#x\n", error);
- 		return;
+ 	status = acpi_hw_write_port(acpi_gbl_FADT.smi_command,
+ 				    (u32)acpi_gbl_FADT.s4_bios_request, 8);
+ 	if (ACPI_FAILURE(status)) {
 -- 
 2.34.1
 
