@@ -2,254 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9DB0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 08:01:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DF1CC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 08:04:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343826AbiARIB6 (ORCPT
+        id S1343871AbiARIET (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 03:01:58 -0500
-Received: from mx3.molgen.mpg.de ([141.14.17.11]:57031 "EHLO mx1.molgen.mpg.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S244429AbiARIB6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 03:01:58 -0500
-Received: from [192.168.0.4] (ip5f5aeaaa.dynamic.kabel-deutschland.de [95.90.234.170])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits))
-        (No client certificate requested)
-        (Authenticated sender: pmenzel)
-        by mx.molgen.mpg.de (Postfix) with ESMTPSA id 6067461EA1BE6;
-        Tue, 18 Jan 2022 09:01:56 +0100 (CET)
-Message-ID: <a312d512-1709-b69f-e685-e0301bce6a14@molgen.mpg.de>
-Date:   Tue, 18 Jan 2022 09:01:56 +0100
+        Tue, 18 Jan 2022 03:04:19 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.50]:39545 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232112AbiARIES (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 03:04:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1642492697;
+    s=strato-dkim-0002; d=hartkopp.net;
+    h=In-Reply-To:From:References:Cc:To:Subject:Date:Message-ID:Cc:Date:
+    From:Subject:Sender;
+    bh=1qsuYiZ+TnspVh46LBDqSDLAe/AFtcWSs/1s3CE8Rds=;
+    b=cGCPl4dH02cODoYYyb9G2WpxoTYhBpFiTzJv3tnR+NSuHlYpYqcr/F2TETEYwOCp2p
+    CJW3wXN9TcUEOADMF5qcMIoNQFOJ7PDVc8QDkRQvamlWjeYEgXEvsNPgQWHQsGtOMJwe
+    fpUxXjn2+0A6fFhOePergW2U8QNeBMGfRmuc40DSCB3xL/Zow+RJIzJOhjrSIvGznQLq
+    vQ6pVOzWlCUmqwnxiBSF0fWyIcDFERIcYSnaPNp3uFnS+rqRGr39qh5B+gM/VJmmifdN
+    /ii9AxSx+xx/3ijNbFvE80j90DVAmj80SgrhNDK5R557bSVcGV2PSEXMBVN/WC8/PZRG
+    s3Pw==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P2MHfkW8eP4Mre39l357AZT/I7AY/7nT2yrDxb8mjG14FZxedJy6qgO1qCHSa1GLptZHusx3hdd0DIgVuBOfXW6v7w=="
+X-RZG-CLASS-ID: mo00
+Received: from [IPV6:2a00:6020:1cfa:f900::b82]
+    by smtp.strato.de (RZmta 47.37.6 AUTH)
+    with ESMTPSA id Rb080by0I7wHUGe
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 18 Jan 2022 08:58:17 +0100 (CET)
+Message-ID: <53279d6d-298c-5a85-4c16-887c95447825@hartkopp.net>
+Date:   Tue, 18 Jan 2022 08:58:12 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: Problems with rcutorture on ppc64le: allmodconfig(2) and other
- failures
+Subject: Re: [PATCH net] can: isotp: isotp_rcv_cf(): fix so->rx race problem
 Content-Language: en-US
-From:   Paul Menzel <pmenzel@molgen.mpg.de>
-To:     "Paul E. McKenney" <paulmck@kernel.org>,
-        Josh Triplett <josh@joshtriplett.org>
-Cc:     rcu@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Zhouyi Zhou <zhouzhouyi@gmail.com>
-References: <36bd91e4-8eda-5677-7fde-40295932a640@molgen.mpg.de>
-In-Reply-To: <36bd91e4-8eda-5677-7fde-40295932a640@molgen.mpg.de>
+To:     Ziyang Xuan <william.xuanziyang@huawei.com>, mkl@pengutronix.de
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220117120102.2395157-1-william.xuanziyang@huawei.com>
+From:   Oliver Hartkopp <socketcan@hartkopp.net>
+In-Reply-To: <20220117120102.2395157-1-william.xuanziyang@huawei.com>
 Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-[Correct references]
+Hi,
 
+the referenced syzbot issue has already been fixed in upstream here:
 
-Am 17.01.22 um 23:00 schrieb Paul Menzel:
-> Dear Linux folks,
-> 
-> 
-> On an IBM S822LC SL822 (ppc64le) with Ubuntu 21.04, I tried to torture 
-> the RCU. allmodconfig(2) failed though.
-> 
-> ```
-> $ git describe
-> v5.16-10660-g0c947b893d69
-> $ tools/testing/selftests/rcutorture/bin/torture.sh --duration 10
->   ---  tools/testing/selftests/rcutorture/bin/torture.sh --duration 10
->   --- Results directory:  2022.01.17-18.44.36-torture
->   --- allmodconfig: Start Mon Jan 17 06:44:36 PM CET 2022
->   --- rcutorture: Start Mon Jan 17 06:45:02 PM CET 2022
->   --- rcutorture-kasan: Start Mon Jan 17 07:07:41 PM CET 2022
->   --- locktorture: Start Mon Jan 17 07:33:38 PM CET 2022
->   --- locktorture-kasan: Start Mon Jan 17 07:37:05 PM CET 2022
->   --- scftorture: Start Mon Jan 17 07:40:54 PM CET 2022
->   --- scftorture-kasan: Start Mon Jan 17 07:43:31 PM CET 2022
->   --- refscale-rcu: Start Mon Jan 17 07:46:34 PM CET 2022
->   --- refscale-rcu-kasan: Start Mon Jan 17 07:49:08 PM CET 2022
->   --- refscale-srcu: Start Mon Jan 17 07:52:05 PM CET 2022
->   --- refscale-srcu-kasan: Start Mon Jan 17 07:54:39 PM CET 2022
->   --- refscale-rcu-tasks: Start Mon Jan 17 07:57:35 PM CET 2022
->   --- refscale-rcu-tasks-kasan: Start Mon Jan 17 08:00:10 PM CET 2022
->   --- refscale-rcu-trace: Start Mon Jan 17 08:03:06 PM CET 2022
->   --- refscale-rcu-trace-kasan: Start Mon Jan 17 08:05:40 PM CET 2022
->   --- refscale-refcnt: Start Mon Jan 17 08:08:40 PM CET 2022
->   --- refscale-refcnt-kasan: Start Mon Jan 17 08:11:15 PM CET 2022
->   --- refscale-rwlock: Start Mon Jan 17 08:14:14 PM CET 2022
->   --- refscale-rwlock-kasan: Start Mon Jan 17 08:16:48 PM CET 2022
->   --- refscale-rwsem: Start Mon Jan 17 08:19:45 PM CET 2022
->   --- refscale-rwsem-kasan: Start Mon Jan 17 08:22:18 PM CET 2022
->   --- refscale-lock: Start Mon Jan 17 08:25:17 PM CET 2022
->   --- refscale-lock-kasan: Start Mon Jan 17 08:27:53 PM CET 2022
->   --- refscale-lock-irq: Start Mon Jan 17 08:30:58 PM CET 2022
->   --- refscale-lock-irq-kasan: Start Mon Jan 17 08:33:42 PM CET 2022
->   --- refscale-acqrel: Start Mon Jan 17 08:36:58 PM CET 2022
->   --- refscale-acqrel-kasan: Start Mon Jan 17 08:39:33 PM CET 2022
->   --- refscale-clock: Start Mon Jan 17 08:42:33 PM CET 2022
->   --- refscale-clock-kasan: Start Mon Jan 17 08:45:08 PM CET 2022
->   --- rcuscale-rcu: Start Mon Jan 17 08:48:06 PM CET 2022
->   --- rcuscale-rcu-kasan: Start Mon Jan 17 08:49:25 PM CET 2022
->   --- rcuscale-srcu: Start Mon Jan 17 08:50:56 PM CET 2022
->   --- rcuscale-srcu-kasan: Start Mon Jan 17 08:52:14 PM CET 2022
->   --- rcuscale-srcud: Start Mon Jan 17 08:53:43 PM CET 2022
->   --- rcuscale-srcud-kasan: Start Mon Jan 17 08:55:01 PM CET 2022
->   --- rcuscale-tasks: Start Mon Jan 17 08:56:31 PM CET 2022
->   --- rcuscale-tasks-kasan: Start Mon Jan 17 08:57:48 PM CET 2022
->   --- rcuscale-tasks-tracing: Start Mon Jan 17 08:59:17 PM CET 2022
->   --- rcuscale-tasks-tracing-kasan: Start Mon Jan 17 09:00:35 PM CET 2022
->   --- rcuscale-kvfree: Start Mon Jan 17 09:02:05 PM CET 2022
->   --- rcuscale-kvfree-kasan: Start Mon Jan 17 09:03:23 PM CET 2022
->   --- clocksourcewd-1: Start Mon Jan 17 09:04:52 PM CET 2022
->   --- clocksourcewd-1-kasan: Start Mon Jan 17 09:06:11 PM CET 2022
->   --- clocksourcewd-2: Start Mon Jan 17 09:07:42 PM CET 2022
->   --- clocksourcewd-2-kasan: Start Mon Jan 17 09:08:59 PM CET 2022
->   ---  tools/testing/selftests/rcutorture/bin/torture.sh --duration 10
->   ---  Done Mon Jan 17 09:10:29 PM CET 2022
-> SUCCESSES:
-> rcutorture(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcutorture
-> rcutorture-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcutorture-kasan
-> locktorture(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-locktorture
-> locktorture-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-locktorture-kasan
-> scftorture(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-scftorture
-> scftorture-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-scftorture-kasan
-> refscale-rcu(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-rcu
-> refscale-rcu-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-rcu-kasan
-> refscale-srcu(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-srcu
-> refscale-srcu-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-srcu-kasan
-> refscale-rcu-tasks(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-rcu-tasks
-> refscale-rcu-tasks-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-rcu-tasks-kasan
-> refscale-rcu-trace(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-rcu-trace
-> refscale-rcu-trace-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-rcu-trace-kasan
-> refscale-refcnt(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-refcnt
-> refscale-refcnt-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-refcnt-kasan
-> refscale-rwlock(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-rwlock
-> refscale-rwlock-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-rwlock-kasan
-> refscale-rwsem(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-rwsem
-> refscale-rwsem-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-rwsem-kasan
-> refscale-lock(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-lock
-> refscale-lock-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-lock-kasan
-> refscale-lock-irq(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-lock-irq
-> refscale-lock-irq-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-lock-irq-kasan
-> refscale-acqrel(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-acqrel
-> refscale-acqrel-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-acqrel-kasan
-> refscale-clock(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-clock
-> refscale-clock-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-refscale-clock-kasan
-> rcuscale-rcu(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcuscale-rcu
-> rcuscale-rcu-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcuscale-rcu-kasan
-> rcuscale-srcu(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcuscale-srcu
-> rcuscale-srcu-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcuscale-srcu-kasan
-> rcuscale-srcud(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcuscale-srcud
-> rcuscale-srcud-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcuscale-srcud-kasan
-> rcuscale-tasks(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcuscale-tasks
-> rcuscale-tasks-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcuscale-tasks-kasan
-> rcuscale-tasks-tracing(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcuscale-tasks-tracing
-> rcuscale-tasks-tracing-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcuscale-tasks-tracing-kasan
-> rcuscale-kvfree(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcuscale-kvfree
-> rcuscale-kvfree-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcuscale-kvfree-kasan
-> clocksourcewd-1(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-clocksourcewd-1
-> clocksourcewd-1-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-clocksourcewd-1-kasan
-> clocksourcewd-2(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-clocksourcewd-2
-> clocksourcewd-2-kasan(0) /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-clocksourcewd-2-kasan 
-> 
-> FAILURES:
-> allmodconfig(2) tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/allmodconfig
-> Started at Mon Jan 17 06:44:36 PM CET 2022, ended at Mon Jan 17 09:10:29 
-> PM CET 2022, duration 2:25:53.
-> Summary: Successes: 44 Failures: 1.
-> Size before compressing 0 files: 86M Mon Jan 17 09:10:29 PM CET 2022
-> Waiting for final batch 1 of 22 compressions Mon Jan 17 09:10:29 PM CET 2022
-> Size after compressing 0 files: 86M Mon Jan 17 09:10:29 PM CET 2022
-> Total duration 2:25:53.
-> ```
-> 
-> Here is an excerpt from `Make.out` [1]:
-> 
-> ```
->    CC [M]  sound/isa/ad1848/ad1848.o
->    CC      security/keys/encrypted-keys/ecryptfs_format.o
-> In file included from <command-line>:
-> ././include/linux/kconfig.h:5:10: fatal error: generated/autoconf.h: No such file or directory
->      5 | #include <generated/autoconf.h>
->        |          ^~~~~~~~~~~~~~~~~~~~~~
-> compilation terminated.
->    CC [M]  fs/reiserfs/inode.o
-> In file included from <command-line>:
-> ././include/linux/kconfig.h:5:10: fatal error: generated/autoconf.h: No such file or directory
->      5 | #include <generated/autoconf.h>
->        |          ^~~~~~~~~~~~~~~~~~~~~~
-> compilation terminated.
-> In file included from <command-line>:
-> ././include/linux/kconfig.h:5:10: fatal error: generated/autoconf.h: No such file or directory
->      5 | #include <generated/autoconf.h>
->        |          ^~~~~~~~~~~~~~~~~~~~~~
-> compilation terminated.
-> make[3]: *** [scripts/Makefile.build:288: 
-> security/keys/encrypted-keys/ecryptfs_format.o] Error 1
-> make[3]: *** Waiting for unfinished jobs....
-> In file included from <command-line>:
-> ././include/linux/kconfig.h:5:10: fatal error: generated/autoconf.h: No such file or directory
->      5 | #include <generated/autoconf.h>
->        |          ^~~~~~~~~~~~~~~~~~~~~~
-> compilation terminated.
->    CC [M]  sound/i2c/i2c.o
-> In file included from <command-line>:
-> ././include/linux/kconfig.h:5:10: fatal error: generated/autoconf.h: No such file or directory
->      5 | #include <generated/autoconf.h>
->        |          ^~~~~~~~~~~~~~~~~~~~~~
-> compilation terminated.
->    CC [M]  fs/ext4/block_validity.o
-> make[3]: *** [scripts/Makefile.build:288: sound/isa/ad1848/ad1848.o] 
-> Error 1
-> make[2]: *** [scripts/Makefile.build:550: sound/isa/ad1848] Error 2
-> make[1]: *** [scripts/Makefile.build:550: sound/isa] Error 2
-> make[1]: *** Waiting for unfinished jobs....
-> ```
-> 
-> I wonder why other builds seem to have worked. But checking the other 
-> results, despite the output saying the runs were a success the Linux 
-> kernel builds seem to have failed. For example [2]:
-> 
-> ```
-> $ more 
-> tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcutorture/log 
-> 
-> tools/testing/selftests/rcutorture/bin/kvm.sh --allcpus --duration 7 
-> --configs CFLIST --trust-make --bootargs rcupdate.rcu_cpu_stall_suppress_at_boot=1 torture.disable_onoff_at_boot rcupdate.rcu_task_stall_timeout=30000 --datestamp 2022.01.17-18.44.36-torture/results-rcutorture
-> ----Start batch 1: Mon Jan 17 06:45:03 PM CET 2022
-> TREE03 16: Starting build. Mon Jan 17 06:45:03 PM CET 2022
-> […]
-> TREE09 1: Build complete. Mon Jan 17 07:07:40 PM CET 2022
-> ---- No kernel runs. Mon Jan 17 07:07:40 PM CET 2022
-> ---- TREE03 16: Build/run results:
->   --- Mon Jan 17 06:45:03 PM CET 2022: Starting build, PID 3530842
-> :CONFIG_HYPERVISOR_GUEST=y: improperly set
-> :CONFIG_PARAVIRT=y: improperly set
-> Kernel build error
-> make[2]: *** No rule to make target 
-> 'arch/powerpc/kvm//dev/shm/linux/tools/testing/selftests/rcutorture/kvm_main.o', needed by 'arch/powerpc/kvm/kvm.o'.  Stop.
-> make[1]: *** [scripts/Makefile.build:550: arch/powerpc/kvm] Error 2
-> make: *** [Makefile:1840: arch/powerpc] Error 2
-> Run aborted.
-> Build failed, not running KVM, see 
-> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcutorture/TREE03. 
-> 
-> […]
-> ESC[031mBUG: ESC[mBuild failed
-> 
-> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/results-rcutorture/TREE09 
-> 
->   --- Done at Mon Jan 17 07:07:41 PM CET 2022 (22:39.0) exitcode 0
-> ```
-> 
-> 
-> Kind regards,
-> 
-> Paul
-> 
-> 
-> [1]: https://owww.molgen.mpg.de/~pmenzel/allmodconf-Make.out.txt
-> [2]: https://owww.molgen.mpg.de/~pmenzel/rcutorture-log.txt
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git/commit/?id=5f33a09e769a9da0482f20a6770a342842443776
 
-I botched those. The correct once are:
+("can: isotp: convert struct tpcon::{idx,len} to unsigned int")
 
-[1]: https://owww.molgen.mpg.de/~pmenzel/rcutorture/allmodconf-Make.out.txt
-[2]: https://owww.molgen.mpg.de/~pmenzel/rcutorture/rcutorture-log.txt
+Additionally this fix changes some behaviour that is required by the ISO 
+16765-2 specification (see below).
+
+On 17.01.22 13:01, Ziyang Xuan wrote:
+> When receive a FF, the current code logic does not consider the real
+> so->rx.state but set so->rx.state to ISOTP_IDLE directly. That will
+> make so->rx accessed by multiple receiving processes concurrently.
+
+This is intentionally. "multiple receiving processes" are not allowed 
+resp. specified by ISO 15765-2.
+
+> The following syz problem is one of the scenarios. so->rx.len is
+> changed by isotp_rcv_ff() during isotp_rcv_cf(), so->rx.len equals
+> 0 before alloc_skb() and equals 4096 after alloc_skb(). That will
+> trigger skb_over_panic() in skb_put().
+> 
+> =======================================================
+> CPU: 1 PID: 19 Comm: ksoftirqd/1 Not tainted 5.16.0-rc8-syzkaller #0
+> RIP: 0010:skb_panic+0x16c/0x16e net/core/skbuff.c:113
+> Call Trace:
+>   <TASK>
+>   skb_over_panic net/core/skbuff.c:118 [inline]
+>   skb_put.cold+0x24/0x24 net/core/skbuff.c:1990
+>   isotp_rcv_cf net/can/isotp.c:570 [inline]
+>   isotp_rcv+0xa38/0x1e30 net/can/isotp.c:668
+>   deliver net/can/af_can.c:574 [inline]
+>   can_rcv_filter+0x445/0x8d0 net/can/af_can.c:635
+>   can_receive+0x31d/0x580 net/can/af_can.c:665
+>   can_rcv+0x120/0x1c0 net/can/af_can.c:696
+>   __netif_receive_skb_one_core+0x114/0x180 net/core/dev.c:5465
+>   __netif_receive_skb+0x24/0x1b0 net/core/dev.c:5579
+> 
+> Check so->rx.state equals ISOTP_IDLE firstly in isotp_rcv_ff().
+> Make sure so->rx idle when receive another new packet. And set
+> so->rx.state to ISOTP_IDLE after whole packet being received.
+> 
+> Fixes: e057dd3fc20f ("can: add ISO 15765-2:2016 transport protocol")
+> Reported-by: syzbot+4c63f36709a642f801c5@syzkaller.appspotmail.com
+> Signed-off-by: Ziyang Xuan <william.xuanziyang@huawei.com>
+> ---
+>   net/can/isotp.c | 28 +++++++++++++++++-----------
+>   1 file changed, 17 insertions(+), 11 deletions(-)
+> 
+> diff --git a/net/can/isotp.c b/net/can/isotp.c
+> index df6968b28bf4..a4b174f860f3 100644
+> --- a/net/can/isotp.c
+> +++ b/net/can/isotp.c
+> @@ -443,8 +443,10 @@ static int isotp_rcv_ff(struct sock *sk, struct canfd_frame *cf, int ae)
+>   	int off;
+>   	int ff_pci_sz;
+>   
+> +	if (so->rx.state != ISOTP_IDLE)
+> +		return 0;
+> +
+>   	hrtimer_cancel(&so->rxtimer);
+> -	so->rx.state = ISOTP_IDLE;
+
+No matter in which receiving state we receive a first frame (FF) we are 
+required to start a fresh reception process and/or terminate the current 
+attempt.
+
+Best regards,
+Oliver
+
+>   
+>   	/* get the used sender LL_DL from the (first) CAN frame data length */
+>   	so->rx.ll_dl = padlen(cf->len);
+> @@ -518,8 +520,6 @@ static int isotp_rcv_cf(struct sock *sk, struct canfd_frame *cf, int ae,
+>   		so->lastrxcf_tstamp = skb->tstamp;
+>   	}
+>   
+> -	hrtimer_cancel(&so->rxtimer);
+> -
+>   	/* CFs are never longer than the FF */
+>   	if (cf->len > so->rx.ll_dl)
+>   		return 1;
+> @@ -531,15 +531,15 @@ static int isotp_rcv_cf(struct sock *sk, struct canfd_frame *cf, int ae,
+>   			return 1;
+>   	}
+>   
+> +	hrtimer_cancel(&so->rxtimer);
+> +
+>   	if ((cf->data[ae] & 0x0F) != so->rx.sn) {
+>   		/* wrong sn detected - report 'illegal byte sequence' */
+>   		sk->sk_err = EILSEQ;
+>   		if (!sock_flag(sk, SOCK_DEAD))
+>   			sk_error_report(sk);
+>   
+> -		/* reset rx state */
+> -		so->rx.state = ISOTP_IDLE;
+> -		return 1;
+> +		goto err_out;
+>   	}
+>   	so->rx.sn++;
+>   	so->rx.sn %= 16;
+> @@ -551,21 +551,18 @@ static int isotp_rcv_cf(struct sock *sk, struct canfd_frame *cf, int ae,
+>   	}
+>   
+>   	if (so->rx.idx >= so->rx.len) {
+> -		/* we are done */
+> -		so->rx.state = ISOTP_IDLE;
+> -
+>   		if ((so->opt.flags & ISOTP_CHECK_PADDING) &&
+>   		    check_pad(so, cf, i + 1, so->opt.rxpad_content)) {
+>   			/* malformed PDU - report 'not a data message' */
+>   			sk->sk_err = EBADMSG;
+>   			if (!sock_flag(sk, SOCK_DEAD))
+>   				sk_error_report(sk);
+> -			return 1;
+> +			goto err_out;
+>   		}
+>   
+>   		nskb = alloc_skb(so->rx.len, gfp_any());
+>   		if (!nskb)
+> -			return 1;
+> +			goto err_out;
+>   
+>   		memcpy(skb_put(nskb, so->rx.len), so->rx.buf,
+>   		       so->rx.len);
+> @@ -573,6 +570,10 @@ static int isotp_rcv_cf(struct sock *sk, struct canfd_frame *cf, int ae,
+>   		nskb->tstamp = skb->tstamp;
+>   		nskb->dev = skb->dev;
+>   		isotp_rcv_skb(nskb, sk);
+> +
+> +		/* we are done */
+> +		so->rx.state = ISOTP_IDLE;
+> +
+>   		return 0;
+>   	}
+>   
+> @@ -591,6 +592,11 @@ static int isotp_rcv_cf(struct sock *sk, struct canfd_frame *cf, int ae,
+>   	/* we reached the specified blocksize so->rxfc.bs */
+>   	isotp_send_fc(sk, ae, ISOTP_FC_CTS);
+>   	return 0;
+> +
+> +err_out:
+> +	/* reset rx state */
+> +	so->rx.state = ISOTP_IDLE;
+> +	return 1;
+>   }
+>   
+>   static void isotp_rcv(struct sk_buff *skb, void *data)
