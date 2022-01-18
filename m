@@ -2,124 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2947BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 11:57:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6F53C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 12:02:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241121AbiARL5o (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 06:57:44 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:58112 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237808AbiARL5n (ORCPT
+        id S241147AbiARMCI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 07:02:08 -0500
+Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:47470
+        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237808AbiARMCH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 06:57:43 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        Tue, 18 Jan 2022 07:02:07 -0500
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com [209.85.208.70])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id BF6012113B;
-        Tue, 18 Jan 2022 11:57:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1642507061; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PdOIwExMHXqbtbeyqn3ZGAfv6Y3eXPT52Bt+lUqM2YQ=;
-        b=HNxpo+olws4N68tmxKM7uPCGyjCbWe+2M5z+3bE2+HwKe8uSgPpTL2FFIMaUyEJat+ChdH
-        6FP25yN9sAynBbuORor0wlb7V4S4Pd7ZZrGmn0tseJfjRE0F+BFDtmn1JWOgv7sxCHjNqb
-        hUi34FP3MyQGy1eCyZ+uDjF4eSMKu14=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1642507061;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=PdOIwExMHXqbtbeyqn3ZGAfv6Y3eXPT52Bt+lUqM2YQ=;
-        b=am5HsM+vf6EN6GjYRm1BJoGfRSUGnsP6juo6sjbuPrJY6HBeT8IXrm4ut++iyHjwZsCXNG
-        5Gg5080RJIj/C5CA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 795E313B26;
-        Tue, 18 Jan 2022 11:57:41 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id eUe9HDWr5mG6YAAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Tue, 18 Jan 2022 11:57:41 +0000
-Message-ID: <bc55bb89-9986-5271-2e60-a38ec0d44cf0@suse.cz>
-Date:   Tue, 18 Jan 2022 12:57:41 +0100
+        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id DA4513F1E1
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 12:01:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1642507319;
+        bh=lWp9D6Gb/hKsGfFZ+PUoC3Eon55T4hCbYJ43VkS4IP0=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=KNssfaq2OxU6nCW8Qvm8NeFpi4Hh/XfQ4rJhAWHTdWQxkqy2FG7FffXoc2YH1hZgc
+         MDdWbHkO+P+exIqN+vgAC5J9/wsiDzxS1WsgxdIeM4UVxPNuNwsJWCTlnZmYz9WpNv
+         FYN1dWeQM7a3uHfM6tFfLzxxqMPjWCmqANEkbA1ntfL/G8Ap7XzVuqPdX7VnNU68Yk
+         uVhzLuFoJDol2l2f79Y2bJ/cffzYW8wM9y9FyLBsFccwDNJ1C0+BzE1ISFWsQ1fqbK
+         J4chZxjs66/F9ZRCqYvNoCYy+V4A/MmVpaPA0IyzVkMuwTALyNgxnon3uI4oGdkIf2
+         Box+H/OCZkkGQ==
+Received: by mail-ed1-f70.google.com with SMTP id ee53-20020a056402293500b004022f34edcbso6102620edb.11
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 04:01:59 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=lWp9D6Gb/hKsGfFZ+PUoC3Eon55T4hCbYJ43VkS4IP0=;
+        b=5PurmjO7UHjJY4StV8EBpNvqyMLLckDlxFOdflcHagj547uguErY78893HCwHddcKQ
+         LIvd2TfjUIEsqxR9cZCOODUnkHKOWMM9IjYwjkR7txr5GsN7WcYuSP7IIHrTP2e4Mp/D
+         9aeDsjxVnskMMalgRTzuP5uYzp+KYrEDuQOF9QvIoVdRsD8ZFgFZyRK33ZlljTv73yDx
+         XcI673aVi8InqbzjOuPgMItgC9L2flG8d1dY5XFlHYfiamlqTTeHV3CwEwLogvI3+cCd
+         FUj/HDOnXJe8/kGbsWSFztshbQzy49f27yyVXvo2rq42ALTq4jxZmPeSuOwv6IB10ApT
+         aS0A==
+X-Gm-Message-State: AOAM533GashY9DhDjZH+5urSEQYButYuKj/KhHJtGbc/FRh2LudIVpgj
+        nNuamYq3DlOGL0Jbc0QudoXXrj/ZKrkAaZLs1vZqaIkjn/kbuNZA6riCmuy35uOJM1PiF0iFM+k
+        LunLO8jItxzzinoP/ObkyRZ2f9sVYbnCDUsc+NU9hwA==
+X-Received: by 2002:a17:907:a424:: with SMTP id sg36mr11140758ejc.426.1642507319222;
+        Tue, 18 Jan 2022 04:01:59 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzO8IEgxKwBfxxftPu6ekoj48zmPhv17kAuB/R6hif+x1cfua53dfQ/bMN9TxZ5m2uJPBJEfw==
+X-Received: by 2002:a17:907:a424:: with SMTP id sg36mr11140741ejc.426.1642507318974;
+        Tue, 18 Jan 2022 04:01:58 -0800 (PST)
+Received: from [192.168.0.41] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.gmail.com with ESMTPSA id l8sm3063388edv.52.2022.01.18.04.01.58
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 18 Jan 2022 04:01:58 -0800 (PST)
+Message-ID: <bdca34bd-50f5-c526-26f1-0f2add02f361@canonical.com>
+Date:   Tue, 18 Jan 2022 13:01:57 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 27/66] mm/mmap: Change do_brk_munmap() to use
- do_mas_align_munmap()
+ Thunderbird/91.3.1
+Subject: Re: ERROR: modpost: "gpmc_omap_get_nand_ops"
+ [drivers/mtd/nand/raw/omap2_nand.ko] undefined!
 Content-Language: en-US
-To:     Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Song Liu <songliubraving@fb.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        David Rientjes <rientjes@google.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Rik van Riel <riel@surriel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Michel Lespinasse <walken.cr@gmail.com>,
-        Jerome Glisse <jglisse@redhat.com>,
-        Minchan Kim <minchan@google.com>,
-        Joel Fernandes <joelaf@google.com>,
-        Rom Lemarchand <romlem@google.com>
-References: <20211201142918.921493-1-Liam.Howlett@oracle.com>
- <20211201142918.921493-28-Liam.Howlett@oracle.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20211201142918.921493-28-Liam.Howlett@oracle.com>
+To:     Roger Quadros <rogerq@kernel.org>,
+        kernel test robot <lkp@intel.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+References: <202201171805.5HeoR4rS-lkp@intel.com>
+ <232ecd71-c4f8-6272-9a1e-91372763c3f5@kernel.org>
+ <57ad6f87-2198-92c6-8c26-f5b5a8d8a354@canonical.com>
+ <7c523b72-2285-80b9-e0fc-0fbb2aa9d439@kernel.org>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <7c523b72-2285-80b9-e0fc-0fbb2aa9d439@kernel.org>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/1/21 15:30, Liam Howlett wrote:
-> From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
+On 18/01/2022 12:51, Roger Quadros wrote:
+> Hi Krzysztof,
 > 
-> do_brk_munmap() has already aligned the address and has a maple tree
-> state to be used.  Use the new do_mas_align_munmap() to avoid
-> unnecessary alignment and error checks.
+> On 17/01/2022 15:08, Krzysztof Kozlowski wrote:
+>> On 17/01/2022 13:35, Roger Quadros wrote:
+>>> Hi,
+>>>
+>>> On 17/01/2022 12:51, kernel test robot wrote:
+>>>> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+>>>> head:   0c947b893d69231a9add855939da7c66237ab44f
+>>>> commit: dbcb124acebd8148e9e858a231f1798956dd3ca6 mtd: rawnand: omap2: Select GPMC device driver for ARCH_K3
+>>>> date:   4 weeks ago
+>>>> config: arm64-randconfig-r001-20220117 (https://download.01.org/0day-ci/archive/20220117/202201171805.5HeoR4rS-lkp@intel.com/config)
+>>>> compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 5f782d25a742302d25ef3c8b84b54f7483c2deb9)
+>>>> reproduce (this is a W=1 build):
+>>>>         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+>>>>         chmod +x ~/bin/make.cross
+>>>>         # install arm64 cross compiling tool for clang build
+>>>>         # apt-get install binutils-aarch64-linux-gnu
+>>>>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=dbcb124acebd8148e9e858a231f1798956dd3ca6
+>>>>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>>>>         git fetch --no-tags linus master
+>>>>         git checkout dbcb124acebd8148e9e858a231f1798956dd3ca6
+>>>>         # save the config file to linux build tree
+>>>>         mkdir build_dir
+>>>>         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm64 SHELL=/bin/bash
+>>>>
+>>>> If you fix the issue, kindly add following tag as appropriate
+>>>> Reported-by: kernel test robot <lkp@intel.com>
+>>>>
+>>>> All errors (new ones prefixed by >>, old ones prefixed by <<):
+>>>>
+>>>>>> ERROR: modpost: "gpmc_omap_get_nand_ops" [drivers/mtd/nand/raw/omap2_nand.ko] undefined!
+>>>
+>>> The issue is that CONFIG_MEMORY is not set so OMAP_GPMC driver is not built causing the above undefined symbol error.
+>>>
+>>>>
+>>>> Kconfig warnings: (for reference only)
+>>>>    WARNING: unmet direct dependencies detected for OMAP_GPMC
+>>>>    Depends on MEMORY && OF_ADDRESS
+>>>>    Selected by
+>>>>    - MTD_NAND_OMAP2 && MTD && MTD_RAW_NAND && (ARCH_OMAP2PLUS || ARCH_KEYSTONE || COMPILE_TEST && HAS_IOMEM && ARCH_K3
+>>>>
+>>>
+>>> A possible fix would be to select MEMORY along with OMAP_GPMC at the below location
+>>>
+>>> config MTD_NAND_OMAP2
+>>>         tristate "OMAP2, OMAP3, OMAP4 and Keystone NAND controller"
+>>>         depends on ARCH_OMAP2PLUS || ARCH_KEYSTONE || ARCH_K3 || COMPILE_TEST
+>>>         depends on HAS_IOMEM
+>>> 	select MEMORY
+>>> ^^
+>>>         select OMAP_GPMC if ARCH_K3 
+>>>         help
+>>>           Support for NAND flash on Texas Instruments OMAP2, OMAP3, OMAP4
+>>>           and Keystone platforms.
+>>>
+>>>
+>>> Is this OK?
+>>
+>> Instead rather "select MEMORY if ARCH_K3"?
 > 
-> Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
-> ---
->  mm/mmap.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
+> I think we should drop "if ARCH_K3" for both for simplicity as the driver is using gpmc_omap_get_nand_ops() from that driver.
 > 
-> diff --git a/mm/mmap.c b/mm/mmap.c
-> index 14190306a483..79b8494d83c6 100644
-> --- a/mm/mmap.c
-> +++ b/mm/mmap.c
-> @@ -2926,12 +2926,15 @@ static int do_brk_munmap(struct ma_state *mas, struct vm_area_struct *vma,
->  	struct mm_struct *mm = vma->vm_mm;
->  	struct vm_area_struct unmap;
->  	unsigned long unmap_pages;
-> -	int ret = 1;
-> +	int ret;
->  
->  	arch_unmap(mm, newbrk, oldbrk);
->  
-> -	if (likely(vma->vm_start >= newbrk)) { // remove entire mapping(s)
-> -		ret = do_mas_munmap(mas, mm, newbrk, oldbrk-newbrk, uf, true);
-> +	if (likely((vma->vm_end < oldbrk) ||
-> +		   ((vma->vm_start == newbrk) && (vma->vm_end == oldbrk)))) {
 
-Can you describe this change of conditions in the commit log as well?
+Then it's fine.
 
-> +		// remove entire mapping(s)
-> +		ret = do_mas_align_munmap(mas, vma, mm, newbrk, oldbrk, uf,
-> +					  true);
->  		goto munmap_full_vma;
->  	}
->  
 
+Best regards,
+Krzysztof
