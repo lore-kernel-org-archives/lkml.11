@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9798BC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:27:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DA3FC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:27:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245327AbiARC1Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:27:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57510 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245325AbiARCZR (ORCPT
+        id S245046AbiARC13 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:27:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42242 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245724AbiARCZW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:25:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56DDDC0613AB;
-        Mon, 17 Jan 2022 18:24:25 -0800 (PST)
+        Mon, 17 Jan 2022 21:25:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E9B2860C89;
-        Tue, 18 Jan 2022 02:24:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D841C36AEB;
-        Tue, 18 Jan 2022 02:24:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C1CBB610AB;
+        Tue, 18 Jan 2022 02:25:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38C66C36AEB;
+        Tue, 18 Jan 2022 02:25:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472664;
-        bh=UGWm0wK11v3EDmwx/5ILniSLk7LdT6bmX2euEBeMYLw=;
+        s=k20201202; t=1642472721;
+        bh=KnyhTXWyAhQ6+TJyfkCxRN8k4+AZ9shB9T5IiZSCg30=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=G2PS4dTaOwSXvpSZV+igzh1JToL2mq0EJEONCO8ccdvHJgOsbUIKXIHnr3h6d78BO
-         eq4CuWpjwgiFfhZ5ckeYbwWKgO6zCK1zZ3/c+QHmVOfgBXF3s8sNATK/pj+vlg3nnL
-         xm30GF+xBdAUsj9l6WYw93+7pDtnFR9Arf+MdVac4rlHt19gqCBkJ5bBG+YEPHz6n6
-         1p9vbyH78YYzKTcfLKOLAFk7+V66Ri15xFO8XkOJeIIViMdGTYOwgdRstUUQ2YLwa3
-         /DhRGirPdxc+xky/7CRMQEB3B2NrkiZjb5tcKHeIlAmU94bXBM+9zGxTElPOZPzKcV
-         jDtX9LazS8ENw==
+        b=UVyZ+ITfaM1Bxng40gQmHAhb7ALZxTKy4X+TJQWC0RkL1LxPuIXSH2BqtVlqe2FAY
+         rVQ9qQPRnb2QGQ3Mbv4e2Z66cweSO28mOVrNIR2QJcO3TP6Tw9n/VdDmvdvHjXwy3f
+         uhrbVPflmgtam0WzAke5Sty4PZT4ano+WEXWA500YxI5Ha9srJ3dLjf+r0lvrtB7Te
+         LON34ffoNDUfwF5pd6F8JPWTpxQkqK+bUYFDm1N8+THEx6D94pcpInTQfqdObwKvYa
+         28p6o0koVaZS+XsDRCHlulZzuetwjRO/bVb0G7pEJdCIK+3MTEpstpEV/bVW9dRneO
+         MbKBt0+hF9FAg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Sasha Levin <sashal@kernel.org>, nm@ti.com, kristo@kernel.org,
-        robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 091/217] arm64: dts: ti: j721e-main: Fix 'dtbs_check' in serdes_ln_ctrl node
-Date:   Mon, 17 Jan 2022 21:17:34 -0500
-Message-Id: <20220118021940.1942199-91-sashal@kernel.org>
+Cc:     Antoine Tenart <atenart@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        edumazet@google.com, pabeni@redhat.com, weiwan@google.com,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 112/217] net-sysfs: update the queue counts in the unregistration path
+Date:   Mon, 17 Jan 2022 21:17:55 -0500
+Message-Id: <20220118021940.1942199-112-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -54,35 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kishon Vijay Abraham I <kishon@ti.com>
+From: Antoine Tenart <atenart@kernel.org>
 
-[ Upstream commit 3f92a5be6084b77f764a8bbb881ac0d12cb9e863 ]
+[ Upstream commit d7dac083414eb5bb99a6d2ed53dc2c1b405224e5 ]
 
-Fix 'dtbs_check' in serdes_ln_ctrl (mux@4080) node by changing the node
-name to mux-controller@4080.
+When updating Rx and Tx queue kobjects, the queue count should always be
+updated to match the queue kobjects count. This was not done in the net
+device unregistration path, fix it. Tracking all queue count updates
+will allow in a following up patch to detect illegal updates.
 
-Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
-Reviewed-by: Aswath Govindraju <a-govindraju@ti.com>
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Link: https://lore.kernel.org/r/20211126084555.17797-3-kishon@ti.com
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/ti/k3-j721e-main.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/net-sysfs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-index 08c8d1b47dcd9..e85c89eebfa31 100644
---- a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
-@@ -42,7 +42,7 @@ scm_conf: scm-conf@100000 {
- 		#size-cells = <1>;
- 		ranges = <0x0 0x0 0x00100000 0x1c000>;
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index 9c01c642cf9ef..d7f9ee830d34c 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -1820,6 +1820,9 @@ static void remove_queue_kobjects(struct net_device *dev)
  
--		serdes_ln_ctrl: mux@4080 {
-+		serdes_ln_ctrl: mux-controller@4080 {
- 			compatible = "mmio-mux";
- 			reg = <0x00004080 0x50>;
- 			#mux-control-cells = <1>;
+ 	net_rx_queue_update_kobjects(dev, real_rx, 0);
+ 	netdev_queue_update_kobjects(dev, real_tx, 0);
++
++	dev->real_num_rx_queues = 0;
++	dev->real_num_tx_queues = 0;
+ #ifdef CONFIG_SYSFS
+ 	kset_unregister(dev->queues_kset);
+ #endif
 -- 
 2.34.1
 
