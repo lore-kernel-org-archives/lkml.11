@@ -2,20 +2,20 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDA58C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:12:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 501FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:12:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241955AbiARNM0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 08:12:26 -0500
-Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:58730 "EHLO
-        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242009AbiARNMT (ORCPT
+        id S242079AbiARNM2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 08:12:28 -0500
+Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:49075 "EHLO
+        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242031AbiARNMY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 08:12:19 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R421e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0V2C1owk_1642511536;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V2C1owk_1642511536)
+        Tue, 18 Jan 2022 08:12:24 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R201e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0V2C5CnK_1642511540;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V2C5CnK_1642511540)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 18 Jan 2022 21:12:17 +0800
+          Tue, 18 Jan 2022 21:12:20 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -23,208 +23,157 @@ Cc:     linux-fsdevel@vger.kernel.org, joseph.qi@linux.alibaba.com,
         bo.liu@linux.alibaba.com, tao.peng@linux.alibaba.com,
         gerry@linux.alibaba.com, eguan@linux.alibaba.com,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 00/20] fscache,erofs: fscache-based demand-read semantics
-Date:   Tue, 18 Jan 2022 21:11:56 +0800
-Message-Id: <20220118131216.85338-1-jefflexu@linux.alibaba.com>
+Subject: [PATCH v2 03/20] netfs,fscache: support on-demand reading
+Date:   Tue, 18 Jan 2022 21:11:59 +0800
+Message-Id: <20220118131216.85338-4-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220118131216.85338-1-jefflexu@linux.alibaba.com>
+References: <20220118131216.85338-1-jefflexu@linux.alibaba.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-changes since v1:
-- rebase to v5.17
-- erofs: In chunk based layout, since the logical file offset has the
-  same remainder over PAGE_SIZE with the corresponding physical address
-  inside the data blob file, the file page cache can be directly
-  transferred to netfs library to contain the data from data blob file.
-  (patch 15) (Gao Xiang)
-- netfs,cachefiles: manage logical/physical offset separately. (patch 2)
-  (It is used by erofs_begin_cache_operation() in patch 15.)
-- cachefiles: introduce a new devnode specificaly for on-demand reading.
-  (patch 6)
-- netfs,fscache,cachefiles: add new CONFIG_* for on-demand reading.
-  (patch 3/5)
-- You could start a quick test by
-  https://github.com/lostjeffle/demand-read-cachefilesd
-- add more background information (mainly introduction to nydus) in the
-  "Background" part of this cover letter
+Add ondemand_read() callback to netfs_cache_ops to implement on-demand
+reading.
 
-[Important Issues]
-The following issues still need further discussion. Thanks for your time
-and patience.
+The precondition for implementing on-demand reading semantic is that,
+all blob files have been placed under corresponding directory with
+correct file size (sparse files) on the first beginning. When upper fs
+starts to access the blob file, it will "cache miss" (hit the hole) and
+then .issue_op() callback will be called to prepare the data.
 
-1. I noticed that there's refactoring of netfs library[1], and patch 1
-is not needed since [2].
+The following working flow is described as below. The .issue_op()
+callback could be implemented by netfs_ondemand_read() helper, which
+will in turn call .ondemand_read() callback of corresponding fscache
+backend to prepare the data.
 
-2. The current implementation will severely conflict with the
-refactoring of netfs library[1][2]. The assumption of 'struct
-netfs_i_context' [2] is that, every file in the upper netfs will
-correspond to only one backing file. While in our scenario, one file in
-erofs can correspond to multiple backing files. That is, the content of
-one file can be divided into multiple chunks, and are distrubuted over
-multiple blob files, i.e. multiple backing files. Currently I have no
-good idea solving this conflic.
+The implementation of .ondemand_read() callback can be backend specific.
+The following patch will introduce an implementation of .ondemand_read()
+callback for cachefiles, which will notify user daemon the requested
+file range to read. The .ondemand_read() callback will get blocked until
+the user daemon has prepared the corresponding data.
 
-Besides there are still two quetions:
-- What's the plan of [1]? When is it planned to be merged?
-- It seems that all upper fs using fscache is going to use netfs API,
-  while the APIs like fscache_read_or_alloc_page() are deprecated. Is
-  that true?
+Then once .ondemand_read() callback returns with 0, it is guaranteed
+that the requested data has been ready. In this case, transform this IO
+request to NETFS_READ_FROM_CACHE state, initiate an incomplete
+completion and then retry to read from backing file.
 
-[1] https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/log/?h=netfs-lib
-[2] https://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git/commit/?h=netfs-lib&id=087d913752522fb9aa6d3effdb9a8c7908c779dd
+Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
+---
+ fs/fscache/Kconfig     |  8 ++++++++
+ fs/netfs/Kconfig       |  8 ++++++++
+ fs/netfs/read_helper.c | 37 +++++++++++++++++++++++++++++++++++++
+ include/linux/netfs.h  |  8 ++++++++
+ 4 files changed, 61 insertions(+)
 
-
-RFC: https://lore.kernel.org/all/YbRL2glGzjfZkVbH@B-P7TQMD6M-0146.local/t/
-v1: https://lore.kernel.org/lkml/47831875-4bdd-8398-9f2d-0466b31a4382@linux.alibaba.com/T/
-
-
-[Background]
-============
-Nydus is a remote container snapthotter specially optimised for container
-images distribution over network. It has recently been accepted as a
-sub-project of containerd[1]. Nydus is an excellent container image
-acceleration solution, since it only pulls data from remote when it's
-really needed, a.k.a. on-demand reading.
-
-erofs (Enhanced Read-Only File System) is a filesystem specially
-optimised for read-only scenarios. (Documentation/filesystem/erofs.rst)
-
-Recently we are focusing on erofs in container images distribution
-scenario [2], trying to combine it with nydus. In this case, erofs can
-be mounted from one bootstrap file (metadata) with (optional) multiple
-data blob files (data) stored on another local filesystem. (All these
-files are actually image files in erofs disk format.)
-
-To accelerate the container startup (fetching container image from remote
-and then start the container), we do hope that the bootstrap blob file
-could support demand read. That is, erofs can be mounted and accessed
-even when the bootstrap/data blob files have not been fully downloaded.
-
-That means we have to manage the cache state of the bootstrap/data blob
-files (if cache hit, read directly from the local cache; if cache miss,
-fetch the data somehow). It would be painful and may be dumb for erofs to
-implement the cache management itself. Thus we prefer fscache/cachefiles
-to do the cache management. Besides, the demand-read feature shall be
-general and it can benefit other using scenarios if it can be implemented
-in fscache level.
-
-[1] https://d7y.io/en-us/blog/containerd_accepted_nydus-snapshotter.html
-[2] https://sched.co/pcdL
-
-
-[Overall Design]
-================
-The upper fs uses a backing file on the local fs as the local cache
-(exactly the "cachefiles" way), and relies on fscache to detect if data
-is ready or not (cache hit/miss). Since currently fscache detects cache
-hit/miss by detecting the hole of the backing files, our demand-read
-mechanism also relies on the hole detecting.
-
-1. initial phase
-On the first beginning, the user daemon will touch the backing files
-(bootstrap/data blob files) under corresponding directory (under
-<root>/cache/<volume>/<fan>/) in advance. These backing files are
-completely sparse files (with zero disk usage). Since these backing
-files are all read-only and the file size is known prior mounting, user
-daemon will set corresponding file size and thus create all these sparse
-backing files in advance.
-
-2. cache miss
-When a file range (of bootstrap/data blob file) is accessed for the
-first time, a cache miss will be triggered and then .issue_op() will be
-called to fetch the data somehow.
-
-In the demand-read case, we relies on a user daemon to fetch the data
-from local/remote. In this case, .issue_op() just packages the file
-range into a message and informs the user daemon. User daemon needs to
-poll and wait on the devnode (/dev/cachefiles_demand). Once awaken, the
-user daemon will read the devnode to get the file range information, and
-then fetch the data corresponding to the file range somehow, e.g.
-download from remote through network. Once data ready, the user daemon
-will write the fetched data into the backing file and then inform
-cachefiles backend by writing to the devnode. Cachefiles backend getting
-blocked on the previous .issue_op() calling will be awaken then. By then
-the data has been ready in the backing file, and the netfs API will
-re-initiate a read request from the backing file.
-
-3. cache hit
-Once data is already ready in the backing file, netfs API will read from
-the backing file directly.
-
-
-[Advantage of fscache-based demand-read]
-========================================
-1. Asynchronous Prefetch
-In current mechanism, fscache is responsible for cache state management,
-while the data plane (fetch data from local/remote on cache miss) is
-done on the user daemon side.
-
-If data has already been ready in the backing file, netfs API will read
-from the backing file directly and won't be trapped to user space anymore.
-Thus the user daemon could fetch data (from remote) asynchronously on the
-background, and thus accelerate the backing file accessing in some degree.
-
-2. Support massive blob files
-Besides this mechanism supports a large amount of backing files, and
-thus can benefit the densely employed scenario.
-
-In our using scenario, one container image can correspond to one
-bootstrap file (required) and multiple data blob files (optional). For
-example, one container image for node.js will corresponds to ~20 files
-in total. In densely employed environment, there could be as many as
-hundreds of containers and thus thousands of backing files on one
-machine.
-
-[Test]
-You could start a quick test by
-https://github.com/lostjeffle/demand-read-cachefilesd
-
-
-Jeffle Xu (20):
-  netfs: make @file optional in netfs_alloc_read_request()
-  netfs,cachefiles: manage logical/physical offset separately
-  netfs,fscache: support on-demand reading
-  cachefiles: extract generic daemon write function
-  cachefiles: detect backing file size in on-demand read mode
-  cachefiles: introduce new devnode for on-demand read mode
-  erofs: use meta buffers for erofs_read_superblock()
-  erofs: export erofs_map_blocks()
-  erofs: add mode checking helper
-  erofs: register global fscache volume
-  erofs: add cookie context helper functions
-  erofs: add anonymous inode managing page cache of blob file
-  erofs: register cookie context for bootstrap blob
-  erofs: implement fscache-based metadata read
-  erofs: implement fscache-based data read for non-inline layout
-  erofs: implement fscache-based data read for inline layout
-  erofs: register cookie context for data blobs
-  erofs: implement fscache-based data read for data blobs
-  erofs: add 'uuid' mount option
-  erofs: support on-demand reading
-
- fs/cachefiles/Kconfig    |   8 +
- fs/cachefiles/daemon.c   | 147 ++++++++++++++++-
- fs/cachefiles/internal.h |  23 +++
- fs/cachefiles/io.c       |  82 +++++++++-
- fs/cachefiles/main.c     |  27 ++++
- fs/cachefiles/namei.c    |  60 ++++++-
- fs/erofs/Kconfig         |   2 +-
- fs/erofs/Makefile        |   3 +-
- fs/erofs/data.c          |  18 ++-
- fs/erofs/fscache.c       | 339 +++++++++++++++++++++++++++++++++++++++
- fs/erofs/inode.c         |   6 +-
- fs/erofs/internal.h      |  30 ++++
- fs/erofs/super.c         | 101 +++++++++---
- fs/fscache/Kconfig       |   8 +
- fs/netfs/Kconfig         |   8 +
- fs/netfs/read_helper.c   |  65 ++++++--
- include/linux/netfs.h    |  10 ++
- 17 files changed, 886 insertions(+), 51 deletions(-)
- create mode 100644 fs/erofs/fscache.c
-
+diff --git a/fs/fscache/Kconfig b/fs/fscache/Kconfig
+index 76316c4a3fb7..f6b5396759ee 100644
+--- a/fs/fscache/Kconfig
++++ b/fs/fscache/Kconfig
+@@ -41,3 +41,11 @@ config FSCACHE_DEBUG
+ 
+ config FSCACHE_OLD_API
+ 	bool
++
++config FSCACHE_ONDEMAND
++	bool "Support for on-demand reading"
++	depends on FSCACHE
++	select NETFS_ONDEMAND
++	help
++	  This permits on-demand reading with fscache.
++	  If unsure, say N.
+diff --git a/fs/netfs/Kconfig b/fs/netfs/Kconfig
+index b4db21022cb4..c4bdd0b032dd 100644
+--- a/fs/netfs/Kconfig
++++ b/fs/netfs/Kconfig
+@@ -21,3 +21,11 @@ config NETFS_STATS
+ 	  multi-CPU system these may be on cachelines that keep bouncing
+ 	  between CPUs.  On the other hand, the stats are very useful for
+ 	  debugging purposes.  Saying 'Y' here is recommended.
++
++config NETFS_ONDEMAND
++	bool "Support for on-demand reading"
++	depends on NETFS_SUPPORT
++	default n
++	help
++	  This enables on-demand reading with netfs API.
++	  If unsure, say N.
+diff --git a/fs/netfs/read_helper.c b/fs/netfs/read_helper.c
+index 077c0ca96612..b84c184c365d 100644
+--- a/fs/netfs/read_helper.c
++++ b/fs/netfs/read_helper.c
+@@ -1013,6 +1013,43 @@ int netfs_readpage(struct file *file,
+ }
+ EXPORT_SYMBOL(netfs_readpage);
+ 
++#ifdef CONFIG_NETFS_ONDEMAND
++void netfs_ondemand_read(struct netfs_read_subrequest *subreq)
++{
++	struct netfs_read_request *rreq = subreq->rreq;
++	struct netfs_cache_resources *cres = &rreq->cache_resources;
++	loff_t start_pos;
++	size_t len;
++	int ret = -ENOBUFS;
++
++	/* The cache backend may not be accessible at this moment. */
++	if (!cres->ops)
++		goto out;
++
++	if (!cres->ops->ondemand_read) {
++		ret = -EOPNOTSUPP;
++		goto out;
++	}
++
++	start_pos = subreq->p_start + subreq->transferred;
++	len = subreq->len - subreq->transferred;
++
++	/*
++	 * In success case (ret == 0), user daemon has prepared data for
++	 * us, thus transform to NETFS_READ_FROM_CACHE state and
++	 * advertise that 0 byte readed, so that the request will enter
++	 * into INCOMPLETE state and retry to read from backing file.
++	 */
++	ret = cres->ops->ondemand_read(cres, start_pos, len);
++	if (!ret) {
++		subreq->source = NETFS_READ_FROM_CACHE;
++		__clear_bit(NETFS_SREQ_WRITE_TO_CACHE, &subreq->flags);
++	}
++out:
++	netfs_subreq_terminated(subreq, ret, false);
++}
++#endif
++
+ /*
+  * Prepare a folio for writing without reading first
+  * @folio: The folio being prepared
+diff --git a/include/linux/netfs.h b/include/linux/netfs.h
+index a17740b3b9d6..d6e041293dcc 100644
+--- a/include/linux/netfs.h
++++ b/include/linux/netfs.h
+@@ -246,6 +246,11 @@ struct netfs_cache_ops {
+ 	int (*prepare_write)(struct netfs_cache_resources *cres,
+ 			     loff_t *_start, size_t *_len, loff_t i_size,
+ 			     bool no_space_allocated_yet);
++
++#ifdef CONFIG_NETFS_ONDEMAND
++	int (*ondemand_read)(struct netfs_cache_resources *cres,
++			     loff_t start_pos, size_t len);
++#endif
+ };
+ 
+ struct readahead_control;
+@@ -261,6 +266,9 @@ extern int netfs_write_begin(struct file *, struct address_space *,
+ 			     void **,
+ 			     const struct netfs_read_request_ops *,
+ 			     void *);
++#ifdef CONFIG_NETFS_ONDEMAND
++extern void netfs_ondemand_read(struct netfs_read_subrequest *);
++#endif
+ 
+ extern void netfs_subreq_terminated(struct netfs_read_subrequest *, ssize_t, bool);
+ extern void netfs_stats_show(struct seq_file *);
 -- 
 2.27.0
 
