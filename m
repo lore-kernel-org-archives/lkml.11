@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0711CC3526C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9620FC4707A
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352451AbiARDAA (ORCPT
+        id S1352668AbiARDAX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:00:00 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56404 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345210AbiARCrl (ORCPT
+        Mon, 17 Jan 2022 22:00:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34402 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349086AbiARCrc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:47:41 -0500
+        Mon, 17 Jan 2022 21:47:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79B6EC06176F;
+        Mon, 17 Jan 2022 18:39:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D4BBAB811CE;
-        Tue, 18 Jan 2022 02:47:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD420C36AEB;
-        Tue, 18 Jan 2022 02:47:37 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 193C66118D;
+        Tue, 18 Jan 2022 02:39:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9C57CC36AEF;
+        Tue, 18 Jan 2022 02:39:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474058;
-        bh=IgOmWKurGb8OpPoy0PJCtd1kBOIPTV6l0o9s3riMki8=;
+        s=k20201202; t=1642473547;
+        bh=WrmovBE7B/LPgIOvuDDD6clEs9gOydREBb19a2g3R1w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HD0/za9sITI9ZhZDbqBjvMe1Hzmm1J2MST4gSzdc/U5207F3IJBRvGTzgn7CfYxqZ
-         k44jB5UJ+Bz124i01++a19h7CdE/mQi2tTmOVqlYLxJRJ3Ux96J5XZ6KojDlXWeo7U
-         1olZYH0kf7Exsedozz8Xj8gafEAO+1NEzpo+qwRdCzZTTxewhxr7t/yPAj5svghYxC
-         IMW9MmGIUbP0FiCRc0MW+dz0o91KIYMfuTRkCEuXOlNbMYL8/b+FuIgSkzdy8YkuYF
-         CXTGJlpx1DajpMD6yL4YVJkhZ8sr07PJUwf0o4wqf8UM70LGUSihqa/nWapAcCzxtK
-         I5U2RTszg9exQ==
+        b=bGYXKD16+VIaS/uvwJwFgygJfLoDWT9cbPoEQr3j/pRRuR43o/b+a8PfdAW1tsSY3
+         1MaSUcvAjMbK+Xhb5MNp/BZcjt+ccday8Mep7Anq62eg2jsPrxAfzd05gOz1/6udl3
+         r9YyBDNPutaEdiCpgSFkTU30zrqzUW7U4Wx+CwaZfK8m78ztR9bVsYEKqAJVRfqIqb
+         M0Rr6cSrncSaRCb6jI6XrIsQ/hX+uPT6wMJPJdP14N2ITQMiG2HLtKOIWj95jwOeVJ
+         a75kFutRtrhfMZd2cHcpC79ybaO/+iWdXfDfZ42Iq3EpiSbed84y+5exH2enGeMZg4
+         bJHUaG4eCAACQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhou Qingyang <zhou1615@umn.edu>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
-        mchehab@kernel.org, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 18/59] media: saa7146: hexium_orion: Fix a NULL pointer dereference in hexium_attach()
-Date:   Mon, 17 Jan 2022 21:46:19 -0500
-Message-Id: <20220118024701.1952911-18-sashal@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Tsuchiya Yuto <kitakar@gmail.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, andy@kernel.org
+Subject: [PATCH AUTOSEL 5.15 160/188] mfd: intel_soc_pmic: Use CPU-id check instead of _HRV check to differentiate variants
+Date:   Mon, 17 Jan 2022 21:31:24 -0500
+Message-Id: <20220118023152.1948105-160-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
-References: <20220118024701.1952911-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,71 +54,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit 348df8035301dd212e3cc2860efe4c86cb0d3303 ]
+[ Upstream commit 5b78223f55a0f516a1639dbe11cd4324d4aaee20 ]
 
-In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
-a new memory for dev->vv_data. In hexium_detach(), saa7146_vv_release()
-will be called and there is a dereference of dev->vv_data in
-saa7146_vv_release(), which could lead to a NULL pointer dereference
-on failure of saa7146_vv_init() according to the following logic.
+The Intel Crystal Cove PMIC has 2 different variants, one for use with
+Bay Trail (BYT) SoCs and one for use with Cherry Trail (CHT) SoCs.
 
-Both hexium_attach() and hexium_detach() are callback functions of
-the variable 'extension', so there exists a possible call chain directly
-from hexium_attach() to hexium_detach():
+So far we have been using an ACPI _HRV check to differentiate between
+the 2, but at least on the Microsoft Surface 3, which is a CHT device,
+the wrong _HRV value is reported by ACPI.
 
-hexium_attach(dev, info) -- fail to alloc memory to dev->vv_data
-	|		    		in saa7146_vv_init().
-	|
-	|
-hexium_detach() -- a dereference of dev->vv_data in saa7146_vv_release()
+So instead switch to a CPU-ID check which prevents us from relying on
+the possibly wrong ACPI _HRV value.
 
-Fix this bug by adding a check of saa7146_vv_init().
-
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_VIDEO_HEXIUM_ORION=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Reported-by: Tsuchiya Yuto <kitakar@gmail.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20211206174806.197772-2-hdegoede@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/saa7146/hexium_orion.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/mfd/intel_soc_pmic_core.c | 28 +++-------------------------
+ 1 file changed, 3 insertions(+), 25 deletions(-)
 
-diff --git a/drivers/media/pci/saa7146/hexium_orion.c b/drivers/media/pci/saa7146/hexium_orion.c
-index a794f9e5f9908..b88aa1feb7df2 100644
---- a/drivers/media/pci/saa7146/hexium_orion.c
-+++ b/drivers/media/pci/saa7146/hexium_orion.c
-@@ -367,10 +367,16 @@ static struct saa7146_ext_vv vv_data;
- static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_data *info)
- {
- 	struct hexium *hexium = (struct hexium *) dev->ext_priv;
-+	int ret;
+diff --git a/drivers/mfd/intel_soc_pmic_core.c b/drivers/mfd/intel_soc_pmic_core.c
+index ddd64f9e3341e..47cb7f00dfcfc 100644
+--- a/drivers/mfd/intel_soc_pmic_core.c
++++ b/drivers/mfd/intel_soc_pmic_core.c
+@@ -14,15 +14,12 @@
+ #include <linux/module.h>
+ #include <linux/mfd/core.h>
+ #include <linux/mfd/intel_soc_pmic.h>
++#include <linux/platform_data/x86/soc.h>
+ #include <linux/pwm.h>
+ #include <linux/regmap.h>
  
- 	DEB_EE("\n");
+ #include "intel_soc_pmic_core.h"
  
--	saa7146_vv_init(dev, &vv_data);
-+	ret = saa7146_vv_init(dev, &vv_data);
-+	if (ret) {
-+		pr_err("Error in saa7146_vv_init()\n");
-+		return ret;
-+	}
-+
- 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
- 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
- 	vv_data.vid_ops.vidioc_s_input = vidioc_s_input;
+-/* Crystal Cove PMIC shares same ACPI ID between different platforms */
+-#define BYT_CRC_HRV		2
+-#define CHT_CRC_HRV		3
+-
+ /* PWM consumed by the Intel GFX */
+ static struct pwm_lookup crc_pwm_lookup[] = {
+ 	PWM_LOOKUP("crystal_cove_pwm", 0, "0000:00:02.0", "pwm_pmic_backlight", 0, PWM_POLARITY_NORMAL),
+@@ -34,31 +31,12 @@ static int intel_soc_pmic_i2c_probe(struct i2c_client *i2c,
+ 	struct device *dev = &i2c->dev;
+ 	struct intel_soc_pmic_config *config;
+ 	struct intel_soc_pmic *pmic;
+-	unsigned long long hrv;
+-	acpi_status status;
+ 	int ret;
+ 
+-	/*
+-	 * There are 2 different Crystal Cove PMICs a Bay Trail and Cherry
+-	 * Trail version, use _HRV to differentiate between the 2.
+-	 */
+-	status = acpi_evaluate_integer(ACPI_HANDLE(dev), "_HRV", NULL, &hrv);
+-	if (ACPI_FAILURE(status)) {
+-		dev_err(dev, "Failed to get PMIC hardware revision\n");
+-		return -ENODEV;
+-	}
+-
+-	switch (hrv) {
+-	case BYT_CRC_HRV:
++	if (soc_intel_is_byt())
+ 		config = &intel_soc_pmic_config_byt_crc;
+-		break;
+-	case CHT_CRC_HRV:
++	else
+ 		config = &intel_soc_pmic_config_cht_crc;
+-		break;
+-	default:
+-		dev_warn(dev, "Unknown hardware rev %llu, assuming BYT\n", hrv);
+-		config = &intel_soc_pmic_config_byt_crc;
+-	}
+ 
+ 	pmic = devm_kzalloc(dev, sizeof(*pmic), GFP_KERNEL);
+ 	if (!pmic)
 -- 
 2.34.1
 
