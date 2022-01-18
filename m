@@ -2,43 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 758F4C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEA58C4167B
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:46:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348713AbiARCpw (ORCPT
+        id S1348747AbiARCp6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:45:52 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56008 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239896AbiARCid (ORCPT
+        Mon, 17 Jan 2022 21:45:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345313AbiARCim (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:38:33 -0500
+        Mon, 17 Jan 2022 21:38:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5EC7C06177A;
+        Mon, 17 Jan 2022 18:35:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 147DB61291;
-        Tue, 18 Jan 2022 02:38:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8D5FC36AF3;
-        Tue, 18 Jan 2022 02:38:31 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 61810B81252;
+        Tue, 18 Jan 2022 02:35:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E6004C36AF2;
+        Tue, 18 Jan 2022 02:35:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473512;
-        bh=xsfclcnth22emOhXnExQDbZEHeQPjA9k8JwPqBUjW/I=;
+        s=k20201202; t=1642473314;
+        bh=tgMxk0poZY5zYAaPiVwW6ZLGXckdFm/KF9btJSEKfHc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DiH2120Roex9uNV4zrMSXP6w7UAnR096Csr5RSJVpHhoRJ6Pw5pMdT2gg0NkEotOF
-         vNBiWO90RlknVl34w9opYU+EEVTO+cz95zXLcx7dJAndNE0iF1lK30W8K//nQgYXs1
-         Pgqx/g8SXj9TMijz9QoEMQi//On1aDhqEa1Ak0TgRnLRV+roREq3zf+T0BVk0RvYM+
-         b8+kPb5DFygRGr0OZYEhI9qD22GJztQMs4i+8XOqzY/X8GKwaxYVkYSBsNJmHW7Z5g
-         SvEniROPKoIpNgHk/7i8uWoXAkuCG2j8D/n8WRWB7eQ6eksC0QTc5F1/Vx0JJXw6Z1
-         UYJrFduYNdXQw==
+        b=ijuwuQ2UTlfHjNuYsfrf2NEjXT0pJIBs1dMrIMrrcwL7ztxB6UrDTtMa86zZTqmwO
+         p6qFtyhhuGbNHhOKbyHeALwjvuv8y8zSuJRVlPqSZZ3LyJmmE9hrY/XlLzSfMvQxfP
+         BhukBvJumrDKyEjtLqPfNd9qyFoyLLl3NXNC8h0RedcqMdhTFKPjD5eKsDgwo0Cd/k
+         fvFm33y4FG1/5Q+TtwKrSiJWzmW45jLERrAOxjAB7MKZM01XRmRgFDWXiv64yCD/IJ
+         2VVzPAERgihKMszeKNVeGFHu3EsqsoqZHsHFFkfVb2E/iBtyJxqyLTLmtAforjIeOV
+         7LuSY9OW12QxQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Hector Martin <marcan@marcan.st>,
-        Adrian Hunter <adrian.hunter@intel.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, linux-mmc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 143/188] mmc: sdhci-pci-gli: GL9755: Support for CD/WP inversion on OF platforms
-Date:   Mon, 17 Jan 2022 21:31:07 -0500
-Message-Id: <20220118023152.1948105-143-sashal@kernel.org>
+Cc:     Zekun Shen <bruceshenzk@gmail.com>,
+        Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, amitkarwar@gmail.com,
+        siva8118@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 066/188] rsi: Fix out-of-bounds read in rsi_read_pkt()
+Date:   Mon, 17 Jan 2022 21:29:50 -0500
+Message-Id: <20220118023152.1948105-66-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -50,61 +56,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit 189f1d9bc3a5ea3e442e119e4a5deda63da8c462 ]
+[ Upstream commit f1cb3476e48b60c450ec3a1d7da0805bffc6e43a ]
 
-This is required on some Apple ARM64 laptops using this controller.
-As is typical on DT platforms, pull these quirks from the device tree
-using the standard mmc bindings.
+rsi_get_* functions rely on an offset variable from usb
+input. The size of usb input is RSI_MAX_RX_USB_PKT_SIZE(3000),
+while 2-byte offset can be up to 0xFFFF. Thus a large offset
+can cause out-of-bounds read.
 
-See Documentation/devicetree/bindings/mmc/mmc-controller.yaml
+The patch adds a bound checking condition when rcv_pkt_len is 0,
+indicating it's USB. It's unclear whether this is triggerable
+from other type of bus. The following check might help in that case.
+offset > rcv_pkt_len - FRAME_DESC_SZ
 
-Acked-by: Adrian Hunter <adrian.hunter@intel.com>
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Link: https://lore.kernel.org/r/20211215161045.38843-2-marcan@marcan.st
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+The bug is trigerrable with conpromised/malfunctioning USB devices.
+I tested the patch with the crashing input and got no more bug report.
+
+Attached is the KASAN report from fuzzing.
+
+BUG: KASAN: slab-out-of-bounds in rsi_read_pkt+0x42e/0x500 [rsi_91x]
+Read of size 2 at addr ffff888019439fdb by task RX-Thread/227
+
+CPU: 0 PID: 227 Comm: RX-Thread Not tainted 5.6.0 #66
+Call Trace:
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ __kasan_report.cold+0x37/0x7c
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ kasan_report+0xe/0x20
+ rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ rsi_usb_rx_thread+0x1b1/0x2fc [rsi_usb]
+ ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
+ ? _raw_spin_lock_irqsave+0x7b/0xd0
+ ? _raw_spin_trylock_bh+0x120/0x120
+ ? __wake_up_common+0x10b/0x520
+ ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
+ kthread+0x2b5/0x3b0
+ ? kthread_create_on_node+0xd0/0xd0
+ ret_from_fork+0x22/0x40
+
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/YXxXS4wgu2OsmlVv@10-18-43-117.dynapool.wireless.nyu.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/sdhci-pci-gli.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/net/wireless/rsi/rsi_91x_main.c | 4 ++++
+ drivers/net/wireless/rsi/rsi_91x_usb.c  | 1 -
+ drivers/net/wireless/rsi/rsi_usb.h      | 2 ++
+ 3 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/host/sdhci-pci-gli.c b/drivers/mmc/host/sdhci-pci-gli.c
-index 4fd99c1e82ba3..ad50f16658fe2 100644
---- a/drivers/mmc/host/sdhci-pci-gli.c
-+++ b/drivers/mmc/host/sdhci-pci-gli.c
-@@ -12,6 +12,7 @@
- #include <linux/pci.h>
- #include <linux/mmc/mmc.h>
- #include <linux/delay.h>
-+#include <linux/of.h>
- #include "sdhci.h"
- #include "sdhci-pci.h"
- #include "cqhci.h"
-@@ -116,6 +117,8 @@
- #define PCI_GLI_9755_PECONF   0x44
- #define   PCI_GLI_9755_LFCLK    GENMASK(14, 12)
- #define   PCI_GLI_9755_DMACLK   BIT(29)
-+#define   PCI_GLI_9755_INVERT_CD  BIT(30)
-+#define   PCI_GLI_9755_INVERT_WP  BIT(31)
+diff --git a/drivers/net/wireless/rsi/rsi_91x_main.c b/drivers/net/wireless/rsi/rsi_91x_main.c
+index f1bf71e6c6081..5d1490fc32db4 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_main.c
++++ b/drivers/net/wireless/rsi/rsi_91x_main.c
+@@ -23,6 +23,7 @@
+ #include "rsi_common.h"
+ #include "rsi_coex.h"
+ #include "rsi_hal.h"
++#include "rsi_usb.h"
  
- #define PCI_GLI_9755_CFG2          0x48
- #define   PCI_GLI_9755_CFG2_L1DLY    GENMASK(28, 24)
-@@ -570,6 +573,14 @@ static void gl9755_hw_setting(struct sdhci_pci_slot *slot)
- 	gl9755_wt_on(pdev);
+ u32 rsi_zone_enabled = /* INFO_ZONE |
+ 			INIT_ZONE |
+@@ -168,6 +169,9 @@ int rsi_read_pkt(struct rsi_common *common, u8 *rx_pkt, s32 rcv_pkt_len)
+ 		frame_desc = &rx_pkt[index];
+ 		actual_length = *(u16 *)&frame_desc[0];
+ 		offset = *(u16 *)&frame_desc[2];
++		if (!rcv_pkt_len && offset >
++			RSI_MAX_RX_USB_PKT_SIZE - FRAME_DESC_SZ)
++			goto fail;
  
- 	pci_read_config_dword(pdev, PCI_GLI_9755_PECONF, &value);
-+	/*
-+	 * Apple ARM64 platforms using these chips may have
-+	 * inverted CD/WP detection.
-+	 */
-+	if (of_property_read_bool(pdev->dev.of_node, "cd-inverted"))
-+		value |= PCI_GLI_9755_INVERT_CD;
-+	if (of_property_read_bool(pdev->dev.of_node, "wp-inverted"))
-+		value |= PCI_GLI_9755_INVERT_WP;
- 	value &= ~PCI_GLI_9755_LFCLK;
- 	value &= ~PCI_GLI_9755_DMACLK;
- 	pci_write_config_dword(pdev, PCI_GLI_9755_PECONF, value);
+ 		queueno = rsi_get_queueno(frame_desc, offset);
+ 		length = rsi_get_length(frame_desc, offset);
+diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
+index 3cca1823c458a..66fe386ec9cc6 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_usb.c
++++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
+@@ -330,7 +330,6 @@ static int rsi_rx_urb_submit(struct rsi_hw *adapter, u8 ep_num, gfp_t mem_flags)
+ 	struct sk_buff *skb;
+ 	u8 dword_align_bytes = 0;
+ 
+-#define RSI_MAX_RX_USB_PKT_SIZE	3000
+ 	skb = dev_alloc_skb(RSI_MAX_RX_USB_PKT_SIZE);
+ 	if (!skb)
+ 		return -ENOMEM;
+diff --git a/drivers/net/wireless/rsi/rsi_usb.h b/drivers/net/wireless/rsi/rsi_usb.h
+index 254d19b664123..961851748bc4c 100644
+--- a/drivers/net/wireless/rsi/rsi_usb.h
++++ b/drivers/net/wireless/rsi/rsi_usb.h
+@@ -44,6 +44,8 @@
+ #define RSI_USB_BUF_SIZE	     4096
+ #define RSI_USB_CTRL_BUF_SIZE	     0x04
+ 
++#define RSI_MAX_RX_USB_PKT_SIZE	3000
++
+ struct rx_usb_ctrl_block {
+ 	u8 *data;
+ 	struct urb *rx_urb;
 -- 
 2.34.1
 
