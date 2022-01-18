@@ -2,114 +2,68 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1538C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:16:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECFC0C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:17:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345498AbiARJQi (ORCPT
+        id S1345512AbiARJRw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 04:16:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:34080 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1345472AbiARJQc (ORCPT
+        Tue, 18 Jan 2022 04:17:52 -0500
+Received: from prt-mail.chinatelecom.cn ([42.123.76.226]:33296 "EHLO
+        chinatelecom.cn" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S237329AbiARJRw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 04:16:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642497391;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=7pHlcaTRiriHEO8haif3+Ixs0hQTPZKTCLrheKgj/Tw=;
-        b=KUkihOlTFcoF4zz8WOHtBv1RcsVmo690jodjuCGyqgMt/TU9siyfEbWItOLEdFfSazNwpY
-        5hHz6osu12MMe5RFzZhlzYcDmJOU8rCfGvgPDUPi9orkOmprx/qR0kug0hqqyE7m+nKQMa
-        wDmVmYzlQnEKJ1XDqaiA3wEFyWtwv58=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-402-jWJRqNihNV-Jt4u4Ix0mnQ-1; Tue, 18 Jan 2022 04:16:27 -0500
-X-MC-Unique: jWJRqNihNV-Jt4u4Ix0mnQ-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3BD3E10151E0;
-        Tue, 18 Jan 2022 09:16:26 +0000 (UTC)
-Received: from sirius.home.kraxel.org (unknown [10.39.192.49])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id B71D84BC48;
-        Tue, 18 Jan 2022 09:16:17 +0000 (UTC)
-Received: by sirius.home.kraxel.org (Postfix, from userid 1000)
-        id D309318000A6; Tue, 18 Jan 2022 10:16:15 +0100 (CET)
-Date:   Tue, 18 Jan 2022 10:16:15 +0100
-From:   Gerd Hoffmann <kraxel@redhat.com>
-To:     Helge Deller <deller@gmx.de>
-Cc:     Daniel Vetter <daniel@ffwll.ch>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Sven Schnelle <svens@stackframe.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
-Message-ID: <20220118091615.3ih5n7vhd6tgmnku@sirius.home.kraxel.org>
-References: <c80ed72c-2eb4-16dd-a7ad-57e9dde59ba1@gmx.de>
- <20220117125716.yjwxsze35j2ndn2i@sirius.home.kraxel.org>
- <CAMuHMdW=Zpp2mHbrBx7i0WN8PqY3XpK5qpyAyYxgf9n88edpug@mail.gmail.com>
- <70530b62-7b3f-db88-7f1a-f89b824e5825@suse.de>
- <CAMuHMdW5M=zEuGEnQQc3JytDhoxCKRiq0QFw+HOPp0YMORzidw@mail.gmail.com>
- <57d276d3-aa12-fa40-6f90-dc19ef393679@gmx.de>
- <CAKMK7uE7jnTtetB5ovGeyPxHq4ymhbWmQXWmSVw-V1vP3iNAKQ@mail.gmail.com>
- <b32ffceb-ea90-3d26-f20e-29ae21c68fcf@gmx.de>
- <20220118062947.6kfuam6ah63z5mmn@sirius.home.kraxel.org>
- <ebe9c076-e2a9-0cb7-eb6a-ae71c075975e@gmx.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <ebe9c076-e2a9-0cb7-eb6a-ae71c075975e@gmx.de>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+        Tue, 18 Jan 2022 04:17:52 -0500
+HMM_SOURCE_IP: 172.18.0.188:51990.1385957579
+HMM_ATTACHE_NUM: 0000
+HMM_SOURCE_TYPE: SMTP
+Received: from clientip-110.86.5.92 (unknown [172.18.0.188])
+        by chinatelecom.cn (HERMES) with SMTP id 8AA20280118;
+        Tue, 18 Jan 2022 17:17:46 +0800 (CST)
+X-189-SAVE-TO-SEND: +zhenggy@chinatelecom.cn
+Received: from  ([172.18.0.188])
+        by app0023 with ESMTP id 1479501a639e40e2943d9f1f15895486 for bcrl@kvack.org;
+        Tue, 18 Jan 2022 17:17:49 CST
+X-Transaction-ID: 1479501a639e40e2943d9f1f15895486
+X-Real-From: zhenggy@chinatelecom.cn
+X-Receive-IP: 172.18.0.188
+X-MEDUSA-Status: 0
+Sender: zhenggy@chinatelecom.cn
+From:   GuoYong Zheng <zhenggy@chinatelecom.cn>
+To:     bcrl@kvack.org, viro@zeniv.linux.org.uk
+Cc:     linux-aio@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        GuoYong Zheng <zhenggy@chinatelecom.cn>
+Subject: [PATCH] aio: inform block layer of how many requests we are submitting
+Date:   Tue, 18 Jan 2022 17:17:44 +0800
+Message-Id: <1642497464-1847-1-git-send-email-zhenggy@chinatelecom.cn>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 09:20:43AM +0100, Helge Deller wrote:
-> On 1/18/22 07:29, Gerd Hoffmann wrote:
-> >> Please correct me if I'm wrong, but text-console emulation/scrolling on DRM is
-> >> currently unaccelerated and bound to Truecolour modes only,
-> >
-> > Yes.  Adding support for formats beside argb8888 to the drm fbcon
-> > emulation shouldn't be that much of a problem though.
-> 
-> Really? Assuming a graphic card which runs with only 256 colors framebuffer
-> is easily supported by DRM, and you can use fbcon without using lots of memcpy()?
+After commit 47c122e35d7e ("block: pre-allocate requests if plug is
+started and is a batch"), block layer can make smarter request allocation
+if it know how many requests it need to submit, so switch to use
+blk_start_plug_nr_ios here to pass the number of requests we will submit.
 
-Driver: programming a fixed color cube palette, then use RGB332.
+Signed-off-by: GuoYong Zheng <zhenggy@chinatelecom.cn>
+---
+ fs/aio.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-fbcon/fbdev emulation: RGB332 support must be added I think.  But both
-argb888 and rgb565 are supported today, so it should not be hard to find
-the places where you have to add some code to handle RGB332 too.
-
-> > Acceleration is harder.  The scroll acceleration had issues nobody
-> > addressed for years, and on modern hardware it is simply not used, which
-> > is probably the reason nobody stepped up fixing things and it ended up
-> > being dropped.
-> 
-> The DRM layer doesn't use scroll acceleration.
-> More than 30 other existing fbdev drivers use it.
-
-Yes.  The world shifted from 2d acceleration to 3d acceleration.  Modern
-hardware simply has no classic blitter any more.  Which is a problem
-when it comes to keeping scroll acceleration alive, it is already a very
-niche use case and it will only become worse ...
-
-> > Bringing it back is much more work than just reverting the commits removing it.
-> 
-> Reverting those commits have no effect on DRM's usage of fbcon.
-> But reverting those commits bring back scroll acceleration for all others.
-> I'm trying to find out which patches did apparently fixed such issues
-> for the REDRAW case. If you have a pointer it would be helpful.
-
-IIRC the code had a bunch of races and syzkaller flagged problems.
-I didn't follow very closely though.
-
-take care,
-  Gerd
+diff --git a/fs/aio.c b/fs/aio.c
+index 4ceba13..7c4935e 100644
+--- a/fs/aio.c
++++ b/fs/aio.c
+@@ -2071,7 +2071,7 @@ static int io_submit_one(struct kioctx *ctx, struct iocb __user *user_iocb,
+ 		nr = ctx->nr_events;
+ 
+ 	if (nr > AIO_PLUG_THRESHOLD)
+-		blk_start_plug(&plug);
++		blk_start_plug_nr_ios(&plug, nr);
+ 	for (i = 0; i < nr; i++) {
+ 		struct iocb __user *user_iocb;
+ 
+-- 
+1.8.3.1
 
