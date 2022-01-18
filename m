@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 897A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:23:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6306CC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:23:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356974AbiARDUM (ORCPT
+        id S1357018AbiARDUT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:20:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38904 "EHLO
+        Mon, 17 Jan 2022 22:20:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343826AbiARDG1 (ORCPT
+        with ESMTP id S1354528AbiARDGg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:06:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DCF7C08EDC7;
-        Mon, 17 Jan 2022 18:48:42 -0800 (PST)
+        Mon, 17 Jan 2022 22:06:36 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65544C08EE6E;
+        Mon, 17 Jan 2022 18:48:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 125616130A;
-        Tue, 18 Jan 2022 02:48:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96B41C36AF2;
-        Tue, 18 Jan 2022 02:48:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B5E1B811CF;
+        Tue, 18 Jan 2022 02:48:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B11F2C36AE3;
+        Tue, 18 Jan 2022 02:48:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474121;
-        bh=HXBz4iIj6SssWXxb0Jk5bHyZF6LEh0NLFm3vPNBODT0=;
+        s=k20201202; t=1642474133;
+        bh=XjqBh/T238oH1vfD/s4WhMqH03h32udr8UJJtPFrAFY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dma4SAeSva9obi5FbhyeZ2IB5I/hzXfbPeQ3Su7FvkZVCFyBO3+BtAmWAc64OlpC0
-         cauRWz+46o0vBM82J5JBwcbyJltsaexFsSz+FuNfJR0+o4GiSQGi9hWOoeERAOBr29
-         ckCW97cVsMMfj28GXqn9rOriBvJxiV3O6YpVNMeMMtxT/ZeCWG7jleMUrUTl5wcitF
-         sveC/8P3IKK7OrycY5eisZe7WL+vFg11sT3EfsaDHXX5ha30V6gl+78jPQd8ILtYR2
-         UWaCVfGAoEIYi743HzMEytaYYJmCs+8xXMZrBp7w5E2jW8RoInR7CnHr9hRHBccTBY
-         +0EaR0eS5kHLw==
+        b=CAaEsb6cro3lVIbXKOmZ3ZRo25vQ6SvIJrlq8yJwFmhRshShY7v+IYnWwF6JejkOw
+         EIaFl/9ehadVB8DbpL60iufOcz9iqr1PNJXcNuEGJcICrcksuL8/IBe9ef3g1TVgAM
+         eH5TmWxjklQYGWs1GeR/xIq3b29yEMzeV3UrEwl9xgFcxLqZjjQyVhbysfCqln6Hry
+         to4uQvubFY4OI4gHBFwFREvWytdCSShVgWLt64M/Gkk5LhB7bHwAhFpH329lD8kKxo
+         xI1EuB9pRkq+BxeTYyMQrQeU3gENy2tEiIzuJY0Gn7JcJ17L+VMmX7hdxkN1IbVB/y
+         Gku1RtaO5A5rg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Lenny Szubowicz <lszubowi@redhat.com>,
-        Bob Moore <robert.moore@intel.com>,
-        Sasha Levin <sashal@kernel.org>, linux-acpi@vger.kernel.org,
-        devel@acpica.org
-Subject: [PATCH AUTOSEL 4.19 44/59] ACPICA: Executer: Fix the REFCLASS_REFOF case in acpi_ex_opcode_1A_0T_1R()
-Date:   Mon, 17 Jan 2022 21:46:45 -0500
-Message-Id: <20220118024701.1952911-44-sashal@kernel.org>
+Cc:     Ping-Ke Shih <pkshih@realtek.com>,
+        Goldwyn Rodrigues <rgoldwyn@suse.com>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Sasha Levin <sashal@kernel.org>, johannes@sipsolutions.net,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 51/59] mac80211: allow non-standard VHT MCS-10/11
+Date:   Mon, 17 Jan 2022 21:46:52 -0500
+Message-Id: <20220118024701.1952911-51-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
 References: <20220118024701.1952911-1-sashal@kernel.org>
@@ -54,54 +55,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+From: Ping-Ke Shih <pkshih@realtek.com>
 
-[ Upstream commit 24ea5f90ec9548044a6209685c5010edd66ffe8f ]
+[ Upstream commit 04be6d337d37400ad5b3d5f27ca87645ee5a18a3 ]
 
-ACPICA commit d984f12041392fa4156b52e2f7e5c5e7bc38ad9e
+Some AP can possibly try non-standard VHT rate and mac80211 warns and drops
+packets, and leads low TCP throughput.
 
-If Operand[0] is a reference of the ACPI_REFCLASS_REFOF class,
-acpi_ex_opcode_1A_0T_1R () calls acpi_ns_get_attached_object () to
-obtain return_desc which may require additional resolution with
-the help of acpi_ex_read_data_from_field (). If the latter fails,
-the reference counter of the original return_desc is decremented
-which is incorrect, because acpi_ns_get_attached_object () does not
-increment the reference counter of the object returned by it.
+    Rate marked as a VHT rate but data is invalid: MCS: 10, NSS: 2
+    WARNING: CPU: 1 PID: 7817 at net/mac80211/rx.c:4856 ieee80211_rx_list+0x223/0x2f0 [mac8021
 
-This issue may lead to premature deletion of the attached object
-while it is still attached and a use-after-free and crash in the
-host OS.  For example, this may happen when on evaluation of ref_of()
-a local region field where there is no registered handler for the
-given Operation Region.
+Since commit c27aa56a72b8 ("cfg80211: add VHT rate entries for MCS-10 and MCS-11")
+has added, mac80211 adds this support as well.
 
-Fix it by making acpi_ex_opcode_1A_0T_1R () return Status right away
-after a acpi_ex_read_data_from_field () failure.
+After this patch, throughput is good and iw can get the bitrate:
+    rx bitrate:	975.1 MBit/s VHT-MCS 10 80MHz short GI VHT-NSS 2
+or
+    rx bitrate:	1083.3 MBit/s VHT-MCS 11 80MHz short GI VHT-NSS 2
 
-Link: https://github.com/acpica/acpica/commit/d984f120
-Link: https://github.com/acpica/acpica/pull/685
-Reported-by: Lenny Szubowicz <lszubowi@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-Signed-off-by: Bob Moore <robert.moore@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Buglink: https://bugzilla.suse.com/show_bug.cgi?id=1192891
+Reported-by: Goldwyn Rodrigues <rgoldwyn@suse.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Link: https://lore.kernel.org/r/20220103013623.17052-1-pkshih@realtek.com
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/acpica/exoparg1.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/mac80211/rx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/acpi/acpica/exoparg1.c b/drivers/acpi/acpica/exoparg1.c
-index ba9fbae0cf91f..319f4bc6a8394 100644
---- a/drivers/acpi/acpica/exoparg1.c
-+++ b/drivers/acpi/acpica/exoparg1.c
-@@ -1007,7 +1007,8 @@ acpi_status acpi_ex_opcode_1A_0T_1R(struct acpi_walk_state *walk_state)
- 						    (walk_state, return_desc,
- 						     &temp_desc);
- 						if (ACPI_FAILURE(status)) {
--							goto cleanup;
-+							return_ACPI_STATUS
-+							    (status);
- 						}
- 
- 						return_desc = temp_desc;
+diff --git a/net/mac80211/rx.c b/net/mac80211/rx.c
+index e0baa563a4dea..c42cc79895202 100644
+--- a/net/mac80211/rx.c
++++ b/net/mac80211/rx.c
+@@ -4620,7 +4620,7 @@ void ieee80211_rx_napi(struct ieee80211_hw *hw, struct ieee80211_sta *pubsta,
+ 				goto drop;
+ 			break;
+ 		case RX_ENC_VHT:
+-			if (WARN_ONCE(status->rate_idx > 9 ||
++			if (WARN_ONCE(status->rate_idx > 11 ||
+ 				      !status->nss ||
+ 				      status->nss > 8,
+ 				      "Rate marked as a VHT rate but data is invalid: MCS: %d, NSS: %d\n",
 -- 
 2.34.1
 
