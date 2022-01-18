@@ -2,265 +2,410 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEE34C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 07:33:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57599C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 07:34:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234390AbiARHd2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 02:33:28 -0500
-Received: from mga03.intel.com ([134.134.136.65]:4272 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229474AbiARHd1 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 02:33:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642491206; x=1674027206;
-  h=message-id:date:subject:references:to:cc:from:
-   in-reply-to:content-transfer-encoding:mime-version;
-  bh=WkhlGSbtbbLJTP3jGD2ejRPI7+/hW1kplm+8vSHLV1g=;
-  b=O2SkCQz1h/TLVut5fJGJ8xbwUMl3VPjt5/pc3Dk89r0djcd2ktvlmQKs
-   bLnhTmLXownjtkXAIIssZfTPemvPXovgV63q91R2eWdPjHGmmu2eKt9A4
-   DCRmlgBMlrXUkZE1oOYbhWtgPwfcErqjNIaej4hM37vVRPN60BIQLxB6t
-   fS6dFnSbtyuZ2Y00aaJEsh58u5KZLDeQdALmwZJMD3EDbqggFBUgXioLv
-   9rhaJDS7GKw73C58ueBrR8A92uxvAauAyqEQp2GKCOcIKY4s88vuGF3Lh
-   iA+dfZ+pydHC1UY7ITV5i3Ts9UF1C87eghLs7cNa4yi/+ktDrLuLLBVLu
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="244716046"
-X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="244716046"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Jan 2022 23:33:26 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,296,1635231600"; 
-   d="scan'208";a="531663639"
-Received: from fmsmsx606.amr.corp.intel.com ([10.18.126.86])
-  by orsmga008.jf.intel.com with ESMTP; 17 Jan 2022 23:33:26 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx606.amr.corp.intel.com (10.18.126.86) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Mon, 17 Jan 2022 23:33:25 -0800
-Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20 via Frontend Transport; Mon, 17 Jan 2022 23:33:25 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.175)
- by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.2308.20; Mon, 17 Jan 2022 23:33:25 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=iTQIFu/b0cWGEzjjBxIjEQllRcSEfHQlsNCSQSk0Q3q+il9fgCM4Pz5Ghi/99+jwYeG0cm5a51W2nyc1vf2yfEonNqDsrTxVqHU976f0RwHS1OWfAU+83MiKHsmDnBgYCV0B8FBlYGYK9ZhFLZiYD58I+TuQBoCkR+b7LsbjpULWAuv/vCEx9ZY68P4OqY1P7pgi+diC89FQl71rpqlJSqvNwpFu1L3Em8T3Oa+t3YP4F0nYR6Q3fr+WzZg0L5HhUX2BLLYveu/1yuxJePbUdVfhwoENxVX1q/FMLDFtstWIJi1p3UAwm0+ZuQwhI1wOI75cTU9WSrfL1gFZDV/JNw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=5qUpusLyfn6Dj9QJ70vR8Ap8oo+2Vas3hZAKkMmf46I=;
- b=L0UhgYYlpHnY0ih67J7d5F5qzzodIzAyjULTx141qS6ZTzHqk7dx3D3FSNWyOdYyfhTLog1z1PxKazCSsSpwF/ZvD3yuHNtnYrxb/DWWaUOQcgufwjnCYXYaQHb/SU7yWLA0QnoX2/EpExgYds9QVoY3fM1eNVqIcxxYUsT0mBi29ghx4bFMmqMYNeX/ZjXqJQz/0xEeyl09qrA8YPbA5gwa53qarUNnf7y9m9qZdyenQ4g2eE1fft5n/ZkzX1j55foptvOS/ce+JH/2LDWEWCli+wkApYmSJPTbCWFTLeVAoNaXaWyLx3hBctsjyPbIzjtCwY4Uf/KADmlWjtjzng==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=intel.com;
-Received: from SJ0PR11MB5598.namprd11.prod.outlook.com (2603:10b6:a03:304::12)
- by BYAPR11MB2888.namprd11.prod.outlook.com (2603:10b6:a03:8c::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Tue, 18 Jan
- 2022 07:33:19 +0000
-Received: from SJ0PR11MB5598.namprd11.prod.outlook.com
- ([fe80::741a:c47f:a4:bff5]) by SJ0PR11MB5598.namprd11.prod.outlook.com
- ([fe80::741a:c47f:a4:bff5%6]) with mapi id 15.20.4888.014; Tue, 18 Jan 2022
- 07:33:19 +0000
-Message-ID: <2fdfe9da-ce67-2495-f6c3-2610033437ad@intel.com>
-Date:   Tue, 18 Jan 2022 15:33:13 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: drivers/gpu/drm/ast/ast_mode.c:1232:3: warning: Use of memory after
- it is freed [clang-analyzer-unix.Malloc]
-References: <202201141416.VfNXpsi5-lkp@intel.com>
-Content-Language: en-US
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-CC:     <llvm@lists.linux.dev>, <kbuild-all@lists.01.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>,
-        Maxime Ripard <maxime@cerno.tech>
-From:   kernel test robot <yujie.liu@intel.com>
-In-Reply-To: <202201141416.VfNXpsi5-lkp@intel.com>
-X-Forwarded-Message-Id: <202201141416.VfNXpsi5-lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: HKAPR04CA0010.apcprd04.prod.outlook.com
- (2603:1096:203:d0::20) To SJ0PR11MB5598.namprd11.prod.outlook.com
- (2603:10b6:a03:304::12)
+        id S236092AbiARHe1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 02:34:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45234 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229474AbiARHeY (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 02:34:24 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49670C061574;
+        Mon, 17 Jan 2022 23:34:24 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id u21so75538740edd.5;
+        Mon, 17 Jan 2022 23:34:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=/1OBZme0H7AVI+jDyd9p59GVxpM5RWOedaf9dth3aMc=;
+        b=ni93+18+9ZRAbWhYSzp+z0hv9ztm+CzSmPZfaqhodYah7GEH39cUK9ZHd1eFolbIKV
+         NZAFhG9iiGF6e4b0l2Xll8McRP5eFSgDTagFNbAKeogtG5i5kQp6TIP+zgTb8xLcqAVE
+         ssxylESId85cxUM7wS4H7KGXsp3WbtzkLKjqBuL+E9gbMk+z6MalwsGUid5uirfjTiW+
+         93tnTla0nhDiryj4YI3mOOIQybcctya/sSsfu/e7RGRl4by/EUJc8xWMhLI4ogHFwd1w
+         LsZP/QXuCU6AE7cNRBsZqlisxxpZa8JZ7iAbjOjMU23KC3t9svLWdMnTfNUaj2zoiqCS
+         7GIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=/1OBZme0H7AVI+jDyd9p59GVxpM5RWOedaf9dth3aMc=;
+        b=t5YKEZAOJW9NTg3GjQ8gJX8lBkYHo/9Bxe8IHYwOFFNTk3moEj6ZntEBreGz8NT3zq
+         h8zQ8SX3SfEfQwBuisD00/X+y+/2lh6HnXQlo7c3tn9DgUIkhs6IAvRARSaO8V18TlCI
+         2I1k0DxmCTghjXOffafhnBWm9YhTrGMgEcAvYwb3xynuCovEx3GlVMJepNKQSJG3fUvH
+         UQfUzIDgI6jR2hZtNwjI1jxItIgeamPszXo+IwGeK9EeRASdb5/gyvoB/rDAboupHMLT
+         Vj6TLhx4OzjfCU1TQD04vvdW/kk3wEe9UR7NfAri840GnEJpYcRomxsjY7JWkgC7yin6
+         eKhQ==
+X-Gm-Message-State: AOAM530GXt2ONW0zkjTtcpMuTO2faLVTcDSDeLx3s6swvLwt7yqD6YS6
+        /HQ3zHD/eiEhd6eOP7+Z2ertM7LIV78BBL7X9YU=
+X-Google-Smtp-Source: ABdhPJzEy+UoEgRvCVbsb7dgoinR2POTS9Kevj+Md3URP1Oie4n0zruj5AejpaklPNynVAEtc3rUsmbI1szMyLvbiiU=
+X-Received: by 2002:a17:906:7254:: with SMTP id n20mr12886751ejk.551.1642491262743;
+ Mon, 17 Jan 2022 23:34:22 -0800 (PST)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 02339db6-f9c3-4da5-b926-08d9da54cc79
-X-MS-TrafficTypeDiagnostic: BYAPR11MB2888:EE_
-X-Microsoft-Antispam-PRVS: <BYAPR11MB2888AE72C7F9D4D7A6688B59FB589@BYAPR11MB2888.namprd11.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:497;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: eXUwQmuF6fS/uQiJ6l4ymP0OBtyFZ4Zpdj47cS7dWbxP8ZBrlT5PiwFD277Kms4ml/s+6dPGBC4fXdefAFN1IMFT/KmzfPhWROp1A61Ogt8VJoKX11/B8rKWUDiobTysyeQdkE8g0DBHW10+QyZyy3n7UBZ8CAqIQRJUrVTYN/qd2bAeUKgihpT8ATOfbPHxlRMjom0z0+EInH1ULAAamIvvr8Zuu5rQ0ZXOSj8nMYQ8xpK/OL2MFnSZvXHAucwzavkeWh/iyiR9DRJNNZGwtmRLKfigAHpnoBSG94HlG5o2upRmNwt1lYRzH0phBImjdKOzA2cBGuPCr4bwTFsoDLwqR//3mJfuYRpt2AnQqnGi5+d1FqMBf0Q0NWdGOh9L0EnJv8iXYK7S9AKunocLGAehhzFUxa3CWHA+miPx3ZHSvHKq0w2FcysCg0TXeyVirzVuxXIdB+iPtsh+HGWr8eiSONpRmBXXvumg8LNDoY2Nmr2h22J5aqwcjmkikTfZEBx/Zd9iOru+BEskS12Ef6ez3GZBLcmS4m/v06eFuEVmVPP6Fz41iq5uSSJzcoLapK9eHVexA6O10l7IMJMPESF8wpz64TQDzNDVywaHwh3FWzbhy8AH96JMKx+b83/cNVrxR1p8Yfh3f+EookFvFAY98FVR1y/ST1yU18jZBOh512kXPiL0HlfVLFM37ReEUakfoOQFlHMC0JgxsaaKjkO8FMYegAjSm612QuW+0EcuDejXLwBjiPQdm+LNzr7ABjqVRaDD7mwBfKgEnnwRLk1Yzhpn0CnGf9DYb4SJ2cw/6QbFDglC+i4YRMB/P02KXXaWvaQ5s3x83ieskPv4Mg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SJ0PR11MB5598.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(66476007)(6512007)(5660300002)(66946007)(8936002)(54906003)(31696002)(6916009)(31686004)(38100700002)(83380400001)(86362001)(36756003)(6666004)(4326008)(508600001)(8676002)(2906002)(6506007)(966005)(82960400001)(186003)(66556008)(6486002)(2616005)(26005)(316002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?MVY0NUdkMTJwK2ZUTVlMY3hGcXl6L0wyVlZkUTd3Y3YvN1ptRlVPbDhRbEsz?=
- =?utf-8?B?bnFuUXlQc05sUzVQU090MHNvTkpkTXBmZi9UQnI0ck9hdHdhdFNRSlVjNmUz?=
- =?utf-8?B?N3lTRXJ4UlVnTEhWK2RoVlJKNHJ2KzNZeE5oM2xZRmdJQ01wTzhwTm43L2VL?=
- =?utf-8?B?WkREU0oxNTEzUTltSE15K2pHbVZmbUhaa1JMNjJjN0R0WmY3bTQxVmt6dTd6?=
- =?utf-8?B?SEZYR0p4ZGNmNDRVMnNNM0lheFh3MHNXTHpDelJNbFB0WnkzY3l6QkFxaEps?=
- =?utf-8?B?UTlTbXRRVkk4K2NpdFduREtMQ0JXU0pXY2hueDd1VkVtc3dtbTZVZDhQcUh3?=
- =?utf-8?B?WkF3U2RGTGJvUVNRbk5ncXlLblFpdk9qZURaa0FxZHpvT3NlL3hhYnhWaUpN?=
- =?utf-8?B?cHVMK25qN0w4bSt4T2tCSFg0UUxIblpKcTZkRnFaNXJ4c2dCeXZLbHYvc0ZV?=
- =?utf-8?B?T3duMDVuT1g3NzFnK2xibG9wTE5GWW1oVWV1RlM4ZXF6NEVKM0tROGo1czl0?=
- =?utf-8?B?ZWlaZkNaWWozaWVka2U4N3MvUmVpUTk0Z01UOGZ3ZEg0NzlvVHUrNjQ1Qkxn?=
- =?utf-8?B?bGNOQWh5ZkI5Qmh4Z0lxSjhZbk9NMDRhYmNwdFRBZW5QU3plbHhjMWRYREZ1?=
- =?utf-8?B?bUUrNkRSeFJ4RjNHTUczUDlxTmlzNlF0YWxhaXFHMVFPT3NCYjM4NmQ3K3lo?=
- =?utf-8?B?WG1WVG8xZ0hwaUNpNk5HeExES1NCSGRpTS9kb25vbGcxVzJpRUxXRktIOVhJ?=
- =?utf-8?B?czVRdWxoWmIwQ3d3UHNXOFN2NzRnWmhkb28wdFBINkFFSG5sRTc0MGVCNUly?=
- =?utf-8?B?WWYyT3FQMjRYbEl3em83ZTNZa3luV2RlTkt4L3Z4Y1dCd1RRcFVFczNLb2Vx?=
- =?utf-8?B?MkpIRGJjVUFsWE1veFVYY3Y3U0lrVlJUZDU0WElrV3hyU1Nxd1J4Y0JwZUpY?=
- =?utf-8?B?OHFYS3VOSTdNZzN2Mnd1eEh3RG5wYThNQzlZSVNSc2lyZlhScTRUdXVHMG0r?=
- =?utf-8?B?SXUwNzlySUdhMEtROUdST0dEOWFHd1k4dE92Sk91K3pLaFhPSHU0all5cWov?=
- =?utf-8?B?elpsdW5SbmQwK2I3elM2OXNlMEk2QlVnKzhPTzBTbWYvb0Z4NHRCdTZrM3h0?=
- =?utf-8?B?aG9jTytOaFhocndCbWpmWHVnUm96WG5oNXJBd0tTcDg0YjlpMk5ZZ0VRU1lQ?=
- =?utf-8?B?NFRPUXRDM2Y0UXlNSi9KYjIzZlNTS1dsNlByTm8wMXgyUEkxTEJLQXBlTmZw?=
- =?utf-8?B?UlpLWEN3TjlPUGR0dlpxNENDZ29oRTJJOEVsWWUwVk9NU21KdzBOWWpydldW?=
- =?utf-8?B?OEl6WGlyRnliYkk4UWh6RjI0QzlyNHNvVnJpRTJnSHRvNE9NT3pBeHV3QVNu?=
- =?utf-8?B?eTJXSjVWMFpvbGFsVms0d3lDU255M0pHeGZVSHVCVmlpYndWYXZKQkI2ZlhQ?=
- =?utf-8?B?MTh0ZENmVGVBSHFEYUJDN3ZSQUNockRaRHhieWZWMVJWZEQraWpDU3JyWUVV?=
- =?utf-8?B?OXo4WFJ4TmpQb2FLMXRvRFRjVjEwMXREUERMQy9nWHk5bXlwTjhPaTJJeFFw?=
- =?utf-8?B?MTNjNThsRjUwL0ZmZUIwaGFzYTR1UXFNdU50ZzRvdVFtOGIyS3dnMVNzenIy?=
- =?utf-8?B?SmZVdDJXVXVhYXVEZUI4djEyeXByVit2UlZHUmNJQlZsVGJ2bHRSZXIzQ3dT?=
- =?utf-8?B?ZXVsTmtuSnVmSmwxcHVmTURKR0lBOFZjVGFlQWVqTVQyT254V1JReFpaaEtF?=
- =?utf-8?B?dldSYjM4dzhRYjZzMnlZeFVDNlljRHE2UEx6S2FWU0huZ3R0Y21sa084cUxs?=
- =?utf-8?B?WFgrYWU5U1FSV1N5L2I3cEVEbG5abXNJQ2VpYkxzZ0dyTWRGcUVvdVl1enR3?=
- =?utf-8?B?UGlUbDJObFA4SThPc0FYOHVSSVlySGw2cS9Oc3pnSEZCd2FNYUFJcmJIcEJX?=
- =?utf-8?B?bEl0dWREeTNBdXNKMUdJTXNvZHl3dXF6bEh4VE5OTFpPa09aYzhvSU91Vk1W?=
- =?utf-8?B?b1R0U0JVM21EWVBudkhMa0hZRit1dHdrR3hORkUvL2xMWEJRTURObzQyQnZB?=
- =?utf-8?B?Ri81cStNeUVvbCtkdUNsWXR2dml0NWhObGJ0dVhPRWJzNGs0WmV5NG91cGZm?=
- =?utf-8?B?T3hkVml6dUQvdjFsYXdZMm1LL3R0UXpMdXdaNGVzT0JBNFNnR3dBbld4TGwy?=
- =?utf-8?Q?oMBOXb5A6S50w1rqG5oCnow=3D?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 02339db6-f9c3-4da5-b926-08d9da54cc79
-X-MS-Exchange-CrossTenant-AuthSource: SJ0PR11MB5598.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2022 07:33:19.6491
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 9xEdOLIx3BsY27dr1wa9PuLSFaAhC4+voxQU7PYJxvQBXQx6kyHvUG8YU209tLxnMa/Ttc7auJh4S8B7hYvqBg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR11MB2888
-X-OriginatorOrg: intel.com
+References: <36bd91e4-8eda-5677-7fde-40295932a640@molgen.mpg.de>
+In-Reply-To: <36bd91e4-8eda-5677-7fde-40295932a640@molgen.mpg.de>
+From:   Zhouyi Zhou <zhouzhouyi@gmail.com>
+Date:   Tue, 18 Jan 2022 15:34:10 +0800
+Message-ID: <CAABZP2wxXW2RqpKevt9erkYg3po0ByUEFvYsgy3cRty5Rt1Qyw@mail.gmail.com>
+Subject: Re: Problems with rcutorture on ppc64le: allmodconfig(2) and other failures
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     "Paul E. McKenney" <paulmck@kernel.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        rcu <rcu@vger.kernel.org>, linux-kselftest@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   fb3b0673b7d5b477ed104949450cd511337ba3c6
-commit: 55dc449a7c60d3df5a8f0b71bbae9d5173c864f5 drm/ast: Handle failed I2C initialization gracefully
-date:   4 weeks ago
-config: riscv-randconfig-c006-20220113 (https://download.01.org/0day-ci/archive/20220114/202201141416.VfNXpsi5-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project d1021978b8e7e35dcc30201ca1731d64b5a602a8)
-reproduce (this is a W=1 build):
-         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-         chmod +x ~/bin/make.cross
-         # install riscv cross compiling tool for clang build
-         # apt-get install binutils-riscv64-linux-gnu
-         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=55dc449a7c60d3df5a8f0b71bbae9d5173c864f5
-         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-         git fetch --no-tags linus master
-         git checkout 55dc449a7c60d3df5a8f0b71bbae9d5173c864f5
-         # save the config file to linux build tree
-         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross ARCH=riscv clang-analyzer
+Hi,
+I have studied the rcu torture test recently. I am also interested in
+this topic.
+But I can't open
+[1]: https://owww.molgen.mpg.de/~pmenzel/allmodconf-Make.out.txt
+[2]: https://owww.molgen.mpg.de/~pmenzel/rcutorture-log.txt
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+From your email, It seems that include/generated/autoconf.h is not
+generated in the early stage of kernel build.
 
+Could you try following one by one if you have time ;-)
+after invoking each of the following commands, we can examine if
+include/generated/autoconf.h is created in another terminal, and if it
+is
+created, we can try the next command.
+tools/testing/selftests/rcutorture/bin/kvm.sh --buildonly --configs "TREE01=
+"
+tools/testing/selftests/rcutorture/bin/kvm.sh --buildonly --configs "TREE02=
+"
+tools/testing/selftests/rcutorture/bin/kvm.sh --buildonly --configs "TREE03=
+"
+tools/testing/selftests/rcutorture/bin/kvm.sh --buildonly --configs "TREE04=
+"
+tools/testing/selftests/rcutorture/bin/kvm.sh --buildonly --configs "TREE05=
+"
+tools/testing/selftests/rcutorture/bin/kvm.sh --buildonly --configs "TREE06=
+"
+tools/testing/selftests/rcutorture/bin/kvm.sh --buildonly --configs "TREE07=
+"
+tools/testing/selftests/rcutorture/bin/kvm.sh --buildonly --configs "TREE08=
+"
+tools/testing/selftests/rcutorture/bin/kvm.sh --buildonly --configs "TREE09=
+"
+tools/testing/selftests/rcutorture/bin/kvm.sh --buildonly --configs "TREE10=
+"
 
-clang-analyzer warnings: (new ones prefixed by >>)
+I am a beginner at learning RCU ;-)  I may not be right. Apologize in
+advance if I am not right.
 
- >> drivers/gpu/drm/ast/ast_mode.c:1232:3: warning: Use of memory after it is freed [clang-analyzer-unix.Malloc]
-                    drm_connector_update_edid_property(&ast_connector->base, edid);
-                    ^                                                        ~~~~
-    drivers/gpu/drm/ast/ast_mode.c:1217:6: note: Assuming field 'tx_chip_type' is equal to AST_TX_DP501
-            if (ast->tx_chip_type == AST_TX_DP501) {
-                ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    drivers/gpu/drm/ast/ast_mode.c:1217:2: note: Taking true branch
-            if (ast->tx_chip_type == AST_TX_DP501) {
-            ^
-    drivers/gpu/drm/ast/ast_mode.c:1220:7: note: Assuming 'edid' is non-null
-                    if (!edid)
-                        ^~~~~
-    drivers/gpu/drm/ast/ast_mode.c:1220:3: note: Taking false branch
-                    if (!edid)
-                    ^
-    drivers/gpu/drm/ast/ast_mode.c:1224:7: note: Assuming 'flags' is false
-                    if (flags)
-                        ^~~~~
-    drivers/gpu/drm/ast/ast_mode.c:1224:3: note: Taking false branch
-                    if (flags)
-                    ^
-    drivers/gpu/drm/ast/ast_mode.c:1227:4: note: Memory is released
-                            kfree(edid);
-                            ^~~~~~~~~~~
-    drivers/gpu/drm/ast/ast_mode.c:1229:7: note: 'flags' is false
-            if (!flags && ast_connector->i2c)
-                 ^~~~~
-    drivers/gpu/drm/ast/ast_mode.c:1229:6: note: Left side of '&&' is true
-            if (!flags && ast_connector->i2c)
-                ^
-    drivers/gpu/drm/ast/ast_mode.c:1229:16: note: Assuming field 'i2c' is null
-            if (!flags && ast_connector->i2c)
-                          ^~~~~~~~~~~~~~~~~~
-    drivers/gpu/drm/ast/ast_mode.c:1229:2: note: Taking false branch
-            if (!flags && ast_connector->i2c)
-            ^
-    drivers/gpu/drm/ast/ast_mode.c:1231:6: note: 'edid' is non-null
-            if (edid) {
-                ^~~~
-    drivers/gpu/drm/ast/ast_mode.c:1231:2: note: Taking true branch
-            if (edid) {
-            ^
-    drivers/gpu/drm/ast/ast_mode.c:1232:3: note: Use of memory after it is freed
-                    drm_connector_update_edid_property(&ast_connector->base, edid);
-                    ^                                                        ~~~~
+Thanks
+Zhouyi
 
-vim +1232 drivers/gpu/drm/ast/ast_mode.c
-
-312fec1405dd54 Dave Airlie       2012-02-29  1204
-4961eb60f14553 Thomas Zimmermann 2019-11-07  1205  /*
-4961eb60f14553 Thomas Zimmermann 2019-11-07  1206   * Connector
-4961eb60f14553 Thomas Zimmermann 2019-11-07  1207   */
-4961eb60f14553 Thomas Zimmermann 2019-11-07  1208
-312fec1405dd54 Dave Airlie       2012-02-29  1209  static int ast_get_modes(struct drm_connector *connector)
-312fec1405dd54 Dave Airlie       2012-02-29  1210  {
-312fec1405dd54 Dave Airlie       2012-02-29  1211  	struct ast_connector *ast_connector = to_ast_connector(connector);
-fa7dbd7688849d Thomas Zimmermann 2020-06-17  1212  	struct ast_private *ast = to_ast_private(connector->dev);
-55dc449a7c60d3 Thomas Zimmermann 2021-12-06  1213  	struct edid *edid = NULL;
-83c6620bae3f14 Dave Airlie       2014-03-28  1214  	bool flags = false;
-55dc449a7c60d3 Thomas Zimmermann 2021-12-06  1215  	int ret;
-6c9bd4432b2527 Gregory Williams  2021-07-30  1216
-83c6620bae3f14 Dave Airlie       2014-03-28  1217  	if (ast->tx_chip_type == AST_TX_DP501) {
-83c6620bae3f14 Dave Airlie       2014-03-28  1218  		ast->dp501_maxclk = 0xff;
-83c6620bae3f14 Dave Airlie       2014-03-28  1219  		edid = kmalloc(128, GFP_KERNEL);
-83c6620bae3f14 Dave Airlie       2014-03-28  1220  		if (!edid)
-83c6620bae3f14 Dave Airlie       2014-03-28  1221  			return -ENOMEM;
-312fec1405dd54 Dave Airlie       2012-02-29  1222
-83c6620bae3f14 Dave Airlie       2014-03-28  1223  		flags = ast_dp501_read_edid(connector->dev, (u8 *)edid);
-83c6620bae3f14 Dave Airlie       2014-03-28  1224  		if (flags)
-83c6620bae3f14 Dave Airlie       2014-03-28  1225  			ast->dp501_maxclk = ast_get_dp501_max_clk(connector->dev);
-83c6620bae3f14 Dave Airlie       2014-03-28  1226  		else
-83c6620bae3f14 Dave Airlie       2014-03-28  1227  			kfree(edid);
-83c6620bae3f14 Dave Airlie       2014-03-28  1228  	}
-55dc449a7c60d3 Thomas Zimmermann 2021-12-06  1229  	if (!flags && ast_connector->i2c)
-312fec1405dd54 Dave Airlie       2012-02-29  1230  		edid = drm_get_edid(connector, &ast_connector->i2c->adapter);
-312fec1405dd54 Dave Airlie       2012-02-29  1231  	if (edid) {
-c555f02371c338 Daniel Vetter     2018-07-09 @1232  		drm_connector_update_edid_property(&ast_connector->base, edid);
-312fec1405dd54 Dave Airlie       2012-02-29  1233  		ret = drm_add_edid_modes(connector, edid);
-993dcb05e47e35 Jani Nikula       2012-08-15  1234  		kfree(edid);
-312fec1405dd54 Dave Airlie       2012-02-29  1235  		return ret;
-6c9bd4432b2527 Gregory Williams  2021-07-30  1236  	}
-c555f02371c338 Daniel Vetter     2018-07-09  1237  	drm_connector_update_edid_property(&ast_connector->base, NULL);
-312fec1405dd54 Dave Airlie       2012-02-29  1238  	return 0;
-312fec1405dd54 Dave Airlie       2012-02-29  1239  }
-312fec1405dd54 Dave Airlie       2012-02-29  1240
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+On Tue, Jan 18, 2022 at 11:03 AM Paul Menzel <pmenzel@molgen.mpg.de> wrote:
+>
+> Dear Linux folks,
+>
+>
+> On an IBM S822LC SL822 (ppc64le) with Ubuntu 21.04, I tried to torture
+> the RCU. allmodconfig(2) failed though.
+>
+> ```
+> $ git describe
+> v5.16-10660-g0c947b893d69
+> $ tools/testing/selftests/rcutorture/bin/torture.sh --duration 10
+>   ---  tools/testing/selftests/rcutorture/bin/torture.sh --duration 10
+>   --- Results directory:  2022.01.17-18.44.36-torture
+>   --- allmodconfig: Start Mon Jan 17 06:44:36 PM CET 2022
+>   --- rcutorture: Start Mon Jan 17 06:45:02 PM CET 2022
+>   --- rcutorture-kasan: Start Mon Jan 17 07:07:41 PM CET 2022
+>   --- locktorture: Start Mon Jan 17 07:33:38 PM CET 2022
+>   --- locktorture-kasan: Start Mon Jan 17 07:37:05 PM CET 2022
+>   --- scftorture: Start Mon Jan 17 07:40:54 PM CET 2022
+>   --- scftorture-kasan: Start Mon Jan 17 07:43:31 PM CET 2022
+>   --- refscale-rcu: Start Mon Jan 17 07:46:34 PM CET 2022
+>   --- refscale-rcu-kasan: Start Mon Jan 17 07:49:08 PM CET 2022
+>   --- refscale-srcu: Start Mon Jan 17 07:52:05 PM CET 2022
+>   --- refscale-srcu-kasan: Start Mon Jan 17 07:54:39 PM CET 2022
+>   --- refscale-rcu-tasks: Start Mon Jan 17 07:57:35 PM CET 2022
+>   --- refscale-rcu-tasks-kasan: Start Mon Jan 17 08:00:10 PM CET 2022
+>   --- refscale-rcu-trace: Start Mon Jan 17 08:03:06 PM CET 2022
+>   --- refscale-rcu-trace-kasan: Start Mon Jan 17 08:05:40 PM CET 2022
+>   --- refscale-refcnt: Start Mon Jan 17 08:08:40 PM CET 2022
+>   --- refscale-refcnt-kasan: Start Mon Jan 17 08:11:15 PM CET 2022
+>   --- refscale-rwlock: Start Mon Jan 17 08:14:14 PM CET 2022
+>   --- refscale-rwlock-kasan: Start Mon Jan 17 08:16:48 PM CET 2022
+>   --- refscale-rwsem: Start Mon Jan 17 08:19:45 PM CET 2022
+>   --- refscale-rwsem-kasan: Start Mon Jan 17 08:22:18 PM CET 2022
+>   --- refscale-lock: Start Mon Jan 17 08:25:17 PM CET 2022
+>   --- refscale-lock-kasan: Start Mon Jan 17 08:27:53 PM CET 2022
+>   --- refscale-lock-irq: Start Mon Jan 17 08:30:58 PM CET 2022
+>   --- refscale-lock-irq-kasan: Start Mon Jan 17 08:33:42 PM CET 2022
+>   --- refscale-acqrel: Start Mon Jan 17 08:36:58 PM CET 2022
+>   --- refscale-acqrel-kasan: Start Mon Jan 17 08:39:33 PM CET 2022
+>   --- refscale-clock: Start Mon Jan 17 08:42:33 PM CET 2022
+>   --- refscale-clock-kasan: Start Mon Jan 17 08:45:08 PM CET 2022
+>   --- rcuscale-rcu: Start Mon Jan 17 08:48:06 PM CET 2022
+>   --- rcuscale-rcu-kasan: Start Mon Jan 17 08:49:25 PM CET 2022
+>   --- rcuscale-srcu: Start Mon Jan 17 08:50:56 PM CET 2022
+>   --- rcuscale-srcu-kasan: Start Mon Jan 17 08:52:14 PM CET 2022
+>   --- rcuscale-srcud: Start Mon Jan 17 08:53:43 PM CET 2022
+>   --- rcuscale-srcud-kasan: Start Mon Jan 17 08:55:01 PM CET 2022
+>   --- rcuscale-tasks: Start Mon Jan 17 08:56:31 PM CET 2022
+>   --- rcuscale-tasks-kasan: Start Mon Jan 17 08:57:48 PM CET 2022
+>   --- rcuscale-tasks-tracing: Start Mon Jan 17 08:59:17 PM CET 2022
+>   --- rcuscale-tasks-tracing-kasan: Start Mon Jan 17 09:00:35 PM CET 2022
+>   --- rcuscale-kvfree: Start Mon Jan 17 09:02:05 PM CET 2022
+>   --- rcuscale-kvfree-kasan: Start Mon Jan 17 09:03:23 PM CET 2022
+>   --- clocksourcewd-1: Start Mon Jan 17 09:04:52 PM CET 2022
+>   --- clocksourcewd-1-kasan: Start Mon Jan 17 09:06:11 PM CET 2022
+>   --- clocksourcewd-2: Start Mon Jan 17 09:07:42 PM CET 2022
+>   --- clocksourcewd-2-kasan: Start Mon Jan 17 09:08:59 PM CET 2022
+>   ---  tools/testing/selftests/rcutorture/bin/torture.sh --duration 10
+>   ---  Done Mon Jan 17 09:10:29 PM CET 2022
+> SUCCESSES:
+> rcutorture(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-rcutorture
+> rcutorture-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-rcutorture-kasan
+> locktorture(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-locktorture
+> locktorture-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-locktorture-kasan
+> scftorture(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-scftorture
+> scftorture-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-scftorture-kasan
+> refscale-rcu(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-rcu
+> refscale-rcu-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-rcu-kasan
+> refscale-srcu(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-srcu
+> refscale-srcu-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-srcu-kasan
+> refscale-rcu-tasks(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-rcu-tasks
+> refscale-rcu-tasks-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-rcu-tasks-kasan
+> refscale-rcu-trace(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-rcu-trace
+> refscale-rcu-trace-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-rcu-trace-kasan
+> refscale-refcnt(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-refcnt
+> refscale-refcnt-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-refcnt-kasan
+> refscale-rwlock(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-rwlock
+> refscale-rwlock-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-rwlock-kasan
+> refscale-rwsem(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-rwsem
+> refscale-rwsem-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-rwsem-kasan
+> refscale-lock(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-lock
+> refscale-lock-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-lock-kasan
+> refscale-lock-irq(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-lock-irq
+> refscale-lock-irq-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-lock-irq-kasan
+> refscale-acqrel(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-acqrel
+> refscale-acqrel-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-acqrel-kasan
+> refscale-clock(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-clock
+> refscale-clock-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-refscale-clock-kasan
+> rcuscale-rcu(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-rcuscale-rcu
+> rcuscale-rcu-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-rcuscale-rcu-kasan
+> rcuscale-srcu(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-rcuscale-srcu
+> rcuscale-srcu-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-rcuscale-srcu-kasan
+> rcuscale-srcud(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-rcuscale-srcud
+> rcuscale-srcud-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-rcuscale-srcud-kasan
+> rcuscale-tasks(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-rcuscale-tasks
+> rcuscale-tasks-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-rcuscale-tasks-kasan
+> rcuscale-tasks-tracing(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-rcuscale-tasks-tracing
+> rcuscale-tasks-tracing-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-rcuscale-tasks-tracing-kasan
+> rcuscale-kvfree(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-rcuscale-kvfree
+> rcuscale-kvfree-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-rcuscale-kvfree-kasan
+> clocksourcewd-1(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-clocksourcewd-1
+> clocksourcewd-1-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-clocksourcewd-1-kasan
+> clocksourcewd-2(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-clocksourcewd-2
+> clocksourcewd-2-kasan(0)
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-clocksourcewd-2-kasan
+> FAILURES:
+> allmodconfig(2)
+> tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/allmod=
+config
+> Started at Mon Jan 17 06:44:36 PM CET 2022, ended at Mon Jan 17 09:10:29
+> PM CET 2022, duration 2:25:53.
+> Summary: Successes: 44 Failures: 1.
+> Size before compressing 0 files: 86M Mon Jan 17 09:10:29 PM CET 2022
+> Waiting for final batch 1 of 22 compressions Mon Jan 17 09:10:29 PM CET 2=
+022
+> Size after compressing 0 files: 86M Mon Jan 17 09:10:29 PM CET 2022
+> Total duration 2:25:53.
+> ```
+>
+> Here is an excerpt from `Make.out` [1]:
+>
+> ```
+>    CC [M]  sound/isa/ad1848/ad1848.o
+>    CC      security/keys/encrypted-keys/ecryptfs_format.o
+> In file included from <command-line>:
+> ././include/linux/kconfig.h:5:10: fatal error: generated/autoconf.h: No
+> such file or directory
+>      5 | #include <generated/autoconf.h>
+>        |          ^~~~~~~~~~~~~~~~~~~~~~
+> compilation terminated.
+>    CC [M]  fs/reiserfs/inode.o
+> In file included from <command-line>:
+> ././include/linux/kconfig.h:5:10: fatal error: generated/autoconf.h: No
+> such file or directory
+>      5 | #include <generated/autoconf.h>
+>        |          ^~~~~~~~~~~~~~~~~~~~~~
+> compilation terminated.
+> In file included from <command-line>:
+> ././include/linux/kconfig.h:5:10: fatal error: generated/autoconf.h: No
+> such file or directory
+>      5 | #include <generated/autoconf.h>
+>        |          ^~~~~~~~~~~~~~~~~~~~~~
+> compilation terminated.
+> make[3]: *** [scripts/Makefile.build:288:
+> security/keys/encrypted-keys/ecryptfs_format.o] Error 1
+> make[3]: *** Waiting for unfinished jobs....
+> In file included from <command-line>:
+> ././include/linux/kconfig.h:5:10: fatal error: generated/autoconf.h: No
+> such file or directory
+>      5 | #include <generated/autoconf.h>
+>        |          ^~~~~~~~~~~~~~~~~~~~~~
+> compilation terminated.
+>    CC [M]  sound/i2c/i2c.o
+> In file included from <command-line>:
+> ././include/linux/kconfig.h:5:10: fatal error: generated/autoconf.h: No
+> such file or directory
+>      5 | #include <generated/autoconf.h>
+>        |          ^~~~~~~~~~~~~~~~~~~~~~
+> compilation terminated.
+>    CC [M]  fs/ext4/block_validity.o
+> make[3]: *** [scripts/Makefile.build:288: sound/isa/ad1848/ad1848.o] Erro=
+r 1
+> make[2]: *** [scripts/Makefile.build:550: sound/isa/ad1848] Error 2
+> make[1]: *** [scripts/Makefile.build:550: sound/isa] Error 2
+> make[1]: *** Waiting for unfinished jobs....
+> ```
+>
+> I wonder why other builds seem to have worked. But checking the other
+> results, despite the output saying the runs were a success the Linux
+> kernel builds seem to have failed. For example [2]:
+>
+> ```
+> $ more
+> tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36-torture/result=
+s-rcutorture/log
+> tools/testing/selftests/rcutorture/bin/kvm.sh --allcpus --duration 7
+> --configs CFLIST --trust-make --bootargs
+> rcupdate.rcu_cpu_stall_suppress_at_boot=3D1 torture.disable_onoff_at_boot
+> rcupdate.rcu_task_stall_timeout=3D30000 --datestamp
+> 2022.01.17-18.44.36-torture/results-rcutorture
+> ----Start batch 1: Mon Jan 17 06:45:03 PM CET 2022
+> TREE03 16: Starting build. Mon Jan 17 06:45:03 PM CET 2022
+> [=E2=80=A6]
+> TREE09 1: Build complete. Mon Jan 17 07:07:40 PM CET 2022
+> ---- No kernel runs. Mon Jan 17 07:07:40 PM CET 2022
+> ---- TREE03 16: Build/run results:
+>   --- Mon Jan 17 06:45:03 PM CET 2022: Starting build, PID 3530842
+> :CONFIG_HYPERVISOR_GUEST=3Dy: improperly set
+> :CONFIG_PARAVIRT=3Dy: improperly set
+> Kernel build error
+> make[2]: *** No rule to make target
+> 'arch/powerpc/kvm//dev/shm/linux/tools/testing/selftests/rcutorture/kvm_m=
+ain.o',
+> needed by 'arch/powerpc/kvm/kvm.o'.  Stop.
+> make[1]: *** [scripts/Makefile.build:550: arch/powerpc/kvm] Error 2
+> make: *** [Makefile:1840: arch/powerpc] Error 2
+> Run aborted.
+> Build failed, not running KVM, see
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-rcutorture/TREE03.
+> [=E2=80=A6]
+> ESC[031mBUG: ESC[mBuild failed
+>
+> /dev/shm/linux/tools/testing/selftests/rcutorture/res/2022.01.17-18.44.36=
+-torture/results-rcutorture/TREE09
+>   --- Done at Mon Jan 17 07:07:41 PM CET 2022 (22:39.0) exitcode 0
+> ```
+>
+>
+> Kind regards,
+>
+> Paul
+>
+>
+> [1]: https://owww.molgen.mpg.de/~pmenzel/allmodconf-Make.out.txt
+> [2]: https://owww.molgen.mpg.de/~pmenzel/rcutorture-log.txt
