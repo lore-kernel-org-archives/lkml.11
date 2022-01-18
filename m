@@ -2,96 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD169C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 20:37:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A09B2C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 20:39:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343787AbiARUh6 (ORCPT
+        id S1349285AbiARUjQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 15:37:58 -0500
-Received: from mail-ua1-f52.google.com ([209.85.222.52]:41574 "EHLO
-        mail-ua1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234251AbiARUh5 (ORCPT
+        Tue, 18 Jan 2022 15:39:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58346 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349143AbiARUjM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 15:37:57 -0500
-Received: by mail-ua1-f52.google.com with SMTP id i10so413755uab.8;
-        Tue, 18 Jan 2022 12:37:57 -0800 (PST)
+        Tue, 18 Jan 2022 15:39:12 -0500
+Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E15C061574;
+        Tue, 18 Jan 2022 12:39:11 -0800 (PST)
+Received: by mail-pg1-x530.google.com with SMTP id p125so297912pga.2;
+        Tue, 18 Jan 2022 12:39:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rTxSIYtF/qhDMdpcunv+R2Pnv7mrcydD4DvIe4qQgBA=;
+        b=XzNVA7WFscHIr9quBbwN1Zl6DlOEBX9F8WsDR4fZuQmtO7dSeFEckqOuxbRK5Dbr36
+         /eNURLliqpELZFheqowDPzNq72XN2bbp84c7+2gEmZWBXHzwINhnbQmHL+COLhW/mH7B
+         sEyyYr0KSen0K0Oz8LuUJAMgc5YGn6FdzO6XUxUA0ZHD/46rOBRY6iZqcfjk3s4c3c+G
+         tQ0FJvOpkvJ1cM8BKRmRfnNY0v9QN+Kor7sdjGPNwfcPoNNyO9VuyPm3JdHZi95ha43F
+         kAYsOqWFk/ykFHxFzIQuyr5djbFrIif7ZEGmKHeNwzi3xNaqHdgLcnaN11LGGvahgN+J
+         qjXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rccm2Ng7Ygp1cY/As0QYhUzGpE8sU6W4R2NG0olHuac=;
-        b=eNh/IBBk4hyYz852AMrG2ovnWsKHp758oVpVmICAFSJSZARiAAkJvGSMxD5AG0jR84
-         GmYSA4nyQYFTDpx09bCKdMJdFMH62yRSWQhrluUKrFMvanvPjB6DclpVRVlMcPjCMRFa
-         XaHnLivk2i3uU50WuMafS3HD6ZWN/NOyWPOxSRFhm8ClFx+kSMYmrEuFuECUzoFEav/E
-         mFS4d3yFoIMpBivYQ5oflXRs4MGazy3DRJsgPBJQceZJoKiTbrkbldi9LyvuHfkNCH90
-         IrN40zyEGYUAsyZLhayRFI0ThqGbZEt9S+vsOsaghT6G9kMvCkNf5X4QPldR+ZHwdmSD
-         uOHw==
-X-Gm-Message-State: AOAM531zXiwfL6kMz6huL3TZDAj2LwX0mSWA74UWwcVQsxtLN1f1QzMs
-        66+DzYWOUmOHkCS1mn5Pdurhw2BViixUew==
-X-Google-Smtp-Source: ABdhPJwxE0WRP3zsobMcA4/zbKuQzV/vmvQXpoOtg4aIYa/fy1piy51AvDYqRlqi4OqrLR0icA92Ww==
-X-Received: by 2002:ab0:60d0:: with SMTP id g16mr10462759uam.121.1642538276786;
-        Tue, 18 Jan 2022 12:37:56 -0800 (PST)
-Received: from mail-ua1-f41.google.com (mail-ua1-f41.google.com. [209.85.222.41])
-        by smtp.gmail.com with ESMTPSA id u107sm387690uau.6.2022.01.18.12.37.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 18 Jan 2022 12:37:56 -0800 (PST)
-Received: by mail-ua1-f41.google.com with SMTP id m90so469443uam.2;
-        Tue, 18 Jan 2022 12:37:56 -0800 (PST)
-X-Received: by 2002:a05:6102:3581:: with SMTP id h1mr10453087vsu.5.1642538275904;
- Tue, 18 Jan 2022 12:37:55 -0800 (PST)
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=rTxSIYtF/qhDMdpcunv+R2Pnv7mrcydD4DvIe4qQgBA=;
+        b=4Z/dvufav4Wo9c1JRIIAkMQDTpAoFOh3UJI7ch95hsgeASuC+KgENvTnnMHMP+5PY3
+         nXS3eJDaWSFAkKZJikinZtbr3KLTC8oRAZdaJIuSSeIEPV3KHV/h6baBjQ5/e7J0AZjs
+         YSB4Ep1Agj8odLY6N8rSCdPu7vVQszFoCV+ok/R/VulrT4P9Yc3uJmgx6ggzje9Dg0BW
+         LKPt1tGswR5J+DMDBPJLe3DlMxPwj9nza66ZBToYcQ0rj8RcZ6lS0fbW4Ipq7ZdVhE3e
+         aTDGUYzPXswFO/HcmuQTPRlfVCZDsi3PXm5FJQRH0ky/Y99hkNFarI/bgHo+aojU3OoH
+         lI5A==
+X-Gm-Message-State: AOAM5312fx/7fo+T9KBwLSH9zgDl2p5dakka8tUwdf3dWaHiVt6Hvt+8
+        kC6oRAtTFP66A9DLGzHdoyM=
+X-Google-Smtp-Source: ABdhPJyeiRPViIFqLAMdX5NCXcv8RFZDx7ydr82FV18KzIXzXluRnjCoqA20Vyi5zu46O1Q7GFBlZw==
+X-Received: by 2002:a63:191a:: with SMTP id z26mr24598864pgl.593.1642538351256;
+        Tue, 18 Jan 2022 12:39:11 -0800 (PST)
+Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
+        by smtp.gmail.com with ESMTPSA id y64sm15227654pgy.12.2022.01.18.12.39.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Jan 2022 12:39:10 -0800 (PST)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Tue, 18 Jan 2022 10:39:09 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Vipin Sharma <vipinsh@google.com>
+Cc:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
+        pbonzini@redhat.com, seanjc@google.com, lizefan.x@bytedance.com,
+        hannes@cmpxchg.org, dmatlack@google.com, jiangshanlai@gmail.com,
+        kvm@vger.kernel.org, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] KVM: Move VM's worker kthreads back to the original
+ cgroups before exiting.
+Message-ID: <Yeclbe3GNdCMLlHz@slm.duckdns.org>
+References: <20211222225350.1912249-1-vipinsh@google.com>
+ <20220105180420.GC6464@blackbody.suse.cz>
+ <CAHVum0e84nUcGtdPYQaJDQszKj-QVP5gM+nteBpSTaQ2sWYpmQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20211126102339.28908-1-andriy.shevchenko@linux.intel.com>
- <CAK8P3a3GuGgdp7Gq5N9XKTGhKbBUym9BiEb94RWyL1CDxS0ffw@mail.gmail.com>
- <CAMuHMdV4HVn+GcCBNQ+1-Kva2XiHQ03L5y9JLXH7qONtBvkV+w@mail.gmail.com>
- <20211129122052.GA7921@alpha.franken.de> <CAMuHMdWbvpzZCs4HOXErbVYQTiQAB0syuiR6Wd7=sTA2vFpXzw@mail.gmail.com>
- <20211129130535.GA8644@alpha.franken.de> <CAMuHMdU94tk5pcTK4Fa-g9vm56oooCeWXkkL8nOgofk5aKbwig@mail.gmail.com>
- <alpine.DEB.2.21.2201090221150.56863@angie.orcam.me.uk>
-In-Reply-To: <alpine.DEB.2.21.2201090221150.56863@angie.orcam.me.uk>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Tue, 18 Jan 2022 21:37:44 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXiLk+b2RtS+9xOfurVF2ajac92i_L48UAF_9B3Let0jQ@mail.gmail.com>
-Message-ID: <CAMuHMdXiLk+b2RtS+9xOfurVF2ajac92i_L48UAF_9B3Let0jQ@mail.gmail.com>
-Subject: Re: [PATCH v1 1/1] MIPS: TXx9: Convert SPI platform data to software nodes
-To:     "Maciej W. Rozycki" <macro@orcam.me.uk>
-Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAHVum0e84nUcGtdPYQaJDQszKj-QVP5gM+nteBpSTaQ2sWYpmQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Maciej,
+Hello,
 
-On Tue, Jan 18, 2022 at 8:59 PM Maciej W. Rozycki <macro@orcam.me.uk> wrote:
-> > Took me a bit to test proper operation, as contemporary cross-toolchains
-> > create userland binaries that can no longer run on MIPS-II/III CPUs,
-> > and native development is slow and memory-constrained (dpkg OOM)...
->
->  You mean cross-toolchains included with (some) distributions, right?
+On Tue, Jan 18, 2022 at 12:25:48PM -0800, Vipin Sharma wrote:
+> Automated tools/scripts which delete VM cgroups after the main KVM
+> process ends were seeing deletion errors because kernel worker threads
+> were still running inside those cgroups. This is not a very frequent
+> issue but we noticed it happens every now and then.
 
-Yep, the MIPS cross-toolchain that comes with Ubuntu.
+So, these are normally driven by the !populated events. That's how everyone
+else is doing it. If you want to tie the kvm workers lifetimes to kvm
+process, wouldn't it be cleaner to do so from kvm side? ie. let kvm process
+exit wait for the workers to be cleaned up.
 
->  I do hope so or otherwise I'd be very concerned.  Myself I've been using
-> a self-built MIPS cross-compiler, running on POWER9, which builds MIPS I
-> binaries just fine, e.g.:
->
-> $ file install/usr/sysroot/{lib/ld-2.32.9000.so,usr/bin/gdbserver}
-> install/usr/sysroot/lib/ld-2.32.9000.so: ELF 32-bit LSB pie executable, MIPS, MIPS-I version 1 (SYSV), dynamically linked, with debug_info, not stripped
-> install/usr/sysroot/usr/bin/gdbserver: ELF 32-bit LSB executable, MIPS, MIPS-I version 1 (GNU/Linux), dynamically linked, interpreter /lib/ld.so.1, for GNU/Linux 3.2.0, not stripped
+Thanks.
 
-Debian raised the minimum requirements for MIPS, hence mine are
-ELF 32-bit MSB shared object, MIPS, MIPS32 rel2 version 1 (SYSV)
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+-- 
+tejun
