@@ -2,51 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1487C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:28:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6D08C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:28:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245004AbiARC2J (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:28:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57328 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244942AbiARC0G (ORCPT
+        id S245601AbiARC2S (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:28:18 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43186 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245589AbiARC0J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:26:06 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A41F0C061362;
-        Mon, 17 Jan 2022 18:24:43 -0800 (PST)
+        Mon, 17 Jan 2022 21:26:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 69C83B81239;
-        Tue, 18 Jan 2022 02:24:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29BDCC36AF5;
-        Tue, 18 Jan 2022 02:24:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2690260C95;
+        Tue, 18 Jan 2022 02:26:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2CABC36AE3;
+        Tue, 18 Jan 2022 02:26:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472681;
-        bh=DTFUkXLNCr018LWSCZK9D1Uv6h36WaZyXht8Fz71pEg=;
+        s=k20201202; t=1642472768;
+        bh=yqSwJVXMzPmSYPIZURiBbJ026IA9VE5I3L1uFRkpvjU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t4PT4Qh4Rzi8YZ0acPnELUtbebwcAstkGdUXRLo6zXRkPkdxsJnJ4Y+VoyJiEc5e3
-         Tvtawf7pEvf5uL1CTmMgsVNLdUsm6gI4s2dznJ7N/v82WW73BnVmh5kYFSO2K+T3+p
-         iBcPD8zN/xkSouZVj81txyFyA7DVXOZbF+DE2cOCkERYTWJByzuPW9szSr+VtSAH4d
-         Y6U456Y9GLsuPOnBZQEUxHwuOG5U5j3ZNhWaAkMzb1wvWqYiMwiBvjP5iOUaR5eoDX
-         6P5SjOqOvY5ix/6av+hfcXe9kK5TDxqhdKcGi1QZ2z45VhixCGL2F818zjCwsabi9a
-         5ZonDmYUAZVTw==
+        b=lDBz/6MvTvAoJF2vOspQ0CZY325ZVQaeEpqUewId82kG27GRrpcq7l2O0qPH93t/k
+         SWvHLvKABmDNNI391ghVeCuD3PnLCKU0sT2sEMNBq7/neSgynYbFybxINlswu8VYmG
+         YhBlbXn//cPNE+CNxXDVKLpFYNsQlAi2JFcbXkkBrHhklnv48MXgbenhfglCukELmQ
+         JXcCNGBN08AbqrDrCTAsY5HNxbZdHsqbJ1mnb9CC7JbM9aamX+bsHRmWdM5GznSJSB
+         ZYIdFvP3h7lh6pUbVjqiFZNG7ZvUBo1hrpLPbttxc754X5sfKrQCDcT/Qre6YZi2At
+         DCfKs+s6fN6xA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        Sasha Levin <sashal@kernel.org>,
-        laurent.pinchart@ideasonboard.com,
-        kieran.bingham+renesas@ideasonboard.com, airlied@linux.ie,
-        daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 096/217] drm: rcar-du: Fix CRTC timings when CMM is used
-Date:   Mon, 17 Jan 2022 21:17:39 -0500
-Message-Id: <20220118021940.1942199-96-sashal@kernel.org>
+Cc:     Isabella Basso <isabbasso@riseup.net>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        Hawking.Zhang@amd.com, john.clements@amd.com, luben.tuikov@amd.com,
+        Dennis.Li@amd.com, Stanley.Yang@amd.com, mukul.joshi@amd.com,
+        nirmoy.das@amd.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.16 131/217] drm/amdgpu: fix amdgpu_ras_mca_query_error_status scope
+Date:   Mon, 17 Jan 2022 21:18:14 -0500
+Message-Id: <20220118021940.1942199-131-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,80 +54,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+From: Isabella Basso <isabbasso@riseup.net>
 
-[ Upstream commit f0ce591dc9a97067c6e783a2eaccd22c5476144d ]
+[ Upstream commit 929bb8e200412da36aca4b61209ec26283f9c184 ]
 
-When the CMM is enabled, an offset of 25 pixels must be subtracted from
-the HDS (horizontal display start) and HDE (horizontal display end)
-registers. Fix the timings calculation, and take this into account in
-the mode validation.
+This commit fixes the compile-time warning below:
 
-This fixes a visible horizontal offset in the image with VGA monitors.
-HDMI monitors seem to be generally more tolerant to incorrect timings,
-but may be affected too.
+ warning: no previous prototype for ‘amdgpu_ras_mca_query_error_status’
+ [-Wmissing-prototypes]
 
-Signed-off-by: Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Changes since v1:
+- As suggested by Alexander Deucher:
+  1. Make function static instead of adding prototype.
+
+Signed-off-by: Isabella Basso <isabbasso@riseup.net>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/rcar-du/rcar_du_crtc.c | 20 ++++++++++++++++----
- 1 file changed, 16 insertions(+), 4 deletions(-)
+ drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/rcar-du/rcar_du_crtc.c b/drivers/gpu/drm/rcar-du/rcar_du_crtc.c
-index 5672830ca184d..ee6ba74627a21 100644
---- a/drivers/gpu/drm/rcar-du/rcar_du_crtc.c
-+++ b/drivers/gpu/drm/rcar-du/rcar_du_crtc.c
-@@ -215,6 +215,7 @@ static void rcar_du_crtc_set_display_timing(struct rcar_du_crtc *rcrtc)
- 	const struct drm_display_mode *mode = &rcrtc->crtc.state->adjusted_mode;
- 	struct rcar_du_device *rcdu = rcrtc->dev;
- 	unsigned long mode_clock = mode->clock * 1000;
-+	unsigned int hdse_offset;
- 	u32 dsmr;
- 	u32 escr;
+diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
+index 08133de21fdd6..26b7a4a0b44b7 100644
+--- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
++++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ras.c
+@@ -867,9 +867,9 @@ static int amdgpu_ras_enable_all_features(struct amdgpu_device *adev,
+ /* feature ctl end */
  
-@@ -298,10 +299,15 @@ static void rcar_du_crtc_set_display_timing(struct rcar_du_crtc *rcrtc)
- 	     | DSMR_DIPM_DISP | DSMR_CSPM;
- 	rcar_du_crtc_write(rcrtc, DSMR, dsmr);
  
-+	hdse_offset = 19;
-+	if (rcrtc->group->cmms_mask & BIT(rcrtc->index % 2))
-+		hdse_offset += 25;
-+
- 	/* Display timings */
--	rcar_du_crtc_write(rcrtc, HDSR, mode->htotal - mode->hsync_start - 19);
-+	rcar_du_crtc_write(rcrtc, HDSR, mode->htotal - mode->hsync_start -
-+					hdse_offset);
- 	rcar_du_crtc_write(rcrtc, HDER, mode->htotal - mode->hsync_start +
--					mode->hdisplay - 19);
-+					mode->hdisplay - hdse_offset);
- 	rcar_du_crtc_write(rcrtc, HSWR, mode->hsync_end -
- 					mode->hsync_start - 1);
- 	rcar_du_crtc_write(rcrtc, HCR,  mode->htotal - 1);
-@@ -836,6 +842,7 @@ rcar_du_crtc_mode_valid(struct drm_crtc *crtc,
- 	struct rcar_du_crtc *rcrtc = to_rcar_crtc(crtc);
- 	struct rcar_du_device *rcdu = rcrtc->dev;
- 	bool interlaced = mode->flags & DRM_MODE_FLAG_INTERLACE;
-+	unsigned int min_sync_porch;
- 	unsigned int vbp;
- 
- 	if (interlaced && !rcar_du_has(rcdu, RCAR_DU_FEATURE_INTERLACED))
-@@ -843,9 +850,14 @@ rcar_du_crtc_mode_valid(struct drm_crtc *crtc,
- 
- 	/*
- 	 * The hardware requires a minimum combined horizontal sync and back
--	 * porch of 20 pixels and a minimum vertical back porch of 3 lines.
-+	 * porch of 20 pixels (when CMM isn't used) or 45 pixels (when CMM is
-+	 * used), and a minimum vertical back porch of 3 lines.
- 	 */
--	if (mode->htotal - mode->hsync_start < 20)
-+	min_sync_porch = 20;
-+	if (rcrtc->group->cmms_mask & BIT(rcrtc->index % 2))
-+		min_sync_porch += 25;
-+
-+	if (mode->htotal - mode->hsync_start < min_sync_porch)
- 		return MODE_HBLANK_NARROW;
- 
- 	vbp = (mode->vtotal - mode->vsync_end) / (interlaced ? 2 : 1);
+-void amdgpu_ras_mca_query_error_status(struct amdgpu_device *adev,
+-				       struct ras_common_if *ras_block,
+-				       struct ras_err_data  *err_data)
++static void amdgpu_ras_mca_query_error_status(struct amdgpu_device *adev,
++					      struct ras_common_if *ras_block,
++					      struct ras_err_data  *err_data)
+ {
+ 	switch (ras_block->sub_block_index) {
+ 	case AMDGPU_RAS_MCA_BLOCK__MP0:
 -- 
 2.34.1
 
