@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85C03C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:46:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00733C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348785AbiARCqF (ORCPT
+        id S1344744AbiARCqc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:46:05 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:56058 "EHLO
+        Mon, 17 Jan 2022 21:46:32 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54188 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345285AbiARCim (ORCPT
+        with ESMTP id S1345355AbiARCis (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:38:42 -0500
+        Mon, 17 Jan 2022 21:38:48 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 19A9A611D6;
-        Tue, 18 Jan 2022 02:38:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24B0AC36AEB;
-        Tue, 18 Jan 2022 02:38:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8574B612C9;
+        Tue, 18 Jan 2022 02:38:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EAE4FC36AEB;
+        Tue, 18 Jan 2022 02:38:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473519;
-        bh=SwHp8z8g4fBVnumYsGHPVujRk5tCwr58kzWwwIKJFhQ=;
+        s=k20201202; t=1642473527;
+        bh=5qnT/ZKpsAPdNJ9R7DEiWjtGbRKYGDcgnO84ikNbvSU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g6ACzTGagxJmWe/nJv3+V6MNcHLiAHd+81QWNHuAjBJL2xL2tqvgAUeALe18i/erb
-         8pB9iB3x+gG7fV4g4xvDWxXGNo1HU7s5lLC3yrAG50v+7IHs82uQV201rurWNn6ZPX
-         T+XJhSCy5jAcp2uUCSy4ejil1ee6NbhXjEqxuQEUBF1j49Ij/uv327EV1k+ebiH5j7
-         hfIISSm4LiOsc8Emc/k+6hAs297guGZjxzSobNAg4Duj8fIGnSDRt5/+s2JTLKTuuD
-         HPgQr5POjLOe4PhkmVhnwsL189BDhh28VlHsIX6VNkPq6YCLxmkWlG+DG3/oDAayPf
-         6+6LZI4b/VFsw==
+        b=lYQLzaqgKvZsX0JKjLIEP0U1Wqcyd4gbLSvmiCFpD04DrFFfbfNj2eQVDPFFF/meY
+         tCW1ggnm5vvDY4pqEHCS7wZ0AWHsKCxhJYjBi9t+bRCZLnBhC8SudD4VGC71o+V9V/
+         tTMuubddT3buUT71mN6Ul8/wZHhzzS7n1wTx6NnulNQuoylDMOF6Ll7JZzfzpJAtkl
+         zZCqDXf+Vz1I6aNipjwVKqq0/9CNBzWw15XUiculQQfAaJMBUMF2Knqqa6Z2Q76EO9
+         eW6fxFUH+ogWPa1EZ6KQzPcpbOBNZxnhpek1jaXElgyXA6s+jHajb0C1oE0kBWA7is
+         0NoatAsk5MpLQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        linux-um@lists.infradead.org, Sasha Levin <sashal@kernel.org>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        viro@zeniv.linux.org.uk
-Subject: [PATCH AUTOSEL 5.15 145/188] um: registers: Rename function names to avoid conflicts and build problems
-Date:   Mon, 17 Jan 2022 21:31:09 -0500
-Message-Id: <20220118023152.1948105-145-sashal@kernel.org>
+Cc:     Lucas Stach <l.stach@pengutronix.de>,
+        Joerg Albert <joerg.albert@iav.de>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
+        daniel@ffwll.ch, etnaviv@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 150/188] drm/etnaviv: consider completed fence seqno in hang check
+Date:   Mon, 17 Jan 2022 21:31:14 -0500
+Message-Id: <20220118023152.1948105-150-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -54,101 +52,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Lucas Stach <l.stach@pengutronix.de>
 
-[ Upstream commit 077b7320942b64b0da182aefd83c374462a65535 ]
+[ Upstream commit cdd156955f946beaa5f3a00d8ccf90e5a197becc ]
 
-The function names init_registers() and restore_registers() are used
-in several net/ethernet/ and gpu/drm/ drivers for other purposes (not
-calls to UML functions), so rename them.
+Some GPU heavy test programs manage to trigger the hangcheck quite often.
+If there are no other GPU users in the system and the test program
+exhibits a very regular structure in the commandstreams that are being
+submitted, we can end up with two distinct submits managing to trigger
+the hangcheck with the FE in a very similar address range. This leads
+the hangcheck to believe that the GPU is stuck, while in reality the GPU
+is already busy working on a different job. To avoid those spurious
+GPU resets, also remember and consider the last completed fence seqno
+in the hang check.
 
-This fixes multiple build errors.
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Jeff Dike <jdike@addtoit.com>
-Cc: Richard Weinberger <richard@nod.at>
-Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Cc: linux-um@lists.infradead.org
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Reported-by: Joerg Albert <joerg.albert@iav.de>
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/include/shared/registers.h | 4 ++--
- arch/um/os-Linux/registers.c       | 4 ++--
- arch/um/os-Linux/start_up.c        | 2 +-
- arch/x86/um/syscalls_64.c          | 3 ++-
- 4 files changed, 7 insertions(+), 6 deletions(-)
+ drivers/gpu/drm/etnaviv/etnaviv_gpu.h   | 1 +
+ drivers/gpu/drm/etnaviv/etnaviv_sched.c | 4 +++-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/arch/um/include/shared/registers.h b/arch/um/include/shared/registers.h
-index 0c50fa6e8a55b..fbb709a222839 100644
---- a/arch/um/include/shared/registers.h
-+++ b/arch/um/include/shared/registers.h
-@@ -16,8 +16,8 @@ extern int restore_fp_registers(int pid, unsigned long *fp_regs);
- extern int save_fpx_registers(int pid, unsigned long *fp_regs);
- extern int restore_fpx_registers(int pid, unsigned long *fp_regs);
- extern int save_registers(int pid, struct uml_pt_regs *regs);
--extern int restore_registers(int pid, struct uml_pt_regs *regs);
--extern int init_registers(int pid);
-+extern int restore_pid_registers(int pid, struct uml_pt_regs *regs);
-+extern int init_pid_registers(int pid);
- extern void get_safe_registers(unsigned long *regs, unsigned long *fp_regs);
- extern unsigned long get_thread_reg(int reg, jmp_buf *buf);
- extern int get_fp_registers(int pid, unsigned long *regs);
-diff --git a/arch/um/os-Linux/registers.c b/arch/um/os-Linux/registers.c
-index 2d9270508e156..b123955be7acc 100644
---- a/arch/um/os-Linux/registers.c
-+++ b/arch/um/os-Linux/registers.c
-@@ -21,7 +21,7 @@ int save_registers(int pid, struct uml_pt_regs *regs)
- 	return 0;
- }
+diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gpu.h b/drivers/gpu/drm/etnaviv/etnaviv_gpu.h
+index 1c75c8ed5bcea..85eddd492774d 100644
+--- a/drivers/gpu/drm/etnaviv/etnaviv_gpu.h
++++ b/drivers/gpu/drm/etnaviv/etnaviv_gpu.h
+@@ -130,6 +130,7 @@ struct etnaviv_gpu {
  
--int restore_registers(int pid, struct uml_pt_regs *regs)
-+int restore_pid_registers(int pid, struct uml_pt_regs *regs)
- {
- 	int err;
+ 	/* hang detection */
+ 	u32 hangcheck_dma_addr;
++	u32 hangcheck_fence;
  
-@@ -36,7 +36,7 @@ int restore_registers(int pid, struct uml_pt_regs *regs)
- static unsigned long exec_regs[MAX_REG_NR];
- static unsigned long exec_fp_regs[FP_SIZE];
+ 	void __iomem *mmio;
+ 	int irq;
+diff --git a/drivers/gpu/drm/etnaviv/etnaviv_sched.c b/drivers/gpu/drm/etnaviv/etnaviv_sched.c
+index feb6da1b6cebc..bbf391f48f949 100644
+--- a/drivers/gpu/drm/etnaviv/etnaviv_sched.c
++++ b/drivers/gpu/drm/etnaviv/etnaviv_sched.c
+@@ -107,8 +107,10 @@ static enum drm_gpu_sched_stat etnaviv_sched_timedout_job(struct drm_sched_job
+ 	 */
+ 	dma_addr = gpu_read(gpu, VIVS_FE_DMA_ADDRESS);
+ 	change = dma_addr - gpu->hangcheck_dma_addr;
+-	if (change < 0 || change > 16) {
++	if (gpu->completed_fence != gpu->hangcheck_fence ||
++	    change < 0 || change > 16) {
+ 		gpu->hangcheck_dma_addr = dma_addr;
++		gpu->hangcheck_fence = gpu->completed_fence;
+ 		goto out_no_timeout;
+ 	}
  
--int init_registers(int pid)
-+int init_pid_registers(int pid)
- {
- 	int err;
- 
-diff --git a/arch/um/os-Linux/start_up.c b/arch/um/os-Linux/start_up.c
-index 8a72c99994eb1..e3ee4db58b40d 100644
---- a/arch/um/os-Linux/start_up.c
-+++ b/arch/um/os-Linux/start_up.c
-@@ -368,7 +368,7 @@ void __init os_early_checks(void)
- 	check_tmpexec();
- 
- 	pid = start_ptraced_child();
--	if (init_registers(pid))
-+	if (init_pid_registers(pid))
- 		fatal("Failed to initialize default registers");
- 	stop_ptraced_child(pid, 1, 1);
- }
-diff --git a/arch/x86/um/syscalls_64.c b/arch/x86/um/syscalls_64.c
-index 58f51667e2e4b..8249685b40960 100644
---- a/arch/x86/um/syscalls_64.c
-+++ b/arch/x86/um/syscalls_64.c
-@@ -11,6 +11,7 @@
- #include <linux/uaccess.h>
- #include <asm/prctl.h> /* XXX This should get the constants from libc */
- #include <os.h>
-+#include <registers.h>
- 
- long arch_prctl(struct task_struct *task, int option,
- 		unsigned long __user *arg2)
-@@ -35,7 +36,7 @@ long arch_prctl(struct task_struct *task, int option,
- 	switch (option) {
- 	case ARCH_SET_FS:
- 	case ARCH_SET_GS:
--		ret = restore_registers(pid, &current->thread.regs.regs);
-+		ret = restore_pid_registers(pid, &current->thread.regs.regs);
- 		if (ret)
- 			return ret;
- 		break;
 -- 
 2.34.1
 
