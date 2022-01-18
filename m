@@ -2,53 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA558C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:26:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 208D1C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:26:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358768AbiARDZ0 (ORCPT
+        id S1358794AbiARDZ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:25:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39110 "EHLO
+        Mon, 17 Jan 2022 22:25:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346675AbiARDI7 (ORCPT
+        with ESMTP id S1353246AbiARDIs (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:08:59 -0500
+        Mon, 17 Jan 2022 22:08:48 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8612C06175C;
-        Mon, 17 Jan 2022 18:51:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C182CC061759;
+        Mon, 17 Jan 2022 18:51:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A9D36118D;
-        Tue, 18 Jan 2022 02:51:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AC9BC36AE3;
-        Tue, 18 Jan 2022 02:51:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 309EC61348;
+        Tue, 18 Jan 2022 02:51:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BBB7C36AEF;
+        Tue, 18 Jan 2022 02:51:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474285;
-        bh=46ZQ2Ukvtqdel2YKeI9Beyu+coFEEPVZxoQUk1YKJUY=;
+        s=k20201202; t=1642474270;
+        bh=zgJycrBY7VvfgIA9nrpGkp89cc0lhlwKiFUFwBPoQBU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d4lYVqFw6aGpGNN+0oqJHxCxpQ82tzcyTmWQDS64qh5clK5lIkSQLfZJVL6VEN9uu
-         a+9u6S+TWLIncBrgYPZO/oqcp3RXeksBklrYgaCaRAiyBsG/6G1l2vmDYM14LY+HFH
-         MevQPkK+e53kWgdr2037HGshrPxCpTUPkDrSRI8dHv/qdThU0BVO5WxR+qK9KssUaM
-         P2tY9gk3w8fTbIYQvUY5TGwCXHUTc0UMZm0LAX9Xv32JD6EWwuIBKDhM9SIEtLks0s
-         pIR2vfYIRPGggE+qyaXPeSLZP+/2T4YQ6x7u9IPjeJ8uf2mr6pnVNMDWTQ2mz8oiTe
-         EpS/zpyRv4DfA==
+        b=EkfI83w7vaFIITe85s7QqbHmW5IPWUTOYPmyaWNWf6QytBpEQfjWD7TNVMueOew85
+         s80zdMn4j1ZRFwrxB31utUUVLfFTTNVDZ/U55VP4HSNQpJfLh6RixawM1fNGwQnDyx
+         vmIDtekgK8lHS+AZJSrdJp147W7n/5Q3z4gD5JdKLua4md9/zn/igxtQqvi9nRjqnh
+         GGgRNAIRSNGybM7vr2g6Ia+EgmfLNr56qcQXR+LVcv5Rbnjq9bHN5K//ioAU9M92hD
+         EWLGRFkzull6+QekDjGKGwa8lMA5NLw0G/1+wnpaFRnI8Q7HIY7WExaXzDWcqYi3Z0
+         zgh385EUfnxCg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
-        John Keeping <john@metanate.com>,
+Cc:     Lukas Wunner <lukas@wunner.de>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, balbi@kernel.org,
-        axboe@kernel.dk, dean@sensoray.com, wcheng@codeaurora.org,
-        salah.triki@gmail.com, jj251510319013@gmail.com,
-        plr.vincent@gmail.com, andrew_gabbasov@mentor.com, lkp@intel.com,
-        linux-usb@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 04/33] usb: gadget: f_fs: Use stream_open() for endpoint files
-Date:   Mon, 17 Jan 2022 21:50:46 -0500
-Message-Id: <20220118025116.1954375-4-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        jirislaby@kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 54/56] serial: pl010: Drop CR register reset on set_termios
+Date:   Mon, 17 Jan 2022 21:49:06 -0500
+Message-Id: <20220118024908.1953673-54-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118025116.1954375-1-sashal@kernel.org>
-References: <20220118025116.1954375-1-sashal@kernel.org>
+In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
+References: <20220118024908.1953673-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -57,63 +54,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit c76ef96fc00eb398c8fc836b0eb2f82bcc619dc7 ]
+[ Upstream commit 08a0c6dff91c965e39905cf200d22db989203ccb ]
 
-Function fs endpoint file operations are synchronized via an interruptible
-mutex wait. However we see threads that do ep file operations concurrently
-are getting blocked for the mutex lock in __fdget_pos(). This is an
-uninterruptible wait and we see hung task warnings and kernel panic
-if hung_task_panic systcl is enabled if host does not send/receive
-the data for long time.
+pl010_set_termios() briefly resets the CR register to zero.
 
-The reason for threads getting blocked in __fdget_pos() is due to
-the file position protection introduced by the commit 9c225f2655e3
-("vfs: atomic f_pos accesses as per POSIX"). Since function fs
-endpoint files does not have the notion of the file position, switch
-to the stream mode. This will bypass the file position mutex and
-threads will be blocked in interruptible state for the function fs
-mutex.
+Where does this register write come from?
 
-It should not affects user space as we are only changing the task state
-changes the task state from UNINTERRUPTIBLE to INTERRUPTIBLE while waiting
-for the USB transfers to be finished. However there is a slight change to
-the O_NONBLOCK behavior. Earlier threads that are using O_NONBLOCK are also
-getting blocked inside fdget_pos(). Now they reach to function fs and error
-code is returned. The non blocking behavior is actually honoured now.
+The PL010 driver's IRQ handler ambauart_int() originally modified the CR
+register without holding the port spinlock.  ambauart_set_termios() also
+modified that register.  To prevent concurrent read-modify-writes by the
+IRQ handler and to prevent transmission while changing baudrate,
+ambauart_set_termios() had to disable interrupts.  That is achieved by
+writing zero to the CR register.
 
-Reviewed-by: John Keeping <john@metanate.com>
-Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-Link: https://lore.kernel.org/r/1636712682-1226-1-git-send-email-quic_pkondeti@quicinc.com
+However in 2004 the PL010 driver was amended to acquire the port
+spinlock in the IRQ handler, obviating the need to disable interrupts in
+->set_termios():
+https://git.kernel.org/history/history/c/157c0342e591
+
+That rendered the CR register write obsolete.  Drop it.
+
+Cc: Russell King <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/fcaff16e5b1abb4cc3da5a2879ac13f278b99ed0.1641128728.git.lukas@wunner.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/function/f_fs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/tty/serial/amba-pl010.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
-index 0336392686935..e4826454de1a7 100644
---- a/drivers/usb/gadget/function/f_fs.c
-+++ b/drivers/usb/gadget/function/f_fs.c
-@@ -608,7 +608,7 @@ static int ffs_ep0_open(struct inode *inode, struct file *file)
- 	file->private_data = ffs;
- 	ffs_data_opened(ffs);
+diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
+index 9ec4b8d2879f7..0698fbf3b6d61 100644
+--- a/drivers/tty/serial/amba-pl010.c
++++ b/drivers/tty/serial/amba-pl010.c
+@@ -465,14 +465,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	if ((termios->c_cflag & CREAD) == 0)
+ 		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
  
--	return 0;
-+	return stream_open(inode, file);
- }
+-	/* first, disable everything */
+ 	old_cr = readb(uap->port.membase + UART010_CR) & ~UART010_CR_MSIE;
  
- static int ffs_ep0_release(struct inode *inode, struct file *file)
-@@ -1071,7 +1071,7 @@ ffs_epfile_open(struct inode *inode, struct file *file)
- 	file->private_data = epfile;
- 	ffs_data_opened(epfile->ffs);
+ 	if (UART_ENABLE_MS(port, termios->c_cflag))
+ 		old_cr |= UART010_CR_MSIE;
  
--	return 0;
-+	return stream_open(inode, file);
- }
- 
- static int ffs_aio_cancel(struct kiocb *kiocb)
+-	writel(0, uap->port.membase + UART010_CR);
+-
+ 	/* Set baud rate */
+ 	quot -= 1;
+ 	writel((quot & 0xf00) >> 8, uap->port.membase + UART010_LCRM);
 -- 
 2.34.1
 
