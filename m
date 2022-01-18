@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FCF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 14:18:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D899C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 14:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245236AbiAROSg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 09:18:36 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:48562 "EHLO
+        id S245046AbiAROSi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 09:18:38 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38549 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S244179AbiAROSP (ORCPT
+        by vger.kernel.org with ESMTP id S244668AbiAROSQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 09:18:15 -0500
+        Tue, 18 Jan 2022 09:18:16 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642515495;
+        s=mimecast20190719; t=1642515496;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=vT5SFyPQwf3C5QU0HD+SeNKojUWOi+souCVxIuzr4TU=;
-        b=CbnR8sYYecMBwz/0do1OLVWKDjryoy+CI6byj1+s4iIAHVZrjKBQKo3vEvhgDQOHD50Wea
-        zc2vNCjDIF4hrZsQvNvE1c/TxCwQP4PgfPLy+ZIU4MhUXqA82a07OLazQeWnnuE3dlAIIr
-        vJoNhlxOzkuf+boDInGJVkrZyz5pqFY=
+        bh=2PBE8349W+pORnjnNy3WMgm07NQBV8dZAmx6X3HKn1A=;
+        b=GuIwESnrZOEmFpjHkg7GoYOdq8/DQjl3DdkLx4z6lApjOertq9blT1qr0FOvWhAzCakPUB
+        O7gWMUf6naiZiplxpFdZlrXUmLUKxew+0YQkoaoHfYjTFmYGBtjzec1xFR44ltSYlZBatp
+        CclIRO9b/0KZfH9/7XAKnojy+qRc6B4=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-19-hLSgUNlKMJeI24vLWpfdWQ-1; Tue, 18 Jan 2022 09:18:08 -0500
-X-MC-Unique: hLSgUNlKMJeI24vLWpfdWQ-1
+ us-mta-614-9daYxCHSNkOn5qYGvG1CSQ-1; Tue, 18 Jan 2022 09:18:13 -0500
+X-MC-Unique: 9daYxCHSNkOn5qYGvG1CSQ-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8FBBE193F560;
-        Tue, 18 Jan 2022 14:18:07 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C771A86A060;
+        Tue, 18 Jan 2022 14:18:11 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.194.195])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BD2D57E12B;
-        Tue, 18 Jan 2022 14:18:05 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0B8147E126;
+        Tue, 18 Jan 2022 14:18:09 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -42,9 +42,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Jim Mattson <jmattson@google.com>,
         Igor Mammedov <imammedo@redhat.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/4] KVM: x86: Do runtime CPUID update before updating vcpu->arch.cpuid_entries
-Date:   Tue, 18 Jan 2022 15:17:58 +0100
-Message-Id: <20220118141801.2219924-2-vkuznets@redhat.com>
+Subject: [PATCH v3 3/4] KVM: selftests: Rename 'get_cpuid_test' to 'cpuid_test'
+Date:   Tue, 18 Jan 2022 15:18:00 +0100
+Message-Id: <20220118141801.2219924-4-vkuznets@redhat.com>
 In-Reply-To: <20220118141801.2219924-1-vkuznets@redhat.com>
 References: <20220118141801.2219924-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -54,124 +54,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kvm_update_cpuid_runtime() mangles CPUID data coming from userspace
-VMM after updating 'vcpu->arch.cpuid_entries', this makes it
-impossible to compare an update with what was previously
-supplied. Introduce __kvm_update_cpuid_runtime() version which can be
-used to tweak the input before it goes to 'vcpu->arch.cpuid_entries'
-so the upcoming update check can compare tweaked data.
+In preparation to reusing the existing 'get_cpuid_test' for testing
+"KVM_SET_CPUID{,2} after KVM_RUN" rename it to 'cpuid_test' to avoid
+the confusion.
 
 No functional change intended.
 
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/kvm/cpuid.c | 34 ++++++++++++++++++++++++----------
- 1 file changed, 24 insertions(+), 10 deletions(-)
+ tools/testing/selftests/kvm/.gitignore                        | 2 +-
+ tools/testing/selftests/kvm/Makefile                          | 4 ++--
+ .../selftests/kvm/x86_64/{get_cpuid_test.c => cpuid_test.c}   | 0
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+ rename tools/testing/selftests/kvm/x86_64/{get_cpuid_test.c => cpuid_test.c} (100%)
 
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index c55e57b30e81..812190a707f6 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -145,14 +145,21 @@ static void kvm_update_kvm_cpuid_base(struct kvm_vcpu *vcpu)
- 	}
- }
+diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
+index 8c129961accf..20b4c921c9a2 100644
+--- a/tools/testing/selftests/kvm/.gitignore
++++ b/tools/testing/selftests/kvm/.gitignore
+@@ -8,11 +8,11 @@
+ /s390x/memop
+ /s390x/resets
+ /s390x/sync_regs_test
++/x86_64/cpuid_test
+ /x86_64/cr4_cpuid_sync_test
+ /x86_64/debug_regs
+ /x86_64/evmcs_test
+ /x86_64/emulator_error_test
+-/x86_64/get_cpuid_test
+ /x86_64/get_msr_index_features
+ /x86_64/kvm_clock_test
+ /x86_64/kvm_pv_test
+diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+index ee8cf2149824..ec78a8692899 100644
+--- a/tools/testing/selftests/kvm/Makefile
++++ b/tools/testing/selftests/kvm/Makefile
+@@ -43,11 +43,11 @@ LIBKVM_aarch64 = lib/aarch64/processor.c lib/aarch64/ucall.c lib/aarch64/handler
+ LIBKVM_s390x = lib/s390x/processor.c lib/s390x/ucall.c lib/s390x/diag318_test_handler.c
+ LIBKVM_riscv = lib/riscv/processor.c lib/riscv/ucall.c
  
--static struct kvm_cpuid_entry2 *kvm_find_kvm_cpuid_features(struct kvm_vcpu *vcpu)
-+static struct kvm_cpuid_entry2 *__kvm_find_kvm_cpuid_features(struct kvm_vcpu *vcpu,
-+					      struct kvm_cpuid_entry2 *entries, int nent)
- {
- 	u32 base = vcpu->arch.kvm_cpuid_base;
- 
- 	if (!base)
- 		return NULL;
- 
--	return kvm_find_cpuid_entry(vcpu, base | KVM_CPUID_FEATURES, 0);
-+	return cpuid_entry2_find(entries, nent, base | KVM_CPUID_FEATURES, 0);
-+}
-+
-+static struct kvm_cpuid_entry2 *kvm_find_kvm_cpuid_features(struct kvm_vcpu *vcpu)
-+{
-+	return __kvm_find_kvm_cpuid_features(vcpu, vcpu->arch.cpuid_entries,
-+					     vcpu->arch.cpuid_nent);
- }
- 
- void kvm_update_pv_runtime(struct kvm_vcpu *vcpu)
-@@ -167,11 +174,12 @@ void kvm_update_pv_runtime(struct kvm_vcpu *vcpu)
- 		vcpu->arch.pv_cpuid.features = best->eax;
- }
- 
--void kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu)
-+static void __kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *entries,
-+				       int nent)
- {
- 	struct kvm_cpuid_entry2 *best;
- 
--	best = kvm_find_cpuid_entry(vcpu, 1, 0);
-+	best = cpuid_entry2_find(entries, nent, 1, 0);
- 	if (best) {
- 		/* Update OSXSAVE bit */
- 		if (boot_cpu_has(X86_FEATURE_XSAVE))
-@@ -182,33 +190,38 @@ void kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu)
- 			   vcpu->arch.apic_base & MSR_IA32_APICBASE_ENABLE);
- 	}
- 
--	best = kvm_find_cpuid_entry(vcpu, 7, 0);
-+	best = cpuid_entry2_find(entries, nent, 7, 0);
- 	if (best && boot_cpu_has(X86_FEATURE_PKU) && best->function == 0x7)
- 		cpuid_entry_change(best, X86_FEATURE_OSPKE,
- 				   kvm_read_cr4_bits(vcpu, X86_CR4_PKE));
- 
--	best = kvm_find_cpuid_entry(vcpu, 0xD, 0);
-+	best = cpuid_entry2_find(entries, nent, 0xD, 0);
- 	if (best)
- 		best->ebx = xstate_required_size(vcpu->arch.xcr0, false);
- 
--	best = kvm_find_cpuid_entry(vcpu, 0xD, 1);
-+	best = cpuid_entry2_find(entries, nent, 0xD, 1);
- 	if (best && (cpuid_entry_has(best, X86_FEATURE_XSAVES) ||
- 		     cpuid_entry_has(best, X86_FEATURE_XSAVEC)))
- 		best->ebx = xstate_required_size(vcpu->arch.xcr0, true);
- 
--	best = kvm_find_kvm_cpuid_features(vcpu);
-+	best = __kvm_find_kvm_cpuid_features(vcpu, entries, nent);
- 	if (kvm_hlt_in_guest(vcpu->kvm) && best &&
- 		(best->eax & (1 << KVM_FEATURE_PV_UNHALT)))
- 		best->eax &= ~(1 << KVM_FEATURE_PV_UNHALT);
- 
- 	if (!kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT)) {
--		best = kvm_find_cpuid_entry(vcpu, 0x1, 0);
-+		best = cpuid_entry2_find(entries, nent, 0x1, 0);
- 		if (best)
- 			cpuid_entry_change(best, X86_FEATURE_MWAIT,
- 					   vcpu->arch.ia32_misc_enable_msr &
- 					   MSR_IA32_MISC_ENABLE_MWAIT);
- 	}
- }
-+
-+void kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu)
-+{
-+	__kvm_update_cpuid_runtime(vcpu, vcpu->arch.cpuid_entries, vcpu->arch.cpuid_nent);
-+}
- EXPORT_SYMBOL_GPL(kvm_update_cpuid_runtime);
- 
- static void kvm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
-@@ -298,6 +311,8 @@ static int kvm_set_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
- {
- 	int r;
- 
-+	__kvm_update_cpuid_runtime(vcpu, e2, nent);
-+
- 	r = kvm_check_cpuid(vcpu, e2, nent);
- 	if (r)
- 		return r;
-@@ -307,7 +322,6 @@ static int kvm_set_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
- 	vcpu->arch.cpuid_nent = nent;
- 
- 	kvm_update_kvm_cpuid_base(vcpu);
--	kvm_update_cpuid_runtime(vcpu);
- 	kvm_vcpu_after_set_cpuid(vcpu);
- 
- 	return 0;
+-TEST_GEN_PROGS_x86_64 = x86_64/cr4_cpuid_sync_test
++TEST_GEN_PROGS_x86_64 = x86_64/cpuid_test
++TEST_GEN_PROGS_x86_64 += x86_64/cr4_cpuid_sync_test
+ TEST_GEN_PROGS_x86_64 += x86_64/get_msr_index_features
+ TEST_GEN_PROGS_x86_64 += x86_64/evmcs_test
+ TEST_GEN_PROGS_x86_64 += x86_64/emulator_error_test
+-TEST_GEN_PROGS_x86_64 += x86_64/get_cpuid_test
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_clock
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_cpuid
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_features
+diff --git a/tools/testing/selftests/kvm/x86_64/get_cpuid_test.c b/tools/testing/selftests/kvm/x86_64/cpuid_test.c
+similarity index 100%
+rename from tools/testing/selftests/kvm/x86_64/get_cpuid_test.c
+rename to tools/testing/selftests/kvm/x86_64/cpuid_test.c
 -- 
 2.34.1
 
