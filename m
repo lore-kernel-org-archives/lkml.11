@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1D19C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:11:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C91B3C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238499AbiARQLQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:11:16 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40656 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347144AbiARQJl (ORCPT
+        id S243787AbiARQLS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 11:11:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51544 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347107AbiARQJh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:09:41 -0500
+        Tue, 18 Jan 2022 11:09:37 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FA32C0613E3;
+        Tue, 18 Jan 2022 08:09:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8ED6E61295;
-        Tue, 18 Jan 2022 16:09:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57069C00446;
-        Tue, 18 Jan 2022 16:09:39 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id AB457CE1A32;
+        Tue, 18 Jan 2022 16:09:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FACEC340E0;
+        Tue, 18 Jan 2022 16:09:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522180;
-        bh=hTRDEN/X1rHYkMuWknx8N7RQeDUfodJ/6qtI+kqvAZE=;
+        s=korg; t=1642522170;
+        bh=jvgy58p5NNQDL1d44rsCcECEHTpB8jcJZ4tD6xqJeU0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V0MukKC2KRz8TTnqAKOpGfJE9Ivtggva9Ote3zEkQgL9BDkmMyut1qOcO8oPqISwJ
-         gy/IUVy5xB8g1PYh56vCeYpQUIn9NnDQjghDQBfw6JJ05/rWGECmEJX9zIyslLO/JY
-         LW+WfaUgJyPekwQY11PprHiy+uDWm8L/R6+/3kIA=
+        b=S+PKZ0JhqHt65S0gVKxGeSZiZ1LmhdGeAeEDWd9tmpHZn66EjXz+UT8tX5S9b8ZKx
+         OTijbw/Y85Qj1x9XSE9/vjf6gDxIW88cGuNcO03/fqGYxpdH2wFXE6GKvzDkq52Vk+
+         CoOkc2JUkB1o6PC/3pV+78+J7LazQfNvhGVlmXtk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sameer Pujar <spujar@nvidia.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
+        stable@vger.kernel.org,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
         Takashi Iwai <tiwai@suse.de>
-Subject: [PATCH 5.15 25/28] ALSA: hda/tegra: Fix Tegra194 HDA reset failure
-Date:   Tue, 18 Jan 2022 17:06:11 +0100
-Message-Id: <20220118160452.719044943@linuxfoundation.org>
+Subject: [PATCH 5.15 22/28] ALSA: hda/realtek: Use ALC285_FIXUP_HP_GPIO_LED on another HP laptop
+Date:   Tue, 18 Jan 2022 17:06:08 +0100
+Message-Id: <20220118160452.614874048@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118160451.879092022@linuxfoundation.org>
 References: <20220118160451.879092022@linuxfoundation.org>
@@ -46,123 +49,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sameer Pujar <spujar@nvidia.com>
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-commit d278dc9151a034674b31ffeda24cdfb0073570f3 upstream.
+commit 08977fe8cfb7d9fe9337470eec4843081cf3a76d upstream.
 
-HDA regression is recently reported on Tegra194 based platforms.
-This happens because "hda2codec_2x" reset does not really exist
-in Tegra194 and it causes probe failure. All the HDA based audio
-tests fail at the moment. This underlying issue is exposed by
-commit c045ceb5a145 ("reset: tegra-bpmp: Handle errors in BPMP
-response") which now checks return code of BPMP command response.
-Fix this issue by skipping unavailable reset on Tegra194.
+The audio mute and mic mute LEDs don't work, so use the quirk to make
+them work.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Sameer Pujar <spujar@nvidia.com>
-Reviewed-by: Dmitry Osipenko <digetx@gmail.com>
-Link: https://lore.kernel.org/r/1640260431-11613-2-git-send-email-spujar@nvidia.com
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/20211224035015.310068-1-kai.heng.feng@canonical.com
 Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/pci/hda/hda_tegra.c |   43 ++++++++++++++++++++++++++++++++++---------
- 1 file changed, 34 insertions(+), 9 deletions(-)
+ sound/pci/hda/patch_realtek.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/sound/pci/hda/hda_tegra.c
-+++ b/sound/pci/hda/hda_tegra.c
-@@ -68,14 +68,20 @@
-  */
- #define TEGRA194_NUM_SDO_LINES	  4
- 
-+struct hda_tegra_soc {
-+	bool has_hda2codec_2x_reset;
-+};
-+
- struct hda_tegra {
- 	struct azx chip;
- 	struct device *dev;
--	struct reset_control *reset;
-+	struct reset_control_bulk_data resets[3];
- 	struct clk_bulk_data clocks[3];
-+	unsigned int nresets;
- 	unsigned int nclocks;
- 	void __iomem *regs;
- 	struct work_struct probe_work;
-+	const struct hda_tegra_soc *soc;
- };
- 
- #ifdef CONFIG_PM
-@@ -170,7 +176,7 @@ static int __maybe_unused hda_tegra_runt
- 	int rc;
- 
- 	if (!chip->running) {
--		rc = reset_control_assert(hda->reset);
-+		rc = reset_control_bulk_assert(hda->nresets, hda->resets);
- 		if (rc)
- 			return rc;
- 	}
-@@ -187,7 +193,7 @@ static int __maybe_unused hda_tegra_runt
- 	} else {
- 		usleep_range(10, 100);
- 
--		rc = reset_control_deassert(hda->reset);
-+		rc = reset_control_bulk_deassert(hda->nresets, hda->resets);
- 		if (rc)
- 			return rc;
- 	}
-@@ -427,9 +433,17 @@ static int hda_tegra_create(struct snd_c
- 	return 0;
- }
- 
-+static const struct hda_tegra_soc tegra30_data = {
-+	.has_hda2codec_2x_reset = true,
-+};
-+
-+static const struct hda_tegra_soc tegra194_data = {
-+	.has_hda2codec_2x_reset = false,
-+};
-+
- static const struct of_device_id hda_tegra_match[] = {
--	{ .compatible = "nvidia,tegra30-hda" },
--	{ .compatible = "nvidia,tegra194-hda" },
-+	{ .compatible = "nvidia,tegra30-hda", .data = &tegra30_data },
-+	{ .compatible = "nvidia,tegra194-hda", .data = &tegra194_data },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, hda_tegra_match);
-@@ -449,6 +463,8 @@ static int hda_tegra_probe(struct platfo
- 	hda->dev = &pdev->dev;
- 	chip = &hda->chip;
- 
-+	hda->soc = of_device_get_match_data(&pdev->dev);
-+
- 	err = snd_card_new(&pdev->dev, SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1,
- 			   THIS_MODULE, 0, &card);
- 	if (err < 0) {
-@@ -456,11 +472,20 @@ static int hda_tegra_probe(struct platfo
- 		return err;
- 	}
- 
--	hda->reset = devm_reset_control_array_get_exclusive(&pdev->dev);
--	if (IS_ERR(hda->reset)) {
--		err = PTR_ERR(hda->reset);
-+	hda->resets[hda->nresets++].id = "hda";
-+	hda->resets[hda->nresets++].id = "hda2hdmi";
-+	/*
-+	 * "hda2codec_2x" reset is not present on Tegra194. Though DT would
-+	 * be updated to reflect this, but to have backward compatibility
-+	 * below is necessary.
-+	 */
-+	if (hda->soc->has_hda2codec_2x_reset)
-+		hda->resets[hda->nresets++].id = "hda2codec_2x";
-+
-+	err = devm_reset_control_bulk_get_exclusive(&pdev->dev, hda->nresets,
-+						    hda->resets);
-+	if (err)
- 		goto out_free;
--	}
- 
- 	hda->clocks[hda->nclocks++].id = "hda";
- 	hda->clocks[hda->nclocks++].id = "hda2hdmi";
+--- a/sound/pci/hda/patch_realtek.c
++++ b/sound/pci/hda/patch_realtek.c
+@@ -8730,6 +8730,7 @@ static const struct snd_pci_quirk alc269
+ 	SND_PCI_QUIRK(0x103c, 0x8896, "HP EliteBook 855 G8 Notebook PC", ALC285_FIXUP_HP_MUTE_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x8898, "HP EliteBook 845 G8 Notebook PC", ALC285_FIXUP_HP_LIMIT_INT_MIC_BOOST),
+ 	SND_PCI_QUIRK(0x103c, 0x88d0, "HP Pavilion 15-eh1xxx (mainboard 88D0)", ALC287_FIXUP_HP_GPIO_LED),
++	SND_PCI_QUIRK(0x103c, 0x89c3, "HP", ALC285_FIXUP_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x89ca, "HP", ALC236_FIXUP_HP_MUTE_LED_MICMUTE_VREF),
+ 	SND_PCI_QUIRK(0x1043, 0x103e, "ASUS X540SA", ALC256_FIXUP_ASUS_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x103f, "ASUS TX300", ALC282_FIXUP_ASUS_TX300),
 
 
