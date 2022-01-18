@@ -2,101 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD35DC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:25:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E2DDC4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:25:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244702AbiARCZg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:25:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57208 "EHLO
+        id S1343532AbiARCZk (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:25:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245350AbiARCXk (ORCPT
+        with ESMTP id S245358AbiARCXk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 17 Jan 2022 21:23:40 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54975C06175E;
-        Mon, 17 Jan 2022 18:23:33 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6032C061763;
+        Mon, 17 Jan 2022 18:23:38 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15A43B8122C;
-        Tue, 18 Jan 2022 02:23:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 85947C36AE3;
-        Tue, 18 Jan 2022 02:23:29 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C94DB81239;
+        Tue, 18 Jan 2022 02:23:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D16BC36AF3;
+        Tue, 18 Jan 2022 02:23:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472610;
-        bh=P0K1qFpXW6iZLb8fx18FKgzSyX5CF/f0E9RlLpHqlc0=;
+        s=k20201202; t=1642472616;
+        bh=FtVstA5Qd9mauR9+4JEDWKdV8yzsC6t8OYr2IPene8k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jZkYDOM3OCn1TkZesEC7cCdWVe38bJ4hXTreIM3uoTfgWhlFYHwEQmeTLWkZ9unkF
-         22Kf6gkxcigrJ31DhBzz1Tli0LstM3rK6tyf1+A3b2/SNn40vD98FClPeySjKdyoVt
-         wVF6ANaRLIMqHjPI2OfFhI1VapYTBLpG1wYFclQoOC2HD6InCMgLVyUiuPKz4RZZQR
-         u/MvAmq4kOTDl5etFyvhLgirGNJKMHBMXo/YMKe6rzO9SzC/qiPx/3lX0C92Da3G/Q
-         u1PURoDXY2KD4cLmMFLdQD081gIYKblEHYO6AlPG0mjqNlQV1wg52T7qcVIUKwOPCk
-         jCqck6JNj1jBQ==
+        b=KRr7XAQA1xvvenuC2QSp2Hfm0K3hGwI0hJeFFuzYEuLEWhtPeQyA8p//15xqEiEQd
+         nP7WAAO33wL0jWuHOnERooW9s0485k+PHSBFDTzyYVTZX1RuQyl7mMvgdhvfgK92sA
+         KkMCT5UdnfZImJk/adLMIjwYWRV+ancGpG47mQu019K9UXvM/05r3Kp193g84+g0Tm
+         +4axq6a4J6+Fq5MrtnZLgNM806BuY5Qx1VSc8E4ZlhZFjE0vzOSQU5TJIpqnZpIuCW
+         wtteHe5Inci3fwFu+n+jgERWFQTTJzFZql9dxY0bwegegUU2oZlp0zz9gLxCPlJ+g9
+         MC2YMBo1Aj8cw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Emil Renner Berthing <kernel@esmil.dk>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        andriy.shevchenko@linux.intel.com, johan@kernel.org,
-        luzmaximilian@gmail.com, linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 069/217] serial: 8250_dw: Add StarFive JH7100 quirk
-Date:   Mon, 17 Jan 2022 21:17:12 -0500
-Message-Id: <20220118021940.1942199-69-sashal@kernel.org>
+Cc:     =?UTF-8?q?Stephan=20M=C3=BCller?= <smueller@chronox.de>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        linux-crypto@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 073/217] crypto: jitter - consider 32 LSB for APT
+Date:   Mon, 17 Jan 2022 21:17:16 -0500
+Message-Id: <20220118021940.1942199-73-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Emil Renner Berthing <kernel@esmil.dk>
+From: Stephan Müller <smueller@chronox.de>
 
-[ Upstream commit 57dcb6ec85d59e04285b7dcf10924bb819c8e46f ]
+[ Upstream commit 552d03a223eda3df84526ab2c1f4d82e15eaee7a ]
 
-On the StarFive JH7100 RISC-V SoC the UART core clocks can't be set to
-exactly 16 * 115200Hz and many other common bitrates. Trying this will
-only result in a higher input clock, but low enough that the UART's
-internal divisor can't come close enough to the baud rate target.
-So rather than try to set the input clock it's better to skip the
-clk_set_rate call and rely solely on the UART's internal divisor.
+The APT compares the current time stamp with a pre-set value. The
+current code only considered the 4 LSB only. Yet, after reviews by
+mathematicians of the user space Jitter RNG version >= 3.1.0, it was
+concluded that the APT can be calculated on the 32 LSB of the time
+delta. Thi change is applied to the kernel.
 
-Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
-Link: https://lore.kernel.org/r/20211116150119.2171-15-kernel@esmil.dk
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+This fixes a bug where an AMD EPYC fails this test as its RDTSC value
+contains zeros in the LSB. The most appropriate fix would have been to
+apply a GCD calculation and divide the time stamp by the GCD. Yet, this
+is a significant code change that will be considered for a future
+update. Note, tests showed that constantly the GCD always was 32 on
+these systems, i.e. the 5 LSB were always zero (thus failing the APT
+since it only considered the 4 LSB for its calculation).
+
+Signed-off-by: Stephan Mueller <smueller@chronox.de>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/8250/8250_dw.c | 3 +++
- 1 file changed, 3 insertions(+)
+ crypto/jitterentropy.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/tty/serial/8250/8250_dw.c b/drivers/tty/serial/8250/8250_dw.c
-index 53f57c3b9f42c..1769808031c52 100644
---- a/drivers/tty/serial/8250/8250_dw.c
-+++ b/drivers/tty/serial/8250/8250_dw.c
-@@ -414,6 +414,8 @@ static void dw8250_quirks(struct uart_port *p, struct dw8250_data *data)
+diff --git a/crypto/jitterentropy.c b/crypto/jitterentropy.c
+index 4dc2261cdeefb..788d90749715a 100644
+--- a/crypto/jitterentropy.c
++++ b/crypto/jitterentropy.c
+@@ -265,7 +265,6 @@ static int jent_stuck(struct rand_data *ec, __u64 current_delta)
+ {
+ 	__u64 delta2 = jent_delta(ec->last_delta, current_delta);
+ 	__u64 delta3 = jent_delta(ec->last_delta2, delta2);
+-	unsigned int delta_masked = current_delta & JENT_APT_WORD_MASK;
  
- 		if (of_device_is_compatible(np, "marvell,armada-38x-uart"))
- 			p->serial_out = dw8250_serial_out38x;
-+		if (of_device_is_compatible(np, "starfive,jh7100-uart"))
-+			p->set_termios = dw8250_do_set_termios;
+ 	ec->last_delta = current_delta;
+ 	ec->last_delta2 = delta2;
+@@ -274,7 +273,7 @@ static int jent_stuck(struct rand_data *ec, __u64 current_delta)
+ 	 * Insert the result of the comparison of two back-to-back time
+ 	 * deltas.
+ 	 */
+-	jent_apt_insert(ec, delta_masked);
++	jent_apt_insert(ec, current_delta);
  
- 	} else if (acpi_dev_present("APMC0D08", NULL, -1)) {
- 		p->iotype = UPIO_MEM32;
-@@ -696,6 +698,7 @@ static const struct of_device_id dw8250_of_match[] = {
- 	{ .compatible = "cavium,octeon-3860-uart" },
- 	{ .compatible = "marvell,armada-38x-uart" },
- 	{ .compatible = "renesas,rzn1-uart" },
-+	{ .compatible = "starfive,jh7100-uart" },
- 	{ /* Sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, dw8250_of_match);
+ 	if (!current_delta || !delta2 || !delta3) {
+ 		/* RCT with a stuck bit */
 -- 
 2.34.1
 
