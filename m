@@ -2,20 +2,20 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3C0DC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:13:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D4BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:13:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243162AbiARNNC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 08:13:02 -0500
-Received: from out30-130.freemail.mail.aliyun.com ([115.124.30.130]:38229 "EHLO
-        out30-130.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242521AbiARNMm (ORCPT
+        id S241752AbiARNNJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 08:13:09 -0500
+Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:35029 "EHLO
+        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242333AbiARNMh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 08:12:42 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R581e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0V2C2ay._1642511558;
-Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V2C2ay._1642511558)
+        Tue, 18 Jan 2022 08:12:37 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R191e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=jefflexu@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0V2C1oyi_1642511554;
+Received: from localhost(mailfrom:jefflexu@linux.alibaba.com fp:SMTPD_---0V2C1oyi_1642511554)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 18 Jan 2022 21:12:38 +0800
+          Tue, 18 Jan 2022 21:12:35 +0800
 From:   Jeffle Xu <jefflexu@linux.alibaba.com>
 To:     dhowells@redhat.com, linux-cachefs@redhat.com, xiang@kernel.org,
         chao@kernel.org, linux-erofs@lists.ozlabs.org
@@ -23,9 +23,9 @@ Cc:     linux-fsdevel@vger.kernel.org, joseph.qi@linux.alibaba.com,
         bo.liu@linux.alibaba.com, tao.peng@linux.alibaba.com,
         gerry@linux.alibaba.com, eguan@linux.alibaba.com,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 18/20] erofs: implement fscache-based data read for data blobs
-Date:   Tue, 18 Jan 2022 21:12:14 +0800
-Message-Id: <20220118131216.85338-19-jefflexu@linux.alibaba.com>
+Subject: [PATCH v2 15/20] erofs: implement fscache-based data read for non-inline layout
+Date:   Tue, 18 Jan 2022 21:12:11 +0800
+Message-Id: <20220118131216.85338-16-jefflexu@linux.alibaba.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220118131216.85338-1-jefflexu@linux.alibaba.com>
 References: <20220118131216.85338-1-jefflexu@linux.alibaba.com>
@@ -35,91 +35,183 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch implements the data plane of reading data from data blob file
-over fscache.
+This patch implements the data plane of reading data from bootstrap blob
+file over fscache for non-inline layout.
+
+Be noted that compressed layout is not supported yet.
 
 Signed-off-by: Jeffle Xu <jefflexu@linux.alibaba.com>
 ---
- fs/erofs/data.c     |  3 +++
- fs/erofs/fscache.c  | 15 ++++++++++++---
- fs/erofs/internal.h |  1 +
- 3 files changed, 16 insertions(+), 3 deletions(-)
+ fs/erofs/fscache.c  | 111 ++++++++++++++++++++++++++++++++++++++++++++
+ fs/erofs/inode.c    |   6 ++-
+ fs/erofs/internal.h |   1 +
+ 3 files changed, 117 insertions(+), 1 deletion(-)
 
-diff --git a/fs/erofs/data.c b/fs/erofs/data.c
-index 51ccbc02dd73..56db391a3411 100644
---- a/fs/erofs/data.c
-+++ b/fs/erofs/data.c
-@@ -200,6 +200,7 @@ int erofs_map_dev(struct super_block *sb, struct erofs_map_dev *map)
- 	map->m_bdev = sb->s_bdev;
- 	map->m_daxdev = EROFS_SB(sb)->dax_dev;
- 	map->m_dax_part_off = EROFS_SB(sb)->dax_part_off;
-+	map->m_ctx = EROFS_SB(sb)->bootstrap;
- 
- 	if (map->m_deviceid) {
- 		down_read(&devs->rwsem);
-@@ -211,6 +212,7 @@ int erofs_map_dev(struct super_block *sb, struct erofs_map_dev *map)
- 		map->m_bdev = dif->bdev;
- 		map->m_daxdev = dif->dax_dev;
- 		map->m_dax_part_off = dif->dax_part_off;
-+		map->m_ctx = dif->ctx;
- 		up_read(&devs->rwsem);
- 	} else if (devs->extra_devices) {
- 		down_read(&devs->rwsem);
-@@ -228,6 +230,7 @@ int erofs_map_dev(struct super_block *sb, struct erofs_map_dev *map)
- 				map->m_bdev = dif->bdev;
- 				map->m_daxdev = dif->dax_dev;
- 				map->m_dax_part_off = dif->dax_part_off;
-+				map->m_ctx = dif->ctx;
- 				break;
- 			}
- 		}
 diff --git a/fs/erofs/fscache.c b/fs/erofs/fscache.c
-index 8c56bd54b2af..e8df35ee4ba8 100644
+index 5a25ae523e5e..588c33ab6a90 100644
 --- a/fs/erofs/fscache.c
 +++ b/fs/erofs/fscache.c
-@@ -144,8 +144,8 @@ static int erofs_fscache_readpage(struct file *file, struct page *page)
- 	struct inode *inode = page->mapping->host;
- 	struct erofs_inode *vi = EROFS_I(inode);
- 	struct super_block *sb = inode->i_sb;
--	struct erofs_sb_info *sbi = EROFS_SB(sb);
- 	struct erofs_map_blocks map;
-+	struct erofs_map_dev mdev;
- 	struct erofs_fscache_map fsmap;
- 	int ret;
+@@ -4,6 +4,17 @@
+  */
+ #include "internal.h"
  
-@@ -168,9 +168,18 @@ static int erofs_fscache_readpage(struct file *file, struct page *page)
- 		return 0;
- 	}
- 
--	fsmap.m_ctx  = sbi->bootstrap;
-+	mdev = (struct erofs_map_dev) {
-+		.m_deviceid = map.m_deviceid,
-+		.m_pa = map.m_pa,
-+	};
++struct erofs_fscache_map {
++	struct erofs_fscache_context *m_ctx;
++	erofs_off_t m_pa, m_la, o_la;
++	u64 m_llen;
++};
 +
-+	ret = erofs_map_dev(sb, &mdev);
++struct erofs_fscache_priv {
++	struct fscache_cookie *cookie;
++	loff_t offset;
++};
++
+ static struct fscache_volume *volume;
+ 
+ static int erofs_blob_begin_cache_operation(struct netfs_read_request *rreq)
+@@ -22,6 +33,33 @@ static const struct netfs_read_request_ops erofs_blob_req_ops = {
+ 	.cleanup		= erofs_noop_cleanup,
+ };
+ 
++static int erofs_begin_cache_operation(struct netfs_read_request *rreq)
++{
++	struct erofs_fscache_priv *priv = rreq->netfs_priv;
++
++	rreq->p_start = priv->offset;
++	return fscache_begin_read_operation(&rreq->cache_resources,
++					    priv->cookie);
++}
++
++static bool erofs_clamp_length(struct netfs_read_subrequest *subreq)
++{
++	/*
++	 * For non-inline layout, rreq->i_size is actually the size of upper
++	 * file in erofs rather than that of blob file. Thus when cache miss,
++	 * subreq->len can be restricted to the upper file size, while we hope
++	 * blob file can be filled in a EROFS_BLKSIZ granule.
++	 */
++	subreq->len = round_up(subreq->len, EROFS_BLKSIZ);
++	return true;
++}
++
++static const struct netfs_read_request_ops erofs_req_ops = {
++	.begin_cache_operation  = erofs_begin_cache_operation,
++	.cleanup		= erofs_noop_cleanup,
++	.clamp_length		= erofs_clamp_length,
++};
++
+ static int erofs_fscache_blob_readpage(struct file *data, struct page *page)
+ {
+ 	struct folio *folio = page_folio(page);
+@@ -42,6 +80,79 @@ struct page *erofs_fscache_read_cache_page(struct erofs_fscache_context *ctx,
+ 	return read_mapping_page(ctx->inode->i_mapping, index, ctx);
+ }
+ 
++static int erofs_fscache_readpage_noinline(struct page *page,
++					   struct erofs_fscache_map *fsmap)
++{
++	struct folio *folio = page_folio(page);
++	struct erofs_fscache_priv priv;
++
++	/*
++	 * 1) For FLAT_PLAIN layout, the output map.m_la shall be equal to o_la,
++	 * and the output map.m_pa is exactly the physical address of o_la.
++	 * 2) For CHUNK_BASED layout, the output map.m_la is rounded down to the
++	 * nearest chunk boundary, and the output map.m_pa is actually the
++	 * physical address of this chunk boundary. So we need to recalculate
++	 * the actual physical address of o_la.
++	 */
++	priv.offset = fsmap->m_pa + fsmap->o_la - fsmap->m_la;
++	priv.cookie = fsmap->m_ctx->cookie;
++
++	return netfs_readpage(NULL, folio, &erofs_req_ops, &priv);
++}
++
++static int erofs_fscache_readpage(struct file *file, struct page *page)
++{
++	struct inode *inode = page->mapping->host;
++	struct erofs_inode *vi = EROFS_I(inode);
++	struct super_block *sb = inode->i_sb;
++	struct erofs_sb_info *sbi = EROFS_SB(sb);
++	struct erofs_map_blocks map;
++	struct erofs_fscache_map fsmap;
++	int ret;
++
++	if (erofs_inode_is_data_compressed(vi->datalayout)) {
++		erofs_info(sb, "compressed layout not supported yet");
++		ret = -EOPNOTSUPP;
++		goto err_out;
++	}
++
++	map.m_la = fsmap.o_la = page_offset(page);
++
++	ret = erofs_map_blocks(inode, &map, EROFS_GET_BLOCKS_RAW);
 +	if (ret)
-+		return ret;
++		goto err_out;
 +
-+	fsmap.m_ctx  = mdev.m_ctx;
- 	fsmap.m_la   = map.m_la;
--	fsmap.m_pa   = map.m_pa;
-+	fsmap.m_pa   = mdev.m_pa;
- 	fsmap.m_llen = map.m_llen;
++	if (!(map.m_flags & EROFS_MAP_MAPPED)) {
++		zero_user(page, 0, PAGE_SIZE);
++		SetPageUptodate(page);
++		unlock_page(page);
++		return 0;
++	}
++
++	fsmap.m_ctx  = sbi->bootstrap;
++	fsmap.m_la   = map.m_la;
++	fsmap.m_pa   = map.m_pa;
++	fsmap.m_llen = map.m_llen;
++
++	switch (vi->datalayout) {
++	case EROFS_INODE_FLAT_PLAIN:
++	case EROFS_INODE_CHUNK_BASED:
++		return erofs_fscache_readpage_noinline(page, &fsmap);
++	default:
++		DBG_BUGON(1);
++		ret = -EOPNOTSUPP;
++	}
++
++err_out:
++	SetPageError(page);
++	unlock_page(page);
++	return ret;
++}
++
++const struct address_space_operations erofs_fscache_access_aops = {
++	.readpage = erofs_fscache_readpage,
++};
++
+ static int erofs_fscache_init_cookie(struct erofs_fscache_context *ctx,
+ 				     char *path)
+ {
+diff --git a/fs/erofs/inode.c b/fs/erofs/inode.c
+index ff62f84f47d3..2f450cb3a7b9 100644
+--- a/fs/erofs/inode.c
++++ b/fs/erofs/inode.c
+@@ -296,7 +296,11 @@ static int erofs_fill_inode(struct inode *inode, int isdir)
+ 		err = z_erofs_fill_inode(inode);
+ 		goto out_unlock;
+ 	}
+-	inode->i_mapping->a_ops = &erofs_raw_access_aops;
++
++	if (erofs_bdev_mode(inode->i_sb))
++		inode->i_mapping->a_ops = &erofs_raw_access_aops;
++	else
++		inode->i_mapping->a_ops = &erofs_fscache_access_aops;
  
- 	switch (vi->datalayout) {
+ out_unlock:
+ 	erofs_put_metabuf(&buf);
 diff --git a/fs/erofs/internal.h b/fs/erofs/internal.h
-index 5d514c7b73cc..6ccf14952b2d 100644
+index fca706cfaf72..548f928b0ded 100644
 --- a/fs/erofs/internal.h
 +++ b/fs/erofs/internal.h
-@@ -486,6 +486,7 @@ struct erofs_map_dev {
- 	struct block_device *m_bdev;
- 	struct dax_device *m_daxdev;
- 	u64 m_dax_part_off;
-+	struct erofs_fscache_context *m_ctx;
+@@ -393,6 +393,7 @@ struct page *erofs_grab_cache_page_nowait(struct address_space *mapping,
+ extern const struct super_operations erofs_sops;
  
- 	erofs_off_t m_pa;
- 	unsigned int m_deviceid;
+ extern const struct address_space_operations erofs_raw_access_aops;
++extern const struct address_space_operations erofs_fscache_access_aops;
+ extern const struct address_space_operations z_erofs_aops;
+ 
+ /*
 -- 
 2.27.0
 
