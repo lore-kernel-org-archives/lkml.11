@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBC0CC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 20:44:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22D05C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 20:44:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349415AbiARUoB (ORCPT
+        id S1349436AbiARUoF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 15:44:01 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:43832 "EHLO
+        Tue, 18 Jan 2022 15:44:05 -0500
+Received: from linux.microsoft.com ([13.77.154.182]:43838 "EHLO
         linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345711AbiARUnc (ORCPT
+        with ESMTP id S1345794AbiARUnc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 18 Jan 2022 15:43:32 -0500
 Received: from localhost.localdomain (c-73-140-2-214.hsd1.wa.comcast.net [73.140.2.214])
-        by linux.microsoft.com (Postfix) with ESMTPSA id AAF8420B927D;
-        Tue, 18 Jan 2022 12:43:31 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com AAF8420B927D
+        by linux.microsoft.com (Postfix) with ESMTPSA id 2389420B927F;
+        Tue, 18 Jan 2022 12:43:32 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 2389420B927F
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1642538611;
-        bh=Xllnhc2NZewvYwvrWoFMtROtoHHNqU9MMDssi+lUA2Y=;
+        s=default; t=1642538612;
+        bh=5FJFDO3BzaAEZs6N7MSuDqREW0y+adaFcopL532iJsw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TpIEurxmK9Ll6Wy+igZ3atzsgL2oLF3sz0t5s05iKfIN00TxThDWbcpFOdJJ/gT80
-         hwVbMCjUMQ2Dr7anVTWLQf6zh89Xc5dUhwu+cPuTFtJ02A/v1C2qp1bWnMwzROCjR2
-         w/bE2ZcrNwK7o1A/0r33PFjT/XxRfVlesP+HTp3s=
+        b=LbQsgohaZPnNd1OvgkB8N2uV+LPHNF91xJkrch7oy/ozQT8uqpMemSKRTV8vw8/q8
+         ioF2RP/bM7kPlXForxHrOVXP7rd/xKk1VmU1Xu8YrwHlnEAJpPJv/hvJlPFgRUY1Fd
+         ljBvJoIwEtpjM6DEsJKxw4aj1vEOmNXMcR1Zc4xk=
 From:   Beau Belgrave <beaub@linux.microsoft.com>
 To:     rostedt@goodmis.org, mhiramat@kernel.org
 Cc:     linux-trace-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
         beaub@linux.microsoft.com
-Subject: [PATCH v10 05/12] user_events: Optimize writing events by only copying data once
-Date:   Tue, 18 Jan 2022 12:43:19 -0800
-Message-Id: <20220118204326.2169-6-beaub@linux.microsoft.com>
+Subject: [PATCH v10 07/12] user_events: Add self-test for ftrace integration
+Date:   Tue, 18 Jan 2022 12:43:21 -0800
+Message-Id: <20220118204326.2169-8-beaub@linux.microsoft.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220118204326.2169-1-beaub@linux.microsoft.com>
 References: <20220118204326.2169-1-beaub@linux.microsoft.com>
@@ -38,218 +38,434 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pass iterator through to probes to allow copying data directly to the
-probe buffers instead of taking multiple copies. Enables eBPF user and
-raw iterator types out to programs for no-copy scenarios.
+Tests basic functionality of registering/deregistering, status and
+writing data out via ftrace mechanisms within user_events.
 
 Signed-off-by: Beau Belgrave <beaub@linux.microsoft.com>
 ---
- kernel/trace/trace_events_user.c | 115 +++++++++++++++++++++++--------
- 1 file changed, 85 insertions(+), 30 deletions(-)
+ tools/testing/selftests/user_events/Makefile  |   9 +
+ .../selftests/user_events/ftrace_test.c       | 387 ++++++++++++++++++
+ tools/testing/selftests/user_events/settings  |   1 +
+ 3 files changed, 397 insertions(+)
+ create mode 100644 tools/testing/selftests/user_events/Makefile
+ create mode 100644 tools/testing/selftests/user_events/ftrace_test.c
+ create mode 100644 tools/testing/selftests/user_events/settings
 
-diff --git a/kernel/trace/trace_events_user.c b/kernel/trace/trace_events_user.c
-index 371f31472156..78b6b96c4cfa 100644
---- a/kernel/trace/trace_events_user.c
-+++ b/kernel/trace/trace_events_user.c
-@@ -41,6 +41,9 @@
- #define MAX_FIELD_ARRAY_SIZE 1024
- #define MAX_FIELD_ARG_NAME 256
- 
-+#define MAX_BPF_COPY_SIZE PAGE_SIZE
-+#define MAX_STACK_BPF_DATA 512
+diff --git a/tools/testing/selftests/user_events/Makefile b/tools/testing/selftests/user_events/Makefile
+new file mode 100644
+index 000000000000..d66c551a6fe3
+--- /dev/null
++++ b/tools/testing/selftests/user_events/Makefile
+@@ -0,0 +1,9 @@
++# SPDX-License-Identifier: GPL-2.0
++CFLAGS += -Wl,-no-as-needed -Wall -I../../../../usr/include
++LDLIBS += -lrt -lpthread -lm
 +
- static char *register_page_data;
- 
- static DEFINE_MUTEX(reg_mutex);
-@@ -78,8 +81,7 @@ struct user_event_refs {
- 	struct user_event *events[];
- };
- 
--typedef void (*user_event_func_t) (struct user_event *user,
--				   void *data, u32 datalen,
-+typedef void (*user_event_func_t) (struct user_event *user, struct iov_iter *i,
- 				   void *tpdata);
- 
- static int user_event_parse(char *name, char *args, char *flags,
-@@ -90,6 +92,20 @@ static u32 user_event_key(char *name)
- 	return jhash(name, strlen(name), 0);
- }
- 
-+static __always_inline __must_check
-+size_t copy_nofault(void *addr, size_t bytes, struct iov_iter *i)
++TEST_GEN_PROGS = ftrace_test
++
++TEST_FILES := settings
++
++include ../lib.mk
+diff --git a/tools/testing/selftests/user_events/ftrace_test.c b/tools/testing/selftests/user_events/ftrace_test.c
+new file mode 100644
+index 000000000000..68010fd7b719
+--- /dev/null
++++ b/tools/testing/selftests/user_events/ftrace_test.c
+@@ -0,0 +1,387 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * User Events FTrace Test Program
++ *
++ * Copyright (c) 2021 Beau Belgrave <beaub@linux.microsoft.com>
++ */
++
++#include <errno.h>
++#include <linux/user_events.h>
++#include <stdio.h>
++#include <stdlib.h>
++#include <fcntl.h>
++#include <sys/ioctl.h>
++#include <sys/stat.h>
++#include <unistd.h>
++
++#include "../kselftest_harness.h"
++
++const char *data_file = "/sys/kernel/debug/tracing/user_events_data";
++const char *status_file = "/sys/kernel/debug/tracing/user_events_status";
++const char *enable_file = "/sys/kernel/debug/tracing/events/user_events/__test_event/enable";
++const char *trace_file = "/sys/kernel/debug/tracing/trace";
++const char *fmt_file = "/sys/kernel/debug/tracing/events/user_events/__test_event/format";
++
++static int trace_bytes(void)
 +{
-+	size_t ret;
++	int fd = open(trace_file, O_RDONLY);
++	char buf[256];
++	int bytes = 0, got;
 +
-+	pagefault_disable();
++	if (fd == -1)
++		return -1;
 +
-+	ret = copy_from_iter_nocache(addr, bytes, i);
++	while (true) {
++		got = read(fd, buf, sizeof(buf));
 +
-+	pagefault_enable();
++		if (got == -1)
++			return -1;
 +
-+	return ret;
-+}
++		if (got == 0)
++			break;
 +
- static struct list_head *user_event_get_fields(struct trace_event_call *call)
- {
- 	struct user_event *user = (struct user_event *)call->data;
-@@ -525,7 +541,7 @@ static struct user_event *find_user_event(char *name, u32 *outkey)
- /*
-  * Writes the user supplied payload out to a trace file.
-  */
--static void user_event_ftrace(struct user_event *user, void *data, u32 datalen,
-+static void user_event_ftrace(struct user_event *user, struct iov_iter *i,
- 			      void *tpdata)
- {
- 	struct trace_event_file *file;
-@@ -541,41 +557,83 @@ static void user_event_ftrace(struct user_event *user, void *data, u32 datalen,
- 
- 	/* Allocates and fills trace_entry, + 1 of this is data payload */
- 	entry = trace_event_buffer_reserve(&event_buffer, file,
--					   sizeof(*entry) + datalen);
-+					   sizeof(*entry) + i->count);
- 
- 	if (unlikely(!entry))
- 		return;
- 
--	memcpy(entry + 1, data, datalen);
--
--	trace_event_buffer_commit(&event_buffer);
-+	if (unlikely(!copy_nofault(entry + 1, i->count, i)))
-+		__trace_event_discard_commit(event_buffer.buffer,
-+					     event_buffer.event);
-+	else
-+		trace_event_buffer_commit(&event_buffer);
- }
- 
- #ifdef CONFIG_PERF_EVENTS
-+static void user_event_bpf(struct user_event *user, struct iov_iter *i)
-+{
-+	struct user_bpf_context context;
-+	struct user_bpf_iter bpf_i;
-+	char fast_data[MAX_STACK_BPF_DATA];
-+	void *temp = NULL;
-+
-+	if ((user->flags & FLAG_BPF_ITER) && iter_is_iovec(i)) {
-+		/* Raw iterator */
-+		context.data_type = USER_BPF_DATA_ITER;
-+		context.data_len = i->count;
-+		context.iter = &bpf_i;
-+
-+		bpf_i.iov_offset = i->iov_offset;
-+		bpf_i.iov = i->iov;
-+		bpf_i.nr_segs = i->nr_segs;
-+	} else if (i->nr_segs == 1 && iter_is_iovec(i)) {
-+		/* Single buffer from user */
-+		context.data_type = USER_BPF_DATA_USER;
-+		context.data_len = i->count;
-+		context.udata = i->iov->iov_base + i->iov_offset;
-+	} else {
-+		/* Multi buffer from user */
-+		struct iov_iter copy = *i;
-+		size_t copy_size = min_t(size_t, i->count, MAX_BPF_COPY_SIZE);
-+
-+		context.data_type = USER_BPF_DATA_KERNEL;
-+		context.kdata = fast_data;
-+
-+		if (unlikely(copy_size > sizeof(fast_data))) {
-+			temp = kmalloc(copy_size, GFP_NOWAIT);
-+
-+			if (temp)
-+				context.kdata = temp;
-+			else
-+				copy_size = sizeof(fast_data);
-+		}
-+
-+		context.data_len = copy_nofault(context.kdata,
-+						copy_size, &copy);
++		bytes += got;
 +	}
 +
-+	trace_call_bpf(&user->call, &context);
++	close(fd);
 +
-+	kfree(temp);
++	return bytes;
 +}
 +
- /*
-  * Writes the user supplied payload out to perf ring buffer or eBPF program.
-  */
--static void user_event_perf(struct user_event *user, void *data, u32 datalen,
-+static void user_event_perf(struct user_event *user, struct iov_iter *i,
- 			    void *tpdata)
- {
- 	struct hlist_head *perf_head;
- 
--	if (bpf_prog_array_valid(&user->call)) {
--		struct user_bpf_context context = {0};
--
--		context.data_len = datalen;
--		context.data_type = USER_BPF_DATA_KERNEL;
--		context.kdata = data;
--
--		trace_call_bpf(&user->call, &context);
--	}
-+	if (bpf_prog_array_valid(&user->call))
-+		user_event_bpf(user, i);
- 
- 	perf_head = this_cpu_ptr(user->call.perf_events);
- 
- 	if (perf_head && !hlist_empty(perf_head)) {
- 		struct trace_entry *perf_entry;
- 		struct pt_regs *regs;
--		size_t size = sizeof(*perf_entry) + datalen;
-+		size_t size = sizeof(*perf_entry) + i->count;
- 		int context;
- 
- 		perf_entry = perf_trace_buf_alloc(ALIGN(size, 8),
-@@ -586,7 +644,10 @@ static void user_event_perf(struct user_event *user, void *data, u32 datalen,
- 
- 		perf_fetch_caller_regs(regs);
- 
--		memcpy(perf_entry + 1, data, datalen);
-+		if (unlikely(!copy_nofault(perf_entry + 1, i->count, i))) {
-+			perf_swevent_put_recursion_context(context);
-+			return;
-+		}
- 
- 		perf_trace_buf_submit(perf_entry, size, context,
- 				      user->call.event.type, 1, regs,
-@@ -1024,16 +1085,11 @@ static ssize_t user_events_write_core(struct file *file, struct iov_iter *i)
- 	if (likely(atomic_read(&tp->key.enabled) > 0)) {
- 		struct tracepoint_func *probe_func_ptr;
- 		user_event_func_t probe_func;
-+		struct iov_iter copy;
- 		void *tpdata;
--		void *kdata;
--		u32 datalen;
- 
--		kdata = kmalloc(i->count, GFP_KERNEL);
--
--		if (unlikely(!kdata))
--			return -ENOMEM;
--
--		datalen = copy_from_iter(kdata, i->count, i);
-+		if (unlikely(fault_in_iov_iter_readable(i, i->count)))
-+			return -EFAULT;
- 
- 		rcu_read_lock_sched();
- 
-@@ -1041,15 +1097,14 @@ static ssize_t user_events_write_core(struct file *file, struct iov_iter *i)
- 
- 		if (probe_func_ptr) {
- 			do {
-+				copy = *i;
- 				probe_func = probe_func_ptr->func;
- 				tpdata = probe_func_ptr->data;
--				probe_func(user, kdata, datalen, tpdata);
-+				probe_func(user, &copy, tpdata);
- 			} while ((++probe_func_ptr)->func);
- 		}
- 
- 		rcu_read_unlock_sched();
--
--		kfree(kdata);
- 	}
- 
- 	return ret;
++static int skip_until_empty_line(FILE *fp)
++{
++	int c, last = 0;
++
++	while (true) {
++		c = getc(fp);
++
++		if (c == EOF)
++			break;
++
++		if (last == '\n' && c == '\n')
++			return 0;
++
++		last = c;
++	}
++
++	return -1;
++}
++
++static int get_print_fmt(char *buffer, int len)
++{
++	FILE *fp = fopen(fmt_file, "r");
++	char *newline;
++
++	if (!fp)
++		return -1;
++
++	/* Read until empty line (Skip Common) */
++	if (skip_until_empty_line(fp) < 0)
++		goto err;
++
++	/* Read until empty line (Skip Properties) */
++	if (skip_until_empty_line(fp) < 0)
++		goto err;
++
++	/* Read in print_fmt: */
++	if (fgets(buffer, len, fp) == NULL)
++		goto err;
++
++	newline = strchr(buffer, '\n');
++
++	if (newline)
++		*newline = '\0';
++
++	fclose(fp);
++
++	return 0;
++err:
++	fclose(fp);
++
++	return -1;
++}
++
++static int clear(void)
++{
++	int fd = open(data_file, O_RDWR);
++
++	if (fd == -1)
++		return -1;
++
++	if (ioctl(fd, DIAG_IOCSDEL, "__test_event") == -1)
++		if (errno != ENOENT)
++			return -1;
++
++	close(fd);
++
++	return 0;
++}
++
++static int check_print_fmt(const char *event, const char *expected)
++{
++	struct user_reg reg = {0};
++	char print_fmt[256];
++	int ret;
++	int fd;
++
++	/* Ensure cleared */
++	ret = clear();
++
++	if (ret != 0)
++		return ret;
++
++	fd = open(data_file, O_RDWR);
++
++	if (fd == -1)
++		return fd;
++
++	reg.size = sizeof(reg);
++	reg.name_args = (__u64)event;
++
++	/* Register should work */
++	ret = ioctl(fd, DIAG_IOCSREG, &reg);
++
++	close(fd);
++
++	if (ret != 0)
++		return ret;
++
++	/* Ensure correct print_fmt */
++	ret = get_print_fmt(print_fmt, sizeof(print_fmt));
++
++	if (ret != 0)
++		return ret;
++
++	return strcmp(print_fmt, expected);
++}
++
++FIXTURE(user) {
++	int status_fd;
++	int data_fd;
++	int enable_fd;
++};
++
++FIXTURE_SETUP(user) {
++	self->status_fd = open(status_file, O_RDONLY);
++	ASSERT_NE(-1, self->status_fd);
++
++	self->data_fd = open(data_file, O_RDWR);
++	ASSERT_NE(-1, self->data_fd);
++
++	self->enable_fd = -1;
++}
++
++FIXTURE_TEARDOWN(user) {
++	close(self->status_fd);
++	close(self->data_fd);
++
++	if (self->enable_fd != -1) {
++		write(self->enable_fd, "0", sizeof("0"));
++		close(self->enable_fd);
++	}
++
++	ASSERT_EQ(0, clear());
++}
++
++TEST_F(user, register_events) {
++	struct user_reg reg = {0};
++	int page_size = sysconf(_SC_PAGESIZE);
++	char *status_page;
++
++	reg.size = sizeof(reg);
++	reg.name_args = (__u64)"__test_event u32 field1; u32 field2";
++
++	status_page = mmap(NULL, page_size, PROT_READ, MAP_SHARED,
++			   self->status_fd, 0);
++
++	/* Register should work */
++	ASSERT_EQ(0, ioctl(self->data_fd, DIAG_IOCSREG, &reg));
++	ASSERT_EQ(0, reg.write_index);
++	ASSERT_NE(0, reg.status_index);
++
++	/* Multiple registers should result in same index */
++	ASSERT_EQ(0, ioctl(self->data_fd, DIAG_IOCSREG, &reg));
++	ASSERT_EQ(0, reg.write_index);
++	ASSERT_NE(0, reg.status_index);
++
++	/* Ensure disabled */
++	self->enable_fd = open(enable_file, O_RDWR);
++	ASSERT_NE(-1, self->enable_fd);
++	ASSERT_NE(-1, write(self->enable_fd, "0", sizeof("0")))
++
++	/* MMAP should work and be zero'd */
++	ASSERT_NE(MAP_FAILED, status_page);
++	ASSERT_NE(NULL, status_page);
++	ASSERT_EQ(0, status_page[reg.status_index]);
++
++	/* Enable event and ensure bits updated in status */
++	ASSERT_NE(-1, write(self->enable_fd, "1", sizeof("1")))
++	ASSERT_EQ(EVENT_STATUS_FTRACE, status_page[reg.status_index]);
++
++	/* Disable event and ensure bits updated in status */
++	ASSERT_NE(-1, write(self->enable_fd, "0", sizeof("0")))
++	ASSERT_EQ(0, status_page[reg.status_index]);
++
++	/* File still open should return -EBUSY for delete */
++	ASSERT_EQ(-1, ioctl(self->data_fd, DIAG_IOCSDEL, "__test_event"));
++	ASSERT_EQ(EBUSY, errno);
++
++	/* Delete should work only after close */
++	close(self->data_fd);
++	self->data_fd = open(data_file, O_RDWR);
++	ASSERT_EQ(0, ioctl(self->data_fd, DIAG_IOCSDEL, "__test_event"));
++
++	/* Unmap should work */
++	ASSERT_EQ(0, munmap(status_page, page_size));
++}
++
++TEST_F(user, write_events) {
++	struct user_reg reg = {0};
++	struct iovec io[3];
++	__u32 field1, field2;
++	int before = 0, after = 0;
++
++	reg.size = sizeof(reg);
++	reg.name_args = (__u64)"__test_event u32 field1; u32 field2";
++
++	field1 = 1;
++	field2 = 2;
++
++	io[0].iov_base = &reg.write_index;
++	io[0].iov_len = sizeof(reg.write_index);
++	io[1].iov_base = &field1;
++	io[1].iov_len = sizeof(field1);
++	io[2].iov_base = &field2;
++	io[2].iov_len = sizeof(field2);
++
++	/* Register should work */
++	ASSERT_EQ(0, ioctl(self->data_fd, DIAG_IOCSREG, &reg));
++	ASSERT_EQ(0, reg.write_index);
++	ASSERT_NE(0, reg.status_index);
++
++	/* Write should fail on invalid slot with ENOENT */
++	io[0].iov_base = &field2;
++	io[0].iov_len = sizeof(field2);
++	ASSERT_EQ(-1, writev(self->data_fd, (const struct iovec *)io, 3));
++	ASSERT_EQ(ENOENT, errno);
++	io[0].iov_base = &reg.write_index;
++	io[0].iov_len = sizeof(reg.write_index);
++
++	/* Enable event */
++	self->enable_fd = open(enable_file, O_RDWR);
++	ASSERT_NE(-1, write(self->enable_fd, "1", sizeof("1")))
++
++	/* Write should make it out to ftrace buffers */
++	before = trace_bytes();
++	ASSERT_NE(-1, writev(self->data_fd, (const struct iovec *)io, 3));
++	after = trace_bytes();
++	ASSERT_GT(after, before);
++}
++
++TEST_F(user, write_fault) {
++	struct user_reg reg = {0};
++	struct iovec io[2];
++	int l = sizeof(__u64);
++	void *anon;
++
++	reg.size = sizeof(reg);
++	reg.name_args = (__u64)"__test_event u64 anon";
++
++	anon = mmap(NULL, l, PROT_READ, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
++	ASSERT_NE(MAP_FAILED, anon);
++
++	io[0].iov_base = &reg.write_index;
++	io[0].iov_len = sizeof(reg.write_index);
++	io[1].iov_base = anon;
++	io[1].iov_len = l;
++
++	/* Register should work */
++	ASSERT_EQ(0, ioctl(self->data_fd, DIAG_IOCSREG, &reg));
++	ASSERT_EQ(0, reg.write_index);
++	ASSERT_NE(0, reg.status_index);
++
++	/* Write should work normally */
++	ASSERT_NE(-1, writev(self->data_fd, (const struct iovec *)io, 2));
++
++	/* Faulted data should zero fill and work */
++	ASSERT_EQ(0, madvise(anon, l, MADV_DONTNEED));
++	ASSERT_NE(-1, writev(self->data_fd, (const struct iovec *)io, 2));
++	ASSERT_EQ(0, munmap(anon, l));
++}
++
++TEST_F(user, print_fmt) {
++	int ret;
++
++	ret = check_print_fmt("__test_event __rel_loc char[] data",
++			      "print fmt: \"data=%s\", __get_rel_str(data)");
++	ASSERT_EQ(0, ret);
++
++	ret = check_print_fmt("__test_event __data_loc char[] data",
++			      "print fmt: \"data=%s\", __get_str(data)");
++	ASSERT_EQ(0, ret);
++
++	ret = check_print_fmt("__test_event s64 data",
++			      "print fmt: \"data=%lld\", REC->data");
++	ASSERT_EQ(0, ret);
++
++	ret = check_print_fmt("__test_event u64 data",
++			      "print fmt: \"data=%llu\", REC->data");
++	ASSERT_EQ(0, ret);
++
++	ret = check_print_fmt("__test_event s32 data",
++			      "print fmt: \"data=%d\", REC->data");
++	ASSERT_EQ(0, ret);
++
++	ret = check_print_fmt("__test_event u32 data",
++			      "print fmt: \"data=%u\", REC->data");
++	ASSERT_EQ(0, ret);
++
++	ret = check_print_fmt("__test_event int data",
++			      "print fmt: \"data=%d\", REC->data");
++	ASSERT_EQ(0, ret);
++
++	ret = check_print_fmt("__test_event unsigned int data",
++			      "print fmt: \"data=%u\", REC->data");
++	ASSERT_EQ(0, ret);
++
++	ret = check_print_fmt("__test_event s16 data",
++			      "print fmt: \"data=%d\", REC->data");
++	ASSERT_EQ(0, ret);
++
++	ret = check_print_fmt("__test_event u16 data",
++			      "print fmt: \"data=%u\", REC->data");
++	ASSERT_EQ(0, ret);
++
++	ret = check_print_fmt("__test_event short data",
++			      "print fmt: \"data=%d\", REC->data");
++	ASSERT_EQ(0, ret);
++
++	ret = check_print_fmt("__test_event unsigned short data",
++			      "print fmt: \"data=%u\", REC->data");
++	ASSERT_EQ(0, ret);
++
++	ret = check_print_fmt("__test_event s8 data",
++			      "print fmt: \"data=%d\", REC->data");
++	ASSERT_EQ(0, ret);
++
++	ret = check_print_fmt("__test_event u8 data",
++			      "print fmt: \"data=%u\", REC->data");
++	ASSERT_EQ(0, ret);
++
++	ret = check_print_fmt("__test_event char data",
++			      "print fmt: \"data=%d\", REC->data");
++	ASSERT_EQ(0, ret);
++
++	ret = check_print_fmt("__test_event unsigned char data",
++			      "print fmt: \"data=%u\", REC->data");
++	ASSERT_EQ(0, ret);
++
++	ret = check_print_fmt("__test_event char[4] data",
++			      "print fmt: \"data=%s\", REC->data");
++	ASSERT_EQ(0, ret);
++}
++
++int main(int argc, char **argv)
++{
++	return test_harness_run(argc, argv);
++}
+diff --git a/tools/testing/selftests/user_events/settings b/tools/testing/selftests/user_events/settings
+new file mode 100644
+index 000000000000..ba4d85f74cd6
+--- /dev/null
++++ b/tools/testing/selftests/user_events/settings
+@@ -0,0 +1 @@
++timeout=90
 -- 
 2.17.1
 
