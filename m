@@ -2,221 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE21C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:27:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B38FC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:27:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352665AbiARD12 (ORCPT
+        id S1356773AbiARD1i (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:27:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39108 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351537AbiARDG7 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:06:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0CBCC014F33;
-        Mon, 17 Jan 2022 18:49:03 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23D85B8124B;
-        Tue, 18 Jan 2022 02:49:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F4191C36AF5;
-        Tue, 18 Jan 2022 02:48:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474141;
-        bh=OTBb49Fi/RleHdQTOg9kHAnjLKJeSfvgKcpSmDTOnYQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=c1IdkXVDA8VwtuMxMJdQbKRfSXEkEISpsWo7HxcGOMQjStdnr/oePhLnOVYrcdDOw
-         YVn+qTN6zZ3cXQ5ngSClZxChAAuOYvWRvo9R1R8hibLv4Uf9+gPHX3Wdhc4MoGjCG1
-         Zz5FEe5MMgB/W3SkmYeGU0rxBzsh+7gBdYKaZTjFathM6OMYzBdQtcUaiTWjSPyPu2
-         Zfo/Mm7BoEFlaetgomOe1+9A/XoXSUFHZ6trr8Nm1TkY1Wj+kKrzbvpCyBg4DPFhAz
-         FI1AVSOjfNZfqUgkSFYOC/sFd26fusDBMk4t4qImKxvA+A2CoYz869vLAT4TehrlzX
-         QkMOCoZk/NMIw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        bjorn.andersson@linaro.org, lgirdwood@gmail.com,
-        linux-arm-msm@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 56/59] regulator: qcom_smd: Align probe function with rpmh-regulator
-Date:   Mon, 17 Jan 2022 21:46:57 -0500
-Message-Id: <20220118024701.1952911-56-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
-References: <20220118024701.1952911-1-sashal@kernel.org>
+        Mon, 17 Jan 2022 22:27:38 -0500
+Received: from mout.gmx.net ([212.227.15.19]:38321 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1358030AbiARDWB (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 17 Jan 2022 22:22:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1642476115;
+        bh=5Qq2p5W2JibUj3VnfM9qhlcyuLRttlCtXprUMQmQXP8=;
+        h=X-UI-Sender-Class:Subject:From:To:Cc:Date:In-Reply-To:References;
+        b=bj/v7NoGJ48DIogvAZtggMQL5toQPJz4DkBo9Kxx4UI2CIWHhfKmLzE+SC2lopj5o
+         exNoWCfAzqUMjq9V8/+V9CthAQsmGeJmYQb3WW0c3vRihbqz/A3z3LRlywRWHgzTx7
+         BKZu1tbbL246kOwmQSkURUBuB+a01IS8nfd+ZzYY=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from homer.fritz.box ([185.191.218.34]) by mail.gmx.net (mrgmx005
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MowKi-1mWi9l1fH4-00qQA7; Tue, 18
+ Jan 2022 04:21:55 +0100
+Message-ID: <0a1c1464e40e4c60687bc715c0b78c9124e456f8.camel@gmx.de>
+Subject: Re: regression: LTP isofs testcase failure - bisection fingers
+ "loop: make autoclear operation asynchronous"
+From:   Mike Galbraith <efault@gmx.de>
+To:     Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Cc:     lkml <linux-kernel@vger.kernel.org>
+Date:   Tue, 18 Jan 2022 04:21:54 +0100
+In-Reply-To: <c53285e4-cbd4-5fd0-cbc9-93e2e3d3d88d@I-love.SAKURA.ne.jp>
+References: <4eb771d2b48ee94ba2e3aa8706bce8117d398e80.camel@gmx.de>
+         <c53285e4-cbd4-5fd0-cbc9-93e2e3d3d88d@I-love.SAKURA.ne.jp>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.2 
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:jPTabahKRVhBNOutTVLWwgUTAD/OU6OXKmHOJNdxhKA+/AHqbCY
+ 0iAbji0zvSFtTRoscm5OMLXMu+4SGlL8bS45i8c+NuHTDVUscCTqIH562vLAhM6WAGrmNol
+ mN4Pid6a/bd038rrM98Ke65Lmn+iS9mRAhY9W9vXi6YwjXpUVJItHBZQsVwcY0m9i7pi344
+ shu1+gtNApxxIx3lHNMsA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:cUH10lS9UJs=:xqFcs24r5cIenB9Vwbgz1d
+ hWf/3LRZ83ZD4DDOCv2yuR0klkm/dJe/K3LZC/WK6A1XcWBK0nviY9ml3Z8wkT55ciSruOZo/
+ R4R+rbF/3tca5tu6r95wXzJK6Ar4Ro8ChvY+Vte+f+UgLjUmipRvEyCoMHzNQaFOL+WyhPgne
+ LYcGP8tUata7XNbGkro9nWOQ3emmXjsH6QuQGkgtKrvR7YKarDRPZBC3vUFl3nAEqF9OujgCK
+ jTn0YuuYs/TEJ0zIi/hqRfsQgnesuvS16DBU0GP5E8nyiZ0N6jiG1ABPn4mxA1zjlVdszLfcx
+ UmZ7/JxL7QAwwnvump88SpBpeAGhLR8YzhR0yKU1YBvt6/ASk6kpwRt4cKak6hqee8O3Soq7q
+ 1XIUcNKv8tZ1zgNTzYxPKOO4HpmRkw5LeFKi9WmGm72/tQdtWZ+NxwJ6Ek48HtkJsQ2cCmW77
+ I7jYK6VnaCqOqH0EHJjnssUPfQZ6TnBKP837Z+2hD+W6d8gkmgEC8kOYxsGsKlviWjQpg1wJ3
+ xg6ZeL+p+Iq9+71IxAQGrVi9muGyO7dFgOMVj3SfFsWPRTSzvjzfjRLAtnT2avGv5Wrm5d2Gn
+ QQUd7qmEas71MkeeSYBs+0V68aPAW9H8dUqYHgwAkvO8Gbz+i4c7C7GMqLjoPc7MT8AaqdiVn
+ WdrIFKgw9z1wWx2pTvhVKxIDzeWei3Bv+XRq9XswN9/oc+YI+xOIRk6seeY9NTJDabqm5UyHz
+ OmUBxjhT5viN5qeSUzrUhWpyJnMfmexJ7lWtx31OSx65c9tAeHEw+sGMMBWSv1PSmagTiZk0l
+ wIxYg9nH2IS/GGUC2J4qvPSVkkA9rviCG0l8a6Okh7hZ8kulSIj9CNJSYP4Z3ye1U20kz4TRm
+ F29X6ZY2VpQw9dHj/ml+M9vErG6cn5+HvfpfXGqdItFw24B6XY+jGGFSO6qjsTHTf4PTwAZ0b
+ 1RzVWQSjSrDdABbUZi9SCe/jCpAQQr/ghjjOOa4wH1OMYTsgDiTdCyxQas2T2PEQZWzFpS1AG
+ 0RsQqVflnylC7dVcDc+MWVpkr6UxnBixxoZXyDZnTNPpEgCUshKeoSu7+WlsAx17Vg==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Konrad Dybcio <konrad.dybcio@somainline.org>
+On Tue, 2022-01-18 at 06:57 +0900, Tetsuo Handa wrote:
+> On 2022/01/18 0:34, Mike Galbraith wrote:
+> > Greetings,
+> >
+> > LTP's isofs testcase began failing this cycle, and bisected as below,
+> > which a revert then confirmed.=C2=A0 Full testcase output attached.
+> >
+>
+> Thanks for reporting.
+> Discussion is continued at https://lkml.kernel.org/r/cdaf1346-2885-f0da-=
+8878-12264bd48348@I-love.SAKURA.ne.jp=C2=A0.
 
-[ Upstream commit 14e2976fbabdacb01335d7f91eeebbc89c67ddb1 ]
+FWIW, simply immediately flushing that shiny new rundown_work turned
+LTP's thumb back to upward pointing.
 
-The RPMh regulator driver is much newer and gets more attention, which in
-consequence makes it do a few things better. Update qcom_smd-regulator's
-probe function to mimic what rpmh-regulator does to address a couple of
-issues:
+=2D--
+ drivers/block/loop.c |    1 +
+ 1 file changed, 1 insertion(+)
 
-- Probe defer now works correctly, before it used to, well,
-  kinda just die.. This fixes reliable probing on (at least) PM8994,
-  because Linux apparently cannot deal with supply map dependencies yet..
+=2D-- a/drivers/block/loop.c
++++ b/drivers/block/loop.c
+@@ -1197,6 +1197,7 @@ static void loop_schedule_rundown(struct
+ 	kobject_get(&bdev->bd_device.kobj);
+ 	INIT_WORK(&lo->rundown_work, loop_rundown_workfn);
+ 	queue_work(system_long_wq, &lo->rundown_work);
++	flush_work(&lo->rundown_work);
+ }
 
-- Regulator data is now matched more sanely: regulator data is matched
-  against each individual regulator node name and throwing an -EINVAL if
-  data is missing, instead of just assuming everything is fine and
-  iterating over all subsequent array members.
-
-- status = "disabled" will now work for disabling individual regulators in
-  DT. Previously it didn't seem to do much if anything at all.
-
-Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
-Link: https://lore.kernel.org/r/20211230023442.1123424-1-konrad.dybcio@somainline.org
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/regulator/qcom_smd-regulator.c | 100 +++++++++++++++++--------
- 1 file changed, 70 insertions(+), 30 deletions(-)
-
-diff --git a/drivers/regulator/qcom_smd-regulator.c b/drivers/regulator/qcom_smd-regulator.c
-index fe2fb36803e0b..8d920a3ad40b8 100644
---- a/drivers/regulator/qcom_smd-regulator.c
-+++ b/drivers/regulator/qcom_smd-regulator.c
-@@ -17,6 +17,7 @@
- #include <linux/of_device.h>
- #include <linux/platform_device.h>
- #include <linux/regulator/driver.h>
-+#include <linux/regulator/of_regulator.h>
- #include <linux/soc/qcom/smd-rpm.h>
- 
- struct qcom_rpm_reg {
-@@ -673,52 +674,91 @@ static const struct of_device_id rpm_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, rpm_of_match);
- 
--static int rpm_reg_probe(struct platform_device *pdev)
-+/**
-+ * rpm_regulator_init_vreg() - initialize all attributes of a qcom_smd-regulator
-+ * @vreg:		Pointer to the individual qcom_smd-regulator resource
-+ * @dev:		Pointer to the top level qcom_smd-regulator PMIC device
-+ * @node:		Pointer to the individual qcom_smd-regulator resource
-+ *			device node
-+ * @rpm:		Pointer to the rpm bus node
-+ * @pmic_rpm_data:	Pointer to a null-terminated array of qcom_smd-regulator
-+ *			resources defined for the top level PMIC device
-+ *
-+ * Return: 0 on success, errno on failure
-+ */
-+static int rpm_regulator_init_vreg(struct qcom_rpm_reg *vreg, struct device *dev,
-+				   struct device_node *node, struct qcom_smd_rpm *rpm,
-+				   const struct rpm_regulator_data *pmic_rpm_data)
- {
--	const struct rpm_regulator_data *reg;
--	const struct of_device_id *match;
--	struct regulator_config config = { };
-+	struct regulator_config config = {};
-+	const struct rpm_regulator_data *rpm_data;
- 	struct regulator_dev *rdev;
-+	int ret;
-+
-+	for (rpm_data = pmic_rpm_data; rpm_data->name; rpm_data++)
-+		if (of_node_name_eq(node, rpm_data->name))
-+			break;
-+
-+	if (!rpm_data->name) {
-+		dev_err(dev, "Unknown regulator %pOFn\n", node);
-+		return -EINVAL;
-+	}
-+
-+	vreg->dev	= dev;
-+	vreg->rpm	= rpm;
-+	vreg->type	= rpm_data->type;
-+	vreg->id	= rpm_data->id;
-+
-+	memcpy(&vreg->desc, rpm_data->desc, sizeof(vreg->desc));
-+	vreg->desc.name = rpm_data->name;
-+	vreg->desc.supply_name = rpm_data->supply;
-+	vreg->desc.owner = THIS_MODULE;
-+	vreg->desc.type = REGULATOR_VOLTAGE;
-+	vreg->desc.of_match = rpm_data->name;
-+
-+	config.dev		= dev;
-+	config.of_node		= node;
-+	config.driver_data	= vreg;
-+
-+	rdev = devm_regulator_register(dev, &vreg->desc, &config);
-+	if (IS_ERR(rdev)) {
-+		ret = PTR_ERR(rdev);
-+		dev_err(dev, "%pOFn: devm_regulator_register() failed, ret=%d\n", node, ret);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int rpm_reg_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	const struct rpm_regulator_data *vreg_data;
-+	struct device_node *node;
- 	struct qcom_rpm_reg *vreg;
- 	struct qcom_smd_rpm *rpm;
-+	int ret;
- 
- 	rpm = dev_get_drvdata(pdev->dev.parent);
- 	if (!rpm) {
--		dev_err(&pdev->dev, "unable to retrieve handle to rpm\n");
-+		dev_err(&pdev->dev, "Unable to retrieve handle to rpm\n");
- 		return -ENODEV;
- 	}
- 
--	match = of_match_device(rpm_of_match, &pdev->dev);
--	if (!match) {
--		dev_err(&pdev->dev, "failed to match device\n");
-+	vreg_data = of_device_get_match_data(dev);
-+	if (!vreg_data)
- 		return -ENODEV;
--	}
- 
--	for (reg = match->data; reg->name; reg++) {
-+	for_each_available_child_of_node(dev->of_node, node) {
- 		vreg = devm_kzalloc(&pdev->dev, sizeof(*vreg), GFP_KERNEL);
- 		if (!vreg)
- 			return -ENOMEM;
- 
--		vreg->dev = &pdev->dev;
--		vreg->type = reg->type;
--		vreg->id = reg->id;
--		vreg->rpm = rpm;
--
--		memcpy(&vreg->desc, reg->desc, sizeof(vreg->desc));
--
--		vreg->desc.id = -1;
--		vreg->desc.owner = THIS_MODULE;
--		vreg->desc.type = REGULATOR_VOLTAGE;
--		vreg->desc.name = reg->name;
--		vreg->desc.supply_name = reg->supply;
--		vreg->desc.of_match = reg->name;
--
--		config.dev = &pdev->dev;
--		config.driver_data = vreg;
--		rdev = devm_regulator_register(&pdev->dev, &vreg->desc, &config);
--		if (IS_ERR(rdev)) {
--			dev_err(&pdev->dev, "failed to register %s\n", reg->name);
--			return PTR_ERR(rdev);
-+		ret = rpm_regulator_init_vreg(vreg, dev, node, rpm, vreg_data);
-+
-+		if (ret < 0) {
-+			of_node_put(node);
-+			return ret;
- 		}
- 	}
- 
--- 
-2.34.1
+ static int loop_clr_fd(struct loop_device *lo)
 
