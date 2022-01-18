@@ -2,142 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B912AC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 10:51:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A0B5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 10:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238063AbiARKvW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 05:51:22 -0500
-Received: from outbound3.eu.mailhop.org ([52.29.21.168]:11614 "EHLO
-        outbound3.eu.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231760AbiARKvV (ORCPT
+        id S238141AbiARKzb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 05:55:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35318 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230113AbiARKz3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 05:51:21 -0500
-X-Greylist: delayed 2703 seconds by postgrey-1.27 at vger.kernel.org; Tue, 18 Jan 2022 05:51:21 EST
-ARC-Seal: i=1; a=rsa-sha256; t=1642500316; cv=none;
-        d=outbound.mailhop.org; s=arc-outbound20181012;
-        b=ZSC/JHdGSdlVsTfvheO4aaKm3UqmMr5Sbf13dV35vdP0mGemrJjVv9zRplK9BIk1BV23LN1t9aw7S
-         jonpEtO5Io+UUMRXUck6co67m8O/1tn5g/pLG07evXlS6B4vXM6Ksbj/v+L22CPMW/5N3WmGUfEEaQ
-         pnsBuPakTKH20KlKG75Lo4lsVNgge+jUnEhQwC3EaYz3q0Rh/AITEvFMWtHIqWRfULbuHBfJzlFdkE
-         Pvz1zmKcramuaT/lfTX+GglyjiZTURGySs3mTyLDLTJzQcbGv45X9Piy8IskWr1sxQF+sDMFLhj4io
-         /VFwmKorfBHWQhth8N93BIBCIIPu0qg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=outbound.mailhop.org; s=arc-outbound20181012;
-        h=content-transfer-encoding:content-type:mime-version:message-id:in-reply-to:
-         date:references:subject:cc:to:from:dkim-signature:dkim-signature:from;
-        bh=+nnzxvvQj7+bvjQcSTQPnIo0ojYxhfwmrLpYQ8reS7o=;
-        b=QEjX+HUTpBwhrngljwl9WJG7EVkw80G6K/hfqUXEbm7LC4qR7PwMmbLUfYewushFcT2hF8MCLu9mD
-         hKOye5Bh/tNCzbQe13G755vq2I8+He2yPSv9SqS0C+6Sus/Loz9F07CeTsGMEi38Sasyof+B50IrQr
-         hpQW8Mv+/dY/+6jqmUSJAeVUPDWk68IpayDJbrQdmHPR4BZlHzG+7H1d+4cvOEQqflCZiQ7gU9cV2r
-         13GjMVV+N7jGd1WOnjiMKhNz1fgYyrWqndd9Flck788+NgJfNggq52PaILkxswwC67kds3a41iuD8Q
-         gmuFWYer4mOYfiPxUzWVli5VLGEXSJA==
-ARC-Authentication-Results: i=1; outbound3.eu.mailhop.org;
-        spf=pass smtp.mailfrom=stackframe.org smtp.remote-ip=91.207.61.48;
-        dmarc=none header.from=stackframe.org;
-        arc=none header.oldest-pass=0;
+        Tue, 18 Jan 2022 05:55:29 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37305C061574;
+        Tue, 18 Jan 2022 02:55:29 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id p5so54350008ybd.13;
+        Tue, 18 Jan 2022 02:55:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=stackframe.org; s=duo-1634547266507-560c42ae;
-        h=content-transfer-encoding:content-type:mime-version:message-id:in-reply-to:
-         date:references:subject:cc:to:from:from;
-        bh=+nnzxvvQj7+bvjQcSTQPnIo0ojYxhfwmrLpYQ8reS7o=;
-        b=bxHvMxbl5ntdEp+6XLmItF/hxD10ToBwYre08e+FlQmA74fF/ccBqQiMIcYe+d+Lyj4ybM4t0sQBt
-         I/pNyEqVO9xn5rYE+naazMJ3LcX0m3EO7UTH6I5PIjuZ+opPjdXRxSaZfHAUvEJTer4SzxBwbs/VDZ
-         gX0C1QKizq7goO3k=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=outbound.mailhop.org; s=dkim-high;
-        h=content-transfer-encoding:content-type:mime-version:message-id:in-reply-to:
-         date:references:subject:cc:to:from:from;
-        bh=+nnzxvvQj7+bvjQcSTQPnIo0ojYxhfwmrLpYQ8reS7o=;
-        b=pWEf8RqoSlJW6MG02oIJd0fcFPHtwGSAqcs+K0FqJVn1OTouF/8AYmJXZDeODEpQ0OxQPtX3HOhhc
-         kfOrFkl/C+a2cw+jsgHoUOO9xxHAxJgpCn5wRTT7mv0U2mf7ybuOslv82HITN++NnrrKyNIQxYLImh
-         x5EGL9mhemxmCX/sdBEBfQEkJdvvPkCSpHkZU2GHyQA2J3LgGmJFXrSt1hE19P+EAS3xcxvWyit6bA
-         gxKPPfII/I6DwX2T6wx6I3u1ikBPqW6qno+I4tOBTCfE2HcCrERowc4UwXzn23Gl1Tomjmtf1l0S/z
-         QA2/AwM9485CylFlf/1pf/bPk5TPWyA==
-X-Originating-IP: 91.207.61.48
-X-MHO-RoutePath: dG9ta2lzdG5lcm51
-X-MHO-User: 1f77ca2d-7846-11ec-92ec-95b64d6800c5
-X-Report-Abuse-To: https://support.duocircle.com/support/solutions/articles/5000540958-duocircle-standard-smtp-abuse-information
-X-Mail-Handler: DuoCircle Outbound SMTP
-Received: from mail.duncanthrax.net (propper.duncanthrax.net [91.207.61.48])
-        by outbound3.eu.mailhop.org (Halon) with ESMTPSA
-        id 1f77ca2d-7846-11ec-92ec-95b64d6800c5;
-        Tue, 18 Jan 2022 10:05:12 +0000 (UTC)
-Received: from hsi-kbw-109-193-149-228.hsi7.kabel-badenwuerttemberg.de ([109.193.149.228] helo=x1.stackframe.org.stackframe.org)
-        by mail.duncanthrax.net with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <svens@stackframe.org>)
-        id 1n9lMU-004ylN-Hg; Tue, 18 Jan 2022 12:05:10 +0200
-From:   Sven Schnelle <svens@stackframe.org>
-To:     Michel =?utf-8?Q?D=C3=A4nzer?= <michel.daenzer@mailbox.org>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Helge Deller <deller@gmx.de>, linux-fbdev@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
-References: <YeG8ydoJNWWkGrTb@ls3530>
-        <c48ad8ae-aea5-43fa-882f-dccb90dde9a4@suse.de>
-        <87bl0amc6s.fsf@x1.stackframe.org>
-        <a922343d-8805-3446-c000-cf7969699823@mailbox.org>
-Date:   Tue, 18 Jan 2022 11:05:08 +0100
-In-Reply-To: <a922343d-8805-3446-c000-cf7969699823@mailbox.org> ("Michel
-        =?utf-8?Q?D=C3=A4nzer=22's?= message of "Tue, 18 Jan 2022 09:58:13 +0100")
-Message-ID: <87h7a1l5pn.fsf@x1.stackframe.org>
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qX9bpX2U2LycHUgsFRXfic647Pds1didQ033KinuA4k=;
+        b=o0BztHVZ1LQmVJP92fkpl16r9fBU9Pm1o0VonUhcxZhiOO4ihX0Pb29+y1k1PNj34z
+         +UpG5OCvAcyxsJB8uHLXvj4BUywITXo07plyGSKDS/P/OfsOVqhH98R6zHlWEq3QXMQu
+         08Ta72t3KaHMx2M4HzFhQw3UC5lLXkG1NlQPL8+3G0+1zVSd+meTommKZpuJXFvvzD4I
+         dIMder4solR5FSuntM0EXN5+sPxBJXh0+ZdyO656iPDuOKqq4Mh5wWmYi/tMdL9e1mSK
+         GpOyuSxKR25wp9J+OsPtNipL+7L0FHc1zpSUiVAIp+kvMCmaLEFoDE2DvueYmFq59Dlc
+         HRfQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qX9bpX2U2LycHUgsFRXfic647Pds1didQ033KinuA4k=;
+        b=UpQTeEGvZqVyJFE81Be4TJOGYpvnXcT8s8in/Z0TOWbDcopFlT0s8gL8u9XD424mSm
+         O76AEcEu0X9FC2QgfPnMfah+Vz78m5Kwmm7UHJi+Z9HzPOh16LY4bz2kE524W0OEdvfx
+         BSsFvj4EiYTDTGli/tATVeZ6fmWtMe6F/F8+Fo4IAUDROt9H/6pC0xGeLO3n0Qrmnav8
+         8CfYZYYEoBTcZ434pkZADZhqP1TB8xepzYt6oILQJJcnou4MKUSPdEsl073y7EOEoiVm
+         ehdfZr8evGFeH5FXGcohqPIwVx2/kxBXKOZDyjuLRvbhG0D/iYZdZFOvbFBNn1Y/heX6
+         0qiA==
+X-Gm-Message-State: AOAM530dPJxhAKt4wOlSKlHDhukHzKCBGHA/T7HUzkePVus8pZ1qFi/Y
+        3l6FCZODqwzQOwU3lL6ZVwd/waM6LXXdH0yDHXs=
+X-Google-Smtp-Source: ABdhPJz5ZjtgS46r8HctMvvAHzp05vBC1E/wskDFyy3SGIR5TezLZWsW4hrfgYRNWuc7PJnV/9pEtp+oDwGZCOpDT9w=
+X-Received: by 2002:a25:d293:: with SMTP id j141mr14450203ybg.690.1642503328474;
+ Tue, 18 Jan 2022 02:55:28 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <20220113103215.27080-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20220117081110.bkwr3ttoexgr2wjt@uno.localdomain> <CA+V-a8t=f14QH=M8p8mufeJsqddwOn6XPqFma5TEbfQ7XdLBZA@mail.gmail.com>
+In-Reply-To: <CA+V-a8t=f14QH=M8p8mufeJsqddwOn6XPqFma5TEbfQ7XdLBZA@mail.gmail.com>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Tue, 18 Jan 2022 10:55:02 +0000
+Message-ID: <CA+V-a8sNoX6=MUj6VVR7ewR2O8gbQb9z41MAYzehd0P05VYL2w@mail.gmail.com>
+Subject: Re: [PATCH] media: dt-bindings: media: renesas,csi2: Update
+ data-lanes property
+To:     Jacopo Mondi <jacopo@jmondi.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        linux-media <linux-media@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Michel,
-
-Michel D=C3=A4nzer <michel.daenzer@mailbox.org> writes:
-
-> On 2022-01-17 19:47, Sven Schnelle wrote:
->>=20
->>>  * There's no new development in fbdev and there are no new
->>>    drivers. Everyone works on DRM, which is better in most
->>>    regards. The consequence is that userspace is slowly loosing the
->>>   ability to use fbdev.
->>=20
->> That might be caused by the fact that no new drivers are accepted for
->> fbdev. I wrote a driver for the HP Visualize FX5/10 cards end of last
->> year which was rejected for inclusion into fbdev[1].
->>=20
->> Based on your recommendation i re-wrote the whole thing in DRM. This
->> works but has several drawbacks:
->>=20
->> - no modesetting. With fbdev, i can nicely switch resolutions with
->>   fbset. That doesn't work, and i've been told that this is not supporte=
-d[2]
->>=20
->> - It is *much* slower than fbset with hardware blitting. I would have to
->>   dig out the numbers, but it's in the ratio of 1:15. The nice thing
->>   with fbdev blitting is that i get an array of pixels and the
->>   foreground/background colors all of these these pixels should have.
->>   With the help of the hardware blitting, i can write 32 pixels at once
->>   with every 32-bit transfer.
->>=20
->>   With DRM, the closest i could find was DRM_FORMAT_C8, which means one
->>   byte per pixel. So i can put 4 pixels into one 32-bit transfer.
->>=20
->>   fbdev also clears the lines with hardware blitting, which is much
->>   faster than clearing it with memcpy.
->>=20
->>   Based on your recommendation i also verified that pci coalescing is
->>   enabled.
->>=20
->>   These numbers are with DRM's unnatural scrolling behaviour - it seems
->>   to scroll several (text)lines at once if it takes to much time. I
->>   guess if DRM would scroll line by line it would be even slower.
->>=20
->>   If DRM would add those things - hardware clearing of memory regions,
->>   hw blitting for text with a FG/BG color and modesetting i wouldn't
->>   care about fbdev at all. But right now, it's working way faster for me.
+On Tue, Jan 18, 2022 at 9:11 AM Lad, Prabhakar
+<prabhakar.csengg@gmail.com> wrote:
 >
-> A DRM driver can implement the same fbdev acceleration hooks as an fbdev =
-driver.
+> Hi Jacopo,
+>
+> Thank you for the review.
+>
+> On Mon, Jan 17, 2022 at 8:11 AM Jacopo Mondi <jacopo@jmondi.org> wrote:
+> >
+> > Hello Prabhakar,
+> >
+> > On Thu, Jan 13, 2022 at 10:32:14AM +0000, Lad Prabhakar wrote:
+> > > CSI-2 (CSI4LNK0) on R-Car and RZ/G2 supports 4-lane mode which is already
+> > > handled by rcar-csi2.c driver. This patch updates the data-lanes property
+> > > to describe the same.
+> > >
+> > > Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+> > > ---
+> > >  .../devicetree/bindings/media/renesas,csi2.yaml          | 9 ++++++++-
+> > >  1 file changed, 8 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/Documentation/devicetree/bindings/media/renesas,csi2.yaml b/Documentation/devicetree/bindings/media/renesas,csi2.yaml
+> > > index e6a036721082..064a0a4c5737 100644
+> > > --- a/Documentation/devicetree/bindings/media/renesas,csi2.yaml
+> > > +++ b/Documentation/devicetree/bindings/media/renesas,csi2.yaml
+> > > @@ -67,7 +67,14 @@ properties:
+> > >                  maxItems: 1
+> > >
+> > >                data-lanes:
+> > > -                maxItems: 1
+> > > +                items:
+> > > +                  minItems: 1
+> > > +                  maxItems: 4
+> > > +                  items:
+> > > +                    - const: 1
+> > > +                    - const: 2
+> > > +                    - const: 3
+> > > +                    - const: 4
+> >
+> > Seeing "maxItems: 1" there confuses me too, as the property is an
+> > array of data-lanes, but I'm afraid your change does not what you
+> > intend as it would allow you to specify the number of data lanes as an
+> > integer rather than as an array.
+> >
+> Agreed, what do you think of the below instead?
+>
+>             properties:
+>               data-lanes:
+>                 minItems: 1
+>                 maxItems: 4
+uniqueItems: true
 
-But i guess i can still only use the DRM_FORMAT_* encodings with that?
-What i need is a pixel bitmap with separate FG/BG colors. Is that
-possible?
+can go in as well, to avoid duplicate lane numbers.
 
-/Sven
+>                 items:
+>                   maximum: 4
+>
+Cheers,
+Prabhakar
