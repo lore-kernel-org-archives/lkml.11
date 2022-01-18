@@ -2,154 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 548AAC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:18:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 608E2C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244311AbiARCSX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:18:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56012 "EHLO
+        id S244352AbiARCTu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:19:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236398AbiARCSW (ORCPT
+        with ESMTP id S231611AbiARCTp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:18:22 -0500
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 929E5C061574
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 18:18:22 -0800 (PST)
-Received: by mail-pg1-x543.google.com with SMTP id c5so12512764pgk.12
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 18:18:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=M5EU8xSyfUERpd7Pq8+3cm8Q6XTji9bSKcDdI+RBBQA=;
-        b=LOXWor/YiEKB8CeYc/LTnk0axctKze7m+mK5JOMZrsUYSFvwaOgfPr7m3n3lxR0mpj
-         /lL6uX3dUilpNbjXQTryKMTwYWHwu/G2/yfiVoPWYDxEyixzuRujNghSqgLY5e9WdSDm
-         HWUz5tB1w8w5JjrlVlTaY3x4aan36aX4X6BwiFiUTfsiXIU0eOh6GY+shXO/Ypdhqzh+
-         qSvIGhm5im2NGbFc0y0Fjq8GQOkTeveMcI/fcP95Y82gGfvE+zXx296gw+U3hz0SCqeO
-         piWbjy2/O/0Fm02Ai5iwiJVCsegUvCoRiHg75B3t/b2mBr4b//Zi0hTpr5DRxv6Nt2O9
-         Qx1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=M5EU8xSyfUERpd7Pq8+3cm8Q6XTji9bSKcDdI+RBBQA=;
-        b=GeDkedSb7hUgNn7eWJTlTaVySFv/UtRCCj9I6w/Rm1FfkP+oQzT/6eRLDaPkzGzyRJ
-         2nkEo8eB3XGu6wa0hGr10xgHoq3xg2ba6U4Cy8VMU+Is+FF3GoZL5iaRiiPjXOZ6s3tV
-         NY4dX1GKkKCDgUwW5WzQ5dSMmeeWNBzXNH9KgUlTTNIOKciZpR1G5TWXtxzhAo/hy3DP
-         A1Co5/nIep2A4Jnk7cHyHOIFNiJciGCORGsEnNWTi0n6MK3fpbQJIamnQgbH5vVnJ38T
-         O4aGUK9RjmikC5zBpl+oWxrlkaSnbZasWCu4iLgsx42aWaTW76PoecwF4eBuNVNZET7r
-         0t/w==
-X-Gm-Message-State: AOAM532K+oeFSc1P6O19Wc5t73z+e727OlqncwytkrAg4zgbiJaC15T8
-        PLYZ5mmNdrDS9C0pjBxrXInpKdOlLM9cJQ==
-X-Google-Smtp-Source: ABdhPJzM0s6kDprNQgEL8WGfViL8HILHhl5tTlI2W1Ft8DEEJbNAw/LXMtU8HN7ogIiAgQFEjms/ng==
-X-Received: by 2002:a62:528f:0:b0:4bc:d18e:cc20 with SMTP id g137-20020a62528f000000b004bcd18ecc20mr23603855pfb.40.1642472301796;
-        Mon, 17 Jan 2022 18:18:21 -0800 (PST)
-Received: from [0.0.0.0] ([209.97.166.32])
-        by smtp.gmail.com with ESMTPSA id e3sm13366598pgl.59.2022.01.17.18.18.19
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 17 Jan 2022 18:18:21 -0800 (PST)
-Subject: Re: [PATCH v2 RESEND] m68k/kernel: array out of bound access in
- process_uboot_commandline
-To:     Greg Ungerer <gerg@linux-m68k.org>, geert@linux-m68k.org
-Cc:     schwab@linux-m68k.org, linux-m68k@lists.linux-m68k.org,
-        linux-kernel@vger.kernel.org
-References: <20220113015854.9326-1-hbh25y@gmail.com>
- <95d91f5f-c5e1-0750-ebb9-b6839aecdc7c@linux-m68k.org>
-From:   Hangyu Hua <hbh25y@gmail.com>
-Message-ID: <9775e266-5fee-b0e9-7fa3-b602ec4b7796@gmail.com>
-Date:   Tue, 18 Jan 2022 10:18:16 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Mon, 17 Jan 2022 21:19:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF981C061574;
+        Mon, 17 Jan 2022 18:19:44 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 360E6612BE;
+        Tue, 18 Jan 2022 02:19:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55668C36AEB;
+        Tue, 18 Jan 2022 02:19:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642472383;
+        bh=ePBaW9YD9SIwvLA46ELgC5rC7fjkynIpw6UKXVSMxew=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PYHkxLtkipoa2E6HucbExx9mFwwJ951fWgG9pgCl9/kpovqMGWqAVlHVSoiX5VtPA
+         E5T/8wYB6K0BSkB3Pb4iSS61UcxjnRppneHNS7ztptpZPT8/Tkd5C0GVNHv72nHulN
+         Ot61ANhQomBsuFxv24JbiHpKrl3PupMPrjlsxcyjbFCuqpTaLxPJZWvPm4WUXt30qR
+         07sYJW7oTFlJ5jV1UEFLyTHT/4HWfz0L0plpmZnt2V4X3G/6pT1MZ7HnQZbyTBWG/P
+         oG5tO/ZiYv0cZ1qUm4WnUMvUohAPNu4sBaB/hOMIPbCNhaBAFjrxbfjwB/zRTGxJHX
+         +dehexyopM7Lw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Nguyen Dinh Phi <phind.uet@gmail.com>,
+        syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
+        luiz.dentz@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 001/217] Bluetooth: hci_sock: purge socket queues in the destruct() callback
+Date:   Mon, 17 Jan 2022 21:16:04 -0500
+Message-Id: <20220118021940.1942199-1-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-In-Reply-To: <95d91f5f-c5e1-0750-ebb9-b6839aecdc7c@linux-m68k.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+From: Nguyen Dinh Phi <phind.uet@gmail.com>
 
-On 2022/1/17 下午12:03, Greg Ungerer wrote:
-> Hi Hangyu,
-> 
-> On 13/1/22 11:58 am, Hangyu Hua wrote:
->> When the size of commandp >= size, array out of bound write occurs 
->> because
->> len == 0.
->>
->> Signed-off-by: Hangyu Hua <hbh25y@gmail.com>
->> ---
->>   arch/m68k/kernel/uboot.c | 3 ++-
->>   1 file changed, 2 insertions(+), 1 deletion(-)
->>
->> diff --git a/arch/m68k/kernel/uboot.c b/arch/m68k/kernel/uboot.c
->> index 928dbd33fc4a..63eaf3c3ddcd 100644
->> --- a/arch/m68k/kernel/uboot.c
->> +++ b/arch/m68k/kernel/uboot.c
->> @@ -101,5 +101,6 @@ __init void process_uboot_commandline(char 
->> *commandp, int size)
->>       }
->>       parse_uboot_commandline(commandp, len);
->> -    commandp[len - 1] = 0;
->> +    if (len > 0)
->> +        commandp[len - 1] = 0;
->>   }
->>
-> 
-> I am not convinced this is wrong for the reason you think it is.
-> Looking at the code in its entirety:
-> 
-> __init void process_uboot_commandline(char *commandp, int size)
-> {
->          int len, n;
-> 
->          n = strnlen(commandp, size);
->          commandp += n;
->          len = size - n;
->          if (len) {
->                  /* Add the whitespace separator */
->                  *commandp++ = ' ';
->                  len--;
->          }
-> 
->          parse_uboot_commandline(commandp, len);
->          commandp[len - 1] = 0;
-> }
-> 
-> 
-> "commandp" is moved based on the return of the strnlen(). So in the
-> case of commandp actually being full of valid characters (so n == size,
-> and thus len == 0) the commandp technically points outside of its
-> real size at that point. But "command[[len - 1]" would actually be
-> pointing to the last char in the original commandp array (so the original
-> commandp[size - 1]). Well at least if you are happy with the use of
-> negative array indexes.
-> 
+[ Upstream commit 709fca500067524381e28a5f481882930eebac88 ]
 
-You mean this is a friendly out of bound beacause "command[[len - 1]" 
-pointing to the last char in the original commandp array. I used to 
-think command[[len - 1] = 0 may be a zero-terminated for command. You 
-can see my discussion with Andreas Schwab and my patch v1 in
+The receive path may take the socket right before hci_sock_release(),
+but it may enqueue the packets to the socket queues after the call to
+skb_queue_purge(), therefore the socket can be destroyed without clear
+its queues completely.
 
-https://lore.kernel.org/all/CAOo-nLJG71QqqD0-cJDyH0rY2VTx1eO9nHVQ5MCe8J0iiME_vw@mail.gmail.com/
+Moving these skb_queue_purge() to the hci_sock_destruct() will fix this
+issue, because nothing is referencing the socket at this point.
 
-But this still be a out of bound write because "commandp" is a macro 
-definition with a fixed size.
+Signed-off-by: Nguyen Dinh Phi <phind.uet@gmail.com>
+Reported-by: syzbot+4c4ffd1e1094dae61035@syzkaller.appspotmail.com
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ net/bluetooth/hci_sock.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-> Clearly this could be structured better. There is no point in calling
-> parse_uboot_commandline() if len == 0, or even if len == 1, since you
-> cannot add anymore to the command line, it is full.
-> 
-I think it is no point too. But the caller (setup_arch()) don't check 
-the size of "commandp" before call parse_uboot_commandline(). Instead we 
-do this in parse_uboot_commandline(). So it may be better to move these 
-checks to the caller ?
+diff --git a/net/bluetooth/hci_sock.c b/net/bluetooth/hci_sock.c
+index d0dad1fafe079..446573a125711 100644
+--- a/net/bluetooth/hci_sock.c
++++ b/net/bluetooth/hci_sock.c
+@@ -889,10 +889,6 @@ static int hci_sock_release(struct socket *sock)
+ 	}
+ 
+ 	sock_orphan(sk);
+-
+-	skb_queue_purge(&sk->sk_receive_queue);
+-	skb_queue_purge(&sk->sk_write_queue);
+-
+ 	release_sock(sk);
+ 	sock_put(sk);
+ 	return 0;
+@@ -2058,6 +2054,12 @@ static int hci_sock_getsockopt(struct socket *sock, int level, int optname,
+ 	return err;
+ }
+ 
++static void hci_sock_destruct(struct sock *sk)
++{
++	skb_queue_purge(&sk->sk_receive_queue);
++	skb_queue_purge(&sk->sk_write_queue);
++}
++
+ static const struct proto_ops hci_sock_ops = {
+ 	.family		= PF_BLUETOOTH,
+ 	.owner		= THIS_MODULE,
+@@ -2111,6 +2113,7 @@ static int hci_sock_create(struct net *net, struct socket *sock, int protocol,
+ 
+ 	sock->state = SS_UNCONNECTED;
+ 	sk->sk_state = BT_OPEN;
++	sk->sk_destruct = hci_sock_destruct;
+ 
+ 	bt_sock_link(&hci_sk_list, sk);
+ 	return 0;
+-- 
+2.34.1
 
-> Regards
-> Greg
-
-Thanks for your reply
-Hangyu Hua
