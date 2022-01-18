@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 772EEC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:33:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D59CC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:33:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240100AbiARCdi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:33:38 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40636 "EHLO
+        id S245598AbiARCdp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:33:45 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42152 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344145AbiARC3Q (ORCPT
+        with ESMTP id S1344233AbiARC3X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:29:16 -0500
+        Mon, 17 Jan 2022 21:29:23 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B4CFAB811FF;
-        Tue, 18 Jan 2022 02:29:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C14D0C36AEB;
-        Tue, 18 Jan 2022 02:29:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ED7FAB8122C;
+        Tue, 18 Jan 2022 02:29:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3274C36AEF;
+        Tue, 18 Jan 2022 02:29:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472954;
-        bh=lRjqPn9qJ+FH43bnGFmSyWZ6o80v/vkvabiW0x/dIYE=;
+        s=k20201202; t=1642472960;
+        bh=9zqniQmnmRj2EP7QeluyIKIoG9IT21ZtY1hW7QzQH5Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ivnw7bYDh3zo5l8nWjNj2zu1NCtl+yYkOOvPYDluEr4G9sI1R5LyusBMSYUXjDBnB
-         29qfX0icdxDxs/sSWdfui88vlawiuDqjP+M2IysqdKnjCPOcX5vIJ4Ck6OkQc9fjmx
-         Yk4WjpkTXHEe4ipI+CyYN5t5Dy044IuCU1vspNcbYyKG4ZxKgHj68C7VJEV/c3a3lz
-         yInG7WMcfSoQ7ODicBvKj6leUTo9pdQPYAiEHGDU2Zv6k6UjdNiuR2ezVD7EwnSfpZ
-         dgX0/BQe8tvRYGCkzFYDEPWBm43W74Lb1KKRKaK8xmdxesO5EcH3tG7P8LxPk4poRT
-         GqVzZjBdWknag==
+        b=mCotV6+uCILJleuXXSHPescsMYa39PMvTrB4ctC41cGn9ZFgwbJR9PUaQY8GII+mD
+         4FfJ7dp0P0Ndsjhd5ReTzzOrE2km+mJ7MbLSX3+IO/WbQ74lcKqiYmsTpFxzYYy07c
+         L1XATqam8Jtc4leQHGd+QvtWoOHAU8VX/LldnOAQtuKN46Zj/rWESWhkhDTxYYpDAP
+         Lwrxm1UuUTllUyzdfCgA6DlSFmJAtRWl5/8GDuNBGYa0pT81VCJMRUS5eQ/r0u3rLE
+         mG3+wVylpXLvU5oCROjJbRBsJ2JQSEIoRypXH6DdWWQ5Ywmiz5/dz/fL0DqwfPHoYT
+         rEIdNCBQ/hmHA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>, johan.hedberg@gmail.com,
-        luiz.dentz@gmail.com, linux-bluetooth@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 175/217] Bluetooth: vhci: Set HCI_QUIRK_VALID_LE_STATES
-Date:   Mon, 17 Jan 2022 21:18:58 -0500
-Message-Id: <20220118021940.1942199-175-sashal@kernel.org>
+Cc:     Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>,
+        Richard Weinberger <richard@nod.at>,
+        Sasha Levin <sashal@kernel.org>, dwmw2@infradead.org,
+        joel@jms.id.au, linux-mtd@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 178/217] jffs2: GC deadlock reading a page that is used in jffs2_write_begin()
+Date:   Mon, 17 Jan 2022 21:19:01 -0500
+Message-Id: <20220118021940.1942199-178-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -49,33 +49,131 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>
 
-[ Upstream commit cfb4c313be670fd4bd09650216620fa4514cdb93 ]
+[ Upstream commit aa39cc675799bc92da153af9a13d6f969c348e82 ]
 
-This set HCI_QUIRK_VALID_LE_STATES quirk which is required for the likes
-of experimental LE simultaneous roles.
+GC task can deadlock in read_cache_page() because it may attempt
+to release a page that is actually allocated by another task in
+jffs2_write_begin().
+The reason is that in jffs2_write_begin() there is a small window
+a cache page is allocated for use but not set Uptodate yet.
 
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+This ends up with a deadlock between two tasks:
+1) A task (e.g. file copy)
+   - jffs2_write_begin() locks a cache page
+   - jffs2_write_end() tries to lock "alloc_sem" from
+	 jffs2_reserve_space() <-- STUCK
+2) GC task (jffs2_gcd_mtd3)
+   - jffs2_garbage_collect_pass() locks "alloc_sem"
+   - try to lock the same cache page in read_cache_page() <-- STUCK
+
+So to avoid this deadlock, hold "alloc_sem" in jffs2_write_begin()
+while reading data in a cache page.
+
+Signed-off-by: Kyeong Yoo <kyeong.yoo@alliedtelesis.co.nz>
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/hci_vhci.c | 2 ++
- 1 file changed, 2 insertions(+)
+ fs/jffs2/file.c | 40 +++++++++++++++++++++++++---------------
+ 1 file changed, 25 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/bluetooth/hci_vhci.c b/drivers/bluetooth/hci_vhci.c
-index b45db0db347c6..dff4456bc7089 100644
---- a/drivers/bluetooth/hci_vhci.c
-+++ b/drivers/bluetooth/hci_vhci.c
-@@ -237,6 +237,8 @@ static int __vhci_create_device(struct vhci_data *data, __u8 opcode)
- 	if (opcode & 0x80)
- 		set_bit(HCI_QUIRK_RAW_DEVICE, &hdev->quirks);
+diff --git a/fs/jffs2/file.c b/fs/jffs2/file.c
+index 4fc8cd698d1a4..bd7d58d27bfc6 100644
+--- a/fs/jffs2/file.c
++++ b/fs/jffs2/file.c
+@@ -136,20 +136,15 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 	struct page *pg;
+ 	struct inode *inode = mapping->host;
+ 	struct jffs2_inode_info *f = JFFS2_INODE_INFO(inode);
++	struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
+ 	pgoff_t index = pos >> PAGE_SHIFT;
+ 	uint32_t pageofs = index << PAGE_SHIFT;
+ 	int ret = 0;
  
-+	set_bit(HCI_QUIRK_VALID_LE_STATES, &hdev->quirks);
+-	pg = grab_cache_page_write_begin(mapping, index, flags);
+-	if (!pg)
+-		return -ENOMEM;
+-	*pagep = pg;
+-
+ 	jffs2_dbg(1, "%s()\n", __func__);
+ 
+ 	if (pageofs > inode->i_size) {
+ 		/* Make new hole frag from old EOF to new page */
+-		struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
+ 		struct jffs2_raw_inode ri;
+ 		struct jffs2_full_dnode *fn;
+ 		uint32_t alloc_len;
+@@ -160,7 +155,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 		ret = jffs2_reserve_space(c, sizeof(ri), &alloc_len,
+ 					  ALLOC_NORMAL, JFFS2_SUMMARY_INODE_SIZE);
+ 		if (ret)
+-			goto out_page;
++			goto out_err;
+ 
+ 		mutex_lock(&f->sem);
+ 		memset(&ri, 0, sizeof(ri));
+@@ -190,7 +185,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 			ret = PTR_ERR(fn);
+ 			jffs2_complete_reservation(c);
+ 			mutex_unlock(&f->sem);
+-			goto out_page;
++			goto out_err;
+ 		}
+ 		ret = jffs2_add_full_dnode_to_inode(c, f, fn);
+ 		if (f->metadata) {
+@@ -205,13 +200,26 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 			jffs2_free_full_dnode(fn);
+ 			jffs2_complete_reservation(c);
+ 			mutex_unlock(&f->sem);
+-			goto out_page;
++			goto out_err;
+ 		}
+ 		jffs2_complete_reservation(c);
+ 		inode->i_size = pageofs;
+ 		mutex_unlock(&f->sem);
+ 	}
+ 
++	/*
++	 * While getting a page and reading data in, lock c->alloc_sem until
++	 * the page is Uptodate. Otherwise GC task may attempt to read the same
++	 * page in read_cache_page(), which causes a deadlock.
++	 */
++	mutex_lock(&c->alloc_sem);
++	pg = grab_cache_page_write_begin(mapping, index, flags);
++	if (!pg) {
++		ret = -ENOMEM;
++		goto release_sem;
++	}
++	*pagep = pg;
 +
- 	if (hci_register_dev(hdev) < 0) {
- 		BT_ERR("Can't register HCI device");
- 		hci_free_dev(hdev);
+ 	/*
+ 	 * Read in the page if it wasn't already present. Cannot optimize away
+ 	 * the whole page write case until jffs2_write_end can handle the
+@@ -221,15 +229,17 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+ 		mutex_lock(&f->sem);
+ 		ret = jffs2_do_readpage_nolock(inode, pg);
+ 		mutex_unlock(&f->sem);
+-		if (ret)
+-			goto out_page;
++		if (ret) {
++			unlock_page(pg);
++			put_page(pg);
++			goto release_sem;
++		}
+ 	}
+ 	jffs2_dbg(1, "end write_begin(). pg->flags %lx\n", pg->flags);
+-	return ret;
+ 
+-out_page:
+-	unlock_page(pg);
+-	put_page(pg);
++release_sem:
++	mutex_unlock(&c->alloc_sem);
++out_err:
+ 	return ret;
+ }
+ 
 -- 
 2.34.1
 
