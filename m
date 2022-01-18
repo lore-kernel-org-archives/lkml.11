@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 238C8C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53F52C4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:06:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348163AbiARDGP (ORCPT
+        id S1353916AbiARDEx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:06:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34850 "EHLO
+        Mon, 17 Jan 2022 22:04:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346559AbiARCtJ (ORCPT
+        with ESMTP id S1348958AbiARCrT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:49:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDC89C06175E;
-        Mon, 17 Jan 2022 18:41:32 -0800 (PST)
+        Mon, 17 Jan 2022 21:47:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0358FC03327A;
+        Mon, 17 Jan 2022 18:38:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A88E0B81239;
-        Tue, 18 Jan 2022 02:41:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D1750C36AE3;
-        Tue, 18 Jan 2022 02:41:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 95B746093C;
+        Tue, 18 Jan 2022 02:38:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 25AC9C36AEF;
+        Tue, 18 Jan 2022 02:38:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473690;
-        bh=bECX07xkx2k484fsrIWFoWPuZFgoO91gV/NWmls1Tc4=;
+        s=k20201202; t=1642473531;
+        bh=GyS828HD/W5brWBjztyF7pzethTmRJ7htmn28hD2mHA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eTgej2snnU2ifNA/2UNYP4yKOOG+57EA9G10s12fj5p90IObQ/A9oEVJNBAWXHk0/
-         i6G6uphlgvYXNhS8lLoAuMGpmv6gSeZ9VuZCGWdAeaklVP/IO9rBNXU2IPBmU9iU2X
-         Z9lpKPGi8hokcK96vXThcZh/bJC1vSInTjCu2M5V31kmv0qPsetDvyapeSLZ4qbuA8
-         6jtu445//JrI0qLGgvNn0hV2xQofEt0yCpQWjTlN/Q+rMV2olm/uIZLTBjur8ckwWY
-         Bqq1T52jO825d/y+ljo6lluCgLw1B7SIWo44lorqFp3EdDV9pjhi3M1rqPrsLYcIQT
-         4zv7lLBETEWgA==
+        b=AExYOn0hN0JgHXM3GCvDZ/SakpC2qw5m2gQKfJabOVDKmVLE9bzzhG706tGiKsyVg
+         uTsD5pNnpsoJUxPURzZL+8eNhEdygzFwEaml1b8bsxbRbFQ2q/6vvrD41rzkQo3gmA
+         5JRXQ7lq0q3q8mGDhxkIGusfSAxttG4ZvwY4gczlmWfZnzfvX6AlKHfC30zjtEsOyP
+         kEGrPpgVtQee0/liX3BMwPbHau++vYlFvUWJqDpR/cgPzOz/83ycBUZDAf1W5OzUmF
+         W8bN7MX9/pyvSk8pG3AgNOgaz8raYbPghOtpjoJR9zR7yMh8bSK2mOjYRmbhLX3e4N
+         i19ZE3H1dMEoQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jan Kiszka <jan.kiszka@siemens.com>, Suman Anna <s-anna@ti.com>,
-        Nishanth Menon <nm@ti.com>, Sasha Levin <sashal@kernel.org>,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.10 024/116] soc: ti: pruss: fix referenced node in error message
-Date:   Mon, 17 Jan 2022 21:38:35 -0500
-Message-Id: <20220118024007.1950576-24-sashal@kernel.org>
+Cc:     Mark Langsdorf <mlangsdo@redhat.com>,
+        Bob Moore <robert.moore@intel.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Sasha Levin <sashal@kernel.org>, linux-acpi@vger.kernel.org,
+        devel@acpica.org
+Subject: [PATCH AUTOSEL 5.15 152/188] ACPICA: actypes.h: Expand the ACPI_ACCESS_ definitions
+Date:   Mon, 17 Jan 2022 21:31:16 -0500
+Message-Id: <20220118023152.1948105-152-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,34 +54,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kiszka <jan.kiszka@siemens.com>
+From: Mark Langsdorf <mlangsdo@redhat.com>
 
-[ Upstream commit 8aa35e0bb5eaa42bac415ad0847985daa7b4890c ]
+[ Upstream commit f81bdeaf816142e0729eea0cc84c395ec9673151 ]
 
-So far, "(null)" is reported for the node that is missing clocks.
+ACPICA commit bc02c76d518135531483dfc276ed28b7ee632ce1
 
-Signed-off-by: Jan Kiszka <jan.kiszka@siemens.com>
-Acked-by: Suman Anna <s-anna@ti.com>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Link: https://lore.kernel.org/r/d6e24953-ea89-fd1c-6e16-7a0142118054@siemens.com
+The current ACPI_ACCESS_*_WIDTH defines do not provide a way to
+test that size is small enough to not cause an overflow when
+applied to a 32-bit integer.
+
+Rather than adding more magic numbers, add ACPI_ACCESS_*_SHIFT,
+ACPI_ACCESS_*_MAX, and ACPI_ACCESS_*_DEFAULT #defines and
+redefine ACPI_ACCESS_*_WIDTH in terms of the new #defines.
+
+This was inititally reported on Linux where a size of 102 in
+ACPI_ACCESS_BIT_WIDTH caused an overflow error in the SPCR
+initialization code.
+
+Link: https://github.com/acpica/acpica/commit/bc02c76d
+Signed-off-by: Mark Langsdorf <mlangsdo@redhat.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/soc/ti/pruss.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/acpi/actypes.h | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/soc/ti/pruss.c b/drivers/soc/ti/pruss.c
-index cc0b4ad7a3d34..30695172a508f 100644
---- a/drivers/soc/ti/pruss.c
-+++ b/drivers/soc/ti/pruss.c
-@@ -131,7 +131,7 @@ static int pruss_clk_init(struct pruss *pruss, struct device_node *cfg_node)
+diff --git a/include/acpi/actypes.h b/include/acpi/actypes.h
+index 92c71dfce0d5d..cefbb7ad253e0 100644
+--- a/include/acpi/actypes.h
++++ b/include/acpi/actypes.h
+@@ -536,8 +536,14 @@ typedef u64 acpi_integer;
+  * Can be used with access_width of struct acpi_generic_address and access_size of
+  * struct acpi_resource_generic_register.
+  */
+-#define ACPI_ACCESS_BIT_WIDTH(size)     (1 << ((size) + 2))
+-#define ACPI_ACCESS_BYTE_WIDTH(size)    (1 << ((size) - 1))
++#define ACPI_ACCESS_BIT_SHIFT		2
++#define ACPI_ACCESS_BYTE_SHIFT		-1
++#define ACPI_ACCESS_BIT_MAX		(31 - ACPI_ACCESS_BIT_SHIFT)
++#define ACPI_ACCESS_BYTE_MAX		(31 - ACPI_ACCESS_BYTE_SHIFT)
++#define ACPI_ACCESS_BIT_DEFAULT		(8 - ACPI_ACCESS_BIT_SHIFT)
++#define ACPI_ACCESS_BYTE_DEFAULT	(8 - ACPI_ACCESS_BYTE_SHIFT)
++#define ACPI_ACCESS_BIT_WIDTH(size)	(1 << ((size) + ACPI_ACCESS_BIT_SHIFT))
++#define ACPI_ACCESS_BYTE_WIDTH(size)	(1 << ((size) + ACPI_ACCESS_BYTE_SHIFT))
  
- 	clks_np = of_get_child_by_name(cfg_node, "clocks");
- 	if (!clks_np) {
--		dev_err(dev, "%pOF is missing its 'clocks' node\n", clks_np);
-+		dev_err(dev, "%pOF is missing its 'clocks' node\n", cfg_node);
- 		return -ENODEV;
- 	}
- 
+ /*******************************************************************************
+  *
 -- 
 2.34.1
 
