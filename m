@@ -2,143 +2,164 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA12C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:53:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF8D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:53:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235444AbiARJxI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 04:53:08 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:38094 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S234412AbiARJwe (ORCPT
+        id S234391AbiARJxM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 04:53:12 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:62888 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234286AbiARJwf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 04:52:34 -0500
-Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20I6YQ6M003501;
-        Tue, 18 Jan 2022 09:52:33 GMT
+        Tue, 18 Jan 2022 04:52:35 -0500
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20I9Se4D007812;
+        Tue, 18 Jan 2022 09:52:35 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=YmnpOvVMnVJCBPQFTQzSGP29GQCLDBp1L/Hu7pd2a94=;
- b=BUNgPNrRnaY9iDoLWhtbED+d8eOThqjngbcKWF8kFNL9n/VGTtuFBKaXTD39lhETQ/5v
- 3lbPAVgRPEa/eGnt2//HLytDSlRm39WL2nLrN+vkFbynVjy13zESbLlKs5WQiOSuHNVg
- jgHyeUqfob3jNRDcBOOcCua4Ss8BCPAzzndk3zQ7sRVXpMJEiTUDQjKBO+f7XnDESzLF
- p9Kprbl7IG/6ixnIRSCAZZDH6BdPPnEUmy7sdkhLMbW4Kz8yugaBcV3Z5HBMOe0LPfte
- 8oJYd9OfJgob/jSEqu58JivpymsTL4j/7Eplg7JWPNTzbLRbv0MCpHdbOisrP4BjOn8L ow== 
+ bh=fToiBeFyk7X2qv0GhgQKJmC13Y7eRHJ2EBXvbcgupII=;
+ b=OK+ZV2pZIALSp5t17IPaD4wuyRIbjY3wu9CxAC2GakQhay6oQxizWscf+2XtJ0x01tSc
+ B/eQUdTsOtpOeehL8b0XgCRbj+EQvIs8geksyUTm/RrzjXyHDpqsqJKKnq9tg6uG6LB7
+ hYJpsb24Y8HjRS0Io/GFZUCRyc7j9UgyurH5Ht9TMFj9Hs9YdkcT8r5T6u8KTbCv7KFg
+ GhSJD9CPoNTMytyr1b0IDbtStirbg4aKdaIaoKAyix3btjNL7JfLpjbSZ9OGHB5YmF7M
+ 0QXM9SSSMUjxnEf5mOeuptg+Fc4q9en0p0DDODyKkUQFLt85yz7oyucPXufW7YPW6YDM BQ== 
 Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dngcqctfb-1
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dntxy8cjw-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 18 Jan 2022 09:52:33 +0000
-Received: from m0098413.ppops.net (m0098413.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20I9CHoH032281;
-        Tue, 18 Jan 2022 09:52:33 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dngcqctf0-1
+        Tue, 18 Jan 2022 09:52:35 +0000
+Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20I9fY7M019460;
+        Tue, 18 Jan 2022 09:52:34 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dntxy8cje-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 18 Jan 2022 09:52:34 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20I9ldq6017710;
+        Tue, 18 Jan 2022 09:52:32 GMT
+Received: from b06cxnps4075.portsmouth.uk.ibm.com (d06relay12.portsmouth.uk.ibm.com [9.149.109.197])
+        by ppma06ams.nl.ibm.com with ESMTP id 3dknhjapka-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
         Tue, 18 Jan 2022 09:52:32 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20I9lPbL027155;
-        Tue, 18 Jan 2022 09:52:31 GMT
-Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
-        by ppma01fra.de.ibm.com with ESMTP id 3dknw99gjj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 18 Jan 2022 09:52:31 +0000
 Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20I9qRuF40894936
+        by b06cxnps4075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20I9qPk736700606
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 18 Jan 2022 09:52:28 GMT
+        Tue, 18 Jan 2022 09:52:25 GMT
 Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D186CA4057;
-        Tue, 18 Jan 2022 09:52:27 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 9764EA4040;
+        Tue, 18 Jan 2022 09:52:25 +0000 (GMT)
 Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 90E6EA4051;
-        Tue, 18 Jan 2022 09:52:27 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 3F110A405B;
+        Tue, 18 Jan 2022 09:52:25 +0000 (GMT)
 Received: from tuxmaker.boeblingen.de.ibm.com (unknown [9.152.85.9])
         by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Tue, 18 Jan 2022 09:52:27 +0000 (GMT)
+        Tue, 18 Jan 2022 09:52:25 +0000 (GMT)
 From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
 To:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Janosch Frank <frankja@linux.ibm.com>
+        Janosch Frank <frankja@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
 Cc:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
         David Hildenbrand <david@redhat.com>,
-        Claudio Imbrenda <imbrenda@linux.ibm.com>, kvm@vger.kernel.org,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        kvm@vger.kernel.org, linux-s390@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [RFC PATCH v1 10/10] KVM: s390: selftests: Make use of capability in MEM_OP test
-Date:   Tue, 18 Jan 2022 10:52:10 +0100
-Message-Id: <20220118095210.1651483-11-scgl@linux.ibm.com>
+Subject: [RFC PATCH v1 07/10] KVM: s390: Rename existing vcpu memop functions
+Date:   Tue, 18 Jan 2022 10:52:07 +0100
+Message-Id: <20220118095210.1651483-8-scgl@linux.ibm.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220118095210.1651483-1-scgl@linux.ibm.com>
 References: <20220118095210.1651483-1-scgl@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: Bj9j9ury-LIHZyEIAM_ientqs7Ca4KAg
-X-Proofpoint-ORIG-GUID: gjNmfIzPcFvb1I84G2tgZBOKhbTktv6H
+X-Proofpoint-GUID: V6n9UDZF6BYdDTmsWrjFyJ3fQ2yp7WZZ
+X-Proofpoint-ORIG-GUID: c001IxH3Gvw7bnH-Tt9L6R_xZvdhKJCq
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-01-18_02,2022-01-14_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- bulkscore=0 mlxlogscore=999 malwarescore=0 adultscore=0 lowpriorityscore=0
- suspectscore=0 spamscore=0 impostorscore=0 clxscore=1015 phishscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
+ priorityscore=1501 mlxlogscore=999 impostorscore=0 lowpriorityscore=0
+ spamscore=0 phishscore=0 clxscore=1015 bulkscore=0 suspectscore=0
+ malwarescore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2110150000 definitions=main-2201180057
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Only test the functionality whose availability is indicated by
-KVM_CAP_S390_MEM_OP_SKEY if the capability indicates support.
+Makes the naming consistent, now that we also have a vm ioctl.
 
 Signed-off-by: Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+Reviewed-by: Janosch Frank <frankja@linux.ibm.com>
+Reviewed-by: Claudio Imbrenda <imbrenda@linux.ibm.com>
 ---
- tools/testing/selftests/kvm/s390x/memop.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ arch/s390/kvm/kvm-s390.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/tools/testing/selftests/kvm/s390x/memop.c b/tools/testing/selftests/kvm/s390x/memop.c
-index 774d5756f41d..7bdd6727d0ff 100644
---- a/tools/testing/selftests/kvm/s390x/memop.c
-+++ b/tools/testing/selftests/kvm/s390x/memop.c
-@@ -308,6 +308,7 @@ int main(int argc, char *argv[])
- 	struct kvm_vm *vm;
- 	struct kvm_run *run;
- 	struct kvm_s390_mem_op ksmo;
-+	bool has_skey_ext;
- 	vm_vaddr_t guest_mem1;
- 	vm_vaddr_t guest_mem2;
- 	vm_paddr_t guest_mem1_abs;
-@@ -322,6 +323,9 @@ int main(int argc, char *argv[])
+diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+index 8dab956f84a6..ab07389fb4d9 100644
+--- a/arch/s390/kvm/kvm-s390.c
++++ b/arch/s390/kvm/kvm-s390.c
+@@ -4776,8 +4776,8 @@ static int kvm_vcpu_ioctl_enable_cap(struct kvm_vcpu *vcpu,
+ 	return r;
+ }
+ 
+-static long kvm_s390_guest_sida_op(struct kvm_vcpu *vcpu,
+-				   struct kvm_s390_mem_op *mop)
++static long kvm_s390_vcpu_sida_op(struct kvm_vcpu *vcpu,
++				  struct kvm_s390_mem_op *mop)
+ {
+ 	void __user *uaddr = (void __user *)mop->buf;
+ 	int r = 0;
+@@ -4804,8 +4804,9 @@ static long kvm_s390_guest_sida_op(struct kvm_vcpu *vcpu,
  	}
- 	if (maxsize > sizeof(mem1))
- 		maxsize = sizeof(mem1);
-+	has_skey_ext = kvm_check_cap(KVM_CAP_S390_MEM_OP_SKEY);
-+	if (!has_skey_ext)
-+		print_skip("CAP_S390_MEM_OP_SKEY not supported");
- 
- 	/* Create VM */
- 	vm = vm_create_default(VCPU_ID, 0, guest_code);
-@@ -342,7 +346,7 @@ int main(int argc, char *argv[])
- 	TEST_ASSERT(!memcmp(mem1, mem2, maxsize),
- 		    "Memory contents do not match!");
- 
--	{
-+	if (has_skey_ext) {
- 		vm_vaddr_t guest_0_page = vm_vaddr_alloc(vm, PAGE_SIZE, 0);
- 		vm_vaddr_t guest_last_page = vm_vaddr_alloc(vm, PAGE_SIZE, last_page_addr);
- 		vm_paddr_t guest_mem2_abs = addr_gva2gpa(vm, guest_mem2);
-@@ -515,6 +519,14 @@ int main(int argc, char *argv[])
- 		TEST_ASSERT(rv != 0, "Fetch should result in exception");
- 		rv = _vm_read_guest_key(vm, mem2, addr_gva2gpa(vm, 0), 2048, 2);
- 		TEST_ASSERT(rv == 4, "Fetch should result in protection exception");
-+	} else {
-+		struct ucall uc;
+ 	return r;
+ }
+-static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
+-				  struct kvm_s390_mem_op *mop)
 +
-+		do {
-+			vcpu_run(vm, VCPU_ID);
-+			get_ucall(vm, VCPU_ID, &uc);
-+			ASSERT_EQ(uc.cmd, UCALL_SYNC);
-+		} while (uc.args[1] < 100);
- 	}
++static long kvm_s390_vcpu_mem_op(struct kvm_vcpu *vcpu,
++				 struct kvm_s390_mem_op *mop)
+ {
+ 	void __user *uaddr = (void __user *)mop->buf;
+ 	void *tmpbuf = NULL;
+@@ -4868,8 +4869,8 @@ static long kvm_s390_guest_mem_op(struct kvm_vcpu *vcpu,
+ 	return r;
+ }
  
- 	/* Check error conditions */
+-static long kvm_s390_guest_memsida_op(struct kvm_vcpu *vcpu,
+-				      struct kvm_s390_mem_op *mop)
++static long kvm_s390_vcpu_memsida_op(struct kvm_vcpu *vcpu,
++				     struct kvm_s390_mem_op *mop)
+ {
+ 	int r, srcu_idx;
+ 
+@@ -4878,12 +4879,12 @@ static long kvm_s390_guest_memsida_op(struct kvm_vcpu *vcpu,
+ 	switch (mop->op) {
+ 	case KVM_S390_MEMOP_LOGICAL_READ:
+ 	case KVM_S390_MEMOP_LOGICAL_WRITE:
+-		r = kvm_s390_guest_mem_op(vcpu, mop);
++		r = kvm_s390_vcpu_mem_op(vcpu, mop);
+ 		break;
+ 	case KVM_S390_MEMOP_SIDA_READ:
+ 	case KVM_S390_MEMOP_SIDA_WRITE:
+ 		/* we are locked against sida going away by the vcpu->mutex */
+-		r = kvm_s390_guest_sida_op(vcpu, mop);
++		r = kvm_s390_vcpu_sida_op(vcpu, mop);
+ 		break;
+ 	default:
+ 		r = -EINVAL;
+@@ -5046,7 +5047,7 @@ long kvm_arch_vcpu_ioctl(struct file *filp,
+ 		struct kvm_s390_mem_op mem_op;
+ 
+ 		if (copy_from_user(&mem_op, argp, sizeof(mem_op)) == 0)
+-			r = kvm_s390_guest_memsida_op(vcpu, &mem_op);
++			r = kvm_s390_vcpu_memsida_op(vcpu, &mem_op);
+ 		else
+ 			r = -EFAULT;
+ 		break;
 -- 
 2.32.0
 
