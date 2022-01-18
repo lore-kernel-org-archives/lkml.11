@@ -2,167 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C761BC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:11:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89E40C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 13:12:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241895AbiARNLi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 08:11:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38544 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238429AbiARNLe (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 08:11:34 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96555C061574
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 05:11:33 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id x7so70436578lfu.8
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 05:11:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=TVZaPKiTrsKRccgkQsYbK/pQLkqx8K3+Dy6ZGqF9QZA=;
-        b=pQYJtfx2w4zuiE62aojn4PLOdpiyQrAbWcBncTzDWYYISGz7tW6CEkat1z81YSOJrW
-         R5VGOQ/dff5gjz4oeMbb2rWoGmzv8DzMMd8sgHnQcNx/TCxkqJHQq/Wl0yyH5Gxi9cWA
-         jG9EkPopRUiiQDbPIyZ6W6L51mGx+8V8CoRAfDgqkSxgfj5G0WhOv5+yMNJEiWJT9HjU
-         bg/n0FFVCg6QzlS6T21XfbnEDfzOMr7TjGYofvQpHrvKiIQGQ1SDQBZ3+BIfBy6pLUp3
-         yEqeP2rA8kGPIQhKmxVtGeZfn+wy9oyo54aBpNbFCqGkLCKXeFDIkGX+JId30JVLopaR
-         EmhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TVZaPKiTrsKRccgkQsYbK/pQLkqx8K3+Dy6ZGqF9QZA=;
-        b=gacTWPnFiKJTGYwg9xV9KQs6KwuRQftr3dKlmUsym44Wb/TV89g9hd4084/obbhi8R
-         8Wq8lxhONlJn3zZ50c69ULETeuThcLXEmyStUunwcTMHPk/4fFsiS+Ozew9PVwhKeZq8
-         bm/A5ZXpcgmhvXPk6qD1G4QicRyHtfyfMYsEE4JY7WYEV2d5J5JwfghddbuDCB5BirJF
-         ER8sQTmVrfyQh7dwvw4SZOnSNklF44uDlPnH27+90MiZkLdw1RDu+Smpj4FY1QIFJIAJ
-         lri/2/RTe1ycGplssGqQoydHslc4V/MireWAkfXShMowzJVPXTy0byT3gADK/YSOsgda
-         g1JA==
-X-Gm-Message-State: AOAM532roKggvMDxPr/BlzYWSGrTS7dn0670XK3jSLCAk/s2nmUIpLt4
-        CVUDqbMP0pwu+i11/NvIhlXk1LMAoOylve3xL2ZNRY6q86fdK24A
-X-Google-Smtp-Source: ABdhPJwTin1i185n0G5k6Sa5fRYD5qqBBZCdHCS0O4wZk8JaZwm8A8Dm4+1nnaPHe3VE/87RVKiPeqsfkqRkbXxuVF0=
-X-Received: by 2002:a05:6512:34d3:: with SMTP id w19mr2395401lfr.253.1642511491968;
- Tue, 18 Jan 2022 05:11:31 -0800 (PST)
+        id S241937AbiARNML (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 08:12:11 -0500
+Received: from mga17.intel.com ([192.55.52.151]:18381 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S241895AbiARNMK (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 08:12:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642511530; x=1674047530;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=haAtT0qnhMnxuzbQjHYujPfMm8bzq9m+bN5pE/BEwjs=;
+  b=euBOaAa6H2IkCM7zl7QYSlPvHAazjL5H6qZW0KGMRCKrshdrVt+j5e6N
+   XyIQRNZoleP2dB0lWAG9Y2MZiHI7k1PfR4Z/fNB4QZOdoUMJ9OEDw7uNO
+   BqyP1j+GgRks1agyNLn7Vnd7EQL0SsGCV4/HPdg8PK/vt47cCHTlkDDat
+   9Sm7CEC9cOPpLjVBKfEzR3cvU4LNwyGX8vGx7+3j631q3kO25FzLz03AO
+   tc/BaL4Lr3cXCmVa9zG/3sFkxYZCTO6fbwWF6UfBeAfYT+B0oT2DQND/e
+   Ik5RanTd1xP88IKg6mgj9Sk8OyFa4ePYxT73yf7JSHaU1SpZ8v8f0Coar
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="225489371"
+X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
+   d="scan'208";a="225489371"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 05:12:10 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
+   d="scan'208";a="671834293"
+Received: from kuha.fi.intel.com ([10.237.72.185])
+  by fmsmga001.fm.intel.com with SMTP; 18 Jan 2022 05:12:07 -0800
+Received: by kuha.fi.intel.com (sSMTP sendmail emulation); Tue, 18 Jan 2022 15:12:07 +0200
+Date:   Tue, 18 Jan 2022 15:12:07 +0200
+From:   Heikki Krogerus <heikki.krogerus@linux.intel.com>
+To:     Mikhail Gavrilov <mikhail.v.gavrilov@gmail.com>
+Cc:     Linux List Kernel Mailing <linux-kernel@vger.kernel.org>,
+        rafael.j.wysocki@intel.com, linux-usb@vger.kernel.org
+Subject: Re: [Bug][5.17-rc0] Between commits daadb3bd0e8d and 455e73a07f6e,
+ the kernel stops loading on my devices.
+Message-ID: <Yea8p1b/sZYKNGaB@kuha.fi.intel.com>
+References: <CABXGCsNb22JCJ4AyR1sYqFtF4QUnvM3B2zQcc1svcm2mquWxoA@mail.gmail.com>
+ <YeUvvIaVJnJrrpYe@kuha.fi.intel.com>
+ <CABXGCsO5PYBuZ11YR16NLLa0H07Jom1JQhWHFuETfotfBfzkMw@mail.gmail.com>
+ <YeVQsRp7aDMcQKs7@kuha.fi.intel.com>
+ <CABXGCsMWXFFQY3L8ixK9K-gYX41_gTjqHRBXNp6gDpUgdnvFfg@mail.gmail.com>
+ <YeVfYOhxGTgg8VpZ@kuha.fi.intel.com>
+ <CABXGCsOwsP7NJ67oyK3HPs2EarSJKLB9EVW7oEh+8bAFihSa8g@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220114150824.3578829-1-jens.wiklander@linaro.org> <20220114150824.3578829-4-jens.wiklander@linaro.org>
-In-Reply-To: <20220114150824.3578829-4-jens.wiklander@linaro.org>
-From:   Sumit Garg <sumit.garg@linaro.org>
-Date:   Tue, 18 Jan 2022 18:41:20 +0530
-Message-ID: <CAFA6WYOG263--zk9djUT1ueeXBCbg62fo95ZRJ1c733KULpUhw@mail.gmail.com>
-Subject: Re: [PATCH v2 03/12] tee: add tee_shm_alloc_user_buf()
-To:     Jens Wiklander <jens.wiklander@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Devaraj Rangasamy <Devaraj.Rangasamy@amd.com>,
-        Rijo Thomas <Rijo-john.Thomas@amd.com>,
-        David Howells <dhowells@redhat.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CABXGCsOwsP7NJ67oyK3HPs2EarSJKLB9EVW7oEh+8bAFihSa8g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 14 Jan 2022 at 20:38, Jens Wiklander <jens.wiklander@linaro.org> wrote:
->
-> Adds a new function tee_shm_alloc_user_buf() or user mode allocations,
-> replacing passing the flags TEE_SHM_MAPPED | TEE_SHM_DMA_BUF to
-> tee_shm_alloc().
->
-> Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
-> ---
->  drivers/tee/tee_core.c     |  2 +-
->  drivers/tee/tee_shm.c      | 18 ++++++++++++++++++
->  drivers/tee/tee_shm_pool.c |  2 +-
->  include/linux/tee_drv.h    |  3 ++-
->  4 files changed, 22 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/tee/tee_core.c b/drivers/tee/tee_core.c
-> index 3fc426dad2df..a15812baaeb1 100644
-> --- a/drivers/tee/tee_core.c
-> +++ b/drivers/tee/tee_core.c
-> @@ -297,7 +297,7 @@ static int tee_ioctl_shm_alloc(struct tee_context *ctx,
->         if (data.flags)
->                 return -EINVAL;
->
-> -       shm = tee_shm_alloc(ctx, data.size, TEE_SHM_MAPPED | TEE_SHM_DMA_BUF);
-> +       shm = tee_shm_alloc_user_buf(ctx, data.size);
+Hi Mikhail,
 
-Since it's the only place this API would be used within the driver
-itself and I can't see any future usage from other kernel drivers..
+On Tue, Jan 18, 2022 at 04:26:27PM +0500, Mikhail Gavrilov wrote:
+> On Mon, 17 Jan 2022 at 17:21, Heikki Krogerus
+> <heikki.krogerus@linux.intel.com> wrote:
+> >
+> > Have you modified the file, or something else that you have not
+> > committed yet?
+> >
+> >         % git status
+> >
+> > Checkout the file, and then try to apply the patch:
+> >
+> >         % git checkout drivers/usb/typec/port-mapper.c
+> >         % git apply -v 0001-usb-typec-Test-fix.patch
+> >
+> 
+> I understood why the patch was not applied. The "Window line endings"
+> in the attached file were.
+> 
+> $ dos2unix 0001-usb-typec-Test-fix.patch
+> dos2unix: converting file 0001-usb-typec-Test-fix.patch to Unix format...
+> $ git apply -v 0001-usb-typec-Test-fix.patch
+> Checking patch drivers/usb/typec/port-mapper.c...
+> Applied patch drivers/usb/typec/port-mapper.c cleanly.
 
->         if (IS_ERR(shm))
->                 return PTR_ERR(shm);
->
-> diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
-> index 499fccba3d74..b43178986985 100644
-> --- a/drivers/tee/tee_shm.c
-> +++ b/drivers/tee/tee_shm.c
-> @@ -127,6 +127,24 @@ struct tee_shm *tee_shm_alloc(struct tee_context *ctx, size_t size, u32 flags)
->  }
->  EXPORT_SYMBOL_GPL(tee_shm_alloc);
->
-> +/**
-> + * tee_shm_alloc_user_buf() - Allocate shared memory for user space
-> + * @ctx:       Context that allocates the shared memory
-> + * @size:      Requested size of shared memory
-> + *
-> + * Memory allocated as user space shared memory is automatically freed when
-> + * the TEE file pointer is closed. The primary usage of this function is
-> + * when the TEE driver doesn't support registering ordinary user space
-> + * memory.
-> + *
-> + * @returns a pointer to 'struct tee_shm'
-> + */
-> +struct tee_shm *tee_shm_alloc_user_buf(struct tee_context *ctx, size_t size)
-> +{
-> +       return tee_shm_alloc(ctx, size, TEE_SHM_MAPPED | TEE_SHM_DMA_BUF);
-> +}
-> +EXPORT_SYMBOL_GPL(tee_shm_alloc_user_buf);
-> +
+Oh, I'm sorry. Something corrupted the patch, which is a bit alarming,
+but good that you managed to test it in any case.
 
-..so I don't see any value-add for this export..
+> Unfortunately the attached patch didn't fix the issue.
+> 
+>  BUG: kernel NULL pointer dereference, address: 0000000000000008
+>  #PF: supervisor read access in kernel mode
+>  #PF: error_code(0x0000) - not-present page
+>  PGD 0 P4D 0
+>  Oops: 0000 [#1] PREEMPT SMP NOPTI
+>  CPU: 10 PID: 459 Comm: kworker/10:2 Not tainted
+> 5.16.0-patched-455e73a07f6e+ #26
+>  Hardware name: ASUSTeK COMPUTER INC. ROG Strix G513QY_G513QY/G513QY,
+> BIOS G513QY.316 11/29/2021
+>  Workqueue: events_long ucsi_init_work [typec_ucsi]
+>  RIP: 0010:component_master_add_with_match+0x14/0x110
+>  Code: 72 d7 48 89 ef 5b 5d e9 1a 5c 9f ff 66 2e 0f 1f 84 00 00 00 00
+> 00 0f 1f 44 00 00 41 55 49 89 fd 41 54 49 89 f4 55 53 48 89 d3 <48> 8b
+> 72 08 48 3b 32 74 10 48 89 d7 e8 4b fd ff ff 85 c0 0f 85 bb
+>  RSP: 0018:ffffba4581837d90 EFLAGS: 00010282
+>  RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
+>  RDX: 0000000000000000 RSI: ffffffffc04f58d0 RDI: ffff9c5afe43a808
+>  RBP: ffff9c5a81076358 R08: 0000000000000001 R09: 0000000000000001
+>  R10: 0000000000000001 R11: 0000000000000000 R12: ffffffffc04f58d0
+>  R13: ffff9c5afe43a808 R14: ffff9c5afe43a808 R15: ffff9c5a832c4010
+>  FS:  0000000000000000(0000) GS:ffff9c5d88a00000(0000) knlGS:0000000000000000
+>  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+>  CR2: 0000000000000008 CR3: 00000002e5028000 CR4: 0000000000750ee0
+>  PKRU: 55555554
+>  Call Trace:
+>   <TASK>
+>   typec_link_ports+0x5d/0x70 [typec]
+>   typec_register_port+0x1e6/0x2e0 [typec]
+>   ucsi_init_work+0x463/0x840 [typec_ucsi]
+>   process_one_work+0x2bb/0x600
+>   worker_thread+0x55/0x3b0
+>   ? process_one_work+0x600/0x600
+>   kthread+0x17c/0x1a0
+>   ? set_kthread_struct+0x40/0x40
+>   ret_from_fork+0x22/0x30
+>   </TASK>
 
->  /**
->   * tee_shm_alloc_kernel_buf() - Allocate shared memory for kernel buffer
->   * @ctx:       Context that allocates the shared memory
-> diff --git a/drivers/tee/tee_shm_pool.c b/drivers/tee/tee_shm_pool.c
-> index a9f9d50fd181..0e460347138a 100644
-> --- a/drivers/tee/tee_shm_pool.c
-> +++ b/drivers/tee/tee_shm_pool.c
-> @@ -1,6 +1,6 @@
->  // SPDX-License-Identifier: GPL-2.0-only
->  /*
-> - * Copyright (c) 2015, Linaro Limited
-> + * Copyright (c) 2015, 2017, 2022 Linaro Limited
->   */
->  #include <linux/device.h>
->  #include <linux/dma-buf.h>
-> diff --git a/include/linux/tee_drv.h b/include/linux/tee_drv.h
-> index 6b0f0d01ebdf..26b450484ac1 100644
-> --- a/include/linux/tee_drv.h
-> +++ b/include/linux/tee_drv.h
-> @@ -1,6 +1,6 @@
->  /* SPDX-License-Identifier: GPL-2.0-only */
->  /*
-> - * Copyright (c) 2015-2016, Linaro Limited
-> + * Copyright (c) 2015-2022 Linaro Limited
->   */
->
->  #ifndef __TEE_DRV_H
-> @@ -308,6 +308,7 @@ void *tee_get_drvdata(struct tee_device *teedev);
->   * @returns a pointer to 'struct tee_shm'
->   */
->  struct tee_shm *tee_shm_alloc(struct tee_context *ctx, size_t size, u32 flags);
-> +struct tee_shm *tee_shm_alloc_user_buf(struct tee_context *ctx, size_t size);
+This is not the same issue, this is another bug :-(. The original
+issue does seem to be fixed.
 
-..and it should rather belong to drivers/tee/tee_private.h.
+I can reproduce this one by simply not creating the component list in
+the code. That function - component_master_add_with_match() - can't
+handle situation where the list is empty. I'll prepare the fix.
 
--Sumit
+Thanks,
 
->  struct tee_shm *tee_shm_alloc_kernel_buf(struct tee_context *ctx, size_t size);
->
->  /**
-> --
-> 2.31.1
->
+-- 
+heikki
