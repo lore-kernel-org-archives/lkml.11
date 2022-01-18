@@ -2,80 +2,174 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C971C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 18:21:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D5FC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 18:21:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244421AbiARSVp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        id S1347746AbiARSVr (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 13:21:47 -0500
+Received: from conssluserg-05.nifty.com ([210.131.2.90]:33809 "EHLO
+        conssluserg-05.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244323AbiARSVp (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
         Tue, 18 Jan 2022 13:21:45 -0500
-Received: from mga06.intel.com ([134.134.136.31]:29151 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1347740AbiARSVk (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 13:21:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642530100; x=1674066100;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=EdNqGv3xnFii2TmxzYZKP/EMaaoub73SmUvUqBfCqpo=;
-  b=LY0QywZpO8V3/ue0/pBOzLytn41r8QIQ4gwArOqyKtwscleZK/eeVNtT
-   CvnODNw0qnhiKuomi/FrK5jhaq9TjNIaA/KeBusurmB0y0UX0n7Q3YTMx
-   Flo1E+suGFi37gYqWMS5qW2DZQpckGh6/fZP6ICms47kZpNcbkdZcST7X
-   nLtdv121c9kjPdKRimJ/sZSnGGs4sZHhyvg9AtN3tDUXRz83gM0x/Y4Cx
-   TLwTXh5rluy0iSLKfezL50M8wb4JJbnwRBcUynv0fAaAZCiQDIhlRh6pj
-   xNkGanrln4sC5Ao3oFr0FUO+tQcaeRWGLhXZzxqbSVImE8uo94hm2DmHz
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="305615131"
-X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="305615131"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 10:21:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
-   d="scan'208";a="477079482"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 18 Jan 2022 10:21:04 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1n9t6N-000CpV-Dr; Tue, 18 Jan 2022 18:21:03 +0000
-Date:   Wed, 19 Jan 2022 02:20:58 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     David Howells <dhowells@redhat.com>
-Cc:     kbuild-all@lists.01.org, GNU/Weeb Mailing List <gwml@gnuweeb.org>,
-        linux-kernel@vger.kernel.org
-Subject: [ammarfaizi2-block:dhowells/linux-fs/netfs-lib 19/23] ERROR:
- modpost: "netfs_invalidatepage" [fs/cifs/cifs.ko] undefined!
-Message-ID: <202201190252.29bOuDYN-lkp@intel.com>
+Received: from mail-pg1-f170.google.com (mail-pg1-f170.google.com [209.85.215.170]) (authenticated)
+        by conssluserg-05.nifty.com with ESMTP id 20IILSee011882;
+        Wed, 19 Jan 2022 03:21:29 +0900
+DKIM-Filter: OpenDKIM Filter v2.10.3 conssluserg-05.nifty.com 20IILSee011882
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
+        s=dec2015msa; t=1642530089;
+        bh=RDC2Fjwcdz1UygYpDoeHxvqZCWGtSgJ9ZjIXI8tV+ew=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=mfFin+KCmPBqKmbXzoh3r93wOV+yaxUedaMyO9+I3TG8tVz0NoUmSUaInWEyg/QnG
+         0/CNliD0nNuOqCUuIi116VSprw7PMXnGPst2kARVqhpf1o1xvkC2PFql1Ggk9Jc7Vx
+         hbvOgnd16yMyMsNQqCjjwbjSidwSOvjrcedWxTe3Fi5RqGR1QSEYcnFnMx3i6xq2Aw
+         7wEZYCHlYZrQXJGMvS5LiETzLMTRpRDj78uYOWN0ZB8+FJB1/6I5T4MNZt/wDYK7eD
+         PpAwlw8Gvrh4hlhGU7iUKA0jnSivKf3s3+2f/QwvlAKekEpH6hHswrx2MqPJ9jJkjj
+         pNUfU04PtzOcw==
+X-Nifty-SrcIP: [209.85.215.170]
+Received: by mail-pg1-f170.google.com with SMTP id r11so2038420pgr.6;
+        Tue, 18 Jan 2022 10:21:28 -0800 (PST)
+X-Gm-Message-State: AOAM533WSndfyBPrWtLYCZGT26aw4w02jXB5x44k00xy6CNP/GATFrkW
+        Be2326zhhdqx5goIjIUabdDq/rpwRXUxzBr91lM=
+X-Google-Smtp-Source: ABdhPJxppakuZNPZqJ8qO8K8ZnlZedADMwxwZPJWvK53Cb26njShi1VOp3FVrSTverXM6Z5OxoMeUzwigo4tAEzELgU=
+X-Received: by 2002:a63:7148:: with SMTP id b8mr24532460pgn.616.1642530087928;
+ Tue, 18 Jan 2022 10:21:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20211213100043.45645-1-arielmarcovitch@gmail.com> <20211213100043.45645-2-arielmarcovitch@gmail.com>
+In-Reply-To: <20211213100043.45645-2-arielmarcovitch@gmail.com>
+From:   Masahiro Yamada <masahiroy@kernel.org>
+Date:   Wed, 19 Jan 2022 03:20:50 +0900
+X-Gmail-Original-Message-ID: <CAK7LNAS+Df_V-B9Qy_39hgUZF1b6UeiHQ5m-25JekiVYSQ67dQ@mail.gmail.com>
+Message-ID: <CAK7LNAS+Df_V-B9Qy_39hgUZF1b6UeiHQ5m-25JekiVYSQ67dQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] kconfig: Show menuconfigs as menus in the .config file
+To:     Ariel Marcovitch <arielmarcovitch@gmail.com>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/ammarfaizi2/linux-block dhowells/linux-fs/netfs-lib
-head:   e229088c2bc0ba29fdff1bc737506aed6ec50581
-commit: eab3170e20c001ee23073a8705db22713b529c21 [19/23] netfs: Provide invalidatepage and releasepage calls
-config: parisc-defconfig (https://download.01.org/0day-ci/archive/20220119/202201190252.29bOuDYN-lkp@intel.com/config)
-compiler: hppa-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/ammarfaizi2/linux-block/commit/eab3170e20c001ee23073a8705db22713b529c21
-        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
-        git fetch --no-tags ammarfaizi2-block dhowells/linux-fs/netfs-lib
-        git checkout eab3170e20c001ee23073a8705db22713b529c21
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=parisc SHELL=/bin/bash
+On Mon, Dec 13, 2021 at 7:01 PM Ariel Marcovitch
+<arielmarcovitch@gmail.com> wrote:
+>
+> Until now, menuconfigs were considered configs because they had non-zero
+> sym attribute. This meant that instead of having the nice menu comment
+> block in the .config output file, they were merely shown as single
+> configs.
+>
+> For example:
+> ```Kconfig
+> menu "Foo"
+> endmenu
+>
+> menuconfig BAR
+>         bool "Bar"
+>
+> config OTHER
+>         bool "Other"
+>         depends on BAR
+> ```
+>
+> Will be shown as:
+> ```.config
+>  #
+>  # Foo
+>  #
+>  # end of Foo
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
 
-All errors (new ones prefixed by >>, old ones prefixed by <<):
+I am OK with this patch.
 
-ERROR: modpost: "netfs_releasepage" [fs/cifs/cifs.ko] undefined!
->> ERROR: modpost: "netfs_invalidatepage" [fs/cifs/cifs.ko] undefined!
+Just a nit.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+As far as I tested your sample code (without applying this patch),
+I did not see the line "# end of Foo".
+
+The line "# end of ..." is printed when the last child gets back to
+its parent, but the "Foo" menu has no child menu here.
+
+This is out of scope of this patch, but can you update the
+commit log so it matches the current behavior?
+
+(or add one config into the "Foo" menu)
+
+
+
+
+
+
+
+>
+>  CONFIG_BAR=y
+>  CONFIG_OTHER=y
+> ```
+>
+> Instead of using the sym attribute to decide whether or not to print the
+> menu block comment, check menu->prompt->type explicitly (after checking
+> that menu_is_visible(menu) which means menu->prompt is not none). The
+> only prompt types we actually show as menus are P_MENU and P_COMMENT. At
+> the end of the menu we need to show the end of block only for P_MENU
+> (although P_COMMENT prompts will not get to this flow because they don't
+> have children).
+>
+> Signed-off-by: Ariel Marcovitch <arielmarcovitch@gmail.com>
+> ---
+>  scripts/kconfig/confdata.c | 28 +++++++++++++++++-----------
+>  1 file changed, 17 insertions(+), 11 deletions(-)
+>
+> diff --git a/scripts/kconfig/confdata.c b/scripts/kconfig/confdata.c
+> index 42bc56ee238c..9f2c22f46ee0 100644
+> --- a/scripts/kconfig/confdata.c
+> +++ b/scripts/kconfig/confdata.c
+> @@ -874,16 +874,21 @@ int conf_write(const char *name)
+>         menu = rootmenu.list;
+>         while (menu) {
+>                 sym = menu->sym;
+> -               if (!sym) {
+> -                       if (!menu_is_visible(menu))
+> -                               goto next;
+> -                       str = menu_get_prompt(menu);
+> -                       fprintf(out, "\n"
+> -                                    "#\n"
+> -                                    "# %s\n"
+> -                                    "#\n", str);
+> -                       need_newline = false;
+> -               } else if (!(sym->flags & SYMBOL_CHOICE) &&
+> +
+> +               if (menu_is_visible(menu)) {
+> +                       enum prop_type type = menu->prompt->type;
+> +
+> +                       if (type == P_MENU || type == P_COMMENT) {
+> +                               str = menu_get_prompt(menu);
+> +                               fprintf(out, "\n"
+> +                                       "#\n"
+> +                                       "# %s\n"
+> +                                       "#\n", str);
+> +                               need_newline = false;
+> +                       }
+> +               }
+> +
+> +               if (sym && !(sym->flags & SYMBOL_CHOICE) &&
+>                            !(sym->flags & SYMBOL_WRITTEN)) {
+>                         sym_calc_value(sym);
+>                         if (!(sym->flags & SYMBOL_WRITE))
+> @@ -904,7 +909,8 @@ int conf_write(const char *name)
+>                 if (menu->next)
+>                         menu = menu->next;
+>                 else while ((menu = menu->parent)) {
+> -                       if (!menu->sym && menu_is_visible(menu) &&
+> +                       if (menu_is_visible(menu) &&
+> +                           menu->prompt->type == P_MENU &&
+>                             menu != &rootmenu) {
+>                                 str = menu_get_prompt(menu);
+>                                 fprintf(out, "# end of %s\n", str);
+> --
+> 2.25.1
+>
+
+
+-- 
+Best Regards
+Masahiro Yamada
