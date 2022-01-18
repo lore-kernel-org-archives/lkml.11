@@ -2,102 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0410C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:17:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39949C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:17:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347619AbiARDRX (ORCPT
+        id S1350757AbiARDRd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:17:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35858 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349201AbiARC4h (ORCPT
+        Mon, 17 Jan 2022 22:17:33 -0500
+Received: from mail104.syd.optusnet.com.au ([211.29.132.246]:46717 "EHLO
+        mail104.syd.optusnet.com.au" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1352933AbiARDAt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:56:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 936DBC02B749;
-        Mon, 17 Jan 2022 18:44:20 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 64E49612CE;
-        Tue, 18 Jan 2022 02:44:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21E69C36AE3;
-        Tue, 18 Jan 2022 02:44:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473859;
-        bh=ttfyB81yNQlMenIPGF8dZQXmiBNmpBeJ8w+ZiOjs+5E=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rYNydTgJadtn7XJPbFf98z/uNDPXq1TZDnNCfhOPt1MvU8WQI3g3S3i5PpKzOIXcT
-         k3IEk28SjSQQ8t4CE9yx0SXMf8hIne/7l1/tQgGrNO8Jsh6E6568lgmqs9kbz0Mdfy
-         ob3kFbCsJsNHV17T+sDN4xuuusZWU1sodYSwcwaHrXK/Ow17s/vim76OtL4ugQ0lKD
-         wCThrXPWuV8T58BKiyp16DyOKyHR+MMd4rO+Vu1LudpyNcYIOhODK1g6+l9xRLJhHu
-         Aa7zr2Q7yELZ3/lBLMm1AWnUQuJYauZBOlQ/elt08ja8Qr/vLaXi2ExTfP6EapsIsx
-         JsVHUN2EOBTDw==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Wunner <lukas@wunner.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
-        linux-serial@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 111/116] serial: core: Keep mctrl register state and cached copy in sync
-Date:   Mon, 17 Jan 2022 21:40:02 -0500
-Message-Id: <20220118024007.1950576-111-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
+        Mon, 17 Jan 2022 22:00:49 -0500
+Received: from dread.disaster.area (pa49-179-45-11.pa.nsw.optusnet.com.au [49.179.45.11])
+        by mail104.syd.optusnet.com.au (Postfix) with ESMTPS id 80E6562BFEC;
+        Tue, 18 Jan 2022 14:00:43 +1100 (AEDT)
+Received: from dave by dread.disaster.area with local (Exim 4.92.3)
+        (envelope-from <david@fromorbit.com>)
+        id 1n9ejh-00180W-6I; Tue, 18 Jan 2022 14:00:41 +1100
+Date:   Tue, 18 Jan 2022 14:00:41 +1100
+From:   Dave Chinner <david@fromorbit.com>
+To:     Al Viro <viro@zeniv.linux.org.uk>
+Cc:     Brian Foster <bfoster@redhat.com>, Ian Kent <raven@themaw.net>,
+        "Darrick J. Wong" <djwong@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        David Howells <dhowells@redhat.com>,
+        Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        xfs <linux-xfs@vger.kernel.org>
+Subject: Re: [PATCH] vfs: check dentry is still valid in get_link()
+Message-ID: <20220118030041.GB59729@dread.disaster.area>
+References: <164180589176.86426.501271559065590169.stgit@mickey.themaw.net>
+ <YeJr7/E+9stwEb3t@zeniv-ca.linux.org.uk>
+ <275358741c4ee64b5e4e008d514876ed4ec1071c.camel@themaw.net>
+ <YeV+zseKGNqnSuKR@bfoster>
+ <YeWZRL88KPtLWlkI@zeniv-ca.linux.org.uk>
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YeWZRL88KPtLWlkI@zeniv-ca.linux.org.uk>
+X-Optus-CM-Score: 0
+X-Optus-CM-Analysis: v=2.4 cv=deDjYVbe c=1 sm=1 tr=0 ts=61e62d5f
+        a=Eslsx4mF8WGvnV49LKizaA==:117 a=Eslsx4mF8WGvnV49LKizaA==:17
+        a=kj9zAlcOel0A:10 a=DghFqjY3_ZEA:10 a=7-415B0cAAAA:8
+        a=ZbRbMrvnt3dbDbI5YVEA:9 a=CjuIK1q_8ugA:10 a=biEYGPWJfzWAr4FL6Ov7:22
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Wunner <lukas@wunner.de>
+On Mon, Jan 17, 2022 at 04:28:52PM +0000, Al Viro wrote:
+> On Mon, Jan 17, 2022 at 09:35:58AM -0500, Brian Foster wrote:
+> 
+> > To Al's question, at the end of the day there is no rcu delay involved
+> > with inode reuse in XFS. We do use call_rcu() for eventual freeing of
+> > inodes (see __xfs_inode_free()), but inode reuse occurs for inodes that
+> > have been put into a "reclaim" state before getting to the point of
+> > freeing the struct inode memory. This lead to the long discussion [1]
+> > Ian references around ways to potentially deal with that. I think the
+> > TLDR of that thread is there are various potential options for
+> > improvement, such as to rcu wait on inode creation/reuse (either
+> > explicitly or via more open coded grace period cookie tracking), to rcu
+> > wait somewhere in the destroy sequence before inodes become reuse
+> > candidates, etc., but none of them seemingly agreeable for varying
+> > reasons (IIRC mostly stemming from either performance or compexity) [2].
+> > 
+> > The change that has been made so far in XFS is to turn rcuwalk for
+> > symlinks off once again, which looks like landed in Linus' tree as
+> > commit 7b7820b83f23 ("xfs: don't expose internal symlink metadata
+> > buffers to the vfs"). The hope is that between that patch and this
+> > prospective vfs tweak, we can have a couple incremental fixes that at
+> > least address the practical problem users have been running into (which
+> > is a crash due to a NULL ->get_link() callback pointer due to inode
+> > reuse). The inode reuse vs. rcu thing might still be a broader problem,
+> > but AFAIA that mechanism has been in place in XFS on Linux pretty much
+> > forever.
+> 
+> My problem with that is that pathname resolution very much relies upon
+> the assumption that any inode it observes will *not* change its nature
+> until the final rcu_read_unlock().  Papering over ->i_op->get_link reads
+> in symlink case might be sufficient at the moment (I'm still not certain
+> about that, though), but that's rather brittle.  E.g. if some XFS change
+> down the road adds ->permission() on some inodes, you'll get the same
+> problem in do_inode_permission().  We also have places where we rely upon
+> 	sample ->d_seq
+> 	fetch ->d_flags
+> 	fetch ->d_inode
+> 	validate ->d_seq
+> 	...
+> 	assume that inode type matches the information in flags
+> 
+> How painful would it be to make xfs_destroy_inode() a ->free_inode() instance?
+> IOW, how far is xfs_inode_mark_reclaimable() from being callable in RCU
+> callback context?
 
-[ Upstream commit 93a770b7e16772530196674ffc79bb13fa927dc6 ]
+AIUI, not very close at all,
 
-struct uart_port contains a cached copy of the Modem Control signals.
-It is used to skip register writes in uart_update_mctrl() if the new
-signal state equals the old signal state.  It also avoids a register
-read to obtain the current state of output signals.
+I'm pretty sure we can't put it under RCU callback context at all
+because xfs_fs_destroy_inode() can take sleeping locks, perform
+transactions, do IO, run rcu_read_lock() critical sections, etc.
+This means that needs to run an a full task context and so can't run
+from RCU callback context at all.
 
-When a uart_port is registered, uart_configure_port() changes signal
-state but neglects to keep the cached copy in sync.  That may cause
-a subsequent register write to be incorrectly skipped.  Fix it before
-it trips somebody up.
+> IOW, ->free_inode() is RCU-delayed part of ->destroy_inode().  If both
+> are present, ->destroy_inode() will be called synchronously, followed
+> by ->free_inode() from RCU callback, so you can have both - moving just
+> the "finally mark for reuse" part into ->free_inode() would be OK.
+> Any blocking stuff (if any) can be left in ->destroy_inode()...
 
-This behavior has been present ever since the serial core was introduced
-in 2002:
-https://git.kernel.org/history/history/c/33c0d1b0c3eb
+Yup, that's pretty much what we already do, except that we run the
+RCU-delayed part of freeing the inode once XFS has finished with the
+inode internally and the background inode GC reclaims it.
 
-So far it was never an issue because the cached copy is initialized to 0
-by kzalloc() and when uart_configure_port() is executed, at most DTR has
-been set by uart_set_options() or sunsu_console_setup().  Therefore,
-a stable designation seems unnecessary.
+Cheers,
 
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/bceeaba030b028ed810272d55d5fc6f3656ddddb.1641129752.git.lukas@wunner.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/tty/serial/serial_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 046bedca7b8f5..55108db5b64bf 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2414,7 +2414,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 		 * We probably don't need a spinlock around this, but
- 		 */
- 		spin_lock_irqsave(&port->lock, flags);
--		port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
-+		port->mctrl &= TIOCM_DTR;
-+		port->ops->set_mctrl(port, port->mctrl);
- 		spin_unlock_irqrestore(&port->lock, flags);
- 
- 		/*
+Dave.
 -- 
-2.34.1
-
+Dave Chinner
+david@fromorbit.com
