@@ -2,47 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1425BC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:10:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAD26C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:10:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347249AbiARQKQ (ORCPT
+        id S1347283AbiARQKU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:10:16 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40222 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346983AbiARQJM (ORCPT
+        Tue, 18 Jan 2022 11:10:20 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:40958 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346828AbiARQIv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:09:12 -0500
+        Tue, 18 Jan 2022 11:08:51 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 95BBA612E7;
-        Tue, 18 Jan 2022 16:09:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B42AC00446;
-        Tue, 18 Jan 2022 16:09:10 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 120AECE1A30;
+        Tue, 18 Jan 2022 16:08:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5801C00446;
+        Tue, 18 Jan 2022 16:08:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522151;
-        bh=eP1FHXkJaS1vfmICRdpSwWEOAQrgMPNvDtNQR6vgBrs=;
+        s=korg; t=1642522128;
+        bh=M04+IOqjZ8MjY1uWE3zqPozfZYLYhCtw3qbRPNTlDXE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FQfmTck7EpzXW5cm/w41nXtpAGDjlf5yqmCIkt5wMeQUpGHL9OXytamwvC5kxEVn6
-         TGo+VS/ZhDCZ3iGrJzrxRu+2spk1RXN81QwffvH0+Dnpka0/S1QMSfApyMt+YQuQHe
-         Kz3BMtjai2yYfFPWx8Y41Mz+VUQKi0Rl82oSlDkI=
+        b=KnCCgFFprtOHQ6PZxtUcEESMP+V6dKXdaVLa320wG+7ofHb5sTtQowqPkHIByUVg+
+         CPN3ox9vyJwQ10Q0ozBMlOgUDIuSJZPRMd/M1bOpZsNBaL/QYzq8FE2hupyFqMUmLN
+         zPc8fAHQptwVidCbeNlZnqHH6YuWBrZIb8wykikU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Artem Kashkanov <artem.kashkanov@intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.15 08/28] KVM: x86: Register Processor Trace interrupt hook iff PT enabled in guest
-Date:   Tue, 18 Jan 2022 17:05:54 +0100
-Message-Id: <20220118160452.156025146@linuxfoundation.org>
+        Christian Brauner <christian.brauner@ubuntu.com>,
+        Al Viro <viro@zeniv.linux.org.uk>, NeilBrown <neilb@suse.de>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.15 01/28] devtmpfs regression fix: reconfigure on each mount
+Date:   Tue, 18 Jan 2022 17:05:47 +0100
+Message-Id: <20220118160451.927235130@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118160451.879092022@linuxfoundation.org>
 References: <20220118160451.879092022@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -50,77 +50,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: NeilBrown <neilb@suse.de>
 
-commit f4b027c5c8199abd4fb6f00d67d380548dbfdfa8 upstream.
+commit a6097180d884ddab769fb25588ea8598589c218c upstream.
 
-Override the Processor Trace (PT) interrupt handler for guest mode if and
-only if PT is configured for host+guest mode, i.e. is being used
-independently by both host and guest.  If PT is configured for system
-mode, the host fully controls PT and must handle all events.
+Prior to Linux v5.4 devtmpfs used mount_single() which treats the given
+mount options as "remount" options, so it updates the configuration of
+the single super_block on each mount.
 
-Fixes: 8479e04e7d6b ("KVM: x86: Inject PMI for KVM guest")
-Reported-by: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Reported-by: Artem Kashkanov <artem.kashkanov@intel.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
-Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
-Acked-by: Paolo Bonzini <pbonzini@redhat.com>
-Cc: stable@vger.kernel.org
-Link: https://lore.kernel.org/r/20211111020738.2512932-4-seanjc@google.com
+Since that was changed, the mount options used for devtmpfs are ignored.
+This is a regression which affect systemd - which mounts devtmpfs with
+"-o mode=755,size=4m,nr_inodes=1m".
+
+This patch restores the "remount" effect by calling reconfigure_single()
+
+Fixes: d401727ea0d7 ("devtmpfs: don't mix {ramfs,shmem}_fill_super() with mount_single()")
+Acked-by: Christian Brauner <christian.brauner@ubuntu.com>
+Cc: Al Viro <viro@zeniv.linux.org.uk>
+Signed-off-by: NeilBrown <neilb@suse.de>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/kvm_host.h |    1 +
- arch/x86/kvm/vmx/vmx.c          |    1 +
- arch/x86/kvm/x86.c              |    5 ++++-
- 3 files changed, 6 insertions(+), 1 deletion(-)
+ drivers/base/devtmpfs.c    |    7 +++++++
+ fs/super.c                 |    4 ++--
+ include/linux/fs_context.h |    2 ++
+ 3 files changed, 11 insertions(+), 2 deletions(-)
 
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1509,6 +1509,7 @@ struct kvm_x86_init_ops {
- 	int (*disabled_by_bios)(void);
- 	int (*check_processor_compatibility)(void);
- 	int (*hardware_setup)(void);
-+	bool (*intel_pt_intr_in_guest)(void);
- 
- 	struct kvm_x86_ops *runtime_ops;
- };
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -7899,6 +7899,7 @@ static struct kvm_x86_init_ops vmx_init_
- 	.disabled_by_bios = vmx_disabled_by_bios,
- 	.check_processor_compatibility = vmx_check_processor_compat,
- 	.hardware_setup = hardware_setup,
-+	.intel_pt_intr_in_guest = vmx_pt_mode_is_host_guest,
- 
- 	.runtime_ops = &vmx_x86_ops,
- };
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -8430,7 +8430,7 @@ static struct perf_guest_info_callbacks
- 	.is_in_guest		= kvm_is_in_guest,
- 	.is_user_mode		= kvm_is_user_mode,
- 	.get_guest_ip		= kvm_get_guest_ip,
--	.handle_intel_pt_intr	= kvm_handle_intel_pt_intr,
-+	.handle_intel_pt_intr	= NULL,
- };
- 
- #ifdef CONFIG_X86_64
-@@ -11183,6 +11183,8 @@ int kvm_arch_hardware_setup(void *opaque
- 	memcpy(&kvm_x86_ops, ops->runtime_ops, sizeof(kvm_x86_ops));
- 	kvm_ops_static_call_update();
- 
-+	if (ops->intel_pt_intr_in_guest && ops->intel_pt_intr_in_guest())
-+		kvm_guest_cbs.handle_intel_pt_intr = kvm_handle_intel_pt_intr;
- 	perf_register_guest_info_callbacks(&kvm_guest_cbs);
- 
- 	if (!kvm_cpu_cap_has(X86_FEATURE_XSAVES))
-@@ -11213,6 +11215,7 @@ int kvm_arch_hardware_setup(void *opaque
- void kvm_arch_hardware_unsetup(void)
+--- a/drivers/base/devtmpfs.c
++++ b/drivers/base/devtmpfs.c
+@@ -59,8 +59,15 @@ static struct dentry *public_dev_mount(s
+ 		      const char *dev_name, void *data)
  {
- 	perf_unregister_guest_info_callbacks(&kvm_guest_cbs);
-+	kvm_guest_cbs.handle_intel_pt_intr = NULL;
- 
- 	static_call(kvm_x86_hardware_unsetup)();
+ 	struct super_block *s = mnt->mnt_sb;
++	int err;
++
+ 	atomic_inc(&s->s_active);
+ 	down_write(&s->s_umount);
++	err = reconfigure_single(s, flags, data);
++	if (err < 0) {
++		deactivate_locked_super(s);
++		return ERR_PTR(err);
++	}
+ 	return dget(s->s_root);
  }
+ 
+--- a/fs/super.c
++++ b/fs/super.c
+@@ -1421,8 +1421,8 @@ struct dentry *mount_nodev(struct file_s
+ }
+ EXPORT_SYMBOL(mount_nodev);
+ 
+-static int reconfigure_single(struct super_block *s,
+-			      int flags, void *data)
++int reconfigure_single(struct super_block *s,
++		       int flags, void *data)
+ {
+ 	struct fs_context *fc;
+ 	int ret;
+--- a/include/linux/fs_context.h
++++ b/include/linux/fs_context.h
+@@ -142,6 +142,8 @@ extern void put_fs_context(struct fs_con
+ extern int vfs_parse_fs_param_source(struct fs_context *fc,
+ 				     struct fs_parameter *param);
+ extern void fc_drop_locked(struct fs_context *fc);
++int reconfigure_single(struct super_block *s,
++		       int flags, void *data);
+ 
+ /*
+  * sget() wrappers to be called from the ->get_tree() op.
 
 
