@@ -2,122 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E1C4C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 11:41:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D580CC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 11:43:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240692AbiARLlc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 06:41:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46174 "EHLO
+        id S240841AbiARLnU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 06:43:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237441AbiARLlb (ORCPT
+        with ESMTP id S237441AbiARLnR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 06:41:31 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35603C061574
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 03:41:31 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id g205so27972724oif.5
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 03:41:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=x78/TbYfX5QsnYZyr52VgAAejiGos9kR5zRjc4vUcCI=;
-        b=BHIqFD6eJovLYxKCszVQrtc4G+FVdv6Af3+lRJEtvGKcldsEv7St9cpQiHsu8HtM0U
-         NVcEdyoH7nAWqEdWzcNUGjIgads4GWtLnBxoviCJOps7kYsK27aZW2mZEhBLUqWgzRPE
-         VN+r7kLysZOMORWrbBThHM57uYpD/YgJdfDHk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=x78/TbYfX5QsnYZyr52VgAAejiGos9kR5zRjc4vUcCI=;
-        b=jnt8Y0Ri7MWSUX09kXXWPjG5NxDcmKciu5PeGDLxfS6Dd2CjBxMViV0IilFqiic+UX
-         4F38fM1dH0LA96GB7JjIHJV5H/6/QWB+ncB1D0QiG8Op14ZTAp0svtvOKFJVmdURNiQX
-         xy3bGwMpfkfQS7D3fer/WsUw/4KL3USC1QkyuYZzebqacMfKAZtJ1TVMa+ar2NBkWQLB
-         YKAil8LUeKBiL2WHd5Wv2DuhxiV7HMEznRW/cts5aQjaaiPtuBVlP02fikwVEbgpwjcZ
-         zLGPFXHkM7wEKkXGF3C5JPtBCk2Rfs8doc+HP/hmEZk56trGDvBf5fJuzpgt7vm6pGmL
-         Cxqw==
-X-Gm-Message-State: AOAM530oF9Az9O7lYCwhGjcDvLCzcs2uqMIB+TBXeSW6zVHp5HFhJ62L
-        fCqvLvaIHD6ICzSkxumPY3jLeOSH8yxZu0EhAYCCGg==
-X-Google-Smtp-Source: ABdhPJy5bFsGvTTo9Rj+B1mnhsO4OFpJd/bnRdu8kgbMxvhGzvZK0wJseXPAtmukitDgS+zCuzX4XwI2yFZBlgTFLbQ=
-X-Received: by 2002:a05:6808:3a3:: with SMTP id n3mr12476341oie.128.1642506089204;
- Tue, 18 Jan 2022 03:41:29 -0800 (PST)
+        Tue, 18 Jan 2022 06:43:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAE39C061574;
+        Tue, 18 Jan 2022 03:43:16 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id ECD70612D2;
+        Tue, 18 Jan 2022 11:43:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B53D6C340E5;
+        Tue, 18 Jan 2022 11:43:14 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="UWhDxVOV"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1642506192;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=UY51soStDeX7hSwfxW/Nourib51ic30YjyXLLEp9HtA=;
+        b=UWhDxVOVNcUjzvUjwHhHyZQFX3zZLK5d4RfOkN0lnf3m9KvPS3j6bQjJKu4LDZbLIqNc1D
+        LOZX8oz9CBYHnFxK7r275wTMloTj8R9AJqU6I2NYT5FDs0zM946ELlHB3z3o4AyPMb5TjY
+        fp/rXFKHgo4ERVJ7g8yCS6L+u4GdKbc=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 19799da0 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 18 Jan 2022 11:43:12 +0000 (UTC)
+Received: by mail-yb1-f176.google.com with SMTP id m1so36183613ybo.5;
+        Tue, 18 Jan 2022 03:43:11 -0800 (PST)
+X-Gm-Message-State: AOAM531PKg4EhsUCoe1zdjAY6lMc0/aCdRE+MVZqPFWmdYh/TRtsMcQZ
+        Iabo7mxnR1VF9KpUzEJjd4VVcilBjxXk2drnIGI=
+X-Google-Smtp-Source: ABdhPJyEGJF0pwT3RY1nsH6lCBYOcSCuzgxGWqoaEC3w3XUMUZqr+gElLrE5UBtj52h3avkewVEljTNUn5n2TrbaiKo=
+X-Received: by 2002:a25:854f:: with SMTP id f15mr32699113ybn.121.1642506189835;
+ Tue, 18 Jan 2022 03:43:09 -0800 (PST)
 MIME-Version: 1.0
-References: <YeG8ydoJNWWkGrTb@ls3530> <CAKMK7uGdJckdM+fg+576iJXsqzCOUg20etPBMwRLB9U7GcG01Q@mail.gmail.com>
- <c80ed72c-2eb4-16dd-a7ad-57e9dde59ba1@gmx.de> <CAKMK7uHVHn9apB6YYbLSwu+adEB2Fqp4FM0z582zf4F-v3_GnQ@mail.gmail.com>
- <cf21018b-f231-7538-169e-2ad450643cbf@gmx.de> <97d49bca-f5f7-dba4-b62d-b6fcdd4276ac@suse.de>
- <87ee5659dt.fsf@intel.com> <4f1d6018-d74e-8e62-ea4d-0ca79c6bbbc5@gmx.de>
- <87a6ft5thv.fsf@intel.com> <CAMuHMdVE6OY29qB+F-QPgQt2q5xAYfyuPhKqSDrh_HhD9PPw9g@mail.gmail.com>
-In-Reply-To: <CAMuHMdVE6OY29qB+F-QPgQt2q5xAYfyuPhKqSDrh_HhD9PPw9g@mail.gmail.com>
-From:   Daniel Vetter <daniel@ffwll.ch>
-Date:   Tue, 18 Jan 2022 12:41:17 +0100
-Message-ID: <CAKMK7uHtdjyeasnJw2ZVwJJjuCn1KGT05kJu-x5jdmEmnBB-dA@mail.gmail.com>
-Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
-        Helge Deller <deller@gmx.de>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Javier Martinez Canillas <javierm@redhat.com>
+Received: by 2002:a05:7110:209:b0:11c:1b85:d007 with HTTP; Tue, 18 Jan 2022
+ 03:43:09 -0800 (PST)
+In-Reply-To: <YeZhVGczxcBl0sI9@gondor.apana.org.au>
+References: <CAHmME9rxdksVZkN4DF_GabsEPrSDrKbo1cVQs77B_s-e2jZ64A@mail.gmail.com>
+ <YeZhVGczxcBl0sI9@gondor.apana.org.au>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 18 Jan 2022 12:43:09 +0100
+X-Gmail-Original-Message-ID: <CAHmME9ogAW0o2PReNtsD+fFgwp28q2kP7WADtbd8kA7GsnKBpg@mail.gmail.com>
+Message-ID: <CAHmME9ogAW0o2PReNtsD+fFgwp28q2kP7WADtbd8kA7GsnKBpg@mail.gmail.com>
+Subject: Re: [PATCH crypto v3 0/2] reduce code size from blake2s on m68k and
+ other small platforms
+To:     Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     geert@linux-m68k.org, linux-crypto@vger.kernel.org,
+        netdev@vger.kernel.org, wireguard@lists.zx2c4.com,
+        linux-kernel@vger.kernel.org, bpf@vger.kernel.org, tytso@mit.edu,
+        gregkh@linuxfoundation.org, jeanphilippe.aumasson@gmail.com,
+        ardb@kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 9:41 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
->
-> Hi Jani,
->
-> On Tue, Jan 18, 2022 at 9:38 AM Jani Nikula <jani.nikula@linux.intel.com> wrote:
-> > On Mon, 17 Jan 2022, Helge Deller <deller@gmx.de> wrote:
-> > > On 1/17/22 22:40, Jani Nikula wrote:
-> > >> On Mon, 17 Jan 2022, Thomas Zimmermann <tzimmermann@suse.de> wrote:
-> > >>> Seems like few people read linux-fbdev these days.
-> > >>
-> > >> How much traffic is there to linux-fbdev that is *not* Cc'd to dri-devel
-> > >> also?
-> > >
-> > > Doesn't seem like much traffic - which IMHO is OK for such a tree with
-> > > mostly just maintenance patches.
-> > >
-> > >> Do we still need a separate linux-fbdev mailing list at all?
-> > >
-> > > Yes. I want to have it seperate of dri-devel.
-> > > Actually I'd prefer to drop dri-devel from the list where patches
-> > > for fbdev are sent...
-> >
-> > Disagreed. If anything, this thread shows we can't have fbdev and drm in
-> > silos of their own.
->
-> Unless DRM drops fbdev support. Isn't that the long-term plan anyway?
+On 1/18/22, Herbert Xu <herbert@gondor.apana.org.au> wrote:
+> As the patches that triggered this weren't part of the crypto
+> tree, this will have to go through the random tree if you want
+> them for 5.17.
 
-No. There's way too much old stuff still using the fbdev interface to
-do that. We've even done things like standardize the vblank wait
-ioctl, because people need that.
-
-There's some effort to make fbdev drivers like efifb obsolete, and
-there's been discussions to have a drm-native fbcon. But none of these
-are going to make fbdev on top of drm obsolete and something we can
-remove. Pretty sure at least not this decade.
--Daniel
-
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
-
-
-
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+Sure, will do.
