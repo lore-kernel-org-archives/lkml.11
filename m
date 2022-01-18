@@ -2,50 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D98C1C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:16:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98612C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:16:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355902AbiARDOt (ORCPT
+        id S1355977AbiARDO5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:14:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37618 "EHLO
+        Mon, 17 Jan 2022 22:14:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350941AbiARC6l (ORCPT
+        with ESMTP id S1352215AbiARC7V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:58:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DE13C08E81D;
-        Mon, 17 Jan 2022 18:46:34 -0800 (PST)
+        Mon, 17 Jan 2022 21:59:21 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A001C0619C9;
+        Mon, 17 Jan 2022 18:34:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 134D061310;
-        Tue, 18 Jan 2022 02:46:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 931EEC36AEB;
-        Tue, 18 Jan 2022 02:46:32 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0970B81258;
+        Tue, 18 Jan 2022 02:34:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D955FC36AE3;
+        Tue, 18 Jan 2022 02:34:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473993;
-        bh=cnN5xt6O7qL5pb9YX1Cpeo6wCDkG1nZj0Zoq4vNviYg=;
+        s=k20201202; t=1642473253;
+        bh=MPgyCk3gHvl6pAmB++S7vawcL6tEWEZbnPonpzfws4k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oiekNBZdJHPsQMjU/Vut5Zp5cyGjOU44PH2KthAxUeICK/huPe7pVdYe3uL8Uos0U
-         Lxa/f29CDwme2kuQPgS40Rx652pp1Jv3n6RYbBU5sh7NZZ+qy3l6ieHgP/6jgcHYqK
-         55UoRGr2VZ+55pozABsoLWA6b1EbN6YWAxe4F0M74iZPdi+shWp8LGNA3EGP8r8Ly5
-         MbwK7gbzeWPVb1aFx9GacVqRYQ+SvPvA/P0PXD24GF23ayh9fE0TUbuG1GpcBs8T0n
-         J9ImNZuExj2l6sdiYJhGnE9UnIP92bmykAI3jrs0YwTVQCs2Tfsbnp1vrwfADCBhXs
-         GNCmSlkOdgllg==
+        b=aJ9x5CBqVEP/3CTWQ8OMsUGPYmSFJ/CEF4wWsD9q8SWEVE6saXx8NPNt4oyXYxm01
+         JIlArq1H7UiUPbL0Vvq2+iPzkMeh5OVbW8pjDnxcUzcTXclVCuEahPE7JTfed0Lj1q
+         c9qxOr+126SHF1KS8UZW+E/M9p7aU7rNTFHvI8UYVidK4HgOncCVH42bupl6/2Cwkw
+         mdcQbEEt7B+0GrnTO19nM2Oc9Abin3r05bLadjpyRI6an/QpcmFCLGLI0hCCzqHDdl
+         FabRBIP+5EksmzkODM+Wl9JUzg64pipNYox3zzocRq9ReL/YGmXzPnRQFBLvjhNmsM
+         lS0AIVySLX3HA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sudeep Holla <sudeep.holla@arm.com>,
-        Bob Moore <robert.moore@intel.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, linux-acpi@vger.kernel.org,
-        devel@acpica.org
-Subject: [PATCH AUTOSEL 5.4 57/73] ACPICA: Fix wrong interpretation of PCC address
-Date:   Mon, 17 Jan 2022 21:44:16 -0500
-Message-Id: <20220118024432.1952028-57-sashal@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 041/188] cirrus: mac89x0: use eth_hw_addr_set()
+Date:   Mon, 17 Jan 2022 21:29:25 -0500
+Message-Id: <20220118023152.1948105-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
-References: <20220118024432.1952028-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,84 +52,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sudeep Holla <sudeep.holla@arm.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 9a3b8655db1ada31c82189ae13f40eb25da48c35 ]
+[ Upstream commit 9a962aedd30f7fceb828d3161a80e0526e358eb5 ]
 
-ACPICA commit 41be6afacfdaec2dba3a5ed368736babc2a7aa5c
+Byte by byte assignments.
 
-With the PCC Opregion in the firmware and we are hitting below kernel crash:
+Fixes build on m68k.
 
--->8
-Unable to handle kernel NULL pointer dereference at virtual address 0000000000000010
- Workqueue: pm pm_runtime_work
- pstate: 80000005 (Nzcv daif -PAN -UAO -TCO -DIT -SSBS BTYPE=--)
- pc : __memcpy+0x54/0x260
- lr : acpi_ex_write_data_to_field+0xb8/0x194
- Call trace:
-  __memcpy+0x54/0x260
-  acpi_ex_store_object_to_node+0xa4/0x1d4
-  acpi_ex_store+0x44/0x164
-  acpi_ex_opcode_1A_1T_1R+0x25c/0x508
-  acpi_ds_exec_end_op+0x1b4/0x44c
-  acpi_ps_parse_loop+0x3a8/0x614
-  acpi_ps_parse_aml+0x90/0x2f4
-  acpi_ps_execute_method+0x11c/0x19c
-  acpi_ns_evaluate+0x1ec/0x2b0
-  acpi_evaluate_object+0x170/0x2b0
-  acpi_device_set_power+0x118/0x310
-  acpi_dev_suspend+0xd4/0x180
-  acpi_subsys_runtime_suspend+0x28/0x38
-  __rpm_callback+0x74/0x328
-  rpm_suspend+0x2d8/0x624
-  pm_runtime_work+0xa4/0xb8
-  process_one_work+0x194/0x25c
-  worker_thread+0x260/0x49c
-  kthread+0x14c/0x30c
-  ret_from_fork+0x10/0x20
- Code: f9000006 f81f80a7 d65f03c0 361000c2 (b9400026)
- ---[ end trace 24d8a032fa77b68a ]---
-
-The reason for the crash is that the PCC channel index passed via region.address
-in acpi_ex_store_object_to_node is interpreted as the channel subtype
-incorrectly.
-
-Assuming the PCC op_region support is not used by any other type, let us
-remove the subtype check as the AML has no access to the subtype information.
-Once we remove it, the kernel crash disappears and correctly complains about
-missing PCC Opregion handler.
-
-ACPI Error: No handler for Region [PFRM] ((____ptrval____)) [PCC] (20210730/evregion-130)
-ACPI Error: Region PCC (ID=10) has no handler (20210730/exfldio-261)
-ACPI Error: Aborting method \_SB.ETH0._PS3 due to previous error (AE_NOT_EXIST) (20210730/psparse-531)
-
-Link: https://github.com/acpica/acpica/commit/41be6afa
-Signed-off-by: Sudeep Holla <sudeep.holla@arm.com>
-Signed-off-by: Bob Moore <robert.moore@intel.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/acpica/exfield.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+ drivers/net/ethernet/cirrus/mac89x0.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/acpi/acpica/exfield.c b/drivers/acpi/acpica/exfield.c
-index d3d2dbfba680c..cd3debefe990d 100644
---- a/drivers/acpi/acpica/exfield.c
-+++ b/drivers/acpi/acpica/exfield.c
-@@ -320,12 +320,7 @@ acpi_ex_write_data_to_field(union acpi_operand_object *source_desc,
- 		       obj_desc->field.base_byte_offset,
- 		       source_desc->buffer.pointer, data_length);
+diff --git a/drivers/net/ethernet/cirrus/mac89x0.c b/drivers/net/ethernet/cirrus/mac89x0.c
+index 6324e80960c3e..4a959a74b1cea 100644
+--- a/drivers/net/ethernet/cirrus/mac89x0.c
++++ b/drivers/net/ethernet/cirrus/mac89x0.c
+@@ -242,12 +242,15 @@ static int mac89x0_device_probe(struct platform_device *pdev)
+ 		pr_info("No EEPROM, giving up now.\n");
+ 		goto out1;
+         } else {
++		u8 addr[ETH_ALEN];
++
+                 for (i = 0; i < ETH_ALEN; i += 2) {
+ 			/* Big-endian (why??!) */
+ 			unsigned short s = readreg(dev, PP_IA + i);
+-                        dev->dev_addr[i] = s >> 8;
+-                        dev->dev_addr[i+1] = s & 0xff;
++			addr[i] = s >> 8;
++			addr[i+1] = s & 0xff;
+                 }
++		eth_hw_addr_set(dev, addr);
+         }
  
--		if ((obj_desc->field.region_obj->region.address ==
--		     PCC_MASTER_SUBSPACE
--		     && MASTER_SUBSPACE_COMMAND(obj_desc->field.
--						base_byte_offset))
--		    || GENERIC_SUBSPACE_COMMAND(obj_desc->field.
--						base_byte_offset)) {
-+		if (MASTER_SUBSPACE_COMMAND(obj_desc->field.base_byte_offset)) {
- 
- 			/* Perform the write */
- 
+ 	dev->irq = SLOT2IRQ(slot);
 -- 
 2.34.1
 
