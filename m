@@ -2,47 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B60BEC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:10:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E01A9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:10:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346785AbiARQKi (ORCPT
+        id S1346894AbiARQKm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:10:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51722 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243394AbiARQJV (ORCPT
+        Tue, 18 Jan 2022 11:10:42 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39986 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346571AbiARQI6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:09:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 695F3C061401;
-        Tue, 18 Jan 2022 08:09:21 -0800 (PST)
+        Tue, 18 Jan 2022 11:08:58 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0B508612D1;
-        Tue, 18 Jan 2022 16:09:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1167C00446;
-        Tue, 18 Jan 2022 16:09:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DDA3612E6;
+        Tue, 18 Jan 2022 16:08:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54F73C00446;
+        Tue, 18 Jan 2022 16:08:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522160;
-        bh=u20GRXqdFoWwdO0HLqYOO3U5SYterS/PKJI/gjDF68E=;
+        s=korg; t=1642522137;
+        bh=euUqpoJamjbQtoMt2wX7hkoWVdt15chwwxCFqoDKJu8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=z1nDj1QpsFr/rSFQvCHNsR0MWhDWTPucgvPG/Xyyal5ZJsTTWA3uKEm9Dzyig1OQM
-         gi3aTK0BCVnYiriUdvAfBaMFE/4IygC9uB7GLS2BVGINLXCiukLNDGPGMFkDHz3xkn
-         BaFh+pJAaxlfXdfE7bxYC/nWLmmpQqrEk2sZ2uCc=
+        b=a49Tm78YYe/MTS4ZliiZzAqt3P+UWGqSN0abUedYuEfpZynsNNL4g2RRIvPM/BECc
+         4Rn8E07JYEWXt7jNauZcqLoV6fIP3yD8gKwb8Nh4SO8/pFffiSNS2/PU4mdiNS4y4b
+         euNH2kF+j3T6V3c8Rph+hw8A3Iew/Jzw1mzmWEXw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dario Petrillo <dario.pk1@gmail.com>,
-        Arnaldo Carvalho de Melo <acme@redhat.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>, stable@kernel.org
-Subject: [PATCH 5.15 19/28] perf annotate: Avoid TUI crash when navigating in the annotation of recursive functions
-Date:   Tue, 18 Jan 2022 17:06:05 +0100
-Message-Id: <20220118160452.511243269@linuxfoundation.org>
+        stable@vger.kernel.org, Stephen Boyd <swboyd@chromium.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Subject: [PATCH 5.15 04/28] remoteproc: qcom: pil_info: Dont memcpy_toio more than is provided
+Date:   Tue, 18 Jan 2022 17:05:50 +0100
+Message-Id: <20220118160452.025245220@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118160451.879092022@linuxfoundation.org>
 References: <20220118160451.879092022@linuxfoundation.org>
@@ -54,108 +46,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dario Petrillo <dario.pk1@gmail.com>
+From: Stephen Boyd <swboyd@chromium.org>
 
-commit d5962fb7d69073bf68fb647531cfd4f0adf84be3 upstream.
+commit fdc12231d885119cc2e2b4f3e0fbba3155f37a56 upstream.
 
-In 'perf report', entering a recursive function from inside of itself
-(either directly of indirectly through some other function) results in
-calling symbol__annotate2 multiple() times, and freeing the whole
-disassembly when exiting from the innermost instance.
+If the string passed into qcom_pil_info_store() isn't as long as
+PIL_RELOC_NAME_LEN we'll try to copy the string assuming the length is
+PIL_RELOC_NAME_LEN to the io space and go beyond the bounds of the
+string. Let's only copy as many byes as the string is long, ignoring the
+NUL terminator.
 
-The first issue causes the function's disassembly to be duplicated, and
-the latter a heap use-after-free (and crash) when trying to access the
-disassembly again.
+This fixes the following KASAN error:
 
-I reproduced the bug on perf 5.11.22 (Ubuntu 20.04.3 LTS) and 5.16.rc8
-with the following testcase (compile with gcc recursive.c -o recursive).
-To reproduce:
+ BUG: KASAN: global-out-of-bounds in __memcpy_toio+0x124/0x140
+ Read of size 1 at addr ffffffd35086e386 by task rmtfs/2392
 
-- perf record ./recursive
-- perf report
-- enter fibonacci and annotate it
-- move the cursor on one of the "callq fibonacci" instructions and press enter
-  - at this point there will be two copies of the function in the disassembly
-- go back by pressing q, and perf will crash
+ CPU: 2 PID: 2392 Comm: rmtfs Tainted: G        W         5.16.0-rc1-lockdep+ #10
+ Hardware name: Google Lazor (rev3+) with KB Backlight (DT)
+ Call trace:
+  dump_backtrace+0x0/0x410
+  show_stack+0x24/0x30
+  dump_stack_lvl+0x7c/0xa0
+  print_address_description+0x78/0x2bc
+  kasan_report+0x160/0x1a0
+  __asan_report_load1_noabort+0x44/0x50
+  __memcpy_toio+0x124/0x140
+  qcom_pil_info_store+0x298/0x358 [qcom_pil_info]
+  q6v5_start+0xdf0/0x12e0 [qcom_q6v5_mss]
+  rproc_start+0x178/0x3a0
+  rproc_boot+0x5f0/0xb90
+  state_store+0x78/0x1bc
+  dev_attr_store+0x70/0x90
+  sysfs_kf_write+0xf4/0x118
+  kernfs_fop_write_iter+0x208/0x300
+  vfs_write+0x55c/0x804
+  ksys_pwrite64+0xc8/0x134
+  __arm64_compat_sys_aarch32_pwrite64+0xc4/0xdc
+  invoke_syscall+0x78/0x20c
+  el0_svc_common+0x11c/0x1f0
+  do_el0_svc_compat+0x50/0x60
+  el0_svc_compat+0x5c/0xec
+  el0t_32_sync_handler+0xc0/0xf0
+  el0t_32_sync+0x1a4/0x1a8
 
-  #include <stdio.h>
+ The buggy address belongs to the variable:
+  .str.59+0x6/0xffffffffffffec80 [qcom_q6v5_mss]
 
-  int fibonacci(int n)
-  {
-      if(n <= 2) return 1;
-      return fibonacci(n-1) + fibonacci(n-2);
-  }
+ Memory state around the buggy address:
+  ffffffd35086e280: 00 00 00 00 02 f9 f9 f9 f9 f9 f9 f9 00 00 00 00
+  ffffffd35086e300: 00 02 f9 f9 f9 f9 f9 f9 00 00 00 06 f9 f9 f9 f9
+ >ffffffd35086e380: 06 f9 f9 f9 05 f9 f9 f9 00 00 00 00 00 06 f9 f9
+                    ^
+  ffffffd35086e400: f9 f9 f9 f9 01 f9 f9 f9 04 f9 f9 f9 00 00 01 f9
+  ffffffd35086e480: f9 f9 f9 f9 00 00 00 00 00 00 00 01 f9 f9 f9 f9
 
-  int main()
-  {
-      printf("%d\n", fibonacci(40));
-  }
-
-This patch addresses the issue by annotating a function and freeing the
-associated memory on exit only if no annotation is already present, so
-that a recursive function is only annotated on entry.
-
-Signed-off-by: Dario Petrillo <dario.pk1@gmail.com>
-Tested-by: Arnaldo Carvalho de Melo <acme@redhat.com>
-Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
-Cc: Jiri Olsa <jolsa@redhat.com>
-Cc: Mark Rutland <mark.rutland@arm.com>
-Cc: Namhyung Kim <namhyung@kernel.org>
-Cc: Peter Zijlstra <peterz@infradead.org>
-Cc: stable@kernel.org
-Link: http://lore.kernel.org/lkml/20220109234441.325106-1-dario.pk1@gmail.com
-Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
+Fixes: 549b67da660d ("remoteproc: qcom: Introduce helper to store pil info in IMEM")
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211117065454.4142936-1-swboyd@chromium.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- tools/perf/ui/browsers/annotate.c |   23 ++++++++++++++---------
- 1 file changed, 14 insertions(+), 9 deletions(-)
+ drivers/remoteproc/qcom_pil_info.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/tools/perf/ui/browsers/annotate.c
-+++ b/tools/perf/ui/browsers/annotate.c
-@@ -966,6 +966,7 @@ int symbol__tui_annotate(struct map_symb
- 		.opts = opts,
- 	};
- 	int ret = -1, err;
-+	int not_annotated = list_empty(&notes->src->source);
+--- a/drivers/remoteproc/qcom_pil_info.c
++++ b/drivers/remoteproc/qcom_pil_info.c
+@@ -104,7 +104,7 @@ int qcom_pil_info_store(const char *imag
+ 	return -ENOMEM;
  
- 	if (sym == NULL)
- 		return -1;
-@@ -973,13 +974,15 @@ int symbol__tui_annotate(struct map_symb
- 	if (ms->map->dso->annotate_warned)
- 		return -1;
- 
--	err = symbol__annotate2(ms, evsel, opts, &browser.arch);
--	if (err) {
--		char msg[BUFSIZ];
--		ms->map->dso->annotate_warned = true;
--		symbol__strerror_disassemble(ms, err, msg, sizeof(msg));
--		ui__error("Couldn't annotate %s:\n%s", sym->name, msg);
--		goto out_free_offsets;
-+	if (not_annotated) {
-+		err = symbol__annotate2(ms, evsel, opts, &browser.arch);
-+		if (err) {
-+			char msg[BUFSIZ];
-+			ms->map->dso->annotate_warned = true;
-+			symbol__strerror_disassemble(ms, err, msg, sizeof(msg));
-+			ui__error("Couldn't annotate %s:\n%s", sym->name, msg);
-+			goto out_free_offsets;
-+		}
- 	}
- 
- 	ui_helpline__push("Press ESC to exit");
-@@ -994,9 +997,11 @@ int symbol__tui_annotate(struct map_symb
- 
- 	ret = annotate_browser__run(&browser, evsel, hbt);
- 
--	annotated_source__purge(notes->src);
-+	if(not_annotated)
-+		annotated_source__purge(notes->src);
- 
- out_free_offsets:
--	zfree(&notes->offsets);
-+	if(not_annotated)
-+		zfree(&notes->offsets);
- 	return ret;
- }
+ found_unused:
+-	memcpy_toio(entry, image, PIL_RELOC_NAME_LEN);
++	memcpy_toio(entry, image, strnlen(image, PIL_RELOC_NAME_LEN));
+ found_existing:
+ 	/* Use two writel() as base is only aligned to 4 bytes on odd entries */
+ 	writel(base, entry + PIL_RELOC_NAME_LEN);
 
 
