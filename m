@@ -2,53 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6371C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:53:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CD9EC41535
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:53:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349774AbiARCuR (ORCPT
+        id S1350239AbiARCv1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:50:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58636 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345406AbiARCbb (ORCPT
+        Mon, 17 Jan 2022 21:51:27 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50454 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347598AbiARCli (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:31:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B226AC06175D;
-        Mon, 17 Jan 2022 18:29:09 -0800 (PST)
+        Mon, 17 Jan 2022 21:41:38 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 521516114D;
-        Tue, 18 Jan 2022 02:29:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57983C36AEF;
-        Tue, 18 Jan 2022 02:29:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1A3AB81250;
+        Tue, 18 Jan 2022 02:41:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9490CC36AF2;
+        Tue, 18 Jan 2022 02:41:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472948;
-        bh=SwHp8z8g4fBVnumYsGHPVujRk5tCwr58kzWwwIKJFhQ=;
+        s=k20201202; t=1642473695;
+        bh=nTQQoOcwOSWdtjW4HqwT3MpwSNGEGW1hkZI3TJyvSr4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FFquYUukTAjIn3vWR3lQlNliqi3kEfKhB6S4FiPrtWXSWzkl9zd1tEYBbeFqELzcv
-         V0DunSeWE2F4xHzCvvaMnCveSjpDmnzx106iyngWjvwWOJNpREzGUd3zUTYwNeB0ga
-         HMcm7PHvUa1wkJeFbd8Gpj7i+wNo3ECt5gevfbLyELtvDkd35S62Rulm5z/pfqTeS/
-         yniTdiXfKR/B4Ng7MGw3RAdgfisC2T+Iv3sdxvIt51hOwYInkFaeD8BoMLz/UaS73d
-         +NiEmsu36X3X+0Cob+exOfFxSm2Oxkqr5XrWxhD4PeDeKImeFNkXYnqceMU/J/malT
-         +XFwY+LK2qxgA==
+        b=Db5ae39ZKN+6pJo+YeIWmEtT78BGjMMFNs8BH+rQurykvWbTFV/FI8V3iariNzwXm
+         a5V92S8qoY0LvI5VRfg/I/UHMQ7uHSqEmAn9o+azEAPri/f7E9gf3yAxxhnWV1QPb4
+         kjEhz1/SPzzFcVFkgXXAMT2IJm4/PQMm4r2hPohQbpjpoaIXpcsfz6uF5Ymu9FxtgE
+         q9UjcAlog/D8wxQ0plOiNl3hhWTQrFDRdrz0nybEAynKZXo1uudy0Ut+KvSmMY3hk1
+         LKNLGWqKgfL8MdXyntULr5AiONPq00IRaMsBDBQtVYnOo6b3UDA4hIXNGSuh1Bns7/
+         50USrecL/hXzw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        linux-um@lists.infradead.org, Sasha Levin <sashal@kernel.org>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        viro@zeniv.linux.org.uk
-Subject: [PATCH AUTOSEL 5.16 171/217] um: registers: Rename function names to avoid conflicts and build problems
-Date:   Mon, 17 Jan 2022 21:18:54 -0500
-Message-Id: <20220118021940.1942199-171-sashal@kernel.org>
+Cc:     Fugang Duan <fugang.duan@nxp.com>, Sherry Sun <sherry.sun@nxp.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, jirislaby@kernel.org,
+        shawnguo@kernel.org, linux-serial@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.10 027/116] tty: serial: imx: disable UCR4_OREN in .stop_rx() instead of .shutdown()
+Date:   Mon, 17 Jan 2022 21:38:38 -0500
+Message-Id: <20220118024007.1950576-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
-References: <20220118021940.1942199-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -57,101 +51,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Fugang Duan <fugang.duan@nxp.com>
 
-[ Upstream commit 077b7320942b64b0da182aefd83c374462a65535 ]
+[ Upstream commit 028e083832b06fdeeb290e1e57dc1f6702c4c215 ]
 
-The function names init_registers() and restore_registers() are used
-in several net/ethernet/ and gpu/drm/ drivers for other purposes (not
-calls to UML functions), so rename them.
+The UCR4_OREN should be disabled before disabling the uart receiver in
+.stop_rx() instead of in the .shutdown().
 
-This fixes multiple build errors.
+Otherwise, if we have the overrun error during the receiver disable
+process, the overrun interrupt will keep trigging until we disable the
+OREN interrupt in the .shutdown(), because the ORE status can only be
+cleared when read the rx FIFO or reset the controller.  Although the
+called time between the receiver disable and OREN disable in .shutdown()
+is very short, there is still the risk of endless interrupt during this
+short period of time. So here change to disable OREN before the receiver
+been disabled in .stop_rx().
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Jeff Dike <jdike@addtoit.com>
-Cc: Richard Weinberger <richard@nod.at>
-Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Cc: linux-um@lists.infradead.org
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Fugang Duan <fugang.duan@nxp.com>
+Signed-off-by: Sherry Sun <sherry.sun@nxp.com>
+Link: https://lore.kernel.org/r/20211125020349.4980-1-sherry.sun@nxp.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/include/shared/registers.h | 4 ++--
- arch/um/os-Linux/registers.c       | 4 ++--
- arch/um/os-Linux/start_up.c        | 2 +-
- arch/x86/um/syscalls_64.c          | 3 ++-
- 4 files changed, 7 insertions(+), 6 deletions(-)
+ drivers/tty/serial/imx.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/arch/um/include/shared/registers.h b/arch/um/include/shared/registers.h
-index 0c50fa6e8a55b..fbb709a222839 100644
---- a/arch/um/include/shared/registers.h
-+++ b/arch/um/include/shared/registers.h
-@@ -16,8 +16,8 @@ extern int restore_fp_registers(int pid, unsigned long *fp_regs);
- extern int save_fpx_registers(int pid, unsigned long *fp_regs);
- extern int restore_fpx_registers(int pid, unsigned long *fp_regs);
- extern int save_registers(int pid, struct uml_pt_regs *regs);
--extern int restore_registers(int pid, struct uml_pt_regs *regs);
--extern int init_registers(int pid);
-+extern int restore_pid_registers(int pid, struct uml_pt_regs *regs);
-+extern int init_pid_registers(int pid);
- extern void get_safe_registers(unsigned long *regs, unsigned long *fp_regs);
- extern unsigned long get_thread_reg(int reg, jmp_buf *buf);
- extern int get_fp_registers(int pid, unsigned long *regs);
-diff --git a/arch/um/os-Linux/registers.c b/arch/um/os-Linux/registers.c
-index 2d9270508e156..b123955be7acc 100644
---- a/arch/um/os-Linux/registers.c
-+++ b/arch/um/os-Linux/registers.c
-@@ -21,7 +21,7 @@ int save_registers(int pid, struct uml_pt_regs *regs)
- 	return 0;
- }
- 
--int restore_registers(int pid, struct uml_pt_regs *regs)
-+int restore_pid_registers(int pid, struct uml_pt_regs *regs)
+diff --git a/drivers/tty/serial/imx.c b/drivers/tty/serial/imx.c
+index 28cc328ddb6eb..93cd8ad57f385 100644
+--- a/drivers/tty/serial/imx.c
++++ b/drivers/tty/serial/imx.c
+@@ -508,18 +508,21 @@ static void imx_uart_stop_tx(struct uart_port *port)
+ static void imx_uart_stop_rx(struct uart_port *port)
  {
- 	int err;
+ 	struct imx_port *sport = (struct imx_port *)port;
+-	u32 ucr1, ucr2;
++	u32 ucr1, ucr2, ucr4;
  
-@@ -36,7 +36,7 @@ int restore_registers(int pid, struct uml_pt_regs *regs)
- static unsigned long exec_regs[MAX_REG_NR];
- static unsigned long exec_fp_regs[FP_SIZE];
+ 	ucr1 = imx_uart_readl(sport, UCR1);
+ 	ucr2 = imx_uart_readl(sport, UCR2);
++	ucr4 = imx_uart_readl(sport, UCR4);
  
--int init_registers(int pid)
-+int init_pid_registers(int pid)
- {
- 	int err;
+ 	if (sport->dma_is_enabled) {
+ 		ucr1 &= ~(UCR1_RXDMAEN | UCR1_ATDMAEN);
+ 	} else {
+ 		ucr1 &= ~UCR1_RRDYEN;
+ 		ucr2 &= ~UCR2_ATEN;
++		ucr4 &= ~UCR4_OREN;
+ 	}
+ 	imx_uart_writel(sport, ucr1, UCR1);
++	imx_uart_writel(sport, ucr4, UCR4);
  
-diff --git a/arch/um/os-Linux/start_up.c b/arch/um/os-Linux/start_up.c
-index 8a72c99994eb1..e3ee4db58b40d 100644
---- a/arch/um/os-Linux/start_up.c
-+++ b/arch/um/os-Linux/start_up.c
-@@ -368,7 +368,7 @@ void __init os_early_checks(void)
- 	check_tmpexec();
+ 	ucr2 &= ~UCR2_RXEN;
+ 	imx_uart_writel(sport, ucr2, UCR2);
+@@ -1576,7 +1579,7 @@ static void imx_uart_shutdown(struct uart_port *port)
+ 	imx_uart_writel(sport, ucr1, UCR1);
  
- 	pid = start_ptraced_child();
--	if (init_registers(pid))
-+	if (init_pid_registers(pid))
- 		fatal("Failed to initialize default registers");
- 	stop_ptraced_child(pid, 1, 1);
- }
-diff --git a/arch/x86/um/syscalls_64.c b/arch/x86/um/syscalls_64.c
-index 58f51667e2e4b..8249685b40960 100644
---- a/arch/x86/um/syscalls_64.c
-+++ b/arch/x86/um/syscalls_64.c
-@@ -11,6 +11,7 @@
- #include <linux/uaccess.h>
- #include <asm/prctl.h> /* XXX This should get the constants from libc */
- #include <os.h>
-+#include <registers.h>
+ 	ucr4 = imx_uart_readl(sport, UCR4);
+-	ucr4 &= ~(UCR4_OREN | UCR4_TCEN);
++	ucr4 &= ~UCR4_TCEN;
+ 	imx_uart_writel(sport, ucr4, UCR4);
  
- long arch_prctl(struct task_struct *task, int option,
- 		unsigned long __user *arg2)
-@@ -35,7 +36,7 @@ long arch_prctl(struct task_struct *task, int option,
- 	switch (option) {
- 	case ARCH_SET_FS:
- 	case ARCH_SET_GS:
--		ret = restore_registers(pid, &current->thread.regs.regs);
-+		ret = restore_pid_registers(pid, &current->thread.regs.regs);
- 		if (ret)
- 			return ret;
- 		break;
+ 	spin_unlock_irqrestore(&sport->port.lock, flags);
 -- 
 2.34.1
 
