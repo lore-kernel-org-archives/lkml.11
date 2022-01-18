@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 284B8C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:56:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEDBFC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:56:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347393AbiARC4g (ORCPT
+        id S1347548AbiARC4k (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:56:36 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53034 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346315AbiARCoc (ORCPT
+        Mon, 17 Jan 2022 21:56:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33276 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346336AbiARCoj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:44:32 -0500
+        Mon, 17 Jan 2022 21:44:39 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B097C061244;
+        Mon, 17 Jan 2022 18:37:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AC7E6B81253;
-        Tue, 18 Jan 2022 02:44:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3AD2DC36AE3;
-        Tue, 18 Jan 2022 02:44:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2883F6120D;
+        Tue, 18 Jan 2022 02:37:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77337C36AEB;
+        Tue, 18 Jan 2022 02:37:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473869;
-        bh=XKhNpFcyGUjE+sjTlejmD2OUYPSklbFBgEeUXUUIQe4=;
+        s=k20201202; t=1642473462;
+        bh=CnrwTehG9YW6BhiZw6t6jc8f53zGWef6UsPNAyd9KW8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cXxSIX+MGdbHkbraKhSm3DkGZhd/f+1KoS/7J8r0XZPNwW5QVcymAcMAOrv43hlL5
-         /7/BrP1tiALYmF8ar7Cy3rdCEy3d37rT/J14VeRGwmSZD3jDv1hpPMj6JSAnWsGMPP
-         ae9ct+fmxZNAks13bac0cQUAOFI2SbIiPjKwWv/EGu67gJoP1Hn7ljMv1Rp3bDSn8m
-         XnQHOAenqhqDhMJQnmHg6kanxuwtwJGQWuPytN9JFQXiAFrJnp04vcyzNEsUVCJzr5
-         0Uy9e3eMKvuSiKmf5FM3PqyYi+hDiahtKWj2ejG6MDuWEdzm8LkqO1qrCyWAa1FDsc
-         /jJsLyFdjMIWw==
+        b=U5jwyL7F+uGrSI7rKjbvBgEOqH0EB7IF2QfqUqp2oDw2W75ZnW1B6pIYpzkJWbJFU
+         Ez0E3HIASxNJUokCD9Wu735AUYAL9cRj5GQPIj3W1zhWy46D92UhMNm+2LAsRC6Ro/
+         4Ju5tzbfz/DN0nH8req6bBOMaVfdFMVMwJMOFk+4lLs/2mZIjrYniNazgLQVJ4Cqjx
+         u3ZWoRBCOCFkTYJFWvzH6rBBcQFSFU/jGEw6m5joWCE43lVw4mUk+7GmYLdNmwHCto
+         mjcArfkOo1qct/2lyGhZJjQiLvxiHp2C4zqyk4yf0/NkeTm2yxT+a+lunfRFZNvOxJ
+         BdqjYDomIcPzQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ingo Molnar <mingo@kernel.org>, Sasha Levin <sashal@kernel.org>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org, yuzenghui@huawei.com,
-        emil.l.velikov@gmail.com, mbenes@suse.cz, jeyu@kernel.org,
-        akpm@linux-foundation.org
-Subject: [PATCH AUTOSEL 5.10 115/116] x86/kbuild: Enable CONFIG_KALLSYMS_ALL=y in the defconfigs
-Date:   Mon, 17 Jan 2022 21:40:06 -0500
-Message-Id: <20220118024007.1950576-115-sashal@kernel.org>
+Cc:     "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
+        len.brown@intel.com, pavel@ucw.cz, linux-pm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 127/188] PM: runtime: Add safety net to supplier device release
+Date:   Mon, 17 Jan 2022 21:30:51 -0500
+Message-Id: <20220118023152.1948105-127-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,43 +54,135 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ingo Molnar <mingo@kernel.org>
+From: "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
 
-[ Upstream commit b6aa86cff44cf099299d3a5e66348cb709cd7964 ]
+[ Upstream commit d1579e61192e0e686faa4208500ef4c3b529b16c ]
 
-Most distro kernels have this option enabled, to improve debug output.
+Because refcount_dec_not_one() returns true if the target refcount
+becomes saturated, it is generally unsafe to use its return value as
+a loop termination condition, but that is what happens when a device
+link's supplier device is released during runtime PM suspend
+operations and on device link removal.
 
-Lockdep also selects it.
+To address this, introduce pm_runtime_release_supplier() to be used
+in the above cases which will check the supplier device's runtime
+PM usage counter in addition to the refcount_dec_not_one() return
+value, so the loop can be terminated in case the rpm_active refcount
+value becomes invalid, and update the code in question to use it as
+appropriate.
 
-Enable this in the defconfig kernel as well, to make it more
-representative of what people are using on x86.
+This change is not expected to have any visible functional impact.
 
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Link: https://lore.kernel.org/r/YdTn7gssoMVDMgMw@gmail.com
+Reported-by: Peter Zijlstra <peterz@infradead.org>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Acked-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/configs/i386_defconfig   | 1 +
- arch/x86/configs/x86_64_defconfig | 1 +
- 2 files changed, 2 insertions(+)
+ drivers/base/core.c          |  3 +--
+ drivers/base/power/runtime.c | 41 ++++++++++++++++++++++++++----------
+ include/linux/pm_runtime.h   |  3 +++
+ 3 files changed, 34 insertions(+), 13 deletions(-)
 
-diff --git a/arch/x86/configs/i386_defconfig b/arch/x86/configs/i386_defconfig
-index 78210793d357c..38d7acb9610cc 100644
---- a/arch/x86/configs/i386_defconfig
-+++ b/arch/x86/configs/i386_defconfig
-@@ -264,3 +264,4 @@ CONFIG_BLK_DEV_IO_TRACE=y
- CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
- CONFIG_EARLY_PRINTK_DBGP=y
- CONFIG_DEBUG_BOOT_PARAMS=y
-+CONFIG_KALLSYMS_ALL=y
-diff --git a/arch/x86/configs/x86_64_defconfig b/arch/x86/configs/x86_64_defconfig
-index 9936528e19393..c6e587a9a6f85 100644
---- a/arch/x86/configs/x86_64_defconfig
-+++ b/arch/x86/configs/x86_64_defconfig
-@@ -260,3 +260,4 @@ CONFIG_BLK_DEV_IO_TRACE=y
- CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
- CONFIG_EARLY_PRINTK_DBGP=y
- CONFIG_DEBUG_BOOT_PARAMS=y
-+CONFIG_KALLSYMS_ALL=y
+diff --git a/drivers/base/core.c b/drivers/base/core.c
+index 63577de268565..8e73a34e10055 100644
+--- a/drivers/base/core.c
++++ b/drivers/base/core.c
+@@ -485,8 +485,7 @@ static void device_link_release_fn(struct work_struct *work)
+ 	/* Ensure that all references to the link object have been dropped. */
+ 	device_link_synchronize_removal();
+ 
+-	while (refcount_dec_not_one(&link->rpm_active))
+-		pm_runtime_put(link->supplier);
++	pm_runtime_release_supplier(link, true);
+ 
+ 	put_device(link->consumer);
+ 	put_device(link->supplier);
+diff --git a/drivers/base/power/runtime.c b/drivers/base/power/runtime.c
+index ec94049442b99..44ae3909e64bb 100644
+--- a/drivers/base/power/runtime.c
++++ b/drivers/base/power/runtime.c
+@@ -305,19 +305,40 @@ static int rpm_get_suppliers(struct device *dev)
+ 	return 0;
+ }
+ 
++/**
++ * pm_runtime_release_supplier - Drop references to device link's supplier.
++ * @link: Target device link.
++ * @check_idle: Whether or not to check if the supplier device is idle.
++ *
++ * Drop all runtime PM references associated with @link to its supplier device
++ * and if @check_idle is set, check if that device is idle (and so it can be
++ * suspended).
++ */
++void pm_runtime_release_supplier(struct device_link *link, bool check_idle)
++{
++	struct device *supplier = link->supplier;
++
++	/*
++	 * The additional power.usage_count check is a safety net in case
++	 * the rpm_active refcount becomes saturated, in which case
++	 * refcount_dec_not_one() would return true forever, but it is not
++	 * strictly necessary.
++	 */
++	while (refcount_dec_not_one(&link->rpm_active) &&
++	       atomic_read(&supplier->power.usage_count) > 0)
++		pm_runtime_put_noidle(supplier);
++
++	if (check_idle)
++		pm_request_idle(supplier);
++}
++
+ static void __rpm_put_suppliers(struct device *dev, bool try_to_suspend)
+ {
+ 	struct device_link *link;
+ 
+ 	list_for_each_entry_rcu(link, &dev->links.suppliers, c_node,
+-				device_links_read_lock_held()) {
+-
+-		while (refcount_dec_not_one(&link->rpm_active))
+-			pm_runtime_put_noidle(link->supplier);
+-
+-		if (try_to_suspend)
+-			pm_request_idle(link->supplier);
+-	}
++				device_links_read_lock_held())
++		pm_runtime_release_supplier(link, try_to_suspend);
+ }
+ 
+ static void rpm_put_suppliers(struct device *dev)
+@@ -1770,9 +1791,7 @@ void pm_runtime_drop_link(struct device_link *link)
+ 		return;
+ 
+ 	pm_runtime_drop_link_count(link->consumer);
+-
+-	while (refcount_dec_not_one(&link->rpm_active))
+-		pm_runtime_put(link->supplier);
++	pm_runtime_release_supplier(link, true);
+ }
+ 
+ static bool pm_runtime_need_not_resume(struct device *dev)
+diff --git a/include/linux/pm_runtime.h b/include/linux/pm_runtime.h
+index eddd66d426caf..016de5776b6db 100644
+--- a/include/linux/pm_runtime.h
++++ b/include/linux/pm_runtime.h
+@@ -58,6 +58,7 @@ extern void pm_runtime_get_suppliers(struct device *dev);
+ extern void pm_runtime_put_suppliers(struct device *dev);
+ extern void pm_runtime_new_link(struct device *dev);
+ extern void pm_runtime_drop_link(struct device_link *link);
++extern void pm_runtime_release_supplier(struct device_link *link, bool check_idle);
+ 
+ extern int devm_pm_runtime_enable(struct device *dev);
+ 
+@@ -283,6 +284,8 @@ static inline void pm_runtime_get_suppliers(struct device *dev) {}
+ static inline void pm_runtime_put_suppliers(struct device *dev) {}
+ static inline void pm_runtime_new_link(struct device *dev) {}
+ static inline void pm_runtime_drop_link(struct device_link *link) {}
++static inline void pm_runtime_release_supplier(struct device_link *link,
++					       bool check_idle) {}
+ 
+ #endif /* !CONFIG_PM */
+ 
 -- 
 2.34.1
 
