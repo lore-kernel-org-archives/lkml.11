@@ -2,38 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AA40C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:12:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52FBEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:12:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234648AbiARQMQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:12:16 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:41748 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346485AbiARQKe (ORCPT
+        id S1346636AbiARQMS (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 11:12:18 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41606 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347385AbiARQKf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:10:34 -0500
+        Tue, 18 Jan 2022 11:10:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 30A50CE1A49;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 444206127D;
+        Tue, 18 Jan 2022 16:10:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02389C00446;
         Tue, 18 Jan 2022 16:10:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4615C00446;
-        Tue, 18 Jan 2022 16:10:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522230;
-        bh=VvEXG/uskcBxjxchzFJiJEq3FHobJwTi3M5ECqK+QJU=;
+        s=korg; t=1642522233;
+        bh=ERFngSnK8NWlq1S9iWKrXO753FmDpH8p3lhZOH5OLis=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ACSaANOhf5Mt1i6FYktY/YoW/nNaz8flRr2MGrjVm4kAsb3SA61Ttp1Rt5P26vkAy
-         IRlhX+ji0y9I2nvgq4P5O6Ep68rSNsQ0vJXaBZC8VHHyvtih9u0WUP3yF9i4o89vCA
-         UpoIIekuzJ58Pc6060byFTCeWdIi94QLc8d6O8iE=
+        b=mgB9/Ro3FfS/pTTfgFrcCLqRS6kzwa144AEVUn+VWDamAeA5+mQosM6lvSsx0Q2p/
+         Jj5yKvukgRlvUp1bccncXr9bHe8VaaaEyWRQHwhuqu7ZfWiiRFbDQxXivAG2qPKNnr
+         VV+hBowNabSmXRJdKu5RzQ5WJFtDIaB4mSiM5mzE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sibi Sankar <sibis@codeaurora.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: [PATCH 5.16 11/28] remoteproc: qcom: pas: Add missing power-domain "mxc" for CDSP
-Date:   Tue, 18 Jan 2022 17:06:06 +0100
-Message-Id: <20220118160452.781948870@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Trond Myklebust <trond.myklebust@hammerspace.com>,
+        Chuck Lever <chuck.lever@oracle.com>
+Subject: [PATCH 5.16 12/28] NFSD: Fix zero-length NFSv3 WRITEs
+Date:   Tue, 18 Jan 2022 17:06:07 +0100
+Message-Id: <20220118160452.813222449@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118160452.384322748@linuxfoundation.org>
 References: <20220118160452.384322748@linuxfoundation.org>
@@ -45,33 +47,85 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sibi Sankar <sibis@codeaurora.org>
+From: Chuck Lever <chuck.lever@oracle.com>
 
-commit dd585d9bfbf06fd08a6326c82978be1f06e7d1bd upstream.
+commit 6a2f774424bfdcc2df3e17de0cefe74a4269cad5 upstream.
 
-Add missing power-domain "mxc" required by CDSP PAS remoteproc on SM8350
-SoC.
+The Linux NFS server currently responds to a zero-length NFSv3 WRITE
+request with NFS3ERR_IO. It responds to a zero-length NFSv4 WRITE
+with NFS4_OK and count of zero.
 
-Fixes: e8b4e9a21af7 ("remoteproc: qcom: pas: Add SM8350 PAS remoteprocs")
-Signed-off-by: Sibi Sankar <sibis@codeaurora.org>
+RFC 1813 says of the WRITE procedure's @count argument:
+
+count
+         The number of bytes of data to be written. If count is
+         0, the WRITE will succeed and return a count of 0,
+         barring errors due to permissions checking.
+
+RFC 8881 has similar language for NFSv4, though NFSv4 removed the
+explicit @count argument because that value is already contained in
+the opaque payload array.
+
+The synthetic client pynfs's WRT4 and WRT15 tests do emit zero-
+length WRITEs to exercise this spec requirement. Commit fdec6114ee1f
+("nfsd4: zero-length WRITE should succeed") addressed the same
+problem there with the same fix.
+
+But interestingly the Linux NFS client does not appear to emit zero-
+length WRITEs, instead squelching them. I'm not aware of a test that
+can generate such WRITEs for NFSv3, so I wrote a naive C program to
+generate a zero-length WRITE and test this fix.
+
+Fixes: 8154ef2776aa ("NFSD: Clean up legacy NFS WRITE argument XDR decoders")
+Reported-by: Trond Myklebust <trond.myklebust@hammerspace.com>
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Cc: stable@vger.kernel.org
-Tested-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/1624559605-29847-1-git-send-email-sibis@codeaurora.org
+Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/remoteproc/qcom_q6v5_pas.c |    1 +
- 1 file changed, 1 insertion(+)
+ fs/nfsd/nfs3proc.c |    6 +-----
+ fs/nfsd/nfsproc.c  |    5 -----
+ 2 files changed, 1 insertion(+), 10 deletions(-)
 
---- a/drivers/remoteproc/qcom_q6v5_pas.c
-+++ b/drivers/remoteproc/qcom_q6v5_pas.c
-@@ -652,6 +652,7 @@ static const struct adsp_data sm8350_cds
- 	.auto_boot = true,
- 	.proxy_pd_names = (char*[]){
- 		"cx",
-+		"mxc",
- 		NULL
- 	},
- 	.load_state = "cdsp",
+--- a/fs/nfsd/nfs3proc.c
++++ b/fs/nfsd/nfs3proc.c
+@@ -202,15 +202,11 @@ nfsd3_proc_write(struct svc_rqst *rqstp)
+ 	fh_copy(&resp->fh, &argp->fh);
+ 	resp->committed = argp->stable;
+ 	nvecs = svc_fill_write_vector(rqstp, &argp->payload);
+-	if (!nvecs) {
+-		resp->status = nfserr_io;
+-		goto out;
+-	}
++
+ 	resp->status = nfsd_write(rqstp, &resp->fh, argp->offset,
+ 				  rqstp->rq_vec, nvecs, &cnt,
+ 				  resp->committed, resp->verf);
+ 	resp->count = cnt;
+-out:
+ 	return rpc_success;
+ }
+ 
+--- a/fs/nfsd/nfsproc.c
++++ b/fs/nfsd/nfsproc.c
+@@ -235,10 +235,6 @@ nfsd_proc_write(struct svc_rqst *rqstp)
+ 		argp->len, argp->offset);
+ 
+ 	nvecs = svc_fill_write_vector(rqstp, &argp->payload);
+-	if (!nvecs) {
+-		resp->status = nfserr_io;
+-		goto out;
+-	}
+ 
+ 	resp->status = nfsd_write(rqstp, fh_copy(&resp->fh, &argp->fh),
+ 				  argp->offset, rqstp->rq_vec, nvecs,
+@@ -247,7 +243,6 @@ nfsd_proc_write(struct svc_rqst *rqstp)
+ 		resp->status = fh_getattr(&resp->fh, &resp->stat);
+ 	else if (resp->status == nfserr_jukebox)
+ 		return rpc_drop_reply;
+-out:
+ 	return rpc_success;
+ }
+ 
 
 
