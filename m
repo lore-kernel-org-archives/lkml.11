@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF156C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:26:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 109D5C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:26:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358939AbiARDZm (ORCPT
+        id S1358962AbiARDZo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:25:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39182 "EHLO
+        Mon, 17 Jan 2022 22:25:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39644 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346868AbiARDJS (ORCPT
+        with ESMTP id S1348252AbiARDJY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:09:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5D2DC061760;
-        Mon, 17 Jan 2022 18:51:36 -0800 (PST)
+        Mon, 17 Jan 2022 22:09:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57CAFC061763;
+        Mon, 17 Jan 2022 18:51:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 85B53B8125F;
-        Tue, 18 Jan 2022 02:51:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E97EEC36AEB;
-        Tue, 18 Jan 2022 02:51:32 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8E2261359;
+        Tue, 18 Jan 2022 02:51:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47C8DC36AE3;
+        Tue, 18 Jan 2022 02:51:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474294;
-        bh=FOyqZlOeBq6u+MSMKyoUAfWpX/QM9j9Q1bEwVmshbS4=;
+        s=k20201202; t=1642474300;
+        bh=JZ7z9uj03AYMOh3XucqqrW+DG6zPcpcLLEJB4WDjveQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D6w9za1vK1lnL2tRqD7286QGB4F/vyDpvXkbk+AHjn6UVKIJswa+eBPbYKxkUBklT
-         lK8w0/vPVTxOIwFh9Ua0eKtBCH3WASczvJDIzvxzIi/EnGeBkGOIkYIe1dhfKKBZkt
-         js76bT0BNWl1ZWaGAhJiA/4x4rlchta3U2fwHYgrDzyo8A0d4BEGRNP5H6ZVS+manK
-         whYXBVfKtKeCDDaNKThwimfH/53/F4QX4aBil9cAkhVzUeMUHsirEXMgjRrfObfam0
-         kQvlOkrMDdwD2BioaCUKDZ9MkuZB5vm/v8YTOYz05c7D709kK7W0TXxMSsel1jFvCa
-         EkX+0RIDp94kw==
+        b=lm6G/Jiz5Xj/ZwEi7oCvLIXO6x7A1DUCQxEJMTSMT8UNocX9DbVCV6czNGrzKAmTm
+         3lNwC5VEWTep8nvJgcpysoNPKtgvhwBJymC7OriP6nf7LPMPWlnJcR1+Yscy3tz9gg
+         iKAOXet6hAFll+Gj98l1Mep0YueUST95twdGvXEHUkbgGPr64SsGdj8Pr+iiHdlYcO
+         JgO9OU8FZQHONFt24F5CT9JeSqe/2rU3oraDUIwYHyyfevZcF8g9XMZ5mxABl9VrR1
+         hAcYwEElxzWRsQRb7PYCIN6UhJeqX20qb7OVx/Ucwx5pIiXNDYHftUNSPdYOYoeook
+         hVqvt+untqajA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
-        linus.walleij@linaro.org, daniel@thingy.jp, avolmat@me.com,
-        romain.perier@gmail.com, eugen.hristev@microchip.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.9 07/33] ARM: imx: rename DEBUG_IMX21_IMX27_UART to DEBUG_IMX27_UART
-Date:   Mon, 17 Jan 2022 21:50:49 -0500
-Message-Id: <20220118025116.1954375-7-sashal@kernel.org>
+Cc:     Xiongwei Song <sxwjean@gmail.com>,
+        syzbot+23a02c7df2cf2bc93fa2@syzkaller.appspotmail.com,
+        Denis Efremov <efremov@linux.com>,
+        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
+        linux-block@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 11/33] floppy: Add max size check for user space request
+Date:   Mon, 17 Jan 2022 21:50:53 -0500
+Message-Id: <20220118025116.1954375-11-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118025116.1954375-1-sashal@kernel.org>
 References: <20220118025116.1954375-1-sashal@kernel.org>
@@ -55,119 +54,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+From: Xiongwei Song <sxwjean@gmail.com>
 
-[ Upstream commit b0100bce4ff82ec1ccd3c1f3d339fd2df6a81784 ]
+[ Upstream commit 545a32498c536ee152331cd2e7d2416aa0f20e01 ]
 
-Since commit 4b563a066611 ("ARM: imx: Remove imx21 support"), the config
-DEBUG_IMX21_IMX27_UART is really only debug support for IMX27.
+We need to check the max request size that is from user space before
+allocating pages. If the request size exceeds the limit, return -EINVAL.
+This check can avoid the warning below from page allocator.
 
-So, rename this option to DEBUG_IMX27_UART and adjust dependencies in
-Kconfig and rename the definitions to IMX27 as further clean-up.
+WARNING: CPU: 3 PID: 16525 at mm/page_alloc.c:5344 current_gfp_context include/linux/sched/mm.h:195 [inline]
+WARNING: CPU: 3 PID: 16525 at mm/page_alloc.c:5344 __alloc_pages+0x45d/0x500 mm/page_alloc.c:5356
+Modules linked in:
+CPU: 3 PID: 16525 Comm: syz-executor.3 Not tainted 5.15.0-syzkaller #0
+Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
+RIP: 0010:__alloc_pages+0x45d/0x500 mm/page_alloc.c:5344
+Code: be c9 00 00 00 48 c7 c7 20 4a 97 89 c6 05 62 32 a7 0b 01 e8 74 9a 42 07 e9 6a ff ff ff 0f 0b e9 a0 fd ff ff 40 80 e5 3f eb 88 <0f> 0b e9 18 ff ff ff 4c 89 ef 44 89 e6 45 31 ed e8 1e 76 ff ff e9
+RSP: 0018:ffffc90023b87850 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 1ffff92004770f0b RCX: dffffc0000000000
+RDX: 0000000000000000 RSI: 0000000000000033 RDI: 0000000000010cc1
+RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffffff81bb4686 R11: 0000000000000001 R12: ffffffff902c1960
+R13: 0000000000000033 R14: 0000000000000000 R15: ffff88804cf64a30
+FS:  0000000000000000(0000) GS:ffff88802cd00000(0063) knlGS:00000000f44b4b40
+CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
+CR2: 000000002c921000 CR3: 000000004f507000 CR4: 0000000000150ee0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ alloc_pages+0x1a7/0x300 mm/mempolicy.c:2191
+ __get_free_pages+0x8/0x40 mm/page_alloc.c:5418
+ raw_cmd_copyin drivers/block/floppy.c:3113 [inline]
+ raw_cmd_ioctl drivers/block/floppy.c:3160 [inline]
+ fd_locked_ioctl+0x12e5/0x2820 drivers/block/floppy.c:3528
+ fd_ioctl drivers/block/floppy.c:3555 [inline]
+ fd_compat_ioctl+0x891/0x1b60 drivers/block/floppy.c:3869
+ compat_blkdev_ioctl+0x3b8/0x810 block/ioctl.c:662
+ __do_compat_sys_ioctl+0x1c7/0x290 fs/ioctl.c:972
+ do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
+ __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
+ do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
+ entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
 
-This issue was discovered with ./scripts/checkkconfigsymbols.py, which
-reported that DEBUG_IMX21_IMX27_UART depends on the non-existing config
-SOC_IMX21.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Reviewed-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Shawn Guo <shawnguo@kernel.org>
+Reported-by: syzbot+23a02c7df2cf2bc93fa2@syzkaller.appspotmail.com
+Link: https://lore.kernel.org/r/20211116131033.27685-1-sxwjean@me.com
+Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
+Signed-off-by: Denis Efremov <efremov@linux.com>
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/Kconfig.debug            | 14 +++++++-------
- arch/arm/include/debug/imx-uart.h | 18 +++++++++---------
- 2 files changed, 16 insertions(+), 16 deletions(-)
+ drivers/block/floppy.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
-index bb8f39fe3a225..8349a171a8f3c 100644
---- a/arch/arm/Kconfig.debug
-+++ b/arch/arm/Kconfig.debug
-@@ -341,12 +341,12 @@ choice
- 		  Say Y here if you want kernel low-level debugging support
- 		  on i.MX25.
+diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
+index 4496e7a492352..8832cd0d03e79 100644
+--- a/drivers/block/floppy.c
++++ b/drivers/block/floppy.c
+@@ -3116,6 +3116,8 @@ static void raw_cmd_free(struct floppy_raw_cmd **ptr)
+ 	}
+ }
  
--	config DEBUG_IMX21_IMX27_UART
--		bool "i.MX21 and i.MX27 Debug UART"
--		depends on SOC_IMX21 || SOC_IMX27
-+	config DEBUG_IMX27_UART
-+		bool "i.MX27 Debug UART"
-+		depends on SOC_IMX27
- 		help
- 		  Say Y here if you want kernel low-level debugging support
--		  on i.MX21 or i.MX27.
-+		  on i.MX27.
- 
- 	config DEBUG_IMX28_UART
- 		bool "i.MX28 Debug UART"
-@@ -1350,7 +1350,7 @@ config DEBUG_IMX_UART_PORT
- 	int "i.MX Debug UART Port Selection"
- 	depends on DEBUG_IMX1_UART || \
- 		   DEBUG_IMX25_UART || \
--		   DEBUG_IMX21_IMX27_UART || \
-+		   DEBUG_IMX27_UART || \
- 		   DEBUG_IMX31_UART || \
- 		   DEBUG_IMX35_UART || \
- 		   DEBUG_IMX50_UART || \
-@@ -1403,12 +1403,12 @@ config DEBUG_LL_INCLUDE
- 	default "debug/icedcc.S" if DEBUG_ICEDCC
- 	default "debug/imx.S" if DEBUG_IMX1_UART || \
- 				 DEBUG_IMX25_UART || \
--				 DEBUG_IMX21_IMX27_UART || \
-+				 DEBUG_IMX27_UART || \
- 				 DEBUG_IMX31_UART || \
- 				 DEBUG_IMX35_UART || \
- 				 DEBUG_IMX50_UART || \
- 				 DEBUG_IMX51_UART || \
--				 DEBUG_IMX53_UART ||\
-+				 DEBUG_IMX53_UART || \
- 				 DEBUG_IMX6Q_UART || \
- 				 DEBUG_IMX6SL_UART || \
- 				 DEBUG_IMX6SX_UART || \
-diff --git a/arch/arm/include/debug/imx-uart.h b/arch/arm/include/debug/imx-uart.h
-index bce58e975ad1f..c750cc9876f6d 100644
---- a/arch/arm/include/debug/imx-uart.h
-+++ b/arch/arm/include/debug/imx-uart.h
-@@ -14,13 +14,6 @@
- #define IMX1_UART_BASE_ADDR(n)	IMX1_UART##n##_BASE_ADDR
- #define IMX1_UART_BASE(n)	IMX1_UART_BASE_ADDR(n)
- 
--#define IMX21_UART1_BASE_ADDR	0x1000a000
--#define IMX21_UART2_BASE_ADDR	0x1000b000
--#define IMX21_UART3_BASE_ADDR	0x1000c000
--#define IMX21_UART4_BASE_ADDR	0x1000d000
--#define IMX21_UART_BASE_ADDR(n)	IMX21_UART##n##_BASE_ADDR
--#define IMX21_UART_BASE(n)	IMX21_UART_BASE_ADDR(n)
--
- #define IMX25_UART1_BASE_ADDR	0x43f90000
- #define IMX25_UART2_BASE_ADDR	0x43f94000
- #define IMX25_UART3_BASE_ADDR	0x5000c000
-@@ -29,6 +22,13 @@
- #define IMX25_UART_BASE_ADDR(n)	IMX25_UART##n##_BASE_ADDR
- #define IMX25_UART_BASE(n)	IMX25_UART_BASE_ADDR(n)
- 
-+#define IMX27_UART1_BASE_ADDR	0x1000a000
-+#define IMX27_UART2_BASE_ADDR	0x1000b000
-+#define IMX27_UART3_BASE_ADDR	0x1000c000
-+#define IMX27_UART4_BASE_ADDR	0x1000d000
-+#define IMX27_UART_BASE_ADDR(n)	IMX27_UART##n##_BASE_ADDR
-+#define IMX27_UART_BASE(n)	IMX27_UART_BASE_ADDR(n)
++#define MAX_LEN (1UL << MAX_ORDER << PAGE_SHIFT)
 +
- #define IMX31_UART1_BASE_ADDR	0x43f90000
- #define IMX31_UART2_BASE_ADDR	0x43f94000
- #define IMX31_UART3_BASE_ADDR	0x5000c000
-@@ -115,10 +115,10 @@
+ static int raw_cmd_copyin(int cmd, void __user *param,
+ 				 struct floppy_raw_cmd **rcmd)
+ {
+@@ -3153,7 +3155,7 @@ static int raw_cmd_copyin(int cmd, void __user *param,
+ 	ptr->resultcode = 0;
  
- #ifdef CONFIG_DEBUG_IMX1_UART
- #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX1)
--#elif defined(CONFIG_DEBUG_IMX21_IMX27_UART)
--#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX21)
- #elif defined(CONFIG_DEBUG_IMX25_UART)
- #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX25)
-+#elif defined(CONFIG_DEBUG_IMX27_UART)
-+#define UART_PADDR	IMX_DEBUG_UART_BASE(IMX27)
- #elif defined(CONFIG_DEBUG_IMX31_UART)
- #define UART_PADDR	IMX_DEBUG_UART_BASE(IMX31)
- #elif defined(CONFIG_DEBUG_IMX35_UART)
+ 	if (ptr->flags & (FD_RAW_READ | FD_RAW_WRITE)) {
+-		if (ptr->length <= 0)
++		if (ptr->length <= 0 || ptr->length >= MAX_LEN)
+ 			return -EINVAL;
+ 		ptr->kernel_data = (char *)fd_dma_mem_alloc(ptr->length);
+ 		fallback_on_nodma_alloc(&ptr->kernel_data, ptr->length);
 -- 
 2.34.1
 
