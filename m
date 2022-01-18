@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1915EC433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:36:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1523AC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:37:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352702AbiARDgt (ORCPT
+        id S1344505AbiARDhA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:36:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45796 "EHLO
+        Mon, 17 Jan 2022 22:37:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376600AbiARDcl (ORCPT
+        with ESMTP id S1376561AbiARDch (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:32:41 -0500
+        Mon, 17 Jan 2022 22:32:37 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D3C8C03325A;
-        Mon, 17 Jan 2022 19:08:52 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36E5C014F2D;
+        Mon, 17 Jan 2022 19:08:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AAE1160439;
-        Tue, 18 Jan 2022 03:08:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1406FC36AEF;
-        Tue, 18 Jan 2022 03:08:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D93860439;
+        Tue, 18 Jan 2022 03:08:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5042C36AEF;
+        Tue, 18 Jan 2022 03:08:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642475331;
-        bh=0v+JllOVEUPwx1fjNp5aIjDUrj9rNqlMNdUqUcRfCJ8=;
+        s=k20201202; t=1642475324;
+        bh=ltfBF/t0KEK7VJPJMB0V8iusdFPJKGVQeC+PLK7eJGQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aYn47IZCUSdH3aiBgsmWZX8WI40RUQbGYhh7a5qX2czruIT9YmTQptuSAmWn9WZAE
-         OTdjRhBdnRL1kEd7052c2Du/CEGO6goaSkfb4/FHT22Dc6f9v/PSpud5hxhQLbVpIj
-         u3KGc7PLYHNydg1OUe1QqSGi2Co7c9nCa4fYpb89QmGQ/A+V8qcSM4BJkBOS9WmljH
-         6kUbEImga6KZoC/R8DQKpS1B6PGpAgrgUYnTouSL7y85DtRRWwfRbIylwZHRlz7tDG
-         QySOKGzIQ4p60TvC2qlJoGs/HuQQiQY+tSIujc9E1PecPmMOdwyFMaxSVD2NgUV4uI
-         l+QgeYHuyg1uA==
+        b=CocaQCQ7e3eTEwsrmiZaP+Z3Ylk24V6z3HbsD9tayEHprntGYMgbfWiP5taOUvTaz
+         rMYocf+03dkfJu91B7GylD/VVJFiw51wBK+Qs+Fs9LzbgSVadMvr/Rgl/T93hVnG1W
+         okWGzKkjjk0eGX9wcQabIAIbOj+t7v4CKLGCpfDwiMfjzVtBQmshoVPeY3L0m9IiU/
+         Kmv6ljlMkLkOzGIf8yekY/7eHdZ+lH82SKjLs7TNWczJE2vszWf6umvtSNyo63cBhF
+         caDk7FLbDrxgcTRwGFG3/D9krvTFm7xG2uWZn2i7/C1X9RKRasxeSLiK2XbFtGceQB
+         MB4cbQrAnVuyQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhou Qingyang <zhou1615@umn.edu>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
-        mchehab@kernel.org, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 10/29] media: saa7146: hexium_orion: Fix a NULL pointer dereference in hexium_attach()
-Date:   Mon, 17 Jan 2022 22:08:03 -0500
-Message-Id: <20220118030822.1955469-10-sashal@kernel.org>
+Cc:     Chengfeng Ye <cyeaa@connect.ust.hk>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>, sre@kernel.org
+Subject: [PATCH AUTOSEL 4.4 07/29] HSI: core: Fix return freed object in hsi_new_client
+Date:   Mon, 17 Jan 2022 22:08:00 -0500
+Message-Id: <20220118030822.1955469-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118030822.1955469-1-sashal@kernel.org>
 References: <20220118030822.1955469-1-sashal@kernel.org>
@@ -54,71 +52,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Chengfeng Ye <cyeaa@connect.ust.hk>
 
-[ Upstream commit 348df8035301dd212e3cc2860efe4c86cb0d3303 ]
+[ Upstream commit a1ee1c08fcd5af03187dcd41dcab12fd5b379555 ]
 
-In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
-a new memory for dev->vv_data. In hexium_detach(), saa7146_vv_release()
-will be called and there is a dereference of dev->vv_data in
-saa7146_vv_release(), which could lead to a NULL pointer dereference
-on failure of saa7146_vv_init() according to the following logic.
+cl is freed on error of calling device_register, but this
+object is return later, which will cause uaf issue. Fix it
+by return NULL on error.
 
-Both hexium_attach() and hexium_detach() are callback functions of
-the variable 'extension', so there exists a possible call chain directly
-from hexium_attach() to hexium_detach():
-
-hexium_attach(dev, info) -- fail to alloc memory to dev->vv_data
-	|		    		in saa7146_vv_init().
-	|
-	|
-hexium_detach() -- a dereference of dev->vv_data in saa7146_vv_release()
-
-Fix this bug by adding a check of saa7146_vv_init().
-
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_VIDEO_HEXIUM_ORION=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/saa7146/hexium_orion.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ drivers/hsi/hsi.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/media/pci/saa7146/hexium_orion.c b/drivers/media/pci/saa7146/hexium_orion.c
-index 214396b1ca73c..2f3b4e01ff289 100644
---- a/drivers/media/pci/saa7146/hexium_orion.c
-+++ b/drivers/media/pci/saa7146/hexium_orion.c
-@@ -366,10 +366,16 @@ static struct saa7146_ext_vv vv_data;
- static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_data *info)
- {
- 	struct hexium *hexium = (struct hexium *) dev->ext_priv;
-+	int ret;
+diff --git a/drivers/hsi/hsi.c b/drivers/hsi/hsi.c
+index 55e36fcd7ff35..e1080f005a19e 100644
+--- a/drivers/hsi/hsi.c
++++ b/drivers/hsi/hsi.c
+@@ -115,6 +115,7 @@ struct hsi_client *hsi_new_client(struct hsi_port *port,
+ 	if (device_register(&cl->device) < 0) {
+ 		pr_err("hsi: failed to register client: %s\n", info->name);
+ 		put_device(&cl->device);
++		goto err;
+ 	}
  
- 	DEB_EE("\n");
- 
--	saa7146_vv_init(dev, &vv_data);
-+	ret = saa7146_vv_init(dev, &vv_data);
-+	if (ret) {
-+		pr_err("Error in saa7146_vv_init()\n");
-+		return ret;
-+	}
-+
- 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
- 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
- 	vv_data.vid_ops.vidioc_s_input = vidioc_s_input;
+ 	return cl;
 -- 
 2.34.1
 
