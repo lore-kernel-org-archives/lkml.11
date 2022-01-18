@@ -2,107 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03B92C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 10:07:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 605BBC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 10:07:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236504AbiARKHL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 05:07:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52800 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236434AbiARKHK (ORCPT
+        id S236688AbiARKHe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 05:07:34 -0500
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:35849 "EHLO
+        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236434AbiARKHd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 05:07:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A75D4C061574
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 02:07:09 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 68AA8B812A5
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 10:07:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5931C00446;
-        Tue, 18 Jan 2022 10:07:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642500427;
-        bh=LtGI7ReI1VAbLJR+tqn3W9qAVWXu25LmWPuXFerZXhI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=hg9Z5PRj0PLyaAfZcZ0nd+RtrzHE3w1vkMa0by9aVLjd6SwARimg+IUMbRee82B2N
-         np7ybr4YgzC1p2EpKJY1Wr3ODdXmJHnXLr8BAL6lU3+pJCjSeXGReJ4xztXjn7s060
-         spfUotA4H38aFS/1tTrJ4B7JYUbbfI52ofw5hiCrGYTpCWJ2Mn+cHtdkbqBSoWzAvr
-         55qljGPlUGFYdWByjOKRoQ7E49jEyjnvUu61E7QPnAw+YcQLh4JtLic25I2/o4BXre
-         Db84KAfITczL+QsH6aiqcN0S4B+BWGloJZaqOpmbxbOmNox3SihDkK3EV7XUSfitfQ
-         29KDcQrXVSk9A==
-Date:   Tue, 18 Jan 2022 10:07:02 +0000
-From:   Will Deacon <will@kernel.org>
-To:     German Gomez <german.gomez@arm.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        mark.rutland@arm.com, james.clark@arm.com, leo.yan@linaro.org
-Subject: Re: [RFC PATCH 1/2] perf: arm_spe: Fix consistency of PMSCR register
- bit CX
-Message-ID: <20220118100702.GB16547@willie-the-truck>
-References: <20220117124432.3119132-1-german.gomez@arm.com>
- <20220117124432.3119132-2-german.gomez@arm.com>
+        Tue, 18 Jan 2022 05:07:33 -0500
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 20IA0Rb9021058;
+        Tue, 18 Jan 2022 18:00:27 +0800 (GMT-8)
+        (envelope-from jammy_huang@aspeedtech.com)
+Received: from JammyHuang-PC.aspeed.com (192.168.2.115) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 18 Jan
+ 2022 18:07:25 +0800
+From:   Jammy Huang <jammy_huang@aspeedtech.com>
+To:     <eajames@linux.ibm.com>, <mchehab@kernel.org>, <joel@jms.id.au>,
+        <andrew@aj.id.au>, <linux-media@vger.kernel.org>,
+        <openbmc@lists.ozlabs.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v4 2/2] media: aspeed: Fix unstable timing detection
+Date:   Tue, 18 Jan 2022 18:07:29 +0800
+Message-ID: <20220118100729.7651-3-jammy_huang@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220118100729.7651-1-jammy_huang@aspeedtech.com>
+References: <20220118100729.7651-1-jammy_huang@aspeedtech.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220117124432.3119132-2-german.gomez@arm.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.2.115]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 20IA0Rb9021058
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 12:44:31PM +0000, German Gomez wrote:
-> The arm_spe_pmu driver will enable the CX bit of the PMSCR register in
-> order to add CONTEXT packets into the traces if the owner of the perf
-> event runs with capabilities CAP_PERFMON or CAP_SYS_ADMIN.
-> 
-> The value of the bit is computed in the arm_spe_event_to_pmscr function
-> [1], and the check for capabilities happens in [2] in the pmu init
-> callback. This suggests that the value of the CX bit should remain
-> consistent for the duration of the perf session.
-> 
-> However, the function arm_spe_event_to_pmscr may be called later during
-> the start callback [3] when the "current" process is not the owner of
-> the perf session, so the CX bit is currently not consistent. Consider
-> the following example:
-> 
->   1. Run a process in the background with capability CAP_SYS_ADMIN in CPU0.
-> 
->     $ taskset --cpu-list 0 sudo dd if=/dev/random of=/dev/null &
->     [3] 3806
-> 
->   2. Begin a perf session _without_ capabilities (we shouldn't see CONTEXT packets).
-> 
->     $ perf record -e arm_spe_0// -C0 -- sleep 1
->     $ perf report -D | grep CONTEXT
->     .  0000000e:  65 df 0e 00 00                                  CONTEXT 0xedf el2
->     .  0000004e:  65 df 0e 00 00                                  CONTEXT 0xedf el2
->     .  0000008e:  65 df 0e 00 00                                  CONTEXT 0xedf el2
->     [...]
-> 
-> As can be seen, the traces begin showing CONTEXT packets when the pid is
-> 0xedf (3807).
+Using stable-signal in resolution detection, and try detection again
+if unstable.
 
-So to be clear: we shouldn't be reporting these packets because 'perf'
-doesn't have the right capabilities, but we evaluate that in the context of
-'dd' (running as root) and so incorrectly grant the permission. Correct?
+VE_MODE_DETECT_EXTSRC_ADC: 1 if video source is from ADC output.
+VE_MODE_DETECT_H_STABLE: 1 if horizontal signal detection is stable.
+VE_MODE_DETECT_V_STABLE: 1 if vertical signal detection is stable.
 
-> This happens because the pmu start callback is run when
-> the current process is not the owner of the perf session, so the CX
-> register bit is set.
+Signed-off-by: Jammy Huang <jammy_huang@aspeedtech.com>
+---
+ drivers/media/platform/aspeed-video.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-This doesn't really seem SPE-specific to me -- the perf_allow_*() helpers
-also operate implicitly on the current task. How do other PMU drivers avoid
-falling into this trap?
+diff --git a/drivers/media/platform/aspeed-video.c b/drivers/media/platform/aspeed-video.c
+index 5ba4d70c8dab..585ee2997d44 100644
+--- a/drivers/media/platform/aspeed-video.c
++++ b/drivers/media/platform/aspeed-video.c
+@@ -165,9 +165,14 @@
+ 
+ #define VE_MODE_DETECT_STATUS		0x098
+ #define  VE_MODE_DETECT_H_PERIOD	GENMASK(11, 0)
++#define  VE_MODE_DETECT_EXTSRC_ADC	BIT(12)
++#define  VE_MODE_DETECT_H_STABLE	BIT(13)
++#define  VE_MODE_DETECT_V_STABLE	BIT(14)
+ #define  VE_MODE_DETECT_V_LINES		GENMASK(27, 16)
+ #define  VE_MODE_DETECT_STATUS_VSYNC	BIT(28)
+ #define  VE_MODE_DETECT_STATUS_HSYNC	BIT(29)
++#define  VE_MODE_DETECT_VSYNC_RDY	BIT(30)
++#define  VE_MODE_DETECT_HSYNC_RDY	BIT(31)
+ 
+ #define VE_SYNC_STATUS			0x09c
+ #define  VE_SYNC_STATUS_HSYNC		GENMASK(11, 0)
+@@ -971,6 +976,13 @@ static void aspeed_video_get_resolution(struct aspeed_video *video)
+ 			return;
+ 		}
+ 
++		mds = aspeed_video_read(video, VE_MODE_DETECT_STATUS);
++		// try detection again if current signal isn't stable
++		if (!(mds & VE_MODE_DETECT_H_STABLE) ||
++		    !(mds & VE_MODE_DETECT_V_STABLE) ||
++		    (mds & VE_MODE_DETECT_EXTSRC_ADC))
++			continue;
++
+ 		aspeed_video_check_and_set_polarity(video);
+ 
+ 		aspeed_video_enable_mode_detect(video);
+-- 
+2.25.1
 
-> One way to fix this is by caching the value of the CX bit during the
-> initialization of the PMU event, so that it remains consistent for the
-> duration of the session.
-
-It doesn't feel right to stash this in 'struct arm_spe_pmu' during event
-initialisation -- wouldn't that allow perf to continue creating new events
-with CX set, even if the paranoid sysctl was changed dynamically? Instead,
-I think it would be better if the capabilities were stash in the event
-itself somehow at initialisation time.
-
-Will
