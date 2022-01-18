@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79759C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:47:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C74D7C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:47:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349240AbiARCrs (ORCPT
+        id S1349253AbiARCr4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:47:48 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52540 "EHLO
+        Mon, 17 Jan 2022 21:47:56 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48990 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345252AbiARCfU (ORCPT
+        with ESMTP id S1344041AbiARCeI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:35:20 -0500
+        Mon, 17 Jan 2022 21:34:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9387C6120D;
-        Tue, 18 Jan 2022 02:35:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 16A67C36AF3;
-        Tue, 18 Jan 2022 02:35:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 30EB861269;
+        Tue, 18 Jan 2022 02:34:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A8DBEC36AEB;
+        Tue, 18 Jan 2022 02:34:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473320;
-        bh=Hvvm+t8YuGPHPo5EwnXIPry3zfErMAu9pssWp8p3sPA=;
+        s=k20201202; t=1642473247;
+        bh=TzeY5kjwuR+907nvx0UXsopJcumuIJtfZTdJBviSCmQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RMA0t2Zk2v3GpgK1bDgg/QByj2rKjmNFF7dtDinAEhFPzPCE5E8cZmh9Jm2Ce8voW
-         q1oRWlqjPDMy8dyfifPuZFHi687WOsvLsU8BuKRPuM8GNXJWkLaEF+TfZ2Kibwemez
-         dl1P71c28cQdg1c7kkcnsoCJxy9TScpKNSvp6hjudCijkBu1YYQcp+6NukTdJnJNTH
-         kKb/izbLswWLpg5TUVDYRbAx1SI0VMHaVnZIHwt91f0Jjp+nZiPOpqDQbey2psqbgX
-         7bLKOeI+T1ET+KLZsuPESEUS29obFYsltkiuoVAK486gzsiJF060fbpP3bIFQj3k5B
-         9qmaO3jT+mbSA==
+        b=Eeg6fZiFsOjrb+AS9MdkUwWbTb4F5XrucoLuVS6C6HJhiHBO78zoEiLzcVyl8QTt/
+         lh8ArUpYLIFRhHz8Exxne8miMrFJdQUnWvpvFxd++tOWnxtuWzu1uWo2yrg28IGlKH
+         cH8FoALIG4Uo5zrHGePFojUK+HlclYgoQ7PMJLbY2SOkwzRQsh0RhoXLUk0Pe3yrWQ
+         /OoyOLY5b7XwHSnjo5Tm8IncxTNHduGyqw8GHJ13E1CSRPwvzlstPkXwlKDOtRh4M2
+         XKFF84hlmMKyon2NVE7yDL7fiApdtKPNtGeC8z4vNkX5WMhRHygsJ1DiYRWGEwXZyq
+         q0LN+/Yj9ddVw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zack Rusin <zackr@vmware.com>,
-        Martin Krastev <krastevm@vmware.com>,
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
         Sasha Levin <sashal@kernel.org>,
-        linux-graphics-maintainer@vmware.com, airlied@linux.ie,
-        daniel@ffwll.ch, dri-devel@lists.freedesktop.org
-Subject: [PATCH AUTOSEL 5.15 070/188] drm/vmwgfx: Release ttm memory if probe fails
-Date:   Mon, 17 Jan 2022 21:29:54 -0500
-Message-Id: <20220118023152.1948105-70-sashal@kernel.org>
+        u.kleine-koenig@pengutronix.de, sudipm.mukherjee@gmail.com,
+        jirislaby@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 039/188] lasi_82594: use eth_hw_addr_set()
+Date:   Mon, 17 Jan 2022 21:29:23 -0500
+Message-Id: <20220118023152.1948105-39-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -51,78 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zack Rusin <zackr@vmware.com>
+From: Jakub Kicinski <kuba@kernel.org>
 
-[ Upstream commit 28b5f3b6121b7db2a44be499cfca0b6b801588b6 ]
+[ Upstream commit 5b6d5affd27486ec9152a66df1741cf67782712a ]
 
-The ttm mem global state was leaking if the vmwgfx driver load failed.
+dev_addr is set from IO reads, passed to an arch-specific helper.
+Note that the helper never reads it so uninitialized temp is fine.
 
-In case of a driver load failure we have to make sure we also release
-the ttm mem global state.
+Fixes build on parisc.
 
-Signed-off-by: Zack Rusin <zackr@vmware.com>
-Reviewed-by: Martin Krastev <krastevm@vmware.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211105193845.258816-3-zackr@vmware.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vmwgfx/vmwgfx_drv.c | 26 ++++++++++++++++----------
- 1 file changed, 16 insertions(+), 10 deletions(-)
+ drivers/net/ethernet/i825xx/lasi_82596.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
-index ab9a1750e1dff..8d0b083ba267f 100644
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.c
-@@ -1617,34 +1617,40 @@ static int vmw_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+diff --git a/drivers/net/ethernet/i825xx/lasi_82596.c b/drivers/net/ethernet/i825xx/lasi_82596.c
+index 48e001881c75f..0af70094aba34 100644
+--- a/drivers/net/ethernet/i825xx/lasi_82596.c
++++ b/drivers/net/ethernet/i825xx/lasi_82596.c
+@@ -147,6 +147,7 @@ lan_init_chip(struct parisc_device *dev)
+ 	struct	net_device *netdevice;
+ 	struct i596_private *lp;
+ 	int retval = -ENOMEM;
++	u8 addr[ETH_ALEN];
+ 	int i;
  
- 	ret = drm_aperture_remove_conflicting_pci_framebuffers(pdev, &driver);
- 	if (ret)
--		return ret;
-+		goto out_error;
+ 	if (!dev->irq) {
+@@ -167,13 +168,14 @@ lan_init_chip(struct parisc_device *dev)
+ 	netdevice->base_addr = dev->hpa.start;
+ 	netdevice->irq = dev->irq;
  
- 	ret = pcim_enable_device(pdev);
- 	if (ret)
--		return ret;
-+		goto out_error;
+-	if (pdc_lan_station_id(netdevice->dev_addr, netdevice->base_addr)) {
++	if (pdc_lan_station_id(addr, netdevice->base_addr)) {
+ 		for (i = 0; i < 6; i++) {
+-			netdevice->dev_addr[i] = gsc_readb(LAN_PROM_ADDR + i);
++			addr[i] = gsc_readb(LAN_PROM_ADDR + i);
+ 		}
+ 		printk(KERN_INFO
+ 		       "%s: MAC of HP700 LAN read from EEPROM\n", __FILE__);
+ 	}
++	eth_hw_addr_set(netdevice, addr);
  
- 	vmw = devm_drm_dev_alloc(&pdev->dev, &driver,
- 				 struct vmw_private, drm);
--	if (IS_ERR(vmw))
--		return PTR_ERR(vmw);
-+	if (IS_ERR(vmw)) {
-+		ret = PTR_ERR(vmw);
-+		goto out_error;
-+	}
- 
- 	pci_set_drvdata(pdev, &vmw->drm);
- 
- 	ret = ttm_mem_global_init(&ttm_mem_glob, &pdev->dev);
- 	if (ret)
--		return ret;
-+		goto out_error;
- 
- 	ret = vmw_driver_load(vmw, ent->device);
- 	if (ret)
--		return ret;
-+		goto out_release;
- 
- 	ret = drm_dev_register(&vmw->drm, 0);
--	if (ret) {
--		vmw_driver_unload(&vmw->drm);
--		return ret;
--	}
-+	if (ret)
-+		goto out_unload;
- 
- 	return 0;
-+out_unload:
-+	vmw_driver_unload(&vmw->drm);
-+out_release:
-+	ttm_mem_global_release(&ttm_mem_glob);
-+out_error:
-+	return ret;
- }
- 
- static int __init vmwgfx_init(void)
+ 	lp = netdev_priv(netdevice);
+ 	lp->options = dev->id.sversion == 0x72 ? OPT_SWAP_PORT : 0;
 -- 
 2.34.1
 
