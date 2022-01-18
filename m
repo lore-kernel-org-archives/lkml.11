@@ -2,51 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F670C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:04:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF3BBC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:04:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349217AbiARDD7 (ORCPT
+        id S1345829AbiARDEL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:03:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34408 "EHLO
+        Mon, 17 Jan 2022 22:04:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349352AbiARCtd (ORCPT
+        with ESMTP id S1345915AbiARCsz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:49:33 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C37C0613E9;
-        Mon, 17 Jan 2022 18:42:02 -0800 (PST)
+        Mon, 17 Jan 2022 21:48:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82F0BC06174E;
+        Mon, 17 Jan 2022 18:39:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2BFA8612BD;
-        Tue, 18 Jan 2022 02:42:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92243C36AF3;
-        Tue, 18 Jan 2022 02:42:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24BBEB8125F;
+        Tue, 18 Jan 2022 02:39:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DF0CDC36AEB;
+        Tue, 18 Jan 2022 02:39:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473721;
-        bh=KdBJiKOkFUdGUD1MYP3m1AoWMAS1TaD/JXPjAa/Az6I=;
+        s=k20201202; t=1642473577;
+        bh=s/Gb1+A0zdS6AV7USnmioZzAIOaTo9cubpQqrOa/pnA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l1mmQ0yquntlXtvCn7SuL51c6fFoLvHUv9pPIpnxJkMK5WV9+/Ze1rr8llRm7Zp33
-         VzNZK+2CyAG599odWJHRYRsAOcytUMUSWHwPfNkVPfwpvAB8CAwxbCMR/BFuNnxg3m
-         pKMoY2BCamWd+AiQRNftpkSMvJaMgF3iHMWnvqYiHY874hb7gxAoV9TZES2KVPGjAZ
-         jT5WCdfSZMAUPkyQB/f8pMdS5i40LuTUzQCP3E4UEaxjSr8iuMhvvf1PMHRqGVLDdL
-         Fm2CS3sNYS9HrVfO24atpdrw1wloOZH8vxBzJFWcSZDaRsJX2WnPWihfzcp8sUGPHx
-         +7ksDS0/E9yTA==
+        b=N90EAq8SrnIFnnVF/k6RjWu1IRleFZEk4/8SfSS+cidW0W5VGCPb4UeFM+tDj0JaN
+         b6f4nQVA1616P8Y+tN7PawdRRa2+kn5rNcQYuZJyGUUO3tdnwmZQPKSduFRrWbIVgs
+         DQFC9B7Ngzbw6xTpwXd1PYrAOK+FoHktAq1gMV3lyW8g6PlCr6Wv8iTZMx004lFyhG
+         10xSFX3l8uNnwgh8cNYRmTNPVQorywTzHGRtR0Pcl8QPT3TIvcvwpcufd+OCWnQVrT
+         6dUdyPv4SfzuP5wxu7d5P/vKoWRYSzQw94gR422c1rV0qUt3/vv60LeNMdYmaaZx8y
+         giefyDf8GXo/g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Aswath Govindraju <a-govindraju@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Sasha Levin <sashal@kernel.org>, nm@ti.com, kristo@kernel.org,
-        robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 040/116] arm64: dts: ti: j7200-main: Fix 'dtbs_check' serdes_ln_ctrl node
-Date:   Mon, 17 Jan 2022 21:38:51 -0500
-Message-Id: <20220118024007.1950576-40-sashal@kernel.org>
+Cc:     Lukas Wunner <lukas@wunner.de>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>, linux@armlinux.org.uk,
+        jirislaby@kernel.org, linux-serial@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 177/188] serial: pl011: Drop CR register reset on set_termios
+Date:   Mon, 17 Jan 2022 21:31:41 -0500
+Message-Id: <20220118023152.1948105-177-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -55,35 +54,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kishon Vijay Abraham I <kishon@ti.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit 4d3984906397581dc0ccb6a02bf16b6ff82c9192 ]
+[ Upstream commit e368cc656fd6d0075f1c3ab9676e2001451e3e04 ]
 
-Fix 'dtbs_check' in serdes_ln_ctrl (serdes-ln-ctrl@4080) node by
-changing the node name to mux-controller@4080.
+pl011_set_termios() briefly resets the CR register to zero, thereby
+glitching DTR/RTS signals.  With rs485 this may result in the bus being
+occupied for no reason.
 
-Signed-off-by: Kishon Vijay Abraham I <kishon@ti.com>
-Reviewed-by: Aswath Govindraju <a-govindraju@ti.com>
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Link: https://lore.kernel.org/r/20211126084555.17797-2-kishon@ti.com
+Where does this register write originate from?
+
+The PL011 driver was forked from the PL010 driver in 2004:
+https://git.kernel.org/history/history/c/157c0342e591
+
+Until this commit, the PL010 driver's IRQ handler ambauart_int()
+modified the CR register without holding the port spinlock.
+
+ambauart_set_termios() also modified that register.  To prevent
+concurrent read-modify-writes by the IRQ handler and to prevent
+transmission while changing baudrate, ambauart_set_termios() had to
+disable interrupts.  On the PL010, that is achieved by writing zero to
+the CR register.
+
+However, on the PL011, interrupts are disabled in the IMSC register,
+not in the CR register.
+
+Additionally, the commit amended both the PL010 and PL011 driver to
+acquire the port spinlock in the IRQ handler, obviating the need to
+disable interrupts in ->set_termios().
+
+So the CR register write is obsolete for two reasons.  Drop it.
+
+Cc: Russell King <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/f49f945375f5ccb979893c49f1129f51651ac738.1641129062.git.lukas@wunner.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/ti/k3-j7200-main.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/tty/serial/amba-pl011.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi b/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
-index 5832ad830ed14..1ab9f9604af6c 100644
---- a/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j7200-main.dtsi
-@@ -25,7 +25,7 @@ scm_conf: scm-conf@100000 {
- 		#size-cells = <1>;
- 		ranges = <0x00 0x00 0x00100000 0x1c000>;
+diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
+index 52518a606c06a..9b1b0d9bdf7be 100644
+--- a/drivers/tty/serial/amba-pl011.c
++++ b/drivers/tty/serial/amba-pl011.c
+@@ -2105,9 +2105,7 @@ pl011_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	if (port->rs485.flags & SER_RS485_ENABLED)
+ 		termios->c_cflag &= ~CRTSCTS;
  
--		serdes_ln_ctrl: serdes-ln-ctrl@4080 {
-+		serdes_ln_ctrl: mux-controller@4080 {
- 			compatible = "mmio-mux";
- 			#mux-control-cells = <1>;
- 			mux-reg-masks = <0x4080 0x3>, <0x4084 0x3>, /* SERDES0 lane0/1 select */
+-	/* first, disable everything */
+ 	old_cr = pl011_read(uap, REG_CR);
+-	pl011_write(0, uap, REG_CR);
+ 
+ 	if (termios->c_cflag & CRTSCTS) {
+ 		if (old_cr & UART011_CR_RTS)
 -- 
 2.34.1
 
