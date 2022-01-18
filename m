@@ -2,46 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 997C2C35268
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE22EC47086
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344259AbiARDCm (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:02:42 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42820 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346660AbiARCtO (ORCPT
+        id S232742AbiARDC4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 22:02:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34892 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349256AbiARCtS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:49:14 -0500
+        Mon, 17 Jan 2022 21:49:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EDB3C061776;
+        Mon, 17 Jan 2022 18:41:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 383846118D;
-        Tue, 18 Jan 2022 02:49:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8FB4C36AF3;
-        Tue, 18 Jan 2022 02:49:11 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 281CAB812A2;
+        Tue, 18 Jan 2022 02:41:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB1BCC36AF2;
+        Tue, 18 Jan 2022 02:41:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474152;
-        bh=UZqt7F9T0rDiSTLTAnZvkhKO5UvRVAdoAjXoYZrpjwA=;
+        s=k20201202; t=1642473705;
+        bh=Jf2jqJkMT9XhVYOHueT6/brMJFdC5+zm2vIMbJgJbm8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=djXoIGQtYIiz7aDGIMxcebjgiKXJqD3T+oP5PHuzbIe6sJBF3EBHlHsSFaPyVU6bB
-         iwL1+S9GCfE84f+OidxYRE8E6gI9iyLyW1kRo8RovFELbGpnMrCRCiBB8HiWScuVp5
-         zCZQ8lfEq3K81AhYmY1B01B7Buj/Nruk4hbf71zYQKhhPHLq8891hFg2kBUv92x1Mk
-         UoMdX8s58pqLPJgETi84VjYgLzJ2zdsEhfyHNmPaPUsGfzk55dk3TvsuAGgLAyJ6t7
-         9YkzJKimK9Atb6MuIvpoa9tqM9a0u0X8sltSZU+yYWSeGMH4noPF9jMVYfyWwSXU9j
-         CuLDFwfYW7Zeg==
+        b=Zamqcj5gz0kJfv8lRmVxzfAecddys8dudaKIC2bnnVYWkaJ4pFYxYndulSYlXRh57
+         InvJoWo5XZ0n6ZiXITUL2EsXiL8OM9t2kPa+qpRE3cJxmaog0EIItxduk2WioWjqgr
+         khaywTTSyUJQVE9fSFJkxfF73dICOgzpfDseF2nF9M3j3r5T7g8ba9u2wgFA2pvWeO
+         y8Dn5o1sll/6KL29bLAN/d4lj38MUPNwkE5lfn+IRGo+UOHAuKbjbmNIkHNn0MWFv9
+         q6864qC6CpDSHDqK8D++kdO4GjOrCuvxwuXcuHXyzLw7ShurrRQ70xI0G0DpSNizjA
+         +hexcQox8vx8Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexander Aring <aahringo@redhat.com>,
-        David Teigland <teigland@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, ccaulfie@redhat.com,
-        cluster-devel@redhat.com
-Subject: [PATCH AUTOSEL 4.14 02/56] fs: dlm: filter user dlm messages for kernel locks
-Date:   Mon, 17 Jan 2022 21:48:14 -0500
-Message-Id: <20220118024908.1953673-2-sashal@kernel.org>
+Cc:     Zekun Shen <bruceshenzk@gmail.com>,
+        Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, amitkarwar@gmail.com,
+        siva8118@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 033/116] rsi: Fix out-of-bounds read in rsi_read_pkt()
+Date:   Mon, 17 Jan 2022 21:38:44 -0500
+Message-Id: <20220118024007.1950576-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
-References: <20220118024908.1953673-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -50,116 +55,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Aring <aahringo@redhat.com>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit 6c2e3bf68f3e5e5a647aa52be246d5f552d7496d ]
+[ Upstream commit f1cb3476e48b60c450ec3a1d7da0805bffc6e43a ]
 
-This patch fixes the following crash by receiving a invalid message:
+rsi_get_* functions rely on an offset variable from usb
+input. The size of usb input is RSI_MAX_RX_USB_PKT_SIZE(3000),
+while 2-byte offset can be up to 0xFFFF. Thus a large offset
+can cause out-of-bounds read.
 
-[  160.672220] ==================================================================
-[  160.676206] BUG: KASAN: user-memory-access in dlm_user_add_ast+0xc3/0x370
-[  160.679659] Read of size 8 at addr 00000000deadbeef by task kworker/u32:13/319
-[  160.681447]
-[  160.681824] CPU: 10 PID: 319 Comm: kworker/u32:13 Not tainted 5.14.0-rc2+ #399
-[  160.683472] Hardware name: Red Hat KVM/RHEL-AV, BIOS 1.14.0-1.module+el8.6.0+12648+6ede71a5 04/01/2014
-[  160.685574] Workqueue: dlm_recv process_recv_sockets
-[  160.686721] Call Trace:
-[  160.687310]  dump_stack_lvl+0x56/0x6f
-[  160.688169]  ? dlm_user_add_ast+0xc3/0x370
-[  160.689116]  kasan_report.cold.14+0x116/0x11b
-[  160.690138]  ? dlm_user_add_ast+0xc3/0x370
-[  160.690832]  dlm_user_add_ast+0xc3/0x370
-[  160.691502]  _receive_unlock_reply+0x103/0x170
-[  160.692241]  _receive_message+0x11df/0x1ec0
-[  160.692926]  ? rcu_read_lock_sched_held+0xa1/0xd0
-[  160.693700]  ? rcu_read_lock_bh_held+0xb0/0xb0
-[  160.694427]  ? lock_acquire+0x175/0x400
-[  160.695058]  ? do_purge.isra.51+0x200/0x200
-[  160.695744]  ? lock_acquired+0x360/0x5d0
-[  160.696400]  ? lock_contended+0x6a0/0x6a0
-[  160.697055]  ? lock_release+0x21d/0x5e0
-[  160.697686]  ? lock_is_held_type+0xe0/0x110
-[  160.698352]  ? lock_is_held_type+0xe0/0x110
-[  160.699026]  ? ___might_sleep+0x1cc/0x1e0
-[  160.699698]  ? dlm_wait_requestqueue+0x94/0x140
-[  160.700451]  ? dlm_process_requestqueue+0x240/0x240
-[  160.701249]  ? down_write_killable+0x2b0/0x2b0
-[  160.701988]  ? do_raw_spin_unlock+0xa2/0x130
-[  160.702690]  dlm_receive_buffer+0x1a5/0x210
-[  160.703385]  dlm_process_incoming_buffer+0x726/0x9f0
-[  160.704210]  receive_from_sock+0x1c0/0x3b0
-[  160.704886]  ? dlm_tcp_shutdown+0x30/0x30
-[  160.705561]  ? lock_acquire+0x175/0x400
-[  160.706197]  ? rcu_read_lock_sched_held+0xa1/0xd0
-[  160.706941]  ? rcu_read_lock_bh_held+0xb0/0xb0
-[  160.707681]  process_recv_sockets+0x32/0x40
-[  160.708366]  process_one_work+0x55e/0xad0
-[  160.709045]  ? pwq_dec_nr_in_flight+0x110/0x110
-[  160.709820]  worker_thread+0x65/0x5e0
-[  160.710423]  ? process_one_work+0xad0/0xad0
-[  160.711087]  kthread+0x1ed/0x220
-[  160.711628]  ? set_kthread_struct+0x80/0x80
-[  160.712314]  ret_from_fork+0x22/0x30
+The patch adds a bound checking condition when rcv_pkt_len is 0,
+indicating it's USB. It's unclear whether this is triggerable
+from other type of bus. The following check might help in that case.
+offset > rcv_pkt_len - FRAME_DESC_SZ
 
-The issue is that we received a DLM message for a user lock but the
-destination lock is a kernel lock. Note that the address which is trying
-to derefence is 00000000deadbeef, which is in a kernel lock
-lkb->lkb_astparam, this field should never be derefenced by the DLM
-kernel stack. In case of a user lock lkb->lkb_astparam is lkb->lkb_ua
-(memory is shared by a union field). The struct lkb_ua will be handled
-by the DLM kernel stack but on a kernel lock it will contain invalid
-data and ends in most likely crashing the kernel.
+The bug is trigerrable with conpromised/malfunctioning USB devices.
+I tested the patch with the crashing input and got no more bug report.
 
-It can be reproduced with two cluster nodes.
+Attached is the KASAN report from fuzzing.
 
-node 2:
-dlm_tool join test
-echo "862 fooobaar 1 2 1" > /sys/kernel/debug/dlm/test_locks
-echo "862 3 1" > /sys/kernel/debug/dlm/test_waiters
+BUG: KASAN: slab-out-of-bounds in rsi_read_pkt+0x42e/0x500 [rsi_91x]
+Read of size 2 at addr ffff888019439fdb by task RX-Thread/227
 
-node 1:
-dlm_tool join test
+CPU: 0 PID: 227 Comm: RX-Thread Not tainted 5.6.0 #66
+Call Trace:
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ __kasan_report.cold+0x37/0x7c
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ kasan_report+0xe/0x20
+ rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ rsi_usb_rx_thread+0x1b1/0x2fc [rsi_usb]
+ ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
+ ? _raw_spin_lock_irqsave+0x7b/0xd0
+ ? _raw_spin_trylock_bh+0x120/0x120
+ ? __wake_up_common+0x10b/0x520
+ ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
+ kthread+0x2b5/0x3b0
+ ? kthread_create_on_node+0xd0/0xd0
+ ret_from_fork+0x22/0x40
 
-python:
-foo = DLM(h_cmd=3, o_nextcmd=1, h_nodeid=1, h_lockspace=0x77222027, \
-          m_type=7, m_flags=0x1, m_remid=0x862, m_result=0xFFFEFFFE)
-newFile = open("/sys/kernel/debug/dlm/comms/2/rawmsg", "wb")
-newFile.write(bytes(foo))
-
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Signed-off-by: David Teigland <teigland@redhat.com>
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/YXxXS4wgu2OsmlVv@10-18-43-117.dynapool.wireless.nyu.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/dlm/lock.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/net/wireless/rsi/rsi_91x_main.c | 4 ++++
+ drivers/net/wireless/rsi/rsi_91x_usb.c  | 1 -
+ drivers/net/wireless/rsi/rsi_usb.h      | 2 ++
+ 3 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/fs/dlm/lock.c b/fs/dlm/lock.c
-index 21643d2b3fee4..8364f170fbb82 100644
---- a/fs/dlm/lock.c
-+++ b/fs/dlm/lock.c
-@@ -3974,6 +3974,14 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
- 	int from = ms->m_header.h_nodeid;
- 	int error = 0;
+diff --git a/drivers/net/wireless/rsi/rsi_91x_main.c b/drivers/net/wireless/rsi/rsi_91x_main.c
+index 8c638cfeac52f..fe8aed58ac088 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_main.c
++++ b/drivers/net/wireless/rsi/rsi_91x_main.c
+@@ -23,6 +23,7 @@
+ #include "rsi_common.h"
+ #include "rsi_coex.h"
+ #include "rsi_hal.h"
++#include "rsi_usb.h"
  
-+	/* currently mixing of user/kernel locks are not supported */
-+	if (ms->m_flags & DLM_IFL_USER && ~lkb->lkb_flags & DLM_IFL_USER) {
-+		log_error(lkb->lkb_resource->res_ls,
-+			  "got user dlm message for a kernel lock");
-+		error = -EINVAL;
-+		goto out;
-+	}
+ u32 rsi_zone_enabled = /* INFO_ZONE |
+ 			INIT_ZONE |
+@@ -168,6 +169,9 @@ int rsi_read_pkt(struct rsi_common *common, u8 *rx_pkt, s32 rcv_pkt_len)
+ 		frame_desc = &rx_pkt[index];
+ 		actual_length = *(u16 *)&frame_desc[0];
+ 		offset = *(u16 *)&frame_desc[2];
++		if (!rcv_pkt_len && offset >
++			RSI_MAX_RX_USB_PKT_SIZE - FRAME_DESC_SZ)
++			goto fail;
+ 
+ 		queueno = rsi_get_queueno(frame_desc, offset);
+ 		length = rsi_get_length(frame_desc, offset);
+diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
+index 7f34148c7dfe5..11388a1469621 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_usb.c
++++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
+@@ -328,7 +328,6 @@ static int rsi_rx_urb_submit(struct rsi_hw *adapter, u8 ep_num, gfp_t mem_flags)
+ 	struct sk_buff *skb;
+ 	u8 dword_align_bytes = 0;
+ 
+-#define RSI_MAX_RX_USB_PKT_SIZE	3000
+ 	skb = dev_alloc_skb(RSI_MAX_RX_USB_PKT_SIZE);
+ 	if (!skb)
+ 		return -ENOMEM;
+diff --git a/drivers/net/wireless/rsi/rsi_usb.h b/drivers/net/wireless/rsi/rsi_usb.h
+index 8702f434b5699..ad88f8c70a351 100644
+--- a/drivers/net/wireless/rsi/rsi_usb.h
++++ b/drivers/net/wireless/rsi/rsi_usb.h
+@@ -44,6 +44,8 @@
+ #define RSI_USB_BUF_SIZE	     4096
+ #define RSI_USB_CTRL_BUF_SIZE	     0x04
+ 
++#define RSI_MAX_RX_USB_PKT_SIZE	3000
 +
- 	switch (ms->m_type) {
- 	case DLM_MSG_CONVERT:
- 	case DLM_MSG_UNLOCK:
-@@ -4002,6 +4010,7 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
- 		error = -EINVAL;
- 	}
- 
-+out:
- 	if (error)
- 		log_error(lkb->lkb_resource->res_ls,
- 			  "ignore invalid message %d from %d %x %x %x %d",
+ struct rx_usb_ctrl_block {
+ 	u8 *data;
+ 	struct urb *rx_urb;
 -- 
 2.34.1
 
