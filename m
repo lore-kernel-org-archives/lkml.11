@@ -2,52 +2,51 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3ED4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:02:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D58B4C35263
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:02:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352620AbiARDAQ (ORCPT
+        id S1352646AbiARDAT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:00:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34446 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349171AbiARCrh (ORCPT
+        Mon, 17 Jan 2022 22:00:19 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41988 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345372AbiARCsg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:47:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4149BC0619C4;
-        Mon, 17 Jan 2022 18:39:11 -0800 (PST)
+        Mon, 17 Jan 2022 21:48:36 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2387161127;
-        Tue, 18 Jan 2022 02:39:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1536C36AF7;
-        Tue, 18 Jan 2022 02:39:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A4976133E;
+        Tue, 18 Jan 2022 02:48:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F79DC36AE3;
+        Tue, 18 Jan 2022 02:48:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473550;
-        bh=dXBOlCuoOPukKy5ijeo0ko66jl0mtrClLVGnUYITNaU=;
+        s=k20201202; t=1642474114;
+        bh=2POWAd983rmLTzegXs88h1p/oWSCn2Gje3KOmqdlqlE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QKJKVu+IHNDjjBbDIbzf3vlbFVk6YmYiAqupARq3VPb6913zzUEpk4alUFrpyKRZR
-         QYwaKK8c2a+qY0+Qo3GWlOG9buXrunklfcD39QchWVh+3hQy/4ZVq4eJ4uuqd96D6Z
-         P1CSPPyl5Ln4D30v8nAYcNBVvVyyHItnbepH83TomxvI9favHWWkQFNuxobk0EiHD9
-         /Kkg7PbOgqGjMPkEybaGmPsDjZy+hkIJ+YMYhe7ruMgUxnA/qSB5h3UqDpXWy3kiF8
-         qh1bRb1bmyOLeaNKHhU84YJPP5TpurtdosttNZMyJ/BeuvBQ6cF0DCpz5aj3+t7kQ0
-         td4QO6A6S2vwg==
+        b=mGK+jjAlFMuYwq/ggkQZu2Hqeqp75BFnjdudjJ4+vLBqTykogjb189wUGRg8mbbQA
+         rNph9H26sB1wZ0BBEU8rbCEkdSbuJIj4SVhx+FcDYTXlYMXB6wa2P4McXPSn5DLd5F
+         D4nxSebuDA7rJ9H+xVS/zG4RyKoclIaduvVRpP7Dq7Eocw9RGN767J+h8GZLK14fEC
+         QydM/ZOAmPizCl5PwKbLrJgx71A2e9G8k10+/T9T9F8Ox1G0l7ehqnnzooZ1XeHH+d
+         07JCeIQXokJwPOUoJNk2bsaBoy9+eAX4fOpQmhRbmzR5Yubq88KNvFe84vOEr+KAyf
+         jeoXl/I1e8TiQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
-        Sasha Levin <sashal@kernel.org>, rafael@kernel.org,
-        linux-acpi@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 162/188] ACPI: battery: Add the ThinkPad "Not Charging" quirk
-Date:   Mon, 17 Jan 2022 21:31:26 -0500
-Message-Id: <20220118023152.1948105-162-sashal@kernel.org>
+Cc:     Randy Dunlap <rdunlap@infradead.org>,
+        Jeff Dike <jdike@addtoit.com>,
+        Richard Weinberger <richard@nod.at>,
+        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
+        linux-um@lists.infradead.org, Sasha Levin <sashal@kernel.org>,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, x86@kernel.org,
+        viro@zeniv.linux.org.uk
+Subject: [PATCH AUTOSEL 4.19 40/59] um: registers: Rename function names to avoid conflicts and build problems
+Date:   Mon, 17 Jan 2022 21:46:41 -0500
+Message-Id: <20220118024701.1952911-40-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
+References: <20220118024701.1952911-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -55,80 +54,101 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Weißschuh <linux@weissschuh.net>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit e96c1197aca628f7d2480a1cc3214912b40b3414 ]
+[ Upstream commit 077b7320942b64b0da182aefd83c374462a65535 ]
 
-The EC/ACPI firmware on Lenovo ThinkPads used to report a status
-of "Unknown" when the battery is between the charge start and
-charge stop thresholds. On Windows, it reports "Not Charging"
-so the quirk has been added to also report correctly.
+The function names init_registers() and restore_registers() are used
+in several net/ethernet/ and gpu/drm/ drivers for other purposes (not
+calls to UML functions), so rename them.
 
-Now the "status" attribute returns "Not Charging" when the
-battery on ThinkPads is not physicaly charging.
+This fixes multiple build errors.
 
-Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Jeff Dike <jdike@addtoit.com>
+Cc: Richard Weinberger <richard@nod.at>
+Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
+Cc: linux-um@lists.infradead.org
+Signed-off-by: Richard Weinberger <richard@nod.at>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/battery.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ arch/um/include/shared/registers.h | 4 ++--
+ arch/um/os-Linux/registers.c       | 4 ++--
+ arch/um/os-Linux/start_up.c        | 2 +-
+ arch/x86/um/syscalls_64.c          | 3 ++-
+ 4 files changed, 7 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/acpi/battery.c b/drivers/acpi/battery.c
-index 8afa85d6eb6a7..ead0114f27c9f 100644
---- a/drivers/acpi/battery.c
-+++ b/drivers/acpi/battery.c
-@@ -53,6 +53,7 @@ static int battery_bix_broken_package;
- static int battery_notification_delay_ms;
- static int battery_ac_is_broken;
- static int battery_check_pmic = 1;
-+static int battery_quirk_notcharging;
- static unsigned int cache_time = 1000;
- module_param(cache_time, uint, 0644);
- MODULE_PARM_DESC(cache_time, "cache time in milliseconds");
-@@ -217,6 +218,8 @@ static int acpi_battery_get_property(struct power_supply *psy,
- 			val->intval = POWER_SUPPLY_STATUS_CHARGING;
- 		else if (acpi_battery_is_charged(battery))
- 			val->intval = POWER_SUPPLY_STATUS_FULL;
-+		else if (battery_quirk_notcharging)
-+			val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
- 		else
- 			val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
- 		break;
-@@ -1111,6 +1114,12 @@ battery_do_not_check_pmic_quirk(const struct dmi_system_id *d)
+diff --git a/arch/um/include/shared/registers.h b/arch/um/include/shared/registers.h
+index a74449b5b0e31..12ad7c435e97f 100644
+--- a/arch/um/include/shared/registers.h
++++ b/arch/um/include/shared/registers.h
+@@ -16,8 +16,8 @@ extern int restore_fp_registers(int pid, unsigned long *fp_regs);
+ extern int save_fpx_registers(int pid, unsigned long *fp_regs);
+ extern int restore_fpx_registers(int pid, unsigned long *fp_regs);
+ extern int save_registers(int pid, struct uml_pt_regs *regs);
+-extern int restore_registers(int pid, struct uml_pt_regs *regs);
+-extern int init_registers(int pid);
++extern int restore_pid_registers(int pid, struct uml_pt_regs *regs);
++extern int init_pid_registers(int pid);
+ extern void get_safe_registers(unsigned long *regs, unsigned long *fp_regs);
+ extern unsigned long get_thread_reg(int reg, jmp_buf *buf);
+ extern int get_fp_registers(int pid, unsigned long *regs);
+diff --git a/arch/um/os-Linux/registers.c b/arch/um/os-Linux/registers.c
+index 2ff8d4fe83c4f..34a5963bd7efd 100644
+--- a/arch/um/os-Linux/registers.c
++++ b/arch/um/os-Linux/registers.c
+@@ -21,7 +21,7 @@ int save_registers(int pid, struct uml_pt_regs *regs)
  	return 0;
  }
  
-+static int __init battery_quirk_not_charging(const struct dmi_system_id *d)
-+{
-+	battery_quirk_notcharging = 1;
-+	return 0;
-+}
-+
- static const struct dmi_system_id bat_dmi_table[] __initconst = {
- 	{
- 		/* NEC LZ750/LS */
-@@ -1155,6 +1164,19 @@ static const struct dmi_system_id bat_dmi_table[] __initconst = {
- 			DMI_MATCH(DMI_PRODUCT_VERSION, "Lenovo MIIX 320-10ICR"),
- 		},
- 	},
-+	{
-+		/*
-+		 * On Lenovo ThinkPads the BIOS specification defines
-+		 * a state when the bits for charging and discharging
-+		 * are both set to 0. That state is "Not Charging".
-+		 */
-+		.callback = battery_quirk_not_charging,
-+		.ident = "Lenovo ThinkPad",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad"),
-+		},
-+	},
- 	{},
- };
+-int restore_registers(int pid, struct uml_pt_regs *regs)
++int restore_pid_registers(int pid, struct uml_pt_regs *regs)
+ {
+ 	int err;
  
+@@ -36,7 +36,7 @@ int restore_registers(int pid, struct uml_pt_regs *regs)
+ static unsigned long exec_regs[MAX_REG_NR];
+ static unsigned long exec_fp_regs[FP_SIZE];
+ 
+-int init_registers(int pid)
++int init_pid_registers(int pid)
+ {
+ 	int err;
+ 
+diff --git a/arch/um/os-Linux/start_up.c b/arch/um/os-Linux/start_up.c
+index 82bf5f8442ba4..2c75f2d638681 100644
+--- a/arch/um/os-Linux/start_up.c
++++ b/arch/um/os-Linux/start_up.c
+@@ -336,7 +336,7 @@ void __init os_early_checks(void)
+ 	check_tmpexec();
+ 
+ 	pid = start_ptraced_child();
+-	if (init_registers(pid))
++	if (init_pid_registers(pid))
+ 		fatal("Failed to initialize default registers");
+ 	stop_ptraced_child(pid, 1, 1);
+ }
+diff --git a/arch/x86/um/syscalls_64.c b/arch/x86/um/syscalls_64.c
+index 58f51667e2e4b..8249685b40960 100644
+--- a/arch/x86/um/syscalls_64.c
++++ b/arch/x86/um/syscalls_64.c
+@@ -11,6 +11,7 @@
+ #include <linux/uaccess.h>
+ #include <asm/prctl.h> /* XXX This should get the constants from libc */
+ #include <os.h>
++#include <registers.h>
+ 
+ long arch_prctl(struct task_struct *task, int option,
+ 		unsigned long __user *arg2)
+@@ -35,7 +36,7 @@ long arch_prctl(struct task_struct *task, int option,
+ 	switch (option) {
+ 	case ARCH_SET_FS:
+ 	case ARCH_SET_GS:
+-		ret = restore_registers(pid, &current->thread.regs.regs);
++		ret = restore_pid_registers(pid, &current->thread.regs.regs);
+ 		if (ret)
+ 			return ret;
+ 		break;
 -- 
 2.34.1
 
