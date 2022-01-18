@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C4CEC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:07:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ECF6C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:07:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346260AbiARQHA (ORCPT
+        id S1346323AbiARQHI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:07:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51056 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346285AbiARQG6 (ORCPT
+        Tue, 18 Jan 2022 11:07:08 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:40184 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346321AbiARQHD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:06:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F1ABC06161C;
-        Tue, 18 Jan 2022 08:06:58 -0800 (PST)
+        Tue, 18 Jan 2022 11:07:03 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E395361295;
-        Tue, 18 Jan 2022 16:06:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE451C00446;
-        Tue, 18 Jan 2022 16:06:56 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id E76B1CE1A2C;
+        Tue, 18 Jan 2022 16:07:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5212C00446;
+        Tue, 18 Jan 2022 16:06:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522017;
-        bh=LR2kLMcR+apjYWyEcYPnLl/7WPX0fK4eUt1AbzTwVcs=;
+        s=korg; t=1642522020;
+        bh=khdVEhDTKGq6dOsRJscNJWgQwxfZX4xYhgiF9DUQrc8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NnYkmJAs1wNqEQwXZ+KP1eZjqa+UOgM1/OvUpsWsLmxsfPIx1/2XV5sxeam5TwQDO
-         3KY3clBTZlvIFhwXY7wx2RHFZXNuJDy33S7V/GGHRdQ9yCmgZeG5PJCqjH5pS2Mhx0
-         d7AOmNE0I4pLZCt6QHDiZkzmuSnqBkHNrO2DwMrs=
+        b=RqaatXWgr8U5Zts+xtPQJoei6WwORjfTMPT0vhounuBp/3d79T9aKUC51LDua4vbP
+         /0jVZD88whAKbOM284kRtK1aYJZdbFOOxWbBpGCz2sf0+m+8VfkSTW5ir51xCqRNq/
+         iyj5QGnc0UubNN50OLDer2atyd6WCrEDf5WnZ7LE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
+        stable@vger.kernel.org, Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        kbuild test robot <lkp@intel.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
         Anders Roxell <anders.roxell@linaro.org>
-Subject: [PATCH 5.4 14/15] mtd: fixup CFI on ixp4xx
-Date:   Tue, 18 Jan 2022 17:05:53 +0100
-Message-Id: <20220118160450.523058120@linuxfoundation.org>
+Subject: [PATCH 5.4 15/15] ARM: 9025/1: Kconfig: CPU_BIG_ENDIAN depends on !LD_IS_LLD
+Date:   Tue, 18 Jan 2022 17:05:54 +0100
+Message-Id: <20220118160450.554692446@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118160450.062004175@linuxfoundation.org>
 References: <20220118160450.062004175@linuxfoundation.org>
@@ -51,57 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Nick Desaulniers <ndesaulniers@google.com>
 
-commit 603362b4a58393061dcfed1c7f0d0fd4aba61126 upstream.
+commit 28187dc8ebd938d574edfc6d9e0f9c51c21ff3f4 upstream.
 
-drivers/mtd/maps/ixp4xx.c requires MTD_CFI_BE_BYTE_SWAP to be set
-in order to compile.
+LLD does not yet support any big endian architectures. Make this config
+non-selectable when using LLD until LLD is fixed.
 
-drivers/mtd/maps/ixp4xx.c:57:4: error: #error CONFIG_MTD_CFI_BE_BYTE_SWAP required
+Link: https://github.com/ClangBuiltLinux/linux/issues/965
 
-This patch avoids the #error output by enforcing the policy in
-Kconfig. Not sure if this is the right approach, but it helps doing
-randconfig builds.
-
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20210927141045.1597593-1-arnd@kernel.org
+Signed-off-by: Nick Desaulniers <ndesaulniers@google.com>
+Tested-by: Nathan Chancellor <natechancellor@gmail.com>
+Reviewed-by: Nathan Chancellor <natechancellor@gmail.com>
+Reported-by: kbuild test robot <lkp@intel.com>
+Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 Cc: Anders Roxell <anders.roxell@linaro.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/chips/Kconfig |    2 ++
- drivers/mtd/maps/Kconfig  |    2 +-
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ arch/arm/mm/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/mtd/chips/Kconfig
-+++ b/drivers/mtd/chips/Kconfig
-@@ -55,12 +55,14 @@ choice
- 	  LITTLE_ENDIAN_BYTE, if the bytes are reversed.
- 
- config MTD_CFI_NOSWAP
-+	depends on !ARCH_IXP4XX || CPU_BIG_ENDIAN
- 	bool "NO"
- 
- config MTD_CFI_BE_BYTE_SWAP
- 	bool "BIG_ENDIAN_BYTE"
- 
- config MTD_CFI_LE_BYTE_SWAP
-+	depends on !ARCH_IXP4XX
- 	bool "LITTLE_ENDIAN_BYTE"
- 
- endchoice
---- a/drivers/mtd/maps/Kconfig
-+++ b/drivers/mtd/maps/Kconfig
-@@ -303,7 +303,7 @@ config MTD_DC21285
- 
- config MTD_IXP4XX
- 	tristate "CFI Flash device mapped on Intel IXP4xx based systems"
--	depends on MTD_CFI && MTD_COMPLEX_MAPPINGS && ARCH_IXP4XX
-+	depends on MTD_CFI && MTD_COMPLEX_MAPPINGS && ARCH_IXP4XX && MTD_CFI_ADV_OPTIONS
+--- a/arch/arm/mm/Kconfig
++++ b/arch/arm/mm/Kconfig
+@@ -743,6 +743,7 @@ config SWP_EMULATE
+ config CPU_BIG_ENDIAN
+ 	bool "Build big-endian kernel"
+ 	depends on ARCH_SUPPORTS_BIG_ENDIAN
++	depends on !LD_IS_LLD
  	help
- 	  This enables MTD access to flash devices on platforms based
- 	  on Intel's IXP4xx family of network processors such as the
+ 	  Say Y if you plan on running a kernel in big-endian mode.
+ 	  Note that your board must be properly built and your board
 
 
