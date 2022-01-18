@@ -2,50 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83E77C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:34:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A61C5C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:35:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351996AbiARDeV (ORCPT
+        id S1353484AbiARDev (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:34:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39016 "EHLO
+        Mon, 17 Jan 2022 22:34:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235935AbiARDGm (ORCPT
+        with ESMTP id S1376327AbiARDcO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:06:42 -0500
+        Mon, 17 Jan 2022 22:32:14 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE8FBC06127C;
-        Mon, 17 Jan 2022 18:48:58 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4169C01F00A;
+        Mon, 17 Jan 2022 19:08:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6CE25611B4;
-        Tue, 18 Jan 2022 02:48:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8F9AC36AF2;
-        Tue, 18 Jan 2022 02:48:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 245D160C49;
+        Tue, 18 Jan 2022 03:08:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B13F7C36AF3;
+        Tue, 18 Jan 2022 03:08:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474137;
-        bh=CEdO8M38elb+TwdxQlBYqa49sSc8fF+qL7qx0yZugNY=;
+        s=k20201202; t=1642475307;
+        bh=tvYs1VSePffa4h5x8YjWrQTm+RhMLjGYNBC6EzBNKdU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MiVxVvq7Ll3jlUqHsrz0ACo5Jsk471U8QBuFcyTyVqyq75RoYTuEl4jG5ymQUhVz1
-         Q0pjJoKEj2Duds9K92qC2hIm5ek+o4l1m2sIoGG8WgcmID+CRwqcDKEcGLyovJX2C1
-         KlB1GwT6Jot4wrzTRja8bctD9Ph6agttTHs82W4KixF3EcIKw6ZgwPQLlc2IWEf3sH
-         ZHzU6FlgZeDLpvRNwfvA9qK0NGyypK5H3R9AeOmrgRiNQ5nGHtpAT2H7a4/L6y1G1H
-         vtl1JLYcrz0saCePYmucqv39WakY1GHSAY+OAe7fEwtvY8wCObj01vlpQp1Pxdv/NE
-         dxRrEttFpKQig==
+        b=nseI0GfrkfOgbyvREKuIixb5G3+O4O9pVGw867luAnyodqPrqyz8pMe6cD0Cx1HzU
+         DLHaXtG8GMeyapKJ+LPf0S7rdB+UA4jf2B15EU8BRthnc2vzdCfE1OxOL6DEdvfwvx
+         N6r0KgfwazLv/Zu5lQEWHoSvA0X1x02mJUevO2i949SYB5bR4HKfvB8w2p+TtVDegK
+         H9da1vw4kcChKbhPtDeW9j1ostYBcn/bnjq53RWQcdKrxKt3xB0zAMNOZb09WXq2i4
+         tvlok6pGbNML3qUdUYvhv8DgkvxrEjcMurmYmOrEdjJLGQErUarldxvwV3JhrkbOk5
+         vo0ocp+HNfadA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
-        Corentin Labbe <clabbe.montjoie@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hkallweit1@gmail.com,
-        davem@davemloft.net, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 54/59] net: phy: marvell: configure RGMII delays for 88E1118
-Date:   Mon, 17 Jan 2022 21:46:55 -0500
-Message-Id: <20220118024701.1952911-54-sashal@kernel.org>
+Cc:     Alexander Aring <aahringo@redhat.com>,
+        David Teigland <teigland@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, ccaulfie@redhat.com,
+        cluster-devel@redhat.com
+Subject: [PATCH AUTOSEL 4.4 02/29] fs: dlm: filter user dlm messages for kernel locks
+Date:   Mon, 17 Jan 2022 22:07:55 -0500
+Message-Id: <20220118030822.1955469-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
-References: <20220118024701.1952911-1-sashal@kernel.org>
+In-Reply-To: <20220118030822.1955469-1-sashal@kernel.org>
+References: <20220118030822.1955469-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,53 +53,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
+From: Alexander Aring <aahringo@redhat.com>
 
-[ Upstream commit f22725c95ececb703c3f741e8f946d23705630b7 ]
+[ Upstream commit 6c2e3bf68f3e5e5a647aa52be246d5f552d7496d ]
 
-Corentin Labbe reports that the SSI 1328 does not work when allowing
-the PHY to operate at gigabit speeds, but does work with the generic
-PHY driver.
+This patch fixes the following crash by receiving a invalid message:
 
-This appears to be because m88e1118_config_init() writes a fixed value
-to the MSCR register, claiming that this is to enable 1G speeds.
-However, this always sets bits 4 and 5, enabling RGMII transmit and
-receive delays. The suspicion is that the original board this was
-added for required the delays to make 1G speeds work.
+[  160.672220] ==================================================================
+[  160.676206] BUG: KASAN: user-memory-access in dlm_user_add_ast+0xc3/0x370
+[  160.679659] Read of size 8 at addr 00000000deadbeef by task kworker/u32:13/319
+[  160.681447]
+[  160.681824] CPU: 10 PID: 319 Comm: kworker/u32:13 Not tainted 5.14.0-rc2+ #399
+[  160.683472] Hardware name: Red Hat KVM/RHEL-AV, BIOS 1.14.0-1.module+el8.6.0+12648+6ede71a5 04/01/2014
+[  160.685574] Workqueue: dlm_recv process_recv_sockets
+[  160.686721] Call Trace:
+[  160.687310]  dump_stack_lvl+0x56/0x6f
+[  160.688169]  ? dlm_user_add_ast+0xc3/0x370
+[  160.689116]  kasan_report.cold.14+0x116/0x11b
+[  160.690138]  ? dlm_user_add_ast+0xc3/0x370
+[  160.690832]  dlm_user_add_ast+0xc3/0x370
+[  160.691502]  _receive_unlock_reply+0x103/0x170
+[  160.692241]  _receive_message+0x11df/0x1ec0
+[  160.692926]  ? rcu_read_lock_sched_held+0xa1/0xd0
+[  160.693700]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[  160.694427]  ? lock_acquire+0x175/0x400
+[  160.695058]  ? do_purge.isra.51+0x200/0x200
+[  160.695744]  ? lock_acquired+0x360/0x5d0
+[  160.696400]  ? lock_contended+0x6a0/0x6a0
+[  160.697055]  ? lock_release+0x21d/0x5e0
+[  160.697686]  ? lock_is_held_type+0xe0/0x110
+[  160.698352]  ? lock_is_held_type+0xe0/0x110
+[  160.699026]  ? ___might_sleep+0x1cc/0x1e0
+[  160.699698]  ? dlm_wait_requestqueue+0x94/0x140
+[  160.700451]  ? dlm_process_requestqueue+0x240/0x240
+[  160.701249]  ? down_write_killable+0x2b0/0x2b0
+[  160.701988]  ? do_raw_spin_unlock+0xa2/0x130
+[  160.702690]  dlm_receive_buffer+0x1a5/0x210
+[  160.703385]  dlm_process_incoming_buffer+0x726/0x9f0
+[  160.704210]  receive_from_sock+0x1c0/0x3b0
+[  160.704886]  ? dlm_tcp_shutdown+0x30/0x30
+[  160.705561]  ? lock_acquire+0x175/0x400
+[  160.706197]  ? rcu_read_lock_sched_held+0xa1/0xd0
+[  160.706941]  ? rcu_read_lock_bh_held+0xb0/0xb0
+[  160.707681]  process_recv_sockets+0x32/0x40
+[  160.708366]  process_one_work+0x55e/0xad0
+[  160.709045]  ? pwq_dec_nr_in_flight+0x110/0x110
+[  160.709820]  worker_thread+0x65/0x5e0
+[  160.710423]  ? process_one_work+0xad0/0xad0
+[  160.711087]  kthread+0x1ed/0x220
+[  160.711628]  ? set_kthread_struct+0x80/0x80
+[  160.712314]  ret_from_fork+0x22/0x30
 
-Add the necessary configuration for RGMII delays for the 88E1118 to
-bring this into line with the requirements for RGMII support, and thus
-make the SSI 1328 work.
+The issue is that we received a DLM message for a user lock but the
+destination lock is a kernel lock. Note that the address which is trying
+to derefence is 00000000deadbeef, which is in a kernel lock
+lkb->lkb_astparam, this field should never be derefenced by the DLM
+kernel stack. In case of a user lock lkb->lkb_astparam is lkb->lkb_ua
+(memory is shared by a union field). The struct lkb_ua will be handled
+by the DLM kernel stack but on a kernel lock it will contain invalid
+data and ends in most likely crashing the kernel.
 
-Corentin Labbe has tested this on gemini-ssi1328 and gemini-ns2502.
+It can be reproduced with two cluster nodes.
 
-Reported-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
-Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+node 2:
+dlm_tool join test
+echo "862 fooobaar 1 2 1" > /sys/kernel/debug/dlm/test_locks
+echo "862 3 1" > /sys/kernel/debug/dlm/test_waiters
+
+node 1:
+dlm_tool join test
+
+python:
+foo = DLM(h_cmd=3, o_nextcmd=1, h_nodeid=1, h_lockspace=0x77222027, \
+          m_type=7, m_flags=0x1, m_remid=0x862, m_result=0xFFFEFFFE)
+newFile = open("/sys/kernel/debug/dlm/comms/2/rawmsg", "wb")
+newFile.write(bytes(foo))
+
+Signed-off-by: Alexander Aring <aahringo@redhat.com>
+Signed-off-by: David Teigland <teigland@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/phy/marvell.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ fs/dlm/lock.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/net/phy/marvell.c b/drivers/net/phy/marvell.c
-index 832a401c5fa56..484f6691b9c9f 100644
---- a/drivers/net/phy/marvell.c
-+++ b/drivers/net/phy/marvell.c
-@@ -930,6 +930,12 @@ static int m88e1118_config_init(struct phy_device *phydev)
- 	if (err < 0)
- 		return err;
+diff --git a/fs/dlm/lock.c b/fs/dlm/lock.c
+index 3a7f401e943c1..ffab7dc881574 100644
+--- a/fs/dlm/lock.c
++++ b/fs/dlm/lock.c
+@@ -3975,6 +3975,14 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
+ 	int from = ms->m_header.h_nodeid;
+ 	int error = 0;
  
-+	if (phy_interface_is_rgmii(phydev)) {
-+		err = m88e1121_config_aneg_rgmii_delays(phydev);
-+		if (err < 0)
-+			return err;
++	/* currently mixing of user/kernel locks are not supported */
++	if (ms->m_flags & DLM_IFL_USER && ~lkb->lkb_flags & DLM_IFL_USER) {
++		log_error(lkb->lkb_resource->res_ls,
++			  "got user dlm message for a kernel lock");
++		error = -EINVAL;
++		goto out;
 +	}
 +
- 	/* Adjust LED Control */
- 	if (phydev->dev_flags & MARVELL_PHY_M1118_DNS323_LEDS)
- 		err = phy_write(phydev, 0x10, 0x1100);
+ 	switch (ms->m_type) {
+ 	case DLM_MSG_CONVERT:
+ 	case DLM_MSG_UNLOCK:
+@@ -4003,6 +4011,7 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
+ 		error = -EINVAL;
+ 	}
+ 
++out:
+ 	if (error)
+ 		log_error(lkb->lkb_resource->res_ls,
+ 			  "ignore invalid message %d from %d %x %x %x %d",
 -- 
 2.34.1
 
