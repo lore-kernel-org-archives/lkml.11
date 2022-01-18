@@ -2,102 +2,177 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B898EC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7DFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:19:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347145AbiARRRO (ORCPT
+        id S1347121AbiARRTR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 12:17:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39478 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347121AbiARRRN (ORCPT
+        Tue, 18 Jan 2022 12:19:17 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:25316 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243781AbiARRTQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 12:17:13 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6855EC061574
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 09:17:12 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id c2so23707761wml.1
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 09:17:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xjMQTF4eVKdyYAu8QrW4WjNPRTGXRpV0NBTS0oqE87o=;
-        b=IZegMCoeQ3hsBGjk2vtSpm5HrT9deisVQ46CZM3W0KeCwtTnRXltsYEkFkK7yN3kmr
-         FrxakSA4UABJoLpQ2vt1aupCGgjVZR/yetgF6KbYS+Wb1MvUDzzsBcLjGToUAv8yfWEN
-         CtzNojQhJGGDxowfq4eZc6l3xtJmf2RhRdZky817UJYEa0IVe1hVWqPQ9jAmSvChBYiK
-         CmJJe8g75QHXaKLXux+guYXIgee20K9ncaKL5KcgmzKX38rvjaK5D51MMxkhre0mhd9s
-         halEpN+LKuSFqaBxYoxeF0T5KxSnAJXxWpNJO2ZMOb9zLt75zrGVSwmJWj3VVF7IVUMo
-         uy/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xjMQTF4eVKdyYAu8QrW4WjNPRTGXRpV0NBTS0oqE87o=;
-        b=uKm8YyzjN5Ixv4vGnvJoRAr0olu9pqe4nTDv/YI1LlmCN+1oso5In18G3hXoh1v5xK
-         L4HFC8z4oWep6Pw2MUNSoCu17ky/jnEf4jUR8vqIzVHEV/d8mHFy4nkc0VjBwLXWsEOq
-         00tyaZ/4zTlyPxB0dMPoyeMHfrPHlMROtKpf1paUIH1xPUM6c0pupQrplV8Wfu797Rkb
-         0ZJWamI0nyfDwmWptZQLG1+/O+PzwOjj7E08vshNTavWiCtMZfZ2suw437kg3NoO5k57
-         lcRxhg4+eH93gNnPvsoaw+enVwmgj+QgyCgfb5+kbtg4znc4ramLqFb6YISR9SvpHSGy
-         BW2w==
-X-Gm-Message-State: AOAM5335eIvw1P9rpTP5kdV6lxtk3CBKvaC9+sXSnXO59CNV0m+utIyi
-        xjruaWCnj758MBIqizIJ574qd3++lyGN8PS8NhXQ/w==
-X-Google-Smtp-Source: ABdhPJyM8Er7F8IWCUjoxB2zTsyLWrUtQFdcfszUUYmE5GJpHJTzU5uLC3uRD7QV0QTnKuyA/uRJk761VISSAS7dA7Q=
-X-Received: by 2002:a5d:6da4:: with SMTP id u4mr20828497wrs.82.1642526230826;
- Tue, 18 Jan 2022 09:17:10 -0800 (PST)
+        Tue, 18 Jan 2022 12:19:16 -0500
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20IGvdQt015193;
+        Tue, 18 Jan 2022 17:19:16 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=MN7dELDCR2LBLFj2bEiMIb871iFxD1MD0Nq5roM1t+U=;
+ b=hcAkZruNKcyf6lsNOlbb5lF5yIXUgn1K5k/IrhcsaEn/7+sYIssJkGP3uAUIRQrEFycC
+ 2FwPTcALNpLGY0dw5H3Nh9Z1mUModew3seqdsB68eNL0AQCnNA+AkIWiD76ocfy4j0O+
+ y5Q1BkG/oFywwZYM0yV3EZy9GwV516+Fm9rbflvm3TjaEFkYKspeEO88mRMfqq09hrC5
+ H7THxt471UlE79tG/jrt/BqDnYdgPRspyxZNRuhEhXJFDGmKO8BzoNxiFj2Vcjul02JU
+ eGsnIClwkBiARDkZ+Qr/b6Fo4px3wBbVvALKbD8bN8MFaRMTiEpM5+8sY1+b2rpqbk/y qg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dp1hfrfmx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 18 Jan 2022 17:19:16 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20IGvwW9015843;
+        Tue, 18 Jan 2022 17:19:15 GMT
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dp1hfrfm5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 18 Jan 2022 17:19:15 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20IHHa12006908;
+        Tue, 18 Jan 2022 17:19:13 GMT
+Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
+        by ppma01fra.de.ibm.com with ESMTP id 3dknw9db9b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 18 Jan 2022 17:19:13 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20IHJ9hT38338932
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 18 Jan 2022 17:19:09 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8E50EAE04D;
+        Tue, 18 Jan 2022 17:19:09 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 819BFAE053;
+        Tue, 18 Jan 2022 17:19:08 +0000 (GMT)
+Received: from [9.171.70.230] (unknown [9.171.70.230])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Tue, 18 Jan 2022 17:19:08 +0000 (GMT)
+Message-ID: <1ea61cf3-65b2-87ec-55b4-7dfa5f623d15@linux.ibm.com>
+Date:   Tue, 18 Jan 2022 18:20:51 +0100
 MIME-Version: 1.0
-References: <20220113233940.3608440-1-posk@google.com> <20220113233940.3608440-5-posk@google.com>
- <YeU0nr6DfBCaH6UF@hirez.programming.kicks-ass.net>
-In-Reply-To: <YeU0nr6DfBCaH6UF@hirez.programming.kicks-ass.net>
-From:   Peter Oskolkov <posk@google.com>
-Date:   Tue, 18 Jan 2022 09:16:59 -0800
-Message-ID: <CAPNVh5e+ijBCdvzZujWNUw7QnFt5Mdonw35ByuvcvzJu7gGjHQ@mail.gmail.com>
-Subject: Re: [RFC PATCH v2 4/5] sched: UMCG: add a blocked worker list
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     mingo@redhat.com, tglx@linutronix.de, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-api@vger.kernel.org, x86@kernel.org,
-        pjt@google.com, avagin@google.com, jannh@google.com,
-        tdelisle@uwaterloo.ca, posk@posk.io
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v2 23/30] vfio/pci: re-introduce CONFIG_VFIO_PCI_ZDEV
+Content-Language: en-US
+To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
+        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
+        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220114203145.242984-1-mjrosato@linux.ibm.com>
+ <20220114203145.242984-24-mjrosato@linux.ibm.com>
+From:   Pierre Morel <pmorel@linux.ibm.com>
+In-Reply-To: <20220114203145.242984-24-mjrosato@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: -0Hz7wpMr9ou707iK3FpxApm11DExpoL
+X-Proofpoint-ORIG-GUID: dPVtb47df067lrQmMwQikGwH1NkvbY6h
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-18_05,2022-01-18_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
+ malwarescore=0 priorityscore=1501 clxscore=1015 mlxlogscore=999
+ spamscore=0 lowpriorityscore=0 adultscore=0 bulkscore=0 impostorscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201180103
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 1:19 AM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Thu, Jan 13, 2022 at 03:39:39PM -0800, Peter Oskolkov wrote:
 
-[...]
 
-> >
-> > So this change basically decouples block/wake detection from
-> > M:N threading in the sense that the number of servers is now
-> > does not have to be M or N, but is more driven by the scalability
-> > needs of the userspace application.
->
-> So I don't object to having this blocking list, we had that early on in
-> the discussions.
->
-> *However*, combined with WF_CURRENT_CPU this 1:N userspace model doesn't
-> really make sense, also combined with Proxy-Exec (if we ever get that
-> sorted) it will fundamentally not work.
->
-> More consideration is needed I think...
+On 1/14/22 21:31, Matthew Rosato wrote:
+> This was previously removed as unnecessary; while that was true, subsequent
+> changes will make KVM an additional required component for vfio-pci-zdev.
+> Let's re-introduce CONFIG_VFIO_PCI_ZDEV as now there is actually a reason
+> to say 'n' for it (when not planning to CONFIG_KVM).
+> 
+> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+> ---
+>   drivers/vfio/pci/Kconfig      | 11 +++++++++++
+>   drivers/vfio/pci/Makefile     |  2 +-
+>   include/linux/vfio_pci_core.h |  2 +-
+>   3 files changed, 13 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/vfio/pci/Kconfig b/drivers/vfio/pci/Kconfig
+> index 860424ccda1b..fedd1d4cb592 100644
+> --- a/drivers/vfio/pci/Kconfig
+> +++ b/drivers/vfio/pci/Kconfig
+> @@ -42,5 +42,16 @@ config VFIO_PCI_IGD
+>   	  and LPC bridge config space.
+>   
+>   	  To enable Intel IGD assignment through vfio-pci, say Y.
+> +
+> +config VFIO_PCI_ZDEV
+> +	bool "VFIO PCI extensions for s390x KVM passthrough"
+> +	depends on S390 && KVM
+> +	default y
+> +	help
+> +	  Support s390x-specific extensions to enable support for enhancements
+> +	  to KVM passthrough capabilities, such as interpretive execution of
+> +	  zPCI instructions.
+> +
+> +	  To enable s390x KVM vfio-pci extensions, say Y.
 
-I was not very clear here. The intent of this change is not to make
-1:N a good general approach, but to make "several running workers per
-single server" a viable option.
+In several patches we check on CONFIG_PCI (14,15,16,17 and 22) but we 
+may have PCI without VFIO_PCI, wouldn't it be a problem?
 
-My guess, based on some numbers/benchmarks from another project, is
-that having a single server/runqueue per four or eight running
-workers, properly aligned with (= affined to) an AMD chiplet, will be
-the most performant solution, comparing to both a runqueue per single
-running worker and to a global runqueue. On Intel this will probably
-look like a single runqueue per core (2 running workers/HT threads).
+Here we define a new CONFIG entry and I have two questions:
 
-So in this model a "server" represents a runqueue.
+1- there is no dependency on VFIO_PCI while the functionality is 
+obviously based on VFIO_PCI
 
-I'll reply to other active umcg discussions shortly.
+2- Wouldn't it be possible to use this item and the single condition for 
+the different checks we need through the new VFIO interpretation 
+functionality.
+
+
+
+
+>   endif
+>   endif
+> diff --git a/drivers/vfio/pci/Makefile b/drivers/vfio/pci/Makefile
+> index 349d68d242b4..01b1f83d83d7 100644
+> --- a/drivers/vfio/pci/Makefile
+> +++ b/drivers/vfio/pci/Makefile
+> @@ -1,7 +1,7 @@
+>   # SPDX-License-Identifier: GPL-2.0-only
+>   
+>   vfio-pci-core-y := vfio_pci_core.o vfio_pci_intrs.o vfio_pci_rdwr.o vfio_pci_config.o
+> -vfio-pci-core-$(CONFIG_S390) += vfio_pci_zdev.o
+> +vfio-pci-core-$(CONFIG_VFIO_PCI_ZDEV) += vfio_pci_zdev.o
+>   obj-$(CONFIG_VFIO_PCI_CORE) += vfio-pci-core.o
+>   
+>   vfio-pci-y := vfio_pci.o
+> diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
+> index ef9a44b6cf5d..5e2bca3b89db 100644
+> --- a/include/linux/vfio_pci_core.h
+> +++ b/include/linux/vfio_pci_core.h
+> @@ -195,7 +195,7 @@ static inline int vfio_pci_igd_init(struct vfio_pci_core_device *vdev)
+>   }
+>   #endif
+>   
+> -#ifdef CONFIG_S390
+> +#ifdef CONFIG_VFIO_PCI_ZDEV
+>   extern int vfio_pci_info_zdev_add_caps(struct vfio_pci_core_device *vdev,
+>   				       struct vfio_info_cap *caps);
+>   #else
+> 
+
+-- 
+Pierre Morel
+IBM Lab Boeblingen
