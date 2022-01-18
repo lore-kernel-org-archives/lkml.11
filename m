@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC082C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 01:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3162AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 01:02:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244105AbiARBCH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 20:02:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39080 "EHLO
+        id S244118AbiARBCM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 20:02:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243878AbiARBB7 (ORCPT
+        with ESMTP id S243993AbiARBCE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 20:01:59 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90C46C061574;
-        Mon, 17 Jan 2022 17:01:58 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id u21so72585771edd.5;
-        Mon, 17 Jan 2022 17:01:58 -0800 (PST)
+        Mon, 17 Jan 2022 20:02:04 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8BE0C061574;
+        Mon, 17 Jan 2022 17:02:03 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id 30so72680267edv.3;
+        Mon, 17 Jan 2022 17:02:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=ciuwc03q2BGkK4WAOq0QYpQJkVPGRMXxXF8I3KXs9ZY=;
-        b=aO996fTOi8uCivGeZHAIolHhksWaqKkgdA1xdywUzF+1XQLlA7BBK0oRHPDySiIIkO
-         ooa/KpAbFZay4dg9IRRJzZk/NrI272l1+GPRB52IK6E5/NkKD954Ey7iKtK3DnlBypC8
-         VpSuxP/UtDd7BwnANA8f0o97go8FVpY9IrQGoYXalEr4wgvk1ovvxe6pHaGkq4m8d1at
-         wuEO5DT46aCumoW81LdJDG2vmf8WAxLAd6qhcw1rPwDnhF7BgFVrKGoytbEAfsdCUNUf
-         d3C9IORC0op9XeUbZbvTBwbNKb4lu9kj61I7dqXp7mA//wfK3iMrRmg6k98dAS6wsPKb
-         bsgg==
+        bh=CXVZRlEKPP4hcCweUpH3JuNpFEE+gl2M3UXNpQ3IHj0=;
+        b=ZKRD2QhSN8Ds7tSnS8enr3uAt/NjQva6NIkkOknlj5OszLfPQsZR/ijsyWJ9fc2WLk
+         uplnrJY3ZAREamzZ4Dcwfkp7nNxQdNm6CKdDi7mZjTLcqkFQm3QiCmm1KhrMQpA7nRiU
+         OOtbFGIMy0+EWerZrExY3I7HcDhaUx7WDkN26yqNipdBfkNFCGYOfNe5ZbGKa/W/ay8J
+         rlICGXR0po/frBL7YyPIipvshTTZoULIqLgS+Yy5wCfWDywC4+Cvht4aXZIWTPcTI9Mq
+         QR3TpOIQQue0Q3i0vlt7aYIne1HcDDFEtVoEabqfioezw65Zb2yWMOPJiePQB/S/uL1V
+         s4aQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ciuwc03q2BGkK4WAOq0QYpQJkVPGRMXxXF8I3KXs9ZY=;
-        b=w8JJgluc7+WPRBH7RHyWJa+nXZL91SmNrdTPx3ew27QXqZYO0FEif+ElpgFMgtw+zd
-         KzcqyY8b3rZEHDdI3sdCxY9DCY5cKuSCFMmoJnt6uPgjkK7wuS101oIn5MCRdo1GfNkf
-         Xoqh2b8FmS0q0qOmUiRZfEWHDKgza4+jfMu7CnxlY0zTQOwbqYd8nyu/DX2BN26QaSaL
-         aWi6iTHrfTfP3YuaUqfdgRX+TozaO6W1Au1dWwmzkBPxcRrr6rUsdbQ52ZHiGuq7B3Yj
-         rrT4NYwxnoa4kxIvt9o0R+wsmbNWU2SYNoBeC0hpWFIfcyxvnhVyRUWIotvEDnhlbdBE
-         kP6g==
-X-Gm-Message-State: AOAM532K0Q3HC92r9u/N/dkvZphPJY7L08ih0VlqpQ98jUlWsLvbLrFc
-        bMG/6VRij5OXcYMt6cn0zKQ=
-X-Google-Smtp-Source: ABdhPJwadbQQhQFwwou3GrAenFFGLoM7xgWnNr+7WUqN1Io6TuBfb+T9O36lvtsRgXoA1pnn36VmvQ==
-X-Received: by 2002:a17:906:5d0f:: with SMTP id g15mr5271614ejt.167.1642467717023;
-        Mon, 17 Jan 2022 17:01:57 -0800 (PST)
+        bh=CXVZRlEKPP4hcCweUpH3JuNpFEE+gl2M3UXNpQ3IHj0=;
+        b=A8V+3+XrX5rz8FVhzQVGw59aVK+ifYeNz4T9RN/V0yJnY3/pXmp32OdTFrcwukZcJ7
+         seFMgFQ3uAn5kGFNpD6oBv/zvzKBqStEdTlgNcNmsMwAKVsem4ohR11dHutcbeksdxTm
+         dHN9vhYrHsFz1dunSrIo0/4L6FfaK5dh8W6/lkCTpFEYBzKjWiFFTXqMtm7fQDapSLUf
+         ALgYBixGDKlAg2k3RVjACq7Eufm4NAUrP3UHhr3ugDLx29EI6vjyuCBH6x8qUaWgjW8U
+         ObhIxEu0aBiSKWhpRCxBB2MGYJdFgXjMDWDhMKDxDE71xxb+zeZdIaJ9Eaz8ouQsgH6j
+         sKuQ==
+X-Gm-Message-State: AOAM530JgfwsiYSFZyob/t6GHJ5Sc0pZGo3pADVmDmJDSOHIY8weTRYX
+        URZU8qNO5R5I0NRcwcbHW0Y=
+X-Google-Smtp-Source: ABdhPJzmraW03nyXQa7eHj0BHSKZoBUEYfqBf7IaDSvinDs2ioZsDB8+ygHWlvmLbW3+6GhNAq4TQA==
+X-Received: by 2002:a05:6402:c12:: with SMTP id co18mr14364166edb.246.1642467722156;
+        Mon, 17 Jan 2022 17:02:02 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id 24sm4892127ejg.47.2022.01.17.17.01.56
+        by smtp.googlemail.com with ESMTPSA id 24sm4892127ejg.47.2022.01.17.17.02.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 17:01:56 -0800 (PST)
+        Mon, 17 Jan 2022 17:02:01 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -58,9 +58,9 @@ To:     Andy Gross <agross@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 05/14] drivers: clk: qcom: gcc-ipq806x: drop hardcoded pxo and cxo source clk
-Date:   Tue, 18 Jan 2022 01:44:25 +0100
-Message-Id: <20220118004434.17095-6-ansuelsmth@gmail.com>
+Subject: [PATCH 10/14] dt-bindings: clock: add ipq8064 ce5 clk define
+Date:   Tue, 18 Jan 2022 01:44:30 +0100
+Message-Id: <20220118004434.17095-11-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220118004434.17095-1-ansuelsmth@gmail.com>
 References: <20220118004434.17095-1-ansuelsmth@gmail.com>
@@ -70,43 +70,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-We now define these clk in dts. Drop pxo and cxo hardcoded in the gcc
-probe function.
+Add ipq8064 ce5 clk define needed for CryptoEngine in gcc driver.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/clk/qcom/gcc-ipq806x.c | 11 +----------
- 1 file changed, 1 insertion(+), 10 deletions(-)
+ include/dt-bindings/clock/qcom,gcc-ipq806x.h | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/clk/qcom/gcc-ipq806x.c b/drivers/clk/qcom/gcc-ipq806x.c
-index 17ce61f36b08..383494280e3e 100644
---- a/drivers/clk/qcom/gcc-ipq806x.c
-+++ b/drivers/clk/qcom/gcc-ipq806x.c
-@@ -3133,23 +3133,14 @@ MODULE_DEVICE_TABLE(of, gcc_ipq806x_match_table);
+diff --git a/include/dt-bindings/clock/qcom,gcc-ipq806x.h b/include/dt-bindings/clock/qcom,gcc-ipq806x.h
+index 7deec14a6dee..02262d2ac899 100644
+--- a/include/dt-bindings/clock/qcom,gcc-ipq806x.h
++++ b/include/dt-bindings/clock/qcom,gcc-ipq806x.h
+@@ -240,7 +240,7 @@
+ #define PLL14					232
+ #define PLL14_VOTE				233
+ #define PLL18					234
+-#define CE5_SRC					235
++#define CE5_A_CLK				235
+ #define CE5_H_CLK				236
+ #define CE5_CORE_CLK				237
+ #define CE3_SLEEP_CLK				238
+@@ -283,5 +283,8 @@
+ #define EBI2_AON_CLK				281
+ #define NSSTCM_CLK_SRC				282
+ #define NSSTCM_CLK				283
++#define CE5_A_CLK_SRC				285
++#define CE5_H_CLK_SRC				286
++#define CE5_CORE_CLK_SRC			287
  
- static int gcc_ipq806x_probe(struct platform_device *pdev)
- {
--	struct device *dev = &pdev->dev;
- 	struct regmap *regmap;
- 	int ret;
- 
--	ret = qcom_cc_register_board_clk(dev, "cxo_board", "cxo", 25000000);
--	if (ret)
--		return ret;
--
--	ret = qcom_cc_register_board_clk(dev, "pxo_board", "pxo", 25000000);
--	if (ret)
--		return ret;
--
- 	ret = qcom_cc_probe(pdev, &gcc_ipq806x_desc);
- 	if (ret)
- 		return ret;
- 
--	regmap = dev_get_regmap(dev, NULL);
-+	regmap = dev_get_regmap(&pdev->dev, NULL);
- 	if (!regmap)
- 		return -ENODEV;
- 
+ #endif
 -- 
 2.33.1
 
