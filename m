@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12A24C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCFE9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:07:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345100AbiARDHc (ORCPT
+        id S1348359AbiARDHj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:07:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34418 "EHLO
+        Mon, 17 Jan 2022 22:07:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349376AbiARCte (ORCPT
+        with ESMTP id S1345815AbiARCsy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:49:34 -0500
+        Mon, 17 Jan 2022 21:48:54 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 636FAC0613F0;
-        Mon, 17 Jan 2022 18:42:05 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EE66C061747;
+        Mon, 17 Jan 2022 18:39:36 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C033E611F1;
-        Tue, 18 Jan 2022 02:42:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5B50BC36AEF;
-        Tue, 18 Jan 2022 02:42:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 968616115F;
+        Tue, 18 Jan 2022 02:39:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1126AC36AEF;
+        Tue, 18 Jan 2022 02:39:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473724;
-        bh=Gk2MBeDKwAqwrogN3J8PJhNNwXPhx96bQ6PGDwnPzpQ=;
+        s=k20201202; t=1642473575;
+        bh=qyBu0B7dRXJctmKgZrrvfp0L9hSwBmhZ/BtctYh2YSQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YdMPHhsSazzKac6Dkddzjn8oyLlB7tZ+VXGyjK9KTMotd78ehsfWrxesiQHGAKb9D
-         f7NoWvoTdYO3HDIwJTnlP5/I+TISeXtqYbcf0K4YmAI5vI1bGkMpYtsWvGs2Z+il9d
-         qYMAvnZINSq7EOhfe2Iqr1WLH8kKZHhL77lTCbgOMyjT8ecT5orfiV76y8iP5EILE5
-         s7roiHunFLTgald/kspWwWxm9Pjc56fLsBCGpYKqaabx8zThmkWI2u47d3FYy9YPCv
-         R2wGl8wWtUr16Ncj3+MKlUUTWQQ+XhRLc6SpCV6jVvRfQ9Pq59YLP7lFai2zMguCsu
-         jUoObVsmZJCVQ==
+        b=LLHEcMJldgYMNa0e1tA+9Zc5fsrXcKTm3xTW7n0vDWc+wgulZypTQDNFmUoSaQu/b
+         BMomthIRhxS0CEPP9bA3z4mwYqhZ98FbS+YgXg2OFS80QHyh5wuVJKRvSI8M1U2cm9
+         Dq9yf1bLvarMQIjrF0A5JkKawuxYAW4cK3XVuSBhrdRz/BWXVexa+YARcXa8M+oaKk
+         k6OG2iYfjM76m0E0pTqBANZqaFhedWIjLCZ57sU0QOxZE5gfgcJiREdmSVimKVgRYa
+         3TsKnVL0KzJeS9Gpif8TWOabkLQ1j5zfWqtjsZ9f6T8BcLr8DOMuoMGUm9cOwkhYfx
+         uyjFGIfa/0ECA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiongwei Song <sxwjean@gmail.com>,
-        syzbot+23a02c7df2cf2bc93fa2@syzkaller.appspotmail.com,
-        Denis Efremov <efremov@linux.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 042/116] floppy: Add max size check for user space request
-Date:   Mon, 17 Jan 2022 21:38:53 -0500
-Message-Id: <20220118024007.1950576-42-sashal@kernel.org>
+Cc:     Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
+        bjorn.andersson@linaro.org, lgirdwood@gmail.com,
+        linux-arm-msm@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 175/188] regulator: qcom_smd: Align probe function with rpmh-regulator
+Date:   Mon, 17 Jan 2022 21:31:39 -0500
+Message-Id: <20220118023152.1948105-175-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
-References: <20220118024007.1950576-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,80 +54,169 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiongwei Song <sxwjean@gmail.com>
+From: Konrad Dybcio <konrad.dybcio@somainline.org>
 
-[ Upstream commit 545a32498c536ee152331cd2e7d2416aa0f20e01 ]
+[ Upstream commit 14e2976fbabdacb01335d7f91eeebbc89c67ddb1 ]
 
-We need to check the max request size that is from user space before
-allocating pages. If the request size exceeds the limit, return -EINVAL.
-This check can avoid the warning below from page allocator.
+The RPMh regulator driver is much newer and gets more attention, which in
+consequence makes it do a few things better. Update qcom_smd-regulator's
+probe function to mimic what rpmh-regulator does to address a couple of
+issues:
 
-WARNING: CPU: 3 PID: 16525 at mm/page_alloc.c:5344 current_gfp_context include/linux/sched/mm.h:195 [inline]
-WARNING: CPU: 3 PID: 16525 at mm/page_alloc.c:5344 __alloc_pages+0x45d/0x500 mm/page_alloc.c:5356
-Modules linked in:
-CPU: 3 PID: 16525 Comm: syz-executor.3 Not tainted 5.15.0-syzkaller #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-RIP: 0010:__alloc_pages+0x45d/0x500 mm/page_alloc.c:5344
-Code: be c9 00 00 00 48 c7 c7 20 4a 97 89 c6 05 62 32 a7 0b 01 e8 74 9a 42 07 e9 6a ff ff ff 0f 0b e9 a0 fd ff ff 40 80 e5 3f eb 88 <0f> 0b e9 18 ff ff ff 4c 89 ef 44 89 e6 45 31 ed e8 1e 76 ff ff e9
-RSP: 0018:ffffc90023b87850 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 1ffff92004770f0b RCX: dffffc0000000000
-RDX: 0000000000000000 RSI: 0000000000000033 RDI: 0000000000010cc1
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff81bb4686 R11: 0000000000000001 R12: ffffffff902c1960
-R13: 0000000000000033 R14: 0000000000000000 R15: ffff88804cf64a30
-FS:  0000000000000000(0000) GS:ffff88802cd00000(0063) knlGS:00000000f44b4b40
-CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
-CR2: 000000002c921000 CR3: 000000004f507000 CR4: 0000000000150ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- alloc_pages+0x1a7/0x300 mm/mempolicy.c:2191
- __get_free_pages+0x8/0x40 mm/page_alloc.c:5418
- raw_cmd_copyin drivers/block/floppy.c:3113 [inline]
- raw_cmd_ioctl drivers/block/floppy.c:3160 [inline]
- fd_locked_ioctl+0x12e5/0x2820 drivers/block/floppy.c:3528
- fd_ioctl drivers/block/floppy.c:3555 [inline]
- fd_compat_ioctl+0x891/0x1b60 drivers/block/floppy.c:3869
- compat_blkdev_ioctl+0x3b8/0x810 block/ioctl.c:662
- __do_compat_sys_ioctl+0x1c7/0x290 fs/ioctl.c:972
- do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
- __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
- do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+- Probe defer now works correctly, before it used to, well,
+  kinda just die.. This fixes reliable probing on (at least) PM8994,
+  because Linux apparently cannot deal with supply map dependencies yet..
 
-Reported-by: syzbot+23a02c7df2cf2bc93fa2@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20211116131033.27685-1-sxwjean@me.com
-Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
-Signed-off-by: Denis Efremov <efremov@linux.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+- Regulator data is now matched more sanely: regulator data is matched
+  against each individual regulator node name and throwing an -EINVAL if
+  data is missing, instead of just assuming everything is fine and
+  iterating over all subsequent array members.
+
+- status = "disabled" will now work for disabling individual regulators in
+  DT. Previously it didn't seem to do much if anything at all.
+
+Signed-off-by: Konrad Dybcio <konrad.dybcio@somainline.org>
+Link: https://lore.kernel.org/r/20211230023442.1123424-1-konrad.dybcio@somainline.org
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/floppy.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/regulator/qcom_smd-regulator.c | 100 +++++++++++++++++--------
+ 1 file changed, 70 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
-index 7df79ae6b0a1e..eabaaff6360ae 100644
---- a/drivers/block/floppy.c
-+++ b/drivers/block/floppy.c
-@@ -3169,6 +3169,8 @@ static void raw_cmd_free(struct floppy_raw_cmd **ptr)
- 	}
- }
+diff --git a/drivers/regulator/qcom_smd-regulator.c b/drivers/regulator/qcom_smd-regulator.c
+index 198fcc6551f6d..8e077792bddd9 100644
+--- a/drivers/regulator/qcom_smd-regulator.c
++++ b/drivers/regulator/qcom_smd-regulator.c
+@@ -9,6 +9,7 @@
+ #include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ #include <linux/regulator/driver.h>
++#include <linux/regulator/of_regulator.h>
+ #include <linux/soc/qcom/smd-rpm.h>
  
-+#define MAX_LEN (1UL << MAX_ORDER << PAGE_SHIFT)
-+
- static int raw_cmd_copyin(int cmd, void __user *param,
- 				 struct floppy_raw_cmd **rcmd)
+ struct qcom_rpm_reg {
+@@ -1190,52 +1191,91 @@ static const struct of_device_id rpm_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, rpm_of_match);
+ 
+-static int rpm_reg_probe(struct platform_device *pdev)
++/**
++ * rpm_regulator_init_vreg() - initialize all attributes of a qcom_smd-regulator
++ * @vreg:		Pointer to the individual qcom_smd-regulator resource
++ * @dev:		Pointer to the top level qcom_smd-regulator PMIC device
++ * @node:		Pointer to the individual qcom_smd-regulator resource
++ *			device node
++ * @rpm:		Pointer to the rpm bus node
++ * @pmic_rpm_data:	Pointer to a null-terminated array of qcom_smd-regulator
++ *			resources defined for the top level PMIC device
++ *
++ * Return: 0 on success, errno on failure
++ */
++static int rpm_regulator_init_vreg(struct qcom_rpm_reg *vreg, struct device *dev,
++				   struct device_node *node, struct qcom_smd_rpm *rpm,
++				   const struct rpm_regulator_data *pmic_rpm_data)
  {
-@@ -3198,7 +3200,7 @@ static int raw_cmd_copyin(int cmd, void __user *param,
- 	ptr->resultcode = 0;
+-	const struct rpm_regulator_data *reg;
+-	const struct of_device_id *match;
+-	struct regulator_config config = { };
++	struct regulator_config config = {};
++	const struct rpm_regulator_data *rpm_data;
+ 	struct regulator_dev *rdev;
++	int ret;
++
++	for (rpm_data = pmic_rpm_data; rpm_data->name; rpm_data++)
++		if (of_node_name_eq(node, rpm_data->name))
++			break;
++
++	if (!rpm_data->name) {
++		dev_err(dev, "Unknown regulator %pOFn\n", node);
++		return -EINVAL;
++	}
++
++	vreg->dev	= dev;
++	vreg->rpm	= rpm;
++	vreg->type	= rpm_data->type;
++	vreg->id	= rpm_data->id;
++
++	memcpy(&vreg->desc, rpm_data->desc, sizeof(vreg->desc));
++	vreg->desc.name = rpm_data->name;
++	vreg->desc.supply_name = rpm_data->supply;
++	vreg->desc.owner = THIS_MODULE;
++	vreg->desc.type = REGULATOR_VOLTAGE;
++	vreg->desc.of_match = rpm_data->name;
++
++	config.dev		= dev;
++	config.of_node		= node;
++	config.driver_data	= vreg;
++
++	rdev = devm_regulator_register(dev, &vreg->desc, &config);
++	if (IS_ERR(rdev)) {
++		ret = PTR_ERR(rdev);
++		dev_err(dev, "%pOFn: devm_regulator_register() failed, ret=%d\n", node, ret);
++		return ret;
++	}
++
++	return 0;
++}
++
++static int rpm_reg_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	const struct rpm_regulator_data *vreg_data;
++	struct device_node *node;
+ 	struct qcom_rpm_reg *vreg;
+ 	struct qcom_smd_rpm *rpm;
++	int ret;
  
- 	if (ptr->flags & (FD_RAW_READ | FD_RAW_WRITE)) {
--		if (ptr->length <= 0)
-+		if (ptr->length <= 0 || ptr->length >= MAX_LEN)
- 			return -EINVAL;
- 		ptr->kernel_data = (char *)fd_dma_mem_alloc(ptr->length);
- 		fallback_on_nodma_alloc(&ptr->kernel_data, ptr->length);
+ 	rpm = dev_get_drvdata(pdev->dev.parent);
+ 	if (!rpm) {
+-		dev_err(&pdev->dev, "unable to retrieve handle to rpm\n");
++		dev_err(&pdev->dev, "Unable to retrieve handle to rpm\n");
+ 		return -ENODEV;
+ 	}
+ 
+-	match = of_match_device(rpm_of_match, &pdev->dev);
+-	if (!match) {
+-		dev_err(&pdev->dev, "failed to match device\n");
++	vreg_data = of_device_get_match_data(dev);
++	if (!vreg_data)
+ 		return -ENODEV;
+-	}
+ 
+-	for (reg = match->data; reg->name; reg++) {
++	for_each_available_child_of_node(dev->of_node, node) {
+ 		vreg = devm_kzalloc(&pdev->dev, sizeof(*vreg), GFP_KERNEL);
+ 		if (!vreg)
+ 			return -ENOMEM;
+ 
+-		vreg->dev = &pdev->dev;
+-		vreg->type = reg->type;
+-		vreg->id = reg->id;
+-		vreg->rpm = rpm;
+-
+-		memcpy(&vreg->desc, reg->desc, sizeof(vreg->desc));
+-
+-		vreg->desc.id = -1;
+-		vreg->desc.owner = THIS_MODULE;
+-		vreg->desc.type = REGULATOR_VOLTAGE;
+-		vreg->desc.name = reg->name;
+-		vreg->desc.supply_name = reg->supply;
+-		vreg->desc.of_match = reg->name;
+-
+-		config.dev = &pdev->dev;
+-		config.driver_data = vreg;
+-		rdev = devm_regulator_register(&pdev->dev, &vreg->desc, &config);
+-		if (IS_ERR(rdev)) {
+-			dev_err(&pdev->dev, "failed to register %s\n", reg->name);
+-			return PTR_ERR(rdev);
++		ret = rpm_regulator_init_vreg(vreg, dev, node, rpm, vreg_data);
++
++		if (ret < 0) {
++			of_node_put(node);
++			return ret;
+ 		}
+ 	}
+ 
 -- 
 2.34.1
 
