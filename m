@@ -2,48 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B991FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:57:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52996C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:57:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347651AbiARC5T (ORCPT
+        id S1350165AbiARC5h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:57:19 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37500 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348245AbiARCpH (ORCPT
+        Mon, 17 Jan 2022 21:57:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34418 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348506AbiARCpc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:45:07 -0500
+        Mon, 17 Jan 2022 21:45:32 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2E15C08EBAF;
+        Mon, 17 Jan 2022 18:38:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D7056130C;
-        Tue, 18 Jan 2022 02:45:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA0E6C36AF3;
-        Tue, 18 Jan 2022 02:45:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 41A38612CE;
+        Tue, 18 Jan 2022 02:38:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F55DC36AF3;
+        Tue, 18 Jan 2022 02:38:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473905;
-        bh=ot27nxBOMITcF6fRXuYtehlwri265v9oIoxpy+iAVNs=;
+        s=k20201202; t=1642473495;
+        bh=HhDQ5gUAkE/Ixxh28y5d77/aIlgKWeORJlSTctk8v88=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C3+6AP4dDtKlP0famHo//HDlKwNkRu97reMOcPDPQ4wETogPCtLmfWj0pWMGFbfL2
-         QrfQswithb5KBPrS7FdzdVncRd7X89FFrSK+uOJ1pZUSIgJ+BNeazA4QvNeCEIqbze
-         6vOuN3QpbKHPO6Yc+a1BCjn4IZaylvhdCFFxzu7GxCazdM3K3wKDdswtIx7DCeX18O
-         4zjw1SL0w+64wRKHkSEpIMLmijOGTqERbAb9hD2tuEERl7oo6zyLveHZdyAzNvZho9
-         9Vyk3zygyIfXJGzhTRSki7OXRXt1kUCacsMJnopDojcol1I0iy9pqcP/lsS2aV+Z7y
-         Ayap6RSfej0IA==
+        b=RwuG33M/eo3e4uoBwVs6MFBTfRpSqzEgsk60sXt/SRl90+Pn54TeLunnAlr7OMbOY
+         msuZeyo/rqqNeAK/gQiBBwiE4evxIYtOgfHsmCG/6WBIHpSwZlM8QIyozm/0uApMZf
+         UO6Y+kV41vhQYSszo/LNYdHibaltSY9NSmevx828F6cjvujW7hWuh97+HIQ15/z+MT
+         aimeovH1RcsTjXNJzW0Le5jU2x0w4lEAjMTp1nJlrReJAQANB0b2oQVMTXzH69LoVO
+         xmsEBsWzpOp1JlBXdM9UrK74WLEXDKQ7fHS9AiDJIapdVKFrWXs1Usm/AuzWUzDVxU
+         jIG03+oeX9UbQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Danielle Ratson <danieller@nvidia.com>,
-        Eric Biederman <ebiederm@xmission.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, petrm@nvidia.com,
-        kuba@kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 15/73] mlxsw: pci: Add shutdown method in PCI driver
-Date:   Mon, 17 Jan 2022 21:43:34 -0500
-Message-Id: <20220118024432.1952028-15-sashal@kernel.org>
+Cc:     Po-Hao Huang <phhuang@realtek.com>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>,
+        tony0620emma@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 136/188] rtw88: 8822c: update rx settings to prevent potential hw deadlock
+Date:   Mon, 17 Jan 2022 21:31:00 -0500
+Message-Id: <20220118023152.1948105-136-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
-References: <20220118024432.1952028-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -52,94 +54,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Danielle Ratson <danieller@nvidia.com>
+From: Po-Hao Huang <phhuang@realtek.com>
 
-[ Upstream commit c1020d3cf4752f61a6a413f632ea2ce2370e150d ]
+[ Upstream commit c1afb26727d9e507d3e17a9890e7aaf7fc85cd55 ]
 
-On an arm64 platform with the Spectrum ASIC, after loading and executing
-a new kernel via kexec, the following trace [1] is observed. This seems
-to be caused by the fact that the device is not properly shutdown before
-executing the new kernel.
+These settings enables mac to detect and recover when rx fifo
+circuit deadlock occurs. Previous version missed this, so we fix it.
 
-Fix this by implementing a shutdown method which mirrors the remove
-method, as recommended by the kexec maintainer [2][3].
-
-[1]
-BUG: Bad page state in process devlink pfn:22f73d
-page:fffffe00089dcf40 refcount:-1 mapcount:0 mapping:0000000000000000 index:0x0
-flags: 0x2ffff00000000000()
-raw: 2ffff00000000000 0000000000000000 ffffffff089d0201 0000000000000000
-raw: 0000000000000000 0000000000000000 ffffffffffffffff 0000000000000000
-page dumped because: nonzero _refcount
-Modules linked in:
-CPU: 1 PID: 16346 Comm: devlink Tainted: G B 5.8.0-rc6-custom-273020-gac6b365b1bf5 #44
-Hardware name: Marvell Armada 7040 TX4810M (DT)
-Call trace:
- dump_backtrace+0x0/0x1d0
- show_stack+0x1c/0x28
- dump_stack+0xbc/0x118
- bad_page+0xcc/0xf8
- check_free_page_bad+0x80/0x88
- __free_pages_ok+0x3f8/0x418
- __free_pages+0x38/0x60
- kmem_freepages+0x200/0x2a8
- slab_destroy+0x28/0x68
- slabs_destroy+0x60/0x90
- ___cache_free+0x1b4/0x358
- kfree+0xc0/0x1d0
- skb_free_head+0x2c/0x38
- skb_release_data+0x110/0x1a0
- skb_release_all+0x2c/0x38
- consume_skb+0x38/0x130
- __dev_kfree_skb_any+0x44/0x50
- mlxsw_pci_rdq_fini+0x8c/0xb0
- mlxsw_pci_queue_fini.isra.0+0x28/0x58
- mlxsw_pci_queue_group_fini+0x58/0x88
- mlxsw_pci_aqs_fini+0x2c/0x60
- mlxsw_pci_fini+0x34/0x50
- mlxsw_core_bus_device_unregister+0x104/0x1d0
- mlxsw_devlink_core_bus_device_reload_down+0x2c/0x48
- devlink_reload+0x44/0x158
- devlink_nl_cmd_reload+0x270/0x290
- genl_rcv_msg+0x188/0x2f0
- netlink_rcv_skb+0x5c/0x118
- genl_rcv+0x3c/0x50
- netlink_unicast+0x1bc/0x278
- netlink_sendmsg+0x194/0x390
- __sys_sendto+0xe0/0x158
- __arm64_sys_sendto+0x2c/0x38
- el0_svc_common.constprop.0+0x70/0x168
- do_el0_svc+0x28/0x88
- el0_sync_handler+0x88/0x190
- el0_sync+0x140/0x180
-
-[2]
-https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1195432.html
-
-[3]
-https://patchwork.kernel.org/project/linux-scsi/patch/20170212214920.28866-1-anton@ozlabs.org/#20116693
-
-Cc: Eric Biederman <ebiederm@xmission.com>
-Signed-off-by: Danielle Ratson <danieller@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Po-Hao Huang <phhuang@realtek.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20211217012708.8623-1-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/mellanox/mlxsw/pci.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/realtek/rtw88/main.c     | 2 +-
+ drivers/net/wireless/realtek/rtw88/rtw8821c.h | 2 +-
+ drivers/net/wireless/realtek/rtw88/rtw8822b.c | 2 +-
+ drivers/net/wireless/realtek/rtw88/rtw8822c.c | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-index aa4fef7890841..ff331251a019a 100644
---- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
-+++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
-@@ -1876,6 +1876,7 @@ int mlxsw_pci_driver_register(struct pci_driver *pci_driver)
- {
- 	pci_driver->probe = mlxsw_pci_probe;
- 	pci_driver->remove = mlxsw_pci_remove;
-+	pci_driver->shutdown = mlxsw_pci_remove;
- 	return pci_register_driver(pci_driver);
- }
- EXPORT_SYMBOL(mlxsw_pci_driver_register);
+diff --git a/drivers/net/wireless/realtek/rtw88/main.c b/drivers/net/wireless/realtek/rtw88/main.c
+index 6bb55e663fc36..69512856bb462 100644
+--- a/drivers/net/wireless/realtek/rtw88/main.c
++++ b/drivers/net/wireless/realtek/rtw88/main.c
+@@ -1859,7 +1859,7 @@ int rtw_core_init(struct rtw_dev *rtwdev)
+ 
+ 	/* default rx filter setting */
+ 	rtwdev->hal.rcr = BIT_APP_FCS | BIT_APP_MIC | BIT_APP_ICV |
+-			  BIT_HTC_LOC_CTRL | BIT_APP_PHYSTS |
++			  BIT_PKTCTL_DLEN | BIT_HTC_LOC_CTRL | BIT_APP_PHYSTS |
+ 			  BIT_AB | BIT_AM | BIT_APM;
+ 
+ 	ret = rtw_load_firmware(rtwdev, RTW_NORMAL_FW);
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8821c.h b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+index 112faa60f653e..d9fbddd7b0f35 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8821c.h
++++ b/drivers/net/wireless/realtek/rtw88/rtw8821c.h
+@@ -131,7 +131,7 @@ _rtw_write32s_mask(struct rtw_dev *rtwdev, u32 addr, u32 mask, u32 data)
+ #define WLAN_TX_FUNC_CFG2		0x30
+ #define WLAN_MAC_OPT_NORM_FUNC1		0x98
+ #define WLAN_MAC_OPT_LB_FUNC1		0x80
+-#define WLAN_MAC_OPT_FUNC2		0x30810041
++#define WLAN_MAC_OPT_FUNC2		0xb0810041
+ 
+ #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
+ 			(WLAN_SIFS_OFDM_CONT_TX << BIT_SHIFT_SIFS_OFDM_CTX) | \
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822b.c b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+index f1789155e9016..247f26e3e8192 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822b.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822b.c
+@@ -204,7 +204,7 @@ static void rtw8822b_phy_set_param(struct rtw_dev *rtwdev)
+ #define WLAN_TX_FUNC_CFG2		0x30
+ #define WLAN_MAC_OPT_NORM_FUNC1		0x98
+ #define WLAN_MAC_OPT_LB_FUNC1		0x80
+-#define WLAN_MAC_OPT_FUNC2		0x30810041
++#define WLAN_MAC_OPT_FUNC2		0xb0810041
+ 
+ #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
+ 			(WLAN_SIFS_OFDM_CONT_TX << BIT_SHIFT_SIFS_OFDM_CTX) | \
+diff --git a/drivers/net/wireless/realtek/rtw88/rtw8822c.c b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+index f3ad079967a68..bc87e3cb9cdce 100644
+--- a/drivers/net/wireless/realtek/rtw88/rtw8822c.c
++++ b/drivers/net/wireless/realtek/rtw88/rtw8822c.c
+@@ -1962,7 +1962,7 @@ static void rtw8822c_phy_set_param(struct rtw_dev *rtwdev)
+ #define WLAN_TX_FUNC_CFG2		0x30
+ #define WLAN_MAC_OPT_NORM_FUNC1		0x98
+ #define WLAN_MAC_OPT_LB_FUNC1		0x80
+-#define WLAN_MAC_OPT_FUNC2		0x30810041
++#define WLAN_MAC_OPT_FUNC2		0xb0810041
+ #define WLAN_MAC_INT_MIG_CFG		0x33330000
+ 
+ #define WLAN_SIFS_CFG	(WLAN_SIFS_CCK_CONT_TX | \
 -- 
 2.34.1
 
