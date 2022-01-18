@@ -2,192 +2,155 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE681C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:47:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFFA9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 09:47:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232274AbiARJrC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 04:47:02 -0500
-Received: from foss.arm.com ([217.140.110.172]:51954 "EHLO foss.arm.com"
+        id S230116AbiARJrI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 04:47:08 -0500
+Received: from mga17.intel.com ([192.55.52.151]:1355 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230116AbiARJrB (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 04:47:01 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 606991FB;
-        Tue, 18 Jan 2022 01:47:01 -0800 (PST)
-Received: from FVFF7649Q05P (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C5DC63F774;
-        Tue, 18 Jan 2022 01:46:59 -0800 (PST)
-Date:   Tue, 18 Jan 2022 09:46:57 +0000
-From:   Vincent Donnefort <vincent.donnefort@arm.com>
-To:     Dietmar Eggemann <dietmar.eggemann@arm.com>
-Cc:     peterz@infradead.org, mingo@redhat.com, vincent.guittot@linaro.org,
-        linux-kernel@vger.kernel.org, valentin.schneider@arm.com,
-        morten.rasmussen@arm.com, chris.redpath@arm.com,
-        qperret@google.com, lukasz.luba@arm.com
-Subject: Re: [PATCH v2 6/7] sched/fair: Remove task_util from effective
- utilization in feec()
-Message-ID: <YeaMO6v2HZy3OVUv@FVFF7649Q05P>
-References: <20220112161230.836326-1-vincent.donnefort@arm.com>
- <20220112161230.836326-7-vincent.donnefort@arm.com>
- <265e98a5-d641-9ba9-3fac-4844ceaf643d@arm.com>
+        id S232981AbiARJrF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 04:47:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642499225; x=1674035225;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=L+OPdNsaU2FY8wr/SJr9DyBE7V4Xr+Q/OlCWELomdhA=;
+  b=nTY0FFD9zDnkccdxOlHdWX1x4/kl+E/yxDMzCRgeZGiVZcd0pyNagA6m
+   VsRmag6NO73/3kQKCbXRSZ5otOcn52ScoE8anWDj3VVmNR8g47uDLSNBW
+   PQPlSNfM80/T90XuIkoYJiqHHm1O5ZHZWR8MJWsjOdHyDFWVAcUC2ekd5
+   8t0S9PS7NeexulONalq4sTFEHciy9D8LFSKt1kUQUQarcw+wEYP8GoN6s
+   HrcBa+uvvyRY9KIhfs7ufja0J+5zaD5uXYDMY3RGDXgB4TzqThlryyanT
+   w0wxKc2+aXpKfdtPpkWjAdPs2CIS81yYCNjzp8kOQ4fqSlRP64coaWuLy
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10230"; a="225455430"
+X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
+   d="scan'208";a="225455430"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 01:47:04 -0800
+X-IronPort-AV: E=Sophos;i="5.88,297,1635231600"; 
+   d="scan'208";a="622085988"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 01:46:57 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1n9l3i-00BnjX-K9;
+        Tue, 18 Jan 2022 11:45:46 +0200
+Date:   Tue, 18 Jan 2022 11:45:46 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Tomohito Esaki <etom@igel.co.jp>
+Cc:     dri-devel@lists.freedesktop.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Michel =?iso-8859-1?Q?D=E4nzer?= <mdaenzer@redhat.com>,
+        Simon Ser <contact@emersion.fr>,
+        Qingqing Zhuo <qingqing.zhuo@amd.com>,
+        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
+        Mark Yacoub <markyacoub@chromium.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Evan Quan <evan.quan@amd.com>, Petr Mladek <pmladek@suse.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Abhinav Kumar <abhinavk@codeaurora.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@chromium.org>,
+        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        nouveau@lists.freedesktop.org, Daniel Stone <daniel@fooishbar.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Damian Hobson-Garcia <dhobsong@igel.co.jp>,
+        Takanari Hayama <taki@igel.co.jp>
+Subject: Re: [RFC PATCH v4 0/3] Add support modifiers for drivers whose
+ planes only support linear layout
+Message-ID: <YeaMSguM7hTN/I2B@smile.fi.intel.com>
+References: <20220118083652.16335-1-etom@igel.co.jp>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <265e98a5-d641-9ba9-3fac-4844ceaf643d@arm.com>
+In-Reply-To: <20220118083652.16335-1-etom@igel.co.jp>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 02:17:55PM +0100, Dietmar Eggemann wrote:
-> On 12/01/2022 17:12, Vincent Donnefort wrote:
+On Tue, Jan 18, 2022 at 05:36:49PM +0900, Tomohito Esaki wrote:
+> Some drivers whose planes only support linear layout fb do not support format
+> modifiers.
+> These drivers should support modifiers, however the DRM core should handle this
+> rather than open-coding in every driver.
 > 
-> [...]
+> In this patch series, these drivers expose format modifiers based on the
+> following suggestion[1].
 > 
-> > +static inline unsigned long
-> > +get_pd_busy_time(struct task_struct *p, struct cpumask *cpus,
-> > +		 unsigned long pd_cap)
-> > +{
-> > +	unsigned long busy_time = 0;
-> > +	int cpu;
-> >  
-> > -	/*
-> > -	 * The capacity state of CPUs of the current rd can be driven by CPUs
-> > -	 * of another rd if they belong to the same pd. So, account for the
-> > -	 * utilization of these CPUs too by masking pd with cpu_online_mask
-> > -	 * instead of the rd span.
-> > -	 *
-> > -	 * If an entire pd is outside of the current rd, it will not appear in
-> > -	 * its pd list and will not be accounted by compute_energy().
-> > -	 */
-> >  	for_each_cpu(cpu, cpus) {
-> > -		unsigned long util_freq = cpu_util_next(cpu, p, dst_cpu);
-> > -		unsigned long cpu_util, util_running = util_freq;
-> > -		struct task_struct *tsk = NULL;
-> > +		unsigned long util = cpu_util_next(cpu, p, -1);
-> >  
-> > -		/*
-> > -		 * When @p is placed on @cpu:
-> > -		 *
-> > -		 * util_running = max(cpu_util, cpu_util_est) +
-> > -		 *		  max(task_util, _task_util_est)
-> > -		 *
-> > -		 * while cpu_util_next is: max(cpu_util + task_util,
-> > -		 *			       cpu_util_est + _task_util_est)
-> > -		 */
-> > -		if (cpu == dst_cpu) {
-> > -			tsk = p;
-> > -			util_running =
-> > -				cpu_util_next(cpu, p, -1) + task_util_est(p);
-> > -		}
-> > +		busy_time += effective_cpu_util(cpu, util, ENERGY_UTIL, NULL);
-> > +	}
-> >  
-> > -		/*
-> > -		 * Busy time computation: utilization clamping is not
-> > -		 * required since the ratio (sum_util / cpu_capacity)
-> > -		 * is already enough to scale the EM reported power
-> > -		 * consumption at the (eventually clamped) cpu_capacity.
-> > -		 */
-> > -		cpu_util = effective_cpu_util(cpu, util_running, ENERGY_UTIL,
-> > -					      NULL);
-> > +	return min(pd_cap, busy_time);
-> 
-> You're capping the busy_time (sum of effective_cpu_util() of CPUs in
-> cpus) by pd capacity (cpumask_weight(cpus) * cpu_thermal_cap).
-> 
-> Before, each effective_cpu_util() was capped by cpu_thermal_cap
-> individually: sum_util += min(effective_cpu_util(), cpu_thermal_cap)
-> 
-> Why did you change that? Because of the way you calculate busy time with
-> the task: busy_time = min(pd_cap, busy_time + tsk_busy_time) ?
+> On Thu, Nov 18, 2021 at 01:02:11PM +0000, Daniel Stone wrote:
+> > I think the best way forward here is:
+> >   - add a new mode_config.cannot_support_modifiers flag, and enable
+> > this in radeon (plus any other drivers in the same boat)
+> >   - change drm_universal_plane_init() to advertise the LINEAR modifier
+> > when NULL is passed as the modifier list (including installing a
+> > default .format_mod_supported hook)
+> >   - remove the mode_config.allow_fb_modifiers hook and always
+> > advertise modifier support, unless
+> > mode_config.cannot_support_modifiers is set
 
-It avoids having to cap each CPU separately and also aligns with task_busy_time.
-I guess we could argue this isn't the most accurate solution but without taking
-this shortcut, we'd have to walk through all the CPUs again for the busy time
-computation when testing the task placement. :/
+FWIW,
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-But now reading it again makes me feel I might have not taken the right decision
-and we'd prefer not fall into the case where the utilization of a single CPU is
-too high but the global PD's is not. 
+> [1] https://patchwork.kernel.org/project/linux-renesas-soc/patch/20190509054518.10781-1-etom@igel.co.jp/#24602575
+> 
+> v4:
+> * modify documentation for fb_modifiers_not_supported flag in kerneldoc
+> 
+> v3: https://www.spinics.net/lists/dri-devel/msg329102.html
+> * change the order as follows:
+>    1. add fb_modifiers_not_supported flag
+>    2. add default modifiers
+>    3. remove allow_fb_modifiers flag
+> * add a conditional disable in amdgpu_dm_plane_init()
+> 
+> v2: https://www.spinics.net/lists/dri-devel/msg328939.html
+> * rebase to the latest master branch (5.16.0+)
+>       + "drm/plane: Make format_mod_supported truly optional" patch [2]
+>   [2] https://patchwork.freedesktop.org/patch/467940/?series=98255&rev=3
+> 
+> v1: https://www.spinics.net/lists/dri-devel/msg327352.html
+> * The initial patch set
+> 
+> Tomohito Esaki (3):
+>   drm: introduce fb_modifiers_not_supported flag in mode_config
+>   drm: add support modifiers for drivers whose planes only support
+>     linear layout
+>   drm: remove allow_fb_modifiers
+> 
+>  drivers/gpu/drm/amd/amdgpu/amdgpu_display.c   |  6 ++---
+>  drivers/gpu/drm/amd/amdgpu/dce_v10_0.c        |  2 ++
+>  drivers/gpu/drm/amd/amdgpu/dce_v11_0.c        |  2 ++
+>  drivers/gpu/drm/amd/amdgpu/dce_v6_0.c         |  1 +
+>  drivers/gpu/drm/amd/amdgpu/dce_v8_0.c         |  2 ++
+>  .../gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c |  3 +++
+>  drivers/gpu/drm/drm_framebuffer.c             |  6 ++---
+>  drivers/gpu/drm/drm_ioctl.c                   |  2 +-
+>  drivers/gpu/drm/drm_plane.c                   | 22 +++++++++----------
+>  drivers/gpu/drm/nouveau/nouveau_display.c     |  6 +++--
+>  drivers/gpu/drm/radeon/radeon_display.c       |  2 ++
+>  .../gpu/drm/selftests/test-drm_framebuffer.c  |  1 -
+>  include/drm/drm_mode_config.h                 | 18 +++++----------
+>  include/drm/drm_plane.h                       |  3 +++
+>  14 files changed, 43 insertions(+), 33 deletions(-)
+> 
+> -- 
+> 2.25.1
+> 
 
-> 
-> [...]
-> 
-> > @@ -6662,9 +6690,11 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
-> >  {
-> >  	struct cpumask *cpus = this_cpu_cpumask_var_ptr(select_rq_mask);
-> >  	unsigned long prev_delta = ULONG_MAX, best_delta = ULONG_MAX;
-> > +	unsigned long busy_time, tsk_busy_time, max_util, pd_cap;
-> >  	struct root_domain *rd = cpu_rq(smp_processor_id())->rd;
-> >  	int cpu, best_energy_cpu = prev_cpu, target = -1;
-> > -	unsigned long cpu_cap, util, base_energy = 0;
-> > +	unsigned long cpu_cap, cpu_thermal_cap, util;
-> > +	unsigned long base_energy = 0;
-> >  	struct sched_domain *sd;
-> >  	struct perf_domain *pd;
-> >  
-> > @@ -6689,6 +6719,8 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
-> >  	if (!task_util_est(p))
-> >  		goto unlock;
-> >  
-> > +	tsk_busy_time = get_task_busy_time(p, prev_cpu);
-> > +
-> >  	for (; pd; pd = pd->next) {
-> >  		unsigned long cur_delta, spare_cap, max_spare_cap = 0;
-> >  		bool compute_prev_delta = false;
-> > @@ -6697,7 +6729,17 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
-> >  
-> >  		cpumask_and(cpus, perf_domain_span(pd), cpu_online_mask);
-> >  
-> > -		for_each_cpu_and(cpu, cpus, sched_domain_span(sd)) {
-> > +		/* Account thermal pressure for the energy estimation */
-> > +		cpu = cpumask_first(cpus);
-> > +		cpu_thermal_cap = arch_scale_cpu_capacity(cpu);
-> > +		cpu_thermal_cap -= arch_scale_thermal_pressure(cpu);
-> > +
-> > +		for_each_cpu(cpu, cpus) {
-> > +			pd_cap += cpu_thermal_cap;
-> > +
-> > +			if (!cpumask_test_cpu(cpu, sched_domain_span(sd)))
-> > +				continue;
-> > +
-> >  			if (!cpumask_test_cpu(cpu, p->cpus_ptr))
-> >  				continue;
-> >  
-> > @@ -6734,12 +6776,21 @@ static int find_energy_efficient_cpu(struct task_struct *p, int prev_cpu)
-> >  			continue;
-> >  
-> >  		/* Compute the 'base' energy of the pd, without @p */
-> > -		base_energy_pd = compute_energy(p, -1, cpus, pd);
-> > +		busy_time = get_pd_busy_time(p, cpus, pd_cap);
-> > +		max_util = get_pd_max_util(p, -1, cpus, cpu_thermal_cap);
-> 
-> There is this issue now that we would iterate twice now over `cpus`
-> here. To avoid this, I can only see the solution to introduce a
-> 
->     struct eas_env {
->            unsigned long max_util;      (1)
->            unsigned long busy_time;     (2)
->            unsigned long busy_tsk_time; (3)
->            ...
->     }
-> 
-> replace get_pd_busy_time() and get_pd_max_util() with
-> 
->     get_energy_params(struct eas_env *env, ...)
+-- 
+With Best Regards,
+Andy Shevchenko
 
-That'd be cleaner yeah, I'll give a try for a next version.
 
-Thanks.
-
-> 
-> and make sure that (1)-(3) are calculated and returned here whereas only
-> (1) is later for `if (compute_prev_delta)` and `if (max_spare_cap_cpu >=
-> 0)`. E.g. by passing this switch with the env.
-> This would allow the keep pd_cap within get_energy_params(). W/o struct
-> eas_env, IMHO this function ends up with too many parameters.
-> 
-> That said, I haven't seen asymmetric CPU capacity processors with more
-> than 6 CPUs in one PD (i.e. Frequency Domain)
-> 
-> [...]
