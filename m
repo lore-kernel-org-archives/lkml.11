@@ -2,90 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A09B2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 20:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C41C2C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 20:39:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349285AbiARUjQ (ORCPT
+        id S1349293AbiARUjY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 15:39:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58346 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349143AbiARUjM (ORCPT
+        Tue, 18 Jan 2022 15:39:24 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:32582 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349242AbiARUjN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 15:39:12 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2E15C061574;
-        Tue, 18 Jan 2022 12:39:11 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id p125so297912pga.2;
-        Tue, 18 Jan 2022 12:39:11 -0800 (PST)
+        Tue, 18 Jan 2022 15:39:13 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=rTxSIYtF/qhDMdpcunv+R2Pnv7mrcydD4DvIe4qQgBA=;
-        b=XzNVA7WFscHIr9quBbwN1Zl6DlOEBX9F8WsDR4fZuQmtO7dSeFEckqOuxbRK5Dbr36
-         /eNURLliqpELZFheqowDPzNq72XN2bbp84c7+2gEmZWBXHzwINhnbQmHL+COLhW/mH7B
-         sEyyYr0KSen0K0Oz8LuUJAMgc5YGn6FdzO6XUxUA0ZHD/46rOBRY6iZqcfjk3s4c3c+G
-         tQ0FJvOpkvJ1cM8BKRmRfnNY0v9QN+Kor7sdjGPNwfcPoNNyO9VuyPm3JdHZi95ha43F
-         kAYsOqWFk/ykFHxFzIQuyr5djbFrIif7ZEGmKHeNwzi3xNaqHdgLcnaN11LGGvahgN+J
-         qjXA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=rTxSIYtF/qhDMdpcunv+R2Pnv7mrcydD4DvIe4qQgBA=;
-        b=4Z/dvufav4Wo9c1JRIIAkMQDTpAoFOh3UJI7ch95hsgeASuC+KgENvTnnMHMP+5PY3
-         nXS3eJDaWSFAkKZJikinZtbr3KLTC8oRAZdaJIuSSeIEPV3KHV/h6baBjQ5/e7J0AZjs
-         YSB4Ep1Agj8odLY6N8rSCdPu7vVQszFoCV+ok/R/VulrT4P9Yc3uJmgx6ggzje9Dg0BW
-         LKPt1tGswR5J+DMDBPJLe3DlMxPwj9nza66ZBToYcQ0rj8RcZ6lS0fbW4Ipq7ZdVhE3e
-         aTDGUYzPXswFO/HcmuQTPRlfVCZDsi3PXm5FJQRH0ky/Y99hkNFarI/bgHo+aojU3OoH
-         lI5A==
-X-Gm-Message-State: AOAM5312fx/7fo+T9KBwLSH9zgDl2p5dakka8tUwdf3dWaHiVt6Hvt+8
-        kC6oRAtTFP66A9DLGzHdoyM=
-X-Google-Smtp-Source: ABdhPJyeiRPViIFqLAMdX5NCXcv8RFZDx7ydr82FV18KzIXzXluRnjCoqA20Vyi5zu46O1Q7GFBlZw==
-X-Received: by 2002:a63:191a:: with SMTP id z26mr24598864pgl.593.1642538351256;
-        Tue, 18 Jan 2022 12:39:11 -0800 (PST)
-Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
-        by smtp.gmail.com with ESMTPSA id y64sm15227654pgy.12.2022.01.18.12.39.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 12:39:10 -0800 (PST)
-Sender: Tejun Heo <htejun@gmail.com>
-Date:   Tue, 18 Jan 2022 10:39:09 -1000
-From:   Tejun Heo <tj@kernel.org>
-To:     Vipin Sharma <vipinsh@google.com>
-Cc:     Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
-        pbonzini@redhat.com, seanjc@google.com, lizefan.x@bytedance.com,
-        hannes@cmpxchg.org, dmatlack@google.com, jiangshanlai@gmail.com,
-        kvm@vger.kernel.org, cgroups@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] KVM: Move VM's worker kthreads back to the original
- cgroups before exiting.
-Message-ID: <Yeclbe3GNdCMLlHz@slm.duckdns.org>
-References: <20211222225350.1912249-1-vipinsh@google.com>
- <20220105180420.GC6464@blackbody.suse.cz>
- <CAHVum0e84nUcGtdPYQaJDQszKj-QVP5gM+nteBpSTaQ2sWYpmQ@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHVum0e84nUcGtdPYQaJDQszKj-QVP5gM+nteBpSTaQ2sWYpmQ@mail.gmail.com>
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1642538353; x=1674074353;
+  h=from:to:cc:subject:date:message-id;
+  bh=pQAKZfCHGK05kVj7Bze9qOhDkcnNULF2zH8KZDpgQxM=;
+  b=oD5b83UmUo+GVhWWtrq7iigU3CQWbeysm2aJy18Xups/rD5Mp6ycY3Ya
+   tK9YhkXqLHx2Im3scriRlsp4k43Wcj9j8DT21dldkndHau0n14FZXVvIM
+   U3UQkI6Ql0A3lCQSOKtCHEe0SZdjHyiqBfRIbxFrJ02n5U45p4SWlv+yM
+   U=;
+Received: from ironmsg07-lv.qualcomm.com ([10.47.202.151])
+  by alexa-out.qualcomm.com with ESMTP; 18 Jan 2022 12:39:12 -0800
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg07-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 18 Jan 2022 12:39:10 -0800
+X-QCInternal: smtphost
+Received: from rajeevny-linux.qualcomm.com ([10.204.66.121])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 19 Jan 2022 02:08:45 +0530
+Received: by rajeevny-linux.qualcomm.com (Postfix, from userid 2363605)
+        id A001421A8B; Wed, 19 Jan 2022 02:08:44 +0530 (IST)
+From:   Rajeev Nandan <quic_rajeevny@quicinc.com>
+To:     dri-devel@lists.freedesktop.org, linux-arm-msm@vger.kernel.org,
+        freedreno@lists.freedesktop.org, devicetree@vger.kernel.org
+Cc:     Rajeev Nandan <quic_rajeevny@quicinc.com>,
+        linux-kernel@vger.kernel.org, sean@poorly.run, robdclark@gmail.com,
+        robh+dt@kernel.org, robh@kernel.org, quic_abhinavk@quicinc.com,
+        quic_kalyant@quicinc.com, quic_mkrishn@quicinc.com,
+        jonathan@marek.ca, dmitry.baryshkov@linaro.org, airlied@linux.ie,
+        daniel@ffwll.ch, swboyd@chromium.org
+Subject: [v3 0/3] drm/msm/dsi: Add 10nm dsi phy tuning configuration support 
+Date:   Wed, 19 Jan 2022 02:08:37 +0530
+Message-Id: <1642538320-1127-1-git-send-email-quic_rajeevny@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello,
+This series is to add DSI PHY tuning support in Qualcomm Snapdragon
+SoCs with 10nm DSI PHY e.g. SC7180
 
-On Tue, Jan 18, 2022 at 12:25:48PM -0800, Vipin Sharma wrote:
-> Automated tools/scripts which delete VM cgroups after the main KVM
-> process ends were seeing deletion errors because kernel worker threads
-> were still running inside those cgroups. This is not a very frequent
-> issue but we noticed it happens every now and then.
+In most cases the default values of DSI PHY tuning registers
+should be sufficient as they are fully optimized. However, in
+some cases (for example, where extreme board parasitics cause
+the eye shape to degrade), the override bits can be used to
+improve the signal quality.
 
-So, these are normally driven by the !populated events. That's how everyone
-else is doing it. If you want to tie the kvm workers lifetimes to kvm
-process, wouldn't it be cleaner to do so from kvm side? ie. let kvm process
-exit wait for the workers to be cleaned up.
+Different DSI PHY versions have different configurations to adjust the
+drive strength, drive level, de-emphasis, etc. The current series has only
+those configuration options supported by 10nm PHY, e.g. drive strength and
+drive level. The number of registers to configure the drive strength are
+different for 7nm PHY. The design can be extended to other DSI PHY versions
+if required, as each PHY version can have its callback to get the input
+from DT and prepare register values.
 
-Thanks.
+Changes in v2:
+ - Addressed dt-bindings comments (Stephen Boyd, Dmitry Baryshkov)
+ - Split into generic code and 10nm-specific part (Dmitry Baryshkov)
+ - Fix the backward compatibility (Dmitry Baryshkov)
+
+Changes in v3:
+ - Addressed dt-bindings comments (Rob Herring, Dmitry Baryshkov)
+ - Address comments for phy tuning data structure (Dmitry Baryshkov)
+ - s/ops.tuning_cfg_init/ops.parse_dt_properties (Dmitry Baryshkov)
+
+Rajeev Nandan (3):
+  dt-bindings: msm/dsi: Add 10nm dsi phy tuning properties
+  drm/msm/dsi: Add dsi phy tuning configuration support
+  drm/msm/dsi: Add 10nm dsi phy tuning configuration support
+
+ .../bindings/display/msm/dsi-phy-10nm.yaml         | 34 ++++++++
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy.c              |  6 ++
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy.h              |  4 +
+ drivers/gpu/drm/msm/dsi/phy/dsi_phy_10nm.c         | 97 ++++++++++++++++++++--
+ 4 files changed, 135 insertions(+), 6 deletions(-)
 
 -- 
-tejun
+2.7.4
+
