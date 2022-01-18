@@ -2,69 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 616F0C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 12:18:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53517C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 12:20:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241736AbiARMSJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 07:18:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54566 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241604AbiARMSI (ORCPT
+        id S241756AbiARMU0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 07:20:26 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:4426 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239364AbiARMUZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 07:18:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5038EC061574;
-        Tue, 18 Jan 2022 04:18:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E285E61381;
-        Tue, 18 Jan 2022 12:18:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 4FCD3C00446;
-        Tue, 18 Jan 2022 12:18:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642508287;
-        bh=6AH8An8aCWynBNBj2yGfMSAv/Nb6xiSJB6JkaQ23Cck=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=JNrWLEdiY75QwT7hV7dDpjqBTpksYsGzhloD8aYSSM+6+qYYmlwsKaBq+jvIMfUDO
-         tVIyksK82T51NAfAMojVMt3mJF1852mygvA6+LdC6EKZU/LZIDY84mcf2BmNRQUHw9
-         0LQ1VtpIEoef0DHbkKKG1YkKTgtlJf6pc+HY51HBd0Cg2t6Z1fznNb72jsKNzIPM78
-         xNQ/VFLvQRgdD9Mm1XAVgNYT4ibhq3NoURZiXL03ecowLWew7jkpKhCJAc+38vHl2+
-         0G3EDGsnt44zDfUun10fa0Ag4bQVIO2X+K5nDQbTQrMHW1woVwML9lY5Dyvrq3bYjm
-         cKA/BehLu7ksA==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 3BDFCF60794;
-        Tue, 18 Jan 2022 12:18:07 +0000 (UTC)
-Subject: Re: [GIT PULL]: dmaengine updates for v5.17-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YeafgZT1M7IbK8cF@matsya>
-References: <YeafgZT1M7IbK8cF@matsya>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YeafgZT1M7IbK8cF@matsya>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/vkoul/dmaengine.git tags/dmaengine-5.17-rc1
-X-PR-Tracked-Commit-Id: bbd0ff07ed12fda9dbd0cc5f239bb678a775833a
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 99613159ad749543621da8238acf1a122880144e
-Message-Id: <164250828723.8762.14271021445447659093.pr-tracker-bot@kernel.org>
-Date:   Tue, 18 Jan 2022 12:18:07 +0000
-To:     Vinod Koul <vkoul@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        dma <dmaengine@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        Tue, 18 Jan 2022 07:20:25 -0500
+Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JdSSs1NS0z67wFn;
+        Tue, 18 Jan 2022 20:17:17 +0800 (CST)
+Received: from lhreml724-chm.china.huawei.com (10.201.108.75) by
+ fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 18 Jan 2022 13:20:22 +0100
+Received: from localhost.localdomain (10.69.192.58) by
+ lhreml724-chm.china.huawei.com (10.201.108.75) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Tue, 18 Jan 2022 12:20:18 +0000
+From:   John Garry <john.garry@huawei.com>
+To:     <jinpu.wang@cloud.ionos.com>, <jejb@linux.ibm.com>,
+        <martin.petersen@oracle.com>, <damien.lemoal@opensource.wdc.com>,
+        <Ajish.Koshy@microchip.com>
+CC:     <linux-scsi@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <Viswas.G@microchip.com>, <vishakhavc@google.com>,
+        <ipylypiv@google.com>, <Ruksar.devadi@microchip.com>,
+        <Vasanthalakshmi.Tharmarajan@microchip.com>,
+        John Garry <john.garry@huawei.com>
+Subject: [PATCH v2] scsi: pm8001: Fix bogus FW crash for maxcpus=1
+Date:   Tue, 18 Jan 2022 20:15:05 +0800
+Message-ID: <1642508105-95432-1-git-send-email-john.garry@huawei.com>
+X-Mailer: git-send-email 2.8.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.69.192.58]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ lhreml724-chm.china.huawei.com (10.201.108.75)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue, 18 Jan 2022 16:37:45 +0530:
+According to the comment in check_fw_ready() we should not check the
+IOP1_READY field in register SCRATCH_PAD_1 for 8008 or 8009 controllers.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/vkoul/dmaengine.git tags/dmaengine-5.17-rc1
+However we check this very field in process_oq() for processing the highest
+index interrupt vector. The highest interrupt vector is checked as the FW
+is programmed to signal fatal errors through this irq.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/99613159ad749543621da8238acf1a122880144e
+Change that function to not check IOP1_READY for those mentioned
+controllers, but do check ILA_READY in both cases.
 
-Thank you!
+The reason I assume that this was not hit earlier was because we always
+allocated 64 MSI(X), and just did not pass the vector index check in
+process_oq(), i.e.  the handler never ran for vector index 63.
 
+Signed-off-by: John Garry <john.garry@huawei.com>
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Tested-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
+---
+Changes from v1:
+- Improve coding style (Damien)
+- Add comment and commit message info about checking fatal vector (Damien)
+- Change patch subject to mention "bogus"
+- Add tags (thanks!)
+
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.c b/drivers/scsi/pm8001/pm80xx_hwi.c
+index 97750d0ebee9..8a0e5e30b23b 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.c
++++ b/drivers/scsi/pm8001/pm80xx_hwi.c
+@@ -4148,10 +4148,22 @@ static int process_oq(struct pm8001_hba_info *pm8001_ha, u8 vec)
+ 	u32 ret = MPI_IO_STATUS_FAIL;
+ 	u32 regval;
+ 
++	/*
++	 * Fatal errors are programmed to be signalled in irq vector
++	 * pm8001_ha->max_q_num - 1 through pm8001_ha->main_cfg_tbl.pm80xx_tbl.
++	 * fatal_err_interrupt
++	 */
+ 	if (vec == (pm8001_ha->max_q_num - 1)) {
++		u32 mipsall_ready;
++
++		if (pm8001_ha->chip_id == chip_8008 ||
++		    pm8001_ha->chip_id == chip_8009)
++			mipsall_ready = SCRATCH_PAD_MIPSALL_READY_8PORT;
++		else
++			mipsall_ready = SCRATCH_PAD_MIPSALL_READY_16PORT;
++
+ 		regval = pm8001_cr32(pm8001_ha, 0, MSGU_SCRATCH_PAD_1);
+-		if ((regval & SCRATCH_PAD_MIPSALL_READY) !=
+-					SCRATCH_PAD_MIPSALL_READY) {
++		if ((regval & mipsall_ready) != mipsall_ready) {
+ 			pm8001_ha->controller_fatal_error = true;
+ 			pm8001_dbg(pm8001_ha, FAIL,
+ 				   "Firmware Fatal error! Regval:0x%x\n",
+diff --git a/drivers/scsi/pm8001/pm80xx_hwi.h b/drivers/scsi/pm8001/pm80xx_hwi.h
+index c7e5d93bea92..c41ed039c92a 100644
+--- a/drivers/scsi/pm8001/pm80xx_hwi.h
++++ b/drivers/scsi/pm8001/pm80xx_hwi.h
+@@ -1405,8 +1405,12 @@ typedef struct SASProtocolTimerConfig SASProtocolTimerConfig_t;
+ #define SCRATCH_PAD_BOOT_LOAD_SUCCESS	0x0
+ #define SCRATCH_PAD_IOP0_READY		0xC00
+ #define SCRATCH_PAD_IOP1_READY		0x3000
+-#define SCRATCH_PAD_MIPSALL_READY	(SCRATCH_PAD_IOP1_READY | \
++#define SCRATCH_PAD_MIPSALL_READY_16PORT	(SCRATCH_PAD_IOP1_READY | \
+ 					SCRATCH_PAD_IOP0_READY | \
++					SCRATCH_PAD_ILA_READY | \
++					SCRATCH_PAD_RAAE_READY)
++#define SCRATCH_PAD_MIPSALL_READY_8PORT	(SCRATCH_PAD_IOP0_READY | \
++					SCRATCH_PAD_ILA_READY | \
+ 					SCRATCH_PAD_RAAE_READY)
+ 
+ /* boot loader state */
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.26.2
+
