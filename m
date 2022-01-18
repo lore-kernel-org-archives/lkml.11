@@ -2,193 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08DDAC35272
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F360C47080
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:03:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353002AbiARDAy (ORCPT
+        id S1353025AbiARDA4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:00:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34810 "EHLO
+        Mon, 17 Jan 2022 22:00:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346426AbiARCtB (ORCPT
+        with ESMTP id S1346427AbiARCtB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 17 Jan 2022 21:49:01 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 276B0C061757
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 18:40:46 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id a18so73396361edj.7
-        for <linux-kernel@vger.kernel.org>; Mon, 17 Jan 2022 18:40:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=O6Qv2WKh0hCkWoVHwCGvcaqbsi7gpIChCPsK64rh30M=;
-        b=azwTj/cRumZPDXhNC4y3XzIj2U5fMu5ZwhmjXXIFWRk73S9De2kMng227tZPuwVdVB
-         ZU+zjybXapusyiwVvDw7Fr6tzV8DXI8il0nOvRF+nY/O36B0JZg0UA2qAzABOKL+HScx
-         05yy1gh/5lvXVKzaEaL+dgd9tTAvx+/CVVETjVaxvi5JYgEq06CbHJML9F9OzeNDOq34
-         wu6tMbk5hseQ0mB++4YtMhM6XUcjQFwSmrs3XajDdR5xm1gO+H447WUB4fiiD4Nehkl1
-         wK236VWl6KGnlOik7Z+SUsBNOnW5oEa7jYU/hX+ijFjwt0Kdk2YMcF4gJkC1SQtUp/QW
-         I6Tw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O6Qv2WKh0hCkWoVHwCGvcaqbsi7gpIChCPsK64rh30M=;
-        b=3K+SDY/N3LF4bS7ZxXuYQ2v/J3VeTyJQwdcNgnI/3lZbWVY4ga1B/bsHi519m0S0W4
-         Em+nm1zv5eGGCVaZR5xnz2wC9gduxdiOsrsB7eEiF/WZwwcaqJRRlhhbFjWyvBXStd49
-         AkfScnK/A5YihJ2yccOIX+FNl3mQCuXNw5jhnj5IUDEI+5HtuYqY5xhFc4T3eHXv0Vrp
-         J+M5DQHDcctkYoy7eTDOIYEEA7HRWRcdppFgHWa9z5XRUS2Wxtk/2QcVxEAW8dXaLK69
-         eBATlHSCKuXMhXEQlQ8cUhbgNcRAkjC7BNIQF15PY4Hib9R7gvQ9m5d2JWsZxF9r/uyP
-         Jj0A==
-X-Gm-Message-State: AOAM531ldftIyTHpFHYsAAVvYhKAkMqPmDp187Ru8cUnipIznA3R2uLk
-        14HQMFkZYBc8iidVWzq3BtHCeKlbaPEF7EHp82A=
-X-Google-Smtp-Source: ABdhPJwul/yH7lfmy1JEzJ0KnwXHz8q6/QzxbvvONP+nE0jgGPcBx/TT115UGbxek2zkVgIYrLlUgw4/KTKXSf3dnn8=
-X-Received: by 2002:a17:907:94ce:: with SMTP id dn14mr15772344ejc.225.1642473644549;
- Mon, 17 Jan 2022 18:40:44 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30463C061759;
+        Mon, 17 Jan 2022 18:41:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 82A4A612D4;
+        Tue, 18 Jan 2022 02:41:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F31C5C36AE3;
+        Tue, 18 Jan 2022 02:41:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642473669;
+        bh=c48g0P2kXom32ZkWk2oniIOiwrvvjuNKadW20KYAa4o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=fAGzBbw7WRYmQUzS2PJ1W72vkKGve4Dc7ZQyqHsTS1zZ5aEQwXIwu3IzZBTBFC2WH
+         wdedIL0AGqkvbgUjzoW4PGc805UAlwfLgkjeyAZ9DXI7ZdUY9MO6rIZS2N5b1XmKgP
+         pK8KdeVLiGeQTMA5r8/P2s7bOgRHbe4A40inU8cLtfej4NWeFGr679SFsn0whoJFfy
+         AM2xPKN3gjxiGZZjYJWdHadcuOmu2NilkQPX6R0mGEPaWIrMdzWVv8emOgckG4/NGO
+         Feb0w131yMndkquENlYu46rG8fXxBGwEH8nq4RrquJan7tY3tnhVFhp6Af1nOIHJfG
+         U44c3YmkHfRyw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Zheyu Ma <zheyuma97@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, mchehab@kernel.org,
+        arnd@arndb.de, sean@mess.org, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 019/116] media: b2c2: Add missing check in flexcop_pci_isr:
+Date:   Mon, 17 Jan 2022 21:38:30 -0500
+Message-Id: <20220118024007.1950576-19-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <CAPDLWs_iSrbXwfKa6CQ0f6H6GE4U88uRhaFgabRjMmSuSEpsiA@mail.gmail.com>
- <20220117194836.vj2rxr3wocrtdx7k@treble> <20220117202751.bmwvfsnqxokob6d2@treble>
-In-Reply-To: <20220117202751.bmwvfsnqxokob6d2@treble>
-From:   Kaiwan N Billimoria <kaiwan.billimoria@gmail.com>
-Date:   Tue, 18 Jan 2022 08:10:28 +0530
-Message-ID: <CAPDLWs-yX4FNrmnF3rHrEoHNktcw2Yi8X6qidss-qKpdw=r4RQ@mail.gmail.com>
-Subject: Re: Issue using faddr2line on kernel modules
-To:     Josh Poimboeuf <jpoimboe@redhat.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Chi-Thanh Hoang <chithanh.hoang@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Josh,
+From: Zheyu Ma <zheyuma97@gmail.com>
 
-Actually your first patch - the one you mentioned had other issues -
-worked perfectly when applied:
+[ Upstream commit b13203032e679674c7c518f52a7ec0801ca3a829 ]
 
-scripts/faddr2line ./oops_tryv2.ko do_the_work+0x16f/0x194
-do_the_work+0x16f/0x0000000000000194:
-do_the_work at <...>/oops_tryv2/oops_tryv2.c:62
+A out-of-bounds bug can be triggered by an interrupt, the reason for
+this bug is the lack of checking of register values.
 
-The second one still failed in the same manner:
+In flexcop_pci_isr, the driver reads value from a register and uses it as
+a dma address. Finally, this address will be passed to the count parameter
+of find_next_packet. If this value is larger than the size of dma, the
+index of buffer will be out-of-bounds.
 
-scripts/faddr2line ./oops_tryv2.ko do_the_work+0x16f/0x194
-bad symbol size: base: 0x0000000000000000 end: 0x0000000000000000
+Fix this by adding a check after reading the value of the register.
 
-So, is it possible to fixup issues with the first version?
-What are these issues?
+The following KASAN report reveals it:
 
-Thanks,
-Kaiwan.
+BUG: KASAN: slab-out-of-bounds in find_next_packet
+drivers/media/dvb-core/dvb_demux.c:528 [inline]
+BUG: KASAN: slab-out-of-bounds in _dvb_dmx_swfilter
+drivers/media/dvb-core/dvb_demux.c:572 [inline]
+BUG: KASAN: slab-out-of-bounds in dvb_dmx_swfilter+0x3fa/0x420
+drivers/media/dvb-core/dvb_demux.c:603
+Read of size 1 at addr ffff8880608c00a0 by task swapper/2/0
 
+CPU: 2 PID: 0 Comm: swapper/2 Not tainted 4.19.177-gdba4159c14ef #25
+Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS
+rel-1.12.0-59-gc9ba5276e321-prebuilt.qemu.org 04/01/2014
+Call Trace:
+ <IRQ>
+ __dump_stack lib/dump_stack.c:77 [inline]
+ dump_stack+0xec/0x156 lib/dump_stack.c:118
+ print_address_description+0x78/0x290 mm/kasan/report.c:256
+ kasan_report_error mm/kasan/report.c:354 [inline]
+ kasan_report+0x25b/0x380 mm/kasan/report.c:412
+ __asan_report_load1_noabort+0x19/0x20 mm/kasan/report.c:430
+ find_next_packet drivers/media/dvb-core/dvb_demux.c:528 [inline]
+ _dvb_dmx_swfilter drivers/media/dvb-core/dvb_demux.c:572 [inline]
+ dvb_dmx_swfilter+0x3fa/0x420 drivers/media/dvb-core/dvb_demux.c:603
+ flexcop_pass_dmx_data+0x2e/0x40 drivers/media/common/b2c2/flexcop.c:167
+ flexcop_pci_isr+0x3d1/0x5d0 drivers/media/pci/b2c2/flexcop-pci.c:212
+ __handle_irq_event_percpu+0xfb/0x770 kernel/irq/handle.c:149
+ handle_irq_event_percpu+0x79/0x150 kernel/irq/handle.c:189
+ handle_irq_event+0xac/0x140 kernel/irq/handle.c:206
+ handle_fasteoi_irq+0x232/0x5c0 kernel/irq/chip.c:725
+ generic_handle_irq_desc include/linux/irqdesc.h:155 [inline]
+ handle_irq+0x230/0x3a0 arch/x86/kernel/irq_64.c:87
+ do_IRQ+0xa7/0x1e0 arch/x86/kernel/irq.c:247
+ common_interrupt+0xf/0xf arch/x86/entry/entry_64.S:670
+ </IRQ>
+RIP: 0010:native_safe_halt+0x28/0x30 arch/x86/include/asm/irqflags.h:61
+Code: 00 00 55 be 04 00 00 00 48 c7 c7 00 62 2f 8c 48 89 e5 e8 fb 31
+e8 f8 8b 05 75 4f 8e 03 85 c0 7e 07 0f 00 2d 8a 61 66 00 fb f4 <5d> c3
+90 90 90 90 90 90 0f 1f 44 00 00 55 48 89 e5 41 57 41 56 41
+RSP: 0018:ffff88806b71fcc8 EFLAGS: 00000246 ORIG_RAX: ffffffffffffffde
+RAX: 0000000000000000 RBX: ffffffff8bde44c8 RCX: ffffffff88a11285
+RDX: 0000000000000000 RSI: 0000000000000004 RDI: ffffffff8c2f6200
+RBP: ffff88806b71fcc8 R08: fffffbfff185ec40 R09: fffffbfff185ec40
+R10: 0000000000000001 R11: fffffbfff185ec40 R12: 0000000000000002
+R13: ffffffff8be9d6e0 R14: 0000000000000000 R15: 0000000000000000
+ arch_safe_halt arch/x86/include/asm/paravirt.h:94 [inline]
+ default_idle+0x6f/0x360 arch/x86/kernel/process.c:557
+ arch_cpu_idle+0xf/0x20 arch/x86/kernel/process.c:548
+ default_idle_call+0x3b/0x60 kernel/sched/idle.c:93
+ cpuidle_idle_call kernel/sched/idle.c:153 [inline]
+ do_idle+0x2ab/0x3c0 kernel/sched/idle.c:263
+ cpu_startup_entry+0xcb/0xe0 kernel/sched/idle.c:369
+ start_secondary+0x3b8/0x4e0 arch/x86/kernel/smpboot.c:271
+ secondary_startup_64+0xa4/0xb0 arch/x86/kernel/head_64.S:243
 
+Allocated by task 1:
+ save_stack+0x43/0xd0 mm/kasan/kasan.c:448
+ set_track mm/kasan/kasan.c:460 [inline]
+ kasan_kmalloc+0xad/0xe0 mm/kasan/kasan.c:553
+ kasan_slab_alloc+0x11/0x20 mm/kasan/kasan.c:490
+ slab_post_alloc_hook mm/slab.h:445 [inline]
+ slab_alloc_node mm/slub.c:2741 [inline]
+ slab_alloc mm/slub.c:2749 [inline]
+ kmem_cache_alloc+0xeb/0x280 mm/slub.c:2754
+ kmem_cache_zalloc include/linux/slab.h:699 [inline]
+ __kernfs_new_node+0xe2/0x6f0 fs/kernfs/dir.c:633
+ kernfs_new_node+0x9a/0x120 fs/kernfs/dir.c:693
+ __kernfs_create_file+0x5f/0x340 fs/kernfs/file.c:992
+ sysfs_add_file_mode_ns+0x22a/0x4e0 fs/sysfs/file.c:306
+ create_files fs/sysfs/group.c:63 [inline]
+ internal_create_group+0x34e/0xc30 fs/sysfs/group.c:147
+ sysfs_create_group fs/sysfs/group.c:173 [inline]
+ sysfs_create_groups+0x9c/0x140 fs/sysfs/group.c:200
+ driver_add_groups+0x3e/0x50 drivers/base/driver.c:129
+ bus_add_driver+0x3a5/0x790 drivers/base/bus.c:684
+ driver_register+0x1cd/0x410 drivers/base/driver.c:170
+ __pci_register_driver+0x197/0x200 drivers/pci/pci-driver.c:1411
+ cx88_audio_pci_driver_init+0x23/0x25 drivers/media/pci/cx88/cx88-alsa.c:
+ 1017
+ do_one_initcall+0xe0/0x610 init/main.c:884
+ do_initcall_level init/main.c:952 [inline]
+ do_initcalls init/main.c:960 [inline]
+ do_basic_setup init/main.c:978 [inline]
+ kernel_init_freeable+0x4d0/0x592 init/main.c:1145
+ kernel_init+0x18/0x190 init/main.c:1062
+ ret_from_fork+0x24/0x30 arch/x86/entry/entry_64.S:415
 
-On Tue, Jan 18, 2022 at 1:57 AM Josh Poimboeuf <jpoimboe@redhat.com> wrote:
->
-> On Mon, Jan 17, 2022 at 11:48:39AM -0800, Josh Poimboeuf wrote:
-> > On Mon, Jan 17, 2022 at 10:27:14AM +0530, Kaiwan N Billimoria wrote:
-> > > Hi there,
-> > >
-> > > Am researching using the cool faddr2line script to help debug Oops'es
-> > > from kernel modules..
-> > > I find it works just fine when used against the unstripped vmlinux
-> > > with debug symbols.
-> > >
-> > > My use case is for a kernel module which Oopses, though. Here's my scenario:
-> > > I built a module on a custom debug kernel (5.10.60) with most debug
-> > > options enabled...
-> > > KASLR is enabled by default as well.
-> > >
-> > > A test kernel module Oopses on my x86_64 guest running this kernel with:
-> > > RIP: 0010:do_the_work+0x15b/0x174 [oops_tryv2]
-> > >
-> > > So, i try this:
-> > >
-> > > $ <...>/linux-5.10.60/scripts/faddr2line ./oops_tryv2.ko do_the_work+0x15b/0x174
-> > > bad symbol size: base: 0x0000000000000000 end: 0x0000000000000000
-> > > $
-> > >
-> > > (It works fine with addr2line though!).
-> > > Now I think I've traced the faddr2line script's failure to locate
-> > > anything down to this:
-> > > ...
-> > > done < <(${NM} -n $objfile | awk -v fn=$func -v end=$file_end '$3 ==
-> > > fn { found=1; line    =$0; start=$1; next } found == 1 { found=0;
-> > > print line, "0x"$1 } END {if (found == 1) print     line, end; }')
-> > >
-> > > The nm output is:
-> > > $ nm -n ./oops_tryv2.ko |grep -i do_the_work
-> > > 0000000000000000 t do_the_work
-> > > $
-> > >
-> > > nm shows the text addr as 0x0; this is obviously incorrect (same 0x0
-> > > with objdump -d on the module).
-> > > Am I missing something? Any suggestions as to what I can try, to get
-> > > faddr2line working?
-> >
-> > Hi Kaiwan,
-> >
-> > Thanks for reporting this issue.  The module text address of 0x0 is not
-> > necessarily incorrect, as the address is relative the the module, where
-> > all text usually starts at zero.
-> >
-> > I was able to recreate this problem using a module which only has a
-> > single function in .text.  Does this fix it?
->
-> Actually, that patch has other problems.  Try this one?
->
-> ----
->
-> From: Josh Poimboeuf <jpoimboe@redhat.com>
-> Subject: [PATCH] scripts/faddr2line: Only look for text symbols when
->  calculating function size
->
-> With the following commit:
->
->   efdb4167e676 ("scripts/faddr2line: Fix "size mismatch" error")
->
-> ... it was discovered that faddr2line can't just read a function's ELF
-> size, because that wouldn't match the kallsyms function size which is
-> printed in the stack trace.  The kallsyms size includes any padding
-> after the function, whereas the ELF size does not.
->
-> So faddr2line has to manually calculate the size of a function similar
-> to how kallsyms does.  It does so by starting with a sorted list of
-> symbols and subtracting the function address from the subsequent
-> symbol's address.
->
-> That calculation is broken in the case where the function is the last
-> (or only) symbol in the .text section.  The next symbol in the sorted
-> list might actually be a data symbol, which can break the function size
-> detection:
->
->   $ scripts/faddr2line sound/soundcore.ko sound_devnode+0x5/0x35
->   bad symbol size: base: 0x0000000000000000 end: 0x0000000000000000
->
-> Similar breakage can occur when reading from a .o file.
->
-> Fix it by only looking for text symbols.
->
-> Fixes: efdb4167e676 ("scripts/faddr2line: Fix "size mismatch" error")
-> Reported-by: Kaiwan N Billimoria <kaiwan.billimoria@gmail.com>
-> Signed-off-by: Josh Poimboeuf <jpoimboe@redhat.com>
-> ---
->  scripts/faddr2line | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/scripts/faddr2line b/scripts/faddr2line
-> index 6c6439f69a72..2a130134f1e6 100755
-> --- a/scripts/faddr2line
-> +++ b/scripts/faddr2line
-> @@ -189,7 +189,7 @@ __faddr2line() {
->
->                 DONE=1
->
-> -       done < <(${NM} -n $objfile | awk -v fn=$func -v end=$file_end '$3 == fn { found=1; line=$0; start=$1; next } found == 1 { found=0; print line, "0x"$1 } END {if (found == 1) print line, end; }')
-> +       done < <(${NM} -n $objfile | awk -v fn=$func -v end=$file_end '$2 !~ /[Tt]/ {next} $3 == fn { found=1; line=$0; start=$1; next } found == 1 { found=0; print line, "0x"$1 } END {if (found == 1) print line, end; }')
->  }
->
->  [[ $# -lt 2 ]] && usage
-> --
-> 2.31.1
->
+Freed by task 0:
+(stack is not available)
+
+The buggy address belongs to the object at ffff8880608c0000
+ which belongs to the cache kernfs_node_cache of size 160
+The buggy address is located 0 bytes to the right of
+ 160-byte region [ffff8880608c0000, ffff8880608c00a0)
+The buggy address belongs to the page:
+page:ffffea0001823000 count:1 mapcount:0 mapping:ffff88806bed1e00
+index:0x0 compound_mapcount: 0
+flags: 0x100000000008100(slab|head)
+raw: 0100000000008100 dead000000000100 dead000000000200 ffff88806bed1e00
+raw: 0000000000000000 0000000000240024 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff8880608bff80: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff8880608c0000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>ffff8880608c0080: 00 00 00 00 fc fc fc fc fc fc fc fc 00 00 00 00
+                               ^
+ ffff8880608c0100: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+ ffff8880608c0180: fc fc fc fc fc fc fc fc 00 00 00 00 00 00 00 00
+==================================================================
+
+Link: https://lore.kernel.org/linux-media/1620723603-30912-1-git-send-email-zheyuma97@gmail.com
+Reported-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/media/pci/b2c2/flexcop-pci.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/media/pci/b2c2/flexcop-pci.c b/drivers/media/pci/b2c2/flexcop-pci.c
+index a9d9520a94c6d..c9e6c7d663768 100644
+--- a/drivers/media/pci/b2c2/flexcop-pci.c
++++ b/drivers/media/pci/b2c2/flexcop-pci.c
+@@ -185,6 +185,8 @@ static irqreturn_t flexcop_pci_isr(int irq, void *dev_id)
+ 		dma_addr_t cur_addr =
+ 			fc->read_ibi_reg(fc,dma1_008).dma_0x8.dma_cur_addr << 2;
+ 		u32 cur_pos = cur_addr - fc_pci->dma[0].dma_addr0;
++		if (cur_pos > fc_pci->dma[0].size * 2)
++			goto error;
+ 
+ 		deb_irq("%u irq: %08x cur_addr: %llx: cur_pos: %08x, last_cur_pos: %08x ",
+ 				jiffies_to_usecs(jiffies - fc_pci->last_irq),
+@@ -225,6 +227,7 @@ static irqreturn_t flexcop_pci_isr(int irq, void *dev_id)
+ 		ret = IRQ_NONE;
+ 	}
+ 
++error:
+ 	spin_unlock_irqrestore(&fc_pci->irq_lock, flags);
+ 	return ret;
+ }
+-- 
+2.34.1
+
