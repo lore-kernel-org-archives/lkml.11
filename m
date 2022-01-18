@@ -2,47 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A4E3C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:08:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 144C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344846AbiARDH6 (ORCPT
+        id S1348905AbiARDIF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:07:58 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:43986 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349739AbiARCuJ (ORCPT
+        Mon, 17 Jan 2022 22:08:05 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:56216 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349036AbiARCr1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:50:09 -0500
+        Mon, 17 Jan 2022 21:47:27 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 38FD16093C;
-        Tue, 18 Jan 2022 02:50:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BF3C8C36AEF;
-        Tue, 18 Jan 2022 02:50:07 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26C25B81236;
+        Tue, 18 Jan 2022 02:47:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D94A9C36AF2;
+        Tue, 18 Jan 2022 02:47:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474208;
-        bh=bRTAZFngHpq5zaKAMLfK5qHk1VtkY42igdybA6ApHnw=;
+        s=k20201202; t=1642474044;
+        bh=teqJf60VfZfCyKR10hz8RbabCK/klAXvLnO3Vng0KDM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hysurlzei+Ip5XfkJl7Hs0wuGsNYZ5lgx8kDkmTZi19q3sV38mIeSrZu2WGr+5j70
-         AEIF6EZsdDyFperCRjxmoifth+Y3WgiV8Yhvuc3mRiYYx5v4WGEKQ07TFEnDHy4Pln
-         J68DtRwR+IEI2cTma1lnqWg8G+cMcWv/Qo2KsNmc64zL9PZpPbGazsGIGMcS+1jnXT
-         MA0wYrd/DAR5YLgeMkScN8H/hytndhmp+1T6IxylHNgj/3+O9eLnKlrnglLf/vnh9h
-         LCMzUYEM4dnQTSE3HLmlZu3QwNahlfnQkVRH1a3LZqvqk7KrMaqIh1cxa+NINEYIWb
-         W05QGOajhxIfQ==
+        b=sicew5hm5eyyPKlc0QKqYdx1xOVyOOVdSJRp1Nqq2cK9TdXbqxtoOw2xJAV8FwhVM
+         5dPKMpHDWIYun4nidLQWT/X+ijSKhoM576hfR9KCq4X78QzjxpqfcVwyqlxGOzQlv9
+         PHm/d0O/IcEWfQ5VkcNkvv6Gb4sJUCIIbWFUiVOnqykMbW/zTLhj8BuSHGqGeRmdDK
+         vEWVsojU6tdCOrZVNnwiQSl7H8H37YwC1ymqyLN59DbF4ZHaEuR1aEFCwj/xWKAxnj
+         ug2mlwrcRrp3e2IZllthkNG6wVeUdc0bBqWQQi/kiohWXRQHKAm5NeOdr+WVKr5TNO
+         1ucjLlNtpI4BQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Xiongwei Song <sxwjean@gmail.com>,
-        syzbot+23a02c7df2cf2bc93fa2@syzkaller.appspotmail.com,
-        Denis Efremov <efremov@linux.com>,
-        Jens Axboe <axboe@kernel.dk>, Sasha Levin <sashal@kernel.org>,
-        linux-block@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 23/56] floppy: Add max size check for user space request
-Date:   Mon, 17 Jan 2022 21:48:35 -0500
-Message-Id: <20220118024908.1953673-23-sashal@kernel.org>
+Cc:     Danielle Ratson <danieller@nvidia.com>,
+        Eric Biederman <ebiederm@xmission.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, petrm@nvidia.com,
+        kuba@kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 09/59] mlxsw: pci: Add shutdown method in PCI driver
+Date:   Mon, 17 Jan 2022 21:46:10 -0500
+Message-Id: <20220118024701.1952911-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
-References: <20220118024908.1953673-1-sashal@kernel.org>
+In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
+References: <20220118024701.1952911-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,80 +52,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Xiongwei Song <sxwjean@gmail.com>
+From: Danielle Ratson <danieller@nvidia.com>
 
-[ Upstream commit 545a32498c536ee152331cd2e7d2416aa0f20e01 ]
+[ Upstream commit c1020d3cf4752f61a6a413f632ea2ce2370e150d ]
 
-We need to check the max request size that is from user space before
-allocating pages. If the request size exceeds the limit, return -EINVAL.
-This check can avoid the warning below from page allocator.
+On an arm64 platform with the Spectrum ASIC, after loading and executing
+a new kernel via kexec, the following trace [1] is observed. This seems
+to be caused by the fact that the device is not properly shutdown before
+executing the new kernel.
 
-WARNING: CPU: 3 PID: 16525 at mm/page_alloc.c:5344 current_gfp_context include/linux/sched/mm.h:195 [inline]
-WARNING: CPU: 3 PID: 16525 at mm/page_alloc.c:5344 __alloc_pages+0x45d/0x500 mm/page_alloc.c:5356
+Fix this by implementing a shutdown method which mirrors the remove
+method, as recommended by the kexec maintainer [2][3].
+
+[1]
+BUG: Bad page state in process devlink pfn:22f73d
+page:fffffe00089dcf40 refcount:-1 mapcount:0 mapping:0000000000000000 index:0x0
+flags: 0x2ffff00000000000()
+raw: 2ffff00000000000 0000000000000000 ffffffff089d0201 0000000000000000
+raw: 0000000000000000 0000000000000000 ffffffffffffffff 0000000000000000
+page dumped because: nonzero _refcount
 Modules linked in:
-CPU: 3 PID: 16525 Comm: syz-executor.3 Not tainted 5.15.0-syzkaller #0
-Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS 1.14.0-2 04/01/2014
-RIP: 0010:__alloc_pages+0x45d/0x500 mm/page_alloc.c:5344
-Code: be c9 00 00 00 48 c7 c7 20 4a 97 89 c6 05 62 32 a7 0b 01 e8 74 9a 42 07 e9 6a ff ff ff 0f 0b e9 a0 fd ff ff 40 80 e5 3f eb 88 <0f> 0b e9 18 ff ff ff 4c 89 ef 44 89 e6 45 31 ed e8 1e 76 ff ff e9
-RSP: 0018:ffffc90023b87850 EFLAGS: 00010246
-RAX: 0000000000000000 RBX: 1ffff92004770f0b RCX: dffffc0000000000
-RDX: 0000000000000000 RSI: 0000000000000033 RDI: 0000000000010cc1
-RBP: 0000000000000000 R08: 0000000000000000 R09: 0000000000000001
-R10: ffffffff81bb4686 R11: 0000000000000001 R12: ffffffff902c1960
-R13: 0000000000000033 R14: 0000000000000000 R15: ffff88804cf64a30
-FS:  0000000000000000(0000) GS:ffff88802cd00000(0063) knlGS:00000000f44b4b40
-CS:  0010 DS: 002b ES: 002b CR0: 0000000080050033
-CR2: 000000002c921000 CR3: 000000004f507000 CR4: 0000000000150ee0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- alloc_pages+0x1a7/0x300 mm/mempolicy.c:2191
- __get_free_pages+0x8/0x40 mm/page_alloc.c:5418
- raw_cmd_copyin drivers/block/floppy.c:3113 [inline]
- raw_cmd_ioctl drivers/block/floppy.c:3160 [inline]
- fd_locked_ioctl+0x12e5/0x2820 drivers/block/floppy.c:3528
- fd_ioctl drivers/block/floppy.c:3555 [inline]
- fd_compat_ioctl+0x891/0x1b60 drivers/block/floppy.c:3869
- compat_blkdev_ioctl+0x3b8/0x810 block/ioctl.c:662
- __do_compat_sys_ioctl+0x1c7/0x290 fs/ioctl.c:972
- do_syscall_32_irqs_on arch/x86/entry/common.c:112 [inline]
- __do_fast_syscall_32+0x65/0xf0 arch/x86/entry/common.c:178
- do_fast_syscall_32+0x2f/0x70 arch/x86/entry/common.c:203
- entry_SYSENTER_compat_after_hwframe+0x4d/0x5c
+CPU: 1 PID: 16346 Comm: devlink Tainted: G B 5.8.0-rc6-custom-273020-gac6b365b1bf5 #44
+Hardware name: Marvell Armada 7040 TX4810M (DT)
+Call trace:
+ dump_backtrace+0x0/0x1d0
+ show_stack+0x1c/0x28
+ dump_stack+0xbc/0x118
+ bad_page+0xcc/0xf8
+ check_free_page_bad+0x80/0x88
+ __free_pages_ok+0x3f8/0x418
+ __free_pages+0x38/0x60
+ kmem_freepages+0x200/0x2a8
+ slab_destroy+0x28/0x68
+ slabs_destroy+0x60/0x90
+ ___cache_free+0x1b4/0x358
+ kfree+0xc0/0x1d0
+ skb_free_head+0x2c/0x38
+ skb_release_data+0x110/0x1a0
+ skb_release_all+0x2c/0x38
+ consume_skb+0x38/0x130
+ __dev_kfree_skb_any+0x44/0x50
+ mlxsw_pci_rdq_fini+0x8c/0xb0
+ mlxsw_pci_queue_fini.isra.0+0x28/0x58
+ mlxsw_pci_queue_group_fini+0x58/0x88
+ mlxsw_pci_aqs_fini+0x2c/0x60
+ mlxsw_pci_fini+0x34/0x50
+ mlxsw_core_bus_device_unregister+0x104/0x1d0
+ mlxsw_devlink_core_bus_device_reload_down+0x2c/0x48
+ devlink_reload+0x44/0x158
+ devlink_nl_cmd_reload+0x270/0x290
+ genl_rcv_msg+0x188/0x2f0
+ netlink_rcv_skb+0x5c/0x118
+ genl_rcv+0x3c/0x50
+ netlink_unicast+0x1bc/0x278
+ netlink_sendmsg+0x194/0x390
+ __sys_sendto+0xe0/0x158
+ __arm64_sys_sendto+0x2c/0x38
+ el0_svc_common.constprop.0+0x70/0x168
+ do_el0_svc+0x28/0x88
+ el0_sync_handler+0x88/0x190
+ el0_sync+0x140/0x180
 
-Reported-by: syzbot+23a02c7df2cf2bc93fa2@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20211116131033.27685-1-sxwjean@me.com
-Signed-off-by: Xiongwei Song <sxwjean@gmail.com>
-Signed-off-by: Denis Efremov <efremov@linux.com>
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+[2]
+https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1195432.html
+
+[3]
+https://patchwork.kernel.org/project/linux-scsi/patch/20170212214920.28866-1-anton@ozlabs.org/#20116693
+
+Cc: Eric Biederman <ebiederm@xmission.com>
+Signed-off-by: Danielle Ratson <danieller@nvidia.com>
+Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/block/floppy.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/mellanox/mlxsw/pci.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/block/floppy.c b/drivers/block/floppy.c
-index cbf74731cfce6..8cf3cd8df8722 100644
---- a/drivers/block/floppy.c
-+++ b/drivers/block/floppy.c
-@@ -3118,6 +3118,8 @@ static void raw_cmd_free(struct floppy_raw_cmd **ptr)
- 	}
- }
- 
-+#define MAX_LEN (1UL << MAX_ORDER << PAGE_SHIFT)
-+
- static int raw_cmd_copyin(int cmd, void __user *param,
- 				 struct floppy_raw_cmd **rcmd)
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+index a903e97793f9a..addd5765576d9 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+@@ -1825,6 +1825,7 @@ int mlxsw_pci_driver_register(struct pci_driver *pci_driver)
  {
-@@ -3155,7 +3157,7 @@ static int raw_cmd_copyin(int cmd, void __user *param,
- 	ptr->resultcode = 0;
- 
- 	if (ptr->flags & (FD_RAW_READ | FD_RAW_WRITE)) {
--		if (ptr->length <= 0)
-+		if (ptr->length <= 0 || ptr->length >= MAX_LEN)
- 			return -EINVAL;
- 		ptr->kernel_data = (char *)fd_dma_mem_alloc(ptr->length);
- 		fallback_on_nodma_alloc(&ptr->kernel_data, ptr->length);
+ 	pci_driver->probe = mlxsw_pci_probe;
+ 	pci_driver->remove = mlxsw_pci_remove;
++	pci_driver->shutdown = mlxsw_pci_remove;
+ 	return pci_register_driver(pci_driver);
+ }
+ EXPORT_SYMBOL(mlxsw_pci_driver_register);
 -- 
 2.34.1
 
