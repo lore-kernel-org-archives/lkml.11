@@ -2,49 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18CBFC35269
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29C13C3526B
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:13:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355478AbiARDLp (ORCPT
+        id S1355606AbiARDL5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:11:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37278 "EHLO
+        Mon, 17 Jan 2022 22:11:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344054AbiARC51 (ORCPT
+        with ESMTP id S1350213AbiARC5k (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:57:27 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB98C06135B;
-        Mon, 17 Jan 2022 18:45:27 -0800 (PST)
+        Mon, 17 Jan 2022 21:57:40 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8F74C061366;
+        Mon, 17 Jan 2022 18:45:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59427B81132;
-        Tue, 18 Jan 2022 02:45:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4D117C36AE3;
-        Tue, 18 Jan 2022 02:45:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CB23E61302;
+        Tue, 18 Jan 2022 02:45:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DCA2C36AEB;
+        Tue, 18 Jan 2022 02:45:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473925;
-        bh=QAoycasiljDcdSm6faYBKX2CXMKw6Rx++/AvlQpD6PI=;
+        s=k20201202; t=1642473957;
+        bh=PwjgCXsxBBNDaqdajnAiUXq66v/vFynQ/z8Ps+IVHK4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y0ZVYLhIHye0ar/6zR7dGOowV04LS3VVmmrvdVOnma54HtQOIbKqscLmukSVJ0zjL
-         9K+QkuCgKRr+Mxv1n45XdrvmWtVa+pZ42agEm1/zcBKydZICLXfh9I7ihLgPTywH1+
-         pOBzmxJ7YUuJN/n0dN75ZsGjgtXEHMTgXxeLwXOJrHKn8aLVnKv+Bj3Y2W2wFBuyKc
-         WDOMXKUJyp4Xl2B8vxPa9jlPImAnsiVCgNRE7f1xRTLRqZArfWmHDQTugQ3F0iAOzU
-         w5mQmlmWCMZ4X7RQjOAghUyiwrB8W4g0FGzz0YFSUNvjhV+lf4pof/Z3clwUgh6Iwg
-         U8PKXfEZItLlg==
+        b=SZVlJl9prVUTWqBi3YwwopFleSHRKZhyuLFF3dJXvpwUNPTTuMywNILRQ0ykkw7bb
+         Vv17St4ActiaFr3CJPgYB4LMTuX0eQe+E+wStD8mgEEKzgRWm66y89TMtX8m4YmRiP
+         KXS2rmTf9yxD6pnfi56+rbK6TfxaHG9OGx7U0ru4OAwOa8tUxw71ZXO9wr+myRemaT
+         LHMHO2OqIwLN7wFN1BID9DjYo4twBXFtBkT7EkJgzmDJOt1pR9GSvkucSXtt40wIEO
+         i0IekBcyiq9Cjttu+UsyMoUSjc1RmrvPdSYxYz/TzErnLy4cLdymgDBpT43vbK/gsQ
+         JtFOEGKcCXG1A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Joerg Roedel <jroedel@suse.de>, Borislav Petkov <bp@suse.de>,
-        Sasha Levin <sashal@kernel.org>, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        x86@kernel.org, dpreed@deepplum.com, hpa@zytor.com,
-        seanjc@google.com, paul.gortmaker@windriver.com,
-        thomas.lendacky@amd.com, rppt@kernel.org,
-        rafael.j.wysocki@intel.com, brijesh.singh@amd.com
-Subject: [PATCH AUTOSEL 5.4 24/73] x86/mm: Flush global TLB when switching to trampoline page-table
-Date:   Mon, 17 Jan 2022 21:43:43 -0500
-Message-Id: <20220118024432.1952028-24-sashal@kernel.org>
+Cc:     Zhou Qingyang <zhou1615@umn.edu>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
+        mchehab@kernel.org, linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 41/73] media: saa7146: hexium_gemini: Fix a NULL pointer dereference in hexium_attach()
+Date:   Mon, 17 Jan 2022 21:44:00 -0500
+Message-Id: <20220118024432.1952028-41-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
 References: <20220118024432.1952028-1-sashal@kernel.org>
@@ -56,101 +53,71 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit 71d5049b053876afbde6c3273250b76935494ab2 ]
+[ Upstream commit 3af86b046933ba513d08399dba0d4d8b50d607d0 ]
 
-Move the switching code into a function so that it can be re-used and
-add a global TLB flush. This makes sure that usage of memory which is
-not mapped in the trampoline page-table is reliably caught.
+In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
+a new memory for dev->vv_data. saa7146_vv_release() will be called on
+failure of saa7146_register_device(). There is a dereference of
+dev->vv_data in saa7146_vv_release(), which could lead to a NULL
+pointer dereference on failure of saa7146_vv_init().
 
-Also move the clearing of CR4.PCIDE before the CR3 switch because the
-cr4_clear_bits() function will access data not mapped into the
-trampoline page-table.
+Fix this bug by adding a check of saa7146_vv_init().
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211202153226.22946-4-joro@8bytes.org
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
+
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
+
+Builds with CONFIG_VIDEO_HEXIUM_GEMINI=m show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Link: https://lore.kernel.org/linux-media/20211203154030.111210-1-zhou1615@umn.edu
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/include/asm/realmode.h |  1 +
- arch/x86/kernel/reboot.c        | 12 ++----------
- arch/x86/realmode/init.c        | 26 ++++++++++++++++++++++++++
- 3 files changed, 29 insertions(+), 10 deletions(-)
+ drivers/media/common/saa7146/saa7146_fops.c | 2 +-
+ drivers/media/pci/saa7146/hexium_gemini.c   | 7 ++++++-
+ 2 files changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/arch/x86/include/asm/realmode.h b/arch/x86/include/asm/realmode.h
-index 09ecc32f65248..52d7512ea91ab 100644
---- a/arch/x86/include/asm/realmode.h
-+++ b/arch/x86/include/asm/realmode.h
-@@ -82,6 +82,7 @@ static inline void set_real_mode_mem(phys_addr_t mem)
- }
+diff --git a/drivers/media/common/saa7146/saa7146_fops.c b/drivers/media/common/saa7146/saa7146_fops.c
+index aabb830e74689..4b332ea986168 100644
+--- a/drivers/media/common/saa7146/saa7146_fops.c
++++ b/drivers/media/common/saa7146/saa7146_fops.c
+@@ -525,7 +525,7 @@ int saa7146_vv_init(struct saa7146_dev* dev, struct saa7146_ext_vv *ext_vv)
+ 		ERR("out of memory. aborting.\n");
+ 		kfree(vv);
+ 		v4l2_ctrl_handler_free(hdl);
+-		return -1;
++		return -ENOMEM;
+ 	}
  
- void reserve_real_mode(void);
-+void load_trampoline_pgtable(void);
+ 	saa7146_video_uops.init(dev,vv);
+diff --git a/drivers/media/pci/saa7146/hexium_gemini.c b/drivers/media/pci/saa7146/hexium_gemini.c
+index f962269306707..86d4e2abed82a 100644
+--- a/drivers/media/pci/saa7146/hexium_gemini.c
++++ b/drivers/media/pci/saa7146/hexium_gemini.c
+@@ -284,7 +284,12 @@ static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_d
+ 	hexium_set_input(hexium, 0);
+ 	hexium->cur_input = 0;
  
- #endif /* __ASSEMBLY__ */
+-	saa7146_vv_init(dev, &vv_data);
++	ret = saa7146_vv_init(dev, &vv_data);
++	if (ret) {
++		i2c_del_adapter(&hexium->i2c_adapter);
++		kfree(hexium);
++		return ret;
++	}
  
-diff --git a/arch/x86/kernel/reboot.c b/arch/x86/kernel/reboot.c
-index d65d1afb27161..fdef27a84d713 100644
---- a/arch/x86/kernel/reboot.c
-+++ b/arch/x86/kernel/reboot.c
-@@ -113,17 +113,9 @@ void __noreturn machine_real_restart(unsigned int type)
- 	spin_unlock(&rtc_lock);
- 
- 	/*
--	 * Switch back to the initial page table.
-+	 * Switch to the trampoline page table.
- 	 */
--#ifdef CONFIG_X86_32
--	load_cr3(initial_page_table);
--#else
--	write_cr3(real_mode_header->trampoline_pgd);
--
--	/* Exiting long mode will fail if CR4.PCIDE is set. */
--	if (boot_cpu_has(X86_FEATURE_PCID))
--		cr4_clear_bits(X86_CR4_PCIDE);
--#endif
-+	load_trampoline_pgtable();
- 
- 	/* Jump to the identity-mapped low memory code */
- #ifdef CONFIG_X86_32
-diff --git a/arch/x86/realmode/init.c b/arch/x86/realmode/init.c
-index de371e52cfa85..fac50ebb122b5 100644
---- a/arch/x86/realmode/init.c
-+++ b/arch/x86/realmode/init.c
-@@ -16,6 +16,32 @@ u32 *trampoline_cr4_features;
- /* Hold the pgd entry used on booting additional CPUs */
- pgd_t trampoline_pgd_entry;
- 
-+void load_trampoline_pgtable(void)
-+{
-+#ifdef CONFIG_X86_32
-+	load_cr3(initial_page_table);
-+#else
-+	/*
-+	 * This function is called before exiting to real-mode and that will
-+	 * fail with CR4.PCIDE still set.
-+	 */
-+	if (boot_cpu_has(X86_FEATURE_PCID))
-+		cr4_clear_bits(X86_CR4_PCIDE);
-+
-+	write_cr3(real_mode_header->trampoline_pgd);
-+#endif
-+
-+	/*
-+	 * The CR3 write above will not flush global TLB entries.
-+	 * Stale, global entries from previous page tables may still be
-+	 * present.  Flush those stale entries.
-+	 *
-+	 * This ensures that memory accessed while running with
-+	 * trampoline_pgd is *actually* mapped into trampoline_pgd.
-+	 */
-+	__flush_tlb_all();
-+}
-+
- void __init reserve_real_mode(void)
- {
- 	phys_addr_t mem;
+ 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
+ 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
 -- 
 2.34.1
 
