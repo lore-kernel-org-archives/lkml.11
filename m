@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48354C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:23:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B8AEC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:24:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350289AbiARDX1 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:23:27 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42480 "EHLO
+        id S241428AbiARDX7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 22:23:59 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42572 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348243AbiARDJY (ORCPT
+        with ESMTP id S1348263AbiARDJf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:09:24 -0500
+        Mon, 17 Jan 2022 22:09:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4ECDBB811CE;
-        Tue, 18 Jan 2022 03:09:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99E0FC36AE3;
-        Tue, 18 Jan 2022 03:09:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8E64AB81229;
+        Tue, 18 Jan 2022 03:09:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8DF59C36AE3;
+        Tue, 18 Jan 2022 03:09:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642475361;
-        bh=ypGe6ZiPObWziSfTo04HOWAK/HNjCmpuxDJ2gVqG6As=;
+        s=k20201202; t=1642475366;
+        bh=jxzl+T9Tmow7LV9piaMJ7WdRrbsfKDF/gIFVJ4zgETs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=or+BHgasDMtTlf2oy1W0RYv+/H1U44mGKLjSptCZu1oQIjE5ElqV0DwEDHI4rnbYX
-         NTBF9HXHskiTqwtIwYLok5igE4FZ6yVApascozr7UW2MwS84kEmxMKJTkCqV+z0JJ8
-         m+VOu2bWRqyKL+r/9palsU7u2+Kk5O7ypNQhVXb2FjzEq2opsGiYiBtBEoXi5I+7S8
-         iRGDxeTfuMhj7Cy/9evkxKtBepKlr2ZsXGxYqLzn0PBV0VqlfrF/wzdICcvAD3HIM7
-         i21Nd3gJpA5NwUTIXGjJuP914qx5wPVMuDQihij0QAdgcLZrcHbTk0+3SYdkTXzJ4N
-         URizZJ45CVloQ==
+        b=RSurrgJ6IKukXAlXjfZi1QnKMonpFuJrxTxDE4y6zX0g19QO1DcsfqTpwBxuKbCdt
+         Si6/wP4WnnQaybmQ7juLZLFKhzB4PQgX36Fyp8JUUCkpL4ANtJwTXbWrAMGscMz3IS
+         LxCCaCHR144aaXsUWSHajmQpkLeICXbIlK8l53WF6P2hAHNbQbMXYoVTuKOpO5d3za
+         wo8DBPT14+gp2vGlFcpXY6rz3UGL7iEUqSfk/6BzWXAGloEchefwFwBBGxe3u3z7HK
+         rs0Haqs+Nz6WmD+SPFxRrVet4Gdhv0AfOBuoXbh0ZfLn2gJRvUnL8D15G5pmgXZdPI
+         Jv9W4+Fe+wIxg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Jeff Dike <jdike@addtoit.com>,
-        Richard Weinberger <richard@nod.at>,
-        Anton Ivanov <anton.ivanov@cambridgegreys.com>,
-        linux-um@lists.infradead.org, Sasha Levin <sashal@kernel.org>,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, x86@kernel.org,
-        viro@zeniv.linux.org.uk
-Subject: [PATCH AUTOSEL 4.4 19/29] um: registers: Rename function names to avoid conflicts and build problems
-Date:   Mon, 17 Jan 2022 22:08:12 -0500
-Message-Id: <20220118030822.1955469-19-sashal@kernel.org>
+Cc:     Josef Bacik <josef@toxicpanda.com>,
+        David Sterba <dsterba@suse.com>,
+        Sasha Levin <sashal@kernel.org>, clm@fb.com,
+        linux-btrfs@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 23/29] btrfs: remove BUG_ON(!eie) in find_parent_nodes
+Date:   Mon, 17 Jan 2022 22:08:16 -0500
+Message-Id: <20220118030822.1955469-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118030822.1955469-1-sashal@kernel.org>
 References: <20220118030822.1955469-1-sashal@kernel.org>
@@ -54,101 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Randy Dunlap <rdunlap@infradead.org>
+From: Josef Bacik <josef@toxicpanda.com>
 
-[ Upstream commit 077b7320942b64b0da182aefd83c374462a65535 ]
+[ Upstream commit 9f05c09d6baef789726346397438cca4ec43c3ee ]
 
-The function names init_registers() and restore_registers() are used
-in several net/ethernet/ and gpu/drm/ drivers for other purposes (not
-calls to UML functions), so rename them.
+If we're looking for leafs that point to a data extent we want to record
+the extent items that point at our bytenr.  At this point we have the
+reference and we know for a fact that this leaf should have a reference
+to our bytenr.  However if there's some sort of corruption we may not
+find any references to our leaf, and thus could end up with eie == NULL.
+Replace this BUG_ON() with an ASSERT() and then return -EUCLEAN for the
+mortals.
 
-This fixes multiple build errors.
-
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Jeff Dike <jdike@addtoit.com>
-Cc: Richard Weinberger <richard@nod.at>
-Cc: Anton Ivanov <anton.ivanov@cambridgegreys.com>
-Cc: linux-um@lists.infradead.org
-Signed-off-by: Richard Weinberger <richard@nod.at>
+Signed-off-by: Josef Bacik <josef@toxicpanda.com>
+Reviewed-by: David Sterba <dsterba@suse.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/um/include/shared/registers.h | 4 ++--
- arch/um/os-Linux/registers.c       | 4 ++--
- arch/um/os-Linux/start_up.c        | 2 +-
- arch/x86/um/syscalls_64.c          | 3 ++-
- 4 files changed, 7 insertions(+), 6 deletions(-)
+ fs/btrfs/backref.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/arch/um/include/shared/registers.h b/arch/um/include/shared/registers.h
-index f5b76355ad71a..089f979e112e3 100644
---- a/arch/um/include/shared/registers.h
-+++ b/arch/um/include/shared/registers.h
-@@ -14,8 +14,8 @@ extern int restore_fp_registers(int pid, unsigned long *fp_regs);
- extern int save_fpx_registers(int pid, unsigned long *fp_regs);
- extern int restore_fpx_registers(int pid, unsigned long *fp_regs);
- extern int save_registers(int pid, struct uml_pt_regs *regs);
--extern int restore_registers(int pid, struct uml_pt_regs *regs);
--extern int init_registers(int pid);
-+extern int restore_pid_registers(int pid, struct uml_pt_regs *regs);
-+extern int init_pid_registers(int pid);
- extern void get_safe_registers(unsigned long *regs, unsigned long *fp_regs);
- extern unsigned long get_thread_reg(int reg, jmp_buf *buf);
- extern int get_fp_registers(int pid, unsigned long *regs);
-diff --git a/arch/um/os-Linux/registers.c b/arch/um/os-Linux/registers.c
-index 2ff8d4fe83c4f..34a5963bd7efd 100644
---- a/arch/um/os-Linux/registers.c
-+++ b/arch/um/os-Linux/registers.c
-@@ -21,7 +21,7 @@ int save_registers(int pid, struct uml_pt_regs *regs)
- 	return 0;
- }
- 
--int restore_registers(int pid, struct uml_pt_regs *regs)
-+int restore_pid_registers(int pid, struct uml_pt_regs *regs)
- {
- 	int err;
- 
-@@ -36,7 +36,7 @@ int restore_registers(int pid, struct uml_pt_regs *regs)
- static unsigned long exec_regs[MAX_REG_NR];
- static unsigned long exec_fp_regs[FP_SIZE];
- 
--int init_registers(int pid)
-+int init_pid_registers(int pid)
- {
- 	int err;
- 
-diff --git a/arch/um/os-Linux/start_up.c b/arch/um/os-Linux/start_up.c
-index 22a358ef1b0cd..dc06933ba63d9 100644
---- a/arch/um/os-Linux/start_up.c
-+++ b/arch/um/os-Linux/start_up.c
-@@ -334,7 +334,7 @@ void __init os_early_checks(void)
- 	check_tmpexec();
- 
- 	pid = start_ptraced_child();
--	if (init_registers(pid))
-+	if (init_pid_registers(pid))
- 		fatal("Failed to initialize default registers");
- 	stop_ptraced_child(pid, 1, 1);
- }
-diff --git a/arch/x86/um/syscalls_64.c b/arch/x86/um/syscalls_64.c
-index e6552275320bc..40ecacb2c54b3 100644
---- a/arch/x86/um/syscalls_64.c
-+++ b/arch/x86/um/syscalls_64.c
-@@ -9,6 +9,7 @@
- #include <linux/uaccess.h>
- #include <asm/prctl.h> /* XXX This should get the constants from libc */
- #include <os.h>
-+#include <registers.h>
- 
- long arch_prctl(struct task_struct *task, int code, unsigned long __user *addr)
- {
-@@ -32,7 +33,7 @@ long arch_prctl(struct task_struct *task, int code, unsigned long __user *addr)
- 	switch (code) {
- 	case ARCH_SET_FS:
- 	case ARCH_SET_GS:
--		ret = restore_registers(pid, &current->thread.regs.regs);
-+		ret = restore_pid_registers(pid, &current->thread.regs.regs);
- 		if (ret)
- 			return ret;
- 		break;
+diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
+index c59a13a53b1cc..00c9a9e719ece 100644
+--- a/fs/btrfs/backref.c
++++ b/fs/btrfs/backref.c
+@@ -1109,10 +1109,18 @@ static int find_parent_nodes(struct btrfs_trans_handle *trans,
+ 				goto out;
+ 			if (!ret && extent_item_pos) {
+ 				/*
+-				 * we've recorded that parent, so we must extend
+-				 * its inode list here
++				 * We've recorded that parent, so we must extend
++				 * its inode list here.
++				 *
++				 * However if there was corruption we may not
++				 * have found an eie, return an error in this
++				 * case.
+ 				 */
+-				BUG_ON(!eie);
++				ASSERT(eie);
++				if (!eie) {
++					ret = -EUCLEAN;
++					goto out;
++				}
+ 				while (eie->next)
+ 					eie = eie->next;
+ 				eie->next = ref->inode_list;
 -- 
 2.34.1
 
