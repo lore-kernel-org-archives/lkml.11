@@ -2,86 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63DA4C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:24:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E348DC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 17:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347174AbiARRYq (ORCPT
+        id S1347203AbiARRZz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 12:24:46 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:47838 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347228AbiARRYj (ORCPT
+        Tue, 18 Jan 2022 12:25:55 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:25318 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243633AbiARRZv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 12:24:39 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        Tue, 18 Jan 2022 12:25:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642526751;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=rR/bu37Is80SlqeUGWI0t9CgSie0s+VhhWDwdSOZaOM=;
+        b=hsOP71oA+PDSdboeI2khzOr6xS3w+lvCfU9Q8QMlF3KWXG3ZzwcvhFk4uOo1XRsoQZl+VT
+        xRgixhZuW+SFYfOZqjFj+3tYDXFJW6xBExV98NblObTlN9U48eHviqcl9YvP75DW7J9GKy
+        Ri9lzgEWmFxKF6MnOyqQo8ngP+sc/z0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-632-p40EvUEhNN6kNZ7FxO2S4Q-1; Tue, 18 Jan 2022 12:25:46 -0500
+X-MC-Unique: p40EvUEhNN6kNZ7FxO2S4Q-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AE39661497
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 17:24:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00F2AC340E0;
-        Tue, 18 Jan 2022 17:24:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642526678;
-        bh=0i0HALl5CElF6itWK4Xy0OfN+GttciYs6AltWZomMco=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=rsGEjOwZOk5i1sLuSbsh1LxofF510yXoBH/XuBlF892ZaeApOziGnm6+axqdDvfqy
-         quLZPPQTCl7hYNaxvNQzn9ORzzbBPmXeRnGIONwl50YNVHEofWgHo754dja+AJRy7b
-         EoQ7dVBEwxSmvIj227CcVycHrVwF0Z4X5tP8mcaVN3k6Gip1BZvzMWNPzYo428Cb9o
-         saVux0NmrM87yJ6L9vUB+aB+o+Vw8lSbBQ8lW7VaV32fhgmDu5TUds8V2Sv5uLMOTQ
-         MLGk3HsK+vN2I9EJh9LN2gKemtBr4MuO5AK6osEbL7GtnaiY2rEjbnzkVZuIeUodk9
-         Xfe0dUs0tcruA==
-Date:   Tue, 18 Jan 2022 17:24:32 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     cgel.zte@gmail.com
-Cc:     krzysztof.kozlowski@canonical.com, s.nawrocki@samsung.com,
-        lgirdwood@gmail.com, perex@perex.cz, tiwai@suse.com,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] sound/soc/samsung: remove unneeded ret variable
-Message-ID: <Yeb30O1vtFp3f+32@sirena.org.uk>
-References: <20220117110357.863990-1-chi.minghao@zte.com.cn>
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 51FCB11185D0;
+        Tue, 18 Jan 2022 17:10:07 +0000 (UTC)
+Received: from localhost (unknown [10.39.194.139])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id B74817A3F9;
+        Tue, 18 Jan 2022 17:10:06 +0000 (UTC)
+From:   Cornelia Huck <cohuck@redhat.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     Jason Wang <jasowang@redhat.com>, linux-kernel@vger.kernel.org,
+        stable@vger.kernel.org, Halil Pasic <pasic@linux.ibm.com>,
+        virtualization@lists.linux-foundation.org
+Subject: Re: [PATCH] virtio: acknowledge all features before access
+In-Reply-To: <20220118104318-mutt-send-email-mst@kernel.org>
+Organization: Red Hat GmbH
+References: <20220114200744.150325-1-mst@redhat.com>
+ <d6c4e521-1538-bbbf-30e6-f658a095b3ae@redhat.com>
+ <20220117032429-mutt-send-email-mst@kernel.org>
+ <87mtjuv8od.fsf@redhat.com>
+ <20220118104318-mutt-send-email-mst@kernel.org>
+User-Agent: Notmuch/0.34 (https://notmuchmail.org)
+Date:   Tue, 18 Jan 2022 18:10:05 +0100
+Message-ID: <871r15dl76.fsf@redhat.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="n97Ndc2+f45Gv264"
-Content-Disposition: inline
-In-Reply-To: <20220117110357.863990-1-chi.minghao@zte.com.cn>
-X-Cookie: Do YOU have redeeming social value?
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Tue, Jan 18 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
 
---n97Ndc2+f45Gv264
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On Mon, Jan 17, 2022 at 01:38:42PM +0100, Cornelia Huck wrote:
+>> On Mon, Jan 17 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+>>=20
+>> > On Mon, Jan 17, 2022 at 02:31:49PM +0800, Jason Wang wrote:
+>> >>=20
+>> >> =E5=9C=A8 2022/1/15 =E4=B8=8A=E5=8D=884:09, Michael S. Tsirkin =E5=86=
+=99=E9=81=93:
+>> >> > @@ -495,6 +494,10 @@ int virtio_device_restore(struct virtio_device=
+ *dev)
+>> >> >   	/* We have a driver! */
+>> >> >   	virtio_add_status(dev, VIRTIO_CONFIG_S_DRIVER);
+>> >> > +	ret =3D dev->config->finalize_features(dev);
+>> >> > +	if (ret)
+>> >> > +		goto err;
+>> >>=20
+>> >>=20
+>> >> Is this part of code related?
+>> >>=20
+>> >> Thanks
+>> >>=20
+>> >
+>> > Yes. virtio_finalize_features no longer calls dev->config->finalize_fe=
+atures.
+>> >
+>> > I think the dev->config->finalize_features callback is actually
+>> > a misnomer now, it just sends the features to device,
+>> > finalize is FEATURES_OK. Renaming that is a bigger
+>> > patch though, and I'd like this one to be cherry-pickable
+>> > to stable.
+>>=20
+>> Do we want to add a comment before the calls to ->finalize_features()
+>> (/* write features to device */) and adapt the comment in virtio_ring.h?
+>> Should still be stable-friendly, and giving the callback a better name
+>> can be a follow-up patch.
+>
+> Sorry which comment in virtio_ring.h?
+> Could not find anything.
 
-On Mon, Jan 17, 2022 at 11:03:57AM +0000, cgel.zte@gmail.com wrote:
-> From: Minghao Chi <chi.minghao@zte.com.cn>
->=20
-> Return value from io_remap_pfn_range() directly instead
-> of taking this in another redundant variable.
+Typo; I ment virtio_config.h...
 
-Please submit patches using subject lines reflecting the style for the
-subsystem, this makes it easier for people to identify relevant patches.
-Look at what existing commits in the area you're changing are doing and
-make sure your subject lines visually resemble what they're doing.
-There's no need to resubmit to fix this alone.
+>
+>> >
+>> >> > +
+>> >> >   	ret =3D virtio_finalize_features(dev);
+>> >> >   	if (ret)
+>> >> >   		goto err;
 
---n97Ndc2+f45Gv264
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmHm99AACgkQJNaLcl1U
-h9CdiQf/cnwAHPfUpdi2ZcXMAIQm5U0l8eYevcDqjxNLufpObRVWCnvxnC8ifOq9
-5f9LNKmNG5ZHg1NL6s78jKmIECpU1eltowb+52BCOkTX11QPrAx29q6PllczRWqX
-PSmDJTkAqNLC6RFX8Z6xD06xiNfRwapsZT3Ywmo/AQcAySKceNi4gEz7POTHWfZl
-Hl06im/X/knMu3j9gg0gJ9LWgScmXyWKCN1fShKFOWI0C0eGYtV8/KmE/ITjJ0q5
-KsUBQR4ZKNz+7xou/azWgCTj+NVB7WzB7OfZnd7VrAVsG5mThW+ALsFd2dm3ACkO
-P95hTOdPbff+pteD40441nxhPgbKXQ==
-=Y7G+
------END PGP SIGNATURE-----
-
---n97Ndc2+f45Gv264--
