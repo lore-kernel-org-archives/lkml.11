@@ -2,87 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1D73C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 14:54:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE9EC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 14:54:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344519AbiAROyW (ORCPT
+        id S1344759AbiAROy0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 09:54:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34230 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344627AbiAROxt (ORCPT
+        Tue, 18 Jan 2022 09:54:26 -0500
+Received: from mx0b-001ae601.pphosted.com ([67.231.152.168]:43998 "EHLO
+        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344201AbiAROxw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 09:53:49 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3375C061746
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 06:52:53 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id 30so80687293edv.3
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 06:52:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=bQERr3f96sJZo3fyx626TSqkOY/yxktD2TT4mdcbVt0=;
-        b=KCJy185T3knEUP0VU5+2Kb/w2dJCfUi+R6QqFj+D9M67B41I9YRspxvjurd51sI6Zl
-         k3O25OzU2iU2CnyEV9fCL5a5zDqzd/+BWQ3ly8IA/yvKjERUWr8Er55BFVpta/sUOiKK
-         1nZYN2ZhdzcNB5idjud8rbQgozBmb76SUMTUHOA+JrI34xyswedIOT48UbbgYecQEUhb
-         AqfbTt4rOeaVRgLm/DftzRtDHFJRD+LW/T0e1YTefu03dVAj7EVS9g7M4OSNeSQqVcR4
-         ql/Nay9DcVbY0CA2jlhzNNwxWZfsz/73aKSJwaqjh7WBy3nv5WlMtkVKMBmpsqFEV1RA
-         ycKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=bQERr3f96sJZo3fyx626TSqkOY/yxktD2TT4mdcbVt0=;
-        b=vfs/V1RWgr5NsqupER5FkTSgNVzLNJDjwf6ZIzaKgWNbHV7XbsVY7O+hVIiWqMosZs
-         QOZzQyr7HTVU+06BsxoKLUILBAmkE2Ju4x6nPEShUzcbWDhxYJLl1Ggie8JcGnLvGywp
-         Szd6xOTgGF7hTCWZKWuz41PD9ywnlbpIWxDRNaSAapOvl2bHDQOhXC5wQpGZnfH++QbT
-         mLorpJTLZDGOzKauGijv5qERhY/nJwJ2IkdMcOsxJ3iZmu9o7OcpubJAC06MjSrQ0OOh
-         0DLlqYfqLvfrC4MzlzatE28zQPEG9zhqAyG80VXBTqY6jd05ib81mO/W+J1WqaiYy1HF
-         tkyQ==
-X-Gm-Message-State: AOAM532HilGZ/X2+Jmwm/vOSsNbT8mvUcLw+Ix/bBOyRkky0/MRI7hSF
-        abZg10aa0rq55kVahwxO09prnjfXQXK7ZHmcS5L/+w==
-X-Google-Smtp-Source: ABdhPJxfgwnkMBqH0O3rYm2cgpBCiEyYsIzDkff7975I6IoDtQRPDlXXhxmN/92M2MY+QHAL6+sdUoU9Mp1Exv+3Zcc=
-X-Received: by 2002:aa7:c917:: with SMTP id b23mr10498043edt.309.1642517572296;
- Tue, 18 Jan 2022 06:52:52 -0800 (PST)
+        Tue, 18 Jan 2022 09:53:52 -0500
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20IA16xu003923;
+        Tue, 18 Jan 2022 08:53:33 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=PODMain02222019;
+ bh=LqwQlGSPZbY4FUWN/PCbYAVSFcGSRCshh6dVtPJgmMk=;
+ b=iQaAmvzKfAgl75NgBpFsVWVWgaE2U8YrKGScu3h6dP8o0BPwFxOG1SemejwN+08Qxv6F
+ KpzUDAenQPLDRVRaM90+iAcpn/MubiFvkJYwE76l5NMcMJlC6g4gl9g5Iq4D0S50/vz8
+ Mcz9FUOaOkNvVqiNAUkSxh/hNxNHGb7XiIlouuMrfcyVoCLahKczxOQIIF4Cv8xv9KJ0
+ wuHBkxOzGGPQgTNGtBuZ2fGyaPoVqi3BuwGsZx4dHsVDvQwOmEq7FoIOZTmF47yfJ5gc
+ B1Gvn11d08xdooOHpjdwPby3eMTNGTiP7loR/y01N/FNjjaZFRWKZU7n09gRj2wiJ4pP bg== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3dn8k2s8sx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 18 Jan 2022 08:53:33 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Tue, 18 Jan
+ 2022 14:53:31 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
+ Transport; Tue, 18 Jan 2022 14:53:31 +0000
+Received: from LONN2DGDQ73.ad.cirrus.com (unknown [198.90.238.138])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 967297C;
+        Tue, 18 Jan 2022 14:53:27 +0000 (UTC)
+From:   Stefan Binding <sbinding@opensource.cirrus.com>
+To:     Mark Brown <broonie@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
+        <platform-driver-x86@vger.kernel.org>,
+        <patches@opensource.cirrus.com>,
+        Stefan Binding <sbinding@opensource.cirrus.com>
+Subject: [PATCH v3 01/10] spi: Make spi_alloc_device and spi_add_device public again
+Date:   Tue, 18 Jan 2022 14:52:42 +0000
+Message-ID: <20220118145251.1548-2-sbinding@opensource.cirrus.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220118145251.1548-1-sbinding@opensource.cirrus.com>
+References: <20220118145251.1548-1-sbinding@opensource.cirrus.com>
 MIME-Version: 1.0
-From:   Anders Roxell <anders.roxell@linaro.org>
-Date:   Tue, 18 Jan 2022 15:52:41 +0100
-Message-ID: <CADYN=9LE7-9BHPEJBtL2sXChv2OfRcJTQnG+_Ug3HWAouBwHUQ@mail.gmail.com>
-Subject: backport patches to linux-5.4.y+
-To:     linux-stable <stable@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: UPN5TjpL9fMhPkZPYfJJDsAVS_c8EwjC
+X-Proofpoint-ORIG-GUID: UPN5TjpL9fMhPkZPYfJJDsAVS_c8EwjC
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+This functions were previously made private since they
+were not used. However, these functions will be needed
+again.
 
-Can these two patches be backported please?
+Partial revert of commit da21fde0fdb3
+("spi: Make several public functions private to spi.c")
 
-603362b4a583 ("mtd: fixup CFI on ixp4xx") to v5.4+
-28187dc8ebd9 ("ARM: 9025/1: Kconfig: CPU_BIG_ENDIAN depends on
-!LD_IS_LLD") to v5.4+
+Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+---
+ drivers/spi/spi.c       |  6 ++++--
+ include/linux/spi/spi.h | 12 ++++++++++++
+ 2 files changed, 16 insertions(+), 2 deletions(-)
 
-Patch 603362b4a583 ("mtd: fixup CFI on ixp4xx") solves:
+diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
+index 4599b121d744..1eb84101c4ad 100644
+--- a/drivers/spi/spi.c
++++ b/drivers/spi/spi.c
+@@ -532,7 +532,7 @@ static DEFINE_MUTEX(board_lock);
+  *
+  * Return: a pointer to the new device, or NULL.
+  */
+-static struct spi_device *spi_alloc_device(struct spi_controller *ctlr)
++struct spi_device *spi_alloc_device(struct spi_controller *ctlr)
+ {
+ 	struct spi_device	*spi;
+ 
+@@ -557,6 +557,7 @@ static struct spi_device *spi_alloc_device(struct spi_controller *ctlr)
+ 	device_initialize(&spi->dev);
+ 	return spi;
+ }
++EXPORT_SYMBOL_GPL(spi_alloc_device);
+ 
+ static void spi_dev_set_name(struct spi_device *spi)
+ {
+@@ -652,7 +653,7 @@ static int __spi_add_device(struct spi_device *spi)
+  *
+  * Return: 0 on success; negative errno on failure
+  */
+-static int spi_add_device(struct spi_device *spi)
++int spi_add_device(struct spi_device *spi)
+ {
+ 	struct spi_controller *ctlr = spi->controller;
+ 	struct device *dev = ctlr->dev.parent;
+@@ -673,6 +674,7 @@ static int spi_add_device(struct spi_device *spi)
+ 	mutex_unlock(&ctlr->add_lock);
+ 	return status;
+ }
++EXPORT_SYMBOL_GPL(spi_add_device);
+ 
+ static int spi_add_device_locked(struct spi_device *spi)
+ {
+diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
+index 7ab3fed7b804..0346a3ff27fd 100644
+--- a/include/linux/spi/spi.h
++++ b/include/linux/spi/spi.h
+@@ -1452,7 +1452,19 @@ spi_register_board_info(struct spi_board_info const *info, unsigned n)
+  * use spi_new_device() to describe each device.  You can also call
+  * spi_unregister_device() to start making that device vanish, but
+  * normally that would be handled by spi_unregister_controller().
++ *
++ * You can also use spi_alloc_device() and spi_add_device() to use a two
++ * stage registration sequence for each spi_device. This gives the caller
++ * some more control over the spi_device structure before it is registered,
++ * but requires that caller to initialize fields that would otherwise
++ * be defined using the board info.
+  */
++extern struct spi_device *
++spi_alloc_device(struct spi_controller *ctlr);
++
++extern int
++spi_add_device(struct spi_device *spi);
++
+ extern struct spi_device *
+ spi_new_device(struct spi_controller *, struct spi_board_info *);
+ 
+-- 
+2.25.1
 
-drivers/mtd/maps/ixp4xx.c:57:4: error: CONFIG_MTD_CFI_BE_BYTE_SWAP required
-#  error CONFIG_MTD_CFI_BE_BYTE_SWAP required
-   ^
-1 error generated.
-
-Patch 28187dc8ebd9 ("ARM: 9025/1: Kconfig: CPU_BIG_ENDIAN depends on
-!LD_IS_LLD") solves:
-
-ld.lld: error: arch/arm/common/dmabounce.o:(.rodata.str1.1): offset is
-outside the section
-make[2]: *** [scripts/Makefile.build:262: arch/arm/common/dmabounce.o] Error 1
-make[2]: *** Deleting file 'arch/arm/common/dmabounce.o'
-make[2]: Target '__build' not remade because of errors.
-
-
-Cheers,
-Anders
