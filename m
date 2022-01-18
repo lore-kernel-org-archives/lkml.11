@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43175C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:19:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C94C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:19:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344487AbiARDTJ (ORCPT
+        id S1348751AbiARDTS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:19:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37240 "EHLO
+        Mon, 17 Jan 2022 22:19:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353637AbiARDCQ (ORCPT
+        with ESMTP id S1353682AbiARDC1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:02:16 -0500
+        Mon, 17 Jan 2022 22:02:27 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C40E9C08EBAF;
-        Mon, 17 Jan 2022 18:47:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E096C028BD6;
+        Mon, 17 Jan 2022 18:47:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 49FB6612D1;
-        Tue, 18 Jan 2022 02:47:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3055C36AEB;
-        Tue, 18 Jan 2022 02:47:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4F8561127;
+        Tue, 18 Jan 2022 02:47:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31274C36AF4;
+        Tue, 18 Jan 2022 02:47:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474061;
-        bh=NZ86/jhMQ53LYMnML1i/s5E3FRSxzSncXmKzzl4r9Tk=;
+        s=k20201202; t=1642474067;
+        bh=jLeeFf393B8HjgrocufcT+n/GYkXVkQ4rnUo38UVcLM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WRgmYrPRpKL5Y/1g3i9QzOwW8BXSokcBol5ywDdQr1x/r/Us1ZgaHREKseabCNlWr
-         xsBDMVtOu69Fi1zKur7YOa5wbpu4aFKWYdxUBYaeHAIjkFRj3kZzPtJeLIifC5IaMt
-         nQyrBq99se8JyaLetW45ilItTQ7on7C+Mo+CYXB7rsV2PU+LmSEsOkAyTLGwW6XPBy
-         WipHCrHL/ctzkG8vVCU89LnbbSVUtCoNJiBvJnzsXN2XwotxW3Isg+KXL5727Q0oSf
-         phJjt8lOb0txDqHtXBQJHnZurR8ZfRSyIf4vaYDUONvftv9u8W5tliCwAnqmhWH+za
-         EyHZ2h2a9UYpg==
+        b=GAcWqjAGUNwg2PHfrap6SgbqUzShHzx6hbhk4KwMIVN6clMlN67ODTH5e0MZxg/f6
+         old2LJMZvySbtvNzsZAaRWqFoSQHZ7TMPzyW7LHKGY9lJTvF9Jy4+2xUzbG2R3uvfI
+         D29yyAdW0zESYls0UQZrtcg9ZwDeumH2LnrSpbTijpMrfExXb7xJPVcIEd0AigDkvm
+         TAzTXTw3Ik891lgkuLiyoM/SS2G0axqLWnQQ5cxtt6two9WZMU0BEOGzozEgVKqXYT
+         bqR8ARNwe9M/N/FPGxPnFS4gQuUEUWP37y+PuLU6GpcNRicj5zaYjy0nvelE+7x7HQ
+         eHSXtLdp64kPA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        rkardell@mida.se, Sasha Levin <sashal@kernel.org>,
-        mchehab@kernel.org, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 19/59] media: m920x: don't use stack on USB reads
-Date:   Mon, 17 Jan 2022 21:46:20 -0500
-Message-Id: <20220118024701.1952911-19-sashal@kernel.org>
+Cc:     Sebastian Gottschall <s.gottschall@dd-wrt.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, ath10k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 21/59] ath10k: Fix tx hanging
+Date:   Mon, 17 Jan 2022 21:46:22 -0500
+Message-Id: <20220118024701.1952911-21-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
 References: <20220118024701.1952911-1-sashal@kernel.org>
@@ -52,57 +54,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Sebastian Gottschall <s.gottschall@dd-wrt.com>
 
-[ Upstream commit a2ab06d7c4d6bfd0b545a768247a70463e977e27 ]
+[ Upstream commit e8a91863eba3966a447d2daa1526082d52b5db2a ]
 
-Using stack-allocated pointers for USB message data don't work.
-This driver is almost OK with that, except for the I2C read
-logic.
+While running stress tests in roaming scenarios (switching ap's every 5
+seconds, we discovered a issue which leads to tx hangings of exactly 5
+seconds while or after scanning for new accesspoints. We found out that
+this hanging is triggered by ath10k_mac_wait_tx_complete since the
+empty_tx_wq was not wake when the num_tx_pending counter reaches zero.
+To fix this, we simply move the wake_up call to htt_tx_dec_pending,
+since this call was missed on several locations within the ath10k code.
 
-Fix it by using a temporary read buffer, just like on all other
-calls to m920x_read().
-
-Link: https://lore.kernel.org/all/ccc99e48-de4f-045e-0fe4-61e3118e3f74@mida.se/
-Reported-by: rkardell@mida.se
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sebastian Gottschall <s.gottschall@dd-wrt.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20210505085806.11474-1-s.gottschall@dd-wrt.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/dvb-usb/m920x.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath10k/htt_tx.c | 3 +++
+ drivers/net/wireless/ath/ath10k/txrx.c   | 2 --
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/usb/dvb-usb/m920x.c b/drivers/media/usb/dvb-usb/m920x.c
-index 22554d9abd432..3b2a0f36fc38e 100644
---- a/drivers/media/usb/dvb-usb/m920x.c
-+++ b/drivers/media/usb/dvb-usb/m920x.c
-@@ -277,6 +277,13 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
- 			/* Should check for ack here, if we knew how. */
- 		}
- 		if (msg[i].flags & I2C_M_RD) {
-+			char *read = kmalloc(1, GFP_KERNEL);
-+			if (!read) {
-+				ret = -ENOMEM;
-+				kfree(read);
-+				goto unlock;
-+			}
+diff --git a/drivers/net/wireless/ath/ath10k/htt_tx.c b/drivers/net/wireless/ath/ath10k/htt_tx.c
+index fd011bdabb963..3718d4dfc6d60 100644
+--- a/drivers/net/wireless/ath/ath10k/htt_tx.c
++++ b/drivers/net/wireless/ath/ath10k/htt_tx.c
+@@ -158,6 +158,9 @@ void ath10k_htt_tx_dec_pending(struct ath10k_htt *htt)
+ 	htt->num_pending_tx--;
+ 	if (htt->num_pending_tx == htt->max_num_pending_tx - 1)
+ 		ath10k_mac_tx_unlock(htt->ar, ATH10K_TX_PAUSE_Q_FULL);
 +
- 			for (j = 0; j < msg[i].len; j++) {
- 				/* Last byte of transaction?
- 				 * Send STOP, otherwise send ACK. */
-@@ -284,9 +291,12 @@ static int m920x_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[], int nu
++	if (htt->num_pending_tx == 0)
++		wake_up(&htt->empty_tx_wq);
+ }
  
- 				if ((ret = m920x_read(d->udev, M9206_I2C, 0x0,
- 						      0x20 | stop,
--						      &msg[i].buf[j], 1)) != 0)
-+						      read, 1)) != 0)
- 					goto unlock;
-+				msg[i].buf[j] = read[0];
- 			}
-+
-+			kfree(read);
- 		} else {
- 			for (j = 0; j < msg[i].len; j++) {
- 				/* Last byte of transaction? Then send STOP. */
+ int ath10k_htt_tx_inc_pending(struct ath10k_htt *htt)
+diff --git a/drivers/net/wireless/ath/ath10k/txrx.c b/drivers/net/wireless/ath/ath10k/txrx.c
+index 6c47e4b6aa6cd..888a8f4aff5d8 100644
+--- a/drivers/net/wireless/ath/ath10k/txrx.c
++++ b/drivers/net/wireless/ath/ath10k/txrx.c
+@@ -91,8 +91,6 @@ int ath10k_txrx_tx_unref(struct ath10k_htt *htt,
+ 
+ 	ath10k_htt_tx_free_msdu_id(htt, tx_done->msdu_id);
+ 	ath10k_htt_tx_dec_pending(htt);
+-	if (htt->num_pending_tx == 0)
+-		wake_up(&htt->empty_tx_wq);
+ 	spin_unlock_bh(&htt->tx_lock);
+ 
+ 	dma_unmap_single(dev, skb_cb->paddr, msdu->len, DMA_TO_DEVICE);
 -- 
 2.34.1
 
