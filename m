@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 988A2C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:48:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83A26C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:48:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344568AbiARCsf (ORCPT
+        id S1346205AbiARCso (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:48:35 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48436 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345075AbiARCjP (ORCPT
+        Mon, 17 Jan 2022 21:48:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58812 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245699AbiARCdB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:39:15 -0500
+        Mon, 17 Jan 2022 21:33:01 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032B0C0613E3;
+        Mon, 17 Jan 2022 18:32:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2864EB81239;
-        Tue, 18 Jan 2022 02:39:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 539EEC36AEF;
-        Tue, 18 Jan 2022 02:39:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9792F61241;
+        Tue, 18 Jan 2022 02:32:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BFB2C36AF3;
+        Tue, 18 Jan 2022 02:32:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473553;
-        bh=zI6GycII7ZqdcccMhnvZf7pbAzNxjeMsL9gidccGsHY=;
+        s=k20201202; t=1642473126;
+        bh=FpFOz55NDArr1D4SGMUr6c5B/Pd266OUahPpfqk8l5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V8wT/PCBhUOqHSrf+gYsxSwzdCW3lGe34BBDBwUfgZVllpu4c6SmcQ49WNLIYTv1s
-         8/OTLfxmNmVMarxYOnaCciU9Ha2juOPKE7Sp0GcdUD9wmnG7c1mkRYaoznraDOPpsp
-         UXnfqsWHssMiXOFanXYWQR0+kYu7upRKTTETsI3q1sG6jw8dpXo+XmbOoLA2NS95yF
-         Gao3xZeYZsOifBWxxuGXAdLDWTKTkh9HHU+j5ZcQGSMfOGuXwHKNxnfrVp3TA0P01/
-         d4FfdNwr/SQqfNPdPPcUJLgOiGri5oVAuWd34+nrXX9Vzfr9omqNgFsox4fLFR2pXu
-         GkLwEqA46RxGw==
+        b=JLExkustGTrB2paIJ8K2dJOgN0/pJ3SUoUs0RCAStRQpP3k7WZXDXbKQYKO6S17K5
+         dtQjQQQnZYYLCIKFwSnDUn7SYstR2C2gsSD2VIyWkGmWRzYCCMbhERx9sTApnwbzZt
+         jjRKs24LOrmzEEdM/KI7f/sFABMHSfZzzowWP5pet7hqRWcRXGdpgzL2hOV5eyv8ZX
+         eV6KwJ3uHkIr7G2yw0CQh7AUz+yR+PWF7DVGgHKqcvKaV9r8xVGkZwZzZPkr93inzB
+         e+UXC8hiK3dJ/SL+B1y93RIpHv9RJMgAeIbxx++e9Mm5g6GRd8c1jYCw8qZHxGelQ/
+         O/3wj9gD+TmCA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>, clm@fb.com,
-        linux-btrfs@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 164/188] btrfs: remove BUG_ON() in find_parent_nodes()
-Date:   Mon, 17 Jan 2022 21:31:28 -0500
-Message-Id: <20220118023152.1948105-164-sashal@kernel.org>
+Cc:     Qiang Yu <yuq825@gmail.com>,
+        Vasily Khoruzhick <anarsoul@gmail.com>,
+        Roman Stratiienko <r.stratiienko@gmail.com>,
+        Sasha Levin <sashal@kernel.org>, airlied@linux.ie,
+        daniel@ffwll.ch, dri-devel@lists.freedesktop.org,
+        lima@lists.freedesktop.org
+Subject: [PATCH AUTOSEL 5.15 007/188] drm/lima: fix warning when CONFIG_DEBUG_SG=y & CONFIG_DMA_API_DEBUG=y
+Date:   Mon, 17 Jan 2022 21:28:51 -0500
+Message-Id: <20220118023152.1948105-7-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -50,40 +55,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Qiang Yu <yuq825@gmail.com>
 
-[ Upstream commit fcba0120edf88328524a4878d1d6f4ad39f2ec81 ]
+[ Upstream commit 89636a06fa2ee7826a19c39c19a9bc99ab9340a9 ]
 
-We search for an extent entry with .offset = -1, which shouldn't be a
-thing, but corruption happens.  Add an ASSERT() for the developers,
-return -EUCLEAN for mortals.
+Otherwise get following warning:
 
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+DMA-API: lima 1c40000.gpu: mapping sg segment longer than device claims to support [len=4149248] [max=65536]
+
+See: https://gitlab.freedesktop.org/mesa/mesa/-/issues/5496
+
+Reviewed-by: Vasily Khoruzhick <anarsoul@gmail.com>
+Reported-by: Roman Stratiienko <r.stratiienko@gmail.com>
+Signed-off-by: Qiang Yu <yuq825@gmail.com>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211031041604.187216-1-yuq825@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/backref.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/lima/lima_device.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
-index f735b8798ba12..6b4b0f105a572 100644
---- a/fs/btrfs/backref.c
-+++ b/fs/btrfs/backref.c
-@@ -1214,7 +1214,12 @@ static int find_parent_nodes(struct btrfs_trans_handle *trans,
- 	ret = btrfs_search_slot(NULL, fs_info->extent_root, &key, path, 0, 0);
- 	if (ret < 0)
- 		goto out;
--	BUG_ON(ret == 0);
-+	if (ret == 0) {
-+		/* This shouldn't happen, indicates a bug or fs corruption. */
-+		ASSERT(ret != 0);
-+		ret = -EUCLEAN;
-+		goto out;
-+	}
+diff --git a/drivers/gpu/drm/lima/lima_device.c b/drivers/gpu/drm/lima/lima_device.c
+index 65fdca366e41f..36c9905894278 100644
+--- a/drivers/gpu/drm/lima/lima_device.c
++++ b/drivers/gpu/drm/lima/lima_device.c
+@@ -357,6 +357,7 @@ int lima_device_init(struct lima_device *ldev)
+ 	int err, i;
  
- #ifdef CONFIG_BTRFS_FS_RUN_SANITY_TESTS
- 	if (trans && likely(trans->type != __TRANS_DUMMY) &&
+ 	dma_set_coherent_mask(ldev->dev, DMA_BIT_MASK(32));
++	dma_set_max_seg_size(ldev->dev, UINT_MAX);
+ 
+ 	err = lima_clk_init(ldev);
+ 	if (err)
 -- 
 2.34.1
 
