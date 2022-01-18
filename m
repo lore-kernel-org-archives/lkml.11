@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8258C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:36:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54183C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:36:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344988AbiARCfM (ORCPT
+        id S1345096AbiARCfQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:35:12 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45060 "EHLO
+        Mon, 17 Jan 2022 21:35:16 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43954 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245485AbiARC1w (ORCPT
+        with ESMTP id S245546AbiARC0r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:27:52 -0500
+        Mon, 17 Jan 2022 21:26:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E29C660AAF;
-        Tue, 18 Jan 2022 02:27:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CBE99C36AE3;
-        Tue, 18 Jan 2022 02:27:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A0A716115F;
+        Tue, 18 Jan 2022 02:26:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEC54C36AE3;
+        Tue, 18 Jan 2022 02:26:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472871;
-        bh=d/Y/dKHv4FKlCXeMXYlteoOcfs+yj883sgrx/JUCzZE=;
+        s=k20201202; t=1642472806;
+        bh=ufLzCl2omFWLzhWbChO1EMdtfVpNuNeChc52YK05Kdw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FjuBrf7qSJ+kvKvsrOOVAF4jg2NiUFsJDabYvTPRZkueFrp1rfxRBbWgxPUaqXprH
-         SzPX0y216qgbP2QM7z6pa/jlR0lhUYSGds3xxQ0lXcQ44KDqVTmDI5xsEq4STt6h2G
-         XPaZKFOVu5oFopnoFr4yncnRrRixgI2YOlxkWji/1blKDx5a/HOwcfB060UiDldqK3
-         ShHBuaD2AP1cRKkw1U/tWDYVINmuoKh0WSbl7qTuu3D8P48oPHEK2tJdYH4P5i7qWP
-         ja2XCD/q8y3tRJqD0u4YQZZbbUjkHX3FtakEQhKcd4hWJI+VViMb1b7Rzl5S5YrhyF
-         BT9rSFJcTclgw==
+        b=nFdso7uSf4o76dFV9m8TeaG/JQpWT9yygc6tWHehPyWfG5+Yyg6w+MTE0cYa30B1V
+         Oh9Qh6+IFOC+Hbqg8xJFo0rTC790zOyp7uCdjflUfHSsCJs//wAfn75lO1pFBkXbr8
+         87T3VFwzZ7MiK97nBOVLpCBOTPiNSCYVruSltbp2Hm7+efGkZUkQOOO0Z86tDcjrDo
+         a8U44yx6qVygnOPlXmhZEWxdX0Wn7J3i6lA8Ipqps7Gk1AEKhjtJvjJYzqXKLslM3W
+         iyvF8NeTmguk3fMfFJJwlLEwkrHZSVIIZQBggRyEK7ihnfnJ4fQvgu/2lZROMy2wo0
+         e4FIcnfJRa7gw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
-        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        matthias.bgg@gmail.com, sean.wang@mediatek.com,
-        shayne.chen@mediatek.com, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.16 156/217] mt76: mt7615: improve wmm index allocation
-Date:   Mon, 17 Jan 2022 21:18:39 -0500
-Message-Id: <20220118021940.1942199-156-sashal@kernel.org>
+Cc:     "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>,
+        abaci-bugfix@linux.alibaba.com, mchehab+huawei@kernel.org,
+        robh@kernel.org, caihuoqing@baidu.com, linux-mmc@vger.kernel.org,
+        linux-omap@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 139/217] mmc: omap_hsmmc: Revert special init for wl1251
+Date:   Mon, 17 Jan 2022 21:18:22 -0500
+Message-Id: <20220118021940.1942199-139-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -53,43 +52,78 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Felix Fietkau <nbd@nbd.name>
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
 
-[ Upstream commit 70fb028707c8871ef9e56b3ffa3d895e14956cc4 ]
+[ Upstream commit dfb654f1885f05baf506cdfdbc3f7efa1d847d54 ]
 
-Typically all AP interfaces on a PHY will share the same WMM settings, while
-sta/mesh interfaces will usually inherit the settings from a remote device.
-In order minimize the likelihood of conflicting WMM settings, make all AP
-interfaces share one slot, and all non-AP interfaces another one.
+Due to recent changes to the mmc core, card quirks can be applied based
+upon a compatible string in child OF node. The quirk needed for wl1251
+(SDIO card) is managed in the core, therefore there is no longer any reason
+to deal with this in omap_hsmmc too, so let's remove it.
 
-This also fixes running multiple AP interfaces on MT7613, which only has 3
-WMM slots.
-
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Link: https://lore.kernel.org/r/77d313b97d1e18b0eb7ed2d88d718d960f329bb0.1636564631.git.hns@goldelico.com
+[Ulf: Re-wrote the commit message to make it more clear]
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt7615/main.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/mmc/host/omap_hsmmc.c | 36 -----------------------------------
+ 1 file changed, 36 deletions(-)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/main.c b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-index 890d9b07e1563..b308d5ab5f9a6 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7615/main.c
-@@ -211,11 +211,9 @@ static int mt7615_add_interface(struct ieee80211_hw *hw,
- 	mvif->mt76.omac_idx = idx;
+diff --git a/drivers/mmc/host/omap_hsmmc.c b/drivers/mmc/host/omap_hsmmc.c
+index 9dafcbf969d96..fca30add563e9 100644
+--- a/drivers/mmc/host/omap_hsmmc.c
++++ b/drivers/mmc/host/omap_hsmmc.c
+@@ -1499,41 +1499,6 @@ static void omap_hsmmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
+ 	omap_hsmmc_set_bus_mode(host);
+ }
  
- 	mvif->mt76.band_idx = ext_phy;
--	if (mt7615_ext_phy(dev))
--		mvif->mt76.wmm_idx = ext_phy * (MT7615_MAX_WMM_SETS / 2) +
--				mvif->mt76.idx % (MT7615_MAX_WMM_SETS / 2);
--	else
--		mvif->mt76.wmm_idx = mvif->mt76.idx % MT7615_MAX_WMM_SETS;
-+	mvif->mt76.wmm_idx = vif->type != NL80211_IFTYPE_AP;
-+	if (ext_phy)
-+		mvif->mt76.wmm_idx += 2;
+-static void omap_hsmmc_init_card(struct mmc_host *mmc, struct mmc_card *card)
+-{
+-	struct omap_hsmmc_host *host = mmc_priv(mmc);
+-
+-	if (card->type == MMC_TYPE_SDIO || card->type == MMC_TYPE_SD_COMBO) {
+-		struct device_node *np = mmc_dev(mmc)->of_node;
+-
+-		/*
+-		 * REVISIT: should be moved to sdio core and made more
+-		 * general e.g. by expanding the DT bindings of child nodes
+-		 * to provide a mechanism to provide this information:
+-		 * Documentation/devicetree/bindings/mmc/mmc-card.yaml
+-		 */
+-
+-		np = of_get_compatible_child(np, "ti,wl1251");
+-		if (np) {
+-			/*
+-			 * We have TI wl1251 attached to MMC3. Pass this
+-			 * information to the SDIO core because it can't be
+-			 * probed by normal methods.
+-			 */
+-
+-			dev_info(host->dev, "found wl1251\n");
+-			card->quirks |= MMC_QUIRK_NONSTD_SDIO;
+-			card->cccr.wide_bus = 1;
+-			card->cis.vendor = 0x104c;
+-			card->cis.device = 0x9066;
+-			card->cis.blksize = 512;
+-			card->cis.max_dtr = 24000000;
+-			card->ocr = 0x80;
+-			of_node_put(np);
+-		}
+-	}
+-}
+-
+ static void omap_hsmmc_enable_sdio_irq(struct mmc_host *mmc, int enable)
+ {
+ 	struct omap_hsmmc_host *host = mmc_priv(mmc);
+@@ -1660,7 +1625,6 @@ static struct mmc_host_ops omap_hsmmc_ops = {
+ 	.set_ios = omap_hsmmc_set_ios,
+ 	.get_cd = mmc_gpio_get_cd,
+ 	.get_ro = mmc_gpio_get_ro,
+-	.init_card = omap_hsmmc_init_card,
+ 	.enable_sdio_irq = omap_hsmmc_enable_sdio_irq,
+ };
  
- 	dev->mt76.vif_mask |= BIT(mvif->mt76.idx);
- 	dev->omac_mask |= BIT_ULL(mvif->mt76.omac_idx);
 -- 
 2.34.1
 
