@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0793C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0F4CC43219
 	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:41:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346922AbiARCkO (ORCPT
+        id S1346893AbiARCkK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:40:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:44344 "EHLO
+        Mon, 17 Jan 2022 21:40:10 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44288 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345187AbiARCfU (ORCPT
+        with ESMTP id S1345140AbiARCfS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:35:20 -0500
+        Mon, 17 Jan 2022 21:35:18 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E51EEB81240;
-        Tue, 18 Jan 2022 02:35:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3A00C36AEF;
+        by ams.source.kernel.org (Postfix) with ESMTPS id 04ADEB81233;
         Tue, 18 Jan 2022 02:35:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B10D3C36AF6;
+        Tue, 18 Jan 2022 02:35:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473318;
-        bh=AXo2SKIfBrFl+rOiVbbS6B5EIC7YCr/SvPrUDVh/G4E=;
+        s=k20201202; t=1642473315;
+        bh=BeaWnZ5j1Bke+EBbtqE3BLQl4drzIXo45ihMaFWjRuk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UfhxH2Lgl2OlT8yNOldrj+eVzYUhy80Z+qQ5jQ8+4mLcBnrqO5J4FHNjs+ifnbBw/
-         8OS/pG82Jumhvtv0olz1hecU6N2LapzWE+GzSkllw6l2NAsZfm0yn2K0sOK7TVolaA
-         zB24kqE9cl3yW7ixpXXkLfkRfphu8BdqlX9VQUSFeroVhXM8C6h1O/qWqAhCr00b3k
-         N3AoSMu/sTe04sUv2D06tbO6MJMvsRpbbfHsJEFZORpJ1X3km39EJkopNe59bUSQuf
-         whhaP3F2XZhQhXd3oVcHIPOuOt9OQXGThn5bz7/kD0NbDmCN7JSlNg5CyX8HGX3dVp
-         elAi03TTpev2Q==
+        b=aXIvdVG/1WapSh0NdgJ+iVd+sf2+L3S8CUQFazTtLjBqbtF6OPRjmscrSKBFPRF4p
+         xiV08kDOCPXGNsiew/Dlin222xzlqAo7XfTLqFu/OMLNwvhkLN1OQNFibegD5NIW/X
+         9dOKeQqzaH80LniMbxPjFyUiz8JIrbbgcEmX+8eEToCIYjvn/8aAUorMp04l7tpHbu
+         fUsmrcQfcSn8QFIotqdmYYA04gvbDCAzB3WoRUOp0nhifkg3x02akAbZAZOVULtH3K
+         BCBLGYsqmGhUIeKYXZsLWU9KMTy+Li5y6nrI+s2i4s0sa0IpZFyS/F5XwPwv6EeueS
+         dbrb4IQbTLypg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Adam Ward <Adam.Ward.opensource@diasemi.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>,
-        support.opensource@diasemi.com, lgirdwood@gmail.com
-Subject: [PATCH AUTOSEL 5.15 069/188] regulator: da9121: Prevent current limit change when enabled
-Date:   Mon, 17 Jan 2022 21:29:53 -0500
-Message-Id: <20220118023152.1948105-69-sashal@kernel.org>
+Cc:     Sriram R <quic_srirrama@quicinc.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
+        davem@davemloft.net, kuba@kernel.org, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 067/188] ath11k: Avoid NULL ptr access during mgmt tx cleanup
+Date:   Mon, 17 Jan 2022 21:29:51 -0500
+Message-Id: <20220118023152.1948105-67-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -50,37 +51,117 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Adam Ward <Adam.Ward.opensource@diasemi.com>
+From: Sriram R <quic_srirrama@quicinc.com>
 
-[ Upstream commit 24f0853228f3b98f1ef08d5824376c69bb8124d2 ]
+[ Upstream commit a93789ae541c7d5c1c2a4942013adb6bcc5e2848 ]
 
-Prevent changing current limit when enabled as a precaution against
-possibile instability due to tight integration with switching cycle
+Currently 'ar' reference is not added in skb_cb during
+WMI mgmt tx. Though this is generally not used during tx completion
+callbacks, on interface removal the remaining idr cleanup callback
+uses the ar ptr from skb_cb from mgmt txmgmt_idr. Hence
+fill them during tx call for proper usage.
 
-Signed-off-by: Adam Ward <Adam.Ward.opensource@diasemi.com>
-Link: https://lore.kernel.org/r/52ee682476004a1736c1e0293358987319c1c415.1638223185.git.Adam.Ward.opensource@diasemi.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+Also free the skb which is missing currently in these
+callbacks.
+
+Crash_info:
+
+[19282.489476] Unable to handle kernel NULL pointer dereference at virtual address 00000000
+[19282.489515] pgd = 91eb8000
+[19282.496702] [00000000] *pgd=00000000
+[19282.502524] Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+[19282.783728] PC is at ath11k_mac_vif_txmgmt_idr_remove+0x28/0xd8 [ath11k]
+[19282.789170] LR is at idr_for_each+0xa0/0xc8
+
+Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.5.0.1-00729-QCAHKSWPL_SILICONZ-3 v2
+Signed-off-by: Sriram R <quic_srirrama@quicinc.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/1637832614-13831-1-git-send-email-quic_srirrama@quicinc.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/regulator/da9121-regulator.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/net/wireless/ath/ath11k/mac.c | 35 +++++++++++++++------------
+ 1 file changed, 20 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/regulator/da9121-regulator.c b/drivers/regulator/da9121-regulator.c
-index e669250902580..0a4fd449c27d1 100644
---- a/drivers/regulator/da9121-regulator.c
-+++ b/drivers/regulator/da9121-regulator.c
-@@ -253,6 +253,11 @@ static int da9121_set_current_limit(struct regulator_dev *rdev,
- 		goto error;
- 	}
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 89a64ebd620f3..8ea851013bb7a 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: BSD-3-Clause-Clear
+ /*
+  * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
++ * Copyright (c) 2021 Qualcomm Innovation Center, Inc. All rights reserved.
+  */
  
-+	if (rdev->desc->ops->is_enabled(rdev)) {
-+		ret = -EBUSY;
-+		goto error;
-+	}
+ #include <net/mac80211.h>
+@@ -4131,23 +4132,32 @@ static int __ath11k_set_antenna(struct ath11k *ar, u32 tx_ant, u32 rx_ant)
+ 	return 0;
+ }
+ 
+-int ath11k_mac_tx_mgmt_pending_free(int buf_id, void *skb, void *ctx)
++static void ath11k_mac_tx_mgmt_free(struct ath11k *ar, int buf_id)
+ {
+-	struct sk_buff *msdu = skb;
++	struct sk_buff *msdu;
+ 	struct ieee80211_tx_info *info;
+-	struct ath11k *ar = ctx;
+-	struct ath11k_base *ab = ar->ab;
+ 
+ 	spin_lock_bh(&ar->txmgmt_idr_lock);
+-	idr_remove(&ar->txmgmt_idr, buf_id);
++	msdu = idr_remove(&ar->txmgmt_idr, buf_id);
+ 	spin_unlock_bh(&ar->txmgmt_idr_lock);
+-	dma_unmap_single(ab->dev, ATH11K_SKB_CB(msdu)->paddr, msdu->len,
 +
- 	ret = da9121_ceiling_selector(rdev, min_ua, max_ua, &sel);
- 	if (ret < 0)
- 		goto error;
++	if (!msdu)
++		return;
++
++	dma_unmap_single(ar->ab->dev, ATH11K_SKB_CB(msdu)->paddr, msdu->len,
+ 			 DMA_TO_DEVICE);
+ 
+ 	info = IEEE80211_SKB_CB(msdu);
+ 	memset(&info->status, 0, sizeof(info->status));
+ 
+ 	ieee80211_free_txskb(ar->hw, msdu);
++}
++
++int ath11k_mac_tx_mgmt_pending_free(int buf_id, void *skb, void *ctx)
++{
++	struct ath11k *ar = ctx;
++
++	ath11k_mac_tx_mgmt_free(ar, buf_id);
+ 
+ 	return 0;
+ }
+@@ -4156,17 +4166,10 @@ static int ath11k_mac_vif_txmgmt_idr_remove(int buf_id, void *skb, void *ctx)
+ {
+ 	struct ieee80211_vif *vif = ctx;
+ 	struct ath11k_skb_cb *skb_cb = ATH11K_SKB_CB((struct sk_buff *)skb);
+-	struct sk_buff *msdu = skb;
+ 	struct ath11k *ar = skb_cb->ar;
+-	struct ath11k_base *ab = ar->ab;
+ 
+-	if (skb_cb->vif == vif) {
+-		spin_lock_bh(&ar->txmgmt_idr_lock);
+-		idr_remove(&ar->txmgmt_idr, buf_id);
+-		spin_unlock_bh(&ar->txmgmt_idr_lock);
+-		dma_unmap_single(ab->dev, skb_cb->paddr, msdu->len,
+-				 DMA_TO_DEVICE);
+-	}
++	if (skb_cb->vif == vif)
++		ath11k_mac_tx_mgmt_free(ar, buf_id);
+ 
+ 	return 0;
+ }
+@@ -4181,6 +4184,8 @@ static int ath11k_mac_mgmt_tx_wmi(struct ath11k *ar, struct ath11k_vif *arvif,
+ 	int buf_id;
+ 	int ret;
+ 
++	ATH11K_SKB_CB(skb)->ar = ar;
++
+ 	spin_lock_bh(&ar->txmgmt_idr_lock);
+ 	buf_id = idr_alloc(&ar->txmgmt_idr, skb, 0,
+ 			   ATH11K_TX_MGMT_NUM_PENDING_MAX, GFP_ATOMIC);
 -- 
 2.34.1
 
