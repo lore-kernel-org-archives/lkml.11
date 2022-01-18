@@ -2,44 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8772C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:57:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DDC5C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:57:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343934AbiARC5C (ORCPT
+        id S1347801AbiARC51 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:57:02 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37126 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348066AbiARCos (ORCPT
+        Mon, 17 Jan 2022 21:57:27 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53564 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348380AbiARCpU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:44:48 -0500
+        Mon, 17 Jan 2022 21:45:20 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DC2C861294;
-        Tue, 18 Jan 2022 02:44:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 60F2FC36AE3;
-        Tue, 18 Jan 2022 02:44:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8C75EB811CF;
+        Tue, 18 Jan 2022 02:45:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F3A03C36AEB;
+        Tue, 18 Jan 2022 02:45:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473886;
-        bh=k/Lz/Zo8RSedFrd/Cb57u0V3RMctMpavMVRb8b8/edc=;
+        s=k20201202; t=1642473914;
+        bh=ZtDKUt8zQi4O7Km6XjhQhnQ9cR3FhiXrj238XpOzWF4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rWEGfDr0D4+2UtZDRsgzalhs4bdpf394gsdRTO+tM1cFebDVWeSDgObBpLen4HYg3
-         7qQCe2nquykWQ27TLzFIGOev1wc7dgXarwUnSkGrc6vk/3iXRSYJZLV27XBProQ4CX
-         ae4oIgIm7gtXJkxKU6613XgKbdeUmc9kK2INp6n52HaZEDUVG/MnVDOlL2bsJObtzG
-         NGaMLYKHSx/D3GXRIiaUwN+afdWHbA+aUdhNeGu4TF8KJAacXRztJyTwJ1lFZ02Q68
-         Kc0cND2imCjD0IeA3F8xped4yJ+vN/gEugEkddTs0TmU9IrhQUL2gPafo19hAy1EH4
-         ddFPu3e4ROVXg==
+        b=Xutnl80TeKSY253wGrdVLrKXD9JaPsmCwAlVzTe5/8jI6EM+Xtvx0/zIhCh6jBypX
+         OUMmNkYpWFrhddX+Frw5f60rTzliOwX6/nB7nVjSz9my3XIJLwbt4QZwrOZUQ57XjH
+         9QANgBsNPbgmsCCINePHoRoaO1m0SQitkm/hEBHKmniyA1ex84drC6mIk1K22IJ+W6
+         gyzWAykUGZoXbWfQFGgpC0K4WgbMV+xFAbmxr1Ks5MQ1yotooI94dhYH/KKN2Gn4lh
+         RXqOWvNHL4ri46hBF5v6NbdX7Ajn1ZFqBXBPI9NkKw2RkgT4/wAmGveV8RfbCOloI2
+         RUyTALKffdYaw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Wan Jiabing <wanjiabing@vivo.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Sasha Levin <sashal@kernel.org>, magnus.damm@gmail.com,
-        linux@armlinux.org.uk, linux-arm-kernel@lists.infradead.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 07/73] ARM: shmobile: rcar-gen2: Add missing of_node_put()
-Date:   Mon, 17 Jan 2022 21:43:26 -0500
-Message-Id: <20220118024432.1952028-7-sashal@kernel.org>
+Cc:     Zekun Shen <bruceshenzk@gmail.com>,
+        Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, amitkarwar@gmail.com,
+        siva8118@gmail.com, kvalo@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 20/73] rsi: Fix use-after-free in rsi_rx_done_handler()
+Date:   Mon, 17 Jan 2022 21:43:39 -0500
+Message-Id: <20220118024432.1952028-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
 References: <20220118024432.1952028-1-sashal@kernel.org>
@@ -51,50 +53,86 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wan Jiabing <wanjiabing@vivo.com>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit 85744f2d938c5f3cfc44cb6533c157469634da93 ]
+[ Upstream commit b07e3c6ebc0c20c772c0f54042e430acec2945c3 ]
 
-Fix following coccicheck warning:
-./arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c:156:1-33: Function
-for_each_matching_node_and_match should have of_node_put() before break
-and goto.
+When freeing rx_cb->rx_skb, the pointer is not set to NULL,
+a later rsi_rx_done_handler call will try to read the freed
+address.
+This bug will very likley lead to double free, although
+detected early as use-after-free bug.
 
-Early exits from for_each_matching_node_and_match() should decrement the
-node reference counter.
+The bug is triggerable with a compromised/malfunctional usb
+device. After applying the patch, the same input no longer
+triggers the use-after-free.
 
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-Link: https://lore.kernel.org/r/20211018014503.7598-1-wanjiabing@vivo.com
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Attached is the kasan report from fuzzing.
+
+BUG: KASAN: use-after-free in rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+Read of size 4 at addr ffff8880188e5930 by task modprobe/231
+Call Trace:
+ <IRQ>
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+ ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+ __kasan_report.cold+0x37/0x7c
+ ? dma_direct_unmap_page+0x90/0x110
+ ? rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+ kasan_report+0xe/0x20
+ rsi_rx_done_handler+0x354/0x430 [rsi_usb]
+ __usb_hcd_giveback_urb+0x1e4/0x380
+ usb_giveback_urb_bh+0x241/0x4f0
+ ? __usb_hcd_giveback_urb+0x380/0x380
+ ? apic_timer_interrupt+0xa/0x20
+ tasklet_action_common.isra.0+0x135/0x330
+ __do_softirq+0x18c/0x634
+ ? handle_irq_event+0xcd/0x157
+ ? handle_edge_irq+0x1eb/0x7b0
+ irq_exit+0x114/0x140
+ do_IRQ+0x91/0x1e0
+ common_interrupt+0xf/0xf
+ </IRQ>
+
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/YXxQL/vIiYcZUu/j@10-18-43-117.dynapool.wireless.nyu.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/wireless/rsi/rsi_91x_usb.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
-index ee949255ced3f..09ef73b99dd86 100644
---- a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
-+++ b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
-@@ -154,8 +154,10 @@ static int __init rcar_gen2_regulator_quirk(void)
- 		return -ENODEV;
+diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
+index 68ce3d2bc5357..730d7bf86c40c 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_usb.c
++++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
+@@ -261,8 +261,12 @@ static void rsi_rx_done_handler(struct urb *urb)
+ 	struct rsi_91x_usbdev *dev = (struct rsi_91x_usbdev *)rx_cb->data;
+ 	int status = -EINVAL;
  
- 	for_each_matching_node_and_match(np, rcar_gen2_quirk_match, &id) {
--		if (!of_device_is_available(np))
-+		if (!of_device_is_available(np)) {
-+			of_node_put(np);
- 			break;
-+		}
++	if (!rx_cb->rx_skb)
++		return;
++
+ 	if (urb->status) {
+ 		dev_kfree_skb(rx_cb->rx_skb);
++		rx_cb->rx_skb = NULL;
+ 		return;
+ 	}
  
- 		ret = of_property_read_u32(np, "reg", &addr);
- 		if (ret)	/* Skip invalid entry and continue */
-@@ -164,6 +166,7 @@ static int __init rcar_gen2_regulator_quirk(void)
- 		quirk = kzalloc(sizeof(*quirk), GFP_KERNEL);
- 		if (!quirk) {
- 			ret = -ENOMEM;
-+			of_node_put(np);
- 			goto err_mem;
- 		}
+@@ -286,8 +290,10 @@ static void rsi_rx_done_handler(struct urb *urb)
+ 	if (rsi_rx_urb_submit(dev->priv, rx_cb->ep_num, GFP_ATOMIC))
+ 		rsi_dbg(ERR_ZONE, "%s: Failed in urb submission", __func__);
  
+-	if (status)
++	if (status) {
+ 		dev_kfree_skb(rx_cb->rx_skb);
++		rx_cb->rx_skb = NULL;
++	}
+ }
+ 
+ static void rsi_rx_urb_kill(struct rsi_hw *adapter, u8 ep_num)
 -- 
 2.34.1
 
