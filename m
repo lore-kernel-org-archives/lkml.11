@@ -2,50 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACB70C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:40:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46571C433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:41:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354765AbiARDko (ORCPT
+        id S1349810AbiARDk7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:40:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45090 "EHLO
+        Mon, 17 Jan 2022 22:40:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38920 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353595AbiARDdV (ORCPT
+        with ESMTP id S1354484AbiARDG1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:33:21 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DFB9C037012;
-        Mon, 17 Jan 2022 19:09:17 -0800 (PST)
+        Mon, 17 Jan 2022 22:06:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9447C08EDC8;
+        Mon, 17 Jan 2022 18:48:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3DBDB811CF;
-        Tue, 18 Jan 2022 03:09:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6108AC36AE3;
-        Tue, 18 Jan 2022 03:09:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85D766130A;
+        Tue, 18 Jan 2022 02:48:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 12DAAC36AE3;
+        Tue, 18 Jan 2022 02:48:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642475354;
-        bh=wxHpRND5njXX8eY0Ajb3h03AwZttuekxSrz5d3J35nY=;
+        s=k20201202; t=1642474123;
+        bh=y9ADDFmPm1g6glcf6soI3bub2yXDW5MxdvTkZ7LyFbw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZbGkU/e/VSj5zQEYrzvPLdROcPTt1rQZb4TW1luVM2c+g7jMq896+gim1vm5gfzbP
-         DyD0f9QACbC+Rb0of/8GCcyrbGVJAmq5A2bYX3oJBP9Mjx0ZkB2H3AndgdC27MSzAN
-         5l4Bgg96PGUhBqQdjwgNDzjzZtWwUE5ctd8y4jWkucPSp1/qEkHo5vJw1mmwSh1xK/
-         ffooJxBO50iV9VY8q3AVsUHWUK0MDpfQOokwIRMc9xHMcJ1ZjO+lx9IvvLBkrLFdcC
-         tavamLb0cm8jjNI5GoeZiEtR4g7L+goHKmYQnC0qPHBPSoOPA7Hbf/8mrp4PnAEJDl
-         3DjhWHn4jqDmw==
+        b=Ea2BjuGhE0123FM0Fgt5dMpvqG58ZW3vDmrTOkA8xxc2lc4NPaAAYDBN7xK/7AkB7
+         7l7PaI4az/p3HbjlCPhUnBjF9iq6SpA82UoSy9hMn4BOmeGv2xarK3o4SGtVNeBDQB
+         kDlLrCojJJPq+FgSovRCgnkhTQKa1n0X6MY1LYvuChL9wjFkD3CjQcqH9bz/H1t/+K
+         ltgekc4ISLXU7E5HDaMwCHXut/D1xFKcD1rVoNJdUeDYBE9RHWIeaSYsucLZ7mvrET
+         KFDubapk40Hrq5r1QOYKfL6vbgJV3gwutw/0Nfex4T+9ouytyVe592JnJqCGKHkceV
+         QdlQzDox9TUcA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zekun Shen <bruceshenzk@gmail.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>, ath9k-devel@qca.qualcomm.com,
-        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 18/29] ath9k: Fix out-of-bound memcpy in ath9k_hif_usb_rx_stream
-Date:   Mon, 17 Jan 2022 22:08:11 -0500
-Message-Id: <20220118030822.1955469-18-sashal@kernel.org>
+Cc:     "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>,
+        Bob Moore <robert.moore@intel.com>,
+        Sasha Levin <sashal@kernel.org>, linux-acpi@vger.kernel.org,
+        devel@acpica.org
+Subject: [PATCH AUTOSEL 4.19 45/59] ACPICA: Hardware: Do not flush CPU cache when entering S4 and S5
+Date:   Mon, 17 Jan 2022 21:46:46 -0500
+Message-Id: <20220118024701.1952911-45-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118030822.1955469-1-sashal@kernel.org>
-References: <20220118030822.1955469-1-sashal@kernel.org>
+In-Reply-To: <20220118024701.1952911-1-sashal@kernel.org>
+References: <20220118024701.1952911-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,88 +54,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zekun Shen <bruceshenzk@gmail.com>
+From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 
-[ Upstream commit 6ce708f54cc8d73beca213cec66ede5ce100a781 ]
+[ Upstream commit 1d4e0b3abb168b2ee1eca99c527cffa1b80b6161 ]
 
-Large pkt_len can lead to out-out-bound memcpy. Current
-ath9k_hif_usb_rx_stream allows combining the content of two urb
-inputs to one pkt. The first input can indicate the size of the
-pkt. Any remaining size is saved in hif_dev->rx_remain_len.
-While processing the next input, memcpy is used with rx_remain_len.
+ACPICA commit 3dd7e1f3996456ef81bfe14cba29860e8d42949e
 
-4-byte pkt_len can go up to 0xffff, while a single input is 0x4000
-maximum in size (MAX_RX_BUF_SIZE). Thus, the patch adds a check for
-pkt_len which must not exceed 2 * MAX_RX_BUG_SIZE.
+According to ACPI 6.4, Section 16.2, the CPU cache flushing is
+required on entering to S1, S2, and S3, but the ACPICA code
+flushes the CPU cache regardless of the sleep state.
 
-BUG: KASAN: slab-out-of-bounds in ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
-Read of size 46393 at addr ffff888018798000 by task kworker/0:1/23
+Blind cache flush on entering S5 causes problems for TDX.
 
-CPU: 0 PID: 23 Comm: kworker/0:1 Not tainted 5.6.0 #63
-Hardware name: QEMU Standard PC (i440FX + PIIX, 1996),
-BIOS rel-1.10.2-0-g5f4c7b1-prebuilt.qemu-project.org 04/01/2014
-Workqueue: events request_firmware_work_func
-Call Trace:
- <IRQ>
- dump_stack+0x76/0xa0
- print_address_description.constprop.0+0x16/0x200
- ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- __kasan_report.cold+0x37/0x7c
- ? ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- kasan_report+0xe/0x20
- check_memory_region+0x15a/0x1d0
- memcpy+0x20/0x50
- ath9k_hif_usb_rx_cb+0x490/0xed7 [ath9k_htc]
- ? hif_usb_mgmt_cb+0x2d9/0x2d9 [ath9k_htc]
- ? _raw_spin_lock_irqsave+0x7b/0xd0
- ? _raw_spin_trylock_bh+0x120/0x120
- ? __usb_unanchor_urb+0x12f/0x210
- __usb_hcd_giveback_urb+0x1e4/0x380
- usb_giveback_urb_bh+0x241/0x4f0
- ? __hrtimer_run_queues+0x316/0x740
- ? __usb_hcd_giveback_urb+0x380/0x380
- tasklet_action_common.isra.0+0x135/0x330
- __do_softirq+0x18c/0x634
- irq_exit+0x114/0x140
- smp_apic_timer_interrupt+0xde/0x380
- apic_timer_interrupt+0xf/0x20
+Flushing happens with WBINVD that is not supported in the TDX
+environment.
 
-I found the bug using a custome USBFuzz port. It's a research work
-to fuzz USB stack/drivers. I modified it to fuzz ath9k driver only,
-providing hand-crafted usb descriptors to QEMU.
+TDX only supports S5 and adjusting ACPICA code to conform to the
+spec more strictly fixes the issue.
 
-After fixing the value of pkt_tag to ATH_USB_RX_STREAM_MODE_TAG in QEMU
-emulation, I found the KASAN report. The bug is triggerable whenever
-pkt_len is above two MAX_RX_BUG_SIZE. I used the same input that crashes
-to test the driver works when applying the patch.
-
-Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/YXsidrRuK6zBJicZ@10-18-43-117.dynapool.wireless.nyu.edu
+Link: https://github.com/acpica/acpica/commit/3dd7e1f3
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+[ rjw: Subject and changelog edits ]
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath9k/hif_usb.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/acpi/acpica/hwesleep.c  | 4 +++-
+ drivers/acpi/acpica/hwsleep.c   | 4 +++-
+ drivers/acpi/acpica/hwxfsleep.c | 2 --
+ 3 files changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath9k/hif_usb.c b/drivers/net/wireless/ath/ath9k/hif_usb.c
-index 75072a8f8cf42..15fb14f818f8b 100644
---- a/drivers/net/wireless/ath/ath9k/hif_usb.c
-+++ b/drivers/net/wireless/ath/ath9k/hif_usb.c
-@@ -586,6 +586,13 @@ static void ath9k_hif_usb_rx_stream(struct hif_device_usb *hif_dev,
- 			return;
- 		}
+diff --git a/drivers/acpi/acpica/hwesleep.c b/drivers/acpi/acpica/hwesleep.c
+index 9516966124ae3..9380a5e214da4 100644
+--- a/drivers/acpi/acpica/hwesleep.c
++++ b/drivers/acpi/acpica/hwesleep.c
+@@ -104,7 +104,9 @@ acpi_status acpi_hw_extended_sleep(u8 sleep_state)
  
-+		if (pkt_len > 2 * MAX_RX_BUF_SIZE) {
-+			dev_err(&hif_dev->udev->dev,
-+				"ath9k_htc: invalid pkt_len (%x)\n", pkt_len);
-+			RX_STAT_INC(skb_dropped);
-+			return;
-+		}
-+
- 		pad_len = 4 - (pkt_len & 0x3);
- 		if (pad_len == 4)
- 			pad_len = 0;
+ 	/* Flush caches, as per ACPI specification */
+ 
+-	ACPI_FLUSH_CPU_CACHE();
++	if (sleep_state < ACPI_STATE_S4) {
++		ACPI_FLUSH_CPU_CACHE();
++	}
+ 
+ 	status = acpi_os_enter_sleep(sleep_state, sleep_control, 0);
+ 	if (status == AE_CTRL_TERMINATE) {
+diff --git a/drivers/acpi/acpica/hwsleep.c b/drivers/acpi/acpica/hwsleep.c
+index f4282370947c8..6368ff544af1a 100644
+--- a/drivers/acpi/acpica/hwsleep.c
++++ b/drivers/acpi/acpica/hwsleep.c
+@@ -110,7 +110,9 @@ acpi_status acpi_hw_legacy_sleep(u8 sleep_state)
+ 
+ 	/* Flush caches, as per ACPI specification */
+ 
+-	ACPI_FLUSH_CPU_CACHE();
++	if (sleep_state < ACPI_STATE_S4) {
++		ACPI_FLUSH_CPU_CACHE();
++	}
+ 
+ 	status = acpi_os_enter_sleep(sleep_state, pm1a_control, pm1b_control);
+ 	if (status == AE_CTRL_TERMINATE) {
+diff --git a/drivers/acpi/acpica/hwxfsleep.c b/drivers/acpi/acpica/hwxfsleep.c
+index dc1e44ccaae20..d0dca7dae080c 100644
+--- a/drivers/acpi/acpica/hwxfsleep.c
++++ b/drivers/acpi/acpica/hwxfsleep.c
+@@ -189,8 +189,6 @@ acpi_status acpi_enter_sleep_state_s4bios(void)
+ 		return_ACPI_STATUS(status);
+ 	}
+ 
+-	ACPI_FLUSH_CPU_CACHE();
+-
+ 	status = acpi_hw_write_port(acpi_gbl_FADT.smi_command,
+ 				    (u32)acpi_gbl_FADT.s4_bios_request, 8);
+ 
 -- 
 2.34.1
 
