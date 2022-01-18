@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57DD3C433F5
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:24:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9764FC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:24:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348352AbiARDYC (ORCPT
+        id S1350595AbiARDYN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:24:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38988 "EHLO
+        Mon, 17 Jan 2022 22:24:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352904AbiARDIi (ORCPT
+        with ESMTP id S1352093AbiARDIh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:08:38 -0500
+        Mon, 17 Jan 2022 22:08:37 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36E81C06161C;
-        Mon, 17 Jan 2022 18:50:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E83B8C0619C4;
+        Mon, 17 Jan 2022 18:50:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EECFEB811CF;
-        Tue, 18 Jan 2022 02:50:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C023AC36AE3;
-        Tue, 18 Jan 2022 02:50:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 91A70B811CE;
+        Tue, 18 Jan 2022 02:50:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB3B8C36AEB;
+        Tue, 18 Jan 2022 02:50:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642474237;
-        bh=bm+Rd7qexeD5Drlqz+BMs3kGsfMPTU5l5sG13qlHO/w=;
+        s=k20201202; t=1642474230;
+        bh=R7V9/x7dkmKmUlvwmV4BF5Mr5APc4p8ioiYZydxfyRE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dZ9cwAf/uLVw3I7EPnU3DqYyuK/mzSFSriP+IQ5NWIuexGZfwjUFykTqV/Q+lwy4q
-         Fh7dibqRDjEZ3uE5/DZ6LA+KkIuRSiZvk85bgSOa09DyoenqSNXxMiOIu7TNQC7ok0
-         mVXQ/4gdkN8YIqNebE9m1zd34KVNxFd2FUx2iJPGduDVu7zBhJ6/kH6u2c8gRdJ234
-         /NXyFtSBb4+wGprRic1ig5DUa6s1142EjB8L6/JIh5V0ahzGISa9V29STITBrC1eqs
-         4866L+/Ax4IPLO6wWMaGidlDY/GNcKTZhGJj8i3SABtVV/tcnL2ApxTVq2todUhyvo
-         BfLpU2p8jDfxQ==
+        b=axFcF0vmCw7UWO2UJv1G3AKFarucKbLTE49OoYIL/pY1sbeFvJxTsjpyO+c29VFgZ
+         7ZyDX4wTNJaw9UxpHYYySNFjj3mwn9yHOjcRYosfau3tTcrrBeh/KqCvFbhBrRKQT1
+         q+7k+fxywDCVD/kAvvdeAsKYxSqV7bjSwMoj8D7lbWGHcgrHXwQr8Qva1anVhUT9rB
+         Qc8ZNP7K+nCab3py2GWDKo/f0dUinVqu/cB+2T90rnee4SBGJxC71WXmKxoMetemPe
+         JtYzYW9h5zX72CntK3XVLrRzB9Wv4rFwkiUtHPrkcLjg2JQdQIvQrJusM59WgN3Ygl
+         oBGw5mxJTmk+g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Thierry Reding <treding@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
-        thierry.reding@gmail.com, jonathanh@nvidia.com, spujar@nvidia.com,
-        mperttunen@nvidia.com, devicetree@vger.kernel.org,
-        linux-tegra@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 36/56] arm64: tegra: Adjust length of CCPLEX cluster MMIO region
-Date:   Mon, 17 Jan 2022 21:48:48 -0500
-Message-Id: <20220118024908.1953673-36-sashal@kernel.org>
+Cc:     Sean Young <sean@mess.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, mchehab@kernel.org,
+        linux-media@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 33/56] media: igorplugusb: receiver overflow should be reported
+Date:   Mon, 17 Jan 2022 21:48:45 -0500
+Message-Id: <20220118024908.1953673-33-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024908.1953673-1-sashal@kernel.org>
 References: <20220118024908.1953673-1-sashal@kernel.org>
@@ -54,33 +53,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
+From: Sean Young <sean@mess.org>
 
-[ Upstream commit 2b14cbd643feea5fc17c6e8bead4e71088c69acd ]
+[ Upstream commit 8fede658e7ddb605bbd68ed38067ddb0af033db4 ]
 
-The Tegra186 CCPLEX cluster register region is 4 MiB is length, not 4
-MiB - 1. This was likely presumed to be the "limit" rather than length.
-Fix it up.
+Without this, some IR will be missing mid-stream and we might decode
+something which never really occurred.
 
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Sean Young <sean@mess.org>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/nvidia/tegra186.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/rc/igorplugusb.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/nvidia/tegra186.dtsi b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-index a9c3eef6c4e09..3307d816050fe 100644
---- a/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-+++ b/arch/arm64/boot/dts/nvidia/tegra186.dtsi
-@@ -351,7 +351,7 @@ pmc@c360000 {
+diff --git a/drivers/media/rc/igorplugusb.c b/drivers/media/rc/igorplugusb.c
+index a5ea86be8f449..2a0325d1f9def 100644
+--- a/drivers/media/rc/igorplugusb.c
++++ b/drivers/media/rc/igorplugusb.c
+@@ -73,9 +73,11 @@ static void igorplugusb_irdata(struct igorplugusb *ir, unsigned len)
+ 	if (start >= len) {
+ 		dev_err(ir->dev, "receive overflow invalid: %u", overflow);
+ 	} else {
+-		if (overflow > 0)
++		if (overflow > 0) {
+ 			dev_warn(ir->dev, "receive overflow, at least %u lost",
+ 								overflow);
++			ir_raw_event_reset(ir->rc);
++		}
  
- 	ccplex@e000000 {
- 		compatible = "nvidia,tegra186-ccplex-cluster";
--		reg = <0x0 0x0e000000 0x0 0x3fffff>;
-+		reg = <0x0 0x0e000000 0x0 0x400000>;
- 
- 		nvidia,bpmp = <&bpmp>;
- 	};
+ 		do {
+ 			rawir.duration = ir->buf_in[i] * 85333;
 -- 
 2.34.1
 
