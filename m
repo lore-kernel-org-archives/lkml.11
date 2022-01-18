@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D5AFC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:57:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B129EC43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:57:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350183AbiARC5j (ORCPT
+        id S1350614AbiARC5s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:57:39 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:35086 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348529AbiARCpg (ORCPT
+        Mon, 17 Jan 2022 21:57:48 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:54984 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348775AbiARCqE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:45:36 -0500
+        Mon, 17 Jan 2022 21:46:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 452F860AB1;
-        Tue, 18 Jan 2022 02:45:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 489CDC36AEB;
-        Tue, 18 Jan 2022 02:45:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0B0AFB81244;
+        Tue, 18 Jan 2022 02:46:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E3B6DC36AEB;
+        Tue, 18 Jan 2022 02:46:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473934;
-        bh=42VGfcpCsuLzDqmi2gYeSLUCwjK3nu0k10kgmKeHXME=;
+        s=k20201202; t=1642473961;
+        bh=Mux5XJTW3pJiVPcl/iFS7hUyFsEJtVaPya5qb4ckeX0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hMLdkRc7wvDeCxyDwmyuVJ8yT6KMWXcw+X/jczQYFLF0uipTITzn1Fsepx/SxPs+T
-         X0HgvIUZINrCD2q4SGsVs3nLjLJjSrFq+ivWpJsQhLZJ6Z+xLwIlTn28Qovmqgdm/U
-         Lla49EtBQy8f/enQkTd7vpS9pZcYtmnb481du/cqQYVR+90VK3zKRrz/O2UlIfxrna
-         txaeOfG7iLT5Zm0FWV9DGvl4wKZIiK1eYMxmLqzNfpTpN16hSlyUxOwqQPNYdPiVzR
-         zRJsR38sX7+j87PIRLcB3jAl0qg0o+qZXNqafqBIxslefbvj0L/WaMycWmTfzosC7I
-         37PJP5jIQLwrA==
+        b=eVTcSDcZtgrb2y7kokwfP89uqWf4UCW8+pWU+tw2P2keBxWqgXWMOAsdF58dyDltr
+         jiNzeuySX5VTd279cy/2+MfUxC+Z2gx/d+NEFZV0rhYanT1auw5l+pORgQ7ojPsF07
+         LZNECUm4cYu94vL0wSEoTBLb7ZPzuINYaXYjRMmYXH/e/h6jyCUoZ0UmCPPV0mTy9/
+         bLb1QUeOzgFo3659LeyBWU4SJIJ2sY/MZQjovPK2KhwV3JtiWNrnN52ikvQAvMrILa
+         klnMNborA1aMLvlbsE86N2kEHImemXlIPuL3NH7sQjhpkCwNW1RXnzvCqcLvJZtVIg
+         IbrUxmKqS53IQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Maximilian Ernestus <maximilian@ernestus.de>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>, kvalo@kernel.org,
-        davem@davemloft.net, kuba@kernel.org,
-        mordechay.goodstein@intel.com, miriam.rachel.korenblit@intel.com,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 28/73] iwlwifi: mvm: synchronize with FW after multicast commands
-Date:   Mon, 17 Jan 2022 21:43:47 -0500
-Message-Id: <20220118024432.1952028-28-sashal@kernel.org>
+Cc:     Paul Moore <paul@paul-moore.com>,
+        Gaosheng Cui <cuigaosheng1@huawei.com>,
+        Richard Guy Briggs <rgb@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, eparis@redhat.com,
+        linux-audit@redhat.com
+Subject: [PATCH AUTOSEL 5.4 43/73] audit: ensure userspace is penalized the same as the kernel when under pressure
+Date:   Mon, 17 Jan 2022 21:44:02 -0500
+Message-Id: <20220118024432.1952028-43-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
 References: <20220118024432.1952028-1-sashal@kernel.org>
@@ -54,70 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Paul Moore <paul@paul-moore.com>
 
-[ Upstream commit db66abeea3aefed481391ecc564fb7b7fb31d742 ]
+[ Upstream commit 8f110f530635af44fff1f4ee100ecef0bac62510 ]
 
-If userspace installs a lot of multicast groups very quickly, then
-we may run out of command queue space as we send the updates in an
-asynchronous fashion (due to locking concerns), and the CPU can
-create them faster than the firmware can process them. This is true
-even when mac80211 has a work struct that gets scheduled.
+Due to the audit control mutex necessary for serializing audit
+userspace messages we haven't been able to block/penalize userspace
+processes that attempt to send audit records while the system is
+under audit pressure.  The result is that privileged userspace
+applications have a priority boost with respect to audit as they are
+not bound by the same audit queue throttling as the other tasks on
+the system.
 
-Fix this by synchronizing with the firmware after sending all those
-commands - outside of the iteration we can send a synchronous echo
-command that just has the effect of the CPU waiting for the prior
-asynchronous commands to finish. This also will cause fewer of the
-commands to be sent to the firmware overall, because the work will
-only run once when rescheduled multiple times while it's running.
+This patch attempts to restore some balance to the system when under
+audit pressure by blocking these privileged userspace tasks after
+they have finished their audit processing, and dropped the audit
+control mutex, but before they return to userspace.
 
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=213649
-Suggested-by: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-Reported-by: Maximilian Ernestus <maximilian@ernestus.de>
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211204083238.51aea5b79ea4.I88a44798efda16e9fe480fb3e94224931d311b29@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Reported-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+Tested-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+Reviewed-by: Richard Guy Briggs <rgb@redhat.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/wireless/intel/iwlwifi/mvm/mac80211.c   | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+ kernel/audit.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-index c942255aa1dbc..29ad7804d77aa 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c
-@@ -1696,6 +1696,7 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	struct iwl_mvm_mc_iter_data iter_data = {
- 		.mvm = mvm,
- 	};
-+	int ret;
- 
- 	lockdep_assert_held(&mvm->mutex);
- 
-@@ -1705,6 +1706,22 @@ static void iwl_mvm_recalc_multicast(struct iwl_mvm *mvm)
- 	ieee80211_iterate_active_interfaces_atomic(
- 		mvm->hw, IEEE80211_IFACE_ITER_NORMAL,
- 		iwl_mvm_mc_iface_iterator, &iter_data);
+diff --git a/kernel/audit.c b/kernel/audit.c
+index d67fce9e3f8b8..146edff0c73ec 100644
+--- a/kernel/audit.c
++++ b/kernel/audit.c
+@@ -1528,6 +1528,20 @@ static void audit_receive(struct sk_buff  *skb)
+ 		nlh = nlmsg_next(nlh, &len);
+ 	}
+ 	audit_ctl_unlock();
 +
-+	/*
-+	 * Send a (synchronous) ech command so that we wait for the
-+	 * multiple asynchronous MCAST_FILTER_CMD commands sent by
-+	 * the interface iterator. Otherwise, we might get here over
-+	 * and over again (by userspace just sending a lot of these)
-+	 * and the CPU can send them faster than the firmware can
-+	 * process them.
-+	 * Note that the CPU is still faster - but with this we'll
-+	 * actually send fewer commands overall because the CPU will
-+	 * not schedule the work in mac80211 as frequently if it's
-+	 * still running when rescheduled (possibly multiple times).
-+	 */
-+	ret = iwl_mvm_send_cmd_pdu(mvm, ECHO_CMD, 0, 0, NULL);
-+	if (ret)
-+		IWL_ERR(mvm, "Failed to synchronize multicast groups update\n");
++	/* can't block with the ctrl lock, so penalize the sender now */
++	if (audit_backlog_limit &&
++	    (skb_queue_len(&audit_queue) > audit_backlog_limit)) {
++		DECLARE_WAITQUEUE(wait, current);
++
++		/* wake kauditd to try and flush the queue */
++		wake_up_interruptible(&kauditd_wait);
++
++		add_wait_queue_exclusive(&audit_backlog_wait, &wait);
++		set_current_state(TASK_UNINTERRUPTIBLE);
++		schedule_timeout(audit_backlog_wait_time);
++		remove_wait_queue(&audit_backlog_wait, &wait);
++	}
  }
  
- static u64 iwl_mvm_prepare_multicast(struct ieee80211_hw *hw,
+ /* Run custom bind function on netlink socket group connect or bind requests. */
+@@ -1772,7 +1786,9 @@ struct audit_buffer *audit_log_start(struct audit_context *ctx, gfp_t gfp_mask,
+ 	 *    task_tgid_vnr() since auditd_pid is set in audit_receive_msg()
+ 	 *    using a PID anchored in the caller's namespace
+ 	 * 2. generator holding the audit_cmd_mutex - we don't want to block
+-	 *    while holding the mutex */
++	 *    while holding the mutex, although we do penalize the sender
++	 *    later in audit_receive() when it is safe to block
++	 */
+ 	if (!(auditd_test_task(current) || audit_ctl_owner_current())) {
+ 		long stime = audit_backlog_wait_time;
+ 
 -- 
 2.34.1
 
