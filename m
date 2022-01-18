@@ -2,120 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39949C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:17:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DF42C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 03:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350757AbiARDRd (ORCPT
+        id S1354130AbiARDRh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 22:17:33 -0500
-Received: from mail104.syd.optusnet.com.au ([211.29.132.246]:46717 "EHLO
-        mail104.syd.optusnet.com.au" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1352933AbiARDAt (ORCPT
+        Mon, 17 Jan 2022 22:17:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37138 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352970AbiARDAv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 22:00:49 -0500
-Received: from dread.disaster.area (pa49-179-45-11.pa.nsw.optusnet.com.au [49.179.45.11])
-        by mail104.syd.optusnet.com.au (Postfix) with ESMTPS id 80E6562BFEC;
-        Tue, 18 Jan 2022 14:00:43 +1100 (AEDT)
-Received: from dave by dread.disaster.area with local (Exim 4.92.3)
-        (envelope-from <david@fromorbit.com>)
-        id 1n9ejh-00180W-6I; Tue, 18 Jan 2022 14:00:41 +1100
-Date:   Tue, 18 Jan 2022 14:00:41 +1100
-From:   Dave Chinner <david@fromorbit.com>
-To:     Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Brian Foster <bfoster@redhat.com>, Ian Kent <raven@themaw.net>,
-        "Darrick J. Wong" <djwong@kernel.org>,
-        Christoph Hellwig <hch@lst.de>,
-        Miklos Szeredi <miklos@szeredi.hu>,
-        David Howells <dhowells@redhat.com>,
-        Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        xfs <linux-xfs@vger.kernel.org>
-Subject: Re: [PATCH] vfs: check dentry is still valid in get_link()
-Message-ID: <20220118030041.GB59729@dread.disaster.area>
-References: <164180589176.86426.501271559065590169.stgit@mickey.themaw.net>
- <YeJr7/E+9stwEb3t@zeniv-ca.linux.org.uk>
- <275358741c4ee64b5e4e008d514876ed4ec1071c.camel@themaw.net>
- <YeV+zseKGNqnSuKR@bfoster>
- <YeWZRL88KPtLWlkI@zeniv-ca.linux.org.uk>
+        Mon, 17 Jan 2022 22:00:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F26BC08E87C;
+        Mon, 17 Jan 2022 18:46:52 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 25AAEB81233;
+        Tue, 18 Jan 2022 02:46:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5B82C36AEF;
+        Tue, 18 Jan 2022 02:46:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642474011;
+        bh=P4LRLYfBnppbrKJ1scYlXS9vu/+G92DlHEynEYWCRLU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=i9IRoXZqqRwQd9eQg/+Pf3CopvfEo58xFSLemqKua1KtjIeR3raBngd6vVz3a+iBu
+         fnlRANDTL3ZCnEZRQbtAHqtKcUm3mFYBlap1R+fRtlX+6ATRmaw/0obPCWq04sST+M
+         6m73Hdmhmm8rmXLBvpFpXapieuclcx7jvbwBSqgiV0UqtXRVJNHforX02vJXgygenq
+         eSmbOZt+PQVauUlOBOZWJWDH2TzlZcrWiGw1n7cjbeY9WitRlRongmrHmot29+Mmv1
+         1xEVskvShoVxLINKMv4Ob1GfHkyPN57f0lARMowjJpH7Bz66qb1lUFgcJmY/+ehYIe
+         OPkTv6EnoKX4w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Corentin Labbe <clabbe.montjoie@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, ulli.kroll@googlemail.com,
+        davem@davemloft.net, linux-arm-kernel@lists.infradead.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 68/73] net: gemini: allow any RGMII interface mode
+Date:   Mon, 17 Jan 2022 21:44:27 -0500
+Message-Id: <20220118024432.1952028-68-sashal@kernel.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
+References: <20220118024432.1952028-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YeWZRL88KPtLWlkI@zeniv-ca.linux.org.uk>
-X-Optus-CM-Score: 0
-X-Optus-CM-Analysis: v=2.4 cv=deDjYVbe c=1 sm=1 tr=0 ts=61e62d5f
-        a=Eslsx4mF8WGvnV49LKizaA==:117 a=Eslsx4mF8WGvnV49LKizaA==:17
-        a=kj9zAlcOel0A:10 a=DghFqjY3_ZEA:10 a=7-415B0cAAAA:8
-        a=ZbRbMrvnt3dbDbI5YVEA:9 a=CjuIK1q_8ugA:10 a=biEYGPWJfzWAr4FL6Ov7:22
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 04:28:52PM +0000, Al Viro wrote:
-> On Mon, Jan 17, 2022 at 09:35:58AM -0500, Brian Foster wrote:
-> 
-> > To Al's question, at the end of the day there is no rcu delay involved
-> > with inode reuse in XFS. We do use call_rcu() for eventual freeing of
-> > inodes (see __xfs_inode_free()), but inode reuse occurs for inodes that
-> > have been put into a "reclaim" state before getting to the point of
-> > freeing the struct inode memory. This lead to the long discussion [1]
-> > Ian references around ways to potentially deal with that. I think the
-> > TLDR of that thread is there are various potential options for
-> > improvement, such as to rcu wait on inode creation/reuse (either
-> > explicitly or via more open coded grace period cookie tracking), to rcu
-> > wait somewhere in the destroy sequence before inodes become reuse
-> > candidates, etc., but none of them seemingly agreeable for varying
-> > reasons (IIRC mostly stemming from either performance or compexity) [2].
-> > 
-> > The change that has been made so far in XFS is to turn rcuwalk for
-> > symlinks off once again, which looks like landed in Linus' tree as
-> > commit 7b7820b83f23 ("xfs: don't expose internal symlink metadata
-> > buffers to the vfs"). The hope is that between that patch and this
-> > prospective vfs tweak, we can have a couple incremental fixes that at
-> > least address the practical problem users have been running into (which
-> > is a crash due to a NULL ->get_link() callback pointer due to inode
-> > reuse). The inode reuse vs. rcu thing might still be a broader problem,
-> > but AFAIA that mechanism has been in place in XFS on Linux pretty much
-> > forever.
-> 
-> My problem with that is that pathname resolution very much relies upon
-> the assumption that any inode it observes will *not* change its nature
-> until the final rcu_read_unlock().  Papering over ->i_op->get_link reads
-> in symlink case might be sufficient at the moment (I'm still not certain
-> about that, though), but that's rather brittle.  E.g. if some XFS change
-> down the road adds ->permission() on some inodes, you'll get the same
-> problem in do_inode_permission().  We also have places where we rely upon
-> 	sample ->d_seq
-> 	fetch ->d_flags
-> 	fetch ->d_inode
-> 	validate ->d_seq
-> 	...
-> 	assume that inode type matches the information in flags
-> 
-> How painful would it be to make xfs_destroy_inode() a ->free_inode() instance?
-> IOW, how far is xfs_inode_mark_reclaimable() from being callable in RCU
-> callback context?
+From: "Russell King (Oracle)" <rmk+kernel@armlinux.org.uk>
 
-AIUI, not very close at all,
+[ Upstream commit 4e4f325a0a55907b14f579e6b1a38c53755e3de2 ]
 
-I'm pretty sure we can't put it under RCU callback context at all
-because xfs_fs_destroy_inode() can take sleeping locks, perform
-transactions, do IO, run rcu_read_lock() critical sections, etc.
-This means that needs to run an a full task context and so can't run
-from RCU callback context at all.
+The four RGMII interface modes take care of the required RGMII delay
+configuration at the PHY and should not be limited by the network MAC
+driver. Sadly, gemini was only permitting RGMII mode with no delays,
+which would require the required delay to be inserted via PCB tracking
+or by the MAC.
 
-> IOW, ->free_inode() is RCU-delayed part of ->destroy_inode().  If both
-> are present, ->destroy_inode() will be called synchronously, followed
-> by ->free_inode() from RCU callback, so you can have both - moving just
-> the "finally mark for reuse" part into ->free_inode() would be OK.
-> Any blocking stuff (if any) can be left in ->destroy_inode()...
+However, there are designs that require the PHY to add the delay, which
+is impossible without Gemini permitting the other three PHY interface
+modes. Fix the driver to allow these.
 
-Yup, that's pretty much what we already do, except that we run the
-RCU-delayed part of freeing the inode once XFS has finished with the
-inode internally and the background inode GC reclaims it.
+Signed-off-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Tested-by: Corentin Labbe <clabbe.montjoie@gmail.com>
+Link: https://lore.kernel.org/r/E1n4mpT-002PLd-Ha@rmk-PC.armlinux.org.uk
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/cortina/gemini.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-Cheers,
-
-Dave.
+diff --git a/drivers/net/ethernet/cortina/gemini.c b/drivers/net/ethernet/cortina/gemini.c
+index c9fb1ec625d8b..a8a8b77c1611e 100644
+--- a/drivers/net/ethernet/cortina/gemini.c
++++ b/drivers/net/ethernet/cortina/gemini.c
+@@ -304,21 +304,21 @@ static void gmac_speed_set(struct net_device *netdev)
+ 	switch (phydev->speed) {
+ 	case 1000:
+ 		status.bits.speed = GMAC_SPEED_1000;
+-		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
++		if (phy_interface_mode_is_rgmii(phydev->interface))
+ 			status.bits.mii_rmii = GMAC_PHY_RGMII_1000;
+ 		netdev_dbg(netdev, "connect %s to RGMII @ 1Gbit\n",
+ 			   phydev_name(phydev));
+ 		break;
+ 	case 100:
+ 		status.bits.speed = GMAC_SPEED_100;
+-		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
++		if (phy_interface_mode_is_rgmii(phydev->interface))
+ 			status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
+ 		netdev_dbg(netdev, "connect %s to RGMII @ 100 Mbit\n",
+ 			   phydev_name(phydev));
+ 		break;
+ 	case 10:
+ 		status.bits.speed = GMAC_SPEED_10;
+-		if (phydev->interface == PHY_INTERFACE_MODE_RGMII)
++		if (phy_interface_mode_is_rgmii(phydev->interface))
+ 			status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
+ 		netdev_dbg(netdev, "connect %s to RGMII @ 10 Mbit\n",
+ 			   phydev_name(phydev));
+@@ -388,6 +388,9 @@ static int gmac_setup_phy(struct net_device *netdev)
+ 		status.bits.mii_rmii = GMAC_PHY_GMII;
+ 		break;
+ 	case PHY_INTERFACE_MODE_RGMII:
++	case PHY_INTERFACE_MODE_RGMII_ID:
++	case PHY_INTERFACE_MODE_RGMII_TXID:
++	case PHY_INTERFACE_MODE_RGMII_RXID:
+ 		netdev_dbg(netdev,
+ 			   "RGMII: set GMAC0 and GMAC1 to MII/RGMII mode\n");
+ 		status.bits.mii_rmii = GMAC_PHY_RGMII_100_10;
 -- 
-Dave Chinner
-david@fromorbit.com
+2.34.1
+
