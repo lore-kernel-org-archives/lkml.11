@@ -2,141 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C088FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 18:49:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01800C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 18:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348342AbiARStH (ORCPT
+        id S1348346AbiARStp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 13:49:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32832 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245016AbiARStG (ORCPT
+        Tue, 18 Jan 2022 13:49:45 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:47658 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239777AbiARSto (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 13:49:06 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECADC061574
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 10:49:05 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id e3so71768348lfc.9
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 10:49:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=W7gSIAjEMMHVPzUY9IiyGaokpzvzLkdxvFC2XtksEpw=;
-        b=jv5BMnRBMuhUA/XUaApRCcjspumfl+fNK6m4jaI3SAy+kGzSt4Mx1GJULcYoOFrFh8
-         AEvrIeNsMWBb7bHjLblMkgrER6sznueruOay8Xn0g56/ahOESSMJFj2Nb6xi9PPHKk3p
-         dXPxn/IQNoj7ygHl+pxX2dDVBqwPhsvf9IocFrb6M6FipWRzOVULy32vUT+cPtYJgOqa
-         1Fh15DblTMV56QmkelIsdvvb1rbG07mVoSqLmyQ6iy82tgXUCXXqNjFZndqvaQTFqLrq
-         Ny6DQZbyCUGzpgJR7iMBeWR5uTtedzEDSifwFGn3lS+X6rsLkedZM3ydxSfz0xBbU7z8
-         /7mQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=W7gSIAjEMMHVPzUY9IiyGaokpzvzLkdxvFC2XtksEpw=;
-        b=TEIFvOv8E8Zko7XthinhtwpQ3ux2cXE6bIL+vbrKm8ARcX100MqoFEuh2ZkfALTRFQ
-         bdQxyEw4RGJXLJwL4YNNWQjB9rGnLoSrosNvfd8IE9SiL+yU7tsnnhhFNBynVOX1vfhE
-         WPkmk+ieIpfaadkQQy1//gTCcLzbir13c0MpETeLJreji5JsjGXfcmjCqzp5owDsJVN7
-         Ph1f36VAY+x/zjl+GAr17KDT3P3pU/lZQ0FmZtw4gVNz8ykEY5KrSth2bkNTn1FNGyJW
-         du8qUoeLScWBN+j+OnrzaNYA46PAXUhu2W8x4HkhfzBpor3e0qwiyFUm9YoeN5jqpPeU
-         o8Rw==
-X-Gm-Message-State: AOAM532fnkt7wSCl06dFWEaaPG/5RCD8EQ1jjvHxgdSrvj46z8f0bRNb
-        6K4p6/YvOaHA4FVaGUXEaefxAD9tweaOHme9YfXqMA==
-X-Google-Smtp-Source: ABdhPJywArf49Dw2UNrWxqMejJ7TLW9Hh1LFYNUhrgeX9EXHvoP0U5m2M1Yqidzc0d71+5BkmvBWTHMOVV1QUXgXhi8=
-X-Received: by 2002:a05:6512:20ca:: with SMTP id u10mr22309044lfr.71.1642531744269;
- Tue, 18 Jan 2022 10:49:04 -0800 (PST)
+        Tue, 18 Jan 2022 13:49:44 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6E29B816B8;
+        Tue, 18 Jan 2022 18:49:42 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F203FC340E5;
+        Tue, 18 Jan 2022 18:49:40 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="U/Y+YHBu"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1642531777;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=8kDfRJVSB/Dcaimsa/vjMLUP8srTQCq9bVl6p5ZAm2c=;
+        b=U/Y+YHBuewTXqw0C6Dj06InDbbu4B8M3iGKZaGvn1NdBWM9C+47xqEH+P0VHOepFNXU+FE
+        5Ue6x1hkyZoBp7FRPjhB/KUzhdk/KKK0lcQwM8b1TF3B2IArDW5xYzXR2j4p2mRKhKzyKA
+        RpWgPrc2X0yu+PRQIJRb8+A+DXlW40I=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 4704321f (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Tue, 18 Jan 2022 18:49:36 +0000 (UTC)
+Received: by mail-yb1-f179.google.com with SMTP id 23so4732437ybf.7;
+        Tue, 18 Jan 2022 10:49:35 -0800 (PST)
+X-Gm-Message-State: AOAM5304+u5MliVSIqnDuvJ6zgsUuXxUBNGi9N99bB22nJMLLvtpXKhZ
+        Qn21/aqB3w/yRbMgnHUNaQMHtxjO/xova/Jym/E=
+X-Google-Smtp-Source: ABdhPJwjXcqqMBS96Vtvk119QZBIJ9xohbPgfh8+w+auW1qVQLfqIpJyVlBaV93K+rzMyMYefFNSjqHidvJp07ttYOk=
+X-Received: by 2002:a25:ef08:: with SMTP id g8mr499647ybd.115.1642531774549;
+ Tue, 18 Jan 2022 10:49:34 -0800 (PST)
 MIME-Version: 1.0
-References: <20220115121447.641524-1-andrej.skvortzov@gmail.com>
-In-Reply-To: <20220115121447.641524-1-andrej.skvortzov@gmail.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Tue, 18 Jan 2022 19:48:28 +0100
-Message-ID: <CAPDyKFr_9kfAns2p6fsUck93s3peyrHvCtv5M9E3fnxLmHbRqQ@mail.gmail.com>
-Subject: Re: [PATCH] mmc: core: Wait for command setting 'Power Off
- Notification' bit to complete
-To:     Andrey Skvortsov <andrej.skvortzov@gmail.com>
-Cc:     Arnaud Ferraris <arnaud.ferraris@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Avri Altman <avri.altman@wdc.com>,
-        Shawn Lin <shawn.lin@rock-chips.com>,
-        Huijin Park <huijin.park@samsung.com>,
-        =?UTF-8?Q?Christian_L=C3=B6hle?= <CLoehle@hyperstone.com>,
-        Yue Hu <huyue2@yulong.com>, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+References: <20220111180318.591029-1-roberto.sassu@huawei.com>
+ <YeV+jkGg6mpQdRID@zx2c4.com> <887a1e46cd6f4c02a6530a15f00e8eb8@huawei.com>
+In-Reply-To: <887a1e46cd6f4c02a6530a15f00e8eb8@huawei.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Tue, 18 Jan 2022 19:49:23 +0100
+X-Gmail-Original-Message-ID: <CAHmME9pMEJxGzmetDu0Bkf1=fqb+BHGQ3-6NB3hhtRjLWHm1cA@mail.gmail.com>
+Message-ID: <CAHmME9pMEJxGzmetDu0Bkf1=fqb+BHGQ3-6NB3hhtRjLWHm1cA@mail.gmail.com>
+Subject: Re: [PATCH 00/14] KEYS: Add support for PGP keys and signatures
+To:     roberto.sassu@huawei.com
+Cc:     "dhowells@redhat.com" <dhowells@redhat.com>,
+        "dwmw2@infradead.org" <dwmw2@infradead.org>,
+        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "linux-fscrypt@vger.kernel.org" <linux-fscrypt@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "zohar@linux.ibm.com" <zohar@linux.ibm.com>,
+        "ebiggers@kernel.org" <ebiggers@kernel.org>,
+        "Maciej S. Szmigiero" <mail@maciej.szmigiero.name>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 15 Jan 2022 at 13:15, Andrey Skvortsov
-<andrej.skvortzov@gmail.com> wrote:
->
-> SD card is allowed to signal busy on DAT0 up to 1s after the
-> CMD49. According to SD spec (version 6.0 section 5.8.1.3) first host
-> waits until busy of CMD49 is released and only then polls Power
-> Management Status register up to 1s until the card indicates ready to
-> power off.
->
-> Without waiting for busy before polling status register sometimes card
-> becomes unresponsive and system fails to suspend:
->
->   [  205.907459] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
->   [  206.421274] sunxi-mmc 1c0f000.mmc: data error, sending stop command
->   [  206.421321] sunxi-mmc 1c0f000.mmc: send stop command failed
->   [  206.421347] mmc0: error -110 reading status reg of PM func
->   [  206.421366] PM: dpm_run_callback(): mmc_bus_suspend+0x0/0x74 returns -110
->   [  206.421402] mmcblk mmc0:aaaa: PM: failed to suspend async: error -110
->   [  206.437064] PM: Some devices failed to suspend, or early wake event detected
+Hi Roberto,
 
-Thanks for your patch!
+Thanks for your detailed reply.
 
-I recall I was hesitating on adding another busy completion check for
-this, but thought polling the status register for the power management
-function should be sufficient.
+On Mon, Jan 17, 2022 at 4:21 PM Roberto Sassu <roberto.sassu@huawei.com> wrote:
+> The problem is that I don't see that transition coming soon.
+> Transition from PGP to another scheme would require Linux
+> distribution vendors to do an huge amount of work. It could
+> probably take years before that transition occurs.
+> More specifically, the first task would be to modify how
+> RPMs are signed (and thus how they are verified). The second
+> task would be to have a different way to certify the public key.
+> Lastly, Linux distribution vendors would have to change their
+> building infrastructure to use the new certified key, a new
+> version of the rpm package manager which takes as input
+> the new key, produces a different type of signature and embeds
+> it in the RPM header.
 
->
-> Tested with Sandisk Extreme PRO A2 64GB on Allwinner A64 system.
+Hm, yea, I see your dilemma.
 
-I will give this patch a try too, to make sure it still works on my
-side. Assuming that works fine, I will queue this up for fixes and by
-adding a fixes/stable tag.
+On the one hand, you recognize the problems with what currently
+exists. On the other hand, you[r organization] hasn't made the
+transition to something better. So, rather than putting in what might
+be a lot of work to transition to something better (which includes
+actually evaluating *what* the better thing would be), you'd prefer to
+put in a smaller amount of work to make the current thing satisfy some
+of your needs, even though you recognize its flaws. It seems like this
+is one of those "short term" vs "long term" investment tradeoffs.
 
->
-> Signed-off-by: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+I don't have a whole lot _technical_ to say about long term vs short
+term thinking, but it does strike me that PGP is one of these cases
+where people have known about the flaws for decades, but the ecosystem
+keeps being extended because people continue to go with the short term
+solutions, one by one, and now they've wound up here, at the doorstep
+of the kernel. Maybe if at some point somebody puts down the foot and
+says, "the road of short term intentions stops here," there might
+gradually be impetus toward looking into long term solutions, e.g.
+viable PGP replacements? Just a thought.
 
-Kind regards
-Uffe
+> If in the future the transition from PGP to another scheme
+> occurs, support for PGP keys and signatures can be still
+> deprecated.
 
-> ---
->  drivers/mmc/core/sd.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/mmc/core/sd.c b/drivers/mmc/core/sd.c
-> index e223275bbad1..842b886bdd4e 100644
-> --- a/drivers/mmc/core/sd.c
-> +++ b/drivers/mmc/core/sd.c
-> @@ -66,7 +66,7 @@ static const unsigned int sd_au_size[] = {
->                 __res & __mask;                                         \
->         })
->
-> -#define SD_POWEROFF_NOTIFY_TIMEOUT_MS 2000
-> +#define SD_POWEROFF_NOTIFY_TIMEOUT_MS 1000
->  #define SD_WRITE_EXTR_SINGLE_TIMEOUT_MS 1000
->
->  struct sd_busy_data {
-> @@ -1663,6 +1663,13 @@ static int sd_poweroff_notify(struct mmc_card *card)
->                 goto out;
->         }
->
-> +       /* Find out when the command is completed. */
-> +       err = mmc_poll_for_busy(card, SD_POWEROFF_NOTIFY_TIMEOUT_MS, false,
-> +                               MMC_BUSY_EXTR_SINGLE);
-> +
-> +       if (err)
-> +               goto out;
-> +
->         cb_data.card = card;
->         cb_data.reg_buf = reg_buf;
->         err = __mmc_poll_for_busy(card->host, SD_POWEROFF_NOTIFY_TIMEOUT_MS,
-> --
-> 2.34.1
->
+Things in the kernel rarely disappear. At best, they become subtly
+neglected, and then somebody gets bit by some security bug. At worst,
+we're stuck maintaining a PGP implementation until the end of
+eternity.
+
+
+On the technical front, though, I had sort of the same thought as
+Maciej: is there some way that you can unwrap the PGP data in
+userspace, and re-encode it in ASN.1, and somehow magically account
+for the various metadata included in the signatures? The devil here
+might be in the details, and I'm not sure whether it's feasible. But
+if it is, this would seem to be a much nicer solution. I'm not the
+hugest fan of having an ASN.1 parser in the kernel either, but it's
+_already_ there, and if you could somehow piggyback on top of it, that
+means we'd be able to avoid importing this PGP implementation.
+
+Concretely, it looks like the hardest part of this is the fact that
+pgp_digest_signature seems to hash in some PGP-specific metadata, not
+just the raw data. Am I reading that right, and that's the case? If
+so, that might spell trouble. You also mentioned in that other thread
+the possibility of using a new/custom PGP packet type for this? Is the
+idea there that you'd come up with something that could be unwrapped
+into an ASN.1-verifable blob, as a custom extension of PGP that
+distros could then distribute?
+
+Jason
