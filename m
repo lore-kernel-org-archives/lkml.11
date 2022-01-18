@@ -2,123 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11BA4C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9801C4321E
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:49:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346358AbiARCtR (ORCPT
+        id S1349320AbiARCt2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:49:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60270 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345781AbiARCjZ (ORCPT
+        Mon, 17 Jan 2022 21:49:28 -0500
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:51353 "EHLO
+        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1345807AbiARCcE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:39:25 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B8F5C061786;
-        Mon, 17 Jan 2022 18:35:58 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3B5AA61268;
-        Tue, 18 Jan 2022 02:35:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AC437C36AF2;
-        Tue, 18 Jan 2022 02:35:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473357;
-        bh=JjoTPxcrsm13yYDz2X0aCGOrakWj/cvM4DjQzFBa75A=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MEJHHOksiw+iIIOa6JbEFga0b9Rhzyb/2f6W0S4NFLoXYEY0WRHRkSHDm6lIbLKR6
-         lO4fqqFx3ipIKYyfjTnLPYP0Kaz2rLRLkzCTBZHDf9WC6ly16gVO0gr8GMkPTQjujM
-         NIhURsPADtdiCFIlp7LfsGCZkZ+b6LJODjhlC+OVzwKPRJqmTT3OBXDZ4sTRzfcxpl
-         KRVn0gZarA+A6ZC5zYxEEP/qYnPD0thyfPc01RAXtCEUzrV5VRQ6/2MniswVyhJhum
-         8Mz7X+8G7E7qC5UIaf8kweRsPXG9XrUBXRuXBg62FE1R/kl0Z99Yfa0jkAdRar/ov3
-         /8PyVuTUPIZgQ==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Zhou Qingyang <zhou1615@umn.edu>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, hverkuil@xs4all.nl,
-        mchehab@kernel.org, linux-media@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 085/188] media: saa7146: hexium_orion: Fix a NULL pointer dereference in hexium_attach()
-Date:   Mon, 17 Jan 2022 21:30:09 -0500
-Message-Id: <20220118023152.1948105-85-sashal@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+        Mon, 17 Jan 2022 21:32:04 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id D682C3200946;
+        Mon, 17 Jan 2022 21:32:02 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 17 Jan 2022 21:32:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=themaw.net; h=
+        message-id:subject:from:to:cc:date:in-reply-to:references
+        :content-type:mime-version:content-transfer-encoding; s=fm2; bh=
+        3mRA+fAp1gnVKZsZvkvI9SKUFhnHcen/USfAGlZMD/8=; b=J1u9Ac5VDXG/UgfA
+        F8k48UeRsyAyOn/Y50lgKLzHMDZI+ShW7HwAVKNSeugYAhLsjh0BPxpo4JwDF2pg
+        WsMLL8f78+K643A5XY4XJ08C0Qf+w6HqXYlEXsxdiGkwScq5s/aYjuvmvzuropJt
+        fMkQeb1ceDG4lpxiTrkJFfYaQE6M6JekrwgAdCEutgAhGu8h2W613VZYncd7FGpp
+        oKf7kXK0nHAYljf/n7RFFS/DPUiev4r8WaLzCN6suPwbInNAZ8iyYqu8IB+qIRxz
+        dqUpXsr8BQfBjRaFPixaCT3VqjLWiKQCwMd0vLQwG0gw8iRMHrBkZKAfb8nwEJd3
+        d17PVA==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; bh=3mRA+fAp1gnVKZsZvkvI9SKUFhnHcen/USfAGlZMD
+        /8=; b=ITwNEwhut6PP8iq1nNC8XPTdHIXmjj5o8W3zahgmGmZWysKwg2DduJy/V
+        GwT5UF0fD2l2i6k0WrygOK4G2VwKEN49L1J5WauKkKDJQtliqirfUVbRMn56wxFi
+        Ho1OiO0SCM49WtBBCm3toZQk98Z3Iscp4XSICloQ2qKxvjkFa8YPgh6m+jWe/nQh
+        /uuPg3WeGDBUG/hDmA3cXs9FYBrHF0P//ah2NeVN8qoSx9ZCLkZ5pQacVcb51IP8
+        wvCcPgbhvS12RFAZQ6HFhQUAsNAVxEAuwX3rWBgL29DIKA0ezSmy3XDxAVrrYGzB
+        sRjXjFUa9XoU72Iy4uwDsFwjov4Gw==
+X-ME-Sender: <xms:oSbmYbj_qZA5piY38Id3KBaazhhP5VptdlLDwYRIuX5hZSh9DhFeaQ>
+    <xme:oSbmYYBNt-nwe24mh5If3Q6mBAsczYBwW_Q7CEUzauxuONvxr4xduNE6OHO8UJc95
+    xjVJtaeX0oz>
+X-ME-Received: <xmr:oSbmYbFXDZytBiBBL_Cw7tSauEo0Uznr7bA0zBNINPlfPqZfXiOnF7an2HhUTMZ0P-Kj5RAMzKFpApBrh2PTE_tRBpPnoqryV35TUk-y1Dc9Vtrl9HC1Ag>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddruddvgdegkecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefkuffhvfffjghftggfggfgsehtkeertddtredunecuhfhrohhmpefkrghnucfm
+    vghnthcuoehrrghvvghnsehthhgvmhgrfidrnhgvtheqnecuggftrfgrthhtvghrnhepff
+    elvddtleehveduvefhkeejfedvkeetffeujedtudevfedtveehueeviefhleffnecuvehl
+    uhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheprhgrvhgvnhesth
+    hhvghmrgifrdhnvght
+X-ME-Proxy: <xmx:oSbmYYTIhggIrp71O7yWw-TQ6b5xK0kAeKGYw1rH_MMcrJ4YapDk8A>
+    <xmx:oSbmYYy8fUfoQGXXEPpCZW9FRH8vuaDoUkxCw2MSqJ0k6pxPgkLPOA>
+    <xmx:oSbmYe6r5SE_V0WaSMcXu2xkqbgDd2LYHt-RSAy4vi8gjFYNRnND4w>
+    <xmx:oibmYbw3j9aiq0OZdyFolqdDMoGwTI4RfeniaHfHt_GCmyBQdzqCOA>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Mon,
+ 17 Jan 2022 21:31:58 -0500 (EST)
+Message-ID: <0f6c2348dae2c47ea46a986884a75fc7d44bb6fb.camel@themaw.net>
+Subject: Re: [PATCH] vfs: check dentry is still valid in get_link()
+From:   Ian Kent <raven@themaw.net>
+To:     Al Viro <viro@zeniv.linux.org.uk>,
+        Brian Foster <bfoster@redhat.com>
+Cc:     "Darrick J. Wong" <djwong@kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        Miklos Szeredi <miklos@szeredi.hu>,
+        David Howells <dhowells@redhat.com>,
+        Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
+        xfs <linux-xfs@vger.kernel.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Tue, 18 Jan 2022 10:31:53 +0800
+In-Reply-To: <YeYYp89adipRN64k@zeniv-ca.linux.org.uk>
+References: <164180589176.86426.501271559065590169.stgit@mickey.themaw.net>
+         <YeJr7/E+9stwEb3t@zeniv-ca.linux.org.uk>
+         <275358741c4ee64b5e4e008d514876ed4ec1071c.camel@themaw.net>
+         <YeV+zseKGNqnSuKR@bfoster> <YeWZRL88KPtLWlkI@zeniv-ca.linux.org.uk>
+         <YeWxHPDbdSfBDtyX@zeniv-ca.linux.org.uk>
+         <YeXIIf6/jChv7JN6@zeniv-ca.linux.org.uk>
+         <YeYYp89adipRN64k@zeniv-ca.linux.org.uk>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4 (3.40.4-2.fc34) 
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+On Tue, 2022-01-18 at 01:32 +0000, Al Viro wrote:
+> On Mon, Jan 17, 2022 at 07:48:49PM +0000, Al Viro wrote:
+> > > But that critically depends upon the contents not getting
+> > > mangled.  If it
+> > > *can* be screwed by such unlink, we risk successful lookup
+> > > leading to the
+> > > wrong place, with nothing to tell us that it's happening.  We
+> > > could handle
+> > > that by adding a check to fs/namei.c:put_link(), and propagating
+> > > the error
+> > > to callers.  It's not impossible, but it won't be pretty.
+> > > 
+> > > And that assumes we avoid oopsen on string changing under us in
+> > > the first
+> > > place.  Which might or might not be true - I hadn't finished the
+> > > audit yet.
+> > > Note that it's *NOT* just fs/namei.c + fs/dcache.c + some fs
+> > > methods -
+> > > we need to make sure that e.g. everything called by ->d_hash()
+> > > instances
+> > > is OK with strings changing right under them.  Including
+> > > utf8_to_utf32(),
+> > > crc32_le(), utf8_casefold_hash(), etc.
+> > 
+> > And AFAICS, ext4, xfs and possibly ubifs (I'm unfamiliar with that
+> > one and
+> > the call chains there are deep enough for me to miss something)
+> > have the
+> > "bugger the contents of string returned by RCU ->get_link() if
+> > unlink()
+> > happens" problem.
+> > 
+> > I would very much prefer to have them deal with that crap,
+> > especially
+> > since I don't see why does ext4_evict_inode() need to do that
+> > memset() -
+> > can't we simply check ->i_op in ext4_can_truncate() and be done
+> > with
+> > that?
+> 
+> This reuse-without-delay has another fun side, AFAICS.  Suppose the
+> new use
+> for inode comes with the same ->i_op (i.e. it's a symlink again) and
+> it
+> happens right after ->get_link() has returned the pointer to body.
+> 
+> We are already past whatever checks we might add in pick_link().  And
+> the
+> pointer is still valid.  So we end up quietly traversing the body of
+> completely unrelated symlink that never had been anywhere near any
+> directory
+> we might be looking at.  With no indication of anything going wrong -
+> just
+> a successful resolution with bogus result.
 
-[ Upstream commit 348df8035301dd212e3cc2860efe4c86cb0d3303 ]
+Wouldn't that case be caught by the unlazy call since ->get_link()
+needs to return -ECHILD for the rcu case now (in xfs anyway)?
 
-In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
-a new memory for dev->vv_data. In hexium_detach(), saa7146_vv_release()
-will be called and there is a dereference of dev->vv_data in
-saa7146_vv_release(), which could lead to a NULL pointer dereference
-on failure of saa7146_vv_init() according to the following logic.
+> 
+> Could XFS folks explain what exactly goes wrong if we make actual
+> marking
+> inode as ready for reuse RCU-delayed, by shifting just that into
+> ->free_inode()?  Why would we need any extra synchronize_rcu()
+> anywhere?
 
-Both hexium_attach() and hexium_detach() are callback functions of
-the variable 'extension', so there exists a possible call chain directly
-from hexium_attach() to hexium_detach():
-
-hexium_attach(dev, info) -- fail to alloc memory to dev->vv_data
-	|		    		in saa7146_vv_init().
-	|
-	|
-hexium_detach() -- a dereference of dev->vv_data in saa7146_vv_release()
-
-Fix this bug by adding a check of saa7146_vv_init().
-
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_VIDEO_HEXIUM_ORION=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/media/pci/saa7146/hexium_orion.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/media/pci/saa7146/hexium_orion.c b/drivers/media/pci/saa7146/hexium_orion.c
-index 39d14c179d229..2eb4bee16b71f 100644
---- a/drivers/media/pci/saa7146/hexium_orion.c
-+++ b/drivers/media/pci/saa7146/hexium_orion.c
-@@ -355,10 +355,16 @@ static struct saa7146_ext_vv vv_data;
- static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_data *info)
- {
- 	struct hexium *hexium = (struct hexium *) dev->ext_priv;
-+	int ret;
- 
- 	DEB_EE("\n");
- 
--	saa7146_vv_init(dev, &vv_data);
-+	ret = saa7146_vv_init(dev, &vv_data);
-+	if (ret) {
-+		pr_err("Error in saa7146_vv_init()\n");
-+		return ret;
-+	}
-+
- 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
- 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
- 	vv_data.vid_ops.vidioc_s_input = vidioc_s_input;
--- 
-2.34.1
 
