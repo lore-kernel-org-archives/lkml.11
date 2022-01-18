@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33757C43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 01:38:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED92AC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 01:38:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244339AbiARBid (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 20:38:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47110 "EHLO
+        id S244383AbiARBih (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 20:38:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244244AbiARBiV (ORCPT
+        with ESMTP id S243964AbiARBiW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 20:38:21 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44D0BC061748;
-        Mon, 17 Jan 2022 17:38:19 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id z22so72914704edd.12;
-        Mon, 17 Jan 2022 17:38:19 -0800 (PST)
+        Mon, 17 Jan 2022 20:38:22 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E10C06161C;
+        Mon, 17 Jan 2022 17:38:21 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id t24so72830012edi.8;
+        Mon, 17 Jan 2022 17:38:21 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=edJsOhrgm9HIZp5+3GRACpTuHG3K0zpTiYemM14Um+8=;
-        b=lh9lQiHB10MMb62y6e3Ow/KepDFvQZRvtjy0t9qWGCeWPnauPjUY1lCO6nEiPmNORZ
-         g1jR2kSOvtGYmuq3XUh9lCcMKmCw9mijHuagsNzn8YhytGOr/aBhfq+TDDbkRPVIZjAg
-         /xwx4WOgqsfWC8tXdbq9IaRyHrmb+DCuXDNCuBQd6eSpARYY52WSJlD2fzU6spvLb9v7
-         1n9mi7eyh+SCue43tA3sMa5E4X2GNc/OojTmj5o89L6NA4ZQKG1ps5XYsDv50+jrxdyI
-         rMabTK1LrPnplSAzxVmX2dWyCVZCGdLSq/G5mFaN/DFtJUcXFiFze9BnrvYUhDXsVBbn
-         PXzw==
+        bh=7F6oxNjHH6hPfwoG+gLOCRkTzbus5Vn3BRvpJDh7ZlE=;
+        b=R3jWsxiWNcftQZ/9W5DAErGaQ5XK9KjYl2D++OTmU7+IiMBxqx71XLyVMF8zpfFCoV
+         3qTU/prXTb49tGVI5Z87GBrH4kai69k5V5HjPg/IHaUXS8pB8hpYnTOUAlRtXub/qTE1
+         HF3Fc5QfkXIiOcc1O3G/ATvzvXo4VxsU5ldLgOKlq/nhZ/TRcPxE5qjXVxKwigQAnT8r
+         OeAbbOY6R7EYqaLYm9KFNINwX/fcB+Ds11YIRoqMU/OOVbjCTUJ/h8+jq3rGbZ9ymTW0
+         IiR9F9FVaaEVnxxvqVfcjnJuuoynR7psD95kKQZu2ogPHpQYPQXE2ol9z4zbotl74EmR
+         Pmfw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=edJsOhrgm9HIZp5+3GRACpTuHG3K0zpTiYemM14Um+8=;
-        b=CpSBNs7XKGUlaQQNog3ahmAelDvWo7pBZ+QyKzKzeSkPK1NU0mLfxrh7bKzmnVwI7i
-         G8yHVaz1M+fZM/UvroZWuxxw8MpcIhdpkLoE2dqNSoeh6NqtE73KysOg4MdV/kTufjU8
-         YN2pcYT2T3VXFI9NGp3eRuOSWK5gRBMqv+zLK+StdGMz7G6MZtKvAsrftLwKqKzoegrR
-         2DOucKMtbKV5v10Za92l28ccZPN+3wNcc9r1p1DnjE9L4Dyp2GTdJCosy2MvE1zfZDM/
-         v//an/AiMvbNrO/ubMMtkunAzhjAmpdhFIQnn17bzt8XV74/NSbFod6Yn4wqWsaPYrA0
-         LSqw==
-X-Gm-Message-State: AOAM531FRy+Gs8looiiTNHAk/VcwZHUiY4SOM2ExnnI8wwyiaX4Wuq+w
-        ZWNeTMvmfexgFd2z1QltJNQd/f/jb4I=
-X-Google-Smtp-Source: ABdhPJwXgdvRlmx9Y0lfJqv3JsQo384p8eFhmVaCkHC4Fx14HwEUM/Wu6OVDZvWLCCasuCI3WPdFxw==
-X-Received: by 2002:a17:906:4c95:: with SMTP id q21mr18458051eju.173.1642469897671;
-        Mon, 17 Jan 2022 17:38:17 -0800 (PST)
+        bh=7F6oxNjHH6hPfwoG+gLOCRkTzbus5Vn3BRvpJDh7ZlE=;
+        b=1aPTo6LQhSvov0nrFuwRd3blBoAQ4TMU2UMZr5/P7lHEdesLtzlM3rqtlz8T/SW6y+
+         bVtkhL8puYAzmyMLzluLXYT/kbdjnXER64XYT3Q37Feo8mMdKqYa5Zathi8QLsU0jxPg
+         GZ7MvcULU/i1lmvINNQPjEIW1NixSqE9SXvsTxEscS6KF66wLvc769yK5UyVWjLYyALl
+         CyeqmO4bMVUeqViAop3U84fZPdCEPV7/rkNiIjJ8Kq7qVuRblRlwaFzpsET1Qi4PFxnu
+         lpHpYoT4nFkfMYspFV5CSUrixngd+L4TUYXza0ZlV5aa7HrdBTYajnDjp29qLDJF8OzD
+         pWpg==
+X-Gm-Message-State: AOAM532aHa4EB170nPN7+/4DFNQkhmpYH3uxjD6HmcPVP8oVwh9zhzds
+        WHephgd4QAq/nzT9uDqjLm4=
+X-Google-Smtp-Source: ABdhPJy/SaMMm96q+5cRlN3OZa1N+jasoEwqzcSQYMLtbb58S8RvEJDb4GPgqcc4pz0B/x3iC+nlDw==
+X-Received: by 2002:a05:6402:524c:: with SMTP id t12mr13399269edd.42.1642469899869;
+        Mon, 17 Jan 2022 17:38:19 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id kj18sm3990675ejc.139.2022.01.17.17.38.16
+        by smtp.googlemail.com with ESMTPSA id kj18sm3990675ejc.139.2022.01.17.17.38.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Jan 2022 17:38:17 -0800 (PST)
+        Mon, 17 Jan 2022 17:38:19 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -55,9 +55,9 @@ To:     Andy Gross <agross@kernel.org>,
         linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [PATCH 09/17] ARM: dts: qcom: add saw for l2 cache and kraitcc for ipq8064
-Date:   Tue, 18 Jan 2022 02:20:39 +0100
-Message-Id: <20220118012051.21691-10-ansuelsmth@gmail.com>
+Subject: [PATCH 11/17] ARM: dts: qcom: fix and add some missing gsbi node for ipq8064
+Date:   Tue, 18 Jan 2022 02:20:41 +0100
+Message-Id: <20220118012051.21691-12-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220118012051.21691-1-ansuelsmth@gmail.com>
 References: <20220118012051.21691-1-ansuelsmth@gmail.com>
@@ -67,70 +67,89 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add saw compatible for l2 cache and kraitcc node for ipq8064 dtsi.
-Also declare clock-output-names for acc0 and acc1.
+Add some tag for gsbi to make them usable for ipq8064 SoC. Add missing
+gsbi7 i2c node and gsbi1 node.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- arch/arm/boot/dts/qcom-ipq8064.dtsi | 17 +++++++++++++++--
- 1 file changed, 15 insertions(+), 2 deletions(-)
+ arch/arm/boot/dts/qcom-ipq8064.dtsi | 50 ++++++++++++++++++++++++++++-
+ 1 file changed, 49 insertions(+), 1 deletion(-)
 
 diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-index 8c2d4dac0ebd..a45e4c799b27 100644
+index b82beb297291..6f9075489e58 100644
 --- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
 +++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
-@@ -504,11 +504,13 @@ IRQ_TYPE_EDGE_RISING)>,
- 		acc0: clock-controller@2088000 {
- 			compatible = "qcom,kpss-acc-v1";
- 			reg = <0x02088000 0x1000>, <0x02008000 0x1000>;
-+			clock-output-names = "acpu0_aux";
+@@ -556,6 +556,41 @@ sic_non_secure: sic-non-secure@12100000 {
+ 			reg = <0x12100000 0x10000>;
  		};
  
- 		acc1: clock-controller@2098000 {
- 			compatible = "qcom,kpss-acc-v1";
- 			reg = <0x02098000 0x1000>, <0x02008000 0x1000>;
-+			clock-output-names = "acpu1_aux";
- 		};
- 
- 		adm_dma: dma-controller@18300000 {
-@@ -532,17 +534,23 @@ adm_dma: dma-controller@18300000 {
- 		};
- 
- 		saw0: regulator@2089000 {
--			compatible = "qcom,saw2";
-+			compatible = "qcom,saw2", "qcom,apq8064-saw2-v1.1-cpu", "syscon";
- 			reg = <0x02089000 0x1000>, <0x02009000 0x1000>;
- 			regulator;
- 		};
- 
- 		saw1: regulator@2099000 {
--			compatible = "qcom,saw2";
-+			compatible = "qcom,saw2", "qcom,apq8064-saw2-v1.1-cpu", "syscon";
- 			reg = <0x02099000 0x1000>, <0x02009000 0x1000>;
- 			regulator;
- 		};
- 
-+		saw_l2: regulator@02012000 {
-+			compatible = "qcom,saw2", "syscon";
-+			reg = <0x02012000 0x1000>;
-+			regulator;
++		gsbi1: gsbi@12440000 {
++			compatible = "qcom,gsbi-v1.0.0";
++			cell-index = <1>;
++			reg = <0x12440000 0x100>;
++			clocks = <&gcc GSBI1_H_CLK>;
++			clock-names = "iface";
++			#address-cells = <1>;
++			#size-cells = <1>;
++			ranges;
++			status = "disabled";
++
++			syscon-tcsr = <&tcsr>;
++
++			gsbi1_serial: serial@12450000 {
++				compatible = "qcom,msm-uartdm-v1.3", "qcom,msm-uartdm";
++				reg = <0x12450000 0x100>,
++				      <0x12400000 0x03>;
++				interrupts = <GIC_SPI 193 IRQ_TYPE_LEVEL_HIGH>;
++				clocks = <&gcc GSBI1_UART_CLK>, <&gcc GSBI1_H_CLK>;
++				clock-names = "core", "iface";
++				status = "disabled";
++			};
++
++			gsbi1_i2c: i2c@12460000 {
++				compatible = "qcom,i2c-qup-v1.1.1";
++				reg = <0x12460000 0x1000>;
++				interrupts = <GIC_SPI 194 IRQ_TYPE_LEVEL_HIGH>;
++				clocks = <&gcc GSBI1_QUP_CLK>, <&gcc GSBI1_H_CLK>;
++				clock-names = "core", "iface";
++				#address-cells = <1>;
++				#size-cells = <0>;
++				status = "disabled";
++			};
 +		};
 +
  		gsbi2: gsbi@12480000 {
  			compatible = "qcom,gsbi-v1.0.0";
  			cell-index = <2>;
-@@ -885,6 +893,11 @@ l2cc: clock-controller@2011000 {
- 			clock-output-names = "acpu_l2_aux";
+@@ -579,7 +614,7 @@ gsbi2_serial: serial@12490000 {
+ 				status = "disabled";
+ 			};
+ 
+-			i2c@124a0000 {
++			gsbi2_i2c: i2c@124a0000 {
+ 				compatible = "qcom,i2c-qup-v1.1.1";
+ 				reg = <0x124a0000 0x1000>;
+ 				interrupts = <GIC_SPI 196 IRQ_TYPE_LEVEL_HIGH>;
+@@ -728,6 +763,19 @@ gsbi7_serial: serial@16640000 {
+ 				clock-names = "core", "iface";
+ 				status = "disabled";
+ 			};
++
++			gsbi7_i2c: i2c@16680000 {
++				compatible = "qcom,i2c-qup-v1.1.1";
++				reg = <0x16680000 0x1000>;
++				interrupts = <GIC_SPI 159 IRQ_TYPE_LEVEL_HIGH>;
++
++				clocks = <&gcc GSBI7_QUP_CLK>, <&gcc GSBI7_H_CLK>;
++				clock-names = "core", "iface";
++				status = "disabled";
++
++				#address-cells = <1>;
++				#size-cells = <0>;
++			};
  		};
  
-+		kraitcc: clock-controller {
-+			compatible = "qcom,krait-cc-v1";
-+			#clock-cells = <1>;
-+		};
-+
- 		lcc: clock-controller@28000000 {
- 			compatible = "qcom,lcc-ipq8064";
- 			reg = <0x28000000 0x1000>;
+ 		rng@1a500000 {
 -- 
 2.33.1
 
