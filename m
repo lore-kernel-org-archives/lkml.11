@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E84CBC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:53:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E95FC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:53:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351181AbiARCxq (ORCPT
+        id S1345546AbiARCxt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:53:46 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48216 "EHLO
+        Mon, 17 Jan 2022 21:53:49 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51556 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346035AbiARCnB (ORCPT
+        with ESMTP id S235059AbiARCmy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:43:01 -0500
+        Mon, 17 Jan 2022 21:42:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B6C9CB8123F;
-        Tue, 18 Jan 2022 02:42:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7953C36AE3;
-        Tue, 18 Jan 2022 02:42:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C2C8B81249;
+        Tue, 18 Jan 2022 02:42:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2B922C36AE3;
+        Tue, 18 Jan 2022 02:42:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473778;
-        bh=0+XfjOPAbLf9sTVRzvQ+1jNIKU4CH6CO3sXWF4+Cn78=;
+        s=k20201202; t=1642473772;
+        bh=xkO1nvKt4O3YteSpK5taGaQFmGOjDPnXJi8Tu8UR6g4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=F1bTJXwQsOrQkGf2DHVVwTWXyDY7zmBF4bd6vckDVlEcQ4wqKOLwpPtMnQEhDaHcO
-         F66RuCyRa+z1FtaD2PLNr24u3kke8EnPupMxAjf2akOW3cA9FGzuMis68hPnIDC9Zq
-         6LfFESnRfToE1I/M+mke1pHJqtbwYeoR335ML9nUzHcgH5Qh3MLnJq2lQgOBRDQKHZ
-         BaHdFes5FvgFAp0lqaC2vqYhZGLIY22K9fU54jaK6F1O8rJVdThj6EzhGvxaPn330t
-         iqFV3fkkro73rbWHyHNHlVTMMw3E2OoRkLJQ51VjDp0y/Sereh88T6wslWKAmfB1kU
-         McWeoTy/FYK2A==
+        b=iAeqf7FYbaIxbud2L98+ds6hTumPq1zH2OiszCHV98Jil0pMZDUNqJq5zHWOM98sh
+         6JJjh1ScOp1xJCz6IBhxKf/ZlUHuTXOVTjPkbdYDShqm10lxzaux6njor3DDyAEEMC
+         BZrINsMvzBF+zAoq3e2fCX70RDWLaAAPHpv2wdxzD/dhS5TXMaVGXiR2z9K0ljLkDm
+         ws2jFjx66tQlFhBIwdodbeA2Zo3bZTkj6F5WhI1F3MpqBiAAbPCeJGggfu3uJHvyVy
+         HYFTa0wOJvS6jNblGkHSaDjWe0O3f2L/ZWjjlfE6io+rXD4+Za5ILg0Wn3R7dNa/or
+         /sMog17VuN67Q==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alistair Francis <alistair@alistair23.me>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, jikos@kernel.org,
-        linux-input@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 067/116] HID: quirks: Allow inverting the absolute X/Y values
-Date:   Mon, 17 Jan 2022 21:39:18 -0500
-Message-Id: <20220118024007.1950576-67-sashal@kernel.org>
+Cc:     Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
+        bp@alien8.de, tglx@linutronix.de, mingo@redhat.com,
+        dave.hansen@linux.intel.com, x86@kernel.org,
+        linux-edac@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 063/116] x86/mce: Mark mce_end() noinstr
+Date:   Mon, 17 Jan 2022 21:39:14 -0500
+Message-Id: <20220118024007.1950576-63-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
 References: <20220118024007.1950576-1-sashal@kernel.org>
@@ -50,53 +50,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alistair Francis <alistair@alistair23.me>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit fd8d135b2c5e88662f2729e034913f183455a667 ]
+[ Upstream commit b4813539d37fa31fed62cdfab7bd2dd8929c5b2e ]
 
-Add a HID_QUIRK_X_INVERT/HID_QUIRK_Y_INVERT quirk that can be used
-to invert the X/Y values.
+It is called by the #MC handler which is noinstr.
 
-Signed-off-by: Alistair Francis <alistair@alistair23.me>
-[bentiss: silence checkpatch warning]
-Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Link: https://lore.kernel.org/r/20211208124045.61815-2-alistair@alistair23.me
+Fixes
+
+  vmlinux.o: warning: objtool: do_machine_check()+0xbd6: call to memset() leaves .noinstr.text section
+
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20211208111343.8130-9-bp@alien8.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-input.c | 6 ++++++
- include/linux/hid.h     | 2 ++
- 2 files changed, 8 insertions(+)
+ arch/x86/kernel/cpu/mce/core.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/hid/hid-input.c b/drivers/hid/hid-input.c
-index 580d378342c41..eb53855898c8d 100644
---- a/drivers/hid/hid-input.c
-+++ b/drivers/hid/hid-input.c
-@@ -1288,6 +1288,12 @@ void hidinput_hid_event(struct hid_device *hid, struct hid_field *field, struct
- 
- 	input = field->hidinput->input;
- 
-+	if (usage->type == EV_ABS &&
-+	    (((*quirks & HID_QUIRK_X_INVERT) && usage->code == ABS_X) ||
-+	     ((*quirks & HID_QUIRK_Y_INVERT) && usage->code == ABS_Y))) {
-+		value = field->logical_maximum - value;
-+	}
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 64d8a96a2bf1e..2a608f0819765 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -1070,10 +1070,13 @@ static int mce_start(int *no_way_out)
+  * Synchronize between CPUs after main scanning loop.
+  * This invokes the bulk of the Monarch processing.
+  */
+-static int mce_end(int order)
++static noinstr int mce_end(int order)
+ {
+-	int ret = -1;
+ 	u64 timeout = (u64)mca_cfg.monarch_timeout * NSEC_PER_USEC;
++	int ret = -1;
 +
- 	if (usage->hat_min < usage->hat_max || usage->hat_dir) {
- 		int hat_dir = usage->hat_dir;
- 		if (!hat_dir)
-diff --git a/include/linux/hid.h b/include/linux/hid.h
-index fc56d53cc68bf..2ba33d708942c 100644
---- a/include/linux/hid.h
-+++ b/include/linux/hid.h
-@@ -345,6 +345,8 @@ struct hid_item {
- /* BIT(9) reserved for backward compatibility, was NO_INIT_INPUT_REPORTS */
- #define HID_QUIRK_ALWAYS_POLL			BIT(10)
- #define HID_QUIRK_INPUT_PER_APP			BIT(11)
-+#define HID_QUIRK_X_INVERT			BIT(12)
-+#define HID_QUIRK_Y_INVERT			BIT(13)
- #define HID_QUIRK_SKIP_OUTPUT_REPORTS		BIT(16)
- #define HID_QUIRK_SKIP_OUTPUT_REPORT_ID		BIT(17)
- #define HID_QUIRK_NO_OUTPUT_REPORTS_ON_INTR_EP	BIT(18)
++	/* Allow instrumentation around external facilities. */
++	instrumentation_begin();
+ 
+ 	if (!timeout)
+ 		goto reset;
+@@ -1117,7 +1120,8 @@ static int mce_end(int order)
+ 		/*
+ 		 * Don't reset anything. That's done by the Monarch.
+ 		 */
+-		return 0;
++		ret = 0;
++		goto out;
+ 	}
+ 
+ 	/*
+@@ -1132,6 +1136,10 @@ static int mce_end(int order)
+ 	 * Let others run again.
+ 	 */
+ 	atomic_set(&mce_executing, 0);
++
++out:
++	instrumentation_end();
++
+ 	return ret;
+ }
+ 
 -- 
 2.34.1
 
