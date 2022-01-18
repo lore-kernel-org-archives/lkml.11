@@ -2,49 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A384C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:55:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF9A0C433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:55:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345592AbiARCzV (ORCPT
+        id S1345842AbiARCz1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:55:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33194 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245488AbiARCoS (ORCPT
+        Mon, 17 Jan 2022 21:55:27 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36566 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346221AbiARCoZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:44:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF19C0612B2;
-        Mon, 17 Jan 2022 18:37:42 -0800 (PST)
+        Mon, 17 Jan 2022 21:44:25 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 143D3B811D6;
-        Tue, 18 Jan 2022 02:37:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E637C36AF2;
-        Tue, 18 Jan 2022 02:37:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 819BA6093C;
+        Tue, 18 Jan 2022 02:44:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B60D3C36AEB;
+        Tue, 18 Jan 2022 02:44:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473460;
-        bh=Dw55RYZD/DX3A6O8uk0ifo8PqWSjLQRn9YgpgdbiIv4=;
+        s=k20201202; t=1642473863;
+        bh=sPspLDjSwcA/+CaLh+o2OAKsp197ZqFntPnughJxxdU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jaGWrNo/8Isz7DuHLwcwBsdHidmOJDTVV96k14Vu6ZDS/BD3UhS9FFFQfehtcWlnZ
-         8fDLvGPCu0O7cV+kubjLU9fXz3BafWBJCc5oFxDrZv+7trBIKnq9ZXTbYak6BuuyLc
-         UCvZZK7OOEGZ6rJJOwH6nwPf6XNidgeYCggo3kOOD9MUZtJTS9mil5uTW1ci6su+8B
-         mQHdP9mav1xhLqAu3Ed2F/xCIY85MGXo667VY+9MiUytnQltm4+9Mksq4Azu8THk8/
-         jlzTeSFc4jfgvSwdDxiIk6H66zofu6v95knfb89cCJCVuNl9KmABVexhdv51aRZ0nP
-         CsNKTn5wzCRFA==
+        b=bGCpr1xLnoXHeFAYK2iZVyaEuG7ytSq2hfwJ/g06Olw6Ol+uLeggEWBJ4B7maXFRX
+         6QK+eOLzQmtEsJ0ww3IleMXKe2HgoPYE6FEDWQv9arKTVy0EKXffHPln24SjhDloPq
+         mWYOZJm1Ik1QEccpIXJOu5qXP35IsqHbfH/B7Id4R/uxKJu5K9LglsnUxCqkmGn+ar
+         1Z4LSykEAGUBgZIJAivGn0yJk3MSvm3rIveJEvJ9IC39flCo/p+CDfP2ug0pOhdUku
+         Ei3xeosJBlfwl0q5AKR11OhqvTl7b01FJSV4+vVGECPtikq4oo6bmclVSd0C8jKWqy
+         QvYQsYGMB3v7w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Weili Qian <qianweili@huawei.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Sasha Levin <sashal@kernel.org>, xuzaibo@huawei.com,
-        davem@davemloft.net, linux-crypto@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 126/188] crypto: hisilicon/hpre - fix memory leak in hpre_curve25519_src_init()
-Date:   Mon, 17 Jan 2022 21:30:50 -0500
-Message-Id: <20220118023152.1948105-126-sashal@kernel.org>
+Cc:     John David Anglin <dave.anglin@bell.net>,
+        Helge Deller <deller@gmx.de>, Sasha Levin <sashal@kernel.org>,
+        James.Bottomley@HansenPartnership.com, svens@stackframe.org,
+        rmk+kernel@armlinux.org.uk, akpm@linux-foundation.org,
+        mpe@ellerman.id.au, wangkefeng.wang@huawei.com,
+        ebiederm@xmission.com, linux-parisc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 113/116] parisc: Avoid calling faulthandler_disabled() twice
+Date:   Mon, 17 Jan 2022 21:40:04 -0500
+Message-Id: <20220118024007.1950576-113-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
-References: <20220118023152.1948105-1-sashal@kernel.org>
+In-Reply-To: <20220118024007.1950576-1-sashal@kernel.org>
+References: <20220118024007.1950576-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -53,34 +52,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Weili Qian <qianweili@huawei.com>
+From: John David Anglin <dave.anglin@bell.net>
 
-[ Upstream commit 51fa916b81e5f406a74f14a31a3a228c3cc060ad ]
+[ Upstream commit 9e9d4b460f23bab61672eae397417d03917d116c ]
 
-hpre_curve25519_src_init() allocates memory for 'ptr' before calling
-memcmp(). If memcmp() returns 0, the function will return '-EINVAL'
-without freeing memory.
+In handle_interruption(), we call faulthandler_disabled() to check whether the
+fault handler is not disabled. If the fault handler is disabled, we immediately
+call do_page_fault(). It then calls faulthandler_disabled(). If disabled,
+do_page_fault() attempts to fixup the exception by jumping to no_context:
 
-Signed-off-by: Weili Qian <qianweili@huawei.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+no_context:
+
+        if (!user_mode(regs) && fixup_exception(regs)) {
+                return;
+        }
+
+        parisc_terminate("Bad Address (null pointer deref?)", regs, code, address);
+
+Apart from the error messages, the two blocks of code perform the same
+function.
+
+We can avoid two calls to faulthandler_disabled() by a simple revision
+to the code in handle_interruption().
+
+Note: I didn't try to fix the formatting of this code block.
+
+Signed-off-by: John David Anglin <dave.anglin@bell.net>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/hisilicon/hpre/hpre_crypto.c | 2 +-
+ arch/parisc/kernel/traps.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/crypto/hisilicon/hpre/hpre_crypto.c b/drivers/crypto/hisilicon/hpre/hpre_crypto.c
-index a032c192ef1d6..7ba7641723a0b 100644
---- a/drivers/crypto/hisilicon/hpre/hpre_crypto.c
-+++ b/drivers/crypto/hisilicon/hpre/hpre_crypto.c
-@@ -1865,7 +1865,7 @@ static int hpre_curve25519_src_init(struct hpre_asym_request *hpre_req,
- 	 */
- 	if (memcmp(ptr, p, ctx->key_sz) == 0) {
- 		dev_err(dev, "gx is p!\n");
--		return -EINVAL;
-+		goto err;
- 	} else if (memcmp(ptr, p, ctx->key_sz) > 0) {
- 		hpre_curve25519_src_modulo_p(ptr);
- 	}
+diff --git a/arch/parisc/kernel/traps.c b/arch/parisc/kernel/traps.c
+index 43f56335759a4..269b737d26299 100644
+--- a/arch/parisc/kernel/traps.c
++++ b/arch/parisc/kernel/traps.c
+@@ -784,7 +784,7 @@ void notrace handle_interruption(int code, struct pt_regs *regs)
+ 	     * unless pagefault_disable() was called before.
+ 	     */
+ 
+-	    if (fault_space == 0 && !faulthandler_disabled())
++	    if (faulthandler_disabled() || fault_space == 0)
+ 	    {
+ 		/* Clean up and return if in exception table. */
+ 		if (fixup_exception(regs))
 -- 
 2.34.1
 
