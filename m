@@ -2,45 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07FEDC4707F
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:32:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 649A3C4167E
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:33:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234579AbiARCcy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:32:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58638 "EHLO
+        id S237173AbiARCdA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:33:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344033AbiARC2u (ORCPT
+        with ESMTP id S245648AbiARC2v (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:28:50 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DECB1C0612A3;
-        Mon, 17 Jan 2022 18:25:54 -0800 (PST)
+        Mon, 17 Jan 2022 21:28:51 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9084BC0617B0;
+        Mon, 17 Jan 2022 18:25:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B385F6093C;
-        Tue, 18 Jan 2022 02:25:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BC0EC36AE3;
-        Tue, 18 Jan 2022 02:25:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 58608B8123D;
+        Tue, 18 Jan 2022 02:25:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32129C36AF4;
+        Tue, 18 Jan 2022 02:25:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472754;
-        bh=76k952JqIoqnSJrdx/YN9ePOzNmgl602GkwnJ/y28TY=;
+        s=k20201202; t=1642472757;
+        bh=6wrrJ7aDxIrQw2TbOvBal/FrCaDdQi8ycw415kthYKU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y07r/UnybbIRW+JE5316GaCnU065a1dwGtYCz/zmb6QLi0gmJLreQoTBpz0AsjOzi
-         c6IHbqchmNwmM+nyreqMzaPNnxB+uRA3amhuQFjnsg8QVdAK+24KUJFPuRFWF2k+R7
-         N2tTX2tapU+0HdcHkOrUwt5J/ydkZ96JoEX49+/fEd30QkUewWJgdDGrxXIDh9Z+aw
-         B81U0tX4O3Jnq1vDGrPa9o8jwUQ/G9ExQpGZG3XOGIJ4nXMTmGaRukK45GHETQZl5T
-         4O3J/oR75yLGn4Di4yxY7oMWqYf033a7meP1pm6GGv6UbfvminakcSd9KFENdSQlXq
-         IoOeGJAAkezig==
+        b=je4QrQsrEKDPLzYakPrGpBmdl4UYVsLUTUdlGc3CG+gHc32QcQ24BefcuJSkhJ289
+         fUV6RduNKGPpYtPrXL93lVoHjZOUgB9fPO6x6EysjBdMojfzQauJFu0bMdZC/rKkqb
+         Tmp8zkVfsVur0WagTb7Ivh/rl7Eo/r/T2OecWOg+j7GY/TtCgBLjS2q4IZna3bbCGu
+         E+X4cByXx7pPBo89J+fkj+zmMsE+8d/wBLu0q7bzyM+r9Jj8cdjyRPDINnIzbgMV83
+         w1f+sJH171JQuCau+E5+8KR/l3XR3eZCGqPGKgbWkRu0XrroXwCwOwCAM1GWHySw+4
+         TVS8V4Buw3PbA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>,
         bp@alien8.de, tglx@linutronix.de, mingo@redhat.com,
         dave.hansen@linux.intel.com, x86@kernel.org,
         linux-edac@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 124/217] x86/mce: Mark mce_panic() noinstr
-Date:   Mon, 17 Jan 2022 21:18:07 -0500
-Message-Id: <20220118021940.1942199-124-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.16 126/217] x86/mce: Mark mce_read_aux() noinstr
+Date:   Mon, 17 Jan 2022 21:18:09 -0500
+Message-Id: <20220118021940.1942199-126-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -54,65 +54,32 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit 3c7ce80a818fa7950be123cac80cd078e5ac1013 ]
-
-And allow instrumentation inside it because it does calls to other
-facilities which will not be tagged noinstr.
+[ Upstream commit db6c996d6ce45dfb44891f0824a65ecec216f47a ]
 
 Fixes
 
-  vmlinux.o: warning: objtool: do_machine_check()+0xc73: call to mce_panic() leaves .noinstr.text section
+  vmlinux.o: warning: objtool: do_machine_check()+0x681: call to mce_read_aux() leaves .noinstr.text section
 
 Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-8-bp@alien8.de
+Link: https://lore.kernel.org/r/20211208111343.8130-10-bp@alien8.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/core.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ arch/x86/kernel/cpu/mce/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 70ec5685906b2..9a52ec55e0555 100644
+index 75095986e5eff..69fd51a29278f 100644
 --- a/arch/x86/kernel/cpu/mce/core.c
 +++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -267,11 +267,17 @@ static void wait_for_panic(void)
- 	panic("Panicing machine check CPU died");
- }
- 
--static void mce_panic(const char *msg, struct mce *final, char *exp)
-+static noinstr void mce_panic(const char *msg, struct mce *final, char *exp)
+@@ -645,7 +645,7 @@ static struct notifier_block mce_default_nb = {
+ /*
+  * Read ADDR and MISC registers.
+  */
+-static void mce_read_aux(struct mce *m, int i)
++static noinstr void mce_read_aux(struct mce *m, int i)
  {
--	int apei_err = 0;
- 	struct llist_node *pending;
- 	struct mce_evt_llist *l;
-+	int apei_err = 0;
-+
-+	/*
-+	 * Allow instrumentation around external facilities usage. Not that it
-+	 * matters a whole lot since the machine is going to panic anyway.
-+	 */
-+	instrumentation_begin();
- 
- 	if (!fake_panic) {
- 		/*
-@@ -286,7 +292,7 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
- 	} else {
- 		/* Don't log too much for fake panic */
- 		if (atomic_inc_return(&mce_fake_panicked) > 1)
--			return;
-+			goto out;
- 	}
- 	pending = mce_gen_pool_prepare_records();
- 	/* First print corrected ones that are still unlogged */
-@@ -324,6 +330,9 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
- 		panic(msg);
- 	} else
- 		pr_emerg(HW_ERR "Fake kernel panic: %s\n", msg);
-+
-+out:
-+	instrumentation_end();
- }
- 
- /* Support code for software error injection */
+ 	if (m->status & MCI_STATUS_MISCV)
+ 		m->misc = mce_rdmsrl(mca_msr_reg(i, MCA_MISC));
 -- 
 2.34.1
 
