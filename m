@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96E58C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:08:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AEBAC4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 16:08:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346345AbiARQIQ (ORCPT
+        id S1346349AbiARQIS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 11:08:16 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:40326 "EHLO
+        Tue, 18 Jan 2022 11:08:18 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:40338 "EHLO
         sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235624AbiARQHW (ORCPT
+        with ESMTP id S242991AbiARQHZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 11:07:22 -0500
+        Tue, 18 Jan 2022 11:07:25 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id A690CCE1A2F;
-        Tue, 18 Jan 2022 16:07:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B6BFC00446;
-        Tue, 18 Jan 2022 16:07:18 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id D13B4CE1A34;
+        Tue, 18 Jan 2022 16:07:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EC2FC00446;
+        Tue, 18 Jan 2022 16:07:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642522039;
-        bh=TJP4eG+EUgISouMu2lc/Sy2XQA+4SDvaoiKuJBPSd0Q=;
+        s=korg; t=1642522042;
+        bh=kQOy95IhZSZw5cFxZAIB00jh2ltD6YlMb16JXwiYEjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dd9Dn3HASUOToTNNJAdMDxXeb8BOI+ZZRc7KfPYNolsSpuHgg7jtb9XELN8IWEALZ
-         3LfMgi0Ch5qmyMvNPRJbAIgBayuFpuXscKpG/FO67SpT7cY9LXbh2ssJn/s7KjfaYS
-         NT3UGGkRd5Gp1qIk1md1vwUzpnIVWg1gnQpwaaB8=
+        b=Y8TZD1fnCnzbDsAd4kzdvebDQbWajr5lzeHYI3SdJoD49iNv1Dbc+4Wo/6vW567t+
+         KplhP467PVLJ8NaUsm4ReIKA2NnSBU85HaT87RibQ0SkUutDwk3zDidu810OlmPRyG
+         AVqxaFTAA0EV6iVo7OKV0+0uPID6B+zRP0EO9HbA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.4 07/15] media: uvcvideo: fix division by zero at stream start
-Date:   Tue, 18 Jan 2022 17:05:46 +0100
-Message-Id: <20220118160450.300427847@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+cce1ee31614c171f5595@syzkaller.appspotmail.com,
+        Larry Finger <Larry.Finger@lwfinger.net>,
+        Kalle Valo <kvalo@kernel.org>
+Subject: [PATCH 5.4 08/15] rtlwifi: rtl8192cu: Fix WARNING when calling local_irq_restore() with interrupts enabled
+Date:   Tue, 18 Jan 2022 17:05:47 +0100
+Message-Id: <20220118160450.331847105@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118160450.062004175@linuxfoundation.org>
 References: <20220118160450.062004175@linuxfoundation.org>
@@ -48,43 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Larry Finger <Larry.Finger@lwfinger.net>
 
-commit 8aa637bf6d70d2fb2ad4d708d8b9dd02b1c095df upstream.
+commit 8b144dedb928e4e2f433a328d58f44c3c098d63e upstream.
 
-Add the missing bulk-endpoint max-packet sanity check to
-uvc_video_start_transfer() to avoid division by zero in
-uvc_alloc_urb_buffers() in case a malicious device has broken
-descriptors (or when doing descriptor fuzz testing).
+Syzbot reports the following WARNING:
 
-Note that USB core will reject URBs submitted for endpoints with zero
-wMaxPacketSize but that drivers doing packet-size calculations still
-need to handle this (cf. commit 2548288b4fb0 ("USB: Fix: Don't skip
-endpoint descriptors with maxpacket=0")).
+[200~raw_local_irq_restore() called with IRQs enabled
+WARNING: CPU: 1 PID: 1206 at kernel/locking/irqflag-debug.c:10
+   warn_bogus_irq_restore+0x1d/0x20 kernel/locking/irqflag-debug.c:10
 
-Fixes: c0efd232929c ("V4L/DVB (8145a): USB Video Class driver")
-Cc: stable@vger.kernel.org      # 2.6.26
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Hardware initialization for the rtl8188cu can run for as long as 350 ms,
+and the routine may be called with interrupts disabled. To avoid locking
+the machine for this long, the current routine saves the interrupt flags
+and enables local interrupts. The problem is that it restores the flags
+at the end without disabling local interrupts first.
+
+This patch fixes commit a53268be0cb9 ("rtlwifi: rtl8192cu: Fix too long
+disable of IRQs").
+
+Reported-by: syzbot+cce1ee31614c171f5595@syzkaller.appspotmail.com
+Cc: stable@vger.kernel.org
+Fixes: a53268be0cb9 ("rtlwifi: rtl8192cu: Fix too long disable of IRQs")
+Signed-off-by: Larry Finger <Larry.Finger@lwfinger.net>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20211215171105.20623-1-Larry.Finger@lwfinger.net
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/uvc/uvc_video.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c |    1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/media/usb/uvc/uvc_video.c
-+++ b/drivers/media/usb/uvc/uvc_video.c
-@@ -1915,6 +1915,10 @@ static int uvc_video_start_transfer(stru
- 		if (ep == NULL)
- 			return -EIO;
- 
-+		/* Reject broken descriptors. */
-+		if (usb_endpoint_maxp(&ep->desc) == 0)
-+			return -EIO;
-+
- 		ret = uvc_init_video_bulk(stream, ep, gfp_flags);
- 	}
- 
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192cu/hw.c
+@@ -1000,6 +1000,7 @@ int rtl92cu_hw_init(struct ieee80211_hw
+ 	_initpabias(hw);
+ 	rtl92c_dm_init(hw);
+ exit:
++	local_irq_disable();
+ 	local_irq_restore(flags);
+ 	return err;
+ }
 
 
