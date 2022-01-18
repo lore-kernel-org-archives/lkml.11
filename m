@@ -2,51 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9FA0C433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:58:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27F04C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:58:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348005AbiARC57 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:57:59 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38444 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348723AbiARCpy (ORCPT
+        id S245673AbiARC5P (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:57:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33384 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348196AbiARCo7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:45:54 -0500
+        Mon, 17 Jan 2022 21:44:59 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BD59C06124D;
+        Mon, 17 Jan 2022 18:37:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0A908612E9;
-        Tue, 18 Jan 2022 02:45:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21C0EC36AE3;
-        Tue, 18 Jan 2022 02:45:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BD3A66120D;
+        Tue, 18 Jan 2022 02:37:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A929BC36AE3;
+        Tue, 18 Jan 2022 02:37:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473953;
-        bh=HOVjiGuJLSrGgAuWUGQwZudQWNHmplGt08zBeWR6DBg=;
+        s=k20201202; t=1642473471;
+        bh=syKAXgGkNN/cd6e1sptDYNJgaiCH3RcEKn5+Joj72mU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hiK/fKfaA58nbx37hW6AZlvw5vENaFC/rOcm7BV/gPM1p1VqrxQWXGEPinY1cHbBQ
-         QVhXZM3xDqMUgOYNNchLZJ8wq8PR1Fyp5mveq2FjhVNclT3GGpNYm61Ieaz+ZZZmBV
-         a4jcx4N2dmyYimDt10KnhVftC6mRIb3GpzRPo8OXYo4BTSacydlQKxmEIYHABA2fgS
-         SDF2qX+ocUqVc/cQDfS5ZAEe2RR6pM4vVIT2T8cGa+Q/9Ik3oHweJPULNiG8lvv35+
-         NH71ATt5dkk/Rgt72NgG+5oDIW4WhXg+Ca4lDFEk5o/wVyDj0xwXSu10Swgsz4/PqL
-         TIkiFJMeqRrXQ==
+        b=oez/vXLaSeLvXzcRh+Afy/jWXdBgOdGA792VFRJFtssreaHwUAAMYX54IPgGeN8iG
+         Z180qCKOYhY0Iom1y9uQo76hfnqHpbnG5pe502p/PufeesF/KtXsoT08eY6PCgoGox
+         Z6k1OLeXXMvMGwe4vzMo2kUPHNjlcqJAdGVjXwcpk16dU6ifGVzMTl94dsnKNocx0e
+         aPAW1dFJIyhLEJ/KFlkvavXM46VSwcP7ic4mYVtjWH0qhlBvVkLIWkL14z5jZyUpdn
+         rPIqMEq7B6FFKl+tE56IUcDiSOhKcy372mSEaD7bX6qFBMS9XGiLuXKdpHeWiuVad4
+         bbKqgsSkNm8aA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Paolo Abeni <pabeni@redhat.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, ast@kernel.org,
-        andrii@kernel.org, davem@davemloft.net, kuba@kernel.org,
-        hawk@kernel.org, john.fastabend@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 38/73] bpf: Do not WARN in bpf_warn_invalid_xdp_action()
-Date:   Mon, 17 Jan 2022 21:43:57 -0500
-Message-Id: <20220118024432.1952028-38-sashal@kernel.org>
+Cc:     Peter Chiu <chui-hao.chiu@mediatek.com>,
+        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>,
+        lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        matthias.bgg@gmail.com, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 130/188] mt76: mt7615: fix possible deadlock while mt7615_register_ext_phy()
+Date:   Mon, 17 Jan 2022 21:30:54 -0500
+Message-Id: <20220118023152.1948105-130-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220118024432.1952028-1-sashal@kernel.org>
-References: <20220118024432.1952028-1-sashal@kernel.org>
+In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
+References: <20220118023152.1948105-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,45 +55,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Paolo Abeni <pabeni@redhat.com>
+From: Peter Chiu <chui-hao.chiu@mediatek.com>
 
-[ Upstream commit 2cbad989033bff0256675c38f96f5faab852af4b ]
+[ Upstream commit 8c55516de3f9b76b9d9444e7890682ec2efc809f ]
 
-The WARN_ONCE() in bpf_warn_invalid_xdp_action() can be triggered by
-any bugged program, and even attaching a correct program to a NIC
-not supporting the given action.
+ieee80211_register_hw() is called with rtnl_lock held, and this could be
+caused lockdep from a work item that's on a workqueue that is flushed
+with the rtnl held.
 
-The resulting splat, beyond polluting the logs, fouls automated tools:
-e.g. a syzkaller reproducers using an XDP program returning an
-unsupported action will never pass validation.
+Move mt7615_register_ext_phy() outside the init_work().
 
-Replace the WARN_ONCE with a less intrusive pr_warn_once().
-
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
-Link: https://lore.kernel.org/bpf/016ceec56e4817ebb2a9e35ce794d5c917df572c.1638189075.git.pabeni@redhat.com
+Signed-off-by: Peter Chiu <chui-hao.chiu@mediatek.com>
+Signed-off-by: Felix Fietkau <nbd@nbd.name>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/filter.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 5ebc973ed4c50..0ef3a8a63afc0 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -6910,9 +6910,9 @@ void bpf_warn_invalid_xdp_action(u32 act)
- {
- 	const u32 act_max = XDP_REDIRECT;
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c b/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c
+index a2465b49ecd0c..87b4aa52ee0f9 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7615/pci_init.c
+@@ -28,8 +28,6 @@ static void mt7615_pci_init_work(struct work_struct *work)
+ 		return;
  
--	WARN_ONCE(1, "%s XDP return value %u, expect packet loss!\n",
--		  act > act_max ? "Illegal" : "Driver unsupported",
--		  act);
-+	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
-+		     act > act_max ? "Illegal" : "Driver unsupported",
-+		     act);
+ 	mt7615_init_work(dev);
+-	if (dev->dbdc_support)
+-		mt7615_register_ext_phy(dev);
  }
- EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
+ 
+ static int mt7615_init_hardware(struct mt7615_dev *dev)
+@@ -160,6 +158,12 @@ int mt7615_register_device(struct mt7615_dev *dev)
+ 	mt7615_init_txpower(dev, &dev->mphy.sband_2g.sband);
+ 	mt7615_init_txpower(dev, &dev->mphy.sband_5g.sband);
+ 
++	if (dev->dbdc_support) {
++		ret = mt7615_register_ext_phy(dev);
++		if (ret)
++			return ret;
++	}
++
+ 	return mt7615_init_debugfs(dev);
+ }
  
 -- 
 2.34.1
