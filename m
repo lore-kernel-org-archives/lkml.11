@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80683C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:24:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D45CC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:24:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245476AbiARCYF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:24:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57220 "EHLO
+        id S244637AbiARCYI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 17 Jan 2022 21:24:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244399AbiARCWn (ORCPT
+        with ESMTP id S245085AbiARCWw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:22:43 -0500
+        Mon, 17 Jan 2022 21:22:52 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73905C06176A;
-        Mon, 17 Jan 2022 18:22:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBABFC06177A;
+        Mon, 17 Jan 2022 18:22:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 384EBB8124B;
-        Tue, 18 Jan 2022 02:22:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B04AC36AE3;
-        Tue, 18 Jan 2022 02:22:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6FBFB8123A;
+        Tue, 18 Jan 2022 02:22:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4AD9EC36AE3;
+        Tue, 18 Jan 2022 02:22:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642472560;
-        bh=5jX8eDGS27Wfmkc8/P9LsCE6OkLNSfvuJ5z8AnFEDeA=;
+        s=k20201202; t=1642472569;
+        bh=CmSybgOq/1GrlnZRx5Nae4PVMVICbBeGwoklSLliBzc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z7cvNur5/5h5fzJy9wAVWFmAURs6yBfJCxiNT0FaQtObyffcUL/utd3pFeK+wMmHV
-         J1e1FZZazgY0vmJ0nP04LyA14ZYy79CSasYMYkqm9gowaEmFIEMQiVE7AHRgsrmU5Z
-         cik/tEwKVYS+mN085UjhraznX/GDNclvM5xOvSiJb5OCuBEmMi5XaDF65yYQulKHhE
-         QD3EpgI2UnnBXcyhQBRvbYo7grQUugiL7oCISf/0Y2JIx53A/S2dN6BED0DnhhExot
-         OQGTzp2qiYQ9fPWO4RP4mv+PIBy3/VxuPmBEqgoIszDUoWa+sqxdKC2cvz1IPkSnJG
-         XE4HhfwOUss5A==
+        b=UhWucttEKeX3gdn3Zo/0TV/1DDOeiKlnroyFdwhch0fl6YU6R1J2xAonaqDXRD9NR
+         ozVqy0YqPd3bv1jSPnvMCvi8oxjp9Fu64WjYeoHWEYO3n34jqlcTTpXMjMyOm29e32
+         v8VeWGoAWZltKBqhVqI0UPt8yZ290yzjQMXWtefb0GiY7zCAwLvB/FFSf2r/ma7fMV
+         TXV5+d6IezIeoKaiknucL04rC9ZcyRoSbphOmj9YeF3IonARrV2rKrOHT3KI4sG2qU
+         h67O2BiSzyrVlRCcA+zA3PsGYPUl/6/zGVJhNu7p9C3iCuU7DVW4HDGqhWzP21nv4F
+         H07Tpyty+77kQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, geert@linux-m68k.org,
-        linux@roeck-us.net, arnd@arndb.de, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 053/217] 82596: use eth_hw_addr_set()
-Date:   Mon, 17 Jan 2022 21:16:56 -0500
-Message-Id: <20220118021940.1942199-53-sashal@kernel.org>
+Cc:     Marek Vasut <marex@denx.de>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Peng Fan <peng.fan@nxp.com>, Shawn Guo <shawnguo@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, aford173@gmail.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.16 057/217] soc: imx: gpcv2: Synchronously suspend MIX domains
+Date:   Mon, 17 Jan 2022 21:17:00 -0500
+Message-Id: <20220118021940.1942199-57-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118021940.1942199-1-sashal@kernel.org>
 References: <20220118021940.1942199-1-sashal@kernel.org>
@@ -52,34 +55,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jakub Kicinski <kuba@kernel.org>
+From: Marek Vasut <marex@denx.de>
 
-[ Upstream commit 0f98d7e478430b64d9520a23585e02be5f8b1b2a ]
+[ Upstream commit f756f435f7dd823f2d4bd593ce1bf3168def1308 ]
 
-Byte by byte assignments.
+In case the following power domain sequence happens, iMX8M Mini always hangs:
+  gpumix:on -> gpu:on -> gpu:off -> gpu:on
+This is likely due to another quirk of the GPC block. This situation can be
+prevented by always synchronously powering off both the domain and MIX domain.
+Make it so. This turns the aforementioned sequence into:
+  gpumix:on -> gpu:on -> gpu:off -> gpumix:off -> gpumix:on -> gpu:on
 
-Fixes build on m68k.
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Frieder Schrempf <frieder.schrempf@kontron.de>
+Cc: Lucas Stach <l.stach@pengutronix.de>
+Cc: NXP Linux Team <linux-imx@nxp.com>
+Cc: Peng Fan <peng.fan@nxp.com>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Acked-by: Lucas Stach <l.stach@pengutronix.de>
+Signed-off-by: Shawn Guo <shawnguo@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/i825xx/82596.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/soc/imx/gpcv2.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/i825xx/82596.c b/drivers/net/ethernet/i825xx/82596.c
-index b482f6f633bd5..3ee89ae496d0c 100644
---- a/drivers/net/ethernet/i825xx/82596.c
-+++ b/drivers/net/ethernet/i825xx/82596.c
-@@ -1178,7 +1178,8 @@ static struct net_device * __init i82596_probe(void)
- 	DEB(DEB_PROBE,printk(KERN_INFO "%s: 82596 at %#3lx,", dev->name, dev->base_addr));
+diff --git a/drivers/soc/imx/gpcv2.c b/drivers/soc/imx/gpcv2.c
+index b8d52d8d29dbb..e757044ab7512 100644
+--- a/drivers/soc/imx/gpcv2.c
++++ b/drivers/soc/imx/gpcv2.c
+@@ -377,7 +377,7 @@ static int imx_pgc_power_down(struct generic_pm_domain *genpd)
+ 		}
+ 	}
  
- 	for (i = 0; i < 6; i++)
--		DEB(DEB_PROBE,printk(" %2.2X", dev->dev_addr[i] = eth_addr[i]));
-+		DEB(DEB_PROBE,printk(" %2.2X", eth_addr[i]));
-+	eth_hw_addr_set(dev, eth_addr);
+-	pm_runtime_put(domain->dev);
++	pm_runtime_put_sync_suspend(domain->dev);
  
- 	DEB(DEB_PROBE,printk(" IRQ %d.\n", dev->irq));
+ 	return 0;
  
 -- 
 2.34.1
