@@ -2,102 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95F22C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 19:15:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D766C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 19:15:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348308AbiARTPL (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 14:15:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38986 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239978AbiARTPJ (ORCPT
+        id S244943AbiARTP0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Tue, 18 Jan 2022 14:15:26 -0500
+Received: from mail.antaris-organics.com ([91.227.220.155]:43324 "EHLO
+        mail.antaris-organics.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348640AbiARTPU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 14:15:09 -0500
-Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37924C061574
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 11:15:09 -0800 (PST)
-Received: by mail-pf1-x42d.google.com with SMTP id w204so216731pfc.7
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 11:15:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
-        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dpimc9u9mWkTK2A7AIN/PlilWYzlyB0scr3gag0ePtk=;
-        b=CfkJVLW4r80ivRVQPJwJKCrpdoVWkBV++jB7iUVM64kpcJgpAALPeiIScDIO3d31ms
-         lN6LoDSvcfC/9yTipXqEtuZ4ykX91Jut5J7rP3MMqXhgbeiKzNqVeV7/2gW1d2wwpn0z
-         ndpBjQx1ABZI/B2dwtU45Tcy7zk6ZJunfbvj695FUZzzrhNKnLWZKozy16vEGHPZqZD/
-         ZdmQmlucYW9dW+W7/uw+NiPNFmfJsIRCLJNKdOFVzDWRXTPo0NK6EF47jD0G7sRkmnMa
-         Azf0PDRGSxYFwUPbUej0tAw1vpv4E8WPiZpFzMA/8us7qK7cEaMJQ7OXHSMxfskYm4Y5
-         vH6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
-         :mime-version:content-transfer-encoding;
-        bh=dpimc9u9mWkTK2A7AIN/PlilWYzlyB0scr3gag0ePtk=;
-        b=USuDlMruhQYl/3O3AHezldvXQjFfcow/L6E5gTsnuOgFzwgKO2vDlNjn5ayCm3pfDp
-         M5DMOTOxrNp9iAIkl48N9WazqzqBL2NdqosFtrOHxA3b8eA/S3+0FchS9wfSAmhsivqv
-         WIKaFJg3DNGrkX93dV2+ZBhaIdphh6cIGwkrDhwb+0SXuEepqV/NrkuxtIc8/hPPoqAC
-         6iLXdNeiPT0Ba0Lvt8OIFrpaI/Kk5DSItGRgWka70BdTPxQyoYSgHl6lAxVORuHMg/S/
-         +ZrhKkEgHAPiQ5Q1Sq25bBY/GKFLpT66AzTX8tcER4HQJuc9YCuR9dgvsqvqnCNGwlnl
-         ndZw==
-X-Gm-Message-State: AOAM532kmJdP13vQlfrcbDVm4ZObNJWimOLIYJAZHKk3mUu60HTxOa4f
-        JL7cFLTC/uco2kc1r7ZKrArvsg==
-X-Google-Smtp-Source: ABdhPJzt5P1Hi+ik4AbUuPNtdbsh5ykdqMC2K8UwzvX288Kd4zpJkeMi7TfOgZfnRVlS2NqHzscIqQ==
-X-Received: by 2002:a05:6a00:9a9:b0:4c1:c43e:75e4 with SMTP id u41-20020a056a0009a900b004c1c43e75e4mr27279237pfg.83.1642533308696;
-        Tue, 18 Jan 2022 11:15:08 -0800 (PST)
-Received: from localhost ([12.3.194.138])
-        by smtp.gmail.com with ESMTPSA id e18sm17402375pfc.150.2022.01.18.11.15.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 11:15:08 -0800 (PST)
-Date:   Tue, 18 Jan 2022 11:15:08 -0800 (PST)
-X-Google-Original-Date: Tue, 18 Jan 2022 11:14:41 PST (-0800)
-Subject:     Re: [PATCH v2 0/5] riscv: mm: init clean up #ifdefs
-In-Reply-To: <20211206150353.731-1-jszhang@kernel.org>
-CC:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
-        alex@ghiti.fr, linux-riscv@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-From:   Palmer Dabbelt <palmer@dabbelt.com>
-To:     jszhang@kernel.org
-Message-ID: <mhng-56a04ad9-5ae1-412c-9862-071c4e1b8391@palmer-ri-x1c9>
-Mime-Version: 1.0 (MHng)
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Tue, 18 Jan 2022 14:15:20 -0500
+X-Greylist: delayed 537 seconds by postgrey-1.27 at vger.kernel.org; Tue, 18 Jan 2022 14:15:19 EST
+Date:   Tue, 18 Jan 2022 20:06:20 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mareichelt.com;
+        s=202107; t=1642532781;
+        bh=LtWB4D6zeLWHh+inbSDbj5BIxXp3i6a424NYMgVLAuw=;
+        h=Date:From:To:Subject:References:In-Reply-To:From;
+        b=Qvf6cbzlSnoYJma2N262b3MALOCwFYQ/Xh7cZepxbDCmNqe9zhfb7S2y94pYra2Ir
+         0wTGy1B2qVBQKkWiRTJ+yOvV9lBYkHQfCNK8Zxwg+vHkumGt9dSMVjjqHvjCVDr5Uo
+         2KFKTAOwwMr5XlMAMt3ppWonhU8pY+YHl1YF+ikJMqtHc8q889652oRhJ7XkdaMjBt
+         PQJIC8XIbuup83fbQ4Z2i2NvujqaGX9caiKwfa/NPRjlH0ZZH+IHLZUecVePBmmjgu
+         pi99esdMlbghOBuyDF80lpkzHW/0klkMB9Xk8kISJxh8QT5pvyacxyn0hmpQwar23+
+         Ur0jiiY28KswA==
+From:   Markus Reichelt <ml@mareichelt.com>
+To:     "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: Announce loop-AES-v3.7w file/swap crypto package
+Message-ID: <YecPrJMJTpUwYz4s@pc21.mareichelt.com>
+Mail-Followup-To: "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+References: <8LUdOFjFwCBEYnY82H3a1lkMp0bcXSZs4UNYBpQP9lNigJqB7tnq6OUQR5LB4Lk1eus6P2XpWAlzbTBGc1RJNpkwD7dIED07P5E1N87YL80=@protonmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8LUdOFjFwCBEYnY82H3a1lkMp0bcXSZs4UNYBpQP9lNigJqB7tnq6OUQR5LB4Lk1eus6P2XpWAlzbTBGc1RJNpkwD7dIED07P5E1N87YL80=@protonmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 06 Dec 2021 07:03:48 PST (-0800), jszhang@kernel.org wrote:
-> To support NOMMU, XIP, the arch/riscv/mm/init.c becomes much complex
-> due to lots of #ifdefs, this not only impacts the code readability,
-> compile coverage, but may also bring bugs. For example, I believe one
-> recently fixed bug[1] is caused by this issue when merging.
->
-> This series tries to clean up unnecessary #ifdefs as much as possible.
->
-> Further cleanups may need to refactor the XIP code as Alexandre's patch
-> does.
->
-> [1] http://lists.infradead.org/pipermail/linux-riscv/2021-December/010607.html
->
->
-> Since v1:
->  - collect Reviewed-by tag.
->  - remove the __maybe_unused used in max_mapped_addr declaration.
->  - remove the BUG_ON check of mapping the last 4K bytes of the
->    addressable memory since "this is true for every kernel actually"
->    as pointed out by Alexandre.
->
-> Jisheng Zhang (5):
->   riscv: mm: init: remove unnecessary "#ifdef CONFIG_CRASH_DUMP"
->   riscv: mm: init: try best to use IS_ENABLED(CONFIG_64BIT) instead of
->     #ifdef
->   riscv: mm: init: remove _pt_ops and use pt_ops directly
->   riscv: mm: init: try IS_ENABLED(CONFIG_XIP_KERNEL) instead of #ifdef
->   riscv: mm: init: try best to remove #ifdef CONFIG_XIP_KERNEL usage
->
->  arch/riscv/mm/init.c | 76 ++++++++++++++++----------------------------
->  1 file changed, 27 insertions(+), 49 deletions(-)
+* Jari Ruusu <jariruusu@protonmail.com> wrote:
 
-Thanks, these look good.  I've put them on a staging branch that will 
-soon be for-next, I'd like to start from after my recent PR's merge 
-(assuming it's merged).
+> loop-AES changes since previous release:
+> - Worked around kernel interface changes on 5.16 kernels.
+> - Silenced switch-case fall through C-compiler warnings.
+
+thank you!
