@@ -2,45 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A38DC433FE
-	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABCFFC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 18 Jan 2022 02:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348010AbiARCnp (ORCPT
+        id S1345265AbiARCnx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 17 Jan 2022 21:43:45 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:54034 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240481AbiARCgm (ORCPT
+        Mon, 17 Jan 2022 21:43:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60048 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345287AbiARCik (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 17 Jan 2022 21:36:42 -0500
+        Mon, 17 Jan 2022 21:38:40 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ABF0C06175D;
+        Mon, 17 Jan 2022 18:35:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4664D60A6B;
-        Tue, 18 Jan 2022 02:36:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91190C36AE3;
-        Tue, 18 Jan 2022 02:36:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F27C2B81252;
+        Tue, 18 Jan 2022 02:35:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E72DC36AEF;
+        Tue, 18 Jan 2022 02:35:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642473400;
-        bh=0Q27arFmeWVA9KhKpkcrNms2J3ZrY9IzTiq3hzk3P+U=;
+        s=k20201202; t=1642473308;
+        bh=dkmUFr49CybcD04y+WFJD6jn5JBcCH1bqnANrKf9inE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HxWKz/39RtGOyQv9NjnoNgB2SRPPR7gWs4+d2BF9RkX5JebrhrZwHFybLhPRk826F
-         NtOQUJ2xW5AsG4ayILqjX26X7sLomUqSuzSGrGXBbTrqauh59TCzIez5vAee0U3aiR
-         F6rDBzYyd7CddRXTwX2ZenZBifFYzGGKDJSF8Jkj7gZZWGZRaO9Lsoh4NlNmfkVIFu
-         xe4UO3Ksv92VA67gsf6qYHh9WEAfzCktv0LpvRvf7fo1rRvIDOmmPoTZ38qf2SNaul
-         1RjY+S4ZBiowduowBKnf5vfN2xPk/4eB6fG9rB6N0EQpxIrv1tOryfalBIk7GEAFx/
-         ze7ydi6/nAZqg==
+        b=DIDJi+aXoe+aq5jIRglbxdA9GHyduCMhhKYAKjgVPcmXHrO0L77QzCi9spQbS3IQ6
+         DAjl6Q/fLPytyY5y26PooUlPcZV8yGfIyYIkw7qcGP0qppnVhNaOiFYIaIEEgmyM7a
+         +88virpnYSWOb8jWZeS0eNnNQehkhnLTtV1Y9hiTe7jhlgzjUk46+QfEPO7/Ms7eZC
+         +48VgvV9su05aAReGb19ViKz3dyEKdblgaMdH8peXOstz5aSleoCvZ9sq1yWwuKYo6
+         nsfI3vLMrzZ+RFzdvxDu3LoTfOBW2RIXST8wAzcEUwitGgtXXzO8KauBuaRtTX/xGr
+         RV/8WFjX/xDXw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alex Elder <elder@linaro.org>, David Heidelberg <david@ixit.cz>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, agross@kernel.org,
-        bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 103/188] ARM: dts: qcom: sdx55: fix IPA interconnect definitions
-Date:   Mon, 17 Jan 2022 21:30:27 -0500
-Message-Id: <20220118023152.1948105-103-sashal@kernel.org>
+Cc:     Ping-Ke Shih <pkshih@realtek.com>,
+        rtl8821cerfe2 <rtl8821cerfe2@protonmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, tony0620emma@gmail.com,
+        kvalo@kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 063/188] rtw88: add quirk to disable pci caps on HP 250 G7 Notebook PC
+Date:   Mon, 17 Jan 2022 21:29:47 -0500
+Message-Id: <20220118023152.1948105-63-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220118023152.1948105-1-sashal@kernel.org>
 References: <20220118023152.1948105-1-sashal@kernel.org>
@@ -52,44 +55,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alex Elder <elder@linaro.org>
+From: Ping-Ke Shih <pkshih@realtek.com>
 
-[ Upstream commit c0d6316c238b1bd743108bd4b08eda364f47c7c9 ]
+[ Upstream commit c81edb8dddaa36c4defa26240cc19127f147283f ]
 
-The first two interconnects defined for IPA on the SDX55 SoC are
-really two parts of what should be represented as a single path
-between IPA and system memory.
+8821CE causes random freezes on HP 250 G7 Notebook PC. Add a quirk
+to disable pci ASPM capability.
 
-Fix this by combining the "memory-a" and "memory-b" interconnects
-into a single "memory" interconnect.
-
-Reported-by: David Heidelberg <david@ixit.cz>
-Tested-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Signed-off-by: Alex Elder <elder@linaro.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: rtl8821cerfe2 <rtl8821cerfe2@protonmail.com>
+Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211119052437.8671-1-pkshih@realtek.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/boot/dts/qcom-sdx55.dtsi | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/net/wireless/realtek/rtw88/pci.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/arch/arm/boot/dts/qcom-sdx55.dtsi b/arch/arm/boot/dts/qcom-sdx55.dtsi
-index 1e6ce035f76a9..b5b784c5c65e4 100644
---- a/arch/arm/boot/dts/qcom-sdx55.dtsi
-+++ b/arch/arm/boot/dts/qcom-sdx55.dtsi
-@@ -334,12 +334,10 @@ ipa: ipa@1e40000 {
- 			clocks = <&rpmhcc RPMH_IPA_CLK>;
- 			clock-names = "core";
- 
--			interconnects = <&system_noc MASTER_IPA &system_noc SLAVE_SNOC_MEM_NOC_GC>,
--					<&mem_noc MASTER_SNOC_GC_MEM_NOC &mc_virt SLAVE_EBI_CH0>,
-+			interconnects = <&system_noc MASTER_IPA &mc_virt SLAVE_EBI_CH0>,
- 					<&system_noc MASTER_IPA &system_noc SLAVE_OCIMEM>,
- 					<&mem_noc MASTER_AMPSS_M0 &system_noc SLAVE_IPA_CFG>;
--			interconnect-names = "memory-a",
--					     "memory-b",
-+			interconnect-names = "memory",
- 					     "imem",
- 					     "config";
+diff --git a/drivers/net/wireless/realtek/rtw88/pci.c b/drivers/net/wireless/realtek/rtw88/pci.c
+index a7a6ebfaa203c..3b367c9085eba 100644
+--- a/drivers/net/wireless/realtek/rtw88/pci.c
++++ b/drivers/net/wireless/realtek/rtw88/pci.c
+@@ -1738,6 +1738,15 @@ static const struct dmi_system_id rtw88_pci_quirks[] = {
+ 		},
+ 		.driver_data = (void *)BIT(QUIRK_DIS_PCI_CAP_ASPM),
+ 	},
++	{
++		.callback = disable_pci_caps,
++		.ident = "HP HP 250 G7 Notebook PC",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "HP"),
++			DMI_MATCH(DMI_PRODUCT_NAME, "HP 250 G7 Notebook PC"),
++		},
++		.driver_data = (void *)BIT(QUIRK_DIS_PCI_CAP_ASPM),
++	},
+ 	{}
+ };
  
 -- 
 2.34.1
