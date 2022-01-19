@@ -2,126 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88CF0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 08:23:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAA14C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 08:24:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348901AbiASIXd (ORCPT
+        id S1352321AbiASIYx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 03:23:33 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:57048 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238265AbiASIXc (ORCPT
+        Wed, 19 Jan 2022 03:24:53 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:40938 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1348529AbiASIYw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 03:23:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642580612;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=iKUiNgUusNJV8EMUHx8TbC8tPQnDy1EG1e5Lk1edtDk=;
-        b=DojoDmEJUg8ubkiCUIf63CyIhvb13YoFjoktipJWdJzVNlTpHnZfqBY08V5dBKZgdE4l6f
-        vPQuNl/y89C2KI3G2ibu6nJn+M2yQcSLfyTgGHxRs1E3/sXRfYJbcpunY3ouwzIcJdE3+Y
-        NSMW/DHUy4eQVPx2jiaDveT+s4OYdMQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-669-5SoPtEwOPzOoT5vaw6AZbw-1; Wed, 19 Jan 2022 03:23:26 -0500
-X-MC-Unique: 5SoPtEwOPzOoT5vaw6AZbw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8DB84100C620;
-        Wed, 19 Jan 2022 08:23:24 +0000 (UTC)
-Received: from localhost (ovpn-12-206.pek2.redhat.com [10.72.12.206])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 3BD74108B0;
-        Wed, 19 Jan 2022 08:23:08 +0000 (UTC)
-Date:   Wed, 19 Jan 2022 16:23:06 +0800
-From:   Baoquan He <bhe@redhat.com>
-To:     Eric DeVolder <eric.devolder@oracle.com>
-Cc:     linux-kernel@vger.kernel.org, x86@kernel.org,
-        kexec@lists.infradead.org, ebiederm@xmission.com,
-        dyoung@redhat.com, vgoyal@redhat.com, tglx@linutronix.de,
-        mingo@redhat.com, bp@alien8.de, dave.hansen@linux.intel.com,
-        hpa@zytor.com, nramas@linux.microsoft.com, thomas.lendacky@amd.com,
-        robh@kernel.org, efault@gmx.de, rppt@kernel.org,
-        konrad.wilk@oracle.com, boris.ostrovsky@oracle.com
-Subject: Re: [RFC v2 3/6] crash hp: definitions and prototype changes
-Message-ID: <20220119082306.GA5158@MiWiFi-R3L-srv>
-References: <20211207195204.1582-1-eric.devolder@oracle.com>
- <20211207195204.1582-4-eric.devolder@oracle.com>
+        Wed, 19 Jan 2022 03:24:52 -0500
+X-UUID: 97f9c6ab74ca4abdbe273660cd85ffeb-20220119
+X-UUID: 97f9c6ab74ca4abdbe273660cd85ffeb-20220119
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw02.mediatek.com
+        (envelope-from <miles.chen@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 645517797; Wed, 19 Jan 2022 16:24:48 +0800
+Received: from mtkcas10.mediatek.inc (172.21.101.39) by
+ mtkmbs07n1.mediatek.inc (172.21.101.16) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 19 Jan 2022 16:24:47 +0800
+Received: from mtksdccf07.mediatek.inc (172.21.84.99) by mtkcas10.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 19 Jan 2022 16:24:47 +0800
+From:   <miles.chen@mediatek.com>
+To:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>
+CC:     Miles Chen <miles.chen@mediatek.com>,
+        <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>
+Subject: [PATCH] lib/crypto: blake2s: fix a CFI failure
+Date:   Wed, 19 Jan 2022 16:24:46 +0800
+Message-ID: <20220119082447.1675-1-miles.chen@mediatek.com>
+X-Mailer: git-send-email 2.18.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211207195204.1582-4-eric.devolder@oracle.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/07/21 at 02:52pm, Eric DeVolder wrote:
-> This change adds members to struct kimage to facilitate crash
-> hotplug support.
-> 
-> This change also defines crash hotplug events and associated
-> prototypes.
-> 
-> Signed-off-by: Eric DeVolder <eric.devolder@oracle.com>
-> ---
->  include/linux/kexec.h | 21 +++++++++++++++++++--
->  1 file changed, 19 insertions(+), 2 deletions(-)
-> 
-> diff --git a/include/linux/kexec.h b/include/linux/kexec.h
-> index 0c994ae37729..068f853f1c65 100644
-> --- a/include/linux/kexec.h
-> +++ b/include/linux/kexec.h
-> @@ -221,8 +221,9 @@ struct crash_mem {
->  extern int crash_exclude_mem_range(struct crash_mem *mem,
->  				   unsigned long long mstart,
->  				   unsigned long long mend);
-> -extern int crash_prepare_elf64_headers(struct crash_mem *mem, int kernel_map,
-> -				       void **addr, unsigned long *sz);
-> +extern int crash_prepare_elf64_headers(struct kimage *image,
-> +					struct crash_mem *mem, int kernel_map,
-> +					void **addr, unsigned long *sz);
->  #endif /* CONFIG_KEXEC_FILE */
->  
->  #ifdef CONFIG_KEXEC_ELF
-> @@ -299,6 +300,13 @@ struct kimage {
->  
->  	/* Information for loading purgatory */
->  	struct purgatory_info purgatory_info;
-> +
-> +#ifdef CONFIG_CRASH_HOTPLUG
-> +	bool hotplug_event;
-> +	int offlinecpu;
-> +	bool elf_index_valid;
-> +	int elf_index;
+From: Miles Chen <miles.chen@mediatek.com>
 
-Do we really need elf_index_valid? Can we initialize elf_index to , e.g '-1',
-then check if the value is valid?
+With CONFIG_CFI_CLANG=y, we observe a CFI failure of
+blake2s_compress_generic.
 
-> +#endif
->  #endif
->  
->  #ifdef CONFIG_IMA_KEXEC
-> @@ -315,6 +323,15 @@ struct kimage {
->  	unsigned long elf_load_addr;
->  };
->  
-> +#ifdef CONFIG_CRASH_HOTPLUG
-> +void arch_crash_hotplug_handler(struct kimage *image,
-> +	unsigned int hp_action, unsigned long a, unsigned long b);
-> +#define KEXEC_CRASH_HP_REMOVE_CPU   0
-> +#define KEXEC_CRASH_HP_ADD_CPU      1
-> +#define KEXEC_CRASH_HP_REMOVE_MEMORY 2
-> +#define KEXEC_CRASH_HP_ADD_MEMORY   3
-> +#endif /* CONFIG_CRASH_HOTPLUG */
-> +
->  /* kexec interface functions */
->  extern void machine_kexec(struct kimage *image);
->  extern int machine_kexec_prepare(struct kimage *image);
-> -- 
-> 2.27.0
-> 
+Reverting commit 6048fdcc5f26 ("lib/crypto: blake2s: include as built-in")
+is a solution for this problem. So I looked into the patch
+and I think it is caused by the weak symbols use by blake2s_compress().
+
+To fix it, remove the weak symbol and use CRYPTO_ARCH_HAVE_LIB_BLAKE2S
+to select blake2s_compress_arch/blake2s_compress_generic.
+
+log:
+[    0.000000][    T0] Kernel panic - not syncing: CFI failure (target: blake2s_compress_generic+0x0/0x1444)
+[    0.000000][    T0] CPU: 0 PID: 0 Comm: swapper/0 Not tainted 5.16.0-mainline-06981-g076c855b846e #1
+[    0.000000][    T0] Hardware name: MT6873 (DT)
+[    0.000000][    T0] Call trace:
+[    0.000000][    T0]  dump_backtrace+0xfc/0x1dc
+[    0.000000][    T0]  dump_stack_lvl+0xa8/0x11c
+[    0.000000][    T0]  panic+0x194/0x464
+[    0.000000][    T0]  __cfi_check_fail+0x54/0x58
+[    0.000000][    T0]  __cfi_slowpath_diag+0x354/0x4b0
+[    0.000000][    T0]  blake2s_update+0x14c/0x178
+[    0.000000][    T0]  _extract_entropy+0xf4/0x29c
+[    0.000000][    T0]  crng_initialize_primary+0x24/0x94
+[    0.000000][    T0]  rand_initialize+0x2c/0x6c
+[    0.000000][    T0]  start_kernel+0x2f8/0x65c
+[    0.000000][    T0]  __primary_switched+0xc4/0x7be4
+[    0.000000][    T0] Rebooting in 5 seconds..
+
+Fixes: 6048fdcc5f26 ("lib/crypto: blake2s: include as built-in")
+Signed-off-by: Miles Chen <miles.chen@mediatek.com>
+---
+ lib/crypto/blake2s-generic.c | 3 +--
+ lib/crypto/blake2s.c         | 6 ++++++
+ 2 files changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/lib/crypto/blake2s-generic.c b/lib/crypto/blake2s-generic.c
+index 75ccb3e633e6..22fa3ea1689e 100644
+--- a/lib/crypto/blake2s-generic.c
++++ b/lib/crypto/blake2s-generic.c
+@@ -38,8 +38,7 @@ static inline void blake2s_increment_counter(struct blake2s_state *state,
+ }
+ 
+ void blake2s_compress(struct blake2s_state *state, const u8 *block,
+-		      size_t nblocks, const u32 inc)
+-		      __weak __alias(blake2s_compress_generic);
++		      size_t nblocks, const u32 inc);
+ 
+ void blake2s_compress_generic(struct blake2s_state *state, const u8 *block,
+ 			      size_t nblocks, const u32 inc)
+diff --git a/lib/crypto/blake2s.c b/lib/crypto/blake2s.c
+index 93f2ae051370..4055aa593ec4 100644
+--- a/lib/crypto/blake2s.c
++++ b/lib/crypto/blake2s.c
+@@ -16,6 +16,12 @@
+ #include <linux/init.h>
+ #include <linux/bug.h>
+ 
++#if IS_ENABLED(CONFIG_CRYPTO_ARCH_HAVE_LIB_BLAKE2S)
++#  define blake2s_compress blake2s_compress_arch
++#else
++#  define blake2s_compress blake2s_compress_generic
++#endif
++
+ void blake2s_update(struct blake2s_state *state, const u8 *in, size_t inlen)
+ {
+ 	__blake2s_update(state, in, inlen, blake2s_compress);
+-- 
+2.18.0
 
