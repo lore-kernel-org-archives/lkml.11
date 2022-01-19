@@ -2,254 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79329C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 11:38:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC55C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 11:40:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354239AbiASLiu (ORCPT
+        id S1354247AbiASLkB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 06:38:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34410 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354216AbiASLit (ORCPT
+        Wed, 19 Jan 2022 06:40:01 -0500
+Received: from zg8tmja2lje4os4yms4ymjma.icoremail.net ([206.189.21.223]:58002
+        "HELO zg8tmja2lje4os4yms4ymjma.icoremail.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with SMTP id S1354216AbiASLkA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 06:38:49 -0500
-Received: from mail-ua1-x934.google.com (mail-ua1-x934.google.com [IPv6:2607:f8b0:4864:20::934])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE68C061574
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 03:38:49 -0800 (PST)
-Received: by mail-ua1-x934.google.com with SMTP id m90so3964157uam.2
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 03:38:49 -0800 (PST)
+        Wed, 19 Jan 2022 06:40:00 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xpBnSyjweN7WnT6qOco7rvIixglPL3EZOP790L3l2OQ=;
-        b=nqSYS3nslqfVnD9HrnEY2yC+c+62Z0xBRFtV/SPgbCcgkoRJEwN9gdSFO+xyUnEsh9
-         odi2q7y1GpFzRGEaGc/JS0wVtFdj7vZqD1bR1uO8r5TIx4QVqybZlfbzFGUV3C4sz1rc
-         TyCayMCdkyJ2qoXlnPCFgcKVbTxtn+aeRcW8QztTEJrWWwTTgZ9wEd0ilZtIMq37P3yH
-         NkThHsYu0noq7OL52aM8/USIirpAw/g0hz3uiQGFH1jif+W4iJQFPBNlW8jUFqW9gSTD
-         fbkK7/4xxlXfxh/Zo+T2buwivtueVJAi4Il1wyidlqz+yHltFKYuH9h+5Q/PjMaqv+jU
-         ivLg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xpBnSyjweN7WnT6qOco7rvIixglPL3EZOP790L3l2OQ=;
-        b=nJ5elzuZmiAB342mItSgLiDWHpzTaHVxWCbnDNMOkziKqZoerwJGLzdJl+CexS2RBv
-         Sr/IDWy5aDdQ0x+czCaPkefrZ/28n+5NVICAYjfQs5iinYQKDg4DIu0PHXnLRAlpoiqN
-         ZY7aAFI+z2frXtGrq8PdtzIgfuxYrVaZG13bJoha7v1rp5J6h1CHAYSyuCv+1r/Tg+aS
-         5lZx2mg3ruGYcGwoZlWfns6wisLB1RzoUz+K5ceTQ2V5d3x71rcKF7ePtKbRWyxenro2
-         rUA+YRvtbl4D2RWuTLYf+r9aFbbVZ6y3Us8pGF0AGsONCYYapyUt67byRAggSfh7+/od
-         +7ow==
-X-Gm-Message-State: AOAM532Jb7XQ850ubcdccNVFsSiRpj35/w/ld8+IMePvDs38zoDB4NSM
-        vi/k3lWFYFao8OCLhviVcuWMPjgAA2u9ij1za4LWtvSR+6c=
-X-Google-Smtp-Source: ABdhPJydS2dd4midyt1oITSx41wQnXRpFBWM6yazmZEuLEwIaUX7GL8/g9AwJ01SS7myzs7e2VSE6BASG8EwAJOLma0=
-X-Received: by 2002:a67:c28b:: with SMTP id k11mr9195420vsj.25.1642592328107;
- Wed, 19 Jan 2022 03:38:48 -0800 (PST)
+        d=pku.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
+        In-Reply-To:References:Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Message-ID; bh=ko2uO+xiqlDXVopVE7QY0gYCjDmy8gGdxHDP
+        QLGRqzk=; b=nCVVD+idgr/7HkEjIFTSdLMwXN2V5yJ5I3Y9CZ4myQ3KZU1sCrYQ
+        Dci5x6FYePemsjRKrp9xGn4VQ+qHM8NhNiEuZyQuT2IOilTJKlXLkObPuHcryE4Z
+        fWQp4PsTkxUTB2HPvnssdHTIfLwlAfJsw4judEqCiVIna+2p5IP3qUc=
+Received: by ajax-webmail-front01 (Coremail) ; Wed, 19 Jan 2022 19:36:46
+ +0800 (GMT+08:00)
+X-Originating-IP: [10.129.37.75]
+Date:   Wed, 19 Jan 2022 19:36:46 +0800 (GMT+08:00)
+X-CM-HeaderCharset: UTF-8
+From:   =?UTF-8?B?5YiY5rC45b+X?= <lyz_cs@pku.edu.cn>
+To:     "lucas stach" <l.stach@pengutronix.de>
+Cc:     linux+etnaviv@armlinux.org.uk, christian.gmeiner@gmail.com,
+        airlied@linux.ie, daniel@ffwll.ch, etnaviv@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: Re: [PATCH] drm/etnaviv: Add missing pm_runtime_put
+X-Priority: 3
+X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
+ Copyright (c) 2002-2022 www.mailtech.cn
+ mispb-1ea67e80-64e4-49d5-bd9f-3beeae24b9f2-pku.edu.cn
+In-Reply-To: <bb71f83d4897ce818348522d9594b091478073ff.camel@pengutronix.de>
+References: <1642515391-19329-1-git-send-email-lyz_cs@pku.edu.cn>
+ <bb71f83d4897ce818348522d9594b091478073ff.camel@pengutronix.de>
+Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=UTF-8
 MIME-Version: 1.0
-References: <cover.1642526745.git.khalid.aziz@oracle.com>
-In-Reply-To: <cover.1642526745.git.khalid.aziz@oracle.com>
-From:   Mark Hemment <markhemm@googlemail.com>
-Date:   Wed, 19 Jan 2022 11:38:37 +0000
-Message-ID: <CANe_+UhrcQO0mwB2KJtm69+MDVJuD-r5Cbyqt8AkWdtfY55CCQ@mail.gmail.com>
-Subject: Re: [RFC PATCH 0/6] Add support for shared PTEs across processes
-To:     Khalid Aziz <khalid.aziz@oracle.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        longpeng2@huawei.com, arnd@arndb.de, dave.hansen@linux.intel.com,
-        david@redhat.com, rppt@kernel.org,
-        Suren Baghdasaryan <surenb@google.com>,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org
-Content-Type: text/plain; charset="UTF-8"
+Message-ID: <480fc77e.24a14.17e721fffbe.Coremail.lyz_cs@pku.edu.cn>
+X-Coremail-Locale: zh_CN
+X-CM-TRANSID: 5oFpogD3n7rP9+dhjHt9AA--.20150W
+X-CM-SenderInfo: irzqijirqukmo6sn3hxhgxhubq/1tbiAwEKBlPy7uA+KwAcso
+X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
+        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
+        daVFxhVjvjDU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 18 Jan 2022 at 21:20, Khalid Aziz <khalid.aziz@oracle.com> wrote:
->
-> Page tables in kernel consume some of the memory and as long as
-> number of mappings being maintained is small enough, this space
-> consumed by page tables is not objectionable. When very few memory
-> pages are shared between processes, the number of page table entries
-> (PTEs) to maintain is mostly constrained by the number of pages of
-> memory on the system. As the number of shared pages and the number
-> of times pages are shared goes up, amount of memory consumed by page
-> tables starts to become significant.
->
-> Some of the field deployments commonly see memory pages shared
-> across 1000s of processes. On x86_64, each page requires a PTE that
-> is only 8 bytes long which is very small compared to the 4K page
-> size. When 2000 processes map the same page in their address space,
-> each one of them requires 8 bytes for its PTE and together that adds
-> up to 8K of memory just to hold the PTEs for one 4K page. On a
-> database server with 300GB SGA, a system carsh was seen with
-> out-of-memory condition when 1500+ clients tried to share this SGA
-> even though the system had 512GB of memory. On this server, in the
-> worst case scenario of all 1500 processes mapping every page from
-> SGA would have required 878GB+ for just the PTEs. If these PTEs
-> could be shared, amount of memory saved is very significant.
->
-> This is a proposal to implement a mechanism in kernel to allow
-> userspace processes to opt into sharing PTEs. The proposal is to add
-> a new system call - mshare(), which can be used by a process to
-> create a region (we will call it mshare'd region) which can be used
-> by other processes to map same pages using shared PTEs. Other
-> process(es), assuming they have the right permissions, can then make
-> the mashare() system call to map the shared pages into their address
-> space using the shared PTEs.  When a process is done using this
-> mshare'd region, it makes a mshare_unlink() system call to end its
-> access. When the last process accessing mshare'd region calls
-> mshare_unlink(), the mshare'd region is torn down and memory used by
-> it is freed.
->
->
-> API Proposal
-> ============
->
-> The mshare API consists of two system calls - mshare() and mshare_unlink()
->
-> --
-> int mshare(char *name, void *addr, size_t length, int oflags, mode_t mode)
->
-> mshare() creates and opens a new, or opens an existing mshare'd
-> region that will be shared at PTE level. "name" refers to shared object
-> name that exists under /sys/fs/mshare. "addr" is the starting address
-> of this shared memory area and length is the size of this area.
-> oflags can be one of:
->
-> - O_RDONLY opens shared memory area for read only access by everyone
-> - O_RDWR opens shared memory area for read and write access
-> - O_CREAT creates the named shared memory area if it does not exist
-> - O_EXCL If O_CREAT was also specified, and a shared memory area
->   exists with that name, return an error.
->
-> mode represents the creation mode for the shared object under
-> /sys/fs/mshare.
->
-> mshare() returns an error code if it fails, otherwise it returns 0.
->
-> PTEs are shared at pgdir level and hence it imposes following
-> requirements on the address and size given to the mshare():
->
-> - Starting address must be aligned to pgdir size (512GB on x86_64)
-> - Size must be a multiple of pgdir size
-> - Any mappings created in this address range at any time become
->   shared automatically
-> - Shared address range can have unmapped addresses in it. Any access
->   to unmapped address will result in SIGBUS
->
-> Mappings within this address range behave as if they were shared
-> between threads, so a write to a MAP_PRIVATE mapping will create a
-> page which is shared between all the sharers. The first process that
-> declares an address range mshare'd can continue to map objects in
-> the shared area. All other processes that want mshare'd access to
-> this memory area can do so by calling mshare(). After this call, the
-> address range given by mshare becomes a shared range in its address
-> space. Anonymous mappings will be shared and not COWed.
->
-> A file under /sys/fs/mshare can be opened and read from. A read from
-> this file returns two long values - (1) starting address, and (2)
-> size of the mshare'd region.
->
-> --
-> int mshare_unlink(char *name)
->
-> A shared address range created by mshare() can be destroyed using
-> mshare_unlink() which removes the  shared named object. Once all
-> processes have unmapped the shared object, the shared address range
-> references are de-allocated and destroyed.
->
-> mshare_unlink() returns 0 on success or -1 on error.
->
->
-> Example Code
-> ============
->
-> Snippet of the code that a donor process would run looks like below:
->
-> -----------------
->         addr = mmap((void *)TB(2), GB(512), PROT_READ | PROT_WRITE,
->                         MAP_SHARED | MAP_ANONYMOUS, 0, 0);
->         if (addr == MAP_FAILED)
->                 perror("ERROR: mmap failed");
->
->         err = syscall(MSHARE_SYSCALL, "testregion", (void *)TB(2),
->                         GB(512), O_CREAT|O_RDWR|O_EXCL, 600);
->         if (err < 0) {
->                 perror("mshare() syscall failed");
->                 exit(1);
->         }
->
->         strncpy(addr, "Some random shared text",
->                         sizeof("Some random shared text"));
-> -----------------
->
-> Snippet of code that a consumer process would execute looks like:
->
-> -----------------
->         fd = open("testregion", O_RDONLY);
->         if (fd < 0) {
->                 perror("open failed");
->                 exit(1);
->         }
->
->         if ((count = read(fd, &mshare_info, sizeof(mshare_info)) > 0))
->                 printf("INFO: %ld bytes shared at addr %lx \n",
->                                 mshare_info[1], mshare_info[0]);
->         else
->                 perror("read failed");
->
->         close(fd);
->
->         addr = (char *)mshare_info[0];
->         err = syscall(MSHARE_SYSCALL, "testregion", (void *)mshare_info[0],
->                         mshare_info[1], O_RDWR, 600);
->         if (err < 0) {
->                 perror("mshare() syscall failed");
->                 exit(1);
->         }
->
->         printf("Guest mmap at %px:\n", addr);
->         printf("%s\n", addr);
->         printf("\nDone\n");
->
->         err = syscall(MSHARE_UNLINK_SYSCALL, "testregion");
->         if (err < 0) {
->                 perror("mshare_unlink() failed");
->                 exit(1);
->         }
-> -----------------
-...
-Hi Khalid,
-
-The proposed mshare() appears to be similar to POSIX shared memory,
-but with two extra (related) attributes;
-a) Internally, uses shared page tables.
-b) Shared memory is mapped at same address for all users.
-
-Rather than introduce two new system calls, along with /sys/ file to
-communicate global addresses, could mshare() be built on top of shmem
-API?  Thinking of something like the below;
-1) For shm_open(3), add a new oflag to indicate the properties needed
-for mshare() (say, O_SHARED_PTE - better name?)
-2) For ftruncate(2), objects created with O_SHARED_PTE are constrained
-in the sizes which can be set.
-3) For mmap(2), NULL is always passed as the address for O_SHARED_PTE
-objects.  On first mmap()ing an appropiate address is assigned,
-otherwise the current 'global' address is used.
-4) shm_unlink(3) destroys the object when last reference is dropped.
-
-For 3), might be able to weaken the NULL requirement and validate a
-given address on first mapping to ensure it is correctly aligned.
-shm_open(3) sets FD_CLOEXEC on the file descriptor, which might not be
-the default behaviour you require.
-
-Internally, the handling of mshare()/O_SHARED_PTE memory might be
-sufficiently different to shmem that there is not much code sharing
-between the two (I haven't thought this through, but the object
-naming/refcounting should be similiar), but using shmem would be a
-familiar API.
-
-Any thoughts?
-
-Cheers,
-Mark
+PiAtLS0tLeWOn+Wni+mCruS7ti0tLS0tCj4g5Y+R5Lu25Lq6OiAiTHVjYXMgU3RhY2giIDxsLnN0
+YWNoQHBlbmd1dHJvbml4LmRlPgo+IOWPkemAgeaXtumXtDogMjAyMi0wMS0xOSAxODo1MToyMCAo
+5pif5pyf5LiJKQo+IOaUtuS7tuS6ujogIllvbmd6aGkgTGl1IiA8bHl6X2NzQHBrdS5lZHUuY24+
+LCBsaW51eCtldG5hdml2QGFybWxpbnV4Lm9yZy51aywgY2hyaXN0aWFuLmdtZWluZXJAZ21haWwu
+Y29tLCBhaXJsaWVkQGxpbnV4LmllLCBkYW5pZWxAZmZ3bGwuY2gsIGV0bmF2aXZAbGlzdHMuZnJl
+ZWRlc2t0b3Aub3JnCj4g5oqE6YCBOiBkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnLCBs
+aW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnCj4g5Li76aKYOiBSZTogW1BBVENIXSBkcm0vZXRu
+YXZpdjogQWRkIG1pc3NpbmcgcG1fcnVudGltZV9wdXQKPiAKPiBBbSBEaWVuc3RhZywgZGVtIDE4
+LjAxLjIwMjIgdW0gMDY6MTYgLTA4MDAgc2NocmllYiBZb25nemhpIExpdToKPiA+IHBtX3J1bnRp
+bWVfZ2V0X3N5bmMoKSBpbmNyZW1lbnRzIHRoZSBydW50aW1lIFBNIHVzYWdlIGNvdW50ZXIgZXZl
+bgo+ID4gd2hlbiBpdCByZXR1cm5zIGFuIGVycm9yIGNvZGUsIHRodXMgYSBtYXRjaGluZyBkZWNy
+ZW1lbnQgaXMgbmVlZGVkCj4gPiBvbiB0aGUgZXJyb3IgaGFuZGxpbmcgcGF0aCB0byBrZWVwIHRo
+ZSBjb3VudGVyIGJhbGFuY2VkLgo+ID4gCj4gSW5zdGVhZCBvZiBhZGRpbmcgbW9yZSBlcnJvciBo
+YW5kbGluZyBjb2RlIGhlcmUsIEkgd291bGQgcHJlZmVyIHRvCj4gY29udmVydCB0aGlzIHRvIHBt
+X3J1bnRpbWVfcmVzdW1lX2FuZF9nZXQgdG8gYXZvaWQgdGhpcyBpc3N1ZS4KPiAKPiBSZWdhcmRz
+LAo+IEx1Y2FzCj4gCgpJIHdpbGwgcmVzZW5kIG15IG1vZGlmaWVkIHBhdGNoLiBUaGFua3MgZm9y
+IHlvdXIgcmVwbHkuCgo+ID4gU2lnbmVkLW9mZi1ieTogWW9uZ3poaSBMaXUgPGx5el9jc0Bwa3Uu
+ZWR1LmNuPgo+ID4gLS0tCj4gPiAgZHJpdmVycy9ncHUvZHJtL2V0bmF2aXYvZXRuYXZpdl9ncHUu
+YyB8IDMgKysrCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKQo+ID4gCj4gPiBk
+aWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2V0bmF2aXYvZXRuYXZpdl9ncHUuYyBiL2RyaXZl
+cnMvZ3B1L2RybS9ldG5hdml2L2V0bmF2aXZfZ3B1LmMKPiA+IGluZGV4IDI0MmE1ZmQuLjVlODFh
+OTggMTAwNjQ0Cj4gPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vZXRuYXZpdi9ldG5hdml2X2dwdS5j
+Cj4gPiArKysgYi9kcml2ZXJzL2dwdS9kcm0vZXRuYXZpdi9ldG5hdml2X2dwdS5jCj4gPiBAQCAt
+MTcxNCw2ICsxNzE0LDkgQEAgc3RhdGljIGludCBldG5hdml2X2dwdV9iaW5kKHN0cnVjdCBkZXZp
+Y2UgKmRldiwgc3RydWN0IGRldmljZSAqbWFzdGVyLAo+ID4gIAlyZXR1cm4gMDsKPiA+ICAKPiA+
+ICBvdXRfc2NoZWQ6Cj4gPiArI2lmZGVmIENPTkZJR19QTQo+ID4gKwlwbV9ydW50aW1lX3B1dF9h
+dXRvc3VzcGVuZChncHUtPmRldik7Cj4gPiArI2VuZGlmCj4gPiAgCWV0bmF2aXZfc2NoZWRfZmlu
+aShncHUpOwo+ID4gIAo+ID4gIG91dF93b3JrcXVldWU6Cj4gCg==
