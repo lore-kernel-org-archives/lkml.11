@@ -2,128 +2,194 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3684EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 21:47:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 981E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 21:55:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357459AbiASVrl (ORCPT
+        id S1357465AbiASVzv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 16:47:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60936 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343606AbiASVrk (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 16:47:40 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0A7DC061574;
-        Wed, 19 Jan 2022 13:47:39 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id u18so5444141edt.6;
-        Wed, 19 Jan 2022 13:47:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pSWfoK1jnmO+T32koJ6nJsxNdVBxnqdtz0oVErlAr6A=;
-        b=PKLGbfleH5LN1drzDaSbqbsouBfvIOd5yUNFexmLU43zTI+g/ocZNTKQC7d9T6+2vO
-         B62w2pqphP+3i5XI6e28Mdc8J9sWkofstcAWt/4i1ESTYxwBf0DirC+NWw6PF8UwsGdH
-         HiqbXpnTtcI9hWh9pntLSI1GhRKxi51S/C1GjXUzVkC/5xz61b2uLJs9PNQs6xp7KOUu
-         nGBx1TUS5gpKH1Tei37toDjFiz4ICl+/IxLq79Ww/e8oekLthPtuyEiEM0DXvo5dr0gn
-         dQgR9VkT11kWZL3uLGQyoaPoDI/ik4C9SrByHXx87gVGKgUtuJfRSjVWtthG0n+DU8QA
-         d4Xw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pSWfoK1jnmO+T32koJ6nJsxNdVBxnqdtz0oVErlAr6A=;
-        b=Ez6RAS956Yvz1Q2opnXBrj7002anh93Alc8841fmvwAI9Q1WJUl3Rwjvyvgwup71C6
-         7U0JqHyqRYuYEviLW9OfhHWRu1FPMY5KcWX5puhDsH3t//u0MzuMDMhVFf74Y0xRHaDp
-         hPbbNobAhtQJCezCc9AsMyNcFqvtAckgbxjP0V49Z35Dwbut/I7xOPay0Mglc0nB2ofn
-         G+9gc9TutzkRbF2fH1c+i6o9Qd6KAj/g7kAbcAh/ovaY+E/TH/IJ2fzhZzR2IDxBDXF+
-         VtnLXogM49gRztDkaSTrEC6Bz6soltk5fkuw1HvBchMuzy12IL5pwsS7cgCJ0fMl8n+l
-         9bFg==
-X-Gm-Message-State: AOAM531QMQosLLfA6bNVXAp7FZ68s2YeCT2uvKGbMpOPJoQ6ZL16uOFG
-        tXnsVYZU0QD1/wSbF/ap8utU6J9oLJUsQ77/3gA=
-X-Google-Smtp-Source: ABdhPJw5ae+enqKq3tZAGEBdViyh1ObmCrWMSZh4dhwe3Lb0DW+cB4ZJueiWhsgjeqrAiAIqIeXqdHPsxGLmQv86w/0=
-X-Received: by 2002:aa7:c0c9:: with SMTP id j9mr3582784edp.270.1642628857879;
- Wed, 19 Jan 2022 13:47:37 -0800 (PST)
+        Wed, 19 Jan 2022 16:55:51 -0500
+Received: from mga17.intel.com ([192.55.52.151]:59510 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1343606AbiASVzr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 16:55:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642629347; x=1674165347;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=otFg3swqPlUELCxL5/8SOVueOWKX3jF6HqiI/xk8r4Q=;
+  b=D3Soczo6qeg8wtIIhuZ7Pe2fQzCHTgpg8orfVcLmuL+bKo/BAwuAr8W+
+   I/YooU+wpMTuLkU6nKgaJRdYCJQ8KykH9zcY5imt6jn2rwEfQe5pSs8I3
+   os9Ilc2Vk06plJcONhrbqp1WhaReSpfeoyMcnCD1F1ZDPBPmc/SKBcUAr
+   Qk75VBUvDyQqhSjB7wWQdQT72bphw3aBUq6Dd+IhiBQI5KfAAD2B/2SX/
+   3YKwplp7W1qKBdoJyxb8RGU7EUiTh6ehE/wg59iRe46/es4J51AhOmrsd
+   9bbhttOAOdi6Z9v9nA9HntJWZbQinlHi6EZSdYCCGiLvVJEWOdwlrK7Nk
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="225876262"
+X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
+   d="scan'208";a="225876262"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 13:55:45 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
+   d="scan'208";a="477548959"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 19 Jan 2022 13:55:42 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nAIvd-000DmU-Ea; Wed, 19 Jan 2022 21:55:41 +0000
+Date:   Thu, 20 Jan 2022 05:54:54 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andreas Gruenbacher <agruenba@redhat.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: mm/gup.c:1674:16: error: unexpected token, expected comma
+Message-ID: <202201200528.F5X9Vnfb-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220117142919.207370-1-marcan@marcan.st> <20220117142919.207370-4-marcan@marcan.st>
-In-Reply-To: <20220117142919.207370-4-marcan@marcan.st>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 19 Jan 2022 23:45:55 +0200
-Message-ID: <CAHp75VfZ+thU+AWeOQSC9Dqq3MO+GMb_8oPxqMEbaxYTH0PH5A@mail.gmail.com>
-Subject: Re: [PATCH v3 3/9] brcmfmac: firmware: Do not crash on a NULL board_type
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        SHA-cyfmac-dev-list@infineon.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 4:30 PM Hector Martin <marcan@marcan.st> wrote:
->
-> This unbreaks support for USB devices, which do not have a board_type
-> to create an alt_path out of and thus were running into a NULL
-> dereference.
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   1d1df41c5a33359a00e919d54eaebfb789711fdc
+commit: bb523b406c849eef8f265a07cd7f320f1f177743 gup: Turn fault_in_pages_{readable,writeable} into fault_in_{readable,writeable}
+date:   3 months ago
+config: mips-randconfig-r003-20220118 (https://download.01.org/0day-ci/archive/20220120/202201200528.F5X9Vnfb-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 5f782d25a742302d25ef3c8b84b54f7483c2deb9)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install mips cross compiling tool for clang build
+        # apt-get install binutils-mips-linux-gnu
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=bb523b406c849eef8f265a07cd7f320f1f177743
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout bb523b406c849eef8f265a07cd7f320f1f177743
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash
 
-In v5.16 we have two call sites:
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-1.
-  if (cur->type == BRCMF_FW_TYPE_NVRAM && fwctx->req->board_type) {
-    ...
-    alt_path = brcm_alt_fw_path(cur->path, fwctx->req->board_type);
+All errors (new ones prefixed by >>):
 
-2.
-  alt_path = brcm_alt_fw_path(first->path, fwctx->req->board_type);
-  if (alt_path) {
-    ...
+>> mm/gup.c:1674:16: error: unexpected token, expected comma
+                   if (unlikely(__put_user(0, uaddr) != 0))
+                                ^
+   arch/mips/include/asm/uaccess.h:171:18: note: expanded from macro '__put_user'
+                   __put_data_asm(user_sb, __pu_ptr);                      \
+                                  ^
+   <inline asm>:3:10: note: instantiated into assembly here
+           .set    eva
+                      ^
+>> mm/gup.c:1674:16: error: invalid operand for instruction
+                   if (unlikely(__put_user(0, uaddr) != 0))
+                                ^
+   arch/mips/include/asm/uaccess.h:171:18: note: expanded from macro '__put_user'
+                   __put_data_asm(user_sb, __pu_ptr);                      \
+                                  ^
+   <inline asm>:4:10: note: instantiated into assembly here
+           sbe $0, 0($17)
+                   ^
+   mm/gup.c:1682:16: error: unexpected token, expected comma
+                   if (unlikely(__put_user(0, uaddr) != 0))
+                                ^
+   arch/mips/include/asm/uaccess.h:171:18: note: expanded from macro '__put_user'
+                   __put_data_asm(user_sb, __pu_ptr);                      \
+                                  ^
+   <inline asm>:3:10: note: instantiated into assembly here
+           .set    eva
+                      ^
+   mm/gup.c:1682:16: error: invalid operand for instruction
+                   if (unlikely(__put_user(0, uaddr) != 0))
+                                ^
+   arch/mips/include/asm/uaccess.h:171:18: note: expanded from macro '__put_user'
+                   __put_data_asm(user_sb, __pu_ptr);                      \
+                                  ^
+   <inline asm>:4:10: note: instantiated into assembly here
+           sbe $0, 0($2)
+                   ^
+   mm/gup.c:1710:16: error: unexpected token, expected comma
+                   if (unlikely(__get_user(c, uaddr) != 0))
+                                ^
+   arch/mips/include/asm/uaccess.h:218:23: note: expanded from macro '__get_user'
+                   __get_data_asm((x), user_lb, __gu_ptr);                 \
+                                       ^
+   <inline asm>:3:10: note: instantiated into assembly here
+           .set    eva
+                      ^
+   mm/gup.c:1710:16: error: invalid operand for instruction
+                   if (unlikely(__get_user(c, uaddr) != 0))
+                                ^
+   arch/mips/include/asm/uaccess.h:218:23: note: expanded from macro '__get_user'
+                   __get_data_asm((x), user_lb, __gu_ptr);                 \
+                                       ^
+   <inline asm>:4:10: note: instantiated into assembly here
+           lbe $3, 0($17)
+                   ^
+   mm/gup.c:1718:16: error: unexpected token, expected comma
+                   if (unlikely(__get_user(c, uaddr) != 0))
+                                ^
+   arch/mips/include/asm/uaccess.h:218:23: note: expanded from macro '__get_user'
+                   __get_data_asm((x), user_lb, __gu_ptr);                 \
+                                       ^
+   <inline asm>:3:10: note: instantiated into assembly here
+           .set    eva
+                      ^
+   mm/gup.c:1718:16: error: invalid operand for instruction
+                   if (unlikely(__get_user(c, uaddr) != 0))
+                                ^
+   arch/mips/include/asm/uaccess.h:218:23: note: expanded from macro '__get_user'
+                   __get_data_asm((x), user_lb, __gu_ptr);                 \
+                                       ^
+   <inline asm>:4:10: note: instantiated into assembly here
+           lbe $5, 0($2)
+                   ^
+   8 errors generated.
 
-Looking at them I would rather expect to see (as a quick fix, the
-better solution is to unify those call sites by splitting out a common
-helper):
 
-  if (fwctx->req->board_type) {
-    alt_path = brcm_alt_fw_path(first->path, fwctx->req->board_type);
-  else
-    alt_path = NULL;
-   ...
+vim +1674 mm/gup.c
 
+  1658	
+  1659	/**
+  1660	 * fault_in_writeable - fault in userspace address range for writing
+  1661	 * @uaddr: start of address range
+  1662	 * @size: size of address range
+  1663	 *
+  1664	 * Returns the number of bytes not faulted in (like copy_to_user() and
+  1665	 * copy_from_user()).
+  1666	 */
+  1667	size_t fault_in_writeable(char __user *uaddr, size_t size)
+  1668	{
+  1669		char __user *start = uaddr, *end;
+  1670	
+  1671		if (unlikely(size == 0))
+  1672			return 0;
+  1673		if (!PAGE_ALIGNED(uaddr)) {
+> 1674			if (unlikely(__put_user(0, uaddr) != 0))
+  1675				return size;
+  1676			uaddr = (char __user *)PAGE_ALIGN((unsigned long)uaddr);
+  1677		}
+  1678		end = (char __user *)PAGE_ALIGN((unsigned long)start + size);
+  1679		if (unlikely(end < start))
+  1680			end = NULL;
+  1681		while (uaddr != end) {
+  1682			if (unlikely(__put_user(0, uaddr) != 0))
+  1683				goto out;
+  1684			uaddr += PAGE_SIZE;
+  1685		}
+  1686	
+  1687	out:
+  1688		if (size > uaddr - start)
+  1689			return size - (uaddr - start);
+  1690		return 0;
+  1691	}
+  1692	EXPORT_SYMBOL(fault_in_writeable);
+  1693	
 
-> @@ -599,6 +599,9 @@ static char *brcm_alt_fw_path(const char *path, const char *board_type)
->         char alt_path[BRCMF_FW_NAME_LEN];
->         char suffix[5];
->
-> +       if (!board_type)
-> +               return NULL;
-
-
--- 
-With Best Regards,
-Andy Shevchenko
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
