@@ -2,152 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B7EFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 17:48:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D898C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 17:49:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356519AbiASRsi (ORCPT
+        id S1356524AbiASRtz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 12:48:38 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:37186 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356525AbiASRsb (ORCPT
+        Wed, 19 Jan 2022 12:49:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34846 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350491AbiASRtx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 12:48:31 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 2DE451F3C0;
-        Wed, 19 Jan 2022 17:48:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1642614510; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Rja0rd1IUylof69oFT2eERzDlpMcUeihM+dvReC85pw=;
-        b=AR+ECaI9bU5lZlO/2/M6SbhaeDsdJdwFrikCyjbZSsU9QyCuP2enGfUaU9I9YXfoQAsOHl
-        lXox5/Qful2IiLo8OvH0XKtKCfd2rSFDDcN0qewE9N/5+NenxF/L36qqU913eoCeMaqBjU
-        3un2Bz4aFPlEaeO49mwS3i6u/SMhDYE=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1642614510;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Rja0rd1IUylof69oFT2eERzDlpMcUeihM+dvReC85pw=;
-        b=zlHTiNkoibAlygfENeY3giyX8P5HUH78MyMn9COLEv7Py3wKtMDjRnjM/7SbmJsCoLkNlm
-        NgpMRnPZcflCSbDg==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id C501913E15;
-        Wed, 19 Jan 2022 17:48:29 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id EArILe1O6GGTSgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Wed, 19 Jan 2022 17:48:29 +0000
-Message-ID: <e331709e-e650-d28c-e86a-11e188cef1bd@suse.cz>
-Date:   Wed, 19 Jan 2022 18:48:29 +0100
+        Wed, 19 Jan 2022 12:49:53 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E1F7C06161C
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 09:49:53 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id c9so2876882plg.11
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 09:49:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=m2jEv1T9iOrxqYTw18pKQSL30EzBZlle4dn9cK+DSqw=;
+        b=yYC/dxsoRFYYCmHQLUxvN9S6Rv06g14VEcDuzt4uz0F2KjwW1iRdeYUMBbaD6CNfWr
+         vGjuX5PoTNyF/MZkmPqlf33YZ7E5i4xXgmgCoIOHQ837W9l8Y2+qb8QXOF3gjGX5OJtH
+         cGb7/d6iQoFC82KaDydcPa4Kpaxm3dVjbY9+CKCMXd1YOIBxvuRPcTVCIDn1f1DcVHcR
+         KdvkiSBn9iDs1G7Cq4mcPUWahx+wTKMOqIQQWKuOZw7Q+tQW6nzhDfdU74gTDWRtl01h
+         aFNbRI3ZwzsK0r6I2N/NXKOkDetbIpEXZ+lBFniKWejE9KRAYslDjl8zBYJ8TQBKyLUT
+         3RAA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=m2jEv1T9iOrxqYTw18pKQSL30EzBZlle4dn9cK+DSqw=;
+        b=upKpXkWJEUSGUZ4pEO9+KNGHSvfn3YosiaH71Nk3XjdZyPBmtr+t5t/UsqN/9NfjuE
+         fBM0RBU3L+Lz4N3wLXoFuOGF2xL8kaMw379nL9nIvTaztDoqm/KLprPsJDg0ni7y0w3m
+         DtPgnWa+nZDJopIfQLZdhcCdE2KFAexjPAdCbAjk6N27SXoy6kYCptlG7d+f8TsAtYW4
+         tjiipw5zK0cnCYvN2ESFf3g5PklsYHI+zYnwYDTjJVHAebG7lcfuj9gVB07Yb05yR973
+         v92z9B6DrDi5QdLuUUMBZ3QXznrflw0f1DvlJfQq8u9F9xXTkqvwTLf7EKSTs2EF2EVd
+         Eo3g==
+X-Gm-Message-State: AOAM533TU8Dlutd0vieDaUJbOH8Mx3U+X8OTRpRnA/RrYcMxxzR0R4E4
+        rme9qGlVnbHzTPCon3QxVllw9Q==
+X-Google-Smtp-Source: ABdhPJw6QwCwyN0MLYbe0U5pzmVmTRgRp/n4pJ+Hy1u2Aykbx4Kawx2ncMpzUtvyGtt1RmXiGXfsOQ==
+X-Received: by 2002:a17:902:ecc6:b0:14a:fba3:168d with SMTP id a6-20020a170902ecc600b0014afba3168dmr1989056plh.8.1642614592561;
+        Wed, 19 Jan 2022 09:49:52 -0800 (PST)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id k16sm319644pff.39.2022.01.19.09.49.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Jan 2022 09:49:50 -0800 (PST)
+Date:   Wed, 19 Jan 2022 10:49:47 -0700
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Peng Fan <peng.fan@nxp.com>
+Cc:     "Peng Fan (OSS)" <peng.fan@oss.nxp.com>,
+        "bjorn.andersson@linaro.org" <bjorn.andersson@linaro.org>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "s.hauer@pengutronix.de" <s.hauer@pengutronix.de>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        "festevam@gmail.com" <festevam@gmail.com>,
+        dl-linux-imx <linux-imx@nxp.com>,
+        "linux-remoteproc@vger.kernel.org" <linux-remoteproc@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 5/9] remoteproc: imx_rproc: make clk optional
+Message-ID: <20220119174947.GA1282028@p14s>
+References: <20220111033333.403448-1-peng.fan@oss.nxp.com>
+ <20220111033333.403448-8-peng.fan@oss.nxp.com>
+ <20220118185019.GG1119324@p14s>
+ <DU0PR04MB9417B0AC80F41D425F43277C88599@DU0PR04MB9417.eurprd04.prod.outlook.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v4 51/66] mm/khugepaged: Use maple tree iterators instead
- of vma linked list
-Content-Language: en-US
-To:     Liam Howlett <liam.howlett@oracle.com>,
-        "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
-        "linux-mm@kvack.org" <linux-mm@kvack.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Song Liu <songliubraving@fb.com>,
-        Davidlohr Bueso <dave@stgolabs.net>,
-        "Paul E . McKenney" <paulmck@kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Laurent Dufour <ldufour@linux.ibm.com>,
-        David Rientjes <rientjes@google.com>,
-        Axel Rasmussen <axelrasmussen@google.com>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Rik van Riel <riel@surriel.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Michel Lespinasse <walken.cr@gmail.com>,
-        Jerome Glisse <jglisse@redhat.com>,
-        Minchan Kim <minchan@google.com>,
-        Joel Fernandes <joelaf@google.com>,
-        Rom Lemarchand <romlem@google.com>
-References: <20211201142918.921493-1-Liam.Howlett@oracle.com>
- <20211201142918.921493-52-Liam.Howlett@oracle.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20211201142918.921493-52-Liam.Howlett@oracle.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <DU0PR04MB9417B0AC80F41D425F43277C88599@DU0PR04MB9417.eurprd04.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 12/1/21 15:30, Liam Howlett wrote:
-> From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
-
-Ah, got tired of copy/pasting for a number of patches, I see :)
-
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
-> ---
->  mm/huge_memory.c | 4 ++--
->  mm/khugepaged.c  | 9 ++++++---
->  2 files changed, 8 insertions(+), 5 deletions(-)
+On Wed, Jan 19, 2022 at 02:25:48AM +0000, Peng Fan wrote:
+> > Subject: Re: [PATCH 5/9] remoteproc: imx_rproc: make clk optional
+> > 
+> > On Tue, Jan 11, 2022 at 11:33:29AM +0800, Peng Fan (OSS) wrote:
+> > > From: Peng Fan <peng.fan@nxp.com>
+> > >
+> > > To i.MX8QXP/QM/ULP and i.MX7ULP, Mcore maybe out of control of Linux.
+> > > And in such case, no need clk, so make clk optional with has_clk.
+> > >
+> > > Signed-off-by: Peng Fan <peng.fan@nxp.com>
+> > > ---
+> > >  drivers/remoteproc/imx_rproc.c | 5 +++++
+> > >  1 file changed, 5 insertions(+)
+> > >
+> > > diff --git a/drivers/remoteproc/imx_rproc.c
+> > > b/drivers/remoteproc/imx_rproc.c index 7b2578177ea8..0e99a3ca6fbc
+> > > 100644
+> > > --- a/drivers/remoteproc/imx_rproc.c
+> > > +++ b/drivers/remoteproc/imx_rproc.c
+> > > @@ -89,6 +89,7 @@ struct imx_rproc {
+> > >  	struct work_struct		rproc_work;
+> > >  	struct workqueue_struct		*workqueue;
+> > >  	void __iomem			*rsc_table;
+> > > +	bool				has_clk;
+> > 
+> > I am usually weary of bloating structures with flags.  I suggest achieving the
+> > same functionality with a macro that compares priv->dcfg with the right
+> > imx_rproc_dcfg structure.
 > 
-> diff --git a/mm/huge_memory.c b/mm/huge_memory.c
-> index e5483347291c..f0f4ff5239ef 100644
-> --- a/mm/huge_memory.c
-> +++ b/mm/huge_memory.c
-> @@ -2270,11 +2270,11 @@ void vma_adjust_trans_huge(struct vm_area_struct *vma,
->  	split_huge_pmd_if_needed(vma, end);
->  
->  	/*
-> -	 * If we're also updating the vma->vm_next->vm_start,
-> +	 * If we're also updating the vma_next(vma)->vm_start,
+> priv->dcfg is some kind fixed settings, however has_clk could be runtime changed,
+> because i.MX platform M-core support multiple booting method and it
+> could work w/o clk handled by Linux depending on some pre-configuration
+> such as moving M-core in an separate hardware partition.
 
-vma_next() takes an iterator, not vma, though.
+Unless there is an FPGA in the mix, clocks and power domains should not change.
+Either clocks are handled by the remote processor or the application processor,
+regardless of the mode (attached or detached) the platform is booting into.
 
->  	 * check if we need to split it.
->  	 */
->  	if (adjust_next > 0) {
-> -		struct vm_area_struct *next = vma->vm_next;
-> +		struct vm_area_struct *next = find_vma(vma->vm_mm, vma->vm_end);
->  		unsigned long nstart = next->vm_start;
->  		nstart += adjust_next;
->  		split_huge_pmd_if_needed(next, nstart);
-> diff --git a/mm/khugepaged.c b/mm/khugepaged.c
-> index 0ff7d72cdd1d..8f0633481791 100644
-> --- a/mm/khugepaged.c
-> +++ b/mm/khugepaged.c
-> @@ -2083,6 +2083,7 @@ static unsigned int khugepaged_scan_mm_slot(unsigned int pages,
->  	struct mm_struct *mm;
->  	struct vm_area_struct *vma;
->  	int progress = 0;
-> +	unsigned long address;
->  
->  	VM_BUG_ON(!pages);
->  	lockdep_assert_held(&khugepaged_mm_lock);
-> @@ -2106,11 +2107,13 @@ static unsigned int khugepaged_scan_mm_slot(unsigned int pages,
->  	vma = NULL;
->  	if (unlikely(!mmap_read_trylock(mm)))
->  		goto breakouterloop_mmap_lock;
-> -	if (likely(!khugepaged_test_exit(mm)))
-> -		vma = find_vma(mm, khugepaged_scan.address);
->  
->  	progress++;
-> -	for (; vma; vma = vma->vm_next) {
-> +	if (unlikely(khugepaged_test_exit(mm)))
-> +		goto breakouterloop;
-> +
-> +	address = khugepaged_scan.address;
-> +	mt_for_each(&mm->mm_mt, vma, address, ULONG_MAX) {
-
-Why not via mas_for_each()?
-
->  		unsigned long hstart, hend;
->  
->  		cond_resched();
-
+> 
+> Thanks,
+> Peng. 
+> 
+> > 
+> > >  };
+> > >
+> > >  static const struct imx_rproc_att imx_rproc_att_imx8mn[] = { @@
+> > > -724,6 +725,9 @@ static int imx_rproc_clk_enable(struct imx_rproc *priv)
+> > >  	if (dcfg->method == IMX_RPROC_NONE)
+> > >  		return 0;
+> > >
+> > > +	if (!priv->has_clk)
+> > > +		return 0;
+> > > +
+> > >  	priv->clk = devm_clk_get(dev, NULL);
+> > >  	if (IS_ERR(priv->clk)) {
+> > >  		dev_err(dev, "Failed to get clock\n"); @@ -768,6 +772,7 @@ static
+> > > int imx_rproc_probe(struct platform_device *pdev)
+> > >  	priv->rproc = rproc;
+> > >  	priv->dcfg = dcfg;
+> > >  	priv->dev = dev;
+> > > +	priv->has_clk = true;
+> > >
+> > >  	dev_set_drvdata(dev, rproc);
+> > >  	priv->workqueue = create_workqueue(dev_name(dev));
+> > > --
+> > > 2.25.1
+> > >
