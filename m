@@ -2,109 +2,85 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE5AFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 14:41:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2380DC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 14:44:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355219AbiASOlD (ORCPT
+        id S1355235AbiASOoI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 09:41:03 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.85.151]:46991 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1355175AbiASOlC (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 09:41:02 -0500
-Received: from AcuMS.aculab.com (156.67.243.121 [156.67.243.121]) by
- relay.mimecast.com with ESMTP with STARTTLS (version=TLSv1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- uk-mta-56-LQ0FXddLOfCr6qw0uAVh6w-1; Wed, 19 Jan 2022 14:40:59 +0000
-X-MC-Unique: LQ0FXddLOfCr6qw0uAVh6w-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:994c:f5c2:35d6:9b65) with Microsoft SMTP
- Server (TLS) id 15.0.1497.28; Wed, 19 Jan 2022 14:40:58 +0000
-Received: from AcuMS.Aculab.com ([fe80::994c:f5c2:35d6:9b65]) by
- AcuMS.aculab.com ([fe80::994c:f5c2:35d6:9b65%12]) with mapi id
- 15.00.1497.028; Wed, 19 Jan 2022 14:40:58 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Ard Biesheuvel' <ardb@kernel.org>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>
-CC:     Miles Chen <miles.chen@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux-mediatek@lists.infradead.org" 
-        <linux-mediatek@lists.infradead.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Nathan Chancellor <nathan@kernel.org>,
-        "Nick Desaulniers" <ndesaulniers@google.com>
-Subject: RE: [PATCH] lib/crypto: blake2s: fix a CFI failure
-Thread-Topic: [PATCH] lib/crypto: blake2s: fix a CFI failure
-Thread-Index: AQHYDS69GuHcqhw6yUKTzpetNPFOeaxqZdAw
-Date:   Wed, 19 Jan 2022 14:40:58 +0000
-Message-ID: <13f9d24879e34914b1135a4d2ae48d73@AcuMS.aculab.com>
-References: <CAHmME9oX+4Ek81xy0nBOegqABH0xYqyONAqinsu7GZ7AaQaqYQ@mail.gmail.com>
- <20220119100615.5059-1-miles.chen@mediatek.com>
- <CAHmME9pQcUxs87EwQwBZNDA4ZzqugTggH+uiNPh=mv5zjp3g3A@mail.gmail.com>
- <CAHmME9pPKjRLmR6zpYFZT7rOOfHsG2ESnDi+QQrDJuGLo1X4JQ@mail.gmail.com>
- <CAHmME9oGTPS-gVyHQ4o=AxvMJrGH44_tyQ2KPQcfAKgcqC2SnA@mail.gmail.com>
- <CAMj1kXEo8kQNeoCdwvBkkW0UeYFQEJwkZ_nj06qjsBDF2Qu2pQ@mail.gmail.com>
-In-Reply-To: <CAMj1kXEo8kQNeoCdwvBkkW0UeYFQEJwkZ_nj06qjsBDF2Qu2pQ@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Wed, 19 Jan 2022 09:44:08 -0500
+Received: from foss.arm.com ([217.140.110.172]:58214 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1355133AbiASOoG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 09:44:06 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 42849ED1;
+        Wed, 19 Jan 2022 06:44:04 -0800 (PST)
+Received: from bogus (unknown [10.57.34.234])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id DEC5B3F774;
+        Wed, 19 Jan 2022 06:44:01 -0800 (PST)
+Date:   Wed, 19 Jan 2022 14:43:28 +0000
+From:   Sudeep Holla <sudeep.holla@arm.com>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Lukasz Luba <lukasz.luba@arm.com>,
+        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Subject: Re: [PATCH 2/2] arch_topology: Sanity check cpumask in thermal
+ pressure update
+Message-ID: <20220119144328.cvt76mhsufxg7qbr@bogus>
+References: <20220118185612.2067031-1-bjorn.andersson@linaro.org>
+ <20220118185612.2067031-2-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220118185612.2067031-2-bjorn.andersson@linaro.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-RnJvbTogQXJkIEJpZXNoZXV2ZWwNCj4gU2VudDogMTkgSmFudWFyeSAyMDIyIDEyOjE5DQouLi4N
-Cj4gLSAgICAgICAgICAgICAgICgqY29tcHJlc3MpKHN0YXRlLCBpbiwgbmJsb2NrcyAtIDEsIEJM
-QUtFMlNfQkxPQ0tfU0laRSk7DQo+ICsgICAgICAgICAgICAgICBpZiAoSVNfRU5BQkxFRChDT05G
-SUdfQ1JZUFRPX0FSQ0hfSEFWRV9MSUJfQkxBS0UyUykpDQo+ICsgICAgICAgICAgICAgICAgICAg
-ICAgICgqY29tcHJlc3MpKHN0YXRlLCBpbiwgbmJsb2NrcyAtIDEsIEJMQUtFMlNfQkxPQ0tfU0la
-RSk7DQo+ICsgICAgICAgICAgICAgICBlbHNlDQo+ICsgICAgICAgICAgICAgICAgICAgICAgIGJs
-YWtlMnNfY29tcHJlc3NfZ2VuZXJpYyhzdGF0ZSwgaW4sIG5ibG9ja3MgLSAxLA0KPiArICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgQkxBS0UyU19CTE9DS19T
-SVpFKTsNCg0KSXNuJ3QgdGhhdCBhIGNhbmRpZGF0ZSBmb3IgYSAnc3RhdGljIGNhbGwnID8NCg0K
-QW5kLCBtYXliZSBhbGwgdGhlc2UgaW5saW5lZCBmdW5jdGlvbnMgc2hvdWxkIGJlIHJlYWwgZnVu
-Y3Rpb25zPw0KTm8gcG9pbnQgaGF2aW5nIGFsbCB0aGUgYmxvYXQgb24gZXZlcnkgY2FsbCBzaXRl
-Lg0KTXVjaCBiZXR0ZXIgdG8gY2FsbCBhIHJlYWwgZnVuY3Rpb24gYW5kIHVzZWQgdGhlIGNhY2hl
-ZCBpbnN0cnVjdGlvbnMuDQoNCkFsdGhvdWdoLCBoYXZpbmcgbG9va2VkIGF0IHRoZSBzb3VyY2Ug
-YW5kIHRoZSBnZW5lcmF0ZWQgY29kZSBmb3INCng4Ni02NCBhbmQgYXJtNjQgSSdtIG5vdCBzdXJl
-IEknZCB3YW50IHRvIHRyeSB0byBnZW5lcmF0ZQ0Kb3B0aW1pc2VkIGFzc2VtYmxlciBmb3IgaXQu
-DQooVW5sZXNzIHlvdSBjYW4gYSBpbnN0cnVjdGlvbiB0aGF0IGRvZXMgZXhhY3RseSB3aGF0IHRo
-ZSBjb2RlIHdhbnRzLikNCg0KQmFzaWNhbGx5IHRoZSBjb21waWxlciBjYW4gbWVyZ2UgdGhlIGlu
-c3RydWN0aW9ucyBmb3IgNCBvZiB0aGUNCkcoKSBleHBhbnNpb25zIHNvIHRoYXQgdGhleSBjYW4g
-ZXhlY3V0ZSBpbiBwYXJhbGxlbCBvbiBhIG11bHRpLWlzc3VlDQpjcHUuIERvaW5nIHRoYXQgYnkg
-aGFuZCB3aWxsIGJlIGVycm9yIHByb25lLg0KRWFjaCBHKCkgZXhwYW5zaW9uIGlzIHByZXR0eSBt
-dWNoIGEgcmVnaXN0ZXIgZGVwZW5kZW5jeSBjaGFpbiwNCm5vdCBtdWNoIGNoYW5jZSBvZiBwYXJh
-bGxlbCBleGVjdXRpb24uDQoNClRoZXJlIGFyZSBjbGVhcmx5IG9wdGltaXNhdGlvbnMgZm9yIHRo
-ZSB0b3AvYm90dG9tIG9mIHRoZSBsb29wLg0KQnV0IHRoZXkgY2FuIGJlIGRvbmUgdG8gdGhlIGdl
-bmVyaWMgQyB2ZXJzaW9uLg0KDQpUaGUgcmVhbCBwcm9ibGVtIGlzIGxhY2sgb2YgcmVnaXN0ZXJz
-IC0gdGhlIGNvZGUgbmVlZHMgMTYgZm9yIHRoZQ0KdltdIGFycmF5IHBsdXMgYSBmZXcgZXh0cmFz
-Lg0KU28gc29tZSBoYXZlIHRvIHNwaWxsIHRvIHN0YWNrLg0KDQpUaGUgdW5yb2xsZWQgY29kZSBp
-cyBhYm91dCAxMjAwIGluc3RydWN0aW9ucyBvbiBhcm02NCBhbmQgeDg2LTY0Lg0KRWFjaCBvZiB0
-aGUgMTAgcm91bmRzIHJlYWRzIGFsbCAxNiBvZiB0aGUgdTMyIGlucHV0IHZhbHVlcy4NClNvIHRo
-YXQgaXMgYWJvdXQgOCAoMTIwMC8xNjApIGluc3RydWN0aW9ucyBmb3IgZWFjaCByZWFkLg0KV2hp
-Y2ggbWVhbnMgdGhlcmUgaXMgcGxlbnR5IG9mIG1lbW9yeSBiYW5kd2lkdGggZm9yIG90aGVyDQpy
-ZWFkcy4NCg0KU28gJ3JvbGxpbmcgdXAnIHRoZSByb3VuZHMgLSB3aGljaCBhZGRzIGluIHRoZSBi
-bGFrZTJzX3NpZ21hW10NCnJlYWRzIGNvdWxkIGVhc2lseSBiZSAnYWxtb3N0IGZyZWUnLg0KQ2Vy
-dGFpbmx5IG9uIHg4NiB3aGVyZSB5b3UgYXJlIGp1c3QgKHdlbGwgc2hvdWxkIGJlIGp1c3QpIGFk
-ZGluZyBhbg0KZXh0cmEgbWVtb3J5IHVvcCBmb3IgZWFjaCBpbnB1dCBidWZmZXIgcmVhZHMuDQoN
-CkknbSBub3Qgc3VyZSB0aGUgOCBHKCkgY2FsbHMgY2FuIGJlIGZvbGRlZCBpbnRvIHR3byBzZXRz
-IG9mIDQNCndoaWxlIHN0aWxsIGdldHRpbmcgdGhlIGNvbXBpbGVyIHRvIGludGVybGVhdmUgdGhl
-IGdlbmVyYXRlZCBjb2RlLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2Vz
-aWRlLCBCcmFtbGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVL
-DQpSZWdpc3RyYXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+On Tue, Jan 18, 2022 at 10:56:12AM -0800, Bjorn Andersson wrote:
+> Occasionally during boot the Qualcomm cpufreq driver was able to cause
+> an invalid memory access in topology_update_thermal_pressure() on the
+> line:
+> 
+> 	if (max_freq <= capped_freq)
+> 
+> It turns out that this was caused by a race, which resulted in the
+> cpumask passed to the function being empty, in which case
+> cpumask_first() will return a cpu beyond the number of valid cpus, which
+> when used to access the per_cpu max_freq would return invalid pointer.
+> 
+> The bug in the Qualcomm cpufreq driver is being fixed, but having a
+> sanity check of the arguments would have saved quite a bit of time and
+> it's not unlikely that others will run into the same issue.
+> 
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> ---
+>  drivers/base/arch_topology.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+> index 976154140f0b..6560a0c3b969 100644
+> --- a/drivers/base/arch_topology.c
+> +++ b/drivers/base/arch_topology.c
+> @@ -177,6 +177,9 @@ void topology_update_thermal_pressure(const struct cpumask *cpus,
+>  	u32 max_freq;
+>  	int cpu;
+>  
+> +	if (WARN_ON(cpumask_empty(cpus)))
+> +		return;
+> +
 
+Why can't the caller check and call this only when cpus is not empty ?
+IIUC there are many such APIs that use cpumask and could result in similar
+issues if called with empty cpus. Probably we could add a note that cpus
+must not be empty if that helps the callers ?
+
+-- 
+Regards,
+Sudeep
