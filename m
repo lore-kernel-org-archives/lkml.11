@@ -2,132 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5B3FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 17:21:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01447C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 17:23:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356373AbiASRVG (ORCPT
+        id S1356349AbiASRXF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 12:21:06 -0500
-Received: from mout.kundenserver.de ([212.227.126.135]:43289 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356355AbiASRVA (ORCPT
+        Wed, 19 Jan 2022 12:23:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56876 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239852AbiASRXE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 12:21:00 -0500
-Received: from mail-wm1-f43.google.com ([209.85.128.43]) by
- mrelayeu.kundenserver.de (mreue009 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1N5VPe-1mDVEe23Ss-016tVz; Wed, 19 Jan 2022 18:20:58 +0100
-Received: by mail-wm1-f43.google.com with SMTP id c66so6467944wma.5;
-        Wed, 19 Jan 2022 09:20:58 -0800 (PST)
-X-Gm-Message-State: AOAM530ExIW1CdWL3zLljqpQX/t/ALN9co1FfWvKHpBg21QjWhm/iFMt
-        s23CBId5kTKj54Q+O8hwXZoYTNJ/Q0FrJB2iL0k=
-X-Google-Smtp-Source: ABdhPJw8DlyT7pKhsJLWmueJ95RIFxvoT7HEoBLWXH1En39mN2I9a5at/6YQLxRx6DsDTBeawvhqxIHGFWkfKKALPzw=
-X-Received: by 2002:adf:e193:: with SMTP id az19mr23380958wrb.407.1642612857910;
- Wed, 19 Jan 2022 09:20:57 -0800 (PST)
+        Wed, 19 Jan 2022 12:23:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8FA6C061574;
+        Wed, 19 Jan 2022 09:23:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C878B81A71;
+        Wed, 19 Jan 2022 17:23:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10EABC340E1;
+        Wed, 19 Jan 2022 17:23:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642612981;
+        bh=/AmB+R8lcjTOaUWVStWTJfgQQeNwP0ttFYlVemKo8zo=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=FiHjmEiEBEtFlJ1f2yV2o1QH1sI9wPNewlUGRpUTRS5XHnehzcMakrrHZz7+3UTfW
+         3HMzcE00/KK4yXf9FNuCclCGl7LskHwDKfM39R0FiXQ8CHbAem7WvcWZYF+7UAdT2A
+         wqtqJZsbk0+V8dvtd4eWoTDGy/T2O42OoxXteWZeWCHLtY1R1vpwEifUm4QsXrVPkV
+         bmiQx6OH+mITGuZVqdttxqbJ/hzmVoTctgnMlJeXNMcOHwN4B8viCAvqKMutAQGqAX
+         IJfMUyQNrwlnz2lyUOcExjLy20+Mt95O5VNUm3yPVW37BIhlh7PSYT63H0iPq693Gu
+         swYlpltJMZA/A==
+Received: by mail-wm1-f49.google.com with SMTP id j5-20020a05600c1c0500b0034d2e956aadso6897676wms.4;
+        Wed, 19 Jan 2022 09:23:00 -0800 (PST)
+X-Gm-Message-State: AOAM531UXc8RuP66mzOJmUbNsJQ8tWaUymkEnU78XDBA9n0BLj1df0Rs
+        tx4f+5KH80t5bpXSl8YMUtke7S3YbsCOrtSgo6U=
+X-Google-Smtp-Source: ABdhPJzYEncUKv+J2k0P025BJCluvJy2Isp3uxz1uZU+POwVDgYLA/ypp2CGvDj+1iEqW9QpNbityUTG9HOwpaCSk78=
+X-Received: by 2002:a7b:c34b:: with SMTP id l11mr4713576wmj.56.1642612979347;
+ Wed, 19 Jan 2022 09:22:59 -0800 (PST)
 MIME-Version: 1.0
-References: <Ydm7ReZWQPrbIugn@gmail.com> <CAK8P3a1emGYHPcjTfLqd-yyU8_9w88=2g_B_vfhbKeDtDHMM-w@mail.gmail.com>
- <CAK8P3a3SpYe101RSFD5rzbTQNyQyfG1eb1sCY+rBO-DKVqBdBw@mail.gmail.com>
- <Yd/idffvv8QIQcEU@gmail.com> <CAK8P3a3FahVogb3wfbXSaCpnUsRBGmO9M56M+Cay=skc9rUzjw@mail.gmail.com>
- <YegErRbP+cT42oOC@gmail.com>
-In-Reply-To: <YegErRbP+cT42oOC@gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Wed, 19 Jan 2022 18:20:41 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a2XPwG7rP+TFdEYH7tutE7Zat5vf7PuV2idESZsrxBXyA@mail.gmail.com>
-Message-ID: <CAK8P3a2XPwG7rP+TFdEYH7tutE7Zat5vf7PuV2idESZsrxBXyA@mail.gmail.com>
-Subject: Re: [ANNOUNCE] "Fast Kernel Headers" Tree -v2
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-arch <linux-arch@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        Josh Poimboeuf <jpoimboe@redhat.com>,
-        Jonathan Corbet <corbet@lwn.net>
+References: <1642608867-21307-1-git-send-email-mihai.carabas@oracle.com>
+In-Reply-To: <1642608867-21307-1-git-send-email-mihai.carabas@oracle.com>
+From:   Ard Biesheuvel <ardb@kernel.org>
+Date:   Wed, 19 Jan 2022 18:22:48 +0100
+X-Gmail-Original-Message-ID: <CAMj1kXG14Tx41JZ1NZXkJVTSai++eb-zfv1Dk5dP1QDoDkDFEQ@mail.gmail.com>
+Message-ID: <CAMj1kXG14Tx41JZ1NZXkJVTSai++eb-zfv1Dk5dP1QDoDkDFEQ@mail.gmail.com>
+Subject: Re: [PATCH] efi/libstub: arm64: Fix image check alignment at entry
+To:     Mihai Carabas <mihai.carabas@oracle.com>
+Cc:     linux-efi <linux-efi@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:9bBkhrbDaG5PYnnmFLx5Puqtn6APHaGaSKks3C5hslvyToFEzly
- 7uWFCFq5IXoopmcuLLlJA3GJ8aTbMIWMU1/0L2w9yILxOCs3yMtuXPmUmM+wCBh5tSmGuW5
- yBwnvQlFaift4c/ErMJiBxHlBzFRXp8xccKpgSD/eOdrjmtYbbGkfODzkFVIyeCh2QcYwFY
- 4fDHvrlzEzbDoI0fgmxeQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:vJZ1Dxb5cx4=:wNTfWpJLzYDAJNvCBYUpDP
- GXEZOe/FD1qfj8mIH8lkDKsmBQjnwBoRelLQ+kYpw2FMKUrjG7j9JGoNLmIhDoJ/zrjmwCQMy
- 5VF6CjcI3P1WqkmJndLKrWVMQnKzSvsV1hO1/oOvd3SnrwlsB8jd5+j76jB5N25LWj86iSkD+
- SgcsdoeAm63Y8xLadz+1Z94jFWyC9S8NJMqdhbCcsklBoffa9+fLCHGM623nmbFOOn7FYh+PF
- ZhBQQjHumkTQDv9M260DhN4nN0jPbOACaLKQlls22fUOzOsJEzaqhKBfLoFyd3R7AkzalD6QP
- BfektCwwbFp/joy1PuzUsCspYj8raQuUbEwkl7jy+DZx73kLdueR8GqgwiwYH7y0aDIfDCvXu
- jmAh0Jll00wMBZvZko2XOZECVDDLz4O+oTi8f7fu9wu6f/5ofUM2UNjQBk9JjKNWEryBuJC5D
- gGYeIZFWlBmhwZ+VQFoa5QsOdpfdvlFCw6oVvRU77MM/u3kfBCaXqeF8vX8w2C1JYAJrRgdyi
- 3YDnEj9YJ2PNUsF/sUfq4CXPk3AhDCUvpLPq+piWep9PGEcpcS5T7vF7cNmeGYo7dUli3EfwX
- Ho3ekmR+lXdfSC3eFxfSjCBnPbVH+6tWH3F57GT73whtnxteIienS2XPa8sKitl1kfx3pTuBa
- 1lKjqF0FwIplXi23vaR+6dsHw8yOXy7m560IuyO+WhMOIcIOEGPfWSW92eBATR9CHvyTMAljV
- X3O1lJMry2zN6iGOmwXBN05c84NrZDVhYh507w==
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 1:31 PM Ingo Molnar <mingo@kernel.org> wrote:
+On Wed, 19 Jan 2022 at 18:10, Mihai Carabas <mihai.carabas@oracle.com> wrote:
 >
-> * Arnd Bergmann <arnd@arndb.de> wrote:
+> The kernel is aligned at SEGMENT_SIZE and this is the size populated in the PE
+> headers:
 >
-> > > I tried to avoid as many low level headers as possible from the main
-> > > types headers - and the get_order() functionality also brings in bitops
-> > > definitions, which I'm still hoping to be able to reduce from its
-> > > current ~95% utilization in a distro kernel ...
-> >
-> > Agreed, I think reducing bitops.h and atomic.h usage is fairly important,
-> > I think these are even bigger on arm64 than on x86.
+> arch/arm64/kernel/efi-header.S: .long   SEGMENT_ALIGN // SectionAlignment
 >
-> So what I'm using for 'header complexity metrics' is rather simple: passing
-> -P -H to the preprocessor: stripping comments & not generating
-> line-markers, and then counting linecount.
+> EFI_KIMG_ALIGN is defined as: (SEGMENT_ALIGN > THREAD_ALIGN ? SEGMENT_ALIGN :
+> THREAD_ALIGN)
 >
-> Line-markers should *probably* remain, because the real build is generatinginclude/linux/mm_page_address.h
-> them too - but I wanted to gain a crude & easily available metric to
-> measure 'first-pass parsing complexity'. That's I think where most of the
-> header bloat is concentrated: later passes don't really get any of the
-> unused header definitions passed along. (But maybe this is an invalid
-> assumption, because compiler warnings do get generated by later passes, and
-> they are generated for mostly-unused header inlines too.)
+> So it depends on THREAD_ALIGN. On newer builds this message started to appear
+> even though the loader is taking into account the PE header (which is stating
+> SEGMENT_ALIGN).
 >
-> If we include comments & line-markers then the bloat goes up by another
-> ~2x:
+> Fixes: c32ac11da3f8 ("efi/libstub: arm64: Double check image alignment at entry")
+> Signed-off-by: Mihai Carabas <mihai.carabas@oracle.com>
+
+Thanks. I'll queue this up as a fix.
+
+> ---
+>  drivers/firmware/efi/libstub/arm64-stub.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
 >
->  kepler:~/mingo.tip.git> ./st include/linux/sched.h
->   #include <linux/sched.h>                | LOC:  2,186 | headers:  118
->  kepler:~/mingo.tip.git> ./st include/linux/sched.h
->   #include <linux/sched.h>                | LOC:  4,092 | headers:    0
-
-The metric I've been focusing on is bytes of the preprocessed header, which
-is more sensitive to function definitions that get generated from macros,
-and I multiply this by the number of inclusions (from scanning the
-.file.o.cmd files). It probably helps to have a couple of metrics and look
-at all of them occasionally to not miss something important.
-
-In the meantime, I have made some progress on reducing the headers
-for arm64, on top of your tree from Jan 8, but I have not looked at
-later changes from your side, and I need to work on this a bit more
-to ensure this doesn't break other architectures.
-
-For an arm64 allmodconfig build, my additional improvements on top
-of yours are significant but not as good as I had hoped for, this
-can still improve I hope:
-
-5.16-rc8-vanilla  32640 seconds user, 3286 seconds sys
-5.16-rc8-mingo  22990 seconds user, 2304 seconds sys
-5.16-rc8-arnd   19007 seconds user, 1853 seconds sys
-
-As my tree builds any randconfig cleanly, I keep looking at
-different configs and find that this has a big impact, some options
-end up eliminating most of the benefits until I add further changes
-to clean up certain files. This happened with kasan, kprobes,
-and lse-atomics for instance. After eliminating all circular includes,
-I was also able to revisit my old script to visualize the inclusions,
-see[1] for the current arm64 defconfig output. This version uses
-my arbitrary metric as font-size, and uses labels for the number
-of inclusions.
-
-        Arnd
-
-[1] https://drive.google.com/file/d/1wbs252I8LyswscBAeV3SpjBG2AGoBnB8/view?usp=sharing
+> diff --git a/drivers/firmware/efi/libstub/arm64-stub.c b/drivers/firmware/efi/libstub/arm64-stub.c
+> index 2363fee9211c..9cc556013d08 100644
+> --- a/drivers/firmware/efi/libstub/arm64-stub.c
+> +++ b/drivers/firmware/efi/libstub/arm64-stub.c
+> @@ -119,9 +119,9 @@ efi_status_t handle_kernel_image(unsigned long *image_addr,
+>         if (image->image_base != _text)
+>                 efi_err("FIRMWARE BUG: efi_loaded_image_t::image_base has bogus value\n");
+>
+> -       if (!IS_ALIGNED((u64)_text, EFI_KIMG_ALIGN))
+> -               efi_err("FIRMWARE BUG: kernel image not aligned on %ldk boundary\n",
+> -                       EFI_KIMG_ALIGN >> 10);
+> +       if (!IS_ALIGNED((u64)_text, SEGMENT_ALIGN))
+> +               efi_err("FIRMWARE BUG: kernel image not aligned on %dk boundary\n",
+> +                       SEGMENT_ALIGN >> 10);
+>
+>         kernel_size = _edata - _text;
+>         kernel_memsize = kernel_size + (_end - _edata);
+> --
+> 1.8.3.1
+>
