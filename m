@@ -2,95 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 415CFC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 06:40:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98738C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 06:40:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351815AbiASGk3 (ORCPT
+        id S1351836AbiASGki (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 01:40:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50358 "EHLO
+        Wed, 19 Jan 2022 01:40:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50398 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351814AbiASGkY (ORCPT
+        with ESMTP id S1351829AbiASGkc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 01:40:24 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC58C06173E
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 22:40:24 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id z15-20020a25bb0f000000b00613388c7d99so3000413ybg.8
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 22:40:24 -0800 (PST)
+        Wed, 19 Jan 2022 01:40:32 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 651D2C06173E
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 22:40:32 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id t18so1255080plg.9
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 22:40:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=8U2NSEHKCUQ9Z36JnWsd++SgPVSc/KZrscz58kGHWbs=;
-        b=IRSqYBoUeD7Ry93C2zrCYgsanGN31qieUkxi0BeTfinOsX6JpBzwbaqcpcyFqxF53p
-         06IewAyfME4FVUIdzowKMLV3t2g/Cwb/7vvspipBtDa08Iq2QWPR35ESj7ELH41wavef
-         8AUmVblRGqkDAX2TFq7SOtmQlaT5Hsvio/ujx+P2MIaj9JP0mwvlOv1Hsopjv0wTZnBd
-         VGwB36GqnKnDVk6CjP/cUFqA7xp8pkQDhQXzWGICjpLYnvPaL5vSsUai3jKXDlvUzrPV
-         FbT5s9+u+NTQTFk17dRIYQgZ1P57mx2pT45LmKZs+TbWJ1/02J8BmNuIHY3duTLMgLWT
-         tGDQ==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=zpqOr/tBRi75Pp8qLo4l0nBsgr344a1nSf9Rbnq+odM=;
+        b=qEYIK5rApXpv0wg81nkrlkx1T++XKJBs1RDU+7UymNOd/serK07jnV/QZUYpzO1cZx
+         wj6xTp+NFXcu/VVvkGp0KBC0MfieDkaiP5XvpIvvJKB6tbSd3+sSr5ueB8ITW9ftDO/u
+         yheozRHgkCfFm6CVnnrKd6XiKG2Su3UOFenBTkSPuvzul0kpK9ncGpQJNPSj4vw5afam
+         GYNFNl6Oov2WscSyYFmKYYuq+EJfNE0yfTueSoo4RuDtNhXRP6U1d5CxcfJ120j9HVLg
+         Mj5zu7jCDAtYo8SUwn+zSVSF0TeeL27Wz3XKko0KU5GOn3lm2i2OTWH1ygcjd24A8CHU
+         2jPQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=8U2NSEHKCUQ9Z36JnWsd++SgPVSc/KZrscz58kGHWbs=;
-        b=QugUccD5+6qauvKcF/Dg5DIBLAsVBdf18WhqbGR7uk/KHUlMcjyRNdJ8WW2I0mb8Oh
-         EmNHXEfOOzz+7n3i2PWz8haAHoyJHOlEYncFtesBb7t0TS8AxNtU1yKUJlEz5btcZyhz
-         qjY36s/06DSmYqRRsgNhFEraN9uDJLLGWMHDN8O1sb9wLl2NW0qZUAdJuM1UQg9Wjs/1
-         s49x+Ct5ndA5SFVYWdoSw7/BTsuSJFxyrt/PRmZb0pQY9y26asxrdpI91xUt7dBRXGpE
-         VqeWbcsCVMIlqrFkI89FcHBKrWdVvNUORcjzcTLOeT8UcjKfaZqE2ZMg8m0SZ/FNvlSw
-         +Dcg==
-X-Gm-Message-State: AOAM5333kDDyUfR/sca0k1Caa2ohVuoRrYHxEtFcIxZd7VhcP4eljhww
-        /jWrfXMAJT/Qzj5Sgvvb9FaCceIs7Qfi
-X-Google-Smtp-Source: ABdhPJw4oZplaLI2nBLpJgDmj7/V9O9mEV4kAhMMQKEjyAszy2Z9I1QfXjY8/d+wFeXvKFrQlCyN/+A6d/Yd
-X-Received: from pumahsu.ntc.corp.google.com ([2401:fa00:fc:202:726e:776:90fe:956c])
- (user=pumahsu job=sendgmr) by 2002:a25:b599:: with SMTP id
- q25mr17915493ybj.274.1642574423209; Tue, 18 Jan 2022 22:40:23 -0800 (PST)
-Date:   Wed, 19 Jan 2022 14:40:13 +0800
-Message-Id: <20220119064013.1381172-1-pumahsu@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
-Subject: [PATCH v5] xhci: re-initialize the HC during resume if HCE was set
-From:   Puma Hsu <pumahsu@google.com>
-To:     mathias.nyman@intel.com, gregkh@linuxfoundation.org
-Cc:     s.shtylyov@omp.ru, albertccwang@google.com,
-        linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Puma Hsu <pumahsu@google.com>, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=zpqOr/tBRi75Pp8qLo4l0nBsgr344a1nSf9Rbnq+odM=;
+        b=soMURAML/CjvBAudir1HHIjuZpsUuE5sS9Kl9W3I+SGoBfg3j2e5v2JA6+06XFB5Yu
+         MZ2yrS6tUKcC5ipm7xl90Y8urf5khfNqCwZL+GE87uVARRYyqG5ALD7Xfz87MFRHcAAX
+         Dyr+lgdZLQ+NiQL9RwhwDvzEDAQd60Pa4vKgndHwHD5+b0oZIkTjytr7g4uXyDOGvTkc
+         Ij875Py37SYrKzFtsgGyFt6Ukmh5UDvzMWUi7fSU8Gctp/O3TsPm5sQ+Fk99Qhn6nVlL
+         sYaXnOhFz7hBk5mhpMvOLGO/AgIJgNxUnrKo+71Y/QlXyhBRQk8xcrh7RgBXXGwUhK0e
+         EVIQ==
+X-Gm-Message-State: AOAM532121MB+QlLfNj5SaX9uBojcP2eItzPaNAPE2fCji37bi8L2yVa
+        fbUsXM1XlpfZr38QFda3fTS37w==
+X-Google-Smtp-Source: ABdhPJx8ka9jtqv7zCBJO2qiQ9/AM6qAF/k8L4Cci5O8W/jOWZTORT9y08zINcOya2zj/P+qTeHWVQ==
+X-Received: by 2002:a17:90b:3144:: with SMTP id ip4mr2608936pjb.19.1642574431950;
+        Tue, 18 Jan 2022 22:40:31 -0800 (PST)
+Received: from localhost ([223.184.90.234])
+        by smtp.gmail.com with ESMTPSA id a9sm18672318pfo.169.2022.01.18.22.40.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 18 Jan 2022 22:40:31 -0800 (PST)
+Date:   Wed, 19 Jan 2022 12:10:29 +0530
+From:   Viresh Kumar <viresh.kumar@linaro.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Lukasz Luba <lukasz.luba@arm.com>,
+        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
+        Sudeep Holla <sudeep.holla@arm.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Subject: Re: [PATCH 1/2] cpufreq: qcom-hw: Use initialized cpumask for
+ thermal pressure update
+Message-ID: <20220119064029.b2yhqcazhpdbhasc@vireshk-i7>
+References: <20220118185612.2067031-1-bjorn.andersson@linaro.org>
+ <20220119063547.hktwzbycf7trqjju@vireshk-i7>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220119063547.hktwzbycf7trqjju@vireshk-i7>
+User-Agent: NeoMutt/20180716-391-311a52
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When HCE(Host Controller Error) is set, it means an internal
-error condition has been detected. Software needs to re-initialize
-the HC, so add this check in xhci resume.
+On 19-01-22, 12:05, Viresh Kumar wrote:
+> policy->cpus keeps on changing with CPU hotplug and this can leave
+> your platform in an inconsistent state. For example, in case where you
+> offline a CPU from policy, other CPUs get their thermal pressure
+> updated, online the CPU back and all CPUs of a policy don't have the
+> same settings anymore.
+> 
+> There are few things we can do here now:
+> 
+> - Check for empty related_cpus and return early. Since related_cpus is
+>   updated only once, this shall work just fine and must not be racy.
+> 
+>   While at it, I think we can also do something like this in
+>   topology_update_thermal_pressure() instead:
+> 
+>   	cpu = cpumask_first(cpus);
+>         if (unlikely(cpu >= NR_CPUS))
+>                 return;
+> 
+> - And while writing this email, I dropped all other ideas in favor of
+>   change to topology_update_thermal_pressure() :)
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Puma Hsu <pumahsu@google.com>
----
-v2: Follow Sergey Shtylyov <s.shtylyov@omp.ru>'s comment.
-v3: Add stable@vger.kernel.org for stable release.
-v4: Refine the commit message.
-v5: Add a debug log. Follow Mathias Nyman <mathias.nyman@linux.intel.com>'s comment.
+And then I saw your second patch, which looks good as otherwise we
+will not be able to catch the bug in our system where we are sending
+the empty cpumask :)
 
- drivers/usb/host/xhci.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+So the other idea is:
 
-diff --git a/drivers/usb/host/xhci.c b/drivers/usb/host/xhci.c
-index dc357cabb265..41f594f0f73f 100644
---- a/drivers/usb/host/xhci.c
-+++ b/drivers/usb/host/xhci.c
-@@ -1146,8 +1146,10 @@ int xhci_resume(struct xhci_hcd *xhci, bool hibernated)
- 		temp = readl(&xhci->op_regs->status);
- 	}
- 
--	/* If restore operation fails, re-initialize the HC during resume */
--	if ((temp & STS_SRE) || hibernated) {
-+	/* If restore operation fails or HC error is detected, re-initialize the HC during resume */
-+	if ((temp & (STS_SRE | STS_HCE)) || hibernated) {
-+		xhci_warn(xhci, "re-initialize HC during resume, USBSTS:%s\n",
-+			  xhci_decode_usbsts(str, temp));
- 
- 		if ((xhci->quirks & XHCI_COMP_MODE_QUIRK) &&
- 				!(xhci_all_ports_seen_u0(xhci))) {
+- Revert, or bring back a new version of this and register the
+  interrupt from there. But that is also not a very clean solution.
+
+  commit 4bf8e582119e ("cpufreq: Remove ready() callback")
+
+- 
+
 -- 
-2.34.1.703.g22d0c6ccf7-goog
-
+viresh
