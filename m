@@ -2,88 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F239FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 09:00:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD298C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 09:00:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352748AbiASJAM (ORCPT
+        id S1352765AbiASJA3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 04:00:12 -0500
-Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:55931 "EHLO
-        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1352728AbiASJAL (ORCPT
+        Wed, 19 Jan 2022 04:00:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53904 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237437AbiASJA1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 04:00:11 -0500
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
-        by mailout.west.internal (Postfix) with ESMTP id 640B23202057;
-        Wed, 19 Jan 2022 04:00:10 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute2.internal (MEProxy); Wed, 19 Jan 2022 04:00:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
-        from:to:cc:subject:date:message-id:in-reply-to:references
-        :mime-version:content-type:content-transfer-encoding; s=fm1; bh=
-        VaBFyioQd1iNz90Ah83fVOuABELozkn8BRkq2wXT/rc=; b=KTEYiE/FkOiRN4kD
-        QshYOEEn2DqsLY8LC8nYEU4Kzr7nGkFYIjd6oZPCWc21oI8eIYu+4olSrLFfkEr/
-        DVQ8fx00WZIK9JZsdtuNekxBTVXnTCuPebmYmjtw5PYSSi+ZDpTPpDhTdio/huMo
-        cTdz3ueth5Hua2xr2MHscy+LKeJHvdRdeLLIzuWfL1JDDyuSB8wboG1qIHJRyH79
-        Nhbxlrgr6oxG0IEEO48J/h6RdRdUngvUFXHo4iWsXdfsBNqg/mD/rKJgq/mK9wDv
-        EJquZcOqNvLO/XRBC1/ypxs2xZPHBzPR7qrF19VKWjfMY/wUXcaDkFR/gdRIEsXF
-        uhFidw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=VaBFyioQd1iNz90Ah83fVOuABELozkn8BRkq2wXT/
-        rc=; b=oBVZ+EDlq28Fepk52VQZUUpaDxla5oU4cFEJ7rln2bcdEs4Gtr/hvU0a5
-        zBgvnV9RkUVHUo9SAh79gQgBXoeqWxYOh2ZO4OvcodlehkV3eHFGFpyft+d3If2C
-        vmSpHUCrJRsEyEq+a3UHVThO1oma389Ly1lXWC6geSdcIXdjlATbEYITY0cLjOdT
-        G/tZbMuRGS3BJk6JGNKHhzrNHLHXN7iUjv1z54U96qnbpz08TYhfW8OqYpR8RIZy
-        qpy6Vc8yJliY0/fpvdRn4Jor6X9jhnZhg2Ln5KxOYkV/c/kI7V88I8l4qix8t47R
-        AY550O+5W35J32uFsE1IW2FImsbOg==
-X-ME-Sender: <xms:GdPnYWqhzTYpQCrmQ9ytsQ2DMtj4XqvNKqSbspUndpamnAIBLO0JGQ>
-    <xme:GdPnYUoSQRbVMPt5bF-W1C3CpSdAgpPhZ0mBp5ba_zTeY1KE74M-HvyLKvzDZSpw4
-    S2TT6UixD_z09xGz4o>
-X-ME-Received: <xmr:GdPnYbOdu--T6VymbfddTtG1HBXtxGXNaciC7znSOmSnzceOFagiQVc3BYWRkAdjUmqhkRfWZbXBTySMOdu9eKElwGR_OXbBG3ZMjUg>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeggdduvdehucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhephffvufffkffojghfgggtgfesthekredtredtjeenucfhrhhomhepofgrgihi
-    mhgvucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrg
-    htthgvrhhnpeejuefggeekfffgueevtddvudffhfejffejjedvvdduudethefhfefhfeeg
-    ieekkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpe
-    hmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:GdPnYV5jeILlQxcC8n-HyI4DW4fkZ2xvWkryFrFUEQU49IPl07oynw>
-    <xmx:GdPnYV6HdBHAojiL6Wo93i6YYVwDP465AGIlenmYfyOWo8Z8iOdKbQ>
-    <xmx:GdPnYVizyu9V_TLL5cUfBX5e8ueKP_V1kwkJPbuAZiOLlIVqf-YSrw>
-    <xmx:GdPnYSs17hTLusDwcHr0cp2DFl1ZaLynC9dHvBahwWD9Cw_nhiJnHw>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Wed,
- 19 Jan 2022 04:00:09 -0500 (EST)
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     mripard@kernel.org, Conley Lee <conleylee@foxmail.com>,
-        wens@csie.org, robh@kernel.org
-Cc:     Maxime Ripard <maxime@cerno.tech>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: (subset) [PATCH v4 2/2] dt-bindings: arm: sunxi: add haoyu,a20-marsboard
-Date:   Wed, 19 Jan 2022 09:59:59 +0100
-Message-Id: <164258279605.29285.6847365560924211664.b4-ty@cerno.tech>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <tencent_B6059C6C031E46EFCB05D5A5015B1C4DE608@qq.com>
-References: <tencent_DC7B4D416B69D6D6789356010B5B9647C606@qq.com> <20220114163148.2854265-1-conleylee@foxmail.com> <tencent_B6059C6C031E46EFCB05D5A5015B1C4DE608@qq.com>
+        Wed, 19 Jan 2022 04:00:27 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D4CAC061574;
+        Wed, 19 Jan 2022 01:00:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=qnafBOfaGAHL+V+2V6xLHrQXEkPNWUyyHRjzOTQQks0=; b=X41mnegh42srhJgRjFzw2U39oF
+        ik/ga3x206OM81Ma9yTWHodK6706mdjtlmS8QqItoSXc9Ue0Qqv8QHIAGwOSxIb0vENp+L5m5zVg/
+        2Xvtm9bjVZtkIGC1TWptFA9/bRvlTSB/bTv/LtdEHijmaMKtLI2FzDXpjx7i+23GYUjNqFhScDqKN
+        IrH8x+1khfrS73fXtt2zrSySG2T/cgWuIrttlTTbLNZjChilJEATxTpvPDok+nlBOR/+v6vIzpueR
+        zoqHvMEfl6LTr8xeaHhDOKp5jGnYzXVa1vFNBWoRRMcgdWaaS1FxERozztzXfC0ZAhVH0A15cWnLD
+        SUdsh4Wg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nA6ot-00AL9R-GZ; Wed, 19 Jan 2022 08:59:55 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6B9AB300222;
+        Wed, 19 Jan 2022 09:59:54 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 2E49A200CA459; Wed, 19 Jan 2022 09:59:54 +0100 (CET)
+Date:   Wed, 19 Jan 2022 09:59:54 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Peter Oskolkov <posk@google.com>
+Cc:     Peter Oskolkov <posk@posk.io>, mingo@redhat.com,
+        tglx@linutronix.de, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-api@vger.kernel.org, x86@kernel.org,
+        pjt@google.com, avagin@google.com, jannh@google.com,
+        tdelisle@uwaterloo.ca
+Subject: Re: [RFC][PATCH 3/3] sched: User Mode Concurency Groups
+Message-ID: <YefTCk4to5YzO8AB@hirez.programming.kicks-ass.net>
+References: <20211214204445.665580974@infradead.org>
+ <20211214205358.701701555@infradead.org>
+ <20211221171900.GA580323@dev-hv>
+ <YeGEM7TP3tekBVEh@hirez.programming.kicks-ass.net>
+ <YeaRx9oDp08ABvyU@hirez.programming.kicks-ass.net>
+ <CAPNVh5cdGiDqut90kUo-HXyya6Nbz_CjuUObYXfprgDhQHnUmg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPNVh5cdGiDqut90kUo-HXyya6Nbz_CjuUObYXfprgDhQHnUmg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 15 Jan 2022 00:31:48 +0800, Conley Lee wrote:
-> From: conley <conleylee@foxmail.com>
-> 
-> add haoyu,a20-marsboard dt-bindings
-> 
-> 
+On Tue, Jan 18, 2022 at 10:19:21AM -0800, Peter Oskolkov wrote:
 
-Applied to local tree (sunxi/dt-for-5.18).
+> =========== signals and the general approach
+> 
+> My version of the patchset has all of these things working. What it
+> does not have,
+> compared to the new approach we are discussing here, is runqueues per server
+> and proper signal handling (and potential integration with proxy execution).
+> 
+> Runqueues per server, in the LAZY mode, are easy to emulate in my patchset:
+> nothing prevents the userspace to partition workers among servers, and have
+> servers that "own" their workers to be pointed at by idle_server_tid_ptr.
+> 
+> The only thing that is missing is proper treating of signals. But my patchset
+> does ensure a single running worker per server, had pagefaults and preemptions
+> sorted out, etc. Basically, everything works except signals. This patchet
+> has issues with pagefaults, 
 
-Thanks!
-Maxime
+Already fixed pagefaults per:
+
+  YeGvovSckivQnKX8@hirez.programming.kicks-ass.net
+
+> worker timeouts
+
+I still have no clear answer as to what you actually want there.
+
+> , worker-to-worker context
+> switches (do workers move runqueues when they context switch?), etc.
+
+Not in kernel, if they need to be migrated, userspace needs to do that.
+
+> And my patchset now actually looks smaller and simpler, on the kernel side,
+> that what this patchset is shaping up to be.
+> 
+> What if I fix signals in my patchset? I think the way you deal with signals
+> will work in my approach equally well; I'll also use umcg_kick() to preempt
+> workers instead of sending them a signal.
+> 
+> What do you think? 
+
+I still absolutely hate how long you do page pinning, it *will* wreck
+things like CMA which are somewhat latency critical for silly things
+like Android camera apps and who knows what else.
+
+You've also forgotten about this:
+
+  YcWutpu7BDeG+dQ2@hirez.programming.kicks-ass.net
+
+That's not optional given how you're using page-pinning. Also, I think
+we need at least one direct access to the page after getting the pin in
+order to make it work.
+
+That also very much limits it to Anon pages.
