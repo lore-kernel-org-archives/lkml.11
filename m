@@ -2,120 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DCDBC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 13:39:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78882C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 13:41:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350255AbiASNjX (ORCPT
+        id S1351054AbiASNlj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 08:39:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33394 "EHLO
+        Wed, 19 Jan 2022 08:41:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343938AbiASNjV (ORCPT
+        with ESMTP id S234312AbiASNli (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 08:39:21 -0500
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 001B4C061574;
-        Wed, 19 Jan 2022 05:39:20 -0800 (PST)
-Received: by mail-pf1-x444.google.com with SMTP id w204so2363580pfc.7;
-        Wed, 19 Jan 2022 05:39:20 -0800 (PST)
+        Wed, 19 Jan 2022 08:41:38 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46E15C061574;
+        Wed, 19 Jan 2022 05:41:38 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id x7so9477431lfu.8;
+        Wed, 19 Jan 2022 05:41:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=8NOXdq1kEY3pOnmXg+Zn+1SGl/zikNGQrQDpkrXSeQA=;
-        b=Grw0I8Bzf3z0IHW0BPyppfRlgsOpAmqrKFVYYTprerDwmzSoS+tmFuXTp2661nCk2s
-         0sdPZfeHJLIhB+PkiPaVNCvF1QRQxTNAsQ7Zig7jaMPJLOj5M1j7J9VPEw0+E60+5rZP
-         ME64QZRADsy/M4/FKXSx7nBw1Lk9omFXkAn+iN4ABo78VjzUV4N9ND4MSF2kk9Mbtl+v
-         JieQ7jRnuSftsO4NNb2VYpYwSSXuyuILLMcLuEQjRZDrHO9Ji4wrwjHDqeYa4PRXtpyr
-         iJ86LZfzPyHPerpqy1dhKTkrhxmSZhSUrj4ktbsU1P0WrcfHvSa08of8QOklJ1AoBZ8K
-         J5RA==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=E80AIJuq6LPMF9rIykqm1KYtwvgVA/MlGMAu7dFX5Ek=;
+        b=I8N4zkeDQGGY+JpK17xsljhDGBSRjOz6IoY+IvPzfLzIsFqc/aeNBrxqiYPZfu7Z6E
+         M3KNBjEfrHTfo0tU0u25PgeXtLPcrorYRrRRDtG0bMg376P4rHZk+s0kOfeh6iH8NcYL
+         8MhFzMA+H3J/EtNE12KqmWnrgPPjlzDzkScC0U1FOrAoNBQb73/xJ4SQS7djRna5pkhQ
+         yAViVWJFyZsD8x4kVBIGoLCK0TkCvpDNVGkeDhCL+b9TdrYIdF5cQjrPTeXPXavAM2sf
+         tHHIFi0sn7/9UpXbx7SqjQtVtSWOPLVtJQXCk7SLrrxv5Oln4MwBs26mf62xQMdiM0BL
+         9eWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=8NOXdq1kEY3pOnmXg+Zn+1SGl/zikNGQrQDpkrXSeQA=;
-        b=Zap0HZ+DbR2LsgXjwnc5zb7RDj3wipv6A/22IjYc7oTKi+Hs7BynHesWND2gUgkv3T
-         Uh7Yeda79LlPQDxmU3lugRNtJPWKiSvtmOFvuYcaRtIclZ5VyUSBqxIKQmWg+mxq7Bmv
-         mOqsBLLZWJx79/mXzXHqusttcRei5El0+pZ18jrzljTetFOP682t9t3xFIwL/LPsF74R
-         i8Vr6T6FwDGVegYahWYdjJcW/1YgIMs0u3e9UbrWjgflpLhGqt+c3ORxB1cvwjMfbRWn
-         Ro646x6dpf/4zvmVTjJIvumuPW97kxzKi/zdS6sYcRN0T9GsVNJbeLEt4t2uJZD5Hoyt
-         CvkA==
-X-Gm-Message-State: AOAM533NjWotDYqWX0rmAMxsg6wg1Iku0iWvRLL2XUnVr3h9vFZFuea2
-        HFUVKlV2vjzEf+jSEE/4PLkVCn/lfrmS9Q==
-X-Google-Smtp-Source: ABdhPJyL4RU+b4ur6zVEBaWRJjK+Yu7CyMHGZG9MfIb/O1kNRFEH+BmBCNgrlOzx2zEa2oQiXac5hg==
-X-Received: by 2002:a62:1996:0:b0:4bb:db58:9f6d with SMTP id 144-20020a621996000000b004bbdb589f6dmr30887470pfz.31.1642599560575;
-        Wed, 19 Jan 2022 05:39:20 -0800 (PST)
-Received: from CLOUDLIANG-MB0.tencent.com ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id k8sm6308709pjj.3.2022.01.19.05.39.17
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 19 Jan 2022 05:39:20 -0800 (PST)
-From:   Jinrong Liang <ljr.kernel@gmail.com>
-X-Google-Original-From: Jinrong Liang <cloudliang@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Jinrong Liang <cloudliang@tencent.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] selftests: kvm/x86: Fix the warning in pmu_event_filter_test.c
-Date:   Wed, 19 Jan 2022 21:39:10 +0800
-Message-Id: <20220119133910.56285-1-cloudliang@tencent.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        bh=E80AIJuq6LPMF9rIykqm1KYtwvgVA/MlGMAu7dFX5Ek=;
+        b=DtGIeB/SJUW9GYHXMDQKHsIpYOAJw5ZdKKfaCUujJ8UwZgnN2d68jUfShnCZTzB2oL
+         /NoLymdmSh7pqLN3SLr0wh13cUOwRrSe92Gcnej33WlgGDb8vWHd36n12FYwBv/9JV1C
+         YxgEhxKXPOyq8/eE8SlfDEzhx/v2z3kQrH30ydVzAkyVXhIBagJri+krimisOsNOcW4L
+         E5B4BYgT7oaFAz5XIJeTCQ0TUiTrQhvBC4bGNU8DO8XWhdyZn8QuUPxsiVKss7BfLTUD
+         si4waWN8hslMj3C0FlMbb3iCo3A1wIYQd8rwXd3J03qj7AD97rONkQ7WW4aZsB0MXRnT
+         n2qQ==
+X-Gm-Message-State: AOAM532xSFZ4kfoIyxBD68iC8aA0OT4x1DoTVqozAOMoWcNO/ZoGV88Y
+        OpDH5Kan2fFfMhKLABxUyiY=
+X-Google-Smtp-Source: ABdhPJw7CcqTRgFq0l669xagB3fK6l3pm0gwEuRtaDo2RiKzIhH+cD3GgxZzsX4rtvxoAOZ0tXrIkg==
+X-Received: by 2002:a2e:953:: with SMTP id 80mr24515560ljj.134.1642599696661;
+        Wed, 19 Jan 2022 05:41:36 -0800 (PST)
+Received: from [192.168.2.145] (109-252-139-36.dynamic.spd-mgts.ru. [109.252.139.36])
+        by smtp.googlemail.com with ESMTPSA id f30sm1825612lfv.40.2022.01.19.05.41.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Jan 2022 05:41:36 -0800 (PST)
+Message-ID: <f98df604-1b2b-3803-b415-445656a6fa4b@gmail.com>
+Date:   Wed, 19 Jan 2022 16:41:35 +0300
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [Patch V1 3/4] memory: tegra: add mc-err support for T186
+Content-Language: en-US
+To:     Ashish Mhetre <amhetre@nvidia.com>, thierry.reding@gmail.com,
+        jonathanh@nvidia.com, linux-tegra@vger.kernel.org,
+        krzysztof.kozlowski@canonical.com, linux-kernel@vger.kernel.org
+Cc:     Snikam@nvidia.com, vdumpa@nvidia.com
+References: <1641926750-27544-1-git-send-email-amhetre@nvidia.com>
+ <1641926750-27544-4-git-send-email-amhetre@nvidia.com>
+ <f9ca5794-55ac-803f-8606-f0b48e826eb7@gmail.com>
+ <a926e5aa-4872-5585-d367-da815518915c@nvidia.com>
+From:   Dmitry Osipenko <digetx@gmail.com>
+In-Reply-To: <a926e5aa-4872-5585-d367-da815518915c@nvidia.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jinrong Liang <cloudliang@tencent.com>
+19.01.2022 11:53, Ashish Mhetre пишет:
+> 
+> 
+> On 1/12/2022 4:31 PM, Dmitry Osipenko wrote:
+>> External email: Use caution opening links or attachments
+>>
+>>
+>> 11.01.2022 21:45, Ashish Mhetre пишет:
+>>> Add all mc-errors supported by T186.
+>>> Implement mc interrupt handling routine for T186.
+>>>
+>>> Signed-off-by: Ashish Mhetre <amhetre@nvidia.com>
+>>> ---
+>>>   drivers/memory/tegra/mc.h       |  17 +++++++
+>>>   drivers/memory/tegra/tegra186.c | 100
+>>> ++++++++++++++++++++++++++++++++++++++++
+>>>   2 files changed, 117 insertions(+)
+>>>
+>>> diff --git a/drivers/memory/tegra/mc.h b/drivers/memory/tegra/mc.h
+>>> index 2d4f495..7817492 100644
+>>> --- a/drivers/memory/tegra/mc.h
+>>> +++ b/drivers/memory/tegra/mc.h
+>>> @@ -44,6 +44,15 @@
+>>>   #define MC_TIMING_CONTROL_DBG                                0xf8
+>>>   #define MC_TIMING_CONTROL                            0xfc
+>>>
+>>
+>> this empty line is unnecessary
+>>
+> I'll fix this in next version.
+> 
+>>> +#define MC_ERR_VPR_STATUS                            0x654
+>>> +#define MC_ERR_VPR_ADR                                       0x658
+>>> +#define MC_ERR_SEC_STATUS                            0x67c
+>>> +#define MC_ERR_SEC_ADR                                       0x680
+>>> +#define MC_ERR_MTS_STATUS                            0x9b0
+>>> +#define MC_ERR_MTS_ADR                                       0x9b4
+>>> +#define MC_ERR_GENERALIZED_CARVEOUT_STATUS           0xc00
+>>> +#define MC_ERR_GENERALIZED_CARVEOUT_ADR                      0xc04
+>>> +
+>>>   #define MC_INT_DECERR_ROUTE_SANITY                   BIT(20)
+>>>   #define MC_INT_WCAM_ERR                                      BIT(19)
+>>>   #define MC_INT_SCRUB_ECC_WR_ACK                              BIT(18)
+>>> @@ -159,6 +168,14 @@ extern const struct tegra_mc_ops tegra186_mc_ops;
+>>>   extern const char * const tegra_mc_status_names[32];
+>>>   extern const char * const tegra_mc_error_names[8];
+>>>
+>>> +struct tegra_mc_error {
+>>> +     u32 int_bit;
+>>> +     const char *msg;
+>>> +     u32 status_reg;
+>>> +     u32 addr_reg;
+>>> +     u32 addr_reg_hi;
+>>> +};
+>>> +
+>>>   /*
+>>>    * These IDs are for internal use of Tegra ICC drivers. The ID
+>>> numbers are
+>>>    * chosen such that they don't conflict with the device-tree ICC
+>>> node IDs.
+>>> diff --git a/drivers/memory/tegra/tegra186.c
+>>> b/drivers/memory/tegra/tegra186.c
+>>> index 6766cc4..4f3ae71 100644
+>>> --- a/drivers/memory/tegra/tegra186.c
+>>> +++ b/drivers/memory/tegra/tegra186.c
+>>> @@ -146,8 +146,107 @@ static void tegra186_mc_clear_interrupt(struct
+>>> tegra_mc *mc)
+>>>        mc_writel(mc, MC_INTSTATUS_CLEAR, MC_INTSTATUS);
+>>>   }
+>>>
+>>> +static const struct tegra_mc_error int_mc_errors[] = {
+>>> +     {
+>>> +             .int_bit = MC_INT_DECERR_EMEM,
+>>> +             .msg = "EMEM address decode error",
+>>> +             .status_reg = MC_ERR_STATUS,
+>>> +             .addr_reg = MC_ERR_ADR,
+>>> +     },
+>>> +     {
+>>> +             .int_bit = MC_INT_SECURITY_VIOLATION,
+>>> +             .msg = "non secure access to secure region",
+>>> +             .status_reg = MC_ERR_STATUS,
+>>> +             .addr_reg = MC_ERR_ADR,
+>>> +     },
+>>> +     {
+>>> +             .int_bit = MC_INT_DECERR_VPR,
+>>> +             .msg = "MC request violates VPR requirements",
+>>> +             .status_reg = MC_ERR_VPR_STATUS,
+>>> +             .addr_reg = MC_ERR_VPR_ADR,
+>>> +     },
+>>
+>> I see that these VPR registers present on all SoCs starting with T124.
+>> It doesn't look like you need the separate IRQ handlers at all, instead
+>> please extend the common T30 handler. For example, you may add a
+>> switch-case statements to handle those T124+ specific bits differently.
+>>
+>> static irqreturn_t tegra30_mc_handle_irq(int irq, void *data)
+>> {
+>> ...
+>>          switch (bit) {
+>>          case MC_INT_DECERR_VPR:
+>>                  status_reg = MC_ERR_VPR_STATUS;
+>>                  addr_reg   = MC_ERR_VPR_ADR;
+>>                  break;
+>>          ...
+>>          default:
+>>                  status_reg = MC_ERR_STATUS;
+>>                  addr_reg   = MC_ERR_ADR;
+>>          }
+>>
+>>          value = mc_readl(mc, status_reg);
+>>          ...
+>>
+>>          value = mc_readl(mc, addr_reg);
+> Okay. I'll use same handler as Tegra30 with additional Tegra186 onward
+> bits.
+> Also, shall I change name of tegra30_mc_handle_irq() to
+> tegra_mc_handle_irq() as we are using it across all Tegra SOCs ?
 
-The following warning appears when executing
-make -C tools/testing/selftests/kvm
-
-x86_64/pmu_event_filter_test.c: In function ‘vcpu_supports_intel_br_retired’:
-x86_64/pmu_event_filter_test.c:241:28: warning: variable ‘cpuid’ set but not used [-Wunused-but-set-variable]
-  241 |         struct kvm_cpuid2 *cpuid;
-      |                            ^~~~~
-x86_64/pmu_event_filter_test.c: In function ‘vcpu_supports_amd_zen_br_retired’:
-x86_64/pmu_event_filter_test.c:258:28: warning: variable ‘cpuid’ set but not used [-Wunused-but-set-variable]
-  258 |         struct kvm_cpuid2 *cpuid;
-      |                            ^~~~~
-
-Just delete the unused variables to stay away from warnings.
-
-Fixes: dc7e75b3b3ee ("selftests: kvm/x86: Add test for KVM_SET_PMU_EVENT_FILTER")
-Signed-off-by: Jinrong Liang <cloudliang@tencent.com>
----
- tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c | 4 ----
- 1 file changed, 4 deletions(-)
-
-diff --git a/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c b/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c
-index 8ac99d4cbc73..0611a5c24bbc 100644
---- a/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c
-+++ b/tools/testing/selftests/kvm/x86_64/pmu_event_filter_test.c
-@@ -238,9 +238,7 @@ static void test_not_member_allow_list(struct kvm_vm *vm)
- static bool vcpu_supports_intel_br_retired(void)
- {
- 	struct kvm_cpuid_entry2 *entry;
--	struct kvm_cpuid2 *cpuid;
- 
--	cpuid = kvm_get_supported_cpuid();
- 	entry = kvm_get_supported_cpuid_index(0xa, 0);
- 	return entry &&
- 		(entry->eax & 0xff) &&
-@@ -255,9 +253,7 @@ static bool vcpu_supports_intel_br_retired(void)
- static bool vcpu_supports_amd_zen_br_retired(void)
- {
- 	struct kvm_cpuid_entry2 *entry;
--	struct kvm_cpuid2 *cpuid;
- 
--	cpuid = kvm_get_supported_cpuid();
- 	entry = kvm_get_supported_cpuid_index(1, 0);
- 	return entry &&
- 		((x86_family(entry->eax) == 0x17 &&
--- 
-2.33.1
-
+T20 won't use it, no need to change the name.
