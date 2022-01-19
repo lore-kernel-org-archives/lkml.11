@@ -2,352 +2,296 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6230C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 17:08:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB8FC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 17:08:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354028AbiASRIa (ORCPT
+        id S1356326AbiASRIj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 12:08:30 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:58658 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237375AbiASRI1 (ORCPT
+        Wed, 19 Jan 2022 12:08:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53702 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237375AbiASRIi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 12:08:27 -0500
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20JFhPKa023537;
-        Wed, 19 Jan 2022 17:08:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=oaxRr0rBnBqFhk5zud2h81gfcCCumGJq39eeMtPzEeE=;
- b=nJIQC59/dAFV+g00kn651zmTPXG2Ee9+1gI93BI1SUEVDJnL1PSnZuG5SFpV3JtaQapO
- Hv150cKN3XoABiPH5Q5kRU1f+vY8fVk0hI06gCZORJqLps2TGAAjgGqDGWOHTNcjYpYk
- MJGziEVHFBLumVvpdOYbB6G1Nd28Z1l7a1sgPVBPGFmCJyUh7tjCo5xYNo6A851GjAm5
- b0yskHyFLS9zrsc2BnQlnbkeA8pQe7N7PNugdFs9Vytg5ykGlpMbSOtIqfKNYw3J9/5a
- p3Q4Pca/07ta61E7yzBE1u+f5QCbWiOIh+oQDWyt7qczY5hK1Rq1pzit7r/USK2KS0Fl yw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dpkje5j8g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 Jan 2022 17:08:25 +0000
-Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20JGrQeK005346;
-        Wed, 19 Jan 2022 17:08:25 GMT
-Received: from ppma03fra.de.ibm.com (6b.4a.5195.ip4.static.sl-reverse.com [149.81.74.107])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3dpkje5j7d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 Jan 2022 17:08:25 +0000
-Received: from pps.filterd (ppma03fra.de.ibm.com [127.0.0.1])
-        by ppma03fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20JH359v011174;
-        Wed, 19 Jan 2022 17:08:23 GMT
-Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
-        by ppma03fra.de.ibm.com with ESMTP id 3dknwapxjk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 Jan 2022 17:08:23 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20JH8Job17564122
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 19 Jan 2022 17:08:20 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D7E37A4040;
-        Wed, 19 Jan 2022 17:08:19 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D4BC6A405F;
-        Wed, 19 Jan 2022 17:08:18 +0000 (GMT)
-Received: from [9.171.7.240] (unknown [9.171.7.240])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 19 Jan 2022 17:08:18 +0000 (GMT)
-Message-ID: <adc1df1b-97a0-c41b-cfbf-71a68ea4362d@linux.ibm.com>
-Date:   Wed, 19 Jan 2022 18:10:02 +0100
+        Wed, 19 Jan 2022 12:08:38 -0500
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54D03C061574;
+        Wed, 19 Jan 2022 09:08:38 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id s9so5085182oib.11;
+        Wed, 19 Jan 2022 09:08:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=6WelN89hEfp4KJejxcgAq95DIN16jm2x1el3Hukn54g=;
+        b=i9p9llDsUWmzBJJDx5LWLvER43VrqCJIH4EjiWsYV9oyJQtDG/YP0Kb0aUKwwkTVKS
+         i7wHjmsAN93cQC0MxqDJuLIav3QxOc9lEbdsdnLQbbsWcbomlxwNAO89wj0r9pEsmzz5
+         mmBNorNXQLXZjx3ZisUqKBvIzRR07nVqXyhgbSeyQsejzaao2oSudRpDL+q68lsrC9FC
+         QLoDubk8+ZCrHcl7BErGnrcFWnCOpLm2nvjvlUMM36JvlLYYOEthmfXSKXo6e/bbu7pA
+         JV4likXkt5fg7523ire3XslmYlCcD9x+sz3Wm47hUwmLI8oUKohKURaZGvp5VSnM84DC
+         nVhg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
+         :date:user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=6WelN89hEfp4KJejxcgAq95DIN16jm2x1el3Hukn54g=;
+        b=nthTuUTwGpK3C/i8Q5tR5L9DBCTBUAOJypic75pa5tryGcqOdnJx/5dfvS9MbRRsJ2
+         DPuMo/fGxjxMaoHCZwgEKaZFmXfJH4rJIMU1uvjtMYGRxqeE/3WzhJfLqjSBZnPgJoBB
+         S4hn3df+NCwYQy4iXSIvSd1Cr1crne7S9hwYDQxc9zetsf0BdRgIi4aIbMmqvKIZyzFm
+         XY+qJXHRtC2ejtlaISRuyErJylSqTScTZjFXcM0aB87vBv/Rk4cuA19F2uiVfRV2GqhU
+         g0r0CptfB1VFw8pAD8vUC1cwcKQtnTT3Lje6Ek5k2WBfA8NuKlvWOey96eqUYs0aVxT/
+         aBiw==
+X-Gm-Message-State: AOAM533uL1YTqF7ERdlT/a6ybsCNKR2TtTf845Y2TGRXorUhAYBlWQSL
+        dSLB6VVVsY54k0Gb2S7Grds=
+X-Google-Smtp-Source: ABdhPJyOugbTInEEu//Tx5ttiC0TcU+tzGCFvpdXT66QJ0v39dR0PH0fNmzoqUfEuYFFxFFFFR1Igw==
+X-Received: by 2002:a05:6808:14ca:: with SMTP id f10mr3896046oiw.162.1642612117681;
+        Wed, 19 Jan 2022 09:08:37 -0800 (PST)
+Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id 44sm141801otl.15.2022.01.19.09.08.35
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Jan 2022 09:08:36 -0800 (PST)
+Sender: Guenter Roeck <groeck7@gmail.com>
+Subject: Re: [PATCH v3 2/4] Watchdog: sp5100_tco: Refactor MMIO base address
+ initialization
+To:     Terry Bowman <Terry.Bowman@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     linux-watchdog@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        Wolfram Sang <wsa@kernel.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Robert Richter <rrichter@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "Shah, Nehal-bakulchandra" <Nehal-bakulchandra.Shah@amd.com>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        Mario Limonciello <Mario.Limonciello@amd.com>
+References: <20220118202234.410555-1-terry.bowman@amd.com>
+ <20220118202234.410555-3-terry.bowman@amd.com>
+ <CAHp75VdBFN+QMJpYDp8ytGGrBKYyjxU8u=Xrn44Lc3UGLPRQOA@mail.gmail.com>
+ <b609230d-37e5-d7a3-3dff-5980c1cca5f7@amd.com>
+From:   Guenter Roeck <linux@roeck-us.net>
+Message-ID: <e558133e-b222-6cd8-6e18-162a45cb12fa@roeck-us.net>
+Date:   Wed, 19 Jan 2022 09:08:34 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v2 26/30] vfio-pci/zdev: wire up zPCI adapter interrupt
- forwarding support
+In-Reply-To: <b609230d-37e5-d7a3-3dff-5980c1cca5f7@amd.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
-        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
-        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220114203145.242984-1-mjrosato@linux.ibm.com>
- <20220114203145.242984-27-mjrosato@linux.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <20220114203145.242984-27-mjrosato@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: _uuAx3iatHu00WZRZOzL2I6YTr36vvhe
-X-Proofpoint-ORIG-GUID: IWjeG_BuylC7fTVtPPqEhtpVFW_tks0Z
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-19_09,2022-01-19_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxscore=0
- malwarescore=0 suspectscore=0 bulkscore=0 priorityscore=1501
- lowpriorityscore=0 phishscore=0 clxscore=1015 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2110150000 definitions=main-2201190096
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-
-
-On 1/14/22 21:31, Matthew Rosato wrote:
-> Introduce support for VFIO_DEVICE_FEATURE_ZPCI_AIF, which is a new
-> VFIO_DEVICE_FEATURE ioctl.  This interface is used to indicate that an
-> s390x vfio-pci device wishes to enable/disable zPCI adapter interrupt
-> forwarding, which allows underlying firmware to deliver interrupts
-> directly to the associated kvm guest.
+On 1/19/22 8:57 AM, Terry Bowman wrote:
 > 
-> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
-> ---
->   arch/s390/include/asm/kvm_pci.h  |  2 +
->   drivers/vfio/pci/vfio_pci_core.c |  2 +
->   drivers/vfio/pci/vfio_pci_zdev.c | 98 +++++++++++++++++++++++++++++++-
->   include/linux/vfio_pci_core.h    | 10 ++++
->   include/uapi/linux/vfio.h        |  7 +++
->   include/uapi/linux/vfio_zdev.h   | 20 +++++++
->   6 files changed, 138 insertions(+), 1 deletion(-)
 > 
-> diff --git a/arch/s390/include/asm/kvm_pci.h b/arch/s390/include/asm/kvm_pci.h
-> index dc00c3f27a00..dbab349a4a75 100644
-> --- a/arch/s390/include/asm/kvm_pci.h
-> +++ b/arch/s390/include/asm/kvm_pci.h
-> @@ -36,6 +36,8 @@ struct kvm_zdev {
->   	struct zpci_fib fib;
->   	struct notifier_block nb;
->   	bool interp;
-> +	bool aif;
-> +	bool fhost;
->   };
->   
->   int kvm_s390_pci_dev_open(struct zpci_dev *zdev);
-> diff --git a/drivers/vfio/pci/vfio_pci_core.c b/drivers/vfio/pci/vfio_pci_core.c
-> index 2b2d64a2190c..01658de660bd 100644
-> --- a/drivers/vfio/pci/vfio_pci_core.c
-> +++ b/drivers/vfio/pci/vfio_pci_core.c
-> @@ -1174,6 +1174,8 @@ long vfio_pci_core_ioctl(struct vfio_device *core_vdev, unsigned int cmd,
->   			return 0;
->   		case VFIO_DEVICE_FEATURE_ZPCI_INTERP:
->   			return vfio_pci_zdev_feat_interp(vdev, feature, arg);
-> +		case VFIO_DEVICE_FEATURE_ZPCI_AIF:
-> +			return vfio_pci_zdev_feat_aif(vdev, feature, arg);
->   		default:
->   			return -ENOTTY;
->   		}
-> diff --git a/drivers/vfio/pci/vfio_pci_zdev.c b/drivers/vfio/pci/vfio_pci_zdev.c
-> index 4339f48b98bc..891cfa016d63 100644
-> --- a/drivers/vfio/pci/vfio_pci_zdev.c
-> +++ b/drivers/vfio/pci/vfio_pci_zdev.c
-> @@ -13,6 +13,7 @@
->   #include <linux/vfio_zdev.h>
->   #include <asm/pci_clp.h>
->   #include <asm/pci_io.h>
-> +#include <asm/pci_insn.h>
->   #include <asm/kvm_pci.h>
->   
->   #include <linux/vfio_pci_core.h>
-> @@ -208,6 +209,99 @@ int vfio_pci_zdev_feat_interp(struct vfio_pci_core_device *vdev,
->   	return rc;
->   }
->   
-> +int vfio_pci_zdev_feat_aif(struct vfio_pci_core_device *vdev,
-> +			   struct vfio_device_feature feature,
-> +			   unsigned long arg)
-> +{
-> +	struct zpci_dev *zdev = to_zpci(vdev->pdev);
-> +	struct vfio_device_zpci_aif *data;
-> +	struct vfio_device_feature *feat;
-> +	unsigned long minsz;
-> +	int size, rc = 0;
-> +
-> +	if (!zdev || !zdev->kzdev)
-> +		return -EINVAL;
-> +
-> +	/* If PROBE specified, return probe results immediately */
-> +	if (feature.flags & VFIO_DEVICE_FEATURE_PROBE)
-> +		return kvm_s390_pci_aif_probe(zdev);
-> +
-> +	/* GET and SET are mutually exclusive */
-> +	if ((feature.flags & VFIO_DEVICE_FEATURE_GET) &&
-> +	    (feature.flags & VFIO_DEVICE_FEATURE_SET))
-> +		return -EINVAL;
-> +
-> +	size = sizeof(*feat) + sizeof(*data);
-> +	feat = kzalloc(size, GFP_KERNEL);
-> +	if (!feat)
-> +		return -ENOMEM;
-> +
-> +	data = (struct vfio_device_zpci_aif *)&feat->data;
-> +	minsz = offsetofend(struct vfio_device_feature, flags);
-> +
-> +	if (feature.argsz < minsz + sizeof(*data))
-> +		return -EINVAL;
-> +
-> +	/* Get the rest of the payload for GET/SET */
-> +	rc = copy_from_user(data, (void __user *)(arg + minsz),
-> +			    sizeof(*data));
-> +	if (rc)
-> +		rc = -EINVAL;
-> +
-> +	if (feature.flags & VFIO_DEVICE_FEATURE_GET) {
-> +		if (zdev->kzdev->aif)
-> +			data->flags = VFIO_DEVICE_ZPCI_FLAG_AIF_FLOAT;
-> +		if (zdev->kzdev->fhost)
-> +			data->flags |= VFIO_DEVICE_ZPCI_FLAG_AIF_HOST;
-> +
-> +		if (copy_to_user((void __user *)arg, feat, size))
-> +			rc = -EFAULT;
-> +	} else if (feature.flags & VFIO_DEVICE_FEATURE_SET) {
-> +		if (data->flags & VFIO_DEVICE_ZPCI_FLAG_AIF_FLOAT) {
-> +			/* create a guest fib */
-> +			struct zpci_fib fib;
-> +
-> +			fib.fmt0.aibv = data->ibv;
-> +			fib.fmt0.isc = data->isc;
-> +			fib.fmt0.noi = data->noi;
-> +			if (data->sb != 0) {
-> +				fib.fmt0.aisb = data->sb;
-> +				fib.fmt0.aisbo = data->sbo;
-> +				fib.fmt0.sum = 1;
-> +			} else {
-> +				fib.fmt0.aisb = 0;
-> +				fib.fmt0.aisbo = 0;
-> +				fib.fmt0.sum = 0;
-> +			}
-> +			if (data->flags & VFIO_DEVICE_ZPCI_FLAG_AIF_HOST) {
-> +				rc = kvm_s390_pci_aif_enable(zdev, &fib, false);
-> +				if (!rc) {
-> +					zdev->kzdev->aif = true;
-> +					zdev->kzdev->fhost = true;
-> +				}
-> +			} else {
-> +				rc = kvm_s390_pci_aif_enable(zdev, &fib, true);
-> +				if (!rc)
-> +					zdev->kzdev->aif = true;
-> +			}
-> +		} else if (data->flags == 0) {
-> +			rc = kvm_s390_pci_aif_disable(zdev);
-> +			if (!rc) {
-> +				zdev->kzdev->aif = false;
-> +				zdev->kzdev->fhost = false;
-> +			}
-> +		} else {
-> +			rc = -EINVAL;
-> +		}
-> +	} else {
-> +		/* Neither GET nor SET were specified */
-> +		rc = -EINVAL;
-> +	}
-> +
-> +	kfree(feat);
-> +	return rc;
-> +}
-> +
->   static int vfio_pci_zdev_group_notifier(struct notifier_block *nb,
->   					unsigned long action, void *data)
->   {
-> @@ -255,8 +349,10 @@ void vfio_pci_zdev_release(struct vfio_pci_core_device *vdev)
->   	 * If the device was using interpretation, don't trust that userspace
->   	 * did the appropriate cleanup
->   	 */
-> -	if (zdev->gd != 0)
-> +	if (zdev->gd != 0) {
-> +		kvm_s390_pci_aif_disable(zdev);
->   		kvm_s390_pci_interp_disable(zdev);
-> +	}
->   
->   	kvm_s390_pci_dev_release(zdev);
->   }
-> diff --git a/include/linux/vfio_pci_core.h b/include/linux/vfio_pci_core.h
-> index 0db2b1051931..7ec5e82e7933 100644
-> --- a/include/linux/vfio_pci_core.h
-> +++ b/include/linux/vfio_pci_core.h
-> @@ -201,6 +201,9 @@ extern int vfio_pci_info_zdev_add_caps(struct vfio_pci_core_device *vdev,
->   int vfio_pci_zdev_feat_interp(struct vfio_pci_core_device *vdev,
->   			      struct vfio_device_feature feature,
->   			      unsigned long arg);
-> +int vfio_pci_zdev_feat_aif(struct vfio_pci_core_device *vdev,
-> +			   struct vfio_device_feature feature,
-> +			   unsigned long arg);
->   void vfio_pci_zdev_open(struct vfio_pci_core_device *vdev);
->   void vfio_pci_zdev_release(struct vfio_pci_core_device *vdev);
->   #else
-> @@ -217,6 +220,13 @@ static inline int vfio_pci_zdev_feat_interp(struct vfio_pci_core_device *vdev,
->   	return -ENOTTY;
->   }
->   
-> +static inline int vfio_pci_zdev_feat_aif(struct vfio_pci_core_device *vdev,
-> +					 struct vfio_device_feature feature,
-> +					 unsigned long arg)
-> +{
-> +	return -ENOTTY;
-> +}
-> +
->   static inline void vfio_pci_zdev_open(struct vfio_pci_core_device *vdev)
->   {
->   }
-> diff --git a/include/uapi/linux/vfio.h b/include/uapi/linux/vfio.h
-> index b9a75485b8e7..fe3bfd99bf50 100644
-> --- a/include/uapi/linux/vfio.h
-> +++ b/include/uapi/linux/vfio.h
-> @@ -1009,6 +1009,13 @@ struct vfio_device_feature {
->    */
->   #define VFIO_DEVICE_FEATURE_ZPCI_INTERP		(1)
->   
-> +/*
-> + * Provide support for enbaling adapter interruption forwarding for zPCI
-> + * devices.  This feature is only valid for s390x PCI devices.  Data provided
-> + * when setting and getting this feature is further described in vfio_zdev.h
-> + */
-> +#define VFIO_DEVICE_FEATURE_ZPCI_AIF		(2)
-> +
->   /* -------- API for Type1 VFIO IOMMU -------- */
->   
->   /**
-> diff --git a/include/uapi/linux/vfio_zdev.h b/include/uapi/linux/vfio_zdev.h
-> index 575f0410dc66..c574e23f9385 100644
-> --- a/include/uapi/linux/vfio_zdev.h
-> +++ b/include/uapi/linux/vfio_zdev.h
-> @@ -90,4 +90,24 @@ struct vfio_device_zpci_interp {
->   	__u32 fh;		/* Host device function handle */
->   };
->   
-> +/**
-> + * VFIO_DEVICE_FEATURE_ZPCI_AIF
-> + *
-> + * This feature is used for enabling forwarding of adapter interrupts directly
-> + * from firmware to the guest.  When setting this feature, the flags indicate
-> + * whether to enable/disable the feature and the structure defined below is
-> + * used to setup the forwarding structures.  When getting this feature, only
-> + * the flags are used to indicate the current state.
-> + */
-> +struct vfio_device_zpci_aif {
-> +	__u64 flags;
-> +#define VFIO_DEVICE_ZPCI_FLAG_AIF_FLOAT 1
-> +#define VFIO_DEVICE_ZPCI_FLAG_AIF_HOST 2
-
-Generaly it looks good to me but I miss some explanation on these flags.
-
-Which makes me realize that a more complete documentation under 
-Documentation/S390 for VFIO zPCI as we have for VFIO AP and VFIO CCW 
-would be of great interest.
-
-
-> +	__u64 ibv;		/* Address of guest interrupt bit vector */
-> +	__u64 sb;		/* Address of guest summary bit */
-> +	__u32 noi;		/* Number of interrupts */
-> +	__u8 isc;		/* Guest interrupt subclass */
-> +	__u8 sbo;		/* Offset of guest summary bit vector */
-> +};
-> +
->   #endif
+> On 1/19/22 5:53 AM, Andy Shevchenko wrote:
+>> On Tue, Jan 18, 2022 at 10:23 PM Terry Bowman <terry.bowman@amd.com> wrote:
+>>>
+>>> Combine MMIO base address and alternate base address detection. Combine
+>>> based on layout type. This will simplify the function by eliminating
+>>> a switch case.
+>>>
+>>> Move existing request/release code into functions. This currently only
+>>> supports port I/O request/release. The move into a separate function
+>>> will make it ready for adding MMIO region support.
+>>
+>> ...
+>>
+>>> To: Guenter Roeck <linux@roeck-us.net>
+>>> To: linux-watchdog@vger.kernel.org
+>>> To: Jean Delvare <jdelvare@suse.com>
+>>> To: linux-i2c@vger.kernel.org
+>>> To: Wolfram Sang <wsa@kernel.org>
+>>> To: Andy Shevchenko <andy.shevchenko@gmail.com>
+>>> To: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+>>> Cc: linux-kernel@vger.kernel.org
+>>> Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
+>>> Cc: Robert Richter <rrichter@amd.com>
+>>> Cc: Thomas Lendacky <thomas.lendacky@amd.com>
+>>
+>> Same comment to all your patches.
+> 
+> Ok. I'll reduce the patches' to/cc list to only contain maintainers owning
+> the current patch. I prefer to leave the lengthy list in the cover letter
+> if that is ok because it will not be added to the tree but will provide
+> context this series has multiple systems and may need communication
+> between maintainers. I'll use the -to & -cc commandline as you mentioned to
+> send to the longer list of recipients without cluttering the patch. Let me
+> know if you prefer otherwise.
+>>
+>> ...
+>>
+>>> +static int __sp5100_tco_prepare_base(struct sp5100_tco *tco,
+>>> +                                    u32 mmio_addr,
+>>> +                                    const char *dev_name)
+>>> +{
+>>> +       struct device *dev = tco->wdd.parent;
+>>
+>>> +       int ret = 0;
+>>
+>> Not really used variable.
+> 
+> Yes, I'll remove 'ret' and set hardcoded 0 return value below.
+> 
+>>
+>>> +       if (!mmio_addr)
+>>> +               return -ENOMEM;
+>>> +
+>>> +       if (!devm_request_mem_region(dev, mmio_addr,
+>>> +                                   SP5100_WDT_MEM_MAP_SIZE,
+>>> +                                   dev_name)) {
+>>> +               dev_dbg(dev, "MMIO address 0x%08x already in use\n",
+>>> +                       mmio_addr);
+>>> +               return -EBUSY;
+>>> +       }
+>>> +
+>>> +       tco->tcobase = devm_ioremap(dev, mmio_addr,
+>>> +                                   SP5100_WDT_MEM_MAP_SIZE);
+>>> +       if (!tco->tcobase) {
+>>> +               dev_dbg(dev, "MMIO address 0x%08x failed mapping.\n",
+>>> +                       mmio_addr);
+>>
+>>> +               devm_release_mem_region(dev, mmio_addr,
+>>> +                                       SP5100_WDT_MEM_MAP_SIZE);
+>>
+>> Why? If it's a short live mapping, do not use devm.
+> 
+> This region isn't short lived. This is a region request for the
+> WDT registers used through the lifetime of the driver.
+>                                                                                  
+> The short lived mapping you may be thinking of is in
+> sp5100_tco_setupdevice_mmio() from patch 3. The first register in
+> this region is FCH::PM::DECODEEN and is used to setup the mmio_addr
+> and alt_mmio_addr MMIO (longterm) regions.
+> 
+>>
+>>> +               return -ENOMEM;
+>>> +       }
+>>
+>>> +       dev_info(dev, "Using 0x%08x for watchdog MMIO address\n",
+>>> +                mmio_addr);
+>>
+>> Unneeded noise.
+> 
+> This was present pre-series. The current driver dmesg output with default
+> logging settings is:
+> 
+> dmesg | grep -i sp5100
+> [    8.508515] sp5100_tco: SP5100/SB800 TCO WatchDog Timer Driver
+> [    8.525172] sp5100-tco sp5100-tco: Using 0xfeb00000 for watchdog MMIO address
+> [    8.539912] sp5100-tco sp5100-tco: initialized. heartbeat=60 sec (nowayout=0)
+> 
+> I'll remove the dev_info.
+> 
+>>
+>>> +       return ret;
+>>
+>> On top of above it's a NIH devm_ioremap_resource().
+> 
+> I'm not familiar with NIH term. My friends google and grep weren't much help.
+> 
+>>
+>>> +}
+>>
+>>
+>> ...
+>>
+>>> +       int ret = 0;
+>>
+>> Redundant assignment.
+> 
+> Thanks. I'll leave the variable but remove the 0 assignment in the definition.
+> 
+>>
+>> ...
+>>
+>>> +       /* Check MMIO address conflict */
+>>> +       ret = __sp5100_tco_prepare_base(tco, mmio_addr, dev_name);
+>>
+>>> +
+>>> +       /* Check alternate MMIO address conflict */
+>>
+>> Unify this with the previous comment.
+> 
+> Ok
+> 
+>>
+>>> +       if (ret)
+>>> +               ret = __sp5100_tco_prepare_base(tco, alt_mmio_addr,
+>>> +                                               dev_name);
+>>
+>> ...
+>>
+>>> +               if (alt_mmio_addr & ((SB800_ACPI_MMIO_DECODE_EN |
+>>> +                                     SB800_ACPI_MMIO_SEL) !=
+>>> +                                    SB800_ACPI_MMIO_DECODE_EN)) {
+>>
+>> The split looks ugly. Consider to use temporary variables or somehow
+>> rearrange the condition that it doesn't break in the middle of the one
+>> logical token.
+> 
+> I'll try splitting at the '&' as Guenter mentioned in other email.
+> 
+>>
+>>> +                       alt_mmio_addr &= ~0xFFF;
+>>
+>> Why capital letters?
+> 
+> This was already present pre-series. I'll change to lowercase to make it
+> consistent with the other constants in the file.
+> 
+>>
+>>> +                       alt_mmio_addr += SB800_PM_WDT_MMIO_OFFSET;
+>>> +               }
+>>
+>> ...
+>>
+>>> +               if (!(alt_mmio_addr & (((SB800_ACPI_MMIO_DECODE_EN |
+>>> +                                      SB800_ACPI_MMIO_SEL)) !=
+>>> +                     SB800_ACPI_MMIO_DECODE_EN))) {
+>>
+>> Ditto.
+> 
+> My understanding is #defines should be capitalized. No?
 > 
 
--- 
-Pierre Morel
-IBM Lab Boeblingen
+I think that Ditto referred to the line split comment.
+
+Guenter
+
+>>
+>>> +                       alt_mmio_addr &= ~0xFFF;
+>>
+>> Ditto.
+> 
+> Another uppercase constant I will make lowercase.
+> 
+>>
+>>> +                       alt_mmio_addr += SB800_PM_WDT_MMIO_OFFSET;
+>>
+>> ...
+>>
+>> Okay, I see this is the original code like this... Perhaps it makes
+>> sense to reshuffle them (indentation-wise) at the same time and
+>> mention this in the changelog.
+>>
+>> ...
+>>
+>>>          release_region(SP5100_IO_PM_INDEX_REG, SP5100_PM_IOPORTS_SIZE);
+>>
+>> Is it still needed? I have no context to say if devm_iomap() and this
+>> are not colliding, please double check the correctness.
+>>
+> 
+> Yes, this is needed. The release/request in sp5100_tco_setupdevice() is
+> for the non-efch mmio layout cases. It is using port I/O registers to
+> detect mmio_addr, alt_mmio_addr, and configure the device.
+> 
+> Regards,
+> Terry Bowman
+> 
+
