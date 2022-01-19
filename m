@@ -2,184 +2,372 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46622C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 22:03:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3370C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 22:03:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357500AbiASWC6 (ORCPT
+        id S1357508AbiASWDa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 17:02:58 -0500
-Received: from mail-co1nam11on2098.outbound.protection.outlook.com ([40.107.220.98]:60257
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1357493AbiASWCs (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 17:02:48 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XgP1xJNwYY36ukf6slmSIdp0f5XrQTR0mtEQUTEK2Wq08PzuLgdL1MOXv3aekvSzekEk7FFl0TH1WNhMEM79si2YfsOhhfmW08JcYEBX/SsLjkmI8qr4EoUpaYh/W3jszUldVcYkD+WujJQ8tyxWiiwbUXuYCs5WZFuAmiKJESevB7A00Eq9S1RWYxnkOEDoMuEOdUR8EVXgjdk7SpcX5fMBbvbKy8N4IkqndLw9aIDMCifIVe9VQl0LLHnieKW37d7TC7Sw6ThQ5BsX6hCvsy29kAKvyT+c1ilTumsBeWYYBpkAH6R70cHuK3iRzoT7OKEpKb8Kwv4onNbgFUH1Ww==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=WWEXYbhvC8XDOj0ATKa+LRTI+R0SW2aRl5jrxlVPcm0=;
- b=fK4x7Dr+zgT0OZK+YRIEKzUGkbnB2Z6dQhBU1rMNb6oa07cefWgz4EUegb87utuFlLl7cJDHMk3luDVMSpSKbIUuj47zHL7L1PJY3SeKOnghi3Ju+nljCtB+7GQifgO9yn6PjNWi+IVpj09dlhLnjjTq9nvRU710pvbX3nLn4IJfIwmYVMveOhvEAeyO9plmlWSRRHaovPf9QH3KYqhEOVBEKrRIVVbwF05U+25byIqGqDjq6bN8/mUlErOh4iDIXwsQjZIvJUdanRxtgJ0nV2ZUe/BMZoW9fxZoHp+tyqXDZdOiE6lHGmwme75E6/c2bSMDL3hhC/agMSullTpTkg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WWEXYbhvC8XDOj0ATKa+LRTI+R0SW2aRl5jrxlVPcm0=;
- b=T+Ke6Daej0euApcROD+0nGwYQd79mcjbUhEWmJK22AK2aMOHk+KBHiyd6Ux+5EXu0wjJ5Yapf3vKfrhMYxNfyrRiLtGGVWse+vlFyCDkStRt/XdRlPlOa9uC5rhSPezWhsKqi+H04Hfmpmy5R/ejOJ8NBLAej/RdEsxdiHTQL9Y=
-Received: from CY4PR21MB1586.namprd21.prod.outlook.com (2603:10b6:910:90::10)
- by MW2PR2101MB1836.namprd21.prod.outlook.com (2603:10b6:302:f::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4930.6; Wed, 19 Jan
- 2022 22:02:46 +0000
-Received: from CY4PR21MB1586.namprd21.prod.outlook.com
- ([fe80::b508:1cc:47b2:db82]) by CY4PR21MB1586.namprd21.prod.outlook.com
- ([fe80::b508:1cc:47b2:db82%2]) with mapi id 15.20.4930.004; Wed, 19 Jan 2022
- 22:02:46 +0000
-From:   "Michael Kelley (LINUX)" <mikelley@microsoft.com>
-To:     Yanming Liu <yanminglr@gmail.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        Andres Beltran <lkmlabelt@gmail.com>,
-        Dexuan Cui <decui@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>
-Subject: RE: [PATCH] Drivers: hv: balloon: account for vmbus packet header in
- max_pkt_size
-Thread-Topic: [PATCH] Drivers: hv: balloon: account for vmbus packet header in
- max_pkt_size
-Thread-Index: AQHYDXIgf59ESjND6UqsAXR4+IxhUaxq5O9w
-Date:   Wed, 19 Jan 2022 22:02:46 +0000
-Message-ID: <CY4PR21MB1586251D6DBFFC5E4816F638D7599@CY4PR21MB1586.namprd21.prod.outlook.com>
-References: <20220119202052.3006981-1-yanminglr@gmail.com>
-In-Reply-To: <20220119202052.3006981-1-yanminglr@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=48490d1b-7275-4411-b1b7-397aebffb8e0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2022-01-19T22:00:04Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=microsoft.com;
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 16e24cbf-e5bc-4fd4-f173-08d9db976d31
-x-ms-traffictypediagnostic: MW2PR2101MB1836:EE_
-x-ms-exchange-atpmessageproperties: SA|SL
-x-microsoft-antispam-prvs: <MW2PR2101MB1836C8DBAA4D83B7C6BE789CD7599@MW2PR2101MB1836.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1388;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Prw3l43oL4HxTvh+1aqmfXsjvxClnd32115wz33ZRanrZqRDmvb+nMPkrHecQIQ0eDs4XV0ElQEBkIJqMRLSMrNdfJfWzFpqK7UP9Wd3UqdiGgGQ4S3dCp/oql+nfl9l3iQxXhEWSEEgmDEMf608GcCsrkXy7htcDYZcNYZhzxxv3S+3MruV7DuXOrIUZeEDzOvYC3eovgIr1bJkbGxRNO3xMeto51nQpJv5tHFx6H4QnJ+dESOT+StcnwZf1M0HDjkeRe/HCGeRqr66SdsnQDIPcsDvaMFxOiuJDag7npOt2jMDw7Noz7HaB2INs3AJHVg9cDZARZ/EqqYZqNUc6R5RuovrvDp50ORpCj2/tg1j0bhE+WgkNce0phSGwXtB/zzCRFq4xqj3A3BXsA5WW6Kn8jISXCAS8GqwcMRXMC2p4KmHZ16n5WCjyaSFO1LZxuTyFj34xWeAQjjW1BmHCQTWmrbs85n7RMdgRAAOQeaQvjNuTlsU7acXagEFa6A0vWSIAkDuCOZytLLGcgkMUNVti4zZcsVwc+PzwA/FrzRkNmS6Upx1o4iKmQzcq3VxdfDKthKofWA8qFFQklk2gbyNhFOcsmgMHoOJeURNj6eVo/+EkeIlmYQyMhX6Pmbef+CRF6lJOn2dmLm05eP+v5r7jZFrheaw2HvqVoGrsjV/kSH5RqTMtpq4Lj7GNvOqAi+xic5x+XpgbLcYz6lVerP0WJVTklUDgo27qshG2WZS34bpho9fI0fB+pXMDDm5jsr8ju9NmUO5ufQUyrogq88Kv8EswvhmFWpUAkB6Y4C9GweNguPqRwOo1VC1Ecqj6Blruj39YRrRCbovMEqmdg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR21MB1586.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38070700005)(5660300002)(52536014)(8676002)(122000001)(316002)(38100700002)(76116006)(54906003)(110136005)(82950400001)(82960400001)(4326008)(2906002)(15650500001)(8990500004)(6506007)(71200400001)(33656002)(7696005)(55016003)(66946007)(9686003)(86362001)(8936002)(83380400001)(66446008)(64756008)(66476007)(186003)(508600001)(26005)(107886003)(10290500003)(66556008)(966005)(20210929001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?nXqXei7vf7F0aObRcvflVp5U/hdbfMIEFuDeKzLSJ/iV+tu9inDKVyZof8y6?=
- =?us-ascii?Q?ooneSP933Px7M7VMVNIfSLRBlnZxn6ge+zbiL4bY0ieMJiQTyBdb+QSKKAvA?=
- =?us-ascii?Q?W7oJYaG70FmZ0c2nGXtGGa73QDSfkVFX9oyjZnIlK4vqt0m6kTYudPGpyubG?=
- =?us-ascii?Q?yNQS8/6RHsEJ0/22R3dpPogZbB8vX9Jo2uKEYMnY+NH/LkiUSOBWfmoxukVK?=
- =?us-ascii?Q?4rlaRTROMnRQ9DYpLNvl6ZmmXvQH2t4HIzZA1TV9JmyqyXrQCxiozQJ9L/B+?=
- =?us-ascii?Q?4yg5qvBeyDzUvw5913EmH08hZqZyvNnHaiI1Jr6hreTMJdzMzJ852GYVIvJl?=
- =?us-ascii?Q?8O8dafI77vouecjbcOUc0SysKnASM4KavxSHXLle/DIkDRsmX4d8DVwx4fkJ?=
- =?us-ascii?Q?F0kVxFzAs84lK36uOk1goyvAkanVspjvKwhoddN3hm8RUBhFYI4iUIt6rRiM?=
- =?us-ascii?Q?v6G70rRcbW7VQ1EOAD++58++mdWKdJ5pWJiP7Yw4348SWdsO97WHUGgY7+Dc?=
- =?us-ascii?Q?2Y1thF0LYk1iLrEgiZ8kfGwXnIvR3vGqMo5M/7AzJfV5hrecfAnf7fOYZJmp?=
- =?us-ascii?Q?j8QF/ZGC8oAyy8RHcGT7ucDmUMbaCZYcxbcaJul7rtM+fKU916pPBxB+IbWK?=
- =?us-ascii?Q?jCmmbfEHL5Ndoj/sgVNts1B2Lfr+IV8ZAakcLPlIU5k7I98DRmag4iP8y7BR?=
- =?us-ascii?Q?/bLea/QERTR7h0r2+PFPSbPM1LHl6keKEN3g0LaNxwwLrLHukNBEodmep/GP?=
- =?us-ascii?Q?93yfYjpelS0sHwi2etG/z9R/isNHLhd5Fj4P9hhTRr51jEno+PgacHdrhU8a?=
- =?us-ascii?Q?jJnmIulpeMBtE2qLVD8x403nk+iJ98zJs2ZfbwZ5Yhh3fEdwGRqJK8QG7CaQ?=
- =?us-ascii?Q?6JbGSxCjOjfa1LIq6F7TYoCnnEnEEPvvDH3Z5GBCSK0npsVFMNElSyAYVdny?=
- =?us-ascii?Q?Wj1rSpE/LuOyOJay4TbkYjb6zMp/EDCM3F7wb0Ai0eH4AAjlT6L0Qk8RPUJY?=
- =?us-ascii?Q?It1q2tgEMYdExb269hxiLjjUBMP0uhxkC1cn5BZbjNV71xztUB80MDQ+NR15?=
- =?us-ascii?Q?gek4RsjTZzBL8WitYjT/l21dYcm62f4tXlULHgTVsdx5h7u80g5xz8EYjsI4?=
- =?us-ascii?Q?Vs6fzuJuVimq1ZuEha2vxL1DK9yLNqOQMqjc2dborMblylmMI1MQkVgowqgi?=
- =?us-ascii?Q?wBAPNfjW4Hg3V1VjN479hPhx5+zf8ADxYoxkoKB+X9czfU+y6OCIIt35+Bu3?=
- =?us-ascii?Q?lTe1IiSKnXDXv1kwXDnaW2lKs2wmt4i5TaPwuxvHnd7TkVxDpTTFQ+oxYOy0?=
- =?us-ascii?Q?JcU2DpOMaamP4Q3+PVDd7poIVC8Bint5vX8kpqWSEuje9uzTW+2H0z813G2q?=
- =?us-ascii?Q?Sb18lKrnrLGZT0ILWfqGs4602/vwLBBH7S7BaSfSDeq9nTuxI8SOqKnziMle?=
- =?us-ascii?Q?3F4GUUpdBWL9yymMiXIiBJ4U9vb6e1QI9qlgFPhwifMgJaMTqvSAAIuluisZ?=
- =?us-ascii?Q?mGuRdr9VUkLIJCsLjW2kF7Bw+4xx4vE6EDZxzQJSh2LjvE7AWjmckjzjHHxa?=
- =?us-ascii?Q?akXXBJM9xcbdP7JMlqByrsIQfcP9rqj3jEsVT9IMKqcs3RY4CLXqqzjHzO0t?=
- =?us-ascii?Q?RMW5eLTi0SOMvzo58p+AefMdfF4GPq1YjmP5Cqh/YG+kBej1g0SbnYhJZEwS?=
- =?us-ascii?Q?G5sp+Q=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Wed, 19 Jan 2022 17:03:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36140 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234336AbiASWD3 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 17:03:29 -0500
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65BD5C061574
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 14:03:29 -0800 (PST)
+Received: by mail-io1-xd33.google.com with SMTP id z19so4687652ioj.1
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 14:03:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NL/pg1dblxlbax54UeBJpCZ65dyOrpisAwyXuCNKlGk=;
+        b=RXABIXPCwbZIrjQ3qdZRsZ21f4BQu5BKuFeLDiBnrp1vvweHSaKfPp2T/1pThWRd3/
+         eSq5XJu30yXaAfH4w0Yec0Bprib6Vrhd49tCUytfK+bCsUaZXmvThZhay19X1BczeXUu
+         VDDzMuMQZjPC1ZJSL9sPGm//l4rgKqIvFBOb0LIa/St43la426wF1tUHigYndTgRfJt+
+         urKo7AIZDfTTbushaoKgX/JUqNvGFO6Z61z/ZmtGC6ykXCcYkLgVGGpjXBb1IJtt7bra
+         f3YDY6BKRWJ8A+xoGtVStKUzhIoY+ZaykUYVq8b+C/ipqauhk5LJvE5VsXSye5OnAAUd
+         OaJA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NL/pg1dblxlbax54UeBJpCZ65dyOrpisAwyXuCNKlGk=;
+        b=MhaMvTjs+VzETURcPtgIaKOPyy/Qi3bpvOOXk2R/2DoYiGA3tRBn0rr/qsWw5v/iKu
+         aWaSe/qb4/p0H0JsRjLzZhPOHtSZ3TIptecoXiyO6LUnsj8zwNyThf6pHoMwZ6S91Gut
+         rUE9ewtutCnl/vAYgdnskQKpd9QLnspEA7lZJ0OxXOAET09NaScbMytOoQa9d3GXZmAr
+         I4EXGAnQi+AMx18y2dhZPBhMkH7298X70KntYANKqHNMfBUwMtLV08iBtPgQtdH8ZA6f
+         gxXVGWz/4EhZt4SnQbzmX9UGbYqb9WWhyq8Oo6kpU9++luO6WbcXwgAWpkiG5KVE8c+M
+         R1hg==
+X-Gm-Message-State: AOAM531DKIw4D5eIf18TPxssf1FpteZMMzxF7kbeKFoMw3nDB88oxD46
+        5IXKXlXOdyuq65EUZS3bWGzhrUmOE8Um8HVg8DSYFg==
+X-Google-Smtp-Source: ABdhPJy/hgYqGdRSidYoZaBQC1XUo1IPRz3fDvaJo0Bs/cOTWxTuKkWCcYnj6PnXAk1ew+89qu368do28xBQ6CI32Xw=
+X-Received: by 2002:a02:6289:: with SMTP id d131mr16576881jac.61.1642629808524;
+ Wed, 19 Jan 2022 14:03:28 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CY4PR21MB1586.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 16e24cbf-e5bc-4fd4-f173-08d9db976d31
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jan 2022 22:02:46.6670
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: yO/8g7hUs02NetHMBMvBZQ4fjsK9Fj3QuuLN/WanX8pekqrhixC6nQh/g588H+bDTbHuF+5RLGd2UamKezyAHy6MKdUhm/Pbi0uRzdDEbsM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR2101MB1836
+References: <202201170247.Cir3moOM-lkp@intel.com> <CAJHvVchPpphLefKEOy_C6+0xrGtA3mNCBzQZ3j2i2RgXX3arXQ@mail.gmail.com>
+ <CAJuCfpFEfAxtgCfTU=0Ry6g6c-O4OJypGyE-0M+Ce0TKVSAYqA@mail.gmail.com>
+In-Reply-To: <CAJuCfpFEfAxtgCfTU=0Ry6g6c-O4OJypGyE-0M+Ce0TKVSAYqA@mail.gmail.com>
+From:   Axel Rasmussen <axelrasmussen@google.com>
+Date:   Wed, 19 Jan 2022 14:02:52 -0800
+Message-ID: <CAJHvVciZpSBcQDbqbvwbToo5s2_Q5H2sfr=QAb9UBBWpnD5X-w@mail.gmail.com>
+Subject: Re: [ammarfaizi2-block:google/android/kernel/common/android12-5.4
+ 6517/9999] fs/userfaultfd.c:1519:9: warning: variable 'ioctls_out' set but
+ not used
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     kernel test robot <lkp@intel.com>, llvm@lists.linux.dev,
+        kbuild-all@lists.01.org,
+        "GNU/Weeb Mailing List" <gwml@gnuweeb.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Todd Kjos <tkjos@google.com>, Peter Xu <peterx@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Lokesh Gidra <lokeshgidra@google.com>,
+        Kalesh Singh <kaleshsingh@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yanming Liu <yanminglr@gmail.com> Sent: Wednesday, January 19, 2022 1=
-2:21 PM
->=20
-> Commit adae1e931acd ("Drivers: hv: vmbus: Copy packets sent by Hyper-V
-> out of the ring buffer") introduced a notion of maximum packet size in
-> vmbus channel and used that size to initialize a buffer holding all
-> incoming packet along with their vmbus packet header. hv_balloon uses
-> the default maximum packet size VMBUS_DEFAULT_MAX_PKT_SIZE which matches
-> its maximum message size, however vmbus_open expects this size to also
-> include vmbus packet header. This leads to 4096 bytes
-> dm_unballoon_request messages being truncated to 4080 bytes. When the
-> driver tries to read next packet it starts from a wrong read_index,
-> receives garbage and prints a lot of "Unhandled message: type:
-> <garbage>" in dmesg.
->=20
-> Allocate the buffer with HV_HYP_PAGE_SIZE more bytes to make room for
-> the header.
->=20
-> Fixes: adae1e931acd ("Drivers: hv: vmbus: Copy packets sent by Hyper-V ou=
-t of the
-> ring buffer")
-> Suggested-by: Michael Kelley (LINUX) <mikelley@microsoft.com>
-> Suggested-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-> Signed-off-by: Yanming Liu <yanminglr@gmail.com>
-> ---
-> The patch was "[PATCH v2] hv: account for packet descriptor in maximum
-> packet size". As pointed out by Michael Kelley [1], other hv drivers
-> already overallocate a lot, and hv_balloon is hopefully the only
-> remaining affected driver. It's better to just fix hv_balloon. Patch
-> summary is changed to reflect this new (much smaller) scope.
->=20
-> [1]
-> https://lore.kernel.org/linux-hyperv/CY4PR21MB1586D30C6CEC81EFC37A9848D75=
-99@CY4PR21MB1586.namprd21.prod.outlook.com/
->=20
->  drivers/hv/hv_balloon.c | 7 +++++++
->  1 file changed, 7 insertions(+)
->=20
-> diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
-> index ca873a3b98db..f2d05bff4245 100644
-> --- a/drivers/hv/hv_balloon.c
-> +++ b/drivers/hv/hv_balloon.c
-> @@ -1660,6 +1660,13 @@ static int balloon_connect_vsp(struct hv_device *d=
-ev)
->  	unsigned long t;
->  	int ret;
->=20
-> +	/*
-> +	 * max_pkt_size should be large enough for one vmbus packet header plus
-> +	 * our receive buffer size. Hyper-V sends messages up to
-> +	 * HV_HYP_PAGE_SIZE bytes long on balloon channel.
-> +	 */
-> +	dev->channel->max_pkt_size =3D HV_HYP_PAGE_SIZE * 2;
-> +
->  	ret =3D vmbus_open(dev->channel, dm_ring_size, dm_ring_size, NULL, 0,
->  			 balloon_onchannelcallback, dev);
->  	if (ret)
-> --
-> 2.34.1
+On Wed, Jan 19, 2022 at 1:19 PM Suren Baghdasaryan <surenb@google.com> wrote:
+>
+> On Wed, Jan 19, 2022 at 12:39 PM Axel Rasmussen
+> <axelrasmussen@google.com> wrote:
+> >
+> > Lokesh, I only spent a few moments looking, but my suspicion is that
+> > this is the result of an incomplete backport of these patches to the
+> > Android kernel?
+> >
+> > The UFFDIO_CONTINUE patches introduced ioctls_out since the
+> > computation of it got more complicated, and those same patches also
+> > modified the put_user() on line 1533 here to use ioctls_out. I think
+> > Android backported the first part, but left out the second?
+>
+> The backport https://android-review.googlesource.com/c/kernel/common/+/1652718
+> looks like a mixture of
+> 14819305e09fe4 ("userfaultfd: wp: declare _UFFDIO_WRITEPROTECT
+> conditionally") and f619147104c8 ("userfaultfd: add UFFDIO_CONTINUE
+> ioctl").
+> Not sure why it was done this way, maybe to minimize code changes
+> while backporting.
+> Simplest fix is probably to add __maybe_unused to ioctls_out declaration.
 
-Reviewed-by: Michael Kelley <mikelley@microsoft.com>
+Unfortunately, that doesn't quite do it. That would fix the warning,
+but the code in the original e-mail is still wrong: we incorrectly
+don't report the _UFFDIO_CONTINUE bit, unless we use the value we
+computed in ioctls_out.
 
+>
+> >
+> > On Sun, Jan 16, 2022 at 10:11 AM kernel test robot <lkp@intel.com> wrote:
+> > >
+> > > Hi Axel,
+> > >
+> > > FYI, the error/warning still remains.
+> > >
+> > > tree:   https://github.com/ammarfaizi2/linux-block google/android/kernel/common/android12-5.4
+> > > head:   bdf17ba628090156b539b1474eb5c636eeaf571b
+> > > commit: b69f713e60d03ae448e5c9fd92e5b0b193dea7be [6517/9999] BACKPORT: FROMGIT: userfaultfd: add UFFDIO_CONTINUE ioctl
+> > > config: x86_64-randconfig-a012 (https://download.01.org/0day-ci/archive/20220117/202201170247.Cir3moOM-lkp@intel.com/config)
+> > > compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project c63a3175c2947e8c1a2d3bbe16a8586600705c54)
+> > > reproduce (this is a W=1 build):
+> > >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+> > >         chmod +x ~/bin/make.cross
+> > >         # https://github.com/ammarfaizi2/linux-block/commit/b69f713e60d03ae448e5c9fd92e5b0b193dea7be
+> > >         git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+> > >         git fetch --no-tags ammarfaizi2-block google/android/kernel/common/android12-5.4
+> > >         git checkout b69f713e60d03ae448e5c9fd92e5b0b193dea7be
+> > >         # save the config file to linux build tree
+> > >         mkdir build_dir
+> > >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash
+> > >
+> > > If you fix the issue, kindly add following tag as appropriate
+> > > Reported-by: kernel test robot <lkp@intel.com>
+> > >
+> > > All warnings (new ones prefixed by >>):
+> > >
+> > > >> fs/userfaultfd.c:1519:9: warning: variable 'ioctls_out' set but not used [-Wunused-but-set-variable]
+> > >                    __u64 ioctls_out;
+> > >                          ^
+> > >    1 warning generated.
+> > >
+> > >
+> > > vim +/ioctls_out +1519 fs/userfaultfd.c
+> > >
+> > >   1311
+> > >   1312  static int userfaultfd_register(struct userfaultfd_ctx *ctx,
+> > >   1313                                  unsigned long arg)
+> > >   1314  {
+> > >   1315          struct mm_struct *mm = ctx->mm;
+> > >   1316          struct vm_area_struct *vma, *prev, *cur;
+> > >   1317          int ret;
+> > >   1318          struct uffdio_register uffdio_register;
+> > >   1319          struct uffdio_register __user *user_uffdio_register;
+> > >   1320          unsigned long vm_flags, new_flags;
+> > >   1321          bool found;
+> > >   1322          bool basic_ioctls;
+> > >   1323          unsigned long start, end, vma_end;
+> > >   1324
+> > >   1325          user_uffdio_register = (struct uffdio_register __user *) arg;
+> > >   1326
+> > >   1327          ret = -EFAULT;
+> > >   1328          if (copy_from_user(&uffdio_register, user_uffdio_register,
+> > >   1329                             sizeof(uffdio_register)-sizeof(__u64)))
+> > >   1330                  goto out;
+> > >   1331
+> > >   1332          ret = -EINVAL;
+> > >   1333          if (!uffdio_register.mode)
+> > >   1334                  goto out;
+> > >   1335          if (uffdio_register.mode & ~UFFD_API_REGISTER_MODES)
+> > >   1336                  goto out;
+> > >   1337          vm_flags = 0;
+> > >   1338          if (uffdio_register.mode & UFFDIO_REGISTER_MODE_MISSING)
+> > >   1339                  vm_flags |= VM_UFFD_MISSING;
+> > >   1340          if (uffdio_register.mode & UFFDIO_REGISTER_MODE_WP) {
+> > >   1341                  vm_flags |= VM_UFFD_WP;
+> > >   1342                  /*
+> > >   1343                   * FIXME: remove the below error constraint by
+> > >   1344                   * implementing the wprotect tracking mode.
+> > >   1345                   */
+> > >   1346                  ret = -EINVAL;
+> > >   1347                  goto out;
+> > >   1348          }
+> > >   1349          if (uffdio_register.mode & UFFDIO_REGISTER_MODE_MINOR) {
+> > >   1350  #ifndef CONFIG_HAVE_ARCH_USERFAULTFD_MINOR
+> > >   1351                  goto out;
+> > >   1352  #endif
+> > >   1353                  vm_flags |= VM_UFFD_MINOR;
+> > >   1354          }
+> > >   1355
+> > >   1356          ret = validate_range(mm, &uffdio_register.range.start,
+> > >   1357                               uffdio_register.range.len);
+> > >   1358          if (ret)
+> > >   1359                  goto out;
+> > >   1360
+> > >   1361          start = uffdio_register.range.start;
+> > >   1362          end = start + uffdio_register.range.len;
+> > >   1363
+> > >   1364          ret = -ENOMEM;
+> > >   1365          if (!mmget_not_zero(mm))
+> > >   1366                  goto out;
+> > >   1367
+> > >   1368          down_write(&mm->mmap_sem);
+> > >   1369          if (!mmget_still_valid(mm))
+> > >   1370                  goto out_unlock;
+> > >   1371          vma = find_vma_prev(mm, start, &prev);
+> > >   1372          if (!vma)
+> > >   1373                  goto out_unlock;
+> > >   1374
+> > >   1375          /* check that there's at least one vma in the range */
+> > >   1376          ret = -EINVAL;
+> > >   1377          if (vma->vm_start >= end)
+> > >   1378                  goto out_unlock;
+> > >   1379
+> > >   1380          /*
+> > >   1381           * If the first vma contains huge pages, make sure start address
+> > >   1382           * is aligned to huge page size.
+> > >   1383           */
+> > >   1384          if (is_vm_hugetlb_page(vma)) {
+> > >   1385                  unsigned long vma_hpagesize = vma_kernel_pagesize(vma);
+> > >   1386
+> > >   1387                  if (start & (vma_hpagesize - 1))
+> > >   1388                          goto out_unlock;
+> > >   1389          }
+> > >   1390
+> > >   1391          /*
+> > >   1392           * Search for not compatible vmas.
+> > >   1393           */
+> > >   1394          found = false;
+> > >   1395          basic_ioctls = false;
+> > >   1396          for (cur = vma; cur && cur->vm_start < end; cur = cur->vm_next) {
+> > >   1397                  cond_resched();
+> > >   1398
+> > >   1399                  BUG_ON(!!cur->vm_userfaultfd_ctx.ctx ^
+> > >   1400                         !!(cur->vm_flags & __VM_UFFD_FLAGS));
+> > >   1401
+> > >   1402                  /* check not compatible vmas */
+> > >   1403                  ret = -EINVAL;
+> > >   1404                  if (!vma_can_userfault(cur, vm_flags))
+> > >   1405                          goto out_unlock;
+> > >   1406
+> > >   1407                  /*
+> > >   1408                   * UFFDIO_COPY will fill file holes even without
+> > >   1409                   * PROT_WRITE. This check enforces that if this is a
+> > >   1410                   * MAP_SHARED, the process has write permission to the backing
+> > >   1411                   * file. If VM_MAYWRITE is set it also enforces that on a
+> > >   1412                   * MAP_SHARED vma: there is no F_WRITE_SEAL and no further
+> > >   1413                   * F_WRITE_SEAL can be taken until the vma is destroyed.
+> > >   1414                   */
+> > >   1415                  ret = -EPERM;
+> > >   1416                  if (unlikely(!(cur->vm_flags & VM_MAYWRITE)))
+> > >   1417                          goto out_unlock;
+> > >   1418
+> > >   1419                  /*
+> > >   1420                   * If this vma contains ending address, and huge pages
+> > >   1421                   * check alignment.
+> > >   1422                   */
+> > >   1423                  if (is_vm_hugetlb_page(cur) && end <= cur->vm_end &&
+> > >   1424                      end > cur->vm_start) {
+> > >   1425                          unsigned long vma_hpagesize = vma_kernel_pagesize(cur);
+> > >   1426
+> > >   1427                          ret = -EINVAL;
+> > >   1428
+> > >   1429                          if (end & (vma_hpagesize - 1))
+> > >   1430                                  goto out_unlock;
+> > >   1431                  }
+> > >   1432
+> > >   1433                  /*
+> > >   1434                   * Check that this vma isn't already owned by a
+> > >   1435                   * different userfaultfd. We can't allow more than one
+> > >   1436                   * userfaultfd to own a single vma simultaneously or we
+> > >   1437                   * wouldn't know which one to deliver the userfaults to.
+> > >   1438                   */
+> > >   1439                  ret = -EBUSY;
+> > >   1440                  if (cur->vm_userfaultfd_ctx.ctx &&
+> > >   1441                      cur->vm_userfaultfd_ctx.ctx != ctx)
+> > >   1442                          goto out_unlock;
+> > >   1443
+> > >   1444                  /*
+> > >   1445                   * Note vmas containing huge pages
+> > >   1446                   */
+> > >   1447                  if (is_vm_hugetlb_page(cur))
+> > >   1448                          basic_ioctls = true;
+> > >   1449
+> > >   1450                  found = true;
+> > >   1451          }
+> > >   1452          BUG_ON(!found);
+> > >   1453
+> > >   1454          if (vma->vm_start < start)
+> > >   1455                  prev = vma;
+> > >   1456
+> > >   1457          ret = 0;
+> > >   1458          do {
+> > >   1459                  cond_resched();
+> > >   1460
+> > >   1461                  BUG_ON(!vma_can_userfault(vma, vm_flags));
+> > >   1462                  BUG_ON(vma->vm_userfaultfd_ctx.ctx &&
+> > >   1463                         vma->vm_userfaultfd_ctx.ctx != ctx);
+> > >   1464                  WARN_ON(!(vma->vm_flags & VM_MAYWRITE));
+> > >   1465
+> > >   1466                  /*
+> > >   1467                   * Nothing to do: this vma is already registered into this
+> > >   1468                   * userfaultfd and with the right tracking mode too.
+> > >   1469                   */
+> > >   1470                  if (vma->vm_userfaultfd_ctx.ctx == ctx &&
+> > >   1471                      (vma->vm_flags & vm_flags) == vm_flags)
+> > >   1472                          goto skip;
+> > >   1473
+> > >   1474                  if (vma->vm_start > start)
+> > >   1475                          start = vma->vm_start;
+> > >   1476                  vma_end = min(end, vma->vm_end);
+> > >   1477
+> > >   1478                  new_flags = (vma->vm_flags & ~__VM_UFFD_FLAGS) | vm_flags;
+> > >   1479                  prev = vma_merge(mm, prev, start, vma_end, new_flags,
+> > >   1480                                   vma->anon_vma, vma->vm_file, vma->vm_pgoff,
+> > >   1481                                   vma_policy(vma),
+> > >   1482                                   ((struct vm_userfaultfd_ctx){ ctx }),
+> > >   1483                                   vma_get_anon_name(vma));
+> > >   1484                  if (prev) {
+> > >   1485                          vma = prev;
+> > >   1486                          goto next;
+> > >   1487                  }
+> > >   1488                  if (vma->vm_start < start) {
+> > >   1489                          ret = split_vma(mm, vma, start, 1);
+> > >   1490                          if (ret)
+> > >   1491                                  break;
+> > >   1492                  }
+> > >   1493                  if (vma->vm_end > end) {
+> > >   1494                          ret = split_vma(mm, vma, end, 0);
+> > >   1495                          if (ret)
+> > >   1496                                  break;
+> > >   1497                  }
+> > >   1498          next:
+> > >   1499                  /*
+> > >   1500                   * In the vma_merge() successful mprotect-like case 8:
+> > >   1501                   * the next vma was merged into the current one and
+> > >   1502                   * the current one has not been updated yet.
+> > >   1503                   */
+> > >   1504                  vma->vm_flags = new_flags;
+> > >   1505                  vma->vm_userfaultfd_ctx.ctx = ctx;
+> > >   1506
+> > >   1507                  if (is_vm_hugetlb_page(vma) && uffd_disable_huge_pmd_share(vma))
+> > >   1508                          hugetlb_unshare_all_pmds(vma);
+> > >   1509
+> > >   1510          skip:
+> > >   1511                  prev = vma;
+> > >   1512                  start = vma->vm_end;
+> > >   1513                  vma = vma->vm_next;
+> > >   1514          } while (vma && vma->vm_start < end);
+> > >   1515  out_unlock:
+> > >   1516          up_write(&mm->mmap_sem);
+> > >   1517          mmput(mm);
+> > >   1518          if (!ret) {
+> > > > 1519                  __u64 ioctls_out;
+> > >   1520
+> > >   1521                  ioctls_out = basic_ioctls ? UFFD_API_RANGE_IOCTLS_BASIC :
+> > >   1522                      UFFD_API_RANGE_IOCTLS;
+> > >   1523
+> > >   1524                  /* CONTINUE ioctl is only supported for MINOR ranges. */
+> > >   1525                  if (!(uffdio_register.mode & UFFDIO_REGISTER_MODE_MINOR))
+> > >   1526                          ioctls_out &= ~((__u64)1 << _UFFDIO_CONTINUE);
+> > >   1527
+> > >   1528                  /*
+> > >   1529                   * Now that we scanned all vmas we can already tell
+> > >   1530                   * userland which ioctls methods are guaranteed to
+> > >   1531                   * succeed on this range.
+> > >   1532                   */
+> > >   1533                  if (put_user(basic_ioctls ? UFFD_API_RANGE_IOCTLS_BASIC :
+> > >   1534                               UFFD_API_RANGE_IOCTLS,
+> > >   1535                               &user_uffdio_register->ioctls))
+> > >   1536                          ret = -EFAULT;
+> > >   1537          }
+> > >   1538  out:
+> > >   1539          return ret;
+> > >   1540  }
+> > >   1541
+> > >
+> > > ---
+> > > 0-DAY CI Kernel Test Service, Intel Corporation
+> > > https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> >
