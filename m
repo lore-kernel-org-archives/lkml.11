@@ -2,84 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C11BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 19:12:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC93C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 19:13:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237228AbiASTMj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 14:12:39 -0500
-Received: from mga03.intel.com ([134.134.136.65]:63578 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236679AbiASTMe (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 14:12:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642619554; x=1674155554;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=a7kJT8WZQ6q10SnbggD7Ch7bg5HxbpRC2T1+XzhMwz4=;
-  b=HHQos8U4yHshUsoSHQ2w6GSHCLdOXCt0C1UJWLIQiOCT6tEuKyjbovaR
-   Nbn52kizGtEYr/H7uEtPNf8pAZaMRXjjYiLqFXiTYYgEVbv1AWTzIXWP3
-   H02qnOsqv0+Bo0i7exzeixAMapVHnfd6DrfOqwG8hhhEHIHklFdLXEI6s
-   7h4MV0Dx+rJar234Wr6Z9GIelzMTFkQKgmgDJxh/caGMGMgOqnOkpWm/H
-   yEHfF0rQxPls59y8aTxuyLm4zD1jfSFdjk+U+fpGgKazP9RAHT0J9/MPK
-   vFyWh1Dpvjn1C9mFj2cIsVlFkPlCTDpYUTIu50P3x1/Ef5oCwUws+OvCH
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="245119140"
-X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
-   d="scan'208";a="245119140"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 10:39:41 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
-   d="scan'208";a="518286091"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 19 Jan 2022 10:39:39 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nAFru-000Dh1-TV; Wed, 19 Jan 2022 18:39:38 +0000
-Date:   Thu, 20 Jan 2022 02:38:48 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [ardb:for-kernelci 10/36] ld.lld: error: undefined symbol:
- generic_handle_arch_irq
-Message-ID: <202201200205.1qfWfUJ7-lkp@intel.com>
+        id S237244AbiASTNy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 19 Jan 2022 14:13:54 -0500
+Received: from out01.mta.xmission.com ([166.70.13.231]:35552 "EHLO
+        out01.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230121AbiASTNx (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 14:13:53 -0500
+Received: from in02.mta.xmission.com ([166.70.13.52]:46500)
+        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nAGP0-004pU3-MY; Wed, 19 Jan 2022 12:13:50 -0700
+Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:45716 helo=email.froward.int.ebiederm.org.xmission.com)
+        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.93)
+        (envelope-from <ebiederm@xmission.com>)
+        id 1nAGOz-006ccZ-Aj; Wed, 19 Jan 2022 12:13:50 -0700
+From:   "Eric W. Biederman" <ebiederm@xmission.com>
+To:     Valentin Schneider <valentin.schneider@arm.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
+        Dietmar Eggemann <dietmar.eggemann@arm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Vincent Guittot <vincent.guittot@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Alexey Gladkov <legion@kernel.org>,
+        "Kenta.Tada@sony.com" <Kenta.Tada@sony.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Ed Tsai <ed.tsai@mediatek.com>, linux-api@vger.kernel.org
+References: <20220117164633.322550-1-valentin.schneider@arm.com>
+        <20220117164633.322550-3-valentin.schneider@arm.com>
+        <878rve89cc.fsf@email.froward.int.ebiederm.org>
+        <878rvd6jgu.mognet@arm.com>
+        <87h7a06hkr.fsf@email.froward.int.ebiederm.org>
+        <875yqf7eq4.mognet@arm.com>
+Date:   Wed, 19 Jan 2022 13:13:42 -0600
+In-Reply-To: <875yqf7eq4.mognet@arm.com> (Valentin Schneider's message of
+        "Wed, 19 Jan 2022 18:38:43 +0000")
+Message-ID: <87fspj7d3t.fsf@email.froward.int.ebiederm.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-XM-SPF: eid=1nAGOz-006ccZ-Aj;;;mid=<87fspj7d3t.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
+X-XM-AID: U2FsdGVkX1+oSM1ZuUDl1IfWlCLn1yiB3bjw4dARZ6s=
+X-SA-Exim-Connect-IP: 68.110.24.146
+X-SA-Exim-Mail-From: ebiederm@xmission.com
+Subject: Re: [PATCH v2 2/2] sched/tracing: Add TASK_RTLOCK_WAIT to TASK_REPORT
+X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
+X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git for-kernelci
-head:   d2dc6a5332403ee74fe236e13ee12eb472028523
-commit: b101e912429f59169f78d933ba2b7e546b3af4c0 [10/36] ARM: remove old-style irq entry
-config: arm-randconfig-r023-20220117 (https://download.01.org/0day-ci/archive/20220120/202201200205.1qfWfUJ7-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project f7b7138a62648f4019c55e4671682af1f851f295)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install arm cross compiling tool for clang build
-        # apt-get install binutils-arm-linux-gnueabi
-        # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/commit/?id=b101e912429f59169f78d933ba2b7e546b3af4c0
-        git remote add ardb git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git
-        git fetch --no-tags ardb for-kernelci
-        git checkout b101e912429f59169f78d933ba2b7e546b3af4c0
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
+Valentin Schneider <valentin.schneider@arm.com> writes:
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+> On 18/01/22 12:10, Eric W. Biederman wrote:
+>> Valentin Schneider <valentin.schneider@arm.com> writes:
+>>>
+>>> Alternatively, TASK_RTLOCK_WAIT could be masqueraded as
+>>> TASK_(UN)INTERRUPTIBLE when reported to userspace - it is actually somewhat
+>>> similar, unlike TASK_IDLE vs TASK_UNINTERRUPTIBLE for instance. The
+>>> handling in get_task_state() will be fugly, but it might be preferable over
+>>> exposing a detail userspace might not need to be made aware of?
+>>
+>> Right.
+>>
+>> Frequently I have seen people do a cost/benefit analysis.
+>>
+>> If the benefit is enough, and tracking down the userspace programs that
+>> need to be verified to work with the change is inexpensive enough the
+>> change is made.  Always keeping in mind that if something was missed and
+>> the change causes a regression the change will need to be reverted.
+>>
+>> If there is little benefit or the cost to track down userspace is great
+>> enough the work is put in to hide the change from userspace.  Just
+>> because it is too much trouble to expose it to userspace.
+>>
+>> I honestly don't have any kind of sense about how hard it is to verify
+>> that a userspace regression won't result from a change like this.  I
+>> just know that the question needs to be asked.
+>>
+>
+> I see it as: does it actually make sense to expose a new state? All the
+> information this is conveying is: "this task took a lock that is
+> substituted by a sleepable lock under PREEMPT_RT". Now that you brought
+> this up, I don't really see much value in this vs just conveying that the
+> task is sleeping on a lock, i.e. just report the same as if it had gone
+> through rt_mutex_lock(), aka:
 
-All errors (new ones prefixed by >>):
+That seems reasonable to me.
 
->> ld.lld: error: undefined symbol: generic_handle_arch_irq
-   >>> referenced by kernel/entry-armv.o:(__irq_svc) in archive arch/arm/built-in.a
-   >>> referenced by kernel/entry-armv.o:(__irq_usr) in archive arch/arm/built-in.a
+Eric
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>
+> ---
+> diff --git a/include/linux/sched.h b/include/linux/sched.h
+> index d00837d12b9d..ac7b3eef4a61 100644
+> --- a/include/linux/sched.h
+> +++ b/include/linux/sched.h
+> @@ -1626,6 +1626,14 @@ static inline unsigned int __task_state_index(unsigned int tsk_state,
+>  	if (tsk_state == TASK_IDLE)
+>  		state = TASK_REPORT_IDLE;
+>  
+> +	/*
+> +	 * We're lying here, but rather than expose a completely new task state
+> +	 * to userspace, we can make this appear as if the task had gone through
+> +	 * a regular rt_mutex_lock() call.
+> +	 */
+> +	if (tsk_state == TASK_RTLOCK_WAIT)
+> +		state = TASK_UNINTERRUPTIBLE;
+> +
+>  	return fls(state);
+>  }
+>  
