@@ -2,94 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60E80C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 09:20:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 241F8C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 09:22:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353022AbiASJU2 (ORCPT
+        id S1353031AbiASJWl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 04:20:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58548 "EHLO
+        Wed, 19 Jan 2022 04:22:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59054 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352755AbiASJUZ (ORCPT
+        with ESMTP id S240025AbiASJWj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 04:20:25 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8136FC06173E
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 01:20:25 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id z22so8060344edd.12
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 01:20:25 -0800 (PST)
+        Wed, 19 Jan 2022 04:22:39 -0500
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92860C061574;
+        Wed, 19 Jan 2022 01:22:39 -0800 (PST)
+Received: by mail-qv1-xf36.google.com with SMTP id kl12so2225763qvb.5;
+        Wed, 19 Jan 2022 01:22:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CrKLop8goJNAb7F3nsn024T54b0Rb1lNYvD3dS3QIUg=;
-        b=IysqV66EW2ES4sCLHdqMGUXBEuQJc4fTU3SXkhhXKLiMJAWtXrH5G+5FT/Jm4oauK1
-         OndgKqCg0VKgwrpn9LiBUfoANaWFs71Hu8FjcSLktWZFpxHzkgN4PdgqA7jeuFABJwhw
-         AI3KoA629xhfoZN9ioXEHjbTTG8OtmtEmxIb8=
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=se5ucCO0oyTzoXmYtox819ARwwa/m5alJiXr+YgpVhM=;
+        b=I6uWg5Coo9QxsY3HVeB/+Ro1TUOk4pGTb7PU02YmHBHCPf/x3xgQGcI/b0qui/XT1D
+         hsRVmXkOKDFf9RZJVhlJLrlBYtzjf3DQTi98P/1AD8WBhTIsK4G+Kzy3Yt+sxTqli0Ok
+         MHDiCkpkRdk1f0q6FbLrr6RGMgIHT/1+i1mqKZf/RaTvJMQAR63yPUqbeL8P3TSPahVW
+         xqTRp8JmYEGY8wwX/WYNmya/vOv+0Cn0otsSM7dGvb8Dru/lwZhUBLpR6ea8/3lMdMWF
+         Ptrx3cF/mX3eRYgxujNn1BrzEtEMAQ09sQetUTaLiivHZRcdPCIwqu1OU33ymVcxjVyL
+         +EKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CrKLop8goJNAb7F3nsn024T54b0Rb1lNYvD3dS3QIUg=;
-        b=gJLDV+YGe1WMPqnT3ZU6BCf4scajScHoBScVKrkGI7JV11VVccbT4+p9kPKZ2HqBR3
-         8OE0r7JqGs6TLA2GZ1nGBLowUXeAdHoft62NbU5iRW0W2xfrxc0y5Bz9l06rM8aVe809
-         gGzTLsl1f9UblQYiyT7Ph1/szxVMaNzlBaFtBYdzr2ci1XElhaFA1IBOSaB3RGkNdcn9
-         8IRP90eySgdIS5Il6ATuv8HbaXt+1NIZThDScQ17IarR1Rz7N6Qspgo7GKa8BndtfVqC
-         /0wRkQhgYSWrXwRf7wjDVkYymHyXPSfV4CfynlFnZh8SsVwp8VREtRD40pXD3YjuYfMD
-         JPkg==
-X-Gm-Message-State: AOAM531BDkRRW7lJWSLZgHO5A6ZCSmt7kQh1ERrmHnd1HcjZYUoqTBDN
-        Af+Pcvl9uqtjmjPUvTsT4T0lj/KG1c13yZJ18gw=
-X-Google-Smtp-Source: ABdhPJxja0fUzwvLzt+AtxFc8CGANqUwEO7eM+NHLAUywlmMjxKeRD+cyW8N/0AgWxrnk037PANwSw==
-X-Received: by 2002:a17:906:5d05:: with SMTP id g5mr23681005ejt.61.1642584023847;
-        Wed, 19 Jan 2022 01:20:23 -0800 (PST)
-Received: from mail-wm1-f42.google.com (mail-wm1-f42.google.com. [209.85.128.42])
-        by smtp.gmail.com with ESMTPSA id qa35sm6112220ejc.67.2022.01.19.01.20.23
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Jan 2022 01:20:23 -0800 (PST)
-Received: by mail-wm1-f42.google.com with SMTP id v123so4004788wme.2
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 01:20:23 -0800 (PST)
-X-Received: by 2002:a5d:5582:: with SMTP id i2mr3756654wrv.442.1642584022918;
- Wed, 19 Jan 2022 01:20:22 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=se5ucCO0oyTzoXmYtox819ARwwa/m5alJiXr+YgpVhM=;
+        b=liMe/9ysz450xiFZgBoCdwX3IrtXYjfhX2JM//sEtA9YyYBZnxx7X7xPodysTjyFnF
+         TF1g4vL6WrUMxNqj8bLJOVSOXja9zJuJeYsaS5VK21yK/uMRSUW4YD/qMbAj84Q90P1n
+         n482ekU8j4aAYRBoP7hutzhaHqXaHbu7mDkU/fVdjnuOkq2tu8oBp9owkM5EwlhN7wPX
+         ZzDUH8Qi19rZle0EBGWqA7hMdcIckHv3fEB26x0cG94svch0nMreVPKu/hCCDfdcZUYZ
+         6OzkjQ2rwmvGMS7VB+KCNZO+XWuAti4xi1CeI/9E7vdgbncTEpToBos/53eKapCkqnmP
+         UZKg==
+X-Gm-Message-State: AOAM531034vL4k0ZRIJt0o2h4DxBhWO9KiSJBT1Vdshw7A4Fb3bMIQtm
+        hqB4cNKddG3++1IviyI/REI=
+X-Google-Smtp-Source: ABdhPJyAS0C27DUT1bw9th8Vlf/LhPLR3j4srG7dayF2ccrWuGNvtLUztesUKefrFffn0+ZPY7LlZA==
+X-Received: by 2002:a05:6214:2a4d:: with SMTP id jf13mr25479853qvb.94.1642584158837;
+        Wed, 19 Jan 2022 01:22:38 -0800 (PST)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id u6sm11956222qki.129.2022.01.19.01.22.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Jan 2022 01:22:38 -0800 (PST)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: chi.minghao@zte.com.cn
+To:     damien.lemoal@opensource.wdc.com
+Cc:     cgel.zte@gmail.com, chi.minghao@zte.com.cn, jejb@linux.ibm.com,
+        linux-kernel@vger.kernel.org, linux-scsi@vger.kernel.org,
+        martin.petersen@oracle.com, zealci@zte.com.cn
+Subject: Re: [PATCH] drivers/scsi/csiostor: do not sleep with a spin lock held
+Date:   Wed, 19 Jan 2022 09:22:33 +0000
+Message-Id: <20220119092233.932270-1-chi.minghao@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <9f5428b2-4d36-29a1-ef1a-d544cec25bd7@opensource.wdc.com>
+References: <9f5428b2-4d36-29a1-ef1a-d544cec25bd7@opensource.wdc.com>
 MIME-Version: 1.0
-References: <CAK7LNAShL3dfQ0Ter2avCvGPjrd0YTJau-S4+8rJyWXmu0tG0Q@mail.gmail.com>
-In-Reply-To: <CAK7LNAShL3dfQ0Ter2avCvGPjrd0YTJau-S4+8rJyWXmu0tG0Q@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 19 Jan 2022 11:20:06 +0200
-X-Gmail-Original-Message-ID: <CAHk-=wiizVi7p_VbaXgKxSne9fAEqNR8F_ivx95_2mkGOxxPqg@mail.gmail.com>
-Message-ID: <CAHk-=wiizVi7p_VbaXgKxSne9fAEqNR8F_ivx95_2mkGOxxPqg@mail.gmail.com>
-Subject: Re: [GIT PULL] Kbuild updates for v5.17-rc1
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 9:43 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
->
-> You will see a trivial conflict in scripts/link-vmlinux.sh
-> (commit 72b3942a173c in the mainline
-> vs 7d153696e5db from this PR)
-> The fix is available in linux-next.
-
-The resolution in linux-next seems to be wrong.
-
-It missed a new case of
-
-        if [ -n "${CONFIG_SLS}" ]; then
-
-in scripts/link-vmlinux.sh, which no longer works after commit
-7d153696e5db ("kbuild: do not include include/config/auto.conf from
-shell scripts").
-
-That needed to be converted to
-
-        if is_enabled CONFIG_SLS; then
-
-too.
-
-I think that was the only case. Knock wood.
-
-             Linus
+Sorry, GFP_ATOMIC&__GFP_DIRECT_RECLAIM are indeed false
