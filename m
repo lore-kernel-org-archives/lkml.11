@@ -2,113 +2,148 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 392DBC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 15:56:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F289C43217
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 15:56:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355981AbiASP4B (ORCPT
+        id S1355999AbiASP4G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 10:56:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37066 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237164AbiASPz7 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 10:55:59 -0500
-Received: from mail-oo1-xc30.google.com (mail-oo1-xc30.google.com [IPv6:2607:f8b0:4864:20::c30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B36CEC061574;
-        Wed, 19 Jan 2022 07:55:59 -0800 (PST)
-Received: by mail-oo1-xc30.google.com with SMTP id l7-20020a4a2707000000b002dde197c749so853806oof.10;
-        Wed, 19 Jan 2022 07:55:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=aSGUAl3gocAm+DLJ0aQCnbcEeJnsi/wUpekX13IHCuo=;
-        b=fOyNg4qcUt37pe7laWsmJ8fvNB0XmoDH2Mnynw/z/yiAIkeF9QGVcvVKHDh0CATJts
-         zO5iGRvLbyoJTlKkDb0qC2HqFADSFpf2c9tngfm67w5NUC+9WHmTuDLyY9dIx8JI4wcj
-         R6V/jy2GJKkgOyQEtcdR+lbPAtOh+jdCFpVnqTgid5j6cALrz+Fmd3raXSkpA5gqUmRi
-         YFTuf9Cqd09aQyjvX8yccM1BLzP0Q1K+iBxPbBxNraBAlC09a+0+FFxIrVxaKWZ5mFWF
-         X07qRou0GjQ94bld8IDC3F5eFMPKCi3qP3lXFhRlWhwfAAV2Y2/UaHJWBAnmFKo76Oij
-         DpbQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:to:cc:references:from:subject:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=aSGUAl3gocAm+DLJ0aQCnbcEeJnsi/wUpekX13IHCuo=;
-        b=z3WYPaMZgMQLK7DLVDe7CybDbiqdIy7x7jDkRcDK+lc/KzXtUEsF1SGf8KzJ0batM3
-         aS43hAAz1BxiY2ZCdm3b3h1cxDNqfbPyCNDO6UG2ksKQFLy8HdXKkrPHstiCXbhgUw6a
-         5+SzxG8Sk8ugMzGJ/QR7Mnv5y7h1DQ4pqHhNOyUfhsoJztSRggPitpTRxWAtsLxrcbT0
-         33BGNI5jjRYNoORLBY2+H39C7uGKe3I1LMZUZDLTC6bj2kqx9vefxBV0889LGCnS1e6V
-         rcr7QVnTRJkPPKtVk6bFfxlMDJoYF4J0ZNYyp+5d5LxnOH1Sa0ZFkrgptv2JB7Ks2uMv
-         43fA==
-X-Gm-Message-State: AOAM532nYg75ZgtyUZqEfOZ1h2fp0w7CmDjs9PQ/+tLsLAcqjnbC/t1B
-        dG1ZA1RfqPIWPmTZ96dS1Xw=
-X-Google-Smtp-Source: ABdhPJwVX9iXytkWG/lvP0m/HVAdUHyAlz8jdPDfjrDOPS01ehS+jf00fWaTpgkNwzul7ep+I3Zeng==
-X-Received: by 2002:a4a:3851:: with SMTP id o17mr22448953oof.6.1642607759105;
-        Wed, 19 Jan 2022 07:55:59 -0800 (PST)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id t14sm8853466oth.81.2022.01.19.07.55.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Jan 2022 07:55:58 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-To:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        NeilBrown <neilb@suse.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        stable <stable@vger.kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>
-References: <20220118160452.384322748@linuxfoundation.org>
- <CA+G9fYvJaFVKu24oFuR1wGFRe4N2A=yxH6ksx61bunfR9Y3Ejw@mail.gmail.com>
- <CAHk-=whJjHXGeVnVPmC8t_+Rie5N1tarrzsttECEh5efbXYUuA@mail.gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH 5.16 00/28] 5.16.2-rc1 review
-Message-ID: <45b72e1b-d98b-ba4e-fc08-ab7b122d69ef@roeck-us.net>
-Date:   Wed, 19 Jan 2022 07:55:55 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Wed, 19 Jan 2022 10:56:06 -0500
+Received: from mout.gmx.net ([212.227.17.22]:53475 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1355991AbiASP4E (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 10:56:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1642607743;
+        bh=YI7Q13xa1667GBXT2yWDs/SWe72Hu8X9+CPfpHuc99A=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=RC+x85sZczSRAQWVSK8ejYomi/BNayTf6lz+afsU5eO7YusQ2ncqCoHFNxMxUjvR0
+         vAmlv6UFbjP6YNbPtfZxEYMgcq8L5c4+XOMDfx318IGA5xu4rr1WyWIgNHoaWnrIV/
+         YOf1IiGj08Q29S2whMs79fIBCln49zZ4sBicRPO8=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.183.52]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1M72sJ-1nEKR61YVT-008d9h; Wed, 19
+ Jan 2022 16:55:43 +0100
+Message-ID: <40d39363-bae8-93f2-71c6-7d5531f144bf@gmx.de>
+Date:   Wed, 19 Jan 2022 16:54:35 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAHk-=whJjHXGeVnVPmC8t_+Rie5N1tarrzsttECEh5efbXYUuA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH 2/2] Revert "fbcon: Disable accelerated scrolling"
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+To:     Daniel Vetter <daniel@ffwll.ch>,
+        Sven Schnelle <svens@stackframe.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Sam Ravnborg <sam@ravnborg.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Claudio Suarez <cssk@net-c.es>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Gerd Hoffmann <kraxel@redhat.com>
+References: <20220119110839.33187-1-deller@gmx.de>
+ <20220119110839.33187-3-deller@gmx.de> <Yef0j8+DBbwC7Kjv@kroah.com>
+ <Yef15k2GtC40aJEu@kroah.com>
+ <CAMuHMdVWFJEDwjf-htZ_D1484efmuPnz_L-qhcTeUE-GVpvZXA@mail.gmail.com>
+ <4d8950c7-5f51-ca2b-4c93-741c7805a214@gmx.de>
+ <CAHk-=wikFKjwdUBWCLCu=iL3rFq4BDDF0aBGdXC6ay74yJb+5Q@mail.gmail.com>
+ <CAKMK7uEb53iu_HxYSnFZ59j=vXQdMvTWT7xosEo85XkAwzDMnA@mail.gmail.com>
+ <8735ljkboo.fsf@x1.stackframe.org>
+ <CAKMK7uHHF22+MBz5D2kBv07X2BR76UDi2-JP7eO-f=nm-pymcw@mail.gmail.com>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <CAKMK7uHHF22+MBz5D2kBv07X2BR76UDi2-JP7eO-f=nm-pymcw@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:2z0TYX9D3a0a7Bay37UHJF18IENXDzXFGI/rMc7qUMCnERrLHXu
+ 9R0jxsNowo9md+SFIj73tzJAjebZpZS64c7i7Q8tU1il0PCTOt2HV7jfJjJHUznf9pO6/ml
+ OCm7TtXAy7Oa1Yh46JU4VVNQ8Z7Bj5i/59YTFRRyj8m7BLXQTb5su9A/fd+8bXSu66a0LGn
+ ooDTr7eLMAua5vXEINtCA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:T6BME9pdjQI=:tOIf66w0c6tKIjq1IicbBO
+ aPMVUZDDlBJrLWD8XkXldQuAUYwKDyOcKPYTqUoQHitI5+Sw0rkgOgjT3fvbNx1psgTqc3SQf
+ 55fa841sVz9lVwIqAK5+lZrRMiMIvVM9bdrjvDypEquCQjtzVJyossFPsi2/TW4FULy7I0GQA
+ pXMuGM0oNOkf4Dk5G8WKAvyUBt3/43puLz7rWkhjpzi2QbS15QTXG+3TF6UxO8IWrinDhimeb
+ ZxTNTBHSRPCsoUoxm62mH9q0N+Re4c10RfaSWN+BC/BOxMv+fJlAu9jGhxTZIMAVB/C6Kr5Zj
+ bClr46VFt0J9aqfNy788OWsiEkP8W1K4yZKZmCX77oDIsoTJk14EWX3s/zFtlyuUYaoFH3/Qx
+ W4vJhQEprkk3nDuRclolD3Uxsd6drmXavOucrzoYBnQaktFP58dID0q9NjSUimcd44986mnAN
+ GdByH7Oss5tSQwQDragzNc85Ym9/31yIqGihIoZFQqBIfhmKNJTI1T4B/Sz6UHtrliIttc2ad
+ WRhwPELOu3ypJ4yHVYLXoTufdCbMFtkxRcDdiLLzBgkIlJOlQlfh3BeZHg1Xmf8eShSTTQ+mJ
+ bIOEXS3CpAbwDo1/aWTqhJooWSnTnvWk61HF7EkoLJb7DTNfoMxKlaFPSgef67RMDxsN5hJ3q
+ FFXpZ+UAw2fIKJLVU85EAMGw8wd9pxCcjJ/vYu3bqgMzfKRDHAXCXTjecGok/bz5APIFD9eBn
+ T/13dg+ChWvz7S40E+XGeV/hqhKfJdnW1yGsmTcMhvB0wz8diP/BEw+uy/ZM8qp61sqz2cRZ6
+ XGxLwzKaz3ccLJNm6c3zZ6zFPqRcu1n1KpyNfeNmGeY47yB/7F0jbBq3CAuXTj5OqaEKEMku0
+ u+U1EVqV0K3zu2DYxTsliLSKw03amUPypqzNuFKcdFmc9O6QAcWED0B/1JYWqCuq2b71x1ixb
+ y3AXZzA32WUisTTAiL14v5TdN01x3W4zShjuluzP8pz3mO2EvwWqMEzwpkrEDshgHovX+vpmh
+ +kv7ZOT9IzR/GggInaXpodzeysbJAOpA1Pk/bM3hvf0ottZgUFOblptQqCH0CTkaJJN0BBE4y
+ bACFjuhhFAciJE=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/18/22 11:53 PM, Linus Torvalds wrote:
-> On Wed, Jan 19, 2022 at 9:30 AM Naresh Kamboju
-> <naresh.kamboju@linaro.org> wrote:
+On 1/19/22 16:42, Daniel Vetter wrote:
+> On Wed, Jan 19, 2022 at 4:06 PM Sven Schnelle <svens@stackframe.org> wro=
+te:
 >>
->> Inconsistent kallsyms data
-> 
-> This tends to be a "odd build environment" problem, and very very
-> random. Triggered by very particular compiler versions and just some
-> odd code modement details.
-> 
+>> Daniel Vetter <daniel@ffwll.ch> writes:
+>>
+>>> On Wed, Jan 19, 2022 at 3:01 PM Linus Torvalds
+>>> <torvalds@linux-foundation.org> wrote:
+>>> Irrespective of this code being buggy or not buggy I think the bigger
+>>> pictures, and really the reason I want to see as much code ditched
+>>> from the fbdev/fbcon stack as we possible can, are very clear:
+>>>
+>>> - it's full of bugs
+>>> - there's no test coverage/CI to speak of
+>>> - it's very arcane code which is damn hard to understand and fix issue=
+s within
+>>> - the locking is busted (largely thanks to console_lock, and the
+>>> effort to make that reasonable from -rt folks has been slowly creeping
+>>> forward for years).
+>>>
+>>> Iow this subsystem is firmly stuck in the 90s, and I think it's best
+>>> to just leave it there. There's also not been anyone actually capable
+>>> and willing to put in the work to change this (pretty much all actual
+>>> changes/fixes have been done by drm folks anyway, like me having a
+>>> small pet project to make the fbdev vs fbcon locking slightly less
+>>> busted).
+>>
+>> Saying it's stuck in the 90ies, and actively trying to prevent
+>> Helge from taking over maintainership at the same time looks odd.
+>> I think Helge should at least get a chance to fix the issues. If the
+>> state is still the same in a year or so it should be discussed again.
+>
+> You don't need maintainership to fix issues. You need to submit patches.
 
-It happens once in a while depending on the compiler version and
-on how symbols are arranged, and new compiler specific symbols showing up.
-I had submitted a patch a while ago that kept retrying a few more times
-before giving up (that was rejected). We carry a patch in ChromeOS kernels
-which tells us what the offending symbols are in case we see the problem
-in our builds.
+The very first email of this thread is my patch.
+And you just added your comments to this patch.
 
-> I'd suggest doing a completely clean build and disabling ccache, and
-> seeing if that makes it go away.
-> 
+> If otoh you get the maintainership first to be able to cram in reverts
+> without discussions, then it's very backwards.
+I'm working on the Linux kernel since at least 23 years and am a maintaine=
+r of parts of it.
+I know that and would never push something which is controversal without d=
+iscussions.
 
-My experience is that once it starts, it will show up randomly and become
-more and more prevalent over time until almost all builds fail. powerpc
-seems to be affected a lot by this problem, but we have also seen it
-on x86. When that happens, someone has to go in and figure out the
-offending symbol(s) and add it or them to some exception list.
+>>> The other side is that being a maintainer is about collaboration, and
+>>> this entire fbdev maintainership takeover has been a demonstration of
+>>> anything but that. MAINTAINERS entry was a bit confusing since defacto
+>>> drm has been maintaining it for years.
+>>
+>> It was marked as 'Orphaned'. Anyone is free to send a Patch/PR to take
+>> over maintainership. If you have strong opinions about that code (And y=
+ou
+>> obviously have reading your mail, set it to 'maintained' and care about
+>> it. Everything else is just wrong in my opinion.
+>
+> I already added dri-devel so anything we drastically change can be
+> discussed first. If that's indeed not strong enough then yes I can
+> whack in full maintainer entry with a bugfix-only status.
+>
+> But really I try to not create facts with just editing MAINTAINERS
+> first and ask questions later, that's just not a great way to
+> collaborate.
 
-Guenter
+Helge
