@@ -2,106 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85A99C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 04:08:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFC6FC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 04:08:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351501AbiASEIG (ORCPT
+        id S1345389AbiASEIz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 23:08:06 -0500
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:41312 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1351481AbiASEHh (ORCPT
+        Tue, 18 Jan 2022 23:08:55 -0500
+Received: from out162-62-57-87.mail.qq.com ([162.62.57.87]:42919 "EHLO
+        out162-62-57-87.mail.qq.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235242AbiASEIy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 23:07:37 -0500
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20INx5iq012817;
-        Wed, 19 Jan 2022 04:06:19 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type : content-transfer-encoding; s=corp-2021-07-09;
- bh=bGCfCt6vCAi9RXyrfJqfylamdOtbNoBkaaat0IE/Mnw=;
- b=lJnCGbChCBWiNCJ81/oD1H2AgQZqUQa5nCeYEKv3GgIDNnniyAqdpYR6Amtq5UVy85+S
- bSf1F6fc782Zb3Hp+C/dNgfwXSix7WwLstwfNiw/46TSej1TijDQQYxcpVwee5QgPbXs
- 7qRvvqYwp1E1ZgJdwTidvqkrmMa2mDn9jRoaeO55cbOsT0QqUIBAR9kF8p5ggelQCa3G
- c12qT81DvBC9DrU2d50H1hksN5JKryq7e54/MdXUueGoXHOe0qsRXmf5/407TnolSx/k
- mH6KSOS3qms9+4ReTKr2kzH+nGTE/NnAmFSQ7vRhRr/fL6whaOCHGPK4AnnXhPGdKH9a 5A== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dnc4q3wwt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 19 Jan 2022 04:06:19 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20J42AEu091613;
-        Wed, 19 Jan 2022 04:06:18 GMT
-Received: from pps.reinject (localhost [127.0.0.1])
-        by userp3020.oracle.com with ESMTP id 3dkqqpnr7j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 19 Jan 2022 04:06:18 +0000
-Received: from userp3020.oracle.com (userp3020.oracle.com [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 20J46HPx110383;
-        Wed, 19 Jan 2022 04:06:17 GMT
-Received: from ca-mkp.mkp.ca.oracle.com (ca-mkp.ca.oracle.com [10.156.108.201])
-        by userp3020.oracle.com with ESMTP id 3dkqqpnr68-1;
-        Wed, 19 Jan 2022 04:06:17 +0000
-From:   "Martin K. Petersen" <martin.petersen@oracle.com>
-To:     sreekanth.reddy@broadcom.com, mchehab@kernel.org, mdf@kernel.org,
-        mpe@ellerman.id.au, mporter@kernel.crashing.org, hch@infradead.org,
-        bhelgaas@google.com, airlied@linux.ie,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        benh@kernel.crashing.org, ink@jurassic.park.msu.ru,
-        davem@davemloft.net, akpm@linux-foundation.org, hao.wu@intel.com,
-        vkoul@kernel.org, sathya.prakash@broadcom.com, paulus@samba.org,
-        trix@redhat.com, arnd@arndb.de, yilun.xu@intel.com,
-        suganath-prabu.subramani@broadcom.com, alex.bou9@gmail.com,
-        awalls@md.metrocast.net, rth@twiddle.net, mattst88@gmail.com
-Cc:     "Martin K . Petersen" <martin.petersen@oracle.com>,
-        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        linux-alpha@vger.kernel.org, linux-fpga@vger.kernel.org,
-        MPT-FusionLinux.pdl@broadcom.com, linux-media@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-pci@vger.kernel.org,
-        linux-scsi@vger.kernel.org, dmaengine@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [PATCH 00/16] Remove usage of the deprecated "pci-dma-compat.h" API
-Date:   Tue, 18 Jan 2022 23:06:09 -0500
-Message-Id: <164256513502.31841.5177778968152773786.b4-ty@oracle.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
-References: <cover.1641500561.git.christophe.jaillet@wanadoo.fr>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
-X-Proofpoint-GUID: kv-6XMqJc6gHKjMkAhgWOkvxgVt6FLHh
-X-Proofpoint-ORIG-GUID: kv-6XMqJc6gHKjMkAhgWOkvxgVt6FLHh
+        Tue, 18 Jan 2022 23:08:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foxmail.com;
+        s=s201512; t=1642565330;
+        bh=Ql6j9PlAhOVvskyZmZUI53Opsdpkfj/d0GifJtIn9R8=;
+        h=From:To:Cc:Subject:Date;
+        b=eoJc+5YSKIw3L/9EzV0Xn9QIlT5gxn73zp+Y2g8xcjHnKqnWvZzU5kNTo6/R/zl7V
+         NVaN0eUGKVDDOib8HY5KkZDGTbHBS39MBclQTWA/iFL5fhVp+bioBlaG5Om5uMleog
+         YSQkjgMuskcTFBqbSs5Kc6Oy84LVQNHV+Hxk1/Lc=
+Received: from localhost.localdomain ([124.204.76.123])
+        by newxmesmtplogicsvrszc6.qq.com (NewEsmtp) with SMTP
+        id D4D1A6FE; Wed, 19 Jan 2022 11:53:13 +0800
+X-QQ-mid: xmsmtpt1642564393t6guz7zmq
+Message-ID: <tencent_5DA124DA30164B8C65F2406B34E193F70A09@qq.com>
+X-QQ-XMAILINFO: Mdw6+lqugK2CPiBgJlaJuwIPch7TgmoeikF7cM27REIhxqARxAyu5JsyLhEQ/U
+         NNCg0/2wPTPufA1pIbk0XUkzf3GF4ZZcVPZ5BJHOtHz+xcHtF8EaXL4zK4DXsG84L9Fscsv59ZWp
+         po8qFs7aiYW8pQy8yAIY9qtByY86cqJNQX/DClmKuQCX2mBb4MfbQ0Fm09QvK+01w2oMlgvbdfeM
+         ecARXHqxWqkwt5Al77bzZqvJKA9024Ga7NVjImOaNKWFEcsDiTEatoHiI3pnOY/FOSr0EcQt7cIn
+         Y6mR/MIThJgreRIzbZspbApztcgCqcOOnGuJDsjT8kqopWFIvDzidE841kIxD9i4HMfnS3SCn6A1
+         nlec+F6j53JS+A6lHEyJc4xTCICVOj/e0d+3dDZf9XCK+iFtWdWEwKCIYpg5YMaDYWkMSgScMIbX
+         H2/XVZ56rVBz5PgQi87rIAjgbtD07EzugG28Rs7HoXqUEhKfJVERLVxgIsl/3LLq44egM6/8GiEy
+         Lki32Ktzz1/qBs8tpF50TV1wQCia8/j50kP9uxZlYYXZf/HWVAUoOVXuDpmwJtAyBvHkjgyvJZLU
+         W7ak6VitUAsyumXHfE6Sg8Zg3OtVyfMDfY6dy/50q6wdXzozVehO97PpzKnQ37K3Y5Sx4tY686R+
+         wTLJK7tUCsHJFOo8IXoxN/gEqP+CwWasWuFFJLDIaxPA0MNJ1St/LiJg61EbeFrCMaiHVc8vLhq9
+         sh/dWoQvZjRr0g2LFGJg2zpuXIBHL7tES6Z1je4kKMcWWeU1W8F3hwArFkjAO6Pyfyp9LjRIHl7e
+         N/u9dhOFlXZYYWANv9AbbkULa/2SG2h32yyt0076ZDc0HUaFXseOU0fy4Hx+1GS2E=
+From:   elicec@foxmail.com
+To:     sre@kernel.org
+Cc:     linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Hong Peng <elicec@foxmail.com>
+Subject: [PATCH] power: supply: ab8500_charger: fix spelling typo
+Date:   Wed, 19 Jan 2022 11:53:01 +0800
+X-OQ-MSGID: <20220119035301.29862-1-elicec@foxmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 6 Jan 2022 22:45:13 +0100, Christophe JAILLET wrote:
+From: Hong Peng <elicec@foxmail.com>
 
-> This serie axes all the remaining usages of the deprecated "pci-dma-compat.h"
-> API.
-> 
-> All these patches have already been posted.
-> 
-> They have been generated with a coccinelle script.
-> The tricky parts are patches that use dma_alloc_coherent() because the correct
-> GFP flag has to be used in place of the previous embedded GFP_ATOMIC.
-> 
-> [...]
+fix the comment typo: "interrupts", "structcure"
 
-Applied to 5.17/scsi-queue, thanks!
+Signed-off-by: Hong Peng <elicec@foxmail.com>
+---
+ drivers/power/supply/ab8500_charger.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-[10/16] scsi: message: fusion: Remove usage of the deprecated "pci-dma-compat.h" API
-        https://git.kernel.org/mkp/scsi/c/b114dda6f2f1
-[11/16] scsi: mptbase: Use dma_alloc_coherent() in 'mpt_alloc_fw_memory()'
-        https://git.kernel.org/mkp/scsi/c/2d50607260a6
-[12/16] scsi: mptbase: Use dma_alloc_coherent()
-        https://git.kernel.org/mkp/scsi/c/5c5e6b6f61e0
-[13/16] scsi: mptsas: Use dma_alloc_coherent() in mptsas_exp_repmanufacture_info()
-        https://git.kernel.org/mkp/scsi/c/7a960b3a5e37
-[14/16] scsi: mptsas: Use dma_alloc_coherent()
-        https://git.kernel.org/mkp/scsi/c/76a334d756c5
-[15/16] scsi: mptctl: Use dma_alloc_coherent()
-        https://git.kernel.org/mkp/scsi/c/706dc3b91989
-
+diff --git a/drivers/power/supply/ab8500_charger.c b/drivers/power/supply/ab8500_charger.c
+index ce074c018dcb..fcf4ed4e35aa 100644
+--- a/drivers/power/supply/ab8500_charger.c
++++ b/drivers/power/supply/ab8500_charger.c
+@@ -171,7 +171,7 @@ enum ab8500_usb_state {
+ 	struct ab8500_charger, ac_chg)
+ 
+ /**
+- * struct ab8500_charger_interrupts - ab8500 interupts
++ * struct ab8500_charger_interrupts - ab8500 interrupts
+  * @name:	name of the interrupt
+  * @isr		function pointer to the isr
+  */
+@@ -1083,7 +1083,7 @@ static int ab8500_vbus_in_curr_to_regval(struct ab8500_charger *di, int curr_ua)
+ 
+ /**
+  * ab8500_charger_get_usb_cur() - get usb current
+- * @di:		pointer to the ab8500_charger structre
++ * @di:		pointer to the ab8500_charger structure
+  *
+  * The usb stack provides the maximum current that can be drawn from
+  * the standard usb host. This will be in uA.
 -- 
-Martin K. Petersen	Oracle Linux Engineering
+2.17.1
+
