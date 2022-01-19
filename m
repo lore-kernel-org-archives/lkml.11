@@ -2,116 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE249C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 15:18:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D675DC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 15:19:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355658AbiASPSK (ORCPT
+        id S1355422AbiASPT0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 10:18:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355645AbiASPSF (ORCPT
+        Wed, 19 Jan 2022 10:19:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:30998 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1345949AbiASPTV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 10:18:05 -0500
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D462C061574
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 07:18:05 -0800 (PST)
-Received: by mail-pg1-x52a.google.com with SMTP id c5so2880889pgk.12
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 07:18:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Kp2JX1puGgzXBsvWu8HbdG09bQuSVyJ347xkXdyu4zM=;
-        b=ZaOoXpvKVo/hhWAxlfGIC4Hk1xJcaYgYgke072IZ/a1xoXNvgiTsIFrkIm391CbNWe
-         rXo3/f6oF4ai4CzsZgsQIdn5xyO5h2SUmwlkA2BWP3pdVw2lYIdh+nfCp00F3gye0UHE
-         sXXsTfTiASjt0LRqtXNbmgE8FuBtcTux/WwiI=
+        Wed, 19 Jan 2022 10:19:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642605560;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=N2Kx/KmSGjwFhe88nJ+Zwktzmmd9oPiPrRk8BrjbT0k=;
+        b=CsFeeIoW6OsABLBjIq+wugJ3RPQjr9KS5vB/cb/j3SL+/HtlOvdxACC33Bl4bn1j3o2R6B
+        aMbPI+/9IgtBRjPZEhfBzbiYaaFn/3mXuZ5kAwpjjDlHfqe7iiFBED9VG7+X8np5k1GPob
+        yBY9uhqg0FB6Fo5pcrGUEgs++wwfktY=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-613-bpy4DYftNKGQvAmB90c-rw-1; Wed, 19 Jan 2022 10:19:19 -0500
+X-MC-Unique: bpy4DYftNKGQvAmB90c-rw-1
+Received: by mail-ed1-f70.google.com with SMTP id er7-20020a056402448700b00402bbb8ce8bso2838562edb.1
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 07:19:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Kp2JX1puGgzXBsvWu8HbdG09bQuSVyJ347xkXdyu4zM=;
-        b=0Ax1ZIXFUDYSaNxgIrUdBOEKXoZKA59L8bCgGAZ9ha7xPGnoyX4KAJa8Dm8J87LztJ
-         aKlFRkgjvFrnP80IbzMD5qAM+T4B2+7ZF0HyRda2gZkOqFyltdiU2cChGnB2n1bimiwl
-         1Uz5Vm/52tdyzwqD+sFakf/isNLM5b/S4A8PypgamV+nBOIbD25UuiAldmKtmSW6uJH9
-         uN5SxDo66QTaKyleJcWtx8O3krmQSPNc6GsvN7U9oa1uwU7O7oIZgF6z0wWjAOlpJeqC
-         v7MZDtqO4xdki6LG2PYPZ+ueRvtAPlzKhzmxUnaotSccRWjcU+Apub49reuzskcFRmPN
-         F/rA==
-X-Gm-Message-State: AOAM532q3O7N0HqvdQnYgeTAeL1K+FhI/bnsv02RkBGjBCs0UyNt5Mvi
-        j6d8Ip0GROy2WAtkuutC4QYCZQ==
-X-Google-Smtp-Source: ABdhPJwq/W/AkvyyrQ2/pwRcgiWGOEiwcnyR4t8Y9k4BxxuoDweqV6ttCqo15/59QA8a3KuadqovyA==
-X-Received: by 2002:a63:317:: with SMTP id 23mr20669854pgd.318.1642605484698;
-        Wed, 19 Jan 2022 07:18:04 -0800 (PST)
-Received: from hsinyi-z840.tpe.corp.google.com ([2401:fa00:1:10:ab3b:7ccf:392:3f04])
-        by smtp.gmail.com with ESMTPSA id ip14sm6731596pjb.11.2022.01.19.07.18.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Jan 2022 07:18:04 -0800 (PST)
-From:   Hsin-Yi Wang <hsinyi@chromium.org>
-To:     Robert Foss <robert.foss@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, Xin Ji <xji@analogixsemi.com>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        dri-devel@lists.freedesktop.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Andrzej Hajda <a.hajda@samsung.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Maxime Ripard <maxime@cerno.tech>
-Subject: [PATCH v5 4/4] dt-bindings: drm/bridge: anx7625: Add aux-bus node
-Date:   Wed, 19 Jan 2022 23:17:51 +0800
-Message-Id: <20220119151751.986185-4-hsinyi@chromium.org>
-X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
-In-Reply-To: <20220119151751.986185-1-hsinyi@chromium.org>
-References: <20220119151751.986185-1-hsinyi@chromium.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:organization:in-reply-to
+         :content-transfer-encoding;
+        bh=N2Kx/KmSGjwFhe88nJ+Zwktzmmd9oPiPrRk8BrjbT0k=;
+        b=KKNbA55XEslJtFtB8t0EC5VfuLoxRFURb98Yrs3KUElSOU0okKIBjy+Hy0kxUEqc86
+         ZxW1cCGBFLc2o1btDpp/Awpj8l8eOit4MAsz/ilQcqk84/73HnwDJhzb7F6gjZSs+/Hk
+         B/XK8yHdFkDlfA6VkgsxIvEmL52a/2XK33FaH/VVJqpUHyfIaLQDxhsGneNQ1gZVPVvw
+         iouvVCOvhwnMyIGwANuTkAiYYaEJKrmrJAECHnKmt83yZvfdfcSfK/+OrFD3NeeJRAi5
+         AEYxvJN8u9RddOHR+NtH0+U/+wy65vQlmxpuABUioZ5rtxMjcm+V/dAXpIqaUTsk8nS7
+         r4Ow==
+X-Gm-Message-State: AOAM530O+o5155ZRLAQ0RxVzGOexn+S1NnnRwvL3RSGmyFZ8jsuSUJGF
+        FLARcJJBqJ7BRRWF0O0AoxMylnfELV3vpNx6lLR0hl5h6wx72/RSUC2+VGy5REcJSn5a4xH3Hfu
+        5d4R4tbwq2JdzKFOHBh/swRxa
+X-Received: by 2002:a05:6402:4244:: with SMTP id g4mr8245396edb.271.1642605557936;
+        Wed, 19 Jan 2022 07:19:17 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxwEg/siCN/Fuz2RHHae7nJJb1hw18MrJypanl3R30CSy8Wu4eUatazRDYz27Q4bdB8Qssimg==
+X-Received: by 2002:a05:6402:4244:: with SMTP id g4mr8245380edb.271.1642605557772;
+        Wed, 19 Jan 2022 07:19:17 -0800 (PST)
+Received: from ?IPV6:2003:cb:c705:fb00:c6c0:1fe6:bfa1:e868? (p200300cbc705fb00c6c01fe6bfa1e868.dip0.t-ipconnect.de. [2003:cb:c705:fb00:c6c0:1fe6:bfa1:e868])
+        by smtp.gmail.com with ESMTPSA id rv9sm9351ejb.216.2022.01.19.07.19.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Jan 2022 07:19:17 -0800 (PST)
+Message-ID: <035dc6b1-28cb-0563-c712-bf57ebbc91e8@redhat.com>
+Date:   Wed, 19 Jan 2022 16:19:16 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v1] proc/vmcore: fix false positive lockdep warning
+Content-Language: en-US
+From:   David Hildenbrand <david@redhat.com>
+To:     Boqun Feng <boqun.feng@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, kexec@lists.infradead.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        Baoquan He <bhe@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Vivek Goyal <vgoyal@redhat.com>,
+        Dave Young <dyoung@redhat.com>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Josh Triplett <josh@joshtriplett.org>,
+        Peter Zijlstra <peterz@infradead.org>
+References: <20220119113702.102567-1-david@redhat.com>
+ <YegpdRBSrkVBrwk3@boqun-archlinux>
+ <ec19d477-a75c-1e5a-1c02-f62c8565f48d@redhat.com>
+Organization: Red Hat
+In-Reply-To: <ec19d477-a75c-1e5a-1c02-f62c8565f48d@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-List panel under aux-bus node if it's connected to anx7625's aux bus.
+On 19.01.22 16:15, David Hildenbrand wrote:
+> On 19.01.22 16:08, Boqun Feng wrote:
+>> Hi,
+>>
+>> On Wed, Jan 19, 2022 at 12:37:02PM +0100, David Hildenbrand wrote:
+>>> Lockdep complains that we do during mmap of the vmcore:
+>>> 	down_write(mmap_lock);
+>>> 	down_read(vmcore_cb_rwsem);
+>>> And during read of the vmcore:
+>>> 	down_read(vmcore_cb_rwsem);
+>>> 	down_read(mmap_lock);
+>>>
+>>> We cannot possibly deadlock when only taking vmcore_cb_rwsem in read
+>>> mode, however, it's hard to teach that to lockdep.
+>>>
+>>
+>> Lockdep warned about the above sequences because rw_semaphore is a fair
+>> read-write lock, and the following can cause a deadlock:
+>>
+>> 	TASK 1			TASK 2		TASK 3
+>> 	======			======		======
+>> 	down_write(mmap_lock);
+>> 				down_read(vmcore_cb_rwsem)
+>> 						down_write(vmcore_cb_rwsem); // blocked
+>> 	down_read(vmcore_cb_rwsem); // cannot get the lock because of the fairness
+>> 				down_read(mmap_lock); // blocked
+>> 	
+>> IOW, a reader can block another read if there is a writer queued by the
+>> second reader and the lock is fair.
+>>
+>> So there is a deadlock possiblity.
+> 
+> Task 3 will never take the mmap_lock before doing a
+> down_write(vmcore_cb_rwsem).
+> 
+> How would this happen?
 
-Signed-off-by: Hsin-Yi Wang <hsinyi@chromium.org>
-Reviewed-by: Xin Ji <xji@analogixsemi.com>
----
- .../display/bridge/analogix,anx7625.yaml        | 17 +++++++++++++++++
- 1 file changed, 17 insertions(+)
+Ah, I get it, nevermind. I'll adjust the patch description.
 
-diff --git a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-index 1d3e88daca041a..0d38d6fe39830f 100644
---- a/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-+++ b/Documentation/devicetree/bindings/display/bridge/analogix,anx7625.yaml
-@@ -83,6 +83,9 @@ properties:
-     type: boolean
-     description: let the driver enable audio HDMI codec function or not.
- 
-+  aux-bus:
-+    $ref: /schemas/display/dp-aux-bus.yaml#
-+
-   ports:
-     $ref: /schemas/graph.yaml#/properties/ports
- 
-@@ -167,5 +170,19 @@ examples:
-                     };
-                 };
-             };
-+
-+            aux-bus {
-+                panel {
-+                    compatible = "innolux,n125hce-gn1";
-+                    power-supply = <&pp3300_disp_x>;
-+                    backlight = <&backlight_lcd0>;
-+
-+                    port {
-+                        panel_in: endpoint {
-+                            remote-endpoint = <&anx7625_out>;
-+                        };
-+                    };
-+                };
-+            };
-         };
-     };
+Thanks!
+
 -- 
-2.34.1.703.g22d0c6ccf7-goog
+Thanks,
+
+David / dhildenb
 
