@@ -2,113 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B13BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 17:33:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A829C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 17:33:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356445AbiASRdb (ORCPT
+        id S1356465AbiASRdi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 12:33:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59284 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356438AbiASRd2 (ORCPT
+        Wed, 19 Jan 2022 12:33:38 -0500
+Received: from mx0b-001ae601.pphosted.com ([67.231.152.168]:19112 "EHLO
+        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1356459AbiASRdg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 12:33:28 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 317CEC061574
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 09:33:28 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id o1-20020a1c4d01000000b0034d95625e1fso1348948wmh.4
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 09:33:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=E5e/gbMD1CI1oNnHoXsVfQit0AqJzsZNFNoMFZIa3yo=;
-        b=WmT8mo/Jdy5x0dloa8gkKdAaIf8hr7M/ebJkJWZ/RWfXSCx+/MARi8gUcqkp0XtFrz
-         rM4cstaSkdu91SBqo5K1zXG+ti72XZ/IUGrNAP1vnrxuXWgBuJAYro2LtQFxLvNWTi2h
-         5ZLXWm28rZ68n3PX5lNuQSmhYOXMThUfK5Yym7fixUJZchEpMDZldGD9byToOQc830RZ
-         ZsQUsTuwqNoAOm7g/BSTjFs/Igm3qC02l+4IiR33HANapb8mfs/42RNpC8utTrfLiEXt
-         m6InW8giQaNDO6owF9gYElq7AsEsiL6GURWMQCvwfB9V+FDTY7KuNjzNK0sjcNIEQTL1
-         2fBA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=E5e/gbMD1CI1oNnHoXsVfQit0AqJzsZNFNoMFZIa3yo=;
-        b=P9uawgcJKT1Jq1bG+mZRKrxV6cVOAjWGTWGdVoxox+0xMGjmFCOsOP4rB50XYi2CzJ
-         49B1e9dhBVnEg7Q97th+5U1qRKKhFJf4e0f7/dB734mbM9pDk/Syc/F9w3xxM4/sorl6
-         9+h9+kFWrsv6UUQYZKR9kXXl2vH8TK1JK7bTxCZC8U25OU8kdjizgl/7sJGnSvF5J9iv
-         TYBtnOJjLhR9fYRDrWPvNQjQ0mJvFNhZoLtlMGllaWnAtV2bYRPKb3BI5vEIM5Mk01Lz
-         Lsrl1CxBHJGS73n58qkoIXkvXPQXiVVziS69+V+dTLME3tKm4LffOtu9pfAeC35ZrS7l
-         aBsw==
-X-Gm-Message-State: AOAM5311F5tLe3b57y3er0L2GM7/kqd0vFnh5hSPrvqYE6LnTyhiabNE
-        djsa80gKF/tx3c2cPn8QkFIynGBg9XQJmUzcAYhWTw==
-X-Google-Smtp-Source: ABdhPJwu7kUqdN9jzIk+hqALXPHegLrqP/weejs07XlgrmOWp0FWwVtOZH3CpffoM+v4k+wrQFDN0VBR42C/FK14AnQ=
-X-Received: by 2002:adf:9dc7:: with SMTP id q7mr6096353wre.148.1642613606589;
- Wed, 19 Jan 2022 09:33:26 -0800 (PST)
+        Wed, 19 Jan 2022 12:33:36 -0500
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20JD9ur7018066;
+        Wed, 19 Jan 2022 11:33:09 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=PODMain02222019;
+ bh=LY8az2HAXRdiK9ynIDy8Pw58Iw4eWpj3/24rUT1e+os=;
+ b=n0QG9BKUv/1pDcuKvySsjS/eXUiHdN6Pa2KnT1oZgNYyDFNO+fwhDORWK1+fqQ7g43bk
+ Fort2dn9nT2QuJEFg7Tz9dFUfhIWfJZX1xBDtdHbWhjiJVS4CH0fSSJgmX2mRwvXPaO9
+ Txx7dhGfVOHBIpWG/BHtarUi4WS365imxDLrMAEOxV0Au4Ibz866GgJYxqHEfX/iq8PT
+ OJzMYlLhdOOMm37xlY8g4r/goafnb6vGYYI+jCPeV4sy8sVXPBkT27mWHh1AuygbeoOg
+ TXSWdobJjzdao/Ls+BZsEf9NaNOXZE0Dojpye0q6p9uC5hzh0eHVPlI4r+4Skvtcwlyp mQ== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3dpk9mg9xg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 19 Jan 2022 11:33:09 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 19 Jan
+ 2022 17:33:07 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
+ Transport; Wed, 19 Jan 2022 17:33:07 +0000
+Received: from [198.61.64.122] (unknown [198.61.64.122])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id B1AA0B13;
+        Wed, 19 Jan 2022 17:33:06 +0000 (UTC)
+Message-ID: <a3522b5e-fb36-b959-d2ea-d141d3ad9999@opensource.cirrus.com>
+Date:   Wed, 19 Jan 2022 17:33:06 +0000
 MIME-Version: 1.0
-References: <20211214204445.665580974@infradead.org> <20211214205358.701701555@infradead.org>
- <20211221171900.GA580323@dev-hv> <YeGEM7TP3tekBVEh@hirez.programming.kicks-ass.net>
- <YeaRx9oDp08ABvyU@hirez.programming.kicks-ass.net> <CAPNVh5cdGiDqut90kUo-HXyya6Nbz_CjuUObYXfprgDhQHnUmg@mail.gmail.com>
- <YefQJXn3x3JJtB1d@hirez.programming.kicks-ass.net>
-In-Reply-To: <YefQJXn3x3JJtB1d@hirez.programming.kicks-ass.net>
-From:   Peter Oskolkov <posk@google.com>
-Date:   Wed, 19 Jan 2022 09:33:15 -0800
-Message-ID: <CAPNVh5eBJB+QDr+gH4DvK1raho0tQx=w_LUFm5Gq7TVijoKrBg@mail.gmail.com>
-Subject: Re: [RFC][PATCH 3/3] sched: User Mode Concurency Groups
-To:     Peter Zijlstra <peterz@infradead.org>
-Cc:     Peter Oskolkov <posk@posk.io>, mingo@redhat.com,
-        tglx@linutronix.de, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-api@vger.kernel.org, x86@kernel.org,
-        pjt@google.com, avagin@google.com, jannh@google.com,
-        tdelisle@uwaterloo.ca
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 05/10] platform/x86: i2c-multi-instantiate: Move it to
+ drivers/acpi folder
+Content-Language: en-US
+To:     "Rafael J. Wysocki" <rafael@kernel.org>,
+        Stefan Binding <sbinding@opensource.cirrus.com>
+CC:     Mark Brown <broonie@kernel.org>, Len Brown <lenb@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        "moderated list:SOUND - SOC LAYER / DYNAMIC AUDIO POWER MANAGEM..." 
+        <alsa-devel@alsa-project.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-spi <linux-spi@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Platform Driver <platform-driver-x86@vger.kernel.org>,
+        <patches@opensource.cirrus.com>
+References: <20220118145251.1548-1-sbinding@opensource.cirrus.com>
+ <20220118145251.1548-6-sbinding@opensource.cirrus.com>
+ <CAJZ5v0g0n201FPcG9LBNG3e4UdNYSWmj_1sN3MxLxmK=GoF+tA@mail.gmail.com>
+From:   Lucas tanure <tanureal@opensource.cirrus.com>
+In-Reply-To: <CAJZ5v0g0n201FPcG9LBNG3e4UdNYSWmj_1sN3MxLxmK=GoF+tA@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-ORIG-GUID: pZTpulefTaRyopYGQrjbyoOJAYlFsx6q
+X-Proofpoint-GUID: pZTpulefTaRyopYGQrjbyoOJAYlFsx6q
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 12:47 AM Peter Zijlstra <peterz@infradead.org> wrote:
->
-> On Tue, Jan 18, 2022 at 10:19:21AM -0800, Peter Oskolkov wrote:
-> > ============= worker-to-worker context switches
-> >
-> > One example: absl::Mutex (https://abseil.io/about/design/mutex) has
-> > google-internal extensions that are "fiber aware". More specifically,
-> > consider this situation:
-> >
-> > - worker W1 acqured the mutex and is doing its work
-> > - worker W2 calls mutex::lock()
-> >   mutex::lock(), being aware of workers, understands that W2 is going to sleep;
-> >   so instead of just doing so, waking the server, and letting
-> >   the server figure out what to run in place of the sleeping worker,
-> > mutex::lock()
-> >   calls into the userspace scheduler in the context of W2 running, and the
-> >   userspace scheduler then picks W3 to run and does W2->W3 context switch.
-> >
-> > The optimization above replaces W2->Server and Server->W3 context switches
-> > with a single W2->W3 context switch, which is a material performance gain.
->
-> Yes, I've also already reconsidered. Things like pipelines and other
-> fixed order scheduling policies will greatly benefit from
-> worker-to-worker switching.
->
-> But I think all of them are explicit. That is, we can limit the
-> ::next_tid usage to sys_umcg_wait() and never look at it for implicit
-> blocks.
+On 1/19/22 16:53, Rafael J. Wysocki wrote:
+> On Tue, Jan 18, 2022 at 3:53 PM Stefan Binding
+> <sbinding@opensource.cirrus.com> wrote:
+>>
+>> From: Lucas Tanure <tanureal@opensource.cirrus.com>
+>>
+>> Moving I2C multi instantiate driver to drivers/acpi folder for
+>> upcoming conversion into a generic bus multi instantiate
+>> driver for SPI and I2C
+>>
+>> Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
+>> Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+> 
+> Why are you moving it away from platform/x86?
+> 
+> Adding SPI to the mix doesn't seem to be a sufficient reason.
+> 
+> If this were going to be needed on non-x86, that would be a good
+> reason for moving it, but is that actually the case?  If so, why isn't
+> that mentioned in the changelog above?
+> 
 
-Yes, of course - when a worker blocks, its server gets notified.
+It was a request made by Andy Shevchenko:
+https://lkml.org/lkml/2021/12/3/347
 
->
-> > In addition, when W1 calls mutex::unlock(), the scheduling code determines
-> > that W2 is waiting on the mutex, and thus calls W2::wake() from the context of
-> > running W1 (you asked earlier why do we need "WAKE_ONLY").
->
-> This I'm not at all convinced on. That sounds like it will violate the
-> 1:1 thing.
+There is no plan to use our CS35L41 HDA with non-x86 platforms and we 
+can't comment about i2c-multi-instantiate use.
+For us it can stay in x86 folder until an actual request.
 
-wake_only is a wakeup event, meaning the worker gets added to the wake
-queue, not scheduled on a CPU; we don't have to implement it in the
-kernel, though - the userspace may keep its own wake queue for workers
-like this. So feel free to ignore this operation.
+Thanks
+Lucas Tanure
+
+
+>> ---
+>>   MAINTAINERS                                           |  2 +-
+>>   drivers/acpi/Kconfig                                  | 11 +++++++++++
+>>   drivers/acpi/Makefile                                 |  1 +
+>>   .../{platform/x86 => acpi}/i2c-multi-instantiate.c    |  0
+>>   drivers/acpi/scan.c                                   |  2 +-
+>>   drivers/platform/x86/Kconfig                          | 11 -----------
+>>   drivers/platform/x86/Makefile                         |  1 -
+>>   7 files changed, 14 insertions(+), 14 deletions(-)
+>>   rename drivers/{platform/x86 => acpi}/i2c-multi-instantiate.c (100%)
+>>
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index 4e828542b089..546f9e149d28 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -392,7 +392,7 @@ ACPI I2C MULTI INSTANTIATE DRIVER
+>>   M:     Hans de Goede <hdegoede@redhat.com>
+>>   L:     platform-driver-x86@vger.kernel.org
+>>   S:     Maintained
+>> -F:     drivers/platform/x86/i2c-multi-instantiate.c
+>> +F:     drivers/acpi/i2c-multi-instantiate.c
+>>
+>>   ACPI PCC(Platform Communication Channel) MAILBOX DRIVER
+>>   M:     Sudeep Holla <sudeep.holla@arm.com>
+>> diff --git a/drivers/acpi/Kconfig b/drivers/acpi/Kconfig
+>> index ba45541b1f1f..2fd78366af6f 100644
+>> --- a/drivers/acpi/Kconfig
+>> +++ b/drivers/acpi/Kconfig
+>> @@ -295,6 +295,17 @@ config ACPI_PROCESSOR
+>>            To compile this driver as a module, choose M here:
+>>            the module will be called processor.
+>>
+>> +config ACPI_I2C_MULTI_INST
+>> +       tristate "I2C multi instantiate pseudo device driver"
+>> +       depends on I2C
+>> +       help
+>> +         Some ACPI-based systems list multiple i2c-devices in a single ACPI
+>> +         firmware-node. This driver will instantiate separate i2c-clients
+>> +         for each device in the firmware-node.
+>> +
+>> +         To compile this driver as a module, choose M here: the module
+>> +         will be called i2c-multi-instantiate.
+>> +
+>>   config ACPI_IPMI
+>>          tristate "IPMI"
+>>          depends on IPMI_HANDLER
+>> diff --git a/drivers/acpi/Makefile b/drivers/acpi/Makefile
+>> index bb757148e7ba..d4db7fb0baf0 100644
+>> --- a/drivers/acpi/Makefile
+>> +++ b/drivers/acpi/Makefile
+>> @@ -104,6 +104,7 @@ obj-$(CONFIG_ACPI_SPCR_TABLE)       += spcr.o
+>>   obj-$(CONFIG_ACPI_DEBUGGER_USER) += acpi_dbg.o
+>>   obj-$(CONFIG_ACPI_PPTT)        += pptt.o
+>>   obj-$(CONFIG_ACPI_PFRUT)       += pfr_update.o pfr_telemetry.o
+>> +obj-$(CONFIG_ACPI_I2C_MULTI_INST)      += i2c-multi-instantiate.o
+>>
+>>   # processor has its own "processor." module_param namespace
+>>   processor-y                    := processor_driver.o
+>> diff --git a/drivers/platform/x86/i2c-multi-instantiate.c b/drivers/acpi/i2c-multi-instantiate.c
+>> similarity index 100%
+>> rename from drivers/platform/x86/i2c-multi-instantiate.c
+>> rename to drivers/acpi/i2c-multi-instantiate.c
+>> diff --git a/drivers/acpi/scan.c b/drivers/acpi/scan.c
+>> index 1331756d4cfc..3e85a02f6ba2 100644
+>> --- a/drivers/acpi/scan.c
+>> +++ b/drivers/acpi/scan.c
+>> @@ -1738,7 +1738,7 @@ static bool acpi_device_enumeration_by_parent(struct acpi_device *device)
+>>           * must be instantiated for each, each with its own i2c_device_id.
+>>           * Normally we only instantiate an i2c-client for the first resource,
+>>           * using the ACPI HID as id. These special cases are handled by the
+>> -        * drivers/platform/x86/i2c-multi-instantiate.c driver, which knows
+>> +        * drivers/acpi/i2c-multi-instantiate.c driver, which knows
+>>           * which i2c_device_id to use for each resource.
+>>           */
+>>                  {"BSG1160", },
+>> diff --git a/drivers/platform/x86/Kconfig b/drivers/platform/x86/Kconfig
+>> index 24deeeb29af2..37c1c150508d 100644
+>> --- a/drivers/platform/x86/Kconfig
+>> +++ b/drivers/platform/x86/Kconfig
+>> @@ -990,17 +990,6 @@ config TOPSTAR_LAPTOP
+>>
+>>            If you have a Topstar laptop, say Y or M here.
+>>
+>> -config I2C_MULTI_INSTANTIATE
+>> -       tristate "I2C multi instantiate pseudo device driver"
+>> -       depends on I2C && ACPI
+>> -       help
+>> -         Some ACPI-based systems list multiple i2c-devices in a single ACPI
+>> -         firmware-node. This driver will instantiate separate i2c-clients
+>> -         for each device in the firmware-node.
+>> -
+>> -         To compile this driver as a module, choose M here: the module
+>> -         will be called i2c-multi-instantiate.
+>> -
+>>   config MLX_PLATFORM
+>>          tristate "Mellanox Technologies platform support"
+>>          depends on I2C && REGMAP
+>> diff --git a/drivers/platform/x86/Makefile b/drivers/platform/x86/Makefile
+>> index c12a9b044fd8..6c7870190564 100644
+>> --- a/drivers/platform/x86/Makefile
+>> +++ b/drivers/platform/x86/Makefile
+>> @@ -110,7 +110,6 @@ obj-$(CONFIG_TOPSTAR_LAPTOP)        += topstar-laptop.o
+>>
+>>   # Platform drivers
+>>   obj-$(CONFIG_FW_ATTR_CLASS)            += firmware_attributes_class.o
+>> -obj-$(CONFIG_I2C_MULTI_INSTANTIATE)    += i2c-multi-instantiate.o
+>>   obj-$(CONFIG_MLX_PLATFORM)             += mlx-platform.o
+>>   obj-$(CONFIG_TOUCHSCREEN_DMI)          += touchscreen_dmi.o
+>>   obj-$(CONFIG_WIRELESS_HOTKEY)          += wireless-hotkey.o
+>> --
+>> 2.25.1
+>>
+
