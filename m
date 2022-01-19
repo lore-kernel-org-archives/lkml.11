@@ -2,109 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72ED9C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 23:00:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D1B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 23:06:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239205AbiASXAW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 18:00:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234447AbiASXAV (ORCPT
+        id S243156AbiASXGh convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 19 Jan 2022 18:06:37 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:17002 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230489AbiASXGg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 18:00:21 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E94AC061574;
-        Wed, 19 Jan 2022 15:00:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=69M6KMphEDIUOUxds36xj+F/fkNqq7cJu1oHQj03tXo=; b=oMSVG2gAzAEGFzNYEkSw1n6ZeN
-        9t2IPI55TogrWuTYu5ev1LLx/5LuLBgyVrxogr4vVdpGsWC3bUzfjE3lRXz/G6wzKc0TlEnNV5UuQ
-        hRx4Le1cwlOx1HUcv+l68rSk/suScwTEvs/LAwTxm4pYpLNLJF146YwvZDHdVpFlcYwJs13lBTZgo
-        YZaMhrn3KbC1scHsGPEzLQpBTZIeHkzbjpWelg0iyi/TmIV6bAIn2WEmfB4uDm/m0vOZgZq2m1cre
-        wRe+LbEHx7e57C/0jZcWrBOdfVSa4d9ZhaPZcB+EnXVodck2bgKV1elQqusOgiTvxBmBvK0zjButG
-        GWZ56x8Q==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nAJw7-00CX3s-6f; Wed, 19 Jan 2022 23:00:15 +0000
-Message-ID: <d7130556-a8a4-76c0-0fde-b6b1439efda6@infradead.org>
-Date:   Wed, 19 Jan 2022 15:00:09 -0800
+        Wed, 19 Jan 2022 18:06:36 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20JIs857030729
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 15:06:35 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dp0x32bw6-4
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 15:06:35 -0800
+Received: from twshared7634.08.ash8.facebook.com (2620:10d:c085:208::f) by
+ mail.thefacebook.com (2620:10d:c085:21d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 19 Jan 2022 15:06:34 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id BB60528220C5F; Wed, 19 Jan 2022 15:06:27 -0800 (PST)
+From:   Song Liu <song@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
+        Song Liu <songliubraving@fb.com>
+Subject: [PATCH v4 bpf-next 1/7] x86/Kconfig: select HAVE_ARCH_HUGE_VMALLOC with HAVE_ARCH_HUGE_VMAP
+Date:   Wed, 19 Jan 2022 15:06:14 -0800
+Message-ID: <20220119230620.3137425-2-song@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220119230620.3137425-1-song@kernel.org>
+References: <20220119230620.3137425-1-song@kernel.org>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH] docs: Update the preferred line size to 100 characters
-Content-Language: en-US
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Joe Perches <joe@perches.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Lucas De Marchi <lucas.demarchi@intel.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-References: <20220119160642.140e84c6@gandalf.local.home>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220119160642.140e84c6@gandalf.local.home>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: oHZNtHzHI1255dt_6tz4z63Q5pKNZnF-
+X-Proofpoint-GUID: oHZNtHzHI1255dt_6tz4z63Q5pKNZnF-
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-19_12,2022-01-19_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 adultscore=0
+ malwarescore=0 spamscore=0 priorityscore=1501 mlxscore=0
+ lowpriorityscore=0 phishscore=0 mlxlogscore=948 suspectscore=0 bulkscore=0
+ impostorscore=0 clxscore=1034 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2110150000 definitions=main-2201190122
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Song Liu <songliubraving@fb.com>
 
+This enables module_alloc() to allocate huge page for 2MB+ requests.
+To check the difference of this change, we need enable config
+CONFIG_PTDUMP_DEBUGFS, and call module_alloc(2MB). Before the change,
+/sys/kernel/debug/page_tables/kernel shows pte for this map. With the
+change, /sys/kernel/debug/page_tables/ show pmd for thie map.
 
-On 1/19/22 13:06, Steven Rostedt wrote:
-> From: "Steven Rostedt (Google)" <rostedt@goodmis.org>
-> 
-> As commit bdc48fa11e46f ("checkpatch/coding-style: deprecate 80-column
-> warning") states:
-> 
->     Increase the default limit to 100 characters.  Not because 100
->     characters is some hard limit either, but that's certainly a "what are
->     you doing" kind of value and less likely to be about the occasional
->     slightly longer lines.
+Signed-off-by: Song Liu <songliubraving@fb.com>
+---
+ arch/x86/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-
-Has Linus has changed his view on this since 2016?
-  https://lore.kernel.org/all/CA+55aFxaOFoh+Zrm5tNhU4hWu4Z032+nqV3vXK=QPJyhZsU3_A@mail.gmail.com/
-
-Guess we will see.
-I expect that the answer is "be reasonable," but that's subjective.
-
-To me, it is easier to look below one line for something in context than it is
-to have to scan several inches to the right and then back to the left (or vice versa).
-Maybe I'm alone in that, but I doubt it.
-It's sort of a locality of vision thing.
-
-
-> It's 2022, people are not using 80x24 terminals anymore (well I'm sure
-> someone is, but they are the small minority).
-> 
-> Signed-off-by: Steven Rostedt (Google) <rostedt@goodmis.org>
-> ---
->  Documentation/process/coding-style.rst | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/process/coding-style.rst b/Documentation/process/coding-style.rst
-> index 03eb53fd029a..73be9edffede 100644
-> --- a/Documentation/process/coding-style.rst
-> +++ b/Documentation/process/coding-style.rst
-> @@ -101,10 +101,10 @@ Get a decent editor and don't leave whitespace at the end of lines.
->  Coding style is all about readability and maintainability using commonly
->  available tools.
->  
-> -The preferred limit on the length of a single line is 80 columns.
-> +The preferred limit on the length of a single line is 100 columns.
->  
-> -Statements longer than 80 columns should be broken into sensible chunks,
-> -unless exceeding 80 columns significantly increases readability and does
-> +Statements longer than 100 columns should be broken into sensible chunks,
-> +unless exceeding 100 columns significantly increases readability and does
->  not hide information.
->  
->  Descendants are always substantially shorter than the parent and
-
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 8910b09b5601..b5d1582ea848 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -158,6 +158,7 @@ config X86
+ 	select HAVE_ALIGNED_STRUCT_PAGE		if SLUB
+ 	select HAVE_ARCH_AUDITSYSCALL
+ 	select HAVE_ARCH_HUGE_VMAP		if X86_64 || X86_PAE
++	select HAVE_ARCH_HUGE_VMALLOC		if HAVE_ARCH_HUGE_VMAP
+ 	select HAVE_ARCH_JUMP_LABEL
+ 	select HAVE_ARCH_JUMP_LABEL_RELATIVE
+ 	select HAVE_ARCH_KASAN			if X86_64
 -- 
-~Randy
+2.30.2
+
