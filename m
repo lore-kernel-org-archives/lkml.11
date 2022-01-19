@@ -2,130 +2,272 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D4FDC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 08:38:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 950E4C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 08:40:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352558AbiASIiv (ORCPT
+        id S1352570AbiASIkI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 03:38:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48916 "EHLO
+        Wed, 19 Jan 2022 03:40:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234435AbiASIiu (ORCPT
+        with ESMTP id S234435AbiASIkF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 03:38:50 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2060C061574
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 00:38:49 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id e81so3059446oia.6
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 00:38:49 -0800 (PST)
+        Wed, 19 Jan 2022 03:40:05 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54E67C061574
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 00:40:05 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id f202-20020a1c1fd3000000b0034dd403f4fbso977874wmf.1
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 00:40:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=H+HNSzwe2ZTaOtHiiQO8OytOOz442JrIOxdrAt7aFUU=;
-        b=IEByE+CQ6rkZeRGMp+8fC4oRZ4PWmLOqOQOxIVEdAwR5YdNCu9EL5XNWjmMopmOzLL
-         pKnP9DGMLENmdx2wCYu6s3TkKun8XKimWjYORLRxSTQmkLXNgIHOTUY0J0A5y24+11OO
-         b21PpKZMW4V2fvuB0prSs9zDJvsiD4F/tT/5e42IKHwVIHcvKzIA5FwZI+rSCVWvdM3T
-         DIATtslDWLJglvB9o4MZMD7KUsNE+8+NcutOTApLedIzJ8+9WZuCCblTQ7eijq35sDRQ
-         cfe86Y9ozCaH9lS9Mn0YVg5wmb5u8Jng173Zlh2M0Fb7+I/H9Y0l8HN1DMrI07crGwaB
-         P8ww==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Ko+bB25CPWuF/Cdu+tkXOHeEGmLNqBJEq8dY/pEJw2Y=;
+        b=VTDBsAJPqvy8JMaOAjB9eBH06Zz4rdHjy32T53T5frR1vZahU7OrRRceaL+fpO10p4
+         cRYgbpX2Cq8t89Kz1xHjoZyJSKsyciUHAmIsKarsKVbcWo2Iw751dURhN0Xum6I7zkzW
+         JG/kOABJqRLKobE8HNM73hv3LkHGquxtaJV+FpL24/gWCqY361CxEnfU/uWqpA+kL2lo
+         7uDw1of2ipQz2mVTfBAJj2UMCMv4NemIqhBrDtePn0/RBSbx19aCYxyirYNRvNwXaB90
+         CyKuvzlL0lXbzc4ZqXnOfxnomswsDlRIQRyiKVQbqu0JwaZUA/T2dsGkHME0KY0aL5l0
+         N2mg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=H+HNSzwe2ZTaOtHiiQO8OytOOz442JrIOxdrAt7aFUU=;
-        b=K6iyViU3FKrAUg5Z8FCQzvfVTGtUaZG/AWi0ypdx4DVMGchB7HmZpzsdiK0ChVN7pV
-         noTXdyUy4Dd4gzBC1Iu649OrSCbcPfyYgJwIST+DMQrylJ8Ihk2tuLo6R4RlmLpJntff
-         22GUuBCsnZ2Zr1p9paMEYe7PrPPvkjouB53vORJwUo00wDN3QxbjsZfSZvmGS4leYAAq
-         G+lPnKCYmqm9lL41IaGNmNWQszMGzpe9gAf3UNWZSbSHFsrw04Wslmy755M8kOCgf2ez
-         QM6BJcCEvD5zsRwVkQXu2Mj2Wqn69Jdk5MbWjSw+lGrUiF0KGDpNOssgyZBnUO/OlBvm
-         guKg==
-X-Gm-Message-State: AOAM533kqigEvR3qngciYaufjr1xoDMMY8xYX1NYG8317CYI3BUQrCtz
-        vbAm/IByZ6IZsvXJd40VxbVGNn3oECYkTq0WeFkv6dOAU3s=
-X-Google-Smtp-Source: ABdhPJygAzNUIEnYu5vx/R0jHToSuA+t9ebw7txi3MfmeQ48MQHurD5GRcSO63Xd2wYiHqMG8lV0bUjQtEzzfzMPUcI=
-X-Received: by 2002:aca:2802:: with SMTP id 2mr1970691oix.23.1642581529167;
- Wed, 19 Jan 2022 00:38:49 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:organization
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=Ko+bB25CPWuF/Cdu+tkXOHeEGmLNqBJEq8dY/pEJw2Y=;
+        b=RgZlRIQi5i9IuCHfJT5osReAawbvW5U9fmVnij5zy0w5NnXMuKE6d4hYEj4wlTjNMc
+         HtJYIjim7nVHLNgonN1YFl2Ke63KgvlBgPUVli4vcciqHR9ZaC9akBydp8w0DdM4xd2q
+         qhFelfq0jPU/0yh7VVsgUhKmkSDMikSR5JJUrnZ73dGTfs4nLSDe5qruMQav9yuuOTBP
+         igP4tAqQxNCtYCq3tULFeHREUanPA3hncHiAi1S3sp0lCXsqio5PJNPs5v8IWOxSbQCE
+         p226BL0bpF80bmXbqTM5LndYRzc3l9dxLjWNTuH3ADS8pPAEcN9GlAb5JJsRdHGast3b
+         oGDg==
+X-Gm-Message-State: AOAM533BFh5ARIpbKLZrWoPh5Z7mMjDknHIKXWj2q+kBvdCbxXuGh96A
+        WLBGPnUXIayz3+WKknRPbHm6PQ==
+X-Google-Smtp-Source: ABdhPJwtSWjyQo0XaG+dpWnZP2dr8x9mQ6InIpglijeqZONVIhKBnA1LHxIiDnWk4/USbXH5XgZb8w==
+X-Received: by 2002:a1c:f302:: with SMTP id q2mr2333072wmq.107.1642581603645;
+        Wed, 19 Jan 2022 00:40:03 -0800 (PST)
+Received: from ?IPv6:2001:861:44c0:66c0:d394:97d0:bc02:3846? ([2001:861:44c0:66c0:d394:97d0:bc02:3846])
+        by smtp.gmail.com with ESMTPSA id x8sm18074431wru.102.2022.01.19.00.40.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Jan 2022 00:40:02 -0800 (PST)
+Subject: Re: [PATCH v2] phy: dphy: Correct clk_pre parameter
+To:     Liu Ying <victor.liu@nxp.com>, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org,
+        linux-rockchip@lists.infradead.org
+Cc:     linux-imx@nxp.com, Andrzej Hajda <andrzej.hajda@intel.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        =?UTF-8?Q?Guido_G=c3=bcnther?= <agx@sigxcpu.org>
+References: <20220119023714.1498508-1-victor.liu@nxp.com>
+From:   Neil Armstrong <narmstrong@baylibre.com>
+Organization: Baylibre
+Message-ID: <28e3f723-daf0-b3c5-ee10-519c4cabfe17@baylibre.com>
+Date:   Wed, 19 Jan 2022 09:40:02 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-References: <388098b2c03fbf0a732834fc01b2d875c335bc49.1642170196.git.lucien.xin@gmail.com>
- <YeO8pcs866Iu2iJX@ip-172-31-30-232.ap-northeast-1.compute.internal>
- <CADvbK_eY=3Gf79MkvK72Nh86ysN4eoFei0k1jg0frg22GgToGA@mail.gmail.com>
- <YeU4B46F+oFUBRLE@linutronix.de> <39a3470f-06ab-cf41-32e4-80edb249c7d3@suse.cz>
- <20220117131304.pdc3mfdowkzovw6q@localhost.localdomain> <CADvbK_eKRNpE7PkdFLQgmfEme5LgEVDK7WakUc-Rj4XTRSpdiQ@mail.gmail.com>
- <f8fa28d4-bf89-39f7-92f9-4d7957e57c2c@suse.cz>
-In-Reply-To: <f8fa28d4-bf89-39f7-92f9-4d7957e57c2c@suse.cz>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Wed, 19 Jan 2022 16:38:37 +0800
-Message-ID: <CADvbK_e-ZcX1Y59dC5ms1gy6y=zbpGggrYyLapvsotnJNN815g@mail.gmail.com>
-Subject: Re: [PATCH] mm: slub: fix a deadlock warning in kmem_cache_destroy
-To:     Vlastimil Babka <vbabka@suse.cz>
-Cc:     Juri Lelli <juri.lelli@redhat.com>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>, linux-mm@kvack.org,
-        Christoph Lameter <cl@linux.com>,
-        Pekka Enberg <penberg@kernel.org>,
-        David Rientjes <rientjes@google.com>,
-        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        Clark Williams <williams@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220119023714.1498508-1-victor.liu@nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 7:07 PM Vlastimil Babka <vbabka@suse.cz> wrote:
->
->
-> On 1/18/22 09:00, Xin Long wrote:
-> > On Mon, Jan 17, 2022 at 9:13 PM Juri Lelli <juri.lelli@redhat.com> wrote:
-> >> >
-> >> > RHEL-8 kernel seems to be 4.18, unless RT uses a newer one. Could be some
-> >> > silently relevant backport is missing? How about e.g. 59450bbc12be ("mm,
-> >> > slab, slub: stop taking cpu hotplug lock") ?
-> >>
-> >> Hummm, looks like we have backported commit 59450bbc12be in RHEL-8.
-> >>
-> >> Xin Long, would you be able to check if you still see the lockdep splat
-> >> with latest upstream RT?
-> >>
-> >> git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git linux-5.16.y-rt
-> > Hi, Juri,
-> >
-> > Thanks for sharing the RT kernel repo.
-> >
-> > I just tried with this kernel, and I couldn't reproduce it on my env.
-> > But I don't see how the upstream RT kernel can avoid the call trace.
-> >
-> > As this warning was triggered when the system was shutting down, it might
-> > not be reproduced on it due to some timing change.
->
-> As it was caught by lockdep and not as a real deadlock, I think it should be
-> indepenedent of a timing change. Lockdep will correlate potentially deadlock
-> scenarios even if they don't really occur in the same time, AFAIK.
->
-> But let's go back to:
->
-> > Although cpu_hotplug_lock is a RWSEM, [a] will not block in there. But as
-> > lockdep annotations are added for cpu_hotplug_lock, a deadlock warning
-> > would be detected:
->
-> Is it possible that upstream lockdep handles this RWSEM scenario properly
-> and doesn't report it, but the RHEL kernel is missing some relevant lockdep fix?
-That's a good point.
+Hi,
 
-I actually think:
-  cpus_read_lock()
-  cpus_read_lock()
-shouldn't be considered as a deadlock.
+On 19/01/2022 03:37, Liu Ying wrote:
+> The D-PHY specification (v1.2) explicitly mentions that the T-CLK-PRE
+> parameter's unit is Unit Interval(UI) and the minimum value is 8.  Also,
+> kernel doc of the 'clk_pre' member of struct phy_configure_opts_mipi_dphy
+> mentions that it should be in UI.  However, the dphy core driver wrongly
+> sets 'clk_pre' to 8000, which seems to hint that it's in picoseconds.
+> And, the kernel doc of the 'clk_pre' member wrongly says the minimum value
+> is '8 UI', instead of 8.
+> 
+> So, let's fix both the dphy core driver and the kernel doc of the 'clk_pre'
+> member to correctly reflect the T-CLK-PRE parameter's unit and the minimum
+> value according to the D-PHY specification.
+> 
+> I'm assuming that all impacted custom drivers shall program values in
+> TxByteClkHS cycles into hardware for the T-CLK-PRE parameter.  The D-PHY
+> specification mentions that the frequency of TxByteClkHS is exactly 1/8
+> the High-Speed(HS) bit rate(each HS bit consumes one UI).  So, relevant
+> custom driver code is changed to program those values as
+> DIV_ROUND_UP(cfg->clk_pre, BITS_PER_BYTE), then.
+> 
+> Note that I've only tested the patch with RM67191 DSI panel on i.MX8mq EVK.
+> Help is needed to test with other i.MX8mq, Meson and Rockchip platforms,
+> as I don't have the hardwares.
+> 
+> Fixes: 2ed869990e14 ("phy: Add MIPI D-PHY configuration options")
+> Cc: Andrzej Hajda <andrzej.hajda@intel.com>
+> Cc: Neil Armstrong <narmstrong@baylibre.com>
+> Cc: Robert Foss <robert.foss@linaro.org>
+> Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
+> Cc: Jonas Karlman <jonas@kwiboo.se>
+> Cc: Jernej Skrabec <jernej.skrabec@gmail.com>
+> Cc: David Airlie <airlied@linux.ie>
+> Cc: Daniel Vetter <daniel@ffwll.ch>
+> Cc: Kishon Vijay Abraham I <kishon@ti.com>
+> Cc: Vinod Koul <vkoul@kernel.org>
+> Cc: Kevin Hilman <khilman@baylibre.com>
+> Cc: Jerome Brunet <jbrunet@baylibre.com>
+> Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Cc: Heiko Stuebner <heiko@sntech.de>
+> Cc: Maxime Ripard <mripard@kernel.org>
+> Cc: Guido Günther <agx@sigxcpu.org>
+> Tested-by: Liu Ying <victor.liu@nxp.com> # RM67191 DSI panel on i.MX8mq EVK
+> Signed-off-by: Liu Ying <victor.liu@nxp.com>
+> ---
+> v1->v2:
+> * Use BITS_PER_BYTE macro. (Andrzej)
+> * Drop dsi argument from ui2bc() in nwl-dsi.c.
+> 
+>  drivers/gpu/drm/bridge/nwl-dsi.c                 | 12 +++++-------
+>  drivers/phy/amlogic/phy-meson-axg-mipi-dphy.c    |  3 ++-
+>  drivers/phy/phy-core-mipi-dphy.c                 |  4 ++--
+>  drivers/phy/rockchip/phy-rockchip-inno-dsidphy.c |  3 ++-
+>  include/linux/phy/phy-mipi-dphy.h                |  2 +-
+>  5 files changed, 12 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/bridge/nwl-dsi.c b/drivers/gpu/drm/bridge/nwl-dsi.c
+> index a7389a0facfb..af07eeb47ca0 100644
+> --- a/drivers/gpu/drm/bridge/nwl-dsi.c
+> +++ b/drivers/gpu/drm/bridge/nwl-dsi.c
+> @@ -7,6 +7,7 @@
+>   */
+>  
+>  #include <linux/bitfield.h>
+> +#include <linux/bits.h>
+>  #include <linux/clk.h>
+>  #include <linux/irq.h>
+>  #include <linux/math64.h>
+> @@ -196,12 +197,9 @@ static u32 ps2bc(struct nwl_dsi *dsi, unsigned long long ps)
+>  /*
+>   * ui2bc - UI time periods to byte clock cycles
+>   */
+> -static u32 ui2bc(struct nwl_dsi *dsi, unsigned long long ui)
+> +static u32 ui2bc(unsigned int ui)
+>  {
+> -	u32 bpp = mipi_dsi_pixel_format_to_bpp(dsi->format);
+> -
+> -	return DIV64_U64_ROUND_UP(ui * dsi->lanes,
+> -				  dsi->mode.clock * 1000 * bpp);
+> +	return DIV_ROUND_UP(ui, BITS_PER_BYTE);
+>  }
+>  
+>  /*
+> @@ -232,12 +230,12 @@ static int nwl_dsi_config_host(struct nwl_dsi *dsi)
+>  	}
+>  
+>  	/* values in byte clock cycles */
+> -	cycles = ui2bc(dsi, cfg->clk_pre);
+> +	cycles = ui2bc(cfg->clk_pre);
+>  	DRM_DEV_DEBUG_DRIVER(dsi->dev, "cfg_t_pre: 0x%x\n", cycles);
+>  	nwl_dsi_write(dsi, NWL_DSI_CFG_T_PRE, cycles);
+>  	cycles = ps2bc(dsi, cfg->lpx + cfg->clk_prepare + cfg->clk_zero);
+>  	DRM_DEV_DEBUG_DRIVER(dsi->dev, "cfg_tx_gap (pre): 0x%x\n", cycles);
+> -	cycles += ui2bc(dsi, cfg->clk_pre);
+> +	cycles += ui2bc(cfg->clk_pre);
+>  	DRM_DEV_DEBUG_DRIVER(dsi->dev, "cfg_t_post: 0x%x\n", cycles);
+>  	nwl_dsi_write(dsi, NWL_DSI_CFG_T_POST, cycles);
+>  	cycles = ps2bc(dsi, cfg->hs_exit);
+> diff --git a/drivers/phy/amlogic/phy-meson-axg-mipi-dphy.c b/drivers/phy/amlogic/phy-meson-axg-mipi-dphy.c
+> index cd2332bf0e31..fdbd64c03e12 100644
+> --- a/drivers/phy/amlogic/phy-meson-axg-mipi-dphy.c
+> +++ b/drivers/phy/amlogic/phy-meson-axg-mipi-dphy.c
+> @@ -9,6 +9,7 @@
+>  
+>  #include <linux/bitfield.h>
+>  #include <linux/bitops.h>
+> +#include <linux/bits.h>
+>  #include <linux/clk.h>
+>  #include <linux/delay.h>
+>  #include <linux/io.h>
+> @@ -250,7 +251,7 @@ static int phy_meson_axg_mipi_dphy_power_on(struct phy *phy)
+>  		     (DIV_ROUND_UP(priv->config.clk_zero, temp) << 16) |
+>  		     (DIV_ROUND_UP(priv->config.clk_prepare, temp) << 24));
+>  	regmap_write(priv->regmap, MIPI_DSI_CLK_TIM1,
+> -		     DIV_ROUND_UP(priv->config.clk_pre, temp));
+> +		     DIV_ROUND_UP(priv->config.clk_pre, BITS_PER_BYTE));
+>  
+>  	regmap_write(priv->regmap, MIPI_DSI_HS_TIM,
+>  		     DIV_ROUND_UP(priv->config.hs_exit, temp) |
 
-I will check the lockdep changes, and it may take some time.
+I'll try to run a test, currently the calculation gives 2, so this would give 1.
 
-Thanks.
+Neil
 
->
-> >>
-> >> Thanks!
-> >> Juri
-> >>
->
+> diff --git a/drivers/phy/phy-core-mipi-dphy.c b/drivers/phy/phy-core-mipi-dphy.c
+> index 288c9c67aa74..ccb4045685cd 100644
+> --- a/drivers/phy/phy-core-mipi-dphy.c
+> +++ b/drivers/phy/phy-core-mipi-dphy.c
+> @@ -36,7 +36,7 @@ int phy_mipi_dphy_get_default_config(unsigned long pixel_clock,
+>  
+>  	cfg->clk_miss = 0;
+>  	cfg->clk_post = 60000 + 52 * ui;
+> -	cfg->clk_pre = 8000;
+> +	cfg->clk_pre = 8;
+>  	cfg->clk_prepare = 38000;
+>  	cfg->clk_settle = 95000;
+>  	cfg->clk_term_en = 0;
+> @@ -97,7 +97,7 @@ int phy_mipi_dphy_config_validate(struct phy_configure_opts_mipi_dphy *cfg)
+>  	if (cfg->clk_post < (60000 + 52 * ui))
+>  		return -EINVAL;
+>  
+> -	if (cfg->clk_pre < 8000)
+> +	if (cfg->clk_pre < 8)
+>  		return -EINVAL;
+>  
+>  	if (cfg->clk_prepare < 38000 || cfg->clk_prepare > 95000)
+> diff --git a/drivers/phy/rockchip/phy-rockchip-inno-dsidphy.c b/drivers/phy/rockchip/phy-rockchip-inno-dsidphy.c
+> index 347dc79a18c1..630e01b5c19b 100644
+> --- a/drivers/phy/rockchip/phy-rockchip-inno-dsidphy.c
+> +++ b/drivers/phy/rockchip/phy-rockchip-inno-dsidphy.c
+> @@ -5,6 +5,7 @@
+>   * Author: Wyon Bi <bivvy.bi@rock-chips.com>
+>   */
+>  
+> +#include <linux/bits.h>
+>  #include <linux/kernel.h>
+>  #include <linux/clk.h>
+>  #include <linux/iopoll.h>
+> @@ -364,7 +365,7 @@ static void inno_dsidphy_mipi_mode_enable(struct inno_dsidphy *inno)
+>  	 * The value of counter for HS Tclk-pre
+>  	 * Tclk-pre = Tpin_txbyteclkhs * value
+>  	 */
+> -	clk_pre = DIV_ROUND_UP(cfg->clk_pre, t_txbyteclkhs);
+> +	clk_pre = DIV_ROUND_UP(cfg->clk_pre, BITS_PER_BYTE);
+>  
+>  	/*
+>  	 * The value of counter for HS Tlpx Time
+> diff --git a/include/linux/phy/phy-mipi-dphy.h b/include/linux/phy/phy-mipi-dphy.h
+> index a877ffee845d..59a5e77ab409 100644
+> --- a/include/linux/phy/phy-mipi-dphy.h
+> +++ b/include/linux/phy/phy-mipi-dphy.h
+> @@ -42,7 +42,7 @@ struct phy_configure_opts_mipi_dphy {
+>  	 * the transmitter prior to any associated Data Lane beginning
+>  	 * the transition from LP to HS mode.
+>  	 *
+> -	 * Minimum value: 8 UI
+> +	 * Minimum value: 8
+>  	 */
+>  	unsigned int		clk_pre;
+>  
+> 
+
