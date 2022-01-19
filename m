@@ -2,137 +2,69 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD1E9C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 07:04:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89DFDC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 07:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351869AbiASHEk (ORCPT
+        id S1351878AbiASHIO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 02:04:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55714 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230223AbiASHEi (ORCPT
+        Wed, 19 Jan 2022 02:08:14 -0500
+Received: from mail-sz.amlogic.com ([211.162.65.117]:18131 "EHLO
+        mail-sz.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230223AbiASHIO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 02:04:38 -0500
-Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 844D0C061574;
-        Tue, 18 Jan 2022 23:04:38 -0800 (PST)
-Received: by mail-pg1-x52d.google.com with SMTP id t32so1562435pgm.7;
-        Tue, 18 Jan 2022 23:04:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wCiIeaOP7iQ1GVdByBpgubBq7flsYPm7+h11Tiuiwpg=;
-        b=I/Zq9ZxoUoy7LGYzlgDjcgi95DDZ4Fe0Pb6n5U+cqjcUR0Et5Pr7UDDZTqOCpfLFBp
-         nEH7GcdRDoD5xDR/tUlhHBREYwpJfnwA60VtG0JCEqf3nxUVBvv1oTZLTn6K3Yvu+hK+
-         MmXCVl0up0iY7uVROgHbQ9pdOWZxbrpVlHN4Y4Q5WewojP3zXhzqsKoPj1tWGcqIRnfu
-         BYsCgTw4uvrA4sCh3lOrWg9RLNTrpKIqaFAcoZeM/oZ2RoXpONfMs3QBJMpXrJVgTy3A
-         czU/m8edbY7P/SxdshnY9eEJz2nCSwfolO25LTfhQEuygQTg7Jx4dcWWysw4BTWZZz72
-         hVlQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=wCiIeaOP7iQ1GVdByBpgubBq7flsYPm7+h11Tiuiwpg=;
-        b=i5ZB0VWPmLsLw0MrdXYisGHSVdVdA7jaTdicyjEifuIQiWGSYPTSORB1Opb3Y0FCaL
-         J63pVcEK9R2iKgD3LPlZnVtbKdz4vOtU7m66HVDALq02sLfd11DfZPLZ3s35qdWHthtg
-         KC1R4HzlcVmuotGlbvhvG0/vzsWzDYOL7SPsdp8eTfXMmJgf/Mn8Q4Xk5l0eFawsMU8V
-         gPgR7frllqhqVZAaSEjOGXFVwRsemBbq0qB3CXMuBwSu5SqqxObE8Hw3R9D0yAD/Khwh
-         Nz5kR88T9m2jSlAnrcXqOCSorxnmwaYCsS11KOSruNuH43sFx7tx3cY7KrcGsizxLCWW
-         bKcg==
-X-Gm-Message-State: AOAM532Ps4pgoB2ULNN8ZVPdk6Dkq7Dx9DPsxU4wh1nPhmt41XTO14fJ
-        T+Tqkdg90JtpRy+Z+baOZzY=
-X-Google-Smtp-Source: ABdhPJxe3J12qmVF/Tu9pqymxRi/8Bzrvkc5t/ws3HbbSLQmN0Vk87KavUmmzNc1OqaHgFRMaeidfQ==
-X-Received: by 2002:a63:7946:: with SMTP id u67mr26261546pgc.83.1642575877947;
-        Tue, 18 Jan 2022 23:04:37 -0800 (PST)
-Received: from localhost.localdomain ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id nl17sm5486973pjb.42.2022.01.18.23.04.34
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 23:04:37 -0800 (PST)
-From:   Like Xu <like.xu.linux@gmail.com>
-X-Google-Original-From: Like Xu <likexu@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Dave Hansen <dave.hansen@linux.intel.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>, x86@kernel.org,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Like Xu <likexu@tencent.com>
-Subject: [PATCH] KVM: x86/xcr0: Don't make XFEATURE_MASK_SSE a mandatory bit setting
-Date:   Wed, 19 Jan 2022 15:04:27 +0800
-Message-Id: <20220119070427.33801-1-likexu@tencent.com>
-X-Mailer: git-send-email 2.33.1
+        Wed, 19 Jan 2022 02:08:14 -0500
+Received: from droid09-sz.software.amlogic (10.28.8.19) by mail-sz.amlogic.com
+ (10.28.11.5) with Microsoft SMTP Server id 15.1.2176.2; Wed, 19 Jan 2022
+ 15:08:12 +0800
+From:   Qianggui Song <qianggui.song@amlogic.com>
+To:     Thomas Gleixner <tglx@linutronix.de>, Marc Zyngier <maz@kernel.org>
+CC:     Qianggui Song <qianggui.song@amlogic.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-amlogic@lists.infradead.org>, <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: [PATCH v2 0/4] irqchip/meson-gpio: Add support for Meson-S4 SoC
+Date:   Wed, 19 Jan 2022 15:08:05 +0800
+Message-ID: <20220119070809.15563-1-qianggui.song@amlogic.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.28.8.19]
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Like Xu <likexu@tencent.com>
+This patchset add support for GPIO interrupt controller of Meson-S4 SoC
+Which has something different with current other meson chips. To
+support the new chips, current gpio irqchip driver need to rework as
+below:
+1. support more than 8 gpio irq lines.
+2. add a set trigger type callback function.
 
-If "bits 1 and 2 of XCR0" are cleared and set only "bit 0 of XCR0",
-the x86 hardware does work properly and the CPUID leaf of the states
-size will be updated as follows:
+With above work, add support for S4 gpio irqchip
 
-xsetbv(XCR_XFEATURE_ENABLED_MASK, 0x2e7);
-  CPUID[0d, 00]: eax=000002e7 ebx=00000a88 ecx=00000a88 edx=00000000
-xsetbv(XCR_XFEATURE_ENABLED_MASK, 0x1);
-  CPUID[0d, 00]: eax=000002e7 ebx=00000240 ecx=00000a88 edx=00000000
+Changes since v1 at [0]:
+- fix leaking issue
+- fix some typos
+- change implementation of new feature.
 
-According to Intel SDM "XSETBV - Set Extended Control Register",
-the truth emerges: only the "bit 0 of XCR0 (corresponding to x87 state)
-must be set to 1", and in addition, it's necessary to set both bits
-(XCR0[1] and XCR0[2]) to use AVX instructions".
+[0] https://lore.kernel.org/linux-amlogic/20220108084218.31877-1-qianggui.song@amlogic.com/
 
-Therefore, it's pretty safe for KVM to run a user-defined guest w/o
-using AVX instructions and in that case, the kvm_update_cpuid_runtime()
-cannot work as expected due to the wrong macro definition.
+Qianggui Song (4):
+  dt-bindings: interrupt-controller: New binding for Meson-S4 SoCs
+  irqchip/meson-gpio: support more than 8 channels gpio irq line
+  irqchip/meson-gpio: add select trigger type callback
+  irqchip/meson-gpio: Add support for meson s4 SoCs
 
-Remove the XFEATURE_MASK_SSE bit as part of the XFEATURE_MASK_EXTEND
-and opportunistically, move it into the context of its unique user KVM.
+ .../amlogic,meson-gpio-intc.txt               |   1 +
+ drivers/irqchip/irq-meson-gpio.c              | 105 ++++++++++++++++--
+ 2 files changed, 97 insertions(+), 9 deletions(-)
 
-Fixes: 56c103ec040b ("KVM: x86: Fix xsave cpuid exposing bug")
-Signed-off-by: Like Xu <likexu@tencent.com>
----
- arch/x86/include/asm/fpu/xstate.h | 3 ---
- arch/x86/kvm/cpuid.h              | 8 ++++++++
- 2 files changed, 8 insertions(+), 3 deletions(-)
-
-diff --git a/arch/x86/include/asm/fpu/xstate.h b/arch/x86/include/asm/fpu/xstate.h
-index cd3dd170e23a..7d331a4aa2e2 100644
---- a/arch/x86/include/asm/fpu/xstate.h
-+++ b/arch/x86/include/asm/fpu/xstate.h
-@@ -9,9 +9,6 @@
- #include <asm/fpu/api.h>
- #include <asm/user.h>
- 
--/* Bit 63 of XCR0 is reserved for future expansion */
--#define XFEATURE_MASK_EXTEND	(~(XFEATURE_MASK_FPSSE | (1ULL << 63)))
--
- #define XSTATE_CPUID		0x0000000d
- 
- #define TILE_CPUID		0x0000001d
-diff --git a/arch/x86/kvm/cpuid.h b/arch/x86/kvm/cpuid.h
-index 8a770b481d9d..5e36157febb2 100644
---- a/arch/x86/kvm/cpuid.h
-+++ b/arch/x86/kvm/cpuid.h
-@@ -8,6 +8,14 @@
- #include <asm/processor.h>
- #include <uapi/asm/kvm_para.h>
- 
-+/*
-+ * Bit 63 of XCR0 is reserved for future expansion,
-+ * and will not represent a processor state component.
-+ *
-+ * Only bit 0 of XCR0 (x87 state) must be set to 1.
-+ */
-+#define XFEATURE_MASK_EXTEND	(~(XFEATURE_MASK_FP | (1ULL << 63)))
-+
- extern u32 kvm_cpu_caps[NR_KVM_CPU_CAPS] __read_mostly;
- void kvm_set_cpu_caps(void);
- 
 -- 
-2.33.1
+2.34.1
 
