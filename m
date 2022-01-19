@@ -2,151 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AAC94C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 06:43:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C02AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 06:44:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351851AbiASGnr (ORCPT
+        id S1346419AbiASGoZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 01:43:47 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:10324 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S236370AbiASGnq (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 01:43:46 -0500
-Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20J3vEOn011739;
-        Wed, 19 Jan 2022 06:42:07 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : references : date : in-reply-to : message-id : mime-version :
- content-type; s=pp1; bh=ixb4I1knaCEMpC8Scm2nge8wNvM+tkC2ipXzX72G1l4=;
- b=LIX0Fcb/UPpGY+ek848KZbR+LCQ6blLh6teGCO2jw9i/9yBA9QQti8s7ZBWnjiWhgwo6
- 4pQ3G/uQs3qN+P4K2qEtmx+pP6p3eFjKlRULeHsa2zwUN4qnLpxU55FdPIx3IHZ3XU5e
- kN0likDNljVgCW+F0D69eSwvCHma49VbehnUBU3pLodS/L3+mAgqkzrppR3lIFhdV7zL
- rzYIiA8J1Nc0oxdRdzHcEexJvGZJB+o7nxZYlLCPGp3ejaBUtzRnJGNVTkutONQyQBfT
- OXZI+Jhh+SQagwd7BxDRmb7d8Etk0IPBntogEJBwQcghnT/NyNGObtV26zRBHxMoL5R/ nw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dpb6njeux-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 Jan 2022 06:42:07 +0000
-Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20J6HrQl022445;
-        Wed, 19 Jan 2022 06:42:06 GMT
-Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dpb6njeu3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 Jan 2022 06:42:06 +0000
-Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
-        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20J6bfqY018574;
-        Wed, 19 Jan 2022 06:42:03 GMT
-Received: from b06cxnps3074.portsmouth.uk.ibm.com (d06relay09.portsmouth.uk.ibm.com [9.149.109.194])
-        by ppma01fra.de.ibm.com with ESMTP id 3dknw9h104-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 Jan 2022 06:42:03 +0000
-Received: from d06av24.portsmouth.uk.ibm.com (d06av24.portsmouth.uk.ibm.com [9.149.105.60])
-        by b06cxnps3074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20J6fwSk48497092
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 19 Jan 2022 06:41:58 GMT
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3AD8D42041;
-        Wed, 19 Jan 2022 06:41:58 +0000 (GMT)
-Received: from d06av24.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2501D4204D;
-        Wed, 19 Jan 2022 06:41:57 +0000 (GMT)
-Received: from tuxmaker.linux.ibm.com (unknown [9.152.85.9])
-        by d06av24.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
-        Wed, 19 Jan 2022 06:41:57 +0000 (GMT)
-From:   Sven Schnelle <svens@linux.ibm.com>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-kernel@vger.kernel.org, aleksandar.qemu.devel@gmail.com,
-        alexandru.elisei@arm.com, anup.patel@wdc.com,
-        aou@eecs.berkeley.edu, atish.patra@wdc.com,
-        benh@kernel.crashing.org, bp@alien8.de, catalin.marinas@arm.com,
-        chenhuacai@kernel.org, dave.hansen@linux.intel.com,
-        david@redhat.com, frankja@linux.ibm.com, frederic@kernel.org,
-        gor@linux.ibm.com, hca@linux.ibm.com, imbrenda@linux.ibm.com,
-        james.morse@arm.com, jmattson@google.com, joro@8bytes.org,
-        kvm@vger.kernel.org, maz@kernel.org, mingo@redhat.com,
-        mpe@ellerman.id.au, nsaenzju@redhat.com, palmer@dabbelt.com,
-        paulmck@kernel.org, paulus@samba.org, paul.walmsley@sifive.com,
-        seanjc@google.com, suzuki.poulose@arm.com, tglx@linutronix.de,
-        tsbogend@alpha.franken.de, vkuznets@redhat.com,
-        wanpengli@tencent.com, will@kernel.org
-Subject: Re: [PATCH 0/5] kvm: fix latent guest entry/exit bugs
-References: <YeFqUlhqY+7uzUT1@FVFF77S0Q05N>
-        <ae1a42ab-f719-4a4e-8d2a-e2b4fa6e9580@linux.ibm.com>
-        <YeF7Wvz05JhyCx0l@FVFF77S0Q05N>
-        <b66c4856-7826-9cff-83f3-007d7ed5635c@linux.ibm.com>
-        <YeGUnwhbSvwJz5pD@FVFF77S0Q05N>
-        <8aa0cada-7f00-47b3-41e4-8a9e7beaae47@redhat.com>
-        <20220118120154.GA17938@C02TD0UTHF1T.local>
-        <6b6b8a2b-202c-8966-b3f7-5ce35cf40a7e@linux.ibm.com>
-        <20220118131223.GC17938@C02TD0UTHF1T.local>
-        <yt9dfsplc9fu.fsf@linux.ibm.com>
-        <20220118175051.GE17938@C02TD0UTHF1T.local>
-Date:   Wed, 19 Jan 2022 07:41:56 +0100
-In-Reply-To: <20220118175051.GE17938@C02TD0UTHF1T.local> (Mark Rutland's
-        message of "Tue, 18 Jan 2022 17:50:51 +0000")
-Message-ID: <yt9dbl08uszv.fsf@linux.ibm.com>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
+        Wed, 19 Jan 2022 01:44:25 -0500
+Received: from foss.arm.com ([217.140.110.172]:48178 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236370AbiASGoY (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 01:44:24 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id CE590D6E;
+        Tue, 18 Jan 2022 22:44:23 -0800 (PST)
+Received: from [10.163.74.69] (unknown [10.163.74.69])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 859653F73D;
+        Tue, 18 Jan 2022 22:44:20 -0800 (PST)
+Subject: Re: [PATCH 1/2] arm64: Add Cortex-X2 CPU part definition
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Suzuki Poulose <suzuki.poulose@arm.com>,
+        coresight@lists.linaro.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <1641980099-20315-1-git-send-email-anshuman.khandual@arm.com>
+ <1641980099-20315-2-git-send-email-anshuman.khandual@arm.com>
+ <CAK8P3a1cDF=jEVGchU8LNBdjdtROmHHHpebOASreR=WOuZ4Z1A@mail.gmail.com>
+ <00e28671-8d3a-f789-91c4-109814792a07@arm.com>
+ <CAK8P3a2Q+iN1O6FEdUJRt=0bQu=6fkWAD3RCECfdhu4DKHq0pg@mail.gmail.com>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+Message-ID: <519f3b4e-e790-c051-3cb1-3fd229a3e498@arm.com>
+Date:   Wed, 19 Jan 2022 12:14:23 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: eoEuZVGXtQpAvFi0xFDcaZjGnFAjf1FH
-X-Proofpoint-ORIG-GUID: 2TEPILiq-QMkd9Fdqdqp7R7yk3Di7xtI
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-19_05,2022-01-18_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- spamscore=0 phishscore=0 mlxlogscore=471 clxscore=1015 suspectscore=0
- impostorscore=0 adultscore=0 bulkscore=0 malwarescore=0 mlxscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201190034
+In-Reply-To: <CAK8P3a2Q+iN1O6FEdUJRt=0bQu=6fkWAD3RCECfdhu4DKHq0pg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Mark,
 
-Mark Rutland <mark.rutland@arm.com> writes:
 
-> On Tue, Jan 18, 2022 at 05:09:25PM +0100, Sven Schnelle wrote:
->> Mark Rutland <mark.rutland@arm.com> writes:
->> > On Tue, Jan 18, 2022 at 01:42:26PM +0100, Christian Borntraeger wrote:
->> >> Will you provide an s390 patch in your next iteration or shall we then do
->> >> one as soon as there is a v2? We also need to look into vsie.c where we
->> >> also call sie64a
->> >
->> > I'm having a go at that now; my plan is to try to have an s390 patch as
->> > part of v2 in the next day or so.
->> >
->> > Now that I have a rough idea of how SIE and exception handling works on
->> > s390, I think the structural changes to kvm-s390.c:__vcpu_run() and
->> > vsie.c:do_vsie_run() are fairly simple.
->> >
->> > The only open bit is exactly how/where to identify when the interrupt
->> > entry code needs to wake RCU. I can add a per-cpu variable or thread
->> > flag to indicate that we're inside that EQS, or or I could move the irq
->> > enable/disable into the sie64a asm and identify that as with the OUTSIDE
->> > macro in the entry asm.
->> 
->> I wonder whether the code in irqentry_enter() should call a function
->> is_eqs() instead of is_idle_task(). The default implementation would
->> be just a
->> 
->> #ifndef is_eqs
->> #define is_eqs is_idle_task
->> #endif
->> 
->> and if an architecture has special requirements, it could just define
->> is_eqs() and do the required checks there. This way the architecture
->> could define whether it's a percpu bit, a cpu flag or something else.
->
-> I had come to almost the same approach: I've added an arch_in_rcu_eqs()
-> which is checked in addition to the existing is_idle_thread() check.
->
+On 1/13/22 5:17 PM, Arnd Bergmann wrote:
+> On Thu, Jan 13, 2022 at 4:03 AM Anshuman Khandual
+> <anshuman.khandual@arm.com> wrote:
+>> On 1/12/22 4:20 PM, Arnd Bergmann wrote:
+>>> On Wed, Jan 12, 2022 at 10:34 AM Anshuman Khandual <anshuman.khandual@arm.com> wrote:
+>>>> Add the CPU Partnumbers for the new Arm designs.
+>>>> @@ -74,6 +74,7 @@
+>>>>  #define ARM_CPU_PART_NEOVERSE_N1       0xD0C
+>>>>  #define ARM_CPU_PART_CORTEX_A77                0xD0D
+>>>>  #define ARM_CPU_PART_CORTEX_A710       0xD47
+>>>> +#define ARM_CPU_PART_CORTEX_X2         0xD48
+>>>>  #define ARM_CPU_PART_NEOVERSE_N2       0xD49
+>>>
+>>> No objections to the patch, but would it be possible to just add all the missing
+>>> ones here to the degree that they are known already? I don't see any entries for
+>>> Cortex-A34, Cortex-A65AE, Cortex-A78, Cortex-A78C, Cortex-A78AE,
+>>> Neoverse-E1, Neoverse-V1, Cortex-X1, Cortex-X2, Cortex-A510, Cortex-A710
+>>> and Cortex-R82 among the Arm-designed cores that can run Linux, and there
+>>> are probably others that I missed going through the list.
+>>
+>> Hi Arnd,
+>>
+>> IIUC the part numbers are enumerated here only if there is an errata
+>> applicable for them which needs to be detected at boot. I am not sure
+>> whether all cpu versions that can run Linux, needs to be defined here.
+>> But then I might be missing something.
+> 
+> They clearly don't need to be defined here, and for other constants such
+> as the system registers we may not want to list them all, but I think for
+> the CPU IDs it makes sense to just list them all here rather than adding
+> them one at a time, as we tend to need them sooner or later anyway.
+> 
+> It also helps me personally to have a known place to look up the names
+> by value rather than chasing through reference manuals.
 
-Sounds good, thanks!
+IIUC the purpose here would be a quick CPU ID documentation reference check ?
+I will wait for other opinions here and add the remaining in a separate patch
+probably.
 
-/Sven
+> 
+>       Arnd
+> 
