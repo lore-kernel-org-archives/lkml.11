@@ -2,116 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D335C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 04:18:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65E1BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 04:24:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349366AbiASESJ (ORCPT
+        id S1346654AbiASEYB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 23:18:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47512 "EHLO
+        Tue, 18 Jan 2022 23:24:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235242AbiASESH (ORCPT
+        with ESMTP id S235242AbiASEYA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 23:18:07 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68114C061574
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 20:18:07 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id 59-20020a17090a09c100b001b34a13745eso4987071pjo.5
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 20:18:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=QADJhwGfWeBD6Mab8IMEbikObuIWFnSn6JyMiF5l1f8=;
-        b=cqL+3sNCG7rhdiOQGbVqo9iFDc2RbBerMjygIZ4wJNMAXmwCOGUZlQFoCMF1AN3toN
-         X8QW76PgubFLCYcEYsnvFbgpDfIoH9he38wPkhvNt9FdCPICm94wXvTXp4O3+L2TECIM
-         KGAyUQLLf/mX1hWz6AoNQmHSZuEAmSgYjCoFjSvB6wFcHnzP3QIq/2iXF1H1pOqgjd5p
-         5iWK2NR/gXiqcy0cULeKJV/UOI5KtRLYphFtkoXprgWopl6uxAmGY25zk+L86WL1Kkl9
-         rlC9k59JdjUmXYprts8cBswOBejQwqoRNjjXM8qsQHTXHrbgiK+c0Y29ZyBlNzF6Kf0E
-         nkDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=QADJhwGfWeBD6Mab8IMEbikObuIWFnSn6JyMiF5l1f8=;
-        b=gjnk5CtLtg1i/CEPtrGaOBJQmGuyyZlGmjdRyH61p6LsdnTdLc/hCEa7JL11+kRBrt
-         17wANjDL4YDyhrTIHE3H9janhCWR487PDSUf244EChrFtH7TIloIe1QGkb9dl4x4LVh0
-         0N1lulm0Bh7oYyJgpSb6KQZ0XW0/44MVDKztp4XWxFpnSU58VL9oFD6wgNY3a+W5klU8
-         YVbQfrInsqXPHaYQu+tDzUKbJcdu3xSoco4aCCNv7SSJ8pdWkaqoXUR7FhvrpO9gSqH3
-         8XROEPRpB6VfRgfCYKnQAwsNeHYszbL9p5GF/XTBZlL5tM87TdZ006TtoyfqsbK+6HAI
-         xF4w==
-X-Gm-Message-State: AOAM532zFvo04BnfAfmSprCkYTzpS1Ij8qzh5e8jesR1LTyFkt8+M3n+
-        CgA8tXkyRvbuwTS51GMOG6A1tZ+SV8j+L7rL
-X-Google-Smtp-Source: ABdhPJyqt7d6eQXwc+2wp7Hxk4r7Nky0zs1z4l6wz0Nd5lYlTO6ElLmf138Xdym1GbNaTrc+Ll9v8A==
-X-Received: by 2002:a17:902:e5c4:b0:14a:70d1:4347 with SMTP id u4-20020a170902e5c400b0014a70d14347mr31123714plf.12.1642565886978;
-        Tue, 18 Jan 2022 20:18:06 -0800 (PST)
-Received: from vultr.guest ([141.164.42.249])
-        by smtp.gmail.com with ESMTPSA id p10sm19888069pfo.95.2022.01.18.20.18.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 20:18:06 -0800 (PST)
-From:   Yuntao Wang <ytcoode@gmail.com>
-To:     Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>, linux-kernel@vger.kernel.org,
-        Yuntao Wang <ytcoode@gmail.com>
-Subject: Re: [PATCH] tracing: Remove redundant assignment to variable ret
-Date:   Wed, 19 Jan 2022 04:17:37 +0000
-Message-Id: <20220119041737.1805441-1-ytcoode@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220117074117.3770-1-lukas.bulwahn@gmail.com>
-References: <20220117074117.3770-1-lukas.bulwahn@gmail.com>
+        Tue, 18 Jan 2022 23:24:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3684AC061574;
+        Tue, 18 Jan 2022 20:24:00 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D4433B818AF;
+        Wed, 19 Jan 2022 04:23:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D838C004E1;
+        Wed, 19 Jan 2022 04:23:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642566237;
+        bh=14cx5s1WHsPTvP5g/nc9FBRXmga8O2vQTNNDmJLESBM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=pPOR5BkcBLDhO2H/pTZcT8+l/nAp0/0NLvWxXO9Ru4apiAdDAJlPGdOXqqyEw6ajr
+         Mc+s7rilRXqrz/3swhQ+JxlQDxEJ/kkMOD5033+d8iw/OBv6zG34pCHGXI/kjoaD0z
+         4m9cnNlRhlF2ctDrUYd0DlMKXdnjcLzBzO0/1635J9cFhnLbkido0KT+AeL+x5vBXU
+         XpwQkznM86MuLOnQGv3nEGN7qIyNG5WOiDSiMAEQGrJ6/nlspp1XVPvXcsLVbSlbsa
+         aysj3VaoiRraNo+dF0cUxk1j0+rNO8hxSfxlYGGiacfDl4G5DsGZ+zH33H0R1lZt0a
+         1YC87sQA3eCWA==
+Date:   Wed, 19 Jan 2022 09:53:52 +0530
+From:   Vinod Koul <vkoul@kernel.org>
+To:     Sanjay R Mehta <sanmehta@amd.com>
+Cc:     Sanjay R Mehta <Sanju.Mehta@amd.com>, gregkh@linuxfoundation.org,
+        dan.j.williams@intel.com, Thomas.Lendacky@amd.com, robh@kernel.org,
+        mchehab+samsung@kernel.org, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, dmaengine@vger.kernel.org
+Subject: Re: [PATCH] dmaengine: ptdma: fix concurrency issue with multiple
+ dma transfer
+Message-ID: <YeeSWEZi+BOWb3CK@matsya>
+References: <1639735118-9798-1-git-send-email-Sanju.Mehta@amd.com>
+ <YdLfLc8lfOektWmi@matsya>
+ <38ae8876-610a-3c32-5025-1419466167e4@amd.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <38ae8876-610a-3c32-5025-1419466167e4@amd.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 3:47 PM Lukas Bulwahn <lukas.bulwahn@gmail.com> wrote:
-> Dear Yuntao,
->
->
-> when you consider removing dead-store assignments guided by some static
-> analyzer, you need to check if the code you are looking at is actually
-> missing an error-handling branch.
->
-> In this case, ftrace_process_locs() may return -ENOMEM, and the caller
-> needs to appropriately deal with this error return code. Your patch
-> does not change the code at all, i.e., the compiled object code is the
-> same as after the patch as before.
->
-> Think about how to deal appropriately with the -ENOMEM return in this
-> caller and submit a patch that implements the right error-handling
-> branch or argue in your commit message why that is not needed at all.
->
-> If you do not understand or cannot check such basic code properties for
-> dead-store assignments, it might be better to work on some other aspect
-> and area of the kernel repository. E.g., the kernel documentation build
-> also has a few warnings that deserve patches to be fixed.
->
->
-> Best regards,
->
-> Lukas
+On 10-01-22, 13:27, Sanjay R Mehta wrote:
+> On 1/3/2022 5:04 PM, Vinod Koul wrote:
+> > On 17-12-21, 03:58, Sanjay R Mehta wrote:
+> >> From: Sanjay R Mehta <sanju.mehta@amd.com>
+> >>
+> >> The command should be submitted only if the engine is idle,
+> >> for this, the next available descriptor is checked and set the flag
+> >> to false in case the descriptor is non-empty.
+> >>
+> >> Also need to segregate the cases when DMA is complete or not.
+> >> In case if DMA is already complete there is no need to handle it
+> >> again and gracefully exit from the function.
+> >>
+> >> Signed-off-by: Sanjay R Mehta <sanju.mehta@amd.com>
+> >> ---
+> >>  drivers/dma/ptdma/ptdma-dmaengine.c | 24 +++++++++++++++++-------
+> >>  1 file changed, 17 insertions(+), 7 deletions(-)
+> >>
+> >> diff --git a/drivers/dma/ptdma/ptdma-dmaengine.c b/drivers/dma/ptdma/ptdma-dmaengine.c
+> >> index c9e52f6..91b93e8 100644
+> >> --- a/drivers/dma/ptdma/ptdma-dmaengine.c
+> >> +++ b/drivers/dma/ptdma/ptdma-dmaengine.c
+> >> @@ -100,12 +100,17 @@ static struct pt_dma_desc *pt_handle_active_desc(struct pt_dma_chan *chan,
+> >>  		spin_lock_irqsave(&chan->vc.lock, flags);
+> >>  
+> >>  		if (desc) {
+> >> -			if (desc->status != DMA_ERROR)
+> >> -				desc->status = DMA_COMPLETE;
+> >> -
+> >> -			dma_cookie_complete(tx_desc);
+> >> -			dma_descriptor_unmap(tx_desc);
+> >> -			list_del(&desc->vd.node);
+> >> +			if (desc->status != DMA_COMPLETE) {
+> >> +				if (desc->status != DMA_ERROR)
+> >> +					desc->status = DMA_COMPLETE;
+> >> +
+> >> +				dma_cookie_complete(tx_desc);
+> >> +				dma_descriptor_unmap(tx_desc);
+> >> +				list_del(&desc->vd.node);
+> >> +			} else {
+> >> +				/* Don't handle it twice */
+> >> +				tx_desc = NULL;
+> >> +			}
+> >>  		}
+> >>  
+> >>  		desc = pt_next_dma_desc(chan);
+> >> @@ -233,9 +238,14 @@ static void pt_issue_pending(struct dma_chan *dma_chan)
+> >>  	struct pt_dma_chan *chan = to_pt_chan(dma_chan);
+> >>  	struct pt_dma_desc *desc;
+> >>  	unsigned long flags;
+> >> +	bool engine_is_idle = true;
+> >>  
+> >>  	spin_lock_irqsave(&chan->vc.lock, flags);
+> >>  
+> >> +	desc = pt_next_dma_desc(chan);
+> >> +	if (desc)
+> >> +		engine_is_idle = false;
+> >> +
+> >>  	vchan_issue_pending(&chan->vc);
+> >>  
+> >>  	desc = pt_next_dma_desc(chan);
+> >> @@ -243,7 +253,7 @@ static void pt_issue_pending(struct dma_chan *dma_chan)
+> >>  	spin_unlock_irqrestore(&chan->vc.lock, flags);
+> >>  
+> >>  	/* If there was nothing active, start processing */
+> >> -	if (desc)
+> >> +	if (engine_is_idle)
+> > 
+> > Can you explain why do you need this flag and why desc is not
+> > sufficient..
+> 
+> Here it is required to know if the engine was idle or not before
+> submitting new desc to the active list (i.e, before calling
+> "vchan_issue_pending()" API). So that if there was nothing active then
+> start processing this desc otherwise later.
+> 
+> Here desc is submitted to the engine after vchan_issue_pending() API
+> called which will actually put the desc into the active list and then if
+> I get the next desc, the condition will always be true. Therefore used
+> this flag here to solve this issue.
 
-Dear Lukas,
+ok
 
-Thanks for your reply.
 
-Actually, I had read the source code carefully and noticed the possible
-error return code -ENOMEM of the ftrace_process_locs() function.
 
-At first I was going to implement an error-handling branch as you said,
-but after digging into more details, I discovered:
 
-- The ftrace_init() function did not handle the error return code of the ftrace_process_locs() function since the first version.
-- The ftrace_module_init() function did not handle it either.
 
-To keep consistent with the existing code, I just removed the assignment
-in that patch.
+> 
+> > 
+> > It also sounds like 2 patches to me...
+> 
+> Once the desc is submitted to the engine that will be handled by
+> pt_handle_active_desc() function. This issue was resolved by making
+> these changes together. Hence kept into the single patch.
+> 
+> Please suggest to me, if this still needs to be split. I'll make the
+> changes accordingly.
 
-Maybe we should deal with the error return code more appropriately,
-at least print some warnings?
+2 patches please
 
-Best regards,
-
-Yuntao
+-- 
+~Vinod
