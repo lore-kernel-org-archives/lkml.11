@@ -2,118 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD298C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 09:00:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1614C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 09:00:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352765AbiASJA3 (ORCPT
+        id S1352777AbiASJAl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 04:00:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53904 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237437AbiASJA1 (ORCPT
+        Wed, 19 Jan 2022 04:00:41 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59532 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237437AbiASJAj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 04:00:27 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D4CAC061574;
-        Wed, 19 Jan 2022 01:00:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=qnafBOfaGAHL+V+2V6xLHrQXEkPNWUyyHRjzOTQQks0=; b=X41mnegh42srhJgRjFzw2U39oF
-        ik/ga3x206OM81Ma9yTWHodK6706mdjtlmS8QqItoSXc9Ue0Qqv8QHIAGwOSxIb0vENp+L5m5zVg/
-        2Xvtm9bjVZtkIGC1TWptFA9/bRvlTSB/bTv/LtdEHijmaMKtLI2FzDXpjx7i+23GYUjNqFhScDqKN
-        IrH8x+1khfrS73fXtt2zrSySG2T/cgWuIrttlTTbLNZjChilJEATxTpvPDok+nlBOR/+v6vIzpueR
-        zoqHvMEfl6LTr8xeaHhDOKp5jGnYzXVa1vFNBWoRRMcgdWaaS1FxERozztzXfC0ZAhVH0A15cWnLD
-        SUdsh4Wg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nA6ot-00AL9R-GZ; Wed, 19 Jan 2022 08:59:55 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 6B9AB300222;
-        Wed, 19 Jan 2022 09:59:54 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 2E49A200CA459; Wed, 19 Jan 2022 09:59:54 +0100 (CET)
-Date:   Wed, 19 Jan 2022 09:59:54 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Peter Oskolkov <posk@google.com>
-Cc:     Peter Oskolkov <posk@posk.io>, mingo@redhat.com,
-        tglx@linutronix.de, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-api@vger.kernel.org, x86@kernel.org,
-        pjt@google.com, avagin@google.com, jannh@google.com,
-        tdelisle@uwaterloo.ca
-Subject: Re: [RFC][PATCH 3/3] sched: User Mode Concurency Groups
-Message-ID: <YefTCk4to5YzO8AB@hirez.programming.kicks-ass.net>
-References: <20211214204445.665580974@infradead.org>
- <20211214205358.701701555@infradead.org>
- <20211221171900.GA580323@dev-hv>
- <YeGEM7TP3tekBVEh@hirez.programming.kicks-ass.net>
- <YeaRx9oDp08ABvyU@hirez.programming.kicks-ass.net>
- <CAPNVh5cdGiDqut90kUo-HXyya6Nbz_CjuUObYXfprgDhQHnUmg@mail.gmail.com>
+        Wed, 19 Jan 2022 04:00:39 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F2793B81910;
+        Wed, 19 Jan 2022 09:00:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62C44C340E6;
+        Wed, 19 Jan 2022 09:00:36 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="c3dQq4AT"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1642582833;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2dOFJ+UpcJtVObG5xI+XoGYifJptafHjJhs8HGfwX1w=;
+        b=c3dQq4ATbm3F/187EqTQn/DEc2+TVz5Z6Leei8F10Yf3ixE2Uu6PJW8ci1EnHZrfZM0tzK
+        HOkeqMqMuOacinhQ2L5LbbQObXWehm5LhxLXbvyOgx2P8gpomIxL5mz6xFs3X39Twpe18H
+        6UV6m97d9dMYHbb/v+7tKMp5de21ePo=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id 421036da (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
+        Wed, 19 Jan 2022 09:00:32 +0000 (UTC)
+Received: by mail-yb1-f171.google.com with SMTP id h14so5248579ybe.12;
+        Wed, 19 Jan 2022 01:00:32 -0800 (PST)
+X-Gm-Message-State: AOAM530BhqfR3QltI3Z7G0ouie/zAHliCS+NY/St1793O9Xz0eMhzuTM
+        GtHe7NGb1D1BfdzgEVAsDpWx6R8yivZkteqdB/M=
+X-Google-Smtp-Source: ABdhPJx4RyuigxoTOZs8Or8CkU4hkibFalbgQMbYzSXkFlEEIcgX6zw0oBRh/W5vLkIRmue8eoXzbhHlni3UQuAdKpE=
+X-Received: by 2002:a25:e7c7:: with SMTP id e190mr12418681ybh.457.1642582830614;
+ Wed, 19 Jan 2022 01:00:30 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPNVh5cdGiDqut90kUo-HXyya6Nbz_CjuUObYXfprgDhQHnUmg@mail.gmail.com>
+Received: by 2002:a05:7110:209:b0:11c:1b85:d007 with HTTP; Wed, 19 Jan 2022
+ 01:00:30 -0800 (PST)
+In-Reply-To: <20220119082447.1675-1-miles.chen@mediatek.com>
+References: <20220119082447.1675-1-miles.chen@mediatek.com>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Wed, 19 Jan 2022 10:00:30 +0100
+X-Gmail-Original-Message-ID: <CAHmME9pv4WWATjdqZgwrtHDmq3sX4ABfB9PoNT9Z4tSEduR2Lw@mail.gmail.com>
+Message-ID: <CAHmME9pv4WWATjdqZgwrtHDmq3sX4ABfB9PoNT9Z4tSEduR2Lw@mail.gmail.com>
+Subject: Re: [PATCH] lib/crypto: blake2s: fix a CFI failure
+To:     miles.chen@mediatek.com
+Cc:     Herbert Xu <herbert@gondor.apana.org.au>,
+        "David S. Miller" <davem@davemloft.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Ard Biesheuvel <ardb@kernel.org>, linux-crypto@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 10:19:21AM -0800, Peter Oskolkov wrote:
+Hi Miles,
 
-> =========== signals and the general approach
-> 
-> My version of the patchset has all of these things working. What it
-> does not have,
-> compared to the new approach we are discussing here, is runqueues per server
-> and proper signal handling (and potential integration with proxy execution).
-> 
-> Runqueues per server, in the LAZY mode, are easy to emulate in my patchset:
-> nothing prevents the userspace to partition workers among servers, and have
-> servers that "own" their workers to be pointed at by idle_server_tid_ptr.
-> 
-> The only thing that is missing is proper treating of signals. But my patchset
-> does ensure a single running worker per server, had pagefaults and preemptions
-> sorted out, etc. Basically, everything works except signals. This patchet
-> has issues with pagefaults, 
+Thanks for the patch. Could you let me know which architecture and
+compiler this was broken on? If I had to guess, I'd wager arm32, and
+you hit this by enabling optimized blake2s?
 
-Already fixed pagefaults per:
+If so, I'm not sure the problem is with weak symbols. Why should CFI
+break weak symbols? Rather, perhaps the issue is that the function is
+defined in blake2s-core.S? Are there some CFI macros we need for that
+definition?
 
-  YeGvovSckivQnKX8@hirez.programming.kicks-ass.net
-
-> worker timeouts
-
-I still have no clear answer as to what you actually want there.
-
-> , worker-to-worker context
-> switches (do workers move runqueues when they context switch?), etc.
-
-Not in kernel, if they need to be migrated, userspace needs to do that.
-
-> And my patchset now actually looks smaller and simpler, on the kernel side,
-> that what this patchset is shaping up to be.
-> 
-> What if I fix signals in my patchset? I think the way you deal with signals
-> will work in my approach equally well; I'll also use umcg_kick() to preempt
-> workers instead of sending them a signal.
-> 
-> What do you think? 
-
-I still absolutely hate how long you do page pinning, it *will* wreck
-things like CMA which are somewhat latency critical for silly things
-like Android camera apps and who knows what else.
-
-You've also forgotten about this:
-
-  YcWutpu7BDeG+dQ2@hirez.programming.kicks-ass.net
-
-That's not optional given how you're using page-pinning. Also, I think
-we need at least one direct access to the page after getting the pin in
-order to make it work.
-
-That also very much limits it to Anon pages.
+Jason
