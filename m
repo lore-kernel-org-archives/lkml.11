@@ -2,128 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 927C5C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 06:42:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F1D5C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 06:42:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345361AbiASGmB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 01:42:01 -0500
-Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.84]:39903 "EHLO
-        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344439AbiASGle (ORCPT
+        id S245700AbiASGmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 19 Jan 2022 01:42:33 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:38643 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236370AbiASGm0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 01:41:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1642574425;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:Cc:Date:
-    From:Subject:Sender;
-    bh=soxn4qgkDsTZ0oHmNOMh5qyy1VH0WMra/yBF1KFdkyA=;
-    b=mDhwJ6A64h1u9LKK91u8VrQk1niBls3lKkpkpSbsdonYHAbR2zvclGS4ElY+YlQE6X
-    fdxktMrEev2PpoaFbcDAfvKyz7p/5WGRLIPykNQlp4JGybb+DUwJrriEcRTJmp6rl0iK
-    AGTQicUwQEAN2gzfGzeIIYDtRgbl3RY/Z0NlxJ8jngZ+nRiTUT+S/9RpF7R8n9Q+/FYe
-    cqioEpmJzUVviuwTRMzFBG5LqoYZfrUHD1IKM0suKDpyDI3Nq8yk77dLqKzs2jlm26Zp
-    8ZeT/QrooqXvw2LpQGw9H+bl14ilb2yJq2uyv/UH3F8VUsBEsIioNgbTJhQ7NS1HPHpZ
-    zUDg==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj4Qpw9iZeHWElw4TlkQ=="
-X-RZG-CLASS-ID: mo00
-Received: from imac.fritz.box
-    by smtp.strato.de (RZmta 47.37.6 DYNA|AUTH)
-    with ESMTPSA id D61423y0J6eNjFW
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-        (Client did not present a certificate);
-    Wed, 19 Jan 2022 07:40:23 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 12.4 \(3445.104.21\))
-Subject: Re: [PATCH v5 2/7] drm/ingenic: Add support for JZ4780 and HDMI
- output
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <13356060.GkHXLIg068@jason>
-Date:   Wed, 19 Jan 2022 07:40:22 +0100
-Cc:     Paul Cercueil <paul@crapouillou.net>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        David Airlie <airlied@linux.ie>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linux-mips <linux-mips@vger.kernel.org>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Harry Wentland <harry.wentland@amd.com>,
-        OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS 
-        <devicetree@vger.kernel.org>, Kees Cook <keescook@chromium.org>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Mark Brown <broonie@kernel.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Discussions about the Letux Kernel 
-        <letux-kernel@openphoenux.org>
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <D0989ACA-F6DB-4E16-8D95-5ACBAD90AACD@goldelico.com>
-References: <cover.1633436959.git.hns@goldelico.com>
- <C846BAFB-473D-41D8-93B9-B9ECDD1846C1@goldelico.com>
- <AI0X5R.YWIZO63QXTF4@crapouillou.net> <13356060.GkHXLIg068@jason>
-To:     Paul Boddie <paul@boddie.org.uk>
-X-Mailer: Apple Mail (2.3445.104.21)
+        Wed, 19 Jan 2022 01:42:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642574546;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=MF1FuGFJdpOohIJ1ssXp+qAxwbB16v8stQCdey9tRcg=;
+        b=QZBh/S5obycedEYcYaocchDNEmgUeR43nEDnaNyTj+97rjCscl+6hH8qBqmrtIrZGvS/Xa
+        IENGxSyS1ox7p3VrJlpChoMs3i9h4aselNMMUw+gxFTCf4B4Ulf56hBDGbJzMDml1eDe7x
+        eLWC168nji/3dRoveVxYmSXaNGqRJWs=
+Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
+ [209.85.216.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-592-90E7adCIO0-IBJXRDM1T5Q-1; Wed, 19 Jan 2022 01:42:24 -0500
+X-MC-Unique: 90E7adCIO0-IBJXRDM1T5Q-1
+Received: by mail-pj1-f72.google.com with SMTP id q1-20020a17090a064100b001b4d85cbaf7so2690325pje.9
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 22:42:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=MF1FuGFJdpOohIJ1ssXp+qAxwbB16v8stQCdey9tRcg=;
+        b=nWhvi7qCLXuki6k5zy/hhYyGbuV3l6cbHlxGtgYraHNhTK0/2tUB+8GL+ZfSGgy3GA
+         SXGFZDK4x89vNvIxvdDJJbwS2gtLm4lv4PO6baQNE7Qr+UBy2wF6o7NZqpojBegGum88
+         CfgE+ZKldIp+reYWI+MpS7c5spZ+m56ES8MwGFz2G2ocC4J7fykuA4sKG51o+gEsuXQq
+         fQCGYg8S+yUihJbwji3aZs50h7J3RDNTVdqlK4rVgk0i1TGa686o1OB+kOYtxS8OnOKJ
+         eu0DAPy3w2DSkzPG6uRqcUQ6YF21D3sBlv8Y7vXGF8eT/kn9gaINQw0t6Q2ZY605kCXS
+         UN4g==
+X-Gm-Message-State: AOAM531DxPbarHCYuZ6o8xmXdzs8+osg7GiFPsNFzHnXV9hKiNWFH2W8
+        RqAabblq067+QE2xXyarfugUduyH1eaSluTZYVaBZM3spXkI49Go+j/9/MhOprkmUf/hxDpv1ts
+        RQh0QArnSuMtwt4NtULdCEUVB
+X-Received: by 2002:a17:902:ac8f:b0:14a:ac30:47d7 with SMTP id h15-20020a170902ac8f00b0014aac3047d7mr16543325plr.168.1642574543714;
+        Tue, 18 Jan 2022 22:42:23 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzfLyBSLuUdFeXn+Bg5WDLz7nFtnsc2uixZcGKG5XSs6BPtw5MhYNQsaP8UjQVY658RSwJjgQ==
+X-Received: by 2002:a17:902:ac8f:b0:14a:ac30:47d7 with SMTP id h15-20020a170902ac8f00b0014aac3047d7mr16543301plr.168.1642574543414;
+        Tue, 18 Jan 2022 22:42:23 -0800 (PST)
+Received: from [10.72.13.227] ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id x4sm4821921pjn.56.2022.01.18.22.42.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 18 Jan 2022 22:42:22 -0800 (PST)
+Message-ID: <960d4166-1718-55ef-d324-507a8add7e3e@redhat.com>
+Date:   Wed, 19 Jan 2022 14:42:15 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [RFC PATCH v3 04/11] KVM: arm64: Setup a framework for hypercall
+ bitmap firmware registers
+Content-Language: en-US
+To:     Raghavendra Rao Ananta <rananta@google.com>,
+        Marc Zyngier <maz@kernel.org>,
+        Andrew Jones <drjones@redhat.com>,
+        James Morse <james.morse@arm.com>,
+        Alexandru Elisei <alexandru.elisei@arm.com>,
+        Suzuki K Poulose <suzuki.poulose@arm.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Catalin Marinas <catalin.marinas@arm.com>,
+        Will Deacon <will@kernel.org>, Peter Shier <pshier@google.com>,
+        Ricardo Koller <ricarkol@google.com>,
+        Oliver Upton <oupton@google.com>,
+        Reiji Watanabe <reijiw@google.com>,
+        Jing Zhang <jingzhangos@google.com>,
+        linux-arm-kernel@lists.infradead.org, kvmarm@lists.cs.columbia.edu,
+        linux-kernel@vger.kernel.org, kvm@vger.kernel.org
+References: <20220104194918.373612-1-rananta@google.com>
+ <20220104194918.373612-5-rananta@google.com>
+From:   Jason Wang <jasowang@redhat.com>
+In-Reply-To: <20220104194918.373612-5-rananta@google.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Paul,
 
-> Am 18.01.2022 um 23:59 schrieb Paul Boddie <paul@boddie.org.uk>:
->=20
-> On Tuesday, 18 January 2022 17:58:58 CET Paul Cercueil wrote:
->>=20
->> Not at all. If the clock is disabled, the LCD controller is disabled,
->> so all the registers read zero, this makes sense. You can only read =
-the
->> registers when the clock is enabled. On some SoCs, reading disabled
->> registers can even cause a complete lockup.
->=20
-> My concern was that something might be accessing the registers before =
-the=20
-> clock had been enabled. It seems unlikely, given that the clock is =
-enabled in=20
-> the bind function, and I would have thought that nothing would invoke =
-the=20
-> different driver operations ("funcs") until bind has been called, nor =
-should=20
-> anything called from within bind itself be accessing registers.
->=20
->> Why is this JZ_LCD_OSDC_ALPHAEN bit needed now? I remember it working
->> fine last time I tried, and now I indeed get a black screen unless =
-this
->> bit is set. The PM doesn't make it obvious that the bit is required,
->> but that wouldn't be surprising.
->=20
-> It isn't actually needed. If the DMA descriptors are set up =
-appropriately, the=20
-> OSD alpha bit seems to be set as a consequence. In my non-Linux =
-testing=20
-> environment I don't even set any OSD registers explicitly, but the OSD =
-alpha=20
-> and enable flags become set when the display is active.
+在 2022/1/5 上午3:49, Raghavendra Rao Ananta 写道:
+> KVM regularly introduces new hypercall services to the guests without
+> any consent from the Virtual Machine Manager (VMM). This means, the
+> guests can observe hypercall services in and out as they migrate
+> across various host kernel versions. This could be a major problem
+> if the guest discovered a hypercall, started using it, and after
+> getting migrated to an older kernel realizes that it's no longer
+> available. Depending on how the guest handles the change, there's
+> a potential chance that the guest would just panic.
+>
+> As a result, there's a need for the VMM to elect the services that
+> it wishes the guest to discover. VMM can elect these services based
+> on the kernels spread across its (migration) fleet. To remedy this,
+> extend the existing firmware psuedo-registers, such as
+> KVM_REG_ARM_PSCI_VERSION, for all the hypercall services available.
 
-Is it set by DMA descriptors or by explicit code?
 
-We did have an explicit setting of JZ_LCD_OSDC_ALPHAEN
 
-https://www.spinics.net/lists/devicetree/msg438447.html
+Haven't gone through the series but I wonder whether it's better to have 
+a (e)BPF filter for this like seccomp.
 
-but that was postponed for further discussion. And now if we
-add it (from basic functionality) back, it is fine again.
+Thanks
 
-BR,
-Nikolaus=
+
+>
+> These firmware registers are categorized based on the service call
+> owners, and unlike the existing firmware psuedo-registers, they hold
+> the features supported in the form of a bitmap.
+>
+> The capability, KVM_CAP_ARM_HVC_FW_REG_BMAP, is used to announce
+> this extension, which returns the number of psuedo-firmware
+> registers supported. During the VM initialization, the registers
+> holds an upper-limit of the features supported by the corresponding
+> registers. It's expected that the VMMs discover the features
+> provided by each register via GET_ONE_REG, and writeback the
+> desired values using SET_ONE_REG. KVM allows this modification
+> only until the VM has started.
+>
+> Older VMMs can simply ignore the capability and the hypercall services
+> will be exposed unconditionally to the guests, thus ensuring backward
+> compatibility.
+>
+> In this patch, the framework adds the register only for ARM's standard
+> secure services (owner value 4). Currently, this includes support only
+> for ARM True Random Number Generator (TRNG) service, with bit-0 of the
+> register representing mandatory features of v1.0. Other services are
+> momentarily added in the upcoming patches.
+>
+> Signed-off-by: Raghavendra Rao Ananta<rananta@google.com>
+
