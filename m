@@ -2,105 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA350C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 02:04:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C85C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 02:07:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350844AbiASCEh (ORCPT
+        id S1350857AbiASCHe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 21:04:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350843AbiASCEe (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 21:04:34 -0500
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94EF9C061574;
-        Tue, 18 Jan 2022 18:04:34 -0800 (PST)
-Received: by mail-qk1-x72e.google.com with SMTP id p9so1274884qkh.3;
-        Tue, 18 Jan 2022 18:04:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=++gAg+l0dN/7B7vv6NjXKWxl8eRkjPVp8VF/W6XAH48=;
-        b=qIbZjUOjgsyq3RDMrd53p9/2IkNve51ftq1huuVJlh6tE7vUnupVpSUJXVn4NFOmqd
-         3fbMWzt7XlAJQU6fo3pTlWpx7hPgqbDSvklbRhWkEux2Piqgy3AQlk0ui0mLPPEG9NPj
-         9ix44G9XGNVm1l4ns4NXFPpwNkl9lbeu3w+raWCbnUx88QwVRrfPd13yrAogDJWqW+yo
-         Kv5fvBNCyz/slme/Cku12Czn6c6lqvYa8tF5keGjBUkM4sbUxwNJl6AqeKZ3n5DpBRKW
-         WjHkH1N3o5qx++0lah0zOEWo26pjTaEk+IuSaghm1SpI+1YJL47baQiI8EKXMbLT9V9L
-         LdCw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=++gAg+l0dN/7B7vv6NjXKWxl8eRkjPVp8VF/W6XAH48=;
-        b=2OkD0k2ZnlCSoHqKPYCovpm7ATZcVJ4me2k3KSzheqXcelNmHTLYc9oVXhmxdgSeDX
-         iwQQrZAKM8zMnRNCDZMY1f4WT/YugZz7M7H8joKLomEwLz3OUBgIM9mv+7x+Glou2lDj
-         wL+wJ/tC6s9EEflf+FRZmKHpEnmw98THahDjSwyrJMAIhHJ9lGbQ0jp5oiYbeHENHp4p
-         k9rZjYXGbbHX929Lp2dRCgFkbVySMXMoACrpIc/x4sg4/6gNlElFo2t16Z2CLrua1/X/
-         u+ltD21qNyxzo4EfZ3RvYt4Mkmf21tXeah5H5MYQrKuevtguLENKO2XhGfvVGeA2Y+1g
-         jybQ==
-X-Gm-Message-State: AOAM530qQ/EbO+vUbNjlSvzUZ0PCr6HNw13ST+czpYroDHd5YNoB6/jj
-        VB2jiIcA0YSLyg++4GQTIig=
-X-Google-Smtp-Source: ABdhPJyOnunO+GeIz4tAdGx9vUTvZUmec5ggQsTIda8EZTmduN+ZerZqvwBHMJs2byK+fi3GSwrZoQ==
-X-Received: by 2002:a05:620a:410c:: with SMTP id j12mr5901891qko.636.1642557873672;
-        Tue, 18 Jan 2022 18:04:33 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id o4sm5121072qkp.105.2022.01.18.18.04.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 18:04:33 -0800 (PST)
-From:   xu xin <cgel.zte@gmail.com>
-X-Google-Original-From: xu xin <xu.xin16@zte.com.cn>
-To:     kuba@kernel.org
-Cc:     cgel.zte@gmail.com, davem@davemloft.net, edumazet@google.com,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        xu.xin16@zte.com.cn, yoshfuji@linux-ipv6.org
-Subject: Re: Re: [PATCH] ipv4: Namespaceify min_adv_mss sysctl knob
-Date:   Wed, 19 Jan 2022 02:04:27 +0000
-Message-Id: <20220119020427.929626-1-xu.xin16@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220118112148.3e1acad4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-References: <20220118112148.3e1acad4@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        Tue, 18 Jan 2022 21:07:34 -0500
+Received: from mga09.intel.com ([134.134.136.24]:14240 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1350649AbiASCHd (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 21:07:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642558053; x=1674094053;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=SADnO3+RxA7TLM946fh6hsuryNfZzjZ8vuXRamwkzA0=;
+  b=hD6483/cPfvT/FSLEDd0eyI7o4itsSwTVYEmcTa5dPVKfMOzzcaqj02F
+   KcEnHODx23gVK6SPLJM9IAAzMnycm3x+rxa/JfgbLk1hy3G6ayS22VReF
+   NuP4YCiXaBorWRsSqI3C+Kujhgn+04nR4LX612mco/UVSKJulfEa30RRn
+   MLQgZxR6J0tAkBb/VFgTlQZ6TgepLGZffBspy9A7sUcIwJos+Y35KX/j7
+   im8T51VEsC2DTQssqXK4rg3Q6gLtXJtTIhPpzFE68tQiyvuGSFz70yNKs
+   GtVQ9q8mspDhnXFLEcBKooam0eYLFdBV6y1FXgB8M8Tr9BMaZdaOjolPr
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="244756699"
+X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
+   d="scan'208";a="244756699"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 18:07:32 -0800
+X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
+   d="scan'208";a="622350895"
+Received: from mdzurick-mobl.amr.corp.intel.com (HELO [10.209.145.208]) ([10.209.145.208])
+  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 18:07:31 -0800
+Subject: Re: [PATCH v2 2/2] ASoC: SOF: compress: Implement get_caps and
+ get_codec_caps
+To:     Daniel Baluta <daniel.baluta@oss.nxp.com>, lgirdwood@gmail.com,
+        broonie@kernel.org
+Cc:     alsa-devel@alsa-project.org, kai.vehmanen@linux.intel.com,
+        cezary.rojewski@intel.com, linux-kernel@vger.kernel.org,
+        ranjani.sridharan@linux.intel.com, paul.olaru@nxp.com,
+        daniel.baluta@nxp.com, sound-open-firmware@alsa-project.org
+References: <20220118212732.281657-1-daniel.baluta@oss.nxp.com>
+ <20220118212732.281657-3-daniel.baluta@oss.nxp.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Message-ID: <41ae6093-8e27-01d4-e532-8a28fb1d9cf1@linux.intel.com>
+Date:   Tue, 18 Jan 2022 19:00:35 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220118212732.281657-3-daniel.baluta@oss.nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> > From: xu xin <xu.xin16@zte.com.cn>
-> > 
-> > Different netns have different requirement on the setting of min_adv_mss
-> > sysctl that the advertised MSS will be never lower than. The sysctl
-> > min_adv_mss can indirectly affects the segmentation efficiency of TCP.
-> > 
-> > So enable min_adv_mss to be visible and configurable inside the netns.
-> > 
-> > Signed-off-by: CGEL ZTE <cgel.zte@gmail.com>
-> 
-> CGEL ZTE, whatever it is, is most definitely not a person so it can't
-> sign off patches. Please stop adding the CGEL task, you can tell us
-> what it stands for it you want us to suggest an alternative way of
-> marking.
 
-CGEL ZTE is a team(or project) focusing on Embedded Linux System. With
-the support of the team, I can devote myself to the development and 
-maintenance of the kernel and related patch work.
 
-I'm not sure how to mark it here accurately. I am willing to hear your
-suggestions.
+On 1/18/22 3:27 PM, Daniel Baluta wrote:
+> From: Paul Olaru <paul.olaru@nxp.com>
+> 
+> These functions are used by the userspace to determine what the firmware
+> supports and tools like cplay should use in terms of sample rate, bit
+> rate, buffer size and channel count.
+> 
+> The current implementation uses i.MX8 tested scenarios!
+> 
+> Signed-off-by: Paul Olaru <paul.olaru@nxp.com>
+> Signed-off-by: Daniel Baluta <daniel.baluta@nxp.com>
+> ---
+>  sound/soc/sof/compress.c | 74 ++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 74 insertions(+)
+> 
+> diff --git a/sound/soc/sof/compress.c b/sound/soc/sof/compress.c
+> index 91a9c95929cd..e3f3f309f312 100644
+> --- a/sound/soc/sof/compress.c
+> +++ b/sound/soc/sof/compress.c
+> @@ -308,6 +308,78 @@ static int sof_compr_pointer(struct snd_soc_component *component,
+>  	return 0;
+>  }
+>  
+> +static int sof_compr_get_caps(struct snd_soc_component *component,
+> +			      struct snd_compr_stream *cstream,
+> +			      struct snd_compr_caps *caps)
+> +{
+> +	caps->num_codecs = 3;
+> +	caps->min_fragment_size = 3840;
+> +	caps->max_fragment_size = 3840;
+> +	caps->min_fragments = 2;
+> +	caps->max_fragments = 2;
+> +	caps->codecs[0] = SND_AUDIOCODEC_MP3;
+> +	caps->codecs[1] = SND_AUDIOCODEC_AAC;
+> +	caps->codecs[2] = SND_AUDIOCODEC_PCM;
 
-> # Form letter - net-next is closed
-> 
-> We have already sent the networking pull request for 5.17
-> and therefore net-next is closed for new drivers, features,
-> code refactoring and optimizations. We are currently accepting
-> bug fixes only.
-> 
-> Please repost when net-next reopens after 5.17-rc1 is cut.
-> 
-> Look out for the announcement on the mailing list or check:
-> http://vger.kernel.org/~davem/net-next.html
-> 
-> RFC patches sent for review only are obviously welcome at any time.
+I don't think you can add this unconditionally for all
+devices/platforms, clearly this wouldn't be true for Intel for now.
 
-OK, thanks a lot.
+If the information is not part of a firmware manifest or topology, then
+it's likely we have to use an abstraction layer to add this for specific
+platforms.
+
+it's really a bit odd to hard-code all of this at the kernel level, this
+was not really what I had in mind when we come up with the concept of
+querying capabilities. I understand though that for testing this is
+convenient, so maybe this can become a set of fall-back properties in
+case the firmware doesn't advertise anything.
+
+> +
+> +	return 0;
+> +}
+> +
+> +static struct snd_compr_codec_caps caps_pcm = {
+> +	.num_descriptors = 1,
+> +	.descriptor[0].max_ch = 2,
+> +	.descriptor[0].sample_rates[0] = 48000,
+> +	.descriptor[0].num_sample_rates = 1,
+> +	.descriptor[0].bit_rate = {1536, 3072},
+> +	.descriptor[0].num_bitrates = 2,
+> +	.descriptor[0].profiles = SND_AUDIOPROFILE_PCM,
+> +	.descriptor[0].modes = 0,
+> +	.descriptor[0].formats = SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S32_LE,
+> +};
+> +
+> +static struct snd_compr_codec_caps caps_mp3 = {
+> +	.num_descriptors = 1,
+> +	.descriptor[0].max_ch = 2,
+> +	.descriptor[0].sample_rates[0] = 48000,
+> +	.descriptor[0].num_sample_rates = 1,
+> +	.descriptor[0].bit_rate = {32, 40, 48, 56, 64, 80, 96, 112, 224, 256, 320},
+> +	.descriptor[0].num_bitrates = 11,
+> +	.descriptor[0].profiles = 0,
+> +	.descriptor[0].modes = SND_AUDIOCHANMODE_MP3_STEREO,
+> +	.descriptor[0].formats = 0,
+> +};
+> +
+> +static struct snd_compr_codec_caps caps_aac = {
+> +	.num_descriptors = 1,
+> +	.descriptor[0].max_ch = 2,
+> +	.descriptor[0].sample_rates[0] = 48000,
+> +	.descriptor[0].num_sample_rates = 1,
+> +	.descriptor[0].bit_rate = {128, 192},
+> +	.descriptor[0].num_bitrates = 2,
+> +	.descriptor[0].profiles = 0,
+> +	.descriptor[0].modes = 0,
+> +	.descriptor[0].formats = SND_AUDIOSTREAMFORMAT_MP4ADTS | SND_AUDIOSTREAMFORMAT_MP2ADTS,
+> +};
+> +
+> +static int sof_compr_get_codec_caps(struct snd_soc_component *component,
+> +				    struct snd_compr_stream *cstream,
+> +				    struct snd_compr_codec_caps *codec)
+> +{
+> +	switch (codec->codec) {
+> +	case SND_AUDIOCODEC_MP3:
+> +		*codec = caps_mp3;
+> +		break;
+> +	case SND_AUDIOCODEC_AAC:
+> +		*codec = caps_aac;
+> +		break;
+> +	case SND_AUDIOCODEC_PCM:
+> +		*codec = caps_pcm;
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +	return 0;
+> +}
+> +
+>  struct snd_compress_ops sof_compressed_ops = {
+>  	.open		= sof_compr_open,
+>  	.free		= sof_compr_free,
+> @@ -316,5 +388,7 @@ struct snd_compress_ops sof_compressed_ops = {
+>  	.trigger	= sof_compr_trigger,
+>  	.pointer	= sof_compr_pointer,
+>  	.copy		= sof_compr_copy,
+> +	.get_caps	= sof_compr_get_caps,
+> +	.get_codec_caps	= sof_compr_get_codec_caps,
+>  };
+>  EXPORT_SYMBOL(sof_compressed_ops);
+> 
