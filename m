@@ -2,68 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76685C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 09:48:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7091C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 09:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353185AbiASJsO (ORCPT
+        id S1353303AbiASJsQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 04:48:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36964 "EHLO
+        Wed, 19 Jan 2022 04:48:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36978 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353207AbiASJsN (ORCPT
+        with ESMTP id S1353289AbiASJsN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 19 Jan 2022 04:48:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDDB7C061574;
-        Wed, 19 Jan 2022 01:48:12 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABEFDC06173F
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 01:48:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 76820B81910;
-        Wed, 19 Jan 2022 09:48:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 476C3C004E1;
-        Wed, 19 Jan 2022 09:48:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3C48761543
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 09:48:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id A42EBC004E1;
+        Wed, 19 Jan 2022 09:48:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642585690;
-        bh=9lxZq+V4fSgTWNQiG1VvKwxS0DDDwwI9vkyCXU5Dadc=;
+        s=k20201202; t=1642585692;
+        bh=pY4KReaEw0u814aGXbae1WyLfrNWtzB5SMb+lpChISM=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=MRfpYKSb8lqKw4tTykefdx8ci8PYb9ZCVwUMaUX6KFXmxOuLcxDToLTqVScC0uUTe
-         TEtXKUpk2DODrLYxUPpTuvmklvOKkjFYSsl13BNKiSAvJXjMHk7IWbkygf19h1Yc7i
-         2LDcmffqS3CklBq+hMaaTxTAkGz0xe6juqsWKMCbJTblDXQAB1F+6NaIbbF3C3Vwxl
-         v2DXJc1LmjVg2Nd765Djp7zakehxX5qMstXROVRBxI38ipB8t37Fj7JdG4GzyPxRDL
-         mnRgyIeOWYLI9yo8ZOGT2U+MENgqSVXlsBc9A/ON8FbCFeq38+EOwm17OKchj7vDc4
-         Xf2ui+EXhfJsg==
+        b=WaKCI5QsFLbFjpCYXt0KJ3jRvCft2Q6SfOX7HC9+Pa0wF2dfVBp2LWq3HxzBrkoC/
+         gHMUZ9izqxfcYF0dohNDVqHef8/oodIANgF9YsIpYAth2W6KaLYgT17Nkg8yKOyTCg
+         KxvRo8AiCb0W1d+SxHzfnXmFl67bE4/ad5JvJQAPoTNeXuv6ympj7M8Prnt3dPXved
+         BDVyzteONLMqAet7fnqWgUDOedeOpPvUbElTa8nCTmNuMgsyWzjqog8Askh+r72UPr
+         aSylVWTyQoG5EkKJow24fexBzl+ClgigiFrG2+uUU3HQ/Hxgs5dVhsEiM3Xu6M+8DM
+         syAcbyzvQIYrg==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 36037F60797;
-        Wed, 19 Jan 2022 09:48:10 +0000 (UTC)
-Subject: Re: [GIT PULL] hwspinlock updates for v5.17
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 93C0EF60795;
+        Wed, 19 Jan 2022 09:48:12 +0000 (UTC)
+Subject: Re: [GIT PULL] random number generator fixes for 5.17-rc1
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220118142809.1751011-1-bjorn.andersson@linaro.org>
-References: <20220118142809.1751011-1-bjorn.andersson@linaro.org>
-X-PR-Tracked-List-Id: <linux-remoteproc.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220118142809.1751011-1-bjorn.andersson@linaro.org>
-X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/remoteproc/linux.git tags/hwlock-v5.17
-X-PR-Tracked-Commit-Id: 60630924bb5af8751adcecc896e7763c3783ca89
+In-Reply-To: <20220118164906.402468-1-Jason@zx2c4.com>
+References: <20220118164906.402468-1-Jason@zx2c4.com>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220118164906.402468-1-Jason@zx2c4.com>
+X-PR-Tracked-Remote: https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git random-5.17-rc1-for-linus
+X-PR-Tracked-Commit-Id: a254a0e4093fce8c832414a83940736067eed515
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 39b419eaf0df0de720ed417e785e6c0b004b0a51
-Message-Id: <164258569021.19279.10799535405213687040.pr-tracker-bot@kernel.org>
-Date:   Wed, 19 Jan 2022 09:48:10 +0000
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+X-PR-Merge-Commit-Id: 0ed905975612ea67224af26fd6bfbac965b6d029
+Message-Id: <164258569260.19279.8339990399698192601.pr-tracker-bot@kernel.org>
+Date:   Wed, 19 Jan 2022 09:48:12 +0000
+To:     "Jason A. Donenfeld" <Jason@zx2c4.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Ohad Ben-Cohen <ohad@wizery.com>,
-        linux-remoteproc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Fabien Dessenne <fabien.dessenne@foss.st.com>
+        linux-kernel@vger.kernel.org,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue, 18 Jan 2022 08:28:09 -0600:
+The pull request you sent on Tue, 18 Jan 2022 17:49:06 +0100:
 
-> https://git.kernel.org/pub/scm/linux/kernel/git/remoteproc/linux.git tags/hwlock-v5.17
+> https://git.kernel.org/pub/scm/linux/kernel/git/crng/random.git random-5.17-rc1-for-linus
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/39b419eaf0df0de720ed417e785e6c0b004b0a51
+https://git.kernel.org/torvalds/c/0ed905975612ea67224af26fd6bfbac965b6d029
 
 Thank you!
 
