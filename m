@@ -2,139 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFBB4C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 13:02:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC040C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 13:02:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232897AbiASNCM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 08:02:12 -0500
-Received: from outbound5b.eu.mailhop.org ([3.125.66.160]:24796 "EHLO
-        outbound5b.eu.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354523AbiASNCF (ORCPT
+        id S1354648AbiASNCh (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 19 Jan 2022 08:02:37 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:60470 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354583AbiASNCZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 08:02:05 -0500
-X-Greylist: delayed 96044 seconds by postgrey-1.27 at vger.kernel.org; Wed, 19 Jan 2022 08:02:05 EST
-ARC-Seal: i=1; a=rsa-sha256; t=1642597321; cv=none;
-        d=outbound.mailhop.org; s=arc-outbound20181012;
-        b=vHfpup2E1DbwqmhQeJ8+jlFBwORwx9h1K0RnM35cSzH9LGCJtqb4owzJTszkx6M+C74AhrqmEwBA0
-         rcmXeC8hJUkgbRqTXKAGv0jh7q3NdLhgsJR9u2k7CvDIq76pb97rp+8BTBGPG6IGMmwxggwPAohvRZ
-         hPFnnaJpQ7fCqGFJgN5pJhSLTp1gtFAyre9rX7HOfj464zxNdSkaoCNX6la/j5L2zczuepZYCxeonF
-         /apQOYl+BB65A8OrOpRTsFDMZFte7m4w2KTxdla8IKzABjRjPo7DT2Lv5KJSYBzKwjbuGccuoB7Pw0
-         vHMxc6b6sljzPcBTqm/D7TOSdabCbuQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=outbound.mailhop.org; s=arc-outbound20181012;
-        h=content-type:mime-version:message-id:in-reply-to:date:references:subject:cc:
-         to:from:dkim-signature:dkim-signature:from;
-        bh=c8r/igF5LndnA9H2CDXLuB0h9ElFTJCRkVRmiM0JaA8=;
-        b=JxDfVeb8uO8dxeKWNAZcU/5jtrgJYLrZ5fSqhEWx0bsDeC0wXoefR0hQtyhDRTPnsPS146sc77npz
-         bh1/CUSgdNxI1odZvk/iF3sJX/9PdzaDsx1D3N+jZ3CGWNW1kmjrney3mMJHuiW7YYzv9lgqpitD59
-         Cq2YnEfco8QHnjomcIM4DDyvhKKxklE9rB8eQqLN5FMLIhVngIeThYrmEkPVONLVTTdABb4Q6kdLaF
-         12oXIBPY5l4jlOmO1lyCzzTrkai7+MWj2IGBY8Po9Tu3K9qZELzTEOQVwGrVr90Y1kv2+DAzttlKuN
-         JO1bKJB8+ZABAq32zuwZae0Jh+NSZKA==
-ARC-Authentication-Results: i=1; outbound3.eu.mailhop.org;
-        spf=pass smtp.mailfrom=stackframe.org smtp.remote-ip=91.207.61.48;
-        dmarc=none header.from=stackframe.org;
-        arc=none header.oldest-pass=0;
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=stackframe.org; s=duo-1634547266507-560c42ae;
-        h=content-type:mime-version:message-id:in-reply-to:date:references:subject:cc:
-         to:from:from;
-        bh=c8r/igF5LndnA9H2CDXLuB0h9ElFTJCRkVRmiM0JaA8=;
-        b=cIW020Kx5LLQrpVaGkWAZPwtPYraTHmndoUBbKJ59e9o/dQx4hdayXuyMPssZMGHB+NeN9C7dVHnR
-         l5XTnxAE6+iCwAdYHFcpV5zowI0G1rVk1q899PCLlmcvFQOHHZNeR9qXnwzpoZnd4mXQ0FVEhYYBnk
-         8OnY0sBrNG8IkKcE=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=outbound.mailhop.org; s=dkim-high;
-        h=content-type:mime-version:message-id:in-reply-to:date:references:subject:cc:
-         to:from:from;
-        bh=c8r/igF5LndnA9H2CDXLuB0h9ElFTJCRkVRmiM0JaA8=;
-        b=cB4CSqr0ylyQGLc1mYdPbZm/5YDJPww2xfo+Rp9noVOgwxTr18QZ73OIsEEJm0Rz3RiCZAkpDF/3R
-         F/6dwEW/QoBTtoo0q9vvT/LXGKw/QXHSG7l/kkfP90UqPGqYuZvIVkJr/EuIZjiUnf5j/fdpQtvS3p
-         NfkIfOTafc0o8zRwV3Yz29zJKTjwTYHwyWbSsuWMNvBj3TFJs2MKXx9EZefKcSsZgadKkGEkJlW1y9
-         QlH9WAuSV+mRu33peEJ2sJ2ZOlxA7RgodKTp5JfSArV15lG6wk1amYahA7xXb1GCcMsMg/9CQ7KRd4
-         Lyt/7EKYJ1xFHOuF4N1ha8LmKFy8Gfw==
-X-Originating-IP: 91.207.61.48
-X-MHO-RoutePath: dG9ta2lzdG5lcm51
-X-MHO-User: f6021dd5-7927-11ec-954c-95b64d6800c5
-X-Report-Abuse-To: https://support.duocircle.com/support/solutions/articles/5000540958-duocircle-standard-smtp-abuse-information
-X-Mail-Handler: DuoCircle Outbound SMTP
-Received: from mail.duncanthrax.net (propper.duncanthrax.net [91.207.61.48])
-        by outbound3.eu.mailhop.org (Halon) with ESMTPSA
-        id f6021dd5-7927-11ec-954c-95b64d6800c5;
-        Wed, 19 Jan 2022 13:01:50 +0000 (UTC)
-Received: from hsi-kbw-109-193-149-228.hsi7.kabel-badenwuerttemberg.de ([109.193.149.228] helo=x1.stackframe.org.stackframe.org)
-        by mail.duncanthrax.net with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <svens@stackframe.org>)
-        id 1nAAaw-0058WT-Pr; Wed, 19 Jan 2022 15:01:47 +0200
-From:   Sven Schnelle <svens@stackframe.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Helge Deller <deller@gmx.de>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        linux-fbdev@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Ilia Mirkin <imirkin@alum.mit.edu>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        dri-devel@lists.freedesktop.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Pavel Machek <pavel@ucw.cz>, linux-kernel@vger.kernel.org,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Sam Ravnborg <sam@ravnborg.org>, Claudio Suarez <cssk@net-c.es>
-Subject: Re: [PATCH 2/2] Revert "fbcon: Disable accelerated scrolling"
-References: <20220119110839.33187-1-deller@gmx.de>
-        <20220119110839.33187-3-deller@gmx.de> <Yef0j8+DBbwC7Kjv@kroah.com>
-        <Yef15k2GtC40aJEu@kroah.com>
-Date:   Wed, 19 Jan 2022 14:01:44 +0100
-In-Reply-To: <Yef15k2GtC40aJEu@kroah.com> (Greg Kroah-Hartman's message of
-        "Wed, 19 Jan 2022 12:28:38 +0100")
-Message-ID: <87o847khfr.fsf@x1.stackframe.org>
+        Wed, 19 Jan 2022 08:02:25 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id C6361218B1;
+        Wed, 19 Jan 2022 13:02:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1642597343; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=RkiBdzpfXdOX7MXZnhxrmQteAOQNnX9ERhFe1qzjPU0=;
+        b=lT7JXlp02MR/i1jZ/yNF3al5FTGadcBqD8X3i/eOVe6bqBYGMKowI3ZTW0wO8Vu4ifeqVB
+        Xl+mDX1mPTcK98Eax6zG9jhbmxDlYLTGa6NRYXB/qLPkx7j3GLA7YoET3Dke19bp95HpUY
+        Xgv+befEEnMmIw52lDoAhd0gD3wOCfQ=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id A307F13B61;
+        Wed, 19 Jan 2022 13:02:23 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id omYVJ98L6GHlLQAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Wed, 19 Jan 2022 13:02:23 +0000
+Date:   Wed, 19 Jan 2022 14:02:22 +0100
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     Zhang Qiao <zhangqiao22@huawei.com>
+Cc:     Tejun Heo <tj@kernel.org>, lizefan.x@bytedance.com,
+        hannes@cmpxchg.org, cgroups@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [Question] set_cpus_allowed_ptr() call failed at cpuset_attach()
+Message-ID: <20220119130221.GA31037@blackbody.suse.cz>
+References: <09ce5796-798e-83d0-f1a6-ba38a787bfc5@huawei.com>
+ <4415cd09-6de3-bb2d-386d-8beb4927fb46@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <4415cd09-6de3-bb2d-386d-8beb4927fb46@huawei.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Greg,
+On Fri, Jan 14, 2022 at 09:15:06AM +0800, Zhang Qiao <zhangqiao22@huawei.com> wrote:
+> 	I found the following warning log on qemu. I migrated a task from one cpuset cgroup to
+> another, while I also performed the cpu hotplug operation, and got following calltrace.
 
-Greg Kroah-Hartman <gregkh@linuxfoundation.org> writes:
+Do you have more information on what hotplug event and what error
+(from set_cpus_allowed_ptr() you observe? (And what's src/dst cpuset wrt
+root/non-root)?
 
-> On Wed, Jan 19, 2022 at 12:22:55PM +0100, Greg Kroah-Hartman wrote:
->> On Wed, Jan 19, 2022 at 12:08:39PM +0100, Helge Deller wrote:
->> > This reverts commit 39aead8373b3c20bb5965c024dfb51a94e526151.
->> > 
->> > Revert this patch.  This patch started to introduce the regression that
->> > all hardware acceleration of more than 35 existing fbdev drivers were
->> > bypassed and thus fbcon console output for those was dramatically slowed
->> > down by factor of 10 and more.
->> > 
->> > Reverting this commit has no impact on DRM, since none of the DRM drivers are
->> > tagged with the acceleration flags FBINFO_HWACCEL_COPYAREA,
->> > FBINFO_HWACCEL_FILLRECT or others.
->> > 
->> > Signed-off-by: Helge Deller <deller@gmx.de>
->> > Cc: stable@vger.kernel.org # v5.16
->> 
->> Why just 5.16?  This commit came in on 5.11 and was backported to
->> 5.10.5.
->> 
->> As for "why", I think there was a number of private bugs that were
->> reported in this code, which is why it was removed.  I do not think it
->> can be safely added back in without addressing them first.  Let me go
->> dig through my email to see if I can find them...
->
-> Ah, no, that was just the soft scrollback code I was thinking of, which
-> was a different revert and is still gone, thankfully :)
->
-> This one was just removed because Daniel noticed that only 3 drivers
-> used this (nouveau, omapdrm, and gma600), so this shouldn't have caused
-> any regressions in any other drivers like you are reporting here.
+> 	Can we use cpus_read_lock()/cpus_read_unlock() to guarantee that set_cpus_allowed_ptr()
+> doesn't fail, as follows:
 
-I'm counting more than 3 drivers using this. I think one of the reasons
-why it was reverted was that no one is actively maintaining fbdev. With
-Helge now volunteering i don't see a reason why it should stay reverted.
-If there are issues coming up i'm pretty sure Helge would care, and i
-would probably also take a look.
+I'm wondering what can be wrong with the current actors:
 
-/Sven
+    cpuset_can_attach
+      down_read(cpuset_rwsem)
+        // check all migratees
+      up_read(cpuset_rwsem)
+                                      [ _cpu_down / cpuhp_setup_state ]
+                                      schedule_work
+                                      ...
+                                      cpuset_hotplug_update_tasks
+                                        down_write(cpuset_rwsem)
+                                        up_write(cpuset_rwsem)
+                                      ... flush_work
+                                      [ _cpu_down / cpu_up_down_serialize_trainwrecks ]
+    cpuset_attach
+      down_write(cpuset_rwsem)
+        set_cpus_allowed_ptr(allowed_cpus_weird)
+      up_write(cpuset_rwsem)
+
+The statement in cpuset_attach() about cpuset_can_attach() test is not
+so strong since task_can_attach() is mostly a pass for non-deadline
+tasks. Still, the use of cpuset_rwsem above should synchronize (I may be
+mistaken) the changes of cpuset's cpu masks, so I'd be interested about
+the details above to understand why the current approach doesn't work.
+
+The additional cpus_read_{,un}lock (when reordered wrt cpuset_rwsem)
+may work but your patch should explain why (in what situation).
+
+My .02€,
+Michal
