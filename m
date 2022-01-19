@@ -2,183 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD969C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 22:26:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFF34C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 22:27:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357567AbiASWZ7 (ORCPT
+        id S1343916AbiASW1e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 17:25:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41116 "EHLO
+        Wed, 19 Jan 2022 17:27:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357562AbiASWZy (ORCPT
+        with ESMTP id S234461AbiASW1d (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 17:25:54 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E723C06161C
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 14:25:54 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id a18so19993533edj.7
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 14:25:54 -0800 (PST)
+        Wed, 19 Jan 2022 17:27:33 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5C64C061574;
+        Wed, 19 Jan 2022 14:27:32 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id az27-20020a05600c601b00b0034d2956eb04so8838773wmb.5;
+        Wed, 19 Jan 2022 14:27:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cgjUtIp/NJ23YXRIEjOj0qjbOPGKNdYKcaS2fOswzbc=;
-        b=oGsu4bZqbrZah1XP9hAFPpaAxPc35v4wJQuOPO6BSg+l2m68e9br8SuK66riHukFLH
-         FXIxgXuLCj2g6EufW8wwPm1p/MvkT1nT1blp81zUvRKjiIloJ5HMv/mSEC5Hx1fjZ/gU
-         24pRsKr0zUguTJrpNO/ORsBpWNhlVRjbhQAAAi1Yr+ERmQeLw1l9tVJegpXqqIf6kihG
-         Fr5/fcaS+jKnxNy34qGp5472VvREqU/oI/9IRaT5Myb59dZYQ9AwZzifVIgXEt4SIzIE
-         lNLpwj1O9nQl1h87Mqzo6KjG6z5+7UzbgI5xmzlB53q6vEnT2MCTyzSkMN0jPg0QD6/M
-         DFmA==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DewfwLZFcsnQ9ncpMxSujVRfw0OZIAPpjTixgbn7cO4=;
+        b=FyWmTBJWfW4BZj88fk1zNS4Qk6/ciN00sglYtgb2SE6qohdf1AnadARKLw9ZcAfc/C
+         cONhz7zFV5vSPQw2AVl+MlZ9fkWmw3s4m8YgOBFqoByk/49H6Lg8WlWrKW+S+5sKeqpI
+         HeEu+JN/UVkrgyEhzl/RVbOWrUNKZHznXJZ7/hkw7HCVyNR2HAxGM5hJTYiVJoATCsar
+         BJl3VM2dnTCo8gDSNUDvK/+IngGNdkjyK486MkdIq168GVGyCEBjyY3PlgwpaCpzMDJx
+         cyWVUe+CRQzahl20+O4/S5WS5TSFQ3+LTJbSN1m0T0cFZ79O2PYnz10IRVFBODTQ26VT
+         bFSQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cgjUtIp/NJ23YXRIEjOj0qjbOPGKNdYKcaS2fOswzbc=;
-        b=FH29/UCoPMBjW0vLC+t26eYey50IUxD3NakiK1iv6u3Uaxdz7rJdni+0fVpO5mhHPx
-         FOqmQ0UhBWdzD24tVuXwtark4FB0e3AxsIQ3bcWE+ecsKeuzl4uf6THlf7GjJqwdrsOw
-         C5gF/v1ltylQ/Y5XH7ac6N6Dk+ExygUbEDZQ/v0OP0PMaRrhshhvGXjyeKlDTd7sQQK6
-         DiXYUngrWgP8LUzu7i5P39J03vW51Wiq94Cg/PARHpHXtvPPnXlviy6O8F7y7vtJzmT3
-         24lJA2+e/1ux+JGHoOd9v4aoyg48YAdHiAt2+VeJZJY9+MItYSZ57dJNnWJGUc7rxROe
-         yqsQ==
-X-Gm-Message-State: AOAM533lyjpeh7XyP/xUODOP255kx7iXtKhliPEa/glvl8mL/5JaefZI
-        K5r5+VMC96b5QK3g4hoym44mXo87cIvKr+hkRNjYUg==
-X-Google-Smtp-Source: ABdhPJzkgP6BEDEgQhuAM2rXNU61+MwKYa2K+ClyYgh+IFMum6eOxwSxae/Wj82WqClt5hDJXhIt8J5jlLwZk0HJSxg=
-X-Received: by 2002:aa7:dc53:: with SMTP id g19mr32773866edu.294.1642631152867;
- Wed, 19 Jan 2022 14:25:52 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DewfwLZFcsnQ9ncpMxSujVRfw0OZIAPpjTixgbn7cO4=;
+        b=xrqxBFpG6s1189vslYo0F1ZAaQgp1TSYMWyNUYMyokJAfCFek+fGqTjE34a1AUd26+
+         hOEpc+KiV8paMJUDEs/rRni39S3h5aTiBVcmYM9NO+qNTZ46Jw6lHs/fdjNQftIDLuno
+         qyFJZNs5AVYuKo0ZYdBqM3tGv9D47UObBfJ+7jq6Y1zVyNXYVOWfvLiM6WwD8Lel6p8o
+         IYWF9fbWw9CHCKx1mzw/ZzPLlEbju8Yf1yKsGPbtH51yGpP2Zs4MsPcGTr7io8n5mDDD
+         ILMBxBVsex9v1AOlGN7+tVc75o4mbHfVgzQFNB5LiT2k9jy5P1xqjg7PkcuYpoQnYbBF
+         iEeg==
+X-Gm-Message-State: AOAM530AAEu3kaePl0eV2Rr0ssYi+yuu1URNr66N+Cjl+tuvmrrFlDIQ
+        MMWYc0+CRijM5GeVi4H1jKJ9ieIxOn6ETg==
+X-Google-Smtp-Source: ABdhPJwdHP56Fn/iianQoY6+zo6qivLJMovmcOBNiZlgtysy3YcqH7ISqcGIWhnB51NmGEt8inpFvA==
+X-Received: by 2002:a05:600c:a47:: with SMTP id c7mr5776345wmq.23.1642631251405;
+        Wed, 19 Jan 2022 14:27:31 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id l13sm982203wrs.109.2022.01.19.14.27.30
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Jan 2022 14:27:30 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        linux-fsdevel@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] fs/coredump: rate limit the unsafe core_pattern warning
+Date:   Wed, 19 Jan 2022 22:27:29 +0000
+Message-Id: <20220119222729.98545-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-References: <20220104202227.2903605-1-yuzhao@google.com> <YdSuSHa/Vjl6bPkg@google.com>
- <Yd1Css8+jsspeZHh@google.com>
-In-Reply-To: <Yd1Css8+jsspeZHh@google.com>
-From:   Brian Geffon <bgeffon@google.com>
-Date:   Wed, 19 Jan 2022 17:25:16 -0500
-Message-ID: <CADyq12z9LtDEURaKTY8qx8nb7mqUL5jLnO682DeweFOmw31LDQ@mail.gmail.com>
-Subject: Re: [PATCH v6 0/9] Multigenerational LRU Framework
-To:     Yu Zhao <yuzhao@google.com>
-Cc:     Alexandre Frade <kernel@xanmod.org>,
-        Daniel Byrne <djbyrne@mtu.edu>,
-        =?UTF-8?Q?Holger_Hoffst=C3=A4tte?= <holger@applied-asynchrony.com>,
-        Jan Alexander Steffens <heftig@archlinux.org>,
-        Shuang Zhai <szhai2@cs.rochester.edu>,
-        Sofia Trinh <sofia.trinh@edi.works>,
-        Steven Barrett <steven@liquorix.net>,
-        Suleiman Souhlal <suleiman@google.com>,
-        Andi Kleen <ak@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Michal Hocko <mhocko@kernel.org>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-mm <linux-mm@kvack.org>, page-reclaim@google.com,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022 at 3:41 AM Yu Zhao <yuzhao@google.com> wrote:
->
-> On Tue, Jan 04, 2022 at 01:30:00PM -0700, Yu Zhao wrote:
-> > On Tue, Jan 04, 2022 at 01:22:19PM -0700, Yu Zhao wrote:
-> > > TLDR
-> > > ====
-> > > The current page reclaim is too expensive in terms of CPU usage and it
-> > > often makes poor choices about what to evict. This patchset offers an
-> > > alternative solution that is performant, versatile and
-> > > straightforward.
-> >
-> > <snipped>
-> >
-> > > Summery
-> > > =======
-> > > The facts are:
-> > > 1. The independent lab results and the real-world applications
-> > >    indicate substantial improvements; there are no known regressions.
-> > > 2. Thrashing prevention, working set estimation and proactive reclaim
-> > >    work out of the box; there are no equivalent solutions.
-> > > 3. There is a lot of new code; nobody has demonstrated smaller changes
-> > >    with similar effects.
-> > >
-> > > Our options, accordingly, are:
-> > > 1. Given the amount of evidence, the reported improvements will likely
-> > >    materialize for a wide range of workloads.
-> > > 2. Gauging the interest from the past discussions [14][15][16], the
-> > >    new features will likely be put to use for both personal computers
-> > >    and data centers.
-> > > 3. Based on Google's track record, the new code will likely be well
-> > >    maintained in the long term. It'd be more difficult if not
-> > >    impossible to achieve similar effects on top of the existing
-> > >    design.
-> >
-> > Hi Andrew, Linus,
-> >
-> > Can you please take a look at this patchset and let me know if it's
-> > 5.17 material?
-> >
-> > My goal is to get it merged asap so that users can reap the benefits
-> > and I can push the sequels. Please examine the data provided -- I
-> > think the unprecedented coverage and the magnitude of the improvements
-> > warrant a green light.
->
-> Downstream kernel maintainers who have been carrying MGLRU for more than
-> 3 versions, can you please provide your Acked-by tags?
->
-> Having this patchset in the mainline will make your job easier :)
->
->    Alexandre - the XanMod Kernel maintainer
->                https://xanmod.org
->
->    Brian     - the Chrome OS kernel memory maintainer
->                https://www.chromium.org
+It is possible to spam the kernel log with many invalid attempts
+to set the core_pattern. Rate limit the warning message to make
+it less spammy.
 
-MGLRU has been maturing in ChromeOS for quite some time, we've
-maintained it in a number of different kernels between 4.14 and 5.15,
-and it's become the default
-for tens of millions of users. We've seen substantial improvements in
-terms of CPU utilization and memory pressure resulting in fewer OOM
-kills and reduced UI latency. I would love to see this make it
-upstream so more desktop users can benefit.
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+---
+ fs/coredump.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Acked-by: Brian Geffon <bgeffon@google.com>
+diff --git a/fs/coredump.c b/fs/coredump.c
+index 1c060c0a2d72..2dadc1dcaa2c 100644
+--- a/fs/coredump.c
++++ b/fs/coredump.c
+@@ -898,7 +898,7 @@ void validate_coredump_safety(void)
+ {
+ 	if (suid_dumpable == SUID_DUMP_ROOT &&
+ 	    core_pattern[0] != '/' && core_pattern[0] != '|') {
+-		pr_warn(
++		pr_warn_ratelimited(
+ "Unsafe core_pattern used with fs.suid_dumpable=2.\n"
+ "Pipe handler or fully qualified core dump path required.\n"
+ "Set kernel.core_pattern before fs.suid_dumpable.\n"
+-- 
+2.33.1
 
-
->
->    Jan       - the Arch Linux Zen kernel maintainer
->                https://archlinux.org
->
->    Steven    - the Liquorix kernel maintainer
->                https://liquorix.net
->
->    Suleiman  - the ARCVM (Android downstream) kernel memory maintainer
->                https://chromium.googlesource.com/chromiumos/third_party/kernel
->
-> Also my gratitude to those who have helped test MGLRU:
->
->    Daniel - researcher at Michigan Tech
->             benchmarked memcached
->
->    Holger - who has been testing/patching/contributing to various
->             subsystems since ~2008
->
->    Shuang - researcher at University of Rochester
->             benchmarked fio and provided a report
->
->    Sofia  - EDI https://www.edi.works
->             benchmarked the top eight memory hogs and provided reports
->
-> Can you please provide your Tested-by tags? This will ensure the credit
-> for your contributions.
->
-> Thanks!
