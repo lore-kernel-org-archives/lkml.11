@@ -2,150 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E8DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 02:40:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF26EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 02:45:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351044AbiASCke (ORCPT
+        id S1351051AbiASCpS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 21:40:34 -0500
-Received: from mga01.intel.com ([192.55.52.88]:50511 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1351032AbiASCkR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 21:40:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642560017; x=1674096017;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=VCH8WO0XLfxSlyzeMSeacf0IRboGEyy2xqx1o0Uvz6E=;
-  b=ENQIPTFWkjtJyKbwWBuFCHx7LRP9EQ9TKW+IlmnqN2a4Nq9JN4QzZWis
-   f2NVtQQU7dAnucOUYex2C5YY0xmGXtk42hu+AkUquFFOlvkI+dDyjyoKR
-   3bCtMi4PWGD77qHDIK0QS9XbumWqE8XA0l14+IqHGyZKw7k5yDv9LcWgL
-   CP6VNO7z3AOKsxVyhzwNolQ3WYNdEem45kNkl89uIqnHQpVZOwe7VPWun
-   IBXxHUfXNQvwioF4NNw7mm7/247EwF1nV26QkuxT1OtSOHw19iJ/zKxpU
-   fF5SqI4cyJZlClM9cjcEI+ob4TUfDyEg3WQtHXtlKgul0ahsjyf+E1ebA
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="269354459"
-X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="269354459"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 18:40:16 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="518002399"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 18 Jan 2022 18:40:14 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nA0tR-000D9f-U3; Wed, 19 Jan 2022 02:40:13 +0000
-Date:   Wed, 19 Jan 2022 10:40:08 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     "sw.multimedia" <sw.multimedia@starfivetech.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        "jack.zhu" <jack.zhu@starfivetech.com>,
-        "keith.zhao" <keith.zhao@starfivetech.com>
-Subject: [esmil:visionfive 64/80] include/linux/kern_levels.h:5:25: warning:
- format '%llx' expects argument of type 'long long unsigned int', but
- argument 2 has type 'dma_addr_t' {aka 'unsigned int'}
-Message-ID: <202201191032.ozy73s1C-lkp@intel.com>
+        Tue, 18 Jan 2022 21:45:18 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:26316 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344162AbiASCpR (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 21:45:17 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642560317;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2QbQg6mxiZtW68ExHgyVdc/QMifv6KYOVGiXP5EWIls=;
+        b=YJoLfA/rvI57FrBPt1NlOJ5OJ8wSWZAuB/cHlxPXyntHblWZJLEip03e0dXgTg9YZyLGoU
+        OR0SD74FsHuCioYdkBQq8xJOD8YemvOIajLS2zkMfr0lbDm4AQMgwsIULCFuZAXSEc2pb0
+        ro+6vCg6XW4MVgVnqOq971xGfbHnL90=
+Received: from mail-lf1-f69.google.com (mail-lf1-f69.google.com
+ [209.85.167.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-610-GvCh6WxRMpeZ5vt4YUeEbQ-1; Tue, 18 Jan 2022 21:45:16 -0500
+X-MC-Unique: GvCh6WxRMpeZ5vt4YUeEbQ-1
+Received: by mail-lf1-f69.google.com with SMTP id v7-20020a056512048700b0042d99b3a962so513602lfq.23
+        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 18:45:15 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=2QbQg6mxiZtW68ExHgyVdc/QMifv6KYOVGiXP5EWIls=;
+        b=TopnhnIsB3Xf+W6FwdiXxwi77rChZlssV3+T9QbkKgHqdRbLiJRD+UFjsmkQC06A+J
+         3PWbnTZGba2i6MOjQT7I8xHrZ9k5phmDwVtP+ol3KjlgWhKQcaXcgl370tW6c3IvO8SP
+         AAJHIKurj9xxPoSW1/7Xi9K/waENAnNsLLzKjhY4irnkRPwPg1GPpCz0NN+Pa/M6AQ+T
+         H7MNxkcMRJtzBzOnjtZ6036rtcsb0BsZ+SblOWZxe8wiFufHhQkBckvo3RDUcFud1rWz
+         Gr8DaDsBLs6zrLawvv9E/8C7waSHDjgyfeqLAn5dcnr24OmljXtkNM3uxTU0qQurrrQk
+         aREw==
+X-Gm-Message-State: AOAM533gIsAIrgvahXGpYG5y/8g02n2MYX9gY/GqAubaav4iwoUKqcLD
+        JLc3VTbFoDw44KD+MaGts3MIasR/wf3XafAX/D2WhETxW1ZPXkJ2RoBVNPi0qvg1RllJ0bR/7rB
+        CDwo5224Cmu2y5k4nwNDhp5mYrze+bSZJgUjvq6OV
+X-Received: by 2002:a2e:9843:: with SMTP id e3mr21777387ljj.277.1642560314285;
+        Tue, 18 Jan 2022 18:45:14 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzB9BW6WWCim9vDYU4kum1F16AkR869KEeJaKkIEYwrn5RQkE5MqxGYI12cabpygmhempbvUOpSdSvSn6zf90Q=
+X-Received: by 2002:a2e:9843:: with SMTP id e3mr21777377ljj.277.1642560314113;
+ Tue, 18 Jan 2022 18:45:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220118150631.167015-1-sgarzare@redhat.com>
+In-Reply-To: <20220118150631.167015-1-sgarzare@redhat.com>
+From:   Jason Wang <jasowang@redhat.com>
+Date:   Wed, 19 Jan 2022 10:45:03 +0800
+Message-ID: <CACGkMEtrH5dy7WxqEg7vNARUu3tsYZBtP8MX7a60VR+ZyWvVrw@mail.gmail.com>
+Subject: Re: [PATCH] tools/virtio: fix virtio_test execution
+To:     Stefano Garzarella <sgarzare@redhat.com>
+Cc:     virtualization <virtualization@lists.linux-foundation.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/esmil/linux visionfive
-head:   e46c3a7e373e6faa03399f1a41c29cf7546c37cb
-commit: 1eb3575230496368002bc06d59b7d219c09af47b [64/80] drm/starfive: Add StarFive drm driver
-config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220119/202201191032.ozy73s1C-lkp@intel.com/config)
-compiler: m68k-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/esmil/linux/commit/1eb3575230496368002bc06d59b7d219c09af47b
-        git remote add esmil https://github.com/esmil/linux
-        git fetch --no-tags esmil visionfive
-        git checkout 1eb3575230496368002bc06d59b7d219c09af47b
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=m68k SHELL=/bin/bash drivers/gpu/drm/starfive/
+On Tue, Jan 18, 2022 at 11:06 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+>
+> virtio_test hangs on __vring_new_virtqueue() because `vqs_list_lock`
+> is not initialized.
+>
+> Let's initialize it in vdev_info_init().
+>
+> Signed-off-by: Stefano Garzarella <sgarzare@redhat.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 
-All warnings (new ones prefixed by >>):
+> ---
+>  tools/virtio/virtio_test.c | 1 +
+>  1 file changed, 1 insertion(+)
+>
+> diff --git a/tools/virtio/virtio_test.c b/tools/virtio/virtio_test.c
+> index cb3f29c09aff..23f142af544a 100644
+> --- a/tools/virtio/virtio_test.c
+> +++ b/tools/virtio/virtio_test.c
+> @@ -130,6 +130,7 @@ static void vdev_info_init(struct vdev_info* dev, unsigned long long features)
+>         memset(dev, 0, sizeof *dev);
+>         dev->vdev.features = features;
+>         INIT_LIST_HEAD(&dev->vdev.vqs);
+> +       spin_lock_init(&dev->vdev.vqs_list_lock);
+>         dev->buf_size = 1024;
+>         dev->buf = malloc(dev->buf_size);
+>         assert(dev->buf);
+> --
+> 2.31.1
+>
 
-   In file included from include/asm-generic/bug.h:22,
-                    from arch/m68k/include/asm/bug.h:32,
-                    from include/linux/bug.h:5,
-                    from include/linux/io.h:11,
-                    from include/linux/dma-buf-map.h:9,
-                    from include/linux/dma-buf.h:16,
-                    from drivers/gpu/drm/starfive/starfive_drm_gem.c:5:
-   drivers/gpu/drm/starfive/starfive_drm_gem.c: In function 'starfive_drm_gem_alloc_dma':
->> include/linux/kern_levels.h:5:25: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 2 has type 'dma_addr_t' {aka 'unsigned int'} [-Wformat=]
-       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
-         |                         ^~~~~~
-   include/linux/printk.h:422:25: note: in definition of macro 'printk_index_wrap'
-     422 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                         ^~~~
-   include/drm/drm_print.h:494:9: note: in expansion of macro 'printk'
-     494 |         printk##once(KERN_##level "[" DRM_NAME "] " fmt, ##__VA_ARGS__)
-         |         ^~~~~~
-   include/linux/kern_levels.h:14:25: note: in expansion of macro 'KERN_SOH'
-      14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
-         |                         ^~~~~~~~
-   include/drm/drm_print.h:494:22: note: in expansion of macro 'KERN_INFO'
-     494 |         printk##once(KERN_##level "[" DRM_NAME "] " fmt, ##__VA_ARGS__)
-         |                      ^~~~~
-   include/drm/drm_print.h:498:9: note: in expansion of macro '_DRM_PRINTK'
-     498 |         _DRM_PRINTK(, INFO, fmt, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~
-   drivers/gpu/drm/starfive/starfive_drm_gem.c:132:9: note: in expansion of macro 'DRM_INFO'
-     132 |         DRM_INFO("dma_addr = 0x%llx, size = %lu\n", starfive_obj->dma_addr, obj->size);
-         |         ^~~~~~~~
-   include/linux/kern_levels.h:5:25: warning: format '%lu' expects argument of type 'long unsigned int', but argument 3 has type 'size_t' {aka 'unsigned int'} [-Wformat=]
-       5 | #define KERN_SOH        "\001"          /* ASCII Start Of Header */
-         |                         ^~~~~~
-   include/linux/printk.h:422:25: note: in definition of macro 'printk_index_wrap'
-     422 |                 _p_func(_fmt, ##__VA_ARGS__);                           \
-         |                         ^~~~
-   include/drm/drm_print.h:494:9: note: in expansion of macro 'printk'
-     494 |         printk##once(KERN_##level "[" DRM_NAME "] " fmt, ##__VA_ARGS__)
-         |         ^~~~~~
-   include/linux/kern_levels.h:14:25: note: in expansion of macro 'KERN_SOH'
-      14 | #define KERN_INFO       KERN_SOH "6"    /* informational */
-         |                         ^~~~~~~~
-   include/drm/drm_print.h:494:22: note: in expansion of macro 'KERN_INFO'
-     494 |         printk##once(KERN_##level "[" DRM_NAME "] " fmt, ##__VA_ARGS__)
-         |                      ^~~~~
-   include/drm/drm_print.h:498:9: note: in expansion of macro '_DRM_PRINTK'
-     498 |         _DRM_PRINTK(, INFO, fmt, ##__VA_ARGS__)
-         |         ^~~~~~~~~~~
-   drivers/gpu/drm/starfive/starfive_drm_gem.c:132:9: note: in expansion of macro 'DRM_INFO'
-     132 |         DRM_INFO("dma_addr = 0x%llx, size = %lu\n", starfive_obj->dma_addr, obj->size);
-         |         ^~~~~~~~
-   At top level:
-   drivers/gpu/drm/starfive/starfive_drm_gem.c:17:42: warning: 'mmap_mem_ops' defined but not used [-Wunused-const-variable=]
-      17 | static const struct vm_operations_struct mmap_mem_ops = {
-         |                                          ^~~~~~~~~~~~
-
-
-vim +5 include/linux/kern_levels.h
-
-314ba3520e513a7 Joe Perches 2012-07-30  4  
-04d2c8c83d0e3ac Joe Perches 2012-07-30 @5  #define KERN_SOH	"\001"		/* ASCII Start Of Header */
-04d2c8c83d0e3ac Joe Perches 2012-07-30  6  #define KERN_SOH_ASCII	'\001'
-04d2c8c83d0e3ac Joe Perches 2012-07-30  7  
-
-:::::: The code at line 5 was first introduced by commit
-:::::: 04d2c8c83d0e3ac5f78aeede51babb3236200112 printk: convert the format for KERN_<LEVEL> to a 2 byte pattern
-
-:::::: TO: Joe Perches <joe@perches.com>
-:::::: CC: Linus Torvalds <torvalds@linux-foundation.org>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
