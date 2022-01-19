@@ -2,135 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D44C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 15:05:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDF31C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 15:06:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344565AbiASPFh (ORCPT
+        id S1355310AbiASPGo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 10:05:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53334 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355627AbiASPFX (ORCPT
+        Wed, 19 Jan 2022 10:06:44 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49320 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235115AbiASPGn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 10:05:23 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1AA3C06161C
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 07:05:22 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id az27-20020a05600c601b00b0034d2956eb04so5980293wmb.5
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 07:05:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=0odyDD4qZWEyKf4dgk5bsg3tKYSY9CGvoUStfcevylA=;
-        b=KY4YCZwWueLtUID+/YuRziwAprnxroizrhhiLqgR+VJv0dvAqf6p/e/Z8+2hbD5td3
-         M1RXz2Ulz5/UO405poQs0LC2mWECerbCYmm6/PclkyYapoYCKVCVsrH7+qHMc7mD7DNG
-         yVv6KCpVaJQuyRwX173l73U/aTdl9LopqeRzs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :in-reply-to;
-        bh=0odyDD4qZWEyKf4dgk5bsg3tKYSY9CGvoUStfcevylA=;
-        b=RkuDCglsVjcEBLNjHA7aXH53ijQqWm+awEYUL644VtemHj+Q+oLHPlrJ06gRs6oGp+
-         tq4fuvnXRXKrBwjUahug8jzholY6cn4BW1pQYWqL/n+YXzE4tOsq/UiOXKO9oeMogzod
-         epVXhiPUpRy8WDd1fpKZFlEUmijEC2ZMcKy45crg80o2R0cDqGCx2igIs+hYHZ6fQkxB
-         N6EXJ2hqZMGJ0TBCoQ1I5MSlCSku0yVhvHfeg/2TKECQr65wkfI3K1crKjom/OPa/BG1
-         zszhHx1YUv6+hmr1wDXKYiUsxNPGOOd2iRDivtO3tblJKXWJ+5sAcBujbdaqfUJrpuPV
-         rhzQ==
-X-Gm-Message-State: AOAM530GarK7JJg3p68l+yazTxpa8oAuMIR5dFxroS4E+P9yT0H20qYn
-        lN1XmKdxdx/CZILO1e5JvWiM/A==
-X-Google-Smtp-Source: ABdhPJxqxOTFLl5T1cf1q2Ex/gbOeL3/4WLRyt3JAUtwMEe4sBmurRyS45VDAxAFnc6SDjv5q4TcRQ==
-X-Received: by 2002:adf:fec2:: with SMTP id q2mr29547534wrs.546.1642604721320;
-        Wed, 19 Jan 2022 07:05:21 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id g17sm7645503wmq.9.2022.01.19.07.05.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Jan 2022 07:05:20 -0800 (PST)
-Date:   Wed, 19 Jan 2022 16:05:18 +0100
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Weizhao Ouyang <o451686892@gmail.com>
-Cc:     Sumit Semwal <sumit.semwal@linaro.org>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@kernel.org>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>, christian.koenig@amd.com,
-        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org
-Subject: Re: [PATCH] dma-buf: cma_heap: Fix mutex locking section
-Message-ID: <YegormDmEewox0MF@phenom.ffwll.local>
-Mail-Followup-To: Weizhao Ouyang <o451686892@gmail.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Liam Mark <lmark@codeaurora.org>, Laura Abbott <labbott@kernel.org>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>, christian.koenig@amd.com,
-        linaro-mm-sig@lists.linaro.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-media@vger.kernel.org
-References: <20220104073545.124244-1-o451686892@gmail.com>
+        Wed, 19 Jan 2022 10:06:43 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D64CCB80E09;
+        Wed, 19 Jan 2022 15:06:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04AE5C004E1;
+        Wed, 19 Jan 2022 15:06:36 +0000 (UTC)
+Date:   Wed, 19 Jan 2022 10:06:35 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Sakari Ailus <sakari.ailus@linux.intel.com>
+Cc:     Lucas De Marchi <lucas.demarchi@intel.com>,
+        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+        linux-security-module@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Christian =?UTF-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Emma Anholt <emma@anholt.net>, Eryk Brol <eryk.brol@amd.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Leo Li <sunpeng.li@amd.com>,
+        Mikita Lipski <mikita.lipski@amd.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Vishal Kulkarni <vishal@chelsio.com>
+Subject: Re: [PATCH 1/3] lib/string_helpers: Consolidate yesno()
+ implementation
+Message-ID: <20220119100635.6c45372b@gandalf.local.home>
+In-Reply-To: <YefXg03hXtrdUj6y@paasikivi.fi.intel.com>
+References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
+        <20220119072450.2890107-2-lucas.demarchi@intel.com>
+        <YefXg03hXtrdUj6y@paasikivi.fi.intel.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220104073545.124244-1-o451686892@gmail.com>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 04, 2022 at 03:35:45PM +0800, Weizhao Ouyang wrote:
-> Fix cma_heap_buffer mutex locking critical section to protect vmap_cnt
-> and vaddr.
+On Wed, 19 Jan 2022 11:18:59 +0200
+Sakari Ailus <sakari.ailus@linux.intel.com> wrote:
+
+> On Tue, Jan 18, 2022 at 11:24:48PM -0800, Lucas De Marchi wrote:
+> > @@ -1354,8 +1345,7 @@ static bool tomoyo_print_condition(struct tomoyo_io_buffer *head,
+> >  	case 3:
+> >  		if (cond->grant_log != TOMOYO_GRANTLOG_AUTO)
+> >  			tomoyo_io_printf(head, " grant_log=%s",
+> > -					 tomoyo_yesno(cond->grant_log ==
+> > -						      TOMOYO_GRANTLOG_YES));
+> > +					 yesno(cond->grant_log == TOMOYO_GRANTLOG_YES));  
 > 
-> Fixes: a5d2d29e24be ("dma-buf: heaps: Move heap-helper logic into the cma_heap implementation")
-> Signed-off-by: Weizhao Ouyang <o451686892@gmail.com>
-> ---
->  drivers/dma-buf/heaps/cma_heap.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+> This would be better split on two lines.
+
+Really? Yuck!
+
+I thought the "max line size" guideline was going to grow to a 100, but I
+still see it as 80. But anyway...
+
+	cond->grant_log ==
+	TOMOYO_GRANTLOG_YES
+
+is not readable at all. Not compared to
+
+	cond->grant_log == TOMOYO_GRANTLOG_YES
+
+I say keep it one line!
+
+Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
+
+-- Steve
+
 > 
-> diff --git a/drivers/dma-buf/heaps/cma_heap.c b/drivers/dma-buf/heaps/cma_heap.c
-> index 0c05b79870f9..83f02bd51dda 100644
-> --- a/drivers/dma-buf/heaps/cma_heap.c
-> +++ b/drivers/dma-buf/heaps/cma_heap.c
-> @@ -124,10 +124,11 @@ static int cma_heap_dma_buf_begin_cpu_access(struct dma_buf *dmabuf,
->  	struct cma_heap_buffer *buffer = dmabuf->priv;
->  	struct dma_heap_attachment *a;
->  
-> +	mutex_lock(&buffer->lock);
-> +
->  	if (buffer->vmap_cnt)
->  		invalidate_kernel_vmap_range(buffer->vaddr, buffer->len);
-
-Since this creates nesting with mm/, but optionally I think it'd be good
-to prime lockdep so it knows about this. See e.g. dma_resv_lockdep() in
-dma-resv.c, except I don't know offhand what the right lock for
-invalidate_kernel_vmap_range is.
--Daniel
-
-
->  
-> -	mutex_lock(&buffer->lock);
->  	list_for_each_entry(a, &buffer->attachments, list) {
->  		if (!a->mapped)
->  			continue;
-> @@ -144,10 +145,11 @@ static int cma_heap_dma_buf_end_cpu_access(struct dma_buf *dmabuf,
->  	struct cma_heap_buffer *buffer = dmabuf->priv;
->  	struct dma_heap_attachment *a;
->  
-> +	mutex_lock(&buffer->lock);
-> +
->  	if (buffer->vmap_cnt)
->  		flush_kernel_vmap_range(buffer->vaddr, buffer->len);
->  
-> -	mutex_lock(&buffer->lock);
->  	list_for_each_entry(a, &buffer->attachments, list) {
->  		if (!a->mapped)
->  			continue;
-> -- 
-> 2.32.0
+> Then,
 > 
+> Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
 
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
