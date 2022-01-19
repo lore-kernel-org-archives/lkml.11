@@ -2,133 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 872E2C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 22:03:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A5BC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 22:04:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357520AbiASWDj (ORCPT
+        id S1357523AbiASWEB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 17:03:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36178 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357511AbiASWDi (ORCPT
+        Wed, 19 Jan 2022 17:04:01 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:60704 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231728AbiASWEA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 17:03:38 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A487BC061574;
-        Wed, 19 Jan 2022 14:03:37 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id o64so3810925pjo.2;
-        Wed, 19 Jan 2022 14:03:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=IOjldLrnWWwpwY+JkWf0ExE0MpMLGJQlI8NdiUeY93k=;
-        b=kSEl/U/1h+1dwvDi0hIgtKSfplmCWl9uNrp2KkVmOGqXTw3Qwmd1cnzjLT97tkOzj+
-         Zp2XNWdH8ZH0Ya8qZSIl4+za5S/JcIWOBvnThLOUlDkR0vZ+DSJmM4vVETBIO5uE1gB5
-         WemdUYctYV3UseKEp7Tur2cSdm6qMJR/ENUd02x3NghpHewgIS3fW7Ng3RgUzVkT6UiL
-         qHzack50wKSJWqqgHsznMtLdSJ4T9hRFlO+O4IPmfUdFN3ys1pUZR+7b8bMX7WWxFbwc
-         UpddAjlDPLcoO69i7cj091TwgLVJ7Eur5UCeH6ZAeXeWQheaSUj0OrTxObGS9/eEYCBZ
-         FxhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IOjldLrnWWwpwY+JkWf0ExE0MpMLGJQlI8NdiUeY93k=;
-        b=JVXz3FhZZ/FH39AZJVyI+ShTjejaQ1tygsSP6jaBuRpzHYmjdWbei8BNi37pCOFIhf
-         VIlJcJVGel3cxUq0HfiSQUNHBhqRenMJ0t9NGgYbLubzjTvw3TDxEPMYqrRNsgOo+ewq
-         HB0UU7HhgPzAzBcbkKjJ+JSRbL8g9jRmejtFa08Kzn28RnBg4Af6FaIAWB5zdqUQIKmW
-         cmB7PxpywPhEYmGhaGkiZCuoAw66bC2ZyzgfvMuPUn8LnqSCnYHnv18f9nPHm1M9BnR8
-         pGUuYDB+9I14QdMSspTcq31J353Ov7yvBSkP3bFOmwkxQv/EhgvwoHopzUTNDIO2EpPD
-         b65A==
-X-Gm-Message-State: AOAM531nk0w3rns3P2/+4DokcJSWQJDbMPGfVEIjXppbdXM7X+AUuXFs
-        XwjGGdwOgo8g+/vEQ9vt5tzLFf+8r3ILsI1vAPU=
-X-Google-Smtp-Source: ABdhPJzV1oAx/xoKU++dv1R8kUyf32CYmSuCtq2M5RRSdynsPZSmD55U0LG7xKsRNsiyyG6JEjOIsGEiHHaAgYSi7xw=
-X-Received: by 2002:a17:902:860c:b0:149:1017:25f0 with SMTP id
- f12-20020a170902860c00b00149101725f0mr34284326plo.116.1642629817114; Wed, 19
- Jan 2022 14:03:37 -0800 (PST)
+        Wed, 19 Jan 2022 17:04:00 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 07BB721101;
+        Wed, 19 Jan 2022 22:03:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1642629839; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=itHvYp06aE543pFuixs0a/YyyFcOqlgcA05drNupapE=;
+        b=uehwR/QyOF4lVbQgoAzU+vVmySkOUJuAAsgqmqPT/em4lIEOfaBICWKKg+CuXbTlrO6lPE
+        rTXXH0gDsQY6MmcKB2NjDvejm5RQUELuxpzSOKAUxiufOiZB/VoVJu0aqd306WZEQjkQpR
+        CgBebnu4NrtBzLmTU+Q5+0gR5neFxaI=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id EC45913BB5;
+        Wed, 19 Jan 2022 22:03:58 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id rxFlOc6K6GFdLQAAMHmgww
+        (envelope-from <ailiop@suse.com>); Wed, 19 Jan 2022 22:03:58 +0000
+From:   Anthony Iliopoulos <ailiop@suse.com>
+To:     Al Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Howells <dhowells@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] devtmpfs: drop redundant fs parameters from internal fs
+Date:   Wed, 19 Jan 2022 23:02:48 +0100
+Message-Id: <20220119220248.32225-1-ailiop@suse.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220113070245.791577-1-imagedong@tencent.com>
-In-Reply-To: <20220113070245.791577-1-imagedong@tencent.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 19 Jan 2022 14:03:26 -0800
-Message-ID: <CAADnVQKNCqUzPJAjSHMFr-Ewwtv5Cs3UCQpthaKDTd+YNRWqqg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: Add document for 'dst_port' of 'struct bpf_sock'
-To:     Menglong Dong <menglong8.dong@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        mengensun@tencent.com, flyingpeng@tencent.com,
-        mungerjiang@tencent.com, Menglong Dong <imagedong@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 12, 2022 at 11:03 PM <menglong8.dong@gmail.com> wrote:
->
-> From: Menglong Dong <imagedong@tencent.com>
->
-> The description of 'dst_port' in 'struct bpf_sock' is not accurated.
-> In fact, 'dst_port' is not in network byte order, it is 'partly' in
-> network byte order.
->
-> We can see it in bpf_sock_convert_ctx_access():
->
-> > case offsetof(struct bpf_sock, dst_port):
-> >       *insn++ = BPF_LDX_MEM(
-> >               BPF_FIELD_SIZEOF(struct sock_common, skc_dport),
-> >               si->dst_reg, si->src_reg,
-> >               bpf_target_off(struct sock_common, skc_dport,
-> >                              sizeof_field(struct sock_common,
-> >                                           skc_dport),
-> >                              target_size));
->
-> It simply passes 'sock_common->skc_dport' to 'bpf_sock->dst_port',
-> which makes that the low 16-bits of 'dst_port' is equal to 'skc_port'
-> and is in network byte order, but the high 16-bites of 'dst_port' is
-> 0. And the actual port is 'bpf_ntohs((__u16)dst_port)', and
-> 'bpf_ntohl(dst_port)' is totally not the right port.
->
-> This is different form 'remote_port' in 'struct bpf_sock_ops' or
-> 'struct __sk_buff':
->
-> > case offsetof(struct __sk_buff, remote_port):
-> >       BUILD_BUG_ON(sizeof_field(struct sock_common, skc_dport) != 2);
-> >
-> >       *insn++ = BPF_LDX_MEM(BPF_FIELD_SIZEOF(struct sk_buff, sk),
-> >                             si->dst_reg, si->src_reg,
-> >                                     offsetof(struct sk_buff, sk));
-> >       *insn++ = BPF_LDX_MEM(BPF_H, si->dst_reg, si->dst_reg,
-> >                             bpf_target_off(struct sock_common,
-> >                                            skc_dport,
-> >                                            2, target_size));
-> > #ifndef __BIG_ENDIAN_BITFIELD
-> >       *insn++ = BPF_ALU32_IMM(BPF_LSH, si->dst_reg, 16);
-> > #endif
->
-> We can see that it will left move 16-bits in little endian, which makes
-> the whole 'remote_port' is in network byte order, and the actual port
-> is bpf_ntohl(remote_port).
->
-> Note this in the document of 'dst_port'. ( Maybe this should be unified
-> in the code? )
+The internal_fs_type is mounted via vfs_kernel_mount() and is never
+registered as a filesystem, thus specifying the parameters is redundant
+as those params will not be validated by fs_validate_description().
 
-Looks like
- __sk_buff->remote_port
- bpf_sock_ops->remote_port
- sk_msg_md->remote_port
-are doing the right thing,
-but bpf_sock->dst_port is not correct?
+Both {shmem,ramfs}_fs_parameters are anyway validated when those
+respective filesystems are first registered, so there is no reason to
+pass them to devtmpfs too, drop them.
 
-I think it's better to fix it,
-but probably need to consolidate it with
-convert_ctx_accesses() that deals with narrow access.
-I suspect reading u8 from three flavors of 'remote_port'
-won't be correct.
-'dst_port' works with a narrow load, but gets endianness wrong.
+Signed-off-by: Anthony Iliopoulos <ailiop@suse.com>
+---
+ drivers/base/devtmpfs.c | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/drivers/base/devtmpfs.c b/drivers/base/devtmpfs.c
+index f41063ac1aee..ad5f304e2b30 100644
+--- a/drivers/base/devtmpfs.c
++++ b/drivers/base/devtmpfs.c
+@@ -81,10 +81,8 @@ static struct file_system_type internal_fs_type = {
+ 	.name = "devtmpfs",
+ #ifdef CONFIG_TMPFS
+ 	.init_fs_context = shmem_init_fs_context,
+-	.parameters	= shmem_fs_parameters,
+ #else
+ 	.init_fs_context = ramfs_init_fs_context,
+-	.parameters	= ramfs_fs_parameters,
+ #endif
+ 	.kill_sb = kill_litter_super,
+ };
+-- 
+2.34.1
+
