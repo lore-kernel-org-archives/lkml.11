@@ -2,137 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 372BEC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 19:03:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F12BC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 19:05:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356962AbiASTDD (ORCPT
+        id S1356943AbiASTFJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 14:03:03 -0500
-Received: from mga17.intel.com ([192.55.52.151]:43150 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231845AbiASTDC (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 14:03:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642618982; x=1674154982;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=hA94tR9E+EV8Zk26TRDkNjpj0VOtO/hCsQLa9GYFpqU=;
-  b=YB6xzflSf/Z/HpTKTS3ZU0jkk2scSy65zvR1ishbNCrXiXLvyMNJqBlu
-   YRtUrjZ1/ruVFW4JlJIRttruo8LaHD4h9PdrIjUGK7FCujXMC9dDd8PUE
-   +yv1aSt15N4fKITfxpE6FyD4QRiwe/YGD/p5aOjLvbI8O+e1UH7Z1Ttso
-   87TywrV5bnT52Gd34DK4VAMYGOYJj4MqSdv8VQIPUiTXTv4cLSeqtPxeM
-   yuAOCwwVfuApNX5wSZvjYCgt2zsbS0Kcrj7CrNM5XfTRxWP3yTqWOPIaj
-   iIeA6+P6AME7IOrMSvLoQrUwF3LEdslZhgOc0dHYGC2+7ORRdNJuf8Cfl
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="225829839"
-X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
-   d="scan'208";a="225829839"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 10:18:38 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
-   d="scan'208";a="561132325"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga001.jf.intel.com with ESMTP; 19 Jan 2022 10:18:37 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nAFXY-000DgZ-H6; Wed, 19 Jan 2022 18:18:36 +0000
-Date:   Thu, 20 Jan 2022 02:18:26 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Joerg Schambacher <joerg@hifiberry.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, 0day robot <lkp@intel.com>
-Subject: sound/soc/codecs/tas5754m.c:246:7: warning: variable 'ret' is used
- uninitialized whenever switch case is taken
-Message-ID: <202201200259.nNgbKOJd-lkp@intel.com>
+        Wed, 19 Jan 2022 14:05:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52428 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230427AbiASTFI (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 14:05:08 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25EC4C061574;
+        Wed, 19 Jan 2022 11:05:08 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id w12-20020a17090a528c00b001b276aa3aabso7478120pjh.0;
+        Wed, 19 Jan 2022 11:05:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=sender:date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rRh+idUwbOdly6bknpYwWmsx3IX/EG0YgmQNjU2Me8w=;
+        b=Mn1dOVIkJPRudD5S+4bqqB0SgTsXe1/SRjq9+d/3NLil2nKYd+51WR0mfQqxIdIL7E
+         XLuCWZ2RrMpIX3Fa7EPtb1nlgr4P/0Ou8R337jSark5p0P3MQ6uhZ/Io+yVBbaCIvzsL
+         DhOJOPXtM51TFNfHTsGDj+j9QN00tHs3tuok0UvznETQqi3kBhSXC0XRQjFYeRWmO/6K
+         4eeU7XvljzQPZHNjmj2YBxate/YP9hN4RqJUr723tPynsxtaG7/8j6EdlmYjIhCQuNkr
+         hqt1+MXZHZsqBpwMQsX0bZm1+GGPIxZnJwViaI1E4KRSLP7zLsBzptqB3dhZ/nazKlHy
+         raPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=rRh+idUwbOdly6bknpYwWmsx3IX/EG0YgmQNjU2Me8w=;
+        b=Z2A/vK+REFOwf5mVLpqSYvULEk+WrjIJV/vIBH7cjWFcYY4sYLiZPqn8G4S9gQdLAW
+         3JHpJKllBiAxXJ5X22kOXfQL66b1s0L3xsJmFd3YGGGz44PpZr0gT7zEvtZS8wtNHA0B
+         69HrGLQDeaQgvBTsJIAhq/VY2vhjiH+ENG5UxTFRqc2hbjRytl+45kj/wolS7FkAQ1lM
+         7tyS03wLMOUc2k3K8ecxRiW296eOVc6JYflMOKCRuZmfj71WDp/oFKFZMJ94c1Rgc12c
+         Kyl8/e6/FAG24pOqzcWRzAQKHBINkbTRGMH1fNgWuZWrkgsTvf7goEIzVsen4hSOq78R
+         gpSw==
+X-Gm-Message-State: AOAM531hGRNRGij4pMBxYPr7nyGgUx0d/gRQ4VGPItyVxGYywqM7IECY
+        fgk4EfaEyWVYmEdxdrEZWJA=
+X-Google-Smtp-Source: ABdhPJwoS0m/QykotRUJH3Qi7VVx/2n8pQ/rcYLz3C51+SNORi/AogJ1gvg8zwSw+v2Ein5dC5jn+g==
+X-Received: by 2002:a17:90a:474d:: with SMTP id y13mr6030824pjg.4.1642619107410;
+        Wed, 19 Jan 2022 11:05:07 -0800 (PST)
+Received: from localhost (2603-800c-1a02-1bae-e24f-43ff-fee6-449f.res6.spectrum.com. [2603:800c:1a02:1bae:e24f:43ff:fee6:449f])
+        by smtp.gmail.com with ESMTPSA id j8sm411341pfc.127.2022.01.19.11.05.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Jan 2022 11:05:07 -0800 (PST)
+Sender: Tejun Heo <htejun@gmail.com>
+Date:   Wed, 19 Jan 2022 09:05:05 -1000
+From:   Tejun Heo <tj@kernel.org>
+To:     Vipin Sharma <vipinsh@google.com>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>,
+        seanjc@google.com, lizefan.x@bytedance.com, hannes@cmpxchg.org,
+        dmatlack@google.com, jiangshanlai@gmail.com, kvm@vger.kernel.org,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] KVM: Move VM's worker kthreads back to the original
+ cgroups before exiting.
+Message-ID: <Yehg4doAwoUTBHLX@slm.duckdns.org>
+References: <20211222225350.1912249-1-vipinsh@google.com>
+ <20220105180420.GC6464@blackbody.suse.cz>
+ <CAHVum0e84nUcGtdPYQaJDQszKj-QVP5gM+nteBpSTaQ2sWYpmQ@mail.gmail.com>
+ <Yeclbe3GNdCMLlHz@slm.duckdns.org>
+ <7a0bc562-9f25-392d-5c05-9dbcd350d002@redhat.com>
+ <YehY0z2vHYVZk52J@slm.duckdns.org>
+ <CAHVum0fqhMQd2uFic5_7RN=Ah6TTH2G2qLNZuxnQXSazR57m6g@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <CAHVum0fqhMQd2uFic5_7RN=Ah6TTH2G2qLNZuxnQXSazR57m6g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://github.com/0day-ci/linux/commits/UPDATE-20220119-210919/Joerg-Schambacher/ASoC-adds-component-driver-for-TAS575xM-digital-amplifiers/20220110-164852
-head:   05b8bf5544bc621031f5a0a6bdf1ac6468a7367b
-commit: 05b8bf5544bc621031f5a0a6bdf1ac6468a7367b ASoC: adds component driver for TAS575xM digital amplifiers
-date:   5 hours ago
-config: riscv-randconfig-c006-20220118 (https://download.01.org/0day-ci/archive/20220120/202201200259.nNgbKOJd-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project f7b7138a62648f4019c55e4671682af1f851f295)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install riscv cross compiling tool for clang build
-        # apt-get install binutils-riscv64-linux-gnu
-        # https://github.com/0day-ci/linux/commit/05b8bf5544bc621031f5a0a6bdf1ac6468a7367b
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review UPDATE-20220119-210919/Joerg-Schambacher/ASoC-adds-component-driver-for-TAS575xM-digital-amplifiers/20220110-164852
-        git checkout 05b8bf5544bc621031f5a0a6bdf1ac6468a7367b
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash sound/soc/codecs/
+On Wed, Jan 19, 2022 at 10:49:57AM -0800, Vipin Sharma wrote:
+> Sean suggested that we can use the real_parent of the kthread task
+> which will always be kthreadd_task, this will also not require any
+> changes in the cgroup API. I like that approach, I will give it a try.
+> This will avoid changes in cgroup APIs completely.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Yeah, that's better than the original but still not great in that it's still
+a workaround and just pushes up the problem. You can get the same race if
+the cgroups are nested. e.g. if you have a kvm instance under a/b and when
+kvm exits, the management software removes b and then realizes that a is
+empty too and then tries to delete that too.
 
-All warnings (new ones prefixed by >>):
+It'd be great if we can make kthread_stop actually wait for what most others
+consider thread exit but if we're just gonna work around them, just doing it
+in userspace might be better - e.g. after kvm exits, wait for !populated
+event (this is a pollable event) on the cgroup and then clean up.
 
->> sound/soc/codecs/tas5754m.c:246:7: warning: variable 'ret' is used uninitialized whenever switch case is taken [-Wsometimes-uninitialized]
-           case SND_SOC_BIAS_ON:
-                ^~~~~~~~~~~~~~~
-   sound/soc/codecs/tas5754m.c:267:9: note: uninitialized use occurs here
-           return ret;
-                  ^~~
-   sound/soc/codecs/tas5754m.c:247:7: warning: variable 'ret' is used uninitialized whenever switch case is taken [-Wsometimes-uninitialized]
-           case SND_SOC_BIAS_PREPARE:
-                ^~~~~~~~~~~~~~~~~~~~
-   sound/soc/codecs/tas5754m.c:267:9: note: uninitialized use occurs here
-           return ret;
-                  ^~~
-   sound/soc/codecs/tas5754m.c:242:9: note: initialize the variable 'ret' to silence this warning
-           int ret;
-                  ^
-                   = 0
-   2 warnings generated.
+Thanks.
 
-
-vim +/ret +246 sound/soc/codecs/tas5754m.c
-
-   236	
-   237	static int tas5754m_set_bias_level(struct snd_soc_component *component,
-   238					   enum snd_soc_bias_level level)
-   239	{
-   240		struct tas5754m_priv *tas5754m =
-   241					snd_soc_component_get_drvdata(component);
-   242		int ret;
-   243	
-   244		switch (level) {
-   245		default:
- > 246		case SND_SOC_BIAS_ON:
-   247		case SND_SOC_BIAS_PREPARE:
-   248			break;
-   249	
-   250		case SND_SOC_BIAS_STANDBY:
-   251			ret = regmap_update_bits(tas5754m->regmap,
-   252					TAS5754M_POWER, TAS5754M_RQST, 0);
-   253			if (ret)
-   254				dev_err(component->dev,
-   255					"Failed to remove standby: %d\n", ret);
-   256			break;
-   257	
-   258		case SND_SOC_BIAS_OFF:
-   259			ret = regmap_update_bits(tas5754m->regmap,
-   260					TAS5754M_POWER, TAS5754M_RQST, TAS5754M_RQST);
-   261			if (ret)
-   262				dev_err(component->dev,
-   263					"Failed to request standby: %d\n", ret);
-   264			break;
-   265		}
-   266	
-   267		return ret;
-   268	}
-   269	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+-- 
+tejun
