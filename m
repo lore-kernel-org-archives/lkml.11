@@ -2,87 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA1E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 10:58:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6601AC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 10:58:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353930AbiASK6A (ORCPT
+        id S1353842AbiASK6M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 05:58:00 -0500
-Received: from mx0a-001ae601.pphosted.com ([67.231.149.25]:13802 "EHLO
-        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1353723AbiASK5z (ORCPT
+        Wed, 19 Jan 2022 05:58:12 -0500
+Received: from mail-out.m-online.net ([212.18.0.9]:39712 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349608AbiASK6K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 05:57:55 -0500
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20J5aNQc003098;
-        Wed, 19 Jan 2022 04:57:27 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=PODMain02222019;
- bh=YeXjvt2a/3UPggig0LgeC8zG+kAXAN5PBZnu2EVj7xY=;
- b=LrPgXwdH8VKL3HwRWaA6o8fKipetDIcgkbBL5GAST84W3pDLptBnYV5kxG7+L+BbEBid
- C/Kjm8mA761mT3PTXrMT6e2sJhJhnYD244TOsdNmGn+NRzc8LW0N6W5mbj0Kp77ZK0vy
- eg+1iuwXVygQPud3lxG8lHsCtImFhokOD9Kz372YX4Y2m9Qkj24Nd34Dah9erEYj5Ppt
- tw9PMtj8Fdj9uEXqGIth5cdSwAYKw4vbuKmE2Fz9kuj3JEAcwzaTwdpX7Rh5UP5chgwo
- knQP6V666OzxQe8dcg4399G7genTjTRx6DRYBytS3Fi4tggXiLKofGKaTqQ6xyxhj3aM lQ== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3dnaxhtd5c-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 19 Jan 2022 04:57:27 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 19 Jan
- 2022 10:57:25 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Wed, 19 Jan 2022 10:57:25 +0000
-Received: from ediswmail.ad.cirrus.com (ediswmail.ad.cirrus.com [198.61.86.93])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 89617B0E;
-        Wed, 19 Jan 2022 10:57:24 +0000 (UTC)
-Date:   Wed, 19 Jan 2022 10:57:24 +0000
-From:   Charles Keepax <ckeepax@opensource.cirrus.com>
-To:     Rob Herring <robh@kernel.org>
-CC:     Sandy Huang <hjc@rock-chips.com>,
-        Heiko =?iso-8859-1?Q?St=FCbner?= <heiko@sntech.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Sylwester Nawrocki <s.nawrocki@samsung.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        - <patches@opensource.cirrus.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        <dri-devel@lists.freedesktop.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-rockchip@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-input@vger.kernel.org>,
-        <linux-gpio@vger.kernel.org>, <alsa-devel@alsa-project.org>
-Subject: Re: [PATCH] dt-bindings: Drop unnecessary pinctrl properties
-Message-ID: <20220119105724.GQ18506@ediswmail.ad.cirrus.com>
-References: <20220119015325.2438277-1-robh@kernel.org>
+        Wed, 19 Jan 2022 05:58:10 -0500
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4Jf2g14qkYz1qy4C;
+        Wed, 19 Jan 2022 11:58:05 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4Jf2g13zWDz1qqkD;
+        Wed, 19 Jan 2022 11:58:05 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id ePKFid0XyVGn; Wed, 19 Jan 2022 11:58:04 +0100 (CET)
+X-Auth-Info: AdjUvmT+OC81O3UubJny8e2iCqI6sZo2X0NIh+ATrNdwGl8yDZySOQSZeJosN02s
+Received: from igel.home (ppp-46-244-165-91.dynamic.mnet-online.de [46.244.165.91])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Wed, 19 Jan 2022 11:58:04 +0100 (CET)
+Received: by igel.home (Postfix, from userid 1000)
+        id 24EE62C36ED; Wed, 19 Jan 2022 11:58:04 +0100 (CET)
+From:   Andreas Schwab <schwab@linux-m68k.org>
+To:     Jessica Clarke <jrtc27@jrtc27.com>
+Cc:     Changbin Du <changbin.du@gmail.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] riscv: eliminate unreliable __builtin_frame_address(1)
+References: <20220117154433.3124-1-changbin.du@gmail.com>
+        <C2470F2D-9E45-49D7-A03B-E6A7BB4B9738@jrtc27.com>
+X-Yow:  My DIGITAL WATCH has an automatic SNOOZE FEATURE!!
+Date:   Wed, 19 Jan 2022 11:58:04 +0100
+In-Reply-To: <C2470F2D-9E45-49D7-A03B-E6A7BB4B9738@jrtc27.com> (Jessica
+        Clarke's message of "Mon, 17 Jan 2022 17:33:40 +0000")
+Message-ID: <87v8yg6lhf.fsf@igel.home>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.91 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220119015325.2438277-1-robh@kernel.org>
-User-Agent: Mutt/1.5.21 (2010-09-15)
-X-Proofpoint-GUID: qX5Mw540ExmwrU_vS7Og4PEUG2Xrc84A
-X-Proofpoint-ORIG-GUID: qX5Mw540ExmwrU_vS7Og4PEUG2Xrc84A
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 07:53:25PM -0600, Rob Herring wrote:
-> For a single pinctrl mode, it is not necessary to define pinctrl
-> properties as the tools always allow pinctrl properties.
-> 
-> Signed-off-by: Rob Herring <robh@kernel.org>
-> ---
+On Jan 17 2022, Jessica Clarke wrote:
 
-Acked-by: Charles Keepax <ckeepax@opensource.cirrus.com>
+> Yes, this is a bug, that is always wrong. LLVM gets this right.
 
-Thanks,
-Charles
+Is that an ABI requirement?  In case of a leaf function, gcc saves the
+caller's frame pointer in the first slot, not the second (it doesn't
+save the return address).
+
+-- 
+Andreas Schwab, schwab@linux-m68k.org
+GPG Key fingerprint = 7578 EB47 D4E5 4D69 2510  2552 DF73 E780 A9DA AEC1
+"And now for something completely different."
