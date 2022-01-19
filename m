@@ -2,92 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CCEDC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 08:01:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8175DC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 08:01:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347199AbiASIBl (ORCPT
+        id S1351729AbiASIBw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 03:01:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40440 "EHLO
+        Wed, 19 Jan 2022 03:01:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40498 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343971AbiASIBj (ORCPT
+        with ESMTP id S1343971AbiASIBv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 03:01:39 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA9AC061574
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 00:01:38 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id b13so7544193edn.0
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 00:01:38 -0800 (PST)
+        Wed, 19 Jan 2022 03:01:51 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F24AC061574
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 00:01:51 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id i8so1671556pgt.13
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 00:01:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linux-foundation.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=h+4TAAW0oCGxfeZjzEbwErifa+6E3JL+Snfdxuo9hi4=;
-        b=VphISyBLHqMdbjiWr2Zai00b4bFXug+8mUgSJxbfpZQoTAGgs2rCN2UNKbJD2vXt6i
-         GbOkmqHLi5vXN621pAU3O1Ao0bKq9j/ukvtcqner6W2s0X1EaCJuZ1aCZNCFt6lFO7Ig
-         tH+1kqNjJqFLVH0/8uHItRZFdFBLAZZJMq+2o=
+        d=chromium.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=qMOZ/Ss7D1QGWJrjjWDz0WPhRvhrkckRq7Vv+kCye3I=;
+        b=HKI8k5MxvGek8ymb8BK4XaV0lk8E3V0Cah7MgN7U7S/GKnJXEGHIsn9FQfPEu9QCIW
+         sPzkokAYygCKBWItT7PvG8ALQWzxfvlm/djaQ9XX6mqqwINTNXr+56O2VXXDW3XBPXtb
+         S/GNSmrYtFL67QdSsHs0yZ5xJ5xNomd1r5Lmg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=h+4TAAW0oCGxfeZjzEbwErifa+6E3JL+Snfdxuo9hi4=;
-        b=qvAyZsQI1/ZGfjryTe2COJfXb/awC0sBPBrFbWdiH+KRsaBKSW9kTinCTh6Raye5Nv
-         QQM16oZZc2Xmuu7JI0jP3XL3CHJWIFe34InquJWH+RG73U/uHBaxEitG967WUlIj3Qaz
-         3evIdPCVbMhTVhCuRrJHkQVHCuOm8G0Je+cUa5hlyYhTI6tqidvDrpHj6RtK73QIRHeP
-         f2/QloJnvSKxbCWHEOb/9L9mutKjBQNwr/6vgKbTwpyBQtpR+wCY9QAkSWzGlOqZ2PVl
-         wCVqynKRYJpYCVj9vJ00Gb89U9gWXK5iUxcJsY/+w7GY0rytmi5llWQ51gLvohdVJuyP
-         schg==
-X-Gm-Message-State: AOAM530GbcWyWkLfIYXf7nyh3mjzbX1zvL7HrBinYBMYZbjzyqQyF4a9
-        8UQU9L8Gf7JuMNqvAuSFqKkxSrxciXClbsGqx+A=
-X-Google-Smtp-Source: ABdhPJwiwfF6jks448d1MbcLfqOwg2iIEIVn6c/I1kOxbbMKWBreFSElo5wGTAVo3pUR863Yx1KgUA==
-X-Received: by 2002:a05:6402:b3c:: with SMTP id bo28mr29809127edb.314.1642579297167;
-        Wed, 19 Jan 2022 00:01:37 -0800 (PST)
-Received: from mail-ed1-f41.google.com (mail-ed1-f41.google.com. [209.85.208.41])
-        by smtp.gmail.com with ESMTPSA id lb11sm6095698ejc.216.2022.01.19.00.01.36
-        for <linux-kernel@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Jan 2022 00:01:36 -0800 (PST)
-Received: by mail-ed1-f41.google.com with SMTP id m4so7212864edb.10
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 00:01:36 -0800 (PST)
-X-Received: by 2002:adf:c74e:: with SMTP id b14mr27546389wrh.97.1642578820207;
- Tue, 18 Jan 2022 23:53:40 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=qMOZ/Ss7D1QGWJrjjWDz0WPhRvhrkckRq7Vv+kCye3I=;
+        b=F2fWwdX52PSORuicfH+TGf7uN9gaoGBk5aJWa27VRDvU+QdsMfWVXmAqZqOAHuGCi2
+         wTsCm74H8MweEGFxTxJyrCTWnzWHMBx5JU33eBG2nvFK3ZwFBSHc5APKC/83u/Ag30o8
+         WC7byVfErdHHp4cDz8kwQwTBHBr8SdlxGHN+Ob5xr/MnyDfbnoa3WnxGNz0PThK8AJJL
+         BnaXjPrZjMSy5X0+DcMRW1FzPygqUbWmVfjAVhdneXnVtsP2Kw86zeu9bC5eHNIiE28U
+         Xktg66TkI5KmsCt+ftklhQEi7PeBpDqaCfzqE58cS2SSeni82T5taOlmT0NlVOdaWwSr
+         hxRg==
+X-Gm-Message-State: AOAM531OiMX1Zxv5PzJUHWJo3nCfZKvk+dEhVnKtsCTltRl+sr9T20tz
+        i586bSOQU/rW46FkV/aLve8T6jo9u75APpBu
+X-Google-Smtp-Source: ABdhPJy1EmD8rKbec/UreKDqP7HXe6xosVZyHPaIG276srU+2dhgcPegNBERFgME9/KIKu8qJPY2cA==
+X-Received: by 2002:aa7:80cf:0:b0:4bc:ecc1:e7f5 with SMTP id a15-20020aa780cf000000b004bcecc1e7f5mr30072141pfn.11.1642579310782;
+        Wed, 19 Jan 2022 00:01:50 -0800 (PST)
+Received: from google.com ([2401:fa00:8f:203:3343:314a:558d:5df7])
+        by smtp.gmail.com with ESMTPSA id om15sm5110865pjb.46.2022.01.19.00.01.48
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Jan 2022 00:01:50 -0800 (PST)
+Date:   Wed, 19 Jan 2022 17:01:46 +0900
+From:   Sergey Senozhatsky <senozhatsky@chromium.org>
+To:     Andrew Morton <akpm@linux-foundation.org>,
+        Joe Perches <joe@perches.com>,
+        Andy Whitcroft <apw@canonical.com>
+Cc:     Ricardo Ribalda <ribalda@chromium.org>,
+        Tomasz Figa <tfiga@chromium.org>, linux-kernel@vger.kernel.org,
+        Sergey Senozhatsky <senozhatsky@chromium.org>
+Subject: Re: [RESEND][PATCH] checkpatch: make sure fix-up patches have Fixes
+ tag
+Message-ID: <YefFapMkddSWHXRE@google.com>
+References: <20220119074609.4162747-1-senozhatsky@chromium.org>
 MIME-Version: 1.0
-References: <20220118160452.384322748@linuxfoundation.org> <CA+G9fYvJaFVKu24oFuR1wGFRe4N2A=yxH6ksx61bunfR9Y3Ejw@mail.gmail.com>
-In-Reply-To: <CA+G9fYvJaFVKu24oFuR1wGFRe4N2A=yxH6ksx61bunfR9Y3Ejw@mail.gmail.com>
-From:   Linus Torvalds <torvalds@linux-foundation.org>
-Date:   Wed, 19 Jan 2022 09:53:24 +0200
-X-Gmail-Original-Message-ID: <CAHk-=whJjHXGeVnVPmC8t_+Rie5N1tarrzsttECEh5efbXYUuA@mail.gmail.com>
-Message-ID: <CAHk-=whJjHXGeVnVPmC8t_+Rie5N1tarrzsttECEh5efbXYUuA@mail.gmail.com>
-Subject: Re: [PATCH 5.16 00/28] 5.16.2-rc1 review
-To:     Naresh Kamboju <naresh.kamboju@linaro.org>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Christian Brauner <christian.brauner@ubuntu.com>,
-        NeilBrown <neilb@suse.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Shuah Khan <shuah@kernel.org>, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, Pavel Machek <pavel@denx.de>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        stable <stable@vger.kernel.org>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220119074609.4162747-1-senozhatsky@chromium.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 9:30 AM Naresh Kamboju
-<naresh.kamboju@linaro.org> wrote:
+On (22/01/19 16:46), Sergey Senozhatsky wrote:
 >
-> Inconsistent kallsyms data
+> Change-Id: I066ae0e607a67ac83c6ba0ff8d883f7e7a4a73e0
+>
 
-This tends to be a "odd build environment" problem, and very very
-random. Triggered by very particular compiler versions and just some
-odd code modement details.
-
-I'd suggest doing a completely clean build and disabling ccache, and
-seeing if that makes it go away.
-
-              Linus
+It was not supposed to be there, but it's there (spotted by Tomasz).
+Let me know if I need to re-send.
