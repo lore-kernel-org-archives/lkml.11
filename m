@@ -2,91 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2515CC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 13:48:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EFF5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 13:49:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354918AbiASNs2 (ORCPT
+        id S1354911AbiASNtq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 08:48:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35530 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349591AbiASNsV (ORCPT
+        Wed, 19 Jan 2022 08:49:46 -0500
+Received: from jabberwock.ucw.cz ([46.255.230.98]:37358 "EHLO
+        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235698AbiASNtp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 08:48:21 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE51CC061574;
-        Wed, 19 Jan 2022 05:48:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Transfer-Encoding:
-        Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:
-        Sender:Reply-To:Content-ID:Content-Description;
-        bh=KXtnBmHR26VnyA5/MyeO0p5Mer/FOttvLvx2Yg5H/f0=; b=q307KYxlizBZChDxVWf50BNc7i
-        ulkozYxgvKy0JvUzcELQya+co3ae/kHNFbO1y3/T6S4j4u1q9n27AiQpeEc9GpLDMLSVvksmQpPJK
-        MnOEHc+PxkQY8WS6RXMiDj04z27Jr9OmVBz/rv0fcvN4azhZg8dQVHcGy+WMroOnLK3bySxG5A+xI
-        LWqXJF+Jr7gv+tHXgGkVDEIF2ha516o0dx4gsz6ldb3tNDDk3wMbKx6lT5M3fygBiU12ICmzCpzXc
-        3HIhEJKLOdRJ6XLNvaHagY1xzR38gvmSE8gEDYjtJuNOqUATZ+WipQz+OHME+/GVUHEcyAgphvSQK
-        QIPa9SLA==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nABJt-00AwLk-Qj; Wed, 19 Jan 2022 13:48:13 +0000
-Date:   Wed, 19 Jan 2022 13:48:13 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Kefeng Wang <wangkefeng.wang@huawei.com>
-Cc:     Nicholas Piggin <npiggin@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linuxppc-dev@lists.ozlabs.org, x86@kernel.org,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, Ingo Molnar <mingo@redhat.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Paul Mackerras <paulus@samba.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Will Deacon <will@kernel.org>
-Subject: Re: [PATCH v2 1/3] mm: vmalloc: Let user to control huge vmalloc
- default behavior
-Message-ID: <YegWneON2voE9htO@casper.infradead.org>
-References: <20211227145903.187152-1-wangkefeng.wang@huawei.com>
- <20211227145903.187152-2-wangkefeng.wang@huawei.com>
- <1642473992.qrnqczjfna.astroid@bobo.none>
- <f0dd59eb-6eb8-5b60-508d-7f4022f655ec@huawei.com>
- <YegQfIQibQi993dp@casper.infradead.org>
- <93db576e-9a62-ee98-5af2-a62f8386212c@huawei.com>
+        Wed, 19 Jan 2022 08:49:45 -0500
+Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
+        id A0E6D1C0B9C; Wed, 19 Jan 2022 14:49:43 +0100 (CET)
+Date:   Wed, 19 Jan 2022 14:49:43 +0100
+From:   Pavel Machek <pavel@denx.de>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Pavel Machek <pavel@denx.de>, linux-kernel@vger.kernel.org,
+        torvalds@linux-foundation.org, akpm@linux-foundation.org,
+        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
+        lkft-triage@lists.linaro.org, jonathanh@nvidia.com,
+        f.fainelli@gmail.com, stable@vger.kernel.org
+Subject: Re: 4.4 series end of line was Re: [PATCH 4.4 00/17] 4.4.297-rc1
+ review
+Message-ID: <20220119134943.GA1032@duo.ucw.cz>
+References: <20211227151315.962187770@linuxfoundation.org>
+ <20220119102858.GB4984@amd>
+ <YefooANkr6eem49U@kroah.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha1;
+        protocol="application/pgp-signature"; boundary="azLHFNyN32YCQGCU"
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <93db576e-9a62-ee98-5af2-a62f8386212c@huawei.com>
+In-Reply-To: <YefooANkr6eem49U@kroah.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 09:44:20PM +0800, Kefeng Wang wrote:
-> 
-> On 2022/1/19 21:22, Matthew Wilcox wrote:
-> > On Wed, Jan 19, 2022 at 08:57:58PM +0800, Kefeng Wang wrote:
-> > > Only parts of our products wants this feature,  we add some interfaces which
-> > > only
-> > > 
-> > > alloc hugevmalloc for them, eg,
-> > > vmap_hugepage/vmalloc_hugepage/remap_vmalloc_hugepage_range..
-> > > 
-> > > for our products, but it's not the choice of most products, also add
-> > > nohugevmalloc
-> > > 
-> > > for most products is expensive, so this is the reason for adding the patch.
-> > > 
-> > > more config/cmdline are more flexible for test/products，
-> > But why do only some products want it?  What goes wrong if all products
-> > enable it?  Features should be auto-tuning, not relying on admins to
-> > understand them.
-> 
-> Because this feature will use more memory for vmalloc/vmap, that's why we
-> add some explicit
-> interfaces as said above in our kernel to control the user.
 
-Have you validated that?  What sort of performance penalty do you see?
+--azLHFNyN32YCQGCU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+Hi!
+
+> > > This is the start of the stable review cycle for the 4.4.297 release.
+> > > There are 17 patches in this series, all will be posted as a response
+> > > to this one.  If anyone has any issues with these being applied, plea=
+se
+> > > let me know.
+> >=20
+> > 4.4.X series is scheduled for EOL next month. Do you have any
+> > estimates if it will be more like Feb 2 or Feb 27?
+>=20
+> I would bet on Feb 1 :)
+
+Hmm. That does not leave us too much time.
+
+FAQ states:
+
+# Why are some longterm versions supported longer than others?  The
+# "projected EOL" dates are not set in stone. Each new longterm kernel
+# usually starts with only a 2-year projected EOL that can be extended
+# further if there is enough interest from the industry at large to
+# help support it for a longer period of time.
+
+Is there anyone else interested in continued 4.4.X maintainence?
+
+CIP project will need to maintain 4.4.X-cip and 4.4.X-cip-rt for some
+more years. Do you think it would make sense to maintain 4.4.X-stable
+as well? What would be requirements for doing so?
+
+Best regards,
+								Pavel
+--=20
+DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
+HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
+
+--azLHFNyN32YCQGCU
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYegW9wAKCRAw5/Bqldv6
+8i7kAJ4ihbzh6IYNHqBBAq0eKdOiknic/QCeMN2gTepaNuGTiVNfhvT6Ipvt2iY=
+=qkFY
+-----END PGP SIGNATURE-----
+
+--azLHFNyN32YCQGCU--
