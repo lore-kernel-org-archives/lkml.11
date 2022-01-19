@@ -2,181 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3618EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 13:24:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A337C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 13:25:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354798AbiASNYi (ORCPT
+        id S1354765AbiASNZT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 08:24:38 -0500
-Received: from mx315.baidu.com ([180.101.52.204]:35294 "EHLO
-        njjs-sys-mailin04.njjs.baidu.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1350184AbiASNYb (ORCPT
+        Wed, 19 Jan 2022 08:25:19 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:4432 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350184AbiASNZP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 08:24:31 -0500
-X-Greylist: delayed 606 seconds by postgrey-1.27 at vger.kernel.org; Wed, 19 Jan 2022 08:24:30 EST
-Received: from bjhw-sys-rpm015653cc5.bjhw.baidu.com (bjhw-sys-rpm015653cc5.bjhw.baidu.com [10.227.53.39])
-        by njjs-sys-mailin04.njjs.baidu.com (Postfix) with ESMTP id 8FCFB11800042;
-        Wed, 19 Jan 2022 21:14:21 +0800 (CST)
-Received: from localhost (localhost [127.0.0.1])
-        by bjhw-sys-rpm015653cc5.bjhw.baidu.com (Postfix) with ESMTP id 6EB4DD9932;
-        Wed, 19 Jan 2022 21:14:21 +0800 (CST)
-From:   Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>
-To:     pbonzini@redhat.com, seanjc@google.com, vkuznets@redhat.com,
-        wanpengli@tencent.com, jmattson@google.com, joro@8bytes.org,
-        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
-        dave.hansen@linux.intel.com, hpa@zytor.com
-Cc:     lirongqing@baidu.com, kvm@vger.kernel.org, x86@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1] KVM: X86: Introduce vfio_intr_stat per-vm debugfs file
-Date:   Wed, 19 Jan 2022 21:14:21 +0800
-Message-Id: <1642598061-29454-1-git-send-email-yuanzhaoxiong@baidu.com>
-X-Mailer: git-send-email 1.7.1
+        Wed, 19 Jan 2022 08:25:15 -0500
+Received: from fraeml712-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jf5wV6qk1z67HKP;
+        Wed, 19 Jan 2022 21:24:58 +0800 (CST)
+Received: from fraeml714-chm.china.huawei.com (10.206.15.33) by
+ fraeml712-chm.china.huawei.com (10.206.15.61) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 19 Jan 2022 14:25:12 +0100
+Received: from fraeml714-chm.china.huawei.com ([10.206.15.33]) by
+ fraeml714-chm.china.huawei.com ([10.206.15.33]) with mapi id 15.01.2308.021;
+ Wed, 19 Jan 2022 14:25:12 +0100
+From:   Roberto Sassu <roberto.sassu@huawei.com>
+To:     Eric Biggers <ebiggers@kernel.org>,
+        Antony Vennard <antony@vennard.ch>
+CC:     James Bottomley <James.Bottomley@hansenpartnership.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        "dhowells@redhat.com" <dhowells@redhat.com>,
+        "dwmw2@infradead.org" <dwmw2@infradead.org>,
+        "herbert@gondor.apana.org.au" <herbert@gondor.apana.org.au>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "keyrings@vger.kernel.org" <keyrings@vger.kernel.org>,
+        "linux-crypto@vger.kernel.org" <linux-crypto@vger.kernel.org>,
+        "linux-integrity@vger.kernel.org" <linux-integrity@vger.kernel.org>,
+        "linux-fscrypt@vger.kernel.org" <linux-fscrypt@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "zohar@linux.ibm.com" <zohar@linux.ibm.com>
+Subject: RE: [PATCH 00/14] KEYS: Add support for PGP keys and signatures
+Thread-Topic: [PATCH 00/14] KEYS: Add support for PGP keys and signatures
+Thread-Index: AQHYBxWUAJoIvMeqLk2UYoD6PZRMZ6xnP9oAgAAHlwCAAfOkgIAAJTmAgAD7bXA=
+Date:   Wed, 19 Jan 2022 13:25:12 +0000
+Message-ID: <d71ea8ae51e1438c894b44b011f3efda@huawei.com>
+References: <20220111180318.591029-1-roberto.sassu@huawei.com>
+ <YeV+jkGg6mpQdRID@zx2c4.com>
+ <d92912bba61ee37e42d04b64073b9031604acc0f.camel@HansenPartnership.com>
+ <079f10b9-060b-3a36-2224-fa1b483cbad5@vennard.ch>
+ <YedHR93wPLS/JEsE@sol.localdomain>
+In-Reply-To: <YedHR93wPLS/JEsE@sol.localdomain>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.48.214.59]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use this file to export correspondence between guest_irq, host_irq,
-vector and vcpu belonging to VFIO passthrough devices.
-
-An example output of this looks like (a vm with VFIO passthrough
-devices):
-   guest_irq     host_irq       vector         vcpu
-          24          201           37            8
-          25          202           35           25
-          26          203           35           20
-   ......
-
-When a VM has VFIO passthrough devices, the correspondence between
-guest_irq, host_irq, vector and vcpu may need to be known especially
-in AMD platform with avic disabled. The AMD avic is disabled, and
-the passthrough devices may cause vcpu vm exit twice for a interrupt.
-One extrernal interrupt caused by vfio host irq, other ipi to inject
-a interrupt to vm.
-
-If the system administrator known these information, set vfio host
-irq affinity to Pcpu which the correspondece guest irq affinited vcpu,
-to avoid extra vm exit.
-
-Co-developed-by: Li RongQing <lirongqing@baidu.com>
-Signed-off-by: Li RongQing <lirongqing@baidu.com>
-Signed-off-by: Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>
----
-diff with v0: modifying the code format.
-
- arch/x86/kvm/debugfs.c | 90 ++++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 90 insertions(+)
-
-diff --git a/arch/x86/kvm/debugfs.c b/arch/x86/kvm/debugfs.c
-index 9240b3b..be16bfe 100644
---- a/arch/x86/kvm/debugfs.c
-+++ b/arch/x86/kvm/debugfs.c
-@@ -10,6 +10,11 @@
- #include "mmu.h"
- #include "mmu/mmu_internal.h"
- 
-+#ifdef CONFIG_HAVE_KVM_IRQ_BYPASS
-+#include <linux/kvm_irqfd.h>
-+#include <asm/irq_remapping.h>
-+#endif
-+
- static int vcpu_get_timer_advance_ns(void *data, u64 *val)
- {
- 	struct kvm_vcpu *vcpu = (struct kvm_vcpu *) data;
-@@ -181,9 +186,94 @@ static int kvm_mmu_rmaps_stat_release(struct inode *inode, struct file *file)
- 	.release	= kvm_mmu_rmaps_stat_release,
- };
- 
-+#ifdef CONFIG_HAVE_KVM_IRQ_BYPASS
-+static int kvm_vfio_intr_stat_show(struct seq_file *m, void *v)
-+{
-+	struct kvm_kernel_irq_routing_entry *e;
-+	struct kvm_irq_routing_table *irq_rt;
-+	unsigned int host_irq, guest_irq;
-+	struct kvm_kernel_irqfd *irqfd;
-+	struct kvm *kvm = m->private;
-+	struct kvm_lapic_irq irq;
-+	struct kvm_vcpu *vcpu;
-+	int idx;
-+
-+	if (!kvm_arch_has_assigned_device(kvm) ||
-+			!irq_remapping_cap(IRQ_POSTING_CAP)) {
-+		return 0;
-+	}
-+
-+	seq_printf(m, "%12s %12s %12s %12s\n",
-+			"guest_irq", "host_irq", "vector", "vcpu");
-+
-+	spin_lock_irq(&kvm->irqfds.lock);
-+	idx = srcu_read_lock(&kvm->irq_srcu);
-+	irq_rt = srcu_dereference(kvm->irq_routing, &kvm->irq_srcu);
-+
-+	list_for_each_entry(irqfd, &kvm->irqfds.items, list) {
-+		if (!irqfd->producer)
-+			continue;
-+
-+		host_irq = irqfd->producer->irq;
-+		guest_irq = irqfd->gsi;
-+
-+		if (guest_irq >= irq_rt->nr_rt_entries ||
-+				hlist_empty(&irq_rt->map[guest_irq])) {
-+			pr_warn_once("no route for guest_irq %u/%u (broken user space?)\n",
-+					guest_irq, irq_rt->nr_rt_entries);
-+			continue;
-+		}
-+
-+		hlist_for_each_entry(e, &irq_rt->map[guest_irq], link) {
-+			if (e->type != KVM_IRQ_ROUTING_MSI)
-+				continue;
-+
-+			kvm_set_msi_irq(kvm, e, &irq);
-+			if (kvm_intr_is_single_vcpu(kvm, &irq, &vcpu)) {
-+				seq_printf(m, "%12u %12u %12u %12u\n",
-+						guest_irq, host_irq, irq.vector, vcpu->vcpu_id);
-+			}
-+		}
-+	}
-+	srcu_read_unlock(&kvm->irq_srcu, idx);
-+	spin_unlock_irq(&kvm->irqfds.lock);
-+	return 0;
-+}
-+
-+static int kvm_vfio_intr_stat_open(struct inode *inode, struct file *file)
-+{
-+	struct kvm *kvm = inode->i_private;
-+
-+	if (!kvm_get_kvm_safe(kvm))
-+		return -ENOENT;
-+
-+	return single_open(file, kvm_vfio_intr_stat_show, kvm);
-+}
-+
-+static int kvm_vfio_intr_stat_release(struct inode *inode, struct file *file)
-+{
-+	struct kvm *kvm = inode->i_private;
-+
-+	kvm_put_kvm(kvm);
-+	return single_release(inode, file);
-+}
-+
-+static const struct file_operations vfio_intr_stat_fops = {
-+	.open    = kvm_vfio_intr_stat_open,
-+	.read    = seq_read,
-+	.llseek  = seq_lseek,
-+	.release = kvm_vfio_intr_stat_release,
-+};
-+#endif
-+
- int kvm_arch_create_vm_debugfs(struct kvm *kvm)
- {
- 	debugfs_create_file("mmu_rmaps_stat", 0644, kvm->debugfs_dentry, kvm,
- 			    &mmu_rmaps_stat_fops);
-+
-+#ifdef CONFIG_HAVE_KVM_IRQ_BYPASS
-+	debugfs_create_file("vfio_intr_stat", 0444, kvm->debugfs_dentry, kvm,
-+			    &vfio_intr_stat_fops);
-+#endif
- 	return 0;
- }
--- 
-1.8.3.1
-
+PiBGcm9tOiBFcmljIEJpZ2dlcnMgW21haWx0bzplYmlnZ2Vyc0BrZXJuZWwub3JnXQ0KPiBTZW50
+OiBXZWRuZXNkYXksIEphbnVhcnkgMTksIDIwMjIgMTI6MDQgQU0NCj4gT24gVHVlLCBKYW4gMTgs
+IDIwMjIgYXQgMDk6NTA6MjFQTSArMDEwMCwgQW50b255IFZlbm5hcmQgd3JvdGU6DQo+ID4NCj4g
+PiBIaSBBbGwsDQo+ID4NCj4gPiBPbiAxNy8wMS8yMDIyIDE2OjAyLCBKYW1lcyBCb3R0b21sZXkg
+d3JvdGU6DQo+ID4gPiBPbiBNb24sIDIwMjItMDEtMTcgYXQgMTU6MzQgKzAxMDAsIEphc29uIEEu
+IERvbmVuZmVsZCB3cm90ZToNCj4gPiA+ID4gSGksDQo+ID4gPiA+DQo+ID4gPiA+IFdoaWxlIGl0
+IGxvb2tzIGxpa2UgeW91IHB1dCBhIGxvdCBvZiB3b3JrIGludG8gdGhpcyBwYXRjaHNldCwgSSB0
+aGluaw0KPiA+ID4gPiB0aGUgZ2VuZXJhbCBpZGVhIG9mIGFkZGluZyBQR1AgKnRvIHRoZSBrZXJu
+ZWwqIGlzIGEgcHJldHR5IGRhdW50aW5nDQo+ID4gPiA+IHByb3Bvc2l0aW9uLiBUaGUgZ2VuZXJh
+bCBjb25zZW5zdXMgaW4gdGhlIGNyeXB0byBlbmdpbmVlcmluZyB3b3JsZCBpcw0KPiA+ID4gPiB0
+aGF0IFBHUCBvdWdodCB0byBiZSBvbiBpdHMgd2F5IG91dC4gV2UgZGVmaW5pdGVseSBkb24ndCB3
+YW50IHRvDQo+ID4gPiA+IHBlcnBldHVhdGUgdGhpcyBwcm9qZWN0LW9uLWxpZmUtc3VwcG9ydCBp
+bnRvIHRoZSBwZXJtYW5lbmNlIG9mIGtlcm5lbA0KPiA+ID4gPiBjb2RlLiBTb21lIHF1aWNrIEdv
+b2dsZSBzZWFyY2hlcyB3aWxsIHJldmVhbCBhIGxpdGFueSBvZiBibG9nIHBvc3RzDQo+ID4gPiA+
+IHRvIHRoZSB0dW5lIG9mLCAid2h5IG9oIHdoeSBhcmUgcGVvcGxlIHN0aWxsIHVzaW5nIHRoaXM/
+IiBIZXJlJ3Mgb25lDQo+ID4gPiA+IGZyb20gMjAxOToNCj4gPiA+ID4gaHR0cHM6Ly9sYXRhY29y
+YS5taWNyby5ibG9nLzIwMTkvMDcvMTYvdGhlLXBncC1wcm9ibGVtLmh0bWwgLiBJDQo+ID4gPiA+
+IHRoaW5rIHRoZXNlIGFyZSBhcmd1bWVudHMgdG8gdGFrZSBzZXJpb3VzbHkuIEFuZCBldmVuIGlm
+IHlvdSBkaXNhZ3JlZQ0KPiA+ID4gPiB3aXRoIHNvbWUgcGFydHMsIHlvdSBtYXkgd2FudCB0byBj
+b25zaWRlciB3aGV0aGVyIHRoZSByZW1haW5pbmcgcGFydHMNCj4gPiA+ID4gd2FycmFudCBhIGJp
+dCBvZiBwYXVzZSBiZWZvcmUgYWRkaW5nIHRoaXMgdG8gdGhlIGtlcm5lbCBhbmQNCj4gPiA+ID4g
+cGVycGV0dWF0aW5nIFBHUCdzIGRlc2lnbiBmdXJ0aGVyLg0KPiA+DQo+ID4gU28gd2hpbGUgSSB1
+bmRlcnN0YW5kIHdoeSB0aGlzIGlzIGJlaW5nIHByb3Bvc2VkIGFuZCBjbGVhcmx5IGVmZm9ydCBo
+YXMgZ29uZQ0KPiA+IGludG8gaXQsIEkgYWxzbyB0aGluayBpdCBpcyBub3QgdGhlIHJpZ2h0IGFw
+cHJvYWNoLiBJdCBzZWVtcyB0aGlzIHByb3Bvc2FsDQo+ID4gaXMgdG8gaW5jbHVkZSBhIGZ1bGwg
+UEdQIHBhY2tldCBwYXJzZXIgYW5kIHZlcmlmaWNhdGlvbiBsb2dpYyBpbiB0aGUga2VybmVsDQo+
+ID4gYXMgYW4gZXF1aXZhbGVudCB0byBhbGxvdyBQR1Agc2lnbmF0dXJlcyB0byBiZSBzdWJtaXR0
+ZWQgdmlhDQo+ID4gRlNfSU9DX0VOQUJMRV9WRVJJVFk6DQo+ID4NCj4gPiAiRlNfSU9DX0VOQUJM
+RV9WRVJJVFkgYWNjZXB0cyBhIHBvaW50ZXIgdG8gYSBQS0NTIzcgZm9ybWF0dGVkIGRldGFjaGVk
+DQo+ID4gc2lnbmF0dXJlIGluIERFUiBmb3JtYXQgb2YgdGhlIGZpbGXigJlzIGZzLXZlcml0eSBk
+aWdlc3QuIg0KPiA+DQo+IA0KPiBJdCdzIHdvcnRoIG5vdGluZyB0aGF0IGlmIGZzLXZlcml0eSBi
+dWlsdC1pbiBzaWduYXR1cmVzIGFyZSB1c2VkLCBhIHRydXN0ZWQNCj4gdXNlcnNwYWNlIHByb2dy
+YW0gaXMgc3RpbGwgcmVxdWlyZWQgdG8gZGV0ZXJtaW5lIGFuZCBlbmZvcmNlIHRoZSBwb2xpY3kg
+b2Ygd2hpY2gNCj4gZmlsZXMgYXJlIHJlcXVpcmVkIHRvIGJlIHNpZ25lZC4gIFRoZSBrZXJuZWwg
+b25seSBoYW5kbGVzIHRoZSBhY3R1YWwgc2lnbmF0dXJlDQo+IHZlcmlmaWNhdGlvbi4gIFRoaXMg
+d2FzIGJhc2ljYWxseSBhIHByb29mLW9mLWNvbmNlcHQgd2hpY2ggcmV1c2VkIHRoZSBrZXJuZWwn
+cw0KPiBtb2R1bGUgc2lnbmF0dXJlIHZlcmlmaWNhdGlvbiBjb2RlICh3aGljaCBoYXBwZW5zIHRv
+IHVzZSBQS0NTIzcpLg0KDQpKdXN0IHRvIHNob3cgaG93IHRoZSBmc3Zlcml0eSBjb2RlIHdpbGwg
+bG9vayBsaWtlIGFmdGVyIGFkZGluZyBzdXBwb3J0DQpmb3IgUEdQIHNpZ25hdHVyZXM6DQoNCisg
+ICAgICAgc3dpdGNoICh2aS0+dHlwZSkgew0KKyAgICAgICBjYXNlIFBLRVlfSURfUEtDUzc6DQor
+ICAgICAgICAgICAgICAgZXJyID0gdmVyaWZ5X3BrY3M3X3NpZ25hdHVyZShkLCBzaXplb2YoKmQp
+ICsgaGFzaF9hbGctPmRpZ2VzdF9zaXplLA0KKyAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgc2lnbmF0dXJlLCBzaWdfc2l6ZSwgZnN2ZXJpdHlfa2V5cmluZywNCisg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgIFZFUklGWUlOR19VTlNQ
+RUNJRklFRF9TSUdOQVRVUkUsDQorICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICBOVUxMLCBOVUxMKTsNCisgICAgICAgICAgICAgICBicmVhazsNCisgICAgICAgY2Fz
+ZSBQS0VZX0lEX1BHUDoNCisgICAgICAgICAgICAgICBlcnIgPSB2ZXJpZnlfcGdwX3NpZ25hdHVy
+ZShkLCBzaXplb2YoKmQpICsgaGFzaF9hbGctPmRpZ2VzdF9zaXplLA0KKyAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgIHNpZ25hdHVyZSwgc2lnX3NpemUsIGZzdmVyaXR5
+X2tleXJpbmcsDQorICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgVkVS
+SUZZSU5HX1VOU1BFQ0lGSUVEX1NJR05BVFVSRSwNCisgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICBOVUxMLCBOVUxMKTsNCisgICAgICAgICAgICAgICBicmVhazsNCisg
+ICAgICAgZGVmYXVsdDoNCisgICAgICAgICAgICAgICBlcnIgPSAtRU9QTk9UU1VQUDsNCisgICAg
+ICAgfQ0KDQpBcyB5b3UgY2FuIHNlZSwgdGhlIGNoYW5nZSB3aWxsIGJlIHN0cmFpZ2h0Zm9yd2Fy
+ZC4NCg0KT24gdXNlciBzcGFjZSBzaWRlLCBJIHBsYW4gdG8gYWRkIHRoZSBjYXBhYmlsaXR5IHRv
+IGZzdmVyaXR5LXV0aWxzDQp0byBwcm9kdWNlIGEgUEdQIHNpZ25hdHVyZSB3aXRoIHRoZSBHUEcg
+a2V5IHBhc3NlZCBieSBycG1zaWduLg0KDQo+IEknZCBlbmNvdXJhZ2UgbmV3IHVzZXJzIHRvIGVp
+dGhlciBnbyBhbGwtaW4gb24gYSB1c2Vyc3BhY2Ugc29sdXRpb24sIHVzaW5nIGENCj4gdHJ1c3Rl
+ZCB1c2Vyc3BhY2UgcHJvZ3JhbSB0byB2ZXJpZnkgc2lnbmF0dXJlcyBvZiBmcy12ZXJpdHkgZmls
+ZSBkaWdlc3RzOw0KPiAqb3IqIGdvIGFsbC1pbiBvbiBhbiBpbi1rZXJuZWwgc29sdXRpb24sIHVz
+aW5nIHRoZSBJTUEgc3VwcG9ydCBmb3IgZnMtdmVyaXR5DQo+IHdoaWNoIE1pbWkgWm9oYXIgaXMg
+d29ya2luZyBvbi4gIEEgdXNlcnNwYWNlIHNvbHV0aW9uIGNvdWxkIHVzZSBhIHNpbXBsZQ0KDQpQ
+cm9iYWJseSwgdGhlcmUgaXMgYWxzbyB0aGUgdGhpcmQgb3B0aW9uIG9mIGFuIExTTSAoc3VjaCBh
+cyBJUEUpIHRoYXQgZ2V0cw0KZnJvbSBmc3Zlcml0eSB0aGUgaW5mb3JtYXRpb24gaWYgdGhlIHNp
+Z25hdHVyZSB3YXMgdmFsaWRhdGVkLCBhbmQgZGVjaWRlDQpkZXBlbmRpbmcgb24gYSBwb2xpY3ku
+IEkgd291bGQgYWxzbyBleHBvc2UgdGhlIGluZm9ybWF0aW9uIGFib3V0IHRoZQ0KcmVzdHJpY3Rp
+b24gaW1wb3NlZCBvbiB0aGUga2V5cmluZyBmcm9tIHdoaWNoIHRoZSBrZXkgdXNlZCB0byB2ZXJp
+ZnkNCnRoZSBzaWduYXR1cmUgd2FzIGZvdW5kLg0KDQpNYXliZSBJTUEgY291bGQgdXNlIHRoaXMg
+YXBwcm9hY2ggdG9vLCB3aGljaCB3b3VsZCBhdm9pZCB0aGUgbmVlZA0Kb2YgaW50cm9kdWNpbmcg
+YW5vdGhlciBzaWduYXR1cmUgZm9ybWF0LiBJZiB0aGF0IGlzIGRlc2lyZWQsIHlvdSBtaWdodA0K
+d2FudCB0byBjb29yZGluYXRlIHdpdGggdGhlIGF1dGhvcnMgb2YgYSBGZWRvcmEgZmVhdHVyZToN
+Cg0KaHR0cHM6Ly9mZWRvcmFwcm9qZWN0Lm9yZy93aWtpL0NoYW5nZXMvRnNWZXJpdHlSUE0NCg0K
+d2hpY2gsIGFzIGZhciBhcyBJIGtub3csIHBsYW4gdG8gdXNlIHRoZSBzaWduYXR1cmUgZm9ybWF0
+IGFscmVhZHkNCnVwc3RyZWFtZWQuDQoNClRoYW5rcw0KDQpSb2JlcnRvDQoNCkhVQVdFSSBURUNI
+Tk9MT0dJRVMgRHVlc3NlbGRvcmYgR21iSCwgSFJCIDU2MDYzDQpNYW5hZ2luZyBEaXJlY3Rvcjog
+TGkgUGVuZywgWmhvbmcgUm9uZ2h1YQ0KDQo+IHNpZ25hdHVyZSBmb3JtYXQsIHVzaW5nIGEgbW9k
+ZXJuIGFsZ29yaXRobSBzdWNoIGFzIEVkMjU1MTkuICBJTUEgdXNlcyBhIHNpbXBsZQ0KPiBzaWdu
+YXR1cmUgZm9ybWF0IHRvbywgdGhvdWdoIGl0IHVzZXMgYSBjb21wbGV4IGZvcm1hdCAoWC41MDkp
+IGZvciBwdWJsaWMga2V5cy4NCj4gDQo+IC0gRXJpYw0K
