@@ -2,160 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D289C4167B
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 19:47:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBE00C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 19:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357145AbiASTrT (ORCPT
+        id S1357176AbiASTtO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 14:47:19 -0500
-Received: from mxout01.lancloud.ru ([45.84.86.81]:42860 "EHLO
-        mxout01.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230233AbiASTrQ (ORCPT
+        Wed, 19 Jan 2022 14:49:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34340 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230233AbiASTtN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 14:47:16 -0500
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout01.lancloud.ru F38C920CE459
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH] driver core: platform: Rename platform_get_irq_optional()
- to platform_get_irq_silent()
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-CC:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        <linux-iio@vger.kernel.org>,
-        "Linus Walleij" <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        "ALSA Development Mailing List" <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        <linux-phy@lists.infradead.org>, <netdev@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "Kishon Vijay Abraham I" <kishon@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        <platform-driver-x86@vger.kernel.org>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        "Saravanan Sekar" <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        John Garry <john.garry@huawei.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        "Mark Gross" <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "Alex Williamson" <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        <openipmi-developer@lists.sourceforge.net>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        "Linux ARM" <linux-arm-kernel@lists.infradead.org>,
-        <linux-edac@vger.kernel.org>, Tony Luck <tony.luck@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        "Mun Yew Tham" <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        "Linux MMC List" <linux-mmc@vger.kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        "James Morse" <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        "Sebastian Reichel" <sre@kernel.org>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
-        <linux-mediatek@lists.infradead.org>,
-        "Brian Norris" <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
- <20220112085009.dbasceh3obfok5dc@pengutronix.de>
- <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
- <YeA7CjOyJFkpuhz/@sirena.org.uk>
- <20220113194358.xnnbhsoyetihterb@pengutronix.de>
- <YeF05vBOzkN+xYCq@smile.fi.intel.com>
- <20220115154539.j3tsz5ioqexq2yuu@pengutronix.de>
- <YehdsUPiOTwgZywq@smile.fi.intel.com>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <b7edb713-dd91-14e7-34ff-d8fb559e8e92@omp.ru>
-Date:   Wed, 19 Jan 2022 22:47:06 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Wed, 19 Jan 2022 14:49:13 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 359C8C061574
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 11:49:13 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: bbeckett)
+        with ESMTPSA id EAFFE1F446F5
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1642621751;
+        bh=UIoafffS0/l3S1GB6KgQfq7k8XDj/WzZMnJi03jT+4w=;
+        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
+        b=NNcsmrQbUywS/Hicnx0DJF53N17Jr42HJKPIKGUJaxLaQTDR+kveaR+cFJf+fyfwu
+         GMMAvv48j6+f2ZWTFED+g0ojdxBaXlOW8je2j2TQ1btl2H7c7kOhH7MTPs0+oJUxNe
+         VMB8fv4YSY7acGIBIlEsEKeTVu4/kj5E1/QCWENbP/syauBoeVGSh0Bqti9t6vEzoi
+         RwdnwaT3pL8jQEP8cZNjJRRVSRX6gVa9O2W2eegsEALXmPVxUyYqL66kgqm+KPE5f/
+         QBtS3Nlvh6LqNmT7MNOB93OfVwHlr0lBZBcj49BeEuLuZwcxPu3Do5qhXcfZ/pRawh
+         lRJA+NW1EyX0g==
+Message-ID: <accbc66b-08ca-aa2a-92e6-4d65359e9bf4@collabora.com>
+Date:   Wed, 19 Jan 2022 19:49:08 +0000
 MIME-Version: 1.0
-In-Reply-To: <YehdsUPiOTwgZywq@smile.fi.intel.com>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.1
+Subject: Re: [PATCH v2 4/4] drm/i915/uapi: document behaviour for DG2 64K
+ support
 Content-Language: en-US
+To:     Jordan Justen <jordan.l.justen@intel.com>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>
+Cc:     Matthew Auld <matthew.auld@intel.com>,
+        Ramalingam C <ramalingam.c@intel.com>,
+        Simon Ser <contact@emersion.fr>,
+        Pekka Paalanen <ppaalanen@gmail.com>,
+        Kenneth Graunke <kenneth@whitecape.org>,
+        mesa-dev@lists.freedesktop.org, Tony Ye <tony.ye@intel.com>,
+        Slawomir Milczarek <slawomir.milczarek@intel.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+References: <20220118175036.3840934-1-bob.beckett@collabora.com>
+ <20220118175036.3840934-5-bob.beckett@collabora.com>
+ <87zgnrefoo.fsf@jljusten-skl>
+From:   Robert Beckett <bob.beckett@collabora.com>
+In-Reply-To: <87zgnrefoo.fsf@jljusten-skl>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
- LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/19/22 9:51 PM, Andy Shevchenko wrote:
 
-[...]
->>>>> It'd certainly be good to name anything that doesn't correspond to one
->>>>> of the existing semantics for the API (!) something different rather
->>>>> than adding yet another potentially overloaded meaning.
->>>>
->>>> It seems we're (at least) three who agree about this. Here is a patch
->>>> fixing the name.
->>>
->>> And similar number of people are on the other side.
+
+On 19/01/2022 18:36, Jordan Justen wrote:
+> Robert Beckett <bob.beckett@collabora.com> writes:
+> 
+>> From: Matthew Auld <matthew.auld@intel.com>
 >>
->> If someone already opposed to the renaming (and not only the name) I
->> must have missed that.
+>> On discrete platforms like DG2, we need to support a minimum page size
+>> of 64K when dealing with device local-memory. This is quite tricky for
+>> various reasons, so try to document the new implicit uapi for this.
 >>
->> So you think it's a good idea to keep the name
->> platform_get_irq_optional() despite the "not found" value returned by it
->> isn't usable as if it were a normal irq number?
+>> v2: Fixed suggestions on formatting [Daniel]
+>>
+>> Signed-off-by: Matthew Auld <matthew.auld@intel.com>
+>> Signed-off-by: Ramalingam C <ramalingam.c@intel.com>
+>> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+>> cc: Simon Ser <contact@emersion.fr>
+>> cc: Pekka Paalanen <ppaalanen@gmail.com>
+>> Cc: Jordan Justen <jordan.l.justen@intel.com>
+>> Cc: Kenneth Graunke <kenneth@whitecape.org>
+>> Cc: mesa-dev@lists.freedesktop.org
+>> Cc: Tony Ye <tony.ye@intel.com>
+>> Cc: Slawomir Milczarek <slawomir.milczarek@intel.com>
+>> ---
+>>   include/uapi/drm/i915_drm.h | 44 ++++++++++++++++++++++++++++++++-----
+>>   1 file changed, 39 insertions(+), 5 deletions(-)
+>>
+>> diff --git a/include/uapi/drm/i915_drm.h b/include/uapi/drm/i915_drm.h
+>> index 5e678917da70..486b7b96291e 100644
+>> --- a/include/uapi/drm/i915_drm.h
+>> +++ b/include/uapi/drm/i915_drm.h
+>> @@ -1118,10 +1118,16 @@ struct drm_i915_gem_exec_object2 {
+>>   	/**
+>>   	 * When the EXEC_OBJECT_PINNED flag is specified this is populated by
+>>   	 * the user with the GTT offset at which this object will be pinned.
+>> +	 *
+>>   	 * When the I915_EXEC_NO_RELOC flag is specified this must contain the
+>>   	 * presumed_offset of the object.
+>> +	 *
+>>   	 * During execbuffer2 the kernel populates it with the value of the
+>>   	 * current GTT offset of the object, for future presumed_offset writes.
+>> +	 *
+>> +	 * See struct drm_i915_gem_create_ext for the rules when dealing with
+>> +	 * alignment restrictions with I915_MEMORY_CLASS_DEVICE, on devices with
+>> +	 * minimum page sizes, like DG2.
+>>   	 */
+>>   	__u64 offset;
+>>   
+>> @@ -3145,11 +3151,39 @@ struct drm_i915_gem_create_ext {
+>>   	 *
+>>   	 * The (page-aligned) allocated size for the object will be returned.
+>>   	 *
+>> -	 * Note that for some devices we have might have further minimum
+>> -	 * page-size restrictions(larger than 4K), like for device local-memory.
+>> -	 * However in general the final size here should always reflect any
+>> -	 * rounding up, if for example using the I915_GEM_CREATE_EXT_MEMORY_REGIONS
+>> -	 * extension to place the object in device local-memory.
+>> +	 *
+>> +	 * **DG2 64K min page size implications:**
 > 
-> I meant that on the other side people who are in favour of Sergey's patch.
-> Since that I commented already that I opposed the renaming being a standalone
-> change.
+> Long term, I'm not sure that the "**" (for emphasis) is needed here or
+> below. It's interesting at the moment, but will be just another thing
+> baked into the kernel/user code in a month from now. :)
+
+fair point, I'll make it less shouty
+
 > 
-> Do you agree that we have several issues with platform_get_irq*() APIs?
+>> +	 *
+>> +	 * On discrete platforms, starting from DG2, we have to contend with GTT
+>> +	 * page size restrictions when dealing with I915_MEMORY_CLASS_DEVICE
+>> +	 * objects.  Specifically the hardware only supports 64K or larger GTT
+>> +	 * page sizes for such memory. The kernel will already ensure that all
+>> +	 * I915_MEMORY_CLASS_DEVICE memory is allocated using 64K or larger page
+>> +	 * sizes underneath.
+>> +	 *
+>> +	 * Note that the returned size here will always reflect any required
+>> +	 * rounding up done by the kernel, i.e 4K will now become 64K on devices
+>> +	 * such as DG2.
+>> +	 *
+>> +	 * **Special DG2 GTT address alignment requirement:**
+>> +	 *
+>> +	 * The GTT alignment will also need be at least 2M for  such objects.
+>> +	 *
+>> +	 * Note that due to how the hardware implements 64K GTT page support, we
+>> +	 * have some further complications:
+>> +	 *
+>> +	 *   1) The entire PDE(which covers a 2MB virtual address range), must
+>> +	 *   contain only 64K PTEs, i.e mixing 4K and 64K PTEs in the same
+>> +	 *   PDE is forbidden by the hardware.
+>> +	 *
+>> +	 *   2) We still need to support 4K PTEs for I915_MEMORY_CLASS_SYSTEM
+>> +	 *   objects.
+>> +	 *
+>> +	 * To keep things simple for userland, we mandate that any GTT mappings
+>> +	 * must be aligned to and rounded up to 2MB. As this only wastes virtual
+>> +	 * address space and avoids userland having to copy any needlessly
+>> +	 * complicated PDE sharing scheme (coloring) and only affects GD2, this
+>> +	 * id deemed to be a good compromise.
 > 
-> 1. The unfortunate naming
+> typos: GD2, id
 
-   Mmm, "what's in a name?"... is this the topmost prio issue?
+thanks
 
-> 2. The vIRQ0 handling: a) WARN() followed by b) returned value 0
+> 
+> Isn't much of this more relavent to the vma offset at exec time? Is
+> there actually any new restriction on the size field during buffer
+> creation?
 
-   This is the most severe issue, I think...
+No new restriction on size, just placement, which mesa is already doing.
+The request for ack was just to get an ack from mesa folks that they are 
+happy with the mandatory 2MB alignment for DG2 vma.
 
-> 3. The specific cookie for "IRQ not found, while no error happened" case
+> 
+> I see Matthew references these notes from the offset comments, so if the
+> kernel devs prefer it here, then you can add my Acked-by on this patch.
 
-MBR, Sergey
+thanks!
+
+> 
+> -Jordan
+> 
+>>   	 */
+>>   	__u64 size;
+>>   	/**
+>> -- 
+>> 2.25.1
