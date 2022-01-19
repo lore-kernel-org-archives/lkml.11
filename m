@@ -2,141 +2,269 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D551FC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 00:03:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06FD2C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 00:05:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350341AbiASADj (ORCPT
+        id S1350361AbiASAFn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 19:03:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:34855 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1350331AbiASADi (ORCPT
+        Tue, 18 Jan 2022 19:05:43 -0500
+Received: from mout.kundenserver.de ([212.227.17.10]:60617 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346769AbiASAFl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 19:03:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642550618;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=tVYvA6k75j8gln9tRsgy3BBh8Hq7EurwC1H6Kup6Uac=;
-        b=g3EcQiM/e/lFDvp0/Sivwfg5+r0TS+z1CTV5i/rhLmnfMRhAXcuMHwi/ScFfJZ/tDVtJ96
-        5iISZKg62zXx624F1McbTyN8gR4S5iDPSa1L+aYrNgHh5LOEOOTnfZI12tyN7Dksu3TBmx
-        mRbpFztR//CuHPu8g4FOPQzbMW65i94=
-Received: from mail-oi1-f200.google.com (mail-oi1-f200.google.com
- [209.85.167.200]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-217-DYXUu7DRMnSdBs1LlpSNUg-1; Tue, 18 Jan 2022 19:03:36 -0500
-X-MC-Unique: DYXUu7DRMnSdBs1LlpSNUg-1
-Received: by mail-oi1-f200.google.com with SMTP id d205-20020aca36d6000000b002c890f38d80so554486oia.0
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 16:03:36 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=tVYvA6k75j8gln9tRsgy3BBh8Hq7EurwC1H6Kup6Uac=;
-        b=v82AMBrdFYVbuv0nfwCZVlOHhS+h/mnxQvl3syjjMPAUmlVUoZe+TebvAW6JGKe9fa
-         t7v6IdIu3WjglzikqN6P3XsvX8BLG6jv98gamwOWjs8cXBF8NcaSc12t79PZ+npODvbj
-         1byizjUsZFH7Vs1VOSzZmpZFlQdg80zzQWzYH7Nmr3KITBkhffYrAFKCUO7QZYCRIwvG
-         162eo1KBkNoLkwZJKWQEOh9GMB8uSiAQwahdBeqo2+ce9/NzlAtfXfOon0RV3mtqUxqm
-         iCuvZUwWQUpQ/8CFw0RiZUEUru2cGKwJwqQF4XuOOYpA+F9tDBa2XT+1uxUixmcYTXp3
-         xmJA==
-X-Gm-Message-State: AOAM530UXCXY9RxDavCRUzXwUsZSL/xYk5qcB4pxd4rutfaD97z7mj8I
-        2vMUphyhquAhzk/nNub9OQIoNaidVDTRGUFATnKGrITRMa+kgfDxqraekdex7OC2wciAS2FHzz5
-        LXaoB1dPN7Q2jHf+/oxyoC8lm
-X-Received: by 2002:a05:6830:2785:: with SMTP id x5mr22537881otu.187.1642550616005;
-        Tue, 18 Jan 2022 16:03:36 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwFSVupUWPVUpDZy728lBKKhw+a+1HU1Pevbh8pLavUmbWJOKEDeq0ntl5K4b6WWPcLn98w6Q==
-X-Received: by 2002:a05:6830:2785:: with SMTP id x5mr22537853otu.187.1642550615767;
-        Tue, 18 Jan 2022 16:03:35 -0800 (PST)
-Received: from treble ([2600:1700:6e32:6c00::c])
-        by smtp.gmail.com with ESMTPSA id ay40sm9106563oib.1.2022.01.18.16.03.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Jan 2022 16:03:35 -0800 (PST)
-Date:   Tue, 18 Jan 2022 16:03:27 -0800
-From:   Josh Poimboeuf <jpoimboe@redhat.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     Nick Desaulniers <ndesaulniers@google.com>,
-        Vasily Gorbik <gor@linux.ibm.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
+        Tue, 18 Jan 2022 19:05:41 -0500
+Received: from quad ([82.142.13.186]) by mrelayeu.kundenserver.de (mreue107
+ [212.227.15.183]) with ESMTPSA (Nemesis) id 1N0nOF-1mMFSl0ojd-00wpnl; Wed, 19
+ Jan 2022 01:05:10 +0100
+From:   Laurent Vivier <laurent@vivier.eu>
+To:     linux-kernel@vger.kernel.org
+Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        John Stultz <john.stultz@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-rtc@vger.kernel.org,
         Thomas Gleixner <tglx@linutronix.de>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        x86@kernel.org, llvm@lists.linux.dev, linux-sparse@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Nathan Chancellor <nathan@kernel.org>
-Subject: Re: [PATCH] objtool: prefer memory clobber & %= to volatile &
- __COUNTER__
-Message-ID: <20220119000327.oapghqad4lebnsra@treble>
-References: <20220114010526.1776605-1-ndesaulniers@google.com>
- <YeQei0xNzMq7bFdg@zn.tnic>
- <20220118192256.jzk5dnceeusq7x7u@treble>
- <20220118230120.pivvson7qekfiqic@treble>
- <YedOLva0zos3A1JE@zn.tnic>
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-m68k@lists.linux-m68k.org,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Laurent Vivier <laurent@vivier.eu>
+Subject: [PATCH v10 1/5] m68k: add asm/config.h
+Date:   Wed, 19 Jan 2022 01:05:02 +0100
+Message-Id: <20220119000506.1299843-2-laurent@vivier.eu>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220119000506.1299843-1-laurent@vivier.eu>
+References: <20220119000506.1299843-1-laurent@vivier.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <YedOLva0zos3A1JE@zn.tnic>
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:K5qjz0zUehgqdQGjQH9QmTj2AyKeXILhTCZkx+FjE0Tr4NT6S2j
+ RCqBYBrPOwC5P2KWJW7gth4bRm1gl/MjG8z2mQIK/mfYDoD8AVJMXzCQEBtBHg57+7WymP0
+ UFMt48mHAtTsn9zVrX/9tMDF+JsZsAQcQRd4DBZX2VdtZ9YET14vFYng96lpzVf518aaD63
+ ebggbiyq/cFrKYZES4YeA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Uu2ewiBoqZQ=:pAvAql2wY22MCAls9n5YVE
+ idEXIiWYVnjdOlVfKLhPedVJvXji7e/UWxljQZ65vMPQk24aQVdUBmsxNPxHb9J0G+HreXdy9
+ XeCvcABhBM7GRUw8dKdHvO0yckycw2GmlB05EQqtNSepAzedpzuAMy33fskSnqOjIrzZs/raa
+ J9Q40tEffRWUu+se+mUcr9QOaBczEgpfOUFylRv8Ob2z5nwL85kbCkzUXHgXSkfgBwedhuTUE
+ bMMzclr5QY+YCBrzfAOc3F3EZOLcwXVCQz/0fyReulS5Z/Nzw7jUDM5QISblVzuRpA4fhebaU
+ L4qfG/7iIjj8Pat0rspWmySatNIKBj428rNJWqXmkEm6E6OzwNVodeZeaC52R0lg3iBTRoRce
+ iJI0OuIHfoXQJX0dSeO3i6TyUcphwPDILm1v48v9NxqiwRbSfSM2e+oAxNV7AM91F/gjM8fNB
+ TmAIVQGEn5S/AEbSS90w8nCdw3tgDQa01JM0J34oaf1jw+iSTQlpb1/SbMD0e0GaVjAeeM5oP
+ MgBxAjDNS7E+prIQjTzdvqHhpW3KHNISJiUKzt3MgmshKQ445/H91cQHY72H5F/69YcoU4deA
+ AYzKp6qY1vwu1hLlotFTqg0IXyDIuW6rTW7rUbbh89m5mFIkNzw7R9oBJHkMlVLcJ6tbHO/JL
+ 9ss9J3lL8/99DYPxmMBmDGqq1Pu7kZpnUZS86A0SyfcnoyKmuHWb2sOxKdcKLQmIXRHk=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 12:33:02AM +0100, Borislav Petkov wrote:
-> On Tue, Jan 18, 2022 at 03:01:20PM -0800, Josh Poimboeuf wrote:
-> > With the two WARN_ONs in media_request_object_complete(), GCC apparently
-> > considers the two reachable() asm statements as duplicates, and it
-> > removes the second one.
-> 
-> Could that be the same thing:
-> 
-> net/xfrm/xfrm_output.o: warning: objtool: xfrm_output_resume()+0x2e0: unreachable instruction
-> 
-> I see two WARN_ONs in asm output there too...
+To avoid 'warning: no previous prototype for' error, declare all
+the parse_bootinfo and config functions prototypes into asm/config.h
+and include it in arch/m68k/kernel/setup_mm.c and arch/m68k/*/config.c
 
-If one of the '__bug_table' asm snippets isn't immediately followed by
-the .L[un]reachable asm, then yeah, it's the same issue.
+Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+Reviewed-by: Geert Uytterhoeven <geert@linux-m68k.org>
+---
+ arch/m68k/amiga/config.c       |  1 +
+ arch/m68k/apollo/config.c      |  1 +
+ arch/m68k/atari/config.c       |  1 +
+ arch/m68k/bvme6000/config.c    |  1 +
+ arch/m68k/hp300/config.c       |  1 +
+ arch/m68k/include/asm/config.h | 33 +++++++++++++++++++++++++++++++++
+ arch/m68k/kernel/setup_mm.c    | 23 +----------------------
+ arch/m68k/mac/config.c         |  1 +
+ arch/m68k/mvme147/config.c     |  1 +
+ arch/m68k/mvme16x/config.c     |  1 +
+ arch/m68k/q40/config.c         |  1 +
+ 11 files changed, 43 insertions(+), 22 deletions(-)
+ create mode 100644 arch/m68k/include/asm/config.h
 
-
-For example it's supposed to look something like this:
-
-
-# 472 "net/xfrm/xfrm_output.c" 1
-	1:	.byte 0x0f, 0x0b
-.pushsection __bug_table,"aw"
-2:	.long 1b - 2b	# bug_entry::bug_addr
-	.long .LC4 - 2b	# bug_entry::file	#
-	.word 472	# bug_entry::line	#
-	.word 2307	# bug_entry::flags	#
-	.org 2b+12	#
-.popsection
-# 0 "" 2
-# 472 "net/xfrm/xfrm_output.c" 1
-	.Lreachable1666:
-	.pushsection .discard.reachable
-	.long .Lreachable1666 - .
-	.popsection
-
-
-NOT just this:
-
-
-# 472 "net/xfrm/xfrm_output.c" 1
-	1:	.byte 0x0f, 0x0b
-.pushsection __bug_table,"aw"
-2:	.long 1b - 2b	# bug_entry::bug_addr
-	.long .LC4 - 2b	# bug_entry::file	#
-	.word 472	# bug_entry::line	#
-	.word 2307	# bug_entry::flags	#
-	.org 2b+12	#
-.popsection
-# some other code here...
-
-
-There's a bunch of those throughout the code base.  The current
-annotate_[un]reachable() implementations are carefully written to avoid
-that happening.
-
+diff --git a/arch/m68k/amiga/config.c b/arch/m68k/amiga/config.c
+index be2dfab48fd4..3137b45750df 100644
+--- a/arch/m68k/amiga/config.c
++++ b/arch/m68k/amiga/config.c
+@@ -37,6 +37,7 @@
+ #include <asm/irq.h>
+ #include <asm/machdep.h>
+ #include <asm/io.h>
++#include <asm/config.h>
+ 
+ static unsigned long amiga_model;
+ 
+diff --git a/arch/m68k/apollo/config.c b/arch/m68k/apollo/config.c
+index 581a5f68d102..42a8b8e2b664 100644
+--- a/arch/m68k/apollo/config.c
++++ b/arch/m68k/apollo/config.c
+@@ -16,6 +16,7 @@
+ #include <asm/apollohw.h>
+ #include <asm/irq.h>
+ #include <asm/machdep.h>
++#include <asm/config.h>
+ 
+ u_long sio01_physaddr;
+ u_long sio23_physaddr;
+diff --git a/arch/m68k/atari/config.c b/arch/m68k/atari/config.c
+index 261a0f57cc9a..38a7c0578105 100644
+--- a/arch/m68k/atari/config.c
++++ b/arch/m68k/atari/config.c
+@@ -46,6 +46,7 @@
+ #include <asm/machdep.h>
+ #include <asm/hwtest.h>
+ #include <asm/io.h>
++#include <asm/config.h>
+ 
+ u_long atari_mch_cookie;
+ EXPORT_SYMBOL(atari_mch_cookie);
+diff --git a/arch/m68k/bvme6000/config.c b/arch/m68k/bvme6000/config.c
+index 0c6feafbbd11..9b060d466e03 100644
+--- a/arch/m68k/bvme6000/config.c
++++ b/arch/m68k/bvme6000/config.c
+@@ -36,6 +36,7 @@
+ #include <asm/traps.h>
+ #include <asm/machdep.h>
+ #include <asm/bvme6000hw.h>
++#include <asm/config.h>
+ 
+ static void bvme6000_get_model(char *model);
+ extern void bvme6000_sched_init(void);
+diff --git a/arch/m68k/hp300/config.c b/arch/m68k/hp300/config.c
+index ce1eb3d3d55d..2c92843397c3 100644
+--- a/arch/m68k/hp300/config.c
++++ b/arch/m68k/hp300/config.c
+@@ -22,6 +22,7 @@
+ #include <asm/blinken.h>
+ #include <asm/io.h>                               /* readb() and writeb() */
+ #include <asm/hp300hw.h>
++#include <asm/config.h>
+ 
+ #include "time.h"
+ 
+diff --git a/arch/m68k/include/asm/config.h b/arch/m68k/include/asm/config.h
+new file mode 100644
+index 000000000000..aae61070628b
+--- /dev/null
++++ b/arch/m68k/include/asm/config.h
+@@ -0,0 +1,33 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++/*
++ * This file contains prototypes provided by each m68k machine
++ * to parse bootinfo data structures and to configure the machine
++ */
++
++#ifndef _M68K_CONFIG_H
++#define _M68K_CONFIG_H
++
++extern int amiga_parse_bootinfo(const struct bi_record *record);
++extern int atari_parse_bootinfo(const struct bi_record *record);
++extern int mac_parse_bootinfo(const struct bi_record *record);
++extern int q40_parse_bootinfo(const struct bi_record *record);
++extern int bvme6000_parse_bootinfo(const struct bi_record *record);
++extern int mvme16x_parse_bootinfo(const struct bi_record *record);
++extern int mvme147_parse_bootinfo(const struct bi_record *record);
++extern int hp300_parse_bootinfo(const struct bi_record *record);
++extern int apollo_parse_bootinfo(const struct bi_record *record);
++
++extern void config_amiga(void);
++extern void config_atari(void);
++extern void config_mac(void);
++extern void config_sun3(void);
++extern void config_apollo(void);
++extern void config_mvme147(void);
++extern void config_mvme16x(void);
++extern void config_bvme6000(void);
++extern void config_hp300(void);
++extern void config_q40(void);
++extern void config_sun3x(void);
++
++#endif /* _M68K_CONFIG_H */
+diff --git a/arch/m68k/kernel/setup_mm.c b/arch/m68k/kernel/setup_mm.c
+index 4b51bfd38e5f..226dc3750397 100644
+--- a/arch/m68k/kernel/setup_mm.c
++++ b/arch/m68k/kernel/setup_mm.c
+@@ -47,6 +47,7 @@
+ #endif
+ #include <asm/macintosh.h>
+ #include <asm/natfeat.h>
++#include <asm/config.h>
+ 
+ #if !FPSTATESIZE || !NR_IRQS
+ #warning No CPU/platform type selected, your kernel will not work!
+@@ -113,28 +114,6 @@ EXPORT_SYMBOL(isa_type);
+ EXPORT_SYMBOL(isa_sex);
+ #endif
+ 
+-extern int amiga_parse_bootinfo(const struct bi_record *);
+-extern int atari_parse_bootinfo(const struct bi_record *);
+-extern int mac_parse_bootinfo(const struct bi_record *);
+-extern int q40_parse_bootinfo(const struct bi_record *);
+-extern int bvme6000_parse_bootinfo(const struct bi_record *);
+-extern int mvme16x_parse_bootinfo(const struct bi_record *);
+-extern int mvme147_parse_bootinfo(const struct bi_record *);
+-extern int hp300_parse_bootinfo(const struct bi_record *);
+-extern int apollo_parse_bootinfo(const struct bi_record *);
+-
+-extern void config_amiga(void);
+-extern void config_atari(void);
+-extern void config_mac(void);
+-extern void config_sun3(void);
+-extern void config_apollo(void);
+-extern void config_mvme147(void);
+-extern void config_mvme16x(void);
+-extern void config_bvme6000(void);
+-extern void config_hp300(void);
+-extern void config_q40(void);
+-extern void config_sun3x(void);
+-
+ #define MASK_256K 0xfffc0000
+ 
+ extern void paging_init(void);
+diff --git a/arch/m68k/mac/config.c b/arch/m68k/mac/config.c
+index 5d16f9b47aa9..65d124ec80bb 100644
+--- a/arch/m68k/mac/config.c
++++ b/arch/m68k/mac/config.c
+@@ -47,6 +47,7 @@
+ #include <asm/mac_via.h>
+ #include <asm/mac_oss.h>
+ #include <asm/mac_psc.h>
++#include <asm/config.h>
+ 
+ /* Mac bootinfo struct */
+ struct mac_booter_data mac_bi_data;
+diff --git a/arch/m68k/mvme147/config.c b/arch/m68k/mvme147/config.c
+index dfd6202fd403..b96ea7c76a19 100644
+--- a/arch/m68k/mvme147/config.c
++++ b/arch/m68k/mvme147/config.c
+@@ -34,6 +34,7 @@
+ #include <asm/traps.h>
+ #include <asm/machdep.h>
+ #include <asm/mvme147hw.h>
++#include <asm/config.h>
+ 
+ 
+ static void mvme147_get_model(char *model);
+diff --git a/arch/m68k/mvme16x/config.c b/arch/m68k/mvme16x/config.c
+index b4422c2dfbbf..88cbdc10925b 100644
+--- a/arch/m68k/mvme16x/config.c
++++ b/arch/m68k/mvme16x/config.c
+@@ -37,6 +37,7 @@
+ #include <asm/traps.h>
+ #include <asm/machdep.h>
+ #include <asm/mvme16xhw.h>
++#include <asm/config.h>
+ 
+ extern t_bdid mvme_bdid;
+ 
+diff --git a/arch/m68k/q40/config.c b/arch/m68k/q40/config.c
+index 5caf1e5be1c2..9237243077ce 100644
+--- a/arch/m68k/q40/config.c
++++ b/arch/m68k/q40/config.c
+@@ -34,6 +34,7 @@
+ #include <asm/traps.h>
+ #include <asm/machdep.h>
+ #include <asm/q40_master.h>
++#include <asm/config.h>
+ 
+ extern void q40_init_IRQ(void);
+ static void q40_get_model(char *model);
 -- 
-Josh
+2.34.1
 
