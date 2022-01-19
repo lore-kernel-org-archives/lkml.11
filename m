@@ -2,57 +2,58 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1A7EC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 11:07:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CAFCC433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 11:10:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354020AbiASLHG (ORCPT
+        id S1354022AbiASLKL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 06:07:06 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:44634 "EHLO
+        Wed, 19 Jan 2022 06:10:11 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:45088 "EHLO
         smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354027AbiASLHB (ORCPT
+        with ESMTP id S1353333AbiASLKI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 06:07:01 -0500
+        Wed, 19 Jan 2022 06:10:08 -0500
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by smtp-out1.suse.de (Postfix) with ESMTPS id 717A6212C2;
-        Wed, 19 Jan 2022 11:07:00 +0000 (UTC)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 4FAD6218E4;
+        Wed, 19 Jan 2022 11:10:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
-        t=1642590420; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+        t=1642590607; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=u7s1cYTv7Y/FjbTSAc0sveKigpkrprMLr4cF2U4Mu5o=;
-        b=eFndhYkYz+ZsKaKD9OjE+wpr5l8Tvx7Nd4SXCxjgMQyNnM1KhYdaROqW7Y1HxcwECR81Rs
-        yZvsL166fIpQlit/N7bq73GJBYTWrngqvaodRO6VIKOOLTv9qndPsmlr177FTv+PUWLkmq
-        nrIpPJIBslu4Sx5JXDHt8qYmVPeqK2w=
+        bh=XQns7ry+S4QtQCYHYjH5vlhwIvoPhGouvztO1/xkhOw=;
+        b=TazNgORzPiPdgRTXlVdu2RRANPhrUJFZEv5id/U7dtjkdIMmC1rm7JkBPKqxwzICxBNelX
+        d9XqomwC+9ya7KB+qXtAveVCV9e9TTosR+5mg60AWMkW0BehhkdNn4SgmRgtlVyfai94zV
+        CjVPpd/YLmoGkARdp/pLgfiLnZA1ZAk=
 DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
-        s=susede2_ed25519; t=1642590420;
+        s=susede2_ed25519; t=1642590607;
         h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
          mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=u7s1cYTv7Y/FjbTSAc0sveKigpkrprMLr4cF2U4Mu5o=;
-        b=zqyU8Os9T6/yvUMpjFQPRY52cKXqmS53Cw+PTNr28BCc2AR6Y+CuYWQBFHr57KzEBkqqhK
-        5k4/FBmknJrkgcDA==
+        bh=XQns7ry+S4QtQCYHYjH5vlhwIvoPhGouvztO1/xkhOw=;
+        b=8hxMguh1nXY//+N2o65JGa4x2elWOqSS3Gnrj7mLJUQPz+pb6axFSsnah15g+4iyTQrB3E
+        SslLsrJ9Z0uW+GDA==
 Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
         (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id E4EC913B4A;
-        Wed, 19 Jan 2022 11:06:59 +0000 (UTC)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 14D2513B4A;
+        Wed, 19 Jan 2022 11:10:07 +0000 (UTC)
 Received: from dovecot-director2.suse.de ([192.168.254.65])
         by imap2.suse-dmz.suse.de with ESMTPSA
-        id J4oSN9Pw52EYXgAAMHmgww
-        (envelope-from <vbabka@suse.cz>); Wed, 19 Jan 2022 11:06:59 +0000
-Message-ID: <5c67e6b5-8287-1b35-a6f6-b6f117290457@suse.cz>
-Date:   Wed, 19 Jan 2022 12:06:59 +0100
+        id JTt7BI/x52HuXwAAMHmgww
+        (envelope-from <vbabka@suse.cz>); Wed, 19 Jan 2022 11:10:07 +0000
+Message-ID: <699d9f0c-e330-f651-a6c8-f9e11e1844fd@suse.cz>
+Date:   Wed, 19 Jan 2022 12:10:06 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.5.0
-Subject: Re: [PATCH v4 40/66] exec: Use VMA iterator instead of linked list
+Subject: Re: [PATCH v4 41/66] fs/proc/base: Use maple tree iterators in place
+ of linked list
 Content-Language: en-US
 To:     Liam Howlett <liam.howlett@oracle.com>,
         "maple-tree@lists.infradead.org" <maple-tree@lists.infradead.org>,
@@ -75,9 +76,9 @@ Cc:     Song Liu <songliubraving@fb.com>,
         Joel Fernandes <joelaf@google.com>,
         Rom Lemarchand <romlem@google.com>
 References: <20211201142918.921493-1-Liam.Howlett@oracle.com>
- <20211201142918.921493-41-Liam.Howlett@oracle.com>
+ <20211201142918.921493-42-Liam.Howlett@oracle.com>
 From:   Vlastimil Babka <vbabka@suse.cz>
-In-Reply-To: <20211201142918.921493-41-Liam.Howlett@oracle.com>
+In-Reply-To: <20211201142918.921493-42-Liam.Howlett@oracle.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
@@ -87,62 +88,42 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 On 12/1/21 15:30, Liam Howlett wrote:
 > From: "Liam R. Howlett" <Liam.Howlett@Oracle.com>
 > 
-> Remove a use of the vm_next list by doing the initial lookup with the
-> VMA iterator and then using it to find the next entry.
-> 
-> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
 > Signed-off-by: Liam R. Howlett <Liam.Howlett@Oracle.com>
 
 Acked-by: Vlastimil Babka <vbabka@suse.cz>
 
 > ---
->  fs/exec.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
+>  fs/proc/base.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
 > 
-> diff --git a/fs/exec.c b/fs/exec.c
-> index fee18b63ed35..f033745c148a 100644
-> --- a/fs/exec.c
-> +++ b/fs/exec.c
-> @@ -680,6 +680,8 @@ static int shift_arg_pages(struct vm_area_struct *vma, unsigned long shift)
->  	unsigned long length = old_end - old_start;
->  	unsigned long new_start = old_start - shift;
->  	unsigned long new_end = old_end - shift;
-> +	VMA_ITERATOR(vmi, mm, new_start);
-> +	struct vm_area_struct *next;
->  	struct mmu_gather tlb;
+> diff --git a/fs/proc/base.c b/fs/proc/base.c
+> index 13eda8de2998..ea17ee988158 100644
+> --- a/fs/proc/base.c
+> +++ b/fs/proc/base.c
+> @@ -2323,6 +2323,7 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
+>  	GENRADIX(struct map_files_info) fa;
+>  	struct map_files_info *p;
+>  	int ret;
+> +	MA_STATE(mas, NULL, 0, 0);
 >  
->  	BUG_ON(new_start > new_end);
-> @@ -688,7 +690,7 @@ static int shift_arg_pages(struct vm_area_struct *vma, unsigned long shift)
->  	 * ensure there are no vmas between where we want to go
->  	 * and where we are
->  	 */
-> -	if (vma != find_vma(mm, new_start))
-> +	if (vma != vma_next(&vmi))
->  		return -EFAULT;
+>  	genradix_init(&fa);
+>  
+> @@ -2350,6 +2351,7 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
+>  	}
+>  
+>  	nr_files = 0;
+> +	mas.tree = &mm->mm_mt;
 >  
 >  	/*
-> @@ -707,12 +709,13 @@ static int shift_arg_pages(struct vm_area_struct *vma, unsigned long shift)
+>  	 * We need two passes here:
+> @@ -2361,7 +2363,8 @@ proc_map_files_readdir(struct file *file, struct dir_context *ctx)
+>  	 * routine might require mmap_lock taken in might_fault().
+>  	 */
 >  
->  	lru_add_drain();
->  	tlb_gather_mmu(&tlb, mm);
-> +	next = vma_next(&vmi);
->  	if (new_end > old_start) {
->  		/*
->  		 * when the old and new regions overlap clear from new_end.
->  		 */
->  		free_pgd_range(&tlb, new_end, old_end, new_end,
-> -			vma->vm_next ? vma->vm_next->vm_start : USER_PGTABLES_CEILING);
-> +			next ? next->vm_start : USER_PGTABLES_CEILING);
->  	} else {
->  		/*
->  		 * otherwise, clean from old_start; this is done to not touch
-> @@ -721,7 +724,7 @@ static int shift_arg_pages(struct vm_area_struct *vma, unsigned long shift)
->  		 * for the others its just a little faster.
->  		 */
->  		free_pgd_range(&tlb, old_start, old_end, new_end,
-> -			vma->vm_next ? vma->vm_next->vm_start : USER_PGTABLES_CEILING);
-> +			next ? next->vm_start : USER_PGTABLES_CEILING);
->  	}
->  	tlb_finish_mmu(&tlb);
->  
+> -	for (vma = mm->mmap, pos = 2; vma; vma = vma->vm_next) {
+> +	pos = 2;
+> +	mas_for_each(&mas, vma, ULONG_MAX) {
+>  		if (!vma->vm_file)
+>  			continue;
+>  		if (++pos <= ctx->pos)
 
