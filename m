@@ -2,117 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63919C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 12:28:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F763C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 12:29:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354460AbiASM2t (ORCPT
+        id S1354465AbiASM34 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 07:28:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45574 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347469AbiASM2s (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 07:28:48 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AF1BC061574
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 04:28:47 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id i187-20020a1c3bc4000000b0034d2ed1be2aso12789238wma.1
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 04:28:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=r544K7uLseHgCwnr0wVsLsWb82uTNW4lOUdN19AMQDw=;
-        b=ceClqTAml5TYR5w+T+ZUWlwr1D+2NbFkj4hG8uCQABlOpUcRyrrtPMpIl7N/U2sTCd
-         uHy+5wvddi5ifxY2MRj4gPyKyMexkgoGN2BcnSdELPzOdgrBLXVyhyKFTVTAnBhjCaSq
-         upeG3CpIhfmFfjyZER+/wNiTMnAqdPBwK7PG6rB+BdYy2kmLDEzlVPLDAa6+9yQl51Mn
-         uX+3SYqEG0XjAQNmKp1DJRxIp2NdNDAuQZpw1PKuN0l4rJajkxh12xqHAqy5lQ0kE3yY
-         WmT6OzgdO2wTmA62wb/p7F09kM9gYqtMxelo/nX7EFeTqku29l9GNYSzhaAS2x8hkClm
-         sW2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=r544K7uLseHgCwnr0wVsLsWb82uTNW4lOUdN19AMQDw=;
-        b=uYjKuH9NHPo3SNzhWEsHfs9zMS+I9mN2A6XYdRIIQVYsjMYHmSnl+e+UOJgSmHl9i1
-         Ll8LiHzogw89dFz+OCcFgswmHLU3leKjxLezBg3JxejoxCBMpbmNthxOmKF8z869MA5h
-         O68AN/gZfvq92HYyMeLIzTQAOtybHGSTPeAfoYDiM+CZEv5AWWzqiLz081Dn+UjTNikx
-         LLEhgP6WydQoo9zjarBoB5k4LD30NCL4jucGKFb5pHGY83y4dKUDjZof7E8XQu6jXjx0
-         6DguwAeXt+4Pzn41OpI5TWOjfXeZx1hLpc/0mWtSxuEyRT7D7UO+pT6K5sxFwGTFSZ3Z
-         aIyA==
-X-Gm-Message-State: AOAM533tDn0KhcLxZlCR1PlXp4/T2If5HwY4+FcanQEyri4Ke27O481P
-        DlZo0/8xN6SHlPP4Tz1XrcjCakpsya/CVQ==
-X-Google-Smtp-Source: ABdhPJyW0VTGSUd7xafQtG4NJPiTaXvdlNPbOk8sepjeULE2SjuZDvmR9Pomag4u/PrmPjUi+Tsqmw==
-X-Received: by 2002:adf:f94c:: with SMTP id q12mr28259235wrr.166.1642595325796;
-        Wed, 19 Jan 2022 04:28:45 -0800 (PST)
-Received: from localhost.localdomain ([2001:861:44c0:66c0:d394:97d0:bc02:3846])
-        by smtp.gmail.com with ESMTPSA id j16sm19406933wrp.76.2022.01.19.04.28.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Jan 2022 04:28:45 -0800 (PST)
-From:   Neil Armstrong <narmstrong@baylibre.com>
-To:     robert.foss@linaro.org
-Cc:     Laurent.pinchart@ideasonboard.com, jonas@kwiboo.se,
-        jernej.skrabec@gmail.com, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, kieran.bingham@ideasonboard.com,
-        biju.das.jz@bp.renesas.com,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Subject: [PATCH v2] drm/bridge: dw-hdmi: use safe format when first in bridge chain
-Date:   Wed, 19 Jan 2022 13:28:43 +0100
-Message-Id: <20220119122843.1455611-1-narmstrong@baylibre.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 19 Jan 2022 07:29:56 -0500
+Received: from mout.gmx.net ([212.227.17.22]:43889 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234862AbiASM3k (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 07:29:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1642595353;
+        bh=AzTwOkP2qFnqwWKULceIA25l5VnbUIb4mxUkPf/nTzo=;
+        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
+        b=RfMii8tw7jSZtIvm9xiEwlmoEvvajRQGG0f5Bek3CszkjEYjqxiJGTgGU9ep1ZCOU
+         f3uFvF2v/7LDarAuqEs7IdpCb71k2gZb6tsFS4Gdu4G18WSYpuUgrguYh2Hyms60w4
+         5ScBtF+5b3z7Rpq4ImuT41xvHpJ66pvyOOk0E97o=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.183.52]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1M8ygY-1nGE5n230Q-0064UN; Wed, 19
+ Jan 2022 13:29:13 +0100
+Message-ID: <4d8950c7-5f51-ca2b-4c93-741c7805a214@gmx.de>
+Date:   Wed, 19 Jan 2022 13:28:06 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH 2/2] Revert "fbcon: Disable accelerated scrolling"
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
+        Sven Schnelle <svens@stackframe.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        DRI Development <dri-devel@lists.freedesktop.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Sam Ravnborg <sam@ravnborg.org>, Claudio Suarez <cssk@net-c.es>
+References: <20220119110839.33187-1-deller@gmx.de>
+ <20220119110839.33187-3-deller@gmx.de> <Yef0j8+DBbwC7Kjv@kroah.com>
+ <Yef15k2GtC40aJEu@kroah.com>
+ <CAMuHMdVWFJEDwjf-htZ_D1484efmuPnz_L-qhcTeUE-GVpvZXA@mail.gmail.com>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <CAMuHMdVWFJEDwjf-htZ_D1484efmuPnz_L-qhcTeUE-GVpvZXA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:kH6rz4fWH4V5I9BuuMjlUgUgN4zBgAIh8HdN1Q57L7UUprT5obY
+ YPluvR3niGe8oQy8iy5Csh7ruQsVz2XkUrPl9vr24Xhb9586ElsISuWodSPaPMIZBzDTek0
+ EZ8UoUWc7QgpZJoHd7Vp8Dgm62X8A94TaQ/qpJTWtBZUPdBy0fTF+bDKW4leQfLggle0ys2
+ HpJ3Qq18ysc/QI2tfGjcg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:y12KkCrP0wM=:LVLC78OFUBA0Maz52K+ooI
+ c5vjpiraec9GiDC5ssk80QeQinJphuKF6ECxaZFsoE75u6q/BVx5B4VQgMVv2jn/oN/ff57B+
+ eC/JbIkuesva7Wg/Y3phJcfGB1fHh9K+NW7KL5suEnMekUe5utmETAHEAQTuIrU9iQIGjMNxM
+ FieYF0jay2AUkHabSuamsOcfW46QtK5lfusSU1wKdLWynnc9g8FLehoFpe7B2/V9waAnA1QOb
+ ezALILRsXqWGHC5hkrs2X3KRJsOMqFxz1dFj8FBc8uPUozxkDJePAl5xqurjy1npLmstqTR1/
+ aiKvfLmAJHGOfHMggzvomC3SM0lyvn/KR6WiEaOQwnWe75HS3nGc5/hCsDmX9KmAqzRxIVkfm
+ 5QvEtI1GG8azB9EISmUbYKKwT48nbvRNL66rTpb6bi9R9DTxuDO1NGj4Qnaofp0K4z0AD/LoN
+ EpzEjYGy3ff+sj9H2uOQmB8y6/04HdSHkFXm5j+NuGBqe9Yt28LBHJusiVY2BENVautCBy1PL
+ kKezZRWPhsPLmiXDgAmQlDHmnFlIWpBaoA9zjAKWfT1SvV0nW9ciQ/KL+V3qGSCU8MFCQZBiK
+ IE0BH1SfLui4waAy/fxhK/Vzvq8bNM+Xn11zVO/BJca2iudX9l6tNWwOr4Q9GqseRa6ORqBnw
+ H2nw91Zdy8y2Lugkx56PrWxr7fR1skVgxC4Q5e88ZeQfgOp9ocKL9y0RhKxcW5Fr8atRu8ri2
+ aL6skB9QEUGES6cmoDCJSU1KXMvF9Z2KfgfXTmsGWyVdoAoHyQX8naM1bWy7x+Qq8ZL+JQHfo
+ 06gu6Z7JhRurQrrCYfokFmrQqUwR/8iG1+MwoWCyTPhgmNjYrdZuTYYUkvULGUIGT3/and8Cr
+ fhM5pZT32Hs62/aN23oMuq/neT/P2OC23FGm4MeVyTOebQ9rcaT962KYiP5Ju2ozeANRlPle7
+ YGP96uwsWfNmSq8p3UFcwTdVn0Si3P2ogeYyOjXgtHXf+DD6sjgCUHmnUn7hVc2r+ehVJnezR
+ DhuzQ/iSJ8GOCmn/+eZUC/4c3P7DfZvkC/fOFSoMQ//HQZBU72oI10c1cDQsdkvkr/VQHzwew
+ +LDc1+Stqv12rA=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When the dw-hdmi bridge is in first place of the bridge chain, this
-means there is no way to select an input format of the dw-hdmi HW
-component.
+Hello Greg,
 
-Since introduction of display-connector, negotiation was broken since
-the dw-hdmi negotiation code only worked when the dw-hdmi bridge was
-in last position of the bridge chain or behind another bridge also
-supporting input & output format negotiation.
+On 1/19/22 12:47, Geert Uytterhoeven wrote:
+> On Wed, Jan 19, 2022 at 12:28 PM Greg Kroah-Hartman
+> <gregkh@linuxfoundation.org> wrote:
+>> On Wed, Jan 19, 2022 at 12:22:55PM +0100, Greg Kroah-Hartman wrote:
+>>> On Wed, Jan 19, 2022 at 12:08:39PM +0100, Helge Deller wrote:
+>>>> This reverts commit 39aead8373b3c20bb5965c024dfb51a94e526151.
+>>>>
+>>>> Revert this patch.  This patch started to introduce the regression th=
+at
+>>>> all hardware acceleration of more than 35 existing fbdev drivers were
+>>>> bypassed and thus fbcon console output for those was dramatically slo=
+wed
+>>>> down by factor of 10 and more.
+>>>>
+>>>> Reverting this commit has no impact on DRM, since none of the DRM dri=
+vers are
+>>>> tagged with the acceleration flags FBINFO_HWACCEL_COPYAREA,
+>>>> FBINFO_HWACCEL_FILLRECT or others.
+>>>>
+>>>> Signed-off-by: Helge Deller <deller@gmx.de>
+>
+>>> As for "why", I think there was a number of private bugs that were
+>>> reported in this code, which is why it was removed.  I do not think it
+>>> can be safely added back in without addressing them first.  Let me go
+>>> dig through my email to see if I can find them...
+>>
+>> Ah, no, that was just the soft scrollback code I was thinking of, which
 
-Commit 0656d1285b79 ("drm/bridge: display-connector: implement bus fmts callbacks")
-was introduced to make negotiation work again by making display-connector
-act as a pass-through concerning input & output format negotiation.
+Right.
+That was commit 973c096f6a85 and it was about vgacon, not fbcon.
 
-But in the case where the dw-hdmi is single in the bridge chain, for
-example on Renesas SoCs, with the display-connector bridge the dw-hdmi
-is no more single, breaking output format.
+I did mentioned it in my cover letter, together with my analysis of
+the reported bugs.
 
-Reported-by: Biju Das <biju.das.jz@bp.renesas.com>
-Bisected-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Tested-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Fixes: 0656d1285b79 ("drm/bridge: display-connector: implement bus fmts callbacks").
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
----
-Changes since v1:
-- Remove bad fix in dw_hdmi_bridge_atomic_get_input_bus_fmts
-- Fix typos in commit message
+Maybe I should have put all the information from the cover letter into
+the patch here as well. If you haven't read the cover letter yet, please d=
+o.
 
- drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Helge
 
-diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-index 54d8fdad395f..97cdc61b57f6 100644
---- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-+++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
-@@ -2551,8 +2551,9 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
- 	if (!output_fmts)
- 		return NULL;
- 
--	/* If dw-hdmi is the only bridge, avoid negociating with ourselves */
--	if (list_is_singular(&bridge->encoder->bridge_chain)) {
-+	/* If dw-hdmi is the first or only bridge, avoid negociating with ourselves */
-+	if (list_is_singular(&bridge->encoder->bridge_chain) ||
-+	    list_is_first(&bridge->chain_node, &bridge->encoder->bridge_chain)) {
- 		*num_output_fmts = 1;
- 		output_fmts[0] = MEDIA_BUS_FMT_FIXED;
- 
--- 
-2.25.1
-
+> So the bugs argument is moot.
+>
+>> was a different revert and is still gone, thankfully :)
+>
+> FTR, not everyone else was thankful about that one...
+>
+>> This one was just removed because Daniel noticed that only 3 drivers
+>> used this (nouveau, omapdrm, and gma600), so this shouldn't have caused
+>> any regressions in any other drivers like you are reporting here.
+>>
+>> So perhaps this regression is caused by something else?
+>
+> 1. Daniel's patch was not CCed to linux-fbdev,
+> 2. When I discovered the patch, I pointed out that the premise of 3
+>    drivers was not true, and that it affects 32 more fbdev drivers[1] .
+>    The patch was applied regardless.
+> 3. When the patch was suggested for backporting, I pointed out the
+>    same[2].
+>    The patch was backported regardless.
+>
+> [1] https://lore.kernel.org/r/alpine.DEB.2.22.394.2010311116530.379363@r=
+amsan.of.borg/
+> [2] https://lore.kernel.org/r/CAMuHMdXRgam2zahPEGcw8+76Xm-0AO-Ci9-YmVa5J=
+pTKVHphRw@mail.gmail.com/
+>
+> Gr{oetje,eeting}s,
+>
+>                         Geert
