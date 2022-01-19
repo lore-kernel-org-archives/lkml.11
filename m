@@ -2,108 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8673DC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 02:39:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61F49C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 02:40:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351022AbiASCj1 (ORCPT
+        id S1351037AbiASCkT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 21:39:27 -0500
-Received: from qproxy3-pub.mail.unifiedlayer.com ([67.222.38.20]:40968 "EHLO
-        qproxy3-pub.mail.unifiedlayer.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1350974AbiASCjZ (ORCPT
+        Tue, 18 Jan 2022 21:40:19 -0500
+Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:36052 "EHLO
+        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1351026AbiASCkN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 21:39:25 -0500
-X-Greylist: delayed 1345 seconds by postgrey-1.27 at vger.kernel.org; Tue, 18 Jan 2022 21:39:25 EST
-Received: from outbound-ss-761.bluehost.com (outbound-ss-761.bluehost.com [74.220.211.250])
-        by qproxy3.mail.unifiedlayer.com (Postfix) with ESMTP id D5FD3802D6DE
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 02:16:58 +0000 (UTC)
-Received: from cmgw11.mail.unifiedlayer.com (unknown [10.0.90.126])
-        by progateway8.mail.pro1.eigbox.com (Postfix) with ESMTP id 4816110047280
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 02:16:58 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id A0Wvny556wm8iA0WwnwgN7; Wed, 19 Jan 2022 02:16:58 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=DpSTREz+ c=1 sm=1 tr=0 ts=61e7749a
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=DghFqjY3_ZEA:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=hjfydMHF/MmMGRnNHBs9sxyXrEERNM5+XgoEui7sFIA=; b=OxzJmFjy5JK7BVgsjV1M+6eSQW
-        sM649t3LWY+oXdaOXz7JYKWe9b3eU0s03qqBNPt4UQxJoVVR8e5LFGiS/WoVz6ZT9BmDlZ3gFD9Gj
-        A+7hFBgR7d5kFe/gv+0K9FfEy;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:33320 helo=[10.0.1.23])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <re@w6rz.net>)
-        id 1nA0Wv-002z0P-1c; Tue, 18 Jan 2022 19:16:57 -0700
-Subject: Re: [PATCH 5.15 00/28] 5.15.16-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, stable@vger.kernel.org
-References: <20220118160451.879092022@linuxfoundation.org>
-In-Reply-To: <20220118160451.879092022@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-Message-ID: <ff258d00-12cd-5919-af39-ad07e914580b@w6rz.net>
-Date:   Tue, 18 Jan 2022 18:16:55 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Tue, 18 Jan 2022 21:40:13 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V2F5bjL_1642559989;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0V2F5bjL_1642559989)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 19 Jan 2022 10:40:11 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     ojeda@kernel.org
+Cc:     alex.gaynor@gmail.com, wedsonaf@google.com,
+        rust-for-linux@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH] rust: Remove unused including <linux/version.h>
+Date:   Wed, 19 Jan 2022 10:39:47 +0800
+Message-Id: <20220119023947.30628-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1nA0Wv-002z0P-1c
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:33320
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/18/22 8:05 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.15.16 release.
-> There are 28 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 20 Jan 2022 16:04:42 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.15.16-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.15.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+Eliminate the follow versioncheck warning:
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+./rust/kernel/bindings_helper.h: 13 linux/version.h not needed.
 
-Tested-by: Ron Economos <re@w6rz.net>
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ rust/kernel/bindings_helper.h | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/rust/kernel/bindings_helper.h b/rust/kernel/bindings_helper.h
+index 99a7d785ae01..a79f3f398b93 100644
+--- a/rust/kernel/bindings_helper.h
++++ b/rust/kernel/bindings_helper.h
+@@ -10,7 +10,6 @@
+ #include <linux/sysctl.h>
+ #include <linux/uaccess.h>
+ #include <linux/uio.h>
+-#include <linux/version.h>
+ #include <linux/miscdevice.h>
+ #include <linux/poll.h>
+ #include <linux/mm.h>
+-- 
+2.20.1.7.g153144c
 
