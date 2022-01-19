@@ -2,181 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8AB2C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 20:21:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FCF2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 20:26:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357292AbiASUVf (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 15:21:35 -0500
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:53733 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1357255AbiASUV2 (ORCPT
+        id S244493AbiASU0T (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 19 Jan 2022 15:26:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42724 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231146AbiASU0R (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 15:21:28 -0500
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailnew.nyi.internal (Postfix) with ESMTP id 9CC405803E8;
-        Wed, 19 Jan 2022 15:21:22 -0500 (EST)
-Received: from imap46 ([10.202.2.96])
-  by compute5.internal (MEProxy); Wed, 19 Jan 2022 15:21:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=liquorix.net; h=
-        mime-version:message-id:in-reply-to:references:date:from:to:cc
-        :subject:content-type; s=fm1; bh=JKT/nV8EFLKtbGZNTCYtvqRmmyTL2Tg
-        sz1tu10VSjNQ=; b=cxdUi+cbXCN+4iHGOELe5QBWZOviFSD8GJEG52aBsXsVaIu
-        8OqmAhi5Dl4e5hDUIQ/qo3cDovmpunrbZqh9j8ocObhnaUCyYae5RuEfMwGEKA1a
-        9+nWS8UwZyKEy+McYZBr78JuzucOxulj8KtwEBGa8sO31HgY7146ViVL1B5CXB9j
-        DWrh7jSSkLCROJagKYmyKHJlt01lll4VRxFzB4oBTyeKF3r0NgN5u6gB4p5Kfb+K
-        /lEPpBYo6jxZfQ/55+CKH9uu4WS7E8TtIUBSGUqPFdmq1Q6jNIJxkUtWhcwJ+lBa
-        pRl+dwNtSJ+aS3Hif3umMzpu90dAjWUSwC3q2LQ==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=JKT/nV
-        8EFLKtbGZNTCYtvqRmmyTL2Tgsz1tu10VSjNQ=; b=m2pZbC12MWeHg5y4W+U1wf
-        A+eiOYdWpwCNn1IR5Zagic8Fh6gf4A5dVJhpexiDDOsGdYwVt+29u/5G6ivQmq5i
-        DYvn+VLyeZzTFBDBLKx13M4hhiaVuploplxhDN4rcL+tiwoNnoGGTEglzX0k5j9M
-        /Bwut0errFggj63mRR2tn8LNTpbYb7DgINX+2pm5xq72G6Or6lRBd7WsE+9vJajG
-        2eALcaw6Lynz9sIZmYij6smHQx1ScHOOejLzH0ae/UVgs8R3GebM2EpYr2hU1Sra
-        b/7YxD+R5p03hBh+PAyTjBf11uIEl0pt0PBBuI2iTrioWfBDEMM4bVd/723KPb+w
-        ==
-X-ME-Sender: <xms:wHLoYYN6twqNdJW-i0Q6-Nrmr9R_ftzj8qOCG6d4hJJLZjXtoIgSvA>
-    <xme:wHLoYe_36jrc_rHr0EZ2h7NJBqL4F3VEbZt9ETsZdTBKq1w9h3CHPKvIF5Lp0oyf1
-    A3KRHyqB9gGp5dAOek>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeigdejiecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhtvghv
-    vghnuceurghrrhgvthhtfdcuoehsthgvvhgvnheslhhiqhhuohhrihigrdhnvghtqeenuc
-    ggtffrrghtthgvrhhnpeekleffieffheevveeuteduteffkeffvdejuefhuedugfduvdeh
-    fedtueeiffelheenucffohhmrghinhepgigrnhhmohgurdhorhhgpdgthhhrohhmihhumh
-    drohhrghdprghrtghhlhhinhhugidrohhrghdplhhiqhhuohhrihigrdhnvghtpdhgohho
-    ghhlvghsohhurhgtvgdrtghomhdpvgguihdrfihorhhkshenucevlhhushhtvghrufhiii
-    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsthgvvhgvnheslhhiqhhuohhrihig
-    rdhnvght
-X-ME-Proxy: <xmx:wHLoYfSigPo_sVD8ByZMpCGy8Ue4xJhn1mLg81JMiVzekSDG8ukP8g>
-    <xmx:wHLoYQsGAFEFkXhq4wsXvHQxuENDxMrcU-aRtFAeX5IpIHZ03caEiw>
-    <xmx:wHLoYQc52Nrzp770RssFw5kwF5B8OeSkJ88YKCFYTgmbLLlmA_71OQ>
-    <xmx:wnLoYUMSQxFVToPgasnePQ1J5uHPGV5xjL0w0JIWOM9dGIAsVK82qQ>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id 6A2321EE007B; Wed, 19 Jan 2022 15:21:20 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-4585-ga9d9773056-fm-20220113.001-ga9d97730
-Mime-Version: 1.0
-Message-Id: <9203f79f-7910-4613-a593-aa6fda665b42@www.fastmail.com>
-In-Reply-To: <Yd1Css8+jsspeZHh@google.com>
-References: <20220104202227.2903605-1-yuzhao@google.com>
- <YdSuSHa/Vjl6bPkg@google.com> <Yd1Css8+jsspeZHh@google.com>
-Date:   Wed, 19 Jan 2022 14:19:30 -0600
-From:   "Steven Barrett" <steven@liquorix.net>
-To:     "Yu Zhao" <yuzhao@google.com>
-Cc:     "Andi Kleen" <ak@linux.intel.com>,
-        "Catalin Marinas" <catalin.marinas@arm.com>,
-        "Dave Hansen" <dave.hansen@linux.intel.com>,
-        "Hillf Danton" <hdanton@sina.com>, "Jens Axboe" <axboe@kernel.dk>,
-        "Jesse Barnes" <jsbarnes@google.com>,
-        "Johannes Weiner" <hannes@cmpxchg.org>,
-        "Jonathan Corbet" <corbet@lwn.net>,
-        "Matthew Wilcox" <willy@infradead.org>,
-        "Mel Gorman" <mgorman@suse.de>,
-        "Michael Larabel" <Michael@michaellarabel.com>,
-        "Michal Hocko" <mhocko@kernel.org>,
-        "Rik van Riel" <riel@surriel.com>,
-        "Vlastimil Babka" <vbabka@suse.cz>,
-        "Will Deacon" <will@kernel.org>,
-        "Ying Huang" <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        page-reclaim@google.com, x86@kernel.org,
-        "Andrew Morton" <akpm@linux-foundation.org>,
-        "Linus Torvalds" <torvalds@linux-foundation.org>
-Subject: Re: [PATCH v6 0/9] Multigenerational LRU Framework
-Content-Type: text/plain
+        Wed, 19 Jan 2022 15:26:17 -0500
+Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61877C061574
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 12:26:17 -0800 (PST)
+Received: from zn.tnic (dslb-088-067-202-008.088.067.pools.vodafone-ip.de [88.67.202.8])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 853361EC04EC;
+        Wed, 19 Jan 2022 21:26:10 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1642623970;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=gcsbQtvTIZjcCY2Tai3gH/ZSFkICJFR6G+ix5XAvRhg=;
+        b=k2wSjGGfuBDKNaKVP/qMJOn9ps1+pu3c3E0zXA8WQk40NF8todODr8JcT58jelE5We0m22
+        +XVBb3rNiOFZX5SwDV1SYrwf0gOkADaqkh3xityWpO+8c8ShK8A6VdnjfL/TqvEDK8OHee
+        yx7aHLHTW5wbRchV/rsrlxyWC+/UxC8=
+Date:   Wed, 19 Jan 2022 21:26:05 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     "Kirill A. Shutemov" <kirill@shutemov.name>
+Cc:     "H. Peter Anvin" <hpa@zytor.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
+        mingo@redhat.com, dave.hansen@intel.com, luto@kernel.org,
+        peterz@infradead.org, sathyanarayanan.kuppuswamy@linux.intel.com,
+        aarcange@redhat.com, ak@linux.intel.com, dan.j.williams@intel.com,
+        david@redhat.com, jgross@suse.com, jmattson@google.com,
+        joro@8bytes.org, jpoimboe@redhat.com, knsathya@kernel.org,
+        pbonzini@redhat.com, sdeep@vmware.com, seanjc@google.com,
+        tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
+        x86@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 10/26] x86/tdx: Support TDX guest port I/O at
+ decompression time
+Message-ID: <Yehz3eqq670WRVJE@zn.tnic>
+References: <YeAuehoOEjUH3vZ3@zn.tnic>
+ <20220115010155.ss2hnyotw4a3nljf@black.fi.intel.com>
+ <YeK7AJXGN5GVGkRV@zn.tnic>
+ <20220117143920.3umnnlx7dl27cm5z@box.shutemov.name>
+ <YeW2U9vH65NcLHtY@zn.tnic>
+ <20220119115326.rw2aj3ho2mct4xxv@box.shutemov.name>
+ <YegTjdltOFBIDlf2@zn.tnic>
+ <20220119154925.mzri4zaz3o477e3k@box.shutemov.name>
+ <YehqkKNgQ65uUOe6@zn.tnic>
+ <20220119200841.fupa3hemmswllmxc@box.shutemov.name>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220119200841.fupa3hemmswllmxc@box.shutemov.name>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 11, 2022, at 2:41 AM, Yu Zhao wrote:
-> On Tue, Jan 04, 2022 at 01:30:00PM -0700, Yu Zhao wrote:
-> > On Tue, Jan 04, 2022 at 01:22:19PM -0700, Yu Zhao wrote:
-> > > TLDR
-> > > ====
-> > > The current page reclaim is too expensive in terms of CPU usage and it
-> > > often makes poor choices about what to evict. This patchset offers an
-> > > alternative solution that is performant, versatile and
-> > > straightforward.
-> > 
-> > <snipped>
-> > 
-> > > Summery
-> > > =======
-> > > The facts are:
-> > > 1. The independent lab results and the real-world applications
-> > >    indicate substantial improvements; there are no known regressions.
-> > > 2. Thrashing prevention, working set estimation and proactive reclaim
-> > >    work out of the box; there are no equivalent solutions.
-> > > 3. There is a lot of new code; nobody has demonstrated smaller changes
-> > >    with similar effects.
-> > > 
-> > > Our options, accordingly, are:
-> > > 1. Given the amount of evidence, the reported improvements will likely
-> > >    materialize for a wide range of workloads.
-> > > 2. Gauging the interest from the past discussions [14][15][16], the
-> > >    new features will likely be put to use for both personal computers
-> > >    and data centers.
-> > > 3. Based on Google's track record, the new code will likely be well
-> > >    maintained in the long term. It'd be more difficult if not
-> > >    impossible to achieve similar effects on top of the existing
-> > >    design.
-> > 
-> > Hi Andrew, Linus,
-> > 
-> > Can you please take a look at this patchset and let me know if it's
-> > 5.17 material?
-> > 
-> > My goal is to get it merged asap so that users can reap the benefits
-> > and I can push the sequels. Please examine the data provided -- I
-> > think the unprecedented coverage and the magnitude of the improvements
-> > warrant a green light.
-> 
-> Downstream kernel maintainers who have been carrying MGLRU for more than
-> 3 versions, can you please provide your Acked-by tags?
-> 
-> Having this patchset in the mainline will make your job easier :)
-> 
->    Alexandre - the XanMod Kernel maintainer
->                https://xanmod.org
->    
->    Brian     - the Chrome OS kernel memory maintainer
->                https://www.chromium.org
->    
->    Jan       - the Arch Linux Zen kernel maintainer
->                https://archlinux.org
->    
->    Steven    - the Liquorix kernel maintainer
->                https://liquorix.net
->    
->    Suleiman  - the ARCVM (Android downstream) kernel memory maintainer
->                https://chromium.googlesource.com/chromiumos/third_party/kernel
-> 
-> Also my gratitude to those who have helped test MGLRU:
-> 
->    Daniel - researcher at Michigan Tech
->             benchmarked memcached
->    
->    Holger - who has been testing/patching/contributing to various
->             subsystems since ~2008
->    
->    Shuang - researcher at University of Rochester
->             benchmarked fio and provided a report
->    
->    Sofia  - EDI https://www.edi.works
->             benchmarked the top eight memory hogs and provided reports
-> 
-> Can you please provide your Tested-by tags? This will ensure the credit
-> for your contributions.
-> 
-> Thanks!
+On Wed, Jan 19, 2022 at 11:08:41PM +0300, Kirill A. Shutemov wrote:
+> > Relocation section '.rela.data.rel.local' at offset 0x5c18 contains 6 entries:
+			^^^^^^
 
-This feature has been a huge improvement for desktop linux, system
-responsiveness has hit a new level high memory pressure.  Thanks Yu!
+> JFYI, the message comes from ASSERT in vmlinux.lds.S.
 
-Acked-by: Steven Barrett <steven@liquorix.net>
+Yah, because those relocations are put in a .rela section and that one
+matches.
+
+And looking at which commit added it:
+
+527afc212231 ("x86/boot: Check that there are no run-time relocations")
+
+the removed comment kinda explains it - decompressor kernel cannot
+handle runtime relocations. Obviously.
+
+Now we need to figure out how to avoid those...
+
+> I assume for now I can proceed with the assignment that works, right?
+> It can be changed later once we figure out what is going on.
+
+Right.
+
+-- 
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
