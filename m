@@ -2,115 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BA7FC4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 09:33:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5860AC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 09:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352916AbiASJdQ (ORCPT
+        id S1351759AbiASJdk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 04:33:16 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:58136 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234544AbiASJdO (ORCPT
+        Wed, 19 Jan 2022 04:33:40 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:34464 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S234544AbiASJdf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 04:33:14 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 126B21F38B;
-        Wed, 19 Jan 2022 09:33:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1642584793; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=sBwHHJ1ePgsQCKzWB+AeBOf9B49vrtvnggHlWqo57lQ=;
-        b=OhjQ5S+3jTKJtj13rH9+qcQS7K/pNbNNrkUDRiTRiKXztA2+TX7pFRQuzZnM5Qo6ll+iJv
-        Fxz10ktEKFl55pu8bOYGyyKDSWT5W4HQikdMgrCfIhGaMnwdqU5JM9Bt6jpCfoB37JNh2x
-        +Yinoc8i+oeJm9NOrEgqEyVgEYGukcM=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id BCD4C13E11;
-        Wed, 19 Jan 2022 09:33:12 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id Xr98Ldja52FOKAAAMHmgww
-        (envelope-from <mkoutny@suse.com>); Wed, 19 Jan 2022 09:33:12 +0000
-Date:   Wed, 19 Jan 2022 10:33:11 +0100
-From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Vladimir Davydov <vdavydov.dev@gmail.com>,
-        Shakeel Butt <shakeelb@google.com>,
-        Roman Gushchin <guro@fb.com>, Yang Shi <shy828301@gmail.com>,
-        Alex Shi <alexs@kernel.org>,
-        Wei Yang <richard.weiyang@gmail.com>,
-        Dave Chinner <david@fromorbit.com>,
-        trond.myklebust@hammerspace.com, anna.schumaker@netapp.com,
-        jaegeuk@kernel.org, chao@kernel.org,
-        Kari Argillander <kari.argillander@gmail.com>,
-        linux-fsdevel <linux-fsdevel@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        linux-nfs@vger.kernel.org, Qi Zheng <zhengqi.arch@bytedance.com>,
-        Xiongchun duan <duanxiongchun@bytedance.com>,
-        Fam Zheng <fam.zheng@bytedance.com>,
-        Muchun Song <smuchun@gmail.com>
-Subject: Re: [PATCH v5 10/16] mm: list_lru: allocate list_lru_one only when
- needed
-Message-ID: <20220119093311.GD15686@blackbody.suse.cz>
-References: <20211220085649.8196-1-songmuchun@bytedance.com>
- <20211220085649.8196-11-songmuchun@bytedance.com>
- <20220106110051.GA470@blackbody.suse.cz>
- <CAMZfGtXZA+rLMUw5yLSW=eUncT0BjH++Dpi1EzKwXvV9zwqF1w@mail.gmail.com>
- <20220113133213.GA28468@blackbody.suse.cz>
- <CAMZfGtWJeov9XD_MEkDJwTK5b73OKPYxJBQi=D5-NSyNSSKLCw@mail.gmail.com>
+        Wed, 19 Jan 2022 04:33:35 -0500
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20J8MJq3014974;
+        Wed, 19 Jan 2022 10:33:15 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=Vz5Z00wN5zPjPO1SANvL9AXqgyIwOm0yfPV4ilWMIWI=;
+ b=yhCwni+ENghLAF4NeUwjEY26pxzdzd1+ZEGGXBI4PUPMGXprekNh+nYp+CDvw4o0kwoS
+ bH8a+IB6AvuACGo3kmXfX58RUKXI3y64Fa+YIGS2BXdVvp/oPtWqK4u7PW1hH8eS1U+z
+ +aVgr9dcbtcoxvUjVBocaSdFA24vmk9qY1lMmeW+KVfASguf/BBuJiYYjnMRzcqYVX8v
+ dUAYzsYDWCSJ1kzA7X71dTlb4wOVA4Z9dGcB7mEpVrJFdrMhuoD4+hONSa3IXOPJd2DW
+ W9xb55E2Kb8tRyx45vv8+4NiC7RYPBKUHZyydE+OD6TSbQOomYp5uwGNH98RrdNI70sK fQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3dpf2v8f73-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 19 Jan 2022 10:33:15 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 58B5F100038;
+        Wed, 19 Jan 2022 10:33:15 +0100 (CET)
+Received: from Webmail-eu.st.com (gpxdag2node5.st.com [10.75.127.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 4F26C20ED10;
+        Wed, 19 Jan 2022 10:33:15 +0100 (CET)
+Received: from localhost (10.75.127.51) by GPXDAG2NODE5.st.com (10.75.127.69)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.26; Wed, 19 Jan 2022 10:33:14
+ +0100
+From:   Alain Volmat <alain.volmat@foss.st.com>
+To:     <broonie@kernel.org>, <amelie.delaunay@foss.st.com>
+CC:     <mcoquelin.stm32@gmail.com>, <alexandre.torgue@foss.st.com>,
+        <linux-spi@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <fabrice.gasnier@foss.st.com>,
+        <alain.volmat@foss.st.com>
+Subject: [PATCH 2/2] spi: stm32: make SPI_MASTER_MUST_TX flags only specific to STM32F4
+Date:   Wed, 19 Jan 2022 10:32:45 +0100
+Message-ID: <20220119093245.624878-3-alain.volmat@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220119093245.624878-1-alain.volmat@foss.st.com>
+References: <20220119093245.624878-1-alain.volmat@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMZfGtWJeov9XD_MEkDJwTK5b73OKPYxJBQi=D5-NSyNSSKLCw@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.51]
+X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To GPXDAG2NODE5.st.com
+ (10.75.127.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-19_06,2022-01-18_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 08:05:44PM +0800, Muchun Song <songmuchun@bytedance.com> wrote:
-> I have thought about this. It's a little different to rely on objcg
-> reparenting since the user can get memcg from objcg and
-> then does not realize the memcg has reparented.
+Commit 61367d0b8f5e ("spi: stm32: Add 'SPI_SIMPLEX_RX', 'SPI_3WIRE_RX' support for stm32f4")
+allowed to properly communicate with the st-gyro-spi even when
+there is no tx_buf provided by setting the flag SPI_MASTER_MUST_TX and
+thus forcing a dummy TX buffer to work in Full Duplex.
+This behavior should kept only for the STM32F4 and not for other
+compatible since the STM32H7 do support SIMPLEX_RX and SIMPLEX_TX.
+Add the flags variable within the struct stm32_spi_cfg so that flags
+used at master registration time are compatible specific.
 
-When you pointed that out, I'm now also wondering how
-memcg_list_lru_alloc() would be synchronized against
-reparenting/renumbering of kmemcg_ids. What I suspect is that newly
-allocated mlru may be stored into the xarray with a stale kmemcg_id.
+Fixes: 61367d0b8f5e ("spi: stm32: Add 'SPI_SIMPLEX_RX', 'SPI_3WIRE_RX' support for stm32f4")
 
-> Maybe holding css_set_lock can do that. I do not think this
-> is a good choice.
+Signed-off-by: Alain Volmat <alain.volmat@foss.st.com>
+---
+ drivers/spi/spi-stm32.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-I agree, it doesn't sound well.
+diff --git a/drivers/spi/spi-stm32.c b/drivers/spi/spi-stm32.c
+index b5ef2470cefe..7fc24505a72c 100644
+--- a/drivers/spi/spi-stm32.c
++++ b/drivers/spi/spi-stm32.c
+@@ -231,6 +231,7 @@ struct stm32_spi;
+  * @baud_rate_div_min: minimum baud rate divisor
+  * @baud_rate_div_max: maximum baud rate divisor
+  * @has_fifo: boolean to know if fifo is used for driver
++ * @flags: compatible specific SPI controller flags used at registration time
+  */
+ struct stm32_spi_cfg {
+ 	const struct stm32_spi_regspec *regs;
+@@ -251,6 +252,7 @@ struct stm32_spi_cfg {
+ 	unsigned int baud_rate_div_min;
+ 	unsigned int baud_rate_div_max;
+ 	bool has_fifo;
++	u16 flags;
+ };
+ 
+ /**
+@@ -1720,6 +1722,7 @@ static const struct stm32_spi_cfg stm32f4_spi_cfg = {
+ 	.baud_rate_div_min = STM32F4_SPI_BR_DIV_MIN,
+ 	.baud_rate_div_max = STM32F4_SPI_BR_DIV_MAX,
+ 	.has_fifo = false,
++	.flags = SPI_MASTER_MUST_TX,
+ };
+ 
+ static const struct stm32_spi_cfg stm32h7_spi_cfg = {
+@@ -1852,7 +1855,7 @@ static int stm32_spi_probe(struct platform_device *pdev)
+ 	master->prepare_message = stm32_spi_prepare_msg;
+ 	master->transfer_one = stm32_spi_transfer_one;
+ 	master->unprepare_message = stm32_spi_unprepare_msg;
+-	master->flags = SPI_MASTER_MUST_TX;
++	master->flags = spi->cfg->flags;
+ 
+ 	spi->dma_tx = dma_request_chan(spi->dev, "tx");
+ 	if (IS_ERR(spi->dma_tx)) {
+-- 
+2.25.1
 
-> Do you have any thoughts about this?
-
-Thoughts / questions of what I don't undestand well:
-- Why do you allocate mlrus for all ancestors in memcg_list_lru_alloc()?
-  - It'd be sufficient to allocate just for the current memcg.
-  - Possibly allocate ancestors upon reparenting (to simplify the
-    allocation from slab_pre_alloc_hook itself).
-    
-- What is the per-kmemcg_id lookup good for?
-  - I observe most calls of list_lru_from_memcg_idx() come from callers
-    that know memcg (or even objcg).
-  - The non-specific use case seems list_lru_walk_node() working with
-    per-node and not per-memcg projection.
-    - Consequently that is only used over all nodes anyway
-      (list_lru_walk().
-  - The idea behind this question is -- attach the list_lrus to
-    obj_cgroup (and decomission the kmemcg_id completely).
-    (Not necessarily part of this series but independent approach.)
-
-Thanks,
-Michal
