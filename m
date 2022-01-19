@@ -2,108 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8C22C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 19:12:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C11BC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 19:12:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236948AbiASTMg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 14:12:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54194 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232902AbiASTMe (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
+        id S237228AbiASTMj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 19 Jan 2022 14:12:39 -0500
+Received: from mga03.intel.com ([134.134.136.65]:63578 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236679AbiASTMe (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Wed, 19 Jan 2022 14:12:34 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8BA2C061574
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 11:12:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=kfq6BtDbp9OpFo3P4pVC1BirR13ne2CthW+xXJdID+M=; b=GvHU3PaKQOlo0Hv93WyifT/5Kl
-        zS75z1K4qcrri5b+Jhl3HcS808J0atfkJlEi/6xfaFQOCUvy1hALu+SnQn1Z6Ex1Ha0kdAvi69rSA
-        4jT0j7ioTEza909AvkMWjk64fQQVUJf85mn2cC5DispMk7H9RRCa+Gmyc+vTgPNmmcQmf8bcCBe7E
-        G1H6y/JlOf7lwx7XjwdTUV5bRVUhWz6mdC55FFYzCm6OKXzvUrkkyCkRLEcyIJQo+oNKkHzwDyTwQ
-        Oins7PgQ0dDjLnr2o709Se/iEg/ZLEHKYp4Z0mQ2RhvMM08WXbe+xplRPA1VSb7BimqiNyQ4x1xoa
-        dvcnXonA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:56788)
-        by pandora.armlinux.org.uk with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1nAGNc-00053a-Ko; Wed, 19 Jan 2022 19:12:24 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.94.2)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1nAGNa-0005VR-9Z; Wed, 19 Jan 2022 19:12:22 +0000
-Date:   Wed, 19 Jan 2022 19:12:22 +0000
-From:   "Russell King (Oracle)" <linux@armlinux.org.uk>
-To:     Robin Murphy <robin.murphy@arm.com>
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Yury Norov <yury.norov@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Ding Tianhong <dingtianhong@huawei.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH] vmap(): don't allow invalid pages
-Message-ID: <YehilqRvYLhryUk4@shell.armlinux.org.uk>
-References: <20220118235244.540103-1-yury.norov@gmail.com>
- <f85b3cac-29e7-4179-e078-fd859040c294@arm.com>
- <Yeg79CcofyNuVLid@casper.infradead.org>
- <e9226eb4-4ecf-ac01-e823-ff507a354ac5@arm.com>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642619554; x=1674155554;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=a7kJT8WZQ6q10SnbggD7Ch7bg5HxbpRC2T1+XzhMwz4=;
+  b=HHQos8U4yHshUsoSHQ2w6GSHCLdOXCt0C1UJWLIQiOCT6tEuKyjbovaR
+   Nbn52kizGtEYr/H7uEtPNf8pAZaMRXjjYiLqFXiTYYgEVbv1AWTzIXWP3
+   H02qnOsqv0+Bo0i7exzeixAMapVHnfd6DrfOqwG8hhhEHIHklFdLXEI6s
+   7h4MV0Dx+rJar234Wr6Z9GIelzMTFkQKgmgDJxh/caGMGMgOqnOkpWm/H
+   yEHfF0rQxPls59y8aTxuyLm4zD1jfSFdjk+U+fpGgKazP9RAHT0J9/MPK
+   vFyWh1Dpvjn1C9mFj2cIsVlFkPlCTDpYUTIu50P3x1/Ef5oCwUws+OvCH
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="245119140"
+X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
+   d="scan'208";a="245119140"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 10:39:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
+   d="scan'208";a="518286091"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 19 Jan 2022 10:39:39 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nAFru-000Dh1-TV; Wed, 19 Jan 2022 18:39:38 +0000
+Date:   Thu, 20 Jan 2022 02:38:48 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Arnd Bergmann <arnd@arndb.de>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [ardb:for-kernelci 10/36] ld.lld: error: undefined symbol:
+ generic_handle_arch_irq
+Message-ID: <202201200205.1qfWfUJ7-lkp@intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <e9226eb4-4ecf-ac01-e823-ff507a354ac5@arm.com>
-Sender: Russell King (Oracle) <linux@armlinux.org.uk>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 06:43:10PM +0000, Robin Murphy wrote:
-> Indeed, my impression is that the only legitimate way to get hold of a page
-> pointer without assumed provenance is via pfn_to_page(), which is where
-> pfn_valid() comes in. Thus pfn_valid(page_to_pfn()) really *should* be a
-> tautology.
+tree:   git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git for-kernelci
+head:   d2dc6a5332403ee74fe236e13ee12eb472028523
+commit: b101e912429f59169f78d933ba2b7e546b3af4c0 [10/36] ARM: remove old-style irq entry
+config: arm-randconfig-r023-20220117 (https://download.01.org/0day-ci/archive/20220120/202201200205.1qfWfUJ7-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project f7b7138a62648f4019c55e4671682af1f851f295)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git/commit/?id=b101e912429f59169f78d933ba2b7e546b3af4c0
+        git remote add ardb git://git.kernel.org/pub/scm/linux/kernel/git/ardb/linux.git
+        git fetch --no-tags ardb for-kernelci
+        git checkout b101e912429f59169f78d933ba2b7e546b3af4c0
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash
 
-That can only be true if pfn == page_to_pfn(pfn_to_page(pfn)) for all
-values of pfn.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Given how pfn_to_page() is defined in the sparsemem case:
+All errors (new ones prefixed by >>):
 
-#define __pfn_to_page(pfn)                              \
-({	unsigned long __pfn = (pfn);                    \
-	struct mem_section *__sec = __pfn_to_section(__pfn);    \
-	__section_mem_map_addr(__sec) + __pfn;          \
-})
-#define page_to_pfn __page_to_pfn
+>> ld.lld: error: undefined symbol: generic_handle_arch_irq
+   >>> referenced by kernel/entry-armv.o:(__irq_svc) in archive arch/arm/built-in.a
+   >>> referenced by kernel/entry-armv.o:(__irq_usr) in archive arch/arm/built-in.a
 
-that isn't the case, especially when looking at page_to_pfn():
-
-#define __page_to_pfn(pg)                                       \
-({      const struct page *__pg = (pg);                         \
-        int __sec = page_to_section(__pg);                      \
-	(unsigned long)(__pg - __section_mem_map_addr(__nr_to_section(__sec))); \
-})
-
-Where:
-
-static inline unsigned long page_to_section(const struct page *page)
-{
-	return (page->flags >> SECTIONS_PGSHIFT) & SECTIONS_MASK;
-}
-
-So if page_to_section() returns something that is, e.g. zero for an
-invalid page in a non-zero section, you're not going to end up with
-the right pfn from page_to_pfn().
-
-As I've said now a couple of times, trying to determine of a struct
-page pointer is valid is the wrong question to be asking.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
