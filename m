@@ -2,316 +2,418 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A3C2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 20:17:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A0AC4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 20:19:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244739AbiASURx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 15:17:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40846 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243988AbiASURw (ORCPT
+        id S1357255AbiASUTs (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 19 Jan 2022 15:19:48 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:22944 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231146AbiASUTq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 15:17:52 -0500
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC58BC061574
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 12:17:51 -0800 (PST)
-Received: by mail-lf1-x129.google.com with SMTP id x7so12790492lfu.8
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 12:17:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cogentembedded-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xqt6LQ66TrGZQm4F5wFtHEjp2CT6lZEJotuIEXo7Xmk=;
-        b=NheSLU6qVvnKiZhL2diaJtdKiGjgEvRcfYDDK/lGz/pxeD+i8YarEdNRIfr1OuPipL
-         J10dcymZIWpmVebbkGlG1zo4wQm83huyFMgH5gba6bnJR1pWFfZmgSUxGlEbkh8SEpuw
-         2qYfz8MBON/6dlo/EiF+CuBhVwh9CQwFzcQ1NdICle1WpqYj5DnJWGOnsXvqrOIfC5ae
-         eYDP7cDqX70MXyrQAUQvQBoWwWOhIV6AGGOvck1m+zF3S1bx88DG+f16y4OBkhC9nbum
-         V0EdMNLXhEM4V66nDCEJiDbUEMwcysAuyESdTxXoGnRqV4Yarjh+BWlaiQJzJ3oFmk3E
-         nppg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xqt6LQ66TrGZQm4F5wFtHEjp2CT6lZEJotuIEXo7Xmk=;
-        b=Gbe2IrqfFkML5PS0Hai2ASyGRLU05I+xrxVDHPKmd7KIiYmJOughvmvCp613K0prlO
-         xxRYL1O4MyLXx1gsHGAnyicFallBGkc/4o8CkxYk5BMSL6RoGO10zpfV1XiZbdPzCpnL
-         04/FU0Wr+grmbk7vc5XpJy0/zjKX9j13ZWjFXNOOyeyyhIquWAJ5DgiguSF8chyMW97D
-         N5ls1gFpiN3BhsddzMzayBsXwnT9WcF8uTaCpxYBuGm0tgLfoAZ+2UYcUhmMpm/OC2QL
-         wmCENb8qfcJNUbC924/xhAeZ4Qq5+75aI5tjM9RgPeKeUm8juM2rHPzkpLjtVyOMBNWm
-         NfuA==
-X-Gm-Message-State: AOAM531W8TXDebHlKIZ88+Kuz9Pi/W2ucTfP/NnVJSDKJqzUSlsVm4Vq
-        +8zg9fqQyLkwlZ9pwLVVaSEFt9/qyf095Vuw
-X-Google-Smtp-Source: ABdhPJy1wCzoh6WS5dwttSVaFgGofR3+EC/tSkzTbTB/fA+CQeUBQ3NlNDrjBKzmnRL8wtFKleHdnQ==
-X-Received: by 2002:a2e:99d8:: with SMTP id l24mr26333588ljj.211.1642623469973;
-        Wed, 19 Jan 2022 12:17:49 -0800 (PST)
-Received: from cobook.home (nikaet.starlink.ru. [94.141.168.29])
-        by smtp.gmail.com with ESMTPSA id f19sm78226lfh.63.2022.01.19.12.17.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Jan 2022 12:17:49 -0800 (PST)
-From:   Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-To:     Thomas Gleixner <tglx@linutronix.de>,
-        Marc Zyngier <maz@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Eugeniu Rosca <erosca@de.adit-jv.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Nikita Yushchenko <nikita.yoush@cogentembedded.com>
-Subject: [PATCH] drivers: irqchip: add irq-type-changer
-Date:   Wed, 19 Jan 2022 23:17:41 +0300
-Message-Id: <20220119201741.717770-1-nikita.yoush@cogentembedded.com>
-X-Mailer: git-send-email 2.30.2
+        Wed, 19 Jan 2022 15:19:46 -0500
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20JIBBKZ029761;
+        Wed, 19 Jan 2022 20:19:45 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=Fdw5gC4wD75pZoPBfNG/Ojnow4IbOgrG26PcJZQ4KiM=;
+ b=DoZJIVhFvpw2rOLR0lTeipRAUqJfHnReMql16/CS1dLEVqVIzJiMlWh38l+1e0t+Tdu0
+ jOpz8lsrvNZiwzDQcJ48V064DMzd+7Itugb21i4MoAslSEVC7F2L6daNgwa0NU65cDwN
+ 0WcO5yiuJeOMXGEnp9gBwK3rYtAprE25y3+3O7UskOtfZCuQ9vf2U67rjXHDW/963HSf
+ f9hl7Pn3tSySH0j1hquJ+V1pSaMyTQ3f6he/23TEpLKAbJ493Ap1gmopP5KkG7USqHu6
+ PxoEOLR/N2LTSZ7Rd7tCGARQUi2mUmx36mvd+z2VGvrDqKG3K2BQLPlQGd1E1CRkRmUm fw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dppmhcbnv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 19 Jan 2022 20:19:45 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20JK0JPu011731;
+        Wed, 19 Jan 2022 20:19:45 GMT
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dppmhcbnh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 19 Jan 2022 20:19:45 +0000
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20JKDgdT004999;
+        Wed, 19 Jan 2022 20:19:44 GMT
+Received: from b03cxnp08026.gho.boulder.ibm.com (b03cxnp08026.gho.boulder.ibm.com [9.17.130.18])
+        by ppma01dal.us.ibm.com with ESMTP id 3dknwckypg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 19 Jan 2022 20:19:44 +0000
+Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
+        by b03cxnp08026.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20JKJgPe32637380
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 19 Jan 2022 20:19:42 GMT
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6590C13604F;
+        Wed, 19 Jan 2022 20:19:42 +0000 (GMT)
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8D759136053;
+        Wed, 19 Jan 2022 20:19:40 +0000 (GMT)
+Received: from [9.163.19.30] (unknown [9.163.19.30])
+        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Wed, 19 Jan 2022 20:19:40 +0000 (GMT)
+Message-ID: <628ad4bc-f8b1-1633-e747-2a22e538ab8e@linux.ibm.com>
+Date:   Wed, 19 Jan 2022 15:19:39 -0500
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v2 15/30] KVM: s390: pci: do initial setup for AEN
+ interpretation
+Content-Language: en-US
+To:     Pierre Morel <pmorel@linux.ibm.com>, linux-s390@vger.kernel.org
+Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
+        schnelle@linux.ibm.com, farman@linux.ibm.com,
+        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
+        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
+        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
+        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
+        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220114203145.242984-1-mjrosato@linux.ibm.com>
+ <20220114203145.242984-16-mjrosato@linux.ibm.com>
+ <fce9a0b7-61b5-df74-afd9-c238721f03db@linux.ibm.com>
+From:   Matthew Rosato <mjrosato@linux.ibm.com>
+In-Reply-To: <fce9a0b7-61b5-df74-afd9-c238721f03db@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Q1YGz-kcYonar1W8pW5nHPK8r9ed9apt
+X-Proofpoint-ORIG-GUID: sMULmKEnkqLSJuOg1dZ79vwreTRg2M2X
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-19_10,2022-01-19_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ malwarescore=0 mlxscore=0 adultscore=0 spamscore=0 bulkscore=0
+ priorityscore=1501 mlxlogscore=999 suspectscore=0 phishscore=0
+ clxscore=1015 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2110150000 definitions=main-2201190110
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Irq type changer is a virtual irqchip useful to support boards that
-change (e.g. invert) interrupt signal between producer and consumer.
+On 1/19/22 1:06 PM, Pierre Morel wrote:
+> 
+> 
+> On 1/14/22 21:31, Matthew Rosato wrote:
+>> Initial setup for Adapter Event Notification Interpretation for zPCI
+>> passthrough devices.  Specifically, allocate a structure for 
+>> forwarding of
+>> adapter events and pass the address of this structure to firmware.
+>>
+>> Signed-off-by: Matthew Rosato <mjrosato@linux.ibm.com>
+>> ---
+>>   arch/s390/include/asm/pci.h      |   4 +
+>>   arch/s390/include/asm/pci_insn.h |  12 +++
+>>   arch/s390/kvm/interrupt.c        |  14 +++
+>>   arch/s390/kvm/kvm-s390.c         |   9 ++
+>>   arch/s390/kvm/pci.c              | 144 +++++++++++++++++++++++++++++++
+>>   arch/s390/kvm/pci.h              |  42 +++++++++
+>>   arch/s390/pci/pci.c              |   6 ++
+>>   7 files changed, 231 insertions(+)
+>>   create mode 100644 arch/s390/kvm/pci.h
+>>
+>> diff --git a/arch/s390/include/asm/pci.h b/arch/s390/include/asm/pci.h
+>> index 9b6c657d8d31..9ff8dc19975e 100644
+>> --- a/arch/s390/include/asm/pci.h
+>> +++ b/arch/s390/include/asm/pci.h
+>> @@ -9,6 +9,7 @@
+>>   #include <asm-generic/pci.h>
+>>   #include <asm/pci_clp.h>
+>>   #include <asm/pci_debug.h>
+>> +#include <asm/pci_insn.h>
+>>   #include <asm/sclp.h>
+>>   #define PCIBIOS_MIN_IO        0x1000
+>> @@ -204,6 +205,9 @@ extern const struct attribute_group 
+>> *zpci_attr_groups[];
+>>   extern unsigned int s390_pci_force_floating __initdata;
+>>   extern unsigned int s390_pci_no_rid;
+>> +extern union zpci_sic_iib *zpci_aipb;
+>> +extern struct airq_iv *zpci_aif_sbv;
+>> +
+>>   /* 
+>> ----------------------------------------------------------------------------- 
+>>
+>>     Prototypes
+>>   
+>> ----------------------------------------------------------------------------- 
+>> */
+>> diff --git a/arch/s390/include/asm/pci_insn.h 
+>> b/arch/s390/include/asm/pci_insn.h
+>> index 32759c407b8f..ad9000295c82 100644
+>> --- a/arch/s390/include/asm/pci_insn.h
+>> +++ b/arch/s390/include/asm/pci_insn.h
+>> @@ -101,6 +101,7 @@ struct zpci_fib {
+>>   /* Set Interruption Controls Operation Controls  */
+>>   #define    SIC_IRQ_MODE_ALL        0
+>>   #define    SIC_IRQ_MODE_SINGLE        1
+>> +#define    SIC_SET_AENI_CONTROLS        2
+>>   #define    SIC_IRQ_MODE_DIRECT        4
+>>   #define    SIC_IRQ_MODE_D_ALL        16
+>>   #define    SIC_IRQ_MODE_D_SINGLE        17
+>> @@ -127,9 +128,20 @@ struct zpci_cdiib {
+>>       u64 : 64;
+>>   } __packed __aligned(8);
+>> +/* adapter interruption parameters block */
+>> +struct zpci_aipb {
+>> +    u64 faisb;
+>> +    u64 gait;
+>> +    u16 : 13;
+>> +    u16 afi : 3;
+>> +    u32 : 32;
+>> +    u16 faal;
+>> +} __packed __aligned(8);
+>> +
+>>   union zpci_sic_iib {
+>>       struct zpci_diib diib;
+>>       struct zpci_cdiib cdiib;
+>> +    struct zpci_aipb aipb;
+>>   };
+>>   DECLARE_STATIC_KEY_FALSE(have_mio);
+>> diff --git a/arch/s390/kvm/interrupt.c b/arch/s390/kvm/interrupt.c
+>> index f9b872e358c6..a591b8cd662f 100644
+>> --- a/arch/s390/kvm/interrupt.c
+>> +++ b/arch/s390/kvm/interrupt.c
+>> @@ -32,6 +32,7 @@
+>>   #include "kvm-s390.h"
+>>   #include "gaccess.h"
+>>   #include "trace-s390.h"
+>> +#include "pci.h"
+>>   #define PFAULT_INIT 0x0600
+>>   #define PFAULT_DONE 0x0680
+>> @@ -3278,6 +3279,11 @@ void kvm_s390_gib_destroy(void)
+>>   {
+>>       if (!gib)
+>>           return;
+>> +    if (IS_ENABLED(CONFIG_PCI) && sclp.has_aeni && aift) {
+>> +        mutex_lock(&aift->lock);
+>> +        kvm_s390_pci_aen_exit();
+>> +        mutex_unlock(&aift->lock);
+>> +    }
+>>       chsc_sgib(0);
+>>       unregister_adapter_interrupt(&gib_alert_irq);
+>>       free_page((unsigned long)gib);
+>> @@ -3315,6 +3321,14 @@ int kvm_s390_gib_init(u8 nisc)
+>>           goto out_unreg_gal;
+>>       }
+>> +    if (IS_ENABLED(CONFIG_PCI) && sclp.has_aeni) {
+>> +        if (kvm_s390_pci_aen_init(nisc)) {
+>> +            pr_err("Initializing AEN for PCI failed\n");
+>> +            rc = -EIO;
+>> +            goto out_unreg_gal;
+>> +        }
+>> +    }
+>> +
+>>       KVM_EVENT(3, "gib 0x%pK (nisc=%d) initialized", gib, gib->nisc);
+>>       goto out;
+>> diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
+>> index 14a18ba5ff2c..01dc3f6883d0 100644
+>> --- a/arch/s390/kvm/kvm-s390.c
+>> +++ b/arch/s390/kvm/kvm-s390.c
+>> @@ -48,6 +48,7 @@
+>>   #include <asm/fpu/api.h>
+>>   #include "kvm-s390.h"
+>>   #include "gaccess.h"
+>> +#include "pci.h"
+>>   #define CREATE_TRACE_POINTS
+>>   #include "trace.h"
+>> @@ -503,6 +504,14 @@ int kvm_arch_init(void *opaque)
+>>           goto out;
+>>       }
+>> +    if (IS_ENABLED(CONFIG_PCI)) {
+>> +        rc = kvm_s390_pci_init();
+>> +        if (rc) {
+>> +            pr_err("Unable to allocate AIFT for PCI\n");
+>> +            goto out;
+>> +        }
+>> +    }
+>> +
+>>       rc = kvm_s390_gib_init(GAL_ISC);
+>>       if (rc)
+>>           goto out;
+>> diff --git a/arch/s390/kvm/pci.c b/arch/s390/kvm/pci.c
+>> index 1c33bc7bf2bd..dae853da6df1 100644
+>> --- a/arch/s390/kvm/pci.c
+>> +++ b/arch/s390/kvm/pci.c
+>> @@ -10,6 +10,138 @@
+>>   #include <linux/kvm_host.h>
+>>   #include <linux/pci.h>
+>>   #include <asm/kvm_pci.h>
+>> +#include <asm/pci.h>
+>> +#include <asm/pci_insn.h>
+>> +#include "pci.h"
+>> +
+>> +struct zpci_aift *aift;
+>> +
+>> +static inline int __set_irq_noiib(u16 ctl, u8 isc)
+>> +{
+>> +    union zpci_sic_iib iib = {{0}};
+>> +
+>> +    return zpci_set_irq_ctrl(ctl, isc, &iib);
+>> +}
+>> +
+>> +/* Caller must hold the aift lock before calling this function */
+>> +void kvm_s390_pci_aen_exit(void)
+>> +{
+>> +    unsigned long flags;
+>> +    struct kvm_zdev **gait_kzdev;
+>> +
+>> +    /*
+>> +     * Contents of the aipb remain registered for the life of the host
+>> +     * kernel, the information preserved in zpci_aipb and zpci_aif_sbv
+>> +     * in case we insert the KVM module again later.  Clear the AIFT
+>> +     * information and free anything not registered with underlying
+>> +     * firmware.
+>> +     */
+>> +    spin_lock_irqsave(&aift->gait_lock, flags);
+>> +    gait_kzdev = aift->kzdev;
+>> +    aift->gait = 0;
+>> +    aift->sbv = 0;
+>> +    aift->kzdev = 0;
+>> +    spin_unlock_irqrestore(&aift->gait_lock, flags);
+>> +
+>> +    kfree(gait_kzdev);
+>> +}
+>> +
+>> +int kvm_s390_pci_aen_init(u8 nisc)
+>> +{
+>> +    struct page *page;
+>> +    int rc = 0, size;
+>> +    bool first = false;
+>> +
+>> +    /* If already enabled for AEN, bail out now */
+>> +    if (aift->gait || aift->sbv)
+>> +        return -EPERM;
+>> +
+>> +    mutex_lock(&aift->lock);
+>> +    aift->kzdev = kcalloc(ZPCI_NR_DEVICES, sizeof(struct kvm_zdev),
+>> +                  GFP_KERNEL);
+>> +    if (!aift->kzdev) {
+>> +        rc = -ENOMEM;
+>> +        goto unlock;
+>> +    }
+>> +
+>> +    if (!zpci_aipb) {
+> 
+> I think you should externalize all this allocation and setup of aipb
+> in a dedicated function zpci_setup_aipb()
+> from here ----->
+> 
+>> +        zpci_aipb = kzalloc(sizeof(union zpci_sic_iib), GFP_KERNEL);
+>> +        if (!zpci_aipb) {
+>> +            rc = -ENOMEM;
+>> +            goto free_zdev;
+>> +        }
+>> +        first = true;
+>> +        aift->sbv = airq_iv_create(ZPCI_NR_DEVICES, AIRQ_IV_ALLOC, 0);
+>> +        if (!aift->sbv) {
+>> +            rc = -ENOMEM;
+>> +            goto free_aipb;
+>> +        }
+>> +        zpci_aif_sbv = aift->sbv;
+>> +        size = get_order(PAGE_ALIGN(ZPCI_NR_DEVICES *
+>> +                        sizeof(struct zpci_gaite)));
+>> +        page = alloc_pages(GFP_KERNEL | __GFP_ZERO, size);
+>> +        if (!page) {
+>> +            rc = -ENOMEM;
+>> +            goto free_sbv;
+>> +        }
+>> +        aift->gait = (struct zpci_gaite *)page_to_phys(page);
+>> +
+>> +        zpci_aipb->aipb.faisb = virt_to_phys(aift->sbv->vector);
+>> +        zpci_aipb->aipb.gait = virt_to_phys(aift->gait);
+>> +        zpci_aipb->aipb.afi = nisc;
+>> +        zpci_aipb->aipb.faal = ZPCI_NR_DEVICES;
+>> +
+>> +        /* Setup Adapter Event Notification Interpretation */
+>> +        if (zpci_set_irq_ctrl(SIC_SET_AENI_CONTROLS, 0, zpci_aipb)) {
+>> +            rc = -EIO;
+>> +            goto free_gait;
+> 
+> to here---->
+> 
+>> +        }
+>> +    } else {
+>> +        /*
+>> +         * AEN registration can only happen once per system boot.  If
+>> +         * an aipb already exists then AEN was already registered and
+>> +         * we can re-use the aipb contents.  This can only happen if
+>> +         * the KVM module was removed and re-inserted.
+>> +         */
+>> +        if (zpci_aipb->aipb.afi != nisc ||
+>> +            zpci_aipb->aipb.faal != ZPCI_NR_DEVICES) {
+>> +            rc = -EINVAL;
+>> +            goto free_zdev;
+>> +        }
+>> +        aift->sbv = zpci_aif_sbv;
+>> +        aift->gait = (struct zpci_gaite *)zpci_aipb->aipb.gait;
+>> +    }
+>> +
+>> +    /* Enable floating IRQs */
+>> +    if (__set_irq_noiib(SIC_IRQ_MODE_SINGLE, nisc)) {
+>> +        rc = -EIO;
+>> +        kvm_s390_pci_aen_exit();
+>> +    }
+>> +
+>> +    goto unlock;
+> 
+> and the according errors
+> 
+> here ---->
+>> +
+>> +free_gait:
+>> +    size = get_order(PAGE_ALIGN(ZPCI_NR_DEVICES *
+>> +                    sizeof(struct zpci_gaite)));
+>> +    free_pages((unsigned long)aift->gait, size);
+>> +free_sbv:
+>> +    if (first) {
+>> +        /* If AEN setup failed, only free a newly-allocated sbv */
+>> +        airq_iv_release(aift->sbv);
+>> +        zpci_aif_sbv = 0;
+>> +    }
+>> +free_aipb:
+>> +    if (first) {
+>> +        /* If AEN setup failed, only free a newly-allocated aipb */
+>> +        kfree(zpci_aipb);
+>> +        zpci_aipb = 0;
+>> +    }
+> 
+> to here ---->
+> 
+> To simplify the understanding.
+> 
+>> +free_zdev:
+>> +    kfree(aift->kzdev);
+>> +unlock:
+>> +    mutex_unlock(&aift->lock);
+>> +    return rc;
+>> +}
+>>
+> 
+> ... snip...
+> 
+> The second part of the if(aipb) else
+> could also be externalise in zpci_reset_aipb()
+> 
+> which leads to
+> 
+>     if(!aipb)
+>      ret = zpci_setup_aipb()
+>     else
+>      ret = zpci_reset_aipb()
+> 
+>     if (ret)
+>      goto cleanup;
+> 
+>      enable_irq()
+>      goto unlock;
+> 
+> I think that if we can do that it would be much clearer.
+> what do you think?
+> 
 
-Usage example, for Kingfisher extension board for Renesas Gen-3 Soc,
-that has WiFi interrupt delivered over inverting level-shifter:
-
-/ {
-	gpio1_25_inverted: inverter {
-		compatible = "linux,irq-type-changer";
-		interrupt-controller;
-		#interrupt-cells = <2>;
-		interrupt-parent = <&gpio1>;
-		interrupts = <25 IRQ_TYPE_EDGE_FALLING>;
-	};
-};
-
-&wlcore {
-        interrupt-parent = <&gpio1_25_inverted>;
-	interrupts = <0 IRQ_TYPE_EDGE_RISING>;
-};
-
-Then, wlcore driver observes IRQ_TYPE_EDGE_RISING trigger type and
-configures interrupt output as such. At the same time, gpio-rcar driver
-gets interrupt configured for IRQ_TYPE_EDGE_FALLING.
-
-This version uses hierarchical irq_domain API, and works only with
-parent interrupt domains compatible with that API.
-
-Signed-off-by: Nikita Yushchenko <nikita.yoush@cogentembedded.com>
----
-My previous attempt to solve the issue:
-  https://lore.kernel.org/lkml/20211228165642.2514766-1-nikita.yoush@cogentembedded.com/
-
-Additional patches required for this to work with gpio-rcar:
-  https://lore.kernel.org/lkml/20220119160715.650535-1-nikita.yoush@cogentembedded.com/
-  https://lore.kernel.org/lkml/20220119143211.633399-1-nikita.yoush@cogentembedded.com/
-
- drivers/irqchip/Kconfig            |  18 ++++
- drivers/irqchip/Makefile           |   1 +
- drivers/irqchip/irq-type-changer.c | 162 +++++++++++++++++++++++++++++
- 3 files changed, 181 insertions(+)
- create mode 100644 drivers/irqchip/irq-type-changer.c
-
-diff --git a/drivers/irqchip/Kconfig b/drivers/irqchip/Kconfig
-index 7038957f4a77..7f348016e82c 100644
---- a/drivers/irqchip/Kconfig
-+++ b/drivers/irqchip/Kconfig
-@@ -617,4 +617,22 @@ config MCHP_EIC
- 	help
- 	  Support for Microchip External Interrupt Controller.
- 
-+config IRQ_TYPE_CHANGER
-+	bool "Interrupt trigger type changer"
-+	select IRQ_DOMAIN
-+	select IRQ_DOMAIN_HIERARCHY
-+	help
-+	  Interrupt trigger type changer is designed to support boards that
-+	  modify (e.g. invert) signal between interrupt source and interrupt
-+	  controller input. So trigger type configured by a driver for some
-+	  interrupt output pin does not match trigger type that shall be used
-+	  to configure interrupt controller's input where that pin is connected.
-+
-+	  In this case, board device tree shall add an interrupt trigger
-+	  type changer node and use it as the interrupt parent for the node
-+	  representing interrupt source. Then, interrupt trigger type defined
-+	  in the interrupt source node will be visible for the interrupt source
-+	  driver, and (different) trigger type defined inside the changer node
-+	  will be used to configure the interrupt controller.
-+
- endmenu
-diff --git a/drivers/irqchip/Makefile b/drivers/irqchip/Makefile
-index c1f611cbfbf8..57a664837857 100644
---- a/drivers/irqchip/Makefile
-+++ b/drivers/irqchip/Makefile
-@@ -117,3 +117,4 @@ obj-$(CONFIG_WPCM450_AIC)		+= irq-wpcm450-aic.o
- obj-$(CONFIG_IRQ_IDT3243X)		+= irq-idt3243x.o
- obj-$(CONFIG_APPLE_AIC)			+= irq-apple-aic.o
- obj-$(CONFIG_MCHP_EIC)			+= irq-mchp-eic.o
-+obj-$(CONFIG_IRQ_TYPE_CHANGER)		+= irq-type-changer.o
-diff --git a/drivers/irqchip/irq-type-changer.c b/drivers/irqchip/irq-type-changer.c
-new file mode 100644
-index 000000000000..731ea61e7fcc
---- /dev/null
-+++ b/drivers/irqchip/irq-type-changer.c
-@@ -0,0 +1,162 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-+
-+#include <linux/irqchip.h>
-+#include <linux/irqdomain.h>
-+#include <linux/of_irq.h>
-+
-+struct changer {
-+	unsigned long count;
-+	struct {
-+		struct irq_fwspec fwspec;
-+		unsigned int type;
-+	} out[0];
-+};
-+
-+static int changer_set_type(struct irq_data *data, unsigned int type)
-+{
-+	struct changer *ch = data->domain->host_data;
-+	struct irq_data *parent_data = data->parent_data;
-+
-+	return parent_data->chip->irq_set_type(parent_data,
-+					       ch->out[data->hwirq].type);
-+}
-+
-+static struct irq_chip changer_chip = {
-+	.name			= "type-changer",
-+	.irq_mask		= irq_chip_mask_parent,
-+	.irq_unmask		= irq_chip_unmask_parent,
-+	.irq_eoi		= irq_chip_eoi_parent,
-+	.irq_set_type		= changer_set_type,
-+	.irq_retrigger		= irq_chip_retrigger_hierarchy,
-+	.irq_set_affinity	= irq_chip_set_affinity_parent,
-+	.irq_set_wake		= irq_chip_set_wake_parent,
-+};
-+
-+static int changer_domain_translate(struct irq_domain *domain,
-+				    struct irq_fwspec *fwspec,
-+				    unsigned long *hwirq,
-+				    unsigned int *type)
-+{
-+	struct changer *ch = domain->host_data;
-+
-+	if (fwspec->param_count != 2)
-+		return -EINVAL;
-+	if (fwspec->param[0] >= ch->count)
-+		return -ENXIO;
-+
-+	*hwirq = fwspec->param[0];
-+	*type = fwspec->param[1] & IRQ_TYPE_SENSE_MASK;
-+	return 0;
-+}
-+
-+static int changer_domain_alloc(struct irq_domain *domain, unsigned int virq,
-+				unsigned int nr_irqs, void *arg)
-+{
-+	struct changer *ch = domain->host_data;
-+	struct irq_fwspec *fwspec = arg;
-+	irq_hw_number_t hwirq;
-+	unsigned int type;
-+	int ret;
-+
-+	if (WARN_ON(nr_irqs != 1))
-+		return -EINVAL;
-+
-+	ret = changer_domain_translate(domain, fwspec, &hwirq, &type);
-+	if (ret)
-+		return ret;
-+
-+	irq_domain_set_hwirq_and_chip(domain, virq, hwirq, &changer_chip, ch);
-+
-+	return irq_domain_alloc_irqs_parent(domain, virq, 1,
-+					    &ch->out[hwirq].fwspec);
-+}
-+
-+static const struct irq_domain_ops changer_domain_ops = {
-+	.translate	= changer_domain_translate,
-+	.alloc		= changer_domain_alloc,
-+	.free		= irq_domain_free_irqs_common,
-+};
-+
-+static int __init changer_of_init(struct device_node *node,
-+				  struct device_node *parent)
-+{
-+	struct irq_domain *domain, *parent_domain;
-+	int count, i, ret;
-+	struct changer *ch;
-+	struct of_phandle_args pargs;
-+	irq_hw_number_t unused;
-+
-+	if (!parent) {
-+		pr_err("%pOF: no parent node\n", node);
-+		return -EINVAL;
-+	}
-+
-+	parent_domain = irq_find_host(parent);
-+	if (!parent_domain) {
-+		pr_err("%pOF: no parent domain\n", node);
-+		return -EINVAL;
-+	}
-+
-+	if (WARN_ON(!parent_domain->ops->translate))
-+		return -EINVAL;
-+
-+	count = of_irq_count(node);
-+	if (count < 1) {
-+		pr_err("%pOF: no interrupts defined\n", node);
-+		return -EINVAL;
-+	}
-+
-+	ch = kzalloc(GFP_KERNEL, sizeof(*ch) + count * sizeof(ch->out[0]));
-+	if (!ch)
-+		return -ENOMEM;
-+	ch->count = count;
-+
-+	for (i = 0; i < count; i++) {
-+		ret = of_irq_parse_one(node, i, &pargs);
-+		if (ret) {
-+			pr_err("%pOF: interrupt %d: error %d parsing\n",
-+			       node, i, ret);
-+			goto out_free;
-+		}
-+		of_phandle_args_to_fwspec(pargs.np, pargs.args,
-+					  pargs.args_count,
-+					  &ch->out[i].fwspec);
-+		ret = parent_domain->ops->translate(parent_domain,
-+						    &ch->out[i].fwspec,
-+						    &unused,
-+						    &ch->out[i].type);
-+		if (ret) {
-+			pr_err("%pOF: interrupt %d: error %d extracting type\n",
-+			       node, i, ret);
-+			goto out_free;
-+		}
-+		if (ch->out[i].type == IRQ_TYPE_NONE) {
-+			pr_err("%pOF: interrupt %d: no type\n", node, i);
-+			ret = -ENXIO;
-+			goto out_free;
-+		}
-+	}
-+
-+	domain = irq_domain_create_hierarchy(parent_domain, 0, count,
-+					     of_node_to_fwnode(node),
-+					     &changer_domain_ops, ch);
-+	if (!domain) {
-+		ret = -ENOMEM;
-+		goto out_free;
-+	}
-+
-+	return 0;
-+
-+out_free:
-+	kfree(ch);
-+	return ret;
-+}
-+
-+IRQCHIP_PLATFORM_DRIVER_BEGIN(changer)
-+IRQCHIP_MATCH("linux,irq-type-changer", changer_of_init)
-+IRQCHIP_PLATFORM_DRIVER_END(changer)
-+MODULE_AUTHOR("Nikita Yushchenko <nikita.yoush.cogentembedded.com>");
-+MODULE_DESCRIPTION("Virtual irqchip to support trigger type change in route");
-+MODULE_LICENSE("GPL v2");
--- 
-2.30.2
-
+Yup, that sounds good, I will re-organize with 2 new static functions 
+zpci_setup_aipb() and zpci_reset_aipb()
