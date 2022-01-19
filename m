@@ -2,86 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7877C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 06:01:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE9B3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 06:04:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351680AbiASGBc (ORCPT
+        id S1351650AbiASGE1 convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 01:01:32 -0500
-Received: from mga11.intel.com ([192.55.52.93]:54346 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349913AbiASGBV (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 01:01:21 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642572081; x=1674108081;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=5rv+xSBsT22oCaIQgit01XOhBvVXX2X35GU74edUK8c=;
-  b=OytIXm4uYB9VYI5f8ofa8ppYGqEUuTYWkKWeCOqVjf3nfKcISwd9QR4h
-   uBxWN0VACGEIah/TuUzJ2EiPBwzgSIdnAYxxYy/S+oO2KZSBSYSYOs0pB
-   gYhjrkM1Y8eW2+cDVcWm+mkdWo//3RzAoEvwGHkHw3X7CtGlLFEOnyyS8
-   p8LLZSOgmOdSF9UtWd3R8yRZfrKESTS1dyDb8qGjvb0tJjqTgOJLxQ9bR
-   FPRAWO33DrgnsjFHSBEeBOOWHk7wki57aJHntR+qxvPwSAq5z4bBMgn53
-   5B+YM3eY8OPb217BpB1r2SPqWSZlv59ImL1RTwXNZ68AsDLDKpfDk7mnx
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="242555190"
-X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="242555190"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 22:01:21 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="578716392"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 18 Jan 2022 22:01:20 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nA423-000DJc-J8; Wed, 19 Jan 2022 06:01:19 +0000
-Date:   Wed, 19 Jan 2022 14:00:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Emil Renner Berthing <kernel@esmil.dk>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] nvdla: fix platform_no_drv_owner.cocci warnings
-Message-ID: <20220119060057.GA1143@7f39e361da8f>
-References: <202201191448.hkrxXxgW-lkp@intel.com>
+        Wed, 19 Jan 2022 01:04:27 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:53742 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349816AbiASGE0 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 01:04:26 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 20J64DQO0005262, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexh36504.realtek.com.tw[172.21.6.27])
+        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 20J64DQO0005262
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 19 Jan 2022 14:04:13 +0800
+Received: from RTEXMBS06.realtek.com.tw (172.21.6.99) by
+ RTEXH36504.realtek.com.tw (172.21.6.27) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 19 Jan 2022 14:04:12 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 19 Jan 2022 14:04:12 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e]) by
+ RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e%5]) with mapi id
+ 15.01.2308.020; Wed, 19 Jan 2022 14:04:12 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
+CC:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Neo Jou <neojou@gmail.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>
+Subject: RE: [PATCH 2/4] rtw88: pci: Change queue datatype from u8 to enum rtw_tx_queue_type
+Thread-Topic: [PATCH 2/4] rtw88: pci: Change queue datatype from u8 to enum
+ rtw_tx_queue_type
+Thread-Index: AQHYCaFN/NCw5IDjNUSfNv3fFPlEiaxp4Clg
+Date:   Wed, 19 Jan 2022 06:04:12 +0000
+Message-ID: <59ebfde22f1945f598210144a21cb7d3@realtek.com>
+References: <20220114234825.110502-1-martin.blumenstingl@googlemail.com>
+ <20220114234825.110502-3-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20220114234825.110502-3-martin.blumenstingl@googlemail.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.188]
+x-kse-serverinfo: RTEXMBS06.realtek.com.tw, 9
+x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
+ rules found
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/1/19_=3F=3F_03:30:00?=
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <202201191448.hkrxXxgW-lkp@intel.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-KSE-ServerInfo: RTEXH36504.realtek.com.tw, 9
+X-KSE-Attachment-Filter-Triggered-Rules: Clean
+X-KSE-Attachment-Filter-Triggered-Filters: Clean
+X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: kernel test robot <lkp@intel.com>
 
-drivers/nvdla/nvdla_core_callbacks.c:437:3-8: No need to set .owner here. The core will do it.
+> -----Original Message-----
+> From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Sent: Saturday, January 15, 2022 7:48 AM
+> To: linux-wireless@vger.kernel.org
+> Cc: tony0620emma@gmail.com; kvalo@codeaurora.org; netdev@vger.kernel.org; linux-kernel@vger.kernel.org;
+> Neo Jou <neojou@gmail.com>; Jernej Skrabec <jernej.skrabec@gmail.com>; Pkshih <pkshih@realtek.com>; Martin
+> Blumenstingl <martin.blumenstingl@googlemail.com>
+> Subject: [PATCH 2/4] rtw88: pci: Change queue datatype from u8 to enum rtw_tx_queue_type
+> 
+> This makes it easier to understand which values are allowed for the
+> "queue" variable.
+> 
+> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 
- Remove .owner field if calls are used which set it automatically
+Acked-by: Ping-Ke Shih <pkshih@realtek.com>
 
-Generated by: scripts/coccinelle/api/platform_no_drv_owner.cocci
+[...]
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: kernel test robot <lkp@intel.com>
----
 
-tree:   https://github.com/esmil/linux visionfive
-head:   e46c3a7e373e6faa03399f1a41c29cf7546c37cb
-commit: 72b025fa3bbfeb4e6df66d1753182be5d8ac2374 [73/80] nvdla: Support compilation as module
-:::::: branch date: 6 hours ago
-:::::: commit date: 9 days ago
-
- nvdla_core_callbacks.c |    1 -
- 1 file changed, 1 deletion(-)
-
---- a/drivers/nvdla/nvdla_core_callbacks.c
-+++ b/drivers/nvdla/nvdla_core_callbacks.c
-@@ -434,7 +434,6 @@ static struct platform_driver nvdla_driv
- 	.probe = nvdla_probe,
- 	.remove = __exit_p(nvdla_remove),
- 	.driver = {
--		.owner = THIS_MODULE,
- 		.name = "NVDLA",
- 		.of_match_table = of_match_ptr(nvdla_of_match),
- 	},
