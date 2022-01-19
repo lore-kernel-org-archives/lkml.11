@@ -2,315 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0B63C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 18:23:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A780C4332F
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 18:24:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356716AbiASSXn (ORCPT
+        id S1356718AbiASSYM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 13:23:43 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:25304 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S235941AbiASSXg (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 13:23:36 -0500
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20JIBbZR023405;
-        Wed, 19 Jan 2022 18:23:35 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
- mime-version : subject : to : cc : references : from : in-reply-to :
- content-type : content-transfer-encoding; s=pp1;
- bh=Yf6cnYb6QdxduGssJDBzWHEyg67Wg9UPrVhBnrWaGno=;
- b=hiVtchQgigRh6o8RxacR9ey9CFEo07fpaPV3Eob+TGFRU9QjNcgjIFKi3Tu7jIMo5CTr
- Gc8gJe4/+876VXL8ynv1hYGBeHLaIVp878hq0cuZM1Uf4p2FJQvirHUdtSnerTbRMOYA
- OgNPbri4IBSUtNEx7rtw/VSBzul/pprGXhN9wqUhyh8sXXPBlI8C391OndEg1pGLO4dV
- NNmUfEYY3s4n1Vby4Nj22BaO0q3Nm6kazQx5SP05RzDVgvdwYMz6GKPt0McR2ZRkq5fv
- 54XULpWTyOapjCrbk+JvMwPf2+Sj/CWva8IdTLYl3mIwmLXjkW+lpHuLc23Ph4zkiTy9 hA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dpp8s2ees-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 Jan 2022 18:23:34 +0000
-Received: from m0098414.ppops.net (m0098414.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20JIJ9eJ019821;
-        Wed, 19 Jan 2022 18:23:34 GMT
-Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 3dpp8s2ee6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 Jan 2022 18:23:34 +0000
-Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
-        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20JIHk4I016269;
-        Wed, 19 Jan 2022 18:23:32 GMT
-Received: from b06avi18878370.portsmouth.uk.ibm.com (b06avi18878370.portsmouth.uk.ibm.com [9.149.26.194])
-        by ppma04ams.nl.ibm.com with ESMTP id 3dknw9hbp5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 19 Jan 2022 18:23:32 +0000
-Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
-        by b06avi18878370.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20JINSRk32571698
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 19 Jan 2022 18:23:28 GMT
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 13B83A406B;
-        Wed, 19 Jan 2022 18:23:28 +0000 (GMT)
-Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id E5AC8A4055;
-        Wed, 19 Jan 2022 18:23:26 +0000 (GMT)
-Received: from [9.171.7.240] (unknown [9.171.7.240])
-        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
-        Wed, 19 Jan 2022 18:23:26 +0000 (GMT)
-Message-ID: <cebcc3de-e332-6381-f450-a6a26ef88182@linux.ibm.com>
-Date:   Wed, 19 Jan 2022 19:25:10 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v2 21/30] KVM: s390: pci: handle refresh of PCI
- translations
+        Wed, 19 Jan 2022 13:24:12 -0500
+Received: from mail-eopbgr80081.outbound.protection.outlook.com ([40.107.8.81]:18001
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1356730AbiASSXw (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 13:23:52 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gRBPQ/x1SrHqlEdnR92Gtp3n69ba27H5XMJ7QclnAFom+BB+I7dvrgQSBkXmlDOW2GoaDRF8L7CHmXFigjMh87rSEOsjDMBSgMqfsXpWIx05R2GQBOcKZZmKy6mKpwtFk5cwyXSBAhOEUlxEs7qXWZ/dyLahcq+UPrDSN72OcJGJRswxLO+9HhSxgbvrsFME3hj0wAKy4MwAiOzwpzuWGGFRl/33Vuiem6EVW4N/jlXJGy5Otzm+zyWajY1CYnYBmjFiy93hgGRLzvwBcf7DyjFbDPQb2m4nnj6SUYRVpO+TKWRERBBXhRaBceAyPyI2xzKIK8bjo2MDYoDR6+aODg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=Q/hun9LVdJzICSFp3276k5Rhh9JSw2yfKJ9j+h2KzFg=;
+ b=HCLihSsaRKzixDJktDWoICQUG9OlIWdDojXHEZbbP0WVLnad12nETuOT6bv2UcNQupjM1dWFAQLeQCD0IKDyMHlDLCNWFlCWqUF/IC+y2+Gg4DDSeRGtcoKApNEjyGGzJcHUfmX94xF8iT80+PgkGL5X7WsbKkewwCxmCKXavCWiUCOg+EWQuGh4g8d41oo9H4VNbXzmruV23X/XwODEaHjsWf3vT0cIL+YWrMcGUYiRPadhpYti06Vf4LTldaeLK/oZC1FHAWAcWiyDfKbGTKp/CoJ/ZebScfXGEr08mwe1taQcNoa4KRaeWz5EO5busk/t0WiSDONL2ZSirmtvMw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seco.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Q/hun9LVdJzICSFp3276k5Rhh9JSw2yfKJ9j+h2KzFg=;
+ b=sTDn+O3raFEvB/e243v5ZaYSOKZZRoe2ts/kEdcZoMYXKt8SbSVgdknmmb0TDOWGRUw/JxhjJS8bpdr8yPqdplvbJyebeUh6693obs3oCPs6tX+glsv3/S6AnYx+XMKx7PYy8T1FSyEbcbt6W2aHmssLRhQAvRvKqJuf6UMrjOMziogjxCyGSlJTJDHs8MOFggZ6lv7+Na5kbPH+AqlI4ZZd8wN3vBZw31mLKAzsdrfG61MH1RAjmr1Y8Qg55+Jlb+WpRs7prgKgXN0c2QVvP1hFkpXq6uHgFoWFIZMVT7CeGbRuPkz7iIl4zc6kNA/XQrkVykwXL2z5O/YEeKs0LA==
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=seco.com;
+Received: from AM0PR03MB4514.eurprd03.prod.outlook.com (2603:10a6:208:d0::10)
+ by AS8PR03MB7537.eurprd03.prod.outlook.com (2603:10a6:20b:344::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8; Wed, 19 Jan
+ 2022 18:23:50 +0000
+Received: from AM0PR03MB4514.eurprd03.prod.outlook.com
+ ([fe80::58c1:9483:524d:6b]) by AM0PR03MB4514.eurprd03.prod.outlook.com
+ ([fe80::58c1:9483:524d:6b%4]) with mapi id 15.20.4888.014; Wed, 19 Jan 2022
+ 18:23:50 +0000
+From:   Sean Anderson <sean.anderson@seco.com>
+Subject: Re: [PATCH v2 0/7] usb: dwc3: Calculate REFCLKPER et. al. from
+ reference clock
+To:     Baruch Siach <baruch@tkos.co.il>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-usb@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        Balaji Prakash J <bjagadee@codeaurora.org>,
+        linux-kernel@vger.kernel.org,
+        Robert Hancock <robert.hancock@calian.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
+References: <20220119002438.106079-1-sean.anderson@seco.com>
+ <87ee53fv01.fsf@tarshish>
+Message-ID: <a1932eba-564c-fe32-f220-53aa75250105@seco.com>
+Date:   Wed, 19 Jan 2022 13:23:44 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <87ee53fv01.fsf@tarshish>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-To:     Matthew Rosato <mjrosato@linux.ibm.com>, linux-s390@vger.kernel.org
-Cc:     alex.williamson@redhat.com, cohuck@redhat.com,
-        schnelle@linux.ibm.com, farman@linux.ibm.com,
-        borntraeger@linux.ibm.com, hca@linux.ibm.com, gor@linux.ibm.com,
-        gerald.schaefer@linux.ibm.com, agordeev@linux.ibm.com,
-        frankja@linux.ibm.com, david@redhat.com, imbrenda@linux.ibm.com,
-        vneethv@linux.ibm.com, oberpar@linux.ibm.com, freude@linux.ibm.com,
-        thuth@redhat.com, pasic@linux.ibm.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220114203145.242984-1-mjrosato@linux.ibm.com>
- <20220114203145.242984-22-mjrosato@linux.ibm.com>
- <265e3448-2e8e-c38b-e625-1546ae3d408b@linux.ibm.com>
- <3d8c05d7-79ec-dfa8-bfcb-b8888183612a@linux.ibm.com>
-From:   Pierre Morel <pmorel@linux.ibm.com>
-In-Reply-To: <3d8c05d7-79ec-dfa8-bfcb-b8888183612a@linux.ibm.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: I7juRovRK3MX_SqBTY1lyfF8JNodhXdB
-X-Proofpoint-GUID: SWtv8itAXkmqmluka92Yih1K3COdnTqZ
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-19_10,2022-01-19_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
- clxscore=1015 adultscore=0 priorityscore=1501 mlxlogscore=999
- malwarescore=0 suspectscore=0 spamscore=0 bulkscore=0 lowpriorityscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201190102
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: BL0PR02CA0044.namprd02.prod.outlook.com
+ (2603:10b6:207:3d::21) To AM0PR03MB4514.eurprd03.prod.outlook.com
+ (2603:10a6:208:d0::10)
+MIME-Version: 1.0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 725e89cc-1017-4277-f266-08d9db78d711
+X-MS-TrafficTypeDiagnostic: AS8PR03MB7537:EE_
+X-Microsoft-Antispam-PRVS: <AS8PR03MB7537E2DD512977CE40D864C896599@AS8PR03MB7537.eurprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fitnWJd9PZCLjmWT032SygeoQ/z9xTxCh1gOYafG/nAJgAB4CHxJBWPuWrY3EkJXrQF1oxUqgMEsrtX/rfrMSmj+3dZe4iInOnII/p6XJNfVG+mgdoDEZ726qARBMhuCIzymX8iEdyDULSITrgV9kIHrCD5Hf7UHBrAcoOu/bGQerpERKaTSfyH75T31ZR9CvJnxChTFYprPQmxG5lBq1p7eO7n13aG0W/LRWVWY8EQ43JjhRcmK0FoTVmh7VtOGYXDjbQv5GdTKdEneAWfFqmPX3rD7U6CfI0G75ET9OIaaotrdDph/Cr1hAXnDurAI87Diwr7cLNYujCOkg89PSczAAUfwaVvGlwhB3kNbVZpE6Cy2e8FMVVPpgupUBBfvtU08QEWggc4zSJSkt6nu3KD7hEz5Y9jcDy5p8Hl38gKdf1jB+tPL8FlkYaVQyvziJTGLj+PVrbM4r5etpJtIdoaRPXABuC4DnwITesROWwZ6z1deLO1tMKBfDt5LL6ymY60SPZwl3G7UX6lCyqG6SdjZRcLZNCmtHrRS3XDGpFcuV6O7YRI8Ka0I/b5wd7LqV+wRpmQyarbpzigOlP4+KH3cl4eFhm3k/8WgRiYdKeJhGZXcKig9u/GHVz+gzGYszwKTiwlyFPDYO7PYmcsI4VhWYdS16xPRAIBTd5MZL6AGY1lrQHsQQYFaeYeC7UQrR8CGBy2Ki3bCReozMZf7JKE0kStdZ8rF1kN5MSEnYM2CRMzexAWq/lZArQ14arDlWEwSpkD+ubUOhluU2wX2kw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR03MB4514.eurprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(52116002)(44832011)(38100700002)(38350700002)(8676002)(2906002)(7416002)(8936002)(2616005)(53546011)(6916009)(6506007)(86362001)(6486002)(54906003)(4744005)(31696002)(5660300002)(4326008)(316002)(31686004)(36756003)(26005)(83380400001)(66946007)(66476007)(66556008)(508600001)(6666004)(186003)(6512007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Y1BQSzF0NENWY3ZPQ2VobjBGbWlhYlU4SEJ6ek9sWVNLcU1oUFMzRnBRU0tr?=
+ =?utf-8?B?N01xNU9tbSt6ZlhXdjkzUE9IQ2lYaS94Vjg5NGNjcGx5c2ovNFBuM2hOdVlD?=
+ =?utf-8?B?VHBueDFqSVlLSjMwVklrSUFqc2I2NERJWUdyQkJ3MVNDUnVyMG1wb1ZaZlRy?=
+ =?utf-8?B?blRaVmlnVCtPQ1REbnV0Vk4xMEUrdXVCQStzZnNVamMySnNrUUdNWGtSaFVh?=
+ =?utf-8?B?Y05FWXk5UHdSbnNXN2Rxc21zWHlmblp3dmRndGNDUXhaSU5Lb2lweUVMbDhq?=
+ =?utf-8?B?ZUI3Z0ZtekdjNVJmZjYwWll1cDI0eGZ4S2RIbmFiNXZTNSttZ29vd2NsQ3FQ?=
+ =?utf-8?B?Q1hCRVNxZDZZcFJnODlDVGZFT0ZtZnpUSWgwYlRsN3RlUG45NzZpSkxETHVi?=
+ =?utf-8?B?SWh3VStlUXJYQ1pWL3VMY0t1eWtqVnlrNHA1S3AvVWczdFlUeXhUMXhYTnNl?=
+ =?utf-8?B?ZHNGeGorY2JXaW1ValdhanBvRGpsQllhenpid3MzeVNYN2RJMU15bTlaeWp3?=
+ =?utf-8?B?RGxSQXJOREFXVWlhZkxoVGg5amdsazNjcHlNakI3TUFmNzJjcWxwQnRZT092?=
+ =?utf-8?B?Z0NVTGU1WjlLZHcxSHhybzNDUkt4S0xMZjlUQldZdjVEb3pLTlBhYk1lVFVx?=
+ =?utf-8?B?UGpVR0xxaHN1UlFoOEtaRm9GT3ZjRndTa1pQaUVXRHdWKzAxYXFjNWMrODNq?=
+ =?utf-8?B?MzFhN2habmFkNlQyZmhGOGtwdThSa2RlTDFBb1JKaWtPV1M1QkhRU0tROHZJ?=
+ =?utf-8?B?ZEFQZUlTVUxmeHlLNjZZaTc5UWdTTlRQaEkvWllwMUdjcTRCdjN1UEtVZFA3?=
+ =?utf-8?B?T28raWRYWTgwa1FRT29rMzJCN1BjcFp4cVBBbVVLQnpRdENLQTBwV3gzVnUv?=
+ =?utf-8?B?b3ViQkhaMnVRWkZFZkk4VFBKUzFCeG5wRUt4L1pzMkg4QnRCMXBKZEUrSE1F?=
+ =?utf-8?B?Nk56WEhjdS9TVzdtV0czYVlvRnZRaHoxYTUyQWlvemdXYWpGUVlFWUFoWFpX?=
+ =?utf-8?B?dEtEdHQ5eUZxSTVQMUI5cFZNSm5lejBORS9TdkxreUR2NkI3OVl3a05lQTBG?=
+ =?utf-8?B?TzZrSnhPdVNVY3lvc1RnYy9nbm1XRHJuOVpGNTh4V2lLVTZVaTcxaEgwcndJ?=
+ =?utf-8?B?Y2hLbmxlUnFPWTJDYlVUYnRvWTR6dkVOS3lueDhkMkxncVNmTTd3UWpjQTdU?=
+ =?utf-8?B?UzM2NlQwRzVUOE1VM2pZUFZ2Zm15aUl4c2FEL00rY2pjTTBTaVRWc1VEb213?=
+ =?utf-8?B?UTYvdzNWcGcyQ2R3czhRT00vVW1IeTlHQjh5NkFxQTJPZEF3V0dSM25Xbm1t?=
+ =?utf-8?B?SzFCRlJRVEV2YzNOdzYxdWJDNFZoejI2amNSN2MwcVdEQnMwZ3RnTWh2VUZv?=
+ =?utf-8?B?d01YZnRyT3YzelRMUFJZOG1PVFdZTU4wVVhMMS9tUnQ0a2VWZW1XQ2Zza2FO?=
+ =?utf-8?B?bXlrTGs4YnRCM1ltNjMwS3dSQmVLdXAvR3NrbXVIMVdqcnN6a28zMTBOWHFz?=
+ =?utf-8?B?eFVudHdvcDJGYzhhaEU0d2pYQlJwcWVBb0U0TlAyVjQyMHBMS1d0NE9WVkYr?=
+ =?utf-8?B?a0RtOG81N3VzQ3p1ekREbnUwanJJTzVQNy90bnd5a014eUw2M2NsdUk2VVl6?=
+ =?utf-8?B?TzBIWllVT1lsVXdzZDh2K3B2RW13U0ZPU2FEeXZteXp6SGwwVXpFVEtqT0d0?=
+ =?utf-8?B?c0I2eVVkUzJDciszUXNpSUw0MEU2cm45bUpnTFdJcmxwcTQxMkpINXBIaUNr?=
+ =?utf-8?B?RmlZaldRT3V6L1lPUlIrZXdIdmF2eUczSHFQUVZNMlc3bHk4NjBVNUl0MGpK?=
+ =?utf-8?B?TGRUWGovaFhFNUlnaUJXUUozaEFmRUhhRnd3T0FzZXNyTVVQUFprbndmb3NW?=
+ =?utf-8?B?NXhqSWpQWk45ZDNlV2RUcThCYzBUUWFuZUQvZkdVSHUwbjhhSmJEenl5K21I?=
+ =?utf-8?B?bDN0RU5qcTJDZzVQd2RlcUduYTZoQTdrQnlUeUExV1o4R2Fxb0l6cTAyeWU2?=
+ =?utf-8?B?ZjNHVGFXemdwbWxTSm93U3hUSTcrTHJxemFQeHJJR01NNitzM3hxcjJpbmZF?=
+ =?utf-8?B?UGY3aCtOeXdpeTlUaUNlSWhxN09KVTlZTGJ4VjZ6U1pSaHd2djNESXlrWHFB?=
+ =?utf-8?B?SmNXMCtVSzZvWkl1U1MzbHhySFZWM3VqWVloMmppUnhLR3hSNnp3MXp4YUx5?=
+ =?utf-8?Q?/N35JytYoRYBUFMx+H4fPOA=3D?=
+X-OriginatorOrg: seco.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 725e89cc-1017-4277-f266-08d9db78d711
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR03MB4514.eurprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2022 18:23:50.1878
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: bebe97c3-6438-442e-ade3-ff17aa50e733
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: v+2yiDW4KXfNK4pIFCR26PZ0XmSIxU77E6NJzEMMqfQAMehlGrnVm/Nxfq5l9Num3/nPcnBWm2UUEeefoqSrcg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AS8PR03MB7537
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Baruch,
 
-
-On 1/19/22 17:39, Matthew Rosato wrote:
-> On 1/19/22 4:29 AM, Pierre Morel wrote:
+On 1/19/22 1:14 PM, Baruch Siach wrote:
+> Hi Sean,
+>
+> On Tue, Jan 18 2022, Sean Anderson wrote:
+>> This is a rework of patches 3-5 of [1]. It attempts to correctly program
+>> REFCLKPER and REFCLK_FLADJ based on the reference clock frequency. Since
+>> we no longer need a special property duplicating this configuration,
+>> snps,ref-clock-period-ns is deprecated.
 >>
->>
->> On 1/14/22 21:31, Matthew Rosato wrote:
-> ...
->>> +static int dma_table_shadow(struct kvm_vcpu *vcpu, struct zpci_dev 
->>> *zdev,
->>> +                dma_addr_t dma_addr, size_t size)
->>> +{
->>> +    unsigned int nr_pages = PAGE_ALIGN(size) >> PAGE_SHIFT;
->>> +    struct kvm_zdev *kzdev = zdev->kzdev;
->>> +    unsigned long *entry, *gentry;
->>> +    int i, rc = 0, rc2;
->>> +
->>> +    if (!nr_pages || !kzdev)
->>> +        return -EINVAL;
->>> +
->>> +    mutex_lock(&kzdev->ioat.lock);
->>> +    if (!zdev->dma_table || !kzdev->ioat.head[0]) {
->>> +        rc = -EINVAL;
->>> +        goto out_unlock;
->>> +    }
->>> +
->>> +    for (i = 0; i < nr_pages; i++) {
->>> +        gentry = dma_walk_guest_cpu_trans(vcpu, &kzdev->ioat, 
->>> dma_addr);
->>> +        if (!gentry)
->>> +            continue;
->>> +        entry = dma_walk_cpu_trans(zdev->dma_table, dma_addr);
->>> +
->>> +        if (!entry) {
->>> +            rc = -ENOMEM;
->>> +            goto out_unlock;
->>> +        }
->>> +
->>> +        rc2 = dma_shadow_cpu_trans(vcpu, entry, gentry);
->>> +        if (rc2 < 0) {
->>> +            rc = -EIO;
->>> +            goto out_unlock;
->>> +        }
->>> +        dma_addr += PAGE_SIZE;
->>> +        rc += rc2;
->>> +    }
->>> +
->>
->> In case of error, shouldn't we invalidate the shadow tables entries we 
->> did validate until the error?
-> 
-> Hmm, I don't think this is strictly necessary - the status returned 
-> should indicate the specified DMA range is now in an indeterminate state 
-> (putting the onus on the guest to take corrective action via a global 
-> refresh).
-> 
-> In fact I think I screwed that up below in kvm_s390_pci_refresh_trans, 
-> the fabricated status should always be KVM_S390_RPCIT_INS_RES.
+>> Please test this! Patches 3/4 in this series have the effect of
+>> programming REFCLKPER and REFCLK_FLADJ on boards which already configure
+>> the "ref" clock. I have build tested, but not much else.
+>
+> Tested here on IPQ6010 based system. USB still works. But the with "ref"
+> clock at 24MHz, period is calculated as 0x29. Previous
+> snps,ref-clock-period-ns value used to be 0x32.
+>
+> Is that expected?
 
-OK
+Yes. From the documentation for GFLADJ_REFCLK_240MHZ_DECR:
 
-> 
->>
->>> +out_unlock:
->>> +    mutex_unlock(&kzdev->ioat.lock);
->>> +    return rc;
->>> +}
->>> +
->>> +int kvm_s390_pci_refresh_trans(struct kvm_vcpu *vcpu, unsigned long 
->>> req,
->>> +                   unsigned long start, unsigned long size,
->>> +                   u8 *status)
->>> +{
->>> +    struct zpci_dev *zdev;
->>> +    u32 fh = req >> 32;
->>> +    int rc;
->>> +
->>> +    /* Make sure this is a valid device associated with this guest */
->>> +    zdev = get_zdev_by_fh(fh);
->>> +    if (!zdev || !zdev->kzdev || zdev->kzdev->kvm != vcpu->kvm) {
->>> +        *status = 0;
->>
->> Wouldn't it be interesting to add some debug information here.
->> When would this appear?
-> 
-> Yes, I agree -- One of the follow-ons I'd like to add after this series 
-> is s390dbf entries; this seems like a good spot for one.
-> 
-> As to when this could happen; it should not under normal circumstances, 
-> but consider something like arbitrary function handles coming from the 
-> intercepted guest instruction.  We need to ensure that the specified 
-> function 1) exists and 2) is associated with the guest issuing the refresh.
-> 
->>
->> Also if we have this error this looks like we have a VM problem, 
->> shouldn't we treat this in QEMU and return -EOPNOTSUPP ?
->>
-> 
-> Well, I'm not sure if we can really tell where the problem is (it could 
-> for example indicate a misbehaving guest, or a bug in our KVM tracking 
-> of hostdevs).
-> 
-> The guest chose the function handle, and if we got here then that means 
-> it doesn't indicate that it's an emulated device, which means either we 
-> are using the assist and KVM should handle the intercept or we are not 
-> and userspace should handle it.  But in both of those cases, there 
-> should be a host device and it should be associated with the guest.
+> Examples:
+> If the ref_clk is 24 MHz then
+> - GUCTL.REF_CLK_PERIOD = 41
+> - GFLADJ.GFLADJ_REFCLK_240MHZ_DECR = 240/24 = 10
 
-That is right if we can not find an associated zdev = F(fh)
-but the two other errors are KVM or QEMU errors AFAIU.
+And 41 == 0x29.
 
-> 
-> I think if we decide to throw this to userspace in this event, QEMU 
-> needs some extra code to handle it (basically, if QEMU receives the 
-> intercept and the device is neither emulated nor using intercept mode 
-> then we must treat as an invalid handle as this intercept should have 
-> been handled by KVM)
-
-I do not want to start a discussion on this, I think we can let it like 
-this at first and come back to it when we have a good idea on how to 
-handle this.
-May be just add a /* TODO */
-
-
-> 
-> 
->>> +        return -EINVAL;
->>> +    }
->>> +
->>> +    /* Only proceed if the device is using the assist */
->>> +    if (zdev->kzdev->ioat.head[0] == 0)
->>> +        return -EOPNOTSUPP;
->>> +
->>> +    rc = dma_table_shadow(vcpu, zdev, start, size);
->>> +    if (rc < 0) {
->>> +        /*
->>> +         * If errors encountered during shadow operations, we must
->>> +         * fabricate status to present to the guest
->>> +         */
->>> +        switch (rc) {
->>> +        case -ENOMEM:
->>> +            *status = KVM_S390_RPCIT_INS_RES;
->>> +            break;
->>> +        default:
->>> +            *status = KVM_S390_RPCIT_ERR;
->>> +            break;
-> 
-> As mentioned above I think this switch statement should go away and 
-> instead always set KVM_S390_RPCIT_INS_RES when rc < 0.
-> 
->>> +        }
->>> +    } else if (rc > 0) {
->>> +        /* Host RPCIT must be issued */
->>> +        rc = zpci_refresh_trans((u64) zdev->fh << 32, start, size,
->>> +                    status);
->>> +    }
->>> +    zdev->kzdev->rpcit_count++;
->>> +
->>> +    return rc;
->>> +}
->>> +
->>>   /* Modify PCI: Register floating adapter interruption forwarding */
->>>   static int kvm_zpci_set_airq(struct zpci_dev *zdev)
->>>   {
->>> @@ -620,6 +822,8 @@ EXPORT_SYMBOL_GPL(kvm_s390_pci_attach_kvm);
->>>   int kvm_s390_pci_init(void)
->>>   {
->>> +    int rc;
->>> +
->>>       aift = kzalloc(sizeof(struct zpci_aift), GFP_KERNEL);
->>>       if (!aift)
->>>           return -ENOMEM;
->>> @@ -627,5 +831,7 @@ int kvm_s390_pci_init(void)
->>>       spin_lock_init(&aift->gait_lock);
->>>       mutex_init(&aift->lock);
->>> -    return 0;
->>> +    rc = zpci_get_mdd(&aift->mdd);
->>> +
->>> +    return rc;
->>>   }
->>> diff --git a/arch/s390/kvm/pci.h b/arch/s390/kvm/pci.h
->>> index 54355634df82..bb2be7fc3934 100644
->>> --- a/arch/s390/kvm/pci.h
->>> +++ b/arch/s390/kvm/pci.h
->>> @@ -18,6 +18,9 @@
->>>   #define KVM_S390_PCI_DTSM_MASK 0x40
->>> +#define KVM_S390_RPCIT_INS_RES 0x10
->>> +#define KVM_S390_RPCIT_ERR 0x28
->>> +
->>>   struct zpci_gaite {
->>>       u32 gisa;
->>>       u8 gisc;
->>> @@ -33,6 +36,7 @@ struct zpci_aift {
->>>       struct kvm_zdev **kzdev;
->>>       spinlock_t gait_lock; /* Protects the gait, used during AEN 
->>> forward */
->>>       struct mutex lock; /* Protects the other structures in aift */
->>> +    u32 mdd;
->>>   };
->>>   extern struct zpci_aift *aift;
->>> @@ -47,7 +51,9 @@ static inline struct kvm 
->>> *kvm_s390_pci_si_to_kvm(struct zpci_aift *aift,
->>>   int kvm_s390_pci_aen_init(u8 nisc);
->>>   void kvm_s390_pci_aen_exit(void);
->>> -
->>> +int kvm_s390_pci_refresh_trans(struct kvm_vcpu *vcpu, unsigned long 
->>> req,
->>> +                   unsigned long start, unsigned long end,
->>> +                   u8 *status);
->>>   int kvm_s390_pci_init(void);
->>>   #endif /* __KVM_S390_PCI_H */
->>>
->>
-> 
-
--- 
-Pierre Morel
-IBM Lab Boeblingen
+--Sean
