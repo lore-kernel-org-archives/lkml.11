@@ -2,139 +2,132 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 301D0C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 15:22:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 559E0C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 15:22:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355713AbiASPWk (ORCPT
+        id S1355760AbiASPWs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 10:22:40 -0500
-Received: from outbound3.eu.mailhop.org ([52.29.21.168]:20696 "EHLO
-        outbound3.eu.mailhop.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355803AbiASPWW (ORCPT
+        Wed, 19 Jan 2022 10:22:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57362 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355766AbiASPWh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 10:22:22 -0500
-ARC-Seal: i=1; a=rsa-sha256; t=1642604776; cv=none;
-        d=outbound.mailhop.org; s=arc-outbound20181012;
-        b=XmJULg7KcEsaAaNVIau0nr+3RqdjTMF7EPD+qQzoldcmZAh7cNxSVCsZ7INWh5yKqbSX56p2YCXG3
-         sWtgv3aYaB6xeKUEb2io7X1VxBKX/stnD7snv4Jvee8+m1aGr/REB8VpC2hx805sFtOSLMQ65ooT0X
-         UyVIxM6zn6GacF+jeeRHAOVWMcKR/Z3hjB0lhu88J5YiyW7HZsrfuhGZPPEiGUNLn7OMWbIqPCCaH7
-         ujKpfWZdvzwdoalVB5qozPwn4siRJLpduTcc3oz/z3FN48LFkf109ABPMSJln2KRyIcMMuMS346rYY
-         18rLeK50laBEbqzClBqlzWXXyVvSZYQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=outbound.mailhop.org; s=arc-outbound20181012;
-        h=content-type:mime-version:message-id:in-reply-to:date:references:subject:cc:
-         to:from:dkim-signature:dkim-signature:from;
-        bh=xKcGXC5UN2NwkPJrRpedUdXpH3K121N9tHO7S7nhcBQ=;
-        b=D+QOjciww+Dka5r7dfyw07WWl75WFkX0wqPYKO8IFWnEAYQQK1dZ5jzztbY4Mj53Dd5SvH6XJecjw
-         jLypbGN6BTLZ/Xwa2yjb+y2Er9Pq5hrn6ECPykbCRyEr67Qv7wSmEXmJ9X82puP9ycqdxXYKsLAzXZ
-         Id7jGQqWhMpNFjrPFcyVoUZKdG0vUBcrv1gpeXqvdpTuhHJgDx24cByK75hGy1DiiJzNu5o/fG3Qv0
-         KEQEDM8JSm8iiET4CxUTYOA7E9ARzBEoQRpJGLRdwguizoK4LKvfF0IYDfiYKdy3lUar0aco4XBl0b
-         XApxbsCTLs/ofBJ+jBB1r+J9jyrQ2HQ==
-ARC-Authentication-Results: i=1; outbound3.eu.mailhop.org;
-        spf=pass smtp.mailfrom=stackframe.org smtp.remote-ip=91.207.61.48;
-        dmarc=none header.from=stackframe.org;
-        arc=none header.oldest-pass=0;
+        Wed, 19 Jan 2022 10:22:37 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51EBFC06176D
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 07:22:30 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id v123so5695178wme.2
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 07:22:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=stackframe.org; s=duo-1634547266507-560c42ae;
-        h=content-type:mime-version:message-id:in-reply-to:date:references:subject:cc:
-         to:from:from;
-        bh=xKcGXC5UN2NwkPJrRpedUdXpH3K121N9tHO7S7nhcBQ=;
-        b=BcLT82Y/1rcgNQu3U9ScUtmrhIv4jV67PRF3CeVDj1oq4Q9FsmYxulno70Xhdev93EWnVu92jDNrt
-         uDMEeI4pM835cgf2rmZ0+uDqKlaP0dRvXq7/IO9zM5tDTkF2JhzhggqBmaZyxi/m4Xta26vQWOaezI
-         lPrdR4Dj31elnWq4=
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=outbound.mailhop.org; s=dkim-high;
-        h=content-type:mime-version:message-id:in-reply-to:date:references:subject:cc:
-         to:from:from;
-        bh=xKcGXC5UN2NwkPJrRpedUdXpH3K121N9tHO7S7nhcBQ=;
-        b=fBBbq/RhuKo8xz+BjEVFrwo0c4C5bqsWZS+Z+TgQg+4S7heoONiN9WC8WGe4n9ODZg75BtyYYsV5V
-         PiGzwtLGM3SZdq0XCbw1DU0PmdxyqAOaOhuByU+XWpPOnXj3bItofFdKz82Ht7H6Bg4ZiwMTw96zD3
-         oiNAOa5Rz+pYOsUWHcgp7EfZ0keOyestZuH5py5Emn+KNMkorSqMOCte5xQ91MKyTwpzdSP5oBspXc
-         mehik1F/Cz0GyA7gKiKy/4kk5vpL9AYQ6IC9Xosg5374GZ8xhT4v+CutRs+4PG75I3QlYW9fZny4XX
-         nxeDzERRrGIPgTIaO/d2+wQDcg0YAlg==
-X-Originating-IP: 91.207.61.48
-X-MHO-RoutePath: dG9ta2lzdG5lcm51
-X-MHO-User: 51bf6f5a-7939-11ec-9564-95b64d6800c5
-X-Report-Abuse-To: https://support.duocircle.com/support/solutions/articles/5000540958-duocircle-standard-smtp-abuse-information
-X-Mail-Handler: DuoCircle Outbound SMTP
-Received: from mail.duncanthrax.net (propper.duncanthrax.net [91.207.61.48])
-        by outbound3.eu.mailhop.org (Halon) with ESMTPSA
-        id 51bf6f5a-7939-11ec-9564-95b64d6800c5;
-        Wed, 19 Jan 2022 15:06:05 +0000 (UTC)
-Received: from hsi-kbw-109-193-149-228.hsi7.kabel-badenwuerttemberg.de ([109.193.149.228] helo=x1.stackframe.org.stackframe.org)
-        by mail.duncanthrax.net with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <svens@stackframe.org>)
-        id 1nACXC-00599H-8i; Wed, 19 Jan 2022 17:06:02 +0200
-From:   Sven Schnelle <svens@stackframe.org>
-To:     Daniel Vetter <daniel@ffwll.ch>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Helge Deller <deller@gmx.de>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, Sam Ravnborg <sam@ravnborg.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Claudio Suarez <cssk@net-c.es>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Gerd Hoffmann <kraxel@redhat.com>
-Subject: Re: [PATCH 2/2] Revert "fbcon: Disable accelerated scrolling"
-References: <20220119110839.33187-1-deller@gmx.de>
-        <20220119110839.33187-3-deller@gmx.de> <Yef0j8+DBbwC7Kjv@kroah.com>
-        <Yef15k2GtC40aJEu@kroah.com>
-        <CAMuHMdVWFJEDwjf-htZ_D1484efmuPnz_L-qhcTeUE-GVpvZXA@mail.gmail.com>
-        <4d8950c7-5f51-ca2b-4c93-741c7805a214@gmx.de>
-        <CAHk-=wikFKjwdUBWCLCu=iL3rFq4BDDF0aBGdXC6ay74yJb+5Q@mail.gmail.com>
-        <CAKMK7uEb53iu_HxYSnFZ59j=vXQdMvTWT7xosEo85XkAwzDMnA@mail.gmail.com>
-Date:   Wed, 19 Jan 2022 16:05:59 +0100
-In-Reply-To: <CAKMK7uEb53iu_HxYSnFZ59j=vXQdMvTWT7xosEo85XkAwzDMnA@mail.gmail.com>
-        (Daniel Vetter's message of "Wed, 19 Jan 2022 15:34:06 +0100")
-Message-ID: <8735ljkboo.fsf@x1.stackframe.org>
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=usKOzHTqDlxMHaMrzpxLAl/X0LyI8/CbyeCUrjTWq9k=;
+        b=ackHKEoZK3RCD5tfQsLKKL09VAzMa49DHmF4BgVjWukz1/DnbE5aOjfFSoYBSGe9E6
+         FVmizbjhR5rmXyPdXC8TswIfvvWJq67nuaxKKaxNNCyD+LnmU9V7gidTtJ6/o/jXJ36/
+         w4532Hdtr0RWZY1Ur+03BvQGfkoIY6Qv4D0fDU7a1X40SqSUgxgDpjxDwbCF5Y6TBQk4
+         pEjp1iCOkXpA5esFqn5CjPy5kUfFh5tXoh04oLLFPhmgVr6z3gvZm67RZOS/I8jI5sDC
+         wLyB8N1HcAM+Vwwq9NLWA/VcM9xb4P/OKXAGhjL/nI5EM+1/Rrccz9Ux5/hpTssiXLFD
+         BO5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=usKOzHTqDlxMHaMrzpxLAl/X0LyI8/CbyeCUrjTWq9k=;
+        b=lY/j6ftzuxtzdatzHl5LTff0wTkdPeUTlyxA7nyyYjhbjzMEVffuoql+DIdyYoS9Fr
+         Ylva7KQ/ej7eTjc4HoFwYoed0oNA7ALaaShYaBFr7ppQZeSIal3anRZIOBxtroymLiVn
+         H4kBnlww8Z8U1BoJ8ybnhKfbWq2ISomZvG5s+op4ychHciSbmSMW1cnk//WpnlcEkFsI
+         ZlpUI5WJQ14P56yJLUln/Cbk3g9uC8BMG6Hg+I8BtMdU6cefg+EyuIakf1IcGoEKIkZz
+         RHQt0Tua7drJfENGohV210dlAjeQPfwrZywOY8R7iSF5xUdXlyYXLEsMAtSc4LqblME+
+         JIZA==
+X-Gm-Message-State: AOAM532RDreWpanYz+i5NthJBAjrt/MzQJIM5ELYbg9jTbP5LS/r3GUJ
+        2sERANVGa5ljYhky+wHBqhC5xdEAo8AnWBU/0J/8ZQ==
+X-Google-Smtp-Source: ABdhPJwxrLEEFkkNXFaoF7sVZXJ04JNlpjOC76m88qV7aBTNHfuPX8FFAbqvmpWqNE0R8qFfpQ7l8U03n6xR7Ur5F0U=
+X-Received: by 2002:a5d:588e:: with SMTP id n14mr11663891wrf.658.1642605748846;
+ Wed, 19 Jan 2022 07:22:28 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220114173254.1876151-1-james.clark@arm.com> <20220114173254.1876151-2-james.clark@arm.com>
+In-Reply-To: <20220114173254.1876151-2-james.clark@arm.com>
+From:   Mike Leach <mike.leach@linaro.org>
+Date:   Wed, 19 Jan 2022 15:22:17 +0000
+Message-ID: <CAJ9a7VhedrLMKfXBqzD_9fFxzKTg63-9wUM38Tw6ukhmSR9aoA@mail.gmail.com>
+Subject: Re: [PATCH 1/1] coresight: Fix TRCCONFIGR.QE sysfs interface
+To:     James Clark <James.Clark@arm.com>
+Cc:     mathieu.poirier@linaro.org, coresight@lists.linaro.org,
+        suzuki.poulose@arm.com, Leo Yan <leo.yan@linaro.org>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Daniel Vetter <daniel@ffwll.ch> writes:
+Hi James
 
-> On Wed, Jan 19, 2022 at 3:01 PM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
-> Irrespective of this code being buggy or not buggy I think the bigger
-> pictures, and really the reason I want to see as much code ditched
-> from the fbdev/fbcon stack as we possible can, are very clear:
+On Fri, 14 Jan 2022 at 17:33, James Clark <james.clark@arm.com> wrote:
 >
-> - it's full of bugs
-> - there's no test coverage/CI to speak of
-> - it's very arcane code which is damn hard to understand and fix issues within
-> - the locking is busted (largely thanks to console_lock, and the
-> effort to make that reasonable from -rt folks has been slowly creeping
-> forward for years).
+> It's impossible to program a valid value for TRCCONFIGR.QE
+> when TRCIDR0.QSUPP==0b10. In that case the following is true:
 >
-> Iow this subsystem is firmly stuck in the 90s, and I think it's best
-> to just leave it there. There's also not been anyone actually capable
-> and willing to put in the work to change this (pretty much all actual
-> changes/fixes have been done by drm folks anyway, like me having a
-> small pet project to make the fbdev vs fbcon locking slightly less
-> busted).
+>   Q element support is implemented, and only supports Q elements without
+>   instruction counts. TRCCONFIGR.QE can only take the values 0b00 or 0b11.
+>
+> Currently the low bit of QSUPP is checked to see if the low bit of QE can
+> be written to, but as you can see when QSUPP==0b10 the low bit is cleared
+> making it impossible to ever write the only valid value of 0b11 to QE.
+> 0b10 would be written instead, which is a reserved QE value even for all
+> values of QSUPP.
+>
+> The fix is to allow writing the low bit of QE for any non zero value of
+> QSUPP.
+>
+> This change doesn't go any further to validate if the user supplied value
+> is valid, because none of the other parts this function do, but it does fix
+> the case where it was impossible to ever set a valid value.
+>
 
-Saying it's stuck in the 90ies, and actively trying to prevent
-Helge from taking over maintainership at the same time looks odd.
-I think Helge should at least get a chance to fix the issues. If the
-state is still the same in a year or so it should be discussed again.
+I concur that the input is not checked as valid, However all the other
+fields are single bit - with no invalid values - other than the cond
+field, which controls tracing of non-branch conditionals -
+architecturally unsupported for A profile in ETMv4/.
 
-> The other side is that being a maintainer is about collaboration, and
-> this entire fbdev maintainership takeover has been a demonstration of
-> anything but that. MAINTAINERS entry was a bit confusing since defacto
-> drm has been maintaining it for years.
 
-It was marked as 'Orphaned'. Anyone is free to send a Patch/PR to take
-over maintainership. If you have strong opinions about that code (And you
-obviously have reading your mail, set it to 'maintained' and care about
-it. Everything else is just wrong in my opinion.
+> Signed-off-by: James Clark <james.clark@arm.com>
+> ---
+>  drivers/hwtracing/coresight/coresight-etm4x-sysfs.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> index a0640fa5c55b..a99bb537ea23 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> +++ b/drivers/hwtracing/coresight/coresight-etm4x-sysfs.c
+> @@ -368,7 +368,7 @@ static ssize_t mode_store(struct device *dev,
+>         /* start by clearing QE bits */
+>         config->cfg &= ~(BIT(13) | BIT(14));
+>         /* if supported, Q elements with instruction counts are enabled */
+> -       if ((mode & BIT(0)) && (drvdata->q_support & BIT(0)))
+> +       if ((mode & BIT(0)) && drvdata->q_support)
+>                 config->cfg |= BIT(13);
 
-/Sven
+This can be trivially changed to
+
+if ((mode)  && drvdata->q_support)
+         config->cfg |= BIT(13);
+
+to ensure that any input mode 2'b01, 2'b10, 2'b11 results in output
+settings of 2'b01, 2'b11, 2'b11 respectively
+
+With that
+
+Reviewed-by: Mike Leach <mike.leach@linaro.org>
+
+>         /*
+>          * if supported, Q elements with and without instruction
+> --
+> 2.17.1
+>
+
+
+-- 
+Mike Leach
+Principal Engineer, ARM Ltd.
+Manchester Design Centre. UK
