@@ -2,110 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6267FC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 16:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD5A0C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 16:07:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356039AbiASQDn (ORCPT
+        id S1356058AbiASQHM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 11:03:43 -0500
-Received: from fanzine2.igalia.com ([213.97.179.56]:59748 "EHLO
-        fanzine2.igalia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237164AbiASQDm (ORCPT
+        Wed, 19 Jan 2022 11:07:12 -0500
+Received: from mout.kundenserver.de ([212.227.17.13]:49947 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356042AbiASQHL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 11:03:42 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=igalia.com;
-        s=20170329; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=lJftPEJHRwVtXT5VmrtZuYaqnJ5uAXD+32MKyePnyww=; b=mLZX70R1FqWT9zRoFcLbGhFWnm
-        hSwlj4W88Od7ySlHXhrWLsBFzPikB/WOeEazMutsXJkIntsRXmT4fi5W7B7INkTQUNER/zo52kirO
-        wQgWw4CkgpAEw2QVdgyOyM/RIYFHLtK1KNnurUgZ2YsQuMXSftSA/doGdApM16efOY6x/n4xhC/R/
-        2svNgIknAg8fFstIlhc5AUm69TRrHUeYzR0i9gUhClPpB2FAzzE9hwh+DoTsrR11p6odK1sRWFiOm
-        uKVMcDA97wBm60FLYTB39H2lfAoYlDjyG2iflEFDISKL67oNrsTDQrEtWxUpPL683kV1WRf75BYnG
-        297ydupg==;
-Received: from [179.98.77.138] (helo=[192.168.1.60])
-        by fanzine2.igalia.com with esmtpsa 
-        (Cipher TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_128_GCM:128) (Exim)
-        id 1nADQp-000AGF-6S; Wed, 19 Jan 2022 17:03:31 +0100
-Message-ID: <94bb12a2-a788-cee6-7d4f-dc0ac581fb39@igalia.com>
-Date:   Wed, 19 Jan 2022 13:03:15 -0300
+        Wed, 19 Jan 2022 11:07:11 -0500
+Received: from mail-ot1-f44.google.com ([209.85.210.44]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1MG9wg-1n4fZZ2hdk-00GWUC; Wed, 19 Jan 2022 17:07:09 +0100
+Received: by mail-ot1-f44.google.com with SMTP id z25-20020a0568301db900b005946f536d85so3689564oti.9;
+        Wed, 19 Jan 2022 08:07:09 -0800 (PST)
+X-Gm-Message-State: AOAM531RENRBXb+eCsIFf+VVS2A5Ql/ca7uPr5SbIOekT+LTSo92dK1j
+        qkFCdIwCq03BeI85i+LrHfTBLd1+/Ya6jOPmoSk=
+X-Google-Smtp-Source: ABdhPJwYmjzUwr3LqMDlVmKxu2P94HWVRZ2m5aOzrrEpILDroO2fGK4U5w+vgoOvlKMup1bpupuBPszbhpm3gtVSmXc=
+X-Received: by 2002:a05:6830:2095:: with SMTP id y21mr22337764otq.368.1642608428193;
+ Wed, 19 Jan 2022 08:07:08 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.1
-Subject: Re: [PATCH V3] panic: Move panic_print before kmsg dumpers
-Content-Language: en-US
-To:     Petr Mladek <pmladek@suse.com>, Baoquan He <bhe@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
-        kernel@gpiccoli.net, senozhatsky@chromium.org, rostedt@goodmis.org,
-        john.ogness@linutronix.de, feng.tang@intel.com,
-        kexec@lists.infradead.org, dyoung@redhat.com,
-        keescook@chromium.org, anton@enomsg.org, ccross@android.com,
-        tony.luck@intel.com
-References: <20220114183046.428796-1-gpiccoli@igalia.com>
- <20220119071318.GA4977@MiWiFi-R3L-srv> <YegytkfED+QI56Y8@alley>
-From:   "Guilherme G. Piccoli" <gpiccoli@igalia.com>
-In-Reply-To: <YegytkfED+QI56Y8@alley>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <20211227112959.7325-1-krzysztof.kozlowski@canonical.com> <CAPLW+4n-1H5Yu3wQaus-UJ_VW_TjHrNUHaPCGCMURXg8EqxjyA@mail.gmail.com>
+In-Reply-To: <CAPLW+4n-1H5Yu3wQaus-UJ_VW_TjHrNUHaPCGCMURXg8EqxjyA@mail.gmail.com>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Wed, 19 Jan 2022 17:06:51 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a1ou-ZdrXN0MHQoJ+gGbvhXT-e2qt96_f9M8VwrdX0pAg@mail.gmail.com>
+Message-ID: <CAK8P3a1ou-ZdrXN0MHQoJ+gGbvhXT-e2qt96_f9M8VwrdX0pAg@mail.gmail.com>
+Subject: Re: [GIT PULL] arm64: dts: samsung: Second pull for v5.17
+To:     Sam Protsenko <semen.protsenko@linaro.org>
+Cc:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
+        arm-soc <arm@kernel.org>, SoC Team <soc@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
+        <linux-samsung-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:KKOZjnLuk3iTkOcRT6hWTWdg/xJkfcBwxDwv+rrf5J9WdII/9Fn
+ LtchAOPQiM2ThFjFtCuY64ANMoz9G2Ye3JPrm1ty9Nv/9cI2Ps3sV67CbL15TjK/NWlpAHs
+ FKBkkA659YwJJ8x2D6bfokSDi4Be+kJuoclNsGFOWhuM0lYcgMbPOin5QdTax0yDF5O6gY1
+ Xy9j8T3ARUWQm1gNAecdQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:mk32gY16VnQ=:mE8AcpLw0STQToxkReeUBG
+ tVAXcVX8HyJa6P0NhHPnMTn8C9Y70WU43fDSyuaDH1StVK3+hj6IE8MuYurfQKmDLjRQs+JZN
+ /qWfnmjzzYLiLy7nXyfnBpJEyMymRXnU3GFLT8pncKVP7fZYjAJz/KRWXSo3FtwKpJAUDE8Aj
+ n28JIrVMR0DbJT6FxWVBFtgUhO7AieOWTpI5cCfQsvZarmlBMFKqUojRxDxhg0Bpia6QOAvry
+ IrjP4Skx4IZbE+w64lNsKlo/9IgL5NHmzIVZDtOH7HkFVtrJr6MGdoffAcLDMJqQh+Pc3d/A6
+ FFcK9c8z/Cmt5t2fkpwZyre6H+QEbn7WjeaEgG1ef0WLbVW8iOxRluHLedhwFei4HGJ2ZfTsW
+ yZNUZwuSycb8D+6YHMeeYzottpO+f27qu90aYGg5R3r7B/dOLQSvuhl0MT7FNOMRZhtpjntGZ
+ uHterVa8LeeLA8e462C1p+z81vMq+frdGdT6cqWtarbasS7ZJbXTrpCnumPmfsReVBVe681Qh
+ YiTktbuaZzx6ZK/IuFySYCvGSygJ6RYvG+qfR7QLJ9K8wlihYZD/4LsSdVCOnDAaKoiK4nroJ
+ Gfy25bJJHJ2NO37ye5Yy9OSBbGYPLlxgtE/l4wyZffIYji6vVdcndBxlI7qSKI0l+YvcHfDfg
+ APlNl+E57VsgIGegYhU2GtjxArwxn0yfW4qYQd6N9TJTiSihlU7iLDOAAVW4tqXecBZI=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Thanks again Petr, for the deep analysis! Much appreciated.
-Some comments inline below:
+On Wed, Jan 19, 2022 at 4:11 PM Sam Protsenko
+<semen.protsenko@linaro.org> wrote:
+> On Mon, 27 Dec 2021 at 13:30, Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
+>
+> Hi Olof, Arnd,
+>
+> Just want to check if it's possible for those patches to be applied in
+> v5.17? Sorry for the noise, but that's important to me.
 
+I can see that Olof merged merged this into the "arm/late" branch in
+the soc tree,
+so I assume he still plans to send it in the next few days.
 
-On 19/01/2022 12:48, Petr Mladek wrote:
->[...]
-> From my POV, the function of panic notifiers is not well defined. They
-> do various things, for example:
-> [...] 
-> 
-> The do more that just providing information. Some are risky. It is not
-> easy to disable a particular one.
+With the timing over Christmas, I sent out the large bulk of the
+contents (anything
+I merged before Dec 23) last year, and Linus already merged it, the rest ended
+up in the "late" branch.
 
-We are trying to change that here:
-https://lore.kernel.org/lkml/20220108153451.195121-1-gpiccoli@igalia.com/
+As usual, there is no guarantee that late changes make it in, but I have seen
+no indication of any problems so far.
 
-Your review/comments are very welcome =)
-
-
-> [...] 
-> It might make sense to allow to call kmsg_dump before panic notifiers
-> to reduce the risk of a breakage. But I do not have enough experience
-> with them to judge this.
-> 
-> I can't remember any bug report in this code. I guess that only
-> few people use kmsg_dump.
-
-One of the problems doing that is that RCU and hung task detector, for
-example, have panic notifiers to disable themselves in the panic
-scenario - if we kmsg_dump() _before_ the panic notifiers, we may have
-intermixed messages, all messy...so for me it makes sense to keep the
-kmsg_dump() after panic notifiers.
-
-
-> [...]
-> Yes, panic_print_sys_info() increases the risk that the crash dump
-> will not succeed. But the change makes sense because:
-> 
->   + panic_print_sys_info() does nothing by default. Most users will
->     not enable it together with crash dump.
-> 
->   + Guilherme uses crash dump only to dump the kernel log. It might
->     be more reliable than kmsg_dump. In this case, panic_print_sys_info()
->     is the only way to get the extra information.
-> 
->   + panic_print_sys_info() might be useful even with full crash dump.
->     For example, ftrace messages are not easy to read from the memory
->     dump.
-
-The last point is really good, I didn't consider that before but makes a
-lot of sense - we can now dump (a hopefully small!) ftrace/event trace
-buffer to dmesg before a kdump, making it pretty easy to read that later.
-Cheers,
-
-
-Guilherme
+      Arnd
