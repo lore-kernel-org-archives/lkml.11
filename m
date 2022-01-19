@@ -2,123 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99678C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 20:21:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8AB2C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 20:21:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357287AbiASUVW (ORCPT
+        id S1357292AbiASUVf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 15:21:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41638 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231146AbiASUVU (ORCPT
+        Wed, 19 Jan 2022 15:21:35 -0500
+Received: from new3-smtp.messagingengine.com ([66.111.4.229]:53733 "EHLO
+        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1357255AbiASUV2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 15:21:20 -0500
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9F11C061574;
-        Wed, 19 Jan 2022 12:21:20 -0800 (PST)
-Received: by mail-pf1-x42c.google.com with SMTP id w204so3309433pfc.7;
-        Wed, 19 Jan 2022 12:21:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=D0IAhlKzMhVDSvOyrE7WOScz7H0kZ7M7h7y/9jjJAyo=;
-        b=B8z1c8TbozA4PbYfP8freTXuYQq4JYYeVme3C4wbQqfi3tgQGH4YBUg0HdBcmKhp7o
-         ofAu0L0YRVAqCRBecsdSlMI6v8ikYEelTdACKprfxmIF22aegr+b/r5RqIm79md/BrN9
-         hgMDa8wMovhEKiKfAi60H1SorCA3cErxVhFtUshtKQXlrcacGz+rn3KIqoEmIgGnsTrL
-         jR0ZzNyck+437UUSzTZCwxO2QRL8XSewL2UUkeOyR7BumpW4KGeibdko/uOisFMYwRtk
-         YEAZ+hf1f480kpSVPK2fb52fC3h2Ny/kIPQAA6sa4izf2rnvyzVPi1LgHDu1V+4g/RL0
-         8bOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=D0IAhlKzMhVDSvOyrE7WOScz7H0kZ7M7h7y/9jjJAyo=;
-        b=BbBOCVNclF6Ti9dl9ZcM9VOjGR5IyoTF1p+e0yywBz2T0Y6wE9E2DgrqrV9ZL4wi0I
-         5U+u5i0uRL6bKnUrmWkOUAc4LBcSSt8QfOt90WhkYrjiXCBdaafkUV46Frb9kT8MVJs5
-         Ya1H+1aKHs4w0taxbmjjSa4uNTgTRzUXjgsYBJ/i8BBY1r1bKHSJ+l20pA4HtvuFZQrq
-         OB3yYUFEPt0RYCWASjS/F1vZDyo4T3eabW2plqiQraSAkRwt+U5IOOdYUxYO4Y3RUhe/
-         vLQWi1Q2ylyLhq+1Wnb/hi8XXxxglGHsHcqOsockh6QO7oplmgydbeHoKcTtRY61AtBC
-         M+uw==
-X-Gm-Message-State: AOAM533NuX2xNZrB4Edey8y7IHxw57F4orBqY/y8XATqwjhW26I0mx5Z
-        AxicK3oaaW6lx/ItV1jaRKA6xrkYd8GsYQ==
-X-Google-Smtp-Source: ABdhPJwb7K3ljzxYYG9xuDS6ic4TifxN04U+qgTiqu00O06zo+J+LuOFgAPmjp3nU89lxIgf9IEuJg==
-X-Received: by 2002:a63:b24e:: with SMTP id t14mr28937903pgo.381.1642623680041;
-        Wed, 19 Jan 2022 12:21:20 -0800 (PST)
-Received: from megumi-s.h.riat.re ([103.72.4.142])
-        by smtp.gmail.com with ESMTPSA id b4sm474346pfl.106.2022.01.19.12.21.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Jan 2022 12:21:19 -0800 (PST)
-From:   Yanming Liu <yanminglr@gmail.com>
-To:     linux-hyperv@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        Andres Beltran <lkmlabelt@gmail.com>,
-        Dexuan Cui <decui@microsoft.com>, Wei Liu <wei.liu@kernel.org>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        "K. Y. Srinivasan" <kys@microsoft.com>,
-        Yanming Liu <yanminglr@gmail.com>,
-        Michael Kelley <mikelley@microsoft.com>
-Subject: [PATCH] Drivers: hv: balloon: account for vmbus packet header in max_pkt_size
-Date:   Thu, 20 Jan 2022 04:20:52 +0800
-Message-Id: <20220119202052.3006981-1-yanminglr@gmail.com>
-X-Mailer: git-send-email 2.34.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Wed, 19 Jan 2022 15:21:28 -0500
+Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 9CC405803E8;
+        Wed, 19 Jan 2022 15:21:22 -0500 (EST)
+Received: from imap46 ([10.202.2.96])
+  by compute5.internal (MEProxy); Wed, 19 Jan 2022 15:21:22 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=liquorix.net; h=
+        mime-version:message-id:in-reply-to:references:date:from:to:cc
+        :subject:content-type; s=fm1; bh=JKT/nV8EFLKtbGZNTCYtvqRmmyTL2Tg
+        sz1tu10VSjNQ=; b=cxdUi+cbXCN+4iHGOELe5QBWZOviFSD8GJEG52aBsXsVaIu
+        8OqmAhi5Dl4e5hDUIQ/qo3cDovmpunrbZqh9j8ocObhnaUCyYae5RuEfMwGEKA1a
+        9+nWS8UwZyKEy+McYZBr78JuzucOxulj8KtwEBGa8sO31HgY7146ViVL1B5CXB9j
+        DWrh7jSSkLCROJagKYmyKHJlt01lll4VRxFzB4oBTyeKF3r0NgN5u6gB4p5Kfb+K
+        /lEPpBYo6jxZfQ/55+CKH9uu4WS7E8TtIUBSGUqPFdmq1Q6jNIJxkUtWhcwJ+lBa
+        pRl+dwNtSJ+aS3Hif3umMzpu90dAjWUSwC3q2LQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=JKT/nV
+        8EFLKtbGZNTCYtvqRmmyTL2Tgsz1tu10VSjNQ=; b=m2pZbC12MWeHg5y4W+U1wf
+        A+eiOYdWpwCNn1IR5Zagic8Fh6gf4A5dVJhpexiDDOsGdYwVt+29u/5G6ivQmq5i
+        DYvn+VLyeZzTFBDBLKx13M4hhiaVuploplxhDN4rcL+tiwoNnoGGTEglzX0k5j9M
+        /Bwut0errFggj63mRR2tn8LNTpbYb7DgINX+2pm5xq72G6Or6lRBd7WsE+9vJajG
+        2eALcaw6Lynz9sIZmYij6smHQx1ScHOOejLzH0ae/UVgs8R3GebM2EpYr2hU1Sra
+        b/7YxD+R5p03hBh+PAyTjBf11uIEl0pt0PBBuI2iTrioWfBDEMM4bVd/723KPb+w
+        ==
+X-ME-Sender: <xms:wHLoYYN6twqNdJW-i0Q6-Nrmr9R_ftzj8qOCG6d4hJJLZjXtoIgSvA>
+    <xme:wHLoYe_36jrc_rHr0EZ2h7NJBqL4F3VEbZt9ETsZdTBKq1w9h3CHPKvIF5Lp0oyf1
+    A3KRHyqB9gGp5dAOek>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrudeigdejiecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfufhtvghv
+    vghnuceurghrrhgvthhtfdcuoehsthgvvhgvnheslhhiqhhuohhrihigrdhnvghtqeenuc
+    ggtffrrghtthgvrhhnpeekleffieffheevveeuteduteffkeffvdejuefhuedugfduvdeh
+    fedtueeiffelheenucffohhmrghinhepgigrnhhmohgurdhorhhgpdgthhhrohhmihhumh
+    drohhrghdprghrtghhlhhinhhugidrohhrghdplhhiqhhuohhrihigrdhnvghtpdhgohho
+    ghhlvghsohhurhgtvgdrtghomhdpvgguihdrfihorhhkshenucevlhhushhtvghrufhiii
+    gvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehsthgvvhgvnheslhhiqhhuohhrihig
+    rdhnvght
+X-ME-Proxy: <xmx:wHLoYfSigPo_sVD8ByZMpCGy8Ue4xJhn1mLg81JMiVzekSDG8ukP8g>
+    <xmx:wHLoYQsGAFEFkXhq4wsXvHQxuENDxMrcU-aRtFAeX5IpIHZ03caEiw>
+    <xmx:wHLoYQc52Nrzp770RssFw5kwF5B8OeSkJ88YKCFYTgmbLLlmA_71OQ>
+    <xmx:wnLoYUMSQxFVToPgasnePQ1J5uHPGV5xjL0w0JIWOM9dGIAsVK82qQ>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id 6A2321EE007B; Wed, 19 Jan 2022 15:21:20 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-4585-ga9d9773056-fm-20220113.001-ga9d97730
+Mime-Version: 1.0
+Message-Id: <9203f79f-7910-4613-a593-aa6fda665b42@www.fastmail.com>
+In-Reply-To: <Yd1Css8+jsspeZHh@google.com>
+References: <20220104202227.2903605-1-yuzhao@google.com>
+ <YdSuSHa/Vjl6bPkg@google.com> <Yd1Css8+jsspeZHh@google.com>
+Date:   Wed, 19 Jan 2022 14:19:30 -0600
+From:   "Steven Barrett" <steven@liquorix.net>
+To:     "Yu Zhao" <yuzhao@google.com>
+Cc:     "Andi Kleen" <ak@linux.intel.com>,
+        "Catalin Marinas" <catalin.marinas@arm.com>,
+        "Dave Hansen" <dave.hansen@linux.intel.com>,
+        "Hillf Danton" <hdanton@sina.com>, "Jens Axboe" <axboe@kernel.dk>,
+        "Jesse Barnes" <jsbarnes@google.com>,
+        "Johannes Weiner" <hannes@cmpxchg.org>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        "Matthew Wilcox" <willy@infradead.org>,
+        "Mel Gorman" <mgorman@suse.de>,
+        "Michael Larabel" <Michael@michaellarabel.com>,
+        "Michal Hocko" <mhocko@kernel.org>,
+        "Rik van Riel" <riel@surriel.com>,
+        "Vlastimil Babka" <vbabka@suse.cz>,
+        "Will Deacon" <will@kernel.org>,
+        "Ying Huang" <ying.huang@intel.com>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        page-reclaim@google.com, x86@kernel.org,
+        "Andrew Morton" <akpm@linux-foundation.org>,
+        "Linus Torvalds" <torvalds@linux-foundation.org>
+Subject: Re: [PATCH v6 0/9] Multigenerational LRU Framework
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Commit adae1e931acd ("Drivers: hv: vmbus: Copy packets sent by Hyper-V
-out of the ring buffer") introduced a notion of maximum packet size in
-vmbus channel and used that size to initialize a buffer holding all
-incoming packet along with their vmbus packet header. hv_balloon uses
-the default maximum packet size VMBUS_DEFAULT_MAX_PKT_SIZE which matches
-its maximum message size, however vmbus_open expects this size to also
-include vmbus packet header. This leads to 4096 bytes
-dm_unballoon_request messages being truncated to 4080 bytes. When the
-driver tries to read next packet it starts from a wrong read_index,
-receives garbage and prints a lot of "Unhandled message: type:
-<garbage>" in dmesg.
+On Tue, Jan 11, 2022, at 2:41 AM, Yu Zhao wrote:
+> On Tue, Jan 04, 2022 at 01:30:00PM -0700, Yu Zhao wrote:
+> > On Tue, Jan 04, 2022 at 01:22:19PM -0700, Yu Zhao wrote:
+> > > TLDR
+> > > ====
+> > > The current page reclaim is too expensive in terms of CPU usage and it
+> > > often makes poor choices about what to evict. This patchset offers an
+> > > alternative solution that is performant, versatile and
+> > > straightforward.
+> > 
+> > <snipped>
+> > 
+> > > Summery
+> > > =======
+> > > The facts are:
+> > > 1. The independent lab results and the real-world applications
+> > >    indicate substantial improvements; there are no known regressions.
+> > > 2. Thrashing prevention, working set estimation and proactive reclaim
+> > >    work out of the box; there are no equivalent solutions.
+> > > 3. There is a lot of new code; nobody has demonstrated smaller changes
+> > >    with similar effects.
+> > > 
+> > > Our options, accordingly, are:
+> > > 1. Given the amount of evidence, the reported improvements will likely
+> > >    materialize for a wide range of workloads.
+> > > 2. Gauging the interest from the past discussions [14][15][16], the
+> > >    new features will likely be put to use for both personal computers
+> > >    and data centers.
+> > > 3. Based on Google's track record, the new code will likely be well
+> > >    maintained in the long term. It'd be more difficult if not
+> > >    impossible to achieve similar effects on top of the existing
+> > >    design.
+> > 
+> > Hi Andrew, Linus,
+> > 
+> > Can you please take a look at this patchset and let me know if it's
+> > 5.17 material?
+> > 
+> > My goal is to get it merged asap so that users can reap the benefits
+> > and I can push the sequels. Please examine the data provided -- I
+> > think the unprecedented coverage and the magnitude of the improvements
+> > warrant a green light.
+> 
+> Downstream kernel maintainers who have been carrying MGLRU for more than
+> 3 versions, can you please provide your Acked-by tags?
+> 
+> Having this patchset in the mainline will make your job easier :)
+> 
+>    Alexandre - the XanMod Kernel maintainer
+>                https://xanmod.org
+>    
+>    Brian     - the Chrome OS kernel memory maintainer
+>                https://www.chromium.org
+>    
+>    Jan       - the Arch Linux Zen kernel maintainer
+>                https://archlinux.org
+>    
+>    Steven    - the Liquorix kernel maintainer
+>                https://liquorix.net
+>    
+>    Suleiman  - the ARCVM (Android downstream) kernel memory maintainer
+>                https://chromium.googlesource.com/chromiumos/third_party/kernel
+> 
+> Also my gratitude to those who have helped test MGLRU:
+> 
+>    Daniel - researcher at Michigan Tech
+>             benchmarked memcached
+>    
+>    Holger - who has been testing/patching/contributing to various
+>             subsystems since ~2008
+>    
+>    Shuang - researcher at University of Rochester
+>             benchmarked fio and provided a report
+>    
+>    Sofia  - EDI https://www.edi.works
+>             benchmarked the top eight memory hogs and provided reports
+> 
+> Can you please provide your Tested-by tags? This will ensure the credit
+> for your contributions.
+> 
+> Thanks!
 
-Allocate the buffer with HV_HYP_PAGE_SIZE more bytes to make room for
-the header.
+This feature has been a huge improvement for desktop linux, system
+responsiveness has hit a new level high memory pressure.  Thanks Yu!
 
-Fixes: adae1e931acd ("Drivers: hv: vmbus: Copy packets sent by Hyper-V out of the ring buffer")
-Suggested-by: Michael Kelley (LINUX) <mikelley@microsoft.com>
-Suggested-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-Signed-off-by: Yanming Liu <yanminglr@gmail.com>
----
-The patch was "[PATCH v2] hv: account for packet descriptor in maximum
-packet size". As pointed out by Michael Kelley [1], other hv drivers
-already overallocate a lot, and hv_balloon is hopefully the only
-remaining affected driver. It's better to just fix hv_balloon. Patch
-summary is changed to reflect this new (much smaller) scope.
-
-[1] https://lore.kernel.org/linux-hyperv/CY4PR21MB1586D30C6CEC81EFC37A9848D7599@CY4PR21MB1586.namprd21.prod.outlook.com/
-
- drivers/hv/hv_balloon.c | 7 +++++++
- 1 file changed, 7 insertions(+)
-
-diff --git a/drivers/hv/hv_balloon.c b/drivers/hv/hv_balloon.c
-index ca873a3b98db..f2d05bff4245 100644
---- a/drivers/hv/hv_balloon.c
-+++ b/drivers/hv/hv_balloon.c
-@@ -1660,6 +1660,13 @@ static int balloon_connect_vsp(struct hv_device *dev)
- 	unsigned long t;
- 	int ret;
- 
-+	/*
-+	 * max_pkt_size should be large enough for one vmbus packet header plus
-+	 * our receive buffer size. Hyper-V sends messages up to
-+	 * HV_HYP_PAGE_SIZE bytes long on balloon channel.
-+	 */
-+	dev->channel->max_pkt_size = HV_HYP_PAGE_SIZE * 2;
-+
- 	ret = vmbus_open(dev->channel, dm_ring_size, dm_ring_size, NULL, 0,
- 			 balloon_onchannelcallback, dev);
- 	if (ret)
--- 
-2.34.1
-
+Acked-by: Steven Barrett <steven@liquorix.net>
