@@ -2,108 +2,131 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77F10C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 19:36:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE1E5C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 19:36:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357044AbiASTgM (ORCPT
+        id S1357056AbiASTgg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 14:36:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59546 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357034AbiASTft (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 14:35:49 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3BA1C06173E
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 11:35:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=BTctFDlugghbPb+mT0fgLBcwlvNBpzSgllYA3xjcWrs=; b=jcnZQSl5oKu5z9MZdKcUVh/HDN
-        QIRUbKxvEgbiqaoJ8yVLCy8UxESf7Ve2AtfN42EmuXgcCMBS8LQl4VNpa8nZEK/FzdZaXnlOh5neE
-        X+ALUAl+ZF8C9z0qIpLd4axHfWML+pcSJ3TYZ75vfXLre1Esd+GX0bdzwElrlbbJWOesI9MG/NYbj
-        qi3cmhafL8em48vvoN4EAoL8fbjZCHbkd4hpmArMAbbpDhS84XPpQAYEI1RW6kcdfbTH/E6q+s9ap
-        +c2vLEmj+5VKpXS4MZkOKUT6FAQL7RVaGnvQGCox80+T0EwnwL0foIvDx5jef9sazBRLGiW4dZ4Gr
-        2wts/3lw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nAGk1-00BvrJ-F0; Wed, 19 Jan 2022 19:35:33 +0000
-Date:   Wed, 19 Jan 2022 19:35:33 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     "Russell King (Oracle)" <linux@armlinux.org.uk>
-Cc:     Robin Murphy <robin.murphy@arm.com>,
-        Yury Norov <yury.norov@gmail.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
+        Wed, 19 Jan 2022 14:36:36 -0500
+Received: from mga07.intel.com ([134.134.136.100]:5752 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1357020AbiASTg1 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 14:36:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642620987; x=1674156987;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Y7zetMO+F9o9TgvTfnNqU31+rhVBHq60hicGgEyx15I=;
+  b=HhzYV4lDUyY0zhE8U9LQ4rni4Lm3Ln4mXgY1xQjSoU0F2uTie+LxGlkM
+   oBRWJSzwQGh1DLAMGrizOHtiJEZmuHVs/sQ/H9wek9g+0jDqqizd21ahz
+   5Q6yuBeSbylYJ36SPljxQlWeqdMbmYGeqgD6driL4fn9Ed1koxRm6XfLl
+   z5U43+DqrU/2SojfAKvFemPc2jFBAJR0wJucfy+l95KoRsWQ0ZBDYX8Sh
+   /xiQwZyyoQftkKaXbMlqk+/fMXEOyY4f9m0w68N2+No83ldeVojKwQxcP
+   swXuoQLBb8M3RwThIz9M5DRnXpL7HCK6PUS3XTcXr6oOdv0dof51eYgIX
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="308510733"
+X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
+   d="scan'208";a="308510733"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 11:26:27 -0800
+X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
+   d="scan'208";a="765057648"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga006-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 11:26:19 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nAGZw-00CEZW-RK;
+        Wed, 19 Jan 2022 21:25:08 +0200
+Date:   Wed, 19 Jan 2022 21:25:08 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+        linux-security-module@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
+        Alex Deucher <alexander.deucher@amd.com>,
         Andrew Morton <akpm@linux-foundation.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Ding Tianhong <dingtianhong@huawei.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org
-Subject: Re: [PATCH] vmap(): don't allow invalid pages
-Message-ID: <YehoBQZvSmwXjqJ3@casper.infradead.org>
-References: <20220118235244.540103-1-yury.norov@gmail.com>
- <f85b3cac-29e7-4179-e078-fd859040c294@arm.com>
- <Yeg79CcofyNuVLid@casper.infradead.org>
- <YehQR7NWKKzcyEq6@shell.armlinux.org.uk>
- <YehR9BiI92q5DSOu@casper.infradead.org>
- <YehfHsuMzvy//Szi@shell.armlinux.org.uk>
+        Ben Skeggs <bskeggs@redhat.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Emma Anholt <emma@anholt.net>, Eryk Brol <eryk.brol@amd.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Leo Li <sunpeng.li@amd.com>,
+        Mikita Lipski <mikita.lipski@amd.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Vishal Kulkarni <vishal@chelsio.com>
+Subject: Re: [PATCH 1/3] lib/string_helpers: Consolidate yesno()
+ implementation
+Message-ID: <YehllDq7wC3M2PQZ@smile.fi.intel.com>
+References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
+ <20220119072450.2890107-2-lucas.demarchi@intel.com>
+ <YefXg03hXtrdUj6y@paasikivi.fi.intel.com>
+ <20220119100635.6c45372b@gandalf.local.home>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YehfHsuMzvy//Szi@shell.armlinux.org.uk>
+In-Reply-To: <20220119100635.6c45372b@gandalf.local.home>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 06:57:34PM +0000, Russell King (Oracle) wrote:
-> On Wed, Jan 19, 2022 at 06:01:24PM +0000, Matthew Wilcox wrote:
-> > On Wed, Jan 19, 2022 at 05:54:15PM +0000, Russell King (Oracle) wrote:
-> > > On Wed, Jan 19, 2022 at 04:27:32PM +0000, Matthew Wilcox wrote:
-> > > > On Wed, Jan 19, 2022 at 01:28:14PM +0000, Robin Murphy wrote:
-> > > > > > +		if (WARN_ON(!pfn_valid(page_to_pfn(page))))
-> > > > > 
-> > > > > Is it page_to_pfn() guaranteed to work without blowing up if page is invalid
-> > > > > in the first place? Looking at the CONFIG_SPARSEMEM case I'm not sure that's
-> > > > > true...
-> > > > 
-> > > > Even if it does blow up, at least it's blowing up here where someone
-> > > > can start to debug it, rather than blowing up on first access, where
-> > > > we no longer have the invlid struct page pointer.
-> > > > 
-> > > > I don't think we have a 'page_valid' function which will tell us whether
-> > > > a random pointer is actually a struct page or not.
-> > > 
-> > > Isn't it supposed to be:
-> > > 
-> > > 	if (!pfn_valid(pfn)) {
-> > > 		handle invalid pfn;
-> > > 	}
-> > > 
-> > > 	page = pfn_to_page(pfn);
-> > > 
-> > > Anything else - even trying to convert an invalid page back to a pfn,
-> > > could well be unreliable (sparsemem or discontigmem). 
+On Wed, Jan 19, 2022 at 10:06:35AM -0500, Steven Rostedt wrote:
+> On Wed, 19 Jan 2022 11:18:59 +0200
+> Sakari Ailus <sakari.ailus@linux.intel.com> wrote:
+> > On Tue, Jan 18, 2022 at 11:24:48PM -0800, Lucas De Marchi wrote:
+> > > @@ -1354,8 +1345,7 @@ static bool tomoyo_print_condition(struct tomoyo_io_buffer *head,
+> > >  	case 3:
+> > >  		if (cond->grant_log != TOMOYO_GRANTLOG_AUTO)
+> > >  			tomoyo_io_printf(head, " grant_log=%s",
+> > > -					 tomoyo_yesno(cond->grant_log ==
+> > > -						      TOMOYO_GRANTLOG_YES));
+> > > +					 yesno(cond->grant_log == TOMOYO_GRANTLOG_YES));  
 > > 
-> > This function is passed an array of pages.  We have no way of doing
-> > what you propose.
+> > This would be better split on two lines.
 > 
-> You can't go from a struct page to "this is valid", it's too late by the
-> time you call vmap() - that's my fundamental point.
+> Really? Yuck!
+> 
+> I thought the "max line size" guideline was going to grow to a 100, but I
+> still see it as 80. But anyway...
+> 
+> 	cond->grant_log ==
+> 	TOMOYO_GRANTLOG_YES
+> 
+> is not readable at all. Not compared to
+> 
+> 	cond->grant_log == TOMOYO_GRANTLOG_YES
+> 
+> I say keep it one line!
+> 
+> Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>
 
-Yes, and we have debugging code in __virt_to_phys() that would have
-caught this, had Yury enabled CONFIG_DEBUG_VIRTUAL.  My point is that
-in this instance, page_to_pfn() doesn't crash, which lets vmap() set
-up a mapping to a completely bogus physical address.  We're better
-off checking pfn_valid() here than not.
+I believe Sakari strongly follows the 80 rule, which means...
 
-> If the translation from a PFN to a struct page can return pointers to
-> something that isn't a valid struct page, then it can also (with
-> sparsemem) return a pointer to _another_ struct page that could well
-> be valid depending on how the struct page arrays are laid out in
-> memory.
+> > Reviewed-by: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-Sure, it's not going to catch everything.  But I don't think that
-letting perfect be the enemy of the good here is the right approach.
+...chose either of these tags and be happy with :-)
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
