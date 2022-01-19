@@ -2,129 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC93C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 19:13:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3237C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 19:15:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237244AbiASTNy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 14:13:54 -0500
-Received: from out01.mta.xmission.com ([166.70.13.231]:35552 "EHLO
-        out01.mta.xmission.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230121AbiASTNx (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 14:13:53 -0500
-Received: from in02.mta.xmission.com ([166.70.13.52]:46500)
-        by out01.mta.xmission.com with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nAGP0-004pU3-MY; Wed, 19 Jan 2022 12:13:50 -0700
-Received: from ip68-110-24-146.om.om.cox.net ([68.110.24.146]:45716 helo=email.froward.int.ebiederm.org.xmission.com)
-        by in02.mta.xmission.com with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <ebiederm@xmission.com>)
-        id 1nAGOz-006ccZ-Aj; Wed, 19 Jan 2022 12:13:50 -0700
-From:   "Eric W. Biederman" <ebiederm@xmission.com>
-To:     Valentin Schneider <valentin.schneider@arm.com>
-Cc:     linux-kernel@vger.kernel.org,
-        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Abhijeet Dharmapurikar <adharmap@quicinc.com>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>,
-        Kees Cook <keescook@chromium.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alexey Gladkov <legion@kernel.org>,
-        "Kenta.Tada@sony.com" <Kenta.Tada@sony.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Ed Tsai <ed.tsai@mediatek.com>, linux-api@vger.kernel.org
-References: <20220117164633.322550-1-valentin.schneider@arm.com>
-        <20220117164633.322550-3-valentin.schneider@arm.com>
-        <878rve89cc.fsf@email.froward.int.ebiederm.org>
-        <878rvd6jgu.mognet@arm.com>
-        <87h7a06hkr.fsf@email.froward.int.ebiederm.org>
-        <875yqf7eq4.mognet@arm.com>
-Date:   Wed, 19 Jan 2022 13:13:42 -0600
-In-Reply-To: <875yqf7eq4.mognet@arm.com> (Valentin Schneider's message of
-        "Wed, 19 Jan 2022 18:38:43 +0000")
-Message-ID: <87fspj7d3t.fsf@email.froward.int.ebiederm.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        id S238379AbiASTPA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 19 Jan 2022 14:15:00 -0500
+Received: from mga17.intel.com ([192.55.52.151]:44491 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230121AbiASTO5 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 14:14:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642619697; x=1674155697;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=UxCJC6eWdEdNah12KsCkH6nSMwzBaq9zmFaRweUROSw=;
+  b=LAc+xMae98biOIe5+1js4+13ymMtQfOZSUQURTlSus0gzNjipYYXMVRV
+   NyUait10iKdR/90KFN5Y1m05QCfp6q3qzq7aMUxV770tU54G7cYAhQtgv
+   pVX9FLJ0gZMdqxMkdJ7QwAtl/ocGGTqCzwLfUnZfBNXYBI0aw53UzRHZQ
+   htJvPpqnvZya6hmULFQD4Y5jo22ao12AxEHZ9RcdHd8qayiqfi6f/Vn+H
+   HDDeAnxl7jb2W+TuQI/wswZl5zM/+T11pBUstVIHHX+nQ191zFUOLeEu4
+   6a2gQVcdPCcvCyM7pE+7iucp6314FpQtnvO2DoPSUNQBK5Y2BdxezH8ST
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="225834857"
+X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
+   d="scan'208";a="225834857"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 10:38:30 -0800
+X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
+   d="scan'208";a="518285423"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga007-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 10:38:09 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nAFpH-00CDps-NH;
+        Wed, 19 Jan 2022 20:36:55 +0200
+Date:   Wed, 19 Jan 2022 20:36:55 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Mark Brown <broonie@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        KVM list <kvm@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Guenter Roeck <groeck@chromium.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        MTD Maling List <linux-mtd@lists.infradead.org>,
+        Linux I2C <linux-i2c@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        linux-phy@lists.infradead.org, netdev@vger.kernel.org,
+        linux-spi <linux-spi@vger.kernel.org>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Khuong Dinh <khuong@os.amperecomputing.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Kamal Dasu <kdasu.kdev@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Zhang Rui <rui.zhang@intel.com>,
+        platform-driver-x86@vger.kernel.org,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Robert Richter <rric@kernel.org>,
+        Saravanan Sekar <sravanhome@gmail.com>,
+        Corey Minyard <minyard@acm.org>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        John Garry <john.garry@huawei.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Peter Korsgaard <peter@korsgaard.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        openipmi-developer@lists.sourceforge.net,
+        Benson Leung <bleung@chromium.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
+        Richard Weinberger <richard@nod.at>,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Eric Auger <eric.auger@redhat.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Cornelia Huck <cohuck@redhat.com>,
+        Linux MMC List <linux-mmc@vger.kernel.org>,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        Vinod Koul <vkoul@kernel.org>,
+        James Morse <james.morse@arm.com>,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Niklas =?iso-8859-1?Q?S=F6derlund?= 
+        <niklas.soderlund@ragnatech.se>,
+        linux-mediatek@lists.infradead.org,
+        Brian Norris <computersforpeace@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH] driver core: platform: Rename
+ platform_get_irq_optional() to platform_get_irq_silent()
+Message-ID: <YehaRwIe4LjymMhS@smile.fi.intel.com>
+References: <20220112085009.dbasceh3obfok5dc@pengutronix.de>
+ <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
+ <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
+ <Yd9L9SZ+g13iyKab@sirena.org.uk>
+ <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
+ <YeA7CjOyJFkpuhz/@sirena.org.uk>
+ <20220113194358.xnnbhsoyetihterb@pengutronix.de>
+ <745c601f-c782-0904-f786-c9bfced8f11c@gmail.com>
+ <cae0b73e-46df-a491-4a8e-415205038c2c@omp.ru>
+ <20220115135550.dr4ngiz2c6rfs2rl@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-XM-SPF: eid=1nAGOz-006ccZ-Aj;;;mid=<87fspj7d3t.fsf@email.froward.int.ebiederm.org>;;;hst=in02.mta.xmission.com;;;ip=68.110.24.146;;;frm=ebiederm@xmission.com;;;spf=neutral
-X-XM-AID: U2FsdGVkX1+oSM1ZuUDl1IfWlCLn1yiB3bjw4dARZ6s=
-X-SA-Exim-Connect-IP: 68.110.24.146
-X-SA-Exim-Mail-From: ebiederm@xmission.com
-Subject: Re: [PATCH v2 2/2] sched/tracing: Add TASK_RTLOCK_WAIT to TASK_REPORT
-X-SA-Exim-Version: 4.2.1 (built Sat, 08 Feb 2020 21:53:50 +0000)
-X-SA-Exim-Scanned: Yes (on in02.mta.xmission.com)
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220115135550.dr4ngiz2c6rfs2rl@pengutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Valentin Schneider <valentin.schneider@arm.com> writes:
+On Sat, Jan 15, 2022 at 02:55:50PM +0100, Uwe Kleine-König wrote:
+> On Fri, Jan 14, 2022 at 08:55:07PM +0300, Sergey Shtylyov wrote:
+> > On 1/14/22 12:42 AM, Florian Fainelli wrote:
 
-> On 18/01/22 12:10, Eric W. Biederman wrote:
->> Valentin Schneider <valentin.schneider@arm.com> writes:
->>>
->>> Alternatively, TASK_RTLOCK_WAIT could be masqueraded as
->>> TASK_(UN)INTERRUPTIBLE when reported to userspace - it is actually somewhat
->>> similar, unlike TASK_IDLE vs TASK_UNINTERRUPTIBLE for instance. The
->>> handling in get_task_state() will be fugly, but it might be preferable over
->>> exposing a detail userspace might not need to be made aware of?
->>
->> Right.
->>
->> Frequently I have seen people do a cost/benefit analysis.
->>
->> If the benefit is enough, and tracking down the userspace programs that
->> need to be verified to work with the change is inexpensive enough the
->> change is made.  Always keeping in mind that if something was missed and
->> the change causes a regression the change will need to be reverted.
->>
->> If there is little benefit or the cost to track down userspace is great
->> enough the work is put in to hide the change from userspace.  Just
->> because it is too much trouble to expose it to userspace.
->>
->> I honestly don't have any kind of sense about how hard it is to verify
->> that a userspace regression won't result from a change like this.  I
->> just know that the question needs to be asked.
->>
->
-> I see it as: does it actually make sense to expose a new state? All the
-> information this is conveying is: "this task took a lock that is
-> substituted by a sleepable lock under PREEMPT_RT". Now that you brought
-> this up, I don't really see much value in this vs just conveying that the
-> task is sleeping on a lock, i.e. just report the same as if it had gone
-> through rt_mutex_lock(), aka:
+> So you oppose to the name chosen, but not the renaming as such.
 
-That seems reasonable to me.
+I oppose the name change. The unneeded churn right now since it won't fix
+the issues with the underneath API (platform_get_irq() in this case) and
+will require one more iteration over callers again.
 
-Eric
+The main issue that platform_get_irq*() returns magic error code while
+treating 0 in a very special way (issuing WARN() and considering it as
+a successful cookie) and this all is quite confusing.
 
->
-> ---
-> diff --git a/include/linux/sched.h b/include/linux/sched.h
-> index d00837d12b9d..ac7b3eef4a61 100644
-> --- a/include/linux/sched.h
-> +++ b/include/linux/sched.h
-> @@ -1626,6 +1626,14 @@ static inline unsigned int __task_state_index(unsigned int tsk_state,
->  	if (tsk_state == TASK_IDLE)
->  		state = TASK_REPORT_IDLE;
->  
-> +	/*
-> +	 * We're lying here, but rather than expose a completely new task state
-> +	 * to userspace, we can make this appear as if the task had gone through
-> +	 * a regular rt_mutex_lock() call.
-> +	 */
-> +	if (tsk_state == TASK_RTLOCK_WAIT)
-> +		state = TASK_UNINTERRUPTIBLE;
-> +
->  	return fls(state);
->  }
->  
+If you are going to fix the underlying issue, welcome! Now I see only
+the step to somewhere. I.o.w. this change _standalone_ makes no sense
+to me.
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
+
