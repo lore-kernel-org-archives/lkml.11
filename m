@@ -2,72 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0884C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 10:27:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D20E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 10:28:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353652AbiASK1x (ORCPT
+        id S1353670AbiASK2Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 05:27:53 -0500
-Received: from mail-m972.mail.163.com ([123.126.97.2]:29589 "EHLO
-        mail-m972.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353429AbiASK1w (ORCPT
+        Wed, 19 Jan 2022 05:28:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46394 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1353429AbiASK2O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 05:27:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=Ggh+j
-        BUxPZigS6LulYn3qU9duz7ejB5F3vOjxnkFcnM=; b=XG+fovDDxuMf+QBe22rXp
-        enUNaRD5RQH6ET9DfO1BINiHo86WoM1gJ/iLvgqMh4Tl3PeZbbMZNjHwclLdV8cB
-        PMnqWu+5KJrWBxXTCT7tZ+ZxHmWfeFjdAQdl83gskpvp51BtTdDiC059pLaBJ4iC
-        ikx6m7gKePYsd2cvX+u9pg=
-Received: from localhost.localdomain (unknown [112.97.57.111])
-        by smtp2 (Coremail) with SMTP id GtxpCgDXTrP_4+dh2FkEAw--.8202S2;
-        Wed, 19 Jan 2022 18:12:17 +0800 (CST)
-From:   Slark Xiao <slark_xiao@163.com>
-To:     mani@kernel.org, hemantk@codeaurora.org, jarvis.w.jiang@gmail.com,
-        loic.poulain@linaro.org
-Cc:     mhi@lists.linux.dev, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Slark Xiao <slark_xiao@163.com>
-Subject: [PATCH net v3] bus: mhi: Add mru_default for Foxconn SDX55
-Date:   Wed, 19 Jan 2022 18:12:13 +0800
-Message-Id: <20220119101213.5008-1-slark_xiao@163.com>
-X-Mailer: git-send-email 2.25.1
+        Wed, 19 Jan 2022 05:28:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7184C061574;
+        Wed, 19 Jan 2022 02:28:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 755CAB81919;
+        Wed, 19 Jan 2022 10:28:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7085BC004E1;
+        Wed, 19 Jan 2022 10:28:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1642588091;
+        bh=0jCJMjVYWUcxzXHIesD3FU8jEvbBrlINZq0n/Yx5ufA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mVsoStA8AfGP7kacCQWh7DOEew0wWHsb7nfEx20TWLXyJ4aZm19/S+6taVoIA+5KV
+         osLhrA9ulw9N3/oRT1dxRwC0DKUlWHb5MkFDiDNGhoSZOwA7LeS66QQIieS04IjaEQ
+         l55DBO5WE2LwdJY9JIUeSX50Zw3Az79aCuCcstIc=
+Date:   Wed, 19 Jan 2022 11:28:08 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     Tyler Hicks <tyhicks@linux.microsoft.com>,
+        Sasha Levin <sashal@kernel.org>,
+        Lei Wang <lewan@microsoft.com>,
+        Tony Luck <tony.luck@intel.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Sinan Kaya <okaya@kernel.org>,
+        Shiping Ji <shiping.linux@gmail.com>,
+        James Morse <james.morse@arm.com>,
+        Robert Richter <rric@kernel.org>, linux-edac@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] EDAC/dmc520: Don't print an error for each unconfigured
+ interrupt line
+Message-ID: <YefnuCPwMq5V2lgl@kroah.com>
+References: <20220111163800.22362-1-tyhicks@linux.microsoft.com>
+ <YeRkGvestiloCAUV@zn.tnic>
+ <20220118152816.GA89184@sequoia>
+ <Yeb4sK+ZmSHjWPWL@zn.tnic>
+ <20220118195401.GB89184@sequoia>
+ <YecrXidqecoYI/xg@zn.tnic>
+ <YefXQHXNlsxk8yUc@kroah.com>
+ <Yefb7zO9p1iPF3Jm@zn.tnic>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: GtxpCgDXTrP_4+dh2FkEAw--.8202S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrtw4xuw1rAFyxtF4xZFyfXrb_yoWDJFb_Cr
-        ZIgF4xuws8WrZ5Gwn2qan5Z3yrK3W7ZF1kZF10qrn8J34aqw1qqwn5trZ5AFn0gFW5AF9r
-        J34rWr1rAw1a9jkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUjSoGtUUUUU==
-X-Originating-IP: [112.97.57.111]
-X-CM-SenderInfo: xvod2y5b0lt0i6rwjhhfrp/1tbiRwKNZFc7Vmlq1gAAsD
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <Yefb7zO9p1iPF3Jm@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For default mechanism, product would use default MRU 3500 if
-they didn't define it. But for Foxconn SDX55, there is a known
-issue which MRU 3500 would lead to data connection lost.
-So we align it with Qualcomm default MRU settings.
+On Wed, Jan 19, 2022 at 10:37:51AM +0100, Borislav Petkov wrote:
+> On Wed, Jan 19, 2022 at 10:17:52AM +0100, Greg Kroah-Hartman wrote:
+> > For this specific change, I do NOT think it should be backported at all,
+> > mostly for the reason that people are still arguing over the whole
+> > platform_get_*_optional() mess that we currently have.  Let's not go and
+> > backport anything right now to stable trees until we have all of that
+> > sorted out, as it looks like it all might be changing again.  See:
+> > 	https://lore.kernel.org/r/20220110195449.12448-1-s.shtylyov@omp.ru
+> > for all of the gory details and the 300+ emails written on the topic so
+> > far.
+> 
+> It sounds to me I should not even take this patch upstream yet,
+> considering that's still ongoing...
 
-Fixes: aac426562f56 ("bus: mhi: pci_generic: Introduce Foxconn T99W175 support")
-Signed-off-by: Slark Xiao <slark_xiao@163.com>
-Reviewed-by: Manivannan Sadhasivam <mani@kernel.org>
----
- drivers/bus/mhi/pci_generic.c | 1 +
- 1 file changed, 1 insertion(+)
+Yes, I would not take that just yet at all.  Let's let the api argument
+settle down a bit first.
 
-diff --git a/drivers/bus/mhi/pci_generic.c b/drivers/bus/mhi/pci_generic.c
-index 3a258a677df8..74e8fc342cfd 100644
---- a/drivers/bus/mhi/pci_generic.c
-+++ b/drivers/bus/mhi/pci_generic.c
-@@ -366,6 +366,7 @@ static const struct mhi_pci_dev_info mhi_foxconn_sdx55_info = {
- 	.config = &modem_foxconn_sdx55_config,
- 	.bar_num = MHI_PCI_DEFAULT_BAR_NUM,
- 	.dma_data_width = 32,
-+	.mru_default = 32768,
- 	.sideband_wake = false,
- };
- 
--- 
-2.25.1
+thanks,
 
+greg k-h
