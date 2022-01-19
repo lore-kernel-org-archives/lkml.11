@@ -2,196 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F961C4167E
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 19:20:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00723C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 19:22:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239653AbiASTUH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 14:20:07 -0500
-Received: from mga09.intel.com ([134.134.136.24]:46925 "EHLO mga09.intel.com"
+        id S239741AbiASTW1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 19 Jan 2022 14:22:27 -0500
+Received: from foss.arm.com ([217.140.110.172]:35976 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239752AbiASTTu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 14:19:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642619990; x=1674155990;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=GrIa/eIkS4G4kb2rO6T4E37qSkXPKSwhy4Oe6Ceo9GE=;
-  b=Ks/3HUvVsWkTUYJa/4ZMdoPiTTOvIVu4N5vGSVNIgBMIpKUFJDpaVJsA
-   EXWo/0GjwdvwnEOEFpVd0O7SeNs7lL5keSDSz+RPWqdhQ4ffsiZhh6Jy1
-   led0+7j6qXeab/lVKMGvzIQ2k/UrscgKtA2x4/Q2UOXxd6aeN/3kTzSyl
-   u6Z+8vCeBIceyDcsgaBpKJsypR4p3mndFe41m5qcZLlLo9uwF8STJFdYn
-   vhufn7waodXb4VESKPHGk/N5ux2Ot1WYL60mjawln0QZ9/bMPx4qlzY48
-   O8odoesT1i5jmSDbpjwZU3JimCWmbatGCREUwibyRrz2J+6xbeojmDQwS
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="244961252"
-X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
-   d="scan'208";a="244961252"
-Received: from fmsmga004.fm.intel.com ([10.253.24.48])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 11:01:51 -0800
-X-IronPort-AV: E=Sophos;i="5.88,300,1635231600"; 
-   d="scan'208";a="595498167"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 11:01:29 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nAG9n-00CEAT-Kb;
-        Wed, 19 Jan 2022 20:58:07 +0200
-Date:   Wed, 19 Jan 2022 20:58:07 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, netdev@vger.kernel.org,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        platform-driver-x86@vger.kernel.org,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        openipmi-developer@lists.sourceforge.net,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <YehfP23nMd4wn48K@smile.fi.intel.com>
-References: <20220112085009.dbasceh3obfok5dc@pengutronix.de>
- <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
- <20220114092557.jrkfx7ihg26ekzci@pengutronix.de>
- <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru>
- <20220114202226.ugzklxv4wzr6egwj@pengutronix.de>
- <57af1851-9341-985e-7b28-d2ba86770ecb@omp.ru>
- <20220117084732.cdy2sash5hxp4lwo@pengutronix.de>
+        id S237071AbiASTW0 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 14:22:26 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 514811FB;
+        Wed, 19 Jan 2022 11:22:25 -0800 (PST)
+Received: from C02TD0UTHF1T.local (unknown [10.57.36.53])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id CF5673F73D;
+        Wed, 19 Jan 2022 11:22:19 -0800 (PST)
+Date:   Wed, 19 Jan 2022 19:22:17 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Christian Borntraeger <borntraeger@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        aleksandar.qemu.devel@gmail.com, alexandru.elisei@arm.com,
+        anup.patel@wdc.com, aou@eecs.berkeley.edu, atish.patra@wdc.com,
+        bp@alien8.de, catalin.marinas@arm.com, chenhuacai@kernel.org,
+        dave.hansen@linux.intel.com, frankja@linux.ibm.com,
+        frederic@kernel.org, gor@linux.ibm.com, hca@linux.ibm.com,
+        james.morse@arm.com, jmattson@google.com, joro@8bytes.org,
+        luto@kernel.org, maz@kernel.org, mingo@redhat.com,
+        nsaenzju@redhat.com, palmer@dabbelt.com, paulmck@kernel.org,
+        paul.walmsley@sifive.com, peterz@infradead.org, seanjc@google.com,
+        suzuki.poulose@arm.com, svens@linux.ibm.com, tglx@linutronix.de,
+        tsbogend@alpha.franken.de, vkuznets@redhat.com,
+        wanpengli@tencent.com, will@kernel.org,
+        Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@atishpatra.org>
+Subject: Re: [PATCH v2 0/7] kvm: fix latent guest entry/exit bugs
+Message-ID: <20220119192217.GD43919@C02TD0UTHF1T.local>
+References: <20220119105854.3160683-1-mark.rutland@arm.com>
+ <a4a26805-3a56-d264-0a7e-60bed1ada9f3@linux.ibm.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20220117084732.cdy2sash5hxp4lwo@pengutronix.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <a4a26805-3a56-d264-0a7e-60bed1ada9f3@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 09:47:32AM +0100, Uwe Kleine-König wrote:
-> On Sun, Jan 16, 2022 at 09:15:20PM +0300, Sergey Shtylyov wrote:
-
-...
-
-> Because with your change we have:
+On Wed, Jan 19, 2022 at 07:25:20PM +0100, Christian Borntraeger wrote:
+> Am 19.01.22 um 11:58 schrieb Mark Rutland:
 > 
->  - < 0 -> error
->  - == 0 -> no irq
->  - > 0 -> irq
 > 
-> For my part I'd say this doesn't justify the change, but at least I
-> could better life with the reasoning. If you start at:
+> CCing new emails for Anup and Atish so that they are aware of this thread.
+
+Ah; whoops. I'd meant to fix the Ccs on the patches.
+
+Thanks!
+
+[...]
+
+> I just gave this a spin on s390 with debugging on and I got the following:
 > 
-> 	irq = platform_get_irq_optional(...)
-> 	if (irq < 0 && irq != -ENXIO)
-> 		return irq
-> 	else if (irq > 0)
-> 		setup_irq(irq);
-> 	else
-> 		setup_polling()
+> [  457.151295] ------------[ cut here ]------------
+> [  457.151311] WARNING: CPU: 14 PID: 0 at kernel/rcu/tree.c:613 rcu_eqs_enter.constprop.0+0xf8/0x118
+
+Hmm, so IIUC that's:
+
+	WARN_ON_ONCE(rdp->dynticks_nmi_nesting != DYNTICK_IRQ_NONIDLE);
+
+... and we're clearly in the idle thread here.
+
+I wonder, is the s390 guest entry/exit *preemptible* ?
+
+If a timer IRQ can preempt in the middle of the EQS, we wouldn't balance
+things before a ctx-switch to the idle thread, which would then be able
+to hit this.
+
+I'll need to go audit the other architectures for similar.
+
+Thanks,
+Mark.
+
+> [  457.151324] Modules linked in: vhost_vsock vmw_vsock_virtio_transport_common vsock vhost vhost_iotlb xt_CHECKSUM xt_MASQUERADE xt_conntrack ipt_REJECT xt_tcpudp nft_compat nf_nat_tftp nft_objref nf_conntrack_tftp nft_counter kvm nft_fib_inet nft_fib_ipv4 nft_fib_ipv6 nft_fib nft_reject_inet nf_reject_ipv4 nf_reject_ipv6 nft_reject nft_ct nft_chain_nat nf_nat nf_conntrack nf_defrag_ipv6 nf_defrag_ipv4 ip_set nf_tables nfnetlink sunrpc mlx5_ib ib_uverbs s390_trng ib_core genwqe_card crc_itu_t vfio_ccw mdev vfio_iommu_type1 eadm_sch vfio zcrypt_cex4 sch_fq_codel configfs ip_tables x_tables mlx5_core ghash_s390 prng aes_s390 des_s390 libdes sha3_512_s390 sha3_256_s390 sha512_s390 sha256_s390 sha1_s390 sha_common pkey zcrypt rng_core autofs4
+> [  457.151422] CPU: 14 PID: 0 Comm: swapper/14 Not tainted 5.16.0-00007-g89e9021389e2 #3
+> [  457.151428] Hardware name: IBM 3906 M04 704 (LPAR)
+> [  457.151432] Krnl PSW : 0404d00180000000 00000000a7c0495c (rcu_eqs_enter.constprop.0+0xfc/0x118)
+> [  457.151440]            R:0 T:1 IO:0 EX:0 Key:0 M:1 W:0 P:0 AS:3 CC:1 PM:0 RI:0 EA:3
+> [  457.151445] Krnl GPRS: ffffffffebd81d31 4000000000000000 0000000000000070 00000000a7fd7024
+> [  457.151450]            0000000000000000 0000000000000001 0000000000000000 0000000000000000
+> [  457.151454]            000000000000000e 000000000000000e 00000000a84d3a88 0000001fd8645c00
+> [  457.151458]            0000000000000000 0000000000000000 00000000a7c04882 0000038000653dc0
+> [  457.151468] Krnl Code: 00000000a7c0494c: ebaff0a00004	lmg	%r10,%r15,160(%r15)
+>                           00000000a7c04952: c0f4fffffef7	brcl	15,00000000a7c04740
+>                          #00000000a7c04958: af000000		mc	0,0
+>                          >00000000a7c0495c: a7f4ffa3		brc	15,00000000a7c048a2
+>                           00000000a7c04960: c0e500003f70	brasl	%r14,00000000a7c0c840
+>                           00000000a7c04966: a7f4ffcd		brc	15,00000000a7c04900
+>                           00000000a7c0496a: c0e500003f6b	brasl	%r14,00000000a7c0c840
+>                           00000000a7c04970: a7f4ffde		brc	15,00000000a7c0492c
+> [  457.151527] Call Trace:
+> [  457.151530]  [<00000000a7c0495c>] rcu_eqs_enter.constprop.0+0xfc/0x118
+> [  457.151536] ([<00000000a7c04882>] rcu_eqs_enter.constprop.0+0x22/0x118)
+> [  457.151540]  [<00000000a7c14cd2>] default_idle_call+0x62/0xd8
+> [  457.151545]  [<00000000a6f816c6>] do_idle+0xf6/0x1b0
+> [  457.151553]  [<00000000a6f81a06>] cpu_startup_entry+0x36/0x40
+> [  457.151558]  [<00000000a7c16abe>] restart_int_handler+0x6e/0x90
+> [  457.151563] no locks held by swapper/14/0.
+> [  457.151567] Last Breaking-Event-Address:
+> [  457.151570]  [<00000000a7c0489e>] rcu_eqs_enter.constprop.0+0x3e/0x118
+> [  457.151574] irq event stamp: 608654
+> [  457.151578] hardirqs last  enabled at (608653): [<00000000a70190d8>] tick_nohz_idle_enter+0xb0/0x130
+> [  457.151584] hardirqs last disabled at (608654): [<00000000a6f8173e>] do_idle+0x16e/0x1b0
+> [  457.151589] softirqs last  enabled at (608586): [<00000000a7c1861a>] __do_softirq+0x4ba/0x668
+> [  457.151594] softirqs last disabled at (608581): [<00000000a6f367c6>] __irq_exit_rcu+0x13e/0x170
+> [  457.151600] ---[ end trace 2ae2154f9724de86 ]---
 > 
-> I'd change that to
-> 
-> 	irq = platform_get_irq_optional(...)
-> 	if (irq > 0) /* or >= 0 ? */
-> 		setup_irq(irq)
-> 	else if (irq == -ENXIO)
-> 		setup_polling()
-> 	else
-> 		return irq
-> 
-> This still has to mention -ENXIO, but this is ok and checking for 0 just
-> hardcodes a different return value.
-
-It's what we are against of. The idea is to have
-
-	irq = platform_get_irq_optional(...)
-	if (irq < 0) // we do not care about special cookies here
-		return irq;
-
-	if (irq)
-		setup_irq(irq)
-	else
-		setup_polling()
-
-See the difference? Your code is convoluted.
-
-> Anyhow, I think if you still want to change platform_get_irq_optional
-> you should add a few patches converting some drivers which demonstrates
-> the improvement for the callers.
-
-
-
--- 
-With Best Regards,
-Andy Shevchenko
-
-
+> I can not see right now whats wrong, your patches look sane.
