@@ -2,150 +2,228 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F763C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 12:29:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E115C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 12:30:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354465AbiASM34 (ORCPT
+        id S1354472AbiASMaO convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 07:29:56 -0500
-Received: from mout.gmx.net ([212.227.17.22]:43889 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234862AbiASM3k (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 07:29:40 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1642595353;
-        bh=AzTwOkP2qFnqwWKULceIA25l5VnbUIb4mxUkPf/nTzo=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=RfMii8tw7jSZtIvm9xiEwlmoEvvajRQGG0f5Bek3CszkjEYjqxiJGTgGU9ep1ZCOU
-         f3uFvF2v/7LDarAuqEs7IdpCb71k2gZb6tsFS4Gdu4G18WSYpuUgrguYh2Hyms60w4
-         5ScBtF+5b3z7Rpq4ImuT41xvHpJ66pvyOOk0E97o=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.183.52]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1M8ygY-1nGE5n230Q-0064UN; Wed, 19
- Jan 2022 13:29:13 +0100
-Message-ID: <4d8950c7-5f51-ca2b-4c93-741c7805a214@gmx.de>
-Date:   Wed, 19 Jan 2022 13:28:06 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH 2/2] Revert "fbcon: Disable accelerated scrolling"
+        Wed, 19 Jan 2022 07:30:14 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:4430 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234862AbiASMaM (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 07:30:12 -0500
+Received: from fraeml703-chm.china.huawei.com (unknown [172.18.147.200])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Jf4ch6gXwz685gm;
+        Wed, 19 Jan 2022 20:26:12 +0800 (CST)
+Received: from lhreml721-chm.china.huawei.com (10.201.108.72) by
+ fraeml703-chm.china.huawei.com (10.206.15.52) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.21; Wed, 19 Jan 2022 13:30:09 +0100
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ lhreml721-chm.china.huawei.com (10.201.108.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Wed, 19 Jan 2022 12:30:09 +0000
+Received: from lhreml710-chm.china.huawei.com ([169.254.81.184]) by
+ lhreml710-chm.china.huawei.com ([169.254.81.184]) with mapi id
+ 15.01.2308.021; Wed, 19 Jan 2022 12:30:09 +0000
+From:   Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+To:     Catalin Marinas <catalin.marinas@arm.com>
+CC:     "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "kvmarm@lists.cs.columbia.edu" <kvmarm@lists.cs.columbia.edu>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "maz@kernel.org" <maz@kernel.org>,
+        "will@kernel.org" <will@kernel.org>,
+        "james.morse@arm.com" <james.morse@arm.com>,
+        "julien.thierry.kdev@gmail.com" <julien.thierry.kdev@gmail.com>,
+        "suzuki.poulose@arm.com" <suzuki.poulose@arm.com>,
+        "jean-philippe@linaro.org" <jean-philippe@linaro.org>,
+        "Alexandru.Elisei@arm.com" <Alexandru.Elisei@arm.com>,
+        "qperret@google.com" <qperret@google.com>,
+        Jonathan Cameron <jonathan.cameron@huawei.com>,
+        Linuxarm <linuxarm@huawei.com>
+Subject: RE: [PATCH v4 0/4] kvm/arm: New VMID allocator based on asid
+Thread-Topic: [PATCH v4 0/4] kvm/arm: New VMID allocator based on asid
+Thread-Index: AQHX35sqG4N0fL5BTkOeJNZZBpVcWaxpD9KAgAFUH+CAADI2AIAAApfw
+Date:   Wed, 19 Jan 2022 12:30:09 +0000
+Message-ID: <ab7dc77ee8804f1e958c18cc4dac4a65@huawei.com>
+References: <20211122121844.867-1-shameerali.kolothum.thodi@huawei.com>
+ <Yeazd1lLuYm4k3lH@arm.com> <207f800d1a67427a9771ffb06086365b@huawei.com>
+ <Yef65ng6pQK5yZDa@arm.com>
+In-Reply-To: <Yef65ng6pQK5yZDa@arm.com>
+Accept-Language: en-GB, en-US
 Content-Language: en-US
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Sven Schnelle <svens@stackframe.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Ilia Mirkin <imirkin@alum.mit.edu>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Gerd Hoffmann <kraxel@redhat.com>,
-        Sam Ravnborg <sam@ravnborg.org>, Claudio Suarez <cssk@net-c.es>
-References: <20220119110839.33187-1-deller@gmx.de>
- <20220119110839.33187-3-deller@gmx.de> <Yef0j8+DBbwC7Kjv@kroah.com>
- <Yef15k2GtC40aJEu@kroah.com>
- <CAMuHMdVWFJEDwjf-htZ_D1484efmuPnz_L-qhcTeUE-GVpvZXA@mail.gmail.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <CAMuHMdVWFJEDwjf-htZ_D1484efmuPnz_L-qhcTeUE-GVpvZXA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:kH6rz4fWH4V5I9BuuMjlUgUgN4zBgAIh8HdN1Q57L7UUprT5obY
- YPluvR3niGe8oQy8iy5Csh7ruQsVz2XkUrPl9vr24Xhb9586ElsISuWodSPaPMIZBzDTek0
- EZ8UoUWc7QgpZJoHd7Vp8Dgm62X8A94TaQ/qpJTWtBZUPdBy0fTF+bDKW4leQfLggle0ys2
- HpJ3Qq18ysc/QI2tfGjcg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:y12KkCrP0wM=:LVLC78OFUBA0Maz52K+ooI
- c5vjpiraec9GiDC5ssk80QeQinJphuKF6ECxaZFsoE75u6q/BVx5B4VQgMVv2jn/oN/ff57B+
- eC/JbIkuesva7Wg/Y3phJcfGB1fHh9K+NW7KL5suEnMekUe5utmETAHEAQTuIrU9iQIGjMNxM
- FieYF0jay2AUkHabSuamsOcfW46QtK5lfusSU1wKdLWynnc9g8FLehoFpe7B2/V9waAnA1QOb
- ezALILRsXqWGHC5hkrs2X3KRJsOMqFxz1dFj8FBc8uPUozxkDJePAl5xqurjy1npLmstqTR1/
- aiKvfLmAJHGOfHMggzvomC3SM0lyvn/KR6WiEaOQwnWe75HS3nGc5/hCsDmX9KmAqzRxIVkfm
- 5QvEtI1GG8azB9EISmUbYKKwT48nbvRNL66rTpb6bi9R9DTxuDO1NGj4Qnaofp0K4z0AD/LoN
- EpzEjYGy3ff+sj9H2uOQmB8y6/04HdSHkFXm5j+NuGBqe9Yt28LBHJusiVY2BENVautCBy1PL
- kKezZRWPhsPLmiXDgAmQlDHmnFlIWpBaoA9zjAKWfT1SvV0nW9ciQ/KL+V3qGSCU8MFCQZBiK
- IE0BH1SfLui4waAy/fxhK/Vzvq8bNM+Xn11zVO/BJca2iudX9l6tNWwOr4Q9GqseRa6ORqBnw
- H2nw91Zdy8y2Lugkx56PrWxr7fR1skVgxC4Q5e88ZeQfgOp9ocKL9y0RhKxcW5Fr8atRu8ri2
- aL6skB9QEUGES6cmoDCJSU1KXMvF9Z2KfgfXTmsGWyVdoAoHyQX8naM1bWy7x+Qq8ZL+JQHfo
- 06gu6Z7JhRurQrrCYfokFmrQqUwR/8iG1+MwoWCyTPhgmNjYrdZuTYYUkvULGUIGT3/and8Cr
- fhM5pZT32Hs62/aN23oMuq/neT/P2OC23FGm4MeVyTOebQ9rcaT962KYiP5Ju2ozeANRlPle7
- YGP96uwsWfNmSq8p3UFcwTdVn0Si3P2ogeYyOjXgtHXf+DD6sjgCUHmnUn7hVc2r+ehVJnezR
- DhuzQ/iSJ8GOCmn/+eZUC/4c3P7DfZvkC/fOFSoMQ//HQZBU72oI10c1cDQsdkvkr/VQHzwew
- +LDc1+Stqv12rA=
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.47.82.100]
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: 8BIT
+MIME-Version: 1.0
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello Greg,
 
-On 1/19/22 12:47, Geert Uytterhoeven wrote:
-> On Wed, Jan 19, 2022 at 12:28 PM Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
->> On Wed, Jan 19, 2022 at 12:22:55PM +0100, Greg Kroah-Hartman wrote:
->>> On Wed, Jan 19, 2022 at 12:08:39PM +0100, Helge Deller wrote:
->>>> This reverts commit 39aead8373b3c20bb5965c024dfb51a94e526151.
->>>>
->>>> Revert this patch.  This patch started to introduce the regression th=
-at
->>>> all hardware acceleration of more than 35 existing fbdev drivers were
->>>> bypassed and thus fbcon console output for those was dramatically slo=
-wed
->>>> down by factor of 10 and more.
->>>>
->>>> Reverting this commit has no impact on DRM, since none of the DRM dri=
-vers are
->>>> tagged with the acceleration flags FBINFO_HWACCEL_COPYAREA,
->>>> FBINFO_HWACCEL_FILLRECT or others.
->>>>
->>>> Signed-off-by: Helge Deller <deller@gmx.de>
->
->>> As for "why", I think there was a number of private bugs that were
->>> reported in this code, which is why it was removed.  I do not think it
->>> can be safely added back in without addressing them first.  Let me go
->>> dig through my email to see if I can find them...
->>
->> Ah, no, that was just the soft scrollback code I was thinking of, which
 
-Right.
-That was commit 973c096f6a85 and it was about vgacon, not fbcon.
+> -----Original Message-----
+> From: Catalin Marinas [mailto:catalin.marinas@arm.com]
+> Sent: 19 January 2022 11:50
+> To: Shameerali Kolothum Thodi <shameerali.kolothum.thodi@huawei.com>
+> Cc: linux-arm-kernel@lists.infradead.org; kvmarm@lists.cs.columbia.edu;
+> linux-kernel@vger.kernel.org; maz@kernel.org; will@kernel.org;
+> james.morse@arm.com; julien.thierry.kdev@gmail.com;
+> suzuki.poulose@arm.com; jean-philippe@linaro.org;
+> Alexandru.Elisei@arm.com; qperret@google.com; Jonathan Cameron
+> <jonathan.cameron@huawei.com>; Linuxarm <linuxarm@huawei.com>
+> Subject: Re: [PATCH v4 0/4] kvm/arm: New VMID allocator based on asid
+> 
+> On Wed, Jan 19, 2022 at 09:23:31AM +0000, Shameerali Kolothum Thodi
+> wrote:
+> > > On Mon, Nov 22, 2021 at 12:18:40PM +0000, Shameer Kolothum wrote:
+> > > >  -TLA+ model. Modified the asidalloc model to incorporate the new
+> > > >   VMID algo. The main differences are,
+> > > >   -flush_tlb_all() instead of local_tlb_flush_all() on rollover.
+> > > >   -Introduced INVALID_VMID and vCPU Sched Out logic.
+> > > >   -No CnP (Removed UniqueASIDAllCPUs & UniqueASIDActiveTask
+> invariants).
+> > > >   -Removed  UniqueVMIDPerCPU invariant for now as it looks like
+> > > >    because of the speculative fetching with flush_tlb_all() there
+> > > >    is a small window where this gets triggered. If I change the
+> > > >    logic back to local_flush_tlb_all(), UniqueVMIDPerCPU seems to
+> > > >    be fine. With my limited knowledge on TLA+ model, it is not
+> > > >    clear to me whether this is a problem with the above logic
+> > > >    or the VMID model implementation. Really appreciate any help
+> > > >    with the model.
+> > > >    The initial VMID TLA+ model is here,
+> > > >
+> https://github.com/shamiali2008/kernel-tla/tree/private-vmidalloc-v1
+> > >
+> > > I only had a brief look at the TLA+ model and I don't understand why you
+> > > have a separate 'shed_out' process. It would run in parallel with the
+> > > 'sched' but AFAICT you can't really schedule a guest out while you are
+> > > in the middle of scheduling it in. I'd rather use the same 'sched'
+> > > process and either schedule in an inactive task or schedule out an
+> > > active one for a given CPU.
+> > >
+> > > Also active_vmids[] for example is defined on the CPUS domain but you
+> > > call vcpu_sched_out() from a process that's not in the CPUS domain but
+> > > the SCHED_OUT one.
+> >
+> > Many thanks for taking a look. My bad!. The 'sched_out' would indeed run in
+> parallel
+> > and defeat the purpose. I must say I was really confused by the TLA+ syntax
+> and
+> > is still not very confident about it.
+> 
+> Yeah, it can be confusing. If you have time, you could give CBMC a try
+> and the 'spec' would be pretty close to your C version. Each CPU would
+> be modelled as a thread with an extra thread that simulates the
+> speculative TLB look-ups for all CPUS together with the asserts for the
+> invariants. The spinlocks would be pthread_mutexes.
 
-I did mentioned it in my cover letter, together with my analysis of
-the reported bugs.
+Ok, will take a look.
 
-Maybe I should have put all the information from the cover letter into
-the patch here as well. If you haven't read the cover letter yet, please d=
-o.
+> > Based on the above suggestion, I have modified it as below,
+> >
+> > \* vCPU is scheduled out by KVM
+> > macro vcpu_sched_out() {
+> >         active_kvm[self].task := 0;
+> >         active_vmids[self] := INVALID_VMID;
+> > }
+> 
+> Could you call cpu_switch_kvm(0, INVALID_VMID) instead? You could do
+> this directly below and avoid another macro. Well, whatever you find
+> clearer.
 
-Helge
+Sure, will change that.
 
-> So the bugs argument is moot.
->
->> was a different revert and is still gone, thankfully :)
->
-> FTR, not everyone else was thankful about that one...
->
->> This one was just removed because Daniel noticed that only 3 drivers
->> used this (nouveau, omapdrm, and gma600), so this shouldn't have caused
->> any regressions in any other drivers like you are reporting here.
->>
->> So perhaps this regression is caused by something else?
->
-> 1. Daniel's patch was not CCed to linux-fbdev,
-> 2. When I discovered the patch, I pointed out that the premise of 3
->    drivers was not true, and that it affects 32 more fbdev drivers[1] .
->    The patch was applied regardless.
-> 3. When the patch was suggested for backporting, I pointed out the
->    same[2].
->    The patch was backported regardless.
->
-> [1] https://lore.kernel.org/r/alpine.DEB.2.22.394.2010311116530.379363@r=
-amsan.of.borg/
-> [2] https://lore.kernel.org/r/CAMuHMdXRgam2zahPEGcw8+76Xm-0AO-Ci9-YmVa5J=
-pTKVHphRw@mail.gmail.com/
->
-> Gr{oetje,eeting}s,
->
->                         Geert
+> What confuses me is that your INVALID_VMID looks like a valid one: vmid
+> 0, generation 1. Do you ensure that you never allocate VMID 0?
+
+This is same as in asidalloc wherein the cur_idx starts at 1 for any new
+allocation. I think that guarantees VMID 0 is never allocated.  
+
+> 
+> > \* About to run a Guest VM
+> > process (sched \in CPUS)
+> > {
+> > sched_loop:
+> >         while (TRUE) {
+> >                 with (t \in TASKS) {
+> >                         if (t # ActiveTask(self))
+> >                                 call kvm_arm_vmid_update(t);
+> >                         else
+> >                                 vcpu_sched_out();
+> >                 }
+> >         }
+> > }
+> 
+> Yes, that's what I meant.
+
+Ok.
+
+> 
+> > > The corresponding
+> > > UniqueASIDPerCPU meant that for any two TLB entries on a single CPU, if
+> > > they correspond to different tasks (pgd), they should have different
+> > > ASIDs. That's a strong requirement, otherwise we end up with the wrong
+> > > translation.
+> >
+> > Yes, I understand that it is a strong requirement. Also, I thought this is
+> something
+> > that will trigger easily with the test setup I had with the real hardware. But
+> testing
+> > stayed on for days, so I was not sure it is a problem with the TLA+
+> implementation
+> > or not.
+> 
+> Well, you'd have to check the TLA+ state trace and see how it got
+> there, whether the last state would be a valid one. It's either
+> something missing in the spec that the hardware enforces or the
+> algorithm is wrong and just hard to hit in practice. If this condition
+> is violated in hardware for a very brief period, e.g. due to some TLBI,
+> you'd not notice an issue under normal circumstances. But it's still
+> incorrect.
+
+Hmm..I had a quick implementation with a separate thread for speculative
+load as done in the arm64kpti.tla, but still get the UniqueVMIDPerCPU violation
+error. I will go through the state trace and see whether I can interpret something :) 
+ 
+> > > Why did you remove the CnP? Do we have this disabled for KVM guests?
+> >
+> > I removed CnP related Invariants to simplify things for the first version. Also
+> not sure
+> > what specific changes we need to do for CnP here. Do we still need that
+> switching to
+> > global pg_dir to prevent any speculative reading? I didn't see that being
+> done in KVM
+> > anywhere at the moment. Maybe I am missing something.
+> 
+> It make sense to ignore CnP for now. Maybe KVM doesn't even bother and
+> sets VTTBR_EL2.CnP to 0 (I haven't checked).
+
+I think KVM sets the CnP here,
+https://elixir.bootlin.com/linux/latest/source/arch/arm64/include/asm/kvm_mmu.h#L264
+
+But I haven't figured out what else we need to do in this new VMID allocator for
+CnP case. 
+
+Marc, Will?
+
+> 
+> > On a side note, In my setup, the CnP=TRUE case for asidalloc.tla now fails
+> with,
+> > "Error: Invariant TLBEmptyInvalPTE is violated.". Please check.
+> 
+> This was added later as part of try-to-unmap and I only checked this
+> with CnP = FALSE. I'll need to look into, it's possible that
+> flush_tlb_all() doesn't take into account that the pte is unmapped (as
+> cpu_switch_mm() does). I'll add a separate thread for speculative TLB
+> loads, it's easier to have them in one place. Thanks.
+
+Ok.
+
+Thanks,
+Shameer
