@@ -2,266 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3CA2C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 15:54:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75B03C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 15:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355969AbiASPyH (ORCPT
+        id S1355979AbiASPyu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 10:54:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36634 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355575AbiASPyF (ORCPT
+        Wed, 19 Jan 2022 10:54:50 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:55870 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238625AbiASPyt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 10:54:05 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 675A4C06173E
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 07:54:05 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id p18so5862113wmg.4
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 07:54:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ffwll.ch; s=google;
-        h=date:from:to:cc:subject:message-id:mail-followup-to:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=0wqlG/hTKmwc1qlTFRNgFAeCCLQtJYdgJJ7JVZ30KiM=;
-        b=e3Pr/dvFruT2iN6cAa0XHKtiGXwO9ueK+tpw6WUP4dtdEWHBBmgavmSQF8CU9J+UcN
-         Hz8qBhrHQ1Vt/k5htfjwnT1NUI2SOss2Xgrkvlggt0Lb//TD0mBdhSnopsXNee83qc/w
-         W1zJllJJxCEqEHZ8Wdd6DgeaZC8r9Yvd0MdkE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id
-         :mail-followup-to:references:mime-version:content-disposition
-         :content-transfer-encoding:in-reply-to;
-        bh=0wqlG/hTKmwc1qlTFRNgFAeCCLQtJYdgJJ7JVZ30KiM=;
-        b=KvQtnRvf0WCcvGM9xqVTCA19MNVtZxSX54gdsD3WjjHEn1Tib33RPOfnUWFxWCCEXZ
-         zqNuNsRissyB0dabqi+63i2xcSlISIv0PzJ3K81fRDSZ6vufLdMBXLDD4h3FnrMs/i4f
-         oETAZJLEN8+zSqd4ggUNeAqbYVSujYfkD3dk9zq1qwPb3Iadx+3Q4hwALdlbUEzuaMwc
-         4jZzXa4e5UwbK5twZZ+XxBn5lk2D0GTHr2+oBTBmM6zTeBNnnBsqgDsCphXoFsOnxDrj
-         /hRLqRzD0JeD8y5wfBF7/w5omDewHT4vTZLvLX+mSKf/J31IQkXoaw7C9fKsVGt5bzgM
-         MFxA==
-X-Gm-Message-State: AOAM532veK0FtxZ/ChmwKZetA0Ygz/L6IeuiD4JG/yu9zh2EBPm/nVtt
-        7VF/7Nhby5zJ/9G+E9s5ze/WqQ==
-X-Google-Smtp-Source: ABdhPJwYR2kHuXIdMjbo//urPLyFiKmcuB+F1hAH4j6/NzToi8Ft7emFD9AOoL2abPOHJyc76IPrBA==
-X-Received: by 2002:a05:6000:381:: with SMTP id u1mr18768876wrf.431.1642607643845;
-        Wed, 19 Jan 2022 07:54:03 -0800 (PST)
-Received: from phenom.ffwll.local ([2a02:168:57f4:0:efd0:b9e5:5ae6:c2fa])
-        by smtp.gmail.com with ESMTPSA id w9sm6382224wmc.36.2022.01.19.07.54.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 19 Jan 2022 07:54:02 -0800 (PST)
-Date:   Wed, 19 Jan 2022 16:54:00 +0100
-From:   Daniel Vetter <daniel@ffwll.ch>
-To:     Hridya Valsaraju <hridya@google.com>
-Cc:     Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>,
-        Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <christian@brauner.io>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        Liam Mark <lmark@codeaurora.org>,
-        Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>,
-        Tejun Heo <tj@kernel.org>, Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Dave Airlie <airlied@redhat.com>,
-        Jason Ekstrand <jason@jlekstrand.net>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Matthew Brost <matthew.brost@intel.com>,
-        Li Li <dualli@google.com>, Marco Ballesio <balejs@google.com>,
-        Miguel Ojeda <ojeda@kernel.org>,
-        Hang Lu <hangl@codeaurora.org>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Chris Down <chris@chrisdown.name>,
-        Vipin Sharma <vipinsh@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Arnd Bergmann <arnd@arndb.de>, dri-devel@lists.freedesktop.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linaro-mm-sig@lists.linaro.org,
-        cgroups@vger.kernel.org, Kenny.Ho@amd.com, daniels@collabora.com,
-        kaleshsingh@google.com, tjmercier@google.com
-Subject: Re: [RFC 4/6] dma-buf: Add DMA-BUF exporter op to charge a DMA-BUF
- to a cgroup.
-Message-ID: <Yeg0GGi0tdnnCLHg@phenom.ffwll.local>
-Mail-Followup-To: Hridya Valsaraju <hridya@google.com>,
-        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>, Jonathan Corbet <corbet@lwn.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Arve =?iso-8859-1?B?SGr4bm5lduVn?= <arve@android.com>,
-        Todd Kjos <tkjos@android.com>, Martijn Coenen <maco@android.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Christian Brauner <christian@brauner.io>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        Liam Mark <lmark@codeaurora.org>, Laura Abbott <labbott@redhat.com>,
-        Brian Starkey <Brian.Starkey@arm.com>,
-        John Stultz <john.stultz@linaro.org>, Tejun Heo <tj@kernel.org>,
-        Zefan Li <lizefan.x@bytedance.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Dave Airlie <airlied@redhat.com>,
-        Jason Ekstrand <jason@jlekstrand.net>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Matthew Brost <matthew.brost@intel.com>, Li Li <dualli@google.com>,
-        Marco Ballesio <balejs@google.com>, Miguel Ojeda <ojeda@kernel.org>,
-        Hang Lu <hangl@codeaurora.org>,
-        Wedson Almeida Filho <wedsonaf@google.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nathan Chancellor <nathan@kernel.org>,
-        Kees Cook <keescook@chromium.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Chris Down <chris@chrisdown.name>,
-        Vipin Sharma <vipinsh@google.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Vlastimil Babka <vbabka@suse.cz>, Arnd Bergmann <arnd@arndb.de>,
-        dri-devel@lists.freedesktop.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linaro-mm-sig@lists.linaro.org, cgroups@vger.kernel.org,
-        Kenny.Ho@amd.com, daniels@collabora.com, kaleshsingh@google.com,
-        tjmercier@google.com
-References: <20220115010622.3185921-1-hridya@google.com>
- <20220115010622.3185921-5-hridya@google.com>
- <f8c8b196-7d12-6242-97ac-38149f3a3ba3@amd.com>
- <CA+wgaPMjCfjQS4LA8hmVwAaGfXZhoJvvTUnOGt3duOhFb3orTw@mail.gmail.com>
+        Wed, 19 Jan 2022 10:54:49 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 814E2212C5;
+        Wed, 19 Jan 2022 15:54:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1642607688; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=huSQfD1kXWPxYY8LjOeU4PnuzXl1Fa3PIHCPfVNpPD4=;
+        b=OxRHgpGHsiS9/qgPyLl2pav/JxQzvHxK34IoXxp3fnsLA3qPye7uIIcuJqhmHMixmeqabl
+        wB7eS+pgOv3Ykrt9o57mOTGZCVuTT2nzsa/IG8JMWy82S7+BetcNbWLF9aDWC3Qr1Z/SRZ
+        gmeEQsWM6isiMtCR7jx/INvWrIyr0MM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1642607688;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=huSQfD1kXWPxYY8LjOeU4PnuzXl1Fa3PIHCPfVNpPD4=;
+        b=MZLDgg5D8Y6admaU+zjUjBRQLolKcDdEg53rAerqr4l7oLUQsN3J/2xp7whmKS2Vtwp11y
+        0d0HLd08ApUmzIAw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 4F01B13F84;
+        Wed, 19 Jan 2022 15:54:48 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id eTw9Ekg06GHSEwAAMHmgww
+        (envelope-from <tzimmermann@suse.de>); Wed, 19 Jan 2022 15:54:48 +0000
+Message-ID: <83484eca-8562-bf76-78f1-75b626a59029@suse.de>
+Date:   Wed, 19 Jan 2022 16:54:47 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <CA+wgaPMjCfjQS4LA8hmVwAaGfXZhoJvvTUnOGt3duOhFb3orTw@mail.gmail.com>
-X-Operating-System: Linux phenom 5.10.0-8-amd64 
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] drm/ast: Create threshold values for AST2600
+Content-Language: en-US
+To:     KuoHsiang Chou <kuohsiang_chou@aspeedtech.com>,
+        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Cc:     hungju_huang@aspeedtech.com, airlied@linux.ie,
+        tommy_huang@aspeedtech.com, airlied@redhat.com,
+        arc_sung@aspeedtech.com, luke_chen@aspeedtech.com
+References: <20220117083643.41493-1-kuohsiang_chou@aspeedtech.com>
+From:   Thomas Zimmermann <tzimmermann@suse.de>
+In-Reply-To: <20220117083643.41493-1-kuohsiang_chou@aspeedtech.com>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ protocol="application/pgp-signature";
+ boundary="------------UM0o5JZz0JfmaFfA8BBBd2b7"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 10:54:16AM -0800, Hridya Valsaraju wrote:
-> On Sun, Jan 16, 2022 at 11:46 PM Christian König
-> <christian.koenig@amd.com> wrote:
-> >
-> > Am 15.01.22 um 02:06 schrieb Hridya Valsaraju:
-> > > The optional exporter op provides a way for processes to transfer
-> > > charge of a buffer to a different process. This is essential for the
-> > > cases where a central allocator process does allocations for various
-> > > subsystems, hands over the fd to the client who
-> > > requested the memory and drops all references to the allocated memory.
-> > >
-> > > Signed-off-by: Hridya Valsaraju <hridya@google.com>
-> > > ---
-> > >   include/linux/dma-buf.h | 18 ++++++++++++++++++
-> > >   1 file changed, 18 insertions(+)
-> > >
-> > > diff --git a/include/linux/dma-buf.h b/include/linux/dma-buf.h
-> > > index 7ab50076e7a6..d5e52f81cc6f 100644
-> > > --- a/include/linux/dma-buf.h
-> > > +++ b/include/linux/dma-buf.h
-> > > @@ -13,6 +13,7 @@
-> > >   #ifndef __DMA_BUF_H__
-> > >   #define __DMA_BUF_H__
-> > >
-> > > +#include <linux/cgroup_gpu.h>
-> > >   #include <linux/dma-buf-map.h>
-> > >   #include <linux/file.h>
-> > >   #include <linux/err.h>
-> > > @@ -285,6 +286,23 @@ struct dma_buf_ops {
-> > >
-> > >       int (*vmap)(struct dma_buf *dmabuf, struct dma_buf_map *map);
-> > >       void (*vunmap)(struct dma_buf *dmabuf, struct dma_buf_map *map);
-> > > +
-> > > +     /**
-> > > +      * @charge_to_cgroup:
-> > > +      *
-> > > +      * This is called by an exporter to charge a buffer to the specified
-> > > +      * cgroup.
-> >
-> > Well that sentence makes absolutely no sense at all.
-> >
-> > The dma_buf_ops are supposed to be called by the DMA-buf subsystem on
-> > behalves of the importer and never by the exporter itself.
-> >
-> > I hope that this is just a documentation mixup.
-> 
-> Thank you for taking a look Christian!
-> 
-> Yes, that was poor wording, sorry about that. It should instead say
-> that the op would be called by the process the buffer is currently
-> charged to in order to transfer the buffer's charge to a different
-> cgroup. This is helpful in the case where a process acts as an
-> allocator for multiple client processes and we would like the
-> allocated buffers to be charged to the clients who requested their
-> allocation(instead of the allocating process as is the default
-> behavior). In Android, the graphics allocator HAL process[1] does
-> most of the graphics allocations on behalf of various clients. After
-> allocation, the HAL process passes the fd to the client over binder
-> IPC and the binder driver invokes the charge_to_cgroup() DMA-BUF op to
-> uncharge the buffer from the HAL process and charge it to the client
-> process instead.
-> 
-> [1]: https://source.android.com/devices/graphics/arch-bq-gralloc
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--------------UM0o5JZz0JfmaFfA8BBBd2b7
+Content-Type: multipart/mixed; boundary="------------pbZ4Zwa0cbdW7pS18cwzXL1v";
+ protected-headers="v1"
+From: Thomas Zimmermann <tzimmermann@suse.de>
+To: KuoHsiang Chou <kuohsiang_chou@aspeedtech.com>,
+ dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Cc: hungju_huang@aspeedtech.com, airlied@linux.ie,
+ tommy_huang@aspeedtech.com, airlied@redhat.com, arc_sung@aspeedtech.com,
+ luke_chen@aspeedtech.com
+Message-ID: <83484eca-8562-bf76-78f1-75b626a59029@suse.de>
+Subject: Re: [PATCH] drm/ast: Create threshold values for AST2600
+References: <20220117083643.41493-1-kuohsiang_chou@aspeedtech.com>
+In-Reply-To: <20220117083643.41493-1-kuohsiang_chou@aspeedtech.com>
 
-For that use-case, do we really need to have the vfunc abstraction and
-force all exporters to do something reasonable with it?
+--------------pbZ4Zwa0cbdW7pS18cwzXL1v
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: base64
 
-I think just storing the cgrpus gpu memory bucket this is charged against
-and doing this in a generic way would be a lot better.
+SGkNCg0KQW0gMTcuMDEuMjIgdW0gMDk6MzYgc2NocmllYiBLdW9Ic2lhbmcgQ2hvdToNCj4g
+VGhlIHRocmVzaG9sZCB2YWx1ZSBpcyB1c2VkIGZvciBBU1QyNjAwIG9ubHkuDQo+IA0KPiBT
+aWduZWQtb2ZmLWJ5OiBLdW9Ic2lhbmcgQ2hvdSA8a3VvaHNpYW5nX2Nob3VAYXNwZWVkdGVj
+aC5jb20+DQo+IC0tLQ0KPiAgIGRyaXZlcnMvZ3B1L2RybS9hc3QvYXN0X21vZGUuYyB8IDUg
+KysrKy0NCj4gICAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9u
+KC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2FzdC9hc3RfbW9kZS5j
+IGIvZHJpdmVycy9ncHUvZHJtL2FzdC9hc3RfbW9kZS5jDQo+IGluZGV4IDFjN2E1N2EwMy4u
+N2YyZTI0OGE2IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vYXN0L2FzdF9tb2Rl
+LmMNCj4gKysrIGIvZHJpdmVycy9ncHUvZHJtL2FzdC9hc3RfbW9kZS5jDQo+IEBAIC00NzEs
+NyArNDcxLDEwIEBAIHN0YXRpYyB2b2lkIGFzdF9zZXRfY29sb3JfcmVnKHN0cnVjdCBhc3Rf
+cHJpdmF0ZSAqYXN0LA0KPiAgIHN0YXRpYyB2b2lkIGFzdF9zZXRfY3J0dGhkX3JlZyhzdHJ1
+Y3QgYXN0X3ByaXZhdGUgKmFzdCkNCj4gICB7DQo+ICAgCS8qIFNldCBUaHJlc2hvbGQgKi8N
+Cj4gLQlpZiAoYXN0LT5jaGlwID09IEFTVDIzMDAgfHwgYXN0LT5jaGlwID09IEFTVDI0MDAg
+fHwNCj4gKwlpZiAoYXN0LT5jaGlwID09IEFTVDI2MDApIHsNCj4gKwkJYXN0X3NldF9pbmRl
+eF9yZWcoYXN0LCBBU1RfSU9fQ1JUQ19QT1JULCAweGE3LCAweGUwKTsNCj4gKwkJYXN0X3Nl
+dF9pbmRleF9yZWcoYXN0LCBBU1RfSU9fQ1JUQ19QT1JULCAweGE2LCAweGEwKTsNCj4gKwl9
+IGVsc2UgaWYgKGFzdC0+Y2hpcCA9PSBBU1QyMzAwIHx8IGFzdC0+Y2hpcCA9PSBBU1QyNDAw
+IHx8DQo+ICAgCSAgICBhc3QtPmNoaXAgPT0gQVNUMjUwMCkgew0KPiAgIAkJYXN0X3NldF9p
+bmRleF9yZWcoYXN0LCBBU1RfSU9fQ1JUQ19QT1JULCAweGE3LCAweDc4KTsNCj4gICAJCWFz
+dF9zZXRfaW5kZXhfcmVnKGFzdCwgQVNUX0lPX0NSVENfUE9SVCwgMHhhNiwgMHg2MCk7DQo+
+IC0tDQo+IDIuMjcuMA0KPiANCg0KTWVyZ2VkIGludG8gZHJtLW1pc2MtbmV4dC4gVGhhbmtz
+IGZvciB0aGUgcGF0Y2guDQoNCkJlc3QgcmVnYXJkcw0KVGhvbWFzDQoNCi0tIA0KVGhvbWFz
+IFppbW1lcm1hbm4NCkdyYXBoaWNzIERyaXZlciBEZXZlbG9wZXINClNVU0UgU29mdHdhcmUg
+U29sdXRpb25zIEdlcm1hbnkgR21iSA0KTWF4ZmVsZHN0ci4gNSwgOTA0MDkgTsO8cm5iZXJn
+LCBHZXJtYW55DQooSFJCIDM2ODA5LCBBRyBOw7xybmJlcmcpDQpHZXNjaMOkZnRzZsO8aHJl
+cjogSXZvIFRvdGV2DQo=
 
-That way we can also easily add other neat features in the future, like
-e.g. ttm could take care of charge-assignement automatically maybe, or we
-could print the current cgroups charge relationship in the sysfs info
-file. Or anything else really.
+--------------pbZ4Zwa0cbdW7pS18cwzXL1v--
 
-I do feel that in general for gpu memory cgroups to be useful, we should
-really have memory pools as a fairly strong concept. Otherwise every
-driver/allocator/thing is going to come up with their own, and very likely
-incompatible interpretation. And we end up with a supposed generic cgroups
-interface which cannot actually be used in a driver/vendor agnostic way at
-all.
--Daniel
+--------------UM0o5JZz0JfmaFfA8BBBd2b7
+Content-Type: application/pgp-signature; name="OpenPGP_signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="OpenPGP_signature"
 
-> 
-> Regards,
-> Hridya
-> 
-> 
-> >
-> > Regards,
-> > Christian.
-> >
-> > >   The caller must hold a reference to @gpucg obtained via
-> > > +      * gpucg_get(). The DMA-BUF will be uncharged from the cgroup it is
-> > > +      * currently charged to before being charged to @gpucg. The caller must
-> > > +      * belong to the cgroup the buffer is currently charged to.
-> > > +      *
-> > > +      * This callback is optional.
-> > > +      *
-> > > +      * Returns:
-> > > +      *
-> > > +      * 0 on success or negative error code on failure.
-> > > +      */
-> > > +     int (*charge_to_cgroup)(struct dma_buf *dmabuf, struct gpucg *gpucg);
-> > >   };
-> > >
-> > >   /**
-> >
+-----BEGIN PGP SIGNATURE-----
 
--- 
-Daniel Vetter
-Software Engineer, Intel Corporation
-http://blog.ffwll.ch
+wsF5BAABCAAjFiEExndm/fpuMUdwYFFolh/E3EQov+AFAmHoNEcFAwAAAAAACgkQlh/E3EQov+Bj
+TBAAqHNQCMhLLJVRD+PwOfYhzJrdCGFqVmqUFsq/etfNOgDANfIw1HcEeSlbLAtWHIZxvD/11C+q
+lTz7YdEoXgyA4mDaW8RKllMZaUXfCt8HUpt2tnBd1t8dmrZ7/QJGuJet+ZvwAjSu2pcQqt8Z1hyL
+sFV3XQSasx6ntFSBSkBJwvxTE3giJcH1unxwNfg6MRHpnBtP3UmhUzYIMbrlz63xdilKyePrdrkV
+BxdH+tLD3l4/JOGsJpbvZMK7DaX2Wbvaavsuf3fNz87hCcp7HRWCoH2cnMWazhDzNKN8ikNN9WrU
++xy6gGShBDmmWJqFNYnVO38rU86Lb6QHtsUwXbZAIsIvPpuH6UdZYfdSbe5VdF9wjjgbjnQ7aMXL
+0Iu3wMPI7KoNB4z9GnrBJPhVwAHoip5q3gXYdg4BsPT2jy3wzOmwWwrb9Mu4dPuiGyNZi819K9mV
+yN9YomPYSsqRMJiRY9MfPK0K7T4elm7jWBhe9y0kzwtcPGoUbwZ6WwS6GId3QN1mWQ2tJr74rNur
+DFmmT0OEqJqYf8PMJ2iTlKNbi9PMwyY+CufBQTsetjzXITxWd88s1fGlrD4m2Ax6GsYZg12jnzDx
+J1WEW5h/YcIRnfVrFqAsb/pY//SXTcmmdWscSP0+OencE/FP8jifxA6w9cUFd3Uw3m8E1CP3EhFR
+Kz8=
+=+vsY
+-----END PGP SIGNATURE-----
+
+--------------UM0o5JZz0JfmaFfA8BBBd2b7--
