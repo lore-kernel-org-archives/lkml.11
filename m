@@ -2,120 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49FBFC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 02:50:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E81E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 02:51:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351079AbiASCuf (ORCPT
+        id S1351085AbiASCvS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 21:50:35 -0500
-Received: from mga01.intel.com ([192.55.52.88]:51210 "EHLO mga01.intel.com"
+        Tue, 18 Jan 2022 21:51:18 -0500
+Received: from mga06.intel.com ([134.134.136.31]:6865 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244048AbiASCue (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 21:50:34 -0500
+        id S244048AbiASCvQ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 21:51:16 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642560634; x=1674096634;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=u2HGL8KISl8494gdzNKZWFnRqO2cILWQ4uYRe/M7siM=;
-  b=Cvrsu9Vr31EpLudHgCUK2gmjdeTcoW9fW8j3Lpkx5FhbIN/JH5EFxNaF
-   jdgTtP2dWkhrr7TMfa8wzr562h3RMy6XFwJSaN0ZukChXw4N9Pqnve579
-   ijBv4r8c6DB59/ejqo/9agdSjVyhEXSl6HoOOB9JZ44zy+c2aBcEvkrIT
-   zrOr0r5YKBLaQsQvtv4kS1g6EucZtdTc+exjUksQbCKLVo/wbPffWFpUW
-   xQ6E0hk13ce15ufK4lZNxhoGVP0Kz2589yn+n/+xzg6PYd67mIg8QfPCU
-   mfwxFHScuwcWqnu1oHtLCbCRB6tZkOLNwzAW8ucjYDjf4yp1hXSJdmjsA
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="269355573"
+  t=1642560676; x=1674096676;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=6MNgv6gOBWr2etpKObCC3kKbrF9v4SwaLJQQ3hF4zuM=;
+  b=exSSY9ii3WrQNOXU2uga7HtT8bht5Z75Ao/a7OltjNxkP3qDLjwR2EV+
+   zFUjvYynF3U2ucbPry24jd0aTFl7amzy44EYFcMsMTmyEQJ5jFRATPo3k
+   qV6PgcHY6VEYtWr550bDluIzdxDEwQL5rwO+f9hG4VZgFbtmHsioAET/q
+   qItMVthSkEe3Zg/I1i46LX23OTrwqRlHZ1hekE248qe91Qvk4mUy0WJhG
+   IXGoQeP/vnjM2KLka+QfqFgbS1lSiEt/ScHdtBdd78ZXzg3vAyt02k0jZ
+   boEpOdUyBnPEvACswNCFyS2hetgpLfh0/5WIUh16O5aO11lgE1ACmBaoU
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="305699713"
 X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="269355573"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 18:50:33 -0800
+   d="scan'208";a="305699713"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 18:51:15 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="532063112"
-Received: from zengguan-mobl.ccr.corp.intel.com (HELO [10.238.0.96]) ([10.238.0.96])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 18:50:26 -0800
-Message-ID: <be6cb4b3-541c-8a8b-8d49-c53f84ac8a9c@intel.com>
-Date:   Wed, 19 Jan 2022 10:48:46 +0800
+   d="scan'208";a="625724713"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga004.jf.intel.com with ESMTP; 18 Jan 2022 18:51:14 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nA146-000DAE-3b; Wed, 19 Jan 2022 02:51:14 +0000
+Date:   Wed, 19 Jan 2022 10:50:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Farzad Farshchi <farzadfr@gmail.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Emil Renner Berthing <kernel@esmil.dk>
+Subject: [esmil:visionfive 72/80] drivers/nvdla/nvdla_gem.c:74:3: warning:
+ cast to pointer from integer of different size
+Message-ID: <202201191052.0lVZjaZf-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.5.0
-Subject: Re: [PATCH v5 5/8] KVM: x86: Support interrupt dispatch in x2APIC
- mode with APIC-write VM exit
-Content-Language: en-US
-To:     Sean Christopherson <seanjc@google.com>
-Cc:     Paolo Bonzini <pbonzini@redhat.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "Luck, Tony" <tony.luck@intel.com>,
-        Kan Liang <kan.liang@linux.intel.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        Kim Phillips <kim.phillips@amd.com>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jethro Beekman <jethro@fortanix.com>,
-        "Huang, Kai" <kai.huang@intel.com>,
-        "x86@kernel.org" <x86@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Hu, Robert" <robert.hu@intel.com>,
-        "Gao, Chao" <chao.gao@intel.com>
-References: <20211231142849.611-1-guang.zeng@intel.com>
- <20211231142849.611-6-guang.zeng@intel.com> <YeCZpo+qCkvx5l5m@google.com>
- <ec578526-989d-0913-e40e-9e463fb85a8f@intel.com>
- <YeG0Fdn/2++phMWs@google.com>
- <8ab5f976-1f3e-e2a5-87f6-e6cf376ead2f@intel.com>
- <YecEHF9Dqf3E3t02@google.com>
-From:   Zeng Guang <guang.zeng@intel.com>
-In-Reply-To: <YecEHF9Dqf3E3t02@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/19/2022 2:17 AM, Sean Christopherson wrote:
-> On Sat, Jan 15, 2022, Zeng Guang wrote:
->>> What about tweaking my prep patch from before to the below?  That would yield:
->>>
->>> 	if (apic_x2apic_mode(apic)) {
->>> 		if (WARN_ON_ONCE(offset != APIC_ICR))
->>> 			return 1;
->>>
->>> 		kvm_lapic_msr_read(apic, offset, &val);
->> I think it's problematic to use kvm_lapic_msr_read() in this case. It
->> premises the high 32bit value already valid at APIC_ICR2, while in handling
->> "nodecode" x2APIC writes we need get continuous 64bit data from offset 300H
->> first and prepare emulation of APIC_ICR2 write.
-> Ah, I read this part of the spec:
->
->    All 64 bits of the ICR are written by using WRMSR to access the MSR with index 830H.
->    If ECX = 830H, WRMSR writes the 64-bit value in EDX:EAX to the ICR, causing the APIC
->    to send an IPI. If any of bits 13, 17:16, or 31:20 are set in EAX, WRMSR detects a
->    reserved-bit violation and causes a general-protection exception (#GP).
->
-> but not the part down below that explicit says
->
->    VICR refers the 64-bit field at offset 300H on the virtual-APIC page. When the
->    “virtualize x2APIC mode” VM-execution control is 1 (indicating virtualization of
->    x2APIC mode), this field is used to virtualize the entire ICR.
->
-> But that's indicative of an existing KVM problem.  KVM's emulation of x2APIC is
-> broken.  The SDM, in section 10.12.9 ICR Operation in x2APIC Mode, clearly states
-> that the ICR is extended to 64-bits.  ICR2 does not exist in x2APIC mode, full stop.
-> KVM botched things by effectively aliasing ICR[63:32] to ICR2.
->
-> We can and should fix that issue before merging IPIv suport, that way we don't
-> further propagate KVM's incorrect behavior.  KVM will need to manipulate the APIC
-> state in KVM_{G,S}ET_LAPIC so as not to "break" migration, "break" in quotes because
-> I highly doubt any kernel reads ICR[63:32] for anything but debug purposes.  But
-> we'd need to do that anyways for IPIv, otherwise migration from an IPIv host to
-> a non-IPIv host would suffer the same migration bug.
->
-> I'll post a series this week, in theory we should be able to reduce the patch for
-> IPIv support to just having to only touching kvm_apic_write_nodecode().
-OK, I'll adapt patch after your fix is ready. Suppose 
-kvm_lapic_msr_{write,read} needn't emulate ICR2 write/read anymore.
+tree:   https://github.com/esmil/linux visionfive
+head:   e46c3a7e373e6faa03399f1a41c29cf7546c37cb
+commit: 22c69dadd3685e2d35fb43f4da3bb7fe43f2548c [72/80] nvdla: add NVDLA driver
+config: i386-allyesconfig (https://download.01.org/0day-ci/archive/20220119/202201191052.0lVZjaZf-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/esmil/linux/commit/22c69dadd3685e2d35fb43f4da3bb7fe43f2548c
+        git remote add esmil https://github.com/esmil/linux
+        git fetch --no-tags esmil visionfive
+        git checkout 22c69dadd3685e2d35fb43f4da3bb7fe43f2548c
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash drivers/nvdla/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   drivers/nvdla/nvdla_gem.c: In function 'nvdla_fill_task_desc':
+>> drivers/nvdla/nvdla_gem.c:74:3: warning: cast to pointer from integer of different size [-Wint-to-pointer-cast]
+      74 |   (void __user *)local_task->address_list,
+         |   ^
+
+
+vim +74 drivers/nvdla/nvdla_gem.c
+
+    58	
+    59	static int32_t nvdla_fill_task_desc(struct nvdla_ioctl_submit_task *local_task,
+    60					struct nvdla_task *task)
+    61	{
+    62		struct nvdla_mem_handle *handles;
+    63	
+    64		/* update task desc fields */
+    65		task->num_addresses = local_task->num_addresses;
+    66	
+    67		handles = kzalloc(local_task->num_addresses *
+    68					sizeof(struct nvdla_mem_handle), GFP_KERNEL);
+    69		if (handles == NULL)
+    70			return -EFAULT;
+    71	
+    72		/* get user addresses list */
+    73		if (copy_from_user(handles,
+  > 74			(void __user *)local_task->address_list,
+    75			(task->num_addresses *
+    76				sizeof(struct nvdla_mem_handle)))) {
+    77			pr_err("failed to copy address list from user ptr\n");
+    78			kfree(handles);
+    79			return -EFAULT;
+    80		}
+    81	
+    82		task->address_list = handles;
+    83		return 0;
+    84	}
+    85	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
