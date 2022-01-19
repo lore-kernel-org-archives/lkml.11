@@ -2,111 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2B18C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 17:50:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ACA44C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 17:52:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356539AbiASRuu (ORCPT
+        id S1356548AbiASRwA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 12:50:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35060 "EHLO
+        Wed, 19 Jan 2022 12:52:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344353AbiASRur (ORCPT
+        with ESMTP id S1356545AbiASRvx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 12:50:47 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F310CC061574;
-        Wed, 19 Jan 2022 09:50:46 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id j23so11382882edp.5;
-        Wed, 19 Jan 2022 09:50:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gYqrzHKY6NZ+smDMyNLEdjverS9Vu94GwZDjRJxBkqA=;
-        b=fiV7KO5DntXelX0OfsQwMZ+mrbf1r4MX4LvHgm8nKHMgHVomhgK2EstxRyA3k2PNMo
-         ND6qE2dpDjcyySIVQbG5BVociAX9RQp1Iw2qF9YaZ8bK+TpyP2WhWG4CjdC+phk37eWk
-         lLU4ZS/QTAU83uE54abGHGwTiTF78dMbRBXLbAHzdf2cGD3TMKnot0FBpYSy0VuXQdFJ
-         fpfwBXTYPRk+DhGZXarUHtCFXfDTBis8RDS0htGQ9pw2KI/2kW2KZyGVJx3p385LD/Zk
-         w/lT4WXLAEeeZNFZK9yR9E6LxldsRj44MO9GAv5RdQcKLN/G97hSFd1FYwOzRjwrwQ1s
-         U71g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gYqrzHKY6NZ+smDMyNLEdjverS9Vu94GwZDjRJxBkqA=;
-        b=yA5cMUcT/jqBKQVsjtM0NxjNGCfFKcI5812LRLRf2ehpeGpNQO1Ddn9ekLj4QMsFr5
-         XooxUAd/naHzr5w5H6S6tsyMQtqq6MdIOvsiMqc7vzJz380gXySjHg8mk7eXLiqdrKOC
-         9DgzfjIQIIlwd2pAwd9n9tYhK8hJOPY4p4FUXY8A/JsdHVQSLlTDEbJKbcwzbRmexfDY
-         T3PatmlK2NNxJNL0zePXM4s4cORqZVY2UEHZIb/dvTf+Pf0FST4d3sz/CvtvqBMXWc7Q
-         s/IxpKnrAEMufLwWUpoRr81sjDGdZyLNXnfB6PEIyQ8b/Nrv63725INjof2z16f97jSD
-         fKWg==
-X-Gm-Message-State: AOAM533fheJ3VJiSMU5ThDVYOucUUbFX5O442wMc/VlEoOvN1G0Pgl97
-        Lu3oTt87rOILNC744AAkjLshgyt4wFbr9GYJqgo=
-X-Google-Smtp-Source: ABdhPJxpCISVyWKWKmWvQqQZxVaOGKUDCOomH8fpNTQfnCEI6mNChEe1bV6hhw1xHpAzOHlmz0/2fU+h5aQ8rZLpMeU=
-X-Received: by 2002:a05:6402:4c5:: with SMTP id n5mr31968102edw.122.1642614645556;
- Wed, 19 Jan 2022 09:50:45 -0800 (PST)
+        Wed, 19 Jan 2022 12:51:53 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F693C061574
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 09:51:53 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E134561633
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 17:51:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5CCEC004E1;
+        Wed, 19 Jan 2022 17:51:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1642614712;
+        bh=QsWDQvNKpqCglgKA2IleZuJy64rc5ENQciBuCdVwMgM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=p4sGnrfyDFYnoXmSg+y0jG8I9cT2ka1BLVcuDHbfEDXyl7LPixij10ayGoYSwsZmv
+         II2v+e1hxdMt9EtWi/6SDNuqxzEBwJguI0aqQXg1O1uLRGVJtMu6+rVKQ0IeAXIzn6
+         WYQMD9ez5ugypn9B7AhcC0Tb256bwvccKX4iJ1z8=
+Date:   Wed, 19 Jan 2022 18:51:49 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Alexander Usyskin <alexander.usyskin@intel.com>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Tomas Winkler <tomas.winkler@intel.com>,
+        Vitaly Lubart <vitaly.lubart@intel.com>,
+        intel-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 0/5] Add driver for GSC controller
+Message-ID: <YehPtWZ2aGlFOvWK@kroah.com>
+References: <20220119155807.222657-1-alexander.usyskin@intel.com>
 MIME-Version: 1.0
-References: <20220117142919.207370-1-marcan@marcan.st> <20220117142919.207370-2-marcan@marcan.st>
-In-Reply-To: <20220117142919.207370-2-marcan@marcan.st>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 19 Jan 2022 19:49:03 +0200
-Message-ID: <CAHp75VfVuX-BG1MJcEoQrOW6jn=PSMZH0jTcwGj9PwWxocG_Gw@mail.gmail.com>
-Subject: Re: [PATCH v3 1/9] brcmfmac: pcie: Release firmwares in the
- brcmf_pcie_setup error path
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        SHA-cyfmac-dev-list@infineon.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220119155807.222657-1-alexander.usyskin@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 4:30 PM Hector Martin <marcan@marcan.st> wrote:
->
-> This avoids leaking memory if brcmf_chip_get_raminfo fails. Note that
-> the CLM blob is released in the device remove path.
+On Wed, Jan 19, 2022 at 05:58:02PM +0200, Alexander Usyskin wrote:
+> GSC is a graphics system controller, it provides
+> a chassis controller for graphics discrete cards.
+> 
+> There are two MEI interfaces in GSC: HECI1 and HECI2.
+> 
+> This series includes instantiation of the auxiliary devices for HECI2
+> and mei-gsc auxiliary device driver that binds to the auxiliary device.
+> 
+> In v2 the platform device was replaced by the auxiliary device.
+> 
+> Greg KH, please review and ACK the MEI patches.
+> We are pushing all through gfx tree as the auxiliary device belongs there.
 
-...
+I will review this after 5.17-rc1 is out.  Please give us some time,
+there is no rush.
 
->         if (ret) {
-
->                 brcmf_err(bus, "Failed to get RAM info\n");
-> +               release_firmware(fw);
-> +               brcmf_fw_nvram_free(nvram);
-
-Can we first undo the things and only after print a message?
-
->                 goto fail;
->         }
-
-
--- 
-With Best Regards,
-Andy Shevchenko
+greg k-h
