@@ -2,102 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15AC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 17:31:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E558CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 17:33:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356426AbiASRbO (ORCPT
+        id S1356436AbiASRdO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 12:31:14 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:45272 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346866AbiASRbN (ORCPT
+        Wed, 19 Jan 2022 12:33:14 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:43561 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346866AbiASRdN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 12:31:13 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BA351615E5;
-        Wed, 19 Jan 2022 17:31:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22E93C004E1;
-        Wed, 19 Jan 2022 17:31:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642613472;
-        bh=VUM+zefqtgHBv4YnB4BhWYy0GNdhtJQ7lZ3gr/B8kU0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=gWQ9fvpjan3htYRDTrUxthqZ5ZnJ0DG3/dzp9rAv1ndREXFq28YXGkzZ/2Edx6K7o
-         ptskYiLys411tP5Wp0jMzughZB7dnysDX96GkoAyHyul+t9vYKUK5S9OMoMWSlT5aC
-         boBbD3SnfDvOdAxyIL0wK9zhrqQVsRPMc1q3Acan1yg/opEsBJNpBQsDc8I6OtROKQ
-         xEz36f62ST87wBIkNzk9PZkOvLTIH1KxPCI4yFy0JXjOCPMUuogUiR3V3h2DD1TtEx
-         ObR2Y7fQBtETqgAeSwU7E7lde3U3NfwxCp5oXM5vP05rMt9ZtK3QXnqk8bRZtVeR2f
-         64hCBzstOF4Uw==
-Date:   Wed, 19 Jan 2022 18:31:07 +0100
-From:   Christian Brauner <brauner@kernel.org>
-To:     Alexey Gladkov <legion@kernel.org>
-Cc:     Alexey Dobriyan <adobriyan@gmail.com>, viro@zeniv.linux.org.uk,
-        ebiederm@xmission.com, akpm@linux-foundation.org,
-        linux-kernel@vger.kernel.org, linux-fsdevel@vger.kernel.org,
-        stephen.s.brennan@oracle.com, cyphar@cyphar.com
-Subject: Re: [PATCH v2] proc: "mount -o lookup=" support
-Message-ID: <20220119173107.tcsrjml4ujrdcqyh@wittgenstein>
-References: <YegysyqL3LvljK66@localhost.localdomain>
- <20220119162423.eqbyefywhtzm22tr@wittgenstein>
- <20220119171522.pxmkbt5eu3rs5yik@example.org>
+        Wed, 19 Jan 2022 12:33:13 -0500
+Received: by mail-io1-f72.google.com with SMTP id a185-20020a6bcac2000000b00604c268546dso2012184iog.10
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 09:33:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=krtATGllhtAyALqcC63oUyGRYkOjOXl+s46Pa7ysR9c=;
+        b=T6cGb76aqOuEjS4mZvbFrtEABrAnuL5U7rpbFN9zuI9Q7px1nibJjJsqVin6/yN+KI
+         XgCJcNqkMi1/aC6k6AuUcvhM1m8h6c3bMHdsDarJLKrKIVIIeE11ijtNz/ASMsXqsbpL
+         HibqzpwkweW7z73tVlnbUvsjMj0VJoUO57qkNI2iN1PkGtj2rI03RIOnXLR0qwscBP4d
+         u2JjbBrzMM2ivW+wrZd4ErLqIIzV1t5jjuSWUM/sJwYe7wE1A8RZStWedaVFe+7GOW3K
+         vGjcr9O+Vh7AUjOc78vB1t7jmvPdYAg0v5w5kpwJyS2fpjaTzWpJtynxSAPBlj0IHz2B
+         1X/A==
+X-Gm-Message-State: AOAM533a31xkmOgxMoUldwNxErz6yYIadmjCRMXAdSf0h/xC1tr2GtiI
+        AOs18NL6rzNPaNpLI2z/yTu34x1X1y8MYf5sEX7n0u5fyPPX
+X-Google-Smtp-Source: ABdhPJzaKzowQfVT+GHWXZ4UgeNZs4G8yUeWQIjhrpoxjIgMxBU+Sk0gF05xHP68cBU8Nk4qdQmB+F86UGe2oxxBm63RydRPrvJF
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220119171522.pxmkbt5eu3rs5yik@example.org>
+X-Received: by 2002:a05:6e02:174b:: with SMTP id y11mr18240493ill.256.1642613592883;
+ Wed, 19 Jan 2022 09:33:12 -0800 (PST)
+Date:   Wed, 19 Jan 2022 09:33:12 -0800
+In-Reply-To: <000000000000c5c09805d313d03e@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000b5085105d5f2c7ab@google.com>
+Subject: Re: [syzbot] BUG: sleeping function called from invalid context in tipc_crypto_start
+From:   syzbot <syzbot+73a4f2b28371d5526901@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, fw@strlen.de, hoang.h.le@dektech.com.au,
+        jmaloy@redhat.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
+        mathew.j.martineau@linux.intel.com, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com, tadeusz.struk@linaro.org,
+        tipc-discussion@lists.sourceforge.net, yajun.deng@linux.dev,
+        ying.xue@windriver.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 06:15:22PM +0100, Alexey Gladkov wrote:
-> On Wed, Jan 19, 2022 at 05:24:23PM +0100, Christian Brauner wrote:
-> > On Wed, Jan 19, 2022 at 06:48:03PM +0300, Alexey Dobriyan wrote:
-> > > From 61376c85daab50afb343ce50b5a97e562bc1c8d3 Mon Sep 17 00:00:00 2001
-> > > From: Alexey Dobriyan <adobriyan@gmail.com>
-> > > Date: Mon, 22 Nov 2021 20:41:06 +0300
-> > > Subject: [PATCH 1/1] proc: "mount -o lookup=..." support
-> > > 
-> > > Docker implements MaskedPaths configuration option
-> > > 
-> > > 	https://github.com/estesp/docker/blob/9c15e82f19b0ad3c5fe8617a8ec2dddc6639f40a/oci/defaults.go#L97
-> > > 
-> > > to disable certain /proc files. It overmounts them with /dev/null.
-> > > 
-> > > Implement proper mount option which selectively disables lookup/readdir
-> > > in the top level /proc directory so that MaskedPaths doesn't need
-> > > to be updated as time goes on.
-> > 
-> > I might've missed this when this was sent the last time so maybe it was
-> > clearly explained in an earlier thread: What's the reason this needs to
-> > live in the kernel?
-> > 
-> > The MaskedPaths entry is optional so runtimes aren't required to block
-> > anything by default and this mostly makes sense for workloads that run
-> > privileged.
-> > 
-> > In addition MaskedPaths is a generic option which allows to hide any
-> > existing path, not just proc. Even in the very docker-specific defaults
-> > /sys/firmware is covered.
-> > 
-> > I do see clear value in the subset= and hidepid= options. They are
-> > generally useful independent of opinionated container workloads. I don't
-> > see the same for lookup=.
-> > 
-> > An alternative I find more sensible is to add a new value for subset=
-> > that hides anything(?) that only global root should have read/write
-> > access too.
-> 
-> Or we can allow to change permissions in the procfs only in the direction
-> of decreasing (if some file has 644 then allow to set 640 or 600). In this
-> case, we will not need to constantly check the whitelist.
+syzbot suspects this issue was fixed by commit:
 
-I don't fancy any filtering or allowlist approach. I find that rather
-inelegant. But if I understand you correctly is that if we were to have
-decreasing permissions we could allow a (namespace) procfs-admin to set
-permissions so that the relevant files are essentially read-only or not
-even readable at all for container workloads. So once you've lowered
-perms you can't raise them which ensures even namespace procfs-admin
-can't raise them again.
-Might work as well. But that implies that we wouldn't need any allowlist
-at all afaict.
+commit f845fe5819efc4111c456c102f15db6d9ed3406e
+Author: Hoang Le <hoang.h.le@dektech.com.au>
+Date:   Fri Dec 17 03:00:59 2021 +0000
+
+    Revert "tipc: use consistent GFP flags"
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17b09d88700000
+start commit:   28a2686c185e selftests: Fix IPv6 address bind tests
+git tree:       net
+kernel config:  https://syzkaller.appspot.com/x/.config?x=221ffc09e39ebbd1
+dashboard link: https://syzkaller.appspot.com/bug?extid=73a4f2b28371d5526901
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1066ce9db00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1398fc6db00000
+
+If the result looks correct, please mark the issue as fixed by replying with:
+
+#syz fix: Revert "tipc: use consistent GFP flags"
+
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
