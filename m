@@ -2,182 +2,193 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12C85C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 02:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09709C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 02:07:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350857AbiASCHe (ORCPT
+        id S1350872AbiASCH4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 21:07:34 -0500
-Received: from mga09.intel.com ([134.134.136.24]:14240 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350649AbiASCHd (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 21:07:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642558053; x=1674094053;
-  h=subject:to:cc:references:from:message-id:date:
-   mime-version:in-reply-to:content-transfer-encoding;
-  bh=SADnO3+RxA7TLM946fh6hsuryNfZzjZ8vuXRamwkzA0=;
-  b=hD6483/cPfvT/FSLEDd0eyI7o4itsSwTVYEmcTa5dPVKfMOzzcaqj02F
-   KcEnHODx23gVK6SPLJM9IAAzMnycm3x+rxa/JfgbLk1hy3G6ayS22VReF
-   NuP4YCiXaBorWRsSqI3C+Kujhgn+04nR4LX612mco/UVSKJulfEa30RRn
-   MLQgZxR6J0tAkBb/VFgTlQZ6TgepLGZffBspy9A7sUcIwJos+Y35KX/j7
-   im8T51VEsC2DTQssqXK4rg3Q6gLtXJtTIhPpzFE68tQiyvuGSFz70yNKs
-   GtVQ9q8mspDhnXFLEcBKooam0eYLFdBV6y1FXgB8M8Tr9BMaZdaOjolPr
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="244756699"
-X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="244756699"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 18:07:32 -0800
-X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="622350895"
-Received: from mdzurick-mobl.amr.corp.intel.com (HELO [10.209.145.208]) ([10.209.145.208])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 18:07:31 -0800
-Subject: Re: [PATCH v2 2/2] ASoC: SOF: compress: Implement get_caps and
- get_codec_caps
-To:     Daniel Baluta <daniel.baluta@oss.nxp.com>, lgirdwood@gmail.com,
-        broonie@kernel.org
-Cc:     alsa-devel@alsa-project.org, kai.vehmanen@linux.intel.com,
-        cezary.rojewski@intel.com, linux-kernel@vger.kernel.org,
-        ranjani.sridharan@linux.intel.com, paul.olaru@nxp.com,
-        daniel.baluta@nxp.com, sound-open-firmware@alsa-project.org
-References: <20220118212732.281657-1-daniel.baluta@oss.nxp.com>
- <20220118212732.281657-3-daniel.baluta@oss.nxp.com>
-From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
-Message-ID: <41ae6093-8e27-01d4-e532-8a28fb1d9cf1@linux.intel.com>
-Date:   Tue, 18 Jan 2022 19:00:35 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.14.0
+        Tue, 18 Jan 2022 21:07:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46896 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350649AbiASCHz (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 21:07:55 -0500
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32AE7C061574;
+        Tue, 18 Jan 2022 18:07:55 -0800 (PST)
+Received: by mail-ed1-x535.google.com with SMTP id p12so3858239edq.9;
+        Tue, 18 Jan 2022 18:07:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=U5yybkRyy74+vUgcdmJvZM65Xa1rfncQiIH2cIlKdHE=;
+        b=KTWes4lr7GZeDhVcRrU3n2cGz/V+jTCno+1aTbPMI8VYjB1V3Ytr1fL9FKReXX52c9
+         5aJMiw9Qrn+EvEvXb/dom7MnqWISD/zHADAYfRLJsBKiEY4o6iY9QbVlhNFr+NnMrrhh
+         WGPyBWE5+VwS3nZe/QD/+8QZUtgEHfyyLLJ+AU3wlCdA1Iv4hdD3CFtrXwSS96Nd9Iks
+         gVUK0/rgPOyl7XSL/T8jOLnK0GJYcxn6RgtklfWO7enutqzKpYsoQgh2GyyIXTyiWlzI
+         eMENpyMKJ7NEJH/DgKL8tMPkglg3xR7hJb97sOyKyb3hzKvf1m5i4VLRSu8SyQRsm2cy
+         XTHA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=U5yybkRyy74+vUgcdmJvZM65Xa1rfncQiIH2cIlKdHE=;
+        b=qEBP9+Dt3yu0mW/fvR+Zf0OjRcb6srF+qPMOlO/4qGgHTfE8QKGOn8dT1/Rnn2pbu4
+         DrCyW8taaAvKby8Ot54THr38/0iGEY9K79Sv0fp9IH2DSmkaSd4oL2Z7E79El7jrJfTQ
+         WJC6tKPkeGIAJd9eQaTir8J+vzK2ICrFLLAQYA15rNSQ3U7b9oiAUs6U/JoCo+w4tdeM
+         hkrIkBxFwe12DyUaUCXzehzImCv9bs4QL1EgZAO61pVUdCIO0b2llLs/M7lSRhcqUPFP
+         lwjO1iMWW1tlX13Hf97a102u+O+lF+xy0fjjEdRsBiMg2m2kzWfCFD+W7/2TKpijrYeR
+         eZJw==
+X-Gm-Message-State: AOAM531YFaXjYZ6DS8phz4ASbZ6+FAPMrWEgGbz8n0FNGPDuUkqBwGp1
+        V7w9X+J9r5Z5f1u1hQfi5avbkWsvvPveUtc4Exg=
+X-Google-Smtp-Source: ABdhPJwu7q7MpAQLPPXfxVHIfcMWw6v/ODYbkPx0kUypo7cnOssvZ4mqSKpfTMBmvvJGzTqYOkYPuI7G/c7imbfVsBk=
+X-Received: by 2002:a05:6402:51c6:: with SMTP id r6mr28172784edd.129.1642558073780;
+ Tue, 18 Jan 2022 18:07:53 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220118212732.281657-3-daniel.baluta@oss.nxp.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <36bd91e4-8eda-5677-7fde-40295932a640@molgen.mpg.de>
+ <CAABZP2wxXW2RqpKevt9erkYg3po0ByUEFvYsgy3cRty5Rt1Qyw@mail.gmail.com>
+ <d744e653-5e8f-b874-6991-3005e6b8afd4@molgen.mpg.de> <20220118172904.GG947480@paulmck-ThinkPad-P17-Gen-1>
+ <20220118234656.GA3120763@paulmck-ThinkPad-P17-Gen-1>
+In-Reply-To: <20220118234656.GA3120763@paulmck-ThinkPad-P17-Gen-1>
+From:   Zhouyi Zhou <zhouzhouyi@gmail.com>
+Date:   Wed, 19 Jan 2022 10:07:42 +0800
+Message-ID: <CAABZP2yffDyg31smcCyqENFBvQPfmFCT_YwDM_DJ=S-3rjxKuQ@mail.gmail.com>
+Subject: Re: Problems with rcutorture on ppc64le: allmodconfig(2) and other failures
+To:     "Paul E. McKenney" <paulmck@kernel.org>
+Cc:     Paul Menzel <pmenzel@molgen.mpg.de>,
+        Josh Triplett <josh@joshtriplett.org>,
+        rcu <rcu@vger.kernel.org>, linux-kselftest@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Thanks Paul for looking into this
 
+On Wed, Jan 19, 2022 at 7:46 AM Paul E. McKenney <paulmck@kernel.org> wrote=
+:
+>
+> On Tue, Jan 18, 2022 at 09:29:04AM -0800, Paul E. McKenney wrote:
+> > On Tue, Jan 18, 2022 at 08:56:24AM +0100, Paul Menzel wrote:
+> > > Dear Zhouyi,
+> > >
+> > >
+> > > Thank you for your quick response.
+> > >
+> > >
+> > > Am 18.01.22 um 08:34 schrieb Zhouyi Zhou:
+> > >
+> > > > I have studied the rcu torture test recently. I am also interested =
+in
+> > > > this topic.
+> > > > But I can't open
+> > > > [1]: https://owww.molgen.mpg.de/~pmenzel/allmodconf-Make.out.txt
+> > > > [2]: https://owww.molgen.mpg.de/~pmenzel/rcutorture-log.txt
+> > >
+> > > Sorry, about that. I should have checked those. I had put them into a
+> > > directory:
+> > >
+> > > [1]: https://owww.molgen.mpg.de/~pmenzel/rcutorture/allmodconf-Make.o=
+ut.txt
+> > > [2]: https://owww.molgen.mpg.de/~pmenzel/rcutorture/rcutorture-log.tx=
+t
+> > >
+> > > I am going to try to test your suggestions at the end of the day.
+> >
+> > On x86 rcutorture builds successfully.  However, allmodconfig
+> > on semi-recent -next got me "Can't open perl script
+> > "./usr/include/headers_check.pl": No such file or directory".
+> > Which might well be a local problem or might well be fixed by now.
+>
+> Not fixed as of next-20220118.  Chasing it down...  ;-)
+I can do allmodconfig on -next,
+$git describe
+next-20220118
+$tools/testing/selftests/rcutorture/bin/torture.sh --duration 10
+ ---  tools/testing/selftests/rcutorture/bin/torture.sh --duration 10
+ --- Results directory:  2022.01.19-09.14.39-torture
+$ ps -aux|grep qemu-system
+zzy       470309  773  0.3 1876544 153936 pts/0  Sl+  09:55  31:27
+qemu-system-x86_64 -enable-kvm -nographic -smp 16 -net none -machine
+q35,accel=3Dkvm -cpu kvm64 -serial
+file:/tmp/linux-next/tools/testing/selftests/rcutorture/res/2022.01.19-09.1=
+4.39-torture/results-rcutorture/TREE03/console.log
+-m 512 -kernel /tmp/linux-next/tools/testing/selftests/rcutorture/res/2022.=
+01.19-09.14.39-torture/results-rcutorture/TREE03/bzImage
+-append debug_boot_weak_hash panic=3D-1 selinux=3D0 initcall_debug debug
+console=3DttyS0 rcupdate.rcu_cpu_stall_suppress_at_boot=3D1
+torture.disable_onoff_at_boot rcupdate.rcu_task_stall_timeout=3D30000
+rcutorture.onoff_interval=3D200 rcutorture.onoff_holdoff=3D30
+rcutree.gp_preinit_delay=3D12 rcutree.gp_init_delay=3D3
+rcutree.gp_cleanup_delay=3D3 rcutree.kthread_prio=3D2 threadirqs
+tree.use_softirq=3D0 rcutorture.n_barrier_cbs=3D4
+rcutorture.stat_interval=3D15 rcutorture.shutdown_secs=3D420
+rcutorture.test_no_idle_hz=3D1 rcutorture.verbose=3D1
+zzy       755865  0.0  0.0  17676  2876 pts/2    S+   09:59   0:00
+grep --color=3Dauto qemu-system
+$ ls -l vmlinux
+-rwxrwxr-x 1 zzy zzy 69349872 1=E6=9C=88  19 09:55 vmlinux
 
-On 1/18/22 3:27 PM, Daniel Baluta wrote:
-> From: Paul Olaru <paul.olaru@nxp.com>
-> 
-> These functions are used by the userspace to determine what the firmware
-> supports and tools like cplay should use in terms of sample rate, bit
-> rate, buffer size and channel count.
-> 
-> The current implementation uses i.MX8 tested scenarios!
-> 
-> Signed-off-by: Paul Olaru <paul.olaru@nxp.com>
-> Signed-off-by: Daniel Baluta <daniel.baluta@nxp.com>
-> ---
->  sound/soc/sof/compress.c | 74 ++++++++++++++++++++++++++++++++++++++++
->  1 file changed, 74 insertions(+)
-> 
-> diff --git a/sound/soc/sof/compress.c b/sound/soc/sof/compress.c
-> index 91a9c95929cd..e3f3f309f312 100644
-> --- a/sound/soc/sof/compress.c
-> +++ b/sound/soc/sof/compress.c
-> @@ -308,6 +308,78 @@ static int sof_compr_pointer(struct snd_soc_component *component,
->  	return 0;
->  }
->  
-> +static int sof_compr_get_caps(struct snd_soc_component *component,
-> +			      struct snd_compr_stream *cstream,
-> +			      struct snd_compr_caps *caps)
-> +{
-> +	caps->num_codecs = 3;
-> +	caps->min_fragment_size = 3840;
-> +	caps->max_fragment_size = 3840;
-> +	caps->min_fragments = 2;
-> +	caps->max_fragments = 2;
-> +	caps->codecs[0] = SND_AUDIOCODEC_MP3;
-> +	caps->codecs[1] = SND_AUDIOCODEC_AAC;
-> +	caps->codecs[2] = SND_AUDIOCODEC_PCM;
-
-I don't think you can add this unconditionally for all
-devices/platforms, clearly this wouldn't be true for Intel for now.
-
-If the information is not part of a firmware manifest or topology, then
-it's likely we have to use an abstraction layer to add this for specific
-platforms.
-
-it's really a bit odd to hard-code all of this at the kernel level, this
-was not really what I had in mind when we come up with the concept of
-querying capabilities. I understand though that for testing this is
-convenient, so maybe this can become a set of fall-back properties in
-case the firmware doesn't advertise anything.
-
-> +
-> +	return 0;
-> +}
-> +
-> +static struct snd_compr_codec_caps caps_pcm = {
-> +	.num_descriptors = 1,
-> +	.descriptor[0].max_ch = 2,
-> +	.descriptor[0].sample_rates[0] = 48000,
-> +	.descriptor[0].num_sample_rates = 1,
-> +	.descriptor[0].bit_rate = {1536, 3072},
-> +	.descriptor[0].num_bitrates = 2,
-> +	.descriptor[0].profiles = SND_AUDIOPROFILE_PCM,
-> +	.descriptor[0].modes = 0,
-> +	.descriptor[0].formats = SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S32_LE,
-> +};
-> +
-> +static struct snd_compr_codec_caps caps_mp3 = {
-> +	.num_descriptors = 1,
-> +	.descriptor[0].max_ch = 2,
-> +	.descriptor[0].sample_rates[0] = 48000,
-> +	.descriptor[0].num_sample_rates = 1,
-> +	.descriptor[0].bit_rate = {32, 40, 48, 56, 64, 80, 96, 112, 224, 256, 320},
-> +	.descriptor[0].num_bitrates = 11,
-> +	.descriptor[0].profiles = 0,
-> +	.descriptor[0].modes = SND_AUDIOCHANMODE_MP3_STEREO,
-> +	.descriptor[0].formats = 0,
-> +};
-> +
-> +static struct snd_compr_codec_caps caps_aac = {
-> +	.num_descriptors = 1,
-> +	.descriptor[0].max_ch = 2,
-> +	.descriptor[0].sample_rates[0] = 48000,
-> +	.descriptor[0].num_sample_rates = 1,
-> +	.descriptor[0].bit_rate = {128, 192},
-> +	.descriptor[0].num_bitrates = 2,
-> +	.descriptor[0].profiles = 0,
-> +	.descriptor[0].modes = 0,
-> +	.descriptor[0].formats = SND_AUDIOSTREAMFORMAT_MP4ADTS | SND_AUDIOSTREAMFORMAT_MP2ADTS,
-> +};
-> +
-> +static int sof_compr_get_codec_caps(struct snd_soc_component *component,
-> +				    struct snd_compr_stream *cstream,
-> +				    struct snd_compr_codec_caps *codec)
-> +{
-> +	switch (codec->codec) {
-> +	case SND_AUDIOCODEC_MP3:
-> +		*codec = caps_mp3;
-> +		break;
-> +	case SND_AUDIOCODEC_AAC:
-> +		*codec = caps_aac;
-> +		break;
-> +	case SND_AUDIOCODEC_PCM:
-> +		*codec = caps_pcm;
-> +		break;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +	return 0;
-> +}
-> +
->  struct snd_compress_ops sof_compressed_ops = {
->  	.open		= sof_compr_open,
->  	.free		= sof_compr_free,
-> @@ -316,5 +388,7 @@ struct snd_compress_ops sof_compressed_ops = {
->  	.trigger	= sof_compr_trigger,
->  	.pointer	= sof_compr_pointer,
->  	.copy		= sof_compr_copy,
-> +	.get_caps	= sof_compr_get_caps,
-> +	.get_codec_caps	= sof_compr_get_codec_caps,
->  };
->  EXPORT_SYMBOL(sof_compressed_ops);
-> 
+Could you please try the following command ?
+linux-next$ perl ./usr/include/headers_check.pl usr/include x86
+usr/include/rdma/hfi/hfi1_user.h
+linux-next$ echo $?
+0
+The headers_check.pl in linux-next
+(https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/tree/u=
+sr/include/headers_check.pl)
+is used to check the validity of head files in ./usr/include
+>
+> > Either way, it looks like I need to upgrade the torture.sh script's
+> > checks for failed builds.  Thank you for reporting this!
+>
+> Does this make torture.sh more reliably report build failures?
+I studied this commit line by line several times and benefited a lot. Thank=
+ you!
+>
+>                                                 Thanx, Paul
+>
+> ------------------------------------------------------------------------
+>
+> commit 0d302830515307ceb58e89d5fb91e81b6d22e0bf
+> Author: Paul E. McKenney <paulmck@kernel.org>
+> Date:   Tue Jan 18 15:40:49 2022 -0800
+>
+>     torture: Make kvm-find-errors.sh notice missing vmlinux file
+>
+>     Currently, an obtuse compiler diagnostic can fool kvm-find-errors.sh
+>     into believing that the build was successful.  This commit therefore
+>     adds a check for a missing vmlinux file.
+>
+>     Link: https://lore.kernel.org/lkml/36bd91e4-8eda-5677-7fde-40295932a6=
+40@molgen.mpg.de/
+>     Reported-by: Paul Menzel <pmenzel@molgen.mpg.de>
+>     Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+>
+> diff --git a/tools/testing/selftests/rcutorture/bin/kvm-find-errors.sh b/=
+tools/testing/selftests/rcutorture/bin/kvm-find-errors.sh
+> index 2e9e9e2eedb69..7d3e11a6b8290 100755
+> --- a/tools/testing/selftests/rcutorture/bin/kvm-find-errors.sh
+> +++ b/tools/testing/selftests/rcutorture/bin/kvm-find-errors.sh
+> @@ -30,10 +30,15 @@ editor=3D${EDITOR-vi}
+>  files=3D
+>  for i in ${rundir}/*/Make.out
+>  do
+> +       scenariodir=3D"`dirname $i`"
+>         if egrep -q "error:|warning:|^ld: .*undefined reference to" < $i
+>         then
+>                 egrep "error:|warning:|^ld: .*undefined reference to" < $=
+i > $i.diags
+>                 files=3D"$files $i.diags $i"
+> +       elif ! test -f ${scenariodir}/vmlinux
+> +       then
+> +               echo No ${scenariodir}/vmlinux file > $i.diags
+> +               files=3D"$files $i.diags $i"
+>         fi
+>  done
+>  if test -n "$files"
+Thanks
+Zhouyi
