@@ -2,158 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7536DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 13:22:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3618EC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 13:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354793AbiASNWu (ORCPT
+        id S1354798AbiASNYi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 08:22:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57886 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354669AbiASNWn (ORCPT
+        Wed, 19 Jan 2022 08:24:38 -0500
+Received: from mx315.baidu.com ([180.101.52.204]:35294 "EHLO
+        njjs-sys-mailin04.njjs.baidu.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1350184AbiASNYb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 08:22:43 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED1D6C06173F
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 05:22:42 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id x11so9371935lfa.2
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 05:22:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=K4NxkHaCPaZxAktRY7Z9j13Y+DVG/4Ag2JSyRXHqb24=;
-        b=ti8Gh06talRe37sOC29PCTTLR6mADi2r7ZHqYaJ5sSLO1zKq5s6E6T3q//czKCW1gM
-         JGha1wvCDGvl6QtuhvFxn3BdefYyH87USpFeB7wGsibh5eciB9mcxBO0wN5Dx4OY85/p
-         Z7ikhOitXFCQNo7KkI/zK/WT+j5FGaMJb2DDzjQ7P79MtllzXplRscjBTYceV/xvTD+b
-         j/aiMVtBriFmAN8WH0ijWgLN9t5EcbZsRLLEYOINaWTZfqFyWu3WjWnalXqtj2cumrrk
-         1n8d1Hf79gSwW3QqQ7D1lRK2QodZ5O6X0gD/RUB36B8+UeVgxCUEfXRcLVg41kkbr5Lb
-         A8Ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=K4NxkHaCPaZxAktRY7Z9j13Y+DVG/4Ag2JSyRXHqb24=;
-        b=qva6ySd+NXDxix8KoE87bRE9u0TOMLyc28hBqslSNemy/UHBf0Eury1CMJuAkSVkee
-         QxXWwa9IBRegTXXvc2z8Zp1F0FKicB4dt3JjsYFBsMAymp2ji7nLYBVRC08OPyjDylzD
-         ezmHoYhBA+52qWzyhxkTIPAhGkSMoJLc3sSJdXfcbkgOoZtubM+g+9XZtH+kidBkLDdQ
-         YmK0JgfZth/8+BvSOvO8RSOXGQqA0EXP2umn8o+5qEteCsYXumzaugKEzrjxyZpmXbaw
-         atOIM2h3L/x+unerjMgsWFYwqIOj0bdJdU6pHpv7X6LlHqJgU7hobM/FlSUauIW0VzFp
-         Ku2Q==
-X-Gm-Message-State: AOAM530v5bAsITrt2JsfNO9ezwqFnilagvXQQGRpRjtsWBw4Dz9TzjHD
-        DwKKuQhI6bTNFWyFx2Ne5av6JRhAJDNOeqbeqLjlSA==
-X-Google-Smtp-Source: ABdhPJx6GoAj8bSptRZ68c+ctdvk5tpIiiiFZFiN9pmrER+fTAfDbHQjRp8i5/be41dPbatXScHf/0ieDl9tc/5GPIs=
-X-Received: by 2002:a05:6512:308d:: with SMTP id z13mr18136533lfd.523.1642598561229;
- Wed, 19 Jan 2022 05:22:41 -0800 (PST)
-MIME-Version: 1.0
-References: <20220112161230.836326-1-vincent.donnefort@arm.com>
- <20220112161230.836326-3-vincent.donnefort@arm.com> <CAKfTPtC2wCw4U9w=saW0dGYHfOKo42nBKU7oHcEM7KeDj7MzWA@mail.gmail.com>
- <Yeac5Y5Fzu/jaUf0@FVFF7649Q05P> <CAKfTPtAdTTP+qGruYy8gi6rfhS0W1gAdjgeLCtrLZHxyCEHo9g@mail.gmail.com>
- <Yef8kTnlP5h4I7/1@FVFF7649Q05P>
-In-Reply-To: <Yef8kTnlP5h4I7/1@FVFF7649Q05P>
-From:   Vincent Guittot <vincent.guittot@linaro.org>
-Date:   Wed, 19 Jan 2022 14:22:28 +0100
-Message-ID: <CAKfTPtB=CJNFDrpXY9o8g5XfjBfnVTUgb2rWke1SyWMUxz0M+g@mail.gmail.com>
-Subject: Re: [PATCH v2 2/7] sched/fair: Decay task PELT values during migration
-To:     Vincent Donnefort <Vincent.Donnefort@arm.com>
-Cc:     peterz@infradead.org, mingo@redhat.com,
-        linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
-        Valentin.Schneider@arm.com, Morten.Rasmussen@arm.com,
-        Chris.Redpath@arm.com, qperret@google.com, Lukasz.Luba@arm.com
-Content-Type: text/plain; charset="UTF-8"
+        Wed, 19 Jan 2022 08:24:31 -0500
+X-Greylist: delayed 606 seconds by postgrey-1.27 at vger.kernel.org; Wed, 19 Jan 2022 08:24:30 EST
+Received: from bjhw-sys-rpm015653cc5.bjhw.baidu.com (bjhw-sys-rpm015653cc5.bjhw.baidu.com [10.227.53.39])
+        by njjs-sys-mailin04.njjs.baidu.com (Postfix) with ESMTP id 8FCFB11800042;
+        Wed, 19 Jan 2022 21:14:21 +0800 (CST)
+Received: from localhost (localhost [127.0.0.1])
+        by bjhw-sys-rpm015653cc5.bjhw.baidu.com (Postfix) with ESMTP id 6EB4DD9932;
+        Wed, 19 Jan 2022 21:14:21 +0800 (CST)
+From:   Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>
+To:     pbonzini@redhat.com, seanjc@google.com, vkuznets@redhat.com,
+        wanpengli@tencent.com, jmattson@google.com, joro@8bytes.org,
+        tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
+        dave.hansen@linux.intel.com, hpa@zytor.com
+Cc:     lirongqing@baidu.com, kvm@vger.kernel.org, x86@kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1] KVM: X86: Introduce vfio_intr_stat per-vm debugfs file
+Date:   Wed, 19 Jan 2022 21:14:21 +0800
+Message-Id: <1642598061-29454-1-git-send-email-yuanzhaoxiong@baidu.com>
+X-Mailer: git-send-email 1.7.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 19 Jan 2022 at 12:59, Vincent Donnefort
-<vincent.donnefort@arm.com> wrote:
->
-> [...]
->
-> > > >
-> > > > This has several shortfalls:
-> > > > - have a look at cfs_rq_clock_pelt() and rq_clock_pelt(). What you
-> > > > name clock_pelt in your commit message and is used to update PELT and
-> > > > saved in se->avg.last_update_time is : rq->clock_pelt -
-> > > > rq->lost_idle_time - cfs_rq->throttled_clock_task_time
-> > >
-> > > That's why, the PELT "lag" is added onto se->avg.last_update_time. (see the last
-> > > paragraph of the commit message) The estimator is just a time delta, that is
-> > > added on top of the entity's last_update_time. I don't see any problem with the
-> > > lost_idle_time here.
-> >
-> > lost_idle_time is updated before entering idle and after your
-> > clock_pelt_lag has been updated. This means that the delta that you
-> > are computing can be wrong
-> >
-> > I haven't look in details but similar problem probably happens for
-> > throttled_clock_task_time
-> >
-> > >
-> > > > - you are doing this whatever the state of the cpu : idle or not. But
-> > > > the clock cycles are not accounted for in the same way in both cases.
-> > >
-> > > If the CPU is idle and clock_pelt == clock_task, the component A of the
-> > > estimator would be 0 and we only would account for how outdated is the rq's
-> > > clock, i.e. component B.
-> >
-> > And if cpu is not idle, you can't apply the diff between clk_pelt and clock_task
-> >
-> > >
-> > > > - (B) doesn't seem to be accurate as you skip irq and steal time
-> > > > accounting and you don't apply any scale invariance if the cpu is not
-> > > > idle
-> > >
-> > > The missing irq and paravirt time is the reason why it is called "estimator".
-> > > But maybe there's a chance of improving this part with a lockless version of
-> > > rq->prev_irq_time and rq->prev_steal_time_rq?
-> > >
-> > > > - IIUC your explanation in the commit message above, the (A) period
-> > > > seems to be a problem only when idle but you apply it unconditionally.
-> > >
-> > > If the CPU is idle (and clock_pelt == clock_task), only the B part would be
-> > > worth something:
-> > >
-> > >   A + B = [clock_task - clock_pelt] + [sched_clock_cpu() - clock]
-> > >                       A                            B
-> > >
-> > > > If cpu is idle you can assume that clock_pelt should be equal to
-> > > > clock_task but you can't if cpu is not idle otherwise your sync will
-> > > > be inaccurate and defeat the primary goal of this patch. If your
-> > > > problem with clock_pelt is that the pending idle time is not accounted
-> > > > for when entering idle but only at the next update (update blocked
-> > > > load or wakeup of a thread). This patch below should fix this and
-> > > > remove your A.
-> > >
-> > > That would help slightly the current situation, but this part is already
-> > > covered by the estimator.
-> >
-> > But the estimator, as you name it, is wrong beaus ethe A part can't be
-> > applied unconditionally
->
-> Hum, it is used only in the !active migration. So we know the task was sleeping
-> before that migration. As a consequence, the time we need to account is "sleeping"
-> time from the task point of view, which is clock_pelt == clock_task (for
-> __update_load_avg_blocked_se()). Otherwise, we would only decay with the
-> "wallclock" idle time instead of the "scaled" one wouldn't we?
+Use this file to export correspondence between guest_irq, host_irq,
+vector and vcpu belonging to VFIO passthrough devices.
 
-clock_pelt == clock_task only when cpu is idle and after updating
-lost_idle_time but you have no idea of the state of the cpu when
-migrating the task
+An example output of this looks like (a vm with VFIO passthrough
+devices):
+   guest_irq     host_irq       vector         vcpu
+          24          201           37            8
+          25          202           35           25
+          26          203           35           20
+   ......
 
->
->
->      +-------------+--------------
->      |   Task A    |    Task B    .....
->               ^    ^             ^
->               |    |          migrate A
->               |    |             |
->               |    |             |
->               |    |             |
->               |    |<----------->|
->               |  Wallclock Task A idle time
->               |<---------------->|
->             "Scaled" Task A idle time
->
->
-> [...]
+When a VM has VFIO passthrough devices, the correspondence between
+guest_irq, host_irq, vector and vcpu may need to be known especially
+in AMD platform with avic disabled. The AMD avic is disabled, and
+the passthrough devices may cause vcpu vm exit twice for a interrupt.
+One extrernal interrupt caused by vfio host irq, other ipi to inject
+a interrupt to vm.
+
+If the system administrator known these information, set vfio host
+irq affinity to Pcpu which the correspondece guest irq affinited vcpu,
+to avoid extra vm exit.
+
+Co-developed-by: Li RongQing <lirongqing@baidu.com>
+Signed-off-by: Li RongQing <lirongqing@baidu.com>
+Signed-off-by: Yuan ZhaoXiong <yuanzhaoxiong@baidu.com>
+---
+diff with v0: modifying the code format.
+
+ arch/x86/kvm/debugfs.c | 90 ++++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 90 insertions(+)
+
+diff --git a/arch/x86/kvm/debugfs.c b/arch/x86/kvm/debugfs.c
+index 9240b3b..be16bfe 100644
+--- a/arch/x86/kvm/debugfs.c
++++ b/arch/x86/kvm/debugfs.c
+@@ -10,6 +10,11 @@
+ #include "mmu.h"
+ #include "mmu/mmu_internal.h"
+ 
++#ifdef CONFIG_HAVE_KVM_IRQ_BYPASS
++#include <linux/kvm_irqfd.h>
++#include <asm/irq_remapping.h>
++#endif
++
+ static int vcpu_get_timer_advance_ns(void *data, u64 *val)
+ {
+ 	struct kvm_vcpu *vcpu = (struct kvm_vcpu *) data;
+@@ -181,9 +186,94 @@ static int kvm_mmu_rmaps_stat_release(struct inode *inode, struct file *file)
+ 	.release	= kvm_mmu_rmaps_stat_release,
+ };
+ 
++#ifdef CONFIG_HAVE_KVM_IRQ_BYPASS
++static int kvm_vfio_intr_stat_show(struct seq_file *m, void *v)
++{
++	struct kvm_kernel_irq_routing_entry *e;
++	struct kvm_irq_routing_table *irq_rt;
++	unsigned int host_irq, guest_irq;
++	struct kvm_kernel_irqfd *irqfd;
++	struct kvm *kvm = m->private;
++	struct kvm_lapic_irq irq;
++	struct kvm_vcpu *vcpu;
++	int idx;
++
++	if (!kvm_arch_has_assigned_device(kvm) ||
++			!irq_remapping_cap(IRQ_POSTING_CAP)) {
++		return 0;
++	}
++
++	seq_printf(m, "%12s %12s %12s %12s\n",
++			"guest_irq", "host_irq", "vector", "vcpu");
++
++	spin_lock_irq(&kvm->irqfds.lock);
++	idx = srcu_read_lock(&kvm->irq_srcu);
++	irq_rt = srcu_dereference(kvm->irq_routing, &kvm->irq_srcu);
++
++	list_for_each_entry(irqfd, &kvm->irqfds.items, list) {
++		if (!irqfd->producer)
++			continue;
++
++		host_irq = irqfd->producer->irq;
++		guest_irq = irqfd->gsi;
++
++		if (guest_irq >= irq_rt->nr_rt_entries ||
++				hlist_empty(&irq_rt->map[guest_irq])) {
++			pr_warn_once("no route for guest_irq %u/%u (broken user space?)\n",
++					guest_irq, irq_rt->nr_rt_entries);
++			continue;
++		}
++
++		hlist_for_each_entry(e, &irq_rt->map[guest_irq], link) {
++			if (e->type != KVM_IRQ_ROUTING_MSI)
++				continue;
++
++			kvm_set_msi_irq(kvm, e, &irq);
++			if (kvm_intr_is_single_vcpu(kvm, &irq, &vcpu)) {
++				seq_printf(m, "%12u %12u %12u %12u\n",
++						guest_irq, host_irq, irq.vector, vcpu->vcpu_id);
++			}
++		}
++	}
++	srcu_read_unlock(&kvm->irq_srcu, idx);
++	spin_unlock_irq(&kvm->irqfds.lock);
++	return 0;
++}
++
++static int kvm_vfio_intr_stat_open(struct inode *inode, struct file *file)
++{
++	struct kvm *kvm = inode->i_private;
++
++	if (!kvm_get_kvm_safe(kvm))
++		return -ENOENT;
++
++	return single_open(file, kvm_vfio_intr_stat_show, kvm);
++}
++
++static int kvm_vfio_intr_stat_release(struct inode *inode, struct file *file)
++{
++	struct kvm *kvm = inode->i_private;
++
++	kvm_put_kvm(kvm);
++	return single_release(inode, file);
++}
++
++static const struct file_operations vfio_intr_stat_fops = {
++	.open    = kvm_vfio_intr_stat_open,
++	.read    = seq_read,
++	.llseek  = seq_lseek,
++	.release = kvm_vfio_intr_stat_release,
++};
++#endif
++
+ int kvm_arch_create_vm_debugfs(struct kvm *kvm)
+ {
+ 	debugfs_create_file("mmu_rmaps_stat", 0644, kvm->debugfs_dentry, kvm,
+ 			    &mmu_rmaps_stat_fops);
++
++#ifdef CONFIG_HAVE_KVM_IRQ_BYPASS
++	debugfs_create_file("vfio_intr_stat", 0444, kvm->debugfs_dentry, kvm,
++			    &vfio_intr_stat_fops);
++#endif
+ 	return 0;
+ }
+-- 
+1.8.3.1
+
