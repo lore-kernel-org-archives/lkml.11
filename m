@@ -2,103 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6870DC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 16:54:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B480C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 16:56:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356238AbiASQyH (ORCPT
+        id S1346701AbiASQ4T (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 11:54:07 -0500
-Received: from mga17.intel.com ([192.55.52.151]:27172 "EHLO mga17.intel.com"
+        Wed, 19 Jan 2022 11:56:19 -0500
+Received: from mga06.intel.com ([134.134.136.31]:18747 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243524AbiASQyA (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 11:54:00 -0500
+        id S243606AbiASQ4R (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 11:56:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642611240; x=1674147240;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8pZSvEi9rquxwXrszIRf2gCK/ow/gOe+bkO+nvMwHiQ=;
-  b=UnPNVfbUfcvyO0jjAqFjMiXhOFtlDYFBJK12m+i7/ex6e5enVto/VoU6
-   s74uiKR5N3MHsS7OmMiA8G1f3yW10iCoGPNInAO5wZMks7TFwB+7S4LSy
-   60QM8n0l8h5+iq012WNogOEqAEPIkjuiGJ6x9cGrXSR/s8kOmxxGKTikJ
-   +4CRfjX+BY/ndIbNc5u9ol831wywT+P2mn5hdiY+t0dFJ+Dw7lZHClNLC
-   qQPgtyuM1ESTLDMC2QsVgT1+e9I5agopRLUMO/KDgmhKV3LGl1nxjMuEI
-   u/Fsye207JUmQArYmNKeepr1+Ai4z3FT1KkRo35xrcyiFXRTKG9Bnm6Tc
+  t=1642611376; x=1674147376;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=hvMNRV+46QTOBIdXa737oX1B+YE6eYwqV4rwsBUiW+k=;
+  b=SUYpMvcwgm9gwMqe7eN1lsAlCQkBXGcLDQy/rmLGeWmTKtV5RKk35+d3
+   G0wUqGWUIOl/kJBynyxtlllyneDMGfggLCPM+40A6Nj69HovLh8Wfw+SG
+   5ozU+UBZTcG3RbHdscum2yO8Imkg395+/gs0cG6eQ5TNakmKb+GEyhIMB
+   MVh3obpWYQthqJ71C4KKgOgi3+BPRuKF1U5N9EVA90Nxg53zBBiJw78x1
+   q/xqBV+kZUMU2thxJya1+ll06wtWk1Bnl7aAFkUaeRh8jQQDeBF+/y3pl
+   Mq0VfAQ4yD+WXfbjnfQblMzdb5SFC17HrrokBw5+zkEnPCh7lL6Xacrzk
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="225784298"
+X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="305843305"
 X-IronPort-AV: E=Sophos;i="5.88,299,1635231600"; 
-   d="scan'208";a="225784298"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 08:53:57 -0800
+   d="scan'208";a="305843305"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 08:56:16 -0800
 X-IronPort-AV: E=Sophos;i="5.88,299,1635231600"; 
-   d="scan'208";a="693843934"
-Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by orsmga005-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 08:53:56 -0800
-Date:   Wed, 19 Jan 2022 08:53:56 -0800
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>
-Cc:     amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH 0/7] DRM kmap() fixes and kmap_local_page() conversions
-Message-ID: <20220119165356.GD209936@iweiny-DESK2.sc.intel.com>
-References: <20211210232404.4098157-1-ira.weiny@intel.com>
+   d="scan'208";a="475193495"
+Received: from leechri2-mobl.amr.corp.intel.com (HELO [10.209.179.248]) ([10.209.179.248])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 08:56:15 -0800
+Subject: Re: [PATCH v2 2/2] ASoC: SOF: compress: Implement get_caps and
+ get_codec_caps
+To:     Daniel Baluta <daniel.baluta@nxp.com>,
+        Daniel Baluta <daniel.baluta@oss.nxp.com>, lgirdwood@gmail.com,
+        broonie@kernel.org
+Cc:     alsa-devel@alsa-project.org, kai.vehmanen@linux.intel.com,
+        cezary.rojewski@intel.com, ranjani.sridharan@linux.intel.com,
+        linux-kernel@vger.kernel.org, paul.olaru@nxp.com,
+        sound-open-firmware@alsa-project.org
+References: <20220118212732.281657-1-daniel.baluta@oss.nxp.com>
+ <20220118212732.281657-3-daniel.baluta@oss.nxp.com>
+ <41ae6093-8e27-01d4-e532-8a28fb1d9cf1@linux.intel.com>
+ <8786f0c4-e60c-92ac-ba07-8244c785f75a@nxp.com>
+From:   Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>
+Message-ID: <729f7a48-0f6e-0569-74a3-f28363d16857@linux.intel.com>
+Date:   Wed, 19 Jan 2022 10:56:14 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211210232404.4098157-1-ira.weiny@intel.com>
-User-Agent: Mutt/1.11.1 (2018-12-01)
+In-Reply-To: <8786f0c4-e60c-92ac-ba07-8244c785f75a@nxp.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Dec 10, 2021 at 03:23:57PM -0800, 'Ira Weiny' wrote:
-> From: Ira Weiny <ira.weiny@intel.com>
-> 
-> This series starts by converting the last easy kmap() uses to
-> kmap_local_page().
-> 
-> There is one more call to kmap() wrapped in ttm_bo_kmap_ttm().  Unfortunately,
-> ttm_bo_kmap_ttm() is called in a number of different ways including some which
-> are not thread local.  I have a patch to convert that call.  However, it is not
-> straight forward so it is not included in this series.
-> 
-> The final 2 patches fix bugs found while working on the ttm_bo_kmap_ttm()
-> conversion.
 
-Gentile ping on this series?  Will it make this merge window?
+>>>   +static int sof_compr_get_caps(struct snd_soc_component *component,
+>>> +                  struct snd_compr_stream *cstream,
+>>> +                  struct snd_compr_caps *caps)
+>>> +{
+>>> +    caps->num_codecs = 3;
+>>> +    caps->min_fragment_size = 3840;
+>>> +    caps->max_fragment_size = 3840;
+>>> +    caps->min_fragments = 2;
+>>> +    caps->max_fragments = 2;
+>>> +    caps->codecs[0] = SND_AUDIOCODEC_MP3;
+>>> +    caps->codecs[1] = SND_AUDIOCODEC_AAC;
+>>> +    caps->codecs[2] = SND_AUDIOCODEC_PCM;
+>>
+>> I don't think you can add this unconditionally for all
+>> devices/platforms, clearly this wouldn't be true for Intel for now.
+>>
+>> If the information is not part of a firmware manifest or topology, then
+>> it's likely we have to use an abstraction layer to add this for specific
+>> platforms.
+>>
+>> it's really a bit odd to hard-code all of this at the kernel level, this
+>> was not really what I had in mind when we come up with the concept of
+>> querying capabilities. I understand though that for testing this is
+>> convenient, so maybe this can become a set of fall-back properties in
+>> case the firmware doesn't advertise anything.
+> 
+> I see your point. I think for the moment I will remove this patch
+> until I will come with a better solution.
+> 
+> One important thing is: where do we advertise the supported parameters:
+> 
+> 1) topology.
+> 2) codec component instance (codec adapter) inside FW.
+> 3) Linux kernel side based on some info about the current running platform.
 
-Thanks,
-Ira
+I like the topology approach because it doesn't require an IPC to
+retrieve the information and it doesn't require additional tables in the
+firmware - which would increase the size for no good reason.
 
+The topology also allows to remove support for the compressed path if
+there are any concerns with memory/mcps usages in a given platform. DSPs
+have finite resources and designers will need to trade off fancy noise
+suppression libraries, large SRAM buffers to reduce power and compressed
+audio codecs.
+
+I think we need to have something in the firmware manifest that lists
+the presence of the codec component in the build or installed libraries,
+so that we can verify that topology and firmware are aligned. Otherwise
+this will be really error-prone.
+
+We've had this problem for a while now that the topology can refer to
+components that are not part of the build, and it's problematic IMHO to
+see an IPC error as a result of a firmware/topology mistmatch.
+
+> Unfortunately, most of the existing users of this interface really do
+> hardcode supported params:
 > 
+> e.g
 > 
-> Ira Weiny (7):
-> drm/i915: Replace kmap() with kmap_local_page()
-> drm/amd: Replace kmap() with kmap_local_page()
-> drm/gma: Remove calls to kmap()
-> drm/radeon: Replace kmap() with kmap_local_page()
-> drm/msm: Alter comment to use kmap_local_page()
-> drm/amdgpu: Ensure kunmap is called on error
-> drm/radeon: Ensure kunmap is called on error
+> intel/atom/sst/sst_drv_interface.c
+> qcom/qdsp6/q6asm-dai.c
+> uniphier/aio-compress.c
 > 
-> drivers/gpu/drm/amd/amdgpu/amdgpu_ttm.c | 8 ++++----
-> drivers/gpu/drm/amd/amdgpu/amdgpu_uvd.c | 1 +
-> drivers/gpu/drm/gma500/gma_display.c | 6 ++----
-> drivers/gpu/drm/gma500/mmu.c | 8 ++++----
-> drivers/gpu/drm/i915/gem/i915_gem_shmem.c | 4 ++--
-> drivers/gpu/drm/i915/gem/selftests/i915_gem_mman.c | 8 ++++----
-> drivers/gpu/drm/i915/gt/intel_ggtt_fencing.c | 4 ++--
-> drivers/gpu/drm/i915/gt/shmem_utils.c | 4 ++--
-> drivers/gpu/drm/i915/i915_gem.c | 8 ++++----
-> drivers/gpu/drm/i915/i915_gpu_error.c | 4 ++--
-> drivers/gpu/drm/msm/msm_gem_submit.c | 4 ++--
-> drivers/gpu/drm/radeon/radeon_ttm.c | 4 ++--
-> drivers/gpu/drm/radeon/radeon_uvd.c | 1 +
-> 13 files changed, 32 insertions(+), 32 deletions(-)
-> 
-> --
-> 2.31.1
-> 
+> But that's because I think they only support one single platform family
+> which has same capabilities.
+
+I think Qualcomm probably has the same problems as us, the firmware can
+be modified, so hard-coding in the kernel is far from ideal.
+
+The unifier case is a bit different, IIRC they only support IEC formats
+which at the kernel level can be treated as PCM. I am not sure why the
+compressed interface was required here, but it's not wrong to use the
+compressed interface as a domain-specific transport mechanism. Others do
+it was well for audio over SPI and on the Intel side the probes are
+based on a custom transport format to multiplex all the PCM data on a
+single 'compressed' stream.
+
