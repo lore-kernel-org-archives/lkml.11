@@ -2,141 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A02CDC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 09:42:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB4D5C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 09:42:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352788AbiASJmu (ORCPT
+        id S1352984AbiASJmy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 04:42:50 -0500
-Received: from smtp-out1.suse.de ([195.135.220.28]:59690 "EHLO
-        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235918AbiASJmt (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 04:42:49 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out1.suse.de (Postfix) with ESMTP id 6F7542177B;
-        Wed, 19 Jan 2022 09:42:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1642585368; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bYZCV4bYim71AB+/QlUD1eg456naM2OEMt3lf0LO1HA=;
-        b=jIi92zpelf8mzF+0yk4eI/jvO3S6FlNCteJxLfwc7T8r1uHCbr7xuG4zEadbUA/uJV4yzZ
-        qUQfgJaXQeUFgTaqS6NtO++fEMmXmUkTiNdIpnj+ThLeu6yvWmkf7ciEjfnvm3GgpYz4Tv
-        4NRE1rxPOGuRTlwRVhHfBgsSxBQjA0Q=
-Received: from suse.cz (unknown [10.100.201.86])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by relay2.suse.de (Postfix) with ESMTPS id 83C7EA3B8D;
-        Wed, 19 Jan 2022 09:42:47 +0000 (UTC)
-Date:   Wed, 19 Jan 2022 10:42:47 +0100
-From:   Michal Hocko <mhocko@suse.com>
-To:     Yu Zhao <yuzhao@google.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andi Kleen <ak@linux.intel.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Hillf Danton <hdanton@sina.com>, Jens Axboe <axboe@kernel.dk>,
-        Jesse Barnes <jsbarnes@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Matthew Wilcox <willy@infradead.org>,
-        Mel Gorman <mgorman@suse.de>,
-        Michael Larabel <Michael@michaellarabel.com>,
-        Rik van Riel <riel@surriel.com>,
-        Vlastimil Babka <vbabka@suse.cz>,
-        Will Deacon <will@kernel.org>,
-        Ying Huang <ying.huang@intel.com>,
-        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        page-reclaim@google.com, x86@kernel.org,
-        Konstantin Kharlamov <Hi-Angel@yandex.ru>
-Subject: Re: [PATCH v6 6/9] mm: multigenerational lru: aging
-Message-ID: <YefdFwcoX4+ZcDSY@dhcp22.suse.cz>
-References: <20220104202227.2903605-1-yuzhao@google.com>
- <20220104202227.2903605-7-yuzhao@google.com>
- <YdhR4vWdWksBALtM@dhcp22.suse.cz>
- <Ydu6fXg2FmrseQOn@google.com>
- <YdwQcl6D5Mbp9Z4h@dhcp22.suse.cz>
- <Yee36hPfWSs+jR0m@google.com>
+        Wed, 19 Jan 2022 04:42:54 -0500
+Received: from mga01.intel.com ([192.55.52.88]:32092 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235918AbiASJmv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 04:42:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642585371; x=1674121371;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=LxWQZjhb/fNbEShE73X5g5DvnhYQLiQO3Stdcf1bZhA=;
+  b=PZlBTFIUoLS1PtpsQP14JHhklMx4Yedi4yLPuigaWjdeYYI7HZ+SBw2I
+   u1TuGl2uW0oYWknBTM3AgwQlVaHhYnJFnzKj4vjzBxLnJFQkaLssOZ2gi
+   cRDQgBA7fANq0KGW2EFVFHhxN4EQ1bucK4DhhAFh51DdAGepl8+c1YUa8
+   eoTB134DoOAFtd+yPhtejGZr597DosZnJv3qXRpvHsJa9RT0Bknf/xKwF
+   yewkX/4LBf4eTjyvEeEuCn1J0ceRI55UCG47VqTDbc3i7mR9kIJjpAIVG
+   RKS+tteXGKAcpEtm6r6MfXv9HRk3RjkhpsxSXTdbzaUKAotCnf8vxk0C+
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="269418425"
+X-IronPort-AV: E=Sophos;i="5.88,299,1635231600"; 
+   d="scan'208";a="269418425"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 01:42:50 -0800
+X-IronPort-AV: E=Sophos;i="5.88,299,1635231600"; 
+   d="scan'208";a="532207547"
+Received: from atefehad-mobl1.amr.corp.intel.com (HELO ldmartin-desk2) ([10.212.238.132])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 01:42:49 -0800
+Date:   Wed, 19 Jan 2022 01:42:49 -0800
+From:   Lucas De Marchi <lucas.demarchi@intel.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Emma Anholt <emma@anholt.net>, David Airlie <airlied@linux.ie>,
+        "nouveau@lists.freedesktop.org" <nouveau@lists.freedesktop.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Vishal Kulkarni <vishal@chelsio.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Mikita Lipski <mikita.lipski@amd.com>,
+        "amd-gfx@lists.freedesktop.org" <amd-gfx@lists.freedesktop.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Petr Mladek <pmladek@suse.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Leo Li <sunpeng.li@amd.com>,
+        "intel-gfx@lists.freedesktop.org" <intel-gfx@lists.freedesktop.org>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Eryk Brol <eryk.brol@amd.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        "linux-security-module@vger.kernel.org" 
+        <linux-security-module@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH 2/3] lib/string_helpers: Add helpers for
+ enable[d]/disable[d]
+Message-ID: <20220119094249.6g24562y2b4iwtvk@ldmartin-desk2>
+References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
+ <20220119072450.2890107-3-lucas.demarchi@intel.com>
+ <CAHp75Vc4bdu1OTi2t-fHeHkmnVgd6LCdeotnGEH_+q4EGk3OmQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <Yee36hPfWSs+jR0m@google.com>
+In-Reply-To: <CAHp75Vc4bdu1OTi2t-fHeHkmnVgd6LCdeotnGEH_+q4EGk3OmQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed 19-01-22 00:04:10, Yu Zhao wrote:
-> On Mon, Jan 10, 2022 at 11:54:42AM +0100, Michal Hocko wrote:
-> > On Sun 09-01-22 21:47:57, Yu Zhao wrote:
-> > > On Fri, Jan 07, 2022 at 03:44:50PM +0100, Michal Hocko wrote:
-> > > > On Tue 04-01-22 13:22:25, Yu Zhao wrote:
-> > > > [...]
-> > > > > +static void walk_mm(struct lruvec *lruvec, struct mm_struct *mm, struct lru_gen_mm_walk *walk)
-> > > > > +{
-> > > > > +	static const struct mm_walk_ops mm_walk_ops = {
-> > > > > +		.test_walk = should_skip_vma,
-> > > > > +		.p4d_entry = walk_pud_range,
-> > > > > +	};
-> > > > > +
-> > > > > +	int err;
-> > > > > +#ifdef CONFIG_MEMCG
-> > > > > +	struct mem_cgroup *memcg = lruvec_memcg(lruvec);
-> > > > > +#endif
-> > > > > +
-> > > > > +	walk->next_addr = FIRST_USER_ADDRESS;
-> > > > > +
-> > > > > +	do {
-> > > > > +		unsigned long start = walk->next_addr;
-> > > > > +		unsigned long end = mm->highest_vm_end;
-> > > > > +
-> > > > > +		err = -EBUSY;
-> > > > > +
-> > > > > +		rcu_read_lock();
-> > > > > +#ifdef CONFIG_MEMCG
-> > > > > +		if (memcg && atomic_read(&memcg->moving_account))
-> > > > > +			goto contended;
-> > > > > +#endif
-> > > > > +		if (!mmap_read_trylock(mm))
-> > > > > +			goto contended;
-> > > > 
-> > > > Have you evaluated the behavior under mmap_sem contention? I mean what
-> > > > would be an effect of some mms being excluded from the walk? This path
-> > > > is called from direct reclaim and we do allocate with exclusive mmap_sem
-> > > > IIRC and the trylock can fail in a presence of pending writer if I am
-> > > > not mistaken so even the read lock holder (e.g. an allocation from the #PF)
-> > > > can bypass the walk.
-> > > 
-> > > You are right. Here it must be a trylock; otherwise it can deadlock.
-> > 
-> > Yeah, this is clear.
-> > 
-> > > I think there might be a misunderstanding: the aging doesn't
-> > > exclusively rely on page table walks to gather the accessed bit. It
-> > > prefers page table walks but it can also fallback to the rmap-based
-> > > function, i.e., lru_gen_look_around(), which only gathers the accessed
-> > > bit from at most 64 PTEs and therefore is less efficient. But it still
-> > > retains about 80% of the performance gains.
-> > 
-> > I have to say that I really have hard time to understand the runtime
-> > behavior depending on that interaction. How does the reclaim behave when
-> > the virtual scan is enabled, partially enabled and almost completely
-> > disabled due to different constrains? I do not see any such an
-> > evaluation described in changelogs and I consider this to be a rather
-> > important information to judge the overall behavior.
-> 
-> It doesn't have (partially) enabled/disabled states nor does its
-> behavior change with different reclaim constraints. Having either
-> would make its design too complex to implement or benchmark.
+On Wed, Jan 19, 2022 at 11:20:38AM +0200, Andy Shevchenko wrote:
+>On Wednesday, January 19, 2022, Lucas De Marchi <lucas.demarchi@intel.com>
+>wrote:
+>
+>> Follow the yes/no logic and add helpers for enabled/disabled and
+>> enable/disable - those are not so common throughout the kernel,
+>> but they give a nice way to reuse the strings to log things as
+>> enabled/disabled or enable/disable.
+>>
+>> Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
+>> ---
+>>  drivers/gpu/drm/i915/i915_utils.h | 10 ----------
+>>  include/linux/string_helpers.h    |  2 ++
+>>  2 files changed, 2 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/drivers/gpu/drm/i915/i915_utils.h
+>> b/drivers/gpu/drm/i915/i915_utils.h
+>> index 2a8781cc648b..cbec79bae0d2 100644
+>> --- a/drivers/gpu/drm/i915/i915_utils.h
+>> +++ b/drivers/gpu/drm/i915/i915_utils.h
+>> @@ -419,16 +419,6 @@ static inline const char *onoff(bool v)
+>>         return v ? "on" : "off";
+>>  }
+>>
+>> -static inline const char *enabledisable(bool v)
+>> -{
+>> -       return v ? "enable" : "disable";
+>> -}
+>> -
+>> -static inline const char *enableddisabled(bool v)
+>> -{
+>> -       return v ? "enabled" : "disabled";
+>> -}
+>> -
+>>  void add_taint_for_CI(struct drm_i915_private *i915, unsigned int taint);
+>>  static inline void __add_taint_for_CI(unsigned int taint)
+>>  {
+>> diff --git a/include/linux/string_helpers.h b/include/linux/string_
+>> helpers.h
+>> index e980dec05d31..e4b82f364ee1 100644
+>> --- a/include/linux/string_helpers.h
+>> +++ b/include/linux/string_helpers.h
+>> @@ -103,5 +103,7 @@ char *kstrdup_quotable_file(struct file *file, gfp_t
+>> gfp);
+>>  void kfree_strarray(char **array, size_t n);
+>>
+>>  static inline const char *yesno(bool v) { return v ? "yes" : "no"; }
+>> +static inline const char *enabledisable(bool v) { return v ? "enable" :
+>> "disable"; }
+>> +static inline const char *enableddisabled(bool v) { return v ? "enabled"
+>> : "disabled"; }
+>
+>
+>Looks not readable even if takes 80 characters. Please, keep original style.
+>
+>
+>I believe you wanted to have nice negative statistics from day 1, then you
+>may add more patches in the series to cleanup more users.
 
-Let me clarify. By "partially enabled" I really meant behavior depedning
-on runtime conditions. Say mmap_sem cannot be locked for half of scanned
-tasks and/or allocation for the mm walker fails due to lack of memory.
-How does this going to affect reclaim efficiency. How does a user/admin
-know that the memory reclaim is in a "degraded" mode because of the
-contention?
--- 
-Michal Hocko
-SUSE Labs
+not really the reason... it was just "this is small enough and
+checkpatch doesn't complain" (it checks for 100 chars nowadays). But yes,
+I can keep it in 4 lines.
+
+thanks
+Lucas De Marchi
