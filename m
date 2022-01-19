@@ -2,115 +2,74 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A16BC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 17:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1F0CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 17:06:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356332AbiASRGI (ORCPT
+        id S1354028AbiASRGN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 12:06:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53070 "EHLO
+        Wed, 19 Jan 2022 12:06:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53080 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356327AbiASRFs (ORCPT
+        with ESMTP id S1356330AbiASRFv (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 12:05:48 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4224CC061401;
-        Wed, 19 Jan 2022 09:05:48 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D7672615E1;
-        Wed, 19 Jan 2022 17:05:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4727CC36AE3;
-        Wed, 19 Jan 2022 17:05:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642611947;
-        bh=KKlzc8c5w+fq1k4uKo5Qwf+gm47vjQ8VvRXIbggWzbM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=tH9EpPZohuwPlNyLgUQaSh2/TW27U3dWzvT8E96QQ1O49ak8F6oMNPCIpNqEW6u1n
-         dno4NiQcqiNnwkUnBF8/tvCcMhP66hUVF6RTYDKU3v+8xqFAi8TdtN6XL/ylAhlILt
-         TnhUxgAWojwpxC/Dsfb4F/dviiWsXf/JdBPpji4ZWgxzZnRX9ueGnepCyDIe4pFs4l
-         NmSxMUQXXy/74/u9/yf4iVff4NeZELpdPSjjyWb9omwGSxu4DWdRPzdnqQD4rnrxEi
-         +yH1RrQB2RDDQPNYjPeFFlwst1/afn2F3oy/VExs437dhiu5qbqGw5hJ5WFF/2A3FN
-         5ggoBNeKHDe3g==
-Received: by mail-ed1-f43.google.com with SMTP id 30so15475680edv.3;
-        Wed, 19 Jan 2022 09:05:47 -0800 (PST)
-X-Gm-Message-State: AOAM533VzpG2cBvqTJzXCLsyNOCL/bc4xL42w2XGQVXyvreW8gjchzBU
-        RGzVEcw/o4b5rWn3G0iT2GMz1jMFgUL1MTkNwg==
-X-Google-Smtp-Source: ABdhPJzBgPPIvP9HvnVg4dyNMmI5ujybpyr1kYU14iE13zheGQ3O2xg88wkrkwxTCk6RnznZtYMkYbIeJD0Kzr0Ph78=
-X-Received: by 2002:a17:906:7801:: with SMTP id u1mr8446002ejm.82.1642611945572;
- Wed, 19 Jan 2022 09:05:45 -0800 (PST)
+        Wed, 19 Jan 2022 12:05:51 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ED5FC061746
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 09:05:50 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id c6so9407899ybk.3
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 09:05:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kYhFZj7bN4GmfkpGkaypcnLkkrDkLgSpBT+XGsydD5g=;
+        b=mIA0V51NKn2sgb6c50eVbnJ5qxx5W75tk1TI+G3HyWv4wKr/lV32rL3AZ52KcsXuYx
+         heIq0u9vo5KgXspeyd+8pS5QbFss564saWV/iHJp9kkkwZyGmCU47xzv++/isrTLwdQZ
+         6niZm+AZiWU+oH/DBBsJZk4MSYl35DUmEXOT7CjdtbSQKDt0DT5iI9pbx3c/WD0I0kYQ
+         VPCTzKCkOZ+2ma2GeeN4Nex82FjDKb25ui+aOf87YPFdFnw1ZCH2RB7CRq09JhQErAEc
+         yBNCVAyZiKkZVxhv5PnOAsmgRNDvz8dnPHEglaHyXrSs/BzI80+hPCfccT8+OKJ86MWn
+         j4Ug==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kYhFZj7bN4GmfkpGkaypcnLkkrDkLgSpBT+XGsydD5g=;
+        b=Q2Ep0qD3sg8m6SFu+yfG+hRbTSV6cmMocWEbrE6G80nssVlnJvnTQSvCZh2cMeX/w3
+         +NnjXeeXtVuOGof7/+49/1aajlJ6seDEniBUI+s/Cmmlc0Sdc/OX5MCMOLsqvHlXjBpw
+         bChLArZqwoT1mUknJtRdNH0KH1ydIztWr651gEcsum7PLytPsbnnrz9OdxWV33PJmFWi
+         RFKlXDzDm0nq+Hfc4DAHaFzreeQ+9aputFKYZ4w11kLiRUq199vKfFM9btUYuOJT4gG6
+         FHHISvvrBIPAF2z8sqxnnT2lW5G4YuiGFkkkXulTZOVOKYSxDWR4OdK/1d9Tx6VPZE+g
+         TPCQ==
+X-Gm-Message-State: AOAM530ZimZoSAW29X7J6DqQZEKvWMUsc/6jtGJHBzoxuO32IfRlvs2g
+        YmxCuG6hv2pTy5wwYvp1MCh3ePIi1su2vB+/RAQvj9FXkMc=
+X-Google-Smtp-Source: ABdhPJyOW9d3AS7oBdQPamilXLaey5HZBJCYVDMerC5sglVNvpvYVmXkmE1Hi7bAmW34h372gn0zkSzR/jisOQDGB1c=
+X-Received: by 2002:a25:4987:: with SMTP id w129mr40312318yba.34.1642611949650;
+ Wed, 19 Jan 2022 09:05:49 -0800 (PST)
 MIME-Version: 1.0
-References: <20220118194857.26546-1-julianmarcusschroeder@gmail.com>
-In-Reply-To: <20220118194857.26546-1-julianmarcusschroeder@gmail.com>
-From:   Rob Herring <robh@kernel.org>
-Date:   Wed, 19 Jan 2022 11:05:31 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqJ4MqMYNiKNF_3rkbnR0CE9GhV-jzbxKn2jeJBvPGibLA@mail.gmail.com>
-Message-ID: <CAL_JsqJ4MqMYNiKNF_3rkbnR0CE9GhV-jzbxKn2jeJBvPGibLA@mail.gmail.com>
-Subject: Re: [PATCH] fix serdev bind/unbind
-To:     julian schroeder <julianmarcusschroeder@gmail.com>
-Cc:     bhanumaiya@google.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Johan Hovold <johan@kernel.org>
+References: <20220117120317.1581315-1-hannes@cmpxchg.org> <YeaoeQlAoj06qlNa@hirez.programming.kicks-ass.net>
+In-Reply-To: <YeaoeQlAoj06qlNa@hirez.programming.kicks-ass.net>
+From:   Suren Baghdasaryan <surenb@google.com>
+Date:   Wed, 19 Jan 2022 09:05:39 -0800
+Message-ID: <CAJuCfpHX9TUsfN572Jq+X0ru++LQGbzr9TuMimHmWLNYUm-kQA@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: add Suren as psi co-maintainer
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Johannes Weiner <hannes@cmpxchg.org>,
+        LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-+Johan
-
-On Tue, Jan 18, 2022 at 1:47 PM julian schroeder
-<julianmarcusschroeder@gmail.com> wrote:
+On Tue, Jan 18, 2022 at 3:46 AM Peter Zijlstra <peterz@infradead.org> wrote:
 >
-> On some chromebooks, the serdev is used to communicate with
-> an embedded controller. When the controller is updated, the
-> regular ttyS* is needed. Therefore unbind/bind needs to work
-> to be able to switch between the two modes without having to
-> reboot. In the case of ACPI enabled platforms, the underlying
-> serial device is marked as enumerated but this is not cleared
-> upon remove (unbind). In this state it can not be bound as
-> serdev.
-
-'fix' implies this was supposed to work and doesn't, but unbind/bind
-was never a feature of serdev. Or more specifically, switching between
-serdev and tty was not a feature. There have been some attempts to add
-that. I suspect it is more than a 4 line change based on those, but
-maybe I'm wrong.
-
-For your usecase, how does a given piece of h/w that needs and/or
-provides kernel support continue to work when the driver is unbound.
-Are you leaving any power controls that the serdev driver configured
-enabled so that the tty happens to keep working? What happens to
-interfaces the EC provides? The kernel doesn't deal with resources
-going away too well. I have to wonder if the existing serdev EC driver
-should learn to handle the 'update mode' itself or provide some sort
-of raw/passthru mode to userspace. A TTY, while standard, brings a lot
-of complexities.
-
-> Signed-off-by: julian schroeder <julianmarcusschroeder@gmail.com>
-> ---
->  drivers/tty/serdev/core.c | 4 ++++
->  1 file changed, 4 insertions(+)
+> On Mon, Jan 17, 2022 at 07:03:17AM -0500, Johannes Weiner wrote:
+> > Suren wrote the poll() interface, which is a significant part of the
+> > psi code and represents a large user of psi itself (Android). It's a
+> > good idea to have him look at psi patches as well, and it's good to
+> > have two people following things in case one of us is traveling.
+> >
+> > Signed-off-by: Johannes Weiner <hannes@cmpxchg.org>
 >
-> diff --git a/drivers/tty/serdev/core.c b/drivers/tty/serdev/core.c
-> index 92e3433276f8..668fa570bc07 100644
-> --- a/drivers/tty/serdev/core.c
-> +++ b/drivers/tty/serdev/core.c
-> @@ -138,7 +138,11 @@ EXPORT_SYMBOL_GPL(serdev_device_add);
->  void serdev_device_remove(struct serdev_device *serdev)
->  {
->         struct serdev_controller *ctrl = serdev->ctrl;
-> +       struct acpi_device *adev;
->
-> +       adev = ACPI_COMPANION(&serdev->dev);
-> +       if (adev)
-> +               acpi_device_clear_enumerated(adev);
->         device_unregister(&serdev->dev);
->         ctrl->serdev = NULL;
->  }
-> --
-> 2.20.1
->
+> Thanks!
+
+Thanks guys!
