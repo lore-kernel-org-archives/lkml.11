@@ -2,98 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AAE7C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 00:51:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11CDBC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 01:04:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350537AbiASAvt (ORCPT
+        id S1350570AbiASBEk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 19:51:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58238 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235175AbiASAvs (ORCPT
+        Tue, 18 Jan 2022 20:04:40 -0500
+Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:47082 "EHLO
+        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S238548AbiASBEg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 19:51:48 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 498C7C061574
-        for <linux-kernel@vger.kernel.org>; Tue, 18 Jan 2022 16:51:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=bSFNXBAL3L/sZMcUTYCHF8j9CNgzUTePNEfP42fi6WM=; b=ITKBmPkjINkr+kVaj6Y+dKIcDI
-        BvqOngu/9IT5Rn4s9sTLn2PzesWshv2YBsi96+rofQ3+BVYoqVcjkMtC6rlUmPtTMSq/ul5NyOAI/
-        q9DfCSH+rEK9qqPiFSGY2rKngDe1XMI3RfAvmOn5EOBwbK7ns9ErE/q+y6JdyZZMHbSjln06B+F5d
-        HQZHhSFi8mSfC9SP34IMzIrPdTN5zgIjUDjXMh1S7jqBjTqVUJ0QXKMfoUJYqorDpNzxB298VO7vG
-        XIkw1MnizDFVQjXTcqksKReY9AwdDKZBSf1YV0Kkn1jYYD8jqYGonSDHHpgNXaVS+PGt16D+BzX3X
-        cqw5cPlw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1n9zCB-009rPJ-HZ; Wed, 19 Jan 2022 00:51:27 +0000
-Date:   Wed, 19 Jan 2022 00:51:27 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Yury Norov <yury.norov@gmail.com>
-Cc:     Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Ding Tianhong <dingtianhong@huawei.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, Uladzislau Rezki <urezki@gmail.com>
-Subject: Re: [PATCH] vmap(): don't allow invalid pages
-Message-ID: <Yedgj+Lo2eru8197@casper.infradead.org>
-References: <20220118235244.540103-1-yury.norov@gmail.com>
+        Tue, 18 Jan 2022 20:04:36 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R751e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=yang.lee@linux.alibaba.com;NM=1;PH=DS;RN=7;SR=0;TI=SMTPD_---0V2E8.mY_1642554274;
+Received: from localhost(mailfrom:yang.lee@linux.alibaba.com fp:SMTPD_---0V2E8.mY_1642554274)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 19 Jan 2022 09:04:34 +0800
+From:   Yang Li <yang.lee@linux.alibaba.com>
+To:     linus.walleij@linaro.org
+Cc:     brgl@bgdev.pl, linmq006@gmail.com, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Yang Li <yang.lee@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH -next 1/2] gpio: idt3243x: Fix an ignored error return from platform_get_irq()
+Date:   Wed, 19 Jan 2022 09:04:31 +0800
+Message-Id: <20220119010432.65493-1-yang.lee@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220118235244.540103-1-yury.norov@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 03:52:44PM -0800, Yury Norov wrote:
-> vmap() takes struct page *pages as one of arguments, and user may provide
-> an invalid pointer which would lead to DABT at address translation later.
+The return from the call to platform_get_irq() is int, it can be
+a negative error code, however this is being assigned to an unsigned
+int variable 'parent_irq', so making 'parent_irq' an int.
 
-Could we spell out 'DABT'?  Presumably that's an ARM-specific thing.
-Just like we don't say #PF for Intel page faults, I think this is
-probably a 'data abort'?
+Eliminate the following coccicheck warning:
+./drivers/gpio/gpio-idt3243x.c:167:6-16: WARNING: Unsigned expression
+compared with zero: parent_irq < 0
 
-> Currently, kernel checks the pages against NULL. In my case, however, the
-> address was not NULL, and was big enough so that the hardware generated
-> Address Size Abort on arm64.
-> 
-> Interestingly, this abort happens even if copy_from_kernel_nofault() is
-> used, which is quite inconvenient for debugging purposes. 
-> 
-> This patch adds a pfn_valid() check into vmap() path, so that invalid
-> mapping will not be created.
-> 
-> RFC: https://lkml.org/lkml/2022/1/18/815
-> v1: use pfn_valid() instead of adding an arch-specific
->     arch_vmap_page_valid(). Thanks to Matthew Wilcox for the hint.
-> 
-> Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Fixes: 30fee1d7462a ("gpio: idt3243x: Fix IRQ check in idt_gpio_probe")
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+---
+ drivers/gpio/gpio-idt3243x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Suggested-by: Matthew Wilcox (Oracle) <willy@infradead.org>
+diff --git a/drivers/gpio/gpio-idt3243x.c b/drivers/gpio/gpio-idt3243x.c
+index 08493b05be2d..52b8b72ded77 100644
+--- a/drivers/gpio/gpio-idt3243x.c
++++ b/drivers/gpio/gpio-idt3243x.c
+@@ -132,7 +132,7 @@ static int idt_gpio_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	struct gpio_irq_chip *girq;
+ 	struct idt_gpio_ctrl *ctrl;
+-	unsigned int parent_irq;
++	int parent_irq;
+ 	int ngpios;
+ 	int ret;
+ 
+-- 
+2.20.1.7.g153144c
 
-> ---
->  mm/vmalloc.c | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/mm/vmalloc.c b/mm/vmalloc.c
-> index d2a00ad4e1dd..a4134ee56b10 100644
-> --- a/mm/vmalloc.c
-> +++ b/mm/vmalloc.c
-> @@ -477,6 +477,8 @@ static int vmap_pages_pte_range(pmd_t *pmd, unsigned long addr,
->  			return -EBUSY;
->  		if (WARN_ON(!page))
->  			return -ENOMEM;
-> +		if (WARN_ON(!pfn_valid(page_to_pfn(page))))
-> +			return -EINVAL;
->  		set_pte_at(&init_mm, addr, pte, mk_pte(page, prot));
->  		(*nr)++;
->  	} while (pte++, addr += PAGE_SIZE, addr != end);
-> -- 
-> 2.30.2
-> 
