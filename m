@@ -2,117 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B88AC433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 10:24:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8790CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 10:25:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353652AbiASKYG (ORCPT
+        id S1349003AbiASKZg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 05:24:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45420 "EHLO
+        Wed, 19 Jan 2022 05:25:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45540 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353616AbiASKYE (ORCPT
+        with ESMTP id S238936AbiASKYa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 05:24:04 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DC39C061574;
-        Wed, 19 Jan 2022 02:24:03 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id j2so8902592edj.8;
-        Wed, 19 Jan 2022 02:24:03 -0800 (PST)
+        Wed, 19 Jan 2022 05:24:30 -0500
+Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2838BC061574;
+        Wed, 19 Jan 2022 02:24:30 -0800 (PST)
+Received: by mail-wm1-x331.google.com with SMTP id h206-20020a1c21d7000000b0034d95625e1fso5297258wmh.4;
+        Wed, 19 Jan 2022 02:24:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=nkuGN1Vnj60Rd4SqRXwo3p9yx1/wd6axZJItw3JdV2k=;
-        b=QjRCQfkITJNswVCv4WP2utOD+TASiUHrDW4E/0BRSnF2bndoxWm9TG7jcmj/iP//Jb
-         oVd1JUi4DlDUDjqrpuBGtr+QnMgOSRewo+UGFuTjxsuRmO0xvC7it630J6+581UJHj0c
-         B+km9Wy2X0IQisS1zYMi19G0R6OgKtLBcXeHevadPO+fdhPpsmG1vr97G6PSzPewN10W
-         o800vy+MSF1xeb2CrXlTkwWByGu+cn3mrn0vu0TWG84KO2/KWJ/kvWhudeihpiRo+H/u
-         BZlRWMln1cqce3hISefkAA1owntSY+M/KxMg01OFdqub83UzFjNyRlBZUE5eRtHNlVRw
-         fjsA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=23T4xOW2I0F1J8h1VBHMXa/Hl9U+ZT3rpxlsT4/aGfc=;
+        b=YsEHE2FoxTIEDYdQkjHZoP/fMCSt7QDmBQ4JdVPHxM4mlnOCzYop6XchK4rNHKQtf+
+         EB550obMnV3f5ZhHcIk/AxpQ8rIFuitjP2WoGDxLwZPMERXqneeB/TZ8sQCaB/Na7dAD
+         gBFFTaU95S2gXYoC1ejMoGbHiqPSliY7DgwtbQkFJB0qfSMMdRfOMiiSSiPIlGi9YkfW
+         SF6KUmqLmY0Vm9eUK4+qdupPRPxxj4ZT74ftdKfK9m/t115DOzfVBBOGbky0j7JF+4xS
+         /laydDlP6PnfNM7FjGBWQC6AyMUnubEMwTk5FqFL60694tozYxQKd8zFSgAVHk04Owxb
+         LpWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=nkuGN1Vnj60Rd4SqRXwo3p9yx1/wd6axZJItw3JdV2k=;
-        b=zw2dOgBQcqeokwmy6RsmJA1imGuq1H2j0/g9qdBc+KqGAni8V2wxXKQhR+GjK4kbk+
-         xhSk6wKMpnn739Lmf7RvNmedUNdhzNsplJPZ6J5fr7Jn7E4c3Oebeh75IDs2PATvP5zF
-         iKuruwmW7TAGtW5EAg37DIs/urJEc2QD080mubGkBV/Qmimy3lmdg8Gw1YceLK67Fg9r
-         c+NfmdbUGk/2qcBq4ZG+H79onYSnBzWd25lLDf6GaWcPEJzxOTJsmd7OVWU8BCpojKRj
-         U9Uu3IyX1NwUaBtnOCwjMUOvZpH0fX+X20BMkiI6KL+3vpGXnQijZx92BjmIqt6J9es6
-         Pknw==
-X-Gm-Message-State: AOAM533oIM5uN3I/36BQaXFR2J40567AcCQa8/RC1MzgMdv7jEsQJP7d
-        CUHP0nAI18ZKLdUQ8KSl4n7YnAYLWSc=
-X-Google-Smtp-Source: ABdhPJzz7piW2gj8TZNGzs1Q3d9+NIMTM4qEqQxe1jsFAfModjFtnvfuwrnq6rZOqzTvAH4KspNzLA==
-X-Received: by 2002:a17:906:950e:: with SMTP id u14mr1062606ejx.550.1642587841272;
-        Wed, 19 Jan 2022 02:24:01 -0800 (PST)
-Received: from localhost.localdomain ([46.249.74.23])
-        by smtp.gmail.com with ESMTPSA id b4sm3456546ejb.131.2022.01.19.02.23.59
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 19 Jan 2022 02:24:00 -0800 (PST)
-From:   Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
-To:     tomba@kernel.org, airlied@linux.ie, daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, merlijn@wizzup.org, tony@atomide.com,
-        Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
-Subject: [PATCH 3/3] drm: omapdrm: Do no allocate non-scanout GEMs through DMM/TILER
-Date:   Wed, 19 Jan 2022 12:23:11 +0200
-Message-Id: <1642587791-13222-4-git-send-email-ivo.g.dimitrov.75@gmail.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1642587791-13222-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
-References: <1642587791-13222-1-git-send-email-ivo.g.dimitrov.75@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=23T4xOW2I0F1J8h1VBHMXa/Hl9U+ZT3rpxlsT4/aGfc=;
+        b=wp71PNOw7uY9/OJcFWEXNEREiiehw2o2wtyR0AoKRfpKxjOVNAeuHDsU1xQhR+e/pf
+         4vTLMgzUjcBEyzK6XVxR5IaAis1Q4HLs/k5aKuk3I941zWh4DmpY7sGlfLzZlB4wswj/
+         ibNtmpIIO90BCA+e7IE54qfvDQPO27MCokYnZGddxbpFxldZCdzepuIoaGugLW54xs56
+         oD8iMR7P+yrCYxQNXecxtfpAL46IQFs+voh3rL2sVh1SNaKN7Sj4zujtnNvX3UxnCpdg
+         tfElr111tKLjJGKQb3yiZOPvW1hxw65giPYVy9B5zNqOVgtRXkIaJAzqxBrx9cCFhyIg
+         1ghA==
+X-Gm-Message-State: AOAM530N5Q7n+yD6DH151KyOplkCydNiKxJMv71N/7JN4E21sKh96hvL
+        k0N3MKJuyq9P6kVac7v15wO+2kXi812TE7t8E44=
+X-Google-Smtp-Source: ABdhPJyQ5Tdq7m8t7iLiOJAS4JTEijMM4at1JFtGA1ZF2R8mUGyIx8zXbXyxAiL39Qfm4S+aXM2whQ60Ky+y/NvZSKQ=
+X-Received: by 2002:adf:d08b:: with SMTP id y11mr27706022wrh.384.1642587868723;
+ Wed, 19 Jan 2022 02:24:28 -0800 (PST)
+MIME-Version: 1.0
+References: <20220110165208.1826-1-jszhang@kernel.org> <Ydxljv2Q4YNDYRTx@xhacker>
+In-Reply-To: <Ydxljv2Q4YNDYRTx@xhacker>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
+Date:   Wed, 19 Jan 2022 11:24:16 +0100
+Message-ID: <CAJ+HfNiS7Ss0FJowPUrrKvuC+1Kn9gXb=VqNoqh3eWJDu=m4Mg@mail.gmail.com>
+Subject: Re: [PATCH riscv-next] riscv: bpf: Fix eBPF's exception tables
+To:     Jisheng Zhang <jszhang@kernel.org>,
+        Palmer Dabbelt <palmer@dabbelt.com>, palmer@rivosinc.com,
+        Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, Netdev <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Tong Tiangen <tongtiangen@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On devices with DMM, all allocations are done through either DMM or TILER.
-DMM/TILER being a limited resource means that such allocations will start
-to fail before actual free memory is exhausted. What is even worse is that
-with time DMM/TILER space gets fragmented to the point that even if we have
-enough free DMM/TILER space and free memory, allocation fails because there
-is no big enough free block in DMM/TILER space.
+Jisheng/Palmer,
 
-Such failures can be easily observed with OMAP xorg DDX, for example -
-starting few GUI applications (so buffers for their windows are allocated)
-and then rotating landscape<->portrait while closing and opening new
-windows soon results in allocation failures.
+On Mon, 10 Jan 2022 at 18:05, Jisheng Zhang <jszhang@kernel.org> wrote:
+>
+> On Tue, Jan 11, 2022 at 12:52:08AM +0800, Jisheng Zhang wrote:
+> > eBPF's exception tables needs to be modified to relative synchronously.
+> >
+> > Suggested-by: Tong Tiangen <tongtiangen@huawei.com>
+> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 
-Fix that by mapping buffers through DMM/TILER only when really needed,
-like, for scanout buffers.
+Nice catch, and apologies for the slow response.
 
-Signed-off-by: Ivaylo Dimitrov <ivo.g.dimitrov.75@gmail.com>
----
- drivers/gpu/drm/omapdrm/omap_gem.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
+Acked-by: Bj=C3=B6rn T=C3=B6pel <bjorn@kernel.org>
 
-diff --git a/drivers/gpu/drm/omapdrm/omap_gem.c b/drivers/gpu/drm/omapdrm/omap_gem.c
-index 41c1a6d..cf57179 100644
---- a/drivers/gpu/drm/omapdrm/omap_gem.c
-+++ b/drivers/gpu/drm/omapdrm/omap_gem.c
-@@ -821,10 +821,12 @@ int omap_gem_pin(struct drm_gem_object *obj, dma_addr_t *dma_addr)
- 			if (ret)
- 				goto fail;
- 
--			if (priv->has_dmm) {
--				ret = omap_gem_pin_tiler(obj);
--				if (ret)
--					goto fail;
-+			if (omap_obj->flags & OMAP_BO_SCANOUT) {
-+				if (priv->has_dmm) {
-+					ret = omap_gem_pin_tiler(obj);
-+					if (ret)
-+						goto fail;
-+				}
- 			}
- 		} else {
- 			refcount_inc(&omap_obj->pin_cnt);
-@@ -861,6 +863,8 @@ static void omap_gem_unpin_locked(struct drm_gem_object *obj)
- 			kfree(omap_obj->sgt);
- 			omap_obj->sgt = NULL;
- 		}
-+		if (!(omap_obj->flags & OMAP_BO_SCANOUT))
-+			return;
- 		if (priv->has_dmm) {
- 			ret = tiler_unpin(omap_obj->block);
- 			if (ret) {
--- 
-1.9.1
+> > ---
+> >  arch/riscv/net/bpf_jit_comp64.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/arch/riscv/net/bpf_jit_comp64.c b/arch/riscv/net/bpf_jit_c=
+omp64.c
+> > index 69bab7e28f91..44c97535bc15 100644
+> > --- a/arch/riscv/net/bpf_jit_comp64.c
+> > +++ b/arch/riscv/net/bpf_jit_comp64.c
+> > @@ -498,7 +498,7 @@ static int add_exception_handler(const struct bpf_i=
+nsn *insn,
+> >       offset =3D pc - (long)&ex->insn;
+> >       if (WARN_ON_ONCE(offset >=3D 0 || offset < INT_MIN))
+> >               return -ERANGE;
+> > -     ex->insn =3D pc;
+> > +     ex->insn =3D offset;
+>
+> Hi Palmer,
+>
+> Tong pointed out this issue but there was something wrong with my email
+> forwarding address, so I didn't get his reply. Today, I searched on
+> lore.kernel.org just found his reply, sorry for inconvenience.
+>
 
+AFAIK, Jisheng's extable work is still in Palmer's for-next tree.
+
+Daniel/Alexei: This eBPF must follow commit 1f77ed9422cb ("riscv:
+switch to relative extable and other improvements"), which is in
+Palmer's tree. It cannot go via bpf-next.
+
+Palmer, please pull this to your for-next tree.
+
+
+Thanks,
+Bj=C3=B6rn
