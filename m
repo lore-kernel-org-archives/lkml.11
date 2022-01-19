@@ -2,81 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BC55C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 11:40:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2085C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 11:42:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354247AbiASLkB (ORCPT
+        id S1354262AbiASLmG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 06:40:01 -0500
-Received: from zg8tmja2lje4os4yms4ymjma.icoremail.net ([206.189.21.223]:58002
-        "HELO zg8tmja2lje4os4yms4ymjma.icoremail.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with SMTP id S1354216AbiASLkA (ORCPT
+        Wed, 19 Jan 2022 06:42:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35136 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236274AbiASLmE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 06:40:00 -0500
+        Wed, 19 Jan 2022 06:42:04 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5845AC061574;
+        Wed, 19 Jan 2022 03:42:04 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id cx27so9989980edb.1;
+        Wed, 19 Jan 2022 03:42:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pku.edu.cn; s=dkim; h=Received:Date:From:To:Cc:Subject:
-        In-Reply-To:References:Content-Transfer-Encoding:Content-Type:
-        MIME-Version:Message-ID; bh=ko2uO+xiqlDXVopVE7QY0gYCjDmy8gGdxHDP
-        QLGRqzk=; b=nCVVD+idgr/7HkEjIFTSdLMwXN2V5yJ5I3Y9CZ4myQ3KZU1sCrYQ
-        Dci5x6FYePemsjRKrp9xGn4VQ+qHM8NhNiEuZyQuT2IOilTJKlXLkObPuHcryE4Z
-        fWQp4PsTkxUTB2HPvnssdHTIfLwlAfJsw4judEqCiVIna+2p5IP3qUc=
-Received: by ajax-webmail-front01 (Coremail) ; Wed, 19 Jan 2022 19:36:46
- +0800 (GMT+08:00)
-X-Originating-IP: [10.129.37.75]
-Date:   Wed, 19 Jan 2022 19:36:46 +0800 (GMT+08:00)
-X-CM-HeaderCharset: UTF-8
-From:   =?UTF-8?B?5YiY5rC45b+X?= <lyz_cs@pku.edu.cn>
-To:     "lucas stach" <l.stach@pengutronix.de>
-Cc:     linux+etnaviv@armlinux.org.uk, christian.gmeiner@gmail.com,
-        airlied@linux.ie, daniel@ffwll.ch, etnaviv@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: Re: Re: [PATCH] drm/etnaviv: Add missing pm_runtime_put
-X-Priority: 3
-X-Mailer: Coremail Webmail Server Version XT5.0.13 build 20210104(ab8c30b6)
- Copyright (c) 2002-2022 www.mailtech.cn
- mispb-1ea67e80-64e4-49d5-bd9f-3beeae24b9f2-pku.edu.cn
-In-Reply-To: <bb71f83d4897ce818348522d9594b091478073ff.camel@pengutronix.de>
-References: <1642515391-19329-1-git-send-email-lyz_cs@pku.edu.cn>
- <bb71f83d4897ce818348522d9594b091478073ff.camel@pengutronix.de>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain; charset=UTF-8
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1+B4sq8/6TEaBWgWEnV3mLAtHSqc2KRS8IDGfcK24Xo=;
+        b=n8nJ15XTj9DsA1iPCd3e/D3UZrS/N4+PGtIrYUgw7kROEgh1GxwowG6HwoXX05BAWO
+         sGHJLzDS1rKJs2Zq9cY3XgtXlLUMtVgVUwQDxzzNEx/xehkXRQCxquUBWZYqfSiP9hE/
+         Gtazz9zgEhcnGsHP4RzwMwa5/D7CrJQeQUnFLOsfwcucW4paZmomSPA5K9m3KEoj1Aon
+         JYcDxhzUyq/FmN7uF4ivkqMna+1myZndfJNRlBkO9Sk17KACxC3VStABrGHFzVveCUE7
+         8mo7rZWl+ruqq0X4iZ+2adcfVUZyvYfv98Z0qxROLZ2oZNgpL2kZ/kZ1hgIK02YA9UTG
+         3QNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1+B4sq8/6TEaBWgWEnV3mLAtHSqc2KRS8IDGfcK24Xo=;
+        b=OsPBZXGMcv2utlYGGjKUF6dKR6kUvsu2qlGOKQw7DCAgU3fnzkTQIc3Ou3J7CTlJHr
+         Zv14AM12bIv0STKM9XiWZEl/ChcYKv6q3iAZdKz8pCoNMD4Flr7GayKbHoyPSX5JSwuJ
+         yrrnHtKUwmgUrZ/hzz8FdfNAiZ/rLmsOSLP8TK1VL0KReFFDosCwtwiER2TeFJrK/DmA
+         WxtQlyWLHRbC3ED8hx+1JxJSTVa+duy29aP8ivB4rr3kq88ZFp7ls9yRfuZVsPn3fNZH
+         nIvTSOLvrzPAwDpm1xwbdMJRCZJkqgjZ54Ouv0JnPlpBLxfj44BJ8Hz/NHvNcAjMgS2Z
+         BP6g==
+X-Gm-Message-State: AOAM530qBGwCDosPGICgCx+nYtTXmoocuToI+mEpqWSjEM+6MHrE/82F
+        aFioK0zf7x3ks3P+rPsm/cjT3cMfTbeBoCFJrtw=
+X-Google-Smtp-Source: ABdhPJzAQTlv0R11jEPsza2Ux5Y3MNDCkdqf0w81jskUcd0V7TchTarD2HHgi0MIvTsTn5aA4xMiP5RJxiqLIh+bn+c=
+X-Received: by 2002:a17:907:968c:: with SMTP id hd12mr23728698ejc.639.1642592522875;
+ Wed, 19 Jan 2022 03:42:02 -0800 (PST)
 MIME-Version: 1.0
-Message-ID: <480fc77e.24a14.17e721fffbe.Coremail.lyz_cs@pku.edu.cn>
-X-Coremail-Locale: zh_CN
-X-CM-TRANSID: 5oFpogD3n7rP9+dhjHt9AA--.20150W
-X-CM-SenderInfo: irzqijirqukmo6sn3hxhgxhubq/1tbiAwEKBlPy7uA+KwAcso
-X-Coremail-Antispam: 1Ur529EdanIXcx71UUUUU7IcSsGvfJ3iIAIbVAYjsxI4VWxJw
-        CS07vEb4IE77IF4wCS07vE1I0E4x80FVAKz4kxMIAIbVAFxVCaYxvI4VCIwcAKzIAtYxBI
-        daVFxhVjvjDU=
+References: <20220118202234.410555-1-terry.bowman@amd.com> <20220118202234.410555-2-terry.bowman@amd.com>
+In-Reply-To: <20220118202234.410555-2-terry.bowman@amd.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 19 Jan 2022 13:40:20 +0200
+Message-ID: <CAHp75VfD2iOF+nkCtOGyAd7sadxJWL2yFKo+zXcrv6E-ADU98g@mail.gmail.com>
+Subject: Re: [PATCH v3 1/4] Watchdog: sp5100_tco: Move timer initialization
+ into function
+To:     Terry Bowman <terry.bowman@amd.com>
+Cc:     Guenter Roeck <linux@roeck-us.net>, linux-watchdog@vger.kernel.org,
+        Jean Delvare <jdelvare@suse.com>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        Wolfram Sang <wsa@kernel.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Robert Richter <rrichter@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>,
+        "Shah, Nehal-bakulchandra" <Nehal-bakulchandra.Shah@amd.com>,
+        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
+        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
+        Mario Limonciello <Mario.Limonciello@amd.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-PiAtLS0tLeWOn+Wni+mCruS7ti0tLS0tCj4g5Y+R5Lu25Lq6OiAiTHVjYXMgU3RhY2giIDxsLnN0
-YWNoQHBlbmd1dHJvbml4LmRlPgo+IOWPkemAgeaXtumXtDogMjAyMi0wMS0xOSAxODo1MToyMCAo
-5pif5pyf5LiJKQo+IOaUtuS7tuS6ujogIllvbmd6aGkgTGl1IiA8bHl6X2NzQHBrdS5lZHUuY24+
-LCBsaW51eCtldG5hdml2QGFybWxpbnV4Lm9yZy51aywgY2hyaXN0aWFuLmdtZWluZXJAZ21haWwu
-Y29tLCBhaXJsaWVkQGxpbnV4LmllLCBkYW5pZWxAZmZ3bGwuY2gsIGV0bmF2aXZAbGlzdHMuZnJl
-ZWRlc2t0b3Aub3JnCj4g5oqE6YCBOiBkcmktZGV2ZWxAbGlzdHMuZnJlZWRlc2t0b3Aub3JnLCBs
-aW51eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnCj4g5Li76aKYOiBSZTogW1BBVENIXSBkcm0vZXRu
-YXZpdjogQWRkIG1pc3NpbmcgcG1fcnVudGltZV9wdXQKPiAKPiBBbSBEaWVuc3RhZywgZGVtIDE4
-LjAxLjIwMjIgdW0gMDY6MTYgLTA4MDAgc2NocmllYiBZb25nemhpIExpdToKPiA+IHBtX3J1bnRp
-bWVfZ2V0X3N5bmMoKSBpbmNyZW1lbnRzIHRoZSBydW50aW1lIFBNIHVzYWdlIGNvdW50ZXIgZXZl
-bgo+ID4gd2hlbiBpdCByZXR1cm5zIGFuIGVycm9yIGNvZGUsIHRodXMgYSBtYXRjaGluZyBkZWNy
-ZW1lbnQgaXMgbmVlZGVkCj4gPiBvbiB0aGUgZXJyb3IgaGFuZGxpbmcgcGF0aCB0byBrZWVwIHRo
-ZSBjb3VudGVyIGJhbGFuY2VkLgo+ID4gCj4gSW5zdGVhZCBvZiBhZGRpbmcgbW9yZSBlcnJvciBo
-YW5kbGluZyBjb2RlIGhlcmUsIEkgd291bGQgcHJlZmVyIHRvCj4gY29udmVydCB0aGlzIHRvIHBt
-X3J1bnRpbWVfcmVzdW1lX2FuZF9nZXQgdG8gYXZvaWQgdGhpcyBpc3N1ZS4KPiAKPiBSZWdhcmRz
-LAo+IEx1Y2FzCj4gCgpJIHdpbGwgcmVzZW5kIG15IG1vZGlmaWVkIHBhdGNoLiBUaGFua3MgZm9y
-IHlvdXIgcmVwbHkuCgo+ID4gU2lnbmVkLW9mZi1ieTogWW9uZ3poaSBMaXUgPGx5el9jc0Bwa3Uu
-ZWR1LmNuPgo+ID4gLS0tCj4gPiAgZHJpdmVycy9ncHUvZHJtL2V0bmF2aXYvZXRuYXZpdl9ncHUu
-YyB8IDMgKysrCj4gPiAgMSBmaWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKQo+ID4gCj4gPiBk
-aWZmIC0tZ2l0IGEvZHJpdmVycy9ncHUvZHJtL2V0bmF2aXYvZXRuYXZpdl9ncHUuYyBiL2RyaXZl
-cnMvZ3B1L2RybS9ldG5hdml2L2V0bmF2aXZfZ3B1LmMKPiA+IGluZGV4IDI0MmE1ZmQuLjVlODFh
-OTggMTAwNjQ0Cj4gPiAtLS0gYS9kcml2ZXJzL2dwdS9kcm0vZXRuYXZpdi9ldG5hdml2X2dwdS5j
-Cj4gPiArKysgYi9kcml2ZXJzL2dwdS9kcm0vZXRuYXZpdi9ldG5hdml2X2dwdS5jCj4gPiBAQCAt
-MTcxNCw2ICsxNzE0LDkgQEAgc3RhdGljIGludCBldG5hdml2X2dwdV9iaW5kKHN0cnVjdCBkZXZp
-Y2UgKmRldiwgc3RydWN0IGRldmljZSAqbWFzdGVyLAo+ID4gIAlyZXR1cm4gMDsKPiA+ICAKPiA+
-ICBvdXRfc2NoZWQ6Cj4gPiArI2lmZGVmIENPTkZJR19QTQo+ID4gKwlwbV9ydW50aW1lX3B1dF9h
-dXRvc3VzcGVuZChncHUtPmRldik7Cj4gPiArI2VuZGlmCj4gPiAgCWV0bmF2aXZfc2NoZWRfZmlu
-aShncHUpOwo+ID4gIAo+ID4gIG91dF93b3JrcXVldWU6Cj4gCg==
+On Tue, Jan 18, 2022 at 10:22 PM Terry Bowman <terry.bowman@amd.com> wrote:
+>
+> Refactor driver's timer initialization into new function. This is needed
+> inorder to support adding new device layouts while using common timer
+> initialization.
+
+> Co-developed-by: Robert Richter <rrichter@amd.com>
+> Signed-off-by: Robert Richter <rrichter@amd.com>
+> Signed-off-by: Terry Bowman <terry.bowman@amd.com>
+
+> To: Guenter Roeck <linux@roeck-us.net>
+> To: linux-watchdog@vger.kernel.org
+> To: Jean Delvare <jdelvare@suse.com>
+> To: linux-i2c@vger.kernel.org
+> To: Wolfram Sang <wsa@kernel.org>
+> To: Andy Shevchenko <andy.shevchenko@gmail.com>
+> To: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+> Cc: linux-kernel@vger.kernel.org
+> Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
+> Cc: Robert Richter <rrichter@amd.com>
+> Cc: Thomas Lendacky <thomas.lendacky@amd.com>
+
+Please, do not pollute commit messages with this rather unnecessary
+list of recipients. There are (at least?) two possibilities:
+- use --cc and --to whe run `git send-email`
+- move them under the cutter '--- ' line below
+
+> ---
+
+> +       val = readl(SP5100_WDT_CONTROL(tco->tcobase));
+> +       if (val & SP5100_WDT_DISABLED) {
+> +               dev_err(dev, "Watchdog hardware is disabled\n");
+> +               return(-ENODEV);
+
+Missed space, too many parentheses.
+
+> +       }
+
+-- 
+With Best Regards,
+Andy Shevchenko
