@@ -2,205 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A87C433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 15:20:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79E6CC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 15:21:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355662AbiASPUJ (ORCPT
+        id S1355659AbiASPVI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 10:20:09 -0500
-Received: from mout.gmx.net ([212.227.17.22]:51193 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1355645AbiASPUG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 10:20:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1642605583;
-        bh=1wueW8BO2whJgvsCqgT7W/w+DL8z3im+ceSWmVhDJBs=;
-        h=X-UI-Sender-Class:Date:To:Cc:References:From:Subject:In-Reply-To;
-        b=ZCGIGcc48p7NH4m612POSZjIkPA/BEQbPqE7Hcj4txhvyjOMRsA6CieXRdAZof8+C
-         FpxsE4DMHVPHjujgpVXQkUC0G0UVenqi8M0pK/o/mlMe08TwmsTkSd3+WrJk+lOz+g
-         Wz4dZQQdyawMvF1lozEAzH1aVQl9bx168ugi8iQU=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.183.52]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1Mq2jC-1mXHRN21FS-00n8Tz; Wed, 19
- Jan 2022 16:19:43 +0100
-Message-ID: <31410fa2-293f-9b47-8fb1-e2486033fd22@gmx.de>
-Date:   Wed, 19 Jan 2022 16:18:35 +0100
+        Wed, 19 Jan 2022 10:21:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57034 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344565AbiASPVA (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 10:21:00 -0500
+Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08CD5C06161C
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 07:21:00 -0800 (PST)
+Received: by mail-oo1-xc35.google.com with SMTP id k15-20020a4a850f000000b002dc3cdb0256so833415ooh.3
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 07:21:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=u+VlURNkFbcvnlcKAhj9AzbW+2y4iy8uqcT2Hg3D05w=;
+        b=PqjhB4OWRy0R4raPT4KWqqKggpggvSj3ieBshqWNHsD7eJ2VhpM0J+6sma/iN9cnrr
+         P6q5ecnenTFRFEe7xPoOjA7I1JJI1LR4oawI6wX5gbUKMSFx+nULv+CaqPels7MY7/3j
+         BWNJI0aeFuNyNFTjOgHg1WkTN/5lANvt9aD0OSB6sikWDRxr2FMJEG6QqxFlIk+RS9Rs
+         pbsV8UyArjhyPAPwq+JYLNjCKEI+ByurR5j86Py7nEUw0cqIh4ttim+FsEUEqT648Aex
+         fFVcIyM2Az5ny/EhEF5PKOWAkrR25/yOaN5gMu/tDcfh7oMAS6zhvdz6ECDSpI+0YH5m
+         HxPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=u+VlURNkFbcvnlcKAhj9AzbW+2y4iy8uqcT2Hg3D05w=;
+        b=sfO33mJ09ssWpwjz0stzLhppgD4bn8sJyvJF8Zhu6j858ge/FImtjCtLXBBslUV+SG
+         7pP153sKFGuEH6fVYVC0tglVRPjvlkhcHQ1xStbtR1PfsmAeS7AeOewdJaluuUsNI85p
+         Kg/c9X1cewf5MYVyOoVzuiqAnp539cp66gH++BHZBeZzn2xnhS9vzvlp3LBswGx0eAVm
+         iG6OOYFf0wfzKsNpFYYTHDzNkc9bK2u4s6TXsmYOlSfMuEkKbVz2T43wIQgoKpLMzjRg
+         sT7aCaoZ6n67S0gNb32gFkVLhPsyLZRreBVE0CGkGrIWjfOfvm6x4hHjh9guizENRaEJ
+         nL/g==
+X-Gm-Message-State: AOAM533SERDieI2jbo5swJf7gtB0lIHPg+rg7JzfRwahzxwUgiKtdVNn
+        tfpMRdol6uDLqhWKIBYfCqtT6g==
+X-Google-Smtp-Source: ABdhPJzciEV+DLP4ljYzj4If36zEm4Yn76ryBLFy7hYXn+XWNeljTJgFZOKilcrC59nl8wBqkg4Qaw==
+X-Received: by 2002:a4a:3e53:: with SMTP id t80mr22119292oot.74.1642605659248;
+        Wed, 19 Jan 2022 07:20:59 -0800 (PST)
+Received: from ripper ([2600:1700:a0:3dc8:205:1bff:fec0:b9b3])
+        by smtp.gmail.com with ESMTPSA id d15sm40204oiw.4.2022.01.19.07.20.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Jan 2022 07:20:58 -0800 (PST)
+Date:   Wed, 19 Jan 2022 07:21:34 -0800
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Sudeep Holla <sudeep.holla@arm.com>
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Viresh Kumar <viresh.kumar@linaro.org>,
+        Lukasz Luba <lukasz.luba@arm.com>,
+        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
+        Thara Gopinath <thara.gopinath@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-pm@vger.kernel.org
+Subject: Re: [PATCH 2/2] arch_topology: Sanity check cpumask in thermal
+ pressure update
+Message-ID: <YegsfuLPJDqYPr0n@ripper>
+References: <20220118185612.2067031-1-bjorn.andersson@linaro.org>
+ <20220118185612.2067031-2-bjorn.andersson@linaro.org>
+ <20220119144328.cvt76mhsufxg7qbr@bogus>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Content-Language: en-US
-To:     Daniel Vetter <daniel@ffwll.ch>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, Sam Ravnborg <sam@ravnborg.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Claudio Suarez <cssk@net-c.es>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Sven Schnelle <svens@stackframe.org>,
-        Gerd Hoffmann <kraxel@redhat.com>
-References: <20220119110839.33187-1-deller@gmx.de>
- <20220119110839.33187-3-deller@gmx.de> <Yef0j8+DBbwC7Kjv@kroah.com>
- <Yef15k2GtC40aJEu@kroah.com>
- <CAMuHMdVWFJEDwjf-htZ_D1484efmuPnz_L-qhcTeUE-GVpvZXA@mail.gmail.com>
- <4d8950c7-5f51-ca2b-4c93-741c7805a214@gmx.de>
- <CAHk-=wikFKjwdUBWCLCu=iL3rFq4BDDF0aBGdXC6ay74yJb+5Q@mail.gmail.com>
- <CAKMK7uEb53iu_HxYSnFZ59j=vXQdMvTWT7xosEo85XkAwzDMnA@mail.gmail.com>
-From:   Helge Deller <deller@gmx.de>
-Subject: Re: [PATCH 2/2] Revert "fbcon: Disable accelerated scrolling"
-In-Reply-To: <CAKMK7uEb53iu_HxYSnFZ59j=vXQdMvTWT7xosEo85XkAwzDMnA@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:6zO4hVKFAQeptRF1xDsaMUngTmTgz6fBOQmqxQHV9tYchko01GW
- AXojxLbLPhh04GfuWtYRoKaZNpCezkzKqHUcn1zl8UwTXXQbE/zPMI4qgsJPKV62qcNFlw/
- 9V3Uq5pZI3w+MqzYXkwYsJp3sVVl6qn5bYyuY46EZFpY6wAY1dDAfsT7eUrSCiJeBbeXAGu
- Ek5VC3Cm1g4b/uWPzbLbQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:iRMuHJLEPBQ=:KKJiJoPvAvG6Zo4y71VOKc
- WrByrBlGbkLCfKP0wDoSYzbMf4mTfiMLNyf+MlD4mLhF+g3y2qM3ueH/k2ZtpmP7Fqy8+o8eQ
- QdyS5TiNCzP/BqCkuLr4v+k7kKDHNOqHeAJrv6Vx8XHF0cuyizWb8+G5F8Dil20RkzxJNGXH7
- VcQ4dOctutb5hxU5OpnYQUuMVp6cZPP7NcX9NZqxxu4TwKTfpzifyHXxvnxOD0MrDi+b98z20
- TD56McIS1R6G4a0P7kujxhLhIF9KbWaji/fXcDqtu28DPptDGuxzo0fLKWPN2uAqGP4D9JW3F
- VUYLl59j+lSbj8/tmWSIzHwZsnyWMq+Zgsu897fzmaaUHOBdceOVM1/AAnARzebzjgtn8LaCI
- Z+MPLZlO+7Ms4fh3WrDUTXQLSYHU4f0E5uIi8LbKP1Xl5sKt7h5qdk8OmzXyDhGPqKU5VpXWL
- Id+u54Ud0roTADv9995VS/KMKjCGiOvM5hHFlxV8ecxduXiGQlLxh858Tjbgww4FVXrCGOJeU
- ilEas9T7lOdVvKFefiaSJzRQZ/45wUErO3+trMOIhgoTuq3+Mu9pAkdAC/Buj9CpzQtO9uzPe
- v1DUAtTfBu2nR6R8rD0eb3HjeHfvRSXYtqD24NffaSMoY+jJ1ESakU07jFbcMnL2Mb49pmhXQ
- z2H6ENwKvoa5ZZ0YIMdBARaQCaLI7Aj/6nHuYkhpefgd1vcJDkm4+X9OYVqXCfhOEXvwtv+js
- Er150Fxvl8XJFA1ZoAwwMiUsEG21Z9YG7ztJ7m8cVp2SGnRdgagbGRSiwqzd2oTNRm8a/aeIm
- PdLXDTWFG90z0fFmIWE+XhtVr0oYZvUnDCTCmm+JM23tRVO3oSrnpsLcoTZi8Y7kPc2aDSRjk
- YfeVcXNH9rrq4FlGar/GtP4FGbuk6sTJvm/GJIZiLD67CnsZYam3Gx0KOraVbRQxb1qpDynIj
- Kz0/tmqOEutAHk0/FoSaVlYj1JwuoRcBcC9lVg/OkvFVUH2+ybvneK2UiD+7Vl7XHBXoMJ5UN
- wOvi1Or3jBcsMD4yMXqaUppLbT3lAj/VpHamm7Jpq8zaTlie34Oy9M3+qgbto8Eqg3vofJ0sV
- DrM1T3TKZVspJc=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220119144328.cvt76mhsufxg7qbr@bogus>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/19/22 15:34, Daniel Vetter wrote:
-> On Wed, Jan 19, 2022 at 3:01 PM Linus Torvalds
-> <torvalds@linux-foundation.org> wrote:
->>
->> On Wed, Jan 19, 2022 at 2:29 PM Helge Deller <deller@gmx.de> wrote:
->>>
->>>>>
->>>>> Ah, no, that was just the soft scrollback code I was thinking of, wh=
-ich
->>>
->>> Right.
->>> That was commit 973c096f6a85 and it was about vgacon, not fbcon.
->>
->> No, fbcon had some bug too, although I've paged out the details. See
->> commit 50145474f6ef ("fbcon: remove soft scrollback code").
->
-> tbh I've paged it all out too.
->
->> If I remember correctly (and it's entirely possible that I don't), the
->> whole "softback_lines" logic had serious problems with resizing the
->> console (or maybe changing the font size).
->
-> Yeah that pile of reverts was my motiviation to look into this and see
-> what else we could rip out most likely and still have an fbcon that
-> works as well as it does right now for almost all users (which is not
-> so great, but oh well).
->
->> There may have been some other bad interaction with
->> foreground/background consoles too, I forget.
->
-> Irrespective of this code being buggy or not buggy I think the bigger
-> pictures, and really the reason I want to see as much code ditched
-> from the fbdev/fbcon stack as we possible can, are very clear:
->
-> - it's full of bugs
+On Wed 19 Jan 06:43 PST 2022, Sudeep Holla wrote:
 
-I'm sure that there are bugs. Not just in fbcon/fbdev.
-Other than that, if there are bugs I'm sure they are independend
-of the question if you use hardware acceleration or not.
+> On Tue, Jan 18, 2022 at 10:56:12AM -0800, Bjorn Andersson wrote:
+> > Occasionally during boot the Qualcomm cpufreq driver was able to cause
+> > an invalid memory access in topology_update_thermal_pressure() on the
+> > line:
+> > 
+> > 	if (max_freq <= capped_freq)
+> > 
+> > It turns out that this was caused by a race, which resulted in the
+> > cpumask passed to the function being empty, in which case
+> > cpumask_first() will return a cpu beyond the number of valid cpus, which
+> > when used to access the per_cpu max_freq would return invalid pointer.
+> > 
+> > The bug in the Qualcomm cpufreq driver is being fixed, but having a
+> > sanity check of the arguments would have saved quite a bit of time and
+> > it's not unlikely that others will run into the same issue.
+> > 
+> > Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+> > ---
+> >  drivers/base/arch_topology.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/drivers/base/arch_topology.c b/drivers/base/arch_topology.c
+> > index 976154140f0b..6560a0c3b969 100644
+> > --- a/drivers/base/arch_topology.c
+> > +++ b/drivers/base/arch_topology.c
+> > @@ -177,6 +177,9 @@ void topology_update_thermal_pressure(const struct cpumask *cpus,
+> >  	u32 max_freq;
+> >  	int cpu;
+> >  
+> > +	if (WARN_ON(cpumask_empty(cpus)))
+> > +		return;
+> > +
+> 
+> Why can't the caller check and call this only when cpus is not empty ?
+> IIUC there are many such APIs that use cpumask and could result in similar
+> issues if called with empty cpus. Probably we could add a note that cpus
+> must not be empty if that helps the callers ?
+> 
 
-> - there's no test coverage/CI to speak of
-> - it's very arcane code which is damn hard to understand and fix issues =
-within
-> - the locking is busted (largely thanks to console_lock, and the
-> effort to make that reasonable from -rt folks has been slowly creeping
-> forward for years).
->
-> Iow this subsystem is firmly stuck in the 90s, and I think it's best
-> to just leave it there. There's also not been anyone actually capable
-> and willing to put in the work to change this (pretty much all actual
-> changes/fixes have been done by drm folks anyway, like me having a
-> small pet project to make the fbdev vs fbcon locking slightly less
-> busted).
+As indicated in the commit message, it took me a while to conclude that
+the cause for a memory fault on what seemed to be a comparison between
+two variables on the stack was actually caused by this race - which
+isn't trivially reproducible, unless you know what the bug is.
 
-Yes, drm folks fixed a lot of bugs in the generic fbcon code.
-I think everyone is thankful for this.
+Now _I_ know better and will hopefully recognize the oops signature
+right away, but my hope was to put the sanity check on this side to save
+the next caller of this API some time. Updating the comment probably
+would have saved me a minute or two at the end, probably as confirmation
+of my findings after the fact...
 
-> The other side is that being a maintainer is about collaboration, and
-> this entire fbdev maintainership takeover has been a demonstration of
-> anything but that. MAINTAINERS entry was a bit confusing since defacto
-> drm has been maintaining it for years, but for the above reasons we've
-> done that by just aggressively deleting stuff that isn't absolutely
-> needed - hence why I figured "orphaned" is a reasonable description of
-> the state of things. This entire affair of rushing in a maintainer
-> change over the w/e and then being greeted by a lot of wtf mails next
-> Monday does leave a rather sour aftertaste. Plus that thread shows a
-> lot of misunderstandings of what's all been going on and what drm can
-> and cannot do by Helge, which doesn't improve the entire "we need
-> fbdev back" argument.
+If you prefer to keep topology_update_thermal_pressure() clean(er) and
+exciting I can hack around the issue in the Qualcomm driver.
 
-I'm happy to *really* maintain fbdev code & drivers.
-Up to now only those parts which were still needed by drm (like fbcon)
-were fixed & "maintained" by drm folks.
-Nearly all other patches sent to the fbdev list were ignored and even new
-submissions for fbdev drivers were denied.
-Now in next step really important infrastructure for fbdev-drivers was
-ripped out of fbcon, like suddenly denying fbdev-drivers to use hardware
-acceleration.
-According to the docs the next step would have been to drop even more
-code from the fbdev drivers.
-This is not what "maintain" really is about.
+PS. I'm onboard with Greg's objection to the WARN_ON()...
 
-> But if the overall consensus is that that fbdev needs to be brought
-> back to it's full 90s glory then I think we need a copy of that code
-> for drm drivers (should work out if we intercept fb_open() and put our
-> own file_ops in there, maybe some more fun with fbcon), so that at
-> least for anything modern using drm driver we can keep on maintaining
-> that compat support code.
-
-It's not about to keep something alive or to stop future developments.
-It's about fairness and not actively breaking other parts of the kernel
-for no good reason.
-
-> And with maintaining here I don't mean build a museum around it, but
-> actually try to keep/move the thing towards a state where we can still
-> tell distros that enabling it is an ok thing to do and not just a CVE
-> subscription (well it is that too right now, but at least we can fix a
-> lot of them by just deleting code).
->
-> I think until that mess is sorted out resurrecting code that's not
-> strictly needed is just not a bright idea.
-
-That's wrong.
-It's strictly needed by more than 35 fbdev drivers and as such
-you introduced a regression for those.
-
-> Also wrt the issue at hand of "fbcon scrolling": The way to actually
-> do that with some speed is to render into a fully cached shadow buffer
-> and upload changed areas with a timer. Not with hw accelerated
-> scrolling, at least not if we just don't have full scale development
-> teams for each driver because creating 2d accel that doesn't suck is
-> really hard. drm fbdev compat helpers give you that shadow buffer for
-> free (well you got to set some options).
->
-> Unfortunately just ditching fbdev/fbcon compat is not an option for
-> many distros still, althought things are very slowly moving towards
-> that. Until we've arrived there I can't just pretend to not care about
-> what's going on in drivers/video.
-
-I'm happy to take care about it.
-That's why I stepped up as maintainer.
-
-Helge
+Regards,
+Bjorn
