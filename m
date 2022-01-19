@@ -2,103 +2,108 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7845BC433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 21:37:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B766C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 21:46:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357440AbiASVh3 (ORCPT
+        id S1357445AbiASVqU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 16:37:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58734 "EHLO
+        Wed, 19 Jan 2022 16:46:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234306AbiASVh2 (ORCPT
+        with ESMTP id S1357418AbiASVqT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 16:37:28 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 005FEC061574;
-        Wed, 19 Jan 2022 13:37:27 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id p12so19472690edq.9;
-        Wed, 19 Jan 2022 13:37:27 -0800 (PST)
+        Wed, 19 Jan 2022 16:46:19 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BC37C06173E
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 13:46:19 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id a7so3462334plh.1
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 13:46:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=g9zZAriOrb5Xr0Ri01rwPR9vgbSqidck2HSWzQmnp0c=;
-        b=HnnBeMFGK0o7vxUSYMfOjy5xhxvtWG8mAcZGXgwnXIaYcKEYzKvqT7MylqeEdyxXOJ
-         W+rWhtMWn+LsxZ4nejDGYP4tE53tDtg/dUhhVDgJ6S9gflQ0NHyqANHGs1X3aZ+c/tBQ
-         8N4PO7OZTCeEon9rgR4wgCFA1NAvyCs3blKo4cFjme8gQf27qr0RlU29ht681vIHCRWb
-         Brqk968peXD6zDdVgNz/dx0XjAaQfjIEIgz8LfLhiltxKhXBow9sWrRK7xz+8dPV9D0V
-         TAqhwYzPdD3dAyQ5gRukN0E6pbbSUT9ByDuNffHUsrQ1TL9USBfc1sPDZV9EjStRG1Lj
-         JBMQ==
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jZ6lVTSSFLFuFM/L+SjIupfkrZNssGv8z3Ianidrykk=;
+        b=T5Ut7gDpIfiZ5vSn4GajrcdCDWzj3ncSvpr6z6u/ZHn+J7ACma+MqlbYIBGh6deKu+
+         AGSqX//MqiJnhFlcxxPXGhsyfGy4OUZt5/o8LkpVe126EQuZ1otC9ZvfvCSyaq5xOigZ
+         5cNXaMKmqRIOE+fQIwzIpvPLiavpe7QZVSlv401/WOfqOnxY6I+NazU64BPtwtOsDxpj
+         3H0Hao4uRWffQHJ212dZlw4d92bI0U2aaqU8cd3Uwsx+gcdBJxwzsRw/pjJjrr+qXPez
+         ixx7wBTUnNLEC1vtxF5KOL4CEnwnE3Jpirk2c7r96x4GdSWtrM5oroLNP+PoZb4BHjIP
+         FSSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=g9zZAriOrb5Xr0Ri01rwPR9vgbSqidck2HSWzQmnp0c=;
-        b=WZIupJ5pGe7ByGFETQro4odk30YQ4CPD1erCpfobZQ0Vh1Dq4UTvTeGigVZkhlirDW
-         jmwqUkkd9vaq9bjXC8yhjKV3ByrjsemcffsmYgT0ZlkejrKEiio7ruJtAD80ylbGOU5J
-         z4JDPDIEGLy2xeAtZTpwo/LRbtQ6aLP7OINZhWL8w0/cfTMoqvokA9kD8KAqBtqQg24E
-         XQhIvnVChPXmWZHpdoS6AYIGP8hOk7NNa2fwVnO7ZjhNhKQsxkLE7/HeIfgr1/uqmEMx
-         uG+1ILONG2CoPWEC3+7bIU1w7t2WDSswciNkKgJmrcdRNDwkmSFgmgKYOQUIw8c841rO
-         bMmw==
-X-Gm-Message-State: AOAM533rXR7RR/nDKTHwluJS6GtVvhnwKJeCSTF0KrZGlXLY+BcpOq2u
-        SXbWXQ9ALbtRZevxhgf7RJORgqCwB8bmcba6LGs=
-X-Google-Smtp-Source: ABdhPJyjjgVpATxmVD1aV35Xo9jAj8pXAk6bx2y/zBQJw/wSro/1lxKqon8RXutyujoIdjaoYPJ+cbXx5hAM2h1/rK4=
-X-Received: by 2002:a17:906:5d0f:: with SMTP id g15mr7687669ejt.44.1642628246319;
- Wed, 19 Jan 2022 13:37:26 -0800 (PST)
-MIME-Version: 1.0
-References: <20220117142919.207370-1-marcan@marcan.st> <20220117142919.207370-3-marcan@marcan.st>
-In-Reply-To: <20220117142919.207370-3-marcan@marcan.st>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 19 Jan 2022 23:35:44 +0200
-Message-ID: <CAHp75VdZG4n1QySXyM+w1gJOWzq5Ng-Ym8dL1sSC_MLP2hqxAw@mail.gmail.com>
-Subject: Re: [PATCH v3 2/9] brcmfmac: firmware: Allocate space for default
- boardrev in nvram
-To:     Hector Martin <marcan@marcan.st>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Arend van Spriel <aspriel@gmail.com>,
-        Franky Lin <franky.lin@broadcom.com>,
-        Hante Meuleman <hante.meuleman@broadcom.com>,
-        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
-        Wright Feng <wright.feng@infineon.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Sven Peter <sven@svenpeter.dev>,
-        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
-        Mark Kettenis <kettenis@openbsd.org>,
-        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
-        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        "brian m. carlson" <sandals@crustytoothpaste.net>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
-        <brcm80211-dev-list.pdl@broadcom.com>,
-        SHA-cyfmac-dev-list@infineon.com
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=jZ6lVTSSFLFuFM/L+SjIupfkrZNssGv8z3Ianidrykk=;
+        b=wM+S0a0k7HeWKLHQSydzA+zEZJ32un9t1uIiWeyv/EB/p9Wecw6geErZkHZbypzW4L
+         fTe7fZGWACFa3rRqJAcQWeBlLF38VfWHsFPHXAJAsiPrIY+je9n5JtH6dvs3SAVjPtrQ
+         DvV1RZkcZ0DU3MS9TVSKXYde4fJYPcSRyzB+PfwbnA6L2wwo4lNmKX30O3HqTl0lkwao
+         XUDsVFxRbX+d9saTCgaRJ4FaifrJ5ZU000JHKRyAtEaqG0oB6Ou43Sbqf2xWFRTgpUb5
+         JIVes3dDuAkNPIeTdgfhtqVsgDb35YEOcOT8jGtuz0UbfobwYVjAwIi1iDmh7Z7bU7W1
+         GcIg==
+X-Gm-Message-State: AOAM53188p8fXJsUaz+N0uTaTqWLQXPXaEoduj6x0P0K1+RDyngn7u1P
+        BPe2cmr9On++/SUH602xue4tvdzSJKtxRA==
+X-Google-Smtp-Source: ABdhPJyOycOjSe9Y3DxhPWvgMrJUgy5U1hJ1ti7S8lIPGcJ4Ev3rPpSEkhI1yF9/JudNuJm4lJE5Sg==
+X-Received: by 2002:a17:90b:1bcc:: with SMTP id oa12mr6853102pjb.4.1642628778470;
+        Wed, 19 Jan 2022 13:46:18 -0800 (PST)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id j4sm635045pfc.125.2022.01.19.13.46.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Jan 2022 13:46:17 -0800 (PST)
+Date:   Wed, 19 Jan 2022 13:46:17 -0800 (PST)
+X-Google-Original-Date: Wed, 19 Jan 2022 13:45:49 PST (-0800)
+Subject:     Re: [PATCH riscv-next] riscv: bpf: Fix eBPF's exception tables
+In-Reply-To: <mhng-db82dcc8-e5f7-4da5-9f5c-d7f6eb225735@palmer-ri-x1c9>
+CC:     Bjorn Topel <bjorn.topel@gmail.com>, jszhang@kernel.org,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        aou@eecs.berkeley.edu, ast@kernel.org, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        tongtiangen@huawei.com
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     daniel@iogearbox.net
+Message-ID: <mhng-5a4269e6-dca2-4a28-b9c8-336c023b8450@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 17, 2022 at 4:30 PM Hector Martin <marcan@marcan.st> wrote:
+On Wed, 19 Jan 2022 10:04:24 PST (-0800), Palmer Dabbelt wrote:
+> On Wed, 19 Jan 2022 07:59:40 PST (-0800), Bjorn Topel wrote:
+>> On Wed, 19 Jan 2022 at 16:42, Daniel Borkmann <daniel@iogearbox.net> wrote:
+>>>
+>> [...]
+>>> > AFAIK, Jisheng's extable work is still in Palmer's for-next tree.
+>>> >
+>>> > Daniel/Alexei: This eBPF must follow commit 1f77ed9422cb ("riscv:
+>>> > switch to relative extable and other improvements"), which is in
+>>> > Palmer's tree. It cannot go via bpf-next.
+>>>
+>>> Thanks for letting us know, then lets route this fix via Palmer. Maybe he could
+>>> also add Fixes tags when applying, so stable can pick it up later on.
+>>>
+>>
+>> It shouldn't have a fixes-tag, since it's a new feature for RV. This
+>> was adapting to that new feature. It hasn't made it upstream yet (I
+>> hope!).
 >
-> If boardrev is missing from the NVRAM we add a default one, but this
-> might need more space in the output buffer than was allocated. Ensure
-> we have enough padding for this in the buffer.
+> That was actually just merged this morning into Linus' tree.  I'm still
+> happy to take the fix via my tree, but you're welcome to take it via a
+> BPF tree as well.  I'm juggling some other patches right now, just LMK
+> what works on your end.
+>
+> IMO it should have a fixes tag: it's a bit of a grey area, but one
+> something's in I generally try and put those tags on it.  That way folks
+> who try and backport features at least have a shot at finding the fix
+> (or at least, finding the fix without chasing around the bug ;)).
+>
+> I also tried poking you guys on the BPF Slack, but I don't really use it
+> and I'm not sure if anyone else does either.
 
-Do you know this ahead (before allocation happens)?
-If yes, the size change should happen conditionally.
+As per the slack discussion with Daniel, I've put this into the RISC-V 
+for-next tree.
 
-Alternatively, krealloc() may be used.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks!
