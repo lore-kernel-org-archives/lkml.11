@@ -2,108 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ADD8C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 11:29:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE063C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 11:31:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354133AbiASL3Y (ORCPT
+        id S1354150AbiASLbc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 06:29:24 -0500
-Received: from qproxy6-pub.mail.unifiedlayer.com ([69.89.23.12]:33534 "EHLO
-        qproxy6-pub.mail.unifiedlayer.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1354064AbiASL3T (ORCPT
+        Wed, 19 Jan 2022 06:31:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60896 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354064AbiASLbb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 06:29:19 -0500
-X-Greylist: delayed 1259 seconds by postgrey-1.27 at vger.kernel.org; Wed, 19 Jan 2022 06:29:19 EST
-Received: from gproxy4-pub.mail.unifiedlayer.com (unknown [69.89.23.142])
-        by qproxy6.mail.unifiedlayer.com (Postfix) with ESMTP id BF4D88037E14
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 11:08:17 +0000 (UTC)
-Received: from cmgw13.mail.unifiedlayer.com (unknown [10.0.90.128])
-        by progateway6.mail.pro1.eigbox.com (Postfix) with ESMTP id 083AE10050173
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 11:08:17 +0000 (UTC)
-Received: from box5620.bluehost.com ([162.241.219.59])
-        by cmsmtp with ESMTP
-        id A8p6ncZWrEaNCA8p6nVwE0; Wed, 19 Jan 2022 11:08:17 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=dJtjJMVb c=1 sm=1 tr=0 ts=61e7f121
- a=30941lsx5skRcbJ0JMGu9A==:117 a=30941lsx5skRcbJ0JMGu9A==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=IkcTkHD0fZMA:10:nop_charset_1
- a=DghFqjY3_ZEA:10:nop_rcvd_month_year
- a=-Ou01B_BuAIA:10:endurance_base64_authed_username_1 a=VwQbUJbxAAAA:8
- a=HaFmDPmJAAAA:8 a=49j0FZ7RFL9ueZfULrUA:9 a=QEXdDO2ut3YA:10:nop_charset_2
- a=AjGcO6oz07-iQ99wixmX:22 a=nmWuMzfKamIsx3l42hEX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=w6rz.net;
-        s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:Date:
-        Message-ID:From:In-Reply-To:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=pTASI+BTtOiq+6yCBe1T6PXhyzQPxP7+af1Mcxktvmw=; b=M0IHa2QOGblm8yzCxR/4y2W14Z
-        oxzCp6+BBCkpX4qFThL7KcVXwDB0CXRP2J06fHzt/kiFT5Qaz5tYrRjoo57l390WPGvAGqHLvqA/J
-        ftxw+E25ntzgdpfd2got5LwhS;
-Received: from c-73-162-232-9.hsd1.ca.comcast.net ([73.162.232.9]:33360 helo=[10.0.1.23])
-        by box5620.bluehost.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <re@w6rz.net>)
-        id 1nA8p5-002KLK-S0; Wed, 19 Jan 2022 04:08:15 -0700
-Subject: Re: [PATCH 5.16 00/28] 5.16.2-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-Cc:     torvalds@linux-foundation.org, akpm@linux-foundation.org,
-        linux@roeck-us.net, shuah@kernel.org, patches@kernelci.org,
-        lkft-triage@lists.linaro.org, pavel@denx.de, jonathanh@nvidia.com,
-        f.fainelli@gmail.com, stable@vger.kernel.org
-References: <20220118160452.384322748@linuxfoundation.org>
-In-Reply-To: <20220118160452.384322748@linuxfoundation.org>
-From:   Ron Economos <re@w6rz.net>
-Message-ID: <4ec8537c-b1bd-70d7-97b2-b3ad6e48d24d@w6rz.net>
-Date:   Wed, 19 Jan 2022 03:08:14 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Wed, 19 Jan 2022 06:31:31 -0500
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B275C061574;
+        Wed, 19 Jan 2022 03:31:31 -0800 (PST)
+Received: by mail-wm1-x329.google.com with SMTP id c2so4830733wml.1;
+        Wed, 19 Jan 2022 03:31:31 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B184jFapKUoaCmeCoLa/RY1yl2o5xLb5T8mZ+GEtvMc=;
+        b=kUJFN1kFYOr2PB86f3ofbWNuzAWIiKt4CKNBAuTjmwOxQ1X9fi8QrmX4DatmvxKL1a
+         eUJ2A8WsGvpPrtlbPPvHr08Z5pM7UGogwF6UHWa75ijA3H6Ujp2FpZ4qi8bikWY4urlt
+         qEQOLREVOYlF/fjPCN88aeKmFGwDjEZkTbuIR4BiyTBVAXqHGv+H+3R9Mjt8JBwPtUoP
+         s1dhuGhdOe2l2yz/+JPu2W6sD3MYRzlKCHH/Y+qXjH+Aruz8AiDkuGROnkYoyFwjEr6v
+         1wdX6SUeW59NCRGD/WnZHmOPxfkcjwayBjKTIchKBBLtT+P6/iADFFPYnx4//nG0db+j
+         GtKg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=B184jFapKUoaCmeCoLa/RY1yl2o5xLb5T8mZ+GEtvMc=;
+        b=ZICkMVceimrlF0SnZVk6cMbkuyRUrxvCkoo1ElC5Kl2D/EogSHXWAW+Rnz3+R+noC6
+         KECifiOgEJwhscbzNF0g/80v4FIirZqkrRw+PNtdpWkzowNJSOl2lwxrLFkZhH5gtFkh
+         tF0oGkr5ARRDJQksM+/hY760p7qMkrT2AtBGDFM/WIqADFd3o0eHlk/YmrvFs1HUwfIq
+         USlPzipwxqeLEnS7QrQLozLTIglwjrJEmu9+NgXFIfqc8NRcsfnuJZh+UCUPtdEqnt3v
+         9IXrSG7sNJobna6RPV/6JQztgQDtJSrYbIf9d+8J79f8lcDk/j2sEdtM69Le2I/NGUxJ
+         uf3g==
+X-Gm-Message-State: AOAM532xUFLu3resCI7gMBtpaf0i5mDIZX9wyRiwCqiztm7G9SI2YbNI
+        EOmKz7C3YTg/8nqjdJJilrrQa7nCOnq/vA==
+X-Google-Smtp-Source: ABdhPJyoASqFatmoRBFJhD6xsJLll7K5Y++9lZk9wFHgaVQ3B0ZBvKxlt3zqwehgaWMNAUDMO645EA==
+X-Received: by 2002:a1c:4c11:: with SMTP id z17mr409412wmf.0.1642591889196;
+        Wed, 19 Jan 2022 03:31:29 -0800 (PST)
+Received: from localhost ([193.209.96.43])
+        by smtp.gmail.com with ESMTPSA id a20sm4778049wmb.27.2022.01.19.03.31.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Jan 2022 03:31:28 -0800 (PST)
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [GIT PULL] pwm: Changes for v5.17-rc1
+Date:   Wed, 19 Jan 2022 12:31:26 +0100
+Message-Id: <20220119113126.1244615-1-thierry.reding@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - box5620.bluehost.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - w6rz.net
-X-BWhitelist: no
-X-Source-IP: 73.162.232.9
-X-Source-L: No
-X-Exim-ID: 1nA8p5-002KLK-S0
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: c-73-162-232-9.hsd1.ca.comcast.net ([10.0.1.23]) [73.162.232.9]:33360
-X-Source-Auth: re@w6rz.net
-X-Email-Count: 2
-X-Source-Cap: d3NpeHJ6bmU7d3NpeHJ6bmU7Ym94NTYyMC5ibHVlaG9zdC5jb20=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/18/22 8:05 AM, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.16.2 release.
-> There are 28 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
->
-> Responses should be made by Thu, 20 Jan 2022 16:04:42 +0000.
-> Anything received after that time might be too late.
->
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.16.2-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.16.y
-> and the diffstat can be found below.
->
-> thanks,
->
-> greg k-h
+Hi Linus,
 
-Built and booted successfully on RISC-V RV64 (HiFive Unmatched).
+The following changes since commit fa55b7dcdc43c1aa1ba12bca9d2dd4318c2a0dbf:
 
-Tested-by: Ron Economos <re@w6rz.net>
+  Linux 5.16-rc1 (2021-11-14 13:56:52 -0800)
 
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/thierry.reding/linux-pwm.git tags/pwm/for-5.17-rc1
+
+for you to fetch changes up to 3f0565451cc0c5158513af0bc4e91aa8fb0b5e75:
+
+  dt-bindings: pwm: Avoid selecting schema on node name match (2021-12-09 18:17:02 +0100)
+
+Thanks,
+Thierry
+
+----------------------------------------------------------------
+pwm: Changes for v5.17-rc1
+
+This contains a number of nice cleanups and improvements for the core
+and various drivers as well as a minor tweak to the json-schema device
+tree bindings.
+
+----------------------------------------------------------------
+Thierry Reding (1):
+      dt-bindings: pwm: Avoid selecting schema on node name match
+
+Uwe Kleine-König (7):
+      pwm: Move legacy driver handling into a dedicated function
+      pwm: Prevent a glitch for legacy drivers
+      pwm: Restore initial state if a legacy callback fails
+      pwm: twl: Implement .apply() callback
+      pwm: img: Implement .apply() callback
+      pwm: vt8500: Implement .apply() callback
+      pwm: img: Use only a single idiom to get a runtime PM reference
+
+ Documentation/devicetree/bindings/pwm/pwm.yaml |   2 +
+ drivers/pwm/core.c                             | 139 ++++++++++++++-----------
+ drivers/pwm/pwm-img.c                          |  35 +++++--
+ drivers/pwm/pwm-twl.c                          |  62 +++++++++--
+ drivers/pwm/pwm-vt8500.c                       |  57 ++++++++--
+ 5 files changed, 213 insertions(+), 82 deletions(-)
