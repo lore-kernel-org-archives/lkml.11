@@ -2,96 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB59C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 13:15:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6039C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 13:17:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354710AbiASNN5 (ORCPT
+        id S1354718AbiASNRe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 08:13:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55852 "EHLO
+        Wed, 19 Jan 2022 08:17:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354629AbiASNNu (ORCPT
+        with ESMTP id S236079AbiASNRc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 08:13:50 -0500
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3F2BC061574;
-        Wed, 19 Jan 2022 05:13:49 -0800 (PST)
-Received: by mail-pj1-x1041.google.com with SMTP id d12-20020a17090a628c00b001b4f47e2f51so3258271pjj.3;
-        Wed, 19 Jan 2022 05:13:49 -0800 (PST)
+        Wed, 19 Jan 2022 08:17:32 -0500
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6937DC061574
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 05:17:32 -0800 (PST)
+Received: by mail-qt1-x82c.google.com with SMTP id d4so2248407qtw.1
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 05:17:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TR4jSRL7SEnB/R3Dx9qH1BJYTaEVN5Jzxkl0ydpL64I=;
-        b=D4i6lLFGQ+uOF7l63BJ0hdDGwkBjQjJVGhqNA6+c+WEOk8PoMzDdjD9XnHmpDBLEmA
-         uA3KDte6t87VCY2D3exzZHtbOKO2rM1PJ41Jry3qaYw0gEn/anPH6gbBJcgmERZzXfWT
-         ZCL4ezDzNCQ0vKVAFu1UyERl7W/YQAoi3yWi6W2S1KjoGdXdgaaRX12q04K7cFAUkJsE
-         dxf6ACiTIcinozxhuJzex2o5EJTZEZT8iX3iaWeHsSPR9HnwOntp7j8OBRWCW9Ba4p8c
-         axMoOKoq9yEuaevBilugpUNeYW117UujtXhKNlEBiY0vDnCB1U3XBn9D2s2iqHDF12Bn
-         nvYQ==
+        d=ziepe.ca; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=uLFGZqyJySmbyBQ4sjesJ1t4m/84/5hhnfPmzo+DBaE=;
+        b=HQt2tqp6zGYhfblEra0zM0+FR6k6EeUJiZDEUZWXH2TZNLdPWXYj3HNzafScmi92E0
+         6ZwiRGFw8bnL8Fu6BT7PEjlwuEMVONf2ofHY/L5Zm3cdachcT8xjhh4icQvmmpFmQXkO
+         Alu2+h+b2rBAnr1viwICoF32r6L5GU4VjQtMYktCOVD5Bp8Pud77VHQvOJvANaKfk3Ej
+         /f0v9Q3eGOB1k3u+jaPh+UYk8XSzOZt08O9+1HIRfDAngLpd1S1IWB9zV/4jhRmeYK0C
+         /t7DktEQ0t/YYeDUjdVlErCHCMRg6ToT8TpX9gu4KqI8twNLG6WN2JfDFVR6iS1DUSuK
+         C6lA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TR4jSRL7SEnB/R3Dx9qH1BJYTaEVN5Jzxkl0ydpL64I=;
-        b=Du0WmywoYgkp7qk21yYfM3g53J8aLDC3w1BkquIli9ysoV7Uygt8PvXgpEND1yqd7B
-         7kls/EN+pD73jljxKdGV7PUobL4vfhx6N/GM1aoQvj4asv9z68g/DiRCibQD9pp4cwtk
-         ZfhSO3KDeQ9EaJ7x/QdE4OBwp6gFsj0iZpneCk+cVm25QuDoOidAxKgDLZcQlJmK5tx5
-         ovm4FaGh69zxMXk7+YvXesspuTgB7IWg4dl1XFAuRKt9fM92IAAF1wl1ISW8PxaR7iUY
-         AuvG1TWSRrX7zuiZM0NuFA1oEPtDFcsW5+1lT+kl/cTFUoTboU8vYad0tEKZIB2eEpNG
-         38VA==
-X-Gm-Message-State: AOAM532GKNAauk9KkqXio8gk1G2C8nK4iOTL5VNGz1EkpBcPgbxKK7SF
-        4Sd5Qh7o35bo7feDBhEMkF8=
-X-Google-Smtp-Source: ABdhPJwyfxSAp/GmLauMRvaCLfYbXzMR1B/09Q3MoxFgZI1Y4qVZVnzds5p5NaVDsAdCDFggCMEenw==
-X-Received: by 2002:a17:903:249:b0:149:dbf7:2753 with SMTP id j9-20020a170903024900b00149dbf72753mr32569509plh.101.1642598029387;
-        Wed, 19 Jan 2022 05:13:49 -0800 (PST)
-Received: from CLOUDLIANG-MB0.tencent.com ([103.7.29.32])
-        by smtp.gmail.com with ESMTPSA id q9sm2285299pjm.20.2022.01.19.05.13.46
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 19 Jan 2022 05:13:49 -0800 (PST)
-From:   Jinrong Liang <ljr.kernel@gmail.com>
-X-Google-Original-From: Jinrong Liang <cloudliang@tencent.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Wanpeng Li <wanpengli@tencent.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Jim Mattson <jmattson@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Jinrong Liang <cloudliang@tencent.com>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] KVM: x86: Fix spelling mistake "Unfortuately" -> "Unfortunately"
-Date:   Wed, 19 Jan 2022 21:13:39 +0800
-Message-Id: <20220119131339.53054-1-cloudliang@tencent.com>
-X-Mailer: git-send-email 2.30.1 (Apple Git-130)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=uLFGZqyJySmbyBQ4sjesJ1t4m/84/5hhnfPmzo+DBaE=;
+        b=KQBrncKxpWgLBBxmhjXL9KRSB1gprNHv9J1ygJrS8i5G1uuvxSw8+5+Llxikxqt5+9
+         GYn16EYTyJG9Xmqlghv15SM7xwdJ976H9VT1qaoFexXS30VxCePajij6Ox3QAHHehB/D
+         92X++NTz//ZKKucXUVlmO7QfrexZDMpJVO/vDiRoK8226ytv7gbTvBfIj4qCK/RIs/Py
+         2bu0b77Y3AgBZwoYNHJz14Rch0AftPPMEoCR5lacPwksJ+wOAJs1lQUNhRupUX2TMDQy
+         /pfWtbTvLpGfHYhnvDDgiqH0u++mKglS971v3si9FFoMNzQKQ4pSHGABR2nPLguLMu4N
+         X9kA==
+X-Gm-Message-State: AOAM533BMSjY/rXmm2eugTyECPpA/hKJ8cDfQJDU3u+GeBVDOXrNvhz8
+        z+4HCXO7nqdxNdENcPUo+CRBYg==
+X-Google-Smtp-Source: ABdhPJw0y5MaVc+dgVB8CBigVZFZt3DgJA+Wkso3kEA+8IErd9EFFOFWXCTUIRdqKkU80gp5ZpjBBQ==
+X-Received: by 2002:ac8:5cd4:: with SMTP id s20mr18611650qta.299.1642598250063;
+        Wed, 19 Jan 2022 05:17:30 -0800 (PST)
+Received: from ziepe.ca (hlfxns017vw-142-162-113-129.dhcp-dynamic.fibreop.ns.bellaliant.net. [142.162.113.129])
+        by smtp.gmail.com with ESMTPSA id i14sm242296qko.18.2022.01.19.05.17.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Jan 2022 05:17:29 -0800 (PST)
+Received: from jgg by mlx with local (Exim 4.94)
+        (envelope-from <jgg@ziepe.ca>)
+        id 1nAAq8-001IVe-UU; Wed, 19 Jan 2022 09:17:28 -0400
+Date:   Wed, 19 Jan 2022 09:17:28 -0400
+From:   Jason Gunthorpe <jgg@ziepe.ca>
+To:     Praveen Kannoju <praveen.kannoju@oracle.com>
+Cc:     Leon Romanovsky <leon@kernel.org>,
+        Santosh Shilimkar <santosh.shilimkar@oracle.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "rds-devel@oss.oracle.com" <rds-devel@oss.oracle.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Rama Nichanamatlu <rama.nichanamatlu@oracle.com>,
+        Rajesh Sivaramasubramaniom 
+        <rajesh.sivaramasubramaniom@oracle.com>
+Subject: Re: [PATCH RFC] rds: ib: Reduce the contention caused by the
+ asynchronous workers to flush the mr pool
+Message-ID: <20220119131728.GK8034@ziepe.ca>
+References: <1642517238-9912-1-git-send-email-praveen.kannoju@oracle.com>
+ <53D98F26-FC52-4F3E-9700-ED0312756785@oracle.com>
+ <20220118191754.GG8034@ziepe.ca>
+ <CEFD48B4-3360-4040-B41A-49B8046D28E8@oracle.com>
+ <Yee2tMJBd4kC8axv@unreal>
+ <PH0PR10MB5515E99CA5DF423BDEBB038E8C599@PH0PR10MB5515.namprd10.prod.outlook.com>
+ <20220119130450.GJ8034@ziepe.ca>
+ <PH0PR10MB551565CBAD2FF5CC0D3C69C48C599@PH0PR10MB5515.namprd10.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <PH0PR10MB551565CBAD2FF5CC0D3C69C48C599@PH0PR10MB5515.namprd10.prod.outlook.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jinrong Liang <cloudliang@tencent.com>
+On Wed, Jan 19, 2022 at 01:12:29PM +0000, Praveen Kannoju wrote:
 
-There is a typo in code comment. Fix it by replacing "Unfortuately"
-with "Unfortunately".
+> Yes, we are using the barriers. I was justifying the usage of
+> smp_rmb() and smp_wmb() over smp_load_acquire() and
+> smp_store_release() in the patch.
 
-Signed-off-by: Jinrong Liang <cloudliang@tencent.com>
----
- arch/x86/kvm/svm/svm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+You failed to justify it.
 
-diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index 6d31d357a83b..0207bd385a76 100644
---- a/arch/x86/kvm/svm/svm.c
-+++ b/arch/x86/kvm/svm/svm.c
-@@ -1913,7 +1913,7 @@ static int shutdown_interception(struct kvm_vcpu *vcpu)
- 
- 	/*
- 	 * VMCB is undefined after a SHUTDOWN intercept.  INIT the vCPU to put
--	 * the VMCB in a known good state.  Unfortuately, KVM doesn't have
-+	 * the VMCB in a known good state.  Unfortunately, KVM doesn't have
- 	 * KVM_MP_STATE_SHUTDOWN and can't add it without potentially breaking
- 	 * userspace.  At a platform view, INIT is acceptable behavior as
- 	 * there exist bare metal platforms that automatically INIT the CPU
--- 
-2.27.0
+Jason
 
