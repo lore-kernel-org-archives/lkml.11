@@ -2,214 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97E68C4332F
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 11:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFAA3C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 11:59:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354372AbiASLy7 (ORCPT
+        id S1354373AbiASL7x (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 06:54:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38146 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346033AbiASLy6 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 06:54:58 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50B85C061574;
-        Wed, 19 Jan 2022 03:54:57 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id j23so4884016edp.5;
-        Wed, 19 Jan 2022 03:54:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=PS6rF1/qC7hs4eJz9gJcqA6Dx/xMCX3EO5vU88DfZZc=;
-        b=M7CPAyDLJkK51lli8eGjFkvNRTyy8qp3E++q68zhCMEl86F8fz18sa0Yx7gGvlOIoX
-         yPFtEjvq0TbGkGBVu02onAkQI6LBbYynWWfkRyy+d2U4Tc03AAW1ysx2pA1Coer3Dg0T
-         DFIuCMs+GHVrkJ469lLT8f/wSbYP7HSYAqOBPS6RXjvqdy3ngibKBIgy/291aNvKeAiv
-         uwOtASk4ZQhAZXtbsVrEnQ5LlQSD4/Hy4RAUh5xAeM7W8uZ6Aj12ugMfZg9kDRFfVMWT
-         oJfEI4iGB8yGaRaIy5BD3RCcSnPSIQkbrdpmfw4OSE9l6Z2BvkSNF5MO73+cC+ufgEpk
-         kY/A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=PS6rF1/qC7hs4eJz9gJcqA6Dx/xMCX3EO5vU88DfZZc=;
-        b=YhEFx4/de4oBebjLG6XRMi5wjAaeZpsErANTilzM1leNmUpmv8g1MMujzky7v7xVNs
-         aAhOs08wfGQ8XFgD8M8WsQRGqpkjn569FQcM7efP3qpqkZwuAyx1c7SVIJ4aGmUYpQfx
-         5fYXLx4VDGtL+J1BL8hqrn293G0cZOZoM2EX/nJ1PFULpJX9suVyGZyE186psB/S1pnD
-         xftWWVAFkyOn7dmJm6rTQFC7GjA4E8OrOb06LGQG4ZENPMZIK64Br8rJEDe4jjLEIhvs
-         5Bh3g6eBiNbgcPackuMs/uNS2bTg83paRoZhtXYRhdpAKiK7N0Z3m4Ng6oXSaH304vSd
-         61vg==
-X-Gm-Message-State: AOAM533RHu8PnN3FOAyCHurJTacZwGsp6RTTX4DaZU11QWaB3MEqLeNp
-        9wmSNaQAv/Vqa4vZBdbt3AlxVd6h9jVoqwer9b+s2wz9YClbwQ==
-X-Google-Smtp-Source: ABdhPJwcCyUxQdrXrMBzu5TYLkAIRDj9GnezxNnu4HntlsC0d3wCBQImpqxaj+4/OZU4XNNp4Rz3aGe6kdVP/nVTdJM=
-X-Received: by 2002:a50:c388:: with SMTP id h8mr24181980edf.218.1642593295904;
- Wed, 19 Jan 2022 03:54:55 -0800 (PST)
+        Wed, 19 Jan 2022 06:59:53 -0500
+Received: from foss.arm.com ([217.140.110.172]:54886 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240846AbiASL7v (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 06:59:51 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 60EB5ED1;
+        Wed, 19 Jan 2022 03:59:51 -0800 (PST)
+Received: from FVFF7649Q05P (usa-sjc-imap-foss1.foss.arm.com [10.121.207.14])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id C741F3F73D;
+        Wed, 19 Jan 2022 03:59:49 -0800 (PST)
+Date:   Wed, 19 Jan 2022 11:59:44 +0000
+From:   Vincent Donnefort <vincent.donnefort@arm.com>
+To:     Vincent Guittot <vincent.guittot@linaro.org>
+Cc:     peterz@infradead.org, mingo@redhat.com,
+        linux-kernel@vger.kernel.org, dietmar.eggemann@arm.com,
+        Valentin.Schneider@arm.com, Morten.Rasmussen@arm.com,
+        Chris.Redpath@arm.com, qperret@google.com, Lukasz.Luba@arm.com
+Subject: Re: [PATCH v2 2/7] sched/fair: Decay task PELT values during
+ migration
+Message-ID: <Yef8kTnlP5h4I7/1@FVFF7649Q05P>
+References: <20220112161230.836326-1-vincent.donnefort@arm.com>
+ <20220112161230.836326-3-vincent.donnefort@arm.com>
+ <CAKfTPtC2wCw4U9w=saW0dGYHfOKo42nBKU7oHcEM7KeDj7MzWA@mail.gmail.com>
+ <Yeac5Y5Fzu/jaUf0@FVFF7649Q05P>
+ <CAKfTPtAdTTP+qGruYy8gi6rfhS0W1gAdjgeLCtrLZHxyCEHo9g@mail.gmail.com>
 MIME-Version: 1.0
-References: <20220118202234.410555-1-terry.bowman@amd.com> <20220118202234.410555-3-terry.bowman@amd.com>
-In-Reply-To: <20220118202234.410555-3-terry.bowman@amd.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 19 Jan 2022 13:53:13 +0200
-Message-ID: <CAHp75VdBFN+QMJpYDp8ytGGrBKYyjxU8u=Xrn44Lc3UGLPRQOA@mail.gmail.com>
-Subject: Re: [PATCH v3 2/4] Watchdog: sp5100_tco: Refactor MMIO base address initialization
-To:     Terry Bowman <terry.bowman@amd.com>
-Cc:     Guenter Roeck <linux@roeck-us.net>, linux-watchdog@vger.kernel.org,
-        Jean Delvare <jdelvare@suse.com>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Robert Richter <rrichter@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "Shah, Nehal-bakulchandra" <Nehal-bakulchandra.Shah@amd.com>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        Mario Limonciello <Mario.Limonciello@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKfTPtAdTTP+qGruYy8gi6rfhS0W1gAdjgeLCtrLZHxyCEHo9g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 10:23 PM Terry Bowman <terry.bowman@amd.com> wrote:
->
-> Combine MMIO base address and alternate base address detection. Combine
-> based on layout type. This will simplify the function by eliminating
-> a switch case.
->
-> Move existing request/release code into functions. This currently only
-> supports port I/O request/release. The move into a separate function
-> will make it ready for adding MMIO region support.
+[...]
 
-...
+> > >
+> > > This has several shortfalls:
+> > > - have a look at cfs_rq_clock_pelt() and rq_clock_pelt(). What you
+> > > name clock_pelt in your commit message and is used to update PELT and
+> > > saved in se->avg.last_update_time is : rq->clock_pelt -
+> > > rq->lost_idle_time - cfs_rq->throttled_clock_task_time
+> >
+> > That's why, the PELT "lag" is added onto se->avg.last_update_time. (see the last
+> > paragraph of the commit message) The estimator is just a time delta, that is
+> > added on top of the entity's last_update_time. I don't see any problem with the
+> > lost_idle_time here.
+> 
+> lost_idle_time is updated before entering idle and after your
+> clock_pelt_lag has been updated. This means that the delta that you
+> are computing can be wrong
+> 
+> I haven't look in details but similar problem probably happens for
+> throttled_clock_task_time
+> 
+> >
+> > > - you are doing this whatever the state of the cpu : idle or not. But
+> > > the clock cycles are not accounted for in the same way in both cases.
+> >
+> > If the CPU is idle and clock_pelt == clock_task, the component A of the
+> > estimator would be 0 and we only would account for how outdated is the rq's
+> > clock, i.e. component B.
+> 
+> And if cpu is not idle, you can't apply the diff between clk_pelt and clock_task
+> 
+> >
+> > > - (B) doesn't seem to be accurate as you skip irq and steal time
+> > > accounting and you don't apply any scale invariance if the cpu is not
+> > > idle
+> >
+> > The missing irq and paravirt time is the reason why it is called "estimator".
+> > But maybe there's a chance of improving this part with a lockless version of
+> > rq->prev_irq_time and rq->prev_steal_time_rq?
+> >
+> > > - IIUC your explanation in the commit message above, the (A) period
+> > > seems to be a problem only when idle but you apply it unconditionally.
+> >
+> > If the CPU is idle (and clock_pelt == clock_task), only the B part would be
+> > worth something:
+> >
+> >   A + B = [clock_task - clock_pelt] + [sched_clock_cpu() - clock]
+> >                       A                            B
+> >
+> > > If cpu is idle you can assume that clock_pelt should be equal to
+> > > clock_task but you can't if cpu is not idle otherwise your sync will
+> > > be inaccurate and defeat the primary goal of this patch. If your
+> > > problem with clock_pelt is that the pending idle time is not accounted
+> > > for when entering idle but only at the next update (update blocked
+> > > load or wakeup of a thread). This patch below should fix this and
+> > > remove your A.
+> >
+> > That would help slightly the current situation, but this part is already
+> > covered by the estimator.
+> 
+> But the estimator, as you name it, is wrong beaus ethe A part can't be
+> applied unconditionally
 
-> To: Guenter Roeck <linux@roeck-us.net>
-> To: linux-watchdog@vger.kernel.org
-> To: Jean Delvare <jdelvare@suse.com>
-> To: linux-i2c@vger.kernel.org
-> To: Wolfram Sang <wsa@kernel.org>
-> To: Andy Shevchenko <andy.shevchenko@gmail.com>
-> To: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
-> Cc: linux-kernel@vger.kernel.org
-> Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
-> Cc: Robert Richter <rrichter@amd.com>
-> Cc: Thomas Lendacky <thomas.lendacky@amd.com>
-
-Same comment to all your patches.
-
-...
-
-> +static int __sp5100_tco_prepare_base(struct sp5100_tco *tco,
-> +                                    u32 mmio_addr,
-> +                                    const char *dev_name)
-> +{
-> +       struct device *dev = tco->wdd.parent;
-
-> +       int ret = 0;
-
-Not really used variable.
-
-> +       if (!mmio_addr)
-> +               return -ENOMEM;
-> +
-> +       if (!devm_request_mem_region(dev, mmio_addr,
-> +                                   SP5100_WDT_MEM_MAP_SIZE,
-> +                                   dev_name)) {
-> +               dev_dbg(dev, "MMIO address 0x%08x already in use\n",
-> +                       mmio_addr);
-> +               return -EBUSY;
-> +       }
-> +
-> +       tco->tcobase = devm_ioremap(dev, mmio_addr,
-> +                                   SP5100_WDT_MEM_MAP_SIZE);
-> +       if (!tco->tcobase) {
-> +               dev_dbg(dev, "MMIO address 0x%08x failed mapping.\n",
-> +                       mmio_addr);
-
-> +               devm_release_mem_region(dev, mmio_addr,
-> +                                       SP5100_WDT_MEM_MAP_SIZE);
-
-Why? If it's a short live mapping, do not use devm.
-
-> +               return -ENOMEM;
-> +       }
-
-> +       dev_info(dev, "Using 0x%08x for watchdog MMIO address\n",
-> +                mmio_addr);
-
-Unneeded noise.
-
-> +       return ret;
-
-On top of above it's a NIH devm_ioremap_resource().
-
-> +}
+Hum, it is used only in the !active migration. So we know the task was sleeping
+before that migration. As a consequence, the time we need to account is "sleeping"
+time from the task point of view, which is clock_pelt == clock_task (for
+__update_load_avg_blocked_se()). Otherwise, we would only decay with the
+"wallclock" idle time instead of the "scaled" one wouldn't we?
 
 
-...
+     +-------------+-------------- 
+     |   Task A    |    Task B    .....
+              ^    ^             ^
+              |    |          migrate A
+	      |    |             |
+              |    |             |
+              |    |             |
+	      |    |<----------->| 
+              |  Wallclock Task A idle time
+              |<---------------->|
+	    "Scaled" Task A idle time
 
-> +       int ret = 0;
 
-Redundant assignment.
-
-...
-
-> +       /* Check MMIO address conflict */
-> +       ret = __sp5100_tco_prepare_base(tco, mmio_addr, dev_name);
-
-> +
-> +       /* Check alternate MMIO address conflict */
-
-Unify this with the previous comment.
-
-> +       if (ret)
-> +               ret = __sp5100_tco_prepare_base(tco, alt_mmio_addr,
-> +                                               dev_name);
-
-...
-
-> +               if (alt_mmio_addr & ((SB800_ACPI_MMIO_DECODE_EN |
-> +                                     SB800_ACPI_MMIO_SEL) !=
-> +                                    SB800_ACPI_MMIO_DECODE_EN)) {
-
-The split looks ugly. Consider to use temporary variables or somehow
-rearrange the condition that it doesn't break in the middle of the one
-logical token.
-
-> +                       alt_mmio_addr &= ~0xFFF;
-
-Why capital letters?
-
-> +                       alt_mmio_addr += SB800_PM_WDT_MMIO_OFFSET;
-> +               }
-
-...
-
-> +               if (!(alt_mmio_addr & (((SB800_ACPI_MMIO_DECODE_EN |
-> +                                      SB800_ACPI_MMIO_SEL)) !=
-> +                     SB800_ACPI_MMIO_DECODE_EN))) {
-
-Ditto.
-
-> +                       alt_mmio_addr &= ~0xFFF;
-
-Ditto.
-
-> +                       alt_mmio_addr += SB800_PM_WDT_MMIO_OFFSET;
-
-...
-
-Okay, I see this is the original code like this... Perhaps it makes
-sense to reshuffle them (indentation-wise) at the same time and
-mention this in the changelog.
-
-...
-
->         release_region(SP5100_IO_PM_INDEX_REG, SP5100_PM_IOPORTS_SIZE);
-
-Is it still needed? I have no context to say if devm_iomap() and this
-are not colliding, please double check the correctness.
-
--- 
-With Best Regards,
-Andy Shevchenko
+[...]
