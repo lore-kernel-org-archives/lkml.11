@@ -2,68 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D7E0C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 09:59:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94425C433FE
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 10:01:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353408AbiASJ7C (ORCPT
+        id S1353188AbiASKBe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 04:59:02 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34428 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353384AbiASJ65 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 04:58:57 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        Wed, 19 Jan 2022 05:01:34 -0500
+Received: from mail.skyhub.de ([5.9.137.197]:47854 "EHLO mail.skyhub.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233471AbiASKBc (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 05:01:32 -0500
+Received: from zn.tnic (dslb-088-067-202-008.088.067.pools.vodafone-ip.de [88.67.202.8])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D54D061531
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 09:58:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 45C56C340E5;
-        Wed, 19 Jan 2022 09:58:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642586336;
-        bh=YK+NHYklnZnc5AIU2rcQ/ugY3qqF2EwcMoX/0pl/+sA=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=nTCq/b988q3QVwf7qIrSTzbMlKR3pIqyZTqN+lweoSyiCmOT4hxwgm/V4YZH6t5uE
-         rfr1k1LUq3DN0JAyf1QDYbDyFul/Cs1EJedRNZKaNZKpzyUaFIR6sLRux6TUzUWtrw
-         4TI3c6HHXVxfFPeNEoTTQY4io2aidfKvGGTMxJXaycTEABsYu5ewaYGGZtEa36/UD6
-         cVOMTC1+w+hbYF6byDDJ2OFnTDjBzIUVmcVsnhidtXVkx4/qonHVUy6y7hnqVRLNlp
-         O7dQxtp3PRPpYrNL+Rs+fEOe/ZgkNgo35+8wcIViSSNBuFNR/qbprU1YDbOO2sumXY
-         vbBlqSU3dRq4A==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 33529F60797;
-        Wed, 19 Jan 2022 09:58:56 +0000 (UTC)
-Subject: Re: [f2fs-dev] [GIT PULL] f2fs update for 5.17-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YedlHVEa4sdbvB2F@google.com>
-References: <YedlHVEa4sdbvB2F@google.com>
-X-PR-Tracked-List-Id: <linux-f2fs-devel.lists.sourceforge.net>
-X-PR-Tracked-Message-Id: <YedlHVEa4sdbvB2F@google.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs.git tags/f2fs-for-5.17-rc1
-X-PR-Tracked-Commit-Id: 5fed0be8583f08c1548b4dcd9e5ee0d1133d0730
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 1d1df41c5a33359a00e919d54eaebfb789711fdc
-Message-Id: <164258633620.28417.9292686617329063876.pr-tracker-bot@kernel.org>
-Date:   Wed, 19 Jan 2022 09:58:56 +0000
-To:     Jaegeuk Kim <jaegeuk@kernel.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux F2FS Dev Mailing List 
-        <linux-f2fs-devel@lists.sourceforge.net>
+        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 03A201EC03AD;
+        Wed, 19 Jan 2022 11:01:26 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
+        t=1642586487;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
+        bh=+sw16Zul1vvekfBj0LiJt53AfIehF1UvXy7HEV0NUk8=;
+        b=sNg5oKZ5eGyh5FUA+/j6KEJRvWtedXw7LRPzpsyxJscN/2mXH2VhGn6kHPdRn4g4LaFn6f
+        vDUqOxtCAdn1B+CU+RUA5bLMjGKrCmccBjfZ0AIsww/6V4MiIUmra8qPqiHVjwYyfmuA2u
+        ps4ZUa6XHh1iytjaugb2xDgVZQUx/Y4=
+Date:   Wed, 19 Jan 2022 11:01:21 +0100
+From:   Borislav Petkov <bp@alien8.de>
+To:     Josh Poimboeuf <jpoimboe@redhat.com>
+Cc:     Nick Desaulniers <ndesaulniers@google.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Ingo Molnar <mingo@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
+        x86@kernel.org, llvm@lists.linux.dev, linux-sparse@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: Re: [PATCH] objtool: prefer memory clobber & %= to volatile &
+ __COUNTER__
+Message-ID: <YefhcXouSQwETTvl@zn.tnic>
+References: <20220114010526.1776605-1-ndesaulniers@google.com>
+ <YeQei0xNzMq7bFdg@zn.tnic>
+ <20220118192256.jzk5dnceeusq7x7u@treble>
+ <20220118230120.pivvson7qekfiqic@treble>
+ <YedOLva0zos3A1JE@zn.tnic>
+ <20220119000327.oapghqad4lebnsra@treble>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220119000327.oapghqad4lebnsra@treble>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Tue, 18 Jan 2022 17:10:53 -0800:
+On Tue, Jan 18, 2022 at 04:03:27PM -0800, Josh Poimboeuf wrote:
+> If one of the '__bug_table' asm snippets isn't immediately followed by
+> the .L[un]reachable asm, then yeah, it's the same issue.
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/jaegeuk/f2fs.git tags/f2fs-for-5.17-rc1
+Found one.
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/1d1df41c5a33359a00e919d54eaebfb789711fdc
+AFAICT, that's the WARN_ON_ONCE(1) catch-all in the default: label of
+the switch-case in nf_hook(). That thing is followed by other gunk and
+no *reachable label near it.
 
-Thank you!
+Damn - that was too good to be true. Gotta love those compilers. :-P
+
+# ./include/linux/netfilter.h:252: 		WARN_ON_ONCE(1);
+#APP
+# 252 "./include/linux/netfilter.h" 1
+	1:	.byte 0x0f, 0x0b
+.pushsection __bug_table,"aw"
+2:	.long 1b - 2b	# bug_entry::bug_addr
+	.long .LC5 - 2b	# bug_entry::file	#
+	.word 252	# bug_entry::line	#
+	.word 2307	# bug_entry::flags	#
+	.org 2b+12	#
+.popsection
+# 0 "" 2
+#NO_APP
+	.p2align 4,,3
+	jmp	.L344	#
+.L265:
+# ./include/linux/netfilter.h:229: 		hook_head = rcu_dereference(net->nf.hooks_ipv4[hook]);
 
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+Regards/Gruss,
+    Boris.
+
+https://people.kernel.org/tglx/notes-about-netiquette
