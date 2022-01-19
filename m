@@ -2,100 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CCB6C433EF
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 08:21:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4BDFC433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 08:22:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346044AbiASIVm (ORCPT
+        id S1347557AbiASIWA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 03:21:42 -0500
-Received: from azure-sdnproxy.icoremail.net ([52.237.72.81]:57902 "HELO
-        azure-sdnproxy-1.icoremail.net" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with SMTP id S238265AbiASIVl (ORCPT
+        Wed, 19 Jan 2022 03:22:00 -0500
+Received: from mail-vk1-f182.google.com ([209.85.221.182]:46891 "EHLO
+        mail-vk1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238265AbiASIV7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 03:21:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=pku.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
-        Message-Id; bh=FeyDaeCUE9Q9PPbCn5K7YqRumBgy06OD99LoSc0+DUU=; b=e
-        +PV6G/BFn9XXMOhXoVD4lC/8uxoBEbV4Q32h9sMlhufQ22lvk4jaNYk722AYUgg6
-        Koz2n9JMZEXdSQyX/CFulJb5+HO0Z2z2kepg2itlMTaqwSJECgMqFt7wBR2/CgK1
-        QBZySMWsA5hEIbjRmOyHndkwuJ/9rQ1J6oI1ClUUuk=
-Received: from localhost (unknown [10.129.21.144])
-        by front01 (Coremail) with SMTP id 5oFpogB3fjqKyedhmGh8AA--.52130S2;
-        Wed, 19 Jan 2022 16:19:23 +0800 (CST)
-From:   Yongzhi Liu <lyz_cs@pku.edu.cn>
-To:     thierry.reding@gmail.com, sam@ravnborg.org, airlied@linux.ie,
-        daniel@ffwll.ch
-Cc:     dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        Yongzhi Liu <lyz_cs@pku.edu.cn>
-Subject: [PATCH] drm/panel: Add missing pm_rumtime_resume_and_get
-Date:   Wed, 19 Jan 2022 00:19:21 -0800
-Message-Id: <1642580361-27552-1-git-send-email-lyz_cs@pku.edu.cn>
-X-Mailer: git-send-email 2.7.4
-X-CM-TRANSID: 5oFpogB3fjqKyedhmGh8AA--.52130S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7ZryUKw47WF1xurW3Cw48WFg_yoW8WFW5pr
-        45XFWIyFyrtrW0yrW7AFn7XFy5uayIgFW7tF98Gan8Za15AF4jy3s8trWaqF1DArnxCFWa
-        qFs7Kw43Z3Wayr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkK1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
-        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
-        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
-        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
-        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVCm-wCF04k20xvY0x0EwIxGrwCF
-        04k20xvE74AGY7Cv6cx26w4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrV
-        AFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCI
-        c40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267
-        AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_
-        Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbU
-        UUUUU==
-X-CM-SenderInfo: irzqijirqukmo6sn3hxhgxhubq/1tbiAwEKBlPy7uA+KwAXsj
+        Wed, 19 Jan 2022 03:21:59 -0500
+Received: by mail-vk1-f182.google.com with SMTP id bj47so1009050vkb.13;
+        Wed, 19 Jan 2022 00:21:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mNEeF7mEICXaIClDfLKBUPzmMnomVxgHrUkxe4T3tSU=;
+        b=MOmghSv3i7vASpRlDPK61llOlZCr8Qbu+4sB3Kc1tE/MkOar+P/4f4NFAe4yPXDCvh
+         yV++LDpgsTQ+0UCCb/EOTwMsdyZiZJl9MnIv27CIkPmCDPeh19bIi7hDfkAhX9YrAUZe
+         l3GjXL1FCJdlPQPS0Q/pR+XjPc7Uq/sY9C5LdOjBwTy66TlgeuzDg7YFJOWTgVCsKHFj
+         sGN3PXvsifHYC9Pjfp7SVh6VVFbvjN3RlMhgYEimqrx0YlQLly8B9YQncw1tJw7Cdxj6
+         gN4+/9awm9Bc/UG4KNeqU8MzvkPQEiOvTUguEvMmWZMwFKlJFW9nF2fXg2OtB8B93Pw3
+         lsAA==
+X-Gm-Message-State: AOAM532ThnmRqGnOsLQoxIbOGezMVgGQZ9XlZ70ywUhGDwms8CvcGjyq
+        5uB8djimPZGlsMoiXDWARptU4tK1gMoCOA==
+X-Google-Smtp-Source: ABdhPJxWFCNwzFTUlDQgQ0hDiPB59InqaAck4xuPxwrrYd0/b/btmSUFzFq1xwnVTqcD8+cXYdF4Nw==
+X-Received: by 2002:a05:6122:508:: with SMTP id x8mr5988706vko.14.1642580518260;
+        Wed, 19 Jan 2022 00:21:58 -0800 (PST)
+Received: from mail-ua1-f53.google.com (mail-ua1-f53.google.com. [209.85.222.53])
+        by smtp.gmail.com with ESMTPSA id u124sm4213260vkg.3.2022.01.19.00.21.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 19 Jan 2022 00:21:57 -0800 (PST)
+Received: by mail-ua1-f53.google.com with SMTP id r15so3113666uao.3;
+        Wed, 19 Jan 2022 00:21:57 -0800 (PST)
+X-Received: by 2002:a05:6102:3581:: with SMTP id h1mr11184748vsu.5.1642580517250;
+ Wed, 19 Jan 2022 00:21:57 -0800 (PST)
+MIME-Version: 1.0
+References: <20220119000506.1299843-1-laurent@vivier.eu> <20220119000506.1299843-3-laurent@vivier.eu>
+In-Reply-To: <20220119000506.1299843-3-laurent@vivier.eu>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 19 Jan 2022 09:21:46 +0100
+X-Gmail-Original-Message-ID: <CAMuHMdXSFU4N+FLYkCLJCJcWJ74g=8Vr23Rx0cka-kDTBs6Z4Q@mail.gmail.com>
+Message-ID: <CAMuHMdXSFU4N+FLYkCLJCJcWJ74g=8Vr23Rx0cka-kDTBs6Z4Q@mail.gmail.com>
+Subject: Re: [PATCH v10 2/5] rtc: goldfish: introduce goldfish_ioread32()/goldfish_iowrite32()
+To:     Laurent Vivier <laurent@vivier.eu>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        John Stultz <john.stultz@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>, linux-rtc@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        linux-m68k <linux-m68k@lists.linux-m68k.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-pm_runtime_put_autosuspend() and pm_runtime_put_sync_suspend()
-will decrease the rumtime PM counter even when it returns an error.
-Thus a pairing decrement is needed to prevent refcount leak.
-Fix this by adding pm_runtime_resume_and_get() on error handling path.
+Hi Laurent,
 
-Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
----
- drivers/gpu/drm/panel/panel-samsung-atna33xc20.c | 4 +++-
- drivers/gpu/drm/panel/panel-simple.c             | 4 +++-
- 2 files changed, 6 insertions(+), 2 deletions(-)
+On Wed, Jan 19, 2022 at 1:05 AM Laurent Vivier <laurent@vivier.eu> wrote:
+> The goldfish device always uses the same endianness as the architecture
+> using it:
+> https://android.googlesource.com/platform/external/qemu/+/refs/heads/emu-master-dev/hw/timer/goldfish_timer.c#177
+>
+> On a big-endian machine, the device is also big-endian, on a
+> little-endian machine the device is little-endian.
+>
+> So we need to use the right accessor to read/write values to the goldfish
+> registers: ioread32()/iowrite32() on a little-endian machine,
+> ioread32be()/iowrite32be() on a big-endian machine.
+>
+> This patch introduces goldfish_ioread32()/goldfish_iowrite32() to allow
+> architectures to define them accordlingly to their endianness.
+>
+> We define them by default in asm-generic/io.h to access the device using
+> little-endian access as it is the current use, but we will be able to define
+> big-endian version when new architectures will use them.
+>
+> Signed-off-by: Laurent Vivier <laurent@vivier.eu>
 
-diff --git a/drivers/gpu/drm/panel/panel-samsung-atna33xc20.c b/drivers/gpu/drm/panel/panel-samsung-atna33xc20.c
-index 20666b6..dd7e3f1 100644
---- a/drivers/gpu/drm/panel/panel-samsung-atna33xc20.c
-+++ b/drivers/gpu/drm/panel/panel-samsung-atna33xc20.c
-@@ -189,8 +189,10 @@ static int atana33xc20_unprepare(struct drm_panel *panel)
- 	 * to get the EDID or otherwise send DP AUX commands to the panel.
- 	 */
- 	ret = pm_runtime_put_sync_suspend(panel->dev);
--	if (ret < 0)
-+	if (ret < 0) {
-+		pm_runtime_resume_and_get(panel->dev);
- 		return ret;
-+	}
- 	p->prepared = false;
- 
- 	return 0;
-diff --git a/drivers/gpu/drm/panel/panel-simple.c b/drivers/gpu/drm/panel/panel-simple.c
-index 9e46db5..ad18965 100644
---- a/drivers/gpu/drm/panel/panel-simple.c
-+++ b/drivers/gpu/drm/panel/panel-simple.c
-@@ -323,8 +323,10 @@ static int panel_simple_unprepare(struct drm_panel *panel)
- 
- 	pm_runtime_mark_last_busy(panel->dev);
- 	ret = pm_runtime_put_autosuspend(panel->dev);
--	if (ret < 0)
-+	if (ret < 0) {
-+		pm_runtime_resume_and_get(panel->dev);
- 		return ret;
-+	}
- 	p->prepared = false;
- 
- 	return 0;
--- 
-2.7.4
+Thanks for your patch!
 
+> --- a/include/asm-generic/io.h
+> +++ b/include/asm-generic/io.h
+> @@ -906,6 +906,13 @@ static inline void iowrite64_rep(volatile void __iomem *addr,
+>  #endif /* CONFIG_64BIT */
+>  #endif /* CONFIG_GENERIC_IOMAP */
+>
+> +#ifndef goldfish_ioread32
+> +#define goldfish_ioread32 ioread32
+> +#endif
+> +#ifndef goldfish_iowrite32
+> +#define goldfish_iowrite32 iowrite32
+> +#endif
+> +
+>  #ifdef __KERNEL__
+
+I've just discovered include/linux/goldfish.h, which already has gf_*()
+accessors for 64-bit, so it'd make sense to move the above there,
+and adjust the names.
+
+Arnd: note that the existing ones do use __raw_writel().
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
