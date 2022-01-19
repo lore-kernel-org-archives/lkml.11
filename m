@@ -2,129 +2,364 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B4D0C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0B80C43217
 	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 23:06:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344098AbiASXGx (ORCPT
+        id S1344293AbiASXGy convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 18:06:53 -0500
-Received: from mail-sn1anam02on2060.outbound.protection.outlook.com ([40.107.96.60]:10891
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1344235AbiASXGr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 18:06:47 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=FJ2Hutsk/8ZnGBLtuDFhhPP1gi9aZEI+AUFplsUyN+pwO6boRLCl9WgFpUrVY5JJIt/0LXk+rjULsTPBhNMBXRR60GOM1RhtUDcxdNMCVCxXt2vuYorpXI1A0cmPCu3gEKEGR1Re/rXRBA23HQSwwy1NtS2hr/nwOVp11OuI8TbJRfaIicjwXzXMMs0jZhD56pRev1TT7yGotKUm6fSVplZmoG7yR6MuONW5aaPf63JDIpzK2Q86GyspQ9rSiJ1CIM4ToIzB/Ely2b6rtQuqvnPlWstD+6cG/vsmTzxSG8YsxjaoS/nq4k3ZAYEtGFL2EFq8hoUIjUsTnPXw9YYIcw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=+eU624T2OHegeHXTVWHITMBKQovRd21Q8K8tCTHknKw=;
- b=B3fUONmcDwydJdCpRa8Ehe+zImU6uHRxbDaHlAWD0kha0QMwXtwYlOHMHXKLy7DZGUAy3YXSEDtfpwYdqhxSMiOx6/q4Tg4Ok7pUZB6+X8i8JThfEGAOf3iiVry3jHTbvD57poxqK/HxnjMEttegU6DoLcs0uIgPLhVhqqN3e8wE+vKuoXJaB+I72scfus3msR6k93WrZlAOksFSDgszDzrPOgor/dFcoUXJ8ILU+JrD+dE0RRjU0/Bam1csLLpKF4m2Mep8NEm/71F/csoIWYsnNt4hBy7B2BQDO24kUvKyB/i2PbRuBZQ6AOZpt+PYbu6SvnF28gFN7W9sPsj1Lg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 165.204.84.17) smtp.rcpttodomain=roeck-us.net smtp.mailfrom=amd.com;
- dmarc=pass (p=quarantine sp=quarantine pct=100) action=none
- header.from=amd.com; dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+eU624T2OHegeHXTVWHITMBKQovRd21Q8K8tCTHknKw=;
- b=BXf87y1EWMyMsz47JfHtCZ9n4KTTm5tkMXePeOWGK0zZexhUXQMqZnK/m19pQrnoFzeaefFeC7mpUBfHkwCZZsjqXARgCbNYid//XIiTUpuIl1qSmATyjqlEN9vP9zjPepi5BaFzEIIVZr+ZFR63iUEHap560gpv9Dz4JRhcCBM=
-Received: from DM5PR08CA0056.namprd08.prod.outlook.com (2603:10b6:4:60::45) by
- DM6PR12MB2748.namprd12.prod.outlook.com (2603:10b6:5:43::28) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4909.8; Wed, 19 Jan 2022 23:06:44 +0000
-Received: from DM6NAM11FT017.eop-nam11.prod.protection.outlook.com
- (2603:10b6:4:60:cafe::4f) by DM5PR08CA0056.outlook.office365.com
- (2603:10b6:4:60::45) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8 via Frontend
- Transport; Wed, 19 Jan 2022 23:06:44 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
- smtp.mailfrom=amd.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=amd.com;
-Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
- 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
- client-ip=165.204.84.17; helo=SATLEXMB04.amd.com;
-Received: from SATLEXMB04.amd.com (165.204.84.17) by
- DM6NAM11FT017.mail.protection.outlook.com (10.13.172.145) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4909.7 via Frontend Transport; Wed, 19 Jan 2022 23:06:44 +0000
-Received: from ethanolx7ea3host.amd.com (10.180.168.240) by SATLEXMB04.amd.com
- (10.181.40.145) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Wed, 19 Jan
- 2022 17:06:43 -0600
-From:   Terry Bowman <terry.bowman@amd.com>
-To:     <terry.bowman@amd.com>, <linux@roeck-us.net>,
-        <linux-watchdog@vger.kernel.org>, <jdelvare@suse.com>,
-        <linux-i2c@vger.kernel.org>, <wsa@kernel.org>,
-        <andy.shevchenko@gmail.com>, <rafael.j.wysocki@intel.com>
-CC:     <linux-kernel@vger.kernel.org>, <wim@linux-watchdog.org>,
-        <rrichter@amd.com>, <thomas.lendacky@amd.com>,
-        <sudheesh.mavila@amd.com>, <Nehal-bakulchandra.Shah@amd.com>,
-        <Basavaraj.Natikar@amd.com>, <Shyam-sundar.S-k@amd.com>,
-        <Mario.Limonciello@amd.com>
-Subject: [PATCH v3 1/9] kernel/resource: Introduce request_muxed_mem_region()
-Date:   Wed, 19 Jan 2022 17:06:18 -0600
-Message-ID: <20220119230626.31560-2-terry.bowman@amd.com>
+        Wed, 19 Jan 2022 18:06:54 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:41890 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1344264AbiASXGt (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 18:06:49 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20JIs4Go030555
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 15:06:49 -0800
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dp0x32bxa-7
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 15:06:49 -0800
+Received: from twshared12416.02.ash9.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::7) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Wed, 19 Jan 2022 15:06:42 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 126A928228258; Wed, 19 Jan 2022 15:06:39 -0800 (PST)
+From:   Song Liu <song@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
+        Song Liu <songliubraving@fb.com>
+Subject: [PATCH v4 bpf-next 7/7] bpf, x86_64: use bpf_prog_pack allocator
+Date:   Wed, 19 Jan 2022 15:06:20 -0800
+Message-ID: <20220119230620.3137425-8-song@kernel.org>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220119230626.31560-1-terry.bowman@amd.com>
-References: <20220119230626.31560-1-terry.bowman@amd.com>
+In-Reply-To: <20220119230620.3137425-1-song@kernel.org>
+References: <20220119230620.3137425-1-song@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
 Content-Type: text/plain
-X-Originating-IP: [10.180.168.240]
-X-ClientProxiedBy: SATLEXMB03.amd.com (10.181.40.144) To SATLEXMB04.amd.com
- (10.181.40.145)
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: a0ced1c5-f353-43cc-25a4-08d9dba05ca0
-X-MS-TrafficTypeDiagnostic: DM6PR12MB2748:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB27488149528CFA7E2CB3BE9383599@DM6PR12MB2748.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: TSKY7pR9OOLWPuRkEY7C5j6EwVCRSVnK9g8u/Fe4hjQXHTu8X4qsmeWgNUEA2fZSjGiMFvwKgIe0aEdFEYZHWuT3CbNJv4D7LG9LZxUJT9YVC147NqvOzmvqCQSvQMPEzS/JSwmh/xDlm0EZ+OSR6vZ9hyHzdchbaLqi1hLXQr7hll0Ptm/mi8hl4b2dTRmjaFIAjQMWvVlFU2k0oFBsHuqNpbuePlRuoRo7AuRqmZvTrhHYGBVKS5iGxc7H7CxUxMpKzVDv4++GJ61rAEjJxZCFrZHqQmfiOQdu/B6dIbGq5FXwZZBknLWtLy8s5+lUWNy3Me4JUA3aGNL1MTL0gf3Tncb0wjGhKadPPsOJ2ZY3i+psBaQ3qtVKpqWAcJftl2pz+91/UCk8K0fnxz3vDsrAw+PiHgpu9brZFUjWz3ECneNi1VtTuG3TtNBGCgE/tcrtyBZbyZy6m+6P0qxCF3yDjLHKRqUQi/ZbELIv11uDwo1Lq7dPO1Lx+fJda4P7U90Xyahou1x+EAuQ/N06U66Qq9Rb5dLMYNMcSbJ2zNvB4z+M0jRsVIVdNSnQUUsiKPEIwJoZvh92G83UmIJYLq1ZC4F8Nx3aU/YHlepOxbDdvZ3ZST1q16UZ1ZMoIUUKxUqqLFMxHLrQPelRYUfAvRcl/dsQ+7Eues+tXuq+ao1X+1GP/vkxiX1EtpEp/Pi7grvixifr1mBRQfMQUjIOFB4WHvGnJe5ccmL3sJRj2k+/2GWAVRGl/gLcCPPHwwzqGbNO/F037Des+go/pFd33jR8MhSwQyaqtqV96SdgnCZm6LbW81ExNa6cC5PWZJFU
-X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB04.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(40470700002)(8676002)(426003)(4326008)(7696005)(82310400004)(26005)(2616005)(40460700001)(6666004)(336012)(44832011)(1076003)(2906002)(36860700001)(54906003)(508600001)(70586007)(83380400001)(16526019)(36756003)(5660300002)(316002)(186003)(110136005)(81166007)(356005)(47076005)(86362001)(8936002)(70206006)(2101003)(36900700001);DIR:OUT;SFP:1101;
-X-OriginatorOrg: amd.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2022 23:06:44.3947
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: a0ced1c5-f353-43cc-25a4-08d9dba05ca0
-X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB04.amd.com]
-X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT017.eop-nam11.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2748
+X-Proofpoint-ORIG-GUID: NpThaehuWqSGDcd-MEnBoI5o0pFCPWDp
+X-Proofpoint-GUID: NpThaehuWqSGDcd-MEnBoI5o0pFCPWDp
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-19_12,2022-01-19_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 adultscore=0
+ malwarescore=0 spamscore=0 priorityscore=1501 mlxscore=0
+ lowpriorityscore=0 phishscore=0 mlxlogscore=816 suspectscore=0 bulkscore=0
+ impostorscore=0 clxscore=1034 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2110150000 definitions=main-2201190122
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Support for requesting muxed memory region is implemented but not
-currently callable as a macro. Add the request muxed memory
-region macro.
+From: Song Liu <songliubraving@fb.com>
 
-MMIO memory accesses can be synchronized using request_mem_region() which
-is already available. This call will return failure if the resource is
-busy. The 'muxed' version of this macro will handle a busy resource by
-using a wait queue to retry until the resource is available.
+Use bpf_prog_pack allocator in x86_64 jit.
 
-Signed-off-by: Terry Bowman <terry.bowman@amd.com>
+The program header from bpf_prog_pack is read only during the jit process.
+Therefore, the binary is first written to a temporary buffer, and later
+copied to final location with text_poke_copy().
+
+Similarly, jit_fill_hole() is updated to fill the hole with 0xcc using
+text_poke_copy().
+
+Signed-off-by: Song Liu <songliubraving@fb.com>
 ---
- include/linux/ioport.h | 2 ++
- 1 file changed, 2 insertions(+)
+ arch/x86/net/bpf_jit_comp.c | 134 +++++++++++++++++++++++++++---------
+ 1 file changed, 103 insertions(+), 31 deletions(-)
 
-diff --git a/include/linux/ioport.h b/include/linux/ioport.h
-index 8359c50f9988..2a5567de318b 100644
---- a/include/linux/ioport.h
-+++ b/include/linux/ioport.h
-@@ -262,6 +262,8 @@ resource_union(struct resource *r1, struct resource *r2, struct resource *r)
- #define request_muxed_region(start,n,name)	__request_region(&ioport_resource, (start), (n), (name), IORESOURCE_MUXED)
- #define __request_mem_region(start,n,name, excl) __request_region(&iomem_resource, (start), (n), (name), excl)
- #define request_mem_region(start,n,name) __request_region(&iomem_resource, (start), (n), (name), 0)
-+#define request_muxed_mem_region(start, n, name) \
-+	__request_region(&iomem_resource, (start), (n), (name), IORESOURCE_MUXED)
- #define request_mem_region_exclusive(start,n,name) \
- 	__request_region(&iomem_resource, (start), (n), (name), IORESOURCE_EXCLUSIVE)
- #define rename_region(region, newname) do { (region)->name = (newname); } while (0)
+diff --git a/arch/x86/net/bpf_jit_comp.c b/arch/x86/net/bpf_jit_comp.c
+index fe4f08e25a1d..6d97f7c24df2 100644
+--- a/arch/x86/net/bpf_jit_comp.c
++++ b/arch/x86/net/bpf_jit_comp.c
+@@ -216,11 +216,34 @@ static u8 simple_alu_opcodes[] = {
+ 	[BPF_ARSH] = 0xF8,
+ };
+ 
++static char jit_hole_buffer[PAGE_SIZE] = {};
++
+ static void jit_fill_hole(void *area, unsigned int size)
++{
++	struct bpf_binary_header *hdr = area;
++	int i;
++
++	for (i = 0; i < roundup(size, PAGE_SIZE); i += PAGE_SIZE) {
++		int s;
++
++		s = min_t(int, PAGE_SIZE, size - i);
++		text_poke_copy(area + i, jit_hole_buffer, s);
++	}
++
++	/*
++	 * bpf_jit_binary_alloc_pack cannot write size directly to the ro
++	 * mapping. Write it here with text_poke_copy().
++	 */
++	text_poke_copy(&hdr->size, &size, sizeof(size));
++}
++
++static int __init x86_jit_fill_hole_init(void)
+ {
+ 	/* Fill whole space with INT3 instructions */
+-	memset(area, 0xcc, size);
++	memset(jit_hole_buffer, 0xcc, PAGE_SIZE);
++	return 0;
+ }
++pure_initcall(x86_jit_fill_hole_init);
+ 
+ struct jit_context {
+ 	int cleanup_addr; /* Epilogue code offset */
+@@ -361,14 +384,11 @@ static int __bpf_arch_text_poke(void *ip, enum bpf_text_poke_type t,
+ 
+ 	ret = -EBUSY;
+ 	mutex_lock(&text_mutex);
+-	if (memcmp(ip, old_insn, X86_PATCH_SIZE))
++	if (text_live && memcmp(ip, old_insn, X86_PATCH_SIZE))
+ 		goto out;
+ 	ret = 1;
+ 	if (memcmp(ip, new_insn, X86_PATCH_SIZE)) {
+-		if (text_live)
+-			text_poke_bp(ip, new_insn, X86_PATCH_SIZE, NULL);
+-		else
+-			memcpy(ip, new_insn, X86_PATCH_SIZE);
++		text_poke_bp(ip, new_insn, X86_PATCH_SIZE, NULL);
+ 		ret = 0;
+ 	}
+ out:
+@@ -537,7 +557,7 @@ static void emit_bpf_tail_call_direct(struct bpf_jit_poke_descriptor *poke,
+ 	*pprog = prog;
+ }
+ 
+-static void bpf_tail_call_direct_fixup(struct bpf_prog *prog)
++static void bpf_tail_call_direct_fixup(struct bpf_prog *prog, bool text_live)
+ {
+ 	struct bpf_jit_poke_descriptor *poke;
+ 	struct bpf_array *array;
+@@ -558,24 +578,15 @@ static void bpf_tail_call_direct_fixup(struct bpf_prog *prog)
+ 		mutex_lock(&array->aux->poke_mutex);
+ 		target = array->ptrs[poke->tail_call.key];
+ 		if (target) {
+-			/* Plain memcpy is used when image is not live yet
+-			 * and still not locked as read-only. Once poke
+-			 * location is active (poke->tailcall_target_stable),
+-			 * any parallel bpf_arch_text_poke() might occur
+-			 * still on the read-write image until we finally
+-			 * locked it as read-only. Both modifications on
+-			 * the given image are under text_mutex to avoid
+-			 * interference.
+-			 */
+ 			ret = __bpf_arch_text_poke(poke->tailcall_target,
+ 						   BPF_MOD_JUMP, NULL,
+ 						   (u8 *)target->bpf_func +
+-						   poke->adj_off, false);
++						   poke->adj_off, text_live);
+ 			BUG_ON(ret < 0);
+ 			ret = __bpf_arch_text_poke(poke->tailcall_bypass,
+ 						   BPF_MOD_JUMP,
+ 						   (u8 *)poke->tailcall_target +
+-						   X86_PATCH_SIZE, NULL, false);
++						   X86_PATCH_SIZE, NULL, text_live);
+ 			BUG_ON(ret < 0);
+ 		}
+ 		WRITE_ONCE(poke->tailcall_target_stable, true);
+@@ -867,7 +878,7 @@ static void emit_nops(u8 **pprog, int len)
+ 
+ #define INSN_SZ_DIFF (((addrs[i] - addrs[i - 1]) - (prog - temp)))
+ 
+-static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
++static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image, u8 *tmp_image,
+ 		  int oldproglen, struct jit_context *ctx, bool jmp_padding)
+ {
+ 	bool tail_call_reachable = bpf_prog->aux->tail_call_reachable;
+@@ -894,8 +905,8 @@ static int do_jit(struct bpf_prog *bpf_prog, int *addrs, u8 *image,
+ 	push_callee_regs(&prog, callee_regs_used);
+ 
+ 	ilen = prog - temp;
+-	if (image)
+-		memcpy(image + proglen, temp, ilen);
++	if (tmp_image)
++		memcpy(tmp_image + proglen, temp, ilen);
+ 	proglen += ilen;
+ 	addrs[0] = proglen;
+ 	prog = temp;
+@@ -1324,8 +1335,10 @@ st:			if (is_imm8(insn->off))
+ 					pr_err("extable->insn doesn't fit into 32-bit\n");
+ 					return -EFAULT;
+ 				}
+-				ex->insn = delta;
++				/* switch ex to temporary buffer for writes */
++				ex = (void *)tmp_image + ((void *)ex - (void *)image);
+ 
++				ex->insn = delta;
+ 				ex->type = EX_TYPE_BPF;
+ 
+ 				if (dst_reg > BPF_REG_9) {
+@@ -1706,7 +1719,7 @@ st:			if (is_imm8(insn->off))
+ 				pr_err("bpf_jit: fatal error\n");
+ 				return -EFAULT;
+ 			}
+-			memcpy(image + proglen, temp, ilen);
++			memcpy(tmp_image + proglen, temp, ilen);
+ 		}
+ 		proglen += ilen;
+ 		addrs[i] = proglen;
+@@ -2248,8 +2261,10 @@ int arch_prepare_bpf_dispatcher(void *image, s64 *funcs, int num_funcs)
+ 
+ struct x64_jit_data {
+ 	struct bpf_binary_header *header;
++	struct bpf_binary_header *tmp_header;
+ 	int *addrs;
+ 	u8 *image;
++	u8 *tmp_image;
+ 	int proglen;
+ 	struct jit_context ctx;
+ };
+@@ -2259,6 +2274,7 @@ struct x64_jit_data {
+ 
+ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ {
++	struct bpf_binary_header *tmp_header = NULL;
+ 	struct bpf_binary_header *header = NULL;
+ 	struct bpf_prog *tmp, *orig_prog = prog;
+ 	struct x64_jit_data *jit_data;
+@@ -2267,6 +2283,7 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 	bool tmp_blinded = false;
+ 	bool extra_pass = false;
+ 	bool padding = false;
++	u8 *tmp_image = NULL;
+ 	u8 *image = NULL;
+ 	int *addrs;
+ 	int pass;
+@@ -2301,7 +2318,9 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 		ctx = jit_data->ctx;
+ 		oldproglen = jit_data->proglen;
+ 		image = jit_data->image;
++		tmp_image = jit_data->tmp_image;
+ 		header = jit_data->header;
++		tmp_header = jit_data->tmp_header;
+ 		extra_pass = true;
+ 		padding = true;
+ 		goto skip_init_addrs;
+@@ -2332,14 +2351,18 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 	for (pass = 0; pass < MAX_PASSES || image; pass++) {
+ 		if (!padding && pass >= PADDING_PASSES)
+ 			padding = true;
+-		proglen = do_jit(prog, addrs, image, oldproglen, &ctx, padding);
++		proglen = do_jit(prog, addrs, image, tmp_image, oldproglen, &ctx, padding);
+ 		if (proglen <= 0) {
+ out_image:
+ 			image = NULL;
+-			if (header)
+-				bpf_jit_binary_free(header);
++			tmp_image = NULL;
++			if (header) {
++				bpf_jit_binary_free_pack(header);
++				kfree(tmp_header);
++			}
+ 			prog = orig_prog;
+ 			header = NULL;
++			tmp_header = NULL;
+ 			goto out_addrs;
+ 		}
+ 		if (image) {
+@@ -2362,13 +2385,27 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 				sizeof(struct exception_table_entry);
+ 
+ 			/* allocate module memory for x86 insns and extable */
+-			header = bpf_jit_binary_alloc(roundup(proglen, align) + extable_size,
+-						      &image, align, jit_fill_hole);
++			header = bpf_jit_binary_alloc_pack(roundup(proglen, align) + extable_size,
++							   &image, align, jit_fill_hole);
+ 			if (!header) {
+ 				prog = orig_prog;
+ 				goto out_addrs;
+ 			}
+-			prog->aux->extable = (void *) image + roundup(proglen, align);
++			if (header->size > bpf_prog_pack_max_size()) {
++				tmp_header = header;
++				tmp_image = image;
++			} else {
++				tmp_header = kzalloc(header->size, GFP_KERNEL);
++				if (!tmp_header) {
++					bpf_jit_binary_free_pack(header);
++					header = NULL;
++					prog = orig_prog;
++					goto out_addrs;
++				}
++				tmp_header->size = header->size;
++				tmp_image = (void *)tmp_header + ((void *)image - (void *)header);
++			}
++			prog->aux->extable = (void *)image + roundup(proglen, align);
+ 		}
+ 		oldproglen = proglen;
+ 		cond_resched();
+@@ -2379,14 +2416,24 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 
+ 	if (image) {
+ 		if (!prog->is_func || extra_pass) {
+-			bpf_tail_call_direct_fixup(prog);
+-			bpf_jit_binary_lock_ro(header);
++			if (header->size > bpf_prog_pack_max_size()) {
++				/*
++				 * bpf_prog_pack cannot handle too big
++				 * program (> ~2MB). Fall back to regular
++				 * module_alloc(), and do the fixup and
++				 * lock_ro here.
++				 */
++				bpf_tail_call_direct_fixup(prog, false);
++				bpf_jit_binary_lock_ro(header);
++			}
+ 		} else {
+ 			jit_data->addrs = addrs;
+ 			jit_data->ctx = ctx;
+ 			jit_data->proglen = proglen;
+ 			jit_data->image = image;
++			jit_data->tmp_image = tmp_image;
+ 			jit_data->header = header;
++			jit_data->tmp_header = tmp_header;
+ 		}
+ 		prog->bpf_func = (void *)image;
+ 		prog->jited = 1;
+@@ -2402,6 +2449,17 @@ struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog)
+ 		kvfree(addrs);
+ 		kfree(jit_data);
+ 		prog->aux->jit_data = NULL;
++		jit_data = NULL;
++		if (tmp_header != header) {
++			text_poke_copy(header, tmp_header, header->size);
++			kfree(tmp_header);
++			/*
++			 * Do the fixup after final text_poke_copy().
++			 * Otherwise, the fix up will be overwritten by
++			 * text_poke_copy().
++			 */
++			bpf_tail_call_direct_fixup(prog, true);
++		}
+ 	}
+ out:
+ 	if (tmp_blinded)
+@@ -2415,3 +2473,17 @@ bool bpf_jit_supports_kfunc_call(void)
+ {
+ 	return true;
+ }
++
++void bpf_jit_free(struct bpf_prog *fp)
++{
++	if (fp->jited) {
++		struct bpf_binary_header *hdr = bpf_jit_binary_hdr(fp);
++
++		if (hdr->size > bpf_prog_pack_max_size())
++			bpf_jit_binary_free(hdr);
++		else
++			bpf_jit_binary_free_pack(hdr);
++	}
++
++	bpf_prog_unlock_free(fp);
++}
 -- 
 2.30.2
 
