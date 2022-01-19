@@ -2,281 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A3C2C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 10:01:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF0A1C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 10:02:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353406AbiASKBo (ORCPT
+        id S1353420AbiASKCz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 05:01:44 -0500
-Received: from mail-eopbgr60087.outbound.protection.outlook.com ([40.107.6.87]:1088
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1353382AbiASKBm (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 05:01:42 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cXtRKPpoZLgemd/yzlaciYXnEHW/0bbwlKtuZU/mi3zPfV9t4tba9EmjhmCzacl2Insl6YsnI+154siWxsoT3FEwKXhGf4HtWOWP1N5C8E9O0kJHW5zlP43h4hIO2FmkR1rMVz419tTRiIURLup0fy81g++EXsU8FPycUQW8a+rmh9Jhxl7dvOPdgKgDH9QucMqk/wyCtVgTFSiX+9anoOH9ais6jD8ECWQgIqiXmBa+ub/yYLujHM7pe5fLQDga/g9x1PDS1A9szyvE0nrT5ANZTnPy4iUcDjc+6IYhQj7iBdqvXiUY0i1mkeBOmkF4fqCvuOVY2kp5E0rbw+eveg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=BpI/OvvzsJzNG9gqkH31JufC65GNwIs2+MiU3ryh/hU=;
- b=C9kWyT7DpKlczxMgk5E60yJlG0PmsHNzwK13sN61ZjiNvNQi/t/hfDw0QnaFbV/QGgQSo28haMZ7hHfhL7SxSBZ9DmYvlAXFkdjQvWLBIw8agkMwk/TCb1WGSKL0BRnj4eQrkRHkmRmcee28yuSW8hIbIUMjri4NRUq18K9/YP0IQdO9sV8RxjOAY+0JZ/MAUGBOEOu8yJjz3/A/rkpekWtZIlwb1x58mg4WlG5qZLBIU23FNhTP4d7bqDw3I3oz9VAajEHQIQSJc3KcbyhJjhlZ3uNGwvi34YY6D9lV31OAgycidaCdvNmw3nrGx3FopMXGd1QaVmqRQbL0qU2lHA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BpI/OvvzsJzNG9gqkH31JufC65GNwIs2+MiU3ryh/hU=;
- b=lL/16EIGvabmZ9NLvgPYsJCDm4nBuEZJ/1aJzNEBX3dK19gvIG8UICklrjpEm1yeLve6AaO0XRxfTr34itsRfQARqB9kMJ4FT5QKSfLt2BdbQSRHoPlCj/rdbAkyQPPHDFTkYX5odNBOgCPuYz7vCpX/sG2CyBMHsAjR6JsYPss=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=nxp.com;
-Received: from AM7PR04MB7046.eurprd04.prod.outlook.com (2603:10a6:20b:113::22)
- by HE1PR04MB3147.eurprd04.prod.outlook.com (2603:10a6:7:25::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7; Wed, 19 Jan
- 2022 10:01:39 +0000
-Received: from AM7PR04MB7046.eurprd04.prod.outlook.com
- ([fe80::a5b3:9e5:366:a3fc]) by AM7PR04MB7046.eurprd04.prod.outlook.com
- ([fe80::a5b3:9e5:366:a3fc%3]) with mapi id 15.20.4909.008; Wed, 19 Jan 2022
- 10:01:39 +0000
-Message-ID: <8ad2cd76e80056192395ca5b73ff514e59881ba3.camel@nxp.com>
-Subject: Re: [PATCH v2] phy: dphy: Correct clk_pre parameter
-From:   Liu Ying <victor.liu@nxp.com>
-To:     Neil Armstrong <narmstrong@baylibre.com>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        linux-phy@lists.infradead.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org,
-        linux-rockchip@lists.infradead.org
-Cc:     linux-imx@nxp.com, Andrzej Hajda <andrzej.hajda@intel.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        Guido =?ISO-8859-1?Q?G=FCnther?= <agx@sigxcpu.org>
-Date:   Wed, 19 Jan 2022 18:01:08 +0800
-In-Reply-To: <5a638561-c704-49e7-1fed-70e26fedb186@baylibre.com>
-References: <20220119023714.1498508-1-victor.liu@nxp.com>
-         <28e3f723-daf0-b3c5-ee10-519c4cabfe17@baylibre.com>
-         <5a638561-c704-49e7-1fed-70e26fedb186@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.4-0ubuntu1 
-Content-Transfer-Encoding: 8bit
-X-ClientProxiedBy: SG2PR02CA0117.apcprd02.prod.outlook.com
- (2603:1096:4:92::33) To AM7PR04MB7046.eurprd04.prod.outlook.com
- (2603:10a6:20b:113::22)
+        Wed, 19 Jan 2022 05:02:55 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:20600 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1353174AbiASKCr (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 05:02:47 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642586567;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=abfS2icOuWpdTxqSWF3BYTWApiC68lAeGLn8EnVYmNE=;
+        b=YlbbI8pLK7jYe3sucLTEXUx1nNHLFnyKOJHBTmNP3wcRTukaXTTs4+4xKIFUksginOJdl+
+        pYB8+b/KMfhf35Q80aYVYixlFqZLx7OfV/kkDls4ldfMYmLVOTJ9/UhCuYHJ46SdibSORT
+        IFDELC7YFYllxLt3a6jEp9eBF1YO4ls=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-638-I2f5J5TBMJG76qDM9-5ifw-1; Wed, 19 Jan 2022 05:02:46 -0500
+X-MC-Unique: I2f5J5TBMJG76qDM9-5ifw-1
+Received: by mail-ed1-f72.google.com with SMTP id s9-20020aa7d789000000b004021d03e2dfso1785170edq.18
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 02:02:45 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=abfS2icOuWpdTxqSWF3BYTWApiC68lAeGLn8EnVYmNE=;
+        b=WkfVhctOC2mFkgtJAQok85R+yA+hRtvRoGR+kJaTh/8uFT1pNQM+CShfOI436XzbcK
+         619G3R9etdrAElcDOlEAQ90vx69GcxZfl/tP0yQjXOEI7inrdvDGkijX1ohL9yjEZV0M
+         fAmysLpmdRI5OEeXwksh7nhTwCUb5ow1j6zhtAKU4CftQJ9mLrmxQCuPLU70CXMYgsBe
+         31a+zsPqGbvYLsLEY0/AQZ9BWbPxsW9//7iXRruOr9jstECXIikWJoXTa7Ec+BnF4cWl
+         iNr3j3/5nXQO1CY7VzjaBRT8hZbY/8aZAtVWEcAtw/X4+s3GlATnq+Q4PQQqXr/z9hdj
+         o2ZQ==
+X-Gm-Message-State: AOAM533Q0rpr0nCfXrw+8awAlKDEtgZh1jGu79zORnMz/Tpe/lH+Fcoj
+        AvOox3nKsHp4xyayWIzp/qDOkV0xTbyRMTzsDN+cs8LySq2m+AwZ+GrrZNecwvCLMuYELDa6N6l
+        jxs98zNGPpvOwnpIs2v03wh4WnZ37LQ3gPrt8PFaFar2nHlKr/I8bWUzXzOaBZECbRg7wZtoKJw
+        t3
+X-Received: by 2002:a17:906:9743:: with SMTP id o3mr23422699ejy.162.1642586564850;
+        Wed, 19 Jan 2022 02:02:44 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzKs3tvi7eu0pEo37qMQnxQYuOPsJEa/XhNVcVFXAYh96CC1F8BGlQlduqYlTUKe8iKLBUVkA==
+X-Received: by 2002:a17:906:9743:: with SMTP id o3mr23422671ejy.162.1642586564494;
+        Wed, 19 Jan 2022 02:02:44 -0800 (PST)
+Received: from fedora (nat-2.ign.cz. [91.219.240.2])
+        by smtp.gmail.com with ESMTPSA id i26sm981649edq.28.2022.01.19.02.02.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Jan 2022 02:02:44 -0800 (PST)
+From:   Vitaly Kuznetsov <vkuznets@redhat.com>
+To:     Sean Christopherson <seanjc@google.com>
+Cc:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Igor Mammedov <imammedo@redhat.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/4] KVM: x86: Partially allow KVM_SET_CPUID{,2}
+ after KVM_RUN
+In-Reply-To: <Yebs21Vnt4WBQBw5@google.com>
+References: <20220118141801.2219924-1-vkuznets@redhat.com>
+ <20220118141801.2219924-3-vkuznets@redhat.com>
+ <Yebs21Vnt4WBQBw5@google.com>
+Date:   Wed, 19 Jan 2022 11:02:43 +0100
+Message-ID: <878rvckpq4.fsf@redhat.com>
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7f8f38fb-115f-47a8-169e-08d9db32af81
-X-MS-TrafficTypeDiagnostic: HE1PR04MB3147:EE_
-X-Microsoft-Antispam-PRVS: <HE1PR04MB3147479CA3C0EE6CB4DB7C4498599@HE1PR04MB3147.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: nxGdPUlfw+7dFEwYuq+Ry8fujZVzkF8ujDxFp0FYPcziv2quUdxqYWvlNRppnqguV0wFrHh3Q9ZvgQ4zOH+7lGo5q6iWe/A/MYfNkhaUd1tIoU1NPB+w16HYRXRUL5ncs7BhEmhzSCHhR0WiFxcZOOFORKCg3FNyBrR7Um7iuwUDC6a0G1hzpmEo4+URchdOv2nKjfnt0fBn0Xjl9ldlZDzfouc27qwtVg1j1yVjB7FHzr7VAr4vDxwjHAp5ebl9tdMEyzH+P2avRL/k8e69zzPqfa3s71d/vJIPvpM4ipe7t5kU83eHDpEx1XVYWOu0c6JnsMHszmzKbDMBKVRA/hyRzzxAj8l8eBMfEwLpLDEfhq2kOciIfclWFI1+E+wm0DSa32gtU+O91L2O2hqzA8ZoptcN8i2IFw0TmobYHmNBpYf57aB/Iw6GSVfpGWY8je8T8CAn0PHQmvnAJ163MFTcPxuB/YYh0oxbZMwNAaPXgT7Iqlh8qyYyq1zdfE0hTbaUVkY1kfh8EDIfsgjkOU1ZyK9qb9HbiC8/hMraOpoOhhvCl/QA8OLB1ZaAXxTNmSAT6ldMYQpoKyv9VtXEWRwduvuJhbCeBKj/Fjw6iZI1kWk0GvY2h6KdCzbYkNiL77bkVgDGpy2UOnpCH0CdsvjRolTYUAU1OUeG7XKxXg5tbfMx5BbLAyGvx+/X9HsNWJS8NUD6weTgiNyInj535A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM7PR04MB7046.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(38350700002)(38100700002)(66946007)(7416002)(508600001)(54906003)(2616005)(6512007)(26005)(6486002)(66476007)(5660300002)(6666004)(8936002)(53546011)(8676002)(6506007)(86362001)(2906002)(52116002)(83380400001)(36756003)(316002)(66556008)(4326008)(186003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?Vno5S2VkU1NwQjFoY0NyRUNZcXprSlgzdGN0NTNzSjAxdEFLVVptWnhrd3NG?=
- =?utf-8?B?V3llck8vbmFxMHpwWW9TY0VKcHJBVDYwT1BKL1ZFTWIvTTRFdjJHNWZRalJR?=
- =?utf-8?B?Y2twaFkxeUc4cERFSlY2VW52NkNXNzl1YmtndGRxZC9qYlAyckwrWDFlTHpC?=
- =?utf-8?B?NFN1dGVvcDRKcjhXcXNJMmRwWFhvbVpCSG5aTndZQ1duRkVuOHNsSHg4MTRU?=
- =?utf-8?B?REx2NG9pVjgweDNBVVNWb2JWdWpsU1dPNDNhZFJsNEVEU1c3eThycWYvM2JO?=
- =?utf-8?B?RE0wOGVxcmpOaVhwTVBVUFUzeDdUcGswMzhhVlo4VHBhMmJxZFZ3N1VkOHFu?=
- =?utf-8?B?Y25kbm14UDU5VmZTSEZLOWxPTElpVzNHaDhYdWNvWkN6OVRTTDdWd1pBVFFY?=
- =?utf-8?B?WUJ6L0xnN0c2UXdpUmpVRDRsM1M4QldpZXE3ZllzMllvcTc3dnRHOURWNVBm?=
- =?utf-8?B?dnpEWjZvUHRZREV6SXRSczJPdnBKUnN5RnJkdlI5VTVSWkpkQ0ZObDV1YTFu?=
- =?utf-8?B?bGtDV3JydWdnYWtBa1k2RXZQajY2V0xtVUYvT0ZTYS9PMWNkUVR0M0YvQVRU?=
- =?utf-8?B?NVBTMDZZVWtCQ0l3Z2tnR0s4aXdVVWtDUWJFVGlDTmc3aGMxdHRETUIyVzVq?=
- =?utf-8?B?OTI1Mk1lSDROQU1scTBuVmUzZWxKSjZKWnppVjlrbEtBZ2VlckhmaWlDZnR0?=
- =?utf-8?B?NFRZdFNSTW1xMXVGMm1RMUVMWk1PRTdEWTEwUE84a3pOcTdGWnR3bFlmaUVZ?=
- =?utf-8?B?eGVNdTUrL0duVlppU05QbEZId1hOU1NIemVWSGhxZ1VXSWcya25tQWcvcVhm?=
- =?utf-8?B?a0hieTRHelEvem9HNmhLaThlZExnZFhCU016NnltN05ZNFZkRVJoRUFTQVBv?=
- =?utf-8?B?Tm1hNVBEbC96TXJrL0ZxUjRQcTE3di9ZR3QyZVlrK1lyQTJudDhaaHZSdHhl?=
- =?utf-8?B?MXBXdnJ4TEVna0pWZkRFa0ZqbkNpaDJiWVljUGZmRDNsdUl2Y2cwYSt4WjFB?=
- =?utf-8?B?S29CeWE2QlNyd0dkT0tUUUZ5dVJybVJnNndiY3ptdzJKMlZtaUZSaW0rTUNX?=
- =?utf-8?B?VEp6NjR5ZTViVmJLVHg2cVNNWTVwM1NTSzNrbEtsRVFubEhYQ2pQbXppMy9v?=
- =?utf-8?B?SVIyQWR3WWRjaTIrMmQ4VVRkcGVUd2h2Q2F0b1g0Ukl5N0FnSUhsTnFvSGRD?=
- =?utf-8?B?U2wzcytBdmN0RHd4SDAvQjdkWCtjcEpOUHBzWFdla2tGZ0t4WlFyL0NBN3U1?=
- =?utf-8?B?RWZKQnBYZVdhd05vZnlvY05tUXhQcGlMblliOVU1RkQrYWxJNDVONHhBS1No?=
- =?utf-8?B?M2diWGsyOFN0ZWNzeis3V050QkZmRW84Q3k3dzV1ZnBnTWNNTHV4Y3oxcVFS?=
- =?utf-8?B?dDQwVFplTHM3RUpJWDA1dTZUR2lyUTdVRHlEV2FZckFFMmdkd0ZaNXMwbk5Y?=
- =?utf-8?B?amo3WFFHeSs3cEplRFhuaGpYNThibG95YU1BR3pnNFNQeDhROVZESCtHbXRO?=
- =?utf-8?B?N0Nqb0VLU1BHbERtb21FQWVsVEcwL1B2OXUwUGsvUFBnZm5HNldINjNna1o0?=
- =?utf-8?B?eTc3NW40OUovMzRvZ1cxL1d6RnVBeVh1blQzVENoVGNkUC9nR1htWm45S21n?=
- =?utf-8?B?L2RpTVhvMHNIOWNVN3Q1cmFvUkc4V1FKM2VUMzFBdG0xT2FZUHFsV1pTUStF?=
- =?utf-8?B?VXJEVjdqQkMvK1JMdDJSbWxoOUhoc2lqUFJiSGYvdnFVQlFmekRBcDQ2Vmpv?=
- =?utf-8?B?ZEI0amU4ZXBuSHhuQm9JdGhDeGRCd0VteTh6YXJLVlozWGhXNzhCTWk2OVZO?=
- =?utf-8?B?WEtEellyUXMrbGduV1dNSG5KWEhSQjFtUTlFL0FYb3k4eXZ0ZHFJTEpjUGhW?=
- =?utf-8?B?aEwvT0MyUmk5c1ZabjFMTms2UjRMSnByb2p6TTFrY2w3MHkyK1ZKUHZQTnJw?=
- =?utf-8?B?SWdvempnaXNucmJFdFFmcVpLT3lWVVJ1enQrbElQU0t4cmlLZGMwdTl4MTFq?=
- =?utf-8?B?NG5tZktTdHd4MmUyMi91MUJVaFFrUGFRN2FQcUVGeitRZ0hJTWFRRi9lVlds?=
- =?utf-8?B?OUszMzNBcmo2bEdqdE9CSmkwYklTalRtanNIVEx2d3psNGtyWUF2V1BIY1RT?=
- =?utf-8?B?OWFVWWs3SDN5enhaVWt0bkxXNzYzRHk2ZWh2MVd2YmtKYlJDUERrcTJzQ3Rl?=
- =?utf-8?Q?R4pUxpAZqMxYLd8R7tRmYDg=3D?=
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7f8f38fb-115f-47a8-169e-08d9db32af81
-X-MS-Exchange-CrossTenant-AuthSource: AM7PR04MB7046.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2022 10:01:39.1299
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: RMgZwqfg4vu6qus3+InO1eL9iUzV+aEP3U4MMSvO2OnWvlq8HgZxmGD3up9Fdnzx0rREKFZGjT8TUsddgAtkqg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR04MB3147
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Neil,
+Sean Christopherson <seanjc@google.com> writes:
 
-On Wed, 2022-01-19 at 10:11 +0100, Neil Armstrong wrote:
-> On 19/01/2022 09:40, Neil Armstrong wrote:
-> > Hi,
-> > 
-> > On 19/01/2022 03:37, Liu Ying wrote:
-> > > The D-PHY specification (v1.2) explicitly mentions that the T-CLK-PRE
-> > > parameter's unit is Unit Interval(UI) and the minimum value is 8.  Also,
-> > > kernel doc of the 'clk_pre' member of struct phy_configure_opts_mipi_dphy
-> > > mentions that it should be in UI.  However, the dphy core driver wrongly
-> > > sets 'clk_pre' to 8000, which seems to hint that it's in picoseconds.
-> > > And, the kernel doc of the 'clk_pre' member wrongly says the minimum value
-> > > is '8 UI', instead of 8.
-> > > 
-> > > So, let's fix both the dphy core driver and the kernel doc of the 'clk_pre'
-> > > member to correctly reflect the T-CLK-PRE parameter's unit and the minimum
-> > > value according to the D-PHY specification.
-> > > 
-> > > I'm assuming that all impacted custom drivers shall program values in
-> > > TxByteClkHS cycles into hardware for the T-CLK-PRE parameter.  The D-PHY
-> > > specification mentions that the frequency of TxByteClkHS is exactly 1/8
-> > > the High-Speed(HS) bit rate(each HS bit consumes one UI).  So, relevant
-> > > custom driver code is changed to program those values as
-> > > DIV_ROUND_UP(cfg->clk_pre, BITS_PER_BYTE), then.
-> > > 
-> > > Note that I've only tested the patch with RM67191 DSI panel on i.MX8mq EVK.
-> > > Help is needed to test with other i.MX8mq, Meson and Rockchip platforms,
-> > > as I don't have the hardwares.
-> > > 
-> > > Fixes: 2ed869990e14 ("phy: Add MIPI D-PHY configuration options")
-> > > Cc: Andrzej Hajda <andrzej.hajda@intel.com>
-> > > Cc: Neil Armstrong <narmstrong@baylibre.com>
-> > > Cc: Robert Foss <robert.foss@linaro.org>
-> > > Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-> > > Cc: Jonas Karlman <jonas@kwiboo.se>
-> > > Cc: Jernej Skrabec <jernej.skrabec@gmail.com>
-> > > Cc: David Airlie <airlied@linux.ie>
-> > > Cc: Daniel Vetter <daniel@ffwll.ch>
-> > > Cc: Kishon Vijay Abraham I <kishon@ti.com>
-> > > Cc: Vinod Koul <vkoul@kernel.org>
-> > > Cc: Kevin Hilman <khilman@baylibre.com>
-> > > Cc: Jerome Brunet <jbrunet@baylibre.com>
-> > > Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> > > Cc: Heiko Stuebner <heiko@sntech.de>
-> > > Cc: Maxime Ripard <mripard@kernel.org>
-> > > Cc: Guido Günther <agx@sigxcpu.org>
-> > > Tested-by: Liu Ying <victor.liu@nxp.com> # RM67191 DSI panel on i.MX8mq EVK
-> > > Signed-off-by: Liu Ying <victor.liu@nxp.com>
-> > > ---
-> > > v1->v2:
-> > > * Use BITS_PER_BYTE macro. (Andrzej)
-> > > * Drop dsi argument from ui2bc() in nwl-dsi.c.
-> > > 
-> > >  drivers/gpu/drm/bridge/nwl-dsi.c                 | 12 +++++-------
-> > >  drivers/phy/amlogic/phy-meson-axg-mipi-dphy.c    |  3 ++-
-> > >  drivers/phy/phy-core-mipi-dphy.c                 |  4 ++--
-> > >  drivers/phy/rockchip/phy-rockchip-inno-dsidphy.c |  3 ++-
-> > >  include/linux/phy/phy-mipi-dphy.h                |  2 +-
-> > >  5 files changed, 12 insertions(+), 12 deletions(-)
-> > > 
-> [...]
-> 
-> > > diff --git a/drivers/phy/amlogic/phy-meson-axg-mipi-dphy.c b/drivers/phy/amlogic/phy-meson-axg-mipi-dphy.c
-> > > index cd2332bf0e31..fdbd64c03e12 100644
-> > > --- a/drivers/phy/amlogic/phy-meson-axg-mipi-dphy.c
-> > > +++ b/drivers/phy/amlogic/phy-meson-axg-mipi-dphy.c
-> > > @@ -9,6 +9,7 @@
-> > >  
-> > >  #include <linux/bitfield.h>
-> > >  #include <linux/bitops.h>
-> > > +#include <linux/bits.h>
-> > >  #include <linux/clk.h>
-> > >  #include <linux/delay.h>
-> > >  #include <linux/io.h>
-> > > @@ -250,7 +251,7 @@ static int phy_meson_axg_mipi_dphy_power_on(struct phy *phy)
-> > >  		     (DIV_ROUND_UP(priv->config.clk_zero, temp) << 16) |
-> > >  		     (DIV_ROUND_UP(priv->config.clk_prepare, temp) << 24));
-> > >  	regmap_write(priv->regmap, MIPI_DSI_CLK_TIM1,
-> > > -		     DIV_ROUND_UP(priv->config.clk_pre, temp));
-> > > +		     DIV_ROUND_UP(priv->config.clk_pre, BITS_PER_BYTE));
-> > >  
-> > >  	regmap_write(priv->regmap, MIPI_DSI_HS_TIM,
-> > >  		     DIV_ROUND_UP(priv->config.hs_exit, temp) |
-> > 
-> > I'll try to run a test, currently the calculation gives 2, so this would give 1.
-> 
-> The Amlogic vendor code does:
-> 
-> /* >8*ui */
-> #define DPHY_TIME_CLK_PRE(ui)       (10 * ui)
+> On Tue, Jan 18, 2022, Vitaly Kuznetsov wrote:
+>> +/* Check whether the supplied CPUID data is equal to what is already set for the vCPU. */
+>> +static int kvm_cpuid_check_equal(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
+>> +				 int nent)
+>> +{
+>> +	struct kvm_cpuid_entry2 *orig;
+>> +	int i;
+>> +
+>> +	if (nent != vcpu->arch.cpuid_nent)
+>> +		return -EINVAL;
+>> +
+>> +	for (i = 0; i < nent; i++) {
+>> +		orig = &vcpu->arch.cpuid_entries[i];
+>> +		if (e2[i].function != orig->function ||
+>> +		    e2[i].index != orig->index ||
+>> +		    e2[i].eax != orig->eax || e2[i].ebx != orig->ebx ||
+>> +		    e2[i].ecx != orig->ecx || e2[i].edx != orig->edx)
+>> +			return -EINVAL;
+>
+> This needs to check .flags for the above check on .index to be meaningful, and at
+> that point, can't we be even more agressive and just do?
+>
+> 	if (memcmp(e2, vcpu->arch.cpuid_entries, nent * sizeof(e2)))
+> 		return -EINVAL;
+>
+> 	return 0;
+>
 
-This looks like clk_pre time is 10 * ui, which matches the comment
-'>8*ui' - longer time 8 * ui.
+Sure, looks good to me.
 
-> 
-> t_ui = lcd_timing.bit_rate
-> 
-> t_ui = (1000000 * 100) / (dsi_ui / 1000); /*100*ns */
-> temp = t_ui * 8; /* lane_byte cycle time */
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>>  static void kvm_update_kvm_cpuid_base(struct kvm_vcpu *vcpu)
+>>  {
+>>  	u32 function;
+>> @@ -313,6 +335,20 @@ static int kvm_set_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
+>>  
+>>  	__kvm_update_cpuid_runtime(vcpu, e2, nent);
+>> +	/*
+>> +	 * KVM does not correctly handle changing guest CPUID after KVM_RUN, as
+>> +	 * MAXPHYADDR, GBPAGES support, AMD reserved bit behavior, etc.. aren't
+>> +	 * tracked in kvm_mmu_page_role.  As a result, KVM may miss guest page
+>> +	 * faults due to reusing SPs/SPTEs. In practice no sane VMM mucks with
+>> +	 * the core vCPU model on the fly. It would've been better to forbid any
+>> +	 * KVM_SET_CPUID{,2} calls after KVM_RUN altogether but unfortunately
+>> +	 * some VMMs (e.g. QEMU) reuse vCPU fds for CPU hotplug/unplug and do
+>> +	 * KVM_SET_CPUID{,2} again. To support this legacy behavior, check
+>> +	 * whether the supplied CPUID data is equal to what's already set.
+>
+> This is misleading/wrong. KVM_RUN isn't the only problematic ioctl(),
 
-If I read correctly, this temp in vendor code is TxByteClkHS period
-time in picoseconds. So...
+Well, it wasn't me who wrote the comment about KVM_RUN :-) My addition
+can be improved of course.
 
-> 
-> dphy->clk_pre = ((DPHY_TIME_CLK_PRE(t_ui) + temp - 1) / temp) & 0xff;
+> it's just the one that we decided to use to detect that userspace is
+> being stupid.  And forbidding KVM_SET_CPUID after KVM_RUN (or even all
+> problematic ioctls()) wouldn't solve problem as providing different
+> CPUID configurations for vCPUs in a VM will also cause the MMU to fall
+> on its face.
 
-IIUC, 'dphy->clk_pre' essentially means dphy->clk_pre = DIV_ROUND_UP(10
-* ui, temp), that is, the time for dphy->clk_pre is no less than 
-10 * ui.  The D-PHY spec (v1.2)'s saying is that the minimum time for
-dphy->clk_pre is 8 * ui.  So, it looks like meson is stricter than the
-spec.
+True, but how do we move forward? We can either let userspace do stupid
+things and (potentially) create hard-to-debug problems or we try to
+cover at least some use-cases with checks (like the one we introduce
+here).
 
-However, the vendor code doesn't seem to match the current meson driver
-implementation.  The temp in driver code is also TxByteClkHS period
-time in picoseconds. And, without this patch, I'm assuming that
-priv->config.clk_pre is 8000.  So, it looks like MIPI_DSI_CLK_TIM1 is
-set to DIV_ROUND_UP(8000, temp).  This '8000' does _not_ reflect
-'10 * ui'.
+Different CPUID configurations for different vCPUs is actually an
+interesting case. It makes me (again) think about the
+allowlist/blocklist approaches: we can easily enhance the
+'vcpu->arch.last_vmentry_cpu != -1' check below and start requiring
+CPUIDs to [almost] match. The question then is how to change CPUID for a
+multi-vCPU guest as it will become effectively forbidden. BTW, is there
+a good use-case for changing CPUIDs besides testing purposes?
 
-So, 3 choices for meson, up to you:
-1) If meson really requires the time for clk_pre no less than
-10 * ui, then sth like DIV_ROUND_UP(10, BITS_PER_BYTE) can be used.
-2) If meson follows the spec's minimum value, then the patch does
-things right for meson.
-3) Force to use 8000 picoseconds for clk_pre, that is, use sth like
-DIV_ROUND_UP(8000, temp).
+>
+>> +	if (vcpu->arch.last_vmentry_cpu != -1)
+>> +		return kvm_cpuid_check_equal(vcpu, e2, nent);
+>
+> And technically, checking last_vmentry_cpu doesn't forbid changing CPUID after
+> KVM_RUN, it forbids changing CPUID after successfully entering the guest (or
+> emulating instructions on VMX).
+>
+> I realize I'm being very pedantic, as a well-intended userspace is obviously not
+> going to change CPUID after -EINTR or whatever.  But I do want to highlight that
+> this approach is by no means bulletproof, and that what is/isn't allowed with
+> respect to guest CPUID isn't necessarily associated with what is/isn't "safe".
+> In other words, this check doesn't guarantee that userspace can't misuse KVM_SET_CPUID,
+> and on the flip side it disallows using KVM_SET_CPUID in ways that are perfectly ok
+> (if userspace is careful and deliberate).
 
-With this patch applied, do you see any display artifacts by visual
-check? Or even checked signals through DSI analyzer?
+All true but I don't see a 'bulletproof' approach here unless we start
+designing new KVM API for userspace and I don't think the problem here
+is a good enough justification for that. Another approach would be to
+name the "don't change CPUIDs after KVM_RUN at will" comment in the code
+a good enough sentinel and hope that no real world userspace actually
+does such things.
 
-Regards,
-Liu Ying
-
-> 
-> PHY Registers only says:
-> MIPI_DSI_CLK_TIM1	[31:0]
-> 7:0 	R/W	0	 tCLK_PRE
-> 
-> > Neil
-> > 
-> 
-> [...]
+-- 
+Vitaly
 
