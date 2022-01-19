@@ -2,93 +2,54 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CFA7C433F5
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 09:39:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A192C433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 09:42:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353092AbiASJjC convert rfc822-to-8bit (ORCPT
+        id S1348254AbiASJmL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 04:39:02 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:52393 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352533AbiASJix (ORCPT
+        Wed, 19 Jan 2022 04:42:11 -0500
+Received: from relay039.a.hostedemail.com ([64.99.140.39]:59750 "EHLO
+        relay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S235918AbiASJmK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 04:38:53 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 20J9cSYa9024415, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexh36505.realtek.com.tw[172.21.6.25])
-        by rtits2.realtek.com.tw (8.15.2/2.71/5.88) with ESMTPS id 20J9cSYa9024415
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 19 Jan 2022 17:38:28 +0800
-Received: from RTEXDAG01.realtek.com.tw (172.21.6.100) by
- RTEXH36505.realtek.com.tw (172.21.6.25) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Wed, 19 Jan 2022 17:38:28 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXDAG01.realtek.com.tw (172.21.6.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Wed, 19 Jan 2022 01:38:26 -0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e]) by
- RTEXMBS04.realtek.com.tw ([fe80::35e4:d9d1:102d:605e%5]) with mapi id
- 15.01.2308.020; Wed, 19 Jan 2022 17:38:26 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-CC:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Ed Swierk <eswierk@gh.st>
-Subject: RE: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
-Thread-Topic: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
-Thread-Index: AQHYBCp/WStseF16x0uJ7VAbWo+1y6xqJTFA
-Date:   Wed, 19 Jan 2022 09:38:26 +0000
-Message-ID: <b1e89f471e824eaba27a5dcbc363974a@realtek.com>
-References: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
-In-Reply-To: <20220108005533.947787-1-martin.blumenstingl@googlemail.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.188]
-x-kse-serverinfo: RTEXDAG01.realtek.com.tw, 9
-x-kse-attachmentfiltering-interceptor-info: no applicable attachment filtering
- rules found
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: =?us-ascii?Q?Clean,_bases:_2022/1/19_=3F=3F_08:01:00?=
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        Wed, 19 Jan 2022 04:42:10 -0500
+Received: from omf03.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay01.hostedemail.com (Postfix) with ESMTP id 2A45160D46;
+        Wed, 19 Jan 2022 09:42:09 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf03.hostedemail.com (Postfix) with ESMTPA id E581160011;
+        Wed, 19 Jan 2022 09:41:52 +0000 (UTC)
+Message-ID: <a70570a10026203b544e930eb6dbcf6ad0abb2ad.camel@perches.com>
+Subject: Re: [RESEND][PATCH] checkpatch: make sure fix-up patches have Fixes
+ tag
+From:   Joe Perches <joe@perches.com>
+To:     Sergey Senozhatsky <senozhatsky@chromium.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Whitcroft <apw@canonical.com>
+Cc:     Ricardo Ribalda <ribalda@chromium.org>,
+        Tomasz Figa <tfiga@chromium.org>, linux-kernel@vger.kernel.org
+Date:   Wed, 19 Jan 2022 01:42:07 -0800
+In-Reply-To: <20220119074609.4162747-1-senozhatsky@chromium.org>
+References: <20220119074609.4162747-1-senozhatsky@chromium.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-X-KSE-ServerInfo: RTEXH36505.realtek.com.tw, 9
-X-KSE-Attachment-Filter-Triggered-Rules: Clean
-X-KSE-Attachment-Filter-Triggered-Filters: Clean
-X-KSE-BulkMessagesFiltering-Scan-Result: protection disabled
+Content-Transfer-Encoding: 7bit
+X-Rspamd-Queue-Id: E581160011
+X-Stat-Signature: pq91pwppiwszaru1nja6fbhn5nzr3pa1
+X-Rspamd-Server: rspamout06
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/muev3J1Q3SckGCYJZ2STxKt8yI1QIKsU=
+X-HE-Tag: 1642585312-887275
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Wed, 2022-01-19 at 16:46 +0900, Sergey Senozhatsky wrote:
+> If a patch contains "commit hash (commit name)", in other words
+> if the patch fixes some particular commit, then require "Fixes:"
+> tag.
 
-> -----Original Message-----
-> From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Sent: Saturday, January 8, 2022 8:55 AM
-> To: linux-wireless@vger.kernel.org
-> Cc: tony0620emma@gmail.com; kvalo@codeaurora.org; johannes@sipsolutions.net; netdev@vger.kernel.org;
-> linux-kernel@vger.kernel.org; Neo Jou <neojou@gmail.com>; Jernej Skrabec <jernej.skrabec@gmail.com>;
-> Pkshih <pkshih@realtek.com>; Ed Swierk <eswierk@gh.st>; Martin Blumenstingl
-> <martin.blumenstingl@googlemail.com>
-> Subject: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
-> 
+I do not like this patch as many commits merely reference a
+previous patch and do not actually fix anything.
 
-[...]
-
-I do stressed test of connection and suspend, and it get stuck after about
-4 hours but no useful messages. I will re-build my kernel and turn on lockdep debug
-to see if it can tell me what is wrong.
-
---
-Ping-Ke
 
