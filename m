@@ -2,117 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22F0FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 04:53:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F068EC433EF
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 04:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351570AbiASExY (ORCPT
+        id S1351562AbiASExS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Tue, 18 Jan 2022 23:53:24 -0500
-Received: from mga04.intel.com ([192.55.52.120]:47056 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349586AbiASExW (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Tue, 18 Jan 2022 23:53:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642568002; x=1674104002;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=3VyniYfxzb8QV4JMONvPYjE01jTYzB0RgF/1+pckj8w=;
-  b=Iw2KRQayoGiuIbWoScWvF/mLo7ObnII6j9MmulIEAdHwYA11Ghq0R09O
-   HoFadVGN2+vpG/bn1gL5w+gnNb/FGFZk5LwJk9/l+uIjR3R0VtJs6CqSu
-   ZGyR0ChhOcq/bPh0oJ/hhJNzEkfPIJKn96CJ+Y+GURbiSSvgGRgPR3HUH
-   NlJl3gZFDdiw0RqoKHwV5G8Iny2GRJjn4Q6ZzdKfPFdYo4F6Bpu9slYyM
-   Nt2oy0EluRfdHnrTuU+NcMvKK0b1nMyVG34KyIHII661iSkDt4Rrcr5Mq
-   WhPmr/55q9+XkWUNCCyaWMlA87HVdy6zV2DDlD4aBEdUGvb+J6EzCnxPJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10231"; a="243803770"
-X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="243803770"
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2022 20:53:20 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,298,1635231600"; 
-   d="scan'208";a="693645426"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga005.jf.intel.com with ESMTP; 18 Jan 2022 20:53:19 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nA2yE-000DGf-J4; Wed, 19 Jan 2022 04:53:18 +0000
-Date:   Wed, 19 Jan 2022 12:52:57 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     mziya <Mohammadzafar.ziya@amd.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        "Stanley.Yang" <Stanley.Yang@amd.com>
-Subject: [agd5f:drm-next 56/91] drivers/gpu/drm/amd/amdgpu/umc_v8_7.c:97:18:
- warning: variable 'umc_reg_offset' set but not used
-Message-ID: <202201191227.YskrG1I5-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Tue, 18 Jan 2022 23:53:18 -0500
+Received: from mo-csw1515.securemx.jp ([210.130.202.154]:49738 "EHLO
+        mo-csw.securemx.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351546AbiASExR (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Tue, 18 Jan 2022 23:53:17 -0500
+Received: by mo-csw.securemx.jp (mx-mo-csw1515) id 20J4qHiP010223; Wed, 19 Jan 2022 13:52:18 +0900
+X-Iguazu-Qid: 34trEBPRjez1XDs3Pd
+X-Iguazu-QSIG: v=2; s=0; t=1642567937; q=34trEBPRjez1XDs3Pd; m=aosDiG3bchN5bA2fkb+lKSgUundvPjPEDj8C0koca20=
+Received: from imx2-a.toshiba.co.jp (imx2-a.toshiba.co.jp [106.186.93.35])
+        by relay.securemx.jp (mx-mr1511) id 20J4qG7J028765
+        (version=TLSv1.2 cipher=AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 19 Jan 2022 13:52:16 +0900
+X-SA-MID: 30555174
+From:   Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        nobuhiro1.iwamatsu@toshiba.co.jp, yuji2.ishikawa@toshiba.co.jp
+Subject: [PATCH v2 1/2] net: stmmac: dwmac-visconti: Fix bit definitions for ETHER_CLK_SEL
+Date:   Wed, 19 Jan 2022 13:46:47 +0900
+X-TSB-HOP: ON
+X-TSB-HOP2: ON
+Message-Id: <20220119044648.18094-2-yuji2.ishikawa@toshiba.co.jp>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220119044648.18094-1-yuji2.ishikawa@toshiba.co.jp>
+References: <20220119044648.18094-1-yuji2.ishikawa@toshiba.co.jp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://gitlab.freedesktop.org/agd5f/linux.git drm-next
-head:   e23fcf632883babbea03fc27f7993e151969b652
-commit: c34242eea16f7d973501267142dd340cad3caeec [56/91] drm/amdgpu: add new query interface for umc_v8_7 block
-config: powerpc-allmodconfig (https://download.01.org/0day-ci/archive/20220119/202201191227.YskrG1I5-lkp@intel.com/config)
-compiler: powerpc-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        git remote add agd5f https://gitlab.freedesktop.org/agd5f/linux.git
-        git fetch --no-tags agd5f drm-next
-        git checkout c34242eea16f7d973501267142dd340cad3caeec
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=powerpc SHELL=/bin/bash drivers/gpu/drm/amd/amdgpu/
+just 0 should be used to represent cleared bits
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+* ETHER_CLK_SEL_DIV_SEL_20
+* ETHER_CLK_SEL_TX_CLK_EXT_SEL_IN
+* ETHER_CLK_SEL_RX_CLK_EXT_SEL_IN
+* ETHER_CLK_SEL_TX_CLK_O_TX_I
+* ETHER_CLK_SEL_RMII_CLK_SEL_IN
 
-All warnings (new ones prefixed by >>):
-
-   drivers/gpu/drm/amd/amdgpu/umc_v8_7.c: In function 'umc_v8_7_ecc_info_query_ras_error_count':
->> drivers/gpu/drm/amd/amdgpu/umc_v8_7.c:97:18: warning: variable 'umc_reg_offset' set but not used [-Wunused-but-set-variable]
-      97 |         uint32_t umc_reg_offset  = 0;
-         |                  ^~~~~~~~~~~~~~
-
-
-vim +/umc_reg_offset +97 drivers/gpu/drm/amd/amdgpu/umc_v8_7.c
-
-    89	
-    90	static void umc_v8_7_ecc_info_query_ras_error_count(struct amdgpu_device *adev,
-    91						void *ras_error_status)
-    92	{
-    93		struct ras_err_data *err_data = (struct ras_err_data *)ras_error_status;
-    94	
-    95		uint32_t umc_inst        = 0;
-    96		uint32_t ch_inst         = 0;
-  > 97		uint32_t umc_reg_offset  = 0;
-    98		uint32_t channel_index   = 0;
-    99	
-   100		/* TODO: driver needs to toggle DF Cstate to ensure
-   101		 * safe access of UMC registers. Will add the protection
-   102		 */
-   103		LOOP_UMC_INST_AND_CH(umc_inst, ch_inst) {
-   104			umc_reg_offset = get_umc_v8_7_reg_offset(adev,
-   105								umc_inst,
-   106								ch_inst);
-   107			channel_index = get_umc_v8_7_channel_index(adev,
-   108								umc_inst,
-   109								ch_inst);
-   110			umc_v8_7_ecc_info_query_correctable_error_count(adev,
-   111								channel_index,
-   112								&(err_data->ce_count));
-   113			umc_v8_7_ecc_info_querry_uncorrectable_error_count(adev,
-   114								channel_index,
-   115								&(err_data->ue_count));
-   116		}
-   117	}
-   118	
-
+Fixes: b38dd98ff8d0 ("net: stmmac: Add Toshiba Visconti SoCs glue driver")
+Signed-off-by: Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+Reviewed-by: Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
+index e2e0f9778..43a446cea 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-visconti.c
+@@ -22,21 +22,21 @@
+ #define ETHER_CLK_SEL_RMII_CLK_EN BIT(2)
+ #define ETHER_CLK_SEL_RMII_CLK_RST BIT(3)
+ #define ETHER_CLK_SEL_DIV_SEL_2 BIT(4)
+-#define ETHER_CLK_SEL_DIV_SEL_20 BIT(0)
++#define ETHER_CLK_SEL_DIV_SEL_20 0
+ #define ETHER_CLK_SEL_FREQ_SEL_125M	(BIT(9) | BIT(8))
+ #define ETHER_CLK_SEL_FREQ_SEL_50M	BIT(9)
+ #define ETHER_CLK_SEL_FREQ_SEL_25M	BIT(8)
+ #define ETHER_CLK_SEL_FREQ_SEL_2P5M	0
+-#define ETHER_CLK_SEL_TX_CLK_EXT_SEL_IN BIT(0)
++#define ETHER_CLK_SEL_TX_CLK_EXT_SEL_IN 0
+ #define ETHER_CLK_SEL_TX_CLK_EXT_SEL_TXC BIT(10)
+ #define ETHER_CLK_SEL_TX_CLK_EXT_SEL_DIV BIT(11)
+-#define ETHER_CLK_SEL_RX_CLK_EXT_SEL_IN  BIT(0)
++#define ETHER_CLK_SEL_RX_CLK_EXT_SEL_IN  0
+ #define ETHER_CLK_SEL_RX_CLK_EXT_SEL_RXC BIT(12)
+ #define ETHER_CLK_SEL_RX_CLK_EXT_SEL_DIV BIT(13)
+-#define ETHER_CLK_SEL_TX_CLK_O_TX_I	 BIT(0)
++#define ETHER_CLK_SEL_TX_CLK_O_TX_I	 0
+ #define ETHER_CLK_SEL_TX_CLK_O_RMII_I	 BIT(14)
+ #define ETHER_CLK_SEL_TX_O_E_N_IN	 BIT(15)
+-#define ETHER_CLK_SEL_RMII_CLK_SEL_IN	 BIT(0)
++#define ETHER_CLK_SEL_RMII_CLK_SEL_IN	 0
+ #define ETHER_CLK_SEL_RMII_CLK_SEL_RX_C	 BIT(16)
+ 
+ #define ETHER_CLK_SEL_RX_TX_CLK_EN (ETHER_CLK_SEL_RX_CLK_EN | ETHER_CLK_SEL_TX_CLK_EN)
+-- 
+2.17.1
+
+
