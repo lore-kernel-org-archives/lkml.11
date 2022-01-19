@@ -2,296 +2,172 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB8FC433FE
-	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 17:08:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC85C433F5
+	for <linux-kernel@archiver.kernel.org>; Wed, 19 Jan 2022 17:10:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356326AbiASRIj (ORCPT
+        id S1356330AbiASRKQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 12:08:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53702 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237375AbiASRIi (ORCPT
+        Wed, 19 Jan 2022 12:10:16 -0500
+Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:12614 "EHLO
+        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S243695AbiASRKP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 12:08:38 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54D03C061574;
-        Wed, 19 Jan 2022 09:08:38 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id s9so5085182oib.11;
-        Wed, 19 Jan 2022 09:08:38 -0800 (PST)
+        Wed, 19 Jan 2022 12:10:15 -0500
+Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
+        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20JGbhnK032613;
+        Wed, 19 Jan 2022 17:10:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
+ subject : date : message-id : content-type : mime-version;
+ s=corp-2021-07-09; bh=nVndqhoacnhbXwBF9pf4cAFgFP0E88ISYrB3jwZ4y+I=;
+ b=FqFKA3voXerD7DI+qB3SQfww7zmP4UdRafeOHKck+LDP6CFKNmO6uaYwgXqZKlpTq0Ee
+ mckqbCYXCLwkhnurtyhKViyT79C9hjL6aBMTPSUYvBi7C5uZigmSpnRSUCA4dc4kVZsZ
+ ZTIMY0He2OX6dPkH1N5uyq1Nj4QwKY6pA98ZDDTPY12EeO8sDcigQnDk+/F5m+64tBt2
+ 3shzMaOPygKPK5gmzF1D2RGQfy1Ytuh7lXYh8thBYgVhps5x4fhbdHCsbV2B3CoP60YE
+ QkAyJq3h1GIc9sofDeTUZxzISB4Hf8ojiKdTHJxPjZfrzE2bGQnuMJMBerCRSvg225kp 4w== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by mx0b-00069f02.pphosted.com with ESMTP id 3dnc4q5u63-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 19 Jan 2022 17:10:11 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20JH6uxE193098;
+        Wed, 19 Jan 2022 17:10:10 GMT
+Received: from nam12-mw2-obe.outbound.protection.outlook.com (mail-mw2nam12lp2040.outbound.protection.outlook.com [104.47.66.40])
+        by aserp3030.oracle.com with ESMTP id 3dkmae02hs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 19 Jan 2022 17:10:10 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Tu480p6fGyctGEVNw1tc4lzRPqOk251vIQbU+WTZGAht4/jaOBdxKYRBvkT+2QvFFDWsfuLIfPhQ2cD8A/pvNZ0UnLHzO8brPv8XsrTgTVabd0FiK2GC/a8NSB0bcPpuNAIU3RjTqwZMe1qBMWI9nqb5W8GwlYzAX7DuGgLtGQlLNfLBT5biVLCIYrjaD8DjIItzB+Y7l+MSqkBVaJPJ7qgtD/qz2cmgOYPScx8WeZW8FnSKX+/sBB2om2KFId7jkVKeEIGtHI8ZyPkdDg0zcS/a84VI9DU4BjlQOyfRBhZtCavMRo745yVAMB6r6C2fyuvHlHzArM47AqdM7tB0Rw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=nVndqhoacnhbXwBF9pf4cAFgFP0E88ISYrB3jwZ4y+I=;
+ b=KVXDTXk5VXS35+DDkp1c6r1Lu9nMB/8GFR0YM5Atwybv6FLGExC6fDerLukOlI12UZtw3p/jxieQMDkyAYcNAR6WeZB+zth8qWSz7lvD3zzCSyeQHBRDNk+3oZTDsujvclMspsPB544BYf2xbr3D8m2EWj7JZJ9To3omVfCXmJgXmnv6k1rPDt7Jv6yE2hw2KOeEntJyA4zqVQLsXFiV2RV9cepVHTB4UIS39oCELgiMmj+uvnSeWt/5euQMpGvovcfRCWyei+hXONth8BhqR8fekUf0mhi7XeFNEV6H40un2rC7ixb7KZ4fxGqcGZp1LiLT9FYR9lT9RDt+q2PCZQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
+ dkim=none; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6WelN89hEfp4KJejxcgAq95DIN16jm2x1el3Hukn54g=;
-        b=i9p9llDsUWmzBJJDx5LWLvER43VrqCJIH4EjiWsYV9oyJQtDG/YP0Kb0aUKwwkTVKS
-         i7wHjmsAN93cQC0MxqDJuLIav3QxOc9lEbdsdnLQbbsWcbomlxwNAO89wj0r9pEsmzz5
-         mmBNorNXQLXZjx3ZisUqKBvIzRR07nVqXyhgbSeyQsejzaao2oSudRpDL+q68lsrC9FC
-         QLoDubk8+ZCrHcl7BErGnrcFWnCOpLm2nvjvlUMM36JvlLYYOEthmfXSKXo6e/bbu7pA
-         JV4likXkt5fg7523ire3XslmYlCcD9x+sz3Wm47hUwmLI8oUKohKURaZGvp5VSnM84DC
-         nVhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:subject:to:cc:references:from:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6WelN89hEfp4KJejxcgAq95DIN16jm2x1el3Hukn54g=;
-        b=nthTuUTwGpK3C/i8Q5tR5L9DBCTBUAOJypic75pa5tryGcqOdnJx/5dfvS9MbRRsJ2
-         DPuMo/fGxjxMaoHCZwgEKaZFmXfJH4rJIMU1uvjtMYGRxqeE/3WzhJfLqjSBZnPgJoBB
-         S4hn3df+NCwYQy4iXSIvSd1Cr1crne7S9hwYDQxc9zetsf0BdRgIi4aIbMmqvKIZyzFm
-         XY+qJXHRtC2ejtlaISRuyErJylSqTScTZjFXcM0aB87vBv/Rk4cuA19F2uiVfRV2GqhU
-         g0r0CptfB1VFw8pAD8vUC1cwcKQtnTT3Lje6Ek5k2WBfA8NuKlvWOey96eqUYs0aVxT/
-         aBiw==
-X-Gm-Message-State: AOAM533uL1YTqF7ERdlT/a6ybsCNKR2TtTf845Y2TGRXorUhAYBlWQSL
-        dSLB6VVVsY54k0Gb2S7Grds=
-X-Google-Smtp-Source: ABdhPJyOugbTInEEu//Tx5ttiC0TcU+tzGCFvpdXT66QJ0v39dR0PH0fNmzoqUfEuYFFxFFFFR1Igw==
-X-Received: by 2002:a05:6808:14ca:: with SMTP id f10mr3896046oiw.162.1642612117681;
-        Wed, 19 Jan 2022 09:08:37 -0800 (PST)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id 44sm141801otl.15.2022.01.19.09.08.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 19 Jan 2022 09:08:36 -0800 (PST)
-Sender: Guenter Roeck <groeck7@gmail.com>
-Subject: Re: [PATCH v3 2/4] Watchdog: sp5100_tco: Refactor MMIO base address
- initialization
-To:     Terry Bowman <Terry.Bowman@amd.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     linux-watchdog@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Robert Richter <rrichter@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "Shah, Nehal-bakulchandra" <Nehal-bakulchandra.Shah@amd.com>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        Mario Limonciello <Mario.Limonciello@amd.com>
-References: <20220118202234.410555-1-terry.bowman@amd.com>
- <20220118202234.410555-3-terry.bowman@amd.com>
- <CAHp75VdBFN+QMJpYDp8ytGGrBKYyjxU8u=Xrn44Lc3UGLPRQOA@mail.gmail.com>
- <b609230d-37e5-d7a3-3dff-5980c1cca5f7@amd.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Message-ID: <e558133e-b222-6cd8-6e18-162a45cb12fa@roeck-us.net>
-Date:   Wed, 19 Jan 2022 09:08:34 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+ d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nVndqhoacnhbXwBF9pf4cAFgFP0E88ISYrB3jwZ4y+I=;
+ b=KapuioueIeNPzrbPGgIbolbQ2+Nd33fNUDPp5Ph8dgiq1Z0QHesMQ4257+iZykOfbayHaoDF0ieax27oa4/ehqnVAIg3h8Cnx0/4QWg21VS7FGi8AgGv+qEMyuJT7EVKJ8B01SK5CjjKAZIlJMA7LtG8KQqlZjiLHA0PLrHYv6Q=
+Received: from PH0PR10MB5894.namprd10.prod.outlook.com (2603:10b6:510:14b::22)
+ by CH0PR10MB5099.namprd10.prod.outlook.com (2603:10b6:610:ca::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Wed, 19 Jan
+ 2022 17:10:08 +0000
+Received: from PH0PR10MB5894.namprd10.prod.outlook.com
+ ([fe80::b815:57ec:4994:e5cb]) by PH0PR10MB5894.namprd10.prod.outlook.com
+ ([fe80::b815:57ec:4994:e5cb%9]) with mapi id 15.20.4888.013; Wed, 19 Jan 2022
+ 17:10:08 +0000
+From:   Mihai Carabas <mihai.carabas@oracle.com>
+To:     ardb@kernel.org
+Cc:     mihai.carabas@oracle.com, linux-efi@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] efi/libstub: arm64: Fix image check alignment at entry
+Date:   Wed, 19 Jan 2022 18:14:27 +0200
+Message-Id: <1642608867-21307-1-git-send-email-mihai.carabas@oracle.com>
+X-Mailer: git-send-email 1.8.3.1
+Content-Type: text/plain
+X-ClientProxiedBy: SJ0PR05CA0031.namprd05.prod.outlook.com
+ (2603:10b6:a03:33f::6) To PH0PR10MB5894.namprd10.prod.outlook.com
+ (2603:10b6:510:14b::22)
 MIME-Version: 1.0
-In-Reply-To: <b609230d-37e5-d7a3-3dff-5980c1cca5f7@amd.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 09ab472d-c438-483d-61dc-08d9db6e8b92
+X-MS-TrafficTypeDiagnostic: CH0PR10MB5099:EE_
+X-Microsoft-Antispam-PRVS: <CH0PR10MB50992069FBDA79FFD3146A2588599@CH0PR10MB5099.namprd10.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: BfRveNuJ1A2N7TQgCwtC9zdjTZ0I1hwXSMYmh8pz7UmAYVJwzTyvdeDRUoTP2FpHDIk3LKaYVed4veAJ0zYIDlJdPKTldye1yUk0B/MoCEE5xvjY8ml5flMr1ct94hTUqD0hs4zZfBVtlpQ/O5E0MkHD0k95pDuG6qQSKCNdUbv228iC5EbbU5W8MomZfh6ahD4s1tuDR1lLuW6LfIxQtTJ6fnVRsv3JByzdN7BK31LS2N+Qh8xNM6xF/AGIs78CiVpgjeXOXowmwVH4BFrhkxuW2FwfAJ9C9D8Dckhg47ytIauXFQw2eQRv6MhQ1lJJl/JyXaCm5PXi7ouglzlQ3RL3nDPvoHdAowZuHhYddQ47U+Uy8/T9FNWWqTLFDDsNy0u+02Z/ZdDrDu+3W19SC4kmOa1xuza3C5s++USl1oJwDo7lyNrIbDkLW6ZpRHoKHETVfMLFPyAyUlqDwnWqGFUQ7Jmv9FpZM8u013B+319F0GgZ4jg9ok3LA54bLjQZvf8gcdJT6b0IpzJoj+SiSKSN/POU2rKVHQJzDURVL+MkZBEOO1LZ6ZxzIJPz0j767BAjpByN/I2MtIJz9OqM716uumQpRhC9Mr49tr7fPdNHcNPrGKRFoN9z9n4zm/G0LmLsWkQuXwI45LQFNwbcKsLXVEHdb2efaje88OmhIPKNYnjX6qBBoODv5mXwcoKKMZTWnpkffubnRVgdfuOluA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR10MB5894.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(52116002)(86362001)(44832011)(6666004)(66476007)(2616005)(186003)(36756003)(26005)(2906002)(8676002)(6506007)(316002)(8936002)(4326008)(6512007)(6916009)(83380400001)(66946007)(508600001)(5660300002)(6486002)(38100700002)(38350700002)(66556008);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?UhyLjmyTVLRKMcVcW5B7PkUQMxWfxuW+zCMkT53d8Qm8fYZxZrY1wAVyqQg8?=
+ =?us-ascii?Q?LPqrKvCgiF9iZf5M+Sx5a2F9GJ5IYOS/fBa+RSBowwl63q3aFLM5uJacVmo+?=
+ =?us-ascii?Q?Ait1ZXe4LTpS5zAbNR58RC436FnxmFiJu4lIcIfxcLoUsWX61pDGTVWSPLGI?=
+ =?us-ascii?Q?Bli73LI2bLPoVbNbpC2zO14/HLxhwVSriuYD5RYaztjNJqmd7zkoQjogIClC?=
+ =?us-ascii?Q?g1ehb6wywCcZgeq6IATcLxPyu3zr1NuMvdY9jGJQkyvuZMjpdNxHm4nTlzSp?=
+ =?us-ascii?Q?q2dH/OmsVzWiIvzl2Y1yTy9p22lPTygwm8WBRE9/LW2MLap6bjuGQ4IElIu5?=
+ =?us-ascii?Q?rRH7FmMtiPePUhVao1DiwqiN+VXpm9gUD8LYcJtucN+X1X3uL3LRd3jnuhYw?=
+ =?us-ascii?Q?j6BNvlp5PEB68W4kNuTivPeULpPEoD1UN0TMvBWR81jubBbTa4E009rhZ7dd?=
+ =?us-ascii?Q?uSXiUWW/lKOi7owMMD13QNSse9Y0lzfthe0CNun1UgQRICM7wAeGKclekpAt?=
+ =?us-ascii?Q?vwZJlQLohFcWYDh/olWkGnjzl/wWomJwG7GWE6EsLKyylj5cm/bmRMc763pu?=
+ =?us-ascii?Q?vacOfqc9+GiNW3IZhyEaYt3yQgfNSlOKESI2bbCMx+hEltiOX7qUDRt7pZh0?=
+ =?us-ascii?Q?+CvhvWDTHyZT12yo8vcPxZxOMRoChEv0VLuIBknxTS9kRWFlhPZXIxUoWh3z?=
+ =?us-ascii?Q?f6yEJJ8zdfebrpFfYCpXH057ltZGLVeB5tpTAEZOqzRs27nDld7DbcnrAXw8?=
+ =?us-ascii?Q?v2zt761tLoWx6FpHBxq1byn5OwuCd/1zIf/98rxEzMwQ0z8/eXl4gbonXF4h?=
+ =?us-ascii?Q?OU6foq8puAz67fwdfsrUkEhHKd6265JRUFJ0RxYm8+qEGpMhTz5fIDVJMYjK?=
+ =?us-ascii?Q?OnaaUJFSmS10HnK5ibdubO7yeefeYL9veidkuMHLQMpSRwJ3htVWycf9djQQ?=
+ =?us-ascii?Q?nE31tzkv6cZQ5/2Fy0lh0OdZ1emasxy/IQiOFtjs6q52TJpG60eMIYta6ZAt?=
+ =?us-ascii?Q?wYFD+lYbDM+U9R+FB/bJ/ooWqvsy4CG1zlfDWSdwFyx+E3Bn5bvEpSgPFoZT?=
+ =?us-ascii?Q?1d5M+kR8FnSi/4acCB1JSFfH5NaSElNHS6zFOQAjGXOcUo6Rg4kjiQQkyRuo?=
+ =?us-ascii?Q?FojGWhTrS8TOnaBr9mNSVq0EGttlma0cNKwzE9jdqv4QjWSbnAtA8wsJnYfz?=
+ =?us-ascii?Q?v+2T74sdRUdItc/tu24nLx0UIapQqzwvsH9Cnm/r2oqsKDY+Rz9Jd6qhwP5/?=
+ =?us-ascii?Q?wbL7HPUc6ifTg9PqUXAQKnBMmB9yBGdw1/pvxPt1darNgJbdZb4zClWMCLb+?=
+ =?us-ascii?Q?MSCxXH4QIluqYT2yCZqEJljloDs7+ARr3TCIy0mlLDg50MbwjscsMri7KxLo?=
+ =?us-ascii?Q?XKm7vbbIWTuYE46xi67ml7aoMtWrdD2HrzsxZj4eMnPlynCxmJ0uZxBAzQRe?=
+ =?us-ascii?Q?jicrr/FMIvOmcQZXt2e61X3mOXW4YweKTgojhkfbNF7rEVWsCYX4As7RmF26?=
+ =?us-ascii?Q?uap20LcIIGfQAZUNjBla5bAMPcWhjHW8vtum9KsrcJB/0/vqxEmulOSrYNCM?=
+ =?us-ascii?Q?Lf5+u3zAywuszKXOaHJLJWp1Cgt5A2d2zWQN8gvH608bHRe7BELsGbAF6mPi?=
+ =?us-ascii?Q?9OOrU/zgn5rpp8SUolkul5qUOjdPMp1+M/FksQB5OEXsEqICPOmdHs5tRXrB?=
+ =?us-ascii?Q?gPkrPQ=3D=3D?=
+X-OriginatorOrg: oracle.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 09ab472d-c438-483d-61dc-08d9db6e8b92
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR10MB5894.namprd10.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2022 17:10:08.5866
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: zOcBiSZMUWzF7Gs4lj0IiVUtattFC70QkiNeWe3Zo4fj+cI4vHTGPu8RtS5emUCel6p3ycYwRoWk7LLgwbu8D+XlbHjGeY+IN4dCOPfF7Mc=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH0PR10MB5099
+X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10231 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 suspectscore=0
+ phishscore=0 malwarescore=0 mlxlogscore=999 spamscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
+ definitions=main-2201190097
+X-Proofpoint-GUID: ozTcPMtgxXl3upv2z5oqzbdr4QAtPYij
+X-Proofpoint-ORIG-GUID: ozTcPMtgxXl3upv2z5oqzbdr4QAtPYij
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/19/22 8:57 AM, Terry Bowman wrote:
-> 
-> 
-> On 1/19/22 5:53 AM, Andy Shevchenko wrote:
->> On Tue, Jan 18, 2022 at 10:23 PM Terry Bowman <terry.bowman@amd.com> wrote:
->>>
->>> Combine MMIO base address and alternate base address detection. Combine
->>> based on layout type. This will simplify the function by eliminating
->>> a switch case.
->>>
->>> Move existing request/release code into functions. This currently only
->>> supports port I/O request/release. The move into a separate function
->>> will make it ready for adding MMIO region support.
->>
->> ...
->>
->>> To: Guenter Roeck <linux@roeck-us.net>
->>> To: linux-watchdog@vger.kernel.org
->>> To: Jean Delvare <jdelvare@suse.com>
->>> To: linux-i2c@vger.kernel.org
->>> To: Wolfram Sang <wsa@kernel.org>
->>> To: Andy Shevchenko <andy.shevchenko@gmail.com>
->>> To: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
->>> Cc: linux-kernel@vger.kernel.org
->>> Cc: Wim Van Sebroeck <wim@linux-watchdog.org>
->>> Cc: Robert Richter <rrichter@amd.com>
->>> Cc: Thomas Lendacky <thomas.lendacky@amd.com>
->>
->> Same comment to all your patches.
-> 
-> Ok. I'll reduce the patches' to/cc list to only contain maintainers owning
-> the current patch. I prefer to leave the lengthy list in the cover letter
-> if that is ok because it will not be added to the tree but will provide
-> context this series has multiple systems and may need communication
-> between maintainers. I'll use the -to & -cc commandline as you mentioned to
-> send to the longer list of recipients without cluttering the patch. Let me
-> know if you prefer otherwise.
->>
->> ...
->>
->>> +static int __sp5100_tco_prepare_base(struct sp5100_tco *tco,
->>> +                                    u32 mmio_addr,
->>> +                                    const char *dev_name)
->>> +{
->>> +       struct device *dev = tco->wdd.parent;
->>
->>> +       int ret = 0;
->>
->> Not really used variable.
-> 
-> Yes, I'll remove 'ret' and set hardcoded 0 return value below.
-> 
->>
->>> +       if (!mmio_addr)
->>> +               return -ENOMEM;
->>> +
->>> +       if (!devm_request_mem_region(dev, mmio_addr,
->>> +                                   SP5100_WDT_MEM_MAP_SIZE,
->>> +                                   dev_name)) {
->>> +               dev_dbg(dev, "MMIO address 0x%08x already in use\n",
->>> +                       mmio_addr);
->>> +               return -EBUSY;
->>> +       }
->>> +
->>> +       tco->tcobase = devm_ioremap(dev, mmio_addr,
->>> +                                   SP5100_WDT_MEM_MAP_SIZE);
->>> +       if (!tco->tcobase) {
->>> +               dev_dbg(dev, "MMIO address 0x%08x failed mapping.\n",
->>> +                       mmio_addr);
->>
->>> +               devm_release_mem_region(dev, mmio_addr,
->>> +                                       SP5100_WDT_MEM_MAP_SIZE);
->>
->> Why? If it's a short live mapping, do not use devm.
-> 
-> This region isn't short lived. This is a region request for the
-> WDT registers used through the lifetime of the driver.
->                                                                                  
-> The short lived mapping you may be thinking of is in
-> sp5100_tco_setupdevice_mmio() from patch 3. The first register in
-> this region is FCH::PM::DECODEEN and is used to setup the mmio_addr
-> and alt_mmio_addr MMIO (longterm) regions.
-> 
->>
->>> +               return -ENOMEM;
->>> +       }
->>
->>> +       dev_info(dev, "Using 0x%08x for watchdog MMIO address\n",
->>> +                mmio_addr);
->>
->> Unneeded noise.
-> 
-> This was present pre-series. The current driver dmesg output with default
-> logging settings is:
-> 
-> dmesg | grep -i sp5100
-> [    8.508515] sp5100_tco: SP5100/SB800 TCO WatchDog Timer Driver
-> [    8.525172] sp5100-tco sp5100-tco: Using 0xfeb00000 for watchdog MMIO address
-> [    8.539912] sp5100-tco sp5100-tco: initialized. heartbeat=60 sec (nowayout=0)
-> 
-> I'll remove the dev_info.
-> 
->>
->>> +       return ret;
->>
->> On top of above it's a NIH devm_ioremap_resource().
-> 
-> I'm not familiar with NIH term. My friends google and grep weren't much help.
-> 
->>
->>> +}
->>
->>
->> ...
->>
->>> +       int ret = 0;
->>
->> Redundant assignment.
-> 
-> Thanks. I'll leave the variable but remove the 0 assignment in the definition.
-> 
->>
->> ...
->>
->>> +       /* Check MMIO address conflict */
->>> +       ret = __sp5100_tco_prepare_base(tco, mmio_addr, dev_name);
->>
->>> +
->>> +       /* Check alternate MMIO address conflict */
->>
->> Unify this with the previous comment.
-> 
-> Ok
-> 
->>
->>> +       if (ret)
->>> +               ret = __sp5100_tco_prepare_base(tco, alt_mmio_addr,
->>> +                                               dev_name);
->>
->> ...
->>
->>> +               if (alt_mmio_addr & ((SB800_ACPI_MMIO_DECODE_EN |
->>> +                                     SB800_ACPI_MMIO_SEL) !=
->>> +                                    SB800_ACPI_MMIO_DECODE_EN)) {
->>
->> The split looks ugly. Consider to use temporary variables or somehow
->> rearrange the condition that it doesn't break in the middle of the one
->> logical token.
-> 
-> I'll try splitting at the '&' as Guenter mentioned in other email.
-> 
->>
->>> +                       alt_mmio_addr &= ~0xFFF;
->>
->> Why capital letters?
-> 
-> This was already present pre-series. I'll change to lowercase to make it
-> consistent with the other constants in the file.
-> 
->>
->>> +                       alt_mmio_addr += SB800_PM_WDT_MMIO_OFFSET;
->>> +               }
->>
->> ...
->>
->>> +               if (!(alt_mmio_addr & (((SB800_ACPI_MMIO_DECODE_EN |
->>> +                                      SB800_ACPI_MMIO_SEL)) !=
->>> +                     SB800_ACPI_MMIO_DECODE_EN))) {
->>
->> Ditto.
-> 
-> My understanding is #defines should be capitalized. No?
-> 
+The kernel is aligned at SEGMENT_SIZE and this is the size populated in the PE
+headers:
 
-I think that Ditto referred to the line split comment.
+arch/arm64/kernel/efi-header.S: .long   SEGMENT_ALIGN // SectionAlignment
 
-Guenter
+EFI_KIMG_ALIGN is defined as: (SEGMENT_ALIGN > THREAD_ALIGN ? SEGMENT_ALIGN :
+THREAD_ALIGN)
 
->>
->>> +                       alt_mmio_addr &= ~0xFFF;
->>
->> Ditto.
-> 
-> Another uppercase constant I will make lowercase.
-> 
->>
->>> +                       alt_mmio_addr += SB800_PM_WDT_MMIO_OFFSET;
->>
->> ...
->>
->> Okay, I see this is the original code like this... Perhaps it makes
->> sense to reshuffle them (indentation-wise) at the same time and
->> mention this in the changelog.
->>
->> ...
->>
->>>          release_region(SP5100_IO_PM_INDEX_REG, SP5100_PM_IOPORTS_SIZE);
->>
->> Is it still needed? I have no context to say if devm_iomap() and this
->> are not colliding, please double check the correctness.
->>
-> 
-> Yes, this is needed. The release/request in sp5100_tco_setupdevice() is
-> for the non-efch mmio layout cases. It is using port I/O registers to
-> detect mmio_addr, alt_mmio_addr, and configure the device.
-> 
-> Regards,
-> Terry Bowman
-> 
+So it depends on THREAD_ALIGN. On newer builds this message started to appear
+even though the loader is taking into account the PE header (which is stating
+SEGMENT_ALIGN).
+
+Fixes: c32ac11da3f8 ("efi/libstub: arm64: Double check image alignment at entry")
+Signed-off-by: Mihai Carabas <mihai.carabas@oracle.com>
+---
+ drivers/firmware/efi/libstub/arm64-stub.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/firmware/efi/libstub/arm64-stub.c b/drivers/firmware/efi/libstub/arm64-stub.c
+index 2363fee9211c..9cc556013d08 100644
+--- a/drivers/firmware/efi/libstub/arm64-stub.c
++++ b/drivers/firmware/efi/libstub/arm64-stub.c
+@@ -119,9 +119,9 @@ efi_status_t handle_kernel_image(unsigned long *image_addr,
+ 	if (image->image_base != _text)
+ 		efi_err("FIRMWARE BUG: efi_loaded_image_t::image_base has bogus value\n");
+ 
+-	if (!IS_ALIGNED((u64)_text, EFI_KIMG_ALIGN))
+-		efi_err("FIRMWARE BUG: kernel image not aligned on %ldk boundary\n",
+-			EFI_KIMG_ALIGN >> 10);
++	if (!IS_ALIGNED((u64)_text, SEGMENT_ALIGN))
++		efi_err("FIRMWARE BUG: kernel image not aligned on %dk boundary\n",
++			SEGMENT_ALIGN >> 10);
+ 
+ 	kernel_size = _edata - _text;
+ 	kernel_memsize = kernel_size + (_end - _edata);
+-- 
+1.8.3.1
 
