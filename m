@@ -2,133 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C82C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:24:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 550AEC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:25:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231252AbiATLY0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 06:24:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45830 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230523AbiATLYX (ORCPT
+        id S231173AbiATLZv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 06:25:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:51147 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230523AbiATLZt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 06:24:23 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23E00C061574
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 03:24:22 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id m11so27131766edi.13
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 03:24:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :references:from:in-reply-to:content-transfer-encoding;
-        bh=GlXva+sxO1RqL881UJiKTuuSojDQ0/889TwSCSPAjsM=;
-        b=AYo4CjeEBE2c1dgMUL6LLL0Pl4iyEa+v+RrbHKxTQ6ye9Jvbs6HoM6mDoiriFpSBOu
-         XuWJtZ+ekEiO8AjDdENeJyW/Ov6xnXhv6LDJypE1AQ1sXPiBV7YJcOL3iecGwhzWnE3C
-         wPBfoafuzAuo3R4P+nTCvxF3Dt1mKTWVvp9w6NXMUyvhyMk+lwSgW9n14TDMqE1W+t4F
-         RJpNLNR65zy0GdgFoL7Ypk2tWuh79/AbIp2Dz4cEAgovMXUUaIxtvIlw/m53dRZzMwoc
-         WhwtziLWEYE1Qg1p3fNzJ96UsVKPVfUF+Bgubbc0Vml9MWfldzpySl9JlanYDHnnn48u
-         VK0Q==
+        Thu, 20 Jan 2022 06:25:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642677949;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=3JnRnkAUl6ydn4aYabatzx9NKCMlhuJGRaxEfTdkCPw=;
+        b=BpsC1vz5p3eK5QkEd2JnqFeWMk8is9JNptf9Xu1q4IhDWmeikk4FUijbxTKfME42XzzCCs
+        eiAmitzGeuAc6KQe6QLdik0QyJvscC09o9xNojXFBPGuiTcd60txcDoW+vXLnYfyIw0SYQ
+        XZESjznKr34CoAFD/SqnjEdFr1nuBvQ=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-475-JzRGwpSvNrGIUdTjVsQ8nA-1; Thu, 20 Jan 2022 06:25:47 -0500
+X-MC-Unique: JzRGwpSvNrGIUdTjVsQ8nA-1
+Received: by mail-ed1-f72.google.com with SMTP id s9-20020aa7d789000000b004021d03e2dfso5600314edq.18
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 03:25:47 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:references:from:in-reply-to
+         :content-language:to:cc:references:from:in-reply-to
          :content-transfer-encoding;
-        bh=GlXva+sxO1RqL881UJiKTuuSojDQ0/889TwSCSPAjsM=;
-        b=XPhukFqrRzN2veTkkxZOeNxq+Op44cpah545HJTvA8BZBRpf/8E0G67590c+ZItZOM
-         9nyvuTsvwDhbi/0Njp7RGroZz6KDgkG/ZP1vQJ4CnsKd2AeteDRLWzqlltsH46s0FS3j
-         TFVRknXhqhPJLOjE4qH7P5dPUviRv8sk8250pBWjFUmKHrDnZt3cWdGRfLF7RugL7ZMU
-         aliDBLdBLUE70BLJNQ2UJ5lj3YXtEdzctUo6/XQPVyUlLc9E3jldOpknkPAgU/MBqf71
-         UIOuca5w4YnYR4lSa6nT+rsy2DvYSr6WztOv50ZQR+HykKqiLheTXVhCwiAfLUk1LFj2
-         qAcA==
-X-Gm-Message-State: AOAM530bt3ieP80u4sBacovy+y2EqH4oB+iz+DHglrO4IuUUqnPtUq7P
-        lPjf1lsI18wxBKFtx8QjtMU=
-X-Google-Smtp-Source: ABdhPJyVAEe3X0dD6qYBKkhC7XejoHkeRwIdt4U9K9wR8Ywgid/b7iYnMeAPor2XANjRYFunIWXKDA==
-X-Received: by 2002:a17:907:6218:: with SMTP id ms24mr16540284ejc.677.1642677861362;
-        Thu, 20 Jan 2022 03:24:21 -0800 (PST)
+        bh=3JnRnkAUl6ydn4aYabatzx9NKCMlhuJGRaxEfTdkCPw=;
+        b=zMve2fmXj2KiYF/rG7+UD+Rg3sub27na/b19wGAWHl8yMmzu2vzJ/s2qUKY8sBwhyJ
+         RTcQlK5VvGpOIOlWClmmk1gisRRJnhYUXm9jG+3Tjep7FWZtabRDDabNVT015sJuyt/q
+         /NH1FlcaCbN2mnK6C/G2Bh0vfrtKErzHRVUDao5O6LiGeGzZWqI2b5BU+CTLzu7x4uDU
+         gQICtcKhGQBBo0iDDtB3nkvkoLf4RWYHJP+0QZOFWm1px2ZLQ+MxMrglQkcLmOtsyQxB
+         G/6jA3MJKA2ig4j3ogs5enPk8xu+wN4ac1Gp/5obJ/8ICfrcohyQPpRc/d5Yec+WmY2S
+         Jj2A==
+X-Gm-Message-State: AOAM530aL5hVzV/9KMolCAnmQcx5jtvYYuHhxztn4yTG3MysregGfC5L
+        8tBpCxBYy4ZL8FbVB73Q6zaN0FF5Zw5wsSb8qZKimFCxQsJTfvP6Nk8h5WcLxWM1VdR6e9y8/n/
+        gCCo63yB1niZ94wyWuCiJjiE8
+X-Received: by 2002:a17:907:9618:: with SMTP id gb24mr28623941ejc.385.1642677946697;
+        Thu, 20 Jan 2022 03:25:46 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzRXCxE2hLOmRh02HFHNmkPepiNeZYVlbYK0NAeBVGZTQMTodp6TTTM4xCYRWls3p+5LgfQZA==
+X-Received: by 2002:a17:907:9618:: with SMTP id gb24mr28623919ejc.385.1642677946463;
+        Thu, 20 Jan 2022 03:25:46 -0800 (PST)
 Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.googlemail.com with ESMTPSA id lt23sm895227ejb.173.2022.01.20.03.24.20
+        by smtp.gmail.com with ESMTPSA id v4sm1184714ede.42.2022.01.20.03.25.45
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Jan 2022 03:24:20 -0800 (PST)
-Message-ID: <cdeace24-67ba-8e23-29ad-f41abac98d79@gmail.com>
-Date:   Thu, 20 Jan 2022 12:24:20 +0100
+        Thu, 20 Jan 2022 03:25:45 -0800 (PST)
+Message-ID: <5bec947e-272b-cfa0-b9b6-4d0d2626153f@redhat.com>
+Date:   Thu, 20 Jan 2022 12:25:45 +0100
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.3.0
-Subject: Re: [RFC] How to add hardware rotation, scaling etc to a DRM/KMS
- driver
+Subject: Re: [PATCH 1/2] i2c: designware: Add missing locks
 Content-Language: en-US
-To:     Daniel Palmer <daniel@0x0f.com>, dri-devel@lists.freedesktop.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <CAFr9PXnig9YfnwSzMg5UPm3UtAsEAQT_xVheBbLppiU45mc_QQ@mail.gmail.com>
- <Yeg8mi0S2ACy9q8O@phenom.ffwll.local>
- <CAFr9PXkUwfyZ9yJgNYHX5_jo_SFfDU9wKA3Ldf+hbVL23faqKQ@mail.gmail.com>
-From:   Hans de Goede <j.w.r.degoede@gmail.com>
-In-Reply-To: <CAFr9PXkUwfyZ9yJgNYHX5_jo_SFfDU9wKA3Ldf+hbVL23faqKQ@mail.gmail.com>
+To:     Jan Dabros <jsd@semihalf.com>, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, jarkko.nikula@linux.intel.com
+Cc:     andriy.shevchenko@linux.intel.com, mika.westerberg@linux.intel.com,
+        wsa@kernel.org, rrangel@chromium.org, mw@semihalf.com,
+        jaz@semihalf.com, upstream@semihalf.com
+References: <20220120001621.705352-1-jsd@semihalf.com>
+ <20220120001621.705352-2-jsd@semihalf.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220120001621.705352-2-jsd@semihalf.com>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+Hi,
 
-On 1/20/22 12:15, Daniel Palmer wrote:
-> Hi Daniel,
+On 1/20/22 01:16, Jan Dabros wrote:
+> All accesses to controller's registers should be protected on
+> probe, disable and xfer paths. This is needed for i2c bus controllers
+> that are shared with but not controller by kernel.
 > 
-> On Thu, 20 Jan 2022 at 01:30, Daniel Vetter <daniel@ffwll.ch> wrote:
->>> I got the feeling that maybe I should just provide an interface to the
->>> blitter from userspace and userspace should be doing the rotation. I'd
->>> like to do it in the kernel so stuff like SDL1 apps just work but
->>> maybe that isn't possible?
->>
->> panel orientation property is for that stuff:
->> fbcon will head this and rotate in sw,
-> 
-> This is working. On boot I get Tux rotated correctly etc.
-> 
->> as should any competent compositor
->> in userspace (but some might not, it depends).
-> 
-> That's the problem I guess. I don't have one. SDL1 apps like prboom
-> use the fbdev emulation as-is so they render upside down[0].
-> I have 16MB of local storage and 128MB of RAM so I don't think I'll
-> manage to get the standard userland bits onto it.
-> 
-> I wanted to do the rotation in the kernel so I didn't have to hack up SDL1.
+> Signed-off-by: Jan Dabros <jsd@semihalf.com>
 
-Right, doing the rotation in the kernel to make this all transparent
-was my first idea / wish too. Unfortunately that just doesn't really
-work well. Most display-blocks have multiple layers, for things like
-hw-rendering a mouse cursor, video overlays etc. I guess this is mostly
-exposed through the DRM/kms interfaces, but I believe fbdev also
-export some of this.
+Thanks, patch looks good to me:
 
-The problem is, that with these layers even if you successfully flip
-the main layer in the kernel the cursor plane will likely still be
-rendered upside down and on some cards, esp. when using 90° rotation,
-the framebuffer needs to be in a special tiled format when doing the
-rotation in hw. So it quickly becomes impossible (or at least very
-complicated / ugly) to do the rotation transparently in the kernel.
-
-For Fedora we have moved all SDL1 apps over to using the SDL1
-compatibility wrapper around SDL2:
-
-https://github.com/laibsdl-org/sdl12-compat
-
-And SDL2 has a drm/kms backend. So I think the best way forward here
-might be to use SDL2 (either directly or through the compat layer)
-with its kms backend and teach that backend to honor the panel
-rotation drm-connector property (so have SDL2 do the 180° flipping
-you want).
-
-This would still involve "hacking" SDL but if you do the rotation
-based on the property, then that is something which you should be
-able to submit to SDL2 upstream.
-
-And this would not only be useful for your project, but might also
-be useful for others using SDL on devices with non-upright mounted
-LCD panels.
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 
 Regards,
 
 Hans
+
+
+> ---
+>  drivers/i2c/busses/i2c-designware-common.c | 12 ++++++++++++
+>  drivers/i2c/busses/i2c-designware-master.c |  6 ++++++
+>  2 files changed, 18 insertions(+)
+> 
+> diff --git a/drivers/i2c/busses/i2c-designware-common.c b/drivers/i2c/busses/i2c-designware-common.c
+> index bf2a4920638a..9f8574320eb2 100644
+> --- a/drivers/i2c/busses/i2c-designware-common.c
+> +++ b/drivers/i2c/busses/i2c-designware-common.c
+> @@ -578,7 +578,12 @@ int i2c_dw_set_fifo_size(struct dw_i2c_dev *dev)
+>  	 * Try to detect the FIFO depth if not set by interface driver,
+>  	 * the depth could be from 2 to 256 from HW spec.
+>  	 */
+> +	ret = i2c_dw_acquire_lock(dev);
+> +	if (ret)
+> +		return ret;
+> +
+>  	ret = regmap_read(dev->map, DW_IC_COMP_PARAM_1, &param);
+> +	i2c_dw_release_lock(dev);
+>  	if (ret)
+>  		return ret;
+>  
+> @@ -607,6 +612,11 @@ u32 i2c_dw_func(struct i2c_adapter *adap)
+>  void i2c_dw_disable(struct dw_i2c_dev *dev)
+>  {
+>  	u32 dummy;
+> +	int ret;
+> +
+> +	ret = i2c_dw_acquire_lock(dev);
+> +	if (ret)
+> +		return;
+>  
+>  	/* Disable controller */
+>  	__i2c_dw_disable(dev);
+> @@ -614,6 +624,8 @@ void i2c_dw_disable(struct dw_i2c_dev *dev)
+>  	/* Disable all interrupts */
+>  	regmap_write(dev->map, DW_IC_INTR_MASK, 0);
+>  	regmap_read(dev->map, DW_IC_CLR_INTR, &dummy);
+> +
+> +	i2c_dw_release_lock(dev);
+>  }
+>  
+>  void i2c_dw_disable_int(struct dw_i2c_dev *dev)
+> diff --git a/drivers/i2c/busses/i2c-designware-master.c b/drivers/i2c/busses/i2c-designware-master.c
+> index 9177463c2cbb..1a4b23556db3 100644
+> --- a/drivers/i2c/busses/i2c-designware-master.c
+> +++ b/drivers/i2c/busses/i2c-designware-master.c
+> @@ -905,7 +905,13 @@ int i2c_dw_probe_master(struct dw_i2c_dev *dev)
+>  		irq_flags = IRQF_SHARED | IRQF_COND_SUSPEND;
+>  	}
+>  
+> +	ret = i2c_dw_acquire_lock(dev);
+> +	if (ret)
+> +		return ret;
+> +
+>  	i2c_dw_disable_int(dev);
+> +	i2c_dw_release_lock(dev);
+> +
+>  	ret = devm_request_irq(dev->dev, dev->irq, i2c_dw_isr, irq_flags,
+>  			       dev_name(dev->dev), dev);
+>  	if (ret) {
+> 
+
