@@ -2,101 +2,185 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B28C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 14:35:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D35D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 14:37:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353350AbiATOfK (ORCPT
+        id S1353695AbiATOhv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 09:35:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:23519 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1345839AbiATOfI (ORCPT
+        Thu, 20 Jan 2022 09:37:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34078 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238270AbiATOht (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 09:35:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642689308;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=D378avGhHf7Yew8dpU8oH0FTT2ZH+6InHr9T5zdsY3g=;
-        b=iAUwRInTTkcxnkbZxUKJZYK059F/qAAjMZs8KgtJPJXZiJl//LocofPzxmW6bi8oWNg9PF
-        eG7nZkQwu5ONx0KgE3r+itU65Fa6c/cSnSfaaH/VE1Z6NCfOBHvkpQhzzqosMQdcfzkbOW
-        zj58v8wpxWVNdypZdPsbuUHoQIxiQEQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-122-Aati9j2NM7e9FDZ-ofjW4g-1; Thu, 20 Jan 2022 09:35:05 -0500
-X-MC-Unique: Aati9j2NM7e9FDZ-ofjW4g-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        Thu, 20 Jan 2022 09:37:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CCFC061574;
+        Thu, 20 Jan 2022 06:37:48 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0D3461926DA0;
-        Thu, 20 Jan 2022 14:35:04 +0000 (UTC)
-Received: from localhost (unknown [10.39.195.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id A092678AB2;
-        Thu, 20 Jan 2022 14:35:03 +0000 (UTC)
-From:   Cornelia Huck <cohuck@redhat.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>, linux-kernel@vger.kernel.org
-Cc:     Jason Wang <jasowang@redhat.com>,
-        virtualization@lists.linux-foundation.org, stable@vger.kernel.org,
-        Halil Pasic <pasic@linux.ibm.com>
-Subject: Re: [PATCH v2 2/2] virtio: acknowledge all features before access
-In-Reply-To: <20220118170225.30620-2-mst@redhat.com>
-Organization: Red Hat GmbH
-References: <20220118170225.30620-1-mst@redhat.com>
- <20220118170225.30620-2-mst@redhat.com>
-User-Agent: Notmuch/0.34 (https://notmuchmail.org)
-Date:   Thu, 20 Jan 2022 15:35:01 +0100
-Message-ID: <87h79ycw6i.fsf@redhat.com>
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4EDAB617C6;
+        Thu, 20 Jan 2022 14:37:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78C7AC340E0;
+        Thu, 20 Jan 2022 14:37:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642689467;
+        bh=g+oxM2J81EeSrKkemxOsGMCNcdknSpVI4hLP1FM05Xs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:From;
+        b=MnZcO5TzvNwS9pEOr4S5gVif6UGpwSNbnSXXJZh6XS93LaIl7LTP62I8ziVCBTyMI
+         +COlt3mR5w8dKC1SKfDAX9jqXm4bPbD9AFcHYM0dy4jO+J15kEl7YYCF6ElVuV/hSz
+         ikpdf0P27ZIVK6AhiRfOve0DDJfwuGpEqkzdcLHzY/vf4ke09D26D/af1LzBgMJFIV
+         I60YCraKJXRkTGaGrXphPq3gFukh+0zhz0Z3sz1DqbsJ7jaO7YSSM8CAk8+a6IKqgE
+         hjl4Ba9JZ7o7SBtFgL/B+4oMlame9nnpajA2uKu3ImpOXXYG+dThM3Y01S8GpF1Pzl
+         R0L/sMo0ns8mg==
+Date:   Thu, 20 Jan 2022 15:37:42 +0100
+From:   Christian Brauner <brauner@kernel.org>
+To:     Alexey Dobriyan <adobriyan@gmail.com>
+Cc:     viro@zeniv.linux.org.uk, ebiederm@xmission.com,
+        akpm@linux-foundation.org, linux-kernel@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, stephen.s.brennan@oracle.com,
+        legion@kernel.org, cyphar@cyphar.com
+Subject: Re: [PATCH v2] proc: "mount -o lookup=" support
+Message-ID: <20220120143742.saz5yh5mlkg43yxl@wittgenstein>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YelWXWKZkR//mD8i@localhost.localdomain>
+ <YelUKIOjLd7A9XQN@localhost.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18 2022, "Michael S. Tsirkin" <mst@redhat.com> wrote:
+On Thu, Jan 20, 2022 at 03:32:29PM +0300, Alexey Dobriyan wrote:
+> On Wed, Jan 19, 2022 at 05:24:23PM +0100, Christian Brauner wrote:
+> > On Wed, Jan 19, 2022 at 06:48:03PM +0300, Alexey Dobriyan wrote:
+> > > From 61376c85daab50afb343ce50b5a97e562bc1c8d3 Mon Sep 17 00:00:00 2001
+> > > From: Alexey Dobriyan <adobriyan@gmail.com>
+> > > Date: Mon, 22 Nov 2021 20:41:06 +0300
+> > > Subject: [PATCH 1/1] proc: "mount -o lookup=..." support
+> > > 
+> > > Docker implements MaskedPaths configuration option
+> > > 
+> > > 	https://github.com/estesp/docker/blob/9c15e82f19b0ad3c5fe8617a8ec2dddc6639f40a/oci/defaults.go#L97
+> > > 
+> > > to disable certain /proc files. It overmounts them with /dev/null.
+> > > 
+> > > Implement proper mount option which selectively disables lookup/readdir
+> > > in the top level /proc directory so that MaskedPaths doesn't need
+> > > to be updated as time goes on.
+> > 
+> > I might've missed this when this was sent the last time so maybe it was
+> > clearly explained in an earlier thread: What's the reason this needs to
+> > live in the kernel?
+> 
+> The reasons are:
+> 	MaskedPaths or equivalents are blacklists, not future proof
+> 
+> 	MaskedPaths is applied at container creation once,
+> 	lookup= is applied at mount time surely but names aren't
+> 	required to exist to be filtered (read: some silly ISV module
+> 	gets loaded, creates /proc entries, containers get them with all
+> 	security holes)
+> 
+> > The MaskedPaths entry is optional so runtimes aren't required to block
+> > anything by default and this mostly makes sense for workloads that run
+> > privileged.
+> > 
+> > In addition MaskedPaths is a generic option which allows to hide any
+> > existing path, not just proc. Even in the very docker-specific defaults
+> > /sys/firmware is covered.
+> 
+> Sure, the patch is for /proc only. MaskedPaths can't overmount with
+> /dev/null file which doesn't exist yet.
+> 
+> > I do see clear value in the subset= and hidepid= options. They are
+> > generally useful independent of opinionated container workloads. I don't
+> > see the same for lookup=.
+> > 
+> > An alternative I find more sensible is to add a new value for subset=
+> > that hides anything(?) that only global root should have read/write
+> > access too.
 
-> The feature negotiation was designed in a way that
-> makes it possible for devices to know which config
-> fields will be accessed by drivers.
->
-> This is broken since commit 404123c2db79 ("virtio: allow drivers to
-> validate features") with fallout in at least block and net.  We have a
-> partial work-around in commit 2f9a174f918e ("virtio: write back
-> F_VERSION_1 before validate") which at least lets devices find out which
-> format should config space have, but this is a partial fix: guests
-> should not access config space without acknowledging features since
-> otherwise we'll never be able to change the config space format.
->
-> To fix, split finalize_features from virtio_finalize_features and
-> call finalize_features with all feature bits before validation,
-> and then - if validation changed any bits - once again after.
->
-> Since virtio_finalize_features no longer writes out features
-> rename it to virtio_features_ok - since that is what it does:
-> checks that features are ok with the device.
->
-> As a side effect, this also reduces the amount of hypervisor accesses -
-> we now only acknowledge features once unless we are clearing any
-> features when validating (which is uncommon).
->
-> Cc: stable@vger.kernel.org
-> Fixes: 404123c2db79 ("virtio: allow drivers to validate features")
-> Fixes: 2f9a174f918e ("virtio: write back F_VERSION_1 before validate")
-> Cc: "Halil Pasic" <pasic@linux.ibm.com>
-> Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
->
-> fixup! virtio: acknowledge all features before access
+On Thu, Jan 20, 2022 at 03:23:04PM +0300, Alexey Dobriyan wrote:
+> On Wed, Jan 19, 2022 at 05:24:23PM +0100, Christian Brauner wrote:
+> > On Wed, Jan 19, 2022 at 06:48:03PM +0300, Alexey Dobriyan wrote:
+> > > From 61376c85daab50afb343ce50b5a97e562bc1c8d3 Mon Sep 17 00:00:00 2001
+> > > From: Alexey Dobriyan <adobriyan@gmail.com>
+> > > Date: Mon, 22 Nov 2021 20:41:06 +0300
+> > > Subject: [PATCH 1/1] proc: "mount -o lookup=..." support
+> > > 
+> > > Docker implements MaskedPaths configuration option
+> > > 
+> > > 	https://github.com/estesp/docker/blob/9c15e82f19b0ad3c5fe8617a8ec2dddc6639f40a/oci/defaults.go#L97
+> > > 
+> > > to disable certain /proc files. It overmounts them with /dev/null.
+> > > 
+> > > Implement proper mount option which selectively disables lookup/readdir
+> > > in the top level /proc directory so that MaskedPaths doesn't need
+> > > to be updated as time goes on.
+> > 
+> > I might've missed this when this was sent the last time so maybe it was
+> > clearly explained in an earlier thread: What's the reason this needs to
+> > live in the kernel?
+> > 
+> > The MaskedPaths entry is optional so runtimes aren't required to block
+> > anything by default and this mostly makes sense for workloads that run
+> > privileged.
+> > 
+> > In addition MaskedPaths is a generic option which allows to hide any
+> > existing path, not just proc. Even in the very docker-specific defaults
+> > /sys/firmware is covered.
+> 
+> MaskedPaths is not future proof, new entries might pop up and nobody
+> will update the MaskedPaths list.
+> 
+> > I do see clear value in the subset= and hidepid= options. They are
+> > generally useful independent of opinionated container workloads. I don't
+> > see the same for lookup=.
+> 
+> The value is if you get /proc/cpuinfo you get everything else
+> but you might not want everything else given that "everything else"
+> changes over time.
+> 
+> > An alternative I find more sensible is to add a new value for subset=
+> > that hides anything(?) that only global root should have read/write
+> > access too.
 
-Leftover from rebasing?
+Thanks for providing some more details.
 
-> ---
->  drivers/virtio/virtio.c       | 39 ++++++++++++++++++++---------------
->  include/linux/virtio_config.h |  3 ++-
->  2 files changed, 24 insertions(+), 18 deletions(-)
+If we really introduce new proc files in the future that are unsafe for
+unprivileged containers then that's a whole bigger problem.
 
-Reviewed-by: Cornelia Huck <cohuck@redhat.com>
+We shouldn't taper over this with a procfs mount option however.
+Especially, since it's very likely that such new procfs files that would
+be exploitable in unprivileged containers would also be exploitable by
+regular users. The argument can't be that in order to protect against
+buggy or information leaking future proc files we need to give proc a
+special mount option for containers to restrict access to files and
+directories.
 
-Would like to see a quick sanity test from Halil, though.
+And for the legacy files that existed before containers were a big thing
+MaskedPath in userspace has worked fine with the last changes to update
+the list from 2018 for the addition of a rather old directory.
 
+And the same problem exists for sysfs. That's why /sys/firmware is in
+there. (In fact, it can be argued that they should restrict sysfs way
+more via MaskedPaths than procfs for privileged containers since it
+leaks way more system-wide information and provides a way bigger attack
+surface which is presumable why the mount is ro but then strangely only
+hide /sys/firmware. Anyway, besides the point.)
+
+MaskedPath is mostly a protection mechanism useful for privileged
+containers as an unprivileged container can't modify anything that would
+allow it to attack the system.
+
+Ultimately, I think the current proposal here is too much modeled after
+how a specific tool runs specific workloads and for containers and I
+don't think that's a good idea.
+
+We should do a generally useful thing that doesn't require any dynamic
+filtering and userspace giving us files that are ok to show.
+
+Alternative proposals to appear later in the thread. I'd be ok to
+endorse one of those if you were to implement one of them. But for now
+I'm not firmly convinced of lookup=.
