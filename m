@@ -2,103 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85034C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 12:56:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A99B1C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 12:56:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244311AbiATM4Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 07:56:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:31133 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S243904AbiATM4T (ORCPT
+        id S244275AbiATM4u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 07:56:50 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:53342 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S239164AbiATM4s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 07:56:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642683379;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=HnjzfSKHnTIW/FDreC+CYQQVdtBa2Yo1in7OBWnPmf0=;
-        b=CQn/np9RfwxSPsi9545CTTPyXBC6JueCpefCSpNHM2H+EbRwyXw+zMbMTRniNKDD9vIiL0
-        iYrJI5L3IsN5JZRRwqWtaYQwahO1/h9YweoSwRXfMU3/2vDb4Klmvi65MCFyShcRCOMERR
-        IbC5R+Ybalrgy58NdAlgscWJS65JB6I=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-539-L3eZGrybOe6NN07JrSBFNg-1; Thu, 20 Jan 2022 07:56:14 -0500
-X-MC-Unique: L3eZGrybOe6NN07JrSBFNg-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 996668144E1;
-        Thu, 20 Jan 2022 12:56:12 +0000 (UTC)
-Received: from T590 (ovpn-8-20.pek2.redhat.com [10.72.8.20])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 01FDB7D72C;
-        Thu, 20 Jan 2022 12:56:07 +0000 (UTC)
-Date:   Thu, 20 Jan 2022 20:56:03 +0800
-From:   Ming Lei <ming.lei@redhat.com>
-To:     Daniel Wagner <dwagner@suse.de>
-Cc:     linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>
-Subject: Re: [PATCH 2/2] block: hold queue lock while iterating in
- diskstats_show
-Message-ID: <Yelb4+r5KuV67tO0@T590>
-References: <20220120105248.117025-1-dwagner@suse.de>
- <20220120105248.117025-3-dwagner@suse.de>
+        Thu, 20 Jan 2022 07:56:48 -0500
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20KBRXtV024652;
+        Thu, 20 Jan 2022 12:56:47 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=KH73oVikxkri0uwKyKzuWhsBpGn8CsgMCRrXIp6W2yM=;
+ b=KeF+0oimV1cA2O5hzjnG101e0z2+yypuqyGxPsnMOt6YGpyMI3AUClhV8OD58CJaiuux
+ AgrXaRGGOI1i4gKybJe+rzOBo8NjiESaULOLJL0V/8lyug+7q+MRXrc5XOrCtV9XQpQt
+ NRPZp35395ibVPm+ZNwT2ve6xEMnEWV+TY+Z5T8SGsVANtiWvy/kbiwDvlGxfM2NCh0i
+ 7LgmlRbzS+qiH+mRzVBPEUTuPPD/buOlDc9ZFR6OvuXVHBbv8LZ0NE/tOBK6sMaPPXhX
+ V+5sPX8W5XYpNO/b4JeBSgWhkV0KiHei83vEoSrSTRLBVYPwGuaEgWkoyrxZPxX+Ghm/ GA== 
+Received: from ppma03ams.nl.ibm.com (62.31.33a9.ip4.static.sl-reverse.com [169.51.49.98])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dq6vs1pb3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 20 Jan 2022 12:56:47 +0000
+Received: from pps.filterd (ppma03ams.nl.ibm.com [127.0.0.1])
+        by ppma03ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20KCq8Lw026414;
+        Thu, 20 Jan 2022 12:56:46 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma03ams.nl.ibm.com with ESMTP id 3dknwa9hqf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 20 Jan 2022 12:56:46 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20KCugnT43516308
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 20 Jan 2022 12:56:42 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 2E87A11C050;
+        Thu, 20 Jan 2022 12:56:42 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CBF7211C052;
+        Thu, 20 Jan 2022 12:56:41 +0000 (GMT)
+Received: from osiris (unknown [9.145.49.221])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Thu, 20 Jan 2022 12:56:41 +0000 (GMT)
+Date:   Thu, 20 Jan 2022 13:56:40 +0100
+From:   Heiko Carstens <hca@linux.ibm.com>
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+Cc:     Vasily Gorbik <gor@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Nico Boehr <nrb@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v1 01/10] s390/uaccess: Add storage key checked
+ access to user memory
+Message-ID: <YelcCEuVbIg9ND90@osiris>
+References: <20220118095210.1651483-1-scgl@linux.ibm.com>
+ <20220118095210.1651483-2-scgl@linux.ibm.com>
+ <YefeakONMN4PLlml@osiris>
+ <422595a5-b24b-8760-ff0e-112322142de7@linux.ibm.com>
+ <YegQCTqEsiFTUZ2R@osiris>
+ <dbfec527-b995-e382-dafa-c3459e1e45ed@linux.ibm.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220120105248.117025-3-dwagner@suse.de>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+In-Reply-To: <dbfec527-b995-e382-dafa-c3459e1e45ed@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: De9Z8sc8iogId_IcQJ7QrioIeCIBkji-
+X-Proofpoint-ORIG-GUID: De9Z8sc8iogId_IcQJ7QrioIeCIBkji-
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-20_04,2022-01-20_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=1 phishscore=0
+ priorityscore=1501 malwarescore=0 mlxscore=1 impostorscore=0
+ lowpriorityscore=0 bulkscore=0 suspectscore=0 mlxlogscore=221
+ clxscore=1015 spamscore=1 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2110150000 definitions=main-2201200065
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 11:52:48AM +0100, Daniel Wagner wrote:
-> The request queues can be freed while we operate on them. Make sure we
-
-It shouldn't be freed here.
-
-> hold a reference when using blk_mq_queue_tag_busy_iter.
+On Thu, Jan 20, 2022 at 09:34:05AM +0100, Janis Schoetterl-Glausch wrote:
+> On 1/19/22 14:20, Heiko Carstens wrote:
+> > On Wed, Jan 19, 2022 at 12:02:34PM +0100, Janis Schoetterl-Glausch wrote:
+> >>> That's a lot of code churn... I would have expected that the existing
+> >>> functions will be renamed, get an additional key parameter, and the
+> >>> current API is implemented by defines which map copy_to_user() &
+> >>> friends to the new functions, and add a zero key.
+> >>
+> >> I don't think I understand you. I can implement raw_copy_from/to_user
+> >> in terms of raw_copy_from/to_user_with_key, which does save a few lines,
+> >> but that's it, isn't it?
+> > 
+> > Right you are. I only looked at your patch, and forgot about that all
+> > the wrapping is nowadays done in common code.
+> > 
+> > So what I really don't like about this approach is that we get an arch
+> > specific copy_to_user() implementation back. This means that all those
+> > extra calls like might_fault(), instrument_copy_to_user(), and friends
+> > now have to be kept in sync by us again, if new instrumentation or
+> > security options are added to common code.
+> > 
+> > Given that this is manual work / monitoring I'm sure this will not
+> > work in the mid or long term, like it has been proven several times in
+> > the past for other features. We need something better, which works
+> > out-of-the-box wrt common code changes / enhancements.
 > 
-> RIP: blk_mq_queue_tag_busy_iter
-
-Any chance to pose the whole stack trace?
-
-> Call Trace:
->  ? blk_mq_hctx_mark_pending
->  ? diskstats_show
->  ? blk_mq_hctx_mark_pending
->  blk_mq_in_flight
->  diskstats_show
->  ? klist_next
->  seq_read
->  proc_reg_read
->  vfs_read
->  ksys_read
->  do_syscall_64
->  entry_SYSCALL_64_after_hwframe
+> What are our options?
 > 
-> Signed-off-by: Daniel Wagner <dwagner@suse.de>
-> ---
->  block/genhd.c | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/block/genhd.c b/block/genhd.c
-> index c9d4386dd177..0e163055a4e6 100644
-> --- a/block/genhd.c
-> +++ b/block/genhd.c
-> @@ -1167,10 +1167,13 @@ static int diskstats_show(struct seq_file *seqf, void *v)
->  		if (bdev_is_partition(hd) && !bdev_nr_sectors(hd))
->  			continue;
->  		part_stat_read_all(hd, &stat);
-> +		if (blk_queue_enter(gp->queue, BLK_MQ_REQ_NOWAIT))
-> +			continue;
+> 1. Tooling
+>    1.1 Automatic monitoring
+>    1.2 ?
 
-The disk device's refcnt is supposed to be grabbed by class device
-iterator code, so queue shouldn't be released in diskstats_show().
+No tooling please.
 
-Not mention blk_queue_enter() won't prevent disk from being released...
+> 2. Implementation changes
+>    2.1 Modify common code
 
-thanks,
-Ming
+In general such changes are done in way that common code is or _may_ be
+modified to fulfill our needs. Common code header file explicitely states
+that architectures should get rid of private instances of
+copy_{to,from}_user() and __copy_{to,from}_user{,_inatomic}().
 
+So we should not add anything like that to arch code again, since nobody
+would expect that.
+
+>    2.2 Don't modify common code, pass key argument via well known location
+
+This might also break, and adds complex code and dependencies which should
+be avoided.
+
+But maybe you find something else which is nice and easily maintainable.
