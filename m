@@ -2,172 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 938B8C43219
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:41:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61476C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:41:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231855AbiATLli (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 06:41:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49892 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231609AbiATLlg (ORCPT
+        id S231878AbiATLly (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 06:41:54 -0500
+Received: from mout.kundenserver.de ([212.227.17.13]:49665 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231848AbiATLlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 06:41:36 -0500
-Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9F9BC061574;
-        Thu, 20 Jan 2022 03:41:35 -0800 (PST)
-Received: by mail-oo1-xc35.google.com with SMTP id p11-20020a4adfcb000000b002dd4a3e84beso2089418ood.4;
-        Thu, 20 Jan 2022 03:41:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Fodk+9GW+hT7jfC255jsfPt58onxdEeUfIkK8XqDsdU=;
-        b=WdUH7oHIpGmQ8SPtqwrJiPo6uU40+yyqDTObz92VJVqIUVRbR/huWlPO+OEemREe1i
-         W9li5UVN0/fik/d4eAlyLgEX2/q5da611IuIaKDdoY15R9ZrZollWwzX5od8VagBrQSv
-         J0n4ZsDqh0BW9s+QtmPtIeiM+MR8L6dJ20J9EVfNSvgWA0OJaO3j0Mbanao+KVsXKHgA
-         RG7gZr1jNrv8Bx0fJNHQv5wL4DSy+KS/9M2nbNzgkJ9ph8tz3VZqI6FL4XjwwDTAHWE+
-         EIvmkUrl81al3gQqJqYZCImLkVNhjGaA657N8RJmJHw951cE2ADMlFHohM1vbsHACUUj
-         15sw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Fodk+9GW+hT7jfC255jsfPt58onxdEeUfIkK8XqDsdU=;
-        b=Zh3rBzjvQLYoeGnHEUc4KwPhW60pm8y8FaLTJIMw2WyWkItsrkIOpyQhR/53mw6vZZ
-         US2h6sIUJiZvvjBLvNFhF3axNuL8N+8xQbqViL/OBlVz6QVT9LphIB/CXOGWyq/FY+1h
-         tbk7SB+wtDDRAI+Pi822FApSB3z5FczvQrLtnglGZucgo4XgS1pNySh9HvplOLyQ9LBF
-         kEpggG1fIAfPSWYVAZw8DUvwSm1sqVFpwc70NHdWaVa+WYCWVL9d9Mvr7msadhXN+Kga
-         eB45aXiuGtdxiAXiJ3gqdakxxqUHaE5lebSeCfUXSD0zEd001uZoffEKyExj2wLwbHdH
-         isQg==
-X-Gm-Message-State: AOAM531b0IVge3Hn39KD4RYz1hBOvz2xs+Ni7l8Al49CSmzGWIWc0Bum
-        mzkIBfLjyQpRhIDxPvG4SvdGxT5+9f5Mx/jK3x4=
-X-Google-Smtp-Source: ABdhPJyP1IfasnEpm5ZNB/lJD5ftcs9/ELkgDdsDowFlQRyxkRt4OJYwHHz6cCY6j3nkhbn8c3SAq/Q8lMLf1UPjlws=
-X-Received: by 2002:a05:6808:1b25:: with SMTP id bx37mr7085479oib.129.1642678895086;
- Thu, 20 Jan 2022 03:41:35 -0800 (PST)
+        Thu, 20 Jan 2022 06:41:53 -0500
+Received: from mail-lf1-f44.google.com ([209.85.167.44]) by
+ mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1M5fUy-1nDGhp1Zu6-007BIW; Thu, 20 Jan 2022 12:41:51 +0100
+Received: by mail-lf1-f44.google.com with SMTP id y15so12271320lfa.9;
+        Thu, 20 Jan 2022 03:41:51 -0800 (PST)
+X-Gm-Message-State: AOAM530tvyQ5T4JV3gkrqe9AhUSyTnugciTj7DiHbp+8zbWWFJ9J3QcL
+        04n5wA1NFJmsAlHDfi7PJrwtL9MMOo2yncro9VY=
+X-Google-Smtp-Source: ABdhPJym7KyRCSRXKMerVMcQ/VMRiOiyKpoCP7tEcDc9DhkSEEWwSJxd9o5Jl5QZLGZ5wnpG9DwFk+lKhhVFjaoKItk=
+X-Received: by 2002:a5d:6488:: with SMTP id o8mr12004975wri.219.1642671600998;
+ Thu, 20 Jan 2022 01:40:00 -0800 (PST)
 MIME-Version: 1.0
-References: <20220120104009.159147-1-krzysztof.kozlowski@canonical.com> <20220120104009.159147-2-krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220120104009.159147-2-krzysztof.kozlowski@canonical.com>
-From:   Enric Balletbo Serra <eballetbo@gmail.com>
-Date:   Thu, 20 Jan 2022 12:41:23 +0100
-Message-ID: <CAFqH_53T+w9gmbTLCt_c4ZR7=NV21hL4Hh0zn4pwm4Pqb0_L=g@mail.gmail.com>
-Subject: Re: [PATCH 2/2] dt-bindings: google, cros-ec: drop Enric Balletbo i
- Serra from maintainers
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Cc:     David Airlie <airlied@linux.ie>, Daniel Vetter <daniel@ffwll.ch>,
-        Rob Herring <robh+dt@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        MyungJoo Ham <myungjoo.ham@samsung.com>,
-        Chanwoo Choi <cw00.choi@samsung.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Andrzej Hajda <andrzej.hajda@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Nicolas Boichat <drinkcat@chromium.org>,
-        Simon Glass <sjg@chromium.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-i2c@vger.kernel.org, linux-iio <linux-iio@vger.kernel.org>,
-        Linux Input <linux-input@vger.kernel.org>
+References: <20220120073911.99857-16-guoren@kernel.org>
+In-Reply-To: <20220120073911.99857-16-guoren@kernel.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 20 Jan 2022 10:39:45 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0Mr2m2dVoVss59cN-9X7GVBD29VQLo3m4xswRznk_WUQ@mail.gmail.com>
+Message-ID: <CAK8P3a0Mr2m2dVoVss59cN-9X7GVBD29VQLo3m4xswRznk_WUQ@mail.gmail.com>
+Subject: Re: [PATCH V3 15/17] riscv: compat: Add UXL_32 support in start_thread
+To:     Guo Ren <guoren@kernel.org>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>, Arnd Bergmann <arnd@arndb.de>,
+        Anup Patel <anup@brainfault.org>,
+        gregkh <gregkh@linuxfoundation.org>,
+        liush <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Wang Junqiang <wangjunqiang@iscas.ac.cn>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Hellwig <hch@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-csky@vger.kernel.org,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        inux-parisc@vger.kernel.org,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Guo Ren <guoren@linux.alibaba.com>
 Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:Jnd6tXvVheyrbbh+xeAuIttBPYzIGn2pO6Pyy8MGiT7g0+tHTYg
+ ppNX/NZb5qBasQ62aCGAhwBL+KVQ3j55clV2VBrd3V7EfaWg99achBw8Fs+nw6eqKCj6sb6
+ Z0pBdcJ/OTLz+hwGXxFN1cZNSxla+WitNBAupt4x22wcNWGOv8qfEZ4LylMsFF/ugnh80Q3
+ sybg53kul8jJBGqrQl8jw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:uopUgF9nUW8=:DzrAYNFvXtQnHD9gAQ62SZ
+ KDQrMUgKEJ3r8Gloo19zs/kHAS8ArUSOCjvLzo4kYqAuWXzoh/Qx+2OfOPZFggQVX62C/6tfq
+ 7jC82Yjx+G9qjLVSo+fwksf/4XEDFPhPZsFU+tL9jgVx8xis2uS/FcvbD8hzRT15vBDzTi21j
+ upGJyywC5RUB/z+gn/vOPmqym2BVQm7QhhFTEl9DoTiGYtum/7jjbP6le9v4ikC5aVqRRVIk8
+ iqraqxSSHe69jfpKd7nwgXEEpJMLKq/vdF41u+Kr66X2Hj3VTpL/xvviv8SaYv+Iw04jpN4zw
+ jKzSWeRQB7XPN2pjaWFV/WAhYJLmt/bwejY35v3exoNGsqxTbHpYc8hSddymWqU06GNQcKDha
+ vNwH5Bz3QZC39Jv3bJd9PKYkT4c6DAlL1baTUfx7K2QH5+myoymmVXjRvBVDYAwFfYW5/Rg4V
+ jbkQrGdilj4ccMATwBjp0XQagMyUByj5fmSBAlDUqaFwsYjJopR49yDUeJlpS4gXH8IBdjCMA
+ nuxKrt9QVVDtgcHpVfY/F52nnHFqQfxvAdiRnFvlC7+PN40rAWmX1OofCeVBhUD8fQdf6kV4f
+ lrA3353o+P/rXCYAjEESSUp+hHv7UUmaQsxjZaxjh6UaV6YsdFPrfwHcm1T4b8TY4GXakTmoP
+ zQFQ52g6g+0KJMG2nCqOAZX1beilt8MCDzbHiMig81k7PrPWRrMFhyACyyIftYGqX++ssRNNG
+ mWQpi7C3vm1O57Zt6PYmGEpUpDxqNX6uhsZMpYYb7+31boN3Z5ShNN7Cw5COmJd0y7lSoIH8n
+ xHDVo/1L7a2oS1wf3nqZH9s3QIvxFTp9rUS+xs2mz7VhLn9U2GzyWnuQnWjH6Yow+qFgoD7
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, Jan 20, 2022 at 8:39 AM <guoren@kernel.org> wrote:
+> +
+> +#ifdef CONFIG_COMPAT
+> +       if (is_compat_task())
+> +               regs->status |= SR_UXL_32;
+> +#endif
 
-Missatge de Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-del dia dj., 20 de gen. 2022 a les 11:40:
->
-> Enric Balletbo i Serra emails bounce:
->
->   <enric.balletbo@collabora.com>: Recipient address rejected: User unknown in  local recipient table
->
-> so drop him from the maintainers, similarly to commit 3119c28634dd
-> ("MAINTAINERS: Chrome: Drop Enric Balletbo i Serra").
->
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-I'm fine with the removal as I don't have access anymore to this
-hardware so it doesn't really make sense to be there. Sorry for not
-sending the patches myself before.
+You should not need that #ifdef, as the is_compat_task() definition is
+meant to drop the code at compile time, unless the SR_UXL_32
+definition is not visible here.
 
-Acked-by: Enric Balletbo i Serra <eballetbo@kernel.org>
-
-Best regards,
-  Enric
-
-> ---
->  .../devicetree/bindings/extcon/extcon-usbc-cros-ec.yaml          | 1 -
->  .../devicetree/bindings/i2c/google,cros-ec-i2c-tunnel.yaml       | 1 -
->  .../bindings/iio/proximity/google,cros-ec-mkbp-proximity.yaml    | 1 -
->  Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml | 1 -
->  Documentation/devicetree/bindings/mfd/google,cros-ec.yaml        | 1 -
->  5 files changed, 5 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.yaml b/Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.yaml
-> index 20e1ccfc8630..2d82b44268db 100644
-> --- a/Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.yaml
-> +++ b/Documentation/devicetree/bindings/extcon/extcon-usbc-cros-ec.yaml
-> @@ -8,7 +8,6 @@ title: ChromeOS EC USB Type-C cable and accessories detection
->
->  maintainers:
->    - Benson Leung <bleung@chromium.org>
-> -  - Enric Balletbo i Serra <enric.balletbo@collabora.com>
->
->  description: |
->    On ChromeOS systems with USB Type C ports, the ChromeOS Embedded Controller is
-> diff --git a/Documentation/devicetree/bindings/i2c/google,cros-ec-i2c-tunnel.yaml b/Documentation/devicetree/bindings/i2c/google,cros-ec-i2c-tunnel.yaml
-> index b386e4128a79..6e1c70e9275e 100644
-> --- a/Documentation/devicetree/bindings/i2c/google,cros-ec-i2c-tunnel.yaml
-> +++ b/Documentation/devicetree/bindings/i2c/google,cros-ec-i2c-tunnel.yaml
-> @@ -10,7 +10,6 @@ title: I2C bus that tunnels through the ChromeOS EC (cros-ec)
->  maintainers:
->    - Doug Anderson <dianders@chromium.org>
->    - Benson Leung <bleung@chromium.org>
-> -  - Enric Balletbo i Serra <enric.balletbo@collabora.com>
->
->  description: |
->    On some ChromeOS board designs we've got a connection to the EC
-> diff --git a/Documentation/devicetree/bindings/iio/proximity/google,cros-ec-mkbp-proximity.yaml b/Documentation/devicetree/bindings/iio/proximity/google,cros-ec-mkbp-proximity.yaml
-> index 099b4be927d4..00e3b59641d2 100644
-> --- a/Documentation/devicetree/bindings/iio/proximity/google,cros-ec-mkbp-proximity.yaml
-> +++ b/Documentation/devicetree/bindings/iio/proximity/google,cros-ec-mkbp-proximity.yaml
-> @@ -10,7 +10,6 @@ title: ChromeOS EC MKBP Proximity Sensor
->  maintainers:
->    - Stephen Boyd <swboyd@chromium.org>
->    - Benson Leung <bleung@chromium.org>
-> -  - Enric Balletbo i Serra <enric.balletbo@collabora.com>
->
->  description: |
->    Google's ChromeOS EC sometimes has the ability to detect user proximity.
-> diff --git a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> index 5377b232fa10..e8f137abb03c 100644
-> --- a/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> +++ b/Documentation/devicetree/bindings/input/google,cros-ec-keyb.yaml
-> @@ -10,7 +10,6 @@ title: ChromeOS EC Keyboard
->  maintainers:
->    - Simon Glass <sjg@chromium.org>
->    - Benson Leung <bleung@chromium.org>
-> -  - Enric Balletbo i Serra <enric.balletbo@collabora.com>
->
->  description: |
->    Google's ChromeOS EC Keyboard is a simple matrix keyboard
-> diff --git a/Documentation/devicetree/bindings/mfd/google,cros-ec.yaml b/Documentation/devicetree/bindings/mfd/google,cros-ec.yaml
-> index e9c46430fd8a..66a995bbbbe9 100644
-> --- a/Documentation/devicetree/bindings/mfd/google,cros-ec.yaml
-> +++ b/Documentation/devicetree/bindings/mfd/google,cros-ec.yaml
-> @@ -8,7 +8,6 @@ title: ChromeOS Embedded Controller
->
->  maintainers:
->    - Benson Leung <bleung@chromium.org>
-> -  - Enric Balletbo i Serra <enric.balletbo@collabora.com>
->    - Guenter Roeck <groeck@chromium.org>
->
->  description:
-> --
-> 2.32.0
->
+         Arnd
