@@ -2,98 +2,204 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBC1C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 02:04:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44039C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 02:15:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358165AbiATCD7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 21:03:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33334 "EHLO
+        id S234265AbiATCPV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Wed, 19 Jan 2022 21:15:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232041AbiATCD6 (ORCPT
+        with ESMTP id S231138AbiATCPU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 21:03:58 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48E6C061574;
-        Wed, 19 Jan 2022 18:03:57 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id c9so3893736plg.11;
-        Wed, 19 Jan 2022 18:03:57 -0800 (PST)
+        Wed, 19 Jan 2022 21:15:20 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFE04C061574
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 18:15:19 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id d3so15786607lfv.13
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 18:15:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=FKvsHgDw8lU7jb9gWUC0NOGdDixcuWetMqLuAq7PwQk=;
-        b=o6VUFhVlB0pYLSWPb/UZeFqVVej8u+WF+PSwjJN9+5ssoieo8N4WeZrIh5VptUcPMP
-         Yy2xN+SiwfsNLWiqKcdWGZU2uPMigFiLbo4rNpg3xEt+GRlNsN0IcQC8qDqKeEpHdg8f
-         ehV3GX9s86sZd8SEXW5Fg9pypmrrxHZfKERT8Wr9LW+RHJCje/gSrZex6uQSVCPPHFOU
-         mgv32i8qekMw7qZSqRF1dEZVxBqfQu5vcoCsUVck04uS8iFtDzpR10WyfV3BxUNeWs6a
-         EMkkO3AMIqiZuH3aHLSMm4KRtr1R2sC2SDkvDOhBJlabYH4hWZp2Fy9e88qi13XGH00N
-         bgaQ==
+        d=shutemov-name.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=jcP/Dq7CNHrVi+EJfNOLtF0PWZTMduwjMXBOhAVR1/s=;
+        b=gzLN7RqgJ4yut51OaXRkypVjOpJvJ/w6M5oZZs5U7GrQfif7TirPD42byUTgWdq0mZ
+         ppYMx349I7NgmCYI+OynG2n1czbdP4gNWIsoj6wV7YxX0Vyxu/oSwSBoHzEE2Sv0mOcH
+         np74EwoB4T2jYLIXcPQo1SlWX7Y3EtZdXu31qqj00quy+zWFAfePnC7t+M3I+p4eGClo
+         NoRYTBfXVxZ0xzR9LgCvOfmm95Z17vn2jw9+Tf2Pq5kThzW3h/py55HgcgDjcLxjlp7R
+         xVPMm7goz28l2SR5a9tUc3tAw+UKQLCxRE2miDe4PFUFkGtPI6KOazusEp/AMTbgAhsH
+         1EWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=FKvsHgDw8lU7jb9gWUC0NOGdDixcuWetMqLuAq7PwQk=;
-        b=DhP8QtLVZM6yztHNe+u/b9Hkf2aCLWAVM0K5R5jYIJquy/SKgFumc/uJdKHG2z6OUR
-         5taGV9wmYwHZ992H6JhsCx1kdaJN0c6XC5Xr5a6CMCPdaSuuXyL36Yd4ZvxXyXJvCWa2
-         xBFgRCIJ2tgoWm4BulxOMUHKLuiZOgkZus+8cyDCMXgwajFlswiD84lb1/g9RoxCU9Bg
-         vWVOkxMI4Idf7tf7FTa9NnJL4GYHWnrc8sXO04A83mI2eqWVsEBKS4urItDptkZXITLI
-         qnXagLx5Wj4gnrMFPYhIUhC5baCSmuzpQsOD0J+sBanNTDrx3fQuIDqutDUjZB2x9FX3
-         KsgA==
-X-Gm-Message-State: AOAM532MMzRQF+QgBHXfjHo3rYKP6CnGR0lRPvbG59FY7e/QcMmYKhF4
-        go1mbRozKaQAchrDrI6cA4CQ3KE5pdLJcSnbTJg=
-X-Google-Smtp-Source: ABdhPJxBYyolCvoIAI4tRvAxPacUY//mEyQ2pvpMHa4c+K+6l58b4cCzU4JXW1oxXz/ozcRHDj0xk9dvkouvzalSHl4=
-X-Received: by 2002:a17:903:24d:b0:14a:677d:843a with SMTP id
- j13-20020a170903024d00b0014a677d843amr36538680plh.129.1642644237330; Wed, 19
- Jan 2022 18:03:57 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=jcP/Dq7CNHrVi+EJfNOLtF0PWZTMduwjMXBOhAVR1/s=;
+        b=F29ExLJjTsHanPNxQo+hrMQUh3RxZhlXMqGeyT/El71WHSZbwF2yI9xRsnsvIExcpx
+         5d15beuqhFXGw8l13vRWERs43hLBwoUlIuSj4CD4IRBtsv5zgxjnjtxp42aAlrG88JlI
+         KHDQsFawKKeFiy5aKxBHUcbzVRbxGEZdmtO6s3VXDWqhfV/33SJqzELv7wmauGpAN8uK
+         Y2pBtb0BKU76nhO5bemKSroJWYrrAmLZjuRIGd59XE9ZQ/Ltolp4bt0AkaBSa4qd+qWT
+         2tpDpAFGKit+nIv05mlyJlHqFX8atN8a1zuWg6rwrBYHH2OPXbi4ixQGjCKWa1dltQ1K
+         N4xg==
+X-Gm-Message-State: AOAM531XO9dWyAPB31CrfBSvY2Q7WoYLMjdT/Fs2cxrBiOygF+zIs3zx
+        HKawwep88VtxEQvmrgaaEFcy5A==
+X-Google-Smtp-Source: ABdhPJzMkT4hZhQrb9XOFnanK+fAiWGecsaKbHj5nFJfu5Io6FC6LxQosqp1iWtDM5BLp7CX8ZKmDQ==
+X-Received: by 2002:a19:ac0a:: with SMTP id g10mr30749343lfc.138.1642644917903;
+        Wed, 19 Jan 2022 18:15:17 -0800 (PST)
+Received: from box.localdomain ([86.57.175.117])
+        by smtp.gmail.com with ESMTPSA id t12sm149862lfr.197.2022.01.19.18.15.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 19 Jan 2022 18:15:17 -0800 (PST)
+From:   "Kirill A. Shutemov" <kirill@shutemov.name>
+X-Google-Original-From: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
+Received: by box.localdomain (Postfix, from userid 1000)
+        id 283D6103E5D; Thu, 20 Jan 2022 05:15:47 +0300 (+03)
+To:     bp@alien8.de
+Cc:     aarcange@redhat.com, ak@linux.intel.com, dan.j.williams@intel.com,
+        dave.hansen@intel.com, david@redhat.com, hpa@zytor.com,
+        jgross@suse.com, jmattson@google.com, joro@8bytes.org,
+        jpoimboe@redhat.com, kirill.shutemov@linux.intel.com,
+        kirill@shutemov.name, knsathya@kernel.org,
+        linux-kernel@vger.kernel.org, luto@kernel.org, mingo@redhat.com,
+        pbonzini@redhat.com, peterz@infradead.org,
+        sathyanarayanan.kuppuswamy@linux.intel.com, sdeep@vmware.com,
+        seanjc@google.com, tglx@linutronix.de, tony.luck@intel.com,
+        vkuznets@redhat.com, wanpengli@tencent.com, x86@kernel.org
+Subject: [PATCH 3/3] x86/boot/compressed: Support TDX guest port I/O at decompression time
+Date:   Thu, 20 Jan 2022 05:15:44 +0300
+Message-Id: <20220120021545.7786-3-kirill.shutemov@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220120021545.7786-1-kirill.shutemov@linux.intel.com>
+References: <Yehz3eqq670WRVJE@zn.tnic>
+ <20220120021545.7786-1-kirill.shutemov@linux.intel.com>
 MIME-Version: 1.0
-References: <20220118002214.18271-1-dipenp@nvidia.com> <20220118002214.18271-2-dipenp@nvidia.com>
-In-Reply-To: <20220118002214.18271-2-dipenp@nvidia.com>
-From:   teng sterling <sterlingteng@gmail.com>
-Date:   Thu, 20 Jan 2022 10:03:48 +0800
-Message-ID: <CAMU9jJoFAG4taoN0SSbVGPFMKyUnkT9VkrtatGuRpU-ek+hJ2g@mail.gmail.com>
-Subject: Re: [RFC v4 01/11] Documentation: Add HTE subsystem guide
-To:     Dipen Patel <dipenp@nvidia.com>
-Cc:     smangipudi@nvidia.com, thierry.reding@gmail.com,
-        jonathanh@nvidia.com, linux-kernel@vger.kernel.org,
-        linux-tegra@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linus.walleij@linaro.org, bgolaszewski@baylibre.com,
-        warthog618@gmail.com, devicetree@vger.kernel.org,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        robh+dt@kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Dipen Patel <dipenp@nvidia.com> =E4=BA=8E2022=E5=B9=B41=E6=9C=8818=E6=97=A5=
-=E5=91=A8=E4=BA=8C 11:06=E5=86=99=E9=81=93=EF=BC=9A
->
-> Adding hte document which can help understand various APIs implemented
-> in HTE framework for the HTE producers and the consumers.
->
-> Signed-off-by: Dipen Patel <dipenp@nvidia.com>
-> ---
-> Changes in v2:
-> - Removed explanation, instead added kernel-doc references.
->
-> Changes in v3:
-> - Addressed grammatical errors.
->
-> Changes in v4:
-> - Added new API hte_req_ts_by_linedata_ns description.
-> - Removed hte_req_ts_by_hte_name.
->
->  Documentation/hte/hte.rst | 83 +++++++++++++++++++++++++++++++++++++++
-Hi Dipen
+Port I/O instructions trigger #VE in the TDX environment. In response to
+the exception, kernel emulates these instructions using hypercalls.
 
-A document build warning will be introduced=EF=BC=8CNeed to add it to the i=
-ndex:
+But during early boot, on the decompression stage, it is cumbersome to
+deal with #VE. It is cleaner to go to hypercalls directly, bypassing #VE
+handling.
 
-1) Create Documentation/hte/index.rst
-2) Add hte/index.rst into Documentation/index.rst
-3) Add hte.rst into Documentation/hte/index.rst
+Hook up TDX-specific port I/O helpers if booting in TDX environment.
 
-Thanks,
-Yanteng
+Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
+---
+ arch/x86/boot/compressed/Makefile |  2 +-
+ arch/x86/boot/compressed/tdcall.S |  3 ++
+ arch/x86/boot/compressed/tdx.c    | 62 +++++++++++++++++++++++++++++++
+ 3 files changed, 66 insertions(+), 1 deletion(-)
+ create mode 100644 arch/x86/boot/compressed/tdcall.S
+
+diff --git a/arch/x86/boot/compressed/Makefile b/arch/x86/boot/compressed/Makefile
+index 22a2a6cc2ab4..3215442d8d2d 100644
+--- a/arch/x86/boot/compressed/Makefile
++++ b/arch/x86/boot/compressed/Makefile
+@@ -98,7 +98,7 @@ ifdef CONFIG_X86_64
+ endif
+ 
+ vmlinux-objs-$(CONFIG_ACPI) += $(obj)/acpi.o
+-vmlinux-objs-$(CONFIG_INTEL_TDX_GUEST) += $(obj)/tdx.o
++vmlinux-objs-$(CONFIG_INTEL_TDX_GUEST) += $(obj)/tdx.o $(obj)/tdcall.o
+ 
+ vmlinux-objs-$(CONFIG_EFI_MIXED) += $(obj)/efi_thunk_$(BITS).o
+ efi-obj-$(CONFIG_EFI_STUB) = $(objtree)/drivers/firmware/efi/libstub/lib.a
+diff --git a/arch/x86/boot/compressed/tdcall.S b/arch/x86/boot/compressed/tdcall.S
+new file mode 100644
+index 000000000000..aafadc136c88
+--- /dev/null
++++ b/arch/x86/boot/compressed/tdcall.S
+@@ -0,0 +1,3 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++#include "../../kernel/tdcall.S"
+diff --git a/arch/x86/boot/compressed/tdx.c b/arch/x86/boot/compressed/tdx.c
+index ae8c57ea00d8..265359131b92 100644
+--- a/arch/x86/boot/compressed/tdx.c
++++ b/arch/x86/boot/compressed/tdx.c
+@@ -5,6 +5,11 @@
+ 
+ #include "../cpuflags.h"
+ #include "../string.h"
++#include "../io.h"
++
++#include <vdso/limits.h>
++#include <uapi/asm/vmx.h>
++#include <asm/tdx.h>
+ 
+ #define TDX_CPUID_LEAF_ID	0x21
+ #define TDX_IDENT		"IntelTDX    "
+@@ -16,6 +21,54 @@ bool early_is_tdx_guest(void)
+ 	return tdx_guest_detected;
+ }
+ 
++static inline unsigned int tdx_io_in(int size, int port)
++{
++	struct tdx_hypercall_output out;
++
++	__tdx_hypercall(TDX_HYPERCALL_STANDARD, EXIT_REASON_IO_INSTRUCTION,
++			size, 0, port, 0, &out);
++
++	return out.r10 ? UINT_MAX : out.r11;
++}
++
++static inline void tdx_io_out(int size, int port, u64 value)
++{
++	struct tdx_hypercall_output out;
++
++	__tdx_hypercall(TDX_HYPERCALL_STANDARD, EXIT_REASON_IO_INSTRUCTION,
++			size, 1, port, value, &out);
++}
++
++static inline unsigned char tdx_inb(int port)
++{
++	return tdx_io_in(1, port);
++}
++
++static inline unsigned short tdx_inw(int port)
++{
++	return tdx_io_in(2, port);
++}
++
++static inline unsigned int tdx_inl(int port)
++{
++	return tdx_io_in(4, port);
++}
++
++static inline void tdx_outb(unsigned char value, int port)
++{
++	tdx_io_out(1, port, value);
++}
++
++static inline void tdx_outw(unsigned short value, int port)
++{
++	tdx_io_out(2, port, value);
++}
++
++static inline void tdx_outl(unsigned int value, int port)
++{
++	tdx_io_out(4, port, value);
++}
++
+ void early_tdx_detect(void)
+ {
+ 	u32 eax, sig[3];
+@@ -27,4 +80,13 @@ void early_tdx_detect(void)
+ 
+ 	/* Cache TDX guest feature status */
+ 	tdx_guest_detected = true;
++
++	pio_ops = (struct port_io_ops) {
++		.inb = tdx_inb,
++		.inw = tdx_inw,
++		.inl = tdx_inl,
++		.outb = tdx_outb,
++		.outw = tdx_outw,
++		.outl = tdx_outl,
++	};
+ }
+-- 
+2.34.1
+
