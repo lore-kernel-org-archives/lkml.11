@@ -2,484 +2,192 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33974C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 08:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08DE1C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 08:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239345AbiATIDx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 03:03:53 -0500
-Received: from mx0a-00622301.pphosted.com ([205.220.163.205]:46210 "EHLO
-        mx0a-00622301.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230116AbiATIDw (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 03:03:52 -0500
-Received: from pps.filterd (m0241924.ppops.net [127.0.0.1])
-        by mx0a-00622301.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20K7uNKY010800;
-        Thu, 20 Jan 2022 00:03:21 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ambarella.com; h=from : to :
- subject : date : message-id : content-transfer-encoding : mime-version :
- content-type; s=com20210415pp;
- bh=YsGnLNUA3rb0Yo+TOXesGgaq2ULszx6UXRYdoF9pqis=;
- b=xI1DLS51MTKtwfv2q5df/CnRKeoszCF37LB4KRrXB+SdIKRPGflrcW30ea04LR07GkXx
- PClcbxxJQ18oBUKri4sA1Xc7oJI8xtIj8HDM5sX185G6APnG0fEdNTtIlWhjayzedKP7
- puO0Ok9+46kBb7MosJ5fTKkzOxHsl0hFj8+LelYIzYfeZTQucRO2FDkRMQLyIJQBZP1m
- GVeuUN/Zu2bKGOIPgcDOrAUXe0p4lXtnhV8WETbORpDBs2p1DKyatXL4kmaaPF9kP/wW
- CIM+FjA1me+YB0UTVv6RvYl5VT+whtIwPGkROAvk3amizv0R0z4zjz5N+EqMDm5JAuZv QQ== 
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2171.outbound.protection.outlook.com [104.47.55.171])
-        by mx0a-00622301.pphosted.com (PPS) with ESMTPS id 3dpp0gr991-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 20 Jan 2022 00:03:20 -0800
+        id S1358164AbiATID6 (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 03:03:58 -0500
+Received: from mga17.intel.com ([192.55.52.151]:41765 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240049AbiATID4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 03:03:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642665836; x=1674201836;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-transfer-encoding:mime-version;
+  bh=zk3qjTgwokdg8NahD1ulTJvIC3IlV/CFaQ42M7QB/rs=;
+  b=ajDSVCqJticLbffce3QrAaTdkghJ4sLNlGDuc/GN++MHiwOfkVryWn4p
+   uzccpZiYeCujYINY4EO4iUnnvBKbVg4GmEtro0kMkNjz10q52BwN2tOwT
+   ADsa883q/pwyB9ZFyCGAB9MFEJjKF3mfKJG1Hb9t9G/SIShUrIXvKHMb8
+   eUpuj7UauMMNYovumim+2l53aSQYZfUUgOg9CFx1DTaDdBblo64BC0mBG
+   xcTPCjUWSUjSMmHzhjlezArPNF3bj5SJljmySIo+KVk3xv3xNoCy0YHSf
+   1pUaIsMkI9FXb6PA5Sf0+/VT56HKNmeZm5y2nFW52NiOYdcSLeSU35clp
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10232"; a="225968301"
+X-IronPort-AV: E=Sophos;i="5.88,301,1635231600"; 
+   d="scan'208";a="225968301"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 00:03:55 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,301,1635231600"; 
+   d="scan'208";a="532667111"
+Received: from fmsmsx602.amr.corp.intel.com ([10.18.126.82])
+  by orsmga008.jf.intel.com with ESMTP; 20 Jan 2022 00:03:55 -0800
+Received: from fmsmsx607.amr.corp.intel.com (10.18.126.87) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Thu, 20 Jan 2022 00:03:54 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx607.amr.corp.intel.com (10.18.126.87) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Thu, 20 Jan 2022 00:03:54 -0800
+Received: from fmsedg602.ED.cps.intel.com (10.1.192.136) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20 via Frontend Transport; Thu, 20 Jan 2022 00:03:54 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.177)
+ by edgegateway.intel.com (192.55.55.71) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2308.20; Thu, 20 Jan 2022 00:03:54 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l95cxxckNTDx0zImZn1K0P1SbyDNjZd254LeZlcQeF3sx2Nx1kufrKoV5YIaJdnnO43OXPKhvVoKL2+GQvtt+gS2lwypX6wSyQ6JO2Har/XB0sKaEOM1+PgpzzsgXLwl1Q/z8my5R2RBxCy1EvI4WwbJxcDbCM6rZiuD7kf2j828dCtJLq3sv4ylxOdKJynnl8whKsnduAxPVR4IGrM7wMLD/6sRWcJ6crQLTbYf+p3k8sHZXwYKAbsYLhfG0wprk3Cy/otjDzctUc6gsimCRqKDbOaLUUQJGmaSjdnCN8RgnKz0jQsxC0H5lp4aWoAWg4wJJfFTk9A8BDM06b55JA==
+ b=ifTf2seUI32c+/PdMP3HxBi9e25KoGRVcB7Wtfnxs7r82uS0gUtpalcAaIfdA8U4eiOr0EVoamMdfUzQKgmOYvS4D8col+n72QX+Hb6irwYJUbh7Oj/zu0pC4KNEXUO0wN0msM6ubB9iKmSJ2tAQB6e66OHEhDaH9R7ksuNhGXDbyHvTgnbIbNKCyRof3Z4wsO9q69bI6oV+e66+0FW7EVYYY6hfI8B8dsFqyl1SSne9G3KoHdPz0tcNqUBKcDUc19qt2StgGDiP5L3JU8Hk24EpzrgwsXTTNoUcFPPzbroTEAhOL/HNPy1AFKFJK4TxYNdRZ7xZVgiAshXUC3h1Vw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vWJa+zEk8Shcm7QpNQdHbgho4seW+4nRQmx+yMKXOhQ=;
- b=HKO0ZYfxy2TY0akgnYR4I4QchhrB+FgTlSRjOr/UXD6984R5loqZhYjqBzEMZyPl03K9f/YOM+LU/VyK6jRCwB2Eoc7H2EsXAyEY04g8QbUrxAz1xgBx2U0V+wMz8gDETJDb19OY7dFgDVe56zK7If7eLCcA4wRgDGN0QT/qJIu+WXN+osWrETVJJ8CjkL+OgKm9JFW8sGdvN+ixZN2qFBn3OsE0BRKFOu0R8TPepelfGoxrYOPSxR2FWhMyBhivCSdgGLNLs6m3eA1YdUrUrqQGrk3SZlpeT7Esb9W/oSbkRNtrKDtdsLO239ec5WVyVBstv3oqarRdRyTohIhLvA==
+ bh=KWz6b1YBWmjE6heQOFBvhI6cxb9i7FMa4WFG9d3N7lw=;
+ b=g7ijlK/cBGfLn3G0HQZcLV+/cX4PUAsSVjrtSnH2P+LB+KKSVMr+LTTF3FnAmYmf9xEXbUuExKAy6P8jSf/+iJfMnC+gOTjfrW+sgui5ySo5stVGneIsVpma0WAmoMKmS5rPpZrsvoYt3P5hybiBJThOtblVKX/Ehv6bx5+v8+vC07UZHFdUWuiI1z+rNoPu/ZEOCmwn0YrFtsDhDp1bY1VnrGEAQ8FAeLx4ScWTUcaeA0bR6RxBVMwwwjj27um9Omy8wbf5JRHEwKyImbMH7ZEKN+/BuFNCodNoi4ZuBk2AQvM3IcflnY9th704mJqMSVOTDsP+JexiL/2O0nsn1w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ambarella.com;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vWJa+zEk8Shcm7QpNQdHbgho4seW+4nRQmx+yMKXOhQ=;
- b=JGw6zrGrHyXxUk/M9kpB5sImvPjg0W/S1lfm4pp6Z38XwAFw+Y/7waJDT8jgxPzXrZJkSaZ0MBgKAN18tveUnMaSYipY6qpsg0c20l3Yz5u1cDEjeQnYoijXhflxut1G8AdulmPRnKPaS3oT3uUs8nc7aiLy+k4kIC4tzuYTuNAmkhmHbRiR8hQW69mkzVUNoqUzV7C0W1P6nP3MwEgfdexIgWXa+s6FMCubQqBXT/HcuFnxIvoy+yPH8zCXzu9VIpiTiRU+Qp2ngPJS2BoRdJtZFt9jGxLNCo3ZklxOCDOrh8SN4ja4SaR/ZIsXGSnlpUolFJ/Nt3jv/L9cPnuHXg==
-Received: from SA1PR19MB5572.namprd19.prod.outlook.com (2603:10b6:806:229::8)
- by MN2PR19MB2944.namprd19.prod.outlook.com (2603:10b6:208:f2::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8; Thu, 20 Jan
- 2022 08:03:18 +0000
-Received: from SA1PR19MB5572.namprd19.prod.outlook.com
- ([fe80::2df6:255a:c65f:69db]) by SA1PR19MB5572.namprd19.prod.outlook.com
- ([fe80::2df6:255a:c65f:69db%7]) with mapi id 15.20.4909.008; Thu, 20 Jan 2022
- 08:03:18 +0000
-From:   Li Chen <lchen@ambarella.com>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?iso-8859-2?Q?Krzysztof_Wilczy=F1ski?= <kw@linux.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: [PATCH] misc: pci_endpoint_test: simplify endpoint test read and
- write operations
-Thread-Topic: [PATCH] misc: pci_endpoint_test: simplify endpoint test read and
- write operations
-Thread-Index: AdgN08pRFuc4KG9kQuiq2cd/4nCPdQ==
-Date:   Thu, 20 Jan 2022 08:03:17 +0000
-Message-ID: <SA1PR19MB5572EAD4025173FA9F3B3937A05A9@SA1PR19MB5572.namprd19.prod.outlook.com>
-Accept-Language: en-US
+Received: from DM8PR11MB5621.namprd11.prod.outlook.com (2603:10b6:8:38::14) by
+ BN6PR11MB1331.namprd11.prod.outlook.com (2603:10b6:404:49::15) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4909.8; Thu, 20 Jan 2022 08:03:52 +0000
+Received: from DM8PR11MB5621.namprd11.prod.outlook.com
+ ([fe80::fcc9:90bb:b249:e2e9]) by DM8PR11MB5621.namprd11.prod.outlook.com
+ ([fe80::fcc9:90bb:b249:e2e9%8]) with mapi id 15.20.4909.008; Thu, 20 Jan 2022
+ 08:03:52 +0000
+From:   "Jankowski, Konrad0" <konrad0.jankowski@intel.com>
+To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+        "Brandeburg, Jesse" <jesse.brandeburg@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        "Jakub Kicinski" <kuba@kernel.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
+        Christoph Hellwig <hch@lst.de>,
+        "Lobakin, Alexandr" <alexandr.lobakin@intel.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH] iavf: Remove useless DMA-32 fallback configuration
+Thread-Topic: [PATCH] iavf: Remove useless DMA-32 fallback configuration
+Thread-Index: AQHYDdRD8oH/E9S7X0m7KiBgTxInqQ==
+Date:   Thu, 20 Jan 2022 08:03:52 +0000
+Message-ID: <DM8PR11MB56216BAE634CBAB39F0F88E2AB5A9@DM8PR11MB5621.namprd11.prod.outlook.com>
+References: <afb3317bc87677096e55fc96f317df29f2ff3408.1641752631.git.christophe.jaillet@wanadoo.fr>
+In-Reply-To: <afb3317bc87677096e55fc96f317df29f2ff3408.1641752631.git.christophe.jaillet@wanadoo.fr>
+Accept-Language: pl-PL, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
+dlp-version: 11.6.200.16
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=intel.com;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 2e615fac-db10-4e64-2724-08d9dbeb518c
-x-ms-traffictypediagnostic: MN2PR19MB2944:EE_
-x-microsoft-antispam-prvs: <MN2PR19MB2944DE2AAEE97E5F4CDAAF19A05A9@MN2PR19MB2944.namprd19.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-office365-filtering-correlation-id: 2d8d5de5-168a-497b-e04a-08d9dbeb6633
+x-ms-traffictypediagnostic: BN6PR11MB1331:EE_
+x-microsoft-antispam-prvs: <BN6PR11MB1331F7A607D02544256BEDEEAB5A9@BN6PR11MB1331.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:590;
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: e4J9OUXggmqkjbx/OIhX8WqEIe/df00Ti5v3St2qsWvBL2fD4eKgpMJs8Kf0AwZYRwEby/s/OTHNHOL5AxDoGXesibFJ96Fgxv3NbEUPEzE6EjQRm1Wq8P8IgC/3f7/wbaAe+3sfoPLLuQMisxZelF4Ulku/UrIIO2LcN8Ph0h2oAZdOg1BNVPXsEt66R4aq0G6Oct+ltJ36tzlnA82YqxPbvpXtPKoY6OGODH8FL2lSP7pab/Uf98jEDUUZGKZISqSs4Hwk2nmLdWQz2Ofz+t9FJR1uaZ8Ub1rw5xMG6BHqQ0hF6ZGucJYiKuwxoSBtQqM54xcodsjA48Es/28oGu7/MdDoDLECEWWhSKYod4FNVMX6D5aOGhuPbfVkZm5cGnNTo4DkkURX9ZV+kZz1r6ZkQGOMmcm6M8hbb4B4VGshRIiGrjk1Mdtm3mcp1UOT0sltNRMVh11xwma281XfwoaZ8JWSf4VS2B0u25xvb517COOCFBvm6aoxEjjPi5E0fHENONmqjkG6GmUHQk5uDqwbpBm3ABPyIJ+NAHL22KtaeY6ZwgptidqHWzkPdTvOAdc6AaOLSW8Gg++TYnj6lymSMfcLb/jeQ+cnyS2EpFERUUw8WPrc50s6WZdVDYpdiWYRxlErTYcN+i01ASiWXg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SA1PR19MB5572.namprd19.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(186003)(66946007)(316002)(55016003)(9686003)(64756008)(66556008)(66446008)(8936002)(6506007)(52536014)(26005)(33656002)(86362001)(122000001)(83380400001)(88996005)(2906002)(71200400001)(7696005)(8676002)(5660300002)(66476007)(508600001)(38100700002)(110136005);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: DCT7/T/BebPcYPbvpmP5JHaws2T+ifFjgPOzTbkW3Uusrgv+etUvxCDsberK/PI3ZS1TJFpEUe6IWtoKx9te5KohLszCdFtowaRUGbMdS8VvzD+1JIV1jLPaIrdL0lYIXY/0PgvNBDzgKKsxQbBoYUXsiOqH0MNjXjzRCMcynfIoqMry5E7wjH4XuIjOhLDaB/VOBpDeY0OMQjRSbpn9v3aWy2FJiq0JXQnFqOU6jYZoCkG1adjnEycwei0V0ME9JSPl2h4kPSORQbP4KCIxzoc8gDCakO5PRB6ROlr8/zqfB5C1QxheVWLtBGDkHj3iy0GEvm4hO+9CdMwFK2i+Wr14PeeaXZIv5o9m9j5AOPlPxjovsSOun99g2hV3lHXdzAtF9I1D0tRhCSfMub1A/BX0f8ktnkcTvH03Nzs1ziFA1rFTCAD98IniwYibTrJm+o1DYzvS36Ug8KXBDWEJy/8LCYSxcS7UrCo1TrAXsaa2+N+GNgvI36izl/pH0OXQqz3AJEH/9mC3TcvD/SyJc0wf7A5Bf99XkHmVvnGcva/ZHlTNIk2ZXBD312D291xletDFQFZjduzTzm4dmp+E1h6LUn4fDhc9ziQXeQGa3fDWXFRSNy+OxrAFFFBm60mSvUsfMksECFwcAc75iFk5kYvzNQjsqtc+nYcKTGDAHohKN4FGVZmCYQ2/ImkhMFfV2Rokd0vAL+rv8uNdREv1nN06iyaBeGNsMfZ5HvXrc+vneOFwXw5U4BCklpLxuFDUgBvVyu3hx/FbQf05bnImk9zcDyZ72afUOxtcFV5ITw8=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM8PR11MB5621.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(82960400001)(55016003)(54906003)(508600001)(71200400001)(966005)(83380400001)(52536014)(66556008)(64756008)(66446008)(316002)(110136005)(66946007)(86362001)(66476007)(76116006)(9686003)(186003)(122000001)(33656002)(5660300002)(2906002)(26005)(38070700005)(8936002)(8676002)(4326008)(6506007)(7696005)(53546011)(38100700002);DIR:OUT;SFP:1102;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-2?Q?jo46YXpJhKxsKWR9nwCHU66TF6QxrlZDDcc3bguKNcHmqfczXnd/pjd1r8?=
- =?iso-8859-2?Q?qqbu4LjIvi6v00CeLPXMoL26oACzEc8Obs57kyIbaJN4wpqoFuaKKy56ra?=
- =?iso-8859-2?Q?ovK5uAlV2O+lwJcjSTiX/qUTqMW+42jM0w23Tma/t4UzihxOCbG/QvlFRG?=
- =?iso-8859-2?Q?Xr7x6XjOztyYdqEp+y2N2uw57tjnBufq3mUF9nyNJlxuy8W+e8ejsJeStQ?=
- =?iso-8859-2?Q?monafgls/8XExemfHEqPCuI7LqBsLg9w96U7cqYujfUmjjzGmRpCOT4BlJ?=
- =?iso-8859-2?Q?MyWJazl+7z/u9yG3CZl1Q4dMwGFpuGUhXktEskM8kloFuux3tZAcoJRhML?=
- =?iso-8859-2?Q?/Q6uHjj8TsXOlzBaW16gIB5w9/Uk8TRPAMH7YFiJGT3EkZrq/K90tVkKcs?=
- =?iso-8859-2?Q?/A0UTCzSGD+UUxEhbTphadjiRExxJ0bmLtJRy++MZY/gyYZf/F4DubMGZ9?=
- =?iso-8859-2?Q?cT2enaVud4Id3Xp0p06CBtdXTihLbGdnQV9jXj/YJTK9810EeVf5uR20eX?=
- =?iso-8859-2?Q?fMXh6KZLcAi77pvokr1LNZqu4kRVP4yMGjDt3CJfNAT7XuOnL/G1k7Ge26?=
- =?iso-8859-2?Q?yzohjvGPV9u1F1vxEoozF5lmYGZS41AwNykLQXOM6nu8lWXq0s2Qhp9WoB?=
- =?iso-8859-2?Q?hkBlb0MeR/Y1N53/Quh2woy6cYCQJO9N7Embjkbk+qWdm8shrh5fCWa62I?=
- =?iso-8859-2?Q?SUhUCtmyaPQzUHDB1zAs0aF3/8HEj8fKFO8Pfus1EZBslum37sdNDYdxcR?=
- =?iso-8859-2?Q?XhtOXFmzidYshVEFMZVuy3dw5spmJ5bEVPeRZlzxtz8U4Ak2TVG3EXSNwB?=
- =?iso-8859-2?Q?uwsbZp8a+WwrgDieAeJ0KUsmc6KYpW9LACb8UBDsX7J2nW8fmLrouDqeVw?=
- =?iso-8859-2?Q?q4BAExy8oj6qkyQY5h5WmYTIZXp5Ih2FYeYWgec4zEYVsJCC+X/Llhm2XW?=
- =?iso-8859-2?Q?88s5glWg+9jjnN3uPEjVIINcO0ub1VCjHQbg/otFIVlnC31sEmBpvhc9xX?=
- =?iso-8859-2?Q?QlKnpGDsUGhU6y0nnG3kJ2sxGsbjB23NvvbZa9x9/31IGnStFS2n1AIL3G?=
- =?iso-8859-2?Q?4YYn3N9XXoOEgBEZdhvOURSp2kNgaKvrGmc4Jz3ObBadE97eg3GPeibGXK?=
- =?iso-8859-2?Q?kdH2e0AUP5ZN8qDuDr2GW7jdkKvCaF5WiKG1tLWp0hKu1cxy8a7g64mXZh?=
- =?iso-8859-2?Q?t9YUukFqm4nbqazp/HISw+9E/zPdCXPLdophS10QDI2wv3SO6pFP26eLx/?=
- =?iso-8859-2?Q?xvLYFNL667QtpsNYA6fKvYPQAPauQoGg0HTe6Qjqf65YlDrZu1g3uql7u3?=
- =?iso-8859-2?Q?vPMwpB5/d0vO+O/+UJAYvj/69ilGieQKm9UHogRtABNEhOumy95yx5/k2r?=
- =?iso-8859-2?Q?lDIq1nfDfzKuBXTJOqkQg6qVj39SFy6POHlAyAATYrpBEepOM4++FQUSMd?=
- =?iso-8859-2?Q?rNlyP9uG9igADtv/nb65Sb2OJptGPURXvhQytfBRxOvqH91OWeRAQzoaZE?=
- =?iso-8859-2?Q?Z+l0oYgVgyJrZHSPe8FogzKX/JXRyH/3/Xr9o6CfUXo8/7XwOS9CKUpgV5?=
- =?iso-8859-2?Q?eCvkIq8XobiSwu7dH738Tr0GLIEQ/wyamzRPdptsJMmbNZIwG3Cbn+lq/b?=
- =?iso-8859-2?Q?JpBw6olM2OjFEOy+G9cIGVjZq4jXye6P6Zai4pY3SkLrwLnhkeRHwBkC9A?=
- =?iso-8859-2?Q?xCid7Uu5VfxT8gwAUcs=3D?=
+x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?u22u15VhPT1w+wyD1eWEBnx3rO97HoSukycvAbxTra1td5mtXUV+teMRdNoE?=
+ =?us-ascii?Q?pRmuVwP/DXxn/jT7Uuq1qDNRH1fzcxvvPUlmEVlG4w6fCa3TLoIkz3c+MKvC?=
+ =?us-ascii?Q?pKNtRom+xqa4L13oxmGr1hQh66G0jDfr+ckC/7Cqrf+Bktd6XJ3qprFCe1ZH?=
+ =?us-ascii?Q?1i5Eh0RUCsajd9MHqC6TkGNoBEWTvy/2F8D3bIL4TkMIsArycSWkn6gsyx/K?=
+ =?us-ascii?Q?jhTLerZOqUtrXzqhX39tAZSxrU+1yTr3OYeMRAROyENQ5rQlN5cfpu6tx7H/?=
+ =?us-ascii?Q?mFdX+RKUmSHmSlWyY1b2a/RJrWYB+2uM+CYdybs64qtLRuK1gt2fSJ7oPoml?=
+ =?us-ascii?Q?cBUgO4v1PhBj0Tr+pe3Lk9DSoKP9iAWAf94L6PU3oND/DEuq6yBbROhOUABB?=
+ =?us-ascii?Q?Yb65Tm65c6i4MhAaE4I/Q31ImpX4mFHUpXAA57qUqbMTGP1cndoCgoZxuUKJ?=
+ =?us-ascii?Q?XSCJDXYcepmFkS6WOPsn2PEZHjESKVhdklK+lcxTqsTd+JqYwG1ft32u5lem?=
+ =?us-ascii?Q?toiaa3YMUyBfz6wYaDAZ/prcKax/+3E97HugngjWXK4/jQA0OcSuF/uUGozY?=
+ =?us-ascii?Q?yJvBX6mhHHmcbD7p9yrCyy73fz+pk7f3I2bzDuEe7HIoki9AP1m4NJFQPtzl?=
+ =?us-ascii?Q?oKO7SF0baieLWgBGpwrlkG+XWeffOI7A/M3Nh8JSdaGiSXshrO4UTh35g+h4?=
+ =?us-ascii?Q?Npbircz+9Vf35viJfS3qPITN7YnN7JSlzdKIrRfTD8fwW3vPYbJ7FTbnBFVo?=
+ =?us-ascii?Q?Rjr68/16tVd6WYHF7JRCqFpm4fLtIIUo5dHm9/pW6yfyZ+ExiueiixbTX2YP?=
+ =?us-ascii?Q?WbsNG6nNu1aSrX01boZcfIHo52X129ZMpl5sRmWHh4kH0QAb3eVx0xgN9oTv?=
+ =?us-ascii?Q?kPVRN3y+ClBEXSwJfj+ZwplRqLVS3epalc1r1RRGqMZTyCmLYy4yalagMdnr?=
+ =?us-ascii?Q?P6IWdLl4eRzJE6AxXVzopNhmR2mnqbITIFwH1hl2Bi4nJYdBIuv1BsGhM0o3?=
+ =?us-ascii?Q?cRNWpe0q5aS8p13wLGdER1ga0pqjHfK7GaydXGNxzQ3M0s881b6a+GVkWzyn?=
+ =?us-ascii?Q?07w4gEPlty+1vAUKMDLPwYyVSmn5QPoI9cUW9K2vN4AIcdg71oGOZt5aKDPn?=
+ =?us-ascii?Q?S24j8cxrLtoMAxT9E1p99L9gjFJkbze2vPqqJgSFpXniAciOrRv8Dt0C/Qcq?=
+ =?us-ascii?Q?ZYEuEs6a/skpDfzT8LnueIgl/L4g/laWhUTu5eyhP0RD91dVnmdrSE77KS1R?=
+ =?us-ascii?Q?cgA36HdQtQ2pS8/4kcJFtYd2Iwprse6SlPyS2wxayMokjAPWTph4SLMzfswf?=
+ =?us-ascii?Q?0FCIBniSJwsdFV7nPl9qBDoLZhq580O/J7+VvuamHxysg+weVvNPBLS3LI7I?=
+ =?us-ascii?Q?4ESxLrx8v/ZylklGLGHQvogBd6ivkPbj5qvvhAdrzJ+/f5TvlB4KUJi6qEO4?=
+ =?us-ascii?Q?ZIlGkWghipcbOklYtjDKkN+Lc39iUQ3dVT3T6ygKQBjPdKcrF/bafgjEYKHw?=
+ =?us-ascii?Q?18i5lUmufI+TvFEtcsFxfnmA5/nu+qvOcJFppexcL2L2yYRw77/66GEVrIE9?=
+ =?us-ascii?Q?uhd8IWAOY/VnHJcXTi7Oa6M1eg2Cb7dWkZPX1ALOKZzSifFMdTmWI30k8Jdu?=
+ =?us-ascii?Q?d7+A7gFfNvqZcVyXcPkV7qlOhyOfumKNpQrtIB/syeUzgKTYaQcrx5l9D82C?=
+ =?us-ascii?Q?hKCqeQ=3D=3D?=
+Content-Type: text/plain; charset="us-ascii"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-OriginatorOrg: ambarella.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: SA1PR19MB5572.namprd19.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2e615fac-db10-4e64-2724-08d9dbeb518c
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jan 2022 08:03:17.9854
+X-MS-Exchange-CrossTenant-AuthSource: DM8PR11MB5621.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2d8d5de5-168a-497b-e04a-08d9dbeb6633
+X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jan 2022 08:03:52.7328
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3ccd3c8d-5f7c-4eb4-ae6f-32d8c106402c
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: EjxBQI+g3WEDIZ4XXl8KWdT4tRWwz4pNQ2lmymPyQQENJ6zKD7gDEAfgHME9OCm3uZdoa7l+fmnq5qBL6VXAOg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR19MB2944
-X-Proofpoint-GUID: 3L86d8oka5f7st-R-u95PHEGwzwAN2VV
-X-Proofpoint-ORIG-GUID: 3L86d8oka5f7st-R-u95PHEGwzwAN2VV
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-20_03,2022-01-19_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- priorityscore=1501 mlxscore=0 adultscore=0 spamscore=0 suspectscore=0
- phishscore=0 clxscore=1015 bulkscore=0 impostorscore=0 mlxlogscore=999
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201200042
-Content-Type: text/plain; charset="iso-8859-2"
+X-MS-Exchange-CrossTenant-userprincipalname: S+X6if+RQqGcS2Vde1bNOWE97fLzATmG7EJUHa3PeFnh2QCqMtdheXQxgsFndpkBP0+2dMXaJNyef86c6gWbuOfpuDyviwx4AIGS51FQ50s=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR11MB1331
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce pci_endpoint_epf_transfer_data to simplify
-read and write operations.
 
-Signed-off-by: Li Chen <lchen@ambarella.com>
----
- drivers/misc/pci_endpoint_test.c | 288 ++++++++++++-------------------
- 1 file changed, 108 insertions(+), 180 deletions(-)
 
-diff --git a/drivers/misc/pci_endpoint_test.c b/drivers/misc/pci_endpoint_t=
-est.c
-index 2ed7e3aaff3a8..55ae2f1851a13 100644
---- a/drivers/misc/pci_endpoint_test.c
-+++ b/drivers/misc/pci_endpoint_test.c
-@@ -103,6 +103,11 @@ enum pci_barno {
- 	BAR_5,
- };
-=20
-+enum operation {
-+	EPF_READ,
-+	EPF_WRITE,
-+};
-+
- struct pci_endpoint_test {
- 	struct pci_dev	*pdev;
- 	void __iomem	*base;
-@@ -142,6 +147,107 @@ static inline u32 pci_endpoint_test_bar_readl(struct =
-pci_endpoint_test *test,
- {
- 	return readl(test->bar[bar] + offset);
- }
-+static bool pci_endpoint_test_transfer_data(struct pci_endpoint_test *test,
-+				unsigned long arg, const enum operation operation)
-+{
-+	struct pci_endpoint_test_xfer_param param;
-+	bool ret =3D false;
-+	u32 flags =3D 0;
-+	bool use_dma;
-+	void *addr;
-+	dma_addr_t phys_addr;
-+	struct pci_dev *pdev =3D test->pdev;
-+	struct device *dev =3D &pdev->dev;
-+	void *orig_addr;
-+	dma_addr_t orig_phys_addr;
-+	size_t offset;
-+	size_t alignment =3D test->alignment;
-+	int irq_type =3D test->irq_type;
-+	size_t size;
-+	int err;
-+
-+	err =3D copy_from_user(&param, (void __user *)arg, sizeof(param));
-+	if (err !=3D 0) {
-+		dev_err(dev, "Failed to get transfer param\n");
-+		return false;
-+	}
-+
-+	size =3D param.size;
-+	if (size > SIZE_MAX - alignment)
-+		goto err;
-+
-+	use_dma =3D !!(param.flags & PCITEST_FLAGS_USE_DMA);
-+	if (use_dma)
-+		flags |=3D FLAG_USE_DMA;
-+
-+	if (irq_type < IRQ_TYPE_LEGACY || irq_type > IRQ_TYPE_MSIX) {
-+		dev_err(dev, "Invalid IRQ type option\n");
-+		goto err;
-+	}
-+
-+	orig_addr =3D kzalloc(size + alignment, GFP_KERNEL);
-+	if (!orig_addr)
-+		goto err;
-+
-+	get_random_bytes(orig_addr, size + alignment);
-+
-+	orig_phys_addr =3D dma_map_single(dev, orig_addr, size + alignment,
-+					operation =3D=3D EPF_WRITE ? DMA_TO_DEVICE : DMA_FROM_DEVICE);
-+	if (dma_mapping_error(dev, orig_phys_addr)) {
-+		dev_err(dev, "failed to map source buffer address\n");
-+		goto err_phys_addr;
-+	}
-+
-+	if (alignment && !IS_ALIGNED(orig_phys_addr, alignment)) {
-+		phys_addr =3D PTR_ALIGN(orig_phys_addr, alignment);
-+		offset =3D phys_addr - orig_phys_addr;
-+		addr =3D orig_addr + offset;
-+	} else {
-+		phys_addr =3D orig_phys_addr;
-+		addr =3D orig_addr;
-+	}
-+
-+	if (operation =3D=3D EPF_WRITE) {
-+
-+		pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_CHECKSUM,
-+				 crc32_le(~0, addr, size));
-+
-+		pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_LOWER_SRC_ADDR,
-+								lower_32_bits(phys_addr));
-+		pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_UPPER_SRC_ADDR,
-+								upper_32_bits(phys_addr));
-+	} else {
-+		pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_LOWER_DST_ADDR,
-+								lower_32_bits(phys_addr));
-+		pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_UPPER_DST_ADDR,
-+								upper_32_bits(phys_addr));
-+	}
-+
-+	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_SIZE, size);
-+	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_FLAGS, flags);
-+	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_IRQ_TYPE, irq_type);
-+	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_IRQ_NUMBER, 1);
-+
-+	// if we ask rc to write to ep, then ep should do read operation, and vic=
-e versa.
-+	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_COMMAND,
-+				 operation =3D=3D EPF_WRITE ? COMMAND_READ : COMMAND_WRITE);
-+
-+	wait_for_completion(&test->irq_raised);
-+
-+	dma_unmap_single(dev, orig_phys_addr, size + alignment,
-+					 operation =3D=3D EPF_WRITE ? DMA_TO_DEVICE : DMA_FROM_DEVICE);
-+
-+	if (operation =3D=3D WRITE)
-+		ret =3D pci_endpoint_test_readl(test, PCI_ENDPOINT_TEST_STATUS) & STATUS=
-_READ_SUCCESS;
-+	else
-+		ret =3D crc32_le(~0, addr, size) =3D=3D pci_endpoint_test_readl(test, PC=
-I_ENDPOINT_TEST_CHECKSUM);
-+
-+err_phys_addr:
-+	kfree(orig_addr);
-+
-+err:
-+	return ret;
-+}
-=20
- static inline void pci_endpoint_test_bar_writel(struct pci_endpoint_test *=
-test,
- 						int bar, u32 offset, u32 value)
-@@ -473,191 +579,13 @@ static bool pci_endpoint_test_copy(struct pci_endpoi=
-nt_test *test,
- static bool pci_endpoint_test_write(struct pci_endpoint_test *test,
- 				    unsigned long arg)
- {
--	struct pci_endpoint_test_xfer_param param;
--	bool ret =3D false;
--	u32 flags =3D 0;
--	bool use_dma;
--	u32 reg;
--	void *addr;
--	dma_addr_t phys_addr;
--	struct pci_dev *pdev =3D test->pdev;
--	struct device *dev =3D &pdev->dev;
--	void *orig_addr;
--	dma_addr_t orig_phys_addr;
--	size_t offset;
--	size_t alignment =3D test->alignment;
--	int irq_type =3D test->irq_type;
--	size_t size;
--	u32 crc32;
--	int err;
+> -----Original Message-----
+> From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Sent: niedziela, 9 stycznia 2022 19:24
+> To: Brandeburg, Jesse <jesse.brandeburg@intel.com>; Nguyen, Anthony L
+> <anthony.l.nguyen@intel.com>; David S. Miller <davem@davemloft.net>;
+> Jakub Kicinski <kuba@kernel.org>
+> Cc: linux-kernel@vger.kernel.org; kernel-janitors@vger.kernel.org;
+> Christophe JAILLET <christophe.jaillet@wanadoo.fr>; Christoph Hellwig
+> <hch@lst.de>; Lobakin, Alexandr <alexandr.lobakin@intel.com>; intel-wired=
 -
--	err =3D copy_from_user(&param, (void __user *)arg, sizeof(param));
--	if (err !=3D 0) {
--		dev_err(dev, "Failed to get transfer param\n");
--		return false;
--	}
--
--	size =3D param.size;
--	if (size > SIZE_MAX - alignment)
--		goto err;
--
--	use_dma =3D !!(param.flags & PCITEST_FLAGS_USE_DMA);
--	if (use_dma)
--		flags |=3D FLAG_USE_DMA;
--
--	if (irq_type < IRQ_TYPE_LEGACY || irq_type > IRQ_TYPE_MSIX) {
--		dev_err(dev, "Invalid IRQ type option\n");
--		goto err;
--	}
--
--	orig_addr =3D kzalloc(size + alignment, GFP_KERNEL);
--	if (!orig_addr) {
--		dev_err(dev, "Failed to allocate address\n");
--		ret =3D false;
--		goto err;
--	}
--
--	get_random_bytes(orig_addr, size + alignment);
--
--	orig_phys_addr =3D dma_map_single(dev, orig_addr, size + alignment,
--					DMA_TO_DEVICE);
--	if (dma_mapping_error(dev, orig_phys_addr)) {
--		dev_err(dev, "failed to map source buffer address\n");
--		ret =3D false;
--		goto err_phys_addr;
--	}
--
--	if (alignment && !IS_ALIGNED(orig_phys_addr, alignment)) {
--		phys_addr =3D  PTR_ALIGN(orig_phys_addr, alignment);
--		offset =3D phys_addr - orig_phys_addr;
--		addr =3D orig_addr + offset;
--	} else {
--		phys_addr =3D orig_phys_addr;
--		addr =3D orig_addr;
--	}
--
--	crc32 =3D crc32_le(~0, addr, size);
--	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_CHECKSUM,
--				 crc32);
--
--	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_LOWER_SRC_ADDR,
--				 lower_32_bits(phys_addr));
--	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_UPPER_SRC_ADDR,
--				 upper_32_bits(phys_addr));
--
--	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_SIZE, size);
--
--	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_FLAGS, flags);
--	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_IRQ_TYPE, irq_type);
--	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_IRQ_NUMBER, 1);
--	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_COMMAND,
--				 COMMAND_READ);
--
--	wait_for_completion(&test->irq_raised);
--
--	reg =3D pci_endpoint_test_readl(test, PCI_ENDPOINT_TEST_STATUS);
--	if (reg & STATUS_READ_SUCCESS)
--		ret =3D true;
--
--	dma_unmap_single(dev, orig_phys_addr, size + alignment,
--			 DMA_TO_DEVICE);
--
--err_phys_addr:
--	kfree(orig_addr);
--
--err:
--	return ret;
-+	return pci_endpoint_test_transfer_data(test, arg, EPF_WRITE);
- }
-=20
- static bool pci_endpoint_test_read(struct pci_endpoint_test *test,
- 				   unsigned long arg)
- {
--	struct pci_endpoint_test_xfer_param param;
--	bool ret =3D false;
--	u32 flags =3D 0;
--	bool use_dma;
--	size_t size;
--	void *addr;
--	dma_addr_t phys_addr;
--	struct pci_dev *pdev =3D test->pdev;
--	struct device *dev =3D &pdev->dev;
--	void *orig_addr;
--	dma_addr_t orig_phys_addr;
--	size_t offset;
--	size_t alignment =3D test->alignment;
--	int irq_type =3D test->irq_type;
--	u32 crc32;
--	int err;
--
--	err =3D copy_from_user(&param, (void __user *)arg, sizeof(param));
--	if (err) {
--		dev_err(dev, "Failed to get transfer param\n");
--		return false;
--	}
--
--	size =3D param.size;
--	if (size > SIZE_MAX - alignment)
--		goto err;
--
--	use_dma =3D !!(param.flags & PCITEST_FLAGS_USE_DMA);
--	if (use_dma)
--		flags |=3D FLAG_USE_DMA;
--
--	if (irq_type < IRQ_TYPE_LEGACY || irq_type > IRQ_TYPE_MSIX) {
--		dev_err(dev, "Invalid IRQ type option\n");
--		goto err;
--	}
--
--	orig_addr =3D kzalloc(size + alignment, GFP_KERNEL);
--	if (!orig_addr) {
--		dev_err(dev, "Failed to allocate destination address\n");
--		ret =3D false;
--		goto err;
--	}
--
--	orig_phys_addr =3D dma_map_single(dev, orig_addr, size + alignment,
--					DMA_FROM_DEVICE);
--	if (dma_mapping_error(dev, orig_phys_addr)) {
--		dev_err(dev, "failed to map source buffer address\n");
--		ret =3D false;
--		goto err_phys_addr;
--	}
--
--	if (alignment && !IS_ALIGNED(orig_phys_addr, alignment)) {
--		phys_addr =3D PTR_ALIGN(orig_phys_addr, alignment);
--		offset =3D phys_addr - orig_phys_addr;
--		addr =3D orig_addr + offset;
--	} else {
--		phys_addr =3D orig_phys_addr;
--		addr =3D orig_addr;
--	}
--
--	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_LOWER_DST_ADDR,
--				 lower_32_bits(phys_addr));
--	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_UPPER_DST_ADDR,
--				 upper_32_bits(phys_addr));
--
--	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_SIZE, size);
--
--	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_FLAGS, flags);
--	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_IRQ_TYPE, irq_type);
--	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_IRQ_NUMBER, 1);
--	pci_endpoint_test_writel(test, PCI_ENDPOINT_TEST_COMMAND,
--				 COMMAND_WRITE);
--
--	wait_for_completion(&test->irq_raised);
--
--	dma_unmap_single(dev, orig_phys_addr, size + alignment,
--			 DMA_FROM_DEVICE);
--
--	crc32 =3D crc32_le(~0, addr, size);
--	if (crc32 =3D=3D pci_endpoint_test_readl(test, PCI_ENDPOINT_TEST_CHECKSUM=
-))
--		ret =3D true;
--
--err_phys_addr:
--	kfree(orig_addr);
--err:
--	return ret;
-+	return pci_endpoint_test_transfer_data(test, arg, EPF_READ);
- }
-=20
- static bool pci_endpoint_test_clear_irq(struct pci_endpoint_test *test)
---=20
-2.34.1
+> lan@lists.osuosl.org; netdev@vger.kernel.org
+> Subject: [PATCH] iavf: Remove useless DMA-32 fallback configuration
+>=20
+> As stated in [1], dma_set_mask() with a 64-bit mask never fails if
+> dev->dma_mask is non-NULL.
+> So, if it fails, the 32 bits case will also fail for the same reason.
+>=20
+> Simplify code and remove some dead code accordingly.
+>=20
+> [1]: https://lkml.org/lkml/2021/6/7/398
+>=20
+> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+> Reviewed-by: Christoph Hellwig <hch@lst.de>
+> Reviewed-by: Alexander Lobakin <alexandr.lobakin@intel.com>
+> ---
+>  drivers/net/ethernet/intel/iavf/iavf_main.c | 9 +++------
+>  1 file changed, 3 insertions(+), 6 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/intel/iavf/iavf_main.c
+> b/drivers/net/ethernet/intel/iavf/iavf_main.c
+> index 8125b9120615..b0bd95c85480 100644
+> --- a/drivers/net/ethernet/intel/iavf/iavf_main.c
+> +++ b/drivers/net/ethernet/intel/iavf/iavf_main.c
 
-**********************************************************************
-This email and attachments contain Ambarella Proprietary and/or Confidentia=
-l Information and is intended solely for the use of the individual(s) to wh=
-om it is addressed. Any unauthorized review, use, disclosure, distribute, c=
-opy, or print is prohibited. If you are not an intended recipient, please c=
-ontact the sender by reply email and destroy all copies of the original mes=
-sage. Thank you.
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
