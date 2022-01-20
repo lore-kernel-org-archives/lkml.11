@@ -2,72 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B8FCC43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 09:12:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17BD3C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 09:12:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240540AbiATJMO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 04:12:14 -0500
-Received: from 113.196.136.162.ll.static.sparqnet.net ([113.196.136.162]:42006
-        "EHLO mg.sunplus.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S240065AbiATJML (ORCPT
+        id S240065AbiATJMf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 04:12:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43836 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237469AbiATJMc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 04:12:11 -0500
-X-MailGates: (flag:3,DYNAMIC,RELAY,NOHOST:PASS)(compute_score:DELIVER,40
-        ,3)
-Received: from 172.17.9.202
-        by mg01.sunplus.com with MailGates ESMTP Server V5.0(11289:0:AUTH_RELAY)
-        (envelope-from <lh.Kuo@sunplus.com>); Thu, 20 Jan 2022 17:12:12 +0800 (CST)
-Received: from sphcmbx02.sunplus.com.tw (172.17.9.112) by
- sphcmbx01.sunplus.com.tw (172.17.9.202) with Microsoft SMTP Server (TLS) id
- 15.0.1497.26; Thu, 20 Jan 2022 17:12:11 +0800
-Received: from sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd]) by
- sphcmbx02.sunplus.com.tw ([fe80::fd3d:ad1a:de2a:18bd%14]) with mapi id
- 15.00.1497.026; Thu, 20 Jan 2022 17:12:11 +0800
-From:   =?big5?B?TGggS3VvILOipE+7qA==?= <lh.Kuo@sunplus.com>
-To:     Mark Brown <broonie@kernel.org>, Li-hao Kuo <lhjeff911@gmail.com>
-CC:     "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
-        "andyshevchenko@gmail.com" <andyshevchenko@gmail.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        =?big5?B?V2VsbHMgTHUgp2aq2sTL?= <wells.lu@sunplus.com>
-Subject: RE: [PATCH v6 1/2] spi: Add spi driver for Sunplus SP7021
-Thread-Topic: [PATCH v6 1/2] spi: Add spi driver for Sunplus SP7021
-Thread-Index: AQHYDEdoNQA4Z8mYU0mSuzI8gOIgg6xohrWAgAMbElA=
-Date:   Thu, 20 Jan 2022 09:12:11 +0000
-Message-ID: <d202d04f32b8496293bd98e090322104@sphcmbx02.sunplus.com.tw>
-References: <cover.1642494310.git.lhjeff911@gmail.com>
- <37998e515d561e762ee30d0ac4fca25a948e0c5c.1642494310.git.lhjeff911@gmail.com>
- <Yeb75aOOckAfNTTG@sirena.org.uk>
-In-Reply-To: <Yeb75aOOckAfNTTG@sirena.org.uk>
-Accept-Language: zh-TW, en-US
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [172.25.108.51]
-Content-Type: text/plain; charset="big5"
-Content-Transfer-Encoding: base64
+        Thu, 20 Jan 2022 04:12:32 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A76FC061574
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 01:12:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
+        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=z+hrGHd2PH766bmL4VHMjzgrJYc+sxstWyvPap6zHJA=; b=wKti/GUKfRupgC0O/4WzY1lX57
+        +RXOD/ZxxhgGsWlM0jFQlxrMUX7qEIQf199YDPvkKaD5bN0rpm71YbxIJeyRvbEIIHhaFNLJqIRyx
+        agmZ5WBmkqRiC+w0m8r5jTeiHc48vP84ai2KXrYRJlnIMwj0616Et6y8PTvJN0oY3hud2/+GBw3AF
+        bKQkstnMa5E3ipZ0fl9WPkn3pnk2DILGSxsO5g0KlCXGx+uLnc9brpdxZkGxL+W/mGucVnzSVRCgA
+        6JOUKZmSWZxkbc570UGs1aMS+56RPvbwvabOJvInmWI4RAhgofmXsFRxKpNkO3MW2iUZ+q+WXB/wl
+        RmZV5kAw==;
+Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nATUb-00A7F4-7N; Thu, 20 Jan 2022 09:12:29 +0000
+Date:   Thu, 20 Jan 2022 01:12:29 -0800
+From:   Christoph Hellwig <hch@infradead.org>
+To:     "Uladzislau Rezki (Sony)" <urezki@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Christoph Hellwig <hch@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Oleksiy Avramchenko <oleksiy.avramchenko@sonymobile.com>
+Subject: Re: [PATCH 1/3] mm/vmalloc: Move draining areas out of caller context
+Message-ID: <YeknfRnxaxcVxEjF@infradead.org>
+References: <20220119143540.601149-1-urezki@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220119143540.601149-1-urezki@gmail.com>
+X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-SGkgTXIuIE1hcmsgQnJvd24gOg0KDQpUaGFua3MgZm9yIHlvdXIgY29tbWVudCwgSSB3aWxsIG1v
-ZGlmeSBpdCBpbiBuZXh0IG5leHQgc3VibWlzc2lvbg0KDQo+IA0KPiA+ICsJZm9yIChpID0gMDsg
-aSA8PSB4ZmVyX2NudDsgaSsrKSB7DQo+ID4gKwkJbXV0ZXhfbG9jaygmcHNwaW0tPmJ1Zl9sb2Nr
-KTsNCj4gDQo+IFRoaXMgbG9jayBpcyByZWR1bmRhbnQ6IGl0IGlzIG9ubHkgZXZlciBoZWxkIGlu
-IHRoaXMgZnVuY3Rpb24gd2hpY2ggaXMgZ3VhcmFudGVlZCBieSB0aGUgY29yZSB0byBuZXZlciBi
-ZQ0KPiBjYWxsZWQgdHdpY2UgY29uY3VycmVudGx5Lg0KDQpJIHdpbGwgbW9kaWZ5IGl0IGluIG5l
-eHQgbmV4dCBzdWJtaXNzaW9uDQoNCg0KPiA+ICsJcmV0ID0gZGV2bV9yZXF1ZXN0X2lycShkZXYs
-IHBzcGltLT5tX2lycSwgc3A3MDIxX3NwaV9tYXN0ZXJfaXJxLA0KPiA+ICsJCQkgICAgICAgSVJR
-Rl9UUklHR0VSX1JJU0lORywgcGRldi0+bmFtZSwgcHNwaW0pOw0KPiA+ICsJaWYgKHJldCkNCj4g
-PiArCQlyZXR1cm4gcmV0Ow0KPiA+ICsNCj4gPiArCXJldCA9IGRldm1fcmVxdWVzdF9pcnEoZGV2
-LCBwc3BpbS0+c19pcnEsIHNwNzAyMV9zcGlfc2xhdmVfaXJxLA0KPiA+ICsJCQkgICAgICAgSVJR
-Rl9UUklHR0VSX1JJU0lORywgcGRldi0+bmFtZSwgcHNwaW0pOw0KPiA+ICsJaWYgKHJldCkNCj4g
-PiArCQlyZXR1cm4gcmV0Ow0KPiANCj4gQXJlIHlvdSBzdXJlIHRoZSBkcml2ZXIgaXMgcmVhZHkg
-dG8gaGFuZGxlIGludGVycnVwdHMgd2l0aG91dCBhbnkgb2YgdGhlIG90aGVyIHJlc291cmNlcz8g
-IE5vcm1hbGx5DQo+IGludGVycnVwdHMgYXJlIG9uZSBvZiB0aGUgbGFzdCB0aGluZ3MgdG8gYmUg
-cmVxdWVzdGVkLg0KDQpJIHdpbGwgbW9kaWZ5IGl0IGluIG5leHQgbmV4dCBzdWJtaXNzaW9uDQoN
-Cg0K
+On Wed, Jan 19, 2022 at 03:35:38PM +0100, Uladzislau Rezki (Sony) wrote:
+> +static void drain_vmap_area(struct work_struct *work)
+
+Nit, but I prefer to have a _work postix for workers just to keep
+it easy to ready.
+
+>  	/* After this point, we may free va at any time */
+>  	if (unlikely(nr_lazy > lazy_max_pages()))
+> -		try_purge_vmap_area_lazy();
+> +		if (!atomic_xchg(&drain_vmap_area_work_in_progress, 1))
+> +			schedule_work(&drain_vmap_area_work);
+
+Work items are defined to be single threaded, so I don't think we need
+the drain_vmap_area_work_in_progress hack.
+
+>  
+>  /*
+> -- 
+> 2.30.2
+> 
+> 
+---end quoted text---
