@@ -2,149 +2,241 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17B9FC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 03:15:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A207AC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 03:18:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358275AbiATDPI (ORCPT
+        id S1358290AbiATDSR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 22:15:08 -0500
-Received: from mailout1.samsung.com ([203.254.224.24]:44888 "EHLO
-        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358274AbiATDPD (ORCPT
+        Wed, 19 Jan 2022 22:18:17 -0500
+Received: from ppsw-33.csi.cam.ac.uk ([131.111.8.133]:59392 "EHLO
+        ppsw-33.csi.cam.ac.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232282AbiATDSQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 22:15:03 -0500
-Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220120031502epoutp010a821c2f6f129e755c5c3b5bf8afc795~L3BwHPM_y0339903399epoutp01X
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 03:15:02 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220120031502epoutp010a821c2f6f129e755c5c3b5bf8afc795~L3BwHPM_y0339903399epoutp01X
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1642648502;
-        bh=n8b5oCAnKAEBwkflbch7/0jfrizlmn1DkP6+toSRWT0=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=jZ/eeldofwzev/vyB20LkHmiytGu3ZjqEdb1NzAXcdn8KB88TwnBBnaE3Czv9a+hf
-         SOHQ9XWGSQ0QORQgITCW9rlXNsf0ksKmO17fXh+IuSHb6gcav6n6eL3Rxmh72oMaqY
-         1X07zoNl8bhYSPE+OoL6c738tFn6SNkBMmrLWICk=
-Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
-        20220120031501epcas2p350c29dfb76ec4153ab379ba6c6ebe69d~L3BvSMfm60189301893epcas2p3d;
-        Thu, 20 Jan 2022 03:15:01 +0000 (GMT)
-Received: from epsmges2p4.samsung.com (unknown [182.195.36.89]) by
-        epsnrtp3.localdomain (Postfix) with ESMTP id 4JfSLB1qS7z4x9Q8; Thu, 20 Jan
-        2022 03:14:58 +0000 (GMT)
-Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
-        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
-        00.D1.12141.2B3D8E16; Thu, 20 Jan 2022 12:14:58 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p2.samsung.com (KnoxPortal) with ESMTPA id
-        20220120031457epcas2p2ae55ef07581ed699a49b27391d7ab133~L3Br_LsuL2781327813epcas2p2y;
-        Thu, 20 Jan 2022 03:14:57 +0000 (GMT)
-Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20220120031457epsmtrp1872b1663c8117d7731ebf099a9c40b37~L3Br3H5cE1062210622epsmtrp1M;
-        Thu, 20 Jan 2022 03:14:57 +0000 (GMT)
-X-AuditID: b6c32a48-d5dff70000002f6d-99-61e8d3b1dbab
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
-        3B.1B.08738.1B3D8E16; Thu, 20 Jan 2022 12:14:57 +0900 (KST)
-Received: from ubuntu.dsn.sec.samsung.com (unknown [12.36.155.120]) by
-        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20220120031457epsmtip2d713d752fc1a4644e094e9159bfff4a5~L3BrsA6Nu0511505115epsmtip2g;
-        Thu, 20 Jan 2022 03:14:57 +0000 (GMT)
-From:   Kiwoong Kim <kwmad.kim@samsung.com>
-To:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alim.akhtar@samsung.com, avri.altman@wdc.com, jejb@linux.ibm.com,
-        martin.petersen@oracle.com, beanhuo@micron.com,
-        cang@codeaurora.org, adrian.hunter@intel.com, sc.suh@samsung.com,
-        hy50.seo@samsung.com, sh425.lee@samsung.com,
-        bhoon95.kim@samsung.com, vkumar.1997@samsung.com
-Cc:     Kiwoong Kim <kwmad.kim@samsung.com>
-Subject: [RESEND PATCH v2] scsi: ufs: use an generic error code in
- ufshcd_set_dev_pwr_mode
-Date:   Thu, 20 Jan 2022 12:13:09 +0900
-Message-Id: <1642648389-189554-1-git-send-email-kwmad.kim@samsung.com>
-X-Mailer: git-send-email 2.7.4
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpjk+LIzCtJLcpLzFFi42LZdljTXHfT5ReJBkuuM1ucfLKGzeLBvG1s
-        Fi9/XmWzOPiwk8Xi69JnrBaf1i9jtVi9+AGLxaIb25gsbm45ymJxedccNovu6zvYLJYf/8dk
-        0XX3BqPF0n9vWSzu3P/I4sDvcbmvl8lj8Z6XTB4TFh1g9Pi+voPN4+PTWywefVtWMXp83iTn
-        0X6gmymAIyrbJiM1MSW1SCE1Lzk/JTMv3VbJOzjeOd7UzMBQ19DSwlxJIS8xN9VWycUnQNct
-        MwfoeiWFssScUqBQQGJxsZK+nU1RfmlJqkJGfnGJrVJqQUpOgXmBXnFibnFpXrpeXmqJlaGB
-        gZEpUGFCdsaqqfcZC55wVUzYu4CtgfEyRxcjJ4eEgIlEy79vbF2MXBxCAjsYJaZ0fWYBSQgJ
-        fGKU2HyJB8L+zCjxeGUhTMPHvbfZIRp2MUrcub2JGcL5wSjx9tc6VpAqNgFNiac3pzKB2CIC
-        15kk5m3PALGZBdQldk04ARYXFoiReH18CjOIzSKgKjH54zewzbwCbhIL1s5mgdgmJ3HzXCfY
-        AgmBRg6JtXshmiUEXCT2TZgJZQtLvDq+hR3ClpJ42d/GDtHQzCixc3cjVPcURokl+z9AVRlL
-        zHrWztjFyAF0kqbE+l36IKaEgLLEkVssEIfySXQc/ssOEeaV6GgTgmhUlvg1aTIjhC0pMfPm
-        HaiBHhKPnl9nhoRWrMSz43PZJzDKzkKYv4CRcRWjWGpBcW56arFRgQk8kpLzczcxghOklscO
-        xtlvP+gdYmTiYDzEKMHBrCTCK1X/LFGINyWxsiq1KD++qDQntfgQoykwwCYyS4km5wNTdF5J
-        vKGJpYGJmZmhuZGpgbmSOK9XyoZEIYH0xJLU7NTUgtQimD4mDk6pBqaNy9672Mxk+Tf/2KGo
-        PZ8b3RPCpthxpfs+OvbDftanruOmfMkpJ29LXtjjsbVKIoX57aEztoeeM26pdNhto7+n8Ur1
-        uyiH6iOxzumZv4wY+PT/GtY8Ufnd9u5+wJwgqSDO8yaXeF1X3TAMVlmvXPi6KmGWe/bGgy+L
-        nAwitqzcL3vYf2OrYWIP99urCxaazJ6lLnDn+2++kD3lqzUnizz/e+pC4KfDf1jDbzjGK50W
-        XfE2kIH7z7nFumnOjI+8Is9cYdZ5lN/gKGTvxsK1VEh7mf/B0Em2c7pPpBrPufn6zwLtKQ/7
-        wzsSM142WEatLl54sWHD9zMzZrWHrtnrdvST3WzeK+aNvQIXX6hlqfAqsRRnJBpqMRcVJwIA
-        vraqWhkEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrGLMWRmVeSWpSXmKPExsWy7bCSvO7Gyy8SDe48kLA4+WQNm8WDedvY
-        LF7+vMpmcfBhJ4vF16XPWC0+rV/GarF68QMWi0U3tjFZ3NxylMXi8q45bBbd13ewWSw//o/J
-        ouvuDUaLpf/esljcuf+RxYHf43JfL5PH4j0vmTwmLDrA6PF9fQebx8ent1g8+rasYvT4vEnO
-        o/1AN1MARxSXTUpqTmZZapG+XQJXxqqp9xkLnnBVTNi7gK2B8TJHFyMnh4SAicTHvbfZQWwh
-        gR2MErfee0HEJSVO7HzOCGELS9xvOcLaxcgFVPONUWLLp2Y2kASbgKbE05tTmUASIgIvmSRe
-        zFkDlmAWUJfYNeEEE4gtLBAl0XNgB9gkFgFVickfv7GA2LwCbhIL1s5mgdggJ3HzXCfzBEae
-        BYwMqxglUwuKc9Nziw0LjPJSy/WKE3OLS/PS9ZLzczcxgoNWS2sH455VH/QOMTJxMB5ilOBg
-        VhLhlap/lijEm5JYWZValB9fVJqTWnyIUZqDRUmc90LXyXghgfTEktTs1NSC1CKYLBMHp1QD
-        k1zY77XHLB9Z3OAzF68Rvvc8lUst8kiMv5K/2N/purOzXhr9Ugxd8XejyW7ro5PsctzFT1xK
-        Dc/sW2eWp9c6+Uhgz2HDov691t+aXvQstJ+yafuRcynydY9cH82aXVw2iXP3+twOl+jD5y0f
-        dcyMP1HSxcF8+344y8Qnotf/bnjba8mj9MydreDR0d9z3lzfZaX2Uznq1zKfpnyBCeqlOlW5
-        tXGqVdwC7E05TWbivV3yj2PzN8gfvfrp+YK9l4QdXv+u+Wt+VOCKQda5E9LeC++cPrJmxoxP
-        ZSJXKyZmG6i2t/m/0d9zw/50d+qsdXZNK6I/L159bdYTv1UBdu48Ep38Xyd+aKiZcHDza92t
-        X5VYijMSDbWYi4oTAdEIrEXJAgAA
-X-CMS-MailID: 20220120031457epcas2p2ae55ef07581ed699a49b27391d7ab133
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20220120031457epcas2p2ae55ef07581ed699a49b27391d7ab133
-References: <CGME20220120031457epcas2p2ae55ef07581ed699a49b27391d7ab133@epcas2p2.samsung.com>
+        Wed, 19 Jan 2022 22:18:16 -0500
+X-Greylist: delayed 1042 seconds by postgrey-1.27 at vger.kernel.org; Wed, 19 Jan 2022 22:18:16 EST
+X-Cam-AntiVirus: no malware found
+X-Cam-ScannerInfo: https://help.uis.cam.ac.uk/email-scanner-virus
+Received: from hades.srcf.societies.cam.ac.uk ([131.111.179.67]:49372)
+        by ppsw-33.csi.cam.ac.uk (ppsw.cam.ac.uk [131.111.8.137]:25)
+        with esmtps (TLS1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
+        id 1nANgO-0005zr-iJ (Exim 4.95)
+        (return-path <amc96@srcf.net>);
+        Thu, 20 Jan 2022 03:00:16 +0000
+Received: from [192.168.1.10] (host-92-12-61-86.as13285.net [92.12.61.86])
+        (Authenticated sender: amc96)
+        by hades.srcf.societies.cam.ac.uk (Postfix) with ESMTPSA id 5EA821FBFF;
+        Thu, 20 Jan 2022 03:00:16 +0000 (GMT)
+Message-ID: <f3239ec0-9fb8-722a-00c5-11b18f19f047@srcf.net>
+Date:   Thu, 20 Jan 2022 03:00:15 +0000
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Content-Language: en-GB
+To:     Sean Christopherson <seanjc@google.com>,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        David Woodhouse <dwmw2@infradead.org>,
+        Alexander Graf <graf@amazon.de>,
+        Andrew Cooper <andrew.cooper3@citrix.com>,
+        Andrew Cooper <amc96@srcf.net>
+References: <20220120000624.655815-1-seanjc@google.com>
+From:   Andrew Cooper <amc96@srcf.net>
+Subject: Re: [PATCH] KVM: VMX: Set vmcs.PENDING_DBG.BS on #DB in STI/MOVSS
+ blocking shadow
+In-Reply-To: <20220120000624.655815-1-seanjc@google.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-v1 -> v2: modify the comment of ufshcd_set_dev_pwr_mode
+On 20/01/2022 00:06, Sean Christopherson wrote:
+> Set vmcs.GUEST_PENDING_DBG_EXCEPTIONS.BS, a.k.a. the pending single-step
+> breakpoint flag, when re-injecting a #DB with RFLAGS.TF=1, and STI or
+> MOVSS blocking is active.  Setting the flag is necessary to make VM-Entry
+> consistency checks happy, as VMX has an invariant that if RFLAGS.TF is
+> set and STI/MOVSS blocking is true, then the previous instruction must
+> have been STI or MOV/POP, and therefore a single-step #DB must be pending
+> since the RFLAGS.TF cannot have been set by the previous instruction,
+> i.e. the one instruction delay after setting RFLAGS.TF must have already
+> expired.
+>
+> Normally, the CPU sets vmcs.GUEST_PENDING_DBG_EXCEPTIONS.BS appropriately
+> when recording guest state as part of a VM-Exit, but #DB VM-Exits
+> intentionally do not treat the #DB as "guest state" as interception of
+> the #DB effectively makes the #DB host-owned, thus KVM needs to manually
+> set PENDING_DBG.BS when forwarding/re-injecting the #DB to the guest.
 
-The return value of ufshcd_set_dev_pwr_mode is given to
-device pm core. However, the function currently returns a result
-in scsi command and the device pm core doesn't understand it.
-It might lead to unexpected behaviors of user land. I found
-the return value led to platform reset in Android.
+The problem is that none of this is documented.
 
-This patch is to use an generic code for SSU failures.
+Amongst other things, the vmentry consistency check misses the case when
+#DB really is pending in ENTRY_INTR_INFO.
 
-Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
----
- drivers/scsi/ufs/ufshcd.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/ufs/ufshcd.c b/drivers/scsi/ufs/ufshcd.c
-index 1049e41..472c382 100644
---- a/drivers/scsi/ufs/ufshcd.c
-+++ b/drivers/scsi/ufs/ufshcd.c
-@@ -8613,7 +8613,7 @@ static void ufshcd_hba_exit(struct ufs_hba *hba)
-  * @pwr_mode: device power mode to set
-  *
-  * Returns 0 if requested power mode is set successfully
-- * Returns non-zero if failed to set the requested power mode
-+ * Returns < 0 if failed to set the requested power mode
-  */
- static int ufshcd_set_dev_pwr_mode(struct ufs_hba *hba,
- 				     enum ufs_dev_pwr_mode pwr_mode)
-@@ -8669,6 +8669,7 @@ static int ufshcd_set_dev_pwr_mode(struct ufs_hba *hba,
- 			    pwr_mode, ret);
- 		if (ret > 0 && scsi_sense_valid(&sshdr))
- 			scsi_print_sense_hdr(sdp, NULL, &sshdr);
-+		ret = -EIO;
- 	}
- 
- 	if (!ret)
--- 
-2.7.4
+It is very clear that to use VT-x/SVM correctly, required reading
+includes the core microcode and RTL, which of course all of us have
+access to...
 
+> Note, although this bug can be triggered by guest userspace, doing so
+> requires IOPL=3, and guest userspace running with IOPL=3 has full access
+> to all I/O ports (from the guest's perspective) and can crash/reboot the
+> guest any number of ways.  IOPL=3 is required because STI blocking kicks
+> in if and only if RFLAGS.IF is toggled 0=>1, and if CPL>IOPL, STI either
+> takes a #GP or modifies RFLAGS.VIF, not RFLAGS.IF.
+>
+> MOVSS blocking can be initiated by userspace, but can be coincident with
+> a #DB if and only if DR7.GD=1 (General Detect enabled) and a MOV DR is
+> executed in the MOVSS shadow.  MOV DR #GPs at CPL>0, thus MOVSS blocking
+> is problematic only for CPL0 (and only if the guest is crazy enough to
+> access a DR in a MOVSS shadow).  All other sources of #DBs are either
+> suppressed by MOVSS blocking (single-step, code fetch, data, and I/O),
+
+It is more complicated than this and undocumented.  Single step is
+discard in a shadow, while data breakpoints are deferred.
+
+I've just run an experiment with code breakpoints, as they're faults
+like General Detect:
+
+bool do_unhandled_exception(struct cpu_regs *regs)
+{
+    static int limit;
+
+    if ( limit++ > 10 )
+        return false;
+
+    if ( regs->entry_vector == X86_EXC_DB )
+    {
+        unsigned int pending_dbg = read_dr6() ^ X86_DR6_DEFAULT;
+        unsigned int dr7 = read_dr7(), spurious = 0;
+
+        for ( int i = 0; i < 4; ++i )
+            if ( pending_dbg & (1 << i) && ((dr7 >> (2 * i)) & 3) == 0 )
+                spurious |= (1 << i);
+
+        printk("#DB at %04x:%p, pending %08x, spurious %x\n",
+               regs->cs, _p(regs->ip), pending_dbg ^ spurious, spurious);
+        write_dr6(X86_DR6_DEFAULT);
+
+        return true;
+    }
+
+    return false;
+}
+
+void test_main(void)
+{
+    extern char l0[] asm ("0f"), l1[] asm ("1f");
+    extern char l2[] asm ("2f"), l3[] asm ("3f");
+    unsigned int tmp;
+
+    write_cr4(read_cr4() | X86_CR4_DE);
+
+    write_dr0(_u(l0));
+    write_dr1(_u(l1));
+    write_dr2(_u(l2));
+    write_dr3(_u(l3));
+
+    write_dr7(/* DR7_SYM(0, G, X) | */
+              /* DR7_SYM(1, G, X) | */
+              DR7_SYM(2, G, X) |
+              /* DR7_SYM(3, G, X) | */
+              X86_DR7_GE);
+
+    asm volatile("mov %%ss, %[tmp];"
+                 "pushf;"
+                 "pushf;"
+                 "orl $"STR(X86_EFLAGS_TF)", (%%"_ASM_SP");"
+                 "popf;"
+                 "nop;"
+                 "0: nop;"
+                 "1: mov %[tmp], %%ss;"
+                 "2: nop;"
+                 "3: popf;"
+                 : [tmp] "=r" (tmp));
+
+    /* If the VM is still alive, it didn't suffer a vmentry failure. */
+    xtf_success("Success: Not vulnerable to XSA-308\n");
+}
+
+$ objdump -d tests/xsa-308/test-hvm64-xsa-308 | grep -A25 '<test_main>:'
+001048a0 <test_main>:
+  1048a0:    0f 20 e0                 mov    %cr4,%rax
+  1048a3:    48 83 c8 08              or     $0x8,%rax
+  1048a7:    0f 22 e0                 mov    %rax,%cr4
+  1048aa:    b8 df 48 10 00           mov    $0x1048df,%eax
+  1048af:    0f 23 c0                 mov    %rax,%db0
+  1048b2:    b8 e0 48 10 00           mov    $0x1048e0,%eax
+  1048b7:    0f 23 c8                 mov    %rax,%db1
+  1048ba:    b8 e2 48 10 00           mov    $0x1048e2,%eax
+  1048bf:    0f 23 d0                 mov    %rax,%db2
+  1048c2:    b8 e3 48 10 00           mov    $0x1048e3,%eax
+  1048c7:    0f 23 d8                 mov    %rax,%db3
+  1048ca:    b8 20 02 00 00           mov    $0x220,%eax
+  1048cf:    0f 23 f8                 mov    %rax,%db7
+  1048d2:    8c d0                    mov    %ss,%eax
+  1048d4:    9c                       pushf 
+  1048d5:    9c                       pushf 
+  1048d6:    81 0c 24 00 01 00 00     orl    $0x100,(%rsp)
+  1048dd:    9d                       popf  
+  1048de:    90                       nop
+  1048df:    90                       nop
+  1048e0:    8e d0                    mov    %eax,%ss
+  1048e2:    90                       nop
+  1048e3:    9d                       popf  
+  1048e4:    bf 00 3e 11 00           mov    $0x113e00,%edi
+  1048e9:    31 c0                    xor    %eax,%eax
+
+gives
+
+--- Xen Test Framework ---
+Environment: HVM 64bit (Long mode 4 levels)
+XSA-308 PoC
+#DB at 0008:00000000001048df, pending 00004000, spurious 1
+#DB at 0008:00000000001048e0, pending 00004000, spurious 2
+#DB at 0008:00000000001048e3, pending 00004000, spurious 8
+#DB at 0008:00000000001048e4, pending 00004000, spurious 0
+Success: Not vulnerable to XSA-308
+
+which suggests that the active code breakpoint in the MovSS shadow is
+discarded too, because of no #DB on the 0x1048e2 boundary.
+
+This test is obscured by another bug/misfeature/something where the
+B{0..3} get lost on vmexit if BT is also set.
+
+> are mutually exclusive with MOVSS blocking (T-bit task switch),
+
+Howso?  MovSS prevents external interrupts from triggering task
+switches, but instruction sources still trigger in a shadow.
+
+>  or are
+> already handled by KVM (ICEBP, a.k.a. INT1).
+
+Other sources of #DB include RTM debugging, with errata causing a
+fault-style #DB pointing at the XBEGIN instruction, rather than
+vectoring to the abort handler, and splitlock which is new since I last
+thought about this problem.
+
+> This bug was originally found by running tests[1] created for XSA-308[2].
+> Note that Xen's userspace test emits ICEBP in the MOVSS shadow, which is
+> presumably why the Xen bug was deemed to be an exploitable DOS from guest
+> userspace.
+
+As I recall, the original report to the security team was something
+along the lines of "Steam has just updated game, and now when I start
+it, the VM explodes".
+
+>   KVM already handles ICEBP by skipping the ICEBP instruction
+> and thus clears MOVSS blocking as a side effect of its "emulation".
+>
+> [1] http://xenbits.xenproject.org/docs/xtf/xsa-308_2main_8c_source.html
+
+This URL is at the whim of doxygen and not necessarily stable.
+
+https://xenbits.xen.org/gitweb/?p=xtf.git;a=blob;f=tests/xsa-308/main.c
+ought to have better longevity, as well as including test description.
+
+~Andrew
