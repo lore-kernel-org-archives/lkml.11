@@ -2,102 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD3EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 01:24:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 198A4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 01:26:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345728AbiATBY0 (ORCPT
+        id S1358087AbiATB0M (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 20:24:26 -0500
-Received: from szxga01-in.huawei.com ([45.249.212.187]:16725 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345516AbiATBYZ (ORCPT
+        Wed, 19 Jan 2022 20:26:12 -0500
+Received: from relmlor2.renesas.com ([210.160.252.172]:17820 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1345516AbiATB0D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 20:24:25 -0500
-Received: from kwepemi100010.china.huawei.com (unknown [172.30.72.56])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4JfPpD5nYlzZfH9;
-        Thu, 20 Jan 2022 09:20:36 +0800 (CST)
-Received: from kwepemm600013.china.huawei.com (7.193.23.68) by
- kwepemi100010.china.huawei.com (7.221.188.54) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 20 Jan 2022 09:24:23 +0800
-Received: from [10.174.178.208] (10.174.178.208) by
- kwepemm600013.china.huawei.com (7.193.23.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Thu, 20 Jan 2022 09:24:22 +0800
-Subject: Re: [PATCH 5.4 00/15] 5.4.173-rc1 review
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <torvalds@linux-foundation.org>, <akpm@linux-foundation.org>,
-        <linux@roeck-us.net>, <shuah@kernel.org>, <patches@kernelci.org>,
-        <lkft-triage@lists.linaro.org>, <pavel@denx.de>,
-        <jonathanh@nvidia.com>, <f.fainelli@gmail.com>,
-        <stable@vger.kernel.org>
-References: <20220118160450.062004175@linuxfoundation.org>
-From:   Samuel Zou <zou_wei@huawei.com>
-Message-ID: <59271f3d-9a26-cda2-3b4b-02847bcfcf73@huawei.com>
-Date:   Thu, 20 Jan 2022 09:24:21 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <20220118160450.062004175@linuxfoundation.org>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.174.178.208]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- kwepemm600013.china.huawei.com (7.193.23.68)
-X-CFilter-Loop: Reflected
+        Wed, 19 Jan 2022 20:26:03 -0500
+X-IronPort-AV: E=Sophos;i="5.88,300,1635174000"; 
+   d="scan'208";a="107627278"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 20 Jan 2022 10:26:01 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id B9A7C416F260;
+        Thu, 20 Jan 2022 10:25:58 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     =?UTF-8?q?Niklas=20S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
+        Jacopo Mondi <jacopo@jmondi.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        linux-media@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH v2] media: dt-bindings: media: renesas,csi2: Update data-lanes property
+Date:   Thu, 20 Jan 2022 01:25:53 +0000
+Message-Id: <20220120012553.23295-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+CSI-2 (CSI4LNK0) on R-Car and RZ/G2 supports 4-lane mode which is already
+handled by rcar-csi2.c driver. This patch updates the data-lanes property
+to describe the same.
 
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+---
+Hi All,
 
-On 2022/1/19 0:05, Greg Kroah-Hartman wrote:
-> This is the start of the stable review cycle for the 5.4.173 release.
-> There are 15 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
-> 
-> Responses should be made by Thu, 20 Jan 2022 16:04:42 +0000.
-> Anything received after that time might be too late.
-> 
-> The whole patch series can be found in one patch at:
-> 	https://www.kernel.org/pub/linux/kernel/v5.x/stable-review/patch-5.4.173-rc1.gz
-> or in the git tree and branch at:
-> 	git://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git linux-5.4.y
-> and the diffstat can be found below.
-> 
-> thanks,
-> 
-> greg k-h
-> 
+Instead of adding uniqueItems:true into SoC binding doc's I think we could
+add this in video-interfaces.yaml for data-lanes property. Any thoughts on this?
 
-Tested on arm64 and x86 for 5.4.173-rc1,
+Cheers,
+Prabhakar
 
-Kernel repo:
-https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux-stable-rc.git
-Branch: linux-5.4.y
-Version: 5.4.173-rc1
-Commit: 6a507169a5ff33a54b96499b12c79f71537e0bde
-Compiler: gcc version 7.3.0 (GCC)
+v1->v2
+* Dropped const items
+* Added uniqueItems
 
-arm64:
---------------------------------------------------------------------
-Testcase Result Summary:
-total: 9014
-passed: 9014
-failed: 0
-timeout: 0
---------------------------------------------------------------------
+v1:
+https://lore.kernel.org/lkml/20220118163413.ge2b4g75yhfqvq3x@uno.localdomain/T/
+---
+ Documentation/devicetree/bindings/media/renesas,csi2.yaml | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-x86:
---------------------------------------------------------------------
-Testcase Result Summary:
-total: 9014
-passed: 9014
-failed: 0
-timeout: 0
---------------------------------------------------------------------
+diff --git a/Documentation/devicetree/bindings/media/renesas,csi2.yaml b/Documentation/devicetree/bindings/media/renesas,csi2.yaml
+index e6a036721082..a5a1b570025a 100644
+--- a/Documentation/devicetree/bindings/media/renesas,csi2.yaml
++++ b/Documentation/devicetree/bindings/media/renesas,csi2.yaml
+@@ -67,7 +67,11 @@ properties:
+                 maxItems: 1
+ 
+               data-lanes:
+-                maxItems: 1
++                minItems: 1
++                maxItems: 4
++                uniqueItems: true
++                items:
++                  maximum: 4
+ 
+             required:
+               - clock-lanes
+-- 
+2.17.1
 
-Tested-by: Hulk Robot <hulkrobot@huawei.com>
