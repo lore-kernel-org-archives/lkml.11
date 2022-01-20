@@ -2,104 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76A23C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:05:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C16B1C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:08:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230269AbiATLFX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 06:05:23 -0500
-Received: from mout.kundenserver.de ([212.227.126.131]:59917 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229908AbiATLEX (ORCPT
+        id S229931AbiATLIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 06:08:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42028 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229576AbiATLID (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 06:04:23 -0500
-Received: from mail-oo1-f45.google.com ([209.85.161.45]) by
- mrelayeu.kundenserver.de (mreue010 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1MJmbB-1mqMtJ1Bo9-00K55w; Thu, 20 Jan 2022 12:04:20 +0100
-Received: by mail-oo1-f45.google.com with SMTP id b20-20020a4a3414000000b002dda566aba7so1888654ooa.13;
-        Thu, 20 Jan 2022 03:04:19 -0800 (PST)
-X-Gm-Message-State: AOAM532CO6xxk8E9jLiCM+zO6LCOrYZPptZaB69JP9XI1jtA299h6MJk
-        ngAhhKcUcYmqJuVnlkYx61M0uPsv8i8HF772Gr8=
-X-Google-Smtp-Source: ABdhPJxdLg6SDZjsvGmAsYmn2qy9+2h/ODrSB5K/8pY/EXdxIA8KLQS4DyhVSmna3jImvkgL6VaV1O46bPcTyjt0SVc=
-X-Received: by 2002:a05:6808:1490:: with SMTP id e16mr6881848oiw.84.1642673470519;
- Thu, 20 Jan 2022 02:11:10 -0800 (PST)
-MIME-Version: 1.0
-References: <20220120073911.99857-18-guoren@kernel.org>
-In-Reply-To: <20220120073911.99857-18-guoren@kernel.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 20 Jan 2022 11:10:53 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1_qwRpfHRyF75WEqfxGxgVnfB15vNS-egQctx7R5-DvA@mail.gmail.com>
-Message-ID: <CAK8P3a1_qwRpfHRyF75WEqfxGxgVnfB15vNS-egQctx7R5-DvA@mail.gmail.com>
-Subject: Re: [PATCH V3 17/17] KVM: compat: riscv: Prevent KVM_COMPAT from
- being selected
-To:     Guo Ren <guoren@kernel.org>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>, Arnd Bergmann <arnd@arndb.de>,
-        Anup Patel <anup@brainfault.org>,
-        gregkh <gregkh@linuxfoundation.org>,
-        liush <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Wang Junqiang <wangjunqiang@iscas.ac.cn>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Hellwig <hch@infradead.org>,
+        Thu, 20 Jan 2022 06:08:03 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408E9C061574;
+        Thu, 20 Jan 2022 03:08:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=KCq0JzQnS5ZYw2B7tpX4PZGYRq7eIxGkoXXZAjqJTxo=; b=ePFB6IGhW5UvyJvFXUAd+jzk0v
+        6FxavVUfmVDmm6bT85fKD+JMSWyWVN1AXhiJVRrriM349oxHza4NhhmbF+kycb8PNc5nNoQkpB6K7
+        1n1jRsx/kbrmFgBzsU9yX+blReQyCiKDXPIEVoDnsGmf7F7pBVxDmbm9WTHRD74FpwDO2W+rVFwQP
+        0JwWXbg2Zpi+qAq7cQL3v4eibBdwrCqA7MTch0ljjZyCGiT7l6y3OyJ1KJcXsd6WlzgHAoY0aySuE
+        /xeXlGebPbbr3bj2ucjP0vcgijubTyA20vVrRR7kQjaQfRjbbT7VzieyrvtciylI5fZdw5JODovb2
+        RQVp1DXA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nAVI8-00EAvd-Qt; Thu, 20 Jan 2022 11:07:45 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 9B28B3002F1;
+        Thu, 20 Jan 2022 12:07:44 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 7DDAD21417388; Thu, 20 Jan 2022 12:07:44 +0100 (CET)
+Date:   Thu, 20 Jan 2022 12:07:44 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Peter Oskolkov <posk@google.com>
+Cc:     Peter Oskolkov <posk@posk.io>, Ingo Molnar <mingo@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Andy Lutomirski <luto@kernel.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        inux-parisc@vger.kernel.org,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Guo Ren <guoren@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:j2ac7wj3LsCM9f+9e4oJASCScxFtNHRtjDDmqr4iy577NRpRpAF
- bMlnZKMV2DYLGVHn0K8JkZd3T2GqO0MNYXz6fcH0qw593jQUksbXGnoN9YSzPzIKe/+5lR6
- vkhBO4+bgoTilrYFReGT0M6jgFRRpZLN5x34QH1WXbatlFvqzaiqNUUsFz12Ol1tTe4FtAC
- rXedzAAJ/vw3lOUWSKspw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:lXSZfcmtm/Q=:SRkDkTuRkxkElxz6iLbS59
- GIp6kV1MlGEO3mJBtnAbsuOWkQw4kQj/9qsIc+2rcwTpPcav4RPYAGNqu9DqJTWdxcTXNf9dC
- /xmtASxwkvFd4AzugE3Q4gpYN25r9TIZSzjGzEARt0BEGr1ApLRzz7WVuXzGIAYyPiS9XTJoe
- eAgovehaJOZ330IGzXZ7LSk/JNIA3CK+JRDrC0CNIW5kOdMvm9iW41PchyrvZfZe2C594XuH3
- xak/xHfeJFO/2JymqAgswcgw1XUNz8vvfP35bBQ8p3RasPTraw35wKH4EOAn3q26ZFY9w1B9W
- m5gfQHyMh/VPHG2tsWMSoTlax9ph7UhUiN5gh/k58YOsLKyT6ISze7pnBHwhNmXssr8ki0MfD
- pl8/zYlSJ/JiUuODbPcdOT+CTxz252Vsawl+h/vKIPNIY/YzuehZpomjExbGFDZE3fF3h/Rhq
- A/nOx3JB6I9b2My0LG25SOp4uLRaZFobO431tfN+WFR2ibA9IcLJKUCbE6sG3WE3Y1qmuQzNt
- Z1EUZgbjxhoGlLmVxYCxz/lCYk6oWSiHqdZYH6ndPu+P5/ntPFz3hoYDtRbNtVBis/VJaZ+95
- +dOEJFKQMU6hl7wrhwwz2QOoHREd+vGyt67I2d+LwdeR0hwFt6kVEuDRdWRA0r/ZTXIRAzqha
- kDu+CMpRtAKykZ7yJeMkbmM6HFCFbOOWfSJ7PcOd5hGhEobjmAW8MWA+WR2EtUy6CERoxoNMa
- LFarC1NWQZdjgZZ4YJaiE+StPfkuerPENJADsFQ3xCcuHphZVRRO6oFl3BBsfigYILDnoloM8
- 3fCM88jEaxZcsKibADiiJb3hBMbiH9Ib9PhlY1WMb5esQikAcg=
+        linux-api@vger.kernel.org, Paul Turner <pjt@google.com>,
+        Ben Segall <bsegall@google.com>,
+        Andrei Vagin <avagin@google.com>, Jann Horn <jannh@google.com>,
+        Thierry Delisle <tdelisle@uwaterloo.ca>
+Subject: Re: [PATCH v0.9.1 3/6] sched/umcg: implement UMCG syscalls
+Message-ID: <YelCgKeprVDNoal7@hirez.programming.kicks-ass.net>
+References: <20211122211327.5931-1-posk@google.com>
+ <20211122211327.5931-4-posk@google.com>
+ <20211124200822.GF721624@worktop.programming.kicks-ass.net>
+ <CAFTs51Uka8VRCHuGidw7mRwATufp87U6S8SWUVod_kU-h6T3ew@mail.gmail.com>
+ <YaEUts3RbOLyvAjl@hirez.programming.kicks-ass.net>
+ <CAFTs51XnN+N74i1XHvRUAUWd04-Fs9uV6ouXo=CQSQs8MaEM5A@mail.gmail.com>
+ <YaUCoe07Wl9Stlch@hirez.programming.kicks-ass.net>
+ <CAFTs51UzR=m6+vcjTCNOGwGu3ZwB5GMrg+cSQy2ecvCWxhZvEQ@mail.gmail.com>
+ <Ya34S2JCQg+81h4t@hirez.programming.kicks-ass.net>
+ <CAPNVh5eYinGEK2Ece45fLYzU8hMWiqAzVdVbdFxd-P5fPXuFSA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPNVh5eYinGEK2Ece45fLYzU8hMWiqAzVdVbdFxd-P5fPXuFSA@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 8:39 AM <guoren@kernel.org> wrote:
->
-> From: Guo Ren <guoren@linux.alibaba.com>
->
-> Current riscv doesn't support the 32bit KVM/arm API. Let's make it
-> clear by not selecting KVM_COMPAT.
->
-> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
-> ---
->  virt/kvm/Kconfig | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/virt/kvm/Kconfig b/virt/kvm/Kconfig
-> index f4834c20e4a6..a8c5c9f06b3c 100644
-> --- a/virt/kvm/Kconfig
-> +++ b/virt/kvm/Kconfig
-> @@ -53,7 +53,7 @@ config KVM_GENERIC_DIRTYLOG_READ_PROTECT
->
->  config KVM_COMPAT
->         def_bool y
-> -       depends on KVM && COMPAT && !(S390 || ARM64)
-> +       depends on KVM && COMPAT && !(S390 || ARM64 || RISCV)
+On Wed, Jan 19, 2022 at 09:26:41AM -0800, Peter Oskolkov wrote:
+> On Mon, Dec 6, 2021 at 3:47 AM Peter Zijlstra <peterz@infradead.org> wrote:
+> >
+> > On Mon, Nov 29, 2021 at 09:34:49AM -0800, Peter Oskolkov wrote:
+> > > On Mon, Nov 29, 2021 at 8:41 AM Peter Zijlstra <peterz@infradead.org> wrote:
+> >
+> > > > Also, timeout on sys_umcg_wait() gets you the exact same situation (or
+> > > > worse, multiple running workers).
+> > >
+> > > It should not. Timed out workers should be added to the runnable list
+> > > and not become running unless a server chooses so. So sys_umcg_wait()
+> > > with a timeout should behave similarly to a normal sleep, in that the
+> > > server is woken upon the worker blocking, and upon the worker wakeup
+> > > the worker is added to the woken workers list and waits for a server
+> > > to run it. The only difference is that in a sleep the worker becomes
+> > > BLOCKED, while in sys_umcg_wait() the worker is RUNNABLE the whole
+> > > time.
+> > >
+> > > Why then have sys_umcg_wait() with a timeout at all, instead of
+> > > calling nanosleep()? Because the worker in sys_umcg_wait() can be
+> > > context-switched into by another worker, or made running by a server;
+> > > if the worker is in nanosleep(), it just sleeps.
+> >
+> > I've been trying to figure out the semantics of that timeout thing, and
+> > I can't seem to make sense of it.
+> >
+> > Consider two workers:
+> >
+> >         S0 running A                            S1 running B
+> >
+> > therefore:
+> >
+> >         S0::state == RUNNABLE                   S1::state == RUNNABLE
+> >         A::server_tid == S0.tid                 B::server_tid = S1.tid
+> >         A::state == RUNNING                     B::state == RUNNING
+> >
+> > Doing:
+> >
+> >         self->state = RUNNABLE;                 self->state = RUNNABLE;
+> >         sys_umcg_wait(0);                       sys_umcg_wait(10);
+> >           umcg_enqueue_runnable()                 umcg_enqueue_runnable()
+> 
+> sys_umcg_wait() should not enqueue the worker as runnable; workers are
+> enqueued to indicate wakeup events.
 
-Maybe this should be flipped around into a positive list now?
-The remaining architectures would be mips, powerpc and x86, but it's unclear
-if this actually meant to work on all of them, or any potential ones
-added in the
-future.
+Oooh... I see.
 
-       Arnd
+> So worker timeouts in sys_umcg_wait are treated as wakeup events, with
+> the difference that when the worker is eventually scheduled by a
+> server, sys_umcg_wait returns with ETIMEDOUT.
+
+Right.. OK, let me go fold and polish what I have now before I go change
+things again though.
