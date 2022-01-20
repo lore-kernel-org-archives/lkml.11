@@ -2,86 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D334AC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 22:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AF95C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 22:46:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378105AbiATWmd (ORCPT
+        id S1378115AbiATWqM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 17:42:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59548 "EHLO
+        Thu, 20 Jan 2022 17:46:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233963AbiATWmb (ORCPT
+        with ESMTP id S237405AbiATWqK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 17:42:31 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F620C061574;
-        Thu, 20 Jan 2022 14:42:31 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: nfraprado)
-        with ESMTPSA id D44951F40EF6
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642718549;
-        bh=n9nzvUGdd1YQiFhmJQVwJMExyCSnYF3MN5S9On1se6k=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Gx5LGmfVs1pDMMfMa4ZSil6InBzCwhMelXygPbxag4PlZhUA9YcwTAYl3Qn1lShLR
-         Ri9pMcNH1Wxs/JEAEQBMZIrYjI0I7nAxpAQQUZ0rwR/v+cOUQl5fuC2iTyxBIQMNmH
-         3ZbngxScmE/R8tVwzUkpdJQRY9uuym5U4ANVRTVzaxOO4UbWMSzhqrFLBbp9Td4qSY
-         Mh+A0iDMvExPLmIo0SRKHOUxIcPur+beeqjRquZaPTm6EGmQTDiaeGknjW3fzPHftS
-         yDC15r8UABRks9IXEmfmcZgB09bgbdx+eDmiXsM+zF5WppR3+DHB1A6+vYW6tGeCwK
-         G3fEtBwmR1bNw==
-From:   =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Xin Ji <xji@analogixsemi.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com,
-        =?UTF-8?q?N=C3=ADcolas=20F=2E=20R=2E=20A=2E=20Prado?= 
-        <nfraprado@collabora.com>
-Subject: [PATCH] arm64: dts: mt8183: jacuzzi: Fix bus properties in anx's DSI endpoint
-Date:   Thu, 20 Jan 2022 17:42:04 -0500
-Message-Id: <20220120224204.773117-1-nfraprado@collabora.com>
-X-Mailer: git-send-email 2.34.1
+        Thu, 20 Jan 2022 17:46:10 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B18BFC061574;
+        Thu, 20 Jan 2022 14:46:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6F2D1B81E89;
+        Thu, 20 Jan 2022 22:46:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DAA52C340E0;
+        Thu, 20 Jan 2022 22:46:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642718768;
+        bh=fdSAFRvqmhbMcbD/TihbFGAN81CMJEMp6Widv9tEMRQ=;
+        h=Date:From:To:Cc:Subject:From;
+        b=JFhkN479sXx1J9LQsgx+M1Vg8kuj6cGz6XxwjqEFvYfEcd3ClfMhtiuxLlDPXVtUH
+         /GD2Jd2BIL4EKOvvPTsMu3QPOikvobu6Bx9R7ENvYNW/MuPBkYyGwU72srIhibTJZf
+         jGJzOgGSR3sxdtx1FtWPih+25ed9nUDTTAYo4tAHnTswPs+iLeuPReN7+tKBAaqEEy
+         cIgzBa3tOBF9D0ciaNh6zrefe9PdZ7tnqySXatThfVe6UkoGxq5Mk5aQLXY/c5Z0cI
+         CwyrsfstB3oh8jlYur642lvHAEVQKRtxr7Y4GRcLwZ2JxwPCVkhQ2NnnrkVlOKonB3
+         BURD6097dlfsg==
+Date:   Thu, 20 Jan 2022 16:52:43 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] iio: hw_consumer: Use struct_size() helper in kzalloc()
+Message-ID: <20220120225243.GA37225@embeddedor>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-mt8183-kukui-jacuzzi has an anx7625 bridge connected to the output of
-its DSI host. However, after fd0310b6fe7d ("drm/bridge: anx7625: add
-MIPI DPI input feature"), a bus-type property started being required in
-the endpoint node by the driver to indicate whether it is DSI or DPI.
+Make use of the struct_size() helper instead of an open-coded version,
+in order to avoid any potential type mistakes or integer overflows that,
+in the worst scenario, could lead to heap overflows.
 
-Add the missing bus-type property and set it to 5
-(V4L2_FWNODE_BUS_TYPE_PARALLEL) so that the driver has its input
-configured to DSI and the display pipeline can probe correctly.
+Also, address the following sparse warnings:
+drivers/iio/buffer/industrialio-hw-consumer.c:63:23: warning: using sizeof on a flexible structure
 
-While at it, also set the data-lanes property that was also introduced
-in that same commit, so that we don't rely on the default value.
-
-Fixes: fd0310b6fe7d ("drm/bridge: anx7625: add MIPI DPI input feature")
-Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Link: https://github.com/KSPP/linux/issues/174
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
 ---
- arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/buffer/industrialio-hw-consumer.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
-index 8f7bf33f607d..e8f133dc96b9 100644
---- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
-+++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
-@@ -171,6 +171,8 @@ port@0 {
+diff --git a/drivers/iio/buffer/industrialio-hw-consumer.c b/drivers/iio/buffer/industrialio-hw-consumer.c
+index 87d9aabd20c7..fb58f599a80b 100644
+--- a/drivers/iio/buffer/industrialio-hw-consumer.c
++++ b/drivers/iio/buffer/industrialio-hw-consumer.c
+@@ -52,7 +52,6 @@ static const struct iio_buffer_access_funcs iio_hw_buf_access = {
+ static struct hw_consumer_buffer *iio_hw_consumer_get_buffer(
+ 	struct iio_hw_consumer *hwc, struct iio_dev *indio_dev)
+ {
+-	size_t mask_size = BITS_TO_LONGS(indio_dev->masklength) * sizeof(long);
+ 	struct hw_consumer_buffer *buf;
  
- 			anx7625_in: endpoint {
- 				remote-endpoint = <&dsi_out>;
-+				bus-type = <5>;
-+				data-lanes = <0 1 2 3>;
- 			};
- 		};
+ 	list_for_each_entry(buf, &hwc->buffers, head) {
+@@ -60,7 +59,8 @@ static struct hw_consumer_buffer *iio_hw_consumer_get_buffer(
+ 			return buf;
+ 	}
+ 
+-	buf = kzalloc(sizeof(*buf) + mask_size, GFP_KERNEL);
++	buf = kzalloc(struct_size(buf, scan_mask, BITS_TO_LONGS(indio_dev->masklength)),
++		      GFP_KERNEL);
+ 	if (!buf)
+ 		return NULL;
  
 -- 
-2.34.1
+2.27.0
 
