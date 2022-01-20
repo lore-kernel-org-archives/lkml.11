@@ -2,82 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F576C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 23:00:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F87C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 23:09:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378142AbiATXAy (ORCPT
+        id S1378147AbiATXJp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 18:00:54 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50110 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233856AbiATXAx (ORCPT
+        Thu, 20 Jan 2022 18:09:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:52399 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1378148AbiATXJi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 18:00:53 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A03A61926;
-        Thu, 20 Jan 2022 23:00:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4629CC340E0;
-        Thu, 20 Jan 2022 23:00:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642719652;
-        bh=yrxtLQYE3Yeaemcy819dMJ8llPOZboFgoHhGTaIxnLk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=Hg/Hvy8fdbrtcd1LKqYf0scpfbBmxrOl+9Gl9E23kTIus26WLT2137a/+eknF6gwq
-         77RadoqmjIqQhfTCrFqUqZWy9U7FB1NGPiFB0ldvBXQgA7yXP/AgGH37pz6hxsM6/B
-         /kBpxVgpxSXHQ0z9uUbPIqJtS2ILMs9Dv13BlqQ0IF/zFDI3DsSV3sqG/eR8Bi5e1g
-         tA0bQ1nSHwpjsqkHel9nUN12nPAAI1OOYCjUKJ9NhF9Jn2fL1lqYspP9BMktRNF59n
-         tZDec5BHTV4FxLu8zOyF4rXg8N3pe7+ATEPfX4QkMJvVkpx6Cb/KyTzBzfm2kTOHnE
-         l62qK7hKdiTdg==
-Date:   Thu, 20 Jan 2022 17:00:50 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Krzysztof =?utf-8?Q?Ha=C5=82asa?= <khalasa@piap.pl>
-Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
-Subject: Re: PCI: Race condition in pci_create_sysfs_dev_files (can't boot)
-Message-ID: <20220120230050.GA1077958@bhelgaas>
+        Thu, 20 Jan 2022 18:09:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642720177;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=3DFeZ1TFp34Pl+W08J0c/5GgqOIQHrN13brjYVbP1e8=;
+        b=OFpRNjB6PqKcxiZBCc8299IhTbAresiCEhoE8AuTBeKGnmBu8VPOF1tUWR/T+e7w+FFmGL
+        cu6dDg26EjUjrQD9nDfMO6GRUOyBLnBTJd3B7bGynLQWLF0jT/RDHBQzc7OIhQSMm1TSUR
+        JWSAKASvEuoVt7OEbVUOIVKLUUIpbPo=
+Received: from mail-qt1-f197.google.com (mail-qt1-f197.google.com
+ [209.85.160.197]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-616-idS8GwgGM3-4wi_zjQI8BQ-1; Thu, 20 Jan 2022 18:09:36 -0500
+X-MC-Unique: idS8GwgGM3-4wi_zjQI8BQ-1
+Received: by mail-qt1-f197.google.com with SMTP id bq17-20020a05622a1c1100b002cae8cc2d38so5169219qtb.20
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 15:09:36 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3DFeZ1TFp34Pl+W08J0c/5GgqOIQHrN13brjYVbP1e8=;
+        b=siaYebt9LGzCzdJFwNwt52/mBoR6pxmAnIXGBv8BGulMI3H8J1kvxQGvLYyAb80tSr
+         QKoKT2LqUl7DMUswVevDFCFq75ubG6tCEKn9Gm5/fN2JPXSuYwmwFnBEXDBW+TLyjpew
+         FZZAHF2Ptm1oEQczvlTSKw/Npuscl20gJMZ35TeWs0uv40NFanQMM0fXcngT3dxPDg+W
+         DfSoQG9q/4sfu1qHRi47LK9Hso3wtrs1UbIiPcclBBR/+8fVy+ugU09q4GpjC5gSVP6d
+         0Ku7Fu23GEdPpfCXocDYRwvjun7P5biV0RRPiIthsVuN7NMDkx9pFBn8WcJUwRhilJJV
+         qlDQ==
+X-Gm-Message-State: AOAM533rpRzq559qI+LSLOzLdkaPxINTBiWyzsdbLBFnh/3C9afAD9Bz
+        yvUENr2wKSU8g6WSNj2NZ+Bc43KcqWFcUWHIRIppeGA8YiAwFzKfARpc3T6/4at6k46qmGk//sZ
+        zL1HlcV0bBGcRO4bb6Kg+M+OP
+X-Received: by 2002:a05:620a:4401:: with SMTP id v1mr935774qkp.402.1642720175782;
+        Thu, 20 Jan 2022 15:09:35 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxJO3KsyktKOOJzCdW6z9OOEzp62/IjkWvQKZ7qVmAO7CGL6HrtVV+Fl76EhRCePzv9ptRMcA==
+X-Received: by 2002:a05:620a:4401:: with SMTP id v1mr935755qkp.402.1642720175564;
+        Thu, 20 Jan 2022 15:09:35 -0800 (PST)
+Received: from treble ([2600:1700:6e32:6c00::c])
+        by smtp.gmail.com with ESMTPSA id i4sm2418596qkn.23.2022.01.20.15.09.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 15:09:34 -0800 (PST)
+Date:   Thu, 20 Jan 2022 15:09:32 -0800
+From:   Josh Poimboeuf <jpoimboe@redhat.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     Sergei Trofimovich <slyich@gmail.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] objtool: check: give big enough buffer for pv_ops
+Message-ID: <20220120230932.vgd3sj4yuk7mhmno@treble>
+References: <20220114075756.838243-1-slyich@gmail.com>
+ <YeE588tXLrgWoUu4@hirez.programming.kicks-ass.net>
+ <20220120225810.zqpbug6oj52c34cg@treble>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <m3eebg9puj.fsf@t19.piap.pl>
+In-Reply-To: <20220120225810.zqpbug6oj52c34cg@treble>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jul 30, 2021 at 10:18:44AM +0200, Krzysztof Hałasa wrote:
-> Pali, et al,
+On Thu, Jan 20, 2022 at 02:58:13PM -0800, Josh Poimboeuf wrote:
+> On Fri, Jan 14, 2022 at 09:53:07AM +0100, Peter Zijlstra wrote:
+> > On Fri, Jan 14, 2022 at 07:57:56AM +0000, Sergei Trofimovich wrote:
+> > > On gcc-12 build fails flagging possible buffer overflow:
+> > > 
+> > >     check.c: In function 'validate_call':
+> > >     check.c:2865:58: error: '%d' directive output may be truncated writing between 1 and 10 bytes into a region of size 9 [-Werror=format-truncation=]
+> > >      2865 |                 snprintf(pvname, sizeof(pvname), "pv_ops[%d]", idx);
+> > >           |                                                          ^~
+> > > 
+> > > I think it's a valid warning:
+> > > 
+> > >     static char pvname[16];
+> > >     int idx;
+> > >     ...
+> > >     idx = (rel->addend / sizeof(void *));
+> > >     snprintf(pvname, sizeof(pvname), "pv_ops[%d]", idx);
+> > > 
+> > > we have only 7 chars for %d while it could take up to 9.
+> > 
+> > Right, very unlikely to have that many pv_ops, but it doesn't hurt to
+> > fix this.
+> > 
+> > Thanks!
 > 
-> I'm encountering a problem booting an i.MX6-based device (Gateworks
-> Ventana SBC). This is apparently a known issue:
-> https://lkml.org/lkml/2020/7/16/388
-> 
-> Do you guys know of a fix for this? Booting this machine reliably is
-> lately impossible.
+> Alternatively, 'idx' could just be unsigned char, since pv_ops only has
+> about ~80 entries max, but either way works for me.  I'll queue it up.
 
-Hi Krzysztof, is this still an issue?
+Sergei, can you send a v2 with a valid Signed-off-by tag?
 
-e1d3f3268b0e ("PCI/sysfs: Convert "config" to static attribute") and
-similar patches appeared in v5.13, and they should resolve things like
-this:
+-- 
+Josh
 
-  sysfs: cannot create duplicate filename '/devices/platform/soc/d0070000.pcie/pci0000:00/0000:00:00.0/config'
-
-But your report is different because it looks like we have a problem
-when creating a *directory*:
-
-> sysfs: cannot create duplicate filename '/devices/platform/soc/1ffc000.pcie/pci0000:00/0000:00:00.0/0000:e0'
-
-and then it seems that we corrupted a pointer:
-
-> Unable to handle kernel paging request at virtual address 6f736572 (ASCII = "reso")
-
-which is even more worrisome.
-
-Bjorn
