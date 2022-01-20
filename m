@@ -2,144 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 136CDC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 07:43:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2109C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 07:45:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238985AbiATHnW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 02:43:22 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:34134 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S235850AbiATHnU (ORCPT
+        id S239291AbiATHp3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 02:45:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51652 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234741AbiATHp2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 02:43:20 -0500
-X-UUID: 2050324cb93c4a8380e2bc7685820fff-20220120
-X-UUID: 2050324cb93c4a8380e2bc7685820fff-20220120
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw02.mediatek.com
-        (envelope-from <yongqiang.niu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 73705492; Thu, 20 Jan 2022 15:43:16 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Thu, 20 Jan 2022 15:43:15 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Thu, 20 Jan 2022 15:43:14 +0800
-From:   Yongqiang Niu <yongqiang.niu@mediatek.com>
-To:     Chun-Kuang Hu <chunkuang.hu@kernel.org>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Yongqiang Niu <yongqiang.niu@mediatek.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Dennis YC Hsieh <dennis-yc.hsieh@mediatek.com>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        mtk18742 <moudy.ho@mediatek.com>
-Subject: [PATCH v1, 1/1] soc: mediatek: cmdq: add cmdq_pkt_poll_addr function
-Date:   Thu, 20 Jan 2022 15:43:11 +0800
-Message-ID: <20220120074311.2243-2-yongqiang.niu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220120074311.2243-1-yongqiang.niu@mediatek.com>
-References: <20220120074311.2243-1-yongqiang.niu@mediatek.com>
+        Thu, 20 Jan 2022 02:45:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2856C061574;
+        Wed, 19 Jan 2022 23:45:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B2A6616EC;
+        Thu, 20 Jan 2022 07:45:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3FEBFC340E5;
+        Thu, 20 Jan 2022 07:45:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1642664727;
+        bh=9ZJSx2TYLXQG4OphMRKHxDWvwvEOpIaayDPvmIc2tQk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=q6T+YmDoljBbludzB8vGmsAYHcDvHYarFkhvb+BbJTriecXwqCQ3nuJL0AWXozWwj
+         IDZfbMClYfBhSBnP/mUG6d+C82+1CiUOG2zw1oDfVCddJoUHD3Yn4KO7SngILRNV/n
+         qjfsjpL+FM8ROkHwaTmOsKn5Ms+nm/wa8zPf4sAo=
+Date:   Thu, 20 Jan 2022 08:45:24 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Christoph Hellwig <hch@infradead.org>
+Cc:     Matthias Kaehlcke <mka@chromium.org>,
+        Alan Stern <stern@rowland.harvard.edu>,
+        Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        Mathias Nyman <mathias.nyman@intel.com>,
+        Felipe Balbi <balbi@kernel.org>, devicetree@vger.kernel.org,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Peter Chen <peter.chen@kernel.org>,
+        linux-kernel@vger.kernel.org,
+        Douglas Anderson <dianders@chromium.org>,
+        Roger Quadros <rogerq@kernel.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-usb@vger.kernel.org, Bastien Nocera <hadess@hadess.net>,
+        Ravi Chandra Sadineni <ravisadineni@chromium.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Subject: Re: [PATCH v20 2/5] driver core: Export device_is_bound()
+Message-ID: <YekTFMnXK87MNMh3@kroah.com>
+References: <20220119204345.3769662-1-mka@chromium.org>
+ <20220119124327.v20.2.Ie1de382686d61909e17fa8def2b83899256e8f5d@changeid>
+ <YekPTh/G1IkvpSiI@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YekPTh/G1IkvpSiI@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: mtk18742 <moudy.ho@mediatek.com>
+On Wed, Jan 19, 2022 at 11:29:18PM -0800, Christoph Hellwig wrote:
+> On Wed, Jan 19, 2022 at 12:43:42PM -0800, Matthias Kaehlcke wrote:
+> > Export device_is_bound() to enable its use by drivers that are
+> > built as modules.
+> > 
+> > Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
+> > Reviewed-by: Douglas Anderson <dianders@chromium.org>
+> > Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> 
+> Didn't Greg clearly NAK this the last few times it came up?
 
-add cmdq_pkt_poll_addr function in cmdq helper functions
+Yes, which is why this series is _WAY_ on the bottom of my list for
+reviews...
 
-Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
----
- drivers/soc/mediatek/mtk-cmdq-helper.c   | 39 ++++++++++++++++++++++++
- include/linux/mailbox/mtk-cmdq-mailbox.h |  1 +
- include/linux/soc/mediatek/mtk-cmdq.h    |  2 ++
- 3 files changed, 42 insertions(+)
-
-diff --git a/drivers/soc/mediatek/mtk-cmdq-helper.c b/drivers/soc/mediatek/mtk-cmdq-helper.c
-index 3c8e4212d941..6c5cfb284140 100644
---- a/drivers/soc/mediatek/mtk-cmdq-helper.c
-+++ b/drivers/soc/mediatek/mtk-cmdq-helper.c
-@@ -344,6 +344,45 @@ int cmdq_pkt_set_event(struct cmdq_pkt *pkt, u16 event)
- }
- EXPORT_SYMBOL(cmdq_pkt_set_event);
- 
-+s32 cmdq_pkt_poll_addr(struct cmdq_pkt *pkt, u32 value, u32 addr, u32 mask, u8 reg_gpr)
-+{
-+	struct cmdq_instruction inst = { {0} };
-+
-+	s32 err;
-+
-+	if (mask != 0xffffffff) {
-+		inst.op = CMDQ_CODE_MASK;
-+		inst.mask = ~mask;
-+		err = cmdq_pkt_append_command(pkt, inst);
-+		if (err != 0)
-+			return err;
-+
-+		addr = addr | 0x1;
-+	}
-+
-+	/* Move extra handle APB address to GPR */
-+	inst.op = CMDQ_CODE_MOVE;
-+	inst.value = addr;
-+	inst.sop = reg_gpr;
-+	inst.dst_t = 1;
-+	err = cmdq_pkt_append_command(pkt, inst);
-+	if (err != 0)
-+		pr_err("%s fail append command move addr to reg err:%d",
-+			__func__, err);
-+
-+	inst.op = CMDQ_CODE_POLL;
-+	inst.value = value;
-+	inst.sop = reg_gpr;
-+	inst.dst_t = 1;
-+	err = cmdq_pkt_append_command(pkt, inst);
-+	if (err != 0)
-+		pr_err("%s fail append command poll err:%d",
-+			__func__, err);
-+
-+	return err;
-+}
-+EXPORT_SYMBOL(cmdq_pkt_poll_addr);
-+
- int cmdq_pkt_poll(struct cmdq_pkt *pkt, u8 subsys,
- 		  u16 offset, u32 value)
- {
-diff --git a/include/linux/mailbox/mtk-cmdq-mailbox.h b/include/linux/mailbox/mtk-cmdq-mailbox.h
-index 44365aab043c..a27329fd7c7f 100644
---- a/include/linux/mailbox/mtk-cmdq-mailbox.h
-+++ b/include/linux/mailbox/mtk-cmdq-mailbox.h
-@@ -54,6 +54,7 @@
-  */
- enum cmdq_code {
- 	CMDQ_CODE_MASK = 0x02,
-+	CMDQ_CODE_MOVE = 0x02,
- 	CMDQ_CODE_WRITE = 0x04,
- 	CMDQ_CODE_POLL = 0x08,
- 	CMDQ_CODE_JUMP = 0x10,
-diff --git a/include/linux/soc/mediatek/mtk-cmdq.h b/include/linux/soc/mediatek/mtk-cmdq.h
-index ac6b5f3cba95..28dc5ce0ff03 100644
---- a/include/linux/soc/mediatek/mtk-cmdq.h
-+++ b/include/linux/soc/mediatek/mtk-cmdq.h
-@@ -280,4 +280,6 @@ int cmdq_pkt_finalize(struct cmdq_pkt *pkt);
- int cmdq_pkt_flush_async(struct cmdq_pkt *pkt, cmdq_async_flush_cb cb,
- 			 void *data);
- 
-+s32 cmdq_pkt_poll_addr(struct cmdq_pkt *pkt, u32 value, u32 addr, u32 mask, u8 reg_gpr);
-+
- #endif	/* __MTK_CMDQ_H__ */
--- 
-2.25.1
-
+greg k-h
