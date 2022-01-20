@@ -2,72 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB43BC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 13:39:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42375C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 13:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238938AbiATNjS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 08:39:18 -0500
-Received: from verein.lst.de ([213.95.11.211]:44631 "EHLO verein.lst.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232587AbiATNjR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 08:39:17 -0500
-Received: by verein.lst.de (Postfix, from userid 2407)
-        id 906E668BEB; Thu, 20 Jan 2022 14:39:11 +0100 (CET)
-Date:   Thu, 20 Jan 2022 14:39:11 +0100
-From:   Christoph Hellwig <hch@lst.de>
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, Christoph Hellwig <hch@lst.de>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Joao Martins <joao.m.martins@oracle.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        Logan Gunthorpe <logang@deltatee.com>,
-        Ming Lei <ming.lei@redhat.com>, linux-block@vger.kernel.org,
-        netdev@vger.kernel.org, linux-mm@kvack.org,
-        linux-rdma@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        nvdimm@lists.linux.dev
-Subject: Re: Phyr Starter
-Message-ID: <20220120133911.GA11052@lst.de>
-References: <YdyKWeU0HTv8m7wD@casper.infradead.org>
+        id S239739AbiATNk4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 08:40:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49150 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232587AbiATNkz (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 08:40:55 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE06FC061574;
+        Thu, 20 Jan 2022 05:40:54 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id w26so12275411wmi.0;
+        Thu, 20 Jan 2022 05:40:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VDkNSsPJEfKQRWGToPkLFqx2eL9VH9/2+z4FYHRDpb4=;
+        b=EyCwPGHfYRycr8FI3MjCnCEIJ6dBkJFgRribeAGi8yMOQFU0VVW44aQjFg6hSypBPO
+         AJ5M0KuNUvBvRwUvGu1nLXBTSKZ88mx24JlSzixDlVdzaSnam3C1prUDENEDdHoYzpLs
+         DaY4Pi8t8/dDYu6B/wuFWLXosi0ydHPvv24HP4AxQtFCZJiSx/ERFS6WWw8nG0/NwGwi
+         tTbVTvsJCZhIyS18t/TSA5wuTb67/wXfW3D6fDNL8jCWDgIQSthWW5m3PlTIX3r9mbOb
+         kC1F09Om7P4z5Hs+jGfwa3Z1YEXx+Tb7lPkzQcJsE/KR8J5PLm95oFadpjooUk5lQonq
+         1vuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VDkNSsPJEfKQRWGToPkLFqx2eL9VH9/2+z4FYHRDpb4=;
+        b=qeS58mGfpWclLQS3niHKkXA3M0ntOnXlM0o5f7I9wthNankhheQaP/flWZZIQTUYFC
+         0pBSzOhLaX4PTA7oybekg3VIDRvbTXQGRcHCvStjIxc/JA8CQSRsL5E80rn6FuwYxJh6
+         N3+6/igHgbvbJFymQi8gIT0zI7X4pncnOp2JJCt9OHzF6CpNbBSdu3a5onEwR4Gjoa41
+         WFVq2qfqYIHUq96rWr5yJifeGOJ83Lx3AfZDFC0mueI39ev561z69/MoT2ecjdYdRMgI
+         VEvFzg/dpKGg0b1OZ6xxpq4UDDdVZEzg0SsY5XZ3GpeY7eEXhxmqoIkY01uhToD5x13K
+         crLg==
+X-Gm-Message-State: AOAM5310zr7iwuHw/KHR5Q2uokOT+v7pkczGilAy1XpT/b0uDiYYwkod
+        LcV5TNvexbednoP0Z0L9VKA=
+X-Google-Smtp-Source: ABdhPJyLbpBGaZOjXLATEW/7UbCYN0jrAQ/HCqDpjyM0+LTqpL6v8hr5QQmkiH/rrnG5W3ix5bTt4w==
+X-Received: by 2002:adf:f850:: with SMTP id d16mr5001363wrq.303.1642686053369;
+        Thu, 20 Jan 2022 05:40:53 -0800 (PST)
+Received: from localhost.localdomain ([195.245.21.30])
+        by smtp.gmail.com with ESMTPSA id f10sm3094344wri.50.2022.01.20.05.40.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 05:40:52 -0800 (PST)
+From:   Alexander Sverdlin <alexander.sverdlin@gmail.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Alexander Sverdlin <alexander.sverdlin@gmail.com>,
+        Hartley Sweeten <hsweeten@visionengravers.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Nikita Shubin <nikita.shubin@maquefel.me>,
+        Arnd Bergmann <arnd@arndb.de>, linux-kernel@vger.kernel.org,
+        kernel test robot <lkp@intel.com>, stable@vger.kernel.org
+Subject: [PATCH] ep93xx: clock: Fix UAF in ep93xx_clk_register_gate()
+Date:   Thu, 20 Jan 2022 14:37:38 +0100
+Message-Id: <20220120133739.4170298-1-alexander.sverdlin@gmail.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YdyKWeU0HTv8m7wD@casper.infradead.org>
-User-Agent: Mutt/1.5.17 (2007-11-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 07:34:49PM +0000, Matthew Wilcox wrote:
-> TLDR: I want to introduce a new data type:
-> 
-> struct phyr {
->         phys_addr_t addr;
->         size_t len;
-> };
-> 
-> and use it to replace bio_vec as well as using it to replace the array
-> of struct pages used by get_user_pages() and friends.
+arch/arm/mach-ep93xx/clock.c:151:2: note: Taking true branch
+if (IS_ERR(clk))
+^
+arch/arm/mach-ep93xx/clock.c:152:3: note: Memory is released
+kfree(psc);
+^~~~~~~~~~
+arch/arm/mach-ep93xx/clock.c:154:2: note: Use of memory after it is freed
+return &psc->hw;
+^ ~~~~~~~~
 
-FYI, I've done a fair amount of work (some already mainline as in all
-the helpers for biovec page access), some of it still waiting (switching
-more users over to these helpers and cleaning up some other mess)
-to move bio_vecs into a form like that.  The difference in my plan
-is to have a u32 len, both to allow for flags space on 64-bit which
-we might need to support things like P2P without dev_pagemap structures.
+Link: https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org/thread/B5YCO2NJEXINCYE26Y255LCVMO55BGWW/
+Reported-by: kernel test robot <lkp@intel.com>
+Fixes: 9645ccc7bd7a ("ep93xx: clock: convert in-place to COMMON_CLK")
+Cc: stable@vger.kernel.org
+Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+---
+ arch/arm/mach-ep93xx/clock.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-> Finally, it may be possible to stop using scatterlist to describe the
-> input to the DMA-mapping operation.  We may be able to get struct
-> scatterlist down to just dma_address and dma_length, with chaining
-> handled through an enclosing struct.
+diff --git a/arch/arm/mach-ep93xx/clock.c b/arch/arm/mach-ep93xx/clock.c
+index cc75087134d3..4aee14f18123 100644
+--- a/arch/arm/mach-ep93xx/clock.c
++++ b/arch/arm/mach-ep93xx/clock.c
+@@ -148,8 +148,10 @@ static struct clk_hw *ep93xx_clk_register_gate(const char *name,
+ 	psc->lock = &clk_lock;
+ 
+ 	clk = clk_register(NULL, &psc->hw);
+-	if (IS_ERR(clk))
++	if (IS_ERR(clk)) {
+ 		kfree(psc);
++		return (void *)clk;
++	}
+ 
+ 	return &psc->hw;
+ }
+-- 
+2.34.1
 
-Yes, I have some prototype could that takes a bio_vec as input and
-returns an array of
-
-struct dma_range {
-	dma_addr_t	addr;
-	u32		len;
-}
-
-І need to get back to it and especially back to the question if this
-needs the chaining support that the current scatterlist has.
