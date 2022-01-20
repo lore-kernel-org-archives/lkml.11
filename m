@@ -2,66 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0FA2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:59:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39255C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 12:00:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232847AbiATL7l (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 06:59:41 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38502 "EHLO
+        id S232535AbiATMAM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 07:00:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39092 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232490AbiATL7M (ORCPT
+        with ESMTP id S232464AbiATMAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 06:59:12 -0500
+        Thu, 20 Jan 2022 07:00:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7D2F061692;
-        Thu, 20 Jan 2022 11:59:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id E3353C340E0;
-        Thu, 20 Jan 2022 11:59:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DD76A61696;
+        Thu, 20 Jan 2022 12:00:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 4E7D7C340E5;
+        Thu, 20 Jan 2022 12:00:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642679950;
-        bh=UWqWrMEsC8tsiCxSdPd/pvKEe2QS8rGx7mI4OF/u3zg=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=VRGNeIAefqN04+IAaTIhya9+RCOAShuL6/7AUyS8UoKDMGjPJmxc6Szb6hqJnKqzX
-         UQkEinVsXemqv7zNKcPTZGWgw/fm0SheteZVyVVkagBK8j0bE0ysKtGl/8fqQN+SGQ
-         djXEqNSsbppR6rGGF4ZrREA9PPzwzG+G2noYtcdSK5jCea6xMa6rv1Lnk/JyI6q6Wm
-         gzKK8ZeuCeqmpBnay7BEeKqfGiLEvDEzGaAzeMIOSa9bOfMGq750+CoksGa0jJydj5
-         gl67Sr7+RjWvZ2QoD4tGVhFqtEziFdwk2ExrBaKOGVvjHVErrCeM8v98Kuf+QNSalI
-         m/KTTySI03tPQ==
+        s=k20201202; t=1642680010;
+        bh=B0LNF65epiT75ISbYwnKBeSakjUZozKKuUL/HAv2CUg=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=iVv87KJZJOcHfIk0r8gXIs43F4GfMHvzMBjw8CRLtbMQ2oTumfkSaIYYukAZAzNBw
+         atyiSP47B1DWGX5FRSeJA70BAQk6p73LawaWeIJDnNbORlRu/bpJ3MBYNuOakmibZL
+         Q66hw9cWJFIc3nZyrFGSDJLyJNHgXmms4R5Nk/OD/MPsGAozmAXrKFZnZGBdmXxrOC
+         oAc2wgBQ0grQKPBBSmaxIYWrYnap5nvqwJCCU9bz4QB8FZSeNDw/BIEkiddmoJ+zh7
+         5dxKtoBADa+iH7q3/Gn0WBZKrFu5jMdg8FaX2eqxrNpBRD+y7P9zWSbOAr53sNo0dl
+         RlqHIRwqVhsbQ==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D2F46F6079A;
-        Thu, 20 Jan 2022 11:59:10 +0000 (UTC)
-Subject: Re: [GIT PULL] VFIO updates for v5.17-rc1
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20220119111142.6ecbab24.alex.williamson@redhat.com>
-References: <20220119111142.6ecbab24.alex.williamson@redhat.com>
-X-PR-Tracked-List-Id: <kvm.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20220119111142.6ecbab24.alex.williamson@redhat.com>
-X-PR-Tracked-Remote: git://github.com/awilliam/linux-vfio.git tags/vfio-v5.17-rc1
-X-PR-Tracked-Commit-Id: 2bed2ced40c97b8540ff38df0149e8ecb2bf4c65
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: c5a0b6e40d0b8c040dbfc37f7403e99867768d92
-Message-Id: <164267995085.31408.1926198916452921954.pr-tracker-bot@kernel.org>
-Date:   Thu, 20 Jan 2022 11:59:10 +0000
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org,
-        "kvm@vger.kernel.org" <kvm@vger.kernel.org>
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 38527F6079B;
+        Thu, 20 Jan 2022 12:00:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 0/2] net: stmmac: dwmac-visconti: Fix bit definitions and
+ clock configuration for RMII mode
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164268001022.32466.14296016089234300224.git-patchwork-notify@kernel.org>
+Date:   Thu, 20 Jan 2022 12:00:10 +0000
+References: <20220119044648.18094-1-yuji2.ishikawa@toshiba.co.jp>
+In-Reply-To: <20220119044648.18094-1-yuji2.ishikawa@toshiba.co.jp>
+To:     Yuji Ishikawa <yuji2.ishikawa@toshiba.co.jp>
+Cc:     davem@davemloft.net, kuba@kernel.org, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, joabreu@synopsys.com,
+        netdev@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, nobuhiro1.iwamatsu@toshiba.co.jp
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Wed, 19 Jan 2022 11:11:42 -0700:
+Hello:
 
-> git://github.com/awilliam/linux-vfio.git tags/vfio-v5.17-rc1
+This series was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/c5a0b6e40d0b8c040dbfc37f7403e99867768d92
+On Wed, 19 Jan 2022 13:46:46 +0900 you wrote:
+> Hi,
+> 
+> This series is a fix for RMII/MII operation mode of the dwmac-visconti driver.
+> It is composed of two parts:
+> 
+> * 1/2: fix constant definitions for cleared bits in ETHER_CLK_SEL register
+> * 2/2: fix configuration of ETHER_CLK_SEL register for running in RMII operation mode.
+> 
+> [...]
 
-Thank you!
+Here is the summary with links:
+  - [v2,1/2] net: stmmac: dwmac-visconti: Fix bit definitions for ETHER_CLK_SEL
+    https://git.kernel.org/netdev/net/c/1ba1a4a90fa4
+  - [v2,2/2] net: stmmac: dwmac-visconti: Fix clock configuration for RMII mode
+    https://git.kernel.org/netdev/net/c/0959bc4bd420
 
+You are awesome, thank you!
 -- 
 Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
