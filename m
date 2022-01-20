@@ -2,98 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56B7FC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 18:02:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C3F2C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 18:03:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238856AbiATSCL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 13:02:11 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:56248 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238561AbiATSCG (ORCPT
+        id S238958AbiATSDu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 13:03:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53988 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233042AbiATSDr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 13:02:06 -0500
-Received: from machine.home (lfbn-lyo-1-1484-111.w86-207.abo.wanadoo.fr [86.207.51.111])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 6652520B8010;
-        Thu, 20 Jan 2022 10:02:05 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 6652520B8010
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1642701726;
-        bh=nw21DXI5tw2hIoJNvKpVyoLMBzMbxA4gDPPYMtT2PCw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fErZozI/eGIYLMHCe7f+RAxe+mi/01XEhEB6ltGDnsh2tq8Avao10gdWhvGQLGhCf
-         03mkLXghDl+WgV8drRQqDK4sPFqQp2Or/zApz6YDm2FYJgyxJ/ua6ZsEnkQ5a2sQ1c
-         0sJWt8uHR2silGAkqKy+YPRSQ0n5+H6XdFKyzqrM=
-From:   Francis Laniel <flaniel@linux.microsoft.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-security-module@vger.kernel.org,
-        Serge Hallyn <serge@hallyn.com>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        Francis Laniel <flaniel@linux.microsoft.com>
-Subject: [RFC PATCH v3 2/2] security/inode.c: Add capabilities file.
-Date:   Thu, 20 Jan 2022 19:01:16 +0100
-Message-Id: <20220120180116.167702-3-flaniel@linux.microsoft.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220120180116.167702-1-flaniel@linux.microsoft.com>
-References: <20220120180116.167702-1-flaniel@linux.microsoft.com>
+        Thu, 20 Jan 2022 13:03:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF45BC061574;
+        Thu, 20 Jan 2022 10:03:46 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 98C7BB81D74;
+        Thu, 20 Jan 2022 18:03:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5DA23C340E0;
+        Thu, 20 Jan 2022 18:03:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642701824;
+        bh=hnCvMNzGWqbC4sL/0zVTHFsSyDTS0wssN9HVuAtSlEE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=b5HKZ1DiR5MGJUva6SjqfLdFN29GNFkr5XOv88VzjZDFQXBrdd1QySbriErYp4A3y
+         +qbt2fzqWG8LegRWAii4Yu8MGRyqhey3z9gjKULit5ycvchECXktUrUWZrEYIIxmWl
+         4k1vk0uJFHNuX249R2yqJNFIz1fNUqgOAthaezSJxIZbvcduZB0pu03JbAKfSUsW5K
+         a8zotVTBVrwGTwBWBXgc1OkdPxmT1244v7vrufWG6WVIf+01wTpdFW+3dJc08DX2m+
+         hCqkEDcH6uJKt32C4rglP4k4WNbkJpYHME5RUHRJEVy0ARAl+MCDlZxKp6Tltp6kLq
+         rpxrOALfkFFZw==
+Date:   Thu, 20 Jan 2022 10:03:44 -0800
+From:   "Darrick J. Wong" <djwong@kernel.org>
+To:     Anthony Iliopoulos <ailiop@suse.com>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Deepa Dinamani <deepa.kernel@gmail.com>,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH RESEND] mount: warn only once about timestamp range
+ expiration
+Message-ID: <20220120180344.GA13499@magnolia>
+References: <20220119202934.26495-1-ailiop@suse.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220119202934.26495-1-ailiop@suse.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This new read-only file prints the capabilities values with their names:
-cat /sys/kernel/security/capabilities
-0       CAP_CHOWN
-1       CAP_DAC_OVERRIDE
-...
-40      CAP_CHECKPOINT_RESTORE
+On Wed, Jan 19, 2022 at 09:29:34PM +0100, Anthony Iliopoulos wrote:
+> Commit f8b92ba67c5d ("mount: Add mount warning for impending timestamp
+> expiry") introduced a mount warning regarding filesystem timestamp
+> limits, that is printed upon each writable mount or remount.
+> 
+> This can result in a lot of unnecessary messages in the kernel log in
+> setups where filesystems are being frequently remounted (or mounted
+> multiple times).
+> 
+> Avoid this by setting a superblock flag which indicates that the warning
+> has been emitted at least once for any particular mount, as suggested in
+> [1].
+> 
+> Signed-off-by: Anthony Iliopoulos <ailiop@suse.com>
 
-Signed-off-by: Francis Laniel <flaniel@linux.microsoft.com>
----
- security/inode.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+I'm glad someone finally turned down the volume on this.
+Reviewed-by: Darrick J. Wong <djwong@kernel.org>
 
-diff --git a/security/inode.c b/security/inode.c
-index 6c326939750d..cef78b497bab 100644
---- a/security/inode.c
-+++ b/security/inode.c
-@@ -21,6 +21,7 @@
- #include <linux/security.h>
- #include <linux/lsm_hooks.h>
- #include <linux/magic.h>
-+#include <linux/capability.h>
- 
- static struct vfsmount *mount;
- static int mount_count;
-@@ -328,6 +329,19 @@ static const struct file_operations lsm_ops = {
- };
- #endif
- 
-+static struct dentry *capabilities_dentry;
-+static ssize_t capabilities_read(struct file *unused, char __user *buf,
-+				 size_t count, loff_t *ppos)
-+{
-+	return simple_read_from_buffer(buf, count, ppos, cap_string,
-+				       strlen(cap_string));
-+}
-+
-+static const struct file_operations capabilities_ops = {
-+	.read = capabilities_read,
-+	.llseek = generic_file_llseek,
-+};
-+
- static int __init securityfs_init(void)
- {
- 	int retval;
-@@ -345,6 +359,8 @@ static int __init securityfs_init(void)
- 	lsm_dentry = securityfs_create_file("lsm", 0444, NULL, NULL,
- 						&lsm_ops);
- #endif
-+	capabilities_dentry = securityfs("capabilities", 0444, NULL, NULL,
-+					 capabilities_ops);
- 	return 0;
- }
- core_initcall(securityfs_init);
--- 
-2.30.2
+--D
 
+> 
+> [1] https://lore.kernel.org/CAHk-=wim6VGnxQmjfK_tDg6fbHYKL4EFkmnTjVr9QnRqjDBAeA@mail.gmail.com/
+> ---
+>  fs/namespace.c     | 2 ++
+>  include/linux/fs.h | 1 +
+>  2 files changed, 3 insertions(+)
+> 
+> diff --git a/fs/namespace.c b/fs/namespace.c
+> index c6feb92209a6..fec0f79aa2eb 100644
+> --- a/fs/namespace.c
+> +++ b/fs/namespace.c
+> @@ -2583,6 +2583,7 @@ static void mnt_warn_timestamp_expiry(struct path *mountpoint, struct vfsmount *
+>  	struct super_block *sb = mnt->mnt_sb;
+>  
+>  	if (!__mnt_is_readonly(mnt) &&
+> +	   (!(sb->s_iflags & SB_I_TS_EXPIRY_WARNED)) &&
+>  	   (ktime_get_real_seconds() + TIME_UPTIME_SEC_MAX > sb->s_time_max)) {
+>  		char *buf = (char *)__get_free_page(GFP_KERNEL);
+>  		char *mntpath = buf ? d_path(mountpoint, buf, PAGE_SIZE) : ERR_PTR(-ENOMEM);
+> @@ -2597,6 +2598,7 @@ static void mnt_warn_timestamp_expiry(struct path *mountpoint, struct vfsmount *
+>  			tm.tm_year+1900, (unsigned long long)sb->s_time_max);
+>  
+>  		free_page((unsigned long)buf);
+> +		sb->s_iflags |= SB_I_TS_EXPIRY_WARNED;
+>  	}
+>  }
+>  
+> diff --git a/include/linux/fs.h b/include/linux/fs.h
+> index f3daaea16554..5c537cd9b006 100644
+> --- a/include/linux/fs.h
+> +++ b/include/linux/fs.h
+> @@ -1435,6 +1435,7 @@ extern int send_sigurg(struct fown_struct *fown);
+>  
+>  #define SB_I_SKIP_SYNC	0x00000100	/* Skip superblock at global sync */
+>  #define SB_I_PERSB_BDI	0x00000200	/* has a per-sb bdi */
+> +#define SB_I_TS_EXPIRY_WARNED 0x00000400 /* warned about timestamp range expiry */
+>  
+>  /* Possible states of 'frozen' field */
+>  enum {
+> -- 
+> 2.34.1
+> 
