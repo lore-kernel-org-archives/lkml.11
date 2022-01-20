@@ -2,186 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3109CC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 22:24:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC32C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 22:32:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378077AbiATWYc (ORCPT
+        id S1378088AbiATWcg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 17:24:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55596 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238984AbiATWY2 (ORCPT
+        Thu, 20 Jan 2022 17:32:36 -0500
+Received: from mail-ot1-f49.google.com ([209.85.210.49]:38456 "EHLO
+        mail-ot1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378078AbiATWce (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 17:24:28 -0500
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D5BDC061574;
-        Thu, 20 Jan 2022 14:24:27 -0800 (PST)
-Received: by mail-il1-x130.google.com with SMTP id a18so6220984ilq.6;
-        Thu, 20 Jan 2022 14:24:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6VwUv3cNz7g/RSSZ/ppqeuln5DSPNtnS50dC5TR7BTE=;
-        b=T/mvfkjiHyunaL9NZ8ciJ60yKOwLwg6uxL/W13+DSK06mOhTEU1VDZgC1AaoeDtmeg
-         7U/tBH3yCHIzlaepG+XHJnfbb70mhX1phtQIFFo/y3JNClJo9qQmeohE4x62vv/TKQKE
-         ZdF3R6diw3clOAAhsg0dbtPag3f3awuDw8lrWRQCAQ0rAOW791UHWo1h1Ysfl5+j4bnc
-         W74pGiEyq3moMLpvLkzvGd9Ep/UuvCUA8hogA8cXzDyUu6yB7h2wMA2a7PBXIf6Zi5h8
-         EXe782et69S7dtlNCmpdA5dpOEdqla2lbhw6Bq1xxnQQNidLe8CAljL3EJjbz7CT67VA
-         DkzA==
+        Thu, 20 Jan 2022 17:32:34 -0500
+Received: by mail-ot1-f49.google.com with SMTP id k13-20020a056830150d00b0059c6afb8627so7256552otp.5;
+        Thu, 20 Jan 2022 14:32:34 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6VwUv3cNz7g/RSSZ/ppqeuln5DSPNtnS50dC5TR7BTE=;
-        b=KDeo0b4H45UGT3H7NeaDgABfT4jrUXueTdvEWNN5xk/zjnvCoQCjspTJnJy2ONR/Pe
-         gbt6g2OjcUKlqMj62kYW5e4Zo1D1y/w965Dvh1P+wrlloYDX5044uR+j6fCsyMy1CM81
-         gUBxmASYeIsfUo+DU8Nl735MKhCbpdezsTYnovJqJd1Dik2onzaNsvgMVPjP7jvmXNfq
-         D9k1bitqMTRbTMWMDriZbdDUZ+30TfpJDb9a8CdtxOCdhmV7iFT+Md8N7pO31nfE3IYM
-         Ds/P1iHNrQ9+fHzmdccKz+hNj9FReFsfAaNlGqOpV3CjVjRqovpC7j5xNvFb0iDUe8+B
-         A1xA==
-X-Gm-Message-State: AOAM533iLxfUktM4slOMqnYgRZKcTk1h2PFVVp4dFtpGtA5qOL/cmtpU
-        GWUBvqS7HKHFxoZzQVpzZMqsPPSpu5WE2/WXyDA=
-X-Google-Smtp-Source: ABdhPJwhLnj4TJOCJlgZSSzP4rrkjNcKzInQf//XnyLSzUggHiSIvoZBPDiakd3GZZtcyyoxhYyVHGb7ffY0nraFqLw=
-X-Received: by 2002:a05:6e02:1748:: with SMTP id y8mr572291ill.305.1642717466961;
- Thu, 20 Jan 2022 14:24:26 -0800 (PST)
-MIME-Version: 1.0
-References: <164260419349.657731.13913104835063027148.stgit@devnote2>
-In-Reply-To: <164260419349.657731.13913104835063027148.stgit@devnote2>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 20 Jan 2022 14:24:15 -0800
-Message-ID: <CAEf4Bzbbimea3ydwafXSHFiEffYx5zAcwGNKk8Zi6QZ==Vn0Ug@mail.gmail.com>
-Subject: Re: [RFC PATCH v3 0/9] fprobe: Introduce fprobe function entry/exit probe
-To:     Masami Hiramatsu <mhiramat@kernel.org>
-Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        lkml <linux-kernel@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
-        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
-        "David S . Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=Qk+KVq+IEtQ2KJ1s+kYA1v3op5u0MiFtVTneB8j+4Gc=;
+        b=pNjAjF/oSJWaFVTmIRvP0OHnaR+mRtzFsvhOjrKPsb/1aB7BD0bu/AlV9gNWOrQBpR
+         7iymDu9NGG6Co2CKfF2zXdSH/pYMRtFbBKbbLwInqw9dkPmg1B+MCPX6G00KXhxnez4x
+         cN1YdDDIzKmC3eHe9MYSXe7F8qn1nLLHYnySBEzPqJIznD8BCSRvO8v/XsNKZPPCl/eV
+         1XEpQaLtYjgIWHDP/upurKL6uQxEG3qFIVPmryy2fEBTkPywZ3JK55SgfuH0MZntA/NL
+         ImQ28f8qO6keLR6jVIXbf6nNd9z7ppYc6OLlFu6X8vMEgKAsOn+PjyGsjlGG54rXIcBU
+         OKnw==
+X-Gm-Message-State: AOAM533+s2Epnkn22p2ptuxyskqIFb/793ImO9x7+VITicJdUSnk8Okh
+        bQNd+CyglnXRtLhG5EEP8Q==
+X-Google-Smtp-Source: ABdhPJyMAA182WiefyQ1snVqf2+n/o1Y5BQiyJ6E/Mn8qFkrr457ICztjZxr28+T+/s0YjTjzzPy3A==
+X-Received: by 2002:a9d:24a2:: with SMTP id z31mr755556ota.216.1642717953907;
+        Thu, 20 Jan 2022 14:32:33 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id h2sm232992otm.11.2022.01.20.14.32.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 14:32:32 -0800 (PST)
+Received: (nullmailer pid 2059832 invoked by uid 1000);
+        Thu, 20 Jan 2022 22:32:31 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     Vignesh Raghavendra <vigneshr@ti.com>,
+        Richard Weinberger <richard@nod.at>,
+        linux-mtd@lists.infradead.org,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        linux-kernel@vger.kernel.org
+In-Reply-To: <20220120202615.28076-2-ansuelsmth@gmail.com>
+References: <20220120202615.28076-1-ansuelsmth@gmail.com> <20220120202615.28076-2-ansuelsmth@gmail.com>
+Subject: Re: [RFC PATCH 1/2] dt-bindings: mtd: partitions: Document new dynamic-partitions node
+Date:   Thu, 20 Jan 2022 16:32:31 -0600
+Message-Id: <1642717951.834828.2059831.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 6:56 AM Masami Hiramatsu <mhiramat@kernel.org> wrote:
->
-> Hello Jiri,
->
-> Here is the 3rd version of fprobe. I added some comments and
-> fixed some issues. But I still saw some problems when I add
-> your selftest patches.
->
-> This series introduces the fprobe, the function entry/exit probe
-> with multiple probe point support. This also introduces the rethook
-> for hooking function return as same as kretprobe does. This
-> abstraction will help us to generalize the fgraph tracer,
-> because we can just switch it from rethook in fprobe, depending
-> on the kernel configuration.
->
-> The patch [1/9] and [7/9] are from Jiri's series[1]. Other libbpf
-> patches will not be affected by this change.
->
-> [1] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#u
->
-> However, when I applied all other patches on top of this series,
-> I saw the "#8 bpf_cookie" test case has been stacked (maybe related
-> to the bpf_cookie issue which Andrii and Jiri talked?) And when I
-> remove the last selftest patch[2], the selftest stopped at "#112
-> raw_tp_test_run".
->
-> [2] https://lore.kernel.org/all/20220104080943.113249-1-jolsa@kernel.org/T/#m242d2b3a3775eeb5baba322424b15901e5e78483
->
-> Note that I used tools/testing/selftests/bpf/vmtest.sh to check it.
->
-> This added 2 more out-of-tree patches. [8/9] is for adding wildcard
-> support to the sample program, [9/9] is a testing patch for replacing
-> kretprobe trampoline with rethook.
-> According to this work, I noticed that using rethook in kretprobe
-> needs 2 steps.
->  1. port the rethook on all architectures which supports kretprobes.
->     (some arch requires CONFIG_KPROBES for rethook)
->  2. replace kretprobe trampoline with rethook for all archs, at once.
->     This must be done by one treewide patch.
->
-> Anyway, I'll do the kretprobe update in the next step as another series.
-> (This testing patch is just for confirming the rethook is correctly
->  implemented.)
->
-> BTW, on the x86, ftrace (with fentry) location address is same as
-> symbol address. But on other archs, it will be different (e.g. arm64
-> will need 2 instructions to save link-register and call ftrace, the
-> 2nd instruction will be the ftrace location.)
-> Does libbpf correctly handle it?
-
-libbpf doesn't do anything there. The interface for kprobe is based on
-function name and kernel performs name lookups internally to resolve
-IP. For fentry it's similar (kernel handles IP resolution), but
-instead of function name we specify BTF ID of a function type.
-
->
-> Thank you,
->
+On Thu, 20 Jan 2022 21:26:14 +0100, Ansuel Smith wrote:
+> Document new dynamic-partitions node used to provide an of node for
+> partition registred at runtime by parsers. This is required for nvmem
+> system to declare and detect nvmem-cells.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 > ---
->
-> Jiri Olsa (2):
->       ftrace: Add ftrace_set_filter_ips function
->       bpf: Add kprobe link for attaching raw kprobes
->
-> Masami Hiramatsu (7):
->       fprobe: Add ftrace based probe APIs
->       rethook: Add a generic return hook
->       rethook: x86: Add rethook x86 implementation
->       fprobe: Add exit_handler support
->       fprobe: Add sample program for fprobe
->       [DO NOT MERGE] Out-of-tree: Support wildcard symbol option to sample
->       [DO NOT MERGE] out-of-tree: kprobes: Use rethook for kretprobe
->
->
->  arch/x86/Kconfig                |    1
->  arch/x86/include/asm/unwind.h   |    8 +
->  arch/x86/kernel/Makefile        |    1
->  arch/x86/kernel/kprobes/core.c  |  106 --------------
->  arch/x86/kernel/rethook.c       |  115 +++++++++++++++
->  include/linux/bpf_types.h       |    1
->  include/linux/fprobe.h          |   84 +++++++++++
->  include/linux/ftrace.h          |    3
->  include/linux/kprobes.h         |   85 +----------
->  include/linux/rethook.h         |   99 +++++++++++++
->  include/linux/sched.h           |    4 -
->  include/uapi/linux/bpf.h        |   12 ++
->  kernel/bpf/syscall.c            |  195 +++++++++++++++++++++++++-
->  kernel/exit.c                   |    3
->  kernel/fork.c                   |    4 -
->  kernel/kallsyms.c               |    1
->  kernel/kprobes.c                |  265 +++++------------------------------
->  kernel/trace/Kconfig            |   22 +++
->  kernel/trace/Makefile           |    2
->  kernel/trace/fprobe.c           |  179 ++++++++++++++++++++++++
->  kernel/trace/ftrace.c           |   54 ++++++-
->  kernel/trace/rethook.c          |  295 +++++++++++++++++++++++++++++++++++++++
->  kernel/trace/trace_kprobe.c     |    4 -
->  kernel/trace/trace_output.c     |    2
->  samples/Kconfig                 |    7 +
->  samples/Makefile                |    1
->  samples/fprobe/Makefile         |    3
->  samples/fprobe/fprobe_example.c |  154 ++++++++++++++++++++
->  tools/include/uapi/linux/bpf.h  |   12 ++
->  29 files changed, 1283 insertions(+), 439 deletions(-)
->  create mode 100644 arch/x86/kernel/rethook.c
->  create mode 100644 include/linux/fprobe.h
->  create mode 100644 include/linux/rethook.h
->  create mode 100644 kernel/trace/fprobe.c
->  create mode 100644 kernel/trace/rethook.c
->  create mode 100644 samples/fprobe/Makefile
->  create mode 100644 samples/fprobe/fprobe_example.c
->
-> --
-> Masami Hiramatsu (Linaro) <mhiramat@kernel.org>
+>  .../mtd/partitions/dynamic-partitions.yaml    | 59 +++++++++++++++++++
+>  1 file changed, 59 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/mtd/partitions/dynamic-partitions.yaml
+> 
+
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
+
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mtd/partitions/dynamic-partitions.example.dt.yaml: partitions: 'hwlocks' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/qcom/qcom,smem.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mtd/partitions/dynamic-partitions.example.dt.yaml: partitions: 'oneOf' conditional failed, one must be fixed:
+	'reg' is a required property
+	'no-map' is a required property
+	'memory-region' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/qcom/qcom,smem.yaml
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mtd/partitions/dynamic-partitions.example.dt.yaml: partitions: '#address-cells', '#size-cells' do not match any of the regexes: 'pinctrl-[0-9]+'
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/soc/qcom/qcom,smem.yaml
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1582321
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
