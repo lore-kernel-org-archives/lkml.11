@@ -2,106 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ABE3C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 20:59:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D48EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 21:05:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377692AbiATU7M (ORCPT
+        id S1377743AbiATVFs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 15:59:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
+        Thu, 20 Jan 2022 16:05:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347149AbiATU7K (ORCPT
+        with ESMTP id S1347149AbiATVFr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 15:59:10 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E19DC061574;
-        Thu, 20 Jan 2022 12:59:10 -0800 (PST)
+        Thu, 20 Jan 2022 16:05:47 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A43C061574;
+        Thu, 20 Jan 2022 13:05:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B731AB81E56;
-        Thu, 20 Jan 2022 20:59:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E365C340E0;
-        Thu, 20 Jan 2022 20:59:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6AD461881;
+        Thu, 20 Jan 2022 21:05:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0807DC340E0;
+        Thu, 20 Jan 2022 21:05:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642712347;
-        bh=AXnm+3K3zDwYn92rKnkPLA0D2Ce/nV/QIzKpRqu+jsY=;
-        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
-        b=ZIL3wvPghrImgw2nHgfxH/wu0YlBX6OouWGe/CZczepfVPVnCqnB+Q/MZDWoFxkYF
-         6g+0i7pLkHGurxX9bGx3OErHL8y9fKKQHdVow1/vOsGOQIMHa8eiZvNcjIERV5EXkG
-         T3z5evnrZoZJ8xGmFEwhMSbGzUJPmJ38Oe7p/DwlZfig2WgRDGE/g2n0VuwFQlwzh1
-         7OObWyc7b6Ny+9PJSz0OTKsHO+k6Sg+BJZ//vOlAmvb2fctYsq2APSLH7KYFsY81Fj
-         QwItlWsP8DVNQdthE5bMaEvtkL9ov9PM/Rjw4EkDYK0DmgEbtQ0TvLIc77QK0WlFH9
-         NNk7a5H8rTwOw==
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1642712746;
+        bh=QG0w1QxyWXBXF08ydmzYpj/kUSr7oA+nVV6K7TKRTlQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=plnjsfwST8po8W1XACJ8CrFOfSxWQC0R8tRaUIuiE0ncoDtJPlQ8kKoPmZcr1mHLr
+         e3lGfQG2P4/lV4vP8xSrRv7QuuyLfHjAqJA54y7kgEpX9bDBpNyUgPJUrSP/rxgge/
+         bV5IkyL6exYoIrx8mcqylkRYoguCp8jynLI2e3dFUrfvfWB8S+GSmd72FESgU5T67z
+         9+4vRyCpsTB6Ju/uNyUx2UFLywzM0+LBsRie6g61Wacodo1iBEaROVFQxoCbCtf4kV
+         H0b5oU8FPI6J12ig1kF0ViWt80UxDHBaVfk2T2NIXXMeG7F9Dro9UI6OUmo5UKfMA+
+         g2qPSOjQHWylA==
+Date:   Thu, 20 Jan 2022 13:05:44 -0800
+From:   Eric Biggers <ebiggers@kernel.org>
+To:     Mimi Zohar <zohar@linux.ibm.com>
+Cc:     Vitaly Chikunov <vt@altlinux.org>, linux-integrity@vger.kernel.org,
+        linux-fscrypt@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 4/5] ima: support fs-verity file digest based
+ signatures
+Message-ID: <YenOqJtjS/Y2zBQC@sol.localdomain>
+References: <YalDvGjq0inMFKln@sol.localdomain>
+ <56c53b027ae8ae6909d38904bf089e73011657d7.camel@linux.ibm.com>
+ <YdYrw4eiQPryOMkZ@gmail.com>
+ <20220109204537.oueokvvkrkyy3ipq@altlinux.org>
+ <YdtOhsv/A5dqlApY@sol.localdomain>
+ <20220115053101.36xoy2bc7ypozo6l@altlinux.org>
+ <YeJn7hxLEfdVrUQT@sol.localdomain>
+ <bc803a35d914dde65640428d2b29cc6e89d176d4.camel@linux.ibm.com>
+ <Yedd0CKCHSq1ugFk@sol.localdomain>
+ <c0676336a7992b6495c5f5dec7ca1897fb4005eb.camel@linux.ibm.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <ED361B6C-0BE2-4FDD-AF29-497E14A183A6@protonmail.com>
-References: <20220118191839.64086-1-povik+lin@protonmail.com> <20220118191839.64086-3-povik+lin@protonmail.com> <20220120053810.71C17C340E0@smtp.kernel.org> <ED361B6C-0BE2-4FDD-AF29-497E14A183A6@protonmail.com>
-Subject: Re: [PATCH v2 2/3] clk: clk-apple-nco: Add driver for Apple NCO
-From:   Stephen Boyd <sboyd@kernel.org>
-Cc:     Martin =?utf-8?q?Povi=C5=A1er?= <povik+lin@protonmail.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Hector Martin <marcan@marcan.st>,
-        Sven Peter <sven@svenpeter.dev>, alyssa@rosenzweig.io,
-        linux-clk <linux-clk@vger.kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mark Kettenis <kettenis@openbsd.org>
-To:     Martin =?utf-8?q?Povi=C5=A1er?= <povik@protonmail.com>
-Date:   Thu, 20 Jan 2022 12:59:05 -0800
-User-Agent: alot/0.10
-Message-Id: <20220120205907.4E365C340E0@smtp.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <c0676336a7992b6495c5f5dec7ca1897fb4005eb.camel@linux.ibm.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Quoting Martin Povi=C5=A1er (2022-01-20 04:11:34)
->=20
-> > On 20. 1. 2022, at 6:38, Stephen Boyd <sboyd@kernel.org> wrote:
-> >
-> > Quoting Martin Povi=C5=A1er (2022-01-18 11:21:10)
-> >> +
-> >> +static int nco_set_rate(struct clk_hw *hw, unsigned long rate,
-> >> +                               unsigned long parent_rate)
-> >> +{
-> >> +       struct nco_channel *chan =3D to_nco_channel(hw);
-> >> +       unsigned long flags;
-> >> +       u32 div;
-> >> +       s32 inc1, inc2;
-> >> +       bool was_enabled;
-> >> +
-> >> +       div =3D 2 * parent_rate / rate;
-> >> +       inc1 =3D 2 * parent_rate - div * rate;
-> >> +       inc2 =3D -((s32) (rate - inc1));
-> >
-> > Is the cast necessary?
->=20
-> Answering that prompted me to get back to reading some C specification an=
-d now
-> I am confident in moving away from signed types here and in nco_recalc_ra=
-te
-> altogether.
+On Thu, Jan 20, 2022 at 11:39:56AM -0500, Mimi Zohar wrote:
+> Eric, Vitaly,
+> 
+> On Tue, 2022-01-18 at 16:39 -0800, Eric Biggers wrote:
+> 
+> > > > The easiest way to do this would be sign/verify the following struct:
+> > > > 	struct ima_file_id {
+> > > > 		u8 is_fsverity;
+> > > > 		u8 hash_algorithm;
+> > > > 		u8 hash[];
+> > > > 	};
+> 
+> 
+> > > This would be the *data* that is signed/verified -- meaning that it
+> would be
+> > > > hashed again as part of the signature algorithm (whether that hash is built-in
+> > > > to the signature algorithm, as is the case for modern algorithms, or handled by
+> > > > the caller as is the case for legacy algorithms).
+> > > 
+> > > There seems to be an inconsistency, here, with what you said above,
+> > > "... ECDSA just signs/verifies a raw hash, and in fact it *must* be a
+> > > raw hash for it to be secure."
+> > 
+> > There isn't an inconsistency.  ECDSA is among the algorithms where the caller is
+> > expected to handle the hash.
+> > 
+> > It is confusing dealing with all these different signature algorithms.  I think
+> > the right way to think about this is in terms of what *data* is being
+> > signed/verified.  Currently the data is the full file contents.  I think it
+> > needs to be made into an annotated hash, e.g. the struct I gave.
+> > 
+> > public_key_verify_signature() also needs to be fixed to support both types of
+> > signature algorithms (caller-provided hash and internal hash) in a logical way.
+> > Originally it only supported caller-provided hashes, but then SM2 support was
+> > added and now it is super broken.
+> 
+> Eric, did you say you're working on fixes to address these problems?
 
-Great! Operating with only unsigned types makes this easier to
-understand.
+Yes, I was working on some patches at
+https://git.kernel.org/pub/scm/linux/kernel/git/ebiggers/linux.git/log/?h=wip-keys-fixes
+but got distracted by other things, as well as finding the problems with SM2
+which will take some time to decide what to do with.  I'll try to get some
+patches ready, but there are a lot of things to fix.
 
-> >> +       struct nco_tables *tbl;
-> >> +       unsigned int nchannels;
-> >> +       int ret, i;
-> >> +
-> >> +       regs =3D devm_platform_get_and_ioremap_resource(pdev, 0, &regs=
-_res);
-> >> +       if (IS_ERR(regs))
-> >> +               return PTR_ERR(regs);
-> >> +
-> >> +       if (resource_size(regs_res) < NCO_CHANNEL_REGSIZE)
-> >> +               return -EINVAL;
-> >> +       nchannels =3D (resource_size(regs_res) - NCO_CHANNEL_REGSIZE)
-> >> +                       / NCO_CHANNEL_STRIDE + 1;
-> >
-> > Is this some sort of DIV_ROUND_UP()?
->=20
-> Almost. I will shop around for a macro replacement.
+> 
+> Instead of using a flexible array, Vitaly suggested defining the hash
+> as FS_VERITY_MAX_DIGEST_SIZE, so that it could be allocated temporarily
+> on stack
+> instead of kalloc.
+> 
+> As the above struct is not limited to fsverity, we could use
+> MAX_HASH_DIGESTSIZE, if it was exported, but it isn't.  Would the
+> following work for you?
+> 
+> /*
+>  * IMA signature header version 3 disambiguates the data that is signed
+> by
+>  * indirectly signing the hash of this structure, containing either the
+>  * fsverity_descriptor struct digest or, in the future, the traditional
+> IMA
+>  * file hash.
+>  */
+> struct ima_file_id {
+>         __u8 is_fsverity;       /* set to 1 for IMA_VERITY_DIGSIG */
+>         __u8 hash_algorithm;    /* Digest algorithm [enum hash_algo] */
+> #ifdef __KERNEL__
+>         __u8 hash[HASH_MAX_DIGESTSIZE];
+> #else
+>         __u8 hash[];
+> #endif
+> };
 
-Alright.
+You could certainly declare a fixed-length struct, but only sign/verify the used
+portion of it.  The fixed-length struct would just be an implementation detail.
+
+Alternatively, you could always sign/verify a fixed-length struct, with any
+shorter hashes zero-padded to HASH_MAX_DIGESTSIZE (64 bytes).  This would be
+fine if you're confident that hashes longer than 64 bytes will never be used.
+(They don't make sense cryptographically, but who knows.)
+
+For future extensibility, you might want to call the 'is_fsverity' field
+something like 'hash_type', so it would be like an enum rather than a bool.  I
+just used 'is_fsverity' as a minimal example.
+
+- Eric
