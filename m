@@ -2,267 +2,182 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BED7C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 20:28:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B053C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 20:37:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347295AbiATU2K (ORCPT
+        id S1347336AbiATUhk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 15:28:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58040 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229701AbiATU2J (ORCPT
+        Thu, 20 Jan 2022 15:37:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:51181 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229701AbiATUhj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 15:28:09 -0500
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B404C061574;
-        Thu, 20 Jan 2022 12:28:09 -0800 (PST)
-Received: by mail-pj1-x102e.google.com with SMTP id h12so7054674pjq.3;
-        Thu, 20 Jan 2022 12:28:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CI7NDBFAkGXfidbJOW8wXZoiOshWSUhW2QoHzW3cfQk=;
-        b=O6ImPnT/ScJ1yJPH0+wBjdMg0vhRmstquWv/7DS5f3LQBN8VcQEhubPmYPrfp0FY7u
-         9Gw8EvurKwLcqMBeeKVj2NqK9c7DLJmIX7zyXE6AzMckd5UAOZtPrP11GkMYfIZvt0Mv
-         /CjMLlnlsEFMq1/IvKxAdlnYiVJxZvTEj5KF/Vphuk7lmfiLtJcA2/3p6JfXrpgow98q
-         HjdwJsfprOK/lGs288M6WtAeqjA3lpG3B944t5o2Lr8wFIFL6MSfUY3OSVDP9j3Uxi4r
-         gZ7jf/6WIUpDA5q1RgRrP8tb0b7U7wtd84cM5TGoCs2Bec4Iz1Sia582iVjFCanYP0m8
-         omNQ==
+        Thu, 20 Jan 2022 15:37:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642711058;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=uGxwqBCvgZoPCkZZ5FkImKlvcovv546VMc/LVt9w2tc=;
+        b=ZvKDtGSzkWt1zH1GTudlG8LdzvJYPl4a4TZUs8+X75TdncCRIpi7wmEjelkzMCZrZqquYW
+        atZAtA2Oqdnl/Ea/EPGsVaJjC3B4C3K00r07vN4IBJPCeAO3BReoSuzWkQv5+47WEOo60G
+        58DwWaPKYslrUfBlexGJYmZOg3GTnA4=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-187-FzPzYBpdP4SLgGLoARepcA-1; Thu, 20 Jan 2022 15:37:37 -0500
+X-MC-Unique: FzPzYBpdP4SLgGLoARepcA-1
+Received: by mail-ed1-f71.google.com with SMTP id en7-20020a056402528700b00404aba0a6ffso5821061edb.5
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 12:37:37 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:from:to:cc:references:organization:in-reply-to
          :content-transfer-encoding;
-        bh=CI7NDBFAkGXfidbJOW8wXZoiOshWSUhW2QoHzW3cfQk=;
-        b=aRSEMaDWkshIEeuq64ukjg2D7YgtVY/fPLSUHKg1ixhG75/sQyJoEr1AwX6VSgp+Ed
-         2OOMyvBc2YwqMwgEd6bkFFfslTKUXFsU/67mbyp13WeMcNd7eVQL2wP7WLZ7YbWm4lry
-         pGn7J1KjojlUBMNDebq2wsF9yNZG9cH+PNBe1okLQbffklLeiJdn0O8rgkkJmWH9FWX6
-         gFkdqDtJQq9N8SWvmaktIKdXtZuGC0Kgifx/TFf/XaroruSJSO02luCGY0vzjAK8rKB9
-         ZlTj4oBPGtzuJCo+pzweYrUcXcVzMjRsgJPfygsOWwwmU4Eet+hvMx5N6R8wB8BQa+cN
-         ajIQ==
-X-Gm-Message-State: AOAM530Fu8sIwnEyJm3KsKRdWg2jZX25sbdq94F7uUFcfTErUllKUsgj
-        jEwc8wqRTy3o8g6SP7CIK6Y=
-X-Google-Smtp-Source: ABdhPJzrkABpytO1HoyWMwxlgkChZMTBPkgeCN4n/9xZP6sdrZo+BE52sUsnimcBi7XyC/6qS7cC2w==
-X-Received: by 2002:a17:902:f545:b0:14b:18f:9389 with SMTP id h5-20020a170902f54500b0014b018f9389mr436844plf.25.1642710488625;
-        Thu, 20 Jan 2022 12:28:08 -0800 (PST)
-Received: from localhost.localdomain (c-67-174-241-145.hsd1.ca.comcast.net. [67.174.241.145])
-        by smtp.gmail.com with ESMTPSA id d18sm4506668pfv.173.2022.01.20.12.28.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 12:28:07 -0800 (PST)
-From:   Yang Shi <shy828301@gmail.com>
-To:     kirill.shutemov@linux.intel.com, jannh@google.com,
-        willy@infradead.org, akpm@linux-foundation.org
-Cc:     shy828301@gmail.com, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: [v2 PATCH] fs/proc: task_mmu.c: don't read mapcount for migration entry
-Date:   Thu, 20 Jan 2022 12:28:05 -0800
-Message-Id: <20220120202805.3369-1-shy828301@gmail.com>
-X-Mailer: git-send-email 2.26.3
+        bh=uGxwqBCvgZoPCkZZ5FkImKlvcovv546VMc/LVt9w2tc=;
+        b=SjEZ9XUQY9E+3fSgU+MD7+N3vG1B+dsstAF0r0C+mESkJIiKy9oljTjR4q4auJy+Xc
+         3KB+6LdNhKDqTTIw09s0JDEZ0ekJIdav0iLO9Gc4VPjiJvzxIiIndlUhGEmHmvofaIq9
+         kKCeCW3nWY9CcBcm4MHTFcFc7B1seDYsJRHJk58VUsN9kwKT2JAntxfPqs2nDxODKEIq
+         stn/vzjitj4612mIVieEZdQSjNyEcoJgDzY89RPraV03vrHwWeCrP1QsgacvCzZ3QRl8
+         MC31NsjCd/+bIEmS5rUl0jVTisYj3vR3IBuMAMT7MzQhcd+8LefHdSFh2Wwav6h6u+vk
+         MxBg==
+X-Gm-Message-State: AOAM530NyIrJ73cekCn6NIh1r0icBRA/GvUtMeW2QdzTRBPA6cbxmkts
+        yYlUP84XM9R6I4JbihlewgtfUs/RNYJVXi28rQox6RN1PHGPiT8P7hOxSOBZKAuDmIKea/uhDAM
+        xKHz8/rfp+YKysiEPc46TFmcm
+X-Received: by 2002:a05:6402:1104:: with SMTP id u4mr917723edv.24.1642711056022;
+        Thu, 20 Jan 2022 12:37:36 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzYE4Lp9kOI/G+mmLmeVOSnWXs3gIZZIBO5XD6ezueSA34Nf0afMXtekWQmU16Ku3t5x3mhlA==
+X-Received: by 2002:a05:6402:1104:: with SMTP id u4mr917710edv.24.1642711055820;
+        Thu, 20 Jan 2022 12:37:35 -0800 (PST)
+Received: from ?IPV6:2003:cb:c70e:5800:eeb:dae2:b1c0:f5d1? (p200300cbc70e58000eebdae2b1c0f5d1.dip0.t-ipconnect.de. [2003:cb:c70e:5800:eeb:dae2:b1c0:f5d1])
+        by smtp.gmail.com with ESMTPSA id v14sm1399715ejy.77.2022.01.20.12.37.34
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Jan 2022 12:37:34 -0800 (PST)
+Message-ID: <42a9b72d-093e-c35c-f4b5-b321a666e67d@redhat.com>
+Date:   Thu, 20 Jan 2022 21:37:34 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] mm: reuse the unshared swapcache page in do_wp_page
+Content-Language: en-US
+From:   David Hildenbrand <david@redhat.com>
+To:     Matthew Wilcox <willy@infradead.org>
+Cc:     Nadav Amit <nadav.amit@gmail.com>,
+        "zhangliang (AG)" <zhangliang5@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        wangzhigang17@huawei.com,
+        Linus Torvalds <torvalds@linux-foundation.org>
+References: <a93988da-80fb-dd32-4717-a6a0bae9e4ee@huawei.com>
+ <dc415c4a-63aa-19b0-0fbc-795989970f6d@redhat.com>
+ <fb02087a-b102-c91e-ab65-fb02cc8ee0a2@huawei.com>
+ <9cd7eee2-91fd-ddb8-e47d-e8585e5baa05@redhat.com>
+ <b6df4f7f-c080-ad6c-d1ad-098115f016f3@huawei.com>
+ <747ff31c-6c9e-df6c-f14d-c43aa1c77b4a@redhat.com>
+ <C8734D0B-B855-4323-A7DF-2D96245951B2@gmail.com>
+ <8931808d-db61-0f06-ceb3-f48a83b1f74c@redhat.com>
+ <6225EAFF-B323-4DC5-AC4C-885B29ED7261@gmail.com>
+ <9071d5a8-ed2d-5cf5-5526-43fe7dd377ec@redhat.com>
+ <YenA7Xzd2G2OYvqz@casper.infradead.org>
+ <da2846a1-f950-d330-7ada-ad3c9abfde74@redhat.com>
+Organization: Red Hat
+In-Reply-To: <da2846a1-f950-d330-7ada-ad3c9abfde74@redhat.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The syzbot reported the below BUG:
+On 20.01.22 21:09, David Hildenbrand wrote:
+> On 20.01.22 21:07, Matthew Wilcox wrote:
+>> On Thu, Jan 20, 2022 at 08:55:12PM +0100, David Hildenbrand wrote:
+>>>>>> David, does any of it regards the lru_cache_add() reference issue that I
+>>>>>> mentioned? [1]
+>>
+>>> +++ b/mm/memory.c
+>>> @@ -3291,19 +3291,28 @@ static vm_fault_t do_wp_page(struct vm_fault *vmf)
+>>>         if (PageAnon(vmf->page)) {
+>>>                 struct page *page = vmf->page;
+>>>  
+>>> -               /* PageKsm() doesn't necessarily raise the page refcount */
+>>> -               if (PageKsm(page) || page_count(page) != 1)
+>>> +               /*
+>>> +                * PageKsm() doesn't necessarily raise the page refcount.
+>>> +                *
+>>> +                * These checks are racy as long as we haven't locked the page;
+>>> +                * they are a pure optimization to avoid trying to lock the page
+>>> +                * and trying to free the swap cache when there is little hope
+>>> +                * it will actually result in a refcount of 1.
+>>> +                */
+>>> +               if (PageKsm(page) || page_count(page) > 1 + PageSwapCache(page))
+>>>                         goto copy;
+>>>                 if (!trylock_page(page))
+>>>                         goto copy;
+>>> -               if (PageKsm(page) || page_mapcount(page) != 1 || page_count(page) != 1) {
+>>> +               if (PageSwapCache(page))
+>>> +                       try_to_free_swap(page);
+>>> +               if (PageKsm(page) || page_count(page) != 1) {
+>>>                         unlock_page(page);
+>>>                         goto copy;
+>>>                 }
+>>>                 /*
+>>> -                * Ok, we've got the only map reference, and the only
+>>> -                * page count reference, and the page is locked,
+>>> -                * it's dark out, and we're wearing sunglasses. Hit it.
+>>> +                * Ok, we've got the only page reference from our mapping
+>>> +                * and the page is locked, it's dark out, and we're wearing
+>>> +                * sunglasses. Hit it.
+>>>                  */
+>>>                 unlock_page(page);
+>>>                 wp_page_reuse(vmf);
+>>>
+>>>
+>>> I added some vmstats that monitor various paths. After one run of
+>>> 	./forceswap 2 1000000 1
+>>> I'm left with a rough delta (including some noise) of
+>>> 	anon_wp_copy_count 1799
+>>> 	anon_wp_copy_count_early 1
+>>> 	anon_wp_copy_lock 983396
+>>> 	anon_wp_reuse 0
+>>>
+>>> The relevant part of your reproducer is
+>>>
+>>> 	for (i = 0; i < nops; i++) {
+>>> 		if (madvise((void *)p, PAGE_SIZE * npages, MADV_PAGEOUT)) {
+>>> 			perror("madvise");
+>>> 			exit(-1);
+>>> 		}
+>>>
+>>> 		for (j = 0; j < npages; j++) {
+>>> 			c = p[j * PAGE_SIZE];
+>>> 			c++;
+>>> 			time -= rdtscp();
+>>> 			p[j * PAGE_SIZE] = c;
+>>> 			time += rdtscp();
+>>> 		}
+>>> 	}
+>>>
+>>> For this specific reproducer at least, the page lock seems to be the thingy that prohibits
+>>> reuse if I interpret the numbers correctly. We pass the initial page_count() check.
+>>>
+>>> Haven't looked into the details, and I would be curious how that performs with actual
+>>> workloads, if we can reproduce similar behavior.
+>>
+>> I don't see how that patch addresses the lru issue.  Wouldn't we need
+>> something like ...
+>>
+>> 	if (!PageLRU(page))
+>> 		lru_add_drain_all();
+>>
 
-kernel BUG at include/linux/page-flags.h:785!
-invalid opcode: 0000 [#1] PREEMPT SMP KASAN
-CPU: 1 PID: 4392 Comm: syz-executor560 Not tainted 5.16.0-rc6-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-RIP: 0010:PageDoubleMap include/linux/page-flags.h:785 [inline]
-RIP: 0010:__page_mapcount+0x2d2/0x350 mm/util.c:744
-Code: e8 d3 16 d1 ff 48 c7 c6 c0 00 b6 89 48 89 ef e8 94 4e 04 00 0f 0b e8 bd 16 d1 ff 48 c7 c6 60 01 b6 89 48 89 ef e8 7e 4e 04 00 <0f> 0b e8 a7 16 d1 ff 48 c7 c6 a0 01 b6 89 4c 89 f7 e8 68 4e 04 00
-RSP: 0018:ffffc90002b6f7b8 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff888019619d00 RSI: ffffffff81a68c12 RDI: 0000000000000003
-RBP: ffffea0001bdc2c0 R08: 0000000000000029 R09: 00000000ffffffff
-R10: ffffffff8903e29f R11: 00000000ffffffff R12: 00000000ffffffff
-R13: 00000000ffffea00 R14: ffffc90002b6fb30 R15: ffffea0001bd8001
-FS:  00007faa2aefd700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fff7e663318 CR3: 0000000018c6e000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- <TASK>
- page_mapcount include/linux/mm.h:837 [inline]
- smaps_account+0x470/0xb10 fs/proc/task_mmu.c:466
- smaps_pte_entry fs/proc/task_mmu.c:538 [inline]
- smaps_pte_range+0x611/0x1250 fs/proc/task_mmu.c:601
- walk_pmd_range mm/pagewalk.c:128 [inline]
- walk_pud_range mm/pagewalk.c:205 [inline]
- walk_p4d_range mm/pagewalk.c:240 [inline]
- walk_pgd_range mm/pagewalk.c:277 [inline]
- __walk_page_range+0xe23/0x1ea0 mm/pagewalk.c:379
- walk_page_vma+0x277/0x350 mm/pagewalk.c:530
- smap_gather_stats.part.0+0x148/0x260 fs/proc/task_mmu.c:768
- smap_gather_stats fs/proc/task_mmu.c:741 [inline]
- show_smap+0xc6/0x440 fs/proc/task_mmu.c:822
- seq_read_iter+0xbb0/0x1240 fs/seq_file.c:272
- seq_read+0x3e0/0x5b0 fs/seq_file.c:162
- vfs_read+0x1b5/0x600 fs/read_write.c:479
- ksys_read+0x12d/0x250 fs/read_write.c:619
- do_syscall_x64 arch/x86/entry/common.c:50 [inline]
- do_syscall_64+0x35/0xb0 arch/x86/entry/common.c:80
- entry_SYSCALL_64_after_hwframe+0x44/0xae
-RIP: 0033:0x7faa2af6c969
-Code: 28 00 00 00 75 05 48 83 c4 28 c3 e8 11 15 00 00 90 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 c7 c1 b8 ff ff ff f7 d8 64 89 01 48
-RSP: 002b:00007faa2aefd288 EFLAGS: 00000246 ORIG_RAX: 0000000000000000
-RAX: ffffffffffffffda RBX: 00007faa2aff4418 RCX: 00007faa2af6c969
-RDX: 0000000000002025 RSI: 0000000020000100 RDI: 0000000000000003
-RBP: 00007faa2aff4410 R08: 00007faa2aefd700 R09: 0000000000000000
-R10: 00007faa2aefd700 R11: 0000000000000246 R12: 00007faa2afc20ac
-R13: 00007fff7e6632bf R14: 00007faa2aefd400 R15: 0000000000022000
- </TASK>
-Modules linked in:
----[ end trace 24ec93ff95e4ac3d ]---
-RIP: 0010:PageDoubleMap include/linux/page-flags.h:785 [inline]
-RIP: 0010:__page_mapcount+0x2d2/0x350 mm/util.c:744
-Code: e8 d3 16 d1 ff 48 c7 c6 c0 00 b6 89 48 89 ef e8 94 4e 04 00 0f 0b e8 bd 16 d1 ff 48 c7 c6 60 01 b6 89 48 89 ef e8 7e 4e 04 00 <0f> 0b e8 a7 16 d1 ff 48 c7 c6 a0 01 b6 89 4c 89 f7 e8 68 4e 04 00
-RSP: 0018:ffffc90002b6f7b8 EFLAGS: 00010293
-RAX: 0000000000000000 RBX: 0000000000000000 RCX: 0000000000000000
-RDX: ffff888019619d00 RSI: ffffffff81a68c12 RDI: 0000000000000003
-RBP: ffffea0001bdc2c0 R08: 0000000000000029 R09: 00000000ffffffff
-R10: ffffffff8903e29f R11: 00000000ffffffff R12: 00000000ffffffff
-R13: 00000000ffffea00 R14: ffffc90002b6fb30 R15: ffffea0001bd8001
-FS:  00007faa2aefd700(0000) GS:ffff8880b9d00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 00007fff7e663318 CR3: 0000000018c6e000 CR4: 00000000003506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+lru_add_drain_all() takes a mutex ... best we can do I guess is drain
+the local CPU using lru_add_drain(). I'll go play with it and see what
+breaks :)
 
-The reproducer was trying to reading /proc/$PID/smaps when calling
-MADV_FREE at the mean time.  MADV_FREE may split THPs if it is called
-for partial THP.  It may trigger the below race:
-
-         CPU A                         CPU B
-         -----                         -----
-smaps walk:                      MADV_FREE:
-page_mapcount()
-  PageCompound()
-                                 split_huge_page()
-  page = compound_head(page)
-  PageDoubleMap(page)
-
-When calling PageDoubleMap() this page is not a tail page of THP anymore
-so the BUG is triggered.
-
-This could be fixed by elevated refcount of the page before calling
-mapcount, but it prevents from counting migration entries, and it seems
-overkilling because the race just could happen when PMD is split so all
-PTE entries of tail pages are actually migration entries, and
-smaps_account() does treat migration entries as mapcount == 1 as Kirill
-pointed out.
-
-Add a new parameter for smaps_account() to tell this entry is migration
-entry then skip calling page_mapcount().  Don't skip getting mapcount for
-device private entries since they do track references with mapcount.
-
-Fixes: b1d4d9e0cbd0 ("proc/smaps: carefully handle migration entries")
-Reported-by: syzbot+1f52b3a18d5633fa7f82@syzkaller.appspotmail.com
-Cc: "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Cc: Jann Horn <jannh@google.com>
-Cc: Matthew Wilcox <willy@infradead.org>
-Cc: <stable@vger.kernel.org>
-Signed-off-by: Yang Shi <shy828301@gmail.com>
----
-v2: * Added proper fix tag per Jann Horn
-    * Rebased to the latest linus's tree
-
- fs/proc/task_mmu.c | 27 +++++++++++++++++++++------
- 1 file changed, 21 insertions(+), 6 deletions(-)
-
-diff --git a/fs/proc/task_mmu.c b/fs/proc/task_mmu.c
-index 18f8c3acbb85..2bb567014d77 100644
---- a/fs/proc/task_mmu.c
-+++ b/fs/proc/task_mmu.c
-@@ -440,7 +440,8 @@ static void smaps_page_accumulate(struct mem_size_stats *mss,
- }
- 
- static void smaps_account(struct mem_size_stats *mss, struct page *page,
--		bool compound, bool young, bool dirty, bool locked)
-+		bool compound, bool young, bool dirty, bool locked,
-+		bool migration)
- {
- 	int i, nr = compound ? compound_nr(page) : 1;
- 	unsigned long size = nr * PAGE_SIZE;
-@@ -467,8 +468,12 @@ static void smaps_account(struct mem_size_stats *mss, struct page *page,
- 	 * page_count(page) == 1 guarantees the page is mapped exactly once.
- 	 * If any subpage of the compound page mapped with PTE it would elevate
- 	 * page_count().
-+	 *
-+	 * Treated regular migration entries as mapcount == 1 without reading
-+	 * mapcount since calling page_mapcount() for migration entries is
-+	 * racy against THP splitting.
- 	 */
--	if (page_count(page) == 1) {
-+	if ((page_count(page) == 1) || migration) {
- 		smaps_page_accumulate(mss, page, size, size << PSS_SHIFT, dirty,
- 			locked, true);
- 		return;
-@@ -517,6 +522,7 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
- 	struct vm_area_struct *vma = walk->vma;
- 	bool locked = !!(vma->vm_flags & VM_LOCKED);
- 	struct page *page = NULL;
-+	bool migration = false;
- 
- 	if (pte_present(*pte)) {
- 		page = vm_normal_page(vma, addr, *pte);
-@@ -536,8 +542,11 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
- 			} else {
- 				mss->swap_pss += (u64)PAGE_SIZE << PSS_SHIFT;
- 			}
--		} else if (is_pfn_swap_entry(swpent))
-+		} else if (is_pfn_swap_entry(swpent)) {
-+			if (is_migration_entry(swpent))
-+				migration = true;
- 			page = pfn_swap_entry_to_page(swpent);
-+		}
- 	} else {
- 		smaps_pte_hole_lookup(addr, walk);
- 		return;
-@@ -546,7 +555,8 @@ static void smaps_pte_entry(pte_t *pte, unsigned long addr,
- 	if (!page)
- 		return;
- 
--	smaps_account(mss, page, false, pte_young(*pte), pte_dirty(*pte), locked);
-+	smaps_account(mss, page, false, pte_young(*pte), pte_dirty(*pte),
-+		      locked, migration);
- }
- 
- #ifdef CONFIG_TRANSPARENT_HUGEPAGE
-@@ -557,6 +567,7 @@ static void smaps_pmd_entry(pmd_t *pmd, unsigned long addr,
- 	struct vm_area_struct *vma = walk->vma;
- 	bool locked = !!(vma->vm_flags & VM_LOCKED);
- 	struct page *page = NULL;
-+	bool migration = false;
- 
- 	if (pmd_present(*pmd)) {
- 		/* FOLL_DUMP will return -EFAULT on huge zero page */
-@@ -564,8 +575,10 @@ static void smaps_pmd_entry(pmd_t *pmd, unsigned long addr,
- 	} else if (unlikely(thp_migration_supported() && is_swap_pmd(*pmd))) {
- 		swp_entry_t entry = pmd_to_swp_entry(*pmd);
- 
--		if (is_migration_entry(entry))
-+		if (is_migration_entry(entry)) {
-+			migration = true;
- 			page = pfn_swap_entry_to_page(entry);
-+		}
- 	}
- 	if (IS_ERR_OR_NULL(page))
- 		return;
-@@ -577,7 +590,9 @@ static void smaps_pmd_entry(pmd_t *pmd, unsigned long addr,
- 		/* pass */;
- 	else
- 		mss->file_thp += HPAGE_PMD_SIZE;
--	smaps_account(mss, page, true, pmd_young(*pmd), pmd_dirty(*pmd), locked);
-+
-+	smaps_account(mss, page, true, pmd_young(*pmd), pmd_dirty(*pmd),
-+		      locked, migration);
- }
- #else
- static void smaps_pmd_entry(pmd_t *pmd, unsigned long addr,
 -- 
-2.26.3
+Thanks,
+
+David / dhildenb
 
