@@ -2,109 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B8D8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 18:02:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5991C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 18:02:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236440AbiATSCE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 13:02:04 -0500
-Received: from linux.microsoft.com ([13.77.154.182]:56204 "EHLO
-        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233344AbiATSB7 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 13:01:59 -0500
-Received: from machine.home (lfbn-lyo-1-1484-111.w86-207.abo.wanadoo.fr [86.207.51.111])
-        by linux.microsoft.com (Postfix) with ESMTPSA id 9771020B6C61;
-        Thu, 20 Jan 2022 10:01:57 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 9771020B6C61
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
-        s=default; t=1642701718;
-        bh=a5fVWGlzwUBqYrtxpw1SkQ2TEhRIbUpc2aCbvXgA0vc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FLe3Rgw3w3pOq64l+izGov9JOcfZvEFA1tD9y9/ZAdw/49HNyCkUKhlwKW3WqBoDn
-         cjHVf2h7BJ+sMXVxQPMTrL4A2pYYsoW2W6ytf6v4+vLKQaD2LP110tJD0IxaBTkwRb
-         sTj1gAN3mhFwTsbAbzzI5wnRTCO9eGE1L5Hi8kq4=
-From:   Francis Laniel <flaniel@linux.microsoft.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     linux-security-module@vger.kernel.org,
-        Serge Hallyn <serge@hallyn.com>,
-        Casey Schaufler <casey@schaufler-ca.com>,
-        Francis Laniel <flaniel@linux.microsoft.com>
-Subject: [RFC PATCH v3 0/2] Add capabilities file to sysfs
-Date:   Thu, 20 Jan 2022 19:01:14 +0100
-Message-Id: <20220120180116.167702-1-flaniel@linux.microsoft.com>
-X-Mailer: git-send-email 2.30.2
+        id S238499AbiATSCG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 13:02:06 -0500
+Received: from mga09.intel.com ([134.134.136.24]:51549 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233557AbiATSCA (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 13:02:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642701720; x=1674237720;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=TF7EhkH6yB6RnHB40fIMGf6Q1t1Vymj4PS+rdAdW8zU=;
+  b=DGTtM/5ApNBGucfC+zMviuIxQHBjc8Gj5YnO0ifbjBdMCH39uWbIcYYI
+   VYC1Np6eL5GtScghrC+xtjGaRgsMbgtEf2WjI5A6C0DsCG9ZCLWloWXBh
+   uSOM+aLofJoJQ+ax44o2cojf94f9ZV4s2b1HP+c0cRPLeVKPqkv7mfLNS
+   pASkSYnResIeir2xdJF7a2nx7n0eHduzOBpY7O/9qucOd24kbzqGUD7ey
+   f1lUxfjBeH7+Q3/OXDa5zDz7dZPWMjvvGm7O7VduqKvvLMjBowsAL6iLz
+   mHEpkl4qZNWhKIlP57DajAzSCQwtblxEk5qTd7myZxKzUuwncUhKYUvCX
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10233"; a="245206616"
+X-IronPort-AV: E=Sophos;i="5.88,303,1635231600"; 
+   d="scan'208";a="245206616"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 10:01:53 -0800
+X-IronPort-AV: E=Sophos;i="5.88,303,1635231600"; 
+   d="scan'208";a="672633592"
+Received: from agluck-desk2.sc.intel.com (HELO agluck-desk2.amr.corp.intel.com) ([10.3.52.146])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 10:01:52 -0800
+Date:   Thu, 20 Jan 2022 10:01:51 -0800
+From:   "Luck, Tony" <tony.luck@intel.com>
+To:     Borislav Petkov <bp@alien8.de>
+Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Smita Koralahalli Channabasappa 
+        <smita.koralahallichannabasappa@amd.com>,
+        Wei Huang <wei.huang2@amd.com>,
+        Tom Lendacky <thomas.lendacky@amd.com>, patches@lists.linux.dev
+Subject: Re: [PATCH 5/5] x86/sysfs: Add PPIN in sysfs under cpu topology
+Message-ID: <Yemjj26elXuOcegg@agluck-desk2.amr.corp.intel.com>
+References: <20220107225442.1690165-1-tony.luck@intel.com>
+ <20220107225442.1690165-6-tony.luck@intel.com>
+ <YellN/3VCasDI3OD@zn.tnic>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YellN/3VCasDI3OD@zn.tnic>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi.
+On Thu, Jan 20, 2022 at 02:35:51PM +0100, Borislav Petkov wrote:
+> On Fri, Jan 07, 2022 at 02:54:42PM -0800, Tony Luck wrote:
+> > +#define topology_ppin(cpu)			(cpu_data(cpu).ppin)
+> 
+> That looks unused. No need to add it.
 
 
-First, I hope you are fine and the same for your relatives.
+It "looks" unused, But thanks to the obscurity of CPP macros using ## to
+concatenate tokens it is needed.
 
-Capabilities are used to check if a thread has the right to perform a given
-action [1].
-For example, a thread with CAP_BPF set can use the bpf() syscall.
+This harmless looking line:
 
-Capabilities are used in the container world.
-In terms of code, several projects related to container maintain code where the
-capabilities are written alike include/uapi/linux/capability.h [2][3][4][5].
-For these projects, their codebase should be updated when a new capability is
-added to the kernel.
-Some other projects rely on <sys/capability.h> [6].
-In this case, this header file should reflect the capabilities offered by the
-kernel.
+define_id_show_func(ppin, "%llx");
 
-So, in this series, I added a new file to sysfs:
-/sys/kernel/security/capabilities.
-The goal of this file is to be used by "container world" software to know kernel
-capabilities at run time instead of compile time.
+is transmogrified by this:
 
-The "file" is read-only and its content is the capability number associated with
-the capability name:
-root@vm-amd64:~# cat /sys/kernel/security/capabilities
-0       CAP_CHOWN
-1       CAP_DAC_OVERRIDE
-...
-40      CAP_CHECKPOINT_RESTORE
+#define define_id_show_func(name, fmt)					\
+static ssize_t name##_show(struct device *dev,				\
+			   struct device_attribute *attr, char *buf)	\
+{									\
+	return sysfs_emit(buf, fmt "\n", topology_##name(dev->id));	\
+                                         ^^^^^^^^^^^^^^^
 
-The kernel already exposes the last capability number under:
-/proc/sys/kernel/cap_last_cap
-So, I think there should not be any issue exposing all the capabilities it
-offers.
-If there is any, please share it as I do not want to introduce issue with this
-series.
-
-Also, if you see any way to improve this series please share it as it would
-increase this contribution quality.
-
-Change since v2:
-* Use a char * for cap_string instead of an array, each line of this char *
-contains the capability number and its name.
-* Move the file under /sys/kernel/security instead of /sys/kernel.
-
-Francis Laniel (2):
-  capability: Add cap_string.
-  security/inode.c: Add capabilities file.
-
- include/uapi/linux/capability.h |  1 +
- kernel/capability.c             | 45 +++++++++++++++++++++++++++++++++
- security/inode.c                | 16 ++++++++++++
- 3 files changed, 62 insertions(+)
+                                         This becomes topology_ppin
+}
 
 
-Best regards and thank you in advance for your reviews.
----
-[1] man capabilities
-[2] https://github.com/containerd/containerd/blob/1a078e6893d07fec10a4940a5664fab21d6f7d1e/pkg/cap/cap_linux.go#L135
-[3] https://github.com/moby/moby/commit/485cf38d48e7111b3d1f584d5e9eab46a902aabc#diff-2e04625b209932e74c617de96682ed72fbd1bb0d0cb9fb7c709cf47a86b6f9c1
-moby relies on containerd code.
-[4] https://github.com/syndtr/gocapability/blob/42c35b4376354fd554efc7ad35e0b7f94e3a0ffb/capability/enum.go#L47
-[5] https://github.com/opencontainers/runc/blob/00f56786bb220b55b41748231880ba0e6380519a/libcontainer/capabilities/capabilities.go#L12
-runc relies on syndtr package.
-[6] https://github.com/containers/crun/blob/fafb556f09e6ffd4690c452ff51856b880c089f1/src/libcrun/linux.c#L35
--- 
-2.30.2
+Will fix the other stuff and rebase to latest so part 4 applies.
 
+Thanks for the review.
+
+-Tony
