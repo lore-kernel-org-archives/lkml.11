@@ -2,150 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64639C4167B
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 08:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F4BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 08:38:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359281AbiATIg0 (ORCPT
+        id S1359322AbiATIiQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 03:36:26 -0500
-Received: from mail-ua1-f43.google.com ([209.85.222.43]:44026 "EHLO
-        mail-ua1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234250AbiATIgZ (ORCPT
+        Thu, 20 Jan 2022 03:38:16 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:56146 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359292AbiATIiM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 03:36:25 -0500
-Received: by mail-ua1-f43.google.com with SMTP id 2so9420095uax.10;
-        Thu, 20 Jan 2022 00:36:24 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rjpWEc8ofW9Ln+ZzVM/iDZ8qr5vzNcJvKqxioEzCZGY=;
-        b=K8E1eXzycKiQIRWxj6qfUFajLTr2sy1dSiMuVac4Ojo2F6egeEaTWG9ZbEsgSkDSEw
-         qRqO5uQssP45mWIaWpG7nVB3Q97Z1Jr6E/38JLbdq15EI8lBonmLG/R6A0L2wQywHdjM
-         tlbG4o+STxkRss/G4WwK4qJM73GTuEXEIIUh6QnfAQP1F4VZPE5JUYse+fcFqMZoHYGf
-         ZafxGxjyuI5ZOlCI72DNOr278MsPXFnFRVZNTSTswiks1K2dV8F/xbDEQ2JSlTgfnhoE
-         hGKLjtKpj5enGPziEdb98hFXbm2BZ4uB/Zgol/rIMf2zdXs4p+1IuBSGQGYYFahsa+z3
-         ATDw==
-X-Gm-Message-State: AOAM5316YKeuEQHWPMSP3XHEStDeK+5+1EWFv3Cbk15N8tilVELLYVbW
-        GecERymnasaq70RxfNTmqifMrUS2CgMjdQ==
-X-Google-Smtp-Source: ABdhPJxGe1OsDYfyTFLeqMrnaPPS7g1NHd4Hi0o7FeKUu5n/kYgAXhvWwHI1mDzEE/HawGiFuMYvRg==
-X-Received: by 2002:a05:6102:3a68:: with SMTP id bf8mr13173693vsb.63.1642667783746;
-        Thu, 20 Jan 2022 00:36:23 -0800 (PST)
-Received: from mail-ua1-f47.google.com (mail-ua1-f47.google.com. [209.85.222.47])
-        by smtp.gmail.com with ESMTPSA id bj23sm432855vkb.23.2022.01.20.00.36.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Jan 2022 00:36:23 -0800 (PST)
-Received: by mail-ua1-f47.google.com with SMTP id r15so9486981uao.3;
-        Thu, 20 Jan 2022 00:36:23 -0800 (PST)
-X-Received: by 2002:a1f:a2d3:: with SMTP id l202mr4847687vke.7.1642667418540;
- Thu, 20 Jan 2022 00:30:18 -0800 (PST)
+        Thu, 20 Jan 2022 03:38:12 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 1F79E1F391;
+        Thu, 20 Jan 2022 08:38:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1642667889; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=S1149P6IJdsdpbMcrXZq6Mc6WqPqJoBvK3pMWsa4MN8=;
+        b=mgVK2GKX4z682928eNQNmcKH4PlzeX6XpPLxSucJKp6GDejDBl9xGnHm3EQ7m1HB7u4s0x
+        HmV98Y94Jgx4BP2N49y70kzTAsfC49uladYoyY9u+lMOkRTYf7K7VjPT83DyGrKubQrpNL
+        4X9INnLQQrZk7xUamCgzquBLJDcbk7E=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 1E602A3B81;
+        Thu, 20 Jan 2022 08:38:04 +0000 (UTC)
+Date:   Thu, 20 Jan 2022 09:38:04 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     Jani Nikula <jani.nikula@linux.intel.com>
+Cc:     Lucas De Marchi <lucas.demarchi@intel.com>,
+        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+        linux-security-module@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Emma Anholt <emma@anholt.net>, Eryk Brol <eryk.brol@amd.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Leo Li <sunpeng.li@amd.com>,
+        Mikita Lipski <mikita.lipski@amd.com>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Vishal Kulkarni <vishal@chelsio.com>
+Subject: Re: [PATCH 0/3] lib/string_helpers: Add a few string helpers
+Message-ID: <YekfbKMjOP9ecc5v@alley>
+References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
+ <YegPiR7LU8aVisMf@alley>
+ <87tudzbykz.fsf@intel.com>
 MIME-Version: 1.0
-References: <20220117110755.3433142-1-conor.dooley@microchip.com> <20220117110755.3433142-4-conor.dooley@microchip.com>
-In-Reply-To: <20220117110755.3433142-4-conor.dooley@microchip.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 20 Jan 2022 09:30:07 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXwe3_F8NeePnoFrLwyzKUwnHtmETC=ambgsC2N3w_h8A@mail.gmail.com>
-Message-ID: <CAMuHMdXwe3_F8NeePnoFrLwyzKUwnHtmETC=ambgsC2N3w_h8A@mail.gmail.com>
-Subject: Re: [PATCH v4 03/14] dt-bindings: i2c: add bindings for microchip
- mpfs i2c
-To:     Conor Dooley <conor.dooley@microchip.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Mark Brown <broonie@kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
-        linux-rtc@vger.kernel.org, linux-spi <linux-spi@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Bin Meng <bin.meng@windriver.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Lewis Hanly <lewis.hanly@microchip.com>,
-        daire.mcnamara@microchip.com, ivan.griffin@microchip.com,
-        Atish Patra <atishp@rivosinc.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <87tudzbykz.fsf@intel.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Conor,
+On Wed 2022-01-19 16:16:12, Jani Nikula wrote:
+> On Wed, 19 Jan 2022, Petr Mladek <pmladek@suse.com> wrote:
+> > On Tue 2022-01-18 23:24:47, Lucas De Marchi wrote:
+> >> d. This doesn't bring onoff() helper as there are some places in the
+> >>    kernel with onoff as variable - another name is probably needed for
+> >>    this function in order not to shadow the variable, or those variables
+> >>    could be renamed.  Or if people wanting  <someprefix>
+> >>    try to find a short one
+> >
+> > I would call it str_on_off().
+> >
+> > And I would actually suggest to use the same style also for
+> > the other helpers.
+> >
+> > The "str_" prefix would make it clear that it is something with
+> > string. There are other <prefix>_on_off() that affect some
+> > functionality, e.g. mute_led_on_off(), e1000_vlan_filter_on_off().
+> >
+> > The dash '_' would significantly help to parse the name. yesno() and
+> > onoff() are nicely short and kind of acceptable. But "enabledisable()"
+> > is a puzzle.
+> >
+> > IMHO, str_yes_no(), str_on_off(), str_enable_disable() are a good
+> > compromise.
+> >
+> > The main motivation should be code readability. You write the
+> > code once. But many people will read it many times. Open coding
+> > is sometimes better than misleading macro names.
+> >
+> > That said, I do not want to block this patchset. If others like
+> > it... ;-)
+> 
+> I don't mind the names either way. Adding the prefix and dashes is
+> helpful in that it's possible to add the functions first and convert
+> users at leisure, though with a bunch of churn, while using names that
+> collide with existing ones requires the changes to happen in one go.
 
-On Mon, Jan 17, 2022 at 12:06 PM <conor.dooley@microchip.com> wrote:
-> From: Conor Dooley <conor.dooley@microchip.com>
->
-> Add device tree bindings for the i2c controller on
-> the Microchip PolarFire SoC.
->
-> Signed-off-by: Daire McNamara <daire.mcnamara@microchip.com>
-> Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
+It is also possible to support both notations at the beginning.
+And convert the existing users in the 2nd step.
 
-Thanks for your patch!
+> What I do mind is grinding this series to a halt once again. I sent a
+> handful of versions of this three years ago, with inconclusive
+> bikeshedding back and forth, eventually threw my hands up in disgust,
+> and walked away.
 
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/i2c/microchip,mpfs-i2c.yaml
-> @@ -0,0 +1,55 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/i2c/microchip,mpfs-i2c.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Microchip MPFS I2C Controller Device Tree Bindings
-> +
-> +maintainers:
-> +  - Daire McNamara <daire.mcnamara@microchip.com>
-> +
-> +allOf:
-> +  - $ref: /schemas/i2c/i2c-controller.yaml#
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - microchip,mpfs-i2c # Microchip PolarFire SoC compatible SoCs
-> +      - microchip,corei2c-rtl-v7 # Microchip Fabric based i2c IP core
+Yeah, and I am sorry for bikeshedding. Honestly, I do not know what is
+better. This is why I do not want to block this series when others
+like this.
 
-Wouldn't it be more logical to have:
+My main motivation is to point out that:
 
-    items:
-      - const: microchip,mpfs-i2c # Microchip PolarFire SoC compatible SoCs
-      - const: microchip,corei2c-rtl-v7 # Microchip Fabric based i2c IP core
+    enabledisable(enable)
 
-?
+might be, for some people, more eye bleeding than
 
-If the IP core is reused, it can become:
+    enable ? "enable" : "disable"
 
-    items:
-      - enum:
-          - microchip,mpfs-i2c # Microchip PolarFire SoC compatible SoCs
-          - microchip,<foo>-i2c # ...
-      - const: microchip,corei2c-rtl-v7 # Microchip Fabric based i2c IP core
 
-That way the driver can just match on the second (fallback) value,
-and no further driver changes will be needed (until v8 or later).
+The problem is not that visible with yesno() and onoff(). But as you said,
+onoff() confliscts with variable names. And enabledisable() sucks.
+As a result, there is a non-trivial risk of two mass changes:
 
-Gr{oetje,eeting}s,
+now:
 
-                        Geert
+- contition ? "yes" : "no"
++ yesno(condition)
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+a few moths later:
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+- yesno(condition)
++ str_yes_no(condition)
+
+
+Best Regards,
+Petr
