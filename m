@@ -2,170 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B48A9C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 09:12:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83AADC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 09:13:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241202AbiATJMv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 04:12:51 -0500
-Received: from mga11.intel.com ([192.55.52.93]:41324 "EHLO mga11.intel.com"
+        id S241308AbiATJN6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 04:13:58 -0500
+Received: from mga01.intel.com ([192.55.52.88]:40621 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237469AbiATJMu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 04:12:50 -0500
+        id S237469AbiATJN4 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 04:13:56 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642669970; x=1674205970;
-  h=from:to:cc:subject:in-reply-to:references:date:
-   message-id:mime-version;
-  bh=O6+9vsSDVilrh7UjW1BQCXvdPjMTCzf/nC38lgkfjeM=;
-  b=AHA02wk5ouwuy6W2HYrPYzS3lrrL/+qHOg0CYICTR4e+NnGDFVlrPQJY
-   gUj38EYBjNh8qH1E352SLmi7aiETla3w5jUoSe+DLdc6dwhtORh48OxAB
-   wwXh0qh8dDeN8ZpYxipzfTpLjwedgt6UZTGuVuF0tPJWiTOD8Hb6lBqYz
-   TUbCocR9flrnZDvAlhu8UmnmUBvlBMKQk8+wBnGcT+5/+LbCwKTmYYJFo
-   5Zdbc2SDIn7jtDAU5Mcfjj2Ul9fOOFojNnFmVlLIhBT6wLzbLvZBezAhi
-   o0Krv3L9xYhq5xaiCt5g4CTKMsIURyXAl01a6ZaGbJ/PxuOdz23nu1+ji
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10232"; a="242871050"
+  t=1642670036; x=1674206036;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=cK8fG4NQ1lLYtkh+oYSvCamKhc4CeZkehTuxWGKWaiA=;
+  b=c3enh4VcQpKaRuZTxHBac+TmRIqJ8yMk/IjITBxJJfN7lr+vMMdNnc6d
+   yyNxgdlUZl8onYjXGjjga+lvOXFjQWlv+1w2ZY6nFuB0v68EQOF1DMlmH
+   OANxfFa56ikPEXGrwEnbprJ39xqrNLk27+kZD9IS21jf89atP/U69oLSe
+   ATKzQAQUzxzsglX+G/jrQwxaUWwm5e+n/8L+/hMeLxksZ1XH3lQwzhbOu
+   UzeRXmbkHlXCvlb8xI43pQD3mvq324AP3iY4rHioDOkPlsXyOif3rVoWb
+   Z2ghx2Xq3Ihz7HFsvjiBjLfILtbUDM1In6oUHWHdKpaZMHtJwuJvt+kWc
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10232"; a="269706628"
 X-IronPort-AV: E=Sophos;i="5.88,302,1635231600"; 
-   d="scan'208";a="242871050"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 01:12:43 -0800
+   d="scan'208";a="269706628"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 01:13:56 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,302,1635231600"; 
-   d="scan'208";a="532691996"
-Received: from davidfsc-mobl3.ger.corp.intel.com (HELO localhost) ([10.252.52.140])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 01:12:32 -0800
-From:   Jani Nikula <jani.nikula@linux.intel.com>
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Lucas De Marchi <lucas.demarchi@intel.com>,
-        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
-        linux-security-module@vger.kernel.org,
-        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Ben Skeggs <bskeggs@redhat.com>,
-        Christian =?utf-8?Q?K=C3=B6nig?= <christian.koenig@amd.com>,
-        Chris Wilson <chris@chris-wilson.co.uk>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        "David S . Miller" <davem@davemloft.net>,
-        Emma Anholt <emma@anholt.net>, Eryk Brol <eryk.brol@amd.com>,
-        Francis Laniel <laniel_francis@privacyrequired.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Harry Wentland <harry.wentland@amd.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
-        Julia Lawall <julia.lawall@lip6.fr>,
-        Kentaro Takeda <takedakn@nttdata.co.jp>,
-        Leo Li <sunpeng.li@amd.com>,
-        Mikita Lipski <mikita.lipski@amd.com>,
-        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
-        Raju Rangoju <rajur@chelsio.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Rodrigo Vivi <rodrigo.vivi@intel.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Vishal Kulkarni <vishal@chelsio.com>
-Subject: Re: [PATCH 0/3] lib/string_helpers: Add a few string helpers
-In-Reply-To: <YekfbKMjOP9ecc5v@alley>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
- <YegPiR7LU8aVisMf@alley> <87tudzbykz.fsf@intel.com>
- <YekfbKMjOP9ecc5v@alley>
-Date:   Thu, 20 Jan 2022 11:12:27 +0200
-Message-ID: <8735libwjo.fsf@intel.com>
+   d="scan'208";a="518542720"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 20 Jan 2022 01:13:54 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nATVy-000EAd-8T; Thu, 20 Jan 2022 09:13:54 +0000
+Date:   Thu, 20 Jan 2022 17:13:06 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Guangming <Guangming.Cao@mediatek.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        0day robot <lkp@intel.com>
+Subject: drivers/dma-buf/heaps/system_heap.c:357:24: sparse: sparse:
+ incorrect type in return expression (different base types)
+Message-ID: <202201201703.UusZsskM-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 20 Jan 2022, Petr Mladek <pmladek@suse.com> wrote:
-> On Wed 2022-01-19 16:16:12, Jani Nikula wrote:
->> On Wed, 19 Jan 2022, Petr Mladek <pmladek@suse.com> wrote:
->> > On Tue 2022-01-18 23:24:47, Lucas De Marchi wrote:
->> >> d. This doesn't bring onoff() helper as there are some places in the
->> >>    kernel with onoff as variable - another name is probably needed for
->> >>    this function in order not to shadow the variable, or those variables
->> >>    could be renamed.  Or if people wanting  <someprefix>
->> >>    try to find a short one
->> >
->> > I would call it str_on_off().
->> >
->> > And I would actually suggest to use the same style also for
->> > the other helpers.
->> >
->> > The "str_" prefix would make it clear that it is something with
->> > string. There are other <prefix>_on_off() that affect some
->> > functionality, e.g. mute_led_on_off(), e1000_vlan_filter_on_off().
->> >
->> > The dash '_' would significantly help to parse the name. yesno() and
->> > onoff() are nicely short and kind of acceptable. But "enabledisable()"
->> > is a puzzle.
->> >
->> > IMHO, str_yes_no(), str_on_off(), str_enable_disable() are a good
->> > compromise.
->> >
->> > The main motivation should be code readability. You write the
->> > code once. But many people will read it many times. Open coding
->> > is sometimes better than misleading macro names.
->> >
->> > That said, I do not want to block this patchset. If others like
->> > it... ;-)
->> 
->> I don't mind the names either way. Adding the prefix and dashes is
->> helpful in that it's possible to add the functions first and convert
->> users at leisure, though with a bunch of churn, while using names that
->> collide with existing ones requires the changes to happen in one go.
->
-> It is also possible to support both notations at the beginning.
-> And convert the existing users in the 2nd step.
->
->> What I do mind is grinding this series to a halt once again. I sent a
->> handful of versions of this three years ago, with inconclusive
->> bikeshedding back and forth, eventually threw my hands up in disgust,
->> and walked away.
->
-> Yeah, and I am sorry for bikeshedding. Honestly, I do not know what is
-> better. This is why I do not want to block this series when others
-> like this.
->
-> My main motivation is to point out that:
->
->     enabledisable(enable)
->
-> might be, for some people, more eye bleeding than
->
->     enable ? "enable" : "disable"
->
->
-> The problem is not that visible with yesno() and onoff(). But as you said,
-> onoff() confliscts with variable names. And enabledisable() sucks.
-> As a result, there is a non-trivial risk of two mass changes:
+tree:   https://github.com/0day-ci/linux/commits/UPDATE-20220120-113516/guangming-cao-mediatek-com/dma-buf-dma-heap-Add-a-size-limitation-for-allocation/20211217-174135
+head:   d6d3f09d899553b1100b195a91a8f718d1bd6bc2
+commit: d6d3f09d899553b1100b195a91a8f718d1bd6bc2 dma-buf: system_heap: Add a size check for allocation
+date:   6 hours ago
+config: sh-randconfig-s031-20220117 (https://download.01.org/0day-ci/archive/20220120/202201201703.UusZsskM-lkp@intel.com/config)
+compiler: sh4-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/0day-ci/linux/commit/d6d3f09d899553b1100b195a91a8f718d1bd6bc2
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review UPDATE-20220120-113516/guangming-cao-mediatek-com/dma-buf-dma-heap-Add-a-size-limitation-for-allocation/20211217-174135
+        git checkout d6d3f09d899553b1100b195a91a8f718d1bd6bc2
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=sh SHELL=/bin/bash drivers/dma-buf/heaps/
 
-My point is, in the past three years we could have churned through more
-than two mass renames just fine, if needed, *if* we had just managed to
-merge something for a start!
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-BR,
-Jani.
 
->
-> now:
->
-> - contition ? "yes" : "no"
-> + yesno(condition)
->
-> a few moths later:
->
-> - yesno(condition)
-> + str_yes_no(condition)
->
->
-> Best Regards,
-> Petr
+sparse warnings: (new ones prefixed by >>)
+>> drivers/dma-buf/heaps/system_heap.c:357:24: sparse: sparse: incorrect type in return expression (different base types) @@     expected struct dma_buf * @@     got int @@
+   drivers/dma-buf/heaps/system_heap.c:357:24: sparse:     expected struct dma_buf *
+   drivers/dma-buf/heaps/system_heap.c:357:24: sparse:     got int
 
--- 
-Jani Nikula, Intel Open Source Graphics Center
+vim +357 drivers/dma-buf/heaps/system_heap.c
+
+   334	
+   335	static struct dma_buf *system_heap_allocate(struct dma_heap *heap,
+   336						    unsigned long len,
+   337						    unsigned long fd_flags,
+   338						    unsigned long heap_flags)
+   339	{
+   340		struct system_heap_buffer *buffer;
+   341		DEFINE_DMA_BUF_EXPORT_INFO(exp_info);
+   342		unsigned long size_remaining = len;
+   343		unsigned int max_order = orders[0];
+   344		struct dma_buf *dmabuf;
+   345		struct sg_table *table;
+   346		struct scatterlist *sg;
+   347		struct list_head pages;
+   348		struct page *page, *tmp_page;
+   349		int i, ret = -ENOMEM;
+   350	
+   351		/*
+   352		 * Size check. The "len" should be less than totalram since system_heap
+   353		 * memory is comes from system. Adding check here can prevent consuming
+   354		 * too much time for invalid allocations.
+   355		 */
+   356		if (len >> PAGE_SHIFT > totalram_pages())
+ > 357			return -EINVAL;
+   358		buffer = kzalloc(sizeof(*buffer), GFP_KERNEL);
+   359		if (!buffer)
+   360			return ERR_PTR(-ENOMEM);
+   361	
+   362		INIT_LIST_HEAD(&buffer->attachments);
+   363		mutex_init(&buffer->lock);
+   364		buffer->heap = heap;
+   365		buffer->len = len;
+   366	
+   367		INIT_LIST_HEAD(&pages);
+   368		i = 0;
+   369		while (size_remaining > 0) {
+   370			/*
+   371			 * Avoid trying to allocate memory if the process
+   372			 * has been killed by SIGKILL
+   373			 */
+   374			if (fatal_signal_pending(current)) {
+   375				ret = -EINTR;
+   376				goto free_buffer;
+   377			}
+   378	
+   379			page = alloc_largest_available(size_remaining, max_order);
+   380			if (!page)
+   381				goto free_buffer;
+   382	
+   383			list_add_tail(&page->lru, &pages);
+   384			size_remaining -= page_size(page);
+   385			max_order = compound_order(page);
+   386			i++;
+   387		}
+   388	
+   389		table = &buffer->sg_table;
+   390		if (sg_alloc_table(table, i, GFP_KERNEL))
+   391			goto free_buffer;
+   392	
+   393		sg = table->sgl;
+   394		list_for_each_entry_safe(page, tmp_page, &pages, lru) {
+   395			sg_set_page(sg, page, page_size(page), 0);
+   396			sg = sg_next(sg);
+   397			list_del(&page->lru);
+   398		}
+   399	
+   400		/* create the dmabuf */
+   401		exp_info.exp_name = dma_heap_get_name(heap);
+   402		exp_info.ops = &system_heap_buf_ops;
+   403		exp_info.size = buffer->len;
+   404		exp_info.flags = fd_flags;
+   405		exp_info.priv = buffer;
+   406		dmabuf = dma_buf_export(&exp_info);
+   407		if (IS_ERR(dmabuf)) {
+   408			ret = PTR_ERR(dmabuf);
+   409			goto free_pages;
+   410		}
+   411		return dmabuf;
+   412	
+   413	free_pages:
+   414		for_each_sgtable_sg(table, sg, i) {
+   415			struct page *p = sg_page(sg);
+   416	
+   417			__free_pages(p, compound_order(p));
+   418		}
+   419		sg_free_table(table);
+   420	free_buffer:
+   421		list_for_each_entry_safe(page, tmp_page, &pages, lru)
+   422			__free_pages(page, compound_order(page));
+   423		kfree(buffer);
+   424	
+   425		return ERR_PTR(ret);
+   426	}
+   427	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
