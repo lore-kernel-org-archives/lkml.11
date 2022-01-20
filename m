@@ -2,87 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB031C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 06:05:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C47CC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 06:08:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358654AbiATGFd (ORCPT
+        id S1358659AbiATGIt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 01:05:33 -0500
-Received: from mga02.intel.com ([134.134.136.20]:29571 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230385AbiATGFa (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 01:05:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642658730; x=1674194730;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=4yIMwpAQHpg+W4EiKTx6nyojdlXTHv3T2fPnEPiOlXA=;
-  b=If+kKqQnBxmVwdb5M0dfAl1wovKfLIk74h+lTGDoz+xZc3b716thoRKu
-   qBVtCzEubJe2+7qoj86OGMmQE005GZchMvOaPMs5537u0vONvQA8WUswe
-   LuxiPKQ/OKlXRMaQ7F29djQH5GzBq2aSaFnwLD8JGIxNDGjN98OKNRzEY
-   o+v4qSqbCMHTAWsVSLYCYLtLVkPpvSiELthk5Bjo52i4Rr+WgH1/Qq1hc
-   iBNxAztUMDbKAeGqD51FOkMfhsykhy62zNv1Ubpw/cKUQMndubVkob2Zu
-   KPQYoli5OhHOXSSRA/C8EulrAI30mMo8uK+mLQb3v5s8n0xgmipJzwJcE
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10232"; a="232642861"
-X-IronPort-AV: E=Sophos;i="5.88,301,1635231600"; 
-   d="scan'208";a="232642861"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 22:05:29 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,301,1635231600"; 
-   d="scan'208";a="532631851"
-Received: from devel-wwang.sh.intel.com ([10.239.48.106])
-  by orsmga008.jf.intel.com with ESMTP; 19 Jan 2022 22:05:28 -0800
-From:   Wei Wang <wei.w.wang@intel.com>
-To:     sfr@canb.auug.org.au, pbonzini@redhat.com
-Cc:     kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Wei Wang <wei.w.wang@intel.com>
-Subject: [PATCH] docs: kvm: fix WARNINGs from api.rst
-Date:   Wed, 19 Jan 2022 23:50:03 -0500
-Message-Id: <20220120045003.315177-1-wei.w.wang@intel.com>
-X-Mailer: git-send-email 2.25.1
+        Thu, 20 Jan 2022 01:08:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58434 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231792AbiATGIs (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 01:08:48 -0500
+Received: from mail.marcansoft.com (marcansoft.com [IPv6:2a01:298:fe:f::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A263C061574;
+        Wed, 19 Jan 2022 22:08:47 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: marcan@marcan.st)
+        by mail.marcansoft.com (Postfix) with ESMTPSA id 9F2054246A;
+        Thu, 20 Jan 2022 06:08:38 +0000 (UTC)
+Subject: Re: [PATCH v3 2/9] brcmfmac: firmware: Allocate space for default
+ boardrev in nvram
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        SHA-cyfmac-dev-list@infineon.com
+References: <20220117142919.207370-1-marcan@marcan.st>
+ <20220117142919.207370-3-marcan@marcan.st>
+ <CAHp75VdZG4n1QySXyM+w1gJOWzq5Ng-Ym8dL1sSC_MLP2hqxAw@mail.gmail.com>
+From:   Hector Martin <marcan@marcan.st>
+Message-ID: <af02e786-873e-50e3-473b-3d57e3c52be3@marcan.st>
+Date:   Thu, 20 Jan 2022 15:08:36 +0900
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHp75VdZG4n1QySXyM+w1gJOWzq5Ng-Ym8dL1sSC_MLP2hqxAw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: es-ES
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the api number 134 for KVM_GET_XSAVE2, instead of 42, which has been
-used by KVM_GET_XSAVE.
-Also, fix the WARNINGs of the underlines being too short.
+On 20/01/2022 06.35, Andy Shevchenko wrote:
+> On Mon, Jan 17, 2022 at 4:30 PM Hector Martin <marcan@marcan.st> wrote:
+>>
+>> If boardrev is missing from the NVRAM we add a default one, but this
+>> might need more space in the output buffer than was allocated. Ensure
+>> we have enough padding for this in the buffer.
+> 
+> Do you know this ahead (before allocation happens)?
+> If yes, the size change should happen conditionally.
+> 
+> Alternatively, krealloc() may be used.
 
-Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-Signed-off-by: Wei Wang <wei.w.wang@intel.com>
----
- Documentation/virt/kvm/api.rst | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+We don't know if we will have to add a boardrev until we find it's
+missing. The buffer is already oversized anyway, as its size is computed
+based on the input NVRAM size, while comments and such will be removed.
+This is just increasing the existing worst-case allocation to properly
+account for the true worst-case case.
 
-diff --git a/Documentation/virt/kvm/api.rst b/Documentation/virt/kvm/api.rst
-index d3791a14eb9a..bb8cfddbb22d 100644
---- a/Documentation/virt/kvm/api.rst
-+++ b/Documentation/virt/kvm/api.rst
-@@ -5545,8 +5545,8 @@ the trailing ``'\0'``, is indicated by ``name_size`` in the header.
- The Stats Data block contains an array of 64-bit values in the same order
- as the descriptors in Descriptors block.
- 
--4.42 KVM_GET_XSAVE2
--------------------
-+4.134 KVM_GET_XSAVE2
-+--------------------
- 
- :Capability: KVM_CAP_XSAVE2
- :Architectures: x86
-@@ -7363,7 +7363,7 @@ trap and emulate MSRs that are outside of the scope of KVM as well as
- limit the attack surface on KVM's MSR emulation code.
- 
- 8.28 KVM_CAP_ENFORCE_PV_FEATURE_CPUID
-------------------------------
-+-------------------------------------
- 
- Architectures: x86
- 
+I don't think trying to keep the buffer perfectly sized buys us anything
+here, since it will be freed after download anyway. There's no point in
+saving a few bytes of memory in the interim.
+
 -- 
-2.25.1
-
+Hector Martin (marcan@marcan.st)
+Public Key: https://mrcn.st/pub
