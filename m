@@ -2,59 +2,59 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F094C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 01:08:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1412BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 01:08:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358219AbiATBH5 (ORCPT
+        id S1358111AbiATBIA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 20:07:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49100 "EHLO
+        Wed, 19 Jan 2022 20:08:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358078AbiATBHc (ORCPT
+        with ESMTP id S1358065AbiATBHg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 20:07:32 -0500
-Received: from mail-pf1-x44a.google.com (mail-pf1-x44a.google.com [IPv6:2607:f8b0:4864:20::44a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C8EDC06173E
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 17:07:32 -0800 (PST)
-Received: by mail-pf1-x44a.google.com with SMTP id g26-20020aa79dda000000b004bde19ed422so2608963pfq.18
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 17:07:32 -0800 (PST)
+        Wed, 19 Jan 2022 20:07:36 -0500
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86FD4C06173F
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 17:07:35 -0800 (PST)
+Received: by mail-pg1-x549.google.com with SMTP id t27-20020a63461b000000b00342c204e4f3so2679498pga.11
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 17:07:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=rr7/xdS9A1Cq2w8MHIPc7fJOr4VT50gYLmjh7LotzWE=;
-        b=lm7IIDCcB6NMu3Iyn7ddQbGmSBJrUq3LlR+awXTl6j+43AEWJT8VxiuJhtr+2YFi5k
-         WUbO3LnrIFQGse/VMN6nEE3abh8iRKcuDyptPD9VOP6rK5l0toLkouQqEJpZMwfCWn9R
-         zfG87U6BcfEqv2SESInjOIeejxAhmTKa71JPas9nEUKis0pcKEAeOj6Y9Ym1jvFKwzuZ
-         bLgbmJXI1X68SXOKNm5UGw+T0oV0Fs9CW8c2sz5Xn5UpMbRzb27n31XQcFlEK52+0B+0
-         UmEWgTUehVbHHuQWEXsfj/4jkBeZGNy5q83X1hOJNG6inY1fCvI6ZZZrhD4/htIbaYND
-         yb0w==
+        bh=SPmcB01Jw1VeFGKhxeTbS/wTzutTVSBvaADi6jp2W34=;
+        b=Bf6iFLmM0Eql/U38xrScPLNbMLbjXLYmQELg5ayX41BI4Km4eyFs4TB/Rsw2gkiqRI
+         y97hQ2UJ/PZIa3tEWd3IL//sqfXfYIzOmAw/0ibi05slPvOGFHvT9r3hpqCu+AwvNzN8
+         RZBeeIAvE7Z+qJI1GXD8MkHuUo6cyFBK9kmLgEybj2zdReYvrHUEAYgYqkVKpgHt/NuA
+         VHGCB3s7zv+zvQsqYzJPM/HoXCXKpZKehuedJ2x00uo29ZHA/ZRxxOhxPt5Fe3cwjHWs
+         C35WKWS6Xh3/FOddroYlUxkhOlTFPRTCwvr9oBgmU5VGY7CY7b4zSKMtcPoyovU88X3U
+         lCJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=rr7/xdS9A1Cq2w8MHIPc7fJOr4VT50gYLmjh7LotzWE=;
-        b=mAypm1nXAkDIJCbi2UNW6Qg+39jBmqjDQ4v1TZ1fjh3izbNf7qycGMDXoXwwMkCH9J
-         T73RLyGJB2ImpMrVNd8oBmujblgF+Z5Lz6huYkbuFmtCB1CbYgSxfedKRjaGIk0zGySA
-         HbFbMkBnIXj6Cmi39/Jd7uu/+WHhqcusQ+oii52U47vmo5X9s5PHCyElFthUMRUWGXp4
-         zWJSJhSmeREke3G7Z1giauQuExHvH9MnZoQUiLnYrLfCBu/Cm6G7STZmXWr9eZN6LoUY
-         MMkSenxLUXFqcaXD1kYS1b8X9JqzUOT+EsWTANkgw5PdiCeGzNlgpEnd4jF9PXdRKT/M
-         vZ6w==
-X-Gm-Message-State: AOAM532f3AikNEWHWoItD9LtPQ/qdzWGHANC6MMLyzUo4/a2ghHGvYc2
-        m03JvrM+N21++N/9OyW8rHfAfydOWxg=
-X-Google-Smtp-Source: ABdhPJz4p6vz9khH27uhFpqdGrJHMj8406rn4ySWvLKzbIKS9p0iBcbIv0LQAP7NED2W6kvXjgrmEP41G5M=
+        bh=SPmcB01Jw1VeFGKhxeTbS/wTzutTVSBvaADi6jp2W34=;
+        b=GgY2g+DNIOyBQpHLKiHlFcxLwUzi+PH8fDVspgbkSVUHqW4MIhbSMp4vbg0ga3y4B/
+         bd1++DqjsSYpf6wrkdDy72M1RC/8iMXFtfYhyQhHfWrcWv4xSjGlHc5nIJUJWyGri1/a
+         fkoXaX1AxnrqSmhegIJtvnXKvzAlnulTs66Vwq1jsA4xeFS8jASLbtw6IgmbQkZo9Dme
+         mdZuY+fKdMwhh+mJnoUIaLWMdkGwfVIROuISqusR6Q0sX2ezFG9tIna9u679hAcg0KZP
+         ypuebHarJfg1qbgm/b1rxll1/hUxpNlXsshf7t8GKXYxXr9LKbyY5I7sDAz0RLAaqSmo
+         sEpw==
+X-Gm-Message-State: AOAM5312JSt+ZbeyqZ4QYjOnGr7fpweArPqBm6uBYqyADj2OpUyL2twB
+        c83shnN2imHgM+iymLDyKVNqFSXgFxk=
+X-Google-Smtp-Source: ABdhPJyhY4bNVRbfnz7JFjEiDTcXsIaFT/6w/ZpYFKxowHUV8yuURC0l5klp0iRUd1vZU9vPmah6Vonz+AQ=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:aa7:888e:0:b0:4c4:3ad:9eee with SMTP id
- z14-20020aa7888e000000b004c403ad9eeemr18324235pfe.13.1642640851937; Wed, 19
- Jan 2022 17:07:31 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a17:90b:1651:: with SMTP id
+ il17mr7717476pjb.151.1642640855071; Wed, 19 Jan 2022 17:07:35 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Thu, 20 Jan 2022 01:07:15 +0000
+Date:   Thu, 20 Jan 2022 01:07:17 +0000
 In-Reply-To: <20220120010719.711476-1-seanjc@google.com>
-Message-Id: <20220120010719.711476-6-seanjc@google.com>
+Message-Id: <20220120010719.711476-8-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220120010719.711476-1-seanjc@google.com>
 X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
-Subject: [PATCH 5/9] KVM: x86: Pass emulation type to can_emulate_instruction()
+Subject: [PATCH 7/9] KVM: SVM: Inject #UD on attempted emulation for SEV guest
+ w/o insn buffer
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -71,112 +71,128 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Pass the emulation type to kvm_x86_ops.can_emulate_insutrction() so that
-a future commit can harden KVM's SEV support to WARN on emulation
-scenarios that should never happen.
-
-No functional change intended.
+Inject #UD if KVM attempts emulation for an SEV guests without an insn
+buffer and instruction decoding is required.  The previous behavior of
+allowing emulation if there is no insn buffer is undesirable as doing so
+means KVM is reading guest private memory and thus decoding cyphertext,
+i.e. is emulating garbage.  The check was previously necessary as the
+emulation type was not provided, i.e. SVM needed to allow emulation to
+handle completion of emulation after exiting to userspace to handle I/O.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/include/asm/kvm_host.h |  3 ++-
- arch/x86/kvm/svm/svm.c          |  3 ++-
- arch/x86/kvm/vmx/vmx.c          |  7 ++++---
- arch/x86/kvm/x86.c              | 11 +++++++++--
- 4 files changed, 17 insertions(+), 7 deletions(-)
+ arch/x86/kvm/svm/svm.c | 89 ++++++++++++++++++++++++++----------------
+ 1 file changed, 55 insertions(+), 34 deletions(-)
 
-diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index 682ad02a4e58..c890931c9c65 100644
---- a/arch/x86/include/asm/kvm_host.h
-+++ b/arch/x86/include/asm/kvm_host.h
-@@ -1482,7 +1482,8 @@ struct kvm_x86_ops {
- 
- 	int (*get_msr_feature)(struct kvm_msr_entry *entry);
- 
--	bool (*can_emulate_instruction)(struct kvm_vcpu *vcpu, void *insn, int insn_len);
-+	bool (*can_emulate_instruction)(struct kvm_vcpu *vcpu, int emul_type,
-+					void *insn, int insn_len);
- 
- 	bool (*apic_init_signal_blocked)(struct kvm_vcpu *vcpu);
- 	int (*enable_direct_tlbflush)(struct kvm_vcpu *vcpu);
 diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
-index edea52be6c01..994224ae2731 100644
+index ed2ca875b84b..d324183fc596 100644
 --- a/arch/x86/kvm/svm/svm.c
 +++ b/arch/x86/kvm/svm/svm.c
-@@ -4257,7 +4257,8 @@ static void svm_enable_smi_window(struct kvm_vcpu *vcpu)
- 	}
- }
+@@ -4277,49 +4277,70 @@ static bool svm_can_emulate_instruction(struct kvm_vcpu *vcpu, int emul_type,
+ 	if (sev_es_guest(vcpu->kvm))
+ 		return false;
  
--static bool svm_can_emulate_instruction(struct kvm_vcpu *vcpu, void *insn, int insn_len)
-+static bool svm_can_emulate_instruction(struct kvm_vcpu *vcpu, int emul_type,
-+					void *insn, int insn_len)
- {
- 	bool smep, smap, is_user;
- 	unsigned long cr4;
-diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index a02a28ce7cc3..4b4c1dfa6842 100644
---- a/arch/x86/kvm/vmx/vmx.c
-+++ b/arch/x86/kvm/vmx/vmx.c
-@@ -1487,11 +1487,12 @@ static int vmx_rtit_ctl_check(struct kvm_vcpu *vcpu, u64 data)
- 	return 0;
- }
- 
--static bool vmx_can_emulate_instruction(struct kvm_vcpu *vcpu, void *insn, int insn_len)
-+static bool vmx_can_emulate_instruction(struct kvm_vcpu *vcpu, int emul_type,
-+					void *insn, int insn_len)
- {
- 	/*
- 	 * Emulation of instructions in SGX enclaves is impossible as RIP does
--	 * not point  tthe failing instruction, and even if it did, the code
-+	 * not point at the failing instruction, and even if it did, the code
- 	 * stream is inaccessible.  Inject #UD instead of exiting to userspace
- 	 * so that guest userspace can't DoS the guest simply by triggering
- 	 * emulation (enclaves are CPL3 only).
-@@ -5397,7 +5398,7 @@ static int handle_ept_misconfig(struct kvm_vcpu *vcpu)
- {
- 	gpa_t gpa;
- 
--	if (!vmx_can_emulate_instruction(vcpu, NULL, 0))
-+	if (!vmx_can_emulate_instruction(vcpu, EMULTYPE_PF, NULL, 0))
- 		return 1;
- 
- 	/*
-diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 55518b7d3b96..2fa4687de8e4 100644
---- a/arch/x86/kvm/x86.c
-+++ b/arch/x86/kvm/x86.c
-@@ -6810,6 +6810,13 @@ int kvm_write_guest_virt_system(struct kvm_vcpu *vcpu, gva_t addr, void *val,
- }
- EXPORT_SYMBOL_GPL(kvm_write_guest_virt_system);
- 
-+static int kvm_can_emulate_insn(struct kvm_vcpu *vcpu, int emul_type,
-+				void *insn, int insn_len)
-+{
-+	return static_call(kvm_x86_can_emulate_instruction)(vcpu, emul_type,
-+							    insn, insn_len);
-+}
++	/*
++	 * Emulation is possible if the instruction is already decoded, e.g.
++	 * when completing I/O after returning from userspace.
++	 */
++	if (emul_type & EMULTYPE_NO_DECODE)
++		return true;
 +
- int handle_ud(struct kvm_vcpu *vcpu)
- {
- 	static const char kvm_emulate_prefix[] = { __KVM_EMULATE_PREFIX };
-@@ -6817,7 +6824,7 @@ int handle_ud(struct kvm_vcpu *vcpu)
- 	char sig[5]; /* ud2; .ascii "kvm" */
- 	struct x86_exception e;
- 
--	if (unlikely(!static_call(kvm_x86_can_emulate_instruction)(vcpu, NULL, 0)))
-+	if (unlikely(!kvm_can_emulate_insn(vcpu, emul_type, NULL, 0)))
- 		return 1;
- 
- 	if (force_emulation_prefix &&
-@@ -8193,7 +8200,7 @@ int x86_emulate_instruction(struct kvm_vcpu *vcpu, gpa_t cr2_or_gpa,
- 	bool writeback = true;
- 	bool write_fault_to_spt;
- 
--	if (unlikely(!static_call(kvm_x86_can_emulate_instruction)(vcpu, insn, insn_len)))
-+	if (unlikely(!kvm_can_emulate_insn(vcpu, emulation_type, insn, insn_len)))
- 		return 1;
- 
- 	vcpu->arch.l1tf_flush_l1d = true;
++	/*
++	 * Emulation is possible for SEV guests if and only if a prefilled
++	 * buffer containing the bytes of the intercepted instruction is
++	 * available. SEV guest memory is encrypted with a guest specific key
++	 * and cannot be decrypted by KVM, i.e. KVM would read cyphertext and
++	 * decode garbage.
++	 *
++	 * Inject #UD if KVM reached this point without an instruction buffer.
++	 * In practice, this path should never be hit by a well-behaved guest,
++	 * e.g. KVM doesn't intercept #UD or #GP for SEV guests, but this path
++	 * is still theoretically reachable, e.g. via unaccelerated fault-like
++	 * AVIC access, and needs to be handled by KVM to avoid putting the
++	 * guest into an infinite loop.   Injecting #UD is somewhat arbitrary,
++	 * but its the least awful option given lack of insight into the guest.
++	 */
++	if (unlikely(!insn)) {
++		kvm_queue_exception(vcpu, UD_VECTOR);
++		return false;
++	}
++
++	/*
++	 * Emulate for SEV guests if the insn buffer is not empty.  The buffer
++	 * will be empty if the DecodeAssist microcode cannot fetch bytes for
++	 * the faulting instruction because the code fetch itself faulted, e.g.
++	 * the guest attempted to fetch from emulated MMIO or a guest page
++	 * table used to translate CS:RIP resides in emulated MMIO.
++	 */
++	if (likely(insn_len))
++		return true;
++
+ 	/*
+ 	 * Detect and workaround Errata 1096 Fam_17h_00_0Fh.
+ 	 *
+ 	 * Errata:
+-	 * When CPU raise #NPF on guest data access and vCPU CR4.SMAP=1, it is
+-	 * possible that CPU microcode implementing DecodeAssist will fail
+-	 * to read bytes of instruction which caused #NPF. In this case,
+-	 * GuestIntrBytes field of the VMCB on a VMEXIT will incorrectly
+-	 * return 0 instead of the correct guest instruction bytes.
+-	 *
+-	 * This happens because CPU microcode reading instruction bytes
+-	 * uses a special opcode which attempts to read data using CPL=0
+-	 * privileges. The microcode reads CS:RIP and if it hits a SMAP
+-	 * fault, it gives up and returns no instruction bytes.
++	 * When CPU raises #NPF on guest data access and vCPU CR4.SMAP=1, it is
++	 * possible that CPU microcode implementing DecodeAssist will fail to
++	 * read guest memory at CS:RIP and vmcb.GuestIntrBytes will incorrectly
++	 * be '0'.  This happens because microcode reads CS:RIP using a _data_
++	 * loap uop with CPL=0 privileges.  If the load hits a SMAP #PF, ucode
++	 * gives up and does not fill the instruction bytes buffer.
+ 	 *
+ 	 * Detection:
+-	 * We reach here in case CPU supports DecodeAssist, raised #NPF and
+-	 * returned 0 in GuestIntrBytes field of the VMCB.
+-	 * First, errata can only be triggered in case vCPU CR4.SMAP=1.
+-	 * Second, if vCPU CR4.SMEP=1, errata could only be triggered
+-	 * in case vCPU CPL==3 (Because otherwise guest would have triggered
+-	 * a SMEP fault instead of #NPF).
+-	 * Otherwise, vCPU CR4.SMEP=0, errata could be triggered by any vCPU CPL.
+-	 * As most guests enable SMAP if they have also enabled SMEP, use above
+-	 * logic in order to attempt minimize false-positive of detecting errata
+-	 * while still preserving all cases semantic correctness.
++	 * KVM reaches this point if the VM is an SEV guest, the CPU supports
++	 * DecodeAssist, a #NPF was raised, KVM's page fault handler triggered
++	 * emulation (e.g. for MMIO), and the CPU returned 0 in GuestIntrBytes
++	 * field of the VMCB.
+ 	 *
+-	 * Workaround:
+-	 * To determine what instruction the guest was executing, the hypervisor
+-	 * will have to decode the instruction at the instruction pointer.
++	 * This does _not_ mean that the erratum has been encountered, as the
++	 * DecodeAssist will also fail if the load for CS:RIP hits a legitimate
++	 * #PF, e.g. if the guest attempt to execute from emulated MMIO and
++	 * encountered a reserved/not-present #PF.
+ 	 *
+-	 * In non SEV guest, hypervisor will be able to read the guest
+-	 * memory to decode the instruction pointer when insn_len is zero
+-	 * so we return true to indicate that decoding is possible.
+-	 *
+-	 * But in the SEV guest, the guest memory is encrypted with the
+-	 * guest specific key and hypervisor will not be able to decode the
+-	 * instruction pointer so we will not able to workaround it. Lets
+-	 * print the error and request to kill the guest.
++	 * To reduce the likelihood of false positives, take action if and only
++	 * if CR4.SMAP=1 (obviously required to hit the erratum) and CR4.SMEP=0
++	 * or CPL=3.  If SMEP=1 and CPL!=3, the erratum cannot have been hit as
++	 * the guest would have encountered a SMEP violation #PF, not a #NPF.
+ 	 */
+-	if (likely(!insn || insn_len))
+-		return true;
+-
+ 	cr4 = kvm_read_cr4(vcpu);
+ 	smep = cr4 & X86_CR4_SMEP;
+ 	smap = cr4 & X86_CR4_SMAP;
 -- 
 2.34.1.703.g22d0c6ccf7-goog
 
