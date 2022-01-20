@@ -2,169 +2,229 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BAD3C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 20:02:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 718D3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 20:05:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377540AbiATUCV (ORCPT
+        id S1377547AbiATUFV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 15:02:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52318 "EHLO
+        Thu, 20 Jan 2022 15:05:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52972 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377533AbiATUCU (ORCPT
+        with ESMTP id S1377529AbiATUFU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 15:02:20 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28D68C06173F
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 12:02:20 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id d1so6068092plh.10
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 12:02:20 -0800 (PST)
+        Thu, 20 Jan 2022 15:05:20 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2008CC061574
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 12:05:20 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id i65so6554020pfc.9
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 12:05:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=squareup.com; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=HtkLk42w0fWd+6/z9mh2AZD/Xm33fQuNOQj57mIh9Q4=;
-        b=M06sFa/2Shhq7noZOjf2EeS1lXvRx9NRhU+kUJyjKxjuBy2rUaKXy2LIkm7Cyda/16
-         bGRqiz9HX+frjV6/IMeFaPBpnzNQUlcbiiVOwfbghUOLYoYogqc3cqVkBh2NZhztpOFA
-         II9ZSGRRYLfmadeUXP9jOQCYsEZKc+G9W6w7E=
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wHjoIaDVZb3U/EHjsENWmQp9GXF9mNsSLLXq3Gksg2Q=;
+        b=VeN5p/tiaTaLsJPPMbZoCiHAwnp+zZmc48JvKaG2+9Qhh817tNlFhiC3hQTeZCvBK0
+         fmf5Vo1UQchPCq88/GrexsaTtE3oBZiXK7jZPY1ElLRIi42U1JFRhR1a7JZ6bN0xpEP5
+         eeF76RHYQXoHG6kk/Z60lEYe4QOxC1+oa2cb4FAK0to44JrnLhaRkGzXfj+ktJ3mEQUF
+         kkDodCcwVIPIMi3fo4wlYKbOgha5UHa7FLkqx/nNGFT+KPSNa4eQvKCPquUm7jOr/q/n
+         JQR6YzvtBbc/kqQ1Tme/kJ+Mob1giIBpres/wUS/rCLkZ/Vh43cyEzGrYKG08sxfj6e+
+         01CQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=HtkLk42w0fWd+6/z9mh2AZD/Xm33fQuNOQj57mIh9Q4=;
-        b=4Gk5XdR7U2yrlzJdhZEcYL9DpmA5uIf+vGGAkVjKZuG5/UrUIlT/rVThcz+6e+vmP8
-         jwY7araW9S5QaUoA6COFwizKFOdTKYreETsAHWCM89w/hMWd3uD04EK6gs/Fo0yDmbo3
-         MZVl3spC0B463U2G/BwGtEO7lnzHxd2Bobg4mK3Lgr9AgqG+6nA38Fs2eiTHitfGJv52
-         Bg/rmosFk0IRqO7FoBwiJUr66AMidZ/PSUBJQZ5t6/mcc+v6m2r3Jxj5ZDbtLHvcomVz
-         jEWZXK9VTWj2hlVjTlFnaIXlOLuAUwoLtklU8xxQrmu2LymB+RtLCsD/nhrV8ekFcX2R
-         vtzQ==
-X-Gm-Message-State: AOAM5307qSPawfsJ/lGC94WN0hKbOCLEIdrdJOtAUyGQNJrXpGaNDYLl
-        xA5lqY+4NBpgP3At9jGGx7XD9g==
-X-Google-Smtp-Source: ABdhPJx4Bedm7kx35gBQovgPPmgKSyX2vlJnVfF48rpV+/YtF+cSQhc7Wm9itzPQ9iYRqRwmoRO20w==
-X-Received: by 2002:a17:90a:ae15:: with SMTP id t21mr677825pjq.147.1642708939439;
-        Thu, 20 Jan 2022 12:02:19 -0800 (PST)
-Received: from localhost (99-47-69-49.lightspeed.sntcca.sbcglobal.net. [99.47.69.49])
-        by smtp.gmail.com with ESMTPSA id em22sm3398862pjb.23.2022.01.20.12.02.17
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jan 2022 12:02:18 -0800 (PST)
-From:   Benjamin Li <benl@squareup.com>
-To:     Amit Kucheria <amitk@kernel.org>,
-        Thara Gopinath <thara.gopinath@linaro.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Zac Crosby <zac@squareup.com>, Benjamin Li <benl@squareup.com>,
-        Andy Gross <agross@kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Zhang Rui <rui.zhang@intel.com>, linux-arm-msm@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] drivers: thermal: tsens: respect thermal_device_mode in threshold irq reporting
-Date:   Thu, 20 Jan 2022 12:01:53 -0800
-Message-Id: <20220120200153.1214-1-benl@squareup.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wHjoIaDVZb3U/EHjsENWmQp9GXF9mNsSLLXq3Gksg2Q=;
+        b=08ZIzkaMOsHYgz69n9QeUjZUQrzhy0dz+mFBG/lCtQfUEcug6woAvN71I3IBW29wG4
+         SKCLMJ1NfEFl5CsWy2FVHYH7hz/GMZyvFjqVtaoI4cx9Rqy694ozpa9DIHFUy02UnNqR
+         oaToh5ERgt6OsxkBfjCTf67UoH1lk40VDsGTq9n2ptLt8yQjRJyy87syUZs0jy9leR+A
+         tCypqnWi3n5SH2O7LNumLY2j9S01GcktJUG/GcPSp1jsP0msRE5g+GeDQWA4Hfd6pCTY
+         6x/4yQ4YxkLlh8Ag8KyaOeePbkJuOavugJ0k1YowolsXomf0zfe0t26ToxgECzi63fLA
+         /Xmg==
+X-Gm-Message-State: AOAM531PFPyi5igGx8Y1gnig/UlQzlVULMzsJjpzhTPlKe2Cuefv30y6
+        TEh98UETQ5fjj4+n32MgPHzqrg==
+X-Google-Smtp-Source: ABdhPJzVjh145XPHiOEZ5dflryXS4RcgNqxRnLNGBPw4EpVZda65QlJOLPaFaq26UvQOQ8Nht6wPAg==
+X-Received: by 2002:a65:5a8c:: with SMTP id c12mr341956pgt.54.1642709119472;
+        Thu, 20 Jan 2022 12:05:19 -0800 (PST)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id f7sm4634906pfv.30.2022.01.20.12.05.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 12:05:18 -0800 (PST)
+Date:   Thu, 20 Jan 2022 13:05:16 -0700
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     Miaoqian Lin <linmq006@gmail.com>, linux-kernel@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, ohad@wizery.com
+Subject: Re: [PATCH v3] remoteproc: Fix NULL vs IS_ERR() checking in
+ rproc_create_trace_file
+Message-ID: <20220120200516.GA1343808@p14s>
+References: <20220105064201.3907-1-linmq006@gmail.com>
+ <20220105131022.25247-1-linmq006@gmail.com>
+ <20220117170600.GA1119324@p14s>
+ <YeXuOwm3yJW2gnSE@builder.lan>
+ <20220118165621.GA1207193@p14s>
+ <YecSXpGRTCKClS8w@builder.lan>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YecSXpGRTCKClS8w@builder.lan>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-'echo disabled > .../thermal_zoneX/mode' will disable the thermal core's
-polling mechanism to check for threshold trips. This is used sometimes to
-run performance test cases.
+On Tue, Jan 18, 2022 at 01:17:50PM -0600, Bjorn Andersson wrote:
+> On Tue 18 Jan 10:56 CST 2022, Mathieu Poirier wrote:
+> 
+> > On Mon, Jan 17, 2022 at 04:31:23PM -0600, Bjorn Andersson wrote:
+> > > On Mon 17 Jan 11:06 CST 2022, Mathieu Poirier wrote:
+> > > 
+> > > > On Wed, Jan 05, 2022 at 01:10:22PM +0000, Miaoqian Lin wrote:
+> > > > > The debugfs_create_file() function doesn't return NULL.
+> > > > > It returns error pointers. Fix check in rproc_create_trace_file
+> > > > > and make it returns return error pointers.
+> > > > 
+> > > > s/"returns return"/return
+> > > > 
+> > > > > Fix check in rproc_handle_trace to propagate the error code.
+> > > > > 
+> > > > > Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> > > > > ---
+> > > > > Changes in v2:
+> > > > > - return PTR_ERR(tfile) in rproc_create_trace_file
+> > > > > - fix check in rproc_handle_trace()
+> > > > > Changes in v3:
+> > > > > - return tfile to fix incorrect return type in v2
+> > > > > ---
+> > > > >  drivers/remoteproc/remoteproc_core.c    | 6 ++++--
+> > > > >  drivers/remoteproc/remoteproc_debugfs.c | 4 +---
+> > > > >  2 files changed, 5 insertions(+), 5 deletions(-)
+> > > > >
+> > > > 
+> > > > I will fix the above, add a proper "Fixes" tag and apply this patch to
+> > > > rproc-next when v5.17-rc1 comes out next week.
+> > > > 
+> > > 
+> > > We're actually not supposed to check debugfs_create_*() for errors.
+> > 
+> > I'm interested in knowing more about this - can you expand on the specifics or
+> > perharps provide a link?
+> > 
+> 
+> I'm not able to find anything going into the reasoning behind it, but
+> you can find lots of examples where Greg says that we shouldn't do this:
+> 
+> $ git log --grep "no need to check return value of debugfs_create functions"
+> 
+> E.g.:
+> https://lore.kernel.org/r/20200818133701.462958-1-gregkh@linuxfoundation.org
 
-However, tsens supports an interrupt mechanism to receive notification of
-trips, implemented in commit 634e11d5b450 ("drivers: thermal: tsens: Add
-interrupt support").
+Greg's changelog leaves little doubt, thanks for pointing that out.
 
-Currently the thermal zone mode that's set by userspace is not checked
-before propagating threshold trip events from IRQs. Let's fix this to
-restore the abilty to disable thermal throttling at runtime.
+> 
+> > > 
+> > > > Thanks,
+> > > > Mathieu
+> > > > 
+> > > > > diff --git a/drivers/remoteproc/remoteproc_core.c b/drivers/remoteproc/remoteproc_core.c
+> > > > > index 775df165eb45..5608408f8eac 100644
+> > > > > --- a/drivers/remoteproc/remoteproc_core.c
+> > > > > +++ b/drivers/remoteproc/remoteproc_core.c
+> > > > > @@ -656,6 +656,7 @@ static int rproc_handle_trace(struct rproc *rproc, void *ptr,
+> > > > >  	struct rproc_debug_trace *trace;
+> > > > >  	struct device *dev = &rproc->dev;
+> > > > >  	char name[15];
+> > > > > +	int ret;
+> > > > >  
+> > > > >  	if (sizeof(*rsc) > avail) {
+> > > > >  		dev_err(dev, "trace rsc is truncated\n");
+> > > > > @@ -684,9 +685,10 @@ static int rproc_handle_trace(struct rproc *rproc, void *ptr,
+> > > > >  
+> > > > >  	/* create the debugfs entry */
+> > > > >  	trace->tfile = rproc_create_trace_file(name, rproc, trace);
+> > > > > -	if (!trace->tfile) {
+> > > > > +	if (IS_ERR(trace->tfile)) {
+> > > > > +		ret = PTR_ERR(trace->tfile);
+> > > > >  		kfree(trace);
+> > > > > -		return -EINVAL;
+> > > > > +		return ret;
+> > > 
+> > > 
+> > > And actually catching and propagating the error here means that we will
+> > > start failing rproc_boot() for firmware including a RSC_TRACE when
+> > > debugfs is disabled...
+> > > 
+> > > So if we really want to save the heap space we should at least cleanly
+> > > ignore the error, by cleaning up and returning 0 here.
+> > 
+> > Humm... To me the _intent_ of the upstream code has always been to propagate
+> > errors reported by rproc_create_trace_file().  The fact that is hasn't happen
+> > because of inappropriate error handling is something that should be corrected.  
+> > 
+> 
+> I share that view, in general. I suspect that the idea with debugfs is
+> that it's for debugging purposes and you don't want your remoteproc to
+> stop working just because there might be an issue debugging it.
+> 
+> > That being said disabling debugfs is a common practice for production systems
+> > and I agree that handling such a condition by returning 0 when
+> > rproc_create_trace_file() returns -ENODEV is the right thing to do.   
+> > 
+> 
+> Right, but even with debugfs enabled, do you want to prevent your
+> remoteproc from booting just because the debugfs, for some reason,
+> wasn't able to add the trace file?
 
-====================
+Greg's comments brings a different angle to the conversation - I agree there is
+no need to dwell on debugfs error conditions.
 
-Tested on MSM8939 running 5.16.0. This platform has 8 cores; the first
-four thermal zones control cpu0-3 and the last zone is for the other four
-CPUs together.
+> 
+> For me the question is if we should clean up the "trace" object or not,
+> as this only relates to the debugfs file. Ignoring the error would imply
+> that we just keep this memory allocated - which I'm fine with for the
+> sake of avoiding the error handling.
 
-  for f in /sys/class/thermal/thermal_zone*; do
-    echo "disabled" > $f/mode
-    echo $f | paste - $f/type $f/mode
-  done
+I would also be fine with not cleaning up the trace object, it will be free'd
+as part of the resource cleanup process anyway.
 
-/sys/class/thermal/thermal_zone0	cpu0-thermal	disabled
-/sys/class/thermal/thermal_zone1	cpu1-thermal	disabled
-/sys/class/thermal/thermal_zone2	cpu2-thermal	disabled
-/sys/class/thermal/thermal_zone3	cpu3-thermal	disabled
-/sys/class/thermal/thermal_zone4	cpu4567-thermal	disabled
-
-With mitigation thresholds at 75 degC and load running, we can now cruise
-past temp=75000 without CPU throttling kicking in.
-
-  watch -n 1 "grep '' /sys/class/thermal/*/temp
-      /sys/class/thermal/*/cur_state
-      /sys/bus/cpu/devices/cpu*/cpufreq/cpuinfo_cur_freq"
-
-/sys/class/thermal/thermal_zone0/temp:82000
-/sys/class/thermal/thermal_zone1/temp:84000
-/sys/class/thermal/thermal_zone2/temp:87000
-/sys/class/thermal/thermal_zone3/temp:84000
-/sys/class/thermal/thermal_zone4/temp:84000
-/sys/class/thermal/cooling_device0/cur_state:0
-/sys/class/thermal/cooling_device1/cur_state:0
-/sys/bus/cpu/devices/cpu0/cpufreq/cpuinfo_cur_freq:1113600
-/sys/bus/cpu/devices/cpu1/cpufreq/cpuinfo_cur_freq:1113600
-/sys/bus/cpu/devices/cpu2/cpufreq/cpuinfo_cur_freq:1113600
-/sys/bus/cpu/devices/cpu3/cpufreq/cpuinfo_cur_freq:1113600
-/sys/bus/cpu/devices/cpu4/cpufreq/cpuinfo_cur_freq:800000
-/sys/bus/cpu/devices/cpu5/cpufreq/cpuinfo_cur_freq:800000
-/sys/bus/cpu/devices/cpu6/cpufreq/cpuinfo_cur_freq:800000
-/sys/bus/cpu/devices/cpu7/cpufreq/cpuinfo_cur_freq:800000
-
-Reported-by: Zac Crosby <zac@squareup.com>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Benjamin Li <benl@squareup.com>
----
-Changes in v3:
-- Upgraded logging to dev_info_ratelimited and revised log message.
-- Remove unrelated hunk.
-
-Some drivers that support thermal zone disabling implement a set_mode
-operation and simply disable the sensor or the relevant IRQ(s), so they
-actually don't log anything when zones are disabled. These drivers are
-imx_thermal.c, intel_quark_dts_thermal.c, and int3400_thermal.c.
-
-For tsens.c, implementing a change_mode would require migrating the driver
-from devm_thermal_zone_of_sensor_register to thermal_zone_device_register
-(or updating thermal_of.c to add a change_mode operation in thermal_zone_
-of_device_ops).
-
-stm_thermal.c seems to use this patch's model of not disabling IRQs when
-the zone is disabled (they still perform the thermal_zone_device_update
-upon IRQ, but return -EAGAIN from their get_temp).
-
-Changes in v2:
-- Reordered sentences in first part of commit message to make sense.
-
- drivers/thermal/qcom/tsens.c | 12 ++++++++----
- 1 file changed, 8 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/thermal/qcom/tsens.c b/drivers/thermal/qcom/tsens.c
-index 99a8d9f3e03c..dd0002829536 100644
---- a/drivers/thermal/qcom/tsens.c
-+++ b/drivers/thermal/qcom/tsens.c
-@@ -509,10 +509,14 @@ static irqreturn_t tsens_irq_thread(int irq, void *data)
- 		spin_unlock_irqrestore(&priv->ul_lock, flags);
- 
- 		if (trigger) {
--			dev_dbg(priv->dev, "[%u] %s: TZ update trigger (%d mC)\n",
--				hw_id, __func__, temp);
--			thermal_zone_device_update(s->tzd,
--						   THERMAL_EVENT_UNSPECIFIED);
-+			if (s->tzd->mode == THERMAL_DEVICE_ENABLED) {
-+				dev_dbg(priv->dev, "[%u] %s: TZ update trigger (%d mC)\n",
-+					hw_id, __func__, temp);
-+				thermal_zone_device_update(s->tzd, THERMAL_EVENT_UNSPECIFIED);
-+			} else {
-+				dev_info_ratelimited(priv->dev, "[%u] %s: TZ update trigger (%d mC) skipped - zone disabled, operating outside of safety limits!\n",
-+					hw_id, __func__, temp);
-+			}
- 		} else {
- 			dev_dbg(priv->dev, "[%u] %s: no violation:  %d\n",
- 				hw_id, __func__, temp);
--- 
-2.17.1
-
+> 
+> > Thanks,
+> > Mathieu
+> > 
+> > > 
+> > > > >  	}
+> > > > >  
+> > > > >  	list_add_tail(&trace->node, &rproc->traces);
+> > > > > diff --git a/drivers/remoteproc/remoteproc_debugfs.c b/drivers/remoteproc/remoteproc_debugfs.c
+> > > > > index b5a1e3b697d9..2ae59a365b7e 100644
+> > > > > --- a/drivers/remoteproc/remoteproc_debugfs.c
+> > > > > +++ b/drivers/remoteproc/remoteproc_debugfs.c
+> > > > > @@ -390,10 +390,8 @@ struct dentry *rproc_create_trace_file(const char *name, struct rproc *rproc,
+> > > > >  
+> > > > >  	tfile = debugfs_create_file(name, 0400, rproc->dbg_dir, trace,
+> > > > >  				    &trace_rproc_ops);
+> > > > > -	if (!tfile) {
+> > > > > +	if (IS_ERR(tfile))
+> > > > >  		dev_err(&rproc->dev, "failed to create debugfs trace entry\n");
+> > > 
+> > > And I therefor think this function would be better reduced to:
+> > > 
+> > > 	return debugfs_create_file(...);
+> > > 
+> 
+> Taking another look at the implementation of debugfs_create_file() this
+> dev_err() should be removed, because there will already be a more useful
+> error printed by debugfs_create_file().
+> 
+> Regards,
+> Bjorn
+> 
+> > > Regards,
+> > > Bjorn
+> > > 
+> > > > > -		return NULL;
+> > > > > -	}
+> > > > >  
+> > > > >  	return tfile;
+> > > > >  }
+> > > > > -- 
+> > > > > 2.17.1
+> > > > > 
