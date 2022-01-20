@@ -2,79 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B18D2C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 17:24:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D11BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 17:28:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377337AbiATRYI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 12:24:08 -0500
-Received: from mail-oo1-f49.google.com ([209.85.161.49]:38640 "EHLO
-        mail-oo1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377331AbiATRYF (ORCPT
+        id S231644AbiATR2N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 12:28:13 -0500
+Received: from mail-io1-f69.google.com ([209.85.166.69]:51962 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242613AbiATR0V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 12:24:05 -0500
-Received: by mail-oo1-f49.google.com with SMTP id w15-20020a4a9d0f000000b002c5cfa80e84so2514483ooj.5;
-        Thu, 20 Jan 2022 09:24:05 -0800 (PST)
+        Thu, 20 Jan 2022 12:26:21 -0500
+Received: by mail-io1-f69.google.com with SMTP id i7-20020a6bb807000000b00605570242e6so4395460iof.18
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 09:26:21 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4wFfi5dvrPs9K8Et4jwF3OW5L3T+FBbrajKxVkpiUl8=;
-        b=jPjpU0eqgM7cXv+FlyEzfgnHohuapiPEDBZPmivNavIM4vmxoqj+rUfpLMKD6PJr8p
-         LQrpRFvwLeQJITb+CJfldM9IJNaxkf+gaBtzHcILtiSYQnAg+WEjTmS74nDis4ToGWP1
-         +TQ0n3nBkdgoXlwD1VoOROkpvBwpRPKpLY84IuxuRQFFtk3hSrvX7+QiKoc9rCxJ9519
-         K2OZ+lv6pLvYT6hV97Kd7JwtITK+tFvFEr9DoHPqIEX93Vek32K60QWSEaUeqLZIi1ZA
-         b1v4Z7mkJdiwxyC8441R52eGHBd5kvuRbQUeu7la8jIMdXtawpVVOmnS+RlKme08aK3n
-         xt9A==
-X-Gm-Message-State: AOAM531LUYz2untJeghftAUMQW7FmqYG+rhLyphfObNFOnmY6eDmiMhP
-        X0q7Cxdq9q/LnK6ofzNq/g==
-X-Google-Smtp-Source: ABdhPJzf1lBCbgaoczLjcM9UyXs2KwEWIOqixZJnvtKEA1iGAADtZoPsfk9lORL/5udRSkr2LcFxAw==
-X-Received: by 2002:a4a:b4cb:: with SMTP id g11mr26820796ooo.46.1642699445132;
-        Thu, 20 Jan 2022 09:24:05 -0800 (PST)
-Received: from xps15.herring.priv (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.googlemail.com with ESMTPSA id x22sm1406405ooo.29.2022.01.20.09.24.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 09:24:04 -0800 (PST)
-From:   Rob Herring <robh@kernel.org>
-To:     Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] ARM: dts: imx7ulp: Fix 'assigned-clocks-parents' typo
-Date:   Thu, 20 Jan 2022 11:23:55 -0600
-Message-Id: <20220120172355.1629650-1-robh@kernel.org>
-X-Mailer: git-send-email 2.32.0
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=2uyROQkwAubxAhtrVkpi0xhwbRArP4G5FL5KEzxUI9M=;
+        b=TQ8yTRb4MbaSVTIXKMjQyQ4LaziK9qnCKteXujq3KscuWXUgejOrYGIAsy1ekjEAkI
+         u7J+3w7DccyMg6zmFHlclo9JMzceV5Sx66eyZSl2zvIErTi09t81awWfPahvAS1Kuy+U
+         lxUZQvxQruD7un0kz0j2Hxl4gxed0NrtZVNVePujtokpEibwy9hyQOkWEI65tTwr3WSH
+         CAKJQ0RAikWAR493+fAVTIz6LeH/pPJtmdqI9DHJlGrxXfXP8m50O9VCZF34DR01mfl3
+         myH/SeFs/Cg84hq3DUzL0V3Brog5HUdQuxLVzrQ3dLuV+/lkp6kegHRcYcpMNEjXWl0r
+         /vXg==
+X-Gm-Message-State: AOAM531/zvvXA3CjrpJpBGAbSC37JjOktS7tZaW6jX3kAbFN/5IDsweD
+        f83fqSj9D8uGJwgt8cRqPwPO87uCbFAhCO9Og07qpXhUloT7
+X-Google-Smtp-Source: ABdhPJzn7lnstB1hmXA3lDtjeXtCpQEY7xs8KvPUbYnitaFERg04FffKPh05hSmrGJX9vU3ghvzbwqufncCskrbtcd8pME37RjTz
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Received: by 2002:a02:cc83:: with SMTP id s3mr15734606jap.153.1642699580697;
+ Thu, 20 Jan 2022 09:26:20 -0800 (PST)
+Date:   Thu, 20 Jan 2022 09:26:20 -0800
+In-Reply-To: <0000000000000ca79b05d24e85fd@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000fafeca05d606cc4a@google.com>
+Subject: Re: [syzbot] WARNING: ODEBUG bug in cancel_delayed_work (2)
+From:   syzbot <syzbot+4b140c35e652626b77ba@syzkaller.appspotmail.com>
+To:     davem@davemloft.net, johan.hedberg@gmail.com, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-kernel@vger.kernel.org,
+        luiz.dentz@gmail.com, marcel@holtmann.org, netdev@vger.kernel.org,
+        syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The correct property name is 'assigned-clock-parents', not
-'assigned-clocks-parents'. Though if the platform works with the typo, one
-has to wonder if the property is even needed.
+syzbot has found a reproducer for the following issue on:
 
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- arch/arm/boot/dts/imx7ulp.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+HEAD commit:    fa2e1ba3e9e3 Merge tag 'net-5.17-rc1' of git://git.kernel...
+git tree:       net
+console output: https://syzkaller.appspot.com/x/log.txt?x=103cf9ffb00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=fed7021824b74f81
+dashboard link: https://syzkaller.appspot.com/bug?extid=4b140c35e652626b77ba
+compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1615b23fb00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13718b50700000
 
-diff --git a/arch/arm/boot/dts/imx7ulp.dtsi b/arch/arm/boot/dts/imx7ulp.dtsi
-index b7ea37ad4e55..bcec98b96411 100644
---- a/arch/arm/boot/dts/imx7ulp.dtsi
-+++ b/arch/arm/boot/dts/imx7ulp.dtsi
-@@ -259,7 +259,7 @@ wdog1: watchdog@403d0000 {
- 			interrupts = <GIC_SPI 55 IRQ_TYPE_LEVEL_HIGH>;
- 			clocks = <&pcc2 IMX7ULP_CLK_WDG1>;
- 			assigned-clocks = <&pcc2 IMX7ULP_CLK_WDG1>;
--			assigned-clocks-parents = <&scg1 IMX7ULP_CLK_FIRC_BUS_CLK>;
-+			assigned-clock-parents = <&scg1 IMX7ULP_CLK_FIRC_BUS_CLK>;
- 			timeout-sec = <40>;
- 		};
- 
--- 
-2.32.0
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+4b140c35e652626b77ba@syzkaller.appspotmail.com
+
+------------[ cut here ]------------
+ODEBUG: assert_init not available (active state 0) object type: timer_list hint: 0x0
+WARNING: CPU: 0 PID: 3603 at lib/debugobjects.c:505 debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+Modules linked in:
+CPU: 0 PID: 3603 Comm: syz-executor756 Not tainted 5.16.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:debug_print_object+0x16e/0x250 lib/debugobjects.c:505
+Code: ff df 48 89 fa 48 c1 ea 03 80 3c 02 00 0f 85 af 00 00 00 48 8b 14 dd 80 f2 05 8a 4c 89 ee 48 c7 c7 80 e6 05 8a e8 24 a3 26 05 <0f> 0b 83 05 85 4f b3 09 01 48 83 c4 18 5b 5d 41 5c 41 5d 41 5e c3
+RSP: 0018:ffffc90001d2f928 EFLAGS: 00010082
+RAX: 0000000000000000 RBX: 0000000000000005 RCX: 0000000000000000
+RDX: ffff888023568000 RSI: ffffffff815f9d98 RDI: fffff520003a5f17
+RBP: 0000000000000001 R08: 0000000000000000 R09: 0000000000000000
+R10: ffffffff815f3afe R11: 0000000000000000 R12: ffffffff89ae27e0
+R13: ffffffff8a05ed00 R14: ffffffff8166b6b0 R15: 1ffff920003a5f30
+FS:  0000555556897300(0000) GS:ffff8880b9c00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00007fe13002485e CR3: 0000000072763000 CR4: 00000000003506f0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ <TASK>
+ debug_object_assert_init lib/debugobjects.c:895 [inline]
+ debug_object_assert_init+0x1f4/0x2e0 lib/debugobjects.c:866
+ debug_timer_assert_init kernel/time/timer.c:739 [inline]
+ debug_assert_init kernel/time/timer.c:784 [inline]
+ del_timer+0x6d/0x110 kernel/time/timer.c:1204
+ try_to_grab_pending+0x6d/0xd0 kernel/workqueue.c:1285
+ __cancel_work kernel/workqueue.c:3268 [inline]
+ cancel_delayed_work+0x79/0x340 kernel/workqueue.c:3297
+ l2cap_clear_timer include/net/bluetooth/l2cap.h:883 [inline]
+ l2cap_chan_del+0x517/0xa80 net/bluetooth/l2cap_core.c:665
+ l2cap_chan_close+0x1b9/0xaf0 net/bluetooth/l2cap_core.c:825
+ l2cap_sock_shutdown+0x3d2/0x1070 net/bluetooth/l2cap_sock.c:1377
+ l2cap_sock_release+0x72/0x200 net/bluetooth/l2cap_sock.c:1420
+ __sock_release+0xcd/0x280 net/socket.c:650
+ sock_close+0x18/0x20 net/socket.c:1318
+ __fput+0x286/0x9f0 fs/file_table.c:280
+ task_work_run+0xdd/0x1a0 kernel/task_work.c:164
+ tracehook_notify_resume include/linux/tracehook.h:188 [inline]
+ exit_to_user_mode_loop kernel/entry/common.c:175 [inline]
+ exit_to_user_mode_prepare+0x27e/0x290 kernel/entry/common.c:207
+ __syscall_exit_to_user_mode_work kernel/entry/common.c:289 [inline]
+ syscall_exit_to_user_mode+0x19/0x60 kernel/entry/common.c:300
+ do_syscall_64+0x42/0xb0 arch/x86/entry/common.c:86
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+RIP: 0033:0x7f24557e606b
+Code: 0f 05 48 3d 00 f0 ff ff 77 45 c3 0f 1f 40 00 48 83 ec 18 89 7c 24 0c e8 63 fc ff ff 8b 7c 24 0c 41 89 c0 b8 03 00 00 00 0f 05 <48> 3d 00 f0 ff ff 77 35 44 89 c7 89 44 24 0c e8 a1 fc ff ff 8b 44
+RSP: 002b:00007ffe2a68a750 EFLAGS: 00000293 ORIG_RAX: 0000000000000003
+RAX: 0000000000000000 RBX: 0000000000000005 RCX: 00007f24557e606b
+RDX: ffffffffffffffb8 RSI: 0000000020000000 RDI: 0000000000000004
+RBP: 0000000000000003 R08: 0000000000000000 R09: 000000ff00000001
+R10: 000000ff00000001 R11: 0000000000000293 R12: 00005555568972b8
+R13: 0000000000000072 R14: 00007ffe2a68a7c0 R15: 0000000000000003
+ </TASK>
 
