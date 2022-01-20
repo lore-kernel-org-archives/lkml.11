@@ -2,71 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05B4DC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 10:37:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16717C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 10:38:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376324AbiATKht (ORCPT
+        id S1376334AbiATKif (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 05:37:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34916 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241959AbiATKhs (ORCPT
+        Thu, 20 Jan 2022 05:38:35 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:32989 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S242470AbiATKie (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 05:37:48 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F983C061574;
-        Thu, 20 Jan 2022 02:37:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=IPCG7u59l6g4gQfA7/kz26XOwQYj1kTGYtvG8ISDhgk=; b=Akv/koBNrr3moj2wsPZFQCOwVS
-        IU+JXc/VRE1FDa90VZfM8su2uTNUv4TkPxWnaahpiY+xeAv79xFB55Mx7rX9K5nAiYfc+eNfAmiSg
-        hTVLfiOdWn/4mdFWVbtEWAgBlWF2oviic1+frRSQKwWu8hXjl0TdStm5f9m6zBXMntdQBrKBaT0BC
-        BpTpRP3zE1UmycEz0bYQqioC+7HXSEFHEzQHDGrD6AuZlngTzQYAv8fUnKPNj3fcJkTKJ7pxHrFle
-        E0UVt9wm4D4YEydthRAQDU463abbfxg+DkWU2cKVZIiywHEPAYMCKBpNA1Duy1pS1MaJgjPG+W4ye
-        PN6MERiA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nAUoZ-002Gvy-Ho; Thu, 20 Jan 2022 10:37:11 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 929B03002F1;
-        Thu, 20 Jan 2022 11:37:08 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 6803421417389; Thu, 20 Jan 2022 11:37:08 +0100 (CET)
-Date:   Thu, 20 Jan 2022 11:37:08 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Peter Oskolkov <posk@google.com>
-Cc:     Peter Oskolkov <posk@posk.io>, mingo@redhat.com,
-        tglx@linutronix.de, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-api@vger.kernel.org, x86@kernel.org,
-        pjt@google.com, avagin@google.com, jannh@google.com,
-        tdelisle@uwaterloo.ca
-Subject: Re: [RFC][PATCH 3/3] sched: User Mode Concurency Groups
-Message-ID: <Yek7VNT2GsTfZsCD@hirez.programming.kicks-ass.net>
-References: <20211214204445.665580974@infradead.org>
- <20211214205358.701701555@infradead.org>
- <20211221171900.GA580323@dev-hv>
- <YeGEM7TP3tekBVEh@hirez.programming.kicks-ass.net>
- <YeaRx9oDp08ABvyU@hirez.programming.kicks-ass.net>
- <CAPNVh5cdGiDqut90kUo-HXyya6Nbz_CjuUObYXfprgDhQHnUmg@mail.gmail.com>
- <YefTCk4to5YzO8AB@hirez.programming.kicks-ass.net>
- <CAPNVh5dccb59Dj5Aeo3AybS+EiHix+-U7wgm8AakPqL3zdTQtQ@mail.gmail.com>
+        Thu, 20 Jan 2022 05:38:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642675114;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sFpN3f0uduDA3tQ7l5sXIVy8xoN2m2qwc3s/2ZpwE2I=;
+        b=CBWQbPJOD0nY8gsyaGhlSbLLEZ458+TdTU0e1WBVhpuI2tlT4GV4IcSEXYgbT4yrMBylmb
+        JJr4GGUANc6xfq/29dXXryRIM+h7sVZIJ/HWXlkClPOGfE8SPKo4/VqlXdxKu1qMU9p2VR
+        1FI99IIVAfOp0DpQmmnaRlZ9dy4W4cM=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-73-vmkHaHKdNMqNWmokhEs1pw-1; Thu, 20 Jan 2022 05:38:32 -0500
+X-MC-Unique: vmkHaHKdNMqNWmokhEs1pw-1
+Received: by mail-wm1-f70.google.com with SMTP id g80-20020a1c9d53000000b0034da9d62199so517919wme.7
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 02:38:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=sFpN3f0uduDA3tQ7l5sXIVy8xoN2m2qwc3s/2ZpwE2I=;
+        b=A90JK2g1x3snLO83tsN9cbkRXUaCeCJbbygWF8HVEaGAlcHI8mXwzbd4paaSfaMMDU
+         sGFXAeapGFnnlYvrQ5ButNNKIByO2Ph0yNONuFsg8i0z7AslX38LMr11pbaPVQ0KDXup
+         SuiyULhqzZtSjdLyRjZtAnA2jO2iANS/MGtSvQP+b8r5EBE13C4GtSLaWffO7cmAkQEI
+         FU2LyAGSdeEm/0iTfDNQygPUFTP4YC3VoGRj8Z4wAT8zjrlc/hvldPb8KSkGGL2Oj9K2
+         eR3XJYheKkUnkW4yVSiE6jEVZRySvsSQZmTHUoJPDd1sP+mYJIHInwmtBGn0Yojel+cT
+         96vQ==
+X-Gm-Message-State: AOAM5326Ggp9lzs9r72Xxh2LWMe5cMkE9vDhX92DaSag2UKc+WWdnmUv
+        +r2gJe9ACBO7mnKkTME2tyBqOJSTUdnJ0Hhtc07FRYHoDCkR7zoyhK7JcnTJ3WlDvDiNr4uLp0I
+        M4uP1WHxGy1kBI4nIVp+DtVSI
+X-Received: by 2002:a05:6000:152:: with SMTP id r18mr3963430wrx.598.1642675111367;
+        Thu, 20 Jan 2022 02:38:31 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzfvIX06o0KrIvdE4knevl3OSMRO8haaYDO1DIVACVjH75Q5KDVwCs2c7eUgWYh9T6sdMZ1nw==
+X-Received: by 2002:a05:6000:152:: with SMTP id r18mr3963404wrx.598.1642675111135;
+        Thu, 20 Jan 2022 02:38:31 -0800 (PST)
+Received: from [10.33.192.183] (nat-pool-str-t.redhat.com. [149.14.88.106])
+        by smtp.gmail.com with ESMTPSA id n10sm1005966wrf.96.2022.01.20.02.38.30
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Jan 2022 02:38:30 -0800 (PST)
+Message-ID: <069c72b6-457f-65c7-652e-e6eca7235fca@redhat.com>
+Date:   Thu, 20 Jan 2022 11:38:29 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPNVh5dccb59Dj5Aeo3AybS+EiHix+-U7wgm8AakPqL3zdTQtQ@mail.gmail.com>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [RFC PATCH v1 06/10] KVM: s390: Add vm IOCTL for key checked
+ guest absolute memory access
+Content-Language: en-US
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220118095210.1651483-1-scgl@linux.ibm.com>
+ <20220118095210.1651483-7-scgl@linux.ibm.com>
+From:   Thomas Huth <thuth@redhat.com>
+In-Reply-To: <20220118095210.1651483-7-scgl@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 09:52:30AM -0800, Peter Oskolkov wrote:
-> Could you, please, post an updated RFC when you have a chance? Thanks!
+On 18/01/2022 10.52, Janis Schoetterl-Glausch wrote:
+> Channel I/O honors storage keys and is performed on absolute memory.
+> For I/O emulation user space therefore needs to be able to do key
+> checked accesses.
+> The vm IOCTL supports read/write accesses, as well as checking
+> if an access would succeed.
+...
+> diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+> index e3f450b2f346..dd04170287fd 100644
+> --- a/include/uapi/linux/kvm.h
+> +++ b/include/uapi/linux/kvm.h
+> @@ -572,6 +572,8 @@ struct kvm_s390_mem_op {
+>   #define KVM_S390_MEMOP_LOGICAL_WRITE	1
+>   #define KVM_S390_MEMOP_SIDA_READ	2
+>   #define KVM_S390_MEMOP_SIDA_WRITE	3
+> +#define KVM_S390_MEMOP_ABSOLUTE_READ	4
+> +#define KVM_S390_MEMOP_ABSOLUTE_WRITE	5
 
-I was working on that, I'll try and get it done today.
+Not quite sure about this - maybe it is, but at least I'd like to see this 
+discussed: Do we really want to re-use the same ioctl layout for both, the 
+VM and the VCPU file handles? Where the userspace developer has to know that 
+the *_ABSOLUTE_* ops only work with VM handles, and the others only work 
+with the VCPU handles? A CPU can also address absolute memory, so why not 
+adding the *_ABSOLUTE_* ops there, too? And if we'd do that, wouldn't it be 
+sufficient to have the VCPU ioctls only - or do you want to call these 
+ioctls from spots in QEMU where you do not have a VCPU handle available? 
+(I/O instructions are triggered from a CPU, so I'd assume that you should 
+have a VCPU handle around?)
+
+  Thomas
+
+
