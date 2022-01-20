@@ -2,82 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 807F7C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 18:26:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8399C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 18:26:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244167AbiATS0A (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 13:26:00 -0500
-Received: from lelv0143.ext.ti.com ([198.47.23.248]:50288 "EHLO
-        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238856AbiATSZy (ORCPT
+        id S244310AbiATS0M (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 13:26:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59084 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346388AbiATS0E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 13:25:54 -0500
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 20KIPQTJ035437;
-        Thu, 20 Jan 2022 12:25:26 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1642703126;
-        bh=2/qtOiX8+RrhrE/rS2MPeAIX4aF+I40EDhFEBNmbWWs=;
-        h=Date:From:To:CC:Subject:References:In-Reply-To;
-        b=y9WuRckUOeM+AD+vJnd2PCAaS9YpWbv3AURxDJuziO+sisVCApOE1M990Iarng8Ug
-         j8Y+w2Rjc3TSI8hFbuEanqcgLBaYzzxIKRgj4+LCiFlfgz6gG9dqaG224EGX/pdSW1
-         4QjfCcbFAB6R8RFU8GE1vlrQEAmG/gtacvC21zZo=
-Received: from DLEE114.ent.ti.com (dlee114.ent.ti.com [157.170.170.25])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 20KIPQpT126366
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 20 Jan 2022 12:25:26 -0600
-Received: from DLEE103.ent.ti.com (157.170.170.33) by DLEE114.ent.ti.com
- (157.170.170.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 20
- Jan 2022 12:25:25 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE103.ent.ti.com
- (157.170.170.33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 20 Jan 2022 12:25:26 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 20KIPPOv044230;
-        Thu, 20 Jan 2022 12:25:25 -0600
-Date:   Thu, 20 Jan 2022 23:55:24 +0530
-From:   Pratyush Yadav <p.yadav@ti.com>
-To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-CC:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Andi Shyti <andi@etezian.org>, Mark Brown <broonie@kernel.org>,
-        Sam Protsenko <semen.protsenko@linaro.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-samsung-soc@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        Alim Akhtar <alim.akhtar@samsung.com>
-Subject: Re: [PATCH v5 2/4] spi: dt-bindings: samsung: convert to dtschema
-Message-ID: <20220120182524.d5fe3uigbelhcs7l@ti.com>
-References: <20220120175747.43403-1-krzysztof.kozlowski@canonical.com>
- <20220120175747.43403-3-krzysztof.kozlowski@canonical.com>
+        Thu, 20 Jan 2022 13:26:04 -0500
+Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5807C06161C
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 10:26:03 -0800 (PST)
+Received: by mail-il1-x12c.google.com with SMTP id r3so5279493iln.3
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 10:26:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VM3tBp/CA+4wTCBfmyWMTm1eADRMbsKEHQheO5QR1dg=;
+        b=kjWd/gluHnZp28leoLrw9gVa9JtC0gx9dMDDSiGyx17HhEXqLHPyCYCzdGIexOoC8W
+         4G7du2uwS/k0/bIytNp0rc0EgcgQAZOWNTcelWkw1KWz8v25VxHJv8bBaEu+xev52pr0
+         yDCNIMUZtZFYIhSqsr8nRFoqnYiBUWRDmCSYVDp42bEEPcVGUv98j6uMJhzrhqkjmY1A
+         0sUNXlpXKp9uDnK24r1+W+twtCQJHhJ0fpOGJ6Aml6R0tKZ3uJu/b/xwW1bfHrjxIUWK
+         dUTOLmDhjr/FzvCK5yRQJJEgKC7rlQODvqDIN9S3XcNzqprC79Wf9xJ3mvKxxxX7Fk/p
+         +KQg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VM3tBp/CA+4wTCBfmyWMTm1eADRMbsKEHQheO5QR1dg=;
+        b=MPzDtnim++uRpeT2jVuwPf3dpaJUDLqZvml1WEZyykvh5Y1kAJUhUR8eiQe0my6QGI
+         lShpb721KLgrbU0H+lcAUyyTadNUpvE0Z+MbQahkRIN2GoykDHajdv303QKf+A2sjHzj
+         r9lFsxFUxzvimqx75sfTVOZNs/TuCbO0nqFbdiHNFPlBIg+5oNSLDtn0+2QieZ/9K3GK
+         YrYKrcyqHDX2Zhv9XdvzwcynJv8Uf78tC6MO069nT9UQOcjz0SjBW9ZcTkOOghP+Z4EA
+         xSb+pYFcE+ejyfrXOMzaUR8hBZDCnDBcmFP7RPN1K35hK4kzpLcWGJw/hz3N/uU8gFW2
+         dujg==
+X-Gm-Message-State: AOAM531A9lfub5Xmj9usRE9yDH2HiPcxbIN1+iXYdGUfpPWzlvfDXCCA
+        Hx0FnVk2kyukXdXqkYQowWfSGE5n1zmRcDBf8U42ew==
+X-Google-Smtp-Source: ABdhPJyQ3HkdPr2dC0EIXetDOosxZkhDjZaOvxxWcA/Q1gWYGTNgeHnozQdeSnPQOpPK5nbkCvbWVSiPRWzUg5y1bYI=
+X-Received: by 2002:a05:6e02:1847:: with SMTP id b7mr135351ilv.300.1642703163043;
+ Thu, 20 Jan 2022 10:26:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220120175747.43403-3-krzysztof.kozlowski@canonical.com>
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+References: <20220120042513.1648831-1-pasha.tatashin@soleen.com> <20220120042513.1648831-4-pasha.tatashin@soleen.com>
+In-Reply-To: <20220120042513.1648831-4-pasha.tatashin@soleen.com>
+From:   Wei Xu <weixugc@google.com>
+Date:   Thu, 20 Jan 2022 10:25:52 -0800
+Message-ID: <CAAPL-u8g3Yuh2Z6rb8ct=mVvNtJe6bHZEiPU2hdoCJKd93H-5g@mail.gmail.com>
+Subject: Re: [PATCH 3/3] mm/page_table_check: use unsigned long for page counters
+To:     Pasha Tatashin <pasha.tatashin@soleen.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Paul Turner <pjt@google.com>, Greg Thelen <gthelen@google.com>,
+        mingo@redhat.com, will@kernel.org, rppt@kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>, hpa@zytor.com,
+        aneesh.kumar@linux.ibm.com, jirislaby@kernel.org,
+        songmuchun@bytedance.com, qydwhotmail@gmail.com,
+        Hugh Dickins <hughd@google.com>, Zi Yan <ziy@nvidia.com>,
+        anshuman.khandual@arm.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/01/22 06:57PM, Krzysztof Kozlowski wrote:
-> Convert the Samsung SoC (S3C24xx, S3C64xx, S5Pv210, Exynos) SPI
-> controller bindings to DT schema format.
-> 
-> The conversion also drops requirement from providing controller-data and
-> its data for each of SPI peripheral device nodes.  The dtschema cannot
-> express this and the requirement is being relaxed in the driver now.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-> Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
+On Wed, Jan 19, 2022 at 8:25 PM Pasha Tatashin
+<pasha.tatashin@soleen.com> wrote:
+>
+> For the consistency, use "unsigned long" for all page counters.
+>
+> Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+> ---
+>  mm/page_table_check.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/mm/page_table_check.c b/mm/page_table_check.c
+> index 2341ac382cd5..22dd285ab8d5 100644
+> --- a/mm/page_table_check.c
+> +++ b/mm/page_table_check.c
+> @@ -86,8 +86,8 @@ static void page_table_check_clear(struct mm_struct *mm, unsigned long addr,
+>  {
+>         struct page_ext *page_ext;
+>         struct page *page;
+> +       unsigned long i;
+>         bool anon;
+> -       int i;
+>
+>         if (!pfn_valid(pfn))
+>                 return;
+> @@ -121,8 +121,8 @@ static void page_table_check_set(struct mm_struct *mm, unsigned long addr,
+>  {
+>         struct page_ext *page_ext;
+>         struct page *page;
+> +       unsigned long i;
+>         bool anon;
+> -       int i;
+>
+>         if (!pfn_valid(pfn))
+>                 return;
+> @@ -186,10 +186,10 @@ static void pmd_clear_level(struct mm_struct *mm, unsigned long addr,
+>  void __page_table_check_zero(struct page *page, unsigned int order)
+>  {
+>         struct page_ext *page_ext = lookup_page_ext(page);
+> -       int i;
+> +       unsigned long i;
+>
+>         BUG_ON(!page_ext);
+> -       for (i = 0; i < (1 << order); i++) {
+> +       for (i = 0; i < (1ul << order); i++) {
+>                 struct page_table_check *ptc = get_page_table_check(page_ext);
+>
+>                 BUG_ON(atomic_read(&ptc->anon_map_count));
+> --
+> 2.34.1.703.g22d0c6ccf7-goog
+>
 
-Thanks.
-
-Acked-by: Pratyush Yadav <p.yadav@ti.com>
-
--- 
-Regards,
-Pratyush Yadav
-Texas Instruments Inc.
+Reviewed-by: Wei Xu <weixugc@google.com>
