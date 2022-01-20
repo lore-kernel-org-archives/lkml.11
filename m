@@ -2,169 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B86FEC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 12:14:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2648BC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 12:15:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237223AbiATMOt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 07:14:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57460 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232829AbiATMOe (ORCPT
+        id S235027AbiATMPh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 07:15:37 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:46012 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232764AbiATMPe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 07:14:34 -0500
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1494BC061751
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 04:14:27 -0800 (PST)
-Received: by mail-wm1-x32b.google.com with SMTP id r9-20020a1c4409000000b0034e043aaac7so335576wma.5
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 04:14:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=9elements.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=esc1uJ/1b1Bl5sIRdBGqAaIciPpRZPZmuwi/GvPIASI=;
-        b=HTONie7dMdtGsPLTyvbZfSGUG6+xqdnKWgOaR+qCVxHQRkzxY+vMBxXGXg/5BpxV+b
-         IsDXlYTyi+qXSq+o2cF6MB4vfE+NibpgVZTErgz7kRO3NbuFwIHHojyWk+NGNIO9UnnA
-         QOgrlhvgK9+7zJCfkdZu1+NdcAJ5BJC0d6F9tqWwopjxTY93nBMXwovpVIAtO1PSZys2
-         +xRTK4eY62C1fAimw/6q6j6jT0brcpFfNvdDkVT1WB8+d/jFM/UAWtE9vklfOYwBTxAB
-         6lGJnLsH7bcwADr01qo5DiEENNOMYSuZWWjf+DKi97Se3DRIZhayFeeO2V1ARqdAX5/c
-         9cnA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=esc1uJ/1b1Bl5sIRdBGqAaIciPpRZPZmuwi/GvPIASI=;
-        b=eIwYCB/VGP9YMTFxbI2uZ0tTruo8GNh9hz3Xmy72y0AtLiO0U43puWne5YgwsL+8qJ
-         eftmLX90mL9bRMKr7nYWMJgAFtGUOjwriCz+fCOvqihiTtWrakOiIi+pXQOYyqJDICUQ
-         d/4EiPwtVKgdpqfGV+r5jb6BgwfBiK2XeJ5xk1fPqVo0a7bPsVj7gZd9OMZMlz+ycz7U
-         NUMRVWsxmtOUspFpoEBUxoIyLF1gUyV9YOmtMjtyPDZTGjn2nlJe2aHL0KO3i3TSJPTt
-         Xm+f5ghWcoIAvdzOWBXWsFrNLDkxY2l+LiC8ECqERhene9UkSAFK7O2IhluZXQE81Lbz
-         fQ2A==
-X-Gm-Message-State: AOAM533IbKVN/3hb1SrdCd/0p+9MNf4fFGjZ7DU9oHeeTERzR7QJRjPz
-        nZvPSTIFHJ8bP45dZYlNkeit0g==
-X-Google-Smtp-Source: ABdhPJzyrsxABb5+2MQcEebguHu+jFibhrZ6TUJ8eIM4jhWsekHkOasUh0vYuPh5kGAaTeCWgnT/RA==
-X-Received: by 2002:a5d:548b:: with SMTP id h11mr33145701wrv.12.1642680865670;
-        Thu, 20 Jan 2022 04:14:25 -0800 (PST)
-Received: from fedora.sec.9e.network (ip-088-153-139-166.um27.pools.vodafone-ip.de. [88.153.139.166])
-        by smtp.gmail.com with ESMTPSA id x4sm2853863wrp.13.2022.01.20.04.14.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 04:14:25 -0800 (PST)
-From:   Patrick Rudolph <patrick.rudolph@9elements.com>
-To:     Peter Rosin <peda@axentia.se>, Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Patrick Rudolph <patrick.rudolph@9elements.com>,
-        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [v3 3/3] i2c: muxes: pca954x: Add regulator support
-Date:   Thu, 20 Jan 2022 13:13:13 +0100
-Message-Id: <20220120121314.463944-4-patrick.rudolph@9elements.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220120121314.463944-1-patrick.rudolph@9elements.com>
-References: <20220120121314.463944-1-patrick.rudolph@9elements.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 20 Jan 2022 07:15:34 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31142616AF;
+        Thu, 20 Jan 2022 12:15:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11E53C340E0;
+        Thu, 20 Jan 2022 12:15:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642680933;
+        bh=0zqjRx17jeQjOp1ol5omqJUXW3BnaewnNO4FG3prRkM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ihUgSNX5R5BLdm/EgKc1Xd0m/WUKj/xJJKFgn0xd6tHchDDoW3zUL3mOYEybMoZm1
+         r5yWPtR1q9gLxHv4MXtT9Ss2ZtGIUuljKzpemqUiFFndGkxP1rMzQ9rgP2QXCZIAf/
+         D8puAzQs6H50/JWpUngeFbFb/p2dbxJ+fzRMQtdo55J0M4/jAZrgOBrgBhXl84/fpP
+         39GuC5D9+AlHQoaBMLGe/xBvu0HYUpOYsXt0Y2ikFeo3Y8N2w7cxZvc+Ppd5TO7PaB
+         hE8SEZeWUvrEXUyp2iMqQJRwJ9QUNFrdxZDbCQ+qD+aH6Y6RgVYeLwdGhFqpf6suTU
+         H4WFVYmqI+Smw==
+Date:   Thu, 20 Jan 2022 21:15:27 +0900
+From:   Masami Hiramatsu <mhiramat@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [RFC PATCH v3 7/9] bpf: Add kprobe link for attaching raw
+ kprobes
+Message-Id: <20220120211527.cd46c74ce2ad8f401aec545a@kernel.org>
+In-Reply-To: <Yek9Jq1UVa8fq91n@krava>
+References: <164260419349.657731.13913104835063027148.stgit@devnote2>
+        <164260427009.657731.15292670471943106202.stgit@devnote2>
+        <Yek9Jq1UVa8fq91n@krava>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add an optional vdd regulator and enable it when found for devices
-that are powered off by default.
+On Thu, 20 Jan 2022 11:44:54 +0100
+Jiri Olsa <jolsa@redhat.com> wrote:
 
-Signed-off-by: Patrick Rudolph <patrick.rudolph@9elements.com>
----
- drivers/i2c/muxes/i2c-mux-pca954x.c | 32 ++++++++++++++++++++++++-----
- 1 file changed, 27 insertions(+), 5 deletions(-)
+> On Wed, Jan 19, 2022 at 11:57:50PM +0900, Masami Hiramatsu wrote:
+> 
+> SNIP
+> 
+> > +static int kprobe_link_prog_run(struct bpf_kprobe_link *kprobe_link,
+> > +				struct pt_regs *regs)
+> > +{
+> > +	struct bpf_trace_run_ctx run_ctx;
+> > +	struct bpf_run_ctx *old_run_ctx;
+> > +	int err;
+> > +
+> > +	if (unlikely(__this_cpu_inc_return(bpf_prog_active) != 1)) {
+> > +		err = 0;
+> > +		goto out;
+> > +	}
+> > +
+> > +	old_run_ctx = bpf_set_run_ctx(&run_ctx.run_ctx);
+> > +	run_ctx.bpf_cookie = kprobe_link->bpf_cookie;
+> > +
+> > +	rcu_read_lock();
+> > +	migrate_disable();
+> > +	err = bpf_prog_run(kprobe_link->link.prog, regs);
+> > +	migrate_enable();
+> > +	rcu_read_unlock();
+> > +
+> > +	bpf_reset_run_ctx(old_run_ctx);
+> > +
+> > + out:
+> > +	__this_cpu_dec(bpf_prog_active);
+> > +	return err;
+> > +}
+> > +
+> > +static void kprobe_link_entry_handler(struct fprobe *fp, unsigned long entry_ip,
+> > +				      struct pt_regs *regs)
+> > +{
+> > +	struct bpf_kprobe_link *kprobe_link;
+> > +
+> > +	/*
+> > +	 * Because fprobe's regs->ip is set to the next instruction of
+> > +	 * dynamic-ftrace insturction, correct entry ip must be set, so
+> > +	 * that the bpf program can access entry address via regs as same
+> > +	 * as kprobes.
+> > +	 */
+> > +	instruction_pointer_set(regs, entry_ip);
+> 
+> ok, so this actually does the stall for me.. it changes
+> the return address back to repeat the call again
 
-diff --git a/drivers/i2c/muxes/i2c-mux-pca954x.c b/drivers/i2c/muxes/i2c-mux-pca954x.c
-index 33b9a6a1fffa..086647193ea9 100644
---- a/drivers/i2c/muxes/i2c-mux-pca954x.c
-+++ b/drivers/i2c/muxes/i2c-mux-pca954x.c
-@@ -49,6 +49,7 @@
- #include <linux/module.h>
- #include <linux/pm.h>
- #include <linux/property.h>
-+#include <linux/regulator/consumer.h>
- #include <linux/slab.h>
- #include <linux/spinlock.h>
- #include <dt-bindings/mux/mux.h>
-@@ -119,6 +120,7 @@ struct pca954x {
- 	struct irq_domain *irq;
- 	unsigned int irq_mask;
- 	raw_spinlock_t lock;
-+	struct regulator *supply;
- };
- 
- /* Provide specs for the PCA954x and MAX735x types we know about */
-@@ -459,6 +461,9 @@ static void pca954x_cleanup(struct i2c_mux_core *muxc)
- 	struct pca954x *data = i2c_mux_priv(muxc);
- 	int c, irq;
- 
-+	if (!IS_ERR_OR_NULL(data->supply))
-+		regulator_disable(data->supply);
-+
- 	if (data->irq) {
- 		for (c = 0; c < data->chip->nchans; c++) {
- 			irq = irq_find_mapping(data->irq, c);
-@@ -513,15 +518,30 @@ static int pca954x_probe(struct i2c_client *client,
- 			     pca954x_select_chan, pca954x_deselect_mux);
- 	if (!muxc)
- 		return -ENOMEM;
-+
- 	data = i2c_mux_priv(muxc);
- 
- 	i2c_set_clientdata(client, muxc);
- 	data->client = client;
- 
-+	data->supply = devm_regulator_get_optional(dev, "vdd");
-+	if (IS_ERR(data->supply)) {
-+		if ((PTR_ERR(data->supply) == -EPROBE_DEFER))
-+			return -EPROBE_DEFER;
-+	} else {
-+		ret = regulator_enable(data->supply);
-+		if (ret) {
-+			dev_err(dev, "Failed to enable regulator vdd: %d\n", ret);
-+			return ret;
-+		}
-+	}
-+
- 	/* Reset the mux if a reset GPIO is specified. */
- 	gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
--	if (IS_ERR(gpio))
--		return PTR_ERR(gpio);
-+	if (IS_ERR(gpio)) {
-+		ret = PTR_ERR(gpio);
-+		goto fail_cleanup;
-+	}
- 	if (gpio) {
- 		udelay(1);
- 		gpiod_set_value_cansleep(gpio, 0);
-@@ -538,7 +558,7 @@ static int pca954x_probe(struct i2c_client *client,
- 
- 		ret = i2c_get_device_id(client, &id);
- 		if (ret && ret != -EOPNOTSUPP)
--			return ret;
-+			goto fail_cleanup;
- 
- 		if (!ret &&
- 		    (id.manufacturer_id != data->chip->id.manufacturer_id ||
-@@ -546,7 +566,8 @@ static int pca954x_probe(struct i2c_client *client,
- 			dev_warn(dev, "unexpected device id %03x-%03x-%x\n",
- 				 id.manufacturer_id, id.part_id,
- 				 id.die_revision);
--			return -ENODEV;
-+			ret = -ENODEV;
-+			goto fail_cleanup;
- 		}
- 	}
- 
-@@ -565,7 +586,8 @@ static int pca954x_probe(struct i2c_client *client,
- 	ret = pca954x_init(client, data);
- 	if (ret < 0) {
- 		dev_warn(dev, "probe failed\n");
--		return -ENODEV;
-+		ret = -ENODEV;
-+		goto fail_cleanup;
- 	}
- 
- 	ret = pca954x_irq_setup(muxc);
+Good catch! and don't mind, this change is introduced me :-P.
+I thought that if I didn't add the FTRACE_FL_IPMODIFY, ftrace
+ignores the updated regs->ip, but it doesn't.
+
+> bu I think it's good idea to carry the original ip in regs
+> (for bpf_get_func_ip helper) so I think we need to save it
+> first and restore after the callback
+
+Yes, btw, should I do that fix in fprobe?
+
+> 
+> I'll make the fix and add cookie change Andrii asked for
+> on top of your ftrace changes and let you know
+
+OK, thank you!
+
+> 
+> thanks,
+> jirka
+> 
+> > +	kprobe_link = container_of(fp, struct bpf_kprobe_link, fp);
+> > +	kprobe_link_prog_run(kprobe_link, regs);
+> > +}
+> > +
+> 
+> SNIP
+> 
+
+
 -- 
-2.34.1
-
+Masami Hiramatsu <mhiramat@kernel.org>
