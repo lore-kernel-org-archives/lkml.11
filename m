@@ -2,110 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 480B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 09:57:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 547EFC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 09:57:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379790AbiAUJ47 (ORCPT
+        id S1379807AbiAUJ5E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 04:56:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39038 "EHLO
+        Fri, 21 Jan 2022 04:57:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349787AbiAUJ46 (ORCPT
+        with ESMTP id S1349787AbiAUJ5D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 04:56:58 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51386C061574
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 01:56:58 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id w12-20020a17090a528c00b001b276aa3aabso13299005pjh.0
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 01:56:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=d/47DffcE+c3jCAlwDovIS7aShnFPAcgmE0Cy5Af+sM=;
-        b=GfzXzlpcW7AKcVRUxF87xbg2Ci6kIiXy4dlvZd1G5MefdT5pGLTz7lXZ1xY/Dv1avS
-         XMRSrMTG4dxH4oB02PFc2sXQGWXqXVLznCIy3js4Wm07gitZNpDLe8nsTy6sbSQgjOJ7
-         O8rf2wKVksUoPHlIpGaiUz0AcFXgDFNI3rChgrgBpeA4RxtD/OLlNUFkitdrWUPeZDsc
-         F3M+OTZgIy/aaFgSuJDhVZgfCcGUKI5UiC+ofwLE7VZ4uVlZO76VWLO1N19ai4UN1AxI
-         cdwQnKj56rsymd4k3xTxkvUg0yKIFPt61Frat6ofUdOunI/3ddfqZOHZY/Ufb5+s4qou
-         FlkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=d/47DffcE+c3jCAlwDovIS7aShnFPAcgmE0Cy5Af+sM=;
-        b=NuMZVbtWKnbnTbkBU43cejvaRkA0SzDVmqd3MHddZaU9a0xuqTDH5VEo/iZvrSHVuo
-         3Et1vwHzTVWsswI1R+cHeGYvurXccD7h/+nZ/1WAgp4fPg2e2rUTW4r89bMZ7wA3kwSj
-         AqlX8/fuiHPCyQIEjq3BsbMakmt3/PoyzFq6S/dhSOhrqeKD7NsEBs5636RsY9FhON0S
-         f9YV2WXHghDGMNkjZlgUB1Pe43Mo+faKy/tKAJ1/YBYaeksL5klj0nQcfqDhcn3tn8Ad
-         cH2nadrnMyoNDMO0guowqSxtP6MMmLsJRMKCO+5arBVSForMinlaB+2SHsAC3/aiUbV8
-         Uyjw==
-X-Gm-Message-State: AOAM5325LatBdwRpUzm8iwmGcRA/1R+SLqlmw4SGvKX0eMZaibmArCMP
-        bNtAs2u358YaeaiCAAKOn18=
-X-Google-Smtp-Source: ABdhPJyg1B3e0pwxGq2QGKT5u3wkuMfPond86NBDkcSZXSd1h6hVndqYThYV0xzAhD2mV0KmJyRkgg==
-X-Received: by 2002:a17:902:da8c:b0:14a:909b:c911 with SMTP id j12-20020a170902da8c00b0014a909bc911mr3224302plx.103.1642759017887;
-        Fri, 21 Jan 2022 01:56:57 -0800 (PST)
-Received: from vultr.guest ([141.164.42.249])
-        by smtp.gmail.com with ESMTPSA id c2sm4623661pgj.63.2022.01.21.01.56.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 01:56:57 -0800 (PST)
-From:   Yuntao Wang <ytcoode@gmail.com>
-To:     Steven Rostedt <rostedt@goodmis.org>,
-        Ingo Molnar <mingo@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>
-Subject: [PATCH] tracing: Use strim() to remove whitespace instead of doing it manually
-Date:   Fri, 21 Jan 2022 09:56:23 +0000
-Message-Id: <20220121095623.1826679-1-ytcoode@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 21 Jan 2022 04:57:03 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5DD3C061574
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 01:57:02 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8142DB81F86
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 09:57:01 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1095EC340E1;
+        Fri, 21 Jan 2022 09:57:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642759020;
+        bh=qR8VRYTCz1DGsP6TG4tf/9SSEqtJu9KSNoIFjCNdds4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=VVQqOz9uMKa1SiorJ1jdHxE/y7sxPOPEm3xQTwwIF4pQMa8Z06Koa1fgjHD6ibvJO
+         KpIi0ShE7YobgQo2mgLZdB/p/QguJP2oRrB9C6ZPVVYSxL85FctCWxzh6BnmVeVW3L
+         mWicYzvXD+ChznQenltM/g0HDZ00Rfyovc9Zssd6G3CRJt2HRusynZJWwqP2dgI2hM
+         CQFrVB4zotfL8X13KvEVfrOgRx0BRnl8YoVdHUEwT5GOrv10Oq8QxkDDgGU64iZZDC
+         Inpu17W0k3lCYuVq+eqgaNWAoEzkVZj28aiicMRvvyzusY4EBximpqMDQEqbYyD9OS
+         Y5YPrPCdU7itg==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 3664640C99; Thu, 20 Jan 2022 12:47:27 -0300 (-03)
+Date:   Thu, 20 Jan 2022 12:47:27 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Eric Lin <eric.lin@sifive.com>
+Cc:     Eduardo Habkost <ehabkost@gmail.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Yao Jin <yao.jin@linux.intel.com>,
+        Greentime Hu <greentime.hu@sifive.com>,
+        Paul Walmsley <paul.walmsley@sifive.com>,
+        Vincent Chen <vincent.chen@sifive.com>
+Subject: Re: About perf tool set exclude_guest = 1 on guest environment
+Message-ID: <YemED+3SzJQR+tZq@kernel.org>
+References: <CAPqJEFoUyHiyNj8Hx-wRaw86NLb5hGo-WT4ysqV4RGerYyDyJA@mail.gmail.com>
+ <CAM9d7chL4_hY8BLHV=q2J_HJ14gUj07t5QvUvUBOj+4hmvY7hQ@mail.gmail.com>
+ <CAPqJEFqJpnq1TF-ZA7Worsy2Yx6au-KHBPkCN0cSnQuyGbwsfw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAPqJEFqJpnq1TF-ZA7Worsy2Yx6au-KHBPkCN0cSnQuyGbwsfw@mail.gmail.com>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The tracing_set_trace_write() function just removes the trailing whitespace
-from the user supplied tracer name, but the leading whitespace should also
-be removed.
+Em Thu, Jan 20, 2022 at 09:35:59PM +0800, Eric Lin escreveu:
+> On Wed, Jan 19, 2022 at 1:02 PM Namhyung Kim <namhyung@kernel.org> wrote:
+> > On Mon, Jan 17, 2022 at 8:05 PM Eric Lin <eric.lin@sifive.com> wrote:
+> > > Currently, I run the perf command 'perf record -e branches:u ls'  and
+> > > 'perf record -e branches ls'. It will set exclude_guest = 1 as below:
+> > >
+> > > # perf record -e branches:u ls
+> > > # perf evlist -v
+> > > branches:u: .., exclude_kernel: 1, exclude_hv: 1,, exclude_guest: 1, ..
+> > >
+> > > # perf record -e branches ls
+> > > # perf evlist -v
+> > > branches: ..., exclude_guest: 1, ...
+> > >
+> > > As I understand it, set exclude_guest =1 will not include guest counting.
+> > > May I ask if I run the above commands as a guest user, should the
+> > > architecture implementation ignore this exclude_guest flags and still
+> > > make perf can count guest events in Linux kernel?
+> >
+> > So do you want to run the command in the host?
+> > Then you can use both 'H' and 'G' modifiers like
+> >
+> >   # perf record -e branches:HG ls
+> >
+> > or (for user-mode only)
+> >
+> >   # perf record -e branches:uHG ls
+> >
+> 
+> Actually, I want to run the commands in the guest.
+> But when I run the commands "perf record -e branches:u ls" and "perf
+> record -e branches ls", it will set exclude_guet = 1.
+> According to the documentation[1] exclude_guest definition, it should
+> not count guest events.
+> So, if I run these commands as a guest user can I get the profile data?
+> 
+> [1] https://man7.org/linux/man-pages/man2/perf_event_open.2.html
 
-In addition, if the user supplied tracer name contains only a few
-whitespace characters, the first one will not be removed using the current
-method, which results it a single whitespace character left in the buf.
+The tool shouldn't know that it is running in a guest, right?
 
-To fix all of these issues, we use strim() to correctly remove both the
-leading and trailing whitespace.
+And the kernel, running on a guest should exclude its guests if
+attr.exclude_guest is set, not itself and its non-guest userland.
 
-Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
----
- kernel/trace/trace.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+So, before delving into how the kernel running on guest _actually_
+handles attr.exclude_guest=1 behaves, what are the results you are
+getting from running perf on a guest?
 
-diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
-index a569a0cb81ee..a6e77db764cf 100644
---- a/kernel/trace/trace.c
-+++ b/kernel/trace/trace.c
-@@ -6433,7 +6433,7 @@ tracing_set_trace_write(struct file *filp, const char __user *ubuf,
- {
- 	struct trace_array *tr = filp->private_data;
- 	char buf[MAX_TRACER_SIZE+1];
--	int i;
-+	char *name;
- 	size_t ret;
- 	int err;
- 
-@@ -6447,11 +6447,9 @@ tracing_set_trace_write(struct file *filp, const char __user *ubuf,
- 
- 	buf[cnt] = 0;
- 
--	/* strip ending whitespace. */
--	for (i = cnt - 1; i > 0 && isspace(buf[i]); i--)
--		buf[i] = 0;
-+	name = strim(buf);
- 
--	err = tracing_set_tracer(tr, buf);
-+	err = tracing_set_tracer(tr, name);
- 	if (err)
- 		return err;
- 
--- 
-2.35.0.rc2
+Lemme see...
 
+On a fedora:35 guest:
+
+[root@fedora ~]# perf record ls
+anaconda-ks.cfg  perf.data
+[ perf record: Woken up 1 times to write data ]
+[ perf record: Captured and wrote 0.014 MB perf.data (3 samples) ]
+[root@fedora ~]# perf evlist -v
+cpu-clock:pppH: type: 1, size: 128, { sample_period, sample_freq }: 4000, sample_type: IP|TID|TIME|PERIOD, read_format: ID, disabled: 1, inherit: 1, mmap: 1, comm: 1, freq: 1, enable_on_exec: 1, task: 1, precise_ip: 3, sample_id_all: 1, exclude_guest: 1, mmap2: 1, comm_exec: 1, ksymbol: 1, bpf_event: 1
+[root@fedora ~]#
+
+IIRC there is some extra magic to allow 'cycles' to be seen on the
+guest, but apart from that it seems to work.
+
+Eduardo, can you help us here?
+
+- Arnaldo
