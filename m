@@ -2,112 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8221FC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 17:30:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0C33C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 17:30:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230140AbiATRag (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 12:30:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45908 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230382AbiATRaF (ORCPT
+        id S229471AbiATRaz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 12:30:55 -0500
+Received: from mail-oi1-f179.google.com ([209.85.167.179]:41941 "EHLO
+        mail-oi1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229629AbiATRay (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 12:30:05 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C1E4C06173F
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 09:30:04 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id t18so5709304plg.9
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 09:30:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nWuQlNh1+FFK77BDf2dM2joOBNRuxhXU9eZ1lL6RJ9U=;
-        b=Vt1BML/8C1w1Q+B4uH6TEBe5Bp0XbsvPs4rQ6vDbh4AQAMJsx6vpR/THGjnP986NTs
-         4d1TEV4riAkWtTWI+l1jErkyQaKUeVe8WtypsjRoeZgbZXQIZ+pX7nRZnQ7iTfTU9B2y
-         BtUyTG8OcdTCpFbU/VnEt3Wh9cjUEYvkCPXzI=
+        Thu, 20 Jan 2022 12:30:54 -0500
+Received: by mail-oi1-f179.google.com with SMTP id q186so9886996oih.8;
+        Thu, 20 Jan 2022 09:30:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nWuQlNh1+FFK77BDf2dM2joOBNRuxhXU9eZ1lL6RJ9U=;
-        b=1/SQEJOLacF+MRty2uujzKfncgJmiB2ogwYfS38EdWopVw6NUCWzCBiiArXntGUZR6
-         UxirJ5Ba+Y6C6v96oe+gdUf/3krY2JIui2/0PHekyqKsIei4uPWTjFfZRS27xkj9cu3Z
-         YpCrIKlrAMcWo2oPi0FL4uhPZ0BN9rgx1GYaDbXRT/kZJcLG7BTxZjKrk4n6uxGFBlmB
-         w9OSgAZ/litNmCyvpl3ScCoGz30Q76PBNWiqEuypVopxFd17jvGMntsWr14R405l4dlN
-         82crtE3IHZLf5pdIlmi2oRu7jz3ivcy0TwtbphXbBQ03DxmtRUWQ881v/17Ow/dy9i7t
-         4Nsg==
-X-Gm-Message-State: AOAM531PJyRiSK58DneTTaNAnHJKX3ys217v8ZY5oS4Yqt61AUuJMlgK
-        N33H5sCZ0OBOc2XeMoSHJoqOXA8LEkmcJvzTgeXYbw==
-X-Google-Smtp-Source: ABdhPJycFKl02Oq1wNGDCLiXjMub65SO5ZLEVDaIoyisqTvtciMEWjY7xyrtl1oNS1NiH4FU0GVEpBm3W0Z0Wb9yuws=
-X-Received: by 2002:a17:902:8208:b0:14a:c442:8ca2 with SMTP id
- x8-20020a170902820800b0014ac4428ca2mr27948pln.12.1642699803642; Thu, 20 Jan
- 2022 09:30:03 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=d8yQBERTvpfmaH1s1wVWlH9urutXAd/YcFyqq0Ym61g=;
+        b=j6JmIGAe0irixEkfpddGNoDipE7T08FgKmm24pn9osiAJNsretwDBPSFntA+RtfJIW
+         ir6v/UdfXZ3yoYAt41tY3K/UG+Vk2KNGU4JfgqOT6B1i65aoYMDMqxqpl2PFwEtQ9cK4
+         MihscEsqLBjfSP4AYpBdC/Uk/NC6TynyiGE4A1Lt7NGyhmk1Jvo0aNH3WKQZktZsWIJy
+         dlT1R4diY4zUZlTb0kaF1YuJGsFtHJ8u2ySofxnQ3oEvWeyj6q1BLEK6AnwnkHGltl8s
+         egXrsE4nBMJ/V1HzNFRiOhWF/8oJgzxaIi+YyhHxjj++biJQYXfXSEPowXR0y/HuHTlU
+         4JYg==
+X-Gm-Message-State: AOAM5336POkKR50JC40djXSuFBasBMvJpxNbOdWIfXT1KtmHdMrBAlRK
+        rRsl2EmJDsz+4B45qqk63UrtpihJ3g==
+X-Google-Smtp-Source: ABdhPJyZqkBzpg/1+RU2t2JzeXzOhg+6gIYQoqsIiie7MtQOR3mLd2E1JbEC0uXUiqice6t1yHaNnA==
+X-Received: by 2002:a05:6808:158c:: with SMTP id t12mr8583121oiw.156.1642699853768;
+        Thu, 20 Jan 2022 09:30:53 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id h3sm1617078otg.54.2022.01.20.09.30.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 09:30:53 -0800 (PST)
+Received: (nullmailer pid 1640219 invoked by uid 1000);
+        Thu, 20 Jan 2022 17:30:52 -0000
+Date:   Thu, 20 Jan 2022 11:30:52 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Michael Walle <michael@walle.cc>
+Cc:     linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Frank Rowand <frowand.list@gmail.com>,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 1/3] of: base: make small of_parse_phandle() variants
+ static inline
+Message-ID: <YemcTJ640SlBkT0V@robh.at.kernel.org>
+References: <20220118173504.2867523-1-michael@walle.cc>
+ <20220118173504.2867523-2-michael@walle.cc>
 MIME-Version: 1.0
-References: <CA+wXwBRbLq6SW39qCD8GNG98YD5BJR2MFXmJV2zU1xwFjC-V0A@mail.gmail.com>
- <CANn89iLbKNkB9bzkA2nk+d2c6rq40-6-h9LXAVFCkub=T4BGsQ@mail.gmail.com>
- <CA+wXwBTQtzgsErFZZEUbEq=JMhdq-fF2OXJ7ztnnq6hPXs_L3Q@mail.gmail.com>
- <CANn89iKTw5aZ0GvybkO=3B17HkGRmFKcqz9FqJFuo5r--=afOA@mail.gmail.com> <CANn89iKBqPRHFy5U+SMxT5RUPkioDFrZ5rN5WKNwfzA-TkMhwA@mail.gmail.com>
-In-Reply-To: <CANn89iKBqPRHFy5U+SMxT5RUPkioDFrZ5rN5WKNwfzA-TkMhwA@mail.gmail.com>
-From:   Daniel Dao <dqminh@cloudflare.com>
-Date:   Thu, 20 Jan 2022 17:29:52 +0000
-Message-ID: <CA+wXwBSGsBjovTqvoPQEe012yEF2eYbnC5_0W==EAvWH1zbOAg@mail.gmail.com>
-Subject: Re: Expensive tcp_collapse with high tcp_rmem limit
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     netdev <netdev@vger.kernel.org>,
-        kernel-team <kernel-team@cloudflare.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Marek Majkowski <marek@cloudflare.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220118173504.2867523-2-michael@walle.cc>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 6, 2022 at 6:55 PM Eric Dumazet <edumazet@google.com> wrote:
->
-> On Thu, Jan 6, 2022 at 10:52 AM Eric Dumazet <edumazet@google.com> wrote:
->
-> > I think that you should first look if you are under some kind of attack [1]
-> >
-> > Eventually you would still have to make room, involving expensive copies.
-> >
-> > 12% of 16MB is still a lot of memory to copy.
-> >
-> > [1] Detecting an attack signature could allow you to zap the socket
-> > and save ~16MB of memory per flow.
+On Tue, 18 Jan 2022 18:35:02 +0100, Michael Walle wrote:
+> Make all the smaller variants of the of_parse_phandle() static inline.
+> This also let us remove the empty function stubs if CONFIG_OF is not
+> defined.
+> 
+> Suggested-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Michael Walle <michael@walle.cc>
+> ---
+> changes since v3:
+>  - rebased due to now signed index parameter
+> 
+> changes since v2:
+>  - new patch
+> 
+>  drivers/of/base.c  | 128 ++----------------------------------
+>  include/linux/of.h | 157 +++++++++++++++++++++++++++++++++++++--------
+>  2 files changed, 135 insertions(+), 150 deletions(-)
+> 
 
-Sorry for the late reply, we spent more time over the past weeks to
-gather more data.
-
->   tid 0: rmem_alloc=16780416 sk_rcvbuf=16777216 rcv_ssthresh=2920
->   tid 0: advmss=1460 wclamp=4194304 rcv_wnd=450560
->   tid 0: len=3316 truesize=15808
->   tid 0: len=4106 truesize=16640
->   tid 0: len=3967 truesize=16512
->   tid 0: len=2988 truesize=15488
-> > I think that you should first look if you are under some kind of attack [1]
-
-This and indeed the majority of similar occurrences come from a
-websocket origin that can
-emit a large flow of tiny packets. As the tcp_collapse hiccups occur
-in a proxy node, we think that
-a combination of slow / unresponsive clients and the websocket traffic
-can trigger this.
-
-We made a workaround to clamp the websocket's rcvbuf to a smaller
-value and it reduces
-the peak latency of tcp_collapse as we no longer need to collapse up to 16MB.
-
-> What kind of NIC driver is used on your host ?
-
-We are running mlx5
-
-> Except that you would still have to parse the linear list.
-
-Most of the time when we see a high value of tcp_collapse, the bloated
-skb is almost always at the top
-of the list. I guess the client is already unresponsive so the flow is
-full of bloated skbs. I would rather not
-having to spend too much time collapsing these skbs.
+I moved the index < 0 checks into __of_parse_phandle_with_args 
+and applied, thanks!
