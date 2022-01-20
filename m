@@ -2,74 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0289C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 13:45:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A556DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 13:47:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244011AbiATNp7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 08:45:59 -0500
-Received: from mail.hust.edu.cn ([202.114.0.240]:2507 "EHLO hust.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1345551AbiATNpy (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 08:45:54 -0500
-Received: from localhost.localdomain ([172.16.0.254])
-        (user=dzm91@hust.edu.cn mech=LOGIN bits=0)
-        by mx1.hust.edu.cn  with ESMTP id 20KDiGAH029221-20KDiGAK029221
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Thu, 20 Jan 2022 21:44:20 +0800
-From:   Dongliang Mu <dzm91@hust.edu.cn>
-To:     Ryusuke Konishi <konishi.ryusuke@gmail.com>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Dongliang Mu <dzm91@hust.edu.cn>, linux-nilfs@vger.kernel.org,
+        id S239088AbiATNrC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 08:47:02 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:46274 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235845AbiATNrB (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 08:47:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=LI7fgGU1QLBmTbo6Itbou4oEcT/ffjAEXYDBbz7bC8o=; b=DcGAfY3n9u4WLa8D6DpfOrUvEA
+        BWinE8CxJwNtOpCkJ0qNrH/j5cIt7/jIP/slGn/CFIBsWkB9yrPSoza2OPvy4fNXZmNa1q4mL6cgJ
+        VI135fzyhLv7Px03eaHzpnh/9ryUvD89FDRrG2b4VfjKxwYl31R8UdrIuAXfIjRUAWXM=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nAXmA-001zjh-Ij; Thu, 20 Jan 2022 14:46:54 +0100
+Date:   Thu, 20 Jan 2022 14:46:54 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] fs: nilfs2: fix memory leak in nilfs_sysfs_create_device_group
-Date:   Thu, 20 Jan 2022 21:44:14 +0800
-Message-Id: <20220120134415.57147-1-dzm91@hust.edu.cn>
-X-Mailer: git-send-email 2.25.1
+Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
+ firmware on a Dell hardware
+Message-ID: <Yelnzrrd0a4Bl5AL@lunn.ch>
+References: <20220120051929.1625791-1-kai.heng.feng@canonical.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-FEAS-AUTH-USER: dzm91@hust.edu.cn
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220120051929.1625791-1-kai.heng.feng@canonical.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The preivous commit 8fd0c1b0647a ("nilfs2: fix memory leak in
-nilfs_sysfs_delete_device_group") only handles the memory leak in the
-nilfs_sysfs_delete_device_group. However, the similar memory leak still
-occurs in the nilfs_sysfs_create_device_group.
+On Thu, Jan 20, 2022 at 01:19:29PM +0800, Kai-Heng Feng wrote:
+> BIOS on Dell Edge Gateway 3200 already makes its own phy LED setting, so
+> instead of setting another value, keep it untouched and restore the saved
+> value on system resume.
 
-Fix it by adding kobject_del when
-kobject_init_and_add succeeds, but one of the following calls fails.
+Please split this patch into two:
 
-Fixes: 8fd0c1b0647a ("nilfs2: fix memory leak in nilfs_sysfs_delete_device_group")
-Signed-off-by: Dongliang Mu <dzm91@hust.edu.cn>
----
- fs/nilfs2/sysfs.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+Don't touch the LEDs
 
-diff --git a/fs/nilfs2/sysfs.c b/fs/nilfs2/sysfs.c
-index 379d22e28ed6..0b2db2b499d5 100644
---- a/fs/nilfs2/sysfs.c
-+++ b/fs/nilfs2/sysfs.c
-@@ -995,7 +995,7 @@ int nilfs_sysfs_create_device_group(struct super_block *sb)
- 
- 	err = nilfs_sysfs_create_mounted_snapshots_group(nilfs);
- 	if (err)
--		goto cleanup_dev_kobject;
-+		goto delete_dev_kobject;
- 
- 	err = nilfs_sysfs_create_checkpoints_group(nilfs);
- 	if (err)
-@@ -1027,6 +1027,9 @@ int nilfs_sysfs_create_device_group(struct super_block *sb)
- delete_mounted_snapshots_group:
- 	nilfs_sysfs_delete_mounted_snapshots_group(nilfs);
- 
-+delete_dev_kobject:
-+	kobject_del(&nilfs->ns_dev_kobj);
-+
- cleanup_dev_kobject:
- 	kobject_put(&nilfs->ns_dev_kobj);
- 	kfree(nilfs->ns_dev_subgroups);
--- 
-2.25.1
+Save and restore the LED configuration over suspend/resume.
 
+> -static void marvell_config_led(struct phy_device *phydev)
+> +static int marvell_find_led_config(struct phy_device *phydev)
+>  {
+> -	u16 def_config;
+> -	int err;
+> +	int def_config;
+> +
+> +	if (phydev->dev_flags & PHY_USE_FIRMWARE_LED) {
+> +		def_config = phy_read_paged(phydev, MII_MARVELL_LED_PAGE, MII_PHY_LED_CTRL);
+> +		return def_config < 0 ? -1 : def_config;
+
+What about the other two registers which configure the LEDs?
+
+Since you talked about suspend/resume, does this machine support WoL?
+Is the BIOS configuring LED2 to be used as an interrupt when WoL is
+enabled in the BIOS? Do you need to save/restore that configuration
+over suspend/review? And prevent the driver from changing the
+configuration?
+
+> +static const struct dmi_system_id platform_flags[] = {
+> +	{
+> +		.matches = {
+> +			DMI_MATCH(DMI_SYS_VENDOR, "Dell EMC"),
+> +			DMI_MATCH(DMI_PRODUCT_NAME, "Edge Gateway 3200"),
+> +		},
+> +		.driver_data = (void *)PHY_USE_FIRMWARE_LED,
+> +	},
+
+This needs a big fat warning, that it will affect all LEDs for PHYs
+which linux is driving, on that machine. So PHYs on USB dongles, PHYs
+in SFPs, PHYs on plugin PCIe card etc.
+
+Have you talked with Dells Product Manager and do they understand the
+implications of this? 
+
+> +	{}
+> +};
+> +
+>  /**
+>   * phy_attach_direct - attach a network device to a given PHY device pointer
+>   * @dev: network device to attach
+> @@ -1363,6 +1379,7 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+>  	struct mii_bus *bus = phydev->mdio.bus;
+>  	struct device *d = &phydev->mdio.dev;
+>  	struct module *ndev_owner = NULL;
+> +	const struct dmi_system_id *dmi;
+>  	bool using_genphy = false;
+>  	int err;
+>  
+> @@ -1443,6 +1460,10 @@ int phy_attach_direct(struct net_device *dev, struct phy_device *phydev,
+>  			phydev_err(phydev, "error creating 'phy_standalone' sysfs entry\n");
+>  	}
+>  
+> +	dmi = dmi_first_match(platform_flags);
+> +	if (dmi)
+> +		phydev->dev_flags |= (u32)dmi->driver_data;
+
+Please us your new flag directly. We don't want this abused to pass
+any old flag to the PHY.
+
+> +
+>  /**
+>   * struct phy_device - An instance of a PHY
+>   *
+> @@ -663,6 +665,7 @@ struct phy_device {
+>  
+>  	struct phy_led_trigger *led_link_trigger;
+>  #endif
+> +	int led_config;
+
+You cannot put this here because you don't know how many registers are
+used to hold the configuration. Marvell has 3, other drivers can have
+other numbers. The information needs to be saved into the drivers on
+priv structure.
+
+>  
+>  	/*
+>  	 * Interrupt number for this PHY
+> @@ -776,6 +779,12 @@ struct phy_driver {
+>  	 */
+>  	int (*config_init)(struct phy_device *phydev);
+>  
+> +	/**
+> +	 * @config_led: Called to config the PHY LED,
+> +	 * Use the resume flag to indicate init or resume
+> +	 */
+> +	void (*config_led)(struct phy_device *phydev, bool resume);
+
+I don't see any need for this.
+
+  Andrew
