@@ -2,76 +2,212 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B70BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 15:13:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFDC7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 15:14:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376538AbiATPNg (ORCPT
+        id S1376589AbiATPOk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 10:13:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42594 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242860AbiATPNe (ORCPT
+        Thu, 20 Jan 2022 10:14:40 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:54522 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376558AbiATPOi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 10:13:34 -0500
-Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6170C061574;
-        Thu, 20 Jan 2022 07:13:33 -0800 (PST)
-Received: from ip4d173d02.dynamic.kabel-deutschland.de ([77.23.61.2] helo=[192.168.66.200]); authenticated
-        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        id 1nAZ7x-0003up-Hz; Thu, 20 Jan 2022 16:13:29 +0100
-Message-ID: <343accce-e361-3154-409d-78ecc2736024@leemhuis.info>
-Date:   Thu, 20 Jan 2022 16:13:29 +0100
+        Thu, 20 Jan 2022 10:14:38 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id D3CDA1F388;
+        Thu, 20 Jan 2022 15:14:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1642691676; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WQQEqKNNxbc6s62M7PExlWeVrhf+Ly/6VnETzkVWTFg=;
+        b=bTTh5nN9bq+eNCJJAa0qKKrTD1towCdvccoRxAs04SNeqCFd7q6OLqOS01nX4ZtFy36JLC
+        fFW6RlEUPCxTvuvmJCeuuiLjnuXtG3kuR/2sltd6hCC1w9TH407L1Du+E4VX3WEts8OsdA
+        B4OhSoBzgSzlQguSI/Uo+E18dGRU+2w=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id 0BBF3A3B90;
+        Thu, 20 Jan 2022 15:14:36 +0000 (UTC)
+Date:   Thu, 20 Jan 2022 16:14:33 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     kexec@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dyoung@redhat.com, linux-doc@vger.kernel.org, bhe@redhat.com,
+        vgoyal@redhat.com, stern@rowland.harvard.edu,
+        akpm@linux-foundation.org, andriy.shevchenko@linux.intel.com,
+        corbet@lwn.net, halves@canonical.com, kernel@gpiccoli.net,
+        Will Deacon <will@kernel.org>,
+        Kees Cook <keescook@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Hidehiro Kawai <hidehiro.kawai.ez@hitachi.com>,
+        Vitaly Kuznetsov <vkuznets@redhat.com>,
+        HATAYAMA Daisuke <d.hatayama@jp.fujitsu.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        John Ogness <john.ogness@linutronix.de>,
+        "Paul E. McKenney" <paulmck@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Juergen Gross <jgross@suse.com>
+Subject: Re: [PATCH V4] notifier/panic: Introduce panic_notifier_filter
+Message-ID: <Yel8WQiBn/HNQN83@alley>
+References: <20220108153451.195121-1-gpiccoli@igalia.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Content-Language: en-BZ
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Paul Menzel <pmenzel@molgen.mpg.de>, Takashi Iwai <tiwai@suse.de>,
-        Fernando Ramos <greenfoo@u92.eu>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        Tedd Ho-Jeong An <tedd.an@intel.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-bluetooth@vger.kernel.org
-References: <20211202162256.31837-1-tiwai@suse.de>
- <acc7b5b4-72cc-9f3b-90a6-6fbf6c3a71e7@molgen.mpg.de>
- <s5h7dcnt0lp.wl-tiwai@suse.de> <YayVYIAi56097Ltl@zacax395.localdomain>
- <1D49EE9C-42D4-45C9-AE37-F4C508FD2D64@holtmann.org>
- <s5hk0gch9ve.wl-tiwai@suse.de>
- <7886757f-60f4-b63e-95a6-52dc7dcb86d8@molgen.mpg.de>
- <6c194b50-84f6-a554-140c-174cb658813a@leemhuis.info>
- <ACC75B0C-E755-4041-8C07-CB87C8BCC566@holtmann.org>
-From:   Thorsten Leemhuis <linux@leemhuis.info>
-Subject: Re: [PATCH] Bluetooth: Apply initial command workaround for more
- Intel chips
-In-Reply-To: <ACC75B0C-E755-4041-8C07-CB87C8BCC566@holtmann.org>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
-X-bounce-key: webpack.hosteurope.de;linux@leemhuis.info;1642691613;ce65283e;
-X-HE-SMSGID: 1nAZ7x-0003up-Hz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220108153451.195121-1-gpiccoli@igalia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20.01.22 16:07, Marcel Holtmann wrote:
+Adding some more people into Cc. Some modified the logic in the past.
+Some are familiar with some interesting areas where the panic
+notfiers are used.
+
+On Sat 2022-01-08 12:34:51, Guilherme G. Piccoli wrote:
+> The kernel notifier infrastructure allows function callbacks to be
+> added in multiple lists, which are then called in the proper time,
+> like in a reboot or panic event. The panic_notifier_list specifically
+> contains the callbacks that are executed during a panic event. As any
+> other notifier list, the panic one has no filtering and all functions
+> previously registered are executed.
 > 
->> Could the bluetooth maintainers please provide a status update? I wonder
->> if it's time to bring this regression to Linus attention, as it seems to
->> be an issue that hits quite a few users -- and at the same takes quite a
->> long time to get fixed for a issue where a patch with a workaround was
->> already proposed one and a half months ago.
+> The kdump infrastructure, on the other hand, enables users to set
+> a crash kernel that is kexec'ed in a panic event, and vmcore/logs
+> are collected in such crash kernel. When kdump is set, by default
+> the panic notifiers are ignored - the kexec jumps to the crash kernel
+> before the list is checked and callbacks executed.
 > 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=95655456e7cee858a23793f67025765b4c4c227b
+> There are some cases though in which kdump users might want to
+> allow panic notifier callbacks to execute _before_ the kexec to
+> the crash kernel, for a variety of reasons - for example, users
+> may think kexec is very prone to fail and want to give a chance
+> to kmsg dumpers to run (and save logs using pstore),
 
-Ahh, okay, many thx for the update, it wasn't clear enough to me that
-this should fix the issue. Would have been nice if the commit would have
-had "Link:" tags to all reports about the issue (as explained in
-Documentation/process/submitting-patches.rst and
-Documentation/process/5.Posting.rst ), as that would have avoided confusion.
+Yes, this seems to be original intention for the
+"crash_kexec_post_notifiers" option, see the commit
+f06e5153f4ae2e2f3b0300f ("kernel/panic.c: add
+"crash_kexec_post_notifiers" option for kdump after panic_notifiers")
 
-Anyway, to close this:
 
-#regzbot introduced: ffcba827c0a1d
-#regzbot fixed-by: 95655456e7cee858a23793f67025765b4c4c227b
+> some panic notifier is required to properly quiesce some hardware
+> that must be used to the crash kernel.
 
-Ciao, Thorsten
+Do you have any example, please? The above mentioned commit
+says "crash_kexec_post_notifiers" actually increases risk
+of kdump failure.
+
+Note that kmsg_dump() is called after the notifiers only because
+some are printing more information, see the commit
+6723734cdff15211bb78a ("panic: call panic handlers before kmsg_dump").
+They might still increase the change that kmsg_dump() will never
+be called.
+
+
+> But there's a problem: currently it's an "all-or-nothing" situation,
+> the kdump user choice is either to execute all panic notifiers or
+> none of them. Given that panic notifiers may increase the risk of a
+> kdump failure, this is a tough decision and may affect the debug of
+> hard to reproduce bugs, if for some reason the user choice is to
+> enable panic notifiers, but kdump then fails.
+>
+> So, this patch aims to ease this decision: we hereby introduce a filter
+> for the panic notifier list, in which users may select specifically
+> which callbacks they wish to run, allowing a safer kdump. The allowlist
+> should be provided using the parameter "panic_notifier_filter=a,b,..."
+> where a, b are valid callback names. Invalid symbols are discarded.
+
+I am afraid that this is almost unusable solution:
+
+   + requires deep knowledge of what each notifier does
+   + might need debugging what notifier causes problems
+   + the list might need to be updated when new notifiers are added
+   + function names are implementation detail and might change
+   + requires kallsyms
+
+
+It is only workaround for a real problem. The problem is that
+"panic_notifier_list" is used for many purposes that break
+each other.
+
+I checked some notifiers and found few groups:
+
+   + disable watchdogs:
+      + hung_task_panic()
+      + rcu_panic()
+
+   + dump information:
+      + kernel_offset_notifier()
+      + trace_panic_handler()     (duplicate of panic_print=0x10)
+
+   + inform hypervisor
+      + xen_panic_event()
+      + pvpanic_panic_notify()
+      + hyperv_panic_event()
+
+   + misc cleanup / flush / blinking
+      + panic_event()   in ipmi_msghandler.c
+      + panic_happened()   in heartbeat.c
+      + led_trigger_panic_notifier()
+
+
+IMHO, the right solution is to split the callbacks into 2 or more
+notifier list. Then we might rework panic() to do:
+
+void panic(void)
+{
+	[...]
+
+	/* stop watchdogs + extra info */
+	atomic_notifier_call_chain(&panic_disable_watchdogs_notifier_list, 0, buf);
+	atomic_notifier_call_chain(&panic_info_notifier_list, 0, buf);
+	panic_print_sys_info();
+
+	/* crash_kexec + kmsg_dump in configurable order */
+	if (!_crash_kexec_post_kmsg_dump) {
+		__crash_kexec(NULL);
+		smp_send_stop();
+	} else {
+		crash_smp_send_stop();
+	}
+
+	kmsg_dump();
+	if (_crash_kexec_post_kmsg_dump)
+		__crash_kexec(NULL);
+
+	/* infinite loop or reboot */
+	atomic_notifier_call_chain(&panic_hypervisor_notifier_list, 0, buf);
+	atomic_notifier_call_chain(&panic_rest_notifier_list, 0, buf);
+
+	console_flush_on_panic(CONSOLE_FLUSH_PENDING);
+
+	if (panic_timeout >= 0) {
+		timeout();
+		emergency_restart();
+	}
+
+	for (i = 0; ; i += PANIC_TIMER_STEP) {
+		if (i >= i_next) {
+			i += panic_blink(state ^= 1);
+			i_next = i + 3600 / PANIC_BLINK_SPD;
+		}
+		mdelay(PANIC_TIMER_STEP);
+	}
+}
+
+Two notifier lists might be enough in the above scenario. I would call
+them:
+
+	panic_pre_dump_notifier_list
+	panic_post_dump_notifier_list
+
+
+It is a real solution that will help everyone. It is more complicated now
+but it will makes things much easier in the long term. And it might be done
+step by step:
+
+     1. introduce the two notifier lists
+     2. convert all users: one by one
+     3. remove the original notifier list when there is no user
+
+Best Regards,
+Petr
