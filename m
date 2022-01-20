@@ -2,99 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E52C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 10:43:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C388CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 10:43:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243287AbiATKnG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 05:43:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36172 "EHLO
+        id S1376365AbiATKnn (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 05:43:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234719AbiATKnF (ORCPT
+        with ESMTP id S243288AbiATKnl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 05:43:05 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98CA9C061574
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 02:43:04 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id x22so19874388lfd.10
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 02:43:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+8enaquFPBu9Rpl1lG/EB/zWJM1rWqPYYB01U+8SlZc=;
-        b=oXvULXpXY39sn/jk9FL0LtiC63NW6iWNXXZVo5rqmBPF5xoqFHjU8jlcEnuXKQEI7Q
-         Mx5lL1NbP0vXAfuawEE92Zi+fkjnoP+iz2gZQShMiGJmzFqk9E/dN+CKuPQiijbNSAa9
-         vDgaZ0UGpq3xYX0N2W37llQ9s4ktRUrU4UfuTK+arb82xBrlAVruWLXJTvBgCSqbzXbx
-         /cfeFgRNZ+dh9Tnz3fq1kglShta/8PluJrqt1gyluxPloElSAJcOf8/ouQM7LTjgo4n5
-         CZWBPFtgmNooZ6qycOa8RmAH9o13sNJhcEmm1v3dCNNC1mU8ZvSCt3Bu0TEjzhmMlFv9
-         ziHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+8enaquFPBu9Rpl1lG/EB/zWJM1rWqPYYB01U+8SlZc=;
-        b=S+x99gxQ7RonlPPJD/UKZIJU/pAtvxRf4UDGNeupsHSjMQoQxestmid4ksU82biPrF
-         bS/krpl9jBo+HRR88zqMc/Wg4/ah4IqUoA7cJUE6QI1XDJznUToHfV4CgWXsT+Od/PiO
-         Qw9Wt66R7dy4uGlK2aGIM3yvkl/Q4kE49wFg7nOgC0Ixk1WzHjUEP+ENR8OO3ywA0lmt
-         16/oOYsbh24PkMy2+3+gm/LRtl5b2qZu5NmPJLIcduNRwg1H0FTRRVzQIRoIa03hb2cI
-         WiRo8pg5ETuKRGkripfDZ/e9nFL493tEmx8h0TzsAnTriQOrPmxbK0l0fDYzF9ETzspH
-         PPwA==
-X-Gm-Message-State: AOAM531Dtvx0jmMTqqud+XCOhwcu9+55GTofRhkx9tF868VXj2kj4kP6
-        bjPvfb+sziRZF7YWvi+RS74hr1BrqshQgg==
-X-Google-Smtp-Source: ABdhPJxs3QH4HwQUqKal4LjMvk7mDm2E1Z0ozXp3fEq5x26kAJj6tCxvI44ITmPVr+BvCAWXOcgHZQ==
-X-Received: by 2002:a2e:9845:: with SMTP id e5mr24030748ljj.154.1642675382981;
-        Thu, 20 Jan 2022 02:43:02 -0800 (PST)
-Received: from pc638.lan ([155.137.26.201])
-        by smtp.gmail.com with ESMTPSA id b7sm248930ljp.35.2022.01.20.02.42.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 02:43:01 -0800 (PST)
-From:   Uladzislau Rezki <urezki@gmail.com>
-X-Google-Original-From: Uladzislau Rezki <urezki@pc638.lan>
-Date:   Thu, 20 Jan 2022 11:42:56 +0100
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     "Uladzislau Rezki (Sony)" <urezki@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>, linux-mm@kvack.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Oleksiy Avramchenko <oleksiy.avramchenko@sonymobile.com>
-Subject: Re: [PATCH 1/3] mm/vmalloc: Move draining areas out of caller context
-Message-ID: <Yek8sHMQuLZb3nCM@pc638.lan>
-References: <20220119143540.601149-1-urezki@gmail.com>
- <YeknfRnxaxcVxEjF@infradead.org>
+        Thu, 20 Jan 2022 05:43:41 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A0E6C061574;
+        Thu, 20 Jan 2022 02:43:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=RUxAMIPHh8EnpD7PkzX4ApuOdrcdTPZnoa+y0am0Ul0=; b=E5o6FGrXSZ1r9rnEjy8o+ycLlk
+        FAE77GFFmK1xFTUF8V3yI/pRFm9u8ipxwYnGaGMbTSS4vvJbTofWtLgpOv0Xg/uzwmw1yC9KEACRA
+        4We19fE6P33qJcUSpx0jzDb4FYIpO8t1uNWiwvLFWmaJtGSYQRzv1yb8iTpvenavYLHNisQuiQPhy
+        enPckymC/F4GPe1oBe39u2M54k4nAGBJBnN8k/TUBETZttv8W5a95qjZlF69MDS/qGyw3+7JYstY0
+        kVf3lKkPkxzlmUAXQJCvq5QATbtZDqMLPTloG5X5lcH3SAxA5X7d+QFKZXYrxr/S0QqTiXyvI7WsP
+        xgVGvoeg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nAUul-00E9Vb-L1; Thu, 20 Jan 2022 10:43:36 +0000
+Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (Client did not present a certificate)
+        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 1045F3002F1;
+        Thu, 20 Jan 2022 11:43:33 +0100 (CET)
+Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
+        id E320C2C4BFBCC; Thu, 20 Jan 2022 11:43:32 +0100 (CET)
+Date:   Thu, 20 Jan 2022 11:43:32 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     Peter Collingbourne <pcc@google.com>
+Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux Memory Management List <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Mel Gorman <mgorman@suse.de>,
+        "# 3.4.x" <stable@vger.kernel.org>
+Subject: Re: [PATCH] mm/mmzone.c: fix page_cpupid_xchg_last() to READ_ONCE()
+ the page flags
+Message-ID: <Yek81DNvQAXMxHwB@hirez.programming.kicks-ass.net>
+References: <20220118230539.323058-1-pcc@google.com>
+ <Yefh00fKOIPj+kYC@hirez.programming.kicks-ass.net>
+ <CAMn1gO5n6GofyRv6dvpEe0xRekRx=wneQzwP-n=9Qj6Pez6eEg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YeknfRnxaxcVxEjF@infradead.org>
+In-Reply-To: <CAMn1gO5n6GofyRv6dvpEe0xRekRx=wneQzwP-n=9Qj6Pez6eEg@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> On Wed, Jan 19, 2022 at 03:35:38PM +0100, Uladzislau Rezki (Sony) wrote:
-> > +static void drain_vmap_area(struct work_struct *work)
+On Wed, Jan 19, 2022 at 03:28:32PM -0800, Peter Collingbourne wrote:
+> On Wed, Jan 19, 2022 at 2:03 AM Peter Zijlstra <peterz@infradead.org> wrote:
+> >
+> > On Tue, Jan 18, 2022 at 03:05:39PM -0800, Peter Collingbourne wrote:
+> > > After submitting a patch with a compare-exchange loop similar to this
+> > > one to set the KASAN tag in the page flags, Andrey Konovalov pointed
+> > > out that we should be using READ_ONCE() to read the page flags. Fix
+> > > it here.
+> >
+> > What does it actually fix? If it manages to split the read and read
+> > garbage the cmpxchg will fail and we go another round, no harm done.
 > 
-> Nit, but I prefer to have a _work postix for workers just to keep
-> it easy to ready.
+> What I wasn't sure about was whether the compiler would be allowed to
+> break this code by hoisting the read of page->flags out of the loop
+> (because nothing in the loop actually writes to page->flags aside from
+> the compare-exchange, and if that succeeds we're *leaving* the loop).
+
+The cmpxchg is a barrier() and as such I don't think it's allowed to
+hoist anything out of the loop. Except perhaps since it's do-while, it
+could try and unroll the first iteration and wreck that something
+fierce.
+
+The bigger problem is I think that page_cpuid_last() usage which does a
+second load of page->flags, and given sufficient races that could
+actually load a different value and then things would be screwy. But
+that's not actually fixed.
+
+> > > Signed-off-by: Peter Collingbourne <pcc@google.com>
+> > > Link: https://linux-review.googlesource.com/id/I2e1f5b5b080ac9c4e0eb7f98768dba6fd7821693
+> >
+> > That's that doing here?
 > 
-Will fix it!
+> I upload my changes to Gerrit and link to them here so that I (and
+> others) can see the progression of the patch via the web UI.
 
-> >  	/* After this point, we may free va at any time */
-> >  	if (unlikely(nr_lazy > lazy_max_pages()))
-> > -		try_purge_vmap_area_lazy();
-> > +		if (!atomic_xchg(&drain_vmap_area_work_in_progress, 1))
-> > +			schedule_work(&drain_vmap_area_work);
-> 
-> Work items are defined to be single threaded, so I don't think we need
-> the drain_vmap_area_work_in_progress hack.
-> 
-The motivation with that hack was to prevent the drain work being placed
-several times at once, i.e. schedule_work() checks only a pending bit.
-
-If the work is in run-queue another caller of vfree() will place it one
-more time, since pending bit is not set because the work is in TASK_RUNNING
-state.
-
-Or am i missing something?
-
---
-Vlad Rezki
+What's the life-time guarantee for that URL existing? Because if it
+becomes part of the git commit, it had better stay around 'forever'
+etc..
