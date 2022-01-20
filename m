@@ -2,86 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61476C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:41:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13123C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:42:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231878AbiATLly (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 06:41:54 -0500
-Received: from mout.kundenserver.de ([212.227.17.13]:49665 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231848AbiATLlx (ORCPT
+        id S231929AbiATLl7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 06:41:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49988 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231899AbiATLl4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 06:41:53 -0500
-Received: from mail-lf1-f44.google.com ([209.85.167.44]) by
- mrelayeu.kundenserver.de (mreue109 [213.165.67.113]) with ESMTPSA (Nemesis)
- id 1M5fUy-1nDGhp1Zu6-007BIW; Thu, 20 Jan 2022 12:41:51 +0100
-Received: by mail-lf1-f44.google.com with SMTP id y15so12271320lfa.9;
-        Thu, 20 Jan 2022 03:41:51 -0800 (PST)
-X-Gm-Message-State: AOAM530tvyQ5T4JV3gkrqe9AhUSyTnugciTj7DiHbp+8zbWWFJ9J3QcL
-        04n5wA1NFJmsAlHDfi7PJrwtL9MMOo2yncro9VY=
-X-Google-Smtp-Source: ABdhPJym7KyRCSRXKMerVMcQ/VMRiOiyKpoCP7tEcDc9DhkSEEWwSJxd9o5Jl5QZLGZ5wnpG9DwFk+lKhhVFjaoKItk=
-X-Received: by 2002:a5d:6488:: with SMTP id o8mr12004975wri.219.1642671600998;
- Thu, 20 Jan 2022 01:40:00 -0800 (PST)
+        Thu, 20 Jan 2022 06:41:56 -0500
+Received: from mail-vk1-xa31.google.com (mail-vk1-xa31.google.com [IPv6:2607:f8b0:4864:20::a31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A475C06173F
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 03:41:56 -0800 (PST)
+Received: by mail-vk1-xa31.google.com with SMTP id w206so3405751vkd.10
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 03:41:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=0x0f.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=AcK8qyswp9gjQwYqxYG0L3jUGTV1Nm9qXmgnSkoFndU=;
+        b=uhjyyCqJ7UVJYr6kFSsnoWr8Yb9oWhPS/21aw0JO8FOnTLNEKxaa7qfmHMBntMzfoH
+         mcwlXC55x56Kt76CCX2teuDzOGrIhYeOav8kJjU8lEVEsxSDMK4xkeTP1UC18+BB7nBB
+         KctO6TxhvyZfCI8z4dcdOKKsNTnICEfVHJU6w=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=AcK8qyswp9gjQwYqxYG0L3jUGTV1Nm9qXmgnSkoFndU=;
+        b=evgRyQAzG8s0y2Ft9xU0oA40wCe5qo/bwHogzEONZalILp9D2IELFkVuWY0wgGjOBt
+         dDrDzGRO/vjXjoSVBLPmE1+UOaFlCjeIFBIOY4m9zDRK7XdWIu5NcaxA5dlOobnMGv7L
+         VgiIyOg+Pq02GlTx84UTUWb8Jr9KVwanI9l5b0L107CCRgS6wCPhJf/wsBqJ5obZfNEK
+         ebrBtMJFVF8raxKCW+jatdKtp6rHJjfmqKmLgwpWdcfi/OWdVLqgBY/l35AOu64O+exh
+         /+FXAGzPIWQ4/cTweH27RSbWetowYQvHe6iQDLJFoSVe03+MiVGjbw1UmWFKBfWtKxxn
+         ujZA==
+X-Gm-Message-State: AOAM533X75jf1AH1RiiDwurv0PxKCgrz1qwZEB95+Ll2KPm4LXH9TG5W
+        6J6vXYtWtRtprM9iVEpl21xuuHF2tiI0gig0k8bxaWu4jQ7Hsg==
+X-Google-Smtp-Source: ABdhPJzKuGisiIKX6JkS19MYQ5lMiIMLo7J6D0ujzzT5zQzQVnVViRq1oJFR8HGXDXxC+J1lbRio0kz39IufKUQWgfo=
+X-Received: by 2002:a05:6122:a09:: with SMTP id 9mr1812478vkn.12.1642678915222;
+ Thu, 20 Jan 2022 03:41:55 -0800 (PST)
 MIME-Version: 1.0
-References: <20220120073911.99857-16-guoren@kernel.org>
-In-Reply-To: <20220120073911.99857-16-guoren@kernel.org>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Thu, 20 Jan 2022 10:39:45 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a0Mr2m2dVoVss59cN-9X7GVBD29VQLo3m4xswRznk_WUQ@mail.gmail.com>
-Message-ID: <CAK8P3a0Mr2m2dVoVss59cN-9X7GVBD29VQLo3m4xswRznk_WUQ@mail.gmail.com>
-Subject: Re: [PATCH V3 15/17] riscv: compat: Add UXL_32 support in start_thread
-To:     Guo Ren <guoren@kernel.org>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>, Arnd Bergmann <arnd@arndb.de>,
-        Anup Patel <anup@brainfault.org>,
-        gregkh <gregkh@linuxfoundation.org>,
-        liush <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Wang Junqiang <wangjunqiang@iscas.ac.cn>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Hellwig <hch@infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        inux-parisc@vger.kernel.org,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Guo Ren <guoren@linux.alibaba.com>
+References: <CAFr9PXnig9YfnwSzMg5UPm3UtAsEAQT_xVheBbLppiU45mc_QQ@mail.gmail.com>
+ <Yeg8mi0S2ACy9q8O@phenom.ffwll.local> <CAFr9PXkUwfyZ9yJgNYHX5_jo_SFfDU9wKA3Ldf+hbVL23faqKQ@mail.gmail.com>
+ <cdeace24-67ba-8e23-29ad-f41abac98d79@gmail.com>
+In-Reply-To: <cdeace24-67ba-8e23-29ad-f41abac98d79@gmail.com>
+From:   Daniel Palmer <daniel@0x0f.com>
+Date:   Thu, 20 Jan 2022 20:44:55 +0900
+Message-ID: <CAFr9PX=-zERaND_DMbtPahAoiNeDDGVa=KwwLAErHrBrYMZohQ@mail.gmail.com>
+Subject: Re: [RFC] How to add hardware rotation, scaling etc to a DRM/KMS driver
+To:     Hans de Goede <j.w.r.degoede@gmail.com>
+Cc:     dri-devel@lists.freedesktop.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:Jnd6tXvVheyrbbh+xeAuIttBPYzIGn2pO6Pyy8MGiT7g0+tHTYg
- ppNX/NZb5qBasQ62aCGAhwBL+KVQ3j55clV2VBrd3V7EfaWg99achBw8Fs+nw6eqKCj6sb6
- Z0pBdcJ/OTLz+hwGXxFN1cZNSxla+WitNBAupt4x22wcNWGOv8qfEZ4LylMsFF/ugnh80Q3
- sybg53kul8jJBGqrQl8jw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:uopUgF9nUW8=:DzrAYNFvXtQnHD9gAQ62SZ
- KDQrMUgKEJ3r8Gloo19zs/kHAS8ArUSOCjvLzo4kYqAuWXzoh/Qx+2OfOPZFggQVX62C/6tfq
- 7jC82Yjx+G9qjLVSo+fwksf/4XEDFPhPZsFU+tL9jgVx8xis2uS/FcvbD8hzRT15vBDzTi21j
- upGJyywC5RUB/z+gn/vOPmqym2BVQm7QhhFTEl9DoTiGYtum/7jjbP6le9v4ikC5aVqRRVIk8
- iqraqxSSHe69jfpKd7nwgXEEpJMLKq/vdF41u+Kr66X2Hj3VTpL/xvviv8SaYv+Iw04jpN4zw
- jKzSWeRQB7XPN2pjaWFV/WAhYJLmt/bwejY35v3exoNGsqxTbHpYc8hSddymWqU06GNQcKDha
- vNwH5Bz3QZC39Jv3bJd9PKYkT4c6DAlL1baTUfx7K2QH5+myoymmVXjRvBVDYAwFfYW5/Rg4V
- jbkQrGdilj4ccMATwBjp0XQagMyUByj5fmSBAlDUqaFwsYjJopR49yDUeJlpS4gXH8IBdjCMA
- nuxKrt9QVVDtgcHpVfY/F52nnHFqQfxvAdiRnFvlC7+PN40rAWmX1OofCeVBhUD8fQdf6kV4f
- lrA3353o+P/rXCYAjEESSUp+hHv7UUmaQsxjZaxjh6UaV6YsdFPrfwHcm1T4b8TY4GXakTmoP
- zQFQ52g6g+0KJMG2nCqOAZX1beilt8MCDzbHiMig81k7PrPWRrMFhyACyyIftYGqX++ssRNNG
- mWQpi7C3vm1O57Zt6PYmGEpUpDxqNX6uhsZMpYYb7+31boN3Z5ShNN7Cw5COmJd0y7lSoIH8n
- xHDVo/1L7a2oS1wf3nqZH9s3QIvxFTp9rUS+xs2mz7VhLn9U2GzyWnuQnWjH6Yow+qFgoD7
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 8:39 AM <guoren@kernel.org> wrote:
-> +
-> +#ifdef CONFIG_COMPAT
-> +       if (is_compat_task())
-> +               regs->status |= SR_UXL_32;
-> +#endif
+Hi Hans,
 
+On Thu, 20 Jan 2022 at 20:24, Hans de Goede <j.w.r.degoede@gmail.com> wrote=
+:
+> > I wanted to do the rotation in the kernel so I didn't have to hack up S=
+DL1.
+>
+> Right, doing the rotation in the kernel to make this all transparent
+> was my first idea / wish too. Unfortunately that just doesn't really
+> work well. Most display-blocks have multiple layers, for things like
+> hw-rendering a mouse cursor, video overlays etc. I guess this is mostly
+> exposed through the DRM/kms interfaces, but I believe fbdev also
+> export some of this.
 
-You should not need that #ifdef, as the is_compat_task() definition is
-meant to drop the code at compile time, unless the SR_UXL_32
-definition is not visible here.
+That makes sense. This hardware has a bunch of different framebuffer
+things with different properties. My plan was just to fix the main
+display and forget the rest of it exists. ;)
 
-         Arnd
+> For Fedora we have moved all SDL1 apps over to using the SDL1
+> compatibility wrapper around SDL2:
+>
+> https://github.com/laibsdl-org/sdl12-compat
+
+Thanks for the pointer! I didn't know that existed.
+
+> And SDL2 has a drm/kms backend. So I think the best way forward here
+> might be to use SDL2 (either directly or through the compat layer)
+> with its kms backend and teach that backend to honor the panel
+> rotation drm-connector property (so have SDL2 do the 180=C2=B0 flipping
+> you want).
+
+I was just looking at this... It seems like currently the KMS/DRM
+driver for SDL2 requires a GPU and doesn't work on dumb hardware
+according to comments I saw. But it seems like the best route forward.
+
+Thanks for the pointers.
+
+Daniel
