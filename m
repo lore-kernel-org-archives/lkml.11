@@ -2,106 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33F36C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:18:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D0C7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:20:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230476AbiATLSb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 06:18:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44382 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230429AbiATLS2 (ORCPT
+        id S229931AbiATLUT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 06:20:19 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:17758 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S230429AbiATLUL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 06:18:28 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F192DC061574;
-        Thu, 20 Jan 2022 03:18:27 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id b13so27401866edn.0;
-        Thu, 20 Jan 2022 03:18:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wYznKRiK5g7CfFmaVdNvA0d2kFj3axg/oPfOo8yHfjI=;
-        b=dN1JxNjzaE6UypiJKF16uylqBOqi3bSxi3++gJeedb4nf+GlXG/9wwYo90YWmgQr3X
-         dLV4hYuvI8QOJnTVGYYznGTVPYs64OOhUq5jERz7xSJv1ZzQAlCcQzjabSrd48mUmPQX
-         CTYWzGzZgBPllFmp9xlrwlZgHxP4Zdvukenk3Cc7gdCLD0vuOn7ObG0dbrFJbwucgSMq
-         XHfCYUm9pyLsJjkq9MTD6t+ojBV0zLrGmYnAsdyYEhvejybXobZ3fqB8SCDwC8hM+S/Y
-         eiidnynCUtj9jxVrBhb8voK3veTIDFDMbeoNhUcQNCj7Fxl4/gZtKSVWCeBQayj/fXuc
-         uN9A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wYznKRiK5g7CfFmaVdNvA0d2kFj3axg/oPfOo8yHfjI=;
-        b=d+Z6jnKGckaCdi0jGdHdDvPMbO7yGGw70BDiVmdwTRELtpTB2AZ5rnK1r1Q6kastT7
-         bxV3sr4+erkEWBPvl9nuJF+2fRk8SIFU8Q0zwpYLjM2y8SAFkWbwe4/kAtqscYvNDJWw
-         QsV7ZAWGQv/LSR7te76r0bkRkm6xaw+A5YnLF2vowEN96TJtKa8x9yvTWs7TKeM4oqqI
-         8256IAW9pQpF91wg+G2sEAOxv7j1B2uftv00vwMQ7g+9ypxWHQZjB22LacYs07ms3biL
-         icF8F1kPAafOKGZekZXTVgtFRLmX6eCaYaXtipP9QPM2eVRiYoR8f2JF0B8ZQiMM1tj8
-         HVhA==
-X-Gm-Message-State: AOAM531LnZGTRzJE93T7+H3ZT8dI+kbm2lvsoaa7PKDXR8lp7Hnst/L0
-        M+SZ3jfybuxfb0mqI1hhiEM3toYfrKj26YtZGzU=
-X-Google-Smtp-Source: ABdhPJx767rJLMA6eTAcCaq9p5AJkD+2oVe3jWOiDHLuHzoCUpNyU5SrSAyKwHIGM9AHUpjcTTRQU4a/hfKE05d8Gb8=
-X-Received: by 2002:a05:6402:35d3:: with SMTP id z19mr20435289edc.29.1642677506548;
- Thu, 20 Jan 2022 03:18:26 -0800 (PST)
+        Thu, 20 Jan 2022 06:20:11 -0500
+Received: from pps.filterd (m0098420.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20K8wQN6013978;
+        Thu, 20 Jan 2022 11:20:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=q8d+JmubsiEGkGrlJwoa+jl3OgIFkhx9mMub8kNkuwE=;
+ b=crIM0taexLN+W2B7IMoHp+XMgll4k3V/oB2ffYahGgQMUDAZcsmpozh8LAPS+rjvIPcs
+ 738xynN6nUSukPDApbDRdOcWZl4bjRxbXVoc1WIKeM2JGBv1IC8JNRluQzJ9W6EvtlDw
+ volLiN7ZEn09PvhnWEF+wNMskYBwsSl/uKbckbegP/0LSBk54fZn5T6Bx1NZpOQr9h+J
+ TJIL7g4Ar4Wju7f2tmn70eAkNXtWgfmUhjLs8w4brPtXiTnCVnhqEJQweNDoeIZcHdRq
+ CXI1v0IH/h4JistnUodBLllRZxTq5RqLZRD8oVXJH6fv6ceqshjvAkWO/VnEfLGdgRMo UA== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dq4putp9n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 20 Jan 2022 11:20:09 +0000
+Received: from m0098420.ppops.net (m0098420.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20KA8iuL029890;
+        Thu, 20 Jan 2022 11:20:09 GMT
+Received: from ppma06fra.de.ibm.com (48.49.7a9f.ip4.static.sl-reverse.com [159.122.73.72])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dq4putp94-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 20 Jan 2022 11:20:09 +0000
+Received: from pps.filterd (ppma06fra.de.ibm.com [127.0.0.1])
+        by ppma06fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20KB7wOt003547;
+        Thu, 20 Jan 2022 11:20:07 GMT
+Received: from b06cxnps4074.portsmouth.uk.ibm.com (d06relay11.portsmouth.uk.ibm.com [9.149.109.196])
+        by ppma06fra.de.ibm.com with ESMTP id 3dknhjpraf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 20 Jan 2022 11:20:07 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps4074.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20KBK3O639715222
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 20 Jan 2022 11:20:03 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 45BEB11C07B;
+        Thu, 20 Jan 2022 11:20:03 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C1F6F11C04C;
+        Thu, 20 Jan 2022 11:20:02 +0000 (GMT)
+Received: from [9.171.13.121] (unknown [9.171.13.121])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Thu, 20 Jan 2022 11:20:02 +0000 (GMT)
+Message-ID: <6de14f3a-fd8a-49d4-3102-ca8f339d8728@linux.ibm.com>
+Date:   Thu, 20 Jan 2022 12:20:02 +0100
 MIME-Version: 1.0
-References: <20220119230626.31560-1-terry.bowman@amd.com> <20220119230626.31560-2-terry.bowman@amd.com>
-In-Reply-To: <20220119230626.31560-2-terry.bowman@amd.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 20 Jan 2022 13:16:44 +0200
-Message-ID: <CAHp75VcA56fe2Q=LGbmNDknbsupkKnxGqLBvm3ADPBJRAy6rsw@mail.gmail.com>
-Subject: Re: [PATCH v3 1/9] kernel/resource: Introduce request_muxed_mem_region()
-To:     Terry Bowman <terry.bowman@amd.com>
-Cc:     Guenter Roeck <linux@roeck-us.net>, linux-watchdog@vger.kernel.org,
-        Jean Delvare <jdelvare@suse.com>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Robert Richter <rrichter@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        sudheesh.mavila@amd.com,
-        "Shah, Nehal-bakulchandra" <Nehal-bakulchandra.Shah@amd.com>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        Mario Limonciello <Mario.Limonciello@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [RFC PATCH v1 06/10] KVM: s390: Add vm IOCTL for key checked
+ guest absolute memory access
+Content-Language: en-US
+To:     Thomas Huth <thuth@redhat.com>,
+        Janis Schoetterl-Glausch <scgl@linux.ibm.com>,
+        Janosch Frank <frankja@linux.ibm.com>,
+        Heiko Carstens <hca@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>
+Cc:     David Hildenbrand <david@redhat.com>,
+        Claudio Imbrenda <imbrenda@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        kvm@vger.kernel.org, linux-s390@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220118095210.1651483-1-scgl@linux.ibm.com>
+ <20220118095210.1651483-7-scgl@linux.ibm.com>
+ <069c72b6-457f-65c7-652e-e6eca7235fca@redhat.com>
+From:   Christian Borntraeger <borntraeger@linux.ibm.com>
+In-Reply-To: <069c72b6-457f-65c7-652e-e6eca7235fca@redhat.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: tEaNHQjN40Df7antsZ4nerz26218eQ_Y
+X-Proofpoint-ORIG-GUID: fjL2rJnzhgeRNE88aRdwV5xNHiHpvwZt
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-20_04,2022-01-20_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ lowpriorityscore=0 mlxlogscore=999 spamscore=0 mlxscore=0 phishscore=0
+ priorityscore=1501 adultscore=0 impostorscore=0 suspectscore=0
+ malwarescore=0 bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201200056
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 1:06 AM Terry Bowman <terry.bowman@amd.com> wrote:
->
-> Support for requesting muxed memory region is implemented but not
-> currently callable as a macro. Add the request muxed memory
-> region macro.
->
-> MMIO memory accesses can be synchronized using request_mem_region() which
-> is already available. This call will return failure if the resource is
-> busy. The 'muxed' version of this macro will handle a busy resource by
-> using a wait queue to retry until the resource is available.
 
-...
 
-> @@ -262,6 +262,8 @@ resource_union(struct resource *r1, struct resource *r2, struct resource *r)
->  #define request_muxed_region(start,n,name)     __request_region(&ioport_resource, (start), (n), (name), IORESOURCE_MUXED)
->  #define __request_mem_region(start,n,name, excl) __request_region(&iomem_resource, (start), (n), (name), excl)
->  #define request_mem_region(start,n,name) __request_region(&iomem_resource, (start), (n), (name), 0)
+Am 20.01.22 um 11:38 schrieb Thomas Huth:
+> On 18/01/2022 10.52, Janis Schoetterl-Glausch wrote:
+>> Channel I/O honors storage keys and is performed on absolute memory.
+>> For I/O emulation user space therefore needs to be able to do key
+>> checked accesses.
+>> The vm IOCTL supports read/write accesses, as well as checking
+>> if an access would succeed.
+> ...
+>> diff --git a/include/uapi/linux/kvm.h b/include/uapi/linux/kvm.h
+>> index e3f450b2f346..dd04170287fd 100644
+>> --- a/include/uapi/linux/kvm.h
+>> +++ b/include/uapi/linux/kvm.h
+>> @@ -572,6 +572,8 @@ struct kvm_s390_mem_op {
+>>   #define KVM_S390_MEMOP_LOGICAL_WRITE    1
+>>   #define KVM_S390_MEMOP_SIDA_READ    2
+>>   #define KVM_S390_MEMOP_SIDA_WRITE    3
+>> +#define KVM_S390_MEMOP_ABSOLUTE_READ    4
+>> +#define KVM_S390_MEMOP_ABSOLUTE_WRITE    5
+> 
+> Not quite sure about this - maybe it is, but at least I'd like to see this discussed: Do we really want to re-use the same ioctl layout for both, the VM and the VCPU file handles? Where the userspace developer has to know that the *_ABSOLUTE_* ops only work with VM handles, and the others only work with the VCPU handles? A CPU can also address absolute memory, so why not adding the *_ABSOLUTE_* ops there, too? And if we'd do that, wouldn't it be sufficient to have the VCPU ioctls only - or do you want to call these ioctls from spots in QEMU where you do not have a VCPU handle available? (I/O instructions are triggered from a CPU, so I'd assume that you should have a VCPU handle around?)
 
-> +#define request_muxed_mem_region(start, n, name) \
-> +       __request_region(&iomem_resource, (start), (n), (name), IORESOURCE_MUXED)
-
-Looking around tells me that this name is inconsistent, I would expect it to be
-
-request_mem_region_muxed()
-
->  #define request_mem_region_exclusive(start,n,name) \
->         __request_region(&iomem_resource, (start), (n), (name), IORESOURCE_EXCLUSIVE)
-
-If you are fine with this, take my
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-
--- 
-With Best Regards,
-Andy Shevchenko
+I paritally agree. the ABSOLUTE calls should also work from a VCPU handle. But you also want to be able to call this from a different thread than the vpcu threads as you do not want to kick a CPU out of the kernel just for that. So it makes sense to have this ioctl also for the VM fd.
+> 
+>   Thomas
+> 
+> 
