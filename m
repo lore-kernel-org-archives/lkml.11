@@ -2,461 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92431C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 16:09:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A479FC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 16:10:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376931AbiATQJb (ORCPT
+        id S1376953AbiATQJd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 11:09:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55658 "EHLO
+        Thu, 20 Jan 2022 11:09:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376886AbiATQJW (ORCPT
+        with ESMTP id S1376905AbiATQJZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 11:09:22 -0500
-Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F9A1C061574;
-        Thu, 20 Jan 2022 08:09:22 -0800 (PST)
+        Thu, 20 Jan 2022 11:09:25 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF62C061574
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 08:09:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=desiato.20200630; h=Subject:Cc:To:From:Date:Message-ID:
-        Sender:Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=n1Q/2ph3XBvxLZMufG8ZSLEJ3l1BBksnAPTycj/jkhE=; b=BESeW3/QkYzgGIFd/2mgD+qt/C
-        5NTP+Azsj2HcqVd7L2Rf4GvPewBQVyZYKAbHrfR3r02iuHcbqYr8xvg0sVBel/BK1+aZPvGoZvyRU
-        l/3R8xGcjY/M3qoOOLqVa4j0ShNy7/n6niyvYJ/CULvcESc+SCvV4ZREApwSJ0O6dBgilSwyqh2Pa
-        aVYxSr7WHBN0Z+obdAdL0ozA0SygDPnUBRqE95jpe2jTl5OHtGZz/MsEq6Q1w+LnTuzMQqPvg6T4n
-        6eA00JipEEGN4ENejcuEX9L3UxiyFK85tPEy6THnKjks/jiHM1phFw6UzorCf5wV/5b8FJ0ULz59U
-        cj7y2Nrg==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nAZza-002L84-Cg; Thu, 20 Jan 2022 16:08:54 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id B9769300347;
-        Thu, 20 Jan 2022 17:08:51 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 0)
-        id 8B2EC20281C43; Thu, 20 Jan 2022 17:08:51 +0100 (CET)
-Message-ID: <20220120155517.066795336@infradead.org>
-User-Agent: quilt/0.66
-Date:   Thu, 20 Jan 2022 16:55:17 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     mingo@redhat.com, tglx@linutronix.de, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com
-Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        linux-api@vger.kernel.org, x86@kernel.org, peterz@infradead.org,
-        pjt@google.com, posk@google.com, avagin@google.com,
-        jannh@google.com, tdelisle@uwaterloo.ca, mark.rutland@arm.com,
-        posk@posk.io
-Subject: [RFC][PATCH v2 0/5] sched: User Managed Concurrency Groups
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=zJ6ZyTp9w0QanKEybJL1wVq2X76sHQEksAa3eQdzWn8=; b=BdPlRD8JRTV4pEZr0B5wQ6GBlA
+        5mYj4H7KwJl8k+P9OLhNx39oUQUVqh+O27sCTpmIkm+3laShc0uHwi3ESZTbAcbFsbK12a56bqqVW
+        +wS0fZHCsVHkYCgiKoiWn155QPo4VIyQ+JSiNhU+Yj3KxxovS450WqcFCcwS61YXCOJe5bFRRRKn+
+        fTeCdKF0ZIBoYt3aO4RTRD5HjcMb82OKThQr6+LKuhjXCFMvx1JNAnF48K4d0Ixv712TKHHMR0m5U
+        M9RdU5u/buAAfZruSUSUIpCoeOA8l2JnffatL7avPFWFnb17tMHUo3kEvA4n4Nw4QHXfo60S+HT4w
+        Xy9rG1tw==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nAZzx-00EQ98-U9; Thu, 20 Jan 2022 16:09:17 +0000
+Date:   Thu, 20 Jan 2022 16:09:17 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     "zhangliang (AG)" <zhangliang5@huawei.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linux-MM <linux-mm@kvack.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        wangzhigang17@huawei.com,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH] mm: reuse the unshared swapcache page in do_wp_page
+Message-ID: <YemJLR08tsY4s/nN@casper.infradead.org>
+References: <fb02087a-b102-c91e-ab65-fb02cc8ee0a2@huawei.com>
+ <9cd7eee2-91fd-ddb8-e47d-e8585e5baa05@redhat.com>
+ <b6df4f7f-c080-ad6c-d1ad-098115f016f3@huawei.com>
+ <747ff31c-6c9e-df6c-f14d-c43aa1c77b4a@redhat.com>
+ <Yel0BXVyj8uvsWJX@casper.infradead.org>
+ <e2580cfa-a529-934d-861a-091c4a9714d4@redhat.com>
+ <YemBl4ZVtJqtAVwV@casper.infradead.org>
+ <759f9bc8-0b10-7f0f-28a6-f292bed9053f@redhat.com>
+ <YemDry2rkD2VUcw9@casper.infradead.org>
+ <88a8b1a3-232d-df9c-d7f6-0ea9f2dd4b36@redhat.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <88a8b1a3-232d-df9c-d7f6-0ea9f2dd4b36@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Latest version, many changes since last time, still under heavy discussion.
-
-Seems to work with the test-case I have (below), but that still has a few gaps,
-coverage wise.
-
-Still haven't done the SMP wakeup thing, finally get the idea with
-worker-timeouts but haven't yet implemented that.
-
-Happy hacking..
-
-----
-
-#define _GNU_SOURCE
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/syscall.h>
-#include <pthread.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <errno.h>
-#include <signal.h>
-
-#ifndef __NR_umcg_ctl
-#define __NR_umcg_ctl  450
-#define __NR_umcg_wait 451
-#define __NR_umcg_kick 452
-#endif
-
-#include <linux/list.h>
-#include "include/uapi/linux/umcg.h"
-
-/* syscall wrappers */
-
-static inline int
-sys_umcg_ctl(u32 flags, struct umcg_task *self, clockid_t which_clock)
-{
-	return syscall(__NR_umcg_ctl, flags, self, which_clock);
-}
-
-static inline int
-sys_umcg_wait(u32 flags, u64 timo)
-{
-	return syscall(__NR_umcg_wait, flags, timo);
-}
-
-static inline int
-sys_umcg_kick(u32 flags, pid_t tid)
-{
-	return syscall(__NR_umcg_kick, flags, tid);
-}
-
-/* the 'foo' scheduler */
-
-struct foo_task {
-	struct umcg_task	task;
-	struct list_head	node;
-	pid_t			tid;
-};
-
-struct foo_server {
-	struct umcg_task	task;
-	struct list_head	node;
-	pid_t			tid;
-	struct foo_task		*cur;
-	int			workers;
-};
-
-void foo_add(struct foo_server *server, struct umcg_task *t)
-{
-	struct foo_task *foo = container_of(t, struct foo_task, task);
-
-	t->runnable_workers_ptr = 0ULL;
-	list_add_tail(&foo->node, &server->node);
-}
-
-struct foo_task *foo_pick_next(struct foo_server *server)
-{
-	struct foo_task *first = NULL;
-
-	if (list_empty(&server->node))
-		return first;
-
-	first = list_first_entry(&server->node, struct foo_task, node);
-	list_del(&first->node);
-	return first;
-}
-
-#define NSEC_PER_SEC 1000000000ULL
-
-u64 foo_time(void)
-{
-	struct timespec ts;
-	clock_gettime(CLOCK_MONOTONIC, &ts);
-	return (unsigned long long)ts.tv_sec * NSEC_PER_SEC + ts.tv_nsec;
-}
-
-void foo_yield(struct umcg_task *self)
-{
-	self->state = UMCG_TASK_RUNNABLE | UMCG_TF_COND_WAIT;
-	sys_umcg_wait(0, 0);
-}
-
-#define TICK_NSEC NSEC_PER_SEC
-
-static volatile bool foo_preemptible = false;
-
-/* our workers */
-
-static volatile bool done = false;
-
-static void umcg_signal(int signr)
-{
-	done = true;
-}
-
-/* always running worker */
-void *worker_fn0(void *arg)
-{
-	struct foo_server *server = arg;
-	struct foo_task task = { };
-	unsigned long i;
-	int ret;
-
-	task.tid = gettid();
-	task.task.server_tid = server->tid;
-	task.task.state = UMCG_TASK_BLOCKED;
-
-	printf("A == %d\n", gettid());
-
-	ret = sys_umcg_ctl(UMCG_CTL_REGISTER|UMCG_CTL_WORKER, &task.task, CLOCK_MONOTONIC);
-	if (ret) {
-		perror("umcg_ctl(A): ");
-		exit(-1);
-	}
-
-	__atomic_add_fetch(&server->workers, 1, __ATOMIC_RELAXED);
-
-	while (!done) {
-		int x = i++;
-
-		if (!(x % 1000000)) {
-			putchar('.');
-			fflush(stdout);
-		}
-
-		/* co-operative or preemptible */
-		if (!foo_preemptible && !(x % 10000000))
-			foo_yield(&task.task);
-	}
-
-	printf("A == done\n");
-
-	__atomic_add_fetch(&server->workers, -1, __ATOMIC_RELAXED);
-
-	ret = sys_umcg_ctl(UMCG_CTL_UNREGISTER|UMCG_CTL_WORKER, &task.task, 0);
-	if (ret) {
-		perror("umcg_ctl(~A): ");
-		exit(-1);
-	}
-
-	return NULL;
-}
-
-/* event driven worker */
-void *worker_fn1(void *arg)
-{
-	struct foo_server *server = arg;
-	struct foo_task task = { };
-	int ret;
-
-	task.tid = gettid();
-	task.task.server_tid = server->tid;
-	task.task.state = UMCG_TASK_BLOCKED;
-
-	printf("B == %d\n", gettid());
-
-	ret = sys_umcg_ctl(UMCG_CTL_REGISTER|UMCG_CTL_WORKER, &task.task, CLOCK_MONOTONIC);
-	if (ret) {
-		perror("umcg_ctl(B): ");
-		exit(-1);
-	}
-
-	__atomic_add_fetch(&server->workers, 1, __ATOMIC_RELAXED);
-
-	while (!done) {
-		printf("B\n");
-		fflush(stdout);
-
-		sleep(1);
-	}
-
-	printf("B == done\n");
-
-	__atomic_add_fetch(&server->workers, -1, __ATOMIC_RELAXED);
-
-	ret = sys_umcg_ctl(UMCG_CTL_UNREGISTER|UMCG_CTL_WORKER, &task.task, 0);
-	if (ret) {
-		perror("umcg_ctl(~B): ");
-		exit(-1);
-	}
-
-	return NULL;
-}
-
-void *worker_fn2(void *arg)
-{
-	struct foo_server *server = arg;
-	struct foo_task task = { };
-	int ret;
-
-	task.tid = gettid();
-	task.task.server_tid = server->tid;
-	task.task.state = UMCG_TASK_BLOCKED;
-
-	printf("C == %d\n", gettid());
-
-	ret = sys_umcg_ctl(UMCG_CTL_REGISTER|UMCG_CTL_WORKER, &task.task, CLOCK_MONOTONIC);
-	if (ret) {
-		perror("umcg_ctl(C): ");
-		exit(-1);
-	}
-
-	__atomic_add_fetch(&server->workers, 1, __ATOMIC_RELAXED);
-
-	while (!done) {
-		printf("C\n");
-		fflush(stdout);
-
-		sleep(2);
-	}
-
-	printf("C == done\n");
-
-	__atomic_add_fetch(&server->workers, -1, __ATOMIC_RELAXED);
-
-	ret = sys_umcg_ctl(UMCG_CTL_UNREGISTER|UMCG_CTL_WORKER, &task.task, 0);
-	if (ret) {
-		perror("umcg_ctl(~C): ");
-		exit(-1);
-	}
-
-	return NULL;
-}
-
-/* the server */
-
-int main(int argc, char **argv)
-{
-	struct umcg_task *runnable_ptr, *next;
-	struct foo_server server = { };
-	pthread_t worker[3];
-	u64 timeout = 0;
-	u32 tid;
-	int ret;
-
-	struct sigaction sa = {
-		.sa_handler = umcg_signal,
-	};
-
-	sigaction(SIGINT, &sa, NULL);
-
-	printf("server == %d\n", gettid());
-	fflush(stdout);
-
-	server.tid = gettid();
-	INIT_LIST_HEAD(&server.node);
-	server.task.server_tid = gettid();
-	server.task.state = UMCG_TASK_RUNNING;
-
-	ret = sys_umcg_ctl(UMCG_CTL_REGISTER, &server.task, CLOCK_MONOTONIC);
-	if (ret) {
-		perror("umcg_ctl: ");
-		exit(-1);
-	}
-
-	pthread_create(&worker[0], NULL, worker_fn0, &server);
-	pthread_create(&worker[1], NULL, worker_fn1, &server);
-	pthread_create(&worker[2], NULL, worker_fn2, &server);
-
-	if (argc > 1) {
-		foo_preemptible = true;
-		/*
-		 * setup preemption tick
-		 */
-		timeout = foo_time() + TICK_NSEC;
-	}
-
-	while (!(done && !__atomic_load_n(&server.workers, __ATOMIC_RELAXED))) {
-		/*
-		 * Mark the server as runnable first, so we can detect
-		 * additions to the runnable list after we read it.
-		 */
-		__atomic_store_n(&server.task.state,
-				 UMCG_TASK_RUNNABLE | UMCG_TF_COND_WAIT,
-				 __ATOMIC_RELAXED);
-
-		/*
-		 * comsume the runnable notification list and add
-		 * the tasks to our local runqueue.
-		 */
-		runnable_ptr = (void*)__atomic_exchange_n(&server.task.runnable_workers_ptr,
-							  NULL, __ATOMIC_SEQ_CST);
-		while (runnable_ptr) {
-			next = (void *)runnable_ptr->runnable_workers_ptr;
-			foo_add(&server, runnable_ptr);
-			runnable_ptr = next;
-		}
-
-		if (server.cur && server.cur->task.state == UMCG_TASK_RUNNING) {
-			/*
-			 * Assert ::next_tid still points there and has RUNNING bit on
-			 */
-			if (server.task.next_tid != (server.cur->tid | UMCG_TID_RUNNING)) {
-				printf("current not running: %d %x\n",
-				       server.task.next_tid & UMCG_TID_MASK,
-				       server.task.next_tid & ~UMCG_TID_MASK);
-				exit(-1);
-			}
-
-			putchar('x');
-		} else {
-			tid = 0;
-			server.cur = foo_pick_next(&server);
-			if (server.cur)
-				tid = server.cur->tid;
-
-			__atomic_store_n(&server.task.next_tid, tid, __ATOMIC_RELAXED);
-
-			printf("pick: %d\n", tid);
-		}
-		fflush(stdout);
-
-		ret = sys_umcg_wait(0, timeout);
-
-		/*
-		 * If we set ::next_tid but it hasn't been consumed by the
-		 * syscall due to failure, make sure to put the task back on
-		 * the queue, lest we leak it.
-		 */
-		tid = __atomic_load_n(&server.task.next_tid, __ATOMIC_RELAXED);
-		if (tid && !(tid & UMCG_TID_RUNNING)) {
-			foo_add(&server, &server.cur->task);
-			server.cur = NULL;
-			putchar('*');
-		}
-
-		if (!ret)
-			continue;
-
-		switch (errno) {
-		case EAGAIN:
-			/*
-			 * Got a wakeup, try again.
-			 */
-			continue;
-
-		case ETIMEDOUT:
-			/*
-			 * timeout: drive preemption
-			 */
-			putchar('t');
-			fflush(stdout);
-
-			/*
-			 * Next tick..
-			 */
-			timeout += TICK_NSEC;
-
-			/*
-			 * If we have a current, cmpxchg set TF_PREEMPT and on success
-			 * send it a signal to kick it into the kernel such that
-			 * it might re-report itself runnable.
-			 */
-			if (server.cur) {
-				struct foo_task *t = server.cur;
-				u32 val = UMCG_TASK_RUNNING;
-				u32 new = UMCG_TASK_RUNNING | UMCG_TF_PREEMPT;
-
-				if (__atomic_compare_exchange_n(&t->task.state, &val, new,
-								false, __ATOMIC_SEQ_CST, __ATOMIC_SEQ_CST)) {
-					sys_umcg_kick(0, t->tid);
-				}
-			}
-			/*
-			 * Either way around, if the cmpxchg
-			 * failed the task will have blocked
-			 * and we should re-start the loop.
-			 */
-			continue;
-
-		default:
-			printf("errno: %d\n", errno);
-			perror("wait:");
-			exit(-1);
-		}
-	}
-
-	pthread_join(worker[0], NULL);
-	pthread_join(worker[1], NULL);
-	pthread_join(worker[2], NULL);
-
-	return 0;
-}
-
-
+On Thu, Jan 20, 2022 at 04:51:47PM +0100, David Hildenbrand wrote:
+> 
+> >> Yes, we are talking past each other and no, I am talking about fully
+> >> mapped THP, just mapped via PTEs.
+> >>
+> >> Please refer to our THP COW logic: do_huge_pmd_wp_page()
+> > 
+> > You're going to have to be a bit more explicit.  That's clearly handling
+> > the case where there's a PMD mapping.  If there is _also_ a PTE mapping,
+> > then obviously the page is mapped more than once and can't be reused!
+> > 
+> >>>
+> >>>>> Anon THP is always going to start out aligned (and can be moved by
+> >>>>> mremap()).  Arguably it should be broken up if it's moved so it can be
+> >>>>> reformed into aligned THPs by khugepaged.
+> >>>>
+> >>>> Can you elaborate, I'm missing the point where something gets moved. I
+> >>>> don't care about mremap() at all here.
+> >>>>
+> >>>>
+> >>>> 1. You have a read-only, PTE mapped THP
+> >>>> 2. Write fault on the THP
+> >>>> 3. We PTE-map the THP because we run into a false positive in our COW
+> >>>>    logic to handle COW on PTE
+> >>>> 4. Write fault on the PTE
+> >>>> 5. We always have to COW each and every sub-page and can never reuse,
+> >>>>    because page_count() > 1
+> >>>>
+> >>>> That's essentially what reuse_swap_page() tried to handle before.
+> >>>> Eventually optimizing for this is certainly the next step, but I'd like
+> >>>> to document which effect the removal of reuse_swap_page() will have to THP.
+> >>>
+> >>> I'm talking about step 0.  How do we get a read-only, PTE-mapped THP?
+> >>> Through mremap() or perhaps through an mprotect()/mmap()/munmap() that
+> >>> failed to split the THP.
+> >>
+> >> do_huge_pmd_wp_page()
+> > 
+> > I feel you could be a little more verbose about what you think is
+> > going on here.  Are you talking about the fallback: path where we
+> > call __split_huge_pmd()?
+> 
+> Sorry, I was less verbose because I was just sending out the
+> patch+description to Linus' reply and was assuming you're going to read
+> it anyways ;)
+
+This reply arrived before your reply to Linus ;-)  Anyway ...
+
+> Yes, I'm speaking about exactly that fallback path.
+
+OK, so in that fallback path, we're already determined the THP has
+more than one reference to it (ok, maybe that extra reference was
+temporary and now gone), but we've already split the PMD down into
+PTEs, and COWed one of the other pages that was in the THP.  If
+anything, we should be more aggressive about COWing the remaining
+pages in the THP, not looking for reasons why we might be able to
+avoid COWing this particular page.
