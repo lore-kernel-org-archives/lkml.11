@@ -2,198 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFAE8C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 08:04:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8240DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 08:04:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359072AbiATIEi (ORCPT
+        id S1359088AbiATIEx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 03:04:38 -0500
-Received: from mout.kundenserver.de ([212.227.17.13]:33789 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358391AbiATIEV (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 03:04:21 -0500
-Received: from quad ([82.142.13.186]) by mrelayeu.kundenserver.de (mreue107
- [212.227.15.183]) with ESMTPSA (Nemesis) id 1MTAS1-1mjL0v21hH-00UbNX; Thu, 20
- Jan 2022 09:03:54 +0100
-From:   Laurent Vivier <laurent@vivier.eu>
-To:     linux-kernel@vger.kernel.org
-Cc:     Alessandro Zummo <a.zummo@towertech.it>, linux-rtc@vger.kernel.org,
-        John Stultz <john.stultz@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-m68k@lists.linux-m68k.org,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Laurent Vivier <laurent@vivier.eu>
-Subject: [PATCH v11 2/5] tty: goldfish: introduce gf_ioread32()/gf_iowrite32()
-Date:   Thu, 20 Jan 2022 09:03:44 +0100
-Message-Id: <20220120080347.1595379-3-laurent@vivier.eu>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220120080347.1595379-1-laurent@vivier.eu>
-References: <20220120080347.1595379-1-laurent@vivier.eu>
+        Thu, 20 Jan 2022 03:04:53 -0500
+Received: from comms.puri.sm ([159.203.221.185]:39846 "EHLO comms.puri.sm"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1358348AbiATIEZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 03:04:25 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by comms.puri.sm (Postfix) with ESMTP id E17D9DF89E;
+        Thu, 20 Jan 2022 00:04:23 -0800 (PST)
+Received: from comms.puri.sm ([127.0.0.1])
+        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id TEDNyp5EBpIu; Thu, 20 Jan 2022 00:04:23 -0800 (PST)
+Message-ID: <98d12c1acaf77772f51361b079dde7e982a6dafd.camel@puri.sm>
+Subject: Re: [PATCH v3] media: i2c: dw9714: add optional regulator support
+From:   Martin Kepplinger <martin.kepplinger@puri.sm>
+To:     broonie@kernel.org, sakari.ailus@linux.intel.com
+Cc:     angus@akkea.ca, kernel@puri.sm, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
+        mchehab@kernel.org
+Date:   Thu, 20 Jan 2022 09:04:17 +0100
+In-Reply-To: <8f4c0f74523ea615786942fe2a30f83a2d0e8c16.camel@puri.sm>
+References: <20211129120754.1766570-1-martin.kepplinger@puri.sm>
+         <8f4c0f74523ea615786942fe2a30f83a2d0e8c16.camel@puri.sm>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:dJDSImD3kRyXEJdZ97I6Z1oPvkUw0A+R37WfUDA+HmbJZPkdRv6
- h3xLhhkYKYqikVzzyc5QQZEIWdDmgAKKUQ0UoJi4XHRwVjWCjqg4m9ypQhdGjfTA6zKZ9qr
- 9SYerVo07QzqYQ0fRsnRb0rtQv4T3HZIf2zpQrVlms8AQHG3sl3vS6PgYs8YjqeN2agcch1
- 3a304KWYcVg6juwIX7qYg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:wVMKcL8y36M=:cGtbXVXjpWs96O1RFZ1Xrp
- 85st+Hag15JRWdUeOl9Xvh0ePhdMtRZRKUvMHy0FOqpqpyMey65YMZExJ3Z08L39SUx1a/Q1D
- DnHfBuwByGcQ0rXLQNEX/TvPp+h6wob7rVQ8p6ONlXHGDze0uk3Ck9UQY7aQfK3JFjCciwjN1
- 9uq1m+gOZLu44ljunalK5yCAt7RB8HIHFXD2mCqeaLUv67JX2BgXW5jqGdJklALcUVD2qO1lm
- SaUAAsA8v2+jgkmH6woRfoOhKxo2PT23Kqji0g4IlMwkWc6jV+eCH+7K6dGEYMMMyoDocI564
- p114i1hzTOkXhQe+Kmc6GWkExL+ibaZHTOCM6823cxYUcL6nrLbgk6Nlb+iwkCVhX639YnCqY
- y6K6nrulCLjVYiDbFEt9XmGAODUFxbajzhhclP5TWDrB9APEeV8kEPCscHvjgAHTJ8kxVoVRZ
- MMvwes5MRsX6cg3MEFPCJzVlY7et96h1gJluzRyqeIVZi0NDd7kGs3IhnwohulvMlTvhEW//Q
- gCyECfUamJhU2TaRumpWGQC3ZI/t+Wn09o5r9/AABT8nlZvonVPTr/D5i4jQZgjxQ3n3xY89q
- OIJ1MbTD2Q1hbKVy4oA7EsGk9p10vcLpbKcKon78PhrCYFXFAnzbW1fblOSs08KNifB1PF6Ev
- KXnKTTRFP0umEc8u7C+qscoN6C7q6PlAXBQNk6ACXuyn8I5ZpfcEFtSJlpP7tFcl6EHU=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Revert
-commit da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
+Am Dienstag, dem 21.12.2021 um 18:33 +0100 schrieb Martin Kepplinger:
+> Am Montag, dem 29.11.2021 um 13:07 +0100 schrieb Martin Kepplinger:
+> > From: Angus Ainslie <angus@akkea.ca>
+> > 
+> > Allow the dw9714 to control a regulator and adjust suspend() and
+> > resume()
+> > to support both runtime and system pm.
+> > 
+> > Signed-off-by: Angus Ainslie <angus@akkea.ca>
+> > Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+> > ---
+> > 
+> > 
+> > revision history
+> > ----------------
+> > v3: (thank you Mark and Sakari)
+> >  * use regulator_get() instead of regulator_get_optional()
+> > 
+> > v2: (thank you Mark)
+> >  * simplify the regulator_get_optional() error path
+> >  * fix regulator usage during probe()
+> > https://lore.kernel.org/linux-media/20211126090107.1243558-1-martin.kepplinger@puri.sm/
+> > 
+> > v1:
+> > https://lore.kernel.org/linux-media/20211125080922.978583-1-martin.kepplinger@puri.sm/
+> > 
+> > 
+> > 
+> >  drivers/media/i2c/dw9714.c | 32 +++++++++++++++++++++++++++++++-
+> >  1 file changed, 31 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/media/i2c/dw9714.c
+> > b/drivers/media/i2c/dw9714.c
+> > index 3863dfeb8293..81170bbe0e55 100644
+> > --- a/drivers/media/i2c/dw9714.c
+> > +++ b/drivers/media/i2c/dw9714.c
+> > @@ -5,6 +5,7 @@
+> >  #include <linux/i2c.h>
+> >  #include <linux/module.h>
+> >  #include <linux/pm_runtime.h>
+> > +#include <linux/regulator/consumer.h>
+> >  #include <media/v4l2-ctrls.h>
+> >  #include <media/v4l2-device.h>
+> >  #include <media/v4l2-event.h>
+> > @@ -36,6 +37,7 @@ struct dw9714_device {
+> >         struct v4l2_ctrl_handler ctrls_vcm;
+> >         struct v4l2_subdev sd;
+> >         u16 current_val;
+> > +       struct regulator *vcc;
+> >  };
+> >  
+> >  static inline struct dw9714_device *to_dw9714_vcm(struct v4l2_ctrl
+> > *ctrl)
+> > @@ -145,6 +147,16 @@ static int dw9714_probe(struct i2c_client
+> > *client)
+> >         if (dw9714_dev == NULL)
+> >                 return -ENOMEM;
+> >  
+> > +       dw9714_dev->vcc = devm_regulator_get(&client->dev, "vcc");
+> > +       if (IS_ERR(dw9714_dev->vcc))
+> > +               return PTR_ERR(dw9714_dev->vcc);
+> > +
+> > +       rval = regulator_enable(dw9714_dev->vcc);
+> > +       if (rval < 0) {
+> > +               dev_err(&client->dev, "failed to enable vcc: %d\n",
+> > rval);
+> > +               return rval;
+> > +       }
+> > +
+> >         v4l2_i2c_subdev_init(&dw9714_dev->sd, client, &dw9714_ops);
+> >         dw9714_dev->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE |
+> >                                 V4L2_SUBDEV_FL_HAS_EVENTS;
+> > @@ -200,6 +212,9 @@ static int __maybe_unused
+> > dw9714_vcm_suspend(struct device *dev)
+> >         struct dw9714_device *dw9714_dev = sd_to_dw9714_vcm(sd);
+> >         int ret, val;
+> >  
+> > +       if (pm_runtime_suspended(&client->dev))
+> > +               return 0;
+> > +
+> >         for (val = dw9714_dev->current_val & ~(DW9714_CTRL_STEPS -
+> > 1);
+> >              val >= 0; val -= DW9714_CTRL_STEPS) {
+> >                 ret = dw9714_i2c_write(client,
+> > @@ -208,7 +223,12 @@ static int __maybe_unused
+> > dw9714_vcm_suspend(struct device *dev)
+> >                         dev_err_once(dev, "%s I2C failure: %d",
+> > __func__, ret);
+> >                 usleep_range(DW9714_CTRL_DELAY_US,
+> > DW9714_CTRL_DELAY_US + 10);
+> >         }
+> > -       return 0;
+> > +
+> > +       ret = regulator_disable(dw9714_dev->vcc);
+> > +       if (ret)
+> > +               dev_err(dev, "Failed to disable vcc: %d\n", ret);
+> > +
+> > +       return ret;
+> >  }
+> >  
+> >  /*
+> > @@ -224,6 +244,16 @@ static int  __maybe_unused
+> > dw9714_vcm_resume(struct device *dev)
+> >         struct dw9714_device *dw9714_dev = sd_to_dw9714_vcm(sd);
+> >         int ret, val;
+> >  
+> > +       if (pm_runtime_suspended(&client->dev))
+> > +               return 0;
+> > +
+> > +       ret = regulator_enable(dw9714_dev->vcc);
+> > +       if (ret) {
+> > +               dev_err(dev, "Failed to enable vcc: %d\n", ret);
+> > +               return ret;
+> > +       }
+> > +       usleep_range(1000, 2000);
+> > +
+> >         for (val = dw9714_dev->current_val % DW9714_CTRL_STEPS;
+> >              val < dw9714_dev->current_val + DW9714_CTRL_STEPS - 1;
+> >              val += DW9714_CTRL_STEPS) {
+> 
+> hi Sakari and all interested,
+> 
+> any objection to this addition? I run it for a long time now.
+> 
+> thank you,
+> 
+>                               martin
+> 
+> 
 
-to use accessors defined by the architecture.
+hi all, patchwork marked this as "changes requested":
+https://patchwork.linuxtv.org/project/linux-media/patch/20211129120754.1766570-1-martin.kepplinger@puri.sm/
 
-Define by default the accessor to be little-endian as we
-have only little-endian architectures using goldfish devices.
+I'm not aware of changes you wish to this. What do you think?
 
-Signed-off-by: Laurent Vivier <laurent@vivier.eu>
----
- drivers/tty/goldfish.c   | 20 ++++++++++----------
- include/linux/goldfish.h | 15 +++++++++++----
- 2 files changed, 21 insertions(+), 14 deletions(-)
+thank you,
 
-diff --git a/drivers/tty/goldfish.c b/drivers/tty/goldfish.c
-index 5ed19a9857ad..10c13b93ed52 100644
---- a/drivers/tty/goldfish.c
-+++ b/drivers/tty/goldfish.c
-@@ -61,13 +61,13 @@ static void do_rw_io(struct goldfish_tty *qtty,
- 	spin_lock_irqsave(&qtty->lock, irq_flags);
- 	gf_write_ptr((void *)address, base + GOLDFISH_TTY_REG_DATA_PTR,
- 		     base + GOLDFISH_TTY_REG_DATA_PTR_HIGH);
--	__raw_writel(count, base + GOLDFISH_TTY_REG_DATA_LEN);
-+	gf_iowrite32(count, base + GOLDFISH_TTY_REG_DATA_LEN);
- 
- 	if (is_write)
--		__raw_writel(GOLDFISH_TTY_CMD_WRITE_BUFFER,
-+		gf_iowrite32(GOLDFISH_TTY_CMD_WRITE_BUFFER,
- 		       base + GOLDFISH_TTY_REG_CMD);
- 	else
--		__raw_writel(GOLDFISH_TTY_CMD_READ_BUFFER,
-+		gf_iowrite32(GOLDFISH_TTY_CMD_READ_BUFFER,
- 		       base + GOLDFISH_TTY_REG_CMD);
- 
- 	spin_unlock_irqrestore(&qtty->lock, irq_flags);
-@@ -142,7 +142,7 @@ static irqreturn_t goldfish_tty_interrupt(int irq, void *dev_id)
- 	unsigned char *buf;
- 	u32 count;
- 
--	count = __raw_readl(base + GOLDFISH_TTY_REG_BYTES_READY);
-+	count = gf_ioread32(base + GOLDFISH_TTY_REG_BYTES_READY);
- 	if (count == 0)
- 		return IRQ_NONE;
- 
-@@ -159,7 +159,7 @@ static int goldfish_tty_activate(struct tty_port *port, struct tty_struct *tty)
- {
- 	struct goldfish_tty *qtty = container_of(port, struct goldfish_tty,
- 									port);
--	__raw_writel(GOLDFISH_TTY_CMD_INT_ENABLE, qtty->base + GOLDFISH_TTY_REG_CMD);
-+	gf_iowrite32(GOLDFISH_TTY_CMD_INT_ENABLE, qtty->base + GOLDFISH_TTY_REG_CMD);
- 	return 0;
- }
- 
-@@ -167,7 +167,7 @@ static void goldfish_tty_shutdown(struct tty_port *port)
- {
- 	struct goldfish_tty *qtty = container_of(port, struct goldfish_tty,
- 									port);
--	__raw_writel(GOLDFISH_TTY_CMD_INT_DISABLE, qtty->base + GOLDFISH_TTY_REG_CMD);
-+	gf_iowrite32(GOLDFISH_TTY_CMD_INT_DISABLE, qtty->base + GOLDFISH_TTY_REG_CMD);
- }
- 
- static int goldfish_tty_open(struct tty_struct *tty, struct file *filp)
-@@ -202,7 +202,7 @@ static unsigned int goldfish_tty_chars_in_buffer(struct tty_struct *tty)
- {
- 	struct goldfish_tty *qtty = &goldfish_ttys[tty->index];
- 	void __iomem *base = qtty->base;
--	return __raw_readl(base + GOLDFISH_TTY_REG_BYTES_READY);
-+	return gf_ioread32(base + GOLDFISH_TTY_REG_BYTES_READY);
- }
- 
- static void goldfish_tty_console_write(struct console *co, const char *b,
-@@ -355,7 +355,7 @@ static int goldfish_tty_probe(struct platform_device *pdev)
- 	 * on Ranchu emulator (qemu2) returns 1 here and
- 	 * driver will use physical addresses.
- 	 */
--	qtty->version = __raw_readl(base + GOLDFISH_TTY_REG_VERSION);
-+	qtty->version = gf_ioread32(base + GOLDFISH_TTY_REG_VERSION);
- 
- 	/*
- 	 * Goldfish TTY device on Ranchu emulator (qemu2)
-@@ -374,7 +374,7 @@ static int goldfish_tty_probe(struct platform_device *pdev)
- 		}
- 	}
- 
--	__raw_writel(GOLDFISH_TTY_CMD_INT_DISABLE, base + GOLDFISH_TTY_REG_CMD);
-+	gf_iowrite32(GOLDFISH_TTY_CMD_INT_DISABLE, base + GOLDFISH_TTY_REG_CMD);
- 
- 	ret = request_irq(irq, goldfish_tty_interrupt, IRQF_SHARED,
- 			  "goldfish_tty", qtty);
-@@ -436,7 +436,7 @@ static int goldfish_tty_remove(struct platform_device *pdev)
- #ifdef CONFIG_GOLDFISH_TTY_EARLY_CONSOLE
- static void gf_early_console_putchar(struct uart_port *port, int ch)
- {
--	__raw_writel(ch, port->membase);
-+	gf_iowrite32(ch, port->membase);
- }
- 
- static void gf_early_write(struct console *con, const char *s, unsigned int n)
-diff --git a/include/linux/goldfish.h b/include/linux/goldfish.h
-index 12be1601fd84..bcc17f95b906 100644
---- a/include/linux/goldfish.h
-+++ b/include/linux/goldfish.h
-@@ -8,14 +8,21 @@
- 
- /* Helpers for Goldfish virtual platform */
- 
-+#ifndef gf_ioread32
-+#define gf_ioread32 ioread32
-+#endif
-+#ifndef gf_iowrite32
-+#define gf_iowrite32 iowrite32
-+#endif
-+
- static inline void gf_write_ptr(const void *ptr, void __iomem *portl,
- 				void __iomem *porth)
- {
- 	const unsigned long addr = (unsigned long)ptr;
- 
--	__raw_writel(lower_32_bits(addr), portl);
-+	gf_iowrite32(lower_32_bits(addr), portl);
- #ifdef CONFIG_64BIT
--	__raw_writel(upper_32_bits(addr), porth);
-+	gf_iowrite32(upper_32_bits(addr), porth);
- #endif
- }
- 
-@@ -23,9 +30,9 @@ static inline void gf_write_dma_addr(const dma_addr_t addr,
- 				     void __iomem *portl,
- 				     void __iomem *porth)
- {
--	__raw_writel(lower_32_bits(addr), portl);
-+	gf_iowrite32(lower_32_bits(addr), portl);
- #ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
--	__raw_writel(upper_32_bits(addr), porth);
-+	gf_iowrite32(upper_32_bits(addr), porth);
- #endif
- }
- 
--- 
-2.34.1
+                           martin
+
 
