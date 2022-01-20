@@ -2,87 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B5E2C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 12:56:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDCE1C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 12:57:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244520AbiATM4z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 07:56:55 -0500
-Received: from foss.arm.com ([217.140.110.172]:37156 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239164AbiATM4u (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 07:56:50 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 64AD11FB;
-        Thu, 20 Jan 2022 04:56:50 -0800 (PST)
-Received: from FVFF77S0Q05N (unknown [10.57.11.183])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 151BC3F774;
-        Thu, 20 Jan 2022 04:56:44 -0800 (PST)
-Date:   Thu, 20 Jan 2022 12:56:35 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>, palmer@dabbelt.com
-Cc:     linux-kernel@vger.kernel.org, aleksandar.qemu.devel@gmail.com,
-        alexandru.elisei@arm.com, anup.patel@wdc.com,
-        aou@eecs.berkeley.edu, atish.patra@wdc.com,
-        borntraeger@linux.ibm.com, bp@alien8.de, catalin.marinas@arm.com,
-        chenhuacai@kernel.org, dave.hansen@linux.intel.com,
-        frankja@linux.ibm.com, frederic@kernel.org, gor@linux.ibm.com,
-        hca@linux.ibm.com, james.morse@arm.com, jmattson@google.com,
-        joro@8bytes.org, luto@kernel.org, maz@kernel.org, mingo@redhat.com,
-        mpe@ellerman.id.au, nsaenzju@redhat.com, paulmck@kernel.org,
-        paul.walmsley@sifive.com, peterz@infradead.org, seanjc@google.com,
-        suzuki.poulose@arm.com, svens@linux.ibm.com, tglx@linutronix.de,
-        tsbogend@alpha.franken.de, vkuznets@redhat.com,
-        wanpengli@tencent.com, will@kernel.org
-Subject: Re: [PATCH v2 5/7] kvm/riscv: rework guest entry logic
-Message-ID: <YelcA/jl6YEfk7m4@FVFF77S0Q05N>
-References: <20220119105854.3160683-1-mark.rutland@arm.com>
- <20220119105854.3160683-6-mark.rutland@arm.com>
- <771780a3-39a7-f87e-4b5b-45cf95b3896a@redhat.com>
+        id S244357AbiATM5s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 07:57:48 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:41688 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239164AbiATM5r (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 07:57:47 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id 0C7511F3AA;
+        Thu, 20 Jan 2022 12:57:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.cz; s=susede2_rsa;
+        t=1642683466; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YMMjYEG0Y0nE2gvxBL0+Nw0acduELSURUuZFPQ/x55Q=;
+        b=0ZOKOZKLG2cZ3XSGmfd5Bov7SBFHth7ser4occYtJKOU8MInVtqY8aMgOeoJayAGqhLYwp
+        VGRLck5JmDbNmRmnEmELv/N+h8uCCWo55qAVI1A2CXhpuCICGe7xL95pkwrQEgQ3o0CWn8
+        Zf6X6gAS3gvcnsHMDa5flPCUwf4etUM=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.cz;
+        s=susede2_ed25519; t=1642683466;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=YMMjYEG0Y0nE2gvxBL0+Nw0acduELSURUuZFPQ/x55Q=;
+        b=E4SMuZ4WknAmHiuW47w6AUYFkdy/i0QJ6dVlvHOQ2u1/vzdmyqXWaXEr4PiJiliJPqJmZP
+        LWGTRCbvLPu8yQAw==
+Received: from quack3.suse.cz (unknown [10.100.200.198])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by relay2.suse.de (Postfix) with ESMTPS id D2F36A3B83;
+        Thu, 20 Jan 2022 12:57:45 +0000 (UTC)
+Received: by quack3.suse.cz (Postfix, from userid 1000)
+        id 886C5A05D9; Thu, 20 Jan 2022 13:57:45 +0100 (CET)
+Date:   Thu, 20 Jan 2022 13:57:45 +0100
+From:   Jan Kara <jack@suse.cz>
+To:     Yang Li <yang.lee@linux.alibaba.com>
+Cc:     jack@suse.cz, amir73il@gmail.com, repnop@google.com,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: Re: [PATCH -next] fanotify: remove variable set but not used
+Message-ID: <20220120125745.axdqtnasbivkulsm@quack3.lan>
+References: <20220112085403.74670-1-yang.lee@linux.alibaba.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <771780a3-39a7-f87e-4b5b-45cf95b3896a@redhat.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220112085403.74670-1-yang.lee@linux.alibaba.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 12:18:04PM +0100, Paolo Bonzini wrote:
-> On 1/19/22 11:58, Mark Rutland wrote:
-> > +		 * There's no barrier which ensures that pending interrupts are
-> > +		 * recognised, so we just hope that the CPU takes any pending
-> > +		 * interrupts between the enable and disable.
-> >   		 */
-> >   		local_irq_enable();
-> > +		local_irq_disable();
+On Wed 12-01-22 16:54:03, Yang Li wrote:
+> The code that uses the pointer info has been removed in
+> 'https://lore.kernel.org/all/20211129201537.1932819-11-amir73il@gmail.com/'
+> and fanotify_event_info() doesn't change 'event', so the declaration and 
+> assignment of info can be removed.
 > 
-> This should be the required architectural behavior: "a CSR access is
-> performed after the execution of any prior instructions in program order
-> whose behavior modifies or is modified by the CSR state and before the
-> execution of any subsequent instructions in program order whose behavior
-> modifies or is modified by the CSR state" (Zicsr spec, paragraph "CSR Access
-> Ordering", available at
-> https://www.five-embeddev.com/riscv-isa-manual/latest/csr.html#csrinsts).
+> Eliminate the following clang warning:
+> fs/notify/fanotify/fanotify_user.c:161:24: warning: variable ‘info’ set
+> but not used
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
 
-I think that's necessary, but not sufficient.
+Thanks! I've added the patch to my tree.
 
-IIUC that wording means that writes to the CSR state occur in program order
-without requiring additional barriers to take effect. The current value of the
-CSR determines whether interrupts *can* be taken, but that doesn't say that
-pending interrrupts *must* be taken immediately when unmasked in the CSR.
+								Honza
 
-For comparison, ARMv8 has similar wording that writes to PSTATE.I via the
-DAIF/DAIFSet/DAIFClr registers occur in program order and do not require
-additional barriers. However, there's also wording that to ensure that a
-pending interrupt is taken, a context-synchronization-event (e.g. an ISB
-instruction) is necessary. Without that, a back-to-back enable->disable will
-not necessarily result in a pending interrupt being taken.
-
-The arm64 patch in this series has references to the documentation.
-
-I had asked Palmer about this on IRC, and he didn't seem to think the
-architecture mandated this (or at least, was unsure).
-
-Palmer, thoughts?
-
-Thanks,
-Mark.
+> ---
+>  fs/notify/fanotify/fanotify_user.c | 3 ---
+>  1 file changed, 3 deletions(-)
+> 
+> diff --git a/fs/notify/fanotify/fanotify_user.c b/fs/notify/fanotify/fanotify_user.c
+> index 73b1615f9d96..1026f67b1d1e 100644
+> --- a/fs/notify/fanotify/fanotify_user.c
+> +++ b/fs/notify/fanotify/fanotify_user.c
+> @@ -158,7 +158,6 @@ static size_t fanotify_event_len(unsigned int info_mode,
+>  				 struct fanotify_event *event)
+>  {
+>  	size_t event_len = FAN_EVENT_METADATA_LEN;
+> -	struct fanotify_info *info;
+>  	int fh_len;
+>  	int dot_len = 0;
+>  
+> @@ -168,8 +167,6 @@ static size_t fanotify_event_len(unsigned int info_mode,
+>  	if (fanotify_is_error_event(event->mask))
+>  		event_len += FANOTIFY_ERROR_INFO_LEN;
+>  
+> -	info = fanotify_event_info(event);
+> -
+>  	if (fanotify_event_has_any_dir_fh(event)) {
+>  		event_len += fanotify_dir_name_info_len(event);
+>  	} else if ((info_mode & FAN_REPORT_NAME) &&
+> -- 
+> 2.20.1.7.g153144c
+> 
+-- 
+Jan Kara <jack@suse.com>
+SUSE Labs, CR
