@@ -2,127 +2,88 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 676DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 12:14:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28EE4C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 12:14:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232696AbiATMOE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 07:14:04 -0500
-Received: from mail-ua1-f41.google.com ([209.85.222.41]:39459 "EHLO
-        mail-ua1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230093AbiATMN4 (ORCPT
+        id S232659AbiATMOU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 07:14:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57340 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232793AbiATMOK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 07:13:56 -0500
-Received: by mail-ua1-f41.google.com with SMTP id p7so3224137uao.6;
-        Thu, 20 Jan 2022 04:13:56 -0800 (PST)
+        Thu, 20 Jan 2022 07:14:10 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 783B5C06173F
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 04:14:10 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id az27-20020a05600c601b00b0034d2956eb04so13181515wmb.5
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 04:14:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=9elements.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mpM/rGmBFzv7cwTGJJLNgA1OU0/AoeYggu1XWiqY0Xk=;
+        b=J6wSwcUYCIUKMjJC9dceWaT0FrzS3MYCWGO6u5QaaZ5OpSjB4Mj33mdFevF8YX4/fO
+         eOr6IEaO/NtMSHWMpaExKmutuRmcSSPsiqE03W+oDze9G5JxBxiZczF6CF8tcoPW2BQ4
+         +ojTS/azripxXXAAqq2KZnDEkbByTPlGiflLm7PDYCJuR49RRWx5Zhip3vD+pA8Gd28j
+         H/qiikB38Cveu3J5TvYX1e0jvWyGjuBRj7Im/2m+BI7ALjAocpQlBF1SZ7mDWBFV2HXG
+         oo6ChMBO6u2srGl59/w1de2TSxUCvHYTOCfqsnwas/HQivNhduw2JI3IhxC9+iI/2l+d
+         0lPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=olNvo1hlOps7yRNGdWPhIvGrV31s5RQbZPcE1Lfk/FY=;
-        b=DPYJ92Mw1I2q8aKrJ0lGi3LDJ1jkP1hsAXidhUNlxbbp5DKsUBDRIGJaxx5IPBcxMg
-         +scjWssmycN5Mx/pVYF7JzPJU9XG6Y6weUaQdIaOhlZk0UZKesZgibSSNmje79Owdc7R
-         RUAEz/1Z7WNyF7abNMxc64RntmC+jfIfNgD4OxTiI1svXYxrkEdKRNd++0vionl14Asm
-         CwuvONKs/XboBl9WQ6ukcfxOxCmfYE9HP/2ZQCVCvnEL/Mco79R0aaw8BoGW+8NPYmlG
-         i5UJ9syUp9HOJq8QkWYZsBMkJXabSsXy13bDLHS6b6fmoASnzUMvLAAZjictT0qE7ETl
-         XHDA==
-X-Gm-Message-State: AOAM531S3SP+bH4gtBIh+1JIR8vV60yDAxw0nSPN+X1dZbzofPJRCAqm
-        i38lOYLpQhIS9wRIIymrByHvhUTB86ecdQ==
-X-Google-Smtp-Source: ABdhPJz10yFfydZ2MyS/VscLmlnd50fxuJ8Fa/CJ2sGh4z+eWVPfuJo8I+95gQfk3FoXG7IxuBDkHw==
-X-Received: by 2002:a05:6102:94e:: with SMTP id a14mr519914vsi.86.1642680835432;
-        Thu, 20 Jan 2022 04:13:55 -0800 (PST)
-Received: from mail-ua1-f49.google.com (mail-ua1-f49.google.com. [209.85.222.49])
-        by smtp.gmail.com with ESMTPSA id m6sm420318vsc.28.2022.01.20.04.13.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Jan 2022 04:13:55 -0800 (PST)
-Received: by mail-ua1-f49.google.com with SMTP id l1so8555495uap.8;
-        Thu, 20 Jan 2022 04:13:55 -0800 (PST)
-X-Received: by 2002:a67:e055:: with SMTP id n21mr551166vsl.57.1642680834901;
- Thu, 20 Jan 2022 04:13:54 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mpM/rGmBFzv7cwTGJJLNgA1OU0/AoeYggu1XWiqY0Xk=;
+        b=6S9w3CxQjxbR5nVAH+tnrVF1mX1oNp4kUtAG+n1lExypfiuiPPUx79D+2HlhmyZuIq
+         oFd3tKoSCgo/yogO/1wdQ9uKv9DLZskW4BYgruZzEdi0iE8Y+HT17c973gNtvoYQGB9B
+         96+eYjOk+eOUIMU5AXYI1vnk6iNKTtzVYzn98Qc0Hmzcl2LU0Ni1NQHJsYhUv8Ljsccy
+         810YXiRCM3+iismJrXPrvftKU//6rFtwAEKR3JLLTQcJMWigmLbMAVzoX//Xez4qyCpI
+         4kEGuwXGTaq2yFVKF9HhbkWGoD3V0ghOljZSFXwaV0SV/+nGqU1hR9aHQJdSuDX0eKI5
+         VBZg==
+X-Gm-Message-State: AOAM533Q2HbPk9Mkc/4KpLUpVivI31VUK3jBf2OlvnFXPeGfSEdC7N3E
+        rLoVLBDQaHKGQABk15k5X590rQ==
+X-Google-Smtp-Source: ABdhPJzoOXVTD93A3oHdCn7GNYdZ/w/iULAXwJNFyE/+MrVoE2APhlsp2kN8aP/zRyzW+K66ZtMFgw==
+X-Received: by 2002:a5d:584e:: with SMTP id i14mr19318297wrf.690.1642680849034;
+        Thu, 20 Jan 2022 04:14:09 -0800 (PST)
+Received: from fedora.sec.9e.network (ip-088-153-139-166.um27.pools.vodafone-ip.de. [88.153.139.166])
+        by smtp.gmail.com with ESMTPSA id x4sm2853863wrp.13.2022.01.20.04.14.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 04:14:08 -0800 (PST)
+From:   Patrick Rudolph <patrick.rudolph@9elements.com>
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        linux-i2c@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Patrick Rudolph <patrick.rudolph@9elements.com>,
+        devicetree@vger.kernel.org
+Subject: [v3 0/3] Add support for Maxim MAX735x/MAX736x variants
+Date:   Thu, 20 Jan 2022 13:13:10 +0100
+Message-Id: <20220120121314.463944-1-patrick.rudolph@9elements.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <YeG8ydoJNWWkGrTb@ls3530> <c48ad8ae-aea5-43fa-882f-dccb90dde9a4@suse.de>
- <87bl0amc6s.fsf@x1.stackframe.org> <20220118103323.4bae3a7d@eldfell>
- <20220118095352.xsb6fqacw4p276c5@sirius.home.kraxel.org> <CAMuHMdWV+-+Jr7HggbfH_GEDcdep4pJLiMG+15jxBvQ91BCS0w@mail.gmail.com>
- <CAKMK7uEOFg3z2btFERQ5XBQ7hqex6bXCb9X=SdwCjeLfX_SdFw@mail.gmail.com>
-In-Reply-To: <CAKMK7uEOFg3z2btFERQ5XBQ7hqex6bXCb9X=SdwCjeLfX_SdFw@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Thu, 20 Jan 2022 13:13:43 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVjv1+UNeXkCBE+80tdtLuNg=5d6N12hNLgJdaS-jxERg@mail.gmail.com>
-Message-ID: <CAMuHMdVjv1+UNeXkCBE+80tdtLuNg=5d6N12hNLgJdaS-jxERg@mail.gmail.com>
-Subject: Re: [PATCH] MAINTAINERS: Add Helge as fbdev maintainer
-To:     Daniel Vetter <daniel@ffwll.ch>
-Cc:     Gerd Hoffmann <kraxel@redhat.com>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Helge Deller <deller@gmx.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Sven Schnelle <svens@stackframe.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Daniel,
+v3:
+- Merge dt-bindings into i2c-mux-pca954x.yaml
 
-On Thu, Jan 20, 2022 at 12:33 PM Daniel Vetter <daniel@ffwll.ch> wrote:
-> On Thu, Jan 20, 2022 at 10:06 AM Geert Uytterhoeven
-> <geert@linux-m68k.org> wrote:
-> > On Thu, Jan 20, 2022 at 4:29 AM Gerd Hoffmann <kraxel@redhat.com> wrote:
-> > > On Tue, Jan 18, 2022 at 10:33:23AM +0200, Pekka Paalanen wrote:
-> > > > On Mon, 17 Jan 2022 19:47:39 +0100
-> > > > Sven Schnelle <svens@stackframe.org> wrote:
-> > > > > I also tested the speed on my Thinkpad X1 with Intel graphics, and there
-> > > > > a dmesg with 919 lines one the text console took about 2s to display. In
-> > > > > x11, i measure 22ms. This might be unfair because encoding might be
-> > > > > different, but i cannot confirm the 'memcpy' is faster than hardware
-> > > > > blitting' point. I think if that would be the case, no-one would care
-> > > > > about 2D acceleration.
-> > > >
-> > > > I think that is an extremely unfair comparison, because a graphical
-> > > > terminal app is not going to render every line of text streamed to it.
-> > > > It probably renders only the final view alone if you simply run
-> > > > 'dmesg', skipping the first 800-900 lines completely.
-> > >
-> > > Probably more like "render on every vblank", but yes, unlike fbcon it
-> > > surely wouldn't render every single character sent to the terminal.
-> > >
-> > > Also acceleration on modern hardware is more like "compose window
-> > > content using the 3d engine" than "use 2d blitter to scroll the window".
-> > >
-> > > > Maybe fbcon should do the same when presented with a flood of text,
-> > > > but I don't know how or why it works like it works.
-> > >
-> > > fbcon could do the same, i.e. render to fbdev in a 60Hz timer instead of
-> > > doing it synchronously.
-> >
-> > Hopefully only the parts of the screen which need a redraw?
-> >
-> > Not all displays can be updated that fast. For a "modern" example, see
-> > https://patchwork.freedesktop.org/series/93070/.
->
-> drm does damage tracking throughout the stack, e.g.
->
-> https://dri.freedesktop.org/docs/drm/gpu/drm-kms.html#damage-tracking-properties
->
-> And unlike fbdev, it's explicit (so less overhead since userspace
-> generally knows what it's drawn) and doesn't rely on page fault
-> intercepting and fun stuff like that.
+v2:
+- Move dt-bindings to separate file
+- Added support for MAX736x as they are very similar
+- Fixed an issue found by kernel test robot
+- Dropped max735x property and custom IRQ check
+- Added MAX7357 config register defines instead of magic values
+- Renamed vcc-supply to vdd-supply
 
-My reply was to a paragraph about rendering text by fbcon, not about
-userspace rendering graphics.
+Patrick Rudolph (3):
+  dt-bindings: i2c: Add Maxim MAX735x/MAX736x variants
+  i2c: muxes: pca954x: Add MAX735x/MAX736x support
+  i2c: muxes: pca954x: Add regulator support
 
-> Like do people actually know what drm can and cannot do, or would that
-> take out all the fun?
+ .../bindings/i2c/i2c-mux-pca954x.yaml         |  43 ++++--
+ drivers/i2c/muxes/Kconfig                     |   4 +-
+ drivers/i2c/muxes/i2c-mux-pca954x.c           | 124 ++++++++++++++++--
+ 3 files changed, 150 insertions(+), 21 deletions(-)
 
-;-)
+-- 
+2.34.1
 
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
