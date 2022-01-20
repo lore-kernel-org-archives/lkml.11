@@ -2,154 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1D84C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4371BC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:15:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230322AbiATLOz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 06:14:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43556 "EHLO
+        id S230337AbiATLPH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 06:15:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43612 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbiATLOr (ORCPT
+        with ESMTP id S230268AbiATLPC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 06:14:47 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB00EC061574;
-        Thu, 20 Jan 2022 03:14:46 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id p12so27114411edq.9;
-        Thu, 20 Jan 2022 03:14:46 -0800 (PST)
+        Thu, 20 Jan 2022 06:15:02 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83F1CC061574
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 03:15:02 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id m11so27022584edi.13
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 03:15:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=amarulasolutions.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=IT9uvhWZdWmjY3EmgbPu/lh1Ibe0zATbXaJ/u/RtpyE=;
-        b=dfwxLtXcM9MSY3S5yJHp6J1gQ/QR7MYKFBVfKhF4e+XZoNSWb88hHwjtJAFxV2Clkg
-         YnZS4/2OLsHTUQ/Fhmvk6MhsYNUDN7ao872f2QflOuYKcGNaovKLgvpRj70HDXSOaYOg
-         1mdxn5f6poTJ0TS9lDA7/n/ckq1sHmaiPJn/vCInz4vGdfEG6ugxAqplLMW49AZ9goa5
-         ZFaEDjehLmQvtEK26BxDJMRZdL8UgvILRQT8wiydr9y8CxDTrqi1M50CeZ0C/2O0ZOgO
-         CGwvZJm4rI5RG53PYBQK0NSTrYtpvGgG8p9xQzS7j6+oXDA617Hf+6ajCKzbkzftXi1x
-         oHlQ==
+        bh=iCGbnSIdeVbc+bdXt5zsiojMkCxV5VpYtP9a9mDjURU=;
+        b=FT7qC5sPu+G1OIfrLGzhNGP+P1cPEnYbuJkYByoReQfid0NZ7HxsgC9qC2YGLtgdHp
+         C2p7aktVbPdVexnAAX9rTbxTVDCIOyMc7PaesN3OWvw9LET1QlycXuzgU5P3f+Hs44wR
+         gsZhHmatoEmOwZ46sMLQdUM3vzmMe3Mxkhk8A=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=IT9uvhWZdWmjY3EmgbPu/lh1Ibe0zATbXaJ/u/RtpyE=;
-        b=oUZtKiXnnx9lRMZTcBHipA9VLaRQnz2EL5LPPuQN3uU5xnda3YSC5nL70T31diKnQI
-         mQzb6V6QBoD4ocMdh5SsONle24Lq2daGC85YI3h19xYLgUMZL0mhnRuHlR8CE76WyiXw
-         /WSQOY1y9pstXnCQM7EjZ+Wx1p4HNUkzBXbsouBU44odlEFfeVOMHUGeSJaCMpgVZeEs
-         bP+/7G3sGufgex9uaj+VlmwArdHPFYYYfr5io2ZOLIV4ijtznviOJciInxdMs47FWHKy
-         gRge8Lk+7+mBu5VpCOpkpz7fX1ZvhtSvtxXAYrSJBKD75F3IAgPgY/UIHud+95tJl0tI
-         oLSw==
-X-Gm-Message-State: AOAM531K8EdAegZVEren8G3J9D2BklfVTb8OHJRNemtLMm8OPOrjQkCM
-        zYvsFlA38xagk6q0VVWTWKPAjuSxNerDl/xwwNH+H2muF9CAow==
-X-Google-Smtp-Source: ABdhPJywg0WB3YNKw1F/9yC8fESf3+WJp8so5WFTFo89l712Oi5LZYLmHYr+UFN/37dpaRI8FKH8FMK+3Gc/MFqzVys=
-X-Received: by 2002:a17:907:94d3:: with SMTP id dn19mr1405352ejc.77.1642677285360;
- Thu, 20 Jan 2022 03:14:45 -0800 (PST)
+        bh=iCGbnSIdeVbc+bdXt5zsiojMkCxV5VpYtP9a9mDjURU=;
+        b=jMsOY1ZEE9DFyA3Zy7H5m6U87SFviO/ZPJ6NR5WYDj4sLy38k/cP1LhzJ0dR/+Ipl1
+         aLIG5ezBLaoTHlina8fDqwqyRbLpOzFcT0ZlIh9sT3f5OOnFg0R5A9hFGGpBljCO7tti
+         bBmYwPNTlo6CQHJbknHoruf4rmctD54+HqTYUZd4g4xVd4zdGxBp9TnnQ8BK0NByrX/7
+         hGEq09YWM1u+HlyDmZ8zaYQet3TGIoo1kYSev3yzG2EOpnQOnu8JHo48DbnC0EdeK4Of
+         plbqyQheMaZ/wPGrf8hziN8UKLD7zJcHPjuCLPmwNuDqhEVlF3ra5YmhkSe/r7uK9BBo
+         CDXQ==
+X-Gm-Message-State: AOAM532LWQfYPqxPC6SgVqJN/068zVzhfXLcqACNT3tKwpCH2DAnVdYQ
+        UB4jhbvGT1YpvkMM86yooMvmJWvTYMqUa9rvff3oZQ==
+X-Google-Smtp-Source: ABdhPJy0Rw3dNudsqr44tsK3H1wq7yJrlB7b/cPD/JGratpsbyDUX3QaW1JHCSJhFUXeCVCWwXV8lL0DwW+oi82UKkE=
+X-Received: by 2002:a05:6402:4244:: with SMTP id g4mr12693422edb.271.1642677301085;
+ Thu, 20 Jan 2022 03:15:01 -0800 (PST)
 MIME-Version: 1.0
-References: <20220118202234.410555-1-terry.bowman@amd.com> <20220118202234.410555-3-terry.bowman@amd.com>
- <CAHp75VdBFN+QMJpYDp8ytGGrBKYyjxU8u=Xrn44Lc3UGLPRQOA@mail.gmail.com> <b4f66a42-6f25-7e93-2a3b-5d73af39e72e@roeck-us.net>
-In-Reply-To: <b4f66a42-6f25-7e93-2a3b-5d73af39e72e@roeck-us.net>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 20 Jan 2022 13:13:03 +0200
-Message-ID: <CAHp75VfcJ1HBM=Rw5LcTZWYMxxpASC2b=gTWTrRs4--CmqafpQ@mail.gmail.com>
-Subject: Re: [PATCH v3 2/4] Watchdog: sp5100_tco: Refactor MMIO base address initialization
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Terry Bowman <terry.bowman@amd.com>,
-        linux-watchdog@vger.kernel.org, Jean Delvare <jdelvare@suse.com>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Robert Richter <rrichter@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "Shah, Nehal-bakulchandra" <Nehal-bakulchandra.Shah@amd.com>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        Mario Limonciello <Mario.Limonciello@amd.com>
+References: <20220119122843.1455611-1-narmstrong@baylibre.com>
+In-Reply-To: <20220119122843.1455611-1-narmstrong@baylibre.com>
+From:   Jagan Teki <jagan@amarulasolutions.com>
+Date:   Thu, 20 Jan 2022 16:44:50 +0530
+Message-ID: <CAMty3ZBHSt2jjOxhQWpyYviTM3-uF0HXFtbGPjVddk4PP8Npsw@mail.gmail.com>
+Subject: Re: [PATCH v2] drm/bridge: dw-hdmi: use safe format when first in
+ bridge chain
+To:     Neil Armstrong <narmstrong@baylibre.com>
+Cc:     robert.foss@linaro.org, jernej.skrabec@gmail.com, jonas@kwiboo.se,
+        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        kieran.bingham@ideasonboard.com,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        laurent.pinchart@ideasonboard.com, biju.das.jz@bp.renesas.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 5:46 PM Guenter Roeck <linux@roeck-us.net> wrote:
-> On 1/19/22 3:53 AM, Andy Shevchenko wrote:
-> > On Tue, Jan 18, 2022 at 10:23 PM Terry Bowman <terry.bowman@amd.com> wrote:
-
-...
-
-> >> +               devm_release_mem_region(dev, mmio_addr,
-> >> +                                       SP5100_WDT_MEM_MAP_SIZE);
-> >
-> > Why? If it's a short live mapping, do not use devm.
+On Wed, Jan 19, 2022 at 5:58 PM Neil Armstrong <narmstrong@baylibre.com> wrote:
 >
-> This is not short lived; it is needed by the driver. The release
-> is an artifact of calling this function twice and ignoring the error
-> from devm_ioremap() if the first call fails. devm_release_mem_region()
-> isn't strictly needed but that would result in keeping the memory
-> region reserved even though it isn't used by the driver.
-
-So, this seems like micro-optimization, but okay, at least it
-justifies it. Thanks for explaining.
-
-> There is a functional difference to the original code, though.
-> The failing devm_ioremap() causes the code to try the alternate
-> address. I am not sure if that really adds value; devm_ioremap()
-> fails because the system is out of virtual memory, and calling
-> it again on a different address doesn't seem to add much value.
-> I preferred the original code, which would only call devm_ioremap()
-> after successfully reserving a memory region.
-
-...
-
-> > On top of above it's a NIH devm_ioremap_resource().
+> When the dw-hdmi bridge is in first place of the bridge chain, this
+> means there is no way to select an input format of the dw-hdmi HW
+> component.
 >
-> Not sure what NIH means
-
-Not Invented Here (syndrome)
-
-...
-
-> >> +       /* Check MMIO address conflict */
-> >> +       ret = __sp5100_tco_prepare_base(tco, mmio_addr, dev_name);
-> >
-> >> +
-> >> +       /* Check alternate MMIO address conflict */
-> >
-> > Unify this with the previous comment.
+> Since introduction of display-connector, negotiation was broken since
+> the dw-hdmi negotiation code only worked when the dw-hdmi bridge was
+> in last position of the bridge chain or behind another bridge also
+> supporting input & output format negotiation.
 >
-> Why ? It refers to the code below. If that is a single or two comments
-> is really just POV.
+> Commit 0656d1285b79 ("drm/bridge: display-connector: implement bus fmts callbacks")
+> was introduced to make negotiation work again by making display-connector
+> act as a pass-through concerning input & output format negotiation.
+>
+> But in the case where the dw-hdmi is single in the bridge chain, for
+> example on Renesas SoCs, with the display-connector bridge the dw-hdmi
+> is no more single, breaking output format.
+>
+> Reported-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Bisected-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+> Tested-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
+> Fixes: 0656d1285b79 ("drm/bridge: display-connector: implement bus fmts callbacks").
+> Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+> ---
+> Changes since v1:
+> - Remove bad fix in dw_hdmi_bridge_atomic_get_input_bus_fmts
+> - Fix typos in commit message
+>
+>  drivers/gpu/drm/bridge/synopsys/dw-hdmi.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+> index 54d8fdad395f..97cdc61b57f6 100644
+> --- a/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+> +++ b/drivers/gpu/drm/bridge/synopsys/dw-hdmi.c
+> @@ -2551,8 +2551,9 @@ static u32 *dw_hdmi_bridge_atomic_get_output_bus_fmts(struct drm_bridge *bridge,
+>         if (!output_fmts)
+>                 return NULL;
+>
+> -       /* If dw-hdmi is the only bridge, avoid negociating with ourselves */
+> -       if (list_is_singular(&bridge->encoder->bridge_chain)) {
+> +       /* If dw-hdmi is the first or only bridge, avoid negociating with ourselves */
+> +       if (list_is_singular(&bridge->encoder->bridge_chain) ||
+> +           list_is_first(&bridge->chain_node, &bridge->encoder->bridge_chain)) {
 
-It depends on the angle from which you see it (i.o.w. like you said
-POV). I considered it from the code perspective and personally found
-the
-/*
- * Bla bla bla
- */
-ret = foo();
-if (ret)
-  bar();
+What if we use bridge helper, drm_bridge_chain_get_first_bridge in
+order to find the first bridge in chain?
 
-better than above.
-
-> >> +       if (ret)
-> >> +               ret = __sp5100_tco_prepare_base(tco, alt_mmio_addr,
-> >> +                                               dev_name);
-
-...
-
-> >>          release_region(SP5100_IO_PM_INDEX_REG, SP5100_PM_IOPORTS_SIZE);
-> >
-> > Is it still needed? I have no context to say if devm_iomap() and this
-> > are not colliding, please double check the correctness.
-> >
-> Not sure I understand. This is the release of the io region reserved with
-> request_muxed_region() at the beginning of this function. Why would it no
-> longer be necessary to release that region ?
-
-Thank you for explaining, as I said I have no full context here, and I
-simply asked for double check.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Thanks,
+Jagan.
