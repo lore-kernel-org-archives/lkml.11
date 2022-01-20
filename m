@@ -2,79 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CED8C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 22:14:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E85C7C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 22:18:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378039AbiATWOK (ORCPT
+        id S1378047AbiATWSG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 17:14:10 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58870 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378018AbiATWOI (ORCPT
+        Thu, 20 Jan 2022 17:18:06 -0500
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:4945 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1347534AbiATWSE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 17:14:08 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7042A618F8;
-        Thu, 20 Jan 2022 22:14:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4C30C340E0;
-        Thu, 20 Jan 2022 22:14:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642716847;
-        bh=/BYzlmSc3EXhLhUP/zTY4q87ax/HPCgh9lWXojPLRd4=;
-        h=Date:From:To:Cc:Subject:From;
-        b=ZQN+YTUBpg91uyZ4bbhz/gPU24X+VcANisoz6Xzwjj7exgzwzpFuPyNh9aOP5ILfA
-         Att5HhsxsvrDFeAorzVYvh5YHhlRhIQZ7tH6ZGsEYMBr8MAYsKQ7e35m1XpdYBMjEL
-         5f+yXOSDkRsE3/2Ozd1YYy6TRAU1IVeZFkIVuSUn/hijW7H3d+AlubZ4BunU6YzFHU
-         9sp1EemqRLM5t5G4+510U04QQjcEKeO7wUfoSu08I1Q3ozNy4qDpwDrfhB1+P8FvRm
-         QQwEAWA2WojQQPvBvp4iPtfEisc5EkidFe5VJN9aBqFyFGfz6psr4r+lq0pg7wFNpF
-         +QboktrrfJS6w==
-Date:   Thu, 20 Jan 2022 16:20:43 -0600
-From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        linux-hardening@vger.kernel.org
-Subject: [PATCH][next] usb: host: fotg210: Use struct_size() helper in
- kzalloc()
-Message-ID: <20220120222043.GA33559@embeddedor>
+        Thu, 20 Jan 2022 17:18:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1642717084; x=1674253084;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=CbvFbjQfwDtoDzlP5NcZT4tKgkqu0dtU0t97oGIQdwY=;
+  b=xYRKuwvUIrlHTGlMPStCkSHdnh4xmwHmE14gYvnvG7hOSU4sXlyrfULh
+   vzJQ3iMMAZbAxgQdXb5AsCbXb2FpdGFKOnCeo8GNnqOtWVIvh4YC6zakP
+   9bdNeqtaVYsaU0chq7gPq/1zYbfEuFJgVW+XXw2KiyKtKDOa9E6G3GGr9
+   o=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 20 Jan 2022 14:18:03 -0800
+X-QCInternal: smtphost
+Received: from unknown (HELO nasanex01a.na.qualcomm.com) ([10.52.223.231])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 14:18:01 -0800
+Received: from [10.110.122.217] (10.80.80.8) by nasanex01a.na.qualcomm.com
+ (10.52.223.231) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Thu, 20 Jan
+ 2022 14:18:02 -0800
+Subject: Re: [PATCH 3/3] input: misc: pm8941-pwrkey: avoid potential null
+ pointer dereference
+To:     Anjelique Melendez <quic_amelende@quicinc.com>,
+        <dmitry.torokhov@gmail.com>
+CC:     <linux-input@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-arm-msm@vger.kernel.org>, <collinsd@codeaurora.org>,
+        <bjorn.andersson@linaro.org>, <swboyd@chromium.org>,
+        <skakit@codeaurora.org>
+References: <20220120204132.17875-1-quic_amelende@quicinc.com>
+ <20220120204132.17875-4-quic_amelende@quicinc.com>
+From:   Trilok Soni <quic_tsoni@quicinc.com>
+Message-ID: <88e7a6c5-c94e-0b65-173d-5f21109e216e@quicinc.com>
+Date:   Thu, 20 Jan 2022 14:18:01 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+In-Reply-To: <20220120204132.17875-4-quic_amelende@quicinc.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01a.na.qualcomm.com (10.52.223.231)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Make use of the struct_size() helper instead of an open-coded version,
-in order to avoid any potential type mistakes or integer overflows that,
-in the worst scenario, could lead to heap overflows.
+On 1/20/2022 12:41 PM, Anjelique Melendez wrote:
+> From: David Collins <collinsd@codeaurora.org>
+> 
+> Add a null check for the pwrkey->data pointer after it is assigned
+> in pm8941_pwrkey_probe().  This avoids a potential null pointer
+> dereference when pwrkey->data->has_pon_pbs is accessed later in
+> the probe function.
+> 
+> Change-Id: I589c4851e544d79a1863fd110b32a0b45ac03caf
+> Signed-off-by: David Collins <collinsd@codeaurora.org>
+> Signed-off-by: Anjelique Melendez <quic_amelende@quicinc.com>
+> ---
+>   drivers/input/misc/pm8941-pwrkey.c | 4 ++++
+>   1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/input/misc/pm8941-pwrkey.c b/drivers/input/misc/pm8941-pwrkey.c
+> index 0ce00736e695..ac08ed025802 100644
+> --- a/drivers/input/misc/pm8941-pwrkey.c
+> +++ b/drivers/input/misc/pm8941-pwrkey.c
+> @@ -263,6 +263,10 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
+>   
+>   	pwrkey->dev = &pdev->dev;
+>   	pwrkey->data = of_device_get_match_data(&pdev->dev);
+> +	if (!pwrkey->data) {
+> +		dev_err(&pdev->dev, "match data not found\n");
+> +		return -ENODEV;
+> +	}
+>   
 
-Also, address the following sparse warnings:
-drivers/usb/host/fotg210-hcd.c:4017:20: warning: using sizeof on a flexible structure
+I don't understand why this patch is 3rd in the series. Isn't it 
+independent from the debounce time? If not, then why it is not fixed as 
+part of the patch which adds this debounce time support?
 
-Link: https://github.com/KSPP/linux/issues/174
-Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
----
- drivers/usb/host/fotg210-hcd.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
-
-diff --git a/drivers/usb/host/fotg210-hcd.c b/drivers/usb/host/fotg210-hcd.c
-index 7af17c8e069b..c3fd375b4778 100644
---- a/drivers/usb/host/fotg210-hcd.c
-+++ b/drivers/usb/host/fotg210-hcd.c
-@@ -4014,10 +4014,8 @@ static struct fotg210_iso_sched *iso_sched_alloc(unsigned packets,
- 		gfp_t mem_flags)
- {
- 	struct fotg210_iso_sched *iso_sched;
--	int size = sizeof(*iso_sched);
- 
--	size += packets * sizeof(struct fotg210_iso_packet);
--	iso_sched = kzalloc(size, mem_flags);
-+	iso_sched = kzalloc(struct_size(iso_sched, packet, packets), mem_flags);
- 	if (likely(iso_sched != NULL))
- 		INIT_LIST_HEAD(&iso_sched->td_list);
- 
--- 
-2.27.0
-
+---Trilok Soni
