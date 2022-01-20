@@ -2,81 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD04EC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 23:34:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CACEDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 23:35:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348116AbiATXeF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 18:34:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42796 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230472AbiATXeD (ORCPT
+        id S244278AbiATXf5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 18:35:57 -0500
+Received: from mail.hugovil.com ([162.243.120.170]:49952 "EHLO
+        mail.hugovil.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230472AbiATXfy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 18:34:03 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3DF5C06173F
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 15:34:03 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id u11so6762591plh.13
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 15:34:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=W8u4xvb9YGTbkR+XB2tficjJLp06bXV9VHY3GrFF5AU=;
-        b=kjnvRURd0d5x4xaHgLsQrLQFFTt+6yuhoqo3w1AgYdyRqMIxqjqTk1Abi+NnFy1KoR
-         2S/bTBbPiE9z6gFVosCCBEaPqyADyS2hQbiyxp7FMquiOAB+5EulTVKKnC8kTYEy/OuS
-         8YIa2ev/7/gxr61vJa9wq41lGpWwuDmLHruro=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=W8u4xvb9YGTbkR+XB2tficjJLp06bXV9VHY3GrFF5AU=;
-        b=qhwTefzpxHNty+iDpClyP0sbxrh5omt1f173VcZ4ZdYEbfVPAvFdK4+Y48VnQ+99XP
-         l7cvOYqKj3iB06+jrC5CKCRjCAO4yApBTa96XLtyI/nVfIrktpgj2oMIHM5ogy68CPdz
-         6fctWjxhROkF5rMQM4GofdNCxI2o8e+jplqrBcEvQgd5GINbTa8UUgrOmTnMnMK2C7jM
-         RphROjvzteaqaS/Fnzr2yesRjLMxuGP1S745I00ryyQ5gZPEFndD0cDRNcqw0oLvwuta
-         zyZ9j9tBoYPPlPc5GGHbm0Vp1wunzsEyZY2JVftqKxYrtft4Z2LdB5myc1qjU/yKjwkC
-         TlvA==
-X-Gm-Message-State: AOAM533VzVvLJov8O0WzVR12tVDBQe7atfCwPYL4ATT3LH65GqfKdWUe
-        PjzLwjWslc2KtlLioo35b3fFdA==
-X-Google-Smtp-Source: ABdhPJwU4q/RhAzX8q32y3IhhvwpRjOdIOJmRH0cShdwRxJhGaw2bCqB3Cy8q1CLWCJ0I+0xU8z7EA==
-X-Received: by 2002:a17:90a:4305:: with SMTP id q5mr13751808pjg.222.1642721643308;
-        Thu, 20 Jan 2022 15:34:03 -0800 (PST)
-Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
-        by smtp.gmail.com with ESMTPSA id q6sm3168035pgb.85.2022.01.20.15.34.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 15:34:03 -0800 (PST)
-Date:   Thu, 20 Jan 2022 15:34:02 -0800
-From:   Kees Cook <keescook@chromium.org>
-To:     "Gustavo A. R. Silva" <gustavoars@kernel.org>
-Cc:     Jon Mason <jdmason@kudzu.us>, Dave Jiang <dave.jiang@intel.com>,
-        Allen Hubbe <allenbh@gmail.com>, linux-ntb@googlegroups.com,
-        linux-kernel@vger.kernel.org, linux-hardening@vger.kernel.org
-Subject: Re: [PATCH][next] NTB/msi: Use struct_size() helper in devm_kzalloc()
-Message-ID: <202201201533.975AD386E@keescook>
-References: <20220120230247.GA40182@embeddedor>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220120230247.GA40182@embeddedor>
+        Thu, 20 Jan 2022 18:35:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=hugovil.com
+        ; s=x; h=Subject:Content-Transfer-Encoding:Content-Type:Mime-Version:
+        References:In-Reply-To:Message-Id:Cc:To:From:Date:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=f3L6TZiJ+uQRcJZkGE5CwwCr2VwQ6AVuXmjyr0r35t4=; b=GNE+s1WZLCKxV6C7H88EjIH/Bv
+        DQJfa+dfUFhV7NDRzEUQ3Urc1qjZVMXLkF+vhLtaXkeXTJ7KUGr6+/xJDfFG5HLVHWkYAOR5427qP
+        LQpGsDnX8DyciLozziTRcwpUEhEf+hgyXoZIc1gAVNTuPnGRTId6wevvaCmL2aSC6olo=;
+Received: from modemcable168.174-80-70.mc.videotron.ca ([70.80.174.168]:54882 helo=pettiford)
+        by mail.hugovil.com with esmtpa (Exim 4.92)
+        (envelope-from <hugo@hugovil.com>)
+        id 1nAgy4-0004Me-LJ; Thu, 20 Jan 2022 18:35:50 -0500
+Date:   Thu, 20 Jan 2022 18:35:48 -0500
+From:   Hugo Villeneuve <hugo@hugovil.com>
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     Alessandro Zummo <a.zummo@towertech.it>,
+        Hugo Villeneuve <hvilleneuve@dimonoff.com>,
+        linux-rtc@vger.kernel.org, linux-kernel@vger.kernel.org
+Message-Id: <20220120183548.e6a8f46ede2a636a8eaf11c1@hugovil.com>
+In-Reply-To: <YehiHJXP23TSREbE@piout.net>
+References: <20220119172740.1856302-1-hugo@hugovil.com>
+        <YehMZC4vduvSH5HA@piout.net>
+        <20220119130845.6de245b8b217e659cd319328@hugovil.com>
+        <YehiHJXP23TSREbE@piout.net>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-SA-Exim-Connect-IP: 70.80.174.168
+X-SA-Exim-Mail-From: hugo@hugovil.com
+Subject: Re: [PATCH] rtc: pcf2127: add error message if writing to CLKOUT
+ register fails
+X-SA-Exim-Version: 4.2.1 (built Wed, 08 May 2019 21:11:16 +0000)
+X-SA-Exim-Scanned: Yes (on mail.hugovil.com)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 05:02:47PM -0600, Gustavo A. R. Silva wrote:
-> Make use of the struct_size() helper instead of an open-coded version,
-> in order to avoid any potential type mistakes or integer overflows that,
-> in the worst scenario, could lead to heap overflows.
-> 
-> Also, address the following sparse warnings:
-> drivers/ntb/msi.c:46:23: warning: using sizeof on a flexible structure
-> 
-> Link: https://github.com/KSPP/linux/issues/174
-> Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+On Wed, 19 Jan 2022 20:10:20 +0100
+Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
 
-Heh, the variable was even named struct_size. ;)
+> On 19/01/2022 13:08:45-0500, Hugo Villeneuve wrote:
+> > On Wed, 19 Jan 2022 18:37:40 +0100
+> > Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
+> > 
+> > > On 19/01/2022 12:27:39-0500, Hugo Villeneuve wrote:
+> > > > From: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > > > 
+> > > > If writing to CLKOUT register fails, the probe operation will be aborted
+> > > > without a meaningful error message.
+> > > > 
+> > > 
+> > > The current trend is to remove debug messages, please do not add more :)
+> > 
+> > Hi,
+> > If the read operation fails, the probe function will exit silently, and our RTC chip will not work. In that case, if we parse the dmesg logs, I think we  should have an indication that something went wrong.
+> > 
+> 
+> This is not true, it doesn't fail silently, you'd get:
+> rtc-pcf2127: probe of 1-0051 failed with error -121
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
+Well this is certainly true for me because I am not seing the same error message as you :)
+
+Just for context, I have defined a dummy pcf2127 on I2C bus 0 in my device tree (no actual hardware is present). I also added some debug messages to investigate (rtc-pcf2127.c and dd.c files), and here is the dmesg log after issuing "modprobe rtc-pcf2127":
+
+[Thu Jan 20 23:22:20 2022] rtc-pcf2127-i2c 0-0051: pcf2127_i2c_probe
+[Thu Jan 20 23:22:20 2022] rtc-pcf2127-i2c 0-0051: pcf2127_probe
+[Thu Jan 20 23:22:20 2022] rtc-pcf2127-i2c 0-0051: PORO disabling failed with error -6
+[Thu Jan 20 23:22:20 2022] rtc-pcf2127-i2c 0-0051: call_driver_probe probe error: -6
+
+Error code -6 is -ENXIO, and looking at the call_driver_probe() function in dd.c, I now understand why I didn't see the error message (line 531):
+
+	case -ENXIO:
+		pr_debug("%s: probe of %s rejects match %d\n",
+			 drv->name, dev_name(dev), ret);
+
+So it seems that the return code is different than what you got?
+
+
+> > I had a case where my dev board was not properly plugged-in, and before this patch, I didn't notice it because of the silent abort of the probe function.
+> > 
+> 
+> Again, not silent.
+> 
+> > > 
+> > > > Signed-off-by: Hugo Villeneuve <hvilleneuve@dimonoff.com>
+> > > > ---
+> > > >  drivers/rtc/rtc-pcf2127.c | 4 +++-
+> > > >  1 file changed, 3 insertions(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/drivers/rtc/rtc-pcf2127.c b/drivers/rtc/rtc-pcf2127.c
+> > > > index 3d1f57e54372..823abe2a7147 100644
+> > > > --- a/drivers/rtc/rtc-pcf2127.c
+> > > > +++ b/drivers/rtc/rtc-pcf2127.c
+> > > > @@ -717,8 +717,10 @@ static int pcf2127_probe(struct device *dev, struct regmap *regmap,
+> > > >  	if (!(val & PCF2127_BIT_CLKOUT_OTPR)) {
+> > > >  		ret = regmap_set_bits(pcf2127->regmap, PCF2127_REG_CLKOUT,
+> > > >  				      PCF2127_BIT_CLKOUT_OTPR);
+> > > > -		if (ret < 0)
+> > > > +		if (ret < 0) {
+> > > > +			dev_err(dev, "writing to CLKOUT register failed\n");
+> > > >  			return ret;
+> > > > +		}
+> > > >  
+> > > >  		msleep(100);
+> > > >  	}
+> > > > -- 
+> > > > 2.30.2
+> > > > 
+> > > 
+> > > -- 
+> > > Alexandre Belloni, co-owner and COO, Bootlin
+> > > Embedded Linux and Kernel engineering
+> > > https://bootlin.com
+> > > 
+> > 
+> > 
+> > -- 
+> > Hugo Villeneuve <hugo@hugovil.com>
+> 
+> -- 
+> Alexandre Belloni, co-owner and COO, Bootlin
+> Embedded Linux and Kernel engineering
+> https://bootlin.com
+> 
 
 -- 
-Kees Cook
+Hugo Villeneuve <hugo@hugovil.com>
