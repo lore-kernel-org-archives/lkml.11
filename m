@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACC4DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 08:48:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E785C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 08:48:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359380AbiATIsM (ORCPT
+        id S1359445AbiATIsQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 03:48:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37888 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359388AbiATIsC (ORCPT
+        Thu, 20 Jan 2022 03:48:16 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:32772 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359435AbiATIsI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 03:48:02 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 129E2C06173F;
-        Thu, 20 Jan 2022 00:48:02 -0800 (PST)
+        Thu, 20 Jan 2022 03:48:08 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9FC05B81C9C;
-        Thu, 20 Jan 2022 08:48:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A6384C340E0;
-        Thu, 20 Jan 2022 08:47:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CEC68B81D09;
+        Thu, 20 Jan 2022 08:48:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAE1EC340E0;
+        Thu, 20 Jan 2022 08:48:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642668479;
-        bh=vOqBrAOEA1apxa6n10TxAj+g5Zc54eq/AsXRd/YTa+w=;
+        s=korg; t=1642668485;
+        bh=ie9/X0jajbX0XB5h5ypp2RhqAElYm5xwYzj2iXtogoU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ueKmJmMCW7cQ2mYoJTMmq7T56KIgZf1WK4C/8WevfThTin4/82tA8EazuisVnEX1f
-         F9nRcH3LJ1K9I0fCCuNsIAmXu7qkC0eYGuP7tC48Cygf9hdxWO6LQjbjDZSDl6hW0c
-         lGiS65HysjB1RFuz3zYEVKoeSYJxeo0u9ECBpQ/c=
+        b=jqbv6MB0MYarmsnbhnQv4AYorMpSmhSyxpbLfwYIUVJv718kzVtfESptuPfNgZgEs
+         VY7VKQWFQjeI2FyjS8X6kl3wQM5cQp5m7xO6yt4eFpr8VT+0Ba2Z0sqRzWZ5NmYfJv
+         hwB7HLhaCi7AtbR/YVwagTBHvVyr9/xe/94W/d0U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org, akpm@linux-foundation.org,
         torvalds@linux-foundation.org, stable@vger.kernel.org
 Cc:     lwn@lwn.net, jslaby@suse.cz,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Subject: Re: Linux 5.10.93
-Date:   Thu, 20 Jan 2022 09:47:48 +0100
-Message-Id: <1642668467202134@kroah.com>
+Subject: Re: Linux 5.15.16
+Date:   Thu, 20 Jan 2022 09:47:53 +0100
+Message-Id: <164266847315175@kroah.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <164266846794214@kroah.com>
-References: <164266846794214@kroah.com>
+In-Reply-To: <1642668473194108@kroah.com>
+References: <1642668473194108@kroah.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -48,27 +45,18 @@ List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
 diff --git a/Makefile b/Makefile
-index a113a29545bd..993559750df9 100644
+index aed26e228dde..af173c9df942 100644
 --- a/Makefile
 +++ b/Makefile
 @@ -1,7 +1,7 @@
  # SPDX-License-Identifier: GPL-2.0
  VERSION = 5
- PATCHLEVEL = 10
--SUBLEVEL = 92
-+SUBLEVEL = 93
+ PATCHLEVEL = 15
+-SUBLEVEL = 15
++SUBLEVEL = 16
  EXTRAVERSION =
- NAME = Dare mighty things
+ NAME = Trick or Treat
  
-@@ -1073,7 +1073,7 @@ export mod_sign_cmd
- HOST_LIBELF_LIBS = $(shell pkg-config libelf --libs 2>/dev/null || echo -lelf)
- 
- has_libelf = $(call try-run,\
--               echo "int main() {}" | $(HOSTCC) -xc -o /dev/null $(HOST_LIBELF_LIBS) -,1,0)
-+               echo "int main() {}" | $(HOSTCC) $(KBUILD_HOSTLDFLAGS) -xc -o /dev/null $(HOST_LIBELF_LIBS) -,1,0)
- 
- ifdef CONFIG_STACK_VALIDATION
-   ifeq ($(has_libelf),1)
 diff --git a/arch/arm/kernel/perf_callchain.c b/arch/arm/kernel/perf_callchain.c
 index 3b69a76d341e..1626dfc6f6ce 100644
 --- a/arch/arm/kernel/perf_callchain.c
@@ -124,7 +112,7 @@ index 3b69a76d341e..1626dfc6f6ce 100644
  		else
  			misc |= PERF_RECORD_MISC_GUEST_KERNEL;
 diff --git a/arch/arm64/kernel/perf_callchain.c b/arch/arm64/kernel/perf_callchain.c
-index 88ff471b0bce..58ae55d78a20 100644
+index 4a72c2727309..86d9f2013172 100644
 --- a/arch/arm64/kernel/perf_callchain.c
 +++ b/arch/arm64/kernel/perf_callchain.c
 @@ -102,7 +102,9 @@ compat_user_backtrace(struct compat_frame_tail __user *tail,
@@ -267,41 +255,11 @@ index 0ce6f9f307e6..f38791960781 100644
  			misc |= PERF_RECORD_MISC_GUEST_USER;
  		else
  			misc |= PERF_RECORD_MISC_GUEST_KERNEL;
-diff --git a/arch/powerpc/include/asm/hvcall.h b/arch/powerpc/include/asm/hvcall.h
-index 3e8e19f5746c..00c8cda1c9c3 100644
---- a/arch/powerpc/include/asm/hvcall.h
-+++ b/arch/powerpc/include/asm/hvcall.h
-@@ -382,6 +382,8 @@
- #define H_CPU_BEHAV_BNDS_CHK_SPEC_BAR	(1ull << 61) // IBM bit 2
- #define H_CPU_BEHAV_FLUSH_COUNT_CACHE	(1ull << 58) // IBM bit 5
- #define H_CPU_BEHAV_FLUSH_LINK_STACK	(1ull << 57) // IBM bit 6
-+#define H_CPU_BEHAV_NO_L1D_FLUSH_ENTRY	(1ull << 56) // IBM bit 7
-+#define H_CPU_BEHAV_NO_L1D_FLUSH_UACCESS (1ull << 55) // IBM bit 8
- 
- /* Flag values used in H_REGISTER_PROC_TBL hcall */
- #define PROC_TABLE_OP_MASK	0x18
-diff --git a/arch/powerpc/platforms/pseries/setup.c b/arch/powerpc/platforms/pseries/setup.c
-index 5f0d446a2325..47dfada140e1 100644
---- a/arch/powerpc/platforms/pseries/setup.c
-+++ b/arch/powerpc/platforms/pseries/setup.c
-@@ -538,6 +538,12 @@ static void init_cpu_char_feature_flags(struct h_cpu_char_result *result)
- 	if (!(result->behaviour & H_CPU_BEHAV_L1D_FLUSH_PR))
- 		security_ftr_clear(SEC_FTR_L1D_FLUSH_PR);
- 
-+	if (result->behaviour & H_CPU_BEHAV_NO_L1D_FLUSH_ENTRY)
-+		security_ftr_clear(SEC_FTR_L1D_FLUSH_ENTRY);
-+
-+	if (result->behaviour & H_CPU_BEHAV_NO_L1D_FLUSH_UACCESS)
-+		security_ftr_clear(SEC_FTR_L1D_FLUSH_UACCESS);
-+
- 	if (!(result->behaviour & H_CPU_BEHAV_BNDS_CHK_SPEC_BAR))
- 		security_ftr_clear(SEC_FTR_BNDS_CHK_SPEC_BAR);
- }
 diff --git a/arch/riscv/kernel/perf_callchain.c b/arch/riscv/kernel/perf_callchain.c
-index cf190197a22f..ad3001cbdf61 100644
+index 0bb1854dce83..8ecfc4c128bc 100644
 --- a/arch/riscv/kernel/perf_callchain.c
 +++ b/arch/riscv/kernel/perf_callchain.c
-@@ -60,10 +60,11 @@ static unsigned long user_backtrace(struct perf_callchain_entry_ctx *entry,
+@@ -56,10 +56,11 @@ static unsigned long user_backtrace(struct perf_callchain_entry_ctx *entry,
  void perf_callchain_user(struct perf_callchain_entry_ctx *entry,
  			 struct pt_regs *regs)
  {
@@ -314,7 +272,7 @@ index cf190197a22f..ad3001cbdf61 100644
  		return;
  
  	fp = regs->s0;
-@@ -84,8 +85,10 @@ void notrace walk_stackframe(struct task_struct *task,
+@@ -78,8 +79,10 @@ static bool fill_callchain(void *entry, unsigned long pc)
  void perf_callchain_kernel(struct perf_callchain_entry_ctx *entry,
  			   struct pt_regs *regs)
  {
@@ -327,7 +285,7 @@ index cf190197a22f..ad3001cbdf61 100644
  		return;
  	}
 diff --git a/arch/s390/kvm/interrupt.c b/arch/s390/kvm/interrupt.c
-index e6c4f29fc695..b51ab19eb972 100644
+index 2245f4b8d362..8ce03a5ca863 100644
 --- a/arch/s390/kvm/interrupt.c
 +++ b/arch/s390/kvm/interrupt.c
 @@ -2115,6 +2115,13 @@ int kvm_s390_is_stop_irq_pending(struct kvm_vcpu *vcpu)
@@ -345,10 +303,10 @@ index e6c4f29fc695..b51ab19eb972 100644
  {
  	struct kvm_s390_local_interrupt *li = &vcpu->arch.local_int;
 diff --git a/arch/s390/kvm/kvm-s390.c b/arch/s390/kvm/kvm-s390.c
-index 00f03f363c9b..07a04f392600 100644
+index 1c97493d21e1..24e42bd7d3b7 100644
 --- a/arch/s390/kvm/kvm-s390.c
 +++ b/arch/s390/kvm/kvm-s390.c
-@@ -4588,10 +4588,15 @@ int kvm_s390_vcpu_stop(struct kvm_vcpu *vcpu)
+@@ -4642,10 +4642,15 @@ int kvm_s390_vcpu_stop(struct kvm_vcpu *vcpu)
  		}
  	}
  
@@ -367,7 +325,7 @@ index 00f03f363c9b..07a04f392600 100644
  
  	for (i = 0; i < online_vcpus; i++) {
 diff --git a/arch/s390/kvm/kvm-s390.h b/arch/s390/kvm/kvm-s390.h
-index 2d134833bca6..a3e9b71d426f 100644
+index 52bc8fbaa60a..1539dd981104 100644
 --- a/arch/s390/kvm/kvm-s390.h
 +++ b/arch/s390/kvm/kvm-s390.h
 @@ -418,6 +418,7 @@ void kvm_s390_destroy_adapters(struct kvm *kvm);
@@ -418,10 +376,10 @@ index 683036c1c92a..3dc921e853b6 100644
  	case SIGP_SENSE:
  		vcpu->stat.instruction_sigp_sense++;
 diff --git a/arch/x86/events/core.c b/arch/x86/events/core.c
-index 1f5d96ba4866..b79b9f21cbb3 100644
+index 6dfa8ddaa60f..81d5e0a1f48c 100644
 --- a/arch/x86/events/core.c
 +++ b/arch/x86/events/core.c
-@@ -2545,10 +2545,11 @@ static bool perf_hw_regs(struct pt_regs *regs)
+@@ -2762,10 +2762,11 @@ static bool perf_hw_regs(struct pt_regs *regs)
  void
  perf_callchain_kernel(struct perf_callchain_entry_ctx *entry, struct pt_regs *regs)
  {
@@ -434,7 +392,7 @@ index 1f5d96ba4866..b79b9f21cbb3 100644
  		/* TODO: We don't support guest os callchain now */
  		return;
  	}
-@@ -2648,10 +2649,11 @@ perf_callchain_user32(struct pt_regs *regs, struct perf_callchain_entry_ctx *ent
+@@ -2865,10 +2866,11 @@ perf_callchain_user32(struct pt_regs *regs, struct perf_callchain_entry_ctx *ent
  void
  perf_callchain_user(struct perf_callchain_entry_ctx *entry, struct pt_regs *regs)
  {
@@ -447,7 +405,7 @@ index 1f5d96ba4866..b79b9f21cbb3 100644
  		/* TODO: We don't support guest os callchain now */
  		return;
  	}
-@@ -2728,18 +2730,21 @@ static unsigned long code_segment_base(struct pt_regs *regs)
+@@ -2945,18 +2947,21 @@ static unsigned long code_segment_base(struct pt_regs *regs)
  
  unsigned long perf_instruction_pointer(struct pt_regs *regs)
  {
@@ -474,18 +432,18 @@ index 1f5d96ba4866..b79b9f21cbb3 100644
  		else
  			misc |= PERF_RECORD_MISC_GUEST_KERNEL;
 diff --git a/arch/x86/events/intel/core.c b/arch/x86/events/intel/core.c
-index a521135247eb..6525693e7aea 100644
+index c7f1cc433a6a..03e6555aa8f1 100644
 --- a/arch/x86/events/intel/core.c
 +++ b/arch/x86/events/intel/core.c
-@@ -2586,6 +2586,7 @@ static int handle_pmi_common(struct pt_regs *regs, u64 status)
+@@ -2788,6 +2788,7 @@ static int handle_pmi_common(struct pt_regs *regs, u64 status)
  {
  	struct perf_sample_data data;
  	struct cpu_hw_events *cpuc = this_cpu_ptr(&cpu_hw_events);
 +	struct perf_guest_info_callbacks *guest_cbs;
  	int bit;
  	int handled = 0;
- 
-@@ -2651,9 +2652,11 @@ static int handle_pmi_common(struct pt_regs *regs, u64 status)
+ 	u64 intel_ctrl = hybrid(cpuc->pmu, intel_ctrl);
+@@ -2854,9 +2855,11 @@ static int handle_pmi_common(struct pt_regs *regs, u64 status)
  	 */
  	if (__test_and_clear_bit(GLOBAL_STATUS_TRACE_TOPAPMI_BIT, (unsigned long *)&status)) {
  		handled++;
@@ -501,10 +459,10 @@ index a521135247eb..6525693e7aea 100644
  			intel_pt_interrupt();
  	}
 diff --git a/arch/x86/include/asm/kvm_host.h b/arch/x86/include/asm/kvm_host.h
-index e8fb4b0394af..13e10b970ac8 100644
+index 75e21715ecb4..77ab14bcd477 100644
 --- a/arch/x86/include/asm/kvm_host.h
 +++ b/arch/x86/include/asm/kvm_host.h
-@@ -1306,6 +1306,7 @@ struct kvm_x86_init_ops {
+@@ -1509,6 +1509,7 @@ struct kvm_x86_init_ops {
  	int (*disabled_by_bios)(void);
  	int (*check_processor_compatibility)(void);
  	int (*hardware_setup)(void);
@@ -512,11 +470,53 @@ index e8fb4b0394af..13e10b970ac8 100644
  
  	struct kvm_x86_ops *runtime_ops;
  };
+diff --git a/arch/x86/kvm/lapic.c b/arch/x86/kvm/lapic.c
+index 95f5527646e4..d8f9aa2605e6 100644
+--- a/arch/x86/kvm/lapic.c
++++ b/arch/x86/kvm/lapic.c
+@@ -676,31 +676,25 @@ static inline bool pv_eoi_enabled(struct kvm_vcpu *vcpu)
+ static bool pv_eoi_get_pending(struct kvm_vcpu *vcpu)
+ {
+ 	u8 val;
+-	if (pv_eoi_get_user(vcpu, &val) < 0) {
+-		printk(KERN_WARNING "Can't read EOI MSR value: 0x%llx\n",
+-			   (unsigned long long)vcpu->arch.pv_eoi.msr_val);
++	if (pv_eoi_get_user(vcpu, &val) < 0)
+ 		return false;
+-	}
++
+ 	return val & KVM_PV_EOI_ENABLED;
+ }
+ 
+ static void pv_eoi_set_pending(struct kvm_vcpu *vcpu)
+ {
+-	if (pv_eoi_put_user(vcpu, KVM_PV_EOI_ENABLED) < 0) {
+-		printk(KERN_WARNING "Can't set EOI MSR value: 0x%llx\n",
+-			   (unsigned long long)vcpu->arch.pv_eoi.msr_val);
++	if (pv_eoi_put_user(vcpu, KVM_PV_EOI_ENABLED) < 0)
+ 		return;
+-	}
++
+ 	__set_bit(KVM_APIC_PV_EOI_PENDING, &vcpu->arch.apic_attention);
+ }
+ 
+ static void pv_eoi_clr_pending(struct kvm_vcpu *vcpu)
+ {
+-	if (pv_eoi_put_user(vcpu, KVM_PV_EOI_DISABLED) < 0) {
+-		printk(KERN_WARNING "Can't clear EOI MSR value: 0x%llx\n",
+-			   (unsigned long long)vcpu->arch.pv_eoi.msr_val);
++	if (pv_eoi_put_user(vcpu, KVM_PV_EOI_DISABLED) < 0)
+ 		return;
+-	}
++
+ 	__clear_bit(KVM_APIC_PV_EOI_PENDING, &vcpu->arch.apic_attention);
+ }
+ 
 diff --git a/arch/x86/kvm/vmx/vmx.c b/arch/x86/kvm/vmx/vmx.c
-index 38c453f28f1f..351ef5cf1436 100644
+index 7d280e6f5488..2ab0e997e39f 100644
 --- a/arch/x86/kvm/vmx/vmx.c
 +++ b/arch/x86/kvm/vmx/vmx.c
-@@ -7915,6 +7915,7 @@ static struct kvm_x86_init_ops vmx_init_ops __initdata = {
+@@ -7899,6 +7899,7 @@ static struct kvm_x86_init_ops vmx_init_ops __initdata = {
  	.disabled_by_bios = vmx_disabled_by_bios,
  	.check_processor_compatibility = vmx_check_processor_compat,
  	.hardware_setup = hardware_setup,
@@ -525,10 +525,10 @@ index 38c453f28f1f..351ef5cf1436 100644
  	.runtime_ops = &vmx_x86_ops,
  };
 diff --git a/arch/x86/kvm/x86.c b/arch/x86/kvm/x86.c
-index 4f828cac0273..271669dc8d90 100644
+index ccb256c377a6..2b80edffe02c 100644
 --- a/arch/x86/kvm/x86.c
 +++ b/arch/x86/kvm/x86.c
-@@ -1229,7 +1229,7 @@ static const u32 msrs_to_save_all[] = {
+@@ -1323,7 +1323,7 @@ static const u32 msrs_to_save_all[] = {
  	MSR_IA32_UMWAIT_CONTROL,
  
  	MSR_ARCH_PERFMON_FIXED_CTR0, MSR_ARCH_PERFMON_FIXED_CTR1,
@@ -537,7 +537,7 @@ index 4f828cac0273..271669dc8d90 100644
  	MSR_CORE_PERF_FIXED_CTR_CTRL, MSR_CORE_PERF_GLOBAL_STATUS,
  	MSR_CORE_PERF_GLOBAL_CTRL, MSR_CORE_PERF_GLOBAL_OVF_CTRL,
  	MSR_ARCH_PERFMON_PERFCTR0, MSR_ARCH_PERFMON_PERFCTR1,
-@@ -7882,7 +7882,7 @@ static struct perf_guest_info_callbacks kvm_guest_cbs = {
+@@ -8430,7 +8430,7 @@ static struct perf_guest_info_callbacks kvm_guest_cbs = {
  	.is_in_guest		= kvm_is_in_guest,
  	.is_user_mode		= kvm_is_user_mode,
  	.get_guest_ip		= kvm_get_guest_ip,
@@ -546,25 +546,46 @@ index 4f828cac0273..271669dc8d90 100644
  };
  
  #ifdef CONFIG_X86_64
-@@ -8005,6 +8005,8 @@ int kvm_arch_init(void *opaque)
- 			PT_PRESENT_MASK, 0, sme_me_mask);
+@@ -8551,8 +8551,6 @@ int kvm_arch_init(void *opaque)
+ 
  	kvm_timer_init();
  
-+	if (ops->intel_pt_intr_in_guest && ops->intel_pt_intr_in_guest())
-+		kvm_guest_cbs.handle_intel_pt_intr = kvm_handle_intel_pt_intr;
- 	perf_register_guest_info_callbacks(&kvm_guest_cbs);
- 
+-	perf_register_guest_info_callbacks(&kvm_guest_cbs);
+-
  	if (boot_cpu_has(X86_FEATURE_XSAVE)) {
-@@ -8042,6 +8044,7 @@ void kvm_arch_exit(void)
+ 		host_xcr0 = xgetbv(XCR_XFEATURE_ENABLED_MASK);
+ 		supported_xcr0 = host_xcr0 & KVM_SUPPORTED_XCR0;
+@@ -8586,7 +8584,6 @@ void kvm_arch_exit(void)
+ 		clear_hv_tscchange_cb();
  #endif
  	kvm_lapic_exit();
- 	perf_unregister_guest_info_callbacks(&kvm_guest_cbs);
-+	kvm_guest_cbs.handle_intel_pt_intr = NULL;
+-	perf_unregister_guest_info_callbacks(&kvm_guest_cbs);
  
  	if (!boot_cpu_has(X86_FEATURE_CONSTANT_TSC))
  		cpufreq_unregister_notifier(&kvmclock_cpufreq_notifier_block,
+@@ -11186,6 +11183,10 @@ int kvm_arch_hardware_setup(void *opaque)
+ 	memcpy(&kvm_x86_ops, ops->runtime_ops, sizeof(kvm_x86_ops));
+ 	kvm_ops_static_call_update();
+ 
++	if (ops->intel_pt_intr_in_guest && ops->intel_pt_intr_in_guest())
++		kvm_guest_cbs.handle_intel_pt_intr = kvm_handle_intel_pt_intr;
++	perf_register_guest_info_callbacks(&kvm_guest_cbs);
++
+ 	if (!kvm_cpu_cap_has(X86_FEATURE_XSAVES))
+ 		supported_xss = 0;
+ 
+@@ -11213,6 +11214,9 @@ int kvm_arch_hardware_setup(void *opaque)
+ 
+ void kvm_arch_hardware_unsetup(void)
+ {
++	perf_unregister_guest_info_callbacks(&kvm_guest_cbs);
++	kvm_guest_cbs.handle_intel_pt_intr = NULL;
++
+ 	static_call(kvm_x86_hardware_unsetup)();
+ }
+ 
 diff --git a/drivers/base/devtmpfs.c b/drivers/base/devtmpfs.c
-index a71d14117943..b5cbaa61cbea 100644
+index 8be352ab4ddb..fa13ad49d211 100644
 --- a/drivers/base/devtmpfs.c
 +++ b/drivers/base/devtmpfs.c
 @@ -59,8 +59,15 @@ static struct dentry *public_dev_mount(struct file_system_type *fs_type, int fla
@@ -644,11 +665,23 @@ index 172c751a4f6c..f08e056ed0ae 100644
  	return err;
  }
  
+diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+index fef13e93a99f..2fbaf6f869bf 100644
+--- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
++++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
+@@ -5604,6 +5604,7 @@ static void update_dsc_caps(struct amdgpu_dm_connector *aconnector,
+ 							struct dsc_dec_dpcd_caps *dsc_caps)
+ {
+ 	stream->timing.flags.DSC = 0;
++	dsc_caps->is_dsc_supported = false;
+ 
+ 	if (aconnector->dc_link && sink->sink_signal == SIGNAL_TYPE_DISPLAY_PORT) {
+ 		dc_dsc_parse_dsc_dpcd(aconnector->dc_link->ctx->dc,
 diff --git a/drivers/media/usb/uvc/uvc_video.c b/drivers/media/usb/uvc/uvc_video.c
-index b8477fa93b7d..f6373d678d25 100644
+index 9f37eaf28ce7..1b4cc934109e 100644
 --- a/drivers/media/usb/uvc/uvc_video.c
 +++ b/drivers/media/usb/uvc/uvc_video.c
-@@ -1915,6 +1915,10 @@ static int uvc_video_start_transfer(struct uvc_streaming *stream,
+@@ -1963,6 +1963,10 @@ static int uvc_video_start_transfer(struct uvc_streaming *stream,
  		if (ep == NULL)
  			return -EIO;
  
@@ -679,10 +712,10 @@ index aef14990e5f7..19726ebd973d 100644
  
  endchoice
 diff --git a/drivers/mtd/maps/Kconfig b/drivers/mtd/maps/Kconfig
-index 6650acbc961e..fc0aaa03c524 100644
+index aaa164b977fe..4945caa88345 100644
 --- a/drivers/mtd/maps/Kconfig
 +++ b/drivers/mtd/maps/Kconfig
-@@ -325,7 +325,7 @@ config MTD_DC21285
+@@ -302,7 +302,7 @@ config MTD_DC21285
  
  config MTD_IXP4XX
  	tristate "CFI Flash device mapped on Intel IXP4xx based systems"
@@ -716,8 +749,20 @@ index 7c007dd7b200..aca21560e20b 100644
  found_existing:
  	/* Use two writel() as base is only aligned to 4 bytes on odd entries */
  	writel(base, entry + PIL_RELOC_NAME_LEN);
+diff --git a/drivers/remoteproc/qcom_q6v5_pas.c b/drivers/remoteproc/qcom_q6v5_pas.c
+index 401b1ec90785..699eaac5b760 100644
+--- a/drivers/remoteproc/qcom_q6v5_pas.c
++++ b/drivers/remoteproc/qcom_q6v5_pas.c
+@@ -661,6 +661,7 @@ static const struct adsp_data sm8350_cdsp_resource = {
+ 	},
+ 	.proxy_pd_names = (char*[]){
+ 		"cx",
++		"mxc",
+ 		NULL
+ 	},
+ 	.ssr_name = "cdsp",
 diff --git a/drivers/video/fbdev/vga16fb.c b/drivers/video/fbdev/vga16fb.c
-index 1e8a38a7967d..5c6e9dc88060 100644
+index e2757ff1c23d..96e312a3eac7 100644
 --- a/drivers/video/fbdev/vga16fb.c
 +++ b/drivers/video/fbdev/vga16fb.c
 @@ -184,6 +184,25 @@ static inline void setindex(int index)
@@ -759,12 +804,12 @@ index 1e8a38a7967d..5c6e9dc88060 100644
  
  	if (!ret) {
 diff --git a/fs/9p/vfs_inode_dotl.c b/fs/9p/vfs_inode_dotl.c
-index 72b67d810b8c..a13ef836fe4e 100644
+index 01b9e1281a29..a61df2e0ae52 100644
 --- a/fs/9p/vfs_inode_dotl.c
 +++ b/fs/9p/vfs_inode_dotl.c
-@@ -541,7 +541,10 @@ int v9fs_vfs_setattr_dotl(struct dentry *dentry, struct iattr *iattr)
+@@ -553,7 +553,10 @@ int v9fs_vfs_setattr_dotl(struct user_namespace *mnt_userns,
  {
- 	int retval;
+ 	int retval, use_dentry = 0;
  	struct p9_fid *fid = NULL;
 -	struct p9_iattr_dotl p9attr;
 +	struct p9_iattr_dotl p9attr = {
@@ -774,7 +819,7 @@ index 72b67d810b8c..a13ef836fe4e 100644
  	struct inode *inode = d_inode(dentry);
  
  	p9_debug(P9_DEBUG_VFS, "\n");
-@@ -551,14 +554,22 @@ int v9fs_vfs_setattr_dotl(struct dentry *dentry, struct iattr *iattr)
+@@ -563,14 +566,22 @@ int v9fs_vfs_setattr_dotl(struct user_namespace *mnt_userns,
  		return retval;
  
  	p9attr.valid = v9fs_mapped_iattr_valid(iattr->ia_valid);
@@ -806,10 +851,10 @@ index 72b67d810b8c..a13ef836fe4e 100644
  	if (iattr->ia_valid & ATTR_FILE) {
  		fid = iattr->ia_file->private_data;
 diff --git a/fs/fs_context.c b/fs/fs_context.c
-index 2834d1afa6e8..b11677802ee1 100644
+index b7e43a780a62..24ce12f0db32 100644
 --- a/fs/fs_context.c
 +++ b/fs/fs_context.c
-@@ -530,7 +530,7 @@ static int legacy_parse_param(struct fs_context *fc, struct fs_parameter *param)
+@@ -548,7 +548,7 @@ static int legacy_parse_param(struct fs_context *fc, struct fs_parameter *param)
  			      param->key);
  	}
  
@@ -851,10 +896,10 @@ index 538e839590ef..b501dc07f922 100644
  	kfree(bufmap);
  out:
 diff --git a/fs/super.c b/fs/super.c
-index 98bb0629ee10..20f1707807bb 100644
+index bcef3a6f4c4b..a1f82dfd1b39 100644
 --- a/fs/super.c
 +++ b/fs/super.c
-@@ -1472,8 +1472,8 @@ struct dentry *mount_nodev(struct file_system_type *fs_type,
+@@ -1421,8 +1421,8 @@ struct dentry *mount_nodev(struct file_system_type *fs_type,
  }
  EXPORT_SYMBOL(mount_nodev);
  
@@ -866,12 +911,12 @@ index 98bb0629ee10..20f1707807bb 100644
  	struct fs_context *fc;
  	int ret;
 diff --git a/include/linux/fs_context.h b/include/linux/fs_context.h
-index 5b44b0195a28..e869ce3ae660 100644
+index 6b54982fc5f3..13fa6f3df8e4 100644
 --- a/include/linux/fs_context.h
 +++ b/include/linux/fs_context.h
-@@ -140,6 +140,8 @@ extern int generic_parse_monolithic(struct fs_context *fc, void *data);
- extern int vfs_get_tree(struct fs_context *fc);
- extern void put_fs_context(struct fs_context *fc);
+@@ -142,6 +142,8 @@ extern void put_fs_context(struct fs_context *fc);
+ extern int vfs_parse_fs_param_source(struct fs_context *fc,
+ 				     struct fs_parameter *param);
  extern void fc_drop_locked(struct fs_context *fc);
 +int reconfigure_single(struct super_block *s,
 +		       int flags, void *data);
@@ -879,10 +924,10 @@ index 5b44b0195a28..e869ce3ae660 100644
  /*
   * sget() wrappers to be called from the ->get_tree() op.
 diff --git a/include/linux/perf_event.h b/include/linux/perf_event.h
-index ce14fb2772b5..c94551091dad 100644
+index 9b60bb89d86a..ae1f0c8b7562 100644
 --- a/include/linux/perf_event.h
 +++ b/include/linux/perf_event.h
-@@ -1235,7 +1235,18 @@ extern void perf_event_bpf_event(struct bpf_prog *prog,
+@@ -1239,7 +1239,18 @@ extern void perf_event_bpf_event(struct bpf_prog *prog,
  				 enum perf_bpf_event_type type,
  				 u16 flags);
  
@@ -903,10 +948,10 @@ index ce14fb2772b5..c94551091dad 100644
  extern int perf_unregister_guest_info_callbacks(struct perf_guest_info_callbacks *callbacks);
  
 diff --git a/kernel/events/core.c b/kernel/events/core.c
-index 639b99a318db..e2d774cc470e 100644
+index 2931faf92a76..0fe6a65bbd58 100644
 --- a/kernel/events/core.c
 +++ b/kernel/events/core.c
-@@ -6395,18 +6395,25 @@ static void perf_pending_event(struct irq_work *entry)
+@@ -6526,18 +6526,25 @@ static void perf_pending_event(struct irq_work *entry)
   * Later on, we might change it to a list if there is
   * another virtualization implementation supporting the callbacks.
   */
@@ -935,11 +980,109 @@ index 639b99a318db..e2d774cc470e 100644
  	return 0;
  }
  EXPORT_SYMBOL_GPL(perf_unregister_guest_info_callbacks);
+diff --git a/sound/pci/hda/hda_tegra.c b/sound/pci/hda/hda_tegra.c
+index ea700395bef4..773f4903550a 100644
+--- a/sound/pci/hda/hda_tegra.c
++++ b/sound/pci/hda/hda_tegra.c
+@@ -68,14 +68,20 @@
+  */
+ #define TEGRA194_NUM_SDO_LINES	  4
+ 
++struct hda_tegra_soc {
++	bool has_hda2codec_2x_reset;
++};
++
+ struct hda_tegra {
+ 	struct azx chip;
+ 	struct device *dev;
+-	struct reset_control *reset;
++	struct reset_control_bulk_data resets[3];
+ 	struct clk_bulk_data clocks[3];
++	unsigned int nresets;
+ 	unsigned int nclocks;
+ 	void __iomem *regs;
+ 	struct work_struct probe_work;
++	const struct hda_tegra_soc *soc;
+ };
+ 
+ #ifdef CONFIG_PM
+@@ -170,7 +176,7 @@ static int __maybe_unused hda_tegra_runtime_resume(struct device *dev)
+ 	int rc;
+ 
+ 	if (!chip->running) {
+-		rc = reset_control_assert(hda->reset);
++		rc = reset_control_bulk_assert(hda->nresets, hda->resets);
+ 		if (rc)
+ 			return rc;
+ 	}
+@@ -187,7 +193,7 @@ static int __maybe_unused hda_tegra_runtime_resume(struct device *dev)
+ 	} else {
+ 		usleep_range(10, 100);
+ 
+-		rc = reset_control_deassert(hda->reset);
++		rc = reset_control_bulk_deassert(hda->nresets, hda->resets);
+ 		if (rc)
+ 			return rc;
+ 	}
+@@ -427,9 +433,17 @@ static int hda_tegra_create(struct snd_card *card,
+ 	return 0;
+ }
+ 
++static const struct hda_tegra_soc tegra30_data = {
++	.has_hda2codec_2x_reset = true,
++};
++
++static const struct hda_tegra_soc tegra194_data = {
++	.has_hda2codec_2x_reset = false,
++};
++
+ static const struct of_device_id hda_tegra_match[] = {
+-	{ .compatible = "nvidia,tegra30-hda" },
+-	{ .compatible = "nvidia,tegra194-hda" },
++	{ .compatible = "nvidia,tegra30-hda", .data = &tegra30_data },
++	{ .compatible = "nvidia,tegra194-hda", .data = &tegra194_data },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, hda_tegra_match);
+@@ -449,6 +463,8 @@ static int hda_tegra_probe(struct platform_device *pdev)
+ 	hda->dev = &pdev->dev;
+ 	chip = &hda->chip;
+ 
++	hda->soc = of_device_get_match_data(&pdev->dev);
++
+ 	err = snd_card_new(&pdev->dev, SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1,
+ 			   THIS_MODULE, 0, &card);
+ 	if (err < 0) {
+@@ -456,11 +472,20 @@ static int hda_tegra_probe(struct platform_device *pdev)
+ 		return err;
+ 	}
+ 
+-	hda->reset = devm_reset_control_array_get_exclusive(&pdev->dev);
+-	if (IS_ERR(hda->reset)) {
+-		err = PTR_ERR(hda->reset);
++	hda->resets[hda->nresets++].id = "hda";
++	hda->resets[hda->nresets++].id = "hda2hdmi";
++	/*
++	 * "hda2codec_2x" reset is not present on Tegra194. Though DT would
++	 * be updated to reflect this, but to have backward compatibility
++	 * below is necessary.
++	 */
++	if (hda->soc->has_hda2codec_2x_reset)
++		hda->resets[hda->nresets++].id = "hda2codec_2x";
++
++	err = devm_reset_control_bulk_get_exclusive(&pdev->dev, hda->nresets,
++						    hda->resets);
++	if (err)
+ 		goto out_free;
+-	}
+ 
+ 	hda->clocks[hda->nclocks++].id = "hda";
+ 	hda->clocks[hda->nclocks++].id = "hda2hdmi";
 diff --git a/sound/pci/hda/patch_realtek.c b/sound/pci/hda/patch_realtek.c
-index 14ce48f1a8e4..a858bb9e9927 100644
+index 28255e752c4a..fa80a79e9f96 100644
 --- a/sound/pci/hda/patch_realtek.c
 +++ b/sound/pci/hda/patch_realtek.c
-@@ -1936,6 +1936,7 @@ enum {
+@@ -1924,6 +1924,7 @@ enum {
  	ALC887_FIXUP_ASUS_BASS,
  	ALC887_FIXUP_BASS_CHMAP,
  	ALC1220_FIXUP_GB_DUAL_CODECS,
@@ -947,7 +1090,7 @@ index 14ce48f1a8e4..a858bb9e9927 100644
  	ALC1220_FIXUP_CLEVO_P950,
  	ALC1220_FIXUP_CLEVO_PB51ED,
  	ALC1220_FIXUP_CLEVO_PB51ED_PINS,
-@@ -2125,6 +2126,29 @@ static void alc1220_fixup_gb_dual_codecs(struct hda_codec *codec,
+@@ -2113,6 +2114,29 @@ static void alc1220_fixup_gb_dual_codecs(struct hda_codec *codec,
  	}
  }
  
@@ -977,7 +1120,7 @@ index 14ce48f1a8e4..a858bb9e9927 100644
  static void alc1220_fixup_clevo_p950(struct hda_codec *codec,
  				     const struct hda_fixup *fix,
  				     int action)
-@@ -2427,6 +2451,10 @@ static const struct hda_fixup alc882_fixups[] = {
+@@ -2415,6 +2439,10 @@ static const struct hda_fixup alc882_fixups[] = {
  		.type = HDA_FIXUP_FUNC,
  		.v.func = alc1220_fixup_gb_dual_codecs,
  	},
@@ -988,7 +1131,7 @@ index 14ce48f1a8e4..a858bb9e9927 100644
  	[ALC1220_FIXUP_CLEVO_P950] = {
  		.type = HDA_FIXUP_FUNC,
  		.v.func = alc1220_fixup_clevo_p950,
-@@ -2529,7 +2557,7 @@ static const struct snd_pci_quirk alc882_fixup_tbl[] = {
+@@ -2517,7 +2545,7 @@ static const struct snd_pci_quirk alc882_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x13fe, 0x1009, "Advantech MIT-W101", ALC886_FIXUP_EAPD),
  	SND_PCI_QUIRK(0x1458, 0xa002, "Gigabyte EP45-DS3/Z87X-UD3H", ALC889_FIXUP_FRONT_HP_NO_PRESENCE),
  	SND_PCI_QUIRK(0x1458, 0xa0b8, "Gigabyte AZ370-Gaming", ALC1220_FIXUP_GB_DUAL_CODECS),
@@ -997,7 +1140,7 @@ index 14ce48f1a8e4..a858bb9e9927 100644
  	SND_PCI_QUIRK(0x1458, 0xa0ce, "Gigabyte X570 Aorus Xtreme", ALC1220_FIXUP_CLEVO_P950),
  	SND_PCI_QUIRK(0x1462, 0x11f7, "MSI-GE63", ALC1220_FIXUP_CLEVO_P950),
  	SND_PCI_QUIRK(0x1462, 0x1228, "MSI-GP63", ALC1220_FIXUP_CLEVO_P950),
-@@ -6729,6 +6757,8 @@ enum {
+@@ -6784,6 +6812,8 @@ enum {
  	ALC256_FIXUP_SYSTEM76_MIC_NO_PRESENCE,
  	ALC233_FIXUP_NO_AUDIO_JACK,
  	ALC256_FIXUP_MIC_NO_PRESENCE_AND_RESUME,
@@ -1006,7 +1149,7 @@ index 14ce48f1a8e4..a858bb9e9927 100644
  };
  
  static const struct hda_fixup alc269_fixups[] = {
-@@ -8319,6 +8349,18 @@ static const struct hda_fixup alc269_fixups[] = {
+@@ -8380,6 +8410,18 @@ static const struct hda_fixup alc269_fixups[] = {
  		.chained = true,
  		.chain_id = ALC236_FIXUP_HP_MUTE_LED_MICMUTE_VREF,
  	},
@@ -1025,7 +1168,15 @@ index 14ce48f1a8e4..a858bb9e9927 100644
  	[ALC287_FIXUP_LEGION_15IMHG05_SPEAKERS] = {
  		.type = HDA_FIXUP_VERBS,
  		//.v.verbs = legion_15imhg05_coefs,
-@@ -8857,13 +8899,16 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+@@ -8730,6 +8772,7 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
+ 	SND_PCI_QUIRK(0x103c, 0x8896, "HP EliteBook 855 G8 Notebook PC", ALC285_FIXUP_HP_MUTE_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x8898, "HP EliteBook 845 G8 Notebook PC", ALC285_FIXUP_HP_LIMIT_INT_MIC_BOOST),
+ 	SND_PCI_QUIRK(0x103c, 0x88d0, "HP Pavilion 15-eh1xxx (mainboard 88D0)", ALC287_FIXUP_HP_GPIO_LED),
++	SND_PCI_QUIRK(0x103c, 0x89c3, "HP", ALC285_FIXUP_HP_GPIO_LED),
+ 	SND_PCI_QUIRK(0x103c, 0x89ca, "HP", ALC236_FIXUP_HP_MUTE_LED_MICMUTE_VREF),
+ 	SND_PCI_QUIRK(0x1043, 0x103e, "ASUS X540SA", ALC256_FIXUP_ASUS_MIC),
+ 	SND_PCI_QUIRK(0x1043, 0x103f, "ASUS TX300", ALC282_FIXUP_ASUS_TX300),
+@@ -8921,13 +8964,16 @@ static const struct snd_pci_quirk alc269_fixup_tbl[] = {
  	SND_PCI_QUIRK(0x17aa, 0x3176, "ThinkCentre Station", ALC283_FIXUP_HEADSET_MIC),
  	SND_PCI_QUIRK(0x17aa, 0x3178, "ThinkCentre Station", ALC283_FIXUP_HEADSET_MIC),
  	SND_PCI_QUIRK(0x17aa, 0x31af, "ThinkCentre Station", ALC623_FIXUP_LENOVO_THINKSTATION_P340),
@@ -1044,3 +1195,52 @@ index 14ce48f1a8e4..a858bb9e9927 100644
  	SND_PCI_QUIRK(0x17aa, 0x3902, "Lenovo E50-80", ALC269_FIXUP_DMIC_THINKPAD_ACPI),
  	SND_PCI_QUIRK(0x17aa, 0x3977, "IdeaPad S210", ALC283_FIXUP_INT_MIC),
  	SND_PCI_QUIRK(0x17aa, 0x3978, "Lenovo B50-70", ALC269_FIXUP_DMIC_THINKPAD_ACPI),
+diff --git a/tools/perf/ui/browsers/annotate.c b/tools/perf/ui/browsers/annotate.c
+index e81c2493efdf..44ba900828f6 100644
+--- a/tools/perf/ui/browsers/annotate.c
++++ b/tools/perf/ui/browsers/annotate.c
+@@ -966,6 +966,7 @@ int symbol__tui_annotate(struct map_symbol *ms, struct evsel *evsel,
+ 		.opts = opts,
+ 	};
+ 	int ret = -1, err;
++	int not_annotated = list_empty(&notes->src->source);
+ 
+ 	if (sym == NULL)
+ 		return -1;
+@@ -973,13 +974,15 @@ int symbol__tui_annotate(struct map_symbol *ms, struct evsel *evsel,
+ 	if (ms->map->dso->annotate_warned)
+ 		return -1;
+ 
+-	err = symbol__annotate2(ms, evsel, opts, &browser.arch);
+-	if (err) {
+-		char msg[BUFSIZ];
+-		ms->map->dso->annotate_warned = true;
+-		symbol__strerror_disassemble(ms, err, msg, sizeof(msg));
+-		ui__error("Couldn't annotate %s:\n%s", sym->name, msg);
+-		goto out_free_offsets;
++	if (not_annotated) {
++		err = symbol__annotate2(ms, evsel, opts, &browser.arch);
++		if (err) {
++			char msg[BUFSIZ];
++			ms->map->dso->annotate_warned = true;
++			symbol__strerror_disassemble(ms, err, msg, sizeof(msg));
++			ui__error("Couldn't annotate %s:\n%s", sym->name, msg);
++			goto out_free_offsets;
++		}
+ 	}
+ 
+ 	ui_helpline__push("Press ESC to exit");
+@@ -994,9 +997,11 @@ int symbol__tui_annotate(struct map_symbol *ms, struct evsel *evsel,
+ 
+ 	ret = annotate_browser__run(&browser, evsel, hbt);
+ 
+-	annotated_source__purge(notes->src);
++	if(not_annotated)
++		annotated_source__purge(notes->src);
+ 
+ out_free_offsets:
+-	zfree(&notes->offsets);
++	if(not_annotated)
++		zfree(&notes->offsets);
+ 	return ret;
+ }
