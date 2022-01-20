@@ -2,103 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61AEEC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 03:07:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6D68C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 03:14:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358265AbiATDHS (ORCPT
+        id S1358274AbiATDOG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 22:07:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229601AbiATDHR (ORCPT
+        Wed, 19 Jan 2022 22:14:06 -0500
+Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:34345 "EHLO
+        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1358266AbiATDOF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 22:07:17 -0500
-Received: from mail-ed1-x544.google.com (mail-ed1-x544.google.com [IPv6:2a00:1450:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6A46C061574;
-        Wed, 19 Jan 2022 19:07:15 -0800 (PST)
-Received: by mail-ed1-x544.google.com with SMTP id c24so20196161edy.4;
-        Wed, 19 Jan 2022 19:07:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=6AciR2AKfyPUvmQqqeZADltLycshLQ4pZRWrBxQwNds=;
-        b=au9z0HdVBZBLq5GfMsCVAczVs4JxTYHuhw8YWbzU3jXlJyCU6DL0bwgPzEtW8Q8pMO
-         w2QzOztChaWzGqqbCBStS3qGn94DQneWOlOTDG1rf8+JZ9spA8lXCOidJkdOepG+cHEr
-         /J0j1QXW9Ez241MyXdzdKzKCUecaofMtnlFj3posuMFpcDABBbEC2r0wkXW836j8KsDz
-         Jf2plTDfzee+VKHPwUt+gw0i/RuaN+WQqbP+akYY7AYCDR67q51uOuNr7q19WHiQHu3X
-         FzocVx7JtVwd3smRGeMxDwSbO1r79iQuhiJ1Jgw7q1e8Bdig/ilWPj1V22s9btrBfWBd
-         uNhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=6AciR2AKfyPUvmQqqeZADltLycshLQ4pZRWrBxQwNds=;
-        b=zc76t+ayH30k4aoEfSxZcgqlEDPE3jSd+MwH+cJ6X+Vr8tGHC1OHqEu+i9r8jLYIiw
-         oJIFtvkpUwCYPgf9Wk5d2/Z8jPoRRq+evz72IhxQcqlSx6bJUoeRlo7UsZ5kh/GnzEuG
-         hvt5OnCaeHcP+9/Aa6eitKWRP/PgfieEoD22Rha3va18vT/r8sEZp4lay2FFleI9+LgM
-         9HjMkj3XD65xWsrcxyxwnFIKm+v8HwuIKiA2lTibgNr614bRrxFQb4JMy1d/rAeE4m7F
-         v7Ml8T9y/nmD5czybV2ufg55A7Ake/I9SEoZKo/z0D6bB6DJkTquNpQbD4tQ2WBGEOl8
-         JT7g==
-X-Gm-Message-State: AOAM533EaQRQL9P2rbjZ/bV5JUUvDVoDPkftGsGwYyTbz15SpfAZK+og
-        kYtJm4tSNNuCafgr27lfSLfyvLO0VnY+1fBM210=
-X-Google-Smtp-Source: ABdhPJwpcONPGuyA1L71cypckx0JcsiD/9+/f7BbFH1VxA84gPzARHiLqRySG4Pii6TEGarWECZLjL+KX0QAFxGFPMg=
-X-Received: by 2002:a05:6402:34c9:: with SMTP id w9mr34197425edc.403.1642648009169;
- Wed, 19 Jan 2022 19:06:49 -0800 (PST)
+        Wed, 19 Jan 2022 22:14:05 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R991e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=zelin.deng@linux.alibaba.com;NM=1;PH=DS;RN=4;SR=0;TI=SMTPD_---0V2JWwbh_1642648442;
+Received: from 30.21.166.20(mailfrom:zelin.deng@linux.alibaba.com fp:SMTPD_---0V2JWwbh_1642648442)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Thu, 20 Jan 2022 11:14:03 +0800
+Message-ID: <2ad9b10f-b7b7-afec-38ed-16176a6c55c9@linux.alibaba.com>
+Date:   Thu, 20 Jan 2022 11:13:55 +0800
 MIME-Version: 1.0
-References: <20220113070245.791577-1-imagedong@tencent.com> <CAADnVQKNCqUzPJAjSHMFr-Ewwtv5Cs3UCQpthaKDTd+YNRWqqg@mail.gmail.com>
-In-Reply-To: <CAADnVQKNCqUzPJAjSHMFr-Ewwtv5Cs3UCQpthaKDTd+YNRWqqg@mail.gmail.com>
-From:   Menglong Dong <menglong8.dong@gmail.com>
-Date:   Thu, 20 Jan 2022 11:02:27 +0800
-Message-ID: <CADxym3bJZrcGHKH8=kKBkxh848dijAZ56n0fm_DvEh6Bbnrezg@mail.gmail.com>
-Subject: Re: [PATCH bpf-next] bpf: Add document for 'dst_port' of 'struct bpf_sock'
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-        Mengen Sun <mengensun@tencent.com>, flyingpeng@tencent.com,
-        mungerjiang@tencent.com, Menglong Dong <imagedong@tencent.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:91.0)
+ Gecko/20100101 Thunderbird/91.5.0
+Subject: Re: [PATCH] iommu/vt-d: Do not dump pasid table entries in kdump
+ kernel
+To:     Lu Baolu <baolu.lu@linux.intel.com>,
+        David Woodhouse <dwmw2@infradead.org>
+Cc:     iommu@lists.linux-foundation.org, linux-kernel@vger.kernel.org
+References: <1642583260-21095-1-git-send-email-zelin.deng@linux.alibaba.com>
+ <846c0ff6-32b1-73a4-0510-f1e809684991@linux.intel.com>
+From:   zelin deng <zelin.deng@linux.alibaba.com>
+In-Reply-To: <846c0ff6-32b1-73a4-0510-f1e809684991@linux.intel.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello!
 
-On Thu, Jan 20, 2022 at 6:03 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
+在 2022/1/20 上午10:58, Lu Baolu 写道:
+> On 1/19/22 5:07 PM, Zelin Deng wrote:
+>> In kdump kernel PASID translations won't be copied from previous kernel
+>> even if scalable-mode is enabled, so pages of PASID translations are
 >
-[...]
+> Yes. The copy table support for scalable mode is still in my task list.
 >
-> Looks like
->  __sk_buff->remote_port
->  bpf_sock_ops->remote_port
->  sk_msg_md->remote_port
-> are doing the right thing,
-> but bpf_sock->dst_port is not correct?
+>> non-present in kdump kernel. Attempt to access those address will cause
+>> PF fault:
+>>
+>> [   13.396476] DMAR: DRHD: handling fault status reg 3
+>> [   13.396478] DMAR: [DMA Read NO_PASID] Request device [81:00.0] 
+>> fault addr 0xffffd000 [fault reason 0x59] SM: Present bit in PA$
+>> [   13.396480] DMAR: Dump dmar5 table entries for IOVA 0xffffd000
+>> [   13.396481] DMAR: scalable mode root entry: hi 0x0000000000000000, 
+>> low 0x00000000460d1001
+>> [   13.396482] DMAR: context entry: hi 0x0000000000000008, low 
+>> 0x00000010c4237401
+>> [   13.396485] BUG: unable to handle page fault for address: 
+>> ff110010c4237000
+>> [   13.396486] #PF: supervisor read access in kernel mode
+>> [   13.396487] #PF: error_code(0x0000) - not-present page
+>> [   13.396488] PGD 5d201067 P4D 5d202067 PUD 0
+>> [   13.396490] Oops: 0000 [#1] PREEMPT SMP NOPTI
+>> [   13.396491] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 
+>> 5.16.0-rc6-next-20211224+ #6
+>> [   13.396493] Hardware name: Intel Corporation 
+>> EAGLESTREAM/EAGLESTREAM, BIOS EGSDCRB1.86B.0067.D12.2110190950 
+>> 10/19/2021
+>> [   13.396494] RIP: 0010:dmar_fault_dump_ptes+0x13b/0x295
+>>
+>> Hence skip dumping pasid table entries if in kdump kernel.
 >
-> I think it's better to fix it,
-> but probably need to consolidate it with
-> convert_ctx_accesses() that deals with narrow access.
-> I suspect reading u8 from three flavors of 'remote_port'
-> won't be correct.
+> This just asks dmar_fault_dump_ptes() to keep silent. The problem is
+> that the context entry is mis-configured. Perhaps we should disable
+> copy table for scalable mode for now. How about below change?
 
-What's the meaning of 'narrow access'? Do you mean to
-make 'remote_port' u16? Or 'remote_port' should be made
-accessible with u8? In fact, '*((u16 *)&skops->remote_port + 1)'
-won't work, as it only is accessible with u32.
+Yep.  The change looks good to me.
 
-I can simply make 'dst_port' endianness right with what
-'remote_port' do.
+Actually I had encountered another issue which had blocked virtio-net 
+device when scalable mode is enabled in kdump kernel so that I had made 
+the same change as yours -- 'to disable translation if sm_on in kdump 
+kernel' in our internal tree.
 
-Thanks!
-Menglong Dong
+I only observe this issue on our dragonfly baremetal server with 
+virtio-net device inside, I did't send the fix to upstream as I am not 
+sure if it is reasonable to disable translation in kdump kernel.
 
 
-> 'dst_port' works with a narrow load, but gets endianness wrong.
+>
+> --- a/drivers/iommu/intel/iommu.c
+> +++ b/drivers/iommu/intel/iommu.c
+> @@ -3337,10 +3337,11 @@ static int __init init_dmars(void)
+>
+>                 init_translation_status(iommu);
+>
+> -               if (translation_pre_enabled(iommu) && 
+> !is_kdump_kernel()) {
+> +               if (translation_pre_enabled(iommu) &&
+> +                   (!is_kdump_kernel() || sm_supported(iommu))) {
+>                         iommu_disable_translation(iommu);
+>                         clear_translation_pre_enabled(iommu);
+> -                       pr_warn("Translation was enabled for %s but we 
+> are not in kdump mode\n",
+> +                       pr_warn("Translation was enabled for %s but we 
+> are not in kdump mode or copy table not supported\n",
+>                                 iommu->name);
+>                 }
+>
+>>
+>> Fixes: 914ff7719e8a (“iommu/vt-d: Dump DMAR translation structure 
+>> when DMA fault occurs”)
+>> Signed-off-by: Zelin Deng <zelin.deng@linux.alibaba.com>
+>> ---
+>>   drivers/iommu/intel/iommu.c | 6 ++++++
+>>   1 file changed, 6 insertions(+)
+>>
+>> diff --git a/drivers/iommu/intel/iommu.c b/drivers/iommu/intel/iommu.c
+>> index 92fea3fb..f0134cf 100644
+>> --- a/drivers/iommu/intel/iommu.c
+>> +++ b/drivers/iommu/intel/iommu.c
+>> @@ -1074,6 +1074,12 @@ void dmar_fault_dump_ptes(struct intel_iommu 
+>> *iommu, u16 source_id,
+>>       if (!sm_supported(iommu))
+>>           goto pgtable_walk;
+>>   +    /* PASID translations is not copied, skip dumping pasid table 
+>> entries
+>> +     * otherwise non-present page will be accessed.
+>> +     */
+>> +    if (is_kdump_kernel())
+>> +        goto pgtable_walk;
+>> +
+>>       /* get the pointer to pasid directory entry */
+>>       dir = phys_to_virt(ctx_entry->lo & VTD_PAGE_MASK);
+>>       if (!dir) {
+>>
+>
+> Best regards,
+> baolu
