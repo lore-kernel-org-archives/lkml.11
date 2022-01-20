@@ -2,117 +2,144 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F05EC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 10:44:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42605C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 10:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376371AbiATKos (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 05:44:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36568 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233816AbiATKoq (ORCPT
+        id S243336AbiATKpC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 05:45:02 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:43789 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1376373AbiATKpA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 05:44:46 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8400CC061574;
-        Thu, 20 Jan 2022 02:44:46 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id m4so26689010edb.10;
-        Thu, 20 Jan 2022 02:44:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EAldbO0fY6c4Z69F0zgy5Tqy+hJZ7FajNYzfcG8lzu8=;
-        b=lwbSqh4SLeikP8AenBAz+mJgucOMFhn6+qi40XJf/wKYVo2zz5ZAGvwqwdxvEojzAI
-         JgGkDlMK2QWP3O7fS6JLFVaM0QANG9+1PWJpwn1qDddLR6nbUUSzkVgpp54aL6uqsXgT
-         nKJiiLtDKSTFsVaTdLH4ggrsAdzlfvEMhgS+euHv6FuknqniCl9JaTPwwnHBBNVMJtzO
-         ls6mDoNdCFQefk9og1DtSfY5FF6RQaYeY4TNw1S9BeTTer6+QvdoX3qcyMziU/+zyMs9
-         03qv9y4jIaCOpa0luwW12ltRwgncoale+jJfOIgz0ePs1J86ShFDttgm7KaRLJPiH7LS
-         Dc0g==
+        Thu, 20 Jan 2022 05:45:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642675499;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=kX+pu+Lp5VnrEzf41aOccHYagPzdKOujjotR8Q1un+c=;
+        b=cTsR47lRXNSvLbEQZJd0Y5WAeEaQySKBo5HOGinlBs5W/e25y42jSV51hjs6PzGjil5/DT
+        vQFicFCirj93wO6QcXdTGyHH04+iIsc3//3St14xW4MYKuMRpna+VRd2Mh6kxNnbj7WneN
+        KaRt3av+Li/QTWcconO8VregSapBMzk=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-411-Qs-YU4YAOeeMn_7bbUK7Zw-1; Thu, 20 Jan 2022 05:44:58 -0500
+X-MC-Unique: Qs-YU4YAOeeMn_7bbUK7Zw-1
+Received: by mail-ed1-f71.google.com with SMTP id cf15-20020a0564020b8f00b0040284b671c6so5501301edb.22
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 02:44:58 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EAldbO0fY6c4Z69F0zgy5Tqy+hJZ7FajNYzfcG8lzu8=;
-        b=W9rtgQtnXq1S6WScgFko0mwYDAUlIr1p0AITQnpZ26r78LaGAz+QV5MI/THv+e+x1t
-         9gk7CLwOc30Q+CLsJO7kLn916b6tMFgaSOUbGAOBSBmlkOZc5M2V4wQy5nC/06nnJBfd
-         30h3SmRBQZAt15zCI6zkXRxAh4muyDvQutqCmgAcTJK6nKskSDnu04Qs+N2YEIQFm7p/
-         B0gC1tewb+DOt5KE7ELw/H4DNoPA/jpvmEEWXPMeaLM5KqwQVxV9xzhIvV4J2fEj3fjY
-         I63gvIHQ78ugrvpyVRMwZ7T7GDBsMoqjiFB2H3TkNhEbsJ1yexsKp1Lu6nZeitGon8SL
-         tQBw==
-X-Gm-Message-State: AOAM531vBI/M5nL4skWWICKIJlkjmdfQDKDyLA3Y+4OeAg9TChrlK0kL
-        bH6p9bryYjCm/Jo3taJ5PAqZC6yowvjVr+/3IU0=
-X-Google-Smtp-Source: ABdhPJzI915PPwkfPJEnAuUAqB1eSmCNb6jxmD2FIagRHCy+t6lJFz807DF7d7pczoMfl+Hj+9jS8/Fr5ibapsuYB8A=
-X-Received: by 2002:a05:6402:35d3:: with SMTP id z19mr20301107edc.29.1642675485050;
- Thu, 20 Jan 2022 02:44:45 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=kX+pu+Lp5VnrEzf41aOccHYagPzdKOujjotR8Q1un+c=;
+        b=2b+6RD/uGN3nR2UyFX04Swc1ragzEpDi98rRi0uQ9feLJBSOLsQz6uXptK7v9kCg2O
+         kWkzogdbSeGOaaLUFmxHVQx/f111k1lNJX/nZafeJIpJdDLF4wV+tOzii1/MxfE1P+jg
+         AhF2yZFoJHxLLKim3W6+/bbdmh3XFE3ZCGDoEwfAvGoSXBxWFp9ZDMxJRYPFzrzATHKx
+         t9A6DgG1k7mBmytWiguwOXcjKwsgrw6aTvc3fCw86udWS60QnTb8ZZ9ae4KQJN3ZJ2xC
+         LT61Mo4W/F+LGr2Gs6uVzyQlP1J8kCu95TtVFZzD/QsAC5/ku9Ut5iQsesbv9VsWKLCy
+         OgSw==
+X-Gm-Message-State: AOAM530XHl43JxK79VSHsLRnUokd2AJcjCt3gWY+pNlbNbRZyDEexa2b
+        CSHXa87niC5/oeTqiq+0ppFvXpdFjCTA260I48wntCD4jURH0gi0GB8xA7ujppA5gXD3+MbsY5y
+        nawLliSJJ+JNHnDFVEVamK3qx
+X-Received: by 2002:a05:6402:2803:: with SMTP id h3mr36105225ede.241.1642675497196;
+        Thu, 20 Jan 2022 02:44:57 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyjARLhfYm29sjlnTYujKowEOv25kxTDg3c9udfzGwVbNwty28AzlkAFfqoo+s+jkviUx9CjA==
+X-Received: by 2002:a05:6402:2803:: with SMTP id h3mr36105201ede.241.1642675497034;
+        Thu, 20 Jan 2022 02:44:57 -0800 (PST)
+Received: from krava (nat-pool-brq-u.redhat.com. [213.175.37.12])
+        by smtp.gmail.com with ESMTPSA id l3sm843873ejg.44.2022.01.20.02.44.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 02:44:56 -0800 (PST)
+Date:   Thu, 20 Jan 2022 11:44:54 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Masami Hiramatsu <mhiramat@kernel.org>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Naveen N . Rao" <naveen.n.rao@linux.ibm.com>,
+        Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [RFC PATCH v3 7/9] bpf: Add kprobe link for attaching raw kprobes
+Message-ID: <Yek9Jq1UVa8fq91n@krava>
+References: <164260419349.657731.13913104835063027148.stgit@devnote2>
+ <164260427009.657731.15292670471943106202.stgit@devnote2>
 MIME-Version: 1.0
-References: <1641996862-26960-1-git-send-email-akhilrajeev@nvidia.com>
- <1641996862-26960-4-git-send-email-akhilrajeev@nvidia.com>
- <CAHp75Vd=gxF9jFMvRw3qM9rfsxxCsO8qYXKVheuhjOV7ypU9og@mail.gmail.com>
- <DM5PR12MB18509C555A8A6F5891F0CC28C05A9@DM5PR12MB1850.namprd12.prod.outlook.com>
- <CAHp75VfVJo=8FPX_Pw15X5B3awFXpuEq+=LryxB6M4Ub-YJ7uA@mail.gmail.com> <DM5PR12MB185098D36F665AC5702D47DDC05A9@DM5PR12MB1850.namprd12.prod.outlook.com>
-In-Reply-To: <DM5PR12MB185098D36F665AC5702D47DDC05A9@DM5PR12MB1850.namprd12.prod.outlook.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 20 Jan 2022 12:43:02 +0200
-Message-ID: <CAHp75VfVt0b+rBTfvTTj4-M11DrM2EGdqb4NNNTq0ApvR+gpDg@mail.gmail.com>
-Subject: Re: [PATCH v2 3/3] i2c: smbus: Use device_*() functions instead of of_*()
-To:     Akhil R <akhilrajeev@nvidia.com>,
-        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Christian Koenig <christian.koenig@amd.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Wolfram Sang <wsa@kernel.org>, Len Brown <lenb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <164260427009.657731.15292670471943106202.stgit@devnote2>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 12:29 PM Akhil R <akhilrajeev@nvidia.com> wrote:
->
-> > ...
-> >
-> > > > This change reveals potential issue:
-> > > >
-> > > > > -               irq = of_irq_get_byname(adapter->dev.of_node, "smbus_alert");
-> > > > > +               irq = device_irq_get_byname(adapter->dev.parent,
-> > "smbus_alert");
-> > > >
-> > > > >                 if (irq <= 0)
-> > > >
-> > > > I guess this '= 0' part should be fixed first.
-> > >
-> > > '0' is a failure as per the documentation of of_irq_get_byname() as well as
-> > > of_irq_get(). The case is different for acpi_irq_get(), but it is handled in
-> > > fwnode_irq_get(). If I understood it right, a return value of '0' should be
-> > > considered a failure here.
-> >
-> > Depends. I have no idea what the original code does here. But
-> > returning an error or 0 from this function seems confusing to me.
-> >
-> The description in of_irq_get*() says -
-> /* Return: Linux IRQ number on success, or 0 on the IRQ mapping failure, or
->  * -EPROBE_DEFER if the IRQ domain is not yet created, or error code in case
->  * of any other failure.
->  */
-> As I see from the code of fwnode_irq_get(), which is used in this case, returns
-> either the return value of of_irq_get() or error code from acpi_irq_get() when
-> it fails, or res.start if it didn't fail. I guess, any of these would not be 0 unless
-> there is an error.
+On Wed, Jan 19, 2022 at 11:57:50PM +0900, Masami Hiramatsu wrote:
 
-of_irq_get*() seems inconsistent...
+SNIP
 
-Uwe, what do you think?
+> +static int kprobe_link_prog_run(struct bpf_kprobe_link *kprobe_link,
+> +				struct pt_regs *regs)
+> +{
+> +	struct bpf_trace_run_ctx run_ctx;
+> +	struct bpf_run_ctx *old_run_ctx;
+> +	int err;
+> +
+> +	if (unlikely(__this_cpu_inc_return(bpf_prog_active) != 1)) {
+> +		err = 0;
+> +		goto out;
+> +	}
+> +
+> +	old_run_ctx = bpf_set_run_ctx(&run_ctx.run_ctx);
+> +	run_ctx.bpf_cookie = kprobe_link->bpf_cookie;
+> +
+> +	rcu_read_lock();
+> +	migrate_disable();
+> +	err = bpf_prog_run(kprobe_link->link.prog, regs);
+> +	migrate_enable();
+> +	rcu_read_unlock();
+> +
+> +	bpf_reset_run_ctx(old_run_ctx);
+> +
+> + out:
+> +	__this_cpu_dec(bpf_prog_active);
+> +	return err;
+> +}
+> +
+> +static void kprobe_link_entry_handler(struct fprobe *fp, unsigned long entry_ip,
+> +				      struct pt_regs *regs)
+> +{
+> +	struct bpf_kprobe_link *kprobe_link;
+> +
+> +	/*
+> +	 * Because fprobe's regs->ip is set to the next instruction of
+> +	 * dynamic-ftrace insturction, correct entry ip must be set, so
+> +	 * that the bpf program can access entry address via regs as same
+> +	 * as kprobes.
+> +	 */
+> +	instruction_pointer_set(regs, entry_ip);
 
--- 
-With Best Regards,
-Andy Shevchenko
+ok, so this actually does the stall for me.. it changes
+the return address back to repeat the call again
+
+bu I think it's good idea to carry the original ip in regs
+(for bpf_get_func_ip helper) so I think we need to save it
+first and restore after the callback
+
+I'll make the fix and add cookie change Andrii asked for
+on top of your ftrace changes and let you know
+
+thanks,
+jirka
+
+> +	kprobe_link = container_of(fp, struct bpf_kprobe_link, fp);
+> +	kprobe_link_prog_run(kprobe_link, regs);
+> +}
+> +
+
+SNIP
+
