@@ -2,177 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FBBCC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 15:04:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F852C4332F
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 15:05:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376408AbiATPEj (ORCPT
+        id S1376396AbiATPFB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 10:04:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:20710 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1376401AbiATPEd (ORCPT
+        Thu, 20 Jan 2022 10:05:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376355AbiATPE6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 10:04:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642691073;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=To2wpxuY27WAnz4SIl/hJ0+xCm0ywOKL7oN+T9JQDqU=;
-        b=gPU8mNrovp/OB9nT+qQdrYDv4LQ4TFUejlaeojg2oBqwH6PDLs1rrUVC4Rf7OP4pU8uhh/
-        Ypli+unm0XKL6NpA1DpyOuCPP/pBO7o/Uvru/0dfhOrEZIg9tO5lDrSSC5Yd6hGO7kav4G
-        Vvxl+k7szARWJhuGHYRNq2itbwUD6A4=
-Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
- [209.85.208.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-396-n5LrcJB1OX-hBMr6-AxjPA-1; Thu, 20 Jan 2022 10:04:31 -0500
-X-MC-Unique: n5LrcJB1OX-hBMr6-AxjPA-1
-Received: by mail-ed1-f70.google.com with SMTP id i22-20020a50fd16000000b00405039f2c59so2091757eds.1
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 07:04:31 -0800 (PST)
+        Thu, 20 Jan 2022 10:04:58 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F969C061574;
+        Thu, 20 Jan 2022 07:04:58 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id n10so14300925edv.2;
+        Thu, 20 Jan 2022 07:04:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0B0txwt9I3zBHBA04rxL+1M1cNNBUpFyJyCl5rt6UEQ=;
+        b=OaZBl8tGrO1X9a7FHGZB4cmJ4VgTU/3ItHTB79dImrklyW3lvKSD8e+ysCI/q8fTkY
+         ZN/OJ9sLOdYorv2sKzI/D6kLhs/iS3ZZvdwmkCt/Bte9hVj/JLeaTa5pd0Z7LXPVtBHZ
+         PTV2OqYeVGK6CUmulaU1mkya5Nx+qD6sVJbaoGkbUkw0YbABzXFkz538JiSIxTwMcc/t
+         SlSOJuRSr2h6li7ph1WuwSEInBUxqmajFWtG+B8Hxn+Js0If8VxlZt+J8ffhVMW3C4ur
+         iC+g6I9030SeiVxyy1EdJwlaJkyDAyvpLBlS6TAx37CzQJZmOuWcTjl9rCC+MSANkzSX
+         kFhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=To2wpxuY27WAnz4SIl/hJ0+xCm0ywOKL7oN+T9JQDqU=;
-        b=UbiWjX7+4aXV2WwrT753N6jcY/tdNg7EaRuUUfiShEu+SlMOvfY9FC2KmT5VChE4OW
-         s108pOgr16ybg+nuzuw6HZ4c3AsYnVA+RJoaP3O4lU6OJlzjd48NvqFFYcgEO+vCdeVt
-         8b6HGc5x7mxQDdNU1iKpVIERrCAg9MicRmt8vpRt6mq8LGy8eMmmxsW9mUYEXI5lY1Pa
-         ZLILWg/fmspN9gabFvbQKQmWtrr24bVtCoXk6EaN6Kl28OnfZK7Yu1MwPy4P8pDy8dVk
-         8Rh35zKclCL5ba+z/UV56Y48/iP2c648IxGg+NtLkQfg2ADKU7ZWPrR6AINg+irNDbuW
-         WYug==
-X-Gm-Message-State: AOAM531paiERyxCXACTI28v4lwGhpyQd70pPwexFyUZjalh4gpGRRJ03
-        b+sNN33JRynWbVicvYQ6qqE96P5mNvxepwHAHMgB4MKGZ06Dw57VOpHN/hvhE+4ShfkmSVdt4Go
-        RDqUs3spJiwK3H3wPVTVDXaZA
-X-Received: by 2002:a17:907:6da4:: with SMTP id sb36mr28535597ejc.542.1642691070468;
-        Thu, 20 Jan 2022 07:04:30 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyghiAn88f/FuP8ckekTfjsMklMLqYCh+mLdlTm7Wp0lVLOMWfL9/cqIYmnkwrbVIhfgzxPWA==
-X-Received: by 2002:a17:907:6da4:: with SMTP id sb36mr28535566ejc.542.1642691070203;
-        Thu, 20 Jan 2022 07:04:30 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.gmail.com with ESMTPSA id gh14sm1090985ejb.38.2022.01.20.07.04.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Jan 2022 07:04:29 -0800 (PST)
-Message-ID: <78979080-1338-002c-ee16-5213415095da@redhat.com>
-Date:   Thu, 20 Jan 2022 16:04:29 +0100
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0B0txwt9I3zBHBA04rxL+1M1cNNBUpFyJyCl5rt6UEQ=;
+        b=mqS2rHgT34MivHGFR8AkkM0JsYSoo0avOhBikljCixK2zF0s4in4W8GSY8JMbOXXsH
+         HRbpZ68ZiOiqJQtwiQKPYDhc+CL8L98uj75JNoNCg1gaI1nUB3cKShhuiLo45G5hnhyY
+         49RAqnczOZeBIPPIvh5HOgNb9ImCc8OeSn4TZaUymELjv+s05ZGmWQ5jErowAAD58DPT
+         grASC9DB7T23KXibwinnrgUhEuBe13nO+GwXiqJqZrB4mhNqdg51O2KAnYRKokaoXon2
+         R9ak3gRCIPsRR5L9ySVqOSIU/aTuIn5zTtpfjshMHdtenOs8/ew2SFdNnZqBmtnT88r9
+         yTLg==
+X-Gm-Message-State: AOAM530RyrP1WEMspF0OZ+eUlyoN+WGmrGR87EDLxJnVgYqBMf2B7FIL
+        ZGmsjsSDxQOORhifKKKAR78glRqPX2YjFtUwpHU=
+X-Google-Smtp-Source: ABdhPJzZRS5c6GbMZJ3YVrg75Ha9c8GpIBK6w4XxIX4joFpc3VUWOdfDcTqr1Crv3QTvW9rKuYxr1irkQ89yZOqzfos=
+X-Received: by 2002:a17:907:968c:: with SMTP id hd12mr28869417ejc.639.1642691096836;
+ Thu, 20 Jan 2022 07:04:56 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH v4 4/9] spi: Add API to count spi acpi resources
-Content-Language: en-US
-To:     Stefan Binding <sbinding@opensource.cirrus.com>,
-        Mark Brown <broonie@kernel.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>, Mark Gross <markgross@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-acpi@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, patches@opensource.cirrus.com
-References: <20220120134326.5295-1-sbinding@opensource.cirrus.com>
- <20220120134326.5295-5-sbinding@opensource.cirrus.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220120134326.5295-5-sbinding@opensource.cirrus.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <1642686255-25951-1-git-send-email-akhilrajeev@nvidia.com> <1642686255-25951-3-git-send-email-akhilrajeev@nvidia.com>
+In-Reply-To: <1642686255-25951-3-git-send-email-akhilrajeev@nvidia.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 20 Jan 2022 17:03:14 +0200
+Message-ID: <CAHp75VehSCxszDV3UQCEnPk7OCXRabRMJEStjpCamBG6X1iaCw@mail.gmail.com>
+Subject: Re: [PATCH v3 2/3] docs: firmware-guide: ACPI: Add named interrupt doc
+To:     Akhil R <akhilrajeev@nvidia.com>
+Cc:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Christian Koenig <christian.koenig@amd.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Len Brown <lenb@kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux-i2c <linux-i2c@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-tegra <linux-tegra@vger.kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+On Thu, Jan 20, 2022 at 3:45 PM Akhil R <akhilrajeev@nvidia.com> wrote:
+>
+> Added details and example for named interrupts in the ACPI table.
 
-On 1/20/22 14:43, Stefan Binding wrote:
-> Some ACPI nodes may have more than one Spi Resource.
-> To be able to handle these case, its necessary to have
-> a way of counting these resources.
-> 
-> Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
-> ---
->  drivers/spi/spi.c       | 40 ++++++++++++++++++++++++++++++++++++++++
->  include/linux/spi/spi.h |  6 ++++++
->  2 files changed, 46 insertions(+)
-> 
-> diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-> index 898cc9931490..8c0c2e26609a 100644
-> --- a/drivers/spi/spi.c
-> +++ b/drivers/spi/spi.c
-> @@ -2325,6 +2325,46 @@ struct acpi_spi_lookup {
->  	int			irq_index;
->  };
->  
-> +static int acpi_spi_count(struct acpi_resource *ares, void *data)
-> +{
-> +	struct acpi_resource_spi_serialbus *sb;
-> +	int *count = data;
-> +
-> +	if (ares->type != ACPI_RESOURCE_TYPE_SERIAL_BUS)
-> +		return 1;
-> +
-> +	sb = &ares->data.spi_serial_bus;
-> +	if (sb->type != ACPI_RESOURCE_SERIAL_TYPE_SPI)
-> +		return 1;
-> +
-> +	*count = *count + 1;
-> +
-> +	return 1;
-> +}
-> +
-> +/**
-> + * acpi_spi_count_resources - Count the number of SpiSerialBus resources
-> + * @adev:	ACPI device
-> + *
-> + * Returns the number of SpiSerialBus resources in the ACPI-device's
-> + * resource-list; or a negative error code.
-> + */
-> +int acpi_spi_count_resources(struct acpi_device *adev)
-> +{
-> +	LIST_HEAD(r);
-> +	int count = 0;
-> +	int ret;
-> +
-> +	ret = acpi_dev_get_resources(adev, &r, acpi_spi_count, &count);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	acpi_dev_free_resource_list(&r);
-> +
-> +	return count;
-> +}
-> +EXPORT_SYMBOL_GPL(acpi_spi_count_resources);
-> +
->  static void acpi_spi_parse_apple_properties(struct acpi_device *dev,
->  					    struct acpi_spi_lookup *lookup)
->  {
-> diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
-> index 1a34fd0f6ca2..25a82729f8da 100644
-> --- a/include/linux/spi/spi.h
-> +++ b/include/linux/spi/spi.h
-> @@ -764,6 +764,7 @@ extern void spi_unregister_controller(struct spi_controller *ctlr);
->  extern struct spi_device *acpi_spi_device_alloc(struct spi_controller *ctlr,
->  						struct acpi_device *adev,
->  						int index, int irq_index);
-> +int acpi_spi_count_resources(struct acpi_device *adev);
->  #else
->  static inline struct spi_device *acpi_spi_device_alloc(struct spi_controller *ctlr,
->  						       struct acpi_device *adev,
-> @@ -771,6 +772,11 @@ static inline struct spi_device *acpi_spi_device_alloc(struct spi_controller *ct
->  {
->  	return ERR_PTR(-EOPNOTSUPP);
->  }
-> +
-> +int acpi_spi_count_resources(struct acpi_device *adev)
-> +{
-> +	return -EOPNOTSUPP;
-> +}
->  #endif
->  
->  /*
+Added details and example for --> Add a detailed example of the
 
-I just realized I miss this bit, like with my review of patch 2/9,
-I don't think we need stubs here.
+...
 
-Regards,
+> +            Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) {
+> +                0x20,
 
-Hans
+I would think of splitting this to two separate entries in between of
+which the GpioInt() resource is provided. It will explicitly show that
+you describe the case only for Interrupt(). Something like
 
+  Interrupt (...) { 0x20 }
+  GpioInt(...) { ... }
+  Interrupt (...) { 0x24 }
 
+But it's up to you.
+
+> +                0x24
+> +            }
+
+...
+
+> +The driver can call the function - device_irq_get_byname() with the device
+> +and interrupt name as arguments to get the corresponding IRQ number.
+
+Needs switch to fwnode as per comment against the previous patch.
+
+-- 
+With Best Regards,
+Andy Shevchenko
