@@ -2,84 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5004C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 17:56:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C0CC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 17:56:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233220AbiATR4N (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 12:56:13 -0500
-Received: from mx0a-001ae601.pphosted.com ([67.231.149.25]:37138 "EHLO
-        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S233102AbiATR4G (ORCPT
+        id S233134AbiATR4s (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 12:56:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52316 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231135AbiATR4r (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 12:56:06 -0500
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20K5Ip9w022340;
-        Thu, 20 Jan 2022 11:55:57 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=PODMain02222019;
- bh=/IA9aYK9SVb9BvHEuwQJnvbzmEGlO38e5B5sMd74PEs=;
- b=CbICzOYPKbjJcZ5Y39rvRaJd5MksGxO26iFQxXR509EmiVXIc2oEptleua5XaDz9lWpy
- mbEf8qkke+5KTppMduYiSCw8JvPRTiokkaw0vw4CmKuMBRW3xLrU1KoHw3CFdHOlHd5b
- wptJiq9DKmu1AoP6TCFK8k85poc7hpONOHOar79Mu3/GHSYHWG1o1l2Pxh4UhnUcxS52
- 9Cd8twaMYLTf2lANJxVJq/Y+tmje9S7oq6Umv7tH7/aZnHMqeRuQcEPOd0CyBc4YLRiW
- JQkrp0R6O2muqc7RJ8VBpZGtttB84rjjokFf2OXtrBkI1D5DCpHZo8WZbRg5DVadcR8n rw== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3dpms0hh17-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Thu, 20 Jan 2022 11:55:57 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Thu, 20 Jan
- 2022 17:55:53 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Thu, 20 Jan 2022 17:55:53 +0000
-Received: from AUSNPC0LSNW1-debian.cirrus.com (AUSNPC0LSNW1.ad.cirrus.com [198.61.65.33])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 35050B13;
-        Thu, 20 Jan 2022 17:55:53 +0000 (UTC)
-From:   Richard Fitzgerald <rf@opensource.cirrus.com>
-To:     <broonie@kernel.org>
-CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <patches@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>
-Subject: [PATCH 0/3] ASOC: cs42l42: Add support for system suspend
-Date:   Thu, 20 Jan 2022 17:55:46 +0000
-Message-ID: <20220120175549.671831-1-rf@opensource.cirrus.com>
-X-Mailer: git-send-email 2.30.2
+        Thu, 20 Jan 2022 12:56:47 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E454C061574
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 09:56:47 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id b1-20020a17090a990100b001b14bd47532so6519489pjp.0
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 09:56:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=eQK5zVzqLI6klwHyZj/+smdOpWkvGx4b96oH7k78DVI=;
+        b=h3qF4O7gvq4Ngmvx2/kjn9H6OS8Lau1YuC4M8nMdC4/En8aXI85M6NX9I4dtxPuOvR
+         LNGI3s0xYtWiTsLZfVyvPffs9SGIdhwwhB08iHTgIbwdEKrOpN6nExX/Zskqq4UoQy3k
+         0f03014Xr2C6BvgmptvCARFJ9pal8Hm7K/4ilIj5aKBePIr+EzC6iQgAxhA9rthj6zmc
+         YxyrQhJYlnF+K8UUOOi49dbDeQhGLo1Sw/G6XAhjUCofgEfj4fFt6xPZdx0LmQtijzzL
+         +lcuDM95hzIzn4gLZ244o+UN20aYeZLYV5Vq0FHitFwHP7OmtX2iiCe/0wb5VIKGjXe+
+         6J0A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=eQK5zVzqLI6klwHyZj/+smdOpWkvGx4b96oH7k78DVI=;
+        b=jVUS9yMu4NTOkkBjfTXNRAW/Zt7kqwHov8Z/TFpVM0Hf0V2vY8XLmer4MwVy5P9C/G
+         E3Dmt2w4sJLJSOz1FbtsZZAt1Lq8aZP3L281gDi5uI65Ri3ptzoCyNBerXFMXImzlmvi
+         aNQO+DgYyMY+gb7pihHbP/KoL4ylp40ey9aJMcgoY8SD0L7d03eCaW6APFG1s6sZesep
+         DyexWvms/EnzJu+3JUHbZ1ofO8syBXx7f+c4LQUYwAVm+iT1VZWLB9rklfPvhS2XruU3
+         mfwk3XTk9BCwZVetPRGshLH+wzg5uEMoIdUqKlA3eMM4YXiafiG5Sxnn/MZHXS7Sjpm1
+         5TpQ==
+X-Gm-Message-State: AOAM532PjVN3jSDjKwqjkpNiaNcBAAOAHlUjoEiivFtZO3ii7Z1Gqr6W
+        WKOyA6/4fzpgNjfUPZZcMy/MQA==
+X-Google-Smtp-Source: ABdhPJwUKxMCYglR9XOpdXVnTtB/k9OqpDZEl+oS4hqc6RRWe0ciZkXLEvosyCk8upOLgBMKD0Y5YA==
+X-Received: by 2002:a17:90a:c08f:: with SMTP id o15mr2479838pjs.204.1642701405601;
+        Thu, 20 Jan 2022 09:56:45 -0800 (PST)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id rj2sm9860364pjb.54.2022.01.20.09.56.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 09:56:44 -0800 (PST)
+Date:   Thu, 20 Jan 2022 10:56:42 -0700
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] coresight: syscfg: Fix memleak on registration failure
+ in cscfg_create_device
+Message-ID: <20220120175642.GB1338735@p14s>
+References: <20220110073100.15497-1-linmq006@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: -0qIb_fGy_rUEMofCkMELgRt3ynZ0UbZ
-X-Proofpoint-GUID: -0qIb_fGy_rUEMofCkMELgRt3ynZ0UbZ
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220110073100.15497-1-linmq006@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add system suspend and resume handlers so that the cs42l42 is cleanly
-put into power-off state during system suspend and the registers are
-restored in resume.
+Good morning,
 
-The first two patches separate out two small changes that can stand
-alone and are needed to enable the system suspend implementation:
+On Mon, Jan 10, 2022 at 07:31:00AM +0000, Miaoqian Lin wrote:
+> device_register() calls device_initialize(),
+> according to doc of device_initialize:
+> 
+>     Use put_device() to give up your reference instead of freeing
+>     * @dev directly once you have called this function.
 
-1) Don't rely on there being a jack unplug IRQ before a plug IRQ.
-There won't be if the unplug and plug happened while in system suspend.
+That is _if_ device_initialize() is called manually.  In this instance
+@dev is registered with device_register() and unregistered with
+device_unregister().  The latter conforms to the comment you pointed out and
+calls put_device() as expected.
 
-2) Put a mutex around the entire IRQ handling so that the suspend can
-ensure the last run of the IRQ handler has completed before it powers
-down.
+Thanks,
+Mathieu
 
-Richard Fitzgerald (3):
-  ASoC: cs42l42: Report full jack status when plug is detected
-  ASoC: cs42l42: Change jack_detect_mutex to a lock of all IRQ handling
-  ASoC: cs42l42: Handle system suspend
-
- sound/soc/codecs/cs42l42.c | 164 ++++++++++++++++++++++++++++++++++++++++++---
- sound/soc/codecs/cs42l42.h |   7 +-
- 2 files changed, 161 insertions(+), 10 deletions(-)
-
--- 
-2.11.0
-
+> 
+> To prevent potential memleak, use put_device() instead call kfree
+> directly.
+> 
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> ---
+>  drivers/hwtracing/coresight/coresight-syscfg.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/hwtracing/coresight/coresight-syscfg.c b/drivers/hwtracing/coresight/coresight-syscfg.c
+> index 43054568430f..007fa1c761a7 100644
+> --- a/drivers/hwtracing/coresight/coresight-syscfg.c
+> +++ b/drivers/hwtracing/coresight/coresight-syscfg.c
+> @@ -764,7 +764,7 @@ struct device *cscfg_device(void)
+>  /* Must have a release function or the kernel will complain on module unload */
+>  static void cscfg_dev_release(struct device *dev)
+>  {
+> -	kfree(cscfg_mgr);
+> +	put_device(dev);
+>  	cscfg_mgr = NULL;
+>  }
+>  
+> -- 
+> 2.17.1
+> 
