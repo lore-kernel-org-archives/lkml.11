@@ -2,139 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF419C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 21:22:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27B5FC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 21:25:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377799AbiATVWv (ORCPT
+        id S1377831AbiATVY6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 16:22:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41882 "EHLO
+        Thu, 20 Jan 2022 16:24:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231299AbiATVWu (ORCPT
+        with ESMTP id S1347775AbiATVY5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 16:22:50 -0500
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C6EEC061574
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 13:22:50 -0800 (PST)
-Received: by mail-pf1-x42a.google.com with SMTP id v74so3559012pfc.1
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 13:22:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=CUsY6BC+pXhHFnLSqdEbGSsL6/Agpcnt4z12QyJauGo=;
-        b=GN39w31clbNaSPLsttHOH88mpjYQ/o/CpHxIQkhwgZIf/GjIQl4WjNTv8//y4vKEX4
-         JqR6xnUDR2n0F/E1LlPW33bp27QDLQMuAOTOZYSwjQ9czM2fUnNSUq1iwLrVGMViMro/
-         AqEAF2iI1v3wjYYhpgn3xYG43mW/Qb5Gdm4ppfgma3p7rOISH2mxi0vPDcbi5+OBgPSi
-         QweNS1ewJ0jfHkzAMnECivsRGUsnfo5DSZa7kMnbCdK5qiCNVl0a5+RjbnGb+1K4BDqo
-         ZqZNemG7ROhUW5yw2r2nA8+ndrPhmoNCqW3XtVeYUe8bnkyj6tQIXwOTL6567XVpX/JY
-         EI6A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=CUsY6BC+pXhHFnLSqdEbGSsL6/Agpcnt4z12QyJauGo=;
-        b=bz4bM3V+Uwbu82I6Ty1OAoPW6xz+0eyZVRxxqAQvmGYg7M2hqwZLB4V3VKaASAIKMc
-         uiPcNZ7VnfDRIpbLcoollb5yTSRRkj6LOGHJyVhpjbdv0G7GwnsEiFAeVCtlrsGwsbFr
-         w6QuqFA/jIYodZ94mz9wJhtudAGuDFGWjh12N4CDz5uibB0DVcefaXC5kklcyrntM3Mn
-         hOFohOBndb3nOPlFfq4vaGzvEiAzF6dNfeWasAKhGjyWWzY8GF9UylqUzcaNqZexMw6R
-         K8U8k3c/bb+2ueAxk87Jj47sp7IzVSqk9cjXUtyuK0zWzC6d5/uLdimJvbrT6R81gsb8
-         zoSg==
-X-Gm-Message-State: AOAM533lTYsoD2w2tC/tNSzPiAkZLZ9wC12TtnXBfbl7aRyO1Z30ftU6
-        5tMx8hiqcMdsW2mt5y5eVVQ=
-X-Google-Smtp-Source: ABdhPJwbHyasteQOuzk/p1y7DsTSy0FhnE+g47J549pQmSUM2jPk2xS75YATV8Q24Td6GIIUbzZEww==
-X-Received: by 2002:a05:6a00:c92:b0:4c3:d3e:3674 with SMTP id a18-20020a056a000c9200b004c30d3e3674mr658218pfv.16.1642713769827;
-        Thu, 20 Jan 2022 13:22:49 -0800 (PST)
-Received: from google.com ([2620:15c:211:201:b370:1e12:5bf4:801f])
-        by smtp.gmail.com with ESMTPSA id ca12sm3236486pjb.11.2022.01.20.13.22.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 13:22:49 -0800 (PST)
-Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Thu, 20 Jan 2022 13:22:47 -0800
-From:   Minchan Kim <minchan@kernel.org>
-To:     David Hildenbrand <david@redhat.com>
-Cc:     Michal Hocko <mhocko@suse.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        John Dias <joaodias@google.com>
-Subject: Re: [RESEND][PATCH v2] mm: don't call lru draining in the nested
- lru_cache_disable
-Message-ID: <YenSp5l80kBLijcd@google.com>
-References: <20211230193627.495145-1-minchan@kernel.org>
- <YeVzWlrojI1+buQx@dhcp22.suse.cz>
- <YedXhpwURNTkW1Z3@google.com>
- <644356e5-2a85-fcea-2280-ff779ae8d38d@redhat.com>
+        Thu, 20 Jan 2022 16:24:57 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67910C06161C;
+        Thu, 20 Jan 2022 13:24:57 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0637B60018;
+        Thu, 20 Jan 2022 21:24:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E5ACC340E5;
+        Thu, 20 Jan 2022 21:24:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642713896;
+        bh=hHa2vsWqZope6dE5BM2dTH63C6nTwIElUo+CDUVb3Vs=;
+        h=Date:From:To:Cc:Subject:From;
+        b=fn3W2BEfiC+mCMp8OUuAvEWXUn55FurdT4wdFl9zaZfJ10KfHcHQGzn7x12AnpJ3E
+         vkqNSkN8COcHEHipYoa+D48mYYhM+DMsSlorf0Hgwg0Ohw57n1Lxr8K/RyMx3uzIxE
+         vi7QY/hup/Utf1+e6yGi5Gm0Un+PliO/aeVJ8GQ7sZkdZlsAmvEC4yf2gvrR+4dD9f
+         j2pUyP2v2W7usBXU7x3fAqcBs9jIAcxTtlPKleWq01pe+AsNTZ3It/rluxIeQhVU8V
+         mhJMzKu8W/ymSVnSrVXxcE8LKFIAiaBcOSiqva3wh9MMA3HQzVuO+QpMS78/7/lau2
+         wmPaOR/wjNCUA==
+Date:   Thu, 20 Jan 2022 15:31:31 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] USB: serial: ti_usb_3410_5052: Use struct_size()
+ helper in ti_write_byte()
+Message-ID: <20220120213131.GA32119@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <644356e5-2a85-fcea-2280-ff779ae8d38d@redhat.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 09:42:23AM +0100, David Hildenbrand wrote:
-> On 19.01.22 01:12, Minchan Kim wrote:
-> > On Mon, Jan 17, 2022 at 02:47:06PM +0100, Michal Hocko wrote:
-> >> On Thu 30-12-21 11:36:27, Minchan Kim wrote:
-> >>> lru_cache_disable involves IPIs to drain pagevec of each core,
-> >>> which sometimes takes quite long time to complete depending
-> >>> on cpu's business, which makes allocation too slow up to
-> >>> sveral hundredth milliseconds. Furthermore, the repeated draining
-> >>> in the alloc_contig_range makes thing worse considering caller
-> >>> of alloc_contig_range usually tries multiple times in the loop.
-> >>>
-> >>> This patch makes the lru_cache_disable aware of the fact the
-> >>> pagevec was already disabled. With that, user of alloc_contig_range
-> >>> can disable the lru cache in advance in their context during the
-> >>> repeated trial so they can avoid the multiple costly draining
-> >>> in cma allocation.
-> >>
-> >> Do you have any numbers on any improvements?
-> > 
-> > The LRU draining consumed above 50% overhead for the 20M CMA alloc.
-> > 
-> >>
-> >> Now to the change. I do not like this much to be honest. LRU cache
-> >> disabling is a complex synchronization scheme implemented in
-> >> __lru_add_drain_all now you are stacking another level on top of that.
-> >>
-> >> More fundamentally though. I am not sure I understand the problem TBH.
-> > 
-> > The problem is that kinds of IPI using normal prority workqueue to drain
-> > takes much time depending on the system CPU business.
-> > 
-> >> What prevents you from calling lru_cache_disable at the cma level in the
-> >> first place?
-> > 
-> > You meant moving the call from alloc_contig_range to caller layer?
-> > So, virtio_mem_fake_online, too? It could and make sense from
-> > performance perspective since upper layer usually calls the
-> > alloc_contig_range multiple times on retrial loop.
-> > 
-> 
-> ^ I actually do have something like that on my TODO list.
+Make use of the struct_size() helper instead of an open-coded version,
+in order to avoid any potential type mistakes or integer overflows that,
+in the worst scenario, could lead to heap overflows.
 
-I'm glad to hear you are also looking the direction.
-If we move some information out of alloc_contig_range,
-upper layer has higher chance to make it fast. A example,
-"failure pfn and why it fails"
+Also, address the following sparse warnings:
+drivers/usb/serial/ti_usb_3410_5052.c:1521:16: warning: using sizeof on a flexible structure
 
-> 
-> The issue is that we have demanding requirements for
-> alloc_contig_range(), discussed in the past for CMA bulk allocations:
-> 
-> (1) Fast, unreliable allocations
-> 
-> Fail fast and let caller continue with next allocation instead of
-> retrying. Try to not degrade system performance.
-> 
-> (2) Slow, reliable allocations
-> 
-> Retry as good as possible. Degrading system performance (e.g., disabling
-> lru) is acceptable.
+Link: https://github.com/KSPP/linux/issues/174
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/usb/serial/ti_usb_3410_5052.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-"Fast and unreliable" provides lots of flexibilty for us to design
-since it's okay to fail. For "Slow, reliable", "the slow" should be not
-too much and we need to keep effort to make it faster.
+diff --git a/drivers/usb/serial/ti_usb_3410_5052.c b/drivers/usb/serial/ti_usb_3410_5052.c
+index 18c0bd853392..03f98e61626f 100644
+--- a/drivers/usb/serial/ti_usb_3410_5052.c
++++ b/drivers/usb/serial/ti_usb_3410_5052.c
+@@ -1512,13 +1512,13 @@ static int ti_write_byte(struct usb_serial_port *port,
+ 			 u8 mask, u8 byte)
+ {
+ 	int status;
+-	unsigned int size;
++	size_t size;
+ 	struct ti_write_data_bytes *data;
+ 
+ 	dev_dbg(&port->dev, "%s - addr 0x%08lX, mask 0x%02X, byte 0x%02X\n", __func__,
+ 		addr, mask, byte);
+ 
+-	size = sizeof(struct ti_write_data_bytes) + 2;
++	size = struct_size(data, bData, 2);
+ 	data = kmalloc(size, GFP_KERNEL);
+ 	if (!data)
+ 		return -ENOMEM;
+-- 
+2.27.0
+
