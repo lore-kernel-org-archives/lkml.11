@@ -2,83 +2,83 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95695C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 10:50:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CE6BC43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 10:51:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229685AbiATKuv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 05:50:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:59400 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1376399AbiATKrT (ORCPT
+        id S229889AbiATKvB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 05:51:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37804 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232804AbiATKuL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 05:47:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642675638;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qO1hZafvyKcBxQP78yk3hqC/9kFUIj2Avg9axdX+yPo=;
-        b=OZHe9T7smZ+tJe7rucU2a3BClATfnnHYUg4Z8esgdgor+Xc32iGjWRXNcevcv8qRjhQ9du
-        fNeHTcRLM7XTpu9KA8Bc7/gEpi6oDV3koxPfLoSEcguFzsnHBVg9vmoBSIDOehL9s+e9Cr
-        Pir0x7P3zTb53xJ2t8SWtpOYWeuOR64=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-117-ZfiickwMO-OpFgAgdS0T_Q-1; Thu, 20 Jan 2022 05:47:17 -0500
-X-MC-Unique: ZfiickwMO-OpFgAgdS0T_Q-1
-Received: by mail-wm1-f70.google.com with SMTP id s190-20020a1ca9c7000000b00347c6c39d9aso3804935wme.5
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 02:47:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=qO1hZafvyKcBxQP78yk3hqC/9kFUIj2Avg9axdX+yPo=;
-        b=Y4RwL09f+aEPpFEbBgfXaJAikTjG2RZC6/ssFOqSGl8wuex2uzyhZRjxgkEge1slA0
-         pW5y0AJ7k4UWqeL4YcOeRqGaOI1FiLniJ2H5KeB8SKT6In6R5Bm5vdH+4SNblzXWcf0E
-         9dfUdNSUtNPGTan5GJoLjc6TrPQWuo3cpun9Gy0MGi14d1n5DTUv5VHhg1l8KXz3vasE
-         V6SNZOW1OName0WySMnSxA8wa1WmMQI6T7kzfhBaQG7ii1JRFXYF+mV2q83ta6HYw5qU
-         qnhlzsemkvO0W+HX5I/vDYnUzgcqQveSexk6Cv/8CPhJVdCbG7KIDzS15RUYkAx2eXO+
-         rUWg==
-X-Gm-Message-State: AOAM53074fgbZUc5jJ1ARb+CixnoVCCjtDGe3CEV7Lfm3MMdz0cBwxLP
-        EUyMKPjI73Ais8AdUpKsVFCLSSohWqthChMl6H7REwYvnrQduQx7iAI+TbCyCitNsjxhofvF19q
-        ufNP0BhDIKyIx+gkELwG8u5m6
-X-Received: by 2002:adf:e6cb:: with SMTP id y11mr5521817wrm.680.1642675635949;
-        Thu, 20 Jan 2022 02:47:15 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwcrwDfaLaSDQRGqrng7EFnJZ80JOK/Ll6EzS9W8XU5xUayOcQx0qNZa9uj2wnfeK8hisgMXg==
-X-Received: by 2002:adf:e6cb:: with SMTP id y11mr5521797wrm.680.1642675635763;
-        Thu, 20 Jan 2022 02:47:15 -0800 (PST)
-Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
-        by smtp.googlemail.com with ESMTPSA id f17sm1972724wml.31.2022.01.20.02.47.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 20 Jan 2022 02:47:14 -0800 (PST)
-Message-ID: <a87499ee-8cd5-2f57-9c1a-58779b5f7047@redhat.com>
-Date:   Thu, 20 Jan 2022 11:47:13 +0100
+        Thu, 20 Jan 2022 05:50:11 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05978C061574;
+        Thu, 20 Jan 2022 02:50:11 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8B6F76151B;
+        Thu, 20 Jan 2022 10:50:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EC172C340E2;
+        Thu, 20 Jan 2022 10:50:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642675810;
+        bh=NqowiAMeZDXoTZn1mzYNvP3gKL0n2MW5IpjY4dst0aM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=KPhUmUvmhNZwdfeBhmuWepa9loN49yjSHyzxSsGBDHoEEBHh4Wmnj9JwVv/GYOjVx
+         IGDGwXg8o47UXbtLS0W3R83VJWqigS8+zPGs5zUPzEO/t13Z5vMvl2c3NjUplu0Bgx
+         f/5Op1rf8WDFiVsp4hZxdAKDcv67mnGcAw520rkk7xUGfg4ReNQMrZ5h0tU8caetl0
+         GK0lp5Q5h3rhXe5AOEONRQ9FGOBlBBtpNDFDeS3GNbKGIw5VJH+J0p5aJFa+XavXOr
+         cfuqRqc3DvpBNw+Dv3z1TzCXWQg8JKFkQIEYV93o9f9Fh0MmKGTOT+xRK7XFBgUrM1
+         kBnqtHlPPln+g==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id D5CC7F6079B;
+        Thu, 20 Jan 2022 10:50:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Subject: Re: linux-next: manual merge of the kvm-fixes tree with Linus' tree
-Content-Language: en-US
-To:     Stephen Rothwell <sfr@canb.auug.org.au>, KVM <kvm@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Marcelo Tosatti <mtosatti@redhat.com>,
-        Sean Christopherson <seanjc@google.com>
-References: <20220120092527.71e3a85f@canb.auug.org.au>
-From:   Paolo Bonzini <pbonzini@redhat.com>
-In-Reply-To: <20220120092527.71e3a85f@canb.auug.org.au>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2 net] net: fix information leakage in /proc/net/ptype
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164267580986.26718.1893811896925655041.git-patchwork-notify@kernel.org>
+Date:   Thu, 20 Jan 2022 10:50:09 +0000
+References: <20220118192013.1608432-1-liu3101@purdue.edu>
+In-Reply-To: <20220118192013.1608432-1-liu3101@purdue.edu>
+To:     Congyu Liu <liu3101@purdue.edu>
+Cc:     davem@davemloft.net, kuba@kernel.org, yajun.deng@linux.dev,
+        edumazet@google.com, willemb@google.com, mkl@pengutronix.de,
+        rsanger@wand.net.nz, wanghai38@huawei.com, pablo@netfilter.org,
+        jiapeng.chong@linux.alibaba.com, xemul@openvz.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/19/22 23:25, Stephen Rothwell wrote:
-> It may be worth while rebasing this fix on top of Linus' current tree.
+Hello:
 
-Yes, the next pull request will include a merge commit to avoid the 
-conflict.
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-Paolo
+On Tue, 18 Jan 2022 14:20:13 -0500 you wrote:
+> In one net namespace, after creating a packet socket without binding
+> it to a device, users in other net namespaces can observe the new
+> `packet_type` added by this packet socket by reading `/proc/net/ptype`
+> file. This is minor information leakage as packet socket is
+> namespace aware.
+> 
+> Add a net pointer in `packet_type` to keep the net namespace of
+> of corresponding packet socket. In `ptype_seq_show`, this net pointer
+> must be checked when it is not NULL.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2,net] net: fix information leakage in /proc/net/ptype
+    https://git.kernel.org/netdev/net/c/47934e06b656
+
+You are awesome, thank you!
+-- 
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
