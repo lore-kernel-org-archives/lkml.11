@@ -2,118 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 21:53:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13BD0C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 21:54:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347487AbiATVxB (ORCPT
+        id S1347685AbiATVyT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 16:53:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48714 "EHLO
+        Thu, 20 Jan 2022 16:54:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231373AbiATVxA (ORCPT
+        with ESMTP id S231373AbiATVyS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 16:53:00 -0500
-Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA76C06161C
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 13:52:59 -0800 (PST)
-Received: by mail-wm1-x335.google.com with SMTP id e9-20020a05600c4e4900b0034d23cae3f0so17143881wmq.2
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 13:52:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=references:user-agent:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=xzD+fvNee9njgyoYpg+UfIIsMfFdbgQCkyRxjeUcLZs=;
-        b=DOWC4rjbw8rnosLNZZjD93f0SMG2hWCl/mdKZ1MaUzw8y2wcHsCnDSRlQSc6TE1Wnf
-         rlW4qh3oWy3Qeo9Wu5FOz1HVlrMU5Wr2Yg+y1ols/BK+Vl36ZyNqKxQ7I72o4pR+Mbpg
-         MQvrlYZsegGKzXFRHPCA9H/0X27k3IyKvaK/ISWR4tCvqfL6w6WLJGYC+d1M9O0tkzqX
-         Re3ru0cS6l/egUk7HyrhiE/AegRHQVZ5sOvdhK4zBW8VBNDlssyaOLW/yH3OqbAv+TxH
-         fvcJLPm+w/qoLyXWzcrr19ttNrrD+507D1gYj0MGAbNUL2mQuqA9tEz9sz9pPdL6optS
-         eRrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:user-agent:from:to:cc:subject:date
-         :in-reply-to:message-id:mime-version;
-        bh=xzD+fvNee9njgyoYpg+UfIIsMfFdbgQCkyRxjeUcLZs=;
-        b=eHgyzpSKCwt/WLfULL5qRaMcSSorBawdbsboLlLihNPkrXQzUuL6UZ/9boc4Jbrxq3
-         QZZnIgtYPDdES/hWf7k7eE0X8EKDmwy/lJ1kbU5YbJQ/23t6pPNB8C+wJxANOKI5AK7L
-         4InWYBcmsvtrpCCd6jC3ew6GcP0g0n4a5iIr+cgJPU7aPrZpYuialvPSpXzrvz/S8gOE
-         KqMr1gJ8PK6By5tWdpYGTqIZsuWCFEzd/FvhzOhgNj2ddgTGa66A6536J6rgzgpfNKhX
-         eix9Rmkjo/bxKiWI4QuRG5znfnbNCrMDhdv2rDEpKdV+1XOaFZiAQKqDBlbuRF2uNx0F
-         s+gw==
-X-Gm-Message-State: AOAM533dHCUycoTbjMtA9xWVg/F+M74hkkuyKtIlVy3mtubPSdGOgG/6
-        LTsL9lzwOrwgWJXgTrfcwu28lA==
-X-Google-Smtp-Source: ABdhPJxQ7umiOemEiVDSGIoLE5STLtbE5klLfGxPCsiVM1g38HO04FwYGlUrBw0KI+h5aWAwhv4J1g==
-X-Received: by 2002:adf:f804:: with SMTP id s4mr933990wrp.672.1642715578424;
-        Thu, 20 Jan 2022 13:52:58 -0800 (PST)
-Received: from localhost (82-65-169-74.subs.proxad.net. [82.65.169.74])
-        by smtp.gmail.com with ESMTPSA id a26sm8552337wmb.37.2022.01.20.13.52.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 13:52:57 -0800 (PST)
-References: <20220118030911.12815-1-yu.tu@amlogic.com>
- <20220118030911.12815-5-yu.tu@amlogic.com>
-User-agent: mu4e 1.6.10; emacs 27.1
-From:   Jerome Brunet <jbrunet@baylibre.com>
-To:     Yu Tu <yu.tu@amlogic.com>, linux-serial@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH V6 4/5] tty: serial: meson: Make some bit of the REG5
- register writable
-Date:   Thu, 20 Jan 2022 22:49:28 +0100
-In-reply-to: <20220118030911.12815-5-yu.tu@amlogic.com>
-Message-ID: <1j7dau2hxi.fsf@starbuckisacylon.baylibre.com>
+        Thu, 20 Jan 2022 16:54:18 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C49BAC061574
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 13:54:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 803ECB81E66
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 21:54:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9BFFC340E0
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 21:54:14 +0000 (UTC)
+Authentication-Results: smtp.kernel.org;
+        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="YGNRMuE1"
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
+        t=1642715650;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=lokLTpWksCE0MydRUXeENjWpAFOTxKNvajfwP8CuTh8=;
+        b=YGNRMuE158M0ux9u01cuEr6LKW9qIuFJ0++srrsz4KzcXoHsis11nyz6plg/XhwXe42z9U
+        alZCUNVoJpUYXSZFrIRDYzpprmqrlN5f+PCYs2xOxQp4Q9TUpa2EGFTtwl76df3rrvT1pF
+        wOkuTWsP2oItotKT2PfFPzXHPqO0qEA=
+Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id ba7d6a91 (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO)
+        for <linux-kernel@vger.kernel.org>;
+        Thu, 20 Jan 2022 21:54:10 +0000 (UTC)
+Received: by mail-il1-f179.google.com with SMTP id w5so1936360ilo.2
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 13:54:09 -0800 (PST)
+X-Gm-Message-State: AOAM532nEAwI33vhtE426TIZG2irn4U+rYH4UltSjgFQB/i7L0DTrrIx
+        Ux1o9qO3ucUOhRezFV2Pa89qEneHl+2iLxKK2uU=
+X-Google-Smtp-Source: ABdhPJwR5pYiHJ1PdesXQLdzVtSd28dV8G734VFr7Pnb5vCfH0Pok/e0PsTbTMuLhfeIbeP129/2WLZq3Tu7VM1Bu+M=
+X-Received: by 2002:a05:6e02:160a:: with SMTP id t10mr579655ilu.82.1642715649293;
+ Thu, 20 Jan 2022 13:54:09 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <CAHmME9pxJFBv-ZZ3bPMJdmxUO4oeY-wS4BtW34w1ncbeeU=MeA@mail.gmail.com>
+ <20220120150734.509125-1-Jason@zx2c4.com> <Yemg2rWLqmYNzcDF@mit.edu>
+In-Reply-To: <Yemg2rWLqmYNzcDF@mit.edu>
+From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
+Date:   Thu, 20 Jan 2022 22:53:58 +0100
+X-Gmail-Original-Message-ID: <CAHmME9pDHLXUdovYNPkFzOVecPmyq_bKxW9MDB5WHrsHv_o_4g@mail.gmail.com>
+Message-ID: <CAHmME9pDHLXUdovYNPkFzOVecPmyq_bKxW9MDB5WHrsHv_o_4g@mail.gmail.com>
+Subject: Re: [PATCH] random: use named fields for adjusting chacha state
+To:     "Theodore Ts'o" <tytso@mit.edu>
+Cc:     LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hi Ted,
 
-On Tue 18 Jan 2022 at 11:09, Yu Tu <yu.tu@amlogic.com> wrote:
+On Thu, Jan 20, 2022 at 6:50 PM Theodore Ts'o <tytso@mit.edu> wrote:
+> This change means that we're only initializing the key, but we're not
+> initializing the counter/nonce (well, IV) value.  Could you fix this,
+> please?
 
-> The UART_REG5 register defaults to 0. The console port is set in
-> ROMCODE. But other UART ports default to 0, so make bit24 and
-> bit[26,27] writable so that the UART can choose a more
-> appropriate clock.
+Right, as I mentioned in the commit message, this was the point. I'll
+understand if you don't want to make this change, but the idea is that
+indeed we make the nonce and counter values start at zero. This is
+what's done in the original "fast key erasure" chacha rng [1,2] and
+openbsd's arc4random [3]. And it seems sensible, in that we're not
+really getting anything from having a 384-bit key over a 256-bit one.
+It's not actually a meaningful reduction in security, and it
+simplifies analysis by having the key rows used explicitly for keys
+and the public rows used explicitly for public-ish values. It's always
+scary to do seemingly _less_, and you could argue that these fields
+are fine as input for a little additional pizzazz, so why not? If
+that's your perspective, I can understand, and I'm not wedded to
+changing it like this. On the other hand, if you agree it doesn't
+change things cryptographically, and it simplifies the analysis, then
+we can make the change. Either way works for me.
 
-Suggestion: Instead of talking bits (which is a bit cryptic) tell us
-what is actually does
+Jason
 
-Something like:
- Make the internal clock source mux and divider writeable, allowing the
- uart to deviate from the settings intially applied by the ROMCode and
- using the most appropriate clocks
-
->
-> Signed-off-by: Yu Tu <yu.tu@amlogic.com>
-> ---
->  drivers/tty/serial/meson_uart.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tty/serial/meson_uart.c b/drivers/tty/serial/meson_uart.c
-> index 92fa91c825e6..4e7b2b38ab0a 100644
-> --- a/drivers/tty/serial/meson_uart.c
-> +++ b/drivers/tty/serial/meson_uart.c
-> @@ -678,7 +678,7 @@ static int meson_uart_probe_clocks(struct uart_port *port)
->  							CLK_SET_RATE_NO_REPARENT,
->  							port->membase + AML_UART_REG5,
->  							26, 2,
-> -							CLK_DIVIDER_READ_ONLY,
-> +							CLK_DIVIDER_ROUND_CLOSEST,
->  							xtal_div_table, NULL);
->  		if (IS_ERR(hw))
->  			return PTR_ERR(hw);
-> @@ -708,7 +708,7 @@ static int meson_uart_probe_clocks(struct uart_port *port)
->  					CLK_SET_RATE_PARENT,
->  					port->membase + AML_UART_REG5,
->  					24, 0x1,
-> -					CLK_MUX_READ_ONLY,
-> +					CLK_MUX_ROUND_CLOSEST,
->  					NULL, NULL);
->  	if (IS_ERR(hw))
->  		return PTR_ERR(hw);
-
+[1] http://blog.cr.yp.to/20170723-random.html
+[2] https://github.com/jedisct1/supercop/blob/master/crypto_rng/chacha20/ref/rng.c
+[3] https://github.com/openbsd/src/blob/master/lib/libc/crypt/arc4random.c
