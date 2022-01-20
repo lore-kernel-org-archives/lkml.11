@@ -2,97 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39938C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 21:08:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C12AAC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 21:09:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377763AbiATVIF (ORCPT
+        id S1377762AbiATVJa (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 16:08:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38546 "EHLO
+        Thu, 20 Jan 2022 16:09:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347149AbiATVH6 (ORCPT
+        with ESMTP id S234343AbiATVJ3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 16:07:58 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D2C5C061574
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 13:07:58 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id e9so6355178pgb.3
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 13:07:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=7yReEIG2XuZiaNevYXoaZDowK53Ixw5WTV91sPdZZqQ=;
-        b=grI/nQxFj4oq2UTCiTdXevZ8OZsVAsxw2JnG3XbEjojLZnobinLSlHnGgZLO52pCZI
-         19THJqzHoFwydtdyad18RY2vhUe/8mJU5w3B7O5rQOcLM5Zjh2qeZ1Ho4BlWsW2vk03n
-         E4Cf0jadhAew4LxhZo3sl6KLyG5ePdu9lHc8dHnNkfpu/xSRs5Ih7ARPmIP1OjHbrfmz
-         a3lp3vsNO1gd7m57yEEz8KmT4O9sAzSRaZNzkATJ4RTqzuynqEpiyEkXlIT8Mxkje8mZ
-         BxHNBSIzmA36MR4Zbt/uqRq7DWfg5Zaoc1WmBkQrjac1U3F1Lfr7E+6BFTjd/lopnPdc
-         231w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:date:from:to:cc:subject:message-id
-         :references:mime-version:content-disposition:in-reply-to;
-        bh=7yReEIG2XuZiaNevYXoaZDowK53Ixw5WTV91sPdZZqQ=;
-        b=TP0dcg1YxtA2UtBHhtGrax5NUzjm3sXXw7mp0Aiq2q+MB3c2p6ixtAGZZn7LvSlAzy
-         TsYGhbDLXheosABrjL3I3BmfFPpRis7MYJjGQAKKcz9tni0yZ7TvhKmAQ5hj4e37gTBR
-         M4iK5Wqud2j+A/C3oed8zuoXmqEfd9TUL5YRPMS7u+u4yGToB5nqpsCiJbQzii5kaTJj
-         YRvzpebN+ziA4Fg7WvOGS4XWm0euVETH2+F0OhrOryvgAKebvRvPuHT6ou2cMWQGHtUi
-         JuPilRHNzsWo60k/QmfISVBTbcDUPobblj3Pa+/73PwOb6pzJijF/m88bkB35u8i6s0L
-         wilQ==
-X-Gm-Message-State: AOAM530lTeWoAA0iGZORJ+jB7ZWRCyw1TYsDvYx+LE3hvvhZUpbYZems
-        AQo17LgRi0pghQGbPCReAcw=
-X-Google-Smtp-Source: ABdhPJyDsV/Dackn7ETE8gQmoorS0gE8B+qtyYaosDeMdlIlb4q1K/lzMrYQ09g8a7ycDinULfPXxA==
-X-Received: by 2002:a63:2210:: with SMTP id i16mr488618pgi.532.1642712877626;
-        Thu, 20 Jan 2022 13:07:57 -0800 (PST)
-Received: from google.com ([2620:15c:211:201:b370:1e12:5bf4:801f])
-        by smtp.gmail.com with ESMTPSA id h21sm4549939pfh.93.2022.01.20.13.07.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 13:07:57 -0800 (PST)
-Sender: Minchan Kim <minchan.kim@gmail.com>
-Date:   Thu, 20 Jan 2022 13:07:55 -0800
-From:   Minchan Kim <minchan@kernel.org>
-To:     Michal Hocko <mhocko@suse.com>
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        David Hildenbrand <david@redhat.com>,
-        linux-mm <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        John Dias <joaodias@google.com>
-Subject: Re: [RESEND][PATCH v2] mm: don't call lru draining in the nested
- lru_cache_disable
-Message-ID: <YenPK/JVNOhbxjtr@google.com>
-References: <20211230193627.495145-1-minchan@kernel.org>
- <YeVzWlrojI1+buQx@dhcp22.suse.cz>
- <YedXhpwURNTkW1Z3@google.com>
- <YefX1t4owjlx/m5I@dhcp22.suse.cz>
- <YejkUlnnYeED1pC5@google.com>
- <YekcNmBqcpO9BYWv@dhcp22.suse.cz>
+        Thu, 20 Jan 2022 16:09:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C844C061574;
+        Thu, 20 Jan 2022 13:09:29 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C9E67B81E66;
+        Thu, 20 Jan 2022 21:09:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DEC3C340E0;
+        Thu, 20 Jan 2022 21:09:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642712966;
+        bh=gvKJNFWH+rntYZyayUFG04Y21zNp8GkFCMeuh1tSq1o=;
+        h=Date:From:To:Cc:Subject:From;
+        b=rTNcSXOaMkn7HtA/lElfF2YmeFt5wt3AfTQtPpIiBkZ6WE7Z30VhfKlE2ETkyEzkA
+         mVI3CN7lWYa6DpY1+rv0szN+INL2Ts4o1mZjxmV03qpvoCoUE0CJhmMUth91es9r5F
+         k7EwNDgqRSP6NzqgmoudknZ0BC/QbxEHIR/5bHcsaLQvgH9o8D+ubX7urAZrdV6Bh9
+         T03m0TiN3BDnCe1UXk84KlftBFKVV8ZvJmDY8GAOxCejCRY98U/PYU5rQaCzwxQb3O
+         OZGoQrOHXjlE4mKWLATHx66Sw5kbl1zE7t3UKhUgt7j8IGIHYPlLTEBhNadVOw4Wy9
+         Hb+7Ee+WMA9Gw==
+Date:   Thu, 20 Jan 2022 15:16:00 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     "Geoffrey D. Bennett" <g@b4.vu>, Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>
+Cc:     alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH v2][next] ALSA: usb-audio: scarlett2: Use struct_size()
+ helper in scarlett2_usb()
+Message-ID: <20220120211600.GA28841@embeddedor>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YekcNmBqcpO9BYWv@dhcp22.suse.cz>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 09:24:22AM +0100, Michal Hocko wrote:
-> On Wed 19-01-22 20:25:54, Minchan Kim wrote:
-> > On Wed, Jan 19, 2022 at 10:20:22AM +0100, Michal Hocko wrote:
-> [...]
-> > > What does prevent you from calling lru_cache_{disable,enable} this way
-> > > with the existing implementation? AFAICS calls can be nested just fine.
-> > > Or am I missing something?
-> > 
-> > It just increases more IPI calls since we drain the lru cache
-> > both upper layer and lower layer. That's I'd like to avoid
-> > in this patch. Just disable lru cache one time for entire
-> > allocation path.
-> 
-> I do not follow. Once you call lru_cache_disable at the higher level
-> then no new pages are going to be added to the pcp caches. At the same
-> time existing caches are flushed so the inner lru_cache_disable will not
-> trigger any new IPIs.
+Make use of the struct_size() helper instead of an open-coded version,
+in order to avoid any potential type mistakes or integer overflows that,
+in the worst scenario, could lead to heap overflows.
 
-lru_cache_disable calls __lru_add_drain_all with force_all_cpus
-unconditionally so keep calling the IPI.
+Also, address the following sparse warnings:
+sound/usb/mixer_scarlett_gen2.c:1064:28: warning: using sizeof on a flexible structure
+sound/usb/mixer_scarlett_gen2.c:1065:29: warning: using sizeof on a flexible structure
+
+Link: https://github.com/KSPP/linux/issues/174
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+Changes in v2:
+ - Use correct format specifier %zu for type size_t argument.
+
+ sound/usb/mixer_scarlett_gen2.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/sound/usb/mixer_scarlett_gen2.c b/sound/usb/mixer_scarlett_gen2.c
+index 53ebabf42472..7ff8a4817c67 100644
+--- a/sound/usb/mixer_scarlett_gen2.c
++++ b/sound/usb/mixer_scarlett_gen2.c
+@@ -1061,9 +1061,9 @@ static int scarlett2_usb(
+ {
+ 	struct scarlett2_data *private = mixer->private_data;
+ 	struct usb_device *dev = mixer->chip->dev;
+-	u16 req_buf_size = sizeof(struct scarlett2_usb_packet) + req_size;
+-	u16 resp_buf_size = sizeof(struct scarlett2_usb_packet) + resp_size;
+ 	struct scarlett2_usb_packet *req, *resp = NULL;
++	size_t req_buf_size = struct_size(req, data, req_size);
++	size_t resp_buf_size = struct_size(resp, data, resp_size);
+ 	int err;
+ 
+ 	req = kmalloc(req_buf_size, GFP_KERNEL);
+@@ -1111,7 +1111,7 @@ static int scarlett2_usb(
+ 		usb_audio_err(
+ 			mixer->chip,
+ 			"Scarlett Gen 2/3 USB response result cmd %x was %d "
+-			"expected %d\n",
++			"expected %zu\n",
+ 			cmd, err, resp_buf_size);
+ 		err = -EINVAL;
+ 		goto unlock;
+-- 
+2.27.0
+
