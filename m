@@ -2,71 +2,150 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D75B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 13:08:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6932DC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 13:09:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343612AbiATNIW (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 08:08:22 -0500
-Received: from mail.hust.edu.cn ([202.114.0.240]:18084 "EHLO hust.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S245426AbiATNIM (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 08:08:12 -0500
-Received: from localhost.localdomain ([172.16.0.254])
-        (user=dzm91@hust.edu.cn mech=LOGIN bits=0)
-        by mx1.hust.edu.cn  with ESMTP id 20KD670M007780-20KD670P007780
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Thu, 20 Jan 2022 21:06:13 +0800
-From:   Dongliang Mu <dzm91@hust.edu.cn>
-To:     Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Stephane Grosjean <s.grosjean@peak-system.com>,
-        =?UTF-8?q?Stefan=20M=C3=A4tje?= <stefan.maetje@esd.eu>,
-        Pavel Skripkin <paskripkin@gmail.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Cc:     Dongliang Mu <mudongliangabcd@gmail.com>,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] drivers: net: remove a dangling pointer in peak_usb_create_dev
-Date:   Thu, 20 Jan 2022 21:05:58 +0800
-Message-Id: <20220120130605.55741-1-dzm91@hust.edu.cn>
-X-Mailer: git-send-email 2.25.1
+        id S245554AbiATNJA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 08:09:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41762 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245476AbiATNIh (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 08:08:37 -0500
+Received: from wp530.webpack.hosteurope.de (wp530.webpack.hosteurope.de [IPv6:2a01:488:42:1000:50ed:8234::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2194FC061574;
+        Thu, 20 Jan 2022 05:08:37 -0800 (PST)
+Received: from ip4d173d02.dynamic.kabel-deutschland.de ([77.23.61.2] helo=[192.168.66.200]); authenticated
+        by wp530.webpack.hosteurope.de running ExIM with esmtpsa (TLS1.3:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        id 1nAXB3-00032A-8D; Thu, 20 Jan 2022 14:08:33 +0100
+Message-ID: <38b569e4-2e9f-0155-4a5c-52876e8ca38a@leemhuis.info>
+Date:   Thu, 20 Jan 2022 14:08:32 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [REGRESSION] Bluetooth not working on 5.15+ since "Bluetooth:
+ Move shutdown callback before flushing tx and rx queue"
+Content-Language: en-BS
+From:   Thorsten Leemhuis <regressions@leemhuis.info>
+To:     "An, Tedd" <tedd.an@intel.com>,
+        "kai.heng.feng@canonical.com" <kai.heng.feng@canonical.com>,
+        "andypalmadi@gmail.com" <andypalmadi@gmail.com>,
+        "marcel@holtmann.org" <marcel@holtmann.org>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "regressions@lists.linux.dev" <regressions@lists.linux.dev>
+References: <CAJvGw+AJ5dHSb50RtJHnjbhMVQa+rJgYznFV4t-iaO0qx+W-jw@mail.gmail.com>
+ <fbc36e8ebdd9222f84322d54d9114f58c225547e.camel@intel.com>
+ <e3e7147e-dd4c-59a9-5dba-5ddcd2e3130f@leemhuis.info>
+In-Reply-To: <e3e7147e-dd4c-59a9-5dba-5ddcd2e3130f@leemhuis.info>
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-FEAS-AUTH-USER: dzm91@hust.edu.cn
+X-bounce-key: webpack.hosteurope.de;regressions@leemhuis.info;1642684117;dfe97bd5;
+X-HE-SMSGID: 1nAXB3-00032A-8D
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+On 10.12.21 10:16, Thorsten Leemhuis wrote:
+> Hi, this is your Linux kernel regression tracker speaking.
 
-The error handling code of peak_usb_create_dev forgets to reset the
-next_siblings of previous entry.
+/me again
 
-Fix this by nullifying the (dev->prev_siblings)->next_siblings in the
-error handling code.
+> On 10.12.21 02:10, An, Tedd wrote:
+>> On Fri, 2021-12-10 at 01:36 +0200, coldolt wrote:
+>>> After a restart, bluetooth doesn't work since commit 0ea53674d07f
+>>> "Bluetooth: Move shutdown callback before flushing tx and rx queue"
+>>>
+>>> bluetoothctl doesn't list any controllers and I get the following in
+>>> dmesg | grep -i bluetooth
+>>>
+>>> [    2.634812] Bluetooth: Core ver 2.22
+>>> [    2.634843] NET: Registered PF_BLUETOOTH protocol family
+>>> [    2.634845] Bluetooth: HCI device and connection manager initialized
+>>> [    2.634850] Bluetooth: HCI socket layer initialized
+>>> [    2.634853] Bluetooth: L2CAP socket layer initialized
+>>> [    2.634858] Bluetooth: SCO socket layer initialized
+>>> [    4.077788] Bluetooth: BNEP (Ethernet Emulation) ver 1.3
+>>> [    4.077794] Bluetooth: BNEP filters: protocol multicast
+>>> [    4.077799] Bluetooth: BNEP socket layer initialized
+>>> [    4.078219] random: bluetoothd: uninitialized urandom read (4 bytes read)
+>>> [    4.852835] Bluetooth: hci0: Reading Intel version command failed (-110)
+>>> [    4.852838] Bluetooth: hci0: command 0xfc05 tx timeout
+>>>
+>>> However, it works after a cold start or after putting the computer to sleep.
+>>>
+>>> Before 83f2dafe2a62 "Bluetooth: btintel: Refactoring setup routine for
+>>> legacy ROM sku", it always works after a restart, but from that commit
+>>> up until before 0ea53674d07f it either works or doesn't work after a
+>>> restart depending on if before restart it was working or not, meaning
+>>> it stays working or stays not working.
+>>>
+>>> Also on the first restart from before 83f2dafe2a62 into 0ea53674d07f
+>>> or later it works, but then restarting again into 0ea53674d07f or
+>>> later it no longer works. So it seems that 0ea53674d07f and later puts
+>>> the bluetooth in a nonworking state if you restart from it, but before
+>>> 83f2dafe2a62 it puts it back into a working state at startup, and in
+>>> between it doesn't do either, i.e. it stays the way it was.
+>>>
+>>> I have a Dell Latitude E5550 laptop with an Intel 7265 wifi/bluetooth
+>>> card REV=0x210 firmware version 29.4063824552.0 7265D-29. I'm on Arch
+>>> Linux, the problem is still there on 5.16-rc4.
+>>>
+>>> Here is a thread on the Arch Linux forums with several people with the
+>>> same problem, for some of them it got fixed with a kernel update or by
+>>> reloading modules, but not for everybody, including me
+>>> https://bbs.archlinux.org/viewtopic.php?id=271459
+>>>
+>>> #regzbot introduced 0ea53674d07f
+> 
+> Many thx for directly getting regzbot involved! :-D
+> 
+>> This issue is under investigation to find the root cause and proper solution.
+> 
+> Only internally? Or are there any other related public discussions that
+> are relevant to this and thus good to be aware of?
 
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
- drivers/net/can/usb/peak_usb/pcan_usb_core.c | 3 +++
- 1 file changed, 3 insertions(+)
+What's the status here? It looks like there was no progress since 41
+days, which is awfully long even with the festive season in between.
+Could anyone provide a status update please?
 
-diff --git a/drivers/net/can/usb/peak_usb/pcan_usb_core.c b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-index b850ff8fe4bd..f858810221b6 100644
---- a/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-+++ b/drivers/net/can/usb/peak_usb/pcan_usb_core.c
-@@ -894,6 +894,9 @@ static int peak_usb_create_dev(const struct peak_usb_adapter *peak_usb_adapter,
- 		dev->adapter->dev_free(dev);
- 
- lbl_unregister_candev:
-+	/* remove the dangling pointer in next_siblings */
-+	if (dev->prev_siblings)
-+		(dev->prev_siblings)->next_siblings = NULL;
- 	unregister_candev(netdev);
- 
- lbl_restore_intf_data:
--- 
-2.25.1
+Ciao, Thorsten
 
+#regzbot poke
+
+P.S.: As a Linux kernel regression tracker I'm getting a lot of reports
+on my table. I can only look briefly into most of them. Unfortunately
+therefore I sometimes will get things wrong or miss something important.
+I hope that's not the case here; if you think it is, don't hesitate to
+tell me about it in a public reply, that's in everyone's interest.
+
+BTW, I have no personal interest in this issue, which is tracked using
+regzbot, my Linux kernel regression tracking bot
+(https://linux-regtracking.leemhuis.info/regzbot/). I'm only posting
+this mail to get things rolling again and hence don't need to be CC on
+all further activities wrt to this regression.
+
+>> The downloaded firmware breaks the behavior though, we need to investigate
+>> further to see if it can be fixed in firmware or fix in the driver.
+> 
+> The answer from my point is simple: it needs to be fixed in the kernel,
+> not just in the firmware, otherwise people that update the kernel
+> without updating the firmware at the same time will run into a
+> regression -- and that is not acceptable by kernel development standards.
+> 
+> Ciao, Thorsten
+> 
+> P.S.: As a Linux kernel regression tracker I'm getting a lot of reports
+> on my table. I can only look briefly into most of them. Unfortunately
+> therefore I sometimes will get things wrong or miss something important.
+> I hope that's not the case here; if you think it is, don't hesitate to
+> tell me about it in a public reply. That's in everyone's interest, as
+> what I wrote above might be misleading to everyone reading this; any
+> suggestion I gave they thus might sent someone reading this down the
+> wrong rabbit hole, which none of us wants.
+> 
+> BTW, I have no personal interest in this issue, which is tracked using
+> regzbot, my Linux kernel regression tracking bot
+> (https://linux-regtracking.leemhuis.info/regzbot/). I'm only posting
+> this mail to get things rolling again and hence don't need to be CC on
+> all further activities wrt to this regression.
