@@ -2,94 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23330C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 15:54:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18DB7C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 15:56:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376783AbiATPyy (ORCPT
+        id S1376808AbiATP42 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 10:54:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52168 "EHLO
+        Thu, 20 Jan 2022 10:56:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229628AbiATPyx (ORCPT
+        with ESMTP id S229628AbiATP41 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 10:54:53 -0500
-Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDFC1C061574
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 07:54:52 -0800 (PST)
-Received: by mail-qk1-x734.google.com with SMTP id p9so6189164qkh.3
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 07:54:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cmpxchg-org.20210112.gappssmtp.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=3imv5N5fxywtvSvcA2lQJudUo3fZTOe6sHyrTTAExJM=;
-        b=M1lffiwB1KLYq1J8nAT8JMcPgGsU1FzGHHWsTq/K9IshZRpLxrNhWmd6QP1GKfUxBA
-         76O/l8kWD+mTeEzqyt8BVi/KLfTidOI3ObbhdFhQ7HJJqoWxY+xk0JohOp+jz8ogimnF
-         4VcDUXDdCgEyFQMp5xyxyppINhHLU5i7nIitnLJfJvMwqyc6gna3wktp0CTGu+vCGibC
-         ZBJ7z1+5M9bGooXjUGG2JyUKJR0+qiiP4mK77u9Xx9DuWvavFKEWrTI6IPX8geSXs0qN
-         EWJxGcDHHl/lryEyhQrj1vyLblQllLSPGI0REIHU3nqxW/3NxCaJYJctv1HjGRUHux3v
-         KArw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=3imv5N5fxywtvSvcA2lQJudUo3fZTOe6sHyrTTAExJM=;
-        b=utkFpjZvwT27SkhcOMkSlyQYGzDEXf961dmecSzT5RzSto2y3AOZx/DWsIsv4jAfHP
-         Taj7XR4f9h9Nb2D3szGvQTlsgVFjeauHIii7f7NEO8XhR2+yXZtVbELrMq+zEVXDzFx/
-         6qPXaTIA8HYWkbEXjCMfMx7gnvVXx95TY3SN+ObtmOZVpKyYXa3ZpQtp7lFUFnnIG8t/
-         k5oit/pYOaTtY3JCx1sSAxZTw2vc5Got2UAvLAyOQyCRkTL7NAyN6vT7pmyeZljj5YUN
-         DEpBy37h9qgXabTAd8kCwZzSVxp9Lo9G755Fe+cfwO4Zvl4XhfIZl+ChD4d9bzr2DFPZ
-         5GoQ==
-X-Gm-Message-State: AOAM531qLxadWUYxXYoVM64zBlkWv8SElCDRVP00gUoI4rkTjZz79fbc
-        +ulseuUp8x3MSMmLIkF6Gg+GDA==
-X-Google-Smtp-Source: ABdhPJy8Eyfg4/k+3lg4PinOuMHDcU903HioGbTVEy2SNs/dfAxM73fcSY50ZYRcg4rrzXZ+fF7mbA==
-X-Received: by 2002:a05:620a:4707:: with SMTP id bs7mr17590848qkb.69.1642694091949;
-        Thu, 20 Jan 2022 07:54:51 -0800 (PST)
-Received: from localhost (cpe-98-15-154-102.hvc.res.rr.com. [98.15.154.102])
-        by smtp.gmail.com with ESMTPSA id p64sm1610570qkf.38.2022.01.20.07.54.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 07:54:51 -0800 (PST)
-Date:   Thu, 20 Jan 2022 10:54:50 -0500
-From:   Johannes Weiner <hannes@cmpxchg.org>
-To:     Suren Baghdasaryan <surenb@google.com>
-Cc:     peterz@infradead.org, mingo@redhat.com, ebiggers@kernel.org,
-        tj@kernel.org, willy@infradead.org, juri.lelli@redhat.com,
-        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
-        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
-        bristot@redhat.com, akpm@linux-foundation.org,
-        linux-kernel@vger.kernel.org, kernel-team@android.com,
-        kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH 2/2] psi: Fix "defined but not used" warnings when
- CONFIG_PROC_FS=n
-Message-ID: <YemFypC3TKwpuUvm@cmpxchg.org>
-References: <20220119223940.787748-1-surenb@google.com>
- <20220119223940.787748-3-surenb@google.com>
+        Thu, 20 Jan 2022 10:56:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA616C061574;
+        Thu, 20 Jan 2022 07:56:26 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 794A461419;
+        Thu, 20 Jan 2022 15:56:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F12FFC340E0;
+        Thu, 20 Jan 2022 15:56:23 +0000 (UTC)
+From:   Catalin Marinas <catalin.marinas@arm.com>
+To:     Will Deacon <will@kernel.org>, Kees Cook <keescook@chromium.org>
+Cc:     Boqun Feng <boqun.feng@gmail.com>,
+        Ard Biesheuvel <ardb@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-kernel@vger.kernel.org,
+        Peter Zijlstra <peterz@infradead.org>,
+        linux-hardening@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2] arm64: atomics: lse: Dereference matching size
+Date:   Thu, 20 Jan 2022 15:56:21 +0000
+Message-Id: <164269417315.2457156.6204086542906520057.b4-ty@arm.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220112202259.3950286-1-keescook@chromium.org>
+References: <20220112202259.3950286-1-keescook@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220119223940.787748-3-surenb@google.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 02:39:40PM -0800, Suren Baghdasaryan wrote:
-> When CONFIG_PROC_FS is disabled psi code generates the following warnings:
+On Wed, 12 Jan 2022 12:22:59 -0800, Kees Cook wrote:
+> When building with -Warray-bounds, the following warning is generated:
 > 
-> kernel/sched/psi.c:1364:30: warning: 'psi_cpu_proc_ops' defined but not used [-Wunused-const-variable=]
->     1364 | static const struct proc_ops psi_cpu_proc_ops = {
->          |                              ^~~~~~~~~~~~~~~~
-> kernel/sched/psi.c:1355:30: warning: 'psi_memory_proc_ops' defined but not used [-Wunused-const-variable=]
->     1355 | static const struct proc_ops psi_memory_proc_ops = {
->          |                              ^~~~~~~~~~~~~~~~~~~
-> kernel/sched/psi.c:1346:30: warning: 'psi_io_proc_ops' defined but not used [-Wunused-const-variable=]
->     1346 | static const struct proc_ops psi_io_proc_ops = {
->          |                              ^~~~~~~~~~~~~~~
+> In file included from ./arch/arm64/include/asm/lse.h:16,
+>                  from ./arch/arm64/include/asm/cmpxchg.h:14,
+>                  from ./arch/arm64/include/asm/atomic.h:16,
+>                  from ./include/linux/atomic.h:7,
+>                  from ./include/asm-generic/bitops/atomic.h:5,
+>                  from ./arch/arm64/include/asm/bitops.h:25,
+>                  from ./include/linux/bitops.h:33,
+>                  from ./include/linux/kernel.h:22,
+>                  from kernel/printk/printk.c:22:
+> ./arch/arm64/include/asm/atomic_lse.h:247:9: warning: array subscript 'long unsigned int[0]' is partly outside array bounds of 'atomic_t[1]' [-Warray-bounds]
+>   247 |         asm volatile(                                                   \
+>       |         ^~~
+> ./arch/arm64/include/asm/atomic_lse.h:266:1: note: in expansion of macro '__CMPXCHG_CASE'
+>   266 | __CMPXCHG_CASE(w,  , acq_, 32,  a, "memory")
+>       | ^~~~~~~~~~~~~~
+> kernel/printk/printk.c:3606:17: note: while referencing 'printk_cpulock_owner'
+>  3606 | static atomic_t printk_cpulock_owner = ATOMIC_INIT(-1);
+>       |                 ^~~~~~~~~~~~~~~~~~~~
 > 
-> Make definitions of these structures and related functions conditional on
-> CONFIG_PROC_FS config.
-> 
-> Fixes: 0e94682b73bf ("psi: introduce psi monitor")
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> [...]
 
-Acked-by: Johannes Weiner <hannes@cmpxchg.org>
+Applied to arm64 (for-next/core), thanks!
+
+[1/1] arm64: atomics: lse: Dereference matching size
+      https://git.kernel.org/arm64/c/3364c6ce23c6
+
+-- 
+Catalin
+
