@@ -2,109 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F852C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 15:05:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4440EC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 15:05:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376396AbiATPFB (ORCPT
+        id S1376426AbiATPFL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 10:05:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40352 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376355AbiATPE6 (ORCPT
+        Thu, 20 Jan 2022 10:05:11 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:34258 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376432AbiATPFE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 10:04:58 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F969C061574;
-        Thu, 20 Jan 2022 07:04:58 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id n10so14300925edv.2;
-        Thu, 20 Jan 2022 07:04:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0B0txwt9I3zBHBA04rxL+1M1cNNBUpFyJyCl5rt6UEQ=;
-        b=OaZBl8tGrO1X9a7FHGZB4cmJ4VgTU/3ItHTB79dImrklyW3lvKSD8e+ysCI/q8fTkY
-         ZN/OJ9sLOdYorv2sKzI/D6kLhs/iS3ZZvdwmkCt/Bte9hVj/JLeaTa5pd0Z7LXPVtBHZ
-         PTV2OqYeVGK6CUmulaU1mkya5Nx+qD6sVJbaoGkbUkw0YbABzXFkz538JiSIxTwMcc/t
-         SlSOJuRSr2h6li7ph1WuwSEInBUxqmajFWtG+B8Hxn+Js0If8VxlZt+J8ffhVMW3C4ur
-         iC+g6I9030SeiVxyy1EdJwlaJkyDAyvpLBlS6TAx37CzQJZmOuWcTjl9rCC+MSANkzSX
-         kFhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0B0txwt9I3zBHBA04rxL+1M1cNNBUpFyJyCl5rt6UEQ=;
-        b=mqS2rHgT34MivHGFR8AkkM0JsYSoo0avOhBikljCixK2zF0s4in4W8GSY8JMbOXXsH
-         HRbpZ68ZiOiqJQtwiQKPYDhc+CL8L98uj75JNoNCg1gaI1nUB3cKShhuiLo45G5hnhyY
-         49RAqnczOZeBIPPIvh5HOgNb9ImCc8OeSn4TZaUymELjv+s05ZGmWQ5jErowAAD58DPT
-         grASC9DB7T23KXibwinnrgUhEuBe13nO+GwXiqJqZrB4mhNqdg51O2KAnYRKokaoXon2
-         R9ak3gRCIPsRR5L9ySVqOSIU/aTuIn5zTtpfjshMHdtenOs8/ew2SFdNnZqBmtnT88r9
-         yTLg==
-X-Gm-Message-State: AOAM530RyrP1WEMspF0OZ+eUlyoN+WGmrGR87EDLxJnVgYqBMf2B7FIL
-        ZGmsjsSDxQOORhifKKKAR78glRqPX2YjFtUwpHU=
-X-Google-Smtp-Source: ABdhPJzZRS5c6GbMZJ3YVrg75Ha9c8GpIBK6w4XxIX4joFpc3VUWOdfDcTqr1Crv3QTvW9rKuYxr1irkQ89yZOqzfos=
-X-Received: by 2002:a17:907:968c:: with SMTP id hd12mr28869417ejc.639.1642691096836;
- Thu, 20 Jan 2022 07:04:56 -0800 (PST)
+        Thu, 20 Jan 2022 10:05:04 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out1.suse.de (Postfix) with ESMTPS id 9427B21905;
+        Thu, 20 Jan 2022 15:05:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1642691103; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=2nAWydtx5DdzNGZYqxu4dZV+DvOfZYEZrc2cFUMKL8M=;
+        b=r4jbhqQWwY/Z9/hjXZ6h6tTz6bY/SVcBXO+CmBi9g+75D0cuyPbDmkpjc728sDJnOVvvUg
+        GSRqyxC3n/bFkiYIHZLVo1Q54qisS0YiIA6eTwz1IKvQIMGe/KUqnFLxNPV4kD0lm2dGRZ
+        ZF6TjHvRug8R3uO8y+6aOd77NnCuOzA=
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 590A713BD2;
+        Thu, 20 Jan 2022 15:05:03 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id 72gCFR966WHQLwAAMHmgww
+        (envelope-from <mkoutny@suse.com>); Thu, 20 Jan 2022 15:05:03 +0000
+Date:   Thu, 20 Jan 2022 16:05:02 +0100
+From:   Michal =?iso-8859-1?Q?Koutn=FD?= <mkoutny@suse.com>
+To:     Tejun Heo <tj@kernel.org>
+Cc:     Paolo Bonzini <pbonzini@redhat.com>,
+        Vipin Sharma <vipinsh@google.com>, seanjc@google.com,
+        lizefan.x@bytedance.com, hannes@cmpxchg.org, dmatlack@google.com,
+        jiangshanlai@gmail.com, kvm@vger.kernel.org,
+        cgroups@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] KVM: Move VM's worker kthreads back to the original
+ cgroups before exiting.
+Message-ID: <20220120150502.GC27269@blackbody.suse.cz>
+References: <20211222225350.1912249-1-vipinsh@google.com>
+ <20220105180420.GC6464@blackbody.suse.cz>
+ <CAHVum0e84nUcGtdPYQaJDQszKj-QVP5gM+nteBpSTaQ2sWYpmQ@mail.gmail.com>
+ <Yeclbe3GNdCMLlHz@slm.duckdns.org>
+ <7a0bc562-9f25-392d-5c05-9dbcd350d002@redhat.com>
+ <YehY0z2vHYVZk52J@slm.duckdns.org>
 MIME-Version: 1.0
-References: <1642686255-25951-1-git-send-email-akhilrajeev@nvidia.com> <1642686255-25951-3-git-send-email-akhilrajeev@nvidia.com>
-In-Reply-To: <1642686255-25951-3-git-send-email-akhilrajeev@nvidia.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 20 Jan 2022 17:03:14 +0200
-Message-ID: <CAHp75VehSCxszDV3UQCEnPk7OCXRabRMJEStjpCamBG6X1iaCw@mail.gmail.com>
-Subject: Re: [PATCH v3 2/3] docs: firmware-guide: ACPI: Add named interrupt doc
-To:     Akhil R <akhilrajeev@nvidia.com>
-Cc:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Christian Koenig <christian.koenig@amd.com>,
-        Dmitry Osipenko <digetx@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Len Brown <lenb@kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-tegra <linux-tegra@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Wolfram Sang <wsa@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YehY0z2vHYVZk52J@slm.duckdns.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 3:45 PM Akhil R <akhilrajeev@nvidia.com> wrote:
->
-> Added details and example for named interrupts in the ACPI table.
+On Wed, Jan 19, 2022 at 08:30:43AM -1000, Tejun Heo <tj@kernel.org> wrote:
+> It'd be nicer if we can make kthread_stop() waiting more regular but I
+> couldn't find a good existing place and routing the usual parent
+> signaling might be too complicated. Anyone has better ideas?
 
-Added details and example for --> Add a detailed example of the
+The regular way is pictured in Paolo's diagram already, the
+exit_notify/do_signal_parent -> wait4 path.
 
-...
+Actually, I can see that there exists already kernel_wait() and is used
+by a UMH wrapper kthread. kthreadd issues ignore_signals() so (besides
+no well defined point of signalling a kthread) the signal notification
+is moot and only waking up the waiter is relevant. So kthread_stop()
+could wait via kernel_wait() based on pid (extracted from task_struct).
 
-> +            Interrupt (ResourceConsumer, Level, ActiveHigh, Exclusive) {
-> +                0x20,
+Have I missed an obstacle?
 
-I would think of splitting this to two separate entries in between of
-which the GpioInt() resource is provided. It will explicitly show that
-you describe the case only for Interrupt(). Something like
 
-  Interrupt (...) { 0x20 }
-  GpioInt(...) { ... }
-  Interrupt (...) { 0x24 }
-
-But it's up to you.
-
-> +                0x24
-> +            }
-
-...
-
-> +The driver can call the function - device_irq_get_byname() with the device
-> +and interrupt name as arguments to get the corresponding IRQ number.
-
-Needs switch to fwnode as per comment against the previous patch.
-
--- 
-With Best Regards,
-Andy Shevchenko
+Michal
