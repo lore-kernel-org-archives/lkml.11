@@ -2,178 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8240DC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 08:04:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4971AC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 08:05:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359088AbiATIEx (ORCPT
+        id S1359135AbiATIFF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 03:04:53 -0500
-Received: from comms.puri.sm ([159.203.221.185]:39846 "EHLO comms.puri.sm"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358348AbiATIEZ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 03:04:25 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id E17D9DF89E;
-        Thu, 20 Jan 2022 00:04:23 -0800 (PST)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id TEDNyp5EBpIu; Thu, 20 Jan 2022 00:04:23 -0800 (PST)
-Message-ID: <98d12c1acaf77772f51361b079dde7e982a6dafd.camel@puri.sm>
-Subject: Re: [PATCH v3] media: i2c: dw9714: add optional regulator support
-From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-To:     broonie@kernel.org, sakari.ailus@linux.intel.com
-Cc:     angus@akkea.ca, kernel@puri.sm, linux-kernel@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
-        mchehab@kernel.org
-Date:   Thu, 20 Jan 2022 09:04:17 +0100
-In-Reply-To: <8f4c0f74523ea615786942fe2a30f83a2d0e8c16.camel@puri.sm>
-References: <20211129120754.1766570-1-martin.kepplinger@puri.sm>
-         <8f4c0f74523ea615786942fe2a30f83a2d0e8c16.camel@puri.sm>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3-1 
+        Thu, 20 Jan 2022 03:05:05 -0500
+Received: from mout.kundenserver.de ([217.72.192.73]:58995 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358448AbiATIE2 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 03:04:28 -0500
+Received: from quad ([82.142.13.186]) by mrelayeu.kundenserver.de (mreue107
+ [212.227.15.183]) with ESMTPSA (Nemesis) id 1Mnqfc-1mVN6P2AqA-00pJic; Thu, 20
+ Jan 2022 09:03:55 +0100
+From:   Laurent Vivier <laurent@vivier.eu>
+To:     linux-kernel@vger.kernel.org
+Cc:     Alessandro Zummo <a.zummo@towertech.it>, linux-rtc@vger.kernel.org,
+        John Stultz <john.stultz@linaro.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Jiaxun Yang <jiaxun.yang@flygoat.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        linux-m68k@lists.linux-m68k.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Laurent Vivier <laurent@vivier.eu>
+Subject: [PATCH v11 3/5] rtc: goldfish: use gf_ioread32()/gf_iowrite32()
+Date:   Thu, 20 Jan 2022 09:03:45 +0100
+Message-Id: <20220120080347.1595379-4-laurent@vivier.eu>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220120080347.1595379-1-laurent@vivier.eu>
+References: <20220120080347.1595379-1-laurent@vivier.eu>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:PDlTvEErr5w6REUxeS4f2MUuaTmpsPqLy8NBpWsWLJ7HitgBOLP
+ j8hOIts9trIqV0mIBdQzPWMXhzv/1yO3Y9mBAjx7hTkUdXL9DzUhQdMbOJ5ljGLRom48J5E
+ FVzWOuy+dn16RlGPpr4JPQjA+J0w0GW0keR512UgAnzHa51ef0Ugrd0QX3S3cwPvCwYW19M
+ NeteAPzQotgVF2T/v+OKw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:IXTJ/PC8SO8=:hOtS4rQX09Ypm+WJJiDFVN
+ WmoA5tMLstWnfC/eAk9DwElhUKRlH/dQCTQ/52Imeuc5nhFNsytHZPTxzPM3CtFnAdL/xXTJh
+ 961yf4MbNZOffBoLzvuEzIwoS0G2C4g4H5bgaKE8HiKxDZYMThMKbNI2+YgADN5Fg5KLIeV2a
+ /7skmHjjiPaKKM2p5Eypj16zfIJQzIg3hWwflwJ4DyB2w7drLMUNtOyFeeHffazAasGJ8pAaL
+ 2B+rjVTqHPaS1BSk1vxRBLIO+XpWzZRI/ZlcKuLwek/gKSN3xFX5SIBWBeNLIQpGZvibF95ZA
+ +EJ2WBvaXKP95+s8jWvNfCBiXF3vIWNvD93mGs+ZzBXU3Dskf2Xd4CfTLARTJtp8dIryU5kAZ
+ +GAGxhqXZl0VMQmi4U+cOslIY84UATnP6cLoUj9Hq/hHwNAKfIbECv4zrybpHkKIvkhe9RTWG
+ yGEVQv3eZBTEPULat9GrsmCRpYVwBfQ5x15uxWdHOUQs7jWZg2lOLxkjlWAwMZMF8rClG3ZZq
+ Fk9fL9LUK7Y5BgASpcj9UP4QLWgFq07xHvvzY352FKNlufStP7tlPjlIWUNsIfNd2u9xVb5IV
+ Gplbq77+qOYuHhp04vqYWpRYzAARE/2YOHnA4YjDdWoICNorJojKxnK93+ZxLRS+eImFuu1lK
+ dcYd2G/DWm0oPd39FJlan23DxeO73D81+xRzU98wk3B+Sm/tsPWUeKyQG4GZZfbId9XQ=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Am Dienstag, dem 21.12.2021 um 18:33 +0100 schrieb Martin Kepplinger:
-> Am Montag, dem 29.11.2021 um 13:07 +0100 schrieb Martin Kepplinger:
-> > From: Angus Ainslie <angus@akkea.ca>
-> > 
-> > Allow the dw9714 to control a regulator and adjust suspend() and
-> > resume()
-> > to support both runtime and system pm.
-> > 
-> > Signed-off-by: Angus Ainslie <angus@akkea.ca>
-> > Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
-> > ---
-> > 
-> > 
-> > revision history
-> > ----------------
-> > v3: (thank you Mark and Sakari)
-> >  * use regulator_get() instead of regulator_get_optional()
-> > 
-> > v2: (thank you Mark)
-> >  * simplify the regulator_get_optional() error path
-> >  * fix regulator usage during probe()
-> > https://lore.kernel.org/linux-media/20211126090107.1243558-1-martin.kepplinger@puri.sm/
-> > 
-> > v1:
-> > https://lore.kernel.org/linux-media/20211125080922.978583-1-martin.kepplinger@puri.sm/
-> > 
-> > 
-> > 
-> >  drivers/media/i2c/dw9714.c | 32 +++++++++++++++++++++++++++++++-
-> >  1 file changed, 31 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/media/i2c/dw9714.c
-> > b/drivers/media/i2c/dw9714.c
-> > index 3863dfeb8293..81170bbe0e55 100644
-> > --- a/drivers/media/i2c/dw9714.c
-> > +++ b/drivers/media/i2c/dw9714.c
-> > @@ -5,6 +5,7 @@
-> >  #include <linux/i2c.h>
-> >  #include <linux/module.h>
-> >  #include <linux/pm_runtime.h>
-> > +#include <linux/regulator/consumer.h>
-> >  #include <media/v4l2-ctrls.h>
-> >  #include <media/v4l2-device.h>
-> >  #include <media/v4l2-event.h>
-> > @@ -36,6 +37,7 @@ struct dw9714_device {
-> >         struct v4l2_ctrl_handler ctrls_vcm;
-> >         struct v4l2_subdev sd;
-> >         u16 current_val;
-> > +       struct regulator *vcc;
-> >  };
-> >  
-> >  static inline struct dw9714_device *to_dw9714_vcm(struct v4l2_ctrl
-> > *ctrl)
-> > @@ -145,6 +147,16 @@ static int dw9714_probe(struct i2c_client
-> > *client)
-> >         if (dw9714_dev == NULL)
-> >                 return -ENOMEM;
-> >  
-> > +       dw9714_dev->vcc = devm_regulator_get(&client->dev, "vcc");
-> > +       if (IS_ERR(dw9714_dev->vcc))
-> > +               return PTR_ERR(dw9714_dev->vcc);
-> > +
-> > +       rval = regulator_enable(dw9714_dev->vcc);
-> > +       if (rval < 0) {
-> > +               dev_err(&client->dev, "failed to enable vcc: %d\n",
-> > rval);
-> > +               return rval;
-> > +       }
-> > +
-> >         v4l2_i2c_subdev_init(&dw9714_dev->sd, client, &dw9714_ops);
-> >         dw9714_dev->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE |
-> >                                 V4L2_SUBDEV_FL_HAS_EVENTS;
-> > @@ -200,6 +212,9 @@ static int __maybe_unused
-> > dw9714_vcm_suspend(struct device *dev)
-> >         struct dw9714_device *dw9714_dev = sd_to_dw9714_vcm(sd);
-> >         int ret, val;
-> >  
-> > +       if (pm_runtime_suspended(&client->dev))
-> > +               return 0;
-> > +
-> >         for (val = dw9714_dev->current_val & ~(DW9714_CTRL_STEPS -
-> > 1);
-> >              val >= 0; val -= DW9714_CTRL_STEPS) {
-> >                 ret = dw9714_i2c_write(client,
-> > @@ -208,7 +223,12 @@ static int __maybe_unused
-> > dw9714_vcm_suspend(struct device *dev)
-> >                         dev_err_once(dev, "%s I2C failure: %d",
-> > __func__, ret);
-> >                 usleep_range(DW9714_CTRL_DELAY_US,
-> > DW9714_CTRL_DELAY_US + 10);
-> >         }
-> > -       return 0;
-> > +
-> > +       ret = regulator_disable(dw9714_dev->vcc);
-> > +       if (ret)
-> > +               dev_err(dev, "Failed to disable vcc: %d\n", ret);
-> > +
-> > +       return ret;
-> >  }
-> >  
-> >  /*
-> > @@ -224,6 +244,16 @@ static int  __maybe_unused
-> > dw9714_vcm_resume(struct device *dev)
-> >         struct dw9714_device *dw9714_dev = sd_to_dw9714_vcm(sd);
-> >         int ret, val;
-> >  
-> > +       if (pm_runtime_suspended(&client->dev))
-> > +               return 0;
-> > +
-> > +       ret = regulator_enable(dw9714_dev->vcc);
-> > +       if (ret) {
-> > +               dev_err(dev, "Failed to enable vcc: %d\n", ret);
-> > +               return ret;
-> > +       }
-> > +       usleep_range(1000, 2000);
-> > +
-> >         for (val = dw9714_dev->current_val % DW9714_CTRL_STEPS;
-> >              val < dw9714_dev->current_val + DW9714_CTRL_STEPS - 1;
-> >              val += DW9714_CTRL_STEPS) {
-> 
-> hi Sakari and all interested,
-> 
-> any objection to this addition? I run it for a long time now.
-> 
-> thank you,
-> 
->                               martin
-> 
-> 
+replace readl()/writel() by gf_ioread32()/gf_iowrite32()
+as done for goldfish-tty.
 
-hi all, patchwork marked this as "changes requested":
-https://patchwork.linuxtv.org/project/linux-media/patch/20211129120754.1766570-1-martin.kepplinger@puri.sm/
+Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+---
+ drivers/rtc/rtc-goldfish.c | 30 +++++++++++++++---------------
+ 1 file changed, 15 insertions(+), 15 deletions(-)
 
-I'm not aware of changes you wish to this. What do you think?
-
-thank you,
-
-                           martin
-
+diff --git a/drivers/rtc/rtc-goldfish.c b/drivers/rtc/rtc-goldfish.c
+index 7ab95d052644..a3a556f6a3e0 100644
+--- a/drivers/rtc/rtc-goldfish.c
++++ b/drivers/rtc/rtc-goldfish.c
+@@ -41,8 +41,8 @@ static int goldfish_rtc_read_alarm(struct device *dev,
+ 	rtcdrv = dev_get_drvdata(dev);
+ 	base = rtcdrv->base;
+ 
+-	rtc_alarm_low = readl(base + TIMER_ALARM_LOW);
+-	rtc_alarm_high = readl(base + TIMER_ALARM_HIGH);
++	rtc_alarm_low = gf_ioread32(base + TIMER_ALARM_LOW);
++	rtc_alarm_high = gf_ioread32(base + TIMER_ALARM_HIGH);
+ 	rtc_alarm = (rtc_alarm_high << 32) | rtc_alarm_low;
+ 
+ 	do_div(rtc_alarm, NSEC_PER_SEC);
+@@ -50,7 +50,7 @@ static int goldfish_rtc_read_alarm(struct device *dev,
+ 
+ 	rtc_time64_to_tm(rtc_alarm, &alrm->time);
+ 
+-	if (readl(base + TIMER_ALARM_STATUS))
++	if (gf_ioread32(base + TIMER_ALARM_STATUS))
+ 		alrm->enabled = 1;
+ 	else
+ 		alrm->enabled = 0;
+@@ -71,18 +71,18 @@ static int goldfish_rtc_set_alarm(struct device *dev,
+ 
+ 	if (alrm->enabled) {
+ 		rtc_alarm64 = rtc_tm_to_time64(&alrm->time) * NSEC_PER_SEC;
+-		writel((rtc_alarm64 >> 32), base + TIMER_ALARM_HIGH);
+-		writel(rtc_alarm64, base + TIMER_ALARM_LOW);
+-		writel(1, base + TIMER_IRQ_ENABLED);
++		gf_iowrite32((rtc_alarm64 >> 32), base + TIMER_ALARM_HIGH);
++		gf_iowrite32(rtc_alarm64, base + TIMER_ALARM_LOW);
++		gf_iowrite32(1, base + TIMER_IRQ_ENABLED);
+ 	} else {
+ 		/*
+ 		 * if this function was called with enabled=0
+ 		 * then it could mean that the application is
+ 		 * trying to cancel an ongoing alarm
+ 		 */
+-		rtc_status_reg = readl(base + TIMER_ALARM_STATUS);
++		rtc_status_reg = gf_ioread32(base + TIMER_ALARM_STATUS);
+ 		if (rtc_status_reg)
+-			writel(1, base + TIMER_CLEAR_ALARM);
++			gf_iowrite32(1, base + TIMER_CLEAR_ALARM);
+ 	}
+ 
+ 	return 0;
+@@ -98,9 +98,9 @@ static int goldfish_rtc_alarm_irq_enable(struct device *dev,
+ 	base = rtcdrv->base;
+ 
+ 	if (enabled)
+-		writel(1, base + TIMER_IRQ_ENABLED);
++		gf_iowrite32(1, base + TIMER_IRQ_ENABLED);
+ 	else
+-		writel(0, base + TIMER_IRQ_ENABLED);
++		gf_iowrite32(0, base + TIMER_IRQ_ENABLED);
+ 
+ 	return 0;
+ }
+@@ -110,7 +110,7 @@ static irqreturn_t goldfish_rtc_interrupt(int irq, void *dev_id)
+ 	struct goldfish_rtc *rtcdrv = dev_id;
+ 	void __iomem *base = rtcdrv->base;
+ 
+-	writel(1, base + TIMER_CLEAR_INTERRUPT);
++	gf_iowrite32(1, base + TIMER_CLEAR_INTERRUPT);
+ 
+ 	rtc_update_irq(rtcdrv->rtc, 1, RTC_IRQF | RTC_AF);
+ 
+@@ -128,8 +128,8 @@ static int goldfish_rtc_read_time(struct device *dev, struct rtc_time *tm)
+ 	rtcdrv = dev_get_drvdata(dev);
+ 	base = rtcdrv->base;
+ 
+-	time_low = readl(base + TIMER_TIME_LOW);
+-	time_high = readl(base + TIMER_TIME_HIGH);
++	time_low = gf_ioread32(base + TIMER_TIME_LOW);
++	time_high = gf_ioread32(base + TIMER_TIME_HIGH);
+ 	time = (time_high << 32) | time_low;
+ 
+ 	do_div(time, NSEC_PER_SEC);
+@@ -149,8 +149,8 @@ static int goldfish_rtc_set_time(struct device *dev, struct rtc_time *tm)
+ 	base = rtcdrv->base;
+ 
+ 	now64 = rtc_tm_to_time64(tm) * NSEC_PER_SEC;
+-	writel((now64 >> 32), base + TIMER_TIME_HIGH);
+-	writel(now64, base + TIMER_TIME_LOW);
++	gf_iowrite32((now64 >> 32), base + TIMER_TIME_HIGH);
++	gf_iowrite32(now64, base + TIMER_TIME_LOW);
+ 
+ 	return 0;
+ }
+-- 
+2.34.1
 
