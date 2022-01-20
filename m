@@ -2,124 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C16B1C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1694C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:09:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229931AbiATLIE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 06:08:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42028 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229576AbiATLID (ORCPT
+        id S229962AbiATLJi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 06:09:38 -0500
+Received: from szxga08-in.huawei.com ([45.249.212.255]:31109 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230315AbiATLJe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 06:08:03 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 408E9C061574;
-        Thu, 20 Jan 2022 03:08:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=KCq0JzQnS5ZYw2B7tpX4PZGYRq7eIxGkoXXZAjqJTxo=; b=ePFB6IGhW5UvyJvFXUAd+jzk0v
-        6FxavVUfmVDmm6bT85fKD+JMSWyWVN1AXhiJVRrriM349oxHza4NhhmbF+kycb8PNc5nNoQkpB6K7
-        1n1jRsx/kbrmFgBzsU9yX+blReQyCiKDXPIEVoDnsGmf7F7pBVxDmbm9WTHRD74FpwDO2W+rVFwQP
-        0JwWXbg2Zpi+qAq7cQL3v4eibBdwrCqA7MTch0ljjZyCGiT7l6y3OyJ1KJcXsd6WlzgHAoY0aySuE
-        /xeXlGebPbbr3bj2ucjP0vcgijubTyA20vVrRR7kQjaQfRjbbT7VzieyrvtciylI5fZdw5JODovb2
-        RQVp1DXA==;
-Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=noisy.programming.kicks-ass.net)
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nAVI8-00EAvd-Qt; Thu, 20 Jan 2022 11:07:45 +0000
-Received: from hirez.programming.kicks-ass.net (hirez.programming.kicks-ass.net [192.168.1.225])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (Client did not present a certificate)
-        by noisy.programming.kicks-ass.net (Postfix) with ESMTPS id 9B28B3002F1;
-        Thu, 20 Jan 2022 12:07:44 +0100 (CET)
-Received: by hirez.programming.kicks-ass.net (Postfix, from userid 1000)
-        id 7DDAD21417388; Thu, 20 Jan 2022 12:07:44 +0100 (CET)
-Date:   Thu, 20 Jan 2022 12:07:44 +0100
-From:   Peter Zijlstra <peterz@infradead.org>
-To:     Peter Oskolkov <posk@google.com>
-Cc:     Peter Oskolkov <posk@posk.io>, Ingo Molnar <mingo@redhat.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Andy Lutomirski <luto@kernel.org>,
-        Linux Memory Management List <linux-mm@kvack.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-api@vger.kernel.org, Paul Turner <pjt@google.com>,
-        Ben Segall <bsegall@google.com>,
-        Andrei Vagin <avagin@google.com>, Jann Horn <jannh@google.com>,
-        Thierry Delisle <tdelisle@uwaterloo.ca>
-Subject: Re: [PATCH v0.9.1 3/6] sched/umcg: implement UMCG syscalls
-Message-ID: <YelCgKeprVDNoal7@hirez.programming.kicks-ass.net>
-References: <20211122211327.5931-1-posk@google.com>
- <20211122211327.5931-4-posk@google.com>
- <20211124200822.GF721624@worktop.programming.kicks-ass.net>
- <CAFTs51Uka8VRCHuGidw7mRwATufp87U6S8SWUVod_kU-h6T3ew@mail.gmail.com>
- <YaEUts3RbOLyvAjl@hirez.programming.kicks-ass.net>
- <CAFTs51XnN+N74i1XHvRUAUWd04-Fs9uV6ouXo=CQSQs8MaEM5A@mail.gmail.com>
- <YaUCoe07Wl9Stlch@hirez.programming.kicks-ass.net>
- <CAFTs51UzR=m6+vcjTCNOGwGu3ZwB5GMrg+cSQy2ecvCWxhZvEQ@mail.gmail.com>
- <Ya34S2JCQg+81h4t@hirez.programming.kicks-ass.net>
- <CAPNVh5eYinGEK2Ece45fLYzU8hMWiqAzVdVbdFxd-P5fPXuFSA@mail.gmail.com>
+        Thu, 20 Jan 2022 06:09:34 -0500
+Received: from dggpemm500020.china.huawei.com (unknown [172.30.72.53])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4JffnP2sjDz1FCph;
+        Thu, 20 Jan 2022 19:05:45 +0800 (CST)
+Received: from dggpemm500001.china.huawei.com (7.185.36.107) by
+ dggpemm500020.china.huawei.com (7.185.36.49) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Thu, 20 Jan 2022 19:09:31 +0800
+Received: from [10.174.177.243] (10.174.177.243) by
+ dggpemm500001.china.huawei.com (7.185.36.107) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
+ 15.1.2308.21; Thu, 20 Jan 2022 19:09:30 +0800
+Message-ID: <e1c7a290-45ac-25ab-018e-2289fad72413@huawei.com>
+Date:   Thu, 20 Jan 2022 19:09:29 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPNVh5eYinGEK2Ece45fLYzU8hMWiqAzVdVbdFxd-P5fPXuFSA@mail.gmail.com>
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.2.0
+Subject: Re: [PATCH v2 1/2] powerpc: Fix virt_addr_valid() check
+Content-Language: en-US
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "Benjamin Herrenschmidt" <benh@kernel.crashing.org>,
+        Kees Cook <keescook@chromium.org>,
+        Laura Abbott <labbott@redhat.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Paul Mackerras <paulus@samba.org>
+References: <20211225120621.13908-1-wangkefeng.wang@huawei.com>
+ <20211225120621.13908-2-wangkefeng.wang@huawei.com>
+ <09ed46a5-6df3-ffc0-8243-61612c06153a@huawei.com>
+ <1641871726.fshx7g5r92.astroid@bobo.none>
+ <ca351bfc-3507-11ad-73f1-79ca772b55fd@csgroup.eu>
+ <8a24ef1d-1c93-416d-cfbe-e63aacfb25cc@huawei.com>
+ <017744c1-1252-a25c-3dcc-057ee18d0769@csgroup.eu>
+From:   Kefeng Wang <wangkefeng.wang@huawei.com>
+In-Reply-To: <017744c1-1252-a25c-3dcc-057ee18d0769@csgroup.eu>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.174.177.243]
+X-ClientProxiedBy: dggeme704-chm.china.huawei.com (10.1.199.100) To
+ dggpemm500001.china.huawei.com (7.185.36.107)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 09:26:41AM -0800, Peter Oskolkov wrote:
-> On Mon, Dec 6, 2021 at 3:47 AM Peter Zijlstra <peterz@infradead.org> wrote:
-> >
-> > On Mon, Nov 29, 2021 at 09:34:49AM -0800, Peter Oskolkov wrote:
-> > > On Mon, Nov 29, 2021 at 8:41 AM Peter Zijlstra <peterz@infradead.org> wrote:
-> >
-> > > > Also, timeout on sys_umcg_wait() gets you the exact same situation (or
-> > > > worse, multiple running workers).
-> > >
-> > > It should not. Timed out workers should be added to the runnable list
-> > > and not become running unless a server chooses so. So sys_umcg_wait()
-> > > with a timeout should behave similarly to a normal sleep, in that the
-> > > server is woken upon the worker blocking, and upon the worker wakeup
-> > > the worker is added to the woken workers list and waits for a server
-> > > to run it. The only difference is that in a sleep the worker becomes
-> > > BLOCKED, while in sys_umcg_wait() the worker is RUNNABLE the whole
-> > > time.
-> > >
-> > > Why then have sys_umcg_wait() with a timeout at all, instead of
-> > > calling nanosleep()? Because the worker in sys_umcg_wait() can be
-> > > context-switched into by another worker, or made running by a server;
-> > > if the worker is in nanosleep(), it just sleeps.
-> >
-> > I've been trying to figure out the semantics of that timeout thing, and
-> > I can't seem to make sense of it.
-> >
-> > Consider two workers:
-> >
-> >         S0 running A                            S1 running B
-> >
-> > therefore:
-> >
-> >         S0::state == RUNNABLE                   S1::state == RUNNABLE
-> >         A::server_tid == S0.tid                 B::server_tid = S1.tid
-> >         A::state == RUNNING                     B::state == RUNNING
-> >
-> > Doing:
-> >
-> >         self->state = RUNNABLE;                 self->state = RUNNABLE;
-> >         sys_umcg_wait(0);                       sys_umcg_wait(10);
-> >           umcg_enqueue_runnable()                 umcg_enqueue_runnable()
-> 
-> sys_umcg_wait() should not enqueue the worker as runnable; workers are
-> enqueued to indicate wakeup events.
 
-Oooh... I see.
+On 2022/1/20 15:31, Christophe Leroy wrote:
+>
+> Le 19/01/2022 à 02:15, Kefeng Wang a écrit :
+>> On 2022/1/11 14:04, Christophe Leroy wrote:
+>>> Le 11/01/2022 à 05:37, Nicholas Piggin a écrit :
+>>>> Excerpts from Kefeng Wang's message of January 8, 2022 9:58 pm:
+>>>>> Hi PPC maintainers， ping..
+>>>> Hmm. I might have confused myself about this. I'm going back and
+>>>> trying to work out what I was thinking when I suggested it. This
+>>>> works on 64e because vmalloc space is below the kernel linear map,
+>>>> right?
+>>>>
+>>>> On 64s it is the other way around and it is still possible to enable
+>>>> flatmem on 64s. Altough we might just not hit the problem there because
+>>>> __pa() will not mask away the vmalloc offset for 64s so it will still
+>>>> return something that's outside the pfn_valid range for flatmem. That's
+>>>> very subtle though.
+>>> That's the way it works on PPC32 at least, so for me it's not chocking
+>>> to have it work the same way on PPC64s.
+>>>
+>>> The main issue here is the way __pa() works. On PPC32 __pa = va -
+>>> PAGE_OFFSET, so it works correctly for any address.
+>>> On PPC64, __pa() works by masking out the 2 top bits instead of
+>>> substracting PAGE_OFFSET, so the test must add a verification that we
+>>> really have the 2 top bits set at first. This is what (addr >=
+>>> PAGE_OFFSET) does. Once this first test is done, we can perfectly rely
+>>> on pfn_valid() just like PPC32, I see absolutely no point in an
+>>> additionnal test checking the addr is below KERN_VIRT_START.
+>>
+>> Hi Christophe and Nicholas， for ppc32， I think we need check the upper
+>> limit,
+> Why ? Have you experimented any problem at all on PPC32 with the way it
+> is done at the moment ?
+>
+> I don't think we have to change PPC32 at all unless we have a real
+> reason to do it.
 
-> So worker timeouts in sys_umcg_wait are treated as wakeup events, with
-> the difference that when the worker is eventually scheduled by a
-> server, sys_umcg_wait returns with ETIMEDOUT.
+yes, I missed this commit in old kernel(lts5.10), you have fixed the 
+upper limit.
 
-Right.. OK, let me go fold and polish what I have now before I go change
-things again though.
+commit 602946ec2f90d5bd965857753880db29d2d9a1e9
+Author: Christophe Leroy <christophe.leroy@csgroup.eu>
+Date:   Tue Oct 12 12:40:37 2021 +0200
+
+     powerpc: Set max_mapnr correctly
+
+
+>
+>> eg,  addr >= PAGE_OFFSET && addr < high_memory
+> Isn't it exactly what pfn_valid() already do today ?
+> Why change that at all ?
+>
+> Christophe
+>
+>> arch/powerpc/mm/mem.c:  high_memory = (void *) __va(max_low_pfn *
+>> PAGE_SIZE);
+>>
+>> for ppc32 max_low_pfn is the upper low memory pfn,  and For ppc64,
+>> high_memory is
+>>
+>> the max memory pfn, it looks good too, correct me if I'm wrong, if the
+>> above check
+>>
+>> is ok, I will send a new v3,  thanks.
+>>
+>>
+>>
+>>
+>>>
+>>>> The checks added to __pa actually don't prevent vmalloc memory from
+>>>> being passed to it either on 64s, only a more basic test.
+>>> That's correct. It is the role of pfn_valid() to check that.
+>>>
+>>> Christophe
+>>>
+>>>> I think 64s wants (addr >= PAGE_OFFSET && addr < KERN_VIRT_START) as
+>>>> the condition.  Could possibly add that check to __pa as well to
+>>>> catch vmalloc addresses.
+>>>>
+>>>> Thanks,
+>>>> Nick
+>>>>
+>>> >
