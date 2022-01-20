@@ -2,200 +2,287 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7B1EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 16:58:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E4EEC433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 17:02:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377199AbiATQ6p (ORCPT
+        id S1377207AbiATRCl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 11:58:45 -0500
-Received: from mx0b-00069f02.pphosted.com ([205.220.177.32]:7734 "EHLO
-        mx0b-00069f02.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1377136AbiATQ6m (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 11:58:42 -0500
-Received: from pps.filterd (m0246631.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20KFgf5u014584;
-        Thu, 20 Jan 2022 16:58:17 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=message-id : date :
- subject : to : cc : references : from : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=corp-2021-07-09;
- bh=gLQvumxv686sCKl8t8DgMI2bkxPAFQtaF1hwZa0mktc=;
- b=W94baaD++tumLclm88GLLQvmyQrPFL19+hY8tDLlzMOBD09J9tWs7NDJeK0gQ1mNyX8V
- j3y0BbKn8+GvPfCV93tXD3VfYh2rnyCEFrLJ3eU7275U32Jh6NJEjiD93/oG2tJPILZQ
- OesaStk7M885ttIGqasAkgNi7SmhaYWH2OPSKNNgFYRvwW7ODzfZTfJwqDfxneUPT6Lo
- hFtqfT45UgumFOzcqm9mCC014js7BFC3HzET7xrLR9lARrqPyD4LuEhmUhrbwVYzhOdZ
- 43nNorjT4FNVx9SF0e3nb63fY09WpIUNVZa0JedT5Gol+LDEuAI9ZZG25uoQG5IIq8Tu fw== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by mx0b-00069f02.pphosted.com with ESMTP id 3dqam9r7km-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 20 Jan 2022 16:58:17 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.1.2/8.16.1.2) with SMTP id 20KGuBrm150770;
-        Thu, 20 Jan 2022 16:58:16 GMT
-Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2173.outbound.protection.outlook.com [104.47.59.173])
-        by userp3020.oracle.com with ESMTP id 3dkqqsr996-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 20 Jan 2022 16:58:16 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lrC6wOoH5TGUdW+33D0R628VwYxqbvcEWYLdY9dQUguwE+PeuR0AaMMcmiOGdX1VIACMxX0CEE0i0NZ9A6/YXvJASMhRTjTb4raGlqx6nWQy/d3w4m2tT10nVcpGtxAWHFoa8MSM3eDivf+k841+Q+RHKqTTlWagdwqDD5lBaMogZcFeVFwy2D+7dw+Gnc1f2/07IdRgNKPc7m1iWokK9saGmUqsu33dDoUt6XWyOgysvlqdFBwgAwLHPlNUbXzsB5zGyR1TDUelT64foQjfLPw30/qG+z9YNoInOh75pI2XMZNIgPkqqfSmj9ogC97fzO7LhrQ59x2fjbvJl7BOjg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=gLQvumxv686sCKl8t8DgMI2bkxPAFQtaF1hwZa0mktc=;
- b=ArK395szIOpcwXbacJ/thYAHHYAKB2+gNyRKIBLpiEdpeEOKFbeOLTpqyc/L8EyEScMD4p082LFV1g4hM7rXO9nl8DbfHNblgXk7zlcKKB0Kre+mWXDi4f25PzlH8lwGTxPBXML/KI7tbBsNe1DQ7JUHmhsk7+BX+3aSsYSuDmswbsnVJavH2JHbeNxcqEoylWGutpwph8FgTAzNThbusTyvtw5y8D8XDfUFAKmyc9IpFMeavXu92Lb8P26qPzjzUpVPG9Lh1PANQR9984drzxhWbGKBnQokr5yIpxlFSk2xtKVIfimoIR2VfQR11zEfId6ViCPMIg4dCuGOtm4f8A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gLQvumxv686sCKl8t8DgMI2bkxPAFQtaF1hwZa0mktc=;
- b=NYC8X6Wv+yohAd9W03Gq1LtDhmQLU3pCPBvqQ2D0wlwcpB19FB6Yr7LJAqMtHNEQuTA1guMBKHdcHFeMF5jqoyogXhaFoctBkal9Xl4niHmVlZD8QJ1MDR8tJViq6chp26gf8e1UC4X8712G4YypT0MsKumVMbXyx1i9pePnP5c=
-Received: from DS7PR10MB5038.namprd10.prod.outlook.com (2603:10b6:5:38c::5) by
- BN6PR10MB1249.namprd10.prod.outlook.com (2603:10b6:405:c::14) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4909.8; Thu, 20 Jan 2022 16:58:14 +0000
-Received: from DS7PR10MB5038.namprd10.prod.outlook.com
- ([fe80::e01a:f38f:1282:5677]) by DS7PR10MB5038.namprd10.prod.outlook.com
- ([fe80::e01a:f38f:1282:5677%3]) with mapi id 15.20.4909.008; Thu, 20 Jan 2022
- 16:58:13 +0000
-Message-ID: <d02e3982-b34c-c529-11b5-4c788af480d2@oracle.com>
-Date:   Thu, 20 Jan 2022 16:58:07 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH 0/9] KVM: SVM: Fix and clean up "can emulate" mess
-Content-Language: en-GB
-To:     Sean Christopherson <seanjc@google.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Cc:     Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Liam Merwick <liam.merwick@oracle.com>
-References: <20220120010719.711476-1-seanjc@google.com>
-From:   Liam Merwick <liam.merwick@oracle.com>
-In-Reply-To: <20220120010719.711476-1-seanjc@google.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-ClientProxiedBy: LO3P265CA0001.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:bb::6) To DS7PR10MB5038.namprd10.prod.outlook.com
- (2603:10b6:5:38c::5)
+        Thu, 20 Jan 2022 12:02:41 -0500
+Received: from mout.gmx.net ([212.227.17.22]:57865 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1377148AbiATRCj (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 12:02:39 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1642698129;
+        bh=+JXhNOsw5MHkIVzGSJW0sfejmO+zFCCP/sfpuUD9wKI=;
+        h=X-UI-Sender-Class:Date:To:References:From:Subject:In-Reply-To;
+        b=aDJ2eioR3emy6j0MAQZ9JAh5JHbIRcXkOt3Ml/c5lvqy6R3bXlCo0jaO+kLdiwL6k
+         3+VYB9hz9jdbp4BwbNh9SWJPe9TsIyExHch3/rTdI/6enK40FbgZwMeGwRah78Wi5O
+         AsMrqChkZOs0V93Wsi1VoKNB5f8Miw02GcAMcWrk=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.166.9]) by mail.gmx.net (mrgmx104
+ [212.227.17.168]) with ESMTPSA (Nemesis) id 1MrQJ5-1mYFL42TUF-00oXJG; Thu, 20
+ Jan 2022 18:02:09 +0100
+Message-ID: <6c000477-002b-d125-b945-2c4831bad8a5@gmx.de>
+Date:   Thu, 20 Jan 2022 18:01:00 +0100
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c886bba8-fa18-42c1-a6de-08d9dc360bef
-X-MS-TrafficTypeDiagnostic: BN6PR10MB1249:EE_
-X-Microsoft-Antispam-PRVS: <BN6PR10MB12495D76B1B07A4AA6F8F7EDE85A9@BN6PR10MB1249.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:972;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: zTWuuvclN5C9ed+scosafdwFBwLQUDJjVEVaCOJfSsjSpfgTlqhA/VChSWe/z75im7wiOYH3ikO6WEyLP8DtanVwKY6/2g00vK2+dR6N+CVIXo2KbM+bgGzz2qQnInP0MmyI4yh8L1aD4mBROixvsYDHPNJr+xr6KgBRW4xmoYBCJqMqPTCA/z9DQWDhRxk36krNt8o+eC/XELfdG7d9SIvxtxmtdoSr8/0nzLeXUVVkowr/pMcbLiuhwURRVrXDYC00LBXc/HalVqSAR7vxnmXj8Z3VHImt0r4MG1mCOJKS5InPf/Ff2Nbp3ksTMf6nOJnrgoMd13s2uXMHlle8rjyix4gPY1LkLRE1V2cMTkBsKDOSoXyZY9baTzHmBnOMEN9U+aZAZxDeK8j5Jve/yD8DJZyBR/Hr/mkcispVghiQTsyLlpVRg0o1cCHKTTzDjtFSJzhhxj0GyclZLV7nGB+klcxB3EXwJohvxRamRtYHxOEBcpaWSGAes4iNYKc7nqOXKi4ZDKv53rOXahltIttJoVhHV3EZ/wK40BO4zSZ3fLbJubFyujMitqXLJuLLLCb9Axfa/h2+/kCmSOdWcWkTRx7av4RbVFUJRIHQHNHZbCR5+EutE4usZc3nknhsMTLXjAnur6SzaggNR8MoRpYF2lFFUecEP5mFdM70LDG7OVSw9ISyFs1AcNTuikFm5JrwkMT42XtPi/8OFRkEVf1LH//LFPpB2PISZoyiOuaM2osrxwqPKZ0Xp6mppsxJi/wfxZJBCf8dpDkMvLZ/+w==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DS7PR10MB5038.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(6666004)(52116002)(86362001)(38100700002)(38350700002)(36756003)(31686004)(54906003)(8676002)(66476007)(6486002)(6506007)(53546011)(66556008)(31696002)(66946007)(186003)(26005)(508600001)(2616005)(107886003)(8936002)(7416002)(316002)(110136005)(4326008)(5660300002)(44832011)(6512007)(83380400001)(2906002)(43740500002)(45980500001);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?WUhWeFJhNVhHZUQvWndteWdzamdJWC9hYmd4NzNVSUlLK21NUDNLazBFWElQ?=
- =?utf-8?B?cHFjOExrbjlGTHZQTkVvbC9YNXhkclprSEJzODRPemkvUHFWQWNoMWNUY212?=
- =?utf-8?B?YkY5MW1tMVhYMzdRUjVTRVYxendoOWdTS0tZU1RJY2Z0NVRrZkNSUUJyUVRW?=
- =?utf-8?B?WGppUmQzb1BFcWVPVEF6OFBsWmdmMGN1OFBpMEFaSCs4empuZEVvb0FTdjNa?=
- =?utf-8?B?NUNYR0M2alhlMlh6ZzN3ajlLM2l3cnBWOW9ERzhPTlRrbnYvMk1WN3dndzRo?=
- =?utf-8?B?L1JPaHNJTFphVFNoZExFSkswNG5NM3pHVVJVRldLb3QwMnhjMkhBelNPcis5?=
- =?utf-8?B?dzJHYWQyLzZScU0vZG82a0pzaGpxbDZCdFRHZ0xnODIzWXBLS0lyT3d2OGNR?=
- =?utf-8?B?RXlZSndtalZQNzdPbWVlYlZiMmZaU2lpU0loQkd0bmY4VEFERTlqbzJ5L1Q1?=
- =?utf-8?B?a1U1dUpyRGhBTE5yOGhvRW5ZTHlITUlYcElRQ08zVFIwMmViVVpHYkZHUGdH?=
- =?utf-8?B?UFV1dXdBUGVwL0E2NEtma3hnT3lSYUZZS1N2dktjZkt2ZzJZL3V0OGxzM2Qy?=
- =?utf-8?B?UWxzOFJEazdPcFYwOGdqdExjSVVvYkpEdWZzWGZwazRkYzlBUzVxdHhxT2V2?=
- =?utf-8?B?eFJXa2MvdFRQc2UyYkxheUpkbmZnSTZ2RjViRWlkZndNOTdsaXFiR3YwZ0FE?=
- =?utf-8?B?YWZ6OEdtOTR1b2Njd0pLOXh4MHhieTA4WnlXMWkzOW1QNSsvUDlnb3o0ZWZC?=
- =?utf-8?B?SkhjTkJ2NytscGdObmJQdjZHdzhzS3VGdTJaZlQveFZQTGx3TTU1TUNzRzFI?=
- =?utf-8?B?UFFXOXFRSXpZckpwdHpEd0pFTWNIdWdocCtIMkZZT29IU2VFdnBjanNUZGNa?=
- =?utf-8?B?enZoYkUvVCtFT0syM0lnUzFqWEVJNmZoTXVyZVFPd25wY0lTU1N6aXNtUy8x?=
- =?utf-8?B?RHl0TnpQUVhtSlJ3TlpyRzVFWG9JR29jdXBVeERCcEdMMlZJa1hFak53RTZR?=
- =?utf-8?B?YUxEYldraWpwYnMwdkNSSEU4M2R3WkE3cVFvSjdwS2RTNDB3ZUV3enBab1Fa?=
- =?utf-8?B?MDRZWC9uMHFTNkx6enpCejIwMGh4YmZtd1g3YnNHTzRxYWs3aXhhNlhUUlBi?=
- =?utf-8?B?N1pETmd2a0dLK3FOVlJIWmlMbHF3MDF1OVQ3blVGSVVTYmx1Q2FtbS96VVUv?=
- =?utf-8?B?M2VGb2VRUlRQK3pRYW5BNktULzJCcSthZWxmczcwRmUwTU5iYmdoOTAvNGM1?=
- =?utf-8?B?dzNyQkl1Y2JFY3FpODBjekVYSmFnR0svdFVBUW1FM3NwRytFR0hkK1orQ29O?=
- =?utf-8?B?dmhHVUt6NTloRzMzZ1E1Z0lJTEVONXM3ZHFjbVNPc1Q4ZjFlTFlOUmN1alkz?=
- =?utf-8?B?dzEvQXVkaTgvbVJtSzNKRStHZ0lMd3UzOCt5dzMzRGwvSWptR1RQZnZULzgw?=
- =?utf-8?B?OGtNTFlKaHgvZnZRbjZKT2trQzJBeTN2eTlPcW5MamRmQjEyaXhNQVhhbGxK?=
- =?utf-8?B?VENTcDVoNUVhVWk3OGhJWXRhSDZyVVdRUmRQeVJDa1JmSTA2VUxNOEFxS2dY?=
- =?utf-8?B?QWppRkwxL05lTjVTcStjcFAzRVpVRHZxQXpqYmtSczh5T0I5L1MwQ3pTYXdR?=
- =?utf-8?B?VWFqTFIzaVJPT3NDNjFwTnNPdVpUZDlxL1hLT0NvenBkNmhmQmR2ME52STdC?=
- =?utf-8?B?dDB3d1JyUVkxeXVZUEJ3TjE4NjNEdGlNMEx6ZE1ON0tlMm5haHhwalFvRzU2?=
- =?utf-8?B?Q3NGSE44M3ZPZWxGcCtsQlNKMkE0akFPWWUyKzkydDJKb0RkcXhkdjdRTXZa?=
- =?utf-8?B?OXhnUXlEMDFxczVjak5NSmtxVDMxdkFkSmxtRlVuNVZnVlpSanRTM3BoN0Zi?=
- =?utf-8?B?SFhPRTBlZW1obFJaVVhXcWVHdWgvTlg1VE9Na0VTNHdFUUwwY0NvOVVKdVp6?=
- =?utf-8?B?TUxscXFKYit2bjd3a0lPY05TcXBDZlJJTTVjWUhjMFJaNW4vVFdaK2JJNksv?=
- =?utf-8?B?ZUFyTkxSL2w4WkFDMlpjNEUzdzlpb1h5MnNTbWc2U1g0d0wrRG9hZlRQeGlM?=
- =?utf-8?B?SmZscTR4NXhMZ00vcW1WV0h1K3pLQUM5dENPM0pGT0ZIUDBwUHpHS2JzdXFD?=
- =?utf-8?B?QlZCTGd4a1RITFVJcEY3NmJ1NFE3Mk1ramlPd2FMWEpaQXdwZ0VTUXhDbkNj?=
- =?utf-8?Q?/5NIfr43o2hdGN+xBWCT554=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c886bba8-fa18-42c1-a6de-08d9dc360bef
-X-MS-Exchange-CrossTenant-AuthSource: DS7PR10MB5038.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jan 2022 16:58:13.8579
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: jxp9KsrgwOcbwE9zcf4x8fFkEU8A9lsNuWxcP5aOISWdda8qAiW3EsU9wPmDiqsoOozDn2+90q5JCmscKaBqVQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR10MB1249
-X-Proofpoint-Virus-Version: vendor=nai engine=6300 definitions=10233 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0
- mlxlogscore=999 malwarescore=0 bulkscore=0 suspectscore=0 spamscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2201200087
-X-Proofpoint-GUID: 37knbwBVK8n_ruZm_SaBT3Mpf9sFsp0-
-X-Proofpoint-ORIG-GUID: 37knbwBVK8n_ruZm_SaBT3Mpf9sFsp0-
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Content-Language: en-US
+To:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-fbdev@vger.kernel.org, Sven Schnelle <svens@stackframe.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        dri-devel@lists.freedesktop.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Pavel Machek <pavel@ucw.cz>, linux-kernel@vger.kernel.org,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Sam Ravnborg <sam@ravnborg.org>, Claudio Suarez <cssk@net-c.es>
+References: <20220119110839.33187-1-deller@gmx.de>
+ <20220119110839.33187-3-deller@gmx.de> <YelyGDNDTn1Aq/hm@phenom.ffwll.local>
+From:   Helge Deller <deller@gmx.de>
+Subject: Re: [PATCH 2/2] Revert "fbcon: Disable accelerated scrolling"
+In-Reply-To: <YelyGDNDTn1Aq/hm@phenom.ffwll.local>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:HYKznw+AROEUb19KFphHX3jBu+8VFsPzvK1w56ZWReh6hz5gRAL
+ Yv+ISQ95yKuukbtq5OeYmZKYIb2CZm98fRx6wfi3oeQUQe6JHPXAlZtJRF3posFuCHiBqwX
+ FJGbMXwNJJpgWY4mpel58M/MtVGWMjwX1/ahtIna3d42Bz+7CHpGTiAZhBIbnKBo5OYs28x
+ 5o58uyOHlpZthTSM4VWqA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:vuR0FnfXGrI=:FNei+G/vJWgcWxM9I1dSE3
+ tdVYcE5p9pqqMpa0gpCHxg3tnxGfZHWkf2RGrt5LI2cCGDyBE2Mt2iENp+WIPxCp6zvqDugVv
+ tG7aDjZVXDZmsnz4VSJZ93HXX3SQPznJdU5Ywjx0g21LJYtXvlsi1T7Nx995cz70DZBHS+yag
+ SoIjsvvSUJdAE7lITZmZWl5JGgJiaI2CLpLklZl47rFG03FxNKVB2NVKOUlMMH+mo8AsnqJRs
+ d+UYw4sbOs/oD5e2w5J1fJD720hQ15GFHF0bZvDJ7s+5Vj9WajppumhcOK4YbgtUDB/hAXK2B
+ WKjZ4kT4L1Qxg8Tj0MlA/s6WAptapMe1YkSeHjC6dywaMTlJNj4gT0Xz2UwZRqFKgwJtK6SDf
+ A+0Si7VEZTsEQXlQm4T3/jv9Vko8jIiQHeqNs17kcwFIvMNkDrbNkxnj5hUG37BYnhZfwz72d
+ hWwJXMlp5sBX+SY1Q5h5yNYLnCqFMUkJT8g+0ekBCkRtCrP/2UnudLbbIfVXWg2R8nas/c5Mk
+ ly2T8j3ShTKHYY0AlokYOzsrBr4TL8NIEGc9Xsn8rcjFfKpiutx4vPlxaqOfu0PFT1UKbXwlp
+ Ai6j+EorbgBiqtmbYRtTWBcs4Kbkw0NMkmPd4cAFh+H0fijN4+/CoV/K2ACwoVpdP/aznPm6d
+ Qo8fmM+i2xsZceWhOd749ILyJ0QyR/Zluew+Josaja/MnscqKJiDHwJqrwdPquH10MbyIJEpM
+ UGUNV4oLiWk71HbdgycprCyLJ0u4kWpKjFPG8QO50xwi7+cjho+TuUtxKhrefNTylKtoASdlr
+ 3oWpswA4f6V1C092b+D2Xkb9MyPXmiB2gQW1D/3bZx+Kh+dj67QnurVhJYnILJwRb/m7kLW7T
+ LeXgtRg1OwALQNVpbK9SUvK+05ty47p/Xv8c1A9kad+OzdGLZIb4deZEG7dx6OGop+Vwwl98s
+ BgJybX8lIGemZuJfLaJpUmGvnux9RFKjApDzEM8AC4cDaiRadVngo00AZwr9vkH4wlU+z13kz
+ 4o7KiHtDr0/9JqZEV5K4fjfIjo/ZCnzuVi1vYJp0klaYAXSvkPQqr32atvo21spncF301GIdj
+ 9TBWxFAMTH8Pzw=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/01/2022 01:07, Sean Christopherson wrote:
-> Revert an amusing/embarassing goof reported by Liam Merwick, where KVM
-> attempts to determine if RIP is backed by a valid memslot without first
-> translating RIP to its associated GPA/GFN.  Fix the underlying bug that
-> was "fixed" by the misguided memslots check by (a) never rejecting
-> emulation for !SEV guests and (b) using the #NPF error code to determine
-> if the fault happened on the code fetch or on guest page tables, which is
-> effectively what the memslots check attempted to do.
-> 
-> Further clean up, harden, and document SVM's "can emulate" helper, and
-> fix a #GP interception SEV bug found in the process of doing so.
+Hello Daniel,
+
+On 1/20/22 15:30, Daniel Vetter wrote:
+> On Wed, Jan 19, 2022 at 12:08:39PM +0100, Helge Deller wrote:
+>> This reverts commit 39aead8373b3c20bb5965c024dfb51a94e526151.
+>>
+>> Revert this patch.  This patch started to introduce the regression that
+>> all hardware acceleration of more than 35 existing fbdev drivers were
+>> bypassed and thus fbcon console output for those was dramatically slowe=
+d
+>> down by factor of 10 and more.
+>>
+>> Reverting this commit has no impact on DRM, since none of the DRM drive=
+rs are
+>> tagged with the acceleration flags FBINFO_HWACCEL_COPYAREA,
+>> FBINFO_HWACCEL_FILLRECT or others.
+>>
+>> Signed-off-by: Helge Deller <deller@gmx.de>
+>> Cc: stable@vger.kernel.org # v5.16
+>
+> So if this really has to come back then I think the pragmatic approach i=
+s
+> to do it behind a CONFIG_FBCON_ACCEL, default n, and with a huge warning
+> that enabling that shouldn't be done for any distro which only enables
+> firmware and drm fbdev drivers.
+
+Thanks for coming back on this, but quite frankly I don't understand
+that request. How should that warning look like, something along:
+"BE WARNED: The framebuffer text console on your non-DRM supported
+graphic card will then run faster and smoother if you enable this option."
+That doesn't make sense. People and distros would want to enable that.
+
+And if a distro *just* has firmware and drm fbdev drivers enabled,
+none of the non-DRM graphic cards would be loaded anyway and this code
+wouldn't be executed anyway.
+
+I think what you want is that DRM drivers are preferred over standard
+fbdev drivers, esp. if there is a driver for both available.
+But that's completely independed of fbdev-drivers console hardware acceler=
+ation.
+
+> Plus adjusting the todo to limit it to drm drivers. Maybe also #ifdef ou=
+t
+> the code that's then dead from fbcon.
+
+Sorry, I don't understand that either.
+I assume you mean to put code of fbcon which is only used by fbdev-drivers
+into and #ifdef CONFIG_FB .. #endif (CONFIG_FB may be wrong in this exampl=
+e).
+That's probably possible, but I don't see a big win.
+If there is no fbdev driver compiled-in or as module, none of this fbdev-d=
+rivers
+will be loaded and that code path wouldn't be executed anyway.
+In that case you will win a few bytes of code, but probably not much.
+
+> Also in that case I guess it's ok to cc: stable, and really if you cc:
+> stable it needs to go down to 5.11, not 5.16.
+
+Yes, I missed that in my patch request. Will fix.
+
+> And if we do that, I think that should go in through a -next cycle, or a=
+t
+> least quite some soaking before it's cherry-picked over. Enough to give
+> syzbot a chance to discover any path we've missed at least.
+
+Sure. We don't need to hurry.
+
+Thanks!
+Helge
 
 
-FYI: I've applied all 9 commits to a 5.15 based branch (applied cleanly)
-and the 3 stable candidates to a 5.4 based branch (applied with minor
-contextual conflicts) and have been running my SEV test case (sysbench)
-and kvm-unit-tests without issues for a number of hours now.
-
-Regards,
-Liam
-
-
-> 
-> Sean Christopherson (9):
->    KVM: SVM: Never reject emulation due to SMAP errata for !SEV guests
->    Revert "KVM: SVM: avoid infinite loop on NPF from bad address"
->    KVM: SVM: Don't intercept #GP for SEV guests
->    KVM: SVM: Explicitly require DECODEASSISTS to enable SEV support
->    KVM: x86: Pass emulation type to can_emulate_instruction()
->    KVM: SVM: WARN if KVM attempts emulation on #UD or #GP for SEV guests
->    KVM: SVM: Inject #UD on attempted emulation for SEV guest w/o insn
->      buffer
->    KVM: SVM: Don't apply SEV+SMAP workaround on code fetch or PT access
->    KVM: SVM: Don't kill SEV guest if SMAP erratum triggers in usermode
-> 
->   arch/x86/include/asm/kvm_host.h |   3 +-
->   arch/x86/kvm/svm/sev.c          |   9 +-
->   arch/x86/kvm/svm/svm.c          | 162 ++++++++++++++++++++++----------
->   arch/x86/kvm/vmx/vmx.c          |   7 +-
->   arch/x86/kvm/x86.c              |  11 ++-
->   virt/kvm/kvm_main.c             |   1 -
->   6 files changed, 135 insertions(+), 58 deletions(-)
-> 
-> 
-> base-commit: edb9e50dbe18394d0fc9d0494f5b6046fc912d33
+> -Daniel
+>
+>> ---
+>>  Documentation/gpu/todo.rst       | 21 ---------------
+>>  drivers/video/fbdev/core/fbcon.c | 45 ++++++++++++++++++++++++++------
+>>  2 files changed, 37 insertions(+), 29 deletions(-)
+>>
+>> diff --git a/Documentation/gpu/todo.rst b/Documentation/gpu/todo.rst
+>> index 29506815d24a..a1212b5b3026 100644
+>> --- a/Documentation/gpu/todo.rst
+>> +++ b/Documentation/gpu/todo.rst
+>> @@ -300,27 +300,6 @@ Contact: Daniel Vetter, Noralf Tronnes
+>>
+>>  Level: Advanced
+>>
+>> -Garbage collect fbdev scrolling acceleration
+>> ---------------------------------------------
+>> -
+>> -Scroll acceleration is disabled in fbcon by hard-wiring p->scrollmode =
+=3D
+>> -SCROLL_REDRAW. There's a ton of code this will allow us to remove:
+>> -
+>> -- lots of code in fbcon.c
+>> -
+>> -- a bunch of the hooks in fbcon_ops, maybe the remaining hooks could b=
+e called
+>> -  directly instead of the function table (with a switch on p->rotate)
+>> -
+>> -- fb_copyarea is unused after this, and can be deleted from all driver=
+s
+>> -
+>> -Note that not all acceleration code can be deleted, since clearing and=
+ cursor
+>> -support is still accelerated, which might be good candidates for furth=
+er
+>> -deletion projects.
+>> -
+>> -Contact: Daniel Vetter
+>> -
+>> -Level: Intermediate
+>> -
+>>  idr_init_base()
+>>  ---------------
+>>
+>> diff --git a/drivers/video/fbdev/core/fbcon.c b/drivers/video/fbdev/cor=
+e/fbcon.c
+>> index 22bb3892f6bd..b813985f1403 100644
+>> --- a/drivers/video/fbdev/core/fbcon.c
+>> +++ b/drivers/video/fbdev/core/fbcon.c
+>> @@ -1025,7 +1025,7 @@ static void fbcon_init(struct vc_data *vc, int in=
+it)
+>>  	struct vc_data *svc =3D *default_mode;
+>>  	struct fbcon_display *t, *p =3D &fb_display[vc->vc_num];
+>>  	int logo =3D 1, new_rows, new_cols, rows, cols;
+>> -	int ret;
+>> +	int cap, ret;
+>>
+>>  	if (WARN_ON(info_idx =3D=3D -1))
+>>  	    return;
+>> @@ -1034,6 +1034,7 @@ static void fbcon_init(struct vc_data *vc, int in=
+it)
+>>  		con2fb_map[vc->vc_num] =3D info_idx;
+>>
+>>  	info =3D registered_fb[con2fb_map[vc->vc_num]];
+>> +	cap =3D info->flags;
+>>
+>>  	if (logo_shown < 0 && console_loglevel <=3D CONSOLE_LOGLEVEL_QUIET)
+>>  		logo_shown =3D FBCON_LOGO_DONTSHOW;
+>> @@ -1135,13 +1136,11 @@ static void fbcon_init(struct vc_data *vc, int =
+init)
+>>
+>>  	ops->graphics =3D 0;
+>>
+>> -	/*
+>> -	 * No more hw acceleration for fbcon.
+>> -	 *
+>> -	 * FIXME: Garbage collect all the now dead code after sufficient time
+>> -	 * has passed.
+>> -	 */
+>> -	p->scrollmode =3D SCROLL_REDRAW;
+>> +	if ((cap & FBINFO_HWACCEL_COPYAREA) &&
+>> +	    !(cap & FBINFO_HWACCEL_DISABLED))
+>> +		p->scrollmode =3D SCROLL_MOVE;
+>> +	else /* default to something safe */
+>> +		p->scrollmode =3D SCROLL_REDRAW;
+>>
+>>  	/*
+>>  	 *  ++guenther: console.c:vc_allocate() relies on initializing
+>> @@ -1953,15 +1952,45 @@ static void updatescrollmode(struct fbcon_displ=
+ay *p,
+>>  {
+>>  	struct fbcon_ops *ops =3D info->fbcon_par;
+>>  	int fh =3D vc->vc_font.height;
+>> +	int cap =3D info->flags;
+>> +	u16 t =3D 0;
+>> +	int ypan =3D FBCON_SWAP(ops->rotate, info->fix.ypanstep,
+>> +				  info->fix.xpanstep);
+>> +	int ywrap =3D FBCON_SWAP(ops->rotate, info->fix.ywrapstep, t);
+>>  	int yres =3D FBCON_SWAP(ops->rotate, info->var.yres, info->var.xres);
+>>  	int vyres =3D FBCON_SWAP(ops->rotate, info->var.yres_virtual,
+>>  				   info->var.xres_virtual);
+>> +	int good_pan =3D (cap & FBINFO_HWACCEL_YPAN) &&
+>> +		divides(ypan, vc->vc_font.height) && vyres > yres;
+>> +	int good_wrap =3D (cap & FBINFO_HWACCEL_YWRAP) &&
+>> +		divides(ywrap, vc->vc_font.height) &&
+>> +		divides(vc->vc_font.height, vyres) &&
+>> +		divides(vc->vc_font.height, yres);
+>> +	int reading_fast =3D cap & FBINFO_READS_FAST;
+>> +	int fast_copyarea =3D (cap & FBINFO_HWACCEL_COPYAREA) &&
+>> +		!(cap & FBINFO_HWACCEL_DISABLED);
+>> +	int fast_imageblit =3D (cap & FBINFO_HWACCEL_IMAGEBLIT) &&
+>> +		!(cap & FBINFO_HWACCEL_DISABLED);
+>>
+>>  	p->vrows =3D vyres/fh;
+>>  	if (yres > (fh * (vc->vc_rows + 1)))
+>>  		p->vrows -=3D (yres - (fh * vc->vc_rows)) / fh;
+>>  	if ((yres % fh) && (vyres % fh < yres % fh))
+>>  		p->vrows--;
+>> +
+>> +	if (good_wrap || good_pan) {
+>> +		if (reading_fast || fast_copyarea)
+>> +			p->scrollmode =3D good_wrap ?
+>> +				SCROLL_WRAP_MOVE : SCROLL_PAN_MOVE;
+>> +		else
+>> +			p->scrollmode =3D good_wrap ? SCROLL_REDRAW :
+>> +				SCROLL_PAN_REDRAW;
+>> +	} else {
+>> +		if (reading_fast || (fast_copyarea && !fast_imageblit))
+>> +			p->scrollmode =3D SCROLL_MOVE;
+>> +		else
+>> +			p->scrollmode =3D SCROLL_REDRAW;
+>> +	}
+>>  }
+>>
+>>  #define PITCH(w) (((w) + 7) >> 3)
+>> --
+>> 2.31.1
+>>
+>
 
