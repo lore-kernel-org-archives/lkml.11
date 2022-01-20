@@ -2,296 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3C56C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 14:51:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8D4DC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 14:53:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355000AbiATOvF (ORCPT
+        id S1345973AbiATOxJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 09:51:05 -0500
-Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:36504
-        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1354963AbiATOu5 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 09:50:57 -0500
-Received: from localhost.localdomain (1-171-82-176.dynamic-ip.hinet.net [1.171.82.176])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id BAC393F10B;
-        Thu, 20 Jan 2022 14:50:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642690249;
-        bh=/49LYPSu0AJEquLB6smXzCkxdd12/VDPVrdZ7MJv1UE=;
-        h=From:To:Cc:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=RmedSiixYW63JmXC8FIRzgiuMtThcl0zGpR6B44u5NOv543TcKCajITaqHuEqMmno
-         434VycuD+rnBvhKteStS4ae+Y0cVfvYNaT61+0t7PmAIlA9NZ4f+yL5KNSp7U+1pHn
-         jPgAweZFNO19wCdRxWWISbDibgbEyUm1/p/HWSO0jSi+DQWOgPGL1l9Pll+JWumAiN
-         IQCtuRoSZnK8Y6WbRaX5ZOLt2AV2RLKjgqu3j2Fy1LFsGukiDxLz63EH702mT8RRge
-         7vAlW/ahO1j/IA/TnU7MwYIMBCVHDWzH6J886lGf6GaptGdeWzw874t0H8HRDjo0p3
-         0WyVGD8WOiqkA==
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-To:     arnd@arndb.de, gregkh@linuxfoundation.org, ulf.hansson@linaro.org
-Cc:     linux-pm@vger.kernel.org,
-        Kai-Heng Feng <kai.heng.feng@canonical.com>,
-        Ricky WU <ricky_wu@realtek.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Yang Li <yang.lee@linux.alibaba.com>,
+        Thu, 20 Jan 2022 09:53:09 -0500
+Received: from mga07.intel.com ([134.134.136.100]:9242 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232516AbiATOxH (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 09:53:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642690387; x=1674226387;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=Noy+6LqkiM5eEKz+N8lZjE3Eh0k1uiYmZ3BxbONhZeM=;
+  b=IXwOozrecvm3lXUmd2UOSt3io/z+UQVQgN4WEzt9T7k8kZxYfZFcep05
+   I7zLYFGPnu9nvZ8ft2r4X54Rbgy3gEPg1clqKNM/nm8c/vm5VVTM+GD98
+   RKVdDBhtwJq5r5xXzPwJgfNV2DCGJUxA1AlGyBxr9L6H8xKHuF7soENRs
+   cElBiX6s6XY7Q5yDHKREirFBESg6a/mUgt9gwZrCrgZktUklC0k0gS1xP
+   hGgz4Oof5CcDY5DKmNFP/a8Hr6pZU1dGY/Xt0JH9CV6XZra2Fw8uoaA6Z
+   kw3T17tveOV97GPyy3IBj4Wkc+bRiDzS7Nsyeyk05RKcdTCCqFwco+W/x
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10232"; a="308705710"
+X-IronPort-AV: E=Sophos;i="5.88,302,1635231600"; 
+   d="scan'208";a="308705710"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 06:53:07 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,302,1635231600"; 
+   d="scan'208";a="493440497"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga002.jf.intel.com with ESMTP; 20 Jan 2022 06:53:06 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nAYoD-000EM1-Bm; Thu, 20 Jan 2022 14:53:05 +0000
+Date:   Thu, 20 Jan 2022 22:52:30 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Guo Ren <guoren@linux.alibaba.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 4/4] misc: rtsx: Quiesce rts5249 on system suspend
-Date:   Thu, 20 Jan 2022 22:50:05 +0800
-Message-Id: <20220120145006.1682014-4-kai.heng.feng@canonical.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220120145006.1682014-1-kai.heng.feng@canonical.com>
-References: <20220120145006.1682014-1-kai.heng.feng@canonical.com>
+Subject: [csky-linux:riscv_compat_v3 16/17]
+ arch/riscv/kernel/compat_signal.c:199:5: warning: no previous prototype for
+ function 'compat_setup_rt_frame'
+Message-ID: <202201202234.gybNbUYU-lkp@intel.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Set more registers in force_power_down callback to avoid S3 wakeup from
-hotplugging cards.
+Hi Guo,
 
-This is originally written by Ricky WU.
+First bad commit (maybe != root cause):
 
-Link: https://lore.kernel.org/lkml/c4525b4738f94483b9b8f8571fc80646@realtek.com/
-Cc: Ricky WU <ricky_wu@realtek.com>
-Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+tree:   https://github.com/c-sky/csky-linux riscv_compat_v3
+head:   83f51edf28491d90ae9591131bc7cdd8ce7d3764
+commit: ca6210b52caef524df951e60ec5bc09fb3196017 [16/17] riscv: compat: Add COMPAT Kbuild skeletal support
+config: riscv-randconfig-r021-20220120 (https://download.01.org/0day-ci/archive/20220120/202201202234.gybNbUYU-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project f7b7138a62648f4019c55e4671682af1f851f295)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install riscv cross compiling tool for clang build
+        # apt-get install binutils-riscv64-linux-gnu
+        # https://github.com/c-sky/csky-linux/commit/ca6210b52caef524df951e60ec5bc09fb3196017
+        git remote add csky-linux https://github.com/c-sky/csky-linux
+        git fetch --no-tags csky-linux riscv_compat_v3
+        git checkout ca6210b52caef524df951e60ec5bc09fb3196017
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=riscv SHELL=/bin/bash arch/riscv/kernel/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+>> arch/riscv/kernel/compat_signal.c:199:5: warning: no previous prototype for function 'compat_setup_rt_frame' [-Wmissing-prototypes]
+   int compat_setup_rt_frame(struct ksignal *ksig, sigset_t *set,
+       ^
+   arch/riscv/kernel/compat_signal.c:199:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
+   int compat_setup_rt_frame(struct ksignal *ksig, sigset_t *set,
+   ^
+   static 
+   1 warning generated.
+
+
+vim +/compat_setup_rt_frame +199 arch/riscv/kernel/compat_signal.c
+
+97edfbe8120313 Guo Ren 2021-12-13  198  
+97edfbe8120313 Guo Ren 2021-12-13 @199  int compat_setup_rt_frame(struct ksignal *ksig, sigset_t *set,
+97edfbe8120313 Guo Ren 2021-12-13  200  	struct pt_regs *regs)
+97edfbe8120313 Guo Ren 2021-12-13  201  {
+97edfbe8120313 Guo Ren 2021-12-13  202  	struct compat_rt_sigframe __user *frame;
+97edfbe8120313 Guo Ren 2021-12-13  203  	long err = 0;
+97edfbe8120313 Guo Ren 2021-12-13  204  
+97edfbe8120313 Guo Ren 2021-12-13  205  	frame = compat_get_sigframe(ksig, regs, sizeof(*frame));
+97edfbe8120313 Guo Ren 2021-12-13  206  	if (!access_ok(frame, sizeof(*frame)))
+97edfbe8120313 Guo Ren 2021-12-13  207  		return -EFAULT;
+97edfbe8120313 Guo Ren 2021-12-13  208  
+97edfbe8120313 Guo Ren 2021-12-13  209  	err |= copy_siginfo_to_user32(&frame->info, &ksig->info);
+97edfbe8120313 Guo Ren 2021-12-13  210  
+97edfbe8120313 Guo Ren 2021-12-13  211  	/* Create the ucontext. */
+97edfbe8120313 Guo Ren 2021-12-13  212  	err |= __put_user(0, &frame->uc.uc_flags);
+97edfbe8120313 Guo Ren 2021-12-13  213  	err |= __put_user(NULL, &frame->uc.uc_link);
+97edfbe8120313 Guo Ren 2021-12-13  214  	err |= __compat_save_altstack(&frame->uc.uc_stack, regs->sp);
+97edfbe8120313 Guo Ren 2021-12-13  215  	err |= compat_setup_sigcontext(frame, regs);
+97edfbe8120313 Guo Ren 2021-12-13  216  	err |= __copy_to_user(&frame->uc.uc_sigmask, set, sizeof(*set));
+97edfbe8120313 Guo Ren 2021-12-13  217  	if (err)
+97edfbe8120313 Guo Ren 2021-12-13  218  		return -EFAULT;
+97edfbe8120313 Guo Ren 2021-12-13  219  
+97edfbe8120313 Guo Ren 2021-12-13  220  	regs->ra = (unsigned long)COMPAT_VDSO_SYMBOL(
+97edfbe8120313 Guo Ren 2021-12-13  221  			current->mm->context.vdso, rt_sigreturn);
+97edfbe8120313 Guo Ren 2021-12-13  222  
+97edfbe8120313 Guo Ren 2021-12-13  223  	/*
+97edfbe8120313 Guo Ren 2021-12-13  224  	 * Set up registers for signal handler.
+97edfbe8120313 Guo Ren 2021-12-13  225  	 * Registers that we don't modify keep the value they had from
+97edfbe8120313 Guo Ren 2021-12-13  226  	 * user-space at the time we took the signal.
+97edfbe8120313 Guo Ren 2021-12-13  227  	 * We always pass siginfo and mcontext, regardless of SA_SIGINFO,
+97edfbe8120313 Guo Ren 2021-12-13  228  	 * since some things rely on this (e.g. glibc's debug/segfault.c).
+97edfbe8120313 Guo Ren 2021-12-13  229  	 */
+97edfbe8120313 Guo Ren 2021-12-13  230  	regs->epc = (unsigned long)ksig->ka.sa.sa_handler;
+97edfbe8120313 Guo Ren 2021-12-13  231  	regs->sp = (unsigned long)frame;
+97edfbe8120313 Guo Ren 2021-12-13  232  	regs->a0 = ksig->sig;                     /* a0: signal number */
+97edfbe8120313 Guo Ren 2021-12-13  233  	regs->a1 = (unsigned long)(&frame->info); /* a1: siginfo pointer */
+97edfbe8120313 Guo Ren 2021-12-13  234  	regs->a2 = (unsigned long)(&frame->uc);   /* a2: ucontext pointer */
+97edfbe8120313 Guo Ren 2021-12-13  235  
+
+:::::: The code at line 199 was first introduced by commit
+:::::: 97edfbe8120313cf2a214c61d72175cf6f564430 riscv: compat: signal: Add rt_frame implementation
+
+:::::: TO: Guo Ren <guoren@linux.alibaba.com>
+:::::: CC: Guo Ren <guoren@linux.alibaba.com>
+
 ---
- drivers/misc/cardreader/rtl8411.c  |  2 +-
- drivers/misc/cardreader/rts5209.c  |  2 +-
- drivers/misc/cardreader/rts5228.c  |  2 +-
- drivers/misc/cardreader/rts5229.c  |  2 +-
- drivers/misc/cardreader/rts5249.c  | 31 ++++++++++++++++++++++++++++--
- drivers/misc/cardreader/rts5261.c  |  2 +-
- drivers/misc/cardreader/rtsx_pcr.c | 14 +++++++-------
- drivers/misc/cardreader/rtsx_pcr.h |  1 +
- include/linux/rtsx_pci.h           |  2 +-
- 9 files changed, 43 insertions(+), 15 deletions(-)
-
-diff --git a/drivers/misc/cardreader/rtl8411.c b/drivers/misc/cardreader/rtl8411.c
-index 4c5621b17a6fb..06457e875a90c 100644
---- a/drivers/misc/cardreader/rtl8411.c
-+++ b/drivers/misc/cardreader/rtl8411.c
-@@ -76,7 +76,7 @@ static void rtl8411b_fetch_vendor_settings(struct rtsx_pcr *pcr)
- 		map_sd_drive(rtl8411b_reg_to_sd30_drive_sel_3v3(reg));
- }
- 
--static void rtl8411_force_power_down(struct rtsx_pcr *pcr, u8 pm_state)
-+static void rtl8411_force_power_down(struct rtsx_pcr *pcr, u8 pm_state, bool runtime)
- {
- 	rtsx_pci_write_register(pcr, FPDCTL, 0x07, 0x07);
- }
-diff --git a/drivers/misc/cardreader/rts5209.c b/drivers/misc/cardreader/rts5209.c
-index 29f5414072bf1..52b0a476ba51f 100644
---- a/drivers/misc/cardreader/rts5209.c
-+++ b/drivers/misc/cardreader/rts5209.c
-@@ -47,7 +47,7 @@ static void rts5209_fetch_vendor_settings(struct rtsx_pcr *pcr)
- 	}
- }
- 
--static void rts5209_force_power_down(struct rtsx_pcr *pcr, u8 pm_state)
-+static void rts5209_force_power_down(struct rtsx_pcr *pcr, u8 pm_state, bool runtime)
- {
- 	rtsx_pci_write_register(pcr, FPDCTL, 0x07, 0x07);
- }
-diff --git a/drivers/misc/cardreader/rts5228.c b/drivers/misc/cardreader/rts5228.c
-index ffc128278613b..ffe3afbf8bfed 100644
---- a/drivers/misc/cardreader/rts5228.c
-+++ b/drivers/misc/cardreader/rts5228.c
-@@ -91,7 +91,7 @@ static int rts5228_optimize_phy(struct rtsx_pcr *pcr)
- 	return rtsx_pci_write_phy_register(pcr, 0x07, 0x8F40);
- }
- 
--static void rts5228_force_power_down(struct rtsx_pcr *pcr, u8 pm_state)
-+static void rts5228_force_power_down(struct rtsx_pcr *pcr, u8 pm_state, bool runtime)
- {
- 	/* Set relink_time to 0 */
- 	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 1, MASK_8_BIT_DEF, 0);
-diff --git a/drivers/misc/cardreader/rts5229.c b/drivers/misc/cardreader/rts5229.c
-index c748eaf1ec1f9..b0edd8006d52f 100644
---- a/drivers/misc/cardreader/rts5229.c
-+++ b/drivers/misc/cardreader/rts5229.c
-@@ -44,7 +44,7 @@ static void rts5229_fetch_vendor_settings(struct rtsx_pcr *pcr)
- 		map_sd_drive(rtsx_reg_to_sd30_drive_sel_3v3(reg));
- }
- 
--static void rts5229_force_power_down(struct rtsx_pcr *pcr, u8 pm_state)
-+static void rts5229_force_power_down(struct rtsx_pcr *pcr, u8 pm_state, bool runtime)
- {
- 	rtsx_pci_write_register(pcr, FPDCTL, 0x03, 0x03);
- }
-diff --git a/drivers/misc/cardreader/rts5249.c b/drivers/misc/cardreader/rts5249.c
-index 53f3a1f45c4a7..91d240dd68faa 100644
---- a/drivers/misc/cardreader/rts5249.c
-+++ b/drivers/misc/cardreader/rts5249.c
-@@ -74,7 +74,8 @@ static void rtsx_base_fetch_vendor_settings(struct rtsx_pcr *pcr)
- 	pci_read_config_dword(pdev, PCR_SETTING_REG2, &reg);
- 	pcr_dbg(pcr, "Cfg 0x%x: 0x%x\n", PCR_SETTING_REG2, reg);
- 
--	pcr->rtd3_en = rtsx_reg_to_rtd3_uhsii(reg);
-+	if (CHK_PCI_PID(pcr, PID_524A) || CHK_PCI_PID(pcr, PID_525A))
-+		pcr->rtd3_en = rtsx_reg_to_rtd3_uhsii(reg);
- 
- 	if (rtsx_check_mmc_support(reg))
- 		pcr->extra_caps |= EXTRA_CAPS_NO_MMC;
-@@ -143,6 +144,27 @@ static int rts5249_init_from_hw(struct rtsx_pcr *pcr)
- 	return 0;
- }
- 
-+static void rts52xa_force_power_down(struct rtsx_pcr *pcr, u8 pm_state, bool runtime)
-+{
-+	/* Set relink_time to 0 */
-+	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 1, MASK_8_BIT_DEF, 0);
-+	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 2, MASK_8_BIT_DEF, 0);
-+	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 3,
-+				RELINK_TIME_MASK, 0);
-+
-+	rtsx_pci_write_register(pcr, RTS524A_PM_CTRL3,
-+			D3_DELINK_MODE_EN, D3_DELINK_MODE_EN);
-+
-+	if (!runtime) {
-+		rtsx_pci_write_register(pcr, RTS524A_AUTOLOAD_CFG1,
-+				CD_RESUME_EN_MASK, 0);
-+		rtsx_pci_write_register(pcr, RTS524A_PM_CTRL3, 0x01, 0x00);
-+		rtsx_pci_write_register(pcr, RTS524A_PME_FORCE_CTL, 0x30, 0x20);
-+	}
-+
-+	rtsx_pci_write_register(pcr, FPDCTL, ALL_POWER_DOWN, ALL_POWER_DOWN);
-+}
-+
- static void rts52xa_save_content_from_efuse(struct rtsx_pcr *pcr)
- {
- 	u8 cnt, sv;
-@@ -281,8 +303,11 @@ static int rts5249_extra_init_hw(struct rtsx_pcr *pcr)
- 
- 	rtsx_pci_send_cmd(pcr, CMD_TIMEOUT_DEF);
- 
--	if (CHK_PCI_PID(pcr, PID_524A) || CHK_PCI_PID(pcr, PID_525A))
-+	if (CHK_PCI_PID(pcr, PID_524A) || CHK_PCI_PID(pcr, PID_525A)) {
- 		rtsx_pci_write_register(pcr, REG_VREF, PWD_SUSPND_EN, PWD_SUSPND_EN);
-+		rtsx_pci_write_register(pcr, RTS524A_AUTOLOAD_CFG1,
-+			CD_RESUME_EN_MASK, CD_RESUME_EN_MASK);
-+	}
- 
- 	if (pcr->rtd3_en) {
- 		if (CHK_PCI_PID(pcr, PID_524A) || CHK_PCI_PID(pcr, PID_525A)) {
-@@ -724,6 +749,7 @@ static const struct pcr_ops rts524a_pcr_ops = {
- 	.card_power_on = rtsx_base_card_power_on,
- 	.card_power_off = rtsx_base_card_power_off,
- 	.switch_output_voltage = rtsx_base_switch_output_voltage,
-+	.force_power_down = rts52xa_force_power_down,
- 	.set_l1off_cfg_sub_d0 = rts5250_set_l1off_cfg_sub_d0,
- };
- 
-@@ -841,6 +867,7 @@ static const struct pcr_ops rts525a_pcr_ops = {
- 	.card_power_on = rts525a_card_power_on,
- 	.card_power_off = rtsx_base_card_power_off,
- 	.switch_output_voltage = rts525a_switch_output_voltage,
-+	.force_power_down = rts52xa_force_power_down,
- 	.set_l1off_cfg_sub_d0 = rts5250_set_l1off_cfg_sub_d0,
- };
- 
-diff --git a/drivers/misc/cardreader/rts5261.c b/drivers/misc/cardreader/rts5261.c
-index 1fd4e0e507302..64333347c14a4 100644
---- a/drivers/misc/cardreader/rts5261.c
-+++ b/drivers/misc/cardreader/rts5261.c
-@@ -91,7 +91,7 @@ static void rtsx5261_fetch_vendor_settings(struct rtsx_pcr *pcr)
- 	pcr->sd30_drive_sel_3v3 = rts5261_reg_to_sd30_drive_sel_3v3(reg);
- }
- 
--static void rts5261_force_power_down(struct rtsx_pcr *pcr, u8 pm_state)
-+static void rts5261_force_power_down(struct rtsx_pcr *pcr, u8 pm_state, bool runtime)
- {
- 	/* Set relink_time to 0 */
- 	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 1, MASK_8_BIT_DEF, 0);
-diff --git a/drivers/misc/cardreader/rtsx_pcr.c b/drivers/misc/cardreader/rtsx_pcr.c
-index 8107c85028c37..576c72e1580a6 100644
---- a/drivers/misc/cardreader/rtsx_pcr.c
-+++ b/drivers/misc/cardreader/rtsx_pcr.c
-@@ -1086,7 +1086,7 @@ static void rtsx_pm_power_saving(struct rtsx_pcr *pcr)
- 	rtsx_comm_pm_power_saving(pcr);
- }
- 
--static void rtsx_base_force_power_down(struct rtsx_pcr *pcr, u8 pm_state)
-+static void rtsx_base_force_power_down(struct rtsx_pcr *pcr)
- {
- 	/* Set relink_time to 0 */
- 	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 1, MASK_8_BIT_DEF, 0);
-@@ -1100,7 +1100,7 @@ static void rtsx_base_force_power_down(struct rtsx_pcr *pcr, u8 pm_state)
- 	rtsx_pci_write_register(pcr, FPDCTL, ALL_POWER_DOWN, ALL_POWER_DOWN);
- }
- 
--static void __maybe_unused rtsx_pci_power_off(struct rtsx_pcr *pcr, u8 pm_state)
-+static void __maybe_unused rtsx_pci_power_off(struct rtsx_pcr *pcr, u8 pm_state, bool runtime)
- {
- 	if (pcr->ops->turn_off_led)
- 		pcr->ops->turn_off_led(pcr);
-@@ -1112,9 +1112,9 @@ static void __maybe_unused rtsx_pci_power_off(struct rtsx_pcr *pcr, u8 pm_state)
- 	rtsx_pci_write_register(pcr, HOST_SLEEP_STATE, 0x03, pm_state);
- 
- 	if (pcr->ops->force_power_down)
--		pcr->ops->force_power_down(pcr, pm_state);
-+		pcr->ops->force_power_down(pcr, pm_state, runtime);
- 	else
--		rtsx_base_force_power_down(pcr, pm_state);
-+		rtsx_base_force_power_down(pcr);
- }
- 
- void rtsx_pci_enable_ocp(struct rtsx_pcr *pcr)
-@@ -1675,7 +1675,7 @@ static int __maybe_unused rtsx_pci_suspend(struct device *dev_d)
- 
- 	mutex_lock(&pcr->pcr_mutex);
- 
--	rtsx_pci_power_off(pcr, HOST_ENTER_S3);
-+	rtsx_pci_power_off(pcr, HOST_ENTER_S3, false);
- 
- 	mutex_unlock(&pcr->pcr_mutex);
- 	return 0;
-@@ -1719,7 +1719,7 @@ static void rtsx_pci_shutdown(struct pci_dev *pcidev)
- 
- 	handle = pci_get_drvdata(pcidev);
- 	pcr = handle->pcr;
--	rtsx_pci_power_off(pcr, HOST_ENTER_S1);
-+	rtsx_pci_power_off(pcr, HOST_ENTER_S1, false);
- 
- 	pci_disable_device(pcidev);
- 	free_irq(pcr->irq, (void *)pcr);
-@@ -1770,7 +1770,7 @@ static int rtsx_pci_runtime_suspend(struct device *device)
- 	cancel_delayed_work_sync(&pcr->carddet_work);
- 
- 	mutex_lock(&pcr->pcr_mutex);
--	rtsx_pci_power_off(pcr, HOST_ENTER_S3);
-+	rtsx_pci_power_off(pcr, HOST_ENTER_S3, true);
- 
- 	mutex_unlock(&pcr->pcr_mutex);
- 
-diff --git a/drivers/misc/cardreader/rtsx_pcr.h b/drivers/misc/cardreader/rtsx_pcr.h
-index daf057c4eea62..aa0ebd6672277 100644
---- a/drivers/misc/cardreader/rtsx_pcr.h
-+++ b/drivers/misc/cardreader/rtsx_pcr.h
-@@ -25,6 +25,7 @@
- #define REG_EFUSE_POWEROFF		0x00
- #define RTS5250_CLK_CFG3		0xFF79
- #define RTS525A_CFG_MEM_PD		0xF0
-+#define RTS524A_AUTOLOAD_CFG1		0xFF7C
- #define RTS524A_PM_CTRL3		0xFF7E
- #define RTS525A_BIOS_CFG		0xFF2D
- #define RTS525A_LOAD_BIOS_FLAG	0x01
-diff --git a/include/linux/rtsx_pci.h b/include/linux/rtsx_pci.h
-index 671aaca8529c6..7e2f2da756cde 100644
---- a/include/linux/rtsx_pci.h
-+++ b/include/linux/rtsx_pci.h
-@@ -1095,7 +1095,7 @@ struct pcr_ops {
- 	unsigned int	(*cd_deglitch)(struct rtsx_pcr *pcr);
- 	int		(*conv_clk_and_div_n)(int clk, int dir);
- 	void		(*fetch_vendor_settings)(struct rtsx_pcr *pcr);
--	void		(*force_power_down)(struct rtsx_pcr *pcr, u8 pm_state);
-+	void		(*force_power_down)(struct rtsx_pcr *pcr, u8 pm_state, bool runtime);
- 	void		(*stop_cmd)(struct rtsx_pcr *pcr);
- 
- 	void (*set_aspm)(struct rtsx_pcr *pcr, bool enable);
--- 
-2.33.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
