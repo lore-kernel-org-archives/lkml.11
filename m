@@ -2,173 +2,234 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F851C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 13:07:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F675C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 13:07:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245176AbiATNHM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 08:07:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41404 "EHLO
+        id S245355AbiATNHX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 08:07:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41472 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244622AbiATNHJ (ORCPT
+        with ESMTP id S244622AbiATNHW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 08:07:09 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB65C061574
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 05:07:08 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id o1-20020a1c4d01000000b0034d95625e1fso7280926wmh.4
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 05:07:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Pf4BYXVkEBiAHxvfjg/LOTJIqSqaQLQh4tvfHTTB40k=;
-        b=w9Qy6G03ThdCH7oCJFZ1yv/joiohw6cBHxsD4nQF5QSUU7k8QyVWRwA9pnL3IhaAgj
-         zmFZcqLzoA+JenBw6K0Db06rx9TbYNbhs/uJi3nIzp2c/L+b0VzZFtZeElTlDwOFKJRq
-         egfnvSgubGXORX0PQxktigyZcUZ7endRTEcVxNxhOGy0V4gzzNLnOEiLBnWQnCzlgTKy
-         NpzzEmuD3wLP24QvgUXyQzmW3uBF1li5AsDK2P9g9RECXV+S3IjuHYwWS4QVXEOm4ry6
-         R0xHUA7Ke+KuGxU/iZby+1HSbVxQTBF6th0OcW6FK5gXq7V0yeQY95wu7KKAem3eAveQ
-         Xacg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Pf4BYXVkEBiAHxvfjg/LOTJIqSqaQLQh4tvfHTTB40k=;
-        b=OlX71BdqtUJKgSmxSPnzjVLhlRiQzDF0kRNtQxtWKcSW4JKl3tWKXt3inTZVmDln7Y
-         Xel1anSjsHVBVnpzXuEjKQsvSpG81paTk78ekv9N4dOAbJrISzl2w/CvTPfQdygWT8wi
-         spsRpNp6IcnvxdZU60KtU0s2glanDcQz2REZhpFnHqQJfix2a4BTxyRyA0uSnHFS6ev7
-         IN1eQKyUBTMLcQbNqFZwCwna5IvkLz0ygfPhRgZSccSczdYO002K4/DPduTDDb05a1jb
-         CMQaQlt7Hzf7yjpkfkrqzhOBZBVW50qpPgg8nP/MbgHHxs8es0t+rGNPXtqkqBETJ8Ww
-         msaQ==
-X-Gm-Message-State: AOAM530VSJuAYRgBfAfHCOVr1xsUV/+WF3CZTrSoZMT1t1Pgd7+QiNGv
-        Epj7E9qxGg7c71CXxJtGohb+knNt+e7b2i+c59+u6A==
-X-Google-Smtp-Source: ABdhPJzX+KqHzjtxOkv77MHHzbYfly4M1iEzLRQJEKYDS8mwQ891Is6L6HbxPg8YkZVjZJdMyUOLiUxCDTatsoiaiE8=
-X-Received: by 2002:a5d:6c6e:: with SMTP id r14mr13074020wrz.651.1642684027298;
- Thu, 20 Jan 2022 05:07:07 -0800 (PST)
-MIME-Version: 1.0
-References: <20220114150824.3578829-1-jens.wiklander@linaro.org>
- <20220114150824.3578829-10-jens.wiklander@linaro.org> <CAFA6WYOOLAxwK6P8=kcG29FGv3YG=jrOt_uAqEnrLmRwbQGU6w@mail.gmail.com>
-In-Reply-To: <CAFA6WYOOLAxwK6P8=kcG29FGv3YG=jrOt_uAqEnrLmRwbQGU6w@mail.gmail.com>
-From:   Jens Wiklander <jens.wiklander@linaro.org>
-Date:   Thu, 20 Jan 2022 14:06:56 +0100
-Message-ID: <CAHUa44H0ryokLDJn3DLFEQUw+0jd0a_Jh9hPOCLjL-pZxKk-ZA@mail.gmail.com>
-Subject: Re: [PATCH v2 09/12] tee: add tee_shm_register_{user,kernel}_buf()
-To:     Sumit Garg <sumit.garg@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Devaraj Rangasamy <Devaraj.Rangasamy@amd.com>,
-        Rijo Thomas <Rijo-john.Thomas@amd.com>,
-        David Howells <dhowells@redhat.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>
+        Thu, 20 Jan 2022 08:07:22 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB3E6C061574;
+        Thu, 20 Jan 2022 05:07:21 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 81271B81A74;
+        Thu, 20 Jan 2022 13:07:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE70AC340E0;
+        Thu, 20 Jan 2022 13:07:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642684039;
+        bh=c19BuRk0Zh2oimT7UqMQr8Bit7U+S2t98zkERlbgPOk=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=ZRgUp8RcdVCtx4Y6AA2+AVtXTE7ArUcDwOnNLRrkAfY0zDq/eO24MsDdGz9AHLGoL
+         OOa4phRRwVlhJL9CHYHnEBgejovf3Wo3lloax/H/75S+aeEOpwznh+F53wp6mhTm6E
+         RxkL/TPHbpJ+O8nH4+pAdeM11hMkE7mvtN8bG4LYoWBpEuuRog9tG/zRocoBydRUfS
+         SXZMPcsFWrzC2R6wrg8x9xeNfGv/9iXrtMQbAh7Hx3mFWD4tycDHCqnTRJoYztzinq
+         gJTDQHNU0iJJPWcDzMMRy2BPLZR/2RBczZkgtWUErtkYWtaCm+wol1jAx4PgH0VOr1
+         OfKOY5nVRbi3A==
+Message-ID: <abeddeee390824d261018cecf5be3f7379fe4b38.camel@kernel.org>
+Subject: Re: [PATCH v3 1/2] x86/sgx: Add accounting for tracking overcommit
+From:   Jarkko Sakkinen <jarkko@kernel.org>
+To:     Kristen Carlson Accardi <kristen@linux.intel.com>,
+        linux-sgx@vger.kernel.org,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
+        x86@kernel.org, "H. Peter Anvin" <hpa@zytor.com>
+Cc:     linux-kernel@vger.kernel.org
+Date:   Thu, 20 Jan 2022 15:07:03 +0200
+In-Reply-To: <20220118175717.6922-2-kristen@linux.intel.com>
+References: <20220118175717.6922-1-kristen@linux.intel.com>
+         <20220118175717.6922-2-kristen@linux.intel.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.42.3 
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 12:00 PM Sumit Garg <sumit.garg@linaro.org> wrote:
->
-> On Fri, 14 Jan 2022 at 20:38, Jens Wiklander <jens.wiklander@linaro.org> wrote:
-> >
-> > Adds the two new functions tee_shm_register_user_buf() and
-> > tee_shm_register_kernel_buf() which should be used instead of the old
-> > tee_shm_register().
-> >
-> > This avoids having the caller supplying the flags parameter which
-> > exposes a bit more than desired of the internals of the TEE subsystem.
-> >
-> > Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
-> > ---
-> >  drivers/tee/tee_core.c  |  3 +--
-> >  drivers/tee/tee_shm.c   | 34 ++++++++++++++++++++++++++++++++++
-> >  include/linux/tee_drv.h |  4 ++++
-> >  3 files changed, 39 insertions(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/tee/tee_core.c b/drivers/tee/tee_core.c
-> > index a15812baaeb1..8aa1a4836b92 100644
-> > --- a/drivers/tee/tee_core.c
-> > +++ b/drivers/tee/tee_core.c
-> > @@ -334,8 +334,7 @@ tee_ioctl_shm_register(struct tee_context *ctx,
-> >         if (data.flags)
-> >                 return -EINVAL;
-> >
-> > -       shm = tee_shm_register(ctx, data.addr, data.length,
-> > -                              TEE_SHM_DMA_BUF | TEE_SHM_USER_MAPPED);
-> > +       shm = tee_shm_register_user_buf(ctx, data.addr, data.length);
-> >         if (IS_ERR(shm))
-> >                 return PTR_ERR(shm);
-> >
-> > diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
-> > index d51bf97ce7e5..6a1dbce75616 100644
-> > --- a/drivers/tee/tee_shm.c
-> > +++ b/drivers/tee/tee_shm.c
-> > @@ -301,6 +301,40 @@ struct tee_shm *tee_shm_register(struct tee_context *ctx, unsigned long addr,
-> >  }
-> >  EXPORT_SYMBOL_GPL(tee_shm_register);
-> >
-> > +/**
-> > + * tee_shm_register_user_buf() - Register a userspace shared memory buffer
-> > + * @ctx:       Context that registers the shared memory
-> > + * @addr:      The userspace address of the shared buffer
-> > + * @length:    Length of the shared buffer
-> > + *
-> > + * @returns a pointer to 'struct tee_shm'
-> > + */
-> > +struct tee_shm *tee_shm_register_user_buf(struct tee_context *ctx,
-> > +                                         unsigned long addr, size_t length)
-> > +{
-> > +       return tee_shm_register(ctx, addr, length,
-> > +                               TEE_SHM_DMA_BUF | TEE_SHM_USER_MAPPED);
-> > +}
-> > +EXPORT_SYMBOL_GPL(tee_shm_register_user_buf);
-> > +
->
-> Similar comment as for tee_shm_alloc_user_buf() in patch #3. This
-> isn't required to be exported but rather a private function to TEE
-> core.
+On Tue, 2022-01-18 at 09:57 -0800, Kristen Carlson Accardi wrote:
+> When the system runs out of enclave memory, SGX can reclaim EPC pages
+> by swapping to normal RAM. This normal RAM is allocated via a
+> per-enclave shared memory area. The shared memory area is not mapped
+> into the enclave or the task mapping it, which makes its memory use
+> opaque (including to the OOM killer). Having lots of hard to find
+> memory around is problematic, especially when there is no limit.
+>=20
+> Introduce a global counter that can be used to limit the number of
+> pages
+> that enclaves are able to consume for backing storage.=C2=A0 This
+> parameter
+> is a percentage value that is used in conjunction with the number of
+> EPC pages in the system to set a cap on the amount of backing RAM
+> that
+> can be consumed.
+>=20
+> The default for this value is 150, which limits the total number of
+> shared memory pages that may be consumed by all enclaves as backing
+> pages to 1.5X of EPC pages on the system. For example, on an SGX
+> system that has 128MB of EPC, this default would cap the amount of
+> normal RAM that SGX consumes for its shared memory areas at 192MB.
+> The value of 1.5x the number of EPC pages was chosen because it
+> should
+> handle the most common case of a few enclaves that don't need much
+> overcommit without any impact to user space. In the less common case
+> where there are many enclaves, or a few large enclaves which need
+> a lot of overcommit due to large EPC memory requirements, the
+> reclaimer may fail to allocate a backing page for swapping if the
+> limit has been reached. In this case, the page will not be able
+> to allocate any new EPC pages. Any ioctl or call to add new EPC
+> pages will get -ENOMEM, so for example, new enclaves will fail to
+> load, and new EPC pages will not be able to be added.
+>=20
+> The SGX overcommit_percent works differently than the core VM
+> overcommit
+> limit. Enclaves request backing pages one page at a time, and the
+> number
+> of in use backing pages that are allowed is a global resource that is
+> limited for all enclaves.
+>=20
+> Introduce a pair of functions which can be used by callers when
+> requesting
+> backing RAM pages. These functions are responsible for accounting the
+> page charges. A request may return an error if the request will cause
+> the
+> counter to exceed the backing page cap.
+>=20
+> Signed-off-by: Kristen Carlson Accardi <kristen@linux.intel.com>
+> Tested-by: Jarkko Sakkinen <jarkko@kernel.org>
+> ---
+> =C2=A0arch/x86/kernel/cpu/sgx/main.c | 45
+> ++++++++++++++++++++++++++++++++++
+> =C2=A0arch/x86/kernel/cpu/sgx/sgx.h=C2=A0 |=C2=A0 2 ++
+> =C2=A02 files changed, 47 insertions(+)
+>=20
+> diff --git a/arch/x86/kernel/cpu/sgx/main.c
+> b/arch/x86/kernel/cpu/sgx/main.c
+> index 2857a49f2335..261e3702aef9 100644
+> --- a/arch/x86/kernel/cpu/sgx/main.c
+> +++ b/arch/x86/kernel/cpu/sgx/main.c
+> @@ -43,6 +43,45 @@ static struct sgx_numa_node *sgx_numa_nodes;
+> =C2=A0
+> =C2=A0static LIST_HEAD(sgx_dirty_page_list);
+> =C2=A0
+> +/*
+> + * Limits the amount of normal RAM that SGX can consume for EPC
+> + * overcommit to the total EPC pages * sgx_overcommit_percent / 100
+> + */
+> +static int sgx_overcommit_percent =3D 150;
+> +
+> +/* The number of pages that can be allocated globally for backing
+> storage. */
+> +static atomic_long_t sgx_nr_available_backing_pages;
+> +
+> +/**
+> + * sgx_charge_mem() - charge for a page used for backing storage
+> + *
+> + * Backing storage usage is capped by the
+> sgx_nr_available_backing_pages.
+> + * If the backing storage usage is over the overcommit limit,
+> + * return an error.
+> + *
+> + * Return:
+> + * 0:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0The pag=
+e requested does not exceed the limit
+> + * -ENOMEM:=C2=A0=C2=A0=C2=A0=C2=A0The page requested exceeds the overco=
+mmit limit
+> + */
+> +int sgx_charge_mem(void)
+> +{
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0if (!atomic_long_add_unless(&s=
+gx_nr_available_backing_pages,
+> -1, 0))
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0return -ENOMEM;
+> +
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return 0;
+> +}
+> +
+> +/**
+> + * sgx_uncharge_mem() - uncharge a page previously used for backing
+> storage
+> + *
+> + * When backing storage is no longer in use, increment the
+> + * sgx_nr_available_backing_pages counter.
+> + */
+> +void sgx_uncharge_mem(void)
+> +{
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0atomic_long_inc(&sgx_nr_availa=
+ble_backing_pages);
+> +}
+> +
+> =C2=A0/*
+> =C2=A0 * Reset post-kexec EPC pages to the uninitialized state. The pages
+> are removed
+> =C2=A0 * from the input list, and made available for the page allocator.
+> SECS pages
+> @@ -783,6 +822,8 @@ static inline u64 __init
+> sgx_calc_section_metric(u64 low, u64 high)
+> =C2=A0static bool __init sgx_page_cache_init(void)
+> =C2=A0{
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u32 eax, ebx, ecx, edx, t=
+ype;
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 available_backing_bytes;
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 total_epc_bytes =3D 0;
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0u64 pa, size;
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0int nid;
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0int i;
+> @@ -830,6 +871,7 @@ static bool __init sgx_page_cache_init(void)
+> =C2=A0
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0sgx_epc_sections[i].node =3D=C2=A0 &sgx_numa_nodes[=
+nid];
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0sgx_numa_nodes[nid].size +=3D size;
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0total_epc_bytes +=3D size;
+> =C2=A0
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0sgx_nr_epc_sections++;
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0}
+> @@ -839,6 +881,9 @@ static bool __init sgx_page_cache_init(void)
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0return false;
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0}
+> =C2=A0
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0available_backing_bytes =3D to=
+tal_epc_bytes *
+> (sgx_overcommit_percent / 100);
+> +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0atomic_long_set(&sgx_nr_availa=
+ble_backing_pages,
+> available_backing_bytes >> PAGE_SHIFT);
+> +
+> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0return true;
+> =C2=A0}
+> =C2=A0
+> diff --git a/arch/x86/kernel/cpu/sgx/sgx.h
+> b/arch/x86/kernel/cpu/sgx/sgx.h
+> index 0f17def9fe6f..3507a9983fc1 100644
+> --- a/arch/x86/kernel/cpu/sgx/sgx.h
+> +++ b/arch/x86/kernel/cpu/sgx/sgx.h
+> @@ -89,6 +89,8 @@ void sgx_free_epc_page(struct sgx_epc_page *page);
+> =C2=A0void sgx_mark_page_reclaimable(struct sgx_epc_page *page);
+> =C2=A0int sgx_unmark_page_reclaimable(struct sgx_epc_page *page);
+> =C2=A0struct sgx_epc_page *sgx_alloc_epc_page(void *owner, bool reclaim);
+> +int sgx_charge_mem(void);
+> +void sgx_uncharge_mem(void);
+> =C2=A0
+> =C2=A0#ifdef CONFIG_X86_SGX_KVM
+> =C2=A0int __init sgx_vepc_init(void);
 
-OK, I'll fix it in v3.
+For me this looks cool. I also found out where the charge keyword comes
+from while looking at shmem code for doing patches to add the checks that
+Dave suggested (shmem_charge(), shmem_uncharge()).
 
-Thanks,
-Jens
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
 
->
-> -Sumit
->
-> > +/**
-> > + * tee_shm_register_kernel_buf() - Register kernel memory to be shared with
-> > + *                                secure world
-> > + * @ctx:       Context that registers the shared memory
-> > + * @addr:      The buffer
-> > + * @length:    Length of the buffer
-> > + *
-> > + * @returns a pointer to 'struct tee_shm'
-> > + */
-> > +
-> > +struct tee_shm *tee_shm_register_kernel_buf(struct tee_context *ctx,
-> > +                                           void *addr, size_t length)
-> > +{
-> > +       return tee_shm_register(ctx, (unsigned long)addr, length,
-> > +                               TEE_SHM_DMA_BUF | TEE_SHM_KERNEL_MAPPED);
-> > +}
-> > +EXPORT_SYMBOL_GPL(tee_shm_register_kernel_buf);
-> > +
-> >  static int tee_shm_fop_release(struct inode *inode, struct file *filp)
-> >  {
-> >         tee_shm_put(filp->private_data);
-> > diff --git a/include/linux/tee_drv.h b/include/linux/tee_drv.h
-> > index e71cb0411e9c..029c9a0590cc 100644
-> > --- a/include/linux/tee_drv.h
-> > +++ b/include/linux/tee_drv.h
-> > @@ -289,6 +289,10 @@ struct tee_shm *tee_shm_alloc_kernel_buf(struct tee_context *ctx, size_t size);
-> >   */
-> >  struct tee_shm *tee_shm_register(struct tee_context *ctx, unsigned long addr,
-> >                                  size_t length, u32 flags);
-> > +struct tee_shm *tee_shm_register_user_buf(struct tee_context *ctx,
-> > +                                         unsigned long addr, size_t length);
-> > +struct tee_shm *tee_shm_register_kernel_buf(struct tee_context *ctx,
-> > +                                           void *addr, size_t length);
-> >
-> >  /**
-> >   * tee_shm_is_registered() - Check if shared memory object in registered in TEE
-> > --
-> > 2.31.1
-> >
+BR, Jarkko
