@@ -2,126 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC710C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:09:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C48C1C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:10:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230347AbiATLJo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 06:09:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42372 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230337AbiATLJh (ORCPT
+        id S229779AbiATLKr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 06:10:47 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:45929 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230124AbiATLKi (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 06:09:37 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E82C061574;
-        Thu, 20 Jan 2022 03:09:36 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id c24so24739331edy.4;
-        Thu, 20 Jan 2022 03:09:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wSZuENnQtvpSb9XtNjDDtEDFI7SfngDO55OTaUOdmw4=;
-        b=g7OIi0GtebZGboMXAanw7y/VpJ/1Ulx94qe38Ts36dUTPuIus4WUyOQzORpupDgwTr
-         JLWdlRiF6LCXYRTxAxfujua7EynlrZN3tyfhlzDkusqbsv20lFibq62IcEBO+AVukAQc
-         n1rABmd78KdBSe3rh1URZiWlxYAG0129Ke7IFn5omYXK7YAB3Pc8K5yCwJ7MBg53Z0S1
-         WbhjWP2wzmUkIZbjgT3yBNy1ewGhXRbkt3gFd0H95ErBGpGItazyBb+fD4ohByxtQAyB
-         XRyaXryUF+SlvGD2eI9I7bSum7iNa6Gb3OBiGoJAn8enpv9NNKZM2aHEL8xWbKyYWlKm
-         Qnuw==
+        Thu, 20 Jan 2022 06:10:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642677037;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eZiFnHtXoPm2mpu78nKh9PJits8vQO5Q+C8iCYjoyCw=;
+        b=A6G8LCB2YvRg8Rxu8ABZDNQIgTqcTKBZIQGwUKRDUgJB5CQuPHdLPgh2NgIg9mdnddztTW
+        Ijkh9iVwPRHIsm/y7i9qZZZGNHb381hlhlLKLMho+bnvc01l8h5jgBryn6pdwToBjcBk/m
+        L4PKC4yIHFLyzhmWRLO4yYtfE8iqPx8=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-265-6s_QNcbUPS6QNbN3NyzYfw-1; Thu, 20 Jan 2022 06:10:36 -0500
+X-MC-Unique: 6s_QNcbUPS6QNbN3NyzYfw-1
+Received: by mail-wm1-f72.google.com with SMTP id a189-20020a1c98c6000000b0034e32e18a21so271919wme.9
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 03:10:36 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wSZuENnQtvpSb9XtNjDDtEDFI7SfngDO55OTaUOdmw4=;
-        b=MPgCDhsL4v6sqkb7XVfFj2ik5qe0Bwg2BpcyUI2gQTLkjfQiUSWgrGzN9Kex9VAOov
-         /HkUaKNsC3TcNKSt5CTC+NbrMQius08qCVw+bdSj+eJGqTI+N4NvQN4WuPU2GIV7agmy
-         PnsfS5GDkqcp1miKWxj6I5VAh1VpgaddDHlmGxZk2Rjen8jJ04fXy0gJ55sPqNoGFaXb
-         XdCITuQI3bsek7RAbkN6ZCsVGENaZlA87/CdROvP0Yy29O/Ci/Czm/W7mxFRMmnKyi++
-         9K/Uw1ofOAPZgtPHMAF5XDk/81RMBeOXHyu6XOMYeVBkavpMZzqdLGr44XY2bUBE5Wfc
-         RBsA==
-X-Gm-Message-State: AOAM5335zqdnkIvywkDkt1HtN3QKIqzJe0sEWW5qvlT/zud3+NTT8fcr
-        76OJ7lveMSQWDIqiAgbTqxU1HjgnEL+2A1LHkP8=
-X-Google-Smtp-Source: ABdhPJyeqHQILu1JRTaWq3VF7OKVfjjePuQs/kowTNknuojPUjwSNhIHGqw2wflIoOnDcAzr+FuK4BHeTIuxxPFg4XE=
-X-Received: by 2002:aa7:cf0e:: with SMTP id a14mr2624400edy.296.1642676974640;
- Thu, 20 Jan 2022 03:09:34 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=eZiFnHtXoPm2mpu78nKh9PJits8vQO5Q+C8iCYjoyCw=;
+        b=Ohk/bK5rvaJQZtffnso4TWtxPhnhPWYeS6jcNYMc4TBPCfXvxJ2Qx0H2b0cxYKKqci
+         6zL3AMM5+NS4UNj53NVf3ZHFtQDHCobnAP8kn1Gf664GgxCbp9dpKlSedpGlIquLt0m9
+         tjngd/BCRywrhTs320XzrWw+sSj1vkczXwWOBV9F2Y6RQzhZAPOKP/q8vvZrnZhng/+O
+         SaVHX7Eik2A6keZ6EcbPZjUiWtUrgIpfAEyedMcwebicjDZkCVWNll3O3g7ko5OlmHYk
+         Jza0OLHjjt+NZa0Z6wO1yITjuFngI98YgxZh4Ox/MZ6M8/wgIuJiwVAa8xi0eD5YEwhy
+         dmVw==
+X-Gm-Message-State: AOAM530gHLqOtX4UA6g+yYS3yZOBpFjU0r298QASbsWY85LP+fno8d2B
+        qm+CaovhQx6ytG9EpeIKa70CYqpMQRQG/4kErWD6eX6neFCLwbavl7wksflkenmbuPc0DLLtEsz
+        TomhdDu42OQiqU/ThPmruy8m8
+X-Received: by 2002:a05:600c:35d0:: with SMTP id r16mr8311643wmq.195.1642677031886;
+        Thu, 20 Jan 2022 03:10:31 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyD6f+RP/yAkHQ+ZHaTHkrSJaHFaCVgb8l6O5w//R8/nT6YwFDvFD96p40aKXcLXTVRdG5nHg==
+X-Received: by 2002:a05:600c:35d0:: with SMTP id r16mr8311305wmq.195.1642677027579;
+        Thu, 20 Jan 2022 03:10:27 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id m187sm1993003wme.25.2022.01.20.03.10.23
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Jan 2022 03:10:26 -0800 (PST)
+Message-ID: <cbb6a332-f230-ff5e-ce64-5dbbd6df02b5@redhat.com>
+Date:   Thu, 20 Jan 2022 12:10:22 +0100
 MIME-Version: 1.0
-References: <20220118202234.410555-1-terry.bowman@amd.com> <20220118202234.410555-3-terry.bowman@amd.com>
- <CAHp75VdBFN+QMJpYDp8ytGGrBKYyjxU8u=Xrn44Lc3UGLPRQOA@mail.gmail.com> <b609230d-37e5-d7a3-3dff-5980c1cca5f7@amd.com>
-In-Reply-To: <b609230d-37e5-d7a3-3dff-5980c1cca5f7@amd.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 20 Jan 2022 13:07:52 +0200
-Message-ID: <CAHp75Vf6_SKT94rDQMLWah-WgdP=w1YZ=X+cHS0SWr_26b+u0g@mail.gmail.com>
-Subject: Re: [PATCH v3 2/4] Watchdog: sp5100_tco: Refactor MMIO base address initialization
-To:     Terry Bowman <Terry.Bowman@amd.com>
-Cc:     Guenter Roeck <linux@roeck-us.net>, linux-watchdog@vger.kernel.org,
-        Jean Delvare <jdelvare@suse.com>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Wolfram Sang <wsa@kernel.org>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Robert Richter <rrichter@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        "Shah, Nehal-bakulchandra" <Nehal-bakulchandra.Shah@amd.com>,
-        Basavaraj Natikar <Basavaraj.Natikar@amd.com>,
-        Shyam Sundar S K <Shyam-sundar.S-k@amd.com>,
-        Mario Limonciello <Mario.Limonciello@amd.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v2 4/7] kvm/mips: rework guest entry logic
+Content-Language: en-US
+To:     Mark Rutland <mark.rutland@arm.com>, linux-kernel@vger.kernel.org
+Cc:     aleksandar.qemu.devel@gmail.com, alexandru.elisei@arm.com,
+        anup.patel@wdc.com, aou@eecs.berkeley.edu, atish.patra@wdc.com,
+        borntraeger@linux.ibm.com, bp@alien8.de, catalin.marinas@arm.com,
+        chenhuacai@kernel.org, dave.hansen@linux.intel.com,
+        frankja@linux.ibm.com, frederic@kernel.org, gor@linux.ibm.com,
+        hca@linux.ibm.com, james.morse@arm.com, jmattson@google.com,
+        joro@8bytes.org, luto@kernel.org, maz@kernel.org, mingo@redhat.com,
+        mpe@ellerman.id.au, nsaenzju@redhat.com, palmer@dabbelt.com,
+        paulmck@kernel.org, paul.walmsley@sifive.com, peterz@infradead.org,
+        seanjc@google.com, suzuki.poulose@arm.com, svens@linux.ibm.com,
+        tglx@linutronix.de, tsbogend@alpha.franken.de, vkuznets@redhat.com,
+        wanpengli@tencent.com, will@kernel.org
+References: <20220119105854.3160683-1-mark.rutland@arm.com>
+ <20220119105854.3160683-5-mark.rutland@arm.com>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220119105854.3160683-5-mark.rutland@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 6:57 PM Terry Bowman <Terry.Bowman@amd.com> wrote:
-> On 1/19/22 5:53 AM, Andy Shevchenko wrote:
-> > On Tue, Jan 18, 2022 at 10:23 PM Terry Bowman <terry.bowman@amd.com> wrote:
+On 1/19/22 11:58, Mark Rutland wrote:
+> +	 * TODO: is there a barrier which ensures that pending interrupts are
+> +	 * recognised? Currently this just hopes that the CPU takes any pending
+> +	 * interrupts between the enable and disable.
+> +	 */
+> +	local_irq_enable();
+> +	local_irq_disable();
+>   
 
-> Ok. I'll reduce the patches' to/cc list to only contain maintainers owning
-> the current patch. I prefer to leave the lengthy list in the cover letter
-> if that is ok because it will not be added to the tree but will provide
-> context this series has multiple systems and may need communication
-> between maintainers. I'll use the -to & -cc commandline as you mentioned to
-> send to the longer list of recipients without cluttering the patch. Let me
-> know if you prefer otherwise.
+It's okay, there is irq_enable_hazard() but it's automatically included 
+in arch_local_irq_enable().
 
-My point is that: supply the list implicitly.
-For the help of choosing the right people I have written a script [1]
-that shows a very good heuristics approach to me.
+Paolo
 
-[1]: https://github.com/andy-shev/home-bin-tools/blob/master/ge2maintainer.sh
-
-...
-
-> >> +       if (!devm_request_mem_region(dev, mmio_addr,
-> >> +                                   SP5100_WDT_MEM_MAP_SIZE,
-> >> +                                   dev_name)) {
-> >> +               dev_dbg(dev, "MMIO address 0x%08x already in use\n",
-> >> +                       mmio_addr);
-> >> +               return -EBUSY;
-> >> +       }
-> >> +
-> >> +       tco->tcobase = devm_ioremap(dev, mmio_addr,
-> >> +                                   SP5100_WDT_MEM_MAP_SIZE);
-> >> +       if (!tco->tcobase) {
-> >> +               dev_dbg(dev, "MMIO address 0x%08x failed mapping.\n",
-> >> +                       mmio_addr);
-
-> > On top of above it's a NIH devm_ioremap_resource().
->
-> I'm not familiar with NIH term. My friends google and grep weren't much help.
-
-[2]: https://en.wikipedia.org/wiki/Not_invented_here
-
-Means that you could very well simplify the code by using existing functions.
-
-...
-
-> > Okay, I see this is the original code like this... Perhaps it makes
-> > sense to reshuffle them (indentation-wise) at the same time and
-> > mention this in the changelog.
-
-Here is the explanation that I noticed that the code you move is
-original, and not written by you.
-
--- 
-With Best Regards,
-Andy Shevchenko
