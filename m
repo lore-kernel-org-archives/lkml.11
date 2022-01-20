@@ -2,99 +2,124 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 805E4C433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 10:53:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C2AC43219
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 10:54:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229931AbiATKxS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 05:53:18 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:56112 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiATKwv (ORCPT
+        id S229754AbiATKyC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 05:54:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38754 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229526AbiATKyA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 05:52:51 -0500
-Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
-        by smtp-out2.suse.de (Postfix) with ESMTP id 04F5E1F76A;
-        Thu, 20 Jan 2022 10:52:50 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1642675970; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BRntaQvQnRRKs8Q9fD7/O4tfQUl0HeggvKHheBBFdio=;
-        b=Jf0HcFw3c8FQJ9zNNyF4FRXtMG7+0rNJptDq3vrBmWZ+F84NcWK8XUmIw5D8t9bF8+fQth
-        +TANA4NuGgPqBUXHxSXZvgcxWPy3AY/oeKBfwhreGufRxswrjnxATGxhuXYVNubMFBBf+i
-        VvIfsTaKcNGLqe81GFPOABe7wIQ5VCs=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1642675970;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=BRntaQvQnRRKs8Q9fD7/O4tfQUl0HeggvKHheBBFdio=;
-        b=tL9mPxbp8JZLAftheBJd++yhdFkb1xE9PikvgcAJrkLtjfdLB7djCqUPAQ5oP1dPpalfT4
-        j23ECmKjNRruzPCQ==
-Received: from adalid.arch.suse.de (adalid.arch.suse.de [10.161.8.13])
-        by relay2.suse.de (Postfix) with ESMTP id 1B6B7A3B88;
-        Thu, 20 Jan 2022 10:52:44 +0000 (UTC)
-Received: by adalid.arch.suse.de (Postfix, from userid 17828)
-        id E4DC95192BF8; Thu, 20 Jan 2022 11:52:49 +0100 (CET)
-From:   Daniel Wagner <dwagner@suse.de>
-To:     linux-block@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>,
-        Hannes Reinecke <hare@suse.de>, Daniel Wagner <dwagner@suse.de>
-Subject: [PATCH 2/2] block: hold queue lock while iterating in diskstats_show
-Date:   Thu, 20 Jan 2022 11:52:48 +0100
-Message-Id: <20220120105248.117025-3-dwagner@suse.de>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20220120105248.117025-1-dwagner@suse.de>
-References: <20220120105248.117025-1-dwagner@suse.de>
+        Thu, 20 Jan 2022 05:54:00 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33D93C061574;
+        Thu, 20 Jan 2022 02:54:00 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id cx27so27081209edb.1;
+        Thu, 20 Jan 2022 02:54:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rueY/jFC2lLrcjtQ698sMwfakQXnY26l1d8Z0p1kGzY=;
+        b=auLHWOAe3eLtUNRB3I/GnroHB9vg/WLVbd9NGSlwq2h+rIeyZH+SKh06qHVXiFcb8f
+         uaP5tk8wF84oK+Hbfr3uMQbhw5K0PhDKKZ3EqCrsccaGA2a9DCYMfk06T+1GVwbfxisi
+         ux+RFoTRcNJYsSVpS0Dx3lDQ57yBbv+lrzCWTBGtW5a2UPrsKrMS37iIwI2CcCz9+rgS
+         rpj42xGjO8qh5hvMJt9pgXsa4TK6tgP2a4wQ8RN9hqBIP5luq1IUSZgiel0Dlt3i+vEl
+         /wcGnxCKVrwphXZ1IbGQKdPCM1yhyDSZJgcADt1jQIEygY43mxzRvVj/GHjhc87yo5CV
+         qiiA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rueY/jFC2lLrcjtQ698sMwfakQXnY26l1d8Z0p1kGzY=;
+        b=sF2HqiVwfIXNqqcGiuBf5nYMOwtvmBhS3b+Issex0v+uLzrEWmOvF1Bs25OWaJwBZc
+         /tU8bVfrktRP6/bByM+q+y6OW/RYZmld0vpIzRAxaG+9Y6BsGZnbfsTP2NIegqcOjNaL
+         LVXr+akzvKrBBDC9RpxiSMO6mIp8hULOPz5kOOO84RB0/iw3ErBTHlReRwoTTdX3D5vY
+         9On2EYfUFV53GUI05sHVXeecsICHXIqOUBf+cBNLhfzytcLFKm+FOuOebv19mFXY3dye
+         qzLyAHWZzO8pcRcUb6lkz+jZtcojLrcqceYbmiGsG5Et0z0dzapzqS4Rc7n7nCRzKEfG
+         udQQ==
+X-Gm-Message-State: AOAM533SwplEnSPyzdyWV5Hny0LArUATWkIHW+xV84kyK7iwOfgd3MG4
+        LlgUySgDypix9AZjx0XEDYK6oHdqBHQ8H2SFpY8=
+X-Google-Smtp-Source: ABdhPJxGiMU1xrv7ZzwueN4iKsoTSUGlAYddhd/BYPDmdrQuY89UiTfUdv/qHPTtG90np5GBNclAJjIoXTK8m1rJRVM=
+X-Received: by 2002:a17:907:968c:: with SMTP id hd12mr27927990ejc.639.1642676038694;
+ Thu, 20 Jan 2022 02:53:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220117142919.207370-1-marcan@marcan.st> <20220117142919.207370-8-marcan@marcan.st>
+In-Reply-To: <20220117142919.207370-8-marcan@marcan.st>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 20 Jan 2022 12:52:16 +0200
+Message-ID: <CAHp75Vfj-uqzmY24ByXLnhgyhEuaGpZckdczwUf=2OXL3aBuog@mail.gmail.com>
+Subject: Re: [PATCH v3 7/9] brcmfmac: of: Use devm_kstrdup for board_type &
+ check for errors
+To:     Hector Martin <marcan@marcan.st>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Arend van Spriel <aspriel@gmail.com>,
+        Franky Lin <franky.lin@broadcom.com>,
+        Hante Meuleman <hante.meuleman@broadcom.com>,
+        Chi-hsien Lin <chi-hsien.lin@infineon.com>,
+        Wright Feng <wright.feng@infineon.com>,
+        Dmitry Osipenko <digetx@gmail.com>,
+        Sven Peter <sven@svenpeter.dev>,
+        Alyssa Rosenzweig <alyssa@rosenzweig.io>,
+        Mark Kettenis <kettenis@openbsd.org>,
+        =?UTF-8?B?UmFmYcWCIE1pxYJlY2tp?= <zajec5@gmail.com>,
+        Pieter-Paul Giesberts <pieter-paul.giesberts@broadcom.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        "brian m. carlson" <sandals@crustytoothpaste.net>,
+        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "open list:BROADCOM BRCM80211 IEEE802.11n WIRELESS DRIVER" 
+        <brcm80211-dev-list.pdl@broadcom.com>,
+        SHA-cyfmac-dev-list@infineon.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The request queues can be freed while we operate on them. Make sure we
-hold a reference when using blk_mq_queue_tag_busy_iter.
+On Mon, Jan 17, 2022 at 4:31 PM Hector Martin <marcan@marcan.st> wrote:
+>
+> This was missing a NULL check, and we can collapse the strlen/alloc/copy
+> into a devm_kstrdup().
 
-RIP: blk_mq_queue_tag_busy_iter
-Call Trace:
- ? blk_mq_hctx_mark_pending
- ? diskstats_show
- ? blk_mq_hctx_mark_pending
- blk_mq_in_flight
- diskstats_show
- ? klist_next
- seq_read
- proc_reg_read
- vfs_read
- ksys_read
- do_syscall_64
- entry_SYSCALL_64_after_hwframe
+Nice patch. After dropping the message,
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-Signed-off-by: Daniel Wagner <dwagner@suse.de>
----
- block/genhd.c | 3 +++
- 1 file changed, 3 insertions(+)
+>                 /* get rid of '/' in the compatible string to be able to find the FW */
+>                 len = strlen(tmp) + 1;
+> -               board_type = devm_kzalloc(dev, len, GFP_KERNEL);
+> -               strscpy(board_type, tmp, len);
+> +               board_type = devm_kstrdup(dev, tmp, GFP_KERNEL);
+> +               if (!board_type) {
+> +                       brcmf_err("out of memory allocating board_type\n");
+> +                       of_node_put(root);
+> +                       return;
+> +               }
 
-diff --git a/block/genhd.c b/block/genhd.c
-index c9d4386dd177..0e163055a4e6 100644
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -1167,10 +1167,13 @@ static int diskstats_show(struct seq_file *seqf, void *v)
- 		if (bdev_is_partition(hd) && !bdev_nr_sectors(hd))
- 			continue;
- 		part_stat_read_all(hd, &stat);
-+		if (blk_queue_enter(gp->queue, BLK_MQ_REQ_NOWAIT))
-+			continue;
- 		if (queue_is_mq(gp->queue))
- 			inflight = blk_mq_in_flight(gp->queue, hd);
- 		else
- 			inflight = part_in_flight(hd);
-+		blk_queue_exit(gp->queue);
- 
- 		seq_printf(seqf, "%4d %7d %pg "
- 			   "%lu %lu %lu %u "
+>                 for (i = 0; i < board_type[i]; i++) {
+>                         if (board_type[i] == '/')
+>                                 board_type[i] = '-';
+
+Next step is to replace this with NIH strreplace()
+
+And
+  of_property_read_string_index(root, "compatible", 0, &tmp);
+with
+  of_property_read_string(root, "compatible", &tmp);
+
+And might add an error check, but I believe if there is no compatible
+property present, this can't be called.
+
 -- 
-2.29.2
-
+With Best Regards,
+Andy Shevchenko
