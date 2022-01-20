@@ -2,66 +2,79 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8218C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 15:33:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CED8C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 22:14:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376697AbiATPdw (ORCPT
+        id S1378039AbiATWOK (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 10:33:52 -0500
-Received: from mail-108-mta11.mxroute.com ([136.175.108.11]:33777 "EHLO
-        mail-108-mta11.mxroute.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1376666AbiATPdr (ORCPT
+        Thu, 20 Jan 2022 17:14:10 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58870 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378018AbiATWOI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 10:33:47 -0500
-Received: from filter004.mxroute.com ([149.28.56.236] filter004.mxroute.com)
- (Authenticated sender: mN4UYu2MZsgR)
- by mail-108-mta11.mxroute.com (ZoneMTA) with ESMTPSA id 17e781a9fcb000bdf2.004
- for <linux-kernel@vger.kernel.org>
- (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256);
- Thu, 20 Jan 2022 15:28:37 +0000
-X-Zone-Loop: 8b04c47f0568cd3a1f4ee070b5f323d3a2297cbb00ea
-X-Originating-IP: [149.28.56.236]
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=ds0.me; s=x
-        ; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From
-        :Sender:Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:
-        References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:
-        List-Owner:List-Archive; bh=d4rlcBSsDMSlADxswOGFTDUxcitWqo4M6bUPgSom6w0=; b=Y
-        cBI97RpG7pM4ucvHjBwkZMoxkSbQEsL/zRDaAqKe8oCW+Xjm+WeWmZPxE6+dojhEap9vQkDPhmlug
-        IipZOJ5XutXwm2Y4Plz6ZZHD6oHxwrmva0CqGNz6S/1Yv/X2x9LAR+kDpXoz6KLbEESIP9X090zb/
-        HZH6cHmNYSnExDT2fi8uv4m/fNYHNij6fNQc06E031lSjSgpPG8S8TvVbiZ7Ny+jDRqzAYYaiPQw0
-        f//4DRDFnwqx5jII50eEtWrQru4lCrI5PK/4rozq5nk9CsDU71ZBwqiGz2Pb7phd1Y3cTjgvf8ChM
-        Ws/+MZE9TJdI5ecpWoLa8rK/EWAbpcJtQ==;
-From:   Myrtle Shah <gatecat@ds0.me>
-To:     linux-riscv@lists.infradead.org, paul.walmsley@sifive.com,
-        palmer@dabbelt.com
-Cc:     linux-kernel@vger.kernel.org
-Subject: 
-Date:   Thu, 20 Jan 2022 15:28:26 +0000
-Message-Id: <20220120152828.4089364-1-gatecat@ds0.me>
-X-Mailer: git-send-email 2.34.1
+        Thu, 20 Jan 2022 17:14:08 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7042A618F8;
+        Thu, 20 Jan 2022 22:14:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4C30C340E0;
+        Thu, 20 Jan 2022 22:14:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642716847;
+        bh=/BYzlmSc3EXhLhUP/zTY4q87ax/HPCgh9lWXojPLRd4=;
+        h=Date:From:To:Cc:Subject:From;
+        b=ZQN+YTUBpg91uyZ4bbhz/gPU24X+VcANisoz6Xzwjj7exgzwzpFuPyNh9aOP5ILfA
+         Att5HhsxsvrDFeAorzVYvh5YHhlRhIQZ7tH6ZGsEYMBr8MAYsKQ7e35m1XpdYBMjEL
+         5f+yXOSDkRsE3/2Ozd1YYy6TRAU1IVeZFkIVuSUn/hijW7H3d+AlubZ4BunU6YzFHU
+         9sp1EemqRLM5t5G4+510U04QQjcEKeO7wUfoSu08I1Q3ozNy4qDpwDrfhB1+P8FvRm
+         QQwEAWA2WojQQPvBvp4iPtfEisc5EkidFe5VJN9aBqFyFGfz6psr4r+lq0pg7wFNpF
+         +QboktrrfJS6w==
+Date:   Thu, 20 Jan 2022 16:20:43 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-usb@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] usb: host: fotg210: Use struct_size() helper in
+ kzalloc()
+Message-ID: <20220120222043.GA33559@embeddedor>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-AuthUser: dave@ds0.me
-X-Spam: Yes
-X-Zone-Spam-Resolution: add header
-X-Zone-Spam-Status: Yes, score=11, required=15, tests=[ARC_NA=0,
- SPAM_FLAG=5, FROM_HAS_DN=0, RCPT_COUNT_THREE=0, R_MISSING_CHARSET=2.5,
- TO_DN_NONE=0, BROKEN_CONTENT_TYPE=1.5, NEURAL_SPAM=0, MID_CONTAINS_FROM=1,
- RCVD_COUNT_ZERO=0, FROM_EQ_ENVFROM=0, EMPTY_SUBJECT=1, MIME_TRACE=0]
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-These are some initial patches to bugs I found attempting to
-get a XIP kernel working on hardware:
- - 32-bit VexRiscv processor
- - kernel in SPI flash, at 0x00200000
- - 16MB of RAM at 0x10000000
- - MMU enabled
- 
-I still have some more debugging to do, but these at least
-get the kernel as far as initialising the MMU, and I would
-appreciate feedback if anyone else is working on RISC-V XIP.
+Make use of the struct_size() helper instead of an open-coded version,
+in order to avoid any potential type mistakes or integer overflows that,
+in the worst scenario, could lead to heap overflows.
 
+Also, address the following sparse warnings:
+drivers/usb/host/fotg210-hcd.c:4017:20: warning: using sizeof on a flexible structure
+
+Link: https://github.com/KSPP/linux/issues/174
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/usb/host/fotg210-hcd.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/usb/host/fotg210-hcd.c b/drivers/usb/host/fotg210-hcd.c
+index 7af17c8e069b..c3fd375b4778 100644
+--- a/drivers/usb/host/fotg210-hcd.c
++++ b/drivers/usb/host/fotg210-hcd.c
+@@ -4014,10 +4014,8 @@ static struct fotg210_iso_sched *iso_sched_alloc(unsigned packets,
+ 		gfp_t mem_flags)
+ {
+ 	struct fotg210_iso_sched *iso_sched;
+-	int size = sizeof(*iso_sched);
+ 
+-	size += packets * sizeof(struct fotg210_iso_packet);
+-	iso_sched = kzalloc(size, mem_flags);
++	iso_sched = kzalloc(struct_size(iso_sched, packet, packets), mem_flags);
+ 	if (likely(iso_sched != NULL))
+ 		INIT_LIST_HEAD(&iso_sched->td_list);
+ 
+-- 
+2.27.0
 
