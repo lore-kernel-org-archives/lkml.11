@@ -2,81 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FC2DC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 09:38:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF7FEC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 09:39:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359565AbiATJiB (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 04:38:01 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:47113 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S241681AbiATJhx (ORCPT
+        id S241839AbiATJjL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 04:39:11 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:46852 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233896AbiATJjK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 04:37:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642671472;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+        Thu, 20 Jan 2022 04:39:10 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id BD7D81F3A9;
+        Thu, 20 Jan 2022 09:39:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1642671548; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=vwaun9h4PrGOctit7O7Y3jbampOsovEgn1eDqCi+RHc=;
-        b=D0U09Nf/GtBHbwgWYAkbcpTpOzE1szrzeEnWCey6vQN0v1N5YqzI5VibQrJnGvGcjLWtOI
-        AamITjP70kmVdoSsnMBklAcLnxs4Dnrdd3qfoZJ7nfzZrn0IBt7oTYIUUAA325b7UI62KA
-        6AlzR6ZQsfAK8xJIVtGefLZ0bxIpFQw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-45-TlUAgrb-MjSgqaMVPtjPzw-1; Thu, 20 Jan 2022 04:37:49 -0500
-X-MC-Unique: TlUAgrb-MjSgqaMVPtjPzw-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        bh=pShYaJ0kOe8l7qrjkXEmprDERO8GtSaHvia2RdvVgZM=;
+        b=Y0dQ3AnJpJRwOmkwdAWjmKbLX+H4d5wKnBYLM4LbjwtNmLTW/SEL6IJYulNt78E/4IPPsT
+        uy6EKBwnlbqzRHFhgNccmi1t6w5FqVhTZd7xYPlY0HaRP1OFxwLwoVo5yrJeJDZaGApPYE
+        f8uIngY1GFL33nwwHSwyFthza+QacGo=
+Received: from suse.cz (unknown [10.100.224.162])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A09901091DA5;
-        Thu, 20 Jan 2022 09:37:46 +0000 (UTC)
-Received: from warthog.procyon.org.uk (unknown [10.33.36.165])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id B386D131CC;
-        Thu, 20 Jan 2022 09:37:21 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <YekmpeQvNlGlMvNY@infradead.org>
-References: <YekmpeQvNlGlMvNY@infradead.org> <YeefizLOGt1Qf35o@infradead.org> <YebpktrcUZOlBHkZ@infradead.org> <164251396932.3435901.344517748027321142.stgit@warthog.procyon.org.uk> <164251409447.3435901.10092442643336534999.stgit@warthog.procyon.org.uk> <3613681.1642527614@warthog.procyon.org.uk> <3765724.1642583885@warthog.procyon.org.uk>
-To:     Christoph Hellwig <hch@infradead.org>
-Cc:     dhowells@redhat.com, linux-cachefs@redhat.com,
-        Jeff Layton <jlayton@kernel.org>,
-        Trond Myklebust <trondmy@hammerspace.com>,
-        Anna Schumaker <anna.schumaker@netapp.com>,
-        Steve French <smfrench@gmail.com>,
-        Dominique Martinet <asmadeus@codewreck.org>,
-        Matthew Wilcox <willy@infradead.org>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Omar Sandoval <osandov@osandov.com>,
-        JeffleXu <jefflexu@linux.alibaba.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
-        linux-cifs@vger.kernel.org, ceph-devel@vger.kernel.org,
-        v9fs-developer@lists.sourceforge.net,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 09/11] vfs, fscache: Add an IS_KERNEL_FILE() macro for the S_KERNEL_FILE flag
+        by relay2.suse.de (Postfix) with ESMTPS id 58E99A3C40;
+        Thu, 20 Jan 2022 09:39:02 +0000 (UTC)
+Date:   Thu, 20 Jan 2022 10:39:08 +0100
+From:   Petr Mladek <pmladek@suse.com>
+To:     "Guilherme G. Piccoli" <gpiccoli@igalia.com>
+Cc:     Baoquan He <bhe@redhat.com>, linux-kernel@vger.kernel.org,
+        akpm@linux-foundation.org, kernel@gpiccoli.net,
+        senozhatsky@chromium.org, rostedt@goodmis.org,
+        john.ogness@linutronix.de, feng.tang@intel.com,
+        kexec@lists.infradead.org, dyoung@redhat.com,
+        keescook@chromium.org, anton@enomsg.org, ccross@android.com,
+        tony.luck@intel.com
+Subject: Re: [PATCH V3] panic: Move panic_print before kmsg dumpers
+Message-ID: <YektvNyN6mAHv9jJ@alley>
+References: <20220114183046.428796-1-gpiccoli@igalia.com>
+ <20220119071318.GA4977@MiWiFi-R3L-srv>
+ <YegytkfED+QI56Y8@alley>
+ <94bb12a2-a788-cee6-7d4f-dc0ac581fb39@igalia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <58089.1642671440.1@warthog.procyon.org.uk>
-Date:   Thu, 20 Jan 2022 09:37:20 +0000
-Message-ID: <58090.1642671440@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <94bb12a2-a788-cee6-7d4f-dc0ac581fb39@igalia.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Christoph Hellwig <hch@infradead.org> wrote:
+On Wed 2022-01-19 13:03:15, Guilherme G. Piccoli wrote:
+> Thanks again Petr, for the deep analysis! Much appreciated.
+> Some comments inline below:
+> 
+> 
+> On 19/01/2022 12:48, Petr Mladek wrote:
+> >[...]
+> > From my POV, the function of panic notifiers is not well defined. They
+> > do various things, for example:
+> > [...] 
+> > 
+> > The do more that just providing information. Some are risky. It is not
+> > easy to disable a particular one.
+> 
+> We are trying to change that here:
+> https://lore.kernel.org/lkml/20220108153451.195121-1-gpiccoli@igalia.com/
+> 
+> Your review/comments are very welcome =)
+> 
+> 
+> > [...] 
+> > It might make sense to allow to call kmsg_dump before panic notifiers
+> > to reduce the risk of a breakage. But I do not have enough experience
+> > with them to judge this.
+> > 
+> > I can't remember any bug report in this code. I guess that only
+> > few people use kmsg_dump.
+> 
+> One of the problems doing that is that RCU and hung task detector, for
+> example, have panic notifiers to disable themselves in the panic
+> scenario - if we kmsg_dump() _before_ the panic notifiers, we may have
+> intermixed messages, all messy...so for me it makes sense to keep the
+> kmsg_dump() after panic notifiers.
 
-> But you tricked Linus
+It makes perfect sense to disable the watchdogs during panic().
+For example, rcu_panic() just sets a variable:
 
-Tricked?  I put a notice explicitly pointing out that I was adding it and
-indicating that it might be controversial in the cover note and the pull
-request and further explained the use in the patches that handle it.  I posted
-the patches adding/using it a bunch of times to various mailing lists.  TYVM.
+static int rcu_panic(struct notifier_block *this, unsigned long ev, void *ptr)
+{
+	rcu_cpu_stall_suppress = 1;
+	return NOTIFY_DONE;
+}
 
-David
+It is quick and super-safe. It might make sense to implement similar
+thing for other watchdogs and do something like:
 
+void panic_supress_watchdogs(void)
+{
+	rcu_panic();
+	softlockup_watchog_panic();
+	wq_watchog_panic();
+}
+
+It might be caller early in panic().
+
+> 
+> > [...]
+> > Yes, panic_print_sys_info() increases the risk that the crash dump
+> > will not succeed. But the change makes sense because:
+> > 
+> >   + panic_print_sys_info() might be useful even with full crash dump.
+> >     For example, ftrace messages are not easy to read from the memory
+> >     dump.
+> 
+> The last point is really good, I didn't consider that before but makes a
+> lot of sense - we can now dump (a hopefully small!) ftrace/event trace
+> buffer to dmesg before a kdump, making it pretty easy to read that later.
+> Cheers,
+
+JFYI, there is an extension for the crash tool that might be able to read
+the trace log, see https://crash-utility.github.io/extensions.html
+
+I haven't tested it myself yet.
+
+Best Regards,
+Petr
