@@ -2,110 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D76C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 16:57:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 518CFC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 16:58:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377192AbiATQ5X (ORCPT
+        id S1377186AbiATQ61 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 11:57:23 -0500
-Received: from mga12.intel.com ([192.55.52.136]:10462 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1377176AbiATQ5T (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 11:57:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642697839; x=1674233839;
-  h=date:from:to:subject:message-id:references:mime-version:
-   content-transfer-encoding:in-reply-to;
-  bh=pCcwTYYesBJwbUxzk/FlPOIcKf6xw2HINpD6RNQi8Ug=;
-  b=mio8YSRAqurha6z+YCGHa20GK7EYxbTZdcZIc0dtbdAcOMiuQ+UeYDGv
-   4m4zlra6u5dzYy5w6vwc3Id8sT2JaEzm9HlmriMtmNgq7dLMi/G0ODVj6
-   wDeVaDZNsYuK9O573TPBt9FecNiuUgIPNXTY761U9wviUSuVfIGWEPybe
-   JZKdcdUUxwmR/S88u2nWKizRmSIAy2XuSyxxxJkTqIho4BQEvazqQFE/0
-   dMvn8dDcTI3FFDYvkdp/TO2oTHsyDxcl3iru/8SratB5IX2J5ma8vDQvi
-   lzdieDMnVBxuy6L28+BlKIBDkF0ZN06M6Avkn/dIPeeRzclHC1AWjVT5h
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10233"; a="225377673"
-X-IronPort-AV: E=Sophos;i="5.88,302,1635231600"; 
-   d="scan'208";a="225377673"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 08:57:18 -0800
-X-IronPort-AV: E=Sophos;i="5.88,302,1635231600"; 
-   d="scan'208";a="532859202"
-Received: from iweiny-desk2.sc.intel.com (HELO localhost) ([10.3.52.147])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 08:57:18 -0800
-Date:   Thu, 20 Jan 2022 08:57:17 -0800
-From:   Ira Weiny <ira.weiny@intel.com>
-To:     Christian =?iso-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Patrik Jakobsson <patrik.r.jakobsson@gmail.com>,
-        Rob Clark <robdclark@gmail.com>, Sean Paul <sean@poorly.run>,
-        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
-        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: [Intel-gfx] [PATCH 0/7] DRM kmap() fixes and kmap_local_page()
- conversions
-Message-ID: <20220120165717.GG209936@iweiny-DESK2.sc.intel.com>
-References: <20211210232404.4098157-1-ira.weiny@intel.com>
- <20220119165356.GD209936@iweiny-DESK2.sc.intel.com>
- <YehJRt+JngIsj+Gd@phenom.ffwll.local>
- <20220119235542.GF209936@iweiny-DESK2.sc.intel.com>
- <fb71af05-a889-8f6e-031b-426b58a64f00@amd.com>
- <YemEYndwyP6BHwMx@phenom.ffwll.local>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+        Thu, 20 Jan 2022 11:58:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377136AbiATQ6Y (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 11:58:24 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD439C061574
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 08:58:24 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id s2-20020a17090ad48200b001b501977b23so5732256pju.2
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 08:58:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=dabbelt-com.20210112.gappssmtp.com; s=20210112;
+        h=date:subject:in-reply-to:cc:from:to:message-id:mime-version
+         :content-transfer-encoding;
+        bh=IlE4PKTqOpwGLmeHcvM3V2OxUD4byfa5I1kusdpu4LM=;
+        b=BoOlO916FeueTACmIVZG6Di6cPnwL0MibCyttpptZBXLlTNcE/yoZ13RFqGVg6HZir
+         awMcBlC9bJCCRwuRDsKkkqxpiNxUfmm6a4Px9DYt+aURU+4IQ6rhBvKWPsTnemgONUKC
+         fUs1oHDRk5dl73ycxB9NtWBLN05sHvUPIRMLy40L2hDj2qXwIyrvJ1sIQ4Ay4S2L2cEE
+         RdecNvZycqTmGJuAR//yjleMUGGnZSGkBu5dw/j+zzFgBlWdV7vFJh7WDYX5DU8zfpu7
+         nCr+tjJKOf5xppKqyKLv/sA1f5stBkdvz3tyhi0Vztl2ijC0/1W2C99zIxL0f12RsniN
+         FwGg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:subject:in-reply-to:cc:from:to:message-id
+         :mime-version:content-transfer-encoding;
+        bh=IlE4PKTqOpwGLmeHcvM3V2OxUD4byfa5I1kusdpu4LM=;
+        b=PUs5JkChQ9vDT1z+IsT2W15KS923cwTX9mM+3Vgw0v2cdmeIofMBlyzdUFepDZntSU
+         byys/mE/ZrBzbeLp0DN44J7ca5FKAb7jV6QVuqPLlCl3GC17ef7HqKmYfyMslzurnRXI
+         6eCIz8M25IYxm6nRUE9NUHt+yMVP/njG2E1L1XYSlkOSX/IDajMFjJRN4yKKEDyjueQE
+         60yRBn1JT4s3kglXE3f7QBkRNdO7m13nRRtVg0709CYljpbxJTizW/Q4NfyZEqsoE29I
+         tmsf4u+kRkgxGTACPE2grpMYtlfFziQCGMA5u15dJuqGPuPmAXsiQJ2+Q6onwnMEYiiP
+         ezzQ==
+X-Gm-Message-State: AOAM531Qkn3kmAthcsJOdfctHfeJQqTNGb5mAMCzuCf516YWeKFm5M9l
+        0ZEPGgFPuoXaa22sVp+G2hiXiA==
+X-Google-Smtp-Source: ABdhPJz/GMEZDHsqoWmkmlnFC/P5fgMAtM7xYdj0RtuinLJoarckNRDraf406XfaKisylPQa7RDlqg==
+X-Received: by 2002:a17:90b:3b83:: with SMTP id pc3mr11739741pjb.217.1642697904051;
+        Thu, 20 Jan 2022 08:58:24 -0800 (PST)
+Received: from localhost ([12.3.194.138])
+        by smtp.gmail.com with ESMTPSA id l2sm4209809pfc.183.2022.01.20.08.58.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 08:58:23 -0800 (PST)
+Date:   Thu, 20 Jan 2022 08:58:23 -0800 (PST)
+X-Google-Original-Date: Thu, 20 Jan 2022 08:57:56 PST (-0800)
+Subject:     Re: [PATCH 1/1] riscv: default to CONFIG_RISCV_SBI_V01=n
+In-Reply-To: <20211216123538.175087-1-heinrich.schuchardt@canonical.com>
+CC:     Paul Walmsley <paul.walmsley@sifive.com>, aou@eecs.berkeley.edu,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        heinrich.schuchardt@canonical.com
+From:   Palmer Dabbelt <palmer@dabbelt.com>
+To:     heinrich.schuchardt@canonical.com
+Message-ID: <mhng-ca6db968-3278-4108-b8f5-4435eb40def5@palmer-ri-x1c9>
+Mime-Version: 1.0 (MHng)
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <YemEYndwyP6BHwMx@phenom.ffwll.local>
-User-Agent: Mutt/1.11.1 (2018-12-01)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 04:48:50PM +0100, Daniel Vetter wrote:
-> On Thu, Jan 20, 2022 at 09:16:35AM +0100, Christian König wrote:
-> > Am 20.01.22 um 00:55 schrieb Ira Weiny:
-> > > On Wed, Jan 19, 2022 at 06:24:22PM +0100, Daniel Vetter wrote:
-> > > > On Wed, Jan 19, 2022 at 08:53:56AM -0800, Ira Weiny wrote:
-> > > > > On Fri, Dec 10, 2021 at 03:23:57PM -0800, 'Ira Weiny' wrote:
-> > > > > > From: Ira Weiny <ira.weiny@intel.com>
-> > > > > > 
-> > > > > > This series starts by converting the last easy kmap() uses to
-> > > > > > kmap_local_page().
-> > > > > > 
-> > > > > > There is one more call to kmap() wrapped in ttm_bo_kmap_ttm().  Unfortunately,
-> > > > > > ttm_bo_kmap_ttm() is called in a number of different ways including some which
-> > > > > > are not thread local.  I have a patch to convert that call.  However, it is not
-> > > > > > straight forward so it is not included in this series.
-> > > > > > 
-> > > > > > The final 2 patches fix bugs found while working on the ttm_bo_kmap_ttm()
-> > > > > > conversion.
-> > > > > Gentile ping on this series?  Will it make this merge window?
-> > > > I think this fell through the cracks and so no. Note that generally we
-> > > > feature-freeze drm tree around -rc6 anyway for the upcoming merge window,
-> > > > so you were cutting this all a bit close anyway.
-> > > Ok, No problem.  I just had not heard if this was picked up or not.
-> > > 
-> > > > Also looks like the ttm
-> > > > kmap caching question didn't get resolved?
-> > > I'm sorry I thought it was resolve for this series.  Christian said the patches
-> > > in this series were "a good bug fix" even if not strictly necessary.[1]  Beyond
-> > > this series I was discussing where to go from here, and is it possible to go
-> > > further with more changes.[2]  At the moment I don't think I will.
-> > > 
-> > > Christian did I misunderstand?  I can drop patch 6 and 7 if they are not proper
-> > > bug fixes or at least clarifications to the code.
-> > 
-> > Yeah, it is indeed a correct cleanup. I would just *not* put a CC stable on
-> > it because it doesn't really fix anything.
-> 
-> Ok can you pls get the amd/radeon ones stuffed into alex' tree? Or do we
-> want to put all the ttm ones into drm-misc instead?
+On Thu, 16 Dec 2021 04:35:38 PST (-0800), heinrich.schuchardt@canonical.com wrote:
+> The SBI 0.1 specification is obsolete. The current version is 0.3.
+> Hence we should not rely by default on SBI 0.1 being implemented.
+>
+> Signed-off-by: Heinrich Schuchardt <heinrich.schuchardt@canonical.com>
+> ---
+>  arch/riscv/Kconfig | 1 -
+>  1 file changed, 1 deletion(-)
+>
+> diff --git a/arch/riscv/Kconfig b/arch/riscv/Kconfig
+> index 09abf62ae0ad..f177ad3bee0f 100644
+> --- a/arch/riscv/Kconfig
+> +++ b/arch/riscv/Kconfig
+> @@ -396,7 +396,6 @@ source "kernel/Kconfig.hz"
+>
+>  config RISCV_SBI_V01
+>  	bool "SBI v0.1 support"
+> -	default y
+>  	depends on RISCV_SBI
+>  	help
+>  	  This config allows kernel to use SBI v0.1 APIs. This will be
 
-I just updated to the latest master and there is a minor conflict.  Since this
-is not going in this window.  Let me rebase and resend.
-
-Ira
-
-> -Daniel
-> 
+Thanks, this is on for-next.
