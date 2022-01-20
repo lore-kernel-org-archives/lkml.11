@@ -2,58 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7101C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 13:32:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B57EC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 13:32:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232157AbiATNcp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 08:32:45 -0500
-Received: from mail.skyhub.de ([5.9.137.197]:56094 "EHLO mail.skyhub.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230470AbiATNcn (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 08:32:43 -0500
-Received: from zn.tnic (dslb-088-067-202-008.088.067.pools.vodafone-ip.de [88.67.202.8])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 772C11EC0495;
-        Thu, 20 Jan 2022 14:32:42 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1642685562;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=28wI6iedsNvzH0vXzCzIubkiRJPe6oBSNXexv601jfA=;
-        b=bR9MG4UEhv5B+m20bHlrVDgjDm9PHntMieBMJoipMJhkHBOvvbCO01uwDoR2ZWYTKCYWlM
-        Wow0cEUPaIQ2HO1XURYKxLvTohalSkhHAcrLrsKwIje1jH9uplE8LRV3VF4RKMppJsYnWr
-        WaNAj/jV7TkU1kbAV0JUBijJ+f3bBMw=
-Date:   Thu, 20 Jan 2022 14:32:35 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Tony Luck <tony.luck@intel.com>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Smita Koralahalli Channabasappa 
-        <smita.koralahallichannabasappa@amd.com>,
-        Wei Huang <wei.huang2@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>, patches@lists.linux.dev
-Subject: Re: [PATCH 2/5] x86/ras: X86_FEATURE_INTEL_PPIN finally has a CPUID
- bit
-Message-ID: <Yelkc2Lcul0hAV5A@zn.tnic>
-References: <20220107225442.1690165-1-tony.luck@intel.com>
- <20220107225442.1690165-3-tony.luck@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220107225442.1690165-3-tony.luck@intel.com>
+        id S236801AbiATNc5 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 08:32:57 -0500
+Received: from smtp-out1.suse.de ([195.135.220.28]:52058 "EHLO
+        smtp-out1.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230470AbiATNcz (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 08:32:55 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out1.suse.de (Postfix) with ESMTP id 1A3F5218E5;
+        Thu, 20 Jan 2022 13:32:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1642685574; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=RUW4JCYoOKQIMeHd0SRiPk2FJC+gkVsUyDABH5eSlK8=;
+        b=SkXRIjrYip0hMI8T8YAIk+8TsTgfY4HBR0RdD07ticr+uzn6Mkkca7CR+XwRrQP4dldRAX
+        C1e+tEm2yVvicu5oGgnx2h57e0997et9KBnvXhoBa/qODce8KrW40+Gf6hiRivtLTf//rB
+        +isryo1QS88zycV5Hu5GBOlKCRctBcQ=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1642685574;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=RUW4JCYoOKQIMeHd0SRiPk2FJC+gkVsUyDABH5eSlK8=;
+        b=mEFkO0Kxtb3Qlaib78GilABSHj40M4s+tVrUqrb8/viFFC4kKT666cr7KYjOW3Gm8jwleU
+        r6pUjjU1geI9HABg==
+Received: from alsa1.suse.de (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 09493A3B83;
+        Thu, 20 Jan 2022 13:32:54 +0000 (UTC)
+Date:   Thu, 20 Jan 2022 14:32:53 +0100
+Message-ID: <s5hsftittve.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Vitaly Rodionov <vitalyr@opensource.cirrus.com>
+Cc:     Takashi Iwai <tiwai@suse.com>, Jaroslav Kysela <perex@perex.cz>,
+        Stefan Binding <sbinding@opensource.cirrus.com>,
+        <alsa-devel@alsa-project.org>, <patches@opensource.cirrus.com>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ALSA: hda/cs8409: Add new Warlock SKUs to patch_cs8409
+In-Reply-To: <20220120105618.249144-1-vitalyr@opensource.cirrus.com>
+References: <20220120105618.249144-1-vitalyr@opensource.cirrus.com>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 07, 2022 at 02:54:39PM -0800, Tony Luck wrote:
-> After nine generations of adding to model specific list of CPUS that
+On Thu, 20 Jan 2022 11:56:18 +0100,
+Vitaly Rodionov wrote:
+> 
+> From: Stefan Binding <sbinding@opensource.cirrus.com>
+> 
+> Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+> Signed-off-by: Vitaly Rodionov <vitalyr@opensource.cirrus.com>
 
-CPUs
+Thanks, applied.
 
--- 
-Regards/Gruss,
-    Boris.
 
-https://people.kernel.org/tglx/notes-about-netiquette
+Takashi
