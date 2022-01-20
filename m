@@ -2,218 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01C27C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 15:07:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3B29C433FE
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 15:08:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376396AbiATPH5 (ORCPT
+        id S1376467AbiATPIU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 10:07:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41084 "EHLO
+        Thu, 20 Jan 2022 10:08:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232516AbiATPH5 (ORCPT
+        with ESMTP id S232516AbiATPIS (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 10:07:57 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98B79C061574
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 07:07:56 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15E50B81D7F
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 15:07:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B202C340E5;
-        Thu, 20 Jan 2022 15:07:53 +0000 (UTC)
-Authentication-Results: smtp.kernel.org;
-        dkim=pass (1024-bit key) header.d=zx2c4.com header.i=@zx2c4.com header.b="du+9EPhb"
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=zx2c4.com; s=20210105;
-        t=1642691272;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Cy4G1xwqxsSWWvVGbvG/Ej2dahjAM+uexUKu3EtqffE=;
-        b=du+9EPhb3GRQ9fNA4vE3gbEwGmUdGKf7Io/VEiY+LpzFxy6TJRWksueQDNpkmHENJgbNFq
-        Opgazdrvt6OpAfcTLBDHV9SSmynhtrOC8JioG1sfGFuH51EMWEA39fidhrb0R6a4xVwfgr
-        QjIkCIb2NZDQTOMk2wW1vO/Uti/uQjQ=
-Received: by mail.zx2c4.com (ZX2C4 Mail Server) with ESMTPSA id e7aa1dbe (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Thu, 20 Jan 2022 15:07:51 +0000 (UTC)
-From:   "Jason A. Donenfeld" <Jason@zx2c4.com>
-To:     Theodore Ts'o <tytso@mit.edu>, LKML <linux-kernel@vger.kernel.org>
-Cc:     "Jason A. Donenfeld" <Jason@zx2c4.com>
-Subject: [PATCH] random: use named fields for adjusting chacha state
-Date:   Thu, 20 Jan 2022 16:07:34 +0100
-Message-Id: <20220120150734.509125-1-Jason@zx2c4.com>
-In-Reply-To: <CAHmME9pxJFBv-ZZ3bPMJdmxUO4oeY-wS4BtW34w1ncbeeU=MeA@mail.gmail.com>
-References: <CAHmME9pxJFBv-ZZ3bPMJdmxUO4oeY-wS4BtW34w1ncbeeU=MeA@mail.gmail.com>
+        Thu, 20 Jan 2022 10:08:18 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8F41C061574;
+        Thu, 20 Jan 2022 07:08:17 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id o7-20020a05600c510700b00347e10f66d1so7246297wms.0;
+        Thu, 20 Jan 2022 07:08:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=ddPVCxZ4dU5YjdeoeIUkKx7PGG9W/fGI0TtRqbFtTuw=;
+        b=H6c4pby5QH1o8S7IPDYhT0iMNADpq3fH9CJ1YFaBUTbth7CK+XT0K1kj/KxEW3svMz
+         qgPSkkw0v5ifu7wiTZ5ueesuwmt13mkAyXAHkbUvi5ZKfVSsMWLuc2Swh1ZByGg8Cwgs
+         JCgHJ/p6N0it6jnvmy+yz+X9GiRJHqUyok4tcJwB1VTHCQ0wnhTroDypB1uqiwBLNjKo
+         vLCmGDNpepIE/C0qTpl46MLnWh0+aWCljk+Umg70LvdYmUUHwHO/XvXINwEWnlXSlDnF
+         NHmU9EwfPYCHUxAD5LD6QBcp0IM8253CUgv7gWuYyanHdMTY0yzw9xKdC9DHUQqu2N+H
+         VsfA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=ddPVCxZ4dU5YjdeoeIUkKx7PGG9W/fGI0TtRqbFtTuw=;
+        b=iVpLMaGJZaR7e5Oi3gDcwRTdIJLBBXWr3252t7Ynviausn5dSiOBJJPxECZLNpe4HW
+         MUwS+kaoZQgT06U+L76t76UVlYIJQutAoIsfZCxSo2eR2MCpMzBdGAwSEJBYA9dmBu8e
+         q3WVf6/Mebcgdgzfw2PvjrosS9PNh4AkT4ymdAL58WPMBE2mXZxXyz83hkVPmmhGsRPK
+         qEshXwkRqRTfuY+lPU0PtFIZMpR/2XBeQNPCLZH5KNBlr027rH6Vn784GvTboiy1O/5M
+         Qbvq91gJdPx0xC29XDHPcMIY6+Rv0ol5Egh5/25RqP5ahxqLWBoowz/gEl6EdfUXLz+l
+         dIew==
+X-Gm-Message-State: AOAM532WFhyd018Ao/IaaXdooLbBgwXXjHxhmqxq2FOVvRm1jgpuqRkY
+        vkNij/adjWODgxEAZ1Cm3Xae95Z20EpSarktVjG8Uc0CYho=
+X-Google-Smtp-Source: ABdhPJycTIloH80MYHJgoCdcMS3sJYfpzZW6RfgpOkcOdf2Mub026i47AWJ9yyadXN1Q0Bwely+PGyslLzS6SnFiRN8=
+X-Received: by 2002:a7b:c310:: with SMTP id k16mr9289871wmj.169.1642691296273;
+ Thu, 20 Jan 2022 07:08:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220120000409.2706549-1-rajatja@google.com> <CAE_wzQ_XxONXx5bgDNLAWM_UbV0r8hP9fW6s5sgRYRVSHQWjLw@mail.gmail.com>
+In-Reply-To: <CAE_wzQ_XxONXx5bgDNLAWM_UbV0r8hP9fW6s5sgRYRVSHQWjLw@mail.gmail.com>
+Reply-To: rajatxjain@gmail.com
+From:   Rajat Jain <rajatxjain@gmail.com>
+Date:   Thu, 20 Jan 2022 07:08:06 -0800
+Message-ID: <CAA93t1pOi9mz9he41E+S+sb7F=0ptaWG4hmi+Nuac=7FXEBi7Q@mail.gmail.com>
+Subject: Re: [PATCH] PCI: ACPI: Allow internal devices to be marked as untrusted
+To:     Dmitry Torokhov <dtor@google.com>
+Cc:     Rajat Jain <rajatja@google.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jesse Barnes <jsbarnes@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Rather than hard coding [4] and [12] and such in places, use an
-anonymous struct where we can actually name the individual fields. In
-the process, always extract to the key field and not into the
-counter/nonce fields. We only need 256-bits anyway, and before those
-extra bytes were only filled in at init time when there's not even any
-entropy, so we're not losing anything substantial. We can then make the
-nonce field into a u64 and increment it in the impossibly-likely event
-that the counter wraps under the same key.
+Hi Dmitry, Bjorn,
 
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
----
- drivers/char/random.c | 49 ++++++++++++++++++++++++-------------------
- 1 file changed, 27 insertions(+), 22 deletions(-)
+Thanks for your review and comments.
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index b411182df6f6..7413c55c7c5c 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -443,17 +443,23 @@ static DEFINE_SPINLOCK(random_ready_list_lock);
- static LIST_HEAD(random_ready_list);
- 
- struct crng_state {
--	u32 state[16];
-+	union {
-+		u32 state[CHACHA_STATE_WORDS];
-+		struct {
-+			u32 constants[4];
-+			u32 key[CHACHA_KEY_SIZE / sizeof(u32)];
-+			u32 counter[2];
-+			u64 nonce;
-+		};
-+	};
- 	unsigned long init_time;
- 	spinlock_t lock;
- };
- 
- static struct crng_state primary_crng = {
- 	.lock = __SPIN_LOCK_UNLOCKED(primary_crng.lock),
--	.state[0] = CHACHA_CONSTANT_EXPA,
--	.state[1] = CHACHA_CONSTANT_ND_3,
--	.state[2] = CHACHA_CONSTANT_2_BY,
--	.state[3] = CHACHA_CONSTANT_TE_K,
-+	.constants = { CHACHA_CONSTANT_EXPA, CHACHA_CONSTANT_ND_3,
-+		       CHACHA_CONSTANT_2_BY, CHACHA_CONSTANT_TE_K }
- };
- 
- /*
-@@ -750,13 +756,13 @@ static bool crng_init_try_arch(struct crng_state *crng)
- 	bool arch_init = true;
- 	unsigned long rv;
- 
--	for (i = 4; i < 16; i++) {
-+	for (i = 0; i < ARRAY_SIZE(crng->key); i++) {
- 		if (!arch_get_random_seed_long(&rv) &&
- 		    !arch_get_random_long(&rv)) {
- 			rv = random_get_entropy();
- 			arch_init = false;
- 		}
--		crng->state[i] ^= rv;
-+		crng->key[i] ^= rv;
- 	}
- 
- 	return arch_init;
-@@ -768,13 +774,13 @@ static bool __init crng_init_try_arch_early(struct crng_state *crng)
- 	bool arch_init = true;
- 	unsigned long rv;
- 
--	for (i = 4; i < 16; i++) {
-+	for (i = 0; i < ARRAY_SIZE(crng->key); i++) {
- 		if (!arch_get_random_seed_long_early(&rv) &&
- 		    !arch_get_random_long_early(&rv)) {
- 			rv = random_get_entropy();
- 			arch_init = false;
- 		}
--		crng->state[i] ^= rv;
-+		crng->key[i] ^= rv;
- 	}
- 
- 	return arch_init;
-@@ -783,14 +789,14 @@ static bool __init crng_init_try_arch_early(struct crng_state *crng)
- static void crng_initialize_secondary(struct crng_state *crng)
- {
- 	chacha_init_consts(crng->state);
--	_get_random_bytes(&crng->state[4], sizeof(u32) * 12);
-+	_get_random_bytes(&crng->key, sizeof(crng->key));
- 	crng_init_try_arch(crng);
- 	crng->init_time = jiffies - CRNG_RESEED_INTERVAL - 1;
- }
- 
- static void __init crng_initialize_primary(struct crng_state *crng)
- {
--	_extract_entropy(&crng->state[4], sizeof(u32) * 12);
-+	_extract_entropy(&crng->key, sizeof(crng->key));
- 	if (crng_init_try_arch_early(crng) && trust_cpu && crng_init < 2) {
- 		invalidate_batched_entropy();
- 		numa_crng_init();
-@@ -892,7 +898,7 @@ static size_t crng_fast_load(const u8 *cp, size_t len)
- 		spin_unlock_irqrestore(&primary_crng.lock, flags);
- 		return 0;
- 	}
--	p = (u8 *)&primary_crng.state[4];
-+	p = (u8 *)primary_crng.key;
- 	while (len > 0 && crng_init_cnt < CRNG_INIT_CNT_THRESH) {
- 		p[crng_init_cnt % CHACHA_KEY_SIZE] ^= *cp;
- 		cp++; crng_init_cnt++; len--; ret++;
-@@ -927,7 +933,7 @@ static int crng_slow_load(const u8 *cp, size_t len)
- 	u8 tmp;
- 	unsigned int i, max = CHACHA_KEY_SIZE;
- 	const u8 *src_buf = cp;
--	u8 *dest_buf = (u8 *)&primary_crng.state[4];
-+	u8 *dest_buf = (u8 *)primary_crng.key;
- 
- 	if (!spin_trylock_irqsave(&primary_crng.lock, flags))
- 		return 0;
-@@ -970,12 +976,12 @@ static void crng_reseed(struct crng_state *crng, bool use_input_pool)
- 					CHACHA_KEY_SIZE);
- 	}
- 	spin_lock_irqsave(&crng->lock, flags);
--	for (i = 0; i < 8; i++) {
-+	for (i = 0; i < ARRAY_SIZE(crng->key); i++) {
- 		unsigned long rv;
- 		if (!arch_get_random_seed_long(&rv) &&
- 		    !arch_get_random_long(&rv))
- 			rv = random_get_entropy();
--		crng->state[i + 4] ^= buf.key[i] ^ rv;
-+		crng->key[i] ^= buf.key[i] ^ rv;
- 	}
- 	memzero_explicit(&buf, sizeof(buf));
- 	WRITE_ONCE(crng->init_time, jiffies);
-@@ -994,9 +1000,9 @@ static void _extract_crng(struct crng_state *crng, u8 out[CHACHA_BLOCK_SIZE])
- 			crng_reseed(crng, crng == &primary_crng);
- 	}
- 	spin_lock_irqsave(&crng->lock, flags);
--	chacha20_block(&crng->state[0], out);
--	if (crng->state[12] == 0)
--		crng->state[13]++;
-+	chacha20_block(crng->state, out);
-+	if (unlikely(!crng->counter[0] && !++crng->counter[1]))
-+		++crng->nonce;
- 	spin_unlock_irqrestore(&crng->lock, flags);
- }
- 
-@@ -1013,7 +1019,7 @@ static void _crng_backtrack_protect(struct crng_state *crng,
- 				    u8 tmp[CHACHA_BLOCK_SIZE], int used)
- {
- 	unsigned long flags;
--	u32 *s, *d;
-+	u32 *s;
- 	int i;
- 
- 	used = round_up(used, sizeof(u32));
-@@ -1023,9 +1029,8 @@ static void _crng_backtrack_protect(struct crng_state *crng,
- 	}
- 	spin_lock_irqsave(&crng->lock, flags);
- 	s = (u32 *)&tmp[used];
--	d = &crng->state[4];
--	for (i = 0; i < 8; i++)
--		*d++ ^= *s++;
-+	for (i = 0; i < ARRAY_SIZE(crng->key); i++)
-+		crng->key[i] ^= s[i];
- 	spin_unlock_irqrestore(&crng->lock, flags);
- }
- 
--- 
-2.34.1
+On Wed, Jan 19, 2022 at 6:25 PM Dmitry Torokhov <dtor@google.com> wrote:
+>
+> Hi Rajat,
+>
+> On Wed, Jan 19, 2022 at 4:04 PM Rajat Jain <rajatja@google.com> wrote:
+> >
+> > Today the pci_dev->untrusted is set for any devices sitting downstream
+> > an external facing port (determined via "ExternalFacingPort" property).
+> > This however, disallows any internal devices to be marked as untrusted.
+> >
+> > There are use-cases though, where a platform would like to treat an
+> > internal device as untrusted (perhaps because it runs untrusted
+> > firmware, or offers an attack surface by handling untrusted network
+> > data etc).
+> >
+> > This patch introduces a new "UntrustedDevice" property that can be used
+> > by the firmware to mark any device as untrusted.
+> >
+> > Signed-off-by: Rajat Jain <rajatja@google.com>
+> > ---
+> >  drivers/pci/pci-acpi.c | 13 +++++++++++++
+> >  1 file changed, 13 insertions(+)
+> >
+> > diff --git a/drivers/pci/pci-acpi.c b/drivers/pci/pci-acpi.c
+> > index a42dbf448860..3d9e5fa49451 100644
+> > --- a/drivers/pci/pci-acpi.c
+> > +++ b/drivers/pci/pci-acpi.c
+> > @@ -1350,12 +1350,25 @@ static void pci_acpi_set_external_facing(struct pci_dev *dev)
+> >                 dev->external_facing = 1;
+> >  }
+> >
+> > +static void pci_acpi_set_untrusted(struct pci_dev *dev)
+> > +{
+> > +       u8 val;
+> > +
+> > +       if (device_property_read_u8(&dev->dev, "UntrustedDevice", &val))
+> > +               return;
+> > +
+> > +       /* These PCI devices are not trustworthy */
+> > +       if (val)
+> > +               dev->untrusted = 1;
+>
+> Should this all be replaced with:
+>
+> dev->untrusted = device_property_read_bool(&dev->dev, "UntrustedDevice");
+>
+> ?
 
+Ack, yes, I will do this.
+
+>
+> Also, is this ACPI-specific? Why won't we need this for DT systems (or
+> do we already have this)?.
+
+Good point. Ack, Yes, I don't mind doing this for DT systems also. I
+wanted to get some feedback and acceptance within the PCI subsystem on
+the general idea of this property though. Bjorn?
+
+Thanks & Best Regards,
+
+Rajat
+
+>
+> Thanks,
+> Dmitry
