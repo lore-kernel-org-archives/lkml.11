@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C36AC4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 23:20:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2923C4167D
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 23:20:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378163AbiATXUh (ORCPT
+        id S1378193AbiATXUp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 18:20:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39582 "EHLO
+        Thu, 20 Jan 2022 18:20:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378150AbiATXUe (ORCPT
+        with ESMTP id S1378159AbiATXUh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 18:20:34 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25A82C061574;
-        Thu, 20 Jan 2022 15:20:34 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id c2so14917452wml.1;
-        Thu, 20 Jan 2022 15:20:34 -0800 (PST)
+        Thu, 20 Jan 2022 18:20:37 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 263ABC061574;
+        Thu, 20 Jan 2022 15:20:37 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id l35-20020a05600c1d2300b0034d477271c1so17649823wms.3;
+        Thu, 20 Jan 2022 15:20:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:mime-version
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=UcYnZJXwLc4lqt61bDMxR0ZCzh1Cztx6cNOepvk0MLY=;
-        b=nTTF8cYS2m6KU1k6dDIAzQbGDUksZ5cKjfvNW29C0S2hzZ1W01qXV1KRIXsmmNYiXW
-         PdiY8uwWqR7otOigA/UA/SGWOS6cNZXorhI6NtQ9SwqxmYTECjjAHmc44+d5LAxOEKTm
-         BKUXfynB6E+GNcQuCOtPuLt3qRbq73N998WSH0NF8PBFZ9ftoRFLZ75V1WRe/iN5vJAG
-         utPb4je50FojpMVbii3D9cN3guQzwKV/E4FqiUxISeDuNtEpzQXBjVxkZP4FNrC8lgiJ
-         3pCeAlILnMG9oA0UXZET7V9zgl/+JqD/VNxb29G2y7cghOE9ioCKQYSM16m4p1t9KwYq
-         cvSg==
+        bh=NqCTa9NPeJIZj8OJYmPeW7U5uohmgzf9QA184JG+m+o=;
+        b=T7QgcwUm37r+BBCTIeRiF/awvjrCNxtIFhO6n6kcA2xo1onnJpTrWswW5v3Z+d3nvH
+         rlCHwVkBZXQuRJKJRpzt+4y2dXsbaljqtC8GxxevPb+4lo0VE7rrHVOaCLwSF4ljpQE9
+         EdbUlLwWkxAAKPymhiVd89cTZ3T7KTRJ0844hbHCUxQeRVTLVnD6qcqdgPijluVXi10Z
+         N9IhBgMI+4BfAcuP6w/67mhKEtQ4bl5dXRzEBi8jBAhqWRRHYS6UuxhZ+ZKuTS4Ca+qA
+         NSBeDnj2r8UW4RU4FGtW8SSZRWw+S3I0AHSJ0deX/SjcApne1daU3WQxCDu6Qx8t57YB
+         Y43Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UcYnZJXwLc4lqt61bDMxR0ZCzh1Cztx6cNOepvk0MLY=;
-        b=5AJ2aeofEuhVQFNyhdP295JCmw+fR/RoVq4YWnh7IAKiF7dvJxQuELG0ODzl+2JXnS
-         8fjPujgVrxhkgElet2Y6UBWlyaWR4DDvZkTy6SuMaV9BkrfkccitIxh4SjRDTpQ3CfxW
-         xb4LnhZcC/lH8G+QKMqMz7zOeS/qFjkTQVCjj5P6Ide88qOXcwzXaY/J3lSjpEycBLuz
-         YyC1niAfm9czmNcnDbEbvX4YgQ4Kdtgm1x0jhmZSlIfB4L8la7Wxo18iUu+mu6X3gYVj
-         BMjrjuCylVRgJojA4DwnSNL0aX91c2ZmHaCj/l6H8Z5SEpGXAx5wXIyPH/3oCe2bHleA
-         IgHQ==
-X-Gm-Message-State: AOAM533B6T+eH87Lg+j8HS6GRmAwfsYKuxWmKeYWT3z5/Th8avzUlTcD
-        yZUK6ybt3d3gEyhTXxg/i9+qbbLv4Qo=
-X-Google-Smtp-Source: ABdhPJzDbjksy4Dl+Wf8rgiRdVl1Eoz4qUD4mBjgoaOMNROY12cBUof5no8oj1J7KSBssDI+9j163Q==
-X-Received: by 2002:a1c:1982:: with SMTP id 124mr7154025wmz.50.1642720832322;
-        Thu, 20 Jan 2022 15:20:32 -0800 (PST)
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=NqCTa9NPeJIZj8OJYmPeW7U5uohmgzf9QA184JG+m+o=;
+        b=16SuuxQMm7I6Zn9Qz1MSNQbANdtfw3NOru0IYm3hk+70qKEeP83Paz6lLrTpVoNp7p
+         KQmKuztWKR9NakhCV0lZxQ3axzgV4fyot7hzgHofLQpzcsHFrUm3jPswPvz+mzOrjRo0
+         iH001RQukNXLr/kyD0/V9nYgiwpPpb5nEKn5r+jTMFo4BZi7L74ILFk3s0YvFc1XYecd
+         tPvZUpOjdidN1bY+0kBu/3DUlVfJ3RiLh16GpsU39v63JfR6YLujo7FOQrHU2nrxSKNS
+         5XLsRXT2A8H/mQmWilIQvkHfMM+x1borEzihomDMy+Xlm/ym4lDXRlpV+3gZkBSKaPHc
+         03qg==
+X-Gm-Message-State: AOAM530fze6cA2upJbfqhkAtEtRurVzZu8/9Dt9XFMDiCKuLnp8HTmzW
+        LKrRha8Oks3h+yFvctTU9bo=
+X-Google-Smtp-Source: ABdhPJy31IV3HCJP3tN1S1eF6mObbX7TSSd8e9QxOK89J11YROL/Jt1/8KYCtTOerGEo5V0cc5pJpA==
+X-Received: by 2002:a5d:4742:: with SMTP id o2mr1244653wrs.346.1642720835621;
+        Thu, 20 Jan 2022 15:20:35 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id a9sm3939283wmm.32.2022.01.20.15.20.31
+        by smtp.googlemail.com with ESMTPSA id a9sm3939283wmm.32.2022.01.20.15.20.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 15:20:31 -0800 (PST)
+        Thu, 20 Jan 2022 15:20:35 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -60,71 +60,104 @@ To:     Andy Gross <agross@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 00/15] Multiple addition and improvement to ipq8064 gcc
-Date:   Fri, 21 Jan 2022 00:20:13 +0100
-Message-Id: <20220120232028.6738-1-ansuelsmth@gmail.com>
+Subject: [PATCH v2 03/15] dt-bindings: clock: Document qcom,gcc-ipq8064 binding
+Date:   Fri, 21 Jan 2022 00:20:16 +0100
+Message-Id: <20220120232028.6738-4-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220120232028.6738-1-ansuelsmth@gmail.com>
+References: <20220120232028.6738-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This is an attempt in making the ipq8064 SoC actually usable. Currently
-many feature are missing for this SoC and devs user off-the-tree patches
-to make it work (example patch for missing clock, patch for cpufreq
-driver, patch to add missing node in the dts)
+Document qcom,gcc-ipq8064 binding needed to declare pxo and cxo source
+clocks. The gcc node is also used by the tsens driver, already documented,
+to get the calib nvmem cells and the base reg from gcc.
 
-I notice there was some work in modernizing the gcc driver for other
-qcom target but this wasn't done for ipq806x. This does exactly this, we
-drop any parent_names stuff and we switch to the parent_data way. We
-also drop the pxo and cxo source clk from gcc driver and we refer to the
-dts for it.
-
-This also add all the missing feature for the nss cores and the
-cryptoengine in them. It does also introduce the required flags to make
-the RPM actually work and NOT reject any command. There was an attempt
-in declaring these clock as core clock in the dts but this ends up in no
-serial as the kernel makes these clock not accessible. We just want to
-make the kernel NOT disable them if unused nothing more.
-
-At the end we update the ipq8064 dtsi to add the pxo and cxo tag and
-declare them in gcc and also fix a problem with tsens probe.
-
-v2:
-- Fix error from Rob bot.
-- Add additional commits to make qcom,gcc.yaml a template
-- Squash parent_hws patch with the modernize patch
-- Create gcc_pxo instead of using long define.
-
-Ansuel Smith (15):
-  dt-bindings: clock: permit additionalProprieties to qcom,gcc
-  dt-bindings: clock: simplify qcom,gcc-apq8064 Documentation
-  dt-bindings: clock: Document qcom,gcc-ipq8064 binding
-  drivers: clk: qcom: gcc-ipq806x: fix wrong naming for
-    gcc_pxo_pll8_pll0
-  drivers: clk: qcom: gcc-ipq806x: convert parent_names to parent_data
-  drivers: clk: qcom: gcc-ipq806x: use ARRAY_SIZE for num_parents
-  drivers: clk: qcom: gcc-ipq806x: drop hardcoded pxo and cxo source clk
-  drivers: clk: qcom: gcc-ipq806x: add additional freq nss cores
-  drivers: clk: qcom: gcc-ipq806x: add unusued flag for critical clock
-  drivers: clk: qcom: gcc-ipq806x: add additional freq for sdc table
-  dt-bindings: clock: add ipq8064 ce5 clk define
-  drivers: clk: qcom: gcc-ipq806x: add CryptoEngine clocks
-  dt-bindings: reset: add ipq8064 ce5 resets
-  drivers: clk: qcom: gcc-ipq806x: add CryptoEngine resets
-  ARM: dts: qcom: Add syscon and cxo/pxo clock to gcc node for ipq8064
-
- .../bindings/clock/qcom,gcc-apq8064.yaml      |  27 +-
- .../bindings/clock/qcom,gcc-ipq8064.yaml      |  70 ++
- .../devicetree/bindings/clock/qcom,gcc.yaml   |  41 +-
- arch/arm/boot/dts/qcom-ipq8064.dtsi           |   8 +-
- drivers/clk/qcom/gcc-ipq806x.c                | 638 +++++++++++++-----
- include/dt-bindings/clock/qcom,gcc-ipq806x.h  |   5 +-
- include/dt-bindings/reset/qcom,gcc-ipq806x.h  |   5 +
- 7 files changed, 581 insertions(+), 213 deletions(-)
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+---
+ .../bindings/clock/qcom,gcc-ipq8064.yaml      | 70 +++++++++++++++++++
+ 1 file changed, 70 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/clock/qcom,gcc-ipq8064.yaml
 
+diff --git a/Documentation/devicetree/bindings/clock/qcom,gcc-ipq8064.yaml b/Documentation/devicetree/bindings/clock/qcom,gcc-ipq8064.yaml
+new file mode 100644
+index 000000000000..abc76a46b2ca
+--- /dev/null
++++ b/Documentation/devicetree/bindings/clock/qcom,gcc-ipq8064.yaml
+@@ -0,0 +1,70 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/clock/qcom,gcc-ipq8064.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Qualcomm Global Clock & Reset Controller Binding for IPQ8064
++
++allOf:
++  - $ref: qcom,gcc.yaml#
++
++maintainers:
++  - Ansuel Smith <ansuelsmth@gmail.com>
++
++description: |
++  Qualcomm global clock control module which supports the clocks, resets and
++  power domains on IPQ8064.
++
++  See also:
++  - dt-bindings/clock/qcom,gcc-ipq806x.h
++  - dt-bindings/reset/qcom,gcc-ipq806x.h
++
++properties:
++  clocks:
++    items:
++      - description: PXO source
++      - description: CXO source
++
++  clock-names:
++    items:
++      - const: pxo
++      - const: cxo
++
++  thermal-sensor:
++    type: object
++
++    allOf:
++      - $ref: /schemas/thermal/qcom-tsens.yaml#
++
++required:
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++
++    gcc: clock-controller@900000 {
++      compatible = "qcom,gcc-ipq8064", "syscon";
++      reg = <0x00900000 0x4000>;
++      clocks = <&pxo_board>, <&cxo_board>;
++      clock-names = "pxo", "cxo";
++      #clock-cells = <1>;
++      #reset-cells = <1>;
++      #power-domain-cells = <1>;
++
++      tsens: thermal-sensor {
++        compatible = "qcom,ipq8064-tsens";
++
++        nvmem-cells = <&tsens_calib>, <&tsens_calib_backup>;
++        nvmem-cell-names = "calib", "calib_backup";
++        interrupts = <GIC_SPI 178 IRQ_TYPE_LEVEL_HIGH>;
++        interrupt-names = "uplow";
++
++        #qcom,sensors = <11>;
++        #thermal-sensor-cells = <1>;
++      };
++    };
 -- 
 2.33.1
 
