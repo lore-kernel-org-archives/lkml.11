@@ -2,174 +2,107 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD25C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:27:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA05DC43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:28:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231366AbiATL1d (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 06:27:33 -0500
-Received: from mxout04.lancloud.ru ([45.84.86.114]:54944 "EHLO
-        mxout04.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230371AbiATL1T (ORCPT
+        id S231347AbiATL2Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 06:28:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:33853 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231406AbiATL2P (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 06:27:19 -0500
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout04.lancloud.ru C003420DA1E6
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-To:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-CC:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        <linux-iio@vger.kernel.org>,
-        "Linus Walleij" <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        "ALSA Development Mailing List" <alsa-devel@alsa-project.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        <linux-phy@lists.infradead.org>, Jiri Slaby <jirislaby@kernel.org>,
-        <openipmi-developer@lists.sourceforge.net>,
-        "Khuong Dinh" <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        "Bartosz Golaszewski" <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        "Tony Luck" <tony.luck@intel.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        "Saravanan Sekar" <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        "Sebastian Reichel" <sre@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        "Matthias Brugger" <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        <platform-driver-x86@vger.kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        <linux-edac@vger.kernel.org>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        "Hans de Goede" <hdegoede@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        "Yoshihiro Shimoda" <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        "Liam Girdwood" <lgirdwood@gmail.com>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
-        <linux-mediatek@lists.infradead.org>,
-        "Brian Norris" <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-References: <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
- <20220114092557.jrkfx7ihg26ekzci@pengutronix.de>
- <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru>
- <20220114202226.ugzklxv4wzr6egwj@pengutronix.de>
- <c9026f17-2b3f-ee94-0ea3-5630f981fbc1@omp.ru>
- <CAMuHMdXVbRudGs69f9ZzaP1PXhteDNZiXA658eMFAwP4nr9r3w@mail.gmail.com>
- <20220117092444.opoedfcf5k5u6otq@pengutronix.de>
- <CAMuHMdUgZUeraHadRAi2Z=DV+NuNBrKPkmAKsvFvir2MuquVoA@mail.gmail.com>
- <20220117114923.d5vajgitxneec7j7@pengutronix.de>
- <CAMuHMdWCKERO20R2iVHq8P=BaoauoBAtiampWzfMRYihi3Sb0g@mail.gmail.com>
-Organization: Open Mobile Platform
-Message-ID: <b8fda2ae-07b7-af30-2b0d-213a60a7b802@omp.ru>
-Date:   Thu, 20 Jan 2022 14:27:08 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        Thu, 20 Jan 2022 06:28:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642678094;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Q6qeG5JMe+t7+z8JXLCS4Q97k5j0AmGEKqfbALm6D9s=;
+        b=OhZkRmCRU14b8vIVxcS3grH8EQEElaz2/flddq8+qdgXPl3a+Dn2leTrAfi8TSCfMUIGYg
+        0BhpNtdh5QDKLgUbgzEoSfGGcczZF07RUqnYx2SrUErX6lJqwz9ZgNRiF4fYU3S8Zz0HDw
+        WGX6XK9bQHL1GY9ieffrHHBt9wOxHFw=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-260-fo0FIRhyM32kLz2NJiQO9w-1; Thu, 20 Jan 2022 06:28:13 -0500
+X-MC-Unique: fo0FIRhyM32kLz2NJiQO9w-1
+Received: by mail-wm1-f72.google.com with SMTP id s17-20020a7bc0d1000000b00348737ba2a2so3878272wmh.2
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 03:28:13 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=Q6qeG5JMe+t7+z8JXLCS4Q97k5j0AmGEKqfbALm6D9s=;
+        b=5/NeGMuBlF1ldn3sO1FAjMygGgG7NPZwH1IdVB8QN0dsakdQ6YXoNed6yTlc6PXsLW
+         nqmzOSccUyDyPd3bCEuzqcjalBaXyyptPUn0zP/xRUpjcKtrpgB3y+hpr/4yTuinozCB
+         P97f/5WvcSO8INSJkfHlgeH0iyvojAja806Q6/9i5NhaLUFzxxZt2kxsVGyEvkGVHp8b
+         XK4bm3Ll49hGrwvjUBOr5v1TgCDSA/AWUOiAGbSM+d6td2sRqeqccVF5xhYOUIhrO7cN
+         4mMWzs//XV1pk687BuLv9XcPQ793JkQz7GnEM6ftplCVYmZACSpcUpKY0EOk80BHtC6U
+         VjOg==
+X-Gm-Message-State: AOAM531tcB/aTKIawYom/uYHnj+WW7Ve2rzs2I7cN8W23S2gDe0x+Cmn
+        lSG8aLFhHopXiYKPEUpmCcSYvuYsam+jLu01jh4zo63ttbs0K0xInQ+02+ehp1nd/InN0ZGvoVb
+        o6Lk/K72Mx8N5uK5JkGcSaJW4
+X-Received: by 2002:a05:600c:3ac5:: with SMTP id d5mr8294084wms.45.1642678092369;
+        Thu, 20 Jan 2022 03:28:12 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyZghi1ffmPgh1ii0PBQ0LoK1VH/aBjfHfCpuRYc76BJGR2/yUaAyzSlMsK9JJQb6/eogoqPA==
+X-Received: by 2002:a05:600c:3ac5:: with SMTP id d5mr8294041wms.45.1642678092145;
+        Thu, 20 Jan 2022 03:28:12 -0800 (PST)
+Received: from ?IPV6:2001:b07:6468:f312:c8dd:75d4:99ab:290a? ([2001:b07:6468:f312:c8dd:75d4:99ab:290a])
+        by smtp.googlemail.com with ESMTPSA id 8sm3095771wrz.57.2022.01.20.03.28.10
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Jan 2022 03:28:11 -0800 (PST)
+Message-ID: <2688b779-9cb8-b6ea-f8cc-93bc8ddf72f3@redhat.com>
+Date:   Thu, 20 Jan 2022 12:28:09 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAMuHMdWCKERO20R2iVHq8P=BaoauoBAtiampWzfMRYihi3Sb0g@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH v2 0/7] kvm: fix latent guest entry/exit bugs
 Content-Language: en-US
+To:     Mark Rutland <mark.rutland@arm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>
+Cc:     linux-kernel@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        aleksandar.qemu.devel@gmail.com, alexandru.elisei@arm.com,
+        anup.patel@wdc.com, aou@eecs.berkeley.edu, atish.patra@wdc.com,
+        bp@alien8.de, catalin.marinas@arm.com, chenhuacai@kernel.org,
+        dave.hansen@linux.intel.com, frankja@linux.ibm.com,
+        frederic@kernel.org, gor@linux.ibm.com, hca@linux.ibm.com,
+        james.morse@arm.com, jmattson@google.com, joro@8bytes.org,
+        luto@kernel.org, maz@kernel.org, mingo@redhat.com,
+        nsaenzju@redhat.com, palmer@dabbelt.com, paulmck@kernel.org,
+        paul.walmsley@sifive.com, peterz@infradead.org, seanjc@google.com,
+        suzuki.poulose@arm.com, svens@linux.ibm.com, tglx@linutronix.de,
+        tsbogend@alpha.franken.de, vkuznets@redhat.com,
+        wanpengli@tencent.com, will@kernel.org,
+        Anup Patel <anup@brainfault.org>,
+        Atish Patra <atishp@atishpatra.org>
+References: <20220119105854.3160683-1-mark.rutland@arm.com>
+ <a4a26805-3a56-d264-0a7e-60bed1ada9f3@linux.ibm.com>
+ <20220119192217.GD43919@C02TD0UTHF1T.local>
+From:   Paolo Bonzini <pbonzini@redhat.com>
+In-Reply-To: <20220119192217.GD43919@C02TD0UTHF1T.local>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/17/22 4:08 PM, Geert Uytterhoeven wrote:
-
-[...]
->>> But as we were all in a hurry to kill the non-applicable error
->>> message, we went for the quick and dirty fix.
->>>
->>>> Also I fail to see how a caller of (today's) platform_get_irq_optional()
->>>> is simpler than a caller of platform_get_irq() given that there is no
->>>> semantic difference between the two. Please show me a single
->>>> conversion from platform_get_irq to platform_get_irq_optional that
->>>> yielded a simplification.
->>>
->>> That's exactly why we want to change the latter to return 0 ;-)
->>
->> OK. So you agree to my statement "The reason for
->> platform_get_irq_optional()'s existence is just that platform_get_irq()
->> emits an error message [...]". Actually you don't want to oppose but
->> say: It's unfortunate that the silent variant of platform_get_irq() took
->> the obvious name of a function that could have an improved return code
->> semantic.
->>
->> So my suggestion to rename todays platform_get_irq_optional() to
->> platform_get_irq_silently() and then introducing
->> platform_get_irq_optional() with your suggested semantic seems
->> intriguing and straigt forward to me.
+On 1/19/22 20:22, Mark Rutland wrote:
+> I wonder, is the s390 guest entry/exit*preemptible*  ?
 > 
-> I don't really see the point of needing platform_get_irq_silently(),
-> unless as an intermediary step, where it's going to be removed again
-> once the conversion has completed.
-> Still, the rename would touch all users at once anyway.
+> If a timer IRQ can preempt in the middle of the EQS, we wouldn't balance
+> things before a ctx-switch to the idle thread, which would then be able
+> to hit this.
 > 
->> Another thought: platform_get_irq emits an error message for all
->> problems. Wouldn't it be consistent to let platform_get_irq_optional()
->> emit an error message for all problems but "not found"?
->> Alternatively remove the error printk from platform_get_irq().
-> 
-> Yes, all problems but not found are real errors.
+> I'll need to go audit the other architectures for similar.
 
-   ACK for using dev_err_probe() in platfrom_get_irq_optional()
-for the real errors...
-   I've also noted that only platfrom_get_irq_optional() got converted
-from dev_err() to dev_err_probe() but not platfrom_get_irq_byname_optional()...
+They don't enable interrupts in the entry/exit path so they should be 
+okay.  RISC-V and x86 have an explicit preempt_disable/enable, while 
+MIPS only has local_irq_disable/enable.
 
-[...]
+(MIPS is a mess of dead code, I have patches to clean it up).
 
-> Gr{oetje,eeting}s,
-> 
->                         Geert
+Paolo
 
-MBR, Sergey
