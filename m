@@ -2,95 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD2EC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 10:10:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C9A6C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 10:12:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359764AbiATKKd (ORCPT
+        id S1359770AbiATKMo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 05:10:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56974 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234793AbiATKKc (ORCPT
+        Thu, 20 Jan 2022 05:12:44 -0500
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:49116 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234793AbiATKMo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 05:10:32 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F87EC061574;
-        Thu, 20 Jan 2022 02:10:32 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id d12-20020a17090a628c00b001b4f47e2f51so6427260pjj.3;
-        Thu, 20 Jan 2022 02:10:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=IHoRYXmsI6hCwlePGthADoqqx8EGqrGxFXJW5zS+sQ0=;
-        b=YvqpLTSOHM9Pz6U4id3HfU1MmCRrcgTcmZmMu7/AyGjpEZsiMKlXASida8OEvzGXFY
-         PCcpga6trrt0kerBrrNxJCQMUXEr6uNh3xjzFIiZ7eqDL27zLSCDayK9lnp3+ir8M3ud
-         l7l7JmSX7E1rL6Hd1Rkiv0PvJ5WWfVfC5RGxT9D+o4qFcRrKkkJ8DpNyTXMxj6GL5dIg
-         cIvzv6l4HkdnbG9LsBIfP4rbzA8VWZnfTtlWHEqIZLWE2/gCRDkudtdwcXdBBJZ5rCmi
-         1AcSSwicf50fhecPaZoQrydMVET5WUJv8wkbAX/Y5ZjsAqcEggFLmh5kdtS4dbuoyqWe
-         DVRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=IHoRYXmsI6hCwlePGthADoqqx8EGqrGxFXJW5zS+sQ0=;
-        b=Q+ng7fZ5PTut7BfxQyy2EpJNVxeD/2+yaHDGuANlfYnmprE+UsBF3E3pS3ORzwwdxM
-         nxMcPaLPkRxHES3v3FKMZUfG8xakVf2LLde34KJaG6jHcJuLcwdc6qXaqgyFG2lulG8P
-         YnSY4IbNh7oLO0AbwW8meaj/kWaGgJgeVlgdanSnKLEtSsBuXFLT7ST7fjoFrG3kzZhd
-         PieELFsUCURX4WbbKrTf60/9TV24f4/7HTfOtN/C7LWwtvutvuqPWMAzbORY0WIOUm1O
-         fnyF9KKQHOIzLhoYiT4URorMmFz37xz8OTQox9CBozEHFbLIuUi+I/Zmueg+10pHT9BZ
-         Vm5g==
-X-Gm-Message-State: AOAM533deGX1r6Q3mEbRh7V2y857kZ75lp8sUyaQHOxyG+JeGBuRxMgp
-        Hbr0AUQGgOTwqst+BxOz/c0=
-X-Google-Smtp-Source: ABdhPJz/6lhApOItRjC9jAHbqU8MScNTsw4oqQ+fYOBEGjosaF0Bth4k4RFBB6qZHb/wDOjm1Oi7ow==
-X-Received: by 2002:a17:90b:1bc9:: with SMTP id oa9mr9912048pjb.47.1642673431696;
-        Thu, 20 Jan 2022 02:10:31 -0800 (PST)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id x7sm2862788pfh.178.2022.01.20.02.10.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 02:10:31 -0800 (PST)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Jens Axboe <axboe@kernel.dk>, Hannes Reinecke <hare@suse.de>,
-        Keith Busch <kbusch@kernel.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Damien Le Moal <damien.lemoal@wdc.com>,
-        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     linmq006@gmail.com
-Subject: [PATCH] block: fix memory leak in disk_register_independent_access_ranges
-Date:   Thu, 20 Jan 2022 10:10:25 +0000
-Message-Id: <20220120101025.22411-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Thu, 20 Jan 2022 05:12:44 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 20KACNJc044524;
+        Thu, 20 Jan 2022 04:12:23 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1642673543;
+        bh=sTm9Bn4sy6Bs//IDGPOdP1kqR36tKRbjiXGLPR+6GYU=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=BcAqqd7m6b6rnMYbzZtx7tk28krzg+FwUxtBuvn7PLOXga4FQHbIlLskP1wuXADRS
+         Ayr5c9Vzzs6E30t8j4Q6abwoRqYa8HklId03W1k0vzkPlaIMu4yLvtQ/3l0YsMcLZ/
+         GEwtqyQii03YXkrFz4+/CQoAsC6phKL9OESsNAY8=
+Received: from DLEE115.ent.ti.com (dlee115.ent.ti.com [157.170.170.26])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 20KACNjO112372
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 20 Jan 2022 04:12:23 -0600
+Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 20
+ Jan 2022 04:12:22 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE102.ent.ti.com
+ (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 20 Jan 2022 04:12:22 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 20KACL6E083517;
+        Thu, 20 Jan 2022 04:12:22 -0600
+Date:   Thu, 20 Jan 2022 15:42:21 +0530
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+CC:     <dianders@chromium.org>, <tudor.ambarus@microchip.com>,
+        <michael@walle.cc>, <miquel.raynal@bootlin.com>, <richard@nod.at>,
+        <vigneshr@ti.com>, <linux-mtd@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <stummala@codeaurora.org>,
+        <vbadigan@codeaurora.org>, <quic_rampraka@quicinc.com>,
+        <quic_pragalla@quicinc.com>, <sartgarg@codeaurora.org>
+Subject: Re: [PATCH V4] mtd: spi-nor: winbond: Add support for winbond chip
+Message-ID: <20220120101221.oqtfa6vosnweqsoq@ti.com>
+References: <1642672491-30067-1-git-send-email-quic_c_sbhanu@quicinc.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <1642672491-30067-1-git-send-email-quic_c_sbhanu@quicinc.com>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-kobject_init_and_add() takes reference even when it fails.
-According to the doc of kobject_init_and_add()
+Hi,
 
-   If this function returns an error, kobject_put() must be called to
-   properly clean up the memory associated with the object.
+On 20/01/22 03:24PM, Shaik Sajida Bhanu wrote:
+> Add support for winbond W25Q512NW-IM chip.
+> 
+> Signed-off-by: Shaik Sajida Bhanu <quic_c_sbhanu@quicinc.com>
+> Reviewed-by: Doug Anderson <dianders@chromium.org>
+> ---
+> 
+> Changes since V1:
+> 	- Added space before name of the flash part as suggested by Doug.
+> 
+> Changes since V2:
+> 	- Updated chip name as w25q512nwm as suggested by Doug.
+> 
+> Changes since V3:
+> 	- Updated flash_info flags passing according to below patch
+> 	 https://lore.kernel.org/all/20211207140254.87681-7-tudor.ambarus@microchip.com/
+> 	 As suggested by Tudor Ambarus.
+> ---
+>  drivers/mtd/spi-nor/winbond.c | 4 ++++
+>  1 file changed, 4 insertions(+)
+> 
+> diff --git a/drivers/mtd/spi-nor/winbond.c b/drivers/mtd/spi-nor/winbond.c
+> index 675f32c..c4be225 100644
+> --- a/drivers/mtd/spi-nor/winbond.c
+> +++ b/drivers/mtd/spi-nor/winbond.c
+> @@ -124,6 +124,10 @@ static const struct flash_info winbond_parts[] = {
+>  	{ "w25m512jv", INFO(0xef7119, 0, 64 * 1024, 1024)
+>  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_QUAD_READ |
+>  			      SPI_NOR_DUAL_READ) },
+> +	{ "w25q512nwm", INFO(0xef8020, 0, 64 * 1024, 1024)
+> +		FLAGS(SPI_NOR_HAS_LOCK | SPI_NOR_HAS_TB)
+> +		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
+> +			      SPI_NOR_QUAD_READ) },
 
-Fix this issue by adding kobject_put().
-Callback function blk_ia_ranges_sysfs_release() in kobject_put()
-can handle the pointer "iars" properly.
+This way is for "legacy" flash code and is not recommended anymore. Does 
+the flash support SFDP? In that case just add PARSE_SFDP and let the 
+SFDP parser discover these capabilities. You can keep the "FLAGS" part 
+since those are not discoverable via SFDP.
 
-Fixes: a2247f19ee1c ("block: Add independent access ranges support")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
- block/blk-ia-ranges.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+>  	{ "w25q512jvq", INFO(0xef4020, 0, 64 * 1024, 1024)
+>  		NO_SFDP_FLAGS(SECT_4K | SPI_NOR_DUAL_READ |
+>  			      SPI_NOR_QUAD_READ) },
+> -- 
+> QUALCOMM INDIA, on behalf of Qualcomm Innovation Center, Inc. is a member 
+> of Code Aurora Forum, hosted by The Linux Foundation
+> 
 
-diff --git a/block/blk-ia-ranges.c b/block/blk-ia-ranges.c
-index b925f3db3ab7..18c68d8b9138 100644
---- a/block/blk-ia-ranges.c
-+++ b/block/blk-ia-ranges.c
-@@ -144,7 +144,7 @@ int disk_register_independent_access_ranges(struct gendisk *disk,
- 				   &q->kobj, "%s", "independent_access_ranges");
- 	if (ret) {
- 		q->ia_ranges = NULL;
--		kfree(iars);
-+		kobject_put(&iars->kobj);
- 		return ret;
- 	}
- 
 -- 
-2.17.1
-
+Regards,
+Pratyush Yadav
+Texas Instruments Inc.
