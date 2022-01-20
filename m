@@ -2,108 +2,82 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1001C43217
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 17:09:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2031CC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 17:12:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377241AbiATRJz (ORCPT
+        id S1377248AbiATRM1 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 12:09:55 -0500
-Received: from mout.kundenserver.de ([212.227.126.134]:54389 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1377242AbiATRJe (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 12:09:34 -0500
-Received: from [192.168.100.1] ([82.142.13.186]) by mrelayeu.kundenserver.de
- (mreue009 [213.165.67.103]) with ESMTPSA (Nemesis) id
- 1MatZr-1mZLAn3xiF-00cUYe; Thu, 20 Jan 2022 18:09:07 +0100
-Message-ID: <cb884368-0226-e913-80d2-62d2b7b2e761@vivier.eu>
-Date:   Thu, 20 Jan 2022 18:09:04 +0100
+        Thu, 20 Jan 2022 12:12:27 -0500
+Received: from mga12.intel.com ([192.55.52.136]:12268 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1346412AbiATRM0 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 12:12:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642698746; x=1674234746;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=wLQNADyyNJsuNIww5+s/w6SemtHmpxADc9KQDUzmhA4=;
+  b=KyIZkz4FXRx7PYmajgwYvs28b9Q+2BiNpnu9zk14kM7e3xkiHoR3/3JT
+   d5A+JATJioX3OUW0GlmmD81sj6cBSA4LDp7K7AVb/FGugVB575jOiRDFT
+   2ZUiFvkJC2TnW7C6kIj0C40Bm+naC28QrM7+wiTCTthCPaSSpDm95aLIW
+   ooMpZof4+p3ACh+9PaDV1ShvNCFfyrWLJC05f6oDaQMUzLlAdEOgIhqI5
+   7ARUqLp6PzgQzJBIkQpKjtlCwO9Z+foLejoEUeEXMURq9HOLS1TzTlwsp
+   kXXSZ+ib4XHkGilcxtH0FxUNWmueK8SDFQTt4JPbNrEXCJ2xwWVSDZXk8
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10233"; a="225382201"
+X-IronPort-AV: E=Sophos;i="5.88,302,1635231600"; 
+   d="scan'208";a="225382201"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 09:11:01 -0800
+X-IronPort-AV: E=Sophos;i="5.88,302,1635231600"; 
+   d="scan'208";a="475600713"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 09:10:57 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nAawW-00CcXd-No;
+        Thu, 20 Jan 2022 19:09:48 +0200
+Date:   Thu, 20 Jan 2022 19:09:48 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     kernel test robot <lkp@intel.com>
+Cc:     Jan Dabros <jsd@semihalf.com>, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, jarkko.nikula@linux.intel.com,
+        kbuild-all@lists.01.org, mika.westerberg@linux.intel.com,
+        hdegoede@redhat.com, wsa@kernel.org, rrangel@chromium.org,
+        mw@semihalf.com, jaz@semihalf.com
+Subject: Re: [PATCH 2/2] i2c: designware: Add AMD PSP I2C bus support
+Message-ID: <YemXXCsy4lBsCmDx@smile.fi.intel.com>
+References: <20220120001621.705352-3-jsd@semihalf.com>
+ <202201202353.tVXCQlqh-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.4.0
-Content-Language: en-US
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        linux-rtc@vger.kernel.org, John Stultz <john.stultz@linaro.org>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Jiaxun Yang <jiaxun.yang@flygoat.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-m68k <linux-m68k@lists.linux-m68k.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Geert Uytterhoeven <geert@linux-m68k.org>
-References: <20220120080347.1595379-1-laurent@vivier.eu>
- <20220120080347.1595379-3-laurent@vivier.eu>
- <CAK8P3a1oN8NrUjkh2X8jHQbyz42Xo6GSa=5n0gD6vQcXRjmq1Q@mail.gmail.com>
-From:   Laurent Vivier <laurent@vivier.eu>
-Subject: Re: [PATCH v11 2/5] tty: goldfish: introduce
- gf_ioread32()/gf_iowrite32()
-In-Reply-To: <CAK8P3a1oN8NrUjkh2X8jHQbyz42Xo6GSa=5n0gD6vQcXRjmq1Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:dddbphkpSIF6p9YP9xYcw9vEmF+op0Ndo1F40uOawLCcXjeMmby
- bzCBkRZkM916Hemr2XwL4CE+QGkvN9gPsdnDZSoBwFeEEF1+P71tAnSEekxfLcnseozmQIZ
- BFedbjRVjUqTrfdGkbfmRKXX3eHaVOMuukaBkOkfkMxV736K6p9Vw1SPkFrsNFT2UjO+T0c
- kA55JRy6V+N/CaihCUAVw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Dy7v5wb7I0k=:yylvJx+860sEkjPyrIC1H8
- gVm97KvhlrbB7LDmCyziiAT8iq/NfLr2vvH5lp3V5l8hQiyEbH2DoO0Re2ofm8pId0JZ/EiBN
- B2cu949M9qo/mqWwSEipoGgH7fNy1b8Vx4RAxLGz4k+9det3NYOz4YMSN13/agp5gcQaIBlcp
- fVlJ8rIQbiJmiTKXvjRe0g0F9IOdz4xDES+FGeeqS6UI8/PmQicu9sKGIB5TwqkNl05RhcoRm
- nqXRkgjBTILY9TuOplO0v3dw8QubtGKug/O0EB/o34hmLo5n6QT6Vhc/jIgvM4aNEFOV/YoMb
- IW6RfezQCCe7HzGreO+6KpRXuz4We17N6wlr8rKpBPgjE0W0jJZPZs7jVl8YiPPvLVjNxbeNt
- +CDACzRdD4WODjEBfVRE0xYbZUpUoi/OZFL4lbiA8KrnRhGe86CW36Mbfs95Tuxq+up/HN0zy
- BRnVF4DbBpNW/Pgj6qM1XPdSZIRZ5FP1cixDGWpud2Ine6WpIQrH9cPiA0jaftWv4cZqK/xRV
- hTv0N3mIjhKbIXR+W88kvpJVkbjpy+XCd19S2i7IgUsvOcm2UurA9fWHxqFTdih3JvOscxZ4G
- olAP2EPrLZtUcgK9ZZNc3pNjiU1CgiA2OhzxMHAXtInR2BzoUIALDTbEdhDFMadAWI88Nm3FU
- mALgZhB2l9/KRGEMhZIlRPb7Lgfxj0m4Plz4hwBIujqUjQBKiTeRpa8UTmxmW4s58YfE=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202201202353.tVXCQlqh-lkp@intel.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Le 20/01/2022 à 09:50, Arnd Bergmann a écrit :
-> On Thu, Jan 20, 2022 at 9:03 AM Laurent Vivier <laurent@vivier.eu> wrote:
->>
->> Revert
->> commit da31de35cd2f ("tty: goldfish: use __raw_writel()/__raw_readl()")
->>
->> to use accessors defined by the architecture.
->>
->> Define by default the accessor to be little-endian as we
->> have only little-endian architectures using goldfish devices.
->>
->> Signed-off-by: Laurent Vivier <laurent@vivier.eu>
+On Thu, Jan 20, 2022 at 11:33:05PM +0800, kernel test robot wrote:
+
+> If you fix the issue, kindly add following tag as appropriate
+> Reported-by: kernel test robot <lkp@intel.com>
 > 
-> The patch looks good, but the description seems wrong to me:
+> All errors (new ones prefixed by >>):
 > 
-> Talking about "little-endian architectures" makes no sense here, the
-> point is that the device was clearly defined as having little-endian
-> registers, and your earlier patch broke this driver when running
-> on big-endian kernels (if anyone ever tried this).
-To explain why I did that:
+>    drivers/i2c/busses/i2c-designware-amdpsp.c: In function 'psp_send_cmd':
+> >> drivers/i2c/busses/i2c-designware-amdpsp.c:130:2: error: implicit declaration of function 'writeq'; did you mean 'writel'? [-Werror=implicit-function-declaration]
+>      130 |  writeq((uintptr_t)__psp_pa((void *)req), &mbox->i2c_req_addr);
+>          |  ^~~~~~
+>          |  writel
+>    cc1: some warnings being treated as errors
 
-The reference document[1] doesn't define the endianness of goldfish.
+Adding io-64-nonatomic-lo-hi.h after io.h should fix this.
 
-In QEMU, goldfish devices are defined with the DEVICE_NATIVE_ENDIAN flag [2], that means all the 
-target architectures defined in QEMU with TARGET_WORDS_BIGENDIAN will present them as big-endian 
-devices, the others as little-endian devices.
 
-According to TARGET_WORDS_BIGENDIAN definition:
+-- 
+With Best Regards,
+Andy Shevchenko
 
-On the following QEMU target architectures (qemu-system-XXX), goldfish devices must be accessed with 
-big-endian read/write:
 
-mips, mips64, s390x, sparc, sparc64, or1k, m68k, ppc, ppc64, xtensaeb, hppa, sh4eb, microblaze
-
-On the following QEMU target architectures, goldfish devices must be accessed with little-endian 
-read/write:
-
-arm, aarch64, alpha, avr, cris, i386, x86_64, microblazeel, mipsel, mips64el, nios2, riscv32, 
-riscv64, rx, sh4, tricore, xtensa
-
-Thanks,
-Laurent
-
-[1] https://android.googlesource.com/platform/external/qemu/+/master/docs/GOLDFISH-VIRTUAL-HARDWARE.TXT
-[2] 
-https://android.googlesource.com/platform/external/qemu/+/refs/heads/emu-master-dev/hw/char/goldfish_tty.c#222
