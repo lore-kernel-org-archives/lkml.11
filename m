@@ -2,105 +2,118 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE43C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 17:28:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE230C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 17:28:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230261AbiATR2p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 12:28:45 -0500
-Received: from mout.gmx.net ([212.227.17.22]:38521 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232295AbiATR2f (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 12:28:35 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1642699710;
-        bh=UHhjAWf/9pVz8wScRWDow/ubaju2WM3ooNGJadQmmyw=;
-        h=X-UI-Sender-Class:Date:Subject:To:References:From:In-Reply-To;
-        b=LRdm3g8HDi1CpAlqU42nsOWO6j9clZ6kil00zIf/i1lpPN3Z/0H7FCDwmtUKgP+mQ
-         jaQlQhla/9hR9yZRmHoO0dCdhtdm/Bgefyv/trfyYxU78gsUy6jeccJvPBDN9bkPYL
-         kAmBt7tDgWUG0Ta9d7UPMw8V0W4H58k+a23Ie/zU=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.166.9]) by mail.gmx.net (mrgmx104
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1M1HZi-1n8wH13hMY-002l7u; Thu, 20
- Jan 2022 18:28:29 +0100
-Message-ID: <cb82c739-b496-670a-13dd-0f1a37c085f8@gmx.de>
-Date:   Thu, 20 Jan 2022 18:27:22 +0100
+        id S231830AbiATR2w (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 12:28:52 -0500
+Received: from netrider.rowland.org ([192.131.102.5]:33033 "HELO
+        netrider.rowland.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with SMTP id S231535AbiATR2n (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 12:28:43 -0500
+Received: (qmail 157157 invoked by uid 1000); 20 Jan 2022 12:28:42 -0500
+Date:   Thu, 20 Jan 2022 12:28:42 -0500
+From:   Alan Stern <stern@rowland.harvard.edu>
+To:     syzbot <syzbot+76629376e06e2c2ad626@syzkaller.appspotmail.com>
+Cc:     gregkh@linuxfoundation.org, hdanton@sina.com, johan@kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        paskripkin@gmail.com, syzkaller-bugs@googlegroups.com
+Subject: Re: [syzbot] INFO: task hung in hub_port_init (2)
+Message-ID: <YembypBPqEXg+YB+@rowland.harvard.edu>
+References: <20220120080020.2619-1-hdanton@sina.com>
+ <000000000000836a4805d5ff0b2b@google.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH] parisc: pdc_stable: Fix memory leak in
- pdcs_register_pathentries
-Content-Language: en-US
-To:     Miaoqian Lin <linmq006@gmail.com>,
-        "James E.J. Bottomley" <James.Bottomley@HansenPartnership.com>,
-        Greg Kroah-Hartman <gregkh@suse.de>,
-        linux-parisc@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220120121812.14943-1-linmq006@gmail.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <20220120121812.14943-1-linmq006@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:sN32WROnKtNl1RxHyC+SOF3Teld739cwnAAnkP9wfgeaXxFUhhc
- HiVZdhTDHPpKkVLSErcERtsnVHvlqkiK9tL/R+7eyeCgnBVQBQffCv1Eo/0wbTiqVMtfWQ4
- v/QHvC+xmOVTDRc98iy4+LfQtJcscKyGh1PFnUdQHE0iMhKbFA3OzJ8KjwyI8W9Au5odEgU
- 1CfY2OvnxV5dv90XCXqGA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:5Ox+WbnmG2g=:GiURZDMCA/lNYj9F43Y0Bw
- 15dvZ1c90M8rfDJtwSdcZJ1UzYxt3UMCHu3SUlKoxROXz+l5GJWPOeAHWR83JgPebRBdaw45w
- T39mXwOWD5znid5BhWGbaOsgE+RLzKBSTzlXI3oBStWiOvaZfpzC30LJV71yP/vcACTtUPYfs
- d/x+QFqnqGiolIiTVaaG7ZADaMZEPGBiQKXpW4onk+Rb+7Sf6YWIfZY9W+gdGMgh46KmmSHvm
- VzaYc2mXmA20IKvNuDE/QW+d1Tnh9vikMpgToEpSv5fMPt8FTnK/KY3zjWZb+BWCRn4TZglQX
- cgAZDd97UX+3tSNOIJ23EyWDy5xVkFxEUS2mFOgM+Lw/mHXM0AyAgY7X0WdeD/p0+R2gMGtQ4
- 5S76G+QbbSR+XFS8alBkYYJKDmY0PGXwey6DuIYffPQoSPEVNkVLLlfYkylXr3gLKnsubm4dk
- +UnWFd21Cp2Cqg2mVT+7gg70tk0oFDYVlCiOVmdr1eVnkPDdl/T1JV/b0u8+zn6QsCWoSHeML
- s3CGAdvGzkNuyhsSIuw9p9NruIkAy6+njrNq/3VnD5Sb53YRhYnBrxnK93/e6/ezv8jQV7cbS
- bkVlzsJ2tdyQC5M4d80N6z4r49ojutTP021urIUrKY+2E3B6Omx/IZWcKvuX4uQt5BTZJ8MR0
- 0b2Z16EY+n3N7hc3NdUw0CLQfD50mUhJ5WZcdSkA+V5AiQmQCawuc2ghN3IFpjJI9J1dP5AG/
- r0tISGmPyga9jvWESoh1qI+YirTyJlz0cRu5/R2aN9wMZRkE2876i52AYkiwjfFcpV7jTPyFX
- 5CyoreL1qoPPftnI1WzRzuJ+xp+Ux+7gnXn9au6LKMARFcnc0kqfLG7EuOdv6Iq4ZcmlpqUz4
- wSAxL/sxwNvFeu+vThlEqLnap0S2Dntu/TT2LkbTh3iTLQilLa0VWMvhM46UlOU1Q5++9QnhX
- gkknvHSQ4SWZXJwIY8Q6zQHJzj81A00oDHrug78ww3m3RTpDzyNcDEAXwv04/PEdPtQAT6c5h
- vIJC4zEEFO0waZfksRDiESPtmOHOX/Y2drEVlFIXtyWrrEF1NBp/NYVfoMpvjiISmt1g0KF1p
- QmjC4yrWVqFcUA=
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <000000000000836a4805d5ff0b2b@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/20/22 13:18, Miaoqian Lin wrote:
-> kobject_init_and_add() takes reference even when it fails.
-> According to the doc of kobject_init_and_add()=EF=BC=9A
->
->    If this function returns an error, kobject_put() must be called to
->    properly clean up the memory associated with the object.
->
-> Fix memory leak by calling kobject_put().
->
-> Fixes: 73f368cf679b ("Kobject: change drivers/parisc/pdc_stable.c to use=
- kobject_init_and_add")
-> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+On Thu, Jan 20, 2022 at 12:11:10AM -0800, syzbot wrote:
+> Hello,
+> 
+> syzbot has tested the proposed patch and the reproducer did not trigger any issue:
+> 
+> Reported-and-tested-by: syzbot+76629376e06e2c2ad626@syzkaller.appspotmail.com
+> 
+> Tested on:
+> 
+> commit:         6f59bc24 Add linux-next specific files for 20220118
+> git tree:       git://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=94e8da4df9ab6319
+> dashboard link: https://syzkaller.appspot.com/bug?extid=76629376e06e2c2ad626
+> compiler:       gcc (Debian 10.2.1-6) 10.2.1 20210110, GNU ld (GNU Binutils for Debian) 2.35.2
+> patch:          https://syzkaller.appspot.com/x/patch.diff?x=101ba7efb00000
+> 
+> Note: testing is done by a robot and is best-effort only.
 
-applied.
-Thanks!
-Helge
+Attempted fix.
 
+Alan Stern
 
-> ---
->  drivers/parisc/pdc_stable.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/parisc/pdc_stable.c b/drivers/parisc/pdc_stable.c
-> index 9513c39719d1..d9e51036a4fa 100644
-> --- a/drivers/parisc/pdc_stable.c
-> +++ b/drivers/parisc/pdc_stable.c
-> @@ -980,8 +980,10 @@ pdcs_register_pathentries(void)
->  		entry->kobj.kset =3D paths_kset;
->  		err =3D kobject_init_and_add(&entry->kobj, &ktype_pdcspath, NULL,
->  					   "%s", entry->name);
-> -		if (err)
-> +		if (err) {
-> +			kobject_put(&entry->kobj);
->  			return err;
-> +		}
->
->  		/* kobject is now registered */
->  		write_lock(&entry->rw_lock);
->
+#syz test: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/ 6f59bc24
+
+Index: usb-devel/drivers/usb/core/hcd.c
+===================================================================
+--- usb-devel.orig/drivers/usb/core/hcd.c
++++ usb-devel/drivers/usb/core/hcd.c
+@@ -1563,6 +1563,12 @@ int usb_hcd_submit_urb (struct urb *urb,
+ 		urb->hcpriv = NULL;
+ 		INIT_LIST_HEAD(&urb->urb_list);
+ 		atomic_dec(&urb->use_count);
++		/*
++		 * Order the write of urb->use_count above against the read of
++		 * urb->reject below.  Pairs with the memory barriers in
++		 * usb_kill_urb() and usb_poison_urb().
++		 */
++		smp_mb__after_atomic();
+ 		atomic_dec(&urb->dev->urbnum);
+ 		if (atomic_read(&urb->reject))
+ 			wake_up(&usb_kill_urb_queue);
+@@ -1665,6 +1671,13 @@ static void __usb_hcd_giveback_urb(struc
+ 
+ 	usb_anchor_resume_wakeups(anchor);
+ 	atomic_dec(&urb->use_count);
++	/*
++	 * Order the write of urb->use_count above against the read of
++	 * urb->reject below.  Pairs with the memory barriers in
++	 * usb_kill_urb() and usb_poison_urb().
++	 */
++	smp_mb__after_atomic();
++
+ 	if (unlikely(atomic_read(&urb->reject)))
+ 		wake_up(&usb_kill_urb_queue);
+ 	usb_put_urb(urb);
+Index: usb-devel/drivers/usb/core/urb.c
+===================================================================
+--- usb-devel.orig/drivers/usb/core/urb.c
++++ usb-devel/drivers/usb/core/urb.c
+@@ -715,6 +715,12 @@ void usb_kill_urb(struct urb *urb)
+ 	if (!(urb && urb->dev && urb->ep))
+ 		return;
+ 	atomic_inc(&urb->reject);
++	/*
++	 * Order the write of urb->reject above against the read of
++	 * urb->use_count below.  Pairs with the barriers in
++	 * __usb_hcd_giveback_urb() and usb_hcd_submit_urb().
++	 */
++	smp_mb__after_atomic();
+ 
+ 	usb_hcd_unlink_urb(urb, -ENOENT);
+ 	wait_event(usb_kill_urb_queue, atomic_read(&urb->use_count) == 0);
+@@ -756,6 +762,12 @@ void usb_poison_urb(struct urb *urb)
+ 	if (!urb)
+ 		return;
+ 	atomic_inc(&urb->reject);
++	/*
++	 * Order the write of urb->reject above against the read of
++	 * urb->use_count below.  Pairs with the barriers in
++	 * __usb_hcd_giveback_urb() and usb_hcd_submit_urb().
++	 */
++	smp_mb__after_atomic();
+ 
+ 	if (!urb->dev || !urb->ep)
+ 		return;
 
