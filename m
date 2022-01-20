@@ -2,133 +2,168 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80DDCC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 03:28:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBED3C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 03:32:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358387AbiATD26 (ORCPT
+        id S1358375AbiATDcQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 22:28:58 -0500
-Received: from mga09.intel.com ([134.134.136.24]:9423 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358362AbiATD2x (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 22:28:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642649332; x=1674185332;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=yGEX533S2tbV/dEA7pP2AmauuodkY6I0Rfh4AIdL+OM=;
-  b=Ub6OmV95sHNDlv2csiKllX7dZD+6gX/pvFXu6BFN4h9/5W26oyaaY1ig
-   JyehNGs15hh6nfzfHskFN5bhb7pktxtji2MCCWyyDdmVOUNuTa831Nk4P
-   5xo5+OOkSMgMRi+G2MVrvNZ+pVLHrA0GfNPZIdLLTzMSosCGZIlEwlftW
-   A/yMjEw5By/4XE+mORf+RvhQDGPYkzqc2qdS2XD/qOHrSHUEmaYIZD+u7
-   3Om1uMkp4GCB73PKg1CAvDMEPYKSkZq6X0+kQRGXgLcfT5IKT6Y8p/DUa
-   4AydBXzg7AqtulEoADygTjHRYcagqGmc7wgsV4Feikmz88oX1TPzdxw8w
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10232"; a="245055621"
-X-IronPort-AV: E=Sophos;i="5.88,301,1635231600"; 
-   d="scan'208";a="245055621"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2022 19:28:49 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,301,1635231600"; 
-   d="scan'208";a="477639300"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga006.jf.intel.com with ESMTP; 19 Jan 2022 19:28:48 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nAO7z-000Dxo-JC; Thu, 20 Jan 2022 03:28:47 +0000
-Date:   Thu, 20 Jan 2022 11:27:50 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Mathias Nyman <mathias.nyman@linux.intel.com>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mnyman-xhci:dbc 5/5] drivers/usb/host/xhci-dbgtty.c:423
- xhci_dbc_tty_register_device() warn: unsigned 'port->minor' is never less
- than zero.
-Message-ID: <202201200955.C9pzrtCw-lkp@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        Wed, 19 Jan 2022 22:32:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52680 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234287AbiATDcO (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Wed, 19 Jan 2022 22:32:14 -0500
+Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D35F7C061574
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 19:32:13 -0800 (PST)
+Received: by mail-pf1-x429.google.com with SMTP id y27so26561pfa.0
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 19:32:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id;
+        bh=6VcCCa/uNyu5klYi1x3xHgmWoLaBIpIlwVyG80i3crM=;
+        b=ULO3DXzfltvoF1pPRTDLBeRyPli2sY9LcwnVN7wBK9Jt7yVlWDQNnb7gYkJNYAxTIu
+         x4NHVSMFt6GAv4NTEBv4gUcyDxZj+iJcP5rp8S69Zp8ABkhsZl/OSJ7pF+5fDappiqZX
+         XBHaDFEQ+tr1diJixNZFQuuELVy0MbHIwpHA+QpA+QVRUHHDcBXeSm7s1NnXD6gdGYju
+         WXQvmIuah5g6h30xHnSUFk7okFOgXJcjjgq9jwvHjXuIpA8pezl0Z0Mg1kuOa7zM+VlJ
+         3UPLXl7bYtU6BlWj2mqWMityaizZgsvCG8jETXUTQgGU/zM2B0gfaTjicKDjj2tVkxrm
+         g6pA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=6VcCCa/uNyu5klYi1x3xHgmWoLaBIpIlwVyG80i3crM=;
+        b=YurO39wVaeNfDvPuRtyEsB0SESkWdrlTF0QCa0xv5SQthh3ey8c6/Xr28MZwOhIyCl
+         lqHPmfC7U0yHQ6bgROLp54q+DVogwQaNdQEmCKiwXtCwJ4zdhkPjJ9d2sXhSsGgMRaD5
+         4etHbsuqmwOMp+9jb3gDV8mU3WtzNkIHiiUA0bDMJnXja851vOae0EBeRGrg8Lbs3HJi
+         uytiYefLjOqg1jobdKXlF7uRfD+0MP53sqBh5nZaZc6SX0C9EOVnpI6YUP/48g36m2xs
+         2wlh6BH8eGO9j8gCqvN7QIp8RAe/eUpBaW9PmeA0SSxaBJno9lA8ySmVneKTRIenop8d
+         YIow==
+X-Gm-Message-State: AOAM532LMHamm4M4N15IaAYaMKYTkaBDOCCcXPp/fX+Z9D8oXw6DZzCH
+        6YMGSU++I1o0Ru+w5HTInlKYnXVijLvKDw==
+X-Google-Smtp-Source: ABdhPJyU2wvXBwrRe/LnxztvOS2PjL2olL8B7hpWapZ/PFjhalgfpmkk/8PC41fbNLGwhYQatAoi+g==
+X-Received: by 2002:a05:6a00:803:b0:4c3:37b9:74d8 with SMTP id m3-20020a056a00080300b004c337b974d8mr23024575pfk.60.1642649533338;
+        Wed, 19 Jan 2022 19:32:13 -0800 (PST)
+Received: from bj03382pcu.spreadtrum.com ([117.18.48.102])
+        by smtp.gmail.com with ESMTPSA id h10sm1035996pfh.49.2022.01.19.19.32.10
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 19 Jan 2022 19:32:12 -0800 (PST)
+From:   Huangzhaoyang <huangzhaoyang@gmail.com>
+To:     Johannes Weiner <hannes@cmpxchg.org>,
+        Suren Baghdasaryan <surenb@google.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Zhaoyang Huang <zhaoyang.huang@unisoc.com>,
+        Ingo Molnar <mingo@redhat.com>, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org
+Subject: [Resend PATCH v3] psi: fix possible trigger missing in the window
+Date:   Thu, 20 Jan 2022 11:31:56 +0800
+Message-Id: <1642649516-15076-1-git-send-email-huangzhaoyang@gmail.com>
+X-Mailer: git-send-email 1.7.9.5
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/mnyman/xhci.git dbc
-head:   595547d1cfa3f6c591ea084cc1f77cd45bd81213
-commit: 595547d1cfa3f6c591ea084cc1f77cd45bd81213 [5/5] xhci: dbgtty: use IDR to support several dbc instances.
-config: riscv-randconfig-m031-20220118 (https://download.01.org/0day-ci/archive/20220120/202201200955.C9pzrtCw-lkp@intel.com/config)
-compiler: riscv32-linux-gcc (GCC) 11.2.0
+From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+When a new threshold breaching stall happens after a psi event was
+generated and within the window duration, the new event is not
+generated because the events are rate-limited to one per window. If
+after that no new stall is recorded then the event will not be
+generated even after rate-limiting duration has passed. This is
+happening because with no new stall, window_update will not be called
+even though threshold was previously breached. To fix this, record
+threshold breaching occurrence and generate the event once window
+duration is passed.
 
-smatch warnings:
-drivers/usb/host/xhci-dbgtty.c:423 xhci_dbc_tty_register_device() warn: unsigned 'port->minor' is never less than zero.
-
-vim +423 drivers/usb/host/xhci-dbgtty.c
-
-   407	
-   408	static int xhci_dbc_tty_register_device(struct xhci_dbc *dbc)
-   409	{
-   410		int			ret;
-   411		struct device		*tty_dev;
-   412		struct dbc_port		*port = dbc_to_port(dbc);
-   413	
-   414		if (port->registered)
-   415			return -EBUSY;
-   416	
-   417		xhci_dbc_tty_init_port(dbc, port);
-   418	
-   419		mutex_lock(&dbc_tty_minors_lock);
-   420		port->minor = idr_alloc(&dbc_tty_minors, port, 0, 64, GFP_KERNEL);
-   421		mutex_unlock(&dbc_tty_minors_lock);
-   422	
- > 423		if (port->minor < 0) {
-   424			ret = port->minor;
-   425			goto err_idr;
-   426		}
-   427	
-   428		ret = kfifo_alloc(&port->write_fifo, DBC_WRITE_BUF_SIZE, GFP_KERNEL);
-   429		if (ret)
-   430			goto err_exit_port;
-   431	
-   432		ret = xhci_dbc_alloc_requests(dbc, BULK_IN, &port->read_pool,
-   433					      dbc_read_complete);
-   434		if (ret)
-   435			goto err_free_fifo;
-   436	
-   437		ret = xhci_dbc_alloc_requests(dbc, BULK_OUT, &port->write_pool,
-   438					      dbc_write_complete);
-   439		if (ret)
-   440			goto err_free_requests;
-   441	
-   442		tty_dev = tty_port_register_device(&port->port,
-   443						   dbc_tty_driver, port->minor, NULL);
-   444		if (IS_ERR(tty_dev)) {
-   445			ret = PTR_ERR(tty_dev);
-   446			goto err_free_requests;
-   447		}
-   448	
-   449		port->registered = true;
-   450	
-   451		return 0;
-   452	
-   453	err_free_requests:
-   454		xhci_dbc_free_requests(&port->read_pool);
-   455		xhci_dbc_free_requests(&port->write_pool);
-   456	err_free_fifo:
-   457		kfifo_free(&port->write_fifo);
-   458	err_exit_port:
-   459		idr_remove(&dbc_tty_minors, port->minor);
-   460	err_idr:
-   461		xhci_dbc_tty_exit_port(port);
-   462	
-   463		dev_err(dbc->dev, "can't register tty port, err %d\n", ret);
-   464	
-   465		return ret;
-   466	}
-   467	
-
+Suggested-by: Suren Baghdasaryan <surenb@google.com>
+Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+v2: modify the logic according to Suren's suggestion
+v3: update commit message
+---
+---
+ include/linux/psi_types.h |  2 ++
+ kernel/sched/psi.c        | 38 +++++++++++++++++++++++---------------
+ 2 files changed, 25 insertions(+), 15 deletions(-)
+
+diff --git a/include/linux/psi_types.h b/include/linux/psi_types.h
+index 0a23300..87b694a 100644
+--- a/include/linux/psi_types.h
++++ b/include/linux/psi_types.h
+@@ -132,6 +132,8 @@ struct psi_trigger {
+ 
+ 	/* Refcounting to prevent premature destruction */
+ 	struct kref refcount;
++
++	bool threshold_breach;
+ };
+ 
+ struct psi_group {
+diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
+index 1652f2b..5c67ab9 100644
+--- a/kernel/sched/psi.c
++++ b/kernel/sched/psi.c
+@@ -524,24 +524,29 @@ static u64 update_triggers(struct psi_group *group, u64 now)
+ 	 */
+ 	list_for_each_entry(t, &group->triggers, node) {
+ 		u64 growth;
++		bool trigger_stalled =
++			group->polling_total[t->state] != total[t->state];
+ 
+-		/* Check for stall activity */
+-		if (group->polling_total[t->state] == total[t->state])
+-			continue;
+-
+-		/*
+-		 * Multiple triggers might be looking at the same state,
+-		 * remember to update group->polling_total[] once we've
+-		 * been through all of them. Also remember to extend the
+-		 * polling time if we see new stall activity.
+-		 */
+-		new_stall = true;
+-
+-		/* Calculate growth since last update */
+-		growth = window_update(&t->win, now, total[t->state]);
+-		if (growth < t->threshold)
++		/* Check for stall activity or a previous threshold breach */
++		if (!trigger_stalled && !t->threshold_breach)
+ 			continue;
+ 
++		if (trigger_stalled) {
++			/*
++			 * Multiple triggers might be looking at the same state,
++			 * remember to update group->polling_total[] once we've
++			 * been through all of them. Also remember to extend the
++			 * polling time if we see new stall activity.
++			 */
++			new_stall = true;
++
++			/* Calculate growth since last update */
++			growth = window_update(&t->win, now, total[t->state]);
++			if (growth < t->threshold)
++				continue;
++
++			t->threshold_breach = true;
++		}
+ 		/* Limit event signaling to once per window */
+ 		if (now < t->last_event_time + t->win.size)
+ 			continue;
+@@ -550,6 +555,8 @@ static u64 update_triggers(struct psi_group *group, u64 now)
+ 		if (cmpxchg(&t->event, 0, 1) == 0)
+ 			wake_up_interruptible(&t->event_wait);
+ 		t->last_event_time = now;
++		/* Reset threshold breach flag once event got generated */
++		t->threshold_breach = false;
+ 	}
+ 
+ 	if (new_stall)
+@@ -1152,6 +1159,7 @@ struct psi_trigger *psi_trigger_create(struct psi_group *group,
+ 	t->last_event_time = 0;
+ 	init_waitqueue_head(&t->event_wait);
+ 	kref_init(&t->refcount);
++	t->threshold_breach = false;
+ 
+ 	mutex_lock(&group->trigger_lock);
+ 
+-- 
+1.9.1
+
