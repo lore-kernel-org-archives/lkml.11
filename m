@@ -2,59 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14E56C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 01:07:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5240C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 01:07:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358140AbiATBHo (ORCPT
+        id S1358101AbiATBHq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 20:07:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49082 "EHLO
+        Wed, 19 Jan 2022 20:07:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358067AbiATBHb (ORCPT
+        with ESMTP id S1358060AbiATBHe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 20:07:31 -0500
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD97C061574
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 17:07:30 -0800 (PST)
-Received: by mail-pg1-x54a.google.com with SMTP id i25-20020a635859000000b003486e456e52so2679489pgm.8
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 17:07:30 -0800 (PST)
+        Wed, 19 Jan 2022 20:07:34 -0500
+Received: from mail-pj1-x104a.google.com (mail-pj1-x104a.google.com [IPv6:2607:f8b0:4864:20::104a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBA6DC061574
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 17:07:33 -0800 (PST)
+Received: by mail-pj1-x104a.google.com with SMTP id m2-20020a17090ade0200b001b51cbdfd9eso135667pjv.6
+        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 17:07:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20210112;
         h=reply-to:date:in-reply-to:message-id:mime-version:references
          :subject:from:to:cc;
-        bh=etmFS5aQ8X6vAJnSs1+UFq6/lLfLZRuqqadMgpcY+H4=;
-        b=IZeBbskZYHHbh9MmvaLxBTCLgAh/+23lV4uSE8Kr3gsvq/d0mmmx0WbWXGB/rojdbP
-         7dZh7UtuGnSJuvzxILtGWx0nKdSSL4aEARVKqgpTOflP5I887OUu2O2WFTJKRLuSZ5PG
-         YX4wF6R3Y+iJ6dsUtEwPBkY7+EugAMWitpnmG0EBisvjscdUmyxVN4V1hZkS8HcCFvB/
-         U7spOaT5SSKl3EUYJxcNh7VrhpM1iszDOX5pV1DkvVKnNOmMyd4O95S4rP6e1b7OGRk9
-         ysYTm0TwWaLOQDGYtYHjQBsFGfKh+OnSWfnioFvpB2OaAfAdP8mFGEYRJUEX2qPTbeJf
-         DWWw==
+        bh=TxuUNLoyietdT61eIE0lbg64yLaLTh0tHHqgbXWBlNo=;
+        b=b827jumsuFaQW5H+v6dhCHq7b3TR1naHApZBaKCp7PAs7IpS3I/CcRPHsL9rQIzmqt
+         fSWR5GNGb0IeP2vIWEHrwv3wcAD2g1do2+OZRMulelc9eNpcnRSmmGV76Zsayf1p45Sj
+         tYimU7SSyemoo4SMI51paePVRyaod80QTPkCULIR6ekgo2OR5EPfAKP+bxDG/40ikcQ/
+         nihI9NoKpvf1vAyTGVAmDvIPmMN8BqGj3Q7wFVZOEoH6DsHrnB0VxaOPKBFEiSiWGYGR
+         n8ZZwnFcW/+nxIfTwldLYVd3m9rLPY2vBJx0W9Jvi5VbX+u0tlRmC3RJBHZbvvyC7xlv
+         6F8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:reply-to:date:in-reply-to:message-id
          :mime-version:references:subject:from:to:cc;
-        bh=etmFS5aQ8X6vAJnSs1+UFq6/lLfLZRuqqadMgpcY+H4=;
-        b=zEn6icDeaUgTwrcIN4S46T8GHFnXEAi0kD0TYTMFSpSrthQ0ApvPAOZ8ZeQJEdezHz
-         GL1fV5iGwhG5VPeOCXyEx1HWIN1CA+V6Nxjd6aHYdsOuZO8NTmnpJ78DFacJ8NrSHsJn
-         Ogew+pJeL/0pDT+/SW0XRy+Z0iXH8RwujBOZWXJwNEGZ/nuYTk3WaEKh8chuhuz2rCvx
-         8kmYX6YMwgt5YR0z4506Bd+O1LuwTp0kqhrlGArWhxWXlMvfiQRPkju2UiarVrK3VBpl
-         SRvCLetUpYGSMJdBJIukrPDM/6S0+WID7m04KI8IQfm8Vkw+JyFEvMsq6CNXIYz5jZRa
-         ZDEg==
-X-Gm-Message-State: AOAM533D7YbXvobbiimasHZv51BtDGDNJP200mM9QyfaBb0hNaB3gbB7
-        awlQhMS0fA2TeUQk61mwmfhTFhRnb0g=
-X-Google-Smtp-Source: ABdhPJz//VfhQY7uDSpPFJC1RKvS96ldqzb5J6rUkijGyq4uR2uWEtf7fV8kfxwvh9RZNa8/pbVS0NaY4YI=
+        bh=TxuUNLoyietdT61eIE0lbg64yLaLTh0tHHqgbXWBlNo=;
+        b=7hYWE2DTbCgdN4XCcDE1Xt0P1wZ/lqjs63cA0aarYRX0QlRf0cZB8R29b+1WA4aQmQ
+         R90wqb2Z7dNeFHNslLRaZzfGuF71JqL96HrlI427O9vifcH7pflA6Nx4pPU+6A/2nIgs
+         of78MHPaFLDdHK4uYhYq30xZR0poaWJJxhuLDaMWvgQ8cHsSZ4ffaZWSqmF0bkl4CaiW
+         /CxGQn+NSWmhzoLe3NmZLMGWcI81L9cOyT11DVwPT/ALHe4TbIU5eDHJ8TKYC2klI57+
+         zyjYG0xXJJOM182ZrmPiUoreRk0n5KsS6/UwaMitHoRwMFWnHVv5AKulUxarFJY84mh3
+         ibOA==
+X-Gm-Message-State: AOAM5335JrfAZV55AqFU4GV6BuLu2R/PU7np6CG010KKN3+td1G2D41V
+        Ckm0Jh+sHJlFc2kClenEIFndeqBgAVU=
+X-Google-Smtp-Source: ABdhPJy/MSJ5chrh5w+N9f9+8l6wVRl+020P8ytnIUW0IshMvWAK+MeRPrUrNbIFJ78QjFxa4TB88Hy/vGM=
 X-Received: from seanjc.c.googlers.com ([fda3:e722:ac3:cc00:7f:e700:c0a8:3e5])
- (user=seanjc job=sendgmr) by 2002:a17:902:70c7:b0:149:d966:789d with SMTP id
- l7-20020a17090270c700b00149d966789dmr35860150plt.164.1642640850279; Wed, 19
- Jan 2022 17:07:30 -0800 (PST)
+ (user=seanjc job=sendgmr) by 2002:a62:1ad6:0:b0:4c1:8aa6:f622 with SMTP id
+ a205-20020a621ad6000000b004c18aa6f622mr33698912pfa.41.1642640853249; Wed, 19
+ Jan 2022 17:07:33 -0800 (PST)
 Reply-To: Sean Christopherson <seanjc@google.com>
-Date:   Thu, 20 Jan 2022 01:07:14 +0000
+Date:   Thu, 20 Jan 2022 01:07:16 +0000
 In-Reply-To: <20220120010719.711476-1-seanjc@google.com>
-Message-Id: <20220120010719.711476-5-seanjc@google.com>
+Message-Id: <20220120010719.711476-7-seanjc@google.com>
 Mime-Version: 1.0
 References: <20220120010719.711476-1-seanjc@google.com>
 X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
-Subject: [PATCH 4/9] KVM: SVM: Explicitly require DECODEASSISTS to enable SEV support
+Subject: [PATCH 6/9] KVM: SVM: WARN if KVM attempts emulation on #UD or #GP
+ for SEV guests
 From:   Sean Christopherson <seanjc@google.com>
 To:     Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -71,38 +72,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add a sanity check on DECODEASSIST being support if SEV is supported, as
-KVM cannot read guest private memory and thus relies on the CPU to
-provide the instruction byte stream on #NPF for emulation.  The intent of
-the check is to document the dependency, it should never fail in practice
-as producing hardware that supports SEV but not DECODEASSISTS would be
-non-sensical.
+WARN if KVM attempts to emulate in response to #UD or #GP for SEV guests,
+i.e. if KVM intercepts #UD or #GP, as emulation on any fault except #NPF
+is impossible since KVM cannot read guest private memory to get the code
+stream, and the CPU's DecodeAssists feature only provides the instruction
+bytes on #NPF.
 
 Signed-off-by: Sean Christopherson <seanjc@google.com>
 ---
- arch/x86/kvm/svm/sev.c | 9 +++++++--
- 1 file changed, 7 insertions(+), 2 deletions(-)
+ arch/x86/kvm/svm/svm.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/arch/x86/kvm/svm/sev.c b/arch/x86/kvm/svm/sev.c
-index 6a22798eaaee..17b53457d866 100644
---- a/arch/x86/kvm/svm/sev.c
-+++ b/arch/x86/kvm/svm/sev.c
-@@ -2100,8 +2100,13 @@ void __init sev_hardware_setup(void)
- 	if (!sev_enabled || !npt_enabled)
- 		goto out;
+diff --git a/arch/x86/kvm/svm/svm.c b/arch/x86/kvm/svm/svm.c
+index 994224ae2731..ed2ca875b84b 100644
+--- a/arch/x86/kvm/svm/svm.c
++++ b/arch/x86/kvm/svm/svm.c
+@@ -4267,6 +4267,9 @@ static bool svm_can_emulate_instruction(struct kvm_vcpu *vcpu, int emul_type,
+ 	if (!sev_guest(vcpu->kvm))
+ 		return true;
  
--	/* Does the CPU support SEV? */
--	if (!boot_cpu_has(X86_FEATURE_SEV))
-+	/*
-+	 * SEV must obviously be supported in hardware.  Sanity check that the
-+	 * CPU supports decode assists, which is mandatory for SEV guests to
-+	 * support instruction emulation.
-+	 */
-+	if (!boot_cpu_has(X86_FEATURE_SEV) ||
-+	    WARN_ON_ONCE(!boot_cpu_has(X86_FEATURE_DECODEASSISTS)))
- 		goto out;
- 
- 	/* Retrieve SEV CPUID information */
++	/* #UD and #GP should never be intercepted for SEV guests. */
++	WARN_ON_ONCE(emul_type & (EMULTYPE_TRAP_UD | EMULTYPE_VMWARE_GP));
++
+ 	/*
+ 	 * Emulation is impossible for SEV-ES guests as KVM doesn't have access
+ 	 * to guest register state.
 -- 
 2.34.1.703.g22d0c6ccf7-goog
 
