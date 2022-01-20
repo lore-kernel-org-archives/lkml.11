@@ -2,171 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 776A4C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 18:26:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B781C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 18:28:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346468AbiATS00 (ORCPT
+        id S1346829AbiATS21 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 13:26:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59172 "EHLO
+        Thu, 20 Jan 2022 13:28:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346409AbiATS0Y (ORCPT
+        with ESMTP id S233412AbiATS20 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 13:26:24 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9EA2C061574
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 10:26:23 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id m11so32299937edi.13
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 10:26:23 -0800 (PST)
+        Thu, 20 Jan 2022 13:28:26 -0500
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82985C061574
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 10:28:26 -0800 (PST)
+Received: by mail-pl1-x631.google.com with SMTP id u11so5830133plh.13
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 10:28:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=soleen.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=oNbdF/QpRq+ud6uqivBxeFheJzBweVEt87O2OSCqklM=;
-        b=djYBV+Fns9UgKTk6TTACAWvrerNhzkQujwtFiTOlSK8aFgdw9KIP2SJdEIxhgYzhxj
-         Z/i/nssIKRLowCnCad/bwyAii7uuvrcpkrLCIuZ1WeA7IwewD8/gV3wdK16Ki3fu63MG
-         UpSVL4IEt/+iN0Ndf8jt4d2ApX936VBMq42/0WTC8Mi7bRNOFHnhop/beRmVECtt6hrN
-         In1ROAWSfcDRXdXkwZkjBydQYCsygBmQY+ZPcpGKn7JJFoNs68fobNvwk5LC4EzrmnNp
-         o1HjcxHEw9rJEqTokBItU+n42EI9iOwLm2DeZ4CoTnogtw5NcB7uLUSflQaekxybSNd9
-         VsSA==
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=cll/Fz+oRzTg4NkYGgse3QyvCmyGspXQFPzsSfhpD4Q=;
+        b=XTbLMgr6L9Hf10tLGk72ynIT5OU06Oi/93dAe867TV67BFnxFSL7S54t3bJEN1hzB3
+         GBalv7/XAe2tp/skOHkOvqgpT0CZtMxIMMIEwneAx5lF9mugf5ADQ89q0kJ4/8Vi2zWk
+         XFK0uNXhdQ2VgGdzMgxmHNHaQmUZIyxJsZDBfSKGyxhLO5eL91ji53ckCuXzbNsOMekR
+         IwZaQiEjzdzaPq6g6VNDxWqf3/KH13kE5IiGJwpBvyigdUAYxVVn0XB12HRqCyD3HTq3
+         4FgeoCoABh93e9JDeijtrhTDlPpZpJK6nlX/oWXeNXyaKr16/gf3jBRlhEJZvfuYm2nT
+         WB7Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oNbdF/QpRq+ud6uqivBxeFheJzBweVEt87O2OSCqklM=;
-        b=NoV502/R4ZAOaQReJiO6jjJ6xb72IHelVQMqlqkTJhg1inOtVgxiJZD6kFxRmhxfdM
-         l2ugin+fbtsW/LF9U1H7ySHw7pxeY3cvU1ENc/qJ7oiImQV5uSuU1fzYMAyxN98aiHm6
-         imdcMe+yg9b71Ii+uXqCZWdGp56B3gOkMxaV5OLcDXrFoyPd7NGjXMt50WDOrsSyU5x5
-         JfD+kKAu36pCV1atXH41xdyli+veI0rRmbyrOaTGQrV0d1YPvhYgdXhUNrF9+JrgbqKx
-         pKFnXU7UKjk0RM7f6ga3S4mqbvN4o6bhrJ/1NG599CD6XeB1/108Bl65rNZQLU5jQTdz
-         TDyQ==
-X-Gm-Message-State: AOAM531ETZXeVMDIfIkJLk0n/wIAWPigMXmlzbF8KtcytfY2nZrOOnV6
-        WLg5kHraVkwTKgb1rmt2JkiIjLW9eBmrWiZ7Wdfasw==
-X-Google-Smtp-Source: ABdhPJwZ1g5y5mmCGfSt1kmKCYsNuFITmsXjQrGs0XFE0mSOtrGpuw5zLq4qeQp4yp1nm3JTRAbkQncvDfH2eK2xfpA=
-X-Received: by 2002:a05:6402:350b:: with SMTP id b11mr316216edd.355.1642703182284;
- Thu, 20 Jan 2022 10:26:22 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=cll/Fz+oRzTg4NkYGgse3QyvCmyGspXQFPzsSfhpD4Q=;
+        b=5n1MTE4SYyJouKgHwtJPPVlFxvhSBUod7rsXnxgPQjKntqUNx1o965Wah+S+FYoDqd
+         iyrUzYGA7DPQe00aILGwuMwufAU7gBQg72GZuWrYlX506mK5K7pqeHsldzlezjdctkNd
+         PvOq5RBZlHzRPO9smxU1w2tXferNiy3M0EeIW0KkrQitmxyJ+X6bdLX6Utkc534jIWzD
+         4I9+bT39lySH6JUskwAh/WkzT3IxLTt4ApHK6t8oY7N+aGuYfLmFV3FiqkYAwoAakgae
+         px9jdoo4eYcQs54c6dzxbJFIQrZzO9b6YHW6k5r29aQvjTObRBk/EJ3iQ/pu40au+4gp
+         wntQ==
+X-Gm-Message-State: AOAM533d16BTlkYKYq2Fk88SEMbsUaITCY+lpQvkN958OKrozo6zVGTx
+        e/UI7c90j3H8AHoiLYRfSQQt1w==
+X-Google-Smtp-Source: ABdhPJzaPlt6MPQpB5TqcZOSwNiTVTpKDx+isyPvbrL5Zw93YzzhMY1p4pVnjgjvN5lkHq1Z+lKBYQ==
+X-Received: by 2002:a17:902:a38f:b0:14a:ec8d:51ac with SMTP id x15-20020a170902a38f00b0014aec8d51acmr11724250pla.132.1642703305917;
+        Thu, 20 Jan 2022 10:28:25 -0800 (PST)
+Received: from p14s (S0106889e681aac74.cg.shawcable.net. [68.147.0.187])
+        by smtp.gmail.com with ESMTPSA id t9sm9197455pjg.44.2022.01.20.10.28.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 10:28:24 -0800 (PST)
+Date:   Thu, 20 Jan 2022 11:28:22 -0700
+From:   Mathieu Poirier <mathieu.poirier@linaro.org>
+To:     Miaoqian Lin <linmq006@gmail.com>
+Cc:     Suzuki K Poulose <suzuki.poulose@arm.com>,
+        Mike Leach <mike.leach@linaro.org>,
+        Leo Yan <leo.yan@linaro.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        coresight@lists.linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] coresight: syscfg: Fix memleak on registration failure
+ in cscfg_create_device
+Message-ID: <20220120182822.GA1342128@p14s>
+References: <20220110073100.15497-1-linmq006@gmail.com>
+ <20220120175642.GB1338735@p14s>
 MIME-Version: 1.0
-References: <20220120042513.1648831-1-pasha.tatashin@soleen.com>
- <20220120042513.1648831-3-pasha.tatashin@soleen.com> <CAAPL-u_kP5E5iOtyztsXLJG0YNFzganD3djr2nW0vTkUpv=A9Q@mail.gmail.com>
-In-Reply-To: <CAAPL-u_kP5E5iOtyztsXLJG0YNFzganD3djr2nW0vTkUpv=A9Q@mail.gmail.com>
-From:   Pasha Tatashin <pasha.tatashin@soleen.com>
-Date:   Thu, 20 Jan 2022 13:25:45 -0500
-Message-ID: <CA+CK2bC5WJxdb9tdZj8eiB1PeOfV-D4v1Tpi+TEZhMskbZ6k4A@mail.gmail.com>
-Subject: Re: [PATCH 2/3] mm/page_table_check: check entries at pud and pmd levels
-To:     Wei Xu <weixugc@google.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        David Rientjes <rientjes@google.com>,
-        Paul Turner <pjt@google.com>, Greg Thelen <gthelen@google.com>,
-        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
-        Mike Rapoport <rppt@kernel.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>,
-        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Muchun Song <songmuchun@bytedance.com>,
-        Fusion Future <qydwhotmail@gmail.com>,
-        Hugh Dickins <hughd@google.com>, Zi Yan <ziy@nvidia.com>,
-        Anshuman Khandual <anshuman.khandual@arm.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220120175642.GB1338735@p14s>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Wei,
+On Thu, Jan 20, 2022 at 10:56:42AM -0700, Mathieu Poirier wrote:
+> Good morning,
+> 
+> On Mon, Jan 10, 2022 at 07:31:00AM +0000, Miaoqian Lin wrote:
+> > device_register() calls device_initialize(),
+> > according to doc of device_initialize:
+> > 
+> >     Use put_device() to give up your reference instead of freeing
+> >     * @dev directly once you have called this function.
+> 
+> That is _if_ device_initialize() is called manually.  In this instance
+> @dev is registered with device_register() and unregistered with
+> device_unregister().  The latter conforms to the comment you pointed out and
+> calls put_device() as expected.
 
-Thank you for looking at this patch.
+I originally misunderstood the context - you are referring to the failure path in
+cscfg_create_device().  You are correct about needing to call put_device() but
+your solution will not work when the module is unloaded properly and
+device_unregister() is called by way of cscfg_clear_device().  In that case
+device_unregister() is already calling put_device().
 
-> > +static void pmd_clear_level(struct mm_struct *mm, unsigned long addr,
-> > +                           pmd_t *pmdp)
-> > +{
-> > +       unsigned long i;
-> > +
-> > +       for (i = 0; i < PTRS_PER_PMD; i++) {
-> > +               pmd_t old_pmd = *pmdp;
-> > +
-> > +               if (pmd_user_accessible_page(old_pmd)) {
-> > +                       page_table_check_clear(mm, addr, pmd_pfn(old_pmd),
-> > +                                              PMD_PAGE_SIZE >> PAGE_SHIFT);
-> > +               } else if (!pmd_bad(old_pmd) && !pmd_leaf(old_pmd)) {
-> > +                       pte_t *ptep = pte_offset_map(&old_pmd, addr);
-> > +
-> > +                       pte_clear_level(mm, addr, ptep);
-> > +                       pte_unmap(ptep);
-> > +               }
->
-> You can call __page_table_check_pmd_clear(mm, addr, old_pmd, addr)
-> instead to share the new code.
+Here simply calling put_device() instead of cscfg_dev_release() in the error
+path should do just fine.  That will call cscfg_dev_release() and the memory
+allocated for cscfg_mgr will be release.
 
-Yeap.
-
->
-> >
-> > +               addr += PMD_PAGE_SIZE;
-> > +               pmdp++;
-> > +       }
-> > +}
-> > +
-> >  /*
-> >   * page is on free list, or is being allocated, verify that counters are zeroes
-> >   * crash if they are not.
-> > @@ -186,6 +220,11 @@ void __page_table_check_pmd_clear(struct mm_struct *mm, unsigned long addr,
-> >         if (pmd_user_accessible_page(pmd)) {
-> >                 page_table_check_clear(mm, addr, pmd_pfn(pmd),
-> >                                        PMD_PAGE_SIZE >> PAGE_SHIFT);
-> > +       } else if (!pmd_bad(pmd) && !pmd_leaf(pmd)) {
-> > +               pte_t *ptep = pte_offset_map(&pmd, addr);
-> > +
-> > +               pte_clear_level(mm, addr, ptep);
-> > +               pte_unmap(ptep);
-> >         }
+> 
+> Thanks,
+> Mathieu
+> 
+> > 
+> > To prevent potential memleak, use put_device() instead call kfree
+> > directly.
+> > 
+> > Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> > ---
+> >  drivers/hwtracing/coresight/coresight-syscfg.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/hwtracing/coresight/coresight-syscfg.c b/drivers/hwtracing/coresight/coresight-syscfg.c
+> > index 43054568430f..007fa1c761a7 100644
+> > --- a/drivers/hwtracing/coresight/coresight-syscfg.c
+> > +++ b/drivers/hwtracing/coresight/coresight-syscfg.c
+> > @@ -764,7 +764,7 @@ struct device *cscfg_device(void)
+> >  /* Must have a release function or the kernel will complain on module unload */
+> >  static void cscfg_dev_release(struct device *dev)
+> >  {
+> > -	kfree(cscfg_mgr);
+> > +	put_device(dev);
+> >  	cscfg_mgr = NULL;
 > >  }
-> >  EXPORT_SYMBOL(__page_table_check_pmd_clear);
-> > @@ -199,6 +238,10 @@ void __page_table_check_pud_clear(struct mm_struct *mm, unsigned long addr,
-> >         if (pud_user_accessible_page(pud)) {
-> >                 page_table_check_clear(mm, addr, pud_pfn(pud),
-> >                                        PUD_PAGE_SIZE >> PAGE_SHIFT);
-> > +       } else if (!pud_bad(pud) && !pud_leaf(pud)) {
-> > +               pmd_t *pmdp = pmd_offset(&pud, addr);
-> > +
-> > +               pmd_clear_level(mm, addr, pmdp);
-> >         }
-> >  }
-> >  EXPORT_SYMBOL(__page_table_check_pud_clear);
-> > @@ -237,6 +280,11 @@ void __page_table_check_pmd_set(struct mm_struct *mm, unsigned long addr,
-> >         if (pmd_user_accessible_page(old_pmd)) {
-> >                 page_table_check_clear(mm, addr, pmd_pfn(old_pmd),
-> >                                        PMD_PAGE_SIZE >> PAGE_SHIFT);
-> > +       } else if (!pmd_bad(old_pmd) && !pmd_leaf(old_pmd)) {
-> > +               pte_t *ptep = pte_offset_map(&old_pmd, addr);
-> > +
-> > +               pte_clear_level(mm, addr, ptep);
-> > +               pte_unmap(ptep);
-> >         }
-> >
->
-> How about replacing the above code with
-> __page_table_check_pmd_clear(mm, addr, old_pmd)?
-
-OK
-
->
-> >         if (pmd_user_accessible_page(pmd)) {
-> > @@ -259,6 +307,10 @@ void __page_table_check_pud_set(struct mm_struct *mm, unsigned long addr,
-> >         if (pud_user_accessible_page(old_pud)) {
-> >                 page_table_check_clear(mm, addr, pud_pfn(old_pud),
-> >                                        PUD_PAGE_SIZE >> PAGE_SHIFT);
-> > +       } else if (!pud_bad(old_pud) && !pud_leaf(old_pud)) {
-> > +               pmd_t *pmdp = pmd_offset(&old_pud, addr);
-> > +
-> > +               pmd_clear_level(mm, addr, pmdp);
-> >         }
->
-> Replacing with __page_table_check_pud_clear(mm, addr, old_pud)?
-
-OK
-
-Good suggestions, I will simplify the code with your suggestions.
-
-Pasha
+> >  
+> > -- 
+> > 2.17.1
+> > 
