@@ -2,157 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97D5FC433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 08:59:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4669C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 09:00:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358933AbiATI7V (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 03:59:21 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:59158 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238241AbiATI7S (ORCPT
+        id S239291AbiATJAd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 04:00:33 -0500
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:48198 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232155AbiATJAb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 03:59:18 -0500
-Received: from benjamin-XPS-13-9310.. (unknown [IPv6:2a01:e0a:120:3210:3368:5e43:a228:ee75])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: benjamin.gaignard)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 668331F44C70;
-        Thu, 20 Jan 2022 08:59:16 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642669156;
-        bh=70J/M3Mn2wuN/O5yaZDjpp/xB3BHC/zkHmIcZktdScY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ZO8Jmz4j0cx8AicUqq06pX/TskR7JHRp/Q1GVsO9dQou6RdjZ79D8dDzmeBKhXD6R
-         cRrLyTQC1rBbV2kYb61ZWuP4kxkgY39mpa+8M4zz+n24Lbz1BcvWOEoOh/JDubO7Im
-         3mh765ifD5U/1ch+i/uyY7bD6drbjTz3LvACB/pgwvzvFAnUjUe20e4Uk1bDy9+VJd
-         N7wXwUCFU1teeNPJeZKEvzaAaJBFE3hGh4SwKp6Uhp+krOCvWbnBpT4qkLOEyu/9+h
-         57IHZCu2wK9AMTdWI++wbVJJ0c8L/Mi03LQDfP+kjA8Mzn3SmYO+lsPQd6ZcR9X3Xh
-         n/N9teIDupRxA==
-From:   Benjamin Gaignard <benjamin.gaignard@collabora.com>
-To:     tiffany.lin@mediatek.com, andrew-ct.chen@mediatek.com,
-        mchehab@kernel.org, matthias.bgg@gmail.com,
-        angelogioacchino.delregno@collabora.co.uk
-Cc:     linux-media@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH v2] media: platform: mtk-vcodec: Do not force /dev/videoX node number
-Date:   Thu, 20 Jan 2022 09:59:09 +0100
-Message-Id: <20220120085909.103886-1-benjamin.gaignard@collabora.com>
-X-Mailer: git-send-email 2.30.2
+        Thu, 20 Jan 2022 04:00:31 -0500
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 20K905f3082782;
+        Thu, 20 Jan 2022 03:00:05 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1642669205;
+        bh=mbxFDq+kSFkwW2W3BxrlDysfLpH8QchCTWCRFIXWbZA=;
+        h=Date:From:To:CC:Subject:References:In-Reply-To;
+        b=Si1RjyryP+ooek1UZpauEgKuhfsMbi4KHFvUw4CulENhu/xZiofTl83TN/MRVXT5G
+         6OTEALd5wPr6QSt87KChBdVzTgyUtBSCB5wGOLvChGOEAKLmYYQzjKnRr/ftSap6ZT
+         rjdDfzYr2xJLyHMAYr9YqWY30Jgu6yqcvkJX6Yvg=
+Received: from DLEE113.ent.ti.com (dlee113.ent.ti.com [157.170.170.24])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 20K905Rr054041
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 20 Jan 2022 03:00:05 -0600
+Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE113.ent.ti.com
+ (157.170.170.24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 20
+ Jan 2022 03:00:05 -0600
+Received: from fllv0040.itg.ti.com (10.64.41.20) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 20 Jan 2022 03:00:05 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0040.itg.ti.com (8.15.2/8.15.2) with ESMTP id 20K904e8121914;
+        Thu, 20 Jan 2022 03:00:05 -0600
+Date:   Thu, 20 Jan 2022 14:30:02 +0530
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+CC:     Andi Shyti <andi@etezian.org>, Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>, <linux-spi@vger.kernel.org>,
+        <linux-samsung-soc@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Sam Protsenko <semen.protsenko@linaro.org>
+Subject: Re: [PATCH v3 2/4] spi: dt-bindings: samsung: convert to dtschema
+Message-ID: <20220120090002.hg4jmb7q2s25k64y@ti.com>
+References: <20220112100046.68068-1-krzysztof.kozlowski@canonical.com>
+ <20220112100046.68068-3-krzysztof.kozlowski@canonical.com>
+ <20220119192758.z3lvlkaeyeiqi73a@ti.com>
+ <5f912896-0635-fbe7-4fda-f4cb569190d9@canonical.com>
+ <20220120070620.wyeosdstbfcsaplt@ti.com>
+ <0c0a22ed-2c4b-374c-4f4c-06afd4e8681d@canonical.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <0c0a22ed-2c4b-374c-4f4c-06afd4e8681d@canonical.com>
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Let's v4l2 framework use a free /dev/videoX node for decode and encoder.
-For the decoder call video_register_device() before register the media
-controller device so the mapping between ins correctly done.
-Since the registering sequence has changed rework exiting errors case too.
+On 20/01/22 08:36AM, Krzysztof Kozlowski wrote:
+> On 20/01/2022 08:06, Pratyush Yadav wrote:
+> > On 19/01/22 08:49PM, Krzysztof Kozlowski wrote:
+> >> On 19/01/2022 20:31, Pratyush Yadav wrote:
+> >>> On 12/01/22 11:00AM, Krzysztof Kozlowski wrote:
+> >>>> Convert the Samsung SoC (S3C24xx, S3C64xx, S5Pv210, Exynos) SPI
+> >>>> controller bindings to DT schema format
+> >>>>
+> >>>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> >>>> Reviewed-by: Sam Protsenko <semen.protsenko@linaro.org>
+> >>>> ---
+> >>>>  .../spi/samsung,spi-peripheral-props.yaml     |  35 ++++
+> >>>>  .../devicetree/bindings/spi/samsung,spi.yaml  | 187 ++++++++++++++++++
+> >>>>  .../bindings/spi/spi-peripheral-props.yaml    |   1 +
+> >>>>  .../devicetree/bindings/spi/spi-samsung.txt   | 122 ------------
+> >>>>  MAINTAINERS                                   |   2 +-
+> >>>>  5 files changed, 224 insertions(+), 123 deletions(-)
+> >>>>  create mode 100644 Documentation/devicetree/bindings/spi/samsung,spi-peripheral-props.yaml
+> >>>>  create mode 100644 Documentation/devicetree/bindings/spi/samsung,spi.yaml
+> >>>>  delete mode 100644 Documentation/devicetree/bindings/spi/spi-samsung.txt
+> >>>>
+> >>>> diff --git a/Documentation/devicetree/bindings/spi/samsung,spi-peripheral-props.yaml b/Documentation/devicetree/bindings/spi/samsung,spi-peripheral-props.yaml
+> >>>> new file mode 100644
+> >>>> index 000000000000..aa5a1f48494b
+> >>>> --- /dev/null
+> >>>> +++ b/Documentation/devicetree/bindings/spi/samsung,spi-peripheral-props.yaml
+> >>>> @@ -0,0 +1,35 @@
+> >>>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> >>>> +%YAML 1.2
+> >>>> +---
+> >>>> +$id: http://devicetree.org/schemas/spi/samsung,spi-peripheral-props.yaml#
+> >>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> >>>> +
+> >>>> +title: Peripheral-specific properties for Samsung S3C/S5P/Exynos SoC SPI controller
+> >>>> +
+> >>>> +maintainers:
+> >>>> +  - Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> >>>> +
+> >>>> +description:
+> >>>> +  See spi-peripheral-props.yaml for more info.
+> >>>> +
+> >>>> +properties:
+> >>>> +  controller-data:
+> >>>> +    type: object
+> >>>> +    additionalProperties: false
+> >>>> +
+> >>>> +    properties:
+> >>>> +      samsung,spi-feedback-delay:
+> >>>> +        description: |
+> >>>> +          The sampling phase shift to be applied on the miso line (to account
+> >>>> +          for any lag in the miso line). Valid values:
+> >>>> +           - 0: No phase shift.
+> >>>> +           - 1: 90 degree phase shift sampling.
+> >>>> +           - 2: 180 degree phase shift sampling.
+> >>>> +           - 3: 270 degree phase shift sampling.
+> >>>> +        $ref: /schemas/types.yaml#/definitions/uint32
+> >>>> +        enum: [0, 1, 2, 3]
+> >>>> +
+> >>>> +    required:
+> >>>> +      - samsung,spi-feedback-delay
+> >>>
+> >>> I am not quite sure if this required would work here. Let's say another 
+> >>> controller also uses a controller-data node, but it contains a different 
+> >>> set of properties. Won't this cause an error to be raised for that 
+> >>> controller since this property is not there?
+> >>
+> >> The controller-data is Samsung SPI specific (does not exist in any other
+> >> binding), so why would controller-data get added to a different controller?
+> > 
+> > It does not as of now, but the name is fairly generic and some 
+> > controller in the future might use it. I do not think it is a good idea 
+> > to list required properties in X-peripheral-props.yaml in general since 
+> > all those will be collected by spi-peripheral-props.yaml and so will 
+> > apply to _all_ controllers that reference it.
+> 
+> Right, but have in mind this is merely a bindings conversion. These were
+> made like this long time ago.
 
-Fixes: 590577a4e525 ("[media] vcodec: mediatek: Add Mediatek V4L2 Video Decoder Driver")
-Fixes: 4e855a6efa54 ("[media] vcodec: mediatek: Add Mediatek V4L2 Video Encoder Driver")
+Yes, but the bindings infrastructure is not capable of handling these 
+required properties as of now. So even if your next patch was _not_ 
+making it optional, I would still say you should drop the "required:". 
+Even though the property is actually a required one, we currently do not 
+have the means to express that.
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@collabora.com>
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
-version 2:
- - add Fixes and Reviewed-by tags as suggested by Angelo
- .../platform/mtk-vcodec/mtk_vcodec_dec_drv.c  | 27 +++++++++----------
- .../platform/mtk-vcodec/mtk_vcodec_enc_drv.c  |  2 +-
- 2 files changed, 13 insertions(+), 16 deletions(-)
+> 
+> I think we can drop the "required:" entirely with the commit 3/4 which
+> makes it optional.
 
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
-index 86b639d82be8..a4a3f9631d04 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
-@@ -374,7 +374,7 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
- 	if (IS_ERR((__force void *)dev->m2m_dev_dec)) {
- 		mtk_v4l2_err("Failed to init mem2mem dec device");
- 		ret = PTR_ERR((__force void *)dev->m2m_dev_dec);
--		goto err_dec_mem_init;
-+		goto err_dec_alloc;
- 	}
- 
- 	dev->decode_workqueue =
-@@ -391,10 +391,16 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
- 					   &pdev->dev);
- 		if (ret) {
- 			mtk_v4l2_err("Main device of_platform_populate failed.");
--			goto err_event_workq;
-+			goto err_reg_cont;
- 		}
- 	}
- 
-+	ret = video_register_device(vfd_dec, VFL_TYPE_VIDEO, -1);
-+	if (ret) {
-+		mtk_v4l2_err("Failed to register video device");
-+		goto err_reg_cont;
-+	}
-+
- 	if (dev->vdec_pdata->uses_stateless_api) {
- 		dev->mdev_dec.dev = &pdev->dev;
- 		strscpy(dev->mdev_dec.model, MTK_VCODEC_DEC_NAME,
-@@ -408,7 +414,7 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
- 							 MEDIA_ENT_F_PROC_VIDEO_DECODER);
- 		if (ret) {
- 			mtk_v4l2_err("Failed to register media controller");
--			goto err_reg_cont;
-+			goto err_dec_mem_init;
- 		}
- 
- 		ret = media_device_register(&dev->mdev_dec);
-@@ -419,30 +425,21 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
- 
- 		mtk_v4l2_debug(0, "media registered as /dev/media%d", vfd_dec->minor);
- 	}
--	ret = video_register_device(vfd_dec, VFL_TYPE_VIDEO, 0);
--	if (ret) {
--		mtk_v4l2_err("Failed to register video device");
--		goto err_dec_reg;
--	}
- 
- 	mtk_v4l2_debug(0, "decoder registered as /dev/video%d", vfd_dec->minor);
- 
- 	return 0;
- 
--err_dec_reg:
--	if (dev->vdec_pdata->uses_stateless_api)
--		media_device_unregister(&dev->mdev_dec);
- err_media_reg:
--	if (dev->vdec_pdata->uses_stateless_api)
--		v4l2_m2m_unregister_media_controller(dev->m2m_dev_dec);
-+	v4l2_m2m_unregister_media_controller(dev->m2m_dev_dec);
-+err_dec_mem_init:
-+	video_unregister_device(vfd_dec);
- err_reg_cont:
- 	if (dev->vdec_pdata->uses_stateless_api)
- 		media_device_cleanup(&dev->mdev_dec);
- 	destroy_workqueue(dev->decode_workqueue);
- err_event_workq:
- 	v4l2_m2m_release(dev->m2m_dev_dec);
--err_dec_mem_init:
--	video_unregister_device(vfd_dec);
- err_dec_alloc:
- 	v4l2_device_unregister(&dev->v4l2_dev);
- err_core_workq:
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
-index 507ad1ea2104..3975613b75b3 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_enc_drv.c
-@@ -350,7 +350,7 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
- 	if (of_get_property(pdev->dev.of_node, "dma-ranges", NULL))
- 		dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(34));
- 
--	ret = video_register_device(vfd_enc, VFL_TYPE_VIDEO, 1);
-+	ret = video_register_device(vfd_enc, VFL_TYPE_VIDEO, -1);
- 	if (ret) {
- 		mtk_v4l2_err("Failed to register video device");
- 		goto err_enc_reg;
+I would prefer you never add it in the first place.
+
 -- 
-2.30.2
-
+Regards,
+Pratyush Yadav
+Texas Instruments Inc.
