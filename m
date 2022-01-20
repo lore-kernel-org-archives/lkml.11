@@ -2,372 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C88AC433F5
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:51:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93C4BC433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232146AbiATLv1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 06:51:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52130 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232099AbiATLv0 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 06:51:26 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A45D6C061574
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 03:51:25 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id b14so20688741lff.3
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 03:51:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=93p6hvOXn5uTYzDS8qmbb8kxxAARtxbHtUvJK3rnNys=;
-        b=Yn6CQFdS4gziNY1lqTBMLVZIQh70Iwq+YK4hOmrQB//kFmNJbRlPNsbNP7zeWgkaUK
-         V8DkWDgsNU0GO3rHNQqodN4f6/k2R+WxIhehHRvhP2EzJTbOR2+2tVZ6QJdohplkPrNO
-         dKvrpBuDD3XNrDZoYWFlMEc0/zx3tM1vMiAW9JXzn0CMGc9ffCw8Ay+WxwDfD3UePWwA
-         5Po1CzQM6qZqOjpvhcSmTMBDxjYBlojU6EMn8rRPSoT+RP8857esPN2IOecj6J4GE14w
-         Za5UpWMzTv7sV738pFRMdBN9fIqO/ZPXM9D7eWMmCdLiUHxzeZuI18d3RAqUJ22x7g3l
-         Ndtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=93p6hvOXn5uTYzDS8qmbb8kxxAARtxbHtUvJK3rnNys=;
-        b=Ut7qrLPOErFPcBoneinaWRd1jt5b7M2ijMFzdPEaVB0r6UVYpXEEVInEajOkRekXqX
-         1Rd5nuk4h7xC8psy8MhKnGUTOFPxIg+HX0rDuBJ0b8dFYdrK7B0OpVzp0+lk8USQLvPZ
-         lcNfffUJTruAt1EDuKZNlVPD2YYII+gOoRkbkcFBxI+dk6HUqcMv6c5hXoPlAKDCC2Ly
-         9c8T41tXxgsJOl7/BbLpfx6Rp0e6SEY/VVfZo7r7kbBBfSKPFCiBeqKfNaWdhsar5e2a
-         T/MBYsjgamCSNEshdwPh6Nqa8MDQ9x9LuKHLUdt3/WKdu5Qe4msVVp07N18NhHnEZYBT
-         0Hdw==
-X-Gm-Message-State: AOAM532f0ueubrXCPhz8qOIfPqnyw0jeLJI/4Fxq4kF1HdbZwyyr3onk
-        T/ovaBSKnyLg0THIys2PnlfOBNvZQB/Nr/0HOVRubQ==
-X-Google-Smtp-Source: ABdhPJwywxrdKA8zELmq+74gsbaNzg9xa1hx5RJvxHTYJe07Rfvn8nGytgpd9wMfsEeCzD/PZjgf89cGeass24j+tQQ=
-X-Received: by 2002:a05:6512:34d3:: with SMTP id w19mr12702688lfr.253.1642679483885;
- Thu, 20 Jan 2022 03:51:23 -0800 (PST)
+        id S232182AbiATLyH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 06:54:07 -0500
+Received: from mga06.intel.com ([134.134.136.31]:47456 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231604AbiATLyG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 06:54:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642679646; x=1674215646;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=hWH9CQcyJ3OyvK1GCGLRnCY5B+LN3QzOt6ywsVoqDPA=;
+  b=Ksjkhc82EQmFEnBRIG95KJv+DXGgAslCX+u5picgjiN8c92U4cIuvLtM
+   61fks0TdEdNzeb1biZhK0FoBbn03iikAZsSPMTUewfYI6kPKbE2iErYJJ
+   e5t4hsLegv4KcQ8w43CDRX0YrAP1goW+cI6KOzNDw620sOeHXEWts1eTd
+   ttb3M/u/jjSRcY1UKuM1QNa0tTiBcMy0nCPVKfTP3nlAZpxCrv3M7xjfi
+   KPLAADqoBbDTHNY6QgA5OPRyS5UMteh/1qF2cBiP82HYzrZ/xprreO4gQ
+   yfeRtcqtlNTN4wWIdiOq8fGOyUhHYbPaqLTBo0TbhiuCi9mE+sc47i8bh
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10232"; a="306066367"
+X-IronPort-AV: E=Sophos;i="5.88,302,1635231600"; 
+   d="scan'208";a="306066367"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 03:54:06 -0800
+X-IronPort-AV: E=Sophos;i="5.88,302,1635231600"; 
+   d="scan'208";a="767572817"
+Received: from ramaling-i9x.iind.intel.com (HELO intel.com) ([10.203.144.108])
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 03:54:01 -0800
+Date:   Thu, 20 Jan 2022 17:23:58 +0530
+From:   Ramalingam C <ramalingam.c@intel.com>
+To:     Robert Beckett <bob.beckett@collabora.com>
+Cc:     Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Matthew Auld <matthew.auld@intel.com>,
+        Simon Ser <contact@emersion.fr>,
+        Pekka Paalanen <ppaalanen@gmail.com>,
+        Jordan Justen <jordan.l.justen@intel.com>,
+        Kenneth Graunke <kenneth@whitecape.org>,
+        mesa-dev@lists.freedesktop.org, Tony Ye <tony.ye@intel.com>,
+        Slawomir Milczarek <slawomir.milczarek@intel.com>,
+        intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] drm/i915/uapi: document behaviour for DG2 64K
+ support
+Message-ID: <20220120115357.GB8264@intel.com>
+References: <20220118175036.3840934-1-bob.beckett@collabora.com>
+ <20220118175036.3840934-5-bob.beckett@collabora.com>
 MIME-Version: 1.0
-References: <20220114150824.3578829-1-jens.wiklander@linaro.org> <20220114150824.3578829-12-jens.wiklander@linaro.org>
-In-Reply-To: <20220114150824.3578829-12-jens.wiklander@linaro.org>
-From:   Sumit Garg <sumit.garg@linaro.org>
-Date:   Thu, 20 Jan 2022 17:21:12 +0530
-Message-ID: <CAFA6WYMQX_e4JKugQFV=87Wvvo2HAfpWLHHK2_MShGBqHBvh-A@mail.gmail.com>
-Subject: Re: [PATCH v2 11/12] tee: replace tee_shm_register()
-To:     Jens Wiklander <jens.wiklander@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Devaraj Rangasamy <Devaraj.Rangasamy@amd.com>,
-        Rijo Thomas <Rijo-john.Thomas@amd.com>,
-        David Howells <dhowells@redhat.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220118175036.3840934-5-bob.beckett@collabora.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 14 Jan 2022 at 20:38, Jens Wiklander <jens.wiklander@linaro.org> wrote:
->
-> tee_shm_register() is replaced by the previously introduced functions
-> tee_shm_register_user_buf() and tee_shm_register_kernel_buf().
->
-> Since there are not external callers left we can remove tee_shm_register()
-> and refactor the remains.
->
-> Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
+On 2022-01-18 at 17:50:37 +0000, Robert Beckett wrote:
+> From: Matthew Auld <matthew.auld@intel.com>
+> 
+> On discrete platforms like DG2, we need to support a minimum page size
+> of 64K when dealing with device local-memory. This is quite tricky for
+> various reasons, so try to document the new implicit uapi for this.
+> 
+> v2: Fixed suggestions on formatting [Daniel]
+> 
+> Signed-off-by: Matthew Auld <matthew.auld@intel.com>
+> Signed-off-by: Ramalingam C <ramalingam.c@intel.com>
+> Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
+> cc: Simon Ser <contact@emersion.fr>
+> cc: Pekka Paalanen <ppaalanen@gmail.com>
+> Cc: Jordan Justen <jordan.l.justen@intel.com>
+> Cc: Kenneth Graunke <kenneth@whitecape.org>
+> Cc: mesa-dev@lists.freedesktop.org
+> Cc: Tony Ye <tony.ye@intel.com>
+> Cc: Slawomir Milczarek <slawomir.milczarek@intel.com>
 > ---
->  drivers/tee/tee_shm.c   | 157 +++++++++++++++++++++++-----------------
->  include/linux/tee_drv.h |  11 ---
->  2 files changed, 91 insertions(+), 77 deletions(-)
->
-> diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
-> index 6a1dbce75616..fe3e5977dd7c 100644
-> --- a/drivers/tee/tee_shm.c
-> +++ b/drivers/tee/tee_shm.c
-> @@ -12,17 +12,43 @@
->  #include <linux/uio.h>
->  #include "tee_private.h"
->
-> +static void shm_put_kernel_pages(struct page **pages, unsigned long npages)
-> +{
-> +       unsigned long n;
+>  include/uapi/drm/i915_drm.h | 44 ++++++++++++++++++++++++++++++++-----
+>  1 file changed, 39 insertions(+), 5 deletions(-)
+> 
+> diff --git a/include/uapi/drm/i915_drm.h b/include/uapi/drm/i915_drm.h
+> index 5e678917da70..486b7b96291e 100644
+> --- a/include/uapi/drm/i915_drm.h
+> +++ b/include/uapi/drm/i915_drm.h
+> @@ -1118,10 +1118,16 @@ struct drm_i915_gem_exec_object2 {
+>  	/**
+>  	 * When the EXEC_OBJECT_PINNED flag is specified this is populated by
+>  	 * the user with the GTT offset at which this object will be pinned.
+> +	 *
+>  	 * When the I915_EXEC_NO_RELOC flag is specified this must contain the
+>  	 * presumed_offset of the object.
+> +	 *
+>  	 * During execbuffer2 the kernel populates it with the value of the
+>  	 * current GTT offset of the object, for future presumed_offset writes.
+> +	 *
+> +	 * See struct drm_i915_gem_create_ext for the rules when dealing with
+> +	 * alignment restrictions with I915_MEMORY_CLASS_DEVICE, on devices with
+> +	 * minimum page sizes, like DG2.
+>  	 */
+>  	__u64 offset;
+>  
+> @@ -3145,11 +3151,39 @@ struct drm_i915_gem_create_ext {
+>  	 *
+>  	 * The (page-aligned) allocated size for the object will be returned.
+>  	 *
+> -	 * Note that for some devices we have might have further minimum
+> -	 * page-size restrictions(larger than 4K), like for device local-memory.
+> -	 * However in general the final size here should always reflect any
+> -	 * rounding up, if for example using the I915_GEM_CREATE_EXT_MEMORY_REGIONS
+> -	 * extension to place the object in device local-memory.
+> +	 *
+> +	 * **DG2 64K min page size implications:**
+> +	 *
+> +	 * On discrete platforms, starting from DG2, we have to contend with GTT
+> +	 * page size restrictions when dealing with I915_MEMORY_CLASS_DEVICE
+> +	 * objects.  Specifically the hardware only supports 64K or larger GTT
+> +	 * page sizes for such memory. The kernel will already ensure that all
+> +	 * I915_MEMORY_CLASS_DEVICE memory is allocated using 64K or larger page
+> +	 * sizes underneath.
+> +	 *
+> +	 * Note that the returned size here will always reflect any required
+> +	 * rounding up done by the kernel, i.e 4K will now become 64K on devices
+> +	 * such as DG2.
+> +	 *
+> +	 * **Special DG2 GTT address alignment requirement:**
+> +	 *
+> +	 * The GTT alignment will also need be at least 2M for  such objects.
+> +	 *
+> +	 * Note that due to how the hardware implements 64K GTT page support, we
+> +	 * have some further complications:
+> +	 *
+> +	 *   1) The entire PDE(which covers a 2MB virtual address range), must
+> +	 *   contain only 64K PTEs, i.e mixing 4K and 64K PTEs in the same
+> +	 *   PDE is forbidden by the hardware.
+> +	 *
+> +	 *   2) We still need to support 4K PTEs for I915_MEMORY_CLASS_SYSTEM
+> +	 *   objects.
+> +	 *
+> +	 * To keep things simple for userland, we mandate that any GTT mappings
+> +	 * must be aligned to and rounded up to 2MB. As this only wastes virtual
+> +	 * address space and avoids userland having to copy any needlessly
+> +	 * complicated PDE sharing scheme (coloring) and only affects GD2, this
+> +	 * id deemed to be a good compromise.
+"only affects DG2, this is" 
 
-nit: Can we have a consistent prototype for the number of pages?
-size_t as used by struct tee_shm or unsigned long? Same holds true for
-variables below as well: npages, page_count, num_pages, n.
+Except these typos, patch looks good to me
 
-> +
-> +       for (n = 0; n < npages; n++)
-> +               put_page(pages[n]);
-> +}
-> +
-> +static int shm_get_kernel_pages(unsigned long start, int page_count,
-> +                               struct page **pages)
-> +{
-> +       struct kvec *kiov;
-> +       unsigned int n;
-> +       int rc;
-> +
-> +       kiov = kcalloc(page_count, sizeof(*kiov), GFP_KERNEL);
-> +       if (!kiov)
-> +               return -ENOMEM;
-> +
-> +       for (n = 0; n < page_count; n++) {
-> +               kiov[n].iov_base = (void *)(start + n * PAGE_SIZE);
-> +               kiov[n].iov_len = PAGE_SIZE;
-> +       }
-> +
-> +       rc = get_kernel_pages(kiov, page_count, 0, pages);
-> +       kfree(kiov);
-> +
-> +       return rc;
-> +}
-> +
->  static void release_registered_pages(struct tee_shm *shm)
->  {
->         if (shm->pages) {
-> -               if (shm->flags & TEE_SHM_USER_MAPPED) {
-> +               if (shm->flags & TEE_SHM_USER_MAPPED)
->                         unpin_user_pages(shm->pages, shm->num_pages);
-> -               } else {
-> -                       size_t n;
-> -
-> -                       for (n = 0; n < shm->num_pages; n++)
-> -                               put_page(shm->pages[n]);
-> -               }
-> +               else
-> +                       shm_put_kernel_pages(shm->pages, shm->num_pages);
->
->                 kfree(shm->pages);
->         }
-> @@ -191,28 +217,24 @@ struct tee_shm *tee_shm_alloc_priv_kernel_buf(struct tee_context *ctx,
->  }
->  EXPORT_SYMBOL_GPL(tee_shm_alloc_priv_kernel_buf);
->
-> -struct tee_shm *tee_shm_register(struct tee_context *ctx, unsigned long addr,
-> -                                size_t length, u32 flags)
-> +static struct tee_shm *
-> +register_shm_helper(struct tee_context *ctx, unsigned long addr,
-> +                   size_t length, u32 flags, int id)
->  {
->         struct tee_device *teedev = ctx->teedev;
-> -       const u32 req_user_flags = TEE_SHM_DMA_BUF | TEE_SHM_USER_MAPPED;
-> -       const u32 req_kernel_flags = TEE_SHM_DMA_BUF | TEE_SHM_KERNEL_MAPPED;
->         struct tee_shm *shm;
-> +       unsigned long start;
-> +       int num_pages;
->         void *ret;
->         int rc;
-> -       int num_pages;
-> -       unsigned long start;
-> -
-> -       if (flags != req_user_flags && flags != req_kernel_flags)
-> -               return ERR_PTR(-ENOTSUPP);
->
->         if (!tee_device_get(teedev))
->                 return ERR_PTR(-EINVAL);
->
->         if (!teedev->desc->ops->shm_register ||
->             !teedev->desc->ops->shm_unregister) {
-> -               tee_device_put(teedev);
-> -               return ERR_PTR(-ENOTSUPP);
-> +               ret = ERR_PTR(-ENOTSUPP);
-
-Checkpatch warns about this error code:
-
-WARNING: ENOTSUPP is not a SUSV4 error code, prefer EOPNOTSUPP
-#104: FILE: drivers/tee/tee_shm.c:236:
-+ ret = ERR_PTR(-ENOTSUPP);
-
-> +               goto err_dev_put;
->         }
->
->         teedev_ctx_get(ctx);
-> @@ -220,13 +242,13 @@ struct tee_shm *tee_shm_register(struct tee_context *ctx, unsigned long addr,
->         shm = kzalloc(sizeof(*shm), GFP_KERNEL);
->         if (!shm) {
->                 ret = ERR_PTR(-ENOMEM);
-> -               goto err;
-> +               goto err_ctx_put;
->         }
->
->         refcount_set(&shm->refcount, 1);
-> -       shm->flags = flags | TEE_SHM_REGISTER;
-> +       shm->flags = flags;
->         shm->ctx = ctx;
-> -       shm->id = -1;
-> +       shm->id = id;
->         addr = untagged_addr(addr);
->         start = rounddown(addr, PAGE_SIZE);
->         shm->offset = addr - start;
-> @@ -235,71 +257,45 @@ struct tee_shm *tee_shm_register(struct tee_context *ctx, unsigned long addr,
->         shm->pages = kcalloc(num_pages, sizeof(*shm->pages), GFP_KERNEL);
->         if (!shm->pages) {
->                 ret = ERR_PTR(-ENOMEM);
-> -               goto err;
-> +               goto err_free_shm;
->         }
->
-> -       if (flags & TEE_SHM_USER_MAPPED) {
-> +       if (flags & TEE_SHM_USER_MAPPED)
->                 rc = pin_user_pages_fast(start, num_pages, FOLL_WRITE,
->                                          shm->pages);
-> -       } else {
-> -               struct kvec *kiov;
-> -               int i;
-> -
-> -               kiov = kcalloc(num_pages, sizeof(*kiov), GFP_KERNEL);
-> -               if (!kiov) {
-> -                       ret = ERR_PTR(-ENOMEM);
-> -                       goto err;
-> -               }
-> -
-> -               for (i = 0; i < num_pages; i++) {
-> -                       kiov[i].iov_base = (void *)(start + i * PAGE_SIZE);
-> -                       kiov[i].iov_len = PAGE_SIZE;
-> -               }
-> -
-> -               rc = get_kernel_pages(kiov, num_pages, 0, shm->pages);
-> -               kfree(kiov);
-> -       }
-> +       else
-> +               rc = shm_get_kernel_pages(start, num_pages, shm->pages);
->         if (rc > 0)
->                 shm->num_pages = rc;
->         if (rc != num_pages) {
->                 if (rc >= 0)
->                         rc = -ENOMEM;
->                 ret = ERR_PTR(rc);
-> -               goto err;
-> -       }
-> -
-> -       mutex_lock(&teedev->mutex);
-> -       shm->id = idr_alloc(&teedev->idr, shm, 1, 0, GFP_KERNEL);
-> -       mutex_unlock(&teedev->mutex);
-> -
-> -       if (shm->id < 0) {
-> -               ret = ERR_PTR(shm->id);
-> -               goto err;
-> +               goto err_put_shm_pages;
->         }
->
->         rc = teedev->desc->ops->shm_register(ctx, shm, shm->pages,
->                                              shm->num_pages, start);
->         if (rc) {
->                 ret = ERR_PTR(rc);
-> -               goto err;
-> +               goto err_put_shm_pages;
->         }
->
->         return shm;
-> -err:
-> -       if (shm) {
-> -               if (shm->id >= 0) {
-> -                       mutex_lock(&teedev->mutex);
-> -                       idr_remove(&teedev->idr, shm->id);
-> -                       mutex_unlock(&teedev->mutex);
-> -               }
-> -               release_registered_pages(shm);
-> -       }
-> +err_put_shm_pages:
-> +       if (flags & TEE_SHM_USER_MAPPED)
-> +               unpin_user_pages(shm->pages, shm->num_pages);
-> +       else
-> +               shm_put_kernel_pages(shm->pages, shm->num_pages);
-> +       kfree(shm->pages);
-> +err_free_shm:
->         kfree(shm);
-> +err_ctx_put:
->         teedev_ctx_put(ctx);
-> +err_dev_put:
->         tee_device_put(teedev);
->         return ret;
->  }
-> -EXPORT_SYMBOL_GPL(tee_shm_register);
->
->  /**
->   * tee_shm_register_user_buf() - Register a userspace shared memory buffer
-> @@ -312,8 +308,36 @@ EXPORT_SYMBOL_GPL(tee_shm_register);
->  struct tee_shm *tee_shm_register_user_buf(struct tee_context *ctx,
->                                           unsigned long addr, size_t length)
->  {
-> -       return tee_shm_register(ctx, addr, length,
-> -                               TEE_SHM_DMA_BUF | TEE_SHM_USER_MAPPED);
-> +       u32 f = TEE_SHM_DMA_BUF | TEE_SHM_USER_MAPPED | TEE_SHM_REGISTER;
-
-nit: I would prefer to write variable name as "flags" for clarity.
-
-> +       struct tee_device *teedev = ctx->teedev;
-> +       struct tee_shm *shm;
-> +       void *ret;
-> +       int id;
-> +
-> +       mutex_lock(&teedev->mutex);
-> +       id = idr_alloc(&teedev->idr, NULL, 1, 0, GFP_KERNEL);
-> +       mutex_unlock(&teedev->mutex);
-> +
-
-nit: redundant extra line.
-
-> +       if (id < 0)
-> +               return ERR_PTR(id);
-> +
-> +       shm = register_shm_helper(ctx, addr, length, f, id);
-> +       if (IS_ERR(shm)) {
-> +               mutex_lock(&teedev->mutex);
-> +               idr_remove(&teedev->idr, id);
-> +               mutex_unlock(&teedev->mutex);
-> +               return shm;
-> +       }
-> +
-> +       mutex_lock(&teedev->mutex);
-> +       ret = idr_replace(&teedev->idr, shm, id);
-> +       mutex_unlock(&teedev->mutex);
-> +       if (IS_ERR(ret)) {
-> +               tee_shm_free(shm);
-> +               return ret;
-> +       }
-> +
-> +       return shm;
->  }
->  EXPORT_SYMBOL_GPL(tee_shm_register_user_buf);
->
-> @@ -330,8 +354,9 @@ EXPORT_SYMBOL_GPL(tee_shm_register_user_buf);
->  struct tee_shm *tee_shm_register_kernel_buf(struct tee_context *ctx,
->                                             void *addr, size_t length)
->  {
-> -       return tee_shm_register(ctx, (unsigned long)addr, length,
-> -                               TEE_SHM_DMA_BUF | TEE_SHM_KERNEL_MAPPED);
-> +       u32 f = TEE_SHM_REGISTER | TEE_SHM_KERNEL_MAPPED;
-
-Ditto.
-
--Sumit
-
-> +
-> +       return register_shm_helper(ctx, (unsigned long)addr, length, f, -1);
->  }
->  EXPORT_SYMBOL_GPL(tee_shm_register_kernel_buf);
->
-> diff --git a/include/linux/tee_drv.h b/include/linux/tee_drv.h
-> index 029c9a0590cc..e4f32885e273 100644
-> --- a/include/linux/tee_drv.h
-> +++ b/include/linux/tee_drv.h
-> @@ -278,17 +278,6 @@ struct tee_shm *tee_shm_alloc_priv_kernel_buf(struct tee_context *ctx,
->                                               size_t size);
->  struct tee_shm *tee_shm_alloc_kernel_buf(struct tee_context *ctx, size_t size);
->
-> -/**
-> - * tee_shm_register() - Register shared memory buffer
-> - * @ctx:       Context that registers the shared memory
-> - * @addr:      Address is userspace of the shared buffer
-> - * @length:    Length of the shared buffer
-> - * @flags:     Flags setting properties for the requested shared memory.
-> - *
-> - * @returns a pointer to 'struct tee_shm'
-> - */
-> -struct tee_shm *tee_shm_register(struct tee_context *ctx, unsigned long addr,
-> -                                size_t length, u32 flags);
->  struct tee_shm *tee_shm_register_user_buf(struct tee_context *ctx,
->                                           unsigned long addr, size_t length);
->  struct tee_shm *tee_shm_register_kernel_buf(struct tee_context *ctx,
-> --
-> 2.31.1
->
+Reviewed-by: Ramalingam C <ramalingam.c@intel.com>
+>  	 */
+>  	__u64 size;
+>  	/**
+> -- 
+> 2.25.1
+> 
