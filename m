@@ -2,84 +2,115 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DF09C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 19:23:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EFFDC433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 19:32:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347238AbiATTXf (ORCPT
+        id S1347288AbiATTcI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 14:23:35 -0500
-Received: from conuserg-08.nifty.com ([210.131.2.75]:24706 "EHLO
-        conuserg-08.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243427AbiATTXb (ORCPT
+        Thu, 20 Jan 2022 14:32:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45636 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347174AbiATTcF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 14:23:31 -0500
-Received: from grover.. (133-32-232-101.west.xps.vectant.ne.jp [133.32.232.101]) (authenticated)
-        by conuserg-08.nifty.com with ESMTP id 20KJMCMO001376;
-        Fri, 21 Jan 2022 04:22:13 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-08.nifty.com 20KJMCMO001376
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1642706533;
-        bh=e7aATIIG+VEhoI3nC/mHzVmccU9dk9dBlThTaanPlSw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mbJhvdlLRE2ESnBfuaVbAUo5c0rr+qIWClKFNU+NF5n3/pqjMaEJoFHBtArAzhtyZ
-         025imjOK78Rz6EXfNri06RXcAwNsIULJs7Mo9w8CKmUlxRADfeoHGCUS3QTVv7N20r
-         XlWZNYrbzatI5j98vt7cqhU1f09lJzquJmuzM7F7b8esaEqRgU2rW3w38orsqlO1M4
-         L+ZCPARxdBcMSFnw0YHgkAFt7kPVGkYcrIqub9G10HclxfMgCKf1/ki7p7N9TYJaq0
-         aG5ulSbCQ91EP/xocZT2enqbmRcmpdy0j9TG7gDTOZ2NcirY6y+Kn0MSb8A7ZjiTNu
-         oGxK43KW4aI2w==
-X-Nifty-SrcIP: [133.32.232.101]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     linux-kbuild@vger.kernel.org
-Cc:     Michal Kubecek <mkubecek@suse.cz>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        David Howells <dhowells@redhat.com>,
-        David Woodhouse <dwmw2@infradead.org>,
-        keyrings@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] certs: Fix build error when CONFIG_MODULE_SIG_KEY is empty
-Date:   Fri, 21 Jan 2022 04:22:05 +0900
-Message-Id: <20220120192205.525103-2-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220120192205.525103-1-masahiroy@kernel.org>
-References: <20220120192205.525103-1-masahiroy@kernel.org>
+        Thu, 20 Jan 2022 14:32:05 -0500
+Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59E1CC06173F
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 11:32:05 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id d7so5976857plr.12
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 11:32:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=squareup.com; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=X5WAzIxDTkyxIZIfLA7zVlKDebLcwsAnnd4EsqerCs0=;
+        b=PXAUFdrg39jWP9KQSJnqZHseJEry2XHsAATfJztAz4ao8s+ncqljBdum3TMtcq7hXY
+         h+VpEzNzAdk3hxV/NMEZdUL8kzdX3qWWMzXEfqJuxtCaeH5JZRjDs/7crmLENOMcieu+
+         iPHEVsSHXL2FUsXZfeFIaZdZSlipkW2bKvUQQ=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=X5WAzIxDTkyxIZIfLA7zVlKDebLcwsAnnd4EsqerCs0=;
+        b=wBMMp0kLnCktOdxD+gRDpg6vxxL1UOLRtLl6g1/BKTMb/p3K4YFuU03WeimMG94Z3U
+         5BRAFDJFfViotpgjTYXHdysXdn6xodggub97XfLXxYF56WAG2F4E1CwdSECocI/hXWdS
+         uL1nUkQSlzihknWyXsZCBpfZi9Y9FLtQgxruefulnmYZXhXbp09OKtwbO5CtOGhrV2g+
+         9+GsLTfGpQlQ+JzNN5cvGMKg9TLyjeSkgrO008fhRshs2rp+akB3NTlNPtqRBSPWwy++
+         VfzgbBpmQjBKEfiQNhHQw+4v5iqwBjin3RhKqn39TorJ+eKEry5SvLq9wAJj2nxpNaze
+         UALw==
+X-Gm-Message-State: AOAM530CLs242SBKCZBYr2Sn5RcYhTreQ5dE8xXFT+DhBjAUFusaIT3S
+        K1H++PFOB0VCdp5g2lgOyIrPp4Wo+hG2qw==
+X-Google-Smtp-Source: ABdhPJysjmZstPUoFDXt61dN+xUALOtaMIIfAuYp0kfR47pU8wHWGaxbjf/YzPdWDERzDMsr6+j9ZQ==
+X-Received: by 2002:a17:902:8e82:b0:149:b26a:b9c8 with SMTP id bg2-20020a1709028e8200b00149b26ab9c8mr443501plb.143.1642707124317;
+        Thu, 20 Jan 2022 11:32:04 -0800 (PST)
+Received: from benl-m5lvdt.local ([2600:1700:87d7:48f:b42f:611e:846e:37fd])
+        by smtp.gmail.com with ESMTPSA id rj9sm3254062pjb.49.2022.01.20.11.32.02
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 20 Jan 2022 11:32:03 -0800 (PST)
+Subject: Re: [PATCH v2] drivers: thermal: tsens: respect thermal_device_mode
+ in threshold irq reporting
+To:     Amit Kucheria <amitk@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Linux PM list <linux-pm@vger.kernel.org>,
+        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+References: <20220114031730.25621-1-benl@squareup.com>
+ <CAHLCerNYXxrW=K6hQ38mXd+3V-u=5_NFXKBoaOx+yUaYW5Zu7A@mail.gmail.com>
+From:   Benjamin Li <benl@squareup.com>
+Message-ID: <30c38867-78b0-d3a1-ffcf-9612a7befc3a@squareup.com>
+Date:   Thu, 20 Jan 2022 11:32:01 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHLCerNYXxrW=K6hQ38mXd+3V-u=5_NFXKBoaOx+yUaYW5Zu7A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Since b8c96a6b466c ("certs: simplify $(srctree)/ handling and remove
-config_filename macro"), when CONFIG_MODULE_SIG_KEY is empty,
-signing_key.x509 fails to build:
+On 1/19/22 4:33 PM, Bjorn Andersson <bjorn.andersson@linaro.org> wrote:
+> Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-    CERT    certs/signing_key.x509
-  Usage: extract-cert <source> <dest>
-  make[1]: *** [certs/Makefile:78: certs/signing_key.x509] Error 2
-  make: *** [Makefile:1831: certs] Error 2
+Thanks!
 
-Pass "" to the first argument of extract-cert to fix the build error.
+On 1/20/22 3:40 AM, Amit Kucheria wrote:
+>> +                               dev_dbg(priv->dev, "[%u] %s: TZ update trigger (%d mC)\n",
+>> +                                       hw_id, __func__, temp);
+>> +                               thermal_zone_device_update(s->tzd, THERMAL_EVENT_UNSPECIFIED);
+>> +                       } else {
+>> +                               dev_dbg(priv->dev, "[%u] %s: TZ update trigger (%d mC) skipped as zone disabled\n",
+> 
+> Hmm. I don't like the fact that these messages won't be visible to
+> users in dmesg unless they're debugging. This change puts the SoC in a
+> potentially unsafe state. Perhaps we should print a ratelimited
+> message in the logs that we're operating outside safety limits?
 
-Link: https://lore.kernel.org/linux-kbuild/20220120094606.2skuyb26yjlnu66q@lion.mk-sys.cz/T/#u
-Fixes: b8c96a6b466c ("certs: simplify $(srctree)/ handling and remove config_filename macro")
-Reported-by: Michal Kubecek <mkubecek@suse.cz>
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
+That seems fine, I'll change to dev_info_ratelimited and make the message
+a bit scarier.
 
- certs/Makefile | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+>> +                                       hw_id, __func__, temp);
+>> +                       }
+>>                 } else {
+>> -                       dev_dbg(priv->dev, "[%u] %s: no violation:  %d\n",
+>> -                               hw_id, __func__, temp);
+>> +                       dev_dbg(priv->dev, "[%u] %s: no violation:  %d\n", hw_id, __func__, temp);
+> 
+> Get rid of this hunk, it is unrelated to the above change.
 
-diff --git a/certs/Makefile b/certs/Makefile
-index 0c459cfd09df..3ea7fe60823f 100644
---- a/certs/Makefile
-+++ b/certs/Makefile
-@@ -75,7 +75,7 @@ endif
- $(obj)/system_certificates.o: $(obj)/signing_key.x509
- 
- $(obj)/signing_key.x509: $(X509_DEP) $(obj)/extract-cert FORCE
--	$(call if_changed,extract_certs,$(if $(X509_DEP),$<,$(CONFIG_MODULE_SIG_KEY)))
-+	$(call if_changed,extract_certs,$(if $(CONFIG_MODULE_SIG_KEY),$(if $(X509_DEP),$<,$(CONFIG_MODULE_SIG_KEY)),""))
- endif # CONFIG_MODULE_SIG
- 
- targets += signing_key.x509
--- 
-2.32.0
+Will do.
 
+
+> 
+>>                 }
+>>
+>>                 if (tsens_version(priv) < VER_0_1) {
+>> --
+>> 2.17.1
+>>
