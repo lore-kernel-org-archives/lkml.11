@@ -2,117 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE174C433FE
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 10:32:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE534C433F5
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 10:34:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376320AbiATKcy (ORCPT
+        id S1376321AbiATKe2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 05:32:54 -0500
-Received: from guitar.tcltek.co.il ([84.110.109.230]:55517 "EHLO mx.tkos.co.il"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1359851AbiATKcx (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 05:32:53 -0500
-Received: from tarshish (unknown [10.0.8.4])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id A83A7440EC4;
-        Thu, 20 Jan 2022 12:32:41 +0200 (IST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=tkos.co.il;
-        s=default; t=1642674762;
-        bh=vLMmNW2zYd4cs+GrkWWq8UgDVQ4AcyicuNf3Ub6yOBM=;
-        h=References:From:To:Cc:Subject:Date:In-reply-to:From;
-        b=PJf4vnRUn6ZMWWDokawzeHfIXZb+pppxcGRJUNB62fmaSCRCX1CIDwvyWLchN9dcS
-         ksNv22a841TrpPPvuXRhs33vKx/wGpP2FcVXCh2H23lq2D7cm4ekodRlbHLM0s4yTq
-         w4dyVJO2mveUsYlfzvcdJmT+HFsA+IESJTzoTG/vijQQqu0cUkcFoKyX3t43p0vgnR
-         feBJMrb6PkY+rxk7evREegEIXqaDZtBn+zOFns93Xfi0sjklWOvMNaD9oa9/OkQmte
-         52PgdUQkfhMVQ+vPQuIsztHuTzwSPlG5U+bW9ExUdkO8aRuJh23kDqzx+31wzz0JfK
-         AdCw9SLMbl//g==
-References: <20220119002438.106079-1-sean.anderson@seco.com>
- <87ee53fv01.fsf@tarshish>
- <1965fc315525b8ab26cf9f71f939c24d@codeaurora.org>
-User-agent: mu4e 1.6.10; emacs 27.1
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Kathiravan T <kathirav@codeaurora.org>
-Cc:     Sean Anderson <sean.anderson@seco.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
-        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        Balaji Prakash J <bjagadee@codeaurora.org>,
-        linux-kernel@vger.kernel.org,
-        Robert Hancock <robert.hancock@calian.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH v2 0/7] usb: dwc3: Calculate REFCLKPER et. al. from
- reference clock
-Date:   Thu, 20 Jan 2022 12:29:32 +0200
-In-reply-to: <1965fc315525b8ab26cf9f71f939c24d@codeaurora.org>
-Message-ID: <871r12g0j2.fsf@tarshish>
+        Thu, 20 Jan 2022 05:34:28 -0500
+Received: from mout.kundenserver.de ([217.72.192.74]:39841 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234927AbiATKeX (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Thu, 20 Jan 2022 05:34:23 -0500
+Received: from mail-wm1-f53.google.com ([209.85.128.53]) by
+ mrelayeu.kundenserver.de (mreue106 [213.165.67.113]) with ESMTPSA (Nemesis)
+ id 1M3UEW-1nB2jf1J34-000aYh; Thu, 20 Jan 2022 11:34:21 +0100
+Received: by mail-wm1-f53.google.com with SMTP id q141-20020a1ca793000000b00347b48dfb53so12714962wme.0;
+        Thu, 20 Jan 2022 02:34:21 -0800 (PST)
+X-Gm-Message-State: AOAM532mmwt4WDlPeYfxPfmVVWoGR6VohFudIl8oMshBEnKsEHLabE64
+        fddo/O528bZajEpSKh5xNaMt27PNXKxNgnM4XwI=
+X-Google-Smtp-Source: ABdhPJxEAFXYVk6DktXv3061JPbB7MqrKutmOAXqbVu5eyk6Pz36dhnH8dbuNkOxd7GlFiEfJn/5TzSKv0rhSZwiTMY=
+X-Received: by 2002:a7b:ce96:: with SMTP id q22mr8113766wmj.82.1642671479094;
+ Thu, 20 Jan 2022 01:37:59 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <20220120073911.99857-14-guoren@kernel.org>
+In-Reply-To: <20220120073911.99857-14-guoren@kernel.org>
+From:   Arnd Bergmann <arnd@arndb.de>
+Date:   Thu, 20 Jan 2022 10:37:43 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a03-3QTC-vxmnbouK7wBd8iunPGZpX0-Jf6ntS1DY0E=w@mail.gmail.com>
+Message-ID: <CAK8P3a03-3QTC-vxmnbouK7wBd8iunPGZpX0-Jf6ntS1DY0E=w@mail.gmail.com>
+Subject: Re: [PATCH V3 13/17] riscv: compat: signal: Add rt_frame implementation
+To:     Guo Ren <guoren@kernel.org>
+Cc:     Palmer Dabbelt <palmer@dabbelt.com>, Arnd Bergmann <arnd@arndb.de>,
+        Anup Patel <anup@brainfault.org>,
+        gregkh <gregkh@linuxfoundation.org>,
+        liush <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>,
+        Drew Fustini <drew@beagleboard.org>,
+        Wang Junqiang <wangjunqiang@iscas.ac.cn>,
+        Christoph Hellwig <hch@lst.de>,
+        Christoph Hellwig <hch@infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-riscv <linux-riscv@lists.infradead.org>,
+        linux-csky@vger.kernel.org,
+        linux-s390 <linux-s390@vger.kernel.org>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        inux-parisc@vger.kernel.org,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "the arch/x86 maintainers" <x86@kernel.org>,
+        Guo Ren <guoren@linux.alibaba.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Provags-ID: V03:K1:maXbNfNUf4coYMldaGrFVEumiNLwf3mNjO8XH1NNRoQtd2zeNdf
+ gJEKLqKMfYWyqs6qTQw//UbtBSSV7qnDMo4ZyuQD84WhLaDnkmEwjBajkAQ4pB7qq2o0a3R
+ +22Xsievc4CmTwghx28LxQOByrgKHl80yDKUA/B1bqK2dqdxv8c4iCHGcnVEngTzHZSLqLW
+ npYIW6C29QfRyI0RmBDuA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:5eelWh45nRQ=:AMM50bWtIrqXR/xRnTg739
+ oGEH6ShLu3ymDZw+hsNqhPbKWVHQNfN/3jsM7tWA0iDBQ1y1xtekBTK0+aXoQ/VBWEBdmyEPJ
+ qyv4Ve/9RE+GqfZomw4fOrm8KTGD9xhwvK9VMGudqtjJSOZK4uiTo30XZTu0EG2IA8j0YHFyr
+ 0uxBgeOaSGDtgAw45cc9K+qNzaQ8ib8VEf3wZLcs9IKyZTg8rTwhOrM9biEV/LgK/kFvSlMnd
+ rs9MRvxF5IsE+cw7rvT13frPZuWKwSgZOlxNarR4UDADuAHHndwfIRY2D/dqkCpnrYA4zTn8a
+ ZqPNAeBjWgMB0zjSj+RS+Mk5vqae59Y1ZklhScn9tn47CsOSkcuhvVZT7fwguPnacB6fGOpd6
+ CD1P3r7RBqU4v1+pJZOKmrHm8R/J5YjZ8ofgRJ0qaKenTATdefw3yhyjRJzXH51Zt4EtYRbAa
+ 2sF1uUkto7mgVq/71+FsAoNtxyY8QdPkQVzJAn814eVPzXCExvgQkutB53i6RcNS/iPJy+Dac
+ rK7k8YgLXzNMUL3GQei2uh09d4O4tW6Qq2tbr8GUlOZj6Ts/ZlDv70b5Umfw94iQAEB3T0Lzl
+ ZrwZ10uZR4K4wA3JzBBILU0gjA7XNdaMgTIQLJh1BoSfMlinYRGJ5OPUymdIN8/oUQhxcfER5
+ apKGnaHiBU66x3JTNDT/QrJT3BABEeZvJ54m0K1ciYAjHC46PoeYWsChBKaKnXgyt43uT+OQr
+ YetzrTAzjjsVrRr2FhV4LSBP07YLx4v84Qsp1bIv6ZPA9QqCfI1TFcFbNY/QkQaw/eXMpTgNb
+ nfiUfWvLadhY0FJAgIBxgkQwBMNAFnVXFfi4PedWKF5OUlaTI8Pc9eYGapjDiLnBOxhOAC3
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Kathiravan,
-
-On Thu, Jan 20 2022, Kathiravan T wrote:
-> On 2022-01-19 23:44, Baruch Siach wrote:
->> Hi Sean,
->> On Tue, Jan 18 2022, Sean Anderson wrote:
->>> This is a rework of patches 3-5 of [1]. It attempts to correctly program
->>> REFCLKPER and REFCLK_FLADJ based on the reference clock frequency. Since
->>> we no longer need a special property duplicating this configuration,
->>> snps,ref-clock-period-ns is deprecated.
->>> Please test this! Patches 3/4 in this series have the effect of
->>> programming REFCLKPER and REFCLK_FLADJ on boards which already configure
->>> the "ref" clock. I have build tested, but not much else.
->> Tested here on IPQ6010 based system. USB still works. But the with 
->> "ref"
->> clock at 24MHz, period is calculated as 0x29. Previous
->> snps,ref-clock-period-ns value used to be 0x32.
->> Is that expected?
+On Thu, Jan 20, 2022 at 8:39 AM <guoren@kernel.org> wrote:
 >
-> Yes, it is 0x29 for IPQ60xx based SoCs. In downstream it was wrongly mentioned
-> as 0x32, which was corrected recently.
+> From: Guo Ren <guoren@linux.alibaba.com>
+>
+> Implement compat_setup_rt_frame for sigcontext save & restore. The
+> main process is the same with signal, but the rv32 pt_regs' size
+> is different from rv64's, so we needs convert them.
+>
+> Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
+> Signed-off-by: Guo Ren <guoren@kernel.org>
+> Cc: Arnd Bergmann <arnd@arndb.de>
 
-Thanks for the update. This needs fixing in upstream kernel. I'll send a
-patch.
+I hope someone else can properly review this part, it's not my area
+but it looks complex enough that it could bring subtle bugs.
 
-For some reason USB appears to work here with both values. Is it because
-I only use USB2 signals? If this is the case them I can not actually
-test this series on my system.
-
-Thanks,
-baruch
-
->>> [1] 
->>> https://lore.kernel.org/linux-usb/20220114044230.2677283-1-robert.hancock@calian.com/
->>> Changes in v2:
->>> - Document clock members
->>> - Also program GFLADJ.240MHZDECR
->>> - Don't program GFLADJ if the version is < 2.50a
->>> - Add snps,ref-clock-frequency-hz property for ACPI
->>> Sean Anderson (7):
->>>   dt-bindings: usb: dwc3: Deprecate snps,ref-clock-period-ns
->>>   usb: dwc3: Get clocks individually
->>>   usb: dwc3: Calculate REFCLKPER based on reference clock
->>>   usb: dwc3: Program GFLADJ
->>>   usb: dwc3: Add snps,ref-clock-frequency-hz property for ACPI
->>>   arm64: dts: zynqmp: Move USB clocks to dwc3 node
->>>   arm64: dts: ipq6018: Use reference clock to set dwc3 period
->>>  .../devicetree/bindings/usb/snps,dwc3.yaml    |   7 +-
->>>  arch/arm64/boot/dts/qcom/ipq6018.dtsi         |   3 +-
->>>  .../arm64/boot/dts/xilinx/zynqmp-clk-ccf.dtsi |   4 +-
->>>  arch/arm64/boot/dts/xilinx/zynqmp.dtsi        |   4 +-
->>>  drivers/usb/dwc3/core.c                       | 112 +++++++++++++++---
->>>  drivers/usb/dwc3/core.h                       |  17 ++-
->>>  6 files changed, 120 insertions(+), 27 deletions(-)
-
-
--- 
-                                                     ~. .~   Tk Open Systems
-=}------------------------------------------------ooO--U--Ooo------------{=
-   - baruch@tkos.co.il - tel: +972.52.368.4656, http://www.tkos.co.il -
+       Arnd
