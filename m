@@ -2,164 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC12BC433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:00:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A720C433EF
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 11:02:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230146AbiATLAq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 06:00:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40358 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230071AbiATLAm (ORCPT
+        id S230162AbiATLCv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 06:02:51 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:57686 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230145AbiATLCu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 06:00:42 -0500
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CDAEC061574
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 03:00:41 -0800 (PST)
-Received: by mail-lf1-x131.google.com with SMTP id x22so20043909lfd.10
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 03:00:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UPbDMiKKkCnJ7JFAF+4/3sq+Zk2yl1W5R6/aNYWR0zw=;
-        b=oMYL5gHJxT4GG+l/3JjfM/S7RG6byyXjxy0CcvfRV2mmD42OeYwpbga0iHstV3rQk3
-         zSm85WAiCIzasDplZ/prhy871B8MtzN8IzsnSYx5p5vqvr6vRjXsZYxgZGDNtntbKznm
-         4vnCgCU2o5GlbuWs4pE126le/bqdXgmgUoXmt8i4hxOgunEyqO1Fbttm1Vm8p6oSjKd+
-         ZFpgAz+gyXnv1GP2b62TmKBvINh5q8C+7jTSeC8nxq84a55EYpenhl4mNa4Kn0GeBtnz
-         z9Q7XPcfkfcjBO03yG+GkDC5gEfb6V1NttBLTZIdN2tLCRm+V6ruS0d9cWEQsfu9tZLk
-         pkaw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UPbDMiKKkCnJ7JFAF+4/3sq+Zk2yl1W5R6/aNYWR0zw=;
-        b=NTWtFNjPd4nTKk0O/q1C6d8Ig34nDbdcSv2mZmMCulIk+i6o57nlkW2UuP1l+MPxZh
-         gzEwrgB2kZE3sKQVwAW/oXlO+KbRRFPFYwKeQEyCJhdOuG0qTAh6VFXLy+9UOMpkTUcV
-         OSF7UrLdehLyBQokZSeUHsIQHP65ou/KcWNTOPOrvCtnI/HrcEL0H70z/PnunDEiu7W/
-         gkc3ZDlufq40bdTyQqQ0CLniq7Y2TAkcvNpyX+1wJUWoDty95kJkJuQmXGp0sJpcBFes
-         WXzClASuNNMYwZSFP7H0QTfkhF1EMhw6Vr42XTn0Mbsub1BiGwgZtdn2iQl6Ud1iUJC+
-         EeKg==
-X-Gm-Message-State: AOAM532IWvPMuEUIVuZ5PqnTiiAyNe5KYQZSbBdHD6xg50U9yompecTO
-        SzK0+Tt2eAtnVFxBbM5Tr71zF4NsJqoOMqCOsV8NWw==
-X-Google-Smtp-Source: ABdhPJxaBeypZlrKXUlyJh6fatR1/1ha21PWv5uN37sKk7M1pAW+9sqQ1//5GhfYc+4dyPj3Yi4ZoQw41pF7x4mESIU=
-X-Received: by 2002:a2e:9b47:: with SMTP id o7mr21706611ljj.242.1642676439825;
- Thu, 20 Jan 2022 03:00:39 -0800 (PST)
+        Thu, 20 Jan 2022 06:02:50 -0500
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by smtp-out2.suse.de (Postfix) with ESMTPS id 8A89C1F766;
+        Thu, 20 Jan 2022 11:02:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1642676569; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=p3BqDV1ig3o00bV+/31wlTcHkbP1cECkqVf9yFw8L1Q=;
+        b=01SrN6rMZ1shkMT4kYWA9HnqBDMzl6gT93XmfiFF1n1HO3dqQqp8mNa6fp9MKHCSLH9vkF
+        UgVRXuuNIBCvWIXM3WamVb9ywMHjkDdKazvvnpHEhhph+MjqxSn6VJPaRGHCpijdcWUFZF
+        XPI5BGPgzjJDtAOR6zaoDbJ5sHNuRx0=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1642676569;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=p3BqDV1ig3o00bV+/31wlTcHkbP1cECkqVf9yFw8L1Q=;
+        b=QlcXv1R6f60jWk/EAYeSynTum2DIWp37sF0SfSTV7ST/H3UwA5k6aepXluNoR9Cv7i3lKk
+        vfcQc75N5T2YqfCw==
+Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
+        (No client certificate requested)
+        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 72B2B13E46;
+        Thu, 20 Jan 2022 11:02:49 +0000 (UTC)
+Received: from dovecot-director2.suse.de ([192.168.254.65])
+        by imap2.suse-dmz.suse.de with ESMTPSA
+        id pfYIG1lB6WH8NwAAMHmgww
+        (envelope-from <hare@suse.de>); Thu, 20 Jan 2022 11:02:49 +0000
+Subject: Re: [PATCH 1/2] block: remove commented out code from diskstats_show
+To:     Daniel Wagner <dwagner@suse.de>, linux-block@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Jens Axboe <axboe@kernel.dk>
+References: <20220120105248.117025-1-dwagner@suse.de>
+ <20220120105248.117025-2-dwagner@suse.de>
+From:   Hannes Reinecke <hare@suse.de>
+Message-ID: <83b281e5-16c2-d659-172d-3a2c911c7ff0@suse.de>
+Date:   Thu, 20 Jan 2022 12:02:49 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.12.0
 MIME-Version: 1.0
-References: <20220114150824.3578829-1-jens.wiklander@linaro.org> <20220114150824.3578829-10-jens.wiklander@linaro.org>
-In-Reply-To: <20220114150824.3578829-10-jens.wiklander@linaro.org>
-From:   Sumit Garg <sumit.garg@linaro.org>
-Date:   Thu, 20 Jan 2022 16:30:28 +0530
-Message-ID: <CAFA6WYOOLAxwK6P8=kcG29FGv3YG=jrOt_uAqEnrLmRwbQGU6w@mail.gmail.com>
-Subject: Re: [PATCH v2 09/12] tee: add tee_shm_register_{user,kernel}_buf()
-To:     Jens Wiklander <jens.wiklander@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Devaraj Rangasamy <Devaraj.Rangasamy@amd.com>,
-        Rijo Thomas <Rijo-john.Thomas@amd.com>,
-        David Howells <dhowells@redhat.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20220120105248.117025-2-dwagner@suse.de>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 14 Jan 2022 at 20:38, Jens Wiklander <jens.wiklander@linaro.org> wrote:
->
-> Adds the two new functions tee_shm_register_user_buf() and
-> tee_shm_register_kernel_buf() which should be used instead of the old
-> tee_shm_register().
->
-> This avoids having the caller supplying the flags parameter which
-> exposes a bit more than desired of the internals of the TEE subsystem.
->
-> Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
+On 1/20/22 11:52 AM, Daniel Wagner wrote:
+> The diskstats format is ABI, so we just can't add a new header. The
+> code snippet has been commented out since at least v2.6.12-rc2.
+> Remove it.
+> 
+> Signed-off-by: Daniel Wagner <dwagner@suse.de>
 > ---
->  drivers/tee/tee_core.c  |  3 +--
->  drivers/tee/tee_shm.c   | 34 ++++++++++++++++++++++++++++++++++
->  include/linux/tee_drv.h |  4 ++++
->  3 files changed, 39 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/tee/tee_core.c b/drivers/tee/tee_core.c
-> index a15812baaeb1..8aa1a4836b92 100644
-> --- a/drivers/tee/tee_core.c
-> +++ b/drivers/tee/tee_core.c
-> @@ -334,8 +334,7 @@ tee_ioctl_shm_register(struct tee_context *ctx,
->         if (data.flags)
->                 return -EINVAL;
->
-> -       shm = tee_shm_register(ctx, data.addr, data.length,
-> -                              TEE_SHM_DMA_BUF | TEE_SHM_USER_MAPPED);
-> +       shm = tee_shm_register_user_buf(ctx, data.addr, data.length);
->         if (IS_ERR(shm))
->                 return PTR_ERR(shm);
->
-> diff --git a/drivers/tee/tee_shm.c b/drivers/tee/tee_shm.c
-> index d51bf97ce7e5..6a1dbce75616 100644
-> --- a/drivers/tee/tee_shm.c
-> +++ b/drivers/tee/tee_shm.c
-> @@ -301,6 +301,40 @@ struct tee_shm *tee_shm_register(struct tee_context *ctx, unsigned long addr,
->  }
->  EXPORT_SYMBOL_GPL(tee_shm_register);
->
-> +/**
-> + * tee_shm_register_user_buf() - Register a userspace shared memory buffer
-> + * @ctx:       Context that registers the shared memory
-> + * @addr:      The userspace address of the shared buffer
-> + * @length:    Length of the shared buffer
-> + *
-> + * @returns a pointer to 'struct tee_shm'
-> + */
-> +struct tee_shm *tee_shm_register_user_buf(struct tee_context *ctx,
-> +                                         unsigned long addr, size_t length)
-> +{
-> +       return tee_shm_register(ctx, addr, length,
-> +                               TEE_SHM_DMA_BUF | TEE_SHM_USER_MAPPED);
-> +}
-> +EXPORT_SYMBOL_GPL(tee_shm_register_user_buf);
-> +
+>  block/genhd.c | 8 --------
+>  1 file changed, 8 deletions(-)
+> 
+> diff --git a/block/genhd.c b/block/genhd.c
+> index 626c8406f21a..c9d4386dd177 100644
+> --- a/block/genhd.c
+> +++ b/block/genhd.c
+> @@ -1162,14 +1162,6 @@ static int diskstats_show(struct seq_file *seqf, void *v)
+>  	struct disk_stats stat;
+>  	unsigned long idx;
+>  
+> -	/*
+> -	if (&disk_to_dev(gp)->kobj.entry == block_class.devices.next)
+> -		seq_puts(seqf,	"major minor name"
+> -				"     rio rmerge rsect ruse wio wmerge "
+> -				"wsect wuse running use aveq"
+> -				"\n\n");
+> -	*/
+> -
+>  	rcu_read_lock();
+>  	xa_for_each(&gp->part_tbl, idx, hd) {
+>  		if (bdev_is_partition(hd) && !bdev_nr_sectors(hd))
+> 
+Reviewed-by: Hannes Reinecke <hare@suse.de>
 
-Similar comment as for tee_shm_alloc_user_buf() in patch #3. This
-isn't required to be exported but rather a private function to TEE
-core.
+Cheers,
 
--Sumit
-
-> +/**
-> + * tee_shm_register_kernel_buf() - Register kernel memory to be shared with
-> + *                                secure world
-> + * @ctx:       Context that registers the shared memory
-> + * @addr:      The buffer
-> + * @length:    Length of the buffer
-> + *
-> + * @returns a pointer to 'struct tee_shm'
-> + */
-> +
-> +struct tee_shm *tee_shm_register_kernel_buf(struct tee_context *ctx,
-> +                                           void *addr, size_t length)
-> +{
-> +       return tee_shm_register(ctx, (unsigned long)addr, length,
-> +                               TEE_SHM_DMA_BUF | TEE_SHM_KERNEL_MAPPED);
-> +}
-> +EXPORT_SYMBOL_GPL(tee_shm_register_kernel_buf);
-> +
->  static int tee_shm_fop_release(struct inode *inode, struct file *filp)
->  {
->         tee_shm_put(filp->private_data);
-> diff --git a/include/linux/tee_drv.h b/include/linux/tee_drv.h
-> index e71cb0411e9c..029c9a0590cc 100644
-> --- a/include/linux/tee_drv.h
-> +++ b/include/linux/tee_drv.h
-> @@ -289,6 +289,10 @@ struct tee_shm *tee_shm_alloc_kernel_buf(struct tee_context *ctx, size_t size);
->   */
->  struct tee_shm *tee_shm_register(struct tee_context *ctx, unsigned long addr,
->                                  size_t length, u32 flags);
-> +struct tee_shm *tee_shm_register_user_buf(struct tee_context *ctx,
-> +                                         unsigned long addr, size_t length);
-> +struct tee_shm *tee_shm_register_kernel_buf(struct tee_context *ctx,
-> +                                           void *addr, size_t length);
->
->  /**
->   * tee_shm_is_registered() - Check if shared memory object in registered in TEE
-> --
-> 2.31.1
->
+Hannes
+-- 
+Dr. Hannes Reinecke		           Kernel Storage Architect
+hare@suse.de			                  +49 911 74053 688
+SUSE Software Solutions Germany GmbH, Maxfeldstr. 5, 90409 Nürnberg
+HRB 36809 (AG Nürnberg), GF: Felix Imendörffer
