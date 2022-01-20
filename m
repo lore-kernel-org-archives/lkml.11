@@ -2,113 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A8E5C4332F
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 02:02:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EBC1C43217
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 02:04:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358157AbiATCCE (ORCPT
+        id S1358165AbiATCD7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Wed, 19 Jan 2022 21:02:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32908 "EHLO
+        Wed, 19 Jan 2022 21:03:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358149AbiATCCD (ORCPT
+        with ESMTP id S232041AbiATCD6 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Wed, 19 Jan 2022 21:02:03 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0732C061574
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 18:02:02 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id f12-20020a056902038c00b006116df1190aso8611367ybs.20
-        for <linux-kernel@vger.kernel.org>; Wed, 19 Jan 2022 18:02:02 -0800 (PST)
+        Wed, 19 Jan 2022 21:03:58 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48E6C061574;
+        Wed, 19 Jan 2022 18:03:57 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id c9so3893736plg.11;
+        Wed, 19 Jan 2022 18:03:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:message-id:mime-version:subject:from:to:cc;
-        bh=xdUwiaSDktWd6qoicdCm7OxjVqH7uixhadYKrHDPc0M=;
-        b=CB2aleUsk+i4qlNsdDxRBtAYQXwwyLAJicGUOKZQrShQKriQmd9u6zCneI/B61xl27
-         weBPN7jWK8BTv/dFYfOLwAwzLCkg5DG3IpzAFv8BuI0AidPDiuNWkUvI9KG3wTi9b2Ol
-         Sfsv6tu3VH82Apjf/9g46UshMZxDq741k/fJABlhN/OXvjoHvl4YKg0fyUIotqCfxPbc
-         qJGkz9sN6NaYWitGwy7DWtrqR7oPuWpi2ga9UW8NsJG+tDMsWNLaKDUgcSz6v4PZcNOL
-         DeDA0OYcHAOkSN3SX6zvJSXoUlU1Vn34WyT/9l8oHrKE2QfE+7zI/6ERzuVVa+kJMytY
-         YKCQ==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=FKvsHgDw8lU7jb9gWUC0NOGdDixcuWetMqLuAq7PwQk=;
+        b=o6VUFhVlB0pYLSWPb/UZeFqVVej8u+WF+PSwjJN9+5ssoieo8N4WeZrIh5VptUcPMP
+         Yy2xN+SiwfsNLWiqKcdWGZU2uPMigFiLbo4rNpg3xEt+GRlNsN0IcQC8qDqKeEpHdg8f
+         ehV3GX9s86sZd8SEXW5Fg9pypmrrxHZfKERT8Wr9LW+RHJCje/gSrZex6uQSVCPPHFOU
+         mgv32i8qekMw7qZSqRF1dEZVxBqfQu5vcoCsUVck04uS8iFtDzpR10WyfV3BxUNeWs6a
+         EMkkO3AMIqiZuH3aHLSMm4KRtr1R2sC2SDkvDOhBJlabYH4hWZp2Fy9e88qi13XGH00N
+         bgaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:message-id:mime-version:subject:from:to:cc;
-        bh=xdUwiaSDktWd6qoicdCm7OxjVqH7uixhadYKrHDPc0M=;
-        b=PPjfzUcvTyArPUUNOM9XbiY4Ltt4Q2z4P1Pn/p6eaB3F24yzYgPtxBdxrwB9N2Vih6
-         AeZsXnzy+b+2ybTlv4cCXuElY5xJJ/rw+GrVWc0/W+6LuBIUWSWVvdVLPvwpLMJS5IXr
-         5wRlk19CKNtLBJqNzCM7PR7lP+tL+RJpxGL/hulmylkou7oLE7pzQ4d/+cVZEuin/Vm+
-         zu/ODsC6+LQy0VieyUTihuPQiZEP+M96Ll6GvujlKgxdfuuhmcpDNhPLS/jAaxrAjn/z
-         cQbgGFLRWiv2VQlFme2kL73/8fS8JAXqJ8OSqIBtmUXp09H2fP73Wtl+B2zrZrDKSKhP
-         RZ1Q==
-X-Gm-Message-State: AOAM531cc+hksT+/N79tARzW3QDfi4p7loIuOU7qiLbxFufY3dPrSoTD
-        IZCohkbyGdLRBnLEIAmsBe+v4j8=
-X-Google-Smtp-Source: ABdhPJxUfHuY7ew10sneL3xC7xWml/X6PZfGnYwPRFCi5To3Uz7ontNS6MTD6r4fKgz9R2UXXwpK6ng=
-X-Received: from pcc-desktop.svl.corp.google.com ([2620:15c:2ce:200:7641:d112:dd90:7ea1])
- (user=pcc job=sendgmr) by 2002:a05:6902:154f:: with SMTP id
- r15mr15749472ybu.242.1642644121821; Wed, 19 Jan 2022 18:02:01 -0800 (PST)
-Date:   Wed, 19 Jan 2022 18:01:48 -0800
-Message-Id: <20220120020148.1632253-1-pcc@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.34.1.703.g22d0c6ccf7-goog
-Subject: [PATCH v3] mm: use compare-exchange operation to set KASAN page tag
-From:   Peter Collingbourne <pcc@google.com>
-To:     Andrey Konovalov <andreyknvl@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     Peter Collingbourne <pcc@google.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org,
-        Peter Zijlstra <peterz@infradead.org>, stable@vger.kernel.org
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=FKvsHgDw8lU7jb9gWUC0NOGdDixcuWetMqLuAq7PwQk=;
+        b=DhP8QtLVZM6yztHNe+u/b9Hkf2aCLWAVM0K5R5jYIJquy/SKgFumc/uJdKHG2z6OUR
+         5taGV9wmYwHZ992H6JhsCx1kdaJN0c6XC5Xr5a6CMCPdaSuuXyL36Yd4ZvxXyXJvCWa2
+         xBFgRCIJ2tgoWm4BulxOMUHKLuiZOgkZus+8cyDCMXgwajFlswiD84lb1/g9RoxCU9Bg
+         vWVOkxMI4Idf7tf7FTa9NnJL4GYHWnrc8sXO04A83mI2eqWVsEBKS4urItDptkZXITLI
+         qnXagLx5Wj4gnrMFPYhIUhC5baCSmuzpQsOD0J+sBanNTDrx3fQuIDqutDUjZB2x9FX3
+         KsgA==
+X-Gm-Message-State: AOAM532MMzRQF+QgBHXfjHo3rYKP6CnGR0lRPvbG59FY7e/QcMmYKhF4
+        go1mbRozKaQAchrDrI6cA4CQ3KE5pdLJcSnbTJg=
+X-Google-Smtp-Source: ABdhPJxBYyolCvoIAI4tRvAxPacUY//mEyQ2pvpMHa4c+K+6l58b4cCzU4JXW1oxXz/ozcRHDj0xk9dvkouvzalSHl4=
+X-Received: by 2002:a17:903:24d:b0:14a:677d:843a with SMTP id
+ j13-20020a170903024d00b0014a677d843amr36538680plh.129.1642644237330; Wed, 19
+ Jan 2022 18:03:57 -0800 (PST)
+MIME-Version: 1.0
+References: <20220118002214.18271-1-dipenp@nvidia.com> <20220118002214.18271-2-dipenp@nvidia.com>
+In-Reply-To: <20220118002214.18271-2-dipenp@nvidia.com>
+From:   teng sterling <sterlingteng@gmail.com>
+Date:   Thu, 20 Jan 2022 10:03:48 +0800
+Message-ID: <CAMU9jJoFAG4taoN0SSbVGPFMKyUnkT9VkrtatGuRpU-ek+hJ2g@mail.gmail.com>
+Subject: Re: [RFC v4 01/11] Documentation: Add HTE subsystem guide
+To:     Dipen Patel <dipenp@nvidia.com>
+Cc:     smangipudi@nvidia.com, thierry.reding@gmail.com,
+        jonathanh@nvidia.com, linux-kernel@vger.kernel.org,
+        linux-tegra@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linus.walleij@linaro.org, bgolaszewski@baylibre.com,
+        warthog618@gmail.com, devicetree@vger.kernel.org,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        robh+dt@kernel.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-It has been reported that the tag setting operation on newly-allocated
-pages can cause the page flags to be corrupted when performed
-concurrently with other flag updates as a result of the use of
-non-atomic operations. Fix the problem by using a compare-exchange
-loop to update the tag.
+Dipen Patel <dipenp@nvidia.com> =E4=BA=8E2022=E5=B9=B41=E6=9C=8818=E6=97=A5=
+=E5=91=A8=E4=BA=8C 11:06=E5=86=99=E9=81=93=EF=BC=9A
+>
+> Adding hte document which can help understand various APIs implemented
+> in HTE framework for the HTE producers and the consumers.
+>
+> Signed-off-by: Dipen Patel <dipenp@nvidia.com>
+> ---
+> Changes in v2:
+> - Removed explanation, instead added kernel-doc references.
+>
+> Changes in v3:
+> - Addressed grammatical errors.
+>
+> Changes in v4:
+> - Added new API hte_req_ts_by_linedata_ns description.
+> - Removed hte_req_ts_by_hte_name.
+>
+>  Documentation/hte/hte.rst | 83 +++++++++++++++++++++++++++++++++++++++
+Hi Dipen
 
-Signed-off-by: Peter Collingbourne <pcc@google.com>
-Link: https://linux-review.googlesource.com/id/I456b24a2b9067d93968d43b4bb3351c0cec63101
-Fixes: 2813b9c02962 ("kasan, mm, arm64: tag non slab memory allocated via pagealloc")
-Cc: stable@vger.kernel.org
----
-v3:
-- use try_cmpxchg() as suggested by Peter Zijlstra on another
-  patch
+A document build warning will be introduced=EF=BC=8CNeed to add it to the i=
+ndex:
 
-v2:
-- use READ_ONCE()
+1) Create Documentation/hte/index.rst
+2) Add hte/index.rst into Documentation/index.rst
+3) Add hte.rst into Documentation/hte/index.rst
 
- include/linux/mm.h | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
-
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index c768a7c81b0b..87473fe52c3f 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1531,11 +1531,18 @@ static inline u8 page_kasan_tag(const struct page *page)
- 
- static inline void page_kasan_tag_set(struct page *page, u8 tag)
- {
--	if (kasan_enabled()) {
--		tag ^= 0xff;
--		page->flags &= ~(KASAN_TAG_MASK << KASAN_TAG_PGSHIFT);
--		page->flags |= (tag & KASAN_TAG_MASK) << KASAN_TAG_PGSHIFT;
--	}
-+	unsigned long old_flags, flags;
-+
-+	if (!kasan_enabled())
-+		return;
-+
-+	tag ^= 0xff;
-+	old_flags = READ_ONCE(page->flags);
-+	do {
-+		flags = old_flags;
-+		flags &= ~(KASAN_TAG_MASK << KASAN_TAG_PGSHIFT);
-+		flags |= (tag & KASAN_TAG_MASK) << KASAN_TAG_PGSHIFT;
-+	} while (unlikely(!try_cmpxchg(&page->flags, &old_flags, flags)));
- }
- 
- static inline void page_kasan_tag_reset(struct page *page)
--- 
-2.34.1.703.g22d0c6ccf7-goog
-
+Thanks,
+Yanteng
