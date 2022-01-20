@@ -2,37 +2,33 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61282C433EF
-	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 07:41:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 574E9C2BA4C
+	for <linux-kernel@archiver.kernel.org>; Thu, 20 Jan 2022 07:41:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357699AbiATHlY (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 02:41:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50400 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238703AbiATHk6 (ORCPT
+        id S238953AbiATHlb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 02:41:31 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:34964 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357626AbiATHlL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 02:40:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CD08C061747;
-        Wed, 19 Jan 2022 23:40:46 -0800 (PST)
+        Thu, 20 Jan 2022 02:41:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B6E1616E0;
-        Thu, 20 Jan 2022 07:40:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2DD6C340E4;
-        Thu, 20 Jan 2022 07:40:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A99F8B81CF1;
+        Thu, 20 Jan 2022 07:41:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C65EAC340E5;
+        Thu, 20 Jan 2022 07:41:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642664445;
-        bh=I1DaCsmJWZqrk2Lu9bluM5EEVQ99JKN+4wq1YE5MxNY=;
+        s=k20201202; t=1642664467;
+        bh=wRM4wtueioh6YQZpQG2+TQXws9aFfeyGpVKFgP2zx6A=;
         h=From:To:Cc:Subject:Date:From;
-        b=N7UT3X+ReEW5kEif7061gpNyOYbcCtcj2RaQeWcrAHIGT5QoEwq6GpJdRkJS6+NVF
-         RDvNaSxO6cEmUPPsMpm1A1QMD6fkFfDMf6m04GH3R2aHZYhfUcz8jb7USB4+iQJEsH
-         HjpIwUv0X2JIrEZGuVqAvY1Jddv9+pVwiM73f3JNqpy5zRb2hp2xFIt3bxnR8w2stl
-         uJP7YnNzrsxJW6pENTmgBQsghFDQE57IZKTcaF1dC+r+qvlKLg0VBZT2wLooQYxIG9
-         J04gp1d1M/d24oqst/n7SnQl2CBRwpMug5z2uNu/+K+DijNkiPAl2jEpc9nJ9/wmC+
-         7yyp2+eaOa5cA==
+        b=D7FFc2LNaV1KY/N1D2ttzYy7/lRqtZeS6P1HGEfHFylzXDY7j+/IDoE1tjwYu83I0
+         THFv+9nkxmWlbP1eW5AZO8Ck4lS9KIe5NTxJIF9e567w6fpvULP6dyOdD+nTG8JoLG
+         TTqtEwCKjfLPy8mwDNZccH7uwgUjBATz/3KXNuHxf7mQefsW61ortw1Ov6tuhhOqQ7
+         gwHtC0ct+rf2b2bARC7o7UNCWU8xk0iU0s4V+3FUq01en0lLWCdiaPd8JXRG0DzHTZ
+         oztUZm8qZ5vUs6iWTQa9I57fEkP489LZVPl3UdPhASkfX5ecXxaHDRBBvpWhtg7LlJ
+         2L1taPCcz3vVQ==
 From:   guoren@kernel.org
 To:     guoren@kernel.org, palmer@dabbelt.com, arnd@arndb.de,
         anup@brainfault.org, gregkh@linuxfoundation.org,
@@ -44,9 +40,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-riscv@lists.infradead.org,
         inux-parisc@vger.kernel.org, linux-mips@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, x86@kernel.org,
         Guo Ren <guoren@linux.alibaba.com>
-Subject: [PATCH V3 10/17] riscv: compat: Add elf.h implementation
-Date:   Thu, 20 Jan 2022 15:39:03 +0800
-Message-Id: <20220120073911.99857-11-guoren@kernel.org>
+Subject: [PATCH V3 13/17] riscv: compat: signal: Add rt_frame implementation
+Date:   Thu, 20 Jan 2022 15:39:06 +0800
+Message-Id: <20220120073911.99857-14-guoren@kernel.org>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -56,122 +52,318 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Guo Ren <guoren@linux.alibaba.com>
 
-Implement necessary type and macro for compat elf. See the code
-comment for detail.
+Implement compat_setup_rt_frame for sigcontext save & restore. The
+main process is the same with signal, but the rv32 pt_regs' size
+is different from rv64's, so we needs convert them.
 
 Signed-off-by: Guo Ren <guoren@linux.alibaba.com>
 Signed-off-by: Guo Ren <guoren@kernel.org>
 Cc: Arnd Bergmann <arnd@arndb.de>
 ---
- arch/riscv/include/asm/elf.h | 51 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 50 insertions(+), 1 deletion(-)
+ arch/riscv/kernel/Makefile        |   1 +
+ arch/riscv/kernel/compat_signal.c | 243 ++++++++++++++++++++++++++++++
+ arch/riscv/kernel/signal.c        |  13 +-
+ 3 files changed, 256 insertions(+), 1 deletion(-)
+ create mode 100644 arch/riscv/kernel/compat_signal.c
 
-diff --git a/arch/riscv/include/asm/elf.h b/arch/riscv/include/asm/elf.h
-index f53c40026c7a..353b4589c79c 100644
---- a/arch/riscv/include/asm/elf.h
-+++ b/arch/riscv/include/asm/elf.h
-@@ -8,6 +8,8 @@
- #ifndef _ASM_RISCV_ELF_H
- #define _ASM_RISCV_ELF_H
+diff --git a/arch/riscv/kernel/Makefile b/arch/riscv/kernel/Makefile
+index 59cf97faddae..ef47f7d5843f 100644
+--- a/arch/riscv/kernel/Makefile
++++ b/arch/riscv/kernel/Makefile
+@@ -66,4 +66,5 @@ obj-$(CONFIG_JUMP_LABEL)	+= jump_label.o
  
-+#include <uapi/linux/elf.h>
+ obj-$(CONFIG_EFI)		+= efi.o
+ obj-$(CONFIG_COMPAT)		+= compat_syscall_table.o
++obj-$(CONFIG_COMPAT)		+= compat_signal.o
+ obj-$(CONFIG_COMPAT)		+= compat_vdso/
+diff --git a/arch/riscv/kernel/compat_signal.c b/arch/riscv/kernel/compat_signal.c
+new file mode 100644
+index 000000000000..7041742ded08
+--- /dev/null
++++ b/arch/riscv/kernel/compat_signal.c
+@@ -0,0 +1,243 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++
 +#include <linux/compat.h>
- #include <uapi/asm/elf.h>
- #include <asm/auxvec.h>
- #include <asm/byteorder.h>
-@@ -18,11 +20,13 @@
-  */
- #define ELF_ARCH	EM_RISCV
- 
-+#ifndef ELF_CLASS
- #ifdef CONFIG_64BIT
- #define ELF_CLASS	ELFCLASS64
- #else
- #define ELF_CLASS	ELFCLASS32
- #endif
-+#endif
- 
- #define ELF_DATA	ELFDATA2LSB
- 
-@@ -31,6 +35,15 @@
-  */
- #define elf_check_arch(x) ((x)->e_machine == EM_RISCV)
- 
-+#ifdef CONFIG_COMPAT
-+/*
-+ * Use the same code with elf_check_arch, because elf32_hdr &
-+ * elf64_hdr e_machine's offset are different. The checker is
-+ * a little bit simple compare to other architectures.
-+ */
-+#define compat_elf_check_arch(x) ((x)->e_machine == EM_RISCV)
-+#endif
++#include <linux/signal.h>
++#include <linux/uaccess.h>
++#include <linux/syscalls.h>
++#include <linux/tracehook.h>
++#include <linux/linkage.h>
 +
- #define CORE_DUMP_USE_REGSET
- #define ELF_EXEC_PAGESIZE	(PAGE_SIZE)
- 
-@@ -43,8 +56,14 @@
- #define ELF_ET_DYN_BASE		((TASK_SIZE / 3) * 2)
- 
- #ifdef CONFIG_64BIT
-+#ifdef CONFIG_COMPAT
-+#define STACK_RND_MASK		(test_thread_flag(TIF_32BIT) ? \
-+				 0x7ff >> (PAGE_SHIFT - 12) : \
-+				 0x3ffff >> (PAGE_SHIFT - 12))
++#include <asm/ucontext.h>
++#include <asm/vdso.h>
++#include <asm/switch_to.h>
++#include <asm/csr.h>
++
++#define COMPAT_DEBUG_SIG 0
++
++struct compat_sigcontext {
++	struct compat_user_regs_struct sc_regs;
++	union __riscv_fp_state sc_fpregs;
++};
++
++struct compat_ucontext {
++	compat_ulong_t		uc_flags;
++	struct compat_ucontext	*uc_link;
++	compat_stack_t		uc_stack;
++	sigset_t		uc_sigmask;
++	/* There's some padding here to allow sigset_t to be expanded in the
++	 * future.  Though this is unlikely, other architectures put uc_sigmask
++	 * at the end of this structure and explicitly state it can be
++	 * expanded, so we didn't want to box ourselves in here. */
++	__u8		  __unused[1024 / 8 - sizeof(sigset_t)];
++	/* We can't put uc_sigmask at the end of this structure because we need
++	 * to be able to expand sigcontext in the future.  For example, the
++	 * vector ISA extension will almost certainly add ISA state.  We want
++	 * to ensure all user-visible ISA state can be saved and restored via a
++	 * ucontext, so we're putting this at the end in order to allow for
++	 * infinite extensibility.  Since we know this will be extended and we
++	 * assume sigset_t won't be extended an extreme amount, we're
++	 * prioritizing this. */
++	struct compat_sigcontext uc_mcontext;
++};
++
++struct compat_rt_sigframe {
++	struct compat_siginfo info;
++	struct compat_ucontext uc;
++};
++
++#ifdef CONFIG_FPU
++static long compat_restore_fp_state(struct pt_regs *regs,
++	union __riscv_fp_state __user *sc_fpregs)
++{
++	long err;
++	struct __riscv_d_ext_state __user *state = &sc_fpregs->d;
++	size_t i;
++
++	err = __copy_from_user(&current->thread.fstate, state, sizeof(*state));
++	if (unlikely(err))
++		return err;
++
++	fstate_restore(current, regs);
++
++	/* We support no other extension state at this time. */
++	for (i = 0; i < ARRAY_SIZE(sc_fpregs->q.reserved); i++) {
++		u32 value;
++
++		err = __get_user(value, &sc_fpregs->q.reserved[i]);
++		if (unlikely(err))
++			break;
++		if (value != 0)
++			return -EINVAL;
++	}
++
++	return err;
++}
++
++static long compat_save_fp_state(struct pt_regs *regs,
++			  union __riscv_fp_state __user *sc_fpregs)
++{
++	long err;
++	struct __riscv_d_ext_state __user *state = &sc_fpregs->d;
++	size_t i;
++
++	fstate_save(current, regs);
++	err = __copy_to_user(state, &current->thread.fstate, sizeof(*state));
++	if (unlikely(err))
++		return err;
++
++	/* We support no other extension state at this time. */
++	for (i = 0; i < ARRAY_SIZE(sc_fpregs->q.reserved); i++) {
++		err = __put_user(0, &sc_fpregs->q.reserved[i]);
++		if (unlikely(err))
++			break;
++	}
++
++	return err;
++}
 +#else
- #define STACK_RND_MASK		(0x3ffff >> (PAGE_SHIFT - 12))
- #endif
++#define compat_save_fp_state(task, regs) (0)
++#define compat_restore_fp_state(task, regs) (0)
 +#endif
- /*
-  * This yields a mask that user programs can use to figure out what
-  * instruction set this CPU supports.  This could be done in user space,
-@@ -60,11 +79,19 @@ extern unsigned long elf_hwcap;
-  */
- #define ELF_PLATFORM	(NULL)
- 
-+#define COMPAT_ELF_PLATFORM	(NULL)
 +
- #ifdef CONFIG_MMU
- #define ARCH_DLINFO						\
- do {								\
-+	/*							\
-+	 * Note that we add ulong after elf_addr_t because	\
-+	 * casting current->mm->context.vdso triggers a cast	\
-+	 * warning of cast from pointer to integer for		\
-+	 * COMPAT ELFCLASS32.					\
-+	 */							\
- 	NEW_AUX_ENT(AT_SYSINFO_EHDR,				\
--		(elf_addr_t)current->mm->context.vdso);		\
-+		(elf_addr_t)(ulong)current->mm->context.vdso);	\
- 	NEW_AUX_ENT(AT_L1I_CACHESIZE,				\
- 		get_cache_size(1, CACHE_TYPE_INST));		\
- 	NEW_AUX_ENT(AT_L1I_CACHEGEOMETRY,			\
-@@ -90,4 +117,26 @@ do {							\
- 		*(struct user_regs_struct *)regs;	\
- } while (0);
++static long compat_restore_sigcontext(struct pt_regs *regs,
++	struct compat_sigcontext __user *sc)
++{
++	long err;
++	struct compat_user_regs_struct cregs;
++
++	/* sc_regs is structured the same as the start of pt_regs */
++	err = __copy_from_user(&cregs, &sc->sc_regs, sizeof(sc->sc_regs));
++
++	cregs_to_regs(&cregs, regs);
++
++	/* Restore the floating-point state. */
++	if (has_fpu())
++		err |= compat_restore_fp_state(regs, &sc->sc_fpregs);
++	return err;
++}
++
++COMPAT_SYSCALL_DEFINE0(rt_sigreturn)
++{
++	struct pt_regs *regs = current_pt_regs();
++	struct compat_rt_sigframe __user *frame;
++	struct task_struct *task;
++	sigset_t set;
++
++	/* Always make any pending restarted system calls return -EINTR */
++	current->restart_block.fn = do_no_restart_syscall;
++
++	frame = (struct compat_rt_sigframe __user *)regs->sp;
++
++	if (!access_ok(frame, sizeof(*frame)))
++		goto badframe;
++
++	if (__copy_from_user(&set, &frame->uc.uc_sigmask, sizeof(set)))
++		goto badframe;
++
++	set_current_blocked(&set);
++
++	if (compat_restore_sigcontext(regs, &frame->uc.uc_mcontext))
++		goto badframe;
++
++	if (compat_restore_altstack(&frame->uc.uc_stack))
++		goto badframe;
++
++	return regs->a0;
++
++badframe:
++	task = current;
++	if (show_unhandled_signals) {
++		pr_info_ratelimited(
++			"%s[%d]: bad frame in %s: frame=%p pc=%p sp=%p\n",
++			task->comm, task_pid_nr(task), __func__,
++			frame, (void *)regs->epc, (void *)regs->sp);
++	}
++	force_sig(SIGSEGV);
++	return 0;
++}
++
++static long compat_setup_sigcontext(struct compat_rt_sigframe __user *frame,
++	struct pt_regs *regs)
++{
++	struct compat_sigcontext __user *sc = &frame->uc.uc_mcontext;
++	struct compat_user_regs_struct cregs;
++	long err;
++
++	regs_to_cregs(&cregs, regs);
++
++	/* sc_regs is structured the same as the start of pt_regs */
++	err = __copy_to_user(&sc->sc_regs, &cregs, sizeof(sc->sc_regs));
++	/* Save the floating-point state. */
++	if (has_fpu())
++		err |= compat_save_fp_state(regs, &sc->sc_fpregs);
++	return err;
++}
++
++static inline void __user *compat_get_sigframe(struct ksignal *ksig,
++	struct pt_regs *regs, size_t framesize)
++{
++	unsigned long sp;
++	/* Default to using normal stack */
++	sp = regs->sp;
++
++	/*
++	 * If we are on the alternate signal stack and would overflow it, don't.
++	 * Return an always-bogus address instead so we will die with SIGSEGV.
++	 */
++	if (on_sig_stack(sp) && !likely(on_sig_stack(sp - framesize)))
++		return (void __user __force *)(-1UL);
++
++	/* This is the X/Open sanctioned signal stack switching. */
++	sp = sigsp(sp, ksig) - framesize;
++
++	/* Align the stack frame. */
++	sp &= ~0xfUL;
++
++	return (void __user *)sp;
++}
++
++int compat_setup_rt_frame(struct ksignal *ksig, sigset_t *set,
++	struct pt_regs *regs)
++{
++	struct compat_rt_sigframe __user *frame;
++	long err = 0;
++
++	frame = compat_get_sigframe(ksig, regs, sizeof(*frame));
++	if (!access_ok(frame, sizeof(*frame)))
++		return -EFAULT;
++
++	err |= copy_siginfo_to_user32(&frame->info, &ksig->info);
++
++	/* Create the ucontext. */
++	err |= __put_user(0, &frame->uc.uc_flags);
++	err |= __put_user(NULL, &frame->uc.uc_link);
++	err |= __compat_save_altstack(&frame->uc.uc_stack, regs->sp);
++	err |= compat_setup_sigcontext(frame, regs);
++	err |= __copy_to_user(&frame->uc.uc_sigmask, set, sizeof(*set));
++	if (err)
++		return -EFAULT;
++
++	regs->ra = (unsigned long)COMPAT_VDSO_SYMBOL(
++			current->mm->context.vdso, rt_sigreturn);
++
++	/*
++	 * Set up registers for signal handler.
++	 * Registers that we don't modify keep the value they had from
++	 * user-space at the time we took the signal.
++	 * We always pass siginfo and mcontext, regardless of SA_SIGINFO,
++	 * since some things rely on this (e.g. glibc's debug/segfault.c).
++	 */
++	regs->epc = (unsigned long)ksig->ka.sa.sa_handler;
++	regs->sp = (unsigned long)frame;
++	regs->a0 = ksig->sig;                     /* a0: signal number */
++	regs->a1 = (unsigned long)(&frame->info); /* a1: siginfo pointer */
++	regs->a2 = (unsigned long)(&frame->uc);   /* a2: ucontext pointer */
++
++#if COMPAT_DEBUG_SIG
++	pr_info("SIG deliver (%s:%d): sig=%d pc=%p ra=%p sp=%p\n",
++		current->comm, task_pid_nr(current), ksig->sig,
++		(void *)regs->epc, (void *)regs->ra, frame);
++#endif
++
++	return 0;
++}
+diff --git a/arch/riscv/kernel/signal.c b/arch/riscv/kernel/signal.c
+index c2d5ecbe5526..27d8f39228c4 100644
+--- a/arch/riscv/kernel/signal.c
++++ b/arch/riscv/kernel/signal.c
+@@ -6,6 +6,7 @@
+  * Copyright (C) 2012 Regents of the University of California
+  */
+ 
++#include <linux/compat.h>
+ #include <linux/signal.h>
+ #include <linux/uaccess.h>
+ #include <linux/syscalls.h>
+@@ -229,6 +230,11 @@ static int setup_rt_frame(struct ksignal *ksig, sigset_t *set,
+ 	return 0;
+ }
  
 +#ifdef CONFIG_COMPAT
++extern int compat_setup_rt_frame(struct ksignal *ksig, sigset_t *set,
++				 struct pt_regs *regs);
++#endif
 +
-+/*
-+ * FIXME: not sure SET_PERSONALITY for compat process is right!
-+ */
-+#define SET_PERSONALITY(ex)					\
-+do {    if ((ex).e_ident[EI_CLASS] == ELFCLASS32)		\
-+		set_thread_flag(TIF_32BIT);			\
-+	else							\
-+		clear_thread_flag(TIF_32BIT);			\
-+	if (personality(current->personality) != PER_LINUX32)	\
-+		set_personality(PER_LINUX |			\
-+			(current->personality & (~PER_MASK)));	\
-+} while (0)
-+
-+#define COMPAT_ELF_ET_DYN_BASE		((TASK_SIZE_32 / 3) * 2)
-+
-+/* rv32 registers */
-+typedef compat_ulong_t			compat_elf_greg_t;
-+typedef compat_elf_greg_t		compat_elf_gregset_t[ELF_NGREG];
-+
-+#endif /* CONFIG_COMPAT */
- #endif /* _ASM_RISCV_ELF_H */
+ static void handle_signal(struct ksignal *ksig, struct pt_regs *regs)
+ {
+ 	sigset_t *oldset = sigmask_to_save();
+@@ -258,8 +264,13 @@ static void handle_signal(struct ksignal *ksig, struct pt_regs *regs)
+ 		}
+ 	}
+ 
++#ifdef CONFIG_COMPAT
+ 	/* Set up the stack frame */
+-	ret = setup_rt_frame(ksig, oldset, regs);
++	if (is_compat_task())
++		ret = compat_setup_rt_frame(ksig, oldset, regs);
++	else
++#endif
++		ret = setup_rt_frame(ksig, oldset, regs);
+ 
+ 	signal_setup_done(ret, ksig, 0);
+ }
 -- 
 2.25.1
 
