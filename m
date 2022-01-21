@@ -2,135 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66704C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 17:44:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36A26C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 17:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351856AbiAURoE (ORCPT
+        id S1381816AbiAURrd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 12:44:04 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:14372 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239311AbiAURoC (ORCPT
+        Fri, 21 Jan 2022 12:47:33 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:41474 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345647AbiAURra (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 12:44:02 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20LAHDBc029276;
-        Fri, 21 Jan 2022 09:43:49 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=Hnkix26dB7dgPESASXxF1i0pv7jnm1c9dtXBbWPYVcE=;
- b=KLHovAyNE6av5OXWA6fal0yS0jBi4j+doUeXaSkgpUzFq6rPxyK34zRqIs+GTMxHMkkj
- R59gNK0DwQaRN5rZNSSzuic2jh3ZuEWmImwiuofTUHZj/W+ugxSMTFS4/EhkqbYR3Zby
- Dk5ekkjKIHpwwrUqkr/PzruEDYuXR1WJHefYqpgkY3hvcaMew2h3wrg+vuxdFvAR+N/L
- r7W+xC2PMHKl3wi3qAUntgTKMA3iGBEWq4ZiVm9QLufjpVEX5Q6Zf1kaAfyaQzMcM4U8
- H2Un1A1STe9L7FvvdKBg1JpurjA53H+HT02gQJ5ek+FYyGIXXVqU7HmHQmw2ZrV3KVIL Xw== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3dqj05jw27-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 21 Jan 2022 09:43:49 -0800
-Received: from m0045851.ppops.net (m0045851.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 20LHbGkC021851;
-        Fri, 21 Jan 2022 09:43:49 -0800
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3dqj05jw23-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 21 Jan 2022 09:43:48 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Fri, 21 Jan
- 2022 09:43:46 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Fri, 21 Jan 2022 09:43:46 -0800
-Received: from localhost.localdomain (unknown [10.28.34.29])
-        by maili.marvell.com (Postfix) with ESMTP id 8EEA33F70A1;
-        Fri, 21 Jan 2022 09:43:42 -0800 (PST)
-From:   Shijith Thotton <sthotton@marvell.com>
-To:     Arnaud Ebalard <arno@natisbad.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Boris Brezillon <bbrezillon@kernel.org>
-CC:     Shijith Thotton <sthotton@marvell.com>,
-        <linux-crypto@vger.kernel.org>, <jerinj@marvell.com>,
-        <sgoutham@marvell.com>, Srujana Challa <schalla@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        chiminghao <chi.minghao@zte.com.cn>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>,
-        "Suheil Chandran" <schandran@marvell.com>,
-        Lukasz Bartosik <lbartosik@marvell.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2] crypto: octeontx2: fix NULL pointer dereference
-Date:   Fri, 21 Jan 2022 23:13:23 +0530
-Message-ID: <3ef09bf0c4adf7bc33f01f60cb8ce96e8f77b58c.1642786900.git.sthotton@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <3ff70ee925aad3afa1adc4ad1f4a7a494929d400.1642773756.git.sthotton@marvell.com>
-References: <3ff70ee925aad3afa1adc4ad1f4a7a494929d400.1642773756.git.sthotton@marvell.com>
+        Fri, 21 Jan 2022 12:47:30 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id F3D03B82069;
+        Fri, 21 Jan 2022 17:47:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33E3DC340E1;
+        Fri, 21 Jan 2022 17:47:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642787247;
+        bh=oKkPWd9txk9tE7fz7famX/0zcd82lrEm08j+OdI1AT4=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=XNye038kVucvuvASSDWSFeJ+KZjUERhEx5LppAPprw3yBD6/Cd7Eo8MJ9P+a/V9sw
+         hDDeuPayw2/9OplJ332k3lNGLFVd6YgiY5/W9i5SXQ3Cqe6h8vqu1qkE4h6aO6FZL0
+         qJ/Qxf77uvE6rAqq1//DYm9TPlWUBmpIoVnrLg+hCBHSVlWpjJoK4lMjg9Q7CxhBBj
+         5WBBsM7YbDBeeXKzcyTCosgZm8h6X83oeNrjLK7kM7GFOtGucuS4oIootz8JR9c2DE
+         rkjfgPtMT9xkYOz8yHHR+gqtJqrz+lhN3cjrvMxIH5bq9u1e0rpFTKyn67xD0nnOgF
+         sHVmGmcXMTGQg==
+Message-ID: <725c4bcacded089553341003117a3f49104c971b.camel@kernel.org>
+Subject: Re: [PATCH 02/11] cachefiles: Calculate the blockshift in terms of
+ bytes, not pages
+From:   Jeff Layton <jlayton@kernel.org>
+To:     David Howells <dhowells@redhat.com>, linux-cachefs@redhat.com
+Cc:     Trond Myklebust <trondmy@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Steve French <smfrench@gmail.com>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Omar Sandoval <osandov@osandov.com>,
+        JeffleXu <jefflexu@linux.alibaba.com>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
+        linux-cifs@vger.kernel.org, ceph-devel@vger.kernel.org,
+        v9fs-developer@lists.sourceforge.net,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Fri, 21 Jan 2022 12:47:24 -0500
+In-Reply-To: <164251398954.3435901.7138806620218474123.stgit@warthog.procyon.org.uk>
+References: <164251396932.3435901.344517748027321142.stgit@warthog.procyon.org.uk>
+         <164251398954.3435901.7138806620218474123.stgit@warthog.procyon.org.uk>
+Content-Type: text/plain; charset="ISO-8859-15"
+User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: Va0f9547P-r80JbcPiW8guMOVHxl2ZDU
-X-Proofpoint-ORIG-GUID: cbe3lamZNG3loXYPqGV06Tp3x0cDp6Yr
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-21_09,2022-01-21_01,2021-12-02_01
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CONFIG_DM_CRYPT is checked before registering ciphers, but not before
-unregister. This could lead to a NULL pointer dereference during driver
-release (in unregister) if CONFIG_DM_CRYPT is enabled.
+On Tue, 2022-01-18 at 13:53 +0000, David Howells wrote:
+> Cachefiles keeps track of how much space is available on the backing
+> filesystem and refuses new writes permission to start if there isn't enough
+> (we especially don't want ENOSPC happening).  It also tracks the amount of
+> data pending in DIO writes (cache->b_writing) and reduces the amount of
+> free space available by this amount before deciding if it can set up a new
+> write.
+> 
+> However, the old fscache I/O API was very much page-granularity dependent
+> and, as such, cachefiles's cache->bshift was meant to be a multiplier to
+> get from PAGE_SIZE to block size (ie. a blocksize of 512 would give a shift
+> of 3 for a 4KiB page) - and this was incorrectly being used to turn the
+> number of bytes in a DIO write into a number of blocks, leading to a
+> massive over estimation of the amount of data in flight.
+> 
+> Fix this by changing cache->bshift to be a multiplier from bytes to
+> blocksize and deal with quantities of blocks, not quantities of pages.
+> 
+> Fix also the rounding in the calculation in cachefiles_write() which needs
+> a "- 1" inserting.
+> 
+> Fixes: 047487c947e8 ("cachefiles: Implement the I/O routines")
+> Signed-off-by: David Howells <dhowells@redhat.com>
+> cc: linux-cachefs@redhat.com
+> ---
+> 
+>  fs/cachefiles/cache.c    |    7 ++-----
+>  fs/cachefiles/internal.h |    2 +-
+>  fs/cachefiles/io.c       |    2 +-
+>  3 files changed, 4 insertions(+), 7 deletions(-)
+> 
+> diff --git a/fs/cachefiles/cache.c b/fs/cachefiles/cache.c
+> index ce4d4785003c..1e9c71666c6a 100644
+> --- a/fs/cachefiles/cache.c
+> +++ b/fs/cachefiles/cache.c
+> @@ -84,9 +84,7 @@ int cachefiles_add_cache(struct cachefiles_cache *cache)
+>  		goto error_unsupported;
+>  
+>  	cache->bsize = stats.f_bsize;
+> -	cache->bshift = 0;
+> -	if (stats.f_bsize < PAGE_SIZE)
+> -		cache->bshift = PAGE_SHIFT - ilog2(stats.f_bsize);
+> +	cache->bshift = ilog2(stats.f_bsize);
+>  
+>  	_debug("blksize %u (shift %u)",
+>  	       cache->bsize, cache->bshift);
+> @@ -106,7 +104,6 @@ int cachefiles_add_cache(struct cachefiles_cache *cache)
+>  	       (unsigned long long) cache->fcull,
+>  	       (unsigned long long) cache->fstop);
+>  
+> -	stats.f_blocks >>= cache->bshift;
+>  	do_div(stats.f_blocks, 100);
+>  	cache->bstop = stats.f_blocks * cache->bstop_percent;
+>  	cache->bcull = stats.f_blocks * cache->bcull_percent;
+> @@ -209,7 +206,7 @@ int cachefiles_has_space(struct cachefiles_cache *cache,
+>  		return ret;
+>  	}
+>  
+> -	b_avail = stats.f_bavail >> cache->bshift;
+> +	b_avail = stats.f_bavail;
+>  	b_writing = atomic_long_read(&cache->b_writing);
+>  	if (b_avail > b_writing)
+>  		b_avail -= b_writing;
+> diff --git a/fs/cachefiles/internal.h b/fs/cachefiles/internal.h
+> index 8dd54d9375b6..c793d33b0224 100644
+> --- a/fs/cachefiles/internal.h
+> +++ b/fs/cachefiles/internal.h
+> @@ -86,7 +86,7 @@ struct cachefiles_cache {
+>  	unsigned			bcull_percent;	/* when to start culling (% blocks) */
+>  	unsigned			bstop_percent;	/* when to stop allocating (% blocks) */
+>  	unsigned			bsize;		/* cache's block size */
+> -	unsigned			bshift;		/* min(ilog2(PAGE_SIZE / bsize), 0) */
+> +	unsigned			bshift;		/* ilog2(bsize) */
+>  	uint64_t			frun;		/* when to stop culling */
+>  	uint64_t			fcull;		/* when to start culling */
+>  	uint64_t			fstop;		/* when to stop allocating */
+> diff --git a/fs/cachefiles/io.c b/fs/cachefiles/io.c
+> index 60b1eac2ce78..04eb52736990 100644
+> --- a/fs/cachefiles/io.c
+> +++ b/fs/cachefiles/io.c
+> @@ -264,7 +264,7 @@ static int cachefiles_write(struct netfs_cache_resources *cres,
+>  	ki->term_func		= term_func;
+>  	ki->term_func_priv	= term_func_priv;
+>  	ki->was_async		= true;
+> -	ki->b_writing		= (len + (1 << cache->bshift)) >> cache->bshift;
+> +	ki->b_writing		= (len + (1 << cache->bshift) - 1) >> cache->bshift;
+>  
+>  	if (ki->term_func)
+>  		ki->iocb.ki_complete = cachefiles_write_complete;
+> 
+> 
 
-...
-Unable to handle kernel NULL pointer dereference at virtual address 0000000000000008
-...
-Call trace:
- crypto_unregister_alg+0x68/0xfc
- crypto_unregister_skciphers+0x44/0x60
- otx2_cpt_crypto_exit+0x100/0x1a0
- otx2_cptvf_remove+0xf8/0x200
- pci_device_remove+0x3c/0xd4
- __device_release_driver+0x188/0x234
- device_release_driver+0x2c/0x4c
-...
-
-Added a CONFIG_DM_CRYPT check, similar to register, in unregister to
-avoid this.
-
-Fixes: 6f03f0e8b6c8 ("crypto: octeontx2 - register with linux crypto framework")
-
-Signed-off-by: Shijith Thotton <sthotton@marvell.com>
----
-v2:
-- Added fixes line to commit message.
-
- drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
-index 2748a3327e39..620fa9b23e78 100644
---- a/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
-@@ -1650,7 +1650,7 @@ static inline int cpt_register_algs(void)
- 
- 	err = crypto_register_aeads(otx2_cpt_aeads,
- 				    ARRAY_SIZE(otx2_cpt_aeads));
--	if (err) {
-+	if (err && !IS_ENABLED(CONFIG_DM_CRYPT)) {
- 		crypto_unregister_skciphers(otx2_cpt_skciphers,
- 					    ARRAY_SIZE(otx2_cpt_skciphers));
- 		return err;
-@@ -1661,8 +1661,9 @@ static inline int cpt_register_algs(void)
- 
- static inline void cpt_unregister_algs(void)
- {
--	crypto_unregister_skciphers(otx2_cpt_skciphers,
--				    ARRAY_SIZE(otx2_cpt_skciphers));
-+	if (!IS_ENABLED(CONFIG_DM_CRYPT))
-+		crypto_unregister_skciphers(otx2_cpt_skciphers,
-+					    ARRAY_SIZE(otx2_cpt_skciphers));
- 	crypto_unregister_aeads(otx2_cpt_aeads, ARRAY_SIZE(otx2_cpt_aeads));
- }
- 
--- 
-2.25.1
-
+Reviewed-by: Jeff Layton <jlayton@kernel.org>
