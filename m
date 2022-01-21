@@ -2,112 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 651A4C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 08:57:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16A8EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 08:58:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379609AbiAUI5F (ORCPT
+        id S1379622AbiAUI6o (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 03:57:05 -0500
-Received: from mout.kundenserver.de ([212.227.126.130]:33879 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234205AbiAUI5E (ORCPT
+        Fri, 21 Jan 2022 03:58:44 -0500
+Received: from linux.microsoft.com ([13.77.154.182]:49218 "EHLO
+        linux.microsoft.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234205AbiAUI6i (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 03:57:04 -0500
-Received: from mail-oi1-f175.google.com ([209.85.167.175]) by
- mrelayeu.kundenserver.de (mreue011 [213.165.67.97]) with ESMTPSA (Nemesis) id
- 1M9WiK-1nGJMv0rHY-005WIw; Fri, 21 Jan 2022 09:57:01 +0100
-Received: by mail-oi1-f175.google.com with SMTP id x193so12786488oix.0;
-        Fri, 21 Jan 2022 00:57:00 -0800 (PST)
-X-Gm-Message-State: AOAM530JDR3GWqRtnL7inzM2TCJNCeLWB7HWJCYZCn4LdGrWw9ulABJu
-        80ROBoJWSEwxEscNhLZajR5dzGehlCoGAtpcJkA=
-X-Google-Smtp-Source: ABdhPJylnMQV70n0iz9SImQwsqAn8J+KL/hKoGrWF8c1XxnGFchA2qX7H9h0ZVY5igqqe7kHNmQOCuoQNmiaakrHJBA=
-X-Received: by 2002:a05:6808:9a:: with SMTP id s26mr2365492oic.108.1642755419287;
- Fri, 21 Jan 2022 00:56:59 -0800 (PST)
+        Fri, 21 Jan 2022 03:58:38 -0500
+Received: from machine.localnet (lfbn-lyo-1-1484-111.w86-207.abo.wanadoo.fr [86.207.51.111])
+        by linux.microsoft.com (Postfix) with ESMTPSA id 722ED20B6C61;
+        Fri, 21 Jan 2022 00:58:37 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 linux.microsoft.com 722ED20B6C61
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.microsoft.com;
+        s=default; t=1642755518;
+        bh=WbOLIRm6CwlXPDaoqOPOSwuwUAxz//nxPmXnsK4U1t8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=gBJfkgTtdT4cMk6aQoitHvxKSumu/p36mNUFvRFM/x9k1Wm3sIjKyVXch78WUKdDP
+         Ip87j6Z2hgmYjkb7+X6UlXaIPib9/WxhqCNnaAZ0+W+NoZqm425ukfSXntNDOtT0kY
+         JipKhMdFGx9EBRSmOFya9QncgjLb0TnOBmHjYS6c=
+From:   Francis Laniel <flaniel@linux.microsoft.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     linux-security-module@vger.kernel.org,
+        Serge Hallyn <serge@hallyn.com>,
+        Casey Schaufler <casey@schaufler-ca.com>
+Subject: Re: [RFC PATCH v3 2/2] security/inode.c: Add capabilities file.
+Date:   Fri, 21 Jan 2022 09:58:34 +0100
+Message-ID: <7787651.jkfHb4QSSr@machine>
+In-Reply-To: <20220120180116.167702-3-flaniel@linux.microsoft.com>
+References: <20220120180116.167702-1-flaniel@linux.microsoft.com> <20220120180116.167702-3-flaniel@linux.microsoft.com>
 MIME-Version: 1.0
-References: <20220120073911.99857-9-guoren@kernel.org> <CAK8P3a0LxB3we9wHOa4OPmNow6wz5NP49zeYhh7QXNv-MiR8UA@mail.gmail.com>
- <CAJF2gTQVUF4LSO0a6_MV8x-UAiJw32pAFyS1oPNLXhcEaemzqg@mail.gmail.com>
-In-Reply-To: <CAJF2gTQVUF4LSO0a6_MV8x-UAiJw32pAFyS1oPNLXhcEaemzqg@mail.gmail.com>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 21 Jan 2022 09:56:43 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a1sOejkdOyoRUfw4ESS7ewX_8Wj9tQNrZ40OiuDqJnrmw@mail.gmail.com>
-Message-ID: <CAK8P3a1sOejkdOyoRUfw4ESS7ewX_8Wj9tQNrZ40OiuDqJnrmw@mail.gmail.com>
-Subject: Re: [PATCH V3 08/17] riscv: compat: syscall: Add compat_sys_call_table
- implementation
-To:     Guo Ren <guoren@kernel.org>
-Cc:     Arnd Bergmann <arnd@arndb.de>, Palmer Dabbelt <palmer@dabbelt.com>,
-        Anup Patel <anup@brainfault.org>,
-        gregkh <gregkh@linuxfoundation.org>,
-        liush <liush@allwinnertech.com>, Wei Fu <wefu@redhat.com>,
-        Drew Fustini <drew@beagleboard.org>,
-        Wang Junqiang <wangjunqiang@iscas.ac.cn>,
-        Christoph Hellwig <hch@lst.de>,
-        Christoph Hellwig <hch@infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-csky@vger.kernel.org,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
-        inux-parisc@vger.kernel.org,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "the arch/x86 maintainers" <x86@kernel.org>,
-        Guo Ren <guoren@linux.alibaba.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Provags-ID: V03:K1:IRpQPv8WoAqPSucQu/tG6nYL/K7Y5OESJf7MTo7MX1bQCNjtbkX
- mgieNxFEqUu9XXdJHhk9CH4iJ3s3ba6aZc39s3BytPSR5sZ6og+VWElDBiG+lMGhIbu49Yp
- xtVVwqEsPyaFk7uAss600Ux+zMasvK/PRfcCfqNeu9pu93+kt8mebWFL8jk5zE+39N3e7Tu
- zMnPh760S6oQqgLLahT3Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:6ZAe3wFVFro=:Mp2/8vZ841C8qpVmzjLTG0
- 3vQdqDDuwG6NoS80SODh6gmJ2uPM1IRaO7AuVtu/xT/5X8+f0u6ySwlNYiQL1QVsU3CZyPIUi
- /1NFBGxq69oP20f9pbNLI1zdTT8hSS1prrdPud2GpYUNrh3WVBwNs66xEq0jQmDVHjX3+DKhF
- xmC6bw9mZD4qDoTAUgx1FEhmTiu8essyxPAIk2Ic2eVQR1iQf5FpCd0kZpeC9323LCQ4AKomY
- vfLiadMVIYuadOauUSqF34Tl9HpLGPWP+meTW42WettJkxSkIyi/yLRCaZlB2i7pHR0XzrTjw
- Cq7XXM3SpJvTQu3hRl7IRXUFAI0fyChieeyIbB2wqvkLE+zMGRy4vqYBMr1fUl/ugRwfc+cpV
- SL0merbPFUarMIFUZ7Jey8lgvtXqkEa7VyV8RFUEzGd7/RrwPY/+DhWgPr+YCLgaObT90w2xG
- wtL1L89mZjnn81YOIv5bP6jIXt0lipYrub7EJYxMMH15JpdU0ADmT1T5ldvoFutc3Pkal8p5Y
- J8dtSJQyYQeJlS3fIOforELqnqOxkyaTdQ0WWmXYbm3Occ8vyDwFKv/n8dy5L7Fqd0vZYNV+5
- W+/uszNEIo9OBqYkE4INiNDYqFd+aYu1gNAC7ZXgVkQz3CoKZunUoPog5g/VMGgP+fxh4HjAi
- zJb4r62U4DqDFrP5QF6AxI3uVCMPiSnLwENbQUDxlqsbeSyii6V96qaisw1/U5qchkM94r0kn
- 56zkjZGV4vIQAIcgADkoZlBYQtue43EiL3WOjJ2J4w8zaAiLad6+WkRhegW2SmPnz0gdyh5ji
- QYNKtT8r1iGhiHF4pu1kB3SQOGESEDKIC41mA6nMQpDYGticy0=
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="iso-8859-1"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 7:25 AM Guo Ren <guoren@kernel.org> wrote:
-> On Thu, Jan 20, 2022 at 10:43 PM Arnd Bergmann <arnd@arndb.de> wrote:
-> > On Thu, Jan 20, 2022 at 8:39 AM <guoren@kernel.org> wrote:
+Hi.
 
-> > Are you sure these are the right calling conventions? According to [1],
-> > I think the 64-bit argument should be in an aligned pair of registers,
-> > which means you need an extra pad argument as in the arm64 version
-> > of these functions. Same for ftruncate64, pread64, pwrite64, and
-> > readahead.
->
-> [1] has abandoned.
->
-> See:
-> https://github.com/riscv-non-isa/riscv-elf-psabi-doc/blob/master/riscv-cc.adoc
+Le jeudi 20 janvier 2022, 19:01:16 CET Francis Laniel a =E9crit :
+> This new read-only file prints the capabilities values with their names:
+> cat /sys/kernel/security/capabilities
+> 0       CAP_CHOWN
+> 1       CAP_DAC_OVERRIDE
+> ...
+> 40      CAP_CHECKPOINT_RESTORE
+>=20
+> Signed-off-by: Francis Laniel <flaniel@linux.microsoft.com>
+> ---
+>  security/inode.c | 16 ++++++++++++++++
+>  1 file changed, 16 insertions(+)
+>=20
+> diff --git a/security/inode.c b/security/inode.c
+> index 6c326939750d..cef78b497bab 100644
+> --- a/security/inode.c
+> +++ b/security/inode.c
+> @@ -21,6 +21,7 @@
+>  #include <linux/security.h>
+>  #include <linux/lsm_hooks.h>
+>  #include <linux/magic.h>
+> +#include <linux/capability.h>
+>=20
+>  static struct vfsmount *mount;
+>  static int mount_count;
+> @@ -328,6 +329,19 @@ static const struct file_operations lsm_ops =3D {
+>  };
+>  #endif
+>=20
+> +static struct dentry *capabilities_dentry;
+> +static ssize_t capabilities_read(struct file *unused, char __user *buf,
+> +				 size_t count, loff_t *ppos)
+> +{
+> +	return simple_read_from_buffer(buf, count, ppos, cap_string,
+> +				       strlen(cap_string));
+> +}
+> +
+> +static const struct file_operations capabilities_ops =3D {
+> +	.read =3D capabilities_read,
+> +	.llseek =3D generic_file_llseek,
+> +};
+> +
+>  static int __init securityfs_init(void)
+>  {
+>  	int retval;
+> @@ -345,6 +359,8 @@ static int __init securityfs_init(void)
+>  	lsm_dentry =3D securityfs_create_file("lsm", 0444, NULL, NULL,
+>  						&lsm_ops);
+>  #endif
+> +	capabilities_dentry =3D securityfs("capabilities", 0444, NULL, NULL,
+> +					 capabilities_ops);
 
-Ok, thanks for the reference, I picked the first one that came up in
-a google search and didn't expect this to ever have changed.
+Sorry, I sent the old version of the patch and did not fixup this...
+Kernel robot kindly show me this error.
+I swear the output in the cover letter was done on the compiled kernel with=
+in=20
+a VM.
 
-> > I still feel like these should be the common implementations next to the
-> > native handlers inside of an #ifdef CONFIG_COMPAT.
-> >
-> > The names clash with the custom versions defined for powerpc and sparc,
-> > but the duplicates look compatible if you can account for the padded
-> > argument and the lo/hi order of the pairs, so could just be removed here
-> > (all other architectures use custom function names instead).
-> I would try it later.
+I will send a v4 correcting this but I will wait to get some reviews on v3 =
+to=20
+not send to not generate too much traffic here.
 
-This becomes easier then, as powerpc and sparc already have the non-padded
-calling conventions, so you could just generalize those without looking at
-the other architectures or adding the padding. The powerpc version already
-has the dual-endian version, so using that will work on big-endian sparc and
-on little-endian riscv as well, though we may need to come up with a better name
-for the arg_u32/arg_u64/merge_64 macros in order to put that into a global
-header without namespace collisions.
+>  	return 0;
+>  }
+>  core_initcall(securityfs_init);
 
-         Arnd
+Best regards.
+
+
