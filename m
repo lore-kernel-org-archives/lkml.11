@@ -2,21 +2,21 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 001B7C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:37:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 853E8C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:37:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350879AbiAUQhP (ORCPT
+        id S1350820AbiAUQhV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 11:37:15 -0500
-Received: from gloria.sntech.de ([185.11.138.130]:35248 "EHLO gloria.sntech.de"
+        Fri, 21 Jan 2022 11:37:21 -0500
+Received: from gloria.sntech.de ([185.11.138.130]:35258 "EHLO gloria.sntech.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349264AbiAUQhF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S1349296AbiAUQhF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 21 Jan 2022 11:37:05 -0500
 Received: from p508fcef5.dip0.t-ipconnect.de ([80.143.206.245] helo=phil.fritz.box)
         by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <heiko@sntech.de>)
-        id 1nAwuM-0008GA-Vw; Fri, 21 Jan 2022 17:37:03 +0100
+        id 1nAwuF-0008GA-I7; Fri, 21 Jan 2022 17:36:55 +0100
 From:   Heiko Stuebner <heiko@sntech.de>
 To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
 Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
@@ -30,9 +30,9 @@ Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
         allen.baum@esperantotech.com, jscheid@ventanamicro.com,
         rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
         philipp.tomsich@vrull.eu, Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH v5 08/14] riscv: move boot alternatives to a slightly earlier position
-Date:   Fri, 21 Jan 2022 17:36:12 +0100
-Message-Id: <20220121163618.351934-9-heiko@sntech.de>
+Subject: [PATCH v5 01/14] riscv: only use IPIs to handle cache-flushes on remote cpus
+Date:   Fri, 21 Jan 2022 17:36:05 +0100
+Message-Id: <20220121163618.351934-2-heiko@sntech.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220121163618.351934-1-heiko@sntech.de>
 References: <20220121163618.351934-1-heiko@sntech.de>
@@ -42,61 +42,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Move the application of boot alternatives to soc_early_init().
-This allows to catch more generic cases of code needing patches
-than doing it in smp_prepare_boot_cpu() and also makes it actually
-work if CONFIG_SMP is disabled for whatever reason.
+Right now, the flush_icache functions always use the SBI remote-fence
+when SBI is available, leaving using IPIs as a fallback mechanism.
 
-The position is chosen mainly as it is before the actual soc early
-init runs but also already allows accessing the devicetree
-via fdt_* functions.
+IPIs on the other hand are more flexible, as the ipi_ops are initially
+set to go through SBI but later will be overwritten to go through the
+ACLINT/CLINT.
 
+In a discussion we had, Nick was of the opinion that "In general we
+should prefer doing IPIs on S-mode through CLINT instead of going
+through SBI/M-mode, so IMHO we should only be using
+on_each_cpu_mask(ipi_remote_fence_i) on flush_icache_all()/
+flush_icache_mm() and remove any explicit calls to sbi_remote_fence_i(),
+because this way we continue using SBI for doing remote fences even after
+CLINT/ACLINT driver is registered, instead of using direct IPIs through
+CLINT/ACLINT."
+
+So follow this suggestion and just do ipi calls to have the proper kernel
+parts do them,
+
+This also fixes the null-ptr dereference happening when flush_icache_all()
+is called before sbi_init().
+
+Suggested-by: Nick Kossifidis <mick@ics.forth.gr>
 Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
- arch/riscv/kernel/head.S    | 2 ++
- arch/riscv/kernel/smpboot.c | 2 --
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ arch/riscv/mm/cacheflush.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-diff --git a/arch/riscv/kernel/head.S b/arch/riscv/kernel/head.S
-index db062279d9ed..432fe7b3f897 100644
---- a/arch/riscv/kernel/head.S
-+++ b/arch/riscv/kernel/head.S
-@@ -10,6 +10,7 @@
- #include <asm/thread_info.h>
- #include <asm/page.h>
- #include <asm/pgtable.h>
-+#include <asm/alternative.h>
- #include <asm/csr.h>
- #include <asm/cpu_ops_sbi.h>
- #include <asm/hwcap.h>
-@@ -341,6 +342,7 @@ clear_bss_done:
- 	call kasan_early_init
- #endif
- 	/* Start the kernel */
-+	call apply_boot_alternatives
- 	call soc_early_init
- 	tail start_kernel
- 
-diff --git a/arch/riscv/kernel/smpboot.c b/arch/riscv/kernel/smpboot.c
-index a6d13dca1403..f1e4948a4b52 100644
---- a/arch/riscv/kernel/smpboot.c
-+++ b/arch/riscv/kernel/smpboot.c
-@@ -32,7 +32,6 @@
- #include <asm/sections.h>
- #include <asm/sbi.h>
- #include <asm/smp.h>
--#include <asm/alternative.h>
- 
- #include "head.h"
- 
-@@ -41,7 +40,6 @@ static DECLARE_COMPLETION(cpu_running);
- void __init smp_prepare_boot_cpu(void)
+diff --git a/arch/riscv/mm/cacheflush.c b/arch/riscv/mm/cacheflush.c
+index 6cb7d96ad9c7..c35375cd52ec 100644
+--- a/arch/riscv/mm/cacheflush.c
++++ b/arch/riscv/mm/cacheflush.c
+@@ -17,11 +17,7 @@ static void ipi_remote_fence_i(void *info)
+ void flush_icache_all(void)
  {
- 	init_cpu_topology();
--	apply_boot_alternatives();
+ 	local_flush_icache_all();
+-
+-	if (IS_ENABLED(CONFIG_RISCV_SBI))
+-		sbi_remote_fence_i(NULL);
+-	else
+-		on_each_cpu(ipi_remote_fence_i, NULL, 1);
++	on_each_cpu(ipi_remote_fence_i, NULL, 1);
  }
+ EXPORT_SYMBOL(flush_icache_all);
  
- void __init smp_prepare_cpus(unsigned int max_cpus)
+@@ -66,8 +62,6 @@ void flush_icache_mm(struct mm_struct *mm, bool local)
+ 		 * with flush_icache_deferred().
+ 		 */
+ 		smp_mb();
+-	} else if (IS_ENABLED(CONFIG_RISCV_SBI)) {
+-		sbi_remote_fence_i(&others);
+ 	} else {
+ 		on_each_cpu_mask(&others, ipi_remote_fence_i, NULL, 1);
+ 	}
 -- 
 2.30.2
 
