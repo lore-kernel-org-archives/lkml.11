@@ -2,123 +2,179 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFEAAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:04:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5054AC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:05:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350751AbiAUOE2 (ORCPT
+        id S1348447AbiAUOE7 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 09:04:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37984 "EHLO
+        Fri, 21 Jan 2022 09:04:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350781AbiAUODw (ORCPT
+        with ESMTP id S1380975AbiAUOEZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 09:03:52 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09650C06175A
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:03:30 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id i187-20020a1c3bc4000000b0034d2ed1be2aso27828023wma.1
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:03:29 -0800 (PST)
+        Fri, 21 Jan 2022 09:04:25 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0372CC06174E
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:04:25 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id l5so26032013edv.3
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:04:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ubz92V3MNOcnXuX2tQRXSV5KJOVjCllK6LUruWkrRxU=;
-        b=kHpYdrnVSjlgT6Y7rsIIE25S3iFVvp2QHcJfQ0aPOci6HIAGnbZ1yuN19J+BcTT0Bw
-         YtGdz1Xb7wbSVWlfVFcs13ntB8C/N38MquVtWtAmKuOowMBdEZ2w5JtWg2Ctb4eiowtE
-         Dqq6WTpe9lbyxxKoF23+0JVx+JGH2W4L3FpuBEs6zI0qjTDwlkOhqQ0AA/SZL3Iirrgr
-         ewlGeeTaxzI3UKDAG5NBpv/Oyh01b9s+LDK6vMJfOqpsxKFFREbM/vsI5lgywsksGlST
-         UBsRRY+4pBkKgCVN/4WeqltsOoZGvS3uFtzc8qLvpo7jbhOnJWCZnSGzFACJ4I5Bubai
-         gpDQ==
+        d=soleen.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oZlpT6bzEx+qiA4VrfBHEX+BsLOoUB2LaTYuoQqCfn0=;
+        b=okG8OHX4PTHLv68X8Pq6F87DoY05RbdGKJSzY+LhnQnJMJ1hVuAxcTomJb/z+kSSXz
+         axX0eNt0JufAlwkTzml6kplHNCGOhVn0+oIAj1tTxJUqSh2VLGkqMt9+23/U6qDbtFW+
+         M5+yYhUHJaORcmHcn4HxiYPHe94cyrtzq7GRSVgrY/ITXV91Ck1Xy900eSraHZ7I5GDo
+         UQrmcw4klm6C+pg7pAV4CnfQ739O5YJKcljiXJHL1P9UyW4CgyEq3KxCIU9DdyQITmdM
+         I6KNMur1he8AsOx+fPupvCxpn9wAgv78qmTXqVbGZTueAU5fnzDa8yy00sL5rKe/gMgc
+         WDbQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ubz92V3MNOcnXuX2tQRXSV5KJOVjCllK6LUruWkrRxU=;
-        b=NxH35sF7fyYkMMpRoJK9GtMUvqf28SL5uvxRbAzPZKp9itb2g7jIQiJcejPoz1E61d
-         CZs8GEXoGwt3EFqG9m4OPb2q89CqthOTgnbXcxwG1LpYhe7lwEJgvCCE7Gw2mNOwFdx9
-         ygk5cyEYXqDsRuf2ARtNOGHzVZQhq//j5m0Kuu5UXAhWDTs7kDTfKachayfxUzZbbca4
-         00jUi++BQyTtA7JPj3cexK5arB9tmxHSzh9l7UCztW+lBnjnX/KOF8WSBWJFs4Ef93Kq
-         nbRp5K5tAdC34SQqEvOSwO/T2byXvpnXdEsgUvud8jnEU3I5AHZ6IswbQ19qfliYqcdD
-         SzHQ==
-X-Gm-Message-State: AOAM533azcb9XC5hnec3+IXuLI7gr8vQeYivGFbQ6sJZVr6RjwR4aMpl
-        YOdV+3GmgENDXVsDkxNKg9tefQ==
-X-Google-Smtp-Source: ABdhPJyT2dSh0BWpE3RsPLYyk9pNAlhiRIXgl2BBXrgRPQOeTr7YVMe4x28OyBuQ/pfFpeQImqsXhw==
-X-Received: by 2002:adf:fe86:: with SMTP id l6mr3927973wrr.403.1642773808449;
-        Fri, 21 Jan 2022 06:03:28 -0800 (PST)
-Received: from groot.home (lfbn-tou-1-205-205.w86-201.abo.wanadoo.fr. [86.201.52.205])
-        by smtp.gmail.com with ESMTPSA id p29sm9225129wms.5.2022.01.21.06.03.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 06:03:28 -0800 (PST)
-From:   Mattijs Korpershoek <mkorpershoek@baylibre.com>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Fabien Parent <fparent@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Mattijs Korpershoek <mkorpershoek@baylibre.com>
-Subject: [PATCH v4 1/4] Input: mtk-pmic-keys - use get_irq_byname() instead of index
-Date:   Fri, 21 Jan 2022 15:03:20 +0100
-Message-Id: <20220121140323.4080640-2-mkorpershoek@baylibre.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220121140323.4080640-1-mkorpershoek@baylibre.com>
-References: <20220121140323.4080640-1-mkorpershoek@baylibre.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oZlpT6bzEx+qiA4VrfBHEX+BsLOoUB2LaTYuoQqCfn0=;
+        b=R2qptmjXuFo7KUCz9NXGmhqIA4ss17Vkt4Re1foLihDlUBHOFXGTYidlRRKsZ8X/hp
+         /EixQZKDFqpm0ydHoDlTOHMhCnPESpk6YPaGzvp/hY7LTuDnMMZRx+EZsi3iBN0XorjH
+         uYbxQqytzrI7o/msnuyfTnVrgVa7hfqGFUAsXORTWjNGq/TxUR9Dwi/2kv33o4VIWxVj
+         4QNr0LeyMJD1h8Y8zrJX/+czdeihVUW/Ixtr2vWy0XrH9DcnPW1a6D4t20Jau7y4PIwK
+         G6pr2bBEaoiyJezWgLLsV2QUaAEX05HTAJh4QhfD3B1sNzjtsTca5w89ciPdvKlN9o2r
+         QWFQ==
+X-Gm-Message-State: AOAM5332gPO2Umf0IuSv4CaUHL/goe7rz+J+GCK2po4HDQxv0xJia+e2
+        94KHhRHmqGJLdg8tbZzsuAya/Yh2M3D4pBFxlvLfww==
+X-Google-Smtp-Source: ABdhPJxH4OQbNOq8+RE1qEL1KLot110tAQUNbO3ApDksEs7j9hUkSbQKR+kqEnp6RCxbzo32rJV5t0JS0dyfi1TcD0o=
+X-Received: by 2002:a05:6402:405:: with SMTP id q5mr4440010edv.372.1642773863492;
+ Fri, 21 Jan 2022 06:04:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220120191250.2671557-1-pasha.tatashin@soleen.com>
+ <20220120191250.2671557-2-pasha.tatashin@soleen.com> <406f41ab-5ed9-7c2e-6bc8-afcae32164c5@arm.com>
+In-Reply-To: <406f41ab-5ed9-7c2e-6bc8-afcae32164c5@arm.com>
+From:   Pasha Tatashin <pasha.tatashin@soleen.com>
+Date:   Fri, 21 Jan 2022 09:03:45 -0500
+Message-ID: <CA+CK2bAWHsgnrH=xKvwEX14J2cwaJ2PHRMK4LXt2f602Yamxtg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] mm/debug_vm_pgtable: remove pte entry from the
+ page table
+To:     Anshuman Khandual <anshuman.khandual@arm.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>, linux-mm <linux-mm@kvack.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Rientjes <rientjes@google.com>,
+        Paul Turner <pjt@google.com>, Wei Xu <weixugc@google.com>,
+        Greg Thelen <gthelen@google.com>,
+        Ingo Molnar <mingo@redhat.com>, Will Deacon <will@kernel.org>,
+        Mike Rapoport <rppt@kernel.org>,
+        Dave Hansen <dave.hansen@linux.intel.com>,
+        "H. Peter Anvin" <hpa@zytor.com>,
+        "Aneesh Kumar K.V" <aneesh.kumar@linux.ibm.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Muchun Song <songmuchun@bytedance.com>,
+        Fusion Future <qydwhotmail@gmail.com>,
+        Hugh Dickins <hughd@google.com>, Zi Yan <ziy@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Some pmics of the mt6397 family (such as MT6358), have two IRQs per
-physical key: one for press event, another for release event.
+Hi Anshuman,
 
-The mtk-pmic-keys driver assumes that each key only has one
-IRQ. The key index and the RES_IRQ resource index have a 1/1 mapping.
+Thanks for looking into this. See my replies below.
 
-This won't work for MT6358, as we have multiple resources (2) for one key.
+> > CONFIG_DEBUG_VM_PGTABLE=y
+> > CONFIG_PAGE_TABLE_CHECK=y
+> > CONFIG_PAGE_TABLE_CHECK_ENFORCED=y
+>
+> Assuming this is on latest mainline.
+>
+> I could enable PAGE_TABLE_CHECK on arm64 after some hacks. It did not build
+> on the platform otherwise. But enabling DEBUG_VM_PGTABLE afterwards did not
+> create below mentioned problems. Is the problem x86 specific ?
 
-To prepare mtk-pmic-keys to support MT6358, retrieve IRQs by name
-instead of by index.
+This is not x86 specific problem, but page_table_check does not have
+support for other arches yet. The arm64 support is on my todo list.
+The patch for arm64 would look something like this:
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=d283d422c6c4f0264fe8ecf5ae80036bf73f4594
 
-Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
----
- drivers/input/keyboard/mtk-pmic-keys.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+>
+> >
+> > During the boot the following BUG is printed:
+> >
+> > [    7.483050][    T1] debug_vm_pgtable: [debug_vm_pgtable         ]:
+> > Validating architecture page tabs
+> > [    7.490930][    T1] ------------[ cut here ]------------
+> > [    7.494926][    T1] kernel BUG at mm/page_table_check.c:194!
+>
+> Which BUG() is this ? mm/page_table_check.c:194 on latest mainline ..
+>
+> void __page_table_check_pud_clear(struct mm_struct *mm, unsigned long addr,
+>                                   pud_t pud) <----
 
-diff --git a/drivers/input/keyboard/mtk-pmic-keys.c b/drivers/input/keyboard/mtk-pmic-keys.c
-index 62391d6c7da6..d1abf95d5701 100644
---- a/drivers/input/keyboard/mtk-pmic-keys.c
-+++ b/drivers/input/keyboard/mtk-pmic-keys.c
-@@ -241,6 +241,7 @@ static int mtk_pmic_keys_probe(struct platform_device *pdev)
- 	unsigned int keycount;
- 	struct mt6397_chip *pmic_chip = dev_get_drvdata(pdev->dev.parent);
- 	struct device_node *node = pdev->dev.of_node, *child;
-+	static const char *const irqnames[] = { "powerkey", "homekey" };
- 	struct mtk_pmic_keys *keys;
- 	const struct mtk_pmic_regs *mtk_pmic_regs;
- 	struct input_dev *input_dev;
-@@ -268,7 +269,8 @@ static int mtk_pmic_keys_probe(struct platform_device *pdev)
- 	input_dev->id.version = 0x0001;
- 
- 	keycount = of_get_available_child_count(node);
--	if (keycount > MTK_PMIC_MAX_KEY_COUNT) {
-+	if (keycount > MTK_PMIC_MAX_KEY_COUNT ||
-+	    keycount > ARRAY_SIZE(irqnames)) {
- 		dev_err(keys->dev, "too many keys defined (%d)\n", keycount);
- 		return -EINVAL;
- 	}
-@@ -276,7 +278,8 @@ static int mtk_pmic_keys_probe(struct platform_device *pdev)
- 	for_each_child_of_node(node, child) {
- 		keys->keys[index].regs = &mtk_pmic_regs->keys_regs[index];
- 
--		keys->keys[index].irq = platform_get_irq(pdev, index);
-+		keys->keys[index].irq =
-+			platform_get_irq_byname(pdev, irqnames[index]);
- 		if (keys->keys[index].irq < 0) {
- 			of_node_put(child);
- 			return keys->keys[index].irq;
--- 
-2.32.0
+It turns out I pasted the backtrace from the modified kernel. Here the
+snippet of backtrace from the mainline:
+[    2.276826] ------------[ cut here ]------------
+[    2.280426] kernel BUG at mm/page_table_check.c:162!
+[    2.284118] invalid opcode: 0000 [#1] PREEMPT SMP PTI
+...
 
+Which corresponds to:
+152 void __page_table_check_zero(struct page *page, unsigned int order)
+153 {
+154         struct page_ext *page_ext = lookup_page_ext(page);
+155         int i;
+156
+157         BUG_ON(!page_ext);
+158         for (i = 0; i < (1 << order); i++) {
+159                 struct page_table_check *ptc =
+get_page_table_check(page_ext);
+160
+161                 BUG_ON(atomic_read(&ptc->anon_map_count));
+162                 BUG_ON(atomic_read(&ptc->file_map_count));
+
+I will update the bug log with the mainline backtrace.
+
+>
+> > [    7.499172][    T1] invalid opcode: 0000 [#1] PREEMPT SMP KASAN
+> > [    7.503610][    T1] CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.16.0+
+> > [    7.508600][    T1] Hardware name: QEMU Standard PC (i440FX + PIIX,
+> > ...
+> >
+> > The entry should be properly removed from the page table before the page
+> > is released to the free list.
+> >
+> > Fixes: a5c3b9ffb0f4 ("mm/debug_vm_pgtable: add tests validating advanced arch page table helpers")
+> I am not sure whether this really fixes an existing problem.
+
+What is detected is that a page that potentially has a PTE entry in a
+user page table was put on a free list. It is not an issue for this
+test, but would be an issue if it happened elsewhere.
+
+>
+> >
+> > Signed-off-by: Pasha Tatashin <pasha.tatashin@soleen.com>
+> > Reviewed-by: Zi Yan <ziy@nvidia.com>
+> > Tested-by: Zi Yan <ziy@nvidia.com>
+> > ---
+> >  mm/debug_vm_pgtable.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> >
+> > diff --git a/mm/debug_vm_pgtable.c b/mm/debug_vm_pgtable.c
+> > index a7ac97c76762..db2abd9e415b 100644
+> > --- a/mm/debug_vm_pgtable.c
+> > +++ b/mm/debug_vm_pgtable.c
+> > @@ -171,6 +171,8 @@ static void __init pte_advanced_tests(struct pgtable_debug_args *args)
+> >       ptep_test_and_clear_young(args->vma, args->vaddr, args->ptep);
+> >       pte = ptep_get(args->ptep);
+> >       WARN_ON(pte_young(pte));
+> > +
+> > +     ptep_get_and_clear_full(args->mm, args->vaddr, args->ptep, 1);
+> >  }
+>
+> Although I dont see any problem on arm64 after this change.
+
+This is because page_table_check does not have support for anything
+beside x86 at the moment.
+
+>
+> >
+> >  static void __init pte_savedwrite_tests(struct pgtable_debug_args *args)
+> >
+
+Pasha
