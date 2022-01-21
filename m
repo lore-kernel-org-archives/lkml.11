@@ -2,100 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBEBAC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 13:45:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 058E7C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 13:46:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380758AbiAUNpu (ORCPT
+        id S1380762AbiAUNqM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 08:45:50 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:52416 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1380734AbiAUNpn (ORCPT
+        Fri, 21 Jan 2022 08:46:12 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:18536 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1380567AbiAUNqJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 08:45:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642772742;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=17q/M65gYgBO/SPoZzHGwbDSkKeNitT4nImp6fFN+Jg=;
-        b=H3+E2DfoaxgSoqMjSeUPm6Kk/7e5+TB6RJ9XY8xm7vYddZn/Bov564E8oinRD8MGAj8N32
-        bCWyYqj3bD7dizTSQcc4fxSZLadeyoisVKhzyp6N2naXmD7UBGMjuuISYk483gWSImDwsj
-        SfP91A/owitvEst8lbJXKwT/5f8Q4d0=
-Received: from mail-oi1-f197.google.com (mail-oi1-f197.google.com
- [209.85.167.197]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-397-qlsH8C5vMgOMQdqkh2YgOg-1; Fri, 21 Jan 2022 08:45:41 -0500
-X-MC-Unique: qlsH8C5vMgOMQdqkh2YgOg-1
-Received: by mail-oi1-f197.google.com with SMTP id j126-20020acaeb84000000b002c90b1bb864so5725391oih.3
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 05:45:41 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=17q/M65gYgBO/SPoZzHGwbDSkKeNitT4nImp6fFN+Jg=;
-        b=ecpLi8f+ZxB1nmFLd9Th8iiAf5dPRjb/Sp70OdmwLc7VdYJtEYeYwMkye3N6tbzEf3
-         ABK5ZY0nDUE4+wtvR4nHQUqaMbzmN29osH5Fnp2acuFHuTqa6TeA9HmTScsHzqqKEWiz
-         UrqSfLZZ8CU6rfAk/dmP5v/9LLkTVZrvrVZV9m+wH/9nuvL/9zTH7VKgpf19hZsxU1aU
-         EqAO5DR5UxbTdhhHKXdhO5tYk3L+6lg8V/GvMJiAR+iJa1V1bKcgKIKmsT87k+5DHhY5
-         Vvs6pakTYtRod7L/TqFClEl3Z6AGnBmAfjspaulvjkOoL0KmTwqvBKtI0EmFep06kAjS
-         0MLQ==
-X-Gm-Message-State: AOAM533lqpFf6/4oMgRXzoFGYrfJzAT1tIDX6Tirgp02cEaNAEVSq2ZQ
-        2ZwGNxp0OggsfN7uU8jyfmwjo9AxD6UgrAnwQ3WRLyEQqvnT3/zGuEaJAL7ApcmoCIxSnfW/nlD
-        Rxxv1yCemTUmy5Jzsc0x1jV+S
-X-Received: by 2002:aca:741:: with SMTP id 62mr570970oih.87.1642772739431;
-        Fri, 21 Jan 2022 05:45:39 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz9SguOPBXUy11/Do9O3kCGX1ZokLcCXVsUAdxGjD9Ol9xJN2frusYOCbndlnUNmcESN2jJZw==
-X-Received: by 2002:aca:741:: with SMTP id 62mr570954oih.87.1642772739225;
-        Fri, 21 Jan 2022 05:45:39 -0800 (PST)
-Received: from localhost.localdomain.com (024-205-208-113.res.spectrum.com. [24.205.208.113])
-        by smtp.gmail.com with ESMTPSA id m5sm1349202oiw.30.2022.01.21.05.45.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 05:45:38 -0800 (PST)
-From:   trix@redhat.com
-To:     clm@fb.com, josef@toxicpanda.com, dsterba@suse.com,
-        nathan@kernel.org, ndesaulniers@google.com, anand.jain@oracle.com
-Cc:     linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        llvm@lists.linux.dev, Tom Rix <trix@redhat.com>
-Subject: [PATCH] btrfs: initialize variable cancel
-Date:   Fri, 21 Jan 2022 05:45:22 -0800
-Message-Id: <20220121134522.832207-1-trix@redhat.com>
-X-Mailer: git-send-email 2.26.3
+        Fri, 21 Jan 2022 08:46:09 -0500
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20LBGTPh002895;
+        Fri, 21 Jan 2022 13:46:08 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=JXyGD+6qyYAPrwJA+4HRaiK0sTCQlCIuJ/AqErjzjN4=;
+ b=TQzHbWCC44q+25nLp8fgfQOYMqziD50gC3IZT1ok9yDxsP3bwHNF8iyo8JxgCmk1Oe4r
+ dBvEoYLzjrF4rP70sASI7UOFYzNNa80cVfIntoCN3wbRVAQwxpAe74yYhVEFdQf8k7tD
+ ZV0y1gLtqL41xEL601gNFJyW7x4ZRJNW3LqDWhYRWaqi9vN1dyqF516YgDM4jKh0M4wl
+ 55vZ9lCiYxp8BbExrrlwZewNdjh75nSCyiwOeQ5vt5yDZfzGn1API2kHMQF+RCMORYQ8
+ J7TFsFnxV2IbYrxBr0ucUs4IPSO+z11qA/Zcb4gaJCAXm7S81Nlck/Q/2Q3vt8anjq+3 pw== 
+Received: from ppma01fra.de.ibm.com (46.49.7a9f.ip4.static.sl-reverse.com [159.122.73.70])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dqutjtw6x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 21 Jan 2022 13:46:08 +0000
+Received: from pps.filterd (ppma01fra.de.ibm.com [127.0.0.1])
+        by ppma01fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20LDg1LF023181;
+        Fri, 21 Jan 2022 13:46:06 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma01fra.de.ibm.com with ESMTP id 3dqjegcx8h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 21 Jan 2022 13:46:06 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20LDk3Hf43516284
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 21 Jan 2022 13:46:03 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 067F552054;
+        Fri, 21 Jan 2022 13:46:03 +0000 (GMT)
+Received: from [9.171.30.56] (unknown [9.171.30.56])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTP id 9CEEF52059;
+        Fri, 21 Jan 2022 13:46:02 +0000 (GMT)
+Message-ID: <13a03972-0020-b8e7-2fc0-def8a164eb10@linux.ibm.com>
+Date:   Fri, 21 Jan 2022 14:46:02 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [RFC PATCH v1 01/10] s390/uaccess: Add storage key checked access
+ to user memory
+Content-Language: en-US
+To:     Heiko Carstens <hca@linux.ibm.com>,
+        Christian Borntraeger <borntraeger@linux.ibm.com>
+Cc:     Vasily Gorbik <gor@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Nico Boehr <nrb@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220118095210.1651483-1-scgl@linux.ibm.com>
+ <20220118095210.1651483-2-scgl@linux.ibm.com> <YefeakONMN4PLlml@osiris>
+ <422595a5-b24b-8760-ff0e-112322142de7@linux.ibm.com>
+ <YegQCTqEsiFTUZ2R@osiris>
+ <dbfec527-b995-e382-dafa-c3459e1e45ed@linux.ibm.com>
+ <YelcCEuVbIg9ND90@osiris> <YemnprCIEjjGFeTn@osiris>
+ <b6896b1a-d529-1504-091c-d41287c01dc8@linux.ibm.com>
+ <YeqTP6WDbZzEJUbJ@osiris>
+From:   Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+In-Reply-To: <YeqTP6WDbZzEJUbJ@osiris>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 1J7rmFUY1BDT5y93PM8CZth9xWuTxnVw
+X-Proofpoint-GUID: 1J7rmFUY1BDT5y93PM8CZth9xWuTxnVw
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-21_06,2022-01-21_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 lowpriorityscore=0 bulkscore=0 mlxlogscore=999 mlxscore=0
+ impostorscore=0 phishscore=0 adultscore=0 clxscore=1015 spamscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201210091
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+On 1/21/22 12:04, Heiko Carstens wrote:
+> On Fri, Jan 21, 2022 at 08:32:25AM +0100, Christian Borntraeger wrote:
+>> So in essence adding something like this and then providing raw_copy_from/to_user_key?
+>> (whitespace damaged, just pasted in)
+>>
+>> diff --git a/include/linux/uaccess.h b/include/linux/uaccess.h
+>> index ac0394087f7d..3b6e78ee211c 100644
+>> --- a/include/linux/uaccess.h
+>> +++ b/include/linux/uaccess.h
+>> @@ -201,6 +201,59 @@ copy_to_user(void __user *to, const void *from, unsigned long n)
+>>         return n;
+>>  }
+>> +
+>> +#if defined(__s390x__) && defined(CONFIG_KVM)
+>> +/*
+>> + * Variants that pass along an access key. Uses by KVM on s390x to implement
+>> + * key checks for guests that use storage keys Must be kept in sync with the
+>> + * non-key variants from above. The only difference is the _key suffix when
+>> + * calling raw_copy_from/to_user_key.
+>> + */
+> 
+> This is too architecture specific, I wouldn't like to see __s390__ or
+> KVM dependencies. This should be a bit more generic, so other
+> architectures _might_ also make use of this interface that is:
+> 
+>> +static inline __must_check unsigned long
+>> +_copy_from_user_key(void *to, const void __user *from, unsigned long n, u8 key)
+> 
+> Make key unsigned long, add support for INLINE_COPY_TO_USER, and maybe
+> add a wrapper, so this works on all architectures, e.g. if
+> raw_copy_to_user_key() is not defined, then fall back to
+> raw_copy_to_user() and ignore the key parameter.
+> 
 
-Clang static analysis reports this problem
-ioctl.c:3333:8: warning: 3rd function call argument is an
-  uninitialized value
-    ret = exclop_start_or_cancel_reloc(fs_info,
+Since we only need the double underscore variants, even if we're going to be more
+general than we need to be, we can restrict ourselves to those, can't we?
 
-cancel is only set in one branch of an if-check and is
-always used.  So initialize to false.
+I don't understand your comment about the wrapper. You'd want an error on misuse,
+that is, if you try to use a _with_key function if the functionality is not defined, no?
 
-Fixes: 1a15eb724aae ("btrfs: use btrfs_get_dev_args_from_path in dev removal ioctls")
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- fs/btrfs/ioctl.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/fs/btrfs/ioctl.c b/fs/btrfs/ioctl.c
-index 190ad8af4f45a..26e82379747f8 100644
---- a/fs/btrfs/ioctl.c
-+++ b/fs/btrfs/ioctl.c
-@@ -3308,7 +3308,7 @@ static long btrfs_ioctl_rm_dev(struct file *file, void __user *arg)
- 	struct block_device *bdev = NULL;
- 	fmode_t mode;
- 	int ret;
--	bool cancel;
-+	bool cancel = false;
- 
- 	if (!capable(CAP_SYS_ADMIN))
- 		return -EPERM;
--- 
-2.26.3
-
+I see the following possibilities:
+ 1. raw_copy_from/to_user is declared by each architecture.
+    Mirror that for raw_copy_from/to_user_with_key.
+    Linker error on misuse.
+ 2. Opt in with #define UACCESS_WITH_KEY or similar.
+    Undeclared function on misuse.
+ 3. Opt in by requiring that raw_copy_from/to_user_with_key are macros.
+    Undeclared function on misuse.
+ 4. Declare raw_copy_from/to_user_with_key in include/linux/uacess.h.
+    Linker error on misuse.
