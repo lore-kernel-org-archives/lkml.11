@@ -2,61 +2,62 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14F3AC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:57:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C895C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:57:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380512AbiAUQ46 (ORCPT
+        id S1381136AbiAUQ5C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 11:56:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49676 "EHLO
+        Fri, 21 Jan 2022 11:57:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380007AbiAUQzS (ORCPT
+        with ESMTP id S1379114AbiAUQ4T (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 11:55:18 -0500
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C72DC061756;
-        Fri, 21 Jan 2022 08:55:03 -0800 (PST)
-Received: by mail-ot1-x332.google.com with SMTP id l64-20020a9d1b46000000b005983a0a8aaaso12528714otl.3;
-        Fri, 21 Jan 2022 08:55:03 -0800 (PST)
+        Fri, 21 Jan 2022 11:56:19 -0500
+Received: from mail-oi1-x233.google.com (mail-oi1-x233.google.com [IPv6:2607:f8b0:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC483C06175B;
+        Fri, 21 Jan 2022 08:55:10 -0800 (PST)
+Received: by mail-oi1-x233.google.com with SMTP id bx18so14350749oib.7;
+        Fri, 21 Jan 2022 08:55:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=//qkdexdYIAffr/wUpysgq4KHDNS4hLAy6zYf5Zu0v0=;
-        b=OSxN7qu75Jl6Ebypga9EB+rplXL2NknX3v4hf6fdfBKRFxnzpNYg+gtEDRUJTspnNY
-         kTwMubX5Osq+gG0ozYv5J1+mfyiuQoGQH/OAU0XLabU/xitBEHrV25rvFJyLpopYC2qI
-         WT94JRxDJECeNsRXFsx/cv2LpFTwt+rhh9PEY5ypRwDUQ9GoxjRJeC9434EFhq9dzfwx
-         2uhCO3G6gMl/MVRzOhxZ2RZMEExqltWLaKq4cn+sm3Zwt9+slU6u7ifmmAYWmCbEQQf7
-         wL+7KNo8KcKA4dwGpoGlNJIXNzPjgv7VTBnRA1dcMvHBqykqPMmfIX6lqlZZ8OTy9myu
-         /NzA==
+        bh=LECfU6cLXmTWAFEkOmILc0YJMNkX9LftVPNv4hejlLw=;
+        b=X1kgsEpBLZffAa6n2Zpdp3hS5eepWNOv7/NvBFCUrLPcDJE7Bb4iovVZguI/81N2Va
+         T9Izj9GCrpLlmiY3jAP7FHD32lbBBoDVYU9aFaII3Ci3mdxhCfgw18C5xGs6nhGcF1jA
+         OB9NWxVkn+zp78jd4frB+zrngn5WDc4SokFNup+Uv+Cl+NtmNhMjTjTKDrLiztSE5swy
+         kGcXylufL7Yg/0WuuFfpyI2wuIj6KLRC8oB27XMpp845Ykq7ovO8++bP0Mzlv8pSuFP6
+         QbpB8wwGNDPXycyEZV6d7lpuxftlO15tpuQ1t6nz/b2l4Yz02AUn4DgS7fqHEA6g9urH
+         yYPA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=//qkdexdYIAffr/wUpysgq4KHDNS4hLAy6zYf5Zu0v0=;
-        b=4sHEBAlGpgqvaAfnACkn7R8xBI7ulCVZcXhZX4+t+NUFJFPzFjF24/hZ092ev8u/na
-         +R6ztxuaktFtYx6mN+v069+nFIgq0GI7Ow1E0XISYu5QLFDy/4fRj3mCpDkNbZ+7HeCK
-         xojQmjRqBpUDsk/coSi1oNgpD9oyG54jmToir377joarnkupOplpidqPKnAOAfHh93dR
-         jYrq4MKFlk1+B+kiNc99OiDLsLDIMPFzvFVDMOhPZNOWT7cMAecCOeva4B2v/Z3EvNNM
-         vhMiFEYtNmLe7U0Gr/7N4mUMeh1CQuXH+PAF+iWV4syL5wutG82I86PFd2xDZS7SsEfx
-         QZJA==
-X-Gm-Message-State: AOAM532K5Vk71RQnXf7zNWQBbEPYjQP321Yqlf4lNSY5upjZYHE/xSzZ
-        o1jXwJihueWNa9DW8wKyHf8=
-X-Google-Smtp-Source: ABdhPJwLwqGU0n96VjHoplzG9X99JN+vvV5vjYkOWtZbXe7dcfTezy+ooVZ/MdX9vggOI9EvsoDRwA==
-X-Received: by 2002:a9d:27c1:: with SMTP id c59mr3457166otb.150.1642784102699;
-        Fri, 21 Jan 2022 08:55:02 -0800 (PST)
+        bh=LECfU6cLXmTWAFEkOmILc0YJMNkX9LftVPNv4hejlLw=;
+        b=Xwxs0LT0kKh0cvNKWzDoiRLlpLt2MbZUY77hFn/bVQ0IEQ3dldS6TknoPDnZrQbxsR
+         31ezKaA8CyirypwkfqJnT0Vz1PaNnpMQNuANEx4aun3SaQOVFDUxdXSBAPPKuT1iOslg
+         xhbnN8yb2+erFuDsens1NHqIjIhTEbEqIMoJ9fCD8TWstkYZiVvjkC02uiJL1AVpb6GZ
+         Z63gWclAp3Ueo2raRxl7DR+KWJx1VjoKgk9A1qIRgcucmuJeJ7BB+EwM25TVhjxaV20e
+         MkLJHN14MZVZgA+eSuwmynLbWwQDr020h5Feuccku+JEqrAZKj3GoxCmjukjH9svM+ul
+         Q4Fg==
+X-Gm-Message-State: AOAM532xs3Sb4Xz3Q5HWxC5kfESFyGOqHdtW6yHgFxu+wHxNP0D4fZb8
+        YFPxWWnybFkI7imPjb+ZZvg=
+X-Google-Smtp-Source: ABdhPJwnMTm/HRYkycV0dhiJ7DZNarIXvBbprClF5tkRMIbPP/TqgF6weELN4MPUKaK2ZtRzAyN7JQ==
+X-Received: by 2002:a05:6808:f13:: with SMTP id m19mr1242656oiw.123.1642784109992;
+        Fri, 21 Jan 2022 08:55:09 -0800 (PST)
 Received: from thinkpad.localdomain ([2804:14d:5cd1:5d03:cf72:4317:3105:f6e5])
-        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.55.00
+        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.55.07
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 08:55:02 -0800 (PST)
+        Fri, 21 Jan 2022 08:55:09 -0800 (PST)
 From:   Luiz Sampaio <sampaio.ime@gmail.com>
-To:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Adrian Hunter <adrian.hunter@intel.com>
+To:     Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, Luiz Sampaio <sampaio.ime@gmail.com>,
-        linux-mmc@vger.kernel.org
-Subject: [PATCH 13/31] mmc: changing LED_* from enum led_brightness to actual value
-Date:   Fri, 21 Jan 2022 13:54:18 -0300
-Message-Id: <20220121165436.30956-14-sampaio.ime@gmail.com>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 15/31] net: wireless: atmel: changing LED_* from enum led_brightness to actual value
+Date:   Fri, 21 Jan 2022 13:54:20 -0300
+Message-Id: <20220121165436.30956-16-sampaio.ime@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220121165436.30956-1-sampaio.ime@gmail.com>
 References: <20220121165436.30956-1-sampaio.ime@gmail.com>
@@ -70,77 +71,26 @@ The enum led_brightness, which contains the declaration of LED_OFF,
 LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
 max_brightness.
 ---
- drivers/mmc/core/core.c           | 4 ++--
- drivers/mmc/host/rtsx_usb_sdmmc.c | 4 ++--
- drivers/mmc/host/sdhci.c          | 4 ++--
- 3 files changed, 6 insertions(+), 6 deletions(-)
+ drivers/net/wireless/atmel/at76c50x-usb.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mmc/core/core.c b/drivers/mmc/core/core.c
-index 368f10405e13..66bc9c780e06 100644
---- a/drivers/mmc/core/core.c
-+++ b/drivers/mmc/core/core.c
-@@ -175,7 +175,7 @@ void mmc_request_done(struct mmc_host *host, struct mmc_request *mrq)
- 		mmc_should_fail_request(host, mrq);
+diff --git a/drivers/net/wireless/atmel/at76c50x-usb.c b/drivers/net/wireless/atmel/at76c50x-usb.c
+index 7582761c61e2..3847c59b9672 100644
+--- a/drivers/net/wireless/atmel/at76c50x-usb.c
++++ b/drivers/net/wireless/atmel/at76c50x-usb.c
+@@ -523,10 +523,10 @@ static void at76_ledtrig_tx_timerfunc(struct timer_list *unused)
  
- 		if (!host->ongoing_mrq)
--			led_trigger_event(host->led, LED_OFF);
-+			led_trigger_event(host->led, 0);
+ 	if (tx_lastactivity != tx_activity) {
+ 		tx_lastactivity = tx_activity;
+-		led_trigger_event(ledtrig_tx, LED_FULL);
++		led_trigger_event(ledtrig_tx, 255);
+ 		mod_timer(&ledtrig_tx_timer, jiffies + HZ / 4);
+ 	} else
+-		led_trigger_event(ledtrig_tx, LED_OFF);
++		led_trigger_event(ledtrig_tx, 0);
+ }
  
- 		if (mrq->sbc) {
- 			pr_debug("%s: req done <CMD%u>: %d: %08x %08x %08x %08x\n",
-@@ -352,7 +352,7 @@ int mmc_start_request(struct mmc_host *host, struct mmc_request *mrq)
- 	if (err)
- 		return err;
- 
--	led_trigger_event(host->led, LED_FULL);
-+	led_trigger_event(host->led, 255);
- 	__mmc_start_request(host, mrq);
- 
- 	return 0;
-diff --git a/drivers/mmc/host/rtsx_usb_sdmmc.c b/drivers/mmc/host/rtsx_usb_sdmmc.c
-index 5fe4528e296e..64fe7a75f401 100644
---- a/drivers/mmc/host/rtsx_usb_sdmmc.c
-+++ b/drivers/mmc/host/rtsx_usb_sdmmc.c
-@@ -1287,7 +1287,7 @@ static void rtsx_usb_update_led(struct work_struct *work)
- 	if (host->power_mode == MMC_POWER_OFF)
- 		goto out;
- 
--	if (host->led.brightness == LED_OFF)
-+	if (host->led.brightness == 0)
- 		rtsx_usb_turn_off_led(ucr);
- 	else
- 		rtsx_usb_turn_on_led(ucr);
-@@ -1357,7 +1357,7 @@ static int rtsx_usb_sdmmc_drv_probe(struct platform_device *pdev)
- 	snprintf(host->led_name, sizeof(host->led_name),
- 		"%s::", mmc_hostname(mmc));
- 	host->led.name = host->led_name;
--	host->led.brightness = LED_OFF;
-+	host->led.brightness = 0;
- 	host->led.default_trigger = mmc_hostname(mmc);
- 	host->led.brightness_set = rtsx_usb_led_control;
- 
-diff --git a/drivers/mmc/host/sdhci.c b/drivers/mmc/host/sdhci.c
-index 07c6da1f2f0f..ddc58a8f0c4f 100644
---- a/drivers/mmc/host/sdhci.c
-+++ b/drivers/mmc/host/sdhci.c
-@@ -395,7 +395,7 @@ static void sdhci_led_control(struct led_classdev *led,
- 	if (host->runtime_suspended)
- 		goto out;
- 
--	if (brightness == LED_OFF)
-+	if (brightness == 0)
- 		__sdhci_led_deactivate(host);
- 	else
- 		__sdhci_led_activate(host);
-@@ -414,7 +414,7 @@ static int sdhci_led_register(struct sdhci_host *host)
- 		 "%s::", mmc_hostname(mmc));
- 
- 	host->led.name = host->led_name;
--	host->led.brightness = LED_OFF;
-+	host->led.brightness = 0;
- 	host->led.default_trigger = mmc_hostname(mmc);
- 	host->led.brightness_set = sdhci_led_control;
- 
+ static void at76_ledtrig_tx_activity(void)
 -- 
 2.34.1
 
