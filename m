@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A711C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 21:04:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 428D6C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 21:04:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233293AbiAUVE0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 16:04:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49456 "EHLO
+        id S233468AbiAUVEd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 16:04:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233126AbiAUVEF (ORCPT
+        with ESMTP id S233437AbiAUVEK (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 16:04:05 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8102DC061755;
-        Fri, 21 Jan 2022 13:04:04 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id n10so29198049edv.2;
-        Fri, 21 Jan 2022 13:04:04 -0800 (PST)
+        Fri, 21 Jan 2022 16:04:10 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E523CC06175A;
+        Fri, 21 Jan 2022 13:04:08 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id l5so27759882edv.3;
+        Fri, 21 Jan 2022 13:04:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=CXVZRlEKPP4hcCweUpH3JuNpFEE+gl2M3UXNpQ3IHj0=;
-        b=mcQt3QQuz8soITCTpwVuo8Dx4/K7umNypJgMjwKSj55Z1PfHWVAfu4UWskKCcT3EWd
-         rldbdvu16iGSPYv96Xy0/Xx274rd/Z0uNl4KjDZMowC+eXo35KmnfutLZ/mgSH+VYJAw
-         aZ/eB6uNiS7qKBnbLAmm1z4AAg6J7buGFhuyEnvsUMmvtlMSC/lug248DXrLHR5Bt4r4
-         4/R+8/ESqqZQchJNnKMHAOAjn8EMH95abNyboWko2rzIzRFuiAzmhakjD5RzYo3hxXAK
-         WfTQwW113L4JoVO1bt49gBPnXLVZGzt0Cp1Y+oJL4UNyz+pMRZFECUi5od47qp4mGee6
-         q67g==
+        bh=70y9nP+1TJuyoQVHWKHYrgk62/1kbAozVgHhQoGQnWU=;
+        b=ifaBPUIYWqx0Yuxwid+52Kneq6qIIEZpQyCGPZBb+SdwutjTuyrN/oWw8oiyCbLJ/4
+         JWNQWjVEd/tMRmtzrg1+Vp0Y9SEKG8h6m6ue3U3cXDOxv42tsqAet4qqt0HcFhztaDtG
+         j/6fGOWsEhoqiqLUrXk5rc1rKrfSi5gXBWqnaDtx7Ae73aH8qX9boL2yfxLD2gbGYFKw
+         HVgGDv5RL8q05bcDRzhiDltJvNTL8QXvqp5d0pwmqVKp0yTbSz7mLQ8He1qYyxSX/iGA
+         slqJ8p3O+RiqiRI7evjb7n3SbBCv1C4cPjyyLnQ+ZT5wZvr+5PwaC6CestOwpIYs2Zph
+         U2lA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CXVZRlEKPP4hcCweUpH3JuNpFEE+gl2M3UXNpQ3IHj0=;
-        b=hGlhUWPC4OW0wzTkZPXmBqrvDOdyks0aFnK3IEUeq7qaIJfePW29Tv45WGveTei1Qg
-         5pPHvhqUOIj7HjamHO2qTbcW9FABRWqro/5YkuX53x9uHRJjMzqRPHzbC62P+P6O3ekg
-         3fcQOrNnt3x/fiV2q4u/eh4bFK4OFYcxYorKTvDdTDCefoAIB9EudP7kEcpmOo4EWndX
-         DSy4GcMaLyyFrgF2kUeEvVzjYZU1Yw0oAO3zRuBPU2xf1N63VoNncKQAAdyt8lM8E4pl
-         d3EsOiJQKTEdvjTkOd0q09xP448dpnOb4RhcJg6EBwGrTHglysohn8sh2c5uCT4aeyXd
-         C2YQ==
-X-Gm-Message-State: AOAM530r5uNvbdWL4c766dqp968JZDhXYUHHD/WDH/PtOTapfDZloyhz
-        fMXti8rIcbTpFCSTbttQI4c=
-X-Google-Smtp-Source: ABdhPJxFu9Aw6F9p69w0CcpdMnivsQPmOxAwDuYEJ9Yv+/EwnUbTiGFkSEfMT7UpCgHA+MdsIcbSvA==
-X-Received: by 2002:a05:6402:5107:: with SMTP id m7mr5715878edd.292.1642799042879;
-        Fri, 21 Jan 2022 13:04:02 -0800 (PST)
+        bh=70y9nP+1TJuyoQVHWKHYrgk62/1kbAozVgHhQoGQnWU=;
+        b=vJ4oNSnSmEcrKpBxiENzCONaJ0O8+g2FEaiNXtA4/bf7oIF3Kwmj3oP5Vdw71/KVWI
+         QDcotawdN6YqOQP64SIyiy6ccCGbJOVf0NGDsD6BUR7BLgYtrVzxINjjs2j5Er5ocSyd
+         108VyzmVblq7j8CH0y74GuhlztwYbZp3s0VFTMKivC0NZ44xLt9NxqA+r46jHWzo8CY7
+         RXCV6gm+sGDlAQ2no1cP0luU6SortxyURW4Mn9AVkHHCkqYBMwq4UY6kqUC4kwtKzZum
+         MRoNmIVxlpvBIeaN9QtLBAcXokpITpzH58y7DNZQPX+TbWeD1xOl9Wt9G7EkscEOCMO4
+         EMPA==
+X-Gm-Message-State: AOAM533smrrKmyHpyiiemTo+70EsGAirSRrVMkv1X9HbBWxhRn8bskej
+        4Jkj853Tqs5LyI8T3/Q0xt0=
+X-Google-Smtp-Source: ABdhPJy1y4HO8/1WaxNmwSExaeBcf58GI14B5KbdtJCqWCaEiOtb20D7eSoT8DXN+D/CEEd8o4jPGQ==
+X-Received: by 2002:a05:6402:b4c:: with SMTP id bx12mr5776585edb.363.1642799047385;
+        Fri, 21 Jan 2022 13:04:07 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id p23sm2898595edx.86.2022.01.21.13.04.01
+        by smtp.googlemail.com with ESMTPSA id p23sm2898595edx.86.2022.01.21.13.04.06
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 13:04:02 -0800 (PST)
+        Fri, 21 Jan 2022 13:04:06 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -59,9 +59,9 @@ To:     Andy Gross <agross@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 11/15] dt-bindings: clock: add ipq8064 ce5 clk define
-Date:   Fri, 21 Jan 2022 22:03:36 +0100
-Message-Id: <20220121210340.32362-12-ansuelsmth@gmail.com>
+Subject: [PATCH v3 15/15] ARM: dts: qcom: Add syscon and cxo/pxo clock to gcc node for ipq8064
+Date:   Fri, 21 Jan 2022 22:03:40 +0100
+Message-Id: <20220121210340.32362-16-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220121210340.32362-1-ansuelsmth@gmail.com>
 References: <20220121210340.32362-1-ansuelsmth@gmail.com>
@@ -71,35 +71,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add ipq8064 ce5 clk define needed for CryptoEngine in gcc driver.
+Add syscon compatible required for tsens driver to correctly probe driver
+and access the reg. Also add cxo and pxo tag and declare them as gcc clock
+now requires them for the ipq8064 gcc driver that has now been modernized.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- include/dt-bindings/clock/qcom,gcc-ipq806x.h | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/arm/boot/dts/qcom-ipq8064.dtsi | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/include/dt-bindings/clock/qcom,gcc-ipq806x.h b/include/dt-bindings/clock/qcom,gcc-ipq806x.h
-index 7deec14a6dee..02262d2ac899 100644
---- a/include/dt-bindings/clock/qcom,gcc-ipq806x.h
-+++ b/include/dt-bindings/clock/qcom,gcc-ipq806x.h
-@@ -240,7 +240,7 @@
- #define PLL14					232
- #define PLL14_VOTE				233
- #define PLL18					234
--#define CE5_SRC					235
-+#define CE5_A_CLK				235
- #define CE5_H_CLK				236
- #define CE5_CORE_CLK				237
- #define CE3_SLEEP_CLK				238
-@@ -283,5 +283,8 @@
- #define EBI2_AON_CLK				281
- #define NSSTCM_CLK_SRC				282
- #define NSSTCM_CLK				283
-+#define CE5_A_CLK_SRC				285
-+#define CE5_H_CLK_SRC				286
-+#define CE5_CORE_CLK_SRC			287
+diff --git a/arch/arm/boot/dts/qcom-ipq8064.dtsi b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+index 11481313bdb6..5524a68cf3d1 100644
+--- a/arch/arm/boot/dts/qcom-ipq8064.dtsi
++++ b/arch/arm/boot/dts/qcom-ipq8064.dtsi
+@@ -298,13 +298,13 @@ smem: smem@41000000 {
+ 	};
  
- #endif
+ 	clocks {
+-		cxo_board {
++		cxo_board: cxo_board {
+ 			compatible = "fixed-clock";
+ 			#clock-cells = <0>;
+ 			clock-frequency = <25000000>;
+ 		};
+ 
+-		pxo_board {
++		pxo_board: pxo_board {
+ 			compatible = "fixed-clock";
+ 			#clock-cells = <0>;
+ 			clock-frequency = <25000000>;
+@@ -736,7 +736,9 @@ tsens_calib_backup: calib_backup@410 {
+ 		};
+ 
+ 		gcc: clock-controller@900000 {
+-			compatible = "qcom,gcc-ipq8064";
++			compatible = "qcom,gcc-ipq8064", "syscon";
++			clocks = <&pxo_board>, <&cxo_board>;
++			clock-names = "pxo", "cxo";
+ 			reg = <0x00900000 0x4000>;
+ 			#clock-cells = <1>;
+ 			#reset-cells = <1>;
 -- 
 2.33.1
 
