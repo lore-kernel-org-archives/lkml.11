@@ -2,132 +2,184 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FD4CC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 17:40:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 016CAC43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 17:40:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242591AbiAURkb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 12:40:31 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:35218 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235773AbiAURk0 (ORCPT
+        id S235773AbiAURke (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 12:40:34 -0500
+Received: from mailout1.samsung.com ([203.254.224.24]:27720 "EHLO
+        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S241342AbiAURk1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 12:40:26 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642786826;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=WTtwQay8miS6u7qa97/OYe9kVctRWoIWbnoO4Ke45Hg=;
-        b=CEbRg95qk1aqFIl7d0esOrVqKl6/WKZPCnr/NlJhcQnwaqhNqcTcHOFJrCXjOyCFu8CVKT
-        DYR4Y1F8I/edQVjcBjonZkMYyOv+hPDiBDC29DO53fICaJT6NV6TCBwEbe4jx4YZWsmlUu
-        ddSfn1NzsXr6EyOercEEmhbvSsAck9A=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-519-pldxnBvQMQO2tdevAWCpMA-1; Fri, 21 Jan 2022 12:40:24 -0500
-X-MC-Unique: pldxnBvQMQO2tdevAWCpMA-1
-Received: by mail-wm1-f69.google.com with SMTP id a189-20020a1c98c6000000b0034e32e18a21so3651746wme.9
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 09:40:23 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=WTtwQay8miS6u7qa97/OYe9kVctRWoIWbnoO4Ke45Hg=;
-        b=HCL0iYGF/MLRAVbESp4tLxFz5AH98pe9M//tCQ4yqxXoQLrjUpZ81bDyamEB5eMx/I
-         Now/NRFRYF0+84XNWZfb7+2upVHuVtU1PTU9Kyfr0/ZZtJoeamNqMxzJ2AEQeiE9YfA4
-         UOEFXcBZ2/eFj4HhmjtnvYOcB7drKgWBuEXuKK2QWARfSwv6bwR7Zp2I8CIQbCQGK5Os
-         dnm7jcLexIh4xKsQknVYOyniOMJu5mL4K+sCyz1F1K6bhRLI4rJmNSfI8nek0+YbDmvV
-         cdMip1TiDjQSOBwI7rhy/W6k7+2zL8tF/e94Q2aU5xzfLOded93cEMjrMw7W1LJky3Sw
-         zo6Q==
-X-Gm-Message-State: AOAM530PtA3zNUOYazTUh2qHebQNgYxMC8PQ8VH+ZSqND8einBuQnPeC
-        /kDhGOMdqiIwsxOxuHv27S6XUoaaKf9wt6Z2LhkF49TUCO12os3yGw4LxWQFhFmjhgvZT+zVl+g
-        U4UvuSaFMQL+uZGCuoh2pq+tF
-X-Received: by 2002:a05:6000:38a:: with SMTP id u10mr4718397wrf.0.1642786822890;
-        Fri, 21 Jan 2022 09:40:22 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJx/U7XRGC7xT66p5zdwvCJnX0GHvveyRPJi3mnkgzyC3XRh3p6GV5nKjlyJ+mgXw2pDlGFadA==
-X-Received: by 2002:a05:6000:38a:: with SMTP id u10mr4718387wrf.0.1642786822687;
-        Fri, 21 Jan 2022 09:40:22 -0800 (PST)
-Received: from ?IPv6:2a0c:5a80:1e09:d600:637e:7f1b:a4a0:fc92? ([2a0c:5a80:1e09:d600:637e:7f1b:a4a0:fc92])
-        by smtp.gmail.com with ESMTPSA id d6sm6178108wrs.85.2022.01.21.09.40.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 09:40:22 -0800 (PST)
-Message-ID: <3d76e432d17f5d579a866191a4a33be189781b60.camel@redhat.com>
-Subject: Re: [PATCH v2 7/7] kvm/x86: rework guest entry logic
-From:   Nicolas Saenz Julienne <nsaenzju@redhat.com>
-To:     Mark Rutland <mark.rutland@arm.com>, linux-kernel@vger.kernel.org
-Cc:     aleksandar.qemu.devel@gmail.com, alexandru.elisei@arm.com,
-        anup.patel@wdc.com, aou@eecs.berkeley.edu, atish.patra@wdc.com,
-        borntraeger@linux.ibm.com, bp@alien8.de, catalin.marinas@arm.com,
-        chenhuacai@kernel.org, dave.hansen@linux.intel.com,
-        frankja@linux.ibm.com, frederic@kernel.org, gor@linux.ibm.com,
-        hca@linux.ibm.com, james.morse@arm.com, jmattson@google.com,
-        joro@8bytes.org, luto@kernel.org, maz@kernel.org, mingo@redhat.com,
-        mpe@ellerman.id.au, palmer@dabbelt.com, paulmck@kernel.org,
-        paul.walmsley@sifive.com, pbonzini@redhat.com,
-        peterz@infradead.org, seanjc@google.com, suzuki.poulose@arm.com,
-        svens@linux.ibm.com, tglx@linutronix.de, tsbogend@alpha.franken.de,
-        vkuznets@redhat.com, wanpengli@tencent.com, will@kernel.org
-Date:   Fri, 21 Jan 2022 18:40:20 +0100
-In-Reply-To: <20220119105854.3160683-8-mark.rutland@arm.com>
-References: <20220119105854.3160683-1-mark.rutland@arm.com>
-         <20220119105854.3160683-8-mark.rutland@arm.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.3 (3.42.3-1.fc35) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 21 Jan 2022 12:40:27 -0500
+Received: from epcas5p1.samsung.com (unknown [182.195.41.39])
+        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20220121174022epoutp016d4c950996aa5b8417a20dfeb3efea80~MWelfd9kQ3053530535epoutp01g
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 17:40:22 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20220121174022epoutp016d4c950996aa5b8417a20dfeb3efea80~MWelfd9kQ3053530535epoutp01g
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1642786822;
+        bh=yEDZjvfFp+4i7/U7MjWMajMUtHtH/8TAa5UWrXpu5kc=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=vST/KwXwtWhsMDDXtcBg5u7xLKk7YFTm9CsZQUFXSN6EUJqPfMZf942nhFhCkBTbP
+         3tEzBxVaE7EYEDJEnZrLvoyofKc77UmPDooRaY6kkYe0+2zeAj6kpEQWhcZD6xst23
+         0+KSpmZHbYZW+VrFC6nYQCJe+iVDznUOtx1+URaI=
+Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTP id
+        20220121174022epcas5p3b1faa21a077485920eb075eeb5e2a496~MWelBljcg2717827178epcas5p30;
+        Fri, 21 Jan 2022 17:40:22 +0000 (GMT)
+Received: from epsmges5p1new.samsung.com (unknown [182.195.38.177]) by
+        epsnrtp2.localdomain (Postfix) with ESMTP id 4JgRV91pn3z4x9Pv; Fri, 21 Jan
+        2022 17:40:17 +0000 (GMT)
+Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
+        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        62.20.06423.100FAE16; Sat, 22 Jan 2022 02:40:17 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas5p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220121174016epcas5p347510c17404c703f6b857bc43413ed2a~MWefryHkd2717827178epcas5p3o;
+        Fri, 21 Jan 2022 17:40:16 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220121174016epsmtrp11c5ed766b29b877a5b93efbeb9a68894~MWefqzXcp2324623246epsmtrp1h;
+        Fri, 21 Jan 2022 17:40:16 +0000 (GMT)
+X-AuditID: b6c32a49-b13ff70000001917-93-61eaf0018b23
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        4E.A7.08738.000FAE16; Sat, 22 Jan 2022 02:40:16 +0900 (KST)
+Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
+        [107.108.73.139]) by epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
+        20220121174014epsmtip26d90cfad6dd3d9d86d851faf7cb5ccf1~MWedcFI2U0094500945epsmtip2q;
+        Fri, 21 Jan 2022 17:40:14 +0000 (GMT)
+From:   Alim Akhtar <alim.akhtar@samsung.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     soc@kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, olof@lixom.net, arnd@arndb.de,
+        linus.walleij@linaro.org, catalin.marinas@arm.com,
+        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
+        s.nawrocki@samsung.com, linux-samsung-soc@vger.kernel.org,
+        pankaj.dubey@samsung.com, sboyd@kernel.org,
+        Alim Akhtar <alim.akhtar@samsung.com>
+Subject: [PATCH v3 00/16] Add support for Tesla Full Self-Driving (FSD) SoC
+Date:   Fri, 21 Jan 2022 22:58:24 +0530
+Message-Id: <20220121172840.12121-1-alim.akhtar@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA0VSe0xTVxjPube9vbh1uRYch7pJcyMJshRaabvL1qqJhZQghmUZS5a47obe
+        tYy+0tuO6QhDN950E3QKyoCMTVwxCrUI4th4hTGJOpWnDDSDLK4bDwGZsUBWeuf23+/7Pb5z
+        vnM+HBUVYmI82+pkHFbaTGJbeFf6dsVKwaKflt0bw6gHdVcwar1qQEAtnKsAVH3/TT7VOvcE
+        oU6uNSGUd2aUTz2qmOZTdztrMar61g8IdX1sGaO+blsRUIVd/QKq769iPrUx2sqjZsbWsH2E
+        7kLdBaALPK0CujMFbkzn9ZRiul9Hv8d0l7/5RDc8eIyv+9znAbpl746MsHdy1CaGNjAOCWPN
+        shmyrUYNmfamfr9eqZLJpfIk6lVSYqUtjIbUHsiQpmSbg2OQkg9psytIZdAsSybsUTtsLicj
+        MdlYp4Zk7AazXWGPZ2kL67Ia462M8zW5TLZbGTS+l2NqW5lG7O7tH/3Z2AcKwMOIMhCGQ0IB
+        n16sB2VgCy4irgG4VFuOcsUSgCcn7gm4YhnA25PnwbNIzdQknxM6AXzy83xIEBGfIXB2CtnE
+        GPEKnDrtC+EIIgWOHy1BNgMo4Ufg2EYztimEE2lw7XQ1uol5RAxcWnwUCggJNZxZd2PcadGw
+        uaU7dCdIVOLw9vIdXhnAg4UWHhvP5Dzh0P+TT8BhMfzjiyIBZ8mBFZ2JHJ0Hv60b4HF4L+we
+        rg11QYld8FJnwiaNEi9Ad2AW4ZJCWFIk4twx8NP5kX+T22FleTmfwzrY0dCAcZMfgn8XB5Dj
+        4KUz/zdtAMADohg7azEyrNIutzK5/31Nls3iBaF9jEvtAFMPFuN7AYKDXgBxlIwQ2m1+WiQ0
+        0IePMA6b3uEyM2wvUAYfqRIVb8uyBRfa6tTLFUkyhUqlUiQlquRkpHDI2EKLCCPtZHIYxs44
+        nuUQPExcgGwdJ+v3ld3xGmuKIr/SnGLXo9HDMbtrOuorbl2KioXTPc2NTTOT2j3vP/7u+i8p
+        B0905X/QKU1uxxdezk/Pm3xDob57kNZa2POH3J4Dru6rvpu2nlNRI9HXmrpXS/GhwlmNR63v
+        aU6LlOQNvbv6lmv1+M64pqj79xcuJs9Mi064zxnCtVcbVV5fW1vml12LvB5ecVOpdkqlShye
+        SI3+fV48kftiWcKNt3t++1E5sFfmVxV0tD8HqmKFqHFJ4NuR6lWMDCabtC1z5TsfZ9q2Skoe
+        VuZHtc4xZwP728/eWOj/OHewcKWat1FtBqIq//OJR8ZHjnZss6e/ntqeLgxcls6TPNZEy+NQ
+        B0v/A0a93EsYBAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrALMWRmVeSWpSXmKPExsWy7bCSvC7Dh1eJBhO/qFg8mLeNzeLvpGPs
+        Fu+X9TBazD9yjtVi49sfTBZT/ixnstj0+Bqrxceee6wWl3fNYbOYcX4fk8Wp65/ZLBZt/cJu
+        0br3CLvF4TftrBb/rm1ksXh8/Q+bg4DHmnlrGD1+/5rE6DGroZfNY9OqTjaPO9f2sHlsXlLv
+        ceVEE6tH35ZVjB6fN8kFcEZx2aSk5mSWpRbp2yVwZWz9co+poFe64vXiw4wNjC9Euhg5OSQE
+        TCRm3r3N2sXIxSEksINRYu7ZzywQCWmJ6xsnsEPYwhIr/z1nhyhqYpK4cXchWBGbgLbE3elb
+        mEBsEQEPibZ/95hBipgFfjFJ7Pt7gxEkISzgLfFn+gxmEJtFQFXi04ePYA28AjYSj//2skFs
+        kJdYveEA8wRGngWMDKsYJVMLinPTc4sNC4zyUsv1ihNzi0vz0vWS83M3MYIDWUtrB+OeVR/0
+        DjEycTAeYpTgYFYS4S3If5UoxJuSWFmVWpQfX1Sak1p8iFGag0VJnPdC18l4IYH0xJLU7NTU
+        gtQimCwTB6dUA5OjgfXF/edn/b7DXF1zraHj035FK5Uzz7Z8sLZ99zLjQr1XmbzkksMlFZ9C
+        fz2YZN3xRCx0k+8fqUWrjh388lzh5Az5e2kunw+m8ir/qlug2HdPUHziyma7X6cWVObuePl3
+        7u9LNYWdi01upZpIhX38lcUipLbzyQmb1Ztmp+97YrH4wMt5SxN2pF5YEPctf1Help8tBvvv
+        r1LdKTptmv8FX5uwu7e3XnOX/5AWd+TRFOdokajcgIqQbG6ldYU/+hKb9kwK1Xlv9uHJ1yts
+        dReOWl1R2S7fuqjl5DzFhrvsp3q2+7xNToo0fP9LreyydasyuxZb89RFrGVGXyY0n1bYqLHb
+        77nopIAlM5dLHc10UmIpzkg01GIuKk4EAKxI8L3TAgAA
+X-CMS-MailID: 20220121174016epcas5p347510c17404c703f6b857bc43413ed2a
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220121174016epcas5p347510c17404c703f6b857bc43413ed2a
+References: <CGME20220121174016epcas5p347510c17404c703f6b857bc43413ed2a@epcas5p3.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 2022-01-19 at 10:58 +0000, Mark Rutland wrote:
-> For consistency and clarity, migrate x86 over to the generic helpers for
-> guest timing and lockdep/RCU/tracing management, and remove the
-> x86-specific helpers.
-> 
-> Prior to this patch, the guest timing was entered in
-> kvm_guest_enter_irqoff() (called by svm_vcpu_enter_exit() and
-> svm_vcpu_enter_exit()), and was exited by the call to
-> vtime_account_guest_exit() within vcpu_enter_guest().
-> 
-> To minimize duplication and to more clearly balance entry and exit, both
-> entry and exit of guest timing are placed in vcpu_enter_guest(), using
-> the new guest_timing_{enter,exit}_irqoff() helpers. When context
-> tracking is used a small amount of additional time will be accounted
-> towards guests; tick-based accounting is unnaffected as IRQs are
-> disabled at this point and not enabled until after the return from the
-> guest.
-> 
-> This also corrects (benign) mis-balanced context tracking accounting
-> introduced in commits:
-> 
->   ae95f566b3d22ade ("KVM: X86: TSCDEADLINE MSR emulation fastpath")
->   26efe2fd92e50822 ("KVM: VMX: Handle preemption timer fastpath")
-> 
-> Where KVM can enter a guest multiple times, calling vtime_guest_enter()
-> without a corresponding call to vtime_account_guest_exit(), and with
-> vtime_account_system() called when vtime_account_guest() should be used.
-> As account_system_time() checks PF_VCPU and calls account_guest_time(),
-> this doesn't result in any functional problem, but is unnecessarily
-> confusing.
-> 
-> Signed-off-by: Mark Rutland <mark.rutland@arm.com>
-> Cc: Borislav Petkov <bp@alien8.de>
-> Cc: Dave Hansen <dave.hansen@linux.intel.com>
-> Cc: Ingo Molnar <mingo@redhat.com>
-> Cc: Jim Mattson <jmattson@google.com>
-> Cc: Joerg Roedel <joro@8bytes.org>
-> Cc: Paolo Bonzini <pbonzini@redhat.com>
-> Cc: Sean Christopherson <seanjc@google.com>
-> Cc: Thomas Gleixner <tglx@linutronix.de>
-> Cc: Vitaly Kuznetsov <vkuznets@redhat.com>
-> Cc: Wanpeng Li <wanpengli@tencent.com>
-> ---
+Adds basic support for the Tesla Full Self-Driving (FSD)
+SoC. This SoC contains three clusters of four Cortex-A72 CPUs,
+as well as several IPs.
 
-Reviewed-by: Nicolas Saenz Julienne <nsaenzju@redhat.com>
+Patches 1 to 9 provide support for the clock controller
+(which is designed similarly to Exynos SoCs).
 
-Thanks,
+The remaining changes provide pinmux support, initial device tree support.
 
+- Changes since v2
+* Addressed Krzysztof's and Stephen's review comments
+* Added Reviewed-by and Acked-by tags
+* Rebased on next-20220120
+
+- Changes since v1
+* fixed make dt_binding_check error as pointed by Rob
+* Addressed Krzysztof's and Rob's review comments
+* Added Reviewed-by and Acked-by tags
+* Dropped SPI, MCT and ADC from this series (to be posted in small sets)
+
+NOTE: These patches are based on next-20220120
+
+Alim Akhtar (16):
+  dt-bindings: add vendor prefix for Tesla
+  dt-bindings: clock: Add bindings definitions for FSD CMU blocks
+  dt-bindings: clock: Document FSD CMU bindings
+  clk: samsung: fsd: Add initial clock support
+  clk: samsung: fsd: Add cmu_peric block clock information
+  clk: samsung: fsd: Add cmu_fsys0 clock information
+  clk: samsung: fsd: Add cmu_fsys1 clock information
+  clk: samsung: fsd: Add cmu_imem block clock information
+  clk: samsung: fsd: Add cmu_mfc block clock information
+  clk: samsung: fsd: Add cam_csi block clock information
+  dt-bindings: pinctrl: samsung: Add compatible for Tesla FSD SoC
+  pinctrl: samsung: add FSD SoC specific data
+  dt-bindings: arm: add Tesla FSD ARM SoC
+  arm64: dts: fsd: Add initial device tree support
+  arm64: dts: fsd: Add initial pinctrl support
+  arm64: defconfig: Enable Tesla FSD SoC
+
+ .../devicetree/bindings/arm/tesla.yaml        |   27 +
+ .../bindings/clock/tesla,fsd-clock.yaml       |  198 ++
+ .../bindings/pinctrl/samsung-pinctrl.txt      |    1 +
+ .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
+ MAINTAINERS                                   |    8 +
+ arch/arm64/Kconfig.platforms                  |    6 +
+ arch/arm64/boot/dts/Makefile                  |    1 +
+ arch/arm64/boot/dts/tesla/Makefile            |    3 +
+ arch/arm64/boot/dts/tesla/fsd-evb.dts         |   39 +
+ arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi    |  335 +++
+ arch/arm64/boot/dts/tesla/fsd.dtsi            |  673 ++++++
+ arch/arm64/configs/defconfig                  |    1 +
+ drivers/clk/samsung/Kconfig                   |    8 +
+ drivers/clk/samsung/Makefile                  |    1 +
+ drivers/clk/samsung/clk-fsd.c                 | 1803 +++++++++++++++++
+ drivers/clk/samsung/clk-pll.c                 |    1 +
+ drivers/clk/samsung/clk-pll.h                 |    1 +
+ .../pinctrl/samsung/pinctrl-exynos-arm64.c    |   71 +
+ drivers/pinctrl/samsung/pinctrl-samsung.c     |    2 +
+ drivers/pinctrl/samsung/pinctrl-samsung.h     |    1 +
+ include/dt-bindings/clock/fsd-clk.h           |  150 ++
+ 21 files changed, 3332 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/tesla.yaml
+ create mode 100644 Documentation/devicetree/bindings/clock/tesla,fsd-clock.yaml
+ create mode 100644 arch/arm64/boot/dts/tesla/Makefile
+ create mode 100644 arch/arm64/boot/dts/tesla/fsd-evb.dts
+ create mode 100644 arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi
+ create mode 100644 arch/arm64/boot/dts/tesla/fsd.dtsi
+ create mode 100644 drivers/clk/samsung/clk-fsd.c
+ create mode 100644 include/dt-bindings/clock/fsd-clk.h
+
+
+base-commit: 7fc5253f5a13271e9df35d6b936ff97b74540a59
 -- 
-Nicolás Sáenz
+2.25.1
 
