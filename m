@@ -2,129 +2,178 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73739C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 08:35:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78AE5C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 08:35:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234210AbiAUIfK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 03:35:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48796 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379591AbiAUIeZ (ORCPT
+        id S234189AbiAUIfP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 03:35:15 -0500
+Received: from esa6.hgst.iphmx.com ([216.71.154.45]:64199 "EHLO
+        esa6.hgst.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229967AbiAUIel (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 03:34:25 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89213C061574
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 00:34:24 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id l5so22864934edv.3
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 00:34:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MaJVMg+g5DUUOUdBu9/Df9/RFBs/TIbTQZzIsKw2iKg=;
-        b=P7QTTv7hHfbbe2OClT1Kjb3kRatE9n4kVuBrYAX+TSocdmc/pPPmPArC+eBY8j45O3
-         /SqBaFXkywgPJ+2rC3PruZ4LR45txQGneJk3zC45MIi26yOLkRREZX8IsvAT7tkdrxP5
-         uoblK4HfmWm0avFOSwpzGyoUMzGHyvAP1s3g/3zm9BRNVjxt9WiYwhbKz5KuLrqOuYh7
-         tHag4GlgjUnKmV+cBLPaJ+enEnDmJxHSDFo+1/0HV+VCGvlilYuI/RlY22HlbJhKLVdC
-         p4cbHOrTY4GL975OpWwwVb/paJISTARLDu193tj/pGhcRcg0khuHika8wQ2RFnrWcS6S
-         f4+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MaJVMg+g5DUUOUdBu9/Df9/RFBs/TIbTQZzIsKw2iKg=;
-        b=3gBqrN4+VLmB4FKxWwkwiF3PU6hpV9DEEgr3EzxomQpIEHgkaTvaAlaahcmsPUxyN4
-         VkEBAReFOEAXQUwqgGEuJRCjymRzSJyugz8RB+YjJ8i3V8tK5hxGdPlhGSbG8PA7udTC
-         LPRPjAbw1hwgqJ7QEZZQzt7I7UtaBBeZ6iEnjv2Hkt9TA28S0UT1fKfg81tndLa4VuA6
-         o5SDtcy+EpWop46I/pQ+EFZgHDhQcHQIHo7Ljbe9vd6vSEXO+RyaEG3HlA76CNFPlA1a
-         70Uipz6x484hXD2iAmKegjgB5G4CFDNebB37mXId/iynOF0omKAc5Xx7jLpPiN37PY89
-         rvMg==
-X-Gm-Message-State: AOAM5318VakeFWUHQvShb1tzN8oysEoo2OJvbSl5jjc8qyiPEJt0sG6+
-        tfC85hzll8JzFYJk4kl+50eD3osHIs8wTyBG2lsf
-X-Google-Smtp-Source: ABdhPJyiX2tettfsCx6cHZABS+yVxwDmnEePfNEcWEOW8c+9z8wtNNeaipYQcpTYt5p4LaunCbPSBLMmhR3jLYdlnO0=
-X-Received: by 2002:a05:6402:4495:: with SMTP id er21mr3388511edb.298.1642754063092;
- Fri, 21 Jan 2022 00:34:23 -0800 (PST)
+        Fri, 21 Jan 2022 03:34:41 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1642754082; x=1674290082;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=Q8+w+zY/fos4SCamEOckILzxUl1jS3yfE7nrCAZdjSU=;
+  b=GKNtQL0C/5wSmxt7I2i9EJZYX2IG5mz/JH/eQNXH2QYAoAF5pHbMpNTM
+   BM4Qn7CSXvtzCoQqEC9rQ6j0r0VX+DySfpdtn1ooGWIJ1XTBUQ12oTQnX
+   5xTb8vIlm8OLj0/Nsq6wtUXNdzdjqz3PzCRSIMGBoAJGVItZyGKJRNzfR
+   pd8nAg3Bs+0NXMsi0VZbpLmbK4pKCeLjKDaAuK1Jm5BK7tqg/fOXFMtcx
+   6kHXjEttarV0fWaalWF7NfVItpV7pYInXUp7x2uhsgLNO7guBoiHBfiOO
+   /g3p9JyYzTw9acqgFhXeritbPGZ6jnI1M0GQKeA+iiF+Hi7NF+4+BbMKy
+   A==;
+X-IronPort-AV: E=Sophos;i="5.88,304,1635177600"; 
+   d="scan'208";a="192036796"
+Received: from uls-op-cesaip02.wdc.com (HELO uls-op-cesaep02.wdc.com) ([199.255.45.15])
+  by ob1.hgst.iphmx.com with ESMTP; 21 Jan 2022 16:34:41 +0800
+IronPort-SDR: 10X62QFxuQRi2un8wOfLqJm2/tXe/csKP4P+gxoCzEyZAtoqGkhgojI7AWLgTRo8baNkEnuzG6
+ VZQ/a33cpDHZWoXqdFiZbT+dDd0XYIGEv5V6C9vtO/DILaVEzpG068OprMM2osgc0TuyRF7QId
+ ZLS3WkqO4Osq6FuwJFGECmnjDXelBcE6SaiJFRfc3qBatWz1MvyWjIE3Oyk7KyyZs7lienAlzO
+ SzSwNJEHi02R0zJFX8tyHJffpkuONokVkim8szD4L2l88wztO/kvq7J0+cwOle5OIZ+tCchV80
+ knxGXljT2deSDLKA038+73Rk
+Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
+  by uls-op-cesaep02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 00:06:52 -0800
+IronPort-SDR: 4moM+oL/GN4+GzYbOAOSUsShVu+NgA/0RrWATnegCNd00z6C6qwjbut8FMDEQXQf/uVQev8Peo
+ Rs9P6LbDZH+g0yOEQ+baagH8ZsYJ7OxelPbOHr/gYKopmkSJKIHEG0MhFDUMgcRz9olcA6LyVk
+ xUtTWlRY63O7XT9EqY4Wdq1X2N/yhDzmtXkgTA+MsyQ7prgs0ft51bd+a8Fu17wT7WsY9Hr7Bu
+ KX+bmIBnrQACZnZzkG58ota/TS6S+etR4ycmUzSzv7ONSYLT5pZEA982UlHS1POclsE0q59Aa1
+ mCo=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip02.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 00:34:41 -0800
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4JgCNc3bwDz1SVp2
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 00:34:40 -0800 (PST)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1642754079; x=1645346080; bh=Q8+w+zY/fos4SCamEOckILzxUl1jS3yfE7n
+        rCAZdjSU=; b=mBYTwNFWNI2gJI+EMJOK8vQ/zPGTFIxOb8hlRMRHucnDP+YTM7c
+        cNhsPI1aSRlDbAhQcy18FB1qtTC4P9C4G6NmL9ktzVOywAqcmYxwZ1rRkVyAfrd5
+        Q/GKJoIsFc5u8zVhoM0c2laOEJ5SBEnjZGgpZT9VFmpJCU71t0XdyCUhfA2sMxKW
+        h51xd2nqdiKkrWyc1uYpBKyZNNTwakYJcW0SNyLrk+3exBpr+HS/iGC9VEK02NKG
+        UNgzuVjUrp41rI4Fu+NwJovQHwpBb8wikIvWBxQTY9jogP3hAqnAaTdw4E06Fdpp
+        vKZbjS7ovToZ6RIzMVfc0310N9+thni8guA==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id wMaN3o6Iuuxg for <linux-kernel@vger.kernel.org>;
+        Fri, 21 Jan 2022 00:34:39 -0800 (PST)
+Received: from [10.225.163.53] (unknown [10.225.163.53])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4JgCNY3K7Vz1RvlN;
+        Fri, 21 Jan 2022 00:34:37 -0800 (PST)
+Message-ID: <6249735f-e6b7-1331-eb2b-361bb17d6115@opensource.wdc.com>
+Date:   Fri, 21 Jan 2022 17:34:35 +0900
 MIME-Version: 1.0
-References: <20211227091241.103-1-xieyongji@bytedance.com> <Ycycda8w/zHWGw9c@infradead.org>
- <CACycT3usfTdzmK=gOsBf3=-0e8HZ3_0ZiBJqkWb_r7nki7xzYA@mail.gmail.com>
- <YdMgCS1RMcb5V2RJ@localhost.localdomain> <CACycT3vYt0XNV2GdjKjDS1iyWieY_OV4h=W1qqk_AAAahRZowA@mail.gmail.com>
- <YdSMqKXv0PUkAwfl@localhost.localdomain> <CACycT3tPZOSkCXPz-oYCXRJ_EOBs3dC0+Juv=FYsa6qRS0GVCw@mail.gmail.com>
-In-Reply-To: <CACycT3tPZOSkCXPz-oYCXRJ_EOBs3dC0+Juv=FYsa6qRS0GVCw@mail.gmail.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Fri, 21 Jan 2022 16:34:11 +0800
-Message-ID: <CACycT3tTKBpS_B5vVJ8MZ1iuaF2bf-01=9+tAdxUddziF2DQ-g@mail.gmail.com>
-Subject: Re: [PATCH v2] nbd: Don't use workqueue to handle recv work
-To:     Josef Bacik <josef@toxicpanda.com>
-Cc:     Christoph Hellwig <hch@infradead.org>,
-        Jens Axboe <axboe@kernel.dk>,
-        Bart Van Assche <bvanassche@acm.org>,
-        linux-block@vger.kernel.org, nbd@other.debian.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [next] mips: cavium_octeon_defconfig: pata_octeon_cf.c:598:23:
+ error: passing argument 1 of 'trace_ata_bmdma_stop' from incompatible pointer
+ type
+Content-Language: en-US
+To:     Naresh Kamboju <naresh.kamboju@linaro.org>,
+        "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
+        <linux-ide@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-mips@vger.kernel.org,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        regressions@lists.linux.dev, lkft-triage@lists.linaro.org
+Cc:     Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Zeal Robot <zealci@zte.com.cn>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        CGEL ZTE <cgel.zte@gmail.com>
+References: <CA+G9fYtq0wzSeG8YG-a+=KrbdWqHJMXk1hvq0FKeAvj9sZAK2g@mail.gmail.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <CA+G9fYtq0wzSeG8YG-a+=KrbdWqHJMXk1hvq0FKeAvj9sZAK2g@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Ping.
+On 1/21/22 17:02, Naresh Kamboju wrote:
+> Linux next-20220106..next-20220121 mips build failing with gcc-10.
+> 
+> drivers/ata/pata_octeon_cf.c: In function 'octeon_cf_dma_finished':
+> drivers/ata/pata_octeon_cf.c:598:23: error: passing argument 1 of
+> 'trace_ata_bmdma_stop' from incompatible pointer type
+> [-Werror=incompatible-pointer-types]
+>   598 |  trace_ata_bmdma_stop(qc, &qc->tf, qc->tag);
+>       |                       ^~
+>       |                       |
+>       |                       struct ata_queued_cmd *
+> In file included from include/trace/events/libata.h:10,
+>                  from drivers/ata/pata_octeon_cf.c:22:
+> include/trace/events/libata.h:414:33: note: expected 'struct ata_port
+> *' but argument is of type 'struct ata_queued_cmd *'
+>   414 |       TP_PROTO(struct ata_port *ap, const struct ata_taskfile
+> *tf, unsigned int tag),
+>       |                ~~~~~~~~~~~~~~~~~^~
+> include/linux/tracepoint.h:342:34: note: in definition of macro
+> '__DECLARE_TRACE'
+>   342 |  static inline void trace_##name(proto)    \
+>       |                                  ^~~~~
+> include/linux/tracepoint.h:419:24: note: in expansion of macro 'PARAMS'
+>   419 |  __DECLARE_TRACE(name, PARAMS(proto), PARAMS(args),  \
+>       |                        ^~~~~~
+> include/linux/tracepoint.h:542:2: note: in expansion of macro 'DECLARE_TRACE'
+>   542 |  DECLARE_TRACE(name, PARAMS(proto), PARAMS(args))
+>       |  ^~~~~~~~~~~~~
+> include/linux/tracepoint.h:542:22: note: in expansion of macro 'PARAMS'
+>   542 |  DECLARE_TRACE(name, PARAMS(proto), PARAMS(args))
+>       |                      ^~~~~~
+> include/trace/events/libata.h:413:1: note: in expansion of macro 'DEFINE_EVENT'
+>   413 | DEFINE_EVENT(ata_exec_command_template, ata_bmdma_stop,
+>       | ^~~~~~~~~~~~
+> include/trace/events/libata.h:414:7: note: in expansion of macro 'TP_PROTO'
+>   414 |       TP_PROTO(struct ata_port *ap, const struct ata_taskfile
+> *tf, unsigned int tag),
+>       |       ^~~~~~~~
+> cc1: some warnings being treated as errors
+> make[3]: *** [scripts/Makefile.build:289: drivers/ata/pata_octeon_cf.o] Error 1
+> make[3]: Target '__build' not remade because of errors.
+> make[2]: *** [scripts/Makefile.build:572: drivers/ata] Error 2
+> 
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
 
-On Wed, Jan 5, 2022 at 1:36 PM Yongji Xie <xieyongji@bytedance.com> wrote:
->
-> On Wed, Jan 5, 2022 at 2:06 AM Josef Bacik <josef@toxicpanda.com> wrote:
-> >
-> > On Tue, Jan 04, 2022 at 01:31:47PM +0800, Yongji Xie wrote:
-> > > On Tue, Jan 4, 2022 at 12:10 AM Josef Bacik <josef@toxicpanda.com> wrote:
-> > > >
-> > > > On Thu, Dec 30, 2021 at 12:01:23PM +0800, Yongji Xie wrote:
-> > > > > On Thu, Dec 30, 2021 at 1:35 AM Christoph Hellwig <hch@infradead.org> wrote:
-> > > > > >
-> > > > > > On Mon, Dec 27, 2021 at 05:12:41PM +0800, Xie Yongji wrote:
-> > > > > > > The rescuer thread might take over the works queued on
-> > > > > > > the workqueue when the worker thread creation timed out.
-> > > > > > > If this happens, we have no chance to create multiple
-> > > > > > > recv threads which causes I/O hung on this nbd device.
-> > > > > >
-> > > > > > If a workqueue is used there aren't really 'receive threads'.
-> > > > > > What is the deadlock here?
-> > > > >
-> > > > > We might have multiple recv works, and those recv works won't quit
-> > > > > unless the socket is closed. If the rescuer thread takes over those
-> > > > > works, only the first recv work can run. The I/O needed to be handled
-> > > > > in other recv works would be hung since no thread can handle them.
-> > > > >
-> > > >
-> > > > I'm not following this explanation.  What is the rescuer thread you're talking
-> > >
-> > > https://www.kernel.org/doc/html/latest/core-api/workqueue.html#c.rescuer_thread
-> > >
-> >
-> > Ahhh ok now I see, thanks, I didn't know this is how this worked.
-> >
-> > So what happens is we do the queue_work(), this needs to do a GFP_KERNEL
-> > allocation internally, we are unable to satisfy this, and thus the work gets
-> > pushed onto the rescuer thread.
-> >
-> > Then the rescuer thread can't be used in the future because it's doing this long
-> > running thing.
-> >
->
-> Yes.
->
-> > I think the correct thing to do here is simply drop the WQ_MEM_RECLAIM bit.  It
-> > makes sense for workqueue's that are handling the work of short lived works that
-> > are in the memory reclaim path.  That's not what these workers are doing, yes
-> > they are in the reclaim path, but they run the entire time the device is up.
-> > The actual work happens as they process incoming requests.  AFAICT
-> > WQ_MEM_RECLAIM doesn't affect the actual allocations that the worker thread
-> > needs to do, which is what I think the intention was in using WQ_MEM_RECLAIM,
-> > which isn't really what it's used for.
-> >
-> > tl;dr, just remove thee WQ_MEM_RECLAIM flag completely and I think that's good
-> > enough?  Thanks,
-> >
->
-> In the reconnect case, we still need to call queue_work() while the
-> device is running. So it looks like we can't simply remove the
-> WQ_MEM_RECLAIM flag.
->
-> Thanks,
-> Yongji
+I just posted a fix. As I do not have the environment to compile test
+mips, could someone test please ? I will send the fix to Linus asap
+after confirmation that it is OK.
+
+Thanks.
+
+
+> 
+> metadata:
+>   git branch: master
+>   git repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
+>   git describe: next-20220121
+>   kernel-config: https://builds.tuxbuild.com/23zIBGjQZgIYW8OnGcYjwWlj40X/config
+>   build: https://builds.tuxbuild.com/23zIBGjQZgIYW8OnGcYjwWlj40X/
+> 
+> # To install tuxmake on your system globally:
+> # sudo pip3 install -U tuxmake
+> #
+> # See https://docs.tuxmake.org/ for complete documentation.
+> # Original tuxmake command with fragments listed below.
+> 
+> tuxmake --runtime podman --target-arch mips --toolchain gcc-10
+> --kconfig cavium_octeon_defconfig
+> 
+> --
+> Linaro LKFT
+> https://lkft.linaro.org
+
+
+-- 
+Damien Le Moal
+Western Digital Research
