@@ -2,99 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C09EBC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 18:34:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52D9BC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 18:37:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382164AbiAUSeI (ORCPT
+        id S1352031AbiAUShl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 13:34:08 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:56700
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1382156AbiAUSeG (ORCPT
+        Fri, 21 Jan 2022 13:37:41 -0500
+Received: from finn.gateworks.com ([108.161.129.64]:48800 "EHLO
+        finn.localdomain" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S241096AbiAUShb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 13:34:06 -0500
-Received: from mail-ej1-f69.google.com (mail-ej1-f69.google.com [209.85.218.69])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id BF56B40051
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 18:34:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642790045;
-        bh=rzjVc/hzS//b68XON/N1yvKj2eAA333KRQ8cX3B1duk=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=TXXVsQ/WhKw9R8fKz/7n852J7+AeKHEc8IgxQFsMradbnWYiDm/h2SJ6Rd/iIeUos
-         s2nWglAQwEiugQbk+RikrKxh2WwFMCThgZkbG2KXoOyS1tckmX2ls+LyLlzoGMlgUb
-         RmtJePlDwRZ1D7ssBmLhbAdWH77cuFfH49P5E8+pJxDCm8OnF81/FFxSYsO1VIc6fF
-         rOFs9Ltx7ZrHkCi8boRJtHqGn0yPGONXk8u+VhkJCCB/zYKhTEDsK8Lts6c0pi8xWM
-         UCImsQJ9SqtctO0YZh0JG0lbfrkqIw+tHHWgoAyBWkBBFYSdnd8j92XmZInqEVMPIx
-         +BM6Rm8XMXJ+g==
-Received: by mail-ej1-f69.google.com with SMTP id v2-20020a170906292200b006a94a27f903so410442ejd.8
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 10:34:05 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=rzjVc/hzS//b68XON/N1yvKj2eAA333KRQ8cX3B1duk=;
-        b=Kb2q++LXzHgC5xIvlgH6gS8+uN99z729h2d72yyQ/DWEIztli70dFZdxzWsofaElF3
-         VbhalyVm87oVF0jsTRIhj1G29phO+c1Aiaw6pkeX4jA/M8wcgQbGCiMMoq9JDzxniLAU
-         meBhAJIjvrulFcZM/kPnDmmXmFRhNujy/GCypCWGyOpG9x4SibVqzgMksF9aj2WfPpot
-         FaLLLy2WG0+Us142hUBfT8XKH025mZBIinpfArPoXQQdnloYfcAxX2GqzbwLfG8+GmJV
-         jhZoavsPaGB2B0ayE/GrB7XPWB2jlmQ+IpTmA0xS7J7uGcNf8aVEy1nN74USiagdLrTL
-         ntrQ==
-X-Gm-Message-State: AOAM532RdEFAPyyF5YG0ZweFwX18Ssik5cioRuIrzaW8IsfXvfc5yXlz
-        zGD173PS6P9H2qvF47X6BPKvQdOFneCVPG1ZakvSPkmW+4oVVxV3oKiIQF6u2Z8+FsfI8k+SB8Z
-        xDgEIT46tu/YMBYclTFfkE21Nlsvuse7NpHDgN4rdPw==
-X-Received: by 2002:a17:906:17c6:: with SMTP id u6mr4264766eje.263.1642790045241;
-        Fri, 21 Jan 2022 10:34:05 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwFxrSulwwT1O8pILmYDkoX3mOFh5Ze91D39vMO/Ze+pPeAqAZF5qwP1SYFHjvCEaqXQxKq3g==
-X-Received: by 2002:a17:906:17c6:: with SMTP id u6mr4264755eje.263.1642790045110;
-        Fri, 21 Jan 2022 10:34:05 -0800 (PST)
-Received: from [192.168.0.51] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id z18sm2249888ejb.112.2022.01.21.10.34.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 Jan 2022 10:34:04 -0800 (PST)
-Message-ID: <5b90220f-c31d-cc8d-3e86-75ad8e56ab5e@canonical.com>
-Date:   Fri, 21 Jan 2022 19:34:03 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.1
-Subject: Re: [PATCH v2 1/3] spi: dt-bindings: samsung: Add fsd spi compatible
-Content-Language: en-US
-To:     Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, linus.walleij@linaro.org,
-        robh+dt@kernel.org, linux-samsung-soc@vger.kernel.org,
-        pankaj.dubey@samsung.com, broonie@kernel.org, andi@etezian.org,
-        linux-spi@vger.kernel.org, linux-fsd@tesla.com,
-        Adithya K V <adithya.kv@samsung.com>
-References: <20220120192438.25555-1-alim.akhtar@samsung.com>
- <CGME20220120193613epcas5p238851849d212e01d7d830d78ca7d6379@epcas5p2.samsung.com>
- <20220120192438.25555-2-alim.akhtar@samsung.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220120192438.25555-2-alim.akhtar@samsung.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Fri, 21 Jan 2022 13:37:31 -0500
+X-Greylist: delayed 1213 seconds by postgrey-1.27 at vger.kernel.org; Fri, 21 Jan 2022 13:37:30 EST
+Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
+        by finn.localdomain with esmtp (Exim 4.93)
+        (envelope-from <tharvey@gateworks.com>)
+        id 1nAyUl-00A3D6-9E; Fri, 21 Jan 2022 18:18:43 +0000
+From:   Tim Harvey <tharvey@gateworks.com>
+To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     Tim Harvey <tharvey@gateworks.com>
+Subject: [PATCH] arm64: dts: imx8mm-venice-gw73xx-0x: add dt overlay for imx219 rpi v2 camera
+Date:   Fri, 21 Jan 2022 10:18:41 -0800
+Message-Id: <20220121181841.13650-1-tharvey@gateworks.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 20/01/2022 20:24, Alim Akhtar wrote:
-> Adds spi controller dt-binding compatible information for
-> Tesla Full Self-Driving (FSD) SoC.
-> 
-> Cc: linux-fsd@tesla.com
-> Signed-off-by: Adithya K V <adithya.kv@samsung.com>
-> Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
-> ---
->  Documentation/devicetree/bindings/spi/samsung,spi.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+Add support for the RaspberryPi Camera v2 which is an IMX219 8MP module:
+ - https://datasheets.raspberrypi.com/camera/camera-v2-schematics.pdf
+ - has its own on-board 24MHz osc so no clock required from baseboard
+ - pin 11 enables 1.8V and 2.8V LDO which is connected to
+   GW73xx MIPI_GPIO4 (IMX8MM GPIO1_IO1) so we use this as a gpio
+   controlled regulator enable.
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Support is added via a device-tree overlay.
 
+The IMX219 supports RAW8/RAW10 image formats.
 
-Best regards,
-Krzysztof
+Signed-off-by: Tim Harvey <tharvey@gateworks.com>
+---
+ arch/arm64/boot/dts/freescale/Makefile        |  1 +
+ .../imx8mm-venice-gw73xx-0x-imx219.dts        | 84 +++++++++++++++++++
+ 2 files changed, 85 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-imx219.dts
+
+diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
+index 2d3489eb073d..324c1b01989a 100644
+--- a/arch/arm64/boot/dts/freescale/Makefile
++++ b/arch/arm64/boot/dts/freescale/Makefile
+@@ -47,6 +47,7 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw72xx-0x-rs232-rts.dtbo
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw72xx-0x-rs422.dtbo
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw72xx-0x-rs485.dtbo
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x.dtb
++dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x-imx219.dtbo
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x-rs232-rts.dtbo
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x-rs422.dtbo
+ dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x-rs485.dtbo
+diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-imx219.dts b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-imx219.dts
+new file mode 100644
+index 000000000000..33aa9eb477a5
+--- /dev/null
++++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-imx219.dts
+@@ -0,0 +1,84 @@
++// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
++/*
++ * Copyright 2022 Gateworks Corporation
++ */
++
++#include <dt-bindings/gpio/gpio.h>
++
++#include "imx8mm-pinfunc.h"
++
++/dts-v1/;
++/plugin/;
++
++&{/} {
++	compatible = "gw,imx8mm-gw73xx-0x", "fsl,imx8mm";
++
++	reg_cam: regulator-cam {
++		pinctrl-names = "default";
++		pinctrl-0 = <&pinctrl_reg_cam>;
++		compatible = "regulator-fixed";
++		regulator-name = "reg_cam";
++		gpio = <&gpio1 1 GPIO_ACTIVE_HIGH>;
++		enable-active-high;
++		regulator-min-microvolt = <1800000>;
++		regulator-max-microvolt = <1800000>;
++	};
++
++	cam24m: cam24m {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <24000000>;
++		clock-output-names = "cam24m";
++	};
++};
++
++&csi {
++	status = "okay";
++};
++
++&i2c3 {
++	#address-cells = <1>;
++	#size-cells = <0>;
++
++	imx219: sensor@10 {
++		compatible = "sony,imx219";
++		reg = <0x10>;
++		clocks = <&cam24m>;
++		VDIG-supply = <&reg_cam>;
++
++		port {
++			/* MIPI CSI-2 bus endpoint */
++			imx219_to_mipi_csi2: endpoint {
++				remote-endpoint = <&imx8mm_mipi_csi_in>;
++				clock-lanes = <0>;
++				data-lanes = <1 2>;
++				link-frequencies = /bits/ 64 <456000000>;
++			};
++		};
++	};
++};
++
++&mipi_csi {
++	status = "okay";
++
++	ports {
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		port@0 {
++			reg = <0>;
++			imx8mm_mipi_csi_in: endpoint {
++				remote-endpoint = <&imx219_to_mipi_csi2>;
++				data-lanes = <1 2>;
++			};
++		};
++	};
++};
++
++&iomuxc {
++	pinctrl_reg_cam: regcamgrp {
++		fsl,pins = <
++			MX8MM_IOMUXC_GPIO1_IO01_GPIO1_IO1	0x41
++		>;
++	};
++};
+-- 
+2.17.1
+
