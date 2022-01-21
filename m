@@ -2,329 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3828AC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 19:50:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B2BCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 19:50:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233155AbiAUTuM convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 14:50:12 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:55968 "EHLO
-        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232685AbiAUTtz (ORCPT
+        id S232508AbiAUTuo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 14:50:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33322 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231700AbiAUTun (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 14:49:55 -0500
-Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20LHuoUX011327
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 11:49:54 -0800
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dqpewvcg9-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 11:49:54 -0800
-Received: from twshared18912.14.frc2.facebook.com (2620:10d:c085:208::11) by
- mail.thefacebook.com (2620:10d:c085:11d::7) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Fri, 21 Jan 2022 11:49:51 -0800
-Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
-        id 8D03B284A5F3F; Fri, 21 Jan 2022 11:49:41 -0800 (PST)
-From:   Song Liu <song@kernel.org>
-To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
-        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
-        Song Liu <songliubraving@fb.com>
-Subject: [PATCH v6 bpf-next 6/7] bpf: introduce bpf_prog_pack allocator
-Date:   Fri, 21 Jan 2022 11:49:25 -0800
-Message-ID: <20220121194926.1970172-7-song@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220121194926.1970172-1-song@kernel.org>
-References: <20220121194926.1970172-1-song@kernel.org>
+        Fri, 21 Jan 2022 14:50:43 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72E8C06173B;
+        Fri, 21 Jan 2022 11:50:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=Content-Type:MIME-Version:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=TyT88I4wWo0H5jlbMaKdshZBKvPf77PgLxaHtxYK8JA=; b=ZtB1cDSaqZJ/nrSg3lbUv2BiX+
+        6IoK9zkmlTprFALbS1fdyZKqArhidYaFX5UEh5Smp9/MPvEy6hPCXGJaRZd1OFBydSAaUi6ZnWSSo
+        37MvjMP+duhZHLjES6dZfMhKMiuzXGB4CGQrmwCsrMOujBDIWliYsOaOAkz2238r7n9+njA4MtPkI
+        sFcKg4LHZMm2JlSBrVePfYvIlIjcvpvPqvsgkC2BqFpDN/Sux6sUXYrDcYD+2STXdJo7966wt0KOg
+        Flz6COw+KT9JxwX9tfqI2NTL2s8cedoCGsCGvcQLN9mjajpn0FrAQU+d86/qlDoAsZnEB+gXG03f6
+        FHYUnERg==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nAzvk-00Fs3E-25; Fri, 21 Jan 2022 19:50:40 +0000
+Date:   Fri, 21 Jan 2022 19:50:40 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     linux-mm@kvack.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Three small folio patches
+Message-ID: <YesOkLfpJWxLxRWs@casper.infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-X-FB-Internal: Safe
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 5gbp0PoqNAooG33Fn04gkFf9EnsmRmFR
-X-Proofpoint-GUID: 5gbp0PoqNAooG33Fn04gkFf9EnsmRmFR
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-21_09,2022-01-21_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 impostorscore=0
- malwarescore=0 suspectscore=0 lowpriorityscore=0 adultscore=0 bulkscore=0
- mlxlogscore=974 spamscore=0 phishscore=0 clxscore=1015 mlxscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2201210128
-X-FB-Internal: deliver
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Song Liu <songliubraving@fb.com>
 
-Most BPF programs are small, but they consume a page each. For systems
-with busy traffic and many BPF programs, this could add significant
-pressure to instruction TLB.
+The following changes since commit 455e73a07f6e288b0061dfcf4fcf54fa9fe06458:
 
-Introduce bpf_prog_pack allocator to pack multiple BPF programs in a huge
-page. The memory is then allocated in 64 byte chunks.
+  Merge tag 'clk-for-linus' of git://git.kernel.org/pub/scm/linux/kernel/git/clk/linux (2022-01-12 17:02:27 -0800)
 
-Memory allocated by bpf_prog_pack allocator is RO protected after initial
-allocation. To write to it, the user (jit engine) need to use text poke
-API.
+are available in the Git repository at:
 
-Signed-off-by: Song Liu <songliubraving@fb.com>
----
- include/linux/filter.h |   7 ++
- kernel/bpf/core.c      | 184 ++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 187 insertions(+), 4 deletions(-)
+  git://git.infradead.org/users/willy/pagecache.git tags/folio-5.17a
 
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 27ea68604c22..a58658442d2e 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -1074,6 +1074,13 @@ void *bpf_jit_alloc_exec(unsigned long size);
- void bpf_jit_free_exec(void *addr);
- void bpf_jit_free(struct bpf_prog *fp);
- 
-+struct bpf_binary_header *
-+bpf_jit_binary_alloc_pack(unsigned int proglen, u8 **image_r_ptr,
-+			  unsigned int alignment,
-+			  bpf_jit_fill_hole_t bpf_fill_ill_insns);
-+void bpf_jit_binary_free_pack(struct bpf_binary_header *hdr);
-+int bpf_prog_pack_max_size(void);
-+
- int bpf_jit_add_poke_descriptor(struct bpf_prog *prog,
- 				struct bpf_jit_poke_descriptor *poke);
- 
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index f252d8529b0b..a912818a5205 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -808,6 +808,116 @@ int bpf_jit_add_poke_descriptor(struct bpf_prog *prog,
- 	return slot;
- }
- 
-+/*
-+ * BPF program pack allocator.
-+ *
-+ * Most BPF programs are pretty small. Allocating a hole page for each
-+ * program is sometime a waste. Many small bpf program also adds pressure
-+ * to instruction TLB. To solve this issue, we introduce a BPF program pack
-+ * allocator. The prog_pack allocator uses HPAGE_PMD_SIZE page (2MB on x86)
-+ * to host BPF programs.
-+ */
-+#define BPF_PROG_PACK_SIZE	HPAGE_PMD_SIZE
-+#define BPF_PROG_CHUNK_SHIFT	6
-+#define BPF_PROG_CHUNK_SIZE	(1 << BPF_PROG_CHUNK_SHIFT)
-+#define BPF_PROG_CHUNK_COUNT	(BPF_PROG_PACK_SIZE / BPF_PROG_CHUNK_SIZE)
-+
-+struct bpf_prog_pack {
-+	struct list_head list;
-+	void *ptr;
-+	unsigned long bitmap[BITS_TO_LONGS(BPF_PROG_CHUNK_COUNT)];
-+};
-+
-+#define BPF_PROG_MAX_PACK_PROG_SIZE	HPAGE_PMD_SIZE
-+#define BPF_PROG_SIZE_TO_NBITS(size)	(round_up(size, BPF_PROG_CHUNK_SIZE) / BPF_PROG_CHUNK_SIZE)
-+
-+static DEFINE_MUTEX(pack_mutex);
-+static LIST_HEAD(pack_list);
-+
-+static struct bpf_prog_pack *alloc_new_pack(void)
-+{
-+	struct bpf_prog_pack *pack;
-+
-+	pack = kzalloc(sizeof(*pack), GFP_KERNEL);
-+	if (!pack)
-+		return NULL;
-+	pack->ptr = module_alloc(BPF_PROG_PACK_SIZE);
-+	if (!pack->ptr) {
-+		kfree(pack);
-+		return NULL;
-+	}
-+	bitmap_zero(pack->bitmap, BPF_PROG_PACK_SIZE / BPF_PROG_CHUNK_SIZE);
-+	list_add_tail(&pack->list, &pack_list);
-+
-+	set_vm_flush_reset_perms(pack);
-+	set_memory_ro((unsigned long)pack->ptr, BPF_PROG_PACK_SIZE / PAGE_SIZE);
-+	set_memory_x((unsigned long)pack->ptr, BPF_PROG_PACK_SIZE / PAGE_SIZE);
-+	return pack;
-+}
-+
-+static void *bpf_prog_pack_alloc(u32 size)
-+{
-+	unsigned int nbits = BPF_PROG_SIZE_TO_NBITS(size);
-+	struct bpf_prog_pack *pack;
-+	unsigned long pos;
-+	void *ptr = NULL;
-+
-+	mutex_lock(&pack_mutex);
-+	list_for_each_entry(pack, &pack_list, list) {
-+		pos = bitmap_find_next_zero_area(pack->bitmap, BPF_PROG_CHUNK_COUNT, 0,
-+						 nbits, 0);
-+		if (pos < BPF_PROG_CHUNK_COUNT)
-+			goto found_free_area;
-+	}
-+
-+	pack = alloc_new_pack();
-+	if (!pack)
-+		goto out;
-+
-+	pos = 0;
-+
-+found_free_area:
-+	bitmap_set(pack->bitmap, pos, nbits);
-+	ptr = (void *)(pack->ptr) + (pos << BPF_PROG_CHUNK_SHIFT);
-+
-+out:
-+	mutex_unlock(&pack_mutex);
-+	return ptr;
-+}
-+
-+static void bpf_prog_pack_free(struct bpf_binary_header *hdr)
-+{
-+	void *pack_ptr = (void *)((unsigned long)hdr & ~(BPF_PROG_PACK_SIZE - 1));
-+	struct bpf_prog_pack *pack = NULL, *tmp;
-+	unsigned int nbits;
-+	unsigned long pos;
-+
-+	mutex_lock(&pack_mutex);
-+
-+	list_for_each_entry(tmp, &pack_list, list) {
-+		if (tmp->ptr == pack_ptr) {
-+			pack = tmp;
-+			break;
-+		}
-+	}
-+
-+	if (WARN_ONCE(!pack, "bpf_prog_pack bug\n"))
-+		goto out;
-+
-+	nbits = BPF_PROG_SIZE_TO_NBITS(hdr->size);
-+	pos = ((unsigned long)hdr - (unsigned long)pack_ptr) >> BPF_PROG_CHUNK_SHIFT;
-+
-+	bitmap_clear(pack->bitmap, pos, nbits);
-+	if (bitmap_find_next_zero_area(pack->bitmap, BPF_PROG_CHUNK_COUNT, 0,
-+				       BPF_PROG_CHUNK_COUNT, 0) == 0) {
-+		list_del(&pack->list);
-+		module_memfree(pack->ptr);
-+		kfree(pack);
-+	}
-+out:
-+	mutex_unlock(&pack_mutex);
-+}
-+
- static atomic_long_t bpf_jit_current;
- 
- /* Can be overridden by an arch's JIT compiler if it has a custom,
-@@ -860,10 +970,59 @@ void __weak bpf_jit_free_exec(void *addr)
- 	module_memfree(addr);
- }
- 
-+static struct bpf_binary_header *
-+__bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
-+		       unsigned int alignment,
-+		       bpf_jit_fill_hole_t bpf_fill_ill_insns,
-+		       u32 round_up_to)
-+{
-+	struct bpf_binary_header *hdr;
-+	u32 size, hole, start;
-+
-+	WARN_ON_ONCE(!is_power_of_2(alignment) ||
-+		     alignment > BPF_IMAGE_ALIGNMENT);
-+
-+	/* Most of BPF filters are really small, but if some of them
-+	 * fill a page, allow at least 128 extra bytes to insert a
-+	 * random section of illegal instructions.
-+	 */
-+	size = round_up(proglen + sizeof(*hdr) + 128, round_up_to);
-+
-+	if (bpf_jit_charge_modmem(size))
-+		return NULL;
-+	hdr = bpf_jit_alloc_exec(size);
-+	if (!hdr) {
-+		bpf_jit_uncharge_modmem(size);
-+		return NULL;
-+	}
-+
-+	/* Fill space with illegal/arch-dep instructions. */
-+	bpf_fill_ill_insns(hdr, size);
-+
-+	hdr->size = size;
-+	hole = min_t(unsigned int, size - (proglen + sizeof(*hdr)),
-+		     PAGE_SIZE - sizeof(*hdr));
-+	start = (get_random_int() % hole) & ~(alignment - 1);
-+
-+	/* Leave a random number of instructions before BPF code. */
-+	*image_ptr = &hdr->image[start];
-+
-+	return hdr;
-+}
-+
- struct bpf_binary_header *
- bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
- 		     unsigned int alignment,
- 		     bpf_jit_fill_hole_t bpf_fill_ill_insns)
-+{
-+	return __bpf_jit_binary_alloc(proglen, image_ptr, alignment,
-+				      bpf_fill_ill_insns, PAGE_SIZE);
-+}
-+
-+struct bpf_binary_header *
-+bpf_jit_binary_alloc_pack(unsigned int proglen, u8 **image_ptr,
-+			  unsigned int alignment,
-+			  bpf_jit_fill_hole_t bpf_fill_ill_insns)
- {
- 	struct bpf_binary_header *hdr;
- 	u32 size, hole, start;
-@@ -875,11 +1034,16 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
- 	 * fill a page, allow at least 128 extra bytes to insert a
- 	 * random section of illegal instructions.
- 	 */
--	size = round_up(proglen + sizeof(*hdr) + 128, PAGE_SIZE);
-+	size = round_up(proglen + sizeof(*hdr) + 128, BPF_PROG_CHUNK_SIZE);
-+
-+	/* for too big program, use __bpf_jit_binary_alloc. */
-+	if (size > BPF_PROG_MAX_PACK_PROG_SIZE)
-+		return __bpf_jit_binary_alloc(proglen, image_ptr, alignment,
-+					      bpf_fill_ill_insns, PAGE_SIZE);
- 
- 	if (bpf_jit_charge_modmem(size))
- 		return NULL;
--	hdr = bpf_jit_alloc_exec(size);
-+	hdr = bpf_prog_pack_alloc(size);
- 	if (!hdr) {
- 		bpf_jit_uncharge_modmem(size);
- 		return NULL;
-@@ -888,9 +1052,8 @@ bpf_jit_binary_alloc(unsigned int proglen, u8 **image_ptr,
- 	/* Fill space with illegal/arch-dep instructions. */
- 	bpf_fill_ill_insns(hdr, size);
- 
--	hdr->size = size;
- 	hole = min_t(unsigned int, size - (proglen + sizeof(*hdr)),
--		     PAGE_SIZE - sizeof(*hdr));
-+		     BPF_PROG_CHUNK_SIZE - sizeof(*hdr));
- 	start = (get_random_int() % hole) & ~(alignment - 1);
- 
- 	/* Leave a random number of instructions before BPF code. */
-@@ -907,6 +1070,19 @@ void bpf_jit_binary_free(struct bpf_binary_header *hdr)
- 	bpf_jit_uncharge_modmem(size);
- }
- 
-+void bpf_jit_binary_free_pack(struct bpf_binary_header *hdr)
-+{
-+	u32 size = hdr->size;
-+
-+	bpf_prog_pack_free(hdr);
-+	bpf_jit_uncharge_modmem(size);
-+}
-+
-+int bpf_prog_pack_max_size(void)
-+{
-+	return BPF_PROG_MAX_PACK_PROG_SIZE;
-+}
-+
- /* This symbol is only overridden by archs that have different
-  * requirements than the usual eBPF JITs, f.e. when they only
-  * implement cBPF JIT, do not set images read-only, etc.
--- 
-2.30.2
+for you to fetch changes up to 3abb28e275bfbe60136db37eae6679c3e1928cd5:
+
+  filemap: Use folio_put_refs() in filemap_free_folio() (2022-01-16 19:52:13 -0500)
+
+----------------------------------------------------------------
+Three small folio patches.
+
+One bug fix, one patch pulled forward from the patches destined for 5.18
+and then a patch to make use of that functionality.
+
+----------------------------------------------------------------
+Matthew Wilcox (Oracle) (3):
+      pagevec: Initialise folio_batch->percpu_pvec_drained
+      mm: Add folio_put_refs()
+      filemap: Use folio_put_refs() in filemap_free_folio()
+
+ include/linux/mm.h      | 20 ++++++++++++++++++++
+ include/linux/pagevec.h |  1 +
+ mm/filemap.c            | 10 ++++------
+ 3 files changed, 25 insertions(+), 6 deletions(-)
+
 
