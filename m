@@ -2,148 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A8FC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 08:33:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE402C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 08:35:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379608AbiAUIdd (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 03:33:33 -0500
-Received: from mail-ua1-f52.google.com ([209.85.222.52]:35584 "EHLO
-        mail-ua1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231392AbiAUIdc (ORCPT
+        id S234150AbiAUIfG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 03:35:06 -0500
+Received: from mail.cn.fujitsu.com ([183.91.158.132]:2637 "EHLO
+        heian.cn.fujitsu.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S234198AbiAUIeV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 03:33:32 -0500
-Received: by mail-ua1-f52.google.com with SMTP id m90so15643527uam.2;
-        Fri, 21 Jan 2022 00:33:32 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=n56f2PNNQdieA9k1jX9tvG8Cwk+6C0TIvBu9rWE3i4o=;
-        b=QbQBhVon6CGgyVP4NfdQD6+d63EVSsCSNxREo0BDwJj6wdoyQ3fKqdwaP0In9I99Bw
-         /fKlfdC3atQEJ0xkBsY5/Q/DUUG6NHdF2v0kHnLPOXfVtLgFWqyyJsfRZVkPWhrKodlC
-         j2A05Jgl9zpMJL8+bdbZqfm4gSWrd5Jc7XvUHYRbBQb7HOMrFG4vH5YxXGNuAdQPou/0
-         mXTMNLwZEZnV14eW7EWyk1uRwBwPQVywwx4v2+zsEN+9RvcfwxitFB/biaiILVroUMXN
-         ovbWoFQxPjQQwYvgQRBBGMMckazQKMFxEYUtKR+rJc40gxY4cL3OfzIIdzxKQqsZ+Pvb
-         QmPg==
-X-Gm-Message-State: AOAM533FSRNGyz5B9poHPL1QhY+lck3tla30C0kICpEWH+9v+C0PvLy+
-        LZV25YP4G+BUY1WFN593ryIZoYyr0UvmVQ==
-X-Google-Smtp-Source: ABdhPJypt9cmefiwLeDdEsItwAFhWRMiubZQNDRBH1LY5vjk3S/ZCjDW1jCGAafFx3v+soBoYZxZJQ==
-X-Received: by 2002:a67:e014:: with SMTP id c20mr1202803vsl.21.1642754011241;
-        Fri, 21 Jan 2022 00:33:31 -0800 (PST)
-Received: from mail-vk1-f170.google.com (mail-vk1-f170.google.com. [209.85.221.170])
-        by smtp.gmail.com with ESMTPSA id g190sm1196346vke.11.2022.01.21.00.33.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 21 Jan 2022 00:33:30 -0800 (PST)
-Received: by mail-vk1-f170.google.com with SMTP id 19so5132508vkl.2;
-        Fri, 21 Jan 2022 00:33:30 -0800 (PST)
-X-Received: by 2002:a1f:5702:: with SMTP id l2mr1220320vkb.33.1642754010512;
- Fri, 21 Jan 2022 00:33:30 -0800 (PST)
+        Fri, 21 Jan 2022 03:34:21 -0500
+IronPort-Data: =?us-ascii?q?A9a23=3ATGEFKqh5CkSoF7MEZqgz4YuZX161CxEKZh0ujC4?=
+ =?us-ascii?q?5NGQNrF6WrkUAy2YXUD+ObvyMZzCmLot/bojn9h8Av8XTnIJkHgtqqnw8FHgiR?=
+ =?us-ascii?q?ejtX4rAdhiqV8+xwmwvdGo+toNGLICowPkcFhcwnT/wdOixxZVA/fvQHOCkUbS?=
+ =?us-ascii?q?dYnkZqTJME0/NtzoywobVvaY42bBVMyvV0T/Di5W31G2NglaYAUpIg063ky6Di?=
+ =?us-ascii?q?dyp0N8uUvPSUtgQ1LPWvyF94JvyvshdJVOgKmVfNrbSq+ouUNiEEm3lExcFUrt?=
+ =?us-ascii?q?Jk57wdAsEX7zTIROTzHFRXsBOgDAb/mprjPl9b6FaNC+7iB3Q9zx14M9QvJqrW?=
+ =?us-ascii?q?EEnOLbQsOoAURhECDw4NqpDkFPCCSHl6ZLNlhKaKhMAxN0rVinaJ7Yw9u9pAG1?=
+ =?us-ascii?q?m++YfLTcXZBGfwemxxdqTSuJsrsUlItPiMI4Wtjdn1z6xJfovR9bBBbrL4dtZ1?=
+ =?us-ascii?q?TIrrsFIAfvaIcEebFJHYBbfZBtAElQaEpQzmKGvnHaXWzlZrk+F4K8yy2vNxQd?=
+ =?us-ascii?q?ylr/3P7L9fMKGRMBQtkKZvX7duWD4BAwKctCS11Kt8Huqi6nEnT7TX5gbH7m1s?=
+ =?us-ascii?q?PVthTW7wm0VFQ1TW0C3rOe0jmagVN9FbU8Z4Cwjqe417kPDZt38WQCo5X2JpBg?=
+ =?us-ascii?q?RX/JOHOAgrgKA0KzZ50CeHGdsZjpAbsE28d84XhQ02VKT2dDkHzpitPuSU331y?=
+ =?us-ascii?q?1s+hVteIgBMdSlbO3BCFlBDvrHeTEgIpkqnZr5e/GSd17UZwQ3N/g0=3D?=
+IronPort-HdrOrdr: =?us-ascii?q?A9a23=3AmS58S6/PRHT7JJgFU+puk+C9I+orL9Y04lQ7?=
+ =?us-ascii?q?vn2ZKCY0TiX2ra2TdZggvyMc6wxxZJhDo7+90cC7KBu2yXcc2/hzAV7IZmXbUQ?=
+ =?us-ascii?q?WTQr1f0Q=3D=3D?=
+X-IronPort-AV: E=Sophos;i="5.88,304,1635177600"; 
+   d="scan'208";a="120661741"
+Received: from unknown (HELO cn.fujitsu.com) ([10.167.33.5])
+  by heian.cn.fujitsu.com with ESMTP; 21 Jan 2022 16:34:20 +0800
+Received: from G08CNEXMBPEKD05.g08.fujitsu.local (unknown [10.167.33.204])
+        by cn.fujitsu.com (Postfix) with ESMTP id 10D3A4D15A58;
+        Fri, 21 Jan 2022 16:34:19 +0800 (CST)
+Received: from G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.85) by
+ G08CNEXMBPEKD05.g08.fujitsu.local (10.167.33.204) with Microsoft SMTP Server
+ (TLS) id 15.0.1497.23; Fri, 21 Jan 2022 16:34:19 +0800
+Received: from [192.168.22.28] (10.167.225.141) by
+ G08CNEXCHPEKD09.g08.fujitsu.local (10.167.33.209) with Microsoft SMTP Server
+ id 15.0.1497.23 via Frontend Transport; Fri, 21 Jan 2022 16:34:16 +0800
+Message-ID: <b928a8cd-e9b5-46fa-20d0-e91fe53ed861@fujitsu.com>
+Date:   Fri, 21 Jan 2022 16:34:18 +0800
 MIME-Version: 1.0
-References: <0d0b0a3ad703f5ef50611e2dd80439675bda666a.1642383007.git.zong.li@sifive.com>
- <mhng-5b3e2596-3558-4534-9229-26885ee4cc5c@palmer-ri-x1c9> <CANXhq0ruGxjO0WPUipzZ7QQM1oEapyHAvb_aVQ_CMqVxbjc_BQ@mail.gmail.com>
-In-Reply-To: <CANXhq0ruGxjO0WPUipzZ7QQM1oEapyHAvb_aVQ_CMqVxbjc_BQ@mail.gmail.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Fri, 21 Jan 2022 09:33:19 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdVh_cXpbUeOmr_1K0dOJwGHSO0Ao=W43j5mpgvOiNyV9w@mail.gmail.com>
-Message-ID: <CAMuHMdVh_cXpbUeOmr_1K0dOJwGHSO0Ao=W43j5mpgvOiNyV9w@mail.gmail.com>
-Subject: Re: [PATCH v4 3/3] dmaengine: sf-pdma: Get number of channel by
- device tree
-To:     Zong Li <zong.li@sifive.com>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Conor Dooley <conor.dooley@microchip.com>,
-        Bin Meng <bin.meng@windriver.com>,
-        Green Wan <green.wan@sifive.com>, Vinod <vkoul@kernel.org>,
-        dmaengine <dmaengine@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.1
+Subject: Re: [PATCH v9 10/10] fsdax: set a CoW flag when associate reflink
+ mappings
+To:     Christoph Hellwig <hch@infradead.org>
+CC:     <linux-kernel@vger.kernel.org>, <linux-xfs@vger.kernel.org>,
+        <nvdimm@lists.linux.dev>, <linux-mm@kvack.org>,
+        <linux-fsdevel@vger.kernel.org>, <djwong@kernel.org>,
+        <dan.j.williams@intel.com>, <david@fromorbit.com>,
+        <jane.chu@oracle.com>
+References: <20211226143439.3985960-1-ruansy.fnst@fujitsu.com>
+ <20211226143439.3985960-11-ruansy.fnst@fujitsu.com>
+ <YekkYAJ+QegoDKCJ@infradead.org>
+ <70a24c20-d7ee-064c-e863-9f012422a2f5@fujitsu.com>
+ <YepdxZ+XrAZYv1dX@infradead.org>
+From:   Shiyang Ruan <ruansy.fnst@fujitsu.com>
+In-Reply-To: <YepdxZ+XrAZYv1dX@infradead.org>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 8bit
+X-yoursite-MailScanner-ID: 10D3A4D15A58.A4165
+X-yoursite-MailScanner: Found to be clean
+X-yoursite-MailScanner-From: ruansy.fnst@fujitsu.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Zong, Palmer,
 
-On Fri, Jan 21, 2022 at 3:21 AM Zong Li <zong.li@sifive.com> wrote:
-> On Fri, Jan 21, 2022 at 2:52 AM Palmer Dabbelt <palmer@dabbelt.com> wrote:
-> > On Sun, 16 Jan 2022 17:35:28 PST (-0800), zong.li@sifive.com wrote:
-> > > It currently assumes that there are always four channels, it would
-> > > cause the error if there is actually less than four channels. Change
-> > > that by getting number of channel from device tree.
-> > >
-> > > For backwards-compatible, it uses the default value (i.e. 4) when there
-> > > is no 'dma-channels' information in dts.
-> >
-> > Some of the same wording issues here as those I pointed out in the DT
-> > bindings patch.
-> >
-> > > Signed-off-by: Zong Li <zong.li@sifive.com>
 
-> > > --- a/drivers/dma/sf-pdma/sf-pdma.c
-> > > +++ b/drivers/dma/sf-pdma/sf-pdma.c
-> > > @@ -482,9 +482,7 @@ static void sf_pdma_setup_chans(struct sf_pdma *pdma)
-> > >  static int sf_pdma_probe(struct platform_device *pdev)
-> > >  {
-> > >       struct sf_pdma *pdma;
-> > > -     struct sf_pdma_chan *chan;
-> > >       struct resource *res;
-> > > -     int len, chans;
-> > >       int ret;
-> > >       const enum dma_slave_buswidth widths =
-> > >               DMA_SLAVE_BUSWIDTH_1_BYTE | DMA_SLAVE_BUSWIDTH_2_BYTES |
-> > > @@ -492,13 +490,21 @@ static int sf_pdma_probe(struct platform_device *pdev)
-> > >               DMA_SLAVE_BUSWIDTH_16_BYTES | DMA_SLAVE_BUSWIDTH_32_BYTES |
-> > >               DMA_SLAVE_BUSWIDTH_64_BYTES;
-> > >
-> > > -     chans = PDMA_NR_CH;
-> > > -     len = sizeof(*pdma) + sizeof(*chan) * chans;
-> > > -     pdma = devm_kzalloc(&pdev->dev, len, GFP_KERNEL);
-> > > +     pdma = devm_kzalloc(&pdev->dev, sizeof(*pdma), GFP_KERNEL);
-> > >       if (!pdma)
-> > >               return -ENOMEM;
-> > >
-> > > -     pdma->n_chans = chans;
-> > > +     ret = of_property_read_u32(pdev->dev.of_node, "dma-channels",
-> > > +                                &pdma->n_chans);
-> > > +     if (ret) {
-> > > +             dev_notice(&pdev->dev, "set number of channels to default value: 4\n");
-> > > +             pdma->n_chans = PDMA_MAX_NR_CH;
-> > > +     }
-> > > +
-> > > +     if (pdma->n_chans > PDMA_MAX_NR_CH) {
-> > > +             dev_err(&pdev->dev, "the number of channels exceeds the maximum\n");
-> > > +             return -EINVAL;
-> >
-> > Can we get away with just using only the number of channels the driver
-> > actually supports?  ie, just never sending an op to the channels above
-> > MAX_NR_CH?  That should leave us with nothing to track.
+在 2022/1/21 15:16, Christoph Hellwig 写道:
+> On Fri, Jan 21, 2022 at 10:33:58AM +0800, Shiyang Ruan wrote:
+>>>
+>>> But different question, how does this not conflict with:
+>>>
+>>> #define PAGE_MAPPING_ANON       0x1
+>>>
+>>> in page-flags.h?
+>>
+>> Now we are treating dax pages, so I think its flags should be different from
+>> normal page.  In another word, PAGE_MAPPING_ANON is a flag of rmap mechanism
+>> for normal page, it doesn't work for dax page.  And now, we have dax rmap
+>> for dax page.  So, I think this two kinds of flags are supposed to be used
+>> in different mechanisms and won't conflect.
+> 
+> It just needs someone to use folio_test_anon in a place where a DAX
+> folio can be passed.  This probably should not happen, but we need to
+> clearly document that.
+> 
+>>> Either way I think this flag should move to page-flags.h and be
+>>> integrated with the PAGE_MAPPING_FLAGS infrastucture.
+>>
+>> And that's why I keep them in this dax.c file.
+> 
+> But that does not integrate it with the infrastructure.  For people
+> to debug things it needs to be next to PAGE_MAPPING_ANON and have
+> documentation explaining why they are exclusive.
 
-In theory we can...
+Ok, understood.
 
-> It might be a bit like when pdma->n_chans is bigger than the maximum,
-> set the pdma->chans to PDMA_MAX_NR_CH, then we could ensure that we
-> don't access the channels above the maximum. If I understand
-> correctly, I gave the similar thought in the thread of v2 patch, and
-> there are some discussions on that, but this way seems to lead to
-> hard-to-track problems.
-
-... but that would mean that when a new variant appears that supports
-more channels, no error is printed, and people might not notice
-immediately that the higher channels are never used.
-
-Gr{oetje,eeting}s,
-
-                        Geert
 
 --
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Thanks,
+Ruan.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+
