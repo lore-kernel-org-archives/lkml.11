@@ -2,29 +2,29 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 240D1C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 19:51:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A40C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 19:51:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232614AbiAUTvs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 14:51:48 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:50388 "EHLO
+        id S232807AbiAUTvx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 14:51:53 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:50426 "EHLO
         bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229697AbiAUTvr (ORCPT
+        with ESMTP id S229697AbiAUTvt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 14:51:47 -0500
+        Fri, 21 Jan 2022 14:51:49 -0500
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: bbeckett)
-        with ESMTPSA id 027A31F46562
+        with ESMTPSA id 87E9D1F465B3
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642794706;
-        bh=Fut1EPFyHtKExAKjhP5T7L+Q36Hqy+5BGq/LNpKSQ60=;
+        s=mail; t=1642794708;
+        bh=qJBTRmyi9jDfM31GVctlUir6LnB5ZIPa2X5lbTLEuQg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gu4uJEuCZlLUb6pJdC7RhWK76Xvzua26HeEOa9XR5Bm8I0mPWD2dNrHJipGBCoZH9
-         WQtKsgVqHrqLbFmR4zP633AdfmuiPUYLAU+rBJ9c6XCl7gqZTvYuoO6zKsbO24s3KM
-         odvh3FZVcOWAPutYUroagdI9cTqxOC3Ss5t9DeRSwSEg9fVukEas43a+MmwU2b/guP
-         tEXc1K2cuHUFZXZrtaP832D3Wsx6IzTLZKbyQOs9K8mtWsrNl4gb365sRj1UKjyuVH
-         mfD700sn9rlZxVff+KomizCVgQ45c6znhU9hp+hg36Bml7VbhP6vcSruLS9JrYoB8m
-         c7bpDB9tvJLrA==
+        b=WmCxd5GxJg4nCXzqxOrII12RwEhRP7YNe8DkovWANA5rD1tmfjL1e611hjfv45T/V
+         4z4A948x1us4VuYe3iR0dwde0GQT3s/EFkSOqvQZNVmczTb7vupz/ad/Y91brYb5Dz
+         FMvXSUMMNTR6RDW9tLUM6mrZ2C3PQ0Ej/r9tcTEl7iRziSVSyoJO3ji9isXRkSr7kz
+         4f7LBKGVWAuJb2XOcNfyH7dqwrpHuW/JyOCz1e5JDmCh7R3YT/kimX2Kzth99smdwb
+         rgpTvZYmXfYjc7iKNgdsVC0UutISk9c1CS3qA6NE8KS+g9Pj7hDDF5bT0btUHJ4GeV
+         5x2Qx8rk0o8xA==
 From:   Robert Beckett <bob.beckett@collabora.com>
 To:     Jani Nikula <jani.nikula@linux.intel.com>,
         Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
@@ -32,14 +32,13 @@ To:     Jani Nikula <jani.nikula@linux.intel.com>,
         Tvrtko Ursulin <tvrtko.ursulin@linux.intel.com>,
         David Airlie <airlied@linux.ie>,
         Daniel Vetter <daniel@ffwll.ch>
-Cc:     Ramalingam C <ramalingam.c@intel.com>,
-        Matthew Auld <matthew.auld@intel.com>,
-        Robert Beckett <bob.beckett@collabora.com>,
+Cc:     Robert Beckett <bob.beckett@collabora.com>,
+        kernel test robot <lkp@intel.com>,
         intel-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 1/5] drm/i915: add needs_compact_pt flag
-Date:   Fri, 21 Jan 2022 19:50:35 +0000
-Message-Id: <20220121195040.2145227-2-bob.beckett@collabora.com>
+Subject: [PATCH v4 4/5] drm/i915: add gtt misalignment test
+Date:   Fri, 21 Jan 2022 19:50:38 +0000
+Message-Id: <20220121195040.2145227-5-bob.beckett@collabora.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220121195040.2145227-1-bob.beckett@collabora.com>
 References: <20220121195040.2145227-1-bob.beckett@collabora.com>
@@ -49,79 +48,195 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ramalingam C <ramalingam.c@intel.com>
+add test to check handling of misaligned offsets and sizes
 
-Add a new platform flag, needs_compact_pt, to mark the requirement of
-compact pt layout support for the ppGTT when using 64K GTT pages.
+v4:
+	* remove spurious blank lines
+	* explicitly cast intel_region_id to intel_memory_type in misaligned_pin
+Reported-by: kernel test robot <lkp@intel.com>
 
-With this flag has_64k_pages will only indicate requirement of 64K
-GTT page sizes or larger for device local memory access.
-
-Suggested-by: Matthew Auld <matthew.auld@intel.com>
-Signed-off-by: Ramalingam C <ramalingam.c@intel.com>
 Signed-off-by: Robert Beckett <bob.beckett@collabora.com>
 ---
- drivers/gpu/drm/i915/i915_drv.h          | 10 +++++++---
- drivers/gpu/drm/i915/i915_pci.c          |  2 ++
- drivers/gpu/drm/i915/intel_device_info.h |  1 +
- 3 files changed, 10 insertions(+), 3 deletions(-)
+ drivers/gpu/drm/i915/selftests/i915_gem_gtt.c | 128 ++++++++++++++++++
+ 1 file changed, 128 insertions(+)
 
-diff --git a/drivers/gpu/drm/i915/i915_drv.h b/drivers/gpu/drm/i915/i915_drv.h
-index 44c1f98144b4..1258b7779705 100644
---- a/drivers/gpu/drm/i915/i915_drv.h
-+++ b/drivers/gpu/drm/i915/i915_drv.h
-@@ -1512,12 +1512,16 @@ IS_SUBPLATFORM(const struct drm_i915_private *i915,
- 
- /*
-  * Set this flag, when platform requires 64K GTT page sizes or larger for
-- * device local memory access. Also this flag implies that we require or
-- * at least support the compact PT layout for the ppGTT when using the 64K
-- * GTT pages.
-+ * device local memory access.
+diff --git a/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c b/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
+index b80788a2b7f9..f082b5ff3b5e 100644
+--- a/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
++++ b/drivers/gpu/drm/i915/selftests/i915_gem_gtt.c
+@@ -22,10 +22,12 @@
+  *
   */
- #define HAS_64K_PAGES(dev_priv) (INTEL_INFO(dev_priv)->has_64k_pages)
  
-+/* Set this flag when platform doesn't allow both 64k pages and 4k pages in
-+ * the same PT. this flag means we need to support compact PT layout for the
-+ * ppGTT when using the 64K GTT pages.
-+ */
-+#define NEEDS_COMPACT_PT(dev_priv) (INTEL_INFO(dev_priv)->needs_compact_pt)
++#include "gt/intel_gtt.h"
+ #include <linux/list_sort.h>
+ #include <linux/prime_numbers.h>
+ 
+ #include "gem/i915_gem_context.h"
++#include "gem/i915_gem_region.h"
+ #include "gem/selftests/mock_context.h"
+ #include "gt/intel_context.h"
+ #include "gt/intel_gpu_commands.h"
+@@ -1067,6 +1069,120 @@ static int shrink_boom(struct i915_address_space *vm,
+ 	return err;
+ }
+ 
++static int misaligned_case(struct i915_address_space *vm, struct intel_memory_region *mr,
++			   u64 addr, u64 size, unsigned long flags)
++{
++	struct drm_i915_gem_object *obj;
++	struct i915_vma *vma;
++	int err = 0;
++	u64 expected_vma_size, expected_node_size;
 +
- #define HAS_IPC(dev_priv)		 (INTEL_INFO(dev_priv)->display.has_ipc)
++	obj = i915_gem_object_create_region(mr, size, 0, 0);
++	if (IS_ERR(obj))
++		return PTR_ERR(obj);
++
++	vma = i915_vma_instance(obj, vm, NULL);
++	if (IS_ERR(vma)) {
++		err = PTR_ERR(vma);
++		goto err_put;
++	}
++
++	err = i915_vma_pin(vma, 0, 0, addr | flags);
++	if (err)
++		goto err_put;
++	i915_vma_unpin(vma);
++
++	if (!drm_mm_node_allocated(&vma->node)) {
++		err = -EINVAL;
++		goto err_put;
++	}
++
++	if (i915_vma_misplaced(vma, 0, 0, addr | flags)) {
++		err = -EINVAL;
++		goto err_put;
++	}
++
++	expected_vma_size = round_up(size, 1 << (ffs(vma->resource->page_sizes_gtt) - 1));
++	expected_node_size = expected_vma_size;
++
++	if (IS_DG2(vm->i915) && i915_gem_object_is_lmem(obj)) {
++		/* dg2 should expand lmem node to 2MB */
++		expected_vma_size = round_up(size, I915_GTT_PAGE_SIZE_64K);
++		expected_node_size = round_up(size, I915_GTT_PAGE_SIZE_2M);
++	}
++
++	if (vma->size != expected_vma_size || vma->node.size != expected_node_size) {
++		err = i915_vma_unbind(vma);
++		err = -EBADSLT;
++		goto err_put;
++	}
++
++	err = i915_vma_unbind(vma);
++	if (err)
++		goto err_put;
++
++	GEM_BUG_ON(drm_mm_node_allocated(&vma->node));
++
++err_put:
++	i915_gem_object_put(obj);
++	cleanup_freed_objects(vm->i915);
++	return err;
++}
++
++static int misaligned_pin(struct i915_address_space *vm,
++			  u64 hole_start, u64 hole_end,
++			  unsigned long end_time)
++{
++	struct intel_memory_region *mr;
++	enum intel_region_id id;
++	unsigned long flags = PIN_OFFSET_FIXED | PIN_USER;
++	int err = 0;
++	u64 hole_size = hole_end - hole_start;
++
++	if (i915_is_ggtt(vm))
++		flags |= PIN_GLOBAL;
++
++	for_each_memory_region(mr, vm->i915, id) {
++		u64 min_alignment = i915_vm_min_alignment(vm, (enum intel_memory_type)id);
++		u64 size = min_alignment;
++		u64 addr = round_up(hole_start + (hole_size / 2), min_alignment);
++
++		/* we can't test < 4k alignment due to flags being encoded in lower bits */
++		if (min_alignment != I915_GTT_PAGE_SIZE_4K) {
++			err = misaligned_case(vm, mr, addr + (min_alignment / 2), size, flags);
++			/* misaligned should error with -EINVAL*/
++			if (!err)
++				err = -EBADSLT;
++			if (err != -EINVAL)
++				return err;
++		}
++
++		/* test for vma->size expansion to min page size */
++		err = misaligned_case(vm, mr, addr, PAGE_SIZE, flags);
++		if (min_alignment > hole_size) {
++			if (!err)
++				err = -EBADSLT;
++			else if (err == -ENOSPC)
++				err = 0;
++		}
++		if (err)
++			return err;
++
++		/* test for intermediate size not expanding vma->size for large alignments */
++		err = misaligned_case(vm, mr, addr, size / 2, flags);
++		if (min_alignment > hole_size) {
++			if (!err)
++				err = -EBADSLT;
++			else if (err == -ENOSPC)
++				err = 0;
++		}
++		if (err)
++			return err;
++	}
++
++	return 0;
++}
++
+ static int exercise_ppgtt(struct drm_i915_private *dev_priv,
+ 			  int (*func)(struct i915_address_space *vm,
+ 				      u64 hole_start, u64 hole_end,
+@@ -1136,6 +1252,11 @@ static int igt_ppgtt_shrink_boom(void *arg)
+ 	return exercise_ppgtt(arg, shrink_boom);
+ }
  
- #define HAS_REGION(i915, i) (INTEL_INFO(i915)->memory_regions & (i))
-diff --git a/drivers/gpu/drm/i915/i915_pci.c b/drivers/gpu/drm/i915/i915_pci.c
-index 4081fd50ba9d..799b56569ef5 100644
---- a/drivers/gpu/drm/i915/i915_pci.c
-+++ b/drivers/gpu/drm/i915/i915_pci.c
-@@ -1028,6 +1028,7 @@ static const struct intel_device_info xehpsdv_info = {
- 	PLATFORM(INTEL_XEHPSDV),
- 	.display = { },
- 	.has_64k_pages = 1,
-+	.needs_compact_pt = 1,
- 	.platform_engine_mask =
- 		BIT(RCS0) | BIT(BCS0) |
- 		BIT(VECS0) | BIT(VECS1) | BIT(VECS2) | BIT(VECS3) |
-@@ -1045,6 +1046,7 @@ static const struct intel_device_info dg2_info = {
- 	.media.rel = 55,
- 	PLATFORM(INTEL_DG2),
- 	.has_64k_pages = 1,
-+	.needs_compact_pt = 1,
- 	.platform_engine_mask =
- 		BIT(RCS0) | BIT(BCS0) |
- 		BIT(VECS0) | BIT(VECS1) |
-diff --git a/drivers/gpu/drm/i915/intel_device_info.h b/drivers/gpu/drm/i915/intel_device_info.h
-index 3699b1c539ea..c8aaf646430c 100644
---- a/drivers/gpu/drm/i915/intel_device_info.h
-+++ b/drivers/gpu/drm/i915/intel_device_info.h
-@@ -130,6 +130,7 @@ enum intel_ppgtt_type {
- 	/* Keep has_* in alphabetical order */ \
- 	func(has_64bit_reloc); \
- 	func(has_64k_pages); \
-+	func(needs_compact_pt); \
- 	func(gpu_reset_clobbers_display); \
- 	func(has_reset_engine); \
- 	func(has_global_mocs); \
++static int igt_ppgtt_misaligned_pin(void *arg)
++{
++	return exercise_ppgtt(arg, misaligned_pin);
++}
++
+ static int sort_holes(void *priv, const struct list_head *A,
+ 		      const struct list_head *B)
+ {
+@@ -1208,6 +1329,11 @@ static int igt_ggtt_lowlevel(void *arg)
+ 	return exercise_ggtt(arg, lowlevel_hole);
+ }
+ 
++static int igt_ggtt_misaligned_pin(void *arg)
++{
++	return exercise_ggtt(arg, misaligned_pin);
++}
++
+ static int igt_ggtt_page(void *arg)
+ {
+ 	const unsigned int count = PAGE_SIZE/sizeof(u32);
+@@ -2180,12 +2306,14 @@ int i915_gem_gtt_live_selftests(struct drm_i915_private *i915)
+ 		SUBTEST(igt_ppgtt_fill),
+ 		SUBTEST(igt_ppgtt_shrink),
+ 		SUBTEST(igt_ppgtt_shrink_boom),
++		SUBTEST(igt_ppgtt_misaligned_pin),
+ 		SUBTEST(igt_ggtt_lowlevel),
+ 		SUBTEST(igt_ggtt_drunk),
+ 		SUBTEST(igt_ggtt_walk),
+ 		SUBTEST(igt_ggtt_pot),
+ 		SUBTEST(igt_ggtt_fill),
+ 		SUBTEST(igt_ggtt_page),
++		SUBTEST(igt_ggtt_misaligned_pin),
+ 		SUBTEST(igt_cs_tlb),
+ 	};
+ 
 -- 
 2.25.1
 
