@@ -2,143 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A88BC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F4CC4167D
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:33:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381158AbiAUOdA (ORCPT
+        id S1381228AbiAUOdb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 09:33:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45296 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381101AbiAUOc6 (ORCPT
+        Fri, 21 Jan 2022 09:33:31 -0500
+Received: from mx0a-001ae601.pphosted.com ([67.231.149.25]:5174 "EHLO
+        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1381159AbiAUOdV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 09:32:58 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 089BDC06173D
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:32:58 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id bu18so34285104lfb.5
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:32:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RVXQn5fAWpM/u0IH/7wcDxKVyHbKmHs+xX1aq8s+H0A=;
-        b=h9ux5v/Q50smb2C/ipPvXLW2MCeJvk3sKcHLgXJd/K0lrYohPEfG6WH2aScvQS4hFj
-         IqihvUBvv1MJSadFUhk7bi+rk4RPq8pwsv1/nJZ11EZNuKx1IXQyjybMhOrmmTjL/diI
-         gjGD9TjTRhf/hnQdKlkZyDjhS1PSFphn8tc7jSOiGuGLBcECDUaLdBeYpEi/9cBftbcw
-         q7FHr8+MA8G+3FXbOmUSCFYnGOFgpVFZwzbs7lzS0R++GvVBYz6FmyPaZQ2U7Uif/3nE
-         ByQmkZAPfXBgfeCBUJ3Ade4p13p+vOp03albJ7jTBzOzTUW3/qSQ3ylqS65B1w0higO1
-         lvJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RVXQn5fAWpM/u0IH/7wcDxKVyHbKmHs+xX1aq8s+H0A=;
-        b=22mjmHj5Sxdk/FNMYmwOY0MeYRmsd74JNyeRm1s0buBafzFKoSCTi22MnQEVDJswYI
-         xNDV3er5X/+7Uzc7XSld9E9ndlkikdzIUre2N0jBvCfc1JguoufjZWYj0chXeaYp2qZW
-         ZkjF/EqUkkInzmn+DWsR6C42Y9iKp5h0Qtn/m1MU5jE6GrIXdGMRxgwVVd59F+cR62kT
-         lgX4VPTvc/z7+8nzJl/vcLH7f9BgNJCmcN3ScJ3zyCoVn0U7VGO5eEuoYCr4vEsrc46M
-         EE4tCYJaLPaBgwlmSCuyXrX1IuYJJjOHnTCDS7oohbHWT22+ayPqX3/r4WLlTND/kHg7
-         ICnw==
-X-Gm-Message-State: AOAM530BD3h//DzPslGWmkyna0y+WqsOpSvCUMbznU1d6qBaBCl+dWLD
-        t7aWmXif431MmRHBw/6tB8faJb4CZ35CdHOqwiiWhg==
-X-Google-Smtp-Source: ABdhPJx7cPZiR9uIKFSqOq89pZPYFqJfbvkmzLzLKS+xgg66BXE3QXoe4FStijxRD9jE6I9RjOlvzYDTv+s+udcuQMk=
-X-Received: by 2002:ac2:4193:: with SMTP id z19mr3831337lfh.358.1642775576413;
- Fri, 21 Jan 2022 06:32:56 -0800 (PST)
+        Fri, 21 Jan 2022 09:33:21 -0500
+Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
+        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20LDS7PF017315;
+        Fri, 21 Jan 2022 08:32:57 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=PODMain02222019;
+ bh=8hcY3hq134C9MEdnIhZfFx5d+Fsp8aYUr67yHiyM5wc=;
+ b=eCGBuWYyTjc5aI1YDO0ML08Qllo6J1xD5spZvz0bkAiCFJ82Bu09zmnwnHtLL3XZ0mgQ
+ 1uxO6oDh+yHLGV1XmxbDXjWrICowocwPVoVlQwImjHdAtUoinNq5qZQ0CvmtKXzsVbSN
+ o3Kf/bXk7azK6RoqtFOnh3+VZF7FbgaLBr2QIcjm34BBWdc5zZf/KxI1nxBRtUE4FXHC
+ Oa6Etun0GoCK9gv8gP9CUZpEcoh14KwhIxn0Y937c98NEw7CFGt/g4pOboWPDcjl2aMZ
+ Q+Gm14YlinBimQ/OEtqKlnK06jWHpT4Pf0mwz4/Y0sTpHDqOOi/wSaVDxQu0ie9EEHdE Tw== 
+Received: from ediex02.ad.cirrus.com ([84.19.233.68])
+        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3dqhyq0up1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 21 Jan 2022 08:32:57 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
+ (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 21 Jan
+ 2022 14:32:55 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
+ Transport; Fri, 21 Jan 2022 14:32:55 +0000
+Received: from LONN2DGDQ73.ad.cirrus.com (unknown [198.90.238.138])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 0E1A7B0E;
+        Fri, 21 Jan 2022 14:32:55 +0000 (UTC)
+From:   Stefan Binding <sbinding@opensource.cirrus.com>
+To:     Mark Brown <broonie@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
+        <platform-driver-x86@vger.kernel.org>,
+        <patches@opensource.cirrus.com>,
+        Stefan Binding <sbinding@opensource.cirrus.com>
+Subject: [PATCH v5 0/9] Support Spi in i2c-multi-instantiate driver
+Date:   Fri, 21 Jan 2022 14:32:45 +0000
+Message-ID: <20220121143254.6432-1-sbinding@opensource.cirrus.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220115121447.641524-1-andrej.skvortzov@gmail.com>
-In-Reply-To: <20220115121447.641524-1-andrej.skvortzov@gmail.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Fri, 21 Jan 2022 15:32:20 +0100
-Message-ID: <CAPDyKFp=pn=yvEtur4rbQwweq2VNc8+2VniYV5ZVy8=re7VJXw@mail.gmail.com>
-Subject: Re: [PATCH] mmc: core: Wait for command setting 'Power Off
- Notification' bit to complete
-To:     Andrey Skvortsov <andrej.skvortzov@gmail.com>
-Cc:     Arnaud Ferraris <arnaud.ferraris@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Avri Altman <avri.altman@wdc.com>,
-        Shawn Lin <shawn.lin@rock-chips.com>,
-        Huijin Park <huijin.park@samsung.com>,
-        =?UTF-8?Q?Christian_L=C3=B6hle?= <CLoehle@hyperstone.com>,
-        Yue Hu <huyue2@yulong.com>, linux-mmc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-GUID: 1cpfQeCaNrkUXtnFnLZoLBN1q9VoT5xe
+X-Proofpoint-ORIG-GUID: 1cpfQeCaNrkUXtnFnLZoLBN1q9VoT5xe
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 15 Jan 2022 at 13:15, Andrey Skvortsov
-<andrej.skvortzov@gmail.com> wrote:
->
-> SD card is allowed to signal busy on DAT0 up to 1s after the
-> CMD49. According to SD spec (version 6.0 section 5.8.1.3) first host
-> waits until busy of CMD49 is released and only then polls Power
-> Management Status register up to 1s until the card indicates ready to
-> power off.
->
-> Without waiting for busy before polling status register sometimes card
-> becomes unresponsive and system fails to suspend:
->
->   [  205.907459] Freezing remaining freezable tasks ... (elapsed 0.001 seconds) done.
->   [  206.421274] sunxi-mmc 1c0f000.mmc: data error, sending stop command
->   [  206.421321] sunxi-mmc 1c0f000.mmc: send stop command failed
->   [  206.421347] mmc0: error -110 reading status reg of PM func
->   [  206.421366] PM: dpm_run_callback(): mmc_bus_suspend+0x0/0x74 returns -110
->   [  206.421402] mmcblk mmc0:aaaa: PM: failed to suspend async: error -110
->   [  206.437064] PM: Some devices failed to suspend, or early wake event detected
->
-> Tested with Sandisk Extreme PRO A2 64GB on Allwinner A64 system.
->
-> Signed-off-by: Andrey Skvortsov <andrej.skvortzov@gmail.com>
+Add support for SPI bus in the i2c-multi-instantiate driver as
+upcoming laptops will need to multi instantiate SPI devices from
+a single device node, which has multiple SpiSerialBus entries at
+the ACPI table.
 
-I did some tests at my side too, using a Qcom platform and it worked
-fine. However, I also used the same type of card as you, as I didn't
-have any other try with at this moment.
+With the new SPI support, i2c-multi-instantiate becomes
+bus-multi-instantiate and is moved to the ACPI folder.
 
-So, applied for fixes and by adding a fixes/stable tag, thanks!
+The intention is to support the SPI bus by re-using the current
+I2C multi instantiate, instead of creating a new SPI multi
+instantiate, to make it possible for peripherals that can be
+controlled by I2C or SPI to have the same HID at the ACPI table.
 
-I also did a minor amendment to the patch, see below.
+The new driver (serial multi instantiate, smi) checks for the
+hard-coded bus type and returns -ENODEV in case of zero devices
+found for that bus. In the case of automatic bus detection, 
+the driver will give preference to I2C.
 
-Kind regards
-Uffe
+The expectation is for a device node in the ACPI table to have
+multiple I2cSerialBus only or multiple SpiSerialBus only, not
+a mix of both; and for the case where there are both entries in
+one device node, only the I2C ones would be probed.
 
-> ---
->  drivers/mmc/core/sd.c | 9 ++++++++-
->  1 file changed, 8 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/mmc/core/sd.c b/drivers/mmc/core/sd.c
-> index e223275bbad1..842b886bdd4e 100644
-> --- a/drivers/mmc/core/sd.c
-> +++ b/drivers/mmc/core/sd.c
-> @@ -66,7 +66,7 @@ static const unsigned int sd_au_size[] = {
->                 __res & __mask;                                         \
->         })
->
-> -#define SD_POWEROFF_NOTIFY_TIMEOUT_MS 2000
-> +#define SD_POWEROFF_NOTIFY_TIMEOUT_MS 1000
->  #define SD_WRITE_EXTR_SINGLE_TIMEOUT_MS 1000
->
->  struct sd_busy_data {
-> @@ -1663,6 +1663,13 @@ static int sd_poweroff_notify(struct mmc_card *card)
->                 goto out;
->         }
->
-> +       /* Find out when the command is completed. */
-> +       err = mmc_poll_for_busy(card, SD_POWEROFF_NOTIFY_TIMEOUT_MS, false,
+This new serial multi instantiate will be used in CS35L41 HDA new
+driver.
 
-/s/SD_POWEROFF_NOTIFY_TIMEOUT_MS/SD_WRITE_EXTR_SINGLE_TIMEOUT_MS
+Changes since V4:
+ - renamed bus-multi-instantiate to serial-multi-instantiate
+ - various minor fixes in serial-multi-instantiate
+ - fix returns in serial-multi-instantiate
+ - removed unnecessary stubs in spi.h
+ - re-order SSIDs in patch_realtek.c
 
-> +                               MMC_BUSY_EXTR_SINGLE);
-> +
-> +       if (err)
-> +               goto out;
-> +
->         cb_data.card = card;
->         cb_data.reg_buf = reg_buf;
->         err = __mmc_poll_for_busy(card->host, SD_POWEROFF_NOTIFY_TIMEOUT_MS,
-> --
-> 2.34.1
->
+Lucas Tanure (4):
+  platform/x86: i2c-multi-instantiate: Rename it for a generic serial
+    driver name
+  platform/x86: serial-multi-instantiate: Reorganize I2C functions
+  ALSA: hda/realtek: Add support for HP Laptops
+  ACPI / scan: Create platform device for CS35L41
 
-Kind regards
-Uffe
+Stefan Binding (5):
+  spi: Make spi_alloc_device and spi_add_device public again
+  spi: Create helper API to lookup ACPI info for spi device
+  spi: Support selection of the index of the ACPI Spi Resource before
+    alloc
+  spi: Add API to count spi acpi resources
+  platform/x86: serial-multi-instantiate: Add SPI support
+
+ MAINTAINERS                                   |   4 +-
+ drivers/acpi/scan.c                           |  16 +-
+ drivers/platform/x86/Kconfig                  |  14 +-
+ drivers/platform/x86/Makefile                 |   2 +-
+ drivers/platform/x86/i2c-multi-instantiate.c  | 174 ---------
+ .../platform/x86/serial-multi-instantiate.c   | 346 ++++++++++++++++++
+ drivers/spi/spi.c                             | 137 ++++++-
+ include/linux/spi/spi.h                       |  20 +
+ sound/pci/hda/patch_realtek.c                 |  43 ++-
+ 9 files changed, 549 insertions(+), 207 deletions(-)
+ delete mode 100644 drivers/platform/x86/i2c-multi-instantiate.c
+ create mode 100644 drivers/platform/x86/serial-multi-instantiate.c
+
+-- 
+2.25.1
+
