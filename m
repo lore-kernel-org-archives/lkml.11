@@ -2,109 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA58AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:26:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAF78C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:26:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350820AbiAUO0D (ORCPT
+        id S1381033AbiAUO0g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 09:26:03 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:46290
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1350535AbiAUOZw (ORCPT
+        Fri, 21 Jan 2022 09:26:36 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:32776 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1381028AbiAUO0M (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 09:25:52 -0500
-Received: from mail-oo1-f72.google.com (mail-oo1-f72.google.com [209.85.161.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 71FE93FFD9
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 14:25:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642775151;
-        bh=AUxDslPF8lqTNSTtvzkdjxriihCQUQMZYiC1s+nxn1U=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=YCBQfkXCdosQVNsGtqj3RxWo8eUx/XiMfK6XsvMoulN5yazU/SUlgNi8u6s6ATq+P
-         MnE1668D6H/67j03RDobCKOsVB4GbNEO5pzQKilA18V8o8U+F73bYaMnUevUyul32h
-         LS+cZDwZH/v9zzSwNOonfP8T543uWd4JBV2sEK/mZ+LTy6K+zHlvATifJK25zfIeXy
-         FCO2zh8Iw5FIWT7udx/Mlf+llgc3rvXvLUT5h6rlNC4XznOoSoHyNCPsA5LgZ8cngG
-         YrQUTADJZIFGQrVPHKfK+uA7JbUKAB7Q5bQBjG4yPWWMAi7HQbICx7OQekSPbyvi/S
-         1jsa/xjtSST1w==
-Received: by mail-oo1-f72.google.com with SMTP id t12-20020a4ab58c000000b002dcbee240efso2515501ooo.10
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:25:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=AUxDslPF8lqTNSTtvzkdjxriihCQUQMZYiC1s+nxn1U=;
-        b=SnA9Dw2EBn6fYnlUYtZO85eMTUYK7buLFRr+N+eM5ffwwbnpRIXtxn+iDDZe4WHFIY
-         bluF1w85RdyKJDUN/6LpqOalLJL5on44X8AYBR5uBORDUHAnAm2Lbw9n0lDNL6SV5cv0
-         Gum+3DfbtbhmIk8UAaay4HrunhDpwM7wS6wGVEhi2Go2lvm0kM40DiyHUJX6i0kLIvTs
-         q8v1z7bvsu0iDhCFOFxM48lJycBNF5OHAYLNYwcYzZFQQLKByT8FOnwhCoQTPF/+TAIq
-         x+AbpWoaedEOtdgZuzL42JkNHoXNo1/hF9aPG/MyHWd9vIlu5cf2tQ4N68Q1fOPflaIf
-         c3Fg==
-X-Gm-Message-State: AOAM53139TnwB+FI+sG8mmaIvWBQKiWTR0FnBC4GjflqAO/sljVlHcJL
-        PzmzKQQ7sS/lXWnUX60X1Nigmv6evcQAN+h+3FkJ9lEw4GJ0l11T8ulvX9WzsWdG7YgtH7IvMSv
-        P2Eexq0cmS6OZUpELiqOVCOvqk/6cbi04QoDt3Py/6cGOuO5MLbz4N7XRzw==
-X-Received: by 2002:a05:6808:30a0:: with SMTP id bl32mr746163oib.41.1642775150177;
-        Fri, 21 Jan 2022 06:25:50 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzzl5cn5VM6kAoUVjAjl8gu6cXM4ni2jdIiRiuAaU8wfBVkVIF+aw34//cPznm1zFHtC62/hV6toXllHHWB1Dw=
-X-Received: by 2002:a05:6808:30a0:: with SMTP id bl32mr746123oib.41.1642775149667;
- Fri, 21 Jan 2022 06:25:49 -0800 (PST)
+        Fri, 21 Jan 2022 09:26:12 -0500
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20LDZxnN030038;
+        Fri, 21 Jan 2022 14:26:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=lsebu3yywD9GXAKMlk2Xl0HzAG5hoaXOsUFjDfEzK3Q=;
+ b=a0mT4g4u4SjEAKHSRhxwyGiN5wWO427PD+MgDaGy0yDlacNTWLQMJxswnSJJ8jpwNGbM
+ RkTgUtMQWlkC5b4ijEM8ypE/sIesKXCxhniGjtGhFg7DUeiQueEjhtvsAQgZIQRGYT/r
+ 0rVjiT65w3awX/C+YVXDAGgTFyJ8oCkrQUya9+Hhek/nYGTRx2hhzA77SlMTznARptN5
+ E7J1nF8dCGzY+VkQ+xwEMxNfWGZIxsnT4Qp3XaaTAOm9y4yJIn/rmjrd5czwC8uwPu9F
+ 7pp+KWt90wDaB4YL1o2GKr2FqVMfuI5VgcP33bFG5EucyFceqvnFDg6fdbjMbo6gZ115 aw== 
+Received: from ppma05fra.de.ibm.com (6c.4a.5195.ip4.static.sl-reverse.com [149.81.74.108])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dqt27wuqc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 21 Jan 2022 14:26:11 +0000
+Received: from pps.filterd (ppma05fra.de.ibm.com [127.0.0.1])
+        by ppma05fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20LE8ZDm001893;
+        Fri, 21 Jan 2022 14:26:09 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma05fra.de.ibm.com with ESMTP id 3dqjepn9pp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 21 Jan 2022 14:26:09 +0000
+Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20LEQ6lJ32833992
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 21 Jan 2022 14:26:06 GMT
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EF80DAE055;
+        Fri, 21 Jan 2022 14:26:05 +0000 (GMT)
+Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A0DEAAE04D;
+        Fri, 21 Jan 2022 14:26:05 +0000 (GMT)
+Received: from osiris (unknown [9.145.74.142])
+        by d06av26.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Fri, 21 Jan 2022 14:26:05 +0000 (GMT)
+Date:   Fri, 21 Jan 2022 15:26:04 +0100
+From:   Heiko Carstens <hca@linux.ibm.com>
+To:     Janis Schoetterl-Glausch <scgl@linux.ibm.com>
+Cc:     Christian Borntraeger <borntraeger@linux.ibm.com>,
+        Vasily Gorbik <gor@linux.ibm.com>,
+        Sven Schnelle <svens@linux.ibm.com>,
+        Nico Boehr <nrb@linux.ibm.com>,
+        Alexander Gordeev <agordeev@linux.ibm.com>,
+        linux-s390@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH v1 01/10] s390/uaccess: Add storage key checked
+ access to user memory
+Message-ID: <YerCfDceDszqbdHU@osiris>
+References: <20220118095210.1651483-2-scgl@linux.ibm.com>
+ <YefeakONMN4PLlml@osiris>
+ <422595a5-b24b-8760-ff0e-112322142de7@linux.ibm.com>
+ <YegQCTqEsiFTUZ2R@osiris>
+ <dbfec527-b995-e382-dafa-c3459e1e45ed@linux.ibm.com>
+ <YelcCEuVbIg9ND90@osiris>
+ <YemnprCIEjjGFeTn@osiris>
+ <b6896b1a-d529-1504-091c-d41287c01dc8@linux.ibm.com>
+ <YeqTP6WDbZzEJUbJ@osiris>
+ <13a03972-0020-b8e7-2fc0-def8a164eb10@linux.ibm.com>
 MIME-Version: 1.0
-References: <20220105060643.822111-1-kai.heng.feng@canonical.com>
- <20220105201226.GA218998@bhelgaas> <CAAd53p5V9gCCc6v9Wdo-bONYfASnhtyGHVPPb6vOneft2XewQQ@mail.gmail.com>
- <YeqRGQoPKy389ct5@lahna> <CAAd53p4ej6FA0dM4ahngnGAccSLe=-bsUVkt-eGb2jZkms1UYA@mail.gmail.com>
- <Yeqqr1YXTNBkpz5C@lahna>
-In-Reply-To: <Yeqqr1YXTNBkpz5C@lahna>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Fri, 21 Jan 2022 22:25:38 +0800
-Message-ID: <CAAd53p6p8YswUe0euxvrYTsT4ZFNiGgaB7MZesfGoWX=GmAjZA@mail.gmail.com>
-Subject: Re: [PATCH] PCI/portdrv: Skip enabling AER on external facing ports
-To:     Mika Westerberg <mika.westerberg@linux.intel.com>
-Cc:     Bjorn Helgaas <helgaas@kernel.org>, bhelgaas@google.com,
-        koba.ko@canonical.com, Lukas Wunner <lukas@wunner.de>,
-        Stuart Hayes <stuart.w.hayes@gmail.com>,
-        Jan Kiszka <jan.kiszka@siemens.com>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <13a03972-0020-b8e7-2fc0-def8a164eb10@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: F8E0q23zV84nP37URidlBGxChnAmGMRc
+X-Proofpoint-GUID: F8E0q23zV84nP37URidlBGxChnAmGMRc
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-21_06,2022-01-21_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 impostorscore=0
+ spamscore=0 bulkscore=0 lowpriorityscore=0 mlxscore=0 malwarescore=0
+ adultscore=0 priorityscore=1501 suspectscore=0 mlxlogscore=815
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201210095
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 8:44 PM Mika Westerberg
-<mika.westerberg@linux.intel.com> wrote:
->
-> Hi,
->
-> On Fri, Jan 21, 2022 at 08:31:27PM +0800, Kai-Heng Feng wrote:
-> > Hi Mika,
-> >
-> > On Fri, Jan 21, 2022 at 6:55 PM Mika Westerberg
-> > <mika.westerberg@linux.intel.com> wrote:
-> > >
-> > > Hi Kai-Heng,
-> > >
-> > > On Fri, Jan 07, 2022 at 12:09:57PM +0800, Kai-Heng Feng wrote:
-> > > > Only from root ports of thunderbolt devices.
-> > > >
-> > > > The error occurs as soon as the root port is runtime suspended to D3cold.
-> > > >
-> > > > Runtime suspend the AER service can resolve the issue. I wonder if
-> > > > it's the right thing to do here?
-> > >
-> > > I think you are right here. It seems that AER "service driver" is
-> > > completely missing PM hooks. Probably because it is more used in server
-> > > type of systems where power management is not priority.
-> >
-> > Here is my previous attempt to suspend AER:
-> > https://lore.kernel.org/linux-pci/20210127173101.446940-1-kai.heng.feng@canonical.com/
->
-> That's great!
->
-> I think we should do the same for runtime PM paths too, though. Will you
-> take care of that as well? :)
+On Fri, Jan 21, 2022 at 02:46:02PM +0100, Janis Schoetterl-Glausch wrote:
+> >> +static inline __must_check unsigned long
+> >> +_copy_from_user_key(void *to, const void __user *from, unsigned long n, u8 key)
+> > 
+> > Make key unsigned long, add support for INLINE_COPY_TO_USER, and maybe
+> > add a wrapper, so this works on all architectures, e.g. if
+> > raw_copy_to_user_key() is not defined, then fall back to
+> > raw_copy_to_user() and ignore the key parameter.
+> > 
+> 
+> Since we only need the double underscore variants, even if we're going to be more
+> general than we need to be, we can restrict ourselves to those, can't we?
 
-Yes that's the plan. I hope I can persuade Bjorn this time...
+I don't think that works with INLINE_COPY_TO_USER. The reason for the
+single underline variants is being able to have an out-line-implementation
+in lib/usercopy.c, isn't it?
 
-Kai-Heng
+> I don't understand your comment about the wrapper. You'd want an error on misuse,
+> that is, if you try to use a _with_key function if the functionality is not defined, no?
+
+No. My intention was that it should simply work/compile by default for
+architectures which do not support a key mechanism:
+
+something like
+
+#ifndef raw_copy_to_user_key
+static inline unsigned long raw_copy_to_user_key(..., unsigned long key)
+{
+	return raw_copy_to_user(...);
+}
+#endif
+
+Again, this is just a proposal and might be turned down by common code
+guys. Just trying to come up with something which could also work on other
+architectures, and which does not cause pain because architectures don't
+really need it.
