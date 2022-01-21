@@ -2,61 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBD45C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AD3FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:54:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378965AbiAUQyd (ORCPT
+        id S1379365AbiAUQyf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 11:54:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49436 "EHLO
+        Fri, 21 Jan 2022 11:54:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379215AbiAUQyZ (ORCPT
+        with ESMTP id S1378945AbiAUQy3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 11:54:25 -0500
-Received: from mail-oi1-x236.google.com (mail-oi1-x236.google.com [IPv6:2607:f8b0:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71449C061748;
-        Fri, 21 Jan 2022 08:54:23 -0800 (PST)
-Received: by mail-oi1-x236.google.com with SMTP id w188so14286000oiw.13;
-        Fri, 21 Jan 2022 08:54:23 -0800 (PST)
+        Fri, 21 Jan 2022 11:54:29 -0500
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA9F3C06173B;
+        Fri, 21 Jan 2022 08:54:28 -0800 (PST)
+Received: by mail-ot1-x32c.google.com with SMTP id a10-20020a9d260a000000b005991bd6ae3eso12458581otb.11;
+        Fri, 21 Jan 2022 08:54:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=oJfZ9bxEyakRGqsa0D0+XQlWPcD9uzPytbmizuUotgY=;
-        b=FdXBH7Iek6amWg401VuWNnvfE9n1dEqsm8gSRUc4W2+XwCI5e8f6fwvDbQmNRDjo59
-         a09lHndSHbtHfW3CHRvyv2HsmMjh8igO9/R+ATU6uo0QHhcYzu2klOt4FNOFw9532/ZI
-         ZFtMYQyZPg8v+a+KqFMBQMFsZva1t8R1liGLfCKUvumxuKGFg7NLOIfKtJanuco7bJzC
-         iBcBgMe+6hcaFTIFg6WqQrMqDXGSrOLHFCqYYZT7BaflUtcCmG5ix3jGYyJcjp5j0q+H
-         6TUB5gRoFnFR3Fb+cD9Jd9G4iWEfBpo3+2nuIB+riZi5uu5Oe46BCujP3OBfi+G/vY84
-         y9Dg==
+        bh=Je4Vg4olpeQt3YYgiuDinqh8u3SDDMhhHec3zR+vbpw=;
+        b=eyCdocg3/BwFXfNB6Ra58X0zGei6GdzjOGAdVx7J3EZnQTgNGumoi5fmYK2Za3iy/V
+         jN4KcidqxXKzrCkljB4x44HUo0uALqPUK43TPmRzhAvbqRJMFkRqo6GK8HHgOmkpkYMb
+         VH5XLEj6enzXbw4Y5gnI7kzbDKx7XjMl5ewZlxJ9g7HHghQjUU1V24v+fC1CwCfIzFWn
+         JrgLaglsFFu6zmi604vr/azRkUrGkI+B1oTVYYKJki6GU/uzAgmPq6SNxHH12lnQSmDy
+         kuNuIvUTd6OO79GVAqblQz1rJXzXKW6npRKdtuI63j3qmOr8EXqz8PDpQiksyusBI/L6
+         m+Fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=oJfZ9bxEyakRGqsa0D0+XQlWPcD9uzPytbmizuUotgY=;
-        b=Fkd/vc7U/B3H8K5mX/a0sf4K2z+hFAkvQiOzenoIE921cUKI45Cfs/5BJTqFK7MO8L
-         TZ6xg3XzQJkdbsD/Y+Gi4lQpfL0cuWdgqgbdDL+a5+BgPUsXYTga2HWCT8XuGXcN1n6M
-         w8BlOknkdl3chYuWnkFUwEAOhR1DclPxKbDT+2aQfmZLNNrtTMGV1six8U8fz/pzCL+t
-         qkvtgXWaoFOt9REaSpN5y3sY8qovY0pJNjcOXtFpg5F9zbdUsgvGhAyLKnqMS8lNFYn9
-         bYgmOSdv+p+weimWkiLvd6OtCx8VKWtI3L0c6tHYGqUD6bd8/pIMwA4+l2ymDkALMfk/
-         JmSA==
-X-Gm-Message-State: AOAM531xsBMFXetVKQhPAXGkWJnnW25g3xegOzhb3BAdy2u7YuCW426r
-        7lrf+jKItdsCYrdQXDuO2n1tF2KXqpo=
-X-Google-Smtp-Source: ABdhPJxVB60m/+irtROG2vo5Jixi422f8mmMPw0s5dKqSWNTf6DszjlcuSjSB8uP4NKmSlGKrxB3hQ==
-X-Received: by 2002:a54:4097:: with SMTP id i23mr1250934oii.115.1642784062879;
-        Fri, 21 Jan 2022 08:54:22 -0800 (PST)
+        bh=Je4Vg4olpeQt3YYgiuDinqh8u3SDDMhhHec3zR+vbpw=;
+        b=GBjo9k+eK9gUAmpwzDlTlMIAUGW7/xZxJXLidH9GSBbbh/JyKlOys7PDhMo5ryyuK+
+         RRbHmcEUR0SCUzEJU3t17XWc1oOq9tPG/W5Y7LgDilly4q+94+vWUTEBbYd98C30Vwu0
+         /JZyPLBW5MgimB9Y10I12KkuBZEx5asvXVT9mECbu3UCISporkP/+GgkHZ6Pug6kIhiy
+         2/JmCTlfT+jkQJzo8QnxAU1gVz913HOaIae4Hr0cU2MFomWwDe3SqTGa1WWkstCqTdBS
+         vLqAMwlH88RH0zDDDgwOHWSWPvYWcUtVcKmFakzQRl7nckoFCyErvlnxGNKgHb7BMzFv
+         GJWA==
+X-Gm-Message-State: AOAM530VAR8UaLVIojQ5oT1qVwMm8Sp41wmU0qFxBYzCUrVF3isAQUv2
+        oRKFajr+yXDdZOyw/g+L9IxKQzFnNkQ=
+X-Google-Smtp-Source: ABdhPJy2nNfP2/sQ5pcqgIqsWk02rQQ3m1RbWO9oJ+ZEbEFN7V0EXWGwjzgsJulb5byjReHdhGwo3A==
+X-Received: by 2002:a05:6830:40c6:: with SMTP id h6mr3263411otu.247.1642784068274;
+        Fri, 21 Jan 2022 08:54:28 -0800 (PST)
 Received: from thinkpad.localdomain ([2804:14d:5cd1:5d03:cf72:4317:3105:f6e5])
-        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.54.20
+        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.54.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 08:54:22 -0800 (PST)
+        Fri, 21 Jan 2022 08:54:27 -0800 (PST)
 From:   Luiz Sampaio <sampaio.ime@gmail.com>
-To:     Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Cc:     linux-kernel@vger.kernel.org, Luiz Sampaio <sampaio.ime@gmail.com>,
-        linux-hwmon@vger.kernel.org
-Subject: [PATCH 03/31] hwmon: pmbus: changing LED_* from enum led_brightness to actual value
-Date:   Fri, 21 Jan 2022 13:54:08 -0300
-Message-Id: <20220121165436.30956-4-sampaio.ime@gmail.com>
+        linux-input@vger.kernel.org
+Subject: [PATCH 05/31] input: keyboard: changing LED_* from enum led_brightness to actual value
+Date:   Fri, 21 Jan 2022 13:54:10 -0300
+Message-Id: <20220121165436.30956-6-sampaio.ime@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220121165436.30956-1-sampaio.ime@gmail.com>
 References: <20220121165436.30956-1-sampaio.ime@gmail.com>
@@ -70,44 +69,100 @@ The enum led_brightness, which contains the declaration of LED_OFF,
 LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
 max_brightness.
 ---
- drivers/hwmon/pmbus/ibm-cffps.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/input/keyboard/cap11xx.c      |  2 +-
+ drivers/input/keyboard/qt2160.c       |  6 +++---
+ drivers/input/keyboard/tm2-touchkey.c | 12 ++++++------
+ 3 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/hwmon/pmbus/ibm-cffps.c b/drivers/hwmon/pmbus/ibm-cffps.c
-index e3294a1a54bb..cc20a70c723b 100644
---- a/drivers/hwmon/pmbus/ibm-cffps.c
-+++ b/drivers/hwmon/pmbus/ibm-cffps.c
-@@ -382,10 +382,10 @@ static int ibm_cffps_led_brightness_set(struct led_classdev *led_cdev,
- 	u8 next_led_state;
- 	struct ibm_cffps *psu = container_of(led_cdev, struct ibm_cffps, led);
+diff --git a/drivers/input/keyboard/cap11xx.c b/drivers/input/keyboard/cap11xx.c
+index 7c85343cd32f..04c03157ef8a 100644
+--- a/drivers/input/keyboard/cap11xx.c
++++ b/drivers/input/keyboard/cap11xx.c
+@@ -290,7 +290,7 @@ static int cap11xx_init_leds(struct device *dev,
+ 		led->cdev.flags = 0;
+ 		led->cdev.brightness_set_blocking = cap11xx_led_set;
+ 		led->cdev.max_brightness = 1;
+-		led->cdev.brightness = LED_OFF;
++		led->cdev.brightness = 0;
+ 
+ 		error = of_property_read_u32(child, "reg", &reg);
+ 		if (error != 0 || reg >= num_leds) {
+diff --git a/drivers/input/keyboard/qt2160.c b/drivers/input/keyboard/qt2160.c
+index 32d4a076eaa3..b80c2195dabb 100644
+--- a/drivers/input/keyboard/qt2160.c
++++ b/drivers/input/keyboard/qt2160.c
+@@ -78,7 +78,7 @@ static int qt2160_led_set(struct led_classdev *cdev,
+ 	if (value != led->brightness) {
+ 		drive = qt2160_read(client, QT2160_CMD_DRIVE_X);
+ 		pwmen = qt2160_read(client, QT2160_CMD_PWMEN_X);
+-		if (value != LED_OFF) {
++		if (value != 0) {
+ 			drive |= BIT(led->id);
+ 			pwmen |= BIT(led->id);
+ 
+@@ -93,7 +93,7 @@ static int qt2160_led_set(struct led_classdev *cdev,
+ 		 * Changing this register will change the brightness
+ 		 * of every LED in the qt2160. It's a HW limitation.
+ 		 */
+-		if (value != LED_OFF)
++		if (value != 0)
+ 			qt2160_write(client, QT2160_CMD_PWM_DUTY, value);
+ 
+ 		led->brightness = value;
+@@ -269,7 +269,7 @@ static int qt2160_register_leds(struct qt2160_data *qt2160)
+ 		snprintf(led->name, sizeof(led->name), "qt2160:x%d", i);
+ 		led->cdev.name = led->name;
+ 		led->cdev.brightness_set_blocking = qt2160_led_set;
+-		led->cdev.brightness = LED_OFF;
++		led->cdev.brightness = 0;
+ 		led->id = i;
+ 		led->qt2160 = qt2160;
+ 
+diff --git a/drivers/input/keyboard/tm2-touchkey.c b/drivers/input/keyboard/tm2-touchkey.c
+index 632cd6c1c8d4..b28ebbc75d11 100644
+--- a/drivers/input/keyboard/tm2-touchkey.c
++++ b/drivers/input/keyboard/tm2-touchkey.c
+@@ -91,7 +91,7 @@ static int tm2_touchkey_led_brightness_set(struct led_classdev *led_dev,
+ 	u32 volt;
+ 	u8 data;
  
 -	if (brightness == LED_OFF) {
 +	if (brightness == 0) {
- 		next_led_state = CFFPS_LED_OFF;
+ 		volt = TM2_TOUCHKEY_LED_VOLTAGE_MIN;
+ 		data = touchkey->variant->cmd_led_off;
  	} else {
--		brightness = LED_FULL;
-+		brightness = 255;
+@@ -173,9 +173,9 @@ static irqreturn_t tm2_touchkey_irq_handler(int irq, void *devid)
+ 	if (touchkey->variant->fixed_regulator &&
+ 				data & TM2_TOUCHKEY_BIT_PRESS_EV) {
+ 		/* touch turns backlight on, so make sure we're in sync */
+-		if (touchkey->led_dev.brightness == LED_OFF)
++		if (touchkey->led_dev.brightness == 0)
+ 			tm2_touchkey_led_brightness_set(&touchkey->led_dev,
+-							LED_OFF);
++							0);
+ 	}
  
- 		if (psu->led_state != CFFPS_LED_BLINK)
- 			next_led_state = CFFPS_LED_ON;
-@@ -426,7 +426,7 @@ static int ibm_cffps_led_blink_set(struct led_classdev *led_cdev,
- 		return rc;
+ 	return IRQ_HANDLED;
+@@ -280,8 +280,8 @@ static int tm2_touchkey_probe(struct i2c_client *client,
  
- 	psu->led_state = CFFPS_LED_BLINK;
--	led_cdev->brightness = LED_FULL;
-+	led_cdev->brightness = 255;
- 	*delay_on = CFFPS_BLINK_RATE_MS;
- 	*delay_off = CFFPS_BLINK_RATE_MS;
+ 	/* led device */
+ 	touchkey->led_dev.name = TM2_TOUCHKEY_DEV_NAME;
+-	touchkey->led_dev.brightness = LED_ON;
+-	touchkey->led_dev.max_brightness = LED_ON;
++	touchkey->led_dev.brightness = 1;
++	touchkey->led_dev.max_brightness = 1;
+ 	touchkey->led_dev.brightness_set_blocking =
+ 					tm2_touchkey_led_brightness_set;
  
-@@ -442,7 +442,7 @@ static void ibm_cffps_create_led_class(struct ibm_cffps *psu)
- 	snprintf(psu->led_name, sizeof(psu->led_name), "%s-%02x", client->name,
- 		 client->addr);
- 	psu->led.name = psu->led_name;
--	psu->led.max_brightness = LED_FULL;
-+	psu->led.max_brightness = 255;
- 	psu->led.brightness_set_blocking = ibm_cffps_led_brightness_set;
- 	psu->led.blink_set = ibm_cffps_led_blink_set;
+@@ -293,7 +293,7 @@ static int tm2_touchkey_probe(struct i2c_client *client,
+ 	}
  
+ 	if (touchkey->variant->fixed_regulator)
+-		tm2_touchkey_led_brightness_set(&touchkey->led_dev, LED_ON);
++		tm2_touchkey_led_brightness_set(&touchkey->led_dev, 1);
+ 
+ 	return 0;
+ }
 -- 
 2.34.1
 
