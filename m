@@ -2,75 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62AF4C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:58:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73B67C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:58:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382044AbiAUQ6N (ORCPT
+        id S1381833AbiAUQ6P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 11:58:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50014 "EHLO
+        Fri, 21 Jan 2022 11:58:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230131AbiAUQ4s (ORCPT
+        with ESMTP id S1379421AbiAUQ4s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 21 Jan 2022 11:56:48 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 319E1C061762;
-        Fri, 21 Jan 2022 08:55:32 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id bb37so14391454oib.1;
-        Fri, 21 Jan 2022 08:55:32 -0800 (PST)
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09EEAC061401;
+        Fri, 21 Jan 2022 08:55:22 -0800 (PST)
+Received: by mail-oi1-x22c.google.com with SMTP id s22so14315382oie.10;
+        Fri, 21 Jan 2022 08:55:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=b0M4okk/H4nrrlK7QqkbLry7t5aeu160aTNcn3RwhCo=;
-        b=XAbkG7K+fm+bsIQ7zZxrvxnx3aG7q6GlqdVN+O5PmoX8gj4v/bzO2blN7LHfhBj/kW
-         jzOh4PRxL/kNc8BTlcLYWWneKD6YwviUAsaA37+QjK08mWLo3JmaWGvtJIfbdrVWYRtk
-         WFhIoUfBLo0wC7cxZ+5byX7877XlbgRHR4WFrcCPd27yWEcuCJEN/zK1Uxvdh4F/VLOH
-         hBvbk/XOSzw5AkEOwcXtaZSovV1Kh1X0CqGVP4dbn4Yjzu+Eoyl/tt6qqFUcuAFyH3xy
-         RfRoHzAdLQkk1b5n4m20C4C6ezrhoZ4gaWDqVhXhGRRsTTljHcDvLHTsrsqZi+i00D+J
-         iOOw==
+        bh=9FkOQM5u5ppX0zk2cCe8h17WreOcSuyA+cCjXY4Ibok=;
+        b=FImpVhK9ZDZtG1dz51vQYI+AlMCcxdaba/9f1CXpNApQCy38g6sYulfphRnyOrmCQa
+         Ug2GmcTOm7WP5jTgcvWBrL46Jq1T/T0Y+ZI5YkHDKuIpBqlNdJ0eOKiLveK3OT7JcHct
+         +oPN+9I+Nw2rWZrMaWVgrhwVMPXD+CTIeJyPtb5eUivV8wDYSv+aJoc9AOkuxwFIzOA6
+         /XUFpoEAwyVjwFJ/4/cvPwMunTEHZPQzDxTs6FCHQL0mL2l0v6I2JP4LDJ5g7b4TENCX
+         0Fi1g8vLruqjZLWCsbkQeHM8aBWg83w4iOqfR3D4utcscqfzbpJyvmp+sL0pzasfQsj/
+         lyag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=b0M4okk/H4nrrlK7QqkbLry7t5aeu160aTNcn3RwhCo=;
-        b=YeeG3s47fN73eaADlDTEkcgdEQvuYfvW69j5QjV/G7wRDr6cv5kbOr3j3osTy4ow+X
-         sKxR3+4JdUrc2tesz3KCtVydcOTubdSe9TtDnKR8xOOOD5RXM137pg5Wpx+W6pKQfqt0
-         uNDDXGvatevP41CUroPZPV2VbQ1ubbtojd4a3aySUHIxpZjqJO3MrnlXkJ43s7DbvHw5
-         KlS+5gXC2pNEBno1nM3XRb5unORuzkpFp/RpIW+ElnPKefUmqvJruGHFOALwmle3sYHy
-         Lu80DZ4moAZSCAE1zLsZ5WymtzzDKRlE3XrpiT07aP3Q20YNGdnioBCd2syFInUkaCJP
-         39kQ==
-X-Gm-Message-State: AOAM530TkvaDJRJDLw4D2XUq6uHkjra7ZIMCwb8xu7Ql4LDBR6K0tePL
-        KlRiXZWSHVYZ/nm32LnoYL0=
-X-Google-Smtp-Source: ABdhPJxf+wNBbKgamGV80Ye704WncAamSECYwf1z584BggR5/FONvhWcDX6Qqt6MP3HBPjlmINm6fQ==
-X-Received: by 2002:a54:4802:: with SMTP id j2mr1291994oij.160.1642784131472;
-        Fri, 21 Jan 2022 08:55:31 -0800 (PST)
+        bh=9FkOQM5u5ppX0zk2cCe8h17WreOcSuyA+cCjXY4Ibok=;
+        b=iRO2/J7Uq/RKupYUOJKVsG4ind1LM1RszlXbJyR5Plsb2CwHN0Zspu02DbRdbY1Vf9
+         Ee0d6vBsj98N7ccv8JTpQIzefbeMXRf8Dj68Iy6YideY6vDdbMyI24wVIZMLPpdB+phT
+         V4PMR9vgUiSf1OSMR/qkjfqZgZYyZ8xgKEqNnd/0yi+Yz6DpHWm6E8Jbo0oV3EHV08gg
+         1OtluL/LxXP4zVQOMatrOK/m1rpl3scdWhoh8DSvNQTbS1hZ4rITsyunWCgWl3OEm42x
+         PZ3Y6k5WkqDKHLiIc/uATsX8Kyqnb4NyGPN9O0fHfabw3ceVZ8LD4wvCqt4SPWlj1ZFi
+         Xy0Q==
+X-Gm-Message-State: AOAM5335eSDZF27Lc6AJJ4JsYVh2/dlwoMG0JR00X3mIAyqk8rigydx3
+        uOm5t07cxGQQf4o04gyjVnc=
+X-Google-Smtp-Source: ABdhPJx8j5Rh7OutZLuKLTpoZF2an+JuV/Gd63EofLmY8JJ/xD3MoU6NM+EYsXzEfYtITA3o2R3p3w==
+X-Received: by 2002:a05:6808:11c5:: with SMTP id p5mr1269478oiv.51.1642784121430;
+        Fri, 21 Jan 2022 08:55:21 -0800 (PST)
 Received: from thinkpad.localdomain ([2804:14d:5cd1:5d03:cf72:4317:3105:f6e5])
-        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.55.26
+        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.55.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 08:55:31 -0800 (PST)
+        Fri, 21 Jan 2022 08:55:21 -0800 (PST)
 From:   Luiz Sampaio <sampaio.ime@gmail.com>
-To:     "Lee, Chun-Yi" <jlee@suse.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Corentin Chary <corentin.chary@gmail.com>,
-        =?UTF-8?q?Jo=C3=A3o=20Paulo=20Rechi=20Vita?= <jprvita@gmail.com>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Jonathan Woithe <jwoithe@just42.net>,
-        Matan Ziv-Av <matan@svgalib.org>,
-        Jeremy Soller <jeremy@system76.com>,
-        System76 Product Development <productdev@system76.com>,
-        Henrique de Moraes Holschuh <hmh@hmh.eng.br>,
-        Herton Ronaldo Krzesinski <herton@canonical.com>,
-        Azael Avalos <coproscefalo@gmail.com>
+To:     Stanislaw Gruszka <stf_xl@wp.pl>,
+        Helmut Schaa <helmut.schaa@googlemail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, Luiz Sampaio <sampaio.ime@gmail.com>,
-        platform-driver-x86@vger.kernel.org,
-        acpi4asus-user@lists.sourceforge.net,
-        ibm-acpi-devel@lists.sourceforge.net
-Subject: [PATCH 20/31] platform: x86: changing LED_* from enum led_brightness to actual value
-Date:   Fri, 21 Jan 2022 13:54:25 -0300
-Message-Id: <20220121165436.30956-21-sampaio.ime@gmail.com>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 18/31] net: wireless: ralink: changing LED_* from enum led_brightness to actual value
+Date:   Fri, 21 Jan 2022 13:54:23 -0300
+Message-Id: <20220121165436.30956-19-sampaio.ime@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220121165436.30956-1-sampaio.ime@gmail.com>
 References: <20220121165436.30956-1-sampaio.ime@gmail.com>
@@ -84,442 +73,182 @@ The enum led_brightness, which contains the declaration of LED_OFF,
 LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
 max_brightness.
 ---
- drivers/platform/x86/acer-wmi.c          |  6 ++---
- drivers/platform/x86/asus-wireless.c     |  6 ++---
- drivers/platform/x86/dell/dell-laptop.c  |  2 +-
- drivers/platform/x86/dell/dell-wmi-led.c |  4 ++--
- drivers/platform/x86/fujitsu-laptop.c    | 28 ++++++++++++------------
- drivers/platform/x86/lg-laptop.c         | 18 +++++++--------
- drivers/platform/x86/system76_acpi.c     |  4 ++--
- drivers/platform/x86/thinkpad_acpi.c     | 14 ++++++------
- drivers/platform/x86/topstar-laptop.c    |  4 ++--
- drivers/platform/x86/toshiba_acpi.c      | 24 ++++++++++----------
- 10 files changed, 55 insertions(+), 55 deletions(-)
+ drivers/net/wireless/ralink/rt2x00/rt2400pci.c  |  2 +-
+ drivers/net/wireless/ralink/rt2x00/rt2500pci.c  |  2 +-
+ drivers/net/wireless/ralink/rt2x00/rt2500usb.c  |  2 +-
+ drivers/net/wireless/ralink/rt2x00/rt2800lib.c  |  4 ++--
+ drivers/net/wireless/ralink/rt2x00/rt2x00leds.c | 16 ++++++++--------
+ drivers/net/wireless/ralink/rt2x00/rt61pci.c    |  4 ++--
+ drivers/net/wireless/ralink/rt2x00/rt73usb.c    |  4 ++--
+ 7 files changed, 17 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/platform/x86/acer-wmi.c b/drivers/platform/x86/acer-wmi.c
-index 9c6943e401a6..ce960164a397 100644
---- a/drivers/platform/x86/acer-wmi.c
-+++ b/drivers/platform/x86/acer-wmi.c
-@@ -1597,7 +1597,7 @@ static int acer_led_init(struct device *dev)
- 
- static void acer_led_exit(void)
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2400pci.c b/drivers/net/wireless/ralink/rt2x00/rt2400pci.c
+index dec6ffdf07c4..d8b7f1a73267 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt2400pci.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt2400pci.c
+@@ -204,7 +204,7 @@ static void rt2400pci_brightness_set(struct led_classdev *led_cdev,
  {
--	set_u32(LED_OFF, ACER_CAP_MAILLED);
-+	set_u32(0, ACER_CAP_MAILLED);
- 	led_classdev_unregister(&mail_led);
- }
+ 	struct rt2x00_led *led =
+ 	    container_of(led_cdev, struct rt2x00_led, led_dev);
+-	unsigned int enabled = brightness != LED_OFF;
++	unsigned int enabled = brightness != 0;
+ 	u32 reg;
  
-@@ -2332,7 +2332,7 @@ static int acer_suspend(struct device *dev)
+ 	reg = rt2x00mmio_register_read(led->rt2x00dev, LEDCSR);
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2500pci.c b/drivers/net/wireless/ralink/rt2x00/rt2500pci.c
+index 8faa0a80e73a..fe490a6382fe 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt2500pci.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt2500pci.c
+@@ -204,7 +204,7 @@ static void rt2500pci_brightness_set(struct led_classdev *led_cdev,
+ {
+ 	struct rt2x00_led *led =
+ 	    container_of(led_cdev, struct rt2x00_led, led_dev);
+-	unsigned int enabled = brightness != LED_OFF;
++	unsigned int enabled = brightness != 0;
+ 	u32 reg;
  
- 	if (has_cap(ACER_CAP_MAILLED)) {
- 		get_u32(&value, ACER_CAP_MAILLED);
--		set_u32(LED_OFF, ACER_CAP_MAILLED);
-+		set_u32(0, ACER_CAP_MAILLED);
- 		data->mailled = value;
+ 	reg = rt2x00mmio_register_read(led->rt2x00dev, LEDCSR);
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2500usb.c b/drivers/net/wireless/ralink/rt2x00/rt2500usb.c
+index bb5ed6630645..b25c32a03d99 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt2500usb.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt2500usb.c
+@@ -267,7 +267,7 @@ static void rt2500usb_brightness_set(struct led_classdev *led_cdev,
+ {
+ 	struct rt2x00_led *led =
+ 	    container_of(led_cdev, struct rt2x00_led, led_dev);
+-	unsigned int enabled = brightness != LED_OFF;
++	unsigned int enabled = brightness != 0;
+ 	u16 reg;
+ 
+ 	reg = rt2500usb_register_read(led->rt2x00dev, MAC_CSR20);
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2800lib.c b/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
+index deddb0afd312..8441e6e5320a 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt2800lib.c
+@@ -1521,7 +1521,7 @@ static void rt2800_brightness_set(struct led_classdev *led_cdev,
+ {
+ 	struct rt2x00_led *led =
+ 	    container_of(led_cdev, struct rt2x00_led, led_dev);
+-	unsigned int enabled = brightness != LED_OFF;
++	unsigned int enabled = brightness != 0;
+ 	unsigned int bg_mode =
+ 	    (enabled && led->rt2x00dev->curr_band == NL80211_BAND_2GHZ);
+ 	unsigned int polarity =
+@@ -1570,7 +1570,7 @@ static void rt2800_brightness_set(struct led_classdev *led_cdev,
+ 			 *	(1 << level) - 1
+ 			 */
+ 			rt2800_mcu_request(led->rt2x00dev, MCU_LED_STRENGTH, 0xff,
+-					      (1 << brightness / (LED_FULL / 6)) - 1,
++					      (1 << brightness / (255 / 6)) - 1,
+ 					      polarity);
+ 		}
  	}
- 
-@@ -2377,7 +2377,7 @@ static void acer_platform_shutdown(struct platform_device *device)
- 		return;
- 
- 	if (has_cap(ACER_CAP_MAILLED))
--		set_u32(LED_OFF, ACER_CAP_MAILLED);
-+		set_u32(0, ACER_CAP_MAILLED);
- }
- 
- static struct platform_driver acer_platform_driver = {
-diff --git a/drivers/platform/x86/asus-wireless.c b/drivers/platform/x86/asus-wireless.c
-index d3e7171928e5..139257bf71ea 100644
---- a/drivers/platform/x86/asus-wireless.c
-+++ b/drivers/platform/x86/asus-wireless.c
-@@ -84,8 +84,8 @@ static enum led_brightness led_state_get(struct led_classdev *led)
- 	s = asus_wireless_method(acpi_device_handle(data->adev), "HSWC",
- 				 data->hswc_params->status, &ret);
- 	if (ACPI_SUCCESS(s) && ret == data->hswc_params->on)
--		return LED_FULL;
--	return LED_OFF;
-+		return 255;
-+	return 0;
- }
- 
- static void led_state_update(struct work_struct *work)
-@@ -103,7 +103,7 @@ static void led_state_set(struct led_classdev *led, enum led_brightness value)
- 	struct asus_wireless_data *data;
- 
- 	data = container_of(led, struct asus_wireless_data, led);
--	data->led_state = value == LED_OFF ? data->hswc_params->off :
-+	data->led_state = value == 0 ? data->hswc_params->off :
- 					     data->hswc_params->on;
- 	queue_work(data->wq, &data->led_work);
- }
-diff --git a/drivers/platform/x86/dell/dell-laptop.c b/drivers/platform/x86/dell/dell-laptop.c
-index 8230e7a68a5e..4dd530e3b47b 100644
---- a/drivers/platform/x86/dell/dell-laptop.c
-+++ b/drivers/platform/x86/dell/dell-laptop.c
-@@ -2141,7 +2141,7 @@ static int micmute_led_set(struct led_classdev *led_cdev,
- {
- 	struct calling_interface_buffer buffer;
- 	struct calling_interface_token *token;
--	int state = brightness != LED_OFF;
-+	int state = brightness != 0;
- 
- 	if (state == 0)
- 		token = dell_smbios_find_token(GLOBAL_MIC_MUTE_DISABLE);
-diff --git a/drivers/platform/x86/dell/dell-wmi-led.c b/drivers/platform/x86/dell/dell-wmi-led.c
-index 5bedaf7f0633..fcfd6dd60583 100644
---- a/drivers/platform/x86/dell/dell-wmi-led.c
-+++ b/drivers/platform/x86/dell/dell-wmi-led.c
-@@ -122,7 +122,7 @@ static int led_blink(unsigned char on_eighths, unsigned char off_eighths)
- static void dell_led_set(struct led_classdev *led_cdev,
- 			 enum led_brightness value)
- {
--	if (value == LED_OFF)
-+	if (value == 0)
- 		led_off();
- 	else
- 		led_on();
-@@ -154,7 +154,7 @@ static int dell_led_blink(struct led_classdev *led_cdev,
- 
- static struct led_classdev dell_led = {
- 	.name		= "dell::lid",
--	.brightness	= LED_OFF,
-+	.brightness	= 0,
- 	.max_brightness = 1,
- 	.brightness_set = dell_led_set,
- 	.blink_set	= dell_led_blink,
-diff --git a/drivers/platform/x86/fujitsu-laptop.c b/drivers/platform/x86/fujitsu-laptop.c
-index 80929380ec7e..6ebfda771209 100644
---- a/drivers/platform/x86/fujitsu-laptop.c
-+++ b/drivers/platform/x86/fujitsu-laptop.c
-@@ -584,10 +584,10 @@ static int logolamp_set(struct led_classdev *cdev,
- 	int poweron = FUNC_LED_ON, always = FUNC_LED_ON;
- 	int ret;
- 
--	if (brightness < LED_HALF)
-+	if (brightness < 127)
- 		poweron = FUNC_LED_OFF;
- 
--	if (brightness < LED_FULL)
-+	if (brightness < 255)
- 		always = FUNC_LED_OFF;
- 
- 	ret = call_fext_func(device, FUNC_LEDS, 0x1, LOGOLAMP_POWERON, poweron);
-@@ -604,13 +604,13 @@ static enum led_brightness logolamp_get(struct led_classdev *cdev)
- 
- 	ret = call_fext_func(device, FUNC_LEDS, 0x2, LOGOLAMP_ALWAYS, 0x0);
- 	if (ret == FUNC_LED_ON)
--		return LED_FULL;
-+		return 255;
- 
- 	ret = call_fext_func(device, FUNC_LEDS, 0x2, LOGOLAMP_POWERON, 0x0);
- 	if (ret == FUNC_LED_ON)
--		return LED_HALF;
-+		return 127;
- 
--	return LED_OFF;
-+	return 0;
- }
- 
- static int kblamps_set(struct led_classdev *cdev,
-@@ -618,7 +618,7 @@ static int kblamps_set(struct led_classdev *cdev,
- {
- 	struct acpi_device *device = to_acpi_device(cdev->dev->parent);
- 
--	if (brightness >= LED_FULL)
-+	if (brightness >= 255)
- 		return call_fext_func(device, FUNC_LEDS, 0x1, KEYBOARD_LAMPS,
- 				      FUNC_LED_ON);
- 	else
-@@ -629,11 +629,11 @@ static int kblamps_set(struct led_classdev *cdev,
- static enum led_brightness kblamps_get(struct led_classdev *cdev)
- {
- 	struct acpi_device *device = to_acpi_device(cdev->dev->parent);
--	enum led_brightness brightness = LED_OFF;
-+	unsigned int brightness = 0;
- 
- 	if (call_fext_func(device,
- 			   FUNC_LEDS, 0x2, KEYBOARD_LAMPS, 0x0) == FUNC_LED_ON)
--		brightness = LED_FULL;
-+		brightness = 255;
- 
- 	return brightness;
- }
-@@ -643,7 +643,7 @@ static int radio_led_set(struct led_classdev *cdev,
- {
- 	struct acpi_device *device = to_acpi_device(cdev->dev->parent);
- 
--	if (brightness >= LED_FULL)
-+	if (brightness >= 255)
- 		return call_fext_func(device, FUNC_FLAGS, 0x5, RADIO_LED_ON,
- 				      RADIO_LED_ON);
- 	else
-@@ -654,10 +654,10 @@ static int radio_led_set(struct led_classdev *cdev,
- static enum led_brightness radio_led_get(struct led_classdev *cdev)
- {
- 	struct acpi_device *device = to_acpi_device(cdev->dev->parent);
--	enum led_brightness brightness = LED_OFF;
-+	unsigned int brightness = 0;
- 
- 	if (call_fext_func(device, FUNC_FLAGS, 0x4, 0x0, 0x0) & RADIO_LED_ON)
--		brightness = LED_FULL;
-+		brightness = 255;
- 
- 	return brightness;
- }
-@@ -669,7 +669,7 @@ static int eco_led_set(struct led_classdev *cdev,
- 	int curr;
- 
- 	curr = call_fext_func(device, FUNC_LEDS, 0x2, ECO_LED, 0x0);
--	if (brightness >= LED_FULL)
-+	if (brightness >= 255)
- 		return call_fext_func(device, FUNC_LEDS, 0x1, ECO_LED,
- 				      curr | ECO_LED_ON);
- 	else
-@@ -680,10 +680,10 @@ static int eco_led_set(struct led_classdev *cdev,
- static enum led_brightness eco_led_get(struct led_classdev *cdev)
- {
- 	struct acpi_device *device = to_acpi_device(cdev->dev->parent);
--	enum led_brightness brightness = LED_OFF;
-+	unsigned int brightness = 0;
- 
- 	if (call_fext_func(device, FUNC_LEDS, 0x2, ECO_LED, 0x0) & ECO_LED_ON)
--		brightness = LED_FULL;
-+		brightness = 255;
- 
- 	return brightness;
- }
-diff --git a/drivers/platform/x86/lg-laptop.c b/drivers/platform/x86/lg-laptop.c
-index a91847a551a7..cbcc945c2d9d 100644
---- a/drivers/platform/x86/lg-laptop.c
-+++ b/drivers/platform/x86/lg-laptop.c
-@@ -547,13 +547,13 @@ static void tpad_led_set(struct led_classdev *cdev,
- {
- 	union acpi_object *r;
- 
--	r = lg_wmab(WM_TLED, WM_SET, brightness > LED_OFF);
-+	r = lg_wmab(WM_TLED, WM_SET, brightness > 0);
- 	kfree(r);
- }
- 
- static enum led_brightness tpad_led_get(struct led_classdev *cdev)
- {
--	return ggov(GOV_TLED) > 0 ? LED_ON : LED_OFF;
-+	return ggov(GOV_TLED) > 0 ? 1 : 0;
- }
- 
- static LED_DEVICE(tpad_led, 1, 0);
-@@ -565,9 +565,9 @@ static void kbd_backlight_set(struct led_classdev *cdev,
- 	union acpi_object *r;
- 
- 	val = 0x22;
--	if (brightness <= LED_OFF)
-+	if (brightness <= 0)
- 		val = 0;
--	if (brightness >= LED_FULL)
-+	if (brightness >= 255)
- 		val = 0x24;
- 	r = lg_wmab(WM_KEY_LIGHT, WM_SET, val);
- 	kfree(r);
-@@ -581,22 +581,22 @@ static enum led_brightness get_kbd_backlight_level(void)
- 	r = lg_wmab(WM_KEY_LIGHT, WM_GET, 0);
- 
- 	if (!r)
--		return LED_OFF;
-+		return 0;
- 
- 	if (r->type != ACPI_TYPE_BUFFER || r->buffer.pointer[1] != 0x05) {
- 		kfree(r);
--		return LED_OFF;
-+		return 0;
- 	}
- 
- 	switch (r->buffer.pointer[0] & 0x27) {
- 	case 0x24:
--		val = LED_FULL;
-+		val = 255;
- 		break;
- 	case 0x22:
--		val = LED_HALF;
-+		val = 127;
- 		break;
- 	default:
--		val = LED_OFF;
-+		val = 0;
- 	}
- 
- 	kfree(r);
-diff --git a/drivers/platform/x86/system76_acpi.c b/drivers/platform/x86/system76_acpi.c
-index 7299ad08c838..9f2b11a0e02f 100644
---- a/drivers/platform/x86/system76_acpi.c
-+++ b/drivers/platform/x86/system76_acpi.c
-@@ -299,7 +299,7 @@ static enum led_brightness ap_led_get(struct led_classdev *led)
- 	if (value > 0)
- 		return (enum led_brightness)value;
- 	else
--		return LED_OFF;
-+		return 0;
- }
- 
- // Set the airplane mode LED brightness
-@@ -308,7 +308,7 @@ static int ap_led_set(struct led_classdev *led, enum led_brightness value)
- 	struct system76_data *data;
- 
- 	data = container_of(led, struct system76_data, ap_led);
--	return system76_set(data, "SAPL", value == LED_OFF ? 0 : 1);
-+	return system76_set(data, "SAPL", value == 0 ? 0 : 1);
- }
- 
- // Get the last set keyboard LED brightness
-diff --git a/drivers/platform/x86/thinkpad_acpi.c b/drivers/platform/x86/thinkpad_acpi.c
-index 82fa6148216c..01fe0a2995fd 100644
---- a/drivers/platform/x86/thinkpad_acpi.c
-+++ b/drivers/platform/x86/thinkpad_acpi.c
-@@ -5421,13 +5421,13 @@ static int light_set_status(int status)
- static int light_sysfs_set(struct led_classdev *led_cdev,
- 			enum led_brightness brightness)
- {
--	return light_set_status((brightness != LED_OFF) ?
-+	return light_set_status((brightness != 0) ?
- 				TPACPI_LED_ON : TPACPI_LED_OFF);
- }
- 
- static enum led_brightness light_sysfs_get(struct led_classdev *led_cdev)
- {
--	return (light_get_status() == 1) ? LED_FULL : LED_OFF;
-+	return (light_get_status() == 1) ? 255 : 0;
- }
- 
- static struct tpacpi_led_classdev tpacpi_led_thinklight = {
-@@ -5759,7 +5759,7 @@ static int led_sysfs_set(struct led_classdev *led_cdev,
- 			     struct tpacpi_led_classdev, led_classdev);
- 	enum led_status_t new_state;
- 
--	if (brightness == LED_OFF)
-+	if (brightness == 0)
- 		new_state = TPACPI_LED_OFF;
- 	else if (tpacpi_led_state_cache[data->led] != TPACPI_LED_BLINK)
- 		new_state = TPACPI_LED_ON;
-@@ -5796,9 +5796,9 @@ static enum led_brightness led_sysfs_get(struct led_classdev *led_cdev)
- 	rc = led_get_status(data->led);
- 
- 	if (rc == TPACPI_LED_OFF || rc < 0)
--		rc = LED_OFF;	/* no error handling in led class :( */
-+		rc = 0;	/* no error handling in led class :( */
- 	else
--		rc = LED_FULL;
-+		rc = 255;
- 
- 	return rc;
- }
-@@ -9145,13 +9145,13 @@ static int tpacpi_led_set(int whichled, bool on)
- static int tpacpi_led_mute_set(struct led_classdev *led_cdev,
- 			       enum led_brightness brightness)
- {
--	return tpacpi_led_set(LED_AUDIO_MUTE, brightness != LED_OFF);
-+	return tpacpi_led_set(LED_AUDIO_MUTE, brightness != 0);
- }
- 
- static int tpacpi_led_micmute_set(struct led_classdev *led_cdev,
- 				  enum led_brightness brightness)
- {
--	return tpacpi_led_set(LED_AUDIO_MICMUTE, brightness != LED_OFF);
-+	return tpacpi_led_set(LED_AUDIO_MICMUTE, brightness != 0);
- }
- 
- static struct led_classdev mute_led_cdev[TPACPI_LED_MAX] = {
-diff --git a/drivers/platform/x86/topstar-laptop.c b/drivers/platform/x86/topstar-laptop.c
-index f7761d98c0fd..1382b91c2860 100644
---- a/drivers/platform/x86/topstar-laptop.c
-+++ b/drivers/platform/x86/topstar-laptop.c
-@@ -71,8 +71,8 @@ static int topstar_led_set(struct led_classdev *led,
- 	 * it seems to be faulty on some models like the Topstar U931
- 	 * Notebook).
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt2x00leds.c b/drivers/net/wireless/ralink/rt2x00/rt2x00leds.c
+index f5361d582d4e..3ef2a81aed7d 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt2x00leds.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt2x00leds.c
+@@ -52,7 +52,7 @@ void rt2x00leds_led_quality(struct rt2x00_dev *rt2x00dev, int rssi)
+ 	 * is going to calculate the value and might use it in a
+ 	 * division.
  	 */
--	if ((ret == 0x30001 && state == LED_OFF)
--			|| (ret == 0x30000 && state != LED_OFF)) {
-+	if ((ret == 0x30001 && state == 0)
-+			|| (ret == 0x30000 && state != 0)) {
- 		status = acpi_execute_simple_method(topstar->device->handle,
- 				"FNCX", 0x83);
- 		if (ACPI_FAILURE(status))
-diff --git a/drivers/platform/x86/toshiba_acpi.c b/drivers/platform/x86/toshiba_acpi.c
-index 352508d30467..641c6766febe 100644
---- a/drivers/platform/x86/toshiba_acpi.c
-+++ b/drivers/platform/x86/toshiba_acpi.c
-@@ -501,19 +501,19 @@ static enum led_brightness toshiba_illumination_get(struct led_classdev *cdev)
+-	brightness = ((LED_FULL / 6) * rssi) + 1;
++	brightness = ((255 / 6) * rssi) + 1;
+ 	if (brightness != led->led_dev.brightness) {
+ 		led->led_dev.brightness_set(&led->led_dev, brightness);
+ 		led->led_dev.brightness = brightness;
+@@ -61,7 +61,7 @@ void rt2x00leds_led_quality(struct rt2x00_dev *rt2x00dev, int rssi)
  
- 	/* First request : initialize communication. */
- 	if (!sci_open(dev))
--		return LED_OFF;
-+		return 0;
+ static void rt2x00led_led_simple(struct rt2x00_led *led, bool enabled)
+ {
+-	unsigned int brightness = enabled ? LED_FULL : LED_OFF;
++	unsigned int brightness = enabled ? 255 : 0;
  
- 	/* Check the illumination */
- 	result = sci_read(dev, SCI_ILLUMINATION, &state);
- 	sci_close(dev);
- 	if (result == TOS_FAILURE) {
- 		pr_err("ACPI call for illumination failed\n");
--		return LED_OFF;
-+		return 0;
- 	} else if (result != TOS_SUCCESS) {
--		return LED_OFF;
-+		return 0;
- 	}
+ 	if (!(led->flags & LED_REGISTERED))
+ 		return;
+@@ -96,7 +96,7 @@ static int rt2x00leds_register_led(struct rt2x00_dev *rt2x00dev,
+ 	int retval;
  
--	return state ? LED_FULL : LED_OFF;
-+	return state ? 255 : 0;
+ 	led->led_dev.name = name;
+-	led->led_dev.brightness = LED_OFF;
++	led->led_dev.brightness = 0;
+ 
+ 	retval = led_classdev_register(device, &led->led_dev);
+ 	if (retval) {
+@@ -179,7 +179,7 @@ static void rt2x00leds_unregister_led(struct rt2x00_led *led)
+ 	 * possible yet.
+ 	 */
+ 	if (!(led->led_dev.flags & LED_SUSPENDED))
+-		led->led_dev.brightness_set(&led->led_dev, LED_OFF);
++		led->led_dev.brightness_set(&led->led_dev, 0);
+ 
+ 	led->flags &= ~LED_REGISTERED;
+ }
+@@ -199,8 +199,8 @@ static inline void rt2x00leds_suspend_led(struct rt2x00_led *led)
+ 	led_classdev_suspend(&led->led_dev);
+ 
+ 	/* This shouldn't be needed, but just to be safe */
+-	led->led_dev.brightness_set(&led->led_dev, LED_OFF);
+-	led->led_dev.brightness = LED_OFF;
++	led->led_dev.brightness_set(&led->led_dev, 0);
++	led->led_dev.brightness = 0;
  }
  
- /* KBD Illumination */
-@@ -602,12 +602,12 @@ static enum led_brightness toshiba_kbd_backlight_get(struct led_classdev *cdev)
- 	result = hci_read(dev, HCI_KBD_ILLUMINATION, &state);
- 	if (result == TOS_FAILURE) {
- 		pr_err("ACPI call to get the keyboard backlight failed\n");
--		return LED_OFF;
-+		return 0;
- 	} else if (result != TOS_SUCCESS) {
--		return LED_OFF;
-+		return 0;
- 	}
+ void rt2x00leds_suspend(struct rt2x00_dev *rt2x00dev)
+@@ -218,8 +218,8 @@ static inline void rt2x00leds_resume_led(struct rt2x00_led *led)
+ 	led_classdev_resume(&led->led_dev);
  
--	return state ? LED_FULL : LED_OFF;
-+	return state ? 255 : 0;
+ 	/* Device might have enabled the LEDS during resume */
+-	led->led_dev.brightness_set(&led->led_dev, LED_OFF);
+-	led->led_dev.brightness = LED_OFF;
++	led->led_dev.brightness_set(&led->led_dev, 0);
++	led->led_dev.brightness = 0;
  }
  
- static void toshiba_kbd_backlight_set(struct led_classdev *cdev,
-@@ -711,13 +711,13 @@ toshiba_eco_mode_get_status(struct led_classdev *cdev)
- 	status = tci_raw(dev, in, out);
- 	if (ACPI_FAILURE(status)) {
- 		pr_err("ACPI call to get ECO led failed\n");
--		return LED_OFF;
-+		return 0;
+ void rt2x00leds_resume(struct rt2x00_dev *rt2x00dev)
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt61pci.c b/drivers/net/wireless/ralink/rt2x00/rt61pci.c
+index 82cfc2aadc2b..d48a7d06013c 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt61pci.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt61pci.c
+@@ -242,7 +242,7 @@ static void rt61pci_brightness_set(struct led_classdev *led_cdev,
+ {
+ 	struct rt2x00_led *led =
+ 	    container_of(led_cdev, struct rt2x00_led, led_dev);
+-	unsigned int enabled = brightness != LED_OFF;
++	unsigned int enabled = brightness != 0;
+ 	unsigned int a_mode =
+ 	    (enabled && led->rt2x00dev->curr_band == NL80211_BAND_5GHZ);
+ 	unsigned int bg_mode =
+@@ -271,7 +271,7 @@ static void rt61pci_brightness_set(struct led_classdev *led_cdev,
+ 		 * argument into the matching level within that range.
+ 		 */
+ 		rt61pci_mcu_request(led->rt2x00dev, MCU_LED_STRENGTH, 0xff,
+-				    brightness / (LED_FULL / 6), 0);
++				    brightness / (255 / 6), 0);
  	}
- 
- 	if (out[0] != TOS_SUCCESS)
--		return LED_OFF;
-+		return 0;
- 
--	return out[2] ? LED_FULL : LED_OFF;
-+	return out[2] ? 255 : 0;
  }
  
- static void toshiba_eco_mode_set_status(struct led_classdev *cdev,
-@@ -2402,7 +2402,7 @@ static void toshiba_acpi_kbd_bl_work(struct work_struct *work)
- 	    toshiba_acpi->kbd_mode != SCI_KBD_MODE_AUTO)
- 		led_classdev_notify_brightness_hw_changed(&toshiba_acpi->kbd_led,
- 				(toshiba_acpi->kbd_mode == SCI_KBD_MODE_ON) ?
--				LED_FULL : LED_OFF);
-+				255 : 0);
- 
- 	/* Emulate the keyboard backlight event */
- 	acpi_bus_generate_netlink_event(toshiba_acpi->acpi_dev->pnp.device_class,
-@@ -3225,7 +3225,7 @@ static void toshiba_acpi_notify(struct acpi_device *acpi_dev, u32 event)
- 		if (dev->kbd_type == 2 && dev->kbd_mode != SCI_KBD_MODE_AUTO)
- 			led_classdev_notify_brightness_hw_changed(&dev->kbd_led,
- 					(dev->kbd_mode == SCI_KBD_MODE_ON) ?
--					LED_FULL : LED_OFF);
-+					255 : 0);
- 		break;
- 	case 0x85: /* Unknown */
- 	case 0x8d: /* Unknown */
+diff --git a/drivers/net/wireless/ralink/rt2x00/rt73usb.c b/drivers/net/wireless/ralink/rt2x00/rt73usb.c
+index 5ff2c740c3ea..45b98395cf9e 100644
+--- a/drivers/net/wireless/ralink/rt2x00/rt73usb.c
++++ b/drivers/net/wireless/ralink/rt2x00/rt73usb.c
+@@ -187,7 +187,7 @@ static void rt73usb_brightness_set(struct led_classdev *led_cdev,
+ {
+ 	struct rt2x00_led *led =
+ 	   container_of(led_cdev, struct rt2x00_led, led_dev);
+-	unsigned int enabled = brightness != LED_OFF;
++	unsigned int enabled = brightness != 0;
+ 	unsigned int a_mode =
+ 	    (enabled && led->rt2x00dev->curr_band == NL80211_BAND_5GHZ);
+ 	unsigned int bg_mode =
+@@ -216,7 +216,7 @@ static void rt73usb_brightness_set(struct led_classdev *led_cdev,
+ 		 * argument into the matching level within that range.
+ 		 */
+ 		rt2x00usb_vendor_request_sw(led->rt2x00dev, USB_LED_CONTROL,
+-					    brightness / (LED_FULL / 6),
++					    brightness / (255 / 6),
+ 					    led->rt2x00dev->led_mcu_reg,
+ 					    REGISTER_TIMEOUT);
+ 	}
 -- 
 2.34.1
 
