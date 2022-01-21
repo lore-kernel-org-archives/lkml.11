@@ -2,98 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D3D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 01:37:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95665C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 01:38:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348263AbiAUBhq (ORCPT
+        id S1348258AbiAUBiN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 20:37:46 -0500
-Received: from mail-ot1-f46.google.com ([209.85.210.46]:36396 "EHLO
-        mail-ot1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347920AbiAUBhn (ORCPT
+        Thu, 20 Jan 2022 20:38:13 -0500
+Received: from relay036.a.hostedemail.com ([64.99.140.36]:2248 "EHLO
+        relay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S233355AbiAUBiM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 20:37:43 -0500
-Received: by mail-ot1-f46.google.com with SMTP id l64-20020a9d1b46000000b005983a0a8aaaso9961860otl.3;
-        Thu, 20 Jan 2022 17:37:42 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=hqlXA1zkINF1/hiLfKQKWGGx9nwIuGLG8G3kFH0NWF0=;
-        b=u2Scql7dz9SlGQIxASZJoBeEDxm9YK8nauYgozKqn0n7xura9K/1KE1bxg3AC3AB/9
-         088AQFgvbFf+s8tPf5nwnwdh7wkLRTuhUI1qtxCIT2zSUSluaaSzJDWFa5D5q/v0GrA/
-         HQNt3Tpy6Qv6X3XtNlbzpJyy8OBAeSej8/LZSZ/ObeKPe32n1EdepWbydpSMklOieh9r
-         qSyuq/F3ftCglvMjwPkrg1vKJL3y76u3FIetFFq8yGDeM9u5Xj6mcJDxq1A1fu/yFBjg
-         PUFh9Y1ObJ5EmGYhtPiS0AFMWQSpe5z+Pr0SO5+asHL+Mk3zR1b2ZARWbmWguVr9HZ8Q
-         qCbw==
-X-Gm-Message-State: AOAM532cl4MBKE3lCLx/5SrPbtD2LU8ZlZs7Zesx/4incVVqoO8qEovU
-        P8bb715Gg8e7+D4EKHcrRw==
-X-Google-Smtp-Source: ABdhPJzTkd1tMl1ZQIkmz6z38op171VvGqNMIYALgBN8WBKDrOAc0BvoXvlezg0FwGrDl6BnnOOILQ==
-X-Received: by 2002:a05:6830:1e99:: with SMTP id n25mr1150607otr.344.1642729062253;
-        Thu, 20 Jan 2022 17:37:42 -0800 (PST)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id h7sm392952otr.43.2022.01.20.17.37.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 17:37:41 -0800 (PST)
-Received: (nullmailer pid 2314868 invoked by uid 1000);
-        Fri, 21 Jan 2022 01:37:38 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Ansuel Smith <ansuelsmth@gmail.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Andy Gross <agross@kernel.org>, devicetree@vger.kernel.org,
-        Stephen Boyd <sboyd@kernel.org>,
-        Taniya Das <tdas@codeaurora.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        linux-clk@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20220120232028.6738-4-ansuelsmth@gmail.com>
-References: <20220120232028.6738-1-ansuelsmth@gmail.com> <20220120232028.6738-4-ansuelsmth@gmail.com>
-Subject: Re: [PATCH v2 03/15] dt-bindings: clock: Document qcom,gcc-ipq8064 binding
-Date:   Thu, 20 Jan 2022 19:37:38 -0600
-Message-Id: <1642729058.545554.2314867.nullmailer@robh.at.kernel.org>
+        Thu, 20 Jan 2022 20:38:12 -0500
+Received: from omf06.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay06.hostedemail.com (Postfix) with ESMTP id DAEDB22DB5;
+        Fri, 21 Jan 2022 01:38:07 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf06.hostedemail.com (Postfix) with ESMTPA id 3264F20010;
+        Fri, 21 Jan 2022 01:37:54 +0000 (UTC)
+Message-ID: <5da3e02454c8c9ff3335c7199f3ae48af2864981.camel@perches.com>
+Subject: Re: [PATCH 1/3] lib/string_helpers: Consolidate yesno()
+ implementation
+From:   Joe Perches <joe@perches.com>
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Lucas De Marchi <lucas.demarchi@intel.com>,
+        linux-kernel@vger.kernel.org, intel-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, amd-gfx@lists.freedesktop.org,
+        linux-security-module@vger.kernel.org,
+        nouveau@lists.freedesktop.org, netdev@vger.kernel.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Christian =?ISO-8859-1?Q?K=F6nig?= <christian.koenig@amd.com>,
+        Chris Wilson <chris@chris-wilson.co.uk>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        "David S . Miller" <davem@davemloft.net>,
+        Emma Anholt <emma@anholt.net>, Eryk Brol <eryk.brol@amd.com>,
+        Francis Laniel <laniel_francis@privacyrequired.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Harry Wentland <harry.wentland@amd.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Joonas Lahtinen <joonas.lahtinen@linux.intel.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Kentaro Takeda <takedakn@nttdata.co.jp>,
+        Leo Li <sunpeng.li@amd.com>,
+        Mikita Lipski <mikita.lipski@amd.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Rahul Lakkireddy <rahul.lakkireddy@chelsio.com>,
+        Raju Rangoju <rajur@chelsio.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Rodrigo Vivi <rodrigo.vivi@intel.com>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Vishal Kulkarni <vishal@chelsio.com>
+Date:   Thu, 20 Jan 2022 17:37:53 -0800
+In-Reply-To: <20220119160017.65bd1fa5@gandalf.local.home>
+References: <20220119072450.2890107-1-lucas.demarchi@intel.com>
+         <20220119072450.2890107-2-lucas.demarchi@intel.com>
+         <YefXg03hXtrdUj6y@paasikivi.fi.intel.com>
+         <20220119100635.6c45372b@gandalf.local.home>
+         <YehllDq7wC3M2PQZ@smile.fi.intel.com>
+         <20220119160017.65bd1fa5@gandalf.local.home>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Stat-Signature: 7rtkhruhzyxmaz9kz4md8szkb6csicqt
+X-Rspamd-Server: rspamout03
+X-Rspamd-Queue-Id: 3264F20010
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1+2KBCQ3/oG0QJHNmpFhxNu1Bw+ZDwRWLg=
+X-HE-Tag: 1642729074-280175
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 21 Jan 2022 00:20:16 +0100, Ansuel Smith wrote:
-> Document qcom,gcc-ipq8064 binding needed to declare pxo and cxo source
-> clocks. The gcc node is also used by the tsens driver, already documented,
-> to get the calib nvmem cells and the base reg from gcc.
+On Wed, 2022-01-19 at 16:00 -0500, Steven Rostedt wrote:
+> On Wed, 19 Jan 2022 21:25:08 +0200
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 > 
-> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
-> ---
->  .../bindings/clock/qcom,gcc-ipq8064.yaml      | 70 +++++++++++++++++++
->  1 file changed, 70 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/clock/qcom,gcc-ipq8064.yaml
+> > > I say keep it one line!
+> > > 
+> > > Reviewed-by: Steven Rostedt (Google) <rostedt@goodmis.org>  
+> > 
+> > I believe Sakari strongly follows the 80 rule, which means...
 > 
+> Checkpatch says "100" I think we need to simply update the docs (the
+> documentation always lags the code ;-)
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+checkpatch doesn't say anything normally, it's a stupid script.
+It just mindlessly bleats a message when a line exceeds 100 chars...
 
-yamllint warnings/errors:
+Just fyi: I think it's nicer on a single line too.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/clock/qcom,gcc-ipq8064.example.dt.yaml: clock-controller@900000: compatible: ['qcom,gcc-ipq8064', 'syscon'] is too long
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/clock/qcom,gcc.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/clock/qcom,gcc-ipq8064.example.dt.yaml: clock-controller@900000: compatible: Additional items are not allowed ('syscon' was unexpected)
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/clock/qcom,gcc.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/clock/qcom,gcc-ipq8064.example.dt.yaml: clock-controller@900000: 'clock-names', 'clocks', 'thermal-sensor' do not match any of the regexes: 'pinctrl-[0-9]+'
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/clock/qcom,gcc.yaml
-
-doc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1582346
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
 
