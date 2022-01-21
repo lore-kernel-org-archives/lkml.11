@@ -2,112 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 535A7C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 17:23:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70119C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 17:25:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379301AbiAURXh (ORCPT
+        id S1379608AbiAURZC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 12:23:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56182 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351585AbiAURXg (ORCPT
+        Fri, 21 Jan 2022 12:25:02 -0500
+Received: from mx0b-001ae601.pphosted.com ([67.231.152.168]:28936 "EHLO
+        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235853AbiAURZB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 12:23:36 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A2FDC06173B;
-        Fri, 21 Jan 2022 09:23:36 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id o12so1943780eju.13;
-        Fri, 21 Jan 2022 09:23:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8NXAiWtMIfeUxiSKSX8KITUpdvgnK1eV2MyEqdhz4Tw=;
-        b=Yn+aa26mkRWKYicHrBF9lv87j17KpEy8yL4Xezg1BnxKgY7jDRRv5fAYktUdU2YoIn
-         S7y4rkc43EhraYHBpAHXj86eIwxiNIUNL9koznpqvpwhdqvKSvzRGfG1Fn5VuPPRioGs
-         P33+rL5rTgiVdt8+gMnzUxWBEQBjR8IVNBlxMXJEBAXDapsZQGyiUJXNScsd0bv7mS4o
-         6Cbyfo96WmRwj9is//o8+v4DkQkf3dDJqLdJ36yFJbG/6Z8K2zckz54LwFe2aYQqhc0W
-         rPfNJ0ib54IN7tC2Jf8eiFuXckAeMkB9Nf8l7ogbH1dzZlA8NdU7D57WzJ1Cxuafoq3W
-         HS4Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8NXAiWtMIfeUxiSKSX8KITUpdvgnK1eV2MyEqdhz4Tw=;
-        b=VMefmzxsn4xpwzS/YEY6xgeaQkSdEvKU6ltTkPTf6acHnce2X3z7gdPuDOoh3T5RZW
-         5EEBOiw8GpsG9VPBkPV/RI1LpEkuXMk+amopxSHpdKxIw++gmemPXJ7bk8m784GIUI06
-         wDQsHxzGMGBrgHhuGscZaeS4ypsZ59EjvYPUJ7EJHDHWtFyBLQnW85wFYmmJ8PysR4VG
-         I7y7L5p7aLvC2wAr+2SLiHIQXd1KQ8QeVhb7Nkn0KXAUhQ5EgY9DPgbUcD9MZYEIUcz4
-         bJcBgCBZ1W34OZaow9vHdIkVcCO3I/qWi8eaqVapupRkf3VX3KtgSMs0pOhdwS7TPzya
-         QzHg==
-X-Gm-Message-State: AOAM5332Qo0lRM8h67+xfEJdUxvlYWLlEQonhO31GoGTigOXFs3PN+im
-        UEHiJqZVRfENQqHQVy+hoSuDk//Zj+rB/02l9nw=
-X-Google-Smtp-Source: ABdhPJxiMuqJI6e97nmWPPdBUq6TS6UCdQgeJ/EHh7s4SfFiRe1tWU9lTjaKe6WX7nZESIBAH+Gz03gyJOr6dOvI2o4=
-X-Received: by 2002:a17:907:968c:: with SMTP id hd12mr4024576ejc.639.1642785814310;
- Fri, 21 Jan 2022 09:23:34 -0800 (PST)
+        Fri, 21 Jan 2022 12:25:01 -0500
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20LH9Hb3013159;
+        Fri, 21 Jan 2022 11:24:48 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=PODMain02222019;
+ bh=fdUwz2fE9/QnfJvce4ApsdtnpQfQkVgz1hq5AF0+SjU=;
+ b=B5VlcrdMdMnk8NnB1oGnvhNUY8thT0ZHWhzqkHQunX7NyQuJcAtBq8n8dCbgQSYKT5SM
+ OslAjFIQCDqEbwQYQ92p15vSdJCpQW3OyzT4AB+VcTrbNo1CeDlindcIxz/Bsw1y3jWt
+ 62uTq9+gyhPJLWscj0cgTj7hsjozFXA8okB2UdDnYoN5VF/hdpsz46mB5G2Ugg1B3dJW
+ /3f1L08AeTQBSdS72TmWxhdUKijFH/ALpCIlH5sujkzffXMQjNjwQ6MSMYKuHWqptE4s
+ AdbAgUR4IK5LsrkO+qC+yqBKjmUerS1J9aRDPb9tTnXv4tCl/atB3KPOYA4QOdhUv9WY fA== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3dqhynrw8c-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 21 Jan 2022 11:24:48 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 21 Jan
+ 2022 17:24:46 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
+ Transport; Fri, 21 Jan 2022 17:24:46 +0000
+Received: from LONN2DGDQ73.ad.cirrus.com (unknown [198.90.238.138])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 2132CB0E;
+        Fri, 21 Jan 2022 17:24:40 +0000 (UTC)
+From:   Stefan Binding <sbinding@opensource.cirrus.com>
+To:     Mark Brown <broonie@kernel.org>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Len Brown <lenb@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
+        <linux-spi@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
+        <platform-driver-x86@vger.kernel.org>,
+        <patches@opensource.cirrus.com>,
+        Stefan Binding <sbinding@opensource.cirrus.com>
+Subject: [PATCH v6 0/9] Support Spi in i2c-multi-instantiate driver
+Date:   Fri, 21 Jan 2022 17:24:22 +0000
+Message-ID: <20220121172431.6876-1-sbinding@opensource.cirrus.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20220118194857.26546-1-julianmarcusschroeder@gmail.com>
-In-Reply-To: <20220118194857.26546-1-julianmarcusschroeder@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 21 Jan 2022 19:22:57 +0200
-Message-ID: <CAHp75VdFGC5yXSmR_uNOv4=aEseMzWdJ=xNqqo1KKuGkajhb3g@mail.gmail.com>
-Subject: Re: [PATCH] fix serdev bind/unbind
-To:     julian schroeder <julianmarcusschroeder@gmail.com>
-Cc:     Rob Herring <robh@kernel.org>, bhanumaiya@google.com,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: t8MGG8qELi458L786NZmVmfIVRSJege4
+X-Proofpoint-GUID: t8MGG8qELi458L786NZmVmfIVRSJege4
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 8:55 AM julian schroeder
-<julianmarcusschroeder@gmail.com> wrote:
->
-> On some chromebooks, the serdev is used to communicate with
+Add support for SPI bus in the i2c-multi-instantiate driver as
+upcoming laptops will need to multi instantiate SPI devices from
+a single device node, which has multiple SpiSerialBus entries at
+the ACPI table.
 
-Chromebooks ?
+With the new SPI support, i2c-multi-instantiate becomes
+bus-multi-instantiate and is moved to the ACPI folder.
 
-> an embedded controller. When the controller is updated, the
-> regular ttyS* is needed. Therefore unbind/bind needs to work
-> to be able to switch between the two modes without having to
-> reboot. In the case of ACPI enabled platforms, the underlying
-> serial device is marked as enumerated but this is not cleared
-> upon remove (unbind). In this state it can not be bound as
-> serdev.
+The intention is to support the SPI bus by re-using the current
+I2C multi instantiate, instead of creating a new SPI multi
+instantiate, to make it possible for peripherals that can be
+controlled by I2C or SPI to have the same HID at the ACPI table.
 
-Seems legit (we do this for i2c and spi serial buses in ACPI case).
-After addressing the following nit-pick
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+The new driver (serial multi instantiate, smi) checks for the
+hard-coded bus type and returns -ENODEV in case of zero devices
+found for that bus. In the case of automatic bus detection, 
+the driver will give preference to I2C.
 
-...
+The expectation is for a device node in the ACPI table to have
+multiple I2cSerialBus only or multiple SpiSerialBus only, not
+a mix of both; and for the case where there are both entries in
+one device node, only the I2C ones would be probed.
 
->  void serdev_device_remove(struct serdev_device *serdev)
->  {
->         struct serdev_controller *ctrl = serdev->ctrl;
-> +       struct acpi_device *adev;
+This new serial multi instantiate will be used in CS35L41 HDA new
+driver.
 
-> +       adev = ACPI_COMPANION(&serdev->dev);
-> +       if (adev)
-> +               acpi_device_clear_enumerated(adev);
+Changes since V5:
+ - comment, commit message and Kconfig description fixes
+ - minor fixes in serial-multi-instantiate
+ - use lowercase for SSIDs in patch_realtek.c
 
-As I mentioned i2c and SPI cases, I think it would be nice to use same
-pattern of this code, i.e.
+Lucas Tanure (4):
+  platform/x86: i2c-multi-instantiate: Rename it for a generic serial
+    driver name
+  platform/x86: serial-multi-instantiate: Reorganize I2C functions
+  ALSA: hda/realtek: Add support for HP Laptops
+  ACPI / scan: Create platform device for CS35L41
 
+Stefan Binding (5):
+  spi: Make spi_alloc_device and spi_add_device public again
+  spi: Create helper API to lookup ACPI info for spi device
+  spi: Support selection of the index of the ACPI Spi Resource before
+    alloc
+  spi: Add API to count spi acpi resources
+  platform/x86: serial-multi-instantiate: Add SPI support
 
-  if (ACPI_COMPANION(&serdev->dev))
-    acpi_device_clear_enumerated(ACPI_COMPANION(&serdev->dev));
-
-drivers/i2c/i2c-core-base.c, line 1007
-drivers/spi/spi.c, line 779
-
->         device_unregister(&serdev->dev);
->         ctrl->serdev = NULL;
->  }
-
+ MAINTAINERS                                   |   4 +-
+ drivers/acpi/scan.c                           |  16 +-
+ drivers/platform/x86/Kconfig                  |  12 +-
+ drivers/platform/x86/Makefile                 |   2 +-
+ drivers/platform/x86/i2c-multi-instantiate.c  | 174 ---------
+ .../platform/x86/serial-multi-instantiate.c   | 349 ++++++++++++++++++
+ drivers/spi/spi.c                             | 137 ++++++-
+ include/linux/spi/spi.h                       |  20 +
+ sound/pci/hda/patch_realtek.c                 |  43 ++-
+ 9 files changed, 551 insertions(+), 206 deletions(-)
+ delete mode 100644 drivers/platform/x86/i2c-multi-instantiate.c
+ create mode 100644 drivers/platform/x86/serial-multi-instantiate.c
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.25.1
+
