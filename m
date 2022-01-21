@@ -2,130 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0378C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 01:43:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE338C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 01:48:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348352AbiAUBn4 (ORCPT
+        id S1377967AbiAUBsJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 20:43:56 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:17357 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233355AbiAUBnz (ORCPT
+        Thu, 20 Jan 2022 20:48:09 -0500
+Received: from mail-io1-f72.google.com ([209.85.166.72]:54907 "EHLO
+        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244589AbiAUBsG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 20:43:55 -0500
-Received: from dggeme706-chm.china.huawei.com (unknown [172.30.72.53])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Jg2F95qVtz9sHP;
-        Fri, 21 Jan 2022 09:42:37 +0800 (CST)
-Received: from huawei.com (10.67.174.47) by dggeme706-chm.china.huawei.com
- (10.1.199.102) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.21; Fri, 21
- Jan 2022 09:43:52 +0800
-From:   He Ying <heying24@huawei.com>
-To:     <catalin.marinas@arm.com>, <mpe@ellerman.id.au>,
-        <benh@kernel.crashing.org>, <paulus@samba.org>,
-        <npiggin@gmail.com>, <christophe.leroy@csgroup.eu>,
-        <sxwjean@gmail.com>, <peterz@infradead.org>,
-        <keescook@chromium.org>
-CC:     <linuxppc-dev@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>,
-        <heying24@huawei.com>, <huwanming@huaweil.com>,
-        <chenjingwen6@huawei.com>
-Subject: [PATCH -v2] powerpc/process, kasan: Silence KASAN warnings in __get_wchan()
-Date:   Thu, 20 Jan 2022 20:44:18 -0500
-Message-ID: <20220121014418.155675-1-heying24@huawei.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220119015025.136902-1-heying24@huawei.com>
-References: <20220119015025.136902-1-heying24@huawei.com>
+        Thu, 20 Jan 2022 20:48:06 -0500
+Received: by mail-io1-f72.google.com with SMTP id z130-20020a6bc988000000b006058a1dd100so5150164iof.21
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 17:48:06 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=DanrII7rs7VHR9x2Ad6ztSAzc5bhObpiObDh8wKC9WU=;
+        b=PXLgpfiFqRQAvDohP7r0W1FlIkOnG2+Cwb49+gvFexpPAtjXZ+zuN2CwPl7Hq9PrU1
+         czGNsk49Oe3upfh1m0/xzD5CuG88dQOtabZ/zFJui0EQGy0fo1+F80YPKBMR3BRP+QP/
+         bB2yyeVHyen8aETijTaB6XnEKMrj16vKCmwvyFN+hxx4kMPiZ6lufSJ38vbhLXoMYOel
+         wZWkGf1gHiy2sv+ukzeGpUXtRVroB/2ASK1gUqAJyOdj870kVSNI05vw9znoT02RZxV1
+         RZGZNghceibLIZ8UJoWthEH6gRUOKIv0KOryW0oxPqYZXmv2ZGf2ROQkZXxeFoXxvN3B
+         01Ag==
+X-Gm-Message-State: AOAM531F8xjZqQu0teNyZkDnShEoObgt5WYXJdtd1gQTUTiQggLym16a
+        DzjwLyzK2wJa74IVza9FGrbqpGmeX5Arv9ON648rbIBC2gQe
+X-Google-Smtp-Source: ABdhPJwo+j/up45k23KzgrwwJOdQRYqe4wZFCj5sSOh1hefXEP0mn76QeYRFAhQgeYfh1ABeRjuYCNLoAcbb47n7Nx1OAC7WHPRo
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.67.174.47]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggeme706-chm.china.huawei.com (10.1.199.102)
-X-CFilter-Loop: Reflected
+X-Received: by 2002:a02:2207:: with SMTP id o7mr751312jao.99.1642729686278;
+ Thu, 20 Jan 2022 17:48:06 -0800 (PST)
+Date:   Thu, 20 Jan 2022 17:48:06 -0800
+In-Reply-To: <000000000000bbdd0405d120c155@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <00000000000069ab4805d60dcf4c@google.com>
+Subject: Re: [syzbot] KASAN: vmalloc-out-of-bounds Write in imageblit (2)
+From:   syzbot <syzbot+14b0e8f3fd1612e35350@syzkaller.appspotmail.com>
+To:     bugs-a21@moonlit-rail.com, deller@gmx.de,
+        dri-devel@lists.freedesktop.org, javierm@redhat.com,
+        linux-fbdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        maxime@cerno.tech, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The following KASAN warning was reported in our kernel.
+syzbot has bisected this issue to:
 
-  BUG: KASAN: stack-out-of-bounds in get_wchan+0x188/0x250
-  Read of size 4 at addr d216f958 by task ps/14437
+commit 0499f419b76f94ede08304aad5851144813ac55c
+Author: Javier Martinez Canillas <javierm@redhat.com>
+Date:   Mon Jan 10 09:56:25 2022 +0000
 
-  CPU: 3 PID: 14437 Comm: ps Tainted: G           O      5.10.0 #1
-  Call Trace:
-  [daa63858] [c0654348] dump_stack+0x9c/0xe4 (unreliable)
-  [daa63888] [c035cf0c] print_address_description.constprop.3+0x8c/0x570
-  [daa63908] [c035d6bc] kasan_report+0x1ac/0x218
-  [daa63948] [c00496e8] get_wchan+0x188/0x250
-  [daa63978] [c0461ec8] do_task_stat+0xce8/0xe60
-  [daa63b98] [c0455ac8] proc_single_show+0x98/0x170
-  [daa63bc8] [c03cab8c] seq_read_iter+0x1ec/0x900
-  [daa63c38] [c03cb47c] seq_read+0x1dc/0x290
-  [daa63d68] [c037fc94] vfs_read+0x164/0x510
-  [daa63ea8] [c03808e4] ksys_read+0x144/0x1d0
-  [daa63f38] [c005b1dc] ret_from_syscall+0x0/0x38
-  --- interrupt: c00 at 0x8fa8f4
-      LR = 0x8fa8cc
+    video: vga16fb: Only probe for EGA and VGA 16 color graphic cards
 
-  The buggy address belongs to the page:
-  page:98ebcdd2 refcount:0 mapcount:0 mapping:00000000 index:0x2 pfn:0x1216f
-  flags: 0x0()
-  raw: 00000000 00000000 01010122 00000000 00000002 00000000 ffffffff 00000000
-  raw: 00000000
-  page dumped because: kasan: bad access detected
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14c71e37b00000
+start commit:   7fc5253f5a13 Add linux-next specific files for 20220120
+git tree:       linux-next
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=16c71e37b00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=12c71e37b00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=94e8da4df9ab6319
+dashboard link: https://syzkaller.appspot.com/bug?extid=14b0e8f3fd1612e35350
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=155dde3db00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=125298e0700000
 
-  Memory state around the buggy address:
-   d216f800: 00 00 00 00 00 f1 f1 f1 f1 00 00 00 00 00 00 00
-   d216f880: f2 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-  >d216f900: 00 00 00 00 00 00 00 00 00 00 00 f1 f1 f1 f1 00
-                                            ^
-   d216f980: f2 f2 f2 f2 f2 f2 f2 00 00 00 00 00 00 00 00 00
-   d216fa00: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+Reported-by: syzbot+14b0e8f3fd1612e35350@syzkaller.appspotmail.com
+Fixes: 0499f419b76f ("video: vga16fb: Only probe for EGA and VGA 16 color graphic cards")
 
-After looking into this issue, I find the buggy address belongs
-to the task stack region. It seems KASAN has something wrong.
-I look into the code of __get_wchan in x86 architecture and
-find the same issue has been resolved by the commit
-f7d27c35ddff ("x86/mm, kasan: Silence KASAN warnings in get_wchan()").
-The solution could be applied to powerpc architecture too.
-
-As Andrey Ryabinin said, get_wchan() is racy by design, it may
-access volatile stack of running task, thus it may access
-redzone in a stack frame and cause KASAN to warn about this.
-
-Use READ_ONCE_NOCHECK() to silence these warnings.
-
-Reported-by: Wanming Hu <huwanming@huaweil.com>
-Signed-off-by: He Ying <heying24@huawei.com>
-Signed-off-by: Chen Jingwen <chenjingwen6@huawei.com>
-Reviewed-by: Kees Cook <keescook@chromium.org>
----
-Changelog:
-
-v2:
-* Add missing Reported-by and SoB tags
----
- arch/powerpc/kernel/process.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
-index 984813a4d5dc..a75d20f23dac 100644
---- a/arch/powerpc/kernel/process.c
-+++ b/arch/powerpc/kernel/process.c
-@@ -2160,12 +2160,12 @@ static unsigned long ___get_wchan(struct task_struct *p)
- 		return 0;
- 
- 	do {
--		sp = *(unsigned long *)sp;
-+		sp = READ_ONCE_NOCHECK(*(unsigned long *)sp);
- 		if (!validate_sp(sp, p, STACK_FRAME_OVERHEAD) ||
- 		    task_is_running(p))
- 			return 0;
- 		if (count > 0) {
--			ip = ((unsigned long *)sp)[STACK_FRAME_LR_SAVE];
-+			ip = READ_ONCE_NOCHECK(((unsigned long *)sp)[STACK_FRAME_LR_SAVE]);
- 			if (!in_sched_functions(ip))
- 				return ip;
- 		}
--- 
-2.17.1
-
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
