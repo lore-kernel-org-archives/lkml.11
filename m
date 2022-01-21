@@ -2,94 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57D39C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 15:22:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 978EDC4321E
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 15:24:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381554AbiAUPV7 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 10:21:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56444 "EHLO
+        id S240579AbiAUPYe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 10:24:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381538AbiAUPVe (ORCPT
+        with ESMTP id S239044AbiAUPYd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 10:21:34 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69EB8C061747
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 07:21:34 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: detlev)
-        with ESMTPSA id C21511F46214
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642778493;
-        bh=idCRqSfxdKKzhaecaARxomPwbXX0Gq6x7F6Y/PBqvN0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OOO3giZ/gCqIS3Hjro+FfPBGrgmSdZIXGzE/77X1tp+kGba/aj7TGZBtUrMe1Plfl
-         Ibz9GyZ0XPU8YKrTw/p51aXyNplsovxXm4raTrLs8exAIcd9g/rb8QzMYCZaG9eadr
-         w53+sMNNgKUoIm5KCYQmh5xHuPw9WcNjJN2TDL5CIUWo1wYbveAC1KoZIXgJgn/CHq
-         1jqUMxS5ypdT0PaZATfSL4htEKWOjyoadC3QssrKhsboyhSYBaVS+U2abvcXR3kXdX
-         5PvNSzaIJ7P0aaYqWyvGthaNh0Hc7ZdP5IMOua+TeaTkxl/K6/ly78bXYi+09x/bd6
-         hEdV7tkJrQoHw==
-From:   Detlev Casanova <detlev.casanova@collabora.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Subject: [PATCH v2 8/9] regulator/rpi-panel-attiny: Don't read the LCD power status
-Date:   Fri, 21 Jan 2022 10:20:55 -0500
-Message-Id: <20220121152056.2044551-9-detlev.casanova@collabora.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220121152056.2044551-1-detlev.casanova@collabora.com>
-References: <20220121152056.2044551-1-detlev.casanova@collabora.com>
+        Fri, 21 Jan 2022 10:24:33 -0500
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D631FC061744
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 07:24:32 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id 23so28507660ybf.7
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 07:24:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lHv4QGKyWaC8pJttpt8QUbf3yyP/jMKn3N+flk/PW10=;
+        b=TuYOvf2B9HOi6a6+5H3dsW8U3FeTz9UocCY2hj9gLGhDsiqoc/vJ4m/8w6bS1mIXAx
+         DfzIIKlVbbDQ2XO53YTs+3KImo9w77vLdnlNocWdvZhBO69EUV1qCkr/K/tJYMeQkQIB
+         a1ZSJe9u2MwXLlhK0yvgZNH0jSsNAf+fk6xNknc5OOrvmGPN0OsDYtfU1iEO4oSKz3px
+         FWRYKaz5l7DLNHgHH/Daee6JLM0IhoUGnE2mmF1uDk32AkvK/k0h+7NlhLM5Lwy/3hlB
+         zU8a6LtNI62avuO/YK+UPiDllbENyvd6MONG7fd86WC/2etQOle1gOmHUJYrL2nHP+lv
+         qrAg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lHv4QGKyWaC8pJttpt8QUbf3yyP/jMKn3N+flk/PW10=;
+        b=n4J3EMrnVSXAEqVI1Ud5WVxn8G8VgVg/8zjr3VFu/fzG+eEiVurACOOnlssIAhLz3p
+         wUyqth45se/oxd925f19cfLQA9rkUCYtGfkIRcXwfOgiBvwNcRsSEqC+OHhbulqCJly1
+         Viv+hgx5kVM+DHoVIgSPnsvOQFltnvWywFgHPcqL0JLluOEiYQNXof+R03aL7SLr8uCc
+         0e3jekOi+9z3zbCRuU1Z6AqPMo4g5GwdlMFpRWo+SYYsV4zQWlOm7K9s32/J4C5ti8jM
+         17dV9K+05aYnUIqo2daVWCqkc6ObZAtNA5j3HFOIflZzTDGCdwFSPVouLIX3Wxqdxr5/
+         Exaw==
+X-Gm-Message-State: AOAM532hn+q+px+qWl4m/86n22CFEnVbMotjw+dndGeL0t703aM7vUTe
+        RhoYrK1b6gQ62NU61mzCntOmtOLWtzlOXBp+W3xcLg==
+X-Google-Smtp-Source: ABdhPJx9UVWg3EfP5/63PnvEnF1YOj5Isounp9ZYZMOzIVLh11iewxgOKv8wxnLSIL7XfldkUQ5A1Lpj9PcvCTC39xs=
+X-Received: by 2002:a25:838b:: with SMTP id t11mr4282883ybk.146.1642778671696;
+ Fri, 21 Jan 2022 07:24:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <CA+G9fYvuEqeoLO6dC_qtGyRUz=UPv5i0C3jZ_n9nz5kWOuCHYQ@mail.gmail.com>
+In-Reply-To: <CA+G9fYvuEqeoLO6dC_qtGyRUz=UPv5i0C3jZ_n9nz5kWOuCHYQ@mail.gmail.com>
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Fri, 21 Jan 2022 20:54:20 +0530
+Message-ID: <CA+G9fYuKGaDfyke81wbSe2yqTm6GqWNuKw2wB6NFaCLa1q7z6A@mail.gmail.com>
+Subject: Re: [next] parisc: allnoconfig: ERROR: modpost: Section mismatches
+ detected. Set CONFIG_SECTION_MISMATCH_WARN_ONLY=y to allow them.
+To:     John David Anglin <dave.anglin@bell.net>,
+        Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        regressions@lists.linux.dev, lkft-triage@lists.linaro.org,
+        Linux PM <linux-pm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org,
+        linux-parisc <linux-parisc@vger.kernel.org>
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>, pavel@ucw.cz,
+        rppt@kernel.org, Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>,
+        Anders Roxell <anders.roxell@linaro.org>,
+        Helge Deller <deller@gmx.de>, Deller <deller@kernel.org>,
+        James Bottomley <James.Bottomley@hansenpartnership.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dave Stevenson <dave.stevenson@raspberrypi.com>
+On Fri, 21 Jan 2022 at 13:16, Naresh Kamboju <naresh.kamboju@linaro.org> wrote:
+>
+> Linux next-20220121 parisc allnoconfig build failed with gcc-9/10/11.
+>
+> make --silent --keep-going --jobs=8 ARCH=parisc
+> CROSS_COMPILE=hppa-linux-gnu- 'CC=sccache hppa-linux-gnu-gcc'
+> 'HOSTCC=sccache gcc'
+>
+> WARNING: modpost: vmlinux.o(.text+0x1c8): Section mismatch in
+> reference from the function ksys_sync() to the function
+> .init.text:memblock_alloc_try_nid()
+> The function ksys_sync() references
+> the function __init memblock_alloc_try_nid().
+> This is often because ksys_sync lacks a __init
+> annotation or the annotation of memblock_alloc_try_nid is wrong.
+>
+> ERROR: modpost: Section mismatches detected.
+> Set CONFIG_SECTION_MISMATCH_WARN_ONLY=y to allow them.
+> make[2]: *** [/builds/linux/scripts/Makefile.modpost:59:
+> vmlinux.symvers] Error 1
 
-The I2C to the Atmel is very fussy, and locks up easily on
-Pi0-3 particularly on reads.
+Anders bisected this build and the first bad commit is point to,
 
-The LCD power status is controlled solely by this driver, so
-rather than reading it back from the Atmel, use the cached
-status last set.
+first bad commit: [4f05e5a3946923676e147ad0e33c80df8249b2fe]
+parisc: Drop __init from map_pages declaration
 
-Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
----
- drivers/regulator/rpi-panel-attiny-regulator.c | 18 +-----------------
- 1 file changed, 1 insertion(+), 17 deletions(-)
 
-diff --git a/drivers/regulator/rpi-panel-attiny-regulator.c b/drivers/regulator/rpi-panel-attiny-regulator.c
-index 8090b9a485b5..8b80c0de1022 100644
---- a/drivers/regulator/rpi-panel-attiny-regulator.c
-+++ b/drivers/regulator/rpi-panel-attiny-regulator.c
-@@ -144,24 +144,8 @@ static int attiny_lcd_power_disable(struct regulator_dev *rdev)
- static int attiny_lcd_power_is_enabled(struct regulator_dev *rdev)
- {
- 	struct attiny_lcd *state = rdev_get_drvdata(rdev);
--	unsigned int data;
--	int ret, i;
--
--	mutex_lock(&state->lock);
--
--	for (i = 0; i < 10; i++) {
--		ret = regmap_read(rdev->regmap, REG_PORTC, &data);
--		if (!ret)
--			break;
--		usleep_range(10000, 12000);
--	}
--
--	mutex_unlock(&state->lock);
--
--	if (ret < 0)
--		return ret;
- 
--	return data & PC_RST_BRIDGE_N;
-+	return state->port_states[REG_PORTC - REG_PORTA] & PC_RST_BRIDGE_N;
- }
- 
- static const struct regulator_init_data attiny_regulator_default = {
--- 
-2.34.1
-
+> Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+>
+> metadata:
+>   git branch: master
+>   git repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
+>   git describe: next-20220121
+>   kernel-config: https://builds.tuxbuild.com/23zIAxC4uCgy4zadA01JYyOwCR4/config
+>   build: https://builds.tuxbuild.com/23zIAxC4uCgy4zadA01JYyOwCR4/
+>
+> # To install tuxmake on your system globally:
+> # sudo pip3 install -U tuxmake
+> #
+> # See https://docs.tuxmake.org/ for complete documentation.
+> # Original tuxmake command with fragments listed below.
+>
+> tuxmake --runtime podman --target-arch parisc --toolchain gcc-11
+> --kconfig allnoconfig
+>
+> --
+> Linaro LKFT
+> https://lkft.linaro.org
