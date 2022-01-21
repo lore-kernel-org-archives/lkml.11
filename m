@@ -2,228 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 488DFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:03:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C46AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:04:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350707AbiAUODN (ORCPT
+        id S1380930AbiAUOEM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 09:03:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38030 "EHLO
+        Fri, 21 Jan 2022 09:04:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38298 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380942AbiAUOCV (ORCPT
+        with ESMTP id S1380934AbiAUOD3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 09:02:21 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9E36C061755
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:02:18 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id c2so18191891wml.1
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:02:18 -0800 (PST)
+        Fri, 21 Jan 2022 09:03:29 -0500
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BAF5C061751
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:03:29 -0800 (PST)
+Received: by mail-wm1-x32f.google.com with SMTP id h188so220083wmh.0
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:03:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=her8pTQyVK8jreqAr5JeTBZvQUJTv2/MJ1OXGn/Z07c=;
-        b=nxJ/Krh9rawBvAW5a2szanIGZ1i73UeIv0GSn0TsOKh2yT5pirgc26ZP/aOWDUGHCi
-         0N5FuPUeqWw9axpSBpehyCLZ9TZENv7qJOsDFrEHvYCTOVl3k8J8i5HDJaKQOURJAYiP
-         0KlAlnRw4ZhPemsPLWlSAwj2FhlPDBFYXpvSvqjZSA9b4cIzS9K3xmTAgc6SsjZRfGC0
-         bYyBtvQVgyFsXHVnaA5iRqoaq6YCiloMRaj1YpUXgQyEMth5hVfy5aRfmkmmWctDTANl
-         +HPq+H/PvxG7vZMd+bXuxmviLabcCnEhW672ZGUfRwzKKFFYNth+70uUu9INt3qoByHj
-         SJNQ==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4l1jtRGL+pYHVAZJF8KgIUHpCfnZhhgBRKh+OiDvorY=;
+        b=fhwTlzKWGaMzqfsup3wVctsfoZXTOQaOFb5R5Juixld0ttqy1JeVP0UBAnOO4SFypl
+         Df1prkauSmcDUosFSq4FqwsGSKYVOkw/bqBDtx72ou6iRRmwyUXBMV/RtyPni7/T2Db8
+         wsjOpwr9rNKpmvWP9ckaqB/Sf/UZl+6/jpWbyHCWRAm91Ee79b8icLN1nQTbu4Lb/aht
+         jBZCoO75QW8Jm5JEjSctOPETtHCTvm8cM5kB4K2d/gItxQd+q1lB4g+qprWSUABunWlE
+         /kJbwx6fRw7U+uCgbcEu959QoZL6efdJOqgrjmamXjX8Ycdi+of9m5uF9YbOdqAzLMcC
+         ZRbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=her8pTQyVK8jreqAr5JeTBZvQUJTv2/MJ1OXGn/Z07c=;
-        b=aNkflIiyqmDu0kqgTxQcb4DXRVZYID93kZC1B9uvbJUPvssqAPPwiqVj2RRhP+xgCb
-         aGPcCffQufd3ZFudga78uIVA2EX58nlguIvA0g7YsH0ToiUUy4JBTAsKc4w9xl2QkuAA
-         VHH+3MhdA38wL3vUr+8vHJ0KHpkbOSPqW/T05lq/bKrWte0FPKnBvep1k4vS7IPe5Y5S
-         FsDyXEEVuyTl2a3o7oOCel6CQs0Vf1erjfo5Jf66h3Qb3XGZEzxN3KBGK1k4nGRisk+D
-         ZFv6699tixDtqNf1FQqoEwRxbuj8GQwifz7PoqWWspNRzpLJlRXm0V8Zar8SyOfdwIQZ
-         n5kA==
-X-Gm-Message-State: AOAM530UbVzgSaHYXcwGwf1RxcpnL/AqP0LmCv2oKFaPIGWsUAkTaK8p
-        q53dJI25oIelSYNMIDZvX1/0utOgos+xUu5veIh2Mo6p1tk=
-X-Google-Smtp-Source: ABdhPJziNjRSUK9pdHhvlNl/V7EUFJMTcY7Sop6mMxH5IKk2wCgCRkmSvagz3PP+iMuRWZIhk2a/Xh6Du1oKcbkcS00=
-X-Received: by 2002:a05:600c:2253:: with SMTP id a19mr901960wmm.8.1642773737211;
- Fri, 21 Jan 2022 06:02:17 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=4l1jtRGL+pYHVAZJF8KgIUHpCfnZhhgBRKh+OiDvorY=;
+        b=MF6xIzoACi63JGDqwf1AlXuvfyu55X6alo/siQd2o1gxhtV/qJSS3O7Bdv/DRQhJqN
+         Q81ziXQUeRKwvuyY2ko4cBj24pKGziIa4CwP2rxbfZn34umkO5eRYCxjDBj4M5ppZECo
+         6euXZIyAzEfEc7Bfb+zcaOSd8Tx1DvzwYYZrosYMNUvJZLVklvctTQKplj1HB9nOr7Pp
+         VBhBmMXniM0hntlMgD8dre+mxJ3eTELaPy5xLOH8kzEfJptai1z+4gMu3dxmMuBgDzX1
+         5ey94PSQvV1xNAZq8h7l13cI7O1vlRTi+shUiqXiFSIyUTtgeIVvp8s7yKDLHk1OIEA7
+         JgDg==
+X-Gm-Message-State: AOAM531+6TvK432WuHsN9R0i918c+8cU7UP4rpmybwqBxDn2johnvnCH
+        bH2RilB0gZuoiJ9++54P9KqBkQ==
+X-Google-Smtp-Source: ABdhPJwSn5xqcnOw4GAEgDzNJvgvtqvE75JH7mto0ajETAzgXi5MCr9UUfks/or68aOUSSE9IMIGYQ==
+X-Received: by 2002:adf:fbc5:: with SMTP id d5mr3913609wrs.83.1642773807588;
+        Fri, 21 Jan 2022 06:03:27 -0800 (PST)
+Received: from groot.home (lfbn-tou-1-205-205.w86-201.abo.wanadoo.fr. [86.201.52.205])
+        by smtp.gmail.com with ESMTPSA id p29sm9225129wms.5.2022.01.21.06.03.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Jan 2022 06:03:27 -0800 (PST)
+From:   Mattijs Korpershoek <mkorpershoek@baylibre.com>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Fabien Parent <fparent@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Mattijs Korpershoek <mkorpershoek@baylibre.com>
+Subject: [PATCH v4 0/4] input: MT6358 PMIC button support
+Date:   Fri, 21 Jan 2022 15:03:19 +0100
+Message-Id: <20220121140323.4080640-1-mkorpershoek@baylibre.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-References: <20220114150824.3578829-1-jens.wiklander@linaro.org>
- <20220114150824.3578829-8-jens.wiklander@linaro.org> <CAFA6WYN+NU6uj=R5y4A6RomWeKc74orvB7ouia8Sxuwxaz_-2w@mail.gmail.com>
- <ad7311fe-0655-e235-f755-2eb3425c79c1@forissier.org> <CAFA6WYNo2xJ8VncpwbHG65hTTshxa-SWaPnGCB2v3KCTGogJkQ@mail.gmail.com>
-In-Reply-To: <CAFA6WYNo2xJ8VncpwbHG65hTTshxa-SWaPnGCB2v3KCTGogJkQ@mail.gmail.com>
-From:   Jens Wiklander <jens.wiklander@linaro.org>
-Date:   Fri, 21 Jan 2022 15:02:06 +0100
-Message-ID: <CAHUa44H-t2fVFWHQDU6ZjY7qyk53rbOi_h7=V_pYXTN+TtbMjA@mail.gmail.com>
-Subject: Re: [PATCH v2 07/12] optee: use driver internal tee_contex for some rpc
-To:     Sumit Garg <sumit.garg@linaro.org>
-Cc:     Jerome Forissier <jerome@forissier.org>,
-        linux-kernel@vger.kernel.org, op-tee@lists.trustedfirmware.org,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Devaraj Rangasamy <Devaraj.Rangasamy@amd.com>,
-        Rijo Thomas <Rijo-john.Thomas@amd.com>,
-        David Howells <dhowells@redhat.com>,
-        Tyler Hicks <tyhicks@linux.microsoft.com>,
-        Etienne Carriere <etienne.carriere@linaro.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 2:37 PM Sumit Garg <sumit.garg@linaro.org> wrote:
->
-> On Fri, 21 Jan 2022 at 18:58, Jerome Forissier <jerome@forissier.org> wrote:
-> >
-> > On 1/21/22 13:54, Sumit Garg wrote:
-> > > + Jerome, Etienne
-> > >
-> > > On Fri, 14 Jan 2022 at 20:38, Jens Wiklander <jens.wiklander@linaro.org> wrote:
-> > >>
-> > >> Uses the new driver internal tee_context when allocating driver private
-> > >> shared memory. This decouples the shared memory object from its original
-> > >> tee_context. This is needed when the life time of such a memory
-> > >> allocation outlives the client tee_context.
-> > >>
-> > >> Signed-off-by: Jens Wiklander <jens.wiklander@linaro.org>
-> > >> ---
-> > >>  drivers/tee/optee/ffa_abi.c | 16 ++++++++--------
-> > >>  drivers/tee/optee/smc_abi.c |  7 ++++---
-> > >>  2 files changed, 12 insertions(+), 11 deletions(-)
-> > >>
-> > >
-> > > I guess with this patch we should no longer see issues [1] reported earlier.
-> >
-> > Correct. I have tested [1] again in QEMU with this whole series applied
-> > and the issue is gone.
-> >
->
-> Thanks for the confirmation.
->
-> Jens,
->
-> Can we have a Fixes tag for this and CC stable? I know it won't be
-> directly applicable to stable kernels but we can help with a backport.
->
+The MediaTek MT6358 PMIC has support for two buttons: PWR and HOME.
 
-OK, I'll add that.
+The interrupt logic is a little different than other PMICs from the
+same family:
+for MT6323 and MT6397, we have one interrupt source per button
+* for MT6358, we have two interrupts lines per button: the press and
+* release interrupts are distinct sources.
 
-Thanks,
-Jens
+Changes since v3 [1]:
+* checkpatch.pl --strict fixes
 
-> -Sumit
->
-> > --
-> > Jerome
-> >
-> > >
-> > > FWIW,
-> > >
-> > > Reviewed-by: Sumit Garg <sumit.garg@linaro.org>
-> > >
-> > > [1] https://github.com/OP-TEE/optee_os/issues/1918
-> > >
-> > > -Sumit
-> > >
-> > >> diff --git a/drivers/tee/optee/ffa_abi.c b/drivers/tee/optee/ffa_abi.c
-> > >> index 88a028d4fb7b..5ec484b42432 100644
-> > >> --- a/drivers/tee/optee/ffa_abi.c
-> > >> +++ b/drivers/tee/optee/ffa_abi.c
-> > >> @@ -424,6 +424,7 @@ static struct tee_shm_pool *optee_ffa_shm_pool_alloc_pages(void)
-> > >>   */
-> > >>
-> > >>  static void handle_ffa_rpc_func_cmd_shm_alloc(struct tee_context *ctx,
-> > >> +                                             struct optee *optee,
-> > >>                                               struct optee_msg_arg *arg)
-> > >>  {
-> > >>         struct tee_shm *shm;
-> > >> @@ -439,7 +440,7 @@ static void handle_ffa_rpc_func_cmd_shm_alloc(struct tee_context *ctx,
-> > >>                 shm = optee_rpc_cmd_alloc_suppl(ctx, arg->params[0].u.value.b);
-> > >>                 break;
-> > >>         case OPTEE_RPC_SHM_TYPE_KERNEL:
-> > >> -               shm = tee_shm_alloc_priv_kernel_buf(ctx,
-> > >> +               shm = tee_shm_alloc_priv_kernel_buf(optee->ctx,
-> > >>                                                     arg->params[0].u.value.b);
-> > >>                 break;
-> > >>         default:
-> > >> @@ -493,14 +494,13 @@ static void handle_ffa_rpc_func_cmd_shm_free(struct tee_context *ctx,
-> > >>  }
-> > >>
-> > >>  static void handle_ffa_rpc_func_cmd(struct tee_context *ctx,
-> > >> +                                   struct optee *optee,
-> > >>                                     struct optee_msg_arg *arg)
-> > >>  {
-> > >> -       struct optee *optee = tee_get_drvdata(ctx->teedev);
-> > >> -
-> > >>         arg->ret_origin = TEEC_ORIGIN_COMMS;
-> > >>         switch (arg->cmd) {
-> > >>         case OPTEE_RPC_CMD_SHM_ALLOC:
-> > >> -               handle_ffa_rpc_func_cmd_shm_alloc(ctx, arg);
-> > >> +               handle_ffa_rpc_func_cmd_shm_alloc(ctx, optee, arg);
-> > >>                 break;
-> > >>         case OPTEE_RPC_CMD_SHM_FREE:
-> > >>                 handle_ffa_rpc_func_cmd_shm_free(ctx, optee, arg);
-> > >> @@ -510,12 +510,12 @@ static void handle_ffa_rpc_func_cmd(struct tee_context *ctx,
-> > >>         }
-> > >>  }
-> > >>
-> > >> -static void optee_handle_ffa_rpc(struct tee_context *ctx, u32 cmd,
-> > >> -                                struct optee_msg_arg *arg)
-> > >> +static void optee_handle_ffa_rpc(struct tee_context *ctx, struct optee *optee,
-> > >> +                                u32 cmd, struct optee_msg_arg *arg)
-> > >>  {
-> > >>         switch (cmd) {
-> > >>         case OPTEE_FFA_YIELDING_CALL_RETURN_RPC_CMD:
-> > >> -               handle_ffa_rpc_func_cmd(ctx, arg);
-> > >> +               handle_ffa_rpc_func_cmd(ctx, optee, arg);
-> > >>                 break;
-> > >>         case OPTEE_FFA_YIELDING_CALL_RETURN_INTERRUPT:
-> > >>                 /* Interrupt delivered by now */
-> > >> @@ -582,7 +582,7 @@ static int optee_ffa_yielding_call(struct tee_context *ctx,
-> > >>                  * above.
-> > >>                  */
-> > >>                 cond_resched();
-> > >> -               optee_handle_ffa_rpc(ctx, data->data1, rpc_arg);
-> > >> +               optee_handle_ffa_rpc(ctx, optee, data->data1, rpc_arg);
-> > >>                 cmd = OPTEE_FFA_YIELDING_CALL_RESUME;
-> > >>                 data->data0 = cmd;
-> > >>                 data->data1 = 0;
-> > >> diff --git a/drivers/tee/optee/smc_abi.c b/drivers/tee/optee/smc_abi.c
-> > >> index 1dbb13b08381..f2ef76451443 100644
-> > >> --- a/drivers/tee/optee/smc_abi.c
-> > >> +++ b/drivers/tee/optee/smc_abi.c
-> > >> @@ -621,6 +621,7 @@ static void handle_rpc_func_cmd_shm_free(struct tee_context *ctx,
-> > >>  }
-> > >>
-> > >>  static void handle_rpc_func_cmd_shm_alloc(struct tee_context *ctx,
-> > >> +                                         struct optee *optee,
-> > >>                                           struct optee_msg_arg *arg,
-> > >>                                           struct optee_call_ctx *call_ctx)
-> > >>  {
-> > >> @@ -650,7 +651,7 @@ static void handle_rpc_func_cmd_shm_alloc(struct tee_context *ctx,
-> > >>                 shm = optee_rpc_cmd_alloc_suppl(ctx, sz);
-> > >>                 break;
-> > >>         case OPTEE_RPC_SHM_TYPE_KERNEL:
-> > >> -               shm = tee_shm_alloc_priv_kernel_buf(ctx, sz);
-> > >> +               shm = tee_shm_alloc_priv_kernel_buf(optee->ctx, sz);
-> > >>                 break;
-> > >>         default:
-> > >>                 arg->ret = TEEC_ERROR_BAD_PARAMETERS;
-> > >> @@ -746,7 +747,7 @@ static void handle_rpc_func_cmd(struct tee_context *ctx, struct optee *optee,
-> > >>         switch (arg->cmd) {
-> > >>         case OPTEE_RPC_CMD_SHM_ALLOC:
-> > >>                 free_pages_list(call_ctx);
-> > >> -               handle_rpc_func_cmd_shm_alloc(ctx, arg, call_ctx);
-> > >> +               handle_rpc_func_cmd_shm_alloc(ctx, optee, arg, call_ctx);
-> > >>                 break;
-> > >>         case OPTEE_RPC_CMD_SHM_FREE:
-> > >>                 handle_rpc_func_cmd_shm_free(ctx, arg);
-> > >> @@ -775,7 +776,7 @@ static void optee_handle_rpc(struct tee_context *ctx,
-> > >>
-> > >>         switch (OPTEE_SMC_RETURN_GET_RPC_FUNC(param->a0)) {
-> > >>         case OPTEE_SMC_RPC_FUNC_ALLOC:
-> > >> -               shm = tee_shm_alloc_priv_kernel_buf(ctx, param->a1);
-> > >> +               shm = tee_shm_alloc_priv_kernel_buf(optee->ctx, param->a1);
-> > >>                 if (!IS_ERR(shm) && !tee_shm_get_pa(shm, 0, &pa)) {
-> > >>                         reg_pair_from_64(&param->a1, &param->a2, pa);
-> > >>                         reg_pair_from_64(&param->a4, &param->a5,
-> > >> --
-> > >> 2.31.1
-> > >>
+Changes since v2 [2]:
+* added 4th patch with device tree enable
+* cover letter title prefixed with 'input'
+
+This has been tested with evtest on mt8183-pumpkin on input/next
+
+[1] https://lore.kernel.org/r/20210702134310.3451560-1-mkorpershoek@baylibre.com
+[2] https://lore.kernel.org/r/id:20210512152648.39961-1-mkorpershoek@baylibre.com
+
+Mattijs Korpershoek (4):
+  Input: mtk-pmic-keys - use get_irq_byname() instead of index
+  dt-bindings: input: mtk-pmic-keys: add MT6358 binding definition
+  Input: mtk-pmic-keys - add support for MT6358
+  arm64: dts: mt6358: add mt6358-keys node
+
+ .../bindings/input/mtk-pmic-keys.txt          |  5 +-
+ arch/arm64/boot/dts/mediatek/mt6358.dtsi      | 12 ++++
+ drivers/input/keyboard/mtk-pmic-keys.c        | 55 +++++++++++++++++--
+ 3 files changed, 67 insertions(+), 5 deletions(-)
+
+
+base-commit: 87a0b2fafc09766d8c55461a18345a1cfb10a7fe
+-- 
+2.32.0
+
