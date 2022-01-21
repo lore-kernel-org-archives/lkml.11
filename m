@@ -2,21 +2,21 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C26D0C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:37:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7955C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:37:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378755AbiAUQha (ORCPT
+        id S1378561AbiAUQhd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 11:37:30 -0500
-Received: from gloria.sntech.de ([185.11.138.130]:35292 "EHLO gloria.sntech.de"
+        Fri, 21 Jan 2022 11:37:33 -0500
+Received: from gloria.sntech.de ([185.11.138.130]:35338 "EHLO gloria.sntech.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349364AbiAUQhF (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 11:37:05 -0500
+        id S1349385AbiAUQhG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 21 Jan 2022 11:37:06 -0500
 Received: from p508fcef5.dip0.t-ipconnect.de ([80.143.206.245] helo=phil.fritz.box)
         by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <heiko@sntech.de>)
-        id 1nAwuH-0008GA-PU; Fri, 21 Jan 2022 17:36:57 +0100
+        id 1nAwuL-0008GA-T2; Fri, 21 Jan 2022 17:37:01 +0100
 From:   Heiko Stuebner <heiko@sntech.de>
 To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
 Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
@@ -30,9 +30,9 @@ Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
         allen.baum@esperantotech.com, jscheid@ventanamicro.com,
         rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
         philipp.tomsich@vrull.eu, Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH v5 03/14] riscv: allow different stages with alternatives
-Date:   Fri, 21 Jan 2022 17:36:07 +0100
-Message-Id: <20220121163618.351934-4-heiko@sntech.de>
+Subject: [PATCH v5 07/14] riscv: prevent compressed instructions in alternatives
+Date:   Fri, 21 Jan 2022 17:36:11 +0100
+Message-Id: <20220121163618.351934-8-heiko@sntech.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220121163618.351934-1-heiko@sntech.de>
 References: <20220121163618.351934-1-heiko@sntech.de>
@@ -42,105 +42,94 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Future features may need to be applied at a different
-time during boot, so allow defining stages for alternatives
-and handling them differently depending on the stage.
+Instructions are opportunistically compressed by the RISC-V assembler
+when possible, but in alternatives-blocks both the old and new content
+need to be the same size, so having the toolchain do somewhat random
+optimizations will cause strange side-effects like
+"attempt to move .org backwards" compile-time errors.
 
-Also make the alternatives-location more flexible so that
-future stages may provide their own location.
+Already a simple "and" used in alternatives assembly will cause these
+mismatched code sizes.
+
+So prevent compressed instructions to be generated in alternatives-
+code and use option-push and -pop to limit this to the relevant
+code blocks
 
 Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
- arch/riscv/errata/sifive/errata.c    |  3 ++-
- arch/riscv/include/asm/alternative.h |  5 ++++-
- arch/riscv/kernel/alternative.c      | 25 +++++++++++++++++--------
- 3 files changed, 23 insertions(+), 10 deletions(-)
+ arch/riscv/include/asm/alternative-macros.h | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-diff --git a/arch/riscv/errata/sifive/errata.c b/arch/riscv/errata/sifive/errata.c
-index f5e5ae70e829..4fe03ac41fd7 100644
---- a/arch/riscv/errata/sifive/errata.c
-+++ b/arch/riscv/errata/sifive/errata.c
-@@ -80,7 +80,8 @@ static void __init warn_miss_errata(u32 miss_errata)
- }
+diff --git a/arch/riscv/include/asm/alternative-macros.h b/arch/riscv/include/asm/alternative-macros.h
+index c0fb11fad631..3a52884bf23d 100644
+--- a/arch/riscv/include/asm/alternative-macros.h
++++ b/arch/riscv/include/asm/alternative-macros.h
+@@ -19,7 +19,10 @@
+ 	.popsection
+ 	.subsection 1
+ 888 :
++	.option push
++	.option norvc
+ 	\new_c
++	.option pop
+ 889 :
+ 	.previous
+ 	.org    . - (889b - 888b) + (887b - 886b)
+@@ -29,7 +32,10 @@
  
- void __init sifive_errata_patch_func(struct alt_entry *begin, struct alt_entry *end,
--				     unsigned long archid, unsigned long impid)
-+				     unsigned long archid, unsigned long impid,
-+				     unsigned int stage)
- {
- 	struct alt_entry *alt;
- 	u32 cpu_req_errata = sifive_errata_probe(archid, impid);
-diff --git a/arch/riscv/include/asm/alternative.h b/arch/riscv/include/asm/alternative.h
-index e625d3cafbed..811bdd8027db 100644
---- a/arch/riscv/include/asm/alternative.h
-+++ b/arch/riscv/include/asm/alternative.h
-@@ -17,6 +17,8 @@
- #include <linux/stddef.h>
- #include <asm/hwcap.h>
+ .macro __ALTERNATIVE_CFG old_c, new_c, vendor_id, errata_id, enable
+ 886 :
++	.option push
++	.option norvc
+ 	\old_c
++	.option pop
+ 887 :
+ 	ALT_NEW_CONTENT \vendor_id, \errata_id, \enable, \new_c
+ .endm
+@@ -40,7 +46,10 @@
+ .macro __ALTERNATIVE_CFG_2 old_c, new_c_1, vendor_id_1, errata_id_1, enable_1, \
+ 				  new_c_2, vendor_id_2, errata_id_2, enable_2
+ 886 :
++	.option push
++	.option norvc
+ 	\old_c
++	.option pop
+ 887 :
+ 	ALT_NEW_CONTENT \vendor_id_1, \errata_id_1, \enable_1, \new_c_1
+ 	ALT_NEW_CONTENT \vendor_id_2, \errata_id_2, \enable_2, \new_c_2
+@@ -70,7 +79,10 @@
+ 	".popsection\n"							\
+ 	".subsection 1\n"						\
+ 	"888 :\n"							\
++	".option push\n"						\
++	".option norvc\n"						\
+ 	new_c "\n"							\
++	".option pop\n"							\
+ 	"889 :\n"							\
+ 	".previous\n"							\
+ 	".org	. - (887b - 886b) + (889b - 888b)\n"			\
+@@ -79,7 +91,10 @@
  
-+#define RISCV_ALTERNATIVES_BOOT		0 /* alternatives applied during regular boot */
-+
- void __init apply_boot_alternatives(void);
+ #define __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, enable)	\
+ 	"886 :\n"							\
++	".option push\n"						\
++	".option norvc\n"						\
+ 	old_c "\n"							\
++	".option pop\n"							\
+ 	"887 :\n"							\
+ 	ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c)
  
- struct alt_entry {
-@@ -33,7 +35,8 @@ struct errata_checkfunc_id {
- };
- 
- void sifive_errata_patch_func(struct alt_entry *begin, struct alt_entry *end,
--			      unsigned long archid, unsigned long impid);
-+			      unsigned long archid, unsigned long impid,
-+			      unsigned int stage);
- 
- #endif
- #endif
-diff --git a/arch/riscv/kernel/alternative.c b/arch/riscv/kernel/alternative.c
-index 3b15885db70b..ead00c508266 100644
---- a/arch/riscv/kernel/alternative.c
-+++ b/arch/riscv/kernel/alternative.c
-@@ -22,7 +22,8 @@ static struct cpu_manufacturer_info_t {
- } cpu_mfr_info;
- 
- static void (*vendor_patch_func)(struct alt_entry *begin, struct alt_entry *end,
--				 unsigned long archid, unsigned long impid);
-+				 unsigned long archid, unsigned long impid,
-+				 unsigned int stage);
- 
- static inline void __init riscv_fill_cpu_mfr_info(void)
- {
-@@ -57,6 +58,18 @@ static void __init init_alternative(void)
-  * a feature detect on the boot CPU). No need to worry about other CPUs
-  * here.
-  */
-+static void __init _apply_alternatives(struct alt_entry *begin,
-+				       struct alt_entry *end,
-+				       unsigned int stage)
-+{
-+	if (!vendor_patch_func)
-+		return;
-+
-+	vendor_patch_func(begin, end,
-+			  cpu_mfr_info.arch_id, cpu_mfr_info.imp_id,
-+			  stage);
-+}
-+
- void __init apply_boot_alternatives(void)
- {
- 	/* If called on non-boot cpu things could go wrong */
-@@ -64,11 +77,7 @@ void __init apply_boot_alternatives(void)
- 
- 	init_alternative();
- 
--	if (!vendor_patch_func)
--		return;
--
--	vendor_patch_func((struct alt_entry *)__alt_start,
--			  (struct alt_entry *)__alt_end,
--			  cpu_mfr_info.arch_id, cpu_mfr_info.imp_id);
-+	_apply_alternatives((struct alt_entry *)__alt_start,
-+			    (struct alt_entry *)__alt_end,
-+			    RISCV_ALTERNATIVES_BOOT);
- }
--
+@@ -89,7 +104,10 @@
+ #define __ALTERNATIVE_CFG_2(old_c, new_c_1, vendor_id_1, errata_id_1, enable_1, \
+ 				  new_c_2, vendor_id_2, errata_id_2, enable_2) \
+ 	"886 :\n"							\
++	".option push\n"						\
++	".option norvc\n"						\
+ 	old_c "\n"							\
++	".option pop\n"							\
+ 	"887 :\n"							\
+ 	ALT_NEW_CONTENT(vendor_id_1, errata_id_1, enable_1, new_c_1)	\
+ 	ALT_NEW_CONTENT(vendor_id_2, errata_id_2, enable_2, new_c_2)
 -- 
 2.30.2
 
