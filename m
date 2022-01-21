@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22ED9C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 19:36:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88464C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 19:36:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232619AbiAUTgG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 14:36:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58142 "EHLO
+        id S229537AbiAUTgZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 14:36:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232107AbiAUTfz (ORCPT
+        with ESMTP id S232304AbiAUTf5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 14:35:55 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6449CC061744;
-        Fri, 21 Jan 2022 11:35:54 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id a13so1504142wrh.9;
-        Fri, 21 Jan 2022 11:35:54 -0800 (PST)
+        Fri, 21 Jan 2022 14:35:57 -0500
+Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66D88C06173D;
+        Fri, 21 Jan 2022 11:35:56 -0800 (PST)
+Received: by mail-wr1-x431.google.com with SMTP id q22so1506281wrc.5;
+        Fri, 21 Jan 2022 11:35:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0JpeJi0yBD942AUCHxsREdLSnIblSWTMYzLY8RDVTEU=;
-        b=g89/RYLsr7FhFgcDDsXD99vhKX5uqRjLhBcwrrLR83njKs5S/mdvoQuwrTKkpynicL
-         2CIIZwXJgrN2gpBu36IB7mrmXmE3LRSIcFPclowEwuNpiPrXXRAEW1bVfrgwdHqn95vQ
-         J4AHIrGpgjxhZ3IMS0LwolLgm+B6UbiCPij5hYg1lmyx5XFxfbD9it8cUeDvoa4aJDze
-         Il5fuhEXqArrzA3s7gw3I49JyQWzEYmNpUh/XD0kszWZ1yZrPlDj0SuP9t8hXa/bJPNH
-         2VqPDlo29ZrIKdJYgYCpBGycHUMG8pm2RP9IzVjVbEOFAvPJOj2rvP+g2IMK/wpArgtx
-         Ho5A==
+        bh=XBkuRgwe6wjN8B0dWdq4qTtmz/vmICR+ObQMfngMweY=;
+        b=O9JyzuHxsKOFunpzLm1NYXhbGQa+ChfNsd5JWvOX1nyic3o+BdNjoHrCWDNqYzAl4M
+         LfFFoWvm8LKZyZjppzTfSytupqohwTAayMTqzC4cve5IFWjCIO5HJoCdLEMkokywfa1O
+         8qpUdG/AxUgcjnNP0zCUHuTujGd6LEbTHwJT103aAiH0AX/ukX6aKls9RFzu06E2x5LE
+         QuA2rSsoUYLcwm2eHwZgZDwua9K76EeFKhMgqJTorQE2AG5LJIXdQtfb3px9dwtdZOI/
+         3UvDUkkogf/rprv5ZC4TzGqJpswbE9mcwlozOyzsuwmf/rM84Kfp3E8QGXicgkQw3M0R
+         Hc/g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0JpeJi0yBD942AUCHxsREdLSnIblSWTMYzLY8RDVTEU=;
-        b=1wqIBJKpyXB1ZAszJIJ4L/hPxXIlJ+yleMR7k94kQVgW4jAbJljXchXCRlYBG3AZah
-         Y+G12AdfIIAcD2d22q/oDO5v7TzC9B24tmvPdAGgJD22ZMEq1zBXTpkZtFT6+vN9PzVp
-         Heb+TTrCazTwEUDLn+Ja7FfYShSGNdf4IAKLYc8BPMRhQ23l8gW1z0szDYwfhDphnPcn
-         Rucp6Wf4peT8AT/fl4BosMpdMqZg/m1NTS2GXm8cjBlIYCIKkE8fFyLD/8GwCnACG+ua
-         rPfKc6FhXlGsW1X8BCCrW9WywNcR4KY1/P3CwOEXQPn7hrKZs0iW97BnWzVkiB2XSCDS
-         hX1A==
-X-Gm-Message-State: AOAM532fHInBfpcYpRoYNvVt+6KnZ/7a0m1X+ydxqERMRDzsopRPTC1/
-        I5xPkClN5W+T6dtrqPw8rnA+fLUU8b3+/A==
-X-Google-Smtp-Source: ABdhPJyAxIZmmPjhGkJnYRvDD5xzZYz10q6HKrGo8VBRZwYaIehVpahipvtp6YOM03iYduGtKcdWmg==
-X-Received: by 2002:adf:e806:: with SMTP id o6mr5370065wrm.331.1642793752502;
-        Fri, 21 Jan 2022 11:35:52 -0800 (PST)
+        bh=XBkuRgwe6wjN8B0dWdq4qTtmz/vmICR+ObQMfngMweY=;
+        b=kXsYi6JarnIKS4xe9YySTtqBSmJi/MFHLm28Cxd9h3AXo7DU2TWYOtMeHU5XN/7VDb
+         0AHk1VJA7bS5PcRi98+PyVGHZK8x1IuXJVdTaS75WwsHUERx2uwrBFmiumqkb6A9DWaC
+         llcVNLhQJoH3qSguCShGMEX5Dj5coq5c3ydBtuzNz+dF1S2rh/dLe0pqVcEgr35eIFDN
+         MbLwSXhHMiNqZrkDBtnyo+QSInH0NvWmbuujDsHoyo1phY43/lfjKJLM82JjU6PXUDlV
+         LPGMWINNJkgvnBUs4XwdRrcMTKNPQzbxxFxrm4FXtS3vIe4qez6Y2IY4BE47xHf2ekMC
+         id/g==
+X-Gm-Message-State: AOAM530D52fiJMvjbakOKipXbtCuuX2DuQxmn6FPlpa6uDdf+mcRSUu7
+        BSRv9VEY+MS405MputRr85w8C3WBXkAsww==
+X-Google-Smtp-Source: ABdhPJy1LaVeyY+Ot8O5P3cv87hxYyzBFU4XK/HMU1KkSa+tiFmuEgPZ54IgF+1VaedIe+Ar6XVxfw==
+X-Received: by 2002:a5d:6481:: with SMTP id o1mr4770121wri.682.1642793754716;
+        Fri, 21 Jan 2022 11:35:54 -0800 (PST)
 Received: from debby ([2a01:e0a:a6d:a8d0:7ff4:8f61:5574:9f95])
-        by smtp.gmail.com with ESMTPSA id v124sm11517940wme.30.2022.01.21.11.35.51
+        by smtp.gmail.com with ESMTPSA id l6sm8685539wry.75.2022.01.21.11.35.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 11:35:52 -0800 (PST)
+        Fri, 21 Jan 2022 11:35:54 -0800 (PST)
 From:   Romain Perier <romain.perier@gmail.com>
 To:     Michael Turquette <mturquette@baylibre.com>,
         Stephen Boyd <sboyd@kernel.org>, linux-clk@vger.kernel.org,
@@ -56,9 +56,9 @@ To:     Michael Turquette <mturquette@baylibre.com>,
         Rob Herring <robh+dt@kernel.org>
 Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 3/9] ARM: mstar: Add cpupll to base dtsi
-Date:   Fri, 21 Jan 2022 20:35:38 +0100
-Message-Id: <20220121193544.23231-4-romain.perier@gmail.com>
+Subject: [PATCH v3 5/9] ARM: mstar: Link cpupll to second core
+Date:   Fri, 21 Jan 2022 20:35:40 +0100
+Message-Id: <20220121193544.23231-6-romain.perier@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220121193544.23231-1-romain.perier@gmail.com>
 References: <20220121193544.23231-1-romain.perier@gmail.com>
@@ -70,32 +70,26 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Daniel Palmer <daniel@0x0f.com>
 
-All MStar/SigmaStar ARMv7 SoCs have the CPU PLL at the same
-place so add it to the base dtsi.
+The second core also sources it's clock from the CPU PLL.
 
 Signed-off-by: Daniel Palmer <daniel@0x0f.com>
 ---
- arch/arm/boot/dts/mstar-v7.dtsi | 7 +++++++
- 1 file changed, 7 insertions(+)
+ arch/arm/boot/dts/mstar-infinity2m.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/arch/arm/boot/dts/mstar-v7.dtsi b/arch/arm/boot/dts/mstar-v7.dtsi
-index 89ebfe4f29da..2249faaa3aa7 100644
---- a/arch/arm/boot/dts/mstar-v7.dtsi
-+++ b/arch/arm/boot/dts/mstar-v7.dtsi
-@@ -155,6 +155,13 @@ mpll: mpll@206000 {
- 				clocks = <&xtal>;
- 			};
+diff --git a/arch/arm/boot/dts/mstar-infinity2m.dtsi b/arch/arm/boot/dts/mstar-infinity2m.dtsi
+index 6d4d1d224e96..dc339cd29778 100644
+--- a/arch/arm/boot/dts/mstar-infinity2m.dtsi
++++ b/arch/arm/boot/dts/mstar-infinity2m.dtsi
+@@ -11,6 +11,8 @@ cpu1: cpu@1 {
+ 		device_type = "cpu";
+ 		compatible = "arm,cortex-a7";
+ 		reg = <0x1>;
++		clocks = <&cpupll>;
++		clock-names = "cpuclk";
+ 	};
+ };
  
-+			cpupll: cpupll@206400 {
-+				compatible = "mstar,msc313-cpupll";
-+				reg = <0x206400 0x200>;
-+				#clock-cells = <0>;
-+				clocks = <&mpll MSTAR_MSC313_MPLL_DIV2>;
-+			};
-+
- 			gpio: gpio@207800 {
- 				#gpio-cells = <2>;
- 				reg = <0x207800 0x200>;
 -- 
 2.34.1
 
