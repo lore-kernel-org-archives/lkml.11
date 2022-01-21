@@ -2,71 +2,222 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8474C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 06:41:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC19EC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 06:44:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378683AbiAUGlY (ORCPT
+        id S1378762AbiAUGoq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 01:41:24 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:41052 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1348882AbiAUGlX (ORCPT
+        Fri, 21 Jan 2022 01:44:46 -0500
+Received: from alexa-out.qualcomm.com ([129.46.98.28]:33381 "EHLO
+        alexa-out.qualcomm.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343722AbiAUGop (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 01:41:23 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20L055gU015220;
-        Thu, 20 Jan 2022 22:41:04 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=pfpt0220;
- bh=8ooxZncd1pxU6VLDFOd0+ogSpakQFSxfdEJz9X266WA=;
- b=RGYBdRzxNajfK608PTgq4Vt69CABZVBErZF2JuEUrk8Cqn1dVby8U2DS+Y50BO8FWqHL
- VmZLQ3w2rksduahhd+n9G+Y7lD/9Ap0iXgZY0nAVPGUcA5nP+J1RxUfo9Wm0U9+qIIv5
- lErbN/P23A6uLFU6NniIPu3DUbJdJq4jGrvPQKguRJSUyijtdzHipf5TzZ+D/nkktck8
- HCAAhWQib4cq75He5kMY8EVyidJAwo/yzc6tlxRg5mNGPqtOepVnNgTnRzcQHZIyL0TI
- aMURX5TtShOFTNGj9jxVyeBoEY81jDJbyI5AVFWxuEryoDj5UYFmgEJvt3emRPgAtISE 9w== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3dqhyts03x-5
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 20 Jan 2022 22:41:03 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 20 Jan
- 2022 22:41:02 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.18 via Frontend
- Transport; Thu, 20 Jan 2022 22:41:02 -0800
-Received: from localhost.localdomain (unknown [10.28.34.29])
-        by maili.marvell.com (Postfix) with ESMTP id 76B553F7097;
-        Thu, 20 Jan 2022 22:40:58 -0800 (PST)
-From:   Shijith Thotton <sthotton@marvell.com>
-To:     <geert+renesas@glider.be>
-CC:     <arnd@arndb.de>, <arno@natisbad.org>, <bbrezillon@kernel.org>,
-        <davem@davemloft.net>, <herbert@gondor.apana.org.au>,
-        <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <schalla@marvell.com>, <sthotton@marvell.com>,
-        <jerinj@marvell.com>, <sgoutham@marvell.com>
-Subject: Re: [PATCH] crypto: marvell - Fix platform dependency for CRYPTO_DEV_OCTEONTX2_CPT
-Date:   Fri, 21 Jan 2022 12:10:57 +0530
-Message-ID: <20220121064057.2387263-1-sthotton@marvell.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <7c89454656dd825b38b0364bbb2a849554e6f57d.1641995837.git.geert+renesas@glider.be>
-References: <7c89454656dd825b38b0364bbb2a849554e6f57d.1641995837.git.geert+renesas@glider.be>
+        Fri, 21 Jan 2022 01:44:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1642747485; x=1674283485;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=gnN8J7Hmx0zp2CogqSWzfQlfG3AuVKS1SW9uZDHI86I=;
+  b=CAJKEDuLa3z8/ABriOJF7ov1V3BVxjlfSsROLwzBhdJ0VtZE3zoLDKB7
+   psJwCEjhmfwTkmSBcQ6vzw78iLTNxAnsJiCwRw7k+rCiDSYrtDgVw8yFd
+   OCp92KMr0+bSY9tDU+n8UkgyUsV4W9FnyJq+KvBfDqGfUhhokBgL/UbiP
+   E=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 20 Jan 2022 22:44:45 -0800
+X-QCInternal: smtphost
+Received: from ironmsg01-blr.qualcomm.com ([10.86.208.130])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/AES256-SHA; 20 Jan 2022 22:44:43 -0800
+X-QCInternal: smtphost
+Received: from unknown (HELO youghand-linux.qualcomm.com) ([10.206.66.115])
+  by ironmsg01-blr.qualcomm.com with ESMTP; 21 Jan 2022 12:14:35 +0530
+Received: by youghand-linux.qualcomm.com (Postfix, from userid 2370257)
+        id C04EA225AE; Fri, 21 Jan 2022 12:14:34 +0530 (IST)
+From:   Youghandhar Chintala <quic_youghand@quicinc.com>
+To:     ath10k@lists.infradead.org
+Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        quic_pillair@quicinc.com, dianders@chromium.org,
+        kuabhs@chromium.org, briannorris@chromium.org,
+        Youghandhar Chintala <quic_youghand@quicinc.com>
+Subject: [RFC 2/2] ath10k: Delay the unmapping of the buffer
+Date:   Fri, 21 Jan 2022 12:14:27 +0530
+Message-Id: <20220121064427.32059-3-quic_youghand@quicinc.com>
+X-Mailer: git-send-email 2.29.0
+In-Reply-To: <20220121064427.32059-1-quic_youghand@quicinc.com>
+References: <20220121064427.32059-1-quic_youghand@quicinc.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: 140yYAPDRS-P1qMvWGSoRDh0IqIiMIae
-X-Proofpoint-GUID: 140yYAPDRS-P1qMvWGSoRDh0IqIiMIae
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-21_02,2022-01-20_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-OcteonTX2 doesn't fall under ARCH_THUNDER and ARCH_THUNDER2. A better approach
-would be to define and use a new SOC type as Arnd mentioned at
-https://patchwork.kernel.org/project/linux-crypto/patch/266065918e47e8965bb6a0ab486da070278788e4.1641996057.git.geert+renesas@glider.be/
-Please wait for him to post that patch or use arm64 as dependency.
+We are seeing a corner case smmu fault issue where copy engine is still
+accessing the memory though host unmaps it hence as work around
+we are delaying the unmapping the memory.
 
-Thanks,
-Shijith
+Tested-on: WLAN.HL.3.2.2.c10-00757-QCAHLSWMTPL-1
+
+Signed-off-by: Youghandhar Chintala <quic_youghand@quicinc.com>
+---
+ drivers/net/wireless/ath/ath10k/core.c | 15 +++++++++++++++
+ drivers/net/wireless/ath/ath10k/htc.c  |  5 +++++
+ drivers/net/wireless/ath/ath10k/hw.h   |  3 +++
+ 3 files changed, 23 insertions(+)
+
+diff --git a/drivers/net/wireless/ath/ath10k/core.c b/drivers/net/wireless/ath/ath10k/core.c
+index fcaed7d176568..65f775fb5ccab 100644
+--- a/drivers/net/wireless/ath/ath10k/core.c
++++ b/drivers/net/wireless/ath/ath10k/core.c
+@@ -93,6 +93,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.tx_mac_seq_by_fw = false,
+ 		.dynamic_sar_support = false,
+ 		.tx_credit_limit = false,
++		.delay_unmap_buffer = false,
+ 	},
+ 	{
+ 		.id = QCA988X_HW_2_0_VERSION,
+@@ -130,6 +131,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.tx_mac_seq_by_fw = false,
+ 		.dynamic_sar_support = false,
+ 		.tx_credit_limit = false,
++		.delay_unmap_buffer = false,
+ 	},
+ 	{
+ 		.id = QCA9887_HW_1_0_VERSION,
+@@ -168,6 +170,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.tx_mac_seq_by_fw = false,
+ 		.dynamic_sar_support = false,
+ 		.tx_credit_limit = false,
++		.delay_unmap_buffer = false,
+ 	},
+ 	{
+ 		.id = QCA6174_HW_3_2_VERSION,
+@@ -200,6 +203,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.bmi_large_size_download = true,
+ 		.dynamic_sar_support = true,
+ 		.tx_credit_limit = false,
++		.delay_unmap_buffer = false,
+ 	},
+ 	{
+ 		.id = QCA6174_HW_2_1_VERSION,
+@@ -237,6 +241,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.tx_mac_seq_by_fw = false,
+ 		.dynamic_sar_support = false,
+ 		.tx_credit_limit = false,
++		.delay_unmap_buffer = false,
+ 	},
+ 	{
+ 		.id = QCA6174_HW_2_1_VERSION,
+@@ -274,6 +279,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.tx_mac_seq_by_fw = false,
+ 		.dynamic_sar_support = false,
+ 		.tx_credit_limit = false,
++		.delay_unmap_buffer = false,
+ 	},
+ 	{
+ 		.id = QCA6174_HW_3_0_VERSION,
+@@ -311,6 +317,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.tx_mac_seq_by_fw = false,
+ 		.dynamic_sar_support = false,
+ 		.tx_credit_limit = false,
++		.delay_unmap_buffer = false,
+ 	},
+ 	{
+ 		.id = QCA6174_HW_3_2_VERSION,
+@@ -351,6 +358,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.tx_mac_seq_by_fw = false,
+ 		.dynamic_sar_support = true,
+ 		.tx_credit_limit = false,
++		.delay_unmap_buffer = false,
+ 	},
+ 	{
+ 		.id = QCA99X0_HW_2_0_DEV_VERSION,
+@@ -394,6 +402,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.tx_mac_seq_by_fw = false,
+ 		.dynamic_sar_support = false,
+ 		.tx_credit_limit = false,
++		.delay_unmap_buffer = false,
+ 	},
+ 	{
+ 		.id = QCA9984_HW_1_0_DEV_VERSION,
+@@ -444,6 +453,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.tx_mac_seq_by_fw = false,
+ 		.dynamic_sar_support = false,
+ 		.tx_credit_limit = false,
++		.delay_unmap_buffer = false,
+ 	},
+ 	{
+ 		.id = QCA9888_HW_2_0_DEV_VERSION,
+@@ -491,6 +501,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.tx_mac_seq_by_fw = false,
+ 		.dynamic_sar_support = false,
+ 		.tx_credit_limit = false,
++		.delay_unmap_buffer = false,
+ 	},
+ 	{
+ 		.id = QCA9377_HW_1_0_DEV_VERSION,
+@@ -528,6 +539,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.tx_mac_seq_by_fw = false,
+ 		.dynamic_sar_support = false,
+ 		.tx_credit_limit = false,
++		.delay_unmap_buffer = false,
+ 	},
+ 	{
+ 		.id = QCA9377_HW_1_1_DEV_VERSION,
+@@ -567,6 +579,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.tx_mac_seq_by_fw = false,
+ 		.dynamic_sar_support = false,
+ 		.tx_credit_limit = false,
++		.delay_unmap_buffer = false,
+ 	},
+ 	{
+ 		.id = QCA9377_HW_1_1_DEV_VERSION,
+@@ -639,6 +652,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.tx_mac_seq_by_fw = false,
+ 		.dynamic_sar_support = false,
+ 		.tx_credit_limit = false,
++		.delay_unmap_buffer = false,
+ 	},
+ 	{
+ 		.id = WCN3990_HW_1_0_DEV_VERSION,
+@@ -669,6 +683,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
+ 		.tx_mac_seq_by_fw = true,
+ 		.dynamic_sar_support = true,
+ 		.tx_credit_limit = true,
++		.delay_unmap_buffer = true,
+ 	},
+ };
+ 
+diff --git a/drivers/net/wireless/ath/ath10k/htc.c b/drivers/net/wireless/ath/ath10k/htc.c
+index 108980476d654..e2640f244918e 100644
+--- a/drivers/net/wireless/ath/ath10k/htc.c
++++ b/drivers/net/wireless/ath/ath10k/htc.c
+@@ -55,6 +55,11 @@ void ath10k_htc_notify_tx_completion(struct ath10k_htc_ep *ep,
+ 	ath10k_dbg(ar, ATH10K_DBG_HTC, "%s: ep %d skb %pK\n", __func__,
+ 		   ep->eid, skb);
+ 
++	/* WAR - Delay the unmapping of the buffer */
++	if (ar->hw_params.delay_unmap_buffer &&
++	    ep->ul_pipe_id == 3)
++		mdelay(2);
++
+ 	ath10k_htc_restore_tx_skb(ep->htc, skb);
+ 
+ 	if (!ep->ep_ops.ep_tx_complete) {
+diff --git a/drivers/net/wireless/ath/ath10k/hw.h b/drivers/net/wireless/ath/ath10k/hw.h
+index 0d96df311b026..3f7539e8da0fc 100644
+--- a/drivers/net/wireless/ath/ath10k/hw.h
++++ b/drivers/net/wireless/ath/ath10k/hw.h
+@@ -628,6 +628,9 @@ struct ath10k_hw_params {
+ 
+ 	/* limit tx credit */
+ 	bool tx_credit_limit;
++
++	/* WAR - Delay the unmapping of the buffer */
++	bool delay_unmap_buffer;
+ };
+ 
+ struct htt_rx_desc;
+-- 
+2.29.0
+
