@@ -2,102 +2,317 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18977C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 07:57:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71CDFC43219
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 07:57:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379333AbiAUH5e (ORCPT
+        id S1379252AbiAUH5h (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 02:57:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51341 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1379232AbiAUH4h (ORCPT
+        Fri, 21 Jan 2022 02:57:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40132 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379282AbiAUH4m (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 02:56:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642751795;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=m2Ho/lCZKO10EzmqqcIcm9qmBssIoEL4oIglAIQFltM=;
-        b=NkUymEuQfICVF0n6My8trFNrxc1UYZmm2CcebWHGKCjguESu7csN5XnwTJ/WWtIFUgmpYR
-        GCKXWRRkCDnH1N53D49jqHYnzDjxmJpCllho7F/ST4Y/cTOqT0EOm6/5cn84jCa4mDDRv6
-        fkKka2+B9+jSx6P+Bo4vy6NxrOvAswE=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-308-qmajEbmeOGKJKS2Wspa7_w-1; Fri, 21 Jan 2022 02:56:30 -0500
-X-MC-Unique: qmajEbmeOGKJKS2Wspa7_w-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 088D084DA42;
-        Fri, 21 Jan 2022 07:56:27 +0000 (UTC)
-Received: from sirius.home.kraxel.org (unknown [10.39.193.47])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 22F6970D21;
-        Fri, 21 Jan 2022 07:56:17 +0000 (UTC)
-Received: by sirius.home.kraxel.org (Postfix, from userid 1000)
-        id A8B8F180060F; Fri, 21 Jan 2022 08:20:06 +0100 (CET)
-Date:   Fri, 21 Jan 2022 08:20:06 +0100
-From:   Gerd Hoffmann <kraxel@redhat.com>
-To:     Helge Deller <deller@gmx.de>
-Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-fbdev@vger.kernel.org, Sven Schnelle <svens@stackframe.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Ilia Mirkin <imirkin@alum.mit.edu>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        dri-devel@lists.freedesktop.org,
-        Jani Nikula <jani.nikula@linux.intel.com>,
-        Pavel Machek <pavel@ucw.cz>, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Sam Ravnborg <sam@ravnborg.org>, Claudio Suarez <cssk@net-c.es>
-Subject: Re: [PATCH 2/2] Revert "fbcon: Disable accelerated scrolling"
-Message-ID: <20220121072006.ylw2hdl7jbkbwnre@sirius.home.kraxel.org>
-References: <20220119110839.33187-1-deller@gmx.de>
- <20220119110839.33187-3-deller@gmx.de>
- <YelyGDNDTn1Aq/hm@phenom.ffwll.local>
- <6c000477-002b-d125-b945-2c4831bad8a5@gmx.de>
+        Fri, 21 Jan 2022 02:56:42 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44488C06174E
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 23:56:42 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id e9so7562923pgb.3
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 23:56:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=5LmIcTdcw5bzUgUHpTw2bCJj+na0Z521FW9c8N2esaA=;
+        b=22o48qCSnTj2QsxfYrrrbTL2ZLTm+5kp2xt+PBrL9IZCu9VTNf2HZ3MMuvMQFJ6WEJ
+         fmNxtfezvbSk4mnjwpp2ukyS+dKOMFksQ028ZzDT1FqcskGpB96N9Bcfy40H6A8ihVhI
+         uI9gm4ueLnW6R8rpV6zLadbIH/0jVYVlr1A+5jalDSFrhdR0v7RrQQ068CGvsA6zrPc8
+         VCTYJrwrANLegGUjsFr1h+iltnH9DYWPvuBzErK6f8iprm57Mp5la3lraJzZXNihYYFc
+         uoixMu00KyHpoxby/B8l6QqpgcXtGuIndYXP9RAS3xwC2Pc492eaA5BtC6zhfXJEKolZ
+         jmeA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=5LmIcTdcw5bzUgUHpTw2bCJj+na0Z521FW9c8N2esaA=;
+        b=EVmS04Y0Bk0OMwkKQ6kIPHcK8EixutlkLai+6zxQN1x8HT7jA4NAXBmbS8CVBbqspg
+         vqLwx3oK/GDRWVkU9+PTn4H2qj1hMwV57B0EDQd4Qztb6S5kBakx14PSFH7GQfrm9Hh8
+         Sj3sZEGoVJNXomikSudsAZkvCb+W4VI6ic9tmNPVYB5bq2IBkB4futqCynDgcsM+LP2z
+         qD8+oVpSjKclfPjUspp78j1wIpZu44ku+k+42PRFxL49l+seN735h/0wyObb3gKh2amV
+         trZrOuW5uBDiz+TqrkqOcFtMhisuPus0N+qegr0ejZUtiWdcA832Ntv1pBGC8PRnZH9I
+         zpdQ==
+X-Gm-Message-State: AOAM5300qhlGaUh2artzHsvIg8Ufg6UOq+Lu2MC/ivMVqh9eAd5rFEv8
+        +RQAKqvSmHtifWSlOZcSGLu23Q==
+X-Google-Smtp-Source: ABdhPJxZsh1kEVKkZgg5mmiTTuA7SA5fu83x81BaMEGYdZzVIbC0H3RSF/yR7MaU91mltsILBevkGg==
+X-Received: by 2002:a63:c5e:: with SMTP id 30mr2122312pgm.522.1642751801695;
+        Thu, 20 Jan 2022 23:56:41 -0800 (PST)
+Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.230])
+        by smtp.gmail.com with ESMTPSA id t15sm10778178pjy.17.2022.01.20.23.56.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 23:56:41 -0800 (PST)
+From:   Muchun Song <songmuchun@bytedance.com>
+To:     dan.j.williams@intel.com, willy@infradead.org, jack@suse.cz,
+        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
+        apopple@nvidia.com, shy828301@gmail.com, rcampbell@nvidia.com,
+        hughd@google.com, xiyuyang19@fudan.edu.cn,
+        kirill.shutemov@linux.intel.com, zwisler@kernel.org
+Cc:     linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        Muchun Song <songmuchun@bytedance.com>
+Subject: [PATCH 3/5] mm: page_vma_mapped: support checking if a pfn is mapped into a vma
+Date:   Fri, 21 Jan 2022 15:55:13 +0800
+Message-Id: <20220121075515.79311-3-songmuchun@bytedance.com>
+X-Mailer: git-send-email 2.32.0 (Apple Git-132)
+In-Reply-To: <20220121075515.79311-1-songmuchun@bytedance.com>
+References: <20220121075515.79311-1-songmuchun@bytedance.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6c000477-002b-d125-b945-2c4831bad8a5@gmx.de>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-  Hi,
+page_vma_mapped_walk() is supposed to check if a page is mapped into a vma.
+However, not all page frames (e.g. PFN_DEV) have a associated struct page
+with it. There is going to be some duplicate codes similar with this function
+if someone want to check if a pfn (without a struct page) is mapped into a
+vma. So add support for checking if a pfn is mapped into a vma. In the next
+patch, the dax will use this new feature.
 
-> > So if this really has to come back then I think the pragmatic approach is
-> > to do it behind a CONFIG_FBCON_ACCEL, default n, and with a huge warning
-> > that enabling that shouldn't be done for any distro which only enables
-> > firmware and drm fbdev drivers.
-> 
-> Thanks for coming back on this, but quite frankly I don't understand
-> that request. How should that warning look like, something along:
-> "BE WARNED: The framebuffer text console on your non-DRM supported
-> graphic card will then run faster and smoother if you enable this option."
-> That doesn't make sense. People and distros would want to enable that.
+Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+---
+ include/linux/rmap.h | 13 +++++++++--
+ mm/internal.h        | 25 +++++++++++++-------
+ mm/page_vma_mapped.c | 65 +++++++++++++++++++++++++++++++++-------------------
+ 3 files changed, 70 insertions(+), 33 deletions(-)
 
-Nope.  Most distros want disable fbdev drivers rather sooner than later.
-The fbdev drivers enabled in the fedora kernel today:
-
-	CONFIG_FB_VGA16=m
-	CONFIG_FB_VESA=y
-	CONFIG_FB_EFI=y
-	CONFIG_FB_SSD1307=m
-
-CONFIG_FB_VESA + CONFIG_FB_EFI will go away soon, with simpledrm taking
-over their role.
-
-> And if a distro *just* has firmware and drm fbdev drivers enabled,
-> none of the non-DRM graphic cards would be loaded anyway and this code
-> wouldn't be executed anyway.
-
-Yes, exactly.  That's why there is no point in compiling that code.
-
-take care,
-  Gerd
+diff --git a/include/linux/rmap.h b/include/linux/rmap.h
+index 221c3c6438a7..7628474732e7 100644
+--- a/include/linux/rmap.h
++++ b/include/linux/rmap.h
+@@ -204,9 +204,18 @@ int make_device_exclusive_range(struct mm_struct *mm, unsigned long start,
+ #define PVMW_SYNC		(1 << 0)
+ /* Look for migarion entries rather than present PTEs */
+ #define PVMW_MIGRATION		(1 << 1)
++/* Walk the page table by checking the pfn instead of a struct page */
++#define PVMW_PFN_WALK		(1 << 2)
+ 
+ struct page_vma_mapped_walk {
+-	struct page *page;
++	union {
++		struct page *page;
++		struct {
++			unsigned long pfn;
++			unsigned int nr;
++			pgoff_t index;
++		};
++	};
+ 	struct vm_area_struct *vma;
+ 	unsigned long address;
+ 	pmd_t *pmd;
+@@ -218,7 +227,7 @@ struct page_vma_mapped_walk {
+ static inline void page_vma_mapped_walk_done(struct page_vma_mapped_walk *pvmw)
+ {
+ 	/* HugeTLB pte is set to the relevant page table entry without pte_mapped. */
+-	if (pvmw->pte && !PageHuge(pvmw->page))
++	if (pvmw->pte && ((pvmw->flags & PVMW_PFN_WALK) || !PageHuge(pvmw->page)))
+ 		pte_unmap(pvmw->pte);
+ 	if (pvmw->ptl)
+ 		spin_unlock(pvmw->ptl);
+diff --git a/mm/internal.h b/mm/internal.h
+index deb9bda18e59..d6e3e8e1be2d 100644
+--- a/mm/internal.h
++++ b/mm/internal.h
+@@ -478,25 +478,34 @@ vma_address(struct page *page, struct vm_area_struct *vma)
+ }
+ 
+ /*
+- * Then at what user virtual address will none of the page be found in vma?
+- * Assumes that vma_address() already returned a good starting address.
+- * If page is a compound head, the entire compound page is considered.
++ * Return the end of user virtual address at the specific offset within
++ * a vma.
+  */
+ static inline unsigned long
+-vma_address_end(struct page *page, struct vm_area_struct *vma)
++vma_pgoff_address_end(pgoff_t pgoff, unsigned long nr_pages,
++		      struct vm_area_struct *vma)
+ {
+-	pgoff_t pgoff;
+ 	unsigned long address;
+ 
+-	VM_BUG_ON_PAGE(PageKsm(page), page);	/* KSM page->index unusable */
+-	pgoff = page_to_pgoff(page) + compound_nr(page);
+-	address = vma->vm_start + ((pgoff - vma->vm_pgoff) << PAGE_SHIFT);
++	address = vma->vm_start + ((pgoff + nr_pages - vma->vm_pgoff) << PAGE_SHIFT);
+ 	/* Check for address beyond vma (or wrapped through 0?) */
+ 	if (address < vma->vm_start || address > vma->vm_end)
+ 		address = vma->vm_end;
+ 	return address;
+ }
+ 
++/*
++ * Then at what user virtual address will none of the page be found in vma?
++ * Assumes that vma_address() already returned a good starting address.
++ * If page is a compound head, the entire compound page is considered.
++ */
++static inline unsigned long
++vma_address_end(struct page *page, struct vm_area_struct *vma)
++{
++	VM_BUG_ON_PAGE(PageKsm(page), page);	/* KSM page->index unusable */
++	return vma_pgoff_address_end(page_to_pgoff(page), compound_nr(page), vma);
++}
++
+ static inline struct file *maybe_unlock_mmap_for_io(struct vm_fault *vmf,
+ 						    struct file *fpin)
+ {
+diff --git a/mm/page_vma_mapped.c b/mm/page_vma_mapped.c
+index f7b331081791..c8819770d457 100644
+--- a/mm/page_vma_mapped.c
++++ b/mm/page_vma_mapped.c
+@@ -53,10 +53,16 @@ static bool map_pte(struct page_vma_mapped_walk *pvmw)
+ 	return true;
+ }
+ 
+-static inline bool pfn_is_match(struct page *page, unsigned long pfn)
++static inline bool pfn_is_match(struct page_vma_mapped_walk *pvmw, unsigned long pfn)
+ {
+-	unsigned long page_pfn = page_to_pfn(page);
++	struct page *page;
++	unsigned long page_pfn;
+ 
++	if (pvmw->flags & PVMW_PFN_WALK)
++		return pfn >= pvmw->pfn && pfn - pvmw->pfn < pvmw->nr;
++
++	page = pvmw->page;
++	page_pfn = page_to_pfn(page);
+ 	/* normal page and hugetlbfs page */
+ 	if (!PageTransCompound(page) || PageHuge(page))
+ 		return page_pfn == pfn;
+@@ -116,7 +122,7 @@ static bool check_pte(struct page_vma_mapped_walk *pvmw)
+ 		pfn = pte_pfn(*pvmw->pte);
+ 	}
+ 
+-	return pfn_is_match(pvmw->page, pfn);
++	return pfn_is_match(pvmw, pfn);
+ }
+ 
+ static void step_forward(struct page_vma_mapped_walk *pvmw, unsigned long size)
+@@ -127,24 +133,24 @@ static void step_forward(struct page_vma_mapped_walk *pvmw, unsigned long size)
+ }
+ 
+ /**
+- * page_vma_mapped_walk - check if @pvmw->page is mapped in @pvmw->vma at
+- * @pvmw->address
+- * @pvmw: pointer to struct page_vma_mapped_walk. page, vma, address and flags
+- * must be set. pmd, pte and ptl must be NULL.
++ * page_vma_mapped_walk - check if @pvmw->page or @pvmw->pfn is mapped in
++ * @pvmw->vma at @pvmw->address
++ * @pvmw: pointer to struct page_vma_mapped_walk. page (or pfn and nr and
++ * index), vma, address and flags must be set. pmd, pte and ptl must be NULL.
+  *
+- * Returns true if the page is mapped in the vma. @pvmw->pmd and @pvmw->pte point
+- * to relevant page table entries. @pvmw->ptl is locked. @pvmw->address is
+- * adjusted if needed (for PTE-mapped THPs).
++ * Returns true if the page or pfn is mapped in the vma. @pvmw->pmd and
++ * @pvmw->pte point to relevant page table entries. @pvmw->ptl is locked.
++ * @pvmw->address is adjusted if needed (for PTE-mapped THPs).
+  *
+  * If @pvmw->pmd is set but @pvmw->pte is not, you have found PMD-mapped page
+- * (usually THP). For PTE-mapped THP, you should run page_vma_mapped_walk() in
+- * a loop to find all PTEs that map the THP.
++ * (usually THP or Huge DEVMAP). For PMD-mapped page, you should run
++ * page_vma_mapped_walk() in a loop to find all PTEs that map the huge page.
+  *
+  * For HugeTLB pages, @pvmw->pte is set to the relevant page table entry
+  * regardless of which page table level the page is mapped at. @pvmw->pmd is
+  * NULL.
+  *
+- * Returns false if there are no more page table entries for the page in
++ * Returns false if there are no more page table entries for the page or pfn in
+  * the vma. @pvmw->ptl is unlocked and @pvmw->pte is unmapped.
+  *
+  * If you need to stop the walk before page_vma_mapped_walk() returned false,
+@@ -153,18 +159,27 @@ static void step_forward(struct page_vma_mapped_walk *pvmw, unsigned long size)
+ bool page_vma_mapped_walk(struct page_vma_mapped_walk *pvmw)
+ {
+ 	struct mm_struct *mm = pvmw->vma->vm_mm;
+-	struct page *page = pvmw->page;
++	struct page *page;
+ 	unsigned long end;
++	unsigned long pfn;
+ 	pgd_t *pgd;
+ 	p4d_t *p4d;
+ 	pud_t *pud;
+ 	pmd_t pmde;
+ 
++	if (pvmw->flags & PVMW_PFN_WALK) {
++		page = NULL;
++		pfn = pvmw->pfn;
++	} else {
++		page = pvmw->page;
++		pfn = page_to_pfn(page);
++	}
++
+ 	/* The only possible pmd mapping has been handled on last iteration */
+ 	if (pvmw->pmd && !pvmw->pte)
+ 		return not_found(pvmw);
+ 
+-	if (unlikely(PageHuge(page))) {
++	if (unlikely(page && PageHuge(page))) {
+ 		/* The only possible mapping was handled on last iteration */
+ 		if (pvmw->pte)
+ 			return not_found(pvmw);
+@@ -187,9 +202,13 @@ bool page_vma_mapped_walk(struct page_vma_mapped_walk *pvmw)
+ 	 * any PageKsm page: whose page->index misleads vma_address()
+ 	 * and vma_address_end() to disaster.
+ 	 */
+-	end = PageTransCompound(page) ?
+-		vma_address_end(page, pvmw->vma) :
+-		pvmw->address + PAGE_SIZE;
++	if (page)
++		end = PageTransCompound(page) ?
++		      vma_address_end(page, pvmw->vma) :
++		      pvmw->address + PAGE_SIZE;
++	else
++		end = vma_pgoff_address_end(pvmw->index, pvmw->nr, pvmw->vma);
++
+ 	if (pvmw->pte)
+ 		goto next_pte;
+ restart:
+@@ -218,13 +237,13 @@ bool page_vma_mapped_walk(struct page_vma_mapped_walk *pvmw)
+ 		 */
+ 		pmde = READ_ONCE(*pvmw->pmd);
+ 
+-		if (pmd_trans_huge(pmde) || is_pmd_migration_entry(pmde)) {
++		if (pmd_leaf(pmde) || is_pmd_migration_entry(pmde)) {
+ 			pvmw->ptl = pmd_lock(mm, pvmw->pmd);
+ 			pmde = *pvmw->pmd;
+-			if (likely(pmd_trans_huge(pmde))) {
++			if (likely(pmd_leaf(pmde))) {
+ 				if (pvmw->flags & PVMW_MIGRATION)
+ 					return not_found(pvmw);
+-				if (pmd_page(pmde) != page)
++				if (pmd_pfn(pmde) != pfn)
+ 					return not_found(pvmw);
+ 				return true;
+ 			}
+@@ -236,7 +255,7 @@ bool page_vma_mapped_walk(struct page_vma_mapped_walk *pvmw)
+ 					return not_found(pvmw);
+ 				entry = pmd_to_swp_entry(pmde);
+ 				if (!is_migration_entry(entry) ||
+-				    pfn_swap_entry_to_page(entry) != page)
++				    page_to_pfn(pfn_swap_entry_to_page(entry)) != pfn)
+ 					return not_found(pvmw);
+ 				return true;
+ 			}
+@@ -249,7 +268,7 @@ bool page_vma_mapped_walk(struct page_vma_mapped_walk *pvmw)
+ 			 * cannot return prematurely, while zap_huge_pmd() has
+ 			 * cleared *pmd but not decremented compound_mapcount().
+ 			 */
+-			if ((pvmw->flags & PVMW_SYNC) &&
++			if ((pvmw->flags & PVMW_SYNC) && page &&
+ 			    PageTransCompound(page)) {
+ 				spinlock_t *ptl = pmd_lock(mm, pvmw->pmd);
+ 
+-- 
+2.11.0
 
