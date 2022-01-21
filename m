@@ -2,117 +2,161 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 433D1C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 12:25:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62E42C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 12:26:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380351AbiAUMZl (ORCPT
+        id S1380353AbiAUM0v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 07:25:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44186 "EHLO
+        Fri, 21 Jan 2022 07:26:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380326AbiAUMZg (ORCPT
+        with ESMTP id S234491AbiAUM0t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 07:25:36 -0500
-Received: from mail.skyhub.de (mail.skyhub.de [IPv6:2a01:4f8:190:11c2::b:1457])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E649C061574;
-        Fri, 21 Jan 2022 04:25:35 -0800 (PST)
-Received: from zn.tnic (dslb-088-067-221-104.088.067.pools.vodafone-ip.de [88.67.221.104])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.skyhub.de (SuperMail on ZX Spectrum 128k) with ESMTPSA id 44A1C1EC0606;
-        Fri, 21 Jan 2022 13:25:28 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=alien8.de; s=dkim;
-        t=1642767928;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:in-reply-to:in-reply-to:  references:references;
-        bh=0yQ74R3NaNtXXiWLWuDtVTd005DK5LpC2uXC3cyXYk4=;
-        b=nYvxqep4R7UqYo06jtTajr6nqpQb+zu2NmtQ8OYSnbeVqSOp/bOhp1m31WOoLPm6GWxulH
-        3bhGfzAlN9Mtp3TzyBBSRyMUQZpYbziDnVNjYVdVjcxZcW8OP6vWe2cPPS5Ny+4q79Z+nX
-        O7z5nMKvUAFKvjrJkbEqfqKFFwMlmWk=
-Date:   Fri, 21 Jan 2022 13:25:21 +0100
-From:   Borislav Petkov <bp@alien8.de>
-To:     Yazen Ghannam <yazen.ghannam@amd.com>
-Cc:     linux-edac@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mchehab@kernel.org, tony.luck@intel.com, james.morse@arm.com,
-        rric@kernel.org, Smita.KoralahalliChannabasappa@amd.com,
-        william.roche@oracle.com
-Subject: Re: [PATCH v3 2/2] EDAC/amd64: Add new register offset support and
- related changes
-Message-ID: <YeqmMcOSpjgHwYFD@zn.tnic>
-References: <20211228200615.412999-1-yazen.ghannam@amd.com>
- <20211228200615.412999-3-yazen.ghannam@amd.com>
+        Fri, 21 Jan 2022 07:26:49 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 916E9C061574;
+        Fri, 21 Jan 2022 04:26:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=oJK25nad9Ku+botT29oqxyUUwfOA24v8IepgHTqcOuc=; b=mpvLbtSMWuybwwODDd6F7LqVot
+        tlSVND9tmkZCWh/KCJPVxUURVTcM9XlheYPrpqTSINhfoCZTXc7HfGDajIn9nXjM9ixolrTnC7Rfs
+        iMAQ2YuIlw7bDEcNkuZEwWzg61CQIXaXOzDyCyJO/aSVRNE8AQfNAPaCqjKQ5kcrNABLL9sKuznPX
+        OmyZ3J93brq95wuyVLAQ2aagRncj1mtoJ3LfB1h/pTNbRIRWOSSMeLR1c5UE36qfruGrj26XZ0JMx
+        tuwq679AlQl6OpOIeOBzLAv18Eo5Q5LjawSBhQ4rpblU82m112l2BL6BtyBk8ATXJtHE3+SPJiNm1
+        bC5kWiKA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nAszq-002Zom-BL; Fri, 21 Jan 2022 12:26:26 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 499B59867E1; Fri, 21 Jan 2022 13:26:25 +0100 (CET)
+Date:   Fri, 21 Jan 2022 13:26:25 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     mingo@redhat.com, tglx@linutronix.de, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-api@vger.kernel.org, x86@kernel.org, pjt@google.com,
+        posk@google.com, avagin@google.com, jannh@google.com,
+        tdelisle@uwaterloo.ca, mark.rutland@arm.com, posk@posk.io,
+        david@redhat.com
+Subject: Re: [RFC][PATCH v2 5/5] sched: User Mode Concurency Groups
+Message-ID: <20220121122625.GG20638@worktop.programming.kicks-ass.net>
+References: <20220120155517.066795336@infradead.org>
+ <20220120160822.914418096@infradead.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20211228200615.412999-3-yazen.ghannam@amd.com>
+In-Reply-To: <20220120160822.914418096@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Dec 28, 2021 at 08:06:15PM +0000, Yazen Ghannam wrote:
-> diff --git a/drivers/edac/amd64_edac.c b/drivers/edac/amd64_edac.c
-> index 4db92c77276f..a299c361a904 100644
-> --- a/drivers/edac/amd64_edac.c
-> +++ b/drivers/edac/amd64_edac.c
-> @@ -15,6 +15,31 @@ static struct msr __percpu *msrs;
->  
->  static struct amd64_family_type *fam_type;
->  
-> +/* Family flag helpers */
-> +static inline u64 get_addr_cfg(void)
-> +{
-> +	if (fam_type->flags.zn_regs_v2)
-> +		return UMCCH_ADDR_CFG_DDR5;
-> +
-> +	return UMCCH_ADDR_CFG;
-> +}
-> +
-> +static inline u64 get_addr_mask_sec(void)
-> +{
-> +	if (fam_type->flags.zn_regs_v2)
-> +		return UMCCH_ADDR_MASK_SEC_DDR5;
-> +
-> +	return UMCCH_ADDR_MASK_SEC;
-> +}
-> +
-> +static inline u64 get_dimm_cfg(void)
-> +{
-> +	if (fam_type->flags.zn_regs_v2)
-> +		return UMCCH_DIMM_CFG_DDR5;
-> +
-> +	return UMCCH_DIMM_CFG;
-> +}
+On Thu, Jan 20, 2022 at 04:55:22PM +0100, Peter Zijlstra wrote:
+> +/*
+> + * Pinning a page inhibits rmap based unmap for Anon pages. Doing a load
+> + * through the user mapping ensures the user mapping exists.
+> + */
+> +#define umcg_pin_and_load(_self, _pagep, _member)				\
+> +({										\
+> +	__label__ __out;							\
+> +	int __ret = -EFAULT;							\
+> +										\
+> +	if (pin_user_pages_fast((unsigned long)(_self), 1, 0, &(_pagep)) != 1)	\
+> +		goto __out;							\
+> +										\
+> +	if (!PageAnon(_pagep) ||						\
+> +	    get_user(_member, &(_self)->_member)) {				\
+> +		unpin_user_page(_pagep);					\
+> +		goto __out;							\
+> +	}									\
+> +	__ret = 0;								\
+> +__out:	__ret;									\
+> +})
 
-Yeah, you can do it either this way and have a lot of small functions
-or you can do what I did with mca_msr_reg() which is a single mapping
-function you then use everywhere.
+Per the thread with David, this wants changing like so.
 
-Your call.
+---
 
-> +
->  /* Per-node stuff */
->  static struct ecc_settings **ecc_stngs;
->  
-> @@ -1429,8 +1454,10 @@ static void __dump_misc_regs_df(struct amd64_pvt *pvt)
->  		edac_dbg(1, "UMC%d x16 DIMMs present: %s\n",
->  				i, (umc->dimm_cfg & BIT(7)) ? "yes" : "no");
->  
-> -		if (pvt->dram_type == MEM_LRDDR4) {
-> -			amd_smn_read(pvt->mc_node_id, umc_base + UMCCH_ADDR_CFG, &tmp);
-> +		if (pvt->dram_type == MEM_LRDDR4 || pvt->dram_type == MEM_LRDDR5) {
-
-This still keeps the ->dram_type per pvt, which is per memory controller
-in amd64_edac nomenclature.
-
-But AFAIR, we said last time that the DRAM type is per UMC now, as you
-do in the previous patch.
-
-Which means, you either have to test umc->dimm_cfg to get the DRAM type
-here or push ->dram_type into the umc struct...
-
--- 
-Regards/Gruss,
-    Boris.
-
-https://people.kernel.org/tglx/notes-about-netiquette
+--- a/kernel/sched/umcg.c
++++ b/kernel/sched/umcg.c
+@@ -34,25 +34,26 @@ static struct task_struct *umcg_get_task
+ }
+ 
+ /*
+- * Pinning a page inhibits rmap based unmap for Anon pages. Doing a load
+- * through the user mapping ensures the user mapping exists.
++ * Pinning a page inhibits rmap based unmap for Anon pages. Doing a store
++ * through the user mapping ensures the user mapping exists and is writable.
+  */
+-#define umcg_pin_and_load(_self, _pagep, _member)				\
+-({										\
+-	__label__ __out;							\
+-	int __ret = -EFAULT;							\
+-										\
+-	if (pin_user_pages_fast((unsigned long)(_self), 1, 0, &(_pagep)) != 1)	\
+-		goto __out;							\
+-										\
+-	if (!PageAnon(_pagep) ||						\
+-	    get_user(_member, &(_self)->_member)) {				\
+-		unpin_user_page(_pagep);					\
+-		goto __out;							\
+-	}									\
+-	__ret = 0;								\
+-__out:	__ret;									\
+-})
++static int umcg_pin_page(struct umcg_task __user *self, struct page **pagep)
++{
++	int ret = -EFAULT;
++
++	if (pin_user_pages_fast((unsigned long)self, 1, FOLL_WRITE, pagep) != 1)
++		goto out;
++
++	if (!PageAnon(*pagep) ||
++	    put_user(0ULL, &self->__zero[0])) {
++		unpin_user_page(*pagep);
++		goto out;
++	}
++
++	ret = 0;
++out:
++	return ret;
++}
+ 
+ /**
+  * umcg_pin_pages: pin pages containing struct umcg_task of
+@@ -72,10 +73,13 @@ static int umcg_pin_pages(void)
+ 			 tsk->umcg_server))
+ 		return -EBUSY;
+ 
+-	ret = umcg_pin_and_load(self, tsk->umcg_page, server_tid);
++	ret = umcg_pin_page(self, &tsk->umcg_page);
+ 	if (ret)
+ 		goto clear_self;
+ 
++	if (get_user(server_tid, &self->server_tid))
++		goto unpin_self;
++
+ 	ret = -ESRCH;
+ 	server = umcg_get_task(server_tid);
+ 	if (!server)
+@@ -83,7 +87,7 @@ static int umcg_pin_pages(void)
+ 
+ 	/* must cache due to possible concurrent change */
+ 	tsk->umcg_server_task = READ_ONCE(server->umcg_task);
+-	ret = umcg_pin_and_load(tsk->umcg_server_task, tsk->umcg_server_page, server_tid);
++	ret = umcg_pin_page(tsk->umcg_server_task, &tsk->umcg_server_page);
+ 	if (ret)
+ 		goto clear_server;
+ 
+@@ -414,7 +418,7 @@ static int umcg_wait(u64 timo)
+ 				break;
+ 			}
+ 
+-			ret = umcg_pin_and_load(self, page, state);
++			ret = umcg_pin_page(self, &page);
+ 			if (ret) {
+ 				page = NULL;
+ 				break;
