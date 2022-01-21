@@ -2,92 +2,129 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF375C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 10:42:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C08A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 10:43:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380036AbiAUKma (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 05:42:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49340 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234910AbiAUKm3 (ORCPT
+        id S234688AbiAUKnB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 05:43:01 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:42432 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229828AbiAUKnA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 05:42:29 -0500
-Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35665C061574;
-        Fri, 21 Jan 2022 02:42:29 -0800 (PST)
-Received: by mail-ed1-x535.google.com with SMTP id r10so10244693edt.1;
-        Fri, 21 Jan 2022 02:42:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zZhYAYN3n5WcZz7HwZEIgORGsu/PwseBwSd+OLunQyw=;
-        b=AZkri8tJKbxLBr2pMTKNZbbeX2q6oRSbHn/oCnZUnw3il4iNUAPXd0tpjydiyoPepj
-         H9eIHMz7F6+1mtpWkLyntJiRcO54bNPWuWpTKhYkZCXp/hfFqIWZRBE4h0xW4SZudxkY
-         4fiH2jHbp/EzHlyier9rBbAbln+YDkR/Oezl6q51r4tg94s2rQXDXKC+xKCjCtK2AlZr
-         f8yvobllJ45pMVuRZ+OQ5RH8oK3ybkp1YreB1iuwNd6XedJn4Ukz7i+9XBMylQmN1Cny
-         a+7w/TYLTpwseTj8dIrhCXu1Ia6IlI6tqLlvMGWmT9dmN7pQu7EuOl40c9J0obSpz3XP
-         2J8A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zZhYAYN3n5WcZz7HwZEIgORGsu/PwseBwSd+OLunQyw=;
-        b=nizbspt0RSi4erlhnkbynOnhFCA26E/Wq48la5xSo4t9khCgGpIVeJu52EVWR/jxAB
-         1W9jaUpqXCK6htgXruGJSPgJl/xfTHkyNQlGeidRKW/wJ/SdnbMBwQQcJj43bxf0n5xQ
-         cxmav6W/9d4oCRXEfUuRqcPCCTNO/755pNh9TYAf0axTD7xu/12zPzWv8hM0zNsNDKNM
-         9w+RFgGLr8Su9RkIso3Lny49qrmWDptzXjEbaHG3zFfGzSjH3UBUg++YTCy7SEtnULJL
-         skwwMjOcxjDsF9qxhe6ly6IXVXNgx/Z+rrs/Z1o579Eao0o9hgeKr51PUAGWB9ll99ic
-         8moA==
-X-Gm-Message-State: AOAM532NPpJOHN9DRFNwCBdfHCaDAoy1HGAkRz3OINe4BrHFBrh+E0fN
-        Pxum8Ft4QC4wvtsrOQ4DTXtRFnZ0BysHnkPj+oc=
-X-Google-Smtp-Source: ABdhPJw7d/LF3frtLFtj3ko/qDw6dxnIG0GOLJlFyQl8D2J/p8srr1uyy4U1jX75suhpUUJ2hmEkbiuh9An3U1GrCBY=
-X-Received: by 2002:a17:907:948d:: with SMTP id dm13mr2790824ejc.497.1642761747389;
- Fri, 21 Jan 2022 02:42:27 -0800 (PST)
+        Fri, 21 Jan 2022 05:43:00 -0500
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20L8GmQr024140;
+        Fri, 21 Jan 2022 10:42:35 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=wjVmRjY5/HzxdiRMhpvDS0AZ7vpcmpFq4APogwzM44M=;
+ b=YOXUpSmCOxppQ8pQ4uXI4jz8t8DuwvHt3I4gYhn4yeVX1IkQmSs1Rzj53NQhxxukWGHT
+ 4JQnYG2vdCOyz5UVVdg0EN56zO3gKURKNHs6vnv4AHjYsbNQG9cwyXUIYnttZ8tALkOu
+ SLcIEkJdwYK4F/wOiqYX2WhBMFYLvlZXX7jE8ym0iZTDbF2PGENNLDWcue1i5wsNc+zu
+ zL6g9hwaJZmUGML7WSydb4QIkLDtjrFNmqAFtDX/NeDLIzCvJ+oK31Byirnge79eCeJN
+ Gmfci/ytc+Nqae5YcxF5OgGImQq3HbCUa0qEE+LQM9BE/p2DkEN8i8ch5ndgy9VhEFVZ 8A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dqs6ajqrt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 21 Jan 2022 10:42:35 +0000
+Received: from m0098394.ppops.net (m0098394.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20LAceWw005204;
+        Fri, 21 Jan 2022 10:42:35 GMT
+Received: from ppma06ams.nl.ibm.com (66.31.33a9.ip4.static.sl-reverse.com [169.51.49.102])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dqs6ajqra-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 21 Jan 2022 10:42:34 +0000
+Received: from pps.filterd (ppma06ams.nl.ibm.com [127.0.0.1])
+        by ppma06ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20LAW10x031503;
+        Fri, 21 Jan 2022 10:42:32 GMT
+Received: from b06cxnps4076.portsmouth.uk.ibm.com (d06relay13.portsmouth.uk.ibm.com [9.149.109.198])
+        by ppma06ams.nl.ibm.com with ESMTP id 3dqjm7bhqs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 21 Jan 2022 10:42:32 +0000
+Received: from d06av21.portsmouth.uk.ibm.com (d06av21.portsmouth.uk.ibm.com [9.149.105.232])
+        by b06cxnps4076.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20LAgUDd43712814
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 21 Jan 2022 10:42:30 GMT
+Received: from d06av21.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id ECA005204E;
+        Fri, 21 Jan 2022 10:42:29 +0000 (GMT)
+Received: from osiris (unknown [9.145.74.142])
+        by d06av21.portsmouth.uk.ibm.com (Postfix) with ESMTPS id 8BB505204F;
+        Fri, 21 Jan 2022 10:42:29 +0000 (GMT)
+Date:   Fri, 21 Jan 2022 11:42:28 +0100
+From:   Heiko Carstens <hca@linux.ibm.com>
+To:     Sven Schnelle <svens@linux.ibm.com>
+Cc:     Yinan Liu <yinan@linux.alibaba.com>, rostedt@goodmis.org,
+        peterz@infradead.org, mark-pk.tsai@mediatek.com, mingo@redhat.com,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH v8] scripts: ftrace - move the sort-processing in
+ ftrace_init
+Message-ID: <YeqOFHNfxKcNXNrn@osiris>
+References: <20210911135043.16014-1-yinan@linux.alibaba.com>
+ <20211212113358.34208-1-yinan@linux.alibaba.com>
+ <20211212113358.34208-2-yinan@linux.alibaba.com>
+ <yt9dee51ctfn.fsf@linux.ibm.com>
 MIME-Version: 1.0
-References: <20220121041428.6437-1-josright123@gmail.com> <20220121041428.6437-3-josright123@gmail.com>
- <CAHp75Vc9pJMNfW2roUbdrcxCSvyGboTsJC0oTDCcTAS5bmF08w@mail.gmail.com>
-In-Reply-To: <CAHp75Vc9pJMNfW2roUbdrcxCSvyGboTsJC0oTDCcTAS5bmF08w@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 21 Jan 2022 12:41:50 +0200
-Message-ID: <CAHp75VcV4F_qLJXW_dZ3t2MGLt0ddKX6m6NzapLtVwvNXaH19A@mail.gmail.com>
-Subject: Re: [PATCH v12, 2/2] net: Add dm9051 driver
-To:     Joseph CHAMG <josright123@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, joseph_chang@davicom.com.tw,
-        netdev <netdev@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, Leon Romanovsky <leon@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <yt9dee51ctfn.fsf@linux.ibm.com>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: gtxIhXYXAhCiHTikDPYHtmSUd5jpv1Et
+X-Proofpoint-ORIG-GUID: VAHo_vQOnqovOfPpRUnkvV2z8CpKyE9P
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-21_06,2022-01-21_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
+ lowpriorityscore=0 impostorscore=0 bulkscore=0 adultscore=0
+ mlxlogscore=999 mlxscore=0 priorityscore=1501 malwarescore=0 spamscore=0
+ suspectscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2201210070
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 12:37 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Fri, Jan 21, 2022 at 6:15 AM Joseph CHAMG <josright123@gmail.com> wrote:
+On Fri, Jan 21, 2022 at 10:46:36AM +0100, Sven Schnelle wrote:
+> Hi Yinan,
+> 
+> Yinan Liu <yinan@linux.alibaba.com> writes:
+> 
+> > When the kernel starts, the initialization of ftrace takes
+> > up a portion of the time (approximately 6~8ms) to sort mcount
+> > addresses. We can save this time by moving mcount-sorting to
+> > compile time.
+> >
+> > Signed-off-by: Yinan Liu <yinan@linux.alibaba.com>
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Reported-by: kernel test robot <oliver.sang@intel.com>
+> > ---
+> >  kernel/trace/ftrace.c   |  11 +++-
+> >  scripts/Makefile        |   6 +-
+> >  scripts/link-vmlinux.sh |   6 +-
+> >  scripts/sorttable.c     |   2 +
+> >  scripts/sorttable.h     | 120 +++++++++++++++++++++++++++++++++++++++-
+> >  5 files changed, 137 insertions(+), 8 deletions(-)
+> 
+> while i like the idea, this unfortunately breaks ftrace on s390. The
+> reason for that is that the compiler generates relocation entries for
+> all the addresses in __mcount_loc. During boot, the s390 decompressor
+> iterates through all the relocations and overwrites the nicely
+> sorted list between __start_mcount_loc and __stop_mcount_loc with
+> the unsorted list because the relocations entries are not adjusted.
+> 
+> Of course we could just disable that option, but that would make us
+> different compared to x86 which i don't like. Adding code to sort the
+> relocation would of course also fix that, but i don't think it is a good
+> idea to rely on the order of relocations.
+> 
+> Any thoughts how a fix could look like, and whether that could also be a
+> problem on other architectures?
 
-...
+Sven, thanks for figuring this out. Can you confirm that reverting
+commit 72b3942a173c ("scripts: ftrace - move the sort-processing in
+ftrace_init") fixes the problem?
 
-> > correctly use regmap bulk read/write/update_bits APIs
-> > use mdiobus to work to phylib and to this driver
-> > fine tune to arrange the source code to better usage
->
-> This is not tagged properly. Also, I specifically removed everything
-> else to point out, please, read finally the article [1] and write a
-> proper commit message. And move changelog under the cutter '--- '
-> line. Without doing these two things nobody can do anything with your
-> contribution.
-
-Next comment, remove all those `unlickely()` calls. Otherwise you have
-to justify their appearance.
-
-> [1]: https://cbea.ms/git-commit/
-
-
--- 
-With Best Regards,
-Andy Shevchenko
+This really should be addressed before rc1 is out, otherwise s390 is
+broken if somebody enables ftrace.
+Where "broken" translates to random crashes as soon as ftrace is
+enabled, which again is nowadays quite common.
