@@ -2,99 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C00C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 01:35:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81314C4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 01:37:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347747AbiAUBfW (ORCPT
+        id S1348055AbiAUBhn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 20:35:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40910 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239700AbiAUBfS (ORCPT
+        Thu, 20 Jan 2022 20:37:43 -0500
+Received: from mail-oi1-f177.google.com ([209.85.167.177]:38624 "EHLO
+        mail-oi1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232540AbiAUBhl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 20:35:18 -0500
-Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B607C061574;
-        Thu, 20 Jan 2022 17:35:18 -0800 (PST)
-Received: by mail-qv1-xf29.google.com with SMTP id k4so8824657qvt.6;
-        Thu, 20 Jan 2022 17:35:18 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XlpFI84bOjXDIKsLry0zm6Nf4XTJwuG9N3/EyF/LIkc=;
-        b=jBsFfq//SLOoNJa4YJ+vOS3PFmjtwBNRrgNNhCr3QPCYMtTiTnaoRPjcFOyqB73apc
-         wl4+pufIhtR8X62l1a279bVocUlgLRaKwzD3NzFprtdpQKRNH0DVeRmoS+nSF6zvk/fP
-         2PzEfSS9ZTbYSwDVZqzmG0NUT72u6IGDHQPr4lGlsza3c5Kpzwp4MjsTFcJ3SungAHO0
-         3h4cJj0baeOwsfJxIdw2uAvlNr6B33uVNIZeiuSiuXDg2suYPvxMxMs0K+opfBFiq0V2
-         ybNPmxoylp7qbvYQ4Pizh6ExhA0OqJR7Yk5MRD7ShsBSyQBL9dftH/9fPy1q56ZY+xWA
-         /Pvg==
+        Thu, 20 Jan 2022 20:37:41 -0500
+Received: by mail-oi1-f177.google.com with SMTP id g205so11559536oif.5;
+        Thu, 20 Jan 2022 17:37:41 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=XlpFI84bOjXDIKsLry0zm6Nf4XTJwuG9N3/EyF/LIkc=;
-        b=uBmGZDm+LIELkCOyFAEmp1rnPU8FuUlgCfpx2Tc47VXjxnN8yGaR09p82V7PTSyglB
-         1j+b1hQ6gjdGm7HwxOsxaeDptbF/eRGFqmRl8AaHjp614kR7GyfYyX2OKQskgAslLfJ1
-         Mv91AcTOaSU0hkaYmkVefE7eL5D0BEEW2qW/eWrqInWpkE9CaeTPKpsRkMxe+mqeGx4E
-         VFiAiC+7ZwfTYXh3N4NJGxwi/PUtviG3u9v7hSUniqmfkaOwAV7mPLkAe5YdQLqip3rG
-         KhUT239QVKhDZGwkYfOT54ez6GNMr9exrK4jV/caBRzwwEzHtyqc4c2ff505vqP1QoUn
-         y5jg==
-X-Gm-Message-State: AOAM531IG74DB5uCH/72eLjE/BxNF1/Wn700lDIG8PlfIFm5DoVwMzXn
-        qZRCdfHYKVL/l9UwFi7bZaY=
-X-Google-Smtp-Source: ABdhPJxj9wj/QOhdwWx6apVy7R7UlvurS5idAc669qDMKSuYo4IYeO5v8HHIeXSZmSL4acT+Gh253Q==
-X-Received: by 2002:a05:6214:627:: with SMTP id a7mr1666916qvx.114.1642728917637;
-        Thu, 20 Jan 2022 17:35:17 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id v25sm2264249qtc.96.2022.01.20.17.35.14
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=lwx/3sI/jAgnGg6BbYNTq2g4K7zJzyk25fhYkr3exC0=;
+        b=t8VFvFhmokBMq5hdyD47XrcVaaRq9Blc6EZwVd2Mckp3jhx+LodO6HWZSIQnrQq3wL
+         3pewnyc7SdBo/iPhkNu3t33cF7eh34HUKLZF66ErQx7hLP0jC1ym2gvy7ao4dHa5ZrBC
+         2/l/Zk6VMu0V3YTKydLL3TcWZW1soN0aAQZQD2haK55S/Vj9r1wTRaV8dmhg4msbE/dH
+         V3O7/G/n3EQQjERTSCLG7BRJGXSeTTblICulS+cTuxw2jBzlCYdW/By32LirEiPk9+RM
+         gzG5WASeOFl4VUoin7QlvrTtQOywTB5iFPR6E2LROy/LtRZHMrcHvAcH++TOJTeaHTtm
+         Z2+g==
+X-Gm-Message-State: AOAM5319yGRvILIv0c+R+pQE2qzqUcX/M+qdyP51Xf73ZZdYMuBM988u
+        LqQoS+jGYeb/g8Y0lrzVsA==
+X-Google-Smtp-Source: ABdhPJxw18vz18oJhNnQmNv3Pg97sN04HSdTjldQBZY7zJAkoFUNRxgJGeo1b/7bNUVA/HdTHKyzKw==
+X-Received: by 2002:a05:6808:aa7:: with SMTP id r7mr1447327oij.47.1642729060372;
+        Thu, 20 Jan 2022 17:37:40 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id o21sm440941ote.4.2022.01.20.17.37.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 17:35:17 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: deng.changcheng@zte.com.cn
-To:     marcel@holtmann.org
-Cc:     johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Changcheng Deng <deng.changcheng@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: [PATCH] bluetooth: mgmt: Replace zero-length array with flexible-array member
-Date:   Fri, 21 Jan 2022 01:35:08 +0000
-Message-Id: <20220121013508.950175-1-deng.changcheng@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 20 Jan 2022 17:37:39 -0800 (PST)
+Received: (nullmailer pid 2314865 invoked by uid 1000);
+        Fri, 21 Jan 2022 01:37:38 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Ansuel Smith <ansuelsmth@gmail.com>
+Cc:     devicetree@vger.kernel.org, Taniya Das <tdas@codeaurora.org>,
+        linux-kernel@vger.kernel.org,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Turquette <mturquette@baylibre.com>,
+        linux-arm-msm@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        linux-clk@vger.kernel.org, Philipp Zabel <p.zabel@pengutronix.de>
+In-Reply-To: <20220120232028.6738-3-ansuelsmth@gmail.com>
+References: <20220120232028.6738-1-ansuelsmth@gmail.com> <20220120232028.6738-3-ansuelsmth@gmail.com>
+Subject: Re: [PATCH v2 02/15] dt-bindings: clock: simplify qcom,gcc-apq8064 Documentation
+Date:   Thu, 20 Jan 2022 19:37:38 -0600
+Message-Id: <1642729058.530862.2314864.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Changcheng Deng <deng.changcheng@zte.com.cn>
+On Fri, 21 Jan 2022 00:20:15 +0100, Ansuel Smith wrote:
+> Simplify qcon,gcc-apq8064 Documentation by using qcom,gcc.yaml as a
+> template.
+> 
+> Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+> ---
+>  .../bindings/clock/qcom,gcc-apq8064.yaml      | 27 +++----------------
+>  1 file changed, 3 insertions(+), 24 deletions(-)
+> 
 
-There is a regular need in the kernel to provide a way to declare having
-a dynamically sized set of trailing elements in a structure. Kernel code
-should always use "flexible array members" for these cases. The older
-style of one-element or zero-length arrays should no longer be used.
-Reference:
-https://www.kernel.org/doc/html/latest/process/deprecated.html#zero-length-and-one-element-arrays
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Reported-by: Zeal Robot <zealci@zte.com.cn>
-Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
----
- include/net/bluetooth/mgmt.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+yamllint warnings/errors:
 
-diff --git a/include/net/bluetooth/mgmt.h b/include/net/bluetooth/mgmt.h
-index 99266f7aebdc..3d26e6a3478b 100644
---- a/include/net/bluetooth/mgmt.h
-+++ b/include/net/bluetooth/mgmt.h
-@@ -1112,7 +1112,7 @@ struct mgmt_ev_adv_monitor_device_found {
- 	__s8   rssi;
- 	__le32 flags;
- 	__le16 eir_len;
--	__u8   eir[0];
-+	__u8   eir[];
- } __packed;
- 
- #define MGMT_EV_ADV_MONITOR_DEVICE_LOST		0x0030
--- 
-2.25.1
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/clock/qcom,gcc-apq8064.example.dt.yaml:0:0: /example-0/clock-controller@900000: failed to match any schema with compatible: ['qcom,gcc-apq8064']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1582347
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
