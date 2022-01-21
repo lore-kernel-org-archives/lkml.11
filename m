@@ -2,146 +2,71 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 987F5C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 06:55:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10B41C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 06:56:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378799AbiAUGzb (ORCPT
+        id S1378818AbiAUG4E (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 01:55:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54350 "EHLO
+        Fri, 21 Jan 2022 01:56:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378826AbiAUGzW (ORCPT
+        with ESMTP id S245091AbiAUG4D (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 01:55:22 -0500
-Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D59C061748
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 22:55:19 -0800 (PST)
-Received: by mail-qv1-xf35.google.com with SMTP id t7so9552175qvj.0
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 22:55:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pKxw+p7lB0nsRwM8MVWzboFXmLT34k0K03FPzwtxAHY=;
-        b=CARe8ttmcxAQOg/zAxhzRGaZ49Ok+ddErNFqywbC2UesN8xubEII2GKJzptNYrw9Q9
-         1RjYToA/5rdw/9NPllBvCxFUKE4quqxeZNPJUXcg5eN4syETNoKJ6xIffwmS289mnF+/
-         0Hxptkus69nAwIRtIskF5sR817fe8S310UPl56d7RN98E/ZATN9aktv7mVMq0v+eAOyn
-         yo75tDM07jAfSf6ALHGVl8RmfPUUCHKMJGTfwzZEl7tmn+fd2eZ5I3YFMksT8Fr/IWhK
-         rDaKNHOsAvOtFFds807V9qZTaOe8RGE+l14Ez8WMGGPwRf5T0R2tJIlYzJZOeS06ETZo
-         MamQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=pKxw+p7lB0nsRwM8MVWzboFXmLT34k0K03FPzwtxAHY=;
-        b=HHQrh0c3SEBZhg3hxKEy+wKTDjFdZrGhv76NBkCdb631TCGXnN4A75SEZMX+mwN4sj
-         NQtisJTBB3nQTLG+66oCZz47UlIorM9pcdgE3UoaB8I+l/V99EqbZVwEC9eiudKb2OMW
-         NrfjxFetkBgA0ZaNLAwPAO4s9bpIEA1DRFXLIVwSwAQ0NoxqAVQ8l95Th/B+IEJQSlkc
-         vDdxHfbPODggV164YhKlwwzdh4FVyTWsuoLPdDhjV9NdEdVtoGlyoOZ0mqxhEgGm7Zun
-         hqRT0WhYQi5P+E+oiStjaeOD5MIja0N5HBJecNbko0t9AN9eo++HCKmXoocH4kQDgc4C
-         OnYA==
-X-Gm-Message-State: AOAM532Seje+Ria5JuxBU7GeWMeuVlcMh14laeA5TnWczeOhHpZkjVCy
-        RkWIEfZJxARYNillaPm0u7E=
-X-Google-Smtp-Source: ABdhPJxfWhr//zTGzRLC9EUH9zThXDmG4p7vGEXiC7o+NuZ73/RzmPJGpwGWGvbJz2HDJk0toGDw+w==
-X-Received: by 2002:a05:6214:62e:: with SMTP id a14mr2395922qvx.113.1642748118752;
-        Thu, 20 Jan 2022 22:55:18 -0800 (PST)
-Received: from localhost.localdomain ([193.203.214.57])
-        by smtp.gmail.com with ESMTPSA id y16sm2888410qtw.4.2022.01.20.22.55.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 22:55:18 -0800 (PST)
-From:   cgel.zte@gmail.com
-X-Google-Original-From: si.hao@zte.com.cn
-To:     catalin.marinas@arm.com, pasha.tatashin@soleen.com,
-        si.hao@zte.com.cn, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Cc:     will@kernel.org, james.morse@arm.com
-Subject: [PATCH linux-next] arm64: kexec: Support the case of VA_BITS=39 in trans_pgd_idmap_page()
-Date:   Fri, 21 Jan 2022 06:52:16 +0000
-Message-Id: <20220121065216.1001021-1-si.hao@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 21 Jan 2022 01:56:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADA3DC061574;
+        Thu, 20 Jan 2022 22:56:03 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4E20D6171F;
+        Fri, 21 Jan 2022 06:56:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id B7698C340E2;
+        Fri, 21 Jan 2022 06:56:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642748162;
+        bh=UrjpnrILwzQkw5gHLWqbr3gC6Hslo+Ca3K3VZFiR7P4=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=o6grQIuNLRfUvn4V2ri7KS0azXS2/GVbBgUJM1HwlGLixIk+KphrHndkcDWFH1nmf
+         7biZ18vwtPJ/kEM4OqEHeZ/toKHQrDwOib9zrORSG7A7YyfVOkZC7xLrdqm4Tuwbld
+         fejRKtM1SatS2GM/gS1NbXLzuZB45gQW7m2pVAsImrm8vqDsEeTDZHq7//yIVnuKvv
+         I9eYdrQ2U1QyJVX1RrnDycAZiO4rNI6KjAp1AXWJIwe7mtERIQZ423iFuoirjQDUfd
+         GnOn4Gj7N8qx6i4ZhHtCfS8RdrOLqRhrO0eYYA2D815jjJa0OH+PoES319N+gok/I3
+         U8Y+XAZFdzlOw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id A6F25F6079A;
+        Fri, 21 Jan 2022 06:56:02 +0000 (UTC)
+Subject: Re: [GIT PULL] xfs: legacy Irix ioctl housecleaning for 5.17-rc1, part 1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <20220120184553.GO13540@magnolia>
+References: <20220120184553.GO13540@magnolia>
+X-PR-Tracked-List-Id: <linux-xfs.vger.kernel.org>
+X-PR-Tracked-Message-Id: <20220120184553.GO13540@magnolia>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git tags/xfs-5.17-merge-5
+X-PR-Tracked-Commit-Id: 4d1b97f9ce7c0d2af2bb85b12d48e6902172a28e
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: b3bb9413e717b44e4aea833d07f14e90fb91cf97
+Message-Id: <164274816267.27527.14866415947964585469.pr-tracker-bot@kernel.org>
+Date:   Fri, 21 Jan 2022 06:56:02 +0000
+To:     "Darrick J. Wong" <djwong@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        linux-fsdevel@vger.kernel.org, linux-xfs@vger.kernel.org,
+        david@fromorbit.com, linux-kernel@vger.kernel.org,
+        sandeen@sandeen.net, hch@lst.de
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: sihao <si.hao@zte.com.cn>
+The pull request you sent on Thu, 20 Jan 2022 10:45:53 -0800:
 
-When the values of CONFIG_ARM64_VA_BITS and CONFIG_ARM64_PA_BITS are not
-equal, the following panic occurs when kexec is executed.
+> git://git.kernel.org/pub/scm/fs/xfs/xfs-linux.git tags/xfs-5.17-merge-5
 
-This happens because trans_pgd_idmap_page() does not support VA_BITS=39.
-So the patch supports the case of VA_BITS=39.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/b3bb9413e717b44e4aea833d07f14e90fb91cf97
 
-->kexec -e
-[   36.168728] 000: kexec_core: Starting new kernel
-[   36.168735] 000: Disabling non-boot CPUs ...
-[   36.168739] 000: Bye!
-[   36.189457] 000: Unable to handle kernel paging request at virtual
-address 000000000fb3c000
-[   36.189460] 000: Mem abort info:
-[   36.189462] 000:   ESR = 0x86000006
-[   36.189463] 000:   EC = 0x21: IABT (current EL), IL = 32 bits
-[   36.189466] 000:   SET = 0, FnV = 0
-[   36.189468] 000:   EA = 0, S1PTW = 0
-[   36.189470] 000: user pgtable: 4k pages, 39-bit VAs,
-pgdp=000000000de68000
-[   36.189475] 000: [000000000fb3c000] pgd=000000000fb24003,
-pud=000000000fb24003, pmd=0000000000000000
-[   36.189482] 000: Internal error: Oops: 86000006 [#1] PREEMPT SMP
-[   36.189488] 000: Modules linked in:
-[   36.189493] 000: CPU: 0 PID: 825 Comm: kexec Not tainted XXX
-[   36.189498] 000: Hardware name: XXX
-[   36.189500] 000: pstate: 600003c5 (nZCv DAIF -PAN -UAO)
-[   36.189503] 000: pc : 0xfb3c000
-[   36.189510] 000: lr : machine_kexec+0x2a4/0x300
-[   36.189520] 000: sp : ffffffc0111fbc90
-[   36.189523] 000: x29: ffffffc0111fbc90 x28: ffffff800fb66440
-[   36.189527] 000: x27: 0000000000000000 x26: 0000000000000000
-[   36.189531] 000: x25: 0000000056000000 x24: 0000000000000015
-[   36.189534] 000: x23: 000000000de64000 x22: 000000000fb3c000
-[   36.189538] 000: x21: ffffffc010699298 x20: ffffffc010752e90
-[   36.189542] 000: x19: ffffff800acc0400 x18: 0000000000000001
-[   36.189545] 000: x17: 0000000000000000 x16: 0000000000000000
-[   36.189549] 000: x15: ffffff800fb66838 x14: ffffffffffffffff
-[   36.189552] 000: x13: ffffffc0108f0b48 x12: ffffffc0111fbba0
-[   36.189556] 000: x11: ffffffc01088d450 x10: ffffffc01088d468
-[   36.189559] 000: x9 : 0000000000000001 x8 : 0000000000024d30
-[   36.189563] 000: x7 : ffffffc0108f0738 x6 : ffffffc0108ebe18
-[   36.189566] 000: x5 : 0000000000024d30 x4 : 0000000000004920
-[   36.189570] 000: x3 : 0000000000000006 x2 : b9bb936edd96cd00
-[   36.189573] 000: x1 : 0000000000000000 x0 : ffffff800acc0400
-[   36.189576] 000: Call trace:
-[   36.189578] 000:  0xfb3c000
-[   36.189580] 000:  kernel_kexec+0x98/0xe8
-[   36.189586] 000:  __do_sys_reboot+0x1d0/0x208
-[   36.189593] 000:  __arm64_sys_reboot+0x2c/0x38
-[   36.189597] 000:  el0_svc_common.constprop.0+0x74/0x168
-[   36.189603] 000:  el0_svc_handler+0x80/0xa0
-[   36.189607] 000:  el0_svc+0x8/0x204
-[   36.189616] 000: Code: bad PC value
-[   36.189621] 000: ---[ end trace f930c021f9bf10a9 ]---
-[   36.189625] 000: Kernel panic - not syncing: Fatal exception
+Thank you!
 
-Reported-by: sihao <si.hao@zte.com.cn>
-Signed-off-by: sihao <si.hao@zte.com.cn>
----
- arch/arm64/mm/trans_pgd.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/arch/arm64/mm/trans_pgd.c b/arch/arm64/mm/trans_pgd.c
-index d7da8ca40d2e..3d88185adcf5 100644
---- a/arch/arm64/mm/trans_pgd.c
-+++ b/arch/arm64/mm/trans_pgd.c
-@@ -232,7 +232,7 @@ int trans_pgd_idmap_page(struct trans_pgd_info *info, phys_addr_t *trans_ttbr0,
- {
- 	phys_addr_t dst_addr = virt_to_phys(page);
- 	unsigned long pfn = __phys_to_pfn(dst_addr);
--	int max_msb = (dst_addr & GENMASK(52, 48)) ? 51 : 47;
-+	int max_msb = (dst_addr & GENMASK(52, VA_BITS)) ? 51 : (VA_BITS - 1);
- 	int bits_mapped = PAGE_SHIFT - 4;
- 	unsigned long level_mask, prev_level_entry, *levels[4];
- 	int this_level, index, level_lsb, level_msb;
 -- 
-2.25.1
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
