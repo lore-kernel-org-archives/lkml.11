@@ -2,102 +2,158 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C76C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 11:25:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B11BDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 11:29:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380128AbiAULZV (ORCPT
+        id S1380147AbiAUL3v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 06:25:21 -0500
-Received: from foss.arm.com ([217.140.110.172]:48958 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235434AbiAULZV (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 06:25:21 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 420D21FB;
-        Fri, 21 Jan 2022 03:25:20 -0800 (PST)
-Received: from [10.57.39.197] (unknown [10.57.39.197])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E3E543F73D;
-        Fri, 21 Jan 2022 03:25:17 -0800 (PST)
-Subject: Re: [PATCH] perf script: Fix printing 'phys_addr' failure issue
-To:     Wei Li <liwei391@huawei.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>
-Cc:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org,
-        guohanjun@huawei.com, jinyao5@huawei.com
-References: <20220121065954.2121900-1-liwei391@huawei.com>
-From:   German Gomez <german.gomez@arm.com>
-Message-ID: <1c38c70b-d165-acf9-1c98-eeb234fbbe99@arm.com>
-Date:   Fri, 21 Jan 2022 11:24:57 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Fri, 21 Jan 2022 06:29:51 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:10222 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1349905AbiAUL3t (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 21 Jan 2022 06:29:49 -0500
+Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20LAgZCM028202;
+        Fri, 21 Jan 2022 11:29:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : references : date : in-reply-to : message-id : mime-version :
+ content-type; s=pp1; bh=Q9ei9VJUKz0sT0uGO/P2sPkgIGa9GD27HpVjME4ge6c=;
+ b=Nk70Nk7rNh4Fvyg3BBGt1bhM2LZAWW4XJL4ZYWYkl9zk73jJCxYSCR0vJeeW2FBwJvIX
+ B4y03wrnzO1WMegLHGA2cESa6Yrtz9efdOnzLRmGZd1n/CmTzPdeAJDsdkcqdDk88TKU
+ I3Ow3XrbI5hLGQ+Sf3R2rbZL8bG3JmcFUvUEY5UPk7KpDTvGcDeDnFMawJJLS6viKOCM
+ zoqIV6Tu9f0OXUN1PzXZs0a/rflF5NFqaz/6W3eOwb6kafDxPPT2tu2Q8GNNIx31xAbP
+ FmCMVauLpegmlDWvecVmE7m4dPFWhmSObOsk8hpaZmCXMi4VRIu9Pvf/3gRT7ZDzsRta jg== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dquae8qk3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 21 Jan 2022 11:29:27 +0000
+Received: from m0098416.ppops.net (m0098416.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20LBJVdQ027502;
+        Fri, 21 Jan 2022 11:29:26 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3dquae8qjr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 21 Jan 2022 11:29:26 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20LBC1No015261;
+        Fri, 21 Jan 2022 11:29:24 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04ams.nl.ibm.com with ESMTP id 3dqj37v1ay-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 21 Jan 2022 11:29:24 +0000
+Received: from d06av25.portsmouth.uk.ibm.com (d06av25.portsmouth.uk.ibm.com [9.149.105.61])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20LBTMvr43319766
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 21 Jan 2022 11:29:22 GMT
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4CB2F11C04A;
+        Fri, 21 Jan 2022 11:29:22 +0000 (GMT)
+Received: from d06av25.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0500111C050;
+        Fri, 21 Jan 2022 11:29:22 +0000 (GMT)
+Received: from tuxmaker.linux.ibm.com (unknown [9.152.85.9])
+        by d06av25.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Fri, 21 Jan 2022 11:29:21 +0000 (GMT)
+From:   Sven Schnelle <svens@linux.ibm.com>
+To:     Heiko Carstens <hca@linux.ibm.com>
+Cc:     Yinan Liu <yinan@linux.alibaba.com>, rostedt@goodmis.org,
+        peterz@infradead.org, mark-pk.tsai@mediatek.com, mingo@redhat.com,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH v8] scripts: ftrace - move the sort-processing in
+ ftrace_init
+References: <20210911135043.16014-1-yinan@linux.alibaba.com>
+        <20211212113358.34208-1-yinan@linux.alibaba.com>
+        <20211212113358.34208-2-yinan@linux.alibaba.com>
+        <yt9dee51ctfn.fsf@linux.ibm.com> <YeqOFHNfxKcNXNrn@osiris>
+        <yt9d8rv9cpdq.fsf@linux.ibm.com>
+Date:   Fri, 21 Jan 2022 12:29:21 +0100
+In-Reply-To: <yt9d8rv9cpdq.fsf@linux.ibm.com> (Sven Schnelle's message of
+        "Fri, 21 Jan 2022 12:14:09 +0100")
+Message-ID: <yt9d4k5xcooe.fsf@linux.ibm.com>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/28.0.50 (gnu/linux)
 MIME-Version: 1.0
-In-Reply-To: <20220121065954.2121900-1-liwei391@huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+Content-Type: text/plain
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: VszLzLK5D8E12wbpmlmrxEHE_ymEFlZt
+X-Proofpoint-ORIG-GUID: iijYK5lyd7OhKY1Pq3_eASSle0ZJ51b3
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-21_06,2022-01-21_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ clxscore=1015 impostorscore=0 bulkscore=0 malwarescore=0 adultscore=0
+ mlxscore=0 lowpriorityscore=0 phishscore=0 mlxlogscore=999 suspectscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2201210075
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Wei,
+Sven Schnelle <svens@linux.ibm.com> writes:
 
-This looks good to me. As a followup we could also fix the 'weight'
-field, which was introduced recently.
+> Heiko Carstens <hca@linux.ibm.com> writes:
+>
+>> On Fri, Jan 21, 2022 at 10:46:36AM +0100, Sven Schnelle wrote:
+>>> Hi Yinan,
+>>> 
+>>> Yinan Liu <yinan@linux.alibaba.com> writes:
+>>> 
+>>> > When the kernel starts, the initialization of ftrace takes
+>>> > up a portion of the time (approximately 6~8ms) to sort mcount
+>>> > addresses. We can save this time by moving mcount-sorting to
+>>> > compile time.
+>>> >
+>>> > Signed-off-by: Yinan Liu <yinan@linux.alibaba.com>
+>>> > Reported-by: kernel test robot <lkp@intel.com>
+>>> > Reported-by: kernel test robot <oliver.sang@intel.com>
+>>> > ---
+>>> >  kernel/trace/ftrace.c   |  11 +++-
+>>> >  scripts/Makefile        |   6 +-
+>>> >  scripts/link-vmlinux.sh |   6 +-
+>>> >  scripts/sorttable.c     |   2 +
+>>> >  scripts/sorttable.h     | 120 +++++++++++++++++++++++++++++++++++++++-
+>>> >  5 files changed, 137 insertions(+), 8 deletions(-)
+>>> 
+>>> while i like the idea, this unfortunately breaks ftrace on s390. The
+>>> reason for that is that the compiler generates relocation entries for
+>>> all the addresses in __mcount_loc. During boot, the s390 decompressor
+>>> iterates through all the relocations and overwrites the nicely
+>>> sorted list between __start_mcount_loc and __stop_mcount_loc with
+>>> the unsorted list because the relocations entries are not adjusted.
+>>> 
+>>> Of course we could just disable that option, but that would make us
+>>> different compared to x86 which i don't like. Adding code to sort the
+>>> relocation would of course also fix that, but i don't think it is a good
+>>> idea to rely on the order of relocations.
+>>> 
+>>> Any thoughts how a fix could look like, and whether that could also be a
+>>> problem on other architectures?
+>>
+>> Sven, thanks for figuring this out. Can you confirm that reverting
+>> commit 72b3942a173c ("scripts: ftrace - move the sort-processing in
+>> ftrace_init") fixes the problem?
+>
+> Yes, reverting this commit fixes it.
+>
+>> This really should be addressed before rc1 is out, otherwise s390 is
+>> broken if somebody enables ftrace.
+>> Where "broken" translates to random crashes as soon as ftrace is
+>> enabled, which again is nowadays quite common.
+>
+> I wasn't able to reproduce these crashes on my systems so far. For the
+> readers here, we're seeing about 10-15 systems crashing every night,
+> usually in the 00basic/ ftrace testcases.
+>
+> In most of the case it looks like register corruption, where some random
+> register is or'd or parts are overwritten with 0x0004000000000000,
+> sometimes 0x00f4000000000000. I haven't found yts found a commit that
+> might cause this.
 
-On 21/01/2022 06:59, Wei Li wrote:
-> From: Yao Jin <jinyao5@huawei.com>
->
-> Perf script was failed to print the phys_addr for SPE profiling.
-> One 'dummy' event is added by SPE profiling but it doesn't have PHYS_ADDR
-> attribute set, perf script then exits with error.
->
-> Now referring to 'addr', use evsel__do_check_stype() to check the type.
->
-> Before:
->
->   # perf record -e arm_spe_0/branch_filter=0,ts_enable=1,pa_enable=1,load_filter=1,jitter=0,\
-> 		store_filter=0,min_latency=0,event_filter=2/ -p 4064384 -- sleep 3
->   # perf script -F pid,tid,addr,phys_addr
->   Samples for 'dummy:u' event do not have PHYS_ADDR attribute set. Cannot print 'phys_addr' field.
->
-> After:
->
->   # perf record -e arm_spe_0/branch_filter=0,ts_enable=1,pa_enable=1,load_filter=1,jitter=0,\
-> 		store_filter=0,min_latency=0,event_filter=2/ -p 4064384 -- sleep 3
->   # perf script -F pid,tid,addr,phys_addr
->   4064384/4064384 ffff802f921be0d0      2f921be0d0
->   4064384/4064384 ffff802f921be0d0      2f921be0d0
->
-> Signed-off-by: Yao Jin <jinyao5@huawei.com>
-> Signed-off-by: Wei Li <liwei391@huawei.com>
+Thinking of it, 04 and f4 are exactly the bytes we're patching in our brcl
+instructions right at the beginning of the function. So i guess that
+because of this bug the ftrace code now writes those bytes to the wrong
+location, sometimes hitting the register save area. I haven't verified
+that, but i think there's a high likelyhood.
 
-Reviewed-by: German Gomez <german.gomez@arm.com>
-
-Also it looks like the SPE samples are also missing the PHYS_ADDR flag.
-I think we'll need to fix the consistency of the flags.
-
-Many thanks,
-German
-
-> ---
->  tools/perf/builtin-script.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/tools/perf/builtin-script.c b/tools/perf/builtin-script.c
-> index ecd4f99a6c14..abae8184e171 100644
-> --- a/tools/perf/builtin-script.c
-> +++ b/tools/perf/builtin-script.c
-> @@ -515,7 +515,7 @@ static int evsel__check_attr(struct evsel *evsel, struct perf_session *session)
->  		return -EINVAL;
->  
->  	if (PRINT_FIELD(PHYS_ADDR) &&
-> -	    evsel__check_stype(evsel, PERF_SAMPLE_PHYS_ADDR, "PHYS_ADDR", PERF_OUTPUT_PHYS_ADDR))
-> +	    evsel__do_check_stype(evsel, PERF_SAMPLE_PHYS_ADDR, "PHYS_ADDR", PERF_OUTPUT_PHYS_ADDR, allow_user_set))
->  		return -EINVAL;
->  
->  	if (PRINT_FIELD(DATA_PAGE_SIZE) &&
+/Sven
