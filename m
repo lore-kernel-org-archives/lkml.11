@@ -2,193 +2,119 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD81BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 07:39:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2081C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 07:39:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379064AbiAUHjA (ORCPT
+        id S1379088AbiAUHjs (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 02:39:00 -0500
-Received: from mga09.intel.com ([134.134.136.24]:14452 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349219AbiAUHi6 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 02:38:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642750738; x=1674286738;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=DcqkV7XZWcjmaaAzzZ7ddFAUMOAUp0W+NCFMMfDNBNI=;
-  b=WvbY/HazyBaSua3K4L3N8nxIJ7OXCutIE7dsYPdLErU84Ynbvz02qjdR
-   wZonPz95znfSQZx/FOp2XRWDeCrPp7A1JCXecIfkFLievLpw128nSTWUl
-   XAoxNaritErs5iFgeJpPf0xfPIb78w6qeFjcwdxFVA8mD2hV1WbZr/Z4i
-   4Lgb2Ja8LtT13peqmEtroEA8UZfH1U17H+iG9P2Ws5JI/L8uEnxuNL7QT
-   PpxsC0wsYqgB9y2HVG96xDf63Itf86CFmfaQZfFreJk3CfadXk/C5oRT3
-   c8nGJcLokBKMN4+kahuX+QdWAqseCTDhltGAnAAL2AyWA8oaNnXwyhcVM
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10233"; a="245376001"
-X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
-   d="scan'208";a="245376001"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 23:38:44 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
-   d="scan'208";a="579519391"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga008.fm.intel.com with ESMTP; 20 Jan 2022 23:38:38 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nAoVJ-000F3u-KS; Fri, 21 Jan 2022 07:38:37 +0000
-Date:   Fri, 21 Jan 2022 15:37:45 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Davidlohr Bueso <dave@stgolabs.net>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Song Liu <song@kernel.org>
-Subject: drivers/md/raid5.c:7055:9: sparse: sparse: cast removes address
- space '__percpu' of expression
-Message-ID: <202201211523.eotam4i6-lkp@intel.com>
+        Fri, 21 Jan 2022 02:39:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36218 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379115AbiAUHji (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 21 Jan 2022 02:39:38 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D71C061401
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 23:39:38 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id c9so7614393plg.11
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 23:39:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=J/KI/DDN8T1ayErpxnQiZZ4iJShjEoYH/kl3zkOkoNM=;
+        b=NMy5ZakHpoNnM2tGCEPIZUk5eQaDDt7d6UOXJA9Bkot8hQ8cwZWFw7AHkVV7w45aj/
+         fooKSMsoNkTHHIHkKH0gBuFJR16x7IRrQdjuhm91pTk/A5qOnoOf9sp84fc88zCe0sb5
+         s/V282A3oyIuK5gVHLmNNOitYm0EbJ0ffVyPM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=J/KI/DDN8T1ayErpxnQiZZ4iJShjEoYH/kl3zkOkoNM=;
+        b=U0kHCtffGCCZliv9vVk82z7hR5ok3XEIpKgVabxRk8bmZ0iI1fVfsiuC3eLJs7xmhO
+         Nyx7JI5CxgyyLYhFuJq6mPiOK/+fRMh/Usmh0RW0/0Sg/c2SDnZiCdPteW/+adBBrdz7
+         ENjIT/84Jlrb6vuKpUMr95yPsmbm0c3MwF4uKbhGRA4s17vncdm8nkDu1RyFdiXinrUE
+         32cEo1KwUPAOL29hfIYA5vP/+Q4EnWDyHITWheuVsNHNioY4MX8wEiwTU6V8BmIEySSY
+         uVSfIbbTXV8ROEJRfYa1h6Z6AC8OmKirdPRH0+DqhMwBPARXU5WMbsG35EXSlMXRxgSu
+         iFOg==
+X-Gm-Message-State: AOAM531W5xFGvEANpi/Naw34L1zzDgNnZmWOElVtT1aFlesCGuJcG+6K
+        hAcrcwPhnXYkMm2E++IJPsMQ8g==
+X-Google-Smtp-Source: ABdhPJzfwDP5KCYaZ2avm4GFVowDxl+HQFPqbIp0EUSpzjd3VONNETepWQLeksdkGayD/hvQVtkD7w==
+X-Received: by 2002:a17:902:6b4a:b0:149:7c73:bd6f with SMTP id g10-20020a1709026b4a00b001497c73bd6fmr2966661plt.46.1642750777816;
+        Thu, 20 Jan 2022 23:39:37 -0800 (PST)
+Received: from www.outflux.net (smtp.outflux.net. [198.145.64.163])
+        by smtp.gmail.com with ESMTPSA id t1sm6005968pfj.115.2022.01.20.23.39.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 20 Jan 2022 23:39:37 -0800 (PST)
+From:   Kees Cook <keescook@chromium.org>
+To:     Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc:     Kees Cook <keescook@chromium.org>,
+        Matthieu Baerts <matthieu.baerts@tessares.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        mptcp@lists.linux.dev, linux-kernel@vger.kernel.org,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH] mptcp: Use struct_group() to avoid cross-field memset()
+Date:   Thu, 20 Jan 2022 23:39:35 -0800
+Message-Id: <20220121073935.1154263-1-keescook@chromium.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1758; h=from:subject; bh=yGrVKJycM9qivlstRAt4EfHl5vdMltBdt/HqxajR6wA=; b=owEBbQKS/ZANAwAKAYly9N/cbcAmAcsmYgBh6mM3Kzvim73jJw1jchuqW5i5KKj0xFVS8nRZ1MEy YrQE6iOJAjMEAAEKAB0WIQSlw/aPIp3WD3I+bhOJcvTf3G3AJgUCYepjNwAKCRCJcvTf3G3AJmx1D/ 41qpIDOaMktPi/OXv2JS0l8Y6yahywC7M/IL2yWxJqReTyQ/TGSfDZIx+g5bsg4+CSBxEyqePyxc8I BOCEmGny2GqWbeixcRQpzODGJmidasyWIQJYr/tR4fJq/TzbkrUy8omwXlfDzWxV/f90ONw8I3ZsBv rAeik1f80B4OmkGlxhAIrihDRlxPLYdC9OAW7NKGMD+6TiK94xVMy2Md2soiznKz0zrINsMwykTi2r hjUEhUCo7zdwnew0qdn9EpMTWtRbV0X9jwaylle24dI/0xUuCnau2FYPd9CaArUKAGCwdBLNzwP05c oDcT4M5WF86HnonrnAPFmheRPU3DOKESv+0Tx0MdeAzTQdhMLoVl/rP13wvh9ivzZUxHWteCA0+WPf RrpLoCRwTxSfs6K90OQiO5HgJA0lIh2KE0EPxFxrNUWWkYo15prCPU73zqCNnj2jv+WEksf3X0LSXz upMs54qoPEovaR1/XGZ6ds0SCyPJuyQsmRj61gaHoHVS9/Y35/CfQQFuM1zYV0eStN4+Uy8yZWTpPx Hzr6CJE3nJv1JGfGjAKxLZpakcvUeH9VCxHy1/DoV+J4F4zFL5dcteTqQ2oGvPepXq61bNA5rQYa9w ZwAI/1E3+GIx2JA2dfkvqyJmBQAuQZLRaxX55hOCuJdCGHq8CxdP45lxz5Zg==
+X-Developer-Key: i=keescook@chromium.org; a=openpgp; fpr=A5C3F68F229DD60F723E6E138972F4DFDC6DC026
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-head:   2c271fe77d52a0555161926c232cd5bc07178b39
-commit: 770b1d216d7371c94c88713824da4be4bc39a4e0 md/raid5: play nice with PREEMPT_RT
-date:   2 weeks ago
-config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220121/202201211523.eotam4i6-lkp@intel.com/config)
-compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-reproduce:
-        # apt-get install sparse
-        # sparse version: v0.6.4-dirty
-        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=770b1d216d7371c94c88713824da4be4bc39a4e0
-        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-        git fetch --no-tags linus master
-        git checkout 770b1d216d7371c94c88713824da4be4bc39a4e0
-        # save the config file to linux build tree
-        mkdir build_dir
-        make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash
+In preparation for FORTIFY_SOURCE performing compile-time and run-time
+field bounds checking for memcpy(), memmove(), and memset(), avoid
+intentionally writing across neighboring fields.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Use struct_group() to capture the fields to be reset, so that memset()
+can be appropriately bounds-checked by the compiler.
 
-
-sparse warnings: (new ones prefixed by >>)
-   drivers/md/raid5.c: note: in included file:
-   drivers/md/raid5.h:271:14: sparse: sparse: array of flexible structures
-   drivers/md/raid5.c:641:40: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:641:40: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:641:40: sparse:    struct md_rdev *
-   drivers/md/raid5.c:643:32: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:643:32: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:643:32: sparse:    struct md_rdev *
-   drivers/md/raid5.c:667:40: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:667:40: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:667:40: sparse:    struct md_rdev *
-   drivers/md/raid5.c:669:32: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:669:32: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:669:32: sparse:    struct md_rdev *
-   drivers/md/raid5.c:1101:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:1101:25: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:1101:25: sparse:    struct md_rdev *
-   drivers/md/raid5.c:1103:24: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:1103:24: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:1103:24: sparse:    struct md_rdev *
-   drivers/md/raid5.c:3563:32: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:3563:32: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:3563:32: sparse:    struct md_rdev *
-   drivers/md/raid5.c:3689:48: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:3689:48: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:3689:48: sparse:    struct md_rdev *
-   drivers/md/raid5.c:3696:32: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:3696:32: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:3696:32: sparse:    struct md_rdev *
-   drivers/md/raid5.c:3718:16: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:3718:16: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:3718:16: sparse:    struct md_rdev *
-   drivers/md/raid5.c:4646:24: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:4646:24: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:4646:24: sparse:    struct md_rdev *
-   drivers/md/raid5.c:4657:32: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:4657:32: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:4657:32: sparse:    struct md_rdev *
-   drivers/md/raid5.c:4704:49: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:4704:49: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:4704:49: sparse:    struct md_rdev *
-   drivers/md/raid5.c:4717:49: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:4717:49: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:4717:49: sparse:    struct md_rdev *
-   drivers/md/raid5.c:4726:49: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:4726:49: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:4726:49: sparse:    struct md_rdev *
-   drivers/md/raid5.c:4748:40: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:4748:40: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:4748:40: sparse:    struct md_rdev *
-   drivers/md/raid5.c:5419:16: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:5419:16: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:5419:16: sparse:    struct md_rdev *
-   drivers/md/raid5.c:5422:24: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:5422:24: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:5422:24: sparse:    struct md_rdev *
->> drivers/md/raid5.c:7055:9: sparse: sparse: cast removes address space '__percpu' of expression
->> drivers/md/raid5.c:7055:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct lockdep_map *lock @@     got struct lockdep_map [noderef] __percpu * @@
-   drivers/md/raid5.c:7055:9: sparse:     expected struct lockdep_map *lock
-   drivers/md/raid5.c:7055:9: sparse:     got struct lockdep_map [noderef] __percpu *
->> drivers/md/raid5.c:7055:9: sparse: sparse: incorrect type in argument 1 (different address spaces) @@     expected struct local_lock_t [usertype] *l @@     got struct local_lock_t [noderef] __percpu * @@
-   drivers/md/raid5.c:7055:9: sparse:     expected struct local_lock_t [usertype] *l
-   drivers/md/raid5.c:7055:9: sparse:     got struct local_lock_t [noderef] __percpu *
-   drivers/md/raid5.c:7808:40: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:7808:40: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:7808:40: sparse:    struct md_rdev *
-   drivers/md/raid5.c:8021:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:8021:25: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:8021:25: sparse:    struct md_rdev *
-   drivers/md/raid5.c:8037:25: sparse: sparse: incompatible types in comparison expression (different address spaces):
-   drivers/md/raid5.c:8037:25: sparse:    struct md_rdev [noderef] __rcu *
-   drivers/md/raid5.c:8037:25: sparse:    struct md_rdev *
-   drivers/md/raid5.c:1476:16: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:1476:39: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:2208:54: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:2419:16: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:2421:9: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:2422:9: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:7031:23: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:7031:23: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:7032:9: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:7033:16: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:7034:9: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:7039:34: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:7040:17: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:7041:22: sparse: sparse: dereference of noderef expression
-   drivers/md/raid5.c:97:9: sparse: sparse: context imbalance in 'raid5_quiesce' - different lock contexts for basic block
-
-vim +/__percpu +7055 drivers/md/raid5.c
-
-  7036	
-  7037	static int alloc_scratch_buffer(struct r5conf *conf, struct raid5_percpu *percpu)
-  7038	{
-  7039		if (conf->level == 6 && !percpu->spare_page) {
-  7040			percpu->spare_page = alloc_page(GFP_KERNEL);
-  7041			if (!percpu->spare_page)
-  7042				return -ENOMEM;
-  7043		}
-  7044	
-  7045		if (scribble_alloc(percpu,
-  7046				   max(conf->raid_disks,
-  7047				       conf->previous_raid_disks),
-  7048				   max(conf->chunk_sectors,
-  7049				       conf->prev_chunk_sectors)
-  7050				   / RAID5_STRIPE_SECTORS(conf))) {
-  7051			free_scratch_buffer(conf, percpu);
-  7052			return -ENOMEM;
-  7053		}
-  7054	
-> 7055		local_lock_init(&percpu->lock);
-  7056		return 0;
-  7057	}
-  7058	
-
+Cc: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Cc: Matthieu Baerts <matthieu.baerts@tessares.net>
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: netdev@vger.kernel.org
+Cc: mptcp@lists.linux.dev
+Signed-off-by: Kees Cook <keescook@chromium.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ net/mptcp/protocol.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
+index 0e6b42c76ea0..85317ce38e3f 100644
+--- a/net/mptcp/protocol.h
++++ b/net/mptcp/protocol.h
+@@ -408,7 +408,7 @@ DECLARE_PER_CPU(struct mptcp_delegated_action, mptcp_delegated_actions);
+ struct mptcp_subflow_context {
+ 	struct	list_head node;/* conn_list of subflows */
+ 
+-	char	reset_start[0];
++	struct_group(reset,
+ 
+ 	unsigned long avg_pacing_rate; /* protected by msk socket lock */
+ 	u64	local_key;
+@@ -458,7 +458,7 @@ struct mptcp_subflow_context {
+ 
+ 	long	delegated_status;
+ 
+-	char	reset_end[0];
++	);
+ 
+ 	struct	list_head delegated_node;   /* link into delegated_action, protected by local BH */
+ 
+@@ -494,7 +494,7 @@ mptcp_subflow_tcp_sock(const struct mptcp_subflow_context *subflow)
+ static inline void
+ mptcp_subflow_ctx_reset(struct mptcp_subflow_context *subflow)
+ {
+-	memset(subflow->reset_start, 0, subflow->reset_end - subflow->reset_start);
++	memset(&subflow->reset, 0, sizeof(subflow->reset));
+ 	subflow->request_mptcp = 1;
+ }
+ 
+-- 
+2.30.2
+
