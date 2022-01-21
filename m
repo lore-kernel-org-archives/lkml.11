@@ -2,130 +2,133 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 547EFC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 09:57:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5FA1C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 09:58:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379807AbiAUJ5E (ORCPT
+        id S1379814AbiAUJ6G (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 04:57:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39062 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349787AbiAUJ5D (ORCPT
+        Fri, 21 Jan 2022 04:58:06 -0500
+Received: from esa5.hgst.iphmx.com ([216.71.153.144]:8012 "EHLO
+        esa5.hgst.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349787AbiAUJ6E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 04:57:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5DD3C061574
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 01:57:02 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8142DB81F86
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 09:57:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1095EC340E1;
-        Fri, 21 Jan 2022 09:57:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642759020;
-        bh=qR8VRYTCz1DGsP6TG4tf/9SSEqtJu9KSNoIFjCNdds4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=VVQqOz9uMKa1SiorJ1jdHxE/y7sxPOPEm3xQTwwIF4pQMa8Z06Koa1fgjHD6ibvJO
-         KpIi0ShE7YobgQo2mgLZdB/p/QguJP2oRrB9C6ZPVVYSxL85FctCWxzh6BnmVeVW3L
-         mWicYzvXD+ChznQenltM/g0HDZ00Rfyovc9Zssd6G3CRJt2HRusynZJWwqP2dgI2hM
-         CQFrVB4zotfL8X13KvEVfrOgRx0BRnl8YoVdHUEwT5GOrv10Oq8QxkDDgGU64iZZDC
-         Inpu17W0k3lCYuVq+eqgaNWAoEzkVZj28aiicMRvvyzusY4EBximpqMDQEqbYyD9OS
-         Y5YPrPCdU7itg==
-Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
-        id 3664640C99; Thu, 20 Jan 2022 12:47:27 -0300 (-03)
-Date:   Thu, 20 Jan 2022 12:47:27 -0300
-From:   Arnaldo Carvalho de Melo <acme@kernel.org>
-To:     Eric Lin <eric.lin@sifive.com>
-Cc:     Eduardo Habkost <ehabkost@gmail.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Yao Jin <yao.jin@linux.intel.com>,
-        Greentime Hu <greentime.hu@sifive.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Vincent Chen <vincent.chen@sifive.com>
-Subject: Re: About perf tool set exclude_guest = 1 on guest environment
-Message-ID: <YemED+3SzJQR+tZq@kernel.org>
-References: <CAPqJEFoUyHiyNj8Hx-wRaw86NLb5hGo-WT4ysqV4RGerYyDyJA@mail.gmail.com>
- <CAM9d7chL4_hY8BLHV=q2J_HJ14gUj07t5QvUvUBOj+4hmvY7hQ@mail.gmail.com>
- <CAPqJEFqJpnq1TF-ZA7Worsy2Yx6au-KHBPkCN0cSnQuyGbwsfw@mail.gmail.com>
+        Fri, 21 Jan 2022 04:58:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
+  t=1642759083; x=1674295083;
+  h=message-id:date:mime-version:subject:to:references:from:
+   in-reply-to:content-transfer-encoding;
+  bh=YAZyTUCMBE+usCyuCqOqnYpV7QsKpbedraJMknC/4XU=;
+  b=o6ifA1YCRvvOVKaFEH7qrg4fDA97102UwPrxzkBf/qpEaAmGYZBOu1w+
+   CXgwo07rKsUpcFEMOEWgqkqWT/Z0GKCyzkCuO388SYJ/sCrOJU7XKB6h8
+   QOiuItLMsud/uG+1X5XFoez7PCGTNB4J/qW+JzvToZ6zRZmOK+oTh5H4q
+   jj1YvUVK97SzCaLB8HEPindAhMMXC/4TU47BvPg0W2Ev5pcUkvjhdl2kR
+   kkVwpdSyoxnj49qiDo9Xdv/mygn4j547Npzmx/GN9WK0aM++7M6P6AEqK
+   ab1HdUeUwgswqtrQuRT2I1RoBNS4ZbL7gIig0cuZtitgrz9i8Y8ncDNHQ
+   w==;
+X-IronPort-AV: E=Sophos;i="5.88,304,1635177600"; 
+   d="scan'208";a="191031972"
+Received: from uls-op-cesaip01.wdc.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
+  by ob1.hgst.iphmx.com with ESMTP; 21 Jan 2022 17:58:02 +0800
+IronPort-SDR: 69W2gPcL7qp09eWa9K0rbWCjNmjPILj0N+tJEmmmbgyaPdsm7exDi/iqVo0v/cgCoG3PMZwBCX
+ pYzloXBvGz0Y9hXmK0i2EOyOauXZr9uN5276e2RoEVx/pPd/sQs4gxUtBNI1cPiIxSUoG27mRu
+ qlX93Lcx79YQJAH1CRQKOEMiIbPGlvfghLrpkbGcNp+sgBetV3tuRWMpwXoLr9yb1mrfvATCCY
+ bJBi5rFPNiLYUeahZJIODSogbblFZO2ArkXcdgydl2wrWLwDkDgJBQuOSDA3YvEpyGIqDxLcBI
+ PMpYIx5zJrxK+TyDsHK7TCE3
+Received: from uls-op-cesaip01.wdc.com ([10.248.3.36])
+  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 01:31:30 -0800
+IronPort-SDR: WGte4rypfIfzD5MuM5fmWKT4GrqNaII24jMZI0yqSqRmunQxOKBXINC9dhxpT1GEEct7Mxtdai
+ HCJhNGLNOqZFOIPs4zBqexMZqOBtm3hqB5MlF6fUBqSEpgp4WQn1zIhafF8OI8LJfb6deUaJs7
+ iWIDhRDUR+eCXNAn1qqKh7WMX7e9UEeBXwt9jHmS6vzUYibM3ZaedDPdb0jtiB1qq0CQqbKaRl
+ LHuGISi8BOMGz+LZ7F/lMbNH0ilga7inECSJh1Kh7z0FNstnkW2Z85h20oUiMcV9KPhNgDLmeg
+ BgU=
+WDCIronportException: Internal
+Received: from usg-ed-osssrv.wdc.com ([10.3.10.180])
+  by uls-op-cesaip01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 01:58:03 -0800
+Received: from usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTP id 4JgFDq2DvFz1SVp3
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 01:58:03 -0800 (PST)
+Authentication-Results: usg-ed-osssrv.wdc.com (amavisd-new); dkim=pass
+        reason="pass (just generated, assumed good)"
+        header.d=opensource.wdc.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=
+        opensource.wdc.com; h=content-transfer-encoding:content-type
+        :in-reply-to:organization:from:references:to:content-language
+        :subject:user-agent:mime-version:date:message-id; s=dkim; t=
+        1642759082; x=1645351083; bh=YAZyTUCMBE+usCyuCqOqnYpV7QsKpbedraJ
+        MknC/4XU=; b=nkMn+kdZP+JDNpI6G8mqhyR+H2cHtKqDKg2m/jBOuxhjK+hFFqK
+        6pNYko4CWNdFPkW9m/71OUxY6vRzZSaLPXABP4tyW3+6TLPWFaxoX3Fgj2+zbsBb
+        PUvlB64fdCCIHnjkDMNwzRA4p4mUQJ6fSLsSOx10jwnHaTdUu5A5HJRO1sWPXuNX
+        QAxurixFEUkVlDOkOKrhA7/WueqWglgT2cmS1xoX74QMqyt8aB9dfuLXT4zMsKX7
+        miEuzk6lUvX6gtDFuE14siNuKy9dFYjwUnplfXvtdeLnpSQsdJB038gPfTCqqWOR
+        /2UkizarL5CjGHSilHaBk4YS7OduDVz71AQ==
+X-Virus-Scanned: amavisd-new at usg-ed-osssrv.wdc.com
+Received: from usg-ed-osssrv.wdc.com ([127.0.0.1])
+        by usg-ed-osssrv.wdc.com (usg-ed-osssrv.wdc.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id s8aHEGTfD5G8 for <linux-kernel@vger.kernel.org>;
+        Fri, 21 Jan 2022 01:58:02 -0800 (PST)
+Received: from [10.225.163.53] (unknown [10.225.163.53])
+        by usg-ed-osssrv.wdc.com (Postfix) with ESMTPSA id 4JgFDn3lyGz1RvlN;
+        Fri, 21 Jan 2022 01:58:01 -0800 (PST)
+Message-ID: <b239d566-1134-a063-4727-65c0f092400c@opensource.wdc.com>
+Date:   Fri, 21 Jan 2022 18:57:59 +0900
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPqJEFqJpnq1TF-ZA7Worsy2Yx6au-KHBPkCN0cSnQuyGbwsfw@mail.gmail.com>
-X-Url:  http://acmel.wordpress.com
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] block: fix memory leak in
+ disk_register_independent_access_ranges
+Content-Language: en-US
+To:     Miaoqian Lin <linmq006@gmail.com>, Jens Axboe <axboe@kernel.dk>,
+        Hannes Reinecke <hare@suse.de>,
+        Keith Busch <kbusch@kernel.org>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20220120101025.22411-1-linmq006@gmail.com>
+From:   Damien Le Moal <damien.lemoal@opensource.wdc.com>
+Organization: Western Digital Research
+In-Reply-To: <20220120101025.22411-1-linmq006@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Em Thu, Jan 20, 2022 at 09:35:59PM +0800, Eric Lin escreveu:
-> On Wed, Jan 19, 2022 at 1:02 PM Namhyung Kim <namhyung@kernel.org> wrote:
-> > On Mon, Jan 17, 2022 at 8:05 PM Eric Lin <eric.lin@sifive.com> wrote:
-> > > Currently, I run the perf command 'perf record -e branches:u ls'  and
-> > > 'perf record -e branches ls'. It will set exclude_guest = 1 as below:
-> > >
-> > > # perf record -e branches:u ls
-> > > # perf evlist -v
-> > > branches:u: .., exclude_kernel: 1, exclude_hv: 1,, exclude_guest: 1, ..
-> > >
-> > > # perf record -e branches ls
-> > > # perf evlist -v
-> > > branches: ..., exclude_guest: 1, ...
-> > >
-> > > As I understand it, set exclude_guest =1 will not include guest counting.
-> > > May I ask if I run the above commands as a guest user, should the
-> > > architecture implementation ignore this exclude_guest flags and still
-> > > make perf can count guest events in Linux kernel?
-> >
-> > So do you want to run the command in the host?
-> > Then you can use both 'H' and 'G' modifiers like
-> >
-> >   # perf record -e branches:HG ls
-> >
-> > or (for user-mode only)
-> >
-> >   # perf record -e branches:uHG ls
-> >
+On 1/20/22 19:10, Miaoqian Lin wrote:
+> kobject_init_and_add() takes reference even when it fails.
+> According to the doc of kobject_init_and_add()
 > 
-> Actually, I want to run the commands in the guest.
-> But when I run the commands "perf record -e branches:u ls" and "perf
-> record -e branches ls", it will set exclude_guet = 1.
-> According to the documentation[1] exclude_guest definition, it should
-> not count guest events.
-> So, if I run these commands as a guest user can I get the profile data?
+>    If this function returns an error, kobject_put() must be called to
+>    properly clean up the memory associated with the object.
 > 
-> [1] https://man7.org/linux/man-pages/man2/perf_event_open.2.html
+> Fix this issue by adding kobject_put().
+> Callback function blk_ia_ranges_sysfs_release() in kobject_put()
+> can handle the pointer "iars" properly.
+> 
+> Fixes: a2247f19ee1c ("block: Add independent access ranges support")
+> Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+> ---
+>  block/blk-ia-ranges.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/block/blk-ia-ranges.c b/block/blk-ia-ranges.c
+> index b925f3db3ab7..18c68d8b9138 100644
+> --- a/block/blk-ia-ranges.c
+> +++ b/block/blk-ia-ranges.c
+> @@ -144,7 +144,7 @@ int disk_register_independent_access_ranges(struct gendisk *disk,
+>  				   &q->kobj, "%s", "independent_access_ranges");
+>  	if (ret) {
+>  		q->ia_ranges = NULL;
+> -		kfree(iars);
+> +		kobject_put(&iars->kobj);
+>  		return ret;
+>  	}
+>  
 
-The tool shouldn't know that it is running in a guest, right?
+Looks good.
 
-And the kernel, running on a guest should exclude its guests if
-attr.exclude_guest is set, not itself and its non-guest userland.
+Reviewed-by: Damien Le Moal <damien.lemoal@opensource.wdc.com>
 
-So, before delving into how the kernel running on guest _actually_
-handles attr.exclude_guest=1 behaves, what are the results you are
-getting from running perf on a guest?
-
-Lemme see...
-
-On a fedora:35 guest:
-
-[root@fedora ~]# perf record ls
-anaconda-ks.cfg  perf.data
-[ perf record: Woken up 1 times to write data ]
-[ perf record: Captured and wrote 0.014 MB perf.data (3 samples) ]
-[root@fedora ~]# perf evlist -v
-cpu-clock:pppH: type: 1, size: 128, { sample_period, sample_freq }: 4000, sample_type: IP|TID|TIME|PERIOD, read_format: ID, disabled: 1, inherit: 1, mmap: 1, comm: 1, freq: 1, enable_on_exec: 1, task: 1, precise_ip: 3, sample_id_all: 1, exclude_guest: 1, mmap2: 1, comm_exec: 1, ksymbol: 1, bpf_event: 1
-[root@fedora ~]#
-
-IIRC there is some extra magic to allow 'cycles' to be seen on the
-guest, but apart from that it seems to work.
-
-Eduardo, can you help us here?
-
-- Arnaldo
+-- 
+Damien Le Moal
+Western Digital Research
