@@ -2,90 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44D0DC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 08:58:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F69CC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 08:59:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379650AbiAUI6u (ORCPT
+        id S1379625AbiAUI7u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 03:58:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54324 "EHLO
+        Fri, 21 Jan 2022 03:59:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234886AbiAUI6p (ORCPT
+        with ESMTP id S234770AbiAUI7s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 03:58:45 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E8BFC06173F
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 00:58:45 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id g81so25575236ybg.10
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 00:58:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5/CAdEqGBk7N/8QQ5A23zI2nrO/utlv2ElHpvb6u4CA=;
-        b=REKUOzbTnrnoKH+nWoApUShHgZjf318EWK9itQNe1JkF4qXv+SGJQbIKI+K3H7D+95
-         bcr2KPcZ5+mPIb6DxeTuv7HF9kN8W9UUcXvjL4p++kLrmkaD1KNf1eEWqFs7PSKC8dEm
-         ME9OL35fUckRg3MVWpk8FylBI+5zGpdZDH3d6rrEzRZCBsJGqGX6DMeqRYiwOOP4Ja/G
-         7wGTaZEhKOLsAWLQD4u0b3GOi+vYHxZgMv8Cev8mA3sgaVtzvmxSN8U5g3ueAb/LMM9f
-         t55rvr2CTMly8LmNPhlTR+npOVIclcOhEtDaxU0kpotd50fmAekkmRn8B7XG0Wr161Cq
-         TIpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5/CAdEqGBk7N/8QQ5A23zI2nrO/utlv2ElHpvb6u4CA=;
-        b=ByfpXX3MvAPpmKeXFqITzVWe0jpUZyBoEtRSILHwXvkuZm72XszV1Q2BM9mDbuRdLy
-         m6OaRHQTsYPYhmVlCqNYO2iLHqI4IyNd2wjuD1uLUfHpP6FrGJwWnfjgF7oNhOdGdG9D
-         nhKNrzJDjDwd5xvckRDeJt8xF+hn+EmNycWWMJW9rgN0VRQF3R+VDC3d8Wf+4fBnLNoO
-         /Tvc6y2lgpikdhKa/ZV7HBfFpZsdF9Gna5JtVe1J9+0bQM07mN7T4yCBIvQ1NuHVuewL
-         aognu6NhZMTF/Wfx5wPFkz1XpM3Y7MtTpzqbKl7TAu2yhZrF1pd0s8hhHzSF5YWuKV1Y
-         UUBQ==
-X-Gm-Message-State: AOAM531S1GSMqnX5rASKvdvcRz86zfSMkOvTeHhCSI4DTxLHzGX8ArP9
-        vTZLK6U2RdgnvnHlZ90HYuIjli2rpCKxhkewRGjfLg==
-X-Google-Smtp-Source: ABdhPJxGI0tWvbu3C1KPF9nJZim+8Kq1aJ/5f3LrEb7Cs7qRdYvtHbmNg0CYHyFs7ws6XGnbWWn724o1yPYmp+AIMhU=
-X-Received: by 2002:a25:9082:: with SMTP id t2mr4422729ybl.684.1642755524616;
- Fri, 21 Jan 2022 00:58:44 -0800 (PST)
+        Fri, 21 Jan 2022 03:59:48 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D901C061574;
+        Fri, 21 Jan 2022 00:59:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=7wc2zUSfhyENFO6ymFjjrv1H+4Rj+PnhH77Hsl91gjc=; b=jrGOS1JRI2plfq4yl+kTVyT8QB
+        lplUqiCN6OZhxp39ABXcb17U2+hx8Zi3Ii7dFt2lQV4Yi+H+jHOQjMkudyjhYmrnmhNmxV2EB8qIK
+        Y7is+ME0ziH3XbydM6URLERYWx+utHOCGGx7fZm6czg8Ry+nqh5edj+D+gJTOaHi55kyzjU9AezKR
+        y/elJtDK+t2+A6ZRbssaNwApsBzd9VDEWE8p2TB1MqNqiEy2TueB83hlPebuGPcpIFA11a4UcN84w
+        WLbuYn0SFqOzDnWP9nAHyd261fwWH8WPAyNVBK27kmbzcAcPv5Fphr1F5PXpAdpJwakqPMD4CYclj
+        53nSlfJA==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nAplO-00FROw-8s; Fri, 21 Jan 2022 08:59:18 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id 0AB9A9853F1; Fri, 21 Jan 2022 09:59:17 +0100 (CET)
+Date:   Fri, 21 Jan 2022 09:59:17 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     David Hildenbrand <david@redhat.com>
+Cc:     mingo@redhat.com, tglx@linutronix.de, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-api@vger.kernel.org, x86@kernel.org,
+        pjt@google.com, posk@google.com, avagin@google.com,
+        jannh@google.com, tdelisle@uwaterloo.ca, mark.rutland@arm.com,
+        posk@posk.io
+Subject: Re: [RFC][PATCH v2 1/5] mm: Avoid unmapping pinned pages
+Message-ID: <20220121085917.GA22849@worktop.programming.kicks-ass.net>
+References: <20220120155517.066795336@infradead.org>
+ <20220120160822.666778608@infradead.org>
+ <ffb88819-a392-84f3-d40f-7406be8e3165@redhat.com>
+ <20220121075157.GA20638@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-References: <CA+G9fYtq0wzSeG8YG-a+=KrbdWqHJMXk1hvq0FKeAvj9sZAK2g@mail.gmail.com>
- <6249735f-e6b7-1331-eb2b-361bb17d6115@opensource.wdc.com>
-In-Reply-To: <6249735f-e6b7-1331-eb2b-361bb17d6115@opensource.wdc.com>
-From:   Naresh Kamboju <naresh.kamboju@linaro.org>
-Date:   Fri, 21 Jan 2022 14:28:33 +0530
-Message-ID: <CA+G9fYu__OOvk-ESXoOqbd-Lk+CmO8CSQ8chEFf3MyeTjKtp9g@mail.gmail.com>
-Subject: Re: [next] mips: cavium_octeon_defconfig: pata_octeon_cf.c:598:23:
- error: passing argument 1 of 'trace_ata_bmdma_stop' from incompatible pointer type
-To:     Damien Le Moal <damien.lemoal@opensource.wdc.com>
-Cc:     "open list:LIBATA SUBSYSTEM (Serial and Parallel ATA drivers)" 
-        <linux-ide@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-mips@vger.kernel.org,
-        Linux-Next Mailing List <linux-next@vger.kernel.org>,
-        regressions@lists.linux.dev, lkft-triage@lists.linaro.org,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Zeal Robot <zealci@zte.com.cn>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        CGEL ZTE <cgel.zte@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220121075157.GA20638@worktop.programming.kicks-ass.net>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-> I just posted a fix. As I do not have the environment to compile test
-> mips, could someone test please ? I will send the fix to Linus asap
-> after confirmation that it is OK.
+On Fri, Jan 21, 2022 at 08:51:57AM +0100, Peter Zijlstra wrote:
+> On Thu, Jan 20, 2022 at 07:25:08PM +0100, David Hildenbrand wrote:
+> > On 20.01.22 16:55, Peter Zijlstra wrote:
+> > > Add a guarantee for Anon pages that pin_user_page*() ensures the
+> > > user-mapping of these pages stay preserved. In order to ensure this
+> > > all rmap users have been audited:
+> > > 
+> > >  vmscan:	already fails eviction due to page_maybe_dma_pinned()
+> > > 
+> > >  migrate:	migration will fail on pinned pages due to
+> > > 		expected_page_refs() not matching, however that is
+> > > 		*after* try_to_migrate() has already destroyed the
+> > > 		user mapping of these pages. Add an early exit for
+> > > 		this case.
+> > > 
+> > >  numa-balance:	as per the above, pinned pages cannot be migrated,
+> > > 		however numa balancing scanning will happily PROT_NONE
+> > > 		them to get usage information on these pages. Avoid
+> > > 		this for pinned pages.
+> > 
+> > page_maybe_dma_pinned() can race with GUP-fast without
+> > mm->write_protect_seq. This is a real problem for vmscan() with
+> > concurrent GUP-fast as it can result in R/O mappings of pinned pages and
+> > GUP will lose synchronicity to the page table on write faults due to
+> > wrong COW.
+> 
+> Urgh, so yeah, that might be a problem. Follow up code uses it like
+> this:
+> 
+> +/*
+> + * Pinning a page inhibits rmap based unmap for Anon pages. Doing a load
+> + * through the user mapping ensures the user mapping exists.
+> + */
+> +#define umcg_pin_and_load(_self, _pagep, _member)                              \
+> +({                                                                             \
+> +       __label__ __out;                                                        \
+> +       int __ret = -EFAULT;                                                    \
+> +                                                                               \
+> +       if (pin_user_pages_fast((unsigned long)(_self), 1, 0, &(_pagep)) != 1)  \
+> +               goto __out;                                                     \
+> +                                                                               \
+> +       if (!PageAnon(_pagep) ||                                                \
+> +           get_user(_member, &(_self)->_member)) {                             \
+> +               unpin_user_page(_pagep);                                        \
+> +               goto __out;                                                     \
+> +       }                                                                       \
+> +       __ret = 0;                                                              \
+> +__out: __ret;                                                                  \
+> +})
+> 
+> And after that hard assumes (on the penalty of SIGKILL) that direct user
+> access works. Specifically it does RmW ops on it. So I suppose I'd
+> better upgrade that load to a RmW at the very least.
+> 
+> But is that sufficient? Let me go find that race you mention...
 
-Please share your patch / patch link. I will test it with tuxmake.
+OK, so copy_page_range() vs lockless_pages_from_mm(). Since I use
+FOLL_PIN that should be sorted, it'll fall back the slow path and use
+mmap_sem and serialize against the fork().
 
-you may also give a try with these easy steps.
+(Also, can I express my hate for __gup_longterm_unlocked(), that
+function name is utter garbage)
 
-# To install tuxmake on your system globally:
-# sudo pip3 install -U tuxmake
-#
-# See https://docs.tuxmake.org/ for complete documentation.
-# Original tuxmake command with fragments listed below.
+However, I'm not quite sure what fork() does with pages that have a pin.
+There's been a number of GUP vs fork() problems over the years, but I'm
+afraid I have lost track of that and I can't quickly find anything in
+the code..
 
- tuxmake --runtime podman --target-arch mips --toolchain gcc-10
---kconfig cavium_octeon_defconfig
+Naively, a page that has async DMA activity should not be CoW'ed, or if
+it is, care must be taken to ensure the original pages stays in the
+original process, but I realize that's somewhat hard.
 
-- Naresh
+Let me dig in a bit more.
