@@ -2,135 +2,91 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A9FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 17:48:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 648FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 17:48:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382038AbiAURsH (ORCPT
+        id S1381961AbiAURs5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 12:48:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33798 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1382045AbiAURsH (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 21 Jan 2022 12:48:07 -0500
-Received: from mga11.intel.com ([192.55.52.93]:56029 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1381866AbiAURrx (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 12:47:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642787272; x=1674323272;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=/1OJfXy/I18emCF3o7qdCGUx0GFDwkCLNiIUahp4qos=;
-  b=kRg3sTx7R8d2VbISrOVpsQB7ztt2iT3laIFwo4GFJjtZxnDUWbzBhzlf
-   hXwb6ph4/caI0faXmjv7pua3HisBTnyDjzDxDwA00xL1imttyWtkUAYh2
-   Fm3LCAtVEwHZp+KR2aVrGFtrIR68RGxqCDYb4OleUWbHB8+b5I4M0ltfr
-   BbZ314qRNurTf4+4T56326FZw0oNTwM76yyucJJmnCkvPWdkU+ytge2os
-   hMXKAXC0YUoXdTI0+UrwXHGmzavDBNShaFvSi1ZFbaINyJ20+g2Ak0JRo
-   Jt3sIpbmSsLSKrN7LBBehQjO8/2kN6EC+IjDS+dJaZBq2wkuT2JqgYMZ1
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10234"; a="243302306"
-X-IronPort-AV: E=Sophos;i="5.88,306,1635231600"; 
-   d="scan'208";a="243302306"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 09:47:52 -0800
-X-IronPort-AV: E=Sophos;i="5.88,306,1635231600"; 
-   d="scan'208";a="623394801"
-Received: from agluck-desk2.sc.intel.com ([10.3.52.146])
-  by fmsmga002-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 09:47:52 -0800
-From:   Tony Luck <tony.luck@intel.com>
-To:     Borislav Petkov <bp@alien8.de>
-Cc:     x86@kernel.org, linux-kernel@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Smita Koralahalli Channabasappa 
-        <smita.koralahallichannabasappa@amd.com>,
-        Wei Huang <wei.huang2@amd.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        patches@lists.linux.dev, Tony Luck <tony.luck@intel.com>
-Subject: [PATCH v2 5/6] topology/sysfs: Add format parameter to macro defining "show" functions for proc
-Date:   Fri, 21 Jan 2022 09:47:42 -0800
-Message-Id: <20220121174743.1875294-6-tony.luck@intel.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220121174743.1875294-1-tony.luck@intel.com>
-References: <20220107225442.1690165-1-tony.luck@intel.com>
- <20220121174743.1875294-1-tony.luck@intel.com>
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3897C06173D
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 09:48:06 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id s11so11605370ioe.12
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 09:48:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=kernel-dk.20210112.gappssmtp.com; s=20210112;
+        h=from:to:in-reply-to:references:subject:message-id:date:mime-version
+         :content-transfer-encoding;
+        bh=BvgJ1KhQ09zgjMCeIf9WRh/NdcZGH1G7T7wldmYjdSE=;
+        b=cNENdJj9VCARwTzDZtisAhMuzRAldSqAvbGoQbnJu32rHz0Q1fS52L8cwBPwk6voZU
+         dMUT7Gpa3TD8uvgwbpI5R5rHhp0CQspe1jE4mdX9yocZtgmKiKpdZC5U9/9EkgW3HOc/
+         w+ACPfBlyX+zmaNQnqLEedOWd+iA6Dpgdlqcncu4Pk6EM7VKuZTaS2OKWdnaC/Aqvdih
+         cGZZc/y2zEQr1hC9BX5DfDPBk9ULLQWsDB70O5+iM1iUvdf0S+eX/Cy1Tv0pkoL976dX
+         W77cuSpyDlMW2gpriOkOEVtNUqoc0fly/P3AcRB0QS2FqZk/VHVOwu8++g1u/WVC/N6u
+         CqPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:in-reply-to:references:subject
+         :message-id:date:mime-version:content-transfer-encoding;
+        bh=BvgJ1KhQ09zgjMCeIf9WRh/NdcZGH1G7T7wldmYjdSE=;
+        b=aSljji6GZJS15WTXPTBOvcR2BS678Pd/oZl015GHWmardZLASjadWnh/a1KvVuG82o
+         6dxZNzaGjqolvmAHL5j9blV/tkUM67jRtNbodmn5llw6uBQLwznLsTtTkPCE4F7irTI7
+         gAjhQfQoBj6xoOqtD0C5Dmfqg20UHW+EuCPb2SSnpo6/aJ+g1AIowl+jTbHioSwTxpd7
+         9ApKZ9jkEKxr3jmi0ZZVTOCEttwNNG6HyPjAPW8iHEqCxKJrdzsrQw5ARbIzqDr42NEV
+         FNthQUbae6tFoyXtRIxzBMZop+P51jLPMbsrM0g3cE4OEAw4FTHy5n1aezWBV4Y4T3Cg
+         0mQg==
+X-Gm-Message-State: AOAM531dMCQe0pUz4KUjR8Nz1Kc6uc4XwC7x2H7jcTldr+jr5bvst1xT
+        JNVgY/RYcU6FBvJvwtc5KRz/MFphGKB4RQ==
+X-Google-Smtp-Source: ABdhPJwb1HnQ9ro85HHm7p9EGFys4Nphpx6yExOfHsGC6ziznix/qKRunIQxVlDaDPiFTugQ23IK7w==
+X-Received: by 2002:a05:6638:a3c:: with SMTP id 28mr2396405jao.281.1642787285706;
+        Fri, 21 Jan 2022 09:48:05 -0800 (PST)
+Received: from x1.localdomain ([207.135.234.126])
+        by smtp.gmail.com with ESMTPSA id h12sm1549324iok.25.2022.01.21.09.48.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Jan 2022 09:48:05 -0800 (PST)
+From:   Jens Axboe <axboe@kernel.dk>
+To:     Hannes Reinecke <hare@suse.de>, linux-kernel@vger.kernel.org,
+        Miaoqian Lin <linmq006@gmail.com>, linux-block@vger.kernel.org,
+        Damien Le Moal <damien.lemoal@wdc.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Keith Busch <kbusch@kernel.org>
+In-Reply-To: <20220120101025.22411-1-linmq006@gmail.com>
+References: <20220120101025.22411-1-linmq006@gmail.com>
+Subject: Re: [PATCH] block: fix memory leak in disk_register_independent_access_ranges
+Message-Id: <164278728249.232198.7158002983506256334.b4-ty@kernel.dk>
+Date:   Fri, 21 Jan 2022 10:48:02 -0700
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-All the simple (non-mask and non-list files in
-/sys/devices/system/cpu/cpu0/topology/ are currently printed as decimal
-integers.
+On Thu, 20 Jan 2022 10:10:25 +0000, Miaoqian Lin wrote:
+> kobject_init_and_add() takes reference even when it fails.
+> According to the doc of kobject_init_and_add()
+> 
+>    If this function returns an error, kobject_put() must be called to
+>    properly clean up the memory associated with the object.
+> 
+> Fix this issue by adding kobject_put().
+> Callback function blk_ia_ranges_sysfs_release() in kobject_put()
+> can handle the pointer "iars" properly.
+> 
+> [...]
 
-Refactor the macro that generates the "show" functions to take a format
-parameter to allow future files to display in other formats.
+Applied, thanks!
 
-No functional change.
+[1/1] block: fix memory leak in disk_register_independent_access_ranges
+      commit: c321e650a45c4228cce1107680ac74e06f014906
 
-Signed-off-by: Tony Luck <tony.luck@intel.com>
----
- drivers/base/topology.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/base/topology.c b/drivers/base/topology.c
-index fc24e89f9592..044f3664f8f2 100644
---- a/drivers/base/topology.c
-+++ b/drivers/base/topology.c
-@@ -14,11 +14,11 @@
- #include <linux/hardirq.h>
- #include <linux/topology.h>
- 
--#define define_id_show_func(name)					\
-+#define define_id_show_func(name, fmt)					\
- static ssize_t name##_show(struct device *dev,				\
- 			   struct device_attribute *attr, char *buf)	\
- {									\
--	return sysfs_emit(buf, "%d\n", topology_##name(dev->id));	\
-+	return sysfs_emit(buf, fmt "\n", topology_##name(dev->id));	\
- }
- 
- #define define_siblings_read_func(name, mask)					\
-@@ -42,20 +42,20 @@ static ssize_t name##_list_read(struct file *file, struct kobject *kobj,	\
- 					off, count);				\
- }
- 
--define_id_show_func(physical_package_id);
-+define_id_show_func(physical_package_id, "%d");
- static DEVICE_ATTR_RO(physical_package_id);
- 
- #ifdef TOPOLOGY_DIE_SYSFS
--define_id_show_func(die_id);
-+define_id_show_func(die_id, "%d");
- static DEVICE_ATTR_RO(die_id);
- #endif
- 
- #ifdef TOPOLOGY_CLUSTER_SYSFS
--define_id_show_func(cluster_id);
-+define_id_show_func(cluster_id, "%d");
- static DEVICE_ATTR_RO(cluster_id);
- #endif
- 
--define_id_show_func(core_id);
-+define_id_show_func(core_id, "%d");
- static DEVICE_ATTR_RO(core_id);
- 
- define_siblings_read_func(thread_siblings, sibling_cpumask);
-@@ -87,7 +87,7 @@ static BIN_ATTR_RO(package_cpus, 0);
- static BIN_ATTR_RO(package_cpus_list, 0);
- 
- #ifdef TOPOLOGY_BOOK_SYSFS
--define_id_show_func(book_id);
-+define_id_show_func(book_id, "%d");
- static DEVICE_ATTR_RO(book_id);
- define_siblings_read_func(book_siblings, book_cpumask);
- static BIN_ATTR_RO(book_siblings, 0);
-@@ -95,7 +95,7 @@ static BIN_ATTR_RO(book_siblings_list, 0);
- #endif
- 
- #ifdef TOPOLOGY_DRAWER_SYSFS
--define_id_show_func(drawer_id);
-+define_id_show_func(drawer_id, "%d");
- static DEVICE_ATTR_RO(drawer_id);
- define_siblings_read_func(drawer_siblings, drawer_cpumask);
- static BIN_ATTR_RO(drawer_siblings, 0);
+Best regards,
 -- 
-2.31.1
+Jens Axboe
+
 
