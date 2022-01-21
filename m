@@ -2,127 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D7FFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:05:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 120EDC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:05:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380991AbiAUOFG (ORCPT
+        id S1350885AbiAUOFv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 09:05:06 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:32358 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1380986AbiAUOEc (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 09:04:32 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20LAASLt015148;
-        Fri, 21 Jan 2022 06:04:23 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=E6656S2D8v2JjAZAXSy/62KUS+Okbjyp/3Dlv5zadkk=;
- b=W9a+YgL8pF7GsPGicJyl7/3/0o/Dk3qTPAI6YCChpdOMR2gROgZcA30/nIE9gtee4k4v
- nbpRbjda9lkO7Ctht5W9/qo6btysECQeOG8W49koxA9s+lBY/LEa0IyYa2HKynhYs6Fg
- psdrK76tzCeTEHqOkiA/XsgLntFTV71fujDLsGvQp669y135pce53Xzv4wHvcy7YVDRA
- KgZqVv98APGZt5NQGSZUAcXf0sbssVq0vIERnSfXqgDi/Dg3QC4dy9Z0oV1x+mrB7hqO
- Acw+q3VmuMV0GWbsspIYlBJFIv8b9S+yIZZWAbevrH9tUXvNvZzVH9T2R7Yn0gDo+cGC 3w== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3dqhytt7u5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 21 Jan 2022 06:04:23 -0800
-Received: from m0045849.ppops.net (m0045849.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 20LDifah013909;
-        Fri, 21 Jan 2022 06:04:22 -0800
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3dqhytt7u2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 21 Jan 2022 06:04:22 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 21 Jan
- 2022 06:04:21 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 21 Jan 2022 06:04:21 -0800
-Received: from localhost.localdomain (unknown [10.28.34.29])
-        by maili.marvell.com (Postfix) with ESMTP id C26403F70B7;
-        Fri, 21 Jan 2022 06:04:16 -0800 (PST)
-From:   Shijith Thotton <sthotton@marvell.com>
-To:     Arnaud Ebalard <arno@natisbad.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Boris Brezillon <bbrezillon@kernel.org>
-CC:     Shijith Thotton <sthotton@marvell.com>,
-        <linux-crypto@vger.kernel.org>, <jerinj@marvell.com>,
-        <sgoutham@marvell.com>, Srujana Challa <schalla@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        "Lukasz Bartosik" <lbartosik@marvell.com>,
-        Suheil Chandran <schandran@marvell.com>,
-        chiminghao <chi.minghao@zte.com.cn>,
-        Ovidiu Panait <ovidiu.panait@windriver.com>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH] crypto: octeontx2: fix NULL pointer dereference
-Date:   Fri, 21 Jan 2022 19:33:10 +0530
-Message-ID: <3ff70ee925aad3afa1adc4ad1f4a7a494929d400.1642773756.git.sthotton@marvell.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 21 Jan 2022 09:05:51 -0500
+Received: from mga04.intel.com ([192.55.52.120]:2394 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1350871AbiAUOFu (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 21 Jan 2022 09:05:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642773950; x=1674309950;
+  h=date:from:to:cc:subject:message-id:mime-version:
+   content-transfer-encoding;
+  bh=69sgSZz7lyieU1mkFLPQfUU9GE2k09qc14bQ2+FZAuE=;
+  b=cF6lyz1SndhCfOQwXlHq4Y4rC2oN2OYdN4grDM68Mmkk4hjIQYezd20n
+   ibFW5tMPrCqqB+kIUxWVnj9h774Gm5LCFi5Gn/fXBLRvw+WW+zWXbrqI2
+   BsEMzim7mJw+pTY0iT05brGn868KyOLe3nMAmi+iPC4l6IRbMYb2jY7GC
+   7WYuZh5RfXouMGMRGj03zvcONRcGoZ1qqVAbAnF+NiLDF1foHppnleb29
+   tW8O3If40W8Vo2VkLTvv2X/4a518IvsJ8MoEB42oSAJjMenhcEcJarpKz
+   BchNddks9OxECEugJjAmR5sbuxzBOp/IO2WOXwpky5z6Bn5GtEgEjwTLJ
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10233"; a="244478982"
+X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
+   d="scan'208";a="244478982"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 06:05:49 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
+   d="scan'208";a="672951934"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 21 Jan 2022 06:05:48 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nAuXz-000FMH-Vf; Fri, 21 Jan 2022 14:05:47 +0000
+Date:   Fri, 21 Jan 2022 22:05:28 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hector Martin <marcan@marcan.st>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org
+Subject: [asahilinux:bits/080-wifi 11/39]
+ drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c:74:10: warning:
+ variable 'len' set but not used
+Message-ID: <202201212104.gFjUBTm8-lkp@intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-ORIG-GUID: Zo-svCzrrA672kxN1-Yc_IEylYeN4Oz4
-X-Proofpoint-GUID: cPup4_Sb39qjQfrLoMdWJVRB3POsKrqm
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-21_06,2022-01-21_01,2021-12-02_01
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-CONFIG_DM_CRYPT is checked before registering ciphers, but not before
-unregister. This could lead to a NULL pointer dereference during driver
-release (in unregister) if CONFIG_DM_CRYPT is enabled.
+tree:   https://github.com/AsahiLinux/linux bits/080-wifi
+head:   1753101ce16367deadb5ec5ab5dc7ab4894649bf
+commit: cc44c86950084bc3437485288390841cf117c0d1 [11/39] brcmfmac: of: Use devm_kstrdup for board_type & check for errors
+config: x86_64-randconfig-a003-20220117 (https://download.01.org/0day-ci/archive/20220121/202201212104.gFjUBTm8-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 7b3d30728816403d1fd73cc5082e9fb761262bce)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/AsahiLinux/linux/commit/cc44c86950084bc3437485288390841cf117c0d1
+        git remote add asahilinux https://github.com/AsahiLinux/linux
+        git fetch --no-tags asahilinux bits/080-wifi
+        git checkout cc44c86950084bc3437485288390841cf117c0d1
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=x86_64 SHELL=/bin/bash drivers/net/wireless/broadcom/brcm80211/brcmfmac/
 
-...
-Unable to handle kernel NULL pointer dereference at virtual address 0000000000000008
-...
-Call trace:
- crypto_unregister_alg+0x68/0xfc
- crypto_unregister_skciphers+0x44/0x60
- otx2_cpt_crypto_exit+0x100/0x1a0
- otx2_cptvf_remove+0xf8/0x200
- pci_device_remove+0x3c/0xd4
- __device_release_driver+0x188/0x234
- device_release_driver+0x2c/0x4c
-...
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Added a CONFIG_DM_CRYPT check, similar to register, in unregister to
-avoid this.
+All warnings (new ones prefixed by >>):
 
-Signed-off-by: Shijith Thotton <sthotton@marvell.com>
+>> drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c:74:10: warning: variable 'len' set but not used [-Wunused-but-set-variable]
+                   int i, len;
+                          ^
+   1 warning generated.
+
+
+vim +/len +74 drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c
+
+1a3ac5c651a0c85 drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c Shawn Guo        2021-04-17  60  
+e457a8a01a19277 drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c Rafał Miłecki    2017-01-07  61  void brcmf_of_probe(struct device *dev, enum brcmf_bus_type bus_type,
+e457a8a01a19277 drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c Rafał Miłecki    2017-01-07  62  		    struct brcmf_mp_device *settings)
+61f663dfc1a091c drivers/net/wireless/brcm80211/brcmfmac/of.c          Chen-Yu Tsai     2014-06-29  63  {
+e457a8a01a19277 drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c Rafał Miłecki    2017-01-07  64  	struct brcmfmac_sdio_pd *sdio = &settings->bus.sdio;
+0ad4b55b2f29784 drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c Hans de Goede    2018-10-10  65  	struct device_node *root, *np = dev->of_node;
+61f663dfc1a091c drivers/net/wireless/brcm80211/brcmfmac/of.c          Chen-Yu Tsai     2014-06-29  66  	int irq;
+1a3ac5c651a0c85 drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c Shawn Guo        2021-04-17  67  	int err;
+61f663dfc1a091c drivers/net/wireless/brcm80211/brcmfmac/of.c          Chen-Yu Tsai     2014-06-29  68  	u32 irqf;
+61f663dfc1a091c drivers/net/wireless/brcm80211/brcmfmac/of.c          Chen-Yu Tsai     2014-06-29  69  	u32 val;
+61f663dfc1a091c drivers/net/wireless/brcm80211/brcmfmac/of.c          Chen-Yu Tsai     2014-06-29  70  
+0ad4b55b2f29784 drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c Hans de Goede    2018-10-10  71  	/* Set board-type to the first string of the machine compatible prop */
+0ad4b55b2f29784 drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c Hans de Goede    2018-10-10  72  	root = of_find_node_by_path("/");
+0ad4b55b2f29784 drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c Hans de Goede    2018-10-10  73  	if (root) {
+29e354ebeeecaee drivers/net/wireless/broadcom/brcm80211/brcmfmac/of.c Matthias Brugger 2020-07-01 @74  		int i, len;
+
+:::::: The code at line 74 was first introduced by commit
+:::::: 29e354ebeeecaee979e6fe22cd6272682d7552c9 brcmfmac: Transform compatible string for FW loading
+
+:::::: TO: Matthias Brugger <mbrugger@suse.com>
+:::::: CC: Kalle Valo <kvalo@codeaurora.org>
+
 ---
- drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
-index 2748a3327e39..620fa9b23e78 100644
---- a/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
-@@ -1650,7 +1650,7 @@ static inline int cpt_register_algs(void)
- 
- 	err = crypto_register_aeads(otx2_cpt_aeads,
- 				    ARRAY_SIZE(otx2_cpt_aeads));
--	if (err) {
-+	if (err && !IS_ENABLED(CONFIG_DM_CRYPT)) {
- 		crypto_unregister_skciphers(otx2_cpt_skciphers,
- 					    ARRAY_SIZE(otx2_cpt_skciphers));
- 		return err;
-@@ -1661,8 +1661,9 @@ static inline int cpt_register_algs(void)
- 
- static inline void cpt_unregister_algs(void)
- {
--	crypto_unregister_skciphers(otx2_cpt_skciphers,
--				    ARRAY_SIZE(otx2_cpt_skciphers));
-+	if (!IS_ENABLED(CONFIG_DM_CRYPT))
-+		crypto_unregister_skciphers(otx2_cpt_skciphers,
-+					    ARRAY_SIZE(otx2_cpt_skciphers));
- 	crypto_unregister_aeads(otx2_cpt_aeads, ARRAY_SIZE(otx2_cpt_aeads));
- }
- 
--- 
-2.25.1
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
