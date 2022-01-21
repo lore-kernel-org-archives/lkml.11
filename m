@@ -2,90 +2,128 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C8F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:57:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27604C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:58:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351721AbiAUQ5y (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 11:57:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50136 "EHLO
+        id S231512AbiAUQ56 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 11:57:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380427AbiAUQ5L (ORCPT
+        with ESMTP id S1379849AbiAUQ4t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 11:57:11 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 634F8C06173B;
-        Fri, 21 Jan 2022 08:57:10 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0169B61A5F;
-        Fri, 21 Jan 2022 16:57:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A9D0C340E1;
-        Fri, 21 Jan 2022 16:57:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642784229;
-        bh=VAH/EB9un3em4rOt5evA5NBqtb1X5kVyOQuIem/HfhI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:From;
-        b=ObJENak7V3h9A2S++J8N8+hw/43AqvzdDjNkj7XZRkXxp4MYigrM6Xo6DYE5vwt6m
-         mx+9CJKOwEMoj5/lC1sFyMvnAzwvNmwpjctkTTvL23WpWWIMsXcayaCyqVypvtr9Wi
-         AWMqx38L1s9yBSJNMAYY2awOpbDHZp5CFrkgF7guSO/U+F2L1YHM/QfkRraf2JvmiD
-         jPPu1eGOAiPU5LR46o8mCrrsUC3i7kxl3ic9e+sPTq8e+SGNK7WCT/nPTUbc8so8PD
-         n0if+30ZJGlfEOymuqqgiDrUGNJhdxLV/PIaJuDHtEnsVCkokb5SxyhKQHbvT5pzz+
-         zH0J1q2Mbwm6Q==
-Date:   Fri, 21 Jan 2022 10:57:07 -0600
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Krzysztof =?utf-8?Q?Ha=C5=82asa?= <khalasa@piap.pl>
-Cc:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>, linux-pci@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Krzysztof =?utf-8?Q?Wilczy=C5=84ski?= <kw@linux.com>
-Subject: Re: PCI: Race condition in pci_create_sysfs_dev_files (can't boot)
-Message-ID: <20220121165707.GA1129091@bhelgaas>
+        Fri, 21 Jan 2022 11:56:49 -0500
+Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 755DBC061763;
+        Fri, 21 Jan 2022 08:55:34 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id w188so14290830oiw.13;
+        Fri, 21 Jan 2022 08:55:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=4weifrQ7PTCoGujS0yQMKZpi8lSBUanoNpSA0DdSt+Y=;
+        b=OF1LGc0evnBIhNNz84FPs7c8hsoF1r+/WS4fAuOmilgSYZYbT6CrqaPs1OIO/6LIxh
+         aCfomttS8vaYkKjlBhGRnCkK5sNSvB90MhaAykJPVz096eYCnJ7kncwalddJLbZmYVe5
+         MjebfomEvGhfTf2h1MgGTNSTVznz9gV0EWT14LVTZ24nZGykPBIKktLkT/rP1v3y60e1
+         Z6yTLr7ejol0GHlZUCZY41ckrUnhyqaRW1JwMN5GZK5O2k8qBmD5DCBxAozgWYBBu1uF
+         5RSJhj6dkBWt0EeCIIdyLjgqmWG4OcP7EQD/B7dkBMCqcGG2P0YCfdnVn2Gyds3JND8A
+         yv3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=4weifrQ7PTCoGujS0yQMKZpi8lSBUanoNpSA0DdSt+Y=;
+        b=x+li9HbDXQxNSfkR5zgpJikqvGrAYCErkUYGH9I5UfkQQCf1U17sx/roNCXoDm411l
+         BZclYBsCnwRC1gLj6Y8kDxmWfULut50+ZKnVP1JpyMb36dfHJWM8l/sdQON2F9jw6coW
+         sYgEzsKs8JzU71ELMlRk/CFcjK4Z/DDKNZ8BQ79MqAEL+VyjNxRNedhBWMHbcdKYzQbf
+         pgphObiWid10/FsYZViA3CWwGNuMYXD4OMAzeWSfLZPee1S2LBAkvQDYpe+uCbMGrmCa
+         tvAxKp4vZeDflKS0MmJV67b8cSlk40cM5ha1LV/sp0g2Vc7tKNTtJiVpml4kn4cekY3w
+         zWSg==
+X-Gm-Message-State: AOAM5328Le80sLSk3NGsLg4blFjC2dRtgEx06Ps5cugKvls4BHdkbhL9
+        jKm8j0ZRnfnfhvjjHkUGUflbyJnnq9I=
+X-Google-Smtp-Source: ABdhPJwjGzQmdpB6fvzrVNmA0mJLwxz20tqVgliSftrr9PonyQNufPf2QsVgpesq4DcccdBJkKfIgw==
+X-Received: by 2002:a54:4e9a:: with SMTP id c26mr1250134oiy.159.1642784133886;
+        Fri, 21 Jan 2022 08:55:33 -0800 (PST)
+Received: from thinkpad.localdomain ([2804:14d:5cd1:5d03:cf72:4317:3105:f6e5])
+        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.55.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Jan 2022 08:55:33 -0800 (PST)
+From:   Luiz Sampaio <sampaio.ime@gmail.com>
+To:     Sebastian Reichel <sre@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Luiz Sampaio <sampaio.ime@gmail.com>,
+        linux-pm@vger.kernel.org
+Subject: [PATCH 21/31] power: supply: changing LED_* from enum led_brightness to actual value
+Date:   Fri, 21 Jan 2022 13:54:26 -0300
+Message-Id: <20220121165436.30956-22-sampaio.ime@gmail.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220121165436.30956-1-sampaio.ime@gmail.com>
+References: <20220121165436.30956-1-sampaio.ime@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <m3bl05zhjt.fsf@t19.piap.pl>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 08:14:46AM +0100, Krzysztof Hałasa wrote:
-> Hi Bjorn, Krzysztof,
-> 
-> Bjorn Helgaas <helgaas@kernel.org> writes:
-> 
-> > On Fri, Jul 30, 2021 at 10:18:44AM +0200, Krzysztof Hałasa wrote:
-> >> I'm encountering a problem booting an i.MX6-based device (Gateworks
-> >> Ventana SBC). This is apparently a known issue:
-> >> https://lkml.org/lkml/2020/7/16/388
-> 
-> > Hi Krzysztof, is this still an issue?
-> 
-> Well... I'm still using i.MX6 with 5.14 and Krzysiek Wilczyński's "PCI:
-> Race condition in pci_create_sysfs_dev_files (can't boot)" patch (which
-> fixes the problem). It seems parts of this patch are now in mainline,
-> but most of it is still missing. So I guess the problem isn't fixed.
-> 
-> Perhaps because the DEC Alpha part of the patch is not yet ready?
-> Krzysztof?
-> 
-> > e1d3f3268b0e ("PCI/sysfs: Convert "config" to static attribute") and
-> > similar patches appeared in v5.13,
-> 
-> Right, but they hadn't fixed the problem. 5.13 was released in June, and
-> I have started using the patch in August (apparently with pre-5.14
-> first, then with final 5.14).
+The enum led_brightness, which contains the declaration of LED_OFF,
+LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
+max_brightness.
+---
+ drivers/power/supply/power_supply_leds.c | 26 ++++++++++++------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
-Thanks.  e1d3f3268b0e and related patches converted individual files
-("config", "rom", "vpd", etc) to static attributes, but since the
-problem you're seeing is with a directory, it's likely different.
+diff --git a/drivers/power/supply/power_supply_leds.c b/drivers/power/supply/power_supply_leds.c
+index d69880cc3593..16f25179f710 100644
+--- a/drivers/power/supply/power_supply_leds.c
++++ b/drivers/power/supply/power_supply_leds.c
+@@ -31,25 +31,25 @@ static void power_supply_update_bat_leds(struct power_supply *psy)
+ 
+ 	switch (status.intval) {
+ 	case POWER_SUPPLY_STATUS_FULL:
+-		led_trigger_event(psy->charging_full_trig, LED_FULL);
+-		led_trigger_event(psy->charging_trig, LED_OFF);
+-		led_trigger_event(psy->full_trig, LED_FULL);
++		led_trigger_event(psy->charging_full_trig, 255);
++		led_trigger_event(psy->charging_trig, 0);
++		led_trigger_event(psy->full_trig, 255);
+ 		led_trigger_event(psy->charging_blink_full_solid_trig,
+-			LED_FULL);
++			255);
+ 		break;
+ 	case POWER_SUPPLY_STATUS_CHARGING:
+-		led_trigger_event(psy->charging_full_trig, LED_FULL);
+-		led_trigger_event(psy->charging_trig, LED_FULL);
+-		led_trigger_event(psy->full_trig, LED_OFF);
++		led_trigger_event(psy->charging_full_trig, 255);
++		led_trigger_event(psy->charging_trig, 255);
++		led_trigger_event(psy->full_trig, 0);
+ 		led_trigger_blink(psy->charging_blink_full_solid_trig,
+ 			&delay_on, &delay_off);
+ 		break;
+ 	default:
+-		led_trigger_event(psy->charging_full_trig, LED_OFF);
+-		led_trigger_event(psy->charging_trig, LED_OFF);
+-		led_trigger_event(psy->full_trig, LED_OFF);
++		led_trigger_event(psy->charging_full_trig, 0);
++		led_trigger_event(psy->charging_trig, 0);
++		led_trigger_event(psy->full_trig, 0);
+ 		led_trigger_event(psy->charging_blink_full_solid_trig,
+-			LED_OFF);
++			0);
+ 		break;
+ 	}
+ }
+@@ -120,9 +120,9 @@ static void power_supply_update_gen_leds(struct power_supply *psy)
+ 	dev_dbg(&psy->dev, "%s %d\n", __func__, online.intval);
+ 
+ 	if (online.intval)
+-		led_trigger_event(psy->online_trig, LED_FULL);
++		led_trigger_event(psy->online_trig, 255);
+ 	else
+-		led_trigger_event(psy->online_trig, LED_OFF);
++		led_trigger_event(psy->online_trig, 0);
+ }
+ 
+ static int power_supply_create_gen_triggers(struct power_supply *psy)
+-- 
+2.34.1
 
-I opened this bugzilla report to try to keep this from getting lost:
-https://bugzilla.kernel.org/show_bug.cgi?id=215515
-
-Bjorn
