@@ -2,221 +2,235 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E546C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:35:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAC1CC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:35:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381225AbiAUOfn (ORCPT
+        id S1351060AbiAUOfz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 09:35:43 -0500
-Received: from mx0a-001ae601.pphosted.com ([67.231.149.25]:16494 "EHLO
-        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1381180AbiAUOdY (ORCPT
+        Fri, 21 Jan 2022 09:35:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45990 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1381282AbiAUOfp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 09:33:24 -0500
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20L6W2WT017662;
-        Fri, 21 Jan 2022 08:32:59 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=rnCBUrcHxzyIdUNa/FPu7w14BdmJjhGgvRwHWbTMLhU=;
- b=JdMyAcEk9lxHjvlSdnaPXZkYf+Yzn/0ZUfg5AzsL9H3YzZ4TxebxJiyL56/mDCfemDel
- HFx9Sid+ImTaY3fAo88EXE/HO0zfenTEPJ0c8hzgrZX+Sa97ZXDNJ1FxYb3c8+liMEBZ
- SVrkVFTeRSKeAkF10odLCKQ1SRNvcq2mAAZ4kEmIowgWD4hUOGFmvHKkKaUeE3Zsr8KP
- EEACbUZYVV+MKnIVZTolhRGQOkoNanWbJcm/Syxjxnmdt/MbeepDzj+2a4iGHEB1gP2A
- TdTIdod76kWyl9h0Nm9JNFBaToWCR129JeVvx2d3fbNRbJpmSzGSOZdZrhv4lgyM8gCl pQ== 
-Received: from ediex01.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3dqhyq0up3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 21 Jan 2022 08:32:59 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 21 Jan
- 2022 14:32:57 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Fri, 21 Jan 2022 14:32:57 +0000
-Received: from LONN2DGDQ73.ad.cirrus.com (unknown [198.90.238.138])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 1707045D;
-        Fri, 21 Jan 2022 14:32:57 +0000 (UTC)
-From:   Stefan Binding <sbinding@opensource.cirrus.com>
-To:     Mark Brown <broonie@kernel.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Len Brown <lenb@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
-CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <linux-spi@vger.kernel.org>, <linux-acpi@vger.kernel.org>,
-        <platform-driver-x86@vger.kernel.org>,
-        <patches@opensource.cirrus.com>,
-        Stefan Binding <sbinding@opensource.cirrus.com>
-Subject: [PATCH v5 3/9] spi: Support selection of the index of the ACPI Spi Resource before alloc
-Date:   Fri, 21 Jan 2022 14:32:48 +0000
-Message-ID: <20220121143254.6432-4-sbinding@opensource.cirrus.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220121143254.6432-1-sbinding@opensource.cirrus.com>
-References: <20220121143254.6432-1-sbinding@opensource.cirrus.com>
+        Fri, 21 Jan 2022 09:35:45 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60E0FC06173D;
+        Fri, 21 Jan 2022 06:35:45 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F2AE5618E5;
+        Fri, 21 Jan 2022 14:35:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE0F2C340E1;
+        Fri, 21 Jan 2022 14:35:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1642775744;
+        bh=1F0QcO3YnTe35+nYpus7GLcDm6uFJD09iGcRztIPfOc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=A7FV0I9dZrmbKehhKjWyoNoW/GU4q6nf6pGRhIFOpsLoF43k4VvoqOmbFEZRcNpE5
+         rLMrtDe38Q3N8mZrmP9be+ptl3W4haE5GL11UBHc1PoLizMQJ58H64ryhd/4PmxxXU
+         Eamn6hvtzcheNkIlq99rBJx2lqAFyfWhTb9inGTU=
+Date:   Fri, 21 Jan 2022 15:35:36 +0100
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>
+Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        "linux-spdx@vger.kernel.org" <linux-spdx@vger.kernel.org>
+Subject: Re: [PATCH v3] powerpc: Add missing SPDX license identifiers
+Message-ID: <YerEuE6XlslE3Goo@kroah.com>
+References: <d2c52284244d6dcb3472d2041abe43b456d116df.1642762977.git.christophe.leroy@csgroup.eu>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: WqpJwWXd8eP5ceZkBZj2e1Vp0jqpsNZ9
-X-Proofpoint-ORIG-GUID: WqpJwWXd8eP5ceZkBZj2e1Vp0jqpsNZ9
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <d2c52284244d6dcb3472d2041abe43b456d116df.1642762977.git.christophe.leroy@csgroup.eu>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If a node contains more than one Spi Resources, it may be necessary to
-use an index to select which one you want to allocate a spi device for.
+On Fri, Jan 21, 2022 at 11:03:20AM +0000, Christophe Leroy wrote:
+> Several files are missing SPDX license identifiers.
+> 
+> Following files are given the following SPDX identifier based on the comments in the top of the file:
+> 
+> 	boot/crtsavres.S:/* SPDX-License-Identifier: GPL-2.0+ */
 
-Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
----
- drivers/spi/spi.c       | 51 +++++++++++++++++++++++++++++++++++------
- include/linux/spi/spi.h |  3 ++-
- 2 files changed, 46 insertions(+), 8 deletions(-)
+Are you sure that this is the correct license for this file?
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index 13f4701f0694..06c0a308b38b 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -2320,6 +2320,8 @@ struct acpi_spi_lookup {
- 	int			irq;
- 	u8			bits_per_word;
- 	u8			chip_select;
-+	int			n;
-+	int			index;
- };
- 
- static void acpi_spi_parse_apple_properties(struct acpi_device *dev,
-@@ -2351,6 +2353,8 @@ static void acpi_spi_parse_apple_properties(struct acpi_device *dev,
- 		lookup->mode |= SPI_CPHA;
- }
- 
-+static struct spi_controller *acpi_spi_find_controller_by_adev(struct acpi_device *adev);
-+
- static int acpi_spi_add_resource(struct acpi_resource *ares, void *data)
- {
- 	struct acpi_spi_lookup *lookup = data;
-@@ -2364,14 +2368,35 @@ static int acpi_spi_add_resource(struct acpi_resource *ares, void *data)
- 		sb = &ares->data.spi_serial_bus;
- 		if (sb->type == ACPI_RESOURCE_SERIAL_TYPE_SPI) {
- 
-+			if (lookup->index != -1 && lookup->n++ != lookup->index)
-+				return 1;
-+
-+			if (lookup->index == -1 && !ctlr)
-+				return -ENODEV;
-+
- 			status = acpi_get_handle(NULL,
- 						 sb->resource_source.string_ptr,
- 						 &parent_handle);
- 
--			if (ACPI_FAILURE(status) ||
--			    ACPI_HANDLE(ctlr->dev.parent) != parent_handle)
-+			if (ACPI_FAILURE(status))
- 				return -ENODEV;
- 
-+			if (ctlr) {
-+				if (ACPI_HANDLE(ctlr->dev.parent) != parent_handle)
-+					return -ENODEV;
-+			} else {
-+				struct acpi_device *adev;
-+
-+				if (acpi_bus_get_device(parent_handle, &adev))
-+					return -ENODEV;
-+
-+				ctlr = acpi_spi_find_controller_by_adev(adev);
-+				if (!ctlr)
-+					return -ENODEV;
-+
-+				lookup->ctlr = ctlr;
-+			}
-+
- 			/*
- 			 * ACPI DeviceSelection numbering is handled by the
- 			 * host controller driver in Windows and can vary
-@@ -2414,14 +2439,21 @@ static int acpi_spi_add_resource(struct acpi_resource *ares, void *data)
-  * acpi_spi_device_alloc - Allocate a spi device, and fill it in with ACPI information
-  * @ctlr: controller to which the spi device belongs
-  * @adev: ACPI Device for the spi device
-+ * @index: Index of the spi resource inside the ACPI Node
-  *
-  * This should be used to allocate a new spi device from and ACPI Node.
-  * The caller is responsible for calling spi_add_device to register the spi device.
-  *
-+ * If ctlr is set to NULL, the Controller for the spi device will be looked up
-+ * using the resource.
-+ * If index is set to -1, index is not used.
-+ * Note: If index is -1, ctlr must be set.
-+ *
-  * Return: a pointer to the new device, or ERR_PTR on error.
-  */
- struct spi_device *acpi_spi_device_alloc(struct spi_controller *ctlr,
--					 struct acpi_device *adev)
-+					 struct acpi_device *adev,
-+					 int index)
- {
- 	acpi_handle parent_handle = NULL;
- 	struct list_head resource_list;
-@@ -2429,8 +2461,13 @@ struct spi_device *acpi_spi_device_alloc(struct spi_controller *ctlr,
- 	struct spi_device *spi;
- 	int ret;
- 
-+	if (!ctlr && index == -1)
-+		return ERR_PTR(-EINVAL);
-+
- 	lookup.ctlr		= ctlr;
- 	lookup.irq		= -1;
-+	lookup.index		= index;
-+	lookup.n		= 0;
- 
- 	INIT_LIST_HEAD(&resource_list);
- 	ret = acpi_dev_get_resources(adev, &resource_list,
-@@ -2443,7 +2480,7 @@ struct spi_device *acpi_spi_device_alloc(struct spi_controller *ctlr,
- 
- 	if (!lookup.max_speed_hz &&
- 	    ACPI_SUCCESS(acpi_get_parent(adev->handle, &parent_handle)) &&
--	    ACPI_HANDLE(ctlr->dev.parent) == parent_handle) {
-+	    ACPI_HANDLE(lookup.ctlr->dev.parent) == parent_handle) {
- 		/* Apple does not use _CRS but nested devices for SPI slaves */
- 		acpi_spi_parse_apple_properties(adev, &lookup);
- 	}
-@@ -2451,9 +2488,9 @@ struct spi_device *acpi_spi_device_alloc(struct spi_controller *ctlr,
- 	if (!lookup.max_speed_hz)
- 		return ERR_PTR(-ENODEV);
- 
--	spi = spi_alloc_device(ctlr);
-+	spi = spi_alloc_device(lookup.ctlr);
- 	if (!spi) {
--		dev_err(&ctlr->dev, "failed to allocate SPI device for %s\n",
-+		dev_err(&lookup.ctlr->dev, "failed to allocate SPI device for %s\n",
- 			dev_name(&adev->dev));
- 		return ERR_PTR(-ENOMEM);
- 	}
-@@ -2478,7 +2515,7 @@ static acpi_status acpi_register_spi_device(struct spi_controller *ctlr,
- 	    acpi_device_enumerated(adev))
- 		return AE_OK;
- 
--	spi = acpi_spi_device_alloc(ctlr, adev);
-+	spi = acpi_spi_device_alloc(ctlr, adev, -1);
- 	if (IS_ERR(spi)) {
- 		if (PTR_ERR(spi) == -ENOMEM)
- 			return AE_NO_MEMORY;
-diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
-index d159cef12f1a..e5bbb9cbd3d7 100644
---- a/include/linux/spi/spi.h
-+++ b/include/linux/spi/spi.h
-@@ -762,7 +762,8 @@ extern void spi_unregister_controller(struct spi_controller *ctlr);
- 
- #if IS_ENABLED(CONFIG_ACPI)
- extern struct spi_device *acpi_spi_device_alloc(struct spi_controller *ctlr,
--						struct acpi_device *adev);
-+						struct acpi_device *adev,
-+						int index);
- #endif
- 
- /*
--- 
-2.25.1
+Also you dropped the arch/powerpc/ prefix here...
 
+
+> 	include/asm/epapr_hcalls.h:/* SPDX-License-Identifier: GPL-2.0+ OR BSD */
+> 	include/asm/fsl_hcalls.h:/* SPDX-License-Identifier: GPL-2.0+ OR BSD */
+> 	include/asm/ibmebus.h:/* SPDX-License-Identifier: GPL-2.0 OR OpenIB BSD */
+> 	include/asm/sfp-machine.h:/* SPDX-License-Identifier: LGPL-2.0+ */
+> 	kvm/mpic.c:// SPDX-License-Identifier: GPL-2.0
+> 	lib/crtsavres.S:/* SPDX-License-Identifier: GPL-2.0+ */
+> 	mm/book3s64/hash_4k.c:// SPDX-License-Identifier: LGPL-2.0
+> 	mm/book3s64/hash_64k.c:// SPDX-License-Identifier: LGPL-2.0
+> 	mm/book3s64/hash_hugepage.c:// SPDX-License-Identifier: LGPL-2.1
+> 	platforms/pseries/ibmebus.c:// SPDX-License-Identifier: GPL-2.0 OR OpenIB BSD
+> 	tools/head_check.sh:# SPDX-License-Identifier: GPL-2.0+
+> 	xmon/ppc.h:/* SPDX-License-Identifier: GPL-1.0+ */
+> 
+> Add to other files the default kernel license identifier, in extenso GPL-2.0.
+> 
+> DTS files are handled in a separate commit.
+> 
+> Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+> Cc: Thomas Gleixner <tglx@linutronix.de>
+> Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> Cc: linux-spdx@vger.kernel.org
+> ---
+> v3: Removed license text and license note in the files that have any.
+> 
+> v2: Changed from GPL-2.0 to a licence consistant with the file's comments for the few files listed in the commit message.
+> ---
+>  arch/powerpc/Makefile                         |  5 +--
+>  arch/powerpc/boot/44x.h                       |  5 +--
+>  arch/powerpc/boot/4xx.h                       |  5 +--
+>  arch/powerpc/boot/crtsavres.S                 | 16 +---------
+>  arch/powerpc/boot/dummy.c                     |  1 +
+>  arch/powerpc/boot/install.sh                  |  5 +--
+>  arch/powerpc/boot/ops.h                       |  6 ++--
+>  arch/powerpc/boot/serial.c                    |  6 ++--
+>  arch/powerpc/boot/simple_alloc.c              |  6 ++--
+>  arch/powerpc/include/asm/8xx_immap.h          |  1 +
+>  arch/powerpc/include/asm/asm-compat.h         |  1 +
+>  arch/powerpc/include/asm/asm-const.h          |  1 +
+>  arch/powerpc/include/asm/asm-offsets.h        |  1 +
+>  arch/powerpc/include/asm/cpm.h                |  1 +
+>  arch/powerpc/include/asm/dtl.h                |  1 +
+>  arch/powerpc/include/asm/edac.h               |  6 ++--
+>  arch/powerpc/include/asm/ehv_pic.h            |  5 +--
+>  arch/powerpc/include/asm/emergency-restart.h  |  1 +
+>  arch/powerpc/include/asm/epapr_hcalls.h       | 32 +------------------
+>  arch/powerpc/include/asm/fixmap.h             |  5 +--
+>  arch/powerpc/include/asm/floppy.h             |  5 +--
+>  arch/powerpc/include/asm/fs_pd.h              |  5 +--
+>  arch/powerpc/include/asm/fsl_hcalls.h         | 32 +------------------
+>  arch/powerpc/include/asm/hydra.h              |  5 +--
+>  arch/powerpc/include/asm/ibmebus.h            | 29 +----------------
+>  arch/powerpc/include/asm/kgdb.h               |  6 ++--
+>  arch/powerpc/include/asm/membarrier.h         |  1 +
+>  arch/powerpc/include/asm/module.lds.h         |  1 +
+>  arch/powerpc/include/asm/mpc52xx.h            |  5 +--
+>  arch/powerpc/include/asm/mpc52xx_psc.h        |  5 +--
+>  arch/powerpc/include/asm/pmac_feature.h       |  5 +--
+>  arch/powerpc/include/asm/ppc_asm.h            |  1 +
+>  arch/powerpc/include/asm/pte-walk.h           |  1 +
+>  arch/powerpc/include/asm/rheap.h              |  6 ++--
+>  arch/powerpc/include/asm/sfp-machine.h        | 16 +---------
+>  arch/powerpc/include/asm/vmalloc.h            |  1 +
+>  arch/powerpc/include/asm/word-at-a-time.h     |  1 +
+>  arch/powerpc/kernel/interrupt_64.S            |  1 +
+>  arch/powerpc/kernel/kgdb.c                    |  5 +--
+>  arch/powerpc/kernel/ptrace/ptrace.c           |  5 +--
+>  arch/powerpc/kernel/ptrace/ptrace32.c         |  5 +--
+>  arch/powerpc/kernel/signal.c                  |  5 +--
+>  arch/powerpc/kernel/signal.h                  |  5 +--
+>  arch/powerpc/kernel/vdso32/note.S             |  1 +
+>  arch/powerpc/kernel/vdso64/note.S             |  1 +
+>  arch/powerpc/kvm/mpic.c                       | 19 +----------
+>  arch/powerpc/lib/crtsavres.S                  | 16 +---------
+>  arch/powerpc/lib/restart_table.c              |  1 +
+>  arch/powerpc/lib/rheap.c                      |  6 ++--
+>  arch/powerpc/mm/book3s64/hash_4k.c            | 10 +-----
+>  arch/powerpc/mm/book3s64/hash_64k.c           | 10 +-----
+>  arch/powerpc/mm/book3s64/hash_hugepage.c      | 10 +-----
+>  arch/powerpc/mm/hugetlbpage.c                 |  1 +
+>  arch/powerpc/perf/req-gen/_end.h              |  1 +
+>  arch/powerpc/platforms/44x/fsp2.h             |  1 +
+>  arch/powerpc/platforms/4xx/pci.c              |  1 +
+>  arch/powerpc/platforms/4xx/pci.h              |  1 +
+>  arch/powerpc/platforms/52xx/efika.c           |  5 +--
+>  arch/powerpc/platforms/52xx/mpc52xx_common.c  |  6 +---
+>  arch/powerpc/platforms/52xx/mpc52xx_pci.c     |  5 +--
+>  arch/powerpc/platforms/52xx/mpc52xx_pic.c     |  6 +---
+>  arch/powerpc/platforms/85xx/ksi8560.c         |  6 ++--
+>  arch/powerpc/platforms/85xx/p1022_ds.c        |  5 +--
+>  arch/powerpc/platforms/85xx/p1022_rdk.c       |  5 +--
+>  arch/powerpc/platforms/8xx/ep88xc.c           |  5 +--
+>  arch/powerpc/platforms/8xx/mpc86xads.h        |  5 ++-
+>  arch/powerpc/platforms/8xx/mpc86xads_setup.c  |  5 +--
+>  arch/powerpc/platforms/8xx/mpc885ads.h        |  5 ++-
+>  arch/powerpc/platforms/8xx/mpc885ads_setup.c  |  5 +--
+>  arch/powerpc/platforms/8xx/mpc8xx.h           |  5 +--
+>  arch/powerpc/platforms/8xx/pic.c              |  1 +
+>  arch/powerpc/platforms/8xx/pic.h              |  1 +
+>  arch/powerpc/platforms/8xx/tqm8xx_setup.c     |  5 +--
+>  .../cell/spufs/spu_restore_dump.h_shipped     |  1 +
+>  .../cell/spufs/spu_save_dump.h_shipped        |  1 +
+>  arch/powerpc/platforms/chrp/gg2.h             |  5 +--
+>  .../platforms/embedded6xx/linkstation.c       |  5 +--
+>  arch/powerpc/platforms/embedded6xx/ls_uart.c  |  5 +--
+>  arch/powerpc/platforms/embedded6xx/mpc10x.h   |  6 ++--
+>  .../platforms/embedded6xx/storcenter.c        |  5 +--
+>  arch/powerpc/platforms/microwatt/Makefile     |  1 +
+>  arch/powerpc/platforms/microwatt/setup.c      |  1 +
+>  arch/powerpc/platforms/pseries/ibmebus.c      | 29 +----------------
+>  arch/powerpc/sysdev/cpm2.c                    |  5 +--
+>  arch/powerpc/sysdev/cpm2_pic.c                |  5 +--
+>  arch/powerpc/sysdev/ehv_pic.c                 |  5 +--
+>  arch/powerpc/sysdev/ge/ge_pic.c               |  5 +--
+>  arch/powerpc/sysdev/mpic.c                    |  5 +--
+>  arch/powerpc/sysdev/rtc_cmos_setup.c          |  6 ++--
+>  arch/powerpc/tools/ci-build.sh                |  1 +
+>  arch/powerpc/tools/head_check.sh              |  6 +---
+>  arch/powerpc/xmon/ppc.h                       | 15 ++-------
+>  92 files changed, 105 insertions(+), 422 deletions(-)
+
+You might want to change less of these at once, as this is hard to
+review as-is.
+
+> diff --git a/arch/powerpc/boot/crtsavres.S b/arch/powerpc/boot/crtsavres.S
+> index 085fb2b9a8b8..25e924459dcc 100644
+> --- a/arch/powerpc/boot/crtsavres.S
+> +++ b/arch/powerpc/boot/crtsavres.S
+> @@ -1,3 +1,4 @@
+> +/* SPDX-License-Identifier: GPL-2.0+ */
+>  /*
+>   * Special support for eabi and SVR4
+>   *
+> @@ -7,11 +8,6 @@
+>   *
+>   * Based on gcc/config/rs6000/crtsavres.asm from gcc
+>   *
+> - * This file is free software; you can redistribute it and/or modify it
+> - * under the terms of the GNU General Public License as published by the
+> - * Free Software Foundation; either version 2, or (at your option) any
+> - * later version.
+> - *
+>   * In addition to the permissions in the GNU General Public License, the
+>   * Free Software Foundation gives you unlimited permission to link the
+>   * compiled version of this file with other programs, and to distribute
+> @@ -20,16 +16,6 @@
+>   * respects; for example, they cover modification of the file, and
+>   * distribution when not linked into another program.)
+>   *
+> - * This file is distributed in the hope that it will be useful, but
+> - * WITHOUT ANY WARRANTY; without even the implied warranty of
+> - * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+> - * General Public License for more details.
+> - *
+> - * You should have received a copy of the GNU General Public License
+> - * along with this program; see the file COPYING.  If not, write to
+> - * the Free Software Foundation, 51 Franklin Street, Fifth Floor,
+> - * Boston, MA 02110-1301, USA.
+> - *
+>   *    As a special exception, if you link this library with files
+>   *    compiled with GCC to produce an executable, this does not cause
+>   *    the resulting executable to be covered by the GNU General Public License.
+
+Look at that "special exception", why are you ignoring it here?  You
+can't do that :(
+
+Please do these in smaller batches, perhaps one patch per type of
+license and directory to make it easier to notice mistakes like this?
+
+thanks,
+
+greg k-h
