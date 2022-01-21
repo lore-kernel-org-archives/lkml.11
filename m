@@ -2,124 +2,127 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE11BC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:05:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D7FFC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:05:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350836AbiAUOFC (ORCPT
+        id S1380991AbiAUOFG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 09:05:02 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:44140
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1380896AbiAUOE1 (ORCPT
+        Fri, 21 Jan 2022 09:05:06 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:32358 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1380986AbiAUOEc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 09:04:27 -0500
-Received: from mail-oo1-f71.google.com (mail-oo1-f71.google.com [209.85.161.71])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id B476A3F19C
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 14:04:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642773865;
-        bh=3OQ/VaDIuTDhMC1t1W5jGAk9lH9/vCwpiE19iLKBlBc=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=Ac0b3abZRX6hCnauPzNCt+mtMRBeERZ6i1f3GriO138x6os+/SJFuWrm/PFPMqBVp
-         DNME9hpaKucHUD88jaPAy/Uz+Kjz8fP7dKYFMrTWpifErDzrsR/xJ4QH1kJoLpMFMT
-         DMuQffpdVLcxIbAu09AQyopk2minRWA37TGtk/XrK1MylTWuLwe0snAE6bXsH2kdsx
-         S4pWB8w/26x4WVWaWF7GmIXIpPTaDopGj84rKgDestPIT0nW+Xi2Vk69lEqqHMEUXe
-         YZGkpSe3DYyjLqWZqYkPBQl3fOBso4hYF5WSry4kB2g1Nh8pgEgWPOYGgGCoaLMoNJ
-         Al78YSGHYrDmQ==
-Received: by mail-oo1-f71.google.com with SMTP id t26-20020a4ad0ba000000b002de9567955cso2509337oor.5
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:04:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3OQ/VaDIuTDhMC1t1W5jGAk9lH9/vCwpiE19iLKBlBc=;
-        b=eTtexXmj+qlXTicldiESd2tN7ZKGRp+KwzmbwvL6mkZoI/XKu7xors0e35Qy4jUA53
-         U2J+jlD46PJGiqkc+kd25u5uVTi7hCbUh50kYTOvcqZoiA0ZPg0lGtUmsznZn3oaQ/7U
-         pkke1K+dXRLJOO6o9FnuYbGOmW/E5RWYaSpL6C/zmmF7UGIhfI6LEGOmzWo3f7iOO8aW
-         nnSz9YSAP6u1zNz6HUBBqfU4kq8RTEZMQ4AmfZcjRyg+EpkdJQJQTFEuAG8R/es+Rh/H
-         E8+HEgMDmR+c193OQrxG/s7dQlPWxkLZmF06a6ar0FqpCQgPEI/WcKGOShkaF5JpuAgR
-         x4zw==
-X-Gm-Message-State: AOAM5328efKUw0yiatsLtYsFIoB8Pz169PmfKu0veGmcoffPfotXhdvV
-        LMmacXOHo/hSuWgvn5d03BvQbwPhz6oOdy7N2CHIw1n/juBtSOprcNqIRruKAio80jJwtt80IZV
-        cUzSUjN16dNrBZ2x4pcyzFWO9uPt3BjT2L+JcxQtWbHl4Ysr32yb/3oHg5g==
-X-Received: by 2002:a9d:6f0e:: with SMTP id n14mr2822774otq.269.1642773861223;
-        Fri, 21 Jan 2022 06:04:21 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyVtaGcho3igX1lqUTemDHDs4BAm+GxXC1OfPO/KgxOSm0eeAE8Nd5NPl6H219ecy1ttNMMRO60EzgHiH7q1Tk=
-X-Received: by 2002:a9d:6f0e:: with SMTP id n14mr2822645otq.269.1642773859362;
- Fri, 21 Jan 2022 06:04:19 -0800 (PST)
-MIME-Version: 1.0
-References: <20220120051929.1625791-1-kai.heng.feng@canonical.com>
- <Yelnzrrd0a4Bl5AL@lunn.ch> <CAAd53p45BbLy0T8AG5QTKhP00zMBsMHfm7i-bTmZmQWM5DpLnQ@mail.gmail.com>
- <Yeqve+KhJKbZJNCL@lunn.ch>
-In-Reply-To: <Yeqve+KhJKbZJNCL@lunn.ch>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Fri, 21 Jan 2022 22:04:08 +0800
-Message-ID: <CAAd53p7of_W26DfZwemZjBYNrkqtoY=NwHDG=6g9vvZfDn3Wwg@mail.gmail.com>
-Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
- firmware on a Dell hardware
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk,
+        Fri, 21 Jan 2022 09:04:32 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20LAASLt015148;
+        Fri, 21 Jan 2022 06:04:23 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=E6656S2D8v2JjAZAXSy/62KUS+Okbjyp/3Dlv5zadkk=;
+ b=W9a+YgL8pF7GsPGicJyl7/3/0o/Dk3qTPAI6YCChpdOMR2gROgZcA30/nIE9gtee4k4v
+ nbpRbjda9lkO7Ctht5W9/qo6btysECQeOG8W49koxA9s+lBY/LEa0IyYa2HKynhYs6Fg
+ psdrK76tzCeTEHqOkiA/XsgLntFTV71fujDLsGvQp669y135pce53Xzv4wHvcy7YVDRA
+ KgZqVv98APGZt5NQGSZUAcXf0sbssVq0vIERnSfXqgDi/Dg3QC4dy9Z0oV1x+mrB7hqO
+ Acw+q3VmuMV0GWbsspIYlBJFIv8b9S+yIZZWAbevrH9tUXvNvZzVH9T2R7Yn0gDo+cGC 3w== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3dqhytt7u5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 21 Jan 2022 06:04:23 -0800
+Received: from m0045849.ppops.net (m0045849.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 20LDifah013909;
+        Fri, 21 Jan 2022 06:04:22 -0800
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com (PPS) with ESMTPS id 3dqhytt7u2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 21 Jan 2022 06:04:22 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 21 Jan
+ 2022 06:04:21 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Fri, 21 Jan 2022 06:04:21 -0800
+Received: from localhost.localdomain (unknown [10.28.34.29])
+        by maili.marvell.com (Postfix) with ESMTP id C26403F70B7;
+        Fri, 21 Jan 2022 06:04:16 -0800 (PST)
+From:   Shijith Thotton <sthotton@marvell.com>
+To:     Arnaud Ebalard <arno@natisbad.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Boris Brezillon <bbrezillon@kernel.org>
+CC:     Shijith Thotton <sthotton@marvell.com>,
+        <linux-crypto@vger.kernel.org>, <jerinj@marvell.com>,
+        <sgoutham@marvell.com>, Srujana Challa <schalla@marvell.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+        "Lukasz Bartosik" <lbartosik@marvell.com>,
+        Suheil Chandran <schandran@marvell.com>,
+        chiminghao <chi.minghao@zte.com.cn>,
+        Ovidiu Panait <ovidiu.panait@windriver.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH] crypto: octeontx2: fix NULL pointer dereference
+Date:   Fri, 21 Jan 2022 19:33:10 +0530
+Message-ID: <3ff70ee925aad3afa1adc4ad1f4a7a494929d400.1642773756.git.sthotton@marvell.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-ORIG-GUID: Zo-svCzrrA672kxN1-Yc_IEylYeN4Oz4
+X-Proofpoint-GUID: cPup4_Sb39qjQfrLoMdWJVRB3POsKrqm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-21_06,2022-01-21_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 9:05 PM Andrew Lunn <andrew@lunn.ch> wrote:
->
-> > > Since you talked about suspend/resume, does this machine support WoL?
-> > > Is the BIOS configuring LED2 to be used as an interrupt when WoL is
-> > > enabled in the BIOS? Do you need to save/restore that configuration
-> > > over suspend/review? And prevent the driver from changing the
-> > > configuration?
-> >
-> > This NIC on the machine doesn't support WoL.
->
-> I'm surprised about that. Are you really sure?
+CONFIG_DM_CRYPT is checked before registering ciphers, but not before
+unregister. This could lead to a NULL pointer dereference during driver
+release (in unregister) if CONFIG_DM_CRYPT is enabled.
 
-Yes I am sure.
+...
+Unable to handle kernel NULL pointer dereference at virtual address 0000000000000008
+...
+Call trace:
+ crypto_unregister_alg+0x68/0xfc
+ crypto_unregister_skciphers+0x44/0x60
+ otx2_cpt_crypto_exit+0x100/0x1a0
+ otx2_cptvf_remove+0xf8/0x200
+ pci_device_remove+0x3c/0xd4
+ __device_release_driver+0x188/0x234
+ device_release_driver+0x2c/0x4c
+...
 
->
-> What are you doing for resume? pressing the power button?
+Added a CONFIG_DM_CRYPT check, similar to register, in unregister to
+avoid this.
 
-Power button, RTC. The system has another igb NIC, which supports WoL.
+Signed-off-by: Shijith Thotton <sthotton@marvell.com>
+---
+ drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
->
-> > > > +static const struct dmi_system_id platform_flags[] = {
-> > > > +     {
-> > > > +             .matches = {
-> > > > +                     DMI_MATCH(DMI_SYS_VENDOR, "Dell EMC"),
-> > > > +                     DMI_MATCH(DMI_PRODUCT_NAME, "Edge Gateway 3200"),
-> > > > +             },
-> > > > +             .driver_data = (void *)PHY_USE_FIRMWARE_LED,
-> > > > +     },
-> > >
-> > > This needs a big fat warning, that it will affect all LEDs for PHYs
-> > > which linux is driving, on that machine. So PHYs on USB dongles, PHYs
-> > > in SFPs, PHYs on plugin PCIe card etc.
-> > >
-> > > Have you talked with Dells Product Manager and do they understand the
-> > > implications of this?
-> >
-> > Right, that's why the original approach is passing the flag from the MAC driver.
-> > That approach can be more specific and doesn't touch unrelated PHYs.
->
-> More specific, but still will go wrong at some point, A PCEe card
-> using that MAC etc. And this is general infrastructure you are adding
-> here, it can be used by any machine, any combination of MAC and PHY
-> etc. So you need to clearly document its limits so others are not
-> surprised.
+diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
+index 2748a3327e39..620fa9b23e78 100644
+--- a/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
++++ b/drivers/crypto/marvell/octeontx2/otx2_cptvf_algs.c
+@@ -1650,7 +1650,7 @@ static inline int cpt_register_algs(void)
+ 
+ 	err = crypto_register_aeads(otx2_cpt_aeads,
+ 				    ARRAY_SIZE(otx2_cpt_aeads));
+-	if (err) {
++	if (err && !IS_ENABLED(CONFIG_DM_CRYPT)) {
+ 		crypto_unregister_skciphers(otx2_cpt_skciphers,
+ 					    ARRAY_SIZE(otx2_cpt_skciphers));
+ 		return err;
+@@ -1661,8 +1661,9 @@ static inline int cpt_register_algs(void)
+ 
+ static inline void cpt_unregister_algs(void)
+ {
+-	crypto_unregister_skciphers(otx2_cpt_skciphers,
+-				    ARRAY_SIZE(otx2_cpt_skciphers));
++	if (!IS_ENABLED(CONFIG_DM_CRYPT))
++		crypto_unregister_skciphers(otx2_cpt_skciphers,
++					    ARRAY_SIZE(otx2_cpt_skciphers));
+ 	crypto_unregister_aeads(otx2_cpt_aeads, ARRAY_SIZE(otx2_cpt_aeads));
+ }
+ 
+-- 
+2.25.1
 
-The dwmac-intel device is an integrated end point connects directly to
-the host bridge, so it won't be in a form of PCIe addin card.
-
-Kai-Heng
-
->
->         Andrew
