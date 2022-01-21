@@ -2,90 +2,276 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B1FAC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 04:06:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D916DC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 04:08:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233900AbiAUEGX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 23:06:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45706 "EHLO
+        id S233924AbiAUEIQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Thu, 20 Jan 2022 23:08:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46148 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231519AbiAUEGP (ORCPT
+        with ESMTP id S233884AbiAUEIP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 23:06:15 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C022C061574;
-        Thu, 20 Jan 2022 20:06:15 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id 192so4295642pfz.3;
-        Thu, 20 Jan 2022 20:06:15 -0800 (PST)
+        Thu, 20 Jan 2022 23:08:15 -0500
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61A37C06173F
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 20:08:15 -0800 (PST)
+Received: by mail-oi1-x22d.google.com with SMTP id q186so11961161oih.8
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 20:08:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=user-agent:date:subject:from:to:cc:message-id:thread-topic
-         :references:in-reply-to:mime-version:content-transfer-encoding;
-        bh=8+X6EhAbzBhA2wQmYG1k4Og2aMdttrSV1A0aWDvQLhI=;
-        b=JVEFPAffj9UhWIsMNUTKT8sKFatG3vC/bQtYcujpKlUHNRpDdpnTh1C7rFjfO0hEsV
-         eBuvgTr9oDbe0Iqk+f58SVjyeoU/TjHwwo0RaZ5EolviAgvRL2sPIsPoWEXmcgCLsn5K
-         9bvT8+4jUrJAIMM9l8ouu8NENjypeIraySAOE/NQo7l9XxdQ5XEz7NT0rO18GOjTolvf
-         KZU0gSj8vNAa7+TDj6fI7nJRyYEJLbRCoAoaiE81fXw+Bl2NDMwi+GHHG+eMq6vX7KMT
-         y73ZnXw70JyjUFEuYPrCaEcUmw7carb5uPQOQ2rAQ9xHzA5arHH1nb4MODWV274gj9AE
-         GPdg==
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=7Kn05henpg5pbL6jUmiTf8Wb4r1PXGs3Ie4dJfSb7xM=;
+        b=CVb7A/h3inhfWvli9MZEAAUchbGrGGtbRcRlSTmNLWvEUYVCsiyJAAVnpDmkY3qPk4
+         ouE4WBbntnUEyyOIE/QdxIWmhk/IabEkD/LkaAh1merrEO1Qn0JmbZ+fXVy2giAN2KdG
+         WI2TP8vpXsy+Zhfn60nzicWNnuuDLLqOGq1oY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:user-agent:date:subject:from:to:cc:message-id
-         :thread-topic:references:in-reply-to:mime-version
-         :content-transfer-encoding;
-        bh=8+X6EhAbzBhA2wQmYG1k4Og2aMdttrSV1A0aWDvQLhI=;
-        b=se6ZbRHX/Ep/viWkil4GbrXjoou2AkDx8JLzZxDVkxW+1EF9Sr5rzm3QDQ1LKL/p8E
-         4VB+86AgSZJLlFs+d1t1pizoYWjZNQHn1iKNUAw2Zim8y08apPyQM0Gvz31d8rQsE7DA
-         V2etQNrcIDe492utdN/sbkYwigdDH6CpumZqp0OfbtxlppTvclwI36UF2UWAVQyIQkOn
-         MIcq2RNGVK3F4GC7S0tNRiaSO6dokQI2cvnFeIzlxv9eyxwPJhCtbRnFCFrtXi04d0+k
-         N25ugbLy62XAdBrzUDEP9E8l7ZnH0lB0VpvV/3Tw17XkTnDqkMlBL8/XrDrY0jBjtGZs
-         ywCQ==
-X-Gm-Message-State: AOAM5311hq2wmnI0Ed436EwQnsobkMFgTp8hmj1TXfeFqrYHLmtgpBEa
-        O+AlsPmVIqWTNjx+uRF3LhQ=
-X-Google-Smtp-Source: ABdhPJxSlODE6zepSGl7wjrdReYE/DDryhJgFya9M2r0IDHO0lFm62e4/IYRrsN2zE5sXarunjG4aw==
-X-Received: by 2002:a63:211a:: with SMTP id h26mr1608979pgh.239.1642737974681;
-        Thu, 20 Jan 2022 20:06:14 -0800 (PST)
-Received: from [30.135.82.253] (ec2-34-221-172-227.us-west-2.compute.amazonaws.com. [34.221.172.227])
-        by smtp.gmail.com with ESMTPSA id ml16sm3554097pjb.10.2022.01.20.20.06.10
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 20 Jan 2022 20:06:14 -0800 (PST)
-User-Agent: Microsoft-MacOutlook/16.57.22011101
-Date:   Fri, 21 Jan 2022 12:06:06 +0800
-Subject: Re: [PATCH] ipv4: fix lock leaks
-From:   Ryan Cai <ycaibb@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <edumazet@google.com>, <davem@davemloft.net>,
-        <yoshfuji@linux-ipv6.org>, <dsahern@kernel.org>, <ast@kernel.org>,
-        <daniel@iogearbox.net>, <andrii@kernel.org>, <kafai@fb.com>,
-        <songliubraving@fb.com>, <yhs@fb.com>, <john.fastabend@gmail.com>,
-        <kpsingh@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <bpf@vger.kernel.org>
-Message-ID: <BDEF9CF1-016A-48F2-A4F3-8B39CC219B4F@gmail.com>
-Thread-Topic: [PATCH] ipv4: fix lock leaks
-References: <20220121031108.4813-1-ycaibb@gmail.com>
- <20220120194733.6a8b13e6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-In-Reply-To: <20220120194733.6a8b13e6@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
-Mime-version: 1.0
-Content-type: text/plain;
-        charset="UTF-8"
-Content-transfer-encoding: quoted-printable
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=7Kn05henpg5pbL6jUmiTf8Wb4r1PXGs3Ie4dJfSb7xM=;
+        b=4xch77g5Uqg4J0SpRSSaBJelt11Z4zi9zKhgSqYvPzySOlSQ9ffNTi6yAS4yXY+ap7
+         k0Mdf4JANRXJZJGmIFLb9ldYuZTswbpvkQOYGZUKopfCWne37iEpWAuJSb2ZCpthCEdw
+         OVAwZv21NWJp+NeknaJMwxLcLLjpaxzhyeKZzVFVDwpHq0phOQZpoLk+drnITcegQ/29
+         YpEYmTxyZK7MAu6QOEmEh1emAi8U89/fLPMZtm9yMPfVR1QdlhhzWpmZNVcqLTmhx4LI
+         ux6hJTLxbWVIzq3bwP/UTdNNzTfqiwgeVqGJ9WnTz/wGKZG3ufRySTOmTcdkFeDdgmjh
+         ZDWA==
+X-Gm-Message-State: AOAM533pxP4KKNkhwUGdMcN7Fa2KAatKhc5wWMdKsKnyE5GMLW70AhZf
+        9Tp1ZmKy3Ir+0VFGSiDPau3iugw4NiLMl2GAp1u+rQ==
+X-Google-Smtp-Source: ABdhPJzHOQhOvtVQ00p9naRyc70i/YMRXtUEJognG5vEVTXrGPIlc9qTKQRuxCRMq25sUcnx1qBsmtgWWyuruLqtcWo=
+X-Received: by 2002:aca:f241:: with SMTP id q62mr1848226oih.64.1642738094606;
+ Thu, 20 Jan 2022 20:08:14 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Thu, 20 Jan 2022 20:08:13 -0800
+MIME-Version: 1.0
+In-Reply-To: <20220120204132.17875-2-quic_amelende@quicinc.com>
+References: <20220120204132.17875-1-quic_amelende@quicinc.com> <20220120204132.17875-2-quic_amelende@quicinc.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Thu, 20 Jan 2022 20:08:13 -0800
+Message-ID: <CAE-0n508nxF_c9pzsTaQfSi42ZGQXkqb3NyQebuMBec2DCV0KA@mail.gmail.com>
+Subject: Re: [PATCH 1/3] input: misc: pm8941-pwrkey: add software key press
+ debouncing support
+To:     Anjelique Melendez <quic_amelende@quicinc.com>,
+        dmitry.torokhov@gmail.com
+Cc:     linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, collinsd@codeaurora.org,
+        bjorn.andersson@linaro.org, skakit@codeaurora.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Sorry for reporting this false positive. Would be more careful next time. T=
-hank you for your checking.
+Quoting Anjelique Melendez (2022-01-20 12:41:33)
+> From: David Collins <collinsd@codeaurora.org>
+>
+> On certain PMICs, an unexpected assertion of KPDPWR_DEB (the
+> positive logic hardware debounced power key signal) may be seen
+> during the falling edge of KPDPWR_N (i.e. a power key press) when
+> it occurs close to the rising edge of SLEEP_CLK.  This then
+> triggers a spurious KPDPWR interrupt.
+>
+> Handle this issue by adding software debouncing support to ignore
+> key events that occur within the hardware debounce delay after the
+> most recent key release event.
+>
+> Change-Id: Ifa3809935c01aab9078ba2302397bc9ebf390021
 
-Best,
-Ryan
+Please remove change-id when upstreaming.
 
-=EF=BB=BFOn 21/1/2022, 11:47 AM, "Jakub Kicinski" <kuba@kernel.org> wrote:
+> Signed-off-by: David Collins <collinsd@codeaurora.org>
+> Signed-off-by: Anjelique Melendez <quic_amelende@quicinc.com>
+> ---
+> diff --git a/drivers/input/misc/pm8941-pwrkey.c b/drivers/input/misc/pm8941-pwrkey.c
+> index 33609603245d..b912ce00ce1c 100644
+> --- a/drivers/input/misc/pm8941-pwrkey.c
+> +++ b/drivers/input/misc/pm8941-pwrkey.c
+> @@ -126,19 +144,65 @@ static irqreturn_t pm8941_pwrkey_irq(int irq, void *_data)
+>         struct pm8941_pwrkey *pwrkey = _data;
+>         unsigned int sts;
+>         int error;
+> +       u64 elapsed_us;
+> +
+> +       if (pwrkey->sw_debounce_time_us) {
+> +               elapsed_us = ktime_us_delta(ktime_get(),
+> +                                           pwrkey->last_release_time);
+> +               if (elapsed_us < pwrkey->sw_debounce_time_us) {
 
-    On Fri, 21 Jan 2022 11:11:08 +0800 ycaibb wrote:
-    >  			if (seq_sk_match(seq, sk))
-    > +				spin_unlock_bh(lock);
-    >  				return sk;
+Perhaps storing last_release_time + sw_debounce_time_us via
+ktime_add_us() in the struct would be better. Then this line would be
 
-    Heh, also you're missing brackets so this is patently buggy.
+	if (ktime_before(debounce_end, ktime_get()))
 
+and we'd avoid a division when converting to microseconds to compare
+time.
 
+> +                       dev_dbg(pwrkey->dev, "ignoring key event received after %llu us, debounce time=%u us\n",
+> +                               elapsed_us, pwrkey->sw_debounce_time_us);
+> +                       return IRQ_HANDLED;
+> +               }
+> +       }
+>
+>         error = regmap_read(pwrkey->regmap,
+>                             pwrkey->baseaddr + PON_RT_STS, &sts);
+
+Nitpick: I'd prefer this be on one line. And 'ret' or 'err' be used as
+it's shorter.
+
+>         if (error)
+>                 return IRQ_HANDLED;
+>
+> -       input_report_key(pwrkey->input, pwrkey->code,
+> -                        sts & pwrkey->data->status_bit);
+> +       sts &= pwrkey->data->status_bit;
+> +
+> +       if (pwrkey->sw_debounce_time_us && !sts)
+> +               pwrkey->last_release_time = ktime_get();
+> +
+> +       input_report_key(pwrkey->input, pwrkey->code, sts);
+>         input_sync(pwrkey->input);
+>
+>         return IRQ_HANDLED;
+>  }
+>
+> +static int pm8941_pwrkey_sw_debounce_init(struct pm8941_pwrkey *pwrkey)
+> +{
+> +       unsigned int val, addr;
+> +       int error;
+> +
+> +       if (pwrkey->data->has_pon_pbs && !pwrkey->pon_pbs_baseaddr) {
+> +               dev_err(pwrkey->dev, "PON_PBS address missing, can't read HW debounce time\n");
+> +               return 0;
+> +       }
+> +
+> +       if (pwrkey->pon_pbs_baseaddr)
+> +               addr = pwrkey->pon_pbs_baseaddr + PON_DBC_CTL;
+> +       else
+> +               addr = pwrkey->baseaddr + PON_DBC_CTL;
+> +       error = regmap_read(pwrkey->regmap, addr, &val);
+> +       if (error)
+> +               return error;
+> +
+> +       if (pwrkey->subtype >= PON_SUBTYPE_GEN2_PRIMARY)
+> +               pwrkey->sw_debounce_time_us = 2 * USEC_PER_SEC /
+> +                                               (1 << (0xf - (val & 0xf)));
+> +       else
+> +               pwrkey->sw_debounce_time_us = 2 * USEC_PER_SEC /
+> +                                               (1 << (0x7 - (val & 0x7)));
+
+Can we have one more local variable like 'mask' or 'offset'. Then the
+code would be easier to read
+
+	if (pwrkey->subtype >= PON_SUBTYPE_GEN2_PRIMARY)
+		mask = 0xf;
+	else
+		mask = 0x7
+	
+	pwrkey->sw_debounce_time_us = 2 * USEC_PER_SEC / (1 << mask - (val & 0x7));
+
+> +
+> +       dev_dbg(pwrkey->dev, "SW debounce time = %u us\n",
+> +               pwrkey->sw_debounce_time_us);
+> +
+> +       return 0;
+> +}
+> +
+>  static int __maybe_unused pm8941_pwrkey_suspend(struct device *dev)
+>  {
+>         struct pm8941_pwrkey *pwrkey = dev_get_drvdata(dev);
+> @@ -167,6 +231,8 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
+>         struct pm8941_pwrkey *pwrkey;
+>         bool pull_up;
+>         struct device *parent;
+> +       struct device_node *regmap_node;
+> +       const __be32 *addr;
+>         u32 req_delay;
+>         int error;
+>
+> @@ -188,8 +254,10 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
+>         pwrkey->data = of_device_get_match_data(&pdev->dev);
+>
+>         parent = pdev->dev.parent;
+> +       regmap_node = pdev->dev.of_node;
+>         pwrkey->regmap = dev_get_regmap(parent, NULL);
+>         if (!pwrkey->regmap) {
+> +               regmap_node = parent->of_node;
+>                 /*
+>                  * We failed to get regmap for parent. Let's see if we are
+>                  * a child of pon node and read regmap and reg from its
+> @@ -200,15 +268,21 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
+>                         dev_err(&pdev->dev, "failed to locate regmap\n");
+>                         return -ENODEV;
+>                 }
+> +       }
+>
+> -               error = of_property_read_u32(parent->of_node,
+> -                                            "reg", &pwrkey->baseaddr);
+> -       } else {
+> -               error = of_property_read_u32(pdev->dev.of_node, "reg",
+> -                                            &pwrkey->baseaddr);
+> +       addr = of_get_address(regmap_node, 0, NULL, NULL);
+> +       if (!addr) {
+> +               dev_err(&pdev->dev, "reg property missing\n");
+> +               return -EINVAL;
+> +       }
+> +       pwrkey->baseaddr = be32_to_cpu(*addr);
+
+Can this hunk be split off? A new API is used and it doesn't look
+relevant to this patch.
+
+> +
+> +       if (pwrkey->data->has_pon_pbs) {
+> +               /* PON_PBS base address is optional */
+> +               addr = of_get_address(regmap_node, 1, NULL, NULL);
+> +               if (addr)
+> +                       pwrkey->pon_pbs_baseaddr = be32_to_cpu(*addr);
+>         }
+> -       if (error)
+> -               return error;
+>
+>         pwrkey->irq = platform_get_irq(pdev, 0);
+>         if (pwrkey->irq < 0)
+> @@ -217,7 +291,14 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
+>         error = regmap_read(pwrkey->regmap, pwrkey->baseaddr + PON_REV2,
+>                             &pwrkey->revision);
+>         if (error) {
+> -               dev_err(&pdev->dev, "failed to set debounce: %d\n", error);
+> +               dev_err(&pdev->dev, "failed to read revision: %d\n", error);
+
+Nice error message fix!
+
+> +               return error;
+> +       }
+> +
+> +       error = regmap_read(pwrkey->regmap, pwrkey->baseaddr + PON_SUBTYPE,
+> +                           &pwrkey->subtype);
+> +       if (error) {
+> +               dev_err(&pdev->dev, "failed to read subtype: %d\n", error);
+>                 return error;
+>         }
+>
+> @@ -255,6 +336,12 @@ static int pm8941_pwrkey_probe(struct platform_device *pdev)
+>                 }
+>         }
+>
+> +       if (pwrkey->data->needs_sw_debounce) {
+> +               error = pm8941_pwrkey_sw_debounce_init(pwrkey);
+> +               if (error)
+> +                       return error;
+> +       }
+> +
+>         if (pwrkey->data->pull_up_bit) {
+>                 error = regmap_update_bits(pwrkey->regmap,
+>                                            pwrkey->baseaddr + PON_PULL_CTL,
+> @@ -316,6 +403,8 @@ static const struct pm8941_data pwrkey_data = {
+>         .phys = "pm8941_pwrkey/input0",
+>         .supports_ps_hold_poff_config = true,
+>         .supports_debounce_config = true,
+> +       .needs_sw_debounce = true,
+
+needs_sw_debounce is always true? Why is it even an option then?
+
+> +       .has_pon_pbs = false,
+>  };
+>
+>  static const struct pm8941_data resin_data = {
