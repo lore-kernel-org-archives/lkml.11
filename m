@@ -2,97 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44ED8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 07:57:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18977C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 07:57:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349280AbiAUH5b (ORCPT
+        id S1379333AbiAUH5e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 02:57:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40098 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379277AbiAUH4g (ORCPT
+        Fri, 21 Jan 2022 02:57:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51341 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1379232AbiAUH4h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 02:56:36 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF5B0C061747
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 23:56:35 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id f13so7723975plg.0
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 23:56:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=g85iyBrbQfGIa6oI3cy0UnhFSe/ynzyb0z74yUFTllk=;
-        b=W4ZdDO/SKqbmtzYR/fK+Rrxosm61hwItSMOkaFU/2YX7icv3gLM22PlkNp8St7zagA
-         UoHLQimZ796bnmN3njyvgHwul7SoNkSBEdJ9IG/MbFpKSoA2CAaUyjBax2geIygUt1g9
-         5ndWslIKU0n0WHiQQDf0T3KGUCK5lyBYsNRJj5bZ5/Hk/R8x7Des5mPQavrM+bQFF06Q
-         yKfhRzFP1c0jCTWn8WNdLEm/dtLo6ZXu5MP+c19NS1mQPYcIl83IWtXuJrZLPJyFofHE
-         oKTVP4jynRsJO4b7OajRDhEO6MGTZJHDYgYjZu38f6inX6lzKJNTofnei2qpVdCJ6XfQ
-         /YKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=g85iyBrbQfGIa6oI3cy0UnhFSe/ynzyb0z74yUFTllk=;
-        b=p4ljXFppoDN5QyCDhpvzZqMRQUIGxKhk9Gb9p3izfgcB+7nszJt0CvNo7wKlZiNhgd
-         qUYDUaBg8uOcpRdyUQNA+5V3Zmas8aDqHGv2O8KFxKVo5jMMCYpSCXPUXGkQLrVLFHWy
-         tW8UcKVWxo4OKBd9Is2Ig/mJYVKgunb5PIpWS+f5CDSNFXQVhqG28KRqavdEl3RD+/qO
-         F6nJjRVv+X65J3+4dme0Ogwkcok6L/Alci6e4WuVoao47ym1ALW/zuETwILF90CryCW0
-         f1yr7i1zWgxFjg42Lz6Z5U5IXdNLkX5CYjc2eMiP6LECRG634PM2httSvAEKgV5LszGX
-         AnYg==
-X-Gm-Message-State: AOAM5325nKokzuAr0vF04doAvb9Otl9+W4oQnqkIya4xtCXyCa9nCvVB
-        7qaJb176u1JW0ComWSmNpmB5bA==
-X-Google-Smtp-Source: ABdhPJz6D9O2uvj40X0dQzDK5rSPcYK0+vGHyAMFzHzrHrk7fEsv1fTssN4tSehxXfv9S9hqt076Kg==
-X-Received: by 2002:a17:902:9894:b0:149:8a72:98ae with SMTP id s20-20020a170902989400b001498a7298aemr2720829plp.132.1642751795469;
-        Thu, 20 Jan 2022 23:56:35 -0800 (PST)
-Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.230])
-        by smtp.gmail.com with ESMTPSA id t15sm10778178pjy.17.2022.01.20.23.56.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 23:56:35 -0800 (PST)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     dan.j.williams@intel.com, willy@infradead.org, jack@suse.cz,
-        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
-        apopple@nvidia.com, shy828301@gmail.com, rcampbell@nvidia.com,
-        hughd@google.com, xiyuyang19@fudan.edu.cn,
-        kirill.shutemov@linux.intel.com, zwisler@kernel.org
-Cc:     linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH 2/5] dax: fix cache flush on PMD-mapped pages
-Date:   Fri, 21 Jan 2022 15:55:12 +0800
-Message-Id: <20220121075515.79311-2-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220121075515.79311-1-songmuchun@bytedance.com>
-References: <20220121075515.79311-1-songmuchun@bytedance.com>
+        Fri, 21 Jan 2022 02:56:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642751795;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=m2Ho/lCZKO10EzmqqcIcm9qmBssIoEL4oIglAIQFltM=;
+        b=NkUymEuQfICVF0n6My8trFNrxc1UYZmm2CcebWHGKCjguESu7csN5XnwTJ/WWtIFUgmpYR
+        GCKXWRRkCDnH1N53D49jqHYnzDjxmJpCllho7F/ST4Y/cTOqT0EOm6/5cn84jCa4mDDRv6
+        fkKka2+B9+jSx6P+Bo4vy6NxrOvAswE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-308-qmajEbmeOGKJKS2Wspa7_w-1; Fri, 21 Jan 2022 02:56:30 -0500
+X-MC-Unique: qmajEbmeOGKJKS2Wspa7_w-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 088D084DA42;
+        Fri, 21 Jan 2022 07:56:27 +0000 (UTC)
+Received: from sirius.home.kraxel.org (unknown [10.39.193.47])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id 22F6970D21;
+        Fri, 21 Jan 2022 07:56:17 +0000 (UTC)
+Received: by sirius.home.kraxel.org (Postfix, from userid 1000)
+        id A8B8F180060F; Fri, 21 Jan 2022 08:20:06 +0100 (CET)
+Date:   Fri, 21 Jan 2022 08:20:06 +0100
+From:   Gerd Hoffmann <kraxel@redhat.com>
+To:     Helge Deller <deller@gmx.de>
+Cc:     Thomas Zimmermann <tzimmermann@suse.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-fbdev@vger.kernel.org, Sven Schnelle <svens@stackframe.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        dri-devel@lists.freedesktop.org,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Pavel Machek <pavel@ucw.cz>, linux-kernel@vger.kernel.org,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Sam Ravnborg <sam@ravnborg.org>, Claudio Suarez <cssk@net-c.es>
+Subject: Re: [PATCH 2/2] Revert "fbcon: Disable accelerated scrolling"
+Message-ID: <20220121072006.ylw2hdl7jbkbwnre@sirius.home.kraxel.org>
+References: <20220119110839.33187-1-deller@gmx.de>
+ <20220119110839.33187-3-deller@gmx.de>
+ <YelyGDNDTn1Aq/hm@phenom.ffwll.local>
+ <6c000477-002b-d125-b945-2c4831bad8a5@gmx.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <6c000477-002b-d125-b945-2c4831bad8a5@gmx.de>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The flush_cache_page() only remove a PAGE_SIZE sized range from the cache.
-However, it does not cover the full pages in a THP except a head page.
-Replace it with flush_cache_range() to fix this issue.
+  Hi,
 
-Fixes: f729c8c9b24f ("dax: wrprotect pmd_t in dax_mapping_entry_mkclean")
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
----
- fs/dax.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> > So if this really has to come back then I think the pragmatic approach is
+> > to do it behind a CONFIG_FBCON_ACCEL, default n, and with a huge warning
+> > that enabling that shouldn't be done for any distro which only enables
+> > firmware and drm fbdev drivers.
+> 
+> Thanks for coming back on this, but quite frankly I don't understand
+> that request. How should that warning look like, something along:
+> "BE WARNED: The framebuffer text console on your non-DRM supported
+> graphic card will then run faster and smoother if you enable this option."
+> That doesn't make sense. People and distros would want to enable that.
 
-diff --git a/fs/dax.c b/fs/dax.c
-index 88be1c02a151..2955ec65eb65 100644
---- a/fs/dax.c
-+++ b/fs/dax.c
-@@ -857,7 +857,7 @@ static void dax_entry_mkclean(struct address_space *mapping, pgoff_t index,
- 			if (!pmd_dirty(*pmdp) && !pmd_write(*pmdp))
- 				goto unlock_pmd;
- 
--			flush_cache_page(vma, address, pfn);
-+			flush_cache_range(vma, address, address + HPAGE_PMD_SIZE);
- 			pmd = pmdp_invalidate(vma, address, pmdp);
- 			pmd = pmd_wrprotect(pmd);
- 			pmd = pmd_mkclean(pmd);
--- 
-2.11.0
+Nope.  Most distros want disable fbdev drivers rather sooner than later.
+The fbdev drivers enabled in the fedora kernel today:
+
+	CONFIG_FB_VGA16=m
+	CONFIG_FB_VESA=y
+	CONFIG_FB_EFI=y
+	CONFIG_FB_SSD1307=m
+
+CONFIG_FB_VESA + CONFIG_FB_EFI will go away soon, with simpledrm taking
+over their role.
+
+> And if a distro *just* has firmware and drm fbdev drivers enabled,
+> none of the non-DRM graphic cards would be loaded anyway and this code
+> wouldn't be executed anyway.
+
+Yes, exactly.  That's why there is no point in compiling that code.
+
+take care,
+  Gerd
 
