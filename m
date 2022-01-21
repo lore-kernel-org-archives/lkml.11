@@ -2,60 +2,63 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FB31C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:58:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EA30C4321E
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:58:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382015AbiAUQ6C (ORCPT
+        id S1382024AbiAUQ6F (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 11:58:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49680 "EHLO
+        Fri, 21 Jan 2022 11:58:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379858AbiAUQ4t (ORCPT
+        with ESMTP id S1379407AbiAUQ4s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 11:56:49 -0500
-Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6995C061769
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 08:55:36 -0800 (PST)
-Received: by mail-ot1-x32a.google.com with SMTP id a12-20020a0568301dcc00b005919e149b4cso12495062otj.8
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 08:55:36 -0800 (PST)
+        Fri, 21 Jan 2022 11:56:48 -0500
+Received: from mail-oo1-xc2d.google.com (mail-oo1-xc2d.google.com [IPv6:2607:f8b0:4864:20::c2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC585C06173D;
+        Fri, 21 Jan 2022 08:55:17 -0800 (PST)
+Received: by mail-oo1-xc2d.google.com with SMTP id q16-20020a4a3010000000b002dde2463e66so3486305oof.9;
+        Fri, 21 Jan 2022 08:55:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=YaU4VG8N9CoVLuyvuF8eKASeQ+KGlO318g0VjIU083s=;
-        b=h5ng4rGJAP8Dw2GzBBkwMcUMgwOH/C0MM674tyPWcagZpg5a5cPerPWSPK9gZ/q+SZ
-         aGijwYdlRIUg87bxdAGcJFIiMjPJf5at0voT815CKdmYzHDrr1qrsq9nqLlP/evlL3o0
-         e++guAbfsQxsxNK5JbI+IvV65L7FGZUv9HJOOXckrW9NyOZhC6k6Zw/GDczbvSxKGkLJ
-         D5QMucQtMB28DMsAvGJduBLGkw4fHUcbACqPG0NvBVFU8hqNEp9mtfGdznqUX+cyRAHh
-         lj5cW9oSn6tQweYPwYEqO3NRL3UzaW5LVqKul2TTano8i6rbANy18HV2wayUJxPdgJDZ
-         /sTA==
+        bh=IVOAJ94pJepIbpbSfUfz/TwG9KdmwHk/Cvcx+UDJ5T4=;
+        b=pIOKSl0EpHvfWhlFljlxDebl+wxZ1lCxG5dYv20Sp2Zkx6SU2GmaD5OaTmH+Wo2MfF
+         6Orxsa9dl/d5YlGtUQn6m1HOLOyIOSAO6qQVimJLB+W9GPbjzEk3FMHa3mjDGT2Truk2
+         HsYXLEUl+oAYX+Lhq0g7gMYFELX7rOAWTZ/7Vw+kRPKCGUSe6S1JAJJpTkwSMkulTlDD
+         Czl00JsRrGhseMk1qAXTK76Q8Sm099C/heQTp05HF2pjEgsnc7ldOiQAYgikA4F7crlq
+         NLqhs+rqc1W0D+hQnJSBgspyxs+2VXk+cyq5GA+2lFsNPL2oXE97+Sz4RS6P9fLxw73R
+         4aSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YaU4VG8N9CoVLuyvuF8eKASeQ+KGlO318g0VjIU083s=;
-        b=6m87ARSMT5/eA7Ogg/IKVgQCVJwZL8ZFKaKoO+INF/V+IiZfDpBTIY+i62LrIrWl3a
-         a4jQChRVkSYp8zvFYkrqdGdV/e/Tm9Qy/hLuZkoMioEuNULI+Fx4LxcZMBCmMm7+FaIc
-         LZq8FNvnpnFZ7n47a7kuGDPpvobnoYXqLwQxtyle+4SbkE0Ys7T/Q0DU2z+btZiZrEHX
-         RhsRuzAePkiYdftGMq8zVnI3h5MhckyJqoKxKUB2EdQD4JGAJF2TcLd8iKebOs5Bk+w7
-         xyNYBTPH5Sd3LHWu+wL1sYk75cxnIW7HmPIav3REwCEdk4iIU8NePJ7E1CAwhyVFgShW
-         Ez8A==
-X-Gm-Message-State: AOAM531QzGQiIprCdePlIxQW5DDoRpXi2PKfPPBsZM36The79xtR+v8t
-        yMosOrS1wN4cvsCxoVfsKTX7bPBd/lY=
-X-Google-Smtp-Source: ABdhPJxB6j58CX46EprCZsW8G6PeZqqSZ6IOoAEGrPdGDyJdeI4cHRGDwsx4dFfMPggbz9WNz7820Q==
-X-Received: by 2002:a05:6830:1ad9:: with SMTP id r25mr3397494otc.31.1642784136254;
-        Fri, 21 Jan 2022 08:55:36 -0800 (PST)
+        bh=IVOAJ94pJepIbpbSfUfz/TwG9KdmwHk/Cvcx+UDJ5T4=;
+        b=qzQ4LB6X/oDw/RZKK9L7FX0tpLwsDHpUxtGYOqEyiNCxJt/cvOP2E+qoiZrJUwAkPq
+         OUcYzjqtfM/2be1OqScRzKbaPfFqO90LnusCXYW9i1NA1+XLkZRyDxPu30vYI9drchbh
+         doVe2/DG0rxZ4ZPZcsVsP2YnFDXtnSK7k48t249qUxVTKlOeNaVW3Dnm0gBJcvdfnZhp
+         iFuvA46JIo6akCw4Em/b5lxJo4OvRek35bvDVIbByDqHSe900QxiHxbjpPtunmmURhAS
+         VDfzOOOXXedrLx423w+Xkzz6vGozZC5vgMi6/lKuFlBl1kyVQ9sCXUxtGUzS7+izxMvO
+         7ndg==
+X-Gm-Message-State: AOAM530y+c6e2XHLH/33b6pMKsu/dv75CnD5+HyriRt7NIt7rX2L31/1
+        FN4RzsAcaH8oOAzZb+ekvOYJ/qPGBCE=
+X-Google-Smtp-Source: ABdhPJz8GHk+7q5boe5b4Wu0fQHWY4WMc/PaCje5B6GeKDz/SFWL8Lj2dH6TwrxPxJylQDn8286Vrg==
+X-Received: by 2002:a4a:d184:: with SMTP id j4mr3108067oor.20.1642784117119;
+        Fri, 21 Jan 2022 08:55:17 -0800 (PST)
 Received: from thinkpad.localdomain ([2804:14d:5cd1:5d03:cf72:4317:3105:f6e5])
-        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.55.34
+        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.55.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 08:55:35 -0800 (PST)
+        Fri, 21 Jan 2022 08:55:16 -0800 (PST)
 From:   Luiz Sampaio <sampaio.ime@gmail.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jiri Slaby <jirislaby@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Luiz Sampaio <sampaio.ime@gmail.com>
-Subject: [PATCH 22/31] tty: vt: changing LED_* from enum led_brightness to actual value
-Date:   Fri, 21 Jan 2022 13:54:27 -0300
-Message-Id: <20220121165436.30956-23-sampaio.ime@gmail.com>
+To:     Christian Lamparter <chunkeey@googlemail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, Luiz Sampaio <sampaio.ime@gmail.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 17/31] net: intersil: changing LED_* from enum led_brightness to actual value
+Date:   Fri, 21 Jan 2022 13:54:22 -0300
+Message-Id: <20220121165436.30956-18-sampaio.ime@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220121165436.30956-1-sampaio.ime@gmail.com>
 References: <20220121165436.30956-1-sampaio.ime@gmail.com>
@@ -69,31 +72,22 @@ The enum led_brightness, which contains the declaration of LED_OFF,
 LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
 max_brightness.
 ---
- drivers/tty/vt/keyboard.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/intersil/p54/led.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/tty/vt/keyboard.c b/drivers/tty/vt/keyboard.c
-index be8313cdbac3..33bad1973180 100644
---- a/drivers/tty/vt/keyboard.c
-+++ b/drivers/tty/vt/keyboard.c
-@@ -1035,7 +1035,7 @@ static int kbd_led_trigger_activate(struct led_classdev *cdev)
- 	if (ledstate != -1U)
- 		led_trigger_event(&trigger->trigger,
- 				  ledstate & trigger->mask ?
--					LED_FULL : LED_OFF);
-+					255 : 0);
- 	tasklet_enable(&keyboard_tasklet);
+diff --git a/drivers/net/wireless/intersil/p54/led.c b/drivers/net/wireless/intersil/p54/led.c
+index 4bc77010f9c1..c5966b32416e 100644
+--- a/drivers/net/wireless/intersil/p54/led.c
++++ b/drivers/net/wireless/intersil/p54/led.c
+@@ -43,7 +43,7 @@ static void p54_update_leds(struct work_struct *work)
+ 			if (tmp < blink_delay)
+ 				blink_delay = tmp;
  
- 	return 0;
-@@ -1081,7 +1081,7 @@ static void kbd_propagate_led_state(unsigned int old_state,
- 		if (changed & trigger->mask)
- 			led_trigger_event(&trigger->trigger,
- 					  new_state & trigger->mask ?
--						LED_FULL : LED_OFF);
-+						255 : 0);
- 	}
- }
+-			if (priv->leds[i].led_dev.brightness == LED_OFF)
++			if (priv->leds[i].led_dev.brightness == 0)
+ 				rerun = true;
  
+ 			priv->leds[i].toggled =
 -- 
 2.34.1
 
