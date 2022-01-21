@@ -2,72 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0FF1C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 19:47:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E992BC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 19:49:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231495AbiAUTr1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 14:47:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60790 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229454AbiAUTrZ (ORCPT
+        id S231854AbiAUTtl convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 14:49:41 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:64556 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231661AbiAUTtk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 14:47:25 -0500
-Received: from metanate.com (unknown [IPv6:2001:8b0:1628:5005::111])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F5B6C06173B
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 11:47:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=metanate.com; s=stronger; h=Content-Transfer-Encoding:Content-Type:
-        References:In-Reply-To:Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-ID
-        :Content-Description; bh=Ru23K7nav+OHjyymO8CSjGmREtw3kKts4vIZNTASfAQ=; b=s0O0
-        /UXqV9obxQwXq3xNCrUbPc8jZaPlneD+lUOrEoxSL04tAiZ/XTPuAt59zKIQOtQFHOqUSB/UnqBa+
-        7izh4iMATFCXMFO3CeGx2DEMqs2OT1hSeCB0eOAdNNORNwzYM6BjOqvnmcc7euLdkinWJh+85RFPm
-        vJTrmZ/GVhXd6deDhX5VWSzagcPhZ9L3UgggdJuCpvgJQrWJQ5i4T/ZXaNIEJyJ4i97o4AUeCgsgE
-        KcyyI+O2kBQPUNJAixbt8frQMiq7PNoFe26zKaP4FIqWEpupIWVDYDtjetLrckELc39BRQNxR/7gd
-        EgYdyTWnu1S5PrTV8pmxlQETJ9/8xQ==;
-Received: from [81.174.171.191] (helo=donbot)
-        by email.metanate.com with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-        (Exim 4.93)
-        (envelope-from <john@metanate.com>)
-        id 1nAzsU-0001sS-UZ; Fri, 21 Jan 2022 19:47:19 +0000
-Date:   Fri, 21 Jan 2022 19:47:18 +0000
-From:   John Keeping <john@metanate.com>
-To:     Valentin Schneider <valentin.schneider@arm.com>
-Cc:     linux-kernel@vger.kernel.org, Ingo Molnar <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Juri Lelli <juri.lelli@redhat.com>,
-        Vincent Guittot <vincent.guittot@linaro.org>,
-        Dietmar Eggemann <dietmar.eggemann@arm.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        Ben Segall <bsegall@google.com>, Mel Gorman <mgorman@suse.de>,
-        Daniel Bristot de Oliveira <bristot@redhat.com>
-Subject: Re: [PATCH] sched/rt: Plug rt_mutex_setprio() vs push_rt_task()
- race
-Message-ID: <20220121194718.5e32bc19.john@metanate.com>
-In-Reply-To: <8735li6vgq.mognet@arm.com>
-References: <20220120194037.650433-1-valentin.schneider@arm.com>
-        <8735li6vgq.mognet@arm.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Fri, 21 Jan 2022 14:49:40 -0500
+Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20LFZbbh016328
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 11:49:40 -0800
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com (PPS) with ESMTPS id 3dqj0gnjt6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 11:49:39 -0800
+Received: from twshared18912.14.frc2.facebook.com (2620:10d:c085:108::4) by
+ mail.thefacebook.com (2620:10d:c085:11d::5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 21 Jan 2022 11:49:39 -0800
+Received: by devbig006.ftw2.facebook.com (Postfix, from userid 4523)
+        id 437FD284A5F10; Fri, 21 Jan 2022 11:49:32 -0800 (PST)
+From:   Song Liu <song@kernel.org>
+To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kernel-team@fb.com>, <peterz@infradead.org>, <x86@kernel.org>,
+        Song Liu <songliubraving@fb.com>
+Subject: [PATCH v6 bpf-next 1/7] x86/Kconfig: select HAVE_ARCH_HUGE_VMALLOC with HAVE_ARCH_HUGE_VMAP
+Date:   Fri, 21 Jan 2022 11:49:20 -0800
+Message-ID: <20220121194926.1970172-2-song@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220121194926.1970172-1-song@kernel.org>
+References: <20220121194926.1970172-1-song@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Authenticated: YES
+Content-Transfer-Encoding: 8BIT
+X-FB-Internal: Safe
+Content-Type: text/plain
+X-Proofpoint-GUID: 9wZfms9IGd8K8PnyA3f5v9DEgJPeIB1z
+X-Proofpoint-ORIG-GUID: 9wZfms9IGd8K8PnyA3f5v9DEgJPeIB1z
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-21_09,2022-01-21_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=fb_outbound_notspam policy=fb_outbound score=0 mlxlogscore=914
+ adultscore=0 suspectscore=0 phishscore=0 mlxscore=0 bulkscore=0
+ spamscore=0 priorityscore=1501 lowpriorityscore=0 impostorscore=0
+ clxscore=1034 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2201210128
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 20 Jan 2022 19:47:01 +0000
-Valentin Schneider <valentin.schneider@arm.com> wrote:
+From: Song Liu <songliubraving@fb.com>
 
-> On 20/01/22 19:40, Valentin Schneider wrote:
-> > Link: http://lore.kernel.org/r/Yb3vXx3DcqVOi+EA@donbot
-> > Fixes: a7c81556ec4d ("sched: Fix migrate_disable() vs rt/dl balancing")
-> > Reported-by: John Keeping <john@metanate.com>
-> > Signed-off-by: Valentin Schneider <valentin.schneider@arm.com>  
-> 
-> @John: it's slightly different than the few things we got you to try out,
-> so I didn't keep your tested-by, sorry!
+This enables module_alloc() to allocate huge page for 2MB+ requests.
+To check the difference of this change, we need enable config
+CONFIG_PTDUMP_DEBUGFS, and call module_alloc(2MB). Before the change,
+/sys/kernel/debug/page_tables/kernel shows pte for this map. With the
+change, /sys/kernel/debug/page_tables/ show pmd for thie map.
 
-I ran a test with this version as well and as expected this does indeed
-fix the issue, so this is also:
+Signed-off-by: Song Liu <songliubraving@fb.com>
+---
+ arch/x86/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-Tested-by: John Keeping <john@metanate.com>
+diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
+index 8910b09b5601..b5d1582ea848 100644
+--- a/arch/x86/Kconfig
++++ b/arch/x86/Kconfig
+@@ -158,6 +158,7 @@ config X86
+ 	select HAVE_ALIGNED_STRUCT_PAGE		if SLUB
+ 	select HAVE_ARCH_AUDITSYSCALL
+ 	select HAVE_ARCH_HUGE_VMAP		if X86_64 || X86_PAE
++	select HAVE_ARCH_HUGE_VMALLOC		if HAVE_ARCH_HUGE_VMAP
+ 	select HAVE_ARCH_JUMP_LABEL
+ 	select HAVE_ARCH_JUMP_LABEL_RELATIVE
+ 	select HAVE_ARCH_KASAN			if X86_64
+-- 
+2.30.2
+
