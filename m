@@ -2,94 +2,87 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FF70C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 11:13:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BBF3C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 11:14:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344949AbiAULND (ORCPT
+        id S1350074AbiAULO2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 06:13:03 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:43412 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231467AbiAULNA (ORCPT
+        Fri, 21 Jan 2022 06:14:28 -0500
+Received: from smtp-out2.suse.de ([195.135.220.29]:50448 "EHLO
+        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231467AbiAULO0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 06:13:00 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20LA1t0r029629;
-        Fri, 21 Jan 2022 03:12:48 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : mime-version : content-transfer-encoding :
- content-type; s=pfpt0220; bh=FJF3UNT0Gfz1FUi1XcF7EOtUsmL/+M6KbfUo65TkHKY=;
- b=iQyf14Vn4aV24bfEhN9mC1gaQgIibD2lzj6MphUQj5DEMEAP1KoYvXF/Of0UCNeoAev1
- OTOhwwen0bdZgymJAUCjpCqfh33j/n7xPhMrQGaSgDnP6d3clnIvM782jX9IQBQ+sZWB
- VIesG2p2LUpblaczfAtdSX6xcr/PvjfHY5hjhLqzvFfvIDup2Wi/FBcDN2T42hbemZjB
- gvfU3glUDiIw8+yg4+1vnW/urH5twPRzFLmyEYnmsa37XQQ8qQwgtJb5ZCo1kdLA4Ggx
- vrjzZ/yYTTXFYJwNBOA/MG526ebqcnfXxa82ATyhDuZpmLA1ggZl4KlT4BL8oRoHH+vE Pg== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com (PPS) with ESMTPS id 3dqj05hq67-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Fri, 21 Jan 2022 03:12:48 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 21 Jan
- 2022 03:12:46 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 21 Jan 2022 03:12:46 -0800
-Received: from localhost.localdomain (unknown [10.28.34.29])
-        by maili.marvell.com (Postfix) with ESMTP id 081FE3F7097;
-        Fri, 21 Jan 2022 03:12:42 -0800 (PST)
-From:   Shijith Thotton <sthotton@marvell.com>
-To:     Arnaud Ebalard <arno@natisbad.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Boris Brezillon <bbrezillon@kernel.org>
-CC:     Shijith Thotton <sthotton@marvell.com>,
-        <linux-crypto@vger.kernel.org>, <jerinj@marvell.com>,
-        <sgoutham@marvell.com>, Srujana Challa <schalla@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH] crypto: octeontx2: select CONFIG_NET_DEVLINK
-Date:   Fri, 21 Jan 2022 16:42:32 +0530
-Message-ID: <41b2f0754d958e2659a88e4c8d005267ef428302.1642763325.git.sthotton@marvell.com>
-X-Mailer: git-send-email 2.25.1
+        Fri, 21 Jan 2022 06:14:26 -0500
+Received: from relay2.suse.de (relay2.suse.de [149.44.160.134])
+        by smtp-out2.suse.de (Postfix) with ESMTP id A4A051F888;
+        Fri, 21 Jan 2022 11:14:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
+        t=1642763665; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=huXZBaaoOclQBKGYH9qhA4+r2hqJ985w7l3q+2AarV4=;
+        b=pooZty+tY45RueosEtn5jjsTq1uLipDDrZUaHFLS5jjCwkKcs5Q2lojB2bkHSyx7DIsfey
+        4wUa1oBT7FMWUe5DdyUTcz4P6CJIh2OiZTpROYXN7NnIuW/aCxphQ4e46quZ52X4irMkCO
+        8WJUCctiIktWMWOnTSNuUa1T9ARoOIU=
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
+        s=susede2_ed25519; t=1642763665;
+        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:  content-transfer-encoding:content-transfer-encoding;
+        bh=huXZBaaoOclQBKGYH9qhA4+r2hqJ985w7l3q+2AarV4=;
+        b=ud8bBkRgIfECxejjjkPb6a4YsnezrDUynm7rKdz29LloIU7PXVIHyYKQXCHvfkWv2h94nR
+        3hpDG8oR7QI0HvBg==
+Received: from alsa1.nue.suse.com (alsa1.suse.de [10.160.4.42])
+        by relay2.suse.de (Postfix) with ESMTP id 9ADF0A3B88;
+        Fri, 21 Jan 2022 11:14:25 +0000 (UTC)
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Luca Coelho <luciano.coelho@intel.com>
+Cc:     Johannes Berg <johannes.berg@intel.com>,
+        Oliver Neukum <oneukum@suse.de>,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iwlwifi: mvm: Fix potential NULL dereference for sta
+Date:   Fri, 21 Jan 2022 12:14:18 +0100
+Message-Id: <20220121111418.9144-1-tiwai@suse.de>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: UQHgiLycYaRxusDuZi2NwzkBkfZSmQoO
-X-Proofpoint-ORIG-GUID: UQHgiLycYaRxusDuZi2NwzkBkfZSmQoO
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-21_06,2022-01-21_01,2021-12-02_01
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-OcteonTX2 CPT driver will fail to link without devlink support.
+The recent fix for NULL sta in iwl_mvm_get_tx_rate() may still hit a
+potential NULL dereference, as iwl_mvm_sta_from_mac80211() is called
+unconditionally (although this doesn't seem happening, practically
+seen, thanks to the compiler optimization).
 
-aarch64-linux-gnu-ld: otx2_cpt_devlink.o: in function `otx2_cpt_dl_egrp_delete':
-otx2_cpt_devlink.c:18: undefined reference to `devlink_priv'
-aarch64-linux-gnu-ld: otx2_cpt_devlink.o: in function `otx2_cpt_dl_egrp_create':
-otx2_cpt_devlink.c:9: undefined reference to `devlink_priv'
-aarch64-linux-gnu-ld: otx2_cpt_devlink.o: in function `otx2_cpt_dl_uc_info':
-otx2_cpt_devlink.c:27: undefined reference to `devlink_priv'
+This patch addresses it by dropping the temporary variable.
 
-Fixes: fed8f4d5f946 ("crypto: octeontx2 - parameters for custom engine groups")
-
-Signed-off-by: Shijith Thotton <sthotton@marvell.com>
+Fixes: d599f714b73e ("iwlwifi: mvm: don't crash on invalid rate w/o STA")
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 ---
- drivers/crypto/marvell/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/net/wireless/intel/iwlwifi/mvm/tx.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/crypto/marvell/Kconfig b/drivers/crypto/marvell/Kconfig
-index 9125199f1702..a48591af12d0 100644
---- a/drivers/crypto/marvell/Kconfig
-+++ b/drivers/crypto/marvell/Kconfig
-@@ -47,6 +47,7 @@ config CRYPTO_DEV_OCTEONTX2_CPT
- 	select CRYPTO_SKCIPHER
- 	select CRYPTO_HASH
- 	select CRYPTO_AEAD
-+	select NET_DEVLINK
- 	help
- 		This driver allows you to utilize the Marvell Cryptographic
- 		Accelerator Unit(CPT) found in OcteonTX2 series of processors.
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/tx.c b/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
+index 6fa2c12f7955..4d1ddca73fb0 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
+@@ -318,15 +318,14 @@ static u32 iwl_mvm_get_tx_rate(struct iwl_mvm *mvm,
+ 
+ 	/* info->control is only relevant for non HW rate control */
+ 	if (!ieee80211_hw_check(mvm->hw, HAS_RATE_CONTROL)) {
+-		struct iwl_mvm_sta *mvmsta = iwl_mvm_sta_from_mac80211(sta);
+-
+ 		/* HT rate doesn't make sense for a non data frame */
+ 		WARN_ONCE(info->control.rates[0].flags & IEEE80211_TX_RC_MCS &&
+ 			  !ieee80211_is_data(fc),
+ 			  "Got a HT rate (flags:0x%x/mcs:%d/fc:0x%x/state:%d) for a non data frame\n",
+ 			  info->control.rates[0].flags,
+ 			  info->control.rates[0].idx,
+-			  le16_to_cpu(fc), sta ? mvmsta->sta_state : -1);
++			  le16_to_cpu(fc),
++			  sta ? iwl_mvm_sta_from_mac80211(sta)->sta_state : -1);
+ 
+ 		rate_idx = info->control.rates[0].idx;
+ 	}
 -- 
-2.25.1
+2.31.1
 
