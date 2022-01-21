@@ -2,145 +2,213 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D3AC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 06:37:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73689C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 06:38:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378744AbiAUGhj (ORCPT
+        id S1378751AbiAUGiS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 01:37:39 -0500
-Received: from mga03.intel.com ([134.134.136.65]:52154 "EHLO mga03.intel.com"
+        Fri, 21 Jan 2022 01:38:18 -0500
+Received: from foss.arm.com ([217.140.110.172]:39656 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1348774AbiAUGhi (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 01:37:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642747058; x=1674283058;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=PrB7+txqACOqvxAdRJEN6Ri06z0Sf+hn/heR9Ndq8fo=;
-  b=dsm/XPkFuzKxhf5oocuMDuxQTJb2gHgjVKcEw032lDG0lS5v4xIAKOEv
-   zawatnrYfAkAuBLqnCtDMbAD24k9Ob4nhmDC9xwng+CcQlEZmvmRLQ6y8
-   exStfBflh7zl3nQe/KkxPnygLx6Jvj63iOWIh0h0e5lRc77PiQ+MaVBb+
-   z3kNt5q8Nl5UIdgx35egGcHSgNnlYukIzXEjbjiLoXlsGhuM/6kQPXMgQ
-   bzyMBeippg0iW+NVJ0UlNUjnOg2vpTk42+H0Iguu2IbVq2fDO/jjUB9vJ
-   U5VM8esYZWXnvPtlz01XOyQfTNA8d7YbHiobt5nsG+0435QHdtIuQxrmh
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10233"; a="245530561"
-X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
-   d="scan'208";a="245530561"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2022 22:37:38 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
-   d="scan'208";a="616400090"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 20 Jan 2022 22:37:35 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nAnYE-000F0y-Qp; Fri, 21 Jan 2022 06:37:34 +0000
-Date:   Fri, 21 Jan 2022 14:36:51 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     zhenwei pi <pizhenwei@bytedance.com>, mst@redhat.com,
-        arei.gonglei@huawei.com
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org,
-        linux-crypto@vger.kernel.org, linux-kernel@vger.kernel.org,
-        helei.sig11@bytedance.com, zhenwei pi <pizhenwei@bytedance.com>
-Subject: Re: [PATCH 3/3] virtio-crypto: implement RSA algorithm
-Message-ID: <202201211427.TgczsUOo-lkp@intel.com>
-References: <20220121022438.1042547-4-pizhenwei@bytedance.com>
+        id S1348774AbiAUGiR (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 21 Jan 2022 01:38:17 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 54E31101E;
+        Thu, 20 Jan 2022 22:38:14 -0800 (PST)
+Received: from [10.163.74.170] (unknown [10.163.74.170])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id A45F53F766;
+        Thu, 20 Jan 2022 22:38:10 -0800 (PST)
+Subject: Re: [PATCH] mm/migration: Add trace events for THP migrations
+To:     Naoya Horiguchi <naoya.horiguchi@linux.dev>
+Cc:     linux-mm@kvack.org, Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Zi Yan <ziy@nvidia.com>,
+        Naoya Horiguchi <naoya.horiguchi@nec.com>,
+        John Hubbard <jhubbard@nvidia.com>,
+        Matthew Wilcox <willy@infradead.org>,
+        linux-kernel@vger.kernel.org
+References: <1641531575-28524-1-git-send-email-anshuman.khandual@arm.com>
+ <20220111015822.GA799985@u2004>
+ <ee99799c-4e88-a7f5-0ec2-64cd710051e5@arm.com>
+ <20220111065756.GA808887@u2004>
+From:   Anshuman Khandual <anshuman.khandual@arm.com>
+Message-ID: <61c7552c-f9e3-19a7-2d1f-8085c615a661@arm.com>
+Date:   Fri, 21 Jan 2022 12:08:14 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220121022438.1042547-4-pizhenwei@bytedance.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220111065756.GA808887@u2004>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi zhenwei,
-
-Thank you for the patch! Perhaps something to improve:
-
-[auto build test WARNING on herbert-cryptodev-2.6/master]
-[also build test WARNING on herbert-crypto-2.6/master linux/master linus/master v5.16 next-20220121]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
-
-url:    https://github.com/0day-ci/linux/commits/zhenwei-pi/Introduce-akcipher-service-for-virtio-crypto/20220121-102730
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/herbert/cryptodev-2.6.git master
-config: hexagon-randconfig-r026-20220120 (https://download.01.org/0day-ci/archive/20220121/202201211427.TgczsUOo-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project d4baf3b1322b84816aa623d8e8cb45a49cb68b84)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/fa1045d13dd16399ab0287c599719a977892cf05
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review zhenwei-pi/Introduce-akcipher-service-for-virtio-crypto/20220121-102730
-        git checkout fa1045d13dd16399ab0287c599719a977892cf05
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=hexagon SHELL=/bin/bash drivers/crypto/virtio/
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All warnings (new ones prefixed by >>):
-
->> drivers/crypto/virtio/virtio_crypto_akcipher_algo.c:276:5: warning: no previous prototype for function 'virtio_crypto_rsa_do_req' [-Wmissing-prototypes]
-   int virtio_crypto_rsa_do_req(struct crypto_engine *engine, void *vreq)
-       ^
-   drivers/crypto/virtio/virtio_crypto_akcipher_algo.c:276:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   int virtio_crypto_rsa_do_req(struct crypto_engine *engine, void *vreq)
-   ^
-   static 
-   1 warning generated.
 
 
-vim +/virtio_crypto_rsa_do_req +276 drivers/crypto/virtio/virtio_crypto_akcipher_algo.c
+On 1/11/22 12:27 PM, Naoya Horiguchi wrote:
+> On Tue, Jan 11, 2022 at 10:31:21AM +0530, Anshuman Khandual wrote:
+>>
+>>
+>> On 1/11/22 7:28 AM, Naoya Horiguchi wrote:
+>>> Hi Anshuman,
+>>>
+>>> On Fri, Jan 07, 2022 at 10:29:35AM +0530, Anshuman Khandual wrote:
+>>>> This adds two trace events for PMD based THP migration without split. These
+>>>> events closely follow the implementation details like setting and removing
+>>>> of PMD migration entries, which are essential operations for THP migration.
+>>>
+>>> I often want to check which individual pages are migrated to which places
+>>> (or not migrated) for testing, so these new tracepoints could help me.
+>>> Maybe these can be much greater if they can handle other types of page
+>>> migration for raw pages and hugetlb pages.  Is it hard to cover all such
+>>> page migration events?
+>>
+>> Are you suggesting to cover all migration entry transitions for normal
+>> and HugeTLB pages as well ?
+> 
+> Yes if you like the idea. I think that some events listed below can be grouped
+> into one tracepoint event with showing args like pgsize or read/write flags
+> (or implementation detail is up to you).
 
-   275	
- > 276	int virtio_crypto_rsa_do_req(struct crypto_engine *engine, void *vreq)
-   277	{
-   278		struct akcipher_request *req = container_of(vreq, struct akcipher_request, base);
-   279		struct virtio_crypto_akcipher_request *vc_akcipher_req = akcipher_request_ctx(req);
-   280		struct virtio_crypto_request *vc_req = &vc_akcipher_req->base;
-   281		struct virtio_crypto_akcipher_ctx *ctx = vc_akcipher_req->akcipher_ctx;
-   282		struct virtio_crypto *vcrypto = ctx->vcrypto;
-   283		struct data_queue *data_vq = vc_req->dataq;
-   284		struct virtio_crypto_op_header *header;
-   285		struct virtio_crypto_akcipher_data_req *akcipher_req;
-   286		int ret;
-   287	
-   288		vc_req->sgs = NULL;
-   289		vc_req->req_data = kzalloc_node(sizeof(*vc_req->req_data),
-   290			GFP_KERNEL, dev_to_node(&vcrypto->vdev->dev));
-   291		if (!vc_req->req_data)
-   292			return -ENOMEM;
-   293	
-   294		/* build request header */
-   295		header = &vc_req->req_data->header;
-   296		header->opcode = cpu_to_le32(vc_akcipher_req->opcode);
-   297		header->algo = cpu_to_le32(VIRTIO_CRYPTO_AKCIPHER_RSA);
-   298		header->session_id = cpu_to_le64(ctx->session_id);
-   299	
-   300		/* build request akcipher data */
-   301		akcipher_req = &vc_req->req_data->u.akcipher_req;
-   302		akcipher_req->para.src_data_len = cpu_to_le32(req->src_len);
-   303		akcipher_req->para.dst_data_len = cpu_to_le32(req->dst_len);
-   304	
-   305		ret = __virtio_crypto_akcipher_do_req(vc_akcipher_req, req, data_vq);
-   306		if (ret < 0) {
-   307			kfree_sensitive(vc_req->req_data);
-   308			vc_req->req_data = NULL;
-   309			return ret;
-   310		}
-   311	
-   312		return 0;
-   313	}
-   314	
+In its simplest form, something like this will work ? Although the THP migration
+patch still remains (almost) unchanged.
 
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ include/trace/events/migrate.h | 38 ++++++++++++++++++++++++++++++++++
+ mm/migrate.c                   | 10 +++++++--
+ mm/rmap.c                      |  3 +++
+ 3 files changed, 49 insertions(+), 2 deletions(-)
+
+diff --git a/include/trace/events/migrate.h b/include/trace/events/migrate.h
+index 779f3fad9ecd..b66652fcc8af 100644
+--- a/include/trace/events/migrate.h
++++ b/include/trace/events/migrate.h
+@@ -105,6 +105,44 @@ TRACE_EVENT(mm_migrate_pages_start,
+ 		  __print_symbolic(__entry->reason, MIGRATE_REASON))
+ );
+ 
++TRACE_EVENT(set_migration_pte,
++
++	TP_PROTO(unsigned long addr, unsigned long pte),
++
++	TP_ARGS(addr, pte),
++
++	TP_STRUCT__entry(
++		__field(unsigned long, addr)
++		__field(unsigned long, pte)
++	),
++
++	TP_fast_assign(
++		__entry->addr = addr;
++		__entry->pte = pte;
++	),
++
++	TP_printk("create pte migration entry addr=%lx, pte=%lx", __entry->addr, __entry->pte)
++);
++
++TRACE_EVENT(remove_migration_ptes,
++
++	TP_PROTO(struct page *old_page, struct page *new_page),
++
++	TP_ARGS(old_page, new_page),
++
++	TP_STRUCT__entry(
++		__field(struct page *, old_page)
++		__field(struct page *, new_page)
++	),
++
++	TP_fast_assign(
++		__entry->old_page = old_page;
++		__entry->new_page = new_page;
++	),
++
++	TP_printk("remove pte migration entry old_page=%lx new_page=%lx", __entry->old_page, __entry->new_page);
++);
++
+ #endif /* _TRACE_MIGRATE_H */
+ 
+ /* This part must be outside protection */
+diff --git a/mm/migrate.c b/mm/migrate.c
+index 18ce840914f0..271b1d565642 100644
+--- a/mm/migrate.c
++++ b/mm/migrate.c
+@@ -1053,9 +1053,12 @@ static int __unmap_and_move(struct page *page, struct page *newpage,
+ 	if (!page_mapped(page))
+ 		rc = move_to_new_page(newpage, page, mode);
+ 
+-	if (page_was_mapped)
++	if (page_was_mapped) {
+ 		remove_migration_ptes(page,
+ 			rc == MIGRATEPAGE_SUCCESS ? newpage : page, false);
++		trace_remove_migration_ptes(page,
++			rc == MIGRATEPAGE_SUCCESS ? newpage : page);
++	}
+ 
+ out_unlock_both:
+ 	unlock_page(newpage);
+@@ -1275,9 +1278,12 @@ static int unmap_and_move_huge_page(new_page_t get_new_page,
+ 	if (!page_mapped(hpage))
+ 		rc = move_to_new_page(new_hpage, hpage, mode);
+ 
+-	if (page_was_mapped)
++	if (page_was_mapped) {
+ 		remove_migration_ptes(hpage,
+ 			rc == MIGRATEPAGE_SUCCESS ? new_hpage : hpage, false);
++		trace_remove_migration_ptes(hpage,
++			rc == MIGRATEPAGE_SUCCESS ? new_hpage : hpage);
++	}
+ 
+ unlock_put_anon:
+ 	unlock_page(new_hpage);
+diff --git a/mm/rmap.c b/mm/rmap.c
+index 6a1e8c7f6213..cd373e378694 100644
+--- a/mm/rmap.c
++++ b/mm/rmap.c
+@@ -77,6 +77,7 @@
+ #include <asm/tlbflush.h>
+ 
+ #include <trace/events/tlb.h>
++#include <trace/events/migrate.h>
+ 
+ #include "internal.h"
+ 
+@@ -1861,6 +1862,7 @@ static bool try_to_migrate_one(struct page *page, struct vm_area_struct *vma,
+ 			if (pte_swp_uffd_wp(pteval))
+ 				swp_pte = pte_swp_mkuffd_wp(swp_pte);
+ 			set_pte_at(mm, pvmw.address, pvmw.pte, swp_pte);
++			trace_set_migration_pte(pvmw.address, pte_val(swp_pte));
+ 			/*
+ 			 * No need to invalidate here it will synchronize on
+ 			 * against the special swap migration pte.
+@@ -1929,6 +1931,7 @@ static bool try_to_migrate_one(struct page *page, struct vm_area_struct *vma,
+ 			if (pte_uffd_wp(pteval))
+ 				swp_pte = pte_swp_mkuffd_wp(swp_pte);
+ 			set_pte_at(mm, address, pvmw.pte, swp_pte);
++			trace_set_migration_pte(address, pte_val(swp_pte));
+ 			/*
+ 			 * No need to invalidate here it will synchronize on
+ 			 * against the special swap migration pte.
+-- 
+2.20.1
+
+
+> 
+>>
+>> migrate_pages()
+>> 	unmap_and_move_huge_page()
+>> 		try_to_migrate()
+>> 			make_writable_migration_entry() <---
+>> 			make_readable_migration_entry() <---
+>> 		remove_migration_ptes() <---
+>> 	unmap_and_move()
+>> 		__unmap_and_move()
+>> 			try_to_migrate()
+>> 				make_writable_migration_entry() <---
+>> 				make_readable_migration_entry() <---
+>> 			remove_migration_ptes() <---
+> 
+> Thanks,
+> Naoya Horiguchi
+> 
