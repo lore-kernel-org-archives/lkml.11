@@ -2,105 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8C99C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 10:40:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C87DEC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 10:42:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380036AbiAUKkI (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 05:40:08 -0500
-Received: from mga12.intel.com ([192.55.52.136]:47859 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238090AbiAUKj7 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 05:39:59 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642761599; x=1674297599;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=yc2EonG4xKNYkgh/4jCFbgWhGutbT/2bF8p8hppsmQU=;
-  b=di7jITcSMIu7URtXLwK+gmbkB/1psU42f0HoZzperlyOz50LEREvD/kP
-   ufR4vKa3YCFHoiUmqvCe5pwLyCzA+hBiQuaNtqcTb52v85hPKLNB/es3j
-   PGOnVRS1pbU3GqHZ63Kppc3vIMAjb/CM6p63LL2zvoksKBVb+WXkXhFPG
-   PTF0x9gC4tRQysave1eOQj2l2TeWP8jB0JeW1bVLg+oe4nS8ihZOAgbJ/
-   BR6c9vN15OxY4MWdNfECL/TelQtiplu5kp85Iehr208Surz6xa0EzWlkO
-   PpVbEUGQ4/HWgNwTszLKDOkNj9LsVJ09uhbGkGCYJOkIMXhh7bhLn09G1
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10233"; a="225608828"
-X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
-   d="scan'208";a="225608828"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 02:39:58 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
-   d="scan'208";a="475910023"
-Received: from dev2 (HELO DEV2.igk.intel.com) ([10.237.148.94])
-  by orsmga003.jf.intel.com with ESMTP; 21 Jan 2022 02:39:56 -0800
-From:   =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>
-To:     x86@kernel.org, Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H . Peter Anvin" <hpa@zytor.com>
-Cc:     linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Amadeusz=20S=C5=82awi=C5=84ski?= 
-        <amadeuszx.slawinski@linux.intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        "Rafael J . Wysocki" <rafael.j.wysocki@intel.com>
-Subject: [PATCH] x86: Preserve ACPI memory area during hibernation
-Date:   Fri, 21 Jan 2022 11:39:38 +0100
-Message-Id: <20220121103938.2602637-1-amadeuszx.slawinski@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
+        id S234896AbiAUKmO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 05:42:14 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:48116 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1380030AbiAUKmM (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 21 Jan 2022 05:42:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642761732;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=CdPdILngPzGrQBwtZZKW+7ixKah3Wpht/KCyewnhlCg=;
+        b=E2QK4XXt/0wjkP32B5b/QnbINlfL7E02PHIne200FVc+8BYe3VdhMKgIhqVHnWhByIW8/Z
+        cawFlFcUL24Khn0y9RkzyU6GVsWuvboEMwyCata0lDrJVJjqhryun117fRvPT6mwY+qcas
+        Z8Jet5vlP6q9fTi9514oNMyvqi1ESvg=
+Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
+ [209.85.208.69]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-620-i6yDQ0XqPf6lt13VTcsdxQ-1; Fri, 21 Jan 2022 05:42:11 -0500
+X-MC-Unique: i6yDQ0XqPf6lt13VTcsdxQ-1
+Received: by mail-ed1-f69.google.com with SMTP id o25-20020a056402039900b0040631c2a67dso2505271edv.19
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 02:42:10 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=CdPdILngPzGrQBwtZZKW+7ixKah3Wpht/KCyewnhlCg=;
+        b=jBelN+uOzzB/mo16Tzg0Ob0+o9FAPnNXXSXyF5kG3ilW0ZxVkGcba91GFSa2ZcL+gc
+         Kc4aATj1hplHy8kxjDsjgO+POAxQedv6Qp0vxfIgrGL6A/0/pfHoJokMqKliyx+A6aJv
+         bQvuGG5cj6HtjdojCzTRx/QuwQangM7iAeqL4GejsVTIJ00sJJBSIO71atMPAm79Ywej
+         6qVZtR5Kywl5Iid66HD7JxGcLV1zBlVNUZ3eYKBnLGdL3i7HWhpcJipUNgTt46xMG34u
+         0dVHTL3/QksnmX8Mp6qm3FYCmDJ4l0oSPLLzAUgquBSYU09QkmtSYvrSvnOIrciDDspW
+         oStw==
+X-Gm-Message-State: AOAM530RIMVCPY5UhpU+NZup2VI2iMYDbHUG9C5PqAXVEbeK99VnMUCX
+        tPAHJjgy3kYuteC9zlg+n5zKAYqAG1n/QAAXaQBpU4EPljpWzIsucQPTewIO/UNOL5ilhCmMJ31
+        ECw0D8oETcXqpnoPHSKA5CCUo
+X-Received: by 2002:a05:6402:31e9:: with SMTP id dy9mr3680088edb.65.1642761729926;
+        Fri, 21 Jan 2022 02:42:09 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwip9Cp2oVEYL+pg2NbsXqt2zQcoTWCMHysfXzR0VjzDHu2yy8g2b0X+EK52vUarXS+yjY5QQ==
+X-Received: by 2002:a05:6402:31e9:: with SMTP id dy9mr3680084edb.65.1642761729806;
+        Fri, 21 Jan 2022 02:42:09 -0800 (PST)
+Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
+        by smtp.gmail.com with ESMTPSA id z10sm2504846edl.54.2022.01.21.02.42.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 21 Jan 2022 02:42:09 -0800 (PST)
+Message-ID: <faa591e3-19f3-1a8d-4e64-bc8cc94b82dc@redhat.com>
+Date:   Fri, 21 Jan 2022 11:42:08 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: linux-next: build warning after merge of the drm-misc tree
+Content-Language: en-US
+To:     Stephen Rothwell <sfr@canb.auug.org.au>,
+        Daniel Vetter <daniel.vetter@ffwll.ch>,
+        Intel Graphics <intel-gfx@lists.freedesktop.org>,
+        DRI <dri-devel@lists.freedesktop.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
+References: <20211015205422.53bec93d@canb.auug.org.au>
+ <20220120141851.5503b65a@canb.auug.org.au>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220120141851.5503b65a@canb.auug.org.au>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When overriding NHLT ACPI-table tests show that on some platforms
-there is problem that NHLT contains garbage after hibernation/resume
-cycle.
+Hi Stepen,
 
-Problem stems from the fact that ACPI override performs early memory
-allocation using memblock_phys_alloc_range() in
-memblock_phys_alloc_range(). This memory block is later being marked as
-ACPI memory block in arch_reserve_mem_area(). Later when memory areas
-are considered for hibernation it is being marked as nosave in
-e820__register_nosave_regions().
+On 1/20/22 04:18, Stephen Rothwell wrote:
+> Hi all,
+> 
+> On Fri, 15 Oct 2021 20:54:22 +1100 Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>>
+>> After merging the drm-misc tree, today's linux-next build (htmldocs)
+>> produced this warning:
+>>
+>> Documentation/gpu/drm-kms-helpers:451: /home/sfr/next/next/drivers/gpu/drm/drm_privacy_screen.c:270: WARNING: Inline emphasis start-string without end-string.
+>>
+>> Introduced by commit
+>>
+>>   8a12b170558a ("drm/privacy-screen: Add notifier support (v2)")
+> 
+> I am still getting this warning.
 
-Fix this by skipping ACPI memory area altogether when considering areas
-to mark as nosave.
+Sorry I completely missed your original report on this between
+all the other kernel related emails.
 
-Signed-off-by: Amadeusz Sławiński <amadeuszx.slawinski@linux.intel.com>
-Reviewed-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Acked-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
----
- arch/x86/kernel/e820.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+I'll prepare a fix for this coming Monday.
 
-diff --git a/arch/x86/kernel/e820.c b/arch/x86/kernel/e820.c
-index bc0657f0deed..88c1b785ffe4 100644
---- a/arch/x86/kernel/e820.c
-+++ b/arch/x86/kernel/e820.c
-@@ -758,6 +758,18 @@ void __init e820__register_nosave_regions(unsigned long limit_pfn)
- 	for (i = 0; i < e820_table->nr_entries; i++) {
- 		struct e820_entry *entry = &e820_table->entries[i];
- 
-+		/*
-+		 * Areas containing ACPI tables should be preserved during
-+		 * hibernation to prevent potential problems caused by BIOS
-+		 * upgrades when offline, as well as to preserve initrd
-+		 * ACPI tables overrides which are applied on boot.
-+		 * See also acpi_table_upgrade() & arch_reserve_mem_area()
-+		 */
-+		if (entry->type == E820_TYPE_ACPI) {
-+			pfn = PFN_UP(entry->addr + entry->size);
-+			continue;
-+		}
-+
- 		if (pfn < PFN_UP(entry->addr))
- 			register_nosave_region(pfn, PFN_UP(entry->addr));
- 
--- 
-2.25.1
+Regards,
+
+Hans
 
