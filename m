@@ -2,53 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC45BC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:04:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7348BC4332F
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:04:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380957AbiAUOEP (ORCPT
+        id S1380926AbiAUOES (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 09:04:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38392 "EHLO
+        Fri, 21 Jan 2022 09:04:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38252 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380952AbiAUODx (ORCPT
+        with ESMTP id S1380864AbiAUOEJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 09:03:53 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE74C06175D
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:03:30 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id ay14-20020a05600c1e0e00b0034d7bef1b5dso22579332wmb.3
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:03:30 -0800 (PST)
+        Fri, 21 Jan 2022 09:04:09 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90343C061765
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:03:32 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id o1-20020a1c4d01000000b0034d95625e1fso14751506wmh.4
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:03:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=b9Qbow8A0YPWPn3/lM+2GnA7PMQAnbZ2M1lFPHFZxvI=;
-        b=iLBvT1rCA9fzZwk3qDs+fOqABHEY57jiB8s6aoCN2xtmXNgFBPi8cTSJ6M+sjOxfKD
-         ML5LjOJJmQaxWaMgHGMOkqXx9FAKKH0RSJ1gxob9voRk1h+hqcb65A5NZPYuLrnO8+oQ
-         +fUCJzkLi8vOoZ+YUkDI9ZNFiaoLd8UJ8E1xmD2qhNdmzv6lIUii/8wLPBslyy5gyxy5
-         ieiVr8m+9jjE5ZKvDwjg0mCUp/wjjSs4n0VXMOsRmZ14yBIGPZqIcBMt8uqGi9S+jzvd
-         3qZTi3PzWk/oNQMoTRkjYQ/Rk35xR1gJyFyjXMa4cWfPOUwATdabAQivzxwD6yRZ0NBF
-         b4RA==
+        bh=loBYM0CvRSmbYDvfbUBNz4qYHn2wRGpqqQjyZhyXZLU=;
+        b=IBdLRh3GfWtpz9wVQJ4xWuWdyqUBqcu2/DG846I5k5YYLKBKHhiL418mxXKdYBztaN
+         qdXWkHF5UDFbawXQlr0ZzIea4m+fHilr3D6gUNN99tKSc2+5e3WwdD3XWcTzh8vUjorD
+         Rtbfrg+NQsdJTOItj7h2sOOlMKjRuBmgHqyinlsUW6WS+GE1aOn/ABvcsMwnywrJJYde
+         qUvL7VRhP0abO0aBWYyv3rW+k9qlOvdU+MKYW1FIcrUpooRTpevYryNFRz0rb6Xd51WG
+         kOHOX4CuojJ5vHG07Tkl1V2MG9biEcOLWD6anj3eWiQEt+5DhoZs1PY2hjZ6HmeKd8i1
+         HfFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=b9Qbow8A0YPWPn3/lM+2GnA7PMQAnbZ2M1lFPHFZxvI=;
-        b=SxtLBtC7nW+aPytzbeohTmdHaE7MqNQtmXA3ffbnNgEjK1/u7fNZwqaCLAZm8i2iq/
-         XLSzREjUXm3Z+Qnha7vy7Ls4C1U6owclhxmJ0ynLnVSTELZ9k2qGTbt49IGjBKMc1BeK
-         3QBhU1cWpBGkXO5JaFRtpIofp0yG5ykqY3BuWM2WPYwjsDHm6dAXWOJdPLeE7wUOIHAo
-         vZu3Q4gGjKoxAQbOqGtNkrtMIwL2i0vuqoVfIyWOfLy8pDBjiZZSEOLgmNF30GvpK75d
-         xIq6WGVTtR9aRvfkueCdG9QjT/N5MW0ZC9JcsFg9jpnYdMsGnfO477RxkIPM/Pw1kI0s
-         kf+Q==
-X-Gm-Message-State: AOAM530RsRdWUKAIhH7pUAdb2V16JS/vesPR/jX8e6zL7Snde72SjRpq
-        IrGjs2cghQIRVX/HjyM5mssNjw==
-X-Google-Smtp-Source: ABdhPJze8JkZPt8YeJNz4+qQXr+QI1NypQGJpv1iLMTMx8IGenCg7ujdHDkOBgABZTcC58knzAWJHg==
-X-Received: by 2002:a1c:1d45:: with SMTP id d66mr899724wmd.24.1642773809302;
-        Fri, 21 Jan 2022 06:03:29 -0800 (PST)
+        bh=loBYM0CvRSmbYDvfbUBNz4qYHn2wRGpqqQjyZhyXZLU=;
+        b=ZnmV6ghtx9kq2CrbrIJizP/LgGICszginiDlykNDDDL98LMHyQ6udYTdQvqLD/KtRm
+         QuhxPtEIml8pOr6arkh0zxKXR0vB2YMkYVpN0Nra+GLpF/3TKVP5fPMCmUMPWWzqGfJu
+         TKpGeSxQGvixlb3zUC0ewhFwctEV8tJGfx9NsTfgzqt+CRNzWCBXWQGojy1HdHPEJf3F
+         Uivy98MKWOUq6L/0jr2Gluo9ORBvywxJ57QoPZF4JGjYrDZZc2YUNWJJRxdNKRJubmZS
+         B0mm3xHnjq2Dy2ONWERIHdOEO6CJ+0eLYeMXxe4mviTiVXV9zGuANtmhhcC5Ga9/lmJ7
+         R/5Q==
+X-Gm-Message-State: AOAM530F/jo7SaiV+IpdnlzRBkrTgibgNw97jc9xzJqh5oi7iBVd6sSB
+        dfSqwtpS3MrPZbgO1u6Ehb0few==
+X-Google-Smtp-Source: ABdhPJydtfNsdqeZZA9fWZU8clNybEl4YDGRvOfTL+ORNNu48acgumv2Axn2vVIs5i6oDvNkpO+iHw==
+X-Received: by 2002:a5d:4b87:: with SMTP id b7mr3858530wrt.327.1642773810915;
+        Fri, 21 Jan 2022 06:03:30 -0800 (PST)
 Received: from groot.home (lfbn-tou-1-205-205.w86-201.abo.wanadoo.fr. [86.201.52.205])
-        by smtp.gmail.com with ESMTPSA id p29sm9225129wms.5.2022.01.21.06.03.28
+        by smtp.gmail.com with ESMTPSA id p29sm9225129wms.5.2022.01.21.06.03.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 06:03:29 -0800 (PST)
+        Fri, 21 Jan 2022 06:03:30 -0800 (PST)
 From:   Mattijs Korpershoek <mkorpershoek@baylibre.com>
 To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Matthias Brugger <matthias.bgg@gmail.com>,
@@ -58,11 +58,10 @@ Cc:     Fabien Parent <fparent@baylibre.com>,
         linux-input@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Mattijs Korpershoek <mkorpershoek@baylibre.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 2/4] dt-bindings: input: mtk-pmic-keys: add MT6358 binding definition
-Date:   Fri, 21 Jan 2022 15:03:21 +0100
-Message-Id: <20220121140323.4080640-3-mkorpershoek@baylibre.com>
+        Mattijs Korpershoek <mkorpershoek@baylibre.com>
+Subject: [PATCH v4 4/4] arm64: dts: mt6358: add mt6358-keys node
+Date:   Fri, 21 Jan 2022 15:03:23 +0100
+Message-Id: <20220121140323.4080640-5-mkorpershoek@baylibre.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20220121140323.4080640-1-mkorpershoek@baylibre.com>
 References: <20220121140323.4080640-1-mkorpershoek@baylibre.com>
@@ -72,33 +71,42 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add the binding documentation of the mtk-pmic-keys for the MT6358 PMICs.
-
-MT6358 is a little different since it used separate IRQs for the
-release key (_r) event
+This enables the power,home keys on MediaTek boards with a mt6358 pmic.
 
 Signed-off-by: Mattijs Korpershoek <mkorpershoek@baylibre.com>
-Acked-by: Rob Herring <robh@kernel.org>
 ---
- Documentation/devicetree/bindings/input/mtk-pmic-keys.txt | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ arch/arm64/boot/dts/mediatek/mt6358.dtsi | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/input/mtk-pmic-keys.txt b/Documentation/devicetree/bindings/input/mtk-pmic-keys.txt
-index 535d92885372..9d00f2a8e13a 100644
---- a/Documentation/devicetree/bindings/input/mtk-pmic-keys.txt
-+++ b/Documentation/devicetree/bindings/input/mtk-pmic-keys.txt
-@@ -9,7 +9,10 @@ For MT6397/MT6323 MFD bindings see:
- Documentation/devicetree/bindings/mfd/mt6397.txt
+diff --git a/arch/arm64/boot/dts/mediatek/mt6358.dtsi b/arch/arm64/boot/dts/mediatek/mt6358.dtsi
+index 95145076b7e6..98f3b0e0c9f6 100644
+--- a/arch/arm64/boot/dts/mediatek/mt6358.dtsi
++++ b/arch/arm64/boot/dts/mediatek/mt6358.dtsi
+@@ -2,6 +2,7 @@
+ /*
+  * Copyright (c) 2020 MediaTek Inc.
+  */
++#include <dt-bindings/input/input.h>
  
- Required properties:
--- compatible: "mediatek,mt6397-keys" or "mediatek,mt6323-keys"
-+- compatible: Should be one of:
-+	- "mediatek,mt6397-keys"
-+	- "mediatek,mt6323-keys"
-+	- "mediatek,mt6358-keys"
- - linux,keycodes: See Documentation/devicetree/bindings/input/input.yaml
- 
- Optional Properties:
+ &pwrap {
+ 	pmic: mt6358 {
+@@ -357,5 +358,16 @@ mt6358_vsim2_reg: ldo_vsim2 {
+ 		mt6358rtc: mt6358rtc {
+ 			compatible = "mediatek,mt6358-rtc";
+ 		};
++
++		mt6358keys: mt6358keys {
++			compatible = "mediatek,mt6358-keys";
++			power {
++				linux,keycodes = <KEY_POWER>;
++				wakeup-source;
++			};
++			home {
++				linux,keycodes = <KEY_HOME>;
++			};
++		};
+ 	};
+ };
 -- 
 2.32.0
 
