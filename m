@@ -2,62 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 818F6C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 18:11:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A81DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 18:11:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382045AbiAUSLT (ORCPT
+        id S1382059AbiAUSLy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 13:11:19 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:49660 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351906AbiAUSLS (ORCPT
+        Fri, 21 Jan 2022 13:11:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:49590 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351822AbiAUSLx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 13:11:18 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: detlev)
-        with ESMTPSA id B9A9A1F464C7
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642788677;
-        bh=puFQfV2qs1P5GiBXbGYGLI3CuoMa0yPk+MB1rCXDW7c=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MB1VQeWC1/iBDRcjP7HC7OVuYMZ7pRJj/izmVeszIT8A75QAsYq8eQ0VZlHCkNbo5
-         tJVFvDT54T5rvd1KidIV6LDdDPTvhFARPEm/cnV6XryeJoiXNz/FdsI6KH8G+Uex3N
-         84L18gfJLSII0sON/va0LGuUiKRgkCXqZTA+ohOFTsQ8XIUI2xmfthPvsItdU+mLQB
-         AnewK1QA+4Ekkm3LP9KZQKKU4bctYjDqwmWjA5mPn8ht+7TO9aRBWWphBw+pOZqKv2
-         sRnK49nv3qxgpLN32zx7JRFVCwKyT3uz8l0y7Ot/6DJn7D3QzvgW8LbuoMfYwGXwiB
-         NX6JLhM9/dg6w==
-From:   Detlev Casanova <detlev.casanova@collabora.com>
-To:     Mark Brown <broonie@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        Dave Stevenson <dave.stevenson@raspberrypi.com>,
-        Liam Girdwood <lgirdwood@gmail.com>
-Subject: Re: [PATCH v2 1/9] regulator: rpi-panel: Register with a unique backlight name
-Date:   Fri, 21 Jan 2022 13:11:15 -0500
-Message-ID: <3643770.kQq0lBPeGt@falcon9>
-In-Reply-To: <Yeremcbzpj2LqFOD@sirena.org.uk>
-References: <20220121152056.2044551-1-detlev.casanova@collabora.com> <20220121152056.2044551-2-detlev.casanova@collabora.com> <Yeremcbzpj2LqFOD@sirena.org.uk>
+        Fri, 21 Jan 2022 13:11:53 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 16742B81F69;
+        Fri, 21 Jan 2022 18:11:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA999C340E1;
+        Fri, 21 Jan 2022 18:11:49 +0000 (UTC)
+Date:   Fri, 21 Jan 2022 13:11:48 -0500
+From:   Steven Rostedt <rostedt@goodmis.org>
+To:     Heiko Carstens <hca@linux.ibm.com>
+Cc:     Sven Schnelle <svens@linux.ibm.com>,
+        Yinan Liu <yinan@linux.alibaba.com>, peterz@infradead.org,
+        mark-pk.tsai@mediatek.com, mingo@redhat.com,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH v8] scripts: ftrace - move the sort-processing in
+ ftrace_init
+Message-ID: <20220121131148.2025bc5b@gandalf.local.home>
+In-Reply-To: <YeqOFHNfxKcNXNrn@osiris>
+References: <20210911135043.16014-1-yinan@linux.alibaba.com>
+        <20211212113358.34208-1-yinan@linux.alibaba.com>
+        <20211212113358.34208-2-yinan@linux.alibaba.com>
+        <yt9dee51ctfn.fsf@linux.ibm.com>
+        <YeqOFHNfxKcNXNrn@osiris>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Friday, January 21, 2022 11:26:01 A.M. EST Mark Brown wrote:
-> On Fri, Jan 21, 2022 at 10:20:48AM -0500, Detlev Casanova wrote:
-> > Use the parent dev_name. It's not as readable, but is unique.
-> > 
-> > Signed-off-by: Dave Stevenson <dave.stevenson@raspberrypi.com>
-> > ---
-> > 
-> >  drivers/regulator/rpi-panel-attiny-regulator.c | 3 +--
-> 
-> You've not provided a Signed-off-by for this so I can't do anything with
-> it, please see Documentation/process/submitting-patches.rst for details
-> on what this is and why it's important.
+On Fri, 21 Jan 2022 11:42:28 +0100
+Heiko Carstens <hca@linux.ibm.com> wrote:
 
-Oh ok, I thought only the author had to be there but I'll add myself as well. 
-Thanks for clarifying this.
+> This really should be addressed before rc1 is out, otherwise s390 is
+> broken if somebody enables ftrace.
+> Where "broken" translates to random crashes as soon as ftrace is
+> enabled, which again is nowadays quite common.
 
+Instead of reverting, should we just add this patch?
 
+-- Steve
 
+diff --git a/kernel/trace/Kconfig b/kernel/trace/Kconfig
+index f468767bc287..752ed89a293b 100644
+--- a/kernel/trace/Kconfig
++++ b/kernel/trace/Kconfig
+@@ -70,6 +70,13 @@ config HAVE_C_RECORDMCOUNT
+ 	help
+ 	  C version of recordmcount available?
+ 
++config BUILDTIME_MCOUNT_SORT
++       bool
++       default y
++       depends on BUILDTIME_TABLE_SORT && !S390
++       help
++         Sort the mcount_loc section at build time.
++
+ config TRACER_MAX_TRACE
+ 	bool
+ 
+@@ -918,7 +925,7 @@ config EVENT_TRACE_TEST_SYSCALLS
+ config FTRACE_SORT_STARTUP_TEST
+        bool "Verify compile time sorting of ftrace functions"
+        depends on DYNAMIC_FTRACE
+-       depends on BUILDTIME_TABLE_SORT
++       depends on BUILDTIME_MCOUNT_SORT
+        help
+ 	 Sorting of the mcount_loc sections that is used to find the
+ 	 where the ftrace knows where to patch functions for tracing
+diff --git a/kernel/trace/ftrace.c b/kernel/trace/ftrace.c
+index 403e485bf091..b01e1fa62193 100644
+--- a/kernel/trace/ftrace.c
++++ b/kernel/trace/ftrace.c
+@@ -6429,10 +6429,10 @@ static int ftrace_process_locs(struct module *mod,
+ 
+ 	/*
+ 	 * Sorting mcount in vmlinux at build time depend on
+-	 * CONFIG_BUILDTIME_TABLE_SORT, while mcount loc in
++	 * CONFIG_BUILDTIME_MCOUNT_SORT, while mcount loc in
+ 	 * modules can not be sorted at build time.
+ 	 */
+-	if (!IS_ENABLED(CONFIG_BUILDTIME_TABLE_SORT) || mod) {
++	if (!IS_ENABLED(CONFIG_BUILDTIME_MCOUNT_SORT) || mod) {
+ 		sort(start, count, sizeof(*start),
+ 		     ftrace_cmp_ips, NULL);
+ 	} else {
