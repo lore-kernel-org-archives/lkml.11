@@ -2,63 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6766C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A17AAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:57:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381568AbiAUQ5j (ORCPT
+        id S1379301AbiAUQ5m (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 11:57:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49612 "EHLO
+        Fri, 21 Jan 2022 11:57:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380207AbiAUQ45 (ORCPT
+        with ESMTP id S1380343AbiAUQ44 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 11:56:57 -0500
+        Fri, 21 Jan 2022 11:56:56 -0500
 Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 979CBC061770;
-        Fri, 21 Jan 2022 08:55:42 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id x193so14466068oix.0;
-        Fri, 21 Jan 2022 08:55:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81043C061773;
+        Fri, 21 Jan 2022 08:55:48 -0800 (PST)
+Received: by mail-oi1-x22f.google.com with SMTP id bb37so14392661oib.1;
+        Fri, 21 Jan 2022 08:55:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=EONUWJiGBiFmk1iJqYCT7v73PWb5tLXI9z7AYQ153+I=;
-        b=aad+fr6w46RiyYwIGj0bv9tlmUENIOrZQpszpW75bDcFiMmDEQ7MA3A3+vn7o/1SZi
-         uthe990vX/MVBrA4EkUn9GYzFohlQQu/TZ0SRqkRs7Njk0/NqPfPeW2F4on/rzC56k05
-         OrUJO8V20q/mAxbJTiWQWN7bgsQEEUPrzJiwMrW7KO7db+WiHBjbhe4IXzJJ1jXeDw/Q
-         nK7iNU5uj9N5T6NfJFOnzA7Fj6lUGXHMONlcUDOCs7yWBNbMiGuhPzBGzMJ6/16e/yrR
-         fl1kmqXIU10sQxaWdeDTrOQs9A4ZOA1awpk8APv8Hx8WS9QU39kXTOs4PSKN56ASEYrh
-         qiOA==
+        bh=/hFEnKfQJiIAaQ2mjd4rxrXqXcThyAji37idZyhsBAY=;
+        b=HEDrhGVj7yfZqvkjCw8k1/FNEXYzOGPmv9dNN2Hn6Ih3y+FbsyD2K4jPUpYbNauJT8
+         bhUbA4IVknUbh6oM8nQDN5aFYvnp1bOdR0zYfUmbmVsSTNpmSF+ydgzjS2IjIvPFwvOi
+         wm5++I3D8YKAJmsKDWrCqlQBb21YPA7Z0xNV/ft/YJNfpkRdkRTm3j2l3quXGaU2npIV
+         qgGxPa2AU2MyfCpmiy+eBEn6LQ+z89Kp3A8rlk7IcSJCOA3XTiiSHqGWRCR4V1McJOKW
+         1L+0wi/MNWYT1AuruOViuur8pCfx+lF/oFLKZH6fHOCNEZbY1AHof/Dlsq16lwsVaZUh
+         r9bw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=EONUWJiGBiFmk1iJqYCT7v73PWb5tLXI9z7AYQ153+I=;
-        b=oPv9jWCkB3mLxZSb5vhypqxgoViud6X7ZsANYdn+LSW0RJQTgcj+7tAYRFRHhdV691
-         OWLJ9CqU3dG+rZcZ9NJhiwC6/Bd7daJnlrPAKWfgzpR2Yne/JfjTA4qmu+NUwB+3l1vU
-         09YbOZMMOpe1PxXzgX525io5VwbSswb6I7NzK41wKLYZYiAYi06PyxCHa87Vb+6AEEJh
-         gI4NPiT22nNaO5oNX0kkQRvVxu7bK0i7AirE2jF7frNZh/v+R0KiZbj4xOEh926Ay/rz
-         Cxvw332D+yXlqLubfukdSq0QHkLz6PBNi+LAsLax/JyQJwDLjv/ADoPnJAukXVVFvcoY
-         M9Hw==
-X-Gm-Message-State: AOAM532cCKDkxs/eYEBOPLZX+4w8Kn8U+jfCSbpD41UaDJCl67k0FJhn
-        4sX1agwvR9gxHERkUb+dq/8=
-X-Google-Smtp-Source: ABdhPJw5RZlemfgOZ2JSxB+h74JPNrnYn7EOQ34SHJ6/u2NPq0tcb7c4dwH4t5xwlLqRqvJClr2EJg==
-X-Received: by 2002:a54:4198:: with SMTP id 24mr1225683oiy.21.1642784142081;
-        Fri, 21 Jan 2022 08:55:42 -0800 (PST)
+        bh=/hFEnKfQJiIAaQ2mjd4rxrXqXcThyAji37idZyhsBAY=;
+        b=LD/ZRy5MlWFyv4U850/TZ/BlHnADzbQUmrAn5Vwa6GedMbqdfRPWrLcHSbpou/bVvb
+         7qKIek8LORHeBtbRIf4KtkvgHkG61FqfQ0teUWxabOASx5yh+3DytZNZ+vQmk/Mq8PXG
+         OUqoySn5+SgqyKWTCg7+5bAzQwPDFtDWE3zN7ZgQROiXSqgmVLcN4jC7vQhSq3pZOJ8g
+         7tL7ASlFT1/c8cv0EcJHUlHgkd/NMbvg5mS+sivLTrexBxu+kyxQ6U0LLzZPvO5HAbZc
+         qU7JNADXRpAhvkWtQnjQsxhLxX3Jv70ew06UQ/1B+LtNy3Jm07YF3OTXAowLfH526Ry+
+         pPlA==
+X-Gm-Message-State: AOAM532u1f+O5Y9zPiYTKfoPwN7PRhxDeXghqds6Maqrr9WaQRPVbgzt
+        BPmBNKNRugxp8B8E40n+S0E=
+X-Google-Smtp-Source: ABdhPJxuroa+LmFuxwX8sb8C/C6iB0kFXUlik7h0Gj12vxUub1iXO+HFMA6PEGE12EVI32ETMI7pNg==
+X-Received: by 2002:a05:6808:1147:: with SMTP id u7mr1261723oiu.117.1642784147933;
+        Fri, 21 Jan 2022 08:55:47 -0800 (PST)
 Received: from thinkpad.localdomain ([2804:14d:5cd1:5d03:cf72:4317:3105:f6e5])
-        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.55.39
+        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.55.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 08:55:41 -0800 (PST)
+        Fri, 21 Jan 2022 08:55:47 -0800 (PST)
 From:   Luiz Sampaio <sampaio.ime@gmail.com>
-To:     Michael Hennerich <michael.hennerich@analog.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>, Helge Deller <deller@gmx.de>
+To:     Marcel Holtmann <marcel@holtmann.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, Luiz Sampaio <sampaio.ime@gmail.com>,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
-Subject: [PATCH 24/31] video: backlight: changing LED_* from enum led_brightness to actual value
-Date:   Fri, 21 Jan 2022 13:54:29 -0300
-Message-Id: <20220121165436.30956-25-sampaio.ime@gmail.com>
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 26/31] net: bluetooth: changing LED_* from enum led_brightness to actual value
+Date:   Fri, 21 Jan 2022 13:54:31 -0300
+Message-Id: <20220121165436.30956-27-sampaio.ime@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220121165436.30956-1-sampaio.ime@gmail.com>
 References: <20220121165436.30956-1-sampaio.ime@gmail.com>
@@ -72,57 +73,39 @@ The enum led_brightness, which contains the declaration of LED_OFF,
 LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
 max_brightness.
 ---
- drivers/video/backlight/adp8860_bl.c | 4 ++--
- drivers/video/backlight/adp8870_bl.c | 4 ++--
- drivers/video/backlight/led_bl.c     | 2 +-
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ net/bluetooth/leds.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/video/backlight/adp8860_bl.c b/drivers/video/backlight/adp8860_bl.c
-index 8ec19425671f..063be4189e7e 100644
---- a/drivers/video/backlight/adp8860_bl.c
-+++ b/drivers/video/backlight/adp8860_bl.c
-@@ -261,10 +261,10 @@ static int adp8860_led_probe(struct i2c_client *client)
- 		led_dat->cdev.name = cur_led->name;
- 		led_dat->cdev.default_trigger = cur_led->default_trigger;
- 		led_dat->cdev.brightness_set = adp8860_led_set;
--		led_dat->cdev.brightness = LED_OFF;
-+		led_dat->cdev.brightness = 0;
- 		led_dat->flags = cur_led->flags >> FLAG_OFFT_SHIFT;
- 		led_dat->client = client;
--		led_dat->new_brightness = LED_OFF;
-+		led_dat->new_brightness = 0;
- 		INIT_WORK(&led_dat->work, adp8860_led_work);
+diff --git a/net/bluetooth/leds.c b/net/bluetooth/leds.c
+index f46847632ffa..7f7e3eed9407 100644
+--- a/net/bluetooth/leds.c
++++ b/net/bluetooth/leds.c
+@@ -22,7 +22,7 @@ void hci_leds_update_powered(struct hci_dev *hdev, bool enabled)
+ {
+ 	if (hdev->power_led)
+ 		led_trigger_event(hdev->power_led,
+-				  enabled ? LED_FULL : LED_OFF);
++				  enabled ? 255 : 0);
  
- 		ret = led_classdev_register(&client->dev, &led_dat->cdev);
-diff --git a/drivers/video/backlight/adp8870_bl.c b/drivers/video/backlight/adp8870_bl.c
-index 8b5213a39527..b04faf8d631d 100644
---- a/drivers/video/backlight/adp8870_bl.c
-+++ b/drivers/video/backlight/adp8870_bl.c
-@@ -287,10 +287,10 @@ static int adp8870_led_probe(struct i2c_client *client)
- 		led_dat->cdev.name = cur_led->name;
- 		led_dat->cdev.default_trigger = cur_led->default_trigger;
- 		led_dat->cdev.brightness_set = adp8870_led_set;
--		led_dat->cdev.brightness = LED_OFF;
-+		led_dat->cdev.brightness = 0;
- 		led_dat->flags = cur_led->flags >> FLAG_OFFT_SHIFT;
- 		led_dat->client = client;
--		led_dat->new_brightness = LED_OFF;
-+		led_dat->new_brightness = 0;
- 		INIT_WORK(&led_dat->work, adp8870_led_work);
+ 	if (!enabled) {
+ 		struct hci_dev *d;
+@@ -37,7 +37,7 @@ void hci_leds_update_powered(struct hci_dev *hdev, bool enabled)
+ 		read_unlock(&hci_dev_list_lock);
+ 	}
  
- 		ret = led_classdev_register(&client->dev, &led_dat->cdev);
-diff --git a/drivers/video/backlight/led_bl.c b/drivers/video/backlight/led_bl.c
-index f54d256e2d54..1b869624b4f8 100644
---- a/drivers/video/backlight/led_bl.c
-+++ b/drivers/video/backlight/led_bl.c
-@@ -46,7 +46,7 @@ static void led_bl_power_off(struct led_bl_data *priv)
- 		return;
+-	led_trigger_event(bt_power_led_trigger, enabled ? LED_FULL : LED_OFF);
++	led_trigger_event(bt_power_led_trigger, enabled ? 255 : 0);
+ }
  
- 	for (i = 0; i < priv->nb_leds; i++)
--		led_set_brightness(priv->leds[i], LED_OFF);
-+		led_set_brightness(priv->leds[i], 0);
+ static int power_activate(struct led_classdev *led_cdev)
+@@ -48,7 +48,7 @@ static int power_activate(struct led_classdev *led_cdev)
+ 	htrig = to_hci_basic_led_trigger(led_cdev->trigger);
+ 	powered = test_bit(HCI_UP, &htrig->hdev->flags);
  
- 	priv->enabled = false;
+-	led_trigger_event(led_cdev->trigger, powered ? LED_FULL : LED_OFF);
++	led_trigger_event(led_cdev->trigger, powered ? 255 : 0);
+ 
+ 	return 0;
  }
 -- 
 2.34.1
