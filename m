@@ -2,140 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B7D2C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:58:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E033DC4321E
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:58:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382140AbiAUQ6b (ORCPT
+        id S1382176AbiAUQ6q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 11:58:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49680 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380025AbiAUQzS (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 11:55:18 -0500
-Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894CBC061757;
-        Fri, 21 Jan 2022 08:55:07 -0800 (PST)
-Received: by mail-oo1-xc34.google.com with SMTP id q16-20020a4a3010000000b002dde2463e66so3486183oof.9;
-        Fri, 21 Jan 2022 08:55:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=v7u/1reZfs0BoCSFwSj+daUOVIdy7CF8lGf6AzgFwV8=;
-        b=dUOYa3+iMqZXKhKXRcAf//V+c049D5heIy9QFjxhsiTO/lGEOqy6uNxoq+GzfKpUk5
-         MEZAMsqOpgmn3b+tyP42LjxdhK3iF8t2Vo9PJV+78hMvS6E3HTV7Ld+y2CpsX8SPaIbf
-         HlpuYROwuiBADozL4lPZ89RIcJGxAjwcflh8qmkWsTTdCTv41ic03v/lliYc1q2XriGH
-         GwCE6T/U7oYnOWM+Ikhp8+IjZYyCPw2Hev08/zkDx83ezLQHMUTJAFM9rqyesSoYtVVI
-         lPJFfEViD7jt9X3i5Ms/4rmyT+A3W2FzIaOjMlZ5DyE6MLCt7/WNDDI08HO5NvDZ2+kt
-         JEBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=v7u/1reZfs0BoCSFwSj+daUOVIdy7CF8lGf6AzgFwV8=;
-        b=KwH9zXLoh8iTTSbAcdYjLFKgIVlZg4enexS2l5PTbmpABZeWkh4aOP2oDV7BjBljIT
-         dwIoziHO3rtQOQtaG5Xsbyd9dTAb9D5JwIEEW25P8SiytOu11kV+iar1uT8kn8F2iHxh
-         nFitbJgB2H9XRDOeOfzG+ELSXbpHRLgDFhYYnGGokll3kWD/11veNOA7UnYSoj4pfiIu
-         VL1kK0M74Y1hNvs7zdOwAaS91YkYAvjw/ud50xE3qRkLGRrBwIarDh+jZe0c/TgB3BE8
-         VIuwSlQdbUcD6ojvTZfHd+odxCaj2rWjK11eCzlBsMSgz2zaj5SYktIN/m34rC6v2Zn7
-         xfnw==
-X-Gm-Message-State: AOAM533tDJbIuDrtEiZbilpJCOCb11aAlyboN2z3Ymqt52jbaI5OQdjo
-        8lupqaesnG+NAZleBGObGjk=
-X-Google-Smtp-Source: ABdhPJx7+MxuKThO+YBT6naKuMHTwYdavYAds1jlnbwFonjq9bexJ87FdRlAV6oXlywXptGdgQ1aAQ==
-X-Received: by 2002:a4a:e60f:: with SMTP id f15mr3106188oot.75.1642784106971;
-        Fri, 21 Jan 2022 08:55:06 -0800 (PST)
-Received: from thinkpad.localdomain ([2804:14d:5cd1:5d03:cf72:4317:3105:f6e5])
-        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.55.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 08:55:06 -0800 (PST)
-From:   Luiz Sampaio <sampaio.ime@gmail.com>
-To:     Jiri Slaby <jirislaby@kernel.org>,
-        Nick Kossifidis <mickflemm@gmail.com>,
-        Luis Chamberlain <mcgrof@kernel.org>,
-        Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, ath9k-devel@qca.qualcomm.com
-Cc:     linux-kernel@vger.kernel.org, Luiz Sampaio <sampaio.ime@gmail.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 14/31] net: wireless: ath: changing LED_* from enum led_brightness to actual value
-Date:   Fri, 21 Jan 2022 13:54:19 -0300
-Message-Id: <20220121165436.30956-15-sampaio.ime@gmail.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220121165436.30956-1-sampaio.ime@gmail.com>
-References: <20220121165436.30956-1-sampaio.ime@gmail.com>
+        Fri, 21 Jan 2022 11:58:46 -0500
+Received: from foss.arm.com ([217.140.110.172]:56662 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1380415AbiAUQ5g (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 21 Jan 2022 11:57:36 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 47AE51FB;
+        Fri, 21 Jan 2022 08:57:35 -0800 (PST)
+Received: from FVFF77S0Q05N (unknown [10.57.1.33])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 2B3723F73D;
+        Fri, 21 Jan 2022 08:57:32 -0800 (PST)
+Date:   Fri, 21 Jan 2022 16:57:29 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Peter Zijlstra <peterz@infradead.org>
+Cc:     mingo@redhat.com, tglx@linutronix.de, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-api@vger.kernel.org, x86@kernel.org,
+        pjt@google.com, posk@google.com, avagin@google.com,
+        jannh@google.com, tdelisle@uwaterloo.ca, posk@posk.io
+Subject: Re: [RFC][PATCH v2 5/5] sched: User Mode Concurency Groups
+Message-ID: <Yerl+ZrZ2qflIMyg@FVFF77S0Q05N>
+References: <20220120155517.066795336@infradead.org>
+ <20220120160822.914418096@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220120160822.914418096@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The enum led_brightness, which contains the declaration of LED_OFF,
-LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
-max_brightness.
----
- drivers/net/wireless/ath/ath5k/led.c          | 2 +-
- drivers/net/wireless/ath/ath9k/gpio.c         | 4 ++--
- drivers/net/wireless/ath/ath9k/htc_drv_gpio.c | 4 ++--
- 3 files changed, 5 insertions(+), 5 deletions(-)
+On Thu, Jan 20, 2022 at 04:55:22PM +0100, Peter Zijlstra wrote:
+> User Managed Concurrency Groups is an M:N threading toolkit that allows
+> constructing user space schedulers designed to efficiently manage
+> heterogeneous in-process workloads while maintaining high CPU
+> utilization (95%+).
+> 
+> XXX moar changelog explaining how this is moar awesome than
+> traditional user-space threading.
 
-diff --git a/drivers/net/wireless/ath/ath5k/led.c b/drivers/net/wireless/ath/ath5k/led.c
-index 33e9928af363..df3db4851bf3 100644
---- a/drivers/net/wireless/ath/ath5k/led.c
-+++ b/drivers/net/wireless/ath/ath5k/led.c
-@@ -118,7 +118,7 @@ ath5k_led_brightness_set(struct led_classdev *led_dev,
- 	struct ath5k_led *led = container_of(led_dev, struct ath5k_led,
- 		led_dev);
- 
--	if (brightness == LED_OFF)
-+	if (brightness == 0)
- 		ath5k_led_off(led->ah);
- 	else
- 		ath5k_led_on(led->ah);
-diff --git a/drivers/net/wireless/ath/ath9k/gpio.c b/drivers/net/wireless/ath/ath9k/gpio.c
-index b457e52dd365..0828dc9d3503 100644
---- a/drivers/net/wireless/ath/ath9k/gpio.c
-+++ b/drivers/net/wireless/ath/ath9k/gpio.c
-@@ -52,7 +52,7 @@ static void ath_led_brightness(struct led_classdev *led_cdev,
- 			       enum led_brightness brightness)
- {
- 	struct ath_softc *sc = container_of(led_cdev, struct ath_softc, led_cdev);
--	u32 val = (brightness == LED_OFF);
-+	u32 val = (brightness == 0);
- 
- 	if (sc->sc_ah->config.led_active_high)
- 		val = !val;
-@@ -65,7 +65,7 @@ void ath_deinit_leds(struct ath_softc *sc)
- 	if (!sc->led_registered)
- 		return;
- 
--	ath_led_brightness(&sc->led_cdev, LED_OFF);
-+	ath_led_brightness(&sc->led_cdev, 0);
- 	led_classdev_unregister(&sc->led_cdev);
- 
- 	ath9k_hw_gpio_free(sc->sc_ah, sc->sc_ah->led_pin);
-diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_gpio.c b/drivers/net/wireless/ath/ath9k/htc_drv_gpio.c
-index ecb848b60725..7a9369f06534 100644
---- a/drivers/net/wireless/ath/ath9k/htc_drv_gpio.c
-+++ b/drivers/net/wireless/ath/ath9k/htc_drv_gpio.c
-@@ -230,7 +230,7 @@ void ath9k_led_work(struct work_struct *work)
- 						   led_work);
- 
- 	ath9k_hw_set_gpio(priv->ah, priv->ah->led_pin,
--			  (priv->brightness == LED_OFF));
-+			  (priv->brightness == 0));
- }
- 
- static void ath9k_led_brightness(struct led_classdev *led_cdev,
-@@ -250,7 +250,7 @@ void ath9k_deinit_leds(struct ath9k_htc_priv *priv)
- 	if (!priv->led_registered)
- 		return;
- 
--	ath9k_led_brightness(&priv->led_cdev, LED_OFF);
-+	ath9k_led_brightness(&priv->led_cdev, 0);
- 	led_classdev_unregister(&priv->led_cdev);
- 	cancel_work_sync(&priv->led_work);
- 
--- 
-2.34.1
+Awaiting a commit message that I can parse, I'm just looking at the entry bits
+for now. TBH I have no idea what this is actually trying to do...
 
+[...]
+
+> --- a/include/linux/entry-common.h
+> +++ b/include/linux/entry-common.h
+> @@ -23,6 +23,10 @@
+>  # define _TIF_UPROBE			(0)
+>  #endif
+>  
+> +#ifndef _TIF_UMCG
+> +# define _TIF_UMCG			(0)
+> +#endif
+> +
+>  /*
+>   * SYSCALL_WORK flags handled in syscall_enter_from_user_mode()
+>   */
+> @@ -43,11 +47,13 @@
+>  				 SYSCALL_WORK_SYSCALL_EMU |		\
+>  				 SYSCALL_WORK_SYSCALL_AUDIT |		\
+>  				 SYSCALL_WORK_SYSCALL_USER_DISPATCH |	\
+> +				 SYSCALL_WORK_SYSCALL_UMCG |		\
+>  				 ARCH_SYSCALL_WORK_ENTER)
+>  #define SYSCALL_WORK_EXIT	(SYSCALL_WORK_SYSCALL_TRACEPOINT |	\
+>  				 SYSCALL_WORK_SYSCALL_TRACE |		\
+>  				 SYSCALL_WORK_SYSCALL_AUDIT |		\
+>  				 SYSCALL_WORK_SYSCALL_USER_DISPATCH |	\
+> +				 SYSCALL_WORK_SYSCALL_UMCG |		\
+>  				 SYSCALL_WORK_SYSCALL_EXIT_TRAP	|	\
+>  				 ARCH_SYSCALL_WORK_EXIT)
+>  
+> @@ -221,8 +227,11 @@ static inline void local_irq_disable_exi
+>   */
+>  static inline void irqentry_irq_enable(struct pt_regs *regs)
+>  {
+> -	if (!regs_irqs_disabled(regs))
+> +	if (!regs_irqs_disabled(regs)) {
+>  		local_irq_enable();
+> +		if (user_mode(regs) && (current->flags & PF_UMCG_WORKER))
+> +			umcg_sys_enter(regs, -1);
+> +	}
+>  }
+
+Perhaps it would make sense to have separate umcg_sys_enter(regs) and
+umcg_sys_enter_syscall(regs, syscallno)? Even if the former is just a wrapper,
+to make the entry/exit bits clearly correspond for all the !syscall cases?
+
+Also, is the syscall case meant to nest within this, or syscall entry paths not
+supposed to call irqentry_irq_enable() ?
+
+>  
+>  /**
+> @@ -232,8 +241,11 @@ static inline void irqentry_irq_enable(s
+>   */
+>  static inline void irqentry_irq_disable(struct pt_regs *regs)
+>  {
+> -	if (!regs_irqs_disabled(regs))
+> +	if (!regs_irqs_disabled(regs)) {
+> +		if (user_mode(regs) && (current->flags & PF_UMCG_WORKER))
+> +			umcg_sys_exit(regs);
+>  		local_irq_disable();
+> +	}
+>  }
+
+Do the umcg_sys_{enter,exit}() calls need to happen with IRQs unmasked?
+
+* If not (and this nests): for arm64 these can live in our
+  enter_from_user_mode() and exit_to_user_mode() helpers.
+
+* If so (or this doesn't nest): for arm64 we'd need to rework our
+  local_daif_{inherit,restore,mask}() calls to handle this, though I've been
+  meaning to do that anyway to handle pseudo-NMI better.
+
+Either way, it looks like we'd need helpers along the lines of:
+
+| static __always_inline void umcg_enter_from_user(struct pt_regs *regs)
+| {
+| 	if (current->flags & PF_UMCG_WORKER)
+| 		umcg_sys_enter(regs, -1);
+| }
+| 
+| static __always_inline void umcg_exit_to_user(struct pt_regs *regs)
+| {
+| 	if (current->flags & PF_UMCG_WORKER)
+| 		umcg_sys_exit(regs);
+| }
+
+Thanks,
+Mark.
