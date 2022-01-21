@@ -2,65 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F537C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:57:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60B6FC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:57:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381849AbiAUQ5Y (ORCPT
+        id S1344702AbiAUQ5a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 11:57:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49672 "EHLO
+        Fri, 21 Jan 2022 11:57:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380361AbiAUQ46 (ORCPT
+        with ESMTP id S1380449AbiAUQ46 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 21 Jan 2022 11:56:58 -0500
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BA4DC061778;
-        Fri, 21 Jan 2022 08:55:55 -0800 (PST)
-Received: by mail-oi1-x22e.google.com with SMTP id s127so14386942oig.2;
-        Fri, 21 Jan 2022 08:55:55 -0800 (PST)
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B1BC06177C
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 08:56:04 -0800 (PST)
+Received: by mail-ot1-x32e.google.com with SMTP id n22-20020a9d2016000000b0059bd79f7777so12089606ota.2
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 08:56:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=X1prsGZ36V3LEOTvvkMgk2CqZfwnDb5j2wczkknGbpY=;
-        b=M7T75cltulYZ8dLhgYXj6Dqlc+gxskyEj1qidzGRzta8A7Ws3Zr9QSTdP2w/UtNCH7
-         1QfX8VMaNiOeO+aJ43N06CEVr1qHaj21QOWCh66A0Szq1y/o6Oho0NI9zlUO9u8pGT59
-         EtP8QRnBXkMWCZlGNXKyV/jcv7iIlxRmyq2P2drG6x93IlqH8s6xSoTS+N5MiAShuOnK
-         SlwWVtPdq0Td7Ppi3b0Y9dJHAl1tIlUGE7SGv5WstOM27x3MWNCgph2FW0eLWUqoCkHb
-         AHjTTNndE/ulSBROV/tV651tAmVP3ndCfgP7y8g9poS1Z2rpgmJo+BmCTYa/riabA7NJ
-         VVwA==
+        bh=OJAPsXsyMyStdrgiiG/42UEEzPqRzVav9xb3OpyRVHQ=;
+        b=Twc9JkSiDP8VFRJqzluEaW2Z+2+GsDobGXcC4mRcD907KrgRdR7biXOtGDPPZ2UBWt
+         SPMO43Mn+NBkptudLVDrRUTuJPwBucOHSQvFhxsq2Tf7rxv8Qs8gegVEYIJ5nXRbv8uQ
+         x9Z2CA/QUQmuSwk7MhgPz/pdOBc9invJxmtmwXQBb5fjr1FWY/BqXLqFTgcGCvKfPjyH
+         RDA6E5h78KUKRRB/ZI+IbfQHiEh6q55IMcPdqQYJD4jzqlu50WlCa1PLLmJQlwOMncv3
+         nrku0yGN4/fMx3DFztsEOuLHsE0Vuq7C4jRLm6GufgYAYvmaOg5563KJ1tass8i47vFZ
+         +xpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=X1prsGZ36V3LEOTvvkMgk2CqZfwnDb5j2wczkknGbpY=;
-        b=pqq4I2WsK6LMCR52KFx3dYLimgloQDgMER59HG7/85zl9r0CumgBCR9XpWGYnxW04M
-         +LXHBkyU9no/epRg0UwbBmX2Osw93MMJQRUMJA22mQdry/HoFo/10nklRvmIHk8DQTVK
-         MYQXYzldlvZfHMkXSufHv172uwqOBuSIfZSPKcvPfw4OJwTflqLTsgx4jhQMkPqDmKeo
-         13dGJNjInHukhacbSnjanQLzhdAfdrWBqBDmUtafm9gxX2HnWHEgucQG/eaKoIpcdO2J
-         R8CAQhyFE9S9MLmdH/L+lCjSjfjZc2sgCKFTDTXlvRp10aY2dG0sXts4C7sYofjx5cwM
-         bKeQ==
-X-Gm-Message-State: AOAM532XaQykolbg6b6pXgEVh8HrGOJxLnrIJJV+/+RYZE6QvLO7WPzY
-        EMrGlN6Jl2ST5Z9P6i1Adm0=
-X-Google-Smtp-Source: ABdhPJz8BK3W/Oh4kBRyv2FuNLqsoZfq+UPcczheQf1w5dq3RrySWoTvNPIRVTRDXq4pSGHlxozTVA==
-X-Received: by 2002:a54:4097:: with SMTP id i23mr1255843oii.115.1642784154379;
-        Fri, 21 Jan 2022 08:55:54 -0800 (PST)
+        bh=OJAPsXsyMyStdrgiiG/42UEEzPqRzVav9xb3OpyRVHQ=;
+        b=gykTHJNNvNOcN2NMvyI0C4FC5Mj8Mh+kzDWmIVm//98Xi7SUyPV4abVZF9irf9BLH+
+         oqGkK96NCzezuMsc78+GPb70HFmVvDkwbGmXk6b426DQjwnVoqttNPUwVpqpOoO5wZxa
+         6KIr0sSTQudCej4zdEWoHMeoaxyA3pOqwVMAZzK3Mf7kcRZSYpkMAjYdnb0+ds+6lOgl
+         h3FRj7XQaHeltUyfVbybl7Xss6GFtt+UtpU93DeL/ubmH9cHGF6g4GojXW7DhD1oq9XU
+         Hx8cpmDtTz4wgRhiJ1eAjVBla88Hg4EpncIRh6GeXY2rQ825DleUrsKB4lX184u6OS4b
+         7yNg==
+X-Gm-Message-State: AOAM531ylhE1UaTkPkuxJjSLb34ucejSFJ05suGVxgdxl9TRtX2nAmbs
+        2OtRCfUYhp2L+diBQYcazjg=
+X-Google-Smtp-Source: ABdhPJzeJejm8YYaXmOdZw3QExcnXsXNYn1jraBIWNvWa+5iSEwrJf3YLpi7qF8eTFUbVqtjFmtDxw==
+X-Received: by 2002:a9d:74d0:: with SMTP id a16mr3413937otl.47.1642784164101;
+        Fri, 21 Jan 2022 08:56:04 -0800 (PST)
 Received: from thinkpad.localdomain ([2804:14d:5cd1:5d03:cf72:4317:3105:f6e5])
-        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.55.51
+        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.56.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 08:55:54 -0800 (PST)
+        Fri, 21 Jan 2022 08:56:03 -0800 (PST)
 From:   Luiz Sampaio <sampaio.ime@gmail.com>
-To:     Pablo Neira Ayuso <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
+To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
+        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
 Cc:     linux-kernel@vger.kernel.org, Luiz Sampaio <sampaio.ime@gmail.com>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org
-Subject: [PATCH 28/31] net: netfilter: changing LED_* from enum led_brightness to actual value
-Date:   Fri, 21 Jan 2022 13:54:33 -0300
-Message-Id: <20220121165436.30956-29-sampaio.ime@gmail.com>
+        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org
+Subject: [PATCH 31/31] sound: soc: sof: changing LED_* from enum led_brightness to actual value
+Date:   Fri, 21 Jan 2022 13:54:36 -0300
+Message-Id: <20220121165436.30956-32-sampaio.ime@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220121165436.30956-1-sampaio.ime@gmail.com>
 References: <20220121165436.30956-1-sampaio.ime@gmail.com>
@@ -74,40 +75,25 @@ The enum led_brightness, which contains the declaration of LED_OFF,
 LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
 max_brightness.
 ---
- net/netfilter/xt_LED.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ sound/soc/sof/control.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/netfilter/xt_LED.c b/net/netfilter/xt_LED.c
-index 0371c387b0d1..eb66e12c7ff7 100644
---- a/net/netfilter/xt_LED.c
-+++ b/net/netfilter/xt_LED.c
-@@ -54,7 +54,7 @@ led_tg(struct sk_buff *skb, const struct xt_action_param *par)
- 		led_trigger_blink_oneshot(&ledinternal->netfilter_led_trigger,
- 					  &led_delay, &led_delay, 1);
+diff --git a/sound/soc/sof/control.c b/sound/soc/sof/control.c
+index ef61936dad59..02e40aef9995 100644
+--- a/sound/soc/sof/control.c
++++ b/sound/soc/sof/control.c
+@@ -39,9 +39,9 @@ static void update_mute_led(struct snd_sof_control *scontrol,
+ 
+ #if IS_REACHABLE(CONFIG_LEDS_TRIGGER_AUDIO)
+ 	if (!scontrol->led_ctl.direction)
+-		ledtrig_audio_set(LED_AUDIO_MUTE, temp ? LED_OFF : LED_ON);
++		ledtrig_audio_set(LED_AUDIO_MUTE, temp ? 0 : 1);
  	else
--		led_trigger_event(&ledinternal->netfilter_led_trigger, LED_FULL);
-+		led_trigger_event(&ledinternal->netfilter_led_trigger, 255);
- 
- 	/* If there's a positive delay, start/update the timer */
- 	if (ledinfo->delay > 0) {
-@@ -63,7 +63,7 @@ led_tg(struct sk_buff *skb, const struct xt_action_param *par)
- 
- 	/* Otherwise if there was no delay given, blink as fast as possible */
- 	} else if (ledinfo->delay == 0) {
--		led_trigger_event(&ledinternal->netfilter_led_trigger, LED_OFF);
-+		led_trigger_event(&ledinternal->netfilter_led_trigger, 0);
- 	}
- 
- 	/* else the delay is negative, which means switch on and stay on */
-@@ -76,7 +76,7 @@ static void led_timeout_callback(struct timer_list *t)
- 	struct xt_led_info_internal *ledinternal = from_timer(ledinternal, t,
- 							      timer);
- 
--	led_trigger_event(&ledinternal->netfilter_led_trigger, LED_OFF);
-+	led_trigger_event(&ledinternal->netfilter_led_trigger, 0);
+-		ledtrig_audio_set(LED_AUDIO_MICMUTE, temp ? LED_OFF : LED_ON);
++		ledtrig_audio_set(LED_AUDIO_MICMUTE, temp ? 0 : 1);
+ #endif
  }
  
- static struct xt_led_info_internal *led_trigger_lookup(const char *name)
 -- 
 2.34.1
 
