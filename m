@@ -2,21 +2,21 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7955C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:37:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D2C2C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:37:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378561AbiAUQhd (ORCPT
+        id S1378637AbiAUQhj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 11:37:33 -0500
-Received: from gloria.sntech.de ([185.11.138.130]:35338 "EHLO gloria.sntech.de"
+        Fri, 21 Jan 2022 11:37:39 -0500
+Received: from gloria.sntech.de ([185.11.138.130]:35496 "EHLO gloria.sntech.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349385AbiAUQhG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 11:37:06 -0500
+        id S1349681AbiAUQhJ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 21 Jan 2022 11:37:09 -0500
 Received: from p508fcef5.dip0.t-ipconnect.de ([80.143.206.245] helo=phil.fritz.box)
         by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <heiko@sntech.de>)
-        id 1nAwuL-0008GA-T2; Fri, 21 Jan 2022 17:37:01 +0100
+        id 1nAwuO-0008GA-21; Fri, 21 Jan 2022 17:37:04 +0100
 From:   Heiko Stuebner <heiko@sntech.de>
 To:     palmer@dabbelt.com, paul.walmsley@sifive.com, aou@eecs.berkeley.edu
 Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
@@ -30,9 +30,9 @@ Cc:     linux-riscv@lists.infradead.org, devicetree@vger.kernel.org,
         allen.baum@esperantotech.com, jscheid@ventanamicro.com,
         rtrauben@gmail.com, samuel@sholland.org, cmuellner@linux.com,
         philipp.tomsich@vrull.eu, Heiko Stuebner <heiko@sntech.de>
-Subject: [PATCH v5 07/14] riscv: prevent compressed instructions in alternatives
-Date:   Fri, 21 Jan 2022 17:36:11 +0100
-Message-Id: <20220121163618.351934-8-heiko@sntech.de>
+Subject: [PATCH v5 09/14] riscv: Fix accessing pfn bits in PTEs for non-32bit variants
+Date:   Fri, 21 Jan 2022 17:36:13 +0100
+Message-Id: <20220121163618.351934-10-heiko@sntech.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220121163618.351934-1-heiko@sntech.de>
 References: <20220121163618.351934-1-heiko@sntech.de>
@@ -42,94 +42,144 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Instructions are opportunistically compressed by the RISC-V assembler
-when possible, but in alternatives-blocks both the old and new content
-need to be the same size, so having the toolchain do somewhat random
-optimizations will cause strange side-effects like
-"attempt to move .org backwards" compile-time errors.
+On rv32 the PFN part of PTEs is defined to use bits [xlen-1:10]
+while on rv64 it is defined to use bits [53:10], leaving [63:54]
+as reserved.
 
-Already a simple "and" used in alternatives assembly will cause these
-mismatched code sizes.
+With upcoming optional extensions like svpbmt these previously
+reserved bits will get used so simply right-shifting the PTE
+to get the PFN won't be enough.
 
-So prevent compressed instructions to be generated in alternatives-
-code and use option-push and -pop to limit this to the relevant
-code blocks
+So introduce a _PAGE_PFN_MASK constant to mask the correct bits
+for both rv32 and rv64 before shifting.
 
 Signed-off-by: Heiko Stuebner <heiko@sntech.de>
 ---
- arch/riscv/include/asm/alternative-macros.h | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+ arch/riscv/include/asm/pgtable-32.h   |  8 ++++++++
+ arch/riscv/include/asm/pgtable-64.h   | 14 +++++++++++---
+ arch/riscv/include/asm/pgtable-bits.h |  6 ------
+ arch/riscv/include/asm/pgtable.h      |  6 +++---
+ 4 files changed, 22 insertions(+), 12 deletions(-)
 
-diff --git a/arch/riscv/include/asm/alternative-macros.h b/arch/riscv/include/asm/alternative-macros.h
-index c0fb11fad631..3a52884bf23d 100644
---- a/arch/riscv/include/asm/alternative-macros.h
-+++ b/arch/riscv/include/asm/alternative-macros.h
-@@ -19,7 +19,10 @@
- 	.popsection
- 	.subsection 1
- 888 :
-+	.option push
-+	.option norvc
- 	\new_c
-+	.option pop
- 889 :
- 	.previous
- 	.org    . - (889b - 888b) + (887b - 886b)
-@@ -29,7 +32,10 @@
+diff --git a/arch/riscv/include/asm/pgtable-32.h b/arch/riscv/include/asm/pgtable-32.h
+index 5b2e79e5bfa5..e266a4fe7f43 100644
+--- a/arch/riscv/include/asm/pgtable-32.h
++++ b/arch/riscv/include/asm/pgtable-32.h
+@@ -7,6 +7,7 @@
+ #define _ASM_RISCV_PGTABLE_32_H
  
- .macro __ALTERNATIVE_CFG old_c, new_c, vendor_id, errata_id, enable
- 886 :
-+	.option push
-+	.option norvc
- 	\old_c
-+	.option pop
- 887 :
- 	ALT_NEW_CONTENT \vendor_id, \errata_id, \enable, \new_c
- .endm
-@@ -40,7 +46,10 @@
- .macro __ALTERNATIVE_CFG_2 old_c, new_c_1, vendor_id_1, errata_id_1, enable_1, \
- 				  new_c_2, vendor_id_2, errata_id_2, enable_2
- 886 :
-+	.option push
-+	.option norvc
- 	\old_c
-+	.option pop
- 887 :
- 	ALT_NEW_CONTENT \vendor_id_1, \errata_id_1, \enable_1, \new_c_1
- 	ALT_NEW_CONTENT \vendor_id_2, \errata_id_2, \enable_2, \new_c_2
-@@ -70,7 +79,10 @@
- 	".popsection\n"							\
- 	".subsection 1\n"						\
- 	"888 :\n"							\
-+	".option push\n"						\
-+	".option norvc\n"						\
- 	new_c "\n"							\
-+	".option pop\n"							\
- 	"889 :\n"							\
- 	".previous\n"							\
- 	".org	. - (887b - 886b) + (889b - 888b)\n"			\
-@@ -79,7 +91,10 @@
+ #include <asm-generic/pgtable-nopmd.h>
++#include <linux/bits.h>
+ #include <linux/const.h>
  
- #define __ALTERNATIVE_CFG(old_c, new_c, vendor_id, errata_id, enable)	\
- 	"886 :\n"							\
-+	".option push\n"						\
-+	".option norvc\n"						\
- 	old_c "\n"							\
-+	".option pop\n"							\
- 	"887 :\n"							\
- 	ALT_NEW_CONTENT(vendor_id, errata_id, enable, new_c)
+ /* Size of region mapped by a page global directory */
+@@ -16,4 +17,11 @@
  
-@@ -89,7 +104,10 @@
- #define __ALTERNATIVE_CFG_2(old_c, new_c_1, vendor_id_1, errata_id_1, enable_1, \
- 				  new_c_2, vendor_id_2, errata_id_2, enable_2) \
- 	"886 :\n"							\
-+	".option push\n"						\
-+	".option norvc\n"						\
- 	old_c "\n"							\
-+	".option pop\n"							\
- 	"887 :\n"							\
- 	ALT_NEW_CONTENT(vendor_id_1, errata_id_1, enable_1, new_c_1)	\
- 	ALT_NEW_CONTENT(vendor_id_2, errata_id_2, enable_2, new_c_2)
+ #define MAX_POSSIBLE_PHYSMEM_BITS 34
+ 
++/*
++ * rv32 PTE format:
++ * | XLEN-1  10 | 9             8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
++ *       PFN      reserved for SW   D   A   G   U   X   W   R   V
++ */
++#define _PAGE_PFN_MASK  GENMASK(31, 10)
++
+ #endif /* _ASM_RISCV_PGTABLE_32_H */
+diff --git a/arch/riscv/include/asm/pgtable-64.h b/arch/riscv/include/asm/pgtable-64.h
+index 228261aa9628..706f0897437d 100644
+--- a/arch/riscv/include/asm/pgtable-64.h
++++ b/arch/riscv/include/asm/pgtable-64.h
+@@ -6,6 +6,7 @@
+ #ifndef _ASM_RISCV_PGTABLE_64_H
+ #define _ASM_RISCV_PGTABLE_64_H
+ 
++#include <linux/bits.h>
+ #include <linux/const.h>
+ 
+ #define PGDIR_SHIFT     30
+@@ -28,6 +29,13 @@ typedef struct {
+ 
+ #define PTRS_PER_PMD    (PAGE_SIZE / sizeof(pmd_t))
+ 
++/*
++ * rv64 PTE format:
++ * | 63 | 62 61 | 60 54 | 53  10 | 9             8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
++ *   N      MT     RSV    PFN      reserved for SW   D   A   G   U   X   W   R   V
++ */
++#define _PAGE_PFN_MASK  GENMASK(53, 10)
++
+ static inline int pud_present(pud_t pud)
+ {
+ 	return (pud_val(pud) & _PAGE_PRESENT);
+@@ -61,12 +69,12 @@ static inline void pud_clear(pud_t *pudp)
+ 
+ static inline pmd_t *pud_pgtable(pud_t pud)
+ {
+-	return (pmd_t *)pfn_to_virt(pud_val(pud) >> _PAGE_PFN_SHIFT);
++	return (pmd_t *)pfn_to_virt((pud_val(pud) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT);
+ }
+ 
+ static inline struct page *pud_page(pud_t pud)
+ {
+-	return pfn_to_page(pud_val(pud) >> _PAGE_PFN_SHIFT);
++	return pfn_to_page((pud_val(pud) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT);
+ }
+ 
+ static inline pmd_t pfn_pmd(unsigned long pfn, pgprot_t prot)
+@@ -76,7 +84,7 @@ static inline pmd_t pfn_pmd(unsigned long pfn, pgprot_t prot)
+ 
+ static inline unsigned long _pmd_pfn(pmd_t pmd)
+ {
+-	return pmd_val(pmd) >> _PAGE_PFN_SHIFT;
++	return (pmd_val(pmd) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT;
+ }
+ 
+ #define mk_pmd(page, prot)    pfn_pmd(page_to_pfn(page), prot)
+diff --git a/arch/riscv/include/asm/pgtable-bits.h b/arch/riscv/include/asm/pgtable-bits.h
+index 2ee413912926..4831122d559d 100644
+--- a/arch/riscv/include/asm/pgtable-bits.h
++++ b/arch/riscv/include/asm/pgtable-bits.h
+@@ -6,12 +6,6 @@
+ #ifndef _ASM_RISCV_PGTABLE_BITS_H
+ #define _ASM_RISCV_PGTABLE_BITS_H
+ 
+-/*
+- * PTE format:
+- * | XLEN-1  10 | 9             8 | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0
+- *       PFN      reserved for SW   D   A   G   U   X   W   R   V
+- */
+-
+ #define _PAGE_ACCESSED_OFFSET 6
+ 
+ #define _PAGE_PRESENT   (1 << 0)
+diff --git a/arch/riscv/include/asm/pgtable.h b/arch/riscv/include/asm/pgtable.h
+index bf204e7c1f74..5cf7465a96c5 100644
+--- a/arch/riscv/include/asm/pgtable.h
++++ b/arch/riscv/include/asm/pgtable.h
+@@ -232,12 +232,12 @@ static inline unsigned long _pgd_pfn(pgd_t pgd)
+ 
+ static inline struct page *pmd_page(pmd_t pmd)
+ {
+-	return pfn_to_page(pmd_val(pmd) >> _PAGE_PFN_SHIFT);
++	return pfn_to_page((pmd_val(pmd) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT);
+ }
+ 
+ static inline unsigned long pmd_page_vaddr(pmd_t pmd)
+ {
+-	return (unsigned long)pfn_to_virt(pmd_val(pmd) >> _PAGE_PFN_SHIFT);
++	return (unsigned long)pfn_to_virt((pmd_val(pmd) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT);
+ }
+ 
+ static inline pte_t pmd_pte(pmd_t pmd)
+@@ -253,7 +253,7 @@ static inline pte_t pud_pte(pud_t pud)
+ /* Yields the page frame number (PFN) of a page table entry */
+ static inline unsigned long pte_pfn(pte_t pte)
+ {
+-	return (pte_val(pte) >> _PAGE_PFN_SHIFT);
++	return ((pte_val(pte) & _PAGE_PFN_MASK) >> _PAGE_PFN_SHIFT);
+ }
+ 
+ #define pte_page(x)     pfn_to_page(pte_pfn(x))
 -- 
 2.30.2
 
