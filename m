@@ -2,35 +2,35 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5595C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 08:45:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32E01C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 08:45:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345879AbiAUIpB convert rfc822-to-8bit (ORCPT
+        id S234715AbiAUIpD convert rfc822-to-8bit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 03:45:01 -0500
-Received: from mail-eopbgr120054.outbound.protection.outlook.com ([40.107.12.54]:17632
+        Fri, 21 Jan 2022 03:45:03 -0500
+Received: from mail-eopbgr120077.outbound.protection.outlook.com ([40.107.12.77]:60063
         "EHLO FRA01-PR2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1379644AbiAUInU (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 03:43:20 -0500
+        id S1379619AbiAUIoJ (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 21 Jan 2022 03:44:09 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bPTj455QNB+EVyVm224htK0Vc2P12e48zgbKtv4PdyeoO0GBzfQoghgjAWMi3+w2gBI6j/mBCwmdTRbWEfSp8Aksmu9rfQjNjD92UijI8Re0MQRFXNhQ+KHav/3k6vsPnW/gACSDSCmx90mKhJl0yFByets0hP1pBMGK3fHg2dhDSdnbvJqsTBi9EhrCnD2/Cx/Q0/h7/D9P/g5dh9UJQrQjtKGyuaCZPksaJ6G2kVXTzNqWQQONn7S/EmU0IRojW7NH7tPr7FT1vGsAO5LbIQMUzyTq4z913OyjIzEMdgbvyy0Q2IQbWSQz7eX5KQb57Pvzs35Djt8noitZ2lSITg==
+ b=AX3Z2hTDUI3yohRYTfCpCFfK7ogCvIY3gI8q1zSw1H+X8P8TSM5gjujLrfLNeH5+z9aqdAE9+SjL9M4tZQ1GQA0JUmzhDU80okl6X2dan2w9OOvTZcmkqY/A05Nc+DUuPm6eVETUJZBl0eBlx3OjX9+S0fMHCnbPxJzdt9Zo8N68SRH36nmCN9Q0YX8UINBrbI/FOxxiEse2jZs+CCDFZ+BJgX/d7PWzeYVeHb6y/VlvaUHeS6h3UOpLdmV3SIFklWOqOx0w9jhWINdq7R6Ojl1mfE+g0THKs5ikKjq6OL2OeIyOnFKT4rTTLRyq/rVNvcrCeCZ7KbeQJxhZhYtrdQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=a9SuhqlOy06KBe0gYPpfKhVvBqJHRnDfSe40VkrHRks=;
- b=JaRA4mK0b4JTJ+RL40l4c0DISgxxmA94q+kSdMszPjb9j05rqTGIBJI3pRH4GztJFv7wWnPUKXTXtJR/3yFXUQRUybBvFSbSqdjRa7d60orM8E3At1q8CXBxhUvcmonulDnOpUY/nT6UWKYib0/Fz5nCEA/hP12Ufz3PXx5blRKIRb/34NaiFq+mmCDZ1rjsSApGYra2tNKna/Bf4INJKrn3A38vVhelY+DSgKT57yymv/FPm7D3PsYWFPPIyy+Ku8j5UkrNwWG2kU+DdTXB0nqDDrM+nEc2+ogH5ZZRtIHS//+1vcVSitLXFfsIIQpHLmMyjkJkuytsyPa2y0iutg==
+ bh=PM1tsV2E7+/dx7vpR2aV9rqndz5KU8OyEwLYpGyZ5i4=;
+ b=CQ1CdBuwLYnepCl8JOU5k7epgLB2pN7d/Uq0U/6sZJ+RcJHnEuQrY/RUO1SDsvCWDOIDbndyRY43kec4g8EKQ19wNgjTEfr64ydbkiIK8P6HmeD/Tjd56lfyIx6WUHeMzHZ3lRrow4hyogPlifQYRCEI3/UiyBbqey3hZ7v2SkiNoDIx+tWBKdj6DIjRGukqp3uRR11zOjLUDsXXyyaucowAkqDE6tho2c2TBd6ojUMNkjIvFtZ7b9b1Fc6pqDEXmUMdZ7M9+9hDGXuWr0yDl+JuXBW5YlXS52lkT4+1jLW0lxg4Nf088UOXDwLEg6rwIP2i0GvzYFYjBkdWwjLmfg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
  dkim=none; arc=none
 Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM (2603:10a6:501:31::15)
- by MR2P264MB0196.FRAP264.PROD.OUTLOOK.COM (2603:10a6:500:c::15) with
+ by PR0P264MB0201.FRAP264.PROD.OUTLOOK.COM (2603:10a6:100:4::15) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7; Fri, 21 Jan
- 2022 08:42:48 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.11; Fri, 21 Jan
+ 2022 08:42:42 +0000
 Received: from MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
  ([fe80::9d4f:1090:9b36:3fc5]) by MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
  ([fe80::9d4f:1090:9b36:3fc5%5]) with mapi id 15.20.4909.008; Fri, 21 Jan 2022
- 08:42:48 +0000
+ 08:42:42 +0000
 From:   Christophe Leroy <christophe.leroy@csgroup.eu>
 To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
         Paul Mackerras <paulus@samba.org>,
@@ -45,11 +45,13 @@ CC:     Christophe Leroy <christophe.leroy@csgroup.eu>,
         "will@kernel.org" <will@kernel.org>,
         "linux-arm-kernel@lists.infradead.org" 
         <linux-arm-kernel@lists.infradead.org>
-Subject: [PATCH v7 14/14] powerpc: Simplify and move arch_randomize_brk()
-Thread-Topic: [PATCH v7 14/14] powerpc: Simplify and move arch_randomize_brk()
-Thread-Index: AQHYDqLenb0tMTWDJ02+PYwHQDqHvA==
-Date:   Fri, 21 Jan 2022 08:42:48 +0000
-Message-ID: <49dc4982c458867c66f022d11f16ad34e656cd85.1642752946.git.christophe.leroy@csgroup.eu>
+Subject: [PATCH v7 12/14] powerpc/mm: Enable full randomisation of memory
+ mappings
+Thread-Topic: [PATCH v7 12/14] powerpc/mm: Enable full randomisation of memory
+ mappings
+Thread-Index: AQHYDqLadZ1PUGsqwUCDshHOaCgmUQ==
+Date:   Fri, 21 Jan 2022 08:42:42 +0000
+Message-ID: <675b7946a15dd18d5517bf10a8b49b09142b6c58.1642752946.git.christophe.leroy@csgroup.eu>
 References: <cover.1642752946.git.christophe.leroy@csgroup.eu>
 In-Reply-To: <cover.1642752946.git.christophe.leroy@csgroup.eu>
 Accept-Language: fr-FR, en-US
@@ -59,171 +61,172 @@ X-MS-TNEF-Correlator:
 authentication-results: dkim=none (message not signed)
  header.d=none;dmarc=none action=none header.from=csgroup.eu;
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: dd402a8c-678b-4878-e2bc-08d9dcba00fe
-x-ms-traffictypediagnostic: MR2P264MB0196:EE_
-x-microsoft-antispam-prvs: <MR2P264MB0196C2C0FF4C648DEFD5861DED5B9@MR2P264MB0196.FRAP264.PROD.OUTLOOK.COM>
-x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-office365-filtering-correlation-id: 7b692418-8b7f-4eb3-2775-08d9dcb9fd6b
+x-ms-traffictypediagnostic: PR0P264MB0201:EE_
+x-microsoft-antispam-prvs: <PR0P264MB02019714738FB92B0D94AA39ED5B9@PR0P264MB0201.FRAP264.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:2887;
 x-ms-exchange-senderadcheck: 1
 x-ms-exchange-antispam-relay: 0
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: O/9ozK6umGY0tJIszwAYxTiJgjiKCCBynk+LGK8Alwp7mRZqQcpO4thYpJrXS2PbHPzy7WZ8bYon9Hw16Z04wKmlS76/KYhmVpLKyLSf/nKPXCPTOXCXhyTb0iMjXZrPYayai921tbzRBMOzjsT35BWQPlbuYO7gP6wui/xDUUxIymOdYJFX8v06a3N3HefbLKcFNacpwlwrcGRFDpTzoS89bEtY3zT3qUMM43zSUC0cr0cc0/X75aKCi5XI8OTGoqaKSRrfpqh9jABKeWXjXre2E1NULvyKNuVAgGj5eC2fjNss6Ubs/MSCgYT45b8UuNz1NLKIb/aWjcebI5TCyDiQyf3dHnM+JnHtopLjFYIE5FBwelqCE7W/kAxpyGHUWgfDuiRzJoOrp8cxq5TsUb1BJzP0XNlRoJMp1pPuIX0P3wKMj6dHC25Lpuz+5JOSd5y6rOdlwFcu39Rqxlfmw2G+NAwI4i+HA7Bxo1TKKzTS2ROTtx+BoYBhynFpUOPCYUuSmf3/Pt4KyIWs7EfD5Wmoe6KuYXcQan40bN+FpQ7gaIasEl9gh2atD1GtNnbWRYV0mJtKwm9ieJpcausxrdnS971DFBJ3uVZpTFy0McLrkAVevqu8DMby8KYHQLv4oYjsmB2kjA8aCU8oYZpouqiu8++vVfRojNjj+hqlhJaPYg4oDZPeKNca+8y2xU5jXqUYXnDHmqMrpSig5YVlzA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(2616005)(6486002)(186003)(44832011)(26005)(7416002)(6512007)(6506007)(2906002)(8676002)(71200400001)(8936002)(508600001)(86362001)(4326008)(5660300002)(316002)(66446008)(64756008)(66556008)(91956017)(110136005)(54906003)(38070700005)(76116006)(66476007)(122000001)(38100700002)(66946007)(36756003)(83380400001);DIR:OUT;SFP:1101;
+x-microsoft-antispam-message-info: ajglEGKiaPxsU+ZeacAlUAYW9R/nQfHWTaVNiogMEf88iibxl2nxkm8p725MEf5jsPL2yFPQXDOdmO5N++4ThlaBaY70RK64Qi6RIxzoBGvKCgtZvkhRHxj7A3MfsrlHHIggvtagKkUAStTrZnE1AmshY7ogtZC0puvsq4ok7nA5FFrK2IBCZiCHtKfIKHLG06QcwR6+Hc9plo+9Ct4XGzMU9WwA/NwHjF2wm+lhy4S1TFon9FqsmPdUjPg41Amt/bwe9n1XCxgrWuoBXuaBSWuUzYJvZlMqfFs2GZCE8XI+Rs6X5v45mXpnE/7wmEMe4KHDygW1rX+FyitUS4hEZEP4V/bdAf0ozcI9WAYhCyVi7pqoFfHHYI1Uz1h+A5MjZm7TeW36NvYg/5J5Bm7ANCyLUI6yp9cXtljw9UkPL6Flkd31CU1ClyfAdaBYkfGhkZJcoPBjC/T5KRSh0e3JP3rTDxNOkLIrCi9RiMHmBsJuenbj81qNgUHphRZUEDA5waZiBzl2LPWFD6jKH+aVAS4NJa6GPDlMf+kDh2m0Fz3EgPebYJCECm2m4bc5SMr6fV2tYG7nU511A1AIbN7ktOvHWQuR/sp2G2bemdVDLjbO7BWKNgo0gmvrVdxnNVe5l9Tg8eRb+lb3cBWMBsFQkh9e7wN8muClPF1gQaFybJ9qN+mmvB2ehdyVDjE5u2qDJQFevH0xbUci8GqTqweV0A==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(366004)(76116006)(91956017)(36756003)(66476007)(2906002)(5660300002)(66946007)(8676002)(6512007)(122000001)(71200400001)(8936002)(83380400001)(66446008)(64756008)(4326008)(66556008)(86362001)(26005)(508600001)(6486002)(54906003)(2616005)(44832011)(38070700005)(6506007)(186003)(38100700002)(7416002)(110136005)(316002);DIR:OUT;SFP:1101;
 x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?r7C3FOW/zL6zHNmBEFUepPumHD4c3g20NOC6K8hWLK+Lw4GbOBOaMOJcow?=
- =?iso-8859-1?Q?ytDzsvEoQgOib2l7vIMYj/XSVY9WE5b/Migd7qnMX4r2plnRW3pdUmnBmH?=
- =?iso-8859-1?Q?NOyY0m/qigUwdLoW1YeJAx2QIYOW5m0spYx2vOrHSDPFED/p1hqoQR2BSc?=
- =?iso-8859-1?Q?PlnrKcWLO/7rugcST/QxpsaLOwXedq0H6zsw+UA4JhrOKCUVcymjqmMaG4?=
- =?iso-8859-1?Q?SK242Ur9KoZWRyglT+sJu8dUE8ZyM5OZyYD7vFFquRKmMj374XaieTxH/C?=
- =?iso-8859-1?Q?TyaKA4xOLLSvAI7p+PAC8DcTvbdDipxu2VJ6twi3mGGQvJuXN9XopQstJg?=
- =?iso-8859-1?Q?5r/gw8zk2ANKf+LxCVz/9L/lSN3JJ985le4HtghPj34XsJXIr7Niws8JEB?=
- =?iso-8859-1?Q?ix8ggNPAyBSXU4z2rRHKLw30z8+CeJYHcjt3Uc04KzwgFfmaUkU93OfSp5?=
- =?iso-8859-1?Q?KlWGOP5tHabw2GviGr8AdVwHL82f8dSMQl0NBgYgehfSs9xbBuXkBBXeDX?=
- =?iso-8859-1?Q?tmJKno5t0Zo5H5NmWXI49WIYpkXcQOKnG26nOM7F9uzbpGAMEeDkDtSI8e?=
- =?iso-8859-1?Q?BNZiFL5+r661pUNm8sgrM3D0EAG+BpYVFCqNUdKzD4TfzKC/4CPL9FMBwE?=
- =?iso-8859-1?Q?z0xxsh2OZKH1SHo9uBdoEankWtDqyzyYDLrLiC9bfesO5hPlkqvZcft7bb?=
- =?iso-8859-1?Q?8SKwKjyAeZrB+oBKuds6SMdhFGknATntv5C+zfsfwH7b1Z3+qVJQoUBZsR?=
- =?iso-8859-1?Q?tDLCkZ5JUcqpbnHTvjkysjDOFwu/wqpcbdSqhbrpzZz1pZyd5jPV4hXizs?=
- =?iso-8859-1?Q?nfoOjvBTSirn6dsalUGnoj22/yFTTZmZMd9ONonYlaNuODUD1ump+qQ32K?=
- =?iso-8859-1?Q?8G098kEiNQs2Q1KSVTHkXXgprPC2nMhlLQx9C9cMoIFgSeW1v3A/2q5tub?=
- =?iso-8859-1?Q?p2QaYA1QiftstxYLsXpCGTw5TcJcpZph4qgT+/mXN8aHEiLr8JLyVXr3OI?=
- =?iso-8859-1?Q?nZN2s/7+qe85wGOS6i3E7Qo9MMhaptW5S84sy2TaTsNmaNo+HiLL9QBjvf?=
- =?iso-8859-1?Q?c87IzR2B076LdVVXeFPmKOsaANQfyQvNhUYkOYHYMF0X8DuXkfMMnhi8bj?=
- =?iso-8859-1?Q?T5AfoWehs8fZ0dKW5Mq09IjkJ5QpZP90bj7TdkqxV2r2dAYxmPPdesDgoV?=
- =?iso-8859-1?Q?kppV2QMRNbfHOIYBX+Fu+jWk+HReSszDLcZFHZbd7G8+4a9tEcEax5VxJd?=
- =?iso-8859-1?Q?YHUaugghbABAjGpRCN1skYNHGQ0UnaJCEhStOCnbY+yO2AUiXP7h9k78Nq?=
- =?iso-8859-1?Q?OaH4pHhT5SVLAK43Db6JkMEvEzmnRTTF9doujXLEAWTNP5HOeziMcqtWha?=
- =?iso-8859-1?Q?Ok4+ocy8Ofh4b1VbRbpdFB+zbag/zIGGp4jD7jZQH1NvW94ktRscYjJMEf?=
- =?iso-8859-1?Q?imzeHPZS6aZOshKxEMJh7Y7wMVJhqwX1phf5hMLb9a1/7ynezPeeWJjDtS?=
- =?iso-8859-1?Q?vtfJFzvcdvyCU4f65Gepa/iQqh1DuexkBrGIfz5kO5Osd38+1G7QWGfnrE?=
- =?iso-8859-1?Q?aNiCbbwOpzGS0c8dWvFxcmBy46Vxb42X9frvviGXXEYS9oZedlyXfAarn9?=
- =?iso-8859-1?Q?NTeAx/d01zu/82uAsmzv6aTsqA++G7JA9qjPIolM4W85Wb55els/unj3ig?=
- =?iso-8859-1?Q?h9vYp/odAtxZLghB2ypi2ZbsZa3dCOlMP5rMf8xfpU1M7fQGsEMnnL7viv?=
- =?iso-8859-1?Q?cniJ0KaElhWDhRPzmeF0HFSdY=3D?=
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?+U9d1ltFf/r/v6RWXZGQW5l1JSyZTh+k695dQxkFj8Q5R1vjCIg5axsq9u?=
+ =?iso-8859-1?Q?Csy0aSaswxQPGdktasu3gEJ9UQzZ7TTyH1aF9Yv1JpdGREyMAq/YCiWNy1?=
+ =?iso-8859-1?Q?iIlNXWyH5YzJ03Us/E9ZuVO/I2FlqStN99nsefDod7rXQXYCbOJ4/D9Hsm?=
+ =?iso-8859-1?Q?EOEfH5Nl67x0NqKO3M0TUwWwg0lS/iT+KBwxWLpUiXQVxlflitxAs/KwwI?=
+ =?iso-8859-1?Q?gwx4s+EwI/Gk46lnK1nCSudls4+p5rVE912BVx8hbnnhnzq1PfQZH1Sxpm?=
+ =?iso-8859-1?Q?VVluetkx3aPhdV12AiqMD/lqKoEV7CoXg9YmqKqncnYG8c1kngmjXcXZOB?=
+ =?iso-8859-1?Q?DycW6wDRf3hDGaL80KkJRcqs9sgvi5/irLWa4H2YCwOYvOE3ptlQzihc8c?=
+ =?iso-8859-1?Q?bHqCjxLKgziYO30XHwvrVzeJ9fcIZbdEOLNt2ccr32t1InG5gwCVsLiaSk?=
+ =?iso-8859-1?Q?7pdUETqYvmFlbyYfar9trrw9ayPMhsfowypfjHPHIPaliOgXmZ3Jvj+V0h?=
+ =?iso-8859-1?Q?VmrZgX9DYobWXC/yNAuQASgq5e4c9UHMC87xOW2axOswENcoS5nmzUCV5m?=
+ =?iso-8859-1?Q?oX9vpkb9FwACOz0eFXBgWd7SuQvziKcRdYRc9g5vZK3IheEwHmXgMjA8O0?=
+ =?iso-8859-1?Q?+DnF+UIwKdv9crQyNdX26tpvjLbWFAqpR5tjuIYGKN7rxn3k4LfG51Rcu7?=
+ =?iso-8859-1?Q?Uh75yIbODuuZS2tQ3cwuX3ezzdVHlUZH8PYGrXBfOPt+bI+5Ul/UFI4PzF?=
+ =?iso-8859-1?Q?d0b3UqFOWFN4PjM1VyJu6zvKogD2zXc7avEpy+sUMIoYGTgVXqLpzm0Wmw?=
+ =?iso-8859-1?Q?jypJTTSa3k+DGQ17Gkk9AMgAOz2MCWio4pHl3JHfaJs1ZUuL6VRrxtrXjf?=
+ =?iso-8859-1?Q?Dtm1WUetNramg5TZuUft+lTbuU6dQmGUAHAl6SDlMum2E/q7nARLOvZtIo?=
+ =?iso-8859-1?Q?8aeN3d9PDIJJtNWBf1iO3dtvWfH65GoJ1earZZegEHfhV/I/7LPNZV0HRF?=
+ =?iso-8859-1?Q?s08vHX5haLZWHp3zCo1XKTUsHujMP+NjC4Z0OArhFe/LGl4NDle7CcZf6q?=
+ =?iso-8859-1?Q?xGYdjkKPxRBl2hnHZsNNpl2uD2IyslTRwSAfnTqZfAjumUJQbjFlVj1Fk9?=
+ =?iso-8859-1?Q?qKijBqtLkL8fOWTgPUJIs/sosuKd8D3hLWtHp6ERYCr4KgxLO17OEPsK5w?=
+ =?iso-8859-1?Q?FADD1ihnrqTKZyqQsb9/WzPuH0Bhe1A/7oLDRYceItJ6DStWEI/nQ2mrx9?=
+ =?iso-8859-1?Q?i71FIMp1VXpO73NesmhDQkQFWZIRap1K8NRpwfhveFGN/FbJhS7xwChmAq?=
+ =?iso-8859-1?Q?6zAA1LzSriwY8p47jN7u4P0kRBTrE5WNX/Gqhdm99S4v1sLfySs2N32OXN?=
+ =?iso-8859-1?Q?W7wHaYJF26zJRIFutfaBRIkApEvGOPgOPBzpxbDOZ7lua2TBvfZCLI8kwW?=
+ =?iso-8859-1?Q?ybXBf1NUR2/tHyfZPXP+0hClYxX36GeezgZ0XrfagpuASXd8noSNARUShm?=
+ =?iso-8859-1?Q?eFRSsG8Gv2e6pRmhljOXizqbQOMS1vAz+pUwkIeIYp0hg+vVLEYlAN879p?=
+ =?iso-8859-1?Q?kCHh5CvgEu7/S1ee4/ekUM7O59E01VlmYdm/cml+0uT7VXWyU2Npmvzi7k?=
+ =?iso-8859-1?Q?aRw+5Bhv2AbkZF7vyKtq+E7USV3fK5gEmCTLgPI0JSMYZt3TArWbGFMcDT?=
+ =?iso-8859-1?Q?L1GMgfoVnFbJkp+U4N25qJIGVKOgNixKRYZ2eNqQGtg5IF4VzaqoK2Ln48?=
+ =?iso-8859-1?Q?2RhTkiZaA/SreLgiyMRB3sJXk=3D?=
 Content-Type: text/plain; charset="iso-8859-1"
 Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
 X-OriginatorOrg: csgroup.eu
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: MRZP264MB2988.FRAP264.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-Network-Message-Id: dd402a8c-678b-4878-e2bc-08d9dcba00fe
-X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jan 2022 08:42:48.8055
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b692418-8b7f-4eb3-2775-08d9dcb9fd6b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jan 2022 08:42:42.7885
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: 9914def7-b676-4fda-8815-5d49fb3b45c8
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: KdQOI9rbEU1DV/T6+acUVGQZdYJarLJnno5XF4Nh6zIe3ir42Do9dVTOoQVIgmr9JE7BkH5VKAYQzZ0eAyl4msu/TG8791Q0vbVXf6uwn5U=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MR2P264MB0196
+X-MS-Exchange-CrossTenant-userprincipalname: YKv5QGv2tePGOq2d+ZQPrzd0hoLel+UOfxFUVHCxi0V/lbJKnTWWGWi4kOxxNYW18f+kWSdVLq9X5jEgIiTyB74c6zcQR0qNLeYCqhVy1/0=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PR0P264MB0201
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-arch_randomize_brk() is only needed for hash on book3s/64, for other
-platforms the one provided by the default mmap layout is good enough.
+Do like most other architectures and provide randomisation also to
+"legacy" memory mappings, by adding the random factor to
+mm->mmap_base in arch_pick_mmap_layout().
 
-Move it to hash_utils.c and use randomize_page() like the generic one.
+See commit 8b8addf891de ("x86/mm/32: Enable full randomization on
+i386 and X86_32") for all explanations and benefits of that mmap
+randomisation.
 
-And properly opt out the radix case instead of making an assumption
-on mmu_highuser_ssize.
+At the moment, slice_find_area_bottomup() doesn't use mm->mmap_base
+but uses the fixed TASK_UNMAPPED_BASE instead.
+slice_find_area_bottomup() being used as a fallback to
+slice_find_area_topdown(), it can't use mm->mmap_base
+directly.
 
-Also change to a 32M range like most other architectures instead of 8M.
+Instead of always using TASK_UNMAPPED_BASE as base address, leave
+it to the caller. When called from slice_find_area_topdown()
+TASK_UNMAPPED_BASE is used. Otherwise mm->mmap_base is used.
 
 Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
 ---
- arch/powerpc/kernel/process.c         | 41 ---------------------------
- arch/powerpc/mm/book3s64/hash_utils.c | 19 +++++++++++++
- 2 files changed, 19 insertions(+), 41 deletions(-)
+ arch/powerpc/mm/book3s64/slice.c | 18 +++++++-----------
+ arch/powerpc/mm/mmap.c           |  2 +-
+ 2 files changed, 8 insertions(+), 12 deletions(-)
 
-diff --git a/arch/powerpc/kernel/process.c b/arch/powerpc/kernel/process.c
-index 984813a4d5dc..e7f809bdd433 100644
---- a/arch/powerpc/kernel/process.c
-+++ b/arch/powerpc/kernel/process.c
-@@ -34,10 +34,8 @@
- #include <linux/ftrace.h>
- #include <linux/kernel_stat.h>
- #include <linux/personality.h>
--#include <linux/random.h>
- #include <linux/hw_breakpoint.h>
- #include <linux/uaccess.h>
--#include <linux/elf-randomize.h>
- #include <linux/pkeys.h>
- #include <linux/seq_buf.h>
- 
-@@ -2313,42 +2311,3 @@ unsigned long arch_align_stack(unsigned long sp)
- 		sp -= get_random_int() & ~PAGE_MASK;
- 	return sp & ~0xf;
+diff --git a/arch/powerpc/mm/book3s64/slice.c b/arch/powerpc/mm/book3s64/slice.c
+index 03681042b807..c0b58afb9a47 100644
+--- a/arch/powerpc/mm/book3s64/slice.c
++++ b/arch/powerpc/mm/book3s64/slice.c
+@@ -276,20 +276,18 @@ static bool slice_scan_available(unsigned long addr,
  }
--
--static inline unsigned long brk_rnd(void)
--{
--        unsigned long rnd = 0;
--
--	/* 8MB for 32bit, 1GB for 64bit */
--	if (is_32bit_task())
--		rnd = (get_random_long() % (1UL<<(23-PAGE_SHIFT)));
--	else
--		rnd = (get_random_long() % (1UL<<(30-PAGE_SHIFT)));
--
--	return rnd << PAGE_SHIFT;
--}
--
--unsigned long arch_randomize_brk(struct mm_struct *mm)
--{
--	unsigned long base = mm->brk;
--	unsigned long ret;
--
--#ifdef CONFIG_PPC_BOOK3S_64
--	/*
--	 * If we are using 1TB segments and we are allowed to randomise
--	 * the heap, we can put it above 1TB so it is backed by a 1TB
--	 * segment. Otherwise the heap will be in the bottom 1TB
--	 * which always uses 256MB segments and this may result in a
--	 * performance penalty.
--	 */
--	if (!radix_enabled() && !is_32bit_task() && (mmu_highuser_ssize == MMU_SEGSIZE_1T))
--		base = max_t(unsigned long, mm->brk, 1UL << SID_SHIFT_1T);
--#endif
--
--	ret = PAGE_ALIGN(base + brk_rnd());
--
--	if (ret < mm->brk)
--		return mm->brk;
--
--	return ret;
--}
--
-diff --git a/arch/powerpc/mm/book3s64/hash_utils.c b/arch/powerpc/mm/book3s64/hash_utils.c
-index 154a5a860959..d28003132a51 100644
---- a/arch/powerpc/mm/book3s64/hash_utils.c
-+++ b/arch/powerpc/mm/book3s64/hash_utils.c
-@@ -37,6 +37,8 @@
- #include <linux/cpu.h>
- #include <linux/pgtable.h>
- #include <linux/debugfs.h>
-+#include <linux/random.h>
-+#include <linux/elf-randomize.h>
  
- #include <asm/interrupt.h>
- #include <asm/processor.h>
-@@ -2171,3 +2173,20 @@ void __init print_system_hash_info(void)
- 	if (htab_hash_mask)
- 		pr_info("htab_hash_mask    = 0x%lx\n", htab_hash_mask);
+ static unsigned long slice_find_area_bottomup(struct mm_struct *mm,
+-					      unsigned long len,
++					      unsigned long addr, unsigned long len,
+ 					      const struct slice_mask *available,
+ 					      int psize, unsigned long high_limit)
+ {
+ 	int pshift = max_t(int, mmu_psize_defs[psize].shift, PAGE_SHIFT);
+-	unsigned long addr, found, next_end;
++	unsigned long found, next_end;
+ 	struct vm_unmapped_area_info info;
+ 
+ 	info.flags = 0;
+ 	info.length = len;
+ 	info.align_mask = PAGE_MASK & ((1ul << pshift) - 1);
+ 	info.align_offset = 0;
+-
+-	addr = TASK_UNMAPPED_BASE;
+ 	/*
+ 	 * Check till the allow max value for this mmap request
+ 	 */
+@@ -322,12 +320,12 @@ static unsigned long slice_find_area_bottomup(struct mm_struct *mm,
  }
-+
-+unsigned long arch_randomize_brk(struct mm_struct *mm)
-+{
-+	/*
-+	 * If we are using 1TB segments and we are allowed to randomise
-+	 * the heap, we can put it above 1TB so it is backed by a 1TB
-+	 * segment. Otherwise the heap will be in the bottom 1TB
-+	 * which always uses 256MB segments and this may result in a
-+	 * performance penalty.
-+	 */
-+	if (is_32bit_task())
-+		return randomize_page(mm->brk, SZ_32M);
-+	else if (!radix_enabled() && mmu_highuser_ssize == MMU_SEGSIZE_1T)
-+		return randomize_page(max_t(unsigned long, mm->brk, SZ_1T), SZ_1G);
-+	else
-+		return randomize_page(mm->brk, SZ_1G);
-+}
+ 
+ static unsigned long slice_find_area_topdown(struct mm_struct *mm,
+-					     unsigned long len,
++					     unsigned long addr, unsigned long len,
+ 					     const struct slice_mask *available,
+ 					     int psize, unsigned long high_limit)
+ {
+ 	int pshift = max_t(int, mmu_psize_defs[psize].shift, PAGE_SHIFT);
+-	unsigned long addr, found, prev;
++	unsigned long found, prev;
+ 	struct vm_unmapped_area_info info;
+ 	unsigned long min_addr = max(PAGE_SIZE, mmap_min_addr);
+ 
+@@ -335,8 +333,6 @@ static unsigned long slice_find_area_topdown(struct mm_struct *mm,
+ 	info.length = len;
+ 	info.align_mask = PAGE_MASK & ((1ul << pshift) - 1);
+ 	info.align_offset = 0;
+-
+-	addr = mm->mmap_base;
+ 	/*
+ 	 * If we are trying to allocate above DEFAULT_MAP_WINDOW
+ 	 * Add the different to the mmap_base.
+@@ -377,7 +373,7 @@ static unsigned long slice_find_area_topdown(struct mm_struct *mm,
+ 	 * can happen with large stack limits and large mmap()
+ 	 * allocations.
+ 	 */
+-	return slice_find_area_bottomup(mm, len, available, psize, high_limit);
++	return slice_find_area_bottomup(mm, TASK_UNMAPPED_BASE, len, available, psize, high_limit);
+ }
+ 
+ 
+@@ -386,9 +382,9 @@ static unsigned long slice_find_area(struct mm_struct *mm, unsigned long len,
+ 				     int topdown, unsigned long high_limit)
+ {
+ 	if (topdown)
+-		return slice_find_area_topdown(mm, len, mask, psize, high_limit);
++		return slice_find_area_topdown(mm, mm->mmap_base, len, mask, psize, high_limit);
+ 	else
+-		return slice_find_area_bottomup(mm, len, mask, psize, high_limit);
++		return slice_find_area_bottomup(mm, mm->mmap_base, len, mask, psize, high_limit);
+ }
+ 
+ static inline void slice_copy_mask(struct slice_mask *dst,
+diff --git a/arch/powerpc/mm/mmap.c b/arch/powerpc/mm/mmap.c
+index 5972d619d274..d9eae456558a 100644
+--- a/arch/powerpc/mm/mmap.c
++++ b/arch/powerpc/mm/mmap.c
+@@ -96,7 +96,7 @@ void arch_pick_mmap_layout(struct mm_struct *mm, struct rlimit *rlim_stack)
+ 	 * bit is set, or if the expected stack growth is unlimited:
+ 	 */
+ 	if (mmap_is_legacy(rlim_stack)) {
+-		mm->mmap_base = TASK_UNMAPPED_BASE;
++		mm->mmap_base = TASK_UNMAPPED_BASE + random_factor;
+ 		mm->get_unmapped_area = arch_get_unmapped_area;
+ 	} else {
+ 		mm->mmap_base = mmap_base(random_factor, rlim_stack);
 -- 
 2.33.1
