@@ -2,88 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A716AC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 11:46:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C031EC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 11:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239121AbiAULq0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 06:46:26 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:45436 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232797AbiAULqX (ORCPT
+        id S1380223AbiAULsQ (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 06:48:16 -0500
+Received: from out30-44.freemail.mail.aliyun.com ([115.124.30.44]:44820 "EHLO
+        out30-44.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232797AbiAULsJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 06:46:23 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id E4FBD1F45D2F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1642765581;
-        bh=BaeBPWQQLy8TR0zWndGX80fxT+ee71mjcJucVO2+uYQ=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=fQxyUyYCryV+CGfTGU3W68Ul5GIQKr6bHvhHFOeFLcsg9vNn/6pOzSE2uRN0P47eV
-         YgnXTN94rEfrWlUzpR9WrHA9afTXl7VvbTqF+xWtVA7bl3W9Zd9tVuWnI7v6S0FNJV
-         waDZzay12MA1d6KoD6CKeZbcHl3A4n1V30Z187YQ0seGtLaBRaTFSo34JlXptlMXgR
-         K4ki/3NDpwcta9IL/MBY9nt35zJPb+Ez+8ZbF7wbZopU2AXvO0HT9dzGXqzeBpGCcq
-         CstVgUC0Zxgj2UgOhfnzLByHzude5vxdNzYPbc96r8WxtuZjcLidunmeUnddLMjSDr
-         gBdtgO+gsmQzQ==
-Subject: Re: [PATCH] arm64: dts: mt8183: jacuzzi: Fix bus properties in anx's
- DSI endpoint
-To:     =?UTF-8?B?TsOtY29sYXMgRi4gUi4gQS4gUHJhZG8=?= 
-        <nfraprado@collabora.com>, Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Robert Foss <robert.foss@linaro.org>,
-        Xin Ji <xji@analogixsemi.com>
-Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com
-References: <20220120224204.773117-1-nfraprado@collabora.com>
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Message-ID: <29069a98-a839-4fb6-5b83-7877402aaf30@collabora.com>
-Date:   Fri, 21 Jan 2022 12:46:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        Fri, 21 Jan 2022 06:48:09 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R671e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04407;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=11;SR=0;TI=SMTPD_---0V2RfKTK_1642765682;
+Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0V2RfKTK_1642765682)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Fri, 21 Jan 2022 19:48:07 +0800
+From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+To:     evan.quan@amd.com
+Cc:     alexander.deucher@amd.com, christian.koenig@amd.com,
+        Xinhui.Pan@amd.com, airlied@linux.ie, daniel@ffwll.ch,
+        amd-gfx@lists.freedesktop.org, dri-devel@lists.freedesktop.org,
+        linux-kernel@vger.kernel.org,
+        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
+        Abaci Robot <abaci@linux.alibaba.com>
+Subject: [PATCH] drm/amd/pm: remove useless if
+Date:   Fri, 21 Jan 2022 19:48:00 +0800
+Message-Id: <20220121114800.95459-1-jiapeng.chong@linux.alibaba.com>
+X-Mailer: git-send-email 2.20.1.7.g153144c
 MIME-Version: 1.0
-In-Reply-To: <20220120224204.773117-1-nfraprado@collabora.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Il 20/01/22 23:42, Nícolas F. R. A. Prado ha scritto:
-> mt8183-kukui-jacuzzi has an anx7625 bridge connected to the output of
-> its DSI host. However, after fd0310b6fe7d ("drm/bridge: anx7625: add
-> MIPI DPI input feature"), a bus-type property started being required in
-> the endpoint node by the driver to indicate whether it is DSI or DPI.
-> 
-> Add the missing bus-type property and set it to 5
-> (V4L2_FWNODE_BUS_TYPE_PARALLEL) so that the driver has its input
-> configured to DSI and the display pipeline can probe correctly.
-> 
-> While at it, also set the data-lanes property that was also introduced
-> in that same commit, so that we don't rely on the default value.
-> 
-> Fixes: fd0310b6fe7d ("drm/bridge: anx7625: add MIPI DPI input feature")
-> Signed-off-by: Nícolas F. R. A. Prado <nfraprado@collabora.com>
+Clean the following coccicheck warning:
 
-Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
+./drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c:7035:2-4: WARNING: possible
+condition with no effect (if == else).
 
-> ---
->   arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
-> index 8f7bf33f607d..e8f133dc96b9 100644
-> --- a/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
-> +++ b/arch/arm64/boot/dts/mediatek/mt8183-kukui-jacuzzi.dtsi
-> @@ -171,6 +171,8 @@ port@0 {
->   
->   			anx7625_in: endpoint {
->   				remote-endpoint = <&dsi_out>;
-> +				bus-type = <5>;
-> +				data-lanes = <0 1 2 3>;
->   			};
->   		};
->   
-> 
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+---
+ drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c b/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
+index 23ff0d812e4b..7427c50409d4 100644
+--- a/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
++++ b/drivers/gpu/drm/amd/pm/legacy-dpm/si_dpm.c
+@@ -7032,10 +7032,7 @@ static int si_power_control_set_level(struct amdgpu_device *adev)
+ 	ret = si_resume_smc(adev);
+ 	if (ret)
+ 		return ret;
+-	ret = si_set_sw_state(adev);
+-	if (ret)
+-		return ret;
+-	return 0;
++	return si_set_sw_state(adev);
+ }
+ 
+ static void si_set_vce_clock(struct amdgpu_device *adev,
+-- 
+2.20.1.7.g153144c
+
