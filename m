@@ -2,116 +2,146 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B3CEC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 12:04:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC1EC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 12:06:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380311AbiAUMEd (ORCPT
+        id S1350381AbiAUMGW (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 07:04:33 -0500
-Received: from mx0a-001ae601.pphosted.com ([67.231.149.25]:10376 "EHLO
-        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1350379AbiAUME2 (ORCPT
+        Fri, 21 Jan 2022 07:06:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39942 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345542AbiAUMGP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 07:04:28 -0500
-Received: from pps.filterd (m0077473.ppops.net [127.0.0.1])
-        by mx0a-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20L6W2RK017662;
-        Fri, 21 Jan 2022 06:04:17 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding : content-type; s=PODMain02222019;
- bh=/5EEVxedqyc4lS3w9/oKz7sNBu3Ep8/TONL9EDmsebU=;
- b=jFuPLgzH0D8YDfL+NZAykCuPJ4QZu1grLVvZS5PWYR3jwhVP+TvFacR/6Cf/rjrbLigW
- WJcOKWHSv3QogtorJHc6z0NvRc7U8mIOWHfIzSsopeJ6pgcG7pNpnHA1cvmRZUOERuWi
- IDamZR/MsA0/rCtXvv08lYOQtWFMo2pWRdFPLUGHa1j4Pnxnzx9HG6q/dFkbuIbGjhfH
- EuZrlpf+Yz/FgNtyZZcxBVYZw3fj/HvnkV1/UD9KGWhdii1dCpWnj3pi3jxA5VCz8mfj
- XcU89/8JjwQJsL3NRDIskek6J0I2fzbgXU8N1BgwbUvJY2ENlmA5SzJvkODsKhBFJddv EQ== 
-Received: from ediex02.ad.cirrus.com ([84.19.233.68])
-        by mx0a-001ae601.pphosted.com (PPS) with ESMTPS id 3dqhyq0nwc-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Fri, 21 Jan 2022 06:04:17 -0600
-Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX02.ad.cirrus.com
- (198.61.84.81) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 21 Jan
- 2022 12:04:15 +0000
-Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
- (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
- Transport; Fri, 21 Jan 2022 12:04:15 +0000
-Received: from AUSNPC0LSNW1-debian.cirrus.com (AUSNPC0LSNW1.ad.cirrus.com [198.61.65.33])
-        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 07D7346D;
-        Fri, 21 Jan 2022 12:04:14 +0000 (UTC)
-From:   Richard Fitzgerald <rf@opensource.cirrus.com>
-To:     <broonie@kernel.org>
-CC:     <alsa-devel@alsa-project.org>, <linux-kernel@vger.kernel.org>,
-        <patches@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>
-Subject: [PATCH v2 1/3] ASoC: cs42l42: Report full jack status when plug is detected
-Date:   Fri, 21 Jan 2022 12:04:10 +0000
-Message-ID: <20220121120412.672284-2-rf@opensource.cirrus.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220121120412.672284-1-rf@opensource.cirrus.com>
-References: <20220121120412.672284-1-rf@opensource.cirrus.com>
+        Fri, 21 Jan 2022 07:06:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE6D9C061574
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 04:06:14 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 66A7F61A9D
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 12:06:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3442BC340E1;
+        Fri, 21 Jan 2022 12:06:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642766773;
+        bh=OiNcQsiL4RkD84Zk69xbi1yGoWq5fR6O7P/s3BBkk2w=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=gDv00yPNi15fkbO0geVOZLZd+qg7ri8sfXXxjOA83Y+pHZ0bJ1ZxE4REhzaZtfms0
+         LJO2XO4h0CMBhNsQOvAhxseLO3by8F8HV8WlFtJEwQTRGuw+IFgqiiFQXMfDoEknkU
+         JuiqbaWfDuhiTJ4z+Z0+XMXwxM0/GPzAnTVdAST78PhuwiU5yMUkSeby83xEzpQJH6
+         7yR68rTueitFaSNZj8b/4GfvgVK3VsoLSMJzj6k0YB/MUCItryjsyEsBycgLcxfpeB
+         fdfspah6Ws3M1f3SZIzIvmoub+36BVW8z+WhjiFrDPFfXAGym9lFSHxwmRaCQSXw75
+         H4NbXvHfOV0Ow==
+Date:   Fri, 21 Jan 2022 13:06:10 +0100
+From:   Frederic Weisbecker <frederic@kernel.org>
+To:     Marcelo Tosatti <mtosatti@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Nitesh Lal <nilal@redhat.com>,
+        Nicolas Saenz Julienne <nsaenzju@redhat.com>,
+        Christoph Lameter <cl@linux.com>,
+        Juri Lelli <juri.lelli@redhat.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Alex Belits <abelits@belits.com>, Peter Xu <peterx@redhat.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Daniel Bristot de Oliveira <bristot@redhat.com>
+Subject: Re: [patch v8 03/10] task isolation: sync vmstats on return to
+ userspace
+Message-ID: <20220121120610.GA231488@lothringen>
+References: <20211208161000.714824954@fuller.cnet>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Proofpoint-GUID: JnDjrwlJwd9kkfhT0hsB5Ro-Q5fHUQ19
-X-Proofpoint-ORIG-GUID: JnDjrwlJwd9kkfhT0hsB5Ro-Q5fHUQ19
-X-Proofpoint-Spam-Reason: safe
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211208161000.714824954@fuller.cnet>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-When a plug event is detect report the full state of all status
-bits, don't assume that there will have been a previous unplug
-event to clear all the bits. Report the state of both HEADPHONE
-and MICROPHONE bits according to detected type, and clear all the
-button status bits. The current button status is already checked
-and reported at the end of the function.
+On Wed, Dec 08, 2021 at 01:09:09PM -0300, Marcelo Tosatti wrote:
+> Index: linux-2.6/include/linux/task_isolation.h
+> ===================================================================
+> --- linux-2.6.orig/include/linux/task_isolation.h
+> +++ linux-2.6/include/linux/task_isolation.h
+> @@ -40,8 +40,19 @@ int prctl_task_isolation_activate_set(un
+>  
+>  int __copy_task_isolation(struct task_struct *tsk);
+>  
+> +void isolation_exit_to_user_mode(void);
+> +
+> +static inline int task_isol_has_work(void)
+> +{
+> +	return 0;
+> +}
+> +
+>  #else
+>  
+> +static void isolation_exit_to_user_mode(void)
+> +{
+> +}
+> +
+>  static inline void tsk_isol_free(struct task_struct *tsk)
+>  {
+>  }
+> @@ -86,6 +97,11 @@ static inline int prctl_task_isolation_a
+>  	return -EOPNOTSUPP;
+>  }
+>  
+> +static inline int task_isol_has_work(void)
+> +{
+> +	return 0;
+> +}
+> +
 
-During a system suspend the jack could be unplugged and plugged,
-possibly changing the jack type. On resume the interrupt status will
-indicate a plug event - there will not be an unplug event to clear
-the bits.
+It would be nice to have a coherent greppable task_isol_*() namespace instead
+of random scattered tsk_*(), isolation_*() stuff...
 
-Signed-off-by: Richard Fitzgerald <rf@opensource.cirrus.com>
----
- sound/soc/codecs/cs42l42.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+task_isol_exit_to_user_mode()
+task_isol_free()
+task_isol_copy_process()
+task_isol_had_work()
+...
 
-diff --git a/sound/soc/codecs/cs42l42.c b/sound/soc/codecs/cs42l42.c
-index 43d98bdb5b5b..2c294868008e 100644
---- a/sound/soc/codecs/cs42l42.c
-+++ b/sound/soc/codecs/cs42l42.c
-@@ -1637,7 +1637,11 @@ static irqreturn_t cs42l42_irq_thread(int irq, void *data)
- 
- 	mutex_lock(&cs42l42->jack_detect_mutex);
- 
--	/* Check auto-detect status */
-+	/*
-+	 * Check auto-detect status. Don't assume a previous unplug event has
-+	 * cleared the flags. If the jack is unplugged and plugged during
-+	 * system suspend there won't have been an unplug event.
-+	 */
- 	if ((~masks[5]) & irq_params_table[5].mask) {
- 		if (stickies[5] & CS42L42_HSDET_AUTO_DONE_MASK) {
- 			cs42l42_process_hs_type_detect(cs42l42);
-@@ -1645,11 +1649,15 @@ static irqreturn_t cs42l42_irq_thread(int irq, void *data)
- 			case CS42L42_PLUG_CTIA:
- 			case CS42L42_PLUG_OMTP:
- 				snd_soc_jack_report(cs42l42->jack, SND_JACK_HEADSET,
--						    SND_JACK_HEADSET);
-+						    SND_JACK_HEADSET |
-+						    SND_JACK_BTN_0 | SND_JACK_BTN_1 |
-+						    SND_JACK_BTN_2 | SND_JACK_BTN_3);
- 				break;
- 			case CS42L42_PLUG_HEADPHONE:
- 				snd_soc_jack_report(cs42l42->jack, SND_JACK_HEADPHONE,
--						    SND_JACK_HEADPHONE);
-+						    SND_JACK_HEADSET |
-+						    SND_JACK_BTN_0 | SND_JACK_BTN_1 |
-+						    SND_JACK_BTN_2 | SND_JACK_BTN_3);
- 				break;
- 			default:
- 				break;
--- 
-2.11.0
+> @@ -149,13 +150,14 @@ static void handle_signal_work(struct pt
+>  }
+>  
+>  static unsigned long exit_to_user_mode_loop(struct pt_regs *regs,
+> -					    unsigned long ti_work)
+> +					    unsigned long ti_work,
+> +					    unsigned long tsk_isol_work)
+>  {
+>  	/*
+>  	 * Before returning to user space ensure that all pending work
+>  	 * items have been completed.
+>  	 */
+> -	while (ti_work & EXIT_TO_USER_MODE_WORK) {
+> +	while ((ti_work & EXIT_TO_USER_MODE_WORK) || tsk_isol_work) {
 
+So there is a dependency on CONFIG_GENERIC_ENTRY. Then you need to split that
+from CONFIG_CPU_ISOLATION:
+
+config TASK_ISOLATION
+       bool "Task isolation prctl()"
+       depends on GENERIC_ENTRY
+       help "...."
+
+>  
+>  		local_irq_enable_exit_to_user(ti_work);
+>  
+> @@ -177,6 +179,9 @@ static unsigned long exit_to_user_mode_l
+>  		/* Architecture specific TIF work */
+>  		arch_exit_to_user_mode_work(regs, ti_work);
+>  
+> +		if (tsk_isol_work)
+> +			isolation_exit_to_user_mode();
+> +
+>  		/*
+>  		 * Disable interrupts and reevaluate the work flags as they
+>  		 * might have changed while interrupts and preemption was
+> @@ -188,6 +193,7 @@ static unsigned long exit_to_user_mode_l
+>  		tick_nohz_user_enter_prepare();
+>  
+>  		ti_work = READ_ONCE(current_thread_info()->flags);
+> +		tsk_isol_work = task_isol_has_work();
+
+Shouldn't it be a TIF_FLAG part of EXIT_TO_USER_MODE_WORK instead?
+
+Thanks.
