@@ -2,202 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B581C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 06:19:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F129C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 06:19:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378645AbiAUGTU (ORCPT
+        id S1378657AbiAUGT0 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 01:19:20 -0500
-Received: from mail-dm6nam10on2137.outbound.protection.outlook.com ([40.107.93.137]:15136
-        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234126AbiAUGTT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 01:19:19 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=M1sQs+dMOq2SE8BEhll75wcMYBIX1lJJKExHf855+IW3L/B+t3IImXOC+0/YqN6xvh1GbfdeajFQ1//S/5+Wil9YBpJVNuB0HGP7qfSSW863ErF4sDElD75WRzZJ4SqyvIXXH20inQ47cJZO3ECLWo6zgWB+5D6cMqZczi+KkaUmSKg281CRF8CMVf1t/3eGhJ/HFugwXr7mjrFsBivlaU4/IaX0lX8klBM++9VzApP8V/VZ1Sa1cWlQIFpS+iozhcSzOpOirICtiiJZemwYv5N/ZfbBRn281a8KQq/OwTCnaQwgoDhNeQbhT7G7WG8lhvQBJqNlroALmu2Xp/KC/A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=o9MW4bqoImvx+fxKvPf3M10JcKtmBGlmTCpQUF2ucyg=;
- b=l2DrNISiarmMFSaXYA6pkcNahvN94ygf/jF9ZUXxp09ARWN/NsKxbd60rvsQNEsNugl8FE7YLXSBpWsuVcgyRXrGpgbaIo72vRBqlpvGWZHzuvXG5urEsGhY1GKRTy48VcLo6NwhOdrhRsZTbOd+sgTf3tWMGZvh40Gh3FxD5PW9K+IOpV3DT1ug0fzVcwGBmqBfEs1IV34D1PX1upjWp7LPRQCzNUdWg4lkp/t0kHpmic4xWkFihoIwM4VfGseXwJnFXKnghDI1eAlstgvQeyX/XwLeMcCwm9a97/gARI4i9q3gwiyfTws1KoDCbYfrARUcwcJ/pwpYgB7QoCGcLg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=Analogixsemi.onmicrosoft.com; s=selector2-Analogixsemi-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=o9MW4bqoImvx+fxKvPf3M10JcKtmBGlmTCpQUF2ucyg=;
- b=d6GcLaMlZQrRQIDN8hstBl/MkPk9rbECLT+wkfXLTldBgnq8hgfBCxkaLF/OkCelWvBRL0OU7wxCYmoo11t51ewF1oXT4cP+JVa4fJ55+A9z4Fs0hCHz3qsfnsBUkfBwr+xE9Q05IyFxRjtCmJKILVmJsdiQ6bJ/Y926zJWLsyc=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=analogixsemi.com;
-Received: from BY5PR04MB6739.namprd04.prod.outlook.com (2603:10b6:a03:229::8)
- by BL0PR04MB6579.namprd04.prod.outlook.com (2603:10b6:208:17c::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7; Fri, 21 Jan
- 2022 06:19:18 +0000
-Received: from BY5PR04MB6739.namprd04.prod.outlook.com
- ([fe80::8c2c:1b0f:8516:a941]) by BY5PR04MB6739.namprd04.prod.outlook.com
- ([fe80::8c2c:1b0f:8516:a941%7]) with mapi id 15.20.4909.011; Fri, 21 Jan 2022
- 06:19:18 +0000
-From:   Xin Ji <xji@analogixsemi.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>, Xin Ji <xji@analogixsemi.com>
-Cc:     bliang@analogixsemi.com, qwen@analogixsemi.com,
-        jli@analogixsemi.com, linux-usb@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/2] dt-bindings: usb: Add analogix anx7411 PD binding
-Date:   Fri, 21 Jan 2022 14:18:55 +0800
-Message-Id: <20220121061856.2038958-1-xji@analogixsemi.com>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: SG2PR02CA0018.apcprd02.prod.outlook.com
- (2603:1096:3:17::30) To BY5PR04MB6739.namprd04.prod.outlook.com
- (2603:10b6:a03:229::8)
+        Fri, 21 Jan 2022 01:19:26 -0500
+Received: from szxga03-in.huawei.com ([45.249.212.189]:31173 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378646AbiAUGTY (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 21 Jan 2022 01:19:24 -0500
+Received: from kwepemi500024.china.huawei.com (unknown [172.30.72.55])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Jg8K85KYwz8wKy;
+        Fri, 21 Jan 2022 14:16:28 +0800 (CST)
+Received: from kwepeml100004.china.huawei.com (7.221.188.19) by
+ kwepemi500024.china.huawei.com (7.221.188.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 21 Jan 2022 14:19:20 +0800
+Received: from dggpeml500011.china.huawei.com (7.185.36.84) by
+ kwepeml100004.china.huawei.com (7.221.188.19) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 21 Jan 2022 14:19:20 +0800
+Received: from dggpeml500011.china.huawei.com ([7.185.36.84]) by
+ dggpeml500011.china.huawei.com ([7.185.36.84]) with mapi id 15.01.2308.020;
+ Fri, 21 Jan 2022 14:19:19 +0800
+From:   "zhudi (E)" <zhudi2@huawei.com>
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+CC:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+        "Luzhihao (luzhihao, Euler)" <luzhihao@huawei.com>,
+        "Chenxiang (EulerOS)" <rose.chen@huawei.com>
+Subject: Re: [PATCH bpf-next v6 2/2] selftests: bpf: test BPF_PROG_QUERY for
+ progs attached to sockmap
+Thread-Topic: [PATCH bpf-next v6 2/2] selftests: bpf: test BPF_PROG_QUERY for
+ progs attached to sockmap
+Thread-Index: AdgOjsCnZ7gsBn94CUmhFdecz7qCWw==
+Date:   Fri, 21 Jan 2022 06:19:19 +0000
+Message-ID: <6853c9b97c334daeb7c2c1b35661f5a2@huawei.com>
+Accept-Language: zh-CN, en-US
+Content-Language: zh-CN
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.136.114.155]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8d865cb0-22c1-4b83-f986-08d9dca5f491
-X-MS-TrafficTypeDiagnostic: BL0PR04MB6579:EE_
-X-Microsoft-Antispam-PRVS: <BL0PR04MB6579DC8D86919157450BB07BC75B9@BL0PR04MB6579.namprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:296;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: M/YyMXmwir0CZ7xYZ66jwYkK6I147xJNyno+YSWjtz4w1trXnncGsCaN0AYCm3vJ4sNe5v1RI81iDVsUJlPHCfifGAjX2bkl2ilzFDMGYpgoubF49U/eLNFIkd7OH9xgSZV2zTWa9L+On9w8FpQIDXHQxj1hJulVccoAK/r0cEJOYEXSbtKejfOMxTx84UaqpMr8bH1VsNX2eBWTUL1VqYEzuC0DDinUJXFACd28j8NSDqNrrgjvH5f7T1yQCescaJyAWQ2z7Vxd7VQPW/lLY21ehiaHIsATAMfQxLqTMnj83r5FtjQGU/+DZ4JoVPh5DZlA15huZdg5mbd523voT8ISv924VVOFf1OuQxKVfC+Weob3oi0vhVGiX91xWpJimQw6PUjGaXM3TxvYcCiUBSGJGu4JwzsdqDcAwd/j3tiWZU6IkQUKaLiUQ1m5hWeFkQPQFfzgaSe1X10bSo8XNEk8JpMUwM81Ngz5Sw/8lg68gOaQL0bvX54ylRAJqlF/reIfDR+U3Z2X+ijLKb9DPcCCeAyVW3yJEgSAa8+d5rMertiZu6thbBJOJU1nYOM8yUKcQ4AEXPtVRj/ppV1PbqpdoKLr6oQjcaF8K26JMH4AyRg0yOU1o9eXLHgYfTxN/QWhXuBv+NuVlOpzsUroFCAZh2VzKzYdxq2fBLMVK3/O0wBGZRm7VGkn6aWng/URFYyDFJge1i8qcklGZZGrt9yku/7khC1FMeTgQO1cjJt6SOKV8gLWwaaJy6K0RRuxawhwO7mIhodVMhocse1zoyOQskg9+vH0682SsIg5HZY=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR04MB6739.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(2616005)(38350700002)(38100700002)(66556008)(66476007)(36756003)(508600001)(86362001)(66946007)(52116002)(1076003)(55236004)(6506007)(6512007)(186003)(26005)(110136005)(8936002)(316002)(6486002)(5660300002)(7049001)(8676002)(2906002)(6666004)(4326008);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?2ZSvBtN05OVuzFCp7vPvzz72/rOaVKEuk5sjFN3QCqxmGKXDiMOaA/jgyW+k?=
- =?us-ascii?Q?/hVVdfzmbVlfnikaPRvRUFGONKWMGMgkbfq26MhiwrxRcFs6IdKgf34++zAr?=
- =?us-ascii?Q?hZT/Vo0DAmd1l1srUyWbZ1ZDz6U+U17FK+aw8aj8neBDDNJHSU/UyLonICQq?=
- =?us-ascii?Q?QrlXnw109czjfD7rAKfj9fzePSxlRLQREH1gj9EvcF1SCJPx3htnuQtB6Q/W?=
- =?us-ascii?Q?z1mX49nLv1zPGo6b3ieHZP4/Lcl2SMEvYrZNLC0ig/MsQVlrdE6ax9Zfhlgt?=
- =?us-ascii?Q?0RvDv1l+Yqhw6vH1XQr2Ho2tpd36Hgb3eYQzd8BfWWB+3O8dshW3fLd633Qj?=
- =?us-ascii?Q?HZQ2nU+jm24GhagfrhgGis7k2Azd4mFa2hwXZ5R/ngfsb5NaaXoSOauMFxDe?=
- =?us-ascii?Q?GsXi2YuW7fCHtUswYpHsFsWOLpMLAXBrivvxFsvJPNNFUyVUz8lCboe0hvJj?=
- =?us-ascii?Q?ntvKrtzBJYcJvosI0n9SIpBLxyzDtaHa2z/0OrcVm98FwewsFSY+HBhA3Uk+?=
- =?us-ascii?Q?rcUkosPddZW/XcsOzhtopEXhDsmJbgG7H9jhqWCFQ4+91NpMWSXkVrikXmVl?=
- =?us-ascii?Q?KQlWQHSU0fK3CdvdoV3o8odHevXecaCOtFYfbZzoiABxYOQuq4jwEYKsX9g2?=
- =?us-ascii?Q?oAc0Yf89UOIFFGWdaU82qB2wrUoC42XSC8YOemHAbZzFrz2S8AVqIhtMuqwW?=
- =?us-ascii?Q?lsab0nbDRnJJn5c1hBCQtE58NMCYI1eOYyqJ2MpofXUzrejPSWt2jW1j+req?=
- =?us-ascii?Q?hkfyjra4Mktbo32BL9+XlTXfFmiha88iRMCAvX+DhFjulClIc52hXFymmWSW?=
- =?us-ascii?Q?YQLD3DahD1j7TOsK1fLoX9kJTsIjQTKbIpyUVfO48Cn0ZNT3Y+dL/5luTVYp?=
- =?us-ascii?Q?L98k7KNLSP+VDRMlgpZz214WYPGLwrveNpxa/nPbyv9qRJaRSBV/vOJwfLI6?=
- =?us-ascii?Q?5HU0vRU7Etu0pkrDW5pxcAj9jH+jVz9uQ36FJOEWmPmsK2qLC4mAp1ACN9Qt?=
- =?us-ascii?Q?nYm3tMYjNj1eKnNQGGaBxhgeOwbkhC9VfUDJfAJ9tBLAAbYPD/xjNOpaRD8l?=
- =?us-ascii?Q?Q6sev2980G+vi7yeDyJ3Qvw5xECSN4YT/9Ik9HSu92Qkh3UCtiA8NeDQ25ZJ?=
- =?us-ascii?Q?6BO1i0Uz8C9h28QqW3VgZLy/J4gwJzqe2oN2d8zYlu1uJtfqZyA0mGSNEl9J?=
- =?us-ascii?Q?uVKi64FmCn4HbYJcyn02uECA1zIdJC9rlVqnA8yYutTv1i+m+9HL1RNrGgH5?=
- =?us-ascii?Q?2NB885JQaNrp49UuklnwIyy7aAnnDwVxdAXzwTCzungGO01vEshkoeFjw+UK?=
- =?us-ascii?Q?hp+VyJhqCwH21YbJ7ymMjIKyEPcb3aB1BVWaayNjVQST7XkNvwHEpcMsvjCd?=
- =?us-ascii?Q?ggW1RG9du8UZa1sLvEUKEKanquOj9BSua+X4voFzcROUiRyiTUCBrT+6oqT9?=
- =?us-ascii?Q?UsV4aA8Eb/9O2Ic6Ns7xUqoMBVaTCmues08ruq1a40EmsKN6SRBGL/M8pVoU?=
- =?us-ascii?Q?gFDHU8coCNZwFXGyjzszGxpAipLFnEJY2jlbQ8HKZhWQMq52elGt4JNM5GvH?=
- =?us-ascii?Q?1BlaczHAm33JYY16gWI4Is8lkqmKX63KZvkiEjcOwIjEE/Xt0/yH7XJn/n/u?=
- =?us-ascii?Q?3Rt+OCQw3WHOG311FzdG7Vs=3D?=
-X-OriginatorOrg: analogixsemi.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8d865cb0-22c1-4b83-f986-08d9dca5f491
-X-MS-Exchange-CrossTenant-AuthSource: BY5PR04MB6739.namprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jan 2022 06:19:18.2276
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: b099b0b4-f26c-4cf5-9a0f-d5be9acab205
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: UaYqL2b12tO9vODQKUEirdI9ER8vQeo4zEw9mtR7pQrh+/e0uyS7c2AvXdHqCZuSY0NebhPpjyYnemv5FB0bGw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR04MB6579
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add analogix PD chip anx7411 device binding
-
-Signed-off-by: Xin Ji <xji@analogixsemi.com>
----
- .../bindings/usb/analogix,anx7411.yaml        | 76 +++++++++++++++++++
- 1 file changed, 76 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
-
-diff --git a/Documentation/devicetree/bindings/usb/analogix,anx7411.yaml b/Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
-new file mode 100644
-index 000000000000..c5c6d5a9dc17
---- /dev/null
-+++ b/Documentation/devicetree/bindings/usb/analogix,anx7411.yaml
-@@ -0,0 +1,76 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/usb/analogix,anx7411.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: Analogix ANX7411 Type-C controller bindings
-+
-+maintainers:
-+  - Xin Ji <xji@analogixsemi.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - analogix,anx7411
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  connector:
-+    type: object
-+
-+    allOf:
-+      - $ref: ../connector/usb-connector.yaml
-+
-+    properties:
-+      compatible:
-+        const: usb-c-connector
-+
-+      power-role: true
-+
-+      data-role: true
-+
-+      try-power-role: true
-+
-+    required:
-+      - compatible
-+
-+required:
-+  - compatible
-+  - reg
-+  - connector
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c1 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        typec: anx7411@2C {
-+            compatible = "analogix,anx7411";
-+            reg = <0x2C>;
-+            interrupts = <8 IRQ_TYPE_EDGE_FALLING>;
-+            interrupt-parent = <&gpio0>;
-+
-+            typec_con: connector {
-+                compatible = "usb-c-connector";
-+                power-role = "dual";
-+                data-role = "dual";
-+                try-power-role = "source";
-+
-+                port {
-+                    typec_con_ep: endpoint {
-+                        remote-endpoint = <&usbotg_hs_ep>;
-+                    };
-+                };
-+            };
-+        };
-+    };
-+...
--- 
-2.25.1
-
+PiA+IEFkZCB0ZXN0IGZvciBxdWVyeWluZyBwcm9ncyBhdHRhY2hlZCB0byBzb2NrbWFwLiB3ZSB1
+c2UgYW4gZXhpc3RpbmcNCj4gPiBsaWJicGYgcXVlcnkgaW50ZXJmYWNlIHRvIHF1ZXJ5IHByb2cg
+Y250IGJlZm9yZSBhbmQgYWZ0ZXIgcHJvZ3MNCj4gPiBhdHRhY2hpbmcgdG8gc29ja21hcCBhbmQg
+Y2hlY2sgd2hldGhlciB0aGUgcXVlcmllZCBwcm9nIGlkIGlzIHJpZ2h0Lg0KPiA+DQo+ID4gU2ln
+bmVkLW9mZi1ieTogRGkgWmh1IDx6aHVkaTJAaHVhd2VpLmNvbT4NCj4gPiBBY2tlZC1ieTogWW9u
+Z2hvbmcgU29uZyA8eWhzQGZiLmNvbT4NCj4gPiAtLS0NCj4gPiAgLi4uL3NlbGZ0ZXN0cy9icGYv
+cHJvZ190ZXN0cy9zb2NrbWFwX2Jhc2ljLmMgIHwgNjYgKysrKysrKysrKysrKysrKysrKw0KPiA+
+ICAuLi4vYnBmL3Byb2dzL3Rlc3Rfc29ja21hcF9wcm9nc19xdWVyeS5jICAgICAgfCAyNCArKysr
+KysrDQo+ID4gIDIgZmlsZXMgY2hhbmdlZCwgOTAgaW5zZXJ0aW9ucygrKQ0KPiA+ICBjcmVhdGUg
+bW9kZSAxMDA2NDQNCj4gdG9vbHMvdGVzdGluZy9zZWxmdGVzdHMvYnBmL3Byb2dzL3Rlc3Rfc29j
+a21hcF9wcm9nc19xdWVyeS5jDQo+ID4NCj4gPiBkaWZmIC0tZ2l0IGEvdG9vbHMvdGVzdGluZy9z
+ZWxmdGVzdHMvYnBmL3Byb2dfdGVzdHMvc29ja21hcF9iYXNpYy5jDQo+IGIvdG9vbHMvdGVzdGlu
+Zy9zZWxmdGVzdHMvYnBmL3Byb2dfdGVzdHMvc29ja21hcF9iYXNpYy5jDQo+ID4gaW5kZXggODVk
+YjBmNGNkZDk1Li4xYWI1N2NkYzRhZTQgMTAwNjQ0DQo+ID4gLS0tIGEvdG9vbHMvdGVzdGluZy9z
+ZWxmdGVzdHMvYnBmL3Byb2dfdGVzdHMvc29ja21hcF9iYXNpYy5jDQo+ID4gKysrIGIvdG9vbHMv
+dGVzdGluZy9zZWxmdGVzdHMvYnBmL3Byb2dfdGVzdHMvc29ja21hcF9iYXNpYy5jDQo+ID4gQEAg
+LTgsNiArOCw3IEBADQo+ID4gICNpbmNsdWRlICJ0ZXN0X3NvY2ttYXBfdXBkYXRlLnNrZWwuaCIN
+Cj4gPiAgI2luY2x1ZGUgInRlc3Rfc29ja21hcF9pbnZhbGlkX3VwZGF0ZS5za2VsLmgiDQo+ID4g
+ICNpbmNsdWRlICJ0ZXN0X3NvY2ttYXBfc2tiX3ZlcmRpY3RfYXR0YWNoLnNrZWwuaCINCj4gPiAr
+I2luY2x1ZGUgInRlc3Rfc29ja21hcF9wcm9nc19xdWVyeS5za2VsLmgiDQo+ID4gICNpbmNsdWRl
+ICJicGZfaXRlcl9zb2NrbWFwLnNrZWwuaCINCj4gPg0KPiA+ICAjZGVmaW5lIFRDUF9SRVBBSVIg
+ICAgICAgICAgICAgMTkgICAgICAvKiBUQ1Agc29jayBpcyB1bmRlciByZXBhaXINCj4gcmlnaHQg
+bm93ICovDQo+ID4gQEAgLTMxNSw2ICszMTYsNjMgQEAgc3RhdGljIHZvaWQgdGVzdF9zb2NrbWFw
+X3NrYl92ZXJkaWN0X2F0dGFjaChlbnVtDQo+IGJwZl9hdHRhY2hfdHlwZSBmaXJzdCwNCj4gPiAg
+ICAgICAgIHRlc3Rfc29ja21hcF9za2JfdmVyZGljdF9hdHRhY2hfX2Rlc3Ryb3koc2tlbCk7DQo+
+ID4gIH0NCj4gPg0KPiA+ICtzdGF0aWMgX191MzIgcXVlcnlfcHJvZ19pZChpbnQgcHJvZ19mZCkN
+Cj4gPiArew0KPiA+ICsgICAgICAgc3RydWN0IGJwZl9wcm9nX2luZm8gaW5mbyA9IHt9Ow0KPiA+
+ICsgICAgICAgX191MzIgaW5mb19sZW4gPSBzaXplb2YoaW5mbyk7DQo+ID4gKyAgICAgICBpbnQg
+ZXJyOw0KPiA+ICsNCj4gPiArICAgICAgIGVyciA9IGJwZl9vYmpfZ2V0X2luZm9fYnlfZmQocHJv
+Z19mZCwgJmluZm8sICZpbmZvX2xlbik7DQo+ID4gKyAgICAgICBpZiAoIUFTU0VSVF9PSyhlcnIs
+ICJicGZfb2JqX2dldF9pbmZvX2J5X2ZkIikgfHwNCj4gPiArICAgICAgICAgICAhQVNTRVJUX0VR
+KGluZm9fbGVuLCBzaXplb2YoaW5mbyksICJicGZfb2JqX2dldF9pbmZvX2J5X2ZkIikpDQo+ID4g
+KyAgICAgICAgICAgICAgIHJldHVybiAwOw0KPiA+ICsNCj4gPiArICAgICAgIHJldHVybiBpbmZv
+LmlkOw0KPiA+ICt9DQo+ID4gKw0KPiA+ICtzdGF0aWMgdm9pZCB0ZXN0X3NvY2ttYXBfcHJvZ3Nf
+cXVlcnkoZW51bSBicGZfYXR0YWNoX3R5cGUgYXR0YWNoX3R5cGUpDQo+ID4gK3sNCj4gPiArICAg
+ICAgIHN0cnVjdCB0ZXN0X3NvY2ttYXBfcHJvZ3NfcXVlcnkgKnNrZWw7DQo+ID4gKyAgICAgICBp
+bnQgZXJyLCBtYXBfZmQsIHZlcmRpY3RfZmQsIGR1cmF0aW9uID0gMDsNCj4gDQo+IFRoZSAnZHVy
+YXRpb24nIGlzIHVudXNlZC4NCj4gWW91IHNob3VsZCBoYXZlIHNlZW4gYSB3YXJuaW5nIHdoaWxl
+IGNvbXBpbGluZyB0aGUgc2VsZnRlc3RzPw0KPiANCj4gQW55d2F5LiBJJ3ZlIGZpeGVkIGl0IHdo
+aWxlIGFwcGx5aW5nLg0KDQpUaGFuayB5b3UuIEknbGwgYmUgbW9yZSBjYXJlZnVsIG5leHQgdGlt
+ZS4NCg0K
