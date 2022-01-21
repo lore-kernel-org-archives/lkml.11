@@ -2,167 +2,576 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD56BC433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 07:20:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62444C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 07:21:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378929AbiAUHT7 (ORCPT
+        id S1349056AbiAUHV4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 02:19:59 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:51834 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1378917AbiAUHTy (ORCPT
+        Fri, 21 Jan 2022 02:21:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60266 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231673AbiAUHVu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 02:19:54 -0500
-X-UUID: f2547a9a95974ce4936830c77bf59055-20220121
-X-UUID: f2547a9a95974ce4936830c77bf59055-20220121
-Received: from mtkmbs10n1.mediatek.inc [(172.21.101.34)] by mailgw01.mediatek.com
-        (envelope-from <axe.yang@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-GCM-SHA384 256/256)
-        with ESMTP id 1790824171; Fri, 21 Jan 2022 15:19:49 +0800
-Received: from mtkexhb02.mediatek.inc (172.21.101.103) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 21 Jan 2022 15:19:48 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by mtkexhb02.mediatek.inc
- (172.21.101.103) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 21 Jan
- 2022 15:19:47 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 21 Jan 2022 15:19:46 +0800
-From:   Axe Yang <axe.yang@mediatek.com>
-To:     Ulf Hansson <ulf.hansson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Chaotian Jing <chaotian.jing@mediatek.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Adrian Hunter <adrian.hunter@intel.com>
-CC:     Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Satya Tangirala <satyat@google.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Axe Yang <axe.yang@mediatek.com>, Lucas Stach <dev@lynxeye.de>,
-        Eric Biggers <ebiggers@google.com>,
-        Andrew Jeffery <andrew@aj.id.au>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Kiwoong Kim <kwmad.kim@samsung.com>,
-        Yue Hu <huyue2@yulong.com>, Tian Tao <tiantao6@hisilicon.com>,
-        <angelogioacchino.delregno@collabora.com>,
-        <linux-mmc@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>
-Subject: [PATCH v5 2/3] mmc: core: Add support for SDIO async interrupt
-Date:   Fri, 21 Jan 2022 15:19:41 +0800
-Message-ID: <20220121071942.11601-3-axe.yang@mediatek.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220121071942.11601-1-axe.yang@mediatek.com>
-References: <20220121071942.11601-1-axe.yang@mediatek.com>
+        Fri, 21 Jan 2022 02:21:50 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E1EC061574
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 23:21:49 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id q9-20020a7bce89000000b00349e697f2fbso27036432wmj.0
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 23:21:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qambV4D1fzSoCrInjkGhTSgESM0jYX/AWgJ65yt09k8=;
+        b=Hl1nsAC54+XQTR5AA9Jh4DdpagXVYi1AR3aFFnEGqgKtBR3RLbSg4keQ4MFkWvWNov
+         FGsM7pgJb/bXYIOeIhRvE/1zVGHtIxoF2V/6GBHXVR6x+boIIUBfT14Yd3Cli1IX5s6d
+         enB1sWaMcM3tvwulUmjYU+PQB5vKuDnDeRAqriu9ruoi8Do4bu5qxjc599+OEqD26BwV
+         uzu3vOFUIk5/YyjodVInWxH3+DaTMzAZoS2Kk9opgv5JZNJq3i9a2Yk8iezTFTjDmBdO
+         qNSVSrfEI1yhwmxR9qvj09Dfc/IuRqJwg53pjS29WcjXaCanSZ7Q/QXEejcUSvvfpaKv
+         yy2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qambV4D1fzSoCrInjkGhTSgESM0jYX/AWgJ65yt09k8=;
+        b=avouua2+rzyZMHDbPwNgBOstyygWFTa6x/fm4e/+FbYHQwJFRXXwzDeyWBZe3IpQdG
+         8tKu2xKd+7t8qui2OmiK7OLuWr8CTZIRRo0GFmW0fKwAFVq2tNzGybrB92oN5KmirOeN
+         bcWfPKUhNaENg3ysYeBDwQ80OexQDWaMyBhWNvblR4Qe/Z4y8tG6/jJfQzTBs61axXOs
+         //Ph2hAFdb8AZPmUpZcw/Te5qaTIOAan9XIWN7DW0fThsg6wJ8FcSyoKnWhL1yEwY8nf
+         UZb8Um5aw9bwF4adr8ubhJB2E+kSlf2y3150/nGwev+BOjO3msn3/03Z5ybw1byOiwwx
+         id3A==
+X-Gm-Message-State: AOAM530/U0V5GbisgPtfPeczHmjtQZ998qhr0IaOXiVbhdnDm6g5BV1E
+        SXPDMKXmyELHdTIO2U+PcUyzGxoY6l9YpcQTCb6lCQ==
+X-Google-Smtp-Source: ABdhPJzhb6YsxLlC4EzWDBoE8qMNnnjdutQxpcBaonRaCsw82ZHfcIAAMkgVviyx/0rln4290gGUgrR9OUr7Z7zcO1E=
+X-Received: by 2002:adf:f48a:: with SMTP id l10mr2535592wro.220.1642749707998;
+ Thu, 20 Jan 2022 23:21:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+References: <20220118223506.1701553-1-dlatypov@google.com> <20220118223506.1701553-2-dlatypov@google.com>
+In-Reply-To: <20220118223506.1701553-2-dlatypov@google.com>
+From:   David Gow <davidgow@google.com>
+Date:   Fri, 21 Jan 2022 15:21:36 +0800
+Message-ID: <CABVgOSnxUqJhVW8sm4HFOyRmHocej6i-52HxD0xXcxXx+Z5qzQ@mail.gmail.com>
+Subject: Re: [PATCH 1/5] kunit: make KUNIT_EXPECT_EQ() use KUNIT_EXPECT_EQ_MSG(),
+ etc.
+To:     Daniel Latypov <dlatypov@google.com>
+Cc:     Brendan Higgins <brendanhiggins@google.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        Shuah Khan <skhan@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If cap-sdio-async-irq flag is set in host dts node, parse EAI
-information from SDIO CCCR interrupt externsion segment. If async
-interrupt is supported by SDIO card then send command to card to
-enable it and set enable_async_irq flag in sdio_cccr structure to 1.
-The parse flow is implemented in sdio_read_cccr().
+On Wed, Jan 19, 2022 at 6:35 AM Daniel Latypov <dlatypov@google.com> wrote:
+>
+> There's quite a few macros in play for KUnit assertions.
+>
+> The current macro chain looks like:
+>   KUNIT_EXPECT_EQ => KUNIT_BINARY_EQ_ASSERTION => KUNIT_BINARY_EQ_MSG_ASSERTION
+>   KUNIT_EXPECT_EQ_MSG => KUNIT_BINARY_EQ_MSG_ASSERTION
+>   KUNIT_ASSERT_EQ => KUNIT_BINARY_EQ_ASSERTION => KUNIT_BINARY_EQ_MSG_ASSERTION
+>   KUNIT_ASSERT_EQ_MSG => KUNIT_BINARY_EQ_MSG_ASSERTION
+>
+> After this change:
+>   KUNIT_EXPECT_EQ => KUNIT_EXPECT_EQ_MSG => KUNIT_BINARY_EQ_MSG_ASSERTION
+>   KUNIT_ASSERT_EQ => KUNIT_ASSERT_EQ_MSG => KUNIT_BINARY_EQ_MSG_ASSERTION
+> and we can drop the intermediate KUNIT_BINARY_EQ_ASSERTION.
+>
+> This change does this for all the other macros as well.
+>
+> Signed-off-by: Daniel Latypov <dlatypov@google.com>
+> ---
 
-Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-Signed-off-by: Axe Yang <axe.yang@mediatek.com>
----
- drivers/mmc/core/host.c  |  2 ++
- drivers/mmc/core/sdio.c  | 17 +++++++++++++++++
- include/linux/mmc/card.h |  3 ++-
- include/linux/mmc/host.h |  1 +
- include/linux/mmc/sdio.h |  5 +++++
- 5 files changed, 27 insertions(+), 1 deletion(-)
+The sheer number of macros here was always a bit headache-inducing for
+me, so this is a great improvement in my book. Thanks!
 
-diff --git a/drivers/mmc/core/host.c b/drivers/mmc/core/host.c
-index cf140f4ec864..a972241548b4 100644
---- a/drivers/mmc/core/host.c
-+++ b/drivers/mmc/core/host.c
-@@ -410,6 +410,8 @@ int mmc_of_parse(struct mmc_host *host)
- 	if (device_property_read_bool(dev, "no-mmc-hs400"))
- 		host->caps2 &= ~(MMC_CAP2_HS400_1_8V | MMC_CAP2_HS400_1_2V |
- 				 MMC_CAP2_HS400_ES);
-+	if (device_property_read_bool(dev, "cap-sdio-async-irq"))
-+		host->caps2 |= MMC_CAP2_SDIO_ASYNC_IRQ;
- 
- 	/* Must be after "non-removable" check */
- 	if (device_property_read_u32(dev, "fixed-emmc-driver-type", &drv_type) == 0) {
-diff --git a/drivers/mmc/core/sdio.c b/drivers/mmc/core/sdio.c
-index 41164748723d..771fb5d18585 100644
---- a/drivers/mmc/core/sdio.c
-+++ b/drivers/mmc/core/sdio.c
-@@ -225,6 +225,23 @@ static int sdio_read_cccr(struct mmc_card *card, u32 ocr)
- 				card->sw_caps.sd3_drv_type |= SD_DRIVER_TYPE_C;
- 			if (data & SDIO_DRIVE_SDTD)
- 				card->sw_caps.sd3_drv_type |= SD_DRIVER_TYPE_D;
-+
-+			if (card->host->caps2 & MMC_CAP2_SDIO_ASYNC_IRQ) {
-+				ret = mmc_io_rw_direct(card, 0, 0, SDIO_CCCR_INTERRUPT_EXT, 0,
-+						       &data);
-+				if (ret)
-+					goto out;
-+
-+				if (data & SDIO_INTERRUPT_EXT_SAI) {
-+					data |= SDIO_INTERRUPT_EXT_EAI;
-+					ret = mmc_io_rw_direct(card, 1, 0, SDIO_CCCR_INTERRUPT_EXT,
-+							       data, NULL);
-+					if (ret)
-+						goto out;
-+
-+					card->cccr.enable_async_irq = 1;
-+				}
-+			}
- 		}
- 
- 		/* if no uhs mode ensure we check for high speed */
-diff --git a/include/linux/mmc/card.h b/include/linux/mmc/card.h
-index 37f975875102..4df9182bc0e6 100644
---- a/include/linux/mmc/card.h
-+++ b/include/linux/mmc/card.h
-@@ -219,7 +219,8 @@ struct sdio_cccr {
- 				wide_bus:1,
- 				high_power:1,
- 				high_speed:1,
--				disable_cd:1;
-+				disable_cd:1,
-+				enable_async_irq:1;
- };
- 
- struct sdio_cis {
-diff --git a/include/linux/mmc/host.h b/include/linux/mmc/host.h
-index 7afb57cab00b..502a5418264c 100644
---- a/include/linux/mmc/host.h
-+++ b/include/linux/mmc/host.h
-@@ -402,6 +402,7 @@ struct mmc_host {
- #define MMC_CAP2_CRYPTO		0
- #endif
- #define MMC_CAP2_ALT_GPT_TEGRA	(1 << 28)	/* Host with eMMC that has GPT entry at a non-standard location */
-+#define MMC_CAP2_SDIO_ASYNC_IRQ	(1 << 29)	/* SDIO host supports asynchronous interrupt */
- 
- 	int			fixed_drv_type;	/* fixed driver type for non-removable media */
- 
-diff --git a/include/linux/mmc/sdio.h b/include/linux/mmc/sdio.h
-index 2a05d1ac4f0e..1ef400f28642 100644
---- a/include/linux/mmc/sdio.h
-+++ b/include/linux/mmc/sdio.h
-@@ -159,6 +159,11 @@
- #define  SDIO_DTSx_SET_TYPE_A	(1 << SDIO_DRIVE_DTSx_SHIFT)
- #define  SDIO_DTSx_SET_TYPE_C	(2 << SDIO_DRIVE_DTSx_SHIFT)
- #define  SDIO_DTSx_SET_TYPE_D	(3 << SDIO_DRIVE_DTSx_SHIFT)
-+
-+#define SDIO_CCCR_INTERRUPT_EXT	0x16
-+#define SDIO_INTERRUPT_EXT_SAI	(1 << 0)
-+#define SDIO_INTERRUPT_EXT_EAI	(1 << 1)
-+
- /*
-  * Function Basic Registers (FBR)
-  */
--- 
-2.25.1
+Reviewed-by: David Gow <davidgow@google.com>
 
+>  include/kunit/test.h | 168 +++++++------------------------------------
+>  1 file changed, 26 insertions(+), 142 deletions(-)
+
+(It's great to see 116 fewer lines here!)
+
+
+-- David
+
+>
+> diff --git a/include/kunit/test.h b/include/kunit/test.h
+> index 5964af750d93..b032dd6816d2 100644
+> --- a/include/kunit/test.h
+> +++ b/include/kunit/test.h
+> @@ -840,9 +840,6 @@ void kunit_do_failed_assertion(struct kunit *test,
+>                               fmt,                                             \
+>                               ##__VA_ARGS__)
+>
+> -#define KUNIT_TRUE_ASSERTION(test, assert_type, condition) \
+> -       KUNIT_TRUE_MSG_ASSERTION(test, assert_type, condition, NULL)
+> -
+>  #define KUNIT_FALSE_MSG_ASSERTION(test, assert_type, condition, fmt, ...)      \
+>         KUNIT_UNARY_ASSERTION(test,                                            \
+>                               assert_type,                                     \
+> @@ -851,9 +848,6 @@ void kunit_do_failed_assertion(struct kunit *test,
+>                               fmt,                                             \
+>                               ##__VA_ARGS__)
+>
+> -#define KUNIT_FALSE_ASSERTION(test, assert_type, condition) \
+> -       KUNIT_FALSE_MSG_ASSERTION(test, assert_type, condition, NULL)
+> -
+>  /*
+>   * A factory macro for defining the assertions and expectations for the basic
+>   * comparisons defined for the built in types.
+> @@ -1000,13 +994,6 @@ do {                                                                             \
+>                                     fmt,                                       \
+>                                     ##__VA_ARGS__)
+>
+> -#define KUNIT_BINARY_EQ_ASSERTION(test, assert_type, left, right)             \
+> -       KUNIT_BINARY_EQ_MSG_ASSERTION(test,                                    \
+> -                                     assert_type,                             \
+> -                                     left,                                    \
+> -                                     right,                                   \
+> -                                     NULL)
+> -
+>  #define KUNIT_BINARY_PTR_EQ_MSG_ASSERTION(test,                                       \
+>                                           assert_type,                         \
+>                                           left,                                \
+> @@ -1022,13 +1009,6 @@ do {                                                                            \
+>                                     fmt,                                       \
+>                                     ##__VA_ARGS__)
+>
+> -#define KUNIT_BINARY_PTR_EQ_ASSERTION(test, assert_type, left, right)         \
+> -       KUNIT_BINARY_PTR_EQ_MSG_ASSERTION(test,                                \
+> -                                         assert_type,                         \
+> -                                         left,                                \
+> -                                         right,                               \
+> -                                         NULL)
+> -
+>  #define KUNIT_BINARY_NE_MSG_ASSERTION(test, assert_type, left, right, fmt, ...)\
+>         KUNIT_BASE_NE_MSG_ASSERTION(test,                                      \
+>                                     kunit_binary_assert,                       \
+> @@ -1039,13 +1019,6 @@ do {                                                                            \
+>                                     fmt,                                       \
+>                                     ##__VA_ARGS__)
+>
+> -#define KUNIT_BINARY_NE_ASSERTION(test, assert_type, left, right)             \
+> -       KUNIT_BINARY_NE_MSG_ASSERTION(test,                                    \
+> -                                     assert_type,                             \
+> -                                     left,                                    \
+> -                                     right,                                   \
+> -                                     NULL)
+> -
+>  #define KUNIT_BINARY_PTR_NE_MSG_ASSERTION(test,                                       \
+>                                           assert_type,                         \
+>                                           left,                                \
+> @@ -1061,13 +1034,6 @@ do {                                                                            \
+>                                     fmt,                                       \
+>                                     ##__VA_ARGS__)
+>
+> -#define KUNIT_BINARY_PTR_NE_ASSERTION(test, assert_type, left, right)         \
+> -       KUNIT_BINARY_PTR_NE_MSG_ASSERTION(test,                                \
+> -                                         assert_type,                         \
+> -                                         left,                                \
+> -                                         right,                               \
+> -                                         NULL)
+> -
+>  #define KUNIT_BINARY_LT_MSG_ASSERTION(test, assert_type, left, right, fmt, ...)\
+>         KUNIT_BASE_LT_MSG_ASSERTION(test,                                      \
+>                                     kunit_binary_assert,                       \
+> @@ -1078,13 +1044,6 @@ do {                                                                            \
+>                                     fmt,                                       \
+>                                     ##__VA_ARGS__)
+>
+> -#define KUNIT_BINARY_LT_ASSERTION(test, assert_type, left, right)             \
+> -       KUNIT_BINARY_LT_MSG_ASSERTION(test,                                    \
+> -                                     assert_type,                             \
+> -                                     left,                                    \
+> -                                     right,                                   \
+> -                                     NULL)
+> -
+>  #define KUNIT_BINARY_PTR_LT_MSG_ASSERTION(test,                                       \
+>                                           assert_type,                         \
+>                                           left,                                \
+> @@ -1100,13 +1059,6 @@ do {                                                                            \
+>                                     fmt,                                       \
+>                                     ##__VA_ARGS__)
+>
+> -#define KUNIT_BINARY_PTR_LT_ASSERTION(test, assert_type, left, right)         \
+> -       KUNIT_BINARY_PTR_LT_MSG_ASSERTION(test,                                \
+> -                                         assert_type,                         \
+> -                                         left,                                \
+> -                                         right,                               \
+> -                                         NULL)
+> -
+>  #define KUNIT_BINARY_LE_MSG_ASSERTION(test, assert_type, left, right, fmt, ...)\
+>         KUNIT_BASE_LE_MSG_ASSERTION(test,                                      \
+>                                     kunit_binary_assert,                       \
+> @@ -1117,13 +1069,6 @@ do {                                                                            \
+>                                     fmt,                                       \
+>                                     ##__VA_ARGS__)
+>
+> -#define KUNIT_BINARY_LE_ASSERTION(test, assert_type, left, right)             \
+> -       KUNIT_BINARY_LE_MSG_ASSERTION(test,                                    \
+> -                                     assert_type,                             \
+> -                                     left,                                    \
+> -                                     right,                                   \
+> -                                     NULL)
+> -
+>  #define KUNIT_BINARY_PTR_LE_MSG_ASSERTION(test,                                       \
+>                                           assert_type,                         \
+>                                           left,                                \
+> @@ -1139,13 +1084,6 @@ do {                                                                            \
+>                                     fmt,                                       \
+>                                     ##__VA_ARGS__)
+>
+> -#define KUNIT_BINARY_PTR_LE_ASSERTION(test, assert_type, left, right)         \
+> -       KUNIT_BINARY_PTR_LE_MSG_ASSERTION(test,                                \
+> -                                         assert_type,                         \
+> -                                         left,                                \
+> -                                         right,                               \
+> -                                         NULL)
+> -
+>  #define KUNIT_BINARY_GT_MSG_ASSERTION(test, assert_type, left, right, fmt, ...)\
+>         KUNIT_BASE_GT_MSG_ASSERTION(test,                                      \
+>                                     kunit_binary_assert,                       \
+> @@ -1156,13 +1094,6 @@ do {                                                                            \
+>                                     fmt,                                       \
+>                                     ##__VA_ARGS__)
+>
+> -#define KUNIT_BINARY_GT_ASSERTION(test, assert_type, left, right)             \
+> -       KUNIT_BINARY_GT_MSG_ASSERTION(test,                                    \
+> -                                     assert_type,                             \
+> -                                     left,                                    \
+> -                                     right,                                   \
+> -                                     NULL)
+> -
+>  #define KUNIT_BINARY_PTR_GT_MSG_ASSERTION(test,                                       \
+>                                           assert_type,                         \
+>                                           left,                                \
+> @@ -1178,13 +1109,6 @@ do {                                                                            \
+>                                     fmt,                                       \
+>                                     ##__VA_ARGS__)
+>
+> -#define KUNIT_BINARY_PTR_GT_ASSERTION(test, assert_type, left, right)         \
+> -       KUNIT_BINARY_PTR_GT_MSG_ASSERTION(test,                                \
+> -                                         assert_type,                         \
+> -                                         left,                                \
+> -                                         right,                               \
+> -                                         NULL)
+> -
+>  #define KUNIT_BINARY_GE_MSG_ASSERTION(test, assert_type, left, right, fmt, ...)\
+>         KUNIT_BASE_GE_MSG_ASSERTION(test,                                      \
+>                                     kunit_binary_assert,                       \
+> @@ -1195,13 +1119,6 @@ do {                                                                            \
+>                                     fmt,                                       \
+>                                     ##__VA_ARGS__)
+>
+> -#define KUNIT_BINARY_GE_ASSERTION(test, assert_type, left, right)             \
+> -       KUNIT_BINARY_GE_MSG_ASSERTION(test,                                    \
+> -                                     assert_type,                             \
+> -                                     left,                                    \
+> -                                     right,                                   \
+> -                                     NULL)
+> -
+>  #define KUNIT_BINARY_PTR_GE_MSG_ASSERTION(test,                                       \
+>                                           assert_type,                         \
+>                                           left,                                \
+> @@ -1217,13 +1134,6 @@ do {                                                                            \
+>                                     fmt,                                       \
+>                                     ##__VA_ARGS__)
+>
+> -#define KUNIT_BINARY_PTR_GE_ASSERTION(test, assert_type, left, right)         \
+> -       KUNIT_BINARY_PTR_GE_MSG_ASSERTION(test,                                \
+> -                                         assert_type,                         \
+> -                                         left,                                \
+> -                                         right,                               \
+> -                                         NULL)
+> -
+>  #define KUNIT_BINARY_STR_ASSERTION(test,                                      \
+>                                    assert_type,                                \
+>                                    left,                                       \
+> @@ -1260,13 +1170,6 @@ do {                                                                            \
+>                                    fmt,                                        \
+>                                    ##__VA_ARGS__)
+>
+> -#define KUNIT_BINARY_STR_EQ_ASSERTION(test, assert_type, left, right)         \
+> -       KUNIT_BINARY_STR_EQ_MSG_ASSERTION(test,                                \
+> -                                         assert_type,                         \
+> -                                         left,                                \
+> -                                         right,                               \
+> -                                         NULL)
+> -
+>  #define KUNIT_BINARY_STR_NE_MSG_ASSERTION(test,                                       \
+>                                           assert_type,                         \
+>                                           left,                                \
+> @@ -1279,13 +1182,6 @@ do {                                                                            \
+>                                    fmt,                                        \
+>                                    ##__VA_ARGS__)
+>
+> -#define KUNIT_BINARY_STR_NE_ASSERTION(test, assert_type, left, right)         \
+> -       KUNIT_BINARY_STR_NE_MSG_ASSERTION(test,                                \
+> -                                         assert_type,                         \
+> -                                         left,                                \
+> -                                         right,                               \
+> -                                         NULL)
+> -
+>  #define KUNIT_PTR_NOT_ERR_OR_NULL_MSG_ASSERTION(test,                         \
+>                                                 assert_type,                   \
+>                                                 ptr,                           \
+> @@ -1304,12 +1200,6 @@ do {                                                                            \
+>                         ##__VA_ARGS__);                                        \
+>  } while (0)
+>
+> -#define KUNIT_PTR_NOT_ERR_OR_NULL_ASSERTION(test, assert_type, ptr)           \
+> -       KUNIT_PTR_NOT_ERR_OR_NULL_MSG_ASSERTION(test,                          \
+> -                                               assert_type,                   \
+> -                                               ptr,                           \
+> -                                               NULL)
+> -
+>  /**
+>   * KUNIT_EXPECT_TRUE() - Causes a test failure when the expression is not true.
+>   * @test: The test context object.
+> @@ -1322,7 +1212,7 @@ do {                                                                             \
+>   * *expectation failure*.
+>   */
+>  #define KUNIT_EXPECT_TRUE(test, condition) \
+> -       KUNIT_TRUE_ASSERTION(test, KUNIT_EXPECTATION, condition)
+> +       KUNIT_EXPECT_TRUE_MSG(test, condition, NULL)
+>
+>  #define KUNIT_EXPECT_TRUE_MSG(test, condition, fmt, ...)                      \
+>         KUNIT_TRUE_MSG_ASSERTION(test,                                         \
+> @@ -1341,7 +1231,7 @@ do {                                                                             \
+>   * KUNIT_EXPECT_TRUE() for more information.
+>   */
+>  #define KUNIT_EXPECT_FALSE(test, condition) \
+> -       KUNIT_FALSE_ASSERTION(test, KUNIT_EXPECTATION, condition)
+> +       KUNIT_EXPECT_FALSE_MSG(test, condition, NULL)
+>
+>  #define KUNIT_EXPECT_FALSE_MSG(test, condition, fmt, ...)                     \
+>         KUNIT_FALSE_MSG_ASSERTION(test,                                        \
+> @@ -1362,7 +1252,7 @@ do {                                                                             \
+>   * more information.
+>   */
+>  #define KUNIT_EXPECT_EQ(test, left, right) \
+> -       KUNIT_BINARY_EQ_ASSERTION(test, KUNIT_EXPECTATION, left, right)
+> +       KUNIT_EXPECT_EQ_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_EXPECT_EQ_MSG(test, left, right, fmt, ...)                      \
+>         KUNIT_BINARY_EQ_MSG_ASSERTION(test,                                    \
+> @@ -1384,10 +1274,7 @@ do {                                                                            \
+>   * more information.
+>   */
+>  #define KUNIT_EXPECT_PTR_EQ(test, left, right)                                \
+> -       KUNIT_BINARY_PTR_EQ_ASSERTION(test,                                    \
+> -                                     KUNIT_EXPECTATION,                       \
+> -                                     left,                                    \
+> -                                     right)
+> +       KUNIT_EXPECT_PTR_EQ_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_EXPECT_PTR_EQ_MSG(test, left, right, fmt, ...)                  \
+>         KUNIT_BINARY_PTR_EQ_MSG_ASSERTION(test,                                \
+> @@ -1409,7 +1296,7 @@ do {                                                                             \
+>   * more information.
+>   */
+>  #define KUNIT_EXPECT_NE(test, left, right) \
+> -       KUNIT_BINARY_NE_ASSERTION(test, KUNIT_EXPECTATION, left, right)
+> +       KUNIT_EXPECT_NE_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_EXPECT_NE_MSG(test, left, right, fmt, ...)                      \
+>         KUNIT_BINARY_NE_MSG_ASSERTION(test,                                    \
+> @@ -1431,10 +1318,7 @@ do {                                                                            \
+>   * more information.
+>   */
+>  #define KUNIT_EXPECT_PTR_NE(test, left, right)                                \
+> -       KUNIT_BINARY_PTR_NE_ASSERTION(test,                                    \
+> -                                     KUNIT_EXPECTATION,                       \
+> -                                     left,                                    \
+> -                                     right)
+> +       KUNIT_EXPECT_PTR_NE_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_EXPECT_PTR_NE_MSG(test, left, right, fmt, ...)                  \
+>         KUNIT_BINARY_PTR_NE_MSG_ASSERTION(test,                                \
+> @@ -1456,7 +1340,7 @@ do {                                                                             \
+>   * more information.
+>   */
+>  #define KUNIT_EXPECT_LT(test, left, right) \
+> -       KUNIT_BINARY_LT_ASSERTION(test, KUNIT_EXPECTATION, left, right)
+> +       KUNIT_EXPECT_LT_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_EXPECT_LT_MSG(test, left, right, fmt, ...)                      \
+>         KUNIT_BINARY_LT_MSG_ASSERTION(test,                                    \
+> @@ -1478,7 +1362,7 @@ do {                                                                             \
+>   * more information.
+>   */
+>  #define KUNIT_EXPECT_LE(test, left, right) \
+> -       KUNIT_BINARY_LE_ASSERTION(test, KUNIT_EXPECTATION, left, right)
+> +       KUNIT_EXPECT_LE_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_EXPECT_LE_MSG(test, left, right, fmt, ...)                      \
+>         KUNIT_BINARY_LE_MSG_ASSERTION(test,                                    \
+> @@ -1500,7 +1384,7 @@ do {                                                                             \
+>   * more information.
+>   */
+>  #define KUNIT_EXPECT_GT(test, left, right) \
+> -       KUNIT_BINARY_GT_ASSERTION(test, KUNIT_EXPECTATION, left, right)
+> +       KUNIT_EXPECT_GT_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_EXPECT_GT_MSG(test, left, right, fmt, ...)                      \
+>         KUNIT_BINARY_GT_MSG_ASSERTION(test,                                    \
+> @@ -1522,7 +1406,7 @@ do {                                                                             \
+>   * more information.
+>   */
+>  #define KUNIT_EXPECT_GE(test, left, right) \
+> -       KUNIT_BINARY_GE_ASSERTION(test, KUNIT_EXPECTATION, left, right)
+> +       KUNIT_EXPECT_GE_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_EXPECT_GE_MSG(test, left, right, fmt, ...)                      \
+>         KUNIT_BINARY_GE_MSG_ASSERTION(test,                                    \
+> @@ -1544,7 +1428,7 @@ do {                                                                             \
+>   * for more information.
+>   */
+>  #define KUNIT_EXPECT_STREQ(test, left, right) \
+> -       KUNIT_BINARY_STR_EQ_ASSERTION(test, KUNIT_EXPECTATION, left, right)
+> +       KUNIT_EXPECT_STREQ_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_EXPECT_STREQ_MSG(test, left, right, fmt, ...)                   \
+>         KUNIT_BINARY_STR_EQ_MSG_ASSERTION(test,                                \
+> @@ -1566,7 +1450,7 @@ do {                                                                             \
+>   * for more information.
+>   */
+>  #define KUNIT_EXPECT_STRNEQ(test, left, right) \
+> -       KUNIT_BINARY_STR_NE_ASSERTION(test, KUNIT_EXPECTATION, left, right)
+> +       KUNIT_EXPECT_STRNEQ_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_EXPECT_STRNEQ_MSG(test, left, right, fmt, ...)                  \
+>         KUNIT_BINARY_STR_NE_MSG_ASSERTION(test,                                \
+> @@ -1587,7 +1471,7 @@ do {                                                                             \
+>   * more information.
+>   */
+>  #define KUNIT_EXPECT_NOT_ERR_OR_NULL(test, ptr) \
+> -       KUNIT_PTR_NOT_ERR_OR_NULL_ASSERTION(test, KUNIT_EXPECTATION, ptr)
+> +       KUNIT_EXPECT_NOT_ERR_OR_NULL_MSG(test, ptr, NULL)
+>
+>  #define KUNIT_EXPECT_NOT_ERR_OR_NULL_MSG(test, ptr, fmt, ...)                 \
+>         KUNIT_PTR_NOT_ERR_OR_NULL_MSG_ASSERTION(test,                          \
+> @@ -1611,7 +1495,7 @@ do {                                                                             \
+>   * this is otherwise known as an *assertion failure*.
+>   */
+>  #define KUNIT_ASSERT_TRUE(test, condition) \
+> -       KUNIT_TRUE_ASSERTION(test, KUNIT_ASSERTION, condition)
+> +       KUNIT_ASSERT_TRUE_MSG(test, condition, NULL)
+>
+>  #define KUNIT_ASSERT_TRUE_MSG(test, condition, fmt, ...)                      \
+>         KUNIT_TRUE_MSG_ASSERTION(test,                                         \
+> @@ -1630,7 +1514,7 @@ do {                                                                             \
+>   * (see KUNIT_ASSERT_TRUE()) when the assertion is not met.
+>   */
+>  #define KUNIT_ASSERT_FALSE(test, condition) \
+> -       KUNIT_FALSE_ASSERTION(test, KUNIT_ASSERTION, condition)
+> +       KUNIT_ASSERT_FALSE_MSG(test, condition, NULL)
+>
+>  #define KUNIT_ASSERT_FALSE_MSG(test, condition, fmt, ...)                     \
+>         KUNIT_FALSE_MSG_ASSERTION(test,                                        \
+> @@ -1650,7 +1534,7 @@ do {                                                                             \
+>   * failure (see KUNIT_ASSERT_TRUE()) when the assertion is not met.
+>   */
+>  #define KUNIT_ASSERT_EQ(test, left, right) \
+> -       KUNIT_BINARY_EQ_ASSERTION(test, KUNIT_ASSERTION, left, right)
+> +       KUNIT_ASSERT_EQ_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_ASSERT_EQ_MSG(test, left, right, fmt, ...)                      \
+>         KUNIT_BINARY_EQ_MSG_ASSERTION(test,                                    \
+> @@ -1671,7 +1555,7 @@ do {                                                                             \
+>   * failure (see KUNIT_ASSERT_TRUE()) when the assertion is not met.
+>   */
+>  #define KUNIT_ASSERT_PTR_EQ(test, left, right) \
+> -       KUNIT_BINARY_PTR_EQ_ASSERTION(test, KUNIT_ASSERTION, left, right)
+> +       KUNIT_ASSERT_PTR_EQ_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_ASSERT_PTR_EQ_MSG(test, left, right, fmt, ...)                  \
+>         KUNIT_BINARY_PTR_EQ_MSG_ASSERTION(test,                                \
+> @@ -1692,7 +1576,7 @@ do {                                                                             \
+>   * failure (see KUNIT_ASSERT_TRUE()) when the assertion is not met.
+>   */
+>  #define KUNIT_ASSERT_NE(test, left, right) \
+> -       KUNIT_BINARY_NE_ASSERTION(test, KUNIT_ASSERTION, left, right)
+> +       KUNIT_ASSERT_NE_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_ASSERT_NE_MSG(test, left, right, fmt, ...)                      \
+>         KUNIT_BINARY_NE_MSG_ASSERTION(test,                                    \
+> @@ -1714,7 +1598,7 @@ do {                                                                             \
+>   * failure (see KUNIT_ASSERT_TRUE()) when the assertion is not met.
+>   */
+>  #define KUNIT_ASSERT_PTR_NE(test, left, right) \
+> -       KUNIT_BINARY_PTR_NE_ASSERTION(test, KUNIT_ASSERTION, left, right)
+> +       KUNIT_ASSERT_PTR_NE_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_ASSERT_PTR_NE_MSG(test, left, right, fmt, ...)                  \
+>         KUNIT_BINARY_PTR_NE_MSG_ASSERTION(test,                                \
+> @@ -1735,7 +1619,7 @@ do {                                                                             \
+>   * is not met.
+>   */
+>  #define KUNIT_ASSERT_LT(test, left, right) \
+> -       KUNIT_BINARY_LT_ASSERTION(test, KUNIT_ASSERTION, left, right)
+> +       KUNIT_ASSERT_LT_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_ASSERT_LT_MSG(test, left, right, fmt, ...)                      \
+>         KUNIT_BINARY_LT_MSG_ASSERTION(test,                                    \
+> @@ -1756,7 +1640,7 @@ do {                                                                             \
+>   * KUNIT_ASSERT_TRUE()) when the assertion is not met.
+>   */
+>  #define KUNIT_ASSERT_LE(test, left, right) \
+> -       KUNIT_BINARY_LE_ASSERTION(test, KUNIT_ASSERTION, left, right)
+> +       KUNIT_ASSERT_LE_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_ASSERT_LE_MSG(test, left, right, fmt, ...)                      \
+>         KUNIT_BINARY_LE_MSG_ASSERTION(test,                                    \
+> @@ -1778,7 +1662,7 @@ do {                                                                             \
+>   * is not met.
+>   */
+>  #define KUNIT_ASSERT_GT(test, left, right) \
+> -       KUNIT_BINARY_GT_ASSERTION(test, KUNIT_ASSERTION, left, right)
+> +       KUNIT_ASSERT_GT_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_ASSERT_GT_MSG(test, left, right, fmt, ...)                      \
+>         KUNIT_BINARY_GT_MSG_ASSERTION(test,                                    \
+> @@ -1800,7 +1684,7 @@ do {                                                                             \
+>   * is not met.
+>   */
+>  #define KUNIT_ASSERT_GE(test, left, right) \
+> -       KUNIT_BINARY_GE_ASSERTION(test, KUNIT_ASSERTION, left, right)
+> +       KUNIT_ASSERT_GE_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_ASSERT_GE_MSG(test, left, right, fmt, ...)                      \
+>         KUNIT_BINARY_GE_MSG_ASSERTION(test,                                    \
+> @@ -1821,7 +1705,7 @@ do {                                                                             \
+>   * assertion failure (see KUNIT_ASSERT_TRUE()) when the assertion is not met.
+>   */
+>  #define KUNIT_ASSERT_STREQ(test, left, right) \
+> -       KUNIT_BINARY_STR_EQ_ASSERTION(test, KUNIT_ASSERTION, left, right)
+> +       KUNIT_ASSERT_STREQ_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_ASSERT_STREQ_MSG(test, left, right, fmt, ...)                   \
+>         KUNIT_BINARY_STR_EQ_MSG_ASSERTION(test,                                \
+> @@ -1843,7 +1727,7 @@ do {                                                                             \
+>   * for more information.
+>   */
+>  #define KUNIT_ASSERT_STRNEQ(test, left, right) \
+> -       KUNIT_BINARY_STR_NE_ASSERTION(test, KUNIT_ASSERTION, left, right)
+> +       KUNIT_ASSERT_STRNEQ_MSG(test, left, right, NULL)
+>
+>  #define KUNIT_ASSERT_STRNEQ_MSG(test, left, right, fmt, ...)                  \
+>         KUNIT_BINARY_STR_NE_MSG_ASSERTION(test,                                \
+> @@ -1864,7 +1748,7 @@ do {                                                                             \
+>   * KUNIT_ASSERT_TRUE()) when the assertion is not met.
+>   */
+>  #define KUNIT_ASSERT_NOT_ERR_OR_NULL(test, ptr) \
+> -       KUNIT_PTR_NOT_ERR_OR_NULL_ASSERTION(test, KUNIT_ASSERTION, ptr)
+> +       KUNIT_ASSERT_NOT_ERR_OR_NULL_MSG(test, ptr, NULL)
+>
+>  #define KUNIT_ASSERT_NOT_ERR_OR_NULL_MSG(test, ptr, fmt, ...)                 \
+>         KUNIT_PTR_NOT_ERR_OR_NULL_MSG_ASSERTION(test,                          \
+> --
+> 2.34.1.703.g22d0c6ccf7-goog
+>
