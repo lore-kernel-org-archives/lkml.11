@@ -2,293 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81BFFC433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 18:37:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99532C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 18:40:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382177AbiAUSht (ORCPT
+        id S1382149AbiAUSkH (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 13:37:49 -0500
-Received: from finn.gateworks.com ([108.161.129.64]:48806 "EHLO
-        finn.localdomain" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1382152AbiAUShp (ORCPT
+        Fri, 21 Jan 2022 13:40:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45554 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352056AbiAUSjj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 13:37:45 -0500
-Received: from 068-189-091-139.biz.spectrum.com ([68.189.91.139] helo=tharvey.pdc.gateworks.com)
-        by finn.localdomain with esmtp (Exim 4.93)
-        (envelope-from <tharvey@gateworks.com>)
-        id 1nAyTE-00A3CA-K8; Fri, 21 Jan 2022 18:17:08 +0000
-From:   Tim Harvey <tharvey@gateworks.com>
-To:     Rob Herring <robh+dt@kernel.org>, Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     Tim Harvey <tharvey@gateworks.com>
-Subject: [PATCH v2] arm64: dts: imx8mm-venice-gw73xx-0x: add dt overlays for serial modes
-Date:   Fri, 21 Jan 2022 10:17:05 -0800
-Message-Id: <20220121181705.13363-1-tharvey@gateworks.com>
-X-Mailer: git-send-email 2.17.1
+        Fri, 21 Jan 2022 13:39:39 -0500
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 448BBC06173B
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 10:39:39 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id d13so1449391ljl.5
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 10:39:39 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=/csbtbwr+UycBIZvysJGcSyJ7kB4nwbtuLHgr5dlbas=;
+        b=ky4H6BVOIXfnLZsKRTtz85EaXhqvqbg2DSL4mdvpRNaUOQ12HXkFqg93dfsl2CLB0h
+         bfpeBv3DBW7LTucOX/PdN9yM+fCrG4Jbb58HHnPxpwMiTpkc1I9p3PLhlWm4qaCNQOO3
+         izjrL5LXb+CYFZZ1Q6cTDL4zF3hWMLs2oz58Bub+3zo+TsxoOg6yPWy/q5g4zge5CiUU
+         yZxOiWOs1BG8loNDC05Ud8U3j3vbIHSQncdNX+O+kZlHr455hSB7Mu+vFkRzByNVzrDX
+         4TFMtEUn7cQjp8qauoxTkqband0frUhqYFLr+O5EqAdi4H8AA16PgWFs3VPkWE7Adtb0
+         Z5sA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=/csbtbwr+UycBIZvysJGcSyJ7kB4nwbtuLHgr5dlbas=;
+        b=L924+REl+rmR1gZ6fKkYgepKzMy072bWwQd9DAigUlsuGQMjstNneykqmuzxq83nsl
+         nlYhyEFIjhkaX6/wuEALgb5V/bZlmHDgzVrF5sS7ZyIRFOhqKCoJC/iFn+GZOI56ZiSP
+         6Dx+08vTAyUNHJ9gitZ7jX3YpH9UszPEfolmQEw+sxyUobMQT8bMsr8/7qg05h2s8hYE
+         r8xv2r6eZqvKGPxj/OZkyGFj9XuvikbZfjC1cyzFIe2P8f4WC4HkJ0KCPpfaIw9EQpvp
+         WB3bsXJOB2x+oRPUVQWTfC6Ch+hsL8gnVDLt8gTRsHIRGTm8sj3Igypi1X81eCpwUQWY
+         XxYA==
+X-Gm-Message-State: AOAM532afpdMpwe/TdrXkkcbEqxSNROYzLAz3zPDO99F5yhApcj3uUaa
+        zv8CcxXrBnBmE+EywGvJGGJmAAPAoWcu6o4CrrvY/8M9V4Q=
+X-Google-Smtp-Source: ABdhPJwaZUHdbpD1khoRuwNuPeRXYC51K0xYCTVUdNEqZQQvi92fvsCgAklLSMGLgaSQgwHgUvWlE1knhCQMCuCCA4c=
+X-Received: by 2002:a2e:9e98:: with SMTP id f24mr4009337ljk.347.1642790377454;
+ Fri, 21 Jan 2022 10:39:37 -0800 (PST)
+MIME-Version: 1.0
+References: <SJ0PR21MB13117BB925ABFD8857CAA5B5C45B9@SJ0PR21MB1311.namprd21.prod.outlook.com>
+ <2e7a440f-b942-2794-6c15-66baf81801ae@infradead.org>
+In-Reply-To: <2e7a440f-b942-2794-6c15-66baf81801ae@infradead.org>
+From:   Jann Horn <jannh@google.com>
+Date:   Fri, 21 Jan 2022 19:39:11 +0100
+Message-ID: <CAG48ez0Om2MD9nn-NSPjtNvQ4DCX=Xakk+A2CqgXcOwxPzPNKQ@mail.gmail.com>
+Subject: Re: Issue With Kernel Changes To Core Dump Collection (Kernel Bug...?)
+To:     Bill Messmer <wmessmer@microsoft.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The imx8mm-venice-gw73xx-0x som+baseboard combination has a multi-protocol
-RS-232/RS-485/RS-422 transceiver to an off-board connector which
-can be configured in a number of ways via UART and GPIO configuration.
+On Fri, Jan 21, 2022 at 7:18 PM Randy Dunlap <rdunlap@infradead.org> wrote:
+> On 1/20/22 17:31, Bill Messmer wrote:
+> > Hello,
+> >
+> > It has been my understanding for some time that the kernel config optio=
+n CONFIG_CORE_DUMP_DEFAULT_ELF_HEADERS (and the corresponding bit 4 of the =
+coredump filter) was, at one point, added for the purpose of ensuring that =
+the GNU build-id of ELF objects was included in core dumps.  The config des=
+cription in Kconfig.binfmt even alludes to this in its description.
+> >
+> > I am trying to understand why in the 5.10+ kernels, there was a change =
+in the kernel that, instead of checking whether a given memory mapping had =
+an ELF header in order to determine whether to include the page to checking=
+ whether the inode is executable.  The change in question:
+> >
+> >       github.com/torvalds/linux/commit/429a22e776a2b9f85a2b9c53d8e64759=
+8b553dd1
 
-The default configuration per the imx8mm-venice-gw73xx-0x dts is for
-UART2 TX/RX and UART4 TX/RX to be available as RS-232:
- J15.1 UART2 TX out
- J15.2 UART2 RX in
- J15.3 UART4 TX out
- J15.4 UART4 RX in
- J15.5 GND
+As the commit message says, it was an attempt to avoid a deadlock
+without making the code overly complicated. Clearly that didn't go as
+planned...
 
-Add dt overlays to allow additional the modes of operation:
+> > In many distributions (e.g.: Ubuntu), the shared objects in /usr/lib an=
+d elsewhere are not marked as executable.
 
-rs232-rts (UART2 RS-232 with RTS/CTS hardware flow control)
- J15.1 TX out
- J15.2 RX in
- J15.3 RTS out
- J15.4 CTS in
- J15.5 GND
+Urgh, crap. I'm looking around on my Debian box now, and I also see
+that some libraries (like ld.so and libc) are marked executable, but
+many others are not...
 
-rs485 (UART2 RS-485 half duplex)
- J15.1 TXRX-
- J15.2 N/C
- J15.3 TXRX+
- J15.4 N/C
- J15.5 GND
+[...]
+> > Was the change here really the intent...?  or is this a kernel bug?
 
-rs422 (UART2 RS-422 full duplex)
- J15.1 TX-
- J15.2 RX+
- J15.3 TX+
- J15.4 RX-
- J15.5 GND
+Yeah, that's a bug. Linus suggested it as a way to simplify my
+original patch (https://lore.kernel.org/all/CAHk-=3DwiOqR-4jXpPe-5PBKSCwQQF=
+DaiJwkJr6ULwhcN8DJoG0A@mail.gmail.com/)
+and it seemed like a good idea to me...
 
-Signed-off-by: Tim Harvey <tharvey@gateworks.com>
----
-v2: fixed typo: s/uast/uart/
----
- arch/arm64/boot/dts/freescale/Makefile        |  3 +
- .../imx8mm-venice-gw73xx-0x-rs232-rts.dts     | 53 ++++++++++++++++
- .../imx8mm-venice-gw73xx-0x-rs422.dts         | 61 +++++++++++++++++++
- .../imx8mm-venice-gw73xx-0x-rs485.dts         | 61 +++++++++++++++++++
- 4 files changed, 178 insertions(+)
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs232-rts.dts
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs422.dts
- create mode 100644 arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs485.dts
+I guess the good news is that the original patch
+https://lore.kernel.org/all/20200818061239.29091-5-jannh@google.com/
+already has the code for doing it properly, so it should be pretty
+straightforward to fix this by just pasting over some bits from the
+old patch... I'll try to get around to that soon.
 
-diff --git a/arch/arm64/boot/dts/freescale/Makefile b/arch/arm64/boot/dts/freescale/Makefile
-index a14a6173b765..5ec8d59347b6 100644
---- a/arch/arm64/boot/dts/freescale/Makefile
-+++ b/arch/arm64/boot/dts/freescale/Makefile
-@@ -44,6 +44,9 @@ dtb-$(CONFIG_ARCH_MXC) += imx8mm-var-som-symphony.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw71xx-0x.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw72xx-0x.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x.dtb
-+dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x-rs232-rts.dtbo
-+dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x-rs422.dtbo
-+dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw73xx-0x-rs485.dtbo
- dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw7901.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mm-venice-gw7902.dtb
- dtb-$(CONFIG_ARCH_MXC) += imx8mn-beacon-kit.dtb
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs232-rts.dts b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs232-rts.dts
-new file mode 100644
-index 000000000000..2fa635e1c1a8
---- /dev/null
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs232-rts.dts
-@@ -0,0 +1,53 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Copyright 2022 Gateworks Corporation
-+ *
-+ * GW73xx RS232 with RTS/CTS hardware flow control:
-+ *  - GPIO4_0 rs485_en needs to be driven low (in-active)
-+ *  - UART4_TX becomes RTS
-+ *  - UART4_RX becomes CTS
-+ */
-+
-+#include <dt-bindings/gpio/gpio.h>
-+
-+#include "imx8mm-pinfunc.h"
-+
-+/dts-v1/;
-+/plugin/;
-+
-+&{/} {
-+	compatible = "gw,imx8mm-gw73xx-0x";
-+};
-+
-+&gpio4 {
-+	rs485_en {
-+		gpio-hog;
-+		gpios = <0 GPIO_ACTIVE_HIGH>;
-+		output-low;
-+		line-name = "rs485_en";
-+	};
-+};
-+
-+&uart2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_uart2>;
-+	rts-gpios = <&gpio5 29 GPIO_ACTIVE_LOW>;
-+	cts-gpios = <&gpio5 28 GPIO_ACTIVE_LOW>;
-+	uart-has-rtscts;
-+	status = "okay";
-+};
-+
-+&uart4 {
-+	status = "disabled";
-+};
-+
-+&iomuxc {
-+	pinctrl_uart2: uart2grp {
-+		fsl,pins = <
-+			MX8MM_IOMUXC_UART2_RXD_UART2_DCE_RX     0x140
-+			MX8MM_IOMUXC_UART2_TXD_UART2_DCE_TX     0x140
-+			MX8MM_IOMUXC_UART4_TXD_GPIO5_IO29	0x140
-+			MX8MM_IOMUXC_UART4_RXD_GPIO5_IO28	0x140
-+		>;
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs422.dts b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs422.dts
-new file mode 100644
-index 000000000000..3e6404340d52
---- /dev/null
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs422.dts
-@@ -0,0 +1,61 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Copyright 2021 Gateworks Corporation
-+ *
-+ * GW73xx RS422 (RS485 full duplex):
-+ *  - GPIO1_0 rs485_term selects on-chip termination
-+ *  - GPIO4_0 rs485_en needs to be driven high (active)
-+ *  - GPIO4_2 rs485_hd needs to be driven low (in-active)
-+ *  - UART4_TX is DE for RS485 transmitter
-+ *  - RS485_EN needs to be pulled high
-+ *  - RS485_HALF needs to be low
-+ */
-+
-+#include <dt-bindings/gpio/gpio.h>
-+
-+#include "imx8mm-pinfunc.h"
-+
-+/dts-v1/;
-+/plugin/;
-+
-+&{/} {
-+	compatible = "gw,imx8mm-gw73xx-0x";
-+};
-+
-+&gpio4 {
-+	rs485_en {
-+		gpio-hog;
-+		gpios = <0 GPIO_ACTIVE_HIGH>;
-+		output-high;
-+		line-name = "rs485_en";
-+	};
-+
-+	rs485_hd {
-+		gpio-hog;
-+		gpios = <2 GPIO_ACTIVE_HIGH>;
-+		output-low;
-+		line-name = "rs485_hd";
-+	};
-+};
-+
-+&uart2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_uart2>;
-+	rts-gpios = <&gpio5 29 GPIO_ACTIVE_HIGH>;
-+	linux,rs485-enabled-at-boot-time;
-+	status = "okay";
-+};
-+
-+&uart4 {
-+	status = "disabled";
-+};
-+
-+&iomuxc {
-+	pinctrl_uart2: uart2grp {
-+		fsl,pins = <
-+			MX8MM_IOMUXC_UART2_RXD_UART2_DCE_RX     0x140
-+			MX8MM_IOMUXC_UART2_TXD_UART2_DCE_TX     0x140
-+			MX8MM_IOMUXC_UART4_TXD_GPIO5_IO29	0x140
-+		>;
-+	};
-+};
-diff --git a/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs485.dts b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs485.dts
-new file mode 100644
-index 000000000000..2c71ab9854cb
---- /dev/null
-+++ b/arch/arm64/boot/dts/freescale/imx8mm-venice-gw73xx-0x-rs485.dts
-@@ -0,0 +1,61 @@
-+// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-+/*
-+ * Copyright 2021 Gateworks Corporation
-+ *
-+ * GW73xx RS485 HD:
-+ *  - GPIO1_0 rs485_term selects on-chip termination
-+ *  - GPIO4_0 rs485_en needs to be driven high (active)
-+ *  - GPIO4_2 rs485_hd needs to be driven high (active)
-+ *  - UART4_TX is DE for RS485 transmitter
-+ *  - RS485_EN needs to be pulled high
-+ *  - RS485_HALF needs to be pulled high
-+ */
-+
-+#include <dt-bindings/gpio/gpio.h>
-+
-+#include "imx8mm-pinfunc.h"
-+
-+/dts-v1/;
-+/plugin/;
-+
-+&{/} {
-+	compatible = "gw,imx8mm-gw73xx-0x";
-+};
-+
-+&gpio4 {
-+	rs485_en {
-+		gpio-hog;
-+		gpios = <0 GPIO_ACTIVE_HIGH>;
-+		output-high;
-+		line-name = "rs485_en";
-+	};
-+
-+	rs485_hd {
-+		gpio-hog;
-+		gpios = <2 GPIO_ACTIVE_HIGH>;
-+		output-high;
-+		line-name = "rs485_hd";
-+	};
-+};
-+
-+&uart2 {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&pinctrl_uart2>;
-+	rts-gpios = <&gpio5 29 GPIO_ACTIVE_HIGH>;
-+	linux,rs485-enabled-at-boot-time;
-+	status = "okay";
-+};
-+
-+&uart4 {
-+	status = "disabled";
-+};
-+
-+&iomuxc {
-+	pinctrl_uart2: uart2grp {
-+		fsl,pins = <
-+			MX8MM_IOMUXC_UART2_RXD_UART2_DCE_RX     0x140
-+			MX8MM_IOMUXC_UART2_TXD_UART2_DCE_TX     0x140
-+			MX8MM_IOMUXC_UART4_TXD_GPIO5_IO29	0x140
-+		>;
-+	};
-+};
--- 
-2.17.1
-
+This would be so much nicer if the kernel actually knew what is a
+library mapping and what isn't... oh well.
