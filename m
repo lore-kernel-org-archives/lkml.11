@@ -2,115 +2,154 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7577EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 18:06:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E7D7C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 18:06:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381873AbiAUSGH (ORCPT
+        id S1382040AbiAUSGh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 13:06:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37958 "EHLO
+        Fri, 21 Jan 2022 13:06:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239373AbiAUSGF (ORCPT
+        with ESMTP id S1381885AbiAUSGg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 13:06:05 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CFE7C06173B;
-        Fri, 21 Jan 2022 10:06:05 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id h7so2243952ejf.1;
-        Fri, 21 Jan 2022 10:06:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HB00Dk4BxVgWeQmFduo2LILaD1FFGYAEdZ3PebPBEBw=;
-        b=btFmWrH/V9v5abyka+eab1Rs3zrpPn0nci4AUiouqLNDpjw/NkYUFUhvw773WCVIAk
-         xVmqjmn/xkl65jW4CpvfWhM1dxlKUEOH+mZCaCYyhd3lampu7yFeaohMhgJxOLABmYK2
-         0sgxwzihFGSQPijTrND8NtNoGE8QvLZsgDbb2u0jCFaiMSvU8eaXk992+0Fs/m8gK2i+
-         dW9hP3ZqPsSXfA2BbKSsAN3XxXk1xRi2PsGpzdmTfbm/tAAg4TFXNNL6U3UECgd/ag2J
-         5N6t40/gB1LtQRaV0K3wOggY/uAWuhlL/2gu3bKqYOK3tbn4edp4axjVfBashkqM4zQI
-         xYTg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HB00Dk4BxVgWeQmFduo2LILaD1FFGYAEdZ3PebPBEBw=;
-        b=aJwjgfhuIcKYYqsAE2Hg+KPN4ocLmK4hyijj0FRxSsEcSS9g3bdLTEqec9Y5/NC+5I
-         PfR5zwrrvjhCQADjeg0f32mVABF/br5Vk7SFkBU5t6kDVpp5F6kccMQs8D0xtjbeyYA1
-         aFOfkk9/ZJiZjp9Set2lyFV6nPs4cnuCgj8SMX+8I2xBxy3k6Xc5In4nUQOUGDYtF0t/
-         zuciEhwR1HT+bh4/dDsbp/zRt9bu3FzpUZdCg74I/G6y+iXfjuoZNqTRFDGkjR96oBtv
-         RqFqizlRhripbWsTMy1U6J8PuZpJFs6a7Zgk+Hh3xSRdkbsyxpneZ2mdnuNcUt3oQcqP
-         /xIA==
-X-Gm-Message-State: AOAM532MNSiq9gaeMlvD1wDJwv9vUVuNMktOzvhjAHjWXBNNKGqTwkv/
-        hJfAY2CGMMbtvU5CjISk2zwaGR3JJQsHzQYb48o=
-X-Google-Smtp-Source: ABdhPJx/A/eFYcqDd4G5OcIvASWaZyYXtR3rIaew10BEAtQbSwm0/TspzVHpdvckLjatHTglZw4oLp9D9/+CH3DiukM=
-X-Received: by 2002:a17:907:94c9:: with SMTP id dn9mr4119453ejc.270.1642788363547;
- Fri, 21 Jan 2022 10:06:03 -0800 (PST)
+        Fri, 21 Jan 2022 13:06:36 -0500
+Received: from gofer.mess.org (gofer.mess.org [IPv6:2a02:8011:d000:212::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04911C06173B
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 10:06:35 -0800 (PST)
+Received: by gofer.mess.org (Postfix, from userid 1000)
+        id 5A26810008D; Fri, 21 Jan 2022 18:06:31 +0000 (UTC)
+Date:   Fri, 21 Jan 2022 18:06:31 +0000
+From:   Sean Young <sean@mess.org>
+To:     Luiz Sampaio <sampaio.ime@gmail.com>
+Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
+        David =?iso-8859-1?Q?H=E4rdeman?= <david@hardeman.nu>,
+        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org
+Subject: Re: [PATCH 11/31] media: rc: changing LED_* from enum led_brightness
+ to actual value
+Message-ID: <Yer2J+96wy7wSDSs@gofer.mess.org>
+References: <20220121165436.30956-1-sampaio.ime@gmail.com>
+ <20220121165436.30956-12-sampaio.ime@gmail.com>
 MIME-Version: 1.0
-References: <20220121075515.79311-1-songmuchun@bytedance.com>
-In-Reply-To: <20220121075515.79311-1-songmuchun@bytedance.com>
-From:   Yang Shi <shy828301@gmail.com>
-Date:   Fri, 21 Jan 2022 10:05:51 -0800
-Message-ID: <CAHbLzkqzu+20TJc8RGDDCyDaFmG+Q7xjkVgpJF5-uPqubMN2HA@mail.gmail.com>
-Subject: Re: [PATCH 1/5] mm: rmap: fix cache flush on THP pages
-To:     Muchun Song <songmuchun@bytedance.com>
-Cc:     Dan Williams <dan.j.williams@intel.com>,
-        Matthew Wilcox <willy@infradead.org>, Jan Kara <jack@suse.cz>,
-        Alexander Viro <viro@zeniv.linux.org.uk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Alistair Popple <apopple@nvidia.com>,
-        Ralph Campbell <rcampbell@nvidia.com>,
-        Hugh Dickins <hughd@google.com>, xiyuyang19@fudan.edu.cn,
-        "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>,
-        zwisler@kernel.org,
-        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
-        nvdimm@lists.linux.dev,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux MM <linux-mm@kvack.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220121165436.30956-12-sampaio.ime@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 20, 2022 at 11:56 PM Muchun Song <songmuchun@bytedance.com> wrote:
->
-> The flush_cache_page() only remove a PAGE_SIZE sized range from the cache.
-> However, it does not cover the full pages in a THP except a head page.
-> Replace it with flush_cache_range() to fix this issue. At least, no
-> problems were found due to this. Maybe because the architectures that
-> have virtual indexed caches is less.
-
-Yeah, actually flush_cache_page()/flush_cache_range() are no-op for
-the most architectures which have THP supported, i.e. x86, aarch64,
-powerpc, etc.
-
-And currently just tmpfs and read-only files support PMD-mapped THP,
-but both don't have to do writeback. And it seems DAX doesn't have
-writeback either, which uses __set_page_dirty_no_writeback() for
-set_page_dirty. So this code should never be called IIUC.
-
-But anyway your fix looks correct to me. Reviewed-by: Yang Shi
-<shy828301@gmail.com>
-
->
-> Fixes: f27176cfc363 ("mm: convert page_mkclean_one() to use page_vma_mapped_walk()")
-> Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+On Fri, Jan 21, 2022 at 01:54:16PM -0300, Luiz Sampaio wrote:
+> The enum led_brightness, which contains the declaration of LED_OFF,
+> LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
+> max_brightness.
 > ---
->  mm/rmap.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/mm/rmap.c b/mm/rmap.c
-> index b0fd9dc19eba..65670cb805d6 100644
-> --- a/mm/rmap.c
-> +++ b/mm/rmap.c
-> @@ -974,7 +974,7 @@ static bool page_mkclean_one(struct page *page, struct vm_area_struct *vma,
->                         if (!pmd_dirty(*pmd) && !pmd_write(*pmd))
->                                 continue;
->
-> -                       flush_cache_page(vma, address, page_to_pfn(page));
-> +                       flush_cache_range(vma, address, address + HPAGE_PMD_SIZE);
->                         entry = pmdp_invalidate(vma, address, pmd);
->                         entry = pmd_wrprotect(entry);
->                         entry = pmd_mkclean(entry);
-> --
-> 2.11.0
->
+>  drivers/media/rc/rc-main.c     | 4 ++--
+>  drivers/media/rc/redrat3.c     | 4 ++--
+>  drivers/media/rc/ttusbir.c     | 4 ++--
+>  drivers/media/rc/winbond-cir.c | 6 +++---
+>  4 files changed, 9 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/media/rc/rc-main.c b/drivers/media/rc/rc-main.c
+> index b90438a71c80..76580f1920e2 100644
+> --- a/drivers/media/rc/rc-main.c
+> +++ b/drivers/media/rc/rc-main.c
+> @@ -641,7 +641,7 @@ static void ir_do_keyup(struct rc_dev *dev, bool sync)
+>  	dev_dbg(&dev->dev, "keyup key 0x%04x\n", dev->last_keycode);
+>  	del_timer(&dev->timer_repeat);
+>  	input_report_key(dev->input_dev, dev->last_keycode, 0);
+> -	led_trigger_event(led_feedback, LED_OFF);
+> +	led_trigger_event(led_feedback, 0);
+>  	if (sync)
+>  		input_sync(dev->input_dev);
+>  	dev->keypressed = false;
+> @@ -812,7 +812,7 @@ static void ir_do_keydown(struct rc_dev *dev, enum rc_proto protocol,
+>  			dev->device_name, keycode, protocol, scancode);
+>  		input_report_key(dev->input_dev, keycode, 1);
+>  
+> -		led_trigger_event(led_feedback, LED_FULL);
+> +		led_trigger_event(led_feedback, 255);
+>  	}
+>  
+>  	/*
+> diff --git a/drivers/media/rc/redrat3.c b/drivers/media/rc/redrat3.c
+> index cb22316b3f00..7c255f7d790c 100644
+> --- a/drivers/media/rc/redrat3.c
+> +++ b/drivers/media/rc/redrat3.c
+> @@ -855,7 +855,7 @@ static void redrat3_brightness_set(struct led_classdev *led_dev, enum
+>  	struct redrat3_dev *rr3 = container_of(led_dev, struct redrat3_dev,
+>  									led);
+>  
+> -	if (brightness != LED_OFF && atomic_cmpxchg(&rr3->flash, 0, 1) == 0) {
+> +	if (brightness != 0 && atomic_cmpxchg(&rr3->flash, 0, 1) == 0) {
+>  		int ret = usb_submit_urb(rr3->flash_urb, GFP_ATOMIC);
+>  		if (ret != 0) {
+>  			dev_dbg(rr3->dev, "%s: unexpected ret of %d\n",
+> @@ -919,7 +919,7 @@ static void redrat3_led_complete(struct urb *urb)
+>  		break;
+>  	}
+>  
+> -	rr3->led.brightness = LED_OFF;
+> +	rr3->led.brightness = 0;
+>  	atomic_dec(&rr3->flash);
+>  }
+>  
+> diff --git a/drivers/media/rc/ttusbir.c b/drivers/media/rc/ttusbir.c
+> index 629787d53ee1..a295112644c3 100644
+> --- a/drivers/media/rc/ttusbir.c
+> +++ b/drivers/media/rc/ttusbir.c
+> @@ -44,7 +44,7 @@ static enum led_brightness ttusbir_brightness_get(struct led_classdev *led_dev)
+>  {
+>  	struct ttusbir *tt = container_of(led_dev, struct ttusbir, led);
+>  
+> -	return tt->led_on ? LED_FULL : LED_OFF;
+> +	return tt->led_on ? 255 : 0;
+>  }
+>  
+>  static void ttusbir_set_led(struct ttusbir *tt)
+> @@ -70,7 +70,7 @@ static void ttusbir_brightness_set(struct led_classdev *led_dev, enum
+>  {
+>  	struct ttusbir *tt = container_of(led_dev, struct ttusbir, led);
+>  
+> -	tt->led_on = brightness != LED_OFF;
+> +	tt->led_on = brightness != 0;
+>  
+>  	ttusbir_set_led(tt);
+>  }
+> diff --git a/drivers/media/rc/winbond-cir.c b/drivers/media/rc/winbond-cir.c
+> index 94efb035d21b..d14e495a8641 100644
+> --- a/drivers/media/rc/winbond-cir.c
+> +++ b/drivers/media/rc/winbond-cir.c
+> @@ -265,7 +265,7 @@ wbcir_led_brightness_get(struct led_classdev *led_cdev)
+>  	if (inb(data->ebase + WBCIR_REG_ECEIR_CTS) & WBCIR_LED_ENABLE)
+>  		return LED_FULL;
+
+You missed this one.
+
+Thanks
+Sean
+
+>  	else
+> -		return LED_OFF;
+> +		return 0;
+>  }
+>  
+>  static void
+> @@ -277,7 +277,7 @@ wbcir_led_brightness_set(struct led_classdev *led_cdev,
+>  					       led);
+>  
+>  	wbcir_set_bits(data->ebase + WBCIR_REG_ECEIR_CTS,
+> -		       brightness == LED_OFF ? 0x00 : WBCIR_LED_ENABLE,
+> +		       brightness == 0 ? 0x00 : WBCIR_LED_ENABLE,
+>  		       WBCIR_LED_ENABLE);
+>  }
+>  
+> @@ -1167,7 +1167,7 @@ wbcir_remove(struct pnp_dev *device)
+>  	led_classdev_unregister(&data->led);
+>  
+>  	/* This is ok since &data->led isn't actually used */
+> -	wbcir_led_brightness_set(&data->led, LED_OFF);
+> +	wbcir_led_brightness_set(&data->led, 0);
+>  
+>  	release_region(data->wbase, WAKEUP_IOMEM_LEN);
+>  	release_region(data->ebase, EHFUNC_IOMEM_LEN);
+> -- 
+> 2.34.1
