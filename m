@@ -2,64 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0790FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:55:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 396A4C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:55:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379740AbiAUQzD (ORCPT
+        id S1379803AbiAUQz2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 11:55:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49488 "EHLO
+        Fri, 21 Jan 2022 11:55:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379312AbiAUQye (ORCPT
+        with ESMTP id S1379776AbiAUQyy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 11:54:34 -0500
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 862E3C06173B;
-        Fri, 21 Jan 2022 08:54:34 -0800 (PST)
-Received: by mail-oi1-x234.google.com with SMTP id s127so14381111oig.2;
-        Fri, 21 Jan 2022 08:54:34 -0800 (PST)
+        Fri, 21 Jan 2022 11:54:54 -0500
+Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC4F1C061747
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 08:54:51 -0800 (PST)
+Received: by mail-ot1-x32e.google.com with SMTP id n22-20020a9d2016000000b0059bd79f7777so12085120ota.2
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 08:54:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=gMvwDdKHz8SxD4XNsSXi0ifYKZbrqBGSjCLlHvwqADI=;
-        b=bFxWZzsGiGVdBe5x6szZZuz5pjdNt6E15NqjGO8IZpJRKXyU1CUVtQfiS7nQ85w9Hr
-         a2F1y2md9h0rVZQajdIrclWiJ+nPA3vP/ZbKGqY1iQ5LhRK5axOYZFH1PI5vO/zWWhHl
-         Eor7nYxkOYgUmAvJXNbqMrfjOckjduoYsdX4Y6JNRzNb3G1lgccNCs7Y980we11ot3UN
-         XHQSZwNj5VD7/nnNJ8r4qN9vTm6Bj+G85IZM4HPdO+1G2RHVJXmzMRqb+7g60TcsjCK4
-         wuMh1c/1/kQbcrDd8GS8Jj8JzJYBPQdU0Ypn6G0fz+xx25Wr4xWQNsmqWf1XxJQQbtiZ
-         KVQg==
+        bh=HVA0ZWgzizXSbtVSNUIGHlKEL+CetSwxidS0XXuLPDw=;
+        b=lhqbeFLn6LGWwaXmjOPj025/8uD2u6ghPM19YiK6cJI0mhCqlepHSe+COo5qrpuYrj
+         Sl6tQM2aeFiwynHCEpE3AmawxvDoNYa46HXASqlYacYo/jQwc673zhFfithjVFOpFXq4
+         wMa0NyFx/j25Ww4M4OL/nOUVvICnZ+Fk1posng1CxQ50V0w1A+I/ILNOAffBghZahGoA
+         h8sg9o+LHpseXVWuqr9PKyzV/3hDbSpG2nLG2I2YSJk+g07XlsrvaurbNJYMGO3G37YW
+         DjlvKNOAaIu0LDJVdA8MoxqUYd4NYzgYb/l9WBlYQWnYnu+5F+NGDNZRxUWtYq+HaI86
+         GLSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gMvwDdKHz8SxD4XNsSXi0ifYKZbrqBGSjCLlHvwqADI=;
-        b=v6NZrRcc03i/LAx1MtmQH/zsI3ox74a08ew4B2sK0zop3ll94wwmMr8qkDKWbac48/
-         Gjl1DtXTn5shBeK3f4HEWrHBfeU4xiX89XpGk3ZQAU/btCgvLptYNLFv7J7iEkRBrcdh
-         wN2hNE/F4r9FOOl4OWCgurdXtiS9VTk9LAVsSJGBbsGSNSdhSZ/iM0HQhLheho9cyzFd
-         gY/AxgMuzSCfLxL+Lsc+91TNrNZz4rWjeGJy5QGDfZRiCQTuJlxfCH1yP/WqyByOrNnu
-         VSCxhljM7hHWIQnSCCg/be+/5q1Raq2MiD5w5BmnOg47bs3bvPZX0Q+u6vSq3GKnPENr
-         hizg==
-X-Gm-Message-State: AOAM533X99YDAl/Qj01E6p/xeeJiHtdw471z2LKx/RV/11aWKu72DYdS
-        O+glebWAECoSg1ZFgzJN1e0=
-X-Google-Smtp-Source: ABdhPJynqGcrSez4vywi3ZAwZ9c1EdrO57Z15fp5aZAFGlBkrVlL1jMCkHBNN5fSrWBvd5Uebtem0g==
-X-Received: by 2002:a05:6808:171c:: with SMTP id bc28mr1273461oib.102.1642784073967;
-        Fri, 21 Jan 2022 08:54:33 -0800 (PST)
+        bh=HVA0ZWgzizXSbtVSNUIGHlKEL+CetSwxidS0XXuLPDw=;
+        b=xSY68OJ1Pg8v9EuluwEB8NRsL6Q0aFaAI7Rk7J+yUYOSbA/NF/R0ig9XxntsEFpg+U
+         sGMn52NjvX06IuFNIkA8mCFQwRBW3JfzTdg0lNs5KEhOSbE/BHcpc30g47qq87bixJdp
+         FpPYMyh0X/euZQnwKDWm9xd67yoeTf3kl4Ewmxd3kKgYPARXY+V7YGEIoiwefzTXlUQJ
+         NwuwA4d0aQsF2MlU1O+ertusKTHhVa6kiXJSPggNGs6uamtfOYUZgU0gdNtieM8WS1ee
+         ngQPO51n6jbi/+2IeKl4anCfzELrdAAxQUAhtCw7bG3r67ReZ7aIFbI3EeupZNcp0Ll2
+         s4Bw==
+X-Gm-Message-State: AOAM533fsDIPVEmakRuA38kXVZ7S8JKNRxjNRPnBYjPNri84+GIhFrGa
+        bd3bHjA0uXW+FNmFm1lg6vFqndRJl/M=
+X-Google-Smtp-Source: ABdhPJzGe5RaMv9muOHI7TUblJz0zvxsC6HtZXqdKfF4KHj5o321mFmDbasyCgJoXNohCMLyfEp3ew==
+X-Received: by 2002:a9d:60b:: with SMTP id 11mr3320985otn.384.1642784091086;
+        Fri, 21 Jan 2022 08:54:51 -0800 (PST)
 Received: from thinkpad.localdomain ([2804:14d:5cd1:5d03:cf72:4317:3105:f6e5])
-        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.54.31
+        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.54.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 08:54:33 -0800 (PST)
+        Fri, 21 Jan 2022 08:54:50 -0800 (PST)
 From:   Luiz Sampaio <sampaio.ime@gmail.com>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>
+To:     Benjamin Herrenschmidt <benh@kernel.crashing.org>
 Cc:     linux-kernel@vger.kernel.org, Luiz Sampaio <sampaio.ime@gmail.com>,
-        linux-input@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 07/31] input: touchscreen: changing LED_* from enum led_brightness to actual value
-Date:   Fri, 21 Jan 2022 13:54:12 -0300
-Message-Id: <20220121165436.30956-8-sampaio.ime@gmail.com>
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH 09/31] macintosh: changing LED_* from enum led_brightness to actual value
+Date:   Fri, 21 Jan 2022 13:54:14 -0300
+Message-Id: <20220121165436.30956-10-sampaio.ime@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220121165436.30956-1-sampaio.ime@gmail.com>
 References: <20220121165436.30956-1-sampaio.ime@gmail.com>
@@ -73,24 +69,22 @@ The enum led_brightness, which contains the declaration of LED_OFF,
 LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
 max_brightness.
 ---
- drivers/input/touchscreen/stmfts.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/macintosh/via-pmu-led.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/input/touchscreen/stmfts.c b/drivers/input/touchscreen/stmfts.c
-index bc11203c9cf7..7e7cb5f4d6d3 100644
---- a/drivers/input/touchscreen/stmfts.c
-+++ b/drivers/input/touchscreen/stmfts.c
-@@ -608,8 +608,8 @@ static int stmfts_enable_led(struct stmfts_data *sdata)
- 		return PTR_ERR(sdata->ledvdd);
+diff --git a/drivers/macintosh/via-pmu-led.c b/drivers/macintosh/via-pmu-led.c
+index ae067ab2373d..b0a727ad0157 100644
+--- a/drivers/macintosh/via-pmu-led.c
++++ b/drivers/macintosh/via-pmu-led.c
+@@ -54,7 +54,7 @@ static void pmu_led_set(struct led_classdev *led_cdev,
  
- 	sdata->led_cdev.name = STMFTS_DEV_NAME;
--	sdata->led_cdev.max_brightness = LED_ON;
--	sdata->led_cdev.brightness = LED_OFF;
-+	sdata->led_cdev.max_brightness = 1;
-+	sdata->led_cdev.brightness = 0;
- 	sdata->led_cdev.brightness_set_blocking = stmfts_brightness_set;
- 	sdata->led_cdev.brightness_get = stmfts_brightness_get;
- 
+ 	spin_lock_irqsave(&pmu_blink_lock, flags);
+ 	switch (brightness) {
+-	case LED_OFF:
++	case 0:
+ 		requested_change = 0;
+ 		break;
+ 	case LED_FULL:
 -- 
 2.34.1
 
