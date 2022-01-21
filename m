@@ -2,164 +2,245 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BDC8C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 07:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 07:58:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379298AbiAUH5r (ORCPT
+        id S1349170AbiAUH6L (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 02:57:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40172 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379201AbiAUH4y (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 02:56:54 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A414C061755
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 23:56:54 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id s2-20020a17090ad48200b001b501977b23so7982860pju.2
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 23:56:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=yfAXAcV/wZ+uHO6JBR1mzR4k32V5m276WxyzPLvNLTE=;
-        b=tsCSqk1SwZfKiz4ejFhGZDtmCqw1BaXmIG8GnY1LmOqW6W34x7ZWmogKVCWpUEv+ED
-         c/rvCRFm6ZFzNHCApLvlhG28OHe4IG/cw7kTVwnGWxQ//EN/1JNbHyZkalCAXATmuqpV
-         NsjevRa91/GcIqUtSYviL9C3VbU5COEXDSB/w81ygjvpB14LbyXqvqrB71bfm/zRZsne
-         h6PY30/T83gzrCY7cvBcDPJNQvJv5e/k6m3HbpZJPNQV9/qiikBXS3exSFVsMq5qMe/j
-         59qq4m+Kw5pJJAFd4Wwdt4Lpn7k//nWZG/wIWhg4LU7poy/H6IRz/+KH599kO8n7+pnc
-         iE1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=yfAXAcV/wZ+uHO6JBR1mzR4k32V5m276WxyzPLvNLTE=;
-        b=zqYNb0vb3xmse7UEcfNp4s8jBn75T/9j2LmCCSOm60ZQ1n4GxgA/EzSlJkRlamc7vD
-         r3V/H2zzJ+3zlVCyg1WzMWOpatnVX+589BYpCWDfxcCMfat1auAkK6F6pXIexujJ7+sl
-         ZVB+TMGpz2H64KLzSDkNSGqbXeRja9vFnMXRC345DaJMqpWwj5Zn6i47LNQ5hFDulf0H
-         PTHWTf7OA3iteybruyzMcsZoc6RTF9IumZn75GB4WaT8FrSPvdp/DjZe7U2ouqmAnHUn
-         HWfdFIdxAqLWlr8OodhnntSmOroT6rDWNq8uCO6i9KOo8rt1L3GGR4qHC44lAlqA1oqq
-         qaOQ==
-X-Gm-Message-State: AOAM5312eFuXT6fduj94C7tBECB9JaxyB3Asom749P7WpI6I/8K6lkya
-        PxKJ9NkmBl+bSsKnY3WWefa+fQ==
-X-Google-Smtp-Source: ABdhPJyF+AFCIJwh5y14gbJR641hVBi2LRzmSf89BfdP8AWEWYlQZY5kaMYEvUoNkqJgILGBmJjr3w==
-X-Received: by 2002:a17:90b:248f:: with SMTP id nt15mr3418448pjb.137.1642751813587;
-        Thu, 20 Jan 2022 23:56:53 -0800 (PST)
-Received: from FVFYT0MHHV2J.tiktokcdn.com ([139.177.225.230])
-        by smtp.gmail.com with ESMTPSA id t15sm10778178pjy.17.2022.01.20.23.56.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 23:56:53 -0800 (PST)
-From:   Muchun Song <songmuchun@bytedance.com>
-To:     dan.j.williams@intel.com, willy@infradead.org, jack@suse.cz,
-        viro@zeniv.linux.org.uk, akpm@linux-foundation.org,
-        apopple@nvidia.com, shy828301@gmail.com, rcampbell@nvidia.com,
-        hughd@google.com, xiyuyang19@fudan.edu.cn,
-        kirill.shutemov@linux.intel.com, zwisler@kernel.org
-Cc:     linux-fsdevel@vger.kernel.org, nvdimm@lists.linux.dev,
-        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
-        Muchun Song <songmuchun@bytedance.com>
-Subject: [PATCH 5/5] mm: remove range parameter from follow_invalidate_pte()
-Date:   Fri, 21 Jan 2022 15:55:15 +0800
-Message-Id: <20220121075515.79311-5-songmuchun@bytedance.com>
-X-Mailer: git-send-email 2.32.0 (Apple Git-132)
-In-Reply-To: <20220121075515.79311-1-songmuchun@bytedance.com>
-References: <20220121075515.79311-1-songmuchun@bytedance.com>
+        Fri, 21 Jan 2022 02:58:11 -0500
+Received: from mx1.cqplus1.com ([113.204.237.245]:55858 "EHLO mx1.cqplus1.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1349256AbiAUH6H (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 21 Jan 2022 02:58:07 -0500
+X-MailGates: (flag:4,DYNAMIC,BADHELO,RELAY,NOHOST:PASS)(compute_score:DE
+        LIVER,40,3)
+Received: from 172.28.114.216
+        by mx1.cqplus1.com with MailGates ESMTP Server V5.0(24938:0:AUTH_RELAY)
+        (envelope-from <qinjian@cqplus1.com>); Fri, 21 Jan 2022 15:53:24 +0800 (CST)
+From:   Qin Jian <qinjian@cqplus1.com>
+To:     robh+dt@kernel.org
+Cc:     mturquette@baylibre.com, sboyd@kernel.org, tglx@linutronix.de,
+        maz@kernel.org, p.zabel@pengutronix.de, linux@armlinux.org.uk,
+        broonie@kernel.org, arnd@arndb.de, stefan.wahren@i2se.com,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-clk@vger.kernel.org,
+        wells.lu@sunplus.com, Qin Jian <qinjian@cqplus1.com>
+Subject: [PATCH v8 05/10] dt-bindings: clock: Add bindings for SP7021 clock driver
+Date:   Fri, 21 Jan 2022 15:53:13 +0800
+Message-Id: <504303c7cf92af8368dcda0cdde3b9c15a833418.1642751015.git.qinjian@cqplus1.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <cover.1642751015.git.qinjian@cqplus1.com>
+References: <cover.1642751015.git.qinjian@cqplus1.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The only user (DAX) of range parameter of follow_invalidate_pte()
-is gone, it safe to remove the range paramter and make it static
-to simlify the code.
+Add documentation to describe Sunplus SP7021 clock driver bindings.
 
-Signed-off-by: Muchun Song <songmuchun@bytedance.com>
+Signed-off-by: Qin Jian <qinjian@cqplus1.com>
 ---
- include/linux/mm.h |  3 ---
- mm/memory.c        | 23 +++--------------------
- 2 files changed, 3 insertions(+), 23 deletions(-)
+Add clocks & clock-names.
+---
+ .../bindings/clock/sunplus,sp7021-clkc.yaml   |  52 ++++++++
+ MAINTAINERS                                   |   2 +
+ include/dt-bindings/clock/sp-sp7021.h         | 112 ++++++++++++++++++
+ 3 files changed, 166 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+ create mode 100644 include/dt-bindings/clock/sp-sp7021.h
 
-diff --git a/include/linux/mm.h b/include/linux/mm.h
-index d211a06784d5..7895b17f6847 100644
---- a/include/linux/mm.h
-+++ b/include/linux/mm.h
-@@ -1814,9 +1814,6 @@ void free_pgd_range(struct mmu_gather *tlb, unsigned long addr,
- 		unsigned long end, unsigned long floor, unsigned long ceiling);
- int
- copy_page_range(struct vm_area_struct *dst_vma, struct vm_area_struct *src_vma);
--int follow_invalidate_pte(struct mm_struct *mm, unsigned long address,
--			  struct mmu_notifier_range *range, pte_t **ptepp,
--			  pmd_t **pmdpp, spinlock_t **ptlp);
- int follow_pte(struct mm_struct *mm, unsigned long address,
- 	       pte_t **ptepp, spinlock_t **ptlp);
- int follow_pfn(struct vm_area_struct *vma, unsigned long address,
-diff --git a/mm/memory.c b/mm/memory.c
-index 514a81cdd1ae..e8ce066be5f2 100644
---- a/mm/memory.c
-+++ b/mm/memory.c
-@@ -4869,9 +4869,8 @@ int __pmd_alloc(struct mm_struct *mm, pud_t *pud, unsigned long address)
- }
- #endif /* __PAGETABLE_PMD_FOLDED */
+diff --git a/Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml b/Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+new file mode 100644
+index 000000000..e6d098cf4
+--- /dev/null
++++ b/Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+@@ -0,0 +1,52 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++# Copyright (C) Sunplus Co., Ltd. 2021
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/clock/sunplus,sp7021-clkc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Sunplus SP7021 SoC Clock Controller Binding
++
++maintainers:
++  - Qin Jian <qinjian@cqplus1.com>
++
++properties:
++  compatible:
++    const: sunplus,sp7021-clkc
++
++  "#clock-cells":
++    const: 1
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    items:
++      - description: External oscillator clock
++      - description: System clock
++
++  clock-names:
++    items:
++      - const: extclk
++      - const: pllsys
++
++required:
++  - compatible
++  - "#clock-cells"
++  - reg
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    clkc: clock-controller@9c000000 {
++      compatible = "sunplus,sp7021-clkc";
++      #clock-cells = <1>;
++      reg = <0x9c000000 0x280>;
++      clocks = <&extclk>, <&clkc PLL_SYS>;
++      clock-names = "extclk", "pllsys";
++    };
++
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 6caffd6d0..90ebb823f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2661,8 +2661,10 @@ L:	linux-arm-kernel@lists.infradead.org (moderated for mon-subscribers)
+ S:	Maintained
+ W:	https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
+ F:	Documentation/devicetree/bindings/arm/sunplus,sp7021.yaml
++F:	Documentation/devicetree/bindings/clock/sunplus,sp7021-clkc.yaml
+ F:	Documentation/devicetree/bindings/reset/sunplus,reset.yaml
+ F:	drivers/reset/reset-sunplus.c
++F:	include/dt-bindings/clock/sp-sp7021.h
+ F:	include/dt-bindings/reset/sp-sp7021.h
  
--int follow_invalidate_pte(struct mm_struct *mm, unsigned long address,
--			  struct mmu_notifier_range *range, pte_t **ptepp,
--			  pmd_t **pmdpp, spinlock_t **ptlp)
-+static int follow_invalidate_pte(struct mm_struct *mm, unsigned long address,
-+				 pte_t **ptepp, pmd_t **pmdpp, spinlock_t **ptlp)
- {
- 	pgd_t *pgd;
- 	p4d_t *p4d;
-@@ -4898,31 +4897,17 @@ int follow_invalidate_pte(struct mm_struct *mm, unsigned long address,
- 		if (!pmdpp)
- 			goto out;
- 
--		if (range) {
--			mmu_notifier_range_init(range, MMU_NOTIFY_CLEAR, 0,
--						NULL, mm, address & PMD_MASK,
--						(address & PMD_MASK) + PMD_SIZE);
--			mmu_notifier_invalidate_range_start(range);
--		}
- 		*ptlp = pmd_lock(mm, pmd);
- 		if (pmd_huge(*pmd)) {
- 			*pmdpp = pmd;
- 			return 0;
- 		}
- 		spin_unlock(*ptlp);
--		if (range)
--			mmu_notifier_invalidate_range_end(range);
- 	}
- 
- 	if (pmd_none(*pmd) || unlikely(pmd_bad(*pmd)))
- 		goto out;
- 
--	if (range) {
--		mmu_notifier_range_init(range, MMU_NOTIFY_CLEAR, 0, NULL, mm,
--					address & PAGE_MASK,
--					(address & PAGE_MASK) + PAGE_SIZE);
--		mmu_notifier_invalidate_range_start(range);
--	}
- 	ptep = pte_offset_map_lock(mm, pmd, address, ptlp);
- 	if (!pte_present(*ptep))
- 		goto unlock;
-@@ -4930,8 +4915,6 @@ int follow_invalidate_pte(struct mm_struct *mm, unsigned long address,
- 	return 0;
- unlock:
- 	pte_unmap_unlock(ptep, *ptlp);
--	if (range)
--		mmu_notifier_invalidate_range_end(range);
- out:
- 	return -EINVAL;
- }
-@@ -4960,7 +4943,7 @@ int follow_invalidate_pte(struct mm_struct *mm, unsigned long address,
- int follow_pte(struct mm_struct *mm, unsigned long address,
- 	       pte_t **ptepp, spinlock_t **ptlp)
- {
--	return follow_invalidate_pte(mm, address, NULL, ptepp, NULL, ptlp);
-+	return follow_invalidate_pte(mm, address, ptepp, NULL, ptlp);
- }
- EXPORT_SYMBOL_GPL(follow_pte);
- 
+ ARM/Synaptics SoC support
+diff --git a/include/dt-bindings/clock/sp-sp7021.h b/include/dt-bindings/clock/sp-sp7021.h
+new file mode 100644
+index 000000000..45dac6de8
+--- /dev/null
++++ b/include/dt-bindings/clock/sp-sp7021.h
+@@ -0,0 +1,112 @@
++/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
++/*
++ * Copyright (C) Sunplus Technology Co., Ltd.
++ *       All rights reserved.
++ */
++#ifndef _DT_BINDINGS_CLOCK_SUNPLUS_SP7021_H
++#define _DT_BINDINGS_CLOCK_SUNPLUS_SP7021_H
++
++#define XTAL			27000000
++
++/* plls */
++#define PLL_A			0
++#define PLL_E			1
++#define PLL_E_2P5		2
++#define PLL_E_25		3
++#define PLL_E_112P5		4
++#define PLL_F			5
++#define PLL_TV			6
++#define PLL_TV_A		7
++#define PLL_SYS			8
++
++/* gates: mo_clken0 ~ mo_clken9 */
++#define CLK_SYSTEM		0x10
++#define CLK_RTC			0x12
++#define CLK_IOCTL		0x13
++#define CLK_IOP			0x14
++#define CLK_OTPRX		0x15
++#define CLK_NOC			0x16
++#define CLK_BR			0x17
++#define CLK_RBUS_L00	        0x18
++#define CLK_SPIFL		0x19
++#define CLK_SDCTRL0		0x1a
++#define CLK_PERI0		0x1b
++#define CLK_A926		0x1d
++#define CLK_UMCTL2		0x1e
++#define CLK_PERI1		0x1f
++
++#define CLK_DDR_PHY0	        0x20
++#define CLK_ACHIP		0x22
++#define CLK_STC0		0x24
++#define CLK_STC_AV0		0x25
++#define CLK_STC_AV1		0x26
++#define CLK_STC_AV2		0x27
++#define CLK_UA0			0x28
++#define CLK_UA1			0x29
++#define CLK_UA2			0x2a
++#define CLK_UA3			0x2b
++#define CLK_UA4			0x2c
++#define CLK_HWUA		0x2d
++#define CLK_DDC0		0x2e
++#define CLK_UADMA		0x2f
++
++#define CLK_CBDMA0		0x30
++#define CLK_CBDMA1		0x31
++#define CLK_SPI_COMBO_0	        0x32
++#define CLK_SPI_COMBO_1	        0x33
++#define CLK_SPI_COMBO_2	        0x34
++#define CLK_SPI_COMBO_3	        0x35
++#define CLK_AUD			0x36
++#define CLK_USBC0		0x3a
++#define CLK_USBC1		0x3b
++#define CLK_UPHY0		0x3d
++#define CLK_UPHY1		0x3e
++
++#define CLK_I2CM0		0x40
++#define CLK_I2CM1		0x41
++#define CLK_I2CM2		0x42
++#define CLK_I2CM3		0x43
++#define CLK_PMC			0x4d
++#define CLK_CARD_CTL0	        0x4e
++#define CLK_CARD_CTL1	        0x4f
++
++#define CLK_CARD_CTL4	        0x52
++#define CLK_BCH			0x54
++#define CLK_DDFCH		0x5b
++#define CLK_CSIIW0		0x5c
++#define CLK_CSIIW1		0x5d
++#define CLK_MIPICSI0	        0x5e
++#define CLK_MIPICSI1	        0x5f
++
++#define CLK_HDMI_TX		0x60
++#define CLK_VPOST		0x65
++
++#define CLK_TGEN		0x70
++#define CLK_DMIX		0x71
++#define CLK_TCON		0x7a
++#define CLK_INTERRUPT	        0x7f
++
++#define CLK_RGST		0x80
++#define CLK_GPIO		0x83
++#define CLK_RBUS_TOP	        0x84
++
++#define CLK_MAILBOX		0x96
++#define CLK_SPIND		0x9a
++#define CLK_I2C2CBUS	        0x9b
++#define CLK_SEC			0x9d
++#define CLK_DVE			0x9e
++#define CLK_GPOST0		0x9f
++
++#define CLK_OSD0		0xa0
++#define CLK_DISP_PWM	        0xa2
++#define CLK_UADBG		0xa3
++#define CLK_DUMMY_MASTER	0xa4
++#define CLK_FIO_CTL		0xa5
++#define CLK_FPGA		0xa6
++#define CLK_L2SW		0xa7
++#define CLK_ICM			0xa8
++#define CLK_AXI_GLOBAL	        0xa9
++
++#define CLK_MAX			0xb0
++
++#endif
 -- 
-2.11.0
+2.33.1
 
