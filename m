@@ -2,216 +2,140 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3830C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 05:39:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FF88C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 05:39:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378552AbiAUFjK (ORCPT
+        id S1378529AbiAUFjv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 00:39:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348689AbiAUFi6 (ORCPT
+        Fri, 21 Jan 2022 00:39:51 -0500
+Received: from mailout3.samsung.com ([203.254.224.33]:63247 "EHLO
+        mailout3.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348742AbiAUFjt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 00:38:58 -0500
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6E5FC06173F
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 21:38:57 -0800 (PST)
-Received: by mail-qt1-x82a.google.com with SMTP id x8so8845357qta.12
-        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 21:38:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=aAAjcbMGSfL+ONrTTuf3PGqmWSdgQ+wWZZ+GAzxN19Y=;
-        b=AFDRxD4KSiEmsFxkbegWggpnP7XEfoiBH4Se3tS9WTgRK8Lbj6wcD/Trmsj9nLMayq
-         wn7R7We7IuvIS9jDgBHr9SiGGa+4F4SpsM0KxgJdQPEIBfikqUnqTrFa0Bq4o8tm7Q/5
-         Z1jKn0p7Nr+VUxzgQHaBB0DZSpnE+Atr28N31Fu/K3z08xS848QM5ay71r6UFPNatgtw
-         qEOZhXLYnTrbRnPqcXQBfflDi69Y/+1G7GhMDscw1GTmPnCUTZGTE+7CdA7q+uUZJiOg
-         91SpJ8hWuCspmLFKILWLyJlDWIsWZohYKI1RQnD0fZTE3GA4y4vL20KZiBLZi7J4t3gk
-         a7KQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=aAAjcbMGSfL+ONrTTuf3PGqmWSdgQ+wWZZ+GAzxN19Y=;
-        b=sIhoVL2JI0vcCM42z8JV2qqpIKT+cS0+LcJxOdLcg1TcVl4vN+Tl6Kb2F5lOKZD5Vm
-         Js1YUQD2yFDo2tvRqpM8dWRsPJ6Y9XZ2SucBJYT9mtC0Tf+fcFP4l5L/ntyK3wh7K21S
-         ryeTX/aMdV0K6rM56zSCiwqgpufjUxmWQfSKjmyj0gYSC64vl3oRIN2A4Z7Z18yWkHs3
-         g6+kjSQEEQz2hR7SnMq9Fn67WXwrbtxpkHv0G20fDOn68XlvTSmTczPrvS6fswD+MhDF
-         ynU/ZmZy5IuvAyjZfVt1mytFZLEiGYGxfFUU4jRw7IZD+CqIj/ccqC2DlXFi6FPnwNEy
-         5/HA==
-X-Gm-Message-State: AOAM531AQEEhBzDunhbpTsyDRSShSz7T5+SqrM6fit7KeH2ytBcAKqQF
-        dyqDhsuVNCuNMyMsxMp/Y0N12TQqbtY=
-X-Google-Smtp-Source: ABdhPJx1i2+IsbzcSIY3h0DecqKpQVtqGLmonyUfXtGyRkQpXghCg5k6zwKgutiBsmrwnO56D3ZjQw==
-X-Received: by 2002:ac8:1186:: with SMTP id d6mr2159010qtj.192.1642743536985;
-        Thu, 20 Jan 2022 21:38:56 -0800 (PST)
-Received: from localhost.localdomain ([45.124.203.14])
-        by smtp.gmail.com with ESMTPSA id y17sm2607169qtw.0.2022.01.20.21.38.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 20 Jan 2022 21:38:56 -0800 (PST)
-Sender: "joel.stan@gmail.com" <joel.stan@gmail.com>
-From:   Joel Stanley <joel@jms.id.au>
-To:     Jeremy Kerr <jk@ozlabs.org>,
-        Alistar Popple <alistair@popple.id.au>,
-        Eddie James <eajames@linux.ibm.com>,
-        Amitay Isaacs <amitay@ozlabs.org>
-Cc:     linux-fsi@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/2] fsi: sbefifo: Implement FSI_SBEFIFO_READ_TIMEOUT_SECONDS ioctl
-Date:   Fri, 21 Jan 2022 16:08:16 +1030
-Message-Id: <20220121053816.82253-3-joel@jms.id.au>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220121053816.82253-1-joel@jms.id.au>
-References: <20220121053816.82253-1-joel@jms.id.au>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 21 Jan 2022 00:39:49 -0500
+Received: from epcas2p1.samsung.com (unknown [182.195.41.53])
+        by mailout3.samsung.com (KnoxPortal) with ESMTP id 20220121053948epoutp036ac579715a751d6c091008b523f0b3a5~MMpcpmlow1933819338epoutp03I
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 05:39:48 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout3.samsung.com 20220121053948epoutp036ac579715a751d6c091008b523f0b3a5~MMpcpmlow1933819338epoutp03I
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1642743588;
+        bh=XKeuICJKfFTAdoh3v+3Qbno4KZ8zHGwFwXcnqw+frjY=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=S6VsddJov8/xpkkV6R2x9GwJhpTjFNBxSZlm/MywkhguISMNg2d5LrbM0NpZaW6Gq
+         ACnXYC9cQ5EhBFEKrxsnLo0yd77il+4PkqvYAY2fzRegzjU/uBBa7eJERibzU96f7j
+         WXitIPCEaZiHBTPmHg/QEimcHDu8JpEVBSrKFA/c=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
+        20220121053948epcas2p1696de1dc7c00fb142c30c498877a3d7b~MMpcA0wce0931209312epcas2p1l;
+        Fri, 21 Jan 2022 05:39:48 +0000 (GMT)
+Received: from epsmges2p3.samsung.com (unknown [182.195.36.70]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4Jg7Vp0RClz4x9QT; Fri, 21 Jan
+        2022 05:39:46 +0000 (GMT)
+Received: from epcas2p1.samsung.com ( [182.195.41.53]) by
+        epsmges2p3.samsung.com (Symantec Messaging Gateway) with SMTP id
+        B2.9B.10014.A564AE16; Fri, 21 Jan 2022 14:36:26 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
+        20220121053945epcas2p386871d63f104de31d8fd0c123615b876~MMpZmjxQl0637506375epcas2p35;
+        Fri, 21 Jan 2022 05:39:45 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20220121053945epsmtrp10820fd05f3b1bcb598a7a645d0e1afcb~MMpZjUDXN2230722307epsmtrp1W;
+        Fri, 21 Jan 2022 05:39:45 +0000 (GMT)
+X-AuditID: b6c32a47-489ff7000000271e-16-61ea465a00f0
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        CC.0B.08738.0274AE16; Fri, 21 Jan 2022 14:39:44 +0900 (KST)
+Received: from ubuntu.dsn.sec.samsung.com (unknown [12.36.155.120]) by
+        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220121053945epsmtip19972b73c2a30f16fa624a27318692e05~MMpZTWAFi2315723157epsmtip1V;
+        Fri, 21 Jan 2022 05:39:45 +0000 (GMT)
+From:   Kiwoong Kim <kwmad.kim@samsung.com>
+To:     linux-scsi@vger.kernel.org, linux-kernel@vger.kernel.org,
+        alim.akhtar@samsung.com, avri.altman@wdc.com, jejb@linux.ibm.com,
+        martin.petersen@oracle.com, beanhuo@micron.com,
+        cang@codeaurora.org, adrian.hunter@intel.com, sc.suh@samsung.com,
+        hy50.seo@samsung.com, sh425.lee@samsung.com,
+        bhoon95.kim@samsung.com, vkumar.1997@samsung.com
+Cc:     Kiwoong Kim <kwmad.kim@samsung.com>
+Subject: [PATCH v2] scsi: ufs: see link lost as fatal
+Date:   Fri, 21 Jan 2022 14:37:55 +0900
+Message-Id: <1642743475-54275-1-git-send-email-kwmad.kim@samsung.com>
+X-Mailer: git-send-email 2.7.4
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmplk+LIzCtJLcpLzFFi42LZdljTVDfK7VWiwcvDzBYnn6xhs3gwbxub
+        xcufV9ksDj7sZLH4uvQZq8Wn9ctYLVYvfsBisejGNiaLm1uOslhc3jWHzaL7+g42i+XH/zFZ
+        dN29wWix9N9bFos79z+yOPB7XO7rZfJYvOclk8eERQcYPb6v72Dz+Pj0FotH35ZVjB6fN8l5
+        tB/oZgrgiMq2yUhNTEktUkjNS85PycxLt1XyDo53jjc1MzDUNbS0MFdSyEvMTbVVcvEJ0HXL
+        zAG6XkmhLDGnFCgUkFhcrKRvZ1OUX1qSqpCRX1xiq5RakJJTYF6gV5yYW1yal66Xl1piZWhg
+        YGQKVJiQnfH30izmgkaOijnzPzE1MB5k62Lk5JAQMJHYvnYjSxcjF4eQwA5GiRW/fkM5nxgl
+        bu55DeV8ZpTY+O8vC0zLqfmP2SESuxglPq2bwAzh/GCUOD7jPNhgNgFNiac3pzKB2CIC15kk
+        5m3PALGZBdQldk04ARTn4BAWMJU4MqMcJMwioCqx/sJzRpAwr4CrRMNHSYhdchI3z3WCjZcQ
+        aOSQaDq1FuoIF4mNiz+wQ9jCEq+Ob4GypSRe9rexQzQ0M0rs3N0I1T2FUWLJfpgOY4lZz9rB
+        tjEDHbp+lz6IKSGgLHHkFgvEmXwSHYf/skOEeSU62oQgGpUlfk2azAhhS0rMvHkHqsRD4vZB
+        e5CwkECsxJWbi9gnMMrOQhi/gJFxFaNYakFxbnpqsVGBMTyOkvNzNzGC06OW+w7GGW8/6B1i
+        ZOJgPMQowcGsJMIrVf8sUYg3JbGyKrUoP76oNCe1+BCjKTC4JjJLiSbnAxN0Xkm8oYmlgYmZ
+        maG5kamBuZI4r1fKhkQhgfTEktTs1NSC1CKYPiYOTqkGpiDNw9s+t3ddnLTLsS370gvmFXtW
+        nWSUbDj/I/ltwKHZ8RdsNP9NiikWsVFk7jUxnq7+f0pS94EvS0W63pk2J9oGb9AOTd16K2x2
+        muKeT6srFn4XZ/VyYzjao/umssK79EnQIWfLL3eeXvlWvyIgQmmCz8p7Bvdiw1w5FxteiWtn
+        6OzxNBdR4ci6rC9ve8RC+4Xq8TbWA+rG7O2r/jA2HCy/YWd8NVxINuC3byy35/QpX9eElN/+
+        X6HI9Kv0pvcz/Y7JmfODJ97l3nrH133XNnWnKff7Ii4rvov8YqDPWPtNPosjam/zLpFX7vPr
+        9faENz2pF1+xWIQn6Kji8q2h6m5byrb46fnlnZywadd6JZbijERDLeai4kQAkiDoERgEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrKLMWRmVeSWpSXmKPExsWy7bCSnK6C+6tEgwvtihYnn6xhs3gwbxub
+        xcufV9ksDj7sZLH4uvQZq8Wn9ctYLVYvfsBisejGNiaLm1uOslhc3jWHzaL7+g42i+XH/zFZ
+        dN29wWix9N9bFos79z+yOPB7XO7rZfJYvOclk8eERQcYPb6v72Dz+Pj0FotH35ZVjB6fN8l5
+        tB/oZgrgiOKySUnNySxLLdK3S+DK+HtpFnNBI0fFnPmfmBoYD7J1MXJySAiYSJya/5i9i5GL
+        Q0hgB6PE38v3mSESkhIndj5nhLCFJe63HGGFKPrGKDHn/zJWkASbgKbE05tTmUASIgIvmSRe
+        zFkDNpZZQF1i14QTQAkODmEBU4kjM8pBwiwCqhLrL4AM5eDgFXCVaPgoCTFfTuLmuU7mCYw8
+        CxgZVjFKphYU56bnFhsWGOWllusVJ+YWl+al6yXn525iBIesltYOxj2rPugdYmTiYDzEKMHB
+        rCTCK1X/LFGINyWxsiq1KD++qDQntfgQozQHi5I474Wuk/FCAumJJanZqakFqUUwWSYOTqkG
+        JtP7iza3btt5TnBj7NX2dpabtiJ5NnwmyWU2tbNb+hPWsBybe6V2C2dUkvacXVt7fXO/bezM
+        vWWbevP3hqOb5GMDzZ6bx205H1p05kvErrx3fhzrQ9cKiOcIm0qcdJ1xt69a4PC/EzKGk5vv
+        ss9u/tb96t+K+du5PHfLC3nXV9k8k0tNlep+IKPprB4RvmWB7YK8g8aMTPkFpvsWsgrIeucv
+        fHerUzBWf39J00vxOP0FajnBb/0Cuz12aj8oSZpvw3zjB8Muj9n1Zkqb1QOuKxVY+DHPnBjn
+        HLL/+VuV1Ylb+mOm/uKfeTr1lVD4Ho8TVmcffLl7fPqUdybsXGe5ZjvH7T6rvMvk4a+3sbMm
+        K7EUZyQaajEXFScCAERyQnvIAgAA
+X-CMS-MailID: 20220121053945epcas2p386871d63f104de31d8fd0c123615b876
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220121053945epcas2p386871d63f104de31d8fd0c123615b876
+References: <CGME20220121053945epcas2p386871d63f104de31d8fd0c123615b876@epcas2p3.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Amitay Isaacs <amitay@ozlabs.org>
+v1 -> v2: modify comment
 
-FSI_SBEFIFO_READ_TIMEOUT_SECONDS ioctl sets the read timeout (in
-seconds) for the response received by sbefifo device from sbe.  The
-timeout affects only the read operation on current sbefifo device fd.
+This event is raised when link is lost as specified
+in UFSHCI spec and that means communication is
+not possible. Thus initializing UFS interface needs to be done.
 
-Certain SBE operations can take long time to complete and the default
-timeout of 10 seconds might not be sufficient to start receiving
-response from SBE.  In such cases, allow the timeout to be set to the
-maximum of 120 seconds.
+This patch is to make UFS driver see Link Lost as fatal by using
+INT_FATAL_ERRORS. This lead to host reset whenever a link lost
+interrupt occurs.
 
-The kernel does not contain the definition of the various SBE
-operations, so we must expose an interface to userspace to set the
-timeout for the given operation.
-
-Signed-off-by: Amitay Isaacs <amitay@ozlabs.org>
-Signed-off-by: Joel Stanley <joel@jms.id.au>
+Signed-off-by: Kiwoong Kim <kwmad.kim@samsung.com>
 ---
-v3:
-  - Clarify why this is an ioctl and not hardcoded in the kernel
-  - Add seconds to the name
----
- drivers/fsi/fsi-sbefifo.c | 49 +++++++++++++++++++++++++++++++++++++++
- include/uapi/linux/fsi.h  | 14 +++++++++++
- 2 files changed, 63 insertions(+)
+ drivers/scsi/ufs/ufshci.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/fsi/fsi-sbefifo.c b/drivers/fsi/fsi-sbefifo.c
-index 1e9b326e8f67..f52a912cdf16 100644
---- a/drivers/fsi/fsi-sbefifo.c
-+++ b/drivers/fsi/fsi-sbefifo.c
-@@ -32,6 +32,8 @@
- #include <linux/vmalloc.h>
- #include <linux/mm.h>
+diff --git a/drivers/scsi/ufs/ufshci.h b/drivers/scsi/ufs/ufshci.h
+index 6a295c8..a7ff0e5 100644
+--- a/drivers/scsi/ufs/ufshci.h
++++ b/drivers/scsi/ufs/ufshci.h
+@@ -142,7 +142,8 @@ static inline u32 ufshci_version(u32 major, u32 minor)
+ #define INT_FATAL_ERRORS	(DEVICE_FATAL_ERROR |\
+ 				CONTROLLER_FATAL_ERROR |\
+ 				SYSTEM_BUS_FATAL_ERROR |\
+-				CRYPTO_ENGINE_FATAL_ERROR)
++				CRYPTO_ENGINE_FATAL_ERROR |\
++				UIC_LINK_LOST)
  
-+#include <uapi/linux/fsi.h>
-+
- /*
-  * The SBEFIFO is a pipe-like FSI device for communicating with
-  * the self boot engine on POWER processors.
-@@ -134,6 +136,7 @@ struct sbefifo_user {
- 	void			*cmd_page;
- 	void			*pending_cmd;
- 	size_t			pending_len;
-+	u32			read_timeout_ms;
- };
- 
- static DEFINE_MUTEX(sbefifo_ffdc_mutex);
-@@ -796,6 +799,7 @@ static int sbefifo_user_open(struct inode *inode, struct file *file)
- 		return -ENOMEM;
- 	}
- 	mutex_init(&user->file_lock);
-+	user->read_timeout_ms = SBEFIFO_TIMEOUT_START_RSP;
- 
- 	return 0;
- }
-@@ -838,7 +842,9 @@ static ssize_t sbefifo_user_read(struct file *file, char __user *buf,
- 	rc = mutex_lock_interruptible(&sbefifo->lock);
- 	if (rc)
- 		goto bail;
-+	sbefifo->timeout_start_rsp_ms = user->read_timeout_ms;
- 	rc = __sbefifo_submit(sbefifo, user->pending_cmd, cmd_len, &resp_iter);
-+	sbefifo->timeout_start_rsp_ms = SBEFIFO_TIMEOUT_START_RSP;
- 	mutex_unlock(&sbefifo->lock);
- 	if (rc < 0)
- 		goto bail;
-@@ -928,12 +934,55 @@ static int sbefifo_user_release(struct inode *inode, struct file *file)
- 	return 0;
- }
- 
-+static int sbefifo_read_timeout(struct sbefifo_user *user, void __user *argp)
-+{
-+	struct device *dev = &user->sbefifo->dev;
-+	u32 timeout;
-+
-+	if (get_user(timeout, (__u32 __user *)argp))
-+		return -EFAULT;
-+
-+	if (timeout == 0) {
-+		user->read_timeout_ms = SBEFIFO_TIMEOUT_START_RSP;
-+		dev_dbg(dev, "Timeout reset to %d\n", user->read_timeout_ms);
-+		return 0;
-+	}
-+
-+	if (timeout < 10 || timeout > 120)
-+		return -EINVAL;
-+
-+	user->read_timeout_ms = timeout * 1000; /* user timeout is in sec */
-+
-+	dev_dbg(dev, "Timeout set to %d\n", user->read_timeout_ms);
-+
-+	return 0;
-+}
-+
-+static long sbefifo_user_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
-+{
-+	struct sbefifo_user *user = file->private_data;
-+	int rc = -ENOTTY;
-+
-+	if (!user)
-+		return -EINVAL;
-+
-+	mutex_lock(&user->file_lock);
-+	switch (cmd) {
-+	case FSI_SBEFIFO_READ_TIMEOUT_SECONDS:
-+		rc = sbefifo_read_timeout(user, (void __user *)arg);
-+		break;
-+	}
-+	mutex_unlock(&user->file_lock);
-+	return rc;
-+}
-+
- static const struct file_operations sbefifo_fops = {
- 	.owner		= THIS_MODULE,
- 	.open		= sbefifo_user_open,
- 	.read		= sbefifo_user_read,
- 	.write		= sbefifo_user_write,
- 	.release	= sbefifo_user_release,
-+	.unlocked_ioctl = sbefifo_user_ioctl,
- };
- 
- static void sbefifo_free(struct device *dev)
-diff --git a/include/uapi/linux/fsi.h b/include/uapi/linux/fsi.h
-index da577ecd90e7..b2f1977378c7 100644
---- a/include/uapi/linux/fsi.h
-+++ b/include/uapi/linux/fsi.h
-@@ -55,4 +55,18 @@ struct scom_access {
- #define FSI_SCOM_WRITE	_IOWR('s', 0x02, struct scom_access)
- #define FSI_SCOM_RESET	_IOW('s', 0x03, __u32)
- 
-+/*
-+ * /dev/sbefifo* ioctl interface
-+ */
-+
-+/**
-+ * FSI_SBEFIFO_READ_TIMEOUT sets the read timeout for response from SBE.
-+ *
-+ * The read timeout is specified in seconds.  The minimum value of read
-+ * timeout is 10 seconds (default) and the maximum value of read timeout is
-+ * 120 seconds.  A read timeout of 0 will reset the value to the default of
-+ * (10 seconds).
-+ */
-+#define FSI_SBEFIFO_READ_TIMEOUT_SECONDS	_IOW('s', 0x00, __u32)
-+
- #endif /* _UAPI_LINUX_FSI_H */
+ /* HCS - Host Controller Status 30h */
+ #define DEVICE_PRESENT				0x1
 -- 
-2.34.1
+2.7.4
 
