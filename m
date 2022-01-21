@@ -2,115 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 990F6C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 13:54:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E48C433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 13:55:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380793AbiAUNyv (ORCPT
+        id S1380819AbiAUNze (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 08:54:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36214 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350341AbiAUNyt (ORCPT
+        Fri, 21 Jan 2022 08:55:34 -0500
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:60995 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1350341AbiAUNz0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 08:54:49 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72924C061574;
-        Fri, 21 Jan 2022 05:54:49 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 59A84616F0;
-        Fri, 21 Jan 2022 13:54:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B912C340E1;
-        Fri, 21 Jan 2022 13:54:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1642773287;
-        bh=MsGTfQONatWIvmB+ivBn7GztIxbSTJkJ4CdpKN2PPh8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=g91iKuk5lY+J2J7MmuPExW4S7EYjj/FcXwJYf7QI9502AbYrToyaXIblqIXbeHsaT
-         gHBa5SHiFz2fP5gEiIbEE0WgIN1kpgLj2uK2m3cc/+fXBS/6kDB420Ow1mL1jmVknt
-         ieKCl7zu846j+LYjAz+1qU+wBOSeVEmPq8gGpFqs=
-Date:   Fri, 21 Jan 2022 14:54:39 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Ulf Hansson <ulf.hansson@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        linux-mmc@vger.kernel.org, stable <stable@vger.kernel.org>,
-        whitehat002 <hackyzh002@gmail.com>
-Subject: Re: [PATCH] moxart: fix potential use-after-free on remove path
-Message-ID: <Yeq7H0LSegfCNHzl@kroah.com>
-References: <20220114075934.302464-1-gregkh@linuxfoundation.org>
- <CAPDyKFpu0mGchoqdzE-qKc6=9ogncnTCwN8AR7g1wcMZLyRFsw@mail.gmail.com>
+        Fri, 21 Jan 2022 08:55:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1642773326; x=1674309326;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=mBlYz8SBr0A5YG9puqHv9OcqhqV+jlPuhxHKzeH01p4=;
+  b=m+JqbALncDBzbiGMIUd7CtGozAqDwRjCNlPCAwzVUkF60aytLdYr2qWC
+   CWg4216fnp2phE15JdwdEPsmUMpNvHSvaLj/jAUtrr4BQJBjkXyEnBsPw
+   P84ejbBNOxfd/XDmnjEzy7zi6J1KplxPT4yHIP7VgT60d1VlPlyYOLxAV
+   I=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 21 Jan 2022 05:55:25 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 05:55:25 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Fri, 21 Jan 2022 05:55:24 -0800
+Received: from blr-ubuntu-525.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Fri, 21 Jan 2022 05:55:19 -0800
+From:   Souradeep Chowdhury <quic_schowdhu@quicinc.com>
+To:     <linux-arm-msm@vger.kernel.org>, <linux-usb@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <pure.logic@nexus-software.ie>,
+        <bjorn.andersson@linaro.org>, <greg@kroah.com>, <robh@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <quic_tsoni@quicinc.com>,
+        <quic_psodagud@quicinc.com>, <quic_satyap@quicinc.com>,
+        <quic_pheragu@quicinc.com>, <quic_rjendra@quicinc.com>,
+        <quic_sibis@quicinc.com>, <quic_saipraka@quicinc.com>,
+        <quic_schowdhu@quicinc.com>
+Subject: [PATCH V4 0/6] Add Embedded USB Debugger (EUD) driver
+Date:   Fri, 21 Jan 2022 19:23:45 +0530
+Message-ID: <cover.1642768837.git.quic_schowdhu@quicinc.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAPDyKFpu0mGchoqdzE-qKc6=9ogncnTCwN8AR7g1wcMZLyRFsw@mail.gmail.com>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 01:41:27PM +0100, Ulf Hansson wrote:
-> On Fri, 14 Jan 2022 at 08:59, Greg Kroah-Hartman
-> <gregkh@linuxfoundation.org> wrote:
-> >
-> > It was reported that the mmc host structure could be accessed after it
-> > was freed in moxart_remove(), so fix this by saving the base register of
-> > the device and using it instead of the pointer dereference.
-> >
-> > Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> > Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-> > Cc: Xin Xiong <xiongx18@fudan.edu.cn>
-> > Cc: Xin Tan <tanxin.ctf@gmail.com>
-> > Cc: Tony Lindgren <tony@atomide.com>
-> > Cc: Yang Li <yang.lee@linux.alibaba.com>
-> > Cc: linux-mmc@vger.kernel.org
-> > Cc: stable <stable@vger.kernel.org>
-> > Reported-by: whitehat002 <hackyzh002@gmail.com>
-> > Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> > ---
-> >  drivers/mmc/host/moxart-mmc.c | 9 +++++----
-> >  1 file changed, 5 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/mmc/host/moxart-mmc.c b/drivers/mmc/host/moxart-mmc.c
-> > index 16d1c7a43d33..f5d96940a9b8 100644
-> > --- a/drivers/mmc/host/moxart-mmc.c
-> > +++ b/drivers/mmc/host/moxart-mmc.c
-> > @@ -697,6 +697,7 @@ static int moxart_remove(struct platform_device *pdev)
-> >  {
-> >         struct mmc_host *mmc = dev_get_drvdata(&pdev->dev);
-> >         struct moxart_host *host = mmc_priv(mmc);
-> > +       void __iomem *base = host->base;
-> >
-> >         dev_set_drvdata(&pdev->dev, NULL);
-> >
-> > @@ -707,10 +708,10 @@ static int moxart_remove(struct platform_device *pdev)
-> >         mmc_remove_host(mmc);
-> >         mmc_free_host(mmc);
-> >
-> > -       writel(0, host->base + REG_INTERRUPT_MASK);
-> > -       writel(0, host->base + REG_POWER_CONTROL);
-> > -       writel(readl(host->base + REG_CLOCK_CONTROL) | CLK_OFF,
-> > -              host->base + REG_CLOCK_CONTROL);
-> 
-> Rather than doing it like this, I think it would be easier to move
-> mmc_free_host() below this part. That's usually what mmc host drivers
-> do clean up things in ->remove().
-> 
-> > +       writel(0, base + REG_INTERRUPT_MASK);
-> > +       writel(0, base + REG_POWER_CONTROL);
-> > +       writel(readl(base + REG_CLOCK_CONTROL) | CLK_OFF,
-> > +              base + REG_CLOCK_CONTROL);
-> >
+This is a series of patches that implements a driver for the control
+peripheral, EUD (Embedded USB Debugger). The EUD is a mini-USB hub
+implemented on chip to support the USB-based debug and trace capabilities.
+Apart from debug capabilities, EUD has a control peripheral. Control
+Peripheral is on when EUD is on and gets signals like USB attach, pet
+EUD etc. EUD driver listens to events like USB attach or detach and then
+informs the USB about these events via ROLE-SWITCH. At regular intervals,
+the EUD driver receives an interrupt to pet the driver indicating that
+the software is functional.
 
-Ok, I can do that, I didn't know if it would cause any functionality
-changes, so I was trying to preserve the same logic that the driver
-currently has.
+Changes in V4
 
-Do you have this device to test this with?
+* Aligned the device tree node structure of EUD as per discussion.
 
-thanks,
+* Changes to usb-connector.yaml is no longer required and is not 
+  included in the patch series.
+  
+* Implemented the rest of the comments on Version 3 of the patch.  
 
-greg k-h
+Changes in V3
+
+* Removed the patch for registration of EUD connector as it is no longer
+  required.
+  
+* Added the description to include EUD in usb-connector.yaml  
+
+* Implemented comments on V2 of the patch.
+
+Changes in V2
+
+* Fixed the yaml issue and also implemented comments on yaml in V1.
+
+Changes in V1
+
+* EUD has now been mapped as a separate DT node as it is an independent QCOM IP.
+
+* EUD is attached to the connector child of dwc3 via port end point since EUD
+  driver needs the connector for role-switching.
+
+* EUD driver has been moved now to drivers/soc/qcom/qcom_eud.c.
+
+* All the comments from version 0 of the patch has been implemented.
+
+Souradeep Chowdhury (6):
+  dt-bindings: Add the yaml bindings for EUD
+  bindings: usb: dwc3: Update dwc3 properties for EUD connector
+  soc: qcom: eud: Add driver support for Embedded USB Debugger(EUD)
+  arm64: dts: qcom: sc7280: Add EUD dt node and dwc3 connector
+  arm64: dts: qcom: sc7280: Set the default dr_mode for usb2
+  MAINTAINERS: Add maintainer entry for EUD
+
+ Documentation/ABI/testing/sysfs-driver-eud         |   9 +
+ .../devicetree/bindings/soc/qcom/qcom,eud.yaml     |  77 +++++++
+ .../devicetree/bindings/usb/snps,dwc3.yaml         |  10 +
+ MAINTAINERS                                        |   8 +
+ arch/arm64/boot/dts/qcom/sc7280-idp.dts            |   4 +
+ arch/arm64/boot/dts/qcom/sc7280.dtsi               |  39 ++++
+ drivers/soc/qcom/Kconfig                           |  10 +
+ drivers/soc/qcom/Makefile                          |   1 +
+ drivers/soc/qcom/qcom_eud.c                        | 250 +++++++++++++++++++++
+ 9 files changed, 408 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-driver-eud
+ create mode 100644 Documentation/devicetree/bindings/soc/qcom/qcom,eud.yaml
+ create mode 100644 drivers/soc/qcom/qcom_eud.c
+
+-- 
+2.7.4
+
