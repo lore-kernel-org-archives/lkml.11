@@ -2,72 +2,66 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FA4EC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 11:50:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D38AC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 11:52:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380219AbiAULuF (ORCPT
+        id S1380283AbiAULwX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 06:50:05 -0500
-Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:36995 "EHLO
-        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S239121AbiAULuE (ORCPT
+        Fri, 21 Jan 2022 06:52:23 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51220 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1380242AbiAULwV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 06:50:04 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04395;MF=jiapeng.chong@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0V2RJRP6_1642765797;
-Received: from localhost(mailfrom:jiapeng.chong@linux.alibaba.com fp:SMTPD_---0V2RJRP6_1642765797)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Fri, 21 Jan 2022 19:50:02 +0800
-From:   Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-staging@lists.linux.dev, linux-kernel@vger.kernel.org,
-        Jiapeng Chong <jiapeng.chong@linux.alibaba.com>,
-        Abaci Robot <abaci@linux.alibaba.com>
-Subject: [PATCH] staging: pi433: using div64_u64() instead of do_div()
-Date:   Fri, 21 Jan 2022 19:49:55 +0800
-Message-Id: <20220121114955.96979-1-jiapeng.chong@linux.alibaba.com>
-X-Mailer: git-send-email 2.20.1.7.g153144c
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 21 Jan 2022 06:52:21 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8944361A8B
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 11:52:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id EDA8CC340E4;
+        Fri, 21 Jan 2022 11:52:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642765940;
+        bh=y5QyjWNiXNED/hFq9hJKu7KfpEqSd+2YGONLyDq4jtM=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=RCkf3itkfbEhXmR4WqR+89ZuoqGOsD/Y4SfyeVVVI6DDNbEN5lPk0vGswLV9wk7S0
+         Yg+BlhBmnVh1++Md5IVsKSW/KY/j7NAz3NW1oxu4RKRRghRylp8Zku+PEpa3F+VRgK
+         Mm0BS4OM87zaaMaeDSDFj8p0S8poel+/A+iCuw+b97crlMHTdqkoKk+6DLdBxJtso8
+         ppYCOWlwtHYd3ncv03CLe44DZhJBEBSjPYSPNBU+wxJwWtmDSqfknKD9UYoCNp+zvY
+         doRWEQqeOPPvskCdyYs5aDXu+Y7CyG153R7MW58L4QJE8oKX141IQINANoKgLwlTsV
+         3WYdqHA3jFK+Q==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id DDE6FF60795;
+        Fri, 21 Jan 2022 11:52:19 +0000 (UTC)
+Subject: Re: [GIT PULL] sound fixes for 5.17-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <s5h5yqdv571.wl-tiwai@suse.de>
+References: <s5h5yqdv571.wl-tiwai@suse.de>
+X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
+X-PR-Tracked-Message-Id: <s5h5yqdv571.wl-tiwai@suse.de>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-fix-5.17-rc1
+X-PR-Tracked-Commit-Id: 2a1355f0bf41a2132d522ed7a2a7eb1cc4fe3d8f
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 1f40caa080474d0420e0b0e6c896e455acb6e236
+Message-Id: <164276593990.2956.18223576577256751356.pr-tracker-bot@kernel.org>
+Date:   Fri, 21 Jan 2022 11:52:19 +0000
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Clean the following coccicheck warning:
+The pull request you sent on Fri, 21 Jan 2022 09:55:14 +0100:
 
-./drivers/staging/pi433/rf69.c:286:1-7: WARNING: do_div() does a
-64-by-32 division, please consider using div64_u64 instead.
+> git://git.kernel.org/pub/scm/linux/kernel/git/tiwai/sound.git tags/sound-fix-5.17-rc1
 
-./drivers/staging/pi433/rf69.c:332:1-7: WARNING: do_div() does a
-64-by-32 division, please consider using div64_u64 instead.
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/1f40caa080474d0420e0b0e6c896e455acb6e236
 
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
----
- drivers/staging/pi433/rf69.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Thank you!
 
-diff --git a/drivers/staging/pi433/rf69.c b/drivers/staging/pi433/rf69.c
-index d64df072d8e8..ae4adeb00ce1 100644
---- a/drivers/staging/pi433/rf69.c
-+++ b/drivers/staging/pi433/rf69.c
-@@ -283,7 +283,7 @@ int rf69_set_deviation(struct spi_device *spi, u32 deviation)
- 
- 	// calculate register settings
- 	f_reg = deviation * factor;
--	do_div(f_reg, f_step);
-+	div64_u64(f_reg, f_step);
- 
- 	msb = (f_reg & 0xff00) >> 8;
- 	lsb = (f_reg & 0xff);
-@@ -329,7 +329,7 @@ int rf69_set_frequency(struct spi_device *spi, u32 frequency)
- 
- 	// calculate reg settings
- 	f_reg = frequency * factor;
--	do_div(f_reg, f_step);
-+	div64_u64(f_reg, f_step);
- 
- 	msb = (f_reg & 0xff0000) >> 16;
- 	mid = (f_reg & 0xff00)   >>  8;
 -- 
-2.20.1.7.g153144c
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
