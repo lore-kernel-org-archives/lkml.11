@@ -2,107 +2,112 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46AA3C4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 395DDC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:32:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381135AbiAUOcr (ORCPT
+        id S1381143AbiAUOcu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 09:32:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45232 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348810AbiAUOcq (ORCPT
+        Fri, 21 Jan 2022 09:32:50 -0500
+Received: from mx0b-001ae601.pphosted.com ([67.231.152.168]:26636 "EHLO
+        mx0b-001ae601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1351048AbiAUOcr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 09:32:46 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4889FC061401
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:32:46 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id o12so34171921lfu.12
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:32:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zJQIuvj9hZOV2/MczNgBpv+PjMBSGnGqbFntPtlryTc=;
-        b=YGxrpvlPmNWGI2zsCCgbxbZKQzQxHQf6iTSL4CHvDpRCmLe6CM0kCd0r4k+av23yUQ
-         zNr/T344+alvGwpC2j9kjxZsFPaBeVAGQmBwVDa5N0aSX1MHDOuwko9Lwg7ARvcQ4igm
-         Iqvm7nUQrZFT+qoRKLwTdtLm6iqirO1xF91ZFZJ1lw/LoeoIUkp5/IjryEDBtsOQA6Pj
-         k27cPvDHYlSgCqHTQQe6Eem78uT+28hF04nRJsmIvw+FYcURr1yuhbE1LI/tANvjw0eL
-         pwrV7wkBrs4IALIM7TlcV4yyZreP09/ZbnpU7Hv7Y/fbjfcmApwo39alL90vyvR639d3
-         rF9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zJQIuvj9hZOV2/MczNgBpv+PjMBSGnGqbFntPtlryTc=;
-        b=Swr5Jy+tDnFZm6qSb/mj3qBiNTN80j8GnqZVwwjVTJ1RguFyFUCde4CneMN5e3iHA3
-         LKrOpFAx1VVpUxdgL+omgsBJ4XLsiiag+R9x8KmsbMgob8bAZkdbD0OZi80m1ZEkD4q7
-         mnKactOTZLrtYQDkg1SC0M5axUGR5Duq4pK8Z018jisc0uNkdNkcGGpyit3iMwUxsNGD
-         aB2MAfjDATSR3ve3rWxFJTrvjCnXqZQYaAHWKj3RpKtjLWUX+l6LHdClON7/jghmNca7
-         WIFt14afDmAsF8kHRMC2YZniNooCga7OiAKv5FcUJANg2qRLp+57mYku1ctLdkNHdZMH
-         zgog==
-X-Gm-Message-State: AOAM533BYfm648rKhsDuvZy1OqLziac7shEmRftZM6jmzl+lMw6pmIbj
-        2klORdOyc3rs54AQoKpCfOarPEhrD0sNUBi+CSCSQQ==
-X-Google-Smtp-Source: ABdhPJxL9m3hu+gflkPPsOXKEZYqNST0IhizJLaYKD0fyzC6vjIJ5drVkOqyZIE344+H+owbjEyqeiR6bgDWmtklbFo=
-X-Received: by 2002:a05:6512:4014:: with SMTP id br20mr4069029lfb.233.1642775564685;
- Fri, 21 Jan 2022 06:32:44 -0800 (PST)
+        Fri, 21 Jan 2022 09:32:47 -0500
+Received: from pps.filterd (m0077474.ppops.net [127.0.0.1])
+        by mx0b-001ae601.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20L5gDLg030246;
+        Fri, 21 Jan 2022 08:32:27 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cirrus.com; h=from : to : cc :
+ references : in-reply-to : subject : date : message-id : mime-version :
+ content-type : content-transfer-encoding; s=PODMain02222019;
+ bh=JCEvGSRutgn1zFC3u9mSgqGgE4vlOvz4fCTu56u3JTw=;
+ b=RsDflDrf0XKHqhNTAJC8VW6MOGUpJBRGBBh2UiiBPkQRMD3ueYK1Vcba06/BBum8ElR3
+ fQZX7LJ/Am6NMoTGiiyfjPkv0dwb7w+OqITwLzR1mtACfXiz9Pwl5YBVoa/VhUyokQM0
+ 2nZLPinVN4ZAjNUcG8KqV5K2S423cMJJ1XPwILGeruJ+E1gHUPjwUAHu9jLUqK/Fly9q
+ UcWGN2izxYj/WgkdaHEVABi/rW+rfJmQqLyxaJkFAzz4XiIUP+6DofZW548h7fPaPDna
+ EsRoQty6yoHrf8OX5qrjJQJ/NhR1yOyz7ahoEhVRmCM9z3p7JgLCgTR6OPMZs+zgTgFD eA== 
+Received: from ediex01.ad.cirrus.com ([84.19.233.68])
+        by mx0b-001ae601.pphosted.com (PPS) with ESMTPS id 3dqhynrnt4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 21 Jan 2022 08:32:27 -0600
+Received: from EDIEX01.ad.cirrus.com (198.61.84.80) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Fri, 21 Jan
+ 2022 14:32:25 +0000
+Received: from ediswmail.ad.cirrus.com (198.61.86.93) by EDIEX01.ad.cirrus.com
+ (198.61.84.80) with Microsoft SMTP Server id 15.1.2375.18 via Frontend
+ Transport; Fri, 21 Jan 2022 14:32:25 +0000
+Received: from LONN2DGDQ73 (unknown [198.90.238.138])
+        by ediswmail.ad.cirrus.com (Postfix) with ESMTP id 7133F45D;
+        Fri, 21 Jan 2022 14:32:24 +0000 (UTC)
+From:   Stefan Binding <sbinding@opensource.cirrus.com>
+To:     'Takashi Iwai' <tiwai@suse.de>
+CC:     <platform-driver-x86@vger.kernel.org>,
+        <alsa-devel@alsa-project.org>, <linux-acpi@vger.kernel.org>,
+        'Lucas Tanure' <tanureal@opensource.cirrus.com>,
+        "'Rafael J . Wysocki'" <rafael@kernel.org>,
+        <linux-kernel@vger.kernel.org>, 'Takashi Iwai' <tiwai@suse.com>,
+        'Mark Gross' <markgross@kernel.org>,
+        'Hans de Goede' <hdegoede@redhat.com>,
+        'Mark Brown' <broonie@kernel.org>,
+        <patches@opensource.cirrus.com>, <linux-spi@vger.kernel.org>,
+        'Len Brown' <lenb@kernel.org>
+References: <20220120134326.5295-1-sbinding@opensource.cirrus.com> <20220120134326.5295-9-sbinding@opensource.cirrus.com> <s5ha6fqtokp.wl-tiwai@suse.de>
+In-Reply-To: <s5ha6fqtokp.wl-tiwai@suse.de>
+Subject: RE: [PATCH v4 8/9] ALSA: hda/realtek: Add support for HP Laptops
+Date:   Fri, 21 Jan 2022 14:32:24 +0000
+Message-ID: <018c01d80ed3$b5a5a610$20f0f230$@opensource.cirrus.com>
 MIME-Version: 1.0
-References: <20220119120006.1426964-1-jiasheng@iscas.ac.cn>
-In-Reply-To: <20220119120006.1426964-1-jiasheng@iscas.ac.cn>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Fri, 21 Jan 2022 15:32:08 +0100
-Message-ID: <CAPDyKFqp4GPyT+OcVQcFYoE4F1izP_g82nhUqe+yvtZjTYUVyQ@mail.gmail.com>
-Subject: Re: [PATCH v2] mmc: sh_mmcif: Check for null res pointer
-To:     Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Cc:     linux-mmc@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQFrharyhx4ySa1JB46MXi1N1GyrjwJH3znKAcNcDSGtJkEkwA==
+Content-Language: en-gb
+X-Proofpoint-ORIG-GUID: sOEA562_2qwbgUYCx1ispTGtLe8T2Ttx
+X-Proofpoint-GUID: sOEA562_2qwbgUYCx1ispTGtLe8T2Ttx
+X-Proofpoint-Spam-Reason: safe
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 19 Jan 2022 at 13:00, Jiasheng Jiang <jiasheng@iscas.ac.cn> wrote:
->
-> If there is no suitable resource, platform_get_resource() will return
-> NULL.
-> Therefore in order to avoid the dereference of the NULL pointer, it
-> should be better to check the 'res'.
->
-> Fixes: df0cc57e057f ("Linux 5.16")
+Hi Takashi,
 
-I have changed this to:
-Cc: stable@vger.kernel.org # v5.16+
+> -----Original Message-----
+> From: Alsa-devel <alsa-devel-bounces@alsa-project.org> On Behalf Of
+> Takashi Iwai
+> Sent: 20 January 2022 15:27
+> To: Stefan Binding <sbinding@opensource.cirrus.com>
+> Cc: platform-driver-x86@vger.kernel.org; alsa-devel@alsa-project.org;
+linux-
+> acpi@vger.kernel.org; Lucas Tanure <tanureal@opensource.cirrus.com>;
+> Rafael J . Wysocki <rafael@kernel.org>; linux-kernel@vger.kernel.org;
+> Takashi Iwai <tiwai@suse.com>; Mark Gross <markgross@kernel.org>; Hans
+> de Goede <hdegoede@redhat.com>; Mark Brown <broonie@kernel.org>;
+> patches@opensource.cirrus.com; linux-spi@vger.kernel.org; Len Brown
+> <lenb@kernel.org>
+> Subject: Re: [PATCH v4 8/9] ALSA: hda/realtek: Add support for HP Laptops
+> 
+> On Thu, 20 Jan 2022 14:43:25 +0100,
+> Stefan Binding wrote:
+> >
+> > From: Lucas Tanure <tanureal@opensource.cirrus.com>
+> >
+> > Add support for two and four CS35L41 using the component
+> > binding method
+> >
+> > Signed-off-by: Lucas Tanure <tanureal@opensource.cirrus.com>
+> > Signed-off-by: Stefan Binding <sbinding@opensource.cirrus.com>
+> 
+> I guess this patch won't be applicable until ACPI or other tree syncs
+> with the latest Linus tree or sound git tree.  Must this patch be
+> merged with other patches?
 
-> Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+In order for these laptops to work correctly, it will need all of the
+patches merged,
+including both this change and the ACPI changes - without the ACPI changes,
+some of the amps will not probe.
 
-Applied for fixes, thanks!
-
-Kind regards
-Uffe
+Thanks,
+Stefan
 
 
-> ---
-> Changelog
->
-> v1 -> v2
->
-> * Change 1. Change the fixes tag to v5.16.
-> ---
->  drivers/mmc/host/sh_mmcif.c | 3 +++
->  1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/mmc/host/sh_mmcif.c b/drivers/mmc/host/sh_mmcif.c
-> index e5e457037235..45dfa3b0be9c 100644
-> --- a/drivers/mmc/host/sh_mmcif.c
-> +++ b/drivers/mmc/host/sh_mmcif.c
-> @@ -405,6 +405,9 @@ static int sh_mmcif_dma_slave_config(struct sh_mmcif_host *host,
->         struct dma_slave_config cfg = { 0, };
->
->         res = platform_get_resource(host->pd, IORESOURCE_MEM, 0);
-> +       if (!res)
-> +               return -EINVAL;
-> +
->         cfg.direction = direction;
->
->         if (direction == DMA_DEV_TO_MEM) {
-> --
-> 2.25.1
->
+
