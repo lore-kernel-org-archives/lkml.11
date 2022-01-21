@@ -2,128 +2,110 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50A8AC43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 09:55:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 480B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 09:57:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379801AbiAUJzE (ORCPT
+        id S1379790AbiAUJ47 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 04:55:04 -0500
-Received: from mout.gmx.net ([212.227.17.20]:37849 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1349731AbiAUJzC (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 04:55:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1642758884;
-        bh=35f9JoVpGFWU3xR7b8fBapZ696kkbYyLXKYQ9TlhbQ0=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=N1yqIfVCwTO0YCam79KbUT0aCEJzRRx/3nP7nC2P6m1WPbmb6v6mEBgNsLn1IPgS1
-         cW9EqAWDPYdi//D7yf/mJdjext+4YWbF2UaSuN4jJvh9odPEj66n9Orl75ybK4RO18
-         qGEjhxnKRsqoTvDUvV/annQuMzZBngnyOmHX/xlo=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.180.114]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MAwXh-1n0ARh1Iev-00BLFZ; Fri, 21
- Jan 2022 10:54:44 +0100
-Message-ID: <016269c1-cf56-04ca-91e8-02417f770af5@gmx.de>
-Date:   Fri, 21 Jan 2022 10:53:36 +0100
+        Fri, 21 Jan 2022 04:56:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39038 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349787AbiAUJ46 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 21 Jan 2022 04:56:58 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51386C061574
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 01:56:58 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id w12-20020a17090a528c00b001b276aa3aabso13299005pjh.0
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 01:56:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d/47DffcE+c3jCAlwDovIS7aShnFPAcgmE0Cy5Af+sM=;
+        b=GfzXzlpcW7AKcVRUxF87xbg2Ci6kIiXy4dlvZd1G5MefdT5pGLTz7lXZ1xY/Dv1avS
+         XMRSrMTG4dxH4oB02PFc2sXQGWXqXVLznCIy3js4Wm07gitZNpDLe8nsTy6sbSQgjOJ7
+         O8rf2wKVksUoPHlIpGaiUz0AcFXgDFNI3rChgrgBpeA4RxtD/OLlNUFkitdrWUPeZDsc
+         F3M+OTZgIy/aaFgSuJDhVZgfCcGUKI5UiC+ofwLE7VZ4uVlZO76VWLO1N19ai4UN1AxI
+         cdwQnKj56rsymd4k3xTxkvUg0yKIFPt61Frat6ofUdOunI/3ddfqZOHZY/Ufb5+s4qou
+         FlkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=d/47DffcE+c3jCAlwDovIS7aShnFPAcgmE0Cy5Af+sM=;
+        b=NuMZVbtWKnbnTbkBU43cejvaRkA0SzDVmqd3MHddZaU9a0xuqTDH5VEo/iZvrSHVuo
+         3Et1vwHzTVWsswI1R+cHeGYvurXccD7h/+nZ/1WAgp4fPg2e2rUTW4r89bMZ7wA3kwSj
+         AqlX8/fuiHPCyQIEjq3BsbMakmt3/PoyzFq6S/dhSOhrqeKD7NsEBs5636RsY9FhON0S
+         f9YV2WXHghDGMNkjZlgUB1Pe43Mo+faKy/tKAJ1/YBYaeksL5klj0nQcfqDhcn3tn8Ad
+         cH2nadrnMyoNDMO0guowqSxtP6MMmLsJRMKCO+5arBVSForMinlaB+2SHsAC3/aiUbV8
+         Uyjw==
+X-Gm-Message-State: AOAM5325LatBdwRpUzm8iwmGcRA/1R+SLqlmw4SGvKX0eMZaibmArCMP
+        bNtAs2u358YaeaiCAAKOn18=
+X-Google-Smtp-Source: ABdhPJyg1B3e0pwxGq2QGKT5u3wkuMfPond86NBDkcSZXSd1h6hVndqYThYV0xzAhD2mV0KmJyRkgg==
+X-Received: by 2002:a17:902:da8c:b0:14a:909b:c911 with SMTP id j12-20020a170902da8c00b0014a909bc911mr3224302plx.103.1642759017887;
+        Fri, 21 Jan 2022 01:56:57 -0800 (PST)
+Received: from vultr.guest ([141.164.42.249])
+        by smtp.gmail.com with ESMTPSA id c2sm4623661pgj.63.2022.01.21.01.56.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Jan 2022 01:56:57 -0800 (PST)
+From:   Yuntao Wang <ytcoode@gmail.com>
+To:     Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Yuntao Wang <ytcoode@gmail.com>
+Subject: [PATCH] tracing: Use strim() to remove whitespace instead of doing it manually
+Date:   Fri, 21 Jan 2022 09:56:23 +0000
+Message-Id: <20220121095623.1826679-1-ytcoode@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [GIT PULL] fbdev updates & fixes for v5.17-rc1
-Content-Language: en-US
-To:     Lee Jones <lee.jones@linaro.org>,
-        Jani Nikula <jani.nikula@linux.intel.com>
-Cc:     Daniel Vetter <daniel@ffwll.ch>, linux-fbdev@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        linux-kernel@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>
-References: <Yeg11pHSqx29yg/T@ls3530>
- <CAKMK7uGeGBBvTGFyBxLwvTAxEWwXMS8U1rrYUb_7gbui-jV+KA@mail.gmail.com>
- <87fsph4fr2.fsf@intel.com> <Yep6te0wrK0ZQ8SB@google.com>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <Yep6te0wrK0ZQ8SB@google.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:LTDA+u/QyLx5NLlZkZXwdyMGBJyxMIR1SiGWjtUH2ssBeCA3JEf
- lSMTThofRjaRuLiWD7LNNj53q2xyYYyji2BNkoxAuqBG8yB5C9U65uyCXVA3KLvvXQY0Il8
- GkCzoeFGSwCy50CN7s9IxPdTFfW/4JgvLkBtdLaKxWTxz9RjGPCqxMU1wmQpQ87eCf/sBaY
- fT3Tqw1e5/6qSK7HXX8+Q==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:+nLVNU0ON8o=:B9Nl8iHgEB9RYlXIRbJ63S
- oL9OMBLJdS9JllkJfDW5qViDQgsG13qyVn/E+Z9X8MaqTWiDWu9ddu2L/ELw0iDtMtY/5ODhj
- ggbLja/t6U95CsG60alXJXPweFS9CBHNRxF75jVZ1X52wLk014lqZwHrbN5uhgym5s/W41VAC
- eHkycx9cIN8yjU6zz9CulG/RvgM1E66HefogPnqPMiGEgAz/oRZUM8DxrZEzaIUnSFt7392BQ
- e6eONpASMYUP/nY3PwhNwAYE7p6CJ3Di3f3CQVQZ07+CIZLCCuHBqhqU2vYs+o0QBFoPrdy8g
- zf1rTc1Q9/s/7fsmcxyOFnNvKhk3zqPBB/BZImNYszzeH839cFUwLR/LBHdqlIGVO8AhkmIpd
- hZ/xyuPYXsNd04gaI3ZnzYFH70alLk5+DqLSLnCNLFLZE1Pt9zeAw36BUeiluIC8AHZLaJf/+
- jkWPbazb2Zi9ec/umawieb5Tqh3sH7GutJ//GzPaxc2ilTu3daNkZEYJzyB5vumh214C6hsy5
- SFp1G76zyQ5lq5Ec1xbTOHSljTS9STJZbmzhZdYW22KmQrpgWMEtaZNcXcMZ58S5rl91zjUIH
- whg3Zm+wOv/44bLmmtLQsaS2/jLi1TqFNVxV/FaI068FawoHVw4pQY7zMrs926aXSfAYabaDf
- V/Z4ogIqB2x/IPDdJJEQkADAAxkPSZuM2In/rrtKj2FNl6arGRtbeG4kfCSMQYGf2u9IOeWpe
- VrcYuKtIgKrBE0qZRJpfpNfSzLAGoni+YdMY2hyyxlRL0d5L5pIfKWMvMohccz1fUi2m7Cfyk
- 7WZxXcLaENmp3gUuSXQ2FuHK2VtOGr3ql6sYSQtLACMSZENsxjwaF0eZEzv1IAHyH8IeEKtrb
- TXBqkwW5fRkarOorK9o7LO4K955CplLRGWH5VNxgOeSbuQnGBdx85nC2VMTLXihRWc6j8m3/d
- U8FcfZft1aomGcXLoJ90u88XLYyfhG1bUWri3w7a7dBwmrCuaYUnvm5Pvr6X5TDuThzp8Slf2
- lgRHVhC8KoNWe/9HwzXjwFnzVrnAoQLIHtJ81d7eH2GIJXUtoZzWhvoxTOMmL/bGX4t2W1ETB
- igJgMsdwliHZy4=
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/21/22 10:19, Lee Jones wrote:
-> On Fri, 21 Jan 2022, Jani Nikula wrote:
->
->> On Fri, 21 Jan 2022, Daniel Vetter <daniel@ffwll.ch> wrote:
->>> On Wed, Jan 19, 2022 at 5:02 PM Helge Deller <deller@gmx.de> wrote:
->>>> A first bunch of updates and fixes for the following fbdev & backligh=
-t drivers:
->>>> ocfb, aty128fb, mb862xx, omapfb, qcom-wled, dt-bindings, hyperv_fb,
->>>> lm3630a_bl, omap2, controlfb, matroxfb
->>>>
->>>> Nothing really important, mostly cleanups, const conversions, added n=
-ull
->>>> pointer/boundary checks and build fixes.
->>>>
->>>> Signed-off-by: Helge Deller <deller@gmx.de>
->>>
->>> Not sure whether Linus missed this or just wanted to let the
->>> discussion settle first. But since this is all random patches for
->>> drivers that many distros don't even enable anymore there's no issues
->>> here, and I very much welcome someone volunteering to pick these up.
->>> I'd expect there's a pile more since it's been 1-2 years since Bart
->>> took care of these and merged them consistently.
->>>
->>> Acked-by: Daniel Vetter <daniel.vetter@ffwll.ch>
->>
->> ...
->>
->>>>  drivers/video/backlight/lm3630a_bl.c                     |  1 -
->>>>  drivers/video/backlight/qcom-wled.c                      |  1 +
->>
->> Backlight changes usually go through the backlight tree.
+The tracing_set_trace_write() function just removes the trailing whitespace
+from the user supplied tracer name, but the leading whitespace should also
+be removed.
 
-Sorry, I didn't know yet.
+In addition, if the user supplied tracer name contains only a few
+whitespace characters, the first one will not be removed using the current
+method, which results it a single whitespace character left in the buf.
 
-> Yes, they do.  How were these applied to the DRM tree?
+To fix all of these issues, we use strim() to correctly remove both the
+leading and trailing whitespace.
 
-I did applied them.
-Shall I drop them and you decide about them?
-Next I round I'll take care not to pick backlight patches.
+Signed-off-by: Yuntao Wang <ytcoode@gmail.com>
+---
+ kernel/trace/trace.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-Helge
-
-
-> I don't see any mails about them being applied:
->
->   Luca Weiss (2):
->         backlight: qcom-wled: Add PM6150L compatible
->
->   https://lore.kernel.org/all/20211229170358.2457006-2-luca.weiss@fairph=
-one.com/
->
->   Xu Wang (2):
->         backlight: lm3630a_bl: Remove redundant 'flush_workqueue()' call=
-s
->
->   https://lore.kernel.org/all/20220113084806.13822-1-vulab@iscas.ac.cn/
->
+diff --git a/kernel/trace/trace.c b/kernel/trace/trace.c
+index a569a0cb81ee..a6e77db764cf 100644
+--- a/kernel/trace/trace.c
++++ b/kernel/trace/trace.c
+@@ -6433,7 +6433,7 @@ tracing_set_trace_write(struct file *filp, const char __user *ubuf,
+ {
+ 	struct trace_array *tr = filp->private_data;
+ 	char buf[MAX_TRACER_SIZE+1];
+-	int i;
++	char *name;
+ 	size_t ret;
+ 	int err;
+ 
+@@ -6447,11 +6447,9 @@ tracing_set_trace_write(struct file *filp, const char __user *ubuf,
+ 
+ 	buf[cnt] = 0;
+ 
+-	/* strip ending whitespace. */
+-	for (i = cnt - 1; i > 0 && isspace(buf[i]); i--)
+-		buf[i] = 0;
++	name = strim(buf);
+ 
+-	err = tracing_set_tracer(tr, buf);
++	err = tracing_set_tracer(tr, name);
+ 	if (err)
+ 		return err;
+ 
+-- 
+2.35.0.rc2
 
