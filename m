@@ -2,154 +2,103 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89BABC4332F
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 07:45:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D5C8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 07:46:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379179AbiAUHpb (ORCPT
+        id S1379152AbiAUHqP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 02:45:31 -0500
-Received: from mail-sz.amlogic.com ([211.162.65.117]:15143 "EHLO
-        mail-sz.amlogic.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379114AbiAUHpY (ORCPT
+        Fri, 21 Jan 2022 02:46:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37704 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1379114AbiAUHqM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 02:45:24 -0500
-Received: from droid11-sz.amlogic.com (10.28.8.21) by mail-sz.amlogic.com
- (10.28.11.5) with Microsoft SMTP Server id 15.1.2176.2; Fri, 21 Jan 2022
- 15:45:20 +0800
-From:   Liang Yang <liang.yang@amlogic.com>
-To:     Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, <linux-clk@vger.kernel.org>
-CC:     Liang Yang <liang.yang@amlogic.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Jianxin Pan <jianxin.pan@amlogic.com>,
-        Victor Wan <victor.wan@amlogic.com>,
-        XianWei Zhao <xianwei.zhao@amlogic.com>,
-        Kelvin Zhang <kelvin.zhang@amlogic.com>,
-        BiChao Zheng <bichao.zheng@amlogic.com>,
-        YongHui Yu <yonghui.yu@amlogic.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-amlogic@lists.infradead.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v10 3/4] clk: meson: add DT documentation for emmc clock controller
-Date:   Fri, 21 Jan 2022 15:45:07 +0800
-Message-ID: <20220121074508.42168-4-liang.yang@amlogic.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220121074508.42168-1-liang.yang@amlogic.com>
-References: <20220121074508.42168-1-liang.yang@amlogic.com>
+        Fri, 21 Jan 2022 02:46:12 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A848C061746
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 23:46:12 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id g14so25088765ybs.8
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 23:46:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:from:date:message-id:subject:to:cc;
+        bh=6VGlaNwo012lzA+7kz/lrPF90trnFFi6FJ6/mHic+hs=;
+        b=xMPuSfeAAlBJoeqTa7zrkdfi+fcCQodwVxBlhLKj0MhKB1NnACApVZgTImEC6sApU8
+         9AvVAlCAqJoyMWZ+Bgz1mADiqpeMprrtN8j4Q6zppP3f4GT2ZXfcqw1LKFaBA9WlhIxq
+         4TeGYRYUwQV84j7lGnjGaacA+AmlgWCaxzWLNkDqHNv+vDZW6S1SpJf15evnnWP2rPGg
+         wI3YE75QumJ8g5TyAOH6Djrq5nRfxp1gHViE1mIi5Q9+WJwHBskFL1YPMI1gycvpkiu5
+         /7b5FtsKvlMBUX9pGLIeU0Fr9sZIl6/PdsUCZtjU/vvDU2ObGsMkqhEcpf9OOibLtvNc
+         B5pA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
+        bh=6VGlaNwo012lzA+7kz/lrPF90trnFFi6FJ6/mHic+hs=;
+        b=HddEf7TrOEBHDtP4uj926cLNdNXBq62c9Bg+RXiWXeFjgWT+vswaanxjmucJi9atXJ
+         hwBzRQn2A41TQqUf4IBEg5mo5q18993irIV/iEU15xeC+H7rgtKi/Kz+N02QSxzKV0GB
+         sAZAr/FXSz4GT7yrYhxDTV8ubcaTmilUch6SUSuiqj71uYujRhIeSev5mCgBlAHByXJS
+         vPCeo4XcUo3dkwDILq8jyPw0RG99AbN5inlTQtsmg/MM0AuHw3uVNjEz/jDZpO/uFFac
+         Vx029JGqUr05b2I4aSBW+nwcs7EOeApsTM7rL68+RDQmC13X3vKkkFU8tU/T6KeUqrhT
+         KIkg==
+X-Gm-Message-State: AOAM531pcukq23T5TfbFUxG8qnpX+WPBaPO8LNpLHIYCYJ1GI+u3kyJj
+        U07GLnED6qTTSTmsxjs3GXYR+BbBRbmLjZ3AqM+xzQ==
+X-Google-Smtp-Source: ABdhPJwK9URes+a+U/H7ToYTf1isUH/kpRc2JSjoWu9Z7aUB1iVP5o2fLVMPV8e7sZaI40IlE/NocAVbxaMs+F8uP7I=
+X-Received: by 2002:a25:8e89:: with SMTP id q9mr5016082ybl.520.1642751171389;
+ Thu, 20 Jan 2022 23:46:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.28.8.21]
+From:   Naresh Kamboju <naresh.kamboju@linaro.org>
+Date:   Fri, 21 Jan 2022 13:16:00 +0530
+Message-ID: <CA+G9fYvuEqeoLO6dC_qtGyRUz=UPv5i0C3jZ_n9nz5kWOuCHYQ@mail.gmail.com>
+Subject: [next] parisc: allnoconfig: ERROR: modpost: Section mismatches
+ detected. Set CONFIG_SECTION_MISMATCH_WARN_ONLY=y to allow them.
+To:     Linux-Next Mailing List <linux-next@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        linux-parisc@vger.kernel.org, regressions@lists.linux.dev,
+        lkft-triage@lists.linaro.org, Linux PM <linux-pm@vger.kernel.org>,
+        linux-fsdevel@vger.kernel.org
+Cc:     Alexander Viro <viro@zeniv.linux.org.uk>, pavel@ucw.cz,
+        rppt@kernel.org, Andrew Morton <akpm@linux-foundation.org>,
+        linux-mm <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Document the MMC sub clock controller driver, the potential consumer
-of this driver is MMC or NAND. Also add four clock bindings IDs which
-provided by this driver.
+Linux next-20220121 parisc allnoconfig build failed with gcc-9/10/11.
 
-Signed-off-by: Liang Yang <liang.yang@amlogic.com>
----
- .../bindings/clock/amlogic,mmc-clkc.yaml      | 64 +++++++++++++++++++
- include/dt-bindings/clock/amlogic,mmc-clkc.h  | 14 ++++
- 2 files changed, 78 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/clock/amlogic,mmc-clkc.yaml
- create mode 100644 include/dt-bindings/clock/amlogic,mmc-clkc.h
+make --silent --keep-going --jobs=8 ARCH=parisc
+CROSS_COMPILE=hppa-linux-gnu- 'CC=sccache hppa-linux-gnu-gcc'
+'HOSTCC=sccache gcc'
 
-diff --git a/Documentation/devicetree/bindings/clock/amlogic,mmc-clkc.yaml b/Documentation/devicetree/bindings/clock/amlogic,mmc-clkc.yaml
-new file mode 100644
-index 000000000000..0fe2e33c2082
---- /dev/null
-+++ b/Documentation/devicetree/bindings/clock/amlogic,mmc-clkc.yaml
-@@ -0,0 +1,64 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/clock/amlogic,mmc-clkc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Amlogic MMC Sub Clock Controller Driver Device Tree Bindings
-+
-+maintainers:
-+  - jianxin.pan@amlogic.com
-+  - liang.yang@amlogic.com
-+
-+properties:
-+  compatible:
-+    enum:
-+      - "amlogic,axg-mmc-clkc", "syscon"
-+      - "amlogic,gx-mmc-clkc", "syscon"
-+
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 2
-+
-+  clock-names:
-+    items:
-+      - const: "clkin0", "clkin1"
-+
-+  "#clock-cells":
-+    const: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+  - "#clock-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    sd_mmc_c_clkc: clock-controller@7000 {
-+	compatible = "amlogic,axg-mmc-clkc", "syscon";
-+	reg = <0x0 0x7000 0x0 0x4>;
-+	#clock-cells = <1>;
-+
-+	clock-names = "clkin0", "clkin1";
-+	clocks = <&clkc CLKID_SD_EMMC_C_CLK0>,
-+		 <&clkc CLKID_FCLK_DIV2>;
-+     };
-+
-+  - |
-+    sd_emmc_b_clkc: clock-controller@5000 {
-+	compatible = "amlogic,axg-mmc-clkc", "syscon";
-+	reg = <0x0 0x5000 0x0 0x4>;
-+
-+	#clock-cells = <1>;
-+	clock-names = "clkin0", "clkin1";
-+	clocks = <&clkc CLKID_SD_EMMC_B_CLK0>,
-+		 <&clkc CLKID_FCLK_DIV2>;
-+    };
-+
-+...
-\ No newline at end of file
-diff --git a/include/dt-bindings/clock/amlogic,mmc-clkc.h b/include/dt-bindings/clock/amlogic,mmc-clkc.h
-new file mode 100644
-index 000000000000..71301517b183
---- /dev/null
-+++ b/include/dt-bindings/clock/amlogic,mmc-clkc.h
-@@ -0,0 +1,14 @@
-+/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-+/*
-+ * Copyright (c) 2019 Amlogic, Inc. All rights reserved.
-+ */
-+
-+#ifndef __MMC_CLKC_H
-+#define __MMC_CLKC_H
-+
-+#define CLKID_MMC_DIV		0
-+#define CLKID_MMC_PHASE_CORE	1
-+#define CLKID_MMC_PHASE_TX	2
-+#define CLKID_MMC_PHASE_RX	3
-+
-+#endif
--- 
-2.34.1
+WARNING: modpost: vmlinux.o(.text+0x1c8): Section mismatch in
+reference from the function ksys_sync() to the function
+.init.text:memblock_alloc_try_nid()
+The function ksys_sync() references
+the function __init memblock_alloc_try_nid().
+This is often because ksys_sync lacks a __init
+annotation or the annotation of memblock_alloc_try_nid is wrong.
 
+ERROR: modpost: Section mismatches detected.
+Set CONFIG_SECTION_MISMATCH_WARN_ONLY=y to allow them.
+make[2]: *** [/builds/linux/scripts/Makefile.modpost:59:
+vmlinux.symvers] Error 1
+
+Reported-by: Linux Kernel Functional Testing <lkft@linaro.org>
+
+metadata:
+  git branch: master
+  git repo: https://gitlab.com/Linaro/lkft/mirrors/next/linux-next
+  git describe: next-20220121
+  kernel-config: https://builds.tuxbuild.com/23zIAxC4uCgy4zadA01JYyOwCR4/config
+  build: https://builds.tuxbuild.com/23zIAxC4uCgy4zadA01JYyOwCR4/
+
+# To install tuxmake on your system globally:
+# sudo pip3 install -U tuxmake
+#
+# See https://docs.tuxmake.org/ for complete documentation.
+# Original tuxmake command with fragments listed below.
+
+tuxmake --runtime podman --target-arch parisc --toolchain gcc-11
+--kconfig allnoconfig
+
+--
+Linaro LKFT
+https://lkft.linaro.org
