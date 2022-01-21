@@ -2,166 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C48C4C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 02:08:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB3E2C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 02:14:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378452AbiAUCIy (ORCPT
+        id S1378460AbiAUCOJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Thu, 20 Jan 2022 21:08:54 -0500
-Received: from mailgw01.mediatek.com ([60.244.123.138]:48942 "EHLO
-        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S244982AbiAUCIx (ORCPT
+        Thu, 20 Jan 2022 21:14:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49522 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245178AbiAUCOH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Thu, 20 Jan 2022 21:08:53 -0500
-X-UUID: d89c17bc827a4c38b6c8ef0c5ffc0d83-20220121
-X-UUID: d89c17bc827a4c38b6c8ef0c5ffc0d83-20220121
-Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw01.mediatek.com
-        (envelope-from <ck.hu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1408320461; Fri, 21 Jan 2022 10:08:49 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Fri, 21 Jan 2022 10:08:47 +0800
-Received: from mtksdccf07 (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Fri, 21 Jan 2022 10:08:47 +0800
-Message-ID: <e4328a0fd2c97d073793532d238abd781797fe13.camel@mediatek.com>
-Subject: Re: [PATCH v1, 1/1] soc: mediatek: cmdq: add cmdq_pkt_poll_addr
- function
-From:   CK Hu <ck.hu@mediatek.com>
-To:     Yongqiang Niu <yongqiang.niu@mediatek.com>,
-        Chun-Kuang Hu <chunkuang.hu@kernel.org>
-CC:     <devicetree@vger.kernel.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        David Airlie <airlied@linux.ie>,
-        Jassi Brar <jassisinghbrar@gmail.com>,
-        <linux-kernel@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
-        "Dennis YC Hsieh" <dennis-yc.hsieh@mediatek.com>,
-        Fabien Parent <fparent@baylibre.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        <linux-mediatek@lists.infradead.org>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        mtk18742 <moudy.ho@mediatek.com>,
-        <linux-arm-kernel@lists.infradead.org>
-Date:   Fri, 21 Jan 2022 10:08:47 +0800
-In-Reply-To: <20220120074311.2243-2-yongqiang.niu@mediatek.com>
-References: <20220120074311.2243-1-yongqiang.niu@mediatek.com>
-         <20220120074311.2243-2-yongqiang.niu@mediatek.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        Thu, 20 Jan 2022 21:14:07 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76FF2C061574
+        for <linux-kernel@vger.kernel.org>; Thu, 20 Jan 2022 18:14:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=mMsttHL5yQ5Bam0gaHSIXD7InB+D1TXSs5SzrAG0bSk=; b=KYXhTDyTi334B1jiFPr/nlo7Nx
+        Zw1cXlIffzkjqN/ZJCyJnkY2yK+SzelC8tB1iQv4o3bYrnyAL1hbnaqukDfqFbdlNMzd5+DBhXmHh
+        8tqJ2IUDqYJM4QXVzqKqq/z1oa3JZWPXnZgA82cSbO1tQwvZbbEtWEtq60SGyGPZgXoNTrXdy4kU+
+        fvh7Mng8jrJvOOqzBeF2lsiEr23ThBUM1fWIzUdcdJe8Y+lCG65oP5mO+g0Fw2R8Oo3EICVtTVGNF
+        L2bgvhyHninDk0zTvnJSodc6+OwtwYbtlRgwCuXwEk+yQ3mfxgGO+zbvJ4panbZD/G3IVyeuTf5SE
+        5UqOZ5zQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nAjR2-00F9EU-MD; Fri, 21 Jan 2022 02:13:52 +0000
+Date:   Fri, 21 Jan 2022 02:13:52 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Barry Song <21cnbao@gmail.com>
+Cc:     khalid.aziz@oracle.com, akpm@linux-foundation.org, arnd@arndb.de,
+        dave.hansen@linux.intel.com, david@redhat.com,
+        linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        longpeng2@huawei.com, rppt@kernel.org, surenb@google.com
+Subject: Re: [RFC PATCH 0/6] Add support for shared PTEs across processes
+Message-ID: <YeoW4CMiU8qbRFST@casper.infradead.org>
+References: <cover.1642526745.git.khalid.aziz@oracle.com>
+ <20220121010806.5607-1-21cnbao@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220121010806.5607-1-21cnbao@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, Yongqiang:
-
-On Thu, 2022-01-20 at 15:43 +0800, Yongqiang Niu wrote:
-> From: mtk18742 <moudy.ho@mediatek.com>
+On Fri, Jan 21, 2022 at 09:08:06AM +0800, Barry Song wrote:
+> > A file under /sys/fs/mshare can be opened and read from. A read from
+> > this file returns two long values - (1) starting address, and (2)
+> > size of the mshare'd region.
+> > 
+> > --
+> > int mshare_unlink(char *name)
+> > 
+> > A shared address range created by mshare() can be destroyed using
+> > mshare_unlink() which removes the  shared named object. Once all
+> > processes have unmapped the shared object, the shared address range
+> > references are de-allocated and destroyed.
 > 
-> add cmdq_pkt_poll_addr function in cmdq helper functions
+> > mshare_unlink() returns 0 on success or -1 on error.
 > 
-> Signed-off-by: Yongqiang Niu <yongqiang.niu@mediatek.com>
-> ---
->  drivers/soc/mediatek/mtk-cmdq-helper.c   | 39
-> ++++++++++++++++++++++++
->  include/linux/mailbox/mtk-cmdq-mailbox.h |  1 +
->  include/linux/soc/mediatek/mtk-cmdq.h    |  2 ++
->  3 files changed, 42 insertions(+)
-> 
-> diff --git a/drivers/soc/mediatek/mtk-cmdq-helper.c
-> b/drivers/soc/mediatek/mtk-cmdq-helper.c
-> index 3c8e4212d941..6c5cfb284140 100644
-> --- a/drivers/soc/mediatek/mtk-cmdq-helper.c
-> +++ b/drivers/soc/mediatek/mtk-cmdq-helper.c
-> @@ -344,6 +344,45 @@ int cmdq_pkt_set_event(struct cmdq_pkt *pkt, u16
-> event)
->  }
->  EXPORT_SYMBOL(cmdq_pkt_set_event);
->  
-> +s32 cmdq_pkt_poll_addr(struct cmdq_pkt *pkt, u32 value, u32 addr,
-> u32 mask, u8 reg_gpr)
-> +{
-> +	struct cmdq_instruction inst = { {0} };
-> +
-> +	s32 err;
-> +
-> +	if (mask != 0xffffffff) {
-> +		inst.op = CMDQ_CODE_MASK;
-> +		inst.mask = ~mask;
-> +		err = cmdq_pkt_append_command(pkt, inst);
-> +		if (err != 0)
-> +			return err;
-> +
-> +		addr = addr | 0x1;
-> +	}
-> +
-> +	/* Move extra handle APB address to GPR */
-> +	inst.op = CMDQ_CODE_MOVE;
-> +	inst.value = addr;
-> +	inst.sop = reg_gpr;
-> +	inst.dst_t = 1;
-> +	err = cmdq_pkt_append_command(pkt, inst);
-> +	if (err != 0)
-> +		pr_err("%s fail append command move addr to reg
-> err:%d",
-> +			__func__, err);
+> I am still struggling with the user scenarios of these new APIs. This patch
+> supposes multiple processes will have same virtual address for the shared
+> area? How can this be guaranteed while different processes can map different
+> stack, heap, libraries, files?
 
-cmdq_pkt_assign() could assign a value to GPR, so remove this part.
+The two processes choose to share a chunk of their address space.
+They can map anything they like in that shared area, and then also
+anything they like in the areas that aren't shared.  They can choose
+for that shared area to have the same address in both processes
+or different locations in each process.
 
-> +
-> +	inst.op = CMDQ_CODE_POLL;
-> +	inst.value = value;
-> +	inst.sop = reg_gpr;
-> +	inst.dst_t = 1;
-> +	err = cmdq_pkt_append_command(pkt, inst);
-> +	if (err != 0)
-> +		pr_err("%s fail append command poll err:%d",
-> +			__func__, err);
-> +
-> +	return err;
-> +}
-> +EXPORT_SYMBOL(cmdq_pkt_poll_addr);
-> +
->  int cmdq_pkt_poll(struct cmdq_pkt *pkt, u8 subsys,
->  		  u16 offset, u32 value)
->  {
-> diff --git a/include/linux/mailbox/mtk-cmdq-mailbox.h
-> b/include/linux/mailbox/mtk-cmdq-mailbox.h
-> index 44365aab043c..a27329fd7c7f 100644
-> --- a/include/linux/mailbox/mtk-cmdq-mailbox.h
-> +++ b/include/linux/mailbox/mtk-cmdq-mailbox.h
-> @@ -54,6 +54,7 @@
->   */
->  enum cmdq_code {
->  	CMDQ_CODE_MASK = 0x02,
-> +	CMDQ_CODE_MOVE = 0x02,
->  	CMDQ_CODE_WRITE = 0x04,
->  	CMDQ_CODE_POLL = 0x08,
->  	CMDQ_CODE_JUMP = 0x10,
-> diff --git a/include/linux/soc/mediatek/mtk-cmdq.h
-> b/include/linux/soc/mediatek/mtk-cmdq.h
-> index ac6b5f3cba95..28dc5ce0ff03 100644
-> --- a/include/linux/soc/mediatek/mtk-cmdq.h
-> +++ b/include/linux/soc/mediatek/mtk-cmdq.h
-> @@ -280,4 +280,6 @@ int cmdq_pkt_finalize(struct cmdq_pkt *pkt);
->  int cmdq_pkt_flush_async(struct cmdq_pkt *pkt, cmdq_async_flush_cb
-> cb,
->  			 void *data);
->  
+If two processes want to put a shared library in that shared address
+space, that should work.  They probably would need to agree to use
+the same virtual address for the shared page tables for that to work.
 
-Add comment for this function, parameters, and return value like other
-interface.
+Processes should probably not put their stacks in the shared region.
+I mean, it could work, I suppose ... threads manage it in a single
+address space.  But I don't see why you'd want to do that.  For
+heaps, if you want the other process to be able to access the memory,
+I suppose you could put it in the shared region, but heaps aren't
+going to be put in the shared region by default.
 
-Regards,
-CK
+Think of this like hugetlbfs, only instead of sharing hugetlbfs
+memory, you can share _anything_ that's mmapable.
 
-> +s32 cmdq_pkt_poll_addr(struct cmdq_pkt *pkt, u32 value, u32 addr,
-> u32 mask, u8 reg_gpr);
-> +
->  #endif	/* __MTK_CMDQ_H__ */
+> BTW, it seems you have different intention with the below?
+> Shared page tables during fork[1]
+> [1] https://lwn.net/Articles/861547/
 
+Yes, that's completely different.
