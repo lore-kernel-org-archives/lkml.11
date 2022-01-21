@@ -2,80 +2,80 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D1B0C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 22:14:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7D39C433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 22:16:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232659AbiAUWOC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 17:14:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36864 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229664AbiAUWOA (ORCPT
+        id S232681AbiAUWQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 17:16:17 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40240 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229657AbiAUWQP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 17:14:00 -0500
-Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3306C06173D
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 14:14:00 -0800 (PST)
-Received: by mail-pl1-x62f.google.com with SMTP id h13so9359400plf.2
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 14:14:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Nnss6a9MA14+UWYAmsICTbIY39H/bkhpNFu76IHD8vg=;
-        b=r3xJL4RGG40p9ajfsacqGZuOebfeT82VCBt8ubl5aH/TOJz0fE8X8KYEDGxePpDjVe
-         NAJ+qciQthYxPyGbwlvt2aUhbmeCUclWM1aEmq5O1ewNz9dtaHjc1Ka0xS7YYnzOvoBG
-         FRcoStxkhDPNmA0Eo51MO2hZ41/TqLewxohgiv6bPyEtpSFOQ/UZWbNYRnC8mne7m73u
-         3EYBO5OQKhDdTgYXgsNUO8Pq8y9H5PhwrAN47VY7oF0ijmrYCEXc0LNoKkWMMQYGcTo2
-         1HeUsDr1gojt4IvaIn5XEycbDRSw4LpiNRV/msZ1LZduq4wgUs0MvpRPTaxSClzxT0TU
-         ardA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Nnss6a9MA14+UWYAmsICTbIY39H/bkhpNFu76IHD8vg=;
-        b=jRlljhIP7oLdQ2twffrf4X4YWunMUJQr/Jc8LXLPBDA3dKI5CNwcZ5/tmgbgz+j5Ks
-         O+1GwrSaeK7t25X3YfRTGQinLo5FgKdzjUBvOGibH/00o0kVLdnM9lv3DZpXwJHLPgBY
-         +UqzHDi9NCx+LD3+V93Ku2RVQ3dHNFSvRaEEVPUIMSEtt9pV1ZEh5msyGvucLvF8VrOq
-         QR2s3Q5bzxWhC48xnNNUapZRaVE7qcpMnDGuS52/ZTNMrLhC/JvFFz5V+pAhov167eBV
-         u4/ct8YosvmQQbWBin7o1mw/YMoLhSCOfDJRzfLKhw+lzJ/7UfWl6UjyfYmJj+SKbJZR
-         wfLw==
-X-Gm-Message-State: AOAM530iZT5/VgX0fKkI5S8+NOdFj0VXn0+3kVOKYbsRVZIGSd+5ozvl
-        OPz3ng25W4ED9fLa0po7nkxXC2tDAKJhrTZksRr2zg==
-X-Google-Smtp-Source: ABdhPJxziV7v+8obhn4MbPKIZDA64SQiHqv9vpRKZfykdhdDMO8Ro9y9Z9V8AjlhBm6Z/p/1vICYPVW47ZIbDhG9LlQ=
-X-Received: by 2002:a17:902:6502:b0:149:1162:f0b5 with SMTP id
- b2-20020a170902650200b001491162f0b5mr5696756plk.126.1642803239982; Fri, 21
- Jan 2022 14:13:59 -0800 (PST)
+        Fri, 21 Jan 2022 17:16:15 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 567F8B820E3;
+        Fri, 21 Jan 2022 22:16:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69CA1C340E1;
+        Fri, 21 Jan 2022 22:16:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642803373;
+        bh=OYCTY6mYYqGyq46xX5k/Wa4Dv6rOx+5pvjKpAGsRp24=;
+        h=Date:From:To:Cc:Subject:From;
+        b=FRnPNsvltvoh2BGl5bCUGgetbbZ730rbs2ZcCbMpYkPPZ6yFU80O51YaATBcV1ri7
+         sqxzLVvTD+ioqbBRm3NfkDR+mujYVp9wPbEf4DyvbN+oO6CJ0QfxZqXcXtfQumnzU5
+         bSAAe03qRCOxYcWg/B45y7a7qlk4xW/38IPOQN+Sd9mVUlZ8URIPJz3B9m+gzf+tWW
+         7YtXRrXsEkLxeyZZWfpSqY3iBw3bnC2MguqijDK3ZumDLvcHsGlk8KamXIJY66jxrp
+         1Z/2An8DdBuWIPYfYZIuptc5q285hK7qzxTKeETKu93ALHaT7/KpiBusFqrsOWxQJG
+         ilV6lXAWtgxiA==
+Date:   Fri, 21 Jan 2022 16:22:50 -0600
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Viresh Kumar <vireshk@kernel.org>, Johan Hovold <johan@kernel.org>,
+        Alex Elder <elder@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     greybus-dev@lists.linaro.org, linux-staging@lists.linux.dev,
+        linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
+        linux-hardening@vger.kernel.org
+Subject: [PATCH][next] staging: greybus: i2c: Use struct_size() helper in
+ gb_i2c_operation_create()
+Message-ID: <20220121222250.GA73021@embeddedor>
 MIME-Version: 1.0
-References: <20220118223506.1701553-1-dlatypov@google.com> <20220118223506.1701553-4-dlatypov@google.com>
-In-Reply-To: <20220118223506.1701553-4-dlatypov@google.com>
-From:   Brendan Higgins <brendanhiggins@google.com>
-Date:   Fri, 21 Jan 2022 17:13:48 -0500
-Message-ID: <CAFd5g4492KRo99mgVuKKXvmnw1Su_XjVrwJ9BGM0kLwC9ce_Wg@mail.gmail.com>
-Subject: Re: [PATCH 3/5] kunit: reduce layering in string assertion macros
-To:     Daniel Latypov <dlatypov@google.com>
-Cc:     davidgow@google.com, linux-kernel@vger.kernel.org,
-        kunit-dev@googlegroups.com, linux-kselftest@vger.kernel.org,
-        skhan@linuxfoundation.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, Jan 18, 2022 at 5:35 PM Daniel Latypov <dlatypov@google.com> wrote:
->
-> The current macro chain looks like:
-> KUNIT_EXPECT_STREQ => KUNIT_EXPECT_STREQ_MSG => KUNIT_BINARY_STR_EQ_MSG_ASSERTION => KUNIT_BINARY_STR_ASSERTION.
-> KUNIT_ASSERT_STREQ => KUNIT_ASSERT_STREQ_MSG => KUNIT_BINARY_STR_EQ_MSG_ASSERTION => KUNIT_BINARY_STR_ASSERTION.
-> <ditto for STR_NE>
->
-> After this change:
-> KUNIT_EXPECT_STREQ => KUNIT_EXPECT_STREQ_MSG => KUNIT_BINARY_STR_ASSERTION.
-> KUNIT_ASSERT_STREQ => KUNIT_ASSERT_STREQ_MSG => KUNIT_BINARY_STR_ASSERTION.
-> <ditto for STR_NE>
->
-> All the intermediate macro did was pass in "==" or "!=", so it seems
-> better to just drop them at the cost of a bit more copy-paste.
->
-> Signed-off-by: Daniel Latypov <dlatypov@google.com>
+Make use of the struct_size() helper instead of an open-coded version,
+in order to avoid any potential type mistakes or integer overflows that,
+in the worst scenario, could lead to heap overflows.
 
-Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Also, address the following sparse warnings:
+drivers/staging/greybus/i2c.c:111:24: warning: using sizeof on a flexible structure
+
+Link: https://github.com/KSPP/linux/issues/174
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/staging/greybus/i2c.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/staging/greybus/i2c.c b/drivers/staging/greybus/i2c.c
+index de2f6516da09..9dfc6791c20e 100644
+--- a/drivers/staging/greybus/i2c.c
++++ b/drivers/staging/greybus/i2c.c
+@@ -108,9 +108,7 @@ gb_i2c_operation_create(struct gb_connection *connection,
+ 		else
+ 			data_out_size += (u32)msg->len;
+ 
+-	request_size = sizeof(*request);
+-	request_size += msg_count * sizeof(*op);
+-	request_size += data_out_size;
++	request_size = struct_size(request, ops, msg_count) + data_out_size;
+ 
+ 	/* Response consists only of incoming data */
+ 	operation = gb_operation_create(connection, GB_I2C_TYPE_TRANSFER,
+-- 
+2.27.0
+
