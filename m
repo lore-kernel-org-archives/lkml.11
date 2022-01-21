@@ -2,127 +2,81 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B1EEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 22:45:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B8D1C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 22:47:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232058AbiAUWp1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 17:45:27 -0500
-Received: from perceval.ideasonboard.com ([213.167.242.64]:55592 "EHLO
-        perceval.ideasonboard.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229926AbiAUWp0 (ORCPT
+        id S232378AbiAUWrz convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 17:47:55 -0500
+Received: from coyote.holtmann.net ([212.227.132.17]:46038 "EHLO
+        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229926AbiAUWry (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 17:45:26 -0500
-Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
-        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 9F37525B;
-        Fri, 21 Jan 2022 23:45:23 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
-        s=mail; t=1642805123;
-        bh=MTvhs1Ji3raiFOvOg+D9/nZXJCTIHgAe9pLcbHUqokA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vOlt4XVRAgTLlKVZ8KyU5yTSTLG60rdslIJRDihqW7EhDcVE6ayoUEZ/HiQBD5fO6
-         MtgAvIhAdtFYrBl/y8FfwSM93KP+NlW2zGer8XRgy+fHJjZaXkaNCYDn6dn6M7hkIH
-         RFHQK/2tu80u5DbhwgUQcrkhV5asm/soaBjWlKxY=
-Date:   Sat, 22 Jan 2022 00:45:07 +0200
-From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-To:     Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
-Cc:     dave.stevenson@raspberrypi.com, devicetree@vger.kernel.org,
-        kernel-list@raspberrypi.com, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-rpi-kernel@lists.infradead.org, lukasz@jany.st,
-        mchehab@kernel.org, naush@raspberrypi.com, robh@kernel.org,
-        tomi.valkeinen@ideasonboard.com
-Subject: Re: [RFC PATCH v2 5/7] ARM: dts: bcm2711: Add unicam CSI nodes
-Message-ID: <Yes3c1v+V1hMlWfW@pendragon.ideasonboard.com>
-References: <20220121081810.155500-1-jeanmichel.hautbois@ideasonboard.com>
- <20220121081810.155500-6-jeanmichel.hautbois@ideasonboard.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220121081810.155500-6-jeanmichel.hautbois@ideasonboard.com>
+        Fri, 21 Jan 2022 17:47:54 -0500
+Received: from smtpclient.apple (p4fefca45.dip0.t-ipconnect.de [79.239.202.69])
+        by mail.holtmann.org (Postfix) with ESMTPSA id 94A56CED19;
+        Fri, 21 Jan 2022 23:47:52 +0100 (CET)
+Content-Type: text/plain;
+        charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 15.0 \(3693.40.0.1.81\))
+Subject: Re: [PATCH] Bluetooth: hci_serdev: call init_rwsem() before p->open()
+From:   Marcel Holtmann <marcel@holtmann.org>
+In-Reply-To: <20220113132704.4354-1-paskripkin@gmail.com>
+Date:   Fri, 21 Jan 2022 23:47:52 +0100
+Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        lukas@wunner.de, BlueZ <linux-bluetooth@vger.kernel.org>,
+        linux-kernel@vger.kernel.org, Yiru Xu <xyru1999@gmail.com>
+Content-Transfer-Encoding: 8BIT
+Message-Id: <EE12A872-B63D-40C9-89CF-98DEEB25DA60@holtmann.org>
+References: <20220113132704.4354-1-paskripkin@gmail.com>
+To:     Pavel Skripkin <paskripkin@gmail.com>
+X-Mailer: Apple Mail (2.3693.40.0.1.81)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Jean-Michel,
+Hi Pavel,
 
-Thank you for the patch.
-
-On Fri, Jan 21, 2022 at 09:18:08AM +0100, Jean-Michel Hautbois wrote:
-> Add both MIPI CSI-2 nodes in the core bcm2711 tree. Use the 3-cells
-> interrupt declaration, corresponding clocks and default as disabled.
+> kvartet reported, that hci_uart_tx_wakeup() uses uninitialized rwsem.
+> The problem was in wrong place for percpu_init_rwsem() call.
 > 
-> Signed-off-by: Jean-Michel Hautbois <jeanmichel.hautbois@ideasonboard.com>
+> hci_uart_proto::open() may register a timer whose callback may call
+> hci_uart_tx_wakeup(). There is a chance, that hci_uart_register_device()
+> thread won't be fast enough to call percpu_init_rwsem().
+> 
+> Fix it my moving percpu_init_rwsem() call before p->open().
+> 
+> INFO: trying to register non-static key.
+> The code is fine but needs lockdep annotation, or maybe
+> you didn't initialize this object before use?
+> turning off the locking correctness validator.
+> CPU: 2 PID: 18524 Comm: syz-executor.5 Not tainted 5.16.0-rc6 #9
+> ...
+> Call Trace:
+> <IRQ>
+> __dump_stack lib/dump_stack.c:88 [inline]
+> dump_stack_lvl+0xcd/0x134 lib/dump_stack.c:106
+> assign_lock_key kernel/locking/lockdep.c:951 [inline]
+> register_lock_class+0x148d/0x1950 kernel/locking/lockdep.c:1263
+> __lock_acquire+0x106/0x57e0 kernel/locking/lockdep.c:4906
+> lock_acquire kernel/locking/lockdep.c:5637 [inline]
+> lock_acquire+0x1ab/0x520 kernel/locking/lockdep.c:5602
+> percpu_down_read_trylock include/linux/percpu-rwsem.h:92 [inline]
+> hci_uart_tx_wakeup+0x12e/0x490 drivers/bluetooth/hci_ldisc.c:124
+> h5_timed_event+0x32f/0x6a0 drivers/bluetooth/hci_h5.c:188
+> call_timer_fn+0x1a5/0x6b0 kernel/time/timer.c:1421
+> 
+> Fixes: d73e17281665 ("Bluetooth: hci_serdev: Init hci_uart proto_lock to avoid oops")
+> Reported-by: Yiru Xu <xyru1999@gmail.com>
+> Signed-off-by: Pavel Skripkin <paskripkin@gmail.com>
 > ---
->  arch/arm/boot/dts/bcm2711.dtsi | 31 +++++++++++++++++++++++++++++++
->  1 file changed, 31 insertions(+)
-> 
-> diff --git a/arch/arm/boot/dts/bcm2711.dtsi b/arch/arm/boot/dts/bcm2711.dtsi
-> index dff18fc9a906..077141df7024 100644
-> --- a/arch/arm/boot/dts/bcm2711.dtsi
-> +++ b/arch/arm/boot/dts/bcm2711.dtsi
-> @@ -3,6 +3,7 @@
->  
->  #include <dt-bindings/interrupt-controller/arm-gic.h>
->  #include <dt-bindings/soc/bcm2835-pm.h>
-> +#include <dt-bindings/power/raspberrypi-power.h>
->  
->  / {
->  	compatible = "brcm,bcm2711";
-> @@ -293,6 +294,36 @@ hvs: hvs@7e400000 {
->  			interrupts = <GIC_SPI 97 IRQ_TYPE_LEVEL_HIGH>;
->  		};
->  
-> +		csi0: csi1@7e800000 {
+> drivers/bluetooth/hci_serdev.c | 3 ++-
+> 1 file changed, 2 insertions(+), 1 deletion(-)
 
-The node name should be csi@7e800000, not csi1@7e800000. Now, this will
-probably cause issues with the firmware that looks for csi1 (and csi0 ?)
-to hand over control of the Unicam CSI-2 receiver to the kernel. I
-wonder if this is something that could be handled by a firmware update,
-to also recognize nodes named "csi" ?
+patch has been applied to bluetooth-next tree.
 
-> +			compatible = "brcm,bcm2835-unicam";
-> +			reg = <0x7e800000 0x800>,
-> +			      <0x7e802000 0x4>;
-> +			interrupts = <GIC_SPI 102 IRQ_TYPE_LEVEL_HIGH>;
-> +			clocks = <&clocks BCM2835_CLOCK_CAM0>,
-> +				 <&firmware_clocks 4>;
-> +			clock-names = "lp", "vpu";
-> +			power-domains = <&power RPI_POWER_DOMAIN_UNICAM0>;
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +			#clock-cells = <1>;
+Regards
 
-Why do you need #address-cells, #size-cells and #clock-cells ? They're
-not mentioned in the binding.
+Marcel
 
-> +			status="disabled";
-
-Missing spaces around the =.
-
-Same comment for the next node.
-
-> +		};
-> +
-> +		csi1: csi1@7e801000 {
-> +			compatible = "brcm,bcm2835-unicam";
-> +			reg = <0x7e801000 0x800>,
-> +			      <0x7e802004 0x4>;
-> +			interrupts = <GIC_SPI 103 IRQ_TYPE_LEVEL_HIGH>;
-> +			clocks = <&clocks BCM2835_CLOCK_CAM1>,
-> +				 <&firmware_clocks 4>;
-> +			clock-names = "lp", "vpu";
-> +			power-domains = <&power RPI_POWER_DOMAIN_UNICAM1>;
-> +			#address-cells = <1>;
-> +			#size-cells = <0>;
-> +			#clock-cells = <1>;
-> +			status="disabled";
-> +		};
-> +
->  		pixelvalve3: pixelvalve@7ec12000 {
->  			compatible = "brcm,bcm2711-pixelvalve3";
->  			reg = <0x7ec12000 0x100>;
-
--- 
-Regards,
-
-Laurent Pinchart
