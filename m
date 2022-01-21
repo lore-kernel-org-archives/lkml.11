@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 468B9C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 13:29:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB72AC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 13:29:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380749AbiAUN3P (ORCPT
+        id S1380789AbiAUN3Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 08:29:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:46612 "EHLO
+        Fri, 21 Jan 2022 08:29:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:58733 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1380708AbiAUN3G (ORCPT
+        by vger.kernel.org with ESMTP id S1380727AbiAUN3L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 08:29:06 -0500
+        Fri, 21 Jan 2022 08:29:11 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642771746;
+        s=mimecast20190719; t=1642771750;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ph7iuiqAyH7LAtbQMxXscX0QTvPI7Az7INEqaoOkdQY=;
-        b=CBnpFW36xLHnYWsa1dXCzWri3TCIPb+J5Cy/oHtA9FogB0niV78cVJCbMN7x8GywyzmpuQ
-        QjEPJjapS3XNA6oB3b5PU1Z0MP7dFhraiLhVVgh9u/6G1KEt22u9IyQRrJfyp2Q8XbGaNT
-        CBEzUZj2CwlWgNr+XrzR0HNVv0rES6U=
+        bh=2PBE8349W+pORnjnNy3WMgm07NQBV8dZAmx6X3HKn1A=;
+        b=Mb9EXCGIA9pJC3LS6zt7QyDxSypyObPwqeoWTAQaXZ+0qtYLvUXpwptiWecxLJxbXnJfNg
+        /YNcKK30n7oCy2rdp2ByVsCbRfQsvkeGEajuoZ+KATroYv4TowBOImPm3xtC654UhD5b4z
+        uyeB1n+fV3eGTWb9E6cfoOp57E/9oFI=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
  (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-330-6akO12oFNImxNxCzy0XgZA-1; Fri, 21 Jan 2022 08:29:03 -0500
-X-MC-Unique: 6akO12oFNImxNxCzy0XgZA-1
+ us-mta-36-DsspPE7UO0aD9UtMTOEkmQ-1; Fri, 21 Jan 2022 08:29:07 -0500
+X-MC-Unique: DsspPE7UO0aD9UtMTOEkmQ-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9362E1091DA1;
-        Fri, 21 Jan 2022 13:29:01 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B05A884DA41;
+        Fri, 21 Jan 2022 13:29:06 +0000 (UTC)
 Received: from fedora.redhat.com (unknown [10.40.195.38])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3514E7E213;
-        Fri, 21 Jan 2022 13:28:59 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9D9637E213;
+        Fri, 21 Jan 2022 13:29:04 +0000 (UTC)
 From:   Vitaly Kuznetsov <vkuznets@redhat.com>
 To:     kvm@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>
 Cc:     Sean Christopherson <seanjc@google.com>,
@@ -43,9 +43,9 @@ Cc:     Sean Christopherson <seanjc@google.com>,
         Jim Mattson <jmattson@google.com>,
         Igor Mammedov <imammedo@redhat.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 2/5] KVM: x86: Move CPUID.(EAX=0x12,ECX=1) mangling to __kvm_update_cpuid_runtime()
-Date:   Fri, 21 Jan 2022 14:28:49 +0100
-Message-Id: <20220121132852.2482355-3-vkuznets@redhat.com>
+Subject: [PATCH v4 4/5] KVM: selftests: Rename 'get_cpuid_test' to 'cpuid_test'
+Date:   Fri, 21 Jan 2022 14:28:51 +0100
+Message-Id: <20220121132852.2482355-5-vkuznets@redhat.com>
 In-Reply-To: <20220121132852.2482355-1-vkuznets@redhat.com>
 References: <20220121132852.2482355-1-vkuznets@redhat.com>
 MIME-Version: 1.0
@@ -55,104 +55,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-To support comparing CPUID data update with what's already set for a vCPU
-all mangling needs to happen in __kvm_update_cpuid_runtime(), before
-'vcpu->arch.cpuid_entries' is updated. CPUID.(EAX=0x12,ECX=1) is currently
-being mangled in kvm_vcpu_after_set_cpuid(), move it to
-__kvm_update_cpuid_runtime(). Split off cpuid_get_supported_xcr0() helper
-as 'vcpu->arch.guest_supported_xcr0' update needs (logically) to stay in
-kvm_vcpu_after_set_cpuid().
+In preparation to reusing the existing 'get_cpuid_test' for testing
+"KVM_SET_CPUID{,2} after KVM_RUN" rename it to 'cpuid_test' to avoid
+the confusion.
 
 No functional change intended.
 
 Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
 ---
- arch/x86/kvm/cpuid.c | 54 +++++++++++++++++++++++++++-----------------
- 1 file changed, 33 insertions(+), 21 deletions(-)
+ tools/testing/selftests/kvm/.gitignore                        | 2 +-
+ tools/testing/selftests/kvm/Makefile                          | 4 ++--
+ .../selftests/kvm/x86_64/{get_cpuid_test.c => cpuid_test.c}   | 0
+ 3 files changed, 3 insertions(+), 3 deletions(-)
+ rename tools/testing/selftests/kvm/x86_64/{get_cpuid_test.c => cpuid_test.c} (100%)
 
-diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
-index 812190a707f6..7c48daee6670 100644
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -174,10 +174,26 @@ void kvm_update_pv_runtime(struct kvm_vcpu *vcpu)
- 		vcpu->arch.pv_cpuid.features = best->eax;
- }
+diff --git a/tools/testing/selftests/kvm/.gitignore b/tools/testing/selftests/kvm/.gitignore
+index 8c129961accf..20b4c921c9a2 100644
+--- a/tools/testing/selftests/kvm/.gitignore
++++ b/tools/testing/selftests/kvm/.gitignore
+@@ -8,11 +8,11 @@
+ /s390x/memop
+ /s390x/resets
+ /s390x/sync_regs_test
++/x86_64/cpuid_test
+ /x86_64/cr4_cpuid_sync_test
+ /x86_64/debug_regs
+ /x86_64/evmcs_test
+ /x86_64/emulator_error_test
+-/x86_64/get_cpuid_test
+ /x86_64/get_msr_index_features
+ /x86_64/kvm_clock_test
+ /x86_64/kvm_pv_test
+diff --git a/tools/testing/selftests/kvm/Makefile b/tools/testing/selftests/kvm/Makefile
+index ee8cf2149824..ec78a8692899 100644
+--- a/tools/testing/selftests/kvm/Makefile
++++ b/tools/testing/selftests/kvm/Makefile
+@@ -43,11 +43,11 @@ LIBKVM_aarch64 = lib/aarch64/processor.c lib/aarch64/ucall.c lib/aarch64/handler
+ LIBKVM_s390x = lib/s390x/processor.c lib/s390x/ucall.c lib/s390x/diag318_test_handler.c
+ LIBKVM_riscv = lib/riscv/processor.c lib/riscv/ucall.c
  
-+/*
-+ * Calculate guest's supported XCR0 taking into account guest CPUID data and
-+ * supported_xcr0 (comprised of host configuration and KVM_SUPPORTED_XCR0).
-+ */
-+static u64 cpuid_get_supported_xcr0(struct kvm_cpuid_entry2 *entries, int nent)
-+{
-+	struct kvm_cpuid_entry2 *best;
-+
-+	best = cpuid_entry2_find(entries, nent, 0xd, 0);
-+	if (!best)
-+		return 0;
-+
-+	return (best->eax | ((u64)best->edx << 32)) & supported_xcr0;
-+}
-+
- static void __kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *entries,
- 				       int nent)
- {
- 	struct kvm_cpuid_entry2 *best;
-+	u64 guest_supported_xcr0 = cpuid_get_supported_xcr0(entries, nent);
- 
- 	best = cpuid_entry2_find(entries, nent, 1, 0);
- 	if (best) {
-@@ -216,6 +232,21 @@ static void __kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu, struct kvm_cpuid_e
- 					   vcpu->arch.ia32_misc_enable_msr &
- 					   MSR_IA32_MISC_ENABLE_MWAIT);
- 	}
-+
-+	/*
-+	 * Bits 127:0 of the allowed SECS.ATTRIBUTES (CPUID.0x12.0x1) enumerate
-+	 * the supported XSAVE Feature Request Mask (XFRM), i.e. the enclave's
-+	 * requested XCR0 value.  The enclave's XFRM must be a subset of XCRO
-+	 * at the time of EENTER, thus adjust the allowed XFRM by the guest's
-+	 * supported XCR0.  Similar to XCR0 handling, FP and SSE are forced to
-+	 * '1' even on CPUs that don't support XSAVE.
-+	 */
-+	best = cpuid_entry2_find(entries, nent, 0x12, 0x1);
-+	if (best) {
-+		best->ecx &= guest_supported_xcr0 & 0xffffffff;
-+		best->edx &= guest_supported_xcr0 >> 32;
-+		best->ecx |= XFEATURE_MASK_FPSSE;
-+	}
- }
- 
- void kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu)
-@@ -239,27 +270,8 @@ static void kvm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
- 		kvm_apic_set_version(vcpu);
- 	}
- 
--	best = kvm_find_cpuid_entry(vcpu, 0xD, 0);
--	if (!best)
--		vcpu->arch.guest_supported_xcr0 = 0;
--	else
--		vcpu->arch.guest_supported_xcr0 =
--			(best->eax | ((u64)best->edx << 32)) & supported_xcr0;
--
--	/*
--	 * Bits 127:0 of the allowed SECS.ATTRIBUTES (CPUID.0x12.0x1) enumerate
--	 * the supported XSAVE Feature Request Mask (XFRM), i.e. the enclave's
--	 * requested XCR0 value.  The enclave's XFRM must be a subset of XCRO
--	 * at the time of EENTER, thus adjust the allowed XFRM by the guest's
--	 * supported XCR0.  Similar to XCR0 handling, FP and SSE are forced to
--	 * '1' even on CPUs that don't support XSAVE.
--	 */
--	best = kvm_find_cpuid_entry(vcpu, 0x12, 0x1);
--	if (best) {
--		best->ecx &= vcpu->arch.guest_supported_xcr0 & 0xffffffff;
--		best->edx &= vcpu->arch.guest_supported_xcr0 >> 32;
--		best->ecx |= XFEATURE_MASK_FPSSE;
--	}
-+	vcpu->arch.guest_supported_xcr0 =
-+		cpuid_get_supported_xcr0(vcpu->arch.cpuid_entries, vcpu->arch.cpuid_nent);
- 
- 	kvm_update_pv_runtime(vcpu);
- 
+-TEST_GEN_PROGS_x86_64 = x86_64/cr4_cpuid_sync_test
++TEST_GEN_PROGS_x86_64 = x86_64/cpuid_test
++TEST_GEN_PROGS_x86_64 += x86_64/cr4_cpuid_sync_test
+ TEST_GEN_PROGS_x86_64 += x86_64/get_msr_index_features
+ TEST_GEN_PROGS_x86_64 += x86_64/evmcs_test
+ TEST_GEN_PROGS_x86_64 += x86_64/emulator_error_test
+-TEST_GEN_PROGS_x86_64 += x86_64/get_cpuid_test
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_clock
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_cpuid
+ TEST_GEN_PROGS_x86_64 += x86_64/hyperv_features
+diff --git a/tools/testing/selftests/kvm/x86_64/get_cpuid_test.c b/tools/testing/selftests/kvm/x86_64/cpuid_test.c
+similarity index 100%
+rename from tools/testing/selftests/kvm/x86_64/get_cpuid_test.c
+rename to tools/testing/selftests/kvm/x86_64/cpuid_test.c
 -- 
 2.34.1
 
