@@ -2,281 +2,269 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F8DEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:29:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DEBBC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:29:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350927AbiAUO3K (ORCPT
+        id S1350967AbiAUO3l (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 09:29:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44222 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348743AbiAUO26 (ORCPT
+        Fri, 21 Jan 2022 09:29:41 -0500
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:58862 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350952AbiAUO3Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 09:28:58 -0500
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378CBC06173B
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:28:57 -0800 (PST)
-Received: by mail-lj1-x232.google.com with SMTP id x26so428291ljd.4
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:28:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=CxwHGwtSCeP76gAX5bO4LAoPL1nqrWMUamT2obcb9sw=;
-        b=c7tP/7CWnTCf34QJz5JuUB0vqBs9hga37gT7ufkvGHkMEHTGaV7j4Mi4mDBJMhuedX
-         0bzYQHYLiIMVsh2DLwZe8FAv9qffstyQ7+mB1FOSYb9QQlkqM7A1n2s99Bukerrdbr0l
-         rWrwjmag78r6WWdO/WKiTV0FkPMEyCkAJY8KPEDe5BnwXA+1k7MmvanSwLo7onzynbkB
-         LAeWZkLSUrTzk7e8VRWJc0vaORrFuqaureLnfR6mGsy9nKLyim5CiBLDfNOR/RlqmO8m
-         96TkAVoFlum/qojaejUDP+IMbQDyAy8Kwx6KhHrwtB1qnsMUMk2dnvs3WxnG33zdowbd
-         nbKQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CxwHGwtSCeP76gAX5bO4LAoPL1nqrWMUamT2obcb9sw=;
-        b=7laP6nUOpEmrUifCyZW5eSe1OG9lpTJG+dojkbQX0hju4UV4POQPP/fG9PpwWHLaxX
-         ZqeKvtwLqn40CeBWOhHNkoKDlEup9cvK7jdqgcTkUwcDxFN1Ua3pCwpyOtm4+y6hrte/
-         z7ObUOKmYNRsLHituHaLztpWVh4K7dpFCtLP7TBfzTPbHnHrsWdlWF7KCzdJ3x29WQDw
-         o7Kty51xu/tVOks0EJJgkt/gq2lVvni+KeSUcvrVAaG+5dYiSmdQlrZxRekXnpFRNEa3
-         Q8sMDDRzsPwECTXx80g7ObG56EooBccUUwYXtRTgi5uXTiHBWZQs/S7bWfLeqYx+GKf3
-         g9jA==
-X-Gm-Message-State: AOAM531lPgsg3Ll7psklEizcOtEn/TFx2F40h4m1IzoJgdBrTykXCcoy
-        QFJM5gv5yN8qtvw910azeXeEdy1YdgXsNgux21BvvA==
-X-Google-Smtp-Source: ABdhPJwpc+gopAU0pZgoWM9E6lgBcox4bUUzd25nkvAL0ORfgNVHsgmGl8OaBGCIDzinOAVQklb41fk6mzn/vekS9Go=
-X-Received: by 2002:a2e:505:: with SMTP id 5mr3161222ljf.273.1642775335507;
- Fri, 21 Jan 2022 06:28:55 -0800 (PST)
+        Fri, 21 Jan 2022 09:29:25 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 20LETKiY076213;
+        Fri, 21 Jan 2022 08:29:20 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1642775360;
+        bh=WQqkHJ+FgY4XE1bTzwmtfXIsd6N1b5dILusabLdQw3E=;
+        h=From:To:CC:Subject:Date:In-Reply-To:References;
+        b=RojKiM5uatS60b8PsSFBOZZtElC4QOBvac3/cRN+ClXeo8dMzwn74RSZDIbQ6yIs1
+         AIOQY7oua3IBpcqaEoud7YtT8IttpTMBc/uymcUtIvNno0ZmwPwMi5ae9Q3bdaMgfY
+         2Q3PCDqLdI8iIVudfnVpAf76HGSX25ByacHQZi00=
+Received: from DLEE105.ent.ti.com (dlee105.ent.ti.com [157.170.170.35])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 20LETKCv064838
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 21 Jan 2022 08:29:20 -0600
+Received: from DLEE100.ent.ti.com (157.170.170.30) by DLEE105.ent.ti.com
+ (157.170.170.35) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Fri, 21
+ Jan 2022 08:29:20 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DLEE100.ent.ti.com
+ (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Fri, 21 Jan 2022 08:29:20 -0600
+Received: from pratyush-4F-325.dhcp.ti.com (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 20LET4Ho072129;
+        Fri, 21 Jan 2022 08:29:16 -0600
+From:   Pratyush Yadav <p.yadav@ti.com>
+To:     Mauro Carvalho Chehab <mchehab@kernel.org>
+CC:     Pratyush Yadav <p.yadav@ti.com>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Nikhil Devshatwar <nikhil.nd@ti.com>,
+        Tomi Valkeinen <tomi.valkeinen@ideasonboard.com>,
+        Benoit Parrot <bparrot@ti.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
+        <niklas.soderlund+renesas@ragnatech.se>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-media@vger.kernel.org>
+Subject: [PATCH v6 03/14] media: cadence: csi2rx: Add get_fmt and set_fmt pad ops
+Date:   Fri, 21 Jan 2022 19:58:53 +0530
+Message-ID: <20220121142904.4091481-4-p.yadav@ti.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220121142904.4091481-1-p.yadav@ti.com>
+References: <20220121142904.4091481-1-p.yadav@ti.com>
 MIME-Version: 1.0
-References: <20220113170300.3555651-1-gsomlo@gmail.com> <Yeq4ej2RAWgDZMp1@errol.ini.cmu.edu>
-In-Reply-To: <Yeq4ej2RAWgDZMp1@errol.ini.cmu.edu>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Fri, 21 Jan 2022 15:28:19 +0100
-Message-ID: <CAPDyKFoXEgS=zzHbsomgMvEZge3Cw4_avOhDmMSeC+1nv1015w@mail.gmail.com>
-Subject: Re: [PATCH v14 0/3] mmc: Add LiteSDCard mmc driver
-To:     "Gabriel L. Somlo" <gsomlo@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        devicetree@vger.kernel.org, linux-mmc@vger.kernel.org,
-        kgugala@antmicro.com, mholenko@antmicro.com, krakoczy@antmicro.com,
-        mdudek@internships.antmicro.com, paulus@ozlabs.org, joel@jms.id.au,
-        shorne@gmail.com, geert@linux-m68k.org,
-        david.abdurachmanov@sifive.com, florent@enjoy-digital.fr,
-        rdunlap@infradead.org, andy.shevchenko@gmail.com, hdanton@sina.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 21 Jan 2022 at 14:43, Gabriel L. Somlo <gsomlo@gmail.com> wrote:
->
-> On Thu, Jan 13, 2022 at 12:02:57PM -0500, Gabriel Somlo wrote:
-> > Add support for the LiteX SD-Card device, LiteSDCard.
-> >
-> > LiteSDCard is a simple SD-Card interface available as part of the LiteX
-> > environment, used with various RISC-V and other FPGA based SoCs.
-> >
-> > New in v14:
-> > Documentation/devicetree/bindings/mmc/litex,mmc.yaml:
-> >   - add missing `vmmc-supply = ...` property to example section
-> >
-> > >New in v13:
-> > >Documentation/devicetree/bindings/mmc/litex,mmc.yaml:
-> > >  - add `vmmc-supply` requirement
-> > >drivers/mmc/host/Kconfig:
-> > >  - add dependency on REGULATOR, REGULATOR_FIXED_VOLTAGE
-> > >drivers/mmc/host/litex_mmc.c:
-> > >  - use `mmc_regulator_get_supply()`, with fallback to hardcoded 3.3V
->
->
-> Ping?
+The format is needed to calculate the link speed for the external DPHY
+configuration. It is not right to query the format from the source
+subdev. Add get_fmt and set_fmt pad operations so that the format can be
+configured and correct bpp be selected.
 
-Please don't ping during the merge window, unless it's a fix.
+Signed-off-by: Pratyush Yadav <p.yadav@ti.com>
 
-Although, as I have already started to prepare for applying a slew of
-patches, I can let you know that this series is going to be applied on
-Monday, when rc1 is out.
+---
 
-Kind regards
-Uffe
+Changes in v6:
+- Move the lock around the dereference for framefmt in
+  csi2rx_{get,set}_fmt() instead of when we get the pointer.
+- Do not return an error when an unsupported format is set. Instead
+  adjust the code to the first format in the list.
+- Not adding Laurent's R-by since I am making changes in
+  csi2rx_set_fmt() that he didn't explicitly recommend.
 
->
->
-> > >>New in v12:
-> > >>drivers/mmc/host/Kconfig:
-> > >>  - add dependency on HAVE_CLK for litex_mmc driver
-> > >>  - (re)add "If unsure, say N" to the litex_mmc driver help message
-> > >>drivers/mmc/host/litex_mmc.c:
-> > >>  - prints message using dev_info() before returning success from probe()
-> > >>
-> > >>>New in v11:
-> > >>>  - picked up r/b from Andy
-> > >>>drivers/mmc/host/litex_mmc.c:
-> > >>>  - defensive coding of litex_mmc_interrupt() return logic
-> > >>>  - remove `dev` member of `struct litex_mmc_host`, only used during probe
-> > >>>
-> > >>>>New in v10:
-> > >>>>drivers/mmc/host/litex_mmc.c:
-> > >>>>  - group `linux/mmc/*` includes by themselves
-> > >>>>  - clean-up of `return` style (multiple locations throughout source)
-> > >>>>  - create `mmc_free_host()` wrapper for use with
-> > >>>>    `devm_add_action_or_reset()`
-> > >>>>  - use GFP_KERNEL with `dmam_alloc_coherent()`
-> > >>>>
-> > >>>>>New in v9:
-> > >>>>>drivers/mmc/host/Kconfig:
-> > >>>>>  - fix OF dependency
-> > >>>>>drivers/mmc/host/litex_mmc.c:
-> > >>>>>  - remove `linux/of.h` include, no longer needed since dropping
-> > >>>>>    `of_match_ptr()`
-> > >>>>>  - add `linux/mod_devicetable.h` include
-> > >>>>>  - use devm_action_or_reset() to devm-ify mmc_alloc_host(), and obviate
-> > >>>>>    the need to call mmc_free_host() explicitly during either probe()
-> > >>>>>    error path or during remove()
-> > >>>>>
-> > >>>>>>New in v8:
-> > >>>>>>commit blurbs:
-> > >>>>>>  - cosmetic editing of descriptions
-> > >>>>>>  - removed `Cc:` lines
-> > >>>>>>drivers/mmc/host/litex_mmc.c:
-> > >>>>>>  - fix file header comment (for real, this time)
-> > >>>>>>  - add explicit `bits.h` include
-> > >>>>>>  - remove `of_match_ptr()` wrapper from around .of_match_table argument
-> > >>>>>>  - fix devm ordering issues: use `devm_request_irq()`, which precludes
-> > >>>>>>    the need to call `free_irq()` on `probe()` error path or from `remove()`
-> > >>>>>>
-> > >>>>>>>New in v7:
-> > >>>>>>>
-> > >>>>>>>drivers/mmc/host/Kconfig:
-> > >>>>>>>  - added module name in LiteSDCard Kconfig entry
-> > >>>>>>>
-> > >>>>>>>drivers/mmc/host/litex_mmc.c:
-> > >>>>>>>  - fixed comment formatting, ordering, and capitalization throughout
-> > >>>>>>>    the entire file
-> > >>>>>>>  - sorted header #include statements
-> > >>>>>>>  - removed redundant parantheses in readx_poll_timeout() condition
-> > >>>>>>>  - explicit handling of readx_poll_timeout() timeout scenarios
-> > >>>>>>>  - dev_err() used in litex_mmc_sdcard_wait_done()
-> > >>>>>>>  - use memcpy_fromio() to grab command response
-> > >>>>>>>  - no need to apply 0xffff mask to a 32-bit value right-shifted by 16
-> > >>>>>>>    (host->resp[3])
-> > >>>>>>>  - use clamp() instead of min(max(...)...)
-> > >>>>>>>  - reworked platform_get_irq_optional() error handling logic
-> > >>>>>>>  - no need to explicitly zero host->irq, kzalloc() does that already
-> > >>>>>>>  - added missing free_irq() in litex_mmc_probe() error path
-> > >>>>>>>  - reordered calls inside litex_mmc_remove() (calling mmc_free_host()
-> > >>>>>>>    before free_irq()
-> > >>>>>>>
-> > >>>>>>>>New in v6:
-> > >>>>>>>>
-> > >>>>>>>>drivers/mmc/host/litex_mmc.c:
-> > >>>>>>>>  - fix handling of deferred probe vs. platform_get_irq_optional()
-> > >>>>>>>>  - don't #ifdef dma_set_mask_and_coherent(), since it automatically
-> > >>>>>>>>    does the right thing on both 32- and 64-bit DMA capable arches
-> > >>>>>>>>  - remove MMC_CAP2_FULL_PWR_CYCLE, add MMC_CAP2_NO_MMC to list of
-> > >>>>>>>>    hardcoded capabilities during litex_mmc_probe()
-> > >>>>>>>>  - hardcode mmc->ocr_avail to the full 2.7-3.6V range allowed by the
-> > >>>>>>>>    SDCard spec (the LiteSDCard device doesn't accept software
-> > >>>>>>>>    configuration)
-> > >>>>>>>>
-> > >>>>>>>>>New in v5:
-> > >>>>>>>>>
-> > >>>>>>>>>MAINTAINERS:
-> > >>>>>>>>>
-> > >>>>>>>>>  - picked up a/b Mateusz
-> > >>>>>>>>>
-> > >>>>>>>>>Doc/dt/bindings/mmc/litex,mmc.yaml:
-> > >>>>>>>>>
-> > >>>>>>>>>  - picked up r/b Rob, Joel
-> > >>>>>>>>>
-> > >>>>>>>>>drivers/mmc/host/litex_mmc.c:
-> > >>>>>>>>>
-> > >>>>>>>>>  - shorten #define constant names (cosmetic, make them less unwieldy)
-> > >>>>>>>>>  - picked up r/b Joel
-> > >>>>>>>>>
-> > >>>>>>>>>>New in v4:
-> > >>>>>>>>>>
-> > >>>>>>>>>>Doc/dt/bindings/mmc/litex,mmc.yaml:
-> > >>>>>>>>>>
-> > >>>>>>>>>>  - fixed `dt_binding_check` errors uncovered by Rob's script
-> > >>>>>>>>>>
-> > >>>>>>>>>>drivers/mmc/host/litex_mmc.c:
-> > >>>>>>>>>>
-> > >>>>>>>>>>  - struct litex_mmc_host fields re-ordered so that `pahole` reports
-> > >>>>>>>>>>    no holes in either 32- or 64-bit builds
-> > >>>>>>>>>>  - litex_mmc_set_bus_width() now encapsulates check for
-> > >>>>>>>>>>    host->is_bus_width_set
-> > >>>>>>>>>>  - litex_mmc_request() - factor out dma data setup into separate
-> > >>>>>>>>>>    helper function: litex_mmc_do_dma()
-> > >>>>>>>>>>
-> > >>>>>>>>>>>New in v3:
-> > >>>>>>>>>>>
-> > >>>>>>>>>>>  MAINTAINERS:
-> > >>>>>>>>>>>
-> > >>>>>>>>>>>  - picked up acked-by Joel
-> > >>>>>>>>>>>  - added listing for liteeth driver
-> > >>>>>>>>>>>  - added Joel as additional co-maintainer (thanks!)
-> > >>>>>>>>>>>
-> > >>>>>>>>>>>  Doc/dt/bindings/mmc/litex,mmc.yaml:
-> > >>>>>>>>>>>
-> > >>>>>>>>>>>  - picked up r/b Geert Uytterhoeven <geert@linux-m68k.org> in DT
-> > >>>>>>>>>>>    bindings document (please let me know if that was premature, and
-> > >>>>>>>>>>>    happy to take further review if needed :)
-> > >>>>>>>>>>>  - add dedicated DT property for source clock frequency
-> > >>>>>>>>>>>
-> > >>>>>>>>>>>  drivers/mmc/host/litex_mmc.c:
-> > >>>>>>>>>>>
-> > >>>>>>>>>>>  - fixed function signature (no line split), and naming (litex_mmc_*)
-> > >>>>>>>>>>>  - more informative MODULE_AUTHOR() entries
-> > >>>>>>>>>>>    - also added matching "Copyright" entries in file header
-> > >>>>>>>>>>>  - fixed description in Kconfig
-> > >>>>>>>>>>>  - fixed DT documentation
-> > >>>>>>>>>>>  - removed magic constants
-> > >>>>>>>>>>>  - removed litex_map_status(), have sdcard_wait_done() return *real*
-> > >>>>>>>>>>>    error codes directly instead.
-> > >>>>>>>>>>>  - streamlined litex_mmc_reponse_len()
-> > >>>>>>>>>>>  - call litex_mmc_set_bus_width() only once, and ensure it returns
-> > >>>>>>>>>>>    correct error code(s)
-> > >>>>>>>>>>>  - use readx_poll_timeout() -- more concise -- instead of
-> > >>>>>>>>>>>    read_poll_timeout()
-> > >>>>>>>>>>>  - use dev_err() in litex_mmc_send_cmd() (instead of pr_err())
-> > >>>>>>>>>>>  - litex_mmc_setclk() will update host->clock before returning
-> > >>>>>>>>>>>  - separate irq initialization into its own function,
-> > >>>>>>>>>>>    litex_mmc_irq_init()
-> > >>>>>>>>>>>  - document rationale for f_min, f_max
-> > >>>>>>>>>>>  - use dmam_alloc_coherent(), which simplifies cleanup significantly
-> > >>>>>>>>>>>  - large `if (data) { ... }` block in litex_mmc_request() left as-is,
-> > >>>>>>>>>>>    there are too many variables shared with the rest of the parent
-> > >>>>>>>>>>>    function body to easily separate (e.g., `len`, `transfer`, `direct`).
-> > >>>>>>>>>>>    If this is indeed a blocker, I can take another shot at refactoring
-> > >>>>>>>>>>>    it in a future revision!
-> > >>>>>>>>>>>  - bump dma_set_mask_and_coherent() to 64-bits on suitable
-> > >>>>>>>>>>>    architectures
-> > >>>>>>>>>>>  - clock source picked up from dedicated DT clock reference property
-> > >>>>>>>>>>>  - remove gpio card-detect logic (needs testing and a dt binding
-> > >>>>>>>>>>>    example before being eligible for upstream inclusion)
-> > >>>>>>>>>>>
-> > >>>>>>>>>>>> New in v2:
-> > >>>>>>>>>>>>   - reword info message in litex_set_clk()
-> > >>>>>>>>>>>>   - streamline code in litex_map_status()
-> > >>>>>>>>>>>>   - fix typos in Kconfig (thanks Randy Dunlap <rdunlap@infradead.org>)
-> > >>>>>>>>>>>>   - improvements suggested by Stafford Horne <shorne@gmail.com>
-> > >>>>>>>>>>>>     - allow COMPILE_TEST in Kconfig
-> > >>>>>>>>>>>>     - use read_poll_timeout() when waiting for cmd/data/DMA
-> > >>>>>>>>>>>>       xfer completion
-> > >>>>>>>>>>>>   - include interrupt.h (thanks kernel test robot <lkp@intel.com>)
-> >
-> > Gabriel Somlo (3):
-> >   MAINTAINERS: co-maintain LiteX platform
-> >   dt-bindings: mmc: Add bindings for LiteSDCard
-> >   mmc: Add driver for LiteX's LiteSDCard interface
-> >
-> >  .../devicetree/bindings/mmc/litex,mmc.yaml    |  78 +++
-> >  MAINTAINERS                                   |   9 +-
-> >  drivers/mmc/host/Kconfig                      |  13 +
-> >  drivers/mmc/host/Makefile                     |   1 +
-> >  drivers/mmc/host/litex_mmc.c                  | 661 ++++++++++++++++++
-> >  5 files changed, 760 insertions(+), 2 deletions(-)
-> >  create mode 100644 Documentation/devicetree/bindings/mmc/litex,mmc.yaml
-> >  create mode 100644 drivers/mmc/host/litex_mmc.c
-> >
-> > --
-> > 2.31.1
-> >
+Changes in v5:
+- Use YUV 1X16 formats instead of 2X8.
+- New in v5.
+
+ drivers/media/platform/cadence/cdns-csi2rx.c | 131 +++++++++++++++++++
+ 1 file changed, 131 insertions(+)
+
+diff --git a/drivers/media/platform/cadence/cdns-csi2rx.c b/drivers/media/platform/cadence/cdns-csi2rx.c
+index 2547903f2e8e..ae3ebdb3890d 100644
+--- a/drivers/media/platform/cadence/cdns-csi2rx.c
++++ b/drivers/media/platform/cadence/cdns-csi2rx.c
+@@ -54,6 +54,11 @@ enum csi2rx_pads {
+ 	CSI2RX_PAD_MAX,
+ };
+ 
++struct csi2rx_fmt {
++	u32				code;
++	u8				bpp;
++};
++
+ struct csi2rx_priv {
+ 	struct device			*dev;
+ 	unsigned int			count;
+@@ -79,12 +84,43 @@ struct csi2rx_priv {
+ 	struct v4l2_subdev		subdev;
+ 	struct v4l2_async_notifier	notifier;
+ 	struct media_pad		pads[CSI2RX_PAD_MAX];
++	struct v4l2_mbus_framefmt	fmt;
+ 
+ 	/* Remote source */
+ 	struct v4l2_subdev		*source_subdev;
+ 	int				source_pad;
+ };
+ 
++static const struct csi2rx_fmt formats[] = {
++	{
++		.code	= MEDIA_BUS_FMT_YUYV8_1X16,
++		.bpp	= 16,
++	},
++	{
++		.code	= MEDIA_BUS_FMT_UYVY8_1X16,
++		.bpp	= 16,
++	},
++	{
++		.code	= MEDIA_BUS_FMT_YVYU8_1X16,
++		.bpp	= 16,
++	},
++	{
++		.code	= MEDIA_BUS_FMT_VYUY8_1X16,
++		.bpp	= 16,
++	},
++};
++
++static const struct csi2rx_fmt *csi2rx_get_fmt_by_code(u32 code)
++{
++	unsigned int i;
++
++	for (i = 0; i < ARRAY_SIZE(formats); i++)
++		if (formats[i].code == code)
++			return &formats[i];
++
++	return NULL;
++}
++
+ static inline
+ struct csi2rx_priv *v4l2_subdev_to_csi2rx(struct v4l2_subdev *subdev)
+ {
+@@ -236,12 +272,103 @@ static int csi2rx_s_stream(struct v4l2_subdev *subdev, int enable)
+ 	return ret;
+ }
+ 
++static struct v4l2_mbus_framefmt *
++csi2rx_get_pad_format(struct csi2rx_priv *csi2rx,
++		      struct v4l2_subdev_state *state,
++		      unsigned int pad, u32 which)
++{
++	switch (which) {
++	case V4L2_SUBDEV_FORMAT_TRY:
++		return v4l2_subdev_get_try_format(&csi2rx->subdev, state, pad);
++	case V4L2_SUBDEV_FORMAT_ACTIVE:
++		return &csi2rx->fmt;
++	default:
++		return NULL;
++	}
++}
++
++static int csi2rx_get_fmt(struct v4l2_subdev *subdev,
++			  struct v4l2_subdev_state *state,
++			  struct v4l2_subdev_format *format)
++{
++	struct csi2rx_priv *csi2rx = v4l2_subdev_to_csi2rx(subdev);
++	struct v4l2_mbus_framefmt *framefmt;
++
++	framefmt = csi2rx_get_pad_format(csi2rx, state, format->pad,
++					 format->which);
++	if (!framefmt)
++		return -EINVAL;
++
++	mutex_lock(&csi2rx->lock);
++	format->format = *framefmt;
++	mutex_unlock(&csi2rx->lock);
++
++	return 0;
++}
++
++static int csi2rx_set_fmt(struct v4l2_subdev *subdev,
++			  struct v4l2_subdev_state *state,
++			  struct v4l2_subdev_format *format)
++{
++	struct csi2rx_priv *csi2rx = v4l2_subdev_to_csi2rx(subdev);
++	struct v4l2_mbus_framefmt *framefmt;
++
++	/* No transcoding, source and sink formats must match. */
++	if (format->pad != CSI2RX_PAD_SINK)
++		return csi2rx_get_fmt(subdev, state, format);
++
++	if (!csi2rx_get_fmt_by_code(format->format.code))
++		format->format.code = formats[0].code;
++
++	format->format.field = V4L2_FIELD_NONE;
++
++	framefmt = csi2rx_get_pad_format(csi2rx, state, format->pad,
++					 format->which);
++	if (!framefmt)
++		return -EINVAL;
++
++	mutex_lock(&csi2rx->lock);
++	*framefmt = format->format;
++	mutex_unlock(&csi2rx->lock);
++
++	return 0;
++}
++
++static int csi2rx_init_cfg(struct v4l2_subdev *subdev,
++			   struct v4l2_subdev_state *state)
++{
++	struct v4l2_subdev_format format = {
++		.which = state ? V4L2_SUBDEV_FORMAT_TRY
++			: V4L2_SUBDEV_FORMAT_ACTIVE,
++		.pad = CSI2RX_PAD_SINK,
++		.format = {
++			.width = 640,
++			.height = 480,
++			.code = MEDIA_BUS_FMT_UYVY8_1X16,
++			.field = V4L2_FIELD_NONE,
++			.colorspace = V4L2_COLORSPACE_SRGB,
++			.ycbcr_enc = V4L2_YCBCR_ENC_601,
++			.quantization = V4L2_QUANTIZATION_LIM_RANGE,
++			.xfer_func = V4L2_XFER_FUNC_SRGB,
++		},
++	};
++
++	return csi2rx_set_fmt(subdev, state, &format);
++}
++
++static const struct v4l2_subdev_pad_ops csi2rx_pad_ops = {
++	.get_fmt	= csi2rx_get_fmt,
++	.set_fmt	= csi2rx_set_fmt,
++	.init_cfg	= csi2rx_init_cfg,
++};
++
+ static const struct v4l2_subdev_video_ops csi2rx_video_ops = {
+ 	.s_stream	= csi2rx_s_stream,
+ };
+ 
+ static const struct v4l2_subdev_ops csi2rx_subdev_ops = {
+ 	.video		= &csi2rx_video_ops,
++	.pad		= &csi2rx_pad_ops,
+ };
+ 
+ static int csi2rx_async_bound(struct v4l2_async_notifier *notifier,
+@@ -457,6 +584,10 @@ static int csi2rx_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err_cleanup;
+ 
++	ret = csi2rx_init_cfg(&csi2rx->subdev, NULL);
++	if (ret)
++		goto err_cleanup;
++
+ 	ret = v4l2_async_register_subdev(&csi2rx->subdev);
+ 	if (ret < 0)
+ 		goto err_cleanup;
+-- 
+2.34.1
+
