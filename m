@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7253C43217
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 21:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57CDFC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 21:04:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233882AbiAUVEp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 16:04:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49456 "EHLO
+        id S233530AbiAUVEv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 16:04:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233366AbiAUVEH (ORCPT
+        with ESMTP id S233256AbiAUVEC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 16:04:07 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C31C1C06174E;
-        Fri, 21 Jan 2022 13:04:06 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id s13so3332715ejy.3;
-        Fri, 21 Jan 2022 13:04:06 -0800 (PST)
+        Fri, 21 Jan 2022 16:04:02 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 300FFC061401;
+        Fri, 21 Jan 2022 13:04:02 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id ka4so3334224ejc.11;
+        Fri, 21 Jan 2022 13:04:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=AjXtNoxCWeIUyUrNbQiYIAA3OZQBx2qW4EKDiOvy2ws=;
-        b=HEtv1uSt2Bqyh0qXdkiNjgKh0C95Ccd4+oApTG+V4+xJLhjYI75t/zHeWDA8vgTGGa
-         cGuGnduhoyWCRrbVEeFcKUl66c5ISt5ZXFtCi/jgo9g8N1nV2ov+dGUsY9f23hIfvYOn
-         l3icLto8cJXwmFgkRvxmSijF8E4C6t6+d+mevgP+gST7QJlZODLgRSzJp+DTTSBAbVXT
-         xJTEfNtaoxp+cJcY259kGRVHZiieXx2dHHWNHqwYMtMfQek5PF3+BJwvosHBwQy9t05Y
-         kV4POI57TIidN9Ud9zP/2mS0eNWfCYiktUgvzRqFWuhoYY2JNcQsTQv0q/zTdOMOw9O4
-         zomw==
+        bh=clnqaNqyzpxcBB6mJhgn58xxBFPn79gkEl2JvXBz70c=;
+        b=OOH9ocpXMafyNcmPxn8I1HcnS7JCORDOLvZKmoeiyMMJ92ELuW9RJr/+G77KhUy2F2
+         8NR47mvrMEQDVJknr+cpFQYk9Dn3tbBk/eCw1kTWKuQMG2DA7qV+XuCM9+qAUnc0+plJ
+         SaUouILc8tyobC+ZirMmVW7r86M2jPCHAbhCCyc59HMZecE+Q+4N1Yf7ejcmaBoDnXLe
+         Gl2d2u/F0PcooPCpLw1JWZzmyjPacfeJ4tQFCpiFGULgR2dmaQ5UlJ0wOTGW2/zStRYc
+         9G+vojpwU5oglIIwBD4fqruugrRQIAqT9G6qRzj2i0QJivR7OTjQh0MEFWKnbyctmvlw
+         N7Qw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=AjXtNoxCWeIUyUrNbQiYIAA3OZQBx2qW4EKDiOvy2ws=;
-        b=SZqp1c91Sq7le2YShW5AI8JNd780YdTSaE+wp+V5UZh0t/0QWLU6zHemMD7b0BYRUo
-         2h4UTf1TdwOFd96kKvlW7O/MlobB+BgCpew5qtbxvsjGpqZ+VLGHUsLx5mhJaBP7XuSr
-         R4BaRHZUBBbS8RBy38xe78kXXEkQiaT0dxz1yAlkCL/NSqXcSbLzRG0LT3O06D/FhRaD
-         eu8JqWmghjNn51njmFb+Q8YPEQv8eTgxLBTSqfFE8w73eBrJPTf6ZGP4XRLFg6r1+VyT
-         BMLGnkYvBN+0LKNWReJkDxMz9If7W9BVSh/180EYgKeozYVGB4ukw+p7w/SvmF0f3U4S
-         ge1w==
-X-Gm-Message-State: AOAM5317yu60Kuj7RM3mU0pkCfw8Lcj5R9X0ZdfEjUiEiaiKk/qVQc6a
-        7X07ZiOKHupKFeJrfYF1bWc=
-X-Google-Smtp-Source: ABdhPJyed0qTSbL9BJbBNFGluKihGGw8N8jCVmQfug9BHwLwXwvM/g4+5wYgQyon3230Btco10L3/A==
-X-Received: by 2002:a17:907:72c2:: with SMTP id du2mr4761257ejc.90.1642799045115;
-        Fri, 21 Jan 2022 13:04:05 -0800 (PST)
+        bh=clnqaNqyzpxcBB6mJhgn58xxBFPn79gkEl2JvXBz70c=;
+        b=F7twbwDzU/0pfoEWnK0MwOuhh2W+pqs96+eLC5UmUc0o/zq6DqHtqiFx+hGRXzIchs
+         0PT86+zL8Jf9SpMjxqGtsmUneiQwsgYFcU1gUeV0Q8WdQFfjH9qGo3D4Q/Y6uhhltDnQ
+         FRHBx7wgTVqNJ5BudzkvmCgnmIATDzi9cFesrlGYYsq+w5l+sh5ztBk3JQLLwPxy4vx7
+         XzdEAVJsRXaRhSpdhqqeVDDE98b2FlwIkEBG3YqtBwCpQJbHF8TYAXsIf++AYSDsBR9e
+         9n47fUZS6UwVPtsCzxr5RRfpEeNuKMBAl7WC40I3iYYMmD5Dvm92BWgZLHe1Rukrp/eQ
+         jrDw==
+X-Gm-Message-State: AOAM530GiyzAqedRwjguRLfQCLtUxZS2YrzCKFCJSuISt3IWd490iHGc
+        +Qoo93szqmONLuTkthQjDxk=
+X-Google-Smtp-Source: ABdhPJxh9JWMfnq6qGWgfnJ4mvaKe3SfbWHN60KbNA3Fqoy8b2Df3/WaoMX9PmUtMJlHkTa6t6u+cw==
+X-Received: by 2002:a17:906:4d18:: with SMTP id r24mr4596501eju.451.1642799040638;
+        Fri, 21 Jan 2022 13:04:00 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id p23sm2898595edx.86.2022.01.21.13.04.04
+        by smtp.googlemail.com with ESMTPSA id p23sm2898595edx.86.2022.01.21.13.03.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 13:04:04 -0800 (PST)
+        Fri, 21 Jan 2022 13:04:00 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -59,9 +59,9 @@ To:     Andy Gross <agross@kernel.org>,
         Ansuel Smith <ansuelsmth@gmail.com>,
         linux-arm-msm@vger.kernel.org, linux-clk@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 13/15] dt-bindings: reset: add ipq8064 ce5 resets
-Date:   Fri, 21 Jan 2022 22:03:38 +0100
-Message-Id: <20220121210340.32362-14-ansuelsmth@gmail.com>
+Subject: [PATCH v3 09/15] drivers: clk: qcom: gcc-ipq806x: add unusued flag for critical clock
+Date:   Fri, 21 Jan 2022 22:03:34 +0100
+Message-Id: <20220121210340.32362-10-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220121210340.32362-1-ansuelsmth@gmail.com>
 References: <20220121210340.32362-1-ansuelsmth@gmail.com>
@@ -71,28 +71,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add ipq8064 ce5 resets needed for CryptoEngine gcc driver.
+Some clocks are used by other devices present on the SoC. For example
+the gsbi4_h_clk is used by RPM and is if disabled cause the RPM to
+reject any regulator change command. These clock should never be
+disabled.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- include/dt-bindings/reset/qcom,gcc-ipq806x.h | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/clk/qcom/gcc-ipq806x.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/include/dt-bindings/reset/qcom,gcc-ipq806x.h b/include/dt-bindings/reset/qcom,gcc-ipq806x.h
-index 26b6f9200620..020c9cf18751 100644
---- a/include/dt-bindings/reset/qcom,gcc-ipq806x.h
-+++ b/include/dt-bindings/reset/qcom,gcc-ipq806x.h
-@@ -163,5 +163,10 @@
- #define NSS_CAL_PRBS_RST_N_RESET			154
- #define NSS_LCKDT_RST_N_RESET				155
- #define NSS_SRDS_N_RESET				156
-+#define CRYPTO_ENG1_RESET				157
-+#define CRYPTO_ENG2_RESET				158
-+#define CRYPTO_ENG3_RESET				159
-+#define CRYPTO_ENG4_RESET				160
-+#define CRYPTO_AHB_RESET				161
- 
- #endif
+diff --git a/drivers/clk/qcom/gcc-ipq806x.c b/drivers/clk/qcom/gcc-ipq806x.c
+index 53a61860063d..77bc3d94f580 100644
+--- a/drivers/clk/qcom/gcc-ipq806x.c
++++ b/drivers/clk/qcom/gcc-ipq806x.c
+@@ -798,7 +798,7 @@ static struct clk_rcg gsbi4_qup_src = {
+ 			.parent_data = gcc_pxo_pll8,
+ 			.num_parents = ARRAY_SIZE(gcc_pxo_pll8),
+ 			.ops = &clk_rcg_ops,
+-			.flags = CLK_SET_PARENT_GATE,
++			.flags = CLK_SET_PARENT_GATE | CLK_IGNORE_UNUSED,
+ 		},
+ 	},
+ };
+@@ -816,7 +816,7 @@ static struct clk_branch gsbi4_qup_clk = {
+ 			},
+ 			.num_parents = 1,
+ 			.ops = &clk_branch_ops,
+-			.flags = CLK_SET_RATE_PARENT,
++			.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
+ 		},
+ 	},
+ };
+@@ -900,7 +900,7 @@ static struct clk_rcg gsbi6_qup_src = {
+ 			.parent_data = gcc_pxo_pll8,
+ 			.num_parents = ARRAY_SIZE(gcc_pxo_pll8),
+ 			.ops = &clk_rcg_ops,
+-			.flags = CLK_SET_PARENT_GATE,
++			.flags = CLK_SET_PARENT_GATE | CLK_IGNORE_UNUSED,
+ 		},
+ 	},
+ };
+@@ -969,7 +969,7 @@ static struct clk_branch gsbi7_qup_clk = {
+ 			},
+ 			.num_parents = 1,
+ 			.ops = &clk_branch_ops,
+-			.flags = CLK_SET_RATE_PARENT,
++			.flags = CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
+ 		},
+ 	},
+ };
+@@ -1015,6 +1015,7 @@ static struct clk_branch gsbi4_h_clk = {
+ 		.hw.init = &(struct clk_init_data){
+ 			.name = "gsbi4_h_clk",
+ 			.ops = &clk_branch_ops,
++			.flags = CLK_IGNORE_UNUSED,
+ 		},
+ 	},
+ };
 -- 
 2.33.1
 
