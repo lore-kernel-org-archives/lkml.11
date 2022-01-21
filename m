@@ -2,229 +2,135 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 073B6C433EF
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:16:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D1BAC433F5
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 14:17:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381002AbiAUOQy (ORCPT
+        id S1381013AbiAUORk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 09:16:54 -0500
-Received: from mga06.intel.com ([134.134.136.31]:20364 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1350707AbiAUOQw (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 09:16:52 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642774612; x=1674310612;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=vTQH54AYg2pzcg7t+1Zr9OpTMSKBzcFnOwMKSyQjRRY=;
-  b=L4SECBu/9uoDoNOKlOi6lg/6qgcUwK/RHp4VU5FuQMD1rWWbYxghH5r0
-   JWFMfEsXXqzQ7L8elOaRSVDpG3ZrFZKLri2VTVULqN4XkDzO35PtNFRXu
-   hI12aSWIDbwD2WM3SCMd9fOymF1QT4vK5FsaG04MqW8hRr9eorzChmdxi
-   nHI5l7f3pHRGJj+mB/WQPWsJfqG4XTA6rxKP+a19/IZFA17f9ADIiXxnz
-   1juw5zCOljGMYVuBxx9Jku3cuxwiH4JzAGqajnMFQhvKrqWFz/FWyhQxy
-   cFiOvIsotOJPIPwCfkesPgZ3qhfMak3yEBf86QUZNi8JztEsbRE00Fmh+
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10233"; a="306381578"
-X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
-   d="scan'208";a="306381578"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 06:16:51 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,304,1635231600"; 
-   d="scan'208";a="533287638"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga008.jf.intel.com with ESMTP; 21 Jan 2022 06:16:49 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nAuie-000FMx-AE; Fri, 21 Jan 2022 14:16:48 +0000
-Date:   Fri, 21 Jan 2022 22:15:46 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        "masahiroy@kernel.org" <masahiroy@kernel.org>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxppc-dev@lists.ozlabs.org" <linuxppc-dev@lists.ozlabs.org>
-Subject: Re: [PATCH v3 4/5] powerpc/vdso: Remove cvdso_call_time macro
-Message-ID: <202201212229.iBniex24-lkp@intel.com>
-References: <2ddc46d3a6d2996c56547039709e171b0ed2ec46.1642759506.git.christophe.leroy@csgroup.eu>
+        Fri, 21 Jan 2022 09:17:40 -0500
+Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:44800
+        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1350707AbiAUORc (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 21 Jan 2022 09:17:32 -0500
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com [209.85.210.71])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 0DD403F32C
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 14:17:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1642774651;
+        bh=C15GD333u2dlFDIS89CpDK65jwsFW00MaLZn7bJW6aM=;
+        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
+         To:Cc:Content-Type;
+        b=HO0VqGjtPHAW4zTrp6tLVPKu2yamcSIgNywRZECfZFHPG4QWljdwy9imxsb+ls8gw
+         xDLE8p9FFuaNH4n+oJwhBGXPHSfz84wVQbn+APoEYjjpDAIhWgxEHXd7V0geGvANVA
+         Zh2HPmwcZrLsIkytDC5fCnIyufGNUdF8DOAsTGjRDXh2TI/IOGyiHoQ4OFpdlZYPL2
+         cZKLadFmp5eIbXDZzMUvqhZ76U/JKqJnRpKsEgBoR6u23rbfHNBylGkww+jk9Xa1x1
+         rgJsa34F6J1DykLTsBEGRcjxKT8vN69fY5jKmEV+sWlN8OSefeXzeeOpGzGAEWp4SF
+         TlU6CyMnhYpUw==
+Received: by mail-ot1-f71.google.com with SMTP id t1-20020a9d7481000000b005919e9a1347so5567352otk.2
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 06:17:31 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=C15GD333u2dlFDIS89CpDK65jwsFW00MaLZn7bJW6aM=;
+        b=xhTiT2vVldznSCpI/yZg2fsiwsj+7+OxzmG69jPabGh9ZvNJynFiZP6ub8IP3Tu8Rp
+         vYywhJalxOuUNHrsGPWHZ8jmq9l1uobI3NXGOmM53xKtDrs72A4Y303YrIDpf2xwIcJ9
+         ozZtenqARQgJvBisZnCpbDdi3f7dWycoZK13pKbEkbxCe6n9sqp8FN5wAK20AIowbnV3
+         bQls2ZOWzzZGM0LAUOxB14llP5zHocuW8+lCvJiHBCjhcckDocdchArk5MW49SfjDdKX
+         8uVP0NkQNnw1HWdvq5xmaqW+I+PI7PWCchFHyxLb5qGg5Ddfx0/yb9a5TtXI5KkeLV57
+         JIgA==
+X-Gm-Message-State: AOAM5326TQjX/lt+iZkf8W8sWnUkHNlhCUau0/6kCeCy8x3yCxKuTby8
+        wGrLPUgdImf7EXcybdiq3Ga4bsrHE7QLVZDiu4viCxj7lSd2FXEVTMfgHM+zQCH+jjLOrjitI0H
+        xxbp3n3GGGdQS9/LHxvtzH+K4M45NAjVYS2vjk/l9Z6ZuIqOK7vsFBOgV5A==
+X-Received: by 2002:a9d:6f0e:: with SMTP id n14mr2868609otq.269.1642774649891;
+        Fri, 21 Jan 2022 06:17:29 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyjyQYmJzzz2UYJ55dcEmEYSMnUIqWkplegZ1x9EtTl1rxIQz108FwtIFS1NvH6aznxz7/zf7zcr4m/Fbj1psg=
+X-Received: by 2002:a9d:6f0e:: with SMTP id n14mr2868583otq.269.1642774649588;
+ Fri, 21 Jan 2022 06:17:29 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2ddc46d3a6d2996c56547039709e171b0ed2ec46.1642759506.git.christophe.leroy@csgroup.eu>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220120051929.1625791-1-kai.heng.feng@canonical.com>
+ <YelxMFOiqnfIVmyy@lunn.ch> <CAAd53p7NjvzsBs2aWTP-3GMjoyefMmLB3ou+7fDcrNVfKwALHw@mail.gmail.com>
+ <Yeqzhx3GbMzaIbj6@lunn.ch>
+In-Reply-To: <Yeqzhx3GbMzaIbj6@lunn.ch>
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+Date:   Fri, 21 Jan 2022 22:17:18 +0800
+Message-ID: <CAAd53p5pF+SRfwGfJaBTPkH7+9Z6vhPHcuk-c=w8aPTzMBxPcg@mail.gmail.com>
+Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
+ firmware on a Dell hardware
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     hkallweit1@gmail.com, linux@armlinux.org.uk,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Christophe,
+On Fri, Jan 21, 2022 at 9:22 PM Andrew Lunn <andrew@lunn.ch> wrote:
+>
+> On Fri, Jan 21, 2022 at 12:01:35PM +0800, Kai-Heng Feng wrote:
+> > On Thu, Jan 20, 2022 at 10:26 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> > >
+> > > On Thu, Jan 20, 2022 at 01:19:29PM +0800, Kai-Heng Feng wrote:
+> > > > BIOS on Dell Edge Gateway 3200 already makes its own phy LED setting, so
+> > > > instead of setting another value, keep it untouched and restore the saved
+> > > > value on system resume.
+> > > >
+> > > > Introduce config_led() callback in phy_driver() to make the implemtation
+> > > > generic.
+> > >
+> > > I'm also wondering if we need to take a step back here and get the
+> > > ACPI guys involved. I don't know much about ACPI, but shouldn't it
+> > > provide a control method to configure the PHYs LEDs?
+> > >
+> > > We already have the basics for defining a PHY in ACPI. See:
+> > >
+> > > https://www.kernel.org/doc/html/latest/firmware-guide/acpi/dsd/phy.html
+> >
+> > These properties seem to come from device-tree.
+>
+> They are similar to what DT has, but expressed in an ACPI way. DT has
+> been used with PHY drivers for a long time, but ACPI is new. The ACPI
+> standard also says nothing about PHYs. So Linux has defined its own
+> properties, which we expect all ACPI machine to use. According to the
+> ACPI maintainers, this is within the ACPI standard. Maybe at some
+> point somebody will submit the current definitions to the standards
+> body for approval, or maybe the standard will do something completely
+> different, but for the moment, this is what we have, and what you
+> should use.
 
-I love your patch! Yet something to improve:
+Right, so we can add a new property, document it, and just use it?
+Maybe others will use the new property once we set the precedence?
 
-[auto build test ERROR on powerpc/next]
-[also build test ERROR on v5.16 next-20220121]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+>
+> > > so you could extend this to include a method to configure the LEDs for
+> > > a specific PHY.
+> >
+> > How to add new properties? Is it required to add new properties to
+> > both DT and ACPI?
+>
+> Since all you are adding is a boolean, 'Don't touch the PHY LED
+> configuration', it should be easy to do for both.
 
-url:    https://github.com/0day-ci/linux/commits/Christophe-Leroy/powerpc-vdso-augment-VDSO32-functions-to-support-64-bits-build/20220121-180748
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git next
-config: powerpc-randconfig-r021-20220120 (https://download.01.org/0day-ci/archive/20220121/202201212229.iBniex24-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 7b3d30728816403d1fd73cc5082e9fb761262bce)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install powerpc cross compiling tool for clang build
-        # apt-get install binutils-powerpc-linux-gnu
-        # https://github.com/0day-ci/linux/commit/09651dc41aab619a025925ace9f5b81e478e7334
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Christophe-Leroy/powerpc-vdso-augment-VDSO32-functions-to-support-64-bits-build/20220121-180748
-        git checkout 09651dc41aab619a025925ace9f5b81e478e7334
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=powerpc prepare
+If adding a brand new property is acceptable, let me discuss it the vendor.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+>
+> What is interesting for Marvell PHYs is WoL, which is part of LED
+> configuration. I've not checked, but i guess there are other PHYs
+> which reuse LED output for a WoL interrupt. So it needs to be clearly
+> defined if we expect the BIOS to also correctly configure WoL, or if
+> Linux is responsible for configuring WoL, even though it means
+> changing the LED configuration.
 
-All errors (new ones prefixed by >>):
+How about what Heiner proposed? Maybe we should leave the LED as is,
+and restore it on system resume?
 
-   arch/powerpc/include/asm/io.h:557:56: note: expanded from macro '__do_insw'
-   #define __do_insw(p, b, n)      readsw((PCI_IO_ADDR)_IO_BASE+(p), (b), (n))
-                                          ~~~~~~~~~~~~~~~~~~~~~^
-   In file included from arch/powerpc/kernel/asm-offsets.c:21:
-   In file included from include/linux/suspend.h:5:
-   In file included from include/linux/swap.h:9:
-   In file included from include/linux/memcontrol.h:13:
-   In file included from include/linux/cgroup.h:26:
-   In file included from include/linux/kernel_stat.h:9:
-   In file included from include/linux/interrupt.h:11:
-   In file included from include/linux/hardirq.h:11:
-   In file included from arch/powerpc/include/asm/hardirq.h:6:
-   In file included from include/linux/irq.h:20:
-   In file included from include/linux/io.h:13:
-   In file included from arch/powerpc/include/asm/io.h:619:
-   arch/powerpc/include/asm/io-defs.h:47:1: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-   DEF_PCI_AC_NORET(insl, (unsigned long p, void *b, unsigned long c),
-   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   arch/powerpc/include/asm/io.h:616:3: note: expanded from macro 'DEF_PCI_AC_NORET'
-                   __do_##name al;                                 \
-                   ^~~~~~~~~~~~~~
-   <scratch space>:198:1: note: expanded from here
-   __do_insl
-   ^
-   arch/powerpc/include/asm/io.h:558:56: note: expanded from macro '__do_insl'
-   #define __do_insl(p, b, n)      readsl((PCI_IO_ADDR)_IO_BASE+(p), (b), (n))
-                                          ~~~~~~~~~~~~~~~~~~~~~^
-   In file included from arch/powerpc/kernel/asm-offsets.c:21:
-   In file included from include/linux/suspend.h:5:
-   In file included from include/linux/swap.h:9:
-   In file included from include/linux/memcontrol.h:13:
-   In file included from include/linux/cgroup.h:26:
-   In file included from include/linux/kernel_stat.h:9:
-   In file included from include/linux/interrupt.h:11:
-   In file included from include/linux/hardirq.h:11:
-   In file included from arch/powerpc/include/asm/hardirq.h:6:
-   In file included from include/linux/irq.h:20:
-   In file included from include/linux/io.h:13:
-   In file included from arch/powerpc/include/asm/io.h:619:
-   arch/powerpc/include/asm/io-defs.h:49:1: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-   DEF_PCI_AC_NORET(outsb, (unsigned long p, const void *b, unsigned long c),
-   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   arch/powerpc/include/asm/io.h:616:3: note: expanded from macro 'DEF_PCI_AC_NORET'
-                   __do_##name al;                                 \
-                   ^~~~~~~~~~~~~~
-   <scratch space>:200:1: note: expanded from here
-   __do_outsb
-   ^
-   arch/powerpc/include/asm/io.h:559:58: note: expanded from macro '__do_outsb'
-   #define __do_outsb(p, b, n)     writesb((PCI_IO_ADDR)_IO_BASE+(p),(b),(n))
-                                           ~~~~~~~~~~~~~~~~~~~~~^
-   In file included from arch/powerpc/kernel/asm-offsets.c:21:
-   In file included from include/linux/suspend.h:5:
-   In file included from include/linux/swap.h:9:
-   In file included from include/linux/memcontrol.h:13:
-   In file included from include/linux/cgroup.h:26:
-   In file included from include/linux/kernel_stat.h:9:
-   In file included from include/linux/interrupt.h:11:
-   In file included from include/linux/hardirq.h:11:
-   In file included from arch/powerpc/include/asm/hardirq.h:6:
-   In file included from include/linux/irq.h:20:
-   In file included from include/linux/io.h:13:
-   In file included from arch/powerpc/include/asm/io.h:619:
-   arch/powerpc/include/asm/io-defs.h:51:1: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-   DEF_PCI_AC_NORET(outsw, (unsigned long p, const void *b, unsigned long c),
-   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   arch/powerpc/include/asm/io.h:616:3: note: expanded from macro 'DEF_PCI_AC_NORET'
-                   __do_##name al;                                 \
-                   ^~~~~~~~~~~~~~
-   <scratch space>:202:1: note: expanded from here
-   __do_outsw
-   ^
-   arch/powerpc/include/asm/io.h:560:58: note: expanded from macro '__do_outsw'
-   #define __do_outsw(p, b, n)     writesw((PCI_IO_ADDR)_IO_BASE+(p),(b),(n))
-                                           ~~~~~~~~~~~~~~~~~~~~~^
-   In file included from arch/powerpc/kernel/asm-offsets.c:21:
-   In file included from include/linux/suspend.h:5:
-   In file included from include/linux/swap.h:9:
-   In file included from include/linux/memcontrol.h:13:
-   In file included from include/linux/cgroup.h:26:
-   In file included from include/linux/kernel_stat.h:9:
-   In file included from include/linux/interrupt.h:11:
-   In file included from include/linux/hardirq.h:11:
-   In file included from arch/powerpc/include/asm/hardirq.h:6:
-   In file included from include/linux/irq.h:20:
-   In file included from include/linux/io.h:13:
-   In file included from arch/powerpc/include/asm/io.h:619:
-   arch/powerpc/include/asm/io-defs.h:53:1: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
-   DEF_PCI_AC_NORET(outsl, (unsigned long p, const void *b, unsigned long c),
-   ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   arch/powerpc/include/asm/io.h:616:3: note: expanded from macro 'DEF_PCI_AC_NORET'
-                   __do_##name al;                                 \
-                   ^~~~~~~~~~~~~~
-   <scratch space>:204:1: note: expanded from here
-   __do_outsl
-   ^
-   arch/powerpc/include/asm/io.h:561:58: note: expanded from macro '__do_outsl'
-   #define __do_outsl(p, b, n)     writesl((PCI_IO_ADDR)_IO_BASE+(p),(b),(n))
-                                           ~~~~~~~~~~~~~~~~~~~~~^
-   6 warnings generated.
->> arch/powerpc/kernel/vdso/gettimeofday.S:68:2: error: invalid instruction
-    cvdso_call_time __c_kernel_time
-    ^
-   arch/powerpc/kernel/vdso/gettimeofday.S:75:8: error: unsupported directive '.stabs'
-   .stabs "_restgpr_31_x:F-1",36,0,0,_restgpr_31_x; .globl _restgpr_31_x; _restgpr_31_x:
-          ^
-   arch/powerpc/kernel/vdso/gettimeofday.S:76:8: error: unsupported directive '.stabs'
-   .stabs "_rest32gpr_31_x:F-1",36,0,0,_rest32gpr_31_x; .globl _rest32gpr_31_x; _rest32gpr_31_x:
-          ^
-   make[2]: *** [arch/powerpc/kernel/vdso/Makefile:71: arch/powerpc/kernel/vdso/gettimeofday-32.o] Error 1
-   make[2]: Target 'include/generated/vdso32-offsets.h' not remade because of errors.
-   make[1]: *** [arch/powerpc/Makefile:423: vdso_prepare] Error 2
-   make[1]: Target 'prepare' not remade because of errors.
-   make: *** [Makefile:219: __sub-make] Error 2
-   make: Target 'prepare' not remade because of errors.
+Kai-Heng
 
-
-vim +68 arch/powerpc/kernel/vdso/gettimeofday.S
-
-a7f290dad32ee3 arch/powerpc/kernel/vdso32/gettimeofday.S Benjamin Herrenschmidt 2005-11-11  59  
-a7f290dad32ee3 arch/powerpc/kernel/vdso32/gettimeofday.S Benjamin Herrenschmidt 2005-11-11  60  
-fcb41a2030abe0 arch/powerpc/kernel/vdso32/gettimeofday.S Adhemerval Zanella     2013-04-22  61  /*
-fcb41a2030abe0 arch/powerpc/kernel/vdso32/gettimeofday.S Adhemerval Zanella     2013-04-22  62   * Exact prototype of time()
-fcb41a2030abe0 arch/powerpc/kernel/vdso32/gettimeofday.S Adhemerval Zanella     2013-04-22  63   *
-fcb41a2030abe0 arch/powerpc/kernel/vdso32/gettimeofday.S Adhemerval Zanella     2013-04-22  64   * time_t time(time *t);
-fcb41a2030abe0 arch/powerpc/kernel/vdso32/gettimeofday.S Adhemerval Zanella     2013-04-22  65   *
-fcb41a2030abe0 arch/powerpc/kernel/vdso32/gettimeofday.S Adhemerval Zanella     2013-04-22  66   */
-fcb41a2030abe0 arch/powerpc/kernel/vdso32/gettimeofday.S Adhemerval Zanella     2013-04-22  67  V_FUNCTION_BEGIN(__kernel_time)
-ab037dd87a2f94 arch/powerpc/kernel/vdso32/gettimeofday.S Christophe Leroy       2020-11-27 @68  	cvdso_call_time __c_kernel_time
-fcb41a2030abe0 arch/powerpc/kernel/vdso32/gettimeofday.S Adhemerval Zanella     2013-04-22  69  V_FUNCTION_END(__kernel_time)
-08c18b63d9656e arch/powerpc/kernel/vdso32/gettimeofday.S Christophe Leroy       2021-03-09  70  
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+>
+>          Andrew
