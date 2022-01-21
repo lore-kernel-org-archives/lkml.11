@@ -2,76 +2,139 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 502FDC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 11:48:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3770EC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 11:48:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380240AbiAULsX (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 06:48:23 -0500
-Received: from smtp-out2.suse.de ([195.135.220.29]:53550 "EHLO
-        smtp-out2.suse.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244240AbiAULsL (ORCPT
+        id S244240AbiAULsi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 06:48:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35874 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1380234AbiAULsb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 06:48:11 -0500
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 0C3C41F888;
-        Fri, 21 Jan 2022 11:48:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
-        t=1642765690; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=liglXMhDezhDiWWzDaxOZQZ28c0/vzwAJcyD6zhEg+E=;
-        b=O//AUfpsfJ8gFR7b6hFDLHBgmGk7rncskDwhFdcDnKrXRkjPClgG7FAURZNqLxTF6T39FR
-        4d9tYuo3k/hj5EODEV8kiBECf10gq5L63QSkevLSbwk0oAwjS2hl3tc0DadnE0Ae/8Ccd9
-        +9H0qZcicFljuQgn/LW8K6wCP0rB+Mk=
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id 9388313BC5;
-        Fri, 21 Jan 2022 11:48:09 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id cgoBIXmd6mGUGAAAMHmgww
-        (envelope-from <nborisov@suse.com>); Fri, 21 Jan 2022 11:48:09 +0000
-Subject: Re: [PATCH v2] btrfs: zoned: Remove redundant initialization of
- to_add
-To:     Jiapeng Chong <jiapeng.chong@linux.alibaba.com>, clm@fb.com
-Cc:     josef@toxicpanda.com, dsterba@suse.com,
-        linux-btrfs@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Abaci Robot <abaci@linux.alibaba.com>
-References: <20220121114351.93220-1-jiapeng.chong@linux.alibaba.com>
-From:   Nikolay Borisov <nborisov@suse.com>
-Message-ID: <2450db09-4029-df92-1c6e-bb5376b74ead@suse.com>
-Date:   Fri, 21 Jan 2022 13:48:09 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Fri, 21 Jan 2022 06:48:31 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF535C06173F;
+        Fri, 21 Jan 2022 03:48:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=lFHfkJxcnXYD0/r/G4ykqtBeToVnk/8ZWOb3hXPkSGs=; b=In+XDGoh4xfF62ZOJqOxbFOxvI
+        AyqXSblou41zoHqurVRhHtaM4vPwYhN/jyrxm5ahd2FZ3boobCmk3Slg+6vRxOrajOAs8+V0Ot7Pp
+        C0e4UNjDW9IsxVh4qi6HfYTsg5t+Q6WLQgTvWuAVmHZ+qa7W5VaewfKCftPIazCHqisI44gOBfB3q
+        Yy3w8P/6VuIA+LV+dUwIBBhr0416w4RF5ymf1QZSMmUDlvENSDlBXomFtPTWPxmyh3vwTLS4V7X++
+        V3jsGYrC8GLOlCHWTl9NfmHFDZNbvUt79RO/BhPhykQZS6a4q9749ad+ZyB/8QVcvHM0YnfYCmUHi
+        GMpFI3bg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nAsOf-002ZUP-3V; Fri, 21 Jan 2022 11:48:01 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id CE8679853F1; Fri, 21 Jan 2022 12:47:58 +0100 (CET)
+Date:   Fri, 21 Jan 2022 12:47:58 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     mingo@redhat.com, tglx@linutronix.de, juri.lelli@redhat.com,
+        vincent.guittot@linaro.org, dietmar.eggemann@arm.com,
+        rostedt@goodmis.org, bsegall@google.com, mgorman@suse.de,
+        bristot@redhat.com
+Cc:     linux-kernel@vger.kernel.org, linux-mm@kvack.org,
+        linux-api@vger.kernel.org, x86@kernel.org, pjt@google.com,
+        posk@google.com, avagin@google.com, jannh@google.com,
+        tdelisle@uwaterloo.ca, mark.rutland@arm.com, posk@posk.io
+Subject: Re: [RFC][PATCH v2 5/5] sched: User Mode Concurency Groups
+Message-ID: <20220121114758.GF20638@worktop.programming.kicks-ass.net>
+References: <20220120155517.066795336@infradead.org>
+ <20220120160822.914418096@infradead.org>
 MIME-Version: 1.0
-In-Reply-To: <20220121114351.93220-1-jiapeng.chong@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220120160822.914418096@infradead.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Thu, Jan 20, 2022 at 04:55:22PM +0100, Peter Zijlstra wrote:
 
+> +SYSCALL_DEFINE2(umcg_wait, u32, flags, u64, timo)
+> +{
+> +	struct task_struct *tsk = current;
+> +	struct umcg_task __user *self = READ_ONCE(tsk->umcg_task);
+> +	bool worker = tsk->flags & PF_UMCG_WORKER;
+> +	int ret;
+> +
+> +	if (!self || flags)
+> +		return -EINVAL;
+> +
+> +	if (worker) {
+> +		tsk->flags &= ~PF_UMCG_WORKER;
+> +		if (timo)
+> +			return -ERANGE;
+> +	}
+> +
+> +	/* see umcg_sys_{enter,exit}() syscall exceptions */
+> +	ret = umcg_pin_pages();
+> +	if (ret)
+> +		goto unblock;
+> +
+> +	/*
+> +	 * Clear UMCG_TF_COND_WAIT *and* check state == RUNNABLE.
+> +	 */
+> +	ret = umcg_update_state(tsk, self, UMCG_TASK_RUNNABLE, UMCG_TASK_RUNNABLE);
+> +	if (ret)
+> +		goto unpin;
+> +
+> +	ret = umcg_wake_next(tsk, self);
+> +	if (ret)
+> +		goto unpin;
+> +
+> +	if (worker) {
+> +		/*
+> +		 * If this fails it is possible ::next_tid is already running
+> +		 * while this task is not going to block. This violates our
+> +		 * constraints.
+> +		 *
+> +		 * That said, pretty much the only way to make this fail is by
+> +		 * force munmap()'ing things. In which case one is most welcome
+> +		 * to the pieces.
+> +		 */
+> +		ret = umcg_enqueue_and_wake(tsk);
+> +		if (ret)
+> +			goto unpin;
+> +	}
+> +
+> +	umcg_unpin_pages();
+> +
+> +	ret = umcg_wait(timo);
+> +	switch (ret) {
+> +	case 0:		/* all done */
+> +	case -EINTR:	/* umcg_notify_resume() will continue the wait */
 
-On 21.01.22 г. 13:43, Jiapeng Chong wrote:
-> to_add is being initialized to len but this is never read as
-> to_add is overwritten later on. Remove the redundant
-> initialization.
-> 
-> Cleans up the following clang-analyzer warning:
-> 
-> fs/btrfs/extent-tree.c:2769:8: warning: Value stored to 'to_add' during
-> its initialization is never read [clang-analyzer-deadcode.DeadStores].
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Jiapeng Chong <jiapeng.chong@linux.alibaba.com>
+So I was playing with the whole worker timeout thing last night and
+realized this is broken. If we get a signal while we have a timeout, the
+timeout gets lost.
 
-Reviewed-by: Nikolay Borisov <nborisov@suse.com>
+I think the easiest solution is to have umcg_notify_resume() also resume
+the timeout, but the first pass of that was yuck, so I need to try
+again.
+
+Related, by moving the whole enqueue-and-wake thing into the timeout, we
+get more 'fun' failure cases :-(
+
+Oh well..
+
+> +		ret = 0;
+> +		break;
+> +
+> +	default:
+> +		goto unblock;
+> +	}
+> +out:
+> +	if (worker)
+> +		tsk->flags |= PF_UMCG_WORKER;
+> +	return ret;
+> +
+> +unpin:
+> +	umcg_unpin_pages();
+> +unblock:
+> +	umcg_update_state(tsk, self, UMCG_TASK_RUNNABLE, UMCG_TASK_RUNNING);
+> +	goto out;
+> +}
