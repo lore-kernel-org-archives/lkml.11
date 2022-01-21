@@ -2,64 +2,60 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0F15C433FE
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:57:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C8E8C433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:57:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381436AbiAUQ5J (ORCPT
+        id S1381790AbiAUQ5P (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 11:57:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49610 "EHLO
+        Fri, 21 Jan 2022 11:57:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379251AbiAUQ4T (ORCPT
+        with ESMTP id S1379874AbiAUQ4t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 11:56:19 -0500
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A10EC06175C;
-        Fri, 21 Jan 2022 08:55:14 -0800 (PST)
-Received: by mail-ot1-x32c.google.com with SMTP id n22-20020a9d2016000000b0059bd79f7777so12086472ota.2;
-        Fri, 21 Jan 2022 08:55:14 -0800 (PST)
+        Fri, 21 Jan 2022 11:56:49 -0500
+Received: from mail-ot1-x329.google.com (mail-ot1-x329.google.com [IPv6:2607:f8b0:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B246C06176C;
+        Fri, 21 Jan 2022 08:55:39 -0800 (PST)
+Received: by mail-ot1-x329.google.com with SMTP id q13-20020a9d4b0d000000b0059b1209d708so12478481otf.10;
+        Fri, 21 Jan 2022 08:55:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Q356TySGpOi9cm8C15uJYgLdKIpPtBrszItNMB5sdtA=;
-        b=d08sxUH3eK/+C4ImWey5IwRNyFJty2X4q2Fcg6n7ZHmZN9ctajF8uw1GBf1L5BH5I7
-         V/kKVyFpnQavgkZlPTK9Wg7ngEaOyGBjaq09IRMK1VTXfYANVnxMFNgSagNRfAPoAH+D
-         fFY6QEbafaDPfAMdRL/B0VVisl/qar+seAQrHGkmlFelczDkuQ0RWymHEGujEWGDcOje
-         y3S9LAVnu7DcuX+DlLtdGeeYGobgEUea6WaaNt5Zq0xv1Pwt6Gcu5v1UvbeK3I45x6SX
-         AeuEz12eggrSCViDGacZEm47IFancwGQ4otY0iBDgahmOIf5w5EazCIq7c1CRKotuRJh
-         eoqg==
+        bh=Z6NMdJmJY0918lK7MEwP90+HahbtL5bkAvsIK2mROkA=;
+        b=ALwBxRoNLaUVojdxu1UguTgJFEO/82SZFhkbgYEuonAQegmTYzNFfsRNgj6/ZT+Awt
+         vSjyx55OfaySiDO8ebcX2PhLzpDQGFCCho3P/uPLnwZtBp/YTrKrOrUm4/4q0NQefk4S
+         LfAXU+3oyS0do27wY18gbjge/cVfM8d27+dP7A/ZPV3rPVS4cFhvlvx2qGdz1WeXRW7L
+         SZ/djoWj/kvENVc8jGiWNz1C9BlYw7XbgvrCkWoZdTlkEQJyUzZJn+vAOf7Raf2p6QSR
+         EfI/DsoiRkf0xrgCrRNT2Da9yRHnJXLCl8jRkKppUVYAdaz1YBisZl5C0wFK/CcDFHKY
+         vlLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Q356TySGpOi9cm8C15uJYgLdKIpPtBrszItNMB5sdtA=;
-        b=sqCq7pT1GmeFygG2d28OyL5iaiu4ZrISrlZhZEczb7mhrfb8lBSUCgZW0jRfargdGl
-         oiV6VLaEx/NAyI03+ZoIivfs9geh9Pn1WWvYqPBrBsLduak97hD3x7vftiyHERM5VaJQ
-         YTm4uBaFsQWM6Si2X2umo/+fJAbkvtgpn/mfOunaxoN6hNEV4EIWgNmdOyH/3HlQJKmi
-         Aq/byVl4mTN4seCztL2S/GLInssYO2FSfg0RElGntP8DjY4XM/hViv/HuVucRV/V11ro
-         6FralrpgW/gT9xlOsEEgfEoMHgadcnmI8Nv3/pp927+DpjCPkBGJwuFSZhZxo3Lf9lTI
-         0/HQ==
-X-Gm-Message-State: AOAM532ahF59RFHp0a1A+78slma53tN4kOrh1ZlTVz+ot+hiReST0Qf7
-        HZiXY0QA7pEieVxVccuIaZY=
-X-Google-Smtp-Source: ABdhPJxMLXhmV3f3kN56sohiz2YckqgwjTMJ0RtIqk/x215sI8lHLYXhQHyVMgC8DtQbU8bte5FllA==
-X-Received: by 2002:a05:6830:1047:: with SMTP id b7mr3285242otp.197.1642784113714;
-        Fri, 21 Jan 2022 08:55:13 -0800 (PST)
+        bh=Z6NMdJmJY0918lK7MEwP90+HahbtL5bkAvsIK2mROkA=;
+        b=4fA6o1nQydvYzZTAXAE67lvDgS1T/rHWi8TvC9m8Lii3+/SZQPJJ+V+qDSk0RozUed
+         jC0JMy6rBr7i5qoehZCppePmjAdjmn0bu+b5aL1XP6H6T5e0FzrZNElO/Xb3u8knfALv
+         wOlhcfoodxT8yuZ4qvC1FSXjZY4xhSH4n5fkxssrfAi/bR7fDRE09A0qX/gAirLFdi4L
+         UZgqxnm3d5tSKsMgGcQq2vcI728Gd/pJXDECxWRbau8LmrHQExvWXJ6+2AmQ+Q6DhBSP
+         aUVANv8z9sHsGyAkAk7C7wh4zGm8ZRqnB81495SfKVKyn7qwslsQCiu64L124fROpreW
+         yqtw==
+X-Gm-Message-State: AOAM533HEsVI/Ouyx/8US5+WS0f2JWLUBa9bsxOGucO3vTXpa/kjAzRj
+        pgXvAPWXodvzezeKVsnrr5jwWmakUkU=
+X-Google-Smtp-Source: ABdhPJy/hpy/QZlbs/qzPqVwNjr+5RZEo6fmAPgo+WXiKx1V4audpzhkpeR32y92eA/k8WW86Plb2g==
+X-Received: by 2002:a05:6830:60a:: with SMTP id w10mr3376814oti.111.1642784138528;
+        Fri, 21 Jan 2022 08:55:38 -0800 (PST)
 Received: from thinkpad.localdomain ([2804:14d:5cd1:5d03:cf72:4317:3105:f6e5])
-        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.55.10
+        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.55.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 08:55:13 -0800 (PST)
+        Fri, 21 Jan 2022 08:55:38 -0800 (PST)
 From:   Luiz Sampaio <sampaio.ime@gmail.com>
-To:     Kalle Valo <kvalo@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Larry Finger <Larry.Finger@lwfinger.net>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-kernel@vger.kernel.org, Luiz Sampaio <sampaio.ime@gmail.com>,
-        linux-wireless@vger.kernel.org, b43-dev@lists.infradead.org,
-        netdev@vger.kernel.org
-Subject: [PATCH 16/31] net: broadcom: changing LED_* from enum led_brightness to actual value
-Date:   Fri, 21 Jan 2022 13:54:21 -0300
-Message-Id: <20220121165436.30956-17-sampaio.ime@gmail.com>
+        linux-usb@vger.kernel.org
+Subject: [PATCH 23/31] usb: core: changing LED_* from enum led_brightness to actual value
+Date:   Fri, 21 Jan 2022 13:54:28 -0300
+Message-Id: <20220121165436.30956-24-sampaio.ime@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220121165436.30956-1-sampaio.ime@gmail.com>
 References: <20220121165436.30956-1-sampaio.ime@gmail.com>
@@ -73,36 +69,37 @@ The enum led_brightness, which contains the declaration of LED_OFF,
 LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
 max_brightness.
 ---
- drivers/net/wireless/broadcom/b43/leds.c       | 2 +-
- drivers/net/wireless/broadcom/b43legacy/leds.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/usb/core/ledtrig-usbport.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/broadcom/b43/leds.c b/drivers/net/wireless/broadcom/b43/leds.c
-index 982a772a9d87..bdb46168e019 100644
---- a/drivers/net/wireless/broadcom/b43/leds.c
-+++ b/drivers/net/wireless/broadcom/b43/leds.c
-@@ -59,7 +59,7 @@ static void b43_led_update(struct b43_wldev *dev,
- 	 * with the brightness_set handler, we will be called again soon
- 	 * to fixup our state. */
- 	if (radio_enabled)
--		turn_on = atomic_read(&led->state) != LED_OFF;
-+		turn_on = atomic_read(&led->state) != 0;
- 	else
- 		turn_on = false;
- 	if (turn_on == led->hw_state)
-diff --git a/drivers/net/wireless/broadcom/b43legacy/leds.c b/drivers/net/wireless/broadcom/b43legacy/leds.c
-index 38b5be3a84e2..5803d41185e7 100644
---- a/drivers/net/wireless/broadcom/b43legacy/leds.c
-+++ b/drivers/net/wireless/broadcom/b43legacy/leds.c
-@@ -66,7 +66,7 @@ static void b43legacy_led_brightness_set(struct led_classdev *led_dev,
- 	 * whether the LED has the wrong state for a second. */
- 	radio_enabled = (dev->phy.radio_on && dev->radio_hw_enable);
+diff --git a/drivers/usb/core/ledtrig-usbport.c b/drivers/usb/core/ledtrig-usbport.c
+index ba371a24ff78..85fa5699bb3d 100644
+--- a/drivers/usb/core/ledtrig-usbport.c
++++ b/drivers/usb/core/ledtrig-usbport.c
+@@ -73,7 +73,7 @@ static void usbport_trig_update_count(struct usbport_trig_data *usbport_data)
  
--	if (brightness == LED_OFF || !radio_enabled)
-+	if (brightness == 0 || !radio_enabled)
- 		b43legacy_led_turn_off(dev, led->index, led->activelow);
- 	else
- 		b43legacy_led_turn_on(dev, led->index, led->activelow);
+ 	usbport_data->count = 0;
+ 	usb_for_each_dev(usbport_data, usbport_trig_usb_dev_check);
+-	led_set_brightness(led_cdev, usbport_data->count ? LED_FULL : LED_OFF);
++	led_set_brightness(led_cdev, usbport_data->count ? 255 : 0);
+ }
+ 
+ /***************************************
+@@ -287,12 +287,12 @@ static int usbport_trig_notify(struct notifier_block *nb, unsigned long action,
+ 	case USB_DEVICE_ADD:
+ 		usbport_trig_add_usb_dev_ports(usb_dev, usbport_data);
+ 		if (observed && usbport_data->count++ == 0)
+-			led_set_brightness(led_cdev, LED_FULL);
++			led_set_brightness(led_cdev, 255);
+ 		return NOTIFY_OK;
+ 	case USB_DEVICE_REMOVE:
+ 		usbport_trig_remove_usb_dev_ports(usbport_data, usb_dev);
+ 		if (observed && --usbport_data->count == 0)
+-			led_set_brightness(led_cdev, LED_OFF);
++			led_set_brightness(led_cdev, 0);
+ 		return NOTIFY_OK;
+ 	}
+ 
 -- 
 2.34.1
 
