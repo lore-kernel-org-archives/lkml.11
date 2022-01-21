@@ -2,66 +2,61 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60B6FC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:57:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B215DC433EF
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 16:57:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344702AbiAUQ5a (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 11:57:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50010 "EHLO
+        id S243916AbiAUQ5e (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 11:57:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380449AbiAUQ46 (ORCPT
+        with ESMTP id S1379719AbiAUQ46 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Fri, 21 Jan 2022 11:56:58 -0500
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7B1BC06177C
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 08:56:04 -0800 (PST)
-Received: by mail-ot1-x32e.google.com with SMTP id n22-20020a9d2016000000b0059bd79f7777so12089606ota.2
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 08:56:04 -0800 (PST)
+Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 092DFC061779;
+        Fri, 21 Jan 2022 08:55:58 -0800 (PST)
+Received: by mail-ot1-x336.google.com with SMTP id a12-20020a0568301dcc00b005919e149b4cso12496259otj.8;
+        Fri, 21 Jan 2022 08:55:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=OJAPsXsyMyStdrgiiG/42UEEzPqRzVav9xb3OpyRVHQ=;
-        b=Twc9JkSiDP8VFRJqzluEaW2Z+2+GsDobGXcC4mRcD907KrgRdR7biXOtGDPPZ2UBWt
-         SPMO43Mn+NBkptudLVDrRUTuJPwBucOHSQvFhxsq2Tf7rxv8Qs8gegVEYIJ5nXRbv8uQ
-         x9Z2CA/QUQmuSwk7MhgPz/pdOBc9invJxmtmwXQBb5fjr1FWY/BqXLqFTgcGCvKfPjyH
-         RDA6E5h78KUKRRB/ZI+IbfQHiEh6q55IMcPdqQYJD4jzqlu50WlCa1PLLmJQlwOMncv3
-         nrku0yGN4/fMx3DFztsEOuLHsE0Vuq7C4jRLm6GufgYAYvmaOg5563KJ1tass8i47vFZ
-         +xpw==
+        bh=si2C+vA2MagtGvM7KQVl7R4c/GkdTJnQxP83OLRcJVk=;
+        b=UQGLTtt5LSEMTK67FS1ihHCiUCpYDCH9lpQphiGsNhgiy4hAmw4ejccESomUBNnmB/
+         aYQ+4LcEArvrDIG0KkSm+4Ai3oIf2AnPCZ0KVnCMpAPm6NmRJ/V03BR5V/c4yIjI3kSu
+         sf6hDb0a5KoXclLLT2u8NhgaTaHM4G9x5Lf3cyL3IBsm9HRi8O4LZ3+tvWjCf5BpyHa6
+         tU4u/eRjs08GGNLHGtmpGMVnxgQAQF8uuASICG2GeIA2YhrzNxE2VccrdIUVKCESgwuU
+         PYiTQH7jFNvJ3TyAuWIk3er2Op6E1kVZTdCJ/oh+lDvRopzfcAndcm2pPBfLGRlGJea9
+         iWwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=OJAPsXsyMyStdrgiiG/42UEEzPqRzVav9xb3OpyRVHQ=;
-        b=gykTHJNNvNOcN2NMvyI0C4FC5Mj8Mh+kzDWmIVm//98Xi7SUyPV4abVZF9irf9BLH+
-         oqGkK96NCzezuMsc78+GPb70HFmVvDkwbGmXk6b426DQjwnVoqttNPUwVpqpOoO5wZxa
-         6KIr0sSTQudCej4zdEWoHMeoaxyA3pOqwVMAZzK3Mf7kcRZSYpkMAjYdnb0+ds+6lOgl
-         h3FRj7XQaHeltUyfVbybl7Xss6GFtt+UtpU93DeL/ubmH9cHGF6g4GojXW7DhD1oq9XU
-         Hx8cpmDtTz4wgRhiJ1eAjVBla88Hg4EpncIRh6GeXY2rQ825DleUrsKB4lX184u6OS4b
-         7yNg==
-X-Gm-Message-State: AOAM531ylhE1UaTkPkuxJjSLb34ucejSFJ05suGVxgdxl9TRtX2nAmbs
-        2OtRCfUYhp2L+diBQYcazjg=
-X-Google-Smtp-Source: ABdhPJzeJejm8YYaXmOdZw3QExcnXsXNYn1jraBIWNvWa+5iSEwrJf3YLpi7qF8eTFUbVqtjFmtDxw==
-X-Received: by 2002:a9d:74d0:: with SMTP id a16mr3413937otl.47.1642784164101;
-        Fri, 21 Jan 2022 08:56:04 -0800 (PST)
+        bh=si2C+vA2MagtGvM7KQVl7R4c/GkdTJnQxP83OLRcJVk=;
+        b=TF8vtws4ovSk2Ph1+ialGaKJTCekWhIt7+A+Ez/PYTh8h6q93Fjr9Mp8j3u4fnyglg
+         WutzMcXr7NZ32CAFDYlDu46yNu9nQ8ZNdYlZy8w+hV3iaX+125QB0wfEYbyn5vh8xXpc
+         eCm/iftbiEkV6AYgbxpX5R8iQhWbAVLxzzq5W/gR/r6YC7iCTR2FpG3OgDeMuuJs+iTV
+         wUYofeQkRiK4AsglCypFopW8zvUHBbPe2w60jL3oIMWcpNhBMmzBRZYrkNrOCSF68Fvo
+         KblIIFnMN1f+KGhzMlIJlMINIMXAdmztRHxYVWUImyqHB54ZlFp8IlV/ROsk+c/vN/+g
+         c8sg==
+X-Gm-Message-State: AOAM5323k6zYq7sQm0gwr66qpBeIFkQ4sDi3Gp61XtyfYU/kbEJkSXsb
+        UKhICewCqFVShGR7xRMSLsA=
+X-Google-Smtp-Source: ABdhPJx1jT0kqIhJYUFQF5ZtfKDl8S9daCIITgVVP8nCR1xY42JaZ2RR+AijgO/vDQjpBB6+OFVyIA==
+X-Received: by 2002:a05:6830:1047:: with SMTP id b7mr3287296otp.197.1642784157446;
+        Fri, 21 Jan 2022 08:55:57 -0800 (PST)
 Received: from thinkpad.localdomain ([2804:14d:5cd1:5d03:cf72:4317:3105:f6e5])
-        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.56.00
+        by smtp.gmail.com with ESMTPSA id y8sm1089271oou.23.2022.01.21.08.55.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 08:56:03 -0800 (PST)
+        Fri, 21 Jan 2022 08:55:57 -0800 (PST)
 From:   Luiz Sampaio <sampaio.ime@gmail.com>
-To:     Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Ranjani Sridharan <ranjani.sridharan@linux.intel.com>,
-        Kai Vehmanen <kai.vehmanen@linux.intel.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+To:     Johannes Berg <johannes@sipsolutions.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, Luiz Sampaio <sampaio.ime@gmail.com>,
-        sound-open-firmware@alsa-project.org, alsa-devel@alsa-project.org
-Subject: [PATCH 31/31] sound: soc: sof: changing LED_* from enum led_brightness to actual value
-Date:   Fri, 21 Jan 2022 13:54:36 -0300
-Message-Id: <20220121165436.30956-32-sampaio.ime@gmail.com>
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH 29/31] net: rfkill: changing LED_* from enum led_brightness to actual value
+Date:   Fri, 21 Jan 2022 13:54:34 -0300
+Message-Id: <20220121165436.30956-30-sampaio.ime@gmail.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220121165436.30956-1-sampaio.ime@gmail.com>
 References: <20220121165436.30956-1-sampaio.ime@gmail.com>
@@ -75,25 +70,43 @@ The enum led_brightness, which contains the declaration of LED_OFF,
 LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
 max_brightness.
 ---
- sound/soc/sof/control.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/rfkill/core.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/sound/soc/sof/control.c b/sound/soc/sof/control.c
-index ef61936dad59..02e40aef9995 100644
---- a/sound/soc/sof/control.c
-+++ b/sound/soc/sof/control.c
-@@ -39,9 +39,9 @@ static void update_mute_led(struct snd_sof_control *scontrol,
+diff --git a/net/rfkill/core.c b/net/rfkill/core.c
+index 5b1927d66f0d..68b4c3a71513 100644
+--- a/net/rfkill/core.c
++++ b/net/rfkill/core.c
+@@ -125,9 +125,9 @@ static void rfkill_led_trigger_event(struct rfkill *rfkill)
+ 	trigger = &rfkill->led_trigger;
  
- #if IS_REACHABLE(CONFIG_LEDS_TRIGGER_AUDIO)
- 	if (!scontrol->led_ctl.direction)
--		ledtrig_audio_set(LED_AUDIO_MUTE, temp ? LED_OFF : LED_ON);
-+		ledtrig_audio_set(LED_AUDIO_MUTE, temp ? 0 : 1);
+ 	if (rfkill->state & RFKILL_BLOCK_ANY)
+-		led_trigger_event(trigger, LED_OFF);
++		led_trigger_event(trigger, 0);
  	else
--		ledtrig_audio_set(LED_AUDIO_MICMUTE, temp ? LED_OFF : LED_ON);
-+		ledtrig_audio_set(LED_AUDIO_MICMUTE, temp ? 0 : 1);
- #endif
+-		led_trigger_event(trigger, LED_FULL);
++		led_trigger_event(trigger, 255);
  }
  
+ static int rfkill_led_trigger_activate(struct led_classdev *led)
+@@ -180,7 +180,7 @@ static void rfkill_global_led_trigger_worker(struct work_struct *work)
+ 	mutex_lock(&rfkill_global_mutex);
+ 	list_for_each_entry(rfkill, &rfkill_list, node) {
+ 		if (!(rfkill->state & RFKILL_BLOCK_ANY)) {
+-			brightness = LED_FULL;
++			brightness = 255;
+ 			break;
+ 		}
+ 	}
+@@ -188,7 +188,7 @@ static void rfkill_global_led_trigger_worker(struct work_struct *work)
+ 
+ 	led_trigger_event(&rfkill_any_led_trigger, brightness);
+ 	led_trigger_event(&rfkill_none_led_trigger,
+-			  brightness == LED_OFF ? LED_FULL : LED_OFF);
++			  brightness == 0 ? 255 : 0);
+ }
+ 
+ static void rfkill_global_led_trigger_event(void)
 -- 
 2.34.1
 
