@@ -2,122 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2E72C433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 12:42:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88A3FC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 12:42:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380428AbiAUMmJ (ORCPT
+        id S1380431AbiAUMmr (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 07:42:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47910 "EHLO
+        Fri, 21 Jan 2022 07:42:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48084 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380407AbiAUMmG (ORCPT
+        with ESMTP id S1350560AbiAUMmq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 07:42:06 -0500
-Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E6AFC061401
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 04:42:05 -0800 (PST)
-Received: by mail-lf1-x135.google.com with SMTP id m3so33857818lfu.0
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 04:42:05 -0800 (PST)
+        Fri, 21 Jan 2022 07:42:46 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30A75C061401
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 04:42:46 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id n12-20020a05600c3b8c00b0034eb13edb8eso293017wms.0
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 04:42:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=U19RMzoNXZLY6f3nYg8iXSqz+HMnSv8rn/hJ0unjcD8=;
-        b=dUz/zCAM4lO11TOqTfgcd1vMlXzRN2KLO9mm+hddHtx+paZDTuoq+1nk+kuKuuQl+Z
-         f76TTo7e3ktlFB2FBOpJ6LMjdYveyF6wrDenkLw4yHWq3BtVizJQxLazZqa3F9TUVVMJ
-         bFlTukNqL1fgpb5gKmoEchSIQNvbhP1qBplSgS961IDRX3Bq7u/KMdiwsIN7qT+fVdMI
-         A5ZKIFEJvrr/xtczyDTVghpKA9vdZJQeLWX9V3FfvYO4YxEIByRdfqYzjs464IJ+Dt6j
-         gh8yPIAG1hmSsknVuerSpLl6uQLmUeQE2C87J89u3ksOvd2TacBn6iKB1NJlOCe9GNQU
-         2L7Q==
+        bh=FbauWvjEFr0VEys9tznLWPTDHaU2uug5P4EDNWbJ8+E=;
+        b=uoPJ8mn9Kan1V+k3BDZDa7RTh/3CLdpRfMvVa7WsJ/gKSaS8pvkj5NERpKxKYq5GPz
+         3mx5xTgJyma8/Ei4cpOGwy6BbvmD9lRqGLiyNJiBT8Kqxbjr26bM8058UvKMiFlNhQLA
+         UlEM4cLyLjyIxUzHjwt5IM37pvGKvDt2SQw8m2Twh6MuwGQhhI5CPDdhyBRj8gEEkQeh
+         7FGYa11oLjNOK19Yso7Ha8I9sK4eoaK9Qvuz2RBuDXW9wDhe2L6xgZSzO+gFDNXgA0ru
+         /Yu7Ft9nMIkwk7QKYbKt9BMZBtLLQ4266yGPeTvUjAihNy5Vt9TjYDfCNcYmCjMaL4QX
+         HNGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=U19RMzoNXZLY6f3nYg8iXSqz+HMnSv8rn/hJ0unjcD8=;
-        b=lVU3diGBHflCf+HzLjvkgWEa0IUYu+MOnRJY99qL0lKQhls8M/+qVFvI9NzHdha5GH
-         28W09JoKdNFc57PfBpPFumsnMZUYO6sYjnX6nzfhdrqOn77geq6NfIc7cyV8N88csWMk
-         8k+yGtjo1qm+k80xTXGk9sjRx+amrTkNdBIccXKMbK1Zbx0BCGcBoCITuBMQ+0sRaT5+
-         wNP+hfCdDnu63/IYxu0Xnv5MNCYeBdPMI6zsiHaSU0rfCmb7+bm6hNrfx+2bBABCFLBN
-         SU+WaB8f65nI5I5b3gJardQvVqEAwOy2YcFMCI9KBBNSK1EUYdCuPZIPJjpDD9n8mwXl
-         JPLA==
-X-Gm-Message-State: AOAM531SlpnlnuJc7kkOh22uj0EI4ENXNW67lX/4+lypWKWMMm3qHQrA
-        07+eFJzoJ9gKXzlblP134kKDo0sOapAWVK2H1LVXDA==
-X-Google-Smtp-Source: ABdhPJz2AOO0gB2ju1tOqj2K+obGJ+0aRFE+IxUpTowkhDOtxQ0U2vMIRiCciYENRWuPyOiwYdnVncZThl8CeKkOc+s=
-X-Received: by 2002:a05:6512:4014:: with SMTP id br20mr3756465lfb.233.1642768923473;
- Fri, 21 Jan 2022 04:42:03 -0800 (PST)
+        bh=FbauWvjEFr0VEys9tznLWPTDHaU2uug5P4EDNWbJ8+E=;
+        b=kAwgaoS9QO+7PoKgWUe8y8zXVSzIdYNwyuBqq7uBw8nrFOBgaENlFatlLzkm7csFOj
+         IA5914NoSYYuaPEAH7lR3Iofox6xrqZaNKkSGlpBvCQFfqDYxOABONGoNP7epdvg/9Oy
+         2mYFvaZBqe2oU11Djck4em/kdCUUF3pncVWF25wgtef7PP4ieinf1XwM8spN8ocJX5p8
+         D67iOAPuS2DEME2bd40noFeSTLGWB1wMjvr3SlucktmAIE4ry0wWvZVX3aEcqVhMwjtX
+         Z73yJBUxoZ574mO0QAbAw8lj//npko/7l3VKhg4GumMyaNyInXY9xlngGKezrnNxCFRU
+         ONvw==
+X-Gm-Message-State: AOAM532fB3lyspeHvZgB/8vRek0G/qkmjRuBYQ56RaCBWN0nuSNbKtQQ
+        gUO/JKhMMXWUcPEtRQXG9NJ7Leq8llIRHe2AdDrMPQ==
+X-Google-Smtp-Source: ABdhPJzLeZ7R7NMebRJM4vVfNZ690JvgI0zhKpWeLaP9Flzk3MULTYtYTkX5Voxns4JCqEDfY804I3cDD+Zgel9ktWE=
+X-Received: by 2002:a05:6000:1c1e:: with SMTP id ba30mr3898662wrb.699.1642768964790;
+ Fri, 21 Jan 2022 04:42:44 -0800 (PST)
 MIME-Version: 1.0
-References: <20220114075934.302464-1-gregkh@linuxfoundation.org>
-In-Reply-To: <20220114075934.302464-1-gregkh@linuxfoundation.org>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Fri, 21 Jan 2022 13:41:27 +0100
-Message-ID: <CAPDyKFpu0mGchoqdzE-qKc6=9ogncnTCwN8AR7g1wcMZLyRFsw@mail.gmail.com>
-Subject: Re: [PATCH] moxart: fix potential use-after-free on remove path
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, Xiyu Yang <xiyuyang19@fudan.edu.cn>,
-        Xin Xiong <xiongx18@fudan.edu.cn>,
-        Xin Tan <tanxin.ctf@gmail.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        linux-mmc@vger.kernel.org, stable <stable@vger.kernel.org>,
-        whitehat002 <hackyzh002@gmail.com>
+References: <20220113091056.1297982-1-james.clark@arm.com> <20220113091056.1297982-3-james.clark@arm.com>
+In-Reply-To: <20220113091056.1297982-3-james.clark@arm.com>
+From:   Mike Leach <mike.leach@linaro.org>
+Date:   Fri, 21 Jan 2022 12:42:34 +0000
+Message-ID: <CAJ9a7ViuON11QZRhejcmCM3KOkWx-i0NZw_Kh-2m1Ps0bop2xw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/6] coresight: Fail to open with return stacks if they
+ are unavailable
+To:     James Clark <James.Clark@arm.com>
+Cc:     suzuki.poulose@arm.com, mathieu.poirier@linaro.org,
+        coresight@lists.linaro.org, leo.yan@linaro.com,
+        Leo Yan <leo.yan@linaro.org>,
+        John Garry <john.garry@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, 14 Jan 2022 at 08:59, Greg Kroah-Hartman
-<gregkh@linuxfoundation.org> wrote:
+Reviewed-by: Mike Leach <mike.leach@linaro.org>
+
+On Thu, 13 Jan 2022 at 09:11, James Clark <james.clark@arm.com> wrote:
 >
-> It was reported that the mmc host structure could be accessed after it
-> was freed in moxart_remove(), so fix this by saving the base register of
-> the device and using it instead of the pointer dereference.
+> Maintain consistency with the other options by failing to open when they
+> aren't supported. For example ETM_OPT_TS, ETM_OPT_CTXTID2 and the newly
+> added ETM_OPT_BRANCH_BROADCAST all return with -EINVAL if they are
+> requested but not supported by hardware.
 >
-> Cc: Ulf Hansson <ulf.hansson@linaro.org>
-> Cc: Xiyu Yang <xiyuyang19@fudan.edu.cn>
-> Cc: Xin Xiong <xiongx18@fudan.edu.cn>
-> Cc: Xin Tan <tanxin.ctf@gmail.com>
-> Cc: Tony Lindgren <tony@atomide.com>
-> Cc: Yang Li <yang.lee@linux.alibaba.com>
-> Cc: linux-mmc@vger.kernel.org
-> Cc: stable <stable@vger.kernel.org>
-> Reported-by: whitehat002 <hackyzh002@gmail.com>
-> Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+> The consequence of not doing this is that the user may not be
+> aware that they are not enabling the feature as it is silently disabled.
+>
+> Signed-off-by: James Clark <james.clark@arm.com>
 > ---
->  drivers/mmc/host/moxart-mmc.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
+>  drivers/hwtracing/coresight/coresight-etm4x-core.c | 13 +++++++++----
+>  1 file changed, 9 insertions(+), 4 deletions(-)
 >
-> diff --git a/drivers/mmc/host/moxart-mmc.c b/drivers/mmc/host/moxart-mmc.c
-> index 16d1c7a43d33..f5d96940a9b8 100644
-> --- a/drivers/mmc/host/moxart-mmc.c
-> +++ b/drivers/mmc/host/moxart-mmc.c
-> @@ -697,6 +697,7 @@ static int moxart_remove(struct platform_device *pdev)
->  {
->         struct mmc_host *mmc = dev_get_drvdata(&pdev->dev);
->         struct moxart_host *host = mmc_priv(mmc);
-> +       void __iomem *base = host->base;
+> diff --git a/drivers/hwtracing/coresight/coresight-etm4x-core.c b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> index 04669ecc0efa..a93c1a5fe045 100644
+> --- a/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> +++ b/drivers/hwtracing/coresight/coresight-etm4x-core.c
+> @@ -674,10 +674,15 @@ static int etm4_parse_event_config(struct coresight_device *csdev,
+>         }
 >
->         dev_set_drvdata(&pdev->dev, NULL);
+>         /* return stack - enable if selected and supported */
+> -       if ((attr->config & BIT(ETM_OPT_RETSTK)) && drvdata->retstack)
+> -               /* bit[12], Return stack enable bit */
+> -               config->cfg |= BIT(12);
+> -
+> +       if (attr->config & BIT(ETM_OPT_RETSTK)) {
+> +               if (!drvdata->retstack) {
+> +                       ret = -EINVAL;
+> +                       goto out;
+> +               } else {
+> +                       /* bit[12], Return stack enable bit */
+> +                       config->cfg |= BIT(12);
+> +               }
+> +       }
+>         /*
+>          * Set any selected configuration and preset.
+>          *
+> --
+> 2.28.0
 >
-> @@ -707,10 +708,10 @@ static int moxart_remove(struct platform_device *pdev)
->         mmc_remove_host(mmc);
->         mmc_free_host(mmc);
->
-> -       writel(0, host->base + REG_INTERRUPT_MASK);
-> -       writel(0, host->base + REG_POWER_CONTROL);
-> -       writel(readl(host->base + REG_CLOCK_CONTROL) | CLK_OFF,
-> -              host->base + REG_CLOCK_CONTROL);
 
-Rather than doing it like this, I think it would be easier to move
-mmc_free_host() below this part. That's usually what mmc host drivers
-do clean up things in ->remove().
 
-> +       writel(0, base + REG_INTERRUPT_MASK);
-> +       writel(0, base + REG_POWER_CONTROL);
-> +       writel(readl(base + REG_CLOCK_CONTROL) | CLK_OFF,
-> +              base + REG_CLOCK_CONTROL);
->
->         return 0;
->  }
-
-Kind regards
-Uffe
+-- 
+Mike Leach
+Principal Engineer, ARM Ltd.
+Manchester Design Centre. UK
