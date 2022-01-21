@@ -2,82 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 732BEC433F5
-	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 19:01:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C95AC433FE
+	for <linux-kernel@archiver.kernel.org>; Fri, 21 Jan 2022 19:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230375AbiAUTBC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 14:01:02 -0500
-Received: from mail-qt1-f177.google.com ([209.85.160.177]:40457 "EHLO
-        mail-qt1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230332AbiAUTBA (ORCPT
+        id S231184AbiAUTCp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 14:02:45 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:57594 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230332AbiAUTCo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 14:01:00 -0500
-Received: by mail-qt1-f177.google.com with SMTP id k2so1908955qtm.7;
-        Fri, 21 Jan 2022 11:01:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=qcTWtImjSv/IKa8U1ZDMasjCJ9CJxcj4OoduIWlDcq4=;
-        b=r8Fkw+6VZF5dqczKzD2/VW/6mNTo0d5w+TieMs9hCNS0v/MWtW46bzETpXe8a2WjdN
-         AaZkfKrrlVQpwzA3WRi8KnVJIYVaiAxpxLsAk17sFSKr2OOf5hG1hXRo/a1yfoxqdt5r
-         6Cd3nQS+sn2EYyU81sP/6OEb6jq8wb8a7x6KtihNy1jZPFGZEy1QjmpaMcmkhQKJs1Ta
-         ZPyb5q66/KHO41fCGxZw2dcfnNP/+vRAN/hGPnkenVjAeGIji9tmnByAL1UZ/dHyNda8
-         DhPh+l2iY7lNM3XM0aoMwgoN958YSXsBHMIESQxgh0UWrQDgUadrvAMxN/kxZNEM55e3
-         zJVw==
-X-Gm-Message-State: AOAM530Zlo5ggIbcVipxt/4Xd8Mc/0FDy59yqiS1gaes0ipyOMVRP27c
-        VwIQhHTiCcoJ0tapZeUdaE3jL091Nxbem+Or+Sk=
-X-Google-Smtp-Source: ABdhPJyuCR+SmirJdSiW2AywJ+r5kBb0SMVoSkmDQY+lIDivISAXiLXa1FRk8dJkdQNCEpV3MKOA4Ik2GJyMfvyLmAk=
-X-Received: by 2002:a05:622a:293:: with SMTP id z19mr4389219qtw.302.1642791660062;
- Fri, 21 Jan 2022 11:01:00 -0800 (PST)
+        Fri, 21 Jan 2022 14:02:44 -0500
+Date:   Fri, 21 Jan 2022 20:02:41 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1642791762;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fG4ZoXatxEkNbG5UBcm+lHkGC19XMjND5Hhdrf/oMvc=;
+        b=CicPx0kKrpOco+R2uwemaIWb13krg1Vm3REpg0bTJf/dh3v9ZTIdgh+nTmH+REckZhi6IO
+        es6mKr6aXX+QQBZQSjdlAC8dqueXESsA6ZlNV7kwMerMM6pVX+1DXxgPUFskUOCsEdpxVd
+        QF38oEwRYEH5wZaAAm2Np6xAilpElnGTvgEVcD1+KOQ1EeduL1+/HK0w1oWbHqAtYr3eVG
+        p0Mr2GMmnEwLWJJ2dIZ4l9YeJa1oGlMxXLhSeQ8QTmrwzp1ep6aurJhpdcQYsr7qbOD+/o
+        G/3OhwTX18CA4IPPDS4CECa/c0YMT/X17x4dbca4RilFlyFGxr3dAhvCgo1LOQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1642791762;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=fG4ZoXatxEkNbG5UBcm+lHkGC19XMjND5Hhdrf/oMvc=;
+        b=fRtimwwvuM5hArrw57j7b+p7TzTP1em7EqCTkZE2JjqBMESxnFIbSWxK4sCox5bZVoLLph
+        kLIXkc7EogAY78AQ==
+From:   Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+To:     Thomas Gleixner <tglx@linutronix.de>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        linux-rt-users@vger.kernel.org,
+        Steven Rostedt <rostedt@goodmis.org>
+Subject: Re: [ANNOUNCE] v5.16.2-rt19
+Message-ID: <YesDUV+ErrdoEvvw@linutronix.de>
+References: <Yer73zjSLXFooB1+@linutronix.de>
 MIME-Version: 1.0
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Fri, 21 Jan 2022 20:00:49 +0100
-Message-ID: <CAJZ5v0hvvYedSn5u-i7sjpoEHU4P65t7i1b2pVn=S1q0nHWgqQ@mail.gmail.com>
-Subject: [Bug] nvme blocks PC10 since v5.15 - bisected
-To:     Keith Busch <kbusch@kernel.org>
-Cc:     Sagi Grimberg <sagi@grimberg.me>, Christoph Hellwig <hch@lst.de>,
-        Len Brown <lenb@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        m.heingbecker@googlemail.com,
-        linux-nvme <linux-nvme@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <Yer73zjSLXFooB1+@linutronix.de>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Keith,
+On 2022-01-21 19:30:57 [+0100], To Thomas Gleixner wrote:
+> Dear RT folks!
+> 
+> I'm pleased to announce the v5.16.2-rt19 patch set. 
+> 
+> Changes since v5.16.2-rt18:
+> 
+>   - Update the printk series. Patches by John Ogness.
+> 
+>   - Redo the i2c patches introduced in the previous release to address
+>     other driver which look also broken.
+> 
+> Known issues
+>      - netconsole triggers WARN.
+> 
+>      - Valentin Schneider reported a few splats on ARM64, see
+>           https://lkml.kernel.org/r/20210810134127.1394269-1-valentin.schneider@arm.com
+> 
+> The delta patch against v5.16.2-rt18 is appended below and can be found here:
+>  
+>      https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.16/incr/patch-5.16.2-rt18-rt19.patch.xz
 
-It is reported that the following commit
+The diff got too big and and the announcement didn't make it to the
+list. Here is the mail without the incremental diff which can been
+viewed at
+   https://git.kernel.org/rt/linux-rt-devel/d/v5.16.2-rt19/v5.16.2-rt18
 
-commit e5ad96f388b765fe6b52f64f37e910c0ba4f3de7
-Author: Keith Busch <kbusch@kernel.org>
-Date:   Tue Jul 27 09:40:44 2021 -0700
+> You can get this release via the git tree at:
+> 
+>     git://git.kernel.org/pub/scm/linux/kernel/git/rt/linux-rt-devel.git v5.16.2-rt19
+> 
+> The RT patch against v5.16.2 can be found here:
+> 
+>     https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.16/older/patch-5.16.2-rt19.patch.xz
+> 
+> The split quilt queue is available at:
+> 
+>     https://cdn.kernel.org/pub/linux/kernel/projects/rt/5.16/older/patches-5.16.2-rt19.tar.xz
 
-   nvme-pci: disable hmb on idle suspend
-
-   An idle suspend may or may not disable host memory access from devices
-   placed in low power mode. Either way, it should always be safe to
-   disable the host memory buffer prior to entering the low power mode, and
-   this should also always be faster than a full device shutdown.
-
-   Signed-off-by: Keith Busch <kbusch@kernel.org>
-   Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
-   Signed-off-by: Christoph Hellwig <hch@lst.de>
-
-is the source of a serious power regression occurring since 5.15
-(please see https://bugzilla.kernel.org/show_bug.cgi?id=215467).
-
-After this commit, the SoC on the affected system cannot enter
-C-states deeper than PC2 while suspended to idle which basically
-defeats the purpose of suspending.
-
-What may be happening is that nvme_disable_prepare_reset() that is not
-called any more in the ndev->nr_host_mem_descs case somehow causes the
-LTR of the device to change to "no requirement" which allows deeper
-C-states to be entered.
-
-Can you have a look at this, please?
-
-Cheers,
-Rafael
+Sebastian
