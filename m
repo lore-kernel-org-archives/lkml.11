@@ -2,174 +2,142 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84128C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 09:50:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94361C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 10:13:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231843AbiAVJur (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 04:50:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48390 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229773AbiAVJuq (ORCPT
+        id S232370AbiAVKNv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 05:13:51 -0500
+Received: from mail-ej1-f54.google.com ([209.85.218.54]:39658 "EHLO
+        mail-ej1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229553AbiAVKNu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 04:50:46 -0500
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26F0CC06173B
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 01:50:45 -0800 (PST)
-Received: by mail-qt1-x82b.google.com with SMTP id h15so13031989qtx.0
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 01:50:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=/DvivhbrHIY4f17iliBHPV/kS4qRh7JJhxcfM6F15FI=;
-        b=KT3hk/STET5VuhcsVl0dSnqPd5cHz7tzpsyNVWb62Ck6N85363yhKnMV4tVI2S7X2X
-         rCIpPqYYwIjwVYsFJSaolhdHr3yxtgiFLBf3qwoQJmUyiK+K8ED9BPJnSEa1+os1xJr0
-         a2kOG2fsJxDOntLwpOpzqsCGEYRMDX41zY6RpgMXDae4K3zNAFEBW5f0iQvHvvBMWTpJ
-         kasANM/E6rzDHUHck3pkfk+qtO9fkx5kBXhB1vk2XZdFXSLQrldNOC9vxBnPZzOqF6ms
-         ZeBh6tNi4eQ63lMUAB99ylbBFhtpNgRSHu5nTaj6mjCYFfHXyvjuuvvWsFv5PlN2qhVE
-         8q8A==
+        Sat, 22 Jan 2022 05:13:50 -0500
+Received: by mail-ej1-f54.google.com with SMTP id j2so6903679ejk.6;
+        Sat, 22 Jan 2022 02:13:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=/DvivhbrHIY4f17iliBHPV/kS4qRh7JJhxcfM6F15FI=;
-        b=NMu4ZfUe0bHKDKSCUDN0FfKsZfxENOH40lobEqALYcBkfiP0UL8A8ERWVpGuy2OYoz
-         9Ptfqns54kvk/Iedb96Gdn/2g1gRNKNzVbHHmAuXwe/pf6UaByTgiHYhfAb3dd8xr6Bj
-         kZ4mOwTJgBL01G4s8dWOnxUPII1yG2CaA04K0tNcgCH3VLFnzpxglyiwO2lmdu7d7yz3
-         bAC4e4amirZHkhFI+6J5FTYmWjQeF8Ha/NN5ZENr6Paoiq37vzssVByFL2ZsDfD8rt9x
-         ZhQCvh8nYnTyp6yhM6yUcx8uChjRDfAa86cIx4r3Ojo2rDyKjzhqv2H9Ovxznq1XRfu/
-         PxkA==
-X-Gm-Message-State: AOAM532k/R66ST9zOMqptumRQN0W0ChKEHcJrAbKf7GC+kIuVQmxu+Ft
-        1zZmL4fkMTKcza127GXV199iRW2/xP5apDeHwTs=
-X-Google-Smtp-Source: ABdhPJyQYqn281mdojFMqETNlLuw4H/1mQrK+zUsXLy7tZTw3i9h2sBlFf+uz6cKqcQ1VNG8G7LO7d29gH3Op8Gm8fc=
-X-Received: by 2002:ac8:5bd5:: with SMTP id b21mr6195415qtb.68.1642845044338;
- Sat, 22 Jan 2022 01:50:44 -0800 (PST)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=DIuoxmImX3ZeY9PJQqgDGkmXrn4z24wj9WF4HsBhY6w=;
+        b=x65zhLwIqu1Pj0WCVFX5B7l/2e7zT1jr24FgxVbPjwZ/S1l3ABa0IVfXGg4aQTk8Yt
+         O8qkBlcd2gC7ha7LFtjNsgv3Vpgzosix9Z0HwJ/GFBAMdFrCDxnETMUuPRkgNlyIW7pP
+         2FWX7PhRlowzMWc6EW47qUS6UiVi9VcqPoeqhSEFcdZ7XxDgXhEKjF8USocFYEwNAfe8
+         aNbPCcpytihqjSY4725fRA/RnF5fvYV/sv2ipTd20ML+9hzGblWe81lZrge6qYnBW7/y
+         ANtZGHNM3+v8TCAnVfNphVLk+CIpeX1Ohn4XWHEoYe0Qqrn/lw/NWjJfWrHj4rJS3MuL
+         qmtg==
+X-Gm-Message-State: AOAM530Bc/+Kq6bIPtPViZ1GDG+uVymI8AQ4b/HKiIfraIVE5uR8LRlt
+        ojksIKXm18UBC52jBurNYsfXo3yArLo=
+X-Google-Smtp-Source: ABdhPJzy+cPJb9cgiD/lSovp0TOxQp7TR34VfGNj5NLaYwdESknaaDnFbKcR7SqJiMMbYXaUrsOi2Q==
+X-Received: by 2002:a17:906:314f:: with SMTP id e15mr6311196eje.658.1642846428834;
+        Sat, 22 Jan 2022 02:13:48 -0800 (PST)
+Received: from [192.168.0.51] (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
+        by smtp.googlemail.com with ESMTPSA id oz18sm2754282ejb.106.2022.01.22.02.13.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 22 Jan 2022 02:13:47 -0800 (PST)
+Message-ID: <062bd1a9-e89c-cac4-de6e-0934c2d844ff@kernel.org>
+Date:   Sat, 22 Jan 2022 11:13:46 +0100
 MIME-Version: 1.0
-References: <1642649516-15076-1-git-send-email-huangzhaoyang@gmail.com>
-In-Reply-To: <1642649516-15076-1-git-send-email-huangzhaoyang@gmail.com>
-From:   Zhaoyang Huang <huangzhaoyang@gmail.com>
-Date:   Sat, 22 Jan 2022 17:50:06 +0800
-Message-ID: <CAGWkznEeeSCrL1SiFi1uuWG05LTECYGOnGn6-7Y5zXpUvt+Rag@mail.gmail.com>
-Subject: Re: [Resend PATCH v3] psi: fix possible trigger missing in the window
-To:     Johannes Weiner <hannes@cmpxchg.org>,
-        Suren Baghdasaryan <surenb@google.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Zhaoyang Huang <zhaoyang.huang@unisoc.com>,
-        Ingo Molnar <mingo@redhat.com>,
-        "open list:MEMORY MANAGEMENT" <linux-mm@kvack.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH v3 2/3] dt-bindings: pwm: Document clk based PWM
+ controller
+Content-Language: en-US
+To:     Sean Anderson <sean.anderson@seco.com>,
+        Nikita Travkin <nikita@trvn.ru>
+Cc:     thierry.reding@gmail.com, lee.jones@linaro.org,
+        u.kleine-koenig@pengutronix.de, robh+dt@kernel.org,
+        sboyd@kernel.org, linus.walleij@linaro.org, masneyb@onstation.org,
+        linux-pwm@vger.kernel.org, devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        ~postmarketos/upstreaming@lists.sr.ht
+References: <20220120161442.140800-1-nikita@trvn.ru>
+ <20220120161442.140800-3-nikita@trvn.ru>
+ <CAJKOXPc249vbZZwjXxfg+mEgqQe0P8uhf1GTg8Db9sBeMY3+tA@mail.gmail.com>
+ <1d9b1db0-981d-f77a-063a-69c8a4d53343@seco.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+In-Reply-To: <1d9b1db0-981d-f77a-063a-69c8a4d53343@seco.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-sorry for broadcasting here. Is anyone aware of Johannes and Peter's
-status? The following patch has been waiting for their comments for a
-long time. Are they available recently?  thanks.
+On 21/01/2022 22:34, Sean Anderson wrote:
+> 
+> 
+> On 1/21/22 2:34 AM, Krzysztof Kozlowski wrote:
+>> On Thu, 20 Jan 2022 at 17:15, Nikita Travkin <nikita@trvn.ru> wrote:
+>>>
+>>> Add YAML devicetree binding for clk based PWM controller
+>>>
+>>> Signed-off-by: Nikita Travkin <nikita@trvn.ru>
+>>> --
+>>> Changes in v2:
+>>>  - fix the file name.
+>>> ---
+>>>  .../devicetree/bindings/pwm/clk-pwm.yaml      | 45 +++++++++++++++++++
+>>>  1 file changed, 45 insertions(+)
+>>>  create mode 100644 Documentation/devicetree/bindings/pwm/clk-pwm.yaml
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/pwm/clk-pwm.yaml b/Documentation/devicetree/bindings/pwm/clk-pwm.yaml
+>>> new file mode 100644
+>>> index 000000000000..4fb2c1baaad4
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/pwm/clk-pwm.yaml
+>>> @@ -0,0 +1,45 @@
+>>> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+>>> +%YAML 1.2
+>>> +---
+>>> +$id: http://devicetree.org/schemas/pwm/clk-pwm.yaml#
+>>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>>> +
+>>> +title: Clock based PWM controller
+>>> +
+>>> +maintainers:
+>>> +  - Nikita Travkin <nikita@trvn.ru>
+>>> +
+>>> +description: |
+>>> +  Some systems have clocks that can be exposed to external devices.
+>>> +  (e.g. by muxing them to GPIO pins)
+>>> +  It's often possible to control duty-cycle of such clocks which makes them
+>>> +  suitable for generating PWM signal.
+>>> +
+>>> +allOf:
+>>> +  - $ref: pwm.yaml#
+>>> +
+>>> +properties:
+>>> +  compatible:
+>>> +    const: clk-pwm
+>>> +
+>>> +  clocks:
+>>> +    description: Clock used to generate the signal.
+>>> +    maxItems: 1
+>>> +
+>>> +  "#pwm-cells":
+>>> +    const: 2
+>>> +
+>>> +unevaluatedProperties: false
+>>> +
+>>> +required:
+>>> +  - clocks
+>>> +
+>>> +examples:
+>>> +  - |
+>>> +    pwm-flash {
+>>
+>> Node names should be generic (see devicetree specification), so just "pwm".
+> 
+> And then what will you do if you have two clock-based pwms?
 
-On Thu, Jan 20, 2022 at 11:32 AM Huangzhaoyang <huangzhaoyang@gmail.com> wrote:
->
-> From: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
->
-> When a new threshold breaching stall happens after a psi event was
-> generated and within the window duration, the new event is not
-> generated because the events are rate-limited to one per window. If
-> after that no new stall is recorded then the event will not be
-> generated even after rate-limiting duration has passed. This is
-> happening because with no new stall, window_update will not be called
-> even though threshold was previously breached. To fix this, record
-> threshold breaching occurrence and generate the event once window
-> duration is passed.
->
-> Suggested-by: Suren Baghdasaryan <surenb@google.com>
-> Signed-off-by: Zhaoyang Huang <zhaoyang.huang@unisoc.com>
-> ---
-> v2: modify the logic according to Suren's suggestion
-> v3: update commit message
-> ---
-> ---
->  include/linux/psi_types.h |  2 ++
->  kernel/sched/psi.c        | 38 +++++++++++++++++++++++---------------
->  2 files changed, 25 insertions(+), 15 deletions(-)
->
-> diff --git a/include/linux/psi_types.h b/include/linux/psi_types.h
-> index 0a23300..87b694a 100644
-> --- a/include/linux/psi_types.h
-> +++ b/include/linux/psi_types.h
-> @@ -132,6 +132,8 @@ struct psi_trigger {
->
->         /* Refcounting to prevent premature destruction */
->         struct kref refcount;
-> +
-> +       bool threshold_breach;
->  };
->
->  struct psi_group {
-> diff --git a/kernel/sched/psi.c b/kernel/sched/psi.c
-> index 1652f2b..5c67ab9 100644
-> --- a/kernel/sched/psi.c
-> +++ b/kernel/sched/psi.c
-> @@ -524,24 +524,29 @@ static u64 update_triggers(struct psi_group *group, u64 now)
->          */
->         list_for_each_entry(t, &group->triggers, node) {
->                 u64 growth;
-> +               bool trigger_stalled =
-> +                       group->polling_total[t->state] != total[t->state];
->
-> -               /* Check for stall activity */
-> -               if (group->polling_total[t->state] == total[t->state])
-> -                       continue;
-> -
-> -               /*
-> -                * Multiple triggers might be looking at the same state,
-> -                * remember to update group->polling_total[] once we've
-> -                * been through all of them. Also remember to extend the
-> -                * polling time if we see new stall activity.
-> -                */
-> -               new_stall = true;
-> -
-> -               /* Calculate growth since last update */
-> -               growth = window_update(&t->win, now, total[t->state]);
-> -               if (growth < t->threshold)
-> +               /* Check for stall activity or a previous threshold breach */
-> +               if (!trigger_stalled && !t->threshold_breach)
->                         continue;
->
-> +               if (trigger_stalled) {
-> +                       /*
-> +                        * Multiple triggers might be looking at the same state,
-> +                        * remember to update group->polling_total[] once we've
-> +                        * been through all of them. Also remember to extend the
-> +                        * polling time if we see new stall activity.
-> +                        */
-> +                       new_stall = true;
-> +
-> +                       /* Calculate growth since last update */
-> +                       growth = window_update(&t->win, now, total[t->state]);
-> +                       if (growth < t->threshold)
-> +                               continue;
-> +
-> +                       t->threshold_breach = true;
-> +               }
->                 /* Limit event signaling to once per window */
->                 if (now < t->last_event_time + t->win.size)
->                         continue;
-> @@ -550,6 +555,8 @@ static u64 update_triggers(struct psi_group *group, u64 now)
->                 if (cmpxchg(&t->event, 0, 1) == 0)
->                         wake_up_interruptible(&t->event_wait);
->                 t->last_event_time = now;
-> +               /* Reset threshold breach flag once event got generated */
-> +               t->threshold_breach = false;
->         }
->
->         if (new_stall)
-> @@ -1152,6 +1159,7 @@ struct psi_trigger *psi_trigger_create(struct psi_group *group,
->         t->last_event_time = 0;
->         init_waitqueue_head(&t->event_wait);
->         kref_init(&t->refcount);
-> +       t->threshold_breach = false;
->
->         mutex_lock(&group->trigger_lock);
->
-> --
-> 1.9.1
->
+The same as we do with fixed clocks, keys and so on:
+pwm-0
+pwm-1
+pwm-2
+
+A descriptive suffix also appears, but there is no justification to use
+it here. There is only one node in the example.
+
+
+Best regards,
+Krzysztof
