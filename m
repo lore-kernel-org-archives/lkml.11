@@ -2,116 +2,136 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54956C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 07:54:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7862DC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 07:56:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233627AbiAVHyP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 02:54:15 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:30293 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbiAVHyO (ORCPT
+        id S233647AbiAVH4Q (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 02:56:16 -0500
+Received: from mailgw02.mediatek.com ([210.61.82.184]:41046 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S229651AbiAVH4O (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 02:54:14 -0500
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.54])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JgpQW0Vhnzbjk7;
-        Sat, 22 Jan 2022 15:53:23 +0800 (CST)
-Received: from dggpeml500018.china.huawei.com (7.185.36.186) by
- dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Sat, 22 Jan 2022 15:54:10 +0800
-Received: from [10.67.111.186] (10.67.111.186) by
- dggpeml500018.china.huawei.com (7.185.36.186) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Sat, 22 Jan 2022 15:54:10 +0800
-Message-ID: <12975f48-0419-9c34-8751-c3d3fca4f7b3@huawei.com>
-Date:   Sat, 22 Jan 2022 15:54:09 +0800
+        Sat, 22 Jan 2022 02:56:14 -0500
+X-UUID: 9ea9f2fdfaad4f948826fbb51f48263f-20220122
+X-UUID: 9ea9f2fdfaad4f948826fbb51f48263f-20220122
+Received: from mtkcas10.mediatek.inc [(172.21.101.39)] by mailgw02.mediatek.com
+        (envelope-from <yunfei.dong@mediatek.com>)
+        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
+        with ESMTP id 298651410; Sat, 22 Jan 2022 15:56:12 +0800
+Received: from mtkcas11.mediatek.inc (172.21.101.40) by
+ mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
+ 15.2.792.15; Sat, 22 Jan 2022 15:56:11 +0800
+Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sat, 22 Jan 2022 15:56:09 +0800
+From:   Yunfei Dong <yunfei.dong@mediatek.com>
+To:     Yunfei Dong <yunfei.dong@mediatek.com>,
+        Alexandre Courbot <acourbot@chromium.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        "Tzung-Bi Shih" <tzungbi@chromium.org>,
+        Tiffany Lin <tiffany.lin@mediatek.com>,
+        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Tomasz Figa <tfiga@google.com>
+CC:     George Sun <george.sun@mediatek.com>,
+        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
+        Hsin-Yi Wang <hsinyi@chromium.org>,
+        Fritz Koenig <frkoenig@chromium.org>,
+        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
+        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        dri-devel <dri-devel@lists.freedesktop.org>,
+        Irui Wang <irui.wang@mediatek.com>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>,
+        Steve Cho <stevecho@chromium.org>,
+        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <srv_heupstream@mediatek.com>,
+        <linux-mediatek@lists.infradead.org>,
+        <Project_Global_Chrome_Upstream_Group@mediatek.com>
+Subject: [PATCH v1, 1/3] mtk-vcodec: Support MT8186
+Date:   Sat, 22 Jan 2022 15:56:04 +0800
+Message-ID: <20220122075606.19373-2-yunfei.dong@mediatek.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220122075606.19373-1-yunfei.dong@mediatek.com>
+References: <20220122075606.19373-1-yunfei.dong@mediatek.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.1.1
-Subject: Re: [PATCH] cgroup/cpuset: Fix a race between cpuset_attach() and cpu
- hotplug
-To:     Waiman Long <longman@redhat.com>, <linux-kernel@vger.kernel.org>,
-        <cgroups@vger.kernel.org>
-CC:     <tj@kernel.org>, <lizefan.x@bytedance.com>, <hannes@cmpxchg.org>,
-        <matthltc@us.ibm.com>, <bblum@google.com>, <menage@google.com>,
-        <akpm@linux-foundation.org>, <mkoutny@suse.com>,
-        <zhaogongyi@huawei.com>
-References: <20220121101210.84926-1-zhangqiao22@huawei.com>
- <a166a39f-aa9f-95af-3f3f-f4e17e7c3305@redhat.com>
-From:   Zhang Qiao <zhangqiao22@huawei.com>
-In-Reply-To: <a166a39f-aa9f-95af-3f3f-f4e17e7c3305@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.67.111.186]
-X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
- dggpeml500018.china.huawei.com (7.185.36.186)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-MTK:  N
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Adds MT8186's compatible "mediatek,mt8186-vcodec-dec".
+Adds MT8186's device private data mtk_vdec_single_core_pdata.
 
+Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
+---
+ .../platform/mtk-vcodec/mtk_vcodec_dec.h      |  1 +
+ .../platform/mtk-vcodec/mtk_vcodec_dec_drv.c  |  4 ++++
+ .../mtk-vcodec/mtk_vcodec_dec_stateless.c     | 19 +++++++++++++++++++
+ 3 files changed, 24 insertions(+)
 
-在 2022/1/21 20:43, Waiman Long 写道:
-> On 1/21/22 05:12, Zhang Qiao wrote:
->> As previously discussed(https://lkml.org/lkml/2022/1/20/51),
->> cpuset_attach() is affected with similar cpu hotplug race,
->> as follow scenario:
->>
->>       cpuset_attach()                cpu hotplug
->>      ---------------------------            ----------------------
->>      down_write(cpuset_rwsem)
->>      guarantee_online_cpus() // (load cpus_attach)
->>                     sched_cpu_deactivate
->>                       set_cpu_active()
->>                       // will change cpu_active_mask
->>      set_cpus_allowed_ptr(cpus_attach)
->>        __set_cpus_allowed_ptr_locked()
->>         // (if the intersection of cpus_attach and
->>           cpu_active_mask is empty, will return -EINVAL)
->>      up_write(cpuset_rwsem)
->>
->> To avoid races such as described above, protect cpuset_attach() call
->> with cpu_hotplug_lock.
->>
->> Fixes: be367d099270 ("cgroups: let ss->can_attach and ss->attach do whole threadgroups at a time")
->> Reported-by: Zhao Gongyi <zhaogongyi@huawei.com>
->> Signed-off-by: Zhang Qiao <zhangqiao22@huawei.com>
->> ---
->>   kernel/cgroup/cpuset.c | 2 ++
->>   1 file changed, 2 insertions(+)
->>
->> diff --git a/kernel/cgroup/cpuset.c b/kernel/cgroup/cpuset.c
->> index dc653ab26e50..0af5725cc1df 100644
->> --- a/kernel/cgroup/cpuset.c
->> +++ b/kernel/cgroup/cpuset.c
->> @@ -2252,6 +2252,7 @@ static void cpuset_attach(struct cgroup_taskset *tset)
->>       cgroup_taskset_first(tset, &css);
->>       cs = css_cs(css);
->>
->> +    cpus_read_lock();
->>       percpu_down_write(&cpuset_rwsem);
->>
->>       guarantee_online_mems(cs, &cpuset_attach_nodemask_to);
->> @@ -2305,6 +2306,7 @@ static void cpuset_attach(struct cgroup_taskset *tset)
->>           wake_up(&cpuset_attach_wq);
->>
->>       percpu_up_write(&cpuset_rwsem);
->> +    cpus_read_unlock();
->>   }
->>
->>   /* The various types of files and directories in a cpuset file system */
->> -- 
->> 2.18.0
-> 
-> The locking sequence looks right.
-> 
-> Acked-by: Waiman Long <longman@redhat.com>
-> 
-Thanks for your review!
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.h b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.h
+index 66cd6d2242c3..4572f92826f2 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.h
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.h
+@@ -69,6 +69,7 @@ extern const struct media_device_ops mtk_vcodec_media_ops;
+ extern const struct mtk_vcodec_dec_pdata mtk_vdec_8173_pdata;
+ extern const struct mtk_vcodec_dec_pdata mtk_vdec_8183_pdata;
+ extern const struct mtk_vcodec_dec_pdata mtk_lat_sig_core_pdata;
++extern const struct mtk_vcodec_dec_pdata mtk_vdec_single_core_pdata;
+ 
+ 
+ /*
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
+index 6b52eaeedafa..2d21d0010c9c 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_drv.c
+@@ -464,6 +464,10 @@ static const struct of_device_id mtk_vcodec_match[] = {
+ 		.compatible = "mediatek,mt8192-vcodec-dec",
+ 		.data = &mtk_lat_sig_core_pdata,
+ 	},
++	{
++		.compatible = "mediatek,mt8186-vcodec-dec",
++		.data = &mtk_vdec_single_core_pdata,
++	},
+ 	{},
+ };
+ 
+diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_stateless.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_stateless.c
+index 3770e8117488..4b83f00a8857 100644
+--- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_stateless.c
++++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec_stateless.c
+@@ -522,3 +522,22 @@ const struct mtk_vcodec_dec_pdata mtk_lat_sig_core_pdata = {
+ 	.is_subdev_supported = true,
+ 	.hw_arch = MTK_VDEC_LAT_SINGLE_CORE,
+ };
++
++const struct mtk_vcodec_dec_pdata mtk_vdec_single_core_pdata = {
++	.init_vdec_params = mtk_init_vdec_params,
++	.ctrls_setup = mtk_vcodec_dec_ctrls_setup,
++	.vdec_vb2_ops = &mtk_vdec_request_vb2_ops,
++	.vdec_formats = mtk_video_formats,
++	.num_formats = &num_formats,
++	.default_out_fmt = &default_out_format,
++	.default_cap_fmt = &default_cap_format,
++	.vdec_framesizes = mtk_vdec_framesizes,
++	.num_framesizes = &num_framesizes,
++	.uses_stateless_api = true,
++	.worker = mtk_vdec_worker,
++	.flush_decoder = mtk_vdec_flush_decoder,
++	.cap_to_disp = mtk_vdec_stateless_cap_to_disp,
++	.get_cap_buffer = vdec_get_cap_buffer,
++	.is_subdev_supported = true,
++	.hw_arch = MTK_VDEC_PURE_SINGLE_CORE,
++};
+-- 
+2.25.1
 
-Regards,
-Qiao
-.
-
-> .
