@@ -2,155 +2,156 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59DA3C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 04:10:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19735C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 04:22:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232489AbiAVEKn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 23:10:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58930 "EHLO
+        id S232645AbiAVEW2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 23:22:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229455AbiAVEKm (ORCPT
+        with ESMTP id S232592AbiAVEW0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 23:10:42 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8674C06173B
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 20:10:36 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id c66so19346139wma.5
-        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 20:10:36 -0800 (PST)
+        Fri, 21 Jan 2022 23:22:26 -0500
+Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CD87C06173B;
+        Fri, 21 Jan 2022 20:22:26 -0800 (PST)
+Received: by mail-lj1-x229.google.com with SMTP id f21so3029835ljc.2;
+        Fri, 21 Jan 2022 20:22:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=brainfault-org.20210112.gappssmtp.com; s=20210112;
+        d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=xtBzfTtDG7oKM+x9UqD0E0Ye5bVhGGdjMoStNboz9r0=;
-        b=3khVdGAzaP4cQaVtq0HqR9t2SgSWu0COjVPL79LLhIjzhULd13thKBLqgrjopbvSr3
-         wlasjQ0Om1cjyWDMZ1b/u5EzP+bnoY8fp3WwM4IM5ovzXGd1ON/+JXeVcrv7DEeEEXjV
-         fgwKJVGLREOR8VjIbMMr7a3iEmgBfsz4LpoAjOD7iem6oLcwrP2nS8m349y5HvnN+sfQ
-         KwPaC9w0G3jRr5EcaYWDFgh6e8AltN4veUgmbzxRn1gHnI9V4o3Oo5+Buh1HCunNbe4X
-         bR8b4uWXLVGoOo7gvIB6Hmgc6UL6nCHGR9/NmY7fE9owoFb6hlYTr9lBKWEdbRIDY8Gw
-         njwQ==
+        bh=WSl0n+WwVjP76UBPGcTgsvP7+rrxq9Ric0OqJhwHSkg=;
+        b=Ifz1AWXrSg+wgkYOmdBm1iMMJyLipcIzsywwWvL28u7TFV6c2w+oQn70f5wHbm7bjy
+         8pOqbS9n8ZsaagYrjRrYi6KrjdoRuuk5auolsU7jzm67aqVLfvUIklnVXV3pr2GanjfE
+         UNBI7kxvS8znxD9CxpqcFgrSQJTjXqUAFeode9QFaEz9b2Vh/DJFs7jtQ4HOfB6nYL37
+         6ol8AtPht+nBQKwMLVjp9p3dv6sl9kkT6Pzd8OXABDtkiCveZP6d7BJwdU7ECpvtojQF
+         WPZBmNP/x6c6K9XEjUIOpJPlEV5SN3Shm3rksWd0q7Xmh7lS5WLH0/v42OWsikmV/fIs
+         41NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=xtBzfTtDG7oKM+x9UqD0E0Ye5bVhGGdjMoStNboz9r0=;
-        b=j58sIxUwmMVTRqKTMG6eVaQ9Fr/otuaXCU7qbQj2b3sHK4MPXgkuGT+f1bZ2CWI1mc
-         2wScPDYLZnh6LdKJ6bQ5Dw+XWfjc+yPrS2TFSA+mx9t5MCaOb374Cj2PMN1tJjFI/mFu
-         fhDb9oB6MK1Wg5uHIoHsza4xx8vkjjobLhIDX7UOBgGTmiJKjasDeQIflgKrm2yhvb1f
-         Tkj/9oswiGGNRymQK54o1P+XLPO/mXX1xjzyAeUax7oyhz3haDhCcOdZP+x6TeGgyu9V
-         hOFf2qJ9pVuNdHI65+Slpf5Yl7r9rJJ2I+5mZp5a5loE0dPjuadpgbNxJiUiUb4b0JJD
-         9pXQ==
-X-Gm-Message-State: AOAM531aWblDOv5HYWKLnUsnLbOw5qvCCSFRYASeo46Ys44h7lMrPhkZ
-        jLPP3Mc81O5FX4L7tFElAeI56HfEFNCODHUzNlKj5w==
-X-Google-Smtp-Source: ABdhPJx6sfY92HZ0xDDUQCFCf4Hlk2yHd1KucAzOdklPTxk3FJgXWdL1u5os7d9ynNFEuL/bjXv/ZFLMdP2ILtQjhfw=
-X-Received: by 2002:a7b:c181:: with SMTP id y1mr3058395wmi.137.1642824635202;
- Fri, 21 Jan 2022 20:10:35 -0800 (PST)
+        bh=WSl0n+WwVjP76UBPGcTgsvP7+rrxq9Ric0OqJhwHSkg=;
+        b=T+WF313fzc9W0s3pMTNn2JgBdIW2rjogXJ8dVVv6YJSJLW1hE4CkT6tOeCSSwzo8+7
+         puZqgEWR8A4HJq8sd2PUhgkRJcoec+6AoLhQbYMGj+NnlZrpw9NsehgEK33ay2iLAuqp
+         JF/lgG36bucyAuQ9q7QDv7Abv5vz1uhnftzsHnA3v1oHQd4mW2L6wCfBl6I46PBWC9aa
+         axhvhByCZBunm02jBeILo8KQCcii7aE+tcltAbsoA0TiXVtBjtkQuoU36ypQqHsS+dR2
+         rHNSkuRmSiBJZ0yVqFJeOw5Ehzx89V1ibrqM0trRb/1MOZkQpyfvE+6qInbODaFWefEX
+         cwrg==
+X-Gm-Message-State: AOAM530kydZ4Hsch2fYNIQ5+cPajINLGflVAFEQ85hOn4WW+rGbSailz
+        KCOHf353T/FpiIfeYncdc4K+zNrEPr7Mq8YOm2c=
+X-Google-Smtp-Source: ABdhPJwiGYOcyqqKUP3LR31Yz846qneduAyOw2NJAiB3r7G6Bp7VYLQAC+HwdkKvTYKdtTBJ1fNArj7SN5apWT13fvI=
+X-Received: by 2002:a05:651c:1a06:: with SMTP id by6mr4909100ljb.244.1642825344529;
+ Fri, 21 Jan 2022 20:22:24 -0800 (PST)
 MIME-Version: 1.0
-References: <20220121163618.351934-1-heiko@sntech.de> <20220121163618.351934-2-heiko@sntech.de>
-In-Reply-To: <20220121163618.351934-2-heiko@sntech.de>
-From:   Anup Patel <anup@brainfault.org>
-Date:   Sat, 22 Jan 2022 09:40:23 +0530
-Message-ID: <CAAhSdy0GgUOEZeVeOgRFt80AvJ9DNJJpuT=-gQT-mdX-Km+BmQ@mail.gmail.com>
-Subject: Re: [PATCH v5 01/14] riscv: only use IPIs to handle cache-flushes on
- remote cpus
-To:     Heiko Stuebner <heiko@sntech.de>
-Cc:     Palmer Dabbelt <palmer@dabbelt.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Albert Ou <aou@eecs.berkeley.edu>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        DTML <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org List" <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, Wei Fu <wefu@redhat.com>,
-        liush <liush@allwinnertech.com>, Guo Ren <guoren@kernel.org>,
-        Atish Patra <atishp@atishpatra.org>,
-        Drew Fustini <drew@beagleboard.org>,
-        Christoph Hellwig <hch@lst.de>, Arnd Bergmann <arnd@arndb.de>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Maxime Ripard <maxime@cerno.tech>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Greg Favor <gfavor@ventanamicro.com>,
-        Andrea Mondelli <andrea.mondelli@huawei.com>,
-        Jonathan Behrens <behrensj@mit.edu>,
-        Xinhaoqu <xinhaoqu@huawei.com>,
-        Bill Huffman <huffman@cadence.com>,
-        Nick Kossifidis <mick@ics.forth.gr>,
-        Allen Baum <allen.baum@esperantotech.com>,
-        Josh Scheid <jscheid@ventanamicro.com>,
-        Richard Trauben <rtrauben@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        Christoph Muellner <cmuellner@linux.com>,
-        Philipp Tomsich <philipp.tomsich@vrull.eu>
+References: <3192BC90-D082-472B-B310-6E09A14A77C6@hust.edu.cn> <CAD-N9QUqfq+0UeMjQALUmGpX5xgjS6=BXvsqcXQpJRzhB6hHLw@mail.gmail.com>
+In-Reply-To: <CAD-N9QUqfq+0UeMjQALUmGpX5xgjS6=BXvsqcXQpJRzhB6hHLw@mail.gmail.com>
+From:   Ryusuke Konishi <konishi.ryusuke@gmail.com>
+Date:   Sat, 22 Jan 2022 13:22:12 +0900
+Message-ID: <CAKFNMokdB+Zph-1OyC1-Xnyi93r+yKSusgaEaa=CkuUBttwRZA@mail.gmail.com>
+Subject: Re: Fw:Re: [PATCH] fs: nilfs2: fix memory leak in nilfs sysfs create
+ device group
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Pavel Skripkin <paskripkin@gmail.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        linux-nilfs <linux-nilfs@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Nanyong Sun <sunnanyong@huawei.com>,
+        =?UTF-8?B?5oWV5Yas5Lqu?= <dzm91@hust.edu.cn>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 10:07 PM Heiko Stuebner <heiko@sntech.de> wrote:
->
-> Right now, the flush_icache functions always use the SBI remote-fence
-> when SBI is available, leaving using IPIs as a fallback mechanism.
->
-> IPIs on the other hand are more flexible, as the ipi_ops are initially
-> set to go through SBI but later will be overwritten to go through the
-> ACLINT/CLINT.
->
-> In a discussion we had, Nick was of the opinion that "In general we
-> should prefer doing IPIs on S-mode through CLINT instead of going
-> through SBI/M-mode, so IMHO we should only be using
-> on_each_cpu_mask(ipi_remote_fence_i) on flush_icache_all()/
-> flush_icache_mm() and remove any explicit calls to sbi_remote_fence_i(),
-> because this way we continue using SBI for doing remote fences even after
-> CLINT/ACLINT driver is registered, instead of using direct IPIs through
-> CLINT/ACLINT."
->
-> So follow this suggestion and just do ipi calls to have the proper kernel
-> parts do them,
->
-> This also fixes the null-ptr dereference happening when flush_icache_all()
-> is called before sbi_init().
->
-> Suggested-by: Nick Kossifidis <mick@ics.forth.gr>
-> Signed-off-by: Heiko Stuebner <heiko@sntech.de>
+Hi Dongliang,
 
-For Guest/VM, only virtual IMSIC provides faster IPIs so in absence of
-virtual IMSIC, the SBI IPI based IPIs are the best approach.
+On Sat, Jan 22, 2022 at 9:31 AM Dongliang Mu <mudongliangabcd@gmail.com> wrote:
+> > (added Nanyong Sun to CC)
+> > Hi Dongliang,
+> >
+> > On Thu, Jan 20, 2022 at 11:07 PM Pavel Skripkin <paskripkin@gmail.com> wrote:
+> >
+> >
+> > Hi Dongliang,
+> >
+> > On 1/20/22 16:44, Dongliang Mu wrote:
+> >
+> > The preivous commit 8fd0c1b0647a ("nilfs2: fix memory leak in
+> > nilfs_sysfs_delete_device_group") only handles the memory leak in the
+> > nilfs_sysfs_delete_device_group. However, the similar memory leak still
+> > occurs in the nilfs_sysfs_create_device_group.
+> >
+> > Fix it by adding kobject_del when
+> > kobject_init_and_add succeeds, but one of the following calls fails.
+> >
+> > Fixes: 8fd0c1b0647a ("nilfs2: fix memory leak in nilfs_sysfs_delete_device_group")
+> >
+> >
+> > Why Fixes tag points to my commit? This issue was introduced before my patch
+> >
+> >
+> > As Pavel pointed out, this patch is independent of his patch.
+> > The following one ?
+>
+> Hi Pavel,
+>
+> This is an incorrect fixes tag. I need to dig more about `git log -p
+> fs/nilfs2/sysfs.c`.
+>
+> I wonder if there are any automatic or semi-automatic ways to capture
+> this fixes tag. Or how do you guys identify the fixes tag?
 
-Like Atish mentioned, please base this work on the ACLINT series
-because the ACLINT series adds required IPI infrastructure which helps
-us select SBI IPI versus direct S-mode IPI based on hardware capability.
+I guess `git blame fs/nilfs2/sysfs.c` may help you to confirm where the change
+came from.   It shows information of commits for every line of the input file.
+If you are using github, 'blame button' is available.
+
+If an issue is reproducible, we use `git bisect` to identify the patch
+that caused the
+issue, however, even then, try to understand why and how it affected
+by looking at
+source code and the commit.
+
+>
+> >
+> > 5f5dec07aca7 ("nilfs2: fix memory leak in nilfs_sysfs_create_device_group")
+> >
+> > Signed-off-by: Dongliang Mu <dzm91@hust.edu.cn>
+> > ---
+> > fs/nilfs2/sysfs.c | 5 ++++-
+> > 1 file changed, 4 insertions(+), 1 deletion(-)
+> >
+> >
+> > Can you describe what memory leak issue does this patch actually fix ?
+> >
+> > It looks like kobject_put() can call __kobject_del() unless circular
+> > references exist.
+> >
+> > kobject_put() -> kref_put() -> kobject_release() ->
+> > kobject_cleanup() -> __kobject_del()
+> >
+> > As explained in Documentation/core-api/kobject.rst,
+> >
+> > kobject_del() can be used to drop the reference to the parent object, if
+> > circular references are constructed.
+> >
+> > But, at least, the parent object is NULL in this case.
+> > I really want to understand what the real problem is.
+> >
+> > Thanks,
+> > Ryusuke Konishi
+>
+> I know where my problem is. From the disconnect function, I think the
+> kobject_del and kobject_put are both necessary without checking the
+> documentation of kobjects.
+>
+> Then I think the current error handling may miss kobject_del, and this
+> patch is generated.
+>
+> As a result, I think we can ignore this patch. Sorry for my false alarm.
+
+Okay, thank you for your reply.
+If you notice anything we missed on this difference, please let us know.
 
 Regards,
-Anup
-
-> ---
->  arch/riscv/mm/cacheflush.c | 8 +-------
->  1 file changed, 1 insertion(+), 7 deletions(-)
->
-> diff --git a/arch/riscv/mm/cacheflush.c b/arch/riscv/mm/cacheflush.c
-> index 6cb7d96ad9c7..c35375cd52ec 100644
-> --- a/arch/riscv/mm/cacheflush.c
-> +++ b/arch/riscv/mm/cacheflush.c
-> @@ -17,11 +17,7 @@ static void ipi_remote_fence_i(void *info)
->  void flush_icache_all(void)
->  {
->         local_flush_icache_all();
-> -
-> -       if (IS_ENABLED(CONFIG_RISCV_SBI))
-> -               sbi_remote_fence_i(NULL);
-> -       else
-> -               on_each_cpu(ipi_remote_fence_i, NULL, 1);
-> +       on_each_cpu(ipi_remote_fence_i, NULL, 1);
->  }
->  EXPORT_SYMBOL(flush_icache_all);
->
-> @@ -66,8 +62,6 @@ void flush_icache_mm(struct mm_struct *mm, bool local)
->                  * with flush_icache_deferred().
->                  */
->                 smp_mb();
-> -       } else if (IS_ENABLED(CONFIG_RISCV_SBI)) {
-> -               sbi_remote_fence_i(&others);
->         } else {
->                 on_each_cpu_mask(&others, ipi_remote_fence_i, NULL, 1);
->         }
-> --
-> 2.30.2
->
+Ryusuke Konishi
