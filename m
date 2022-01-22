@@ -2,79 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E92DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 02:49:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58E99C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 02:55:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231880AbiAVCt2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 21:49:28 -0500
-Received: from outgoing-stata.csail.mit.edu ([128.30.2.210]:34414 "EHLO
-        outgoing-stata.csail.mit.edu" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230513AbiAVCtZ (ORCPT
+        id S232195AbiAVCy4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 21:54:56 -0500
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:51395 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232051AbiAVCyz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 21:49:25 -0500
-X-Greylist: delayed 2191 seconds by postgrey-1.27 at vger.kernel.org; Fri, 21 Jan 2022 21:49:25 EST
-Received: from c-24-16-8-193.hsd1.wa.comcast.net ([24.16.8.193] helo=srivatsab-a02.vmware.com)
-        by outgoing-stata.csail.mit.edu with esmtpsa (TLS1.2:RSA_AES_128_CBC_SHA1:128)
-        (Exim 4.82)
-        (envelope-from <srivatsa@csail.mit.edu>)
-        id 1nB5td-000OOb-JR; Fri, 21 Jan 2022 21:12:53 -0500
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        Vikash Bansal <bvikas@vmware.com>
-Cc:     Greg KH <gregkh@linuxfoundation.org>,
-        "bhelgaas@google.com" <bhelgaas@google.com>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Srivatsa Bhat <srivatsab@vmware.com>,
-        Alexey Makhalov <amakhalov@vmware.com>,
-        Srinidhi Rao <srinidhir@vmware.com>,
-        Anish Swaminathan <anishs@vmware.com>,
-        Vasavi Sirnapalli <vsirnapalli@vmware.com>,
-        Ajay Kaher <akaher@vmware.com>
-References: <20220121194235.GA1146009@bhelgaas>
-From:   "Srivatsa S. Bhat" <srivatsa@csail.mit.edu>
-Subject: Re: [PATCH] PCI: Speed up device init by parsing capabilities all at
- once
-Message-ID: <d1b71a67-80aa-629c-6aff-7265036fffe7@csail.mit.edu>
-Date:   Fri, 21 Jan 2022 18:12:50 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.12.0
+        Fri, 21 Jan 2022 21:54:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1642820095; x=1674356095;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=JB9i5H3tFBG395GywvZdTOH3c894tyXtUaA5Eai+RP4=;
+  b=KRG+kdK3dSWkUG5bf/liaLdLFF1Cgu0YzPHFCMxA8mwD9TTSpBjB/hsi
+   +GnEPKNJqZ9/Z40F0PNudliaTqZy+UUyLrT3J2s74T9+oWLH/n1jmTzLF
+   GPVPEL+b47CCEvfHH//Nt1ETE10P2BCPLMEz5NYwrnkf/y5fsPApBTg8r
+   0=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 21 Jan 2022 18:54:55 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 18:54:54 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Fri, 21 Jan 2022 18:54:54 -0800
+Received: from hu-pkondeti-hyd.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Fri, 21 Jan 2022 18:54:52 -0800
+Date:   Sat, 22 Jan 2022 08:24:48 +0530
+From:   Pavan Kondeti <quic_pkondeti@quicinc.com>
+To:     Alan Stern <stern@rowland.harvard.edu>
+CC:     Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] usb: gadget: f_sourcesink: Fix isoc transfer for
+ USB_SPEED_SUPER_PLUS
+Message-ID: <20220122025448.GD11385@hu-pkondeti-hyd.qualcomm.com>
+References: <1642764684-26060-1-git-send-email-quic_pkondeti@quicinc.com>
+ <YerMjGG8VQkI85bB@rowland.harvard.edu>
 MIME-Version: 1.0
-In-Reply-To: <20220121194235.GA1146009@bhelgaas>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <YerMjGG8VQkI85bB@rowland.harvard.edu>
+User-Agent: Mutt/1.5.24 (2015-08-30)
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Bjorn,
+Hi Alan,
 
-On 1/21/22 11:42 AM, Bjorn Helgaas wrote:
-> On Fri, Jan 21, 2022 at 05:26:35PM +0000, Vikash Bansal wrote:
->>     On 20/01/22, 11:56 AM, "Greg KH" <gregkh@linuxfoundation.org> wrote:
->>
->>     Run pahole for pci_dev structure, it is not adding any padding bytes.
->>     Please refer to my previous email for replies to Greg's other comments. 
+On Fri, Jan 21, 2022 at 10:09:00AM -0500, Alan Stern wrote:
+> On Fri, Jan 21, 2022 at 05:01:24PM +0530, Pavankumar Kondeti wrote:
+> > Currently when gadget enumerates in super speed plus, the isoc
+> > endpoint request buffer size is not calculated correctly. Fix
+> > this by checking the gadget speed against USB_SPEED_SUPER_PLUS
+> > and update the request buffer size.
+> > 
+> > Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+> > ---
+> >  drivers/usb/gadget/function/f_sourcesink.c | 2 ++
+> >  1 file changed, 2 insertions(+)
+> > 
+> > diff --git a/drivers/usb/gadget/function/f_sourcesink.c b/drivers/usb/gadget/function/f_sourcesink.c
+> > index 1abf08e..0a423ba 100644
+> > --- a/drivers/usb/gadget/function/f_sourcesink.c
+> > +++ b/drivers/usb/gadget/function/f_sourcesink.c
+> > @@ -584,6 +584,8 @@ static int source_sink_start_ep(struct f_sourcesink *ss, bool is_in,
+> >  
+> >  	if (is_iso) {
+> >  		switch (speed) {
+> > +		case USB_SPEED_SUPER_PLUS:
+> > +			fallthrough;
 > 
-> Please don't indent your entire response.  The original posting
-> apparently didn't go to linux-pci@vger.kernel.org or was rejected,
-> maybe because it wasn't plain text (see
-> http://vger.kernel.org/majordomo-info.html)?
+> There's no need for this "fallthough" line.  You're allowed to have 
+> multiple case labels for a single block of code.
 > 
-> It doesn't appear in the thread at
-> https://lore.kernel.org/all/7E2C2648-76CE-4987-AB4F-7B4576F10D7B@vmware.com/ 
-> 
+Thanks for the review. I will incorporate your suggestion in v2.
 
-Looking at the source for Vikash's first email in this thread, I see:
-"Content-Type: text/plain", so I don't think that was the issue. Also,
-the patch was sent using git-send-email: "X-Mailer: git-send-email
-2.6.2".
-
-Is there a way to find out exactly why that email might have prompted
-the mailing list to drop it?
-
-Thank you!
-
-Regards,
-Srivatsa
-VMware Photon OS
+Thanks,
+Pavan
