@@ -2,193 +2,170 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC020C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 11:33:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37EE0C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 11:34:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234462AbiAVLdk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 06:33:40 -0500
-Received: from mail-bn7nam10on2078.outbound.protection.outlook.com ([40.107.92.78]:2589
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        id S234459AbiAVLex (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 06:34:53 -0500
+Received: from mail-dm6nam10on2089.outbound.protection.outlook.com ([40.107.93.89]:42976
+        "EHLO NAM10-DM6-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S234457AbiAVLdh (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 06:33:37 -0500
+        id S231329AbiAVLev (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 22 Jan 2022 06:34:51 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QjKAXTfbVVD96PMW2mB2EbOyNp16U6bFV1L6oqarYhBObfnulgyhqC3hOT4YbcWjsOKfzA6NBNAjaRp2vkHGH8k4KCk2PUehlgghFVNR00s8JUyFd2kbbTVG2tHKOHezfl+HbDc5MdS85jJzbqS22LPdhmoSMjxkq2y1S9dx/Hv3JyjB28ksfW5w2Qm+LdKutkCXOFhSauumXNlqASF5lCIkhr49Z5lpdEfsKrlLuTuniAC0TOrGLPC61p3DThBtm4GoxiitBlGpoG4hSV+YnRnQu/6GfwwSQdkk9nktybjnLIOCcqdVs/SNtDjTTfk52ApRVN/ZnJGQOhJHg5G3yQ==
+ b=INOIiyBa6mgKigCLAB7ebZlrxPa4Wj3NOOt0WmgwF6Q914ua9zr+/yLrSh7aO1snaHfEEGT3MlQaMZI4AvqlU4nVGt+tE7gH6OZ3oIlpf6QZZ7/FFerE4Do5CAtnzQrUgiwEuwcErFt+NXd8epLZJyI0tIDPcikXNqpaGDv6RUj8zB2IDe5GdRdr58dDPy2LOPj3deto6R7vBNPW0Hzuxd+a0LizneGWGLcSygPTVESRpXS50TV7mZRKa94vSAdZlbnpRWfDkeNjow2Q8qdtJI34sAu5KHJ3lCQt8BeVDgF/KRq5GoViJOmATeTTkTp1L4mWS8hy5etlBjf+TW4tzQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=11qrQckzhIflZAPjqm044Qyn1W2pRpQsw8fCA76lbIw=;
- b=BQdHTun5d88Kn/ca+piUD4+w/BoQYoHjS61KMdoawsjAd5OkRWXaEGPsSyR0mCa29qd3TyWSri3wz7SCNEptfRFYODXZjXUENmTK9Nzx51TnPCuf53Bv/vNJ8sKFSAQoNIRoYgDX0uMrG18GDsNDfclIcKi0QHier8oIwA6E2wsdUckznKhdyKEEfoCRGSYFmYdZDXYldbcARxJsXnW3OtdZcvrEIUvUN3gI/C+qDaxed10ZfwSC3puyM1Vsx1vVsnDvyBfjPmVWAIulMrnherAJPSgNe7ehAFF4RDPnpI4KZO5xPTHyd6V/I8mKWbKGDVk0RzinYkJaU7EuJIt0hA==
+ bh=QmMKQrvpvU9dIdqyz1EEFwb9M/GYOYkRyP8qd8LyWM0=;
+ b=VK+TyuWLh8VePYizSQa2IESYX6w6vnIr8hGCZ+KIRqTNs/st9b1oyn60KMuRxwvZjgdxflfOjvMG+RSt1dbaC6im7pgTsoSr6yTZ3ZoaKB7OiPV121Pj52ZWiHz+BR7y00N3SM4zxF6dCfCUd2YQ1mX1wy5VCRgD9HGtBv8lp9L2RYE+D/LYjiQl8lAQN52poCVGhPRXKzrpVWfU/kHzJqISlsC8a1CSWzmYRp1rvFbowY6S8IzQPQan8b2LdqjnmxMclMvdMVptGr7+ad/HBoUiL3Q6R9u92lDyq2Nl9Hb80kKiXdAT0JMIn7kQxqlrExnxUyGs+Tf3eF0336hDEg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 12.22.5.238) smtp.rcpttodomain=linuxfoundation.org smtp.mailfrom=nvidia.com;
- dmarc=pass (p=reject sp=reject pct=100) action=none header.from=nvidia.com;
+ 165.204.84.17) smtp.rcpttodomain=kernel.org smtp.mailfrom=amd.com; dmarc=pass
+ (p=quarantine sp=quarantine pct=100) action=none header.from=amd.com;
  dkim=none (message not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Nvidia.com;
- s=selector2;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=amd.com; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=11qrQckzhIflZAPjqm044Qyn1W2pRpQsw8fCA76lbIw=;
- b=BdQqF0lev07fCKBa7HDxlDYzd6CmGtCS2T+bQ8HFJ2gfY5curPxHV9UinXdJTHYVVHgmH+kiiIS+meWeSEQkJiS2aWJW+Srh3UxvbFkRs+lgUKjJ2FO0wpeYk2dDJTTLd0ZFNRf1d8BhZtENLzpbkTsdzZ5sMbfcyk9n4J93J8136A2JXbqZCtw0uQBB92g5ulw7V5XZa2J1shpV2S98ts9/HB9dc+KtaYBIp+jzuDMgT5aiifXsS+ywFxRHtlSsxV16ewDpY8MlggGVFU6WJSlbpro89fJ9oCOV677Hu3ctmf0NVInhcqNVIRdcIGFUNXOX3EV9bMfougDyiZDADA==
-Received: from CO2PR06CA0065.namprd06.prod.outlook.com (2603:10b6:104:3::23)
- by DM6PR12MB3642.namprd12.prod.outlook.com (2603:10b6:5:11f::29) with
+ bh=QmMKQrvpvU9dIdqyz1EEFwb9M/GYOYkRyP8qd8LyWM0=;
+ b=Ip0sgx59u9cN5w4XNEwMcMuEJFbn0956JFUlE99gY8BaKRPBh8pbl/+N+Dz6QROpI2rZxsZtzsKpmDUKR7pnzWp/QjEtIadMGtfiXdYSUiTIDYjFE31gDngM1TaUIFLueyOHWmyDwobJnttkP/wwFbqUl5pmJRlKH6xNuuHa+gI=
+Received: from DM5PR07CA0104.namprd07.prod.outlook.com (2603:10b6:4:ae::33) by
+ BYAPR12MB3271.namprd12.prod.outlook.com (2603:10b6:a03:138::20) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4888.12; Sat, 22 Jan
- 2022 11:33:35 +0000
-Received: from CO1NAM11FT016.eop-nam11.prod.protection.outlook.com
- (2603:10b6:104:3:cafe::99) by CO2PR06CA0065.outlook.office365.com
- (2603:10b6:104:3::23) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.8 via Frontend
- Transport; Sat, 22 Jan 2022 11:33:35 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 12.22.5.238)
- smtp.mailfrom=nvidia.com; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=nvidia.com;
-Received-SPF: Pass (protection.outlook.com: domain of nvidia.com designates
- 12.22.5.238 as permitted sender) receiver=protection.outlook.com;
- client-ip=12.22.5.238; helo=mail.nvidia.com;
-Received: from mail.nvidia.com (12.22.5.238) by
- CO1NAM11FT016.mail.protection.outlook.com (10.13.175.141) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.20.4909.7 via Frontend Transport; Sat, 22 Jan 2022 11:33:34 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- DRHQMAIL105.nvidia.com (10.27.9.14) with Microsoft SMTP Server (TLS) id
- 15.0.1497.18; Sat, 22 Jan 2022 11:33:33 +0000
-Received: from drhqmail201.nvidia.com (10.126.190.180) by
- drhqmail201.nvidia.com (10.126.190.180) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.9;
- Sat, 22 Jan 2022 03:33:32 -0800
-Received: from kyarlagadda-linux.nvidia.com (10.127.8.10) by mail.nvidia.com
- (10.126.190.180) with Microsoft SMTP Server id 15.2.986.9 via Frontend
- Transport; Sat, 22 Jan 2022 03:33:28 -0800
-From:   Akhil R <akhilrajeev@nvidia.com>
-To:     <u.kleine-koenig@pengutronix.de>, <andy.shevchenko@gmail.com>,
-        <christian.koenig@amd.com>, <digetx@gmail.com>,
-        <gregkh@linuxfoundation.org>, <jonathanh@nvidia.com>,
-        <ldewangan@nvidia.com>, <lenb@kernel.org>,
-        <linux-acpi@vger.kernel.org>, <linux-i2c@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-tegra@vger.kernel.org>,
-        <rafael@kernel.org>, <sumit.semwal@linaro.org>,
-        <thierry.reding@gmail.com>, <wsa@kernel.org>
-CC:     <akhilrajeev@nvidia.com>
-Subject: [PATCH v4 3/3] i2c: smbus: Use device_*() functions instead of of_*()
-Date:   Sat, 22 Jan 2022 17:02:46 +0530
-Message-ID: <1642851166-27096-4-git-send-email-akhilrajeev@nvidia.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1642851166-27096-1-git-send-email-akhilrajeev@nvidia.com>
-References: <1642851166-27096-1-git-send-email-akhilrajeev@nvidia.com>
-X-NVConfidentiality: public
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.7; Sat, 22 Jan
+ 2022 11:34:47 +0000
+Received: from DM6NAM11FT029.eop-nam11.prod.protection.outlook.com
+ (2603:10b6:4:ae:cafe::e1) by DM5PR07CA0104.outlook.office365.com
+ (2603:10b6:4:ae::33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.10 via Frontend
+ Transport; Sat, 22 Jan 2022 11:34:47 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 165.204.84.17)
+ smtp.mailfrom=amd.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=amd.com;
+Received-SPF: Pass (protection.outlook.com: domain of amd.com designates
+ 165.204.84.17 as permitted sender) receiver=protection.outlook.com;
+ client-ip=165.204.84.17; helo=SATLEXMB03.amd.com;
+Received: from SATLEXMB03.amd.com (165.204.84.17) by
+ DM6NAM11FT029.mail.protection.outlook.com (10.13.173.23) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4909.7 via Frontend Transport; Sat, 22 Jan 2022 11:34:47 +0000
+Received: from SATLEXMB03.amd.com (10.181.40.144) by SATLEXMB03.amd.com
+ (10.181.40.144) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.18; Sat, 22 Jan
+ 2022 05:34:46 -0600
+Received: from sof-System-Product-Name.amd.com (10.180.168.240) by
+ SATLEXMB03.amd.com (10.181.40.144) with Microsoft SMTP Server id 15.1.2375.18
+ via Frontend Transport; Sat, 22 Jan 2022 05:34:37 -0600
+From:   V sujith kumar Reddy <vsujithkumar.reddy@amd.com>
+To:     <broonie@kernel.org>, <alsa-devel@alsa-project.org>
+CC:     <Vijendar.Mukunda@amd.com>, <Basavaraj.Hiregoudar@amd.com>,
+        <Sunil-kumar.Dommati@amd.com>, <ajitkumar.pandey@amd.com>,
+        "V sujith kumar Reddy" <vsujithkumar.reddy@amd.com>,
+        Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        "Jaroslav Kysela" <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>,
+        Pierre-Louis Bossart <pierre-louis.bossart@linux.intel.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Kai Vehmanen <kai.vehmanen@intel.com>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH] ASoC: amd: sof-mach: Add support for RT5682S and RT1019 card
+Date:   Sun, 23 Jan 2022 01:16:59 +0530
+Message-ID: <20220122194707.2661026-1-vsujithkumar.reddy@amd.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 159b8330-2e91-4018-58f8-08d9dd9b0697
-X-MS-TrafficTypeDiagnostic: DM6PR12MB3642:EE_
-X-Microsoft-Antispam-PRVS: <DM6PR12MB36421E371A023C79CB6451E5C05C9@DM6PR12MB3642.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
+X-MS-Office365-Filtering-Correlation-Id: 45b1a630-2525-40eb-216d-08d9dd9b3199
+X-MS-TrafficTypeDiagnostic: BYAPR12MB3271:EE_
+X-Microsoft-Antispam-PRVS: <BYAPR12MB32714DCC0BBA1EB1FE2DB157925C9@BYAPR12MB3271.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:486;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: PyjYT01/jusPqKI0Lnab9AGTZ+eLR2Xb4E/SJyTMl3kqu18WqEhmrGAk5IklUVmORRc7pPghw+h+9nS7ANtrH90zbZawZUPmQo6I+mOueByV6l1OHCBm4xbiIAUzXBxQodYYnmeMqV1TdYL7yC8UvTezGBG6U67PfksDlji9mZEQA4fCbCR6K+pLsoCg86ztcDQPwT/6J0HamZodqU8cTHsXxuFGH8lOljhkEsUs47fsp8OlebAMULRRoUCSWspz4L3y9NuXWLK2CsG3Hcp8LfUo5TN/zuusesnpP7svNnx4VV6M9dDOd/c8aTwszgNJS1l+bWb6NkV85fZ+4Z4LJRn8gVkwtlUWXB5HZl2K8Sj/DAAluva4jlpQQBxgTEzr8oh0pe07PT6c8gNg9OdoC/9oofIzTANOEYxwyGarKEd4hgqheYbu718J5FGaCoTSLtuh2nzgF3OvlmYs6DC0C1sXApp1swuknSdxfKLyp2QfX3qM9tu2UrysubBcRQqv6x2rMsZKTR/Elu1wZT7XAkQW7lhcEGRwafoYi4lDgQb6F+uTAv3dtP8wkNi6EPNkMtVsrFh6LFcYuKlYANGoc5m9wxohdleXa7aA+yPYGssrKSKmp/sMYtXy/CjDNTxFmQ7bq5qlNf/3r/FuspOpdQMlZXcuGd893bFpKWxhbdCk4PEedG0XiR3j01vWyVx4ALDjOyhRTEhQ1Sxi/qZuh+jt/em6Tc1ZzycVTZ3OE82SuBZATACgFi/nQNqwfdJ+O1zqAQErF02+DX5NNorkpKLT6HkVxhUhf03NMovQsdDXNdoqauQmOjrJIAhSkmL/BY81tdo+6TZWDJSGbI8BH9MyWrJDOMYDK+2E1YeGmuQ=
-X-Forefront-Antispam-Report: CIP:12.22.5.238;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:mail.nvidia.com;PTR:InfoNoRecords;CAT:NONE;SFS:(4636009)(40470700004)(36840700001)(46966006)(82310400004)(316002)(4326008)(336012)(5660300002)(107886003)(40460700003)(8936002)(2906002)(81166007)(356005)(26005)(508600001)(70206006)(70586007)(6666004)(110136005)(186003)(7416002)(426003)(36756003)(83380400001)(2616005)(7696005)(36860700001)(47076005)(921005)(8676002)(86362001)(83996005)(36900700001)(2101003);DIR:OUT;SFP:1101;
-X-OriginatorOrg: Nvidia.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2022 11:33:34.8637
+X-Microsoft-Antispam-Message-Info: tWbeZqgw73jL0iVmiHWIA5RRVil2aTEWcUUq5TrysoKKMj9bgWGMc1JNiQ6M1u6R1j6M7t0PCPIH9RnJ8WDankuu6mR4QQTh53Cx3D0pZ2pATAq7hKRkAuj4rBlVoVqm+H1V0cQ3T3mgoakG9IY7gdEDtZMf7r5EnVvvaOiS7LgoDYQLgIYWtADAgK24LXXpXuGTVymGcGoZ8Arsl+g+homPdFoHxlTvUbZUmqAsrVygs6wrG4joqu+63KGYlS+y1QRKeC2YmoEbH7iSi7JFtuh4pVLnKsNeTGtIipo/fFtAoyF//LPnJNuytgYjaSiA2OBLO/MQSmSwnCN5AUNDS9CStDwoAvHxtUSi0tTxU+CQ2z3p2X3gss7D/BKpKJkUrquxrc/ck1c3sqjuWZ2lD61E1ttuXiYFBIA5cuwqNmJUn5gEAn13CJbsV1w7Q6KbDrtCNJygUbmXxSzXN989YYSUN6XWCQ0QEIIMoqd6UE2IsEVCT2RLN9X1/tV3M272r58tW0/kKZ+BqarI4M1fjXRPcRafckOVjxrhiZGzt8YSCZn2+S+e4vZhC9Py9HNwXC+ZPQQDimD8LKX/WnGDsYfe3ois2OaO/DhIaKWK1Liq1Bq0dt8AmnoVzo9bsyFuZGOL9YDiVNqnPX6MxLuKVvRB4nDN6pO2YmJqRynooVINfAl3z+oRTNy5UnJ7P39SZA4+0ao5T4XELGTlKpr00vgYj1lVmtlXmxaz63tdTyoB5k1VsQ1yPVpbfVMN5TOJQTNSyxOU0Wqfw39dwbWeDtVSKcCS+VfYurhJinUDO6U=
+X-Forefront-Antispam-Report: CIP:165.204.84.17;CTRY:US;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:SATLEXMB03.amd.com;PTR:InfoDomainNonexistent;CAT:NONE;SFS:(4636009)(36840700001)(46966006)(40470700004)(426003)(54906003)(336012)(82310400004)(36860700001)(110136005)(2616005)(7696005)(36756003)(316002)(4326008)(508600001)(40460700003)(8936002)(26005)(8676002)(6666004)(86362001)(47076005)(5660300002)(81166007)(2906002)(70586007)(70206006)(1076003)(356005)(186003)(36900700001);DIR:OUT;SFP:1101;
+X-OriginatorOrg: amd.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2022 11:34:47.0643
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 159b8330-2e91-4018-58f8-08d9dd9b0697
-X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=43083d15-7273-40c1-b7db-39efd9ccc17a;Ip=[12.22.5.238];Helo=[mail.nvidia.com]
-X-MS-Exchange-CrossTenant-AuthSource: CO1NAM11FT016.eop-nam11.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 45b1a630-2525-40eb-216d-08d9dd9b3199
+X-MS-Exchange-CrossTenant-Id: 3dd8961f-e488-4e60-8e11-a82d994e183d
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=3dd8961f-e488-4e60-8e11-a82d994e183d;Ip=[165.204.84.17];Helo=[SATLEXMB03.amd.com]
+X-MS-Exchange-CrossTenant-AuthSource: DM6NAM11FT029.eop-nam11.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB3642
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR12MB3271
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Change of_*() functions to device_*() for firmware agnostic usage.
-This allows to have the smbus_alert interrupt without any changes
-in the controller drivers using the ACPI table.
+We have new platform with rt5682s as a primary codec and rt1019 as an
+amp codec. Add machine struct to register sof audio based sound card
+on such Chrome machine.
 
-Signed-off-by: Akhil R <akhilrajeev@nvidia.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
+Signed-off-by: V sujith kumar Reddy <vsujithkumar.reddy@amd.com>
 ---
- drivers/i2c/i2c-core-base.c  |  2 +-
- drivers/i2c/i2c-core-smbus.c | 10 +++++-----
- drivers/i2c/i2c-smbus.c      |  3 ++-
- include/linux/i2c-smbus.h    |  6 +++---
- 4 files changed, 11 insertions(+), 10 deletions(-)
+ sound/soc/amd/acp-config.c       |  9 +++++++++
+ sound/soc/amd/acp/acp-sof-mach.c | 14 ++++++++++++++
+ 2 files changed, 23 insertions(+)
 
-diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
-index 2c59dd7..32a4526 100644
---- a/drivers/i2c/i2c-core-base.c
-+++ b/drivers/i2c/i2c-core-base.c
-@@ -1479,7 +1479,7 @@ static int i2c_register_adapter(struct i2c_adapter *adap)
- 		goto out_list;
- 	}
+diff --git a/sound/soc/amd/acp-config.c b/sound/soc/amd/acp-config.c
+index c9e1c08364f3..5cbc82eca4c9 100644
+--- a/sound/soc/amd/acp-config.c
++++ b/sound/soc/amd/acp-config.c
+@@ -110,6 +110,15 @@ struct snd_soc_acpi_mach snd_soc_acpi_amd_sof_machines[] = {
+ 		.fw_filename = "sof-rn.ri",
+ 		.sof_tplg_filename = "sof-rn-rt5682-max98360.tplg",
+ 	},
++	{
++		.id = "RTL5682",
++		.drv_name = "rt5682s-rt1019",
++		.pdata = (void *)&acp_quirk_data,
++		.machine_quirk = snd_soc_acpi_codec_list,
++		.quirk_data = &amp_rt1019,
++		.fw_filename = "sof-rn.ri",
++		.sof_tplg_filename = "sof-rn-rt5682-rt1019.tplg",
++	},
+ 	{
+ 		.id = "AMDI1019",
+ 		.drv_name = "renoir-dsp",
+diff --git a/sound/soc/amd/acp/acp-sof-mach.c b/sound/soc/amd/acp/acp-sof-mach.c
+index 07de46142655..c1d9650fc222 100644
+--- a/sound/soc/amd/acp/acp-sof-mach.c
++++ b/sound/soc/amd/acp/acp-sof-mach.c
+@@ -40,6 +40,15 @@ static struct acp_card_drvdata sof_rt5682_max_data = {
+ 	.gpio_spkr_en = EN_SPKR_GPIO_NK,
+ };
  
--	res = of_i2c_setup_smbus_alert(adap);
-+	res = i2c_setup_smbus_alert(adap);
- 	if (res)
- 		goto out_reg;
- 
-diff --git a/drivers/i2c/i2c-core-smbus.c b/drivers/i2c/i2c-core-smbus.c
-index e5b2d14..4c24c84 100644
---- a/drivers/i2c/i2c-core-smbus.c
-+++ b/drivers/i2c/i2c-core-smbus.c
-@@ -701,13 +701,13 @@ struct i2c_client *i2c_new_smbus_alert_device(struct i2c_adapter *adapter,
- }
- EXPORT_SYMBOL_GPL(i2c_new_smbus_alert_device);
- 
--#if IS_ENABLED(CONFIG_I2C_SMBUS) && IS_ENABLED(CONFIG_OF)
--int of_i2c_setup_smbus_alert(struct i2c_adapter *adapter)
-+#if IS_ENABLED(CONFIG_I2C_SMBUS)
-+int i2c_setup_smbus_alert(struct i2c_adapter *adapter)
- {
- 	int irq;
- 
--	irq = of_property_match_string(adapter->dev.of_node, "interrupt-names",
--				       "smbus_alert");
-+	irq = device_property_match_string(adapter->dev.parent, "interrupt-names",
-+					   "smbus_alert");
- 	if (irq == -EINVAL || irq == -ENODATA)
- 		return 0;
- 	else if (irq < 0)
-@@ -715,5 +715,5 @@ int of_i2c_setup_smbus_alert(struct i2c_adapter *adapter)
- 
- 	return PTR_ERR_OR_ZERO(i2c_new_smbus_alert_device(adapter, NULL));
- }
--EXPORT_SYMBOL_GPL(of_i2c_setup_smbus_alert);
-+EXPORT_SYMBOL_GPL(i2c_setup_smbus_alert);
- #endif
-diff --git a/drivers/i2c/i2c-smbus.c b/drivers/i2c/i2c-smbus.c
-index d3d06e3..026e2355 100644
---- a/drivers/i2c/i2c-smbus.c
-+++ b/drivers/i2c/i2c-smbus.c
-@@ -128,7 +128,8 @@ static int smbalert_probe(struct i2c_client *ara,
- 	if (setup) {
- 		irq = setup->irq;
- 	} else {
--		irq = of_irq_get_byname(adapter->dev.of_node, "smbus_alert");
-+		irq = fwnode_irq_get_byname(dev_fwnode(adapter->dev.parent),
-+					    "smbus_alert");
- 		if (irq <= 0)
- 			return irq;
- 	}
-diff --git a/include/linux/i2c-smbus.h b/include/linux/i2c-smbus.h
-index 1ef4218..95cf902 100644
---- a/include/linux/i2c-smbus.h
-+++ b/include/linux/i2c-smbus.h
-@@ -30,10 +30,10 @@ struct i2c_client *i2c_new_smbus_alert_device(struct i2c_adapter *adapter,
- 					      struct i2c_smbus_alert_setup *setup);
- int i2c_handle_smbus_alert(struct i2c_client *ara);
- 
--#if IS_ENABLED(CONFIG_I2C_SMBUS) && IS_ENABLED(CONFIG_OF)
--int of_i2c_setup_smbus_alert(struct i2c_adapter *adap);
-+#if IS_ENABLED(CONFIG_I2C_SMBUS)
-+int i2c_setup_smbus_alert(struct i2c_adapter *adap);
- #else
--static inline int of_i2c_setup_smbus_alert(struct i2c_adapter *adap)
-+static inline int i2c_setup_smbus_alert(struct i2c_adapter *adap)
- {
- 	return 0;
- }
++static struct acp_card_drvdata sof_rt5682s_rt1019_data = {
++	.hs_cpu_id = I2S_SP,
++	.amp_cpu_id = I2S_SP,
++	.dmic_cpu_id = DMIC,
++	.hs_codec_id = RT5682S,
++	.amp_codec_id = RT1019,
++	.dmic_codec_id = DMIC,
++};
++
+ static struct acp_card_drvdata sof_rt5682s_max_data = {
+ 	.hs_cpu_id = I2S_SP,
+ 	.amp_cpu_id = I2S_SP,
+@@ -126,6 +135,10 @@ static const struct platform_device_id board_ids[] = {
+ 		.name = "rt5682s-max",
+ 		.driver_data = (kernel_ulong_t)&sof_rt5682s_max_data
+ 	},
++	{
++		.name = "rt5682s-rt1019",
++		.driver_data = (kernel_ulong_t)&sof_rt5682s_rt1019_data
++	},
+ 	{ }
+ };
+ static struct platform_driver acp_asoc_audio = {
+@@ -143,4 +156,5 @@ MODULE_DESCRIPTION("ACP chrome SOF audio support");
+ MODULE_ALIAS("platform:rt5682-rt1019");
+ MODULE_ALIAS("platform:rt5682-max");
+ MODULE_ALIAS("platform:rt5682s-max");
++MODULE_ALIAS("platform:rt5682s-rt1019");
+ MODULE_LICENSE("GPL v2");
 -- 
-2.7.4
+2.25.1
 
