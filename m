@@ -2,188 +2,247 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E74C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 12:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33244C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 12:49:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231993AbiAVMjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 07:39:05 -0500
-Received: from server.atrad.com.au ([150.101.241.2]:41382 "EHLO
-        server.atrad.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230360AbiAVMjE (ORCPT
+        id S232305AbiAVMtu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 07:49:50 -0500
+Received: from polaris.svanheule.net ([84.16.241.116]:56014 "EHLO
+        polaris.svanheule.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232171AbiAVMts (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 07:39:04 -0500
-X-Greylist: delayed 1781 seconds by postgrey-1.27 at vger.kernel.org; Sat, 22 Jan 2022 07:39:02 EST
-Received: from marvin.atrad.com.au (IDENT:1008@marvin.atrad.com.au [192.168.0.2])
-        by server.atrad.com.au (8.17.1/8.17.1) with ESMTPS id 20MC7UKQ032381
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
-        Sat, 22 Jan 2022 22:37:32 +1030
-Date:   Sat, 22 Jan 2022 22:37:30 +1030
-From:   Jonathan Woithe <jwoithe@just42.net>
-To:     Luiz Sampaio <sampaio.ime@gmail.com>
-Cc:     "Lee, Chun-Yi" <jlee@suse.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Corentin Chary <corentin.chary@gmail.com>,
-        =?iso-8859-1?Q?Jo=E3o?= Paulo Rechi Vita <jprvita@gmail.com>,
-        Matthew Garrett <mjg59@srcf.ucam.org>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
-        Matan Ziv-Av <matan@svgalib.org>,
-        Jeremy Soller <jeremy@system76.com>,
-        System76 Product Development <productdev@system76.com>,
-        Henrique de Moraes Holschuh <hmh@hmh.eng.br>,
-        Herton Ronaldo Krzesinski <herton@canonical.com>,
-        Azael Avalos <coproscefalo@gmail.com>,
-        linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org,
-        acpi4asus-user@lists.sourceforge.net,
-        ibm-acpi-devel@lists.sourceforge.net
-Subject: Re: [PATCH 20/31] platform: x86: changing LED_* from enum
- led_brightness to actual value
-Message-ID: <20220122120730.GA12371@marvin.atrad.com.au>
-References: <20220121165436.30956-1-sampaio.ime@gmail.com>
- <20220121165436.30956-21-sampaio.ime@gmail.com>
+        Sat, 22 Jan 2022 07:49:48 -0500
+Received: from [IPv6:2a02:a03f:eafe:c901:3b3e:e0dc:8977:dea9] (unknown [IPv6:2a02:a03f:eafe:c901:3b3e:e0dc:8977:dea9])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        (Authenticated sender: sander@svanheule.net)
+        by polaris.svanheule.net (Postfix) with ESMTPSA id E02842957CC;
+        Sat, 22 Jan 2022 13:49:46 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=svanheule.net;
+        s=mail1707; t=1642855787;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=QscYBHZxlHkC2HC1UmZnZl4VMPEmIVWTy6UCSMo7XgQ=;
+        b=yVD02cxeEg+MBpVnagvus0FCjRNVKF7sT9Rhc/FW2stXlIAQVECAU/SwSG1A5N/Qvwh86w
+        ykYxRvnr36m2c50ypVhymG0NdxeKeeQahf99VEa9+BF4/sS7+m16iO7V3I/hFkmR++U0gV
+        MBWmEhaPkVG8WG1B7lFfftTTU23v/fd2uG5FH3V/o7fJ079MAxN04E7AILtjqUoDKs4AZl
+        4fdJa1ltU2vPdSq6hUa96sticTiGAw/bEYW65EsaT+bmZQq6jWcxghobuA54X6MBm5GY3r
+        ay9QqyHg1dpR2ARx2cvZYQ0MK+SvDSi9YaPBV6YDngw3Kj7Yp+25xMUslESuMw==
+Message-ID: <d291855a36f200b178aa9e7fb6e41ff438773e38.camel@svanheule.net>
+Subject: Re: [PATCH v3 4/6] dt-bindings: interrupt-controller:
+ realtek,rtl-intc: require parents
+From:   Sander Vanheule <sander@svanheule.net>
+To:     Rob Herring <robh@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Marc Zyngier <maz@kernel.org>,
+        Birger Koblitz <mail@birger-koblitz.de>,
+        Bert Vermeulen <bert@biot.com>, John Crispin <john@phrozen.org>
+Date:   Sat, 22 Jan 2022 13:49:44 +0100
+In-Reply-To: <Yes6NFgUmcIcc5mm@robh.at.kernel.org>
+References: <cover.1641739718.git.sander@svanheule.net>
+         <e043a9faa4a8f71efdf8b7849ec7911f16207fb0.1641739718.git.sander@svanheule.net>
+         <Yes6NFgUmcIcc5mm@robh.at.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.2 (3.42.2-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220121165436.30956-21-sampaio.ime@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-MIMEDefang-action: accept
-X-Scanned-By: MIMEDefang 2.86 on 192.168.0.1
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Fri, Jan 21, 2022 at 01:54:25PM -0300, Luiz Sampaio wrote:
-> The enum led_brightness, which contains the declaration of LED_OFF,
-> LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
-> max_brightness.
-> ---
->  drivers/platform/x86/acer-wmi.c          |  6 ++---
->  drivers/platform/x86/asus-wireless.c     |  6 ++---
->  drivers/platform/x86/dell/dell-laptop.c  |  2 +-
->  drivers/platform/x86/dell/dell-wmi-led.c |  4 ++--
->  drivers/platform/x86/fujitsu-laptop.c    | 28 ++++++++++++------------
->  drivers/platform/x86/lg-laptop.c         | 18 +++++++--------
->  drivers/platform/x86/system76_acpi.c     |  4 ++--
->  drivers/platform/x86/thinkpad_acpi.c     | 14 ++++++------
->  drivers/platform/x86/topstar-laptop.c    |  4 ++--
->  drivers/platform/x86/toshiba_acpi.c      | 24 ++++++++++----------
->  10 files changed, 55 insertions(+), 55 deletions(-)
+Hi Rob,
+
+On Fri, 2022-01-21 at 16:56 -0600, Rob Herring wrote:
+> On Sun, Jan 09, 2022 at 03:54:35PM +0100, Sander Vanheule wrote:
+> > The interrupt router has 32 inputs and up to 15 outputs, and the way
+> > these are mapped to each other is runtime configurable. The outputs of
+> > this interrupt router on the other hand, are connected to a fixed set of
+> > parent interrupts. This means that "interrupt-map" is inappropriate, and
+> > rather a list of parent interrupts should be specified.
 > 
-> ...
-> diff --git a/drivers/platform/x86/fujitsu-laptop.c b/drivers/platform/x86/fujitsu-laptop.c
-> index 80929380ec7e..6ebfda771209 100644
-> --- a/drivers/platform/x86/fujitsu-laptop.c
-> +++ b/drivers/platform/x86/fujitsu-laptop.c
-> @@ -584,10 +584,10 @@ static int logolamp_set(struct led_classdev *cdev,
->  	int poweron = FUNC_LED_ON, always = FUNC_LED_ON;
->  	int ret;
->  
-> -	if (brightness < LED_HALF)
-> +	if (brightness < 127)
->  		poweron = FUNC_LED_OFF;
->  
-> -	if (brightness < LED_FULL)
-> +	if (brightness < 255)
->  		always = FUNC_LED_OFF;
->  
->  	ret = call_fext_func(device, FUNC_LEDS, 0x1, LOGOLAMP_POWERON, poweron);
-> @@ -604,13 +604,13 @@ static enum led_brightness logolamp_get(struct led_classdev *cdev)
->  
->  	ret = call_fext_func(device, FUNC_LEDS, 0x2, LOGOLAMP_ALWAYS, 0x0);
->  	if (ret == FUNC_LED_ON)
-> -		return LED_FULL;
-> +		return 255;
->  
->  	ret = call_fext_func(device, FUNC_LEDS, 0x2, LOGOLAMP_POWERON, 0x0);
->  	if (ret == FUNC_LED_ON)
-> -		return LED_HALF;
-> +		return 127;
->  
-> -	return LED_OFF;
-> +	return 0;
->  }
->  
->  static int kblamps_set(struct led_classdev *cdev,
-> @@ -618,7 +618,7 @@ static int kblamps_set(struct led_classdev *cdev,
->  {
->  	struct acpi_device *device = to_acpi_device(cdev->dev->parent);
->  
-> -	if (brightness >= LED_FULL)
-> +	if (brightness >= 255)
->  		return call_fext_func(device, FUNC_LEDS, 0x1, KEYBOARD_LAMPS,
->  				      FUNC_LED_ON);
->  	else
-> @@ -629,11 +629,11 @@ static int kblamps_set(struct led_classdev *cdev,
->  static enum led_brightness kblamps_get(struct led_classdev *cdev)
->  {
->  	struct acpi_device *device = to_acpi_device(cdev->dev->parent);
-> -	enum led_brightness brightness = LED_OFF;
-> +	unsigned int brightness = 0;
->  
->  	if (call_fext_func(device,
->  			   FUNC_LEDS, 0x2, KEYBOARD_LAMPS, 0x0) == FUNC_LED_ON)
-> -		brightness = LED_FULL;
-> +		brightness = 255;
->  
->  	return brightness;
->  }
-> @@ -643,7 +643,7 @@ static int radio_led_set(struct led_classdev *cdev,
->  {
->  	struct acpi_device *device = to_acpi_device(cdev->dev->parent);
->  
-> -	if (brightness >= LED_FULL)
-> +	if (brightness >= 255)
->  		return call_fext_func(device, FUNC_FLAGS, 0x5, RADIO_LED_ON,
->  				      RADIO_LED_ON);
->  	else
-> @@ -654,10 +654,10 @@ static int radio_led_set(struct led_classdev *cdev,
->  static enum led_brightness radio_led_get(struct led_classdev *cdev)
->  {
->  	struct acpi_device *device = to_acpi_device(cdev->dev->parent);
-> -	enum led_brightness brightness = LED_OFF;
-> +	unsigned int brightness = 0;
->  
->  	if (call_fext_func(device, FUNC_FLAGS, 0x4, 0x0, 0x0) & RADIO_LED_ON)
-> -		brightness = LED_FULL;
-> +		brightness = 255;
->  
->  	return brightness;
->  }
-> @@ -669,7 +669,7 @@ static int eco_led_set(struct led_classdev *cdev,
->  	int curr;
->  
->  	curr = call_fext_func(device, FUNC_LEDS, 0x2, ECO_LED, 0x0);
-> -	if (brightness >= LED_FULL)
-> +	if (brightness >= 255)
->  		return call_fext_func(device, FUNC_LEDS, 0x1, ECO_LED,
->  				      curr | ECO_LED_ON);
->  	else
-> @@ -680,10 +680,10 @@ static int eco_led_set(struct led_classdev *cdev,
->  static enum led_brightness eco_led_get(struct led_classdev *cdev)
->  {
->  	struct acpi_device *device = to_acpi_device(cdev->dev->parent);
-> -	enum led_brightness brightness = LED_OFF;
-> +	unsigned int brightness = 0;
->  
->  	if (call_fext_func(device, FUNC_LEDS, 0x2, ECO_LED, 0x0) & ECO_LED_ON)
-> -		brightness = LED_FULL;
-> +		brightness = 255;
->  
->  	return brightness;
->  }
+> I'm not sure why interrupt-map is not appropriate. It is not appropriate 
+> if you have to touch the interrupt router h/w in servicing the 
+> interrupts. If you just need one time configuration of the mapping, then 
+> it should be fine to use I think.
 
-In a way it's less descriptive to revert from the identifiers to what amount
-to seemingly magic numbers.  However, since the value attributed to maximum
-LED brightness in the LED class is now variable I can see why the global
-enum no longer makes sense.  We could define a suitable enum within
-fujitsu-laptop.c, but there's probably little to be gained in the long run.
+If interrupt-map is used, then AFAICT there are no hooks to inform the driver that a
+translation has occurred. How should the interrupt controller driver then know how to set
+up the routing? Commit de4adddcbcc2 ("of/irq: Add a quirk for controllers with their own
+definition of interrupt-map") added a quirk for the original binding/driver, but that
+requires open-coding an interrupt-map parser in the driver.
 
-To make the patch description a little clearer, could I suggest you add the
-word "variable" before "max_brightness", or even just use the phrase
-"variable maximum brightness"?
+What this binding doesn't mention (I can add it), is that there are also two IRQ status
+registers to:
+  - unmask/mask SoC interrupts
+  - read the current status of the SoC interrupts
 
-For the fujitsu-laptop.c portion of this patch:
-    Acked-by: Jonathan Woithe <jwoithe@just42.net>
+In theory, if the routing is set up correctly (and the IRQ permanently unmasked), I think
+one could treat interrupt-map as intended, and connect SoC peripheral IRQ handlers
+directly to the parent interrupts. But then the interrupt subsystem would need to check
+all attached handlers. This interrupt router/controller allows to check which peripheral
+is triggering the parent IRQ, which should be more efficient.
 
-Regards
-  jonathan
+These interrupt controllers are also used on multi-threaded systems, where each hardware
+thread has its own IRQ controller. I'm still experimenting with the implementation, but 
+there the routing registers would be used to set the CPU affinity of SoC interrupts.
+
+I have to say that I'm not very familiar with the kernel code that handles all this
+though, so maybe I'm just missing something?
+
+> > Two-part compatibles are introduced to be able to require "interrupts"
+> > for new devicetrees. The relevant descriptions are extended or added to
+> > more clearly describe the inputs and outputs of this router.  The old
+> > compatible, "interrupt-map" and "#address-cells", is deprecated.
+> > Interrupt specifiers for new compatibles will require two cells, to
+> > indicate the output selection.
+> > 
+> > To prevent spurious changes when more SoCs are added, "allOf" is used
+> > with one "if", and the compatible enum only has one item.
+> > 
+> > The example is updated to provide a correct example for RTL8380 SoCs.
+> > 
+> > Signed-off-by: Sander Vanheule <sander@svanheule.net>
+> > ---
+> >  .../realtek,rtl-intc.yaml                     | 78 ++++++++++++++-----
+> >  1 file changed, 58 insertions(+), 20 deletions(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/interrupt-controller/realtek,rtl-
+> > intc.yaml b/Documentation/devicetree/bindings/interrupt-controller/realtek,rtl-
+> > intc.yaml
+> > index 9e76fff20323..aab8d44010af 100644
+> > --- a/Documentation/devicetree/bindings/interrupt-controller/realtek,rtl-intc.yaml
+> > +++ b/Documentation/devicetree/bindings/interrupt-controller/realtek,rtl-intc.yaml
+> > @@ -6,6 +6,10 @@ $schema: http://devicetree.org/meta-schemas/core.yaml#
+> >  
+> >  title: Realtek RTL SoC interrupt controller devicetree bindings
+> >  
+> > +description:
+> > +  Interrupt router for Realtek MIPS SoCs, allowing each SoC interrupt to be
+> > +  routed to one parent interrupt, or left disconnected.
+> > +
+> >  maintainers:
+> >    - Birger Koblitz <mail@birger-koblitz.de>
+> >    - Bert Vermeulen <bert@biot.com>
+> > @@ -13,45 +17,79 @@ maintainers:
+> >  
+> >  properties:
+> >    compatible:
+> > -    const: realtek,rtl-intc
+> > +    oneOf:
+> > +      - items:
+> > +          - enum:
+> > +              - realtek,rtl8380-intc
+> > +          - const: realtek,rtl-intc
+> > +      - const: realtek,rtl-intc
+> > +        deprecated: true
+> >  
+> > -  "#interrupt-cells":
+> > -    const: 1
+> > +  "#interrupt-cells": true
+> >  
+> >    reg:
+> >      maxItems: 1
+> >  
+> >    interrupts:
+> > -    maxItems: 1
+> > +    minItems: 1
+> > +    maxItems: 15
+> > +    description:
+> > +      List of parent interrupts, in the order that they are connected to this
+> > +      interrupt router's outputs.
+> >  
+> >    interrupt-controller: true
+> >  
+> > -  "#address-cells":
+> > -    const: 0
+> > -
+> > -  interrupt-map:
+> > -    description: Describes mapping from SoC interrupts to CPU interrupts
+> > -
+> >  required:
+> >    - compatible
+> >    - reg
+> >    - "#interrupt-cells"
+> >    - interrupt-controller
+> > -  - "#address-cells"
+> > -  - interrupt-map
+> > +
+> > +allOf:
+> > +  - if:
+> > +      properties:
+> > +        compatible:
+> > +          const: realtek,rtl-intc
+> > +    then:
+> > +      properties:
+> > +        "#interrupt-cells":
+> > +          const: 1
+> > +
+> > +        "#address-cells":
+> > +          const: 0
+> > +
+> > +        interrupt-map: true
+> > +      required:
+> > +        - "#address-cells"
+> > +        - interrupt-map
+> > +    else:
+> > +      properties:
+> > +        "#interrupt-cells":
+> > +          description:
+> > +            Two cells to specify which line to connect to, and which output it should
+> > +            be routed to. Both cells use a zero-based index.
+> 
+> Picking the index picks the priority? Which is higher priority?
+
+Yes, picking an output will select the (implied) priority. If the parent interrupts are
+the six MIPS CPU HW interrupts, then CPU IRQ7 has the highest priority, and IRQ2 has the
+lowest priority. All known implementations connect output (0..5) to CPU IRQ(2..7), so 
+lower output index then means lower priority.
+
+
+Best,
+Sander
+
+> 
+> 
+> > +          const: 2
+> > +      required:
+> > +        - interrupts
+> >  
+> >  additionalProperties: false
+> >  
+> >  examples:
+> >    - |
+> >      intc: interrupt-controller@3000 {
+> > -      compatible = "realtek,rtl-intc";
+> > -      #interrupt-cells = <1>;
+> > +      compatible = "realtek,rtl8380-intc", "realtek,rtl-intc";
+> > +      #interrupt-cells = <2>;
+> >        interrupt-controller;
+> > -      reg = <0x3000 0x20>;
+> > -      #address-cells = <0>;
+> > -      interrupt-map =
+> > -              <31 &cpuintc 2>,
+> > -              <30 &cpuintc 1>,
+> > -              <29 &cpuintc 5>;
+> > +      reg = <0x3000 0x18>;
+> > +
+> > +      interrupt-parent = <&cpuintc>;
+> > +      interrupts = <2>, <3>, <4>, <5>, <6>;
+> > +    };
+> > +
+> > +    irq-consumer@0 {
+> > +      reg = <0 4>;
+> > +      interrupt-parent = <&intc>;
+> > +      interrupts =
+> > +        <19 3>, /* IRQ 19, routed to output 3 (cpuintc 5) */
+> > +        <18 4>; /* IRQ 18, routed to output 4 (cpuintc 6) */
+> >      };
+> > -- 
+> > 2.33.1
+> > 
+> > 
+
