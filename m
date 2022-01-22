@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94E73C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC0CFC43217
 	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 08:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231853AbiAVISf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 03:18:35 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:17359 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229916AbiAVISY (ORCPT
+        id S232798AbiAVISi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 03:18:38 -0500
+Received: from szxga08-in.huawei.com ([45.249.212.255]:31113 "EHLO
+        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229866AbiAVISY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 22 Jan 2022 03:18:24 -0500
-Received: from dggpeml500020.china.huawei.com (unknown [172.30.72.57])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4Jgpxt1KRGz9rxx;
-        Sat, 22 Jan 2022 16:17:06 +0800 (CST)
+Received: from dggpeml500023.china.huawei.com (unknown [172.30.72.56])
+        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4Jgptw6yCsz1FCYK;
+        Sat, 22 Jan 2022 16:14:32 +0800 (CST)
 Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500020.china.huawei.com (7.185.36.88) with Microsoft SMTP Server
+ dggpeml500023.china.huawei.com (7.185.36.114) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2308.20; Sat, 22 Jan 2022 16:18:22 +0800
 Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
  (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Sat, 22 Jan
- 2022 16:18:22 +0800
+ 2022 16:18:21 +0800
 From:   Kai Ye <yekai13@huawei.com>
 To:     <herbert@gondor.apana.org.au>
 CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <wangzhou1@hisilicon.com>, <yekai13@huawei.com>
-Subject: [PATCH v3 5/5] crypto: hisilicon/sec - use the correct print format
-Date:   Sat, 22 Jan 2022 16:13:12 +0800
-Message-ID: <20220122081312.29121-6-yekai13@huawei.com>
+Subject: [PATCH v3 1/5] crypto: hisilicon/sec - fixup icv checking enabled on Kunpeng 930
+Date:   Sat, 22 Jan 2022 16:13:08 +0800
+Message-ID: <20220122081312.29121-2-yekai13@huawei.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220122081312.29121-1-yekai13@huawei.com>
 References: <20220122081312.29121-1-yekai13@huawei.com>
@@ -44,8 +44,8 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Use the correct print format. Printing an unsigned int value should
-use %u instead of %d.
+Fixup icv(integrity check value) checking enabled wrong on
+Kunpeng 930
 
 Signed-off-by: Kai Ye <yekai13@huawei.com>
 ---
@@ -53,18 +53,18 @@ Signed-off-by: Kai Ye <yekai13@huawei.com>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/crypto/hisilicon/sec2/sec_crypto.c b/drivers/crypto/hisilicon/sec2/sec_crypto.c
-index 7013272134b2..8caba9fd1f19 100644
+index 6a45bd23b363..bf93c9847365 100644
 --- a/drivers/crypto/hisilicon/sec2/sec_crypto.c
 +++ b/drivers/crypto/hisilicon/sec2/sec_crypto.c
-@@ -240,7 +240,7 @@ static void sec_req_cb(struct hisi_qp *qp, void *resp)
- 
- 	if (unlikely(type != type_supported)) {
- 		atomic64_inc(&dfx->err_bd_cnt);
--		pr_err("err bd type [%d]\n", type);
-+		pr_err("err bd type [%u]\n", type);
- 		return;
+@@ -1614,7 +1614,7 @@ static void sec_auth_bd_fill_ex_v3(struct sec_auth_ctx *ctx, int dir,
+ 		sqe3->auth_mac_key |= cpu_to_le32((u32)SEC_AUTH_TYPE1);
+ 		sqe3->huk_iv_seq &= SEC_CIPHER_AUTH_V3;
+ 	} else {
+-		sqe3->auth_mac_key |= cpu_to_le32((u32)SEC_AUTH_TYPE1);
++		sqe3->auth_mac_key |= cpu_to_le32((u32)SEC_AUTH_TYPE2);
+ 		sqe3->huk_iv_seq |= SEC_AUTH_CIPHER_V3;
  	}
- 
+ 	sqe3->a_len_key = cpu_to_le32(c_req->c_len + aq->assoclen);
 -- 
 2.33.0
 
