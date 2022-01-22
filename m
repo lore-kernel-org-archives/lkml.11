@@ -2,129 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7E39C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 15:05:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD58FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 15:18:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233927AbiAVPFp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 10:05:45 -0500
-Received: from mga06.intel.com ([134.134.136.31]:1753 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231322AbiAVPFo (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 10:05:44 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642863944; x=1674399944;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=sLgbzBecYjat1+PQO/DoTusxlo2VOsby49r7bF8xlXw=;
-  b=oIkQvbv3Py3m54N4CBP/ApprW5WMRRV/w9gY9imi0RYxVXAfsJFwaKMw
-   Dk1ealmTnEtz+Ld3i8RqkzKac3qxxzBaxOsEYvPZyS5rVUb1EkLIlC+OB
-   ZD8H+fpjxEczlaQit45ha7lIJSZHOG9J8+Y9Wn87waJm9hKPcY9ZsTgnW
-   A45cDF4R0ornx/milqp/I3jlps6jqYabw48K7/CpBqIRSM1QSgZ6GJrrt
-   y8Pfdw7JttbXMmzA6jqUPqZOs3C67BCrA+S+MqzJwR9F2/5S4VWv7EYDJ
-   s46l8Djnk0UpcnDgRpUkMyzU3v8BQsc+W2Z861lBu/XKUvqqzShhoC4TB
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10234"; a="306544500"
-X-IronPort-AV: E=Sophos;i="5.88,308,1635231600"; 
-   d="scan'208";a="306544500"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2022 07:05:44 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,308,1635231600"; 
-   d="scan'208";a="765985612"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by fmsmga006.fm.intel.com with ESMTP; 22 Jan 2022 07:05:41 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nBHxV-000GWR-3O; Sat, 22 Jan 2022 15:05:41 +0000
-Date:   Sat, 22 Jan 2022 23:05:21 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ben Widawsky <ben.widawsky@intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        linux-kernel@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [cxl:preview 20/53] drivers/cxl/core/regs.c:256:18: error: use of
- undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BLOCK_OFF_LOW_MASK'
-Message-ID: <202201222305.il9hV9Zh-lkp@intel.com>
+        id S234019AbiAVPQY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 10:16:24 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33944 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233950AbiAVPQX (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 22 Jan 2022 10:16:23 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1D657B808C4
+        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 15:16:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C469CC004E1;
+        Sat, 22 Jan 2022 15:16:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642864580;
+        bh=S2f6TWIAXyFZZQY51S1BI0oD3vQ3Mobw/lDTLao4niw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=O2VfXN2MOe9t8ZyCPzbEHGTbEK4SEGuZEVnFrykPJGgNE5WgjPPSJfsKoB2BUekV8
+         48OJaEGXiUEiDOjFdkzIwLF5hpM6Vyr0eVTaP7sVdbprhVnPFyH5/OTtlG9Ln/DQXT
+         d/iw8oNd0YB6Dopc0lIC/4oDauMKZP24/9cvLBCBT5r2HTgS2q5m2U6fMS9SyMS/oK
+         cnvC/ZrdfaFTPddDD7lMOG8hWIMKXkv/OhmiwY7PaQovwaGdlIcsNXA9szd2zpHUPx
+         GpTYFK5DoCfVeZ4ml0ckAd++kLvGXfh2IRq8k0mhBamZ6i2OEMnXg99OsIhggxVwFU
+         MHDGdMLLmavMA==
+From:   Ard Biesheuvel <ardb@kernel.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     maz@kernel.org, Ard Biesheuvel <ardb@kernel.org>,
+        Valentin Schneider <valentin.schneider@arm.com>
+Subject: [PATCH] irqchip: gic-v3-its: fix build for !SMP
+Date:   Sat, 22 Jan 2022 16:16:14 +0100
+Message-Id: <20220122151614.133766-1-ardb@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1205; h=from:subject; bh=S2f6TWIAXyFZZQY51S1BI0oD3vQ3Mobw/lDTLao4niw=; b=owEB7QES/pANAwAKAcNPIjmS2Y8kAcsmYgBh7B+9uYPmJ1Hbc/foLnR4cibQHm+VG/8fPrcl/Ttj Dv1ehdOJAbMEAAEKAB0WIQT72WJ8QGnJQhU3VynDTyI5ktmPJAUCYewfvQAKCRDDTyI5ktmPJHHDC/ 9T9hVFyFkNpCc1tjqWIKhchdUNCnnYtwaNd8Nr5OBCbcoubHUhm/002b3Pbsl/pmfqvIbtWtTXnRDI OLfv/vVQoOsVCKIznkzrZQeBMe4e2u4ai0/y/qAas0SbZ9tpbLTduLHoQMLZHk34hBIyZqHyyAa3/M 39EdithE3dpgN+tAFBRBKl7vRyDKNDN3fjHgCWw+G5xm+coFACL1k+8UFFZrnE5EmJOIe1IFcPsQno cdhvL3T9l3XM/iIJpUwRs7V2JpSJiskWz1/YBN6CjKFi14akvskKGIws/bwuKFwmxN0fU8QO06cz6V h4LOWyjGLBzcUEqCKbsIB47rgMYS1ZNY34NAA0Re5CeUetSWbNm32LfC3kkdyvviFWc+Gm1W9srVW1 ZmnkwLCAt50y3dFH+0Fo8T1tgoZ9F4oDBW7Y4VhfUCJaPn34zt8Y9T8mphdH51zUpYoLwIGCwaE1pm GwW6Kzp033K/A3pIjqpkvLGNqAyqq6fomjBX03aU4dZ5M=
+X-Developer-Key: i=ardb@kernel.org; a=openpgp; fpr=F43D03328115A198C90016883D200E9CA6329909
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git preview
-head:   e675fabdbbcdb6e32dba688a20fb0bd42e0e2d5d
-commit: 0deb1229ea40390e8402361338d680619a750270 [20/53] cxl/acpi: Map component registers for Root Ports
-config: mips-randconfig-c004-20220120 (https://download.01.org/0day-ci/archive/20220122/202201222305.il9hV9Zh-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 7b3d30728816403d1fd73cc5082e9fb761262bce)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git/commit/?id=0deb1229ea40390e8402361338d680619a750270
-        git remote add cxl https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git
-        git fetch --no-tags cxl preview
-        git checkout 0deb1229ea40390e8402361338d680619a750270
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/cxl/core/
+Commit 835f442fdbce ("irqchip/gic-v3-its: Limit memreserve cpuhp state
+lifetime") added a reference to cpus_booted_once_mask, which does not
+exist on !SMP builds, breaking the build for such configurations.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Given the intent of the check, short circuit it to always pass.
 
-All errors (new ones prefixed by >>):
-
->> drivers/cxl/core/regs.c:256:18: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BLOCK_OFF_LOW_MASK'
-                               (reg_lo & CXL_DVSEC_REG_LOCATOR_BLOCK_OFF_LOW_MASK);
-                                         ^
->> drivers/cxl/core/regs.c:257:25: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BIR_MASK'
-           map->barno = FIELD_GET(CXL_DVSEC_REG_LOCATOR_BIR_MASK, reg_lo);
-                                  ^
->> drivers/cxl/core/regs.c:257:25: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BIR_MASK'
->> drivers/cxl/core/regs.c:257:25: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BIR_MASK'
->> drivers/cxl/core/regs.c:257:25: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BIR_MASK'
->> drivers/cxl/core/regs.c:257:25: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BIR_MASK'
->> drivers/cxl/core/regs.c:257:25: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BIR_MASK'
->> drivers/cxl/core/regs.c:257:25: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BIR_MASK'
->> drivers/cxl/core/regs.c:257:25: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BIR_MASK'
->> drivers/cxl/core/regs.c:257:25: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BIR_MASK'
->> drivers/cxl/core/regs.c:257:25: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BIR_MASK'
->> drivers/cxl/core/regs.c:257:13: error: assigning to 'u8' (aka 'unsigned char') from incompatible type 'void'
-           map->barno = FIELD_GET(CXL_DVSEC_REG_LOCATOR_BIR_MASK, reg_lo);
-                      ^ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->> drivers/cxl/core/regs.c:258:28: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BLOCK_ID_MASK'
-           map->reg_type = FIELD_GET(CXL_DVSEC_REG_LOCATOR_BLOCK_ID_MASK, reg_lo);
-                                     ^
->> drivers/cxl/core/regs.c:258:28: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BLOCK_ID_MASK'
->> drivers/cxl/core/regs.c:258:28: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BLOCK_ID_MASK'
->> drivers/cxl/core/regs.c:258:28: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BLOCK_ID_MASK'
->> drivers/cxl/core/regs.c:258:28: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BLOCK_ID_MASK'
->> drivers/cxl/core/regs.c:258:28: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BLOCK_ID_MASK'
->> drivers/cxl/core/regs.c:258:28: error: use of undeclared identifier 'CXL_DVSEC_REG_LOCATOR_BLOCK_ID_MASK'
-   fatal error: too many errors emitted, stopping now [-ferror-limit=]
-   20 errors generated.
-
-
-vim +/CXL_DVSEC_REG_LOCATOR_BLOCK_OFF_LOW_MASK +256 drivers/cxl/core/regs.c
-
-   251	
-   252	static void cxl_decode_regblock(u32 reg_lo, u32 reg_hi,
-   253					struct cxl_register_map *map)
-   254	{
-   255		map->block_offset = ((u64)reg_hi << 32) |
- > 256				    (reg_lo & CXL_DVSEC_REG_LOCATOR_BLOCK_OFF_LOW_MASK);
- > 257		map->barno = FIELD_GET(CXL_DVSEC_REG_LOCATOR_BIR_MASK, reg_lo);
- > 258		map->reg_type = FIELD_GET(CXL_DVSEC_REG_LOCATOR_BLOCK_ID_MASK, reg_lo);
-   259	}
-   260	
-
+Cc: Valentin Schneider <valentin.schneider@arm.com>
+Fixes: 835f442fdbce ("irqchip/gic-v3-its: Limit memreserve cpuhp state lifetime")
+Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/irqchip/irq-gic-v3-its.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/irqchip/irq-gic-v3-its.c b/drivers/irqchip/irq-gic-v3-its.c
+index d25b7a864bbb..d2d61d89c3b8 100644
+--- a/drivers/irqchip/irq-gic-v3-its.c
++++ b/drivers/irqchip/irq-gic-v3-its.c
+@@ -5241,7 +5241,8 @@ static int its_cpu_memreserve_lpi(unsigned int cpu)
+ 
+ out:
+ 	/* Last CPU being brought up gets to issue the cleanup */
+-	if (cpumask_equal(&cpus_booted_once_mask, cpu_possible_mask))
++	if (!IS_ENABLED(CONFIG_SMP) ||
++	    cpumask_equal(&cpus_booted_once_mask, cpu_possible_mask))
+ 		schedule_work(&rdist_memreserve_cpuhp_cleanup_work);
+ 
+ 	gic_data_rdist()->flags |= RD_LOCAL_MEMRESERVE_DONE;
+-- 
+2.30.2
+
