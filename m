@@ -2,38 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BEBAC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 19:57:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCF4C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 19:57:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234895AbiAVT5y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 14:57:54 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33050 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234913AbiAVT5u (ORCPT
+        id S234934AbiAVT55 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 14:57:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38272 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234916AbiAVT5u (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 22 Jan 2022 14:57:50 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8B9C06173B
+        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 11:57:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CCD3360EB3
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 19:57:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91287C340E4
+        by sin.source.kernel.org (Postfix) with ESMTPS id 4CF5DCE0171
         for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 19:57:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19F44C340E5
+        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 19:57:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642881469;
-        bh=Y3hYZqVHeMKgfh14abfGl627PDQ816diRiTpa/a8GyY=;
+        s=k20201202; t=1642881466;
+        bh=O29zgo+53OF4w2gLr9hw6BFblJNifZLqnBmrglSCAWU=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=ihvQ8kh9vTUMUTBtFhWSyk0b+zlqwRCT4Dhf5ltU/sc/9/adM3XkonAHron8sgRtO
-         F85533IQYC7QoMXOzCUPhII/mLc3yEvrS5+vk3GEZZjSx/gi53JGygyQbACVw+bUGR
-         l1EbMnoFVEkJKuktQHUYdsFxGCG/Qk+0p+DO/MWF+7o3XySC6cBHi/YqFO1xBhwA+F
-         l5hcVjTkWaUqZUWwUROXAi+ezokVTw/E5vFg5UIinp++YHucE0HmX9L1p4ig8+Ay0k
-         MQxSvwdbZiscJmqR/RQlkiB9TA48ei/3ZHLChPXJz9ErT7Ve/3dD1g7Ey8Biod+KPg
-         UVBUFmL7dVpjw==
+        b=ArJPQ5v/trxA2SpY7AuI7Ut4StwUvMwuXSmnU04MqrTh2JzLlB2IV2sf+jCscnSJl
+         z7V8ozc/T2CCItvQ+Q2B5kAhm0y0osHfX53DrqqG9BMnRRuy0v1EWdXMooQ2ng5wz+
+         6MIkg4dpnvqWp2W4POEbI9eUO/9KzbyBl1RC1LxbkqU0yOR9QLXXkjTy9hQ/QPNGXK
+         dXQ7HYcM9H0V60zKMav/NnrGPFzGU+9APNvJzjW5y5bY9gzII4dzs/l+XXoCddDCKv
+         Fgua6VxnBUGLx2cw/i5So02wNRtNEsTdBN+jciOKohvxo8INAg49JBxWZrrNskOgkV
+         DwAZahqjIgKVA==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Subject: [PATCH 10/30] habanalabs: move more f/w functions to firmware_if.c
-Date:   Sat, 22 Jan 2022 21:57:11 +0200
-Message-Id: <20220122195731.934494-10-ogabbay@kernel.org>
+Subject: [PATCH 08/30] habanalabs: get clk is common function
+Date:   Sat, 22 Jan 2022 21:57:09 +0200
+Message-Id: <20220122195731.934494-8-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220122195731.934494-1-ogabbay@kernel.org>
 References: <20220122195731.934494-1-ogabbay@kernel.org>
@@ -43,397 +46,140 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-For better maintainability, try to concentrate all the common functions
-that communicate with the f/w in firmware_if.c
+Retrieving the clock from the f/w is done exactly the same in ALL our
+ASICs. Therefore, no real justification for doing it as an
+ASIC-specific function.
+
+The only thing is we need to check if we are running on simulator,
+which doesn't require ASIC-specific callback.
 
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/misc/habanalabs/common/device.c      |   6 +-
- drivers/misc/habanalabs/common/firmware_if.c | 101 ++++++++++++++++-
- drivers/misc/habanalabs/common/habanalabs.h  |  44 +++-----
- drivers/misc/habanalabs/common/sysfs.c       | 110 +------------------
- drivers/misc/habanalabs/goya/goya_hwmgr.c    |  38 +++----
- 5 files changed, 141 insertions(+), 158 deletions(-)
+ drivers/misc/habanalabs/common/habanalabs.h       |  7 ++-----
+ drivers/misc/habanalabs/common/habanalabs_ioctl.c |  9 ++++-----
+ drivers/misc/habanalabs/common/hwmgr.c            | 13 ++++++++-----
+ drivers/misc/habanalabs/gaudi/gaudi.c             |  1 -
+ drivers/misc/habanalabs/goya/goya.c               |  3 +--
+ 5 files changed, 15 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/misc/habanalabs/common/device.c b/drivers/misc/habanalabs/common/device.c
-index 9955e0d3502b..c98a0a81e7d5 100644
---- a/drivers/misc/habanalabs/common/device.c
-+++ b/drivers/misc/habanalabs/common/device.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
- 
- /*
-- * Copyright 2016-2021 HabanaLabs, Ltd.
-+ * Copyright 2016-2022 HabanaLabs, Ltd.
-  * All Rights Reserved.
-  */
- 
-@@ -1228,7 +1228,7 @@ int hl_device_reset(struct hl_device *hdev, u32 flags)
- 			goto out_err;
- 		}
- 
--		hl_set_max_power(hdev);
-+		hl_fw_set_max_power(hdev);
- 	} else {
- 		rc = hdev->asic_funcs->non_hard_reset_late_init(hdev);
- 		if (rc) {
-@@ -1534,7 +1534,7 @@ int hl_device_init(struct hl_device *hdev, struct class *hclass)
- 	/* Need to call this again because the max power might change,
- 	 * depending on card type for certain ASICs
- 	 */
--	hl_set_max_power(hdev);
-+	hl_fw_set_max_power(hdev);
- 
- 	/*
- 	 * hl_hwmon_init() must be called after device_late_init(), because only
-diff --git a/drivers/misc/habanalabs/common/firmware_if.c b/drivers/misc/habanalabs/common/firmware_if.c
-index f7ccbd288510..508ee349f4e4 100644
---- a/drivers/misc/habanalabs/common/firmware_if.c
-+++ b/drivers/misc/habanalabs/common/firmware_if.c
-@@ -2685,7 +2685,7 @@ int hl_fw_init_cpu(struct hl_device *hdev)
- 
- void hl_fw_set_pll_profile(struct hl_device *hdev, enum hl_pll_frequency freq)
- {
--	hl_set_frequency(hdev, hdev->asic_prop.clk_pll_index,
-+	hl_fw_set_frequency(hdev, hdev->asic_prop.clk_pll_index,
- 				hdev->asic_prop.max_freq_value);
- }
- 
-@@ -2702,7 +2702,7 @@ int hl_fw_get_clk_rate(struct hl_device *hdev, u32 *cur_clk, u32 *max_clk)
- 		return 0;
- 	}
- 
--	value = hl_get_frequency(hdev, hdev->asic_prop.clk_pll_index, false);
-+	value = hl_fw_get_frequency(hdev, hdev->asic_prop.clk_pll_index, false);
- 
- 	if (value < 0) {
- 		dev_err(hdev->dev, "Failed to retrieve device max clock %ld\n", value);
-@@ -2711,7 +2711,7 @@ int hl_fw_get_clk_rate(struct hl_device *hdev, u32 *cur_clk, u32 *max_clk)
- 
- 	*max_clk = (value / 1000 / 1000);
- 
--	value = hl_get_frequency(hdev, hdev->asic_prop.clk_pll_index, true);
-+	value = hl_fw_get_frequency(hdev, hdev->asic_prop.clk_pll_index, true);
- 
- 	if (value < 0) {
- 		dev_err(hdev->dev, "Failed to retrieve device current clock %ld\n", value);
-@@ -2722,3 +2722,98 @@ int hl_fw_get_clk_rate(struct hl_device *hdev, u32 *cur_clk, u32 *max_clk)
- 
- 	return 0;
- }
-+
-+long hl_fw_get_frequency(struct hl_device *hdev, u32 pll_index, bool curr)
-+{
-+	struct cpucp_packet pkt;
-+	u32 used_pll_idx;
-+	u64 result;
-+	int rc;
-+
-+	rc = get_used_pll_index(hdev, pll_index, &used_pll_idx);
-+	if (rc)
-+		return rc;
-+
-+	memset(&pkt, 0, sizeof(pkt));
-+
-+	if (curr)
-+		pkt.ctl = cpu_to_le32(CPUCP_PACKET_FREQUENCY_CURR_GET <<
-+						CPUCP_PKT_CTL_OPCODE_SHIFT);
-+	else
-+		pkt.ctl = cpu_to_le32(CPUCP_PACKET_FREQUENCY_GET << CPUCP_PKT_CTL_OPCODE_SHIFT);
-+
-+	pkt.pll_index = cpu_to_le32((u32)used_pll_idx);
-+
-+	rc = hdev->asic_funcs->send_cpu_message(hdev, (u32 *) &pkt, sizeof(pkt), 0, &result);
-+
-+	if (rc) {
-+		dev_err(hdev->dev, "Failed to get frequency of PLL %d, error %d\n",
-+			used_pll_idx, rc);
-+		return rc;
-+	}
-+
-+	return (long) result;
-+}
-+
-+void hl_fw_set_frequency(struct hl_device *hdev, u32 pll_index, u64 freq)
-+{
-+	struct cpucp_packet pkt;
-+	u32 used_pll_idx;
-+	int rc;
-+
-+	rc = get_used_pll_index(hdev, pll_index, &used_pll_idx);
-+	if (rc)
-+		return;
-+
-+	memset(&pkt, 0, sizeof(pkt));
-+
-+	pkt.ctl = cpu_to_le32(CPUCP_PACKET_FREQUENCY_SET << CPUCP_PKT_CTL_OPCODE_SHIFT);
-+	pkt.pll_index = cpu_to_le32((u32)used_pll_idx);
-+	pkt.value = cpu_to_le64(freq);
-+
-+	rc = hdev->asic_funcs->send_cpu_message(hdev, (u32 *) &pkt, sizeof(pkt), 0, NULL);
-+
-+	if (rc)
-+		dev_err(hdev->dev, "Failed to set frequency to PLL %d, error %d\n",
-+			used_pll_idx, rc);
-+}
-+
-+u64 hl_fw_get_max_power(struct hl_device *hdev)
-+{
-+	struct cpucp_packet pkt;
-+	u64 result;
-+	int rc;
-+
-+	memset(&pkt, 0, sizeof(pkt));
-+
-+	pkt.ctl = cpu_to_le32(CPUCP_PACKET_MAX_POWER_GET << CPUCP_PKT_CTL_OPCODE_SHIFT);
-+
-+	rc = hdev->asic_funcs->send_cpu_message(hdev, (u32 *) &pkt, sizeof(pkt), 0, &result);
-+
-+	if (rc) {
-+		dev_err(hdev->dev, "Failed to get max power, error %d\n", rc);
-+		return (u64) rc;
-+	}
-+
-+	return result;
-+}
-+
-+void hl_fw_set_max_power(struct hl_device *hdev)
-+{
-+	struct cpucp_packet pkt;
-+	int rc;
-+
-+	/* TODO: remove this after simulator supports this packet */
-+	if (!hdev->pdev)
-+		return;
-+
-+	memset(&pkt, 0, sizeof(pkt));
-+
-+	pkt.ctl = cpu_to_le32(CPUCP_PACKET_MAX_POWER_SET << CPUCP_PKT_CTL_OPCODE_SHIFT);
-+	pkt.value = cpu_to_le64(hdev->max_power);
-+
-+	rc = hdev->asic_funcs->send_cpu_message(hdev, (u32 *) &pkt, sizeof(pkt), 0, NULL);
-+
-+	if (rc)
-+		dev_err(hdev->dev, "Failed to set max power, error %d\n", rc);
-+}
 diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
-index c782d44d58d5..2bf73e5ce47f 100644
+index 571998899253..ecfdfec7abdc 100644
 --- a/drivers/misc/habanalabs/common/habanalabs.h
 +++ b/drivers/misc/habanalabs/common/habanalabs.h
-@@ -3092,37 +3092,25 @@ enum pci_region hl_get_pci_memory_region(struct hl_device *hdev, u64 addr);
- int hl_pci_init(struct hl_device *hdev);
- void hl_pci_fini(struct hl_device *hdev);
- 
--long hl_get_frequency(struct hl_device *hdev, u32 pll_index,
--								bool curr);
--void hl_set_frequency(struct hl_device *hdev, u32 pll_index,
--								u64 freq);
--int hl_get_temperature(struct hl_device *hdev,
--		       int sensor_index, u32 attr, long *value);
--int hl_set_temperature(struct hl_device *hdev,
--		       int sensor_index, u32 attr, long value);
--int hl_get_voltage(struct hl_device *hdev,
--		   int sensor_index, u32 attr, long *value);
--int hl_get_current(struct hl_device *hdev,
--		   int sensor_index, u32 attr, long *value);
--int hl_get_fan_speed(struct hl_device *hdev,
--		     int sensor_index, u32 attr, long *value);
--int hl_get_pwm_info(struct hl_device *hdev,
--		    int sensor_index, u32 attr, long *value);
--void hl_set_pwm_info(struct hl_device *hdev, int sensor_index, u32 attr,
--			long value);
--u64 hl_get_max_power(struct hl_device *hdev);
--void hl_set_max_power(struct hl_device *hdev);
--int hl_set_voltage(struct hl_device *hdev,
--			int sensor_index, u32 attr, long value);
--int hl_set_current(struct hl_device *hdev,
--			int sensor_index, u32 attr, long value);
--int hl_set_power(struct hl_device *hdev,
--			int sensor_index, u32 attr, long value);
--int hl_get_power(struct hl_device *hdev,
--			int sensor_index, u32 attr, long *value);
-+long hl_fw_get_frequency(struct hl_device *hdev, u32 pll_index, bool curr);
-+void hl_fw_set_frequency(struct hl_device *hdev, u32 pll_index, u64 freq);
-+int hl_get_temperature(struct hl_device *hdev, int sensor_index, u32 attr, long *value);
-+int hl_set_temperature(struct hl_device *hdev, int sensor_index, u32 attr, long value);
-+int hl_get_voltage(struct hl_device *hdev, int sensor_index, u32 attr, long *value);
-+int hl_get_current(struct hl_device *hdev, int sensor_index, u32 attr, long *value);
-+int hl_get_fan_speed(struct hl_device *hdev, int sensor_index, u32 attr, long *value);
-+int hl_get_pwm_info(struct hl_device *hdev, int sensor_index, u32 attr, long *value);
-+void hl_set_pwm_info(struct hl_device *hdev, int sensor_index, u32 attr, long value);
-+u64 hl_fw_get_max_power(struct hl_device *hdev);
-+void hl_fw_set_max_power(struct hl_device *hdev);
-+int hl_set_voltage(struct hl_device *hdev, int sensor_index, u32 attr, long value);
-+int hl_set_current(struct hl_device *hdev, int sensor_index, u32 attr, long value);
-+int hl_set_power(struct hl_device *hdev, int sensor_index, u32 attr, long value);
-+int hl_get_power(struct hl_device *hdev, int sensor_index, u32 attr, long *value);
- int hl_fw_get_clk_rate(struct hl_device *hdev, u32 *cur_clk, u32 *max_clk);
- void hl_fw_set_pll_profile(struct hl_device *hdev, enum hl_pll_frequency freq);
+@@ -1,6 +1,6 @@
+ /* SPDX-License-Identifier: GPL-2.0
+  *
+- * Copyright 2016-2021 HabanaLabs, Ltd.
++ * Copyright 2016-2022 HabanaLabs, Ltd.
+  * All Rights Reserved.
+  *
+  */
+@@ -1190,7 +1190,6 @@ struct fw_load_mgr {
+  * @halt_coresight: stop the ETF and ETR traces.
+  * @ctx_init: context dependent initialization.
+  * @ctx_fini: context dependent cleanup.
+- * @get_clk_rate: Retrieve the ASIC current and maximum clock rate in MHz
+  * @get_queue_id_for_cq: Get the H/W queue id related to the given CQ index.
+  * @load_firmware_to_device: load the firmware to the device's memory
+  * @load_boot_fit_to_device: load boot fit to device's memory
+@@ -1321,7 +1320,6 @@ struct hl_asic_funcs {
+ 	void (*halt_coresight)(struct hl_device *hdev, struct hl_ctx *ctx);
+ 	int (*ctx_init)(struct hl_ctx *ctx);
+ 	void (*ctx_fini)(struct hl_ctx *ctx);
+-	int (*get_clk_rate)(struct hl_device *hdev, u32 *cur_clk, u32 *max_clk);
+ 	u32 (*get_queue_id_for_cq)(struct hl_device *hdev, u32 cq_idx);
+ 	int (*load_firmware_to_device)(struct hl_device *hdev);
+ 	int (*load_boot_fit_to_device)(struct hl_device *hdev);
+@@ -3122,8 +3120,7 @@ int hl_set_power(struct hl_device *hdev,
+ 			int sensor_index, u32 attr, long value);
+ int hl_get_power(struct hl_device *hdev,
+ 			int sensor_index, u32 attr, long *value);
+-int hl_get_clk_rate(struct hl_device *hdev,
+-			u32 *cur_clk, u32 *max_clk);
++int hl_get_clk_rate(struct hl_device *hdev, u32 *cur_clk, u32 *max_clk);
+ void hl_set_pll_profile(struct hl_device *hdev, enum hl_pll_frequency freq);
  void hl_sysfs_add_dev_clk_attr(struct hl_device *hdev, struct attribute_group *dev_attr_grp);
-+
  void hw_sob_get(struct hl_hw_sob *hw_sob);
- void hw_sob_put(struct hl_hw_sob *hw_sob);
- void hl_encaps_handle_do_release(struct kref *ref);
-diff --git a/drivers/misc/habanalabs/common/sysfs.c b/drivers/misc/habanalabs/common/sysfs.c
-index d66cf43788d8..ce3538d36bb7 100644
---- a/drivers/misc/habanalabs/common/sysfs.c
-+++ b/drivers/misc/habanalabs/common/sysfs.c
-@@ -9,106 +9,6 @@
+diff --git a/drivers/misc/habanalabs/common/habanalabs_ioctl.c b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
+index 3ba3a8ffda3e..ed516f911ee2 100644
+--- a/drivers/misc/habanalabs/common/habanalabs_ioctl.c
++++ b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
+@@ -1,7 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0
  
- #include <linux/pci.h>
+ /*
+- * Copyright 2016-2019 HabanaLabs, Ltd.
++ * Copyright 2016-2022 HabanaLabs, Ltd.
+  * All Rights Reserved.
+  */
  
--long hl_get_frequency(struct hl_device *hdev, u32 pll_index, bool curr)
--{
--	struct cpucp_packet pkt;
--	u32 used_pll_idx;
--	u64 result;
--	int rc;
--
--	rc = get_used_pll_index(hdev, pll_index, &used_pll_idx);
--	if (rc)
--		return rc;
--
--	memset(&pkt, 0, sizeof(pkt));
--
--	if (curr)
--		pkt.ctl = cpu_to_le32(CPUCP_PACKET_FREQUENCY_CURR_GET <<
--						CPUCP_PKT_CTL_OPCODE_SHIFT);
--	else
--		pkt.ctl = cpu_to_le32(CPUCP_PACKET_FREQUENCY_GET <<
--						CPUCP_PKT_CTL_OPCODE_SHIFT);
--	pkt.pll_index = cpu_to_le32((u32)used_pll_idx);
--
--	rc = hdev->asic_funcs->send_cpu_message(hdev, (u32 *) &pkt, sizeof(pkt),
--						0, &result);
--
--	if (rc) {
--		dev_err(hdev->dev,
--			"Failed to get frequency of PLL %d, error %d\n",
--			used_pll_idx, rc);
--		return rc;
--	}
--
--	return (long) result;
--}
--
--void hl_set_frequency(struct hl_device *hdev, u32 pll_index, u64 freq)
--{
--	struct cpucp_packet pkt;
--	u32 used_pll_idx;
--	int rc;
--
--	rc = get_used_pll_index(hdev, pll_index, &used_pll_idx);
--	if (rc)
--		return;
--
--	memset(&pkt, 0, sizeof(pkt));
--
--	pkt.ctl = cpu_to_le32(CPUCP_PACKET_FREQUENCY_SET <<
--					CPUCP_PKT_CTL_OPCODE_SHIFT);
--	pkt.pll_index = cpu_to_le32((u32)used_pll_idx);
--	pkt.value = cpu_to_le64(freq);
--
--	rc = hdev->asic_funcs->send_cpu_message(hdev, (u32 *) &pkt, sizeof(pkt),
--						0, NULL);
--
--	if (rc)
--		dev_err(hdev->dev,
--			"Failed to set frequency to PLL %d, error %d\n",
--			used_pll_idx, rc);
--}
--
--u64 hl_get_max_power(struct hl_device *hdev)
--{
--	struct cpucp_packet pkt;
--	u64 result;
--	int rc;
--
--	memset(&pkt, 0, sizeof(pkt));
--
--	pkt.ctl = cpu_to_le32(CPUCP_PACKET_MAX_POWER_GET <<
--				CPUCP_PKT_CTL_OPCODE_SHIFT);
--
--	rc = hdev->asic_funcs->send_cpu_message(hdev, (u32 *) &pkt, sizeof(pkt),
--						0, &result);
--
--	if (rc) {
--		dev_err(hdev->dev, "Failed to get max power, error %d\n", rc);
--		return (u64) rc;
--	}
--
--	return result;
--}
--
--void hl_set_max_power(struct hl_device *hdev)
--{
--	struct cpucp_packet pkt;
--	int rc;
--
--	memset(&pkt, 0, sizeof(pkt));
--
--	pkt.ctl = cpu_to_le32(CPUCP_PACKET_MAX_POWER_SET <<
--				CPUCP_PKT_CTL_OPCODE_SHIFT);
--	pkt.value = cpu_to_le64(hdev->max_power);
--
--	rc = hdev->asic_funcs->send_cpu_message(hdev, (u32 *) &pkt, sizeof(pkt),
--						0, NULL);
--
--	if (rc)
--		dev_err(hdev->dev, "Failed to set max power, error %d\n", rc);
--}
--
- static ssize_t clk_max_freq_mhz_show(struct device *dev, struct device_attribute *attr, char *buf)
- {
- 	struct hl_device *hdev = dev_get_drvdata(dev);
-@@ -117,7 +17,7 @@ static ssize_t clk_max_freq_mhz_show(struct device *dev, struct device_attribute
- 	if (!hl_device_operational(hdev, NULL))
- 		return -ENODEV;
+@@ -251,13 +251,12 @@ static int get_clk_rate(struct hl_device *hdev, struct hl_info_args *args)
+ 	if ((!max_size) || (!out))
+ 		return -EINVAL;
  
--	value = hl_get_frequency(hdev, hdev->asic_prop.clk_pll_index, false);
-+	value = hl_fw_get_frequency(hdev, hdev->asic_prop.clk_pll_index, false);
+-	rc = hdev->asic_funcs->get_clk_rate(hdev, &clk_rate.cur_clk_rate_mhz,
+-						&clk_rate.max_clk_rate_mhz);
++	rc = hl_get_clk_rate(hdev, &clk_rate.cur_clk_rate_mhz, &clk_rate.max_clk_rate_mhz);
+ 	if (rc)
+ 		return rc;
  
- 	hdev->asic_prop.max_freq_value = value;
- 
-@@ -144,7 +44,7 @@ static ssize_t clk_max_freq_mhz_store(struct device *dev, struct device_attribut
- 
- 	hdev->asic_prop.max_freq_value = value * 1000 * 1000;
- 
--	hl_set_frequency(hdev, hdev->asic_prop.clk_pll_index, hdev->asic_prop.max_freq_value);
-+	hl_fw_set_frequency(hdev, hdev->asic_prop.clk_pll_index, hdev->asic_prop.max_freq_value);
- 
- fail:
- 	return count;
-@@ -158,7 +58,7 @@ static ssize_t clk_cur_freq_mhz_show(struct device *dev, struct device_attribute
- 	if (!hl_device_operational(hdev, NULL))
- 		return -ENODEV;
- 
--	value = hl_get_frequency(hdev, hdev->asic_prop.clk_pll_index, true);
-+	value = hl_fw_get_frequency(hdev, hdev->asic_prop.clk_pll_index, true);
- 
- 	return sprintf(buf, "%lu\n", (value / 1000 / 1000));
+-	return copy_to_user(out, &clk_rate,
+-		min((size_t) max_size, sizeof(clk_rate))) ? -EFAULT : 0;
++	return copy_to_user(out, &clk_rate, min_t(size_t, max_size, sizeof(clk_rate)))
++										? -EFAULT : 0;
  }
-@@ -386,7 +286,7 @@ static ssize_t max_power_show(struct device *dev, struct device_attribute *attr,
+ 
+ static int get_reset_count(struct hl_device *hdev, struct hl_info_args *args)
+diff --git a/drivers/misc/habanalabs/common/hwmgr.c b/drivers/misc/habanalabs/common/hwmgr.c
+index f0e5417560c3..e96126b46056 100644
+--- a/drivers/misc/habanalabs/common/hwmgr.c
++++ b/drivers/misc/habanalabs/common/hwmgr.c
+@@ -20,11 +20,16 @@ int hl_get_clk_rate(struct hl_device *hdev, u32 *cur_clk, u32 *max_clk)
  	if (!hl_device_operational(hdev, NULL))
  		return -ENODEV;
  
--	val = hl_get_max_power(hdev);
-+	val = hl_fw_get_max_power(hdev);
++	if (!hdev->pdev) {
++		*cur_clk = 0;
++		*max_clk = 0;
++		return 0;
++	}
++
+ 	value = hl_get_frequency(hdev, hdev->asic_prop.clk_pll_index, false);
  
- 	return sprintf(buf, "%lu\n", val);
- }
-@@ -411,7 +311,7 @@ static ssize_t max_power_store(struct device *dev,
+ 	if (value < 0) {
+-		dev_err(hdev->dev, "Failed to retrieve device max clock %ld\n",
+-			value);
++		dev_err(hdev->dev, "Failed to retrieve device max clock %ld\n", value);
+ 		return value;
  	}
  
- 	hdev->max_power = value;
--	hl_set_max_power(hdev);
-+	hl_fw_set_max_power(hdev);
+@@ -33,9 +38,7 @@ int hl_get_clk_rate(struct hl_device *hdev, u32 *cur_clk, u32 *max_clk)
+ 	value = hl_get_frequency(hdev, hdev->asic_prop.clk_pll_index, true);
  
- out:
- 	return count;
-diff --git a/drivers/misc/habanalabs/goya/goya_hwmgr.c b/drivers/misc/habanalabs/goya/goya_hwmgr.c
-index 76b47749affe..f9f3afe94056 100644
---- a/drivers/misc/habanalabs/goya/goya_hwmgr.c
-+++ b/drivers/misc/habanalabs/goya/goya_hwmgr.c
+ 	if (value < 0) {
+-		dev_err(hdev->dev,
+-			"Failed to retrieve device current clock %ld\n",
+-			value);
++		dev_err(hdev->dev, "Failed to retrieve device current clock %ld\n", value);
+ 		return value;
+ 	}
+ 
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index f096cfc03bf3..744d4305db40 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -9385,7 +9385,6 @@ static const struct hl_asic_funcs gaudi_funcs = {
+ 	.halt_coresight = gaudi_halt_coresight,
+ 	.ctx_init = gaudi_ctx_init,
+ 	.ctx_fini = gaudi_ctx_fini,
+-	.get_clk_rate = hl_get_clk_rate,
+ 	.get_queue_id_for_cq = gaudi_get_queue_id_for_cq,
+ 	.load_firmware_to_device = gaudi_load_firmware_to_device,
+ 	.load_boot_fit_to_device = gaudi_load_boot_fit_to_device,
+diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
+index 954ef4d7bbf7..318b97c53ed7 100644
+--- a/drivers/misc/habanalabs/goya/goya.c
++++ b/drivers/misc/habanalabs/goya/goya.c
 @@ -1,7 +1,7 @@
  // SPDX-License-Identifier: GPL-2.0
  
@@ -443,116 +189,14 @@ index 76b47749affe..f9f3afe94056 100644
   * All Rights Reserved.
   */
  
-@@ -13,19 +13,19 @@ void goya_set_pll_profile(struct hl_device *hdev, enum hl_pll_frequency freq)
- 
- 	switch (freq) {
- 	case PLL_HIGH:
--		hl_set_frequency(hdev, HL_GOYA_MME_PLL, hdev->high_pll);
--		hl_set_frequency(hdev, HL_GOYA_TPC_PLL, hdev->high_pll);
--		hl_set_frequency(hdev, HL_GOYA_IC_PLL, hdev->high_pll);
-+		hl_fw_set_frequency(hdev, HL_GOYA_MME_PLL, hdev->high_pll);
-+		hl_fw_set_frequency(hdev, HL_GOYA_TPC_PLL, hdev->high_pll);
-+		hl_fw_set_frequency(hdev, HL_GOYA_IC_PLL, hdev->high_pll);
- 		break;
- 	case PLL_LOW:
--		hl_set_frequency(hdev, HL_GOYA_MME_PLL, GOYA_PLL_FREQ_LOW);
--		hl_set_frequency(hdev, HL_GOYA_TPC_PLL, GOYA_PLL_FREQ_LOW);
--		hl_set_frequency(hdev, HL_GOYA_IC_PLL, GOYA_PLL_FREQ_LOW);
-+		hl_fw_set_frequency(hdev, HL_GOYA_MME_PLL, GOYA_PLL_FREQ_LOW);
-+		hl_fw_set_frequency(hdev, HL_GOYA_TPC_PLL, GOYA_PLL_FREQ_LOW);
-+		hl_fw_set_frequency(hdev, HL_GOYA_IC_PLL, GOYA_PLL_FREQ_LOW);
- 		break;
- 	case PLL_LAST:
--		hl_set_frequency(hdev, HL_GOYA_MME_PLL, goya->mme_clk);
--		hl_set_frequency(hdev, HL_GOYA_TPC_PLL, goya->tpc_clk);
--		hl_set_frequency(hdev, HL_GOYA_IC_PLL, goya->ic_clk);
-+		hl_fw_set_frequency(hdev, HL_GOYA_MME_PLL, goya->mme_clk);
-+		hl_fw_set_frequency(hdev, HL_GOYA_TPC_PLL, goya->tpc_clk);
-+		hl_fw_set_frequency(hdev, HL_GOYA_IC_PLL, goya->ic_clk);
- 		break;
- 	default:
- 		dev_err(hdev->dev, "unknown frequency setting\n");
-@@ -41,7 +41,7 @@ static ssize_t mme_clk_show(struct device *dev, struct device_attribute *attr,
- 	if (!hl_device_operational(hdev, NULL))
- 		return -ENODEV;
- 
--	value = hl_get_frequency(hdev, HL_GOYA_MME_PLL, false);
-+	value = hl_fw_get_frequency(hdev, HL_GOYA_MME_PLL, false);
- 
- 	if (value < 0)
- 		return value;
-@@ -74,7 +74,7 @@ static ssize_t mme_clk_store(struct device *dev, struct device_attribute *attr,
- 		goto fail;
- 	}
- 
--	hl_set_frequency(hdev, HL_GOYA_MME_PLL, value);
-+	hl_fw_set_frequency(hdev, HL_GOYA_MME_PLL, value);
- 	goya->mme_clk = value;
- 
- fail:
-@@ -90,7 +90,7 @@ static ssize_t tpc_clk_show(struct device *dev, struct device_attribute *attr,
- 	if (!hl_device_operational(hdev, NULL))
- 		return -ENODEV;
- 
--	value = hl_get_frequency(hdev, HL_GOYA_TPC_PLL, false);
-+	value = hl_fw_get_frequency(hdev, HL_GOYA_TPC_PLL, false);
- 
- 	if (value < 0)
- 		return value;
-@@ -123,7 +123,7 @@ static ssize_t tpc_clk_store(struct device *dev, struct device_attribute *attr,
- 		goto fail;
- 	}
- 
--	hl_set_frequency(hdev, HL_GOYA_TPC_PLL, value);
-+	hl_fw_set_frequency(hdev, HL_GOYA_TPC_PLL, value);
- 	goya->tpc_clk = value;
- 
- fail:
-@@ -139,7 +139,7 @@ static ssize_t ic_clk_show(struct device *dev, struct device_attribute *attr,
- 	if (!hl_device_operational(hdev, NULL))
- 		return -ENODEV;
- 
--	value = hl_get_frequency(hdev, HL_GOYA_IC_PLL, false);
-+	value = hl_fw_get_frequency(hdev, HL_GOYA_IC_PLL, false);
- 
- 	if (value < 0)
- 		return value;
-@@ -172,7 +172,7 @@ static ssize_t ic_clk_store(struct device *dev, struct device_attribute *attr,
- 		goto fail;
- 	}
- 
--	hl_set_frequency(hdev, HL_GOYA_IC_PLL, value);
-+	hl_fw_set_frequency(hdev, HL_GOYA_IC_PLL, value);
- 	goya->ic_clk = value;
- 
- fail:
-@@ -188,7 +188,7 @@ static ssize_t mme_clk_curr_show(struct device *dev,
- 	if (!hl_device_operational(hdev, NULL))
- 		return -ENODEV;
- 
--	value = hl_get_frequency(hdev, HL_GOYA_MME_PLL, true);
-+	value = hl_fw_get_frequency(hdev, HL_GOYA_MME_PLL, true);
- 
- 	if (value < 0)
- 		return value;
-@@ -205,7 +205,7 @@ static ssize_t tpc_clk_curr_show(struct device *dev,
- 	if (!hl_device_operational(hdev, NULL))
- 		return -ENODEV;
- 
--	value = hl_get_frequency(hdev, HL_GOYA_TPC_PLL, true);
-+	value = hl_fw_get_frequency(hdev, HL_GOYA_TPC_PLL, true);
- 
- 	if (value < 0)
- 		return value;
-@@ -222,7 +222,7 @@ static ssize_t ic_clk_curr_show(struct device *dev,
- 	if (!hl_device_operational(hdev, NULL))
- 		return -ENODEV;
- 
--	value = hl_get_frequency(hdev, HL_GOYA_IC_PLL, true);
-+	value = hl_fw_get_frequency(hdev, HL_GOYA_IC_PLL, true);
- 
- 	if (value < 0)
- 		return value;
+@@ -5739,7 +5739,6 @@ static const struct hl_asic_funcs goya_funcs = {
+ 	.halt_coresight = goya_halt_coresight,
+ 	.ctx_init = goya_ctx_init,
+ 	.ctx_fini = goya_ctx_fini,
+-	.get_clk_rate = hl_get_clk_rate,
+ 	.get_queue_id_for_cq = goya_get_queue_id_for_cq,
+ 	.load_firmware_to_device = goya_load_firmware_to_device,
+ 	.load_boot_fit_to_device = goya_load_boot_fit_to_device,
 -- 
 2.25.1
 
