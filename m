@@ -2,64 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64515C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 09:40:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D041AC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 09:40:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233994AbiAVJkK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 04:40:10 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52088 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231922AbiAVJkI (ORCPT
+        id S234063AbiAVJkM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 04:40:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45942 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232237AbiAVJkI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 22 Jan 2022 04:40:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75CA7C06173B;
+        Sat, 22 Jan 2022 01:40:08 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 28A39B81B8E;
-        Sat, 22 Jan 2022 09:40:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id B631AC340E8;
+        by ams.source.kernel.org (Postfix) with ESMTPS id AE813B81785;
+        Sat, 22 Jan 2022 09:40:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 44C43C004E1;
         Sat, 22 Jan 2022 09:40:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1642844405;
-        bh=dsiJR+kP2XD9Ms4tTGM2cH6Z9ukEFKq6SuWK2HULMUo=;
+        bh=henkmRl3HfTRAowTOP/RK23Q67yuCV3HA56VhpKoBks=;
         h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=JNZcWoOiQoO83jZQ0kkppQyqPKWY0u5lKjVmvuDYqIfM6D/Fx6raTW+RbledMB7/V
-         oKq6CoEga8hUCW7VYEfJq2klxNPJrnhMT70xelmzY/sBwTTU70TSRS6AMNBd2grZvy
-         txe4ETSoOeDI8qxHC4HHp9aGRQPNeRAUU8gFFszSUJ8nQ3hVEKjPshntP6pcKb/Hxk
-         DYTSmkWTkI201hPXpqHUxnXLfm538TrLJNjZQ/eZ/qnFAb5wBBtbHJ/DhKaQdGgv6D
-         QZRZBjVj4Zgm4r/PvWVR3KRAQLlxAVJG5526I4UngNCuCtWa3BAdeOAwOQUtGUpXqM
-         olSecUyn0uusg==
+        b=NKM6qjRQaQm4rNU9/RrE7JODEuKQEHJpghqkSS1311lLhHxtdUZm4BSjgz+h8z2zQ
+         QSVYgZs739kQqWfPYOZDTRxBUjgy7GeH/n1McqDHhBOWT21dqXVsuyyGty53wWjvOQ
+         TSPqLmRCdBD3sU8D1PqbcKdPA1skGg89V0ZLvieurJbQjRbaa79MvZDYTxQcWJ8d/L
+         Ym3D/50s55/IJ2MkUuZxH9Z4ppCLnNkOeAFoKvpxj3hLFn2yiYOHqY5PNTkquUSmK8
+         fk5jmGpQN7/QEagAqziftFzzvkIN8iBFWOjl20RuaR7K8NCcZCZEiB+X+REN4HBN6H
+         uNehTqqPl+qVA==
 Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 9F67FF60796;
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 23234F60796;
         Sat, 22 Jan 2022 09:40:05 +0000 (UTC)
-Subject: Re: [GIT PULL] More thermal control updates for v5.17-rc1
+Subject: Re: [GIT PULL] fscache: Fixes and minor updates for rewrite
 From:   pr-tracker-bot@kernel.org
-In-Reply-To: <CAJZ5v0hTjqYHH3WeN-jzrgsR8m7=LAvsq9Y7eQRWz3pz0=5bgQ@mail.gmail.com>
-References: <CAJZ5v0hTjqYHH3WeN-jzrgsR8m7=LAvsq9Y7eQRWz3pz0=5bgQ@mail.gmail.com>
-X-PR-Tracked-List-Id: <linux-pm.vger.kernel.org>
-X-PR-Tracked-Message-Id: <CAJZ5v0hTjqYHH3WeN-jzrgsR8m7=LAvsq9Y7eQRWz3pz0=5bgQ@mail.gmail.com>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git thermal-5.17-rc1-2
-X-PR-Tracked-Commit-Id: e5b54867f47f765fcb439e09ed763b5de617af3e
+In-Reply-To: <1339462.1642802244@warthog.procyon.org.uk>
+References: <1339462.1642802244@warthog.procyon.org.uk>
+X-PR-Tracked-List-Id: <linux-nfs.vger.kernel.org>
+X-PR-Tracked-Message-Id: <1339462.1642802244@warthog.procyon.org.uk>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git tags/fscache-fixes-20220121
+X-PR-Tracked-Commit-Id: cef0223191452b3c493a1070baad9ffe806babac
 X-PR-Merge-Tree: torvalds/linux.git
 X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: 6bdfb259d6d66161011d1d618af190f52b6d57fd
-Message-Id: <164284440564.7666.4445430942052934098.pr-tracker-bot@kernel.org>
+X-PR-Merge-Commit-Id: 7fd350f6ff846f788ba5f6668bacf2ce4257ed8f
+Message-Id: <164284440509.7666.8294766242390570357.pr-tracker-bot@kernel.org>
 Date:   Sat, 22 Jan 2022 09:40:05 +0000
-To:     "Rafael J. Wysocki" <rafael@kernel.org>
+To:     David Howells <dhowells@redhat.com>
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+        Shyam Prasad N <nspmangalore@gmail.com>,
+        Jeff Layton <jlayton@kernel.org>, linux-cifs@vger.kernel.org,
+        Steve French <smfrench@gmail.com>,
+        Jeffle Xu <jefflexu@linux.alibaba.com>, dhowells@redhat.com,
+        Trond Myklebust <trondmy@hammerspace.com>,
+        Anna Schumaker <anna.schumaker@netapp.com>,
+        Dominique Martinet <asmadeus@codewreck.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Omar Sandoval <osandov@osandov.com>, linux-cachefs@redhat.com,
+        linux-afs@lists.infradead.org, linux-nfs@vger.kernel.org,
+        ceph-devel@vger.kernel.org, v9fs-developer@lists.sourceforge.net,
+        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 21 Jan 2022 20:28:16 +0100:
+The pull request you sent on Fri, 21 Jan 2022 21:57:24 +0000:
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git thermal-5.17-rc1-2
+> git://git.kernel.org/pub/scm/linux/kernel/git/dhowells/linux-fs.git tags/fscache-fixes-20220121
 
 has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/6bdfb259d6d66161011d1d618af190f52b6d57fd
+https://git.kernel.org/torvalds/c/7fd350f6ff846f788ba5f6668bacf2ce4257ed8f
 
 Thank you!
 
