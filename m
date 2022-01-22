@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27212C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 19:58:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16E7CC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 19:58:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235006AbiAVT6Y (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 14:58:24 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:40594 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234956AbiAVT6A (ORCPT
+        id S235121AbiAVT6Z (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 14:58:25 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33248 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234888AbiAVT6A (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sat, 22 Jan 2022 14:58:00 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 8258ACE09EC
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 19:57:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0C68DC004E1;
-        Sat, 22 Jan 2022 19:57:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4109260E04
+        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 19:58:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1197C340E4;
+        Sat, 22 Jan 2022 19:57:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642881477;
-        bh=IXIbUqJGHmg3ojfwHCdVG4hBWMeEp3Aaeq5o+Fa7dkE=;
+        s=k20201202; t=1642881479;
+        bh=UyhmqyYYymp4D+POO9zvg+tN/Lot2LylB9i/7P3+08k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bHp+dyaScu7jdKwfUTR7iYnWb2EwLLdcNpQU2ixNB78GuQjgMjrVbXp8wrwBcclWi
-         cCB6u7iLqm24n5uuo+Z6jEh+v7nuX9AQhYR5ur5aP4rpbmS7ZwozeZ2tPwFkJqQNiG
-         TuUVcaLNWTiRrAocHqVhdVdgUrK4HoZ2cTpdo8Inp5Bo/u4LuuDttAtPU1Yj0rmoW0
-         J/4LEZj1r/iW/Qj4YcpINmA3aaUMnH+1KlmN9pAmfGkMDUmxRfy7Zwt4LPaapAI902
-         4/lAhzVLj41RyvjBZp9uN4u/D46yQ0LAwX5Cnz0Rr6OQ85tBbyhfT9ssfF/YZh2LgN
-         0uDUD0xmAQJrg==
+        b=S+IIKE2al4zl9JX7qwSEeJGTefY3Hk8vg2V8z2jc+B05doo8K5neTJKRw0rQTUZbc
+         J8xvcO2cbKDTW3Ko6htI5XBaySNBkbj1CGIl/WMl4XAj/fpBYdoEUe89B7SghYBX5m
+         CTSI7wUqilftdaujclO+7tHp6PoHWsvJuv/uJWSE9kGPJY6A509phYLg83vXUpqiSP
+         hp1TIaCq+j1ketIWNsixuYyVqJQEQnAop5BJYI7EhfLQ25zvndQhy5O0KGwgOY+zq5
+         tphnVU6hedmI55H0cyOkjvWHi/E3bRuBA6vBEfiX5ujJUVWKLSe/3XN7JoxkSfabP8
+         3/YDkzsHgD2tQ==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Rajaravi Krishna Katta <rkatta@habana.ai>
-Subject: [PATCH 16/30] habanalabs: sysfs support for fw os version
-Date:   Sat, 22 Jan 2022 21:57:17 +0200
-Message-Id: <20220122195731.934494-16-ogabbay@kernel.org>
+Cc:     Ohad Sharabi <osharabi@habana.ai>
+Subject: [PATCH 18/30] habanalabs: duplicate HOP table props to MMU props
+Date:   Sat, 22 Jan 2022 21:57:19 +0200
+Message-Id: <20220122195731.934494-18-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220122195731.934494-1-ogabbay@kernel.org>
 References: <20220122195731.934494-1-ogabbay@kernel.org>
@@ -44,92 +44,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rajaravi Krishna Katta <rkatta@habana.ai>
+From: Ohad Sharabi <osharabi@habana.ai>
 
-Adds new sysfs entry to display firmware os version
-/sys/class/habanalabs/hl<n>/fw_os_ver
+In order to support several device MMU blocks with different
+architectures (e.g. different HOP table size) we need to move to
+per-MMU properties rather than keeping those properties as ASIC
+properties.
 
-Signed-off-by: Rajaravi Krishna Katta <rkatta@habana.ai>
+Refactoring the code to use "per-MMU proprties" is a major effort.
+
+To start making the transition towards this goal but still support
+taking the properties from ASIC properties (for code that currently
+uses them) this patch copies some of the properties to the "per-MMU"
+properties and later, when implementing the per-MMU properties, we
+would be able to delete the MMU props from the ASIC props.
+
+Signed-off-by: Ohad Sharabi <osharabi@habana.ai>
 Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- Documentation/ABI/testing/sysfs-driver-habanalabs |  6 ++++++
- drivers/misc/habanalabs/common/sysfs.c            | 10 ++++++++++
- drivers/misc/habanalabs/include/common/cpucp_if.h |  2 ++
- 3 files changed, 18 insertions(+)
+ drivers/misc/habanalabs/gaudi/gaudi.c | 3 +++
+ drivers/misc/habanalabs/goya/goya.c   | 6 ++++++
+ 2 files changed, 9 insertions(+)
 
-diff --git a/Documentation/ABI/testing/sysfs-driver-habanalabs b/Documentation/ABI/testing/sysfs-driver-habanalabs
-index c16a573eb680..96646fb2e7a1 100644
---- a/Documentation/ABI/testing/sysfs-driver-habanalabs
-+++ b/Documentation/ABI/testing/sysfs-driver-habanalabs
-@@ -69,6 +69,12 @@ KernelVersion:  5.1
- Contact:        ogabbay@kernel.org
- Description:    Displays the device's version from the eFuse
+diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
+index c58e21e2db3b..f2242aa3baa2 100644
+--- a/drivers/misc/habanalabs/gaudi/gaudi.c
++++ b/drivers/misc/habanalabs/gaudi/gaudi.c
+@@ -613,6 +613,9 @@ static int gaudi_set_fixed_properties(struct hl_device *hdev)
+ 	prop->pmmu.page_size = PAGE_SIZE_4KB;
+ 	prop->pmmu.num_hops = MMU_ARCH_5_HOPS;
+ 	prop->pmmu.last_mask = LAST_MASK;
++	/* TODO: will be duplicated until implementing per-MMU props */
++	prop->pmmu.hop_table_size = prop->mmu_hop_table_size;
++	prop->pmmu.hop0_tables_total_size = prop->mmu_hop0_tables_total_size;
  
-+What:           /sys/class/habanalabs/hl<n>/fw_os_ver
-+Date:           Dec 2021
-+KernelVersion:  5.18
-+Contact:        ogabbay@kernel.org
-+Description:    Version of the firmware OS running on the device's CPU
-+
- What:           /sys/class/habanalabs/hl<n>/hard_reset
- Date:           Jan 2019
- KernelVersion:  5.1
-diff --git a/drivers/misc/habanalabs/common/sysfs.c b/drivers/misc/habanalabs/common/sysfs.c
-index 65b132fa6dbd..3f220dd3b6b2 100644
---- a/drivers/misc/habanalabs/common/sysfs.c
-+++ b/drivers/misc/habanalabs/common/sysfs.c
-@@ -156,6 +156,14 @@ static ssize_t thermal_ver_show(struct device *dev,
- 	return sprintf(buf, "%s", hdev->asic_prop.cpucp_info.thermal_version);
- }
+ 	/* PMMU and HPMMU are the same except of page size */
+ 	memcpy(&prop->pmmu_huge, &prop->pmmu, sizeof(prop->pmmu));
+diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
+index d8c6dea7c809..3785fb33260d 100644
+--- a/drivers/misc/habanalabs/goya/goya.c
++++ b/drivers/misc/habanalabs/goya/goya.c
+@@ -430,6 +430,9 @@ int goya_set_fixed_properties(struct hl_device *hdev)
+ 	prop->dmmu.page_size = PAGE_SIZE_2MB;
+ 	prop->dmmu.num_hops = MMU_ARCH_5_HOPS;
+ 	prop->dmmu.last_mask = LAST_MASK;
++	/* TODO: will be duplicated until implementing per-MMU props */
++	prop->dmmu.hop_table_size = prop->mmu_hop_table_size;
++	prop->dmmu.hop0_tables_total_size = prop->mmu_hop0_tables_total_size;
  
-+static ssize_t fw_os_ver_show(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	struct hl_device *hdev = dev_get_drvdata(dev);
-+
-+	return sprintf(buf, "%s", hdev->asic_prop.cpucp_info.fw_os_version);
-+}
-+
- static ssize_t preboot_btl_ver_show(struct device *dev,
- 				struct device_attribute *attr, char *buf)
- {
-@@ -370,6 +378,7 @@ static DEVICE_ATTR_RO(soft_reset_cnt);
- static DEVICE_ATTR_RO(status);
- static DEVICE_ATTR_RO(thermal_ver);
- static DEVICE_ATTR_RO(uboot_ver);
-+static DEVICE_ATTR_RO(fw_os_ver);
+ 	/* shifts and masks are the same in PMMU and DMMU */
+ 	memcpy(&prop->pmmu, &prop->dmmu, sizeof(prop->dmmu));
+@@ -438,6 +441,9 @@ int goya_set_fixed_properties(struct hl_device *hdev)
+ 	prop->pmmu.page_size = PAGE_SIZE_4KB;
+ 	prop->pmmu.num_hops = MMU_ARCH_5_HOPS;
+ 	prop->pmmu.last_mask = LAST_MASK;
++	/* TODO: will be duplicated until implementing per-MMU props */
++	prop->pmmu.hop_table_size = prop->mmu_hop_table_size;
++	prop->pmmu.hop0_tables_total_size = prop->mmu_hop0_tables_total_size;
  
- static struct bin_attribute bin_attr_eeprom = {
- 	.attr = {.name = "eeprom", .mode = (0444)},
-@@ -393,6 +402,7 @@ static struct attribute *hl_dev_attrs[] = {
- 	&dev_attr_status.attr,
- 	&dev_attr_thermal_ver.attr,
- 	&dev_attr_uboot_ver.attr,
-+	&dev_attr_fw_os_ver.attr,
- 	NULL,
- };
- 
-diff --git a/drivers/misc/habanalabs/include/common/cpucp_if.h b/drivers/misc/habanalabs/include/common/cpucp_if.h
-index 737c39f33f05..f00db22f98fb 100644
---- a/drivers/misc/habanalabs/include/common/cpucp_if.h
-+++ b/drivers/misc/habanalabs/include/common/cpucp_if.h
-@@ -780,6 +780,7 @@ struct cpucp_security_info {
-  *                     (0 = functional 1 = binned)
-  * @xbar_binning_mask: Xbar binning mask, 1 bit per Xbar instance
-  *                     (0 = functional 1 = binned)
-+ * @fw_os_version: Firmware OS Version
-  */
- struct cpucp_info {
- 	struct cpucp_sensor sensors[CPUCP_MAX_SENSORS];
-@@ -807,6 +808,7 @@ struct cpucp_info {
- 	__le32 reserved6;
- 	__u8 pll_map[PLL_MAP_LEN];
- 	__le64 mme_binning_mask;
-+	__u8 fw_os_version[VERSION_MAX_LEN];
- };
- 
- struct cpucp_mac_addr {
+ 	/* PMMU and HPMMU are the same except of page size */
+ 	memcpy(&prop->pmmu_huge, &prop->pmmu, sizeof(prop->pmmu));
 -- 
 2.25.1
 
