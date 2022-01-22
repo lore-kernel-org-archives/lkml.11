@@ -2,188 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AEDCC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 20:58:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B69C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 21:21:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234868AbiAVU6x (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 15:58:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51716 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231459AbiAVU6v (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 15:58:51 -0500
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62559C06173B
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 12:58:51 -0800 (PST)
-Received: by mail-qt1-x835.google.com with SMTP id f5so14399988qtp.11
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 12:58:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5xrCA2r89eKvrmOzXX3tofk0g7H4UYc/icqvWFwOWsc=;
-        b=QoWSt/I0VsIAnOSwFuaEY868IbvICp0Ka77RdA7sJa5ZqlBPbM3HrSL8CwAvvVjY6f
-         U6LVqQx8dB57rSmQD3EqCw2TvocbZda3bQvtdauOdFjdX2Nh0jbsw6bmSrOM4i1hHww6
-         3xEIw1E0I8IS1N5CoF0Q2Pmvg2bTaRmNrQCj0Wgluqh0OUX7rnR59GXzU2uYBiE9psWT
-         ypAPxO2VIFBm0im13NEWDj+v26T6cHRLnrsGSVC1pB3UiHKQFq/23hC2N1/jhtCQkRgy
-         hQTVGw6EtvIKvRo9eAg13869uf3x9R2Gh61SD63h51nDbdjB2ZNPpcSlgHgvSTWJ3NZB
-         7tNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5xrCA2r89eKvrmOzXX3tofk0g7H4UYc/icqvWFwOWsc=;
-        b=nt0qOOZ/+yLHcQcRklJzvKQr25RIK1bhED1A7MxXmEu5gCiEqinz0tmIX+5wWpnksN
-         BRDzGdRpgV9nlyBEfF39gHMr9mJCTmEM1QrF+Hw+vIZLf5S8QrXFNBHV08CJn6CH+YyX
-         WI/5e/hi4JFiZKy5cyLKz5VrF5Y2dvbQNJp1O4XfcsS28BDmh3VoHIKFUoLwJLLx3Ren
-         +moRmB9wKVwG6RYqrouNUZEIL6Xd75VyaNFV8Jg6x4meEYBizAH3B7LYfQ/wtKjsgBiV
-         LgzWhS4UfhqAwPYKMzXiBUvc73v1Dv8UdI6nxn3OQaHFS8NtHcgBJ7H2xrIUlTVw7i2i
-         WsCg==
-X-Gm-Message-State: AOAM531SYJ8qbXbauq3d7lnkFM8hRDWgexNhfK5TFRh+RFuwa3YWXp13
-        MjBYfv3wqRqluuADqdUhnuSbMTluH4wfFy1vprTSnl6B36t0GA==
-X-Google-Smtp-Source: ABdhPJzui7jkmMvCh+nIRSs1nZ5EqtI6T+SlxfX7amORKworfq3HMF0Z4jmyt1aA0XAGvfKqmzAY9hjbuZVZxIcusOE=
-X-Received: by 2002:ac8:59c2:: with SMTP id f2mr7817284qtf.578.1642885130333;
- Sat, 22 Jan 2022 12:58:50 -0800 (PST)
-MIME-Version: 1.0
-References: <20220118060431.1368538-1-jsperbeck@google.com> <Yef9hPon8s8swQMn@alley>
-In-Reply-To: <Yef9hPon8s8swQMn@alley>
-From:   John Sperbeck <jsperbeck@google.com>
-Date:   Sat, 22 Jan 2022 12:58:39 -0800
-Message-ID: <CAFNjLiX6n9C6LqfC=x160RqkEKC9_F6upEPpKG2LRGCU96hfYQ@mail.gmail.com>
-Subject: Re: [PATCH] kernel: count warnings and make count accessible to userspace
-To:     Petr Mladek <pmladek@suse.com>
-Cc:     Steven Rostedt <rostedt@goodmis.org>,
-        John Ogness <john.ogness@linutronix.de>,
+        id S234912AbiAVVSy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 16:18:54 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:49048 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230339AbiAVVSw (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 22 Jan 2022 16:18:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=EILhThOZz6AMIrApvuxhh7LQsxC+OdGSS/Ijnj3VP0U=; b=czU7ZQLFY1/OHBtJ3uZuH0jVhQ
+        x96bcmr5U1aRSCAN/9mMvscMKWMSP9bgXSOxU/0h5ho22cVjiX5IKtPW2rUCjFtDFuD2B1ubFvhlJ
+        SkJqPcOf2PM4AwW7IcDUeFduxquF4i/Gyrqj4CIR6ABtVJmxny0tmtk3Hgw1KBFsuylA=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nBNmP-002KKW-Jz; Sat, 22 Jan 2022 22:18:37 +0100
+Date:   Sat, 22 Jan 2022 22:18:37 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>, linux@armlinux.org.uk,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH v2] net: phy: marvell: Honor phy LED set by system
+ firmware on a Dell hardware
+Message-ID: <Yex0rZ0wRWQH/L4n@lunn.ch>
+References: <20220120051929.1625791-1-kai.heng.feng@canonical.com>
+ <YelxMFOiqnfIVmyy@lunn.ch>
+ <CAAd53p7NjvzsBs2aWTP-3GMjoyefMmLB3ou+7fDcrNVfKwALHw@mail.gmail.com>
+ <Yeqzhx3GbMzaIbj6@lunn.ch>
+ <CAAd53p5pF+SRfwGfJaBTPkH7+9Z6vhPHcuk-c=w8aPTzMBxPcg@mail.gmail.com>
+ <YerOIXi7afbH/3QJ@lunn.ch>
+ <3d7b1ff0-6776-6480-ed20-c9ad61b400f7@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3d7b1ff0-6776-6480-ed20-c9ad61b400f7@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 4:01 AM Petr Mladek <pmladek@suse.com> wrote:
->
-> Adding Andrew into Cc. Most changes in panic.c go via his tree.
->
-> On Tue 2022-01-18 06:04:31, John Sperbeck wrote:
-> > When testing, it's common to consider a warning to be a test failure,
-> > but it's currently awkward to determine which of multiple sequential
-> > tests is responsible for triggering a warning.  Scraping dmesg or
-> > /var/log/messages is somewhat expensive and error-prone.  Setting
-> > panic_on_warn is reliable, but spoils test runs for minor issues.
-> > Looking at the taint bit is also reliable, but only works for a single
-> > warning.
-> >
-> > We can track the warning count and expose it as a sysfs file.  Test
-> > infrastructures can snapshot the value before and after a test.  If
-> > the value changes, they can do more expensive things like extracting
-> > logs.
->
-> The counter makes sense. It might be useful even for normal debugging.
-> It would be nice to show the value in the log.
->
-> > Signed-off-by: John Sperbeck <jsperbeck@google.com>
-> > ---
-> >  kernel/panic.c | 5 +++++
-> >  1 file changed, 5 insertions(+)
-> >
-> > diff --git a/kernel/panic.c b/kernel/panic.c
-> > index cefd7d82366f..5262c2a0ebf4 100644
-> > --- a/kernel/panic.c
-> > +++ b/kernel/panic.c
-> > @@ -571,6 +571,8 @@ struct warn_args {
-> >       va_list args;
-> >  };
-> >
-> > +static atomic_t  __maybe_unused warn_counter;
-> > +
-> >  void __warn(const char *file, int line, void *caller, unsigned taint,
-> >           struct pt_regs *regs, struct warn_args *args)
-> >  {
-> > @@ -612,6 +614,8 @@ void __warn(const char *file, int line, void *caller, unsigned taint,
-> >
-> >       /* Just a warning, don't kill lockdep. */
-> >       add_taint(taint, LOCKDEP_STILL_OK);
-> > +
-> > +     atomic_inc(&warn_counter);
-> >  }
-> >
-> >  #ifndef __WARN_FLAGS
-> > @@ -667,6 +671,7 @@ static __init int register_warn_debugfs(void)
-> >       /* Don't care about failure */
-> >       debugfs_create_file_unsafe("clear_warn_once", 0200, NULL, NULL,
-> >                                  &clear_warn_once_fops);
-> > +     debugfs_create_atomic_t("warn_count", 0444, NULL, &warn_counter);
->
-> Is the sysfs interface really important for you use case, please?
-> Would the value in the log be enough?
->
-> Anyway, we already count the number WARN() reports. It is quite hidden
-> and hashed in init_oops_id()/print_oops_end_marker().
->
-> A solution would be to make this hidden counter more explicit.
-> Something like:
->
-> diff --git a/kernel/panic.c b/kernel/panic.c
-> index cefd7d82366f..8ac19124ceb4 100644
-> --- a/kernel/panic.c
-> +++ b/kernel/panic.c
-> @@ -537,13 +537,12 @@ void oops_enter(void)
->   * 64-bit random ID for oopses:
->   */
->  static u64 oops_id;
-> +static int oops_cnt;
->
->  static int init_oops_id(void)
->  {
->         if (!oops_id)
->                 get_random_bytes(&oops_id, sizeof(oops_id));
-> -       else
-> -               oops_id++;
->
->         return 0;
->  }
-> @@ -552,7 +551,9 @@ late_initcall(init_oops_id);
->  static void print_oops_end_marker(void)
->  {
->         init_oops_id();
-> -       pr_warn("---[ end trace %016llx ]---\n", (unsigned long long)oops_id);
-> +       oops_cnt++;
-> +       pr_warn("---[ end trace %016llx:%d ]---\n",
-> +               (unsigned long long)oops_id, oops_cnt);
->  }
->
->  /*
->
->
-> The report would like like:
->
-> [ 1871.476204] WARNING: CPU: 2 PID: 2003 at samples/livepatch/livepatch-sample.c:60 livepatch_init+0x11/0x20 [livepatch_sample]
-> [ 1871.476905] Modules linked in: livepatch_sample(EK+) [last unloaded: livepatch_sample]
-> [ 1871.477509] CPU: 2 PID: 2003 Comm: modprobe Tainted: G        W   E K   5.16.0-default+ #312
-> [ 1871.478175] Hardware name: QEMU Standard PC (Q35 + ICH9, 2009), BIOS rel-1.12.0-59-gc9ba527-rebuilt.opensuse.org 04/01/2014
-> [ 1871.478858] RIP: 0010:livepatch_init+0x11/0x20 [livepatch_sample]
-> [...]
-> [ 1871.489801] hardirqs last disabled at (9188): [<ffffffffb217aa4e>] vprintk_emit+0x21e/0x2b0
-> [ 1871.489803] softirqs last  enabled at (9096): [<ffffffffb3000364>] __do_softirq+0x364/0x4ab
-> [ 1871.489805] softirqs last disabled at (9083): [<ffffffffb20efb5d>] irq_exit_rcu+0x10d/0x120
-> [ 1871.489807] ---[ end trace a19f0f55262cfcc8:2 ]---
->
-> Best Regards,
-> Petr
+> One more idea:
+> The hw reset default for register 16 is 0x101e. If the current value
+> is different when entering config_init then we could preserve it
+> because intentionally a specific value has been set.
+> Only if we find the hw reset default we'd set the values according
+> to the current code.
 
-Thanks for adding the CC.
+We can split the problem into two.
 
-The sysfs interface was kind of the main thing I'm after.  The intent is
-to avoid parsing logs unless something interesting is likely to be there.
+1) I think saving LED configuration over suspend/resume is not an
+issue. It is probably something we will be needed if we ever get PHY
+LED configuration via sys/class/leds.
 
-If we were to rely entirely on log parsing, adding a count to the logs
-doesn't add much, I think.  That is, if a warning is parsed, then we
-already know it occurred, and don't need the counter value in the message
-that we parsed to tell us what we just discovered.
+2) Knowing something else has configured the LEDs and the Linux driver
+should not touch it. In general, Linux tries not to trust the
+bootloader, because experience has shown bad things can happen when
+you do. We cannot tell if the LED configuration is different to
+defaults because something has deliberately set it, or it is just
+messed up, maybe from the previous boot/kexec, maybe by the
+bootloader. Even this Dell system BIOS gets it wrong, it configures
+the LED on power on, but not resume !?!?!. And what about reboot?
 
-I see some precedent for exposing counts for things like this:  lockdep,
-kfence, DMA-API debug.  Warnings, KASAN, and UBSAN are some areas that
-don't have this convenience.
+So i really would like the bootloader to explicitly say it has
+configured the LEDs and it takes full responsibility for any and all
+bad behaviour as a result.
 
-If the sysfs interface isn't palatable, that's okay.  Supporting a
-three-line patch locally isn't a tremendous burden.
+	  Andrew
