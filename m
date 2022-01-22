@@ -2,42 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ED43C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 19:58:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2DC5C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 19:58:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235000AbiAVT6p (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 14:58:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38374 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234912AbiAVT6G (ORCPT
+        id S235194AbiAVT6u (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 14:58:50 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33386 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235027AbiAVT6J (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 14:58:06 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63810C061749
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 11:58:06 -0800 (PST)
+        Sat, 22 Jan 2022 14:58:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F27CC60E04
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 19:58:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 774DDC340E2;
-        Sat, 22 Jan 2022 19:58:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A7C1F60EC1
+        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 19:58:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E746C340E5
+        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 19:58:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642881485;
-        bh=lGEIBdwJSfqAcTa3FHn1G+D7bTF3b/d85Cq5TUjG774=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sQR0HeZrqFkVbICV3wufYIhuqXDY5qH6TwT+V5MULrBRqDaXiQqVc3aOX8mWRbstH
-         6cDnUvcXPrGFgrP8nZfnDdwLcj4EkFX36J4jNpYjp+R4EcUVwOGkyKM9KV/rW08rqK
-         9NLIYjkksHw+j/eOV+E6eH/J/2ciH7rTd18mzgn177T/D9lUTziWUlqSWsHO1PzZ0l
-         zgPc3OI6/coV0dzvK55FTyiQCsSQD9ZrMBcdJUGR19M+aZa5Drv7dOgsLQLjUlZPnu
-         GwVobB6raRFrDfrr6RW0nrqagYqO06bpMle6iVE1yI9+EWTWzszgosso5ulrFXxVv5
-         MAZEcHVt06nWA==
+        s=k20201202; t=1642881488;
+        bh=UCMsiG6f/DfKkaY0U1WLA1o44ruUik+sVj345f77EJw=;
+        h=From:To:Subject:Date:In-Reply-To:References:From;
+        b=eoGKWOB7gbb/Ux+C2ngU5bEFpmyeTi/as9IHZ5Cx7dULOvnz8xi60Y4aCgFtERzVL
+         fTPsAHXj1Wh6FwTO5oDu9fOMa+AfmA5lIF+OU0NUiPXM9FczgGiGlCmUaADzegeHd6
+         SLLmKOdLYJO9tSD9SeqxAjh6kCkrFbLxYn4gFqXfuXUptaVV0uaiDwPolSlokCHNpM
+         lNqVoArhrY7CQo/GwpPd6LLEkmrduuU5h0lpDCc9NwAAn5uBp7AthrMMVgs90ruIFq
+         pLBOi1jJAMxj48dZxEy5qSi+rxk68W1G9kYpeBcXEhODaP5Qo5/QP5HZx4pSaIdDcx
+         JOhmEnVys8SDQ==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     Dani Liberman <dliberman@habana.ai>
-Subject: [PATCH 22/30] habanalabs: fix soft reset flow in case of failure
-Date:   Sat, 22 Jan 2022 21:57:23 +0200
-Message-Id: <20220122195731.934494-22-ogabbay@kernel.org>
+Subject: [PATCH 24/30] habanalabs: update to latest f/w specs
+Date:   Sat, 22 Jan 2022 21:57:25 +0200
+Message-Id: <20220122195731.934494-24-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220122195731.934494-1-ogabbay@kernel.org>
 References: <20220122195731.934494-1-ogabbay@kernel.org>
@@ -47,40 +43,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dani Liberman <dliberman@habana.ai>
+Copy the latest versions of the f/w specs files.
 
-In case of soft reset failure, hard reset should be initiated, but
-reset flags were not set to enable it, which caused another soft reset
-followed by another failure.
-Updated reset flags to enable hard reset flow in case of soft reset
-failure.
-
-Signed-off-by: Dani Liberman <dliberman@habana.ai>
-Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/misc/habanalabs/common/device.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/misc/habanalabs/include/common/hl_boot_if.h | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/misc/habanalabs/common/device.c b/drivers/misc/habanalabs/common/device.c
-index c98a0a81e7d5..727315b36b8b 100644
---- a/drivers/misc/habanalabs/common/device.c
-+++ b/drivers/misc/habanalabs/common/device.c
-@@ -1293,11 +1293,14 @@ int hl_device_reset(struct hl_device *hdev, u32 flags)
- 		hdev->reset_info.hard_reset_cnt++;
- 	} else if (reset_upon_device_release) {
- 		dev_err(hdev->dev, "Failed to reset device after user release\n");
-+		flags |= HL_DRV_RESET_HARD;
-+		flags &= ~HL_DRV_RESET_DEV_RELEASE;
- 		hard_reset = true;
- 		goto again;
- 	} else {
- 		dev_err(hdev->dev, "Failed to do soft-reset\n");
- 		hdev->reset_info.soft_reset_cnt++;
-+		flags |= HL_DRV_RESET_HARD;
- 		hard_reset = true;
- 		goto again;
- 	}
+diff --git a/drivers/misc/habanalabs/include/common/hl_boot_if.h b/drivers/misc/habanalabs/include/common/hl_boot_if.h
+index 135e21d6edc9..15f91ae9de6e 100644
+--- a/drivers/misc/habanalabs/include/common/hl_boot_if.h
++++ b/drivers/misc/habanalabs/include/common/hl_boot_if.h
+@@ -33,6 +33,7 @@ enum cpu_boot_err {
+ 	CPU_BOOT_ERR_BOOT_FW_CRIT_ERR = 18,
+ 	CPU_BOOT_ERR_BINNING_FAIL = 19,
+ 	CPU_BOOT_ERR_TPM_FAIL = 20,
++	CPU_BOOT_ERR_TMP_THRESH_INIT_FAIL = 21,
+ 	CPU_BOOT_ERR_ENABLED = 31,
+ 	CPU_BOOT_ERR_SCND_EN = 63,
+ 	CPU_BOOT_ERR_LAST = 64 /* we have 2 registers of 32 bits */
+@@ -111,6 +112,9 @@ enum cpu_boot_err {
+  *
+  * CPU_BOOT_ERR0_TPM_FAIL		TPM verification flow failed.
+  *
++ * CPU_BOOT_ERR0_TMP_THRESH_INIT_FAIL	Failed to set threshold for tmperature
++ *					sensor.
++ *
+  * CPU_BOOT_ERR0_ENABLED		Error registers enabled.
+  *					This is a main indication that the
+  *					running FW populates the error
+@@ -134,6 +138,7 @@ enum cpu_boot_err {
+ #define CPU_BOOT_ERR0_BOOT_FW_CRIT_ERR		(1 << CPU_BOOT_ERR_BOOT_FW_CRIT_ERR)
+ #define CPU_BOOT_ERR0_BINNING_FAIL		(1 << CPU_BOOT_ERR_BINNING_FAIL)
+ #define CPU_BOOT_ERR0_TPM_FAIL			(1 << CPU_BOOT_ERR_TPM_FAIL)
++#define CPU_BOOT_ERR0_TMP_THRESH_INIT_FAIL	(1 << CPU_BOOT_ERR_TMP_THRESH_INIT_FAIL)
+ #define CPU_BOOT_ERR0_ENABLED			(1 << CPU_BOOT_ERR_ENABLED)
+ #define CPU_BOOT_ERR1_ENABLED			(1 << CPU_BOOT_ERR_ENABLED)
+ 
 -- 
 2.25.1
 
