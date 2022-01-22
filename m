@@ -2,92 +2,157 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DBC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 18:05:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13DBBC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 18:07:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234662AbiAVSFg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 13:05:36 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:40544 "EHLO
+        id S234668AbiAVSH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 13:07:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41324 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234633AbiAVSFd (ORCPT
+        with ESMTP id S234633AbiAVSH2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 13:05:33 -0500
+        Sat, 22 Jan 2022 13:07:28 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4C81160E97;
-        Sat, 22 Jan 2022 18:05:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCF4AC004E1;
-        Sat, 22 Jan 2022 18:05:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7E3F60E83;
+        Sat, 22 Jan 2022 18:07:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06F23C004E1;
+        Sat, 22 Jan 2022 18:07:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642874732;
-        bh=TPZTXAeqCudQFjGeQRPIDybUI7yE5fBL/PIoEw43+OY=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=t4aNQILFCgnBygili/WLh/ycln7jc6Ish9LHpO87IA89UD/lUbBpVyJ4PF+Zt/PVB
-         Csv29j7VS2NyAT3LvaSo1jkvbNn37Rr/wCCNrVK21iG3H1lA7IlZYU84N0zM/zDT7w
-         BPFtdnZYwpyoEfFC14mgmkv3Pp/7LvPb9lr7zhJzPNsvbT+oG585CNMjbLb4zu4+NF
-         Yvdm5m3JRrKZ8dERVzityFF0wWH+rcRbIpTeYsNpOuwn12d95JxgLd99zXGa3Y10z/
-         LcN0k1VuFqjr8fVZ9iTJv60lwlC1HDcTBHxXNWvq6Y8KQSJIqsGc+0bnlYfM1yO85p
-         cS973ugmC1byA==
-Message-ID: <ee43d68f-000c-6513-38f2-877b9018ab22@kernel.org>
-Date:   Sat, 22 Jan 2022 13:05:30 -0500
+        s=k20201202; t=1642874847;
+        bh=ed4KbG0a448WkbpZMG7EtToBILwDJdJNmhrkkL9oYHs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=dcybovW4OlYGu+qDAhf4CHjsnfKHuFl30wagBG4FIQGi+sP64xX8pL+20Hce7C1CA
+         usRuCttijOh60IWec7d1SsAy5FmstJBUM1/e+1CUXm2dPaaj/KLc6FV+Et/3wx45S5
+         4xGnsU6FH9uDYka3blYl78arRt8fOFDJe2JjT73ZU8pjVDmCAhzWfZMgYGc4p53heG
+         1IEJ7ar3Mt9ABYgFFViySjJ3qBa8SCBHrKfsi+0F7N3WDhzOUcFhai4cQ8tERfOGfu
+         G/ohHXPwSdxIyAPkyxUf8nqaFKU5wkhTBvJEtP72MKBEpy0NbARxIKDHzB2PhEOpnK
+         z5Y+nuWBb8JrQ==
+Date:   Sat, 22 Jan 2022 18:13:36 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Sean Nyekjaer <sean@geanix.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: accel: fxls8962af: add padding to regmap for SPI
+Message-ID: <20220122181336.61bed571@jic23-huawei>
+In-Reply-To: <20220117074600.gmfonh35ptx6kqbs@skn-laptop.hadsten>
+References: <20211220125144.3630539-1-sean@geanix.com>
+        <20220117074600.gmfonh35ptx6kqbs@skn-laptop.hadsten>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v2] dmaengine: qcom_hidma: Remove useless DMA-32 fallback
- configuration
-Content-Language: en-US
-To:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Vinod Koul <vkoul@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org, dmaengine@vger.kernel.org
-References: <4deb32b0c7838da66608022c584326eb01d0da03.1642232106.git.christophe.jaillet@wanadoo.fr>
-From:   Sinan Kaya <okaya@kernel.org>
-In-Reply-To: <4deb32b0c7838da66608022c584326eb01d0da03.1642232106.git.christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/15/2022 2:35 AM, Christophe JAILLET wrote:
-> As stated in [1], dma_set_mask() with a 64-bit mask never fails if
-> dev->dma_mask is non-NULL.
-> So, if it fails, the 32 bits case will also fail for the same reason.
-> 
-> Simplify code and remove some dead code accordingly.
-> 
-> [1]: https://lore.kernel.org/linux-kernel/YL3vSPK5DXTNvgdx@infradead.org/#t
-> 
+On Mon, 17 Jan 2022 08:46:00 +0100
+Sean Nyekjaer <sean@geanix.com> wrote:
 
-Can we please document this?
-
-Usual practice was to try allocating 64 bit DMA if possible and fallback
-to 32 bits.
-
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-> ---
-> v2: have the subject and updated driver match
-> ---
->   drivers/dma/qcom/hidma.c | 4 +---
->   1 file changed, 1 insertion(+), 3 deletions(-)
+> On Mon, Dec 20, 2021 at 01:51:43PM +0100, Sean Nyekjaer wrote:
+> > Add missing don't care padding between address and
+> > data for SPI transfers
+> > 
+> > Fixes: a3e0b51884ee ("iio: accel: add support for FXLS8962AF/FXLS8964AF accelerometers")
+> > Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+> > ---
+> >  drivers/iio/accel/fxls8962af-core.c | 12 ++++++++++--
+> >  drivers/iio/accel/fxls8962af-i2c.c  |  2 +-
+> >  drivers/iio/accel/fxls8962af-spi.c  |  2 +-
+> >  drivers/iio/accel/fxls8962af.h      |  3 ++-
+> >  4 files changed, 14 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
+> > index 32989d91b982..f7fd9e046588 100644
+> > --- a/drivers/iio/accel/fxls8962af-core.c
+> > +++ b/drivers/iio/accel/fxls8962af-core.c
+> > @@ -173,12 +173,20 @@ struct fxls8962af_data {
+> >  	u16 upper_thres;
+> >  };
+> >  
+> > -const struct regmap_config fxls8962af_regmap_conf = {
+> > +const struct regmap_config fxls8962af_i2c_regmap_conf = {
+> >  	.reg_bits = 8,
+> >  	.val_bits = 8,
+> >  	.max_register = FXLS8962AF_MAX_REG,
+> >  };
+> > -EXPORT_SYMBOL_GPL(fxls8962af_regmap_conf);
+> > +EXPORT_SYMBOL_GPL(fxls8962af_i2c_regmap_conf);
+> > +
+> > +const struct regmap_config fxls8962af_spi_regmap_conf = {
+> > +	.reg_bits = 8,
+> > +	.pad_bits = 8,
+> > +	.val_bits = 8,
+> > +	.max_register = FXLS8962AF_MAX_REG,
+> > +};
+> > +EXPORT_SYMBOL_GPL(fxls8962af_spi_regmap_conf);
+> >  
+> >  enum {
+> >  	fxls8962af_idx_x,
+> > diff --git a/drivers/iio/accel/fxls8962af-i2c.c b/drivers/iio/accel/fxls8962af-i2c.c
+> > index cfb004b20455..6bde9891effb 100644
+> > --- a/drivers/iio/accel/fxls8962af-i2c.c
+> > +++ b/drivers/iio/accel/fxls8962af-i2c.c
+> > @@ -18,7 +18,7 @@ static int fxls8962af_probe(struct i2c_client *client)
+> >  {
+> >  	struct regmap *regmap;
+> >  
+> > -	regmap = devm_regmap_init_i2c(client, &fxls8962af_regmap_conf);
+> > +	regmap = devm_regmap_init_i2c(client, &fxls8962af_i2c_regmap_conf);
+> >  	if (IS_ERR(regmap)) {
+> >  		dev_err(&client->dev, "Failed to initialize i2c regmap\n");
+> >  		return PTR_ERR(regmap);
+> > diff --git a/drivers/iio/accel/fxls8962af-spi.c b/drivers/iio/accel/fxls8962af-spi.c
+> > index 57108d3d480b..6f4dff3238d3 100644
+> > --- a/drivers/iio/accel/fxls8962af-spi.c
+> > +++ b/drivers/iio/accel/fxls8962af-spi.c
+> > @@ -18,7 +18,7 @@ static int fxls8962af_probe(struct spi_device *spi)
+> >  {
+> >  	struct regmap *regmap;
+> >  
+> > -	regmap = devm_regmap_init_spi(spi, &fxls8962af_regmap_conf);
+> > +	regmap = devm_regmap_init_spi(spi, &fxls8962af_spi_regmap_conf);
+> >  	if (IS_ERR(regmap)) {
+> >  		dev_err(&spi->dev, "Failed to initialize spi regmap\n");
+> >  		return PTR_ERR(regmap);
+> > diff --git a/drivers/iio/accel/fxls8962af.h b/drivers/iio/accel/fxls8962af.h
+> > index b67572c3ef06..9cbe98c3ba9a 100644
+> > --- a/drivers/iio/accel/fxls8962af.h
+> > +++ b/drivers/iio/accel/fxls8962af.h
+> > @@ -17,6 +17,7 @@ int fxls8962af_core_probe(struct device *dev, struct regmap *regmap, int irq);
+> >  int fxls8962af_core_remove(struct device *dev);
+> >  
+> >  extern const struct dev_pm_ops fxls8962af_pm_ops;
+> > -extern const struct regmap_config fxls8962af_regmap_conf;
+> > +extern const struct regmap_config fxls8962af_i2c_regmap_conf;
+> > +extern const struct regmap_config fxls8962af_spi_regmap_conf;
+> >  
+> >  #endif				/* _FXLS8962AF_H_ */
+> > -- 
+> > 2.34.1
+> >   
 > 
-> diff --git a/drivers/dma/qcom/hidma.c b/drivers/dma/qcom/hidma.c
-> index 65d054bb11aa..51587cf8196b 100644
-> --- a/drivers/dma/qcom/hidma.c
-> +++ b/drivers/dma/qcom/hidma.c
-> @@ -838,9 +838,7 @@ static int hidma_probe(struct platform_device *pdev)
->   	rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
->   	if (rc) {
->   		dev_warn(&pdev->dev, "unable to set coherent mask to 64");
-> -		rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
-> -		if (rc)
-> -			goto dmafree;
-> +		goto dmafree;
->   	}
->   
->   	dmadev->lldev = hidma_ll_init(dmadev->ddev.dev,
+> Hi Jonathan,
+> 
+> Did you have time to look at this?
+
+Sorry, saw it go by but bad timing wrt to opening of merge window
+so it was still in my 'to apply' queue.
+
+Anyhow, now done so and it is in the fixes-togreg branch of iio.git +
+marked for stable.
+
+Note I'll probably rebase that tree after rc1 though as we have a few
+other fixes I'd like in the same pull request for stuff that only
+went in this cycle.
+
+Thanks,
+
+Jonathan
+
+> 
+> /Sean
 
