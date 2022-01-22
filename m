@@ -2,85 +2,126 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0789FC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 20:45:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 073B9C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 20:50:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231403AbiAVUpk (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 15:45:40 -0500
-Received: from jabberwock.ucw.cz ([46.255.230.98]:56420 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230242AbiAVUpk (ORCPT
+        id S231459AbiAVUu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 15:50:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49994 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230242AbiAVUuy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 15:45:40 -0500
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 78BB91C0B76; Sat, 22 Jan 2022 21:45:38 +0100 (CET)
-Date:   Sat, 22 Jan 2022 21:45:37 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     Pavel Machek <pavel@denx.de>, linux-kernel@vger.kernel.org,
-        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>, Shawn Guo <shawnguo@kernel.org>,
-        linux@armlinux.org.uk, linus.walleij@linaro.org, daniel@thingy.jp,
-        avolmat@me.com, krzysztof.kozlowski@canonical.com,
-        romain.perier@gmail.com, eugen.hristev@microchip.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH AUTOSEL 4.4 06/29] ARM: imx: rename
- DEBUG_IMX21_IMX27_UART to DEBUG_IMX27_UART
-Message-ID: <20220122204537.GA31487@duo.ucw.cz>
-References: <20220118030822.1955469-1-sashal@kernel.org>
- <20220118030822.1955469-6-sashal@kernel.org>
- <20220120100849.GA14998@amd>
- <YexahcZZO1z/pM94@sashalap>
+        Sat, 22 Jan 2022 15:50:54 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCCA5C06173B
+        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 12:50:53 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id j14so5353410lja.3
+        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 12:50:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:user-agent:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TqozJPV1D6gDaO3RkMhPdjT+XwjdXWS8FI4A8iAaD+U=;
+        b=eN78gVKxQ1AD2cAufVLznvI3NH8zMy5lI1KlX3SpB76vOPwj/a8Kg4HwxhKvOPmQNe
+         CWxGQrd+5vhqBDns+rVAeRvP3CdhGLttwj+AYURXoGd+0KxfCq6ALs5Bg1Nv/rFG16I3
+         5VU6VxYiigGU2GNXRFtyg1iy3JBRH1Po4ZbIDhYuy3QjL16Rs70Zva76m8sgs80HNLLB
+         QLUcrUudXwokKN1Vf6xwhkk2viWp06N6hYtPrQYW82dEgkaMNta/Gbw+wje+KUYa+T5/
+         B6Nc9zHE93DqTZg3fGHdDQ2IR+CdWu2kialefTs/c7t/Y0kh3z1cdR/ln4xyaBmj1TT1
+         Vr3w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:user-agent
+         :references:mime-version:content-disposition:in-reply-to;
+        bh=TqozJPV1D6gDaO3RkMhPdjT+XwjdXWS8FI4A8iAaD+U=;
+        b=q1DGdj7Gso8TzFn6dKToqEVnIBj+P5xWik0cZFJ1ngOXVlA13ETdwxR/Iqe9A8MHiu
+         aYn/J2Sn4CRLTUDOt/44BqEj1M/UfdoTSgXJAfT9HJXwLxh8QzgKRUTvY5fxztOMMRX2
+         2XPb86ah3/KvgcnivqVFZxucRtkfw5H24cHXpJO/GYhYnDWUBdnph0rZMPXRelKyBBs2
+         xc0cIRBGnEJtiTsj2YaNpr+vlsKx9dSS38Eib94aqJp+JfQcTHaFKJ3ptXTArowmSenG
+         i0aAVG7sGjEKDAc2iXrZF/BY8+RGGaqGJi1OPOB5I8iivV0Djy5Ozrw5TophEluLtvUE
+         KO9A==
+X-Gm-Message-State: AOAM532Fvbb67JmexGmg6yJczTlLqNWkKe9W5KRorqElItzURxdb89/G
+        f/zaSF6Hw45UGm7dKVYL0rE=
+X-Google-Smtp-Source: ABdhPJymFVebkr7sX/AHQbDCGqAw97NF1kcWQ/NhCsiXfiCg9pY1AvWa6h0Kol9M+OzRgz05o1PLzw==
+X-Received: by 2002:a05:651c:198e:: with SMTP id bx14mr223136ljb.46.1642884651614;
+        Sat, 22 Jan 2022 12:50:51 -0800 (PST)
+Received: from localhost.localdomain (ntd06459.static.corbina.ru. [95.31.14.149])
+        by smtp.gmail.com with ESMTPSA id cf10sm661509lfb.72.2022.01.22.12.50.50
+        (version=TLS1 cipher=ECDHE-ECDSA-AES128-SHA bits=128/128);
+        Sat, 22 Jan 2022 12:50:51 -0800 (PST)
+Date:   Sat, 22 Jan 2022 23:56:37 +0300
+From:   Alexander Sergeyev <sergeev917@gmail.com>
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     Jeremy Szu <jeremy.szu@canonical.com>, tiwai@suse.com,
+        "moderated list:SOUND" <alsa-devel@alsa-project.org>,
+        Kailang Yang <kailang@realtek.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Huacai Chen <chenhuacai@kernel.org>,
+        Jian-Hong Pan <jhp@endlessos.org>,
+        Hui Wang <hui.wang@canonical.com>,
+        PeiSen Hou <pshou@realtek.com>
+Subject: Re: [PATCH 1/4] ALSA: hda/realtek: fix mute/micmute LEDs for HP 855
+ G8
+Message-ID: <20220122205637.7gzurdu7xl4sthxw@localhost.localdomain>
+User-Agent: mtt
+References: <20220112201824.qmphnz2hx4frda6e@localhost.localdomain>
+ <s5h8rvk85uy.wl-tiwai@suse.de>
+ <20220113183141.kla37mbqmo4x6wxp@localhost.localdomain>
+ <s5ha6fy46jt.wl-tiwai@suse.de>
+ <20220114183720.n46wealclg6spxkp@localhost.localdomain>
+ <s5hsftp3027.wl-tiwai@suse.de>
+ <20220115152215.kprws5nja2i43qax@localhost.localdomain>
+ <s5hilugw0l0.wl-tiwai@suse.de>
+ <20220119093249.eaxem33bjqjxcher@localhost.localdomain>
+ <20220122190522.ycaygrqcen7d3hj2@localhost.localdomain>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="Kj7319i9nmIyA2yE"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YexahcZZO1z/pM94@sashalap>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20220122190522.ycaygrqcen7d3hj2@localhost.localdomain>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Sat, Jan 22, 2022 at 10:05:24PM +0300, Alexander Sergeyev wrote:
+> I'm not sure about kernel log buffering or maybe the device support for 
+> pipelining, but is it okay that alc_update_coefex_idx() seem to overlap?
 
---Kj7319i9nmIyA2yE
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Given that the CPU number is the same in alc_update_coefex_idx(), it seems 
+these calls execution is interrupted and interleaved on the same core.
 
-Hi!
+And, actually, there are two LEDs to set (mute and micmute). Am I onto 
+something here?
 
-> > > From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-> > >=20
-> > > [ Upstream commit b0100bce4ff82ec1ccd3c1f3d339fd2df6a81784 ]
-> > >=20
-> > > Since commit 4b563a066611 ("ARM: imx: Remove imx21 support"), the con=
-fig
-> > > DEBUG_IMX21_IMX27_UART is really only debug support for IMX27.
-> >=20
-> > This is unsuitable for 4.4 as imx21 is still supported there.
->=20
-> I'll drop it, thanks!
-
-Thank you.
-
-I have not checked which is the newest kernel that supports imx21,
-other kernels may have same issue, too.
-
-Best regards,
-								Pavel
-
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---Kj7319i9nmIyA2yE
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYexs8QAKCRAw5/Bqldv6
-8sPMAJ0Ru+Wuf16Ox2dRQUCWSmL6Pa+miQCeItBzUjW/5yODWS1xoZfyqm9rYCE=
-=4cY3
------END PGP SIGNATURE-----
-
---Kj7319i9nmIyA2yE--
+[4.043235] alc_update_coefex_idx(codec, nid, coef_idx=0xb, mask=0x8, bits_set=0x0): entering
+[4.043237] CPU: 0 PID: 18 Comm: kworker/0:1 Tainted: G                T 5.16.0-rc1-00001-g5c38c8c84e47-dirty #18
+[4.043910] Hardware name: HP HP EliteBook 855 G8 Notebook PC/8895, BIOS T82 Ver. 01.06.03 09/17/2021
+[4.044559] Workqueue: events set_brightness_delayed
+[4.044559] Call Trace:
+[4.044559]  <TASK>
+[4.046289]  dump_stack_lvl+0x34/0x4c
+[4.046289]  alc_update_coefex_idx+0x34/0x7a
+[4.046289]  coef_mute_led_set+0x48/0x56
+[4.046289]  set_brightness_delayed+0x6f/0xb0
+[4.046289]  process_one_work+0x1e1/0x380
+[4.046289]  worker_thread+0x4e/0x3b0
+[4.046289]  ? rescuer_thread+0x370/0x370
+[4.046289]  kthread+0x145/0x170
+[4.046289]  ? set_kthread_struct+0x50/0x50
+[4.046289]  ret_from_fork+0x22/0x30
+[4.046289]  </TASK>
+[4.052793] alc_update_coefex_idx(codec, nid, coef_idx=0x19, mask=0x2000, bits_set=0x0): entering
+[4.052794] CPU: 0 PID: 171 Comm: kworker/0:2 Tainted: G                T 5.16.0-rc1-00001-g5c38c8c84e47-dirty #18
+[4.053363] Hardware name: HP HP EliteBook 855 G8 Notebook PC/8895, BIOS T82 Ver. 01.06.03 09/17/2021
+[4.053364] Workqueue: events set_brightness_delayed
+[4.053366] Call Trace:
+[4.053366]  <TASK>
+[4.053367]  dump_stack_lvl+0x34/0x4c
+[4.053790]  alc_update_coefex_idx+0x34/0x7a
+[4.053790]  coef_micmute_led_set+0x48/0x56
+[4.053790]  set_brightness_delayed+0x6f/0xb0
+[4.053790]  process_one_work+0x1e1/0x380
+[4.053790]  worker_thread+0x4e/0x3b0
+[4.053790]  ? rescuer_thread+0x370/0x370
+[4.053790]  kthread+0x145/0x170
+[4.053790]  ? set_kthread_struct+0x50/0x50
+[4.053790]  ret_from_fork+0x22/0x30
+[4.053790]  </TASK>
