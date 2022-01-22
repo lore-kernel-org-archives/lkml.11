@@ -2,117 +2,72 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F527C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 20:13:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5B7EC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 20:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230018AbiAVUNe (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 15:13:34 -0500
-Received: from vulcan.natalenko.name ([104.207.131.136]:39310 "EHLO
-        vulcan.natalenko.name" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229517AbiAVUNd (ORCPT
+        id S230081AbiAVUPU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 15:15:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42304 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229907AbiAVUPT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 15:13:33 -0500
-Received: from spock.localnet (unknown [83.148.33.151])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by vulcan.natalenko.name (Postfix) with ESMTPSA id 71D58D7ABB3;
-        Sat, 22 Jan 2022 21:13:31 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=natalenko.name;
-        s=dkim-20170712; t=1642882411;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fvFOCrOmpieqrSSeZEK934k3aSXDn2f7mqxg0GSc1BQ=;
-        b=KGrgtajbzM+3wtMuXhnH/UEQLn8QdaRml0rIKIDwVtH57pq6G2goXUCzFM1kFiZrWdfruw
-        8kg/ZNhk+eaFJbzgPrgLaZ3I6zveh7yHj+VAY0qjJlNoR5ODvfh19I2/dic62lQ8FNSgHr
-        /BJ1BrXEhLvnRDhiiwPgnS6TsYN6X5c=
-From:   Oleksandr Natalenko <oleksandr@natalenko.name>
-To:     Eugene Shalygin <eugene.shalygin@gmail.com>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Denis Pauk <pauk.denis@gmail.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-hwmon@vger.kernel.org
-Subject: Re: [ASUS EC Sensors v7 1/3] hwmon: (asus-ec-sensors) add driver for ASUS EC
-Date:   Sat, 22 Jan 2022 21:13:29 +0100
-Message-ID: <2614116.mvXUDI8C0e@natalenko.name>
-In-Reply-To: <20220120004540.GD3474033@roeck-us.net>
-References: <20220118165316.412735-1-eugene.shalygin@gmail.com> <CAB95QATvQPZ-s4dCWeqKcSZ9Rfx9uK1AyoM9Kk3biPfvXh5r5g@mail.gmail.com> <20220120004540.GD3474033@roeck-us.net>
+        Sat, 22 Jan 2022 15:15:19 -0500
+Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E63B6C06173B;
+        Sat, 22 Jan 2022 12:15:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
+        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:In-Reply-To:References;
+        bh=TFQ9CNPUu1Y/Wxiw9dstDcvw/MkO8+fgU7WdEUxn5vw=; b=SjeFAWEhTeFCQ8cGyy642VFK1y
+        hXk9ohngJzRWgUrrfz0/v127DAPoUKfHIDRnPxHGMX2pF30xh7An5LonpxsunjsOduvam46QQebq8
+        x2VnRvURiBWoug3hAynr4X7M+10heJBwHtnw7nGNtAAhUi/Kv76VDFmEGPc43r1a2g1mEOSwIfEGW
+        vX1hDhdjNtr81pHiZsgJLOM/H4QrOKGwrKnOkEE9uTdzPwvF73q6iT3FsDVrXuqVTVo1IM0Fuwl+Z
+        kQeAyVkG65fAEhGa09st2+b77JeK9Lh7SP1SdIsG6xjO5U8H574pUABVFIQ89wNBBNfVX7Fkz5WIU
+        9BFZgedw==;
+Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nBMn7-0002Uu-BF; Sat, 22 Jan 2022 20:15:17 +0000
+From:   Randy Dunlap <rdunlap@infradead.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Randy Dunlap <rdunlap@infradead.org>, Jann Horn <jannh@google.com>,
+        David Howells <dhowells@redhat.com>,
+        Jarkko Sakkinen <jarkko@kernel.org>, keyrings@vger.kernel.org
+Subject: [PATCH] keys: remove __user annotation from function prototype
+Date:   Sat, 22 Jan 2022 12:15:16 -0800
+Message-Id: <20220122201516.13547-1-rdunlap@infradead.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hello.
+Remove a missed __user annotation from the prototype for
+keyring_read(). This cures a sparse warning when it complains about
+the difference in the prototype and the function definition.
 
-On =C4=8Dtvrtek 20. ledna 2022 1:45:40 CET Guenter Roeck wrote:
-> On Wed, Jan 19, 2022 at 04:25:41AM +0100, Eugene Shalygin wrote:
-> > I did not read carefully what I committed and now two small
-> > corrections are required (see inline). Should I resend again?
-> >=20
->=20
-> Wait for a couple of days in case there is test coverage
-> or other feedback.
+security/keys/keyring.c:481:13: sparse:    long static [signed] [toplevel] keyring_read( ... )
+security/keys/keyring.c:81:13: sparse:    long static [addressable] [signed] [toplevel] keyring_read( ... )
 
-Tested-by: Oleksandr Natalenko <oleksandr@natalenko.name>
+Fixes: 796e46f9e2cb ("keys: Remove outdated __user annotations").
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Jann Horn <jannh@google.com>
+Cc: David Howells <dhowells@redhat.com>
+Cc: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: keyrings@vger.kernel.org
+---
+ security/keys/keyring.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-along with line break/comments fixes.
-
-I'd also appreciate Cc'ing me on this submission.
-
-Thanks.
-
->=20
-> Guenter
->=20
-> > On Tue, 18 Jan 2022 at 17:53, Eugene Shalygin <eugene.shalygin@gmail.co=
-m> wrote:
-> > > +       DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX X570=
-=2DF GAMING",
-> > > +               SENSOR_SET_TEMP_CHIPSET_CPU_MB |
-> > > +               SENSOR_TEMP_T_SENSOR | SENSOR_FAN_CHIPSET
-> > Redundant line break.
-> > > +       ),
-> > > +       DMI_EXACT_MATCH_BOARD(VENDOR_ASUS_UPPER_CASE, "ROG STRIX X570=
-=2DI GAMING",
-> > > +               SENSOR_TEMP_T_SENSOR | SENSOR_FAN_VRM_HS |
-> > > +               SENSOR_FAN_CHIPSET | SENSOR_CURR_CPU),
-> >=20
-> >=20
-> > > +struct ec_sensors_data {
-> > > +       unsigned long board_sensors;
-> > > +       struct ec_sensor *sensors;
-> > > +       /** EC registers to read from */
-> > > +       u16 *registers;
-> > > +       u8 *read_buffer;
-> > > +       /** sorted list of unique register banks */
-> > > +       u8 banks[ASUS_EC_MAX_BANK + 1];
-> > > +       /** in jiffies */
-> > > +       unsigned long last_updated;
-> > > +       acpi_handle aml_mutex;
-> > > +       /** number of board EC sensors */
-> > > +       u8 nr_sensors;
-> > > +       /** number of EC registers to read (sensor might span more th=
-an 1 register) */
-> > > +       u8 nr_registers;
-> > > +       /** number of unique register banks */
-> > > +       u8 nr_banks;
-> > > +};
-> >=20
-> > Forgot to remove doc-comments.
-> >=20
-> > Thanks,
-> > Eugene
->=20
->=20
-
-
-=2D-=20
-Oleksandr Natalenko (post-factum)
-
-
+--- linux-next-20220121.orig/security/keys/keyring.c
++++ linux-next-20220121/security/keys/keyring.c
+@@ -79,7 +79,7 @@ static void keyring_revoke(struct key *k
+ static void keyring_destroy(struct key *keyring);
+ static void keyring_describe(const struct key *keyring, struct seq_file *m);
+ static long keyring_read(const struct key *keyring,
+-			 char __user *buffer, size_t buflen);
++			 char *buffer, size_t buflen);
+ 
+ struct key_type key_type_keyring = {
+ 	.name		= "keyring",
