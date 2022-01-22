@@ -2,65 +2,75 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D44C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 09:40:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF38C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 09:42:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234351AbiAVJk0 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 04:40:26 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52238 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234225AbiAVJkR (ORCPT
+        id S231857AbiAVJmS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 04:42:18 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:16731 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229483AbiAVJmQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 04:40:17 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AAA78B81B8F;
-        Sat, 22 Jan 2022 09:40:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id 6CDCBC340EA;
-        Sat, 22 Jan 2022 09:40:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642844415;
-        bh=DTSO7G4eybn9l4mzXBoewAqFEb9tUkOWaydmz3tFwbs=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=WiRpo9Y59yNIiSMHK1z3ZOGM01Lq2zrvDz78safPtbczfYJFPIXU8galreES9aKOP
-         EWqS1+ko5xxoxZ+hxXKyHPvbMCgXw5AZWdUDN6R6HPzs9SJoW/AHbqE/6zpe3mqROq
-         i0YOKHX9SLgacIpjdOtp0HdJYvyB0oUYmEVNiQ1g93N1bQ8xh9OyIpn9soetUOju/B
-         RhqTMEZjcKg+aFcp2OgGhg1IKGU38V9pLl64KKUNRCzjLJ4/l0+dfo+6jQfRJzPzt/
-         OhLCHDmIbm4P7QfIHn5CRHTUMjTvTr2d3mLQ/L+/Z6a1hlFv2h4/FlJJ3VIc3yV9ay
-         f5035tXDlVQXw==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 5915FF60796;
-        Sat, 22 Jan 2022 09:40:15 +0000 (UTC)
-Subject: Re: [GIT PULL] Three small folio patches
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <YesOkLfpJWxLxRWs@casper.infradead.org>
-References: <YesOkLfpJWxLxRWs@casper.infradead.org>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <YesOkLfpJWxLxRWs@casper.infradead.org>
-X-PR-Tracked-Remote: git://git.infradead.org/users/willy/pagecache.git tags/folio-5.17a
-X-PR-Tracked-Commit-Id: 3abb28e275bfbe60136db37eae6679c3e1928cd5
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: b68b10b6266009bc8770adf952d637250ee93135
-Message-Id: <164284441535.7666.87487807135109673.pr-tracker-bot@kernel.org>
-Date:   Sat, 22 Jan 2022 09:40:15 +0000
-To:     Matthew Wilcox <willy@infradead.org>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>, linux-mm@kvack.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org
+        Sat, 22 Jan 2022 04:42:16 -0500
+Received: from canpemm500010.china.huawei.com (unknown [172.30.72.54])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Jgrlj06jlzZcDl;
+        Sat, 22 Jan 2022 17:38:25 +0800 (CST)
+Received: from k03.huawei.com (10.67.174.111) by
+ canpemm500010.china.huawei.com (7.192.105.118) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Sat, 22 Jan 2022 17:42:14 +0800
+From:   He Fengqing <hefengqing@huawei.com>
+To:     <ast@kernel.org>, <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <kafai@fb.com>
+CC:     <songliubraving@fb.com>, <yhs@fb.com>, <john.fastabend@gmail.com>,
+        <kpsingh@kernel.org>, <netdev@vger.kernel.org>,
+        <bpf@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [bpf-next] bpf: Fix possible race in inc_misses_counter
+Date:   Sat, 22 Jan 2022 10:29:36 +0000
+Message-ID: <20220122102936.1219518-1-hefengqing@huawei.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.174.111]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ canpemm500010.china.huawei.com (7.192.105.118)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Fri, 21 Jan 2022 19:50:40 +0000:
+It seems inc_misses_counter() suffers from same issue fixed in
+the commit d979617aa84d ("bpf: Fixes possible race in update_prog_stats()
+for 32bit arches"):
+As it can run while interrupts are enabled, it could
+be re-entered and the u64_stats syncp could be mangled.
 
-> git://git.infradead.org/users/willy/pagecache.git tags/folio-5.17a
+Fixes: 9ed9e9ba2337 ("bpf: Count the number of times recursion was prevented")
+Signed-off-by: He Fengqing <hefengqing@huawei.com>
+---
+ kernel/bpf/trampoline.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/b68b10b6266009bc8770adf952d637250ee93135
-
-Thank you!
-
+diff --git a/kernel/bpf/trampoline.c b/kernel/bpf/trampoline.c
+index 4b6974a195c1..5e7edf913060 100644
+--- a/kernel/bpf/trampoline.c
++++ b/kernel/bpf/trampoline.c
+@@ -550,11 +550,12 @@ static __always_inline u64 notrace bpf_prog_start_time(void)
+ static void notrace inc_misses_counter(struct bpf_prog *prog)
+ {
+ 	struct bpf_prog_stats *stats;
++	unsigned int flags;
+ 
+ 	stats = this_cpu_ptr(prog->stats);
+-	u64_stats_update_begin(&stats->syncp);
++	flags = u64_stats_update_begin_irqsave(&stats->syncp);
+ 	u64_stats_inc(&stats->misses);
+-	u64_stats_update_end(&stats->syncp);
++	u64_stats_update_end_irqrestore(&stats->syncp, flags);
+ }
+ 
+ /* The logic is similar to bpf_prog_run(), but with an explicit
 -- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+2.25.1
+
