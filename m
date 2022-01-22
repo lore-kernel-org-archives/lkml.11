@@ -2,115 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 405B0C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 12:06:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38810C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 12:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234480AbiAVMGy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 07:06:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49632 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229514AbiAVMGx (ORCPT
+        id S234491AbiAVMLN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 07:11:13 -0500
+Received: from out2-smtp.messagingengine.com ([66.111.4.26]:42697 "EHLO
+        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229514AbiAVMLL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 07:06:53 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304D6C06173B
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 04:06:53 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1nBFAM-00043F-3N; Sat, 22 Jan 2022 13:06:46 +0100
-Received: from pengutronix.de (unknown [195.138.59.174])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 80CE61FDB0;
-        Sat, 22 Jan 2022 12:06:44 +0000 (UTC)
-Date:   Sat, 22 Jan 2022 13:06:41 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Vincenzo Frascino <vincenzo.frascino@arm.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>
-Subject: Re: [PATCH] arm64: vdso: Fix "no previous prototype" warning
-Message-ID: <20220122120641.h7p4xujjolkxe52o@pengutronix.de>
-References: <20220109113504.1921017-1-mkl@pengutronix.de>
- <20220121121234.47273-1-vincenzo.frascino@arm.com>
+        Sat, 22 Jan 2022 07:11:11 -0500
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.46])
+        by mailout.nyi.internal (Postfix) with ESMTP id B99D95C0156;
+        Sat, 22 Jan 2022 07:11:10 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute2.internal (MEProxy); Sat, 22 Jan 2022 07:11:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kroah.com; h=cc
+        :cc:content-type:date:date:from:from:in-reply-to:message-id
+        :mime-version:reply-to:sender:subject:subject:to:to; s=fm2; bh=0
+        4G5CcShqixtcjS9thUwmKtBaIQAOrFakrRTKIPU5XM=; b=p7rxeKUCduyoHqPhq
+        f9z9kD5ijspgCCznlN59UWqNAXji8fhgetnhHRr5E2ndOgKjo0W9RpCecVQ1U/dF
+        OVuqhSZQ7VJY/HfVC8TXFP7RH1y4GPn4XWKSXKVAdxRYSM0Uug5+nH+UZnkb/qbx
+        gDMpY0Qp9PVmwmlhrdxZfk8ggi4CNC34ujltU5bKCdz+oPpF4NEzkI6LvLVaieaW
+        M54kCS50/JzrxEyN4cM//1t68+ChQJeC1WN/UUu4c4/JTnfzbTW3rtsXdeufeX2M
+        XSouxBUu6odeosNO+U77kdEe0owUMIZPPUD4cdwpx8suM89HUFcyneclSh7gfpV3
+        Gd+Kg==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-type:date:date:from:from
+        :in-reply-to:message-id:mime-version:reply-to:sender:subject
+        :subject:to:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; bh=04G5CcShqixtcjS9thUwmKtBaIQAOrFakrRTKIPU5
+        XM=; b=L0hoen79Xjy7xYQE7ifQ79XUxE6SfVpibsB5e4yb2kfCoCK4O2LBw0B6s
+        iFMFFfVTOzFLmjQSAcnBujZrXQpi78fRbU585bAoDGL3Odf0oJc3VCTqe+kZkFqO
+        ZQWzIhPsY+FkG15BpIoj6UhC+/c6UMfmgxnZMrx34ZaqtXMt1RNZJX7z92lFOXBQ
+        2D3U7lYYTlZf8XyO6kUvcIgwEnV0sC3QOYNs1WBgsulrY9eAkaK+k3JRCiIPtHWl
+        b4xc4EBV8+nXAag4OW7aGWgOc7OAZDf2r3x5k8iW88JnuAWVJp7QLAZGyvlJ8DIk
+        FvpouSzxmwUVO7FODwMw/CoeL4m7Q==
+X-ME-Sender: <xms:XvTrYRvUcCfpfayTccUsdsaHJcmB536FUUp5tGYR7sj8v1RMHtrcPA>
+    <xme:XvTrYaetdGSP2WB2DR4ExO5ZcsmG0ZU0SqTZgeor3nO0IpY501w7qxWbXDDU2_f_R
+    h0z0l9kdoUe0A>
+X-ME-Received: <xmr:XvTrYUxSBnki2IoxhfS8YwaSJRY5AaINchRDi5m_2-BNk80ktnhJkD3Nk3AG1DbHMOzVn6MqiBu_mf_77ERdtnx0kr_gx9U0>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrvddvgdefjecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkgggtugesthdtredttddtvdenucfhrhhomhepifhrvghgucfmjfcu
+    oehgrhgvgheskhhrohgrhhdrtghomheqnecuggftrfgrthhtvghrnhepvedugeeuffelge
+    ekhfehtdefhfekffdtgedvteeitddvieduhfekheekueehleelnecuffhomhgrihhnpehk
+    rhhorghhrdgtohhmpdhgihhthhhusgdrtghomhenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehgrhgvgheskhhrohgrhhdrtghomh
+X-ME-Proxy: <xmx:XvTrYYO-lECTGUMp4a14vAtnYKaczzR7Ta_lRpR2V4Y_QSWy3oiCag>
+    <xmx:XvTrYR-Uhpny-kMD6g0aZof6gWaMR4Yz1s3CsupcPQCtrhTwewAg2g>
+    <xmx:XvTrYYWH2zapvMCH2ntvdMwnNh9nLm3qpwJMCVA73uc-fWiPyajtHA>
+    <xmx:XvTrYdbvtcUNoRzk0RcqTjCs-RQaQYRczwx_GyJe-Cmbw-rLUhSr6g>
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
+ 22 Jan 2022 07:11:09 -0500 (EST)
+Date:   Sat, 22 Jan 2022 13:11:08 +0100
+From:   Greg KH <greg@kroah.com>
+To:     linux-usb@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, Matthias Gerstner <mgerstner@suse.de>
+Subject: usbview 3.0 release
+Message-ID: <Yev0XJ7qs6xTNQQ9@kroah.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="v3wc56hczuai2w67"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220121121234.47273-1-vincenzo.frascino@arm.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+Hot on the heels of the 2.2 release, here is "3.0", with an entirely
+rewritten back-end where the USB data is read from.  No longer is
+debugfs access needed, all of the information is taken directly from
+sysfs as normal user permissions.
 
---v3wc56hczuai2w67
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This should allow distros and packagers to no longer need polkit
+policies at all, and hopefully remove any potential future problems in
+the tool.
 
-On 21.01.2022 12:12:34, Vincenzo Frascino wrote:
-> If compiling the arm64 kernel with W=3D1 the following warning is produce=
-d:
->=20
-> | arch/arm64/kernel/vdso/vgettimeofday.c:9:5: error: no previous prototyp=
-e for =E2=80=98__kernel_clock_gettime=E2=80=99 [-Werror=3Dmissing-prototype=
-s]
-> |     9 | int __kernel_clock_gettime(clockid_t clock,
-> |       |     ^~~~~~~~~~~~~~~~~~~~~~
-> | arch/arm64/kernel/vdso/vgettimeofday.c:15:5: error: no previous prototy=
-pe for =E2=80=98__kernel_gettimeofday=E2=80=99 [-Werror=3Dmissing-prototype=
-s]
-> |    15 | int __kernel_gettimeofday(struct __kernel_old_timeval *tv,
-> |       |     ^~~~~~~~~~~~~~~~~~~~~
-> | arch/arm64/kernel/vdso/vgettimeofday.c:21:5: error: no previous prototy=
-pe for =E2=80=98__kernel_clock_getres=E2=80=99 [-Werror=3Dmissing-prototype=
-s]
-> |    21 | int __kernel_clock_getres(clockid_t clock_id,
-> |       |     ^~~~~~~~~~~~~~~~~~~~~
->=20
-> This patch removes "-Wmissing-prototypes" and "-Wmissing-declarations" co=
-mpilers
-> flags from the compilation of vgettimeofday.c to make possible to build t=
-he
-> kernel with CONFIG_WERROR enabled.
->=20
-> Cc: Catalin Marinas <catalin.marinas@arm.com>
-> Cc: Will Deacon <will@kernel.org>
-> Suggested-by: Marc Kleine-Budde <mkl@pengutronix.de>
-> Signed-off-by: Vincenzo Frascino <vincenzo.frascino@arm.com>
+The package can be downloaded at:
+	http://www.kroah.com/linux/usb/usbview-3.0.tar.gz
+and the git tree can be found at:
+	http://github.com/gregkh/usbview
 
-Tested-by: Marc Kleine-Budde <mkl@pengutronix.de>
+thanks,
 
-regards,
-Marc
+greg k-h
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+-------
 
---v3wc56hczuai2w67
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmHr804ACgkQqclaivrt
-76lrEggAqM1dSpWkhhPT/0GqJ26yMtySWRcxr8pTM1k4+vRl8ZtWH65MeuKqI0hv
-hhlZuQHbmke4L0/bsnrQPIjbYglJL6uUNP5ZSPE/S/SGb+f4a2kdx4V0xENfdjXi
-ZXUNU7tLNAOq3v14TeijAkvJXEMETHz2Asy37mKJruqLRnUcdRKDc3Okam+XJfVC
-EVD4Fkn4B9iisomiT3u9mm6U729ZbgXc4mXl1aH78H/zT1I9UmbblecyCJUtCD+M
-5a4/NtVCYH1DjZMF1b75PCVJOBef21HP85wUUEOEPLqleILvqlcRvKRP4P0KZzMv
-mbIyvUDhm1Unp+VgB8WcmbhmpVE8uw==
-=v0d+
------END PGP SIGNATURE-----
-
---v3wc56hczuai2w67--
+version 3.0
+	- remove need for debugfs/usbdevfs/usbfs file entirely, rely only on
+	  sysfs now.  This removes the need to run the program as root, which
+	  should have never happened.
+	- added SPDX identifiers and .spdx file to make packaging easier for
+	  others.
