@@ -2,122 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1AB2C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 20:16:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B82C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 20:17:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231209AbiAVUQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 15:16:17 -0500
-Received: from mga06.intel.com ([134.134.136.31]:2429 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230357AbiAVUQG (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 15:16:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642882566; x=1674418566;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=I05j7AIiy5VYCwKC09ZWpINZcZRo6HaH+XfW4ySU/b8=;
-  b=T8gDYv6XsygFkyEItxOKv5aQ7xHDDhi4oyuTouQRzKEVO3krCI5dN5MX
-   Ba2ZdY2eHYPD6zQ5GjZCysmwqDgBNijRxURLcQQIjFQ/P+oBp+BMj2cV6
-   YRVPOL9si1mwToojN3+SM1mqJG3zSZJMtMCYSEqmD7cjI8PPiTMCSmrHI
-   XnwB+Ro9k+ACRZqNlhifju90xTwli2J4WjaoAYdDS2LzQBB4xX7ArDN0a
-   QIael1OY441rp/ml0NJyShDb6mJhfx+YF8SUrZbfWkMhJNo2p/pctBPzC
-   DqFufkHycL+SanQbrQPTqVgIUlnQGWGy7fy48vRNWrY6DymvKVwYB+ML0
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10235"; a="306563077"
-X-IronPort-AV: E=Sophos;i="5.88,308,1635231600"; 
-   d="scan'208";a="306563077"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2022 12:16:05 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,308,1635231600"; 
-   d="scan'208";a="616845117"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by FMSMGA003.fm.intel.com with ESMTP; 22 Jan 2022 12:16:03 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nBMnq-000GjK-Br; Sat, 22 Jan 2022 20:16:02 +0000
-Date:   Sun, 23 Jan 2022 04:15:28 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: [cxl:preview 45/53] drivers/cxl/core/port.c:853:26: error: use of
- undeclared identifier 'CXL_REGLOC_RBI_COMPONENT'
-Message-ID: <202201230041.j2B2ds4Z-lkp@intel.com>
+        id S230242AbiAVURF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 15:17:05 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:42818 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230045AbiAVURE (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 22 Jan 2022 15:17:04 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 38EE060F54;
+        Sat, 22 Jan 2022 20:17:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7977CC004E1;
+        Sat, 22 Jan 2022 20:17:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642882623;
+        bh=tVg2I+OYNYnmRW0hHAxIzXL1Bh86fTDdBEB8uHh50xU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=snCUP0Joj9DvmkjsEKMpcvLb/S20VUmJbOQFnDtT0y8UZFnzTps/m9i0afmyre5Q3
+         vyKk7zK7+Y6mA6qCcvFxzLIfR6djclcTRgy4DtgMAYtvNtI5VNrLgYMeTYb6H0xojv
+         ebXy8RDsS8kA1PZ1bJHigR8nleb5Xx9G8tTXW0+T/Rp3wKdw3I538r56mBaxFi+g0e
+         eFuC9EMVXN8JKPHJFOyQwWlebRqqtuC9MyL073cWMtX5Z6dv47hWy7lKarmraaJGTd
+         LLii1yigMdfqWYFJU8QgdA/SN+hJ+AcS8/AfV5oWaHGEaVwCPOHrB3dFqaieTbNri2
+         kKZaWxQ9ppQVA==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 78B3340D0E; Sat, 22 Jan 2022 17:15:01 -0300 (-03)
+Date:   Sat, 22 Jan 2022 17:15:01 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     German Gomez <german.gomez@arm.com>
+Cc:     Ian Rogers <irogers@google.com>, James Clark <james.clark@arm.com>,
+        linux-kernel@vger.kernel.org, linux-perf-users@vger.kernel.org,
+        Chase Conklin <chase.conklin@arm.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>,
+        Stephane Eranian <eranian@google.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH] perf record/arm-spe: Override attr->sample_period for
+ non-libpfm4 events
+Message-ID: <Yexlxe0JHgj4ndSQ@kernel.org>
+References: <20220114212102.179209-1-german.gomez@arm.com>
+ <c2b960eb-a25e-7ce7-ee4b-2be557d8a213@arm.com>
+ <35a4f70f-d7ef-6e3c-dc79-aa09d87f0271@arm.com>
+ <CAP-5=fUHT29Z8Y5pMdTWK4mLKAXrNTtC5RBpet6UsAy4TLDfDw@mail.gmail.com>
+ <10cc73f1-53fd-9c5a-7fe2-8cd3786fbe37@arm.com>
+ <YeazXmnjkET7h5LW@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <YeazXmnjkET7h5LW@kernel.org>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git preview
-head:   e675fabdbbcdb6e32dba688a20fb0bd42e0e2d5d
-commit: bdcd1df24905ea3d8196ef7e62b077b136d18ab1 [45/53] cxl/core/port: Add switch port enumeration
-config: mips-randconfig-c004-20220120 (https://download.01.org/0day-ci/archive/20220123/202201230041.j2B2ds4Z-lkp@intel.com/config)
-compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 7b3d30728816403d1fd73cc5082e9fb761262bce)
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # install mips cross compiling tool for clang build
-        # apt-get install binutils-mips-linux-gnu
-        # https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git/commit/?id=bdcd1df24905ea3d8196ef7e62b077b136d18ab1
-        git remote add cxl https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git
-        git fetch --no-tags cxl preview
-        git checkout bdcd1df24905ea3d8196ef7e62b077b136d18ab1
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=mips SHELL=/bin/bash drivers/cxl/core/
+Em Tue, Jan 18, 2022 at 09:32:30AM -0300, Arnaldo Carvalho de Melo escreveu:
+> Em Mon, Jan 17, 2022 at 09:32:55PM +0000, German Gomez escreveu:
+> > Hi Ian,
+> > 
+> > On 17/01/2022 16:28, Ian Rogers wrote:
+> > > [...]
+> > > Thanks for fixing this, I can add an acked-by for the v2 patch. Could
+> > > we add a test for this to avoid future regressions? There are similar
+> > > tests for frequency like:
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/tests/attr/test-record-freq
+> > > based on the attr.py test:
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/acme/linux.git/tree/tools/perf/tests/attr.py
+> > > The test specifies a base type of event attribute and then what is
+> > > modified by the test. It takes a little to get your head around but
+> > > having a test for this would be a welcome addition.
+> > 
+> > I agree I should have included a test for this fix. I'll look into this for the v2.
+> 
+> A test is always good to have, we need more, yeah.
+> 
+> But since this is a fix and what is needed for v2 is just to improve the
+> wording, please don't let the test to prevent you from sending the
+> updated fix.
+> 
+> Then you can go on and work on the test.
+> 
+> I say this because the merge window may close before the test gets ready
+> and its better for us to have fixes merged as soon as possible so that
+> we have more time to figure out if it has unintended consequences as it
+> gets in place for longer.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+So, any news about this?
 
-All errors (new ones prefixed by >>):
-
->> drivers/cxl/core/port.c:853:26: error: use of undeclared identifier 'CXL_REGLOC_RBI_COMPONENT'
-           cxl_find_regblock(pdev, CXL_REGLOC_RBI_COMPONENT, &map);
-                                   ^
->> drivers/cxl/core/port.c:854:9: error: implicit declaration of function 'cxl_regmap_to_base' [-Werror,-Wimplicit-function-declaration]
-           return cxl_regmap_to_base(pdev, &map);
-                  ^
-   drivers/cxl/core/port.c:998:18: warning: no previous prototype for function 'cxl_mem_find_port' [-Wmissing-prototypes]
-   struct cxl_port *cxl_mem_find_port(struct cxl_memdev *cxlmd)
-                    ^
-   drivers/cxl/core/port.c:998:1: note: declare 'static' if the function is not intended to be used outside of this translation unit
-   struct cxl_port *cxl_mem_find_port(struct cxl_memdev *cxlmd)
-   ^
-   static 
-   1 warning and 2 errors generated.
-
-
-vim +/CXL_REGLOC_RBI_COMPONENT +853 drivers/cxl/core/port.c
-
-   838	
-   839	static resource_size_t find_component_registers(struct device *dev)
-   840	{
-   841		struct cxl_register_map map;
-   842		struct pci_dev *pdev;
-   843	
-   844		/*
-   845		 * Theoretically, CXL component registers can be hosted on a
-   846		 * non-PCI device, in practice, only cxl_test hits this case.
-   847		 */
-   848		if (!dev_is_pci(dev))
-   849			return CXL_RESOURCE_NONE;
-   850	
-   851		pdev = to_pci_dev(dev);
-   852	
- > 853		cxl_find_regblock(pdev, CXL_REGLOC_RBI_COMPONENT, &map);
- > 854		return cxl_regmap_to_base(pdev, &map);
-   855	}
-   856	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+- ARnaldo
+  
+> > Other events such as "-p 10000 -e cycles//" worked fine. Only the ones with aux area tracing (arm_spe, cs_etm, intel_pt) were ignoring the global config flags.
+> > 
+> > Thank you for the pointers, and the review,
+> > German
