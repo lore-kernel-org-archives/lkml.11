@@ -2,104 +2,121 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19394C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 17:31:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C8BC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 17:32:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234623AbiAVRbJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 12:31:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34742 "EHLO
+        id S234627AbiAVRcY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 12:32:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35030 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231655AbiAVRbH (ORCPT
+        with ESMTP id S231655AbiAVRcX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 12:31:07 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6B87C06173B
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 09:31:06 -0800 (PST)
+        Sat, 22 Jan 2022 12:32:23 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E565EC06173B;
+        Sat, 22 Jan 2022 09:32:22 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8C82EB80AB0
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 17:31:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4540EC004E1;
-        Sat, 22 Jan 2022 17:31:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 85F9460E04;
+        Sat, 22 Jan 2022 17:32:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C475C004E1;
+        Sat, 22 Jan 2022 17:32:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642872664;
-        bh=0hN1VsC/xpkg7gWRCxW4wR6tPARMWomUHwGf0DD6mXU=;
+        s=k20201202; t=1642872742;
+        bh=hZL9e2fcveQw3TicWaRCiKPaKgmA1DgHicUzxI0Dw8U=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ubdqqI4nBASfgeMaxVdxA6FHmngMdGeULanaOyEDlKxugdVhdmPObkFYNDCyjnUOn
-         j3zf8E1KkYFmbiJqpccKwStxHv02f1E8tK6AHPfe5m9d24gnwxRElxbnPvqLur44zb
-         ueik0+BaJ1NIYtOahOwDtWYlRyrSHDTkz5C4f5c0DZJLpEPhaKjK2By7ylmBZJ6SJm
-         rEgVJRxd9WxV1mardJRXLXua1ZOOzV4lDfjsblVCAUWT8N5D8kX6TH3CZI31wAOKkH
-         DEvyDasN1nYli1f/RvPa5KF+plgbnjhhPzZHkNHRfms019FkKSzJnqbSQUUPWtbcsF
-         o3DFXEX2g1orA==
-Received: from disco-boy.misterjones.org ([51.254.78.96] helo=www.loen.fr)
-        by disco-boy.misterjones.org with esmtpsa  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <maz@kernel.org>)
-        id 1nBKEA-00270F-A5; Sat, 22 Jan 2022 17:31:02 +0000
+        b=SUK51qchn793KaARg4Q+7kk2KNs2DmSuTfz+w9movpGRLUcrTziC1SB8j/tfQ6u3K
+         CgHwpZ/7Ad0RBQBUPzLOnsVi8RPEUVB2Zsa+9QBpH24V2l4SWbSJqosDb9tEMDafxL
+         6dbhNB98sx645C2XGXH/WzSqyf5KQiNAcCBHA/FWGG06wGWsjrAut82rYZ5fx/VFG3
+         8xbiybKiVkd2+FriRm/iAO2wh1LYfhtnqw6GxNKerzuTbSIOgxl7yMNhlZjkc+g8l0
+         wShNrheKPdaNS6XSgIpbGkMKvOufkZPIOKtvWrJLYgi5xWrBJbyHF4MfPsI8OXySok
+         XpVvJEC5CxQcg==
+Date:   Sat, 22 Jan 2022 17:38:31 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc:     <robh+dt@kernel.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 3/4] Documentation:ABI:testing:admv1014: add ABI docs
+Message-ID: <20220122173831.2d2c2b0d@jic23-huawei>
+In-Reply-To: <20220119081838.70210-3-antoniu.miclaus@analog.com>
+References: <20220119081838.70210-1-antoniu.miclaus@analog.com>
+        <20220119081838.70210-3-antoniu.miclaus@analog.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Date:   Sat, 22 Jan 2022 17:31:02 +0000
-From:   Marc Zyngier <maz@kernel.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Thomas Gleixner <tglx@linutronix.de>, kernel-team@android.com,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        Jay Chen <jkchen@linux.alibaba.com>
-Subject: Re: [PATCH v2] irqchip/gic-v3-its: Reset each ITS's BASERn register
- before probe
-In-Reply-To: <20220122163712.1141635-1-maz@kernel.org>
-References: <20220122163712.1141635-1-maz@kernel.org>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <a19d7f44abfd38eb429e33d4886518e3@kernel.org>
-X-Sender: maz@kernel.org
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 51.254.78.96
-X-SA-Exim-Rcpt-To: linux-kernel@vger.kernel.org, tglx@linutronix.de, kernel-team@android.com, lorenzo.pieralisi@arm.com, jkchen@linux.alibaba.com
-X-SA-Exim-Mail-From: maz@kernel.org
-X-SA-Exim-Scanned: No (on disco-boy.misterjones.org); SAEximRunCond expanded to false
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 2022-01-22 16:37, Marc Zyngier wrote:
-> A recent bug report outlined that the way GICv4.1 is handled across
-> kexec is pretty bad. We can end-up in a situation where ITSs share
-> memory (this is the case when SVPET==1) and reprogram the base
-> registers, creating a situation where ITSs that are part of a given
-> affinity group see different pointers. Which is illegal. Boo.
+On Wed, 19 Jan 2022 10:18:37 +0200
+Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+
+> Add documentation for the use of the Digital Attenuator gain.
 > 
-> In order to restore some sanity, reset the BASERn registers to 0
-> *before* probing any ITS. Although this isn't optimised at all,
-> this is only a once-per-boot cost, which shouldn't show up on
-> anyone's radar.
-> 
-> Cc: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-> Cc: Jay Chen <jkchen@linux.alibaba.com>
-> Signed-off-by: Marc Zyngier <maz@kernel.org>
-> Link: https://lore.kernel.org/r/20211216190315.GA14220@lpieralisi
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+One entry that should be in the generic docs rather than here.
+
+Given the documentation generation scripts don't support multiple
+entries for a given attribute name an that one is 'standard'
+we should just add it to the main file as otherwise the chances
+are very high of accidentally getting duplication when it
+turns up in another driver ABI doc.
+
+We may need to move some of the others later if they turn out
+to occur in multiple drivers but they are obscure enough to
+be fine in this file for now.
+
+Thanks,
+
+Jonathan
+
 > ---
+> changes in v3:
+>  - add description for calibscale in I/Q mode
+>  .../testing/sysfs-bus-iio-frequency-admv1014  | 29 +++++++++++++++++++
+>  1 file changed, 29 insertions(+)
+>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
 > 
-> Notes:
->     * From v1: Fail probing if any ITS fails to reset.
-> 
->  drivers/irqchip/irq-gic-v3-its.c | 111 +++++++++++++++++++++++++------
->  1 file changed, 92 insertions(+), 19 deletions(-)
-> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
+> new file mode 100644
+> index 000000000000..77c1691e6910
+> --- /dev/null
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
+> @@ -0,0 +1,29 @@
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_i_calibscale_coarse
+> +KernelVersion:
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Read/write value for the digital attenuator gain (IF_I) with coarse steps.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_q_calibscale_coarse
+> +KernelVersion:
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Read/write value for the digital attenuator gain (IF_Q) with coarse steps.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_i_calibscale_fine
+> +KernelVersion:
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Read/write value for the digital attenuator gain (IF_I) with fine steps.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_q_calibscale_fine
+> +KernelVersion:
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Read/write value for the digital attenuator gain (IF_Q) with fine steps.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage_calibscale
 
-[...]
+This particular one is normal ABI, so should just be added to the list
+in sysfs-bus-iio alongside all the other calibscale entries.
 
->  static void __init its_acpi_probe(void)
->  {
->  	acpi_table_parse_srat_its();
-> +	if (acpi_table_parse_madt(ACPI_MADT_TYPE_GENERIC_TRANSLATOR,
-> +				  its_acpi_reset, 0))
-> +		return;
 
-Nah. This is obviously broken.
+> +KernelVersion:
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Read/write value for the digital attenuator gain (I/Q).
 
-I'll repost something once I have actually tested it on an ACPI box.
-
-         M.
--- 
-Jazz is not dead. It just smells funny...
