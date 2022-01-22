@@ -2,157 +2,98 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13DBBC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 18:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D4F4C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 18:28:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234668AbiAVSH3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 13:07:29 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41324 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234633AbiAVSH2 (ORCPT
+        id S234686AbiAVS2g (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 13:28:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:35142 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231531AbiAVS2f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 13:07:28 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C7E3F60E83;
-        Sat, 22 Jan 2022 18:07:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06F23C004E1;
-        Sat, 22 Jan 2022 18:07:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642874847;
-        bh=ed4KbG0a448WkbpZMG7EtToBILwDJdJNmhrkkL9oYHs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dcybovW4OlYGu+qDAhf4CHjsnfKHuFl30wagBG4FIQGi+sP64xX8pL+20Hce7C1CA
-         usRuCttijOh60IWec7d1SsAy5FmstJBUM1/e+1CUXm2dPaaj/KLc6FV+Et/3wx45S5
-         4xGnsU6FH9uDYka3blYl78arRt8fOFDJe2JjT73ZU8pjVDmCAhzWfZMgYGc4p53heG
-         1IEJ7ar3Mt9ABYgFFViySjJ3qBa8SCBHrKfsi+0F7N3WDhzOUcFhai4cQ8tERfOGfu
-         G/ohHXPwSdxIyAPkyxUf8nqaFKU5wkhTBvJEtP72MKBEpy0NbARxIKDHzB2PhEOpnK
-         z5Y+nuWBb8JrQ==
-Date:   Sat, 22 Jan 2022 18:13:36 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Sean Nyekjaer <sean@geanix.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: accel: fxls8962af: add padding to regmap for SPI
-Message-ID: <20220122181336.61bed571@jic23-huawei>
-In-Reply-To: <20220117074600.gmfonh35ptx6kqbs@skn-laptop.hadsten>
-References: <20211220125144.3630539-1-sean@geanix.com>
-        <20220117074600.gmfonh35ptx6kqbs@skn-laptop.hadsten>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        Sat, 22 Jan 2022 13:28:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1642876115;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ucv0aOeTl0qY0LIW0rR1qOQJXa96wvP2HU03hO2vqUI=;
+        b=dFh7fMtR1WRPpjB9ZBI06OoElZgxdCJVEA26SzN3mveCVLa7DuyNlQLO+BTbT4XHJjkvQf
+        3Km0DFjBTTWWWuD5zsfGuKFvuESAdx8ogxZarRA6UuG3MWKjoQFi3F/m5cnxkNT4jEhQco
+        m4BMEfg8aRYUKBCLLNRH3Kv0il7fY/8=
+Received: from mail-qk1-f198.google.com (mail-qk1-f198.google.com
+ [209.85.222.198]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-290-A1eCbTLgPLq_sumZlTzsuQ-1; Sat, 22 Jan 2022 13:28:32 -0500
+X-MC-Unique: A1eCbTLgPLq_sumZlTzsuQ-1
+Received: by mail-qk1-f198.google.com with SMTP id h10-20020a05620a284a00b0047649c94bc7so9548167qkp.20
+        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 10:28:32 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ucv0aOeTl0qY0LIW0rR1qOQJXa96wvP2HU03hO2vqUI=;
+        b=UopZKNC3BtH2PRXI5XsHR4POHuCa1DI90u6iBhBtIJPYoYp/4X1G21An4aM/l+vb7s
+         K8iKn5Fjr45eCpg4hWhIzlVHS2qzHXVWA5lUQEx6Uau9t3W9LtDDaWiCAkk0Z/33Gk2s
+         1SZODblfGEJJGqqxlWyuZpk0BnOu0BTqWdz+Po/arhmxcefgSCjvXNLpn7IR6wlMMqC5
+         Bc2y5GEnYDdQFSm2bfizbPmhWxUoUrIqwMK/Uys0rwYgADkmJZ79cizYVJ8TMOVaO9u9
+         0kMkoIHeFuhCy1uRFMb58r3IhXKYjfsj0SU8YdzdNrNoinJ6zdejrfNBZWw5yBh1DH4d
+         7l5A==
+X-Gm-Message-State: AOAM531dBv/D+4r1gZuIk/g4yQFSeBjCgIOygq9z42kl2dMu+I3TU/Lv
+        ttPa4n6StYYKbltYIW3S0btnv1RtYiWnv0fzdOc7klB7llcVDiJ2/+NsSU1+n3OooTOJfruqO1v
+        7OC3k9VFNtU9GAyCV4JUZ4eKeNKmJKDjdbejbURS2
+X-Received: by 2002:a05:622a:154:: with SMTP id v20mr7424961qtw.291.1642876111882;
+        Sat, 22 Jan 2022 10:28:31 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxIoGUAu6bpFbODt3HNOc9I4zp+34EQICGP/ho2BjV+qObmlj30UPR4WKnhMWKC4nAp+ZQQuSoZ2A3Y9UpV0qs=
+X-Received: by 2002:a05:622a:154:: with SMTP id v20mr7424947qtw.291.1642876111635;
+ Sat, 22 Jan 2022 10:28:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <202201221028.YKA8kSdm-lkp@intel.com>
+In-Reply-To: <202201221028.YKA8kSdm-lkp@intel.com>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Sat, 22 Jan 2022 13:28:20 -0500
+Message-ID: <CAK-6q+h_hb94J3DSXPk=E44kCxiwZ+BE3kMJe09iShRzMb=vzQ@mail.gmail.com>
+Subject: Re: fs/dlm/midcomms.c:913:22: sparse: sparse: restricted __le32
+ degrades to integer
+To:     kernel test robot <lkp@intel.com>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        David Teigland <teigland@redhat.com>,
+        cluster-devel <cluster-devel@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 17 Jan 2022 08:46:00 +0100
-Sean Nyekjaer <sean@geanix.com> wrote:
+Hi,
 
-> On Mon, Dec 20, 2021 at 01:51:43PM +0100, Sean Nyekjaer wrote:
-> > Add missing don't care padding between address and
-> > data for SPI transfers
-> > 
-> > Fixes: a3e0b51884ee ("iio: accel: add support for FXLS8962AF/FXLS8964AF accelerometers")
-> > Signed-off-by: Sean Nyekjaer <sean@geanix.com>
-> > ---
-> >  drivers/iio/accel/fxls8962af-core.c | 12 ++++++++++--
-> >  drivers/iio/accel/fxls8962af-i2c.c  |  2 +-
-> >  drivers/iio/accel/fxls8962af-spi.c  |  2 +-
-> >  drivers/iio/accel/fxls8962af.h      |  3 ++-
-> >  4 files changed, 14 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
-> > index 32989d91b982..f7fd9e046588 100644
-> > --- a/drivers/iio/accel/fxls8962af-core.c
-> > +++ b/drivers/iio/accel/fxls8962af-core.c
-> > @@ -173,12 +173,20 @@ struct fxls8962af_data {
-> >  	u16 upper_thres;
-> >  };
-> >  
-> > -const struct regmap_config fxls8962af_regmap_conf = {
-> > +const struct regmap_config fxls8962af_i2c_regmap_conf = {
-> >  	.reg_bits = 8,
-> >  	.val_bits = 8,
-> >  	.max_register = FXLS8962AF_MAX_REG,
-> >  };
-> > -EXPORT_SYMBOL_GPL(fxls8962af_regmap_conf);
-> > +EXPORT_SYMBOL_GPL(fxls8962af_i2c_regmap_conf);
-> > +
-> > +const struct regmap_config fxls8962af_spi_regmap_conf = {
-> > +	.reg_bits = 8,
-> > +	.pad_bits = 8,
-> > +	.val_bits = 8,
-> > +	.max_register = FXLS8962AF_MAX_REG,
-> > +};
-> > +EXPORT_SYMBOL_GPL(fxls8962af_spi_regmap_conf);
-> >  
-> >  enum {
-> >  	fxls8962af_idx_x,
-> > diff --git a/drivers/iio/accel/fxls8962af-i2c.c b/drivers/iio/accel/fxls8962af-i2c.c
-> > index cfb004b20455..6bde9891effb 100644
-> > --- a/drivers/iio/accel/fxls8962af-i2c.c
-> > +++ b/drivers/iio/accel/fxls8962af-i2c.c
-> > @@ -18,7 +18,7 @@ static int fxls8962af_probe(struct i2c_client *client)
-> >  {
-> >  	struct regmap *regmap;
-> >  
-> > -	regmap = devm_regmap_init_i2c(client, &fxls8962af_regmap_conf);
-> > +	regmap = devm_regmap_init_i2c(client, &fxls8962af_i2c_regmap_conf);
-> >  	if (IS_ERR(regmap)) {
-> >  		dev_err(&client->dev, "Failed to initialize i2c regmap\n");
-> >  		return PTR_ERR(regmap);
-> > diff --git a/drivers/iio/accel/fxls8962af-spi.c b/drivers/iio/accel/fxls8962af-spi.c
-> > index 57108d3d480b..6f4dff3238d3 100644
-> > --- a/drivers/iio/accel/fxls8962af-spi.c
-> > +++ b/drivers/iio/accel/fxls8962af-spi.c
-> > @@ -18,7 +18,7 @@ static int fxls8962af_probe(struct spi_device *spi)
-> >  {
-> >  	struct regmap *regmap;
-> >  
-> > -	regmap = devm_regmap_init_spi(spi, &fxls8962af_regmap_conf);
-> > +	regmap = devm_regmap_init_spi(spi, &fxls8962af_spi_regmap_conf);
-> >  	if (IS_ERR(regmap)) {
-> >  		dev_err(&spi->dev, "Failed to initialize spi regmap\n");
-> >  		return PTR_ERR(regmap);
-> > diff --git a/drivers/iio/accel/fxls8962af.h b/drivers/iio/accel/fxls8962af.h
-> > index b67572c3ef06..9cbe98c3ba9a 100644
-> > --- a/drivers/iio/accel/fxls8962af.h
-> > +++ b/drivers/iio/accel/fxls8962af.h
-> > @@ -17,6 +17,7 @@ int fxls8962af_core_probe(struct device *dev, struct regmap *regmap, int irq);
-> >  int fxls8962af_core_remove(struct device *dev);
-> >  
-> >  extern const struct dev_pm_ops fxls8962af_pm_ops;
-> > -extern const struct regmap_config fxls8962af_regmap_conf;
-> > +extern const struct regmap_config fxls8962af_i2c_regmap_conf;
-> > +extern const struct regmap_config fxls8962af_spi_regmap_conf;
-> >  
-> >  #endif				/* _FXLS8962AF_H_ */
-> > -- 
-> > 2.34.1
-> >   
-> 
-> Hi Jonathan,
-> 
-> Did you have time to look at this?
+On Fri, Jan 21, 2022 at 9:45 PM kernel test robot <lkp@intel.com> wrote:
+>
+> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+> head:   9b57f458985742bd1c585f4c7f36d04634ce1143
+> commit: 658bd576f95ed597e519cdadf1c86ac87c17aea5 fs: dlm: move version conversion to compile time
+> date:   3 months ago
+> config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220122/202201221028.YKA8kSdm-lkp@intel.com/config)
+> compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+> reproduce:
+>         # apt-get install sparse
+>         # sparse version: v0.6.4-dirty
+>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=658bd576f95ed597e519cdadf1c86ac87c17aea5
+>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+>         git fetch --no-tags linus master
+>         git checkout 658bd576f95ed597e519cdadf1c86ac87c17aea5
+>         # save the config file to linux build tree
+>         mkdir build_dir
+>         make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash
+>
+> If you fix the issue, kindly add following tag as appropriate
 
-Sorry, saw it go by but bad timing wrt to opening of merge window
-so it was still in my 'to apply' queue.
+I have it on my list but it isn't easy to make sparse happy here...
+this is the second time the robot reported this issue. Is there a way
+to turn the robot off in that case?
 
-Anyhow, now done so and it is in the fixes-togreg branch of iio.git +
-marked for stable.
+Maybe some human who reads that knows the answer?
 
-Note I'll probably rebase that tree after rc1 though as we have a few
-other fixes I'd like in the same pull request for stuff that only
-went in this cycle.
+Thanks.
 
-Thanks,
-
-Jonathan
-
-> 
-> /Sean
+- Alex
 
