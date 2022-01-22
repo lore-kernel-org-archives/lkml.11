@@ -2,71 +2,67 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B15CC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 09:35:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A757C433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 09:40:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231845AbiAVJf4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 04:35:56 -0500
-Received: from szxga02-in.huawei.com ([45.249.212.188]:17360 "EHLO
-        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230011AbiAVJfx (ORCPT
+        id S233076AbiAVJkJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 04:40:09 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52084 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230011AbiAVJkI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 04:35:53 -0500
-Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.55])
-        by szxga02-in.huawei.com (SkyGuard) with ESMTP id 4JgrgH22kmz9rxh;
-        Sat, 22 Jan 2022 17:34:35 +0800 (CST)
-Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
- dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.20; Sat, 22 Jan 2022 17:35:51 +0800
-Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
- (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Sat, 22 Jan
- 2022 17:35:51 +0800
-From:   Kai Ye <yekai13@huawei.com>
-To:     <herbert@gondor.apana.org.au>
-CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <wangzhou1@hisilicon.com>, <yekai13@huawei.com>
-Subject: [PATCH v2] crypto: hisilicon/qm - cleanup warning in qm_vf_read_qos
-Date:   Sat, 22 Jan 2022 17:30:42 +0800
-Message-ID: <20220122093042.40131-1-yekai13@huawei.com>
-X-Mailer: git-send-email 2.33.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.67.165.24]
-X-ClientProxiedBy: dggems706-chm.china.huawei.com (10.3.19.183) To
- dggpeml100012.china.huawei.com (7.185.36.121)
-X-CFilter-Loop: Reflected
+        Sat, 22 Jan 2022 04:40:08 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EE834B81799;
+        Sat, 22 Jan 2022 09:40:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 879CDC340E7;
+        Sat, 22 Jan 2022 09:40:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642844405;
+        bh=k8ODayuUr1Cw0A91A+Bb0/Dgy1PdbXlVBloFqK9cL8A=;
+        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
+        b=YqnxYxYzMXMW/q+f6Dq/a8B1Jzp5emvByDDvI9nlpiw0yDhKapUYbT5PinsgjnmfR
+         FWygNBGIhEfIwwwxRrZk/G8x6CtbCGVjByynN/FA56t5P6qnFBNrJJtMkgxjkhO/AK
+         RHngpBaxqY+gWQ9+QhQEoAw3c65mGTWpp70ZKsftDT4BU8DTGah9x6EAT2pklDGv9g
+         KXsLzjwFtibnm7O2BLB4TdHQhYP3fC0kmn6Ey10YoO/XkMqRr3gPY3M7Onpa3g/bvQ
+         lNVQ2yvXDaY1gG8SQvLLDmh4kBtyoASRUJgCgNoE3ZDnjjsXR7J/YK+lkLHsaPtJ0i
+         DjCmrSysMYhtQ==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id 731F8F60796;
+        Sat, 22 Jan 2022 09:40:05 +0000 (UTC)
+Subject: Re: [GIT PULL] Extra ACPI updates for v5.17-rc1
+From:   pr-tracker-bot@kernel.org
+In-Reply-To: <CAJZ5v0gJkT+WwEe0=73HKek+B1Ko0XFtkFYbwxb3NBzjR-1=ng@mail.gmail.com>
+References: <CAJZ5v0gJkT+WwEe0=73HKek+B1Ko0XFtkFYbwxb3NBzjR-1=ng@mail.gmail.com>
+X-PR-Tracked-List-Id: <linux-pm.vger.kernel.org>
+X-PR-Tracked-Message-Id: <CAJZ5v0gJkT+WwEe0=73HKek+B1Ko0XFtkFYbwxb3NBzjR-1=ng@mail.gmail.com>
+X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git acpi-5.17-rc1-3
+X-PR-Tracked-Commit-Id: f6f02040e0ca7cb2e82d8aeb8f7daf5d89acc04c
+X-PR-Merge-Tree: torvalds/linux.git
+X-PR-Merge-Refname: refs/heads/master
+X-PR-Merge-Commit-Id: 71f1b916d5ea4a6d781b29e2470f5870a561e82e
+Message-Id: <164284440546.7666.16131154238711645866.pr-tracker-bot@kernel.org>
+Date:   Sat, 22 Jan 2022 09:40:05 +0000
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The kernel test rebot report this warning: Uninitialized variable: ret.
-The code flow may return value of ret directly. This value is an
-uninitialized variable, here is fix it.
+The pull request you sent on Fri, 21 Jan 2022 20:25:34 +0100:
 
-Signed-off-by: Kai Ye <yekai13@huawei.com>
----
-changes v1->v2:
-	modfiy the comments.
+> git://git.kernel.org/pub/scm/linux/kernel/git/rafael/linux-pm.git acpi-5.17-rc1-3
 
- drivers/crypto/hisilicon/qm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+has been merged into torvalds/linux.git:
+https://git.kernel.org/torvalds/c/71f1b916d5ea4a6d781b29e2470f5870a561e82e
 
-diff --git a/drivers/crypto/hisilicon/qm.c b/drivers/crypto/hisilicon/qm.c
-index c5b84a5ea350..3b29c8993b8c 100644
---- a/drivers/crypto/hisilicon/qm.c
-+++ b/drivers/crypto/hisilicon/qm.c
-@@ -4295,7 +4295,7 @@ static void qm_vf_get_qos(struct hisi_qm *qm, u32 fun_num)
- static int qm_vf_read_qos(struct hisi_qm *qm)
- {
- 	int cnt = 0;
--	int ret;
-+	int ret = -EINVAL;
- 
- 	/* reset mailbox qos val */
- 	qm->mb_qos = 0;
+Thank you!
+
 -- 
-2.33.0
-
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/prtracker.html
