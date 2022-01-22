@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFCF4C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 19:57:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38BDAC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 19:58:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234934AbiAVT55 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 14:57:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38272 "EHLO
+        id S234960AbiAVT57 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 14:57:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234916AbiAVT5u (ORCPT
+        with ESMTP id S234881AbiAVT5s (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 14:57:50 -0500
+        Sat, 22 Jan 2022 14:57:48 -0500
 Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC8B9C06173B
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 11:57:49 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 692B8C06173D
+        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 11:57:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 4CF5DCE0171
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 19:57:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19F44C340E5
+        by sin.source.kernel.org (Postfix) with ESMTPS id CE3DACE0171
         for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 19:57:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96EA0C340E4;
+        Sat, 22 Jan 2022 19:57:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642881466;
-        bh=O29zgo+53OF4w2gLr9hw6BFblJNifZLqnBmrglSCAWU=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=ArJPQ5v/trxA2SpY7AuI7Ut4StwUvMwuXSmnU04MqrTh2JzLlB2IV2sf+jCscnSJl
-         z7V8ozc/T2CCItvQ+Q2B5kAhm0y0osHfX53DrqqG9BMnRRuy0v1EWdXMooQ2ng5wz+
-         6MIkg4dpnvqWp2W4POEbI9eUO/9KzbyBl1RC1LxbkqU0yOR9QLXXkjTy9hQ/QPNGXK
-         dXQ7HYcM9H0V60zKMav/NnrGPFzGU+9APNvJzjW5y5bY9gzII4dzs/l+XXoCddDCKv
-         Fgua6VxnBUGLx2cw/i5So02wNRtNEsTdBN+jciOKohvxo8INAg49JBxWZrrNskOgkV
-         DwAZahqjIgKVA==
+        s=k20201202; t=1642881464;
+        bh=+HsgcPDORH9jvfYj3nc9Ra/1wTgXAkkZi2lXmwHS4fg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=om3OfHMaC+ygWnould2go0n9rezl+Ze7OTeqfEbzZ3FA6BpaM12fWDghFelYBSu50
+         Mq/sZ+mknWwIFtG/uEbSNhuK7xh3q5yPZIHQQdNSu6DnupXSe4pE3I1SwDWXb54wv8
+         kYTxxBwcWqX7ZAsAGaz3RMbpgzJHY2cSqqgEHUU7PWbGRS18XeX0o57LimEOPeBwnV
+         jsjgXlDKKBMgVfppktHihvSzewh+9lbkXbTEjXn2nnjB3sFfAb4NLNmJr/bXCsTPpY
+         eO6l4zh+9CDwxqj2PZFKFZoek2LkNmEKmxDsTkmkzH0FFzh9F+VFIvPm5nTyXhVWCl
+         5oJYSziejoglA==
 From:   Oded Gabbay <ogabbay@kernel.org>
 To:     linux-kernel@vger.kernel.org
-Subject: [PATCH 08/30] habanalabs: get clk is common function
-Date:   Sat, 22 Jan 2022 21:57:09 +0200
-Message-Id: <20220122195731.934494-8-ogabbay@kernel.org>
+Cc:     Ohad Sharabi <osharabi@habana.ai>
+Subject: [PATCH 06/30] habanalabs: make some MMU functions common
+Date:   Sat, 22 Jan 2022 21:57:07 +0200
+Message-Id: <20220122195731.934494-6-ogabbay@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220122195731.934494-1-ogabbay@kernel.org>
 References: <20220122195731.934494-1-ogabbay@kernel.org>
@@ -46,157 +47,234 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Retrieving the clock from the f/w is done exactly the same in ALL our
-ASICs. Therefore, no real justification for doing it as an
-ASIC-specific function.
+From: Ohad Sharabi <osharabi@habana.ai>
 
-The only thing is we need to check if we are running on simulator,
-which doesn't require ASIC-specific callback.
+Some MMU functions can be used by different versions of our MMUs, so
+move them to be common.
 
+Signed-off-by: Ohad Sharabi <osharabi@habana.ai>
+Reviewed-by: Oded Gabbay <ogabbay@kernel.org>
 Signed-off-by: Oded Gabbay <ogabbay@kernel.org>
 ---
- drivers/misc/habanalabs/common/habanalabs.h       |  7 ++-----
- drivers/misc/habanalabs/common/habanalabs_ioctl.c |  9 ++++-----
- drivers/misc/habanalabs/common/hwmgr.c            | 13 ++++++++-----
- drivers/misc/habanalabs/gaudi/gaudi.c             |  1 -
- drivers/misc/habanalabs/goya/goya.c               |  3 +--
- 5 files changed, 15 insertions(+), 18 deletions(-)
+ drivers/misc/habanalabs/common/habanalabs.h |  9 ++++
+ drivers/misc/habanalabs/common/mmu/mmu.c    | 55 +++++++++++++++++++++
+ drivers/misc/habanalabs/common/mmu/mmu_v1.c | 45 +++--------------
+ 3 files changed, 72 insertions(+), 37 deletions(-)
 
 diff --git a/drivers/misc/habanalabs/common/habanalabs.h b/drivers/misc/habanalabs/common/habanalabs.h
-index 571998899253..ecfdfec7abdc 100644
+index 24962807e2cf..e96f26e7e804 100644
 --- a/drivers/misc/habanalabs/common/habanalabs.h
 +++ b/drivers/misc/habanalabs/common/habanalabs.h
-@@ -1,6 +1,6 @@
- /* SPDX-License-Identifier: GPL-2.0
-  *
-- * Copyright 2016-2021 HabanaLabs, Ltd.
-+ * Copyright 2016-2022 HabanaLabs, Ltd.
-  * All Rights Reserved.
-  *
+@@ -402,8 +402,11 @@ enum hl_device_hw_state {
+  * @hop4_mask: mask to get the PTE address in hop 4.
+  * @hop5_mask: mask to get the PTE address in hop 5.
+  * @last_mask: mask to get the bit indicating this is the last hop.
++ * @pgt_size: size for page tables.
+  * @page_size: default page size used to allocate memory.
+  * @num_hops: The amount of hops supported by the translation table.
++ * @hop_table_size: HOP table size.
++ * @hop0_tables_total_size: total size for all HOP0 tables.
+  * @host_resident: Should the MMU page table reside in host memory or in the
+  *                 device DRAM.
   */
-@@ -1190,7 +1190,6 @@ struct fw_load_mgr {
-  * @halt_coresight: stop the ETF and ETR traces.
-  * @ctx_init: context dependent initialization.
-  * @ctx_fini: context dependent cleanup.
-- * @get_clk_rate: Retrieve the ASIC current and maximum clock rate in MHz
-  * @get_queue_id_for_cq: Get the H/W queue id related to the given CQ index.
-  * @load_firmware_to_device: load the firmware to the device's memory
-  * @load_boot_fit_to_device: load boot fit to device's memory
-@@ -1321,7 +1320,6 @@ struct hl_asic_funcs {
- 	void (*halt_coresight)(struct hl_device *hdev, struct hl_ctx *ctx);
- 	int (*ctx_init)(struct hl_ctx *ctx);
- 	void (*ctx_fini)(struct hl_ctx *ctx);
--	int (*get_clk_rate)(struct hl_device *hdev, u32 *cur_clk, u32 *max_clk);
- 	u32 (*get_queue_id_for_cq)(struct hl_device *hdev, u32 cq_idx);
- 	int (*load_firmware_to_device)(struct hl_device *hdev);
- 	int (*load_boot_fit_to_device)(struct hl_device *hdev);
-@@ -3122,8 +3120,7 @@ int hl_set_power(struct hl_device *hdev,
- 			int sensor_index, u32 attr, long value);
- int hl_get_power(struct hl_device *hdev,
- 			int sensor_index, u32 attr, long *value);
--int hl_get_clk_rate(struct hl_device *hdev,
--			u32 *cur_clk, u32 *max_clk);
-+int hl_get_clk_rate(struct hl_device *hdev, u32 *cur_clk, u32 *max_clk);
- void hl_set_pll_profile(struct hl_device *hdev, enum hl_pll_frequency freq);
- void hl_sysfs_add_dev_clk_attr(struct hl_device *hdev, struct attribute_group *dev_attr_grp);
- void hw_sob_get(struct hl_hw_sob *hw_sob);
-diff --git a/drivers/misc/habanalabs/common/habanalabs_ioctl.c b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
-index 3ba3a8ffda3e..ed516f911ee2 100644
---- a/drivers/misc/habanalabs/common/habanalabs_ioctl.c
-+++ b/drivers/misc/habanalabs/common/habanalabs_ioctl.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
+@@ -423,8 +426,11 @@ struct hl_mmu_properties {
+ 	u64	hop4_mask;
+ 	u64	hop5_mask;
+ 	u64	last_mask;
++	u64	pgt_size;
+ 	u32	page_size;
+ 	u32	num_hops;
++	u32	hop_table_size;
++	u32	hop0_tables_total_size;
+ 	u8	host_resident;
+ };
  
- /*
-- * Copyright 2016-2019 HabanaLabs, Ltd.
-+ * Copyright 2016-2022 HabanaLabs, Ltd.
-  * All Rights Reserved.
-  */
- 
-@@ -251,13 +251,12 @@ static int get_clk_rate(struct hl_device *hdev, struct hl_info_args *args)
- 	if ((!max_size) || (!out))
- 		return -EINVAL;
- 
--	rc = hdev->asic_funcs->get_clk_rate(hdev, &clk_rate.cur_clk_rate_mhz,
--						&clk_rate.max_clk_rate_mhz);
-+	rc = hl_get_clk_rate(hdev, &clk_rate.cur_clk_rate_mhz, &clk_rate.max_clk_rate_mhz);
- 	if (rc)
- 		return rc;
- 
--	return copy_to_user(out, &clk_rate,
--		min((size_t) max_size, sizeof(clk_rate))) ? -EFAULT : 0;
-+	return copy_to_user(out, &clk_rate, min_t(size_t, max_size, sizeof(clk_rate)))
-+										? -EFAULT : 0;
+@@ -3015,6 +3021,9 @@ int hl_mmu_unmap_contiguous(struct hl_ctx *ctx, u64 virt_addr, u32 size);
+ int hl_mmu_invalidate_cache(struct hl_device *hdev, bool is_hard, u32 flags);
+ int hl_mmu_invalidate_cache_range(struct hl_device *hdev, bool is_hard,
+ 					u32 flags, u32 asid, u64 va, u64 size);
++u64 hl_mmu_get_next_hop_addr(struct hl_ctx *ctx, u64 curr_pte);
++u64 hl_mmu_get_hop_pte_phys_addr(struct hl_ctx *ctx, struct hl_mmu_properties *mmu_prop,
++					u8 hop_idx, u64 hop_addr, u64 virt_addr);
+ void hl_mmu_swap_out(struct hl_ctx *ctx);
+ void hl_mmu_swap_in(struct hl_ctx *ctx);
+ int hl_mmu_if_set_funcs(struct hl_device *hdev);
+diff --git a/drivers/misc/habanalabs/common/mmu/mmu.c b/drivers/misc/habanalabs/common/mmu/mmu.c
+index 9153a1f55175..810b73421ce1 100644
+--- a/drivers/misc/habanalabs/common/mmu/mmu.c
++++ b/drivers/misc/habanalabs/common/mmu/mmu.c
+@@ -662,3 +662,58 @@ int hl_mmu_invalidate_cache_range(struct hl_device *hdev, bool is_hard,
+ 	return rc;
  }
  
- static int get_reset_count(struct hl_device *hdev, struct hl_info_args *args)
-diff --git a/drivers/misc/habanalabs/common/hwmgr.c b/drivers/misc/habanalabs/common/hwmgr.c
-index f0e5417560c3..e96126b46056 100644
---- a/drivers/misc/habanalabs/common/hwmgr.c
-+++ b/drivers/misc/habanalabs/common/hwmgr.c
-@@ -20,11 +20,16 @@ int hl_get_clk_rate(struct hl_device *hdev, u32 *cur_clk, u32 *max_clk)
- 	if (!hl_device_operational(hdev, NULL))
- 		return -ENODEV;
- 
-+	if (!hdev->pdev) {
-+		*cur_clk = 0;
-+		*max_clk = 0;
-+		return 0;
++u64 hl_mmu_get_next_hop_addr(struct hl_ctx *ctx, u64 curr_pte)
++{
++	return (curr_pte & PAGE_PRESENT_MASK) ? (curr_pte & HOP_PHYS_ADDR_MASK) : ULLONG_MAX;
++}
++
++/**
++ * hl_mmu_get_hop_pte_phys_addr() - extract PTE address from HOP
++ * @ctx: pointer to the context structure to initialize.
++ * @hop_idx: HOP index.
++ * @hop_addr: HOP address.
++ * @virt_addr: virtual address fro the translation.
++ *
++ * @return the matching PTE value on success, otherwise U64_MAX.
++ */
++u64 hl_mmu_get_hop_pte_phys_addr(struct hl_ctx *ctx, struct hl_mmu_properties *mmu_prop,
++					u8 hop_idx, u64 hop_addr, u64 virt_addr)
++{
++	u64 mask, shift;
++
++	if (hop_idx >= mmu_prop->num_hops) {
++		dev_err_ratelimited(ctx->hdev->dev, "Invalid hop index %d\n", hop_idx);
++		return U64_MAX;
 +	}
 +
- 	value = hl_get_frequency(hdev, hdev->asic_prop.clk_pll_index, false);
++	/* currently max number of HOPs is 6 */
++	switch (hop_idx) {
++	case 0:
++		mask = mmu_prop->hop0_mask;
++		shift = mmu_prop->hop0_shift;
++		break;
++	case 1:
++		mask = mmu_prop->hop1_mask;
++		shift = mmu_prop->hop1_shift;
++		break;
++	case 2:
++		mask = mmu_prop->hop2_mask;
++		shift = mmu_prop->hop2_shift;
++		break;
++	case 3:
++		mask = mmu_prop->hop3_mask;
++		shift = mmu_prop->hop3_shift;
++		break;
++	case 4:
++		mask = mmu_prop->hop4_mask;
++		shift = mmu_prop->hop4_shift;
++		break;
++	default:
++		mask = mmu_prop->hop5_mask;
++		shift = mmu_prop->hop5_shift;
++		break;
++	}
++
++	return hop_addr + ctx->hdev->asic_prop.mmu_pte_size * ((virt_addr & mask) >> shift);
++}
++
+diff --git a/drivers/misc/habanalabs/common/mmu/mmu_v1.c b/drivers/misc/habanalabs/common/mmu/mmu_v1.c
+index 3cadef97817d..d03786d0c407 100644
+--- a/drivers/misc/habanalabs/common/mmu/mmu_v1.c
++++ b/drivers/misc/habanalabs/common/mmu/mmu_v1.c
+@@ -217,18 +217,10 @@ static inline u64 get_hop4_pte_addr(struct hl_ctx *ctx,
+ 					mmu_prop->hop4_shift);
+ }
  
- 	if (value < 0) {
--		dev_err(hdev->dev, "Failed to retrieve device max clock %ld\n",
--			value);
-+		dev_err(hdev->dev, "Failed to retrieve device max clock %ld\n", value);
- 		return value;
+-static inline u64 get_next_hop_addr(struct hl_ctx *ctx, u64 curr_pte)
+-{
+-	if (curr_pte & PAGE_PRESENT_MASK)
+-		return curr_pte & HOP_PHYS_ADDR_MASK;
+-	else
+-		return ULLONG_MAX;
+-}
+-
+ static inline u64 get_alloc_next_hop_addr(struct hl_ctx *ctx, u64 curr_pte,
+ 						bool *is_new_hop)
+ {
+-	u64 hop_addr = get_next_hop_addr(ctx, curr_pte);
++	u64 hop_addr = hl_mmu_get_next_hop_addr(ctx, curr_pte);
+ 
+ 	if (hop_addr == ULLONG_MAX) {
+ 		hop_addr = alloc_hop(ctx);
+@@ -546,7 +538,7 @@ static int _hl_mmu_v1_unmap(struct hl_ctx *ctx,
+ 
+ 	curr_pte = *(u64 *) (uintptr_t) hop0_pte_addr;
+ 
+-	hop1_addr = get_next_hop_addr(ctx, curr_pte);
++	hop1_addr = hl_mmu_get_next_hop_addr(ctx, curr_pte);
+ 
+ 	if (hop1_addr == ULLONG_MAX)
+ 		goto not_mapped;
+@@ -555,7 +547,7 @@ static int _hl_mmu_v1_unmap(struct hl_ctx *ctx,
+ 
+ 	curr_pte = *(u64 *) (uintptr_t) hop1_pte_addr;
+ 
+-	hop2_addr = get_next_hop_addr(ctx, curr_pte);
++	hop2_addr = hl_mmu_get_next_hop_addr(ctx, curr_pte);
+ 
+ 	if (hop2_addr == ULLONG_MAX)
+ 		goto not_mapped;
+@@ -564,7 +556,7 @@ static int _hl_mmu_v1_unmap(struct hl_ctx *ctx,
+ 
+ 	curr_pte = *(u64 *) (uintptr_t) hop2_pte_addr;
+ 
+-	hop3_addr = get_next_hop_addr(ctx, curr_pte);
++	hop3_addr = hl_mmu_get_next_hop_addr(ctx, curr_pte);
+ 
+ 	if (hop3_addr == ULLONG_MAX)
+ 		goto not_mapped;
+@@ -582,7 +574,7 @@ static int _hl_mmu_v1_unmap(struct hl_ctx *ctx,
  	}
  
-@@ -33,9 +38,7 @@ int hl_get_clk_rate(struct hl_device *hdev, u32 *cur_clk, u32 *max_clk)
- 	value = hl_get_frequency(hdev, hdev->asic_prop.clk_pll_index, true);
+ 	if (!is_huge) {
+-		hop4_addr = get_next_hop_addr(ctx, curr_pte);
++		hop4_addr = hl_mmu_get_next_hop_addr(ctx, curr_pte);
  
- 	if (value < 0) {
--		dev_err(hdev->dev,
--			"Failed to retrieve device current clock %ld\n",
--			value);
-+		dev_err(hdev->dev, "Failed to retrieve device current clock %ld\n", value);
- 		return value;
- 	}
+ 		if (hop4_addr == ULLONG_MAX)
+ 			goto not_mapped;
+@@ -845,27 +837,6 @@ static void hl_mmu_v1_swap_in(struct hl_ctx *ctx)
  
-diff --git a/drivers/misc/habanalabs/gaudi/gaudi.c b/drivers/misc/habanalabs/gaudi/gaudi.c
-index f096cfc03bf3..744d4305db40 100644
---- a/drivers/misc/habanalabs/gaudi/gaudi.c
-+++ b/drivers/misc/habanalabs/gaudi/gaudi.c
-@@ -9385,7 +9385,6 @@ static const struct hl_asic_funcs gaudi_funcs = {
- 	.halt_coresight = gaudi_halt_coresight,
- 	.ctx_init = gaudi_ctx_init,
- 	.ctx_fini = gaudi_ctx_fini,
--	.get_clk_rate = hl_get_clk_rate,
- 	.get_queue_id_for_cq = gaudi_get_queue_id_for_cq,
- 	.load_firmware_to_device = gaudi_load_firmware_to_device,
- 	.load_boot_fit_to_device = gaudi_load_boot_fit_to_device,
-diff --git a/drivers/misc/habanalabs/goya/goya.c b/drivers/misc/habanalabs/goya/goya.c
-index 954ef4d7bbf7..318b97c53ed7 100644
---- a/drivers/misc/habanalabs/goya/goya.c
-+++ b/drivers/misc/habanalabs/goya/goya.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0
+ }
  
- /*
-- * Copyright 2016-2021 HabanaLabs, Ltd.
-+ * Copyright 2016-2022 HabanaLabs, Ltd.
-  * All Rights Reserved.
-  */
+-static inline u64 get_hop_pte_addr(struct hl_ctx *ctx,
+-				struct hl_mmu_properties *mmu_prop,
+-				int hop_num, u64 hop_addr, u64 virt_addr)
+-{
+-	switch (hop_num) {
+-	case 0:
+-		return get_hop0_pte_addr(ctx, mmu_prop, hop_addr, virt_addr);
+-	case 1:
+-		return get_hop1_pte_addr(ctx, mmu_prop, hop_addr, virt_addr);
+-	case 2:
+-		return get_hop2_pte_addr(ctx, mmu_prop, hop_addr, virt_addr);
+-	case 3:
+-		return get_hop3_pte_addr(ctx, mmu_prop, hop_addr, virt_addr);
+-	case 4:
+-		return get_hop4_pte_addr(ctx, mmu_prop, hop_addr, virt_addr);
+-	default:
+-		break;
+-	}
+-	return U64_MAX;
+-}
+-
+ static int hl_mmu_v1_get_tlb_info(struct hl_ctx *ctx, u64 virt_addr,
+ 				struct hl_mmu_hop_info *hops)
+ {
+@@ -906,7 +877,7 @@ static int hl_mmu_v1_get_tlb_info(struct hl_ctx *ctx, u64 virt_addr,
  
-@@ -5739,7 +5739,6 @@ static const struct hl_asic_funcs goya_funcs = {
- 	.halt_coresight = goya_halt_coresight,
- 	.ctx_init = goya_ctx_init,
- 	.ctx_fini = goya_ctx_fini,
--	.get_clk_rate = hl_get_clk_rate,
- 	.get_queue_id_for_cq = goya_get_queue_id_for_cq,
- 	.load_firmware_to_device = goya_load_firmware_to_device,
- 	.load_boot_fit_to_device = goya_load_boot_fit_to_device,
+ 	hops->hop_info[0].hop_addr = get_phys_hop0_addr(ctx);
+ 	hops->hop_info[0].hop_pte_addr =
+-			get_hop_pte_addr(ctx, mmu_prop, 0,
++			hl_mmu_get_hop_pte_phys_addr(ctx, mmu_prop, 0,
+ 					hops->hop_info[0].hop_addr, virt_addr);
+ 	hops->hop_info[0].hop_pte_val =
+ 			hdev->asic_funcs->read_pte(hdev,
+@@ -914,13 +885,13 @@ static int hl_mmu_v1_get_tlb_info(struct hl_ctx *ctx, u64 virt_addr,
+ 
+ 	for (i = 1 ; i < used_hops ; i++) {
+ 		hops->hop_info[i].hop_addr =
+-			get_next_hop_addr(ctx,
++			hl_mmu_get_next_hop_addr(ctx,
+ 					hops->hop_info[i - 1].hop_pte_val);
+ 		if (hops->hop_info[i].hop_addr == ULLONG_MAX)
+ 			return -EFAULT;
+ 
+ 		hops->hop_info[i].hop_pte_addr =
+-				get_hop_pte_addr(ctx, mmu_prop, i,
++				hl_mmu_get_hop_pte_phys_addr(ctx, mmu_prop, i,
+ 						hops->hop_info[i].hop_addr,
+ 						virt_addr);
+ 		hops->hop_info[i].hop_pte_val =
 -- 
 2.25.1
 
