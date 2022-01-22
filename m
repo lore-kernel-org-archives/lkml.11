@@ -2,101 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC4C2C433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 07:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D9CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 07:37:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233610AbiAVHco (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 02:32:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45982 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233629AbiAVHch (ORCPT
+        id S232869AbiAVHhg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 02:37:36 -0500
+Received: from szxga03-in.huawei.com ([45.249.212.189]:31176 "EHLO
+        szxga03-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230061AbiAVHhf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 02:32:37 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABEBDC061748;
-        Fri, 21 Jan 2022 23:32:33 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id az25so3779096wrb.6;
-        Fri, 21 Jan 2022 23:32:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=1dbRvYlFYtDwYEmVyaZdpxRConwrNczxL4pzjyGKTeM=;
-        b=Ymq+X6yZH67bhxLGQvvvDuVW5WuGuC05+9SEuvh6VzWhqxI++n4PQMwKI72DonXbcv
-         Jm1o3bTvlY79AHPM887eoZqOPufKTfo2WXBKHXlEQan+/+G1Pr4wODrRZOat2ksVsYlO
-         kM9wwDeVjTuEFa5UzkLetEXfqdVHy6Jlm4fPQwOt6jX19mCa4T4ASEPAqS0ZwQ7ZW96U
-         X2UCA59NYW9nsaO0zopnRQ16BSUpL9UxssDfNCT6Ef9wO/vFqweejM9k77tS5OVommWD
-         ptKQRFDpo2cVA+6kVDuRI7TuWdlQLtNv1F9n2F2J9OjRcoKY9C0Te8cQSHuB+cSMUY8J
-         CFUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=1dbRvYlFYtDwYEmVyaZdpxRConwrNczxL4pzjyGKTeM=;
-        b=FUveiuNVmiUy1TPgN68aT8q/6S5oKer3i/RlqoFjSDURvq2l52B4hGQSGP0b25e43h
-         G8XmM3VtuK3fIn0/LXIcGCEldvh7mLMlTFcpbmLCbV6+qUmjTB5bJF7vFj+uxnXJvZ38
-         KUHWVwE8lYgPFteMB4nVIhkLKVDMby02fKgXmOv9t6KkmKK123u9C0NKuhl6xpWWHvMK
-         m9w8FoFL3b04QwdbAyR2gSV4V7+3IoQBEi1ZQu9Zx1AFrmR4UvDPvLgu09gydQLgp0Ns
-         uBU1HUvwVBH9JGK+hLFacRED0aNHxi8VXQj5gF6CoXDdslGqecMEYCXqg7+t9MMiDaif
-         2c9A==
-X-Gm-Message-State: AOAM53374BQBomekV9HyY1ZMI2Vag505g2vGh+VO9FaMiK+WhfrJavgP
-        ioYH1FYdQLXuGI3boLQQw0I=
-X-Google-Smtp-Source: ABdhPJxmD/1s884WHFC5qHJ6DlhRLHZ4vDsrKm089DWjneV2lKc4wGWAIDh9CiSAcCQ2LKPzv5eQ/Q==
-X-Received: by 2002:a05:6000:1569:: with SMTP id 9mr6440779wrz.155.1642836752312;
-        Fri, 21 Jan 2022 23:32:32 -0800 (PST)
-Received: from localhost.localdomain ([87.200.95.144])
-        by smtp.gmail.com with ESMTPSA id i8sm8970485wmq.23.2022.01.21.23.32.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 21 Jan 2022 23:32:32 -0800 (PST)
-From:   Christian Hewitt <christianshewitt@gmail.com>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     Christian Hewitt <christianshewitt@gmail.com>,
-        Furkan Kardame <furkan@fkardame.com>
-Subject: [PATCH 3/3] arm64: dts: meson: add BL32 reserved-memory region to GS-King-X
-Date:   Sat, 22 Jan 2022 07:32:21 +0000
-Message-Id: <20220122073221.2398-4-christianshewitt@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220122073221.2398-1-christianshewitt@gmail.com>
-References: <20220122073221.2398-1-christianshewitt@gmail.com>
+        Sat, 22 Jan 2022 02:37:35 -0500
+Received: from dggpeml500022.china.huawei.com (unknown [172.30.72.56])
+        by szxga03-in.huawei.com (SkyGuard) with ESMTP id 4Jgp0w2JFGz8wQH;
+        Sat, 22 Jan 2022 15:34:40 +0800 (CST)
+Received: from dggpeml500018.china.huawei.com (7.185.36.186) by
+ dggpeml500022.china.huawei.com (7.185.36.66) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Sat, 22 Jan 2022 15:37:33 +0800
+Received: from [10.67.111.186] (10.67.111.186) by
+ dggpeml500018.china.huawei.com (7.185.36.186) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Sat, 22 Jan 2022 15:37:32 +0800
+Message-ID: <eab13a50-463d-3d45-d58a-77dfebd3b4dd@huawei.com>
+Date:   Sat, 22 Jan 2022 15:37:32 +0800
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.1.1
+Subject: Re: [PATCH] cgroup/cpuset: Fix a race between cpuset_attach() and cpu
+ hotplug
+To:     =?UTF-8?Q?Michal_Koutn=c3=bd?= <mkoutny@suse.com>
+CC:     <linux-kernel@vger.kernel.org>, <cgroups@vger.kernel.org>,
+        <tj@kernel.org>, <lizefan.x@bytedance.com>, <hannes@cmpxchg.org>,
+        <matthltc@us.ibm.com>, <bblum@google.com>, <menage@google.com>,
+        <akpm@linux-foundation.org>, <longman@redhat.com>,
+        <zhaogongyi@huawei.com>
+References: <20220121101210.84926-1-zhangqiao22@huawei.com>
+ <20220121155705.GA2394@blackbody.suse.cz>
+From:   Zhang Qiao <zhangqiao22@huawei.com>
+In-Reply-To: <20220121155705.GA2394@blackbody.suse.cz>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.67.111.186]
+X-ClientProxiedBy: dggems701-chm.china.huawei.com (10.3.19.178) To
+ dggpeml500018.china.huawei.com (7.185.36.186)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add an additional reserved memory region for the BL32 trusted firmware
-shipping in Beelink g12b devices. This fixes a long running issue with
-boxes booting from Vendor u-boot where the board wedges during boot or
-soon after due to the (un)reserved region being overwritten.
 
-Fixes commit 93db2ce05204 ("arm64: dts: meson: add initial Beelink GS-King-X device-tree")
-Signed-off-by: Christian Hewitt <christianshewitt@gmail.com>
-Tested-by: Furkan Kardame <furkan@fkardame.com>
----
- arch/arm64/boot/dts/amlogic/meson-g12b-gsking-x.dts | 8 ++++++++
- 1 file changed, 8 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12b-gsking-x.dts b/arch/arm64/boot/dts/amlogic/meson-g12b-gsking-x.dts
-index 6c7bfacbad78..c6178cbe3a9b 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12b-gsking-x.dts
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12b-gsking-x.dts
-@@ -20,6 +20,14 @@
- 		rtc1 = &vrtc;
- 	};
- 
-+	reserved-memory {
-+		/* 32 MiB reserved for ARM Trusted Firmware (BL32) */
-+		secmon_reserved_bl32: secmon@5300000 {
-+			reg = <0x0 0x05300000 0x0 0x2000000>;
-+			no-map;
-+		};
-+	};
-+
- 	gpio-keys-polled {
- 		compatible = "gpio-keys-polled";
- 		#address-cells = <1>;
--- 
-2.17.1
+在 2022/1/21 23:57, Michal Koutný 写道:
+> On Fri, Jan 21, 2022 at 06:12:10PM +0800, Zhang Qiao <zhangqiao22@huawei.com> wrote:
+>> Fixes: be367d099270 ("cgroups: let ss->can_attach and ss->attach do whole threadgroups at a time")
+> 
+> What a deep stratigraphy (not sure if it's this one but anything else
+> would likely come from eras ago too).
 
+Yes, I checked again and this bug may have existed since the tag Linux-2.6.12-rc2.
+>> Reported-by: Zhao Gongyi <zhaogongyi@huawei.com>
+>> Signed-off-by: Zhang Qiao <zhangqiao22@huawei.com>
+>> ---
+>>  kernel/cgroup/cpuset.c | 2 ++
+>>  1 file changed, 2 insertions(+)
+> 
+> Feel free to include
+> Reviewed-by: Michal Koutný <mkoutny@suse.com>
+> 
+Thanks for your review!
+
+Regards,
+Qiao
+.
+
+> .
+> 
