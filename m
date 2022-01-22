@@ -2,99 +2,64 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8340AC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F16F1C4167B
 	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 08:18:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbiAVIRv (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 03:17:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:27167 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229488AbiAVIRu (ORCPT
+        id S230288AbiAVISa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 03:18:30 -0500
+Received: from szxga01-in.huawei.com ([45.249.212.187]:16729 "EHLO
+        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229488AbiAVISY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 03:17:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642839469;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=TG6QEhuY9ZIy4SOy4T7GfVmZPT2ViIWcL0SkcfVaGHU=;
-        b=h1yMqd7YeeWfnYMXQ14qXVI3bWByLPl24NssaJy6h4G2amSNpoeJ4Nixt+y0Xkku8qrmiW
-        6HoqavPQKZ5BAr4d0dDxFoZc+9MJoezgkfpP9anvIjCDVHw7lUdP71jk8hiG26bLa6pdBn
-        e3JCX4A8uZx/zjdWes6cgaqXQSF/4Aw=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-218-ZYOYpD1NPH6X8I7CFdyeUA-1; Sat, 22 Jan 2022 03:17:46 -0500
-X-MC-Unique: ZYOYpD1NPH6X8I7CFdyeUA-1
-Received: by mail-wr1-f71.google.com with SMTP id c10-20020adfa30a000000b001d79c73b64bso820645wrb.1
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 00:17:46 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=TG6QEhuY9ZIy4SOy4T7GfVmZPT2ViIWcL0SkcfVaGHU=;
-        b=KI/8r8JfCeZ+MNrshhlG9m1K4LdHcxGIInRyljzwzVWqKm0F/q6SILnyfm49si7yoe
-         x+gxzL1awZ6naYyRqECsdD6LYlo5/6q7U/bgQprK+YGuFONscghXVAnRPoYat6m8ITYC
-         oftRmJudKg3Q+Jev+lsPAJsMXKGpkYKF1Ylzu4+1rHUabl0yIE/IAU/rhwn8FHTH7mzE
-         Mk02SjYp7G7nwpI0wdJ3SDOpQqvGyNJmWD+HCWuwi0YNSzHsX7KC9G79DPVwfgEehVA8
-         rRbKOb+IN0B95lIsfdp3JDo61b/uB9IG/FhJcXdSj9z8ZBFPR6xP9wzpnGhWhgQnCbpd
-         yvjw==
-X-Gm-Message-State: AOAM530FUdlE0bvevmL+eo6lpqwdA7th/D6FPJIASyALtAiOX6BK9I0X
-        UOKU5pn4Ye22/a8cbqAH4VOnZWKeicJ6OcDqIqNLVLAYqxHWYDzQQGGIKF4uReGLnmJUU7Rb/ot
-        7O1fElUDCEFtQgR7Ibk0dogRnlAY9nTnXh3DcuyGxREwijqCjP8tPPrsyx20HODFDbsbIrwP/ey
-        zX
-X-Received: by 2002:a1c:f303:: with SMTP id q3mr3664002wmq.63.1642839465140;
-        Sat, 22 Jan 2022 00:17:45 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwZ30FILZYqtip38gkOzWjiKW119eyvaVofLJH217trFBRst6CBNJFQefEUV3LkVzG++CZv7Q==
-X-Received: by 2002:a1c:f303:: with SMTP id q3mr3663986wmq.63.1642839464882;
-        Sat, 22 Jan 2022 00:17:44 -0800 (PST)
-Received: from fedora (nat-2.ign.cz. [91.219.240.2])
-        by smtp.gmail.com with ESMTPSA id o2sm8263931wms.9.2022.01.22.00.17.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Jan 2022 00:17:44 -0800 (PST)
-From:   Vitaly Kuznetsov <vkuznets@redhat.com>
-To:     Paolo Bonzini <pbonzini@redhat.com>, kvm@vger.kernel.org
-Cc:     Sean Christopherson <seanjc@google.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Igor Mammedov <imammedo@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/5] KVM: x86: Move CPUID.(EAX=0x12,ECX=1) mangling
- to __kvm_update_cpuid_runtime()
-In-Reply-To: <2ba86d3f-5ab2-af2f-1f7d-ba2d6b7e78d2@redhat.com>
-References: <20220121132852.2482355-1-vkuznets@redhat.com>
- <20220121132852.2482355-3-vkuznets@redhat.com>
- <2ba86d3f-5ab2-af2f-1f7d-ba2d6b7e78d2@redhat.com>
-Date:   Sat, 22 Jan 2022 09:17:43 +0100
-Message-ID: <878rv8jiag.fsf@redhat.com>
+        Sat, 22 Jan 2022 03:18:24 -0500
+Received: from dggpeml500024.china.huawei.com (unknown [172.30.72.57])
+        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4Jgptw450TzZf68;
+        Sat, 22 Jan 2022 16:14:32 +0800 (CST)
+Received: from dggpeml100012.china.huawei.com (7.185.36.121) by
+ dggpeml500024.china.huawei.com (7.185.36.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Sat, 22 Jan 2022 16:18:21 +0800
+Received: from huawei.com (10.67.165.24) by dggpeml100012.china.huawei.com
+ (7.185.36.121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Sat, 22 Jan
+ 2022 16:18:21 +0800
+From:   Kai Ye <yekai13@huawei.com>
+To:     <herbert@gondor.apana.org.au>
+CC:     <linux-crypto@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <wangzhou1@hisilicon.com>, <yekai13@huawei.com>
+Subject: [PATCH v3 0/5] crypto: hisilicon - some misc bugfix for SEC engine
+Date:   Sat, 22 Jan 2022 16:13:07 +0800
+Message-ID: <20220122081312.29121-1-yekai13@huawei.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.67.165.24]
+X-ClientProxiedBy: dggems704-chm.china.huawei.com (10.3.19.181) To
+ dggpeml100012.china.huawei.com (7.185.36.121)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Paolo Bonzini <pbonzini@redhat.com> writes:
+some misc bugfix for SEC engine.
 
-> On 1/21/22 14:28, Vitaly Kuznetsov wrote:
->> To support comparing CPUID data update with what's already set for a vCPU
->> all mangling needs to happen in __kvm_update_cpuid_runtime(), before
->> 'vcpu->arch.cpuid_entries' is updated. CPUID.(EAX=0x12,ECX=1) is currently
->> being mangled in kvm_vcpu_after_set_cpuid(), move it to
->> __kvm_update_cpuid_runtime(). Split off cpuid_get_supported_xcr0() helper
->> as 'vcpu->arch.guest_supported_xcr0' update needs (logically) to stay in
->> kvm_vcpu_after_set_cpuid().
->> 
->> No functional change intended.
->
-> Since v3 is already on its way to Linus, I'll merge this patch next week.
->
+changes v1->v2:
+	add rate limited for printing messages.
+changes v2->v3:
+	modify the second patch.
 
-Thanks,
+Kai Ye (5):
+  crypto: hisilicon/sec - fixup icv checking enabled on Kunpeng 930
+  crypto: hisilicon/sec - add some comments for soft fallback
+  crypto: hisilicon/sec - fix the max length of AAD for the CCM mode
+  crypto: hisilicon/sec - fix the CTR mode BD configuration
+  crypto: hisilicon/sec - use the correct print format
 
-there is also a change in "[PATCH v4 3/5] KVM: x86: Partially allow
-KVM_SET_CPUID{,2} after KVM_RUN" where I switch to memcmp (as suggested
-by Sean). I can send an incremental patch if needed.
+ drivers/crypto/hisilicon/sec2/sec_crypto.c | 27 +++++++++++++++-------
+ drivers/crypto/hisilicon/sec2/sec_crypto.h |  6 +++--
+ 2 files changed, 23 insertions(+), 10 deletions(-)
 
 -- 
-Vitaly
+2.33.0
 
