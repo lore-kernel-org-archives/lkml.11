@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 724EBC433FE
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 17:08:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45B9FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 17:26:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234610AbiAVRIQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 12:08:16 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:35898 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234600AbiAVRIP (ORCPT
+        id S234619AbiAVR0j (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 12:26:39 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:54506 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231655AbiAVR0h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 12:08:15 -0500
+        Sat, 22 Jan 2022 12:26:37 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2DA7B807EE;
-        Sat, 22 Jan 2022 17:08:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FCA7C004E1;
-        Sat, 22 Jan 2022 17:08:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6D75660E07;
+        Sat, 22 Jan 2022 17:26:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 13F4FC004E1;
+        Sat, 22 Jan 2022 17:26:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642871292;
-        bh=M+nTT4ATcVMqW6OoyFe0IltlVOeSfQLnMqGdLE5N59E=;
+        s=k20201202; t=1642872396;
+        bh=JKOyBIBEtQl1RLmxtU+7ibAOozBWhlW6qQd4TiIiKmo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VqVlpnIpPSAmA7IDptBkkjGpNt5CzYoP3J5t2r5bBtAY6RrYI2RP84EN+WRcH2SAL
-         nrMROFrDWIV6fO9PBrFgf5Eowqvz/zr+GZb+3zT+gb5oprIC+SpeXFtX3F2ciYQNWY
-         I/dlfGXHrddhJhQiJBnIHC3VoNThlaLRiiCN6+oGlt6XyAJoS1dY4PjwsCuq7vv/bb
-         8xg7I4IuxmX5uj6o5GXvb4rdPve5jiIzmO4w95oT6g546HbF03MkaVFOSC3rpFbz1/
-         t4WAmPSbiD+XZLjAT7P0CRNDvLolUH4tVRVMG8lvQZZFAai4lRcQc9Op+uyyLtrRwx
-         Hb9HZmzUIoN4w==
-Date:   Sat, 22 Jan 2022 17:14:20 +0000
+        b=Rswjyo00WTr/Ld1rwCHlo3T5fv9BLKGkkba++/cHPBXvUC5IA7XhdXlcWRZVbx1Hz
+         YndgiozDqKoRiLXiugZ4YA1DdONVMbzqOhDd0RBX3r1wtLuFEJSHqrqaSyF1RRa9Jg
+         TWi6bsG+IQpAMPbhG3envozCFYKq91tpaBVFqERcHlz/rpTkocgwi9p2ou9lRTSGte
+         lcNkbvLJ6I+r+m0T1+IUU3vvjXflCOJs0jc07ebJ1Yi/Nw37KtMdZjTNvBGMYHd184
+         GRjcaSdP6ar8Me0cH2TBnkwQP+ZsfxjAJrCQ+OjZ/wkPUZndRvHz51Du+uZpiYcMLB
+         f2rs3ojtlcvmA==
+Date:   Sat, 22 Jan 2022 17:32:46 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v3 1/2] iio: adc: tsc2046: add .read_raw support
-Message-ID: <20220122171420.7036e031@jic23-huawei>
-In-Reply-To: <20220117082852.3370869-1-o.rempel@pengutronix.de>
-References: <20220117082852.3370869-1-o.rempel@pengutronix.de>
+To:     Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc:     <robh+dt@kernel.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 2/4] dt-bindings:iio:frequency: add admv1014 binding
+Message-ID: <20220122173246.48f52792@jic23-huawei>
+In-Reply-To: <20220119081838.70210-2-antoniu.miclaus@analog.com>
+References: <20220119081838.70210-1-antoniu.miclaus@analog.com>
+        <20220119081838.70210-2-antoniu.miclaus@analog.com>
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -49,227 +47,169 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, 17 Jan 2022 09:28:51 +0100
-Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+On Wed, 19 Jan 2022 10:18:36 +0200
+Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
 
-> Add read_raw() support to make use of iio_hwmon and other iio clients.
+> Add device tree bindings for the ADMV1014 Upconverter.
 > 
-> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> changes in v3:
+>  - change clock description as suggested
 > ---
 
-Change log? If it's just the check against PAGE_SIZE then I'm fine with it, but
-maybe I missed something.  Much better to have a short description of what
-changed here.
+Change log below the --- 
 
-Anyhow, I'll assume that's it.  Applied to the togreg branch of iio.git and
-pushed out as testing to let 0-day poke at it and see if it can find any
-problems.
+We don't want it in the permanent git history.  There will
+be a link tag to this thread to allow anyone who happens to 
+want to known more to find the version change log.
 
-There was a little fuzz here for patch 2, presumably because the fix that is
-in flight.  Hopefully that won't cause us too many problems in linux-next or
-at merge time.
+Given you got it right in the other 3 patches, I'm guessing you
+just missed here.
+
+If that is all that turns up in review, I can fix it whilst applying.
 
 Thanks,
 
 Jonathan
 
 
->  drivers/iio/adc/ti-tsc2046.c | 118 ++++++++++++++++++++++++++++-------
->  1 file changed, 97 insertions(+), 21 deletions(-)
+>  .../bindings/iio/frequency/adi,admv1014.yaml  | 129 ++++++++++++++++++
+>  1 file changed, 129 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
 > 
-> diff --git a/drivers/iio/adc/ti-tsc2046.c b/drivers/iio/adc/ti-tsc2046.c
-> index 7ac1fc4b04c2..95771ceba206 100644
-> --- a/drivers/iio/adc/ti-tsc2046.c
-> +++ b/drivers/iio/adc/ti-tsc2046.c
-> @@ -86,6 +86,7 @@
->  #define TI_TSC2046_EXT_POLL_CNT			3
->  #define TI_TSC2046_POLL_CNT \
->  	(TI_TSC2046_MIN_POLL_CNT + TI_TSC2046_EXT_POLL_CNT)
-> +#define TI_TSC2046_INT_VREF			2500
->  
->  /* Represents a HW sample */
->  struct tsc2046_adc_atom {
-> @@ -166,9 +167,6 @@ struct tsc2046_adc_priv {
->  	struct tsc2046_adc_atom *rx;
->  	struct tsc2046_adc_atom *tx;
->  
-> -	struct tsc2046_adc_atom *rx_one;
-> -	struct tsc2046_adc_atom *tx_one;
-> -
->  	unsigned int count;
->  	unsigned int groups;
->  	u32 effective_speed_hz;
-> @@ -184,6 +182,8 @@ struct tsc2046_adc_priv {
->  	.type = IIO_VOLTAGE,					\
->  	.indexed = 1,						\
->  	.channel = index,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
->  	.datasheet_name = "#name",				\
->  	.scan_index = index,					\
->  	.scan_type = {						\
-> @@ -247,6 +247,14 @@ static u8 tsc2046_adc_get_cmd(struct tsc2046_adc_priv *priv, int ch_idx,
->  	else
->  		pd = 0;
->  
-> +	switch (ch_idx) {
-> +	case TI_TSC2046_ADDR_TEMP1:
-> +	case TI_TSC2046_ADDR_AUX:
-> +	case TI_TSC2046_ADDR_VBAT:
-> +	case TI_TSC2046_ADDR_TEMP0:
-> +		pd |= TI_TSC2046_SER | TI_TSC2046_PD1_VREF_ON;
-> +	}
+> diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
+> new file mode 100644
+> index 000000000000..864093f6a29a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
+> @@ -0,0 +1,129 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/frequency/adi,admv1014.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
->  	return TI_TSC2046_START | FIELD_PREP(TI_TSC2046_ADDR, ch_idx) | pd;
->  }
->  
-> @@ -258,16 +266,50 @@ static u16 tsc2046_adc_get_value(struct tsc2046_adc_atom *buf)
->  static int tsc2046_adc_read_one(struct tsc2046_adc_priv *priv, int ch_idx,
->  				u32 *effective_speed_hz)
->  {
-> +	struct tsc2046_adc_ch_cfg *ch = &priv->ch_cfg[ch_idx];
-> +	struct tsc2046_adc_atom *rx_buf, *tx_buf;
-> +	unsigned int val, val_normalized = 0;
-> +	int ret, i, count_skip = 0, max_count;
->  	struct spi_transfer xfer;
->  	struct spi_message msg;
-> -	int ret;
-> +	u8 cmd;
+> +title: ADMV1014 Microwave Downconverter
 > +
-> +	if (!effective_speed_hz) {
-> +		count_skip = tsc2046_adc_time_to_count(priv, ch->settling_time_us);
-> +		max_count = count_skip + ch->oversampling_ratio;
-> +	} else {
-> +		max_count = 1;
-> +	}
+> +maintainers:
+> +  - Antoniu Miclaus <antoniu.miclaus@analog.com>
 > +
-> +	if (sizeof(*tx_buf) * max_count > PAGE_SIZE)
-> +		return -ENOSPC;
+> +description: |
+> +   Wideband, microwave downconverter optimized for point to point microwave
+> +   radio designs operating in the 24 GHz to 44 GHz frequency range.
 > +
-> +	tx_buf = kcalloc(max_count, sizeof(*tx_buf), GFP_KERNEL);
-> +	if (!tx_buf)
-> +		return -ENOMEM;
+> +   https://www.analog.com/en/products/admv1014.html
 > +
-> +	rx_buf = kcalloc(max_count, sizeof(*rx_buf), GFP_KERNEL);
-> +	if (!rx_buf) {
-> +		ret = -ENOMEM;
-> +		goto free_tx;
-> +	}
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,admv1014
 > +
-> +	/*
-> +	 * Do not enable automatic power down on working samples. Otherwise the
-> +	 * plates will never be completely charged.
-> +	 */
-> +	cmd = tsc2046_adc_get_cmd(priv, ch_idx, true);
+> +  reg:
+> +    maxItems: 1
 > +
-> +	for (i = 0; i < max_count - 1; i++)
-> +		tx_buf[i].cmd = cmd;
+> +  spi-max-frequency:
+> +    maximum: 1000000
 > +
-> +	/* automatically power down on last sample */
-> +	tx_buf[i].cmd = tsc2046_adc_get_cmd(priv, ch_idx, false);
->  
->  	memset(&xfer, 0, sizeof(xfer));
-> -	priv->tx_one->cmd = tsc2046_adc_get_cmd(priv, ch_idx, false);
-> -	priv->tx_one->data = 0;
-> -	xfer.tx_buf = priv->tx_one;
-> -	xfer.rx_buf = priv->rx_one;
-> -	xfer.len = sizeof(*priv->tx_one);
-> +	xfer.tx_buf = tx_buf;
-> +	xfer.rx_buf = rx_buf;
-> +	xfer.len = sizeof(*tx_buf) * max_count;
->  	spi_message_init_with_transfers(&msg, &xfer, 1);
->  
->  	/*
-> @@ -278,13 +320,25 @@ static int tsc2046_adc_read_one(struct tsc2046_adc_priv *priv, int ch_idx,
->  	if (ret) {
->  		dev_err_ratelimited(&priv->spi->dev, "SPI transfer failed %pe\n",
->  				    ERR_PTR(ret));
-> -		return ret;
-> +		goto free_bufs;
->  	}
->  
->  	if (effective_speed_hz)
->  		*effective_speed_hz = xfer.effective_speed_hz;
->  
-> -	return tsc2046_adc_get_value(priv->rx_one);
-> +	for (i = 0; i < max_count - count_skip; i++) {
-> +		val = tsc2046_adc_get_value(&rx_buf[count_skip + i]);
-> +		val_normalized += val;
-> +	}
+> +  clocks:
+> +    minItems: 1
 > +
-> +	ret = DIV_ROUND_UP(val_normalized, max_count - count_skip);
+> +  clock-names:
+> +    items:
+> +      - const: lo_in
+> +    description:
+> +      External clock that provides the Local Oscilator input.
 > +
-> +free_bufs:
-> +	kfree(rx_buf);
-> +free_tx:
-> +	kfree(tx_buf);
+> +  vcm-supply:
+> +    description:
+> +      Common-mode voltage regulator.
 > +
-> +	return ret;
->  }
->  
->  static size_t tsc2046_adc_group_set_layout(struct tsc2046_adc_priv *priv,
-> @@ -391,6 +445,37 @@ static irqreturn_t tsc2046_adc_trigger_handler(int irq, void *p)
->  	return IRQ_HANDLED;
->  }
->  
-> +static int tsc2046_adc_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long m)
-> +{
-> +	struct tsc2046_adc_priv *priv = iio_priv(indio_dev);
-> +	int ret;
+> +  vcc-if-bb-supply:
+> +    description:
+> +      BB and IF supply voltage regulator.
 > +
-> +	switch (m) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = tsc2046_adc_read_one(priv, chan->channel, NULL);
-> +		if (ret < 0)
-> +			return ret;
+> +  vcc-vga-supply:
+> +    description:
+> +      RF Amplifier supply voltage regulator.
 > +
-> +		*val = ret;
+> +  vcc-vva-supply:
+> +    description:
+> +      VVA Control Circuit supply voltage regulator.
 > +
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		/*
-> +		 * Note: the TSC2046 has internal voltage divider on the VBAT
-> +		 * line. This divider can be influenced by external divider.
-> +		 * So, it is better to use external voltage-divider driver
-> +		 * instead, which is calculating complete chain.
-> +		 */
-> +		*val = TI_TSC2046_INT_VREF;
-> +		*val2 = chan->scan_type.realbits;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	}
+> +  vcc-lna-3p3-supply:
+> +    description:
+> +      Low Noise Amplifier 3.3V supply voltage regulator.
 > +
-> +	return -EINVAL;
-> +}
+> +  vcc-lna-1p5-supply:
+> +    description:
+> +      Low Noise Amplifier 1.5V supply voltage regulator.
 > +
->  static int tsc2046_adc_update_scan_mode(struct iio_dev *indio_dev,
->  					const unsigned long *active_scan_mask)
->  {
-> @@ -421,6 +506,7 @@ static int tsc2046_adc_update_scan_mode(struct iio_dev *indio_dev,
->  }
->  
->  static const struct iio_info tsc2046_adc_info = {
-> +	.read_raw	  = tsc2046_adc_read_raw,
->  	.update_scan_mode = tsc2046_adc_update_scan_mode,
->  };
->  
-> @@ -563,16 +649,6 @@ static int tsc2046_adc_setup_spi_msg(struct tsc2046_adc_priv *priv)
->  	size_t size;
->  	int ret;
->  
-> -	priv->tx_one = devm_kzalloc(&priv->spi->dev, sizeof(*priv->tx_one),
-> -				    GFP_KERNEL);
-> -	if (!priv->tx_one)
-> -		return -ENOMEM;
-> -
-> -	priv->rx_one = devm_kzalloc(&priv->spi->dev, sizeof(*priv->rx_one),
-> -				    GFP_KERNEL);
-> -	if (!priv->rx_one)
-> -		return -ENOMEM;
-> -
->  	/*
->  	 * Make dummy read to set initial power state and get real SPI clock
->  	 * freq. It seems to be not important which channel is used for this
+> +  vcc-bg-supply:
+> +    description:
+> +      Band Gap Circuit supply voltage regulator.
+> +
+> +  vcc-quad-supply:
+> +    description:
+> +      Quadruple supply voltage regulator.
+> +
+> +  vcc-mixer-supply:
+> +    description:
+> +      Mixer supply voltage regulator.
+> +
+> +  adi,input-mode:
+> +    description:
+> +      Select the input mode.
+> +      iq - in-phase quadrature (I/Q) input
+> +      if - complex intermediate frequency (IF) input
+> +    enum: [iq, if]
+> +
+> +  adi,detector-enable:
+> +    description:
+> +      Digital Rx Detector Enable. The Square Law Detector output is
+> +      available at output pin VDET.
+> +    type: boolean
+> +
+> +  adi,p1db-compensation-enable:
+> +    description:
+> +      Turn on bits to optimize P1dB.
+> +    type: boolean
+> +
+> +  adi,quad-se-mode:
+> +    description:
+> +      Switch the LO path from differential to single-ended operation.
+> +      se-neg - Single-Ended Mode, Negative Side Disabled.
+> +      se-pos - Single-Ended Mode, Positive Side Disabled.
+> +      diff - Differential Mode.
+> +    enum: [se-neg, se-pos, diff]
+> +
+> +  '#clock-cells':
+> +    const: 0
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - clocks
+> +  - clock-names
+> +  - vcm-supply
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    spi {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +      admv1014@0{
+> +        compatible = "adi,admv1014";
+> +        reg = <0>;
+> +        spi-max-frequency = <1000000>;
+> +        clocks = <&admv1014_lo>;
+> +        clock-names = "lo_in";
+> +        vcm-supply = <&vcm>;
+> +        adi,quad-se-mode = "diff";
+> +        adi,detector-enable;
+> +        adi,p1db-compensation-enable;
+> +      };
+> +    };
+> +...
 
