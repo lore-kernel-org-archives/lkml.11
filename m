@@ -2,122 +2,106 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4D5AC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 12:34:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E94DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 12:38:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231378AbiAVMds (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 07:33:48 -0500
-Received: from mga07.intel.com ([134.134.136.100]:19903 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230360AbiAVMdr (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 07:33:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1642854827; x=1674390827;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=WKFuPNcSR+vwWACjgcND8o2TodQ+eOV6DGxhxnH90oE=;
-  b=H/SczYzv/bQuU7hkakhpFXPcRxmIQlTITTF4cNm435bU2/PmmVuCbe1O
-   /9V3ryP4JOfANzqaG1FQYxxPUzB5heFZ27VQFX/YFRSm3+miCiHGtrK92
-   TnAwUCN54EQ14AzB3La8iosBFfpIxQ/c/EEksxd9eiC4qd5YsCHKrGHoD
-   riY0uDzMCrEw5wdL717Cm3lbNsafJEpu7Q3eFcrinMyrzEqDOtEsGOx8a
-   R+87j1luT2S9U2lsrpOEw53mt4Xis0DH86/Yg/tecpjxw513zOyRBDHLy
-   K/kX7N+Ke4qw5v1/iqwe2MjXpGCoLjL7qP7PQThGJ3LEMe3JxFvDSGVmm
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10234"; a="309143974"
-X-IronPort-AV: E=Sophos;i="5.88,308,1635231600"; 
-   d="scan'208";a="309143974"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2022 04:33:39 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,308,1635231600"; 
-   d="scan'208";a="519395351"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga007.jf.intel.com with ESMTP; 22 Jan 2022 04:33:37 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nBFaK-000GOQ-C1; Sat, 22 Jan 2022 12:33:36 +0000
-Date:   Sat, 22 Jan 2022 20:32:40 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Dan Williams <dan.j.williams@intel.com>
-Cc:     kbuild-all@lists.01.org,
-        Alison Schofield <alison.schofield@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        Ira Weiny <ira.weiny@intel.com>,
-        Ben Widawsky <ben.widawsky@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        linux-kernel@vger.kernel.org
-Subject: [cxl:preview 34/53] drivers/cxl/cxl.h:285:38: warning: 'struct
- pci_bus' declared inside parameter list will not be visible outside of this
- definition or declaration
-Message-ID: <202201222055.733L3u7d-lkp@intel.com>
+        id S231853AbiAVMiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 07:38:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56492 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230360AbiAVMiV (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 22 Jan 2022 07:38:21 -0500
+Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D74D0C06173D
+        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 04:38:20 -0800 (PST)
+Received: by mail-ua1-x92a.google.com with SMTP id r15so21904998uao.3
+        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 04:38:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=k4uslepZlx+doJxsNKmyezSBQMtw/R3k+N4S5l4lrBo=;
+        b=BsOpApkNdWIaU/sRtOQjwh4eUZx+LBSaRTuxHUaQyNWCQyCl8bai1Wx1qwWnoNC27H
+         UMptAV67VXy6USh28okTjWJFOwzkUvxxcLMSLabutXTFPFkNtnBbMa7eeEuwDF9073we
+         fZ42v9DyP2u9LYxoNaoBkYFla0cFFWJTgKvbYKo6jtRIKNaRM4r9fnxMTi2N2LASC/k9
+         X39719sqIGKXjMPBleMQhBU6ZNT6uQtRYekkR4ZsEjG8s5q28dme/sNuxTeRGLrTi/+J
+         rYybXofWvCBIJpgUyR+L0PKRAlkQvadEp4ZKYSPYub9VCRQ08Tx0DtOa0OrsEetEIl6F
+         +IBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=k4uslepZlx+doJxsNKmyezSBQMtw/R3k+N4S5l4lrBo=;
+        b=QLn0/ZDOPDqCOnpxO5TFzkW7gkN6xPoY7nIy8bqw9yDTD9qILLK1vIzD5EwRhF2/N6
+         oBZg5ari7R83w+iGv5bGFq0wBcFX3uuPG3j9GVIqXiQUUgg0D+/yyDZqkTOr8uKkoiRB
+         Tznl1BrF3ulIot5Jtmg/7xSu7P5wQf2Fe18HrWq3Whqf/AEIQn7ztJ1XmOmHpEf2ryv2
+         IfzzZdhwQhJz2xD7D9iH62QivkMNOqyDdWB1m/+2pBAYw4HZys4NjQiAQOzgh8lzLs5v
+         iBl05Nbpmtpq43VzTMDELdMPpq0+u4TdgsQdHVxQGRmkWOzjeZ8/zlpHuW/HebDc1AjW
+         Krvw==
+X-Gm-Message-State: AOAM5302aYJK1o5fGA3BzC77fEu/NNjpDQiPDfiLNzakHxmfocW3dFOQ
+        3ks5LgDtGAfjc8xyEitwP7qFnjLxAF9VJ3bqRIBmZA==
+X-Google-Smtp-Source: ABdhPJxAkMtrFRW4Pnd6Ntwnglxpjg12Vi1yx2PNmdt/WUzgwtaT1gqfGWUrAGaiAKvIFUvMWfcsFCo1mDlwWWDzqJ0=
+X-Received: by 2002:a67:c093:: with SMTP id x19mr1768383vsi.20.1642855099794;
+ Sat, 22 Jan 2022 04:38:19 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20211227112959.7325-1-krzysztof.kozlowski@canonical.com>
+ <CAPLW+4n-1H5Yu3wQaus-UJ_VW_TjHrNUHaPCGCMURXg8EqxjyA@mail.gmail.com>
+ <CAK8P3a1ou-ZdrXN0MHQoJ+gGbvhXT-e2qt96_f9M8VwrdX0pAg@mail.gmail.com> <CAOesGMgF3S5_XsWjEqq=-zfYXwOWFpFNA6afL81wceRUA_0FeQ@mail.gmail.com>
+In-Reply-To: <CAOesGMgF3S5_XsWjEqq=-zfYXwOWFpFNA6afL81wceRUA_0FeQ@mail.gmail.com>
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+Date:   Sat, 22 Jan 2022 14:38:08 +0200
+Message-ID: <CAPLW+4k8=ymx56R7bKOt8kMVG_uUgrTsCkVd5wiY_rkYq8dYbQ@mail.gmail.com>
+Subject: Re: [GIT PULL] arm64: dts: samsung: Second pull for v5.17
+To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>
+Cc:     arm-soc <arm@kernel.org>, SoC Team <soc@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
+        <linux-samsung-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git preview
-head:   e675fabdbbcdb6e32dba688a20fb0bd42e0e2d5d
-commit: 2b7a34a480122fb652df99554f6d59c5d9f3ef24 [34/53] cxl/core: Generalize dport enumeration in the core
-config: arc-randconfig-r043-20220122 (https://download.01.org/0day-ci/archive/20220122/202201222055.733L3u7d-lkp@intel.com/config)
-compiler: arceb-elf-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git/commit/?id=2b7a34a480122fb652df99554f6d59c5d9f3ef24
-        git remote add cxl https://git.kernel.org/pub/scm/linux/kernel/git/cxl/cxl.git
-        git fetch --no-tags cxl preview
-        git checkout 2b7a34a480122fb652df99554f6d59c5d9f3ef24
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=arc SHELL=/bin/bash drivers/
+On Wed, 19 Jan 2022 at 18:53, Olof Johansson <olof@lixom.net> wrote:
+>
+> On Wed, Jan 19, 2022 at 8:07 AM Arnd Bergmann <arnd@arndb.de> wrote:
+> >
+> > On Wed, Jan 19, 2022 at 4:11 PM Sam Protsenko
+> > <semen.protsenko@linaro.org> wrote:
+> > > On Mon, 27 Dec 2021 at 13:30, Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
+> > >
+> > > Hi Olof, Arnd,
+> > >
+> > > Just want to check if it's possible for those patches to be applied in
+> > > v5.17? Sorry for the noise, but that's important to me.
+> >
+> > I can see that Olof merged merged this into the "arm/late" branch in
+> > the soc tree,
+> > so I assume he still plans to send it in the next few days.
+>
+> Yep, will be sent up today most likely.
+>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+Thanks for detailed answer! Glad to hear it's still a possibility.
+Please let me know if you need any actions on my side (like rebasing,
+etc).
 
-All warnings (new ones prefixed by >>):
-
-   In file included from drivers/cxl/cxlmem.h:7,
-                    from drivers/cxl/core/pmem.c:6:
->> drivers/cxl/cxl.h:285:38: warning: 'struct pci_bus' declared inside parameter list will not be visible outside of this definition or declaration
-     285 |                               struct pci_bus *bus);
-         |                                      ^~~~~~~
-
-
-vim +285 drivers/cxl/cxl.h
-
-24be641caabe25 Ben Widawsky 2021-12-01  281  
-42c377a63d21df Dan Williams 2022-01-05  282  bool is_cxl_port(struct device *dev);
-4812be97c015bd Dan Williams 2021-06-09  283  struct cxl_port *to_cxl_port(struct device *dev);
-7237f27228ec66 Dan Williams 2022-01-18  284  int devm_cxl_register_pci_bus(struct device *host, struct device *uport,
-7237f27228ec66 Dan Williams 2022-01-18 @285  			      struct pci_bus *bus);
-7237f27228ec66 Dan Williams 2022-01-18  286  struct pci_bus *cxl_port_to_pci_bus(struct cxl_port *port);
-4812be97c015bd Dan Williams 2021-06-09  287  struct cxl_port *devm_cxl_add_port(struct device *host, struct device *uport,
-4812be97c015bd Dan Williams 2021-06-09  288  				   resource_size_t component_reg_phys,
-4812be97c015bd Dan Williams 2021-06-09  289  				   struct cxl_port *parent_port);
-3c39e157b25e0c Dan Williams 2022-01-18  290  struct cxl_port *find_cxl_root(struct device *dev);
-2b7a34a480122f Dan Williams 2022-01-18  291  struct cxl_dport *devm_cxl_add_dport(struct device *host, struct cxl_port *port,
-2b7a34a480122f Dan Williams 2022-01-18  292  				     struct device *dport, int port_id,
-2b7a34a480122f Dan Williams 2022-01-18  293  				     resource_size_t component_reg_phys);
-40ba17afdfabb0 Dan Williams 2021-06-09  294  struct cxl_decoder *to_cxl_decoder(struct device *dev);
-8fdcb1704f61a8 Dan Williams 2021-06-15  295  bool is_root_decoder(struct device *dev);
-42c377a63d21df Dan Williams 2022-01-05  296  bool is_cxl_decoder(struct device *dev);
-24be641caabe25 Ben Widawsky 2021-12-01  297  struct cxl_decoder *cxl_root_decoder_alloc(struct cxl_port *port,
-24be641caabe25 Ben Widawsky 2021-12-01  298  					   unsigned int nr_targets);
-24be641caabe25 Ben Widawsky 2021-12-01  299  struct cxl_decoder *cxl_switch_decoder_alloc(struct cxl_port *port,
-24be641caabe25 Ben Widawsky 2021-12-01  300  					     unsigned int nr_targets);
-48667f676189ec Dan Williams 2021-09-21  301  int cxl_decoder_add(struct cxl_decoder *cxld, int *target_map);
-48667f676189ec Dan Williams 2021-09-21  302  int cxl_decoder_autoremove(struct device *host, struct cxl_decoder *cxld);
-40ba17afdfabb0 Dan Williams 2021-06-09  303  
-
-:::::: The code at line 285 was first introduced by commit
-:::::: 7237f27228ec660f73924f38e553e1d2b2ff65c4 cxl/port: Introduce cxl_port_to_pci_bus()
-
-:::::: TO: Dan Williams <dan.j.williams@intel.com>
-:::::: CC: Dan Williams <dan.j.williams@intel.com>
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> > With the timing over Christmas, I sent out the large bulk of the
+> > contents (anything
+> > I merged before Dec 23) last year, and Linus already merged it, the rest ended
+> > up in the "late" branch.
+> >
+> > As usual, there is no guarantee that late changes make it in, but I have seen
+> > no indication of any problems so far.
+>
+> Correct. Been sitting on it for a while in case there were fixes
+> coming in for the first pieces that got merged, but in traditional
+> fashion I'm guessing those will start to show up a few days after the
+> late branch gets merged. :)
+>
+>
+> -Olof
