@@ -2,207 +2,111 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ADB9C4332F
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 03:54:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50979C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 03:54:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232764AbiAVDyc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 22:54:32 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:51864 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S232382AbiAVDxb (ORCPT
+        id S232779AbiAVDy6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 22:54:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55470 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229996AbiAVDy4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 22:53:31 -0500
-X-UUID: 96be5a19e85344268334fa3c4d3d638a-20220122
-X-UUID: 96be5a19e85344268334fa3c4d3d638a-20220122
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <yunfei.dong@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 2001546892; Sat, 22 Jan 2022 11:53:27 +0800
-Received: from mtkexhb01.mediatek.inc (172.21.101.102) by
- mtkmbs07n2.mediatek.inc (172.21.101.141) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Sat, 22 Jan 2022 11:53:26 +0800
-Received: from mtkcas11.mediatek.inc (172.21.101.40) by mtkexhb01.mediatek.inc
- (172.21.101.102) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sat, 22 Jan
- 2022 11:53:25 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas11.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Sat, 22 Jan 2022 11:53:24 +0800
-From:   Yunfei Dong <yunfei.dong@mediatek.com>
-To:     Yunfei Dong <yunfei.dong@mediatek.com>,
-        Alexandre Courbot <acourbot@chromium.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        "Tzung-Bi Shih" <tzungbi@chromium.org>,
-        Tiffany Lin <tiffany.lin@mediatek.com>,
-        Andrew-CT Chen <andrew-ct.chen@mediatek.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Tomasz Figa <tfiga@google.com>
-CC:     George Sun <george.sun@mediatek.com>,
-        Xiaoyong Lu <xiaoyong.lu@mediatek.com>,
-        Hsin-Yi Wang <hsinyi@chromium.org>,
-        Fritz Koenig <frkoenig@chromium.org>,
-        Dafna Hirschfeld <dafna.hirschfeld@collabora.com>,
-        Benjamin Gaignard <benjamin.gaignard@collabora.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Irui Wang <irui.wang@mediatek.com>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>,
-        Steve Cho <stevecho@chromium.org>,
-        <linux-media@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <srv_heupstream@mediatek.com>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>
-Subject: [PATCH v6, 04/15] media: mtk-vcodec: Read max resolution from dec_capability
-Date:   Sat, 22 Jan 2022 11:53:05 +0800
-Message-ID: <20220122035316.18179-5-yunfei.dong@mediatek.com>
+        Fri, 21 Jan 2022 22:54:56 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F0FFC06173B
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 19:54:56 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id d15-20020a17090a110f00b001b4e7d27474so10752422pja.2
+        for <linux-kernel@vger.kernel.org>; Fri, 21 Jan 2022 19:54:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ssu5g04UQjA/IU3u2iGLonkbxXssqKTt/cYNXXqSILs=;
+        b=MsKqCPpbPeFBFL7DlTbUSZO3GrCH87yMw7PDog8TQdHqsi5o7ydOfUVfWyBlsq1VI4
+         t6hrYVV6a1nEPZKwyFKpT6cT43zyI4YPgZV5wkJnNuN/atPRUH6XLI81/6UYC/dwnaGL
+         0MaA4t4stcBHJaqKAF9U6u9eHY3QkPobhTbYrnivep9PDFwOazl2W5IrN/nBdIF1AQGa
+         xAlUI4AQBq/BrcK4cz/Wdizj2Qqe9FEQtNZF9w9gdbOt7+BKm/2yXj8cB+mJm3f38Oe0
+         WEFfwDTEmU//2QofyYiKAYGEIR5Rgoex85BdHFCrRrtUE3KbpFQb0OSL8AwW4J7ryv2D
+         l5ow==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ssu5g04UQjA/IU3u2iGLonkbxXssqKTt/cYNXXqSILs=;
+        b=efJqGH3WjMJplDLCSRpbV/oxjv7H/8BZiKT/reUOzMtL5DSh2+0L2nIXTw0Z7Ajlri
+         YTfFfzOUsmrXiDawqhYykeojN6uI1N3oCeAlx+LdSFogIhvVW//+MSwjDW0Rt+OFA1hA
+         Bt3Ucy6yfBdPbQ71OGwAWn0DaMvBPjjUCHXGQVgAJne4bXy2iR2PSyQzSmgbLZMtmCUu
+         piRQIQWVIyL98BtpOajQ3EOx0Cm4uGt10upwvkbWziLvB146DBAoRggS5bTXGfSV3dD5
+         vvAAeoaddyXeGwNVEBmaKtZNbj4RiYFAsZM8PPXYFhnE0z1UPQCqGT+fxYgg6ynkALwA
+         nBKg==
+X-Gm-Message-State: AOAM533kRYGBIbNCjPFMrXigflCOhTrtSVkjnQBnLsLMFSeUZc1e1jQk
+        kCuniVfwrrA0q/J6bkqoWkw=
+X-Google-Smtp-Source: ABdhPJzwcNqAt3Qy1dja+I/0LzUyTnd84NbKHFPc0DwpkXevZWLsQuv3mRuz+gOILmB1HlBL135lzg==
+X-Received: by 2002:a17:902:7603:b0:148:daa7:ed7e with SMTP id k3-20020a170902760300b00148daa7ed7emr6199490pll.150.1642823695941;
+        Fri, 21 Jan 2022 19:54:55 -0800 (PST)
+Received: from fainelli-desktop.igp.broadcom.net ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id a1sm667255pjm.1.2022.01.21.19.54.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 21 Jan 2022 19:54:55 -0800 (PST)
+From:   Florian Fainelli <f.fainelli@gmail.com>
+To:     linux-arm-kernel@lists.infradead.org
+Cc:     Florian Fainelli <f.fainelli@gmail.com>,
+        bcm-kernel-feedback-list@broadcom.com (maintainer:BROADCOM BCM7XXX ARM
+        ARCHITECTURE), Mark Rutland <mark.rutland@arm.com>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH 0/4] Broadcom STB PM PSCI extensions
+Date:   Fri, 21 Jan 2022 19:54:17 -0800
+Message-Id: <20220122035421.4086618-1-f.fainelli@gmail.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220122035316.18179-1-yunfei.dong@mediatek.com>
-References: <20220122035316.18179-1-yunfei.dong@mediatek.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Supported max resolution for different platforms are not the same: 2K
-or 4K, getting it according to dec_capability.
+Hi all,
 
-Signed-off-by: Yunfei Dong <yunfei.dong@mediatek.com>
-Reviewed-by: Tzung-Bi Shih<tzungbi@google.com>
----
- .../platform/mtk-vcodec/mtk_vcodec_dec.c      | 29 +++++++++++--------
- .../platform/mtk-vcodec/mtk_vcodec_drv.h      |  4 +++
- 2 files changed, 21 insertions(+), 12 deletions(-)
+This patch series contains the Broadcom STB PSCI extensions which adds
+some additional functions on top of the existing standard PSCI interface
+which is the reason for having the driver implement a custom
+suspend_ops.
 
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c
-index 130ecef2e766..304f5afbd419 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_dec.c
-@@ -152,13 +152,15 @@ void mtk_vcodec_dec_set_default_params(struct mtk_vcodec_ctx *ctx)
- 	q_data->coded_height = DFT_CFG_HEIGHT;
- 	q_data->fmt = ctx->dev->vdec_pdata->default_cap_fmt;
- 	q_data->field = V4L2_FIELD_NONE;
-+	ctx->max_width = MTK_VDEC_MAX_W;
-+	ctx->max_height = MTK_VDEC_MAX_H;
- 
- 	v4l_bound_align_image(&q_data->coded_width,
- 				MTK_VDEC_MIN_W,
--				MTK_VDEC_MAX_W, 4,
-+				ctx->max_width, 4,
- 				&q_data->coded_height,
- 				MTK_VDEC_MIN_H,
--				MTK_VDEC_MAX_H, 5, 6);
-+				ctx->max_height, 5, 6);
- 
- 	q_data->sizeimage[0] = q_data->coded_width * q_data->coded_height;
- 	q_data->bytesperline[0] = q_data->coded_width;
-@@ -217,7 +219,7 @@ static int vidioc_vdec_subscribe_evt(struct v4l2_fh *fh,
- 	}
- }
- 
--static int vidioc_try_fmt(struct v4l2_format *f,
-+static int vidioc_try_fmt(struct mtk_vcodec_ctx *ctx, struct v4l2_format *f,
- 			  const struct mtk_video_fmt *fmt)
- {
- 	struct v4l2_pix_format_mplane *pix_fmt_mp = &f->fmt.pix_mp;
-@@ -225,9 +227,9 @@ static int vidioc_try_fmt(struct v4l2_format *f,
- 	pix_fmt_mp->field = V4L2_FIELD_NONE;
- 
- 	pix_fmt_mp->width =
--		clamp(pix_fmt_mp->width, MTK_VDEC_MIN_W, MTK_VDEC_MAX_W);
-+		clamp(pix_fmt_mp->width, MTK_VDEC_MIN_W, ctx->max_width);
- 	pix_fmt_mp->height =
--		clamp(pix_fmt_mp->height, MTK_VDEC_MIN_H, MTK_VDEC_MAX_H);
-+		clamp(pix_fmt_mp->height, MTK_VDEC_MIN_H, ctx->max_height);
- 
- 	if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
- 		pix_fmt_mp->num_planes = 1;
-@@ -245,16 +247,16 @@ static int vidioc_try_fmt(struct v4l2_format *f,
- 		tmp_h = pix_fmt_mp->height;
- 		v4l_bound_align_image(&pix_fmt_mp->width,
- 					MTK_VDEC_MIN_W,
--					MTK_VDEC_MAX_W, 6,
-+					ctx->max_width, 6,
- 					&pix_fmt_mp->height,
- 					MTK_VDEC_MIN_H,
--					MTK_VDEC_MAX_H, 6, 9);
-+					ctx->max_height, 6, 9);
- 
- 		if (pix_fmt_mp->width < tmp_w &&
--			(pix_fmt_mp->width + 64) <= MTK_VDEC_MAX_W)
-+			(pix_fmt_mp->width + 64) <= ctx->max_width)
- 			pix_fmt_mp->width += 64;
- 		if (pix_fmt_mp->height < tmp_h &&
--			(pix_fmt_mp->height + 64) <= MTK_VDEC_MAX_H)
-+			(pix_fmt_mp->height + 64) <= ctx->max_height)
- 			pix_fmt_mp->height += 64;
- 
- 		mtk_v4l2_debug(0,
-@@ -294,7 +296,7 @@ static int vidioc_try_fmt_vid_cap_mplane(struct file *file, void *priv,
- 		fmt = mtk_vdec_find_format(f, dec_pdata);
- 	}
- 
--	return vidioc_try_fmt(f, fmt);
-+	return vidioc_try_fmt(ctx, f, fmt);
- }
- 
- static int vidioc_try_fmt_vid_out_mplane(struct file *file, void *priv,
-@@ -317,7 +319,7 @@ static int vidioc_try_fmt_vid_out_mplane(struct file *file, void *priv,
- 		return -EINVAL;
- 	}
- 
--	return vidioc_try_fmt(f, fmt);
-+	return vidioc_try_fmt(ctx, f, fmt);
- }
- 
- static int vidioc_vdec_g_selection(struct file *file, void *priv,
-@@ -445,7 +447,7 @@ static int vidioc_vdec_s_fmt(struct file *file, void *priv,
- 		return -EINVAL;
- 
- 	q_data->fmt = fmt;
--	vidioc_try_fmt(f, q_data->fmt);
-+	vidioc_try_fmt(ctx, f, q_data->fmt);
- 	if (f->type == V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
- 		q_data->sizeimage[0] = pix_mp->plane_fmt[0].sizeimage;
- 		q_data->coded_width = pix_mp->width;
-@@ -545,6 +547,9 @@ static int vidioc_enum_framesizes(struct file *file, void *priv,
- 				fsize->stepwise.min_height,
- 				fsize->stepwise.max_height,
- 				fsize->stepwise.step_height);
-+
-+		ctx->max_width = fsize->stepwise.max_width;
-+		ctx->max_height = fsize->stepwise.max_height;
- 		return 0;
- 	}
- 
-diff --git a/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h b/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
-index 5056abe3d2be..2d1d878692ca 100644
---- a/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
-+++ b/drivers/media/platform/mtk-vcodec/mtk_vcodec_drv.h
-@@ -287,6 +287,8 @@ struct vdec_pic_info {
-  *	  mtk_video_dec_buf.
-  * @hw_id: hardware index used to identify different hardware.
-  *
-+ * @max_width: hardware supported max width
-+ * @max_height: hardware supported max height
-  * @msg_queue: msg queue used to store lat buffer information.
-  */
- struct mtk_vcodec_ctx {
-@@ -332,6 +334,8 @@ struct mtk_vcodec_ctx {
- 	struct mutex lock;
- 	int hw_id;
- 
-+	unsigned int max_width;
-+	unsigned int max_height;
- 	struct vdec_msg_queue msg_queue;
- };
- 
+These platforms have traditionally supported a mode that is akin to
+ACPI's S2 with the CPU in WFI and all of the chip being clock gated
+which is entered with "echo standby > /sys/power/state". Additional a
+true suspend to DRAM as defined in ACPI by S3 is implemented with "echo
+mem > /sys/power/state".
+
+These platforms also may have an external Broadcom PMIC chip which can
+cause the SoC to be powercycled assuming that we communicate that intent
+via a vendor specific PSCI SYSTEM_RESET2.
+
+Since it is desirable to get any new functionality added to the kernel
+to be loadable as a module as part of shipping said products in a Google
+Kernel Image (GKI) environment, we need to export a couple of symbols from
+drivers/firmware/psci/psci.c.
+
+Thanks for your feedback.
+
+Florian Fainelli (4):
+  firmware: psci: Export a couple of suspend symbols
+  soc: bcm: brcmstb: Make legacy PM code depend on !ARM_PSCI_FW
+  soc: bcm: brcmstb: Added support for PSCI system suspend operations
+  Documentation: ABI: Document Broadcom STB PSCI firmware files
+
+ .../ABI/testing/sysfs-firmware-brcmstb        |  16 +
+ drivers/firmware/psci/psci.c                  |   9 +-
+ drivers/soc/bcm/brcmstb/Kconfig               |   4 +-
+ drivers/soc/bcm/brcmstb/pm/Makefile           |   3 +
+ drivers/soc/bcm/brcmstb/pm/pm-psci.c          | 315 ++++++++++++++++++
+ include/linux/psci.h                          |   2 +
+ include/linux/soc/brcmstb/brcmstb-smccc.h     |  84 +++++
+ 7 files changed, 430 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-firmware-brcmstb
+ create mode 100644 drivers/soc/bcm/brcmstb/pm/pm-psci.c
+ create mode 100644 include/linux/soc/brcmstb/brcmstb-smccc.h
+
 -- 
 2.25.1
 
