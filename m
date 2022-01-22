@@ -2,106 +2,188 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E94DC433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 12:38:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E74C433F5
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 12:39:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231853AbiAVMiX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 07:38:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56492 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230360AbiAVMiV (ORCPT
+        id S231993AbiAVMjF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 07:39:05 -0500
+Received: from server.atrad.com.au ([150.101.241.2]:41382 "EHLO
+        server.atrad.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230360AbiAVMjE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 07:38:21 -0500
-Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D74D0C06173D
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 04:38:20 -0800 (PST)
-Received: by mail-ua1-x92a.google.com with SMTP id r15so21904998uao.3
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 04:38:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=k4uslepZlx+doJxsNKmyezSBQMtw/R3k+N4S5l4lrBo=;
-        b=BsOpApkNdWIaU/sRtOQjwh4eUZx+LBSaRTuxHUaQyNWCQyCl8bai1Wx1qwWnoNC27H
-         UMptAV67VXy6USh28okTjWJFOwzkUvxxcLMSLabutXTFPFkNtnBbMa7eeEuwDF9073we
-         fZ42v9DyP2u9LYxoNaoBkYFla0cFFWJTgKvbYKo6jtRIKNaRM4r9fnxMTi2N2LASC/k9
-         X39719sqIGKXjMPBleMQhBU6ZNT6uQtRYekkR4ZsEjG8s5q28dme/sNuxTeRGLrTi/+J
-         rYybXofWvCBIJpgUyR+L0PKRAlkQvadEp4ZKYSPYub9VCRQ08Tx0DtOa0OrsEetEIl6F
-         +IBQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=k4uslepZlx+doJxsNKmyezSBQMtw/R3k+N4S5l4lrBo=;
-        b=QLn0/ZDOPDqCOnpxO5TFzkW7gkN6xPoY7nIy8bqw9yDTD9qILLK1vIzD5EwRhF2/N6
-         oBZg5ari7R83w+iGv5bGFq0wBcFX3uuPG3j9GVIqXiQUUgg0D+/yyDZqkTOr8uKkoiRB
-         Tznl1BrF3ulIot5Jtmg/7xSu7P5wQf2Fe18HrWq3Whqf/AEIQn7ztJ1XmOmHpEf2ryv2
-         IfzzZdhwQhJz2xD7D9iH62QivkMNOqyDdWB1m/+2pBAYw4HZys4NjQiAQOzgh8lzLs5v
-         iBl05Nbpmtpq43VzTMDELdMPpq0+u4TdgsQdHVxQGRmkWOzjeZ8/zlpHuW/HebDc1AjW
-         Krvw==
-X-Gm-Message-State: AOAM5302aYJK1o5fGA3BzC77fEu/NNjpDQiPDfiLNzakHxmfocW3dFOQ
-        3ks5LgDtGAfjc8xyEitwP7qFnjLxAF9VJ3bqRIBmZA==
-X-Google-Smtp-Source: ABdhPJxAkMtrFRW4Pnd6Ntwnglxpjg12Vi1yx2PNmdt/WUzgwtaT1gqfGWUrAGaiAKvIFUvMWfcsFCo1mDlwWWDzqJ0=
-X-Received: by 2002:a67:c093:: with SMTP id x19mr1768383vsi.20.1642855099794;
- Sat, 22 Jan 2022 04:38:19 -0800 (PST)
+        Sat, 22 Jan 2022 07:39:04 -0500
+X-Greylist: delayed 1781 seconds by postgrey-1.27 at vger.kernel.org; Sat, 22 Jan 2022 07:39:02 EST
+Received: from marvin.atrad.com.au (IDENT:1008@marvin.atrad.com.au [192.168.0.2])
+        by server.atrad.com.au (8.17.1/8.17.1) with ESMTPS id 20MC7UKQ032381
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NO);
+        Sat, 22 Jan 2022 22:37:32 +1030
+Date:   Sat, 22 Jan 2022 22:37:30 +1030
+From:   Jonathan Woithe <jwoithe@just42.net>
+To:     Luiz Sampaio <sampaio.ime@gmail.com>
+Cc:     "Lee, Chun-Yi" <jlee@suse.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Corentin Chary <corentin.chary@gmail.com>,
+        =?iso-8859-1?Q?Jo=E3o?= Paulo Rechi Vita <jprvita@gmail.com>,
+        Matthew Garrett <mjg59@srcf.ucam.org>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>,
+        Matan Ziv-Av <matan@svgalib.org>,
+        Jeremy Soller <jeremy@system76.com>,
+        System76 Product Development <productdev@system76.com>,
+        Henrique de Moraes Holschuh <hmh@hmh.eng.br>,
+        Herton Ronaldo Krzesinski <herton@canonical.com>,
+        Azael Avalos <coproscefalo@gmail.com>,
+        linux-kernel@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        acpi4asus-user@lists.sourceforge.net,
+        ibm-acpi-devel@lists.sourceforge.net
+Subject: Re: [PATCH 20/31] platform: x86: changing LED_* from enum
+ led_brightness to actual value
+Message-ID: <20220122120730.GA12371@marvin.atrad.com.au>
+References: <20220121165436.30956-1-sampaio.ime@gmail.com>
+ <20220121165436.30956-21-sampaio.ime@gmail.com>
 MIME-Version: 1.0
-References: <20211227112959.7325-1-krzysztof.kozlowski@canonical.com>
- <CAPLW+4n-1H5Yu3wQaus-UJ_VW_TjHrNUHaPCGCMURXg8EqxjyA@mail.gmail.com>
- <CAK8P3a1ou-ZdrXN0MHQoJ+gGbvhXT-e2qt96_f9M8VwrdX0pAg@mail.gmail.com> <CAOesGMgF3S5_XsWjEqq=-zfYXwOWFpFNA6afL81wceRUA_0FeQ@mail.gmail.com>
-In-Reply-To: <CAOesGMgF3S5_XsWjEqq=-zfYXwOWFpFNA6afL81wceRUA_0FeQ@mail.gmail.com>
-From:   Sam Protsenko <semen.protsenko@linaro.org>
-Date:   Sat, 22 Jan 2022 14:38:08 +0200
-Message-ID: <CAPLW+4k8=ymx56R7bKOt8kMVG_uUgrTsCkVd5wiY_rkYq8dYbQ@mail.gmail.com>
-Subject: Re: [GIT PULL] arm64: dts: samsung: Second pull for v5.17
-To:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>
-Cc:     arm-soc <arm@kernel.org>, SoC Team <soc@kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
-        <linux-samsung-soc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220121165436.30956-21-sampaio.ime@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-MIMEDefang-action: accept
+X-Scanned-By: MIMEDefang 2.86 on 192.168.0.1
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, 19 Jan 2022 at 18:53, Olof Johansson <olof@lixom.net> wrote:
->
-> On Wed, Jan 19, 2022 at 8:07 AM Arnd Bergmann <arnd@arndb.de> wrote:
-> >
-> > On Wed, Jan 19, 2022 at 4:11 PM Sam Protsenko
-> > <semen.protsenko@linaro.org> wrote:
-> > > On Mon, 27 Dec 2021 at 13:30, Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
-> > >
-> > > Hi Olof, Arnd,
-> > >
-> > > Just want to check if it's possible for those patches to be applied in
-> > > v5.17? Sorry for the noise, but that's important to me.
-> >
-> > I can see that Olof merged merged this into the "arm/late" branch in
-> > the soc tree,
-> > so I assume he still plans to send it in the next few days.
->
-> Yep, will be sent up today most likely.
->
+On Fri, Jan 21, 2022 at 01:54:25PM -0300, Luiz Sampaio wrote:
+> The enum led_brightness, which contains the declaration of LED_OFF,
+> LED_ON, LED_HALF and LED_FULL is obsolete, as the led class now supports
+> max_brightness.
+> ---
+>  drivers/platform/x86/acer-wmi.c          |  6 ++---
+>  drivers/platform/x86/asus-wireless.c     |  6 ++---
+>  drivers/platform/x86/dell/dell-laptop.c  |  2 +-
+>  drivers/platform/x86/dell/dell-wmi-led.c |  4 ++--
+>  drivers/platform/x86/fujitsu-laptop.c    | 28 ++++++++++++------------
+>  drivers/platform/x86/lg-laptop.c         | 18 +++++++--------
+>  drivers/platform/x86/system76_acpi.c     |  4 ++--
+>  drivers/platform/x86/thinkpad_acpi.c     | 14 ++++++------
+>  drivers/platform/x86/topstar-laptop.c    |  4 ++--
+>  drivers/platform/x86/toshiba_acpi.c      | 24 ++++++++++----------
+>  10 files changed, 55 insertions(+), 55 deletions(-)
+> 
+> ...
+> diff --git a/drivers/platform/x86/fujitsu-laptop.c b/drivers/platform/x86/fujitsu-laptop.c
+> index 80929380ec7e..6ebfda771209 100644
+> --- a/drivers/platform/x86/fujitsu-laptop.c
+> +++ b/drivers/platform/x86/fujitsu-laptop.c
+> @@ -584,10 +584,10 @@ static int logolamp_set(struct led_classdev *cdev,
+>  	int poweron = FUNC_LED_ON, always = FUNC_LED_ON;
+>  	int ret;
+>  
+> -	if (brightness < LED_HALF)
+> +	if (brightness < 127)
+>  		poweron = FUNC_LED_OFF;
+>  
+> -	if (brightness < LED_FULL)
+> +	if (brightness < 255)
+>  		always = FUNC_LED_OFF;
+>  
+>  	ret = call_fext_func(device, FUNC_LEDS, 0x1, LOGOLAMP_POWERON, poweron);
+> @@ -604,13 +604,13 @@ static enum led_brightness logolamp_get(struct led_classdev *cdev)
+>  
+>  	ret = call_fext_func(device, FUNC_LEDS, 0x2, LOGOLAMP_ALWAYS, 0x0);
+>  	if (ret == FUNC_LED_ON)
+> -		return LED_FULL;
+> +		return 255;
+>  
+>  	ret = call_fext_func(device, FUNC_LEDS, 0x2, LOGOLAMP_POWERON, 0x0);
+>  	if (ret == FUNC_LED_ON)
+> -		return LED_HALF;
+> +		return 127;
+>  
+> -	return LED_OFF;
+> +	return 0;
+>  }
+>  
+>  static int kblamps_set(struct led_classdev *cdev,
+> @@ -618,7 +618,7 @@ static int kblamps_set(struct led_classdev *cdev,
+>  {
+>  	struct acpi_device *device = to_acpi_device(cdev->dev->parent);
+>  
+> -	if (brightness >= LED_FULL)
+> +	if (brightness >= 255)
+>  		return call_fext_func(device, FUNC_LEDS, 0x1, KEYBOARD_LAMPS,
+>  				      FUNC_LED_ON);
+>  	else
+> @@ -629,11 +629,11 @@ static int kblamps_set(struct led_classdev *cdev,
+>  static enum led_brightness kblamps_get(struct led_classdev *cdev)
+>  {
+>  	struct acpi_device *device = to_acpi_device(cdev->dev->parent);
+> -	enum led_brightness brightness = LED_OFF;
+> +	unsigned int brightness = 0;
+>  
+>  	if (call_fext_func(device,
+>  			   FUNC_LEDS, 0x2, KEYBOARD_LAMPS, 0x0) == FUNC_LED_ON)
+> -		brightness = LED_FULL;
+> +		brightness = 255;
+>  
+>  	return brightness;
+>  }
+> @@ -643,7 +643,7 @@ static int radio_led_set(struct led_classdev *cdev,
+>  {
+>  	struct acpi_device *device = to_acpi_device(cdev->dev->parent);
+>  
+> -	if (brightness >= LED_FULL)
+> +	if (brightness >= 255)
+>  		return call_fext_func(device, FUNC_FLAGS, 0x5, RADIO_LED_ON,
+>  				      RADIO_LED_ON);
+>  	else
+> @@ -654,10 +654,10 @@ static int radio_led_set(struct led_classdev *cdev,
+>  static enum led_brightness radio_led_get(struct led_classdev *cdev)
+>  {
+>  	struct acpi_device *device = to_acpi_device(cdev->dev->parent);
+> -	enum led_brightness brightness = LED_OFF;
+> +	unsigned int brightness = 0;
+>  
+>  	if (call_fext_func(device, FUNC_FLAGS, 0x4, 0x0, 0x0) & RADIO_LED_ON)
+> -		brightness = LED_FULL;
+> +		brightness = 255;
+>  
+>  	return brightness;
+>  }
+> @@ -669,7 +669,7 @@ static int eco_led_set(struct led_classdev *cdev,
+>  	int curr;
+>  
+>  	curr = call_fext_func(device, FUNC_LEDS, 0x2, ECO_LED, 0x0);
+> -	if (brightness >= LED_FULL)
+> +	if (brightness >= 255)
+>  		return call_fext_func(device, FUNC_LEDS, 0x1, ECO_LED,
+>  				      curr | ECO_LED_ON);
+>  	else
+> @@ -680,10 +680,10 @@ static int eco_led_set(struct led_classdev *cdev,
+>  static enum led_brightness eco_led_get(struct led_classdev *cdev)
+>  {
+>  	struct acpi_device *device = to_acpi_device(cdev->dev->parent);
+> -	enum led_brightness brightness = LED_OFF;
+> +	unsigned int brightness = 0;
+>  
+>  	if (call_fext_func(device, FUNC_LEDS, 0x2, ECO_LED, 0x0) & ECO_LED_ON)
+> -		brightness = LED_FULL;
+> +		brightness = 255;
+>  
+>  	return brightness;
+>  }
 
-Thanks for detailed answer! Glad to hear it's still a possibility.
-Please let me know if you need any actions on my side (like rebasing,
-etc).
+In a way it's less descriptive to revert from the identifiers to what amount
+to seemingly magic numbers.  However, since the value attributed to maximum
+LED brightness in the LED class is now variable I can see why the global
+enum no longer makes sense.  We could define a suitable enum within
+fujitsu-laptop.c, but there's probably little to be gained in the long run.
 
-> > With the timing over Christmas, I sent out the large bulk of the
-> > contents (anything
-> > I merged before Dec 23) last year, and Linus already merged it, the rest ended
-> > up in the "late" branch.
-> >
-> > As usual, there is no guarantee that late changes make it in, but I have seen
-> > no indication of any problems so far.
->
-> Correct. Been sitting on it for a while in case there were fixes
-> coming in for the first pieces that got merged, but in traditional
-> fashion I'm guessing those will start to show up a few days after the
-> late branch gets merged. :)
->
->
-> -Olof
+To make the patch description a little clearer, could I suggest you add the
+word "variable" before "max_brightness", or even just use the phrase
+"variable maximum brightness"?
+
+For the fujitsu-laptop.c portion of this patch:
+    Acked-by: Jonathan Woithe <jwoithe@just42.net>
+
+Regards
+  jonathan
