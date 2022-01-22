@@ -2,141 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D39CC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77FE7C43217
 	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 00:57:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231303AbiAVA5H (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 19:57:07 -0500
-Received: from mail-bn8nam08on2114.outbound.protection.outlook.com ([40.107.100.114]:63832
-        "EHLO NAM04-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S231176AbiAVA47 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 19:56:59 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=dUO04d5Cs2NmyrefcduTlEdgKhsACIQdnoIVG+TUWk/OR437Qf21oSnMzqjLa5W78q5YrY5RtHrfBupvkJdi3S8lJaSTeh65/uUC22e6v9tEwfMHIRZzcDMiTUphhbIKK2Pqy77mkBp+EUYTZ7vNR2c13nKRX78QNbVNWXXE18pf+Jidq6S5Goq7+mzLRfcLXfUtLihzpWUq/0gBg+3NzCzVQqJ9g3iZSvXInIwrB1+AULwbCCOYqk8+eppFwgpFJYGSl8IBCbHGQ5Bf6z7+ErXYyMsYEq7QRR0CzfuKw5Ki3x86Nqv1rIbEnxdkLbTCGNj2S/aRfbXs40doDUXfUQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=V5sSXDpwZywJqIs52lS3AJHxZvX8PsfKexFxT4gu9nk=;
- b=DRUMzxS1435Q/Kv8TdZb0tGRzJfaJDWsYyMtAyUxLKvC9GBmRTZ+oG78ha4H1ldFWHXUmfVfRru0bN+5j/bD2A8DFIpFVhtkIKItCd8pOu5LCU6W+Ji+HkzjoxH4UsywuOmLOFgJ/dsaAPXCcNdQ/83a/N3V3NOatlSXVC0JudKHxc/BTbUwsEdwM9joI9ercjYvN3ckw/mbEP0sMyp1/by5kWsg3whT6kaw20pu46j18RgPRFtRy1wWHhoLqSkJmo6tkQI5JgyLy+KzFjH8kkWTdkXQVNFRKtB4xCOwZl8N4NKrwQV5z4N5pIWbb4Y4HN2fieWjeB2H+rXY7xc+hQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=none; dmarc=none;
- dkim=none; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=inadvantage.onmicrosoft.com; s=selector2-inadvantage-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=V5sSXDpwZywJqIs52lS3AJHxZvX8PsfKexFxT4gu9nk=;
- b=ViF8sUObTyjSm3vO20hvRyjA4smPQba1udbdWVX4aJZ420bpP3h2g00wgX3S9kTmYOUpB+xyhab0Z0PAklOh5Ky7NCcKWwoFrH4NWaq+hmoV9yuAt+eNZdMuBqKQP2KxvlUj9GQBpUENGSJh79uJB1IWHcN97nSwKmNESy0/bzI=
-Authentication-Results: dkim=none (message not signed)
- header.d=none;dmarc=none action=none header.from=in-advantage.com;
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37) by CH2PR10MB4022.namprd10.prod.outlook.com
- (2603:10b6:610:9::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4909.10; Sat, 22 Jan
- 2022 00:56:57 +0000
-Received: from MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::2d52:2a96:7e6c:460f]) by MWHPR1001MB2351.namprd10.prod.outlook.com
- ([fe80::2d52:2a96:7e6c:460f%4]) with mapi id 15.20.4888.014; Sat, 22 Jan 2022
- 00:56:57 +0000
-From:   Colin Foster <colin.foster@in-advantage.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>
-Subject: [net RFC v1 1/1] page_pool: fix NULL dereference crash
-Date:   Fri, 21 Jan 2022 16:56:44 -0800
-Message-Id: <20220122005644.802352-2-colin.foster@in-advantage.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220122005644.802352-1-colin.foster@in-advantage.com>
-References: <20220122005644.802352-1-colin.foster@in-advantage.com>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ClientProxiedBy: MWHPR13CA0030.namprd13.prod.outlook.com
- (2603:10b6:300:95::16) To MWHPR1001MB2351.namprd10.prod.outlook.com
- (2603:10b6:301:35::37)
+        id S231383AbiAVA5K (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 19:57:10 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:28680 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231206AbiAVA5D (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 21 Jan 2022 19:57:03 -0500
+Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20LL5gAE013827;
+        Sat, 22 Jan 2022 00:56:52 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=s/JXOWKByKkIT9+XKOfqX5/U2DNopOrY8Pl+/w9acnA=;
+ b=KUPHG5TL/P9dlZ1TRPoBYtDoPZpnf8TVt+j0SQ3JpYtX2GlVopYPHHhshYAOnjiEDvsp
+ 49wDzYfqGja+YBK2dt9Aeullo89N+NuWb9qsdqaCX5KP0+b3u5b73ddTTvnT0NuLTL9U
+ K4/0PnESP5aFDFGhEFXiUUkAcGP0Mi7cc3H8CGrHvjJ1mo0cwlM9RhbUGLrfpocPWOel
+ +fA/idSF6rwBkTrYHE3XJGMRXudDx5isQkSFYJrC01ghwni1/xlewpLEp4Arw017N4bT
+ kIK7LJaXQggMsUe4QZhs+DnLLqXvl6v6CV7073j6RSS40ZewMCgLnxcVBhExquwzfJ8A GQ== 
+Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3dr1w3xm5u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 22 Jan 2022 00:56:52 +0000
+Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
+        by ppma04fra.de.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20M0WW35002286;
+        Sat, 22 Jan 2022 00:56:49 GMT
+Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
+        by ppma04fra.de.ibm.com with ESMTP id 3dqj1k89mb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 22 Jan 2022 00:56:49 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20M0lLlM38797646
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 22 Jan 2022 00:47:21 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6236BA4055;
+        Sat, 22 Jan 2022 00:56:46 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 25083A4053;
+        Sat, 22 Jan 2022 00:56:44 +0000 (GMT)
+Received: from li-4b5937cc-25c4-11b2-a85c-cea3a66903e4.ibm.com.com (unknown [9.211.59.92])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTP;
+        Sat, 22 Jan 2022 00:56:43 +0000 (GMT)
+From:   Nayna Jain <nayna@linux.ibm.com>
+To:     linuxppc-dev@lists.ozlabs.org
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Daniel Axtens <dja@axtens.net>,
+        George Wilson <gcwilson@linux.ibm.com>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Douglas Miller <dougmill@linux.vnet.ibm.com>, gjoyce@ibm.com,
+        linux-kernel@vger.kernel.org, Nayna Jain <nayna@linux.ibm.com>
+Subject: [RFC PATCH 0/2] powerpc/pseries: add support for local secure storage called Platform Keystore(PKS) 
+Date:   Fri, 21 Jan 2022 19:56:35 -0500
+Message-Id: <20220122005637.28199-1-nayna@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 0f740f91-3131-4724-95eb-08d9dd4216b7
-X-MS-TrafficTypeDiagnostic: CH2PR10MB4022:EE_
-X-Microsoft-Antispam-PRVS: <CH2PR10MB4022E867D9E6F2146EC3BA89A45C9@CH2PR10MB4022.namprd10.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3826;
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: +R8JoeIAv1wjn7ts0qbVzimsvKCLloe7qQMeIskZ1prECSwZ1Yo98er6+3V9MgOuRs8yRzFFaXxuO95dSxagfaEHlMjtq8uErSt4SNXCCjHflCmFrHgbZ3nvZVO1uLtA5+Waz+U8PgfhWfBreaDSeAMkaXfxSRQ0PDP8toA4C0mEGlZqBHW43F/fn2j8DGjRBJj+SsuaN++mnXz7sfDhpB/6RZUe+yVsqMP6HKQQLT55uFs3U46jUKP9t+tbFWTbHLwdHsNUTSHci6bWCwtDUhJbXOOdU3m77MgbMP7/tXZ0wuirBVj2rB8JTHIGanpqWfjpzKzv6DdfPPCfaR1z6LsYmpKWMwEvPwxazovr1JohAKGdOtzg7CwDR+043qogkeUZGa9+99i6TDnchEO0jysVLrehsuVhurKA3+rQCImIgsMbqpJehsD3zWmVeR1pEz+dZduhP8t6TS/CJIGJ20Q5jIZaVJ6Cgwf3D5IWY4O7pVYVrbdGA2/5G9I9dPOPGguPNgYEdemGaFt3OsaEL28nJQsaMgeH+YTPZeuRmR6sNR/VBAS+BzJFVcUlyHLmCaS4OPNPdC6hUK+vGIjfsARAB5NClTM3D56JGkQ9uroClmYnoVwmyGx/H6MMo0sgla8AYNElb4fg2PvGWD/Kshv0TE0QKuoKRhbLIUDCQxR3G/5rSt3OV3VjvUgViuZZfrWGY7O8E9bGhwQ4nsS/2A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2351.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(42606007)(39830400003)(376002)(366004)(136003)(346002)(396003)(2616005)(52116002)(2906002)(44832011)(6486002)(186003)(316002)(8676002)(6512007)(26005)(54906003)(8936002)(66946007)(66556008)(4326008)(66476007)(6666004)(4744005)(83380400001)(5660300002)(86362001)(38350700002)(38100700002)(6506007)(1076003)(508600001)(36756003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?6ten8WLISnGr4S6lg4SEzkqCv/rPiXhtkle3veCmLk5jlCBHDow7xNij9fOg?=
- =?us-ascii?Q?rdkwL77Kz5cVYH3/R6XoIdBm2z+293Wyj7b/pHbzgIbRfckosdcGwzKNP5Vv?=
- =?us-ascii?Q?X38+r4O9oszyNhkrNFKFxqurdR79LgZ8HtOGDKLhFbQb32VkcPRyH6EMKGqC?=
- =?us-ascii?Q?261DLeUkJh1f7luAbkQsJ1GS7sm1GmJok4Fqf5dBOje6qgKy9UzB3QRZo9Ma?=
- =?us-ascii?Q?KYi9A13nwprmeLXmwmZDEEPI/YHrg9zgsqdYxz660usgnuWVEX77Cbiz3aFj?=
- =?us-ascii?Q?Hhi7mXLPfYBmon58LItx9xIMz3NcLQ5HZUNF53htsQoYNF/Wj1mxaES+1Hmj?=
- =?us-ascii?Q?tJtFEBopSlO3Kvw3ikzP9GpC5rBxc+xhTrOP9cFeniH4tVFy+1tDpbBZqsSF?=
- =?us-ascii?Q?nqv9DbC9Zs8ae+QTBvIkjb0WxoOwi+7xePpKh6bV9G30a/SrEZTwTwinnvFs?=
- =?us-ascii?Q?PB2bJ7z+kbC+jgLrnW3Nn7bl3DPuGNqHrfvKyb9X62T+4WUzMIfuHPGII+QY?=
- =?us-ascii?Q?4DFndn640ylO4xtKYRh6xAP/SegpIDa/so6nEN22hHQvJ+alLPC3BqWPVkrH?=
- =?us-ascii?Q?p+ZL4H6TDLI4yZlTxpz2uObjDkEAflBNAN7S2gkbau85ucpHVd4VO7x2c/5j?=
- =?us-ascii?Q?WxcQBn3mXaRgPwTZIb6TZrj4Q5LHbRpEK+eIoQv9tzUcXNczpHOcob5YCwXl?=
- =?us-ascii?Q?U5IP0ysCqiM5U9KZkAjiejrBr+WmuF95f9atxF6eJ4BGxihyZVPLoyJGLge+?=
- =?us-ascii?Q?34IdDoySsSBoIrrUgu4MgQSPQLJhbbquhDmhd0Fr5XiJDlPRs2rt/bjOZNx2?=
- =?us-ascii?Q?mwWkGTkHxDDd1faEcAUd9mMtZ7QWTBjMAp1jJQZHD6KH9MQYVCRenuiGVqmI?=
- =?us-ascii?Q?FRfT2Pzrq2SMx0qWMY131RXYdwALQ+p5aPbbX5pYfhCgS6fYward6zLUWxZm?=
- =?us-ascii?Q?G5ImRZKErH3y4uGI6KqSAoiZzLkg7Fpg2OZvgSWisPUDhcU8RI4xoWS8n+0r?=
- =?us-ascii?Q?kGd+9nvFBpLVRsMDbpxjebBoAByjvUZilDw8bgeDSLcMIgtOFMDtwgwAlpEI?=
- =?us-ascii?Q?RYy5jC+P5cawID5auv8/wrzUgBKO/PFaSokx8b/njuSOl+GsPuKl4+Lr8SXm?=
- =?us-ascii?Q?j5VUhL02mgXyzNx57IQXy+mizldo6OLrQHXHt9V3eLn7UikcB9qlv+klU8iZ?=
- =?us-ascii?Q?T+XeFdQULWrEPfWLtBHE3k+inCxKnbp8xFb8U8UhJqyVjOx2ERrk6uyQrDi0?=
- =?us-ascii?Q?c6ol/w9g8mBHrwKhHU5PZlXoVvl9tbkjo/qxO4CJfEdj6NkaOtVWK0xANKB5?=
- =?us-ascii?Q?lA53LLSM11zxMpuLAjDMF3lI1tjlAi1x/fObsKe0oT9+87mGEwZjP8IYnWC9?=
- =?us-ascii?Q?KTAd5kNuKqUlVxXp6Df8AG/dxEyb7HUNZkPWI8s6XHIf9yTXVFl6ceRlWFuj?=
- =?us-ascii?Q?ttD0g9HktQnIrZYicZu5cdWvJ8C8aE9BnxS4PgfcEYLjqQ1xVXylHydn0vD2?=
- =?us-ascii?Q?Ri8irO7DEO4IR8nwHXoXPVbi6yl5meoX+rNnLmqmm5Sm2ZPSX/T0FPNLHKuS?=
- =?us-ascii?Q?aoLws9+CbqqTfzsGnSPMgg3pvQp5f7/+owoBPzJBSDv7KP0t+qDqz0C1ET4b?=
- =?us-ascii?Q?qyo1yqOOLKQ2xfsz3thL8N+rQrhEJ81Mc4fX1Qy6bglOhuvEPR0Xx96GvQwe?=
- =?us-ascii?Q?jiOmJg=3D=3D?=
-X-OriginatorOrg: in-advantage.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 0f740f91-3131-4724-95eb-08d9dd4216b7
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2351.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2022 00:56:57.0377
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 48e842ca-fbd8-4633-a79d-0c955a7d3aae
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: uCYP22+cH1KkrIulK2KC7JmC6PkOJrMuLr72FO5Hc2kK6hSa+6kZGhaimMgahZ7TIabl0ItIL4vTraKs/844TsGiZVvmFJrtMpVoLg8wKaM=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR10MB4022
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: O4D5XP9l9J-q0IX33lPXhlnkhDgUmuJS
+X-Proofpoint-ORIG-GUID: O4D5XP9l9J-q0IX33lPXhlnkhDgUmuJS
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-21_10,2022-01-21_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 spamscore=0
+ mlxscore=0 clxscore=1011 priorityscore=1501 malwarescore=0 mlxlogscore=770
+ lowpriorityscore=0 bulkscore=0 suspectscore=0 impostorscore=0 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2201220001
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Check for the existence of page pool params before dereferencing. This can
-cause crashes in certain conditions.
+PowerVM provides an isolated Platform Keystore(PKS) storage allocation
+for each partition with individually managed access controls to store
+sensitive information securely. Linux Kernel can access this storage by
+interfacing with hypervisor using a new set of hypervisor calls. 
 
-Fixes: 35b2e549894b ("page_pool: Add callback to init pages when they are
-allocated")
+PowerVM guest secure boot intend to use Platform Keystore for the
+purpose of storing public keys. Secure boot requires public keys to
+be able to verify the grub and boot kernel. To allow authenticated
+ manipulation of keys, it supports variables to store key authorities
+- PK/KEK and code signing keys - db. It also supports denied list to
+disallow booting even if signed with valid key. This is done via
+denied list database - dbx or sbat. These variables would be stored in
+PKS, and are managed and controlled by firmware.
 
-Signed-off-by: Colin Foster <colin.foster@in-advantage.com>
----
- net/core/page_pool.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+The purpose of this patchset is to add support for users to
+read/write/add/delete variables required for secure boot on PowerVM.
 
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index bd62c01a2ec3..641f849c95e7 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -213,7 +213,7 @@ static void page_pool_set_pp_info(struct page_pool *pool,
- {
- 	page->pp = pool;
- 	page->pp_magic |= PP_SIGNATURE;
--	if (pool->p.init_callback)
-+	if (pool->p && pool->p.init_callback)
- 		pool->p.init_callback(page, pool->p.init_arg);
- }
- 
+Nayna Jain (2):
+  pseries: define driver for Platform Keystore
+  pseries: define sysfs interface to expose PKS variables
+
+ Documentation/ABI/testing/sysfs-pksvar        |  77 +++
+ arch/powerpc/include/asm/hvcall.h             |  13 +-
+ arch/powerpc/include/asm/pks.h                |  84 +++
+ arch/powerpc/platforms/pseries/Kconfig        |  17 +
+ arch/powerpc/platforms/pseries/Makefile       |   2 +
+ arch/powerpc/platforms/pseries/pks.c          | 494 ++++++++++++++++++
+ arch/powerpc/platforms/pseries/pksvar-sysfs.c | 356 +++++++++++++
+ 7 files changed, 1042 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-pksvar
+ create mode 100644 arch/powerpc/include/asm/pks.h
+ create mode 100644 arch/powerpc/platforms/pseries/pks.c
+ create mode 100644 arch/powerpc/platforms/pseries/pksvar-sysfs.c
+
 -- 
-2.25.1
-
+2.27.0
