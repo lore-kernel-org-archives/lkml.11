@@ -2,86 +2,102 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B8CC433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 03:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 631D2C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 03:18:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230360AbiAVDDd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Fri, 21 Jan 2022 22:03:33 -0500
-Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:50021 "EHLO
-        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229519AbiAVDDc (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Fri, 21 Jan 2022 22:03:32 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
-  t=1642820612; x=1674356612;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=lrRV9BdZ0PK0F7XbnSFRPik4O0MEobW7m7RCIpstsJ0=;
-  b=qV6JNKTslnX2HUMSlVhzGUpKPl12GWxcjqZrjIUVNrjfoyZTrJDYtMCi
-   ouEBbvdYh/jp3H4I4DALay94L0naydpWC+tzdshapJUbaFrqJI/4+On3w
-   Pcq85wUhQnpvsiqd2vWA12e/lR0jo3jYppcbT1/F9o9f4ABbRvWt55jry
-   M=;
-Received: from unknown (HELO ironmsg04-sd.qualcomm.com) ([10.53.140.144])
-  by alexa-out-sd-02.qualcomm.com with ESMTP; 21 Jan 2022 19:03:32 -0800
-X-QCInternal: smtphost
-Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
-  by ironmsg04-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 19:03:32 -0800
-Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
- nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.922.19; Fri, 21 Jan 2022 19:03:31 -0800
-Received: from quicinc.com (10.80.80.8) by nalasex01a.na.qualcomm.com
- (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Fri, 21 Jan
- 2022 19:03:29 -0800
-From:   Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-To:     Felipe Balbi <balbi@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Alan Stern <stern@rowland.harvard.edu>
-CC:     <linux-usb@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Pavankumar Kondeti" <quic_pkondeti@quicinc.com>
-Subject: [PATCH V2] usb: gadget: f_sourcesink: Fix isoc transfer for USB_SPEED_SUPER_PLUS
-Date:   Sat, 22 Jan 2022 08:33:22 +0530
-Message-ID: <1642820602-20619-1-git-send-email-quic_pkondeti@quicinc.com>
-X-Mailer: git-send-email 2.7.4
+        id S232281AbiAVDSS (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Fri, 21 Jan 2022 22:18:18 -0500
+Received: from mga01.intel.com ([192.55.52.88]:40585 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231265AbiAVDSS (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Fri, 21 Jan 2022 22:18:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642821498; x=1674357498;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=XVbcynuBp7YPpn7VkTXTU3PKbJA8Lw5NE5fezak49kc=;
+  b=Jdt9gOEYRtZSGF++AZFBJ3rKmglLEyszHN9Q5c6Y5o1gAYq7vO6pP+03
+   irOW80sWkCah8y7+N895BUDzo3qukA+V9UtD7fKHgHGVVN3L5NRmcIX0O
+   95umfXBgIfFKTqFz94+rkp2El+APG6dUb4w3U/lBoFs6hRr7YAy4W+mP+
+   /+uIOcVe60nZzdxV/CdLDNLflRdgN1yYd+YPBWiND7VDvYdnov9PoLjsQ
+   kZ0frx/CV/9GRX0F5e26/4iCuLO0/lbo2cxqgOKilMtgNmiEZ9HWsOCjX
+   T6i5Xj7vtStmj2VvoUhl+5XpY99j27xB53HWe8VdJOGHptnMYZmkcEIL6
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10234"; a="270214646"
+X-IronPort-AV: E=Sophos;i="5.88,307,1635231600"; 
+   d="scan'208";a="270214646"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2022 19:18:17 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,307,1635231600"; 
+   d="scan'208";a="694844988"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 21 Jan 2022 19:18:15 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nB6us-000FxN-Dy; Sat, 22 Jan 2022 03:18:14 +0000
+Date:   Sat, 22 Jan 2022 11:17:37 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Hannes Reinecke <hare@suse.de>
+Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
+        Christoph Hellwig <hch@lst.de>,
+        Chaitanya Kulkarni <kch@nvidia.com>,
+        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        linux-nvme@lists.infradead.org
+Subject: [PATCH] nvme-fabrics: fix returnvar.cocci warnings
+Message-ID: <20220122031737.GA31599@fba2a898af35>
+References: <202201221116.hWZkKqts-lkp@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.80.80.8]
-X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
- nalasex01a.na.qualcomm.com (10.47.209.196)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <202201221116.hWZkKqts-lkp@intel.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Currently when gadget enumerates in super speed plus, the isoc
-endpoint request buffer size is not calculated correctly. Fix
-this by checking the gadget speed against USB_SPEED_SUPER_PLUS
-and update the request buffer size.
+From: kernel test robot <lkp@intel.com>
 
-Fixes: 90c4d05780d4 ("usb: fix various gadgets null ptr deref on 10gbps cabling.")
-Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+drivers/nvme/host/fabrics.c:1095:5-8: Unneeded variable: "ret". Return "0" on line 1109
+
+
+ Remove unneeded variable used to store return value.
+
+Generated by: scripts/coccinelle/misc/returnvar.cocci
+
+Fixes: f18ee3d98815 ("nvme-fabrics: print out valid arguments when reading from /dev/nvme-fabrics")
+CC: Hannes Reinecke <hare@suse.de>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
 ---
 
-v2:
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   9b57f458985742bd1c585f4c7f36d04634ce1143
+commit: f18ee3d988157ebcadc9b7e5fd34811938f50223 nvme-fabrics: print out valid arguments when reading from /dev/nvme-fabrics
+:::::: branch date: 13 hours ago
+:::::: commit date: 4 weeks ago
 
-- Added Fixes tag
-- Removed fallthrough as we are using single block in switch
+ fabrics.c |    3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
- drivers/usb/gadget/function/f_sourcesink.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/usb/gadget/function/f_sourcesink.c b/drivers/usb/gadget/function/f_sourcesink.c
-index 1abf08e..6803cd6 100644
---- a/drivers/usb/gadget/function/f_sourcesink.c
-+++ b/drivers/usb/gadget/function/f_sourcesink.c
-@@ -584,6 +584,7 @@ static int source_sink_start_ep(struct f_sourcesink *ss, bool is_in,
+--- a/drivers/nvme/host/fabrics.c
++++ b/drivers/nvme/host/fabrics.c
+@@ -1092,7 +1092,6 @@ static void __nvmf_concat_opt_tokens(str
+ static int nvmf_dev_show(struct seq_file *seq_file, void *private)
+ {
+ 	struct nvme_ctrl *ctrl;
+-	int ret = 0;
  
- 	if (is_iso) {
- 		switch (speed) {
-+		case USB_SPEED_SUPER_PLUS:
- 		case USB_SPEED_SUPER:
- 			size = ss->isoc_maxpacket *
- 					(ss->isoc_mult + 1) *
--- 
-2.7.4
-
+ 	mutex_lock(&nvmf_dev_mutex);
+ 	ctrl = seq_file->private;
+@@ -1106,7 +1105,7 @@ static int nvmf_dev_show(struct seq_file
+ 
+ out_unlock:
+ 	mutex_unlock(&nvmf_dev_mutex);
+-	return ret;
++	return 0;
+ }
+ 
+ static int nvmf_dev_open(struct inode *inode, struct file *file)
