@@ -2,131 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F3C4C433F5
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 09:05:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D31DC433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 09:17:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233937AbiAVJFC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 04:05:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38062 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232330AbiAVJFB (ORCPT
+        id S233950AbiAVJRm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 04:17:42 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:14398 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231895AbiAVJRl (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 04:05:01 -0500
-Received: from mout-p-101.mailbox.org (mout-p-101.mailbox.org [IPv6:2001:67c:2050::465:101])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 021DDC06173B;
-        Sat, 22 Jan 2022 01:05:00 -0800 (PST)
-Received: from smtp202.mailbox.org (smtp202.mailbox.org [80.241.60.245])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-101.mailbox.org (Postfix) with ESMTPS id 4Jgr153n5tz9svd;
-        Sat, 22 Jan 2022 10:04:57 +0100 (CET)
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Date:   Sat, 22 Jan 2022 20:04:41 +1100
-From:   Aleksa Sarai <cyphar@cyphar.com>
-To:     Kir Kolyshkin <kolyshkin@gmail.com>
-Cc:     linux-man@vger.kernel.org,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        David Herrmann <dh.herrmann@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Hugh Dickins <hughd@google.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>, linux-mm@kvack.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] fcntl.2: document F_GET_SEALS on tmpfs peculiarity
-Message-ID: <20220122090441.ktxh43lpgsd2dxj4@senku>
-References: <20220122005251.1441343-1-kolyshkin@gmail.com>
+        Sat, 22 Jan 2022 04:17:41 -0500
+Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 20M9Bgkf007078;
+        Sat, 22 Jan 2022 09:17:20 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=Q7VvnvE5MhJQ+AWMk6InaAk4oMHjaVevK214V+6F6G4=;
+ b=T//+29+QkdgnFrxwFh6OQEDAOR0ud2v5tPeZt4RHj87lywHqNN6uC9c/JN/06UkMSnor
+ 0vPoUMLxwV2xqpa6er8jC9qwv0uroaPbyHHDx0KlJvu88sz+Qhr9ueP5mXOqV4RBBDEG
+ u2Op/KCxPirGiulQDyylprzbJTvLIEZAApxNPSjqDtREZJRGc7+4R3ItMUv1RqoanLS0
+ Vfy0+lRB9FMbe5TZ7BUjlJWVE6CrvfRuxjDsoOTLVMeVTIflmMPukpvZMUjf90NFoZKt
+ zEtMddSW4Z5WCvEYgZjf8gvM/QWwZdCVL878J1jwDZ0X21KeWahDvOa7Kj6hV4ehNjaG ng== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3drf2t820h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 22 Jan 2022 09:17:20 +0000
+Received: from m0098396.ppops.net (m0098396.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 20M9HJGS022644;
+        Sat, 22 Jan 2022 09:17:19 GMT
+Received: from ppma04ams.nl.ibm.com (63.31.33a9.ip4.static.sl-reverse.com [169.51.49.99])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3drf2t8204-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 22 Jan 2022 09:17:19 +0000
+Received: from pps.filterd (ppma04ams.nl.ibm.com [127.0.0.1])
+        by ppma04ams.nl.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 20M9C38o000397;
+        Sat, 22 Jan 2022 09:17:17 GMT
+Received: from b06cxnps3075.portsmouth.uk.ibm.com (d06relay10.portsmouth.uk.ibm.com [9.149.109.195])
+        by ppma04ams.nl.ibm.com with ESMTP id 3dr9j8h9em-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 22 Jan 2022 09:17:17 +0000
+Received: from d06av23.portsmouth.uk.ibm.com (d06av23.portsmouth.uk.ibm.com [9.149.105.59])
+        by b06cxnps3075.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 20M9HEb537028312
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 22 Jan 2022 09:17:15 GMT
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id C7028A405B;
+        Sat, 22 Jan 2022 09:17:14 +0000 (GMT)
+Received: from d06av23.portsmouth.uk.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 67AFCA4053;
+        Sat, 22 Jan 2022 09:17:14 +0000 (GMT)
+Received: from osiris (unknown [9.145.25.22])
+        by d06av23.portsmouth.uk.ibm.com (Postfix) with ESMTPS;
+        Sat, 22 Jan 2022 09:17:14 +0000 (GMT)
+Date:   Sat, 22 Jan 2022 10:17:12 +0100
+From:   Heiko Carstens <hca@linux.ibm.com>
+To:     Steven Rostedt <rostedt@goodmis.org>
+Cc:     Sven Schnelle <svens@linux.ibm.com>,
+        Yinan Liu <yinan@linux.alibaba.com>, peterz@infradead.org,
+        mark-pk.tsai@mediatek.com, mingo@redhat.com,
+        linux-kernel@vger.kernel.org, linux-s390@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: Re: [PATCH v8] scripts: ftrace - move the sort-processing in
+ ftrace_init
+Message-ID: <YevLmJd48FPx9XcT@osiris>
+References: <20210911135043.16014-1-yinan@linux.alibaba.com>
+ <20211212113358.34208-1-yinan@linux.alibaba.com>
+ <20211212113358.34208-2-yinan@linux.alibaba.com>
+ <yt9dee51ctfn.fsf@linux.ibm.com>
+ <YeqOFHNfxKcNXNrn@osiris>
+ <20220121131148.2025bc5b@gandalf.local.home>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="envdxlah4rr2kem4"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220122005251.1441343-1-kolyshkin@gmail.com>
+In-Reply-To: <20220121131148.2025bc5b@gandalf.local.home>
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: VeA7NAn_I-eHAM94W-ob5PJS08bjBQ5m
+X-Proofpoint-ORIG-GUID: 8SoNnnmkyAY1FnkhczCnpfZEOC2w91Rm
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-22_03,2022-01-21_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ priorityscore=1501 impostorscore=0 adultscore=0 suspectscore=0
+ malwarescore=0 phishscore=0 spamscore=0 clxscore=1015 mlxscore=0
+ mlxlogscore=894 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2201110000 definitions=main-2201220060
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+On Fri, Jan 21, 2022 at 01:11:48PM -0500, Steven Rostedt wrote:
+> On Fri, 21 Jan 2022 11:42:28 +0100
+> Heiko Carstens <hca@linux.ibm.com> wrote:
+> 
+> > This really should be addressed before rc1 is out, otherwise s390 is
+> > broken if somebody enables ftrace.
+> > Where "broken" translates to random crashes as soon as ftrace is
+> > enabled, which again is nowadays quite common.
+> 
+> Instead of reverting, should we just add this patch?
 
---envdxlah4rr2kem4
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+That would work as well.
 
-Adding the maintainers of mm/{shmem,memfd}.c and fs/hugetlbfs/ just in
-case this was not intended behaviour.
-
-On 2022-01-21, Kir Kolyshkin <kolyshkin@gmail.com> wrote:
-> Currently, from the description of file sealing it can be deduced that
-> unless the fd is a memfd, all sealing operations fail with EINVAL.
->=20
-> Apparently, it's not true for tmpfs or hugetlbfs -- F_GET_SEALS returns
-> 1 (F_SEAL_SEAL) for an fd opened on these filesystems (probably because
-> those are used to back memfd files).
->=20
-> Fix the description to mention that peculiarity. Not knowing this can
-> result in incorrect code logic (see [1], where the code mistook a
-> descriptor of a file opened on on tmpfs for a memfd).
->=20
-> While at it, clarify that fcntl does not actually return EINVAL, but
-> sets errno to it (as it is usually said elsewhere).
->=20
-> [1] https://github.com/opencontainers/runc/pull/3342
->=20
-> Cc: Aleksa Sarai <cyphar@cyphar.com>
-> Cc: David Herrmann <dh.herrmann@gmail.com>
-> Signed-off-by: Kir Kolyshkin <kolyshkin@gmail.com>
-> ---
->  man2/fcntl.2 | 17 +++++++++++++++--
->  1 file changed, 15 insertions(+), 2 deletions(-)
->=20
-> diff --git a/man2/fcntl.2 b/man2/fcntl.2
-> index 7b5604e3a..f951b05ff 100644
-> --- a/man2/fcntl.2
-> +++ b/man2/fcntl.2
-> @@ -1402,10 +1402,23 @@ file seals can be applied only to a file descript=
-or returned by
->  (if the
->  .B MFD_ALLOW_SEALING
->  was employed).
-> -On other filesystems, all
-> +On all other filesystems, except
-> +.BR tmpfs (5)
-> +and
-> +.BR hugetlbfs ,
-> +all
->  .BR fcntl ()
-> -operations that operate on seals will return
-> +operations that operate on seals will fail with
-> +.I errno
-> +set to
->  .BR EINVAL .
-> +For a descriptor from a file on
-> +.BR tmpfs (5)
-> +or
-> +.BR hugetlbfs ,
-> +.B F_GET_SEALS
-> +returns
-> +.BR F_SEAL_SEAL .
->  .PP
->  Seals are a property of an inode.
->  Thus, all open file descriptors referring to the same inode share
-> --=20
-> 2.33.1
->=20
-
---=20
-Aleksa Sarai
-Senior Software Engineer (Containers)
-SUSE Linux GmbH
-<https://www.cyphar.com/>
-
---envdxlah4rr2kem4
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQSxZm6dtfE8gxLLfYqdlLljIbnQEgUCYevIpgAKCRCdlLljIbnQ
-EmUiAQDTNHQDDzlD7fS/Xwxwk5Zxh73/hn1PZUcq5/8zkcummgD/SaHHLa8KogLj
-nc5oNbmQK9xoMMbju8mARw7LIpqLmg8=
-=sgIs
------END PGP SIGNATURE-----
-
---envdxlah4rr2kem4--
+Tested-by: Heiko Carstens <hca@linux.ibm.com>
