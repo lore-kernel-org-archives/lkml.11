@@ -2,101 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D3E5C433EF
-	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 10:33:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BDA6C433EF
+	for <linux-kernel@archiver.kernel.org>; Sat, 22 Jan 2022 10:44:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233366AbiAVKdQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 05:33:16 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:42726
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233119AbiAVKdO (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 05:33:14 -0500
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com [209.85.218.72])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 8EB6A3F1AE
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 10:33:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642847593;
-        bh=mEs+f11ymEwQZPMZ2yNnkqKc9mZDhZ/EMxOn0PWlPJA=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=tL3fZ5HjojSZNyGg2/ELLG+JUvE2WBe97BaG7rN+YW1Rpm9ebxEAnYuSK+36Yn6Sm
-         ilcEZ1oJPwEoToabugib+78oUIEcA+hQ2Z7VTr3AaPtBEIkPTelxtuob+cfHJCASox
-         syEHEaXp+SiuyKbbCcJ2/8FAEbE0y4R/4L0MOyM0q4a1cTfkZbnCPc88+ezeF6ks7U
-         b/Dx3uF3Q7S+7hJmP/eH23U7bzv7qwUozB0twRI0vXPy6v+KZvj6M4pF/DaTsrRn6k
-         z2fUrnTi1l4BqcwGC1zDwaUFcqDZoF32w+EDd50aP/TrjqV119GjivPz+gbhaASpf8
-         /mkv7a1Ys+NKA==
-Received: by mail-ej1-f72.google.com with SMTP id o4-20020a170906768400b006a981625756so784306ejm.0
-        for <linux-kernel@vger.kernel.org>; Sat, 22 Jan 2022 02:33:13 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=mEs+f11ymEwQZPMZ2yNnkqKc9mZDhZ/EMxOn0PWlPJA=;
-        b=zFA5VbAnyQ6l+E3tK8pomNxZ3Kb2S4ONOF6fCs1saSEWbO5YPNsniM1ppz878HvshY
-         scW9RIFkbyCUUUhl4STQr0I4fq5eClqDb/aWAh2OG1K/bkPWPHzb6/W+uQAZ12dltpIn
-         zLqY8bq/xSpLgshJKk53fslzWqFavQdcobYciz+qjDOM99G094qjnScDIGv/OZfamVUr
-         YxFmjtV55Y+JB2A3EKoeH5hpqXaxSH75QWHyKCzApKE61krF4r55M8byUBowusdEdhpr
-         9irJkMNjLxf0LnLO4rIRawRXT508YgXFUqSSSqe6bXgBFSkOJtJNVnUndHwZtNul3D+A
-         KxbA==
-X-Gm-Message-State: AOAM531f4ta9q2Up+Hkcv/L5j2RImr0knHnn5DHARzWxDdWpyBl1kB1x
-        RS3AN9GoQSHMpEdheiL6C5Bczvz2gT55GOKfJNc98dYdU8fZXmiBtPwjTSI2Rwz8/OzTP3CYkek
-        om+ZFet3XuU676ITovu9LTQmReKgCngZ9Zqf6tWfACgIflIOUj9ofSqw24g==
-X-Received: by 2002:a05:6402:2712:: with SMTP id y18mr7751445edd.337.1642847592950;
-        Sat, 22 Jan 2022 02:33:12 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwU3NQ0IukQs+QZK207vEa5wMx7Mph+E8lv8sh5VymdubKUP7F5ZeYqGNNI96g1mpj44AR9ntiVWdDTLxHhDmw=
-X-Received: by 2002:a05:6402:2712:: with SMTP id y18mr7751433edd.337.1642847592826;
- Sat, 22 Jan 2022 02:33:12 -0800 (PST)
+        id S233880AbiAVKoi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 05:44:38 -0500
+Received: from mga06.intel.com ([134.134.136.31]:65310 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233835AbiAVKoh (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sat, 22 Jan 2022 05:44:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642848277; x=1674384277;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=+QvsIxeGcYkl/A1U5Osq5yeMqcCLUOrLGPqPG8HZ4+E=;
+  b=exfRd9JnzCDlVW7l9YltnXZ774POl+ocyeCyPUfUHc7H2hoKB25sk4Xa
+   FFG7Lohgqkii+gK8ds7Ujd9s6hArrSTPDJQC61Y9X/kE2GydSjz1IRH9P
+   qh748rGfM9CwY0Gle0mYuwzvxvHAUnuIM46PRM0LL24q4GorQ5HqKnacj
+   CCh4RGv09eH+naExsfw+rghvVJNMhSikJvK90whqoj7ksbK9SCNq/+g55
+   lZzbKGq1xVl51VlP17i/NLVvZQj2cbBt0LxAM/5ZyJUpVYiVaZjc+EEdl
+   dKDYMleoXAKBVZ2LhVKhQGPSoSpFw3WlqBvNXTT8KmO4vlod7JVDC3U4K
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10234"; a="306529998"
+X-IronPort-AV: E=Sophos;i="5.88,308,1635231600"; 
+   d="scan'208";a="306529998"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2022 02:44:37 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,308,1635231600"; 
+   d="scan'208";a="579872984"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by fmsmga008.fm.intel.com with ESMTP; 22 Jan 2022 02:44:34 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nBDsn-000GJM-SW; Sat, 22 Jan 2022 10:44:33 +0000
+Date:   Sat, 22 Jan 2022 18:44:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Quinn Tran <qutran@marvell.com>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Hannes Reinecke <hare@suse.de>,
+        Himanshu Madhani <himanshu.madhani@oracle.com>,
+        Larry Wisneski <Larry.Wisneski@marvell.com>,
+        Duane Grigsby <duane.grigsby@marvell.com>,
+        Rick Hicksted Jr <rhicksted@marvell.com>,
+        Nilesh Javali <njavali@marvell.com>
+Subject: drivers/scsi/qla2xxx/qla_edif_bsg.h:93:12: warning: field remote_pid
+ within 'struct app_pinfo_req' is less aligned than 'port_id_t' and is
+ usually due to 'struct app_pinfo_req' being packed, which can lead to
+ unaligned accesses
+Message-ID: <202201221855.aplqWaqk-lkp@intel.com>
 MIME-Version: 1.0
-References: <20220120192438.25555-1-alim.akhtar@samsung.com>
- <CGME20220120193613epcas5p238851849d212e01d7d830d78ca7d6379@epcas5p2.samsung.com>
- <20220120192438.25555-2-alim.akhtar@samsung.com> <aa172f14-2328-fc7c-0063-5c0033970d1d@canonical.com>
- <YevcOlARxNcBeDJE@jack.zhora.eu>
-In-Reply-To: <YevcOlARxNcBeDJE@jack.zhora.eu>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Date:   Sat, 22 Jan 2022 11:33:01 +0100
-Message-ID: <CA+Eumj7ab9E_4sbVPSQjOc-ZwM9LVdrgE=rj3duYKBYHjtDhyA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/3] spi: dt-bindings: samsung: Add fsd spi compatible
-To:     Andi Shyti <andi@etezian.org>
-Cc:     Alim Akhtar <alim.akhtar@samsung.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linus.walleij@linaro.org,
-        robh+dt@kernel.org, linux-samsung-soc@vger.kernel.org,
-        pankaj.dubey@samsung.com, broonie@kernel.org,
-        linux-spi@vger.kernel.org, linux-fsd@tesla.com,
-        Adithya K V <adithya.kv@samsung.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, 22 Jan 2022 at 11:28, Andi Shyti <andi@etezian.org> wrote:
->
-> Hi Krzysztof and Alim,
->
-> On Fri, Jan 21, 2022 at 07:33:15PM +0100, Krzysztof Kozlowski wrote:
-> > On 20/01/2022 20:24, Alim Akhtar wrote:
-> > > Adds spi controller dt-binding compatible information for
-> > > Tesla Full Self-Driving (FSD) SoC.
-> > >
-> > > Cc: linux-fsd@tesla.com
-> > > Signed-off-by: Adithya K V <adithya.kv@samsung.com>
-> > > Signed-off-by: Alim Akhtar <alim.akhtar@samsung.com>
-> > > ---
-> > >  Documentation/devicetree/bindings/spi/samsung,spi.yaml | 1 +
-> > >  1 file changed, 1 insertion(+)
-> >
-> > I think you forgot to mention - in cover letter - that this depends on
-> > my Samsung SPI bindings conversion to dtschema.
->
-> It's written in the cover letter:
->
-> "Note: This series is depended on [1] patches which adds
-> support of FSD SoC and on Krzysztof's v5 [2] of spi schema
-> changes"
+tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
+head:   9b57f458985742bd1c585f4c7f36d04634ce1143
+commit: 7878f22a2e03b69baf792f74488962981a1c9547 scsi: qla2xxx: edif: Add getfcinfo and statistic bsgs
+date:   6 months ago
+config: arm-randconfig-r036-20220122 (https://download.01.org/0day-ci/archive/20220122/202201221855.aplqWaqk-lkp@intel.com/config)
+compiler: clang version 14.0.0 (https://github.com/llvm/llvm-project 7b3d30728816403d1fd73cc5082e9fb761262bce)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install arm cross compiling tool for clang build
+        # apt-get install binutils-arm-linux-gnueabi
+        # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=7878f22a2e03b69baf792f74488962981a1c9547
+        git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
+        git fetch --no-tags linus master
+        git checkout 7878f22a2e03b69baf792f74488962981a1c9547
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=arm SHELL=/bin/bash drivers/scsi/
 
-Indeed, it is. I simply could not find the cover letter so I assumed
-none was sent, but it just got hidden.
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   In file included from drivers/scsi/qla2xxx/qla_edif.c:6:
+   In file included from drivers/scsi/qla2xxx/qla_def.h:34:
+   include/uapi/scsi/scsi_bsg_fc.h:280:4: warning: field rqst_data within 'struct fc_bsg_request' is less aligned than 'union (unnamed union at include/uapi/scsi/scsi_bsg_fc.h:271:2)' and is usually due to 'struct fc_bsg_request' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           } rqst_data;
+             ^
+   In file included from drivers/scsi/qla2xxx/qla_edif.c:6:
+   In file included from drivers/scsi/qla2xxx/qla_def.h:74:
+   In file included from drivers/scsi/qla2xxx/qla_bsg.h:298:
+>> drivers/scsi/qla2xxx/qla_edif_bsg.h:93:12: warning: field remote_pid within 'struct app_pinfo_req' is less aligned than 'port_id_t' and is usually due to 'struct app_pinfo_req' being packed, which can lead to unaligned accesses [-Wunaligned-access]
+           port_id_t remote_pid;
+                     ^
+   2 warnings generated.
+
+
+vim +93 drivers/scsi/qla2xxx/qla_edif_bsg.h
+
+7ebb336e45ef1c Quinn Tran 2021-06-23  89  
+7ebb336e45ef1c Quinn Tran 2021-06-23  90  struct app_pinfo_req {
+7ebb336e45ef1c Quinn Tran 2021-06-23  91  	struct app_id app_info;
+7ebb336e45ef1c Quinn Tran 2021-06-23  92  	uint8_t	 num_ports;
+7ebb336e45ef1c Quinn Tran 2021-06-23 @93  	port_id_t remote_pid;
+7ebb336e45ef1c Quinn Tran 2021-06-23  94  	uint8_t	 reserved[VND_CMD_APP_RESERVED_SIZE];
+7ebb336e45ef1c Quinn Tran 2021-06-23  95  } __packed;
+7ebb336e45ef1c Quinn Tran 2021-06-23  96  
+
+:::::: The code at line 93 was first introduced by commit
+:::::: 7ebb336e45ef1ce23462c3bbd03779929008901f scsi: qla2xxx: edif: Add start + stop bsgs
+
+:::::: TO: Quinn Tran <qutran@marvell.com>
+:::::: CC: Martin K. Petersen <martin.petersen@oracle.com>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
