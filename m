@@ -2,89 +2,120 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9E09C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 14:20:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6284FC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 14:23:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236731AbiAWOUX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 09:20:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49862 "EHLO
+        id S236735AbiAWOXs (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 09:23:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236722AbiAWOUW (ORCPT
+        with ESMTP id S232277AbiAWOXr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 09:20:22 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 411C7C06173B;
-        Sun, 23 Jan 2022 06:20:22 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D4D1360C9B;
-        Sun, 23 Jan 2022 14:20:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 987CDC340E2;
-        Sun, 23 Jan 2022 14:20:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642947621;
-        bh=sPP73J14sFJ1BrFw8EftFhDZ6LJsU6ER5loSACvyBtQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=jCbKhn6d320AUbUEPCXhhjj8Z3b3TV9nET3CToXH9Tbja6BPdXmzbEca+a1yWx5po
-         b2J2LfWrTphyL5/zBQ01js7LOnbgABtvmjPddfvDHj1D7lGUw1v5Ca5xLfIEn6fkeb
-         eSn2nYVRvIhB00/5guw866QakBpzFXczU5HIQCjWxN8VV4MT4IIXgIgAEcfIJHOyfO
-         ixCtFTh0ir2onzZN7i/UsGpp/Vq21VXjE09/Q/KN3d64aVIQiIQek05+xZk1OjZcK2
-         Ly9+8so5Y2WSAZaq+aMUhqYB/LrX2/4lCdEpfliXxjKLdRNz5XRZ2GcoHdYX/jfh/z
-         PJ5Wi8Sj7/3ZQ==
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: stmmac: don't stop RXC during LPI
-Date:   Sun, 23 Jan 2022 22:12:45 +0800
-Message-Id: <20220123141245.1060-1-jszhang@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Sun, 23 Jan 2022 09:23:47 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CF7CC06173B;
+        Sun, 23 Jan 2022 06:23:47 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id s5so14119635ejx.2;
+        Sun, 23 Jan 2022 06:23:47 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UJS00ni3OCNaB136EeYoLr1/HomgMMjbmkb3mzujdFI=;
+        b=B61OapB5UZguf7gdBVTOXGVfRurY6/aprVOpZgepOUOQT8EnXr76HGI0Why2qxcqKJ
+         oCOiGurjpU8NUzXQwYoV88WwJrqhRQkHXuNW1dlxDJYS5m54Xm1BkOceTuHpvaomD3Y/
+         HkQsr+vM75sFW6MRDguXal15uStlR7+Rsq2UXRSNelef7bzwoiTStn1i+wMgznfpQZ2o
+         WIV8yloscvS/x2ziGiTp+LNQ8hAhqDro1haTjeMWCOALJ1uK0oxFjGRsAyvo3Qu3Dk1C
+         ESDthpbeUR8Tpti56xFfcdT8mJkbzXFkjHFcw2Bl7lqj/YXH+rh1OGtE1kzSH2hGA6Sy
+         CydA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UJS00ni3OCNaB136EeYoLr1/HomgMMjbmkb3mzujdFI=;
+        b=G6O3zleNsQYKvm3B9HfWPQPldGO7OE/m+4Pp+8Yn/31DH/9kpdd52fvUhj2R0by17i
+         dnaNF/oj2zryPyyovjHeCc52DLQXMXmXfw3NRUzj7V2ALX4pMf7nYYQrnkCU63EfZ/Sc
+         Sr4Wo+6AfJkNujZr/8hSyQuKo07FJDBPucv7u00On7KXoBqff2eYmL51IK94U8Y3UTE+
+         UHXfa1UFpbyKN6fNGHLwhOSxYvPyx6OpJcYNI43FiIAiJqdHRp/vj6uQqEOnKLnCFtHE
+         329Up6jo3Yq1M4Xj/RC0HWD1FxfApHiU6O+/85I5G3o2kq95TubKXY2aRPUzT1fBRuEO
+         9OLg==
+X-Gm-Message-State: AOAM533MTWAFqYoJt69HgjdtPRcBYcaokxX8xsFEwXIS8ChuB/kEb7hQ
+        peokaAhU6nnWj8+fwxNM8AYHDENgI/vajQ4UvQNl+TbiVIY=
+X-Google-Smtp-Source: ABdhPJy0yRz9TeDE7ej229TmAXOSE+OGs81DzmLRI9Kxqvp4URIGPzpuu4xt6AAm4lkDuyqfFPTK7Ltn+9eLEFP4Iow=
+X-Received: by 2002:a17:907:6d94:: with SMTP id sb20mr679658ejc.139.1642947825525;
+ Sun, 23 Jan 2022 06:23:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220123100837.GA1491@haolee.io> <Ye1eZ5rl2E/jy8Tk@localhost.localdomain>
+ <Ye1fCxyZZ0I5lgOL@localhost.localdomain>
+In-Reply-To: <Ye1fCxyZZ0I5lgOL@localhost.localdomain>
+From:   Hao Lee <haolee.swjtu@gmail.com>
+Date:   Sun, 23 Jan 2022 22:23:33 +0800
+Message-ID: <CA+PpKPn3tVsJnijvATXBwfbd_SwcmRps-A-dCJTqi5WYx1Smfg@mail.gmail.com>
+Subject: Re: [PATCH v2] proc: alloc PATH_MAX bytes for /proc/${pid}/fd/ symlinks
+To:     Alexey Dobriyan <adobriyan@gmail.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        christian.brauner@ubuntu.com, Kees Cook <keescook@chromium.org>,
+        jamorris@linux.microsoft.com, linux-fsdevel@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-I met can't receive rx pkt issue with below steps:
-0.plug in ethernet cable then boot normal and get ip from dhcp server
-1.quickly hotplug out then hotplug in the ethernet cable
-2.trigger the dhcp client to renew lease
+On Sun, Jan 23, 2022 at 9:58 PM Alexey Dobriyan <adobriyan@gmail.com> wrote:
+>
+> From: Hao Lee <haolee.swjtu@gmail.com>
+>
+> It's not a standard approach that use __get_free_page() to alloc path
+> buffer directly. We'd better use kmalloc and PATH_MAX.
+>
+>         PAGE_SIZE is different on different archs.
 
-tcpdump shows that the request tx pkt is sent out successfully,
-but the mac can't receive the rx pkt.
+This is indeed a worthy addition. Thanks.
 
-The issue can easily be reproduced on platforms with PHY_POLL external
-phy. If we don't allow the phy to stop the RXC during LPI, the issue
-is gone. I think it's unsafe to stop the RXC during LPI because the mac
-needs RXC clock to support RX logic.
+Regards,
+Hao Lee
 
-And the 2nd param clk_stop_enable of phy_init_eee() is a bool, so use
-false instead of 0.
-
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 6708ca2aa4f7..92a9b0b226b1 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -1162,7 +1162,7 @@ static void stmmac_mac_link_up(struct phylink_config *config,
- 
- 	stmmac_mac_set(priv, priv->ioaddr, true);
- 	if (phy && priv->dma_cap.eee) {
--		priv->eee_active = phy_init_eee(phy, 1) >= 0;
-+		priv->eee_active = phy_init_eee(phy, false) >= 0;
- 		priv->eee_enabled = stmmac_eee_init(priv);
- 		priv->tx_lpi_enabled = priv->eee_enabled;
- 		stmmac_set_eee_pls(priv, priv->hw, true);
--- 
-2.34.1
-
+> An unlinked file
+>         with very long canonical pathname will readlink differently
+>         because "(deleted)" eats into a buffer. --adobriyan
+>
+> Signed-off-by: Hao Lee <haolee.swjtu@gmail.com>
+> Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+> ---
+>
+>  fs/proc/base.c |    8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> --- a/fs/proc/base.c
+> +++ b/fs/proc/base.c
+> @@ -1764,25 +1764,25 @@ static const char *proc_pid_get_link(struct dentry *dentry,
+>
+>  static int do_proc_readlink(struct path *path, char __user *buffer, int buflen)
+>  {
+> -       char *tmp = (char *)__get_free_page(GFP_KERNEL);
+> +       char *tmp = (char *)kmalloc(PATH_MAX, GFP_KERNEL);
+>         char *pathname;
+>         int len;
+>
+>         if (!tmp)
+>                 return -ENOMEM;
+>
+> -       pathname = d_path(path, tmp, PAGE_SIZE);
+> +       pathname = d_path(path, tmp, PATH_MAX);
+>         len = PTR_ERR(pathname);
+>         if (IS_ERR(pathname))
+>                 goto out;
+> -       len = tmp + PAGE_SIZE - 1 - pathname;
+> +       len = tmp + PATH_MAX - 1 - pathname;
+>
+>         if (len > buflen)
+>                 len = buflen;
+>         if (copy_to_user(buffer, pathname, len))
+>                 len = -EFAULT;
+>   out:
+> -       free_page((unsigned long)tmp);
+> +       kfree(tmp);
+>         return len;
+>  }
+>
