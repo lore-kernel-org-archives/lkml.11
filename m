@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39CE2C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 18:40:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F220C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 18:40:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239680AbiAWSkQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 13:40:16 -0500
+        id S239647AbiAWSkX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 13:40:23 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239653AbiAWSkK (ORCPT
+        with ESMTP id S239692AbiAWSkR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 13:40:10 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EDADC06174E;
-        Sun, 23 Jan 2022 10:40:08 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id d1so13469511plh.10;
-        Sun, 23 Jan 2022 10:40:08 -0800 (PST)
+        Sun, 23 Jan 2022 13:40:17 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28765C06173B;
+        Sun, 23 Jan 2022 10:40:17 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id a8so8429996pfa.6;
+        Sun, 23 Jan 2022 10:40:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=fXTatFQVxk5Bi3xsp9CFfQ0rYZTcQkLIFRbBZJuCKTo=;
-        b=KYb54rPHkbyc69CRDBpNpVXaOnbgnehqVIcw6Q5nYZrUJqD8fYG2PdedR79iLsupu1
-         0gdBCwGbPIeYyZXmni9s7ZZpmKmo/Qkt6ciMlPncE4deOuznLGJzZl1K94T185JjDU1/
-         0BM4tN7Pc3cUFGARdyGOI4WjOia7CvHbWBmFiJQomUMYAPygd6mJY/DqSogM2u5pn9Al
-         mLIiLcJHMr9gmdThRmWN027YvK50UezK0LFgIFkLjtOSJtI19b+k2G8Scgm6vJnRW1yL
-         NAcnbU0VWi26fHR+siKm19tyEpaeiFoGlNWzQNa+ac8t06cAXMt05iN57RqKTVDHGZd7
-         reYw==
+        bh=p8QTRt3d7sePwL1Za7J+vXKVGF1Vcf9Dz8ECUX4YRaU=;
+        b=kSGsBEjEhAy4ULYE8qToeMFrZ5GiZfr/HXBxXdnWrnJkuneYffzb9IfBYrjnabzgmu
+         bQWPkMXab2fQ9EaV1nt5r+U8sE7GzTGBRdbOtiVhKrZ5XSK3W8jCWLhKf4M3tPPenrQd
+         f4qF3ZUi/P6ID4y0yDSX8V35SSSCglIvWzd+uyYOcyv6zuzWmX6lnFpmfHASEgBqUQXd
+         1TUUPspx0Zbc1LlTY26uxgvmldx+2g/XNHHVQvBYvM+BDv3yt/SpDeOES8VpXQTsh1jW
+         SHrKxQd+6ZQ0sDVq0B2fdCtaUfTjmagsqen6Tg/u4mKxbGYE411kjF8umErW0yq0NpVM
+         6YYA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fXTatFQVxk5Bi3xsp9CFfQ0rYZTcQkLIFRbBZJuCKTo=;
-        b=gY2zTaPAOGGcOun3NSiwPOGJJ71sZn0VRWIwu4ehkfUYSLlm9lX6hzhRmXopTkHBSV
-         qAsRnBOZ9cGxvlZKTur/+fnlQsthSgp0296bMII2f86EZzmLQMQHe3sf1ntRzx3CAjSH
-         aTcknjGC6qF+x1j5+uPQIgVQKGUbA3Hdf6CNvJvcQP79WRYLXWbjcfNegz7n8wnnQG8D
-         QP/M7fdwCdfrNS7+CGO2VnGBT9+yYmY791KTkiOL4QFoLmi3/Sjal3YGD+XiK1XJHQYZ
-         iQLrfZDXsUT7oQHYWGCgN7Ki+SXoX4xaRHRqyzV6Jawghnk7NXk8JzgKycd5w3UvyNzw
-         E6/Q==
-X-Gm-Message-State: AOAM532QpD+NZ2y4UuKCqTBZ7ylfKMylbzsETBYsinYE4V8QnB31PXEJ
-        IV1OYbB1nxkKQOw7cmtcqNU=
-X-Google-Smtp-Source: ABdhPJxGmwUYVMRzODasTSE+4WExw7bWOf9Gl61W4KWfE3KrsgTh2yrUpg0D0gJG15OcPQdnUHlrww==
-X-Received: by 2002:a17:902:7844:b0:14a:9cff:66c7 with SMTP id e4-20020a170902784400b0014a9cff66c7mr11824524pln.14.1642963207648;
-        Sun, 23 Jan 2022 10:40:07 -0800 (PST)
+        bh=p8QTRt3d7sePwL1Za7J+vXKVGF1Vcf9Dz8ECUX4YRaU=;
+        b=AbybGlsdA+Pxtuk5v5cqR3vcMUlXQjxLD6ShnS54+uZ5kD8Khu8u63llbljz88azmg
+         W94u6+sKBnF/K/gjZWMXCMM9/ex2j7XT7qL4WdXvcMTjU9dtfykvzExyYeYiWvvrtZ5w
+         JpEySH+v8q4IOTYV2OF6Fk6cLWlZkrg2PFXbfRzeD51YMUfzJhwmoYWoD1v8rT6YEN3i
+         oELCrnV8MuEBMDxH8IrtplxN43B4ls9JPp/IsWP+1tS4+rZGf6PXU4mAXVQ+Rbh19maU
+         +4GanVa+17U++1ZkN/IG7HwRwDxXyTVCGOBqMrp2j0n6EAK3yaYD01z8B22xsEdJVovv
+         +6WA==
+X-Gm-Message-State: AOAM530d+Qohfnxie3fpmO1VIAk/X1PGJ/KwFXZtPmarfu3wrVNys5N1
+        nuvv6N7SB8dnaqAMTQ/Gxn8=
+X-Google-Smtp-Source: ABdhPJxPEJs66727LmyAS5olRhoXIbWw8yvPTo3V487TVxqjG3bhda6a1xhG1HMlracKriT/z0m5AQ==
+X-Received: by 2002:a63:7251:: with SMTP id c17mr7591981pgn.579.1642963216638;
+        Sun, 23 Jan 2022 10:40:16 -0800 (PST)
 Received: from localhost (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id m13sm10828821pjl.39.2022.01.23.10.40.06
+        by smtp.gmail.com with ESMTPSA id mh11sm11502854pjb.3.2022.01.23.10.40.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Jan 2022 10:40:07 -0800 (PST)
+        Sun, 23 Jan 2022 10:40:16 -0800 (PST)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Yury Norov <yury.norov@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -62,20 +62,15 @@ To:     Yury Norov <yury.norov@gmail.com>,
         Nicholas Piggin <npiggin@gmail.com>,
         Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
         Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org, Paolo Bonzini <pbonzini@redhat.com>,
-        Sean Christopherson <seanjc@google.com>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Wanpeng Li <wanpengli@tencent.com>,
-        Jim Mattson <jmattson@google.com>,
-        Joerg Roedel <joro@8bytes.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        "H. Peter Anvin" <hpa@zytor.com>, x86@kernel.org,
-        kvm@vger.kernel.org
-Subject: [PATCH 06/54] x86/kvm: replace bitmap_weight with bitmap_empty where appropriate
-Date:   Sun, 23 Jan 2022 10:38:37 -0800
-Message-Id: <20220123183925.1052919-7-yury.norov@gmail.com>
+        linux-kernel@vger.kernel.org, Sunil Goutham <sgoutham@marvell.com>,
+        Geetha sowjanya <gakula@marvell.com>,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        hariprasad <hkelam@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH 09/54] net: ethernet: replace bitmap_weight with bitmap_empty for Marvell
+Date:   Sun, 23 Jan 2022 10:38:40 -0800
+Message-Id: <20220123183925.1052919-10-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220123183925.1052919-1-yury.norov@gmail.com>
 References: <20220123183925.1052919-1-yury.norov@gmail.com>
@@ -85,49 +80,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In some places kvm/hyperv.c code calls bitmap_weight() to check if any bit
-of a given bitmap is set. It's better to use bitmap_empty() in that case
+In some places, octeontx2 code calls bitmap_weight() to check if any bit of
+a given bitmap is set. It's better to use bitmap_empty() in that case
 because bitmap_empty() stops traversing the bitmap as soon as it finds
 first set bit, while bitmap_weight() counts all bits unconditionally.
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- arch/x86/kvm/hyperv.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c | 4 ++--
+ drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c    | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/arch/x86/kvm/hyperv.c b/arch/x86/kvm/hyperv.c
-index 6e38a7d22e97..2c3400dea4b3 100644
---- a/arch/x86/kvm/hyperv.c
-+++ b/arch/x86/kvm/hyperv.c
-@@ -90,7 +90,7 @@ static void synic_update_vector(struct kvm_vcpu_hv_synic *synic,
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
+index 77a13fb555fb..80b2d64b4136 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
+@@ -353,7 +353,7 @@ int otx2_add_macfilter(struct net_device *netdev, const u8 *mac)
  {
- 	struct kvm_vcpu *vcpu = hv_synic_to_vcpu(synic);
- 	struct kvm_hv *hv = to_kvm_hv(vcpu->kvm);
--	int auto_eoi_old, auto_eoi_new;
-+	bool auto_eoi_old, auto_eoi_new;
+ 	struct otx2_nic *pf = netdev_priv(netdev);
  
- 	if (vector < HV_SYNIC_FIRST_VALID_VECTOR)
- 		return;
-@@ -100,16 +100,16 @@ static void synic_update_vector(struct kvm_vcpu_hv_synic *synic,
+-	if (bitmap_weight(&pf->flow_cfg->dmacflt_bmap,
++	if (!bitmap_empty(&pf->flow_cfg->dmacflt_bmap,
+ 			  pf->flow_cfg->dmacflt_max_flows))
+ 		netdev_warn(netdev,
+ 			    "Add %pM to CGX/RPM DMAC filters list as well\n",
+@@ -436,7 +436,7 @@ int otx2_get_maxflows(struct otx2_flow_config *flow_cfg)
+ 		return 0;
+ 
+ 	if (flow_cfg->nr_flows == flow_cfg->max_flows ||
+-	    bitmap_weight(&flow_cfg->dmacflt_bmap,
++	    !bitmap_empty(&flow_cfg->dmacflt_bmap,
+ 			  flow_cfg->dmacflt_max_flows))
+ 		return flow_cfg->max_flows + flow_cfg->dmacflt_max_flows;
  	else
- 		__clear_bit(vector, synic->vec_bitmap);
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+index 6080ebd9bd94..3d369ccc7ab9 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
+@@ -1115,7 +1115,7 @@ static int otx2_cgx_config_loopback(struct otx2_nic *pf, bool enable)
+ 	struct msg_req *msg;
+ 	int err;
  
--	auto_eoi_old = bitmap_weight(synic->auto_eoi_bitmap, 256);
-+	auto_eoi_old = bitmap_empty(synic->auto_eoi_bitmap, 256);
- 
- 	if (synic_has_vector_auto_eoi(synic, vector))
- 		__set_bit(vector, synic->auto_eoi_bitmap);
- 	else
- 		__clear_bit(vector, synic->auto_eoi_bitmap);
- 
--	auto_eoi_new = bitmap_weight(synic->auto_eoi_bitmap, 256);
-+	auto_eoi_new = bitmap_empty(synic->auto_eoi_bitmap, 256);
- 
--	if (!!auto_eoi_old == !!auto_eoi_new)
-+	if (auto_eoi_old == auto_eoi_new)
- 		return;
- 
- 	down_write(&vcpu->kvm->arch.apicv_update_lock);
+-	if (enable && bitmap_weight(&pf->flow_cfg->dmacflt_bmap,
++	if (enable && !bitmap_empty(&pf->flow_cfg->dmacflt_bmap,
+ 				    pf->flow_cfg->dmacflt_max_flows))
+ 		netdev_warn(pf->netdev,
+ 			    "CGX/RPM internal loopback might not work as DMAC filters are active\n");
 -- 
 2.30.2
 
