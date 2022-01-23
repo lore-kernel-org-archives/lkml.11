@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4F1DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:13:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 387BFC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:13:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235178AbiAWANT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 19:13:19 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40982 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235248AbiAWAMX (ORCPT
+        id S235280AbiAWANY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 19:13:24 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36804 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235276AbiAWAMc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 19:12:23 -0500
+        Sat, 22 Jan 2022 19:12:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C1EEB80B1B;
-        Sun, 23 Jan 2022 00:12:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 079CFC36AEC;
-        Sun, 23 Jan 2022 00:12:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C6A7260F77;
+        Sun, 23 Jan 2022 00:12:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBC6FC004E1;
+        Sun, 23 Jan 2022 00:12:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642896740;
-        bh=nxtaYekpVBFkHlh4jI55ddbaFFhM89Sm46JH25MlHJ4=;
+        s=k20201202; t=1642896751;
+        bh=3gLQh3f3+oWaMhkGHsFQqoHKnRNIrxUNODuNRihVYVw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B0eUlOd6mi8MpR7CTb4xRm/we3QTttTTJSqKHiR2k6Ut3c9KVLf1MfTkDMuAWnPY7
-         ME4ulaCtdALP9McpGfPDlpZpG0FHFLxnnprsVvNwrTBpMdJyvJA49X3GEXwO7dLxn9
-         x7CM0F68RYwR002np2UrBBLD7881W4TRWk65xU9SfbA3ZZV2mmoN9daPjpRKhGwCVM
-         Tn+Qo+/2TvddvpgNTSLWaqEhI2OszfambN1nHiwJ10ME2I/BZTJ+b0SfbcoQSWG7e/
-         jF3uw5DMlI8mou8nU6SJvu8McsDTHb/LnhXCo4j4hPxWAZGgta7mFEETOdrKgNGXUP
-         1x0T16gJuls3g==
+        b=Hz8vRJCj0pP7A4PTqJsYeWT56Nm7qT4zKZhMXubDGUFgQIPgl2rj1x4VrWtHI8sAD
+         sO+AWm5TMAu6GPMiv0xzzsX/YSXJ2zufn6NEhAHQcdB59HNX8r1RSS2SwCktMnBK/z
+         UQkCA7Ds4FO03v+c3SnJrlCoa4x2EkOwVhWxn1aNEW3XObXjBcNMOR+b0hzQWsEOnk
+         kSfpzLERDVGUqUGd855VLC4SqvdSwfm+v6DHDkSWc6qzWqw9RmLawZH5bWHaK15+Ft
+         Rxtj08Z7I3mLf/hUaPNKC+bD/6Qa/4XJa2IncTyxBBCEAmsvCmdD72FdkMJ1EuJlj8
+         Z4MGdSrTyM2mQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Fabien Dessenne <fabien.dessenne@foss.st.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Sasha Levin <sashal@kernel.org>, ohad@wizery.com,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@foss.st.com,
-        linux-remoteproc@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 5.15 02/16] hwspinlock: stm32: enable clock at probe
-Date:   Sat, 22 Jan 2022 19:12:01 -0500
-Message-Id: <20220123001216.2460383-2-sashal@kernel.org>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>,
+        Sasha Levin <sashal@kernel.org>, robh+dt@kernel.org,
+        paul.walmsley@sifive.com, palmer@dabbelt.com,
+        aou@eecs.berkeley.edu, bin.meng@windriver.com,
+        atishp@atishpatra.org, devicetree@vger.kernel.org,
+        linux-riscv@lists.infradead.org
+Subject: [PATCH AUTOSEL 5.15 04/16] riscv: dts: microchip: mpfs: Fix reference clock node
+Date:   Sat, 22 Jan 2022 19:12:03 -0500
+Message-Id: <20220123001216.2460383-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220123001216.2460383-1-sashal@kernel.org>
 References: <20220123001216.2460383-1-sashal@kernel.org>
@@ -52,125 +54,77 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fabien Dessenne <fabien.dessenne@foss.st.com>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 
-[ Upstream commit 60630924bb5af8751adcecc896e7763c3783ca89 ]
+[ Upstream commit 9d7b3078628f591e4007210c0d5d3f94805cff55 ]
 
-Set the clock during probe and keep its control during suspend / resume
-operations.
-This fixes an issue when CONFIG_PM is not set and where the clock is
-never enabled.
+"make dtbs_check" reports:
 
-Make use of devm_ functions to simplify the code.
+    arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dt.yaml: soc: refclk: {'compatible': ['fixed-clock'], '#clock-cells': [[0]], 'clock-frequency': [[600000000]], 'clock-output-names': ['msspllclk'], 'phandle': [[7]]} should not be valid under {'type': 'object'}
+	From schema: dtschema/schemas/simple-bus.yaml
 
-Signed-off-by: Fabien Dessenne <fabien.dessenne@foss.st.com>
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Link: https://lore.kernel.org/r/20211011135836.1045437-1-fabien.dessenne@foss.st.com
+Fix this by moving the node out of the "soc" subnode.
+While at it, rename it to "msspllclk", and drop the now superfluous
+"clock-output-names" property.
+Move the actual clock-frequency value to the board DTS, since it is not
+set until bitstream programming time.
+
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+Tested-by: Conor Dooley <conor.dooley@microchip.com>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hwspinlock/stm32_hwspinlock.c | 58 +++++++++++++++++----------
- 1 file changed, 37 insertions(+), 21 deletions(-)
+ .../boot/dts/microchip/microchip-mpfs-icicle-kit.dts |  4 ++++
+ arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi    | 12 +++++-------
+ 2 files changed, 9 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/hwspinlock/stm32_hwspinlock.c b/drivers/hwspinlock/stm32_hwspinlock.c
-index 3ad0ce0da4d98..5bd11a7fab65d 100644
---- a/drivers/hwspinlock/stm32_hwspinlock.c
-+++ b/drivers/hwspinlock/stm32_hwspinlock.c
-@@ -54,8 +54,23 @@ static const struct hwspinlock_ops stm32_hwspinlock_ops = {
- 	.relax		= stm32_hwspinlock_relax,
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts b/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
+index cce5eca31f257..4b69ab4ff30a2 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs-icicle-kit.dts
+@@ -40,6 +40,10 @@ soc {
+ 	};
  };
  
-+static void stm32_hwspinlock_disable_clk(void *data)
-+{
-+	struct platform_device *pdev = data;
-+	struct stm32_hwspinlock *hw = platform_get_drvdata(pdev);
-+	struct device *dev = &pdev->dev;
++&refclk {
++	clock-frequency = <600000000>;
++};
 +
-+	pm_runtime_get_sync(dev);
-+	pm_runtime_disable(dev);
-+	pm_runtime_set_suspended(dev);
-+	pm_runtime_put_noidle(dev);
+ &serial0 {
+ 	status = "okay";
+ };
+diff --git a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+index b12fd594e7172..18ccbdbe86d99 100644
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+@@ -142,6 +142,11 @@ cpu4_intc: interrupt-controller {
+ 		};
+ 	};
+ 
++	refclk: msspllclk {
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++	};
 +
-+	clk_disable_unprepare(hw->clk);
-+}
-+
- static int stm32_hwspinlock_probe(struct platform_device *pdev)
- {
-+	struct device *dev = &pdev->dev;
- 	struct stm32_hwspinlock *hw;
- 	void __iomem *io_base;
- 	size_t array_size;
-@@ -66,41 +81,43 @@ static int stm32_hwspinlock_probe(struct platform_device *pdev)
- 		return PTR_ERR(io_base);
+ 	soc {
+ 		#address-cells = <2>;
+ 		#size-cells = <2>;
+@@ -191,13 +196,6 @@ dma@3000000 {
+ 			#dma-cells = <1>;
+ 		};
  
- 	array_size = STM32_MUTEX_NUM_LOCKS * sizeof(struct hwspinlock);
--	hw = devm_kzalloc(&pdev->dev, sizeof(*hw) + array_size, GFP_KERNEL);
-+	hw = devm_kzalloc(dev, sizeof(*hw) + array_size, GFP_KERNEL);
- 	if (!hw)
- 		return -ENOMEM;
- 
--	hw->clk = devm_clk_get(&pdev->dev, "hsem");
-+	hw->clk = devm_clk_get(dev, "hsem");
- 	if (IS_ERR(hw->clk))
- 		return PTR_ERR(hw->clk);
- 
--	for (i = 0; i < STM32_MUTEX_NUM_LOCKS; i++)
--		hw->bank.lock[i].priv = io_base + i * sizeof(u32);
-+	ret = clk_prepare_enable(hw->clk);
-+	if (ret) {
-+		dev_err(dev, "Failed to prepare_enable clock\n");
-+		return ret;
-+	}
- 
- 	platform_set_drvdata(pdev, hw);
--	pm_runtime_enable(&pdev->dev);
- 
--	ret = hwspin_lock_register(&hw->bank, &pdev->dev, &stm32_hwspinlock_ops,
--				   0, STM32_MUTEX_NUM_LOCKS);
-+	pm_runtime_get_noresume(dev);
-+	pm_runtime_set_active(dev);
-+	pm_runtime_enable(dev);
-+	pm_runtime_put(dev);
- 
--	if (ret)
--		pm_runtime_disable(&pdev->dev);
-+	ret = devm_add_action_or_reset(dev, stm32_hwspinlock_disable_clk, pdev);
-+	if (ret) {
-+		dev_err(dev, "Failed to register action\n");
-+		return ret;
-+	}
- 
--	return ret;
--}
-+	for (i = 0; i < STM32_MUTEX_NUM_LOCKS; i++)
-+		hw->bank.lock[i].priv = io_base + i * sizeof(u32);
- 
--static int stm32_hwspinlock_remove(struct platform_device *pdev)
--{
--	struct stm32_hwspinlock *hw = platform_get_drvdata(pdev);
--	int ret;
-+	ret = devm_hwspin_lock_register(dev, &hw->bank, &stm32_hwspinlock_ops,
-+					0, STM32_MUTEX_NUM_LOCKS);
- 
--	ret = hwspin_lock_unregister(&hw->bank);
- 	if (ret)
--		dev_err(&pdev->dev, "%s failed: %d\n", __func__, ret);
+-		refclk: refclk {
+-			compatible = "fixed-clock";
+-			#clock-cells = <0>;
+-			clock-frequency = <600000000>;
+-			clock-output-names = "msspllclk";
+-		};
 -
--	pm_runtime_disable(&pdev->dev);
-+		dev_err(dev, "Failed to register hwspinlock\n");
- 
--	return 0;
-+	return ret;
- }
- 
- static int __maybe_unused stm32_hwspinlock_runtime_suspend(struct device *dev)
-@@ -135,7 +152,6 @@ MODULE_DEVICE_TABLE(of, stm32_hwpinlock_ids);
- 
- static struct platform_driver stm32_hwspinlock_driver = {
- 	.probe		= stm32_hwspinlock_probe,
--	.remove		= stm32_hwspinlock_remove,
- 	.driver		= {
- 		.name	= "stm32_hwspinlock",
- 		.of_match_table = stm32_hwpinlock_ids,
+ 		clkcfg: clkcfg@20002000 {
+ 			compatible = "microchip,mpfs-clkcfg";
+ 			reg = <0x0 0x20002000 0x0 0x1000>;
 -- 
 2.34.1
 
