@@ -2,35 +2,38 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5EA1C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 15:41:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32947C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 15:41:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237962AbiAWPk7 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 10:40:59 -0500
-Received: from gloria.sntech.de ([185.11.138.130]:46996 "EHLO gloria.sntech.de"
+        id S237991AbiAWPlA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 10:41:00 -0500
+Received: from gloria.sntech.de ([185.11.138.130]:47002 "EHLO gloria.sntech.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237934AbiAWPkw (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 10:40:52 -0500
+        id S237950AbiAWPky (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 23 Jan 2022 10:40:54 -0500
 Received: from p508fcdea.dip0.t-ipconnect.de ([80.143.205.234] helo=phil.fritz.box)
         by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <heiko@sntech.de>)
-        id 1nBez1-0005OB-3z; Sun, 23 Jan 2022 16:40:47 +0100
+        id 1nBez0-0005OB-FH; Sun, 23 Jan 2022 16:40:46 +0100
 From:   Heiko Stuebner <heiko@sntech.de>
-To:     Frank Wunderlich <linux@fw-web.de>,
-        linux-rockchip@lists.infradead.org
+To:     Mark Brown <broonie@kernel.org>,
+        Brian Norris <briannorris@chromium.org>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Liam Girdwood <lgirdwood@gmail.com>
 Cc:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
         linux-arm-kernel@lists.infradead.org,
-        Peter Geis <pgwipeout@gmail.com>,
-        Frank Wunderlich <frank-w@public-files.de>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michael Riesch <michael.riesch@wolfvision.net>
-Subject: Re: [PATCH v2] arm64: dts: rk3568: drop pclk_xpcs from gmac0
-Date:   Sun, 23 Jan 2022 16:40:45 +0100
-Message-Id: <164295214820.418606.1356481887548959776.b4-ty@sntech.de>
+        dri-devel@lists.freedesktop.org, Lin Huang <hl@rock-chips.com>,
+        devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        linux-kernel@vger.kernel.org, alsa-devel@alsa-project.org,
+        Sandy Huang <hjc@rock-chips.com>
+Subject: Re: (subset) [PATCH v2 0/3] (Re)enable DP/HDMI audio for RK3399 Gru
+Date:   Sun, 23 Jan 2022 16:40:43 +0100
+Message-Id: <164295214821.418606.10125525976562860474.b4-ty@sntech.de>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220123133510.135651-1-linux@fw-web.de>
-References: <20220123133510.135651-1-linux@fw-web.de>
+In-Reply-To: <20220114230209.4091727-1-briannorris@chromium.org>
+References: <20220114230209.4091727-1-briannorris@chromium.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -38,32 +41,23 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 23 Jan 2022 14:35:10 +0100, Frank Wunderlich wrote:
-> pclk_xpcs is not supported by mainline driver and breaks dtbs_check
+On Fri, 14 Jan 2022 15:02:06 -0800, Brian Norris wrote:
+> This series fixes DP/HDMI audio for RK3399 Gru systems.
 > 
-> following warnings occour, and many more
+> First, there was a regression with the switch to SPDIF. Patch 1 can be
+> taken separately as a regression fix if desired. But it's not quite so
+> useful (at least on Chrome OS systems) without the second part.
 > 
-> rk3568-evb1-v10.dt.yaml: ethernet@fe2a0000: clocks:
->     [[15, 386], [15, 389], [15, 389], [15, 184], [15, 180], [15, 181],
->     [15, 389], [15, 185], [15, 172]] is too long
-> 	From schema: Documentation/devicetree/bindings/net/snps,dwmac.yaml
-> rk3568-evb1-v10.dt.yaml: ethernet@fe2a0000: clock-names:
->     ['stmmaceth', 'mac_clk_rx', 'mac_clk_tx', 'clk_mac_refout', 'aclk_mac',
->     'pclk_mac', 'clk_mac_speed', 'ptp_ref', 'pclk_xpcs'] is too long
-> 	From schema: Documentation/devicetree/bindings/net/snps,dwmac.yaml
+> Second, jack detection was never upstreamed, because the hdmi-codec
+> dependencies were still being worked out when this platform was first
+> supported.
 > 
 > [...]
 
 Applied as fix for 5.17, thanks!
 
-[1/1] arm64: dts: rk3568: drop pclk_xpcs from gmac0
-      commit: 85a8bccfa945680dc561f06b65ea01341d2033fc
-
-I've adapted the subject to
-    arm64: dts: rockchip: drop pclk_xpcs from gmac0 on rk3568
-though. Please use prefixes matching the subsystem
-(i.e. arm64: dts: rockchip: ... in this case)
-
+[1/3] arm64: dts: rockchip: Switch RK3399-Gru DP to SPDIF output
+      commit: b5fbaf7d779f5f02b7f75b080e7707222573be2a
 
 Best regards,
 -- 
