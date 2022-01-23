@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16BA4C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 18:42:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A081C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 18:43:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234957AbiAWSms (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 13:42:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53752 "EHLO
+        id S239911AbiAWSm6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 13:42:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239887AbiAWSlw (ORCPT
+        with ESMTP id S239899AbiAWSlx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 13:41:52 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD3D5C0613EC
-        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 10:41:41 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id v74so10524110pfc.1
-        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 10:41:41 -0800 (PST)
+        Sun, 23 Jan 2022 13:41:53 -0500
+Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E724C0613EE;
+        Sun, 23 Jan 2022 10:41:47 -0800 (PST)
+Received: by mail-pf1-x434.google.com with SMTP id u130so9498904pfc.2;
+        Sun, 23 Jan 2022 10:41:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=FpGkB1VQhnPPql1nIYBbXxejidNq19lPQtdnhOiEEDw=;
-        b=XYd+pCzi4ZT+GjuWIA7KOpvcIA55kJ1GGwxi03S/32tAG3rkcZiB6MrLqmUrT7RkbE
-         lx85QVKw/hzQx8cm441C9mDFEmr1tF/DCu+iMUyOHcf4tDdo/Sx183QfU3mCjyZ0V2oe
-         nfNCIUq8w60/gcYRa0dScV70cJ3uIRN0tikaeTF21C1rJNdJPj/ATljgmjHMfpz9maBQ
-         A/msWA6jpi+qqcrHKcXuLyGqy+ohgcCuwn551sxDj/UP0PDvOkaUbl7cJIQ1JGpUeMKQ
-         HWzg2mcpuNVpexCE8PHN6NejQ+tZ7B87H9A5mVliwZ3ln09IhDFVTargeNi9UYHA14g+
-         Rjcw==
+        bh=fUD3By+Q+kq98PS9J46Zo9V/GV4St0mmKcFfwwO9Pb8=;
+        b=K1iIT+1E2cEHkTf9YJEGufFMzj+1Eh7+cQ1FoYkqUeKs/xVJZ8bsBzPqbE+az5UcOF
+         3N8dLMXOE9d+QRCy7gbLXLdF0+I4cTggikREfhOztuJnumxxAHkt4rbDqPCOopgasrHg
+         CifKAdMoNw1LqCWQI9py1vRrOdGwG43vlNKwIAPHLqcdjgI+EHDWFVHNzP5YykPOq44x
+         9QKl41c3DWud2s6j5qb22F4E30o25hALFnzf108ytQymFZ1W+tpflr656JLCzb7dZlaq
+         79StCTlGk+PiEDZ2KwRGMk+GircEjWTnb9bYlBtUG0HBcuVDzYqTHzylz2vMtMmszbQ1
+         F0oA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=FpGkB1VQhnPPql1nIYBbXxejidNq19lPQtdnhOiEEDw=;
-        b=jsEG/fy0KN3sCl/CgnW+bSMoSAMlnS/55c+/mxNacN5VmpSdgyrcPmA2l7KitcZUoq
-         E8FWomu5bgR7v542Y0j0iKSGEAfElYTGDrN9UhQrbu+8BX82RtmDRRxE13ofzKn0uooJ
-         qNE2NUQQBcDQjDs/Tvu90TbX9nzuA6F5eBwft55fFTxUm7aF5gjfjUrU5HpgfBtpIwCb
-         +yQY4mQoJawmILfDG9VnH01q4nvV2hyBCnAq/UZTEyyTnjuakeKFXQojfEftw/olOEK4
-         LMsw9XjdZW/4frplJnPp2TB8lGZZLMh7o51fnV9tSr01AmMNMJyPW8K1YqWHRb9EBOCD
-         sEZw==
-X-Gm-Message-State: AOAM532BZgFmLAVKP2lTWYn5ponjcFf3ygc0yNliyaICfDx1OIRXO2MJ
-        e4q0M+wc/IlDljGVp+24bQk=
-X-Google-Smtp-Source: ABdhPJxDuWuravBMI+rpmbnMCNC8EfAtpHxg3yYmz60gSnxCSHRycBJIQK5jLyWBzwNUeovtznVXXg==
-X-Received: by 2002:a63:3fc5:: with SMTP id m188mr9367408pga.307.1642963301119;
-        Sun, 23 Jan 2022 10:41:41 -0800 (PST)
+        bh=fUD3By+Q+kq98PS9J46Zo9V/GV4St0mmKcFfwwO9Pb8=;
+        b=2W74cVVt6RL4kW+puBFgmctKrbpNfDzLAlgQTYjzDP/frJQFsiGZCmjClqFQxgKl5Y
+         b1rzcfo87K1LBxmKuU2e1kZYeUA7sH1i0UezQJ8cjuHU8wIS+t+SEzoj5yEWNLBMI1Z3
+         u48jvDPDS8A/i+zkXuG+rnjDH/C+MqoTwd2czNcVJG290Al0d9QSZo8RO3X4IVkwqOx5
+         lT+N1lg7at8UM+uFmcC7NwwrIwmvUWR3vuH0MlfJgc0HGJdkWWd+Y1hOXOPsgXXepNYU
+         e142jc7UL5VymSJc5m9w9au4wdRbK1NIIKfo7hqrheZO0cvRKh7IB6suJj/sKFiUgvjL
+         Eelg==
+X-Gm-Message-State: AOAM533wAKPtJhBmFsCzCIApw+vpMwtaRzXpoxcBCUuFPjSxJsv2O+r9
+        5A9IuC2fChmNwMXrTWX3s6iMkx5LbLw=
+X-Google-Smtp-Source: ABdhPJzgui0t/epPuAWCm48+9aVBhNRSHTduGzhQc69xdNO0+dJyfJfNKcCZ70W6D4Q4vze3O9f0vA==
+X-Received: by 2002:a63:3710:: with SMTP id e16mr9494755pga.507.1642963306975;
+        Sun, 23 Jan 2022 10:41:46 -0800 (PST)
 Received: from localhost (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id x1sm2314965pfh.167.2022.01.23.10.41.40
+        by smtp.gmail.com with ESMTPSA id mm24sm11135471pjb.20.2022.01.23.10.41.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Jan 2022 10:41:40 -0800 (PST)
+        Sun, 23 Jan 2022 10:41:46 -0800 (PST)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Yury Norov <yury.norov@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -62,10 +62,13 @@ To:     Yury Norov <yury.norov@gmail.com>,
         Nicholas Piggin <npiggin@gmail.com>,
         Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
         Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 36/54] lib/cpumask: add cpumask_weight_{eq,gt,ge,lt,le}
-Date:   Sun, 23 Jan 2022 10:39:07 -0800
-Message-Id: <20220123183925.1052919-37-yury.norov@gmail.com>
+        linux-kernel@vger.kernel.org,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marc Zyngier <maz@kernel.org>, linux-mips@vger.kernel.org
+Subject: [PATCH 38/54] arch/mips: replace cpumask_weight with cpumask_weight_{eq, ...} where appropriate
+Date:   Sun, 23 Jan 2022 10:39:09 -0800
+Message-Id: <20220123183925.1052919-39-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220123183925.1052919-1-yury.norov@gmail.com>
 References: <20220123183925.1052919-1-yury.norov@gmail.com>
@@ -75,91 +78,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In many cases people use cpumask_weight() to compare the result against
-some number or expression:
-
-	if (cpumask_weight(...) > 1)
-		do_something();
-
-It may be significantly improved for large cpumasks: if first few words
-count set bits to a number greater than given, we can stop counting and
-immediately return.
-
-The same idea would work in other direction: if we know that the number
-of set bits that we counted so far is small enough, so that it would be
-smaller than required number even if all bits of the rest of the cpumask
-are set, we can stop counting earlier.
-
-This patch adds cpumask_weight_{eq, gt, ge, lt, le} helpers based on
-corresponding bitmap functions. The following patches apply new functions
-where appropriate.
+Mips code uses calls cpumask_weight() to compare the weight of
+cpumask with a given number. We can do it more efficiently with
+cpumask_weight_{eq, ...} because conditional cpumask_weight may stop
+traversing the cpumask earlier, as soon as condition is met.
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- include/linux/cpumask.h | 50 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+ arch/mips/cavium-octeon/octeon-irq.c | 4 ++--
+ arch/mips/kernel/crash.c             | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/include/linux/cpumask.h b/include/linux/cpumask.h
-index 64dae70d31f5..1906e3225737 100644
---- a/include/linux/cpumask.h
-+++ b/include/linux/cpumask.h
-@@ -575,6 +575,56 @@ static inline unsigned int cpumask_weight(const struct cpumask *srcp)
- 	return bitmap_weight(cpumask_bits(srcp), nr_cpumask_bits);
- }
+diff --git a/arch/mips/cavium-octeon/octeon-irq.c b/arch/mips/cavium-octeon/octeon-irq.c
+index 844f882096e6..914871f15fb7 100644
+--- a/arch/mips/cavium-octeon/octeon-irq.c
++++ b/arch/mips/cavium-octeon/octeon-irq.c
+@@ -763,7 +763,7 @@ static void octeon_irq_cpu_offline_ciu(struct irq_data *data)
+ 	if (!cpumask_test_cpu(cpu, mask))
+ 		return;
  
-+/**
-+ * cpumask_weight_eq - Check if # of bits in *srcp is equal to a given number
-+ * @srcp: the cpumask to count bits (< nr_cpu_ids) in.
-+ * @num: the number to check.
-+ */
-+static inline bool cpumask_weight_eq(const struct cpumask *srcp, unsigned int num)
-+{
-+	return bitmap_weight_eq(cpumask_bits(srcp), nr_cpumask_bits, num);
-+}
-+
-+/**
-+ * cpumask_weight_gt - Check if # of bits in *srcp is greater than a given number
-+ * @srcp: the cpumask to count bits (< nr_cpu_ids) in.
-+ * @num: the number to check.
-+ */
-+static inline bool cpumask_weight_gt(const struct cpumask *srcp, int num)
-+{
-+	return bitmap_weight_gt(cpumask_bits(srcp), nr_cpumask_bits, num);
-+}
-+
-+/**
-+ * cpumask_weight_ge - Check if # of bits in *srcp is greater than or equal to a given number
-+ * @srcp: the cpumask to count bits (< nr_cpu_ids) in.
-+ * @num: the number to check.
-+ */
-+static inline bool cpumask_weight_ge(const struct cpumask *srcp, int num)
-+{
-+	return bitmap_weight_ge(cpumask_bits(srcp), nr_cpumask_bits, num);
-+}
-+
-+/**
-+ * cpumask_weight_lt - Check if # of bits in *srcp is less than a given number
-+ * @srcp: the cpumask to count bits (< nr_cpu_ids) in.
-+ * @num: the number to check.
-+ */
-+static inline bool cpumask_weight_lt(const struct cpumask *srcp, int num)
-+{
-+	return bitmap_weight_lt(cpumask_bits(srcp), nr_cpumask_bits, num);
-+}
-+
-+/**
-+ * cpumask_weight_le - Check if # of bits in *srcp is less than or equal to a given number
-+ * @srcp: the cpumask to count bits (< nr_cpu_ids) in.
-+ * @num: the number to check.
-+ */
-+static inline bool cpumask_weight_le(const struct cpumask *srcp, int num)
-+{
-+	return bitmap_weight_le(cpumask_bits(srcp), nr_cpumask_bits, num);
-+}
-+
- /**
-  * cpumask_shift_right - *dstp = *srcp >> n
-  * @dstp: the cpumask result
+-	if (cpumask_weight(mask) > 1) {
++	if (cpumask_weight_gt(mask, 1)) {
+ 		/*
+ 		 * It has multi CPU affinity, just remove this CPU
+ 		 * from the affinity set.
+@@ -795,7 +795,7 @@ static int octeon_irq_ciu_set_affinity(struct irq_data *data,
+ 	 * This removes the need to do locking in the .ack/.eoi
+ 	 * functions.
+ 	 */
+-	if (cpumask_weight(dest) != 1)
++	if (!cpumask_weight_eq(dest, 1))
+ 		return -EINVAL;
+ 
+ 	if (!enable_one)
+diff --git a/arch/mips/kernel/crash.c b/arch/mips/kernel/crash.c
+index 81845ba04835..5b690d52491f 100644
+--- a/arch/mips/kernel/crash.c
++++ b/arch/mips/kernel/crash.c
+@@ -72,7 +72,7 @@ static void crash_kexec_prepare_cpus(void)
+ 	 */
+ 	pr_emerg("Sending IPI to other cpus...\n");
+ 	msecs = 10000;
+-	while ((cpumask_weight(&cpus_in_crash) < ncpus) && (--msecs > 0)) {
++	while (cpumask_weight_lt(&cpus_in_crash, ncpus) && (--msecs > 0)) {
+ 		cpu_relax();
+ 		mdelay(1);
+ 	}
 -- 
 2.30.2
 
