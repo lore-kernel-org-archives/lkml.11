@@ -2,60 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C17EC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 09:17:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0844CC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 09:17:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236059AbiAWJQ4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 04:16:56 -0500
-Received: from mail-ed1-f52.google.com ([209.85.208.52]:46070 "EHLO
-        mail-ed1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbiAWJQx (ORCPT
+        id S236085AbiAWJRT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 04:17:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40844 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230401AbiAWJRR (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 04:16:53 -0500
-Received: by mail-ed1-f52.google.com with SMTP id z22so50657752edd.12
-        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 01:16:53 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=nWpDQmZNg8zKVk12QskQ7NNS05C4fI/JmZBKLdKyu8Q=;
-        b=2fyFS+Y1m2887LqgERIyKSAM0LubJDu9Epu/X8cfikKj9QmnAg3vzBentIBcTSVm74
-         rGhaS7/Ax+OggRJ2pzJrDRGKfXszTjAYzGrT3B+9sYIvUCvXKiSHDwtc4OKAO1/oi8+8
-         rg+xLWe0tXaCeoYdLx8XR3NQX4XmFXy5eZ/zmHVC0Pho2yzFQegTP1BqDEfsPRI1bqi2
-         DhAxmdkTXQdv6lqbb88ojIr3GPzIsbo+i8XF9UCnw22gxHKFMQRYDW/+6W+OIk/1zS7B
-         IAbjLG1lNYmbDiveEYz5MSc6ys1RLXh1GNsWbcwSm2lHvMQd9zoGDWccl4vt3IibsWOh
-         qKzw==
-X-Gm-Message-State: AOAM532WJTD6MVOGORxJDfds5oGIQihbuUeplB9phz+j4MvEOkHnUc/X
-        lMcGQy/uDJEAobNDpf0V/n4=
-X-Google-Smtp-Source: ABdhPJyroPfnQDhcyUbsYHUCBLYt3vcMzY1QM2dwnvS0gKlL7IS1UHY+k/HyYe/nTILXTOVTS8Qu7Q==
-X-Received: by 2002:a50:d0dc:: with SMTP id g28mr10810282edf.25.1642929412330;
-        Sun, 23 Jan 2022 01:16:52 -0800 (PST)
-Received: from [10.100.102.14] (46-117-116-119.bb.netvision.net.il. [46.117.116.119])
-        by smtp.gmail.com with ESMTPSA id ch27sm643434edb.74.2022.01.23.01.16.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 23 Jan 2022 01:16:51 -0800 (PST)
-Subject: Re: [PATCH] nvme-fabrics: fix returnvar.cocci warnings
-To:     kernel test robot <lkp@intel.com>, Hannes Reinecke <hare@suse.de>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        Christoph Hellwig <hch@lst.de>,
-        Chaitanya Kulkarni <kch@nvidia.com>,
-        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@kernel.dk>,
-        linux-nvme@lists.infradead.org
-References: <202201221116.hWZkKqts-lkp@intel.com>
- <20220122031737.GA31599@fba2a898af35>
-From:   Sagi Grimberg <sagi@grimberg.me>
-Message-ID: <aa0e01c1-4d3e-eed2-d32f-d1ecb9a97e90@grimberg.me>
-Date:   Sun, 23 Jan 2022 11:16:53 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        Sun, 23 Jan 2022 04:17:17 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B642C06173B;
+        Sun, 23 Jan 2022 01:17:17 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 23EB760920;
+        Sun, 23 Jan 2022 09:17:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED734C340E2;
+        Sun, 23 Jan 2022 09:17:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642929436;
+        bh=T5B5ekyVJC+CZ64ohYULuUfaqWzSUcjA8KoiSEczAm8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Wr5iCOtaj1gdnpElkHT3Kfncf7cXEpvQsxYanq9Egt+3Agh92wRlrBu33JC4ddm4z
+         cwbj4Aygtz05BIKOdXXLjAfQLMFX2xKKY2kXewv1RzAVVbwshc54b2zLfN9TioCrYJ
+         kDbv54jnmng3FzcUUYM6bGEhR066ZxtUsBeOkciMS20yKYcI1up0A3jeDxWGja8nMd
+         avOhliGtcC3Olkc25YE5lD1KNMSWOqkE7r+c/SXnl9I1V3Bfa1lhCdT4JQ1GNgMVf3
+         B7LAYh8n1X7RKyPETk49a1v9yZyLX9B8CTev9tQEFG+qu4ywcg2hJNUGXlMNuNY7kP
+         n6zpejDMLcpYQ==
+Date:   Sun, 23 Jan 2022 17:09:36 +0800
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Suren Baghdasaryan <surenb@google.com>
+Cc:     sfr@canb.auug.org.au, akpm@linux-foundation.org,
+        torvalds@linux-foundation.org, linux-kernel@vger.kernel.org,
+        linux-next@vger.kernel.org
+Subject: Re: [PATCH 1/1] sysctl: Fix 'one_thousand' defined but not used
+ warning
+Message-ID: <Ye0bUGBJWRp+abEF@xhacker>
+References: <20220117012317.21168-1-surenb@google.com>
 MIME-Version: 1.0
-In-Reply-To: <20220122031737.GA31599@fba2a898af35>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220117012317.21168-1-surenb@google.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Reviewed-by: Sagi Grimberg <sagi@grimberg.me>
+On Sun, Jan 16, 2022 at 05:23:17PM -0800, Suren Baghdasaryan wrote:
+> Fix the following warning issued when CONFIG_PERF_EVENTS is not
+> defined:
+> 
+> kernel/sysctl.c:125:12: warning: 'one_thousand' defined but not used [-Wunused-variable]
+> 
+> Fixes: 39c65a94cd96 ("mm/pagealloc: sysctl: change watermark_scale_factor max limit to 30%")
+> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
+> ---
+>  kernel/sysctl.c | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
+> index ef77be575d87..81a6f2d47f77 100644
+> --- a/kernel/sysctl.c
+> +++ b/kernel/sysctl.c
+> @@ -122,7 +122,9 @@ static unsigned long one_ul = 1;
+>  static unsigned long long_max = LONG_MAX;
+>  static int one_hundred = 100;
+>  static int two_hundred = 200;
+> +#ifdef CONFIG_PERF_EVENTS
+>  static int one_thousand = 1000;
+
+what about moving one_thousand definition below to group it with
+six_hundred_forty_kb var together, so that we can avoid one
+#ifdef CONFIG_PERF_EVENTS ... #endif
+
+> +#endif
+>  static int three_thousand = 3000;
+>  #ifdef CONFIG_PRINTK
+>  static int ten_thousand = 10000;
+> -- 
+> 2.34.1.703.g22d0c6ccf7-goog
+> 
