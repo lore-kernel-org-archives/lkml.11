@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BBFFC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 01:33:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F0DAC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 01:34:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235230AbiAWBdp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 20:33:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54578 "EHLO
+        id S235320AbiAWBdy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 20:33:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235171AbiAWBdo (ORCPT
+        with ESMTP id S235224AbiAWBdp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 20:33:44 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04FA5C06173B;
-        Sat, 22 Jan 2022 17:33:43 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id s5so11100552ejx.2;
-        Sat, 22 Jan 2022 17:33:43 -0800 (PST)
+        Sat, 22 Jan 2022 20:33:45 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 142F1C06173B;
+        Sat, 22 Jan 2022 17:33:45 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id j2so11048174ejk.6;
+        Sat, 22 Jan 2022 17:33:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MOcW1whAHPYP3c4z42gknvYxdYpE8iK9sfzw5lwuJqM=;
-        b=RWSKr5a1RrnT8os3PLBtvXX73CALP/ICiWdnR+vjeOEcWLaUDviRyta9W+HOrgzUjX
-         gJP4YNFhPhlKCBv1Jmu4Zs/ioitv+tf9M72aTkrLz6eMcAMqbeV36KH8jw4VRz7l66P7
-         XebPN755SlBIFJx4v3ELemCvTJsUZIS6FI7Pujqz3eKFD3ZKM02jjkrsYV2OxWCbXlWW
-         QBzev2MW5aDgV6OprbKqnDZ/y/3wFKg+Z4uwKy583hdfEar0ZU7onDEM8It5Ha7QSqZZ
-         usxKG9enPTknD8RgaTljwkhhiC8vdXhNCiN+NG9Nil3jU8Dd1oxLZd0QLjgkli8LUNPr
-         B02Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=1f21rqjO++zRISxHBRo/gChgYZDRgqrJD1AbgYqQ8Rw=;
+        b=Dxf70AD+WzUJQisFqXuMZ1So1PxZgij5pGqSzuGP9AbY/etK/EljMmXBupUDcPSx3C
+         ESBIZq0g3W1os3Lbapd+a+uhS5wCcievyRO08Rh38YsfzEZIZNxZN2mDgH53SsHy/IQe
+         viqdMVdXKLDHeyXRGC8LKhRNsR7Pey6NaSdQJAQETbWqkqCHhlzyiSAkZC+NeiiMOAIj
+         9Lue3rtZwzcRxYTk4Y7Uz7FF6OPq7dV9mj1duUV/WJQ5xvfdOfj2tbiWHfBFsce6corn
+         kV3tmKSzx2xMEZbctRrhQkPYyMP8v6+hj6txmOPDiPQX1XBcLJWW15h4+1I4tKpamjEN
+         djSg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=MOcW1whAHPYP3c4z42gknvYxdYpE8iK9sfzw5lwuJqM=;
-        b=VF6c+fySM9vR0h6oQArUoKzgPA6q+G+IAxXJIxfXTvzlfYtkD66Y+Ij9adf2jqrtQr
-         f+dDN7+4XvVxO1iNVpilyXGtScklMcz6epYu58FAVnwgWnhD5hE50cvtqjNroPmE1NFI
-         cYNC/127NJf2YRaQIsBgYSxVp+a9LskIIXW3zCJoxQ1EW6vxGatICII2uKAgVPnhs0Do
-         x9vM+GU+4/RC64nEhNxvlVeiWCG6/02qo0ZePlskC67tANaTeEyKk9qrIMHxnhKggH/B
-         fpeGPb8NpeIjvpBdUnnwTPFnc3xtAsOQMg4/7T0Ugmx6kdOyjeKmJLDX11wr996UqcuH
-         tccQ==
-X-Gm-Message-State: AOAM533tH/hGyT2/xXx+DmmmkdQhaEnvUG+8bCi2ZDOdgXfKaKPwDaXm
-        CdV9C5mfIgm3Uv5qCVueNpU=
-X-Google-Smtp-Source: ABdhPJyElAOJxsD5mBODh7TV0y+KC74hUZyb78iL//DSQurBSQp2q7YwbBIGOw/yNcH/bkjv6S6XvA==
-X-Received: by 2002:a17:906:5d08:: with SMTP id g8mr8110497ejt.759.1642901621419;
-        Sat, 22 Jan 2022 17:33:41 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1f21rqjO++zRISxHBRo/gChgYZDRgqrJD1AbgYqQ8Rw=;
+        b=clZ/Hyzdzm9yuYpRpKXfz0rTVyBzJIyD9AWLw5v1+SuvaNUW//z0LmtL7FLrP9vZoa
+         owvBjhDQCtrMzKtqmk0O1kEBf37xQIaskGgfJU0Ux2fs7eGMZSpqzX208Dn1zXMWl3kX
+         ywvas3mcf3sybfCVdwmWVZa6vJdWrdja0OHbu8fdCT4W31pe6ATYG/FQHkMViLM0haf6
+         Y9xXPFAsqPjLwyyfksC+51TmftR+s2xb0kf4Pn8dEE+jVXrV24tyO2qF2X6m0RGosity
+         U1CDf9ZJ2g4Y2CBaYXJt0wMZR17l3Gu6E78Y/0jt9BzqUFAOVhVBYFUfvChAUHbW33Nv
+         xaZg==
+X-Gm-Message-State: AOAM5300vPysCjU7S1BlC8czcLWv9soiprcUFxrAYzYgxUG78dBsjqDM
+        qrY40hO2s8RwIxlSWhal540=
+X-Google-Smtp-Source: ABdhPJwRv/MUm8BX7nB0cZ/hEGogz9Tug1Ju3UhMT084i0IP0wa2B1NAy7itcGlJ5PMWM8C8RFzWEA==
+X-Received: by 2002:a17:906:9b8e:: with SMTP id dd14mr8006535ejc.307.1642901623536;
+        Sat, 22 Jan 2022 17:33:43 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id fy40sm3259866ejc.36.2022.01.22.17.33.40
+        by smtp.googlemail.com with ESMTPSA id fy40sm3259866ejc.36.2022.01.22.17.33.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Jan 2022 17:33:40 -0800 (PST)
+        Sat, 22 Jan 2022 17:33:43 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -56,145 +56,105 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
-Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [RFC PATCH v7 00/16] Add support for qca8k mdio rw in Ethernet packet
-Date:   Sun, 23 Jan 2022 02:33:21 +0100
-Message-Id: <20220123013337.20945-1-ansuelsmth@gmail.com>
+Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Ansuel Smith <ansuelsmth@gmail.com>
+Subject: [RFC PATCH v7 02/16] net: dsa: replay master state events in dsa_tree_{setup,teardown}_master
+Date:   Sun, 23 Jan 2022 02:33:23 +0100
+Message-Id: <20220123013337.20945-3-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20220123013337.20945-1-ansuelsmth@gmail.com>
+References: <20220123013337.20945-1-ansuelsmth@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi, this is ready but require some additional test on a wider userbase.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The main reason for this is that we notice some routing problem in the
-switch and it seems assisted learning is needed. Considering mdio is
-quite slow due to the indirect write using this Ethernet alternative way
-seems to be quicker.
+In order for switch driver to be able to make simple and reliable use of
+the master tracking operations, they must also be notified of the
+initial state of the DSA master, not just of the changes. This is
+because they might enable certain features only during the time when
+they know that the DSA master is up and running.
 
-The qca8k switch supports a special way to pass mdio read/write request
-using specially crafted Ethernet packet.
-This works by putting some defined data in the Ethernet header where the
-mac source and dst should be placed. The Ethernet type header is set to qca
-header and is set to a mdio read/write type.
-This is used to communicate to the switch that this is a special packet
-and should be parsed differently.
+Therefore, this change explicitly checks the state of the DSA master
+under the same rtnl_mutex as we were holding during the
+dsa_master_setup() and dsa_master_teardown() call. The idea being that
+if the DSA master became operational in between the moment in which it
+became a DSA master (dsa_master_setup set dev->dsa_ptr) and the moment
+when we checked for the master being up, there is a chance that we
+would emit a ->master_state_change() call with no actual state change.
+We need to avoid that by serializing the concurrent netdevice event with
+us. If the netdevice event started before, we force it to finish before
+we begin, because we take rtnl_lock before making netdev_uses_dsa()
+return true. So we also handle that early event and do nothing on it.
+Similarly, if the dev_open() attempt is concurrent with us, it will
+attempt to take the rtnl_mutex, but we're holding it. We'll see that
+the master flag IFF_UP isn't set, then when we release the rtnl_mutex
+we'll process the NETDEV_UP notifier.
 
-Currently we use Ethernet packet for
-- MIB counter
-- mdio read/write configuration
-- phy read/write for each port
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
+---
+ net/dsa/dsa2.c | 28 ++++++++++++++++++++++++----
+ 1 file changed, 24 insertions(+), 4 deletions(-)
 
-Current implementation of this use completion API to wait for the packet
-to be processed by the tagger and has a timeout that fallback to the
-legacy mdio way and mutex to enforce one transaction at time.
-
-We now have connect()/disconnect() ops for the tagger. They are used to
-allocate priv data in the dsa priv. The header still has to be put in
-global include to make it usable by a dsa driver.
-They are called when the tag is connect to the dst and the data is freed
-using discconect on tagger change.
-
-(if someone wonder why the bind function is put at in the general setup
-function it's because tag is set in the cpu port where the notifier is
-still not available and we require the notifier to sen the
-tag_proto_connect() event.
-
-We now have a tag_proto_connect() for the dsa driver used to put
-additional data in the tagger priv (that is actually the dsa priv).
-This is called using a switch event DSA_NOTIFIER_TAG_PROTO_CONNECT.
-Current use for this is adding handler for the Ethernet packet to keep
-the tagger code as dumb as possible.
-
-The tagger priv implement only the handler for the special packet. All the
-other stuff is placed in the qca8k_priv and the tagger has to access
-it under lock.
-
-We use the new API from Vladimir to track if the master port is
-operational or not. We had to track many thing to reach a usable state.
-Checking if the port is UP is not enough and tracking a NETDEV_CHANGE is
-also not enough since it use also for other task. The correct way was
-both track for interface UP and if a qdisc was assigned to the
-interface. That tells us the port (and the tagger indirectly) is ready
-to accept and process packet.
-
-I tested this with multicpu port and with port6 set as the unique port and
-it's sad.
-It seems they implemented this feature in a bad way and this is only
-supported with cpu port0. When cpu port6 is the unique port, the switch
-doesn't send ack packet. With multicpu port, packet ack are not duplicated
-and only cpu port0 sends them. This is the same for the MIB counter.
-For this reason this feature is enabled only when cpu port0 is enabled and
-operational.
-
-
-
-
-Sorry if I missed any comments. This series is 2 month old so I think it
-would be good to recheck everything. In the mean time this was tested on
-and no regression are observed related to random port drop.
-
-v7:
-- Rebase on net-next changes
-- Add bulk patches to speedup this even more
-v6:
-- Fix some error in ethtool handler caused by rebase/cleanup
-v5:
-- Adapt to new API fixes
-- Fix a wrong logic for noop
-- Add additional lock for master_state change
-- Limit mdio Ethernet to cpu port0 (switch limitation)
-- Add priority to these special packet
-- Move mdio cache to qca8k_priv
-v4:
-- Remove duplicate patch sent by mistake.
-v3:
-- Include MIB with Ethernet packet.
-- Include phy read/write with Ethernet packet.
-- Reorganize code with new API.
-- Introuce master tracking by Vladimir
-v2:
-- Address all suggestion from Vladimir.
-  Try to generilize this with connect/disconnect function from the
-  tagger and tag_proto_connect for the driver.
-
-Ansuel Smith (14):
-  net: dsa: tag_qca: convert to FIELD macro
-  net: dsa: tag_qca: move define to include linux/dsa
-  net: dsa: tag_qca: enable promisc_on_master flag
-  net: dsa: tag_qca: add define for handling mgmt Ethernet packet
-  net: dsa: tag_qca: add define for handling MIB packet
-  net: dsa: tag_qca: add support for handling mgmt and MIB Ethernet
-    packet
-  net: dsa: qca8k: add tracking state of master port
-  net: dsa: qca8k: add support for mgmt read/write in Ethernet packet
-  net: dsa: qca8k: add support for mib autocast in Ethernet packet
-  net: dsa: qca8k: add support for phy read/write with mgmt Ethernet
-  net: dsa: qca8k: move page cache to driver priv
-  net: dsa: qca8k: cache lo and hi for mdio write
-  net: da: qca8k: add support for larger read/write size with mgmt
-    Ethernet
-  net: dsa: qca8k: introduce qca8k_bulk_read/write function
-
-Vladimir Oltean (2):
-  net: dsa: provide switch operations for tracking the master state
-  net: dsa: replay master state events in
-    dsa_tree_{setup,teardown}_master
-
- drivers/net/dsa/qca8k.c     | 709 +++++++++++++++++++++++++++++++++---
- drivers/net/dsa/qca8k.h     |  46 ++-
- include/linux/dsa/tag_qca.h |  82 +++++
- include/net/dsa.h           |  17 +
- net/dsa/dsa2.c              |  74 +++-
- net/dsa/dsa_priv.h          |  13 +
- net/dsa/slave.c             |  32 ++
- net/dsa/switch.c            |  15 +
- net/dsa/tag_qca.c           |  83 +++--
- 9 files changed, 993 insertions(+), 78 deletions(-)
- create mode 100644 include/linux/dsa/tag_qca.h
-
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index ff998c0ede02..909b045c9b11 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -15,6 +15,7 @@
+ #include <linux/of.h>
+ #include <linux/of_net.h>
+ #include <net/devlink.h>
++#include <net/sch_generic.h>
+ 
+ #include "dsa_priv.h"
+ 
+@@ -1064,9 +1065,18 @@ static int dsa_tree_setup_master(struct dsa_switch_tree *dst)
+ 
+ 	list_for_each_entry(dp, &dst->ports, list) {
+ 		if (dsa_port_is_cpu(dp)) {
+-			err = dsa_master_setup(dp->master, dp);
++			struct net_device *master = dp->master;
++			bool admin_up = (master->flags & IFF_UP) &&
++					!qdisc_tx_is_noop(master);
++
++			err = dsa_master_setup(master, dp);
+ 			if (err)
+ 				return err;
++
++			/* Replay master state event */
++			dsa_tree_master_admin_state_change(dst, master, admin_up);
++			dsa_tree_master_oper_state_change(dst, master,
++							  netif_oper_up(master));
+ 		}
+ 	}
+ 
+@@ -1081,9 +1091,19 @@ static void dsa_tree_teardown_master(struct dsa_switch_tree *dst)
+ 
+ 	rtnl_lock();
+ 
+-	list_for_each_entry(dp, &dst->ports, list)
+-		if (dsa_port_is_cpu(dp))
+-			dsa_master_teardown(dp->master);
++	list_for_each_entry(dp, &dst->ports, list) {
++		if (dsa_port_is_cpu(dp)) {
++			struct net_device *master = dp->master;
++
++			/* Synthesizing an "admin down" state is sufficient for
++			 * the switches to get a notification if the master is
++			 * currently up and running.
++			 */
++			dsa_tree_master_admin_state_change(dst, master, false);
++
++			dsa_master_teardown(master);
++		}
++	}
+ 
+ 	rtnl_unlock();
+ }
 -- 
 2.33.1
 
