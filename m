@@ -2,139 +2,163 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 242F7C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 18:43:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 214FCC433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 18:43:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239963AbiAWSnO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 13:43:14 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:33763 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240138AbiAWSmH (ORCPT
+        id S239696AbiAWSnQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 13:43:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54054 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240141AbiAWSmH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Sun, 23 Jan 2022 13:42:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1642963326;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cY1U+lDZEduaUwZDUPPFY/UPA4Nbu9quyT81CXEx4PE=;
-        b=ViQy58BXzaHacVRa7DcyLLxVfDBz4MwcS1EnyDFE3bCCQbaxsSm+iSv6qYi2TflpOo8d6Q
-        on7JZdEzWVEpsRYRIyPZpyExArIrnt3xyVw/TMldzKrPQLwle1NhKvf3aman6SucENxBXI
-        GAfe6CD88mVZRtUbysjaW3QKvUzVLIA=
-Received: from mail-qk1-f199.google.com (mail-qk1-f199.google.com
- [209.85.222.199]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-593-tXa6qcJnPVie-WdLNahUBg-1; Sun, 23 Jan 2022 13:42:03 -0500
-X-MC-Unique: tXa6qcJnPVie-WdLNahUBg-1
-Received: by mail-qk1-f199.google.com with SMTP id k190-20020a37a1c7000000b0047d8a74b130so890088qke.10
-        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 10:42:03 -0800 (PST)
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C298C061788;
+        Sun, 23 Jan 2022 10:42:07 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id n8so13504407plc.3;
+        Sun, 23 Jan 2022 10:42:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+         :content-transfer-encoding;
+        bh=1tLzjpnOADmNqLEv3y7RAP4vzyys1NFYghrGKziaABc=;
+        b=khLdulZwVjToAAKsGPnVUTUcnSPw7gBK/gucAq2M+Jhnco/kZMbd3eY8aFWgX4ugKJ
+         7k+577Q/M58DQZd93gqoQYYcOYaxBVnkv5vFtyRh5jLDXRz4dHZ22XFzyvEzVigCqsfe
+         KELEEKI+T+GTTCEDGx8gKeDamtVKHpIQ1xaCL6/PdkSahphjpKm9WIn49Og/34rufImJ
+         hbjG0GfhOIvrGodBhGF98wMT4qBTUKamvsIMxxuN+3xpMeMpv8ToXjyI3NXBEEzJSmIP
+         r5QQQNMMVWUxA35xSqj71hqMNWyUkUBFAjI9uGyb4qYvlskV5J++DcBZXbHJUMVaYtzp
+         upKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cY1U+lDZEduaUwZDUPPFY/UPA4Nbu9quyT81CXEx4PE=;
-        b=GVmhgGPU2wWeetdqypGx2usGrUwNhf3HS9Mr0XWz15YQL8BYQLp7NURIAf6smbF1YS
-         fnSHMD/drSVe7UKLsQaYv0rBNBLvE5XESuFCW8KPlCPW+JEgb7G5kVnTc/GZU3MLZ8Tl
-         9ZG9VeoQKEOiyeUXjCm9YPmhTqlKogGa02MCI9fJ9zEmuZ+G8h563jN65e+tpeuPeQIW
-         Zcva+9IUghD3OjeBqA9aK0Ff9VZrBeMU0J/xfIZTiM4a5HZ+ye8T54whbouZU7sCD+bF
-         vdrXIp9kfgwEIh+pbkrH9wZXOuBUHZT8tb6JYbVPtgZIdLH0L9pnSBe7Ujj4WRHHT3S0
-         lh6A==
-X-Gm-Message-State: AOAM532dgi3Tp342sq6MZzHJfYDnvyCHtuPKF5pnszpUMkwSFJxB5JGy
-        eTxen55G59dGDYPRLLv3tHvQ+yQ5zMox+kkgJgpce7oMp9/3YWwJJl4iNFlUU0TPwlYWKui+Qlh
-        26mmWfIvzgFjFR4ruj+kon8GHd3/EFlKwYc5Npxyi
-X-Received: by 2002:ac8:7fce:: with SMTP id b14mr9929563qtk.339.1642963323221;
-        Sun, 23 Jan 2022 10:42:03 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzgrnfftQev+/e1bfthcVXrqsS2NkZk7XaembGAyAtcFzDuZvrfItLL05jZqccEw/AGJEmBtbd/PLqLmStx2NU=
-X-Received: by 2002:ac8:7fce:: with SMTP id b14mr9929550qtk.339.1642963322945;
- Sun, 23 Jan 2022 10:42:02 -0800 (PST)
+        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=1tLzjpnOADmNqLEv3y7RAP4vzyys1NFYghrGKziaABc=;
+        b=XHyygYXuf0JfQ4PWT7N81cl7nfGypNcUQurFlg09zAlznNUGcY3Q59ucBos0uuj/lX
+         AdsQVcyDOL+h8k/bfOICMckhJQ2ciuAPOyIKzMPpYUUETiUAeSUu3VL7k5wB1LLilsbB
+         4qLENV4Nafu7n6drOQ4MKNVYSL/GxntRelU0HagCSPxS336mt0nEKJKgCWyvrpVYaYJO
+         SSL0dplUIfhtZ5CEQYddj5VIev2NVCEmxwhPJFG289UqTSHohifSFNKuoUaokq9OcWpH
+         Tdteb46leda4hsNAuG/Aq0wpBUGtTS9zWyy9ax+UmiIhBS+c5wWmWVgLyaJh6Wk4o3/t
+         3UGg==
+X-Gm-Message-State: AOAM531/Dno9xEi59lHCy49aNifiLa2wtNJ4znYORISjKJQJP/Mub2tN
+        6qS1ff6Ha7oFoIx1+BpuTQE=
+X-Google-Smtp-Source: ABdhPJy02pmad9QwzHaMHfP8LQid/ly1qUr6qMXANtQBkQB6BCcJa3GDae9da0jqfsH81LIjOzFggg==
+X-Received: by 2002:a17:90b:3b46:: with SMTP id ot6mr9845312pjb.104.1642963326516;
+        Sun, 23 Jan 2022 10:42:06 -0800 (PST)
+Received: from localhost (searspoint.nvidia.com. [216.228.112.21])
+        by smtp.gmail.com with ESMTPSA id x12sm9977539pge.58.2022.01.23.10.42.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 23 Jan 2022 10:42:06 -0800 (PST)
+From:   Yury Norov <yury.norov@gmail.com>
+To:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, linux-rdma@vger.kernel.org
+Subject: [PATCH 44/54] infiniband: replace cpumask_weight with cpumask_weight_{eq, ...} where appropriate
+Date:   Sun, 23 Jan 2022 10:39:15 -0800
+Message-Id: <20220123183925.1052919-45-yury.norov@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220123183925.1052919-1-yury.norov@gmail.com>
+References: <20220123183925.1052919-1-yury.norov@gmail.com>
 MIME-Version: 1.0
-References: <202201221028.YKA8kSdm-lkp@intel.com> <CAK-6q+h_hb94J3DSXPk=E44kCxiwZ+BE3kMJe09iShRzMb=vzQ@mail.gmail.com>
- <91901e7b-7d82-116c-aaf2-c74c6a6b999c@infradead.org>
-In-Reply-To: <91901e7b-7d82-116c-aaf2-c74c6a6b999c@infradead.org>
-From:   Alexander Aring <aahringo@redhat.com>
-Date:   Sun, 23 Jan 2022 13:41:52 -0500
-Message-ID: <CAK-6q+j2jc3pBmbvQ-DCmxveC-UMV75SFc2nC1zwXKe9wm4YPg@mail.gmail.com>
-Subject: Re: fs/dlm/midcomms.c:913:22: sparse: sparse: restricted __le32
- degrades to integer
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
-        linux-kernel@vger.kernel.org, David Teigland <teigland@redhat.com>,
-        cluster-devel <cluster-devel@redhat.com>,
-        linux-sparse@vger.kernel.org, rcu@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Randy,
+Infiniband code uses cpumask_weight() to compare the weight of
+cpumask with a given number. We can do it more efficiently with
+cpumask_weight_{eq, ...} because conditional cpumask_weight may stop
+traversing the cpumask earlier, as soon as condition is met.
 
-On Sat, Jan 22, 2022 at 2:19 PM Randy Dunlap <rdunlap@infradead.org> wrote:
->
->
->
-> On 1/22/22 10:28, Alexander Aring wrote:
-> > Hi,
-> >
-> > On Fri, Jan 21, 2022 at 9:45 PM kernel test robot <lkp@intel.com> wrote:
-> >>
-> >> tree:   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git master
-> >> head:   9b57f458985742bd1c585f4c7f36d04634ce1143
-> >> commit: 658bd576f95ed597e519cdadf1c86ac87c17aea5 fs: dlm: move version conversion to compile time
-> >> date:   3 months ago
-> >> config: x86_64-rhel-8.3-kselftests (https://download.01.org/0day-ci/archive/20220122/202201221028.YKA8kSdm-lkp@intel.com/config)
-> >> compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
-> >> reproduce:
-> >>         # apt-get install sparse
-> >>         # sparse version: v0.6.4-dirty
-> >>         # https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=658bd576f95ed597e519cdadf1c86ac87c17aea5
-> >>         git remote add linus https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git
-> >>         git fetch --no-tags linus master
-> >>         git checkout 658bd576f95ed597e519cdadf1c86ac87c17aea5
-> >>         # save the config file to linux build tree
-> >>         mkdir build_dir
-> >>         make W=1 C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=x86_64 SHELL=/bin/bash
-> >>
-> >> If you fix the issue, kindly add following tag as appropriate
-> >
-> > I have it on my list but it isn't easy to make sparse happy here...
-> > this is the second time the robot reported this issue. Is there a way
-> > to turn the robot off in that case?
-> >
-> > Maybe some human who reads that knows the answer?
->
-> Hi Alex,
->
-> In the source file, you can surround the "offending" line(s) with
->
-> #ifndef __CHECKER__
->  ...
-> #endif
->
-> to prevent sparse from checking those lines.
-> Sometimes there needs to be an "#else" branch also.
->
-> 'git grep __CHECKER__' will show you quite a few other examples.
->
+Signed-off-by: Yury Norov <yury.norov@gmail.com>
+---
+ drivers/infiniband/hw/hfi1/affinity.c    | 9 ++++-----
+ drivers/infiniband/hw/qib/qib_file_ops.c | 2 +-
+ drivers/infiniband/hw/qib/qib_iba7322.c  | 2 +-
+ 3 files changed, 6 insertions(+), 7 deletions(-)
 
-Thanks, I will try that to stop the false positives and endianness
-warnings (temporarily).
-
-I see also:
-
-fs/dlm/midcomms.c:213:1: sparse: sparse: symbol
-'__srcu_struct_nodes_srcu' was not declared. Should it be static?
-
-For a macro which contains the "static" keyword, it's
-"DEFINE_STATIC_SRCU()". Either sparse should be teached to deal with
-that or everybody should use "static DEFINE_SRCU()" instead of using
-"DEFINE_STATIC_SRCU()".
-I would like to see the second way because everybody can see "static"
-is being used, that means maybe we should remove
-"DEFINE_STATIC_SRCU()"? The alternative by doing nothing would be to
-use "#ifndef __CHECKER__".
-
-I cc here rcu@vger.kernel.org and linux-sparse@vger.kernel.org, maybe
-this can be discussed?
-
-- Alex
+diff --git a/drivers/infiniband/hw/hfi1/affinity.c b/drivers/infiniband/hw/hfi1/affinity.c
+index 38eee675369a..7c5ca5c5306a 100644
+--- a/drivers/infiniband/hw/hfi1/affinity.c
++++ b/drivers/infiniband/hw/hfi1/affinity.c
+@@ -507,7 +507,7 @@ static int _dev_comp_vect_cpu_mask_init(struct hfi1_devdata *dd,
+ 	 * available CPUs divide it by the number of devices in the
+ 	 * local NUMA node.
+ 	 */
+-	if (cpumask_weight(&entry->comp_vect_mask) == 1) {
++	if (cpumask_weight_eq(&entry->comp_vect_mask, 1)) {
+ 		possible_cpus_comp_vect = 1;
+ 		dd_dev_warn(dd,
+ 			    "Number of kernel receive queues is too large for completion vector affinity to be effective\n");
+@@ -593,7 +593,7 @@ int hfi1_dev_affinity_init(struct hfi1_devdata *dd)
+ {
+ 	struct hfi1_affinity_node *entry;
+ 	const struct cpumask *local_mask;
+-	int curr_cpu, possible, i, ret;
++	int curr_cpu, i, ret;
+ 	bool new_entry = false;
+ 
+ 	local_mask = cpumask_of_node(dd->node);
+@@ -626,10 +626,9 @@ int hfi1_dev_affinity_init(struct hfi1_devdata *dd)
+ 			    local_mask);
+ 
+ 		/* fill in the receive list */
+-		possible = cpumask_weight(&entry->def_intr.mask);
+ 		curr_cpu = cpumask_first(&entry->def_intr.mask);
+ 
+-		if (possible == 1) {
++		if (cpumask_weight_eq(&entry->def_intr.mask, 1)) {
+ 			/* only one CPU, everyone will use it */
+ 			cpumask_set_cpu(curr_cpu, &entry->rcv_intr.mask);
+ 			cpumask_set_cpu(curr_cpu, &entry->general_intr_mask);
+@@ -1017,7 +1016,7 @@ int hfi1_get_proc_affinity(int node)
+ 		cpu = cpumask_first(proc_mask);
+ 		cpumask_set_cpu(cpu, &set->used);
+ 		goto done;
+-	} else if (current->nr_cpus_allowed < cpumask_weight(&set->mask)) {
++	} else if (cpumask_weight_gt(&set->mask, current->nr_cpus_allowed)) {
+ 		hfi1_cdbg(PROC, "PID %u %s affinity set to CPU set(s) %*pbl",
+ 			  current->pid, current->comm,
+ 			  cpumask_pr_args(proc_mask));
+diff --git a/drivers/infiniband/hw/qib/qib_file_ops.c b/drivers/infiniband/hw/qib/qib_file_ops.c
+index aa290928cf96..add89bc21b0a 100644
+--- a/drivers/infiniband/hw/qib/qib_file_ops.c
++++ b/drivers/infiniband/hw/qib/qib_file_ops.c
+@@ -1151,7 +1151,7 @@ static void assign_ctxt_affinity(struct file *fp, struct qib_devdata *dd)
+ 	 * reserve a processor for it on the local NUMA node.
+ 	 */
+ 	if ((weight >= qib_cpulist_count) &&
+-		(cpumask_weight(local_mask) <= qib_cpulist_count)) {
++		(cpumask_weight_le(local_mask, qib_cpulist_count))) {
+ 		for_each_cpu(local_cpu, local_mask)
+ 			if (!test_and_set_bit(local_cpu, qib_cpulist)) {
+ 				fd->rec_cpu_num = local_cpu;
+diff --git a/drivers/infiniband/hw/qib/qib_iba7322.c b/drivers/infiniband/hw/qib/qib_iba7322.c
+index ceed302cf6a0..b17f96509d2c 100644
+--- a/drivers/infiniband/hw/qib/qib_iba7322.c
++++ b/drivers/infiniband/hw/qib/qib_iba7322.c
+@@ -3405,7 +3405,7 @@ static void qib_setup_7322_interrupt(struct qib_devdata *dd, int clearpend)
+ 	local_mask = cpumask_of_pcibus(dd->pcidev->bus);
+ 	firstcpu = cpumask_first(local_mask);
+ 	if (firstcpu >= nr_cpu_ids ||
+-			cpumask_weight(local_mask) == num_online_cpus()) {
++			cpumask_weight_eq(local_mask, num_online_cpus())) {
+ 		local_mask = topology_core_cpumask(0);
+ 		firstcpu = cpumask_first(local_mask);
+ 	}
+-- 
+2.30.2
 
