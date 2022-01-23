@@ -2,34 +2,34 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF73C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4845BC433EF
 	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 15:40:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237958AbiAWPky (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 10:40:54 -0500
-Received: from gloria.sntech.de ([185.11.138.130]:46994 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237932AbiAWPkw (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        id S237936AbiAWPkw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
         Sun, 23 Jan 2022 10:40:52 -0500
+Received: from gloria.sntech.de ([185.11.138.130]:46986 "EHLO gloria.sntech.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237925AbiAWPkv (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 23 Jan 2022 10:40:51 -0500
 Received: from p508fcdea.dip0.t-ipconnect.de ([80.143.205.234] helo=phil.fritz.box)
         by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <heiko@sntech.de>)
-        id 1nBez1-0005OB-Ci; Sun, 23 Jan 2022 16:40:47 +0100
+        id 1nBez0-0005OB-Pp; Sun, 23 Jan 2022 16:40:46 +0100
 From:   Heiko Stuebner <heiko@sntech.de>
-To:     "quentin.schulz@theobroma-systems.com" 
-        <quentin.schulz@theobroma-systems.com>, robh+dt@kernel.org
-Cc:     Heiko Stuebner <heiko@sntech.de>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-rockchip@lists.infradead.org,
-        Quentin Schulz <foss+kernel@0leil.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] arm64: dts: rockchip: fix rk3399-puma-haikou USB OTG mode
-Date:   Sun, 23 Jan 2022 16:40:46 +0100
-Message-Id: <164295214821.418606.138757821449348671.b4-ty@sntech.de>
+To:     Frank Wunderlich <linux@fw-web.de>,
+        linux-rockchip@lists.infradead.org
+Cc:     Heiko Stuebner <heiko@sntech.de>, Rob Herring <robh+dt@kernel.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Frank Wunderlich <frank-w@public-files.de>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Michael Riesch <michael.riesch@wolfvision.net>
+Subject: Re: [PATCH v1] arm64: dts: rk356x: fix dma-controller warning
+Date:   Sun, 23 Jan 2022 16:40:44 +0100
+Message-Id: <164295214820.418606.10641294516834022045.b4-ty@sntech.de>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220120125156.16217-1-quentin.schulz@theobroma-systems.com>
-References: <20220120125156.16217-1-quentin.schulz@theobroma-systems.com>
+In-Reply-To: <20220123133615.135789-1-linux@fw-web.de>
+References: <20220123133615.135789-1-linux@fw-web.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
@@ -37,23 +37,27 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, 20 Jan 2022 13:51:56 +0100, quentin.schulz@theobroma-systems.com wrote:
-> The micro USB3.0 port available on the Haikou evaluation kit for Puma
-> RK3399-Q7 SoM supports dual-role model (aka drd or OTG) but its support
-> was broken until now because of missing logic around the ID pin.
+On Sun, 23 Jan 2022 14:36:15 +0100, Frank Wunderlich wrote:
+> DMA-Cotrollers defined in rk356x.dtsi do not match the pattern in bindings.
 > 
-> This adds proper support for USB OTG on Puma Haikou by "connecting" the
-> GPIO used for USB ID to the USB3 controller device.
+> arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dt.yaml:
+>   dmac@fe530000: $nodename:0: 'dmac@fe530000' does not match '^dma-controller(@.*)?$'
+> 	From schema: Documentation/devicetree/bindings/dma/arm,pl330.yaml
+> arch/arm64/boot/dts/rockchip/rk3568-evb1-v10.dt.yaml:
+>   dmac@fe550000: $nodename:0: 'dmac@fe550000' does not match '^dma-controller(@.*)?$'
+> 	From schema: Documentation/devicetree/bindings/dma/arm,pl330.yaml
+> 
+> [...]
 
 Applied as fix for 5.17, thanks!
 
-[1/1] arm64: dts: rockchip: fix rk3399-puma-haikou USB OTG mode
-      commit: ed2c66a95c0c5669880aa93d0d34c6e9694b4cbd
+[1/1] arm64: dts: rk356x: fix dma-controller warning
+      commit: 2ddd96aadbd0412040ef49eda94549c32de6c92c
 
-I've done a bit of reordereing:
-- extcon comes alphabetically after dr_mode
-- extcon-usb3 before external-gmac...
-
+I've adapted the subject to
+    arm64: dts: rockchip: fix dma-controller node names on rk356x
+though. Please use prefixes matching the subsystem
+(i.e. arm64: dts: rockchip: ... in this case)
 
 Best regards,
 -- 
