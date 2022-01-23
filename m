@@ -2,106 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD859C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 09:11:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD8E3C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 09:11:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236040AbiAWJLG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 04:11:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39494 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbiAWJLD (ORCPT
+        id S236050AbiAWJL4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 04:11:56 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:56536 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230401AbiAWJLy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 04:11:03 -0500
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8C9C06173B
-        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 01:11:03 -0800 (PST)
-Received: by mail-qv1-xf34.google.com with SMTP id k4so16652506qvt.6
-        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 01:11:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bl3efp74ab4pQlhH6DVOKc+JdDnTDiX+IOOPZRvKFIk=;
-        b=ARUGGp+cvzIrVwH8Dm9kcolQ5ADQqS9hkzPW2oU/pvWuhoSxM/q+3AwrAeJ84YpQhJ
-         5ZhsIcShNnEkSJNMFsmOMMbtVITZdiRQP9QHx7G6IHtKcHdJEAggLTGWyQ+DgjxwpVZi
-         +54QUmZ5MbQS+9QIAYpovzahcH2ewcRB9ki0m+sDijroUtEdAzackUaZmmiqZyeNDyGA
-         E4fgcq0GyqKkeqm8d6Jrcq/h/HJmfxyg2VCSPbXDs+L+wOIDhP/JpI7difpGQHbau9HJ
-         UQdz6DTVHWH8EAf0PVoPQO3hJfPhJyc0JRlbt9C9aTF8eu2gVyZbh6vXaNcsdOceFQa+
-         47Gg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bl3efp74ab4pQlhH6DVOKc+JdDnTDiX+IOOPZRvKFIk=;
-        b=CFd0qWLzZUcu/APQgmBn+Nx5RTDKJIXLoJyvA2kJs6RM0S6EqoNP7AB0c8JVd0+90t
-         iajnt4OwRRX9ryD9Ht+LKva+XmBRQfwk1vEuOYMuTpL0E1m0G6Qzt0k1Qya0FwRa83Rc
-         Bj7EuNw+WVlu5ryWCtiVAqURxyCOBgAcJ74qf9SXiZVX4pCyNskFaSsQVS/7sfutVzCc
-         rZUfMjQuvm9PaB7LfkpLEn+NoYaIpX5mAlNYOwU9EPLm0Gu82n+JVKc8xcHKBjAAxRhT
-         cwwQYxKS1RkikRQV0PHLJrN7w1FR/j3NUQaSn9xbXJKkJ0fm8/PBslOLrGwv/pxFLahP
-         RnaA==
-X-Gm-Message-State: AOAM532oLEnJIGGekHx2E0mz6mwiH6d06tXADjSSB5FSRuFfdrVnffd7
-        vo7BfMAKQ8AG22i5QuRPYbo=
-X-Google-Smtp-Source: ABdhPJzpO7Zzbcg01kfGn5FLWvm4y0zy0xN+rM7LtfVAM1UaB6ZlAdZ8qZNpdEmOBJYjasgcxGuM8A==
-X-Received: by 2002:a05:6214:260d:: with SMTP id gu13mr10100714qvb.100.1642929062764;
-        Sun, 23 Jan 2022 01:11:02 -0800 (PST)
-Received: from tong-desktop.local (99-105-211-126.lightspeed.sntcca.sbcglobal.net. [99.105.211.126])
-        by smtp.googlemail.com with ESMTPSA id o126sm5479158qke.53.2022.01.23.01.11.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Jan 2022 01:11:02 -0800 (PST)
-From:   Tong Zhang <ztong0001@gmail.com>
-To:     Hans de Goede <hdegoede@redhat.com>,
-        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
-        Maxime Ripard <mripard@kernel.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Cc:     Tong Zhang <ztong0001@gmail.com>
-Subject: [PATCH v2] drm/privacy-screen: honor acpi=off in detect_thinkpad_privacy_screen
-Date:   Sun, 23 Jan 2022 01:10:04 -0800
-Message-Id: <20220123091004.763775-1-ztong0001@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        Sun, 23 Jan 2022 04:11:54 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 593FAB80B1C
+        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 09:11:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 69046C340E2;
+        Sun, 23 Jan 2022 09:11:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642929111;
+        bh=GY0mrEgMOzSKYYtrDyOe4VtoCDIItsAvJ4mvQZEWyBI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=SoOM7DOLAc8e2q4paRwbWH5vQRJmAtFLeiIUtAM/OJHlSBDEhHN7uaKaVNuK2UU2Z
+         kihXg33VqYjwC7QEB6PvPxNVljrkq1Rp/TRPDuY4I+biTsUj1+YY34avXYVLp7bbS8
+         j3FrOhSJG1VCiwVskW0NoS875dTKJULRElPrWfKfhop7QwI1LoSqfMCgxN58oCXExO
+         1oj9u5LVhNN5vqmmjlF7Fq7JpEtYib77mNto90LUOHsTNU28L71f+2rlteCxKj1SL2
+         asgr2iRzhCrLWVbrC6rjacE7xZ/jPIuhjSZOvJEdRLC2t+YhOYpoUPUQZeGG9mPSWW
+         bWSmt5MLx3hxA==
+From:   Jisheng Zhang <jszhang@kernel.org>
+To:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>
+Cc:     linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Mayuresh Chitale <mchitale@ventanamicro.com>
+Subject: [PATCH] riscv: extable: fix err reg writing in dedicated uaccess handler
+Date:   Sun, 23 Jan 2022 17:04:17 +0800
+Message-Id: <20220123090417.630-1-jszhang@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-when acpi=off is provided in bootarg, kernel crash with
+Mayuresh reported commit 20802d8d477d ("riscv: extable: add a dedicated
+uaccess handler") breaks the writev02 test case in LTP. This is due to
+the err reg isn't correctly set with the errno(-EFAULT in writev02
+case). First of all, the err and zero regs are reg numbers rather than
+reg offsets in struct pt_regs; Secondly, regs_set_gpr() should write
+the regs when offset isn't zero(zero means epc)
 
-[    1.252739] BUG: kernel NULL pointer dereference, address: 0000000000000018
-[    1.258308] Call Trace:
-[    1.258490]  ? acpi_walk_namespace+0x147/0x147
-[    1.258770]  acpi_get_devices+0xe4/0x137
-[    1.258921]  ? drm_core_init+0xc0/0xc0 [drm]
-[    1.259108]  detect_thinkpad_privacy_screen+0x5e/0xa8 [drm]
-[    1.259337]  drm_privacy_screen_lookup_init+0xe/0xe85 [drm]
+Fix it by correcting regs_set_gpr() logic and passing the correct reg
+offset to it.
 
-The reason is that acpi_walk_namespace expects acpi related stuff
-initialized but in fact it wouldn't when acpi is set to off. In this case
-we should honor acpi=off in detect_thinkpad_privacy_screen().
-
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
+Reported-by: Mayuresh Chitale <mchitale@ventanamicro.com>
+Fixes: 20802d8d477d ("riscv: extable: add a dedicated uaccess handler")
+Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
 ---
-v2: fix typo in previous commit -- my keyboard is eating letters 
+ arch/riscv/mm/extable.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
- drivers/gpu/drm/drm_privacy_screen_x86.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/gpu/drm/drm_privacy_screen_x86.c b/drivers/gpu/drm/drm_privacy_screen_x86.c
-index a2cafb294ca6..e7aa74ad0b24 100644
---- a/drivers/gpu/drm/drm_privacy_screen_x86.c
-+++ b/drivers/gpu/drm/drm_privacy_screen_x86.c
-@@ -33,6 +33,9 @@ static bool __init detect_thinkpad_privacy_screen(void)
- 	unsigned long long output;
- 	acpi_status status;
+diff --git a/arch/riscv/mm/extable.c b/arch/riscv/mm/extable.c
+index 05978f78579f..35484d830fd6 100644
+--- a/arch/riscv/mm/extable.c
++++ b/arch/riscv/mm/extable.c
+@@ -33,7 +33,7 @@ static inline void regs_set_gpr(struct pt_regs *regs, unsigned int offset,
+ 	if (unlikely(offset > MAX_REG_OFFSET))
+ 		return;
  
-+	if (acpi_disabled)
-+		return false;
-+
- 	/* Get embedded-controller handle */
- 	status = acpi_get_devices("PNP0C09", acpi_set_handle, NULL, &ec_handle);
- 	if (ACPI_FAILURE(status) || !ec_handle)
+-	if (!offset)
++	if (offset)
+ 		*(unsigned long *)((unsigned long)regs + offset) = val;
+ }
+ 
+@@ -43,8 +43,8 @@ static bool ex_handler_uaccess_err_zero(const struct exception_table_entry *ex,
+ 	int reg_err = FIELD_GET(EX_DATA_REG_ERR, ex->data);
+ 	int reg_zero = FIELD_GET(EX_DATA_REG_ZERO, ex->data);
+ 
+-	regs_set_gpr(regs, reg_err, -EFAULT);
+-	regs_set_gpr(regs, reg_zero, 0);
++	regs_set_gpr(regs, reg_err * sizeof(unsigned long), -EFAULT);
++	regs_set_gpr(regs, reg_zero * sizeof(unsigned long), 0);
+ 
+ 	regs->epc = get_ex_fixup(ex);
+ 	return true;
 -- 
-2.25.1
+2.34.1
 
