@@ -2,51 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6548C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:13:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA280C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:13:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235524AbiAWANJ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 19:13:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36704 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235349AbiAWAMT (ORCPT
+        id S231659AbiAWANM (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 19:13:12 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40958 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235365AbiAWAMV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 19:12:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCC7FC061748;
-        Sat, 22 Jan 2022 16:12:02 -0800 (PST)
+        Sat, 22 Jan 2022 19:12:21 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A350CB80927;
-        Sun, 23 Jan 2022 00:12:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73956C340EA;
-        Sun, 23 Jan 2022 00:11:59 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AF82EB80AF5;
+        Sun, 23 Jan 2022 00:12:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id AA609C004E1;
+        Sun, 23 Jan 2022 00:12:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642896720;
-        bh=+NOHU4s/a+dU564zzjjD4rBRyeHa33jBVA0zpwKj4pE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FtBPiaiEczSLRtAqSs1p/UWVz93S4d+opOaMq9l1oUQcRB72iCWqMFouG7yFt9g45
-         SigKhNmbTA37UXa1EgSnO6TF11fod25bU9dUWUwGqjbUJSRLRH9nHvjDvZcsrVNo2F
-         W2H/OwUiyyS0Qw5SR6+3FWRRHGggl5XIQ1S+GJkfRCPFH45V4wb5QUbzTqTzl9jfil
-         meVLHnfp7BRCLnaasV0ZJxao32Ade3T+KOsoeIE9xh2ISbF9/JqmP8RrKNN1/iCw2a
-         TX4vuiNccuaTGJn2qP5FKmVJX1EASIZYmzHEMiRkIrsWgzbMNRQ7kft8MdFtwFUoJ+
-         cZnCG4H+Eya5Q==
+        s=k20201202; t=1642896738;
+        bh=HYKxLJMRC2uGjUuszv/ikOC4jFTFiRxAuWKQfKrpBl8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mv+IFaUQiB+3V7sUNsBw2ua6DL3JheB7f6ylq70+iQf8NKmrh4wtig9DiVMbNHL76
+         Z6MkjUVHGqXgC84Qys7gWMCBEherq2W7SeNkxYhIQd9lmA/m5w0PsjORW5EeGXihZX
+         Ejk3dLLV8EoVbib8lCDi09Gl3nGCOlx8nGyJfReFVNpykl4lP+kLHuC+rcgk0J59kd
+         zp5WpJpUtln4rxffdOqeq0mr40rAcb5O+ao9shUAy6lUrMcIcIcbn+DPZ83wHj1Pje
+         ZiK1o0U1UuxW/uFjRIUhcu99h7GodZz+olSVufVLYg/yYjjVhizoB3JBDpr/BvuOwg
+         pmhAWCqSumamg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, tanghui20@huawei.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 12/19] net: apple: bmac: Fix build since dev_addr constification
-Date:   Sat, 22 Jan 2022 19:11:05 -0500
-Message-Id: <20220123001113.2460140-12-sashal@kernel.org>
+Cc:     Peng Fan <peng.fan@nxp.com>, kernel test robot <lkp@intel.com>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Sasha Levin <sashal@kernel.org>, bjorn.andersson@linaro.org,
+        linux-remoteproc@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 01/16] remoteproc: coredump: Correct argument 2 type for memcpy_fromio
+Date:   Sat, 22 Jan 2022 19:12:00 -0500
+Message-Id: <20220123001216.2460383-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220123001113.2460140-1-sashal@kernel.org>
-References: <20220123001113.2460140-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,55 +47,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Peng Fan <peng.fan@nxp.com>
 
-[ Upstream commit ea938248557a52e231a31f338eac4baee36a8626 ]
+[ Upstream commit 876e0b26ccd211ca92607d83c87cc1f097784c6d ]
 
-Since commit adeef3e32146 ("net: constify netdev->dev_addr") the bmac
-driver no longer builds with the following errors (pmac32_defconfig):
+Address the sparse check warning:
+>> drivers/remoteproc/remoteproc_coredump.c:169:53:
+sparse: warning: incorrect type in argument 2 (different address spaces)
+sparse:    expected void const volatile [noderef] __iomem *src
+sparse:    got void *[assigned] ptr
 
-  linux/drivers/net/ethernet/apple/bmac.c: In function ‘bmac_probe’:
-  linux/drivers/net/ethernet/apple/bmac.c:1287:20: error: assignment of read-only location ‘*(dev->dev_addr + (sizetype)j)’
-   1287 |   dev->dev_addr[j] = rev ? bitrev8(addr[j]): addr[j];
-        |                    ^
-
-Fix it by making the modifications to a local macaddr variable and then
-passing that to eth_hw_addr_set().
-
-We don't use the existing addr variable because the bitrev8() would
-mutate it, but it is already used unreversed later in the function.
-
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Peng Fan <peng.fan@nxp.com>
+Link: https://lore.kernel.org/r/20211110032101.517487-1-peng.fan@oss.nxp.com
+Signed-off-by: Mathieu Poirier <mathieu.poirier@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/apple/bmac.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/remoteproc/remoteproc_coredump.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/apple/bmac.c b/drivers/net/ethernet/apple/bmac.c
-index 9a650d1c1bdd1..4d2ba30c2fbd8 100644
---- a/drivers/net/ethernet/apple/bmac.c
-+++ b/drivers/net/ethernet/apple/bmac.c
-@@ -1237,6 +1237,7 @@ static int bmac_probe(struct macio_dev *mdev, const struct of_device_id *match)
- 	struct bmac_data *bp;
- 	const unsigned char *prop_addr;
- 	unsigned char addr[6];
-+	u8 macaddr[6];
- 	struct net_device *dev;
- 	int is_bmac_plus = ((int)match->data) != 0;
- 
-@@ -1284,7 +1285,9 @@ static int bmac_probe(struct macio_dev *mdev, const struct of_device_id *match)
- 
- 	rev = addr[0] == 0 && addr[1] == 0xA0;
- 	for (j = 0; j < 6; ++j)
--		dev->dev_addr[j] = rev ? bitrev8(addr[j]): addr[j];
-+		macaddr[j] = rev ? bitrev8(addr[j]): addr[j];
-+
-+	eth_hw_addr_set(dev, macaddr);
- 
- 	/* Enable chip without interrupts for now */
- 	bmac_enable_and_reset_chip(dev);
+diff --git a/drivers/remoteproc/remoteproc_coredump.c b/drivers/remoteproc/remoteproc_coredump.c
+index c892f433a323e..4b093420d98aa 100644
+--- a/drivers/remoteproc/remoteproc_coredump.c
++++ b/drivers/remoteproc/remoteproc_coredump.c
+@@ -166,7 +166,7 @@ static void rproc_copy_segment(struct rproc *rproc, void *dest,
+ 			memset(dest, 0xff, size);
+ 		} else {
+ 			if (is_iomem)
+-				memcpy_fromio(dest, ptr, size);
++				memcpy_fromio(dest, (void const __iomem *)ptr, size);
+ 			else
+ 				memcpy(dest, ptr, size);
+ 		}
 -- 
 2.34.1
 
