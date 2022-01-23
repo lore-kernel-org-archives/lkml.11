@@ -2,107 +2,138 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76BC2C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 11:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF109C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 11:19:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236159AbiAWLSo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 06:18:44 -0500
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:38482
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S236263AbiAWLRA (ORCPT
+        id S232580AbiAWLTZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 06:19:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39028 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229699AbiAWLTY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 06:17:00 -0500
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com [209.85.128.72])
+        Sun, 23 Jan 2022 06:19:24 -0500
+Received: from gandalf.ozlabs.org (gandalf.ozlabs.org [IPv6:2404:9400:2:0:216:3eff:fee2:21ea])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E97EC06173B
+        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 03:19:24 -0800 (PST)
+Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 38E5740053
-        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 11:16:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1642936618;
-        bh=y357G77gKMHlTfzCL6+HEz+/UzqdnZT/McDbXpsW3BM=;
-        h=From:To:Subject:Date:Message-Id:In-Reply-To:References:
-         MIME-Version;
-        b=rSHD0VOlmhsaMq/K4AVovsqSK3tJW40BJ7e3em2MmMQfyCJy6tCSjxn+5Fh0P1765
-         zjKNfG6RQiHmVgRaCuqj2eY3zslvRdkxTtZwh0t/+rmhFJwr9Idhd8Wnfyo0BKZSfc
-         N7073LygIh5I3RWWBBWiGe7/U03WIxSpOgVN8Lbs9/AZoTFXPFg11x0T7+05/EOVlq
-         nMQWGu3m0jveEb7tIL77uzN3KAyavMpQAaHuQsF8QhokW/pD/rcjMwNoI4VyXSZuwW
-         MYNWrSH8rMxZAixhIGVp/+BRb+8UNcgfoOioM4hCJpV/kEyeoyqwLqdyppT61M7xRC
-         qCexaxEbjWD2A==
-Received: by mail-wm1-f72.google.com with SMTP id d140-20020a1c1d92000000b0034edefd55caso2639554wmd.4
-        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 03:16:58 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=y357G77gKMHlTfzCL6+HEz+/UzqdnZT/McDbXpsW3BM=;
-        b=NV5aIi1yzhrQdbmYqvTYvB02b3RAy5OhGv5RxK1a0hPCGJNJCuguhTFtIpUXR5nl+6
-         m7mHFAzivMQEvtdP+AcUkVgqdx09B2ty2c9JzFXcTCIFQ7DPBe4KfkGruMJYcGtuJYt8
-         SNuSTK1D3nNNud7qA/tj2aCA9fXZb0PgICbT7JE3kY5ID6WZr96ojrQJp7q/HEgMP8WG
-         WhHFPiysn82PDbLr8dx6qmbyjGYhoSo10Uyl+d/QUKXiF16Znh4qxrMIQDjVTCTv8jed
-         3Ncjumajoh6MIt15GSOqTdEt3C6yYrtx0+0sfG7sLurCt9Esce17hZhlbk6nCjdHlnUL
-         MASA==
-X-Gm-Message-State: AOAM533Mkr3z8DgvCKKiIhbvx1MTydWKwCzjsHuHDve19AzFQFlHjdVi
-        O9xWwZc8BUCsvbchv1lx+Ac+mXNnXz+qrXzGw8BPTYeTfi2+KUQUj3mVvkh2Xa4o5n3a5YYaf5Z
-        Fpc1QAcgKq1hRofz1DIXafKFDh5+GV1Oap2OMjAOp3w==
-X-Received: by 2002:a5d:4906:: with SMTP id x6mr10245495wrq.552.1642936617998;
-        Sun, 23 Jan 2022 03:16:57 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwb59CpOjfY8CfprDukjo6039z0OQ3gfs8X3bsvt8yvFXtOAvk66eFpeVM1qtu1DqKws8uQug==
-X-Received: by 2002:a5d:4906:: with SMTP id x6mr10245485wrq.552.1642936617866;
-        Sun, 23 Jan 2022 03:16:57 -0800 (PST)
-Received: from localhost.localdomain (xdsl-188-155-168-84.adslplus.ch. [188.155.168.84])
-        by smtp.gmail.com with ESMTPSA id m5sm10143729wms.4.2022.01.23.03.16.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Jan 2022 03:16:57 -0800 (PST)
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        linux-usb@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 08/12] ARM: dts: exynos: add USB DWC3 supplies to Chromebook Peach Pi
-Date:   Sun, 23 Jan 2022 12:16:40 +0100
-Message-Id: <20220123111644.25540-9-krzysztof.kozlowski@canonical.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20220123111644.25540-1-krzysztof.kozlowski@canonical.com>
-References: <20220123111644.25540-1-krzysztof.kozlowski@canonical.com>
+        by mail.ozlabs.org (Postfix) with ESMTPSA id 4JhVxh3rF5z4xkH;
+        Sun, 23 Jan 2022 22:19:20 +1100 (AEDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ellerman.id.au;
+        s=201909; t=1642936762;
+        bh=rjiXIAoujbqKcL6bu1UAXJuKBGJPBbV6NTCD/DODPuc=;
+        h=From:To:Cc:Subject:Date:From;
+        b=CIWtkFV1KPYsCJBegjyHovnQTEK0CgrZDkz/fLMO3ChM6hrmp9lETUzn7Q+c6cXK/
+         u5TlM3xNOwapFFmKakK7Ofu5cTZUEU+hOgvKKawnim4TPEJA3KPGjahgWynhFOdX7c
+         5XRlssJuxGxyYoQKgx8/Mhq/R8oeP3zk0y/MxSGGp1aivIe1TkKqXdXzil3Dg1CSp8
+         10/8Zeabrx5blc4wJCdApbdJscVbm3t7SZ5/DSIZZiD2ZohYdQMHvIoLfTK+agyMSx
+         +S+moaX+0vAmydQbJMX0mYEL4GR2P7aSXe4dSf/jBRzb0FkaRS3Z0MzS18GqxqCkdH
+         lAMgzTvqaWOzQ==
+From:   Michael Ellerman <mpe@ellerman.id.au>
+To:     Linus Torvalds <torvalds@linux-foundation.org>
+Cc:     atrajeev@linux.vnet.ibm.com, christophe.leroy@csgroup.eu,
+        daniel@iogearbox.net, johan.almbladh@anyfinetworks.com,
+        linux-kernel@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        naveen.n.rao@linux.vnet.ibm.com, npiggin@gmail.com
+Subject: [GIT PULL] Please pull powerpc/linux.git powerpc-5.17-2 tag
+Date:   Sun, 23 Jan 2022 22:19:16 +1100
+Message-ID: <877daqu2bv.fsf@mpe.ellerman.id.au>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add required voltage regulators for USB DWC3 block on Exynos5800
-Chromebook Peach Pi board.  Due to lack of board schematics, use same
-regulators as on Odroid XU board (using same MAX77802 PMIC).
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA256
 
-Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
----
- arch/arm/boot/dts/exynos5800-peach-pi.dts | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+Hi Linus,
 
-diff --git a/arch/arm/boot/dts/exynos5800-peach-pi.dts b/arch/arm/boot/dts/exynos5800-peach-pi.dts
-index 77013ee586f8..fd6f80a9c64e 100644
---- a/arch/arm/boot/dts/exynos5800-peach-pi.dts
-+++ b/arch/arm/boot/dts/exynos5800-peach-pi.dts
-@@ -1072,6 +1072,16 @@ &tmu_gpu {
- 	vtmu-supply = <&ldo10_reg>;
- };
- 
-+&usbdrd3_0 {
-+	vdd10-supply = <&ldo15_reg>;
-+	vdd33-supply = <&ldo12_reg>;
-+};
-+
-+&usbdrd3_1 {
-+	vdd10-supply = <&ldo15_reg>;
-+	vdd33-supply = <&ldo12_reg>;
-+};
-+
- &usbdrd_dwc3_0 {
- 	dr_mode = "host";
- };
--- 
-2.32.0
+Please pull powerpc fixes for 5.17.
 
+There's a change to kernel/bpf and one in tools/bpf, both have Daniel's ack.
+
+cheers
+
+
+The following changes since commit 29ec39fcf11e4583eb8d5174f756ea109c77cc44:
+
+  Merge tag 'powerpc-5.17-1' of git://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux (2022-01-14 15:17:26 +0100)
+
+are available in the git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/powerpc/linux.git tags/powerpc-5.17-2
+
+for you to fetch changes up to aee101d7b95a03078945681dd7f7ea5e4a1e7686:
+
+  powerpc/64s: Mask SRR0 before checking against the masked NIP (2022-01-18 10:25:18 +1100)
+
+- ------------------------------------------------------------------
+powerpc fixes for 5.17 #2
+
+ - A series of bpf fixes, including an oops fix and some codegen fixes.
+
+ - Fix a regression in syscall_get_arch() for compat processes.
+
+ - Fix boot failure on some 32-bit systems with KASAN enabled.
+
+ - A couple of other build/minor fixes.
+
+Thanks to: Athira Rajeev, Christophe Leroy, Dmitry V. Levin, Jiri Olsa, Johan Almbladh,
+Maxime Bizon, Naveen N. Rao, Nicholas Piggin.
+
+- ------------------------------------------------------------------
+Athira Rajeev (1):
+      powerpc/perf: Only define power_pmu_wants_prompt_pmi() for CONFIG_PPC64
+
+Christophe Leroy (3):
+      powerpc/audit: Fix syscall_get_arch()
+      powerpc/time: Fix build failure due to do_hard_irq_enable() on PPC32
+      powerpc/32s: Fix kasan_init_region() for KASAN
+
+Naveen N. Rao (5):
+      bpf: Guard against accessing NULL pt_regs in bpf_get_task_stack()
+      powerpc32/bpf: Fix codegen for bpf-to-bpf calls
+      powerpc/bpf: Update ldimm64 instructions during extra pass
+      tools/bpf: Rename 'struct event' to avoid naming conflict
+      powerpc64/bpf: Limit 'ldbrx' to processors compliant with ISA v2.06
+
+Nicholas Piggin (1):
+      powerpc/64s: Mask SRR0 before checking against the masked NIP
+
+
+ arch/powerpc/include/asm/book3s/32/mmu-hash.h |  2 +
+ arch/powerpc/include/asm/hw_irq.h             |  2 +-
+ arch/powerpc/include/asm/ppc-opcode.h         |  1 +
+ arch/powerpc/include/asm/syscall.h            |  4 +-
+ arch/powerpc/include/asm/thread_info.h        |  2 +
+ arch/powerpc/kernel/interrupt_64.S            |  2 +
+ arch/powerpc/mm/book3s32/mmu.c                | 10 ++--
+ arch/powerpc/mm/kasan/book3s_32.c             | 59 ++++++++++----------
+ arch/powerpc/net/bpf_jit_comp.c               | 29 ++++++++--
+ arch/powerpc/net/bpf_jit_comp32.c             |  9 +++
+ arch/powerpc/net/bpf_jit_comp64.c             | 29 ++++++----
+ arch/powerpc/perf/core-book3s.c               | 58 ++++++++++---------
+ kernel/bpf/stackmap.c                         |  5 +-
+ tools/bpf/runqslower/runqslower.bpf.c         |  2 +-
+ tools/bpf/runqslower/runqslower.c             |  2 +-
+ tools/bpf/runqslower/runqslower.h             |  2 +-
+ 16 files changed, 131 insertions(+), 87 deletions(-)
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEJFGtCPCthwEv2Y/bUevqPMjhpYAFAmHtOYQACgkQUevqPMjh
+pYAZHw//UQj2TYAqdcrkDE2tz81s6/ifbnHsypz4vU9YV8muJUFsXpt9MPbvQhoq
+gvUnG3gkMNoXxQ+YDKa2ygN/MLC78ch+4VYWyGGzNcpqVxKWhPqbH/Gt7KvMGOZr
+LtnUCYjw462GBGrU7VI+yg9ki4c/pRzcSGoU4w346Q2/xIWdcNDb2aZ9a9MiYMCw
+/SBOpwj2hPhFQsAINVujXgrIHlybon+cDGJdPQptBSqvEq24wFu+F+elzXBcJvfm
+tVoAe81C077AhT8EGwyM9mTvTmBie+0jgZAkGVsvrUsbJJJY3FV/s923Fc9+lm/m
+SMD4Pn8ZaN+dPMRUgCMaUZFjCKTyBx182ELlqraZtTTZvFXXt/ZtM5BCvXZqreZU
+6XPFs+xMvJN4ZatdVM724hKhR9UoDaDer0zDcMvj1Yqr5E5LL1cl9ZG0fPeIYPdg
++tMKCWxvx64OWYwZNyeGr12JNvtrzWruvO/2TD60gGdqXIQH39ds8voaW6AUJOeX
+xWP5UdEeh1LUPTb5HIEloy7K9QsUlE+fJ+3McbPk2vL01TBbrAjLymPdqCKEDGWe
+Z74u7iRjggXEopUOLQPQS4L60P/T6a+5oq2j0eUh4NCWXlJA4Iyfez/76BIiov3L
+qHNn4PjNXNQzR5r9xuhTe+WSZselnCnaVZgqsYnptkfdps5Yd6w=
+=bxy0
+-----END PGP SIGNATURE-----
