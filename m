@@ -2,47 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE6DBC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:14:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BAADC43219
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:14:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235596AbiAWAO2 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 19:14:28 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:46402 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235196AbiAWANo (ORCPT
+        id S235698AbiAWAOg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 19:14:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37076 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235682AbiAWANt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 19:13:44 -0500
+        Sat, 22 Jan 2022 19:13:49 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2CBAC0613E6;
+        Sat, 22 Jan 2022 16:12:51 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 9374BCE0ACB;
-        Sun, 23 Jan 2022 00:13:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DFD1C340E7;
-        Sun, 23 Jan 2022 00:13:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4043760FAA;
+        Sun, 23 Jan 2022 00:12:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9AEFCC340E5;
+        Sun, 23 Jan 2022 00:12:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642896821;
-        bh=2A8WhiJojw6h9vRPVjbwObfhvtkRQ7F92EyghBa5xN0=;
+        s=k20201202; t=1642896770;
+        bh=NKDIU71Wv1t4OtwDwKWo2B6K8ANzo2zJzF4cKqTyu1s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dXYPVrHWlmYIzsWke+XnqyPvRQWakU+NnnC5Ohmw1rGJZs3ZB15nySb2xWlcYZCIR
-         kFJ8HCxHrqM8aKtpBwmGf/4Ep7WfsxVINmPsZMKPnVEdmf3PfiNhV5+TNWkahO+2nu
-         tqeGEKEWiKoFcobytUoI3jBoLDMmZ67IRImMwCA1JA/PCX4p1Dm9jfp4ar1lDwSK3Z
-         3qu0tLvpmI+afC2bO9/hb+vfVopCwpyvV9PwD4GaeeYzp1ZmDjAbLQlDZ8OtzgU3o5
-         o0IhKGnyVzCHJn6l+9qNzyyQbFRofOOuEcj9v8Wd5bYMRkXlDv74NVi3Jnc+FjOjIP
-         kkiNEG2smAIxA==
+        b=gmtMKNY0CKXZC11Hve+0BTYdMaVJf/+LdZDeIUzB5bkgRfCHsG/iycgH+XhrVdd7f
+         o+BECfn/UhPSYVFdFsqy/C8DU5K217bPhV9nAT9HO7AFOLt0ATuKeyNsAMrcpRbUV4
+         g79ZcegbPF1ehb1ukcDPSic7brZatuI4NT5C9nPwJOnVYAZ8KTqDXesSog+EsjZbPQ
+         /mIVfy029gALcQgUyAsSgpdgHptHbHynCYXi6uzYzpCmmTQa8ml7rxtkb7q32KcK45
+         WvULsIyE1dyOOkfTFQRCvJqeF+SnHMS9jObgkoEG60w6ufp5thaTZfTvLVVmdOnckx
+         0wTwzrnFfr8Jw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ignat Korchagin <ignat@cloudflare.com>,
-        Amir Razmjou <arazmjou@cloudflare.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 3/8] sit: allow encapsulated IPv6 traffic to be delivered locally
-Date:   Sat, 22 Jan 2022 19:13:18 -0500
-Message-Id: <20220123001323.2460719-3-sashal@kernel.org>
+Cc:     Laura Abbott <labbott@kernel.org>,
+        Luo Likang <luolikang@nsfocus.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, jasowang@redhat.com,
+        kvm@vger.kernel.org, virtualization@lists.linux-foundation.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 13/16] vdpa: clean up get_config_size ret value handling
+Date:   Sat, 22 Jan 2022 19:12:12 -0500
+Message-Id: <20220123001216.2460383-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220123001323.2460719-1-sashal@kernel.org>
-References: <20220123001323.2460719-1-sashal@kernel.org>
+In-Reply-To: <20220123001216.2460383-1-sashal@kernel.org>
+References: <20220123001216.2460383-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,57 +54,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ignat Korchagin <ignat@cloudflare.com>
+From: Laura Abbott <labbott@kernel.org>
 
-[ Upstream commit ed6ae5ca437d9d238117d90e95f7f2cc27da1b31 ]
+[ Upstream commit 870aaff92e959e29d40f9cfdb5ed06ba2fc2dae0 ]
 
-While experimenting with FOU encapsulation Amir noticed that encapsulated IPv6
-traffic fails to be delivered, if the peer IP address is configured locally.
+The return type of get_config_size is size_t so it makes
+sense to change the type of the variable holding its result.
 
-It can be easily verified by creating a sit interface like below:
+That said, this already got taken care of (differently, and arguably
+not as well) by commit 3ed21c1451a1 ("vdpa: check that offsets are
+within bounds").
 
-$ sudo ip link add name fou_test type sit remote 127.0.0.1 encap fou encap-sport auto encap-dport 1111
-$ sudo ip link set fou_test up
+The added 'c->off > size' test in that commit will be done as an
+unsigned comparison on 32-bit (safe due to not being signed).
 
-and sending some IPv4 and IPv6 traffic to it
+On a 64-bit platform, it will be done as a signed comparison, but in
+that case the comparison will be done in 64-bit, and 'c->off' being an
+u32 it will be valid thanks to the extended range (ie both values will
+be positive in 64 bits).
 
-$ ping -I fou_test -c 1 1.1.1.1
-$ ping6 -I fou_test -c 1 fe80::d0b0:dfff:fe4c:fcbc
+So this was a real bug, but it was already addressed and marked for stable.
 
-"tcpdump -i any udp dst port 1111" will confirm that only the first IPv4 ping
-was encapsulated and attempted to be delivered.
-
-This seems like a limitation: for example, in a cloud environment the "peer"
-service may be arbitrarily scheduled on any server within the cluster, where all
-nodes are trying to send encapsulated traffic. And the unlucky node will not be
-able to. Moreover, delivering encapsulated IPv4 traffic locally is allowed.
-
-But I may not have all the context about this restriction and this code predates
-the observable git history.
-
-Reported-by: Amir Razmjou <arazmjou@cloudflare.com>
-Signed-off-by: Ignat Korchagin <ignat@cloudflare.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220107123842.211335-1-ignat@cloudflare.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Laura Abbott <labbott@kernel.org>
+Reported-by: Luo Likang <luolikang@nsfocus.com>
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/sit.c | 2 +-
+ drivers/vhost/vdpa.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-index 16e75a996b749..80989dab2e9a3 100644
---- a/net/ipv6/sit.c
-+++ b/net/ipv6/sit.c
-@@ -909,7 +909,7 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
- 		dst_cache_set_ip4(&tunnel->dst_cache, &rt->dst, fl4.saddr);
- 	}
+diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+index d62f05d056b7b..913cd465f9f1e 100644
+--- a/drivers/vhost/vdpa.c
++++ b/drivers/vhost/vdpa.c
+@@ -195,7 +195,7 @@ static int vhost_vdpa_config_validate(struct vhost_vdpa *v,
+ 				      struct vhost_vdpa_config *c)
+ {
+ 	struct vdpa_device *vdpa = v->vdpa;
+-	long size = vdpa->config->get_config_size(vdpa);
++	size_t size = vdpa->config->get_config_size(vdpa);
  
--	if (rt->rt_type != RTN_UNICAST) {
-+	if (rt->rt_type != RTN_UNICAST && rt->rt_type != RTN_LOCAL) {
- 		ip_rt_put(rt);
- 		dev->stats.tx_carrier_errors++;
- 		goto tx_error_icmp;
+ 	if (c->len == 0 || c->off > size)
+ 		return -EINVAL;
 -- 
 2.34.1
 
