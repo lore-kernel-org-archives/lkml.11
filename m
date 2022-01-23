@@ -2,163 +2,191 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07D15C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 19:19:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F20ADC43219
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 19:19:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239697AbiAWTTA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 14:19:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34154 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239672AbiAWTS5 (ORCPT
+        id S239507AbiAWTTn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 14:19:43 -0500
+Received: from mailout2.samsung.com ([203.254.224.25]:44999 "EHLO
+        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234678AbiAWTTk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 14:18:57 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F34EAC06173D
-        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 11:18:56 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id d65-20020a256844000000b00614359972a6so21772347ybc.16
-        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 11:18:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:in-reply-to:message-id:mime-version:references:subject:from:to
-         :cc;
-        bh=c3BO1dm7RCwPO9NDUrb6d3wTfeZ/r9fC9ifvGOyDdbk=;
-        b=AQLwJ8NgHkSIpLKXwAuweEt1NMn2ZHeQtWeEMnCF0ueu5t/Ur8jWWXJQP89E3znpi/
-         GjWpvEQmhMHGMbkZsA3NQZyfuoVNrmMxmUYw79liIbh3ZPQKJNZ1M80KO9TVxh0AaMXz
-         1M/TGvAsh5PJk/im4cUzkEfKUYL0zXQyBhK93IkqPmdD8zsO1V+G6bWCE2gFa+PO0ZhZ
-         vrkFpkxktXPuvGLziO6YZCx2wkXVJZUNf3dAcHu0u5Gw3BGY3tIOtQEC7JaBDjFMNzx9
-         FGRQZNq9ToEHXwkEUCfXuZsLH9F0/QxPygRDyHmO0XHdtE94OuOImNv3+TJ9hr6IEMoP
-         k0Ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=c3BO1dm7RCwPO9NDUrb6d3wTfeZ/r9fC9ifvGOyDdbk=;
-        b=YMMkyyRe3vjhLzSXoeU4WtRXYa/q2lAzb3M8Ft/XC89jB6wVA6oXv/F0HkXgg8ixK/
-         AhPOXlvzRJYmsIFmS3c+Mi9mxQ9LXrN5raMx9nldwjETKTxCnHCzVZYIH572X3mgTG6H
-         VHSIXfH/QbV0KsiEWsP508wNuTpjfKotJGGYJPPADIrKQTOuA/bKLkmomX9mEZSJ+5XP
-         Y957POa/Fm1WXIYdrdREormRH4QnOOTTroM7Pw2mdOZO1hE8xGqJBldkcW1UOLTnm37q
-         5LggElKq2AoddYl2utmb2tSAML8MXL5OxkgLbbE0H9MJVP7xOzYkjjpkIhCzWhr89yRH
-         IChQ==
-X-Gm-Message-State: AOAM5335H3If/Yhjks+et6fyHrtnXtsWTs/TML0fW3WBmfMD8Swojx+S
-        Vp6wQiFhDy1AH5Ckf3DXnZF6dS30VWw9
-X-Google-Smtp-Source: ABdhPJwRXehyzd1gqRhKZ2FkXAbPGpKBcvrxVDQ95RaYC/VdgOT/WjI/+85FoS70LyXp5vgYXMRaZGcPSFmx
-X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:202:1d5e:35c2:7748:3a52])
- (user=irogers job=sendgmr) by 2002:a25:e711:: with SMTP id
- e17mr18520857ybh.327.1642965536208; Sun, 23 Jan 2022 11:18:56 -0800 (PST)
-Date:   Sun, 23 Jan 2022 11:18:49 -0800
-In-Reply-To: <20220123191849.3655855-1-irogers@google.com>
-Message-Id: <20220123191849.3655855-2-irogers@google.com>
-Mime-Version: 1.0
-References: <20220123191849.3655855-1-irogers@google.com>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-Subject: [PATCH 2/2] perf gtk: Only support --gtk if compiled in
-From:   Ian Rogers <irogers@google.com>
-To:     Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Jiri Olsa <jolsa@redhat.com>,
-        Namhyung Kim <namhyung@kernel.org>, xaizek <xaizek@posteo.net>,
-        linux-perf-users@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Ian Rogers <irogers@google.com>
-Content-Type: text/plain; charset="UTF-8"
+        Sun, 23 Jan 2022 14:19:40 -0500
+Received: from epcas5p4.samsung.com (unknown [182.195.41.42])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20220123191938epoutp02e72e7cc99248eafd654080fe1276b3ea~M-H0SAGpE1517915179epoutp02H
+        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 19:19:38 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20220123191938epoutp02e72e7cc99248eafd654080fe1276b3ea~M-H0SAGpE1517915179epoutp02H
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1642965578;
+        bh=DsFfey4DK3A1Ho//27/+z58DaPrEa27+FlwKXNLvWtU=;
+        h=From:To:Cc:Subject:Date:References:From;
+        b=a26iAg40lQi8X+Nq97GbIwXF6r8pBfDy+dIlyn6M857y/6A0+8Q07+bQ1hVRZdoPN
+         dsECBmP5CTrBTj3TVWCvuY/uzZ9bfFdZIw0VdnTg8TG4c1KSvXPkeCZNHoTWW8U2qy
+         ks+uYZQoTPaJGrYGYY6J6gJksE3PKkUMLI6RrCjM=
+Received: from epsnrtp3.localdomain (unknown [182.195.42.164]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTP id
+        20220123191936epcas5p26c1115af494c399f05bf1d753a4029ac~M-HyvKOc82292122921epcas5p2g;
+        Sun, 23 Jan 2022 19:19:36 +0000 (GMT)
+Received: from epsmges5p1new.samsung.com (unknown [182.195.38.177]) by
+        epsnrtp3.localdomain (Postfix) with ESMTP id 4Jhjbl2g0yz4x9Pp; Sun, 23 Jan
+        2022 19:19:31 +0000 (GMT)
+Received: from epcas5p2.samsung.com ( [182.195.41.40]) by
+        epsmges5p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        2B.37.06423.34AADE16; Mon, 24 Jan 2022 04:19:31 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas5p2.samsung.com (KnoxPortal) with ESMTPA id
+        20220123191930epcas5p2572d936fab64a86238cab945171037d7~M-HssVdrh1893418934epcas5p2h;
+        Sun, 23 Jan 2022 19:19:30 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20220123191930epsmtrp266334ddc0e2bbd3cfaea1c1d4a301748~M-HsrVOpm2018820188epsmtrp2M;
+        Sun, 23 Jan 2022 19:19:30 +0000 (GMT)
+X-AuditID: b6c32a49-b01ff70000001917-54-61edaa43355b
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        A0.C9.08738.14AADE16; Mon, 24 Jan 2022 04:19:29 +0900 (KST)
+Received: from Jaguar.sa.corp.samsungelectronics.net (unknown
+        [107.108.73.139]) by epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
+        20220123191927epsmtip150bc9d9804b88892e59871dc8d37c825~M-Hqi3Ecg0799807998epsmtip1D;
+        Sun, 23 Jan 2022 19:19:27 +0000 (GMT)
+From:   Alim Akhtar <alim.akhtar@samsung.com>
+To:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     soc@kernel.org, linux-clk@vger.kernel.org,
+        devicetree@vger.kernel.org, olof@lixom.net, arnd@arndb.de,
+        linus.walleij@linaro.org, catalin.marinas@arm.com,
+        robh+dt@kernel.org, krzysztof.kozlowski@canonical.com,
+        s.nawrocki@samsung.com, linux-samsung-soc@vger.kernel.org,
+        pankaj.dubey@samsung.com, sboyd@kernel.org,
+        Alim Akhtar <alim.akhtar@samsung.com>
+Subject: [PATCH v4 00/16] Add support for Tesla Full Self-Driving (FSD) SoC
+Date:   Mon, 24 Jan 2022 00:37:13 +0530
+Message-Id: <20220123190729.1852-1-alim.akhtar@samsung.com>
+X-Mailer: git-send-email 2.17.1
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmplk+LIzCtJLcpLzFFi42LZdlhTQ9d51dtEg84lfBYP5m1js/g76Ri7
+        xftlPYwW84+cY7XY+PYHk8WUP8uZLDY9vsZq8bHnHqvF5V1z2CxmnN/HZHHq+mc2i0Vbv7Bb
+        tO49wm5x+E07q8W/axtZLB5f/8PmIOCxZt4aRo/fvyYxesxq6GXz2LSqk83jzrU9bB6bl9R7
+        XDnRxOrRt2UVo8fnTXIBnFHZNhmpiSmpRQqpecn5KZl56bZK3sHxzvGmZgaGuoaWFuZKCnmJ
+        uam2Si4+AbpumTlAbygplCXmlAKFAhKLi5X07WyK8ktLUhUy8otLbJVSC1JyCkwK9IoTc4tL
+        89L18lJLrAwNDIxMgQoTsjP2XTvAXHBftuLS7n62BsZm8S5GTg4JAROJJ9uus4HYQgK7GSXm
+        TNeBsD8xSpydzdjFyAVkf2aU2HFpOQtMw+ymdjaIxC5Gia2nJzFBOC1MEitPtYGNYhPQlrg7
+        fQsTiC0i4CZxo7EDrIhZ4BWTxPV/q8GKhAW8JU7d/csKYrMIqEo0794L1sArYC2xYHMnM8Q6
+        eYnVGw4wgzRLCPRySDzp7WaFSLhIvJ2+D8oWlnh1fAs7hC0l8fndXqAFHEB2tkTPLmOIcI3E
+        0nnHoF6wlzhwZQ4LSAmzgKbE+l36IGFmAT6J3t9PmCA6eSU62oQgqoEue3cVqlNaYmI3zAEe
+        Els+HYKGXKxE47rVzBMYZWYhDF3AyLiKUTK1oDg3PbXYtMAwL7UcHjXJ+bmbGMHpUctzB+Pd
+        Bx/0DjEycTAeYpTgYFYS4S3If5UoxJuSWFmVWpQfX1Sak1p8iNEUGEoTmaVEk/OBCTqvJN7Q
+        xNLAxMzMzMTS2MxQSZz3dPqGRCGB9MSS1OzU1ILUIpg+Jg5OqQYmXXmWe1tXOO09LzfrU/r/
+        zXXH/+1cUmNuvEU1dYVSUdt50VWzw7TCSs635irHNT9pvpMzN9en0PyK4tbwtrz2Qpfbs3Zk
+        bHtSMeuDSpK+pGPBvtWbNbu3t5as4o/3bGVZFP22i1dufWMpU82S+kilE9GPbtUZ9E/SVq+f
+        4+p2ikO7YPLUmlbO61mKJZNdVucXtiuLGv9PzrDfsyGxtqP+2WlRdX6zK6/VO9ctsnYXkxTS
+        WF5ZsVSuYW3hm31+Z5k4+VYXKU7kqi7Ydm5jSaNfpvxkzeONa+su1ORmv20O9XKwni1w5urt
+        oOYTmgmHdLVDPuhGMm7y/22xRnHBJKlP+y9d9tvMsFFkV8buYCWW4oxEQy3mouJEALro2MQY
+        BAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFtrPLMWRmVeSWpSXmKPExsWy7bCSnK7jqreJBs/PW1g8mLeNzeLvpGPs
+        Fu+X9TBazD9yjtVi49sfTBZT/ixnstj0+Bqrxceee6wWl3fNYbOYcX4fk8Wp65/ZLBZt/cJu
+        0br3CLvF4TftrBb/rm1ksXh8/Q+bg4DHmnlrGD1+/5rE6DGroZfNY9OqTjaPO9f2sHlsXlLv
+        ceVEE6tH35ZVjB6fN8kFcEZx2aSk5mSWpRbp2yVwZey7doC54L5sxaXd/WwNjM3iXYycHBIC
+        JhKzm9rZQGwhgR2MEs2n5SHi0hLXN05gh7CFJVb+ew5kcwHVNDFJXNw8GayBTUBb4u70LUwg
+        toiAh0Tbv3vMIEXMAr+YJPb9vcEIkhAW8JY4dfcvK4jNIqAq0bx7L1gDr4C1xILNncwQG+Ql
+        Vm84wDyBkWcBI8MqRsnUguLc9NxiwwKjvNRyveLE3OLSvHS95PzcTYzgMNbS2sG4Z9UHvUOM
+        TByMhxglOJiVRHgL8l8lCvGmJFZWpRblxxeV5qQWH2KU5mBREue90HUyXkggPbEkNTs1tSC1
+        CCbLxMEp1cCk9W/irYuqG1c2fbpsE1/uIfV+luAqIYebdV1nF9XLv7H/r3dxr3jWNNa6B04y
+        ey9cOjtj4Qe1RObEDytW1W3/MCnJgCv85fEp2nV8ng94HvIcLviqeeE2l2rJK+9Z83uYs97u
+        ZFBXS71qb7c/TYDv0zoDg+PxT+aem8d7Mijd6+VB1gPrVnoJf3m97sOMuvozL2Ntrxy0Src/
+        sHXTp85P/Geuaz52nzSh5e+r87Oneavn7GHyz9gsKOl6SmbB4fS5++dq3eHlYe696sKUceHx
+        iY3KeaFWybM7VZ+wSNizLHnKJvT/UOKUrowYTu93qWaKm1lClu24Wv288JL9jcCzXlOVpn2I
+        rKs+Pi1+3w3rKCWW4oxEQy3mouJEABd1kKbSAgAA
+X-CMS-MailID: 20220123191930epcas5p2572d936fab64a86238cab945171037d7
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+CMS-TYPE: 105P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20220123191930epcas5p2572d936fab64a86238cab945171037d7
+References: <CGME20220123191930epcas5p2572d936fab64a86238cab945171037d7@epcas5p2.samsung.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-If HAVE_GTK2_SUPPORT isn't defined then --gtk can't succeed, don't
-support it as a command line option in this case.
+Adds basic support for the Tesla Full Self-Driving (FSD)
+SoC. This SoC contains three clusters of four Cortex-A72 CPUs,
+as well as several IPs.
 
-Signed-off-by: Ian Rogers <irogers@google.com>
----
- tools/perf/builtin-annotate.c | 8 ++++++++
- tools/perf/builtin-report.c   | 6 ++++++
- 2 files changed, 14 insertions(+)
+Patches 1 to 9 provide support for the clock controller
+(which is designed similarly to Exynos SoCs).
 
-diff --git a/tools/perf/builtin-annotate.c b/tools/perf/builtin-annotate.c
-index 5e038d9bab05..7664e54bb785 100644
---- a/tools/perf/builtin-annotate.c
-+++ b/tools/perf/builtin-annotate.c
-@@ -50,7 +50,9 @@ struct perf_annotate {
- 	bool	   use_tui;
- #endif
- 	bool	   use_stdio, use_stdio2;
-+#ifdef HAVE_GTK2_SUPPORT
- 	bool	   use_gtk;
-+#endif
- 	bool	   skip_missing;
- 	bool	   has_br_stack;
- 	bool	   group_set;
-@@ -506,7 +508,9 @@ int cmd_annotate(int argc, const char **argv)
- 	OPT_BOOLEAN('q', "quiet", &quiet, "do now show any message"),
- 	OPT_BOOLEAN('D', "dump-raw-trace", &dump_trace,
- 		    "dump raw trace in ASCII"),
-+#ifdef HAVE_GTK2_SUPPORT
- 	OPT_BOOLEAN(0, "gtk", &annotate.use_gtk, "Use the GTK interface"),
-+#endif
- #ifdef HAVE_SLANG_SUPPORT
- 	OPT_BOOLEAN(0, "tui", &annotate.use_tui, "Use the TUI interface"),
- #endif
-@@ -592,10 +596,12 @@ int cmd_annotate(int argc, const char **argv)
- 	if (annotate_check_args(&annotate.opts) < 0)
- 		return -EINVAL;
- 
-+#ifdef HAVE_GTK2_SUPPORT
- 	if (symbol_conf.show_nr_samples && annotate.use_gtk) {
- 		pr_err("--show-nr-samples is not available in --gtk mode at this time\n");
- 		return ret;
- 	}
-+#endif
- 
- 	ret = symbol__validate_sym_arguments();
- 	if (ret)
-@@ -634,8 +640,10 @@ int cmd_annotate(int argc, const char **argv)
- 	else if (annotate.use_tui)
- 		use_browser = 1;
- #endif
-+#ifdef HAVE_GTK2_SUPPORT
- 	else if (annotate.use_gtk)
- 		use_browser = 2;
-+#endif
- 
- 	setup_browser(true);
- 
-diff --git a/tools/perf/builtin-report.c b/tools/perf/builtin-report.c
-index 1ad75c7ba074..b325d180293d 100644
---- a/tools/perf/builtin-report.c
-+++ b/tools/perf/builtin-report.c
-@@ -74,7 +74,9 @@ struct report {
- #ifdef HAVE_SLANG_SUPPORT
- 	bool			use_tui;
- #endif
-+#ifdef HAVE_GTK2_SUPPORT
- 	bool			use_gtk;
-+#endif
- 	bool			use_stdio;
- 	bool			show_full_info;
- 	bool			show_threads;
-@@ -1213,7 +1215,9 @@ int cmd_report(int argc, const char **argv)
- #ifdef HAVE_SLANG_SUPPORT
- 	OPT_BOOLEAN(0, "tui", &report.use_tui, "Use the TUI interface"),
- #endif
-+#ifdef HAVE_GTK2_SUPPORT
- 	OPT_BOOLEAN(0, "gtk", &report.use_gtk, "Use the GTK2 interface"),
-+#endif
- 	OPT_BOOLEAN(0, "stdio", &report.use_stdio,
- 		    "Use the stdio interface"),
- 	OPT_BOOLEAN(0, "header", &report.header, "Show data header."),
-@@ -1502,8 +1506,10 @@ int cmd_report(int argc, const char **argv)
- 	else if (report.use_tui)
- 		use_browser = 1;
- #endif
-+#ifdef HAVE_GTK2_SUPPORT
- 	else if (report.use_gtk)
- 		use_browser = 2;
-+#endif
- 
- 	/* Force tty output for header output and per-thread stat. */
- 	if (report.header || report.header_only || report.show_threads)
+The remaining changes provide pinmux support, initial device tree support.
+
+- Changes since v3
+* Addressed Stefen's review comments on patch 14/16
+* Fixed kernel test robot warning on patch 04/16
+* rebsaed this series on Krzysztof's pinmux new binding schema work [1]
+
+- Changes since v2
+* Addressed Krzysztof's and Stephen's review comments
+* Added Reviewed-by and Acked-by tags
+* Rebased on next-20220120
+
+- Changes since v1
+* fixed make dt_binding_check error as pointed by Rob
+* Addressed Krzysztof's and Rob's review comments
+* Added Reviewed-by and Acked-by tags
+* Dropped SPI, MCT and ADC from this series (to be posted in small sets)
+
+NOTE: These patches are based on Krzysztof's pinmux for-next branch
+      commit = 832ae134ccc1 
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/pinctrl/samsung.git/log/?h=for-next
+
+Alim Akhtar (16):
+  dt-bindings: add vendor prefix for Tesla
+  dt-bindings: clock: Add bindings definitions for FSD CMU blocks
+  dt-bindings: clock: Document FSD CMU bindings
+  clk: samsung: fsd: Add initial clock support
+  clk: samsung: fsd: Add cmu_peric block clock information
+  clk: samsung: fsd: Add cmu_fsys0 clock information
+  clk: samsung: fsd: Add cmu_fsys1 clock information
+  clk: samsung: fsd: Add cmu_imem block clock information
+  clk: samsung: fsd: Add cmu_mfc block clock information
+  clk: samsung: fsd: Add cam_csi block clock information
+  dt-bindings: pinctrl: samsung: Add compatible for Tesla FSD SoC
+  pinctrl: samsung: add FSD SoC specific data
+  dt-bindings: arm: add Tesla FSD ARM SoC
+  arm64: dts: fsd: Add initial device tree support
+  arm64: dts: fsd: Add initial pinctrl support
+  arm64: defconfig: Enable Tesla FSD SoC
+
+ .../devicetree/bindings/arm/tesla.yaml        |   27 +
+ .../bindings/clock/tesla,fsd-clock.yaml       |  198 ++
+ .../bindings/pinctrl/samsung,pinctrl.yaml     |    1 +
+ .../devicetree/bindings/vendor-prefixes.yaml  |    2 +
+ MAINTAINERS                                   |    8 +
+ arch/arm64/Kconfig.platforms                  |    6 +
+ arch/arm64/boot/dts/Makefile                  |    1 +
+ arch/arm64/boot/dts/tesla/Makefile            |    3 +
+ arch/arm64/boot/dts/tesla/fsd-evb.dts         |   39 +
+ arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi    |  335 +++
+ arch/arm64/boot/dts/tesla/fsd.dtsi            |  673 ++++++
+ arch/arm64/configs/defconfig                  |    1 +
+ drivers/clk/samsung/Kconfig                   |    8 +
+ drivers/clk/samsung/Makefile                  |    1 +
+ drivers/clk/samsung/clk-fsd.c                 | 1803 +++++++++++++++++
+ drivers/clk/samsung/clk-pll.c                 |    1 +
+ drivers/clk/samsung/clk-pll.h                 |    1 +
+ .../pinctrl/samsung/pinctrl-exynos-arm64.c    |   71 +
+ drivers/pinctrl/samsung/pinctrl-samsung.c     |    2 +
+ drivers/pinctrl/samsung/pinctrl-samsung.h     |    1 +
+ include/dt-bindings/clock/fsd-clk.h           |  150 ++
+ 21 files changed, 3332 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/arm/tesla.yaml
+ create mode 100644 Documentation/devicetree/bindings/clock/tesla,fsd-clock.yaml
+ create mode 100644 arch/arm64/boot/dts/tesla/Makefile
+ create mode 100644 arch/arm64/boot/dts/tesla/fsd-evb.dts
+ create mode 100644 arch/arm64/boot/dts/tesla/fsd-pinctrl.dtsi
+ create mode 100644 arch/arm64/boot/dts/tesla/fsd.dtsi
+ create mode 100644 drivers/clk/samsung/clk-fsd.c
+ create mode 100644 include/dt-bindings/clock/fsd-clk.h
+
+
+base-commit: 832ae134ccc1c78a2f5ec81b7010dd24c3c49535
 -- 
-2.35.0.rc0.227.g00780c9af4-goog
+2.25.1
 
