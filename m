@@ -2,88 +2,160 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43229C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 22:41:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD6A0C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 22:45:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240389AbiAWWlr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 17:41:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50070 "EHLO
+        id S240392AbiAWWpN (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 17:45:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229944AbiAWWlq (ORCPT
+        with ESMTP id S230077AbiAWWpM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 17:41:46 -0500
-Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7227C06173B;
-        Sun, 23 Jan 2022 14:41:45 -0800 (PST)
-Received: by mail-wm1-x32e.google.com with SMTP id q9-20020a7bce89000000b00349e697f2fbso33026639wmj.0;
-        Sun, 23 Jan 2022 14:41:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FnoUpruS07e9SliOMBRd2B9mJrCRv0Zfw7LhMPxVu6s=;
-        b=kg0Jqz/pJCi7QBRbj36+52ElSW/YbjVvXQdKUmD/cL0yPHmnl/NlfGzaPESB3mFixz
-         IJZ9JRIuWZ43wnrQ834ZfNT9dIbFnot4jNSHwYk7D6IBLDQ6JqrTsSZqSWKblEDl/WFl
-         mXWSJGYK7M07ulzXtyMs7Zpv7hqLbXk0zmy1R7a6M+y9UNECqJm+9/XdBCuwh9bVnBE1
-         FGqwnsRg85Q0YX/vUVZME2T4vycLKom1sLxwS076lwlk8qeTaSZk4R37TjubW9hoNUVi
-         FSBqSoZh6emLtfpu2agRJlprOXN8lw+ZFt0mvBFGlhbus5WILA+4mCqT5R9w/pkWEajG
-         Vecw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FnoUpruS07e9SliOMBRd2B9mJrCRv0Zfw7LhMPxVu6s=;
-        b=ht8+NV9KfFKM56TKlpbPIrrj97X6GZmrxrg37vHdtf/JWp+bzryxM9S4tHIhZxO0VV
-         S64GKlCpGeaF1MXNrJ37cCkMAmqwAdRIaXg9c2iCt3AfseVe/k2BkReLYIkoMyvs5UHj
-         B/pG+sykY0+KtMGsS1z7SoIisQQasSMiQIUV4toI9vskMAu1W78IheCxkF3TmzXHMvvu
-         X5C2RDg5WitwAFigGWWffvvzulYYckjlO4Wj8Nwf3Shb/UykTkiFSM7LvT3uTtb9X7+c
-         jyUJVnR4cAP2a88whqJfxo7614H1lhOk55tP7T7R29IL2b8iIxRDN400n+2EdbjbEMqM
-         kDvA==
-X-Gm-Message-State: AOAM530Mtb+QcdE4NAgkLHJDqdNM6CFPbXLWPRaFZT9rZkbP18Ef0TfA
-        QYZnwHLbrGWddUfrR1lRObDprJ7yEGyhww==
-X-Google-Smtp-Source: ABdhPJz/GDl8nKFqCDuTOIS5Tcd/O6yx8D7cCNU/Us+Wog3rwAYnPRWhEjqSgv2MF06UW9JNew6h2w==
-X-Received: by 2002:a05:600c:218f:: with SMTP id e15mr953069wme.187.1642977704477;
-        Sun, 23 Jan 2022 14:41:44 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id v124sm17395157wme.30.2022.01.23.14.41.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Jan 2022 14:41:44 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-input@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] Input: magellan: make static read-only array nibbles const
-Date:   Sun, 23 Jan 2022 22:41:43 +0000
-Message-Id: <20220123224143.6583-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.33.1
+        Sun, 23 Jan 2022 17:45:12 -0500
+Received: from perceval.ideasonboard.com (perceval.ideasonboard.com [IPv6:2001:4b98:dc2:55:216:3eff:fef7:d647])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C136C06173B
+        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 14:45:12 -0800 (PST)
+Received: from pendragon.ideasonboard.com (62-78-145-57.bb.dnainternet.fi [62.78.145.57])
+        by perceval.ideasonboard.com (Postfix) with ESMTPSA id 6358FD89;
+        Sun, 23 Jan 2022 23:45:09 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=ideasonboard.com;
+        s=mail; t=1642977909;
+        bh=Tpd2xJOyPUYI9Yn817WlPsinNuoRZkReK2xzPz5Iv2s=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Jg+2+jLNXiq4Q8S/HfrbfExWW9Pzdl4nt5YHUe4P+NC3z3LMcaSgqtpgwljZSTd4I
+         R6DOvk3xa6aAc9HhxoKyUi6jQh3Xv6+aRjrIvZnyiqD10dioGmArr3NnRKCCBeIefx
+         xzYp0RAAKqcrdCREPNF4P/yFmEw9GsNLSPus8fPQ=
+Date:   Mon, 24 Jan 2022 00:44:52 +0200
+From:   Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+To:     Tomohito Esaki <etom@igel.co.jp>
+Cc:     dri-devel@lists.freedesktop.org,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Christian =?utf-8?B?S8O2bmln?= <christian.koenig@amd.com>,
+        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Maxime Ripard <mripard@kernel.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Ben Skeggs <bskeggs@redhat.com>,
+        Michel =?utf-8?Q?D=C3=A4nzer?= <mdaenzer@redhat.com>,
+        Simon Ser <contact@emersion.fr>,
+        Qingqing Zhuo <qingqing.zhuo@amd.com>,
+        Bas Nieuwenhuizen <bas@basnieuwenhuizen.nl>,
+        Mark Yacoub <markyacoub@chromium.org>,
+        Sean Paul <seanpaul@chromium.org>,
+        Evan Quan <evan.quan@amd.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Petr Mladek <pmladek@suse.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Abhinav Kumar <abhinavk@codeaurora.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@chromium.org>,
+        amd-gfx@lists.freedesktop.org, linux-kernel@vger.kernel.org,
+        nouveau@lists.freedesktop.org, Daniel Stone <daniel@fooishbar.org>,
+        Damian Hobson-Garcia <dhobsong@igel.co.jp>,
+        Takanari Hayama <taki@igel.co.jp>
+Subject: Re: [RFC PATCH v3 3/3] drm: remove allow_fb_modifiers
+Message-ID: <Ye3aZHFQQux4brrc@pendragon.ideasonboard.com>
+References: <20220114101753.24996-1-etom@igel.co.jp>
+ <20220114101753.24996-4-etom@igel.co.jp>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220114101753.24996-4-etom@igel.co.jp>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The static array nibbles is read-only so it make sense to make
-it const.
+Hello Esaki-san,
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
----
- drivers/input/joystick/magellan.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Thank you for the patch.
 
-diff --git a/drivers/input/joystick/magellan.c b/drivers/input/joystick/magellan.c
-index edb8e1982e26..653a09362a1e 100644
---- a/drivers/input/joystick/magellan.c
-+++ b/drivers/input/joystick/magellan.c
-@@ -51,7 +51,7 @@ struct magellan {
- 
- static int magellan_crunch_nibbles(unsigned char *data, int count)
- {
--	static unsigned char nibbles[16] = "0AB3D56GH9:K<MN?";
-+	static const unsigned char nibbles[16] = "0AB3D56GH9:K<MN?";
- 
- 	do {
- 		if (data[count] == nibbles[data[count] & 0xf])
+On Fri, Jan 14, 2022 at 07:17:53PM +0900, Tomohito Esaki wrote:
+> The allow_fb_modifiers flag is unnecessary since it has been replaced
+> with cannot_support_modifiers flag.
+
+The new flag is fb_modifiers_not_supported, not
+cannot_support_modifiers.
+
+> Signed-off-by: Tomohito Esaki <etom@igel.co.jp>
+> ---
+>  drivers/gpu/drm/drm_plane.c                      |  9 ---------
+>  drivers/gpu/drm/selftests/test-drm_framebuffer.c |  1 -
+>  include/drm/drm_mode_config.h                    | 16 ----------------
+>  3 files changed, 26 deletions(-)
+> 
+> diff --git a/drivers/gpu/drm/drm_plane.c b/drivers/gpu/drm/drm_plane.c
+> index 5aa7e241971e..89a3d044ab59 100644
+> --- a/drivers/gpu/drm/drm_plane.c
+> +++ b/drivers/gpu/drm/drm_plane.c
+> @@ -288,15 +288,6 @@ static int __drm_universal_plane_init(struct drm_device *dev,
+>  		}
+>  	}
+>  
+> -	/* autoset the cap and check for consistency across all planes */
+> -	if (format_modifier_count) {
+> -		drm_WARN_ON(dev, !config->allow_fb_modifiers &&
+> -			    !list_empty(&config->plane_list));
+> -		config->allow_fb_modifiers = true;
+> -	} else {
+> -		drm_WARN_ON(dev, config->allow_fb_modifiers);
+> -	}
+> -
+
+Shouldn't we keep a sanity check to ensure that drivers setting
+fb_modifiers_not_supported do not pass modifiers ?
+
+	drm_WARN_ON(dev, config->fb_modifiers_not_supported &&
+		    format_modifier_count);
+
+Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+
+>  	plane->modifier_count = format_modifier_count;
+>  	plane->modifiers = kmalloc_array(format_modifier_count,
+>  					 sizeof(format_modifiers[0]),
+> diff --git a/drivers/gpu/drm/selftests/test-drm_framebuffer.c b/drivers/gpu/drm/selftests/test-drm_framebuffer.c
+> index 61b44d3a6a61..f6d66285c5fc 100644
+> --- a/drivers/gpu/drm/selftests/test-drm_framebuffer.c
+> +++ b/drivers/gpu/drm/selftests/test-drm_framebuffer.c
+> @@ -323,7 +323,6 @@ static struct drm_device mock_drm_device = {
+>  		.max_width = MAX_WIDTH,
+>  		.min_height = MIN_HEIGHT,
+>  		.max_height = MAX_HEIGHT,
+> -		.allow_fb_modifiers = true,
+>  		.funcs = &mock_config_funcs,
+>  	},
+>  };
+> diff --git a/include/drm/drm_mode_config.h b/include/drm/drm_mode_config.h
+> index da82f45351c7..5001bda9f9af 100644
+> --- a/include/drm/drm_mode_config.h
+> +++ b/include/drm/drm_mode_config.h
+> @@ -917,22 +917,6 @@ struct drm_mode_config {
+>  	 */
+>  	bool async_page_flip;
+>  
+> -	/**
+> -	 * @allow_fb_modifiers:
+> -	 *
+> -	 * Whether the driver supports fb modifiers in the ADDFB2.1 ioctl call.
+> -	 * Note that drivers should not set this directly, it is automatically
+> -	 * set in drm_universal_plane_init().
+> -	 *
+> -	 * IMPORTANT:
+> -	 *
+> -	 * If this is set the driver must fill out the full implicit modifier
+> -	 * information in their &drm_mode_config_funcs.fb_create hook for legacy
+> -	 * userspace which does not set modifiers. Otherwise the GETFB2 ioctl is
+> -	 * broken for modifier aware userspace.
+> -	 */
+> -	bool allow_fb_modifiers;
+> -
+>  	/**
+>  	 * @fb_modifiers_not_supported:
+>  	 *
+
 -- 
-2.33.1
+Regards,
 
+Laurent Pinchart
