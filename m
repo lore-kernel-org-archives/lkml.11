@@ -2,25 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EA4CC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 17:37:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0766C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 17:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239270AbiAWRhd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 12:37:33 -0500
-Received: from mail-4022.proton.ch ([185.70.40.22]:54117 "EHLO
-        mail-4022.proton.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239269AbiAWRhb (ORCPT
+        id S239310AbiAWRhz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 12:37:55 -0500
+Received: from mail-0301.mail-europe.com ([188.165.51.139]:55235 "EHLO
+        mail-0301.mail-europe.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239283AbiAWRht (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 12:37:31 -0500
-Date:   Sun, 23 Jan 2022 17:37:27 +0000
+        Sun, 23 Jan 2022 12:37:49 -0500
+Date:   Sun, 23 Jan 2022 17:37:41 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=connolly.tech;
-        s=protonmail; t=1642959449;
-        bh=RHM16+MmceCNT6uhKBo2gtAGjdHH8oLW9fjQXzk/4OU=;
-        h=Date:To:From:Reply-To:Subject:Message-ID:In-Reply-To:References:
-         From:To:Cc;
-        b=cxB4KY5DJAAwKNBDIAvSzd5kzvDGoWpJjFA3SM5JpQk3rnRzF3B68WXywt3E9Zwfk
-         W2Vyhnq2L6lCW1DEQw/VnG0Xty5y50bwxkfACsZyFjGb3w0w8lXjLLE7l1r1gVtbRs
-         wb63Fd1PB9MD+jEcirvUE60dGHFT181MPAF3zlYE=
+        s=protonmail; t=1642959463;
+        bh=K+JiOICSsVFVePfPQjsbxLe613aRT6uvJVoIQ0XNrYw=;
+        h=Date:To:From:Reply-To:Subject:Message-ID:From:To:Cc;
+        b=GGPpt8Gw3kEEQNBrYUApxZ6eQOgxWxisExq117ltBn7vbRN8Fl1v1taps+tX7mlbN
+         f3hPjPSvfZkZ4rOs6GMPbhhUWatTV2Y488G5FVpQIa/csVDNo/1lJiNT+Atvc0wSdf
+         WhGDRYL8AoKQGEtuMG3ga2StEdL/kux5eHEV3mlw=
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Sam Ravnborg <sam@ravnborg.org>,
         David Airlie <airlied@linux.ie>,
@@ -42,10 +41,8 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
         Alexander Martinz <amartinz@shiftphones.com>
 From:   Caleb Connolly <caleb@connolly.tech>
 Reply-To: Caleb Connolly <caleb@connolly.tech>
-Subject: [PATCH 1/6] dt-bindings: input: touchscreen: add bindings for focaltech,fts
-Message-ID: <20220123173650.290349-2-caleb@connolly.tech>
-In-Reply-To: <20220123173650.290349-1-caleb@connolly.tech>
-References: <20220123173650.290349-1-caleb@connolly.tech>
+Subject: [PATCH 3/6] dt-bindings: display: visionox-rm69299: document new compatible string
+Message-ID: <20220123173650.290349-4-caleb@connolly.tech>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -53,102 +50,30 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Add devicetree bindings for the Focaltech FTS touchscreen drivers.
+Document a new compatible string for the second panel variant.
 
 Signed-off-by: Caleb Connolly <caleb@connolly.tech>
 ---
- .../input/touchscreen/focaltech,fts.yaml      | 78 +++++++++++++++++++
- 1 file changed, 78 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/input/touchscreen/foc=
-altech,fts.yaml
+ .../devicetree/bindings/display/panel/visionox,rm69299.yaml   | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/input/touchscreen/focaltech,=
-fts.yaml b/Documentation/devicetree/bindings/input/touchscreen/focaltech,ft=
-s.yaml
-new file mode 100644
-index 000000000000..bb25a4f8ad71
---- /dev/null
-+++ b/Documentation/devicetree/bindings/input/touchscreen/focaltech,fts.yam=
-l
-@@ -0,0 +1,78 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/input/touchscreen/focaltech,fts.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Focaltech FTS I2C Touchscreen Controller
-+
-+maintainers:
-+  - Caleb Connolly <caleb@connolly.tech>
-+
-+allOf:
-+  - $ref: touchscreen.yaml#
-+
-+properties:
-+  compatible:
+diff --git a/Documentation/devicetree/bindings/display/panel/visionox,rm692=
+99.yaml b/Documentation/devicetree/bindings/display/panel/visionox,rm69299.=
+yaml
+index 076b057b4af5..b02ca75756a7 100644
+--- a/Documentation/devicetree/bindings/display/panel/visionox,rm69299.yaml
++++ b/Documentation/devicetree/bindings/display/panel/visionox,rm69299.yaml
+@@ -17,7 +17,9 @@ allOf:
+
+ properties:
+   compatible:
+-    const: visionox,rm69299-1080p-display
 +    enum:
-+      - focaltech,fts5452
-+      - focaltech,fts8719
-+  reg:
-+    const: 0x38
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  reset-gpios:
-+    maxItems: 1
-+
-+  wakeup-source:
-+    type: boolean
-+    description: touchscreen can be used as a wakeup source.
-+
-+  focaltech,max-touch-number:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: max number of fingers supported
-+    minimum: 2
-+    maximum: 10
-+
-+  touchscreen-size-x: true
-+  touchscreen-size-y: true
-+
-+additionalProperties: false
-+
-+required:
-+  - compatible
-+  - reg
-+  - reset-gpios
-+  - focaltech,max-touch-number
-+  - touchscreen-size-x
-+  - touchscreen-size-y
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/gpio/gpio.h>
-+    &i2c5 {
-+      status=3D"okay";
-+
-+      touchscreen: focaltech@38 {
-+        compatible =3D "focaltech,fts8719";
-+        reg =3D <0x38>;
-+        wakeup-source;
-+        interrupt-parent =3D <&tlmm>;
-+        interrupts =3D <125 0x2>;
-+        vdd-supply =3D <&vreg_l28a_3p0>;
-+        vcc-i2c-supply =3D <&vreg_l14a_1p88>;
-+
-+        pinctrl-names =3D "default", "suspend";
-+        pinctrl-0 =3D <&ts_int_active &ts_reset_active>;
-+        pinctrl-1 =3D <&ts_int_suspend &ts_reset_suspend>;
-+
-+        reset-gpio =3D <&tlmm 99 GPIO_ACTIVE_HIGH>;
-+        irq-gpio =3D <&tlmm 125 GPIO_TRANSITORY>;
-+        touchscreen-size-x =3D <1080>;
-+        touchscreen-size-y =3D <2160>;
-+        focaltech,max-touch-number =3D <5>;
-+      };
-+    };
++      - visionox,rm69299-1080p-display
++      - visionox,rm69299-shift
+
+   vdda-supply:
+     description: |
 --
 2.34.1
 
