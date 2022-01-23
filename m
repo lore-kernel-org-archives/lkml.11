@@ -2,49 +2,50 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D755C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:13:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5E40C43219
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:13:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235693AbiAWANt (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 19:13:49 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:45850 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235421AbiAWAMm (ORCPT
+        id S235333AbiAWANy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 19:13:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36898 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235509AbiAWANH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 19:12:42 -0500
+        Sat, 22 Jan 2022 19:13:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C59A7C061763;
+        Sat, 22 Jan 2022 16:12:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id B747ACE0AC0;
-        Sun, 23 Jan 2022 00:12:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 44FE4C004E1;
-        Sun, 23 Jan 2022 00:12:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 62F1660F9F;
+        Sun, 23 Jan 2022 00:12:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC00CC004E1;
+        Sun, 23 Jan 2022 00:12:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642896759;
-        bh=HE1auXPAvotomIohwNjYUGvmFKANDR1XNJmuKVBzXmM=;
+        s=k20201202; t=1642896726;
+        bh=94AMPHSOMB0HPZgdjyDj+IRBX/Gt+wzDLbqEMbirc/s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WpRqLKvU2DdquQVHkO0JoqX9qGYI2W8gCkkv4HzBF0jFabB4If3wtSiZBZhhb23/o
-         frI/syBhaHXSOEPpAb0ne0v2VD5ZnlMmoInqqsbtogWaV31UPfv3n4lTCw+4iPB9rx
-         qlDz60ByOOtaaZO+wqJv55X3BVPespIGqgtyFcfLiY85Tv8IxHAtoIFP4QkQig2dzL
-         k/itCQw8XijUE+WqxfUH/+yAZFMVT9FZ8PTghGZbpROuLvuLK9cVpfKBfJLB85TxDZ
-         GzET8ljSypQ1HoVAz2IuRPBG1hWu1ahH75lFcgiOSTcnXSSb4GdBX9dkQI2i26R1fW
-         UFCi+hdJocqmA==
+        b=rwrJd8KLZSnIzRgkjXd3GfgjzYubVes9RhCi6gigpRvb1LR/hVt9yvC75/+XyckEN
+         NWebGCH6zlNmGKaDw2o8hudWR9bLdb3UxTYWqA7LY31jOOTY6UlY5SATD8E4TtcP2V
+         +1lE6lJn9yiq25ZrULC9ioTQr4crNLjcGCZbxqvuE74fy9ukkHtYTguMFITYpMkVoJ
+         KfDHK+hGOYaabQwNq6DDF2tAO9XwbS23kHYK900edcmUOET2LFUTa42hQOwWhzMFBw
+         XnZcAVCrE0/XR1s5YUS60V5T4dpjbrIvU3dtttwTJHPyOFi+xen7hjbi5TN+wr8Klk
+         pWn4rWrF2Ja9w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jeff Layton <jlayton@kernel.org>,
-        Hu Weiwen <sehuww@mail.scut.edu.cn>,
-        Luis Henriques <lhenriques@suse.de>,
-        Xiubo Li <xiubli@redhat.com>,
-        Ilya Dryomov <idryomov@gmail.com>,
-        Sasha Levin <sashal@kernel.org>, ceph-devel@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.15 08/16] ceph: don't check for quotas on MDS stray dirs
-Date:   Sat, 22 Jan 2022 19:12:07 -0500
-Message-Id: <20220123001216.2460383-8-sashal@kernel.org>
+Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 15/19] vhost/test: fix memory leak of vhost virtqueues
+Date:   Sat, 22 Jan 2022 19:11:08 -0500
+Message-Id: <20220123001113.2460140-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220123001216.2460383-1-sashal@kernel.org>
-References: <20220123001216.2460383-1-sashal@kernel.org>
+In-Reply-To: <20220123001113.2460140-1-sashal@kernel.org>
+References: <20220123001113.2460140-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -52,84 +53,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jeff Layton <jlayton@kernel.org>
+From: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-[ Upstream commit 0078ea3b0566e3da09ae8e1e4fbfd708702f2876 ]
+[ Upstream commit 080063920777af65105e5953e2851e036376e3ea ]
 
-玮文 胡 reported seeing the WARN_RATELIMIT pop when writing to an
-inode that had been transplanted into the stray dir. The client was
-trying to look up the quotarealm info from the parent and that tripped
-the warning.
+We need free the vqs in .release(), which are allocated in .open().
 
-Change the ceph_vino_is_reserved helper to not throw a warning for
-MDS stray directories (0x100 - 0x1ff), only for reserved dirs that
-are not in that range.
-
-Also, fix ceph_has_realms_with_quotas to return false when encountering
-a reserved inode.
-
-URL: https://tracker.ceph.com/issues/53180
-Reported-by: Hu Weiwen <sehuww@mail.scut.edu.cn>
-Signed-off-by: Jeff Layton <jlayton@kernel.org>
-Reviewed-by: Luis Henriques <lhenriques@suse.de>
-Reviewed-by: Xiubo Li <xiubli@redhat.com>
-Signed-off-by: Ilya Dryomov <idryomov@gmail.com>
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20211228030924.3468439-1-xianting.tian@linux.alibaba.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ceph/quota.c |  3 +++
- fs/ceph/super.h | 20 ++++++++++++--------
- 2 files changed, 15 insertions(+), 8 deletions(-)
+ drivers/vhost/test.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/ceph/quota.c b/fs/ceph/quota.c
-index 620c691af40e7..d1158c40bb0c6 100644
---- a/fs/ceph/quota.c
-+++ b/fs/ceph/quota.c
-@@ -30,6 +30,9 @@ static inline bool ceph_has_realms_with_quotas(struct inode *inode)
- 	/* if root is the real CephFS root, we don't have quota realms */
- 	if (root && ceph_ino(root) == CEPH_INO_ROOT)
- 		return false;
-+	/* MDS stray dirs have no quota realms */
-+	if (ceph_vino_is_reserved(ceph_inode(inode)->i_vino))
-+		return false;
- 	/* otherwise, we can't know for sure */
- 	return true;
+diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+index a09dedc79f682..05740cba1cd89 100644
+--- a/drivers/vhost/test.c
++++ b/drivers/vhost/test.c
+@@ -166,6 +166,7 @@ static int vhost_test_release(struct inode *inode, struct file *f)
+ 	/* We do an extra flush before freeing memory,
+ 	 * since jobs can re-queue themselves. */
+ 	vhost_test_flush(n);
++	kfree(n->dev.vqs);
+ 	kfree(n);
+ 	return 0;
  }
-diff --git a/fs/ceph/super.h b/fs/ceph/super.h
-index 14f951cd5b61b..8cf4323d729cd 100644
---- a/fs/ceph/super.h
-+++ b/fs/ceph/super.h
-@@ -534,19 +534,23 @@ static inline int ceph_ino_compare(struct inode *inode, void *data)
-  *
-  * These come from src/mds/mdstypes.h in the ceph sources.
-  */
--#define CEPH_MAX_MDS		0x100
--#define CEPH_NUM_STRAY		10
-+#define CEPH_MAX_MDS			0x100
-+#define CEPH_NUM_STRAY			10
- #define CEPH_MDS_INO_MDSDIR_OFFSET	(1 * CEPH_MAX_MDS)
-+#define CEPH_MDS_INO_LOG_OFFSET		(2 * CEPH_MAX_MDS)
- #define CEPH_INO_SYSTEM_BASE		((6*CEPH_MAX_MDS) + (CEPH_MAX_MDS * CEPH_NUM_STRAY))
- 
- static inline bool ceph_vino_is_reserved(const struct ceph_vino vino)
- {
--	if (vino.ino < CEPH_INO_SYSTEM_BASE &&
--	    vino.ino >= CEPH_MDS_INO_MDSDIR_OFFSET) {
--		WARN_RATELIMIT(1, "Attempt to access reserved inode number 0x%llx", vino.ino);
--		return true;
--	}
--	return false;
-+	if (vino.ino >= CEPH_INO_SYSTEM_BASE ||
-+	    vino.ino < CEPH_MDS_INO_MDSDIR_OFFSET)
-+		return false;
-+
-+	/* Don't warn on mdsdirs */
-+	WARN_RATELIMIT(vino.ino >= CEPH_MDS_INO_LOG_OFFSET,
-+			"Attempt to access reserved inode number 0x%llx",
-+			vino.ino);
-+	return true;
- }
- 
- static inline struct inode *ceph_find_inode(struct super_block *sb,
 -- 
 2.34.1
 
