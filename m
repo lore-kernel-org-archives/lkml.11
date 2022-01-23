@@ -2,104 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D231FC433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 18:41:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CCC0C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 18:41:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239825AbiAWSk6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 13:40:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53572 "EHLO
+        id S239760AbiAWSlL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 13:41:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239652AbiAWSkm (ORCPT
+        with ESMTP id S239625AbiAWSkn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 13:40:42 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C318BC06175F;
-        Sun, 23 Jan 2022 10:40:32 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id v3so7872549pgc.1;
-        Sun, 23 Jan 2022 10:40:32 -0800 (PST)
+        Sun, 23 Jan 2022 13:40:43 -0500
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E1BC061744;
+        Sun, 23 Jan 2022 10:40:38 -0800 (PST)
+Received: by mail-wm1-x330.google.com with SMTP id bg19-20020a05600c3c9300b0034565e837b6so10686219wmb.1;
+        Sun, 23 Jan 2022 10:40:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=KWn9RMzA0EUrBxcMa6INAn/WVMY8I9S/vbZ+cvBsro8=;
-        b=FEY4hkDCe+Bsb7dfhGhUPLZa3Mw0PtBQkOfweZG+4g+/AQd4KD6MMYPm2IDe5hdOX+
-         dkS3dA+wGDjARWWN5zO+u2yDzeYbGG5IN02WiGuELJoafSGPci3NnnLTdh9I8IhX7fti
-         IpZ5jdcKQ0bOMVbXM9UFM6PgySOQy8PN/gr/8ncHmWzSzsjnyDIxkh9Zl6kXWPt+9/JC
-         EfexkcP1u+e9NGbS8fqX0N1v0PcG40IfxWO1qSi6HVNUzwqETgbERn2BGZG4SW3pKOSA
-         LnMk3qdAMIJw9tW9NvT+99rYqWeMvl91UnjK3COqKpRkCgyEYPdAn318dKt59hcjMA5Y
-         Oj+A==
+        bh=Q/0EoSGGxiZheENQx8vu+lEDidbqKZoQ7scM3xHmiOA=;
+        b=O+Kf5RiyxUVhGdsbQVZkzdwZxWyWQcgnYMidtGRdVSKwvn9hsvnL26XNnfUOEx0t6P
+         vLngeNLWKbOgtvxDbU9J0UpLObOekcz1gGjK4ROw1uXnyaienlOHg2DFyK5OUjNKgLZC
+         bo/mPjBkwfYqVFXiW9lHLj65C55ugenwZ6TcjgQgb0EKFlPh29aSXJsv+f2QVZ9q7Gxf
+         EGMCxxqCdw01ov7xwhV2nSQUCMrDbLf218+7eNcpPPtz4ngZfAK+gL8DVnMcM1RArTu8
+         lAz8Om1roMz9czYHZQ7iRPRjrsBYAXS+jZq0sVlplhR7VKUw5PxMJwgu1exr04tjHmI7
+         Wh6w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KWn9RMzA0EUrBxcMa6INAn/WVMY8I9S/vbZ+cvBsro8=;
-        b=sPOPwlZishlFtZKSSIkea6+dos7H9o88E6jperQcZg8nv4sm9ou8fTgspNg5bWBqEx
-         FWO/KVoQSBA1JPII5qHBh+xufOWa15+mh6nRpaHFRk2a1t+XVltkJz+fNRxRx71ucs0e
-         kTbk3tfKeXJhOYVifCIm3hSq80cxnt/h43p969ztzcNYDxbCzumWNxfNVAM9K8KmT7Eh
-         oIr92xPu38rppGv5fGka05S5FuH+9BIFCxqS5nd+6djpM3XpePFqYRluVejFATc8wydN
-         S2EY6apwUsaVWahcQpXf6khTV3mGruSpI/h2gU6jtsT4oJ86jdnuUlkx9KeNnqziMVii
-         zlPw==
-X-Gm-Message-State: AOAM53031B3Ivz7/kcJqZbIlfGqcBbBJ9kk9/4fRf1wG1FNnJALNKk3z
-        Gj4X017ekgk7bskuKazRFvY=
-X-Google-Smtp-Source: ABdhPJwjqrtFluXvvrz63pW7odh2ArGWcrHPjVu1LB3+cE21kXqVjNBk4w7GSgYFMwwe6AGVJYJ/Ag==
-X-Received: by 2002:a63:2d6:: with SMTP id 205mr3524267pgc.64.1642963231993;
-        Sun, 23 Jan 2022 10:40:31 -0800 (PST)
-Received: from localhost (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id f9sm9845631pgf.94.2022.01.23.10.40.31
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Q/0EoSGGxiZheENQx8vu+lEDidbqKZoQ7scM3xHmiOA=;
+        b=FADSu6GiYBWPpTr9T8taL8q6/u6ragO5HmbOMG9P8ANWESQxsGOIpGOabKDFehYYoJ
+         uv4tPJfw5cTfm495FuT0IouwQf1ENe4ope6ZgrqVrEa4y+HGqibpNuBvtqu1Pb2bZ1VI
+         RaQLyy6MNdz2hfHOydABA9OJzV9KfhePegvYuz7mYd3oPPqinlXl2wzsK+4sSsHYB/VD
+         9b5UnSHP8Is47RM3lTy6hDaObLgJVXSQTYPe6X83NkU7WXWCk9IEsjRUUQyk5rzlFYhU
+         862x+PXh/fJnOeHtBPa57sgP4Okdym7f1OJpzTuyPTzSNUfrS6l9VubsF4ufFxDhw/Xj
+         BRLQ==
+X-Gm-Message-State: AOAM531zM4CQvBJIcFtz3ijllUNfHr0+htIYkoMeOAigqzU8RmLbtAgS
+        9OdfNlqSZTYlkTUEG4uf/gw=
+X-Google-Smtp-Source: ABdhPJwwrWFNQAMgjIlpLcOihRvDCG3iOlaR6bE951uOm6yRBbo5Oyhd8NWqdd0Ip6SYmqGCCaZo5Q==
+X-Received: by 2002:a7b:cf31:: with SMTP id m17mr8741032wmg.183.1642963236844;
+        Sun, 23 Jan 2022 10:40:36 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id n15sm9938604wrf.37.2022.01.23.10.40.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Jan 2022 10:40:31 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Yang Guang <yang.guang5@zte.com.cn>, linux-ia64@vger.kernel.org
-Subject: [PATCH 14/54] arch/ia64: replace cpumask_weight with cpumask_empty where appropriate
-Date:   Sun, 23 Jan 2022 10:38:45 -0800
-Message-Id: <20220123183925.1052919-15-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220123183925.1052919-1-yury.norov@gmail.com>
-References: <20220123183925.1052919-1-yury.norov@gmail.com>
+        Sun, 23 Jan 2022 10:40:36 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: usb: asix: remove redundant assignment to variable reg
+Date:   Sun, 23 Jan 2022 18:40:35 +0000
+Message-Id: <20220123184035.112785-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-setup_arch() calls cpumask_weight() to check if any bit of a given cpumask
-is set. We can do it more efficiently with cpumask_empty() because
-cpumask_empty() stops traversing the cpumask as soon as it finds first set
-bit, while cpumask_weight() counts all bits unconditionally.
+Variable reg is being masked however the variable is never read
+after this. The assignment is redundant and can be removed.
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- arch/ia64/kernel/setup.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/usb/asix_devices.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/arch/ia64/kernel/setup.c b/arch/ia64/kernel/setup.c
-index 5010348fa21b..fd6301eafa9d 100644
---- a/arch/ia64/kernel/setup.c
-+++ b/arch/ia64/kernel/setup.c
-@@ -572,7 +572,7 @@ setup_arch (char **cmdline_p)
- #ifdef CONFIG_ACPI_HOTPLUG_CPU
- 	prefill_possible_map();
- #endif
--	per_cpu_scan_finalize((cpumask_weight(&early_cpu_possible_map) == 0 ?
-+	per_cpu_scan_finalize((cpumask_empty(&early_cpu_possible_map) ?
- 		32 : cpumask_weight(&early_cpu_possible_map)),
- 		additional_cpus > 0 ? additional_cpus : 0);
- #endif /* CONFIG_ACPI_NUMA */
+diff --git a/drivers/net/usb/asix_devices.c b/drivers/net/usb/asix_devices.c
+index 4514d35ef4c4..9b72334aabb6 100644
+--- a/drivers/net/usb/asix_devices.c
++++ b/drivers/net/usb/asix_devices.c
+@@ -858,7 +858,6 @@ static int marvell_phy_init(struct usbnet *dev)
+ 		reg = asix_mdio_read(dev->net, dev->mii.phy_id,
+ 			MII_MARVELL_LED_CTRL);
+ 		netdev_dbg(dev->net, "MII_MARVELL_LED_CTRL (2) = 0x%04x\n", reg);
+-		reg &= 0xfc0f;
+ 	}
+ 
+ 	return 0;
 -- 
-2.30.2
+2.33.1
 
