@@ -2,86 +2,93 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0844CC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 09:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B013C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 09:20:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236085AbiAWJRT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 04:17:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40844 "EHLO
+        id S236097AbiAWJUV (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 04:20:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbiAWJRR (ORCPT
+        with ESMTP id S230401AbiAWJUT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 04:17:17 -0500
+        Sun, 23 Jan 2022 04:20:19 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B642C06173B;
-        Sun, 23 Jan 2022 01:17:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84BD3C06173B;
+        Sun, 23 Jan 2022 01:20:19 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 23EB760920;
-        Sun, 23 Jan 2022 09:17:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ED734C340E2;
-        Sun, 23 Jan 2022 09:17:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 21ACE60921;
+        Sun, 23 Jan 2022 09:20:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 42B53C340E2;
+        Sun, 23 Jan 2022 09:20:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642929436;
-        bh=T5B5ekyVJC+CZ64ohYULuUfaqWzSUcjA8KoiSEczAm8=;
+        s=k20201202; t=1642929618;
+        bh=Dj6LQFC0Rt8FZEOhmYI8OL38h0K/bUpUPb0UB+tnZ04=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Wr5iCOtaj1gdnpElkHT3Kfncf7cXEpvQsxYanq9Egt+3Agh92wRlrBu33JC4ddm4z
-         cwbj4Aygtz05BIKOdXXLjAfQLMFX2xKKY2kXewv1RzAVVbwshc54b2zLfN9TioCrYJ
-         kDbv54jnmng3FzcUUYM6bGEhR066ZxtUsBeOkciMS20yKYcI1up0A3jeDxWGja8nMd
-         avOhliGtcC3Olkc25YE5lD1KNMSWOqkE7r+c/SXnl9I1V3Bfa1lhCdT4JQ1GNgMVf3
-         B7LAYh8n1X7RKyPETk49a1v9yZyLX9B8CTev9tQEFG+qu4ywcg2hJNUGXlMNuNY7kP
-         n6zpejDMLcpYQ==
-Date:   Sun, 23 Jan 2022 17:09:36 +0800
+        b=ddr8J3QFItYLfJ90lbG74ECaXAThq37UnIESGdmin4cpD9hObbT2Cgnl6QXBZu0wZ
+         7X8ny859qZekzDnAR+PZFii/Dc2plkluME3Iojpn1I8lXW+DD/X4UEmXSuVM/c6ipW
+         fg9cjBd5mHlYdPMm5TgLfx3+CBC9gXnmg/W5WQFmWOUvSWqmjsjHn2lb8UTOo6wC5G
+         5sbrvSdT0tW9/pXelP1ff15Vucl4z/A05TNtsTnwuLykCh6X6uqbx5U03GaRo3Fco0
+         Ym4jHSzh6PdZDqQMGifzu/ucMrwGXPHo45QnR3yJgCHcMGc2+ExHNR6i7anFhFBObl
+         Lq8VP3PWdxmWQ==
+Date:   Sun, 23 Jan 2022 17:12:40 +0800
 From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Suren Baghdasaryan <surenb@google.com>
-Cc:     sfr@canb.auug.org.au, akpm@linux-foundation.org,
-        torvalds@linux-foundation.org, linux-kernel@vger.kernel.org,
-        linux-next@vger.kernel.org
-Subject: Re: [PATCH 1/1] sysctl: Fix 'one_thousand' defined but not used
- warning
-Message-ID: <Ye0bUGBJWRp+abEF@xhacker>
-References: <20220117012317.21168-1-surenb@google.com>
+To:     Mayuresh Chitale <mchitale@ventanamicro.com>
+Cc:     Paul Walmsley <paul.walmsley@sifive.com>,
+        Palmer Dabbelt <palmer@dabbelt.com>,
+        Albert Ou <aou@eecs.berkeley.edu>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Michal Marek <michal.lkml@markovi.net>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Tong Tiangen <tongtiangen@huawei.com>,
+        linux-riscv@lists.infradead.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kbuild@vger.kernel.org
+Subject: Re: [PATCH 11/12] riscv: extable: add a dedicated uaccess handler
+Message-ID: <Ye0cCI8aAC8rL1IE@xhacker>
+References: <20211118192130.48b8f04c@xhacker>
+ <20211118192651.605d0c80@xhacker>
+ <CAN37VV6vfee+T18UkbDLe1ts87+Zvg25oQR1+VJD3e6SJFPPiA@mail.gmail.com>
+ <YeqkIKUsdHH0ORxf@xhacker>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20220117012317.21168-1-surenb@google.com>
+In-Reply-To: <YeqkIKUsdHH0ORxf@xhacker>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 16, 2022 at 05:23:17PM -0800, Suren Baghdasaryan wrote:
-> Fix the following warning issued when CONFIG_PERF_EVENTS is not
-> defined:
+On Fri, Jan 21, 2022 at 08:16:51PM +0800, Jisheng Zhang wrote:
+> On Thu, Jan 20, 2022 at 11:45:34PM +0530, Mayuresh Chitale wrote:
+> > Hello Jisheng,
 > 
-> kernel/sysctl.c:125:12: warning: 'one_thousand' defined but not used [-Wunused-variable]
+> Hi,
 > 
-> Fixes: 39c65a94cd96 ("mm/pagealloc: sysctl: change watermark_scale_factor max limit to 30%")
-> Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
-> Signed-off-by: Suren Baghdasaryan <surenb@google.com>
-> ---
->  kernel/sysctl.c | 2 ++
->  1 file changed, 2 insertions(+)
+> > 
+> > Just wanted to inform you that this patch breaks the writev02 test
+> > case in LTP and if it is reverted then the test passes. If we run the
+> > test through strace then we see that the test hangs and following is
+> > the last line printed by strace:
+> > 
+> > "writev(3, [{iov_base=0x7fff848a6000, iov_len=8192}, {iov_base=NULL,
+> > iov_len=0}]"
+> > 
 > 
-> diff --git a/kernel/sysctl.c b/kernel/sysctl.c
-> index ef77be575d87..81a6f2d47f77 100644
-> --- a/kernel/sysctl.c
-> +++ b/kernel/sysctl.c
-> @@ -122,7 +122,9 @@ static unsigned long one_ul = 1;
->  static unsigned long long_max = LONG_MAX;
->  static int one_hundred = 100;
->  static int two_hundred = 200;
-> +#ifdef CONFIG_PERF_EVENTS
->  static int one_thousand = 1000;
+> Thanks for the bug report. I will try to fix it.
 
-what about moving one_thousand definition below to group it with
-six_hundred_forty_kb var together, so that we can avoid one
-#ifdef CONFIG_PERF_EVENTS ... #endif
+Hi Mayuresh,
 
-> +#endif
->  static int three_thousand = 3000;
->  #ifdef CONFIG_PRINTK
->  static int ten_thousand = 10000;
-> -- 
-> 2.34.1.703.g22d0c6ccf7-goog
-> 
+I just sent out a fix for this bug. Per my test, the issue is fixed.
+Could you please try?
+
+Thanks
