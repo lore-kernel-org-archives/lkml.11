@@ -2,65 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C57DDC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 15:47:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4916C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 15:52:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238119AbiAWPrX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 10:47:23 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33296 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238091AbiAWPrS (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 10:47:18 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1A97EB80DC1
-        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 15:47:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPS id CA3B0C340E9;
-        Sun, 23 Jan 2022 15:47:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642952835;
-        bh=fR1TLmxDKvQWn3K4dM7x48ekKKBzQONMbgdTzItKlPc=;
-        h=Subject:From:In-Reply-To:References:Date:To:Cc:From;
-        b=htmwcl//K8q7VsEmjnu+HuidTG3xjPMnJbyB8bRlRA0UAxgCjFdetmWIVGHwLxfnP
-         /VMK2uI22cigUpHtiIVfVMbfKt2TIpJLHnxpK0raynwtdbfEWMJRQyEQRx9foqsNX0
-         JKnAGhl742hhhe12dajMMg4ARLqtr5DwirrCJgKCIP2BIlja2nnk3pbVswnNa5SHPG
-         Wbp+zUuNInZe2zdvei4vdQk4ntJvNo0XTZrOoPC69QmvRiepQjz67SpDaj6CBwsJ81
-         GM15PRjRUR7IrDFHdDaJqM93eWixsIgudDWWk8L27wq14la+FP548s04is1LBXydAk
-         WzRK2dKJDEf7g==
-Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id B6717C395DF;
-        Sun, 23 Jan 2022 15:47:15 +0000 (UTC)
-Subject: Re: [GIT PULL] irq/urgent for v5.17-rc2
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <Ye04diH6Q/UtQ+Tg@zn.tnic>
-References: <Ye04diH6Q/UtQ+Tg@zn.tnic>
-X-PR-Tracked-List-Id: <linux-kernel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <Ye04diH6Q/UtQ+Tg@zn.tnic>
-X-PR-Tracked-Remote: git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/irq_urgent_for_v5.17_rc2
-X-PR-Tracked-Commit-Id: a0af3d1104f752b6d0dba71788e3fddd67c857a7
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: ac5a9bb6b4fa22135b3e371ac9787de120e18c8d
-Message-Id: <164295283574.26749.13958351879754010951.pr-tracker-bot@kernel.org>
-Date:   Sun, 23 Jan 2022 15:47:15 +0000
-To:     Borislav Petkov <bp@suse.de>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        x86-ml <x86@kernel.org>, lkml <linux-kernel@vger.kernel.org>
+        id S238192AbiAWPwm (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 10:52:42 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:49648 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238181AbiAWPwk (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Sun, 23 Jan 2022 10:52:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=lunn.ch;
+        s=20171124; h=In-Reply-To:Content-Disposition:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:From:Sender:Reply-To:Subject:
+        Date:Message-ID:To:Cc:MIME-Version:Content-Type:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Content-Disposition:In-Reply-To:References;
+        bh=EMC6Ft10JXwi16PGGMWQ1pe3LM0kkBsvwtaXhgSs0wM=; b=EO0tRbP4Cm6mmtzSNEUjPEe+fN
+        gEll1aTSwCLFqWNaKAehFMt6LO3f3TV6EsNHAZGABi4xyxeHb8Tpf+vbNq26LfSK0KL9iDpWUzJZI
+        +kQE8nHGPjqqqISIy1/DC/Yk4uQ+cxG41jqOjV8AQAKzMk3WcnoirV20gNJSx7do3ELU=;
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94.2)
+        (envelope-from <andrew@lunn.ch>)
+        id 1nBfAL-002OLT-JC; Sun, 23 Jan 2022 16:52:29 +0100
+Date:   Sun, 23 Jan 2022 16:52:29 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jisheng Zhang <jszhang@kernel.org>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: stmmac: don't stop RXC during LPI
+Message-ID: <Ye15va7tFWMgKPEE@lunn.ch>
+References: <20220123141245.1060-1-jszhang@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220123141245.1060-1-jszhang@kernel.org>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The pull request you sent on Sun, 23 Jan 2022 12:13:58 +0100:
+On Sun, Jan 23, 2022 at 10:12:45PM +0800, Jisheng Zhang wrote:
+> I met can't receive rx pkt issue with below steps:
+> 0.plug in ethernet cable then boot normal and get ip from dhcp server
+> 1.quickly hotplug out then hotplug in the ethernet cable
+> 2.trigger the dhcp client to renew lease
+> 
+> tcpdump shows that the request tx pkt is sent out successfully,
+> but the mac can't receive the rx pkt.
+> 
+> The issue can easily be reproduced on platforms with PHY_POLL external
+> phy. If we don't allow the phy to stop the RXC during LPI, the issue
+> is gone. I think it's unsafe to stop the RXC during LPI because the mac
+> needs RXC clock to support RX logic.
+> 
+> And the 2nd param clk_stop_enable of phy_init_eee() is a bool, so use
+> false instead of 0.
+> 
+> Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index 6708ca2aa4f7..92a9b0b226b1 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -1162,7 +1162,7 @@ static void stmmac_mac_link_up(struct phylink_config *config,
+>  
+>  	stmmac_mac_set(priv, priv->ioaddr, true);
+>  	if (phy && priv->dma_cap.eee) {
+> -		priv->eee_active = phy_init_eee(phy, 1) >= 0;
+> +		priv->eee_active = phy_init_eee(phy, false) >= 0;
 
-> git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git tags/irq_urgent_for_v5.17_rc2
+This has not caused issues in the past. So i'm wondering if this is
+somehow specific to your system? Does everybody else use a PHY which
+does not implement this bit? Does your synthesis of the stmmac have a
+different clock tree?
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/ac5a9bb6b4fa22135b3e371ac9787de120e18c8d
+By changing this value for every instance of the stmmac, you are
+potentially causing a power regression for stmmac implementations
+which don't need the clock. So we need a clear understanding, stopping
+the clock is wrong in general and so the change is correct in
+general. Or this is specific to your system, and you probably need to
+add priv->dma_cap.keep_rx_clock_ticking, which you set in your glue
+driver,and use here to decide what to pass to phy_init_eee().
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/prtracker.html
+	   Andrew
