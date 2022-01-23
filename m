@@ -2,83 +2,109 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29053C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:15:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2962FC4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:15:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236039AbiAWAPh (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 19:15:37 -0500
-Received: from sin.source.kernel.org ([145.40.73.55]:46744 "EHLO
-        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231836AbiAWAOW (ORCPT
+        id S235588AbiAWAPp (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 19:15:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36896 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235477AbiAWAO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 19:14:22 -0500
+        Sat, 22 Jan 2022 19:14:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D309C061788;
+        Sat, 22 Jan 2022 16:13:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by sin.source.kernel.org (Postfix) with ESMTPS id 1621CCE0920;
-        Sun, 23 Jan 2022 00:14:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D27F1C36AE3;
-        Sun, 23 Jan 2022 00:14:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D6E760F9F;
+        Sun, 23 Jan 2022 00:13:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7FBB4C340EA;
+        Sun, 23 Jan 2022 00:13:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642896859;
-        bh=OksXVQlW/gPJ9LytV3kqPMDJ6mNVmLh35P/E7cdZ5+s=;
+        s=k20201202; t=1642896790;
+        bh=8YhMF9n/5Mxn8xZsLWfMDxc71WSqOIyTuusNeOqsYI8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=HavGGbOHXRRFsPjNnIcRSeA3zL8dBjBbZPnynUXu0VOKzZ9Oym4uBXWAnI9ZY1frN
-         BXZD+W8U5tjN4bXamvb6eVIDVxZDtBu2bEW7Ef/CWN+N4ZkAGjk3pYhDLQPGV7fsuH
-         8anQh+/DVXiy7iTe2zEBuazYPmexAyTFU+sd0z4VozXCNsz11xKE8i5Lk2amWtqqAp
-         fPDQDpB8Guhzv9/dtf62/Cjk2AfZlG70pmFgyoJRnL3nXfNDmNI0WxWwZor6cZ8Yb7
-         mO1vRKv0Bt/ziAIsqT7/ThFL0GthMA9zGdfHPBiAJzQbaLlWmemV6/PVmmc7CXXytv
-         zFSZAb0azr9Qg==
+        b=g83bsyQNelBe5K9ZZFcMDKPiv8LlulXVQ9DL0ieSZVuXVTaXIy2CxainZGXXJQ/pF
+         2vfb9P1/sJ+V981uf1yLbESyj134rNxydJPaN07+y/J/xS3Du93xokPYhbvPmCdZMX
+         Eb9B2qrfIF+JLzrw91xGTFvV+nRP/aUIrff98EcbQinG25aKU7p06RRJCL1DadLW4g
+         APavZ7liuKMbTdfDhVke0D7O49NhxPVFI4SKioVaTBlvQJvL21SRJGOUqQY9SPg+FH
+         dfS7FaWBLhpwjziRhfKm1F72ZP5V8zuOUGArP7hGZpBxXPVAJoqGuzAH6vs8nvIzFT
+         uBQOfccoDzNig==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     =?UTF-8?q?=E7=8E=8B=E8=B4=87?= <yun.wang@linux.alibaba.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, jasowang@redhat.com,
-        virtualization@lists.linux-foundation.org
-Subject: [PATCH AUTOSEL 4.14 3/4] virtio-pci: fix the confusing error message
-Date:   Sat, 22 Jan 2022 19:14:09 -0500
-Message-Id: <20220123001412.2460945-3-sashal@kernel.org>
+Cc:     Ignat Korchagin <ignat@cloudflare.com>,
+        Amir Razmjou <arazmjou@cloudflare.com>,
+        David Ahern <dsahern@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 3/9] sit: allow encapsulated IPv6 traffic to be delivered locally
+Date:   Sat, 22 Jan 2022 19:12:52 -0500
+Message-Id: <20220123001258.2460594-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220123001412.2460945-1-sashal@kernel.org>
-References: <20220123001412.2460945-1-sashal@kernel.org>
+In-Reply-To: <20220123001258.2460594-1-sashal@kernel.org>
+References: <20220123001258.2460594-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: 王贇 <yun.wang@linux.alibaba.com>
+From: Ignat Korchagin <ignat@cloudflare.com>
 
-[ Upstream commit 6017599bb25c20b7a68cbb8e7d534bdc1c36b5e4 ]
+[ Upstream commit ed6ae5ca437d9d238117d90e95f7f2cc27da1b31 ]
 
-The error message on the failure of pfn check should tell
-virtio-pci rather than virtio-mmio, just fix it.
+While experimenting with FOU encapsulation Amir noticed that encapsulated IPv6
+traffic fails to be delivered, if the peer IP address is configured locally.
 
-Signed-off-by: Michael Wang <yun.wang@linux.alibaba.com>
-Suggested-by: Michael S. Tsirkin <mst@redhat.com>
-Link: https://lore.kernel.org/r/ae5e154e-ac59-f0fa-a7c7-091a2201f581@linux.alibaba.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+It can be easily verified by creating a sit interface like below:
+
+$ sudo ip link add name fou_test type sit remote 127.0.0.1 encap fou encap-sport auto encap-dport 1111
+$ sudo ip link set fou_test up
+
+and sending some IPv4 and IPv6 traffic to it
+
+$ ping -I fou_test -c 1 1.1.1.1
+$ ping6 -I fou_test -c 1 fe80::d0b0:dfff:fe4c:fcbc
+
+"tcpdump -i any udp dst port 1111" will confirm that only the first IPv4 ping
+was encapsulated and attempted to be delivered.
+
+This seems like a limitation: for example, in a cloud environment the "peer"
+service may be arbitrarily scheduled on any server within the cluster, where all
+nodes are trying to send encapsulated traffic. And the unlucky node will not be
+able to. Moreover, delivering encapsulated IPv4 traffic locally is allowed.
+
+But I may not have all the context about this restriction and this code predates
+the observable git history.
+
+Reported-by: Amir Razmjou <arazmjou@cloudflare.com>
+Signed-off-by: Ignat Korchagin <ignat@cloudflare.com>
+Reviewed-by: David Ahern <dsahern@kernel.org>
+Link: https://lore.kernel.org/r/20220107123842.211335-1-ignat@cloudflare.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/virtio/virtio_pci_legacy.c | 2 +-
+ net/ipv6/sit.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/virtio/virtio_pci_legacy.c b/drivers/virtio/virtio_pci_legacy.c
-index de062fb201bc2..61add42862017 100644
---- a/drivers/virtio/virtio_pci_legacy.c
-+++ b/drivers/virtio/virtio_pci_legacy.c
-@@ -145,7 +145,7 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
- 	q_pfn = virtqueue_get_desc_addr(vq) >> VIRTIO_PCI_QUEUE_ADDR_SHIFT;
- 	if (q_pfn >> 32) {
- 		dev_err(&vp_dev->pci_dev->dev,
--			"platform bug: legacy virtio-mmio must not be used with RAM above 0x%llxGB\n",
-+			"platform bug: legacy virtio-pci must not be used with RAM above 0x%llxGB\n",
- 			0x1ULL << (32 + PAGE_SHIFT - 30));
- 		err = -E2BIG;
- 		goto out_del_vq;
+diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
+index bab0e99f6e356..db098d3f9d6fc 100644
+--- a/net/ipv6/sit.c
++++ b/net/ipv6/sit.c
+@@ -949,7 +949,7 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
+ 		dst_cache_set_ip4(&tunnel->dst_cache, &rt->dst, fl4.saddr);
+ 	}
+ 
+-	if (rt->rt_type != RTN_UNICAST) {
++	if (rt->rt_type != RTN_UNICAST && rt->rt_type != RTN_LOCAL) {
+ 		ip_rt_put(rt);
+ 		dev->stats.tx_carrier_errors++;
+ 		goto tx_error_icmp;
 -- 
 2.34.1
 
