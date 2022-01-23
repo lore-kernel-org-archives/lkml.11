@@ -2,110 +2,123 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50060C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 13:40:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B0AC4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 13:48:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236458AbiAWNkE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 08:40:04 -0500
-Received: from mxwww.masterlogin.de ([95.129.51.170]:46452 "EHLO
-        mxwww.masterlogin.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231578AbiAWNkC (ORCPT
+        id S236501AbiAWNsY (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 08:48:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42840 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236493AbiAWNsX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 08:40:02 -0500
-Received: from mxout2.routing.net (unknown [192.168.10.82])
-        by backup.mxwww.masterlogin.de (Postfix) with ESMTPS id E8DB32C420;
-        Sun, 23 Jan 2022 13:35:29 +0000 (UTC)
-Received: from mxbox3.masterlogin.de (unknown [192.168.10.78])
-        by mxout2.routing.net (Postfix) with ESMTP id 75F2C5FD36;
-        Sun, 23 Jan 2022 13:35:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mailerdienst.de;
-        s=20200217; t=1642944924;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=kyAI46PXFZta1W1LeVBMj4Z45GAo6fYKangEavewQgg=;
-        b=AgK/n/8ym395X77+aJoMETITWME7G0FhMd2RmvbRvOAxSxI/lPKExo4HQIrSDSZGiLfOjA
-        X8SCBvNUn0ObIrMRMVqeKaEdIKpdhubp1F5e111mLBrJfEz+/+sq4cEGAJ2k7GzkDgPa0e
-        PSpHg9y8Pltqo8JfFXaoN339IJgBYAA=
-Received: from localhost.localdomain (fttx-pool-80.245.79.232.bambit.de [80.245.79.232])
-        by mxbox3.masterlogin.de (Postfix) with ESMTPSA id AC2CC36019F;
-        Sun, 23 Jan 2022 13:35:23 +0000 (UTC)
-From:   Frank Wunderlich <linux@fw-web.de>
-To:     linux-rockchip@lists.infradead.org
-Cc:     Frank Wunderlich <frank-w@public-files.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Michael Riesch <michael.riesch@wolfvision.net>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Peter Geis <pgwipeout@gmail.com>
-Subject: [PATCH v2] arm64: dts: rk3568: drop pclk_xpcs from gmac0
-Date:   Sun, 23 Jan 2022 14:35:10 +0100
-Message-Id: <20220123133510.135651-1-linux@fw-web.de>
-X-Mailer: git-send-email 2.25.1
+        Sun, 23 Jan 2022 08:48:23 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F3CC06173B;
+        Sun, 23 Jan 2022 05:48:23 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id br17so43903132lfb.6;
+        Sun, 23 Jan 2022 05:48:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=tT2QsM3sOU580118+Y+fw5XqnLQNgWoMgfe/Dm4461M=;
+        b=WnZzxJs3kLiXg2qX/fHVvRJ6dSgPkl/UdgR8Ru2VwL728msT1somaEusBekyTJYtpd
+         OefTD6jywZZA81pTC3dlmLrx4LG4cAk138DzYBwfY/tPgcbvTIf9gPSP3Pf6KOCat06E
+         Bc08p+cZEoYERzUH0oRHJXFNTH5qrSC9DUYsE4SiwgOcm/GqDWrO+peWlUGxt4VJlgqW
+         FoaOSbTHRHQ0J/8z/rWWfcqofl9tdaosurcHMMVNFhkaH+tLKD9aQTEGsZ5Me/SF7tOH
+         Ukih3vmJ6ucynwyJSVEvsj6c5EKDggFn6j16XiU46zEmdj1RjpLrk/zIN7gy9+hxy0wd
+         Pn9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=tT2QsM3sOU580118+Y+fw5XqnLQNgWoMgfe/Dm4461M=;
+        b=IRfPbZ9DMI4IPYIsdAoDh9+aal+7/i9yicygFQgVmhqjgHPPh/zQ7NWAIzPutCnF2W
+         rkP09ZTWNPxWEi16B6z001y8iRhn6PvYrrxzrCo5TkYTmXPnvzIa6oZPkFRL3zzRyYCF
+         zVY/LeYCpw0bJLqBmfQbZy96SbVKdr1K781MqKUOgKG+TEvey9Z9eTnvp7pPyh+xp/2U
+         AytVEvmPkHe0DFKFG+WDtBGNAhuqgQMZdsNGGT19yNzAf4CvXLBTMHrq3qZfL6KWgraW
+         S8zgqU+pgF62MyRhPn8MHSMQqvY1mhJrAy677JrmDygAGvJmvOCyi4GC9ICaAafVlBxa
+         3boQ==
+X-Gm-Message-State: AOAM530Kwv7xC6wZHTpoWKONrgmD92QKo3NHFQhbOzezZtJkZuVFrh1+
+        kbvcbaMWTyQP3O2mtoHxEjA=
+X-Google-Smtp-Source: ABdhPJxCat9CBAklA6IWceY3oZF62+seQ6TBE1nFUXX8xff7baTG41pFN+oo2iwzXcUMfbzMSlLDdA==
+X-Received: by 2002:a05:6512:16a6:: with SMTP id bu38mr9890501lfb.168.1642945701265;
+        Sun, 23 Jan 2022 05:48:21 -0800 (PST)
+Received: from [192.168.1.11] ([94.103.227.208])
+        by smtp.gmail.com with ESMTPSA id k14sm664406ljh.82.2022.01.23.05.48.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 23 Jan 2022 05:48:20 -0800 (PST)
+Message-ID: <192d9115-864f-d2c1-d11b-d75c23c26102@gmail.com>
+Date:   Sun, 23 Jan 2022 16:48:19 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Mail-ID: 0bbcd62c-25de-453c-b067-23a97143c961
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH] drivers: net: remove a dangling pointer in
+ peak_usb_create_dev
+Content-Language: en-US
+To:     Dongliang Mu <mudongliangabcd@gmail.com>
+Cc:     Dongliang Mu <dzm91@hust.edu.cn>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Stephane Grosjean <s.grosjean@peak-system.com>,
+        =?UTF-8?Q?Stefan_M=c3=a4tje?= <stefan.maetje@esd.eu>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        linux-can@vger.kernel.org,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20220120130605.55741-1-dzm91@hust.edu.cn>
+ <b5cb1132-2f6b-e2da-78c7-1828b3617bc3@gmail.com>
+ <CAD-N9QWvfoo_HtQ+KT-7JNFumQMaq8YqMkHGR2t7pDKsDW0hkQ@mail.gmail.com>
+ <CAD-N9QUfiTNqs7uOH3C99oMNdqFXh+MKLQ94BkQou_T7-yU_mg@mail.gmail.com>
+ <CAD-N9QUZ95zqboe=58gybue6ssSO-M-raijd3XnGXkXnp3wiqQ@mail.gmail.com>
+ <8d4b0822-4e94-d124-e191-bec3effaf97c@gmail.com>
+ <CAD-N9QUATFcaOO2reg=Y0jum83UJGOzMhcX3ukCY+cY-XCJaPA@mail.gmail.com>
+From:   Pavel Skripkin <paskripkin@gmail.com>
+In-Reply-To: <CAD-N9QUATFcaOO2reg=Y0jum83UJGOzMhcX3ukCY+cY-XCJaPA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Frank Wunderlich <frank-w@public-files.de>
+Hi Dongliang,
 
-pclk_xpcs is not supported by mainline driver and breaks dtbs_check
+On 1/22/22 09:45, Dongliang Mu wrote:
+[...]
 
-following warnings occour, and many more
+>> Yeah, it seems like (at least based on code), that this dangling pointer
+>> is not dangerous, since nothing accesses it. And next_siblings
+>> _guaranteed_ to be NULL, since dev->next_siblings is set NULL in
+>> disconnect()
+> 
+> Yes, you're right. As a security researcher, I am sensitive to such
+> dangling pointers.
+> 
+> As its nullifying site is across functions, I suggest developers
+> remove this dangling pointer in case that any newly added code in this
+> function or before the nullifying location would touch next_siblings.
+> 
 
-rk3568-evb1-v10.dt.yaml: ethernet@fe2a0000: clocks:
-    [[15, 386], [15, 389], [15, 389], [15, 184], [15, 180], [15, 181],
-    [15, 389], [15, 185], [15, 172]] is too long
-	From schema: Documentation/devicetree/bindings/net/snps,dwmac.yaml
-rk3568-evb1-v10.dt.yaml: ethernet@fe2a0000: clock-names:
-    ['stmmaceth', 'mac_clk_rx', 'mac_clk_tx', 'clk_mac_refout', 'aclk_mac',
-    'pclk_mac', 'clk_mac_speed', 'ptp_ref', 'pclk_xpcs'] is too long
-	From schema: Documentation/devicetree/bindings/net/snps,dwmac.yaml
+Based on git blame this driver is very old (was added in 2012), so, I 
+guess, nothing really new will come up.
 
-after removing it, the clock and other warnings are gone.
+Anyway, I am absolutely not a security person and if you think, that 
+this dangling pointer can be somehow used in exploitation you should 
+state it in commit message.
 
-pclk_xpcs on gmac is used to support QSGMII, but this requires a driver
-supporting it.
-Once xpcs support is introduced, the clock can be added to the
-documentation and both controllers.
 
-Fixes: b8d41e5053cd ("arm64: dts: rockchip: add gmac0 node to rk3568")
-Co-developed-by: Peter Geis <pgwipeout@gmail.com>
-Signed-off-by: Peter Geis <pgwipeout@gmail.com>
-Signed-off-by: Frank Wunderlich <frank-w@public-files.de>
-Acked-by: Michael Riesch <michael.riesch@wolfvision.net>
----
-changes in v2:
-  - rebase on 5.17-rc1
-  - separate from bpi-r2pro series
-  - changed commit-message
+> If Pavel and others think it's fine, then it's time to close this patch.
+> 
 
----
- arch/arm64/boot/dts/rockchip/rk3568.dtsi | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+I don't have any big objections on the code itself. Maybe only 'if' can 
+be removed to just speed up the code, but I don't see why this change is 
+needed :)
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3568.dtsi b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
-index 2fd313a295f8..d91df1cde736 100644
---- a/arch/arm64/boot/dts/rockchip/rk3568.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3568.dtsi
-@@ -32,13 +32,11 @@ gmac0: ethernet@fe2a0000 {
- 		clocks = <&cru SCLK_GMAC0>, <&cru SCLK_GMAC0_RX_TX>,
- 			 <&cru SCLK_GMAC0_RX_TX>, <&cru CLK_MAC0_REFOUT>,
- 			 <&cru ACLK_GMAC0>, <&cru PCLK_GMAC0>,
--			 <&cru SCLK_GMAC0_RX_TX>, <&cru CLK_GMAC0_PTP_REF>,
--			 <&cru PCLK_XPCS>;
-+			 <&cru SCLK_GMAC0_RX_TX>, <&cru CLK_GMAC0_PTP_REF>;
- 		clock-names = "stmmaceth", "mac_clk_rx",
- 			      "mac_clk_tx", "clk_mac_refout",
- 			      "aclk_mac", "pclk_mac",
--			      "clk_mac_speed", "ptp_ref",
--			      "pclk_xpcs";
-+			      "clk_mac_speed", "ptp_ref";
- 		resets = <&cru SRST_A_GMAC0>;
- 		reset-names = "stmmaceth";
- 		rockchip,grf = <&grf>;
--- 
-2.25.1
 
+
+
+With regards,
+Pavel Skripkin
