@@ -2,69 +2,100 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA2AC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65509C433EF
 	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 15:39:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234956AbiAWPjo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 10:39:44 -0500
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:56145 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237913AbiAWPjn (ORCPT
+        id S237898AbiAWPji (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 10:39:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40248 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237892AbiAWPjc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 10:39:43 -0500
+        Sun, 23 Jan 2022 10:39:32 -0500
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 052F7C06173B
+        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 07:39:30 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 69B2560003;
-        Sun, 23 Jan 2022 15:39:41 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id CE7CA20004;
+        Sun, 23 Jan 2022 15:39:24 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Dario Binacchi <dario.binacchi@amarulasolutions.com>,
-        linux-kernel@vger.kernel.org
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Michael Trimarchi <michael@amarulasolutions.com>,
-        Sascha Hauer <s.hauer@pengutronix.de>, Han Xu <han.xu@nxp.com>,
+To:     Patrick Williams <patrick@stwcx.xyz>,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Michael Walle <michael@walle.cc>,
+        Pratyush Yadav <p.yadav@ti.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
         Richard Weinberger <richard@nod.at>,
         Vignesh Raghavendra <vigneshr@ti.com>,
-        linux-mtd@lists.infradead.org
-Subject: Re: [PATCH 3/4] mtd: rawnand: gpmi: validate controller clock rate
-Date:   Sun, 23 Jan 2022 16:39:41 +0100
-Message-Id: <20220123153941.673301-1-miquel.raynal@bootlin.com>
+        Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
+Cc:     Potin Lai <potin.lai@quantatw.com>, linux-mtd@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] mtd: aspeed-smc: improve probe resilience
+Date:   Sun, 23 Jan 2022 16:39:24 +0100
+Message-Id: <20220123153924.673172-1-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220118095434.35081-4-dario.binacchi@amarulasolutions.com>
+In-Reply-To: <20211229143334.297305-1-patrick@stwcx.xyz>
 References: 
 MIME-Version: 1.0
 X-linux-mtd-patch-notification: thanks
-X-linux-mtd-patch-commit: b'15e27d197a7ea69b4643791ca2f8467fdd998359'
+X-linux-mtd-patch-commit: b'7f852ec58af6ce8d7c6fc799b82d45d76e4bd994'
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Tue, 2022-01-18 at 09:54:33 UTC, Dario Binacchi wrote:
-> What to do when the real rate of the gpmi clock is not equal to the
-> required one? The solutions proposed in [1] did not lead to a conclusion
-> on how to validate the clock rate, so, inspired by the document [2], I
-> consider the rate correct only if not lower or equal to the rate of the
-> previous edo mode. In fact, in chapter 4.16.2 (NV-DDR) of the document [2],
-> it is written that "If the host selects timing mode n, then its clock
-> period shall be faster than the clock period of timing mode n-1 and
-> slower than or equal to the clock period of timing mode n.". I thought
-> that it could therefore also be used in this case, without therefore
-> having to define the valid rate ranges empirically.
+On Wed, 2021-12-29 at 14:33:33 UTC, Patrick Williams wrote:
+> The aspeed-smc can have multiple SPI devices attached to it in the
+> device tree.  If one of the devices is missing or failing the entire
+> probe will fail and all MTD devices under the controller will be
+> removed.  On OpenBMC this results in a kernel panic due to missing
+> rootfs:
 > 
-> For example, suppose that gpmi_nfc_compute_timings() is called to set
-> edo mode 5 (100MHz) but the rate returned by clk_round_rate() is 80MHz
-> (edo mode 4). In this case gpmi_nfc_compute_timings() will return error,
-> and will be called again to set edo mode 4, which this time will be
-> successful.
+> [    0.538774] aspeed-smc 1e620000.spi: Using 50 MHz SPI frequency
+> [    0.540471] aspeed-smc 1e620000.spi: w25q01jv-iq (131072 Kbytes)
+> [    0.540750] aspeed-smc 1e620000.spi: CE0 window [ 0x20000000 - 0x28000000 ] 128MB
+> [    0.540943] aspeed-smc 1e620000.spi: CE1 window [ 0x28000000 - 0x2c000000 ] 64MB
+> [    0.541143] aspeed-smc 1e620000.spi: read control register: 203b0041
+> [    0.581442] 5 fixed-partitions partitions found on MTD device bmc
+> [    0.581625] Creating 5 MTD partitions on "bmc":
+> [    0.581854] 0x000000000000-0x0000000e0000 : "u-boot"
+> [    0.584472] 0x0000000e0000-0x000000100000 : "u-boot-env"
+> [    0.586468] 0x000000100000-0x000000a00000 : "kernel"
+> [    0.588465] 0x000000a00000-0x000006000000 : "rofs"
+> [    0.590552] 0x000006000000-0x000008000000 : "rwfs"
+> [    0.592605] aspeed-smc 1e620000.spi: Using 50 MHz SPI frequency
+> [    0.592801] aspeed-smc 1e620000.spi: unrecognized JEDEC id bytes: 00 00 00 00 00 00
+> [    0.593039] Deleting MTD partitions on "bmc":
+> [    0.593175] Deleting u-boot MTD partition
+> [    0.637929] Deleting u-boot-env MTD partition
+> [    0.829527] Deleting kernel MTD partition
+> [    0.856902] Freeing initrd memory: 1032K
+> [    0.866428] Deleting rofs MTD partition
+> [    0.906264] Deleting rwfs MTD partition
+> [    0.986628] aspeed-smc 1e620000.spi: Aspeed SMC probe failed -2
+> [    0.986929] aspeed-smc: probe of 1e620000.spi failed with error -2
+> ...
+> [    2.936719] /dev/mtdblock: Can't open blockdev
+> mount: mounting /dev/mtdblock on run/initramfs/ro failed: No such file or directory
+> [    2.963030] MTD: Couldn't look up '/dev/mtdblock': -2
+> mount: mounting /dev/mtdblock on run/initramfs/rw failed: No such file or directory
 > 
-> [1] https://lore.kernel.org/r/20210702065350.209646-5-ebiggers@kernel.org
-> [2] http://www.onfi.org/-/media/client/onfi/specs/onfi_3_0_gold.pdf?la=en
+> Mounting read-write /dev/mtdblock filesystem failed.  Please fix and run
+> 	mount /dev/mtdblock run/initramfs/rw -t jffs2 -o rw
+> or perform a factory reset with the clean-rwfs-filesystem option.
+> Fatal error, triggering kernel panic!
+> [    3.013047] Kernel panic - not syncing: Attempted to kill init! exitcode=0x00000100
 > 
-> Co-developed-by: Michael Trimarchi <michael@amarulasolutions.com>
-> Signed-off-by: Michael Trimarchi <michael@amarulasolutions.com>
-> Signed-off-by: Dario Binacchi <dario.binacchi@amarulasolutions.com>
-> Tested-by: Sascha Hauer <s.hauer@pengutronix.de>
-> Reviewed-by: Sascha Hauer <s.hauer@pengutronix.de>
+> Many BMC designs have two flash chips so that they can handle a hardware
+> failure of one of them.  If one chip failed, it doesn't do any good to
+> have redundancy if they all get removed anyhow.
+> 
+> Improve the resilience of the probe function to handle one of the
+> children being missing or failed.  Only in the case where all children
+> fail to probe should the controller be failed out.
+> 
+> Signed-off-by: Patrick Williams <patrick@stwcx.xyz>
 
-Applied to https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git nand/next, thanks.
+Applied to https://git.kernel.org/pub/scm/linux/kernel/git/mtd/linux.git mtd/next, thanks.
 
 Miquel
