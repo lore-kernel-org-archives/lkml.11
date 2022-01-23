@@ -2,47 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7311C433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:14:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0627EC43217
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:14:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235361AbiAWAOB (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 19:14:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36730 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235520AbiAWANI (ORCPT
+        id S235548AbiAWAOQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 19:14:16 -0500
+Received: from sin.source.kernel.org ([145.40.73.55]:46196 "EHLO
+        sin.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235286AbiAWAN0 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 19:13:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9762C061772;
-        Sat, 22 Jan 2022 16:12:15 -0800 (PST)
+        Sat, 22 Jan 2022 19:13:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A60BEB80AB1;
-        Sun, 23 Jan 2022 00:12:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B509AC340E5;
-        Sun, 23 Jan 2022 00:12:12 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id B7CE1CE0ACC;
+        Sun, 23 Jan 2022 00:12:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 36D7DC340E2;
+        Sun, 23 Jan 2022 00:12:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642896733;
-        bh=MOSOdNrNX7YPNs5k15GRveQOjAdD2y3ACTA3CGnAruc=;
+        s=k20201202; t=1642896769;
+        bh=94AMPHSOMB0HPZgdjyDj+IRBX/Gt+wzDLbqEMbirc/s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sycsYueqpJBsOeIZjyUVXYC2H+w8iu0DGlhk7479mLOo2LEd72o4mb9bnUiw6zSiH
-         DJqlYZfPJthoGkoiLfUMt5dNrUreSHpW7CL/saHVlzBCuimf7dhjb8ITyUdPhme0zI
-         8xbDL7HWDVnnGce/KywRC8ieSj6oWHRlkohW74Tl4m0ttXLCg5zQY8Uj2axDYu0rR4
-         G+zm8NCM8EzPT5ch7xvhtlY0ruhRisSASexnv3YvXNOj+YH3pMRqd6LNmBUHdnlM4+
-         uNsqyt/8c0TGq/WzxOyyToZ+8BnNIKHHPdj54XYnYcG+9717Xcq76C+YV+3O7NA0Oq
-         h+QgJB0YF1orw==
+        b=LWGoU3AJkD9nVjesHd/41OidCDOR1jnscq454XaScSgH70WVt5RlUaiWfpNZ029sh
+         mmvIAfK4pshIjw5BmrDPcANOJlwrl1DE4B5QajzhGR8wC/SBubMA0s4yXvWPwAmzMG
+         4OiJVlWAp6KeQXJCb3+66zp8nd5sVJ92M4vF71dEkL3FnVXAVVw6pBQ4Vb+maQ7Pog
+         AKh86q0F6Tt1BRNWy4r/s6aVJ6rpfrOunIR3wrVfOALjLMuxNBasZQmCUjyiGHaW+K
+         FfshlZJcTXBHqRCGtpiSvnYJ+K2U31mWJhXL53E9ZgAFGxDX1NBSbWp84fkCA2lyaT
+         kXn23q2YGfTSA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jens Axboe <axboe@kernel.dk>,
-        Florian Fischer <florian.fl.fischer@fau.de>,
-        Sasha Levin <sashal@kernel.org>, io-uring@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 18/19] io_uring: perform poll removal even if async work removal is successful
-Date:   Sat, 22 Jan 2022 19:11:11 -0500
-Message-Id: <20220123001113.2460140-18-sashal@kernel.org>
+Cc:     Xianting Tian <xianting.tian@linux.alibaba.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Sasha Levin <sashal@kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 12/16] vhost/test: fix memory leak of vhost virtqueues
+Date:   Sat, 22 Jan 2022 19:12:11 -0500
+Message-Id: <20220123001216.2460383-12-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220123001113.2460140-1-sashal@kernel.org>
-References: <20220123001113.2460140-1-sashal@kernel.org>
+In-Reply-To: <20220123001216.2460383-1-sashal@kernel.org>
+References: <20220123001216.2460383-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -51,54 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jens Axboe <axboe@kernel.dk>
+From: Xianting Tian <xianting.tian@linux.alibaba.com>
 
-[ Upstream commit ccbf726171b7328f800bc98005132fd77eb1a175 ]
+[ Upstream commit 080063920777af65105e5953e2851e036376e3ea ]
 
-An active work can have poll armed, hence it's not enough to just do
-the async work removal and return the value if it's different from "not
-found". Rather than make poll removal special, just fall through to do
-the remaining type lookups and removals.
+We need free the vqs in .release(), which are allocated in .open().
 
-Reported-by: Florian Fischer <florian.fl.fischer@fau.de>
-Link: https://lore.kernel.org/io-uring/20220118151337.fac6cthvbnu7icoc@pasture/
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Xianting Tian <xianting.tian@linux.alibaba.com>
+Link: https://lore.kernel.org/r/20211228030924.3468439-1-xianting.tian@linux.alibaba.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/io_uring.c | 15 ++++++++++-----
- 1 file changed, 10 insertions(+), 5 deletions(-)
+ drivers/vhost/test.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/fs/io_uring.c b/fs/io_uring.c
-index fb2a0cb4aaf83..a958457b2af07 100644
---- a/fs/io_uring.c
-+++ b/fs/io_uring.c
-@@ -6316,16 +6316,21 @@ static int io_try_cancel_userdata(struct io_kiocb *req, u64 sqe_addr)
- 	WARN_ON_ONCE(!io_wq_current_is_worker() && req->task != current);
- 
- 	ret = io_async_cancel_one(req->task->io_uring, sqe_addr, ctx);
--	if (ret != -ENOENT)
--		return ret;
-+	/*
-+	 * Fall-through even for -EALREADY, as we may have poll armed
-+	 * that need unarming.
-+	 */
-+	if (!ret)
-+		return 0;
- 
- 	spin_lock(&ctx->completion_lock);
-+	ret = io_poll_cancel(ctx, sqe_addr, false);
-+	if (ret != -ENOENT)
-+		goto out;
-+
- 	spin_lock_irq(&ctx->timeout_lock);
- 	ret = io_timeout_cancel(ctx, sqe_addr);
- 	spin_unlock_irq(&ctx->timeout_lock);
--	if (ret != -ENOENT)
--		goto out;
--	ret = io_poll_cancel(ctx, sqe_addr, false);
- out:
- 	spin_unlock(&ctx->completion_lock);
- 	return ret;
+diff --git a/drivers/vhost/test.c b/drivers/vhost/test.c
+index a09dedc79f682..05740cba1cd89 100644
+--- a/drivers/vhost/test.c
++++ b/drivers/vhost/test.c
+@@ -166,6 +166,7 @@ static int vhost_test_release(struct inode *inode, struct file *f)
+ 	/* We do an extra flush before freeing memory,
+ 	 * since jobs can re-queue themselves. */
+ 	vhost_test_flush(n);
++	kfree(n->dev.vqs);
+ 	kfree(n);
+ 	return 0;
+ }
 -- 
 2.34.1
 
