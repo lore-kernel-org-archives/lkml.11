@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AF6DC433F5
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 18:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2C67C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 18:42:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234843AbiAWSmd (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 13:42:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
+        id S240212AbiAWSmj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 13:42:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53942 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240022AbiAWSld (ORCPT
+        with ESMTP id S240074AbiAWSlo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 13:41:33 -0500
+        Sun, 23 Jan 2022 13:41:44 -0500
 Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D636C06176F;
-        Sun, 23 Jan 2022 10:41:32 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id d1so13471773plh.10;
-        Sun, 23 Jan 2022 10:41:32 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A4EEC0613DE;
+        Sun, 23 Jan 2022 10:41:38 -0800 (PST)
+Received: by mail-pl1-x634.google.com with SMTP id c3so13490602pls.5;
+        Sun, 23 Jan 2022 10:41:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=C5MxD9/CL9NsuqJ/4TQY8GLvDJf1hYVoh5cAUlzqQTg=;
-        b=T16FcQMzIxc211JT8TxZ/iueFxAKmECInlg3Y+mQrSHrf7jHbkKVJ3VC30/X8nmvhk
-         m7C5wa+DA3mOvsxQnVyk/nzrmQ3zY3xxWoSRqAi7R9GvfSXNHyGRXg7bJrx5g3+VTx6p
-         ywIh7sngyIjjK4wfy9uxfdQ8mYadaqT+M7hJfZv8UUK+RJ2IZt64YtQ4+mdmPCi/PTjx
-         qrGczB53zqAMOaTeMj5pglxTBuE1/s52Gqr5cQ+KGlbt3ZdWTJTE+ROhEEnJrvvJRr1l
-         9n1lftGq5Hdt5dZsWyrP/qeoV7yKCwiB74yKaPlJsIUKx8M/vqJF04dwzpeGxm8JLwes
-         thiA==
+        bh=IkNrFbXH9gY1KIOKy+h9o3LQcC7Su75w6LGwm4LKjaA=;
+        b=EaNO/dASy+lPZWlcOtxF1hC9GdUeB2iS8umkWOWTX4v3h315YhPaRibVAi7vXbbHWe
+         dZQi44B8tyxUoVsiF1ho0iJZOHCw92Invp1s1Jngv0T8L+0c7uqMPEEfpdlpf7wsR2hX
+         def6pyngVUbofEtQ0onarODYce0lr6EcewlHKAkg7wW7/E/IkNjJ29EwgZ9JC95dqfwt
+         HyYjjJh6C7hZd1XozPUerv73BbBwkDAQaBq4LR4A9muS5E19XN+FHJn+gDMMIIQ3OCVG
+         BFULBqru13piNITxvIlEYH3XteGH1vToU8U0ADIfL8v4GWj0g5Y1FVAMkzSf8zEQusxa
+         sUQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=C5MxD9/CL9NsuqJ/4TQY8GLvDJf1hYVoh5cAUlzqQTg=;
-        b=2fsUQQ3ZAwqtyPNsdKqR6WzHF1C6Ewv3TsTtWFbEXscu14lYcquim5JACNUsSoZzLF
-         xlwMsajoN2+SzMha3R7Roerbcnrpbw+NnAwCSS/ndz0xx+L8E8SxcJWlihAbW6u5Esof
-         W2fYghXI5LtK/BlboMGsEfFsJBpsvXWKftVNZ9FUz6eKI+sX0beOoJ91GkbjDQxSRLV1
-         PTbEdcPoV+fedNjBRbE/LDY8tlCVPKQvUcOV/PkWDfbIP+pxuFuemq/tq0biH4XUyqXW
-         Z1rg3q5VxBOvFJfHB82+p6uNtC/gb3zoAyio8UFdspiGLtzqxATRRcjplfZG0MPFNBia
-         94sw==
-X-Gm-Message-State: AOAM533s1r9n/WuaHa7m1VN0vk159tHsDZkhu6V6Z+bQfw24b4lSI4EY
-        nWnSHG1ajoUfHmLq0dDnbzg=
-X-Google-Smtp-Source: ABdhPJw2IERdv9EjDfTFfQgHtN7IRDQvs7Jvm28asGSoFXUNkoy5rYrqcLKI+IMbX0TTAZ1cRWBWxQ==
-X-Received: by 2002:a17:90a:8b82:: with SMTP id z2mr9751869pjn.146.1642963291689;
-        Sun, 23 Jan 2022 10:41:31 -0800 (PST)
+        bh=IkNrFbXH9gY1KIOKy+h9o3LQcC7Su75w6LGwm4LKjaA=;
+        b=RY59NwHFm1GkcqcSz+WxYiTzOYYpKs+o8EVUByY0h5MJM5wYx/6NXMO0C3l/O7iM47
+         zy7TIyf6BD90C/Gx3RYoGJN0FF+ttqgIpLAEcTglK5xMG6p/r3Wld1zHt1UQTMdg9/B5
+         ZcdJQU7NqMYXzUInH6Hb0Okv6Ga2ZXrmewlIePNR+W8s7zKaeOe3Ac1pY8RtrjkHhzLW
+         Wff7QzpHnVxJt2ZZnPsiAUh8Lllkj6mX9zoYQBY/u0yXlToUZKrY0KfgyceF6XowEoJB
+         0ZCZtc7Fl/encwiEBiwxmdzweEEETg5f72uKev0mWl8EvuiwKNNbeaZa8H9ICoRw4U7w
+         TWHA==
+X-Gm-Message-State: AOAM533iw7yIgHU+dKabTx8o/cKkFQjbqjvwHdZ1mdw6MG7nYzRnwfOb
+        tkutO2Rvl22V5fOZIfPOo2Y=
+X-Google-Smtp-Source: ABdhPJzWjGjT87hpyuJ8zxGhbFECmd1/Zcro15HLI2qS1pA/4gjZkUJUdMuLJwg9rhA75s0Tv2Dbgg==
+X-Received: by 2002:a17:902:c40d:b0:14a:96a4:1044 with SMTP id k13-20020a170902c40d00b0014a96a41044mr11869369plk.50.1642963297601;
+        Sun, 23 Jan 2022 10:41:37 -0800 (PST)
 Received: from localhost (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id e2sm9947439pgl.91.2022.01.23.10.41.30
+        by smtp.gmail.com with ESMTPSA id ms14sm11163509pjb.15.2022.01.23.10.41.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Jan 2022 10:41:31 -0800 (PST)
+        Sun, 23 Jan 2022 10:41:37 -0800 (PST)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Yury Norov <yury.norov@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -62,15 +62,16 @@ To:     Yury Norov <yury.norov@gmail.com>,
         Nicholas Piggin <npiggin@gmail.com>,
         Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
         Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org, Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 33/54] net: ethernet: replace bitmap_weight with bitmap_weight_{eq,gt,ge,lt,le} for mellanox
-Date:   Sun, 23 Jan 2022 10:39:04 -0800
-Message-Id: <20220123183925.1052919-34-yury.norov@gmail.com>
+        linux-kernel@vger.kernel.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Sowjanya Komatineni <skomatineni@nvidia.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-media@vger.kernel.org, linux-tegra@vger.kernel.org,
+        linux-staging@lists.linux.dev
+Subject: [PATCH 35/54] drivers/staging: replace bitmap_weight with bitmap_weight_le for tegra-video
+Date:   Sun, 23 Jan 2022 10:39:06 -0800
+Message-Id: <20220123183925.1052919-36-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220123183925.1052919-1-yury.norov@gmail.com>
 References: <20220123183925.1052919-1-yury.norov@gmail.com>
@@ -80,98 +81,29 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Mellanox code uses bitmap_weight() to compare the weight of bitmap with
-a given number. We can do it more efficiently with bitmap_weight_{eq, ...}
-because conditional bitmap_weight may stop traversing the bitmap earlier,
-as soon as condition is met.
+tegra_channel_enum_format() calls bitmap_weight() to compare the weight
+of bitmap with a given number. We can do it more efficiently with
+bitmap_weight_le() because conditional bitmap_weight may stop traversing
+the bitmap earlier, as soon as condition is met.
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- drivers/net/ethernet/mellanox/mlx4/cmd.c  | 10 +++-------
- drivers/net/ethernet/mellanox/mlx4/eq.c   |  4 ++--
- drivers/net/ethernet/mellanox/mlx4/fw.c   |  4 ++--
- drivers/net/ethernet/mellanox/mlx4/main.c |  2 +-
- 4 files changed, 8 insertions(+), 12 deletions(-)
+ drivers/staging/media/tegra-video/vi.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/cmd.c b/drivers/net/ethernet/mellanox/mlx4/cmd.c
-index c56d2194cbfc..5bca0c68f00a 100644
---- a/drivers/net/ethernet/mellanox/mlx4/cmd.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/cmd.c
-@@ -2792,9 +2792,8 @@ int mlx4_slave_convert_port(struct mlx4_dev *dev, int slave, int port)
- {
- 	unsigned n;
- 	struct mlx4_active_ports actv_ports = mlx4_get_active_ports(dev, slave);
--	unsigned m = bitmap_weight(actv_ports.ports, dev->caps.num_ports);
+diff --git a/drivers/staging/media/tegra-video/vi.c b/drivers/staging/media/tegra-video/vi.c
+index d1f43f465c22..4e79a80e9307 100644
+--- a/drivers/staging/media/tegra-video/vi.c
++++ b/drivers/staging/media/tegra-video/vi.c
+@@ -436,7 +436,7 @@ static int tegra_channel_enum_format(struct file *file, void *fh,
+ 	if (!IS_ENABLED(CONFIG_VIDEO_TEGRA_TPG))
+ 		fmts_bitmap = chan->fmts_bitmap;
  
--	if (port <= 0 || port > m)
-+	if (port <= 0 || bitmap_weight_lt(actv_ports.ports, dev->caps.num_ports, port))
+-	if (f->index >= bitmap_weight(fmts_bitmap, MAX_FORMAT_NUM))
++	if (bitmap_weight_le(fmts_bitmap, MAX_FORMAT_NUM, f->index))
  		return -EINVAL;
  
- 	n = find_first_bit(actv_ports.ports, dev->caps.num_ports);
-@@ -3404,10 +3403,6 @@ int mlx4_vf_set_enable_smi_admin(struct mlx4_dev *dev, int slave, int port,
- 	struct mlx4_priv *priv = mlx4_priv(dev);
- 	struct mlx4_active_ports actv_ports = mlx4_get_active_ports(
- 			&priv->dev, slave);
--	int min_port = find_first_bit(actv_ports.ports,
--				      priv->dev.caps.num_ports) + 1;
--	int max_port = min_port - 1 +
--		bitmap_weight(actv_ports.ports, priv->dev.caps.num_ports);
- 
- 	if (slave == mlx4_master_func_num(dev))
- 		return 0;
-@@ -3417,7 +3412,8 @@ int mlx4_vf_set_enable_smi_admin(struct mlx4_dev *dev, int slave, int port,
- 	    enabled < 0 || enabled > 1)
- 		return -EINVAL;
- 
--	if (min_port == max_port && dev->caps.num_ports > 1) {
-+	if (dev->caps.num_ports > 1 &&
-+	    bitmap_weight_eq(actv_ports.ports, priv->dev.caps.num_ports, 1)) {
- 		mlx4_info(dev, "SMI access disallowed for single ported VFs\n");
- 		return -EPROTONOSUPPORT;
- 	}
-diff --git a/drivers/net/ethernet/mellanox/mlx4/eq.c b/drivers/net/ethernet/mellanox/mlx4/eq.c
-index 414e390e6b48..0c09432ff389 100644
---- a/drivers/net/ethernet/mellanox/mlx4/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/eq.c
-@@ -1435,8 +1435,8 @@ int mlx4_is_eq_shared(struct mlx4_dev *dev, int vector)
- 	if (vector <= 0 || (vector >= dev->caps.num_comp_vectors + 1))
- 		return -EINVAL;
- 
--	return !!(bitmap_weight(priv->eq_table.eq[vector].actv_ports.ports,
--				dev->caps.num_ports) > 1);
-+	return bitmap_weight_gt(priv->eq_table.eq[vector].actv_ports.ports,
-+				dev->caps.num_ports, 1);
- }
- EXPORT_SYMBOL(mlx4_is_eq_shared);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx4/fw.c b/drivers/net/ethernet/mellanox/mlx4/fw.c
-index 42c96c9d7fb1..855aae326ccb 100644
---- a/drivers/net/ethernet/mellanox/mlx4/fw.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/fw.c
-@@ -1300,8 +1300,8 @@ int mlx4_QUERY_DEV_CAP_wrapper(struct mlx4_dev *dev, int slave,
- 	actv_ports = mlx4_get_active_ports(dev, slave);
- 	first_port = find_first_bit(actv_ports.ports, dev->caps.num_ports);
- 	for (slave_port = 0, real_port = first_port;
--	     real_port < first_port +
--	     bitmap_weight(actv_ports.ports, dev->caps.num_ports);
-+	     bitmap_weight_gt(actv_ports.ports, dev->caps.num_ports,
-+			      real_port - first_port);
- 	     ++real_port, ++slave_port) {
- 		if (flags & (MLX4_DEV_CAP_FLAG_WOL_PORT1 << real_port))
- 			flags |= MLX4_DEV_CAP_FLAG_WOL_PORT1 << slave_port;
-diff --git a/drivers/net/ethernet/mellanox/mlx4/main.c b/drivers/net/ethernet/mellanox/mlx4/main.c
-index b187c210d4d6..cfbaa7ac712f 100644
---- a/drivers/net/ethernet/mellanox/mlx4/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx4/main.c
-@@ -1383,7 +1383,7 @@ static int mlx4_mf_bond(struct mlx4_dev *dev)
- 		   dev->persist->num_vfs + 1);
- 
- 	/* only single port vfs are allowed */
--	if (bitmap_weight(slaves_port_1_2, dev->persist->num_vfs + 1) > 1) {
-+	if (bitmap_weight_gt(slaves_port_1_2, dev->persist->num_vfs + 1, 1)) {
- 		mlx4_warn(dev, "HA mode unsupported for dual ported VFs\n");
- 		return -EINVAL;
- 	}
+ 	for (i = 0; i < f->index + 1; i++, index++)
 -- 
 2.30.2
 
