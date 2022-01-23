@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B38D7C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 18:42:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CD38C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 18:42:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240169AbiAWSmZ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 13:42:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53870 "EHLO
+        id S240027AbiAWSm3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 13:42:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240000AbiAWSl3 (ORCPT
+        with ESMTP id S239866AbiAWSlf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 13:41:29 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD4D5C06175E;
-        Sun, 23 Jan 2022 10:41:28 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id i65so13770076pfc.9;
-        Sun, 23 Jan 2022 10:41:28 -0800 (PST)
+        Sun, 23 Jan 2022 13:41:35 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EDAEC061771
+        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 10:41:35 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id e28so9333233pfj.5
+        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 10:41:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=Tg3yHCkGPkAs3t0HGnkJ3DADYUey/EkpuaonLgL/k1o=;
-        b=ZFcRyIgejcwmVsRn9uACTkHbRFP1Zze98Yat48GCTiBhpRFGqV+EhNdjoptDiSuBV/
-         dvj3ZuDs5x5zOqKJGz4dgUg/bpE7jIhKYWqsuGU8JohMUazDatArKO78k8OfS62hFbG7
-         br07lUuskKVknb0qnOkcuQVxKJYz1MBJd4cJVIM0s3WCFCfUeyiLOatWKIvsI6pfk5/T
-         D2em8N9PllFscT+6kUGr5skgotgtYRkpFEWyJmcfc3e77qXEOa+gQQ7yVKK5Cl1RW8+x
-         H0YkTgJ/FjQ9h7YkPpnNjVdec9Fku25OI8swrUzmnquB2L1IOslvsbuGo+AIYfCvzb6w
-         SI3g==
+        bh=T5W4tcAlu9II6TGKyllSre1cwbBZX0+vG2XX1glXT5Y=;
+        b=VC3JAELl4Bcc9x72apcbabSCxL7VtVtW52zOXinf9qQcKr8OiQhjNNZMIrMJHzF88t
+         PBbjx7GVOfENmdJpobQoYLoM0+q14MmtfuHhOG+fjHB0cOXMjZCKVaz6bk6JD+LNKC5B
+         5NUZ3S71+7ggjbktRx126GlRhxpUMjYhaZ2jbXFyzl5Lj7tIXclBHF9agDV7w5Qy9DhE
+         XHds+SdkFGGW/BxKpgXgtqSdEdTmoAGhhKG9P7xJgfG1bWErw0ZgZPmTOwklfWyoaD2b
+         xRSYuTXb3JFgXIhYF7+jekASh+2hU6RWDE3TB0a2Q1knyPegNCjOVKr8ZN8q72lZ8YSV
+         A6cQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Tg3yHCkGPkAs3t0HGnkJ3DADYUey/EkpuaonLgL/k1o=;
-        b=eEk1sT4NPRyUc2MQjEJSq/uhR5hiEJya0+X/UWYDQTIJxgLvtWzVNjqH4X5VAy/1NW
-         OA8X+KjCgnVYdzuUPe4NL9lMqV1yaX6Yhvh7TZMORLvtZSrEVPC25BIx936KdS5mUpKr
-         9jrhx51MeQQGn6r0KHknU+AZ2oDo2HObqS+7OjhCdl76es6cYGncFBl4oDuMLXng4DfP
-         tP721J5jZiTE6/4eiQu0CB9ABf7ulu85XKQ8fFrmP+ITCMrx0l5a4ltGca+XJ/PuZMSo
-         /lh2nCiQlvUUicbYgcavSD2HakUczRABl4D139pctLfwqpBz/ETwGRfiVgpQ9cj2fpZk
-         IugA==
-X-Gm-Message-State: AOAM530h5gytmOc5mV4wd668shTbAemMjjoC3PvKASXSuhN96XKV36z4
-        p+bXl9PQt/c3IezO0y8ylKI=
-X-Google-Smtp-Source: ABdhPJwoTvblvEg2tP4VBIJgYaJdRCS2zp7p/0njGw/SToaljAppp3HKkW/FWj7H2WQKfitLPsuBKQ==
-X-Received: by 2002:a05:6a00:1795:b0:4c1:e2f6:d0c8 with SMTP id s21-20020a056a00179500b004c1e2f6d0c8mr10981596pfg.47.1642963288396;
-        Sun, 23 Jan 2022 10:41:28 -0800 (PST)
+        bh=T5W4tcAlu9II6TGKyllSre1cwbBZX0+vG2XX1glXT5Y=;
+        b=sIiLreyopLGfEKUTqYsfLuClBnDPWFoou3+NSN0RBmaNstzRCuoG0tRENQSaGLBNAl
+         wN2wtmNU1MiQq7K+c9u4XE9OrjPBX1sDuJaI0JgNRUDGa9dtT1RWyrQAcunONg0J0dyy
+         kncWGBIa10zCX1FVnUs85mMpyn5K653BX+F42p9HvUojFkpRqIr6sl8ZJdpLbTBYm0Nn
+         9g+CyK3H/TXLDVmsxDY0QuJUkOAADJeXzW/uJSXSfUYXQxTBGWVL8ZFHjTZK39Z30Mro
+         z9HyEUMR2/0/tZ81V6C6fe7JE3PZ/2vPoGRwOfXZ8SKWKgrTtPOX5rEzWVz3Z2Q9DMrO
+         Bo0A==
+X-Gm-Message-State: AOAM532/ybak/HB8qBJqUYc2aAAj5ocpslZOWlBbtE3h8TcFA/Wz2pIE
+        V9uTRETfX0LF/DlOB4Pd/Kk=
+X-Google-Smtp-Source: ABdhPJxNACDhw+pefiza8oco2JDFigwtzNjUitC28s8922ZKmIrgEEtXSDugjM9DU6Y1rqgheHdTqQ==
+X-Received: by 2002:a63:9347:: with SMTP id w7mr9366776pgm.84.1642963294566;
+        Sun, 23 Jan 2022 10:41:34 -0800 (PST)
 Received: from localhost (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id mg17sm11154423pjb.19.2022.01.23.10.41.27
+        by smtp.gmail.com with ESMTPSA id k12sm14285241pfc.107.2022.01.23.10.41.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Jan 2022 10:41:28 -0800 (PST)
+        Sun, 23 Jan 2022 10:41:34 -0800 (PST)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Yury Norov <yury.norov@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -62,15 +62,12 @@ To:     Yury Norov <yury.norov@gmail.com>,
         Nicholas Piggin <npiggin@gmail.com>,
         Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
         Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org, Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Subbaraya Sundeep <sbhatta@marvell.com>,
-        hariprasad <hkelam@marvell.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 32/54] net: ethernet: replace bitmap_weight with bitmap_weight_{eq,gt} for OcteonTX2
-Date:   Sun, 23 Jan 2022 10:39:03 -0800
-Message-Id: <20220123183925.1052919-33-yury.norov@gmail.com>
+        linux-kernel@vger.kernel.org, Will Deacon <will@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH 34/54] perf: replace bitmap_weight with bitmap_weight_eq for ThunderX2
+Date:   Sun, 23 Jan 2022 10:39:05 -0800
+Message-Id: <20220123183925.1052919-35-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220123183925.1052919-1-yury.norov@gmail.com>
 References: <20220123183925.1052919-1-yury.norov@gmail.com>
@@ -80,45 +77,31 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-OcteonTX2 code calls bitmap_weight() to compare the weight of bitmap with
-a given number. We can do it more efficiently with bitmap_weight_{eq,gt}
-because conditional bitmap_weight may stop traversing the bitmap earlier,
-as soon as condition is met.
+tx2_uncore_event_start() calls bitmap_weight() to compare the weight
+of bitmap with a given number. We can do it more efficiently with
+bitmap_weight_eq because conditional bitmap_weight may stop traversing
+the bitmap earlier, as soon as condition is met.
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c | 2 +-
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c   | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/perf/thunderx2_pmu.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index d85db90632d6..a55fd1d0c653 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -287,7 +287,7 @@ static int otx2_set_channels(struct net_device *dev,
- 	if (!channel->rx_count || !channel->tx_count)
- 		return -EINVAL;
+diff --git a/drivers/perf/thunderx2_pmu.c b/drivers/perf/thunderx2_pmu.c
+index 05378c0fd8f3..ebfa66b212c7 100644
+--- a/drivers/perf/thunderx2_pmu.c
++++ b/drivers/perf/thunderx2_pmu.c
+@@ -623,8 +623,8 @@ static void tx2_uncore_event_start(struct perf_event *event, int flags)
+ 		return;
  
--	if (bitmap_weight(&pfvf->rq_bmap, pfvf->hw.rx_queues) > 1) {
-+	if (bitmap_weight_gt(&pfvf->rq_bmap, pfvf->hw.rx_queues, 1)) {
- 		netdev_err(dev,
- 			   "Receive queues are in use by TC police action\n");
- 		return -EINVAL;
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-index 80b2d64b4136..55c899a6fcdd 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-@@ -1170,8 +1170,8 @@ int otx2_remove_flow(struct otx2_nic *pfvf, u32 location)
- 		 * interface mac address and configure CGX/RPM block in
- 		 * promiscuous mode
- 		 */
--		if (bitmap_weight(&flow_cfg->dmacflt_bmap,
--				  flow_cfg->dmacflt_max_flows) == 1)
-+		if (bitmap_weight_eq(&flow_cfg->dmacflt_bmap,
-+				     flow_cfg->dmacflt_max_flows, 1))
- 			otx2_update_rem_pfmac(pfvf, DMAC_ADDR_DEL);
- 	} else {
- 		err = otx2_remove_flow_msg(pfvf, flow->entry, false);
+ 	/* Start timer for first event */
+-	if (bitmap_weight(tx2_pmu->active_counters,
+-				tx2_pmu->max_counters) == 1) {
++	if (bitmap_weight_eq(tx2_pmu->active_counters,
++				tx2_pmu->max_counters, 1)) {
+ 		hrtimer_start(&tx2_pmu->hrtimer,
+ 			ns_to_ktime(tx2_pmu->hrtimer_interval),
+ 			HRTIMER_MODE_REL_PINNED);
 -- 
 2.30.2
 
