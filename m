@@ -2,51 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5898FC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F1BBC433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:15:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235669AbiAWAPw (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 19:15:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37250 "EHLO
+        id S235802AbiAWAPy (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 19:15:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235307AbiAWAO1 (ORCPT
+        with ESMTP id S235644AbiAWAOe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 19:14:27 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFCDAC0617AA;
-        Sat, 22 Jan 2022 16:13:19 -0800 (PST)
+        Sat, 22 Jan 2022 19:14:34 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D802C0617BD;
+        Sat, 22 Jan 2022 16:13:25 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8CAA560F7E;
-        Sun, 23 Jan 2022 00:13:19 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 251ACC340E4;
-        Sun, 23 Jan 2022 00:13:18 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 75A62CE0AC8;
+        Sun, 23 Jan 2022 00:12:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C8E4C004E1;
+        Sun, 23 Jan 2022 00:12:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642896799;
-        bh=27M5pdyOBTJQl0t01fS3kfKWUEDLQ3XzMe1jAaZborI=;
+        s=k20201202; t=1642896775;
+        bh=HDcG4XHnKQR2EYsnCiCD99ex1SLaB3RdyJgfkBuuN64=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OM/PlGSpbyxr/bV/2QzJp1/0gp9pdoPW7WzXOTysow525KMf5Y7gSQ6zg8Sg6Uec3
-         kvUrWsgIKhlh56HATABwZrU7fyGksjwjxGztbQnfRSERZR1I1Zwp0rr/auzxSfLlCm
-         T8RobxRsYvHup6sLjCqhWWq3NVGz6oibaUOWiCj5TUvWp8q1L6H43efgUnQ2SFXnEW
-         Mkt+DddTAr3TDhQuFIVEooX4P5ebvyfnI9nE7vz0ZLjvQwvzvfkqg7MVGiUgOBHTYx
-         lBACj1RtX9SLW3G/4WGQeREpzLLqXkpqrID5xrDwLWaJX4W7MWO0LzcGE0ZyfpaoMK
-         aKHcGmv1WYiAw==
+        b=s3E86InD6zYCOIr6K+j9jaoX09SevSge1cyz46gMd3SUrkwepACHUq1DurncQ9sMT
+         c9aLXGY4Oe26M226BSgsbUoXEyINCj6YiE9cxZs+A6ZuFLIccPhb2u4gslrlQvMXd1
+         1sgHIXM32xFItn2Vdwb/6cYAKv+ymsyNxLutGcmu6ZK+NNblym34GU2yUMBUlbXGCD
+         /bN9GrIkNPQeiF80fsSyehfuZDBx1ImX5peZG6AtTy/cwGsCVq+35uzEej1yFncDcR
+         OnMYXGDxwdaa0vbQoHfQ+xl1c02rhzRlSjxeUjwRgEWClC7i/M89C8j17v/sdn7FC+
+         IpZGlCKbuASqg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Sasha Levin <sashal@kernel.org>, tanghui20@huawei.com,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 6/9] net: apple: bmac: Fix build since dev_addr constification
-Date:   Sat, 22 Jan 2022 19:12:55 -0500
-Message-Id: <20220123001258.2460594-6-sashal@kernel.org>
+Cc:     Jens Axboe <axboe@kernel.dk>,
+        Florian Fischer <florian.fl.fischer@fau.de>,
+        Sasha Levin <sashal@kernel.org>, io-uring@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.15 15/16] io_uring: perform poll removal even if async work removal is successful
+Date:   Sat, 22 Jan 2022 19:12:14 -0500
+Message-Id: <20220123001216.2460383-15-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220123001258.2460594-1-sashal@kernel.org>
-References: <20220123001258.2460594-1-sashal@kernel.org>
+In-Reply-To: <20220123001216.2460383-1-sashal@kernel.org>
+References: <20220123001216.2460383-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -54,55 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Michael Ellerman <mpe@ellerman.id.au>
+From: Jens Axboe <axboe@kernel.dk>
 
-[ Upstream commit ea938248557a52e231a31f338eac4baee36a8626 ]
+[ Upstream commit ccbf726171b7328f800bc98005132fd77eb1a175 ]
 
-Since commit adeef3e32146 ("net: constify netdev->dev_addr") the bmac
-driver no longer builds with the following errors (pmac32_defconfig):
+An active work can have poll armed, hence it's not enough to just do
+the async work removal and return the value if it's different from "not
+found". Rather than make poll removal special, just fall through to do
+the remaining type lookups and removals.
 
-  linux/drivers/net/ethernet/apple/bmac.c: In function ‘bmac_probe’:
-  linux/drivers/net/ethernet/apple/bmac.c:1287:20: error: assignment of read-only location ‘*(dev->dev_addr + (sizetype)j)’
-   1287 |   dev->dev_addr[j] = rev ? bitrev8(addr[j]): addr[j];
-        |                    ^
-
-Fix it by making the modifications to a local macaddr variable and then
-passing that to eth_hw_addr_set().
-
-We don't use the existing addr variable because the bitrev8() would
-mutate it, but it is already used unreversed later in the function.
-
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Reviewed-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Reported-by: Florian Fischer <florian.fl.fischer@fau.de>
+Link: https://lore.kernel.org/io-uring/20220118151337.fac6cthvbnu7icoc@pasture/
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/apple/bmac.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ fs/io_uring.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/net/ethernet/apple/bmac.c b/drivers/net/ethernet/apple/bmac.c
-index 1e4e402f07d76..19c7cd9beeef3 100644
---- a/drivers/net/ethernet/apple/bmac.c
-+++ b/drivers/net/ethernet/apple/bmac.c
-@@ -1240,6 +1240,7 @@ static int bmac_probe(struct macio_dev *mdev, const struct of_device_id *match)
- 	struct bmac_data *bp;
- 	const unsigned char *prop_addr;
- 	unsigned char addr[6];
-+	u8 macaddr[6];
- 	struct net_device *dev;
- 	int is_bmac_plus = ((int)match->data) != 0;
+diff --git a/fs/io_uring.c b/fs/io_uring.c
+index 0006fc7479ca3..dbdd8c77774c1 100644
+--- a/fs/io_uring.c
++++ b/fs/io_uring.c
+@@ -6304,16 +6304,21 @@ static int io_try_cancel_userdata(struct io_kiocb *req, u64 sqe_addr)
+ 	WARN_ON_ONCE(!io_wq_current_is_worker() && req->task != current);
  
-@@ -1287,7 +1288,9 @@ static int bmac_probe(struct macio_dev *mdev, const struct of_device_id *match)
+ 	ret = io_async_cancel_one(req->task->io_uring, sqe_addr, ctx);
+-	if (ret != -ENOENT)
+-		return ret;
++	/*
++	 * Fall-through even for -EALREADY, as we may have poll armed
++	 * that need unarming.
++	 */
++	if (!ret)
++		return 0;
  
- 	rev = addr[0] == 0 && addr[1] == 0xA0;
- 	for (j = 0; j < 6; ++j)
--		dev->dev_addr[j] = rev ? bitrev8(addr[j]): addr[j];
-+		macaddr[j] = rev ? bitrev8(addr[j]): addr[j];
+ 	spin_lock(&ctx->completion_lock);
++	ret = io_poll_cancel(ctx, sqe_addr, false);
++	if (ret != -ENOENT)
++		goto out;
 +
-+	eth_hw_addr_set(dev, macaddr);
- 
- 	/* Enable chip without interrupts for now */
- 	bmac_enable_and_reset_chip(dev);
+ 	spin_lock_irq(&ctx->timeout_lock);
+ 	ret = io_timeout_cancel(ctx, sqe_addr);
+ 	spin_unlock_irq(&ctx->timeout_lock);
+-	if (ret != -ENOENT)
+-		goto out;
+-	ret = io_poll_cancel(ctx, sqe_addr, false);
+ out:
+ 	spin_unlock(&ctx->completion_lock);
+ 	return ret;
 -- 
 2.34.1
 
