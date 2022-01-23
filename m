@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E35D3C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:13:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FAE8C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:13:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235322AbiAWANA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 19:13:00 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40898 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235198AbiAWAMO (ORCPT
+        id S235485AbiAWANC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 19:13:02 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36544 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235193AbiAWAMP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 19:12:14 -0500
+        Sat, 22 Jan 2022 19:12:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79626B80927;
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 542E260F9F;
+        Sun, 23 Jan 2022 00:12:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE1C1C340E2;
         Sun, 23 Jan 2022 00:12:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 300C9C340E4;
-        Sun, 23 Jan 2022 00:12:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642896732;
-        bh=Ew//I/En9Gd8ruRvLDwh96Ay8uzpIAJMy1X0RMRL7uw=;
+        s=k20201202; t=1642896734;
+        bh=fZypQpgkRfInoHjS2iRjdcBucBEwTWKnEXuwoq78lFE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TODSJHGea3ns31tXDMpGlBP6UsIMydwrZ2T2xIbpgqbxeJa1qrKmZgPUeXAvITBYE
-         2fGu3YW4AvdPHIj6DFQv7aO55uYCqAxrod+WATTxy7+2EyJQjgIHOO62anCxpdobzM
-         e75tPoJ+2cPtcdkko9hflkLyiC/hju1GkvVHOK4o3H2ll9tHJKPhFlZP09JK6t2PX2
-         wfUDaqXK6QYhAfoRlk366WudK8bWtpi+MEK8y1mofQ/lmuq4eRK9dO2G8F1Sg1SDi8
-         P+6W+KhkVw9PZXUWMTokkWaUoTUvbTo+HXjfCqQGOkn1HovuzvM8WD+zLH7ednP8Tg
-         0doSGLUj/Iklg==
+        b=p32UkSUEoYFwR5iF6/gwU2slKJ0zQv9fLe1ZfuzH89ek4VJcFo0Kllt0P+d1JKaGT
+         UtVaRcN4dBpAvM76+fgPfPLQ3C0se342z0JFhJL4x4TsCXdn7hvxX5iH33Vy34rqMq
+         bTM7UwN6bcZDhi4pvfCmM9OhDHh1HE95ctlfiN8A12rXDRogIcCPxsyYuipRyGAQYW
+         lDAAxgGkHRpXN2ybN4RrHTTIRPVD9L3YeVUJeGel7ETgkGdV3eyj6Tq+sjBBfdRuE9
+         Q59VYzO/anXrssC7JN39B5U/2pY69W7H2PhbbXKjCxzSNZA1q6TCUus/M/Jug4ji5p
+         0Rz5ZfYCguikw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Eli Cohen <elic@nvidia.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Si-Wei Liu <si-wei.liu@oracle.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Sasha Levin <sashal@kernel.org>, parav@nvidia.com,
-        xieyongji@bytedance.com, virtualization@lists.linux-foundation.org
-Subject: [PATCH AUTOSEL 5.16 17/19] vdpa/mlx5: Fix is_index_valid() to refer to features
-Date:   Sat, 22 Jan 2022 19:11:10 -0500
-Message-Id: <20220123001113.2460140-17-sashal@kernel.org>
+Cc:     OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>,
+        syzbot+ac94ae5f68b84197f41c@syzkaller.appspotmail.com,
+        Ming Lei <ming.lei@redhat.com>, Jens Axboe <axboe@kernel.dk>,
+        Sasha Levin <sashal@kernel.org>, linux-block@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 19/19] block: Fix wrong offset in bio_truncate()
+Date:   Sat, 22 Jan 2022 19:11:12 -0500
+Message-Id: <20220123001113.2460140-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220123001113.2460140-1-sashal@kernel.org>
 References: <20220123001113.2460140-1-sashal@kernel.org>
@@ -51,53 +49,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eli Cohen <elic@nvidia.com>
+From: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
 
-[ Upstream commit f8ae3a489b21b05c39a0a1a7734f2a0188852177 ]
+[ Upstream commit 3ee859e384d453d6ac68bfd5971f630d9fa46ad3 ]
 
-Make sure the decision whether an index received through a callback is
-valid or not consults the negotiated features.
+bio_truncate() clears the buffer outside of last block of bdev, however
+current bio_truncate() is using the wrong offset of page. So it can
+return the uninitialized data.
 
-The motivation for this was due to a case encountered where I shut down
-the VM. After the reset operation was called features were already
-clear, I got get_vq_state() call which caused out array bounds
-access since is_index_valid() reported the index value.
+This happened when both of truncated/corrupted FS and userspace (via
+bdev) are trying to read the last of bdev.
 
-So this is more of not hit a bug since the call shouldn't have been made
-first place.
-
-Signed-off-by: Eli Cohen <elic@nvidia.com>
-Link: https://lore.kernel.org/r/20220111183400.38418-4-elic@nvidia.com
-Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
-Reviewed-by: Si-Wei Liu<si-wei.liu@oracle.com>
-Acked-by: Jason Wang <jasowang@redhat.com>
+Reported-by: syzbot+ac94ae5f68b84197f41c@syzkaller.appspotmail.com
+Signed-off-by: OGAWA Hirofumi <hirofumi@mail.parknet.co.jp>
+Reviewed-by: Ming Lei <ming.lei@redhat.com>
+Link: https://lore.kernel.org/r/875yqt1c9g.fsf@mail.parknet.co.jp
+Signed-off-by: Jens Axboe <axboe@kernel.dk>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ block/bio.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-index d8e69340a25ae..68ace0ad659f2 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -138,10 +138,14 @@ struct mlx5_vdpa_virtqueue {
- 
- static bool is_index_valid(struct mlx5_vdpa_dev *mvdev, u16 idx)
- {
--	if (unlikely(idx > mvdev->max_idx))
--		return false;
-+	if (!(mvdev->actual_features & BIT_ULL(VIRTIO_NET_F_MQ))) {
-+		if (!(mvdev->actual_features & BIT_ULL(VIRTIO_NET_F_CTRL_VQ)))
-+			return idx < 2;
-+		else
-+			return idx < 3;
-+	}
- 
--	return true;
-+	return idx <= mvdev->max_idx;
- }
- 
- struct mlx5_vdpa_net {
+diff --git a/block/bio.c b/block/bio.c
+index 15ab0d6d1c06e..99cad261ec531 100644
+--- a/block/bio.c
++++ b/block/bio.c
+@@ -569,7 +569,8 @@ static void bio_truncate(struct bio *bio, unsigned new_size)
+ 				offset = new_size - done;
+ 			else
+ 				offset = 0;
+-			zero_user(bv.bv_page, offset, bv.bv_len - offset);
++			zero_user(bv.bv_page, bv.bv_offset + offset,
++				  bv.bv_len - offset);
+ 			truncated = true;
+ 		}
+ 		done += bv.bv_len;
 -- 
 2.34.1
 
