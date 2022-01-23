@@ -2,85 +2,200 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13840C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 17:52:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73964C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 17:52:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239319AbiAWRwK (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 12:52:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42670 "EHLO
+        id S239349AbiAWRwQ (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 12:52:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232441AbiAWRwJ (ORCPT
+        with ESMTP id S239334AbiAWRwO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 12:52:09 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E226CC06173B;
-        Sun, 23 Jan 2022 09:52:08 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 85ACA60FD3;
-        Sun, 23 Jan 2022 17:52:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6371C340E2;
-        Sun, 23 Jan 2022 17:52:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642960327;
-        bh=pmR1E/ePn4BEVhHc+x+IV9K7vuhU4+WXd+Lt77YSfFo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=uDd4GrIxttG5OGwgSVQ5v1zxRFwC1n66oJiZOkWVka6HGC6MV4nrrRXDgO44bpfJO
-         +KtzUBxHuuaBZ3G/hugbmxVaM4dGrQiP6qCi3/w79CqaEHq9x/04drAfhgyWFI+5Iu
-         A9sQwuU4I+wrJjU1M6WmbuC0qV/WtVrO40ce1f7PJtg8/wU7dU98rNRYLuUEnh5J1y
-         1grIenoEQSnw0pHfCAiz4bWVkWbpsVGE2kjDvBF+Kz57UHAMuIzDwMprkZDd0r+cWq
-         Zt96+u1wJDlytRACf784XS147vG36aN7s1EILi8w5Osgka/YlSUOn+QWtaty44LgbV
-         pWmAYAHIzUP9g==
-Date:   Sun, 23 Jan 2022 23:22:00 +0530
-From:   Manivannan Sadhasivam <mani@kernel.org>
-To:     Slark Xiao <slark_xiao@163.com>
-Cc:     hemantk@codeaurora.org, thomas.ulrich@thalesgroup.com,
-        gregkh@linuxfoundation.org, mhi@lists.linux.dev,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] bus: mhi: Add mru_default for Cinterion MV31-W
-Message-ID: <20220123175200.GC11636@thinkpad>
-References: <20220119102519.5342-1-slark_xiao@163.com>
+        Sun, 23 Jan 2022 12:52:14 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7403DC061747
+        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 09:52:14 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nBh29-0007aF-Qo; Sun, 23 Jan 2022 18:52:09 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nBh28-00BycG-BF; Sun, 23 Jan 2022 18:52:07 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nBh26-000tza-R3; Sun, 23 Jan 2022 18:52:06 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     linux-spi@vger.kernel.org, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-fbdev@vger.kernel.org, Noralf Tronnes <notro@tronnes.org>,
+        linux-staging@lists.linux.dev, dri-devel@lists.freedesktop.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH 2/5] staging: fbtft: Deduplicate driver registration macros
+Date:   Sun, 23 Jan 2022 18:51:58 +0100
+Message-Id: <20220123175201.34839-3-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220123175201.34839-1-u.kleine-koenig@pengutronix.de>
+References: <20220123175201.34839-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220119102519.5342-1-slark_xiao@163.com>
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=6082; h=from:subject; bh=foBmuuEI1He7NuGg3QW3ixnzXwI1LphRcPTFGI3t6X8=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBh7ZWvvuKPqNnlGxkliBrLUAPrmqBmyjgXYcMtZRKf /OdSJuKJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYe2VrwAKCRDB/BR4rcrsCQKdB/ 9sBcrdFWuKD0qO5mR5tfx7V99RsL9sa3essPy4tP8F1zgmNlTI+c/J1M7jmBWqkVi++cVYuMXpmSIK KiijgTxGBFHiLiYNjgP/fAymP0jHYKH3wHWWfclIN2e7gfhCsgrxEQU7NTtYMvn95rqgxunuYQiTGl CmlZHDzsSpxAmVUxWcnc8FUi8nrO6LYKp+UR6y47c1RxsmBBvys/7eJKwR+1kgueeeD2grtULKWqgr 5QIF0deXNH1uj85z3vf93rT/L/0zWIWiCtgM34u6J39dCh5X2T2jjtorNcYMs+2Dj7oNLfss3CFi9G /KRKOrig0xxNdVmMyl6neeSDKdjmJF
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 06:25:19PM +0800, Slark Xiao wrote:
-> For default mechanism, product would use default MRU 3500 if
-> they didn't define it. But for Foxconn SDX55, there is a known
-> issue which MRU 3500 would lead to data connection lost.
-> So we align it with Qualcomm default MRU settings.
-> We also validate it with Cinterion product and find it also
-> works.
-> 
-> Fixes: 87693e092bd0 ("bus: mhi: pci_generic: Add Cinterion MV31-W PCIe to MHI")
-> Signed-off-by: Slark Xiao <slark_xiao@163.com>
+The two macros FBTFT_REGISTER_DRIVER and FBTFT_REGISTER_SPI_DRIVER
+contain quite some duplication: Both define an spi driver and an of device
+table and the differences are quite subtle.
 
-Applied to mhi-next with slight commit message change.
+So create two new macros and use both twice.
 
-Thanks,
-Mani
+Link: https://lore.kernel.org/r/20220118181338.207943-2-u.kleine-koenig@pengutronix.de
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/staging/fbtft/fbtft.h | 93 ++++++++++++++---------------------
+ 1 file changed, 36 insertions(+), 57 deletions(-)
 
-> ---
->  drivers/bus/mhi/pci_generic.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/bus/mhi/pci_generic.c b/drivers/bus/mhi/pci_generic.c
-> index 3a258a677df8..79c16b2a52c7 100644
-> --- a/drivers/bus/mhi/pci_generic.c
-> +++ b/drivers/bus/mhi/pci_generic.c
-> @@ -401,6 +401,7 @@ static const struct mhi_pci_dev_info mhi_mv31_info = {
->  	.config = &modem_mv31_config,
->  	.bar_num = MHI_PCI_DEFAULT_BAR_NUM,
->  	.dma_data_width = 32,
-> +	.mru_default = 32768,
->  };
->  
->  static const struct mhi_channel_config mhi_sierra_em919x_channels[] = {
-> -- 
-> 2.25.1
-> 
+diff --git a/drivers/staging/fbtft/fbtft.h b/drivers/staging/fbtft/fbtft.h
+index 55677efc0138..6a7545b5bcd2 100644
+--- a/drivers/staging/fbtft/fbtft.h
++++ b/drivers/staging/fbtft/fbtft.h
+@@ -272,21 +272,40 @@ void fbtft_write_reg8_bus9(struct fbtft_par *par, int len, ...);
+ void fbtft_write_reg16_bus8(struct fbtft_par *par, int len, ...);
+ void fbtft_write_reg16_bus16(struct fbtft_par *par, int len, ...);
+ 
++#define FBTFT_DT_TABLE(_compatible)						\
++static const struct of_device_id dt_ids[] = {					\
++	{ .compatible = _compatible },						\
++	{},									\
++};										\
++MODULE_DEVICE_TABLE(of, dt_ids);
++
++#define FBTFT_SPI_DRIVER(_name, _compatible, _display, _spi_ids)		\
++										\
++static int fbtft_driver_probe_spi(struct spi_device *spi)			\
++{										\
++	return fbtft_probe_common(_display, spi, NULL);				\
++}										\
++										\
++static int fbtft_driver_remove_spi(struct spi_device *spi)			\
++{										\
++	struct fb_info *info = spi_get_drvdata(spi);				\
++										\
++	fbtft_remove_common(&spi->dev, info);					\
++	return 0;								\
++}										\
++										\
++static struct spi_driver fbtft_driver_spi_driver = {				\
++	.driver = {								\
++		.name = _name,							\
++		.of_match_table = dt_ids,					\
++	},									\
++	.id_table = _spi_ids,							\
++	.probe = fbtft_driver_probe_spi,					\
++	.remove = fbtft_driver_remove_spi,					\
++};
++
+ #define FBTFT_REGISTER_DRIVER(_name, _compatible, _display)                \
+ 									   \
+-static int fbtft_driver_probe_spi(struct spi_device *spi)                  \
+-{                                                                          \
+-	return fbtft_probe_common(_display, spi, NULL);                    \
+-}                                                                          \
+-									   \
+-static int fbtft_driver_remove_spi(struct spi_device *spi)                 \
+-{                                                                          \
+-	struct fb_info *info = spi_get_drvdata(spi);                       \
+-									   \
+-	fbtft_remove_common(&spi->dev, info);                              \
+-	return 0;                                                          \
+-}                                                                          \
+-									   \
+ static int fbtft_driver_probe_pdev(struct platform_device *pdev)           \
+ {                                                                          \
+ 	return fbtft_probe_common(_display, NULL, pdev);                   \
+@@ -300,22 +319,9 @@ static int fbtft_driver_remove_pdev(struct platform_device *pdev)          \
+ 	return 0;                                                          \
+ }                                                                          \
+ 									   \
+-static const struct of_device_id dt_ids[] = {                              \
+-	{ .compatible = _compatible },                                     \
+-	{},                                                                \
+-};                                                                         \
+-									   \
+-MODULE_DEVICE_TABLE(of, dt_ids);                                           \
++FBTFT_DT_TABLE(_compatible)						   \
+ 									   \
+-									   \
+-static struct spi_driver fbtft_driver_spi_driver = {                       \
+-	.driver = {                                                        \
+-		.name   = _name,                                           \
+-		.of_match_table = dt_ids,                                  \
+-	},                                                                 \
+-	.probe  = fbtft_driver_probe_spi,                                  \
+-	.remove = fbtft_driver_remove_spi,                                 \
+-};                                                                         \
++FBTFT_SPI_DRIVER(_name, _compatible, _display, NULL)			   \
+ 									   \
+ static struct platform_driver fbtft_driver_platform_driver = {             \
+ 	.driver = {                                                        \
+@@ -351,42 +357,15 @@ module_exit(fbtft_driver_module_exit);
+ 
+ #define FBTFT_REGISTER_SPI_DRIVER(_name, _comp_vend, _comp_dev, _display)	\
+ 										\
+-static int fbtft_driver_probe_spi(struct spi_device *spi)			\
+-{										\
+-	return fbtft_probe_common(_display, spi, NULL);				\
+-}										\
+-										\
+-static int fbtft_driver_remove_spi(struct spi_device *spi)			\
+-{										\
+-	struct fb_info *info = spi_get_drvdata(spi);				\
+-										\
+-	fbtft_remove_common(&spi->dev, info);					\
+-	return 0;								\
+-}										\
+-										\
+-static const struct of_device_id dt_ids[] = {					\
+-	{ .compatible = _comp_vend "," _comp_dev },				\
+-	{},									\
+-};										\
+-										\
+-MODULE_DEVICE_TABLE(of, dt_ids);						\
++FBTFT_DT_TABLE(_comp_vend "," _comp_dev)					\
+ 										\
+ static const struct spi_device_id spi_ids[] = {					\
+ 	{ .name = _comp_dev },							\
+ 	{},									\
+ };										\
+-										\
+ MODULE_DEVICE_TABLE(spi, spi_ids);						\
+ 										\
+-static struct spi_driver fbtft_driver_spi_driver = {				\
+-	.driver = {								\
+-		.name  = _name,							\
+-		.of_match_table = dt_ids,					\
+-	},									\
+-	.id_table = spi_ids,							\
+-	.probe  = fbtft_driver_probe_spi,					\
+-	.remove = fbtft_driver_remove_spi,					\
+-};										\
++FBTFT_SPI_DRIVER(_name, _comp_vend "," _comp_dev, _display, spi_ids)		\
+ 										\
+ module_spi_driver(fbtft_driver_spi_driver);
+ 
+-- 
+2.34.1
+
