@@ -2,25 +2,24 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F0A4C433FE
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 17:37:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72033C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 17:38:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239263AbiAWRhr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 12:37:47 -0500
-Received: from mail-0301.mail-europe.com ([188.165.51.139]:41595 "EHLO
-        mail-0301.mail-europe.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239282AbiAWRhp (ORCPT
+        id S239315AbiAWRiG (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 12:38:06 -0500
+Received: from mail-4317.proton.ch ([185.70.43.17]:62128 "EHLO
+        mail-4317.proton.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239312AbiAWRiD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 12:37:45 -0500
-Date:   Sun, 23 Jan 2022 17:37:33 +0000
+        Sun, 23 Jan 2022 12:38:03 -0500
+Date:   Sun, 23 Jan 2022 17:37:49 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=connolly.tech;
-        s=protonmail; t=1642959460;
-        bh=FQv1aKzS/LnuVdHDOCDAUsFd7cnwTX2Jbvn0yKrnTD8=;
-        h=Date:To:From:Reply-To:Subject:Message-ID:In-Reply-To:References:
-         From:To:Cc;
-        b=q6g67JyS8HxQhJ7EHX4YP+CwMNGCyEUO0jYvWSbWXoRGJSzpa0DJzPfBcfWuqRxmv
-         bCF8VPbu0TRMDW0TQppmXn7bX0mrpmmAvJ15CjpLm82h78JJqkdQ+VNV0tN8awsAkl
-         XIAQv7i8+zRj8SaaR/DI68NvsuKnWe0I6JBp+OEw=
+        s=protonmail; t=1642959479;
+        bh=Uu0q8KAJ6+bG5zjqtcOXH0AHNydbxkmYhhsv+R7TrF8=;
+        h=Date:To:From:Reply-To:Subject:Message-ID:From:To:Cc;
+        b=BaAiCpzoXfFJOWjcTWs7zv8svJKzTGs4OybPeFMB4ajAc+nlGNxju10TEPbga1fDF
+         QAM8TGa6WILZnZ3pvY2JboU9hnrpTjqJcabKgvfkQ8YMSpEcy6ri53d5QsKe5KqKqS
+         Ai633Rv0ovMSoWVWWPP3cOFnXziAPWojwl9kc8yw=
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Sam Ravnborg <sam@ravnborg.org>,
         David Airlie <airlied@linux.ie>,
@@ -42,10 +41,8 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
         Alexander Martinz <amartinz@shiftphones.com>
 From:   Caleb Connolly <caleb@connolly.tech>
 Reply-To: Caleb Connolly <caleb@connolly.tech>
-Subject: [PATCH 2/6] input: touchscreen: add focaltech FTS driver
-Message-ID: <20220123173650.290349-3-caleb@connolly.tech>
-In-Reply-To: <20220123173650.290349-1-caleb@connolly.tech>
-References: <20220123173650.290349-1-caleb@connolly.tech>
+Subject: [PATCH 4/6] drm/panel: visionox-rm69299: support the variant found in the SHIFT6mq
+Message-ID: <20220123173650.290349-5-caleb@connolly.tech>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -53,952 +50,423 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The focaltech FTS driver supports several variants of focaltech touch
-screens found in ~2018 era smartphones including a variant of the
-PocoPhone F1 and the SHIFT6mq. This driver is loosely based on the
-original driver from Focaltech but has been simplified and largely
-reworked.
+Add support for another variant of the rm69299 panel. This panel is
+1080x2160 and is found in the shift-axolotl (SHIFT6mq).
 
 Signed-off-by: Caleb Connolly <caleb@connolly.tech>
 ---
- drivers/input/touchscreen/Kconfig         |   9 +
- drivers/input/touchscreen/Makefile        |   1 +
- drivers/input/touchscreen/focaltech_fts.c | 870 ++++++++++++++++++++++
- 3 files changed, 880 insertions(+)
- create mode 100644 drivers/input/touchscreen/focaltech_fts.c
+ .../gpu/drm/panel/panel-visionox-rm69299.c    | 281 ++++++++++++++----
+ 1 file changed, 221 insertions(+), 60 deletions(-)
 
-diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/=
-Kconfig
-index 2f6adfb7b938..10874f2d17ac 100644
---- a/drivers/input/touchscreen/Kconfig
-+++ b/drivers/input/touchscreen/Kconfig
-@@ -372,6 +372,15 @@ config TOUCHSCREEN_EXC3000
- =09  To compile this driver as a module, choose M here: the
- =09  module will be called exc3000.
+diff --git a/drivers/gpu/drm/panel/panel-visionox-rm69299.c b/drivers/gpu/d=
+rm/panel/panel-visionox-rm69299.c
+index eb43503ec97b..e3c58ed8a96a 100644
+--- a/drivers/gpu/drm/panel/panel-visionox-rm69299.c
++++ b/drivers/gpu/drm/panel/panel-visionox-rm69299.c
+@@ -20,10 +20,42 @@ struct visionox_rm69299 {
+ =09struct regulator_bulk_data supplies[2];
+ =09struct gpio_desc *reset_gpio;
+ =09struct mipi_dsi_device *dsi;
++=09const struct drm_display_mode *mode;
+ =09bool prepared;
+ =09bool enabled;
+ };
 
-+config TOUCHSCREEN_FOCALTECH_FTS
-+=09tristate "Focaltech FTS Touchscreen"
-+=09depends on I2C
-+=09help
-+=09  Say Y here to enable support for Focaltech FTS based
-+=09  touch panels, including the 5452 and 8917 panels.
-+
-+=09  If unsure, say N.
-+
- config TOUCHSCREEN_FUJITSU
- =09tristate "Fujitsu serial touchscreen"
- =09select SERIO
-diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen=
-/Makefile
-index 39a8127cf6a5..79f877d4ba02 100644
---- a/drivers/input/touchscreen/Makefile
-+++ b/drivers/input/touchscreen/Makefile
-@@ -44,6 +44,7 @@ obj-$(CONFIG_TOUCHSCREEN_ELO)=09=09+=3D elo.o
- obj-$(CONFIG_TOUCHSCREEN_EGALAX)=09+=3D egalax_ts.o
- obj-$(CONFIG_TOUCHSCREEN_EGALAX_SERIAL)=09+=3D egalax_ts_serial.o
- obj-$(CONFIG_TOUCHSCREEN_EXC3000)=09+=3D exc3000.o
-+obj-$(CONFIG_TOUCHSCREEN_FOCALTECH_FTS)=09+=3D focaltech_fts.o
- obj-$(CONFIG_TOUCHSCREEN_FUJITSU)=09+=3D fujitsu_ts.o
- obj-$(CONFIG_TOUCHSCREEN_GOODIX)=09+=3D goodix_ts.o
- obj-$(CONFIG_TOUCHSCREEN_HIDEEP)=09+=3D hideep.o
-diff --git a/drivers/input/touchscreen/focaltech_fts.c b/drivers/input/touc=
-hscreen/focaltech_fts.c
-new file mode 100644
-index 000000000000..c62dc40a5bd0
---- /dev/null
-+++ b/drivers/input/touchscreen/focaltech_fts.c
-@@ -0,0 +1,870 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ *
-+ * FocalTech touchscreen driver.
-+ *
-+ * Copyright (c) 2010-2017, FocalTech Systems, Ltd., all rights reserved.
-+ * Copyright (C) 2018 XiaoMi, Inc.
-+ * Copyright (c) 2021 Caleb Connolly <caleb@connolly.tech>
-+ *
-+ * This software is licensed under the terms of the GNU General Public
-+ * License version 2, as published by the Free Software Foundation, and
-+ * may be copied, distributed, and modified under those terms.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ */
-+
-+#include <linux/i2c.h>
-+#include <linux/input.h>
-+#include <linux/input/mt.h>
-+#include <linux/slab.h>
-+#include <linux/interrupt.h>
-+#include <linux/delay.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/gpio.h>
-+#include <linux/of_gpio.h>
-+#include <linux/of_device.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/mutex.h>
-+#include <linux/wait.h>
-+#include <linux/time.h>
-+#include <linux/workqueue.h>
-+#include <linux/uaccess.h>
-+#include <linux/version.h>
-+#include <linux/types.h>
-+#include <linux/device.h>
-+#include <linux/netdevice.h>
-+#include <linux/unistd.h>
-+#include <linux/vmalloc.h>
-+#include <linux/notifier.h>
-+
-+#define FTS_CMD_START1 0x55
-+#define FTS_CMD_START2 0xAA
-+#define FTS_CMD_START_DELAY 10
-+#define FTS_CMD_READ_ID 0x90
-+#define FTS_CMD_READ_ID_LEN 4
-+
-+#define FTS_REG_INT_CNT 0x8F
-+#define FTS_REG_FLOW_WORK_CNT 0x91
-+#define FTS_REG_WORKMODE 0x00
-+#define FTS_REG_WORKMODE_FACTORY_VALUE 0x40
-+#define FTS_REG_WORKMODE_WORK_VALUE 0x00
-+#define FTS_REG_ESDCHECK_DISABLE 0x8D
-+#define FTS_REG_CHIP_ID 0xA3
-+#define FTS_REG_CHIP_ID2 0x9F
-+#define FTS_REG_POWER_MODE 0xA5
-+#define FTS_REG_POWER_MODE_SLEEP_VALUE 0x03
-+#define FTS_REG_FW_VER 0xA6
-+#define FTS_REG_VENDOR_ID 0xA8
-+#define FTS_REG_LCD_BUSY_NUM 0xAB
-+#define FTS_REG_FACE_DEC_MODE_EN 0xB0
-+#define FTS_REG_FACE_DEC_MODE_STATUS 0x01
-+#define FTS_REG_IDE_PARA_VER_ID 0xB5
-+#define FTS_REG_IDE_PARA_STATUS 0xB6
-+#define FTS_REG_GLOVE_MODE_EN 0xC0
-+#define FTS_REG_COVER_MODE_EN 0xC1
-+#define FTS_REG_CHARGER_MODE_EN 0x8B
-+#define FTS_REG_GESTURE_EN 0xD0
-+#define FTS_REG_GESTURE_OUTPUT_ADDRESS 0xD3
-+#define FTS_REG_MODULE_ID 0xE3
-+#define FTS_REG_LIC_VER 0xE4
-+#define FTS_REG_ESD_SATURATE 0xED
-+
-+#define FTS_MAX_POINTS_SUPPORT 10
-+#define FTS_ONE_TCH_LEN 6
-+
-+#define FTS_MAX_ID 0x0A
-+#define FTS_TOUCH_X_H_POS 3
-+#define FTS_TOUCH_X_L_POS 4
-+#define FTS_TOUCH_Y_H_POS 5
-+#define FTS_TOUCH_Y_L_POS 6
-+#define FTS_TOUCH_PRE_POS 7
-+#define FTS_TOUCH_AREA_POS 8
-+#define FTS_TOUCH_POINT_NUM 2
-+#define FTS_TOUCH_EVENT_POS 3
-+#define FTS_TOUCH_ID_POS 5
-+#define FTS_COORDS_ARR_SIZE 2
-+
-+#define FTS_TOUCH_DOWN 0
-+#define FTS_TOUCH_UP 1
-+#define FTS_TOUCH_CONTACT 2
-+
-+#define EVENT_DOWN(flag) ((flag =3D=3D FTS_TOUCH_DOWN) || (flag =3D=3D FTS=
-_TOUCH_CONTACT))
-+
-+#define FTS_LOCKDOWN_INFO_SIZE 8
-+#define LOCKDOWN_INFO_ADDR 0x1FA0
-+
-+#define FTS_DRIVER_NAME "fts-i2c"
-+#define INTERVAL_READ_REG 100 /* unit:ms */
-+#define TIMEOUT_READ_REG 2000 /* unit:ms */
-+#define FTS_VDD_MIN_UV 2600000
-+#define FTS_VDD_MAX_UV 3300000
-+#define FTS_I2C_VCC_MIN_UV 1800000
-+#define FTS_I2C_VCC_MAX_UV 1800000
-+
-+#define I2C_RETRY_NUMBER 3
-+
-+#define CHIP_TYPE_5452 0x5452
-+#define CHIP_TYPE_8719 0x8719
-+
-+static DEFINE_MUTEX(i2c_rw_access);
-+
-+struct ts_event {
-+=09int x; /*x coordinate */
-+=09int y; /*y coordinate */
-+=09int p; /* pressure */
-+=09int flag; /* touch event flag: 0 -- down; 1-- up; 2 -- contact */
-+=09int id; /*touch ID */
-+=09int area;
++static const struct drm_display_mode visionox_rm69299_1080x2248_60hz =3D {
++=09.name =3D "1080x2248",
++=09.clock =3D 158695,
++=09.hdisplay =3D 1080,
++=09.hsync_start =3D 1080 + 26,
++=09.hsync_end =3D 1080 + 26 + 2,
++=09.htotal =3D 1080 + 26 + 2 + 36,
++=09.vdisplay =3D 2248,
++=09.vsync_start =3D 2248 + 56,
++=09.vsync_end =3D 2248 + 56 + 4,
++=09.vtotal =3D 2248 + 56 + 4 + 4,
++=09.flags =3D 0,
 +};
 +
-+struct fts_ts_data {
-+=09struct i2c_client *client;
-+=09struct input_dev *input_dev;
-+=09struct regulator *vdd;
-+=09struct regulator *vcc_i2c;
-+=09spinlock_t irq_lock;
-+=09struct mutex report_mutex;
-+=09int irq;
-+=09bool irq_disabled;
-+=09bool power_disabled;
-+
-+=09/* multi-touch */
-+=09struct ts_event *events;
-+=09u32 max_touch_number;
-+=09u8 *point_buf;
-+=09int pnt_buf_size;
-+=09int touches;
-+=09int touch_point;
-+=09int point_num;
-+=09bool dev_pm_suspend;
-+=09bool low_power_mode;
-+=09struct completion dev_pm_suspend_completion;
-+=09struct pinctrl *pinctrl;
-+
-+=09// DT data
-+=09struct gpio_desc *irq_gpio;
-+=09struct gpio_desc *reset_gpio;
-+=09u32 width;
-+=09u32 height;
++static const struct drm_display_mode visionox_rm69299_1080x2160_60hz =3D {
++=09.name =3D "Visionox 1080x2160@60Hz",
++=09.clock =3D 158695,
++=09.hdisplay =3D 1080,
++=09.hsync_start =3D 1080 + 26,
++=09.hsync_end =3D 1080 + 26 + 2,
++=09.htotal =3D 1080 + 26 + 2 + 36,
++=09.vdisplay =3D 2160,
++=09.vsync_start =3D 2160 + 8,
++=09.vsync_end =3D 2160 + 8 + 4,
++=09.vtotal =3D 2160 + 8 + 4 + 4,
++=09.flags =3D 0,
++=09.width_mm =3D 74,
++=09.height_mm =3D 131,
++=09.type =3D DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED,
 +};
 +
-+int fts_i2c_read(struct i2c_client *client, char *writebuf, int writelen,
-+=09=09 char *readbuf, int readlen)
-+{
-+=09int ret =3D 0;
-+=09int msg_count =3D !!writelen + 1;
-+=09struct i2c_msg msgs[2];
-+
-+=09if (readlen < 0 || writelen < 0)
-+=09=09return -EINVAL;
-+
-+=09// If writelen is zero then only populate msgs[0].
-+=09// otherwise we read into msgs[1]
-+=09msgs[msg_count-1].len =3D readlen;
-+=09msgs[msg_count-1].buf =3D readbuf;
-+=09msgs[msg_count-1].addr =3D client->addr;
-+=09msgs[msg_count-1].flags =3D I2C_M_RD;
-+
-+=09if (writelen > 0) {
-+=09=09msgs[0].len =3D writelen;
-+=09=09msgs[0].buf =3D writebuf;
-+=09=09msgs[0].addr =3D client->addr;
-+=09=09msgs[0].flags =3D 0;
-+=09}
-+
-+=09mutex_lock(&i2c_rw_access);
-+
-+=09ret =3D i2c_transfer(client->adapter, msgs, msg_count);
-+
-+=09mutex_unlock(&i2c_rw_access);
-+=09return ret;
-+}
-+
-+int fts_i2c_read_reg(struct i2c_client *client, u8 regaddr, u8 *regvalue)
-+{
-+=09return fts_i2c_read(client, &regaddr, 1, regvalue, 1);
-+}
-+
-+static bool fts_chip_is_valid(struct fts_ts_data *data, u16 id)
-+{
-+=09if (id !=3D CHIP_TYPE_5452 && id !=3D CHIP_TYPE_8719)
-+=09=09return false;
-+
-+=09return true;
-+}
-+
-+int fts_wait_ready(struct fts_ts_data *data)
-+{
-+=09int ret =3D 0;
-+=09int cnt =3D 0;
-+=09u8 reg_value[2];
-+=09struct i2c_client *client =3D data->client;
-+
-+=09do {
-+=09=09ret =3D fts_i2c_read_reg(client, FTS_REG_CHIP_ID, &reg_value[0]);
-+=09=09ret =3D fts_i2c_read_reg(client, FTS_REG_CHIP_ID2, &reg_value[1]);
-+=09=09if (fts_chip_is_valid(data, reg_value[0] << 8 | reg_value[1])) {
-+=09=09=09dev_dbg(&data->client->dev, "TP Ready, Device ID =3D 0x%x%x, coun=
-t =3D %d",
-+=09=09=09=09reg_value[0], reg_value[1], cnt);
-+=09=09=09return 0;
-+=09=09}
-+=09=09cnt++;
-+=09=09msleep(INTERVAL_READ_REG);
-+=09} while ((cnt * INTERVAL_READ_REG) < TIMEOUT_READ_REG);
-+
-+=09return -EIO;
-+}
-+
-+static int fts_power_source_init(struct fts_ts_data *data)
-+{
-+=09int ret =3D 0;
-+
-+=09data->vdd =3D devm_regulator_get(&data->client->dev, "vdd");
-+=09if (IS_ERR_OR_NULL(data->vdd)) {
-+=09=09ret =3D PTR_ERR(data->vdd);
-+=09=09dev_err(&data->client->dev, "get vdd regulator failed,ret=3D%d", ret=
-);
-+=09=09return ret;
-+=09}
-+
-+=09if (regulator_count_voltages(data->vdd) > 0) {
-+=09=09ret =3D regulator_set_voltage(data->vdd, FTS_VDD_MIN_UV,
-+=09=09=09=09=09    FTS_VDD_MAX_UV);
-+=09=09if (ret < 0) {
-+=09=09=09dev_err(&data->client->dev, "failed to set vdd regulator ret=3D%d=
-", ret);
-+=09=09=09goto exit;
-+=09=09}
-+=09}
-+
-+=09data->vcc_i2c =3D devm_regulator_get(&data->client->dev, "vcc-i2c");
-+=09if (IS_ERR(data->vcc_i2c)) {
-+=09=09ret =3D PTR_ERR(data->vcc_i2c);
-+=09=09dev_err(&data->client->dev, "get vcc_i2c regulator failed,ret=3D%d",=
- ret);
-+=09=09return ret;
-+=09}
-+
-+=09if (regulator_count_voltages(data->vcc_i2c) > 0) {
-+=09=09ret =3D regulator_set_voltage(data->vcc_i2c, FTS_I2C_VCC_MIN_UV,
-+=09=09=09=09=09    FTS_I2C_VCC_MAX_UV);
-+=09=09if (ret < 0) {
-+=09=09=09dev_err(&data->client->dev, "failed to set vcc_i2c regulator ret=
-=3D%d",
-+=09=09=09=09ret);
-+=09=09=09goto exit;
-+=09=09}
-+=09}
-+
-+exit:
-+=09return ret;
-+}
-+
-+static int fts_power_source_release(struct fts_ts_data *data)
-+{
-+=09if (!data->power_disabled) {
-+=09=09regulator_disable(data->vdd);
-+=09=09regulator_disable(data->vcc_i2c);
-+=09}
-+
-+=09devm_regulator_put(data->vdd);
-+=09devm_regulator_put(data->vcc_i2c);
-+
-+=09return 0;
-+}
-+
-+static int fts_power_source_ctrl(struct fts_ts_data *data, bool enable)
-+{
-+=09int ret =3D 0;
-+
-+=09if (enable) {
-+=09=09if (data->power_disabled) {
-+=09=09=09ret =3D regulator_enable(data->vdd);
-+=09=09=09if (ret < 0) {
-+=09=09=09=09dev_err(&data->client->dev,
-+=09=09=09=09=09"enable vdd regulator failed,ret=3D%d",
-+=09=09=09=09=09ret);
-+=09=09=09}
-+
-+=09=09=09ret =3D regulator_enable(data->vcc_i2c);
-+=09=09=09if (ret < 0) {
-+=09=09=09=09dev_err(&data->client->dev, "enable vcc_i2c regulator failed,r=
-et=3D%d",
-+=09=09=09=09=09  ret);
-+=09=09=09}
-+=09=09=09data->power_disabled =3D false;
-+=09=09}
-+=09} else {
-+=09=09if (!data->power_disabled) {
-+=09=09=09ret =3D regulator_disable(data->vdd);
-+=09=09=09if (ret < 0) {
-+=09=09=09=09dev_err(&data->client->dev,
-+=09=09=09=09=09"disable vdd regulator failed,ret=3D%d",
-+=09=09=09=09=09ret);
-+=09=09=09}
-+
-+=09=09=09ret =3D regulator_disable(data->vcc_i2c);
-+=09=09=09if (ret < 0) {
-+=09=09=09=09dev_err(&data->client->dev, "disable vcc_i2c regulator failed,=
-ret=3D%d",
-+=09=09=09=09=09  ret);
-+=09=09=09}
-+
-+=09=09=09data->power_disabled =3D true;
-+=09=09}
-+=09}
-+
-+=09return ret;
-+}
-+
-+static int fts_pinctrl_set_active(struct fts_ts_data *data, bool enable)
-+{
-+=09int ret =3D 0;
-+=09struct pinctrl_state *state =3D pinctrl_lookup_state(data->pinctrl,
-+=09=09enable ? "default" : "suspend");
-+
-+=09if (IS_ERR_OR_NULL(state)) {
-+=09=09dev_err(&data->client->dev, "pinctrl lookup %s failed\n",
-+=09=09=09enable ? "default" : "suspend");
-+=09=09return -EINVAL;
-+=09}
-+
-+=09ret =3D pinctrl_select_state(data->pinctrl, state);
-+=09if (ret < 0) {
-+=09=09dev_err(&data->client->dev,
-+=09=09=09"Failed to set pinctrl state: enable =3D %d, ret =3D %d",
-+=09=09=09enable, ret);
-+=09}
-+
-+=09return ret;
-+}
-+
-+static void fts_release_all_finger(struct fts_ts_data *data)
-+{
-+=09struct input_dev *input_dev =3D data->input_dev;
-+=09u32 finger_count =3D 0;
-+
-+=09mutex_lock(&data->report_mutex);
-+
-+=09for (finger_count =3D 0; finger_count < data->max_touch_number;
-+=09     finger_count++) {
-+=09=09input_mt_slot(input_dev, finger_count);
-+=09=09input_mt_report_slot_state(input_dev, MT_TOOL_FINGER, false);
-+=09}
-+
-+=09input_report_key(input_dev, BTN_TOUCH, 0);
-+=09input_sync(input_dev);
-+
-+=09mutex_unlock(&data->report_mutex);
-+}
-+
-+static int fts_input_report_b(struct fts_ts_data *data)
-+{
-+=09int i =3D 0;
-+=09int uppoint =3D 0;
-+=09int touches =3D 0;
-+=09bool va_reported =3D false;
-+=09struct ts_event *events =3D data->events;
-+
-+=09for (i =3D 0; i < data->touch_point; i++) {
-+=09=09if (events[i].id >=3D data->max_touch_number)
-+=09=09=09break;
-+
-+=09=09va_reported =3D true;
-+=09=09input_mt_slot(data->input_dev, events[i].id);
-+
-+=09=09if (events[i].flag =3D=3D FTS_TOUCH_DOWN || events[i].flag =3D=3D FT=
-S_TOUCH_CONTACT) {
-+=09=09=09input_mt_report_slot_state(data->input_dev,
-+=09=09=09=09=09=09   MT_TOOL_FINGER, true);
-+
-+=09=09=09if (events[i].p <=3D 0)
-+=09=09=09=09events[i].p =3D 0x3f;
-+
-+=09=09=09input_report_abs(data->input_dev, ABS_MT_PRESSURE,
-+=09=09=09=09=09 events[i].p);
-+
-+=09=09=09if (events[i].area <=3D 0)
-+=09=09=09=09events[i].area =3D 0x09;
-+
-+=09=09=09input_report_abs(data->input_dev, ABS_MT_TOUCH_MAJOR,
-+=09=09=09=09=09 events[i].area);
-+=09=09=09input_report_abs(data->input_dev, ABS_MT_POSITION_X,
-+=09=09=09=09=09 events[i].x);
-+=09=09=09input_report_abs(data->input_dev, ABS_MT_POSITION_Y,
-+=09=09=09=09=09 events[i].y);
-+
-+=09=09=09touches |=3D BIT(events[i].id);
-+=09=09=09data->touches |=3D BIT(events[i].id);
-+=09=09} else {
-+=09=09=09uppoint++;
-+
-+=09=09=09input_report_abs(data->input_dev, ABS_MT_PRESSURE, 0);
-+
-+=09=09=09input_mt_report_slot_state(data->input_dev,
-+=09=09=09=09=09=09   MT_TOOL_FINGER, false);
-+=09=09=09data->touches &=3D ~BIT(events[i].id);
-+=09=09}
-+=09}
-+
-+=09if (data->touches ^ touches) {
-+=09=09for (i =3D 0; i < data->max_touch_number; i++) {
-+=09=09=09if (BIT(i) & (data->touches ^ touches)) {
-+=09=09=09=09va_reported =3D true;
-+=09=09=09=09input_mt_slot(data->input_dev, i);
-+=09=09=09=09input_mt_report_slot_state(
-+=09=09=09=09=09data->input_dev, MT_TOOL_FINGER, false);
-+=09=09=09}
-+=09=09}
-+=09}
-+=09data->touches =3D touches;
-+
-+=09if (va_reported) {
-+=09=09if (!data->point_num || !touches)
-+=09=09=09input_report_key(data->input_dev, BTN_TOUCH, 0);
-+=09=09else
-+=09=09=09input_report_key(data->input_dev, BTN_TOUCH, 1);
-+=09} else {
-+=09=09dev_err(&data->client->dev, "va not reported, but touches=3D%d", tou=
-ches);
-+=09}
-+
-+=09input_sync(data->input_dev);
-+=09return 0;
-+}
-+
-+static int fts_read_touchdata(struct fts_ts_data *data)
-+{
-+=09int ret =3D 0;
-+=09int i =3D 0;
-+=09u8 pointid;
-+=09int base;
-+=09struct ts_event *events =3D data->events;
-+=09int max_touch_num =3D data->max_touch_number;
-+=09u8 *buf =3D data->point_buf;
-+
-+=09data->point_num =3D 0;
-+=09data->touch_point =3D 0;
-+
-+=09memset(buf, 0xFF, data->pnt_buf_size);
-+=09buf[0] =3D 0x00;
-+
-+=09ret =3D fts_i2c_read(data->client, buf, 1, buf, data->pnt_buf_size);
-+=09if (ret < 0) {
-+=09=09dev_err(&data->client->dev, "read touchdata failed, ret:%d", ret);
-+=09=09return ret;
-+=09}
-+=09data->point_num =3D buf[FTS_TOUCH_POINT_NUM] & 0x0F;
-+
-+=09if (data->point_num > max_touch_num)
-+=09=09return -EINVAL;
-+
-+=09for (i =3D 0; i < max_touch_num; i++) {
-+=09=09base =3D FTS_ONE_TCH_LEN * i;
-+
-+=09=09pointid =3D (buf[FTS_TOUCH_ID_POS + base]) >> 4;
-+=09=09if (pointid >=3D FTS_MAX_ID)
-+=09=09=09break;
-+
-+=09=09else if (pointid >=3D max_touch_num)
-+=09=09=09return -EINVAL;
-+
-+=09=09data->touch_point++;
-+
-+=09=09events[i].x =3D ((buf[FTS_TOUCH_X_H_POS + base] & 0x0F) << 8) +
-+=09=09=09      (buf[FTS_TOUCH_X_L_POS + base] & 0xFF);
-+=09=09events[i].y =3D ((buf[FTS_TOUCH_Y_H_POS + base] & 0x0F) << 8) +
-+=09=09=09      (buf[FTS_TOUCH_Y_L_POS + base] & 0xFF);
-+=09=09events[i].flag =3D buf[FTS_TOUCH_EVENT_POS + base] >> 6;
-+=09=09events[i].id =3D buf[FTS_TOUCH_ID_POS + base] >> 4;
-+=09=09events[i].area =3D buf[FTS_TOUCH_AREA_POS + base] >> 4;
-+=09=09events[i].p =3D buf[FTS_TOUCH_PRE_POS + base];
-+
-+=09=09if (((events[i].flag =3D=3D FTS_TOUCH_DOWN) || (events[i].flag =3D=
-=3D FTS_TOUCH_CONTACT))
-+=09=09    && (data->point_num =3D=3D 0)) {
-+=09=09=09dev_err(&data->client->dev, "abnormal touch data from fw");
-+=09=09=09return -EIO;
-+=09=09}
-+=09}
-+=09if (data->touch_point =3D=3D 0) {
-+=09=09dev_err(&data->client->dev, "no touch point information");
-+=09=09return -EIO;
-+=09}
-+
-+=09return 0;
-+}
-+
-+static void fts_report_event(struct fts_ts_data *data)
-+{
-+=09fts_input_report_b(data);
-+}
-+
-+static irqreturn_t fts_ts_interrupt(int irq, void *d)
-+{
-+=09int ret =3D 0;
-+=09struct fts_ts_data *data =3D (struct fts_ts_data *)d;
-+
-+=09if (!data) {
-+=09=09dev_err(&data->client->dev, "%s() Invalid fts_ts_data", __func__);
-+=09=09return IRQ_HANDLED;
-+=09}
-+
-+=09if (data->dev_pm_suspend) {
-+=09=09ret =3D wait_for_completion_timeout(
-+=09=09=09&data->dev_pm_suspend_completion,
-+=09=09=09msecs_to_jiffies(700));
-+=09=09if (!ret) {
-+=09=09=09dev_err(&data->client->dev,
-+=09=09=09=09"Didn't resume in time, skipping wakeup event handling\n");
-+=09=09=09return IRQ_HANDLED;
-+=09=09}
-+=09}
-+
-+=09ret =3D fts_read_touchdata(data);
-+=09if (ret =3D=3D 0) {
-+=09=09mutex_lock(&data->report_mutex);
-+=09=09fts_report_event(data);
-+=09=09mutex_unlock(&data->report_mutex);
-+=09}
-+
-+=09return IRQ_HANDLED;
-+}
-+
-+static int fts_input_init(struct fts_ts_data *data)
-+{
-+=09int ret =3D 0;
-+=09struct input_dev *input_dev;
-+
-+=09input_dev =3D input_allocate_device();
-+=09if (!input_dev) {
-+=09=09dev_err(&data->client->dev, "Failed to allocate memory for input dev=
-ice");
-+=09=09return -ENOMEM;
-+=09}
-+
-+=09/* Init and register Input device */
-+=09input_dev->name =3D FTS_DRIVER_NAME;
-+=09input_dev->id.bustype =3D BUS_I2C;
-+=09input_dev->dev.parent =3D &data->client->dev;
-+
-+=09input_set_drvdata(input_dev, data);
-+
-+=09__set_bit(EV_SYN, input_dev->evbit);
-+=09__set_bit(EV_ABS, input_dev->evbit);
-+=09__set_bit(BTN_TOUCH, input_dev->keybit);
-+=09__set_bit(INPUT_PROP_DIRECT, input_dev->propbit);
-+
-+=09input_mt_init_slots(input_dev, data->max_touch_number,
-+=09=09=09    INPUT_MT_DIRECT);
-+
-+=09input_set_abs_params(input_dev, ABS_MT_POSITION_X, 0,
-+=09=09=09     data->width - 1, 0, 0);
-+=09input_set_abs_params(input_dev, ABS_MT_POSITION_Y, 0,
-+=09=09=09     data->height - 1, 0, 0);
-+=09input_set_abs_params(input_dev, ABS_MT_TOUCH_MAJOR, 0, 0xFF, 0, 0);
-+
-+=09input_set_abs_params(input_dev, ABS_MT_PRESSURE, 0, 0xFF, 0, 0);
-+
-+=09data->pnt_buf_size =3D data->max_touch_number * FTS_ONE_TCH_LEN + 3;
-+=09data->point_buf =3D devm_kzalloc(&data->client->dev, data->pnt_buf_size=
-, GFP_KERNEL);
-+=09if (!data->point_buf) {
-+=09=09dev_err(&data->client->dev, "Failed to alloc memory for point buf!")=
+ static inline struct visionox_rm69299 *panel_to_ctx(struct drm_panel *pane=
+l)
+ {
+ =09return container_of(panel, struct visionox_rm69299, panel);
+@@ -68,14 +100,16 @@ static int visionox_rm69299_unprepare(struct drm_panel=
+ *panel)
+
+ =09ret =3D mipi_dsi_dcs_write(ctx->dsi, MIPI_DCS_SET_DISPLAY_OFF, NULL, 0)=
 ;
-+=09=09ret =3D -ENOMEM;
-+=09=09goto err_out;
-+=09}
+ =09if (ret < 0)
+-=09=09dev_err(ctx->panel.dev, "set_display_off cmd failed ret =3D %d\n", r=
+et);
++=09=09dev_err(ctx->panel.dev, "set_display_off cmd failed ret =3D %d\n",
++=09=09=09ret);
+
+ =09/* 120ms delay required here as per DCS spec */
+ =09msleep(120);
+
+ =09ret =3D mipi_dsi_dcs_write(ctx->dsi, MIPI_DCS_ENTER_SLEEP_MODE, NULL, 0=
+);
+ =09if (ret < 0) {
+-=09=09dev_err(ctx->panel.dev, "enter_sleep cmd failed ret =3D %d\n", ret);
++=09=09dev_err(ctx->panel.dev, "enter_sleep cmd failed ret =3D %d\n",
++=09=09=09ret);
+ =09}
+
+ =09ret =3D visionox_rm69299_power_off(ctx);
+@@ -84,10 +118,123 @@ static int visionox_rm69299_unprepare(struct drm_pane=
+l *panel)
+ =09return ret;
+ }
+
++#define VISIONOX_RM69299_SHIFT_INIT_SEQ_LEN 432
 +
-+=09data->events =3D devm_kzalloc(&data->client->dev,
-+=09=09data->max_touch_number * sizeof(struct ts_event), GFP_KERNEL);
-+=09if (!data->events) {
-+=09=09ret =3D -ENOMEM;
-+=09=09goto err_out;
-+=09}
-+=09ret =3D input_register_device(input_dev);
-+=09if (ret < 0) {
-+=09=09dev_err(&data->client->dev, "Input device registration failed");
-+=09=09goto err_out;
-+=09}
++static const u8 visionox_rm69299_1080x2248_60hz_init_seq[VISIONOX_RM69299_=
+SHIFT_INIT_SEQ_LEN][2] =3D {
++=09{ 0xFE, 0x40 }, { 0x05, 0x04 }, { 0x06, 0x08 }, { 0x08, 0x04 },
++=09{ 0x09, 0x08 }, { 0x0A, 0x07 }, { 0x0B, 0xCC }, { 0x0C, 0x07 },
++=09{ 0x0D, 0x90 }, { 0x0F, 0x87 }, { 0x20, 0x8D }, { 0x21, 0x8D },
++=09{ 0x24, 0x05 }, { 0x26, 0x05 }, { 0x28, 0x05 }, { 0x2A, 0x05 },
++=09{ 0x2D, 0x28 }, { 0x2F, 0x28 }, { 0x30, 0x32 }, { 0x31, 0x32 },
++=09{ 0x37, 0x80 }, { 0x38, 0x30 }, { 0x39, 0xA8 }, { 0x46, 0x48 },
++=09{ 0x47, 0x48 }, { 0x6B, 0x10 }, { 0x6F, 0x02 }, { 0x74, 0x2B },
++=09{ 0x80, 0x1A }, { 0xFE, 0x40 }, { 0x93, 0x10 }, { 0x16, 0x00 },
++=09{ 0x85, 0x07 }, { 0x84, 0x01 }, { 0x86, 0x0F }, { 0x87, 0x05 },
++=09{ 0x8C, 0x00 }, { 0x88, 0x2E }, { 0x89, 0x2E }, { 0x8B, 0x09 },
++=09{ 0x95, 0x00 }, { 0x91, 0x00 }, { 0x90, 0x00 }, { 0x8D, 0xD0 },
++=09{ 0x8A, 0x03 }, { 0xFE, 0xA0 }, { 0x13, 0x00 }, { 0x33, 0x00 },
++=09{ 0x0B, 0x33 }, { 0x36, 0x1E }, { 0x31, 0x88 }, { 0x32, 0x88 },
++=09{ 0x37, 0xF1 }, { 0xFE, 0x50 }, { 0x00, 0x00 }, { 0x01, 0x00 },
++=09{ 0x02, 0x00 }, { 0x03, 0xE9 }, { 0x04, 0x00 }, { 0x05, 0xF6 },
++=09{ 0x06, 0x01 }, { 0x07, 0x2C }, { 0x08, 0x01 }, { 0x09, 0x62 },
++=09{ 0x0A, 0x01 }, { 0x0B, 0x98 }, { 0x0C, 0x01 }, { 0x0D, 0xBF },
++=09{ 0x0E, 0x01 }, { 0x0F, 0xF6 }, { 0x10, 0x02 }, { 0x11, 0x24 },
++=09{ 0x12, 0x02 }, { 0x13, 0x4E }, { 0x14, 0x02 }, { 0x15, 0x70 },
++=09{ 0x16, 0x02 }, { 0x17, 0xAF }, { 0x18, 0x02 }, { 0x19, 0xE2 },
++=09{ 0x1A, 0x03 }, { 0x1B, 0x1F }, { 0x1C, 0x03 }, { 0x1D, 0x52 },
++=09{ 0x1E, 0x03 }, { 0x1F, 0x82 }, { 0x20, 0x03 }, { 0x21, 0xB6 },
++=09{ 0x22, 0x03 }, { 0x23, 0xF0 }, { 0x24, 0x04 }, { 0x25, 0x1F },
++=09{ 0x26, 0x04 }, { 0x27, 0x37 }, { 0x28, 0x04 }, { 0x29, 0x59 },
++=09{ 0x2A, 0x04 }, { 0x2B, 0x68 }, { 0x30, 0x04 }, { 0x31, 0x85 },
++=09{ 0x32, 0x04 }, { 0x33, 0xA2 }, { 0x34, 0x04 }, { 0x35, 0xBC },
++=09{ 0x36, 0x04 }, { 0x37, 0xD8 }, { 0x38, 0x04 }, { 0x39, 0xF4 },
++=09{ 0x3A, 0x05 }, { 0x3B, 0x0E }, { 0x40, 0x05 }, { 0x41, 0x13 },
++=09{ 0x42, 0x05 }, { 0x43, 0x1F }, { 0x44, 0x05 }, { 0x45, 0x1F },
++=09{ 0x46, 0x00 }, { 0x47, 0x00 }, { 0x48, 0x01 }, { 0x49, 0x43 },
++=09{ 0x4A, 0x01 }, { 0x4B, 0x4C }, { 0x4C, 0x01 }, { 0x4D, 0x6F },
++=09{ 0x4E, 0x01 }, { 0x4F, 0x92 }, { 0x50, 0x01 }, { 0x51, 0xB5 },
++=09{ 0x52, 0x01 }, { 0x53, 0xD4 }, { 0x58, 0x02 }, { 0x59, 0x06 },
++=09{ 0x5A, 0x02 }, { 0x5B, 0x33 }, { 0x5C, 0x02 }, { 0x5D, 0x59 },
++=09{ 0x5E, 0x02 }, { 0x5F, 0x7D }, { 0x60, 0x02 }, { 0x61, 0xBD },
++=09{ 0x62, 0x02 }, { 0x63, 0xF7 }, { 0x64, 0x03 }, { 0x65, 0x31 },
++=09{ 0x66, 0x03 }, { 0x67, 0x63 }, { 0x68, 0x03 }, { 0x69, 0x9D },
++=09{ 0x6A, 0x03 }, { 0x6B, 0xD2 }, { 0x6C, 0x04 }, { 0x6D, 0x05 },
++=09{ 0x6E, 0x04 }, { 0x6F, 0x38 }, { 0x70, 0x04 }, { 0x71, 0x51 },
++=09{ 0x72, 0x04 }, { 0x73, 0x70 }, { 0x74, 0x04 }, { 0x75, 0x85 },
++=09{ 0x76, 0x04 }, { 0x77, 0xA1 }, { 0x78, 0x04 }, { 0x79, 0xC0 },
++=09{ 0x7A, 0x04 }, { 0x7B, 0xD8 }, { 0x7C, 0x04 }, { 0x7D, 0xF2 },
++=09{ 0x7E, 0x05 }, { 0x7F, 0x10 }, { 0x80, 0x05 }, { 0x81, 0x21 },
++=09{ 0x82, 0x05 }, { 0x83, 0x2E }, { 0x84, 0x05 }, { 0x85, 0x3A },
++=09{ 0x86, 0x05 }, { 0x87, 0x3E }, { 0x88, 0x00 }, { 0x89, 0x00 },
++=09{ 0x8A, 0x01 }, { 0x8B, 0x86 }, { 0x8C, 0x01 }, { 0x8D, 0x8F },
++=09{ 0x8E, 0x01 }, { 0x8F, 0xB3 }, { 0x90, 0x01 }, { 0x91, 0xD7 },
++=09{ 0x92, 0x01 }, { 0x93, 0xFB }, { 0x94, 0x02 }, { 0x95, 0x18 },
++=09{ 0x96, 0x02 }, { 0x97, 0x4F }, { 0x98, 0x02 }, { 0x99, 0x7E },
++=09{ 0x9A, 0x02 }, { 0x9B, 0xA6 }, { 0x9C, 0x02 }, { 0x9D, 0xCF },
++=09{ 0x9E, 0x03 }, { 0x9F, 0x14 }, { 0xA4, 0x03 }, { 0xA5, 0x52 },
++=09{ 0xA6, 0x03 }, { 0xA7, 0x93 }, { 0xAC, 0x03 }, { 0xAD, 0xCF },
++=09{ 0xAE, 0x04 }, { 0xAF, 0x08 }, { 0xB0, 0x04 }, { 0xB1, 0x42 },
++=09{ 0xB2, 0x04 }, { 0xB3, 0x7F }, { 0xB4, 0x04 }, { 0xB5, 0xB4 },
++=09{ 0xB6, 0x04 }, { 0xB7, 0xCC }, { 0xB8, 0x04 }, { 0xB9, 0xF2 },
++=09{ 0xBA, 0x05 }, { 0xBB, 0x0C }, { 0xBC, 0x05 }, { 0xBD, 0x26 },
++=09{ 0xBE, 0x05 }, { 0xBF, 0x4B }, { 0xC0, 0x05 }, { 0xC1, 0x64 },
++=09{ 0xC2, 0x05 }, { 0xC3, 0x83 }, { 0xC4, 0x05 }, { 0xC5, 0xA1 },
++=09{ 0xC6, 0x05 }, { 0xC7, 0xBA }, { 0xC8, 0x05 }, { 0xC9, 0xC4 },
++=09{ 0xCA, 0x05 }, { 0xCB, 0xD5 }, { 0xCC, 0x05 }, { 0xCD, 0xD5 },
++=09{ 0xCE, 0x00 }, { 0xCF, 0xCE }, { 0xD0, 0x00 }, { 0xD1, 0xDB },
++=09{ 0xD2, 0x01 }, { 0xD3, 0x32 }, { 0xD4, 0x01 }, { 0xD5, 0x3B },
++=09{ 0xD6, 0x01 }, { 0xD7, 0x74 }, { 0xD8, 0x01 }, { 0xD9, 0x7D },
++=09{ 0xFE, 0x60 }, { 0x00, 0xCC }, { 0x01, 0x0F }, { 0x02, 0xFF },
++=09{ 0x03, 0x01 }, { 0x04, 0x00 }, { 0x05, 0x02 }, { 0x06, 0x00 },
++=09{ 0x07, 0x00 }, { 0x09, 0xC4 }, { 0x0A, 0x00 }, { 0x0B, 0x04 },
++=09{ 0x0C, 0x01 }, { 0x0D, 0x00 }, { 0x0E, 0x04 }, { 0x0F, 0x00 },
++=09{ 0x10, 0x71 }, { 0x12, 0xC4 }, { 0x13, 0x00 }, { 0x14, 0x04 },
++=09{ 0x15, 0x01 }, { 0x16, 0x00 }, { 0x17, 0x06 }, { 0x18, 0x00 },
++=09{ 0x19, 0x71 }, { 0x1B, 0xC4 }, { 0x1C, 0x00 }, { 0x1D, 0x02 },
++=09{ 0x1E, 0x00 }, { 0x1F, 0x00 }, { 0x20, 0x08 }, { 0x21, 0x66 },
++=09{ 0x22, 0xB4 }, { 0x24, 0xC4 }, { 0x25, 0x00 }, { 0x26, 0x02 },
++=09{ 0x27, 0x00 }, { 0x28, 0x00 }, { 0x29, 0x07 }, { 0x2A, 0x66 },
++=09{ 0x2B, 0xB4 }, { 0x2F, 0xC4 }, { 0x30, 0x00 }, { 0x31, 0x04 },
++=09{ 0x32, 0x01 }, { 0x33, 0x00 }, { 0x34, 0x03 }, { 0x35, 0x00 },
++=09{ 0x36, 0x71 }, { 0x38, 0xC4 }, { 0x39, 0x00 }, { 0x3A, 0x04 },
++=09{ 0x3B, 0x01 }, { 0x3D, 0x00 }, { 0x3F, 0x05 }, { 0x40, 0x00 },
++=09{ 0x41, 0x71 }, { 0x83, 0xCE }, { 0x84, 0x02 }, { 0x85, 0x20 },
++=09{ 0x86, 0xDC }, { 0x87, 0x00 }, { 0x88, 0x04 }, { 0x89, 0x00 },
++=09{ 0x8A, 0xBB }, { 0x8B, 0x80 }, { 0xC7, 0x0E }, { 0xC8, 0x05 },
++=09{ 0xC9, 0x1F }, { 0xCA, 0x06 }, { 0xCB, 0x00 }, { 0xCC, 0x03 },
++=09{ 0xCD, 0x04 }, { 0xCE, 0x1F }, { 0xCF, 0x1F }, { 0xD0, 0x1F },
++=09{ 0xD1, 0x1F }, { 0xD2, 0x1F }, { 0xD3, 0x1F }, { 0xD4, 0x1F },
++=09{ 0xD5, 0x1F }, { 0xD6, 0x1F }, { 0xD7, 0x17 }, { 0xD8, 0x1F },
++=09{ 0xD9, 0x16 }, { 0xDA, 0x1F }, { 0xDB, 0x0E }, { 0xDC, 0x01 },
++=09{ 0xDD, 0x1F }, { 0xDE, 0x02 }, { 0xDF, 0x00 }, { 0xE0, 0x03 },
++=09{ 0xE1, 0x04 }, { 0xE2, 0x1F }, { 0xE3, 0x1F }, { 0xE4, 0x1F },
++=09{ 0xE5, 0x1F }, { 0xE6, 0x1F }, { 0xE7, 0x1F }, { 0xE8, 0x1F },
++=09{ 0xE9, 0x1F }, { 0xEA, 0x1F }, { 0xEB, 0x17 }, { 0xEC, 0x1F },
++=09{ 0xED, 0x16 }, { 0xEE, 0x1F }, { 0xEF, 0x03 }, { 0xFE, 0x70 },
++=09{ 0x5A, 0x0B }, { 0x5B, 0x0B }, { 0x5C, 0x55 }, { 0x5D, 0x24 },
++=09{ 0xFE, 0x90 }, { 0x12, 0x24 }, { 0x13, 0x49 }, { 0x14, 0x92 },
++=09{ 0x15, 0x86 }, { 0x16, 0x61 }, { 0x17, 0x18 }, { 0x18, 0x24 },
++=09{ 0x19, 0x49 }, { 0x1A, 0x92 }, { 0x1B, 0x86 }, { 0x1C, 0x61 },
++=09{ 0x1D, 0x18 }, { 0x1E, 0x24 }, { 0x1F, 0x49 }, { 0x20, 0x92 },
++=09{ 0x21, 0x86 }, { 0x22, 0x61 }, { 0x23, 0x18 }, { 0xFE, 0x40 },
++=09{ 0x0E, 0x10 }, { 0xFE, 0xA0 }, { 0x04, 0x80 }, { 0x16, 0x00 },
++=09{ 0x26, 0x10 }, { 0x2F, 0x37 }, { 0xFE, 0xD0 }, { 0x06, 0x0F },
++=09{ 0x4B, 0x00 }, { 0x56, 0x4A }, { 0xFE, 0x00 }, { 0xC2, 0x09 },
++=09{ 0x35, 0x00 }, { 0xFE, 0x70 }, { 0x7D, 0x61 }, { 0x7F, 0x00 },
++=09{ 0x7E, 0x4E }, { 0x52, 0x2C }, { 0x49, 0x00 }, { 0x4A, 0x00 },
++=09{ 0x4B, 0x00 }, { 0x4C, 0x00 }, { 0x4D, 0xE8 }, { 0x4E, 0x25 },
++=09{ 0x4F, 0x6E }, { 0x50, 0xAE }, { 0x51, 0x2F }, { 0xAD, 0xF4 },
++=09{ 0xAE, 0x8F }, { 0xAF, 0x00 }, { 0xB0, 0x54 }, { 0xB1, 0x3A },
++=09{ 0xB2, 0x00 }, { 0xB3, 0x00 }, { 0xB4, 0x00 }, { 0xB5, 0x00 },
++=09{ 0xB6, 0x18 }, { 0xB7, 0x30 }, { 0xB8, 0x4A }, { 0xB9, 0x98 },
++=09{ 0xBA, 0x30 }, { 0xBB, 0x60 }, { 0xBC, 0x50 }, { 0xBD, 0x00 },
++=09{ 0xBE, 0x00 }, { 0xBF, 0x39 }, { 0xFE, 0x00 }, { 0x51, 0x66 },
++};
 +
-+=09data->input_dev =3D input_dev;
+ static int visionox_rm69299_prepare(struct drm_panel *panel)
+ {
+ =09struct visionox_rm69299 *ctx =3D panel_to_ctx(panel);
+-=09int ret;
++=09int ret, i;
+
+ =09if (ctx->prepared)
+ =09=09return 0;
+@@ -98,34 +245,55 @@ static int visionox_rm69299_prepare(struct drm_panel *=
+panel)
+
+ =09ctx->dsi->mode_flags |=3D MIPI_DSI_MODE_LPM;
+
+-=09ret =3D mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]) { 0xfe, 0x00 }, 2);
+-=09if (ret < 0) {
+-=09=09dev_err(ctx->panel.dev, "cmd set tx 0 failed, ret =3D %d\n", ret);
+-=09=09goto power_off;
+-=09}
+-
+-=09ret =3D mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]) { 0xc2, 0x08 }, 2);
+-=09if (ret < 0) {
+-=09=09dev_err(ctx->panel.dev, "cmd set tx 1 failed, ret =3D %d\n", ret);
+-=09=09goto power_off;
+-=09}
+-
+-=09ret =3D mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]) { 0x35, 0x00 }, 2);
+-=09if (ret < 0) {
+-=09=09dev_err(ctx->panel.dev, "cmd set tx 2 failed, ret =3D %d\n", ret);
+-=09=09goto power_off;
+-=09}
+-
+-=09ret =3D mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]) { 0x51, 0xff }, 2);
+-=09if (ret < 0) {
+-=09=09dev_err(ctx->panel.dev, "cmd set tx 3 failed, ret =3D %d\n", ret);
+-=09=09goto power_off;
++=09if (ctx->mode =3D=3D &visionox_rm69299_1080x2160_60hz) {
++=09=09for (i =3D 0; i < VISIONOX_RM69299_SHIFT_INIT_SEQ_LEN; i++) {
++=09=09=09ret =3D mipi_dsi_dcs_write_buffer(ctx->dsi,
++=09=09=09=09visionox_rm69299_1080x2248_60hz_init_seq[i], 2);
++=09=09=09if (ret < 0) {
++=09=09=09=09dev_err(ctx->panel.dev,
++=09=09=09=09=09"cmd set tx 0 failed, ret =3D %d\n", ret);
++=09=09=09=09return ret;
++=09=09=09}
++=09=09}
++=09} else {
++=09=09ret =3D mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]){ 0xfe, 0x00 },
++=09=09=09=09=09=092);
++=09=09if (ret < 0) {
++=09=09=09dev_err(ctx->panel.dev,
++=09=09=09=09"cmd set tx 0 failed, ret =3D %d\n", ret);
++=09=09=09return ret;
++=09=09}
 +
-+=09return 0;
++=09=09ret =3D mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]){ 0xc2, 0x08 },
++=09=09=09=09=09=092);
++=09=09if (ret < 0) {
++=09=09=09dev_err(ctx->panel.dev,
++=09=09=09=09"cmd set tx 1 failed, ret =3D %d\n", ret);
++=09=09=09return ret;
++=09=09}
 +
-+err_out:
-+=09input_set_drvdata(input_dev, NULL);
-+=09input_free_device(input_dev);
-+=09input_dev =3D NULL;
++=09=09ret =3D mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]){ 0x35, 0x00 },
++=09=09=09=09=09=092);
++=09=09if (ret < 0) {
++=09=09=09dev_err(ctx->panel.dev,
++=09=09=09=09"cmd set tx 2 failed, ret =3D %d\n", ret);
++=09=09=09return ret;
++=09=09}
 +
-+=09return ret;
-+}
-+
-+static int fts_reset(struct fts_ts_data *data)
-+{
-+=09gpiod_set_value_cansleep(data->reset_gpio, 0);
-+=09msleep(20);
-+=09gpiod_set_value_cansleep(data->reset_gpio, 1);
-+
-+=09return 0;
-+}
-+
-+static int fts_parse_dt(struct fts_ts_data *data)
-+{
-+=09int ret =3D 0;
-+=09struct device *dev =3D &data->client->dev;
-+=09struct device_node *np =3D dev->of_node;
-+=09u32 val;
-+
-+=09ret =3D of_property_read_u32(np, "touchscreen-size-x", &data->width);
-+=09if (ret < 0) {
-+=09=09dev_err(&data->client->dev, "Unable to read property 'touchscreen-si=
-ze-x'");
-+=09=09return -EINVAL;
-+=09}
-+
-+=09ret =3D of_property_read_u32(np, "touchscreen-size-y", &data->height);
-+=09if (ret < 0) {
-+=09=09dev_err(&data->client->dev, "Unable to read property 'touchscreen-si=
-ze-y'");
-+=09=09return -EINVAL;
-+=09}
-+
-+=09ret =3D of_property_read_u32(np, "focaltech,max-touch-number", &val);
-+=09if (ret < 0) {
-+=09=09dev_err(&data->client->dev, "Unable to read property 'focaltech,max-=
-touch-number'");
-+=09=09return -EINVAL;
-+=09}
-+=09if (val < 2 || val > FTS_MAX_POINTS_SUPPORT) {
-+=09=09dev_err(&data->client->dev, "'focaltech,max-touch-number' out of ran=
-ge [2, %d]",
-+=09=09=09FTS_MAX_POINTS_SUPPORT);
-+=09=09return -EINVAL;
-+=09}
-+=09data->max_touch_number =3D val;
-+
-+=09data->reset_gpio =3D devm_gpiod_get(dev, "reset", GPIOD_OUT_LOW);
-+=09if (data->reset_gpio < 0) {
-+=09=09dev_err(&data->client->dev, "Unable to get reset gpio");
-+=09=09return -EINVAL;
-+=09}
-+
-+=09data->irq_gpio =3D devm_gpiod_get_optional(dev, "irq", GPIOD_OUT_LOW);
-+
-+=09return 0;
-+}
-+
-+static int fts_ts_probe(struct i2c_client *client,
-+=09=09=09const struct i2c_device_id *id)
-+{
-+=09int ret =3D 0;
-+=09struct fts_ts_data *data;
-+=09struct pinctrl_state *pinctrl_state_temp;
-+
-+=09if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
-+=09=09dev_err(&data->client->dev, "I2C not supported");
-+=09=09return -ENODEV;
-+=09}
-+
-+=09data =3D devm_kzalloc(&client->dev, sizeof(*data), GFP_KERNEL);
-+=09if (!data)
++=09=09ret =3D mipi_dsi_dcs_write_buffer(ctx->dsi, (u8[]){ 0x51, 0xff },
++=09=09=09=09=09=092);
++=09=09if (ret < 0) {
++=09=09=09dev_err(ctx->panel.dev,
++=09=09=09=09"cmd set tx 3 failed, ret =3D %d\n", ret);
++=09=09=09return ret;
++=09=09}
+ =09}
+
+ =09ret =3D mipi_dsi_dcs_write(ctx->dsi, MIPI_DCS_EXIT_SLEEP_MODE, NULL, 0)=
+;
+ =09if (ret < 0) {
+-=09=09dev_err(ctx->panel.dev, "exit_sleep_mode cmd failed ret =3D %d\n", r=
+et);
+-=09=09goto power_off;
++=09=09dev_err(ctx->panel.dev, "exit_sleep_mode cmd failed ret =3D %d\n",
++=09=09=09ret);
++=09=09return ret;
+ =09}
+
+ =09/* Per DSI spec wait 120ms after sending exit sleep DCS command */
+@@ -133,8 +301,9 @@ static int visionox_rm69299_prepare(struct drm_panel *p=
+anel)
+
+ =09ret =3D mipi_dsi_dcs_write(ctx->dsi, MIPI_DCS_SET_DISPLAY_ON, NULL, 0);
+ =09if (ret < 0) {
+-=09=09dev_err(ctx->panel.dev, "set_display_on cmd failed ret =3D %d\n", re=
+t);
+-=09=09goto power_off;
++=09=09dev_err(ctx->panel.dev, "set_display_on cmd failed ret =3D %d\n",
++=09=09=09ret);
++=09=09return ret;
+ =09}
+
+ =09/* Per DSI spec wait 120ms after sending set_display_on DCS command */
+@@ -143,41 +312,23 @@ static int visionox_rm69299_prepare(struct drm_panel =
+*panel)
+ =09ctx->prepared =3D true;
+
+ =09return 0;
+-
+-power_off:
+-=09return ret;
+ }
+
+-static const struct drm_display_mode visionox_rm69299_1080x2248_60hz =3D {
+-=09.name =3D "1080x2248",
+-=09.clock =3D 158695,
+-=09.hdisplay =3D 1080,
+-=09.hsync_start =3D 1080 + 26,
+-=09.hsync_end =3D 1080 + 26 + 2,
+-=09.htotal =3D 1080 + 26 + 2 + 36,
+-=09.vdisplay =3D 2248,
+-=09.vsync_start =3D 2248 + 56,
+-=09.vsync_end =3D 2248 + 56 + 4,
+-=09.vtotal =3D 2248 + 56 + 4 + 4,
+-=09.flags =3D 0,
+-};
+-
+ static int visionox_rm69299_get_modes(struct drm_panel *panel,
+ =09=09=09=09      struct drm_connector *connector)
+ {
+ =09struct visionox_rm69299 *ctx =3D panel_to_ctx(panel);
+ =09struct drm_display_mode *mode;
+
+-=09mode =3D drm_mode_create(connector->dev);
+-=09if (!mode) {
+-=09=09dev_err(ctx->panel.dev, "failed to create a new display mode\n");
+-=09=09return 0;
+-=09}
++=09mode =3D drm_mode_duplicate(connector->dev, ctx->mode);
++=09if (!mode)
 +=09=09return -ENOMEM;
 +
-+=09data->client =3D client;
-+=09ret =3D fts_parse_dt(data);
-+=09if (ret < 0)
-+=09=09return ret;
++=09drm_mode_set_name(mode);
+
+-=09connector->display_info.width_mm =3D 74;
+-=09connector->display_info.height_mm =3D 131;
+-=09drm_mode_copy(mode, &visionox_rm69299_1080x2248_60hz);
+ =09mode->type =3D DRM_MODE_TYPE_DRIVER | DRM_MODE_TYPE_PREFERRED;
++=09connector->display_info.width_mm =3D mode->width_mm;
++=09connector->display_info.height_mm =3D mode->height_mm;
+ =09drm_mode_probed_add(connector, mode);
+
+ =09return 1;
+@@ -199,6 +350,8 @@ static int visionox_rm69299_probe(struct mipi_dsi_devic=
+e *dsi)
+ =09if (!ctx)
+ =09=09return -ENOMEM;
+
++=09ctx->mode =3D of_device_get_match_data(dev);
 +
-+=09i2c_set_clientdata(client, data);
-+
-+=09spin_lock_init(&data->irq_lock);
-+=09mutex_init(&data->report_mutex);
-+
-+=09ret =3D fts_input_init(data);
-+=09if (ret < 0) {
-+=09=09dev_err(&data->client->dev, "Input initialization fail");
-+=09=09goto err_input_init;
-+=09}
-+
-+=09ret =3D fts_power_source_init(data);
-+=09if (ret < 0) {
-+=09=09dev_err(&data->client->dev, "fail to get vdd/vcc_i2c regulator");
-+=09=09goto err_power_init;
-+=09}
-+
-+=09data->power_disabled =3D true;
-+=09ret =3D fts_power_source_ctrl(data, true);
-+=09if (ret < 0) {
-+=09=09dev_err(&data->client->dev, "fail to enable vdd/vcc_i2c regulator");
-+=09=09goto err_power_ctrl;
-+=09}
-+
-+=09data->pinctrl =3D devm_pinctrl_get(&client->dev);
-+=09if (IS_ERR_OR_NULL(data->pinctrl)) {
-+=09=09dev_err(&data->client->dev, "Failed to get pinctrl, please check dts=
-");
-+=09=09ret =3D PTR_ERR(data->pinctrl);
-+=09=09goto err_power_ctrl;
-+=09}
-+
-+=09pinctrl_state_temp =3D pinctrl_lookup_state(data->pinctrl, "default");
-+=09if (IS_ERR_OR_NULL(pinctrl_state_temp) ||
-+=09=09IS_ERR_OR_NULL(pinctrl_lookup_state(data->pinctrl, "suspend"))) {
-+=09=09dev_err(&data->client->dev, "Failed to get default or suspend pinctr=
-l state, please check dts");
-+=09=09goto err_power_ctrl;
-+=09}
-+
-+=09fts_pinctrl_set_active(data, true);
-+
-+=09ret =3D fts_reset(data);
-+=09if (ret < 0) {
-+=09=09dev_err(&data->client->dev, "Failed to reset chip");
-+=09=09goto err_gpio_config;
-+=09}
-+
-+=09ret =3D fts_wait_ready(data);
-+=09if (ret < 0) {
-+=09=09dev_err(&data->client->dev, "Touch IC didn't turn on or is unsupport=
-ed");
-+=09=09goto err_gpio_config;
-+=09}
-+
-+=09if (data->irq_gpio) {
-+=09=09data->irq =3D gpiod_to_irq(data->irq_gpio);
-+
-+=09=09ret =3D request_threaded_irq(data->irq, NULL, fts_ts_interrupt,
-+=09=09=09=09=09IRQF_ONESHOT,
-+=09=09=09=09=09data->client->name, data);
-+=09=09if (ret < 0) {
-+=09=09=09dev_err(&data->client->dev, "request irq failed");
-+=09=09=09goto err_gpio_config;
-+=09=09}
-+=09=09device_init_wakeup(&client->dev, true);
-+=09}
-+
-+=09data->dev_pm_suspend =3D false;
-+=09init_completion(&data->dev_pm_suspend_completion);
-+
-+=09return 0;
-+
-+err_gpio_config:
-+=09fts_power_source_ctrl(data, false);
-+err_power_ctrl:
-+=09fts_power_source_release(data);
-+err_power_init:
-+=09input_unregister_device(data->input_dev);
-+err_input_init:
-+=09devm_kfree(&client->dev, data);
-+
-+=09return ret;
-+}
-+
-+static int fts_ts_remove(struct i2c_client *client)
-+{
-+=09struct fts_ts_data *data =3D i2c_get_clientdata(client);
-+
-+=09free_irq(client->irq, data);
-+=09input_unregister_device(data->input_dev);
-+
-+=09fts_power_source_ctrl(data, false);
-+=09fts_power_source_release(data);
-+
-+=09kfree(data->point_buf);
-+=09kfree(data->events);
-+
-+=09devm_kfree(&client->dev, data);
-+
-+=09return 0;
-+}
-+
-+static int fts_ts_suspend(struct device *dev)
-+{
-+=09struct fts_ts_data *data =3D dev_get_drvdata(dev);
-+=09int ret =3D 0;
-+
-+=09disable_irq(data->irq);
-+
-+=09ret =3D fts_power_source_ctrl(data, false);
-+=09if (ret < 0)
-+=09=09dev_err(dev, "power off fail, ret=3D%d", ret);
-+=09fts_pinctrl_set_active(data, false);
-+
-+=09return 0;
-+}
-+
-+static int fts_ts_resume(struct device *dev)
-+{
-+=09struct fts_ts_data *data =3D dev_get_drvdata(dev);
-+
-+=09fts_release_all_finger(data);
-+
-+=09fts_power_source_ctrl(data, true);
-+=09fts_pinctrl_set_active(data, true);
-+
-+=09fts_wait_ready(data);
-+
-+=09enable_irq(data->irq);
-+
-+=09return 0;
-+}
-+
-+static int fts_pm_suspend(struct device *dev)
-+{
-+=09struct fts_ts_data *data =3D dev_get_drvdata(dev);
-+=09int ret =3D 0;
-+
-+=09data->dev_pm_suspend =3D true;
-+
-+=09if (data->low_power_mode) {
-+=09=09ret =3D enable_irq_wake(data->irq);
-+=09=09if (ret < 0) {
-+=09=09=09dev_err(&data->client->dev, "enable_irq_wake(irq:%d) failed",
-+=09=09=09=09 data->irq);
-+=09=09}
-+=09} else {
-+=09=09ret =3D fts_ts_suspend(dev);
-+=09}
-+
-+=09reinit_completion(&data->dev_pm_suspend_completion);
-+
-+=09return ret;
-+}
-+
-+static int fts_pm_resume(struct device *dev)
-+{
-+=09struct fts_ts_data *data =3D dev_get_drvdata(dev);
-+=09int ret =3D 0;
-+
-+=09data->dev_pm_suspend =3D false;
-+
-+=09if (data->low_power_mode) {
-+=09=09ret =3D disable_irq_wake(data->irq);
-+=09=09if (ret < 0) {
-+=09=09=09dev_err(&data->client->dev, "disable_irq_wake(irq:%d) failed",
-+=09=09=09=09 data->irq);
-+=09=09}
-+=09} else {
-+=09=09ret =3D fts_ts_resume(dev);
-+=09}
-+
-+=09complete(&data->dev_pm_suspend_completion);
-+
-+=09return 0;
-+}
-+
-+static const struct dev_pm_ops fts_dev_pm_ops =3D {
-+=09.suspend =3D fts_pm_suspend,
-+=09.resume =3D fts_pm_resume,
-+};
-+
-+static const struct of_device_id fts_match_table[] =3D {
-+=09{ .compatible =3D "focaltech,fts5452", },
-+=09{ .compatible =3D "focaltech,fts8719", },
-+=09{ /* sentinel */ },
-+};
-+
-+MODULE_DEVICE_TABLE(of, fts_match_table);
-+
-+static struct i2c_driver fts_ts_driver =3D {
-+=09.probe =3D fts_ts_probe,
-+=09.remove =3D fts_ts_remove,
-+=09.driver =3D {
-+=09=09.name =3D FTS_DRIVER_NAME,
-+=09=09.pm =3D &fts_dev_pm_ops,
-+=09=09.of_match_table =3D fts_match_table,
-+=09},
-+};
-+module_i2c_driver(fts_ts_driver);
-+
-+MODULE_AUTHOR("Caleb Connolly <caleb@connolly.tech>");
-+MODULE_DESCRIPTION("FocalTech touchscreen Driver");
-+MODULE_LICENSE("GPL v2");
+ =09mipi_dsi_set_drvdata(dsi, ctx);
+
+ =09ctx->panel.dev =3D dev;
+@@ -212,10 +365,11 @@ static int visionox_rm69299_probe(struct mipi_dsi_dev=
+ice *dsi)
+ =09if (ret < 0)
+ =09=09return ret;
+
+-=09ctx->reset_gpio =3D devm_gpiod_get(ctx->panel.dev,
+-=09=09=09=09=09 "reset", GPIOD_OUT_LOW);
++=09ctx->reset_gpio =3D
++=09=09devm_gpiod_get(ctx->panel.dev, "reset", GPIOD_OUT_LOW);
+ =09if (IS_ERR(ctx->reset_gpio)) {
+-=09=09dev_err(dev, "cannot get reset gpio %ld\n", PTR_ERR(ctx->reset_gpio)=
+);
++=09=09dev_err(dev, "cannot get reset gpio %ld\n",
++=09=09=09PTR_ERR(ctx->reset_gpio));
+ =09=09return PTR_ERR(ctx->reset_gpio);
+ =09}
+
+@@ -237,13 +391,17 @@ static int visionox_rm69299_probe(struct mipi_dsi_dev=
+ice *dsi)
+
+ =09ret =3D regulator_set_load(ctx->supplies[0].consumer, 32000);
+ =09if (ret) {
+-=09=09dev_err(dev, "regulator set load failed for vdda supply ret =3D %d\n=
+", ret);
++=09=09dev_err(dev,
++=09=09=09"regulator set load failed for vdda supply ret =3D %d\n",
++=09=09=09ret);
+ =09=09goto err_set_load;
+ =09}
+
+ =09ret =3D regulator_set_load(ctx->supplies[1].consumer, 13200);
+ =09if (ret) {
+-=09=09dev_err(dev, "regulator set load failed for vdd3p3 supply ret =3D %d=
+\n", ret);
++=09=09dev_err(dev,
++=09=09=09"regulator set load failed for vdd3p3 supply ret =3D %d\n",
++=09=09=09ret);
+ =09=09goto err_set_load;
+ =09}
+
+@@ -268,7 +426,10 @@ static int visionox_rm69299_remove(struct mipi_dsi_dev=
+ice *dsi)
+ }
+
+ static const struct of_device_id visionox_rm69299_of_match[] =3D {
+-=09{ .compatible =3D "visionox,rm69299-1080p-display", },
++=09{ .compatible =3D "visionox,rm69299-1080p-display",
++=09  .data =3D &visionox_rm69299_1080x2248_60hz },
++=09{ .compatible =3D "visionox,rm69299-shift",
++=09  .data =3D &visionox_rm69299_1080x2160_60hz },
+ =09{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, visionox_rm69299_of_match);
 --
 2.34.1
 
