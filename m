@@ -2,47 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AA4AC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:12:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF32C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 00:12:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235230AbiAWAMP (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 19:12:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36576 "EHLO
+        id S235358AbiAWAMT (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 19:12:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235209AbiAWALv (ORCPT
+        with ESMTP id S235160AbiAWAL4 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 19:11:51 -0500
+        Sat, 22 Jan 2022 19:11:56 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F65BC06173B;
-        Sat, 22 Jan 2022 16:11:50 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6DE2C061744;
+        Sat, 22 Jan 2022 16:11:55 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 60E4FB80927;
-        Sun, 23 Jan 2022 00:11:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 17EB3C340E5;
-        Sun, 23 Jan 2022 00:11:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 57EF9B80AB1;
+        Sun, 23 Jan 2022 00:11:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1AB49C36AE7;
+        Sun, 23 Jan 2022 00:11:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642896708;
-        bh=teLQKXf5tK3pGJQ0z8b5RXQg1+V073oOsG05HKzc2wQ=;
+        s=k20201202; t=1642896713;
+        bh=JNisxRfei9m4NnvzKTq3L3CEJBbv2R5zSIfl/bLX5Hg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Gxj2ZndcwX913sYI8RAh58+AMBr+GT8hO4TQy1xV2vel2hFbqoLAxP1LVlBsAHXLK
-         8OODQizpeREIVl1VEut5VG2TExzCS+NHwJNScqwstp+NdtJOe1iwvZLhKzprjkZDBR
-         upeqwEyKomVqABc54bymxCVNYSgZBpYNUNwfIgzuTJmCmtf1g1qWcAOpRfZk7GibEJ
-         FAaL2hRYv9aklkW1NubxOJ8YVMWylrdSbTeBThkTtB8weRSkMSGSt2m9z6qTRACp4e
-         d3/07XHNpLKBbwxXuQ/hE489sv8m/TTOwZirsB+wdhZh6KHR7weugGF5MKcH77WAwT
-         lwL2i8WqjMijA==
+        b=TSueYz6gzOsDq9HNGpLoJpGlhZdhNlqoR7xP1+mtpsezSpb0Og/V4CaiLuX6qW2Ho
+         fA3NZDP0I7z4K7x9R895tPAlclavlaG6lTSDspNn/xUfUPq0iX81+AfRb6PngzC8cG
+         TMY1kDZpNMQkRFlSdBufvWARSQYKwLQvKsarVLBhG92PdG8sPsQ4ozGzhAh/dq6ESi
+         bZWYL0I5bG12D1RPx2HY7vLwCJUbikfd/P9/y6qeMU6rCX9TwEkklBrJ8D9jyiQQwp
+         ROibQbDM8D4LIuVyzliCNTgxfev7BAnsUpMWdP4pTO9UC0FyQtGL6YyNv/LGeHsXb+
+         WO70douGwJP/A==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ignat Korchagin <ignat@cloudflare.com>,
-        Amir Razmjou <arazmjou@cloudflare.com>,
-        David Ahern <dsahern@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, davem@davemloft.net,
-        yoshfuji@linux-ipv6.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.16 07/19] sit: allow encapsulated IPv6 traffic to be delivered locally
-Date:   Sat, 22 Jan 2022 19:11:00 -0500
-Message-Id: <20220123001113.2460140-7-sashal@kernel.org>
+Cc:     Wen Gu <guwen@linux.alibaba.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Sasha Levin <sashal@kernel.org>, kgraul@linux.ibm.com,
+        kuba@kernel.org, linux-s390@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.16 10/19] net/smc: Resolve the race between SMC-R link access and clear
+Date:   Sat, 22 Jan 2022 19:11:03 -0500
+Message-Id: <20220123001113.2460140-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220123001113.2460140-1-sashal@kernel.org>
 References: <20220123001113.2460140-1-sashal@kernel.org>
@@ -54,57 +52,195 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ignat Korchagin <ignat@cloudflare.com>
+From: Wen Gu <guwen@linux.alibaba.com>
 
-[ Upstream commit ed6ae5ca437d9d238117d90e95f7f2cc27da1b31 ]
+[ Upstream commit 20c9398d3309d170300d67643b851fd26783af24 ]
 
-While experimenting with FOU encapsulation Amir noticed that encapsulated IPv6
-traffic fails to be delivered, if the peer IP address is configured locally.
+We encountered some crashes caused by the race between SMC-R
+link access and link clear that triggered by abnormal link
+group termination, such as port error.
 
-It can be easily verified by creating a sit interface like below:
+Here is an example of this kind of crashes:
 
-$ sudo ip link add name fou_test type sit remote 127.0.0.1 encap fou encap-sport auto encap-dport 1111
-$ sudo ip link set fou_test up
+ BUG: kernel NULL pointer dereference, address: 0000000000000000
+ Workqueue: smc_hs_wq smc_listen_work [smc]
+ RIP: 0010:smc_llc_flow_initiate+0x44/0x190 [smc]
+ Call Trace:
+  <TASK>
+  ? __smc_buf_create+0x75a/0x950 [smc]
+  smcr_lgr_reg_rmbs+0x2a/0xbf [smc]
+  smc_listen_work+0xf72/0x1230 [smc]
+  ? process_one_work+0x25c/0x600
+  process_one_work+0x25c/0x600
+  worker_thread+0x4f/0x3a0
+  ? process_one_work+0x600/0x600
+  kthread+0x15d/0x1a0
+  ? set_kthread_struct+0x40/0x40
+  ret_from_fork+0x1f/0x30
+  </TASK>
 
-and sending some IPv4 and IPv6 traffic to it
+smc_listen_work()                     __smc_lgr_terminate()
+---------------------------------------------------------------
+                                    | smc_lgr_free()
+                                    |  |- smcr_link_clear()
+                                    |      |- memset(lnk, 0)
+smc_listen_rdma_reg()               |
+ |- smcr_lgr_reg_rmbs()             |
+     |- smc_llc_flow_initiate()     |
+         |- access lnk->lgr (panic) |
 
-$ ping -I fou_test -c 1 1.1.1.1
-$ ping6 -I fou_test -c 1 fe80::d0b0:dfff:fe4c:fcbc
+These crashes are similarly caused by clearing SMC-R link
+resources when some functions is still accessing to them.
+This patch tries to fix the issue by introducing reference
+count of SMC-R links and ensuring that the sensitive resources
+of links won't be cleared until reference count reaches zero.
 
-"tcpdump -i any udp dst port 1111" will confirm that only the first IPv4 ping
-was encapsulated and attempted to be delivered.
+The operation to the SMC-R link reference count can be concluded
+as follows:
 
-This seems like a limitation: for example, in a cloud environment the "peer"
-service may be arbitrarily scheduled on any server within the cluster, where all
-nodes are trying to send encapsulated traffic. And the unlucky node will not be
-able to. Moreover, delivering encapsulated IPv4 traffic locally is allowed.
+object          [hold or initialized as 1]         [put]
+--------------------------------------------------------------------
+links           smcr_link_init()                   smcr_link_clear()
+connections     smc_conn_create()                  smc_conn_free()
 
-But I may not have all the context about this restriction and this code predates
-the observable git history.
+Through this way, the clear of SMC-R links is later than the
+free of all the smc connections above it, thus avoiding the
+unsafe reference to SMC-R links.
 
-Reported-by: Amir Razmjou <arazmjou@cloudflare.com>
-Signed-off-by: Ignat Korchagin <ignat@cloudflare.com>
-Reviewed-by: David Ahern <dsahern@kernel.org>
-Link: https://lore.kernel.org/r/20220107123842.211335-1-ignat@cloudflare.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Wen Gu <guwen@linux.alibaba.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/ipv6/sit.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/smc/smc_core.c | 52 +++++++++++++++++++++++++++++++++++-----------
+ net/smc/smc_core.h |  4 ++++
+ 2 files changed, 44 insertions(+), 12 deletions(-)
 
-diff --git a/net/ipv6/sit.c b/net/ipv6/sit.c
-index 8a3618a30632a..72968d4188b93 100644
---- a/net/ipv6/sit.c
-+++ b/net/ipv6/sit.c
-@@ -956,7 +956,7 @@ static netdev_tx_t ipip6_tunnel_xmit(struct sk_buff *skb,
- 		dst_cache_set_ip4(&tunnel->dst_cache, &rt->dst, fl4.saddr);
+diff --git a/net/smc/smc_core.c b/net/smc/smc_core.c
+index 84b89d13c3359..f4de45ac88189 100644
+--- a/net/smc/smc_core.c
++++ b/net/smc/smc_core.c
+@@ -745,6 +745,8 @@ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
  	}
+ 	get_device(&lnk->smcibdev->ibdev->dev);
+ 	atomic_inc(&lnk->smcibdev->lnk_cnt);
++	refcount_set(&lnk->refcnt, 1); /* link refcnt is set to 1 */
++	lnk->clearing = 0;
+ 	lnk->path_mtu = lnk->smcibdev->pattr[lnk->ibport - 1].active_mtu;
+ 	lnk->link_id = smcr_next_link_id(lgr);
+ 	lnk->lgr = lgr;
+@@ -994,8 +996,12 @@ void smc_switch_link_and_count(struct smc_connection *conn,
+ 			       struct smc_link *to_lnk)
+ {
+ 	atomic_dec(&conn->lnk->conn_cnt);
++	/* link_hold in smc_conn_create() */
++	smcr_link_put(conn->lnk);
+ 	conn->lnk = to_lnk;
+ 	atomic_inc(&conn->lnk->conn_cnt);
++	/* link_put in smc_conn_free() */
++	smcr_link_hold(conn->lnk);
+ }
  
--	if (rt->rt_type != RTN_UNICAST) {
-+	if (rt->rt_type != RTN_UNICAST && rt->rt_type != RTN_LOCAL) {
- 		ip_rt_put(rt);
- 		dev->stats.tx_carrier_errors++;
- 		goto tx_error_icmp;
+ struct smc_link *smc_switch_conns(struct smc_link_group *lgr,
+@@ -1152,6 +1158,8 @@ void smc_conn_free(struct smc_connection *conn)
+ 	if (!lgr->conns_num)
+ 		smc_lgr_schedule_free_work(lgr);
+ lgr_put:
++	if (!lgr->is_smcd)
++		smcr_link_put(conn->lnk); /* link_hold in smc_conn_create() */
+ 	smc_lgr_put(lgr); /* lgr_hold in smc_conn_create() */
+ }
+ 
+@@ -1208,22 +1216,11 @@ static void smcr_rtoken_clear_link(struct smc_link *lnk)
+ 	}
+ }
+ 
+-/* must be called under lgr->llc_conf_mutex lock */
+-void smcr_link_clear(struct smc_link *lnk, bool log)
++static void __smcr_link_clear(struct smc_link *lnk)
+ {
+ 	struct smc_link_group *lgr = lnk->lgr;
+ 	struct smc_ib_device *smcibdev;
+ 
+-	if (!lgr || lnk->state == SMC_LNK_UNUSED)
+-		return;
+-	lnk->peer_qpn = 0;
+-	smc_llc_link_clear(lnk, log);
+-	smcr_buf_unmap_lgr(lnk);
+-	smcr_rtoken_clear_link(lnk);
+-	smc_ib_modify_qp_error(lnk);
+-	smc_wr_free_link(lnk);
+-	smc_ib_destroy_queue_pair(lnk);
+-	smc_ib_dealloc_protection_domain(lnk);
+ 	smc_wr_free_link_mem(lnk);
+ 	smc_ibdev_cnt_dec(lnk);
+ 	put_device(&lnk->smcibdev->ibdev->dev);
+@@ -1235,6 +1232,35 @@ void smcr_link_clear(struct smc_link *lnk, bool log)
+ 	smc_lgr_put(lgr); /* lgr_hold in smcr_link_init() */
+ }
+ 
++/* must be called under lgr->llc_conf_mutex lock */
++void smcr_link_clear(struct smc_link *lnk, bool log)
++{
++	if (!lnk->lgr || lnk->clearing ||
++	    lnk->state == SMC_LNK_UNUSED)
++		return;
++	lnk->clearing = 1;
++	lnk->peer_qpn = 0;
++	smc_llc_link_clear(lnk, log);
++	smcr_buf_unmap_lgr(lnk);
++	smcr_rtoken_clear_link(lnk);
++	smc_ib_modify_qp_error(lnk);
++	smc_wr_free_link(lnk);
++	smc_ib_destroy_queue_pair(lnk);
++	smc_ib_dealloc_protection_domain(lnk);
++	smcr_link_put(lnk); /* theoretically last link_put */
++}
++
++void smcr_link_hold(struct smc_link *lnk)
++{
++	refcount_inc(&lnk->refcnt);
++}
++
++void smcr_link_put(struct smc_link *lnk)
++{
++	if (refcount_dec_and_test(&lnk->refcnt))
++		__smcr_link_clear(lnk);
++}
++
+ static void smcr_buf_free(struct smc_link_group *lgr, bool is_rmb,
+ 			  struct smc_buf_desc *buf_desc)
+ {
+@@ -1872,6 +1898,8 @@ int smc_conn_create(struct smc_sock *smc, struct smc_init_info *ini)
+ 			goto out;
+ 	}
+ 	smc_lgr_hold(conn->lgr); /* lgr_put in smc_conn_free() */
++	if (!conn->lgr->is_smcd)
++		smcr_link_hold(conn->lnk); /* link_put in smc_conn_free() */
+ 	conn->freed = 0;
+ 	conn->local_tx_ctrl.common.type = SMC_CDC_MSG_TYPE;
+ 	conn->local_tx_ctrl.len = SMC_WR_TX_SIZE;
+diff --git a/net/smc/smc_core.h b/net/smc/smc_core.h
+index 51203b16307be..e73217f52f3dd 100644
+--- a/net/smc/smc_core.h
++++ b/net/smc/smc_core.h
+@@ -137,6 +137,8 @@ struct smc_link {
+ 	u8			peer_link_uid[SMC_LGR_ID_SIZE]; /* peer uid */
+ 	u8			link_idx;	/* index in lgr link array */
+ 	u8			link_is_asym;	/* is link asymmetric? */
++	u8			clearing : 1;	/* link is being cleared */
++	refcount_t		refcnt;		/* link reference count */
+ 	struct smc_link_group	*lgr;		/* parent link group */
+ 	struct work_struct	link_down_wrk;	/* wrk to bring link down */
+ 	char			ibname[IB_DEVICE_NAME_MAX]; /* ib device name */
+@@ -504,6 +506,8 @@ void smc_core_exit(void);
+ int smcr_link_init(struct smc_link_group *lgr, struct smc_link *lnk,
+ 		   u8 link_idx, struct smc_init_info *ini);
+ void smcr_link_clear(struct smc_link *lnk, bool log);
++void smcr_link_hold(struct smc_link *lnk);
++void smcr_link_put(struct smc_link *lnk);
+ void smc_switch_link_and_count(struct smc_connection *conn,
+ 			       struct smc_link *to_lnk);
+ int smcr_buf_map_lgr(struct smc_link *lnk);
 -- 
 2.34.1
 
