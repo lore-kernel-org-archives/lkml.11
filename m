@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4548C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 01:34:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8CC9C433F5
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 01:34:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235801AbiAWBeb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sat, 22 Jan 2022 20:34:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54664 "EHLO
+        id S235860AbiAWBee (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sat, 22 Jan 2022 20:34:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54624 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235388AbiAWBd7 (ORCPT
+        with ESMTP id S235262AbiAWBdw (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sat, 22 Jan 2022 20:33:59 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78E20C06173B;
-        Sat, 22 Jan 2022 17:33:58 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id a18so49614049edj.7;
-        Sat, 22 Jan 2022 17:33:58 -0800 (PST)
+        Sat, 22 Jan 2022 20:33:52 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2BDDC061401;
+        Sat, 22 Jan 2022 17:33:51 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id z22so49510181edd.12;
+        Sat, 22 Jan 2022 17:33:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wr0aH6ZhDw7172FNY5g9yB4jAgu5kftZ149nACZOyvk=;
-        b=afMKgKV8GT7LP56M5UGAHG+MIh/ZFyfibOFA1o1BGNYjps63YAhYgsBev3XTrxU7VF
-         L6osBvWPyIkc5QbOCf9nGgc/NvaJ/sEyU8Ap36fRjFztaF29JnLyp0VybMaozTu0juhD
-         T+w9R6yy+v0B34l3wGOCMVr4fQquVZu5ZgfnHd5nsSGtSyZSBIWoQeN7inRNZ+a7ZphC
-         dKCQXVc7ZT+DfnPRnglNoZVktPl+G+hVpSAm03GAzIF9PGkDnwCPn2gAoOOeT40GvhJW
-         Ve7YG8ifzXf3CHho7MKy06pamDZgIGJx8DL72kpH3F7RBXXL05+e0LNoq2SnYRXxae1A
-         AjSg==
+        bh=NVeC3B2Yit618jzzQLJaDTN+I7pHw/ZBk6dm6ruYyvo=;
+        b=eYygCN20TJe1WXBqXMPIhCErvz3siyHiMJ1GhIsYx/NzcFFP554HDIAwttBp7D7iGt
+         tTpu6T1TKYPAN3YCoXr5o23TQ07qUsa+G9ycA3kUQwkZEzKO8BIz8QsH0Y9tgucOC17v
+         Omhz7BcES+6WzjUAv7SwLJX1l5X9aNoXDzKyWmHv/LIQFNYIc+0+Ws4mhS7VXMXlHZRh
+         mKYRRveeajUHZRl/namXADxKQituStEF8KvjDpInUAMMO/55AZJ14zZ6aoMqJWhWEEt7
+         sefd2Jpi57PrxjJqCIJ9oE9KLc634SJ36INcc1kJ0Dq+wFXwbUOENluj6y6Vf0CaYuPb
+         24pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wr0aH6ZhDw7172FNY5g9yB4jAgu5kftZ149nACZOyvk=;
-        b=RyuZe8kbVnFxE38+Zy89EzAKFYpRujoM/g0/eF/88Qd4JbZy52whLRcCaA8Raml/D7
-         6P4zoraDBSO9Q2gqNPQhwSk0qKW0jJlyfaVifCE+grWSA4y0JhTZaZNDPOo64sh9keZY
-         ZU+SB9ksexQ8rgHi5wn6/TATpym6N1GTz5LcDaBcuttjCL/lLkhuAKPA1qr/dc2Q6ajX
-         DkGSSrft49wJSBHvKEd0fCFIWSNlIv4f4Ll90b4PEMMAllegpoiyQXC8lyoPYuAAVm4t
-         n7FIqhTHSE+PEBIo4o3V7wonVEGh1rhI77mjHyZ4aUE+H+m3SN1m9IHzDINTiTC5jNXb
-         q+/w==
-X-Gm-Message-State: AOAM530fA9RG3D43VuYU5O5irw6GUQKMdTBSH7E826zkmvlTtw7T+8g5
-        1FXbCb68FZ8sEn/QAjxSaTA=
-X-Google-Smtp-Source: ABdhPJzO67vWQSMtDam2xkx0jVGD53VuMcsWEXSfvldXxU6cNL5YnJ+5mctTuC+7FQxsUMfG+QGR/w==
-X-Received: by 2002:a05:6402:185:: with SMTP id r5mr10036115edv.259.1642901637044;
-        Sat, 22 Jan 2022 17:33:57 -0800 (PST)
+        bh=NVeC3B2Yit618jzzQLJaDTN+I7pHw/ZBk6dm6ruYyvo=;
+        b=UFltOK9HLVJYYxExaolq974RHoqLkqtQZ/KzyxhpHSYa3t+9mFXYEMnD1Tc8xL622e
+         0By/p534y63pzuxrqAm4vAfHxYmZy8L6I7WBYHp8+SBfqzGQkCbI6ucj2ltzN7TlX/dK
+         it1gB8k1rSarEeHahExYebXcEG0aHavOgd8uGWwEoJJddtcNUh45lGRo4ejDDE9nDaii
+         lYjKUaTvWzdIzI9KzuSnLt0EwKtfwGCLyZ1xrF079aYPowJdXbGUeb7KCnFqHbUPU2FF
+         zapZWTkiSMrwj4/mYHwBfgf7SeLM/A3ZYy60DN4Lybgn2gOo+53Nrw+2kOJUocIhKJ1z
+         /wEA==
+X-Gm-Message-State: AOAM5325KO9ysB2hXLQbi5X5WtIYckEEPjapEYYiQMg0t9fgtDUdmTHG
+        a32SRiHzRkpQWO/YZIXIcGw=
+X-Google-Smtp-Source: ABdhPJzlnR3eV37hzAh64GIT3dqvTMorSnte7rs2c1QJTe51kqzmFBpa3ZX79VV26PhANanEc+C4uQ==
+X-Received: by 2002:a05:6402:5203:: with SMTP id s3mr10130309edd.27.1642901630266;
+        Sat, 22 Jan 2022 17:33:50 -0800 (PST)
 Received: from localhost.localdomain (93-42-71-246.ip85.fastwebnet.it. [93.42.71.246])
-        by smtp.googlemail.com with ESMTPSA id fy40sm3259866ejc.36.2022.01.22.17.33.56
+        by smtp.googlemail.com with ESMTPSA id fy40sm3259866ejc.36.2022.01.22.17.33.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Jan 2022 17:33:56 -0800 (PST)
+        Sat, 22 Jan 2022 17:33:49 -0800 (PST)
 From:   Ansuel Smith <ansuelsmth@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -57,9 +57,9 @@ To:     Andrew Lunn <andrew@lunn.ch>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
         netdev@vger.kernel.org
 Cc:     Ansuel Smith <ansuelsmth@gmail.com>
-Subject: [RFC PATCH v7 16/16] net: dsa: qca8k: introduce qca8k_bulk_read/write function
-Date:   Sun, 23 Jan 2022 02:33:37 +0100
-Message-Id: <20220123013337.20945-17-ansuelsmth@gmail.com>
+Subject: [RFC PATCH v7 09/16] net: dsa: qca8k: add tracking state of master port
+Date:   Sun, 23 Jan 2022 02:33:30 +0100
+Message-Id: <20220123013337.20945-10-ansuelsmth@gmail.com>
 X-Mailer: git-send-email 2.33.1
 In-Reply-To: <20220123013337.20945-1-ansuelsmth@gmail.com>
 References: <20220123013337.20945-1-ansuelsmth@gmail.com>
@@ -69,104 +69,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Introduce qca8k_bulk_read/write() function to use mgmt Ethernet way to
-read/write packet in bulk. Make use of this new function in the fdb
-function.
+MDIO/MIB Ethernet require the master port and the tagger availabale to
+correctly work. Use the new api master_state_change to track when master
+is operational or not and set a bool in qca8k_priv.
+We cache the first cached master available and we check if other cpu
+port are operational when the cached one goes down.
+This cached master will later be used by mdio read/write and mib request to
+correctly use the working function.
+
+qca8k implementation for MDIO/MIB Ethernet is bad. CPU port0 is the only
+one that answers with the ack packet or sends MIB Ethernet packets. For
+this reason the master_state_change ignore CPU port6 and checkes only
+CPU port0 if it's operational and enables this mode.
 
 Signed-off-by: Ansuel Smith <ansuelsmth@gmail.com>
 ---
- drivers/net/dsa/qca8k.c | 55 ++++++++++++++++++++++++++++++++---------
- 1 file changed, 43 insertions(+), 12 deletions(-)
+ drivers/net/dsa/qca8k.c | 18 ++++++++++++++++++
+ drivers/net/dsa/qca8k.h |  1 +
+ 2 files changed, 19 insertions(+)
 
 diff --git a/drivers/net/dsa/qca8k.c b/drivers/net/dsa/qca8k.c
-index 0183ce2d5b74..b8d063c58675 100644
+index 039694518788..4bc5064414b5 100644
 --- a/drivers/net/dsa/qca8k.c
 +++ b/drivers/net/dsa/qca8k.c
-@@ -390,6 +390,43 @@ qca8k_regmap_update_bits_eth(struct qca8k_priv *priv, u32 reg, u32 mask, u32 wri
- 	return qca8k_write_eth(priv, reg, &val, 4);
+@@ -2383,6 +2383,23 @@ qca8k_port_lag_leave(struct dsa_switch *ds, int port,
+ 	return qca8k_lag_refresh_portmap(ds, port, lag, true);
  }
  
-+static int
-+qca8k_bulk_read(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
++static void
++qca8k_master_change(struct dsa_switch *ds, const struct net_device *master,
++		    bool operational)
 +{
-+	int i, count = len / sizeof(u32), ret;
++	struct dsa_port *dp = master->dsa_ptr;
++	struct qca8k_priv *priv = ds->priv;
 +
-+	if (priv->mgmt_master && !qca8k_read_eth(priv, reg, val, len))
-+		return 0;
++	/* Ethernet MIB/MDIO is only supported for CPU port 0 */
++	if (dp->index != 0)
++		return;
 +
-+	for (i = 0; i < count; i++) {
-+		ret = regmap_read(priv->regmap, reg + (i * 4), val + i);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return 0;
++	if (operational)
++		priv->mgmt_master = master;
++	else
++		priv->mgmt_master = NULL;
 +}
 +
-+static int
-+qca8k_bulk_write(struct qca8k_priv *priv, u32 reg, u32 *val, int len)
-+{
-+	int i, count = len / sizeof(u32), ret;
-+	u32 tmp;
-+
-+	if (priv->mgmt_master && !qca8k_write_eth(priv, reg, val, len))
-+		return 0;
-+
-+	for (i = 0; i < count; i++) {
-+		tmp = val[i];
-+
-+		ret = regmap_write(priv->regmap, reg + (i * 4), tmp);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static int
- qca8k_regmap_read(void *ctx, uint32_t reg, uint32_t *val)
- {
-@@ -535,17 +572,13 @@ qca8k_busy_wait(struct qca8k_priv *priv, u32 reg, u32 mask)
- static int
- qca8k_fdb_read(struct qca8k_priv *priv, struct qca8k_fdb *fdb)
- {
--	u32 reg[4], val;
--	int i, ret;
-+	u32 reg[4];
-+	int ret;
+ static const struct dsa_switch_ops qca8k_switch_ops = {
+ 	.get_tag_protocol	= qca8k_get_tag_protocol,
+ 	.setup			= qca8k_setup,
+@@ -2418,6 +2435,7 @@ static const struct dsa_switch_ops qca8k_switch_ops = {
+ 	.get_phy_flags		= qca8k_get_phy_flags,
+ 	.port_lag_join		= qca8k_port_lag_join,
+ 	.port_lag_leave		= qca8k_port_lag_leave,
++	.master_state_change	= qca8k_master_change,
+ };
  
- 	/* load the ARL table into an array */
--	for (i = 0; i < 4; i++) {
--		ret = qca8k_read(priv, QCA8K_REG_ATU_DATA0 + (i * 4), &val);
--		if (ret < 0)
--			return ret;
--
--		reg[i] = val;
--	}
-+	ret = qca8k_bulk_read(priv, QCA8K_REG_ATU_DATA0, reg, 12);
-+	if (ret)
-+		return ret;
+ static int qca8k_read_switch_id(struct qca8k_priv *priv)
+diff --git a/drivers/net/dsa/qca8k.h b/drivers/net/dsa/qca8k.h
+index ab4a417b25a9..9437369c60ca 100644
+--- a/drivers/net/dsa/qca8k.h
++++ b/drivers/net/dsa/qca8k.h
+@@ -353,6 +353,7 @@ struct qca8k_priv {
+ 	struct dsa_switch_ops ops;
+ 	struct gpio_desc *reset_gpio;
+ 	unsigned int port_mtu[QCA8K_NUM_PORTS];
++	const struct net_device *mgmt_master; /* Track if mdio/mib Ethernet is available */
+ };
  
- 	/* vid - 83:72 */
- 	fdb->vid = FIELD_GET(QCA8K_ATU_VID_MASK, reg[2]);
-@@ -569,7 +602,6 @@ qca8k_fdb_write(struct qca8k_priv *priv, u16 vid, u8 port_mask, const u8 *mac,
- 		u8 aging)
- {
- 	u32 reg[3] = { 0 };
--	int i;
- 
- 	/* vid - 83:72 */
- 	reg[2] = FIELD_PREP(QCA8K_ATU_VID_MASK, vid);
-@@ -586,8 +618,7 @@ qca8k_fdb_write(struct qca8k_priv *priv, u16 vid, u8 port_mask, const u8 *mac,
- 	reg[0] |= FIELD_PREP(QCA8K_ATU_ADDR5_MASK, mac[5]);
- 
- 	/* load the array into the ARL table */
--	for (i = 0; i < 3; i++)
--		qca8k_write(priv, QCA8K_REG_ATU_DATA0 + (i * 4), reg[i]);
-+	qca8k_bulk_write(priv, QCA8K_REG_ATU_DATA0, reg, 12);
- }
- 
- static int
+ struct qca8k_mib_desc {
 -- 
 2.33.1
 
