@@ -2,83 +2,86 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A2BC433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 12:35:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E068C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 12:43:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236331AbiAWMfg (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 07:35:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55400 "EHLO
+        id S236343AbiAWMmf (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 07:42:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231757AbiAWMff (ORCPT
+        with ESMTP id S231757AbiAWMme (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 07:35:35 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CA6DC06173B;
-        Sun, 23 Jan 2022 04:35:35 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1BDD260C03;
-        Sun, 23 Jan 2022 12:35:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19892C340E2;
-        Sun, 23 Jan 2022 12:35:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642941334;
-        bh=S7js9MyhutpXKmExYcJoR4zt9vRfN4FPoO8fosVNf8o=;
-        h=From:To:Cc:Subject:Date:From;
-        b=lMhV36RUtivGR2ajyZ4IVzQdcYtCJWjwS95KCwl4XFCV4p9oePljYqgy8SyABn0MQ
-         B94uTywz1BX/96guAzyapy72PshjyqR07AIn8RSi6QNDsTLzM7W+yNYxODPm24BFTN
-         9w+h9/ugmHo6q3x0++ji6hGie0YouDnfGwZ6Z3Gl3IAaxiKBiQMwy+KdtkZlhivo/x
-         iJ2BygJPf40eKwxuICcKKX2ugytVlZKpViwbAFJhX64vRqVW5myo3bhk0OwlGx4UAQ
-         VfCXuWUnHoTyRkVcUzFugC5zHcUJf5C9SSZEAy4DsDeSAdNDFOPySEO2p1Mb3DVB8J
-         69kjbOQEBnRoA==
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Russell King <linux@armlinux.org.uk>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] net: stmmac: remove unused members in struct stmmac_priv
-Date:   Sun, 23 Jan 2022 20:27:58 +0800
-Message-Id: <20220123122758.2876-1-jszhang@kernel.org>
-X-Mailer: git-send-email 2.34.1
+        Sun, 23 Jan 2022 07:42:34 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28227C06173B
+        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 04:42:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Type:MIME-Version:Message-ID:
+        Subject:Cc:To:From:Date:Sender:Reply-To:Content-Transfer-Encoding:Content-ID:
+        Content-Description:In-Reply-To:References;
+        bh=Sg6z/rpvEyqSVZeO10t9Tkl5j1ljD3oRNlpBgyr2ooI=; b=V+h+Yi7G1dzQhMn2Aisq3AMJAW
+        yBg4cj+ByfzfO18RzLTC4XL/SHYX8g39hC2ldvelreErZanbGljjZOqFhJrzad6ftbmnqUFw3iyex
+        9N392tvblJ0AUtnCMsDtnB1bIBcEyfDpO8VYrYvXzW+qXktfWAuZxMbvGljZFnabSAYinnvciiULf
+        VCNzuRnsbIQWUf/DPqqrsUgsUy6733JT0FDfO6nPLCBaF00y2a6LKhS+xaQSg1G0J/Bc7JSvI45oH
+        /hTQuDTneUS3Gdb97+ZmMkuuH6W2bmgTPMpzMTYQ5kQvYEAM2HsriP2/i8o7tNZFTlhN5g4zy4jEn
+        04h9LkLg==;
+Received: from j217100.upc-j.chello.nl ([24.132.217.100] helo=worktop.programming.kicks-ass.net)
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nBcCL-002wCU-8A; Sun, 23 Jan 2022 12:42:21 +0000
+Received: by worktop.programming.kicks-ass.net (Postfix, from userid 1000)
+        id B04BA98624A; Sun, 23 Jan 2022 13:42:19 +0100 (CET)
+Date:   Sun, 23 Jan 2022 13:42:19 +0100
+From:   Peter Zijlstra <peterz@infradead.org>
+To:     x86@kernel.org
+Cc:     dwmw@amazon.co.uk, pbonzini@redhat.com,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] x86,kvm/xen: Remove superfluous .fixup usage
+Message-ID: <20220123124219.GH20638@worktop.programming.kicks-ass.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-The tx_coalesce and mii_irq are not used at all now, so remove them.
 
-Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
+Commit 14243b387137 ("KVM: x86/xen: Add KVM_IRQ_ROUTING_XEN_EVTCHN and
+event channel delivery") adds superfluous .fixup usage after the whole
+.fixup section was removed in commit e5eefda5aa51 ("x86: Remove .fixup
+section").
+
+Fixes: 14243b387137 ("KVM: x86/xen: Add KVM_IRQ_ROUTING_XEN_EVTCHN and event channel delivery")
+Reported-by: Borislav Petkov <bp@alien8.de>
+Signed-off-by: Peter Zijlstra (Intel) <peterz@infradead.org>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac.h | 2 --
- 1 file changed, 2 deletions(-)
+ arch/x86/kvm/xen.c | 10 ++--------
+ 1 file changed, 2 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac.h b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-index 40b5ed94cb54..5b195d5051d6 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac.h
-@@ -194,7 +194,6 @@ struct stmmac_priv {
- 	u32 tx_coal_timer[MTL_MAX_TX_QUEUES];
- 	u32 rx_coal_frames[MTL_MAX_TX_QUEUES];
- 
--	int tx_coalesce;
- 	int hwts_tx_en;
- 	bool tx_path_in_lpi_mode;
- 	bool tso;
-@@ -229,7 +228,6 @@ struct stmmac_priv {
- 	unsigned int flow_ctrl;
- 	unsigned int pause;
- 	struct mii_bus *mii;
--	int mii_irq[PHY_MAX_ADDR];
- 
- 	struct phylink_config phylink_config;
- 	struct phylink *phylink;
--- 
-2.34.1
-
+diff --git a/arch/x86/kvm/xen.c b/arch/x86/kvm/xen.c
+index 0e3f7d6e9fd7..bad57535fad0 100644
+--- a/arch/x86/kvm/xen.c
++++ b/arch/x86/kvm/xen.c
+@@ -316,10 +316,7 @@ int __kvm_xen_has_interrupt(struct kvm_vcpu *v)
+ 				     "\tnotq %0\n"
+ 				     "\t" LOCK_PREFIX "andq %0, %2\n"
+ 				     "2:\n"
+-				     "\t.section .fixup,\"ax\"\n"
+-				     "3:\tjmp\t2b\n"
+-				     "\t.previous\n"
+-				     _ASM_EXTABLE_UA(1b, 3b)
++				     _ASM_EXTABLE_UA(1b, 2b)
+ 				     : "=r" (evtchn_pending_sel),
+ 				       "+m" (vi->evtchn_pending_sel),
+ 				       "+m" (v->arch.xen.evtchn_pending_sel)
+@@ -335,10 +332,7 @@ int __kvm_xen_has_interrupt(struct kvm_vcpu *v)
+ 				     "\tnotl %0\n"
+ 				     "\t" LOCK_PREFIX "andl %0, %2\n"
+ 				     "2:\n"
+-				     "\t.section .fixup,\"ax\"\n"
+-				     "3:\tjmp\t2b\n"
+-				     "\t.previous\n"
+-				     _ASM_EXTABLE_UA(1b, 3b)
++				     _ASM_EXTABLE_UA(1b, 2b)
+ 				     : "=r" (evtchn_pending_sel32),
+ 				       "+m" (vi->evtchn_pending_sel),
+ 				       "+m" (v->arch.xen.evtchn_pending_sel)
