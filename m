@@ -2,52 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37237C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 18:40:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0EB5C433EF
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 18:40:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239753AbiAWSkb (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 13:40:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53452 "EHLO
+        id S239507AbiAWSki (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 13:40:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239638AbiAWSkM (ORCPT
+        with ESMTP id S239622AbiAWSkU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 13:40:12 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F200C06173B;
-        Sun, 23 Jan 2022 10:40:11 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id h23so13121408pgk.11;
-        Sun, 23 Jan 2022 10:40:11 -0800 (PST)
+        Sun, 23 Jan 2022 13:40:20 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8451BC06173D;
+        Sun, 23 Jan 2022 10:40:20 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id y17so3130522plg.7;
+        Sun, 23 Jan 2022 10:40:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:subject:date:message-id:in-reply-to:references:mime-version
          :content-transfer-encoding;
-        bh=5dgQylvVki0nkzDnS/+Po4tisaRNHjVIflYn4fyQ95A=;
-        b=NPOFz183ei2daEpofKHSZlIolbNFGvjJd0bvuAgxnQXa1mbuzsB8hvhkTyioW5ltoS
-         y5sMMuWjyvc6kDKU9Jy9RUasJPQQydggdGhHkwIb35VXWo1CaSQ0zCd9mdEPpwTnH9lE
-         TQqSWzrtUY0GJOlgUr5T7TRU7USi2tfNg0iPTHfbRBNkqvnNmL37z4Z3nE/duk/GdyQ5
-         cmvTi8PRmdLMbpY5nfSMCDbv/xdK/q2iKEIs8W5TKJvzZ6qlATNv/wm7uCbiAn1dPBU1
-         +aM82cX+6IPqeayXYKuA7LfBX8rP3SzfEyhASY6EF68X1T6Es8PNFrBgcehKUkL4wkcD
-         DEnw==
+        bh=QqjEcwh/Vt3ob/xyYzKK4XDGLqNzTDbmtmru+0FTCuE=;
+        b=QirWg+lweofM9kFw4lQkoYZAFuKzZxOxrfW4krFfMwzWQOQc828Kg4wUFu/CnyQyYo
+         jXMbk78JyjVnL00jc+K6b7IKZaGBiJkUZRjZhvTWLZjdoGe7Rmc5Ld5gBMmQE4h8CBwc
+         2nZWoOHGLABDxeInZgxPd1zaaerdmwx1uw/CoJ2KNxMrjYLyYAlHX6xP1WQspeALHNbo
+         sOmk6CFE7AWiAd2Uop6Jh9ZUqhP1IiO6WNhmYk8AGo4PvVqdXR12F00sDQVaFHhrZT3G
+         cr4x4N9BbO3MSVwZxJWjB2Lb76qglUp3ZalrE3oh0Bi001lr9e34A5qeWoVSN8j9CeP2
+         22Zg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=5dgQylvVki0nkzDnS/+Po4tisaRNHjVIflYn4fyQ95A=;
-        b=C1XnGtuLZ+5b+jIpOZs8MkATAvPQ8EfJaC9z5s2FLWazeDtrPzD6gsXUmVACzVD5iD
-         wOlJTT0C24+OwJPhf+xdAXqmVtWgi2ZKhVbt0mphnHRb5D0LaO8Me9g9wrDp5KX+nxPF
-         8QQwkas0RbsxMUINecOQJUediEutlqfByXCscoFJCF2rt3Qjj5ywrDNpTlclv8ZavaFP
-         BrkNxGXCIQ1KqYH5ffVB4A1jDiyhWiKgfzzn0yQeB3/yRR1KJcYu3sz3y4Latirfu9Rt
-         sg69Cb+5i0APwX31C5aQ6+SdXepuT9r+RJDeSBXhOADiiRW4bLuJ2bQti2+jH9zwC3B/
-         J1yg==
-X-Gm-Message-State: AOAM531AGLPoGrgMg+bghXOb31wb/ViO1NGjg5EbTC0EAUllEVJUoJJg
-        l8RRJPpQjWR+kBuaDu2hwz0=
-X-Google-Smtp-Source: ABdhPJzsBbCwcI8UQ9QtXW6uxvo0U0RHWhtm06Iz8OLFP8vkslwU6MYNdswa+/Z1sC5DBYGMC9d39A==
-X-Received: by 2002:a05:6a00:23cc:b0:4c6:d3b8:29ea with SMTP id g12-20020a056a0023cc00b004c6d3b829eamr11191897pfc.78.1642963211024;
-        Sun, 23 Jan 2022 10:40:11 -0800 (PST)
+        bh=QqjEcwh/Vt3ob/xyYzKK4XDGLqNzTDbmtmru+0FTCuE=;
+        b=p47GPAYHS8CCalQoJs3WgeqGZhSSgzX6BHuCUYwcJIX062oZaFkdnkEevSvive1aRX
+         TIO0DoJj4Q3VnUAnSERJYGxixGb6Ut3uj/22NChLlmbSFy2ZqSzvHQ/fZ6aqC2lnJu5t
+         8EMNpuyZJzvQd6m4JfHiEkKeq4C/1r5YbuXdi2MyjK7atWZVqf3Bu8Zn/nXImGRhgX4S
+         poeM4iQ3xAFDZ+bnDwzd8ipZzB3PrsH/dt8bLDgEkTd6JXvDVYk5frjixffgIbH+DCv8
+         D+mgOM3/r0pqh35hBkIgetXZLswdf+8Q9mW7NRCI9PBFXBrIuVjCXRd2HHY65JobQ7sO
+         dxJw==
+X-Gm-Message-State: AOAM533Ge3zwx7u9AMz4ij+jhXICuBvGvwJe6FNTixrs/hRhV5X3SF6Z
+        vEcCK7QG9p9S9EkHFJZ86rs=
+X-Google-Smtp-Source: ABdhPJwbVELe7QC7MMVE53A+dZrALuLWXks3kDspFFg5RnGQ+U6L1gKvdNAVlETCFY4gN45eIP7tHg==
+X-Received: by 2002:a17:902:b185:b0:149:fccf:1cf3 with SMTP id s5-20020a170902b18500b00149fccf1cf3mr11659042plr.77.1642963220019;
+        Sun, 23 Jan 2022 10:40:20 -0800 (PST)
 Received: from localhost (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id a3sm10460879pfk.73.2022.01.23.10.40.10
+        by smtp.gmail.com with ESMTPSA id r19sm10615026pjz.6.2022.01.23.10.40.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Jan 2022 10:40:10 -0800 (PST)
+        Sun, 23 Jan 2022 10:40:19 -0800 (PST)
 From:   Yury Norov <yury.norov@gmail.com>
 To:     Yury Norov <yury.norov@gmail.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -62,15 +62,13 @@ To:     Yury Norov <yury.norov@gmail.com>,
         Nicholas Piggin <npiggin@gmail.com>,
         Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
         Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org, Rob Clark <robdclark@gmail.com>,
-        Sean Paul <sean@poorly.run>,
-        Abhinav Kumar <quic_abhinavk@quicinc.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-arm-msm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, freedreno@lists.freedesktop.org
-Subject: [PATCH 07/54] gpu: drm: replace bitmap_weight with bitmap_empty where appropriate
-Date:   Sun, 23 Jan 2022 10:38:38 -0800
-Message-Id: <20220123183925.1052919-8-yury.norov@gmail.com>
+        linux-kernel@vger.kernel.org, Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH 10/54] net: ethernet: replace bitmap_weight with bitmap_empty for qlogic
+Date:   Sun, 23 Jan 2022 10:38:41 -0800
+Message-Id: <20220123183925.1052919-11-yury.norov@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20220123183925.1052919-1-yury.norov@gmail.com>
 References: <20220123183925.1052919-1-yury.norov@gmail.com>
@@ -80,30 +78,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-smp_request_block() in drivers/gpu/drm/msm/disp/mdp5/mdp5_smp.c calls
-bitmap_weight() to check if any bit of a given bitmap is set. It's
-better to use bitmap_empty() in that case because bitmap_empty() stops
-traversing the bitmap as soon as it finds first set bit, while
-bitmap_weight() counts all bits unconditionally.
+qlogic/qed code calls bitmap_weight() to check if any bit of a given
+bitmap is set. It's better to use bitmap_empty() in that case because
+bitmap_empty() stops traversing the bitmap as soon as it finds first
+set bit, while bitmap_weight() counts all bits unconditionally.
 
 Signed-off-by: Yury Norov <yury.norov@gmail.com>
 ---
- drivers/gpu/drm/msm/disp/mdp5/mdp5_smp.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qed/qed_rdma.c | 4 ++--
+ drivers/net/ethernet/qlogic/qed/qed_roce.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/disp/mdp5/mdp5_smp.c b/drivers/gpu/drm/msm/disp/mdp5/mdp5_smp.c
-index d7fa2c49e741..56a3063545ec 100644
---- a/drivers/gpu/drm/msm/disp/mdp5/mdp5_smp.c
-+++ b/drivers/gpu/drm/msm/disp/mdp5/mdp5_smp.c
-@@ -68,7 +68,7 @@ static int smp_request_block(struct mdp5_smp *smp,
- 	uint8_t reserved;
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_rdma.c b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
+index 23b668de4640..b6e2e17bac04 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_rdma.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_rdma.c
+@@ -336,7 +336,7 @@ void qed_rdma_bmap_free(struct qed_hwfn *p_hwfn,
  
- 	/* we shouldn't be requesting blocks for an in-use client: */
--	WARN_ON(bitmap_weight(cs, cnt) > 0);
-+	WARN_ON(!bitmap_empty(cs, cnt));
+ 	/* print aligned non-zero lines, if any */
+ 	for (item = 0, line = 0; line < last_line; line++, item += 8)
+-		if (bitmap_weight((unsigned long *)&pmap[item], 64 * 8))
++		if (!bitmap_empty((unsigned long *)&pmap[item], 64 * 8))
+ 			DP_NOTICE(p_hwfn,
+ 				  "line 0x%04x: 0x%016llx 0x%016llx 0x%016llx 0x%016llx 0x%016llx 0x%016llx 0x%016llx 0x%016llx\n",
+ 				  line,
+@@ -350,7 +350,7 @@ void qed_rdma_bmap_free(struct qed_hwfn *p_hwfn,
  
- 	reserved = smp->reserved[cid];
- 
+ 	/* print last unaligned non-zero line, if any */
+ 	if ((bmap->max_count % (64 * 8)) &&
+-	    (bitmap_weight((unsigned long *)&pmap[item],
++	    (!bitmap_empty((unsigned long *)&pmap[item],
+ 			   bmap->max_count - item * 64))) {
+ 		offset = sprintf(str_last_line, "line 0x%04x: ", line);
+ 		for (; item < last_item; item++)
+diff --git a/drivers/net/ethernet/qlogic/qed/qed_roce.c b/drivers/net/ethernet/qlogic/qed/qed_roce.c
+index 071b4aeaddf2..134ecfca96a3 100644
+--- a/drivers/net/ethernet/qlogic/qed/qed_roce.c
++++ b/drivers/net/ethernet/qlogic/qed/qed_roce.c
+@@ -76,7 +76,7 @@ void qed_roce_stop(struct qed_hwfn *p_hwfn)
+ 	 * We delay for a short while if an async destroy QP is still expected.
+ 	 * Beyond the added delay we clear the bitmap anyway.
+ 	 */
+-	while (bitmap_weight(rcid_map->bitmap, rcid_map->max_count)) {
++	while (!bitmap_empty(rcid_map->bitmap, rcid_map->max_count)) {
+ 		/* If the HW device is during recovery, all resources are
+ 		 * immediately reset without receiving a per-cid indication
+ 		 * from HW. In this case we don't expect the cid bitmap to be
 -- 
 2.30.2
 
