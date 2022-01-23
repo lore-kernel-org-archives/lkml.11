@@ -2,113 +2,78 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B206C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 19:04:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 747B2C433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 19:13:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233368AbiAWTEC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 14:04:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59130 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229533AbiAWTEB (ORCPT
+        id S234701AbiAWTNI (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 14:13:08 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60134 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229533AbiAWTNF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 14:04:01 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E302FC06173B;
-        Sun, 23 Jan 2022 11:04:00 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id b13so52783927edn.0;
-        Sun, 23 Jan 2022 11:04:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hikcqL8mS8nMF1CzMfm8luBGcU7GRgMoFevUVKAg5Ug=;
-        b=UiASGjdh1VQ8Hp21AjanbFzPUBArgoJogAZ4hzN4sig0CppgTiTlavhcRfIW+grqtA
-         vnS7Vj57dS0rLco7TbGy4r6bHFqId/f1mCPtZ6poBg/M1y1Qn5rjY3+PNYnYwBZulxqo
-         UM51keKFIrf4vhUjMDNntfGpM2r2Uvp0fvJvwa/gz7HVb1CwqnJk8xJbYpOyZMMAhcij
-         PZICVfpO0GPp4mc+iyrSbI8l4foRlZ5U8uako6wmcuBMyGtQxdCjdQG3RXc4xokYOvfo
-         8FIo3H2aHiZSK/OM2zs17p6QBgRb6x8x1fplevrEprUK1TQFA7IWf0xU0+W1kTmM5nZz
-         YQIw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hikcqL8mS8nMF1CzMfm8luBGcU7GRgMoFevUVKAg5Ug=;
-        b=Mpt0PZ3QbBI3n2gy30dJGxaCMxoS6ff66KHeZk3Kye4xquKppyREt+g8J8msqfhSky
-         iH3JlFnnYTBjmz+AQrKpzkfi2ryY69DzuGE0nXO19SxhoBg7+tsVbVYJULrbqKZXfksI
-         c/HYcompLm4Czh0toj+C0zSurAye5FnD8M7Cqcc7bf50OhWaxnyNo+fUsizK98Cn0dba
-         spPnocDkz6gpwRX3geKU99p0ucLQoSwYsmfKkKr6oSPvsxYLlnNEKAHhpZNN4hW/GmXM
-         fY6hl/DulwwSHwXwYqIImmlP9XLIQhPkIw5GGndER5+GyNQ+Dq7AErtgaN4XVaJPWY0X
-         euJQ==
-X-Gm-Message-State: AOAM531H/hbuBdvxlZWiSoS+gpxegQtHDw64N7pY66ZpI3tZthYw4HYX
-        B5URnizdt5tkGsTOCDp/1IrAJcPgw9kzN6BoYFqWtwIf8PE=
-X-Google-Smtp-Source: ABdhPJyEuGbEhaR8JMUnLmh2cEdtZcPv7gUuWDVYmzphuzl4za6aIJpjmP9yx3btWANqlBt565j/QDo76VxdGi0NRUA=
-X-Received: by 2002:a50:eacb:: with SMTP id u11mr12866389edp.290.1642964639421;
- Sun, 23 Jan 2022 11:03:59 -0800 (PST)
+        Sun, 23 Jan 2022 14:13:05 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7DC7561044;
+        Sun, 23 Jan 2022 19:13:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 155EBC340E4;
+        Sun, 23 Jan 2022 19:13:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642965184;
+        bh=GJPd6oWq/9UOGgtYOqM5tOECxwhKwp2mxJxFwAAeO2I=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=cYlPo3tkXmU4veIUKk9yFbqjWQnGwSpfYNOF3mExP8FuaeK6uuIeWVdiLMl328sXN
+         pRvYceR+bcwg5vYMxfH8vFtOrZxydvRoF0z0BkTq9zhllEn2r377Px2zRhqOMJCHdV
+         QZwTibz3nNjoWQxcYjVguWWlxWW2rHpDUeXNmegfAie1B7DaagbqLAuiOAR0Z/peQ5
+         FYd2HmOgO0THGdp2ATn2x+YoO7Y+LwTTdhjRG08RGej5nRLlezR0OMmbE2B1yXjo/n
+         fROYUoN/6xhpwpyvzzwxXts9SRvVyHPhB7gtaEAEBOXSS9ZQouVpD1eURc5a7LlT19
+         +fyWifImbo7KA==
+Date:   Sun, 23 Jan 2022 21:13:00 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        Jason Gunthorpe <jgg@ziepe.ca>, linux-rdma@vger.kernel.org
+Subject: Re: [PATCH 18/54] drivers/infiniband: replace cpumask_weight with
+ cpumask_empty where appropriate
+Message-ID: <Ye2ovL0UwQ2X4w7z@unreal>
+References: <20220123183925.1052919-1-yury.norov@gmail.com>
+ <20220123183925.1052919-19-yury.norov@gmail.com>
 MIME-Version: 1.0
-References: <20220108005533.947787-1-martin.blumenstingl@googlemail.com> <423f474e15c948eda4db5bc9a50fd391@realtek.com>
-In-Reply-To: <423f474e15c948eda4db5bc9a50fd391@realtek.com>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Sun, 23 Jan 2022 20:03:48 +0100
-Message-ID: <CAFBinCBVEndU0t-6d5atE31OFYHzPyk7pOe78v0XrrFWcBec9w@mail.gmail.com>
-Subject: Re: [PATCH v3 0/8] rtw88: prepare locking for SDIO support
-To:     Pkshih <pkshih@realtek.com>
-Cc:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "johannes@sipsolutions.net" <johannes@sipsolutions.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Neo Jou <neojou@gmail.com>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Ed Swierk <eswierk@gh.st>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220123183925.1052919-19-yury.norov@gmail.com>
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi Ping-Ke,
+On Sun, Jan 23, 2022 at 10:38:49AM -0800, Yury Norov wrote:
+> drivers/infiniband/hw/hfi1/affinity.c code calls cpumask_weight() to check
+> if any bit of a given cpumask is set. We can do it more efficiently with
+> cpumask_empty() because cpumask_empty() stops traversing the cpumask as
+> soon as it finds first set bit, while cpumask_weight() counts all bits
+> unconditionally.
+> 
+> Signed-off-by: Yury Norov <yury.norov@gmail.com>
+> ---
+>  drivers/infiniband/hw/hfi1/affinity.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 
-On Fri, Jan 21, 2022 at 9:10 AM Pkshih <pkshih@realtek.com> wrote:
-[...]
-> >
-> > I do stressed test of connection and suspend, and it get stuck after about
-> > 4 hours but no useful messages. I will re-build my kernel and turn on lockdep debug
-> > to see if it can tell me what is wrong.
-First of all: thank you so much for testing this and investigating the deadlock!
+Except that title needs to be: "RDMA/hfi: ....", the change looks ok.
 
-> I found some deadlock:
->
-> [ 4891.169653]        CPU0                    CPU1
-> [ 4891.169732]        ----                    ----
-> [ 4891.169799]   lock(&rtwdev->mutex);
-> [ 4891.169874]                                lock(&local->sta_mtx);
-> [ 4891.169948]                                lock(&rtwdev->mutex);
-> [ 4891.170050]   lock(&local->sta_mtx);
->
->
-> [ 4919.598630]        CPU0                    CPU1
-> [ 4919.598715]        ----                    ----
-> [ 4919.598779]   lock(&local->iflist_mtx);
-> [ 4919.598900]                                lock(&rtwdev->mutex);
-> [ 4919.598995]                                lock(&local->iflist_mtx);
-> [ 4919.599092]   lock(&rtwdev->mutex);
-This looks similar to the problem fixed by 5b0efb4d670c8b ("rtw88:
-avoid circular locking between local->iflist_mtx and rtwdev->mutex")
-which you have pointed out earlier.
-It seems to me that we should avoid using the mutex version of
-ieee80211_iterate_*() because it can lead to more of these issues. So
-from my point of view the general idea of the code from your attached
-patch looks good. That said, I'm still very new to mac80211/cfg80211
-so I'm also interested in other's opinions.
-
-> So, I add wrappers to iterate rtw_iterate_stas() and rtw_iterate_vifs() that
-> use _atomic version to collect sta and vif, and use list_for_each() to iterate.
-> Reference code is attached, and I'm still thinking if we can have better method.
-With "better method" do you mean something like in patch #2 from this
-series (using unsigned int num_si and struct rtw_sta_info
-*si[RTW_MAX_MAC_ID_NUM] inside the iter_data) are you thinking of a
-better way in general?
-
-
-Best regards,
-Martin
+Thanks,
+Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
