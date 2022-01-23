@@ -2,107 +2,89 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BC88C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 18:43:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73D0FC433FE
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 18:50:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240054AbiAWSn4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 13:43:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53944 "EHLO
+        id S234775AbiAWSuH (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 13:50:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240206AbiAWSmj (ORCPT
+        with ESMTP id S239684AbiAWStj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 13:42:39 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955F0C0613DE
-        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 10:42:38 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id q63so9477391pja.1
-        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 10:42:38 -0800 (PST)
+        Sun, 23 Jan 2022 13:49:39 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1996C06173B;
+        Sun, 23 Jan 2022 10:49:38 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id az27-20020a05600c601b00b0034d2956eb04so26141474wmb.5;
+        Sun, 23 Jan 2022 10:49:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
+        h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=eurCTfqQPWvOuAgaV33nc0wGgUHFJYL01lWf+T5k2PY=;
-        b=FFMT2f8tr34dAdw6qtWLyYPfB4JxqS9+3IX2kpUT3TpR8TAPWwSftQobhiNpybwI9a
-         EiyLHk4tFUU5q5iqJ+glN5C5lddCZMB0OD2kYc2syyqq54rQ17CHadonX5bGub/FIJTp
-         IECKqMlX01o+0SdqQs2yGwrqdHoTitmFEo34i5Bh8cDa9724NVJqUdgwSFIcJ5BNZ8gj
-         ChoRMM6wgOtyJzqG3JoUYUh8u+GT6RSw6PrBcgAsCInNy/UuWQtvvW8mAikxyZ0Pe1ua
-         ptvxnd66XB0Od3rvoUFylEiHd66+ccWXgvquEi+7+ZkI4gQpMOnPcTy+jSZMeCttgU15
-         NVCw==
+        bh=QNqDn3I3LJLzoyMZXKpcI7Z5iL1QVKhcITQ7cdN2Eik=;
+        b=XTSyLsYruDxgGhVGg7tqEoHCKh7PCit7Tcwzd1PZxnc17OG1M5yfx2Hp2jHGXq1Ngn
+         QfALqEFpgro6Kw6mOECJe8weHFLrdej+K8689SgNWME0OcvKkd7VDMmed3kAZITt+sBP
+         H1ZFDWfExHmnjcOav2iVhMLQpaL0as+k1rXmznmBa85KOYEB+bZXmJi+6HbYozWpYYLq
+         FqTh0rEkmeB6jaVBtzNxBd8M7klwlWBXE2HTAvLdZZDLimiyivwQ04pReCFgHhNRGZHM
+         Upsx5za6EYRupJhomYcuMbY22jWa+PwfiwjuV/jXOgpqybUOcuab+H4ESIH1hwY4zy0N
+         78eA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=eurCTfqQPWvOuAgaV33nc0wGgUHFJYL01lWf+T5k2PY=;
-        b=BFinx2CpKC7i/iOGrSN+3YzITcuSQzG00iII/tnX/MR2bYNq06xlYsaDx8RqDVmgra
-         XprB5bu0JEpoBG5pLi9+RtruLz2VjY9AFZPk8Z+X0jn4j5JG3aPA+Eb7U8OPrhSuGXkE
-         ak5kIa8CkAHdCpSJl59SDiB3Dt16RaPzto71YWfO1weeolicU0zYtxkkDR5j6bGtCfrS
-         keP4DnQ5L0Narx5M8Be49INS4CdV0xa/rptSFaJo4gNGb6FtbxwGztBeBWNL6Ovr0PGs
-         xH3Njw8JaSvWa40Bz5ChE0trTCWzdb3dN5wtKQp15nT11Rq38/jOl6BLafUj8UvHjoY1
-         2mMw==
-X-Gm-Message-State: AOAM530D/V573RFhd6To9l3XTsM5y1DHKHCjl+Ru++6MnUyYZE7QA2SC
-        FfU5dxws0sbiyYDAFDqWI/o=
-X-Google-Smtp-Source: ABdhPJzf3y0mSqzIQNCHu5M8urUCU9T6nbBKxdNMprAK5Xer13Pwyl+y6AEUQai5c7RvsuvJOXpPNQ==
-X-Received: by 2002:a17:902:8305:b0:14a:bd99:203b with SMTP id bd5-20020a170902830500b0014abd99203bmr11479566plb.74.1642963358028;
-        Sun, 23 Jan 2022 10:42:38 -0800 (PST)
-Received: from localhost (searspoint.nvidia.com. [216.228.112.21])
-        by smtp.gmail.com with ESMTPSA id z15sm9867945pgf.66.2022.01.23.10.42.37
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QNqDn3I3LJLzoyMZXKpcI7Z5iL1QVKhcITQ7cdN2Eik=;
+        b=lSOr8WDWZj65++MpTTm/wcbrwVQ19TQ5VBHTk+XrG+4mHxpiCJPHZjRptIfoQFIvb+
+         bELwkPOLxJbymts3srfu3czAvR25Vq/EqQtRkfvBAWQVbrfP5KnHJgD/V3OMLhCc66KC
+         sPxfZZc20h6xP+zdR83WHz8aTbXET7Fj2hueCjtqPdjNyMncnBsLc5nnJIJ/pYWv8QGD
+         BRoza+fq07/8di3ucfpfdObYxOEBRHNzlv5LmcA9DGUbVYVMnwEd7j0/9BQwwWajpPPu
+         1YoPxjvkykj5ZpR2EoJHY0r54kwRRCs9c+QcviCeEdObSzx9Y3o6eUayOa/q52dvGtoh
+         CF1Q==
+X-Gm-Message-State: AOAM532ziBgSnYgDK526rD07b2wWqk94t0/ow1CjgaWuEANcQpExFRPG
+        /NsG7VKkEdV7MQ5/b18Zrlg5R4KcWQTbDQ==
+X-Google-Smtp-Source: ABdhPJxNP8e3b/i3J1jIoUGak690AInHAgR5PpNWEkZNKxwUIDbwFrxt8DkRrzbZZjp4yuM3YhBOHA==
+X-Received: by 2002:a1c:4d1a:: with SMTP id o26mr6375332wmh.147.1642963777165;
+        Sun, 23 Jan 2022 10:49:37 -0800 (PST)
+Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
+        by smtp.gmail.com with ESMTPSA id m5sm11013691wms.4.2022.01.23.10.49.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Jan 2022 10:42:37 -0800 (PST)
-From:   Yury Norov <yury.norov@gmail.com>
-To:     Yury Norov <yury.norov@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        David Laight <David.Laight@aculab.com>,
-        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
-        Emil Renner Berthing <kernel@esmil.dk>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
-        Alexey Klimov <aklimov@redhat.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 54/54] MAINTAINERS: add cpumask and nodemask files to BITMAP_API
-Date:   Sun, 23 Jan 2022 10:39:25 -0800
-Message-Id: <20220123183925.1052919-55-yury.norov@gmail.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20220123183925.1052919-1-yury.norov@gmail.com>
-References: <20220123183925.1052919-1-yury.norov@gmail.com>
+        Sun, 23 Jan 2022 10:49:36 -0800 (PST)
+From:   Colin Ian King <colin.i.king@gmail.com>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] net: fec_ptp: remove redundant initialization of variable val
+Date:   Sun, 23 Jan 2022 18:49:36 +0000
+Message-Id: <20220123184936.113486-1-colin.i.king@gmail.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-cpumask and nodemask APIs are thin wrappers around basic bitmap API, and
-corresponding files are not formally maintained. This patch adds them to
-BITMAP_API section, so that bitmap folks would have closer look at it.
+Variable val is being initialized with a value that is never read,
+it is being re-assigned later. The assignment is redundant and
+can be removed.
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
+Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
 ---
- MAINTAINERS | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/net/ethernet/freescale/fec_ptp.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 27730a5a6345..7a3798de61c9 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3412,10 +3412,14 @@ R:	Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- R:	Rasmus Villemoes <linux@rasmusvillemoes.dk>
- S:	Maintained
- F:	include/linux/bitmap.h
-+F:	include/linux/cpumask.h
- F:	include/linux/find.h
-+F:	include/linux/nodemask.h
- F:	lib/bitmap.c
-+F:	lib/cpumask.c
- F:	lib/find_bit.c
- F:	lib/find_bit_benchmark.c
-+F:	lib/nodemask.c
- F:	lib/test_bitmap.c
- F:	tools/include/linux/bitmap.h
- F:	tools/include/linux/find.h
+diff --git a/drivers/net/ethernet/freescale/fec_ptp.c b/drivers/net/ethernet/freescale/fec_ptp.c
+index af99017a5453..7d49c28215f3 100644
+--- a/drivers/net/ethernet/freescale/fec_ptp.c
++++ b/drivers/net/ethernet/freescale/fec_ptp.c
+@@ -101,7 +101,6 @@ static int fec_ptp_enable_pps(struct fec_enet_private *fep, uint enable)
+ 	u32 val, tempval;
+ 	struct timespec64 ts;
+ 	u64 ns;
+-	val = 0;
+ 
+ 	if (fep->pps_enable == enable)
+ 		return 0;
 -- 
-2.30.2
+2.33.1
 
