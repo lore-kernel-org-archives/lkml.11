@@ -2,118 +2,99 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EBB9C433EF
-	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 16:15:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65320C4332F
+	for <linux-kernel@archiver.kernel.org>; Sun, 23 Jan 2022 16:17:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238507AbiAWQPx (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 11:15:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48976 "EHLO
+        id S238529AbiAWQRE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 11:17:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234456AbiAWQPw (ORCPT
+        with ESMTP id S238520AbiAWQRC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 11:15:52 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F25C06173B;
-        Sun, 23 Jan 2022 08:15:51 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 769F160F9F;
-        Sun, 23 Jan 2022 16:15:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D7F1C340E2;
-        Sun, 23 Jan 2022 16:15:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642954550;
-        bh=pKH0JMOmNai7JFDdF+OBCDodqqK20XbbX9m5cv2cLTk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=SulSkkVDm6DZv8xCQis9mFuQv/3+ghTsDAiAiXGnPGoCocnl1jK28y08CE+OWvbHo
-         Lr2/u3tL5M1GXy4L9BZaCTo7v8dWUFw1GqaJ47wf5pjSwomOSPTOrNVFKBzXB+K5nK
-         mkiBB+Y+kg5R0fwsmFDlK2gG8LB4DLB8ahHPhNoqX8RXDx6Vll0TzPfCrIAy+r86nE
-         Bytr2Ze6VuBe1HJcPLqfcYi/Dx3T9z/peEA7bPkIfSAQHMci9K47hE4xfNy7sdi/C0
-         0cgPc7pZke488jFqJyFGXexldT2mhpcaGYkoRAciGLCKYNRssxpnsailYUfLHx2CDT
-         LLm1PUbOMd3ww==
-Date:   Mon, 24 Jan 2022 00:08:12 +0800
-From:   Jisheng Zhang <jszhang@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: stmmac: don't stop RXC during LPI
-Message-ID: <Ye19bHxcQ5Plx0v9@xhacker>
-References: <20220123141245.1060-1-jszhang@kernel.org>
- <Ye15va7tFWMgKPEE@lunn.ch>
+        Sun, 23 Jan 2022 11:17:02 -0500
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B07B7C06173B;
+        Sun, 23 Jan 2022 08:17:02 -0800 (PST)
+Received: by mail-io1-xd33.google.com with SMTP id y84so314471iof.0;
+        Sun, 23 Jan 2022 08:17:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LAyle5M8Yin1J588XMzvsyR2yrP3PbLy64Gkk1kIsNU=;
+        b=BT6HCKGUg1XaJmawU3N80eef4GpsPRceNHPfAiBnNVPss4Wk4Brum6pYMRSAFr4vBX
+         wqV9G/5usKDIPlOcR/hNQES/QRa35HWNd6DwLAvXBeUc7CVhZPai7eFzBUYsvJoah5In
+         aTSySG60Ptuax9Bh/jwUfvaa4HurmS/e0OrpAbmO3R8Dhxe9jsm7LS7ZoTV9fiTMbBhk
+         aSnLNZbMgI8fLrFaILyq2eNLePrZpVkGzEbTnD6ieDXqsIZLqLLj4SX5BkhJ6P1bpR4Y
+         zqgdkVmCXQjbs0f2S//pzs/oK9cnGkTEUQrvRdk66GAZlAuhHs8A9SQjC8WTdBlzKD1p
+         J8MA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LAyle5M8Yin1J588XMzvsyR2yrP3PbLy64Gkk1kIsNU=;
+        b=lLW1HPuno5ZN0FaId3C1AsNvdSMSbphKluY+MF3HP3gprv+gNWI/jhKOGsa4g5Jhvc
+         X3zFB7u2+zcDMdgLDPZABQzSbxkwe9fFCaZf3Hral5/MlUjZQOaoJCyN3SuUbvel0EW7
+         lliUNnrMZyKOVnmsyzujISPhRsDXQ6TayKTm2hCarbYLJqmeIBqVRiKZBw5VS67naGnj
+         pyxh3zVEW1zUYFmo8cNBay+bmNGZLRnyR6e3T6g8/oW9y2s3AUmT49q8Xaj0pSyg/JGh
+         DWaGtwdHbSBw7UbILL9OrQDN1tFIsHDpgdnsG8RPMLWNto6fza0rMZH7msTaiMJU9glk
+         qd/Q==
+X-Gm-Message-State: AOAM531Lw1al9t7UlRid/p0aTFRkl/Xqv58bDJdgCuoRdfYhnTaGiuiW
+        NQ1rCE/06LNV96JdONeVqHr6n9CZVlfhl4klmxL2VA0TwQM=
+X-Google-Smtp-Source: ABdhPJyXRfHSon1CXbaeMo3p6YKqpoPWYPu2kMaMvmCp9dGwvNgi2GKe58hHXdwt5kM5S6JYuKLpW8Pk81s5WB3f1Eg=
+X-Received: by 2002:a02:a485:: with SMTP id d5mr1206959jam.167.1642954621876;
+ Sun, 23 Jan 2022 08:17:01 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <Ye15va7tFWMgKPEE@lunn.ch>
+References: <20220122131457.63304-1-krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220122131457.63304-1-krzysztof.kozlowski@canonical.com>
+From:   Alim Akhtar <alim.akhtar@gmail.com>
+Date:   Sun, 23 Jan 2022 21:46:28 +0530
+Message-ID: <CAGOxZ53gMpmxtxjk5K0PsZYUxTC9W9Y1vNOU1aY9WgdG1-c0Hw@mail.gmail.com>
+Subject: Re: [PATCH] ARM: dts: exynos: use define for TMU clock on Exynos4412
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 23, 2022 at 04:52:29PM +0100, Andrew Lunn wrote:
-> On Sun, Jan 23, 2022 at 10:12:45PM +0800, Jisheng Zhang wrote:
-> > I met can't receive rx pkt issue with below steps:
-> > 0.plug in ethernet cable then boot normal and get ip from dhcp server
-> > 1.quickly hotplug out then hotplug in the ethernet cable
-> > 2.trigger the dhcp client to renew lease
-> > 
-> > tcpdump shows that the request tx pkt is sent out successfully,
-> > but the mac can't receive the rx pkt.
-> > 
-> > The issue can easily be reproduced on platforms with PHY_POLL external
-> > phy. If we don't allow the phy to stop the RXC during LPI, the issue
-> > is gone. I think it's unsafe to stop the RXC during LPI because the mac
-> > needs RXC clock to support RX logic.
-> > 
-> > And the 2nd param clk_stop_enable of phy_init_eee() is a bool, so use
-> > false instead of 0.
-> > 
-> > Signed-off-by: Jisheng Zhang <jszhang@kernel.org>
-> > ---
-> >  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > index 6708ca2aa4f7..92a9b0b226b1 100644
-> > --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> > @@ -1162,7 +1162,7 @@ static void stmmac_mac_link_up(struct phylink_config *config,
-> >  
-> >  	stmmac_mac_set(priv, priv->ioaddr, true);
-> >  	if (phy && priv->dma_cap.eee) {
-> > -		priv->eee_active = phy_init_eee(phy, 1) >= 0;
-> > +		priv->eee_active = phy_init_eee(phy, false) >= 0;
-> 
-> This has not caused issues in the past. So i'm wondering if this is
-> somehow specific to your system? Does everybody else use a PHY which
-> does not implement this bit? Does your synthesis of the stmmac have a
-> different clock tree?
-> 
-> By changing this value for every instance of the stmmac, you are
-> potentially causing a power regression for stmmac implementations
-> which don't need the clock. So we need a clear understanding, stopping
-> the clock is wrong in general and so the change is correct in
+Hi Krzysztof
 
-I think this is a common issue because the MAC needs phy's RXC for RX
-logic. But it's better to let other stmmac users verify. The issue
-can easily be reproduced on platforms with PHY_POLL external phy.
-Or other platforms use a dedicated clock rather than clock from phy
-for MAC's RX logic?
+On Sun, Jan 23, 2022 at 8:42 PM Krzysztof Kozlowski
+<krzysztof.kozlowski@canonical.com> wrote:
+>
+> Replace clock hard-coded number with a define from bindings.  No
+> functional change.
+>
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+> ---
+Reviewed-by: Alim Akhtar <alim.akhtar@samsung.com>
 
-If the issue turns out specific to my system, then I will send out
-a new patch to adopt your suggestion.
 
-Hi Joakim, IIRC, you have stmmac + external RTL8211F phy platform, but
-I'm not sure whether your platform have an irq for the phy. could you
-help me to check whether you can reproduce the issue on your platform?
+>  arch/arm/boot/dts/exynos4412.dtsi | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/arch/arm/boot/dts/exynos4412.dtsi b/arch/arm/boot/dts/exynos4412.dtsi
+> index d3802046c8b8..aa0b61b59970 100644
+> --- a/arch/arm/boot/dts/exynos4412.dtsi
+> +++ b/arch/arm/boot/dts/exynos4412.dtsi
+> @@ -813,7 +813,7 @@ &tmu {
+>         interrupt-parent = <&combiner>;
+>         interrupts = <2 4>;
+>         reg = <0x100C0000 0x100>;
+> -       clocks = <&clock 383>;
+> +       clocks = <&clock CLK_TMU_APBIF>;
+>         clock-names = "tmu_apbif";
+>         status = "disabled";
+>  };
+> --
+> 2.32.0
+>
 
-> general. Or this is specific to your system, and you probably need to
-> add priv->dma_cap.keep_rx_clock_ticking, which you set in your glue
-> driver,and use here to decide what to pass to phy_init_eee().
 
-Thanks a lot for the suggestion.
+-- 
+Regards,
+Alim
