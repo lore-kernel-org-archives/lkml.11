@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C43E5C43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:14:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C9B5C4167B
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:14:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2372143AbiAYAKn (ORCPT
+        id S2372228AbiAYAKz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:10:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41396 "EHLO
+        Mon, 24 Jan 2022 19:10:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1836988AbiAXWlf (ORCPT
+        with ESMTP id S1848903AbiAXXYP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:41:35 -0500
+        Mon, 24 Jan 2022 18:24:15 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE43BC04D62B;
-        Mon, 24 Jan 2022 13:04:27 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB02C0730A3;
+        Mon, 24 Jan 2022 13:29:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 71D23B815AB;
-        Mon, 24 Jan 2022 21:04:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9DC72C340E5;
-        Mon, 24 Jan 2022 21:04:25 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2E6E1B81057;
+        Mon, 24 Jan 2022 21:29:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62233C340E4;
+        Mon, 24 Jan 2022 21:29:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058266;
-        bh=fntRpshkPH1kBf19IZiQRtlhXjIeJ4hCEiSlfehiMwY=;
+        s=korg; t=1643059768;
+        bh=F4q09PcjBgUukBysrwd15UYEG4A+dn6xaDs9qiOmli0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Aro1rurvsKCL7dhAkPr3inlJbUr+Q3zORrRqUGA8H1k3/y/url2In/wP9I6hmGBvD
-         lyqBPWKBOlBahfzUbJWInd/yUD5/buc4yB8jKmfTLC8TLaAa8vZ+7q5NUeYnY2AV0T
-         U8entK0wsppaLKKMyeeW/jdkwiJvXPgNbN8T4M0w=
+        b=ZSN6lnyJ1NF6lbDpwTyoTADAkdqDYoQd0AQWFTag0Yw7T6SkrSUX8mbrQyVTw/9w0
+         IhjONH+IajXpaRNVfliBs2Q4bDckUxwQHQEwJQ1sknWXKpEkZHXxMU3fFKBrJW92UF
+         biSOPBlRy7OSKf1xVQRiaFbsIJxSUlpxi/iGtwEg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Joerg Albert <joerg.albert@iav.de>,
+        Lucas Stach <l.stach@pengutronix.de>,
+        Christian Gmeiner <christian.gmeiner@gmail.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0190/1039] media: si470x-i2c: fix possible memory leak in si470x_i2c_probe()
-Date:   Mon, 24 Jan 2022 19:32:59 +0100
-Message-Id: <20220124184131.690000207@linuxfoundation.org>
+Subject: [PATCH 5.16 0694/1039] drm/etnaviv: consider completed fence seqno in hang check
+Date:   Mon, 24 Jan 2022 19:41:23 +0100
+Message-Id: <20220124184148.671759759@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,60 +51,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+From: Lucas Stach <l.stach@pengutronix.de>
 
-[ Upstream commit ef054e345ed8c79ce1121a3599b5a2dfd78e57a0 ]
+[ Upstream commit cdd156955f946beaa5f3a00d8ccf90e5a197becc ]
 
-n the 'radio->hdl.error' error handling, ctrl handler allocated by
-v4l2_ctrl_new_std() does not released, and caused memory leak as
-follows:
+Some GPU heavy test programs manage to trigger the hangcheck quite often.
+If there are no other GPU users in the system and the test program
+exhibits a very regular structure in the commandstreams that are being
+submitted, we can end up with two distinct submits managing to trigger
+the hangcheck with the FE in a very similar address range. This leads
+the hangcheck to believe that the GPU is stuck, while in reality the GPU
+is already busy working on a different job. To avoid those spurious
+GPU resets, also remember and consider the last completed fence seqno
+in the hang check.
 
-unreferenced object 0xffff888033d54200 (size 256):
-  comm "i2c-si470x-19", pid 909, jiffies 4294914203 (age 8.072s)
-  hex dump (first 32 bytes):
-    e8 69 11 03 80 88 ff ff 00 46 d5 33 80 88 ff ff  .i.......F.3....
-    10 42 d5 33 80 88 ff ff 10 42 d5 33 80 88 ff ff  .B.3.....B.3....
-  backtrace:
-    [<00000000086bd4ed>] __kmalloc_node+0x1eb/0x360
-    [<00000000bdb68871>] kvmalloc_node+0x66/0x120
-    [<00000000fac74e4c>] v4l2_ctrl_new+0x7b9/0x1c60 [videodev]
-    [<00000000693bf940>] v4l2_ctrl_new_std+0x19b/0x270 [videodev]
-    [<00000000c0cb91bc>] si470x_i2c_probe+0x2d3/0x9a0 [radio_si470x_i2c]
-    [<0000000056a6f01f>] i2c_device_probe+0x4d8/0xbe0
-
-Fix the error handling path to avoid memory leak.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: 8c081b6f9a9b ("media: radio: Critical v4l2 registration...")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Reported-by: Joerg Albert <joerg.albert@iav.de>
+Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
+Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/radio/si470x/radio-si470x-i2c.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/gpu/drm/etnaviv/etnaviv_gpu.h   | 1 +
+ drivers/gpu/drm/etnaviv/etnaviv_sched.c | 4 +++-
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/radio/si470x/radio-si470x-i2c.c b/drivers/media/radio/si470x/radio-si470x-i2c.c
-index a972c0705ac79..76d39e2e87706 100644
---- a/drivers/media/radio/si470x/radio-si470x-i2c.c
-+++ b/drivers/media/radio/si470x/radio-si470x-i2c.c
-@@ -368,7 +368,7 @@ static int si470x_i2c_probe(struct i2c_client *client)
- 	if (radio->hdl.error) {
- 		retval = radio->hdl.error;
- 		dev_err(&client->dev, "couldn't register control\n");
--		goto err_dev;
-+		goto err_all;
+diff --git a/drivers/gpu/drm/etnaviv/etnaviv_gpu.h b/drivers/gpu/drm/etnaviv/etnaviv_gpu.h
+index 1c75c8ed5bcea..85eddd492774d 100644
+--- a/drivers/gpu/drm/etnaviv/etnaviv_gpu.h
++++ b/drivers/gpu/drm/etnaviv/etnaviv_gpu.h
+@@ -130,6 +130,7 @@ struct etnaviv_gpu {
+ 
+ 	/* hang detection */
+ 	u32 hangcheck_dma_addr;
++	u32 hangcheck_fence;
+ 
+ 	void __iomem *mmio;
+ 	int irq;
+diff --git a/drivers/gpu/drm/etnaviv/etnaviv_sched.c b/drivers/gpu/drm/etnaviv/etnaviv_sched.c
+index 180bb633d5c53..58f593b278c15 100644
+--- a/drivers/gpu/drm/etnaviv/etnaviv_sched.c
++++ b/drivers/gpu/drm/etnaviv/etnaviv_sched.c
+@@ -107,8 +107,10 @@ static enum drm_gpu_sched_stat etnaviv_sched_timedout_job(struct drm_sched_job
+ 	 */
+ 	dma_addr = gpu_read(gpu, VIVS_FE_DMA_ADDRESS);
+ 	change = dma_addr - gpu->hangcheck_dma_addr;
+-	if (change < 0 || change > 16) {
++	if (gpu->completed_fence != gpu->hangcheck_fence ||
++	    change < 0 || change > 16) {
+ 		gpu->hangcheck_dma_addr = dma_addr;
++		gpu->hangcheck_fence = gpu->completed_fence;
+ 		goto out_no_timeout;
  	}
  
- 	/* video device initialization */
-@@ -463,7 +463,6 @@ static int si470x_i2c_probe(struct i2c_client *client)
- 	return 0;
- err_all:
- 	v4l2_ctrl_handler_free(&radio->hdl);
--err_dev:
- 	v4l2_device_unregister(&radio->v4l2_dev);
- err_initial:
- 	return retval;
 -- 
 2.34.1
 
