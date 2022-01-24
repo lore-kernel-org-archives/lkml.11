@@ -2,41 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1590BC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3E83C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838180AbiAXWqC (ORCPT
+        id S1838300AbiAXWqS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:46:02 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:51830 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457169AbiAXVlH (ORCPT
+        Mon, 24 Jan 2022 17:46:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55394 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1457582AbiAXVly (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:41:07 -0500
+        Mon, 24 Jan 2022 16:41:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C2EBC07E337;
+        Mon, 24 Jan 2022 12:29:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1AB1BB811FB;
-        Mon, 24 Jan 2022 21:41:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47E15C340E4;
-        Mon, 24 Jan 2022 21:41:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 19A626152E;
+        Mon, 24 Jan 2022 20:29:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E29C3C340E5;
+        Mon, 24 Jan 2022 20:29:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060463;
-        bh=YNh9wod2Ccya1/N3xPQytCYqAj6iSH52glEdm7TViB4=;
+        s=korg; t=1643056182;
+        bh=Ppd/gYwGdixnbtSSWJJvJrtejKJg//SWtm/6//PhVhw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XgvRhUR/va+inSAMOPmwaZLalqWdXKJcQSDtl5uWgoUN2QM0zUxdxA0wrTze1eCbN
-         paNICceVD8txxd+jNUsmu+cBNf3KHA1muH+Wf1keq04Zr1Sjuwq/rBRr3CPRwX5gS0
-         j0yvixULX8tTIHYQohF/YR/Bviylo48iyGVkUgnE=
+        b=dTqqCeeew1AdLAKzQBQtntfhigJ5SehkybgxZtbZQOoebS/WWYQf9saubOwVBVcxY
+         DskjDz45GbZtKZKQlycCGtTqlZTtLEABfYB7nV81+qsw6plDJ4uBX1qXqaqWDFpOzz
+         Fsje4Jw2eoFCpX6TIngaRtVCXabyML6llzRex10c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org
-Subject: [PATCH 5.16 0957/1039] f2fs: fix to reserve space for IO align feature
-Date:   Mon, 24 Jan 2022 19:45:46 +0100
-Message-Id: <20220124184157.460240113@linuxfoundation.org>
+        stable@vger.kernel.org, Paul Blakey <paulb@nvidia.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 366/846] net: openvswitch: Fix ct_state nat flags for conns arriving from tc
+Date:   Mon, 24 Jan 2022 19:38:03 +0100
+Message-Id: <20220124184113.561283139@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -45,155 +51,142 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Chao Yu <chao@kernel.org>
+From: Paul Blakey <paulb@nvidia.com>
 
-commit 300a842937fbcfb5a189cea9ba15374fdb0b5c6b upstream.
+[ Upstream commit 6f022c2ddbcefaee79502ce5386dfe351d457070 ]
 
-https://bugzilla.kernel.org/show_bug.cgi?id=204137
+Netfilter conntrack maintains NAT flags per connection indicating
+whether NAT was configured for the connection. Openvswitch maintains
+NAT flags on the per packet flow key ct_state field, indicating
+whether NAT was actually executed on the packet.
 
-With below script, we will hit panic during new segment allocation:
+When a packet misses from tc to ovs the conntrack NAT flags are set.
+However, NAT was not necessarily executed on the packet because the
+connection's state might still be in NEW state. As such, openvswitch
+wrongly assumes that NAT was executed and sets an incorrect flow key
+NAT flags.
 
-DISK=bingo.img
-MOUNT_DIR=/mnt/f2fs
+Fix this, by flagging to openvswitch which NAT was actually done in
+act_ct via tc_skb_ext and tc_skb_cb to the openvswitch module, so
+the packet flow key NAT flags will be correctly set.
 
-dd if=/dev/zero of=$DISK bs=1M count=105
-mkfs.f2fe -a 1 -o 19 -t 1 -z 1 -f -q $DISK
-
-mount -t f2fs $DISK $MOUNT_DIR -o "noinline_dentry,flush_merge,noextent_cache,mode=lfs,io_bits=7,fsync_mode=strict"
-
-for (( i = 0; i < 4096; i++ )); do
-	name=`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10`
-	mkdir $MOUNT_DIR/$name
-done
-
-umount $MOUNT_DIR
-rm $DISK
-
+Fixes: b57dc7c13ea9 ("net/sched: Introduce action ct")
+Signed-off-by: Paul Blakey <paulb@nvidia.com>
+Acked-by: Jamal Hadi Salim <jhs@mojatatu.com>
+Link: https://lore.kernel.org/r/20220106153804.26451-1-paulb@nvidia.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/f2fs/f2fs.h    |   11 +++++++++++
- fs/f2fs/segment.h |    3 ++-
- fs/f2fs/super.c   |   44 ++++++++++++++++++++++++++++++++++++++++++++
- fs/f2fs/sysfs.c   |    4 +++-
- 4 files changed, 60 insertions(+), 2 deletions(-)
+ include/linux/skbuff.h  |  4 +++-
+ include/net/pkt_sched.h |  4 +++-
+ net/openvswitch/flow.c  | 16 +++++++++++++---
+ net/sched/act_ct.c      |  6 ++++++
+ net/sched/cls_api.c     |  2 ++
+ 5 files changed, 27 insertions(+), 5 deletions(-)
 
---- a/fs/f2fs/f2fs.h
-+++ b/fs/f2fs/f2fs.h
-@@ -1018,6 +1018,7 @@ struct f2fs_sm_info {
- 	unsigned int segment_count;	/* total # of segments */
- 	unsigned int main_segments;	/* # of segments in main area */
- 	unsigned int reserved_segments;	/* # of reserved segments */
-+	unsigned int additional_reserved_segments;/* reserved segs for IO align feature */
- 	unsigned int ovp_segments;	/* # of overprovision segments */
+diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+index f92839b726dc2..532f5d402f060 100644
+--- a/include/linux/skbuff.h
++++ b/include/linux/skbuff.h
+@@ -287,7 +287,9 @@ struct tc_skb_ext {
+ 	__u32 chain;
+ 	__u16 mru;
+ 	__u16 zone;
+-	bool post_ct;
++	u8 post_ct:1;
++	u8 post_ct_snat:1;
++	u8 post_ct_dnat:1;
+ };
+ #endif
  
- 	/* a threshold to reclaim prefree segments */
-@@ -2198,6 +2199,11 @@ static inline int inc_valid_block_count(
+diff --git a/include/net/pkt_sched.h b/include/net/pkt_sched.h
+index 9e71691c491b7..9e7b21c0b3a6d 100644
+--- a/include/net/pkt_sched.h
++++ b/include/net/pkt_sched.h
+@@ -197,7 +197,9 @@ struct tc_skb_cb {
+ 	struct qdisc_skb_cb qdisc_cb;
  
- 	if (!__allow_reserved_blocks(sbi, inode, true))
- 		avail_user_block_count -= F2FS_OPTION(sbi).root_reserved_blocks;
-+
-+	if (F2FS_IO_ALIGNED(sbi))
-+		avail_user_block_count -= sbi->blocks_per_seg *
-+				SM_I(sbi)->additional_reserved_segments;
-+
- 	if (unlikely(is_sbi_flag_set(sbi, SBI_CP_DISABLED))) {
- 		if (avail_user_block_count > sbi->unusable_block_count)
- 			avail_user_block_count -= sbi->unusable_block_count;
-@@ -2444,6 +2450,11 @@ static inline int inc_valid_node_count(s
+ 	u16 mru;
+-	bool post_ct;
++	u8 post_ct:1;
++	u8 post_ct_snat:1;
++	u8 post_ct_dnat:1;
+ 	u16 zone; /* Only valid if post_ct = true */
+ };
  
- 	if (!__allow_reserved_blocks(sbi, inode, false))
- 		valid_block_count += F2FS_OPTION(sbi).root_reserved_blocks;
-+
-+	if (F2FS_IO_ALIGNED(sbi))
-+		valid_block_count += sbi->blocks_per_seg *
-+				SM_I(sbi)->additional_reserved_segments;
-+
- 	user_block_count = sbi->user_block_count;
- 	if (unlikely(is_sbi_flag_set(sbi, SBI_CP_DISABLED)))
- 		user_block_count -= sbi->unusable_block_count;
---- a/fs/f2fs/segment.h
-+++ b/fs/f2fs/segment.h
-@@ -538,7 +538,8 @@ static inline unsigned int free_segments
+diff --git a/net/openvswitch/flow.c b/net/openvswitch/flow.c
+index 6d262d9aa10ea..02096f2ec6784 100644
+--- a/net/openvswitch/flow.c
++++ b/net/openvswitch/flow.c
+@@ -859,7 +859,7 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
+ #if IS_ENABLED(CONFIG_NET_TC_SKB_EXT)
+ 	struct tc_skb_ext *tc_ext;
+ #endif
+-	bool post_ct = false;
++	bool post_ct = false, post_ct_snat = false, post_ct_dnat = false;
+ 	int res, err;
+ 	u16 zone = 0;
  
- static inline unsigned int reserved_segments(struct f2fs_sb_info *sbi)
- {
--	return SM_I(sbi)->reserved_segments;
-+	return SM_I(sbi)->reserved_segments +
-+			SM_I(sbi)->additional_reserved_segments;
+@@ -900,6 +900,8 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
+ 		key->recirc_id = tc_ext ? tc_ext->chain : 0;
+ 		OVS_CB(skb)->mru = tc_ext ? tc_ext->mru : 0;
+ 		post_ct = tc_ext ? tc_ext->post_ct : false;
++		post_ct_snat = post_ct ? tc_ext->post_ct_snat : false;
++		post_ct_dnat = post_ct ? tc_ext->post_ct_dnat : false;
+ 		zone = post_ct ? tc_ext->zone : 0;
+ 	} else {
+ 		key->recirc_id = 0;
+@@ -911,8 +913,16 @@ int ovs_flow_key_extract(const struct ip_tunnel_info *tun_info,
+ 	err = key_extract(skb, key);
+ 	if (!err) {
+ 		ovs_ct_fill_key(skb, key, post_ct);   /* Must be after key_extract(). */
+-		if (post_ct && !skb_get_nfct(skb))
+-			key->ct_zone = zone;
++		if (post_ct) {
++			if (!skb_get_nfct(skb)) {
++				key->ct_zone = zone;
++			} else {
++				if (!post_ct_dnat)
++					key->ct_state &= ~OVS_CS_F_DST_NAT;
++				if (!post_ct_snat)
++					key->ct_state &= ~OVS_CS_F_SRC_NAT;
++			}
++		}
+ 	}
+ 	return err;
  }
- 
- static inline unsigned int free_sections(struct f2fs_sb_info *sbi)
---- a/fs/f2fs/super.c
-+++ b/fs/f2fs/super.c
-@@ -328,6 +328,46 @@ static inline void limit_reserve_root(st
- 					   F2FS_OPTION(sbi).s_resgid));
- }
- 
-+static inline int adjust_reserved_segment(struct f2fs_sb_info *sbi)
-+{
-+	unsigned int sec_blks = sbi->blocks_per_seg * sbi->segs_per_sec;
-+	unsigned int avg_vblocks;
-+	unsigned int wanted_reserved_segments;
-+	block_t avail_user_block_count;
-+
-+	if (!F2FS_IO_ALIGNED(sbi))
-+		return 0;
-+
-+	/* average valid block count in section in worst case */
-+	avg_vblocks = sec_blks / F2FS_IO_SIZE(sbi);
-+
-+	/*
-+	 * we need enough free space when migrating one section in worst case
-+	 */
-+	wanted_reserved_segments = (F2FS_IO_SIZE(sbi) / avg_vblocks) *
-+						reserved_segments(sbi);
-+	wanted_reserved_segments -= reserved_segments(sbi);
-+
-+	avail_user_block_count = sbi->user_block_count -
-+				sbi->current_reserved_blocks -
-+				F2FS_OPTION(sbi).root_reserved_blocks;
-+
-+	if (wanted_reserved_segments * sbi->blocks_per_seg >
-+					avail_user_block_count) {
-+		f2fs_err(sbi, "IO align feature can't grab additional reserved segment: %u, available segments: %u",
-+			wanted_reserved_segments,
-+			avail_user_block_count >> sbi->log_blocks_per_seg);
-+		return -ENOSPC;
-+	}
-+
-+	SM_I(sbi)->additional_reserved_segments = wanted_reserved_segments;
-+
-+	f2fs_info(sbi, "IO align feature needs additional reserved segment: %u",
-+			 wanted_reserved_segments);
-+
-+	return 0;
-+}
-+
- static inline void adjust_unusable_cap_perc(struct f2fs_sb_info *sbi)
- {
- 	if (!F2FS_OPTION(sbi).unusable_cap_perc)
-@@ -4180,6 +4220,10 @@ try_onemore:
- 		goto free_nm;
+diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
+index ab3591408419f..2a17eb77c9049 100644
+--- a/net/sched/act_ct.c
++++ b/net/sched/act_ct.c
+@@ -839,6 +839,12 @@ static int ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
  	}
  
-+	err = adjust_reserved_segment(sbi);
-+	if (err)
-+		goto free_nm;
-+
- 	/* For write statistics */
- 	sbi->sectors_written_start = f2fs_get_sectors_written(sbi);
+ 	err = nf_nat_packet(ct, ctinfo, hooknum, skb);
++	if (err == NF_ACCEPT) {
++		if (maniptype == NF_NAT_MANIP_SRC)
++			tc_skb_cb(skb)->post_ct_snat = 1;
++		if (maniptype == NF_NAT_MANIP_DST)
++			tc_skb_cb(skb)->post_ct_dnat = 1;
++	}
+ out:
+ 	return err;
+ }
+diff --git a/net/sched/cls_api.c b/net/sched/cls_api.c
+index 35c74bdde848e..cc9409aa755eb 100644
+--- a/net/sched/cls_api.c
++++ b/net/sched/cls_api.c
+@@ -1625,6 +1625,8 @@ int tcf_classify(struct sk_buff *skb,
+ 		ext->chain = last_executed_chain;
+ 		ext->mru = cb->mru;
+ 		ext->post_ct = cb->post_ct;
++		ext->post_ct_snat = cb->post_ct_snat;
++		ext->post_ct_dnat = cb->post_ct_dnat;
+ 		ext->zone = cb->zone;
+ 	}
  
---- a/fs/f2fs/sysfs.c
-+++ b/fs/f2fs/sysfs.c
-@@ -415,7 +415,9 @@ out:
- 	if (a->struct_type == RESERVED_BLOCKS) {
- 		spin_lock(&sbi->stat_lock);
- 		if (t > (unsigned long)(sbi->user_block_count -
--				F2FS_OPTION(sbi).root_reserved_blocks)) {
-+				F2FS_OPTION(sbi).root_reserved_blocks -
-+				sbi->blocks_per_seg *
-+				SM_I(sbi)->additional_reserved_segments)) {
- 			spin_unlock(&sbi->stat_lock);
- 			return -EINVAL;
- 		}
+-- 
+2.34.1
+
 
 
