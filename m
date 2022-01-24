@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C464C47081
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:05:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51124C35294
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:05:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1842215AbiAXXBQ (ORCPT
+        id S1842228AbiAXXBX (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:01:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60508 "EHLO
+        Mon, 24 Jan 2022 18:01:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58626 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1577819AbiAXWBH (ORCPT
+        with ESMTP id S1573020AbiAXVzI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:01:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B909C02B847;
-        Mon, 24 Jan 2022 12:40:56 -0800 (PST)
+        Mon, 24 Jan 2022 16:55:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B284CC07E2AF;
+        Mon, 24 Jan 2022 12:37:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3AA4061575;
-        Mon, 24 Jan 2022 20:40:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EEF66C340E5;
-        Mon, 24 Jan 2022 20:40:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6EF23B81063;
+        Mon, 24 Jan 2022 20:37:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F4D9C340E5;
+        Mon, 24 Jan 2022 20:37:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056855;
-        bh=GjXLsfRDL+vMnvwCNX4tCqIZuHwbl8YDD1glN2o18Y8=;
+        s=korg; t=1643056664;
+        bh=vNMezxssj6VcvR7r/jjQIM53BOA5+j+5fVwfrXZIJ98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pLtSUQSKcTBpU7Hk3EaevtdLnlQgeIQZOSOLPLYIYnhYO4U6JpC/xSE0gsMhXjVgI
-         NM0OkGY5jmqXN1GJe0vXfYa2KygeQw3qmhWyNzJTbRQSeEMoPvU9U5m6y70p+JHTGK
-         p6p7E5fLr7GwxhWLBZCBDXhEDEwVHjJTI71BFO5Q=
+        b=xQIaWVpxutPsC6GegXirRFVNxvAInucOp9zRZ7fWvZBtYIl2qFnakw9SfT6fmmQ+x
+         e4W3moSeLmRzT4LPhOJ1h27iq56fxze3Wy8Nc4kkwVeYH0o92/rVD9c1QYWd3PSCQl
+         KszC4l8ktf+N/gyFmRL/NZjAjzv9zF87dQezbiJM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Gaosheng Cui <cuigaosheng1@huawei.com>,
+        Richard Guy Briggs <rgb@redhat.com>,
+        Paul Moore <paul@paul-moore.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 623/846] powerpc/6xx: add missing of_node_put
-Date:   Mon, 24 Jan 2022 19:42:20 +0100
-Message-Id: <20220124184122.538275067@linuxfoundation.org>
+Subject: [PATCH 5.15 559/846] audit: ensure userspace is penalized the same as the kernel when under pressure
+Date:   Mon, 24 Jan 2022 19:41:16 +0100
+Message-Id: <20220124184120.310761403@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,62 +51,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+From: Paul Moore <paul@paul-moore.com>
 
-[ Upstream commit f6e82647ff71d427d4148964b71f239fba9d7937 ]
+[ Upstream commit 8f110f530635af44fff1f4ee100ecef0bac62510 ]
 
-for_each_compatible_node performs an of_node_get on each iteration, so
-a break out of the loop requires an of_node_put.
+Due to the audit control mutex necessary for serializing audit
+userspace messages we haven't been able to block/penalize userspace
+processes that attempt to send audit records while the system is
+under audit pressure.  The result is that privileged userspace
+applications have a priority boost with respect to audit as they are
+not bound by the same audit queue throttling as the other tasks on
+the system.
 
-A simplified version of the semantic patch that fixes this problem is as
-follows (http://coccinelle.lip6.fr):
+This patch attempts to restore some balance to the system when under
+audit pressure by blocking these privileged userspace tasks after
+they have finished their audit processing, and dropped the audit
+control mutex, but before they return to userspace.
 
-// <smpl>
-@@
-expression e;
-local idexpression n;
-@@
-
-@@
-local idexpression n;
-expression e;
-@@
-
- for_each_compatible_node(n,...) {
-   ...
-(
-   of_node_put(n);
-|
-   e = n
-|
-+  of_node_put(n);
-?  break;
-)
-   ...
- }
-... when != n
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1448051604-25256-2-git-send-email-Julia.Lawall@lip6.fr
+Reported-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+Tested-by: Gaosheng Cui <cuigaosheng1@huawei.com>
+Reviewed-by: Richard Guy Briggs <rgb@redhat.com>
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/embedded6xx/hlwd-pic.c | 1 +
- 1 file changed, 1 insertion(+)
+ kernel/audit.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/platforms/embedded6xx/hlwd-pic.c b/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
-index 15396333a90bd..a4b020e4b6af0 100644
---- a/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
-+++ b/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
-@@ -214,6 +214,7 @@ void hlwd_pic_probe(void)
- 			irq_set_chained_handler(cascade_virq,
- 						hlwd_pic_irq_cascade);
- 			hlwd_irq_host = host;
-+			of_node_put(np);
- 			break;
- 		}
+diff --git a/kernel/audit.c b/kernel/audit.c
+index 4cebadb5f30db..eab7282668ab9 100644
+--- a/kernel/audit.c
++++ b/kernel/audit.c
+@@ -1540,6 +1540,20 @@ static void audit_receive(struct sk_buff  *skb)
+ 		nlh = nlmsg_next(nlh, &len);
  	}
+ 	audit_ctl_unlock();
++
++	/* can't block with the ctrl lock, so penalize the sender now */
++	if (audit_backlog_limit &&
++	    (skb_queue_len(&audit_queue) > audit_backlog_limit)) {
++		DECLARE_WAITQUEUE(wait, current);
++
++		/* wake kauditd to try and flush the queue */
++		wake_up_interruptible(&kauditd_wait);
++
++		add_wait_queue_exclusive(&audit_backlog_wait, &wait);
++		set_current_state(TASK_UNINTERRUPTIBLE);
++		schedule_timeout(audit_backlog_wait_time);
++		remove_wait_queue(&audit_backlog_wait, &wait);
++	}
+ }
+ 
+ /* Log information about who is connecting to the audit multicast socket */
+@@ -1824,7 +1838,9 @@ struct audit_buffer *audit_log_start(struct audit_context *ctx, gfp_t gfp_mask,
+ 	 *    task_tgid_vnr() since auditd_pid is set in audit_receive_msg()
+ 	 *    using a PID anchored in the caller's namespace
+ 	 * 2. generator holding the audit_cmd_mutex - we don't want to block
+-	 *    while holding the mutex */
++	 *    while holding the mutex, although we do penalize the sender
++	 *    later in audit_receive() when it is safe to block
++	 */
+ 	if (!(auditd_test_task(current) || audit_ctl_owner_current())) {
+ 		long stime = audit_backlog_wait_time;
+ 
 -- 
 2.34.1
 
