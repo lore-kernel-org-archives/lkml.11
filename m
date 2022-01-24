@@ -2,43 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03278C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C26CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1441879AbiAXUvs (ORCPT
+        id S1441894AbiAXUvv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:51:48 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53486 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384043AbiAXU2r (ORCPT
+        Mon, 24 Jan 2022 15:51:51 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35350 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1384120AbiAXU2y (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:28:47 -0500
+        Mon, 24 Jan 2022 15:28:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 792B26150D;
-        Mon, 24 Jan 2022 20:28:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5A118C340E5;
-        Mon, 24 Jan 2022 20:28:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F5DDB81249;
+        Mon, 24 Jan 2022 20:28:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49180C340E5;
+        Mon, 24 Jan 2022 20:28:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056125;
-        bh=ZzxFbQW2xAG/P4ZtqS8idql9d5dCZsMQurf939RG6pY=;
+        s=korg; t=1643056131;
+        bh=E3RTaUgku1Rf9mVYCDXetqPO8OLq391heMQ/FMi8orE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oCqS90HNx8XKJyaQgBgxi4PBWQ5bl44k1hVVe0HWI2M3ehmtwcCi1qNpoUcftBoTC
-         TtdvLjwRWwTZ/bg+Gu6xNHPnJHFpn5dqRUNuMBOW2GKZfmU3x317WWKUXhgSgq48Pg
-         x/lxNPa+pHyaDtzUEEHTu2ddXZpjQzciridEiOjo=
+        b=EyHQNQe8QZX138DpTe3WVhcyROgvI7ZlmWzj+lFN5XzlIglQeUZ+CJA0HiQJhWKhK
+         5+hRAYnuS++9xV1+TB2A3gKtBRqvB4KgZc58F69ZIdOlOVthqMEKoFyITFQF6z8mug
+         URg+RMpB5MDav9/RLSebAmbWCRPH2ghs7A5acDo8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Vishakha Channapattan <vishakhavc@google.com>,
-        Jack Wang <jinpu.wang@ionos.com>,
-        Igor Pylypiv <ipylypiv@google.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 380/846] scsi: pm80xx: Update WARN_ON check in pm8001_mpi_build_cmd()
-Date:   Mon, 24 Jan 2022 19:38:17 +0100
-Message-Id: <20220124184114.046825070@linuxfoundation.org>
+Subject: [PATCH 5.15 381/846] clk: renesas: rzg2l: Check return value of pm_genpd_init()
+Date:   Mon, 24 Jan 2022 19:38:18 +0100
+Message-Id: <20220124184114.085861691@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,40 +48,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Igor Pylypiv <ipylypiv@google.com>
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-[ Upstream commit 606c54ae975ad3af540b505b46b55a687501711f ]
+[ Upstream commit 27527a3d3b162e4512798c058c0e8a216c721187 ]
 
-Starting from commit 05c6c029a44d ("scsi: pm80xx: Increase number of
-supported queues") driver initializes only max_q_num queues.  Do not use an
-invalid queue if the WARN_ON condition is true.
+Make sure we check the return value of pm_genpd_init() which might fail.
+Also add a devres action to remove the power-domain in-case the probe
+callback fails further down in the code flow.
 
-Link: https://lore.kernel.org/r/20211101232825.2350233-4-ipylypiv@google.com
-Fixes: 7640e1eb8c5d ("scsi: pm80xx: Make mpi_build_cmd locking consistent")
-Reviewed-by: Vishakha Channapattan <vishakhavc@google.com>
-Acked-by: Jack Wang <jinpu.wang@ionos.com>
-Signed-off-by: Igor Pylypiv <ipylypiv@google.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Fixes: ef3c613ccd68a ("clk: renesas: Add CPG core wrapper for RZ/G2L SoC")
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Link: https://lore.kernel.org/r/20211117115101.28281-2-prabhakar.mahadev-lad.rj@bp.renesas.com
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/pm8001/pm8001_hwi.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/clk/renesas/rzg2l-cpg.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/pm8001/pm8001_hwi.c b/drivers/scsi/pm8001/pm8001_hwi.c
-index 639b7e38a1947..880e1f356defc 100644
---- a/drivers/scsi/pm8001/pm8001_hwi.c
-+++ b/drivers/scsi/pm8001/pm8001_hwi.c
-@@ -1325,7 +1325,9 @@ int pm8001_mpi_build_cmd(struct pm8001_hba_info *pm8001_ha,
- 	int q_index = circularQ - pm8001_ha->inbnd_q_tbl;
- 	int rv;
+diff --git a/drivers/clk/renesas/rzg2l-cpg.c b/drivers/clk/renesas/rzg2l-cpg.c
+index 761922ea5db76..61e7c0c4f3794 100644
+--- a/drivers/clk/renesas/rzg2l-cpg.c
++++ b/drivers/clk/renesas/rzg2l-cpg.c
+@@ -638,10 +638,16 @@ static void rzg2l_cpg_detach_dev(struct generic_pm_domain *unused, struct device
+ 		pm_clk_destroy(dev);
+ }
  
--	WARN_ON(q_index >= PM8001_MAX_INB_NUM);
-+	if (WARN_ON(q_index >= pm8001_ha->max_q_num))
-+		return -EINVAL;
++static void rzg2l_cpg_genpd_remove(void *data)
++{
++	pm_genpd_remove(data);
++}
 +
- 	spin_lock_irqsave(&circularQ->iq_lock, flags);
- 	rv = pm8001_mpi_msg_free_get(circularQ, pm8001_ha->iomb_size,
- 			&pMessage);
+ static int __init rzg2l_cpg_add_clk_domain(struct device *dev)
+ {
+ 	struct device_node *np = dev->of_node;
+ 	struct generic_pm_domain *genpd;
++	int ret;
+ 
+ 	genpd = devm_kzalloc(dev, sizeof(*genpd), GFP_KERNEL);
+ 	if (!genpd)
+@@ -652,7 +658,13 @@ static int __init rzg2l_cpg_add_clk_domain(struct device *dev)
+ 		       GENPD_FLAG_ACTIVE_WAKEUP;
+ 	genpd->attach_dev = rzg2l_cpg_attach_dev;
+ 	genpd->detach_dev = rzg2l_cpg_detach_dev;
+-	pm_genpd_init(genpd, &pm_domain_always_on_gov, false);
++	ret = pm_genpd_init(genpd, &pm_domain_always_on_gov, false);
++	if (ret)
++		return ret;
++
++	ret = devm_add_action_or_reset(dev, rzg2l_cpg_genpd_remove, genpd);
++	if (ret)
++		return ret;
+ 
+ 	of_genpd_add_provider_simple(np, genpd);
+ 	return 0;
 -- 
 2.34.1
 
