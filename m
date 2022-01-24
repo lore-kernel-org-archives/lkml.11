@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A732DC35270
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:38:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C916CC4167B
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:38:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1378035AbiAXVid (ORCPT
+        id S1378066AbiAXVit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:38:33 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55642 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444812AbiAXVBg (ORCPT
+        Mon, 24 Jan 2022 16:38:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46670 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1444650AbiAXVBO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:01:36 -0500
+        Mon, 24 Jan 2022 16:01:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C82C04C071;
+        Mon, 24 Jan 2022 12:02:41 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8DA38B81243;
-        Mon, 24 Jan 2022 21:01:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BDB2C340E7;
-        Mon, 24 Jan 2022 21:01:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3CD0CB811F3;
+        Mon, 24 Jan 2022 20:02:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A9E7C340E5;
+        Mon, 24 Jan 2022 20:02:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058094;
-        bh=OwpKNv0ksLy2DW7Xq4ObVUnGJwW2RSKgFNXj5Tn8mh0=;
+        s=korg; t=1643054559;
+        bh=Tfk/9Tnd2NIGXZpaVjiZo4dOXCNs2OsaCggUq26g89U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KJzaLQ/FVc6ljE/dX+tqxjfau6yDcEpx2cLfeHHBwm1U/T7RUksFh0dtlxG8AcTjO
-         nXBvU6MONvlAMQ1HbhWKFzKDP9JIHGyINfyXNq7sZOHuhfTD5O/hjLW5SjdZ2g7jyg
-         zm6Vf4dnEhfhUQCxLGS3XFreWXPlQgT46fvq0gJQ=
+        b=izp5MRdaFp5aBDAgIDmyJxZY7FTsPE0hLs8HhKqKELxEoxW3hCEbgBn/1+gr8racN
+         ntm3yoOO2FosRY1qApA3l6lPw4aTzhhS7V6zy7oCMPobzJtjnMbpaZh98LTcBD/1PW
+         gQur7lff231X9eX2KZgPm4E6nHl1mnfaF/D94euY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joey Gouly <joey.gouly@arm.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        stable@vger.kernel.org, Maxime Bizon <mbizon@freebox.fr>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0179/1039] pinctrl: apple: return an error if pinmux is missing in the DT
-Date:   Mon, 24 Jan 2022 19:32:48 +0100
-Message-Id: <20220124184131.296510925@linuxfoundation.org>
+Subject: [PATCH 5.10 395/563] net: mdio: Demote probed message to debug print
+Date:   Mon, 24 Jan 2022 19:42:40 +0100
+Message-Id: <20220124184038.091730452@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,36 +51,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joey Gouly <joey.gouly@arm.com>
+From: Florian Fainelli <f.fainelli@gmail.com>
 
-[ Upstream commit 839930ca1bd0c79cdf370d11462ef4a81b664e44 ]
+[ Upstream commit 7590fc6f80ac2cbf23e6b42b668bbeded070850b ]
 
-If of_property_count_u32_elems returned 0, return -EINVAL to indicate
-a failure. Previously this would return 0.
+On systems with large numbers of MDIO bus/muxes the message indicating
+that a given MDIO bus has been successfully probed is repeated for as
+many buses we have, which can eat up substantial boot time for no
+reason, demote to a debug print.
 
-Fixes: a0f160ffcb83 ("pinctrl: add pinctrl/GPIO driver for Apple SoCs")
-Signed-off-by: Joey Gouly <joey.gouly@arm.com>
-Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Link: https://lore.kernel.org/r/20211121165642.27883-12-joey.gouly@arm.com
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Reported-by: Maxime Bizon <mbizon@freebox.fr>
+Signed-off-by: Florian Fainelli <f.fainelli@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Link: https://lore.kernel.org/r/20220103194024.2620-1-f.fainelli@gmail.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pinctrl/pinctrl-apple-gpio.c | 2 +-
+ drivers/net/phy/mdio_bus.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/pinctrl/pinctrl-apple-gpio.c b/drivers/pinctrl/pinctrl-apple-gpio.c
-index a7861079a6502..c772e31d21223 100644
---- a/drivers/pinctrl/pinctrl-apple-gpio.c
-+++ b/drivers/pinctrl/pinctrl-apple-gpio.c
-@@ -114,7 +114,7 @@ static int apple_gpio_dt_node_to_map(struct pinctrl_dev *pctldev,
- 		dev_err(pctl->dev,
- 			"missing or empty pinmux property in node %pOFn.\n",
- 			node);
--		return ret;
-+		return ret ? ret : -EINVAL;
- 	}
+diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
+index 2645ca35103c9..c416ab1d2b008 100644
+--- a/drivers/net/phy/mdio_bus.c
++++ b/drivers/net/phy/mdio_bus.c
+@@ -588,7 +588,7 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
+ 	mdiobus_setup_mdiodev_from_board_info(bus, mdiobus_create_device);
  
- 	num_pins = ret;
+ 	bus->state = MDIOBUS_REGISTERED;
+-	pr_info("%s: probed\n", bus->name);
++	dev_dbg(&bus->dev, "probed\n");
+ 	return 0;
+ 
+ error:
 -- 
 2.34.1
 
