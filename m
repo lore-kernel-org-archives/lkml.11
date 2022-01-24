@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E343C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A81D1C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1447705AbiAXVLU (ORCPT
+        id S1447865AbiAXVLf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:11:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41692 "EHLO
+        Mon, 24 Jan 2022 16:11:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358714AbiAXUm7 (ORCPT
+        with ESMTP id S1390172AbiAXUpD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:42:59 -0500
+        Mon, 24 Jan 2022 15:45:03 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77791C019B17;
-        Mon, 24 Jan 2022 11:53:09 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 159FEC0617BD;
+        Mon, 24 Jan 2022 11:54:42 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 17C7A60B56;
-        Mon, 24 Jan 2022 19:53:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7E3AC340E5;
-        Mon, 24 Jan 2022 19:53:07 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AAC876090A;
+        Mon, 24 Jan 2022 19:54:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7F42BC340E5;
+        Mon, 24 Jan 2022 19:54:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053988;
-        bh=zfKn7wh8I2H8T5QJWZmD5y1h6MOrm2419lqsY1J2kOA=;
+        s=korg; t=1643054081;
+        bh=Kdgl4eAeB8QZQJOvxda19BG6ULeDMmWdoInfnJAQYOg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fJ8NX6+AagUndKNoXu5DdxdPD5H9JAacMiTlmeAXADt6sOZAafDjkfuA6gfFqo0U7
-         OZZITNLoSP97K5H3tDYUTuTYGQ3C7iWk6zIuYRpxtr15y3lNCe3JXoBO53GMhzhN4C
-         BawuE3xKt3WEeLgtJ06sYfoZFyzumdXnsqVoVlb0=
+        b=T5DSkxv14Dv/vA6fKbRnHS8g8fsNiYVQL05IAbrSSa+vdSK6wm/Jtr/2J07FO2zjo
+         N2kJtpbtIBTKrB2AzKfwMz9Mss23SRXt6i7FmJG7haWma/lhRprF+4Xj6rYKQmQasr
+         +Klvnf+fHpUZYbFraVqvlsCpSAE0ZSTGvf7VX+NU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 241/563] ALSA: hda: Add missing rwsem around snd_ctl_remove() calls
-Date:   Mon, 24 Jan 2022 19:40:06 +0100
-Message-Id: <20220124184032.765181648@linuxfoundation.org>
+        stable@vger.kernel.org, Frank Rowand <frank.rowand@sony.com>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 272/563] of: unittest: 64 bit dma address test requires arch support
+Date:   Mon, 24 Jan 2022 19:40:37 +0100
+Message-Id: <20220124184033.844760247@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -49,37 +49,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Frank Rowand <frank.rowand@sony.com>
 
-[ Upstream commit 80bd64af75b4bb11c0329bc66c35da2ddfb66d88 ]
+[ Upstream commit 9fd4cf5d3571b27d746b8ead494a3f051485b679 ]
 
-snd_ctl_remove() has to be called with card->controls_rwsem held (when
-called after the card instantiation).  This patch add the missing
-rwsem calls around it.
+If an architecture does not support 64 bit dma addresses then testing
+for an expected dma address >= 0x100000000 will fail.
 
-Fixes: d13bd412dce2 ("ALSA: hda - Manage kcontrol lists")
-Link: https://lore.kernel.org/r/20211116071314.15065-3-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Fixes: e0d072782c73 ("dma-mapping: introduce DMA range map, supplanting dma_pfn_offset")
+Signed-off-by: Frank Rowand <frank.rowand@sony.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20211212221852.233295-1-frowand.list@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/pci/hda/hda_codec.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/of/unittest.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/sound/pci/hda/hda_codec.c b/sound/pci/hda/hda_codec.c
-index 6dece719be669..39281106477eb 100644
---- a/sound/pci/hda/hda_codec.c
-+++ b/sound/pci/hda/hda_codec.c
-@@ -1727,8 +1727,11 @@ void snd_hda_ctls_clear(struct hda_codec *codec)
+diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
+index a5c4c77b6f3e2..5407bbdb64395 100644
+--- a/drivers/of/unittest.c
++++ b/drivers/of/unittest.c
+@@ -941,8 +941,9 @@ static void __init of_unittest_parse_dma_ranges(void)
  {
- 	int i;
- 	struct hda_nid_item *items = codec->mixers.list;
-+
-+	down_write(&codec->card->controls_rwsem);
- 	for (i = 0; i < codec->mixers.used; i++)
- 		snd_ctl_remove(codec->card, items[i].kctl);
-+	up_write(&codec->card->controls_rwsem);
- 	snd_array_free(&codec->mixers);
- 	snd_array_free(&codec->nids);
+ 	of_unittest_dma_ranges_one("/testcase-data/address-tests/device@70000000",
+ 		0x0, 0x20000000);
+-	of_unittest_dma_ranges_one("/testcase-data/address-tests/bus@80000000/device@1000",
+-		0x100000000, 0x20000000);
++	if (IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT))
++		of_unittest_dma_ranges_one("/testcase-data/address-tests/bus@80000000/device@1000",
++			0x100000000, 0x20000000);
+ 	of_unittest_dma_ranges_one("/testcase-data/address-tests/pci@90000000",
+ 		0x80000000, 0x20000000);
  }
 -- 
 2.34.1
