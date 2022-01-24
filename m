@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F2E6C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:23:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C42BC433F5
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:23:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2375279AbiAYATl (ORCPT
+        id S2375356AbiAYAT4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:19:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54950 "EHLO
+        Mon, 24 Jan 2022 19:19:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53994 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1849731AbiAXXej (ORCPT
+        with ESMTP id S2359669AbiAXXej (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:34:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA0E2C0AD1B9;
-        Mon, 24 Jan 2022 13:36:51 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8626CC0AD1BF;
+        Mon, 24 Jan 2022 13:36:56 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 474946131F;
-        Mon, 24 Jan 2022 21:36:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1407CC340E4;
-        Mon, 24 Jan 2022 21:36:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 43490B811A9;
+        Mon, 24 Jan 2022 21:36:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4DABDC340E4;
+        Mon, 24 Jan 2022 21:36:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060210;
-        bh=j4CfaJ67L6Sih9eb4i6T6w8XsJayxWU/gOmexyDIggA=;
+        s=korg; t=1643060214;
+        bh=O/8B47WCHt/7NggE2om+s/HBijeVuMCAcR01gd/vuYs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2uKnYvkLzNp/n+cDKHHbH4KLSeii4U0j+RxaX5qW+H+oLOmgN1LV8PvsBtMdo4B6m
-         Z4YG4ZMC5cNyNWjP1pS9xTI9Y5+/d7uhARAKdODVjVXgEhpLE2sQaLqj53XJXoMnNk
-         owjtLFxZOfgZz8PvWZrwq7fPkuSQ0DX8/tLAx0K4=
+        b=Zz1GW8nhs4ldg0CWX2QQGh7II+fj27PWeAmeFZ0CUDjfIY8gev/pc9qSSeYL5tCnp
+         G/lof+yK+kk49xf2s+JMSrMxjuN8ImdMwQfdThKgHbJylrViHQm4R46noGIzazffGG
+         Ryo0hFhhbR12K1cm+RCSQ3maqoPTSltvaUf8dWZw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
-        Huang Rui <ray.huang@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.16 0867/1039] drm/amdgpu: Use correct VIEWPORT_DIMENSION for DCN2
-Date:   Mon, 24 Jan 2022 19:44:16 +0100
-Message-Id: <20220124184154.442512752@linuxfoundation.org>
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.16 0876/1039] PCI: pci-bridge-emul: Properly mark reserved PCIe bits in PCI config space
+Date:   Mon, 24 Jan 2022 19:44:25 +0100
+Message-Id: <20220124184154.743263590@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,76 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Harry Wentland <harry.wentland@amd.com>
+From: Pali Rohár <pali@kernel.org>
 
-commit dc5d4aff2e99c312df8abbe1ee9a731d2913bc1b upstream.
+commit 7b067ac63a5730d2fae18399fed7e45f23d36912 upstream.
 
-For some reason this file isn't using the appropriate register
-headers for DCN headers, which means that on DCN2 we're getting
-the VIEWPORT_DIMENSION offset wrong.
+Some bits in PCI config space are reserved when device is PCIe. Properly
+define behavior of PCI registers for PCIe emulated bridge and ensure that
+it would not be possible change these reserved bits.
 
-This means that we're not correctly carving out the framebuffer
-memory correctly for a framebuffer allocated by EFI and
-therefore see corruption when loading amdgpu before the display
-driver takes over control of the framebuffer scanout.
-
-Fix this by checking the DCE_HWIP and picking the correct offset
-accordingly.
-
-Long-term we should expose this info from DC as GMC shouldn't
-need to know about DCN registers.
-
+Link: https://lore.kernel.org/r/20211124155944.1290-3-pali@kernel.org
+Fixes: 23a5fba4d941 ("PCI: Introduce PCI bridge emulated config space common logic")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
 Cc: stable@vger.kernel.org
-Signed-off-by: Harry Wentland <harry.wentland@amd.com>
-Reviewed-by: Huang Rui <ray.huang@amd.com>
-Acked-by: Christian König <christian.koenig@amd.com>
-Reviewed-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c |   14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+ drivers/pci/pci-bridge-emul.c |   21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
---- a/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-+++ b/drivers/gpu/drm/amd/amdgpu/gmc_v9_0.c
-@@ -72,6 +72,9 @@
- #define mmDCHUBBUB_SDPIF_MMIO_CNTRL_0                                                                  0x049d
- #define mmDCHUBBUB_SDPIF_MMIO_CNTRL_0_BASE_IDX                                                         2
+--- a/drivers/pci/pci-bridge-emul.c
++++ b/drivers/pci/pci-bridge-emul.c
+@@ -295,6 +295,27 @@ int pci_bridge_emul_init(struct pci_brid
+ 			kfree(bridge->pci_regs_behavior);
+ 			return -ENOMEM;
+ 		}
++		/* These bits are applicable only for PCI and reserved on PCIe */
++		bridge->pci_regs_behavior[PCI_CACHE_LINE_SIZE / 4].ro &=
++			~GENMASK(15, 8);
++		bridge->pci_regs_behavior[PCI_COMMAND / 4].ro &=
++			~((PCI_COMMAND_SPECIAL | PCI_COMMAND_INVALIDATE |
++			   PCI_COMMAND_VGA_PALETTE | PCI_COMMAND_WAIT |
++			   PCI_COMMAND_FAST_BACK) |
++			  (PCI_STATUS_66MHZ | PCI_STATUS_FAST_BACK |
++			   PCI_STATUS_DEVSEL_MASK) << 16);
++		bridge->pci_regs_behavior[PCI_PRIMARY_BUS / 4].ro &=
++			~GENMASK(31, 24);
++		bridge->pci_regs_behavior[PCI_IO_BASE / 4].ro &=
++			~((PCI_STATUS_66MHZ | PCI_STATUS_FAST_BACK |
++			   PCI_STATUS_DEVSEL_MASK) << 16);
++		bridge->pci_regs_behavior[PCI_INTERRUPT_LINE / 4].rw &=
++			~((PCI_BRIDGE_CTL_MASTER_ABORT |
++			   BIT(8) | BIT(9) | BIT(11)) << 16);
++		bridge->pci_regs_behavior[PCI_INTERRUPT_LINE / 4].ro &=
++			~((PCI_BRIDGE_CTL_FAST_BACK) << 16);
++		bridge->pci_regs_behavior[PCI_INTERRUPT_LINE / 4].w1c &=
++			~(BIT(10) << 16);
+ 	}
  
-+#define mmHUBP0_DCSURF_PRI_VIEWPORT_DIMENSION_DCN2                                                          0x05ea
-+#define mmHUBP0_DCSURF_PRI_VIEWPORT_DIMENSION_DCN2_BASE_IDX                                                 2
-+
- 
- static const char *gfxhub_client_ids[] = {
- 	"CB",
-@@ -1105,6 +1108,8 @@ static unsigned gmc_v9_0_get_vbios_fb_si
- 	u32 d1vga_control = RREG32_SOC15(DCE, 0, mmD1VGA_CONTROL);
- 	unsigned size;
- 
-+	/* TODO move to DC so GMC doesn't need to hard-code DCN registers */
-+
- 	if (REG_GET_FIELD(d1vga_control, D1VGA_CONTROL, D1VGA_MODE_ENABLE)) {
- 		size = AMDGPU_VBIOS_VGA_ALLOCATION;
- 	} else {
-@@ -1113,11 +1118,18 @@ static unsigned gmc_v9_0_get_vbios_fb_si
- 		switch (adev->ip_versions[DCE_HWIP][0]) {
- 		case IP_VERSION(1, 0, 0):
- 		case IP_VERSION(1, 0, 1):
--		case IP_VERSION(2, 1, 0):
- 			viewport = RREG32_SOC15(DCE, 0, mmHUBP0_DCSURF_PRI_VIEWPORT_DIMENSION);
- 			size = (REG_GET_FIELD(viewport,
- 					      HUBP0_DCSURF_PRI_VIEWPORT_DIMENSION, PRI_VIEWPORT_HEIGHT) *
- 				REG_GET_FIELD(viewport,
-+					      HUBP0_DCSURF_PRI_VIEWPORT_DIMENSION, PRI_VIEWPORT_WIDTH) *
-+				4);
-+			break;
-+		case IP_VERSION(2, 1, 0):
-+			viewport = RREG32_SOC15(DCE, 0, mmHUBP0_DCSURF_PRI_VIEWPORT_DIMENSION_DCN2);
-+			size = (REG_GET_FIELD(viewport,
-+					      HUBP0_DCSURF_PRI_VIEWPORT_DIMENSION, PRI_VIEWPORT_HEIGHT) *
-+				REG_GET_FIELD(viewport,
- 					      HUBP0_DCSURF_PRI_VIEWPORT_DIMENSION, PRI_VIEWPORT_WIDTH) *
- 				4);
- 			break;
+ 	if (flags & PCI_BRIDGE_EMUL_NO_PREFETCHABLE_BAR) {
 
 
