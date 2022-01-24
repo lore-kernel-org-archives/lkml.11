@@ -2,76 +2,113 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5CF3C35270
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F064C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:59:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3413196AbiAYAif (ORCPT
+        id S3413162AbiAYAib (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:38:35 -0500
-Received: from mout.gmx.net ([212.227.15.19]:46419 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2367774AbiAXX4e (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:56:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643068589;
-        bh=NmbQOTuyirKT5v/51AXWjexT5k8SiMW52h0CGvFQpkY=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject;
-        b=QjJouGxwkReiOhQCKCkjFnntMmQG1QaxS7lFVHdfqR/g2wTRpj9b4KUEOmyNkuznb
-         EyvmIvLP4j9GrEdKC14bSkd+MLtKS4CQp3Gfft9kUWuuINInlIaRRWKXXMF6H7oj9h
-         BFm76T3WhdEgw3Rk3IGI1+JCBfSiMfGS51darGVc=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.100.20] ([46.142.35.142]) by mail.gmx.net (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N7i8O-1mGYd52wL4-014kui; Tue, 25
- Jan 2022 00:56:29 +0100
-Message-ID: <3f11ae4c-82c2-a2b9-1795-5d7824b15b5a@gmx.de>
-Date:   Tue, 25 Jan 2022 00:56:29 +0100
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-From:   Ronald Warsow <rwarsow@gmx.de>
+        Mon, 24 Jan 2022 19:38:31 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:59470 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1444318AbiAXVG7 (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 16:06:59 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id CC29061451;
+        Mon, 24 Jan 2022 21:06:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83AB5C340E5;
+        Mon, 24 Jan 2022 21:06:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643058417;
+        bh=aJ5YBxeO/4QRHT8rngDaLNVmp8PG20YzWHTts758vWY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rslqiSlF3EKnu4qdJkIu3l5J51yFtfNPjEtbrzwV9Hhl3zifJ5GN8vjYpIUxrIveO
+         ENH6GYsThmlkg9LOA3Snc9YMeDw8vC8i0hpThdyHpBS1lEo6qBDwQ/EKT8ao7EYOrn
+         wWj2J2w/XqsdEl8suObpbhZxkXI7POqny9QVrYew=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
-Cc:     stable@vger.kernel.org
-Content-Language: de-DE
-Subject: Re: [PATCH 5.16 0000/1039] 5.16.3-rc1 review
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:EJQTTqdFj0fNUKDkU/qAAJIs7WM01fiQLmSPrdv/4jO+VaUGxr+
- XKm8Q9jp7TIpk4xP8WqAT6fiQlobdLO1vp1iNkSh89oLggRc5dNgvMzwYgnqC/XmA3gQUzD
- NGLB3cXpaj0WZDirAccZhzR2AlRBPpFIon+ZhajVMHOyXxcNAusBlvkFh43l2EX/lWTLz2W
- 50Qgwqlg3J1e3mpn7TJ3g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:MBI8Pw3aryo=:i4nO4bph94kQbvjjNbu/zI
- EF/3fddXA2KFPBVD7coS+yqc851ohVj1R6u8okqcvSqo0qlCZS89tYPgyshUxf2wO0tQEbKVl
- HfButs5eFGXmEfGny+1wXbFjADn9D2STJXO56HRoyi2GXtyKuaL9999qCsssjqmzAn0+Bej6c
- QFlsyOR5A+S3qFacirsA6EwQcVsLbH27Ychk+mRTModGTLsmHB3GFqby2+6lM0bWkQ/gmkQtd
- FQeWtULk9pl4SEmRgQFqF307CnHmjKJuF4a/bFtuUOn9jmzMUgn01Sok/K+aqooOL3CE3xf/b
- 4NdmqEwjt5xUpCzoTsAg1khfUa5eL2wAmsAHd0iTprLZt427z6AnFzgjUjucDTGnrQ6FtMno8
- GmVXy5Jpe37q6WTp0XEjIeJv3Uz3njqAFvZ5TfzHmk8EJHT34px0PbAqy6lbvWL0JnTBHVFMk
- fAtZ4W56n7zF/Qc+Z8uMD/SjJg6lTxD/QHek4xRB1ZTH1Udcm1e6a1fPqiKWjfg1CA3cEQ8l0
- KQcCwHxg0cqbGoYa/cwG6Hw2PplPCUYompuBcDTlk4SnoVQ/jnis8akiXO1jRmWD42OVINVzw
- dQJvqFc6NL9qX/56RIYQfyDsXTyroIHONifhhjPAG7IHtsZcELXDiT4SQ7btL3Etl2D7Zw/da
- 0TvIl63OcJrqnzpiBVzsj2+hc5p65zgYb/g9h6jPEyo23Api9Z6LPogM4FeBBeTlCEIzwcv+o
- H9blO64OyS1IF6GV0ckFYAWckwpg13fLZ/O+ddzHcYaN6rRIio5oXdQf9qwJOCnYfZEQjIb3q
- IlZfRFyyBLlpWABys+ADbvfzTojV3rnq6LWlh88fBKXhnYIzxXaT5OIy6MoXeRVPu7TdQ+8qG
- MBt1Nq0nAKVUg/yu6ZI2XQiHMuyc+t9cxDlExpG4QiUJQs7kCV/+JS6XxyM26+qUtFeIjusx0
- rkIv2ZvtY8VHyQVrhph+D7dFPNEUc6WMi1oxggsXGEvL5kFBx10nzd8mZQt3tNR/RQG4nv3rn
- d4lAjYnAfffiQzB6OmOMsY2/5ppNtJkzcZ9FljNol29RDN6aNyWOIxLzUOf89Ur0edkfkGmQZ
- QaqV9S89HWwsnM=
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Daniel Latypov <dlatypov@google.com>,
+        David Gow <davidgow@google.com>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        Shuah Khan <skhan@linuxfoundation.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0282/1039] kunit: tool: fix --json output for skipped tests
+Date:   Mon, 24 Jan 2022 19:34:31 +0100
+Message-Id: <20220124184134.768342225@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-hallo Greg
+From: Daniel Latypov <dlatypov@google.com>
 
-5.16.3-rc1
+[ Upstream commit 9a6bb30a8830bb868b09629f0b9ad5d2b5fbb2f9 ]
 
-compiles, boots and runs on my x86_64
-(Intel i5-11400, Fedora 35)
+Currently, KUnit will report SKIPPED tests as having failed if one uses
+--json.
 
-Thanks
+Add the missing if statement to set the appropriate status ("SKIP").
+See https://api.kernelci.org/schema-test-case.html:
+  "status": {
+      "type": "string",
+      "description": "The status of the execution of this test case",
+      "enum": ["PASS", "FAIL", "SKIP", "ERROR"],
+      "default": "PASS"
+  },
+with this, we now can properly produce all four of the statuses.
 
-Tested-by: Ronald Warsow <rwarsow@gmx.de>
+Fixes: 5acaf6031f53 ("kunit: tool: Support skipped tests in kunit_tool")
+Signed-off-by: Daniel Latypov <dlatypov@google.com>
+Reviewed-by: David Gow <davidgow@google.com>
+Reviewed-by: Brendan Higgins <brendanhiggins@google.com>
+Signed-off-by: Shuah Khan <skhan@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ tools/testing/kunit/kunit_json.py      | 2 ++
+ tools/testing/kunit/kunit_tool_test.py | 6 ++++++
+ 2 files changed, 8 insertions(+)
 
-=2D-
-regards
-Ronald
+diff --git a/tools/testing/kunit/kunit_json.py b/tools/testing/kunit/kunit_json.py
+index 746bec72b9ac2..b6e66c5d64d14 100644
+--- a/tools/testing/kunit/kunit_json.py
++++ b/tools/testing/kunit/kunit_json.py
+@@ -30,6 +30,8 @@ def _get_group_json(test: Test, def_config: str,
+ 			test_case = {"name": subtest.name, "status": "FAIL"}
+ 			if subtest.status == TestStatus.SUCCESS:
+ 				test_case["status"] = "PASS"
++			elif subtest.status == TestStatus.SKIPPED:
++				test_case["status"] = "SKIP"
+ 			elif subtest.status == TestStatus.TEST_CRASHED:
+ 				test_case["status"] = "ERROR"
+ 			test_cases.append(test_case)
+diff --git a/tools/testing/kunit/kunit_tool_test.py b/tools/testing/kunit/kunit_tool_test.py
+index 9c41267314573..34cb0a12ba180 100755
+--- a/tools/testing/kunit/kunit_tool_test.py
++++ b/tools/testing/kunit/kunit_tool_test.py
+@@ -383,6 +383,12 @@ class KUnitJsonTest(unittest.TestCase):
+ 			{'name': 'example_simple_test', 'status': 'ERROR'},
+ 			result["sub_groups"][1]["test_cases"][0])
+ 
++	def test_skipped_test_json(self):
++		result = self._json_for('test_skip_tests.log')
++		self.assertEqual(
++			{'name': 'example_skip_test', 'status': 'SKIP'},
++			result["sub_groups"][1]["test_cases"][1])
++
+ 	def test_no_tests_json(self):
+ 		result = self._json_for('test_is_test_passed-no_tests_run_with_header.log')
+ 		self.assertEqual(0, len(result['sub_groups']))
+-- 
+2.34.1
+
+
 
