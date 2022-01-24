@@ -2,87 +2,189 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A71A4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:34:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8CA4C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:34:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347536AbiAXTd7 (ORCPT
+        id S1347201AbiAXTeF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:33:59 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53600 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351017AbiAXTZq (ORCPT
+        Mon, 24 Jan 2022 14:34:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50466 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350847AbiAXTZZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:25:46 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 262EB61483
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 19:25:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 814B1C340E5;
-        Mon, 24 Jan 2022 19:25:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643052345;
-        bh=cGzIZ1MKIizkECbK+Lu6MG2AB+TsAwI9HGRrv3av30U=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XBIgUtI+EvImF0ZnkknOIa1odOeHkZxvWOe9sjHFCoHERQmLMXF/wGmAWuDjID+ss
-         Br5A1DegoEO2p5tr1Pg0srwkXqnN7ZSQmHI/tl12j0Gwelrj+qcAHfw7A3i61XQesw
-         RvBj2vThha7fuNGTOWz2XB6/L7MM8OXPyQk3P4CiXrX+BM9WG8HfRxs4NvGJA8qWxP
-         6l2pzQBnavjC+BDfIVLFeracw1J7y2+aEnL9shzPuaNVXmCYAtAIGVPTr10L9yWeLq
-         wzDK7/K4K+1YhHOmojtBEuWaCCApSU2rVq8hmeL9ZzjOhAhCH1G38Qnh5bEtHwI9F/
-         ArMjIYa1c0ULg==
-Date:   Mon, 24 Jan 2022 19:25:44 +0000
-From:   Eric Biggers <ebiggers@kernel.org>
-To:     Harry Austen <harryausten@hotmail.co.uk>
-Cc:     linux-f2fs-devel@lists.sourceforge.net, jaegeuk@kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [f2fs-dev] [PATCH] f2fs: fix fileattr_set unsupported attribute
- handling
-Message-ID: <Ye79OLCFLR3H+GnY@gmail.com>
-References: <AM6PR10MB2838873D61CE1C0DB91EEDB9FA5C9@AM6PR10MB2838.EURPRD10.PROD.OUTLOOK.COM>
+        Mon, 24 Jan 2022 14:25:25 -0500
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 722DDC02B86E;
+        Mon, 24 Jan 2022 11:12:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=630GZf2pl7dUC09jByd2lRVEJ71rHFIBrI9U48V8bzA=; b=l0WJXVDaYcmJ3/V3RWFezwDDer
+        C44GbJGe7OjLN0KX4PaF1IWCv0kAoNTjNLYvwuH+jZell6Ad2JgbYr55poxlvv5DL8vopnnR/7kMY
+        vn/kveSmXCK7I5QKtfyV0XYyRC15LtirFVJpZLpus0tksAvWxi6l/uO/J6VOZyNLBn7KViVZO+pmi
+        tCMavBPk+ocRsC6yujO5bPnGRcZhKLBisgW7TtJG3/FxTW3BAp4mXk9rBm2YHM6MqRSSbpG11QU3K
+        iU0eefreID+Mspii6FT8TND1o3Wgkgcez5ouyqVdYFPOacbzF1GFPC3zVTqT0YP/NTts2M908BtFX
+        6ETemMoQ==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nC4l3-003F5b-C0; Mon, 24 Jan 2022 19:12:05 +0000
+Message-ID: <aca104cf-5f5f-b696-754a-35e62dbe64c3@infradead.org>
+Date:   Mon, 24 Jan 2022 11:11:56 -0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <AM6PR10MB2838873D61CE1C0DB91EEDB9FA5C9@AM6PR10MB2838.EURPRD10.PROD.OUTLOOK.COM>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: Build regressions/improvements in v5.17-rc1
+Content-Language: en-US
+To:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Alex Deucher <alexdeucher@gmail.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
+        KVM list <kvm@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-um <linux-um@lists.infradead.org>,
+        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
+        amd-gfx list <amd-gfx@lists.freedesktop.org>,
+        Lakshmi Sowjanya D <lakshmi.sowjanya.d@intel.com>,
+        sparclinux <sparclinux@vger.kernel.org>,
+        linuxppc-dev <linuxppc-dev@lists.ozlabs.org>,
+        "Tobin C. Harding" <me@tobin.cc>
+References: <20220123125737.2658758-1-geert@linux-m68k.org>
+ <alpine.DEB.2.22.394.2201240851560.2674757@ramsan.of.borg>
+ <CADnq5_MUq0fX7wMLJyUUxxa+2xoRinonL-TzD8tUhXALRfY8-A@mail.gmail.com>
+ <CAMuHMdWUWqHYbbavtMT-XAD_sarDPC5xnc3c0pX1ZAh3Wuzuzg@mail.gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <CAMuHMdWUWqHYbbavtMT-XAD_sarDPC5xnc3c0pX1ZAh3Wuzuzg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sat, Jan 22, 2022 at 12:59:03PM +0000, Harry Austen wrote:
-> FS_IOC_SETFLAGS ioctl should return EOPNOTSUPP if the file attribute
-> (e.g. FS_NOCOW_FL) is not supported, rather than silently ignoring it
-> and returning success.
+
+
+On 1/24/22 10:55, Geert Uytterhoeven wrote:
+> Hi Alex,
 > 
-> Fixes: 9b1bb01c8ae7 (f2fs: convert to fileattr)
-> Signed-off-by: Harry Austen <harryausten@hotmail.co.uk>
-> ---
->  fs/f2fs/file.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+> On Mon, Jan 24, 2022 at 7:52 PM Alex Deucher <alexdeucher@gmail.com> wrote:
+>> On Mon, Jan 24, 2022 at 5:25 AM Geert Uytterhoeven <geert@linux-m68k.org> wrote:
+>>> On Sun, 23 Jan 2022, Geert Uytterhoeven wrote:
+>>>>  + /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c: error: control reaches end of non-void function [-Werror=return-type]:  => 1560:1
+>>
+>> I don't really see what's going on here:
+>>
+>> #ifdef CONFIG_X86_64
+>> return cpu_data(first_cpu_of_numa_node).apicid;
+>> #else
+>> return first_cpu_of_numa_node;
+>> #endif
 > 
-> diff --git a/fs/f2fs/file.c b/fs/f2fs/file.c
-> index 92ec2699bc85..061bf35c2582 100644
-> --- a/fs/f2fs/file.c
-> +++ b/fs/f2fs/file.c
-> @@ -3085,9 +3085,8 @@ int f2fs_fileattr_set(struct user_namespace *mnt_userns,
->  		return -EIO;
->  	if (!f2fs_is_checkpoint_ready(F2FS_I_SB(inode)))
->  		return -ENOSPC;
-> -	if (fsflags & ~F2FS_GETTABLE_FS_FL)
-> +	if (fsflags & ~F2FS_SETTABLE_FS_FL)
->  		return -EOPNOTSUPP;
-> -	fsflags &= F2FS_SETTABLE_FS_FL;
->  	if (!fa->flags_valid)
->  		mask &= FS_COMMON_FL;
+> Ah, the actual failure causing this was not included:
+> 
+> In file included from /kisskb/src/arch/x86/um/asm/processor.h:41:0,
+>                  from /kisskb/src/include/linux/mutex.h:19,
+>                  from /kisskb/src/include/linux/kernfs.h:11,
+>                  from /kisskb/src/include/linux/sysfs.h:16,
+>                  from /kisskb/src/include/linux/kobject.h:20,
+>                  from /kisskb/src/include/linux/pci.h:35,
+>                  from
+> /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:25:
+> /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c: In
+> function 'kfd_cpumask_to_apic_id':
+> /kisskb/src/arch/um/include/asm/processor-generic.h:103:18: error:
+> called object is not a function or function pointer
+>  #define cpu_data (&boot_cpu_data)
+>                   ^
+> /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1556:9:
+> note: in expansion of macro 'cpu_data'
+>   return cpu_data(first_cpu_of_numa_node).apicid;
+>          ^
+> /kisskb/src/drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1560:1:
+> error: control reaches end of non-void function [-Werror=return-type]
+>  }
+>  ^
 
-This is intentional, and matches what ext4 does; see the comment in the ext4
-implementation of this:
+ah yes, UML.
+I have a bunch of UML fixes that I have been hesitant to post.
 
-        /*
-         * chattr(1) grabs flags via GETFLAGS, modifies the result and
-         * passes that to SETFLAGS. So we cannot easily make SETFLAGS
-         * more restrictive than just silently masking off visible but
-         * not settable flags as we always did.
-         */
+This is one of them.
+What do people think about this?
 
-Also, even if this patch was correct, the Fixes tag is wrong.
+thanks.
 
-- Eric
+---
+From: Randy Dunlap <rdunlap@infradead.org>
+
+
+../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1556:9: note: in expansion of macro ‘cpu_data’
+  return cpu_data(first_cpu_of_numa_node).apicid;
+         ^~~~~~~~
+../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_topology.c:1560:1: error: control reaches end of non-void function [-Werror=return-type]
+
+../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c: In function ‘kfd_fill_iolink_info_for_cpu’:
+../arch/um/include/asm/processor-generic.h:103:19: error: called object is not a function or function pointer
+ #define cpu_data (&boot_cpu_data)
+                  ~^~~~~~~~~~~~~~~
+../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1688:27: note: in expansion of macro ‘cpu_data’
+  struct cpuinfo_x86 *c = &cpu_data(0);
+                           ^~~~~~~~
+../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1691:7: error: dereferencing pointer to incomplete type ‘struct cpuinfo_x86’
+  if (c->x86_vendor == X86_VENDOR_AMD)
+       ^~
+../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1691:23: error: ‘X86_VENDOR_AMD’ undeclared (first use in this function); did you mean ‘X86_VENDOR_ANY’?
+  if (c->x86_vendor == X86_VENDOR_AMD)
+                       ^~~~~~~~~~~~~~
+                       X86_VENDOR_ANY
+
+../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c: In function ‘kfd_create_vcrat_image_cpu’:
+../drivers/gpu/drm/amd/amdgpu/../amdkfd/kfd_crat.c:1742:11: warning: unused variable ‘entries’ [-Wunused-variable]
+  uint32_t entries = 0;
+
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+---
+ drivers/gpu/drm/amd/amdkfd/kfd_crat.c     |    6 +++---
+ drivers/gpu/drm/amd/amdkfd/kfd_topology.c |    2 +-
+ 2 files changed, 4 insertions(+), 4 deletions(-)
+
+--- linux-next-20220107.orig/drivers/gpu/drm/amd/amdkfd/kfd_topology.c
++++ linux-next-20220107/drivers/gpu/drm/amd/amdkfd/kfd_topology.c
+@@ -1552,7 +1552,7 @@ static int kfd_cpumask_to_apic_id(const
+ 	first_cpu_of_numa_node = cpumask_first(cpumask);
+ 	if (first_cpu_of_numa_node >= nr_cpu_ids)
+ 		return -1;
+-#ifdef CONFIG_X86_64
++#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
+ 	return cpu_data(first_cpu_of_numa_node).apicid;
+ #else
+ 	return first_cpu_of_numa_node;
+--- linux-next-20220107.orig/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
++++ linux-next-20220107/drivers/gpu/drm/amd/amdkfd/kfd_crat.c
+@@ -1679,7 +1679,7 @@ static int kfd_fill_mem_info_for_cpu(int
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_X86_64
++#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
+ static int kfd_fill_iolink_info_for_cpu(int numa_node_id, int *avail_size,
+ 				uint32_t *num_entries,
+ 				struct crat_subtype_iolink *sub_type_hdr)
+@@ -1738,7 +1738,7 @@ static int kfd_create_vcrat_image_cpu(vo
+ 	struct crat_subtype_generic *sub_type_hdr;
+ 	int avail_size = *size;
+ 	int numa_node_id;
+-#ifdef CONFIG_X86_64
++#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
+ 	uint32_t entries = 0;
+ #endif
+ 	int ret = 0;
+@@ -1803,7 +1803,7 @@ static int kfd_create_vcrat_image_cpu(vo
+ 			sub_type_hdr->length);
+ 
+ 		/* Fill in Subtype: IO Link */
+-#ifdef CONFIG_X86_64
++#if defined(CONFIG_X86_64) && !defined(CONFIG_UML)
+ 		ret = kfd_fill_iolink_info_for_cpu(numa_node_id, &avail_size,
+ 				&entries,
+ 				(struct crat_subtype_iolink *)sub_type_hdr);
+
+
