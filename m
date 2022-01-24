@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63DA6C35295
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88FD7C46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:13:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448013AbiAXVLx (ORCPT
+        id S1448044AbiAXVLz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:11:53 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:46062 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390191AbiAXUpD (ORCPT
+        Mon, 24 Jan 2022 16:11:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42264 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1390180AbiAXUpD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:45:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0351C0617BE;
+        Mon, 24 Jan 2022 11:54:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15CC6B81218;
-        Mon, 24 Jan 2022 20:44:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1A500C340E5;
-        Mon, 24 Jan 2022 20:44:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9095461012;
+        Mon, 24 Jan 2022 19:54:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71D7AC340E5;
+        Mon, 24 Jan 2022 19:54:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057096;
-        bh=ucs4b6QzXOxOc1YICXU0kEQvXUrqmGp6H4umnOvh/+E=;
+        s=korg; t=1643054087;
+        bh=xQDm7FZPXcXZlrZTnKkz6kxd0O0POjHE1l9GdUOFf8Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ozD0Z8Nz6hFjbp996eVDqvwxP53beMTdjZZZ0pwJLRiEOkOvMAN7xfVSTtvWx8rP3
-         nGRbNZb+MaDFDkvYS9uTmM26+9vQTSvsyPLoVR+CMBr5elkMvv9kiYvCmVfGh2suJN
-         YwXo5PFkJSXXW5yyAUz8JWJWTf5TD+KvL0cxHF1s=
+        b=ZsHhuGoZqcsWkJRtw6P+BOIGo4cCJSHuxwLx/npvS4z2xH02Jt1OJ+fZQ853VXALa
+         OBx3MxDFdVL9KAFODtW2MXjGpq9BM+fvzE/maNLN0C5khxFI2JLg6jklVTjNpVgoGr
+         F1dkJQ6UV8EzRyNUnAcJzJ5L6UvJbLhvL4uvVzR8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?St=C3=A9phane=20Graber?= <stgraber@ubuntu.com>,
-        Rob Herring <robh@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
-        =?UTF-8?q?Krzysztof=20Wilczy=C5=84ski?= <kw@linux.com>
-Subject: [PATCH 5.15 700/846] PCI: xgene: Fix IB window setup
-Date:   Mon, 24 Jan 2022 19:43:37 +0100
-Message-Id: <20220124184125.203088385@linuxfoundation.org>
+        stable@vger.kernel.org, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 274/563] mips: add SYS_HAS_CPU_MIPS64_R5 config for MIPS Release 5 support
+Date:   Mon, 24 Jan 2022 19:40:39 +0100
+Message-Id: <20220124184033.921285032@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,43 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Rob Herring <robh@kernel.org>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-commit c7a75d07827a1f33d566e18e6098379cc2a0c2b2 upstream.
+[ Upstream commit fd4eb90b164442cb1e9909f7845e12a0835ac699 ]
 
-Commit 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
-broke PCI support on XGene. The cause is the IB resources are now sorted
-in address order instead of being in DT dma-ranges order. The result is
-which inbound registers are used for each region are swapped. I don't
-know the details about this h/w, but it appears that IB region 0
-registers can't handle a size greater than 4GB. In any case, limiting
-the size for region 0 is enough to get back to the original assignment
-of dma-ranges to regions.
+Commit ab7c01fdc3cf ("mips: Add MIPS Release 5 support") adds the two
+configs CPU_MIPS32_R5 and CPU_MIPS64_R5, which depend on the corresponding
+SYS_HAS_CPU_MIPS32_R5 and SYS_HAS_CPU_MIPS64_R5, respectively.
 
-Link: https://lore.kernel.org/all/CA+enf=v9rY_xnZML01oEgKLmvY1NGBUUhnSJaETmXtDtXfaczA@mail.gmail.com/
-Link: https://lore.kernel.org/r/20211129173637.303201-1-robh@kernel.org
-Fixes: 6dce5aa59e0b ("PCI: xgene: Use inbound resources for setup")
-Reported-by: Stéphane Graber <stgraber@ubuntu.com>
-Tested-by: Stéphane Graber <stgraber@ubuntu.com>
-Signed-off-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Reviewed-by: Krzysztof Wilczyński <kw@linux.com>
-Cc: stable@vger.kernel.org # v5.5+
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+The config SYS_HAS_CPU_MIPS32_R5 was already introduced with commit
+c5b367835cfc ("MIPS: Add support for XPA."); the config
+SYS_HAS_CPU_MIPS64_R5, however, was never introduced.
+
+Hence, ./scripts/checkkconfigsymbols.py warns:
+
+  SYS_HAS_CPU_MIPS64_R5
+  Referencing files: arch/mips/Kconfig, arch/mips/include/asm/cpu-type.h
+
+Add the definition for config SYS_HAS_CPU_MIPS64_R5 under the assumption
+that SYS_HAS_CPU_MIPS64_R5 follows the same pattern as the existing
+SYS_HAS_CPU_MIPS32_R5 and SYS_HAS_CPU_MIPS64_R6.
+
+Fixes: ab7c01fdc3cf ("mips: Add MIPS Release 5 support")
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/pci/controller/pci-xgene.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/mips/Kconfig | 4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/pci/controller/pci-xgene.c
-+++ b/drivers/pci/controller/pci-xgene.c
-@@ -466,7 +466,7 @@ static int xgene_pcie_select_ib_reg(u8 *
- 		return 1;
- 	}
+diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+index 23d756fe0fd6c..db8fe5d7a2377 100644
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -1985,6 +1985,10 @@ config SYS_HAS_CPU_MIPS64_R1
+ config SYS_HAS_CPU_MIPS64_R2
+ 	bool
  
--	if ((size > SZ_1K) && (size < SZ_1T) && !(*ib_reg_mask & (1 << 0))) {
-+	if ((size > SZ_1K) && (size < SZ_4G) && !(*ib_reg_mask & (1 << 0))) {
- 		*ib_reg_mask |= (1 << 0);
- 		return 0;
- 	}
++config SYS_HAS_CPU_MIPS64_R5
++	bool
++	select ARCH_HAS_SYNC_DMA_FOR_CPU if DMA_NONCOHERENT
++
+ config SYS_HAS_CPU_MIPS64_R6
+ 	bool
+ 	select ARCH_HAS_SYNC_DMA_FOR_CPU if DMA_NONCOHERENT
+-- 
+2.34.1
+
 
 
