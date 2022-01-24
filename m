@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A848C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:36:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FFB2C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:36:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1454884AbiAXVeE (ORCPT
+        id S1454936AbiAXVeI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:34:04 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:54632 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443989AbiAXU7p (ORCPT
+        Mon, 24 Jan 2022 16:34:08 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51358 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344693AbiAXU6X (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:59:45 -0500
+        Mon, 24 Jan 2022 15:58:23 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 91CCEB8105C;
-        Mon, 24 Jan 2022 20:59:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0F41C340E7;
-        Mon, 24 Jan 2022 20:59:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EE1B66148B;
+        Mon, 24 Jan 2022 20:58:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC6ABC340E8;
+        Mon, 24 Jan 2022 20:58:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057981;
-        bh=mhCHDlztR2xaxoVSVKhjzH4y06h0vyKSkKPd3wDz+iw=;
+        s=korg; t=1643057902;
+        bh=yoRT3qfphQJgL7iYKNchLDHmu3yMtDJ7MmX9qJOVqRA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gIrKXhgsv+b9KjJk0gRvR3qM965zFBRj2u1O75EUkHuL2SZpNS2Psd8LrBWjDC2PA
-         dTmPeY7SL4jOOxejD5ULTCiCvwcumiKlsJVWB22BgkK1jmXYYWYsYET8WlrFmT4rDN
-         h2bASIa7M2XvsauwJ/wu6oiNGLV/9odz0ImiBUkE=
+        b=Y5DeWmrJPMwYZGi9+Kv8HN/GqVGWc7yMtyY8rZjN6p3K+iVuDxn6AaEMuOuVWKmv0
+         YXDf54g7b28hoMnbeP3+qSE6EGkcHsySnepDMkaOLMclfZ3vgUFnkCwIdM2mM/E2pH
+         x4+r6WCgYalX/ISxDtsG0zzTiC4ftEFoJNl0KweA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sven Eckelmann <sven@narfation.org>,
-        Karthikeyan Kathirvel <kathirve@codeaurora.org>,
+        stable@vger.kernel.org, Benjamin Li <benl@squareup.com>,
+        Loic Poulain <loic.poulain@linaro.org>,
         Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0142/1039] ath11k: clear the keys properly via DISABLE_KEY
-Date:   Mon, 24 Jan 2022 19:32:11 +0100
-Message-Id: <20220124184129.951911203@linuxfoundation.org>
+Subject: [PATCH 5.16 0115/1039] wcn36xx: fix RX BD rate mapping for 5GHz legacy rates
+Date:   Mon, 24 Jan 2022 19:31:44 +0100
+Message-Id: <20220124184128.992544933@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,62 +48,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Karthikeyan Kathirvel <kathirve@codeaurora.org>
+From: Benjamin Li <benl@squareup.com>
 
-[ Upstream commit 436a4e88659842a7cf634d7cc088c8f2cc94ebf5 ]
+[ Upstream commit cfdf6b19e750f7de8ae71a26932f63b52e3bf74c ]
 
-DISABLE_KEY sets the key_len to 0, firmware will not delete the keys if
-key_len is 0. Changing from security mode to open mode will cause mcast
-to be still encrypted without vdev restart.
+The linear mapping between the BD rate field and the driver's 5GHz
+legacy rates table (wcn_5ghz_rates) does not only apply for the latter
+four rates -- it applies to all eight rates.
 
-Set the proper key_len for DISABLE_KEY cmd to clear the keys in
-firmware.
-
-Tested-on: IPQ6018 hw1.0 AHB WLAN.HK.2.5.0.1-01100-QCAHKSWPL_SILICONZ-1
-
-Fixes: d5c65159f289 ("ath11k: driver for Qualcomm IEEE 802.11ax devices")
-Reported-by: Sven Eckelmann <sven@narfation.org>
-Signed-off-by: Karthikeyan Kathirvel <kathirve@codeaurora.org>
-[sven@narfation.org: split into separate patches, clean up commit message]
-Signed-off-by: Sven Eckelmann <sven@narfation.org>
-
+Fixes: 6ea131acea98 ("wcn36xx: Fix warning due to bad rate_idx")
+Signed-off-by: Benjamin Li <benl@squareup.com>
+Tested-by: Loic Poulain <loic.poulain@linaro.org>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20211115100441.33771-1-sven@narfation.org
+Link: https://lore.kernel.org/r/20211104010548.1107405-3-benl@squareup.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/mac.c | 4 +---
- drivers/net/wireless/ath/ath11k/wmi.c | 3 ++-
- 2 files changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/wireless/ath/wcn36xx/txrx.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
-index 1cc55602787bb..cdee7545e876a 100644
---- a/drivers/net/wireless/ath/ath11k/mac.c
-+++ b/drivers/net/wireless/ath/ath11k/mac.c
-@@ -3316,9 +3316,7 @@ static int ath11k_install_key(struct ath11k_vif *arvif,
- 		return 0;
+diff --git a/drivers/net/wireless/ath/wcn36xx/txrx.c b/drivers/net/wireless/ath/wcn36xx/txrx.c
+index f0a9f069a92a9..dd58dde8c8363 100644
+--- a/drivers/net/wireless/ath/wcn36xx/txrx.c
++++ b/drivers/net/wireless/ath/wcn36xx/txrx.c
+@@ -272,7 +272,6 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 	const struct wcn36xx_rate *rate;
+ 	struct ieee80211_hdr *hdr;
+ 	struct wcn36xx_rx_bd *bd;
+-	struct ieee80211_supported_band *sband;
+ 	u16 fc, sn;
  
- 	if (cmd == DISABLE_KEY) {
--		/* TODO: Check if FW expects  value other than NONE for del */
--		/* arg.key_cipher = WMI_CIPHER_NONE; */
--		arg.key_len = 0;
-+		arg.key_cipher = WMI_CIPHER_NONE;
- 		arg.key_data = NULL;
- 		goto install;
- 	}
-diff --git a/drivers/net/wireless/ath/ath11k/wmi.c b/drivers/net/wireless/ath/ath11k/wmi.c
-index 04238c29419b5..621a63d6c8c6d 100644
---- a/drivers/net/wireless/ath/ath11k/wmi.c
-+++ b/drivers/net/wireless/ath/ath11k/wmi.c
-@@ -1689,7 +1689,8 @@ int ath11k_wmi_vdev_install_key(struct ath11k *ar,
- 	tlv = (struct wmi_tlv *)(skb->data + sizeof(*cmd));
- 	tlv->header = FIELD_PREP(WMI_TLV_TAG, WMI_TAG_ARRAY_BYTE) |
- 		      FIELD_PREP(WMI_TLV_LEN, key_len_aligned);
--	memcpy(tlv->value, (u8 *)arg->key_data, key_len_aligned);
-+	if (arg->key_data)
-+		memcpy(tlv->value, (u8 *)arg->key_data, key_len_aligned);
+ 	/*
+@@ -350,12 +349,11 @@ int wcn36xx_rx_skb(struct wcn36xx *wcn, struct sk_buff *skb)
+ 		status.enc_flags = rate->encoding_flags;
+ 		status.bw = rate->bw;
+ 		status.rate_idx = rate->mcs_or_legacy_index;
+-		sband = wcn->hw->wiphy->bands[status.band];
+ 		status.nss = 1;
  
- 	ret = ath11k_wmi_cmd_send(wmi, skb, WMI_VDEV_INSTALL_KEY_CMDID);
- 	if (ret) {
+ 		if (status.band == NL80211_BAND_5GHZ &&
+ 		    status.encoding == RX_ENC_LEGACY &&
+-		    status.rate_idx >= sband->n_bitrates) {
++		    status.rate_idx >= 4) {
+ 			/* no dsss rates in 5Ghz rates table */
+ 			status.rate_idx -= 4;
+ 		}
 -- 
 2.34.1
 
