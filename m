@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9856EC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:28:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6609CC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:28:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381789AbiAXUYp (ORCPT
+        id S1381933AbiAXUY4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:24:45 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48564 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240634AbiAXTvW (ORCPT
+        Mon, 24 Jan 2022 15:24:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60542 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1377240AbiAXUFL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:51:22 -0500
+        Mon, 24 Jan 2022 15:05:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C3B2C08E803;
+        Mon, 24 Jan 2022 11:30:43 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 90F336090A;
-        Mon, 24 Jan 2022 19:51:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71283C340E5;
-        Mon, 24 Jan 2022 19:51:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D835BB8121B;
+        Mon, 24 Jan 2022 19:30:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 14A99C340E5;
+        Mon, 24 Jan 2022 19:30:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053881;
-        bh=EWuSD09ncRWFckeaGe1epERgKjEawSin+XEHc36Lp5E=;
+        s=korg; t=1643052640;
+        bh=1hDgkUT07j19aBXT2Go+t8wv9L8LkMKR1sBjhqc3N+M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Y7+c6ARAUg6fbnj0mtSJ9nWqwUYweW7GeW+p0YK9siKKhHYfoPQxmke0ZsO6/KLq1
-         biULhaoLoljGfW4QeXzkYrogcEpu0Ot619vCSuHoYgpJvsqQga4HIMYHKF7OwXXuTC
-         Cqj3KK3dLuQ9S/fAMUKmvFvgfsuT/5nxnHI42pkY=
+        b=BwMcz/yoYwUWyH328nkwD+ufLwE/mpI/7hhweH8Yyai+8r5//Guhzixq5sk6FdEwN
+         7Hl5v8a2XBj9EzF68Y0Sj0cp5FMcFIXE5rM6FscU9ifA8gw0rZAUdMt9Enr+4gRaZ9
+         wL3TppVgR/vA7VEfe6/FQgjbUBvpw1vUmNjUt1kw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 206/563] bpf: Fix SO_RCVBUF/SO_SNDBUF handling in _bpf_setsockopt().
-Date:   Mon, 24 Jan 2022 19:39:31 +0100
-Message-Id: <20220124184031.552229798@linuxfoundation.org>
+Subject: [PATCH 5.4 125/320] ALSA: hda: Add missing rwsem around snd_ctl_remove() calls
+Date:   Mon, 24 Jan 2022 19:41:49 +0100
+Message-Id: <20220124183957.929170787@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,44 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 04c350b1ae6bdb12b84009a4d0bf5ab4e621c47b ]
+[ Upstream commit 80bd64af75b4bb11c0329bc66c35da2ddfb66d88 ]
 
-The commit 4057765f2dee ("sock: consistent handling of extreme
-SO_SNDBUF/SO_RCVBUF values") added a change to prevent underflow
-in setsockopt() around SO_SNDBUF/SO_RCVBUF.
+snd_ctl_remove() has to be called with card->controls_rwsem held (when
+called after the card instantiation).  This patch add the missing
+rwsem calls around it.
 
-This patch adds the same change to _bpf_setsockopt().
-
-Fixes: 4057765f2dee ("sock: consistent handling of extreme SO_SNDBUF/SO_RCVBUF values")
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20220104013153.97906-2-kuniyu@amazon.co.jp
+Fixes: d13bd412dce2 ("ALSA: hda - Manage kcontrol lists")
+Link: https://lore.kernel.org/r/20211116071314.15065-3-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/core/filter.c | 2 ++
- 1 file changed, 2 insertions(+)
+ sound/pci/hda/hda_codec.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/net/core/filter.c b/net/core/filter.c
-index abd58dce49bbc..706c31ae65b01 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -4711,12 +4711,14 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
- 		switch (optname) {
- 		case SO_RCVBUF:
- 			val = min_t(u32, val, sysctl_rmem_max);
-+			val = min_t(int, val, INT_MAX / 2);
- 			sk->sk_userlocks |= SOCK_RCVBUF_LOCK;
- 			WRITE_ONCE(sk->sk_rcvbuf,
- 				   max_t(int, val * 2, SOCK_MIN_RCVBUF));
- 			break;
- 		case SO_SNDBUF:
- 			val = min_t(u32, val, sysctl_wmem_max);
-+			val = min_t(int, val, INT_MAX / 2);
- 			sk->sk_userlocks |= SOCK_SNDBUF_LOCK;
- 			WRITE_ONCE(sk->sk_sndbuf,
- 				   max_t(int, val * 2, SOCK_MIN_SNDBUF));
+diff --git a/sound/pci/hda/hda_codec.c b/sound/pci/hda/hda_codec.c
+index 326f95ce5ceb1..c8847de8388f0 100644
+--- a/sound/pci/hda/hda_codec.c
++++ b/sound/pci/hda/hda_codec.c
+@@ -1721,8 +1721,11 @@ void snd_hda_ctls_clear(struct hda_codec *codec)
+ {
+ 	int i;
+ 	struct hda_nid_item *items = codec->mixers.list;
++
++	down_write(&codec->card->controls_rwsem);
+ 	for (i = 0; i < codec->mixers.used; i++)
+ 		snd_ctl_remove(codec->card, items[i].kctl);
++	up_write(&codec->card->controls_rwsem);
+ 	snd_array_free(&codec->mixers);
+ 	snd_array_free(&codec->nids);
+ }
 -- 
 2.34.1
 
