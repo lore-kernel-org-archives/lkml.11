@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4184FC43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 637D0C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:22:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349745AbiAXTVP (ORCPT
+        id S1349780AbiAXTVS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:21:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47998 "EHLO
+        Mon, 24 Jan 2022 14:21:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47518 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347525AbiAXTNP (ORCPT
+        with ESMTP id S1347546AbiAXTNQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:13:15 -0500
+        Mon, 24 Jan 2022 14:13:16 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91ED2C034000;
-        Mon, 24 Jan 2022 11:04:40 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFBF0C08EAD7;
+        Mon, 24 Jan 2022 11:04:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38C7DB8121C;
-        Mon, 24 Jan 2022 19:04:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41E32C340E5;
-        Mon, 24 Jan 2022 19:04:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id EBD0AB8122C;
+        Mon, 24 Jan 2022 19:04:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10C43C340E5;
+        Mon, 24 Jan 2022 19:04:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051078;
-        bh=Kf/r40yVU7SO9RNrLnwKXB55jKUIvsvPBRDaa9Byulc=;
+        s=korg; t=1643051075;
+        bh=0HIcbNe44vpoX7J0z4B6yzMybdVKFNuIc5+ehR4MREA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GhkatAPxyzsejfYPdQLSgtefcrw/c8XQ3B4mJQ3akM47HvSKpuv34wSOwsCuJXqgc
-         PZeLrutzhvND/rvx6DeGiBqABl056KUrUoB7BzuUVwZVD7VZNN5XVbi/HX1zvZI+T9
-         Tjj2XFTfvltfwD8EW58sbtLkBtU1ns/UfUTHVab4=
+        b=Dqe0YPy2/nNvs/0MSNjx/pstIJMp3UtuJM7xeCHBFmksPhavbDIpddy7qkd4YnvBp
+         lnTPk9C/73HKAVHJCewEl6z+skuz6Y344rFCFjHYNagsRB4RC1l5v6JNMVg/PkF8Uv
+         lYugf+yg7B0vsY8ihCaT0qgwbZExs0bFtcQ4p27Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lino Sanfilippo <LinoSanfilippo@gmx.de>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Zhou Qingyang <zhou1615@umn.edu>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 048/186] serial: amba-pl011: do not request memory region twice
-Date:   Mon, 24 Jan 2022 19:42:03 +0100
-Message-Id: <20220124183938.675844699@linuxfoundation.org>
+Subject: [PATCH 4.14 047/186] drm/radeon/radeon_kms: Fix a NULL pointer dereference in radeon_driver_open_kms()
+Date:   Mon, 24 Jan 2022 19:42:02 +0100
+Message-Id: <20220124183938.643797389@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -49,101 +52,116 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit d1180405c7b5c7a1c6bde79d5fc24fe931430737 ]
+[ Upstream commit ab50cb9df8896b39aae65c537a30de2c79c19735 ]
 
-With commit 3873e2d7f63a ("drivers: PL011: refactor pl011_probe()") the
-function devm_ioremap() called from pl011_setup_port() was replaced with
-devm_ioremap_resource(). Since this function not only remaps but also
-requests the ports io memory region it now collides with the .config_port()
-callback which requests the same region at uart port registration.
+In radeon_driver_open_kms(), radeon_vm_bo_add() is assigned to
+vm->ib_bo_va and passes and used in radeon_vm_bo_set_addr(). In
+radeon_vm_bo_set_addr(), there is a dereference of vm->ib_bo_va,
+which could lead to a NULL pointer dereference on failure of
+radeon_vm_bo_add().
 
-Since devm_ioremap_resource() already claims the memory successfully, the
-request in .config_port() fails.
+Fix this bug by adding a check of vm->ib_bo_va.
 
-Later at uart port deregistration the attempt to release the unclaimed
-memory also fails. The failure results in a “Trying to free nonexistent
-resource" warning.
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
 
-Fix these issues by removing the callbacks that implement the redundant
-memory allocation/release. Also make sure that changing the drivers io
-memory base address via TIOCSSERIAL is not allowed any more.
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
 
-Fixes: 3873e2d7f63a ("drivers: PL011: refactor pl011_probe()")
-Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Link: https://lore.kernel.org/r/20211129174238.8333-1-LinoSanfilippo@gmx.de
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Builds with CONFIG_DRM_RADEON=m show no new warnings,
+and our static analyzer no longer warns about this code.
+
+Fixes: cc9e67e3d700 ("drm/radeon: fix VM IB handling")
+Reviewed-by: Christian König <christian.koenig@amd.com>
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/amba-pl011.c | 27 +++------------------------
- 1 file changed, 3 insertions(+), 24 deletions(-)
+ drivers/gpu/drm/radeon/radeon_kms.c | 36 ++++++++++++++++-------------
+ 1 file changed, 20 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/tty/serial/amba-pl011.c b/drivers/tty/serial/amba-pl011.c
-index dcf84d5020c65..a9aa8cd7f29c8 100644
---- a/drivers/tty/serial/amba-pl011.c
-+++ b/drivers/tty/serial/amba-pl011.c
-@@ -2111,32 +2111,13 @@ static const char *pl011_type(struct uart_port *port)
- 	return uap->port.type == PORT_AMBA ? uap->type : NULL;
- }
- 
--/*
-- * Release the memory region(s) being used by 'port'
-- */
--static void pl011_release_port(struct uart_port *port)
--{
--	release_mem_region(port->mapbase, SZ_4K);
--}
--
--/*
-- * Request the memory region(s) being used by 'port'
-- */
--static int pl011_request_port(struct uart_port *port)
--{
--	return request_mem_region(port->mapbase, SZ_4K, "uart-pl011")
--			!= NULL ? 0 : -EBUSY;
--}
--
- /*
-  * Configure/autoconfigure the port.
-  */
- static void pl011_config_port(struct uart_port *port, int flags)
+diff --git a/drivers/gpu/drm/radeon/radeon_kms.c b/drivers/gpu/drm/radeon/radeon_kms.c
+index 4973bd241aec3..fb292b9f3d402 100644
+--- a/drivers/gpu/drm/radeon/radeon_kms.c
++++ b/drivers/gpu/drm/radeon/radeon_kms.c
+@@ -655,6 +655,8 @@ void radeon_driver_lastclose_kms(struct drm_device *dev)
+ int radeon_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
  {
--	if (flags & UART_CONFIG_TYPE) {
-+	if (flags & UART_CONFIG_TYPE)
- 		port->type = PORT_AMBA;
--		pl011_request_port(port);
--	}
- }
+ 	struct radeon_device *rdev = dev->dev_private;
++	struct radeon_fpriv *fpriv;
++	struct radeon_vm *vm;
+ 	int r;
  
- /*
-@@ -2151,6 +2132,8 @@ static int pl011_verify_port(struct uart_port *port, struct serial_struct *ser)
- 		ret = -EINVAL;
- 	if (ser->baud_base < 9600)
- 		ret = -EINVAL;
-+	if (port->mapbase != (unsigned long) ser->iomem_base)
-+		ret = -EINVAL;
- 	return ret;
- }
+ 	file_priv->driver_priv = NULL;
+@@ -667,8 +669,6 @@ int radeon_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
  
-@@ -2168,8 +2151,6 @@ static const struct uart_ops amba_pl011_pops = {
- 	.flush_buffer	= pl011_dma_flush_buffer,
- 	.set_termios	= pl011_set_termios,
- 	.type		= pl011_type,
--	.release_port	= pl011_release_port,
--	.request_port	= pl011_request_port,
- 	.config_port	= pl011_config_port,
- 	.verify_port	= pl011_verify_port,
- #ifdef CONFIG_CONSOLE_POLL
-@@ -2199,8 +2180,6 @@ static const struct uart_ops sbsa_uart_pops = {
- 	.shutdown	= sbsa_uart_shutdown,
- 	.set_termios	= sbsa_uart_set_termios,
- 	.type		= pl011_type,
--	.release_port	= pl011_release_port,
--	.request_port	= pl011_request_port,
- 	.config_port	= pl011_config_port,
- 	.verify_port	= pl011_verify_port,
- #ifdef CONFIG_CONSOLE_POLL
+ 	/* new gpu have virtual address space support */
+ 	if (rdev->family >= CHIP_CAYMAN) {
+-		struct radeon_fpriv *fpriv;
+-		struct radeon_vm *vm;
+ 
+ 		fpriv = kzalloc(sizeof(*fpriv), GFP_KERNEL);
+ 		if (unlikely(!fpriv)) {
+@@ -679,35 +679,39 @@ int radeon_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv)
+ 		if (rdev->accel_working) {
+ 			vm = &fpriv->vm;
+ 			r = radeon_vm_init(rdev, vm);
+-			if (r) {
+-				kfree(fpriv);
+-				goto out_suspend;
+-			}
++			if (r)
++				goto out_fpriv;
+ 
+ 			r = radeon_bo_reserve(rdev->ring_tmp_bo.bo, false);
+-			if (r) {
+-				radeon_vm_fini(rdev, vm);
+-				kfree(fpriv);
+-				goto out_suspend;
+-			}
++			if (r)
++				goto out_vm_fini;
+ 
+ 			/* map the ib pool buffer read only into
+ 			 * virtual address space */
+ 			vm->ib_bo_va = radeon_vm_bo_add(rdev, vm,
+ 							rdev->ring_tmp_bo.bo);
++			if (!vm->ib_bo_va) {
++				r = -ENOMEM;
++				goto out_vm_fini;
++			}
++
+ 			r = radeon_vm_bo_set_addr(rdev, vm->ib_bo_va,
+ 						  RADEON_VA_IB_OFFSET,
+ 						  RADEON_VM_PAGE_READABLE |
+ 						  RADEON_VM_PAGE_SNOOPED);
+-			if (r) {
+-				radeon_vm_fini(rdev, vm);
+-				kfree(fpriv);
+-				goto out_suspend;
+-			}
++			if (r)
++				goto out_vm_fini;
+ 		}
+ 		file_priv->driver_priv = fpriv;
+ 	}
+ 
++	if (!r)
++		goto out_suspend;
++
++out_vm_fini:
++	radeon_vm_fini(rdev, vm);
++out_fpriv:
++	kfree(fpriv);
+ out_suspend:
+ 	pm_runtime_mark_last_busy(dev->dev);
+ 	pm_runtime_put_autosuspend(dev->dev);
 -- 
 2.34.1
 
