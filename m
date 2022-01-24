@@ -2,124 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6ECCC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:09:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48385C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:10:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238286AbiAXMJ3 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 07:09:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59860 "EHLO
+        id S238418AbiAXMK1 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 07:10:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238247AbiAXMJ0 (ORCPT
+        with ESMTP id S238278AbiAXMKN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 07:09:26 -0500
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC7AEC06173B;
-        Mon, 24 Jan 2022 04:09:26 -0800 (PST)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: kholk11)
-        with ESMTPSA id EED441F42E77
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1643026165;
-        bh=K2ObFY3Vsm+qnoFl2QeGq49BSilMuqWVDQ+bAXw3Mog=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MXIzTOobugUM0mowy79jjk1wphZsdQeaD09BgOWJkvg9YkRg2INPxE+3z59OGCbaP
-         oGOgJZyLmJ/EDqaqCFR1peOp+C5HLSeEVSR8VN0fCVIerLlfa/PSP1gY89+4F7ymtk
-         RmjpdpgsBEgOl0FqpJblVZj1Dsgw+lIhVOFigOX7JF8PmoIIh6/UCs+6NvySXOCRTo
-         y5203U/mGV2mQ1spOsg1DoKw98o9G0kotfqk6RVIhRaDN8DxbfmdXuoyMl1P0n3i1d
-         mZVoDugn6pJSvub6XGR1RYeiACs7trCsDaFVHFCgXjKt9Wq6pVhef28Ejy1BIlwamf
-         GmUSTmUu1bXhg==
-From:   AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-To:     bjorn.andersson@linaro.org
-Cc:     mathieu.poirier@linaro.org, matthias.bgg@gmail.com,
-        linux-remoteproc@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        kernel@collabora.com,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@collabora.com>
-Subject: [PATCH 3/3] remoteproc: mtk_scp: Use dev_err_probe() where possible
-Date:   Mon, 24 Jan 2022 13:09:15 +0100
-Message-Id: <20220124120915.41292-3-angelogioacchino.delregno@collabora.com>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220124120915.41292-1-angelogioacchino.delregno@collabora.com>
-References: <20220124120915.41292-1-angelogioacchino.delregno@collabora.com>
+        Mon, 24 Jan 2022 07:10:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C113C06173B;
+        Mon, 24 Jan 2022 04:10:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 38D72B80F91;
+        Mon, 24 Jan 2022 12:10:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id E0ACAC340EB;
+        Mon, 24 Jan 2022 12:10:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643026210;
+        bh=IfvTnE0SElEHHi2ltg3BcoNG0+vnUbVnatoPsazTfrA=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=ZLj8jiXKiBJXx4rz5XwFYC7F2XjUZnGHfOJboWp8mjLqhmW+yZQD2itVrdnb1VIft
+         GLVgY46o0Dbbn16NiSQTZDOtYXLvfTl4mRvhnEYve2lkrO5A6wUomuuA24A2RoeKd1
+         knerznu2BY2pSImVwzTmYwOgRrz+vPrC6/wNAZs7wttp3q7XJmUK6lNRkgqiSAJkYN
+         SN2ldaD2kxs8bUffx/pGX/6MHRAca7Nc2jjiTKmEWfBjeu50AdkX4FboYaQ0CQsL/O
+         aguooll5IwUjpo613xGDw/Qjzaq8PSzh8tP1s6p5GkgS4K9p4KnEU4MbCPQSrszpWo
+         lxEejI2Tu2KMw==
+Received: from aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by aws-us-west-2-korg-oddjob-1.ci.codeaurora.org (Postfix) with ESMTP id C3CDFC395DF;
+        Mon, 24 Jan 2022 12:10:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2] net/smc: Transitional solution for clcsock race issue
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <164302621079.19022.3641686752810483922.git-patchwork-notify@kernel.org>
+Date:   Mon, 24 Jan 2022 12:10:10 +0000
+References: <1642844589-23022-1-git-send-email-guwen@linux.alibaba.com>
+In-Reply-To: <1642844589-23022-1-git-send-email-guwen@linux.alibaba.com>
+To:     Wen Gu <guwen@linux.alibaba.com>
+Cc:     kgraul@linux.ibm.com, davem@davemloft.net, kuba@kernel.org,
+        linux-s390@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Simplify the probe function, where possible, by using dev_err_probe().
-While at it, as to increase human readability, also remove some
-unnecessary forced void pointer casts that were previously used in
-error checking.
+Hello:
 
-Signed-off-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
----
- drivers/remoteproc/mtk_scp.c | 28 ++++++++++++----------------
- 1 file changed, 12 insertions(+), 16 deletions(-)
+This patch was applied to netdev/net.git (master)
+by David S. Miller <davem@davemloft.net>:
 
-diff --git a/drivers/remoteproc/mtk_scp.c b/drivers/remoteproc/mtk_scp.c
-index e40706b0e015..dcddb33e9997 100644
---- a/drivers/remoteproc/mtk_scp.c
-+++ b/drivers/remoteproc/mtk_scp.c
-@@ -757,10 +757,8 @@ static int scp_probe(struct platform_device *pdev)
- 	int ret, i;
- 
- 	rproc = devm_rproc_alloc(dev, np->name, &scp_ops, fw_name, sizeof(*scp));
--	if (!rproc) {
--		dev_err(dev, "unable to allocate remoteproc\n");
--		return -ENOMEM;
--	}
-+	if (!rproc)
-+		return dev_err_probe(dev, -ENOMEM, "unable to allocate remoteproc\n");
- 
- 	scp = (struct mtk_scp *)rproc->priv;
- 	scp->rproc = rproc;
-@@ -770,21 +768,20 @@ static int scp_probe(struct platform_device *pdev)
- 
- 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "sram");
- 	scp->sram_base = devm_ioremap_resource(dev, res);
--	if (IS_ERR((__force void *)scp->sram_base)) {
--		dev_err(dev, "Failed to parse and map sram memory\n");
--		return PTR_ERR((__force void *)scp->sram_base);
--	}
-+	if (IS_ERR(scp->sram_base))
-+		return dev_err_probe(dev, PTR_ERR(scp->sram_base),
-+				     "Failed to parse and map sram memory\n");
-+
- 	scp->sram_size = resource_size(res);
- 	scp->sram_phys = res->start;
- 
- 	/* l1tcm is an optional memory region */
- 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "l1tcm");
- 	scp->l1tcm_base = devm_ioremap_resource(dev, res);
--	if (IS_ERR((__force void *)scp->l1tcm_base)) {
--		ret = PTR_ERR((__force void *)scp->l1tcm_base);
-+	if (IS_ERR(scp->l1tcm_base)) {
-+		ret = PTR_ERR(scp->l1tcm_base);
- 		if (ret != -EINVAL) {
--			dev_err(dev, "Failed to map l1tcm memory\n");
--			return ret;
-+			return dev_err_probe(dev, ret, "Failed to map l1tcm memory\n");
- 		}
- 	} else {
- 		scp->l1tcm_size = resource_size(res);
-@@ -792,10 +789,9 @@ static int scp_probe(struct platform_device *pdev)
- 	}
- 
- 	scp->reg_base = devm_platform_ioremap_resource_byname(pdev, "cfg");
--	if (IS_ERR((__force void *)scp->reg_base)) {
--		dev_err(dev, "Failed to parse and map cfg memory\n");
--		return PTR_ERR((__force void *)scp->reg_base);
--	}
-+	if (IS_ERR(scp->reg_base))
-+		return dev_err_probe(dev, PTR_ERR(scp->reg_base),
-+				     "Failed to parse and map cfg memory\n");
- 
- 	ret = scp->data->scp_clk_get(scp);
- 	if (ret)
+On Sat, 22 Jan 2022 17:43:09 +0800 you wrote:
+> We encountered a crash in smc_setsockopt() and it is caused by
+> accessing smc->clcsock after clcsock was released.
+> 
+>  BUG: kernel NULL pointer dereference, address: 0000000000000020
+>  #PF: supervisor read access in kernel mode
+>  #PF: error_code(0x0000) - not-present page
+>  PGD 0 P4D 0
+>  Oops: 0000 [#1] PREEMPT SMP PTI
+>  CPU: 1 PID: 50309 Comm: nginx Kdump: loaded Tainted: G E     5.16.0-rc4+ #53
+>  RIP: 0010:smc_setsockopt+0x59/0x280 [smc]
+>  Call Trace:
+>   <TASK>
+>   __sys_setsockopt+0xfc/0x190
+>   __x64_sys_setsockopt+0x20/0x30
+>   do_syscall_64+0x34/0x90
+>   entry_SYSCALL_64_after_hwframe+0x44/0xae
+>  RIP: 0033:0x7f16ba83918e
+>   </TASK>
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v2] net/smc: Transitional solution for clcsock race issue
+    https://git.kernel.org/netdev/net/c/c0bf3d8a943b
+
+You are awesome, thank you!
 -- 
-2.33.1
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
