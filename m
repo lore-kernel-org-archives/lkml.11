@@ -2,48 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C0EFC3526E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34BD9C3527A
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2367637AbiAXX4D (ORCPT
+        id S2367883AbiAXX4p (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:56:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50610 "EHLO
+        Mon, 24 Jan 2022 18:56:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846544AbiAXXQT (ORCPT
+        with ESMTP id S1846420AbiAXXPz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:16:19 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 089DEC07E29E;
-        Mon, 24 Jan 2022 11:45:41 -0800 (PST)
+        Mon, 24 Jan 2022 18:15:55 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5062C0604D3;
+        Mon, 24 Jan 2022 13:24:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9AFD261574;
-        Mon, 24 Jan 2022 19:45:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C679C340E5;
-        Mon, 24 Jan 2022 19:45:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 60567B81142;
+        Mon, 24 Jan 2022 21:24:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 86074C340E4;
+        Mon, 24 Jan 2022 21:24:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053540;
-        bh=HIAkzRqMWe56mqAJ9L6yapuAdhj1TTnDOc4KMkX8+Pk=;
+        s=korg; t=1643059477;
+        bh=dYHVgXTJBZ/3UowgSYH+o0QhZxf6PnFIxrfZXVMuKnM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B2gHicUbZaTIestuWESUE+v+3BQYYl/jnDO3y2ccBNaA4aW6kcg1dKQi+sDo+TGle
-         fiFZ+j5EH9MPy18T7kOKGJYV5AL9gcBb3aV2PgkSwgsRSXFP22WMbLNG3tuKb++yCl
-         vltPmszj59MBgGw6+h7thcj4ezEFEzA5eT7PY7eQ=
+        b=sHQAnnzrnGZ/p9VoJkgMgt4YI7kTo0DvwLutA8ofvtSOeT9ienx4C+EM9EarNVMkZ
+         7c4mMQ5TgZj/nUhEDxl1qgY7sViBR31Twg6CIUNlpMoMJiWYwjYGx3EFbxfa6NAf8S
+         K4qo+++ShpShw4834901kvnFKxLTCjcKoxJQWkjg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Aline Santana Cordeiro <alinesantanacordeiro@gmail.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sebastian Gottschall <s.gottschall@dd-wrt.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 071/563] media: staging: media: atomisp: pci: Balance braces around conditional statements in file atomisp_cmd.c
-Date:   Mon, 24 Jan 2022 19:37:16 +0100
-Message-Id: <20220124184026.861147087@linuxfoundation.org>
+Subject: [PATCH 5.16 0629/1039] ath10k: Fix tx hanging
+Date:   Mon, 24 Jan 2022 19:40:18 +0100
+Message-Id: <20220124184146.493233124@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -52,76 +51,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Aline Santana Cordeiro <alinesantanacordeiro@gmail.com>
+From: Sebastian Gottschall <s.gottschall@dd-wrt.com>
 
-[ Upstream commit 0a016c35a326c6b2f558ede58ff08da7ef1da1a8 ]
+[ Upstream commit e8a91863eba3966a447d2daa1526082d52b5db2a ]
 
-Balance braces around conditional statements.
-Issue detected by checkpatch.pl.
-It happens in if-else statements where one of the commands
-uses braces around a block of code and the other command
-does not since it has just a single line of code.
+While running stress tests in roaming scenarios (switching ap's every 5
+seconds, we discovered a issue which leads to tx hangings of exactly 5
+seconds while or after scanning for new accesspoints. We found out that
+this hanging is triggered by ath10k_mac_wait_tx_complete since the
+empty_tx_wq was not wake when the num_tx_pending counter reaches zero.
+To fix this, we simply move the wake_up call to htt_tx_dec_pending,
+since this call was missed on several locations within the ath10k code.
 
-Signed-off-by: Aline Santana Cordeiro <alinesantanacordeiro@gmail.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sebastian Gottschall <s.gottschall@dd-wrt.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20210505085806.11474-1-s.gottschall@dd-wrt.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../staging/media/atomisp/pci/atomisp_cmd.c   | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ drivers/net/wireless/ath/ath10k/htt_tx.c | 3 +++
+ drivers/net/wireless/ath/ath10k/txrx.c   | 2 --
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_cmd.c b/drivers/staging/media/atomisp/pci/atomisp_cmd.c
-index 592ea990d4ca4..21cd03f06291d 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_cmd.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_cmd.c
-@@ -1138,9 +1138,10 @@ void atomisp_buf_done(struct atomisp_sub_device *asd, int error,
- 					asd->frame_status[vb->i] =
- 					    ATOMISP_FRAME_STATUS_OK;
- 				}
--			} else
-+			} else {
- 				asd->frame_status[vb->i] =
- 				    ATOMISP_FRAME_STATUS_OK;
-+			}
- 		} else {
- 			asd->frame_status[vb->i] = ATOMISP_FRAME_STATUS_OK;
- 		}
-@@ -4945,9 +4946,9 @@ atomisp_try_fmt_file(struct atomisp_device *isp, struct v4l2_format *f)
+diff --git a/drivers/net/wireless/ath/ath10k/htt_tx.c b/drivers/net/wireless/ath/ath10k/htt_tx.c
+index d6b8bdcef4160..b793eac2cfac8 100644
+--- a/drivers/net/wireless/ath/ath10k/htt_tx.c
++++ b/drivers/net/wireless/ath/ath10k/htt_tx.c
+@@ -147,6 +147,9 @@ void ath10k_htt_tx_dec_pending(struct ath10k_htt *htt)
+ 	htt->num_pending_tx--;
+ 	if (htt->num_pending_tx == htt->max_num_pending_tx - 1)
+ 		ath10k_mac_tx_unlock(htt->ar, ATH10K_TX_PAUSE_Q_FULL);
++
++	if (htt->num_pending_tx == 0)
++		wake_up(&htt->empty_tx_wq);
+ }
  
- 	depth = get_pixel_depth(pixelformat);
+ int ath10k_htt_tx_inc_pending(struct ath10k_htt *htt)
+diff --git a/drivers/net/wireless/ath/ath10k/txrx.c b/drivers/net/wireless/ath/ath10k/txrx.c
+index 7c9ea0c073d8b..6f8b642188941 100644
+--- a/drivers/net/wireless/ath/ath10k/txrx.c
++++ b/drivers/net/wireless/ath/ath10k/txrx.c
+@@ -82,8 +82,6 @@ int ath10k_txrx_tx_unref(struct ath10k_htt *htt,
+ 	flags = skb_cb->flags;
+ 	ath10k_htt_tx_free_msdu_id(htt, tx_done->msdu_id);
+ 	ath10k_htt_tx_dec_pending(htt);
+-	if (htt->num_pending_tx == 0)
+-		wake_up(&htt->empty_tx_wq);
+ 	spin_unlock_bh(&htt->tx_lock);
  
--	if (field == V4L2_FIELD_ANY)
-+	if (field == V4L2_FIELD_ANY) {
- 		field = V4L2_FIELD_NONE;
--	else if (field != V4L2_FIELD_NONE) {
-+	} else if (field != V4L2_FIELD_NONE) {
- 		dev_err(isp->dev, "Wrong output field\n");
- 		return -EINVAL;
- 	}
-@@ -6587,17 +6588,17 @@ static int atomisp_get_pipe_id(struct atomisp_video_pipe *pipe)
- {
- 	struct atomisp_sub_device *asd = pipe->asd;
- 
--	if (ATOMISP_USE_YUVPP(asd))
-+	if (ATOMISP_USE_YUVPP(asd)) {
- 		return IA_CSS_PIPE_ID_YUVPP;
--	else if (asd->vfpp->val == ATOMISP_VFPP_DISABLE_SCALER)
-+	} else if (asd->vfpp->val == ATOMISP_VFPP_DISABLE_SCALER) {
- 		return IA_CSS_PIPE_ID_VIDEO;
--	else if (asd->vfpp->val == ATOMISP_VFPP_DISABLE_LOWLAT)
-+	} else if (asd->vfpp->val == ATOMISP_VFPP_DISABLE_LOWLAT) {
- 		return IA_CSS_PIPE_ID_CAPTURE;
--	else if (pipe == &asd->video_out_video_capture)
-+	} else if (pipe == &asd->video_out_video_capture) {
- 		return IA_CSS_PIPE_ID_VIDEO;
--	else if (pipe == &asd->video_out_vf)
-+	} else if (pipe == &asd->video_out_vf) {
- 		return IA_CSS_PIPE_ID_CAPTURE;
--	else if (pipe == &asd->video_out_preview) {
-+	} else if (pipe == &asd->video_out_preview) {
- 		if (asd->run_mode->val == ATOMISP_RUN_MODE_VIDEO)
- 			return IA_CSS_PIPE_ID_VIDEO;
- 		else
+ 	rcu_read_lock();
 -- 
 2.34.1
 
