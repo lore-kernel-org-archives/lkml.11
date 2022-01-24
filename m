@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91520C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19546C43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345604AbiAXTb3 (ORCPT
+        id S1347313AbiAXTbi (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:31:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50272 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234647AbiAXTWz (ORCPT
+        Mon, 24 Jan 2022 14:31:38 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44700 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347562AbiAXTWg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:22:55 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5492C0617A3;
-        Mon, 24 Jan 2022 11:08:50 -0800 (PST)
+        Mon, 24 Jan 2022 14:22:36 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 393DBB8121B;
-        Mon, 24 Jan 2022 19:08:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4B553C340E5;
-        Mon, 24 Jan 2022 19:08:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7C684B81253;
+        Mon, 24 Jan 2022 19:22:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 912B6C340EA;
+        Mon, 24 Jan 2022 19:22:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051328;
-        bh=Up/mfvhONYj+Dx9dzEmZmji4FSEdxlZp4ge0yxhkITo=;
+        s=korg; t=1643052154;
+        bh=GLtLK6jPA6nPtqriz3ZVOeIfZ5OpRTdv6BTEh612+3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EauCXh/nTNBo4+fQX1diuH2ER1B3vVE9Nn06vTRGRzJAQ46ZCqHS6IaqKTk/3iae1
-         WMuDRoq6ST2ly5LsRU8noGD7iYWYZfi4A+QT9wzNBhvh0lx15IYrRveq7rt7/m/LkY
-         zQwVfhwu8NJtWjlNw6f4DJ4ssu8CceivmMyw+Wng=
+        b=INCVsA7GwDQhjnM1wL2kvp8Seh0SDlmhkBN8V1JcaCFW9mAdxWe0H65bxmFMTyNY9
+         F38v7fpdD8qEVJ8tMzIqCN73HoZa5BqnfSsDVsmg7jTRw6R193VU+IyVTp2yYI+AtN
+         qPpGwzUWq/RuPg3Q5CdMgXWKlf1lFMF3ZHPutemo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joe Thornber <ejt@redhat.com>,
-        Mike Snitzer <snitzer@redhat.com>,
+        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 126/186] dm btree: add a defensive bounds check to insert_at()
-Date:   Mon, 24 Jan 2022 19:43:21 +0100
-Message-Id: <20220124183941.163191458@linuxfoundation.org>
+Subject: [PATCH 4.19 179/239] powerpc/powernv: add missing of_node_put
+Date:   Mon, 24 Jan 2022 19:43:37 +0100
+Message-Id: <20220124183948.791126261@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,43 +47,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joe Thornber <ejt@redhat.com>
+From: Julia Lawall <Julia.Lawall@lip6.fr>
 
-[ Upstream commit 85bca3c05b6cca31625437eedf2060e846c4bbad ]
+[ Upstream commit 7d405a939ca960162eb30c1475759cb2fdf38f8c ]
 
-Corrupt metadata could trigger an out of bounds write.
+for_each_compatible_node performs an of_node_get on each iteration, so
+a break out of the loop requires an of_node_put.
 
-Signed-off-by: Joe Thornber <ejt@redhat.com>
-Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+A simplified version of the semantic patch that fixes this problem is as
+follows (http://coccinelle.lip6.fr):
+
+// <smpl>
+@@
+local idexpression n;
+expression e;
+@@
+
+ for_each_compatible_node(n,...) {
+   ...
+(
+   of_node_put(n);
+|
+   e = n
+|
++  of_node_put(n);
+?  break;
+)
+   ...
+ }
+... when != n
+// </smpl>
+
+Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/1448051604-25256-4-git-send-email-Julia.Lawall@lip6.fr
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/md/persistent-data/dm-btree.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ arch/powerpc/platforms/powernv/opal-lpc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/md/persistent-data/dm-btree.c b/drivers/md/persistent-data/dm-btree.c
-index 8aae0624a2971..6383afb88f319 100644
---- a/drivers/md/persistent-data/dm-btree.c
-+++ b/drivers/md/persistent-data/dm-btree.c
-@@ -83,14 +83,16 @@ void inc_children(struct dm_transaction_manager *tm, struct btree_node *n,
- }
- 
- static int insert_at(size_t value_size, struct btree_node *node, unsigned index,
--		      uint64_t key, void *value)
--		      __dm_written_to_disk(value)
-+		     uint64_t key, void *value)
-+	__dm_written_to_disk(value)
- {
- 	uint32_t nr_entries = le32_to_cpu(node->header.nr_entries);
-+	uint32_t max_entries = le32_to_cpu(node->header.max_entries);
- 	__le64 key_le = cpu_to_le64(key);
- 
- 	if (index > nr_entries ||
--	    index >= le32_to_cpu(node->header.max_entries)) {
-+	    index >= max_entries ||
-+	    nr_entries >= max_entries) {
- 		DMERR("too many entries in btree node for insert");
- 		__dm_unbless_for_disk(value);
- 		return -ENOMEM;
+diff --git a/arch/powerpc/platforms/powernv/opal-lpc.c b/arch/powerpc/platforms/powernv/opal-lpc.c
+index 6c7ad1d8b32ed..21f0edcfb84ad 100644
+--- a/arch/powerpc/platforms/powernv/opal-lpc.c
++++ b/arch/powerpc/platforms/powernv/opal-lpc.c
+@@ -400,6 +400,7 @@ void __init opal_lpc_init(void)
+ 		if (!of_get_property(np, "primary", NULL))
+ 			continue;
+ 		opal_lpc_chip_id = of_get_ibm_chip_id(np);
++		of_node_put(np);
+ 		break;
+ 	}
+ 	if (opal_lpc_chip_id < 0)
 -- 
 2.34.1
 
