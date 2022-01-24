@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 983B5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:06:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8E8BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:06:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237360AbiAXTGF (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:06:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44704 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345456AbiAXTAT (ORCPT
+        id S237429AbiAXTGL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:06:11 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57470 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345446AbiAXTAT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 14:00:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C114C061345;
-        Mon, 24 Jan 2022 10:57:32 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 30218B81223;
-        Mon, 24 Jan 2022 18:57:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5262FC340E7;
-        Mon, 24 Jan 2022 18:57:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0874EB8122F;
+        Mon, 24 Jan 2022 19:00:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50F94C340E5;
+        Mon, 24 Jan 2022 19:00:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050650;
-        bh=2C18HuDLscgc4+tKatxU9QstG6/auVKahETKdInN1gE=;
+        s=korg; t=1643050816;
+        bh=VCURiyomUVIPoWf9AU+8FLL/6YFSGAUikU9Mn+zQSdE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LFNSYsTL38dDAuKLIs67a22ws6vLC99frPvw2bE3pMtr+2IFCSZVthzclN2RFOygq
-         9vfrKHSoGI9KjgUN2SSDwgXM6lvp4d7q/FX/jQgMdIhvFqY1MeoZbK8VQE6bChCRCi
-         Y3wzFhTYyQPkedEe/g6kScFqvAPJpD+CYyu5mWG4=
+        b=KA85OKoDneVlezWGaFdaZdvHlDLDOHCqXcDnUvgUFIC6eFrIMe01eZMgfDVjaW6jJ
+         gdN3EzUYMDj4OIyvx3gmBMW4ht5+Vt4m8SVqM8XQENMHeVpAtQcG69qIZBjHyQStxS
+         mdjV2iy/k51J1Eo4SllcW8ABhih7RGn1tih6HsOM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 069/157] misc: lattice-ecp3-config: Fix task hung when firmware load failed
-Date:   Mon, 24 Jan 2022 19:42:39 +0100
-Message-Id: <20220124183934.983778839@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jeroen van Wolffelaar <jeroen@wolffelaar.nl>,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 4.9 122/157] ext4: set csum seed in tmp inode while migrating to extents
+Date:   Mon, 24 Jan 2022 19:43:32 +0100
+Message-Id: <20220124183936.643926225@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -49,95 +47,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wei Yongjun <weiyongjun1@huawei.com>
+From: Luís Henriques <lhenriques@suse.de>
 
-[ Upstream commit fcee5ce50bdb21116711e38635e3865594af907e ]
+commit e81c9302a6c3c008f5c30beb73b38adb0170ff2d upstream.
 
-When firmware load failed, kernel report task hung as follows:
+When migrating to extents, the temporary inode will have it's own checksum
+seed.  This means that, when swapping the inodes data, the inode checksums
+will be incorrect.
 
-INFO: task xrun:5191 blocked for more than 147 seconds.
-      Tainted: G        W         5.16.0-rc5-next-20211220+ #11
-"echo 0 > /proc/sys/kernel/hung_task_timeout_secs" disables this message.
-task:xrun            state:D stack:    0 pid: 5191 ppid:   270 flags:0x00000004
-Call Trace:
- __schedule+0xc12/0x4b50 kernel/sched/core.c:4986
- schedule+0xd7/0x260 kernel/sched/core.c:6369 (discriminator 1)
- schedule_timeout+0x7aa/0xa80 kernel/time/timer.c:1857
- wait_for_completion+0x181/0x290 kernel/sched/completion.c:85
- lattice_ecp3_remove+0x32/0x40 drivers/misc/lattice-ecp3-config.c:221
- spi_remove+0x72/0xb0 drivers/spi/spi.c:409
+This can be fixed by recalculating the extents checksums again.  Or simply
+by copying the seed into the temporary inode.
 
-lattice_ecp3_remove() wait for signals from firmware loading, but when
-load failed, firmware_load() does not send this signal. This cause
-device remove hung. Fix it by sending signal even if load failed.
-
-Fixes: 781551df57c7 ("misc: Add Lattice ECP3 FPGA configuration via SPI")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
-Link: https://lore.kernel.org/r/20211228125522.3122284-1-weiyongjun1@huawei.com
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=213357
+Reported-by: Jeroen van Wolffelaar <jeroen@wolffelaar.nl>
+Signed-off-by: Luís Henriques <lhenriques@suse.de>
+Link: https://lore.kernel.org/r/20211214175058.19511-1-lhenriques@suse.de
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/misc/lattice-ecp3-config.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ fs/ext4/migrate.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/misc/lattice-ecp3-config.c b/drivers/misc/lattice-ecp3-config.c
-index 626fdcaf25101..645d26536114f 100644
---- a/drivers/misc/lattice-ecp3-config.c
-+++ b/drivers/misc/lattice-ecp3-config.c
-@@ -81,12 +81,12 @@ static void firmware_load(const struct firmware *fw, void *context)
- 
- 	if (fw == NULL) {
- 		dev_err(&spi->dev, "Cannot load firmware, aborting\n");
--		return;
-+		goto out;
+--- a/fs/ext4/migrate.c
++++ b/fs/ext4/migrate.c
+@@ -484,6 +484,17 @@ int ext4_ext_migrate(struct inode *inode
+ 		ext4_journal_stop(handle);
+ 		goto out_unlock;
  	}
- 
- 	if (fw->size == 0) {
- 		dev_err(&spi->dev, "Error: Firmware size is 0!\n");
--		return;
-+		goto out;
- 	}
- 
- 	/* Fill dummy data (24 stuffing bits for commands) */
-@@ -108,7 +108,7 @@ static void firmware_load(const struct firmware *fw, void *context)
- 		dev_err(&spi->dev,
- 			"Error: No supported FPGA detected (JEDEC_ID=%08x)!\n",
- 			jedec_id);
--		return;
-+		goto out;
- 	}
- 
- 	dev_info(&spi->dev, "FPGA %s detected\n", ecp3_dev[i].name);
-@@ -121,7 +121,7 @@ static void firmware_load(const struct firmware *fw, void *context)
- 	buffer = kzalloc(fw->size + 8, GFP_KERNEL);
- 	if (!buffer) {
- 		dev_err(&spi->dev, "Error: Can't allocate memory!\n");
--		return;
-+		goto out;
- 	}
- 
++	/*
++	 * Use the correct seed for checksum (i.e. the seed from 'inode').  This
++	 * is so that the metadata blocks will have the correct checksum after
++	 * the migration.
++	 *
++	 * Note however that, if a crash occurs during the migration process,
++	 * the recovery process is broken because the tmp_inode checksums will
++	 * be wrong and the orphans cleanup will fail.
++	 */
++	ei = EXT4_I(inode);
++	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
+ 	i_size_write(tmp_inode, i_size_read(inode));
  	/*
-@@ -160,7 +160,7 @@ static void firmware_load(const struct firmware *fw, void *context)
- 			"Error: Timeout waiting for FPGA to clear (status=%08x)!\n",
- 			status);
- 		kfree(buffer);
--		return;
-+		goto out;
+ 	 * Set the i_nlink to zero so it will be deleted later
+@@ -527,7 +538,6 @@ int ext4_ext_migrate(struct inode *inode
+ 		goto out_tmp_inode;
  	}
  
- 	dev_info(&spi->dev, "Configuring the FPGA...\n");
-@@ -186,7 +186,7 @@ static void firmware_load(const struct firmware *fw, void *context)
- 	release_firmware(fw);
+-	ei = EXT4_I(inode);
+ 	i_data = ei->i_data;
+ 	memset(&lb, 0, sizeof(lb));
  
- 	kfree(buffer);
--
-+out:
- 	complete(&data->fw_loaded);
- }
- 
--- 
-2.34.1
-
 
 
