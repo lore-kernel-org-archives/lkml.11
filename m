@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B58CC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99973C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442075AbiAXUwo (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:52:44 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:34664 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384463AbiAXU3v (ORCPT
+        id S245191AbiAXUwu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 15:52:50 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:51730 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1384574AbiAXUaH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:29:51 -0500
+        Mon, 24 Jan 2022 15:30:07 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 809E7B810BD;
-        Mon, 24 Jan 2022 20:29:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3365C340E5;
-        Mon, 24 Jan 2022 20:29:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B6F1D6152D;
+        Mon, 24 Jan 2022 20:30:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8CB77C340E5;
+        Mon, 24 Jan 2022 20:30:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056188;
-        bh=/SUbhHhQrO39kbZ9cTdSArrIMeAS48tRAwkreXpJDdU=;
+        s=korg; t=1643056206;
+        bh=mrzrnxbmD+5U4WQgviGOnIsr+fY8KnoUK66V9RP2bRA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0fYmdMN3nNM7MOGnJ3BUzJh1eLgSmaKkmZXK8jENjcbwGeFelvLxsAgINlOfekNtb
-         P8CgutPh0JGc1qmcSmKVkjOgNyqvuBf1p95kbGBtgKyVVNNL5TtXFYmDMTxMiLgGfc
-         otEYJ7zU92zeHfTj1HxrZEkrj6JhopBENl7vDLoM=
+        b=rQi48VY/Qhi30Tr0cQFinZZJ3csMaEeuytMRvQzayWoWcO/b45cwoYnVqUxosuInN
+         0IEIHm69Y5kJg4qQTdpltAjLmiMEQDH1cbJB3OuHNJ51CRpSdiZZ3NVzDiKtp4i4TH
+         XCd4ilWe7LhH4d0U8dJg35onavsTlb8U5mfECtPQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Edwin Peer <edwin.peer@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Juergen Gross <jgross@suse.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 368/846] bnxt_en: Refactor coredump functions
-Date:   Mon, 24 Jan 2022 19:38:05 +0100
-Message-Id: <20220124184113.639255723@linuxfoundation.org>
+Subject: [PATCH 5.15 407/846] PCI/MSI: Fix pci_irq_vector()/pci_irq_get_affinity()
+Date:   Mon, 24 Jan 2022 19:38:44 +0100
+Message-Id: <20220124184114.998619758@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -48,123 +48,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Edwin Peer <edwin.peer@broadcom.com>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-[ Upstream commit 9a575c8c25ae2372112db6d6b3e553cd90e9f02b ]
+[ Upstream commit 29bbc35e29d9b6347780dcacde2deb4b39344167 ]
 
-The coredump functionality will be used by devlink health. Refactor
-these functions that get coredump and coredump length. There is no
-functional change, but the following checkpatch warnings were
-addressed:
+pci_irq_vector() and pci_irq_get_affinity() use the list position to find the
+MSI-X descriptor at a given index. That's correct for the normal case where
+the entry number is the same as the list position.
 
-  - strscpy is preferred over strlcpy.
-  - sscanf results should be checked, with an additional warning.
+But it's wrong for cases where MSI-X was allocated with an entries array
+describing sparse entry numbers into the hardware message descriptor
+table. That's inconsistent at best.
 
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Make it always check the entry number because that's what the zero base
+index really means. This change won't break existing users which use a
+sparse entries array for allocation because these users retrieve the Linux
+interrupt number from the entries array after allocation and none of them
+uses pci_irq_vector() or pci_irq_get_affinity().
+
+Fixes: aff171641d18 ("PCI: Provide sensible IRQ vector alloc/free routines")
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Link: https://lore.kernel.org/r/20211206210223.929792157@linutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 48 ++++++++++++-------
- 1 file changed, 31 insertions(+), 17 deletions(-)
+ drivers/pci/msi.c | 26 ++++++++++++++++++--------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-index 7260910e75fb2..161c354ed4864 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c
-@@ -3803,7 +3803,7 @@ bnxt_fill_coredump_record(struct bnxt *bp, struct bnxt_coredump_record *record,
- 	record->low_version = 0;
- 	record->high_version = 1;
- 	record->asic_state = 0;
--	strlcpy(record->system_name, utsname()->nodename,
-+	strscpy(record->system_name, utsname()->nodename,
- 		sizeof(record->system_name));
- 	record->year = cpu_to_le16(tm.tm_year + 1900);
- 	record->month = cpu_to_le16(tm.tm_mon + 1);
-@@ -3815,11 +3815,12 @@ bnxt_fill_coredump_record(struct bnxt *bp, struct bnxt_coredump_record *record,
- 	strcpy(record->commandline, "ethtool -w");
- 	record->total_segments = cpu_to_le32(total_segs);
+diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+index e11530cb05699..cc4c2b8a5efd7 100644
+--- a/drivers/pci/msi.c
++++ b/drivers/pci/msi.c
+@@ -1193,19 +1193,24 @@ EXPORT_SYMBOL(pci_free_irq_vectors);
  
--	sscanf(utsname()->release, "%u.%u", &os_ver_major, &os_ver_minor);
-+	if (sscanf(utsname()->release, "%u.%u", &os_ver_major, &os_ver_minor) != 2)
-+		netdev_warn(bp->dev, "Unknown OS release in coredump\n");
- 	record->os_ver_major = cpu_to_le32(os_ver_major);
- 	record->os_ver_minor = cpu_to_le32(os_ver_minor);
- 
--	strlcpy(record->os_name, utsname()->sysname, 32);
-+	strscpy(record->os_name, utsname()->sysname, sizeof(record->os_name));
- 	time64_to_tm(end, 0, &tm);
- 	record->end_year = cpu_to_le16(tm.tm_year + 1900);
- 	record->end_month = cpu_to_le16(tm.tm_mon + 1);
-@@ -3837,7 +3838,7 @@ bnxt_fill_coredump_record(struct bnxt *bp, struct bnxt_coredump_record *record,
- 	record->ioctl_high_version = 0;
- }
- 
--static int bnxt_get_coredump(struct bnxt *bp, void *buf, u32 *dump_len)
-+static int __bnxt_get_coredump(struct bnxt *bp, void *buf, u32 *dump_len)
+ /**
+  * pci_irq_vector - return Linux IRQ number of a device vector
+- * @dev: PCI device to operate on
+- * @nr: device-relative interrupt vector index (0-based).
++ * @dev:	PCI device to operate on
++ * @nr:		Interrupt vector index (0-based)
++ *
++ * @nr has the following meanings depending on the interrupt mode:
++ *   MSI-X:	The index in the MSI-X vector table
++ *   MSI:	The index of the enabled MSI vectors
++ *   INTx:	Must be 0
++ *
++ * Return: The Linux interrupt number or -EINVAl if @nr is out of range.
+  */
+ int pci_irq_vector(struct pci_dev *dev, unsigned int nr)
  {
- 	u32 ver_get_resp_len = sizeof(struct hwrm_ver_get_output);
- 	u32 offset = 0, seg_hdr_len, seg_record_len, buf_len = 0;
-@@ -3940,6 +3941,30 @@ err:
- 	return rc;
- }
+ 	if (dev->msix_enabled) {
+ 		struct msi_desc *entry;
+-		int i = 0;
  
-+static int bnxt_get_coredump(struct bnxt *bp, u16 dump_type, void *buf, u32 *dump_len)
-+{
-+	if (dump_type == BNXT_DUMP_CRASH) {
-+#ifdef CONFIG_TEE_BNXT_FW
-+		return tee_bnxt_copy_coredump(buf, 0, *dump_len);
-+#else
-+		return -EOPNOTSUPP;
-+#endif
-+	} else {
-+		return __bnxt_get_coredump(bp, buf, dump_len);
-+	}
-+}
-+
-+static u32 bnxt_get_coredump_length(struct bnxt *bp, u16 dump_type)
-+{
-+	u32 len = 0;
-+
-+	if (dump_type == BNXT_DUMP_CRASH)
-+		len = BNXT_CRASH_DUMP_LEN;
-+	else
-+		__bnxt_get_coredump(bp, NULL, &len);
-+	return len;
-+}
-+
- static int bnxt_set_dump(struct net_device *dev, struct ethtool_dump *dump)
+ 		for_each_pci_msi_entry(entry, dev) {
+-			if (i == nr)
++			if (entry->msi_attrib.entry_nr == nr)
+ 				return entry->irq;
+-			i++;
+ 		}
+ 		WARN_ON_ONCE(1);
+ 		return -EINVAL;
+@@ -1229,17 +1234,22 @@ EXPORT_SYMBOL(pci_irq_vector);
+  * pci_irq_get_affinity - return the affinity of a particular MSI vector
+  * @dev:	PCI device to operate on
+  * @nr:		device-relative interrupt vector index (0-based).
++ *
++ * @nr has the following meanings depending on the interrupt mode:
++ *   MSI-X:	The index in the MSI-X vector table
++ *   MSI:	The index of the enabled MSI vectors
++ *   INTx:	Must be 0
++ *
++ * Return: A cpumask pointer or NULL if @nr is out of range
+  */
+ const struct cpumask *pci_irq_get_affinity(struct pci_dev *dev, int nr)
  {
- 	struct bnxt *bp = netdev_priv(dev);
-@@ -3971,10 +3996,7 @@ static int bnxt_get_dump_flag(struct net_device *dev, struct ethtool_dump *dump)
- 			bp->ver_resp.hwrm_fw_rsvd_8b;
+ 	if (dev->msix_enabled) {
+ 		struct msi_desc *entry;
+-		int i = 0;
  
- 	dump->flag = bp->dump_flag;
--	if (bp->dump_flag == BNXT_DUMP_CRASH)
--		dump->len = BNXT_CRASH_DUMP_LEN;
--	else
--		bnxt_get_coredump(bp, NULL, &dump->len);
-+	dump->len = bnxt_get_coredump_length(bp, bp->dump_flag);
- 	return 0;
- }
- 
-@@ -3989,15 +4011,7 @@ static int bnxt_get_dump_data(struct net_device *dev, struct ethtool_dump *dump,
- 	memset(buf, 0, dump->len);
- 
- 	dump->flag = bp->dump_flag;
--	if (dump->flag == BNXT_DUMP_CRASH) {
--#ifdef CONFIG_TEE_BNXT_FW
--		return tee_bnxt_copy_coredump(buf, 0, dump->len);
--#endif
--	} else {
--		return bnxt_get_coredump(bp, buf, &dump->len);
--	}
--
--	return 0;
-+	return bnxt_get_coredump(bp, dump->flag, buf, &dump->len);
- }
- 
- static int bnxt_get_ts_info(struct net_device *dev,
+ 		for_each_pci_msi_entry(entry, dev) {
+-			if (i == nr)
++			if (entry->msi_attrib.entry_nr == nr)
+ 				return &entry->affinity->mask;
+-			i++;
+ 		}
+ 		WARN_ON_ONCE(1);
+ 		return NULL;
 -- 
 2.34.1
 
