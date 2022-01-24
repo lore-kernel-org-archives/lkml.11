@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65022C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D992DC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:04:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1578002AbiAXWBY (ORCPT
+        id S1578172AbiAXWBy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:01:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50924 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1451554AbiAXVXI (ORCPT
+        Mon, 24 Jan 2022 17:01:54 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:38794 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450358AbiAXVUW (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:23:08 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 053C2C028BE5;
-        Mon, 24 Jan 2022 12:17:40 -0800 (PST)
+        Mon, 24 Jan 2022 16:20:22 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C0E3EB8121C;
-        Mon, 24 Jan 2022 20:17:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7D74BC340E5;
-        Mon, 24 Jan 2022 20:17:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 95021B81188;
+        Mon, 24 Jan 2022 21:20:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2258AC340E4;
+        Mon, 24 Jan 2022 21:20:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055457;
-        bh=3ciSoldh++hXhL5T+bQEQ630RbX7tIX2gXTnVaCdnaQ=;
+        s=korg; t=1643059218;
+        bh=KgD6qxy+fP2fvSM/3e8PrWESYFntT/ISgWQqCE2FJS0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uZ6hF9SBM7wmJuzhYNv+N/6UPXjRnnAwD2JSTwRvO28zhuof2fOtXAbVn9uAmcvu8
-         JZeyO3LsyAAo22Cm8DmcNDtqA6pWEQuBdQ+Wl/1kZ06fx3Zrnd/hzu57CmkHkhzjcq
-         CAfsYiwIRIxbzdBQG6RyS/dpPt+M4GBiHKZjBrSI=
+        b=dtQziMlkN1DA1sQX3v5vYrP8o3b5jNuuGHhWUe+hoo2Opw/aF8hmNApSfRaau6+6c
+         yhsn+WTGaBHqcJeUrkbborYVSmzGtDzuLLudrOMIh8Lsqj6RWZxCWLMt83xvfQxmoE
+         zyAlgB3oL2OFgbTHRSJGurzBukFVMe8CdLuV8fZg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paolo Valente <paolo.valente@linaro.org>,
-        Jan Kara <jack@suse.cz>, Jens Axboe <axboe@kernel.dk>,
+        stable@vger.kernel.org, Wei Yongjun <weiyongjun1@huawei.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 158/846] bfq: Do not let waker requests skip proper accounting
-Date:   Mon, 24 Jan 2022 19:34:35 +0100
-Message-Id: <20220124184106.440831626@linuxfoundation.org>
+Subject: [PATCH 5.16 0541/1039] Bluetooth: Fix memory leak of hci device
+Date:   Mon, 24 Jan 2022 19:38:50 +0100
+Message-Id: <20220124184143.466693673@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,134 +47,64 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit c65e6fd460b4df796ecd6ea22e132076ed1f2820 ]
+[ Upstream commit 75d9b8559ac36e059238ee4f8e33cd86086586ba ]
 
-Commit 7cc4ffc55564 ("block, bfq: put reqs of waker and woken in
-dispatch list") added a condition to bfq_insert_request() which added
-waker's requests directly to dispatch list. The rationale was that
-completing waker's IO is needed to get more IO for the current queue.
-Although this rationale is valid, there is a hole in it. The waker does
-not necessarily serve the IO only for the current queue and maybe it's
-current IO is not needed for current queue to make progress. Furthermore
-injecting IO like this completely bypasses any service accounting within
-bfq and thus we do not properly track how much service is waker's queue
-getting or that the waker is actually doing any IO. Depending on the
-conditions this can result in the waker getting too much or too few
-service.
+Fault injection test reported memory leak of hci device as follows:
 
-Consider for example the following job file:
+unreferenced object 0xffff88800b858000 (size 8192):
+  comm "kworker/0:2", pid 167, jiffies 4294955747 (age 557.148s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 00 00 00 00 00 00 00 00 ad 4e ad de  .............N..
+  backtrace:
+    [<0000000070eb1059>] kmem_cache_alloc_trace mm/slub.c:3208
+    [<00000000015eb521>] hci_alloc_dev_priv include/linux/slab.h:591
+    [<00000000dcfc1e21>] bpa10x_probe include/net/bluetooth/hci_core.h:1240
+    [<000000005d3028c7>] usb_probe_interface drivers/usb/core/driver.c:397
+    [<00000000cbac9243>] really_probe drivers/base/dd.c:517
+    [<0000000024cab3f0>] __driver_probe_device drivers/base/dd.c:751
+    [<00000000202135cb>] driver_probe_device drivers/base/dd.c:782
+    [<000000000761f2bc>] __device_attach_driver drivers/base/dd.c:899
+    [<00000000f7d63134>] bus_for_each_drv drivers/base/bus.c:427
+    [<00000000c9551f0b>] __device_attach drivers/base/dd.c:971
+    [<000000007f79bd16>] bus_probe_device drivers/base/bus.c:487
+    [<000000007bb8b95a>] device_add drivers/base/core.c:3364
+    [<000000009564d9ea>] usb_set_configuration drivers/usb/core/message.c:2171
+    [<00000000e4657087>] usb_generic_driver_probe drivers/usb/core/generic.c:239
+    [<0000000071ede518>] usb_probe_device drivers/usb/core/driver.c:294
+    [<00000000cbac9243>] really_probe drivers/base/dd.c:517
 
-[global]
-directory=/mnt/repro/
-rw=write
-size=8g
-time_based
-runtime=30
-ramp_time=10
-blocksize=1m
-direct=0
-ioengine=sync
+hci_alloc_dev() do not init the device's flag. And hci_free_dev()
+using put_device() to free the memory allocated for this device,
+but it calls just put_device(dev) only in case of HCI_UNREGISTER
+flag is set, So any error handing before hci_register_dev() success
+will cause memory leak.
 
-[slowwriter]
-numjobs=1
-prioclass=2
-prio=7
-fsync=200
+To avoid this behaviour we can using kfree() to release dev before
+hci_register_dev() success.
 
-[fastwriter]
-numjobs=1
-prioclass=2
-prio=0
-fsync=200
-
-Despite processes have very different IO priorities, they get the same
-about of service. The reason is that bfq identifies these processes as
-having waker-wakee relationship and once that happens, IO from
-fastwriter gets injected during slowwriter's time slice. As a result bfq
-is not aware that fastwriter has any IO to do and constantly schedules
-only slowwriter's queue. Thus fastwriter is forced to compete with
-slowwriter's IO all the time instead of getting its share of time based
-on IO priority.
-
-Drop the special injection condition from bfq_insert_request(). As a
-result, requests will be tracked and queued in a normal way and on next
-dispatch bfq_select_queue() can decide whether the waker's inserted
-requests should be injected during the current queue's timeslice or not.
-
-Fixes: 7cc4ffc55564 ("block, bfq: put reqs of waker and woken in dispatch list")
-Acked-by: Paolo Valente <paolo.valente@linaro.org>
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20211125133645.27483-8-jack@suse.cz
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- block/bfq-iosched.c | 44 +-------------------------------------------
- 1 file changed, 1 insertion(+), 43 deletions(-)
+ net/bluetooth/hci_sysfs.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/block/bfq-iosched.c b/block/bfq-iosched.c
-index 480e1a1348596..ea9a086d0498f 100644
---- a/block/bfq-iosched.c
-+++ b/block/bfq-iosched.c
-@@ -5991,48 +5991,7 @@ static void bfq_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
+diff --git a/net/bluetooth/hci_sysfs.c b/net/bluetooth/hci_sysfs.c
+index 7827639ecf5c3..4e3e0451b08c1 100644
+--- a/net/bluetooth/hci_sysfs.c
++++ b/net/bluetooth/hci_sysfs.c
+@@ -86,6 +86,8 @@ static void bt_host_release(struct device *dev)
  
- 	spin_lock_irq(&bfqd->lock);
- 	bfqq = bfq_init_rq(rq);
--
--	/*
--	 * Reqs with at_head or passthrough flags set are to be put
--	 * directly into dispatch list. Additional case for putting rq
--	 * directly into the dispatch queue: the only active
--	 * bfq_queues are bfqq and either its waker bfq_queue or one
--	 * of its woken bfq_queues. The rationale behind this
--	 * additional condition is as follows:
--	 * - consider a bfq_queue, say Q1, detected as a waker of
--	 *   another bfq_queue, say Q2
--	 * - by definition of a waker, Q1 blocks the I/O of Q2, i.e.,
--	 *   some I/O of Q1 needs to be completed for new I/O of Q2
--	 *   to arrive.  A notable example of waker is journald
--	 * - so, Q1 and Q2 are in any respect the queues of two
--	 *   cooperating processes (or of two cooperating sets of
--	 *   processes): the goal of Q1's I/O is doing what needs to
--	 *   be done so that new Q2's I/O can finally be
--	 *   issued. Therefore, if the service of Q1's I/O is delayed,
--	 *   then Q2's I/O is delayed too.  Conversely, if Q2's I/O is
--	 *   delayed, the goal of Q1's I/O is hindered.
--	 * - as a consequence, if some I/O of Q1/Q2 arrives while
--	 *   Q2/Q1 is the only queue in service, there is absolutely
--	 *   no point in delaying the service of such an I/O. The
--	 *   only possible result is a throughput loss
--	 * - so, when the above condition holds, the best option is to
--	 *   have the new I/O dispatched as soon as possible
--	 * - the most effective and efficient way to attain the above
--	 *   goal is to put the new I/O directly in the dispatch
--	 *   list
--	 * - as an additional restriction, Q1 and Q2 must be the only
--	 *   busy queues for this commit to put the I/O of Q2/Q1 in
--	 *   the dispatch list.  This is necessary, because, if also
--	 *   other queues are waiting for service, then putting new
--	 *   I/O directly in the dispatch list may evidently cause a
--	 *   violation of service guarantees for the other queues
--	 */
--	if (!bfqq ||
--	    (bfqq != bfqd->in_service_queue &&
--	     bfqd->in_service_queue != NULL &&
--	     bfq_tot_busy_queues(bfqd) == 1 + bfq_bfqq_busy(bfqq) &&
--	     (bfqq->waker_bfqq == bfqd->in_service_queue ||
--	      bfqd->in_service_queue->waker_bfqq == bfqq)) || at_head) {
-+	if (!bfqq || at_head) {
- 		if (at_head)
- 			list_add(&rq->queuelist, &bfqd->dispatch);
- 		else
-@@ -6059,7 +6018,6 @@ static void bfq_insert_request(struct blk_mq_hw_ctx *hctx, struct request *rq,
- 	 * merge).
- 	 */
- 	cmd_flags = rq->cmd_flags;
--
- 	spin_unlock_irq(&bfqd->lock);
+ 	if (hci_dev_test_flag(hdev, HCI_UNREGISTER))
+ 		hci_release_dev(hdev);
++	else
++		kfree(hdev);
+ 	module_put(THIS_MODULE);
+ }
  
- 	bfq_update_insert_stats(q, bfqq, idle_timer_disabled,
 -- 
 2.34.1
 
