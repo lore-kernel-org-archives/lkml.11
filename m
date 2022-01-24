@@ -2,48 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24959C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0B8CC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:24:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1848280AbiAXXWH (ORCPT
+        id S1848339AbiAXXWP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:22:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37154 "EHLO
+        Mon, 24 Jan 2022 18:22:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1585397AbiAXWXb (ORCPT
+        with ESMTP id S1584676AbiAXWVc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:23:31 -0500
+        Mon, 24 Jan 2022 17:21:32 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAF54C054329;
-        Mon, 24 Jan 2022 12:53:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6D89C041881;
+        Mon, 24 Jan 2022 12:52:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6DA0B611F9;
-        Mon, 24 Jan 2022 20:53:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 78C85C340E5;
-        Mon, 24 Jan 2022 20:53:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 564CB611C2;
+        Mon, 24 Jan 2022 20:52:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1CECAC340E5;
+        Mon, 24 Jan 2022 20:52:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057616;
-        bh=+ZEnUcY7+RPgzxA8XBOKMNeE7kGEnqhjp3FKXau1vAk=;
+        s=korg; t=1643057568;
+        bh=PV3zTcZoEZBIfBNhE05GCrsJQVwhbmMUXbm4kUtn8zI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IB0eJpnu0bsmX/mTqqlmEbihnH5WC8iHsY7kat/fuX2vItp1M+4Gj2iJfOjV1F6TV
-         uk+2r8OMo5D27UbC9Axukv5Q9xNHPJ78FWGMVgpTIxYo/cWRMn5ZNiVBuLDpGDKCBc
-         /n7oW/60R/Y+/0Ei+C+WbgvG2Ouy3fAHQg94w3go=
+        b=oG/h7ez1OU3vlzJLnvHfQH70PrRtUmnD0jHOiULPorwOcKbVXdfkssgvAdLj4GW1Y
+         DQyZ19Ka8etfAj9Wo+mhLlmMZ4c+ebzZDgj/VPR3Me5iR96zfTiW4ZgrNJE4MNbAip
+         p31Whvr18iKC7cMVw3gFAB0l915hbRVf1P38e2UI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adam Borowski <kilobyte@angband.pl>,
-        Anup Patel <anup.patel@wdc.com>,
+        stable@vger.kernel.org, David Matlack <dmatlack@google.com>,
         Sean Christopherson <seanjc@google.com>,
-        Palmer Dabbelt <palmer@rivosinc.com>
-Subject: [PATCH 5.16 0024/1039] RISC-V: Use common riscv_cpuid_to_hartid_mask() for both SMP=y and SMP=n
-Date:   Mon, 24 Jan 2022 19:30:13 +0100
-Message-Id: <20220124184125.950908186@linuxfoundation.org>
+        Paolo Bonzini <pbonzini@redhat.com>
+Subject: [PATCH 5.16 0001/1039] KVM: x86/mmu: Fix write-protection of PTs mapped by the TDP MMU
+Date:   Mon, 24 Jan 2022 19:29:50 +0100
+Message-Id: <20220124184125.179384891@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
+X-stable: review
+X-Patchwork-Hint: ignore
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -51,100 +52,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Christopherson <seanjc@google.com>
+From: David Matlack <dmatlack@google.com>
 
-commit 869c70609248102f3a2e95a39b6233ff6ea2c932 upstream.
+commit 7c8a4742c4abe205ec9daf416c9d42fd6b406e8e upstream.
 
-Use what is currently the SMP=y version of riscv_cpuid_to_hartid_mask()
-for both SMP=y and SMP=n to fix a build failure with KVM=m and SMP=n due
-to boot_cpu_hartid not being exported.  This also fixes a second bug
-where the SMP=n version assumes the sole CPU in the system is in the
-incoming mask, which may not hold true in kvm_riscv_vcpu_sbi_ecall() if
-the KVM guest VM has multiple vCPUs (on a SMP=n system).
+When the TDP MMU is write-protection GFNs for page table protection (as
+opposed to for dirty logging, or due to the HVA not being writable), it
+checks if the SPTE is already write-protected and if so skips modifying
+the SPTE and the TLB flush.
 
-Fixes: 1ef46c231df4 ("RISC-V: Implement new SBI v0.2 extensions")
-Reported-by: Adam Borowski <kilobyte@angband.pl>
-Reviewed-by: Anup Patel <anup.patel@wdc.com>
-Signed-off-by: Sean Christopherson <seanjc@google.com>
+This behavior is incorrect because it fails to check if the SPTE
+is write-protected for page table protection, i.e. fails to check
+that MMU-writable is '0'.  If the SPTE was write-protected for dirty
+logging but not page table protection, the SPTE could locklessly be made
+writable, and vCPUs could still be running with writable mappings cached
+in their TLB.
+
+Fix this by only skipping setting the SPTE if the SPTE is already
+write-protected *and* MMU-writable is already clear.  Technically,
+checking only MMU-writable would suffice; a SPTE cannot be writable
+without MMU-writable being set.  But check both to be paranoid and
+because it arguably yields more readable code.
+
+Fixes: 46044f72c382 ("kvm: x86/mmu: Support write protection for nesting in tdp MMU")
 Cc: stable@vger.kernel.org
-Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
+Signed-off-by: David Matlack <dmatlack@google.com>
+Message-Id: <20220113233020.3986005-2-dmatlack@google.com>
+Reviewed-by: Sean Christopherson <seanjc@google.com>
+Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/riscv/include/asm/smp.h |   10 ++--------
- arch/riscv/kernel/setup.c    |   10 ++++++++++
- arch/riscv/kernel/smp.c      |   10 ----------
- 3 files changed, 12 insertions(+), 18 deletions(-)
+ arch/x86/kvm/mmu/tdp_mmu.c |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/arch/riscv/include/asm/smp.h
-+++ b/arch/riscv/include/asm/smp.h
-@@ -43,7 +43,6 @@ void arch_send_call_function_ipi_mask(st
- void arch_send_call_function_single_ipi(int cpu);
+--- a/arch/x86/kvm/mmu/tdp_mmu.c
++++ b/arch/x86/kvm/mmu/tdp_mmu.c
+@@ -1442,12 +1442,12 @@ static bool write_protect_gfn(struct kvm
+ 		    !is_last_spte(iter.old_spte, iter.level))
+ 			continue;
  
- int riscv_hartid_to_cpuid(int hartid);
--void riscv_cpuid_to_hartid_mask(const struct cpumask *in, struct cpumask *out);
- 
- /* Set custom IPI operations */
- void riscv_set_ipi_ops(const struct riscv_ipi_ops *ops);
-@@ -85,13 +84,6 @@ static inline unsigned long cpuid_to_har
- 	return boot_cpu_hartid;
- }
- 
--static inline void riscv_cpuid_to_hartid_mask(const struct cpumask *in,
--					      struct cpumask *out)
--{
--	cpumask_clear(out);
--	cpumask_set_cpu(boot_cpu_hartid, out);
--}
+-		if (!is_writable_pte(iter.old_spte))
+-			break;
 -
- static inline void riscv_set_ipi_ops(const struct riscv_ipi_ops *ops)
- {
- }
-@@ -102,6 +94,8 @@ static inline void riscv_clear_ipi(void)
+ 		new_spte = iter.old_spte &
+ 			~(PT_WRITABLE_MASK | shadow_mmu_writable_mask);
  
- #endif /* CONFIG_SMP */
- 
-+void riscv_cpuid_to_hartid_mask(const struct cpumask *in, struct cpumask *out);
++		if (new_spte == iter.old_spte)
++			break;
 +
- #if defined(CONFIG_HOTPLUG_CPU) && (CONFIG_SMP)
- bool cpu_has_hotplug(unsigned int cpu);
- #else
---- a/arch/riscv/kernel/setup.c
-+++ b/arch/riscv/kernel/setup.c
-@@ -59,6 +59,16 @@ atomic_t hart_lottery __section(".sdata"
- unsigned long boot_cpu_hartid;
- static DEFINE_PER_CPU(struct cpu, cpu_devices);
- 
-+void riscv_cpuid_to_hartid_mask(const struct cpumask *in, struct cpumask *out)
-+{
-+	int cpu;
-+
-+	cpumask_clear(out);
-+	for_each_cpu(cpu, in)
-+		cpumask_set_cpu(cpuid_to_hartid_map(cpu), out);
-+}
-+EXPORT_SYMBOL_GPL(riscv_cpuid_to_hartid_mask);
-+
- /*
-  * Place kernel memory regions on the resource tree so that
-  * kexec-tools can retrieve them from /proc/iomem. While there
---- a/arch/riscv/kernel/smp.c
-+++ b/arch/riscv/kernel/smp.c
-@@ -59,16 +59,6 @@ int riscv_hartid_to_cpuid(int hartid)
- 	return -ENOENT;
- }
- 
--void riscv_cpuid_to_hartid_mask(const struct cpumask *in, struct cpumask *out)
--{
--	int cpu;
--
--	cpumask_clear(out);
--	for_each_cpu(cpu, in)
--		cpumask_set_cpu(cpuid_to_hartid_map(cpu), out);
--}
--EXPORT_SYMBOL_GPL(riscv_cpuid_to_hartid_mask);
--
- bool arch_match_cpu_phys_id(int cpu, u64 phys_id)
- {
- 	return phys_id == cpuid_to_hartid_map(cpu);
+ 		tdp_mmu_set_spte(kvm, &iter, new_spte);
+ 		spte_set = true;
+ 	}
 
 
