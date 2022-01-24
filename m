@@ -2,50 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07335C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA7E1C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:53:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839552AbiAXWvR (ORCPT
+        id S1839592AbiAXWvZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:51:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56588 "EHLO
+        Mon, 24 Jan 2022 17:51:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458150AbiAXVmr (ORCPT
+        with ESMTP id S1458106AbiAXVmp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:42:47 -0500
+        Mon, 24 Jan 2022 16:42:45 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E4C7C07A959;
-        Mon, 24 Jan 2022 12:31:12 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D40E3C0612A9;
+        Mon, 24 Jan 2022 12:30:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id CCBE761536;
-        Mon, 24 Jan 2022 20:31:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB8A5C340E5;
-        Mon, 24 Jan 2022 20:31:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7207561531;
+        Mon, 24 Jan 2022 20:30:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52AE9C340E5;
+        Mon, 24 Jan 2022 20:30:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056271;
-        bh=31xC9mtUNmT5ViszQgZGChLa+pmB3GlMeXbvgzxJHR8=;
+        s=korg; t=1643056226;
+        bh=4kDAZJSYjqU7WDjd8+sdFj7h1cSKrs5tQjpUpiG2R98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZEC+ROZ5fwELLGQggQwH3O7XtHiu4BKen5E3aew2BR2HA4n/Dw6lLtTpiUEXwCWcW
-         Gjaja2Yx3flS2bBHQFjpUDI6gdvp27rEwJs2W0O7GTkYiwqvZjxEdRY06UgUjavtwv
-         YBbIyX0hmx7rBuv3Z30GBhW2zVkZ4aV8t3YxElwY=
+        b=eSPBnFK404nMnLQvpuCBKEdaOoIDEAgyMdYv+QD10lgWktZ2aSncNboU3EF4XMjBq
+         bBWb/+Wq5vjv8CqQzmGLfwZXlz12zxBqw3bu0TYkbR6o1TAy5cav9J/i9WVeXEPw8V
+         G337G1cm4yWe6wCFu7hCdEF7yKJ4QcCU/Hl+WADo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-efi@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Pingfan Liu <kernelfans@gmail.com>,
-        Dave Kleikamp <dave.kleikamp@oracle.com>,
-        John Donnelly <john.p.donnelly@oracle.com>,
-        Catalin Marinas <catalin.marinas@arm.com>,
-        Will Deacon <will@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 427/846] of: fdt: Aggregate the processing of "linux,usable-memory-range"
-Date:   Mon, 24 Jan 2022 19:39:04 +0100
-Message-Id: <20220124184115.705813438@linuxfoundation.org>
+        stable@vger.kernel.org, Frank Rowand <frank.rowand@sony.com>,
+        Rob Herring <robh@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 414/846] of: unittest: 64 bit dma address test requires arch support
+Date:   Mon, 24 Jan 2022 19:38:51 +0100
+Message-Id: <20220124184115.252756385@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -57,97 +49,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhen Lei <thunder.leizhen@huawei.com>
+From: Frank Rowand <frank.rowand@sony.com>
 
-[ Upstream commit 8347b41748c3019157312fbe7f8a6792ae396eb7 ]
+[ Upstream commit 9fd4cf5d3571b27d746b8ead494a3f051485b679 ]
 
-Currently, we parse the "linux,usable-memory-range" property in
-early_init_dt_scan_chosen(), to obtain the specified memory range of the
-crash kernel. We then reserve the required memory after
-early_init_dt_scan_memory() has identified all available physical memory.
-Because the two pieces of code are separated far, the readability and
-maintainability are reduced. So bring them together.
+If an architecture does not support 64 bit dma addresses then testing
+for an expected dma address >= 0x100000000 will fail.
 
-Suggested-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
-(change the prototype of early_init_dt_check_for_usable_mem_range(), in
-order to use it outside)
-Signed-off-by: Pingfan Liu <kernelfans@gmail.com>
-Tested-by: Dave Kleikamp <dave.kleikamp@oracle.com>
-Acked-by: John Donnelly <john.p.donnelly@oracle.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Cc: Catalin Marinas <catalin.marinas@arm.com>
-Cc: Will Deacon <will@kernel.org>
-Cc: linux-arm-kernel@lists.infradead.org
-To: devicetree@vger.kernel.org
-To: linux-efi@vger.kernel.org
+Fixes: e0d072782c73 ("dma-mapping: introduce DMA range map, supplanting dma_pfn_offset")
+Signed-off-by: Frank Rowand <frank.rowand@sony.com>
 Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20211212221852.233295-1-frowand.list@gmail.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/of/fdt.c | 19 +++++++++++++------
- 1 file changed, 13 insertions(+), 6 deletions(-)
+ drivers/of/unittest.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/of/fdt.c b/drivers/of/fdt.c
-index 4546572af24bb..105b1a47905ab 100644
---- a/drivers/of/fdt.c
-+++ b/drivers/of/fdt.c
-@@ -969,18 +969,22 @@ static void __init early_init_dt_check_for_elfcorehdr(unsigned long node)
- 		 elfcorehdr_addr, elfcorehdr_size);
- }
- 
--static phys_addr_t cap_mem_addr;
--static phys_addr_t cap_mem_size;
-+static unsigned long chosen_node_offset = -FDT_ERR_NOTFOUND;
- 
- /**
-  * early_init_dt_check_for_usable_mem_range - Decode usable memory range
-  * location from flat tree
-- * @node: reference to node containing usable memory range location ('chosen')
-  */
--static void __init early_init_dt_check_for_usable_mem_range(unsigned long node)
-+static void __init early_init_dt_check_for_usable_mem_range(void)
+diff --git a/drivers/of/unittest.c b/drivers/of/unittest.c
+index 242381568f13c..2bee1d992408f 100644
+--- a/drivers/of/unittest.c
++++ b/drivers/of/unittest.c
+@@ -942,8 +942,9 @@ static void __init of_unittest_parse_dma_ranges(void)
  {
- 	const __be32 *prop;
- 	int len;
-+	phys_addr_t cap_mem_addr;
-+	phys_addr_t cap_mem_size;
-+	unsigned long node = chosen_node_offset;
-+
-+	if ((long)node < 0)
-+		return;
- 
- 	pr_debug("Looking for usable-memory-range property... ");
- 
-@@ -993,6 +997,8 @@ static void __init early_init_dt_check_for_usable_mem_range(unsigned long node)
- 
- 	pr_debug("cap_mem_start=%pa cap_mem_size=%pa\n", &cap_mem_addr,
- 		 &cap_mem_size);
-+
-+	memblock_cap_memory_range(cap_mem_addr, cap_mem_size);
+ 	of_unittest_dma_ranges_one("/testcase-data/address-tests/device@70000000",
+ 		0x0, 0x20000000);
+-	of_unittest_dma_ranges_one("/testcase-data/address-tests/bus@80000000/device@1000",
+-		0x100000000, 0x20000000);
++	if (IS_ENABLED(CONFIG_ARCH_DMA_ADDR_T_64BIT))
++		of_unittest_dma_ranges_one("/testcase-data/address-tests/bus@80000000/device@1000",
++			0x100000000, 0x20000000);
+ 	of_unittest_dma_ranges_one("/testcase-data/address-tests/pci@90000000",
+ 		0x80000000, 0x20000000);
  }
- 
- #ifdef CONFIG_SERIAL_EARLYCON
-@@ -1141,9 +1147,10 @@ int __init early_init_dt_scan_chosen(unsigned long node, const char *uname,
- 	    (strcmp(uname, "chosen") != 0 && strcmp(uname, "chosen@0") != 0))
- 		return 0;
- 
-+	chosen_node_offset = node;
-+
- 	early_init_dt_check_for_initrd(node);
- 	early_init_dt_check_for_elfcorehdr(node);
--	early_init_dt_check_for_usable_mem_range(node);
- 
- 	/* Retrieve command line */
- 	p = of_get_flat_dt_prop(node, "bootargs", &l);
-@@ -1279,7 +1286,7 @@ void __init early_init_dt_scan_nodes(void)
- 	of_scan_flat_dt(early_init_dt_scan_memory, NULL);
- 
- 	/* Handle linux,usable-memory-range property */
--	memblock_cap_memory_range(cap_mem_addr, cap_mem_size);
-+	early_init_dt_check_for_usable_mem_range();
- }
- 
- bool __init early_init_dt_scan(void *params)
 -- 
 2.34.1
 
