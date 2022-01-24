@@ -2,105 +2,181 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BD83C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 08603C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587468AbiAXW20 (ORCPT
+        id S1587485AbiAXW2a (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:28:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53822 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1454645AbiAXVdT (ORCPT
+        Mon, 24 Jan 2022 17:28:30 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:47424 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1455133AbiAXVes (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:33:19 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52909C075972
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:21:22 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id u14so21341598lfo.11
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:21:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=wyMvRdYooGkNnpiPbja1/uSfdA1/U9snsdIqkkHvJEc=;
-        b=htyyJ1Z3GRsmUZan58N3Prr0pEBcELIKOR7HkjpOyyQX11oHKKsVhGziUzHRAk9gAQ
-         qKIJ1la4FQPjdeduY0TumzsXC1keATPYK+6nRTIgrBg2Yx3j+qLswnmWYNKKkUD32SGa
-         NEUVgy1cbCWp9ftv9S/S5W24Xf77OuvIUUPVXQgqfByM1wogeIS6Un6jOyUF9MMCkpXG
-         teWa0koFmo2WyVhH9ii5kbYSuulkh24QTq4DkaKRlSHApSrAqcmB2KzC4vQu8X9FU9gv
-         2EOV8xLbbtvhhc9TN8f/mQhQ6bw3lBLH/4ZukkYU7sfiq5QPCY/xyIFbbSA1hYPq/sPZ
-         OO2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=wyMvRdYooGkNnpiPbja1/uSfdA1/U9snsdIqkkHvJEc=;
-        b=B5LU5nNDO4HuF+KKzLY2NJ20Cm2UkD2Gny+ghaP5gwu8NpOEswkHxSTFVuTAUpCApu
-         R1MhPtKpChywxbT48Q1+6Xc3Ua7uC81V2ggp4s40gML02iOp5C07XvxSRguYOlqlwMHz
-         dIiAPakSfI//otD2gb2ZePsrTV25r7Ebp0ro3W/iBks1h0mdRgRKGJ8b13LJKsLmRH48
-         VT5chSBW89G06HstWHxt3NdCP6vI19b6lg3+K4FpZQeUh2p7PBcd4+V+HSFTSqo62eGt
-         2dvO37gTYCbSe81bqEiPBAloOl5yxzRYk1esIfa7wMaXi22z2WuGgnvlH7+wIb21iXes
-         ib3w==
-X-Gm-Message-State: AOAM530nFHRXG1lZytNBFlekI1spQ8287nDfrwkcepUXYJjuWQnshn9m
-        lzELxtn/6kTlHhSSMxb4IqAc+44PMXxdxpzblrBkAQ==
-X-Google-Smtp-Source: ABdhPJzNbWHLfVK0G4oHmQubeJbQeEM15S/l2in0t/MpUPzxIWlbk0Bzs9ERTx3WfdkjIX9h30ubfENOdawlZCrT2bU=
-X-Received: by 2002:a19:ad02:: with SMTP id t2mr14058303lfc.82.1643055680456;
- Mon, 24 Jan 2022 12:21:20 -0800 (PST)
+        Mon, 24 Jan 2022 16:34:48 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3365AB81142;
+        Mon, 24 Jan 2022 21:34:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D1D7C340E7;
+        Mon, 24 Jan 2022 21:34:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643060085;
+        bh=Gj+/fEzo/MIrlAptBR6EwJeX40dJ6PyDWkKRNwcTaWg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SegIXzSS2IAjx32mbozDlyz9LnoQL7p/2+YaRpssX1gAlUmAhZQVXp6bPxaiiKX65
+         0Ly+lyHdm/wNKiXPKww92hdCcbk+jU6KuX+LwPzp34xa9dVDbuhV1/v7r8k4mFIWyD
+         xKoAg7e0OR9Nf++iJXF13OSh09HZaQHXKLS8OymI=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0801/1039] PCI: mvebu: Fix support for bus mastering and PCI_COMMAND on emulated bridge
+Date:   Mon, 24 Jan 2022 19:43:10 +0100
+Message-Id: <20220124184152.227183950@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-References: <20220119224628.123084-1-colin.i.king@gmail.com>
-In-Reply-To: <20220119224628.123084-1-colin.i.king@gmail.com>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Mon, 24 Jan 2022 12:21:07 -0800
-Message-ID: <CAKwvOdnMibw77AvvWw7seB2PPamS_OLMUarSjdsa4w4OP1isKg@mail.gmail.com>
-Subject: Re: [PATCH] drm/radeon: remove redundant assignment to reg
-To:     Colin Ian King <colin.i.king@gmail.com>
-Cc:     Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        Xinhui.Pan@amd.com, David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org, llvm@lists.linux.dev
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Wed, Jan 19, 2022 at 2:46 PM Colin Ian King <colin.i.king@gmail.com> wrote:
->
-> The pointer reg is being assigned a value that is not read, the
-> exit path via label 'out' never accesses it. The assignment is
-> redundant and can be removed.
->
-> Cleans up clang scan build warning:
-> drivers/gpu/drm/radeon/radeon_object.c:570:3: warning: Value
-> stored to 'reg' is never read [deadcode.DeadStores]
->
-> Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+From: Pali Rohár <pali@kernel.org>
 
-Thanks for the patch!
-Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+[ Upstream commit e42b85583719adb87ab88dc7bcd41b38011f7d11 ]
 
-> ---
->  drivers/gpu/drm/radeon/radeon_object.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/drivers/gpu/drm/radeon/radeon_object.c b/drivers/gpu/drm/radeon/radeon_object.c
-> index 56ede9d63b12..87536d205593 100644
-> --- a/drivers/gpu/drm/radeon/radeon_object.c
-> +++ b/drivers/gpu/drm/radeon/radeon_object.c
-> @@ -567,7 +567,6 @@ int radeon_bo_get_surface_reg(struct radeon_bo *bo)
->                 return 0;
->
->         if (bo->surface_reg >= 0) {
-> -               reg = &rdev->surface_regs[bo->surface_reg];
->                 i = bo->surface_reg;
->                 goto out;
->         }
-> --
-> 2.33.1
->
->
+According to PCI specifications bits [0:2] of Command Register, this should
+be by default disabled on reset. So explicitly disable these bits at early
+beginning of driver initialization.
 
+Also remove code which unconditionally enables all 3 bits and let kernel
+code (via pci_set_master() function) to handle bus mastering of PCI Bridge
+via emulated PCI_COMMAND on emulated bridge.
 
+Adjust existing functions mvebu_pcie_handle_iobase_change() and
+mvebu_pcie_handle_membase_change() to handle PCI_IO_BASE and PCI_MEM_BASE
+registers correctly even when bus mastering on emulated bridge is disabled.
+
+Link: https://lore.kernel.org/r/20211125124605.25915-7-pali@kernel.org
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/pci/controller/pci-mvebu.c | 52 ++++++++++++++++++------------
+ 1 file changed, 32 insertions(+), 20 deletions(-)
+
+diff --git a/drivers/pci/controller/pci-mvebu.c b/drivers/pci/controller/pci-mvebu.c
+index beae555b06bbc..326527f2d6f41 100644
+--- a/drivers/pci/controller/pci-mvebu.c
++++ b/drivers/pci/controller/pci-mvebu.c
+@@ -215,16 +215,14 @@ static void mvebu_pcie_setup_hw(struct mvebu_pcie_port *port)
+ {
+ 	u32 cmd, mask;
+ 
+-	/* Point PCIe unit MBUS decode windows to DRAM space. */
+-	mvebu_pcie_setup_wins(port);
+-
+-	/* Master + slave enable. */
++	/* Disable Root Bridge I/O space, memory space and bus mastering. */
+ 	cmd = mvebu_readl(port, PCIE_CMD_OFF);
+-	cmd |= PCI_COMMAND_IO;
+-	cmd |= PCI_COMMAND_MEMORY;
+-	cmd |= PCI_COMMAND_MASTER;
++	cmd &= ~(PCI_COMMAND_IO | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
+ 	mvebu_writel(port, cmd, PCIE_CMD_OFF);
+ 
++	/* Point PCIe unit MBUS decode windows to DRAM space. */
++	mvebu_pcie_setup_wins(port);
++
+ 	/* Enable interrupt lines A-D. */
+ 	mask = mvebu_readl(port, PCIE_MASK_OFF);
+ 	mask |= PCIE_MASK_ENABLE_INTS;
+@@ -371,8 +369,7 @@ static void mvebu_pcie_handle_iobase_change(struct mvebu_pcie_port *port)
+ 
+ 	/* Are the new iobase/iolimit values invalid? */
+ 	if (conf->iolimit < conf->iobase ||
+-	    conf->iolimitupper < conf->iobaseupper ||
+-	    !(conf->command & PCI_COMMAND_IO)) {
++	    conf->iolimitupper < conf->iobaseupper) {
+ 		mvebu_pcie_set_window(port, port->io_target, port->io_attr,
+ 				      &desired, &port->iowin);
+ 		return;
+@@ -409,8 +406,7 @@ static void mvebu_pcie_handle_membase_change(struct mvebu_pcie_port *port)
+ 	struct pci_bridge_emul_conf *conf = &port->bridge.conf;
+ 
+ 	/* Are the new membase/memlimit values invalid? */
+-	if (conf->memlimit < conf->membase ||
+-	    !(conf->command & PCI_COMMAND_MEMORY)) {
++	if (conf->memlimit < conf->membase) {
+ 		mvebu_pcie_set_window(port, port->mem_target, port->mem_attr,
+ 				      &desired, &port->memwin);
+ 		return;
+@@ -430,6 +426,24 @@ static void mvebu_pcie_handle_membase_change(struct mvebu_pcie_port *port)
+ 			      &port->memwin);
+ }
+ 
++static pci_bridge_emul_read_status_t
++mvebu_pci_bridge_emul_base_conf_read(struct pci_bridge_emul *bridge,
++				     int reg, u32 *value)
++{
++	struct mvebu_pcie_port *port = bridge->data;
++
++	switch (reg) {
++	case PCI_COMMAND:
++		*value = mvebu_readl(port, PCIE_CMD_OFF);
++		break;
++
++	default:
++		return PCI_BRIDGE_EMUL_NOT_HANDLED;
++	}
++
++	return PCI_BRIDGE_EMUL_HANDLED;
++}
++
+ static pci_bridge_emul_read_status_t
+ mvebu_pci_bridge_emul_pcie_conf_read(struct pci_bridge_emul *bridge,
+ 				     int reg, u32 *value)
+@@ -484,17 +498,14 @@ mvebu_pci_bridge_emul_base_conf_write(struct pci_bridge_emul *bridge,
+ 
+ 	switch (reg) {
+ 	case PCI_COMMAND:
+-	{
+-		if (!mvebu_has_ioport(port))
+-			conf->command &= ~PCI_COMMAND_IO;
+-
+-		if ((old ^ new) & PCI_COMMAND_IO)
+-			mvebu_pcie_handle_iobase_change(port);
+-		if ((old ^ new) & PCI_COMMAND_MEMORY)
+-			mvebu_pcie_handle_membase_change(port);
++		if (!mvebu_has_ioport(port)) {
++			conf->command = cpu_to_le16(
++				le16_to_cpu(conf->command) & ~PCI_COMMAND_IO);
++			new &= ~PCI_COMMAND_IO;
++		}
+ 
++		mvebu_writel(port, new, PCIE_CMD_OFF);
+ 		break;
+-	}
+ 
+ 	case PCI_IO_BASE:
+ 		mvebu_pcie_handle_iobase_change(port);
+@@ -554,6 +565,7 @@ mvebu_pci_bridge_emul_pcie_conf_write(struct pci_bridge_emul *bridge,
+ }
+ 
+ static struct pci_bridge_emul_ops mvebu_pci_bridge_emul_ops = {
++	.read_base = mvebu_pci_bridge_emul_base_conf_read,
+ 	.write_base = mvebu_pci_bridge_emul_base_conf_write,
+ 	.read_pcie = mvebu_pci_bridge_emul_pcie_conf_read,
+ 	.write_pcie = mvebu_pci_bridge_emul_pcie_conf_write,
 -- 
-Thanks,
-~Nick Desaulniers
+2.34.1
+
+
+
