@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99D5EC4707E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47EAEC46467
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838389AbiAXWqa (ORCPT
+        id S1838122AbiAXWpy (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:46:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55244 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457345AbiAXVlb (ORCPT
+        Mon, 24 Jan 2022 17:45:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58872 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1457043AbiAXVkr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:41:31 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 759F7C07E31C;
-        Mon, 24 Jan 2022 12:28:11 -0800 (PST)
+        Mon, 24 Jan 2022 16:40:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1584361518;
-        Mon, 24 Jan 2022 20:28:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6DE0C340E5;
-        Mon, 24 Jan 2022 20:28:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AE6836150C;
+        Mon, 24 Jan 2022 21:40:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8340EC340E5;
+        Mon, 24 Jan 2022 21:40:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056090;
-        bh=7sD7+lXcXIAbqic7rspXCLXl8Os/glrqskRtRCYDPKA=;
+        s=korg; t=1643060446;
+        bh=waB+9LUVqnckRupSe5o4AhePh0a/nlEjGKrVjtO3D4Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wkabg1Tf21mVzDWCgJESCLx1eA7+FxiwyltozisZZJ3qfsludQmHQcxdmETKHL4Rg
-         X2gdpSJ5dtDyLKRTNcV5bvBkEUjblXfofsMXAC7ydOJiJuK6y4lqtvjgufI8YqndsG
-         MpbFiMuEtJFzHpwPi8sMOM5liPy4daVbYrUBtcKc=
+        b=sr4q5+2MEXM8YEePp/OcKga3dmCWG0JSBPVtHZoDznXVfq+nRYz8yH/Gfo5xqUjID
+         TEeqE3CdoODsUK8bcOqKsq6WxzfBoA49wdR6iJN2LPUB5s4JtNWfXEWkOKofz0oscU
+         e/AgqlJZYnfVOcOAeFIxW3lpVBKZFs05MXC8jKMQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alyssa Ross <hi@alyssa.is>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 334/846] serial: liteuart: fix MODULE_ALIAS
-Date:   Mon, 24 Jan 2022 19:37:31 +0100
-Message-Id: <20220124184112.439816773@linuxfoundation.org>
+        stable@vger.kernel.org, Geert Uytterhoeven <geert@linux-m68k.org>,
+        Conor Dooley <conor.dooley@microchip.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.16 0951/1039] riscv: dts: microchip: mpfs: Drop empty chosen node
+Date:   Mon, 24 Jan 2022 19:45:40 +0100
+Message-Id: <20220124184157.255161107@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,33 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alyssa Ross <hi@alyssa.is>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
 
-[ Upstream commit 556172fabd226ba14b70c1740d0826a4717473dc ]
+commit 53ef07326ad0d6ae7fefded22bc53b427d542761 upstream.
 
-modprobe can't handle spaces in aliases.
+It does not make sense to have an (empty) chosen node in an SoC-specific
+.dtsi, as chosen is meant for system-specific configuration.
+It is already provided in microchip-mpfs-icicle-kit.dts anyway.
 
-Fixes: 1da81e5562fa ("drivers/tty/serial: add LiteUART driver")
-Signed-off-by: Alyssa Ross <hi@alyssa.is>
-Link: https://lore.kernel.org/r/20220104131030.1674733-1-hi@alyssa.is
+Fixes: 0fa6107eca4186ad ("RISC-V: Initial DTS for Microchip ICICLE board")
+Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Reviewed-by: Conor Dooley <conor.dooley@microchip.com>
+Tested-by: Conor Dooley <conor.dooley@microchip.com>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/liteuart.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi |    3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/tty/serial/liteuart.c b/drivers/tty/serial/liteuart.c
-index 2941659e52747..7f74bf7bdcff8 100644
---- a/drivers/tty/serial/liteuart.c
-+++ b/drivers/tty/serial/liteuart.c
-@@ -436,4 +436,4 @@ module_exit(liteuart_exit);
- MODULE_AUTHOR("Antmicro <www.antmicro.com>");
- MODULE_DESCRIPTION("LiteUART serial driver");
- MODULE_LICENSE("GPL v2");
--MODULE_ALIAS("platform: liteuart");
-+MODULE_ALIAS("platform:liteuart");
--- 
-2.34.1
-
+--- a/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
++++ b/arch/riscv/boot/dts/microchip/microchip-mpfs.dtsi
+@@ -9,9 +9,6 @@
+ 	model = "Microchip PolarFire SoC";
+ 	compatible = "microchip,mpfs";
+ 
+-	chosen {
+-	};
+-
+ 	cpus {
+ 		#address-cells = <1>;
+ 		#size-cells = <0>;
 
 
