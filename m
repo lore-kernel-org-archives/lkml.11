@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D6A4C3526F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ADC1C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:47:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573606AbiAXVpX (ORCPT
+        id S1573735AbiAXVpn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:45:23 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:60210 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446607AbiAXVIs (ORCPT
+        Mon, 24 Jan 2022 16:45:43 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60402 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1446389AbiAXVIH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:08:48 -0500
+        Mon, 24 Jan 2022 16:08:07 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B66ADB80CCF;
-        Mon, 24 Jan 2022 21:08:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE9A2C340E5;
-        Mon, 24 Jan 2022 21:08:44 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 043B56141C;
+        Mon, 24 Jan 2022 21:08:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8425C340E5;
+        Mon, 24 Jan 2022 21:08:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058525;
-        bh=AONqG5bMtL6kUVRHWb9GpOeyQRbkloKcPD/OKYlC4ZE=;
+        s=korg; t=1643058485;
+        bh=R3GdNXfUaGyr8KHuooO/tDQGndAoZTEvXAMGEPVcDFc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jL0f3rTxZfy8f3kmECkdglqwRrdQBdN8rD97pUf8mAq48RtIbRxcNMu0bUVOSg0Wo
-         AyxazxgG8y48Sza2X2cAErPiAc6MXmW3ei7K+HdwiQw1v/oNv5gee2CE+ZN4IVrIo8
-         kr+i80in2bGNCB6ht6vvpiJDCVUd4wAR2Ngbbi40=
+        b=mAC6FApmBj0yN6IWlbrksk8QfTsYuO9eKY7p1O56GhxT7snuUQfpkSQv696EqE3E7
+         ojivBOJjAPmqOYW+U3pAWA69zU/MMfP8PGtu3FQWLXKVIArsX7ZF0STrku7EUZIBPa
+         PMzVwxfPTSU3vWRme0qc15sJ2/yvXmlS9wcv1hAY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lorenzo Bianconi <lorenzo@kernel.org>,
-        Felix Fietkau <nbd@nbd.name>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0317/1039] mt76: connac: fix last_chan configuration in mt76_connac_mcu_rate_txpower_band
-Date:   Mon, 24 Jan 2022 19:35:06 +0100
-Message-Id: <20220124184135.951734676@linuxfoundation.org>
+        stable@vger.kernel.org, kernelbot <kernel-bot@kylinos.cn>,
+        Jackie Liu <liuyun01@kylinos.cn>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Rob Clark <robdclark@chromium.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0261/1039] drm/msm/dp: displayPort driver need algorithm rational
+Date:   Mon, 24 Jan 2022 19:34:10 +0100
+Message-Id: <20220124184134.081001067@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,47 +49,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: Jackie Liu <liuyun01@kylinos.cn>
 
-[ Upstream commit 73c7c0443685d8d152c3451e7305a2c2bc47b32e ]
+[ Upstream commit 53d22794711ad630f40d59dd726bd260d77d585f ]
 
-last_ch configuration must not be dependent on the current configured band
-but it is defined by hw capabilities since the fw always expects the
-following order:
-- 2GHz
-- 5GHz
-- 6GHz
+Let's select RATIONAL with dp driver. avoid like:
 
-Fixes: 9b2ea8eee42a1 ("mt76: connac: set 6G phymode in single-sku support")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Felix Fietkau <nbd@nbd.name>
+[...]
+x86_64-linux-gnu-ld: drivers/gpu/drm/msm/dp/dp_catalog.o: in function `dp_catalog_ctrl_config_msa':
+dp_catalog.c:(.text+0x57e): undefined reference to `rational_best_approximation'
+
+Fixes: c943b4948b58 ("drm/msm/dp: add displayPort driver support")
+Reported-by: kernelbot <kernel-bot@kylinos.cn>
+Signed-off-by: Jackie Liu <liuyun01@kylinos.cn>
+Link: https://lore.kernel.org/r/20211110070950.3355597-2-liu.yun@linux.dev
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Signed-off-by: Rob Clark <robdclark@chromium.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/gpu/drm/msm/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
-index 61c4c86e79c88..b15bbd650a90c 100644
---- a/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt76_connac_mcu.c
-@@ -2008,12 +2008,12 @@ mt76_connac_mcu_rate_txpower_band(struct mt76_phy *phy,
- 	}
- 	batch_size = DIV_ROUND_UP(n_chan, batch_len);
- 
--	if (!phy->cap.has_5ghz)
--		last_ch = chan_list_2ghz[n_chan - 1];
--	else if (phy->cap.has_6ghz)
--		last_ch = chan_list_6ghz[n_chan - 1];
-+	if (phy->cap.has_6ghz)
-+		last_ch = chan_list_6ghz[ARRAY_SIZE(chan_list_6ghz) - 1];
-+	else if (phy->cap.has_5ghz)
-+		last_ch = chan_list_5ghz[ARRAY_SIZE(chan_list_5ghz) - 1];
- 	else
--		last_ch = chan_list_5ghz[n_chan - 1];
-+		last_ch = chan_list_2ghz[ARRAY_SIZE(chan_list_2ghz) - 1];
- 
- 	for (i = 0; i < batch_size; i++) {
- 		struct mt76_connac_tx_power_limit_tlv tx_power_tlv = {};
+diff --git a/drivers/gpu/drm/msm/Kconfig b/drivers/gpu/drm/msm/Kconfig
+index 39197b4beea78..1eae5a9645f41 100644
+--- a/drivers/gpu/drm/msm/Kconfig
++++ b/drivers/gpu/drm/msm/Kconfig
+@@ -65,6 +65,7 @@ config DRM_MSM_HDMI_HDCP
+ config DRM_MSM_DP
+ 	bool "Enable DisplayPort support in MSM DRM driver"
+ 	depends on DRM_MSM
++	select RATIONAL
+ 	default y
+ 	help
+ 	  Compile in support for DP driver in MSM DRM driver. DP external
 -- 
 2.34.1
 
