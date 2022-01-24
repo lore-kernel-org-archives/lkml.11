@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9473C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:08:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AF92C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:08:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384869AbiAXXHh (ORCPT
+        id S1384917AbiAXXHz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:07:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36670 "EHLO
+        Mon, 24 Jan 2022 18:07:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1583212AbiAXWR1 (ORCPT
+        with ESMTP id S1583209AbiAXWR1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:17:27 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBF06C06179A;
-        Mon, 24 Jan 2022 12:47:01 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9EEFC04A2EB;
+        Mon, 24 Jan 2022 12:46:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 83FC2B80CCF;
-        Mon, 24 Jan 2022 20:47:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0BC8C340E5;
-        Mon, 24 Jan 2022 20:46:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 75FBDB81243;
+        Mon, 24 Jan 2022 20:46:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E627C340E5;
+        Mon, 24 Jan 2022 20:46:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057219;
-        bh=tpCWaT3Bd7B0AOsiFmTZT3SF5MRyfmUBt4R9vgcOsE4=;
+        s=korg; t=1643057204;
+        bh=PBfU0sjDKHjPEXXIWzNxqIfWzz3fkDv5Yi5PMouzK2E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NkGPyPLdyVSZzL+zxyfAV2Ksl/OXEmrwJwwRtbRKJPKuv39Hnu3IUFVHBluAwcwUS
-         GwNcRDs5apRixzIk/tjGzQ594v0p7f8HXea/2Mv3+rqnvC8Vgi/JBtv1jowBCSju0P
-         PyFsTx5TudK6QpZg2ZiNFTB7OVW7UHLRjihLbEj0=
+        b=LWyf/GLbvpoUjYfAk5QeL4GpEbbjhVyWPmbFoNADagG0AlXDArSofiLwuCLhbmIYC
+         6B+aP3g59SunyOHwP2kHs86PLigs00S/L77WJoyCNSszJgnIERvnP86ngQa0bhxF/6
+         LOtNZ8m+l8FTfnt0MctDpYiAnB+8rPeIxiSeZQ74=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        Steve French <smfrench@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.15 740/846] Documentation, arch: Remove leftovers from CIFS_WEAK_PW_HASH
-Date:   Mon, 24 Jan 2022 19:44:17 +0100
-Message-Id: <20220124184126.517210879@linuxfoundation.org>
+        Jeroen van Wolffelaar <jeroen@wolffelaar.nl>,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 5.15 718/846] ext4: set csum seed in tmp inode while migrating to extents
+Date:   Mon, 24 Jan 2022 19:43:55 +0100
+Message-Id: <20220124184125.785634387@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,181 +51,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+From: Luís Henriques <lhenriques@suse.de>
 
-commit 2ac7069ad7647cd1d9ca5b08765a1e116e13cdc4 upstream.
+commit e81c9302a6c3c008f5c30beb73b38adb0170ff2d upstream.
 
-This config was removed so remove all references to it.
+When migrating to extents, the temporary inode will have it's own checksum
+seed.  This means that, when swapping the inodes data, the inode checksums
+will be incorrect.
 
-Fixes: 76a3c92ec9e0 ("cifs: remove support for NTLM and weaker authentication algorithms")
-Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
-Reviewed-by: Steve French <smfrench@gmail.com>
-Acked-by: Arnd Bergmann <arnd@arndb.de> [arch/arm/configs]
-Acked-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+This can be fixed by recalculating the extents checksums again.  Or simply
+by copying the seed into the temporary inode.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=213357
+Reported-by: Jeroen van Wolffelaar <jeroen@wolffelaar.nl>
+Signed-off-by: Luís Henriques <lhenriques@suse.de>
+Link: https://lore.kernel.org/r/20211214175058.19511-1-lhenriques@suse.de
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/admin-guide/cifs/usage.rst    |    7 +++----
- arch/arm/configs/cm_x300_defconfig          |    1 -
- arch/arm/configs/ezx_defconfig              |    1 -
- arch/arm/configs/imote2_defconfig           |    1 -
- arch/arm/configs/nhk8815_defconfig          |    1 -
- arch/arm/configs/pxa_defconfig              |    1 -
- arch/mips/configs/fuloong2e_defconfig       |    1 -
- arch/mips/configs/malta_qemu_32r6_defconfig |    1 -
- arch/mips/configs/maltaaprp_defconfig       |    1 -
- arch/mips/configs/maltasmvp_defconfig       |    1 -
- arch/mips/configs/maltasmvp_eva_defconfig   |    1 -
- arch/mips/configs/maltaup_defconfig         |    1 -
- arch/powerpc/configs/ppc6xx_defconfig       |    1 -
- arch/sh/configs/titan_defconfig             |    1 -
- 14 files changed, 3 insertions(+), 17 deletions(-)
+ fs/ext4/migrate.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
---- a/Documentation/admin-guide/cifs/usage.rst
-+++ b/Documentation/admin-guide/cifs/usage.rst
-@@ -734,10 +734,9 @@ SecurityFlags		Flags which control secur
- 			using weaker password hashes is 0x37037 (lanman,
- 			plaintext, ntlm, ntlmv2, signing allowed).  Some
- 			SecurityFlags require the corresponding menuconfig
--			options to be enabled (lanman and plaintext require
--			CONFIG_CIFS_WEAK_PW_HASH for example).  Enabling
--			plaintext authentication currently requires also
--			enabling lanman authentication in the security flags
-+			options to be enabled.  Enabling plaintext
-+			authentication currently requires also enabling
-+			lanman authentication in the security flags
- 			because the cifs module only supports sending
- 			laintext passwords using the older lanman dialect
- 			form of the session setup SMB.  (e.g. for authentication
---- a/arch/arm/configs/cm_x300_defconfig
-+++ b/arch/arm/configs/cm_x300_defconfig
-@@ -146,7 +146,6 @@ CONFIG_NFS_V3_ACL=y
- CONFIG_NFS_V4=y
- CONFIG_ROOT_NFS=y
- CONFIG_CIFS=m
--CONFIG_CIFS_WEAK_PW_HASH=y
- CONFIG_PARTITION_ADVANCED=y
- CONFIG_NLS_CODEPAGE_437=m
- CONFIG_NLS_ISO8859_1=m
---- a/arch/arm/configs/ezx_defconfig
-+++ b/arch/arm/configs/ezx_defconfig
-@@ -314,7 +314,6 @@ CONFIG_NFSD_V3_ACL=y
- CONFIG_SMB_FS=m
- CONFIG_CIFS=m
- CONFIG_CIFS_STATS=y
--CONFIG_CIFS_WEAK_PW_HASH=y
- CONFIG_CIFS_XATTR=y
- CONFIG_CIFS_POSIX=y
- CONFIG_NLS_CODEPAGE_437=m
---- a/arch/arm/configs/imote2_defconfig
-+++ b/arch/arm/configs/imote2_defconfig
-@@ -288,7 +288,6 @@ CONFIG_NFSD_V3_ACL=y
- CONFIG_SMB_FS=m
- CONFIG_CIFS=m
- CONFIG_CIFS_STATS=y
--CONFIG_CIFS_WEAK_PW_HASH=y
- CONFIG_CIFS_XATTR=y
- CONFIG_CIFS_POSIX=y
- CONFIG_NLS_CODEPAGE_437=m
---- a/arch/arm/configs/nhk8815_defconfig
-+++ b/arch/arm/configs/nhk8815_defconfig
-@@ -127,7 +127,6 @@ CONFIG_NFS_FS=y
- CONFIG_NFS_V3_ACL=y
- CONFIG_ROOT_NFS=y
- CONFIG_CIFS=m
--CONFIG_CIFS_WEAK_PW_HASH=y
- CONFIG_NLS_CODEPAGE_437=y
- CONFIG_NLS_ASCII=y
- CONFIG_NLS_ISO8859_1=y
---- a/arch/arm/configs/pxa_defconfig
-+++ b/arch/arm/configs/pxa_defconfig
-@@ -699,7 +699,6 @@ CONFIG_NFSD_V3_ACL=y
- CONFIG_NFSD_V4=y
- CONFIG_CIFS=m
- CONFIG_CIFS_STATS=y
--CONFIG_CIFS_WEAK_PW_HASH=y
- CONFIG_CIFS_XATTR=y
- CONFIG_CIFS_POSIX=y
- CONFIG_NLS_DEFAULT="utf8"
---- a/arch/mips/configs/fuloong2e_defconfig
-+++ b/arch/mips/configs/fuloong2e_defconfig
-@@ -206,7 +206,6 @@ CONFIG_NFSD_V3_ACL=y
- CONFIG_NFSD_V4=y
- CONFIG_CIFS=m
- CONFIG_CIFS_STATS2=y
--CONFIG_CIFS_WEAK_PW_HASH=y
- CONFIG_CIFS_XATTR=y
- CONFIG_CIFS_POSIX=y
- CONFIG_CIFS_DEBUG2=y
---- a/arch/mips/configs/malta_qemu_32r6_defconfig
-+++ b/arch/mips/configs/malta_qemu_32r6_defconfig
-@@ -165,7 +165,6 @@ CONFIG_TMPFS=y
- CONFIG_NFS_FS=y
- CONFIG_ROOT_NFS=y
- CONFIG_CIFS=m
--CONFIG_CIFS_WEAK_PW_HASH=y
- CONFIG_CIFS_XATTR=y
- CONFIG_CIFS_POSIX=y
- CONFIG_NLS_CODEPAGE_437=m
---- a/arch/mips/configs/maltaaprp_defconfig
-+++ b/arch/mips/configs/maltaaprp_defconfig
-@@ -166,7 +166,6 @@ CONFIG_TMPFS=y
- CONFIG_NFS_FS=y
- CONFIG_ROOT_NFS=y
- CONFIG_CIFS=m
--CONFIG_CIFS_WEAK_PW_HASH=y
- CONFIG_CIFS_XATTR=y
- CONFIG_CIFS_POSIX=y
- CONFIG_NLS_CODEPAGE_437=m
---- a/arch/mips/configs/maltasmvp_defconfig
-+++ b/arch/mips/configs/maltasmvp_defconfig
-@@ -167,7 +167,6 @@ CONFIG_TMPFS=y
- CONFIG_NFS_FS=y
- CONFIG_ROOT_NFS=y
- CONFIG_CIFS=m
--CONFIG_CIFS_WEAK_PW_HASH=y
- CONFIG_CIFS_XATTR=y
- CONFIG_CIFS_POSIX=y
- CONFIG_NLS_CODEPAGE_437=m
---- a/arch/mips/configs/maltasmvp_eva_defconfig
-+++ b/arch/mips/configs/maltasmvp_eva_defconfig
-@@ -169,7 +169,6 @@ CONFIG_TMPFS=y
- CONFIG_NFS_FS=y
- CONFIG_ROOT_NFS=y
- CONFIG_CIFS=m
--CONFIG_CIFS_WEAK_PW_HASH=y
- CONFIG_CIFS_XATTR=y
- CONFIG_CIFS_POSIX=y
- CONFIG_NLS_CODEPAGE_437=m
---- a/arch/mips/configs/maltaup_defconfig
-+++ b/arch/mips/configs/maltaup_defconfig
-@@ -165,7 +165,6 @@ CONFIG_TMPFS=y
- CONFIG_NFS_FS=y
- CONFIG_ROOT_NFS=y
- CONFIG_CIFS=m
--CONFIG_CIFS_WEAK_PW_HASH=y
- CONFIG_CIFS_XATTR=y
- CONFIG_CIFS_POSIX=y
- CONFIG_NLS_CODEPAGE_437=m
---- a/arch/powerpc/configs/ppc6xx_defconfig
-+++ b/arch/powerpc/configs/ppc6xx_defconfig
-@@ -1022,7 +1022,6 @@ CONFIG_NFSD=m
- CONFIG_NFSD_V3_ACL=y
- CONFIG_NFSD_V4=y
- CONFIG_CIFS=m
--CONFIG_CIFS_WEAK_PW_HASH=y
- CONFIG_CIFS_UPCALL=y
- CONFIG_CIFS_XATTR=y
- CONFIG_CIFS_POSIX=y
---- a/arch/sh/configs/titan_defconfig
-+++ b/arch/sh/configs/titan_defconfig
-@@ -242,7 +242,6 @@ CONFIG_NFSD=y
- CONFIG_NFSD_V3=y
- CONFIG_SMB_FS=m
- CONFIG_CIFS=m
--CONFIG_CIFS_WEAK_PW_HASH=y
- CONFIG_PARTITION_ADVANCED=y
- CONFIG_NLS_CODEPAGE_437=m
- CONFIG_NLS_ASCII=m
+--- a/fs/ext4/migrate.c
++++ b/fs/ext4/migrate.c
+@@ -459,6 +459,17 @@ int ext4_ext_migrate(struct inode *inode
+ 		ext4_journal_stop(handle);
+ 		goto out_unlock;
+ 	}
++	/*
++	 * Use the correct seed for checksum (i.e. the seed from 'inode').  This
++	 * is so that the metadata blocks will have the correct checksum after
++	 * the migration.
++	 *
++	 * Note however that, if a crash occurs during the migration process,
++	 * the recovery process is broken because the tmp_inode checksums will
++	 * be wrong and the orphans cleanup will fail.
++	 */
++	ei = EXT4_I(inode);
++	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
+ 	i_size_write(tmp_inode, i_size_read(inode));
+ 	/*
+ 	 * Set the i_nlink to zero so it will be deleted later
+@@ -502,7 +513,6 @@ int ext4_ext_migrate(struct inode *inode
+ 		goto out_tmp_inode;
+ 	}
+ 
+-	ei = EXT4_I(inode);
+ 	i_data = ei->i_data;
+ 	memset(&lb, 0, sizeof(lb));
+ 
 
 
