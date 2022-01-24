@@ -2,100 +2,117 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D2ABC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 17:35:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6849C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 17:36:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244692AbiAXRfE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 12:35:04 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:4481 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244699AbiAXRfD (ORCPT
+        id S244591AbiAXRgW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 12:36:22 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:28233 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241255AbiAXRgT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 12:35:03 -0500
-Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JjH7r0Mdjz6FGjl;
-        Tue, 25 Jan 2022 01:30:48 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Mon, 24 Jan 2022 18:35:01 +0100
-Received: from localhost (10.47.74.148) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Mon, 24 Jan
- 2022 17:35:00 +0000
-Date:   Mon, 24 Jan 2022 17:34:57 +0000
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Jeff LaBundy <jeff@labundy.com>
-CC:     <lee.jones@linaro.org>, <jic23@kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 2/2] iio: temperature: iqs620at-temp: Add support for V3
- silicon
-Message-ID: <20220124173457.00006728@Huawei.com>
-In-Reply-To: <20220123190106.80591-3-jeff@labundy.com>
-References: <20220123190106.80591-1-jeff@labundy.com>
-        <20220123190106.80591-3-jeff@labundy.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        Mon, 24 Jan 2022 12:36:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1643045779;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=WjBDf6aQrfObbBjTLFtxuNqmDl1jBGQg6+6y9Yi96mM=;
+        b=GIRY+anpJt0g7K1AFZmKF/6qNhfyrZjGb2uA+5yC9i7KVN4EVtWbWJ8PbNRhEqR/5/rkBj
+        R2as345f8KnbcJwX5a63ysK6O5X52w5PMHjqeSoURb5GG29CWcQrLoYBltEQHXqcFgt7dV
+        OxUK/s48QSu7LkMBLjuSHVEZkmq28xo=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-537-79rOQpsMN4yO4TsejadeqQ-1; Mon, 24 Jan 2022 12:36:18 -0500
+X-MC-Unique: 79rOQpsMN4yO4TsejadeqQ-1
+Received: by mail-qv1-f72.google.com with SMTP id 6-20020a0562140d4600b004244d191fd4so699630qvr.0
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 09:36:17 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WjBDf6aQrfObbBjTLFtxuNqmDl1jBGQg6+6y9Yi96mM=;
+        b=1PX/OFP0AY4WwJNIj79o0RGXmsg4n+DvWD6WpJLvjCtAE6OVJ73BlkPpiHivmzL4U7
+         95p2E7SEoiOn5ATECjIaaojv2zuqSLU+2WD1UPlUQ+hn9pLf7Z1v3nh4QJSCJ5o1PIhM
+         r2kuAl/OqmUinf2MZngBaJjMu8uPF1pJoHSDjrVRkSZezFzOFTk/ScWUN8meRd4dtOu3
+         vytIs71ehfoRsZYqlPVnxK4BVOaiPwEiW1LsiDVagSPW/QXWS9CyHTimGtaBL+lygV/b
+         jqdrtZ8BfE7UdJT8DXkXY84Ny9ZZy2nVocSV1wj+mangynnsVgLJbrTEW5/9YHbF+M8k
+         sZAA==
+X-Gm-Message-State: AOAM533N/Vu0zoEynTG3jAVJN7EqM5xVXUBN8Bh8YOhQHFkdM99QbuGs
+        /JXCAyGbjFkABbWdThghXWkR8jvNSw2tcuMo+S9OZ2ErBoJ+g9nbZWLiUlSSohHpgbNUN+98mSw
+        QQgBRPHciWX4wpxXfP4fLLuSf56QEmYXhKC8mKshX
+X-Received: by 2002:a05:622a:154:: with SMTP id v20mr13313782qtw.291.1643045777122;
+        Mon, 24 Jan 2022 09:36:17 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzekCkfE92GPinXMJeJVNleUpPXFDuFcVsiLj6BYCwesW3YBTj4opk1FKA8tMEDl+ZjXtRSE5Ok2D2HOBmeptY=
+X-Received: by 2002:a05:622a:154:: with SMTP id v20mr13313769qtw.291.1643045776895;
+ Mon, 24 Jan 2022 09:36:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.74.148]
-X-ClientProxiedBy: lhreml739-chm.china.huawei.com (10.201.108.189) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+References: <202201221028.YKA8kSdm-lkp@intel.com> <CAK-6q+h_hb94J3DSXPk=E44kCxiwZ+BE3kMJe09iShRzMb=vzQ@mail.gmail.com>
+ <91901e7b-7d82-116c-aaf2-c74c6a6b999c@infradead.org> <CAK-6q+j2jc3pBmbvQ-DCmxveC-UMV75SFc2nC1zwXKe9wm4YPg@mail.gmail.com>
+ <20220124124530.GS1951@kadam> <CAK-6q+iZfY=FyOxJfS7cY7MqScs+nU=U3B4NnLnvcLH3fofuAg@mail.gmail.com>
+In-Reply-To: <CAK-6q+iZfY=FyOxJfS7cY7MqScs+nU=U3B4NnLnvcLH3fofuAg@mail.gmail.com>
+From:   Alexander Aring <aahringo@redhat.com>
+Date:   Mon, 24 Jan 2022 12:36:06 -0500
+Message-ID: <CAK-6q+ga2zT2h4oY0=aCXFeU=oaFHbSXGzuVRptB8Hg-YKR7Gw@mail.gmail.com>
+Subject: Re: fs/dlm/midcomms.c:913:22: sparse: sparse: restricted __le32
+ degrades to integer
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     "Paul E. McKenney" <paulmck@linux.ibm.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        kernel test robot <lkp@intel.com>, kbuild-all@lists.01.org,
+        linux-kernel@vger.kernel.org, David Teigland <teigland@redhat.com>,
+        cluster-devel <cluster-devel@redhat.com>,
+        linux-sparse@vger.kernel.org, rcu@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, 23 Jan 2022 13:01:06 -0600
-Jeff LaBundy <jeff@labundy.com> wrote:
+Hi,
 
-> The vendor introduced an updated revision of IQS620A(T) silicon
-> which is backwards-compatible with previous revisions, the only
-> exception being the offset used to derive temperature.
-> 
-> Enable this new revision by returning the appropriate offset as
-> a function of the hardware number provided by the parent MFD.
-> 
-> Signed-off-by: Jeff LaBundy <jeff@labundy.com>
-Trivial comment inline but I'm fine with this either way.
-Assuming it will go through mfd.
+On Mon, Jan 24, 2022 at 12:21 PM Alexander Aring <aahringo@redhat.com> wrote:
+>
+> Hi,
+>
+> On Mon, Jan 24, 2022 at 7:46 AM Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> >
+> > On Sun, Jan 23, 2022 at 01:41:52PM -0500, Alexander Aring wrote:
+> > >
+> > > I see also:
+> > >
+> > > fs/dlm/midcomms.c:213:1: sparse: sparse: symbol
+> > > '__srcu_struct_nodes_srcu' was not declared. Should it be static?
+> > >
+> >
+> > Why not just do this?  (Untested.  Maybe I don't understand?)
+> >
+> > diff --git a/include/linux/srcutree.h b/include/linux/srcutree.h
+> > index cb1f4351e8ba..a164089abec4 100644
+> > --- a/include/linux/srcutree.h
+> > +++ b/include/linux/srcutree.h
+> > @@ -121,7 +121,7 @@ struct srcu_struct {
+> >  #ifdef MODULE
+> >  # define __DEFINE_SRCU(name, is_static)                                        \
+> >         is_static struct srcu_struct name;                              \
+> > -       struct srcu_struct * const __srcu_struct_##name                 \
+> > +       is_static struct srcu_struct * const __srcu_struct_##name       \
+> >                 __section("___srcu_struct_ptrs") = &name
+> >  #else
+> >  # define __DEFINE_SRCU(name, is_static)                                        \
+> >
+>
+> I tried it and yes it will fix the issue and introduce another one
+> about "is_static struct srcu_struct * const __srcu_struct_##name" is
+> unused ("-Wunused-const-variable").
+> I added a __maybe_unused after the introduced is_static and it seems
+> to fix the introduced issue, now it compiles and sparse is happy. I am
+> not sure if this is the right fix?
 
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+it is obviously unused, but it has something to do with
+"__section("___srcu_struct_ptrs")" and during module loading it, I
+suppose, srcu tries to access it to find whatever needs to be
+registered?
 
-> ---
->  drivers/iio/temperature/iqs620at-temp.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/temperature/iqs620at-temp.c b/drivers/iio/temperature/iqs620at-temp.c
-> index fe126e1fb783..e2f878d57af7 100644
-> --- a/drivers/iio/temperature/iqs620at-temp.c
-> +++ b/drivers/iio/temperature/iqs620at-temp.c
-> @@ -17,6 +17,7 @@
->  
->  #define IQS620_TEMP_SCALE			1000
->  #define IQS620_TEMP_OFFSET			(-100)
-> +#define IQS620_TEMP_OFFSET_V3			(-40)
->  
->  static int iqs620_temp_read_raw(struct iio_dev *indio_dev,
->  				struct iio_chan_spec const *chan,
-> @@ -41,7 +42,8 @@ static int iqs620_temp_read_raw(struct iio_dev *indio_dev,
->  		return IIO_VAL_INT;
->  
->  	case IIO_CHAN_INFO_OFFSET:
-> -		*val = IQS620_TEMP_OFFSET;
-> +		*val = iqs62x->hw_num < IQS620_HW_NUM_V3 ? IQS620_TEMP_OFFSET
-> +							 : IQS620_TEMP_OFFSET_V3;
-
-Line is a bit long, so maybe it would be better to just use an if / else
-
-		if (iqs6x->hw_num < IQS620_HW_NUM_V3)
-			*val = IQS620_TEMP_OFFSET;
-		else
-			*val = IQS620_TEMP_OFFSET_V3;
-
-
->  		return IIO_VAL_INT;
->  
->  	default:
+- Alex
 
