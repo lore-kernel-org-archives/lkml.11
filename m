@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31E8DC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45292C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3410209AbiAYA2p (ORCPT
+        id S3410237AbiAYA2s (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:28:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54808 "EHLO
+        Mon, 24 Jan 2022 19:28:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387192AbiAXXeJ (ORCPT
+        with ESMTP id S1381862AbiAXXeJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:34:09 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B2D7C07597F;
-        Mon, 24 Jan 2022 13:36:12 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20B4AC07597A;
+        Mon, 24 Jan 2022 13:35:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38C9DB8121C;
-        Mon, 24 Jan 2022 21:36:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D8C2C340E4;
-        Mon, 24 Jan 2022 21:36:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5D2361028;
+        Mon, 24 Jan 2022 21:35:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B32D4C340E5;
+        Mon, 24 Jan 2022 21:35:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060170;
-        bh=nlpsVFFBLXH+IEIkEIU95YTgMgVg2K0Hj1A5Aq2u94E=;
+        s=korg; t=1643060158;
+        bh=y2surFG9CF99niOXP/oloofbrzQ/roUtKTzGdU8adRQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DC3y3AaZ+AbIaeAHwep9VUnqMyojbvA7GbjpAx6kay5AvrdZMlGq4iWGq1wNCP+Dk
-         wpivzixp1pZANCBiKUM/chkn3BZXRXY3vm2yzxgQqNTbi6pPgsXH1tRAY83j7Cb5u1
-         2iejhdn89phDH/spQX24pZtxbQIBbwcylGT4Xzls=
+        b=KTKNQqc/PUu1yYpsOUx1sxCLe9s80XRil/hWWFv3SUiDNfoMMNaNaZJWoEWJ9fLHQ
+         FD+83/pjTyqoBjxvWifTsAvPuJ1J0vWWc4uuD9+ICc3sQuE6F2ZANRdZyd37fDndpf
+         33XZPmrkod4Gk35ZvMEowDHqTuxy9w0xct4kuXs4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yizhuo Zhai <yzhai003@ucr.edu>,
-        Alex Deucher <alexander.deucher@amd.com>
-Subject: [PATCH 5.16 0861/1039] drm/amd/display: Fix the uninitialized variable in enable_stream_features()
-Date:   Mon, 24 Jan 2022 19:44:10 +0100
-Message-Id: <20220124184154.238652206@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
+Subject: [PATCH 5.16 0858/1039] device property: Fix fwnode_graph_devcon_match() fwnode leak
+Date:   Mon, 24 Jan 2022 19:44:07 +0100
+Message-Id: <20220124184154.119883333@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,34 +51,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yizhuo Zhai <yzhai003@ucr.edu>
+From: Sakari Ailus <sakari.ailus@linux.intel.com>
 
-commit 0726ed3065eeb910f9cea0c933bc021a848e00b3 upstream.
+commit 4a7f4110f79163fd53ea65438041994ed615e3af upstream.
 
-In function enable_stream_features(), the variable "old_downspread.raw"
-could be uninitialized if core_link_read_dpcd() fails, however, it is
-used in the later if statement, and further, core_link_write_dpcd()
-may write random value, which is potentially unsafe.
+For each endpoint it encounters, fwnode_graph_devcon_match() checks
+whether the endpoint's remote port parent device is available. If it is
+not, it ignores the endpoint but does not put the reference to the remote
+endpoint port parent fwnode. For available devices the fwnode handle
+reference is put as expected.
 
-Fixes: 6016cd9dba0f ("drm/amd/display: add helper for enabling mst stream features")
-Cc: stable@vger.kernel.org
-Signed-off-by: Yizhuo Zhai <yzhai003@ucr.edu>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
+Put the reference for unavailable devices now.
+
+Fixes: 637e9e52b185 ("device connection: Find device connections also from device graphs")
+Cc: 5.1+ <stable@vger.kernel.org> # 5.1+
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc_link.c |    2 ++
- 1 file changed, 2 insertions(+)
+ drivers/base/property.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/amd/display/dc/core/dc_link.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc_link.c
-@@ -1844,6 +1844,8 @@ static void enable_stream_features(struc
- 		union down_spread_ctrl old_downspread;
- 		union down_spread_ctrl new_downspread;
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -1206,8 +1206,10 @@ fwnode_graph_devcon_match(struct fwnode_
  
-+		memset(&old_downspread, 0, sizeof(old_downspread));
-+
- 		core_link_read_dpcd(link, DP_DOWNSPREAD_CTRL,
- 				&old_downspread.raw, sizeof(old_downspread));
+ 	fwnode_graph_for_each_endpoint(fwnode, ep) {
+ 		node = fwnode_graph_get_remote_port_parent(ep);
+-		if (!fwnode_device_is_available(node))
++		if (!fwnode_device_is_available(node)) {
++			fwnode_handle_put(node);
+ 			continue;
++		}
  
+ 		ret = match(node, con_id, data);
+ 		fwnode_handle_put(node);
 
 
