@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0209EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A474C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376921AbiAXUEf (ORCPT
+        id S1376933AbiAXUEj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:04:35 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41458 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356357AbiAXTqB (ORCPT
+        Mon, 24 Jan 2022 15:04:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51322 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350388AbiAXTYy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:46:01 -0500
+        Mon, 24 Jan 2022 14:24:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECD97C0619C6;
+        Mon, 24 Jan 2022 11:11:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6404361523;
-        Mon, 24 Jan 2022 19:46:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71CA5C340E5;
-        Mon, 24 Jan 2022 19:46:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7F8A4612B1;
+        Mon, 24 Jan 2022 19:11:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4153BC340E5;
+        Mon, 24 Jan 2022 19:11:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053560;
-        bh=7j4QYyMjm/9sgur3HyUzCNJo7/u+AvcMqUm5RnpUKDs=;
+        s=korg; t=1643051489;
+        bh=gIKHEDVhwjYvzr6NVj9ZyKBbjZEWfl2bTvGRn2pl4tg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YebtX/4f0QvuJGtFq6hjRKvuLArz7hN+eR5mtDbJrcaLAD4uFBIAujy+glhYAsdUG
-         fdiEdxhTb8B4NczpKnjwktT7tRkafloBMb9FyisiWgf74KNQ6BS0Uw2xI6+jvMn1d7
-         EqfI8aZxwVNkllNXRF9zyFH26dU5z1aKjPP3ufTY=
+        b=v15+YIbgo8rpGqe2xcDJRxKVibf9XAjHxyUdCoLTzp7eeenfBkA+sxVuoisReNbrm
+         fNIrA6WeERxQFsW0dAjodL2C6QraJNG1DbgepknbBKTxxm1up9e318OmukfBm0FR3H
+         ePmd7fnN/4/Dd6AtiSIh43gfTbkRHllHHqyo/cq0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Tzung-Bi Shih <tzungbi@google.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 073/563] media: atomisp: fix enum formats logic
-Date:   Mon, 24 Jan 2022 19:37:18 +0100
-Message-Id: <20220124184026.929304775@linuxfoundation.org>
+Subject: [PATCH 4.14 146/186] ASoC: mediatek: mt8173: fix device_node leak
+Date:   Mon, 24 Jan 2022 19:43:41 +0100
+Message-Id: <20220124183941.801733744@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,80 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Tzung-Bi Shih <tzungbi@google.com>
 
-[ Upstream commit fae46cb0531b45c789e39128f676f2bafa3a7b47 ]
+[ Upstream commit 493433785df0075afc0c106ab65f10a605d0b35d ]
 
-Changeset 374d62e7aa50 ("media: v4l2-subdev: Verify v4l2_subdev_call() pad config argument")
-added an extra verification for a pads parameter for enum mbus
-format code.
+Fixes the device_node leak.
 
-Such change broke atomisp, because now the V4L2 core
-refuses to enum MBUS formats if the state is empty.
-
-So, add .which field in order to select the active formats,
-in order to make it work again.
-
-While here, improve error messages.
-
-Fixes: 374d62e7aa50 ("media: v4l2-subdev: Verify v4l2_subdev_call() pad config argument")
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Tzung-Bi Shih <tzungbi@google.com>
+Link: https://lore.kernel.org/r/20211224064719.2031210-2-tzungbi@google.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../staging/media/atomisp/pci/atomisp_ioctl.c | 23 ++++++++++++++-----
- 1 file changed, 17 insertions(+), 6 deletions(-)
+ sound/soc/mediatek/mt8173/mt8173-max98090.c      | 3 +++
+ sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c | 2 ++
+ sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c | 2 ++
+ sound/soc/mediatek/mt8173/mt8173-rt5650.c        | 2 ++
+ 4 files changed, 9 insertions(+)
 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-index 35717a91cbd15..830df02626634 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-@@ -773,7 +773,10 @@ static int atomisp_enum_fmt_cap(struct file *file, void *fh,
- 	struct video_device *vdev = video_devdata(file);
- 	struct atomisp_device *isp = video_get_drvdata(vdev);
- 	struct atomisp_sub_device *asd = atomisp_to_video_pipe(vdev)->asd;
--	struct v4l2_subdev_mbus_code_enum code = { 0 };
-+	struct v4l2_subdev_mbus_code_enum code = {
-+		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
-+	};
-+	struct v4l2_subdev *camera;
- 	unsigned int i, fi = 0;
- 	int rval;
- 
-@@ -783,14 +786,20 @@ static int atomisp_enum_fmt_cap(struct file *file, void *fh,
- 		return -EINVAL;
- 	}
- 
-+	camera = isp->inputs[asd->input_curr].camera;
-+	if(!camera) {
-+		dev_err(isp->dev, "%s(): camera is NULL, device is %s\n",
-+			__func__, vdev->name);
-+		return -EINVAL;
-+	}
+diff --git a/sound/soc/mediatek/mt8173/mt8173-max98090.c b/sound/soc/mediatek/mt8173/mt8173-max98090.c
+index e0c2b23ec7118..0adb7ded61e9c 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-max98090.c
++++ b/sound/soc/mediatek/mt8173/mt8173-max98090.c
+@@ -177,6 +177,9 @@ static int mt8173_max98090_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
 +
- 	rt_mutex_lock(&isp->mutex);
--	rval = v4l2_subdev_call(isp->inputs[asd->input_curr].camera, pad,
--				enum_mbus_code, NULL, &code);
-+
-+	rval = v4l2_subdev_call(camera, pad, enum_mbus_code, NULL, &code);
- 	if (rval == -ENOIOCTLCMD) {
- 		dev_warn(isp->dev,
--			 "enum_mbus_code pad op not supported. Please fix your sensor driver!\n");
--		//	rval = v4l2_subdev_call(isp->inputs[asd->input_curr].camera,
--		//				video, enum_mbus_fmt, 0, &code.code);
-+			 "enum_mbus_code pad op not supported by %s. Please fix your sensor driver!\n",
-+			 camera->name);
- 	}
- 	rt_mutex_unlock(&isp->mutex);
- 
-@@ -820,6 +829,8 @@ static int atomisp_enum_fmt_cap(struct file *file, void *fh,
- 		f->pixelformat = format->pixelformat;
- 		return 0;
- 	}
-+	dev_err(isp->dev, "%s(): format for code %x not found.\n",
-+		__func__, code.code);
- 
- 	return -EINVAL;
++	of_node_put(codec_node);
++	of_node_put(platform_node);
+ 	return ret;
  }
+ 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
+index 99c15219dbc81..aa52e2f81760a 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5514.c
+@@ -227,6 +227,8 @@ static int mt8173_rt5650_rt5514_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
+index 42de84ca8c844..61b0d8f8678e9 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650-rt5676.c
+@@ -284,6 +284,8 @@ static int mt8173_rt5650_rt5676_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
+diff --git a/sound/soc/mediatek/mt8173/mt8173-rt5650.c b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
+index e69c141d8ed4c..3492c02f72c1a 100644
+--- a/sound/soc/mediatek/mt8173/mt8173-rt5650.c
++++ b/sound/soc/mediatek/mt8173/mt8173-rt5650.c
+@@ -316,6 +316,8 @@ static int mt8173_rt5650_dev_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		dev_err(&pdev->dev, "%s snd_soc_register_card fail %d\n",
+ 			__func__, ret);
++
++	of_node_put(platform_node);
+ 	return ret;
+ }
+ 
 -- 
 2.34.1
 
