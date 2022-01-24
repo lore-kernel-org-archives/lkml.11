@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47C13C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD952C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:18:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344901AbiAXTR5 (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:17:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46108 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346225AbiAXTFN (ORCPT
+        id S236853AbiAXTSA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:18:00 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:60874 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346074AbiAXTFD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:05:13 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FC14C0613E4;
-        Mon, 24 Jan 2022 11:00:16 -0800 (PST)
+        Mon, 24 Jan 2022 14:05:03 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EA2B9B8122C;
-        Mon, 24 Jan 2022 19:00:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DBC8C340E5;
-        Mon, 24 Jan 2022 19:00:12 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01C34B81215;
+        Mon, 24 Jan 2022 19:05:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10983C340E5;
+        Mon, 24 Jan 2022 19:04:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050813;
-        bh=1j7mayRmOuGQ+nRLdXsL59wVA+c5vHDalgnqM39ocY4=;
+        s=korg; t=1643051100;
+        bh=T7KWPVUlwwGeP3+Ec471D8gVEnDQ0SQYVaxxQ4HTt44=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jKANspLH371SZXx7seO4q4AbvOaqoeDpxtiBzWuxbClsW5DyYF1P8id/r50S/vvaC
-         uCY6/30J7H9hEcxw827vzUkuZkHau6OpbaRbH6mqoYXF91MpWfXVwyKJ5Z6q48TNWl
-         nIiZOwxb6Cs6clPY0F1hgguj4tFl/IlM+OO7CQpk=
+        b=VLys8Cu7gsPs+jGEeW2h7gnUWY+/3UVB0+CqLKpH3Q3UhdQL5mLRS4lp5u/BkSktC
+         Jkxdxl9KMVLPKKnNi/5iNsnSfaFYmjEz9sEKAoNKEhivYxW6KWuIxGk8/Tv+TLU/OD
+         3Wt/43dgp2w9LP8DIWX35NRu7iC8EIAEm2LZbNYM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zqiang <qiang.zhang1211@gmail.com>,
-        syzbot+bb950e68b400ab4f65f8@syzkaller.appspotmail.com,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 113/157] ALSA: seq: Set upper limit of processed events
-Date:   Mon, 24 Jan 2022 19:43:23 +0100
-Message-Id: <20220124183936.354960884@linuxfoundation.org>
+        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
+        Dongliang Mu <mudongliangabcd@gmail.com>,
+        syzkaller <syzkaller@googlegroups.com>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.14 037/186] media: em28xx: fix memory leak in em28xx_init_dev
+Date:   Mon, 24 Jan 2022 19:41:52 +0100
+Message-Id: <20220124183938.318318966@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
-References: <20220124183932.787526760@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,85 +49,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Dongliang Mu <mudongliangabcd@gmail.com>
 
-[ Upstream commit 6fadb494a638d8b8a55864ecc6ac58194f03f327 ]
+[ Upstream commit 22be5a10d0b24eec9e45decd15d7e6112b25f080 ]
 
-Currently ALSA sequencer core tries to process the queued events as
-much as possible when they become dispatchable.  If applications try
-to queue too massive events to be processed at the very same timing,
-the sequencer core would still try to process such all events, either
-in the interrupt context or via some notifier; in either away, it
-might be a cause of RCU stall or such problems.
+In the em28xx_init_rev, if em28xx_audio_setup fails, this function fails
+to deallocate the media_dev allocated in the em28xx_media_device_init.
 
-As a potential workaround for those problems, this patch adds the
-upper limit of the amount of events to be processed.  The remaining
-events are processed in the next batch, so they won't be lost.
+Fix this by adding em28xx_unregister_media_device to free media_dev.
 
-For the time being, it's limited up to 1000 events per queue, which
-should be high enough for any normal usages.
+BTW, this patch is tested in my local syzkaller instance, and it can
+prevent the memory leak from occurring again.
 
-Reported-by: Zqiang <qiang.zhang1211@gmail.com>
-Reported-by: syzbot+bb950e68b400ab4f65f8@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20211102033222.3849-1-qiang.zhang1211@gmail.com
-Link: https://lore.kernel.org/r/20211207165146.2888-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+CC: Pavel Skripkin <paskripkin@gmail.com>
+Fixes: 37ecc7b1278f ("[media] em28xx: add media controller support")
+Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
+Reported-by: syzkaller <syzkaller@googlegroups.com>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/core/seq/seq_queue.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/media/usb/em28xx/em28xx-cards.c | 18 ++++++++++++------
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
-diff --git a/sound/core/seq/seq_queue.c b/sound/core/seq/seq_queue.c
-index ea1aa07962761..b923059a22276 100644
---- a/sound/core/seq/seq_queue.c
-+++ b/sound/core/seq/seq_queue.c
-@@ -257,12 +257,15 @@ struct snd_seq_queue *snd_seq_queue_find_name(char *name)
+diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
+index 9747e23aad271..b736c027a0bd0 100644
+--- a/drivers/media/usb/em28xx/em28xx-cards.c
++++ b/drivers/media/usb/em28xx/em28xx-cards.c
+@@ -3386,8 +3386,10 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
  
- /* -------------------------------------------------------- */
- 
-+#define MAX_CELL_PROCESSES_IN_QUEUE	1000
-+
- void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
- {
- 	unsigned long flags;
- 	struct snd_seq_event_cell *cell;
- 	snd_seq_tick_time_t cur_tick;
- 	snd_seq_real_time_t cur_time;
-+	int processed = 0;
- 
- 	if (q == NULL)
- 		return;
-@@ -285,6 +288,8 @@ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
- 		if (!cell)
- 			break;
- 		snd_seq_dispatch_event(cell, atomic, hop);
-+		if (++processed >= MAX_CELL_PROCESSES_IN_QUEUE)
-+			goto out; /* the rest processed at the next batch */
- 	}
- 
- 	/* Process time queue... */
-@@ -294,14 +299,19 @@ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
- 		if (!cell)
- 			break;
- 		snd_seq_dispatch_event(cell, atomic, hop);
-+		if (++processed >= MAX_CELL_PROCESSES_IN_QUEUE)
-+			goto out; /* the rest processed at the next batch */
- 	}
- 
-+ out:
- 	/* free lock */
- 	spin_lock_irqsave(&q->check_lock, flags);
- 	if (q->check_again) {
- 		q->check_again = 0;
--		spin_unlock_irqrestore(&q->check_lock, flags);
--		goto __again;
-+		if (processed < MAX_CELL_PROCESSES_IN_QUEUE) {
-+			spin_unlock_irqrestore(&q->check_lock, flags);
-+			goto __again;
+ 	if (dev->is_audio_only) {
+ 		retval = em28xx_audio_setup(dev);
+-		if (retval)
+-			return -ENODEV;
++		if (retval) {
++			retval = -ENODEV;
++			goto err_deinit_media;
 +		}
+ 		em28xx_init_extension(dev);
+ 
+ 		return 0;
+@@ -3417,7 +3419,7 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
+ 		dev_err(&dev->intf->dev,
+ 			"%s: em28xx_i2c_register bus 0 - error [%d]!\n",
+ 		       __func__, retval);
+-		return retval;
++		goto err_deinit_media;
  	}
- 	q->check_blocked = 0;
- 	spin_unlock_irqrestore(&q->check_lock, flags);
+ 
+ 	/* register i2c bus 1 */
+@@ -3433,9 +3435,7 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
+ 			       "%s: em28xx_i2c_register bus 1 - error [%d]!\n",
+ 			       __func__, retval);
+ 
+-			em28xx_i2c_unregister(dev, 0);
+-
+-			return retval;
++			goto err_unreg_i2c;
+ 		}
+ 	}
+ 
+@@ -3443,6 +3443,12 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
+ 	em28xx_card_setup(dev);
+ 
+ 	return 0;
++
++err_unreg_i2c:
++	em28xx_i2c_unregister(dev, 0);
++err_deinit_media:
++	em28xx_unregister_media_device(dev);
++	return retval;
+ }
+ 
+ /* high bandwidth multiplier, as encoded in highspeed endpoint descriptors */
 -- 
 2.34.1
 
