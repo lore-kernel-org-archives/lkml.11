@@ -2,106 +2,134 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B34C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8C5FC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 08:16:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242087AbiAXIQR (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 03:16:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:51240 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S242062AbiAXIQP (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 03:16:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643012174;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=ZTLl4YJkeUuVgMvKnlcneMHmBiRgYGMhn5C09P+gXVg=;
-        b=hPAoJF8no+GXgt5ZhElOugHzSMVV1gguIDimWXXMpiv7KljTBQaDBuxy9zGQCxcs9gW1EJ
-        a0ChZ8/swvxd1+JsVxCJhTUQUB8kTajXRHTSDfX0L7LcMv1giNTTW8hX8CP1wJrIa1jKmK
-        w3zlWFpZJB3ygeHwRZJ+Xya3AFzIjXI=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-438-OcSjX6zjN5uWViM5VwZeEw-1; Mon, 24 Jan 2022 03:16:11 -0500
-X-MC-Unique: OcSjX6zjN5uWViM5VwZeEw-1
-Received: by mail-ej1-f70.google.com with SMTP id p16-20020a170906785000b006b5d9c3d47fso1755931ejm.21
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 00:16:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ZTLl4YJkeUuVgMvKnlcneMHmBiRgYGMhn5C09P+gXVg=;
-        b=S/NhWfCkwnlkfR8XF+11DruHIDa6S3JoeEnbDLC0rtAj3beqMWVraQWSTtZ7BIo7ua
-         pe5yoNZzsFkWhwJW+mGs3UYnJRr/k7anAjz0zUwJ4OaOv4HIstqeO+zP3TWJkfk7Lir5
-         DiA7GKDIojRwILXBbpFAq5HxUL06N3nzAD5SdBpmdBdBxt/PqaNJTGqQ/dhrz9Ax7Mcu
-         znpEanMKaF0aWXvQWikevn1CUDGf0y5tDHxzChbNh7dX0G9F0pcbOs8BdztrMuUyynCK
-         LRns9D/XooXQ1PAOD5OsKTne6e0Gh5kIcgkEeGPykpkdMkPdkRyXLYlgevys8UpppEVA
-         QU5w==
-X-Gm-Message-State: AOAM532pAv54Pe0XSdDu3EZggr3epwpP/VoWSg7wbcNAkEMt4jGtjroO
-        CO3eHiWFI/aq1cWxkT7VKpMP9H2BMwsTjET2kDV4XmCtRb9Dxc563HPSiZNTVN1I0KcSOA/kBHD
-        WrCgw7Yzd4GLAypRzSFFzI4+w
-X-Received: by 2002:a17:906:9742:: with SMTP id o2mr11722207ejy.530.1643012170408;
-        Mon, 24 Jan 2022 00:16:10 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzOr3jOY+RTOMB2JqY3ZgFgnki6NWYqRSaiNL7SDrsnmX5TQlHJzM/4eGuy6YOS1RraAewSXw==
-X-Received: by 2002:a17:906:9742:: with SMTP id o2mr11722192ejy.530.1643012170213;
-        Mon, 24 Jan 2022 00:16:10 -0800 (PST)
-Received: from ?IPV6:2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1? (2001-1c00-0c1e-bf00-1db8-22d3-1bc9-8ca1.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1db8:22d3:1bc9:8ca1])
-        by smtp.gmail.com with ESMTPSA id r23sm948111eju.134.2022.01.24.00.16.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 00:16:09 -0800 (PST)
-Message-ID: <7792513f-4f5a-d2b8-f142-ac14d97cda8f@redhat.com>
-Date:   Mon, 24 Jan 2022 09:16:08 +0100
+        id S242072AbiAXIQL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 03:16:11 -0500
+Received: from mga06.intel.com ([134.134.136.31]:58474 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S242062AbiAXIPY (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 03:15:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643012124; x=1674548124;
+  h=date:from:to:cc:subject:message-id:mime-version;
+  bh=HujrP6/5teoeAUcPVfeZHIAMjk1F8hBwcrvkJpHJEIw=;
+  b=V7S+Dg20JK34m/N4Yk9mbf9lCRSLFv5PBvoK25fyTe7ozaXsM6KJsNHQ
+   GAe1pSMaMgnMN4VWPWKB5Hhr5SlDaG4gUSzPoXspiMGs8hvLaoy5uHHL+
+   P5Va7G48+kXVxTGyceGLpRPFnwSzms5w776X5fMYp2UPKXI6tUFOGemtQ
+   1g294HZeNI3poy5EDCo0INrjvElpoo+IMo0vm1WA+E0AP0pTmYaXhMaZN
+   aaIEa3dFRlf0jSvbU7zn31p4xSgUrLL7T7kidOiTKL/ItJEo5pfzApgKY
+   vzJ1V0F4/d28FgvRjbO4ykYhfBXq6TyRLMaXRwUAQW4OMPa+jSF6I321K
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="306708799"
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="306708799"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 00:15:24 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="519852305"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga007.jf.intel.com with ESMTP; 24 Jan 2022 00:15:22 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nBuVV-000Hxj-Im; Mon, 24 Jan 2022 08:15:21 +0000
+Date:   Mon, 24 Jan 2022 16:14:47 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>
+Cc:     kbuild-all@lists.01.org, GNU/Weeb Mailing List <gwml@gnuweeb.org>,
+        linux-kernel@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [ammarfaizi2-block:mellanox/linux/queue-next 106/133]
+ include/linux/rcupdate.h:390:9: error: dereferencing pointer to incomplete
+ type 'struct mlx5e_selq_params'
+Message-ID: <202201241612.OX49g5Am-lkp@intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [Patch 0/3] Staging: rtl8723bs: Fix codestyle errors and warnings
-Content-Language: en-US
-To:     Jagath Jog J <jagathjog1996@gmail.com>, gregkh@linuxfoundation.org,
-        Larry.Finger@lwfinger.net
-Cc:     fabioaiuto83@gmail.com, dan.carpenter@oracle.com,
-        marcocesati@gmail.com, linux-staging@lists.linux.dev,
-        linux-kernel@vger.kernel.org
-References: <20220124034456.8665-1-jagathjog1996@gmail.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220124034456.8665-1-jagathjog1996@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Hi,
+tree:   https://github.com/ammarfaizi2/linux-block mellanox/linux/queue-next
+head:   32b13b2dd056afa99be1f0904e767d4fc980d6e2
+commit: 96e88d9f06884769fac7248d445d5c031da26484 [106/133] net/mlx5e: Use select queue parameters to sync with control flow
+config: i386-randconfig-a005-20220124 (https://download.01.org/0day-ci/archive/20220124/202201241612.OX49g5Am-lkp@intel.com/config)
+compiler: gcc-9 (Debian 9.3.0-22) 9.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/ammarfaizi2/linux-block/commit/96e88d9f06884769fac7248d445d5c031da26484
+        git remote add ammarfaizi2-block https://github.com/ammarfaizi2/linux-block
+        git fetch --no-tags ammarfaizi2-block mellanox/linux/queue-next
+        git checkout 96e88d9f06884769fac7248d445d5c031da26484
+        # save the config file to linux build tree
+        mkdir build_dir
+        make W=1 O=build_dir ARCH=i386 SHELL=/bin/bash
 
-On 1/24/22 04:44, Jagath Jog J wrote:
-> This series fix the following errors/warnings:
-> 
-> -Placing { braces at the end of same line of if condition
-> -Removed extra spaces in declaration
-> -Placing necessary blank line after declaration
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-Thanks, series looks good to me:
+All errors (new ones prefixed by >>):
 
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+   In file included from include/linux/rculist.h:11,
+                    from include/linux/dcache.h:8,
+                    from include/linux/fs.h:8,
+                    from include/linux/highmem.h:5,
+                    from drivers/net/ethernet/mellanox/mlx5/core/main.c:33:
+   drivers/net/ethernet/mellanox/mlx5/core/en/selq.h: In function 'mlx5e_selq_get_params':
+>> include/linux/rcupdate.h:390:9: error: dereferencing pointer to incomplete type 'struct mlx5e_selq_params'
+     390 |  typeof(*p) *________p1 = (typeof(*p) *__force)READ_ONCE(p); \
+         |         ^
+   include/linux/rcupdate.h:544:2: note: in expansion of macro '__rcu_dereference_check'
+     544 |  __rcu_dereference_check((p), (c) || rcu_read_lock_bh_held(), __rcu)
+         |  ^~~~~~~~~~~~~~~~~~~~~~~
+   include/linux/rcupdate.h:605:31: note: in expansion of macro 'rcu_dereference_bh_check'
+     605 | #define rcu_dereference_bh(p) rcu_dereference_bh_check(p, 0)
+         |                               ^~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/net/ethernet/mellanox/mlx5/core/en/selq.h:21:9: note: in expansion of macro 'rcu_dereference_bh'
+      21 |  return rcu_dereference_bh(selq->active);
+         |         ^~~~~~~~~~~~~~~~~~
 
-for the series.
 
-Regards,
+vim +390 include/linux/rcupdate.h
 
-Hans
+76c8eaafe4f061 Paul E. McKenney        2021-04-21  380  
+ca5ecddfa8fcbd Paul E. McKenney        2010-04-28  381  #define __rcu_access_pointer(p, space) \
+ca5ecddfa8fcbd Paul E. McKenney        2010-04-28  382  ({ \
+7d0ae8086b8283 Paul E. McKenney        2015-03-03  383  	typeof(*p) *_________p1 = (typeof(*p) *__force)READ_ONCE(p); \
+423a86a610cad1 Joel Fernandes (Google  2018-12-12  384) 	rcu_check_sparse(p, space); \
+ca5ecddfa8fcbd Paul E. McKenney        2010-04-28  385  	((typeof(*p) __force __kernel *)(_________p1)); \
+ca5ecddfa8fcbd Paul E. McKenney        2010-04-28  386  })
+ca5ecddfa8fcbd Paul E. McKenney        2010-04-28  387  #define __rcu_dereference_check(p, c, space) \
+ca5ecddfa8fcbd Paul E. McKenney        2010-04-28  388  ({ \
+ac59853c06993a Pranith Kumar           2014-11-13  389  	/* Dependency order vs. p above. */ \
+506458efaf153c Will Deacon             2017-10-24 @390  	typeof(*p) *________p1 = (typeof(*p) *__force)READ_ONCE(p); \
+f78f5b90c4ffa5 Paul E. McKenney        2015-06-18  391  	RCU_LOCKDEP_WARN(!(c), "suspicious rcu_dereference_check() usage"); \
+423a86a610cad1 Joel Fernandes (Google  2018-12-12  392) 	rcu_check_sparse(p, space); \
+ac59853c06993a Pranith Kumar           2014-11-13  393  	((typeof(*p) __force __kernel *)(________p1)); \
+ca5ecddfa8fcbd Paul E. McKenney        2010-04-28  394  })
+ca5ecddfa8fcbd Paul E. McKenney        2010-04-28  395  #define __rcu_dereference_protected(p, c, space) \
+ca5ecddfa8fcbd Paul E. McKenney        2010-04-28  396  ({ \
+f78f5b90c4ffa5 Paul E. McKenney        2015-06-18  397  	RCU_LOCKDEP_WARN(!(c), "suspicious rcu_dereference_protected() usage"); \
+423a86a610cad1 Joel Fernandes (Google  2018-12-12  398) 	rcu_check_sparse(p, space); \
+ca5ecddfa8fcbd Paul E. McKenney        2010-04-28  399  	((typeof(*p) __force __kernel *)(p)); \
+ca5ecddfa8fcbd Paul E. McKenney        2010-04-28  400  })
+995f1405610bd8 Paul E. McKenney        2016-07-01  401  #define rcu_dereference_raw(p) \
+995f1405610bd8 Paul E. McKenney        2016-07-01  402  ({ \
+995f1405610bd8 Paul E. McKenney        2016-07-01  403  	/* Dependency order vs. p above. */ \
+506458efaf153c Will Deacon             2017-10-24  404  	typeof(p) ________p1 = READ_ONCE(p); \
+995f1405610bd8 Paul E. McKenney        2016-07-01  405  	((typeof(*p) __force __kernel *)(________p1)); \
+995f1405610bd8 Paul E. McKenney        2016-07-01  406  })
+ca5ecddfa8fcbd Paul E. McKenney        2010-04-28  407  
 
-> 
-> Jagath Jog J (3):
->   Staging: rtl8723bs: Placing opening { braces in previous line
->   Staging: rtl8723bs: Removed extra spaces between datatype and variable
->   Staging: rtl8723bs: Inserting blank line after declaration
-> 
->  drivers/staging/rtl8723bs/core/rtw_cmd.c      | 54 +++++-----
->  drivers/staging/rtl8723bs/hal/hal_intf.c      |  5 +
->  .../staging/rtl8723bs/os_dep/ioctl_cfg80211.c | 98 ++++++-------------
->  3 files changed, 63 insertions(+), 94 deletions(-)
-> 
+:::::: The code at line 390 was first introduced by commit
+:::::: 506458efaf153c1ea480591c5602a5a3ba5a3b76 locking/barriers: Convert users of lockless_dereference() to READ_ONCE()
 
+:::::: TO: Will Deacon <will.deacon@arm.com>
+:::::: CC: Ingo Molnar <mingo@kernel.org>
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
