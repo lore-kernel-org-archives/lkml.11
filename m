@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0F27C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C53A5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451184AbiAXVWX (ORCPT
+        id S1451223AbiAXVW2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:22:23 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50036 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358894AbiAXUxE (ORCPT
+        Mon, 24 Jan 2022 16:22:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43750 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359074AbiAXUxE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:53:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CE82C047CC4;
+        Mon, 24 Jan 2022 11:59:09 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D732AB80FA3;
-        Mon, 24 Jan 2022 20:53:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B0BB8C340E5;
-        Mon, 24 Jan 2022 20:53:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 20FC5B8119D;
+        Mon, 24 Jan 2022 19:59:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57BF5C340E5;
+        Mon, 24 Jan 2022 19:59:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057581;
-        bh=KIinkNyzt4ugcO55WTubE68+yAEKo88iRuWUobe4O7E=;
+        s=korg; t=1643054346;
+        bh=SR6/RHYzbaW8Yv7fuCZxeBV3M2Vgut2hDG7UGkgolbU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nWqZ7aoKx2+JCdiS6tSLs00XHfrkZ/ShzHpXAdYrrcGXd23bddO2ueMPCZeoRX/xJ
-         Cd/Ho9kJBgodvqhIw86kpgHtB8s6D7x9DOf446WUff7N4hr+Rv2qvnmCGBQHJ51Iek
-         KvVNV86hRoq+B8pcS8coiVHiE+wOpBpuJeYS9bzM=
+        b=MyNuvCNmd1ej8A/oVZUaPAvKWj2XeGKtjDYg8CZnqNJrB68kSDlKkhGTUID4yPwyE
+         0Kd4gRmPP9eTQM73BbuwKkiyGBtLyAuVaTtG/G1sINqb/XdRonC8qoyLQ2FrXQ9OSc
+         nNPuVu8Mu4Z0szHzL7AnnFMDBwSmM+MiERE6U1Ss=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Karl Kurbjun <kkurbjun@gmail.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.16 0003/1039] HID: Ignore battery for Elan touchscreen on HP Envy X360 15t-dr100
-Date:   Mon, 24 Jan 2022 19:29:52 +0100
-Message-Id: <20220124184125.251451486@linuxfoundation.org>
+        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 326/563] HSI: core: Fix return freed object in hsi_new_client
+Date:   Mon, 24 Jan 2022 19:41:31 +0100
+Message-Id: <20220124184035.707047298@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,46 +50,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Karl Kurbjun <kkurbjun@gmail.com>
+From: Chengfeng Ye <cyeaa@connect.ust.hk>
 
-commit f3193ea1b6779023334faa72b214ece457e02656 upstream.
+[ Upstream commit a1ee1c08fcd5af03187dcd41dcab12fd5b379555 ]
 
-Battery status on Elan tablet driver is reported for the HP ENVY x360
-15t-dr100. There is no separate battery for the Elan controller resulting in a
-battery level report of 0% or 1% depending on whether a stylus has interacted
-with the screen. These low battery level reports causes a variety of bad
-behavior in desktop environments. This patch adds the appropriate quirk to
-indicate that the batery status is unused for this target.
+cl is freed on error of calling device_register, but this
+object is return later, which will cause uaf issue. Fix it
+by return NULL on error.
 
-Cc: stable@vger.kernel.org
-Signed-off-by: Karl Kurbjun <kkurbjun@gmail.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-ids.h   |    1 +
- drivers/hid/hid-input.c |    2 ++
- 2 files changed, 3 insertions(+)
+ drivers/hsi/hsi_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
---- a/drivers/hid/hid-ids.h
-+++ b/drivers/hid/hid-ids.h
-@@ -398,6 +398,7 @@
- #define USB_DEVICE_ID_HP_X2		0x074d
- #define USB_DEVICE_ID_HP_X2_10_COVER	0x0755
- #define I2C_DEVICE_ID_HP_ENVY_X360_15	0x2d05
-+#define I2C_DEVICE_ID_HP_ENVY_X360_15T_DR100	0x29CF
- #define I2C_DEVICE_ID_HP_SPECTRE_X360_15	0x2817
- #define USB_DEVICE_ID_ASUS_UX550VE_TOUCHSCREEN	0x2544
- #define USB_DEVICE_ID_ASUS_UX550_TOUCHSCREEN	0x2706
---- a/drivers/hid/hid-input.c
-+++ b/drivers/hid/hid-input.c
-@@ -329,6 +329,8 @@ static const struct hid_device_id hid_ba
- 	  HID_BATTERY_QUIRK_IGNORE },
- 	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_HP_ENVY_X360_15),
- 	  HID_BATTERY_QUIRK_IGNORE },
-+	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_HP_ENVY_X360_15T_DR100),
-+	  HID_BATTERY_QUIRK_IGNORE },
- 	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_HP_SPECTRE_X360_15),
- 	  HID_BATTERY_QUIRK_IGNORE },
- 	{ HID_I2C_DEVICE(USB_VENDOR_ID_ELAN, I2C_DEVICE_ID_SURFACE_GO_TOUCHSCREEN),
+diff --git a/drivers/hsi/hsi_core.c b/drivers/hsi/hsi_core.c
+index a5f92e2889cb8..a330f58d45fc6 100644
+--- a/drivers/hsi/hsi_core.c
++++ b/drivers/hsi/hsi_core.c
+@@ -102,6 +102,7 @@ struct hsi_client *hsi_new_client(struct hsi_port *port,
+ 	if (device_register(&cl->device) < 0) {
+ 		pr_err("hsi: failed to register client: %s\n", info->name);
+ 		put_device(&cl->device);
++		goto err;
+ 	}
+ 
+ 	return cl;
+-- 
+2.34.1
+
 
 
