@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30AC6C3526E
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E24D9C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2374378AbiAYAQx (ORCPT
+        id S2374305AbiAYAQq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:16:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52892 "EHLO
+        Mon, 24 Jan 2022 19:16:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382263AbiAXX2E (ORCPT
+        with ESMTP id S1383051AbiAXX2E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:28:04 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AC59BC01D7EB;
-        Mon, 24 Jan 2022 13:30:59 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A768CC01D7F3;
+        Mon, 24 Jan 2022 13:31:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74140B81233;
-        Mon, 24 Jan 2022 21:30:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A080BC340E4;
-        Mon, 24 Jan 2022 21:30:56 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 480A2614F3;
+        Mon, 24 Jan 2022 21:31:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30D27C340E9;
+        Mon, 24 Jan 2022 21:31:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059857;
-        bh=vCWM391mahdHAJjL6H0oEHOo3B7sCwqL6vruq8eQ2u4=;
+        s=korg; t=1643059883;
+        bh=OBTuXiREeeRTt0kQKSBldCdfbCJ4bnAco+QXL8c1owQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=epJQW/5dLqq5xLOX1hDMlPYk18IEdJNRtUvakL66vLeabl0JLNT2VkxqIpodGQCcT
-         8jJyhFiy4tHFELAl2pQvF5fwv5hx+cLk0uuNJIjCE9XGdYtSK5Bu4aJahsvbCO2uuQ
-         UvtqtKjqRd/ID0tBxw/pFf0gggUoMzTDJS+j/Mp0=
+        b=lUGvagDkcMAsSO7hKt1pFZDtAyzUCFiYiY6ofM7Hm+cSAHHUFLS8kxQrrN86XqKOj
+         orG1xFw7XseDgT/FVZzn9mfk0j7r+pOMD4Pd9DIJD9SECRyk+8N/ERSgwnsjVZeycS
+         crPTzo/6coEbwagCkuMRToZKVtc7lBgdFjf+UJnw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zqiang <qiang.zhang1211@gmail.com>,
-        syzbot+bb950e68b400ab4f65f8@syzkaller.appspotmail.com,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0756/1039] ALSA: seq: Set upper limit of processed events
-Date:   Mon, 24 Jan 2022 19:42:25 +0100
-Message-Id: <20220124184150.747943551@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Dominik Brodowski <linux@dominikbrodowski.net>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0724/1039] random: do not throw away excess input to crng_fast_load
+Date:   Mon, 24 Jan 2022 19:41:53 +0100
+Message-Id: <20220124184149.668774250@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,85 +51,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Takashi Iwai <tiwai@suse.de>
+From: Jason A. Donenfeld <Jason@zx2c4.com>
 
-[ Upstream commit 6fadb494a638d8b8a55864ecc6ac58194f03f327 ]
+[ Upstream commit 73c7733f122e8d0107f88655a12011f68f69e74b ]
 
-Currently ALSA sequencer core tries to process the queued events as
-much as possible when they become dispatchable.  If applications try
-to queue too massive events to be processed at the very same timing,
-the sequencer core would still try to process such all events, either
-in the interrupt context or via some notifier; in either away, it
-might be a cause of RCU stall or such problems.
+When crng_fast_load() is called by add_hwgenerator_randomness(), we
+currently will advance to crng_init==1 once we've acquired 64 bytes, and
+then throw away the rest of the buffer. Usually, that is not a problem:
+When add_hwgenerator_randomness() gets called via EFI or DT during
+setup_arch(), there won't be any IRQ randomness. Therefore, the 64 bytes
+passed by EFI exactly matches what is needed to advance to crng_init==1.
+Usually, DT seems to pass 64 bytes as well -- with one notable exception
+being kexec, which hands over 128 bytes of entropy to the kexec'd kernel.
+In that case, we'll advance to crng_init==1 once 64 of those bytes are
+consumed by crng_fast_load(), but won't continue onward feeding in bytes
+to progress to crng_init==2. This commit fixes the issue by feeding
+any leftover bytes into the next phase in add_hwgenerator_randomness().
 
-As a potential workaround for those problems, this patch adds the
-upper limit of the amount of events to be processed.  The remaining
-events are processed in the next batch, so they won't be lost.
-
-For the time being, it's limited up to 1000 events per queue, which
-should be high enough for any normal usages.
-
-Reported-by: Zqiang <qiang.zhang1211@gmail.com>
-Reported-by: syzbot+bb950e68b400ab4f65f8@syzkaller.appspotmail.com
-Link: https://lore.kernel.org/r/20211102033222.3849-1-qiang.zhang1211@gmail.com
-Link: https://lore.kernel.org/r/20211207165146.2888-1-tiwai@suse.de
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+[linux@dominikbrodowski.net: rewrite commit message]
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
+Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/core/seq/seq_queue.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/char/random.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
-diff --git a/sound/core/seq/seq_queue.c b/sound/core/seq/seq_queue.c
-index d6c02dea976c8..bc933104c3eea 100644
---- a/sound/core/seq/seq_queue.c
-+++ b/sound/core/seq/seq_queue.c
-@@ -235,12 +235,15 @@ struct snd_seq_queue *snd_seq_queue_find_name(char *name)
+diff --git a/drivers/char/random.c b/drivers/char/random.c
+index 7470ee24db2f9..a27ae3999ff32 100644
+--- a/drivers/char/random.c
++++ b/drivers/char/random.c
+@@ -912,12 +912,14 @@ static struct crng_state *select_crng(void)
  
- /* -------------------------------------------------------- */
- 
-+#define MAX_CELL_PROCESSES_IN_QUEUE	1000
-+
- void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
+ /*
+  * crng_fast_load() can be called by code in the interrupt service
+- * path.  So we can't afford to dilly-dally.
++ * path.  So we can't afford to dilly-dally. Returns the number of
++ * bytes processed from cp.
+  */
+-static int crng_fast_load(const char *cp, size_t len)
++static size_t crng_fast_load(const char *cp, size_t len)
  {
  	unsigned long flags;
- 	struct snd_seq_event_cell *cell;
- 	snd_seq_tick_time_t cur_tick;
- 	snd_seq_real_time_t cur_time;
-+	int processed = 0;
+ 	char *p;
++	size_t ret = 0;
  
- 	if (q == NULL)
- 		return;
-@@ -263,6 +266,8 @@ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
- 		if (!cell)
- 			break;
- 		snd_seq_dispatch_event(cell, atomic, hop);
-+		if (++processed >= MAX_CELL_PROCESSES_IN_QUEUE)
-+			goto out; /* the rest processed at the next batch */
+ 	if (!spin_trylock_irqsave(&primary_crng.lock, flags))
+ 		return 0;
+@@ -928,7 +930,7 @@ static int crng_fast_load(const char *cp, size_t len)
+ 	p = (unsigned char *) &primary_crng.state[4];
+ 	while (len > 0 && crng_init_cnt < CRNG_INIT_CNT_THRESH) {
+ 		p[crng_init_cnt % CHACHA_KEY_SIZE] ^= *cp;
+-		cp++; crng_init_cnt++; len--;
++		cp++; crng_init_cnt++; len--; ret++;
+ 	}
+ 	spin_unlock_irqrestore(&primary_crng.lock, flags);
+ 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
+@@ -936,7 +938,7 @@ static int crng_fast_load(const char *cp, size_t len)
+ 		crng_init = 1;
+ 		pr_notice("fast init done\n");
+ 	}
+-	return 1;
++	return ret;
+ }
+ 
+ /*
+@@ -1287,7 +1289,7 @@ void add_interrupt_randomness(int irq, int irq_flags)
+ 	if (unlikely(crng_init == 0)) {
+ 		if ((fast_pool->count >= 64) &&
+ 		    crng_fast_load((char *) fast_pool->pool,
+-				   sizeof(fast_pool->pool))) {
++				   sizeof(fast_pool->pool)) > 0) {
+ 			fast_pool->count = 0;
+ 			fast_pool->last = now;
+ 		}
+@@ -2295,8 +2297,11 @@ void add_hwgenerator_randomness(const char *buffer, size_t count,
+ 	struct entropy_store *poolp = &input_pool;
+ 
+ 	if (unlikely(crng_init == 0)) {
+-		crng_fast_load(buffer, count);
+-		return;
++		size_t ret = crng_fast_load(buffer, count);
++		count -= ret;
++		buffer += ret;
++		if (!count || crng_init == 0)
++			return;
  	}
  
- 	/* Process time queue... */
-@@ -272,14 +277,19 @@ void snd_seq_check_queue(struct snd_seq_queue *q, int atomic, int hop)
- 		if (!cell)
- 			break;
- 		snd_seq_dispatch_event(cell, atomic, hop);
-+		if (++processed >= MAX_CELL_PROCESSES_IN_QUEUE)
-+			goto out; /* the rest processed at the next batch */
- 	}
- 
-+ out:
- 	/* free lock */
- 	spin_lock_irqsave(&q->check_lock, flags);
- 	if (q->check_again) {
- 		q->check_again = 0;
--		spin_unlock_irqrestore(&q->check_lock, flags);
--		goto __again;
-+		if (processed < MAX_CELL_PROCESSES_IN_QUEUE) {
-+			spin_unlock_irqrestore(&q->check_lock, flags);
-+			goto __again;
-+		}
- 	}
- 	q->check_blocked = 0;
- 	spin_unlock_irqrestore(&q->check_lock, flags);
+ 	/* Suspend writing if we're above the trickle threshold.
 -- 
 2.34.1
 
