@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE54C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:03:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8403FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:03:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240306AbiAXPDo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 10:03:44 -0500
-Received: from mga02.intel.com ([134.134.136.20]:19111 "EHLO mga02.intel.com"
+        id S243359AbiAXPDq (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 10:03:46 -0500
+Received: from mga09.intel.com ([134.134.136.24]:24561 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240231AbiAXPCd (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 10:02:33 -0500
+        id S240334AbiAXPCg (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 10:02:36 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643036553; x=1674572553;
+  t=1643036556; x=1674572556;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=R/2/2Vf7aAJY5Z0gTQ9vw6gI7x3m6wTJrRpGLg8JppI=;
-  b=SeYa2kJgY4u8vieN3NsiqzacHqTXNbYSzhrtL4uS0WY8qOw6agkJPwum
-   g0VNn0nmT/jOQE4p3QLUiB1E6YB/gjaATuq7ZOxkmpDOZiBMAdfqT8ExS
-   wh1atElMoaFgfKVmwvgL8P5pwN0RYf9VWQu/uEmm0PcWpU7w7T1Pb/a8+
-   MWPi3YqaqG5dUQWI3/cN4PEf5ttAVcMr+E6dJZWiwX1+wZjTgce8Dccul
-   WIBCIPcy0tQzE+5xLOa0RNM87YUXUAs+Eb/qMCuP+gWrxMzESB8/pzbK5
-   whFPhE4+foQJlbHT+SNXapDpXesuaqM1ZZyI4Mnk/aXWQVX2dNwkWNKKD
+  bh=uav+UwLJTiQzJso3hjEQdqtULUSM2290C08sG/C0E5c=;
+  b=i81tDKDNHkhJumD/BI+dj3j2K1JNMwNh1+/OywP64pNwBqIUpenAnh8U
+   Iv5o9UFbp49L74E0M9nOFWiMatBJxgi1zFNiwsEdcgpwC9fY1RGsi40Hu
+   trtPGvgeMQCpahuGY2Ctj4vq+SJ3kSCDAVWbX5Ah6pX9YvbAvniKbel9d
+   8MDPdH+3GMhYNMwJ6CtW2ZCm7lDpAeibJfghOOvxSS4D6BaXdUdJlmVTX
+   z/FCRXFMy89+zKad8Z4HssET1PWoj56sTWavEZ4J1joSRLebJw/9RRtly
+   5unXHko86V83OKhFHRuvaOuXCB2krrRVhTbWB6wBIwUL/6IAs9kibVC4P
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="233423327"
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="245843930"
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="233423327"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:27 -0800
+   d="scan'208";a="245843930"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:02:29 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="624104372"
+   d="scan'208";a="627523593"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 24 Jan 2022 07:02:21 -0800
+  by orsmga004.jf.intel.com with ESMTP; 24 Jan 2022 07:02:23 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1000)
-        id 52933C98; Mon, 24 Jan 2022 17:02:20 +0200 (EET)
+        id AAC23DD9; Mon, 24 Jan 2022 17:02:20 +0200 (EET)
 From:   "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
 To:     tglx@linutronix.de, mingo@redhat.com, bp@alien8.de,
         dave.hansen@intel.com, luto@kernel.org, peterz@infradead.org
@@ -47,9 +47,9 @@ Cc:     sathyanarayanan.kuppuswamy@linux.intel.com, aarcange@redhat.com,
         tony.luck@intel.com, vkuznets@redhat.com, wanpengli@tencent.com,
         x86@kernel.org, linux-kernel@vger.kernel.org,
         "Kirill A. Shutemov" <kirill.shutemov@linux.intel.com>
-Subject: [PATCHv2 21/29] x86/tdx: Exclude shared bit from __PHYSICAL_MASK
-Date:   Mon, 24 Jan 2022 18:02:07 +0300
-Message-Id: <20220124150215.36893-22-kirill.shutemov@linux.intel.com>
+Subject: [PATCHv2 28/29] x86/tdx: Warn about unexpected WBINVD
+Date:   Mon, 24 Jan 2022 18:02:14 +0300
+Message-Id: <20220124150215.36893-29-kirill.shutemov@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
 References: <20220124150215.36893-1-kirill.shutemov@linux.intel.com>
@@ -59,60 +59,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In TDX guests, by default memory is protected from host access. If a
-guest needs to communicate with the VMM (like the I/O use case), it uses
-a single bit in the physical address to communicate the protected/shared
-attribute of the given page.
+WBINVD causes #VE in TDX guests. There's no reliable way to emulate it.
+The kernel can ask for VMM assistance, but VMM is untrusted and can ignore
+the request.
 
-In the x86 ARCH code, __PHYSICAL_MASK macro represents the width of the
-physical address in the given architecture. It is used in creating
-physical PAGE_MASK for address bits in the kernel. Since in TDX guest,
-a single bit is used as metadata, it needs to be excluded from valid
-physical address bits to avoid using incorrect addresses bits in the
-kernel.
+Fortunately, there is no use case for WBINVD inside TDX guests.
 
-Enable DYNAMIC_PHYSICAL_MASK to support updating the __PHYSICAL_MASK.
+Warn about any unexpected WBINVD.
 
-Co-developed-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Signed-off-by: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
-Reviewed-by: Andi Kleen <ak@linux.intel.com>
-Reviewed-by: Tony Luck <tony.luck@intel.com>
 Signed-off-by: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
 ---
- arch/x86/Kconfig      | 1 +
- arch/x86/kernel/tdx.c | 8 ++++++++
- 2 files changed, 9 insertions(+)
+ arch/x86/kernel/tdx.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/x86/Kconfig b/arch/x86/Kconfig
-index 1c59e02792e4..680c3cad9422 100644
---- a/arch/x86/Kconfig
-+++ b/arch/x86/Kconfig
-@@ -886,6 +886,7 @@ config INTEL_TDX_GUEST
- 	depends on X86_X2APIC
- 	select ARCH_HAS_CC_PLATFORM
- 	select X86_MCE
-+	select DYNAMIC_PHYSICAL_MASK
- 	help
- 	  Support running as a guest under Intel TDX.  Without this support,
- 	  the guest kernel can not boot or run under TDX.
 diff --git a/arch/x86/kernel/tdx.c b/arch/x86/kernel/tdx.c
-index b27c4261bfd2..beeaf61934bc 100644
+index 6048887ac846..22c785c2059c 100644
 --- a/arch/x86/kernel/tdx.c
 +++ b/arch/x86/kernel/tdx.c
-@@ -486,5 +486,13 @@ void __init tdx_early_init(void)
- 
- 	tdx_get_info();
- 
-+	/*
-+	 * All bits above GPA width are reserved and kernel treats shared bit
-+	 * as flag, not as part of physical address.
-+	 *
-+	 * Adjust physical mask to only cover valid GPA bits.
-+	 */
-+	physical_mask &= GENMASK_ULL(td_info.gpa_width - 2, 0);
-+
- 	pr_info("Guest detected\n");
- }
+@@ -530,6 +530,10 @@ static bool tdx_virt_exception_kernel(struct pt_regs *regs, struct ve_info *ve)
+ 	case EXIT_REASON_IO_INSTRUCTION:
+ 		ret = tdx_handle_io(regs, ve->exit_qual);
+ 		break;
++	case EXIT_REASON_WBINVD:
++		WARN_ONCE(1, "Unexpected WBINVD\n");
++		ret = true;
++		break;
+ 	default:
+ 		pr_warn("Unexpected #VE: %lld\n", ve->exit_reason);
+ 		break;
 -- 
 2.34.1
 
