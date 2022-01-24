@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28729C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7379AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451098AbiAXVWH (ORCPT
+        id S1451113AbiAXVWJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:22:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44230 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359026AbiAXUxF (ORCPT
+        Mon, 24 Jan 2022 16:22:09 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50756 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1442284AbiAXUyP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:53:05 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F841C02B866;
-        Mon, 24 Jan 2022 11:58:55 -0800 (PST)
+        Mon, 24 Jan 2022 15:54:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5A791B8119D;
-        Mon, 24 Jan 2022 19:58:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75E6FC340E5;
-        Mon, 24 Jan 2022 19:58:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id DA554B80FA1;
+        Mon, 24 Jan 2022 20:54:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02C7FC340E5;
+        Mon, 24 Jan 2022 20:54:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054332;
-        bh=9LNPEI3vU+GgQ06ospyNK/ywpFLeKxPrJ2gMNjRDkLg=;
+        s=korg; t=1643057647;
+        bh=TEw8/WP6YfHH4W4x2h4ZS/43zd1x6SlbIuZzOc87T74=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bWdeKoR4ZEYlXT/6Y9vLycjzqwF8i5xo2UI5O1GpWsSq5VLr2heDoECL+TkyYi7de
-         uGupQhC+WfduX0SBVlU5pOP+FlYIOX/gt8542xMXnD2gaitTJ7iY05FP8QgeUX268N
-         JWIz9CKhdghSatzSWyLIYQnHWh1lAqi8tfGVxUO8=
+        b=oTvuvPuJyUQ/hCLd/wAvOg61VliUAWclFCHWmy3a5uWaplz63dREBJ2F4lRWqYNOG
+         0MbT9vc5PqdOGn76P1Cv8GTjDOAS9V7ltKPIgCBpTijVwVLxTiOj6KJBql21R4y4Ln
+         +r8YzSZIzMyG/B5BSlHQm+zFRVMk6jp7VF2RCvDE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Iwona Winiarska <iwona.winiarska@intel.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 353/563] gpio: aspeed: Convert aspeed_gpio.lock to raw_spinlock
-Date:   Mon, 24 Jan 2022 19:41:58 +0100
-Message-Id: <20220124184036.620118465@linuxfoundation.org>
+        Ammar Faizi <ammar.faizi@students.amikom.ac.id>,
+        Willy Tarreau <w@1wt.eu>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: [PATCH 5.16 0033/1039] tools/nolibc: fix incorrect truncation of exit code
+Date:   Mon, 24 Jan 2022 19:30:22 +0100
+Message-Id: <20220124184126.244465832@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,258 +48,91 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Iwona Winiarska <iwona.winiarska@intel.com>
+From: Willy Tarreau <w@1wt.eu>
 
-[ Upstream commit 61a7904b6ace99b1bde0d0e867fa3097f5c8cee2 ]
+commit de0244ae40ae91145faaf164a4252347607c3711 upstream.
 
-The gpio-aspeed driver implements an irq_chip which need to be invoked
-from hardirq context. Since spin_lock() can sleep with PREEMPT_RT, it is
-no longer legal to invoke it while interrupts are disabled.
-This also causes lockdep to complain about:
-[    0.649797] [ BUG: Invalid wait context ]
-because aspeed_gpio.lock (spin_lock_t) is taken under irq_desc.lock
-(raw_spinlock_t).
-Let's use of raw_spinlock_t instead of spinlock_t.
+Ammar Faizi reported that our exit code handling is wrong. We truncate
+it to the lowest 8 bits but the syscall itself is expected to take a
+regular 32-bit signed integer, not an unsigned char. It's the kernel
+that later truncates it to the lowest 8 bits. The difference is visible
+in strace, where the program below used to show exit(255) instead of
+exit(-1):
 
-Signed-off-by: Iwona Winiarska <iwona.winiarska@intel.com>
-Signed-off-by: Bartosz Golaszewski <brgl@bgdev.pl>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+  int main(void)
+  {
+        return -1;
+  }
+
+This patch applies the fix to all archs. x86_64, i386, arm64, armv7 and
+mips were all tested and confirmed to work fine now. Risc-v was not
+tested but the change is trivial and exactly the same as for other archs.
+
+Reported-by: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
+Cc: stable@vger.kernel.org
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpio/gpio-aspeed.c | 52 +++++++++++++++++++-------------------
- 1 file changed, 26 insertions(+), 26 deletions(-)
+ tools/include/nolibc/nolibc.h |   13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/gpio/gpio-aspeed.c b/drivers/gpio/gpio-aspeed.c
-index b966f5e28ebff..e0d5d80ec8e0f 100644
---- a/drivers/gpio/gpio-aspeed.c
-+++ b/drivers/gpio/gpio-aspeed.c
-@@ -53,7 +53,7 @@ struct aspeed_gpio_config {
- struct aspeed_gpio {
- 	struct gpio_chip chip;
- 	struct irq_chip irqc;
--	spinlock_t lock;
-+	raw_spinlock_t lock;
- 	void __iomem *base;
- 	int irq;
- 	const struct aspeed_gpio_config *config;
-@@ -413,14 +413,14 @@ static void aspeed_gpio_set(struct gpio_chip *gc, unsigned int offset,
- 	unsigned long flags;
- 	bool copro;
+--- a/tools/include/nolibc/nolibc.h
++++ b/tools/include/nolibc/nolibc.h
+@@ -414,7 +414,7 @@ asm(".section .text\n"
+     "xor %ebp, %ebp\n"          // zero the stack frame
+     "and $-16, %rsp\n"          // x86 ABI : esp must be 16-byte aligned before call
+     "call main\n"               // main() returns the status code, we'll exit with it.
+-    "movzb %al, %rdi\n"         // retrieve exit code from 8 lower bits
++    "mov %eax, %edi\n"          // retrieve exit code (32 bit)
+     "mov $60, %rax\n"           // NR_exit == 60
+     "syscall\n"                 // really exit
+     "hlt\n"                     // ensure it does not return
+@@ -602,9 +602,9 @@ asm(".section .text\n"
+     "push %ebx\n"               // support both regparm and plain stack modes
+     "push %eax\n"
+     "call main\n"               // main() returns the status code in %eax
+-    "movzbl %al, %ebx\n"        // retrieve exit code from lower 8 bits
+-    "movl   $1, %eax\n"         // NR_exit == 1
+-    "int    $0x80\n"            // exit now
++    "mov %eax, %ebx\n"          // retrieve exit code (32-bit int)
++    "movl $1, %eax\n"           // NR_exit == 1
++    "int $0x80\n"               // exit now
+     "hlt\n"                     // ensure it does not
+     "");
  
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	copro = aspeed_gpio_copro_request(gpio, offset);
- 
- 	__aspeed_gpio_set(gc, offset, val);
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- }
- 
- static int aspeed_gpio_dir_in(struct gpio_chip *gc, unsigned int offset)
-@@ -435,7 +435,7 @@ static int aspeed_gpio_dir_in(struct gpio_chip *gc, unsigned int offset)
- 	if (!have_input(gpio, offset))
- 		return -ENOTSUPP;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	reg = ioread32(addr);
- 	reg &= ~GPIO_BIT(offset);
-@@ -445,7 +445,7 @@ static int aspeed_gpio_dir_in(struct gpio_chip *gc, unsigned int offset)
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return 0;
- }
-@@ -463,7 +463,7 @@ static int aspeed_gpio_dir_out(struct gpio_chip *gc,
- 	if (!have_output(gpio, offset))
- 		return -ENOTSUPP;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	reg = ioread32(addr);
- 	reg |= GPIO_BIT(offset);
-@@ -474,7 +474,7 @@ static int aspeed_gpio_dir_out(struct gpio_chip *gc,
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return 0;
- }
-@@ -492,11 +492,11 @@ static int aspeed_gpio_get_direction(struct gpio_chip *gc, unsigned int offset)
- 	if (!have_output(gpio, offset))
- 		return GPIO_LINE_DIRECTION_IN;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	val = ioread32(bank_reg(gpio, bank, reg_dir)) & GPIO_BIT(offset);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return val ? GPIO_LINE_DIRECTION_OUT : GPIO_LINE_DIRECTION_IN;
- }
-@@ -539,14 +539,14 @@ static void aspeed_gpio_irq_ack(struct irq_data *d)
- 
- 	status_addr = bank_reg(gpio, bank, reg_irq_status);
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	copro = aspeed_gpio_copro_request(gpio, offset);
- 
- 	iowrite32(bit, status_addr);
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- }
- 
- static void aspeed_gpio_irq_set_mask(struct irq_data *d, bool set)
-@@ -565,7 +565,7 @@ static void aspeed_gpio_irq_set_mask(struct irq_data *d, bool set)
- 
- 	addr = bank_reg(gpio, bank, reg_irq_enable);
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	copro = aspeed_gpio_copro_request(gpio, offset);
- 
- 	reg = ioread32(addr);
-@@ -577,7 +577,7 @@ static void aspeed_gpio_irq_set_mask(struct irq_data *d, bool set)
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- }
- 
- static void aspeed_gpio_irq_mask(struct irq_data *d)
-@@ -629,7 +629,7 @@ static int aspeed_gpio_set_type(struct irq_data *d, unsigned int type)
- 		return -EINVAL;
- 	}
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	copro = aspeed_gpio_copro_request(gpio, offset);
- 
- 	addr = bank_reg(gpio, bank, reg_irq_type0);
-@@ -649,7 +649,7 @@ static int aspeed_gpio_set_type(struct irq_data *d, unsigned int type)
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	irq_set_handler_locked(d, handler);
- 
-@@ -719,7 +719,7 @@ static int aspeed_gpio_reset_tolerance(struct gpio_chip *chip,
- 
- 	treg = bank_reg(gpio, to_bank(offset), reg_tolerance);
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 	copro = aspeed_gpio_copro_request(gpio, offset);
- 
- 	val = readl(treg);
-@@ -733,7 +733,7 @@ static int aspeed_gpio_reset_tolerance(struct gpio_chip *chip,
- 
- 	if (copro)
- 		aspeed_gpio_copro_release(gpio, offset);
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return 0;
- }
-@@ -859,7 +859,7 @@ static int enable_debounce(struct gpio_chip *chip, unsigned int offset,
- 		return rc;
- 	}
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	if (timer_allocation_registered(gpio, offset)) {
- 		rc = unregister_allocated_timer(gpio, offset);
-@@ -919,7 +919,7 @@ static int enable_debounce(struct gpio_chip *chip, unsigned int offset,
- 	configure_timer(gpio, offset, i);
- 
- out:
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return rc;
- }
-@@ -930,13 +930,13 @@ static int disable_debounce(struct gpio_chip *chip, unsigned int offset)
- 	unsigned long flags;
- 	int rc;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	rc = unregister_allocated_timer(gpio, offset);
- 	if (!rc)
- 		configure_timer(gpio, offset, 0);
- 
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 
- 	return rc;
- }
-@@ -1018,7 +1018,7 @@ int aspeed_gpio_copro_grab_gpio(struct gpio_desc *desc,
- 		return -EINVAL;
- 	bindex = offset >> 3;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	/* Sanity check, this shouldn't happen */
- 	if (gpio->cf_copro_bankmap[bindex] == 0xff) {
-@@ -1039,7 +1039,7 @@ int aspeed_gpio_copro_grab_gpio(struct gpio_desc *desc,
- 	if (bit)
- 		*bit = GPIO_OFFSET(offset);
-  bail:
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 	return rc;
- }
- EXPORT_SYMBOL_GPL(aspeed_gpio_copro_grab_gpio);
-@@ -1063,7 +1063,7 @@ int aspeed_gpio_copro_release_gpio(struct gpio_desc *desc)
- 		return -EINVAL;
- 	bindex = offset >> 3;
- 
--	spin_lock_irqsave(&gpio->lock, flags);
-+	raw_spin_lock_irqsave(&gpio->lock, flags);
- 
- 	/* Sanity check, this shouldn't happen */
- 	if (gpio->cf_copro_bankmap[bindex] == 0) {
-@@ -1077,7 +1077,7 @@ int aspeed_gpio_copro_release_gpio(struct gpio_desc *desc)
- 		aspeed_gpio_change_cmd_source(gpio, bank, bindex,
- 					      GPIO_CMDSRC_ARM);
-  bail:
--	spin_unlock_irqrestore(&gpio->lock, flags);
-+	raw_spin_unlock_irqrestore(&gpio->lock, flags);
- 	return rc;
- }
- EXPORT_SYMBOL_GPL(aspeed_gpio_copro_release_gpio);
-@@ -1151,7 +1151,7 @@ static int __init aspeed_gpio_probe(struct platform_device *pdev)
- 	if (IS_ERR(gpio->base))
- 		return PTR_ERR(gpio->base);
- 
--	spin_lock_init(&gpio->lock);
-+	raw_spin_lock_init(&gpio->lock);
- 
- 	gpio_id = of_match_node(aspeed_gpio_of_table, pdev->dev.of_node);
- 	if (!gpio_id)
--- 
-2.34.1
-
+@@ -788,7 +788,6 @@ asm(".section .text\n"
+     "and %r3, %r1, $-8\n"         // AAPCS : sp must be 8-byte aligned in the
+     "mov %sp, %r3\n"              //         callee, an bl doesn't push (lr=pc)
+     "bl main\n"                   // main() returns the status code, we'll exit with it.
+-    "and %r0, %r0, $0xff\n"       // limit exit code to 8 bits
+     "movs r7, $1\n"               // NR_exit == 1
+     "svc $0x00\n"
+     "");
+@@ -985,7 +984,6 @@ asm(".section .text\n"
+     "add x2, x2, x1\n"            //           + argv
+     "and sp, x1, -16\n"           // sp must be 16-byte aligned in the callee
+     "bl main\n"                   // main() returns the status code, we'll exit with it.
+-    "and x0, x0, 0xff\n"          // limit exit code to 8 bits
+     "mov x8, 93\n"                // NR_exit == 93
+     "svc #0\n"
+     "");
+@@ -1190,7 +1188,7 @@ asm(".section .text\n"
+     "addiu $sp,$sp,-16\n"         // the callee expects to save a0..a3 there!
+     "jal main\n"                  // main() returns the status code, we'll exit with it.
+     "nop\n"                       // delayed slot
+-    "and $a0, $v0, 0xff\n"        // limit exit code to 8 bits
++    "move $a0, $v0\n"             // retrieve 32-bit exit code from v0
+     "li $v0, 4001\n"              // NR_exit == 4001
+     "syscall\n"
+     ".end __start\n"
+@@ -1388,7 +1386,6 @@ asm(".section .text\n"
+     "add   a2,a2,a1\n"           //             + argv
+     "andi  sp,a1,-16\n"          // sp must be 16-byte aligned
+     "call  main\n"               // main() returns the status code, we'll exit with it.
+-    "andi  a0, a0, 0xff\n"       // limit exit code to 8 bits
+     "li a7, 93\n"                // NR_exit == 93
+     "ecall\n"
+     "");
 
 
