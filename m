@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF62EC35270
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75678C4707A
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380932AbiAXURV (ORCPT
+        id S1358413AbiAXURM (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:17:21 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42774 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344007AbiAXUAY (ORCPT
+        Mon, 24 Jan 2022 15:17:12 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56384 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1359759AbiAXUAL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:00:24 -0500
+        Mon, 24 Jan 2022 15:00:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 33BBDB81218;
-        Mon, 24 Jan 2022 20:00:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56124C340E5;
-        Mon, 24 Jan 2022 20:00:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 31E10601B6;
+        Mon, 24 Jan 2022 20:00:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 26BDEC340E5;
+        Mon, 24 Jan 2022 20:00:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054421;
-        bh=ehT1W02LPHHbQC4CpSx98mgh4CIOnT+AKMKHij0IAzI=;
+        s=korg; t=1643054409;
+        bh=Ewoqf+lA3UVgXVPosWCGDLUE0k5LkPsd+VjXLW6OORU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CldPozz/hgOS6PkcXNiifqofcJPm2nXcSNZadRaMqTLhswYJE3HR7GzjwiA6E8mCt
-         tA0BdMUR2QYy2HaTDntfQU7iQB0vNz4SxQqEzRy8QNFx0vjlSUgrWSNXpobI6fX9CP
-         UkL7zomYVGgGRU5zOdOqPe9x/rUyGF5BvWvLT30Q=
+        b=OrG1e2ZbEUS1oZeYt1VnZ0q7phPA6Tk5JC3lCS2xHZ/h5gkPQQdGMWH51Sao1Hphm
+         yWWFle7NMkWN0xoUi13hkYgjq+fp134jKyjRXCQKJFZHfnc3X6kuAtja8PHJa8wVAb
+         evXDR7PMRYsJA6LbQNgLTTZQr/8QR72KAinyfjgM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        stable@vger.kernel.org, Ben Greear <greearb@candelatech.com>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 357/563] x86/mce: Mark mce_panic() noinstr
-Date:   Mon, 24 Jan 2022 19:42:02 +0100
-Message-Id: <20220124184036.765131336@linuxfoundation.org>
+Subject: [PATCH 5.10 380/563] ath11k: Fix napi related hang
+Date:   Mon, 24 Jan 2022 19:42:25 +0100
+Message-Id: <20220124184037.567917942@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -46,67 +47,107 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Ben Greear <greearb@candelatech.com>
 
-[ Upstream commit 3c7ce80a818fa7950be123cac80cd078e5ac1013 ]
+[ Upstream commit d943fdad7589653065be0e20aadc6dff37725ed4 ]
 
-And allow instrumentation inside it because it does calls to other
-facilities which will not be tagged noinstr.
+Similar to the same bug in ath10k, a napi disable w/out it being enabled
+will hang forever.  I believe I saw this while trying rmmod after driver
+had some failure on startup.  Fix it by keeping state on whether napi is
+enabled or not.
 
-Fixes
+And, remove un-used napi pointer in ath11k driver base struct.
 
-  vmlinux.o: warning: objtool: do_machine_check()+0xc73: call to mce_panic() leaves .noinstr.text section
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-8-bp@alien8.de
+Signed-off-by: Ben Greear <greearb@candelatech.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/20200903195254.29379-1-greearb@candelatech.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/core.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ drivers/net/wireless/ath/ath11k/ahb.c  | 12 +++++++++---
+ drivers/net/wireless/ath/ath11k/core.h |  2 +-
+ drivers/net/wireless/ath/ath11k/pci.c  | 12 +++++++++---
+ 3 files changed, 19 insertions(+), 7 deletions(-)
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 34fffffaf8730..64d8a96a2bf1e 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -295,11 +295,17 @@ static void wait_for_panic(void)
- 	panic("Panicing machine check CPU died");
- }
+diff --git a/drivers/net/wireless/ath/ath11k/ahb.c b/drivers/net/wireless/ath/ath11k/ahb.c
+index e8cca58e18ffc..9ff6e68533142 100644
+--- a/drivers/net/wireless/ath/ath11k/ahb.c
++++ b/drivers/net/wireless/ath/ath11k/ahb.c
+@@ -175,8 +175,11 @@ static void __ath11k_ahb_ext_irq_disable(struct ath11k_base *ab)
  
--static void mce_panic(const char *msg, struct mce *final, char *exp)
-+static noinstr void mce_panic(const char *msg, struct mce *final, char *exp)
- {
--	int apei_err = 0;
- 	struct llist_node *pending;
- 	struct mce_evt_llist *l;
-+	int apei_err = 0;
-+
-+	/*
-+	 * Allow instrumentation around external facilities usage. Not that it
-+	 * matters a whole lot since the machine is going to panic anyway.
-+	 */
-+	instrumentation_begin();
+ 		ath11k_ahb_ext_grp_disable(irq_grp);
  
- 	if (!fake_panic) {
- 		/*
-@@ -314,7 +320,7 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
- 	} else {
- 		/* Don't log too much for fake panic */
- 		if (atomic_inc_return(&mce_fake_panicked) > 1)
--			return;
-+			goto out;
+-		napi_synchronize(&irq_grp->napi);
+-		napi_disable(&irq_grp->napi);
++		if (irq_grp->napi_enabled) {
++			napi_synchronize(&irq_grp->napi);
++			napi_disable(&irq_grp->napi);
++			irq_grp->napi_enabled = false;
++		}
  	}
- 	pending = mce_gen_pool_prepare_records();
- 	/* First print corrected ones that are still unlogged */
-@@ -352,6 +358,9 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
- 		panic(msg);
- 	} else
- 		pr_emerg(HW_ERR "Fake kernel panic: %s\n", msg);
-+
-+out:
-+	instrumentation_end();
  }
  
- /* Support code for software error injection */
+@@ -300,7 +303,10 @@ static void ath11k_ahb_ext_irq_enable(struct ath11k_base *ab)
+ 	for (i = 0; i < ATH11K_EXT_IRQ_GRP_NUM_MAX; i++) {
+ 		struct ath11k_ext_irq_grp *irq_grp = &ab->ext_irq_grp[i];
+ 
+-		napi_enable(&irq_grp->napi);
++		if (!irq_grp->napi_enabled) {
++			napi_enable(&irq_grp->napi);
++			irq_grp->napi_enabled = true;
++		}
+ 		ath11k_ahb_ext_grp_enable(irq_grp);
+ 	}
+ }
+diff --git a/drivers/net/wireless/ath/ath11k/core.h b/drivers/net/wireless/ath/ath11k/core.h
+index c8e36251068c9..d2f2898d17b49 100644
+--- a/drivers/net/wireless/ath/ath11k/core.h
++++ b/drivers/net/wireless/ath/ath11k/core.h
+@@ -124,6 +124,7 @@ struct ath11k_ext_irq_grp {
+ 	u32 num_irq;
+ 	u32 grp_id;
+ 	u64 timestamp;
++	bool napi_enabled;
+ 	struct napi_struct napi;
+ 	struct net_device napi_ndev;
+ };
+@@ -687,7 +688,6 @@ struct ath11k_base {
+ 	u32 wlan_init_status;
+ 	int irq_num[ATH11K_IRQ_NUM_MAX];
+ 	struct ath11k_ext_irq_grp ext_irq_grp[ATH11K_EXT_IRQ_GRP_NUM_MAX];
+-	struct napi_struct *napi;
+ 	struct ath11k_targ_cap target_caps;
+ 	u32 ext_service_bitmap[WMI_SERVICE_EXT_BM_SIZE];
+ 	bool pdevs_macaddr_valid;
+diff --git a/drivers/net/wireless/ath/ath11k/pci.c b/drivers/net/wireless/ath/ath11k/pci.c
+index d7eb6b7160bb4..105e344240c10 100644
+--- a/drivers/net/wireless/ath/ath11k/pci.c
++++ b/drivers/net/wireless/ath/ath11k/pci.c
+@@ -416,8 +416,11 @@ static void __ath11k_pci_ext_irq_disable(struct ath11k_base *sc)
+ 
+ 		ath11k_pci_ext_grp_disable(irq_grp);
+ 
+-		napi_synchronize(&irq_grp->napi);
+-		napi_disable(&irq_grp->napi);
++		if (irq_grp->napi_enabled) {
++			napi_synchronize(&irq_grp->napi);
++			napi_disable(&irq_grp->napi);
++			irq_grp->napi_enabled = false;
++		}
+ 	}
+ }
+ 
+@@ -436,7 +439,10 @@ static void ath11k_pci_ext_irq_enable(struct ath11k_base *ab)
+ 	for (i = 0; i < ATH11K_EXT_IRQ_GRP_NUM_MAX; i++) {
+ 		struct ath11k_ext_irq_grp *irq_grp = &ab->ext_irq_grp[i];
+ 
+-		napi_enable(&irq_grp->napi);
++		if (!irq_grp->napi_enabled) {
++			napi_enable(&irq_grp->napi);
++			irq_grp->napi_enabled = true;
++		}
+ 		ath11k_pci_ext_grp_enable(irq_grp);
+ 	}
+ }
 -- 
 2.34.1
 
