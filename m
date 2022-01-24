@@ -2,41 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ADDAC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D80AC4332F
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421447AbiAYC05 (ORCPT
+        id S3421374AbiAYC0r (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:26:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:39068 "EHLO
+        Mon, 24 Jan 2022 21:26:47 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:37646 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357576AbiAXTuT (ORCPT
+        with ESMTP id S1357206AbiAXTth (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:50:19 -0500
+        Mon, 24 Jan 2022 14:49:37 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F18E6B8122F;
-        Mon, 24 Jan 2022 19:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1FF2AC340E5;
-        Mon, 24 Jan 2022 19:50:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 6AB6FB81188;
+        Mon, 24 Jan 2022 19:49:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92A27C340E8;
+        Mon, 24 Jan 2022 19:49:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053816;
-        bh=nbudAHV5Id/HIQCDuN+n30CdC18eMXg3cLWyw/aOG2Q=;
+        s=korg; t=1643053775;
+        bh=VHxhncLM05CKD8ZqIUX3uIMUbkQi3PdPyrNZ2fAV1Cw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xcUiGlPwnnAtBIBkiyjcXbU5I68M7s4hID9899QKqvkdDkEMaMoyF4sKn7r7cwxyM
-         LpPEz41y3UgTylmgBbxDoJMUtQxKf91ya/5fbsVyZrZTocus/Hdvea/lvXHsZveYbw
-         JtOCXj98AXiVNKs5yq8vL5c6hPdW6vcKtBVV3YdE=
+        b=p0DyD9GxutFaBBzhtWeGsxdCQcl5VpXyYjKBtKLAbi2sykJJnWkpbLsyeu/uIJT9z
+         MPgNCB4RezeR54mrTqLClrUq793Bn1DynuwciwutowuHRPvFvTDIddvhsdji3/ipFq
+         lUFgGZsMBVwK178HR92EPJC5Vzjis2TgbyPW2v5I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 187/563] Bluetooth: L2CAP: Fix using wrong mode
-Date:   Mon, 24 Jan 2022 19:39:12 +0100
-Message-Id: <20220124184030.887767032@linuxfoundation.org>
+Subject: [PATCH 5.10 172/563] media: hantro: Fix probe func error path
+Date:   Mon, 24 Jan 2022 19:38:57 +0100
+Message-Id: <20220124184030.360088937@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -48,52 +50,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
+From: Jernej Skrabec <jernej.skrabec@gmail.com>
 
-[ Upstream commit 30d57722732d9736554f85f75f9d7ad5402d192e ]
+[ Upstream commit 37af43b250fda6162005d47bf7c959c70d52b107 ]
 
-If user has a set to use SOCK_STREAM the socket would default to
-L2CAP_MODE_ERTM which later needs to be adjusted if the destination
-address is LE which doesn't support such mode.
+If clocks for some reason couldn't be enabled, probe function returns
+immediately, without disabling PM. This obviously leaves PM ref counters
+unbalanced.
 
-Fixes: 15f02b9105625 ("Bluetooth: L2CAP: Add initial code for Enhanced Credit Based Mode")
-Signed-off-by: Luiz Augusto von Dentz <luiz.von.dentz@intel.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fix that by jumping to appropriate error path, so effects of PM functions
+are reversed.
+
+Fixes: 775fec69008d ("media: add Rockchip VPU JPEG encoder driver")
+Signed-off-by: Jernej Skrabec <jernej.skrabec@gmail.com>
+Acked-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+Reviewed-by: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/bluetooth/l2cap_sock.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/staging/media/hantro/hantro_drv.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/net/bluetooth/l2cap_sock.c b/net/bluetooth/l2cap_sock.c
-index 4574c5cb1b596..251017c69ab7f 100644
---- a/net/bluetooth/l2cap_sock.c
-+++ b/net/bluetooth/l2cap_sock.c
-@@ -161,7 +161,11 @@ static int l2cap_sock_bind(struct socket *sock, struct sockaddr *addr, int alen)
- 		break;
+diff --git a/drivers/staging/media/hantro/hantro_drv.c b/drivers/staging/media/hantro/hantro_drv.c
+index 7749ca9a8ebbf..bc97ec0a7e4af 100644
+--- a/drivers/staging/media/hantro/hantro_drv.c
++++ b/drivers/staging/media/hantro/hantro_drv.c
+@@ -829,7 +829,7 @@ static int hantro_probe(struct platform_device *pdev)
+ 	ret = clk_bulk_prepare(vpu->variant->num_clocks, vpu->clocks);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Failed to prepare clocks\n");
+-		return ret;
++		goto err_pm_disable;
  	}
  
--	if (chan->psm && bdaddr_type_is_le(chan->src_type))
-+	/* Use L2CAP_MODE_LE_FLOWCTL (CoC) in case of LE address and
-+	 * L2CAP_MODE_EXT_FLOWCTL (ECRED) has not been set.
-+	 */
-+	if (chan->psm && bdaddr_type_is_le(chan->src_type) &&
-+	    chan->mode != L2CAP_MODE_EXT_FLOWCTL)
- 		chan->mode = L2CAP_MODE_LE_FLOWCTL;
- 
- 	chan->state = BT_BOUND;
-@@ -255,7 +259,11 @@ static int l2cap_sock_connect(struct socket *sock, struct sockaddr *addr,
- 			return -EINVAL;
- 	}
- 
--	if (chan->psm && bdaddr_type_is_le(chan->src_type) && !chan->mode)
-+	/* Use L2CAP_MODE_LE_FLOWCTL (CoC) in case of LE address and
-+	 * L2CAP_MODE_EXT_FLOWCTL (ECRED) has not been set.
-+	 */
-+	if (chan->psm && bdaddr_type_is_le(chan->src_type) &&
-+	    chan->mode != L2CAP_MODE_EXT_FLOWCTL)
- 		chan->mode = L2CAP_MODE_LE_FLOWCTL;
- 
- 	l2cap_sock_init_pid(sk);
+ 	ret = v4l2_device_register(&pdev->dev, &vpu->v4l2_dev);
+@@ -885,6 +885,7 @@ err_v4l2_unreg:
+ 	v4l2_device_unregister(&vpu->v4l2_dev);
+ err_clk_unprepare:
+ 	clk_bulk_unprepare(vpu->variant->num_clocks, vpu->clocks);
++err_pm_disable:
+ 	pm_runtime_dont_use_autosuspend(vpu->dev);
+ 	pm_runtime_disable(vpu->dev);
+ 	return ret;
 -- 
 2.34.1
 
