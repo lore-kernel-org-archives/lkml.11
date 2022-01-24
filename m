@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B19EC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91F7AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:03:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345379AbiAXTDf (ORCPT
+        id S1345460AbiAXTDl (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:03:35 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58432 "EHLO
+        Mon, 24 Jan 2022 14:03:41 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56362 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344382AbiAXS70 (ORCPT
+        with ESMTP id S1344839AbiAXS7U (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:59:26 -0500
+        Mon, 24 Jan 2022 13:59:20 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A9BC609EE;
-        Mon, 24 Jan 2022 18:59:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 227D9C340E5;
-        Mon, 24 Jan 2022 18:59:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 357ED608D4;
+        Mon, 24 Jan 2022 18:59:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1149C340E7;
+        Mon, 24 Jan 2022 18:59:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050765;
-        bh=qNILM1RdhmA5Zm0cLlQ79sNMcY7CTw2k9YHU8nTci04=;
+        s=korg; t=1643050759;
+        bh=JcvhSTU1IQqq+oYId9prgK7Cki2I3kfKY0v6RsGm2zU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q7tOC2MsMSRF56FHDLDNos9ZL06NEyjJ602gPqebdg2S0akyWOLEiK1Gf9r+VbcdK
-         LZEThRQK/DqS/eTKn2v2Ra+fOHdrASJJ7EM+VcljJpxLrZItIISMIatPqi/7sZjdqH
-         8wYMgDsldUqknXKYI4ytvs082A1rQMjFa6vIRlQM=
+        b=ZZRCyZTDZyPus2+l4q0LdJRch7rrwToPzmfdrchKkx/NsSdfTlSMdLQF/BawoYX8a
+         78FylcI1c47+0HY0hSsCRTaC3ztSh4zN+vYf/UKxh6hRkGW3ZNVBI1n63z6ONdxhCN
+         NoIbIxqzJVm8rMtd9dTd/t3lX7NhyLH4ECZvBlPw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Julia Lawall <Julia.Lawall@lip6.fr>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 105/157] powerpc/6xx: add missing of_node_put
-Date:   Mon, 24 Jan 2022 19:43:15 +0100
-Message-Id: <20220124183936.094440495@linuxfoundation.org>
+Subject: [PATCH 4.9 103/157] serial: core: Keep mctrl register state and cached copy in sync
+Date:   Mon, 24 Jan 2022 19:43:13 +0100
+Message-Id: <20220124183936.032114999@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -47,62 +46,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Julia Lawall <Julia.Lawall@lip6.fr>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit f6e82647ff71d427d4148964b71f239fba9d7937 ]
+[ Upstream commit 93a770b7e16772530196674ffc79bb13fa927dc6 ]
 
-for_each_compatible_node performs an of_node_get on each iteration, so
-a break out of the loop requires an of_node_put.
+struct uart_port contains a cached copy of the Modem Control signals.
+It is used to skip register writes in uart_update_mctrl() if the new
+signal state equals the old signal state.  It also avoids a register
+read to obtain the current state of output signals.
 
-A simplified version of the semantic patch that fixes this problem is as
-follows (http://coccinelle.lip6.fr):
+When a uart_port is registered, uart_configure_port() changes signal
+state but neglects to keep the cached copy in sync.  That may cause
+a subsequent register write to be incorrectly skipped.  Fix it before
+it trips somebody up.
 
-// <smpl>
-@@
-expression e;
-local idexpression n;
-@@
+This behavior has been present ever since the serial core was introduced
+in 2002:
+https://git.kernel.org/history/history/c/33c0d1b0c3eb
 
-@@
-local idexpression n;
-expression e;
-@@
+So far it was never an issue because the cached copy is initialized to 0
+by kzalloc() and when uart_configure_port() is executed, at most DTR has
+been set by uart_set_options() or sunsu_console_setup().  Therefore,
+a stable designation seems unnecessary.
 
- for_each_compatible_node(n,...) {
-   ...
-(
-   of_node_put(n);
-|
-   e = n
-|
-+  of_node_put(n);
-?  break;
-)
-   ...
- }
-... when != n
-// </smpl>
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/1448051604-25256-2-git-send-email-Julia.Lawall@lip6.fr
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/bceeaba030b028ed810272d55d5fc6f3656ddddb.1641129752.git.lukas@wunner.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/platforms/embedded6xx/hlwd-pic.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/tty/serial/serial_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/powerpc/platforms/embedded6xx/hlwd-pic.c b/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
-index bf4a125faec66..db2ea6b6889de 100644
---- a/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
-+++ b/arch/powerpc/platforms/embedded6xx/hlwd-pic.c
-@@ -220,6 +220,7 @@ void hlwd_pic_probe(void)
- 			irq_set_chained_handler(cascade_virq,
- 						hlwd_pic_irq_cascade);
- 			hlwd_irq_host = host;
-+			of_node_put(np);
- 			break;
- 		}
- 	}
+diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
+index e97961dc3622d..ec458add38833 100644
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -2349,7 +2349,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
+ 		 * We probably don't need a spinlock around this, but
+ 		 */
+ 		spin_lock_irqsave(&port->lock, flags);
+-		port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
++		port->mctrl &= TIOCM_DTR;
++		port->ops->set_mctrl(port, port->mctrl);
+ 		spin_unlock_irqrestore(&port->lock, flags);
+ 
+ 		/*
 -- 
 2.34.1
 
