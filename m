@@ -2,46 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7CDC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99735C4167D
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3410871AbiAYAbJ (ORCPT
+        id S3410957AbiAYAbS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:31:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
+        Mon, 24 Jan 2022 19:31:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2362423AbiAXXmY (ORCPT
+        with ESMTP id S1450656AbiAXVyz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:42:24 -0500
+        Mon, 24 Jan 2022 16:54:55 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4521FC0BD4B3;
-        Mon, 24 Jan 2022 13:38:53 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1ADCC0C090E;
+        Mon, 24 Jan 2022 12:34:59 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F38E5B8123D;
-        Mon, 24 Jan 2022 21:38:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 291A8C340E4;
-        Mon, 24 Jan 2022 21:38:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 66E12B80FA1;
+        Mon, 24 Jan 2022 20:34:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91486C340E5;
+        Mon, 24 Jan 2022 20:34:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060330;
-        bh=9VXSeQPj3bW/cw0fQE/GFo4vmyWAHlsa/ig/RPb23gY=;
+        s=korg; t=1643056498;
+        bh=7KCUkHtCZDPiU8Wu1iyvT6sSWdzlValgHc36KTlvECM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eTFFtENCnCDNwGtd9jjBHtdH2bjx9T/AYsQ6b8H54AAT3sr6fRVx6wseGFVwXvMqw
-         eA58z3hJGXVOF+99kHHA2jjfdoxddVqCxXsAE5TBdyO/Wuc610LHyka7A0oZ0IW0Go
-         HXYKarmwlSEw8jgxdNCnnJ4c7XAAtVsVnBqXT/sk=
+        b=DTANE3LJVm878ZdnsQz2Ut4SY28U7L+5WHU7rjzzsScMdJPMJH+DN5ffeDaNiiOgg
+         ELnSAEd7MuFvZ01KMwz6wCB1elaDEi9+CQSGcm6eSC0iKNYKHZMegDlQ4VDq7MTzej
+         1z9p6gKf64dHga1t8CxuA7RhkUhaOR46XCyOPJRc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Alexandre Ghiti <alexandre.ghiti@canonical.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Subject: [PATCH 5.16 0913/1039] Documentation, arch: Remove leftovers from raw device
-Date:   Mon, 24 Jan 2022 19:45:02 +0100
-Message-Id: <20220124184155.990498529@linuxfoundation.org>
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 472/846] media: atomisp: fix try_fmt logic
+Date:   Mon, 24 Jan 2022 19:39:49 +0100
+Message-Id: <20220124184117.289396210@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,82 +50,115 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexandre Ghiti <alexandre.ghiti@canonical.com>
+From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
-commit 473dcf0ffc31ce1135cd10578e7e06698cf51f4a upstream.
+[ Upstream commit c9e9094c4e42124af909b2f5f6ded0498e0854ac ]
 
-Raw device interface was removed so remove all references to configs
-related to it.
+The internal try_fmt logic is not meant to provide everything
+that the V4L2 API should provide. Also, it doesn't decrement
+the pads that are used only internally by the driver, but aren't
+part of the device's output.
 
-Fixes: 603e4922f1c8 ("remove the raw driver")
-Signed-off-by: Alexandre Ghiti <alexandre.ghiti@canonical.com>
-Acked-by: Arnd Bergmann <arnd@arndb.de> [arch/arm/configs]
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fix it.
+
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- Documentation/admin-guide/devices.txt  |    8 +-------
- arch/arm/configs/spear13xx_defconfig   |    1 -
- arch/arm/configs/spear3xx_defconfig    |    1 -
- arch/arm/configs/spear6xx_defconfig    |    1 -
- arch/powerpc/configs/pseries_defconfig |    1 -
- 5 files changed, 1 insertion(+), 11 deletions(-)
+ .../staging/media/atomisp/pci/atomisp_ioctl.c | 72 ++++++++++++++++++-
+ 1 file changed, 71 insertions(+), 1 deletion(-)
 
---- a/Documentation/admin-guide/devices.txt
-+++ b/Documentation/admin-guide/devices.txt
-@@ -2339,13 +2339,7 @@
- 		disks (see major number 3) except that the limit on
- 		partitions is 31.
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
+index 29826f8e4143d..54624f8814e04 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
+@@ -863,6 +863,72 @@ static int atomisp_g_fmt_file(struct file *file, void *fh,
+ 	return 0;
+ }
  
-- 162 char	Raw block device interface
--		  0 = /dev/rawctl	Raw I/O control device
--		  1 = /dev/raw/raw1	First raw I/O device
--		  2 = /dev/raw/raw2	Second raw I/O device
--		    ...
--		 max minor number of raw device is set by kernel config
--		 MAX_RAW_DEVS or raw module parameter 'max_raw_devs'
-+ 162 char	Used for (now removed) raw block device interface
++static int atomisp_adjust_fmt(struct v4l2_format *f)
++{
++	const struct atomisp_format_bridge *format_bridge;
++	u32 padded_width;
++
++	format_bridge = atomisp_get_format_bridge(f->fmt.pix.pixelformat);
++
++	padded_width = f->fmt.pix.width + pad_w;
++
++	if (format_bridge->planar) {
++		f->fmt.pix.bytesperline = padded_width;
++		f->fmt.pix.sizeimage = PAGE_ALIGN(f->fmt.pix.height *
++						  DIV_ROUND_UP(format_bridge->depth *
++						  padded_width, 8));
++	} else {
++		f->fmt.pix.bytesperline = DIV_ROUND_UP(format_bridge->depth *
++						      padded_width, 8);
++		f->fmt.pix.sizeimage = PAGE_ALIGN(f->fmt.pix.height * f->fmt.pix.bytesperline);
++	}
++
++	if (f->fmt.pix.field == V4L2_FIELD_ANY)
++		f->fmt.pix.field = V4L2_FIELD_NONE;
++
++	format_bridge = atomisp_get_format_bridge(f->fmt.pix.pixelformat);
++	if (!format_bridge)
++		return -EINVAL;
++
++	/* Currently, raw formats are broken!!! */
++	if (format_bridge->sh_fmt == IA_CSS_FRAME_FORMAT_RAW) {
++		f->fmt.pix.pixelformat = V4L2_PIX_FMT_YUV420;
++
++		format_bridge = atomisp_get_format_bridge(f->fmt.pix.pixelformat);
++		if (!format_bridge)
++			return -EINVAL;
++	}
++
++	padded_width = f->fmt.pix.width + pad_w;
++
++	if (format_bridge->planar) {
++		f->fmt.pix.bytesperline = padded_width;
++		f->fmt.pix.sizeimage = PAGE_ALIGN(f->fmt.pix.height *
++						  DIV_ROUND_UP(format_bridge->depth *
++						  padded_width, 8));
++	} else {
++		f->fmt.pix.bytesperline = DIV_ROUND_UP(format_bridge->depth *
++						      padded_width, 8);
++		f->fmt.pix.sizeimage = PAGE_ALIGN(f->fmt.pix.height * f->fmt.pix.bytesperline);
++	}
++
++	if (f->fmt.pix.field == V4L2_FIELD_ANY)
++		f->fmt.pix.field = V4L2_FIELD_NONE;
++
++	/*
++	 * FIXME: do we need to setup this differently, depending on the
++	 * sensor or the pipeline?
++	 */
++	f->fmt.pix.colorspace = V4L2_COLORSPACE_REC709;
++	f->fmt.pix.ycbcr_enc = V4L2_YCBCR_ENC_709;
++	f->fmt.pix.xfer_func = V4L2_XFER_FUNC_709;
++
++	f->fmt.pix.width -= pad_w;
++	f->fmt.pix.height -= pad_h;
++
++	return 0;
++}
++
+ /* This function looks up the closest available resolution. */
+ static int atomisp_try_fmt_cap(struct file *file, void *fh,
+ 			       struct v4l2_format *f)
+@@ -874,7 +940,11 @@ static int atomisp_try_fmt_cap(struct file *file, void *fh,
+ 	rt_mutex_lock(&isp->mutex);
+ 	ret = atomisp_try_fmt(vdev, &f->fmt.pix, NULL);
+ 	rt_mutex_unlock(&isp->mutex);
+-	return ret;
++
++	if (ret)
++		return ret;
++
++	return atomisp_adjust_fmt(f);
+ }
  
-  163 char
- 
---- a/arch/arm/configs/spear13xx_defconfig
-+++ b/arch/arm/configs/spear13xx_defconfig
-@@ -61,7 +61,6 @@ CONFIG_SERIAL_AMBA_PL011=y
- CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
- # CONFIG_HW_RANDOM is not set
- CONFIG_RAW_DRIVER=y
--CONFIG_MAX_RAW_DEVS=8192
- CONFIG_I2C=y
- CONFIG_I2C_DESIGNWARE_PLATFORM=y
- CONFIG_SPI=y
---- a/arch/arm/configs/spear3xx_defconfig
-+++ b/arch/arm/configs/spear3xx_defconfig
-@@ -41,7 +41,6 @@ CONFIG_SERIAL_AMBA_PL011=y
- CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
- # CONFIG_HW_RANDOM is not set
- CONFIG_RAW_DRIVER=y
--CONFIG_MAX_RAW_DEVS=8192
- CONFIG_I2C=y
- CONFIG_I2C_DESIGNWARE_PLATFORM=y
- CONFIG_SPI=y
---- a/arch/arm/configs/spear6xx_defconfig
-+++ b/arch/arm/configs/spear6xx_defconfig
-@@ -36,7 +36,6 @@ CONFIG_INPUT_FF_MEMLESS=y
- CONFIG_SERIAL_AMBA_PL011=y
- CONFIG_SERIAL_AMBA_PL011_CONSOLE=y
- CONFIG_RAW_DRIVER=y
--CONFIG_MAX_RAW_DEVS=8192
- CONFIG_I2C=y
- CONFIG_I2C_DESIGNWARE_PLATFORM=y
- CONFIG_SPI=y
---- a/arch/powerpc/configs/pseries_defconfig
-+++ b/arch/powerpc/configs/pseries_defconfig
-@@ -189,7 +189,6 @@ CONFIG_HVCS=m
- CONFIG_VIRTIO_CONSOLE=m
- CONFIG_IBM_BSR=m
- CONFIG_RAW_DRIVER=y
--CONFIG_MAX_RAW_DEVS=1024
- CONFIG_I2C_CHARDEV=y
- CONFIG_FB=y
- CONFIG_FIRMWARE_EDID=y
+ static int atomisp_s_fmt_cap(struct file *file, void *fh,
+-- 
+2.34.1
+
 
 
