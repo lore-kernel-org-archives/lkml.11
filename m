@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4943C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:54:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E94ADC4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2365337AbiAXXum (ORCPT
+        id S2365496AbiAXXvD (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:50:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48264 "EHLO
+        Mon, 24 Jan 2022 18:51:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1844845AbiAXXK3 (ORCPT
+        with ESMTP id S1844233AbiAXXIM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:10:29 -0500
+        Mon, 24 Jan 2022 18:08:12 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA7BAC0A02A2;
-        Mon, 24 Jan 2022 13:18:44 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E77FC09F4A2;
+        Mon, 24 Jan 2022 13:17:39 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 73ADFB811A2;
-        Mon, 24 Jan 2022 21:18:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 82E53C340E4;
-        Mon, 24 Jan 2022 21:18:41 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A6B8CB811A2;
+        Mon, 24 Jan 2022 21:17:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C73DBC340E4;
+        Mon, 24 Jan 2022 21:17:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059122;
-        bh=sucli1En9E5u5z1IFzbW2r+q38biCmwZYxb30OlR7yk=;
+        s=korg; t=1643059057;
+        bh=ipmEVIXRYyq7vp4hJryUoLzFfRdVsSjgjmRpnw7mLfs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kL7Fy10sQnqKnu4NDhJvaE4DxZVWJG24y0EnhlEPZd4Scp4yTesFemRAl3T3jkLlG
-         KOEaEMlJ8iXvYzLxh71pXZhDBfCAEMO4p0QvJrUjQE6LOJf4v7vlixr9sC18COdzg3
-         webFSXJboG2BrBFUN+SirGgk6w9GixAltKGXoBDE=
+        b=mEfjjrRP/8VRbvOKHqKl7jQdQPvZrB00+p7bLoGhtTC6BtIzVScTN4tvvsJWFALgv
+         MI1KzaOq2EFI+jal7ulwepY8BKZV74EwBBUHnq5IOa/M87fViKKJrqni+9fxdCf3bz
+         UwbPJyvsnm1NF6sr/SNTiknO2bIQXznQ6RuN2izM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hannes Reinecke <hare@suse.de>,
-        Sumanesh Samanta <sumanesh.samanta@broadcom.com>,
-        Bean Huo <beanhuo@micron.com>, Ming Lei <ming.lei@redhat.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0478/1039] scsi: core: Fix scsi_device_max_queue_depth()
-Date:   Mon, 24 Jan 2022 19:37:47 +0100
-Message-Id: <20220124184141.339832686@linuxfoundation.org>
+Subject: [PATCH 5.16 0491/1039] mips: fix Kconfig reference to PHYS_ADDR_T_64BIT
+Date:   Mon, 24 Jan 2022 19:38:00 +0100
+Message-Id: <20220124184141.767752121@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -53,49 +51,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bart Van Assche <bvanassche@acm.org>
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-[ Upstream commit 4bc3bffc1a885eb5cb259e4a25146a4c7b1034e3 ]
+[ Upstream commit a670c82d9ca4f1e7385d9d6f26ff41a50fbdd944 ]
 
-The comment above scsi_device_max_queue_depth() and also the description of
-commit ca4453213951 ("scsi: core: Make sure sdev->queue_depth is <=
-max(shost->can_queue, 1024)") contradict the implementation of the function
-scsi_device_max_queue_depth(). Additionally, the maximum queue depth of a
-SCSI LUN never exceeds host->can_queue. Fix scsi_device_max_queue_depth()
-by changing max_t() into min_t().
+Commit d4a451d5fc84 ("arch: remove the ARCH_PHYS_ADDR_T_64BIT config
+symbol") removes config ARCH_PHYS_ADDR_T_64BIT with all instances of that
+config refactored appropriately. Since then, it is recommended to use the
+config PHYS_ADDR_T_64BIT instead.
 
-Link: https://lore.kernel.org/r/20211203231950.193369-2-bvanassche@acm.org
-Fixes: ca4453213951 ("scsi: core: Make sure sdev->queue_depth is <= max(shost->can_queue, 1024)")
-Cc: Hannes Reinecke <hare@suse.de>
-Cc: Sumanesh Samanta <sumanesh.samanta@broadcom.com>
-Tested-by: Bean Huo <beanhuo@micron.com>
-Reviewed-by: Ming Lei <ming.lei@redhat.com>
-Reviewed-by: Bean Huo <beanhuo@micron.com>
-Signed-off-by: Bart Van Assche <bvanassche@acm.org>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Commit 171543e75272 ("MIPS: Disallow CPU_SUPPORTS_HUGEPAGES for XPA,EVA")
+introduces the expression "!(32BIT && (ARCH_PHYS_ADDR_T_64BIT || EVA))"
+for config CPU_SUPPORTS_HUGEPAGES, which unintentionally refers to the
+non-existing symbol ARCH_PHYS_ADDR_T_64BIT instead of the intended
+PHYS_ADDR_T_64BIT.
+
+Fix this Kconfig reference to the intended PHYS_ADDR_T_64BIT.
+
+This issue was identified with the script ./scripts/checkkconfigsymbols.py.
+I then reported it on the mailing list and Paul confirmed the mistake in
+the linked email thread.
+
+Link: https://lore.kernel.org/lkml/H8IU3R.H5QVNRA077PT@crapouillou.net/
+Suggested-by: Paul Cercueil <paul@crapouillou.net>
+Fixes: 171543e75272 ("MIPS: Disallow CPU_SUPPORTS_HUGEPAGES for XPA,EVA")
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/scsi/scsi.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ arch/mips/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/scsi/scsi.c b/drivers/scsi/scsi.c
-index f6af1562cba49..10e5bffc34aaf 100644
---- a/drivers/scsi/scsi.c
-+++ b/drivers/scsi/scsi.c
-@@ -201,11 +201,11 @@ void scsi_finish_command(struct scsi_cmnd *cmd)
- 
- 
- /*
-- * 1024 is big enough for saturating the fast scsi LUN now
-+ * 1024 is big enough for saturating fast SCSI LUNs.
-  */
- int scsi_device_max_queue_depth(struct scsi_device *sdev)
- {
--	return max_t(int, sdev->host->can_queue, 1024);
-+	return min_t(int, sdev->host->can_queue, 1024);
- }
- 
- /**
+diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
+index 91ce1c57af005..c5826236d913a 100644
+--- a/arch/mips/Kconfig
++++ b/arch/mips/Kconfig
+@@ -2069,7 +2069,7 @@ config CPU_SUPPORTS_ADDRWINCFG
+ 	bool
+ config CPU_SUPPORTS_HUGEPAGES
+ 	bool
+-	depends on !(32BIT && (ARCH_PHYS_ADDR_T_64BIT || EVA))
++	depends on !(32BIT && (PHYS_ADDR_T_64BIT || EVA))
+ config MIPS_PGD_C0_CONTEXT
+ 	bool
+ 	depends on 64BIT
 -- 
 2.34.1
 
