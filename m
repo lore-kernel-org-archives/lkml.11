@@ -2,47 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 450A3C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4A05C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383076AbiAXU0q (ORCPT
+        id S1383210AbiAXU05 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:26:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59478 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347462AbiAXT6o (ORCPT
+        Mon, 24 Jan 2022 15:26:57 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:53818 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237207AbiAXT5Z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:58:44 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A134C047CFB;
-        Mon, 24 Jan 2022 11:27:59 -0800 (PST)
+        Mon, 24 Jan 2022 14:57:25 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 82712B8122F;
-        Mon, 24 Jan 2022 19:27:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2F0AC340E5;
-        Mon, 24 Jan 2022 19:27:55 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 96F0D6090B;
+        Mon, 24 Jan 2022 19:57:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 544F9C33DA0;
+        Mon, 24 Jan 2022 19:57:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052476;
-        bh=Yp1NnFfvlH+1ASCwb2Hc7AdUpcyrvhhExdH1MabsrVw=;
+        s=korg; t=1643054244;
+        bh=eBtV3ryZiXUZattGsksT7BmwOVTZlzKcXHsLCTSvJcc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0Xjq6jHOahJydU2phcUygrU3kn7I8+7JflXeRkRiUKW6Hwn9DjbzDRL7YXQxUIyHR
-         WQuNP26z2Cy1b+JLIPCcnpSnPFWaeqAD7GTrc/4uvSz3QBsJV5rdra7KfAYTo3lTnt
-         vuxXB3guWeDgWUAzifDlen4dApS8AeYcmnQT+EOk=
+        b=g6ooYM8B7/jCwc5C68VkebOO6p5py7J74ct8cqZhIwD7aOV0Fn2WPA3zTHpb5M5hf
+         rn6zqB3I53jnwDSP8NM3CaLtuVxCHIaTYlK8SoOKFuI5CGLPK6NzK7WooeW+cxlwOP
+         a+Fbpkqu4I37TuQ49Dh3pgbfXDnHJyagtdmNJuF8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 072/320] media: dib8000: Fix a memleak in dib8000_init()
-Date:   Mon, 24 Jan 2022 19:40:56 +0100
-Message-Id: <20220124183956.175905593@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 282/563] phy: uniphier-usb3ss: fix unintended writing zeros to PHY register
+Date:   Mon, 24 Jan 2022 19:40:47 +0100
+Message-Id: <20220124184034.194066983@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,53 +48,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>
 
-[ Upstream commit 8dbdcc7269a83305ee9d677b75064d3530a48ee2 ]
+[ Upstream commit 898c7a9ec81620125f2463714a0f4dea18ad6e54 ]
 
-In dib8000_init(), the variable fe is not freed or passed out on the
-failure of dib8000_identify(&state->i2c), which could lead to a memleak.
+Similar to commit 4a90bbb478db ("phy: uniphier-pcie: Fix updating phy
+parameters"), in function uniphier_u3ssphy_set_param(), unintentionally
+write zeros to other fields when writing PHY registers.
 
-Fix this bug by adding a kfree of fe in the error path.
-
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_DVB_DIB8000=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: 77e2c0f5d471 ("V4L/DVB (12900): DiB8000: added support for DiBcom ISDB-T/ISDB-Tsb demodulator DiB8000")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 5ab43d0f8697 ("phy: socionext: add USB3 PHY driver for UniPhier SoC")
+Signed-off-by: Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Link: https://lore.kernel.org/r/1640150369-4134-1-git-send-email-hayashi.kunihiko@socionext.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/dvb-frontends/dib8000.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/phy/socionext/phy-uniphier-usb3ss.c | 10 ++++++----
+ 1 file changed, 6 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/media/dvb-frontends/dib8000.c b/drivers/media/dvb-frontends/dib8000.c
-index bb02354a48b81..d67f2dd997d06 100644
---- a/drivers/media/dvb-frontends/dib8000.c
-+++ b/drivers/media/dvb-frontends/dib8000.c
-@@ -4473,8 +4473,10 @@ static struct dvb_frontend *dib8000_init(struct i2c_adapter *i2c_adap, u8 i2c_ad
+diff --git a/drivers/phy/socionext/phy-uniphier-usb3ss.c b/drivers/phy/socionext/phy-uniphier-usb3ss.c
+index 6700645bcbe6b..3b5ffc16a6947 100644
+--- a/drivers/phy/socionext/phy-uniphier-usb3ss.c
++++ b/drivers/phy/socionext/phy-uniphier-usb3ss.c
+@@ -22,11 +22,13 @@
+ #include <linux/reset.h>
  
- 	state->timf_default = cfg->pll->timf;
+ #define SSPHY_TESTI		0x0
+-#define SSPHY_TESTO		0x4
+ #define TESTI_DAT_MASK		GENMASK(13, 6)
+ #define TESTI_ADR_MASK		GENMASK(5, 1)
+ #define TESTI_WR_EN		BIT(0)
  
--	if (dib8000_identify(&state->i2c) == 0)
-+	if (dib8000_identify(&state->i2c) == 0) {
-+		kfree(fe);
- 		goto error;
-+	}
++#define SSPHY_TESTO		0x4
++#define TESTO_DAT_MASK		GENMASK(7, 0)
++
+ #define PHY_F(regno, msb, lsb) { (regno), (msb), (lsb) }
  
- 	dibx000_init_i2c_master(&state->i2c_master, DIB8000, state->i2c.adap, state->i2c.addr);
+ #define CDR_CPD_TRIM	PHY_F(7, 3, 0)	/* RxPLL charge pump current */
+@@ -84,12 +86,12 @@ static void uniphier_u3ssphy_set_param(struct uniphier_u3ssphy_priv *priv,
+ 	val  = FIELD_PREP(TESTI_DAT_MASK, 1);
+ 	val |= FIELD_PREP(TESTI_ADR_MASK, p->field.reg_no);
+ 	uniphier_u3ssphy_testio_write(priv, val);
+-	val = readl(priv->base + SSPHY_TESTO);
++	val = readl(priv->base + SSPHY_TESTO) & TESTO_DAT_MASK;
  
+ 	/* update value */
+-	val &= ~FIELD_PREP(TESTI_DAT_MASK, field_mask);
++	val &= ~field_mask;
+ 	data = field_mask & (p->value << p->field.lsb);
+-	val  = FIELD_PREP(TESTI_DAT_MASK, data);
++	val  = FIELD_PREP(TESTI_DAT_MASK, data | val);
+ 	val |= FIELD_PREP(TESTI_ADR_MASK, p->field.reg_no);
+ 	uniphier_u3ssphy_testio_write(priv, val);
+ 	uniphier_u3ssphy_testio_write(priv, val | TESTI_WR_EN);
 -- 
 2.34.1
 
