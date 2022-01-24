@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DB25C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92408C43217
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:47:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838197AbiAXWqE (ORCPT
+        id S1838237AbiAXWqJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:46:04 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:51902 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457231AbiAXVlP (ORCPT
+        Mon, 24 Jan 2022 17:46:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55400 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1457581AbiAXVly (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:41:15 -0500
+        Mon, 24 Jan 2022 16:41:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60BA8C07E338;
+        Mon, 24 Jan 2022 12:29:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53A2EB80FA1;
-        Mon, 24 Jan 2022 21:41:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71380C340E5;
-        Mon, 24 Jan 2022 21:41:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 00B7A6152E;
+        Mon, 24 Jan 2022 20:29:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8BFEC340E5;
+        Mon, 24 Jan 2022 20:29:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060473;
-        bh=vtrHks515mWWDB8VUuf53R07+1bjr6PyWKO1q/bUdAk=;
+        s=korg; t=1643056185;
+        bh=cFONM5VO67T7vw1Ikt1XC83kSbbTMBI2w2W/licUUvQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MJr4evXSCfy6Y7me42GLRX+GY/tXtGApTzG12Bo3Bu21oOzRlHbwyLMrQBFLWoY8O
-         o0qNntsyeKgpiaXhhWLgDbc7A8ifSdgrkqJymvdEcAJqkUBC52noQtIOclfCGrFtzP
-         HGHKbuLKG0RqBi8xCq4gKifBvDsVFw1UXJt6QeQc=
+        b=BoUKezO1vC1Lj5OS4x6q/HefQXXVO+lnydLX1am1Dx1tLYeHUsuYXc9SaGDtSKjgN
+         sG23soaNoElAWsX64/ufXHvk1fCtmE2ViNDEkWtaUa0zN7u0iPB0M8lOqEYChQhu3L
+         MUKM7y2sx74RjemP0k+qTpVH+94J7MbAgOUwNIjc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>
-Subject: [PATCH 5.16 0959/1039] crypto: octeontx2 - uninitialized variable in kvf_limits_store()
-Date:   Mon, 24 Jan 2022 19:45:48 +0100
-Message-Id: <20220124184157.530557206@linuxfoundation.org>
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 367/846] iwlwifi: mvm: Use div_s64 instead of do_div in iwl_mvm_ftm_rtt_smoothing()
+Date:   Mon, 24 Jan 2022 19:38:04 +0100
+Message-Id: <20220124184113.599960825@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,39 +50,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-commit 0ea275df84c389e910a3575a9233075118c173ee upstream.
+[ Upstream commit 4ccdcc8ffd955490feec05380223db6a48961eb5 ]
 
-If kstrtoint() fails then "lfs_num" is uninitialized and the warning
-doesn't make any sense.  Just delete it.
+When building ARCH=arm allmodconfig:
 
-Fixes: 8ec8015a3168 ("crypto: octeontx2 - add support to process the crypto request")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c: In function ‘iwl_mvm_ftm_rtt_smoothing’:
+./include/asm-generic/div64.h:222:35: error: comparison of distinct pointer types lacks a cast [-Werror]
+  222 |         (void)(((typeof((n)) *)0) == ((uint64_t *)0));  \
+      |                                   ^~
+drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c:1070:9: note: in expansion of macro ‘do_div’
+ 1070 |         do_div(rtt_avg, 100);
+      |         ^~~~~~
+
+do_div() has to be used with an unsigned 64-bit integer dividend but
+rtt_avg is a signed 64-bit integer.
+
+div_s64() expects a signed 64-bit integer dividend and signed 32-bit
+divisor, which fits this scenario, so use that function here to fix the
+warning.
+
+Fixes: 8b0f92549f2c ("iwlwifi: mvm: fix 32-bit build in FTM")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Link: https://lore.kernel.org/r/20211227191757.2354329-1-nathan@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c |    9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_main.c
-@@ -494,12 +494,11 @@ static ssize_t kvf_limits_store(struct d
- {
- 	struct otx2_cptpf_dev *cptpf = dev_get_drvdata(dev);
- 	int lfs_num;
-+	int ret;
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
+index 6e1d37f258035..bb5fff8174435 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
+@@ -1054,8 +1054,7 @@ static void iwl_mvm_ftm_rtt_smoothing(struct iwl_mvm *mvm,
+ 	overshoot = IWL_MVM_FTM_INITIATOR_SMOOTH_OVERSHOOT;
+ 	alpha = IWL_MVM_FTM_INITIATOR_SMOOTH_ALPHA;
  
--	if (kstrtoint(buf, 0, &lfs_num)) {
--		dev_err(dev, "lfs count %d must be in range [1 - %d]\n",
--			lfs_num, num_online_cpus());
--		return -EINVAL;
--	}
-+	ret = kstrtoint(buf, 0, &lfs_num);
-+	if (ret)
-+		return ret;
- 	if (lfs_num < 1 || lfs_num > num_online_cpus()) {
- 		dev_err(dev, "lfs count %d must be in range [1 - %d]\n",
- 			lfs_num, num_online_cpus());
+-	rtt_avg = alpha * rtt + (100 - alpha) * resp->rtt_avg;
+-	do_div(rtt_avg, 100);
++	rtt_avg = div_s64(alpha * rtt + (100 - alpha) * resp->rtt_avg, 100);
+ 
+ 	IWL_DEBUG_INFO(mvm,
+ 		       "%pM: prev rtt_avg=%lld, new rtt_avg=%lld, rtt=%lld\n",
+-- 
+2.34.1
+
 
 
