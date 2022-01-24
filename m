@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B26DC4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 250FCC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575574AbiAXVwA (ORCPT
+        id S1575537AbiAXVvz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:52:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49940 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353663AbiAXVTI (ORCPT
+        Mon, 24 Jan 2022 16:51:55 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38842 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349609AbiAXVSG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:19:08 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCE3EC06F8E5;
-        Mon, 24 Jan 2022 12:13:32 -0800 (PST)
+        Mon, 24 Jan 2022 16:18:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7A6D26091B;
-        Mon, 24 Jan 2022 20:13:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59195C340E5;
-        Mon, 24 Jan 2022 20:13:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E0DDB614B8;
+        Mon, 24 Jan 2022 21:18:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B4075C340E4;
+        Mon, 24 Jan 2022 21:18:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055211;
-        bh=oj5Je4hEdh8UvrPiv7Hw9okiM1qi3n2AsOBeJ6hgeSM=;
+        s=korg; t=1643059085;
+        bh=NArxHwZeGD7GaMmhx/LlhECXgL7KMKQlYAHAYYPDj34=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aTWpAtlL6//Fw/GzY5xADdHL9t/t/8exOgZ918/3Iz8UKisL2BmfC+6bEYMFHb+vu
-         HAfqvhi1BFTG4502EqG6G9ftzMlgZYHTbFcukn/Qctp0tPOpS59piIsr4YhEtbxEdB
-         scG4wdMgWndY4gnoJNLw/cPmlgKteS495KYCCRCk=
+        b=K9rh77rzuFtCc0VgER0bo1cuClU1Y5l75TvX2G5oaWUWnxf9fTU3TfInc9WIigVMJ
+         cD362BFh/A1DOIsgvDJ3MFOes02t2tCZmK9CFnCPbPB5w8ZbZiZ6baF/Id6Ah8Pvkm
+         Lb8IiQt+0mvNerLPpGGCHXpm0E9NCSVgvLcUTjyg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.15 044/846] media: mceusb: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:32:41 +0100
-Message-Id: <20220124184102.474159963@linuxfoundation.org>
+        stable@vger.kernel.org, John Garry <john.garry@huawei.com>,
+        Xiongfeng Wang <wangxiongfeng2@huawei.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0499/1039] iommu/iova: Fix race between FQ timeout and teardown
+Date:   Mon, 24 Jan 2022 19:38:08 +0100
+Message-Id: <20220124184142.029731523@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,57 +48,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Xiongfeng Wang <wangxiongfeng2@huawei.com>
 
-commit 16394e998cbb050730536bdf7e89f5a70efbd974 upstream.
+[ Upstream commit d7061627d701c90e1cac1e1e60c45292f64f3470 ]
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+It turns out to be possible for hotplugging out a device to reach the
+stage of tearing down the device's group and default domain before the
+domain's flush queue has drained naturally. At this point, it is then
+possible for the timeout to expire just before the del_timer() call
+in free_iova_flush_queue(), such that we then proceed to free the FQ
+resources while fq_flush_timeout() is still accessing them on another
+CPU. Crashes due to this have been observed in the wild while removing
+NVMe devices.
 
-Fixes: 66e89522aff7 ("V4L/DVB: IR: add mceusb IR receiver driver")
-Cc: stable@vger.kernel.org      # 2.6.36
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Close the race window by using del_timer_sync() to safely wait for any
+active timeout handler to finish before we start to free things. We
+already avoid any locking in free_iova_flush_queue() since the FQ is
+supposed to be inactive anyway, so the potential deadlock scenario does
+not apply.
+
+Fixes: 9a005a800ae8 ("iommu/iova: Add flush timer")
+Reviewed-by: John Garry <john.garry@huawei.com>
+Signed-off-by: Xiongfeng Wang <wangxiongfeng2@huawei.com>
+[ rm: rewrite commit message ]
+Signed-off-by: Robin Murphy <robin.murphy@arm.com>
+Link: https://lore.kernel.org/r/0a365e5b07f14b7344677ad6a9a734966a8422ce.1639753638.git.robin.murphy@arm.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/rc/mceusb.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iommu/iova.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
---- a/drivers/media/rc/mceusb.c
-+++ b/drivers/media/rc/mceusb.c
-@@ -1430,7 +1430,7 @@ static void mceusb_gen1_init(struct mceu
- 	 */
- 	ret = usb_control_msg(ir->usbdev, usb_rcvctrlpipe(ir->usbdev, 0),
- 			      USB_REQ_SET_ADDRESS, USB_TYPE_VENDOR, 0, 0,
--			      data, USB_CTRL_MSG_SZ, HZ * 3);
-+			      data, USB_CTRL_MSG_SZ, 3000);
- 	dev_dbg(dev, "set address - ret = %d", ret);
- 	dev_dbg(dev, "set address - data[0] = %d, data[1] = %d",
- 						data[0], data[1]);
-@@ -1438,20 +1438,20 @@ static void mceusb_gen1_init(struct mceu
- 	/* set feature: bit rate 38400 bps */
- 	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
- 			      USB_REQ_SET_FEATURE, USB_TYPE_VENDOR,
--			      0xc04e, 0x0000, NULL, 0, HZ * 3);
-+			      0xc04e, 0x0000, NULL, 0, 3000);
+diff --git a/drivers/iommu/iova.c b/drivers/iommu/iova.c
+index 9e8bc802ac053..920fcc27c9a1e 100644
+--- a/drivers/iommu/iova.c
++++ b/drivers/iommu/iova.c
+@@ -83,8 +83,7 @@ static void free_iova_flush_queue(struct iova_domain *iovad)
+ 	if (!has_iova_flush_queue(iovad))
+ 		return;
  
- 	dev_dbg(dev, "set feature - ret = %d", ret);
+-	if (timer_pending(&iovad->fq_timer))
+-		del_timer(&iovad->fq_timer);
++	del_timer_sync(&iovad->fq_timer);
  
- 	/* bRequest 4: set char length to 8 bits */
- 	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
- 			      4, USB_TYPE_VENDOR,
--			      0x0808, 0x0000, NULL, 0, HZ * 3);
-+			      0x0808, 0x0000, NULL, 0, 3000);
- 	dev_dbg(dev, "set char length - retB = %d", ret);
+ 	fq_destroy_all_entries(iovad);
  
- 	/* bRequest 2: set handshaking to use DTR/DSR */
- 	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
- 			      2, USB_TYPE_VENDOR,
--			      0x0000, 0x0100, NULL, 0, HZ * 3);
-+			      0x0000, 0x0100, NULL, 0, 3000);
- 	dev_dbg(dev, "set handshake  - retC = %d", ret);
- 
- 	/* device resume */
+-- 
+2.34.1
+
 
 
