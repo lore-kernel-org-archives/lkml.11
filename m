@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7AA8C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:12:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F62C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:12:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345392AbiAXTMO (ORCPT
+        id S1344863AbiAXTMV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:12:14 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58834 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344567AbiAXTDP (ORCPT
+        Mon, 24 Jan 2022 14:12:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45332 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345282AbiAXTDN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:03:15 -0500
+        Mon, 24 Jan 2022 14:03:13 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CDAC06175A;
+        Mon, 24 Jan 2022 10:59:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id F201260915;
-        Mon, 24 Jan 2022 19:03:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2E31C340E5;
-        Mon, 24 Jan 2022 19:03:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A347FB81238;
+        Mon, 24 Jan 2022 18:59:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6E6AC340E7;
+        Mon, 24 Jan 2022 18:59:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050994;
-        bh=clj+vxpqqIICktGBM5OJvshuuNp5mLq7b+Nhg7gw3E4=;
+        s=korg; t=1643050749;
+        bh=1irUI/gODjLwvM/jMUYlUbBn28oVk1kyE3HGzfg2p/A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Jx6USeD+Xqmrhn+A53Yvs4jMnLrWToCLXgNZ7qJglSuLw4pLqoErpmWR2HfDDQlUK
-         juTEyuLadiJcnm9xqfJTiLMbqUPBzoXBeCZI6N9DLLvh6yFAAFYUT4GHqEEbI3eyI4
-         emutt89OOXHwF6p4Ky6wqyuAMciyvEwKRg/nsHw0=
+        b=yvSJW3QMjDmDV4q5GrvTO/b2SDCrmhrhqbNSt6u/xwRS1P8/HUzbZJdYpBIz/MLgK
+         vyjJ7aiPDCtMnf44wpI6ldMj+AWCi7bmkkd7hDwgyXh3NW+/qBQm1LU1k0lrYt1Bfo
+         nuG38J4mtFLirzjcrnH25nejZ0xETAnqzU7BFnz0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Mateusz=20Jo=C5=84czyk?= <mat.jonczyk@o2.pl>,
-        Nobuhiro Iwamatsu <iwamatsu@nigauri.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 4.14 020/186] rtc: cmos: take rtc_lock while reading from CMOS
-Date:   Mon, 24 Jan 2022 19:41:35 +0100
-Message-Id: <20220124183937.770167723@linuxfoundation.org>
+        stable@vger.kernel.org, Joe Thornber <ejt@redhat.com>,
+        Mike Snitzer <snitzer@redhat.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 100/157] dm btree: add a defensive bounds check to insert_at()
+Date:   Mon, 24 Jan 2022 19:43:10 +0100
+Message-Id: <20220124183935.937971550@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
+References: <20220124183932.787526760@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,46 +50,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mateusz Jończyk <mat.jonczyk@o2.pl>
+From: Joe Thornber <ejt@redhat.com>
 
-commit 454f47ff464325223129b9b5b8d0b61946ec704d upstream.
+[ Upstream commit 85bca3c05b6cca31625437eedf2060e846c4bbad ]
 
-Reading from the CMOS involves writing to the index register and then
-reading from the data register. Therefore access to the CMOS has to be
-serialized with rtc_lock. This invocation of CMOS_READ was not
-serialized, which could cause trouble when other code is accessing CMOS
-at the same time.
+Corrupt metadata could trigger an out of bounds write.
 
-Use spin_lock_irq() like the rest of the function.
-
-Nothing in kernel modifies the RTC_DM_BINARY bit, so there could be a
-separate pair of spin_lock_irq() / spin_unlock_irq() before doing the
-math.
-
-Signed-off-by: Mateusz Jończyk <mat.jonczyk@o2.pl>
-Reviewed-by: Nobuhiro Iwamatsu <iwamatsu@nigauri.org>
-Cc: Alessandro Zummo <a.zummo@towertech.it>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20211210200131.153887-2-mat.jonczyk@o2.pl
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Joe Thornber <ejt@redhat.com>
+Signed-off-by: Mike Snitzer <snitzer@redhat.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/rtc/rtc-cmos.c |    3 +++
- 1 file changed, 3 insertions(+)
+ drivers/md/persistent-data/dm-btree.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
---- a/drivers/rtc/rtc-cmos.c
-+++ b/drivers/rtc/rtc-cmos.c
-@@ -421,7 +421,10 @@ static int cmos_set_alarm(struct device
- 	min = t->time.tm_min;
- 	sec = t->time.tm_sec;
+diff --git a/drivers/md/persistent-data/dm-btree.c b/drivers/md/persistent-data/dm-btree.c
+index 386215245dfe2..85273da5da206 100644
+--- a/drivers/md/persistent-data/dm-btree.c
++++ b/drivers/md/persistent-data/dm-btree.c
+@@ -83,14 +83,16 @@ void inc_children(struct dm_transaction_manager *tm, struct btree_node *n,
+ }
  
-+	spin_lock_irq(&rtc_lock);
- 	rtc_control = CMOS_READ(RTC_CONTROL);
-+	spin_unlock_irq(&rtc_lock);
-+
- 	if (!(rtc_control & RTC_DM_BINARY) || RTC_ALWAYS_BCD) {
- 		/* Writing 0xff means "don't care" or "match all".  */
- 		mon = (mon <= 12) ? bin2bcd(mon) : 0xff;
+ static int insert_at(size_t value_size, struct btree_node *node, unsigned index,
+-		      uint64_t key, void *value)
+-		      __dm_written_to_disk(value)
++		     uint64_t key, void *value)
++	__dm_written_to_disk(value)
+ {
+ 	uint32_t nr_entries = le32_to_cpu(node->header.nr_entries);
++	uint32_t max_entries = le32_to_cpu(node->header.max_entries);
+ 	__le64 key_le = cpu_to_le64(key);
+ 
+ 	if (index > nr_entries ||
+-	    index >= le32_to_cpu(node->header.max_entries)) {
++	    index >= max_entries ||
++	    nr_entries >= max_entries) {
+ 		DMERR("too many entries in btree node for insert");
+ 		__dm_unbless_for_disk(value);
+ 		return -ENOMEM;
+-- 
+2.34.1
+
 
 
