@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 492B6C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3480C4167E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452732AbiAXV0Y (ORCPT
+        id S1452795AbiAXV0g (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:26:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42820 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358951AbiAXUtC (ORCPT
+        Mon, 24 Jan 2022 16:26:36 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55078 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1444340AbiAXVAm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:49:02 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836AAC0418AE;
-        Mon, 24 Jan 2022 11:57:55 -0800 (PST)
+        Mon, 24 Jan 2022 16:00:42 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2557060BA1;
-        Mon, 24 Jan 2022 19:57:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0B6B4C340E5;
-        Mon, 24 Jan 2022 19:57:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 74154B8122A;
+        Mon, 24 Jan 2022 21:00:40 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A07D2C340E5;
+        Mon, 24 Jan 2022 21:00:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054274;
-        bh=YnzVyzVF2gyXnAhBU7QgCxTIBetL5S/Hebevk1xn7XQ=;
+        s=korg; t=1643058039;
+        bh=OzkQojU2CQWWU1b+Ypc3Ses6ysxsIjIUCCxdS7saOgE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JRhkQZvZYQN4M77HDVr6lOp2RgeMfadFKWh9kNeKidMQ0SycGw9hoOB2fyAvKbfnm
-         BU/hzYc/p4jRl84yaFSVyNMdrhRTaihdPBfvslssGKCV5uNuyBmPMbZsdoKRByXJaq
-         eVcJPt3F90lK3n83vV8nnGfBsPJNUntWYxWn8874=
+        b=ZVL9n6yX8EluVa/R9Be3ppbyDeGfERmbteLWX9qkeJSfBj7CDpEjBLp/BYPT6/5r0
+         KKNHC5LMOAJ6nuJR2QzT94WurbPxTHSrpzROIh/3O3zgI1eXqKC4TjU2TxqKMhfG7H
+         fxhFZ7NK6heoq+GuYAh+JPcfjjTgj0NyyJT/fnAs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 336/563] ACPI / x86: Add not-present quirk for the PCI0.SDHB.BRC1 device on the GPD win
-Date:   Mon, 24 Jan 2022 19:41:41 +0100
-Message-Id: <20220124184036.057066427@linuxfoundation.org>
+Subject: [PATCH 5.16 0128/1039] media: atomisp: fix enum formats logic
+Date:   Mon, 24 Jan 2022 19:31:57 +0100
+Message-Id: <20220124184129.459538078@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,72 +47,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hans de Goede <hdegoede@redhat.com>
+From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
-[ Upstream commit 57d2dbf710d832841872fb15ebb79429cab90fae ]
+[ Upstream commit fae46cb0531b45c789e39128f676f2bafa3a7b47 ]
 
-The GPD win and its sibling the GPD pocket (99% the same electronics in a
-different case) use a PCI wifi card. But the ACPI tables on both variants
-contain a bug where the SDIO MMC controller for SDIO wifi cards is enabled
-despite this. This SDIO MMC controller has a PCI0.SDHB.BRC1 child-device
-which _PS3 method sets a GPIO causing the PCI wifi card to turn off.
+Changeset 374d62e7aa50 ("media: v4l2-subdev: Verify v4l2_subdev_call() pad config argument")
+added an extra verification for a pads parameter for enum mbus
+format code.
 
-At the moment there is a pretty ugly kludge in the sdhci-acpi.c code,
-just to work around the bug in the DSDT of this single design. This can
-be solved cleaner/simply with a quirk overriding the _STA return of the
-broken PCI0.SDHB.BRC1 PCI0.SDHB.BRC1 child with a status value of 0,
-so that its power_manageable flag gets cleared, avoiding this problem.
+Such change broke atomisp, because now the V4L2 core
+refuses to enum MBUS formats if the state is empty.
 
-Note that even though it is not used, the _STA method for the MMC
-controller is deliberately not overridden. If the status of the MMC
-controller were forced to 0 it would never get suspended, which would
-cause these mini-laptops to not reach S0i3 level when suspended.
+So, add .which field in order to select the active formats,
+in order to make it work again.
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+While here, improve error messages.
+
+Fixes: 374d62e7aa50 ("media: v4l2-subdev: Verify v4l2_subdev_call() pad config argument")
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/x86/utils.c | 20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+ .../staging/media/atomisp/pci/atomisp_ioctl.c | 23 ++++++++++++++-----
+ 1 file changed, 17 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/acpi/x86/utils.c b/drivers/acpi/x86/utils.c
-index 91bbc4b6b8035..3f9a162be84e3 100644
---- a/drivers/acpi/x86/utils.c
-+++ b/drivers/acpi/x86/utils.c
-@@ -94,9 +94,10 @@ static const struct override_status_id override_status_ids[] = {
- 	/*
- 	 * The GPD win BIOS dated 20170221 has disabled the accelerometer, the
- 	 * drivers sometimes cause crashes under Windows and this is how the
--	 * manufacturer has solved this :| Note that the the DMI data is less
--	 * generic then it seems, a board_vendor of "AMI Corporation" is quite
--	 * rare and a board_name of "Default String" also is rare.
-+	 * manufacturer has solved this :|  The DMI match may not seem unique,
-+	 * but it is. In the 67000+ DMI decode dumps from linux-hardware.org
-+	 * only 116 have board_vendor set to "AMI Corporation" and of those 116
-+	 * only the GPD win and pocket entries' board_name is "Default string".
- 	 *
- 	 * Unfortunately the GPD pocket also uses these strings and its BIOS
- 	 * was copy-pasted from the GPD win, so it has a disabled KIOX000A
-@@ -120,6 +121,19 @@ static const struct override_status_id override_status_ids[] = {
- 		DMI_MATCH(DMI_PRODUCT_NAME, "Default string"),
- 		DMI_MATCH(DMI_BIOS_DATE, "05/25/2017")
- 	      }),
-+
-+	/*
-+	 * The GPD win/pocket have a PCI wifi card, but its DSDT has the SDIO
-+	 * mmc controller enabled and that has a child-device which _PS3
-+	 * method sets a GPIO causing the PCI wifi card to turn off.
-+	 * See above remark about uniqueness of the DMI match.
-+	 */
-+	NOT_PRESENT_ENTRY_PATH("\\_SB_.PCI0.SDHB.BRC1", ATOM_AIRMONT, {
-+		DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "AMI Corporation"),
-+		DMI_EXACT_MATCH(DMI_BOARD_NAME, "Default string"),
-+		DMI_EXACT_MATCH(DMI_BOARD_SERIAL, "Default string"),
-+		DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "Default string"),
-+	      }),
- };
+diff --git a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
+index a57e640fbf791..29826f8e4143d 100644
+--- a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
++++ b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
+@@ -773,7 +773,10 @@ static int atomisp_enum_fmt_cap(struct file *file, void *fh,
+ 	struct video_device *vdev = video_devdata(file);
+ 	struct atomisp_device *isp = video_get_drvdata(vdev);
+ 	struct atomisp_sub_device *asd = atomisp_to_video_pipe(vdev)->asd;
+-	struct v4l2_subdev_mbus_code_enum code = { 0 };
++	struct v4l2_subdev_mbus_code_enum code = {
++		.which = V4L2_SUBDEV_FORMAT_ACTIVE,
++	};
++	struct v4l2_subdev *camera;
+ 	unsigned int i, fi = 0;
+ 	int rval;
  
- bool acpi_device_override_status(struct acpi_device *adev, unsigned long long *status)
+@@ -783,14 +786,20 @@ static int atomisp_enum_fmt_cap(struct file *file, void *fh,
+ 		return -EINVAL;
+ 	}
+ 
++	camera = isp->inputs[asd->input_curr].camera;
++	if(!camera) {
++		dev_err(isp->dev, "%s(): camera is NULL, device is %s\n",
++			__func__, vdev->name);
++		return -EINVAL;
++	}
++
+ 	rt_mutex_lock(&isp->mutex);
+-	rval = v4l2_subdev_call(isp->inputs[asd->input_curr].camera, pad,
+-				enum_mbus_code, NULL, &code);
++
++	rval = v4l2_subdev_call(camera, pad, enum_mbus_code, NULL, &code);
+ 	if (rval == -ENOIOCTLCMD) {
+ 		dev_warn(isp->dev,
+-			 "enum_mbus_code pad op not supported. Please fix your sensor driver!\n");
+-		//	rval = v4l2_subdev_call(isp->inputs[asd->input_curr].camera,
+-		//				video, enum_mbus_fmt, 0, &code.code);
++			 "enum_mbus_code pad op not supported by %s. Please fix your sensor driver!\n",
++			 camera->name);
+ 	}
+ 	rt_mutex_unlock(&isp->mutex);
+ 
+@@ -820,6 +829,8 @@ static int atomisp_enum_fmt_cap(struct file *file, void *fh,
+ 		f->pixelformat = format->pixelformat;
+ 		return 0;
+ 	}
++	dev_err(isp->dev, "%s(): format for code %x not found.\n",
++		__func__, code.code);
+ 
+ 	return -EINVAL;
+ }
 -- 
 2.34.1
 
