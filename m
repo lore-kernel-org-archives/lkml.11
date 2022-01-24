@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AECDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBDF4C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452298AbiAXVYb (ORCPT
+        id S1452320AbiAXVYf (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:24:31 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52116 "EHLO
+        Mon, 24 Jan 2022 16:24:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52000 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443746AbiAXU65 (ORCPT
+        with ESMTP id S1443725AbiAXU6w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:58:57 -0500
+        Mon, 24 Jan 2022 15:58:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 27A2A61414;
-        Mon, 24 Jan 2022 20:58:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1729C340E5;
-        Mon, 24 Jan 2022 20:58:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 08E9460C60;
+        Mon, 24 Jan 2022 20:58:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6069C340E7;
+        Mon, 24 Jan 2022 20:58:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057935;
-        bh=eJP1hCWniN1ltL1kT6b/7fbt3ENomNOTOg9u1vjqjEM=;
+        s=korg; t=1643057929;
+        bh=oM9XJ6lkMtHrXDqXRQuGbTYoOCRv3BOX3desWydiKQI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TUs4qm5YOcvTsDQ6WdRO33cxZ82WIptEMt3LQ0/MLKj/GJOFlE29XZOXw38s27P7A
-         RlqE+hasyKXcEK5Hjfc1vjxzHHcU3L2Sw/szAOErvh0qYddZfoCr4FynrAb35JI0f2
-         jU8atx7dfde6E1MDoyFbecnKBwgp2JInFqwEIP0U=
+        b=WAfhJkZJ5adSIvZcHjbhHh/eWgXADFrXpZq8LfCrT26ZRyV2B2IhyvhXeKEJvnsjT
+         AmfPYj6P5rGWbA1N++BdrWqL+cMgalf4WmxW4ilb1n45SMFlv+6Ydvr+zbK7+QZjLt
+         3QVlaJhrLa6dMyi4chBnP/u4Knh6hvEtCi0znNpY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Daniel Scally <djrscally@gmail.com>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Sakari Ailus <sakari.ailus@linux.intel.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Soenke Huster <soenke.huster@eknoes.de>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0120/1039] media: ipu3-cio2: fix error code in cio2_bridge_connect_sensor()
-Date:   Mon, 24 Jan 2022 19:31:49 +0100
-Message-Id: <20220124184129.172023559@linuxfoundation.org>
+Subject: [PATCH 5.16 0092/1039] Bluetooth: virtio_bt: fix memory leak in virtbt_rx_handle()
+Date:   Mon, 24 Jan 2022 19:31:21 +0100
+Message-Id: <20220124184128.250254555@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,40 +47,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Soenke Huster <soenke.huster@eknoes.de>
 
-[ Upstream commit 85db29d22cc521d9d06de2f5c7832981a55df157 ]
+[ Upstream commit 1d0688421449718c6c5f46e458a378c9b530ba18 ]
 
-Return -ENODEV if acpi_get_physical_device_location() fails.  Don't
-return success.
+On the reception of packets with an invalid packet type, the memory of
+the allocated socket buffers is never freed. Add a default case that frees
+these to avoid a memory leak.
 
-Fixes: 485aa3df0dff ("media: ipu3-cio2: Parse sensor orientation and rotation")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Daniel Scally <djrscally@gmail.com>
-Reviewed-by: Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>
-Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: afd2daa26c7a ("Bluetooth: Add support for virtio transport driver")
+Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/pci/intel/ipu3/cio2-bridge.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/bluetooth/virtio_bt.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/media/pci/intel/ipu3/cio2-bridge.c b/drivers/media/pci/intel/ipu3/cio2-bridge.c
-index 67c467d3c81f9..0b586b4e537ef 100644
---- a/drivers/media/pci/intel/ipu3/cio2-bridge.c
-+++ b/drivers/media/pci/intel/ipu3/cio2-bridge.c
-@@ -238,8 +238,10 @@ static int cio2_bridge_connect_sensor(const struct cio2_sensor_config *cfg,
- 			goto err_put_adev;
+diff --git a/drivers/bluetooth/virtio_bt.c b/drivers/bluetooth/virtio_bt.c
+index 57908ce4fae85..076e4942a3f0e 100644
+--- a/drivers/bluetooth/virtio_bt.c
++++ b/drivers/bluetooth/virtio_bt.c
+@@ -202,6 +202,9 @@ static void virtbt_rx_handle(struct virtio_bluetooth *vbt, struct sk_buff *skb)
+ 		hci_skb_pkt_type(skb) = pkt_type;
+ 		hci_recv_frame(vbt->hdev, skb);
+ 		break;
++	default:
++		kfree_skb(skb);
++		break;
+ 	}
+ }
  
- 		status = acpi_get_physical_device_location(adev->handle, &sensor->pld);
--		if (ACPI_FAILURE(status))
-+		if (ACPI_FAILURE(status)) {
-+			ret = -ENODEV;
- 			goto err_put_adev;
-+		}
- 
- 		if (sensor->ssdb.lanes > CIO2_MAX_LANES) {
- 			dev_err(&adev->dev,
 -- 
 2.34.1
 
