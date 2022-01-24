@@ -2,43 +2,48 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCC7DC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C14AC46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:11:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379169AbiAXUK3 (ORCPT
+        id S1379197AbiAXUKe (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:10:29 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50246 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235569AbiAXTwv (ORCPT
+        Mon, 24 Jan 2022 15:10:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58066 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352195AbiAXTwp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:52:51 -0500
+        Mon, 24 Jan 2022 14:52:45 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB36DC061394;
+        Mon, 24 Jan 2022 11:26:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1580860989;
-        Mon, 24 Jan 2022 19:52:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DDAB1C340E8;
-        Mon, 24 Jan 2022 19:52:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7286CB81239;
+        Mon, 24 Jan 2022 19:26:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 90EB5C340E5;
+        Mon, 24 Jan 2022 19:26:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053969;
-        bh=HkJde7G0N3DRpmHjssvvdYfr06UK7b1u/hUJBLTfLf4=;
+        s=korg; t=1643052374;
+        bh=l2qkhwyajAQCjSYqn/KNwyizSyty6BnN/EXpCzFQ+wo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fWjdYUDEYkQS17SfaxzHQxD0xOFt9HQJXJ6Ng5oiOi3YfHrufv9d0+2CzQI61NyCH
-         C+LIlUpWArhp3jej1Zuvz/+HyCr7A/8z+P5zlW7TJLC3dt1sXq2m1K9xlYRQBxv8qh
-         uMrCwR6zgEY/bK5JZB6zDavMWAql/B2etcECtDWE=
+        b=tLW8eWyoX1+p02EU0QUytJiG+npQONmDhc1fatLSU7/guTU/fPsJrMGzhBQFOWNQr
+         AyVep+D4wolJ3HWpddkHuHTsdjJ/3djIeQH7QGvmz8rXkSf6Rrftxtb3/k4Y9rAcjE
+         Q5rpfscjmnVTkmzi9kYigTqRk2/YHP9fvxByMWXQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Michael Stapelberg <michael@stapelberg.ch>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 236/563] iwlwifi: mvm: Use div_s64 instead of do_div in iwl_mvm_ftm_rtt_smoothing()
-Date:   Mon, 24 Jan 2022 19:40:01 +0100
-Message-Id: <20220124184032.606666415@linuxfoundation.org>
+Subject: [PATCH 5.4 038/320] clk: bcm-2835: Pick the closest clock rate
+Date:   Mon, 24 Jan 2022 19:40:22 +0100
+Message-Id: <20220124183955.050123837@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,50 +52,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nathan Chancellor <nathan@kernel.org>
+From: Maxime Ripard <maxime@cerno.tech>
 
-[ Upstream commit 4ccdcc8ffd955490feec05380223db6a48961eb5 ]
+[ Upstream commit 5517357a4733d7cf7c17fc79d0530cfa47add372 ]
 
-When building ARCH=arm allmodconfig:
+The driver currently tries to pick the closest rate that is lower than
+the rate being requested.
 
-drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c: In function ‘iwl_mvm_ftm_rtt_smoothing’:
-./include/asm-generic/div64.h:222:35: error: comparison of distinct pointer types lacks a cast [-Werror]
-  222 |         (void)(((typeof((n)) *)0) == ((uint64_t *)0));  \
-      |                                   ^~
-drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c:1070:9: note: in expansion of macro ‘do_div’
- 1070 |         do_div(rtt_avg, 100);
-      |         ^~~~~~
+This causes an issue with clk_set_min_rate() since it actively checks
+for the rounded rate to be above the minimum that was just set.
 
-do_div() has to be used with an unsigned 64-bit integer dividend but
-rtt_avg is a signed 64-bit integer.
+Let's change the logic a bit to pick the closest rate to the requested
+rate, no matter if it's actually higher or lower.
 
-div_s64() expects a signed 64-bit integer dividend and signed 32-bit
-divisor, which fits this scenario, so use that function here to fix the
-warning.
-
-Fixes: 8b0f92549f2c ("iwlwifi: mvm: fix 32-bit build in FTM")
-Signed-off-by: Nathan Chancellor <nathan@kernel.org>
-Link: https://lore.kernel.org/r/20211227191757.2354329-1-nathan@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: 6d18b8adbe67 ("clk: bcm2835: Support for clock parent selection")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Acked-by: Stephen Boyd <sboyd@kernel.org>
+Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org> # boot and basic functionality
+Tested-by: Michael Stapelberg <michael@stapelberg.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210922125419.4125779-2-maxime@cerno.tech
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/clk/bcm/clk-bcm2835.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-index fe3d52620a897..b1335fe3b01a2 100644
---- a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
-@@ -967,8 +967,7 @@ static void iwl_mvm_ftm_rtt_smoothing(struct iwl_mvm *mvm,
- 	overshoot = IWL_MVM_FTM_INITIATOR_SMOOTH_OVERSHOOT;
- 	alpha = IWL_MVM_FTM_INITIATOR_SMOOTH_ALPHA;
- 
--	rtt_avg = alpha * rtt + (100 - alpha) * resp->rtt_avg;
--	do_div(rtt_avg, 100);
-+	rtt_avg = div_s64(alpha * rtt + (100 - alpha) * resp->rtt_avg, 100);
- 
- 	IWL_DEBUG_INFO(mvm,
- 		       "%pM: prev rtt_avg=%lld, new rtt_avg=%lld, rtt=%lld\n",
+diff --git a/drivers/clk/bcm/clk-bcm2835.c b/drivers/clk/bcm/clk-bcm2835.c
+index c5486537b9284..b2af320d1b6c5 100644
+--- a/drivers/clk/bcm/clk-bcm2835.c
++++ b/drivers/clk/bcm/clk-bcm2835.c
+@@ -1216,7 +1216,7 @@ static int bcm2835_clock_determine_rate(struct clk_hw *hw,
+ 		rate = bcm2835_clock_choose_div_and_prate(hw, i, req->rate,
+ 							  &div, &prate,
+ 							  &avgrate);
+-		if (rate > best_rate && rate <= req->rate) {
++		if (abs(req->rate - rate) < abs(req->rate - best_rate)) {
+ 			best_parent = parent;
+ 			best_prate = prate;
+ 			best_rate = rate;
 -- 
 2.34.1
 
