@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3312C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A5DC43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346863AbiAXTbd (ORCPT
+        id S1352984AbiAXTbn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:31:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50798 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349925AbiAXTWz (ORCPT
+        Mon, 24 Jan 2022 14:31:43 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:46416 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1347384AbiAXTWd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:22:55 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2DF8C02B865;
-        Mon, 24 Jan 2022 11:08:45 -0800 (PST)
+        Mon, 24 Jan 2022 14:22:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 53B3060B7B;
-        Mon, 24 Jan 2022 19:08:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 31DDCC340E8;
-        Mon, 24 Jan 2022 19:08:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 71BECB81236;
+        Mon, 24 Jan 2022 19:22:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F2B3C340E5;
+        Mon, 24 Jan 2022 19:22:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051324;
-        bh=R7V9/x7dkmKmUlvwmV4BF5Mr5APc4p8ioiYZydxfyRE=;
+        s=korg; t=1643052148;
+        bh=FRukRTFFv3IyJWhgY9Oz80eIT2Q6q8nsT2qXjYOW4+U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LhSvSf52qRW9iCzeWQB8DVBm7krQ6IxgIQ/uc0KRCqLxjgaVvZWI7v3UQFm2zDkuD
-         XwrQDEcUo3IBxD7bq7ZdEq8F99voWimXZ246ihKOSlU4Vl9qZpRUQmo+v4wsE1fUzT
-         c+tobpHa+0tbC/BM4AYMX58UMIwoHaQ8VgXpaWNo=
+        b=cQIqpfxCqySjuhIFsoTe1sH3HvS4/hOqxyFe1+Mjx6N2zj8nqmPX0iLLsR9pxL6W5
+         +8JFN0paKjqXiTEYy+OI5e1JaJSqDE41CzPVh1K9exb03C5AgPxCt5OA9uMcJ40gMm
+         pXZpgzRwsuLMeDI9Is8a5C+a7APvYSjNs1tF5SME=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sean Young <sean@mess.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 108/186] media: igorplugusb: receiver overflow should be reported
-Date:   Mon, 24 Jan 2022 19:43:03 +0100
-Message-Id: <20220124183940.588661906@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jeroen van Wolffelaar <jeroen@wolffelaar.nl>,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 4.19 204/239] ext4: set csum seed in tmp inode while migrating to extents
+Date:   Mon, 24 Jan 2022 19:44:02 +0100
+Message-Id: <20220124183949.590528678@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,39 +48,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sean Young <sean@mess.org>
+From: Luís Henriques <lhenriques@suse.de>
 
-[ Upstream commit 8fede658e7ddb605bbd68ed38067ddb0af033db4 ]
+commit e81c9302a6c3c008f5c30beb73b38adb0170ff2d upstream.
 
-Without this, some IR will be missing mid-stream and we might decode
-something which never really occurred.
+When migrating to extents, the temporary inode will have it's own checksum
+seed.  This means that, when swapping the inodes data, the inode checksums
+will be incorrect.
 
-Signed-off-by: Sean Young <sean@mess.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This can be fixed by recalculating the extents checksums again.  Or simply
+by copying the seed into the temporary inode.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=213357
+Reported-by: Jeroen van Wolffelaar <jeroen@wolffelaar.nl>
+Signed-off-by: Luís Henriques <lhenriques@suse.de>
+Link: https://lore.kernel.org/r/20211214175058.19511-1-lhenriques@suse.de
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/rc/igorplugusb.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ fs/ext4/migrate.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/media/rc/igorplugusb.c b/drivers/media/rc/igorplugusb.c
-index a5ea86be8f449..2a0325d1f9def 100644
---- a/drivers/media/rc/igorplugusb.c
-+++ b/drivers/media/rc/igorplugusb.c
-@@ -73,9 +73,11 @@ static void igorplugusb_irdata(struct igorplugusb *ir, unsigned len)
- 	if (start >= len) {
- 		dev_err(ir->dev, "receive overflow invalid: %u", overflow);
- 	} else {
--		if (overflow > 0)
-+		if (overflow > 0) {
- 			dev_warn(ir->dev, "receive overflow, at least %u lost",
- 								overflow);
-+			ir_raw_event_reset(ir->rc);
-+		}
+--- a/fs/ext4/migrate.c
++++ b/fs/ext4/migrate.c
+@@ -477,6 +477,17 @@ int ext4_ext_migrate(struct inode *inode
+ 		ext4_journal_stop(handle);
+ 		goto out_unlock;
+ 	}
++	/*
++	 * Use the correct seed for checksum (i.e. the seed from 'inode').  This
++	 * is so that the metadata blocks will have the correct checksum after
++	 * the migration.
++	 *
++	 * Note however that, if a crash occurs during the migration process,
++	 * the recovery process is broken because the tmp_inode checksums will
++	 * be wrong and the orphans cleanup will fail.
++	 */
++	ei = EXT4_I(inode);
++	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
+ 	i_size_write(tmp_inode, i_size_read(inode));
+ 	/*
+ 	 * Set the i_nlink to zero so it will be deleted later
+@@ -520,7 +531,6 @@ int ext4_ext_migrate(struct inode *inode
+ 		goto out_tmp_inode;
+ 	}
  
- 		do {
- 			rawir.duration = ir->buf_in[i] * 85333;
--- 
-2.34.1
-
+-	ei = EXT4_I(inode);
+ 	i_data = ei->i_data;
+ 	memset(&lb, 0, sizeof(lb));
+ 
 
 
