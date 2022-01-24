@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ACDFC41535
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2654AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457676AbiAXVmG (ORCPT
+        id S1457734AbiAXVmN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:42:06 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58150 "EHLO
+        Mon, 24 Jan 2022 16:42:13 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58514 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343668AbiAXVFf (ORCPT
+        with ESMTP id S1354232AbiAXVFt (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:05:35 -0500
+        Mon, 24 Jan 2022 16:05:49 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 909EE60B28;
-        Mon, 24 Jan 2022 21:05:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73449C340E5;
-        Mon, 24 Jan 2022 21:05:33 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 51A8161317;
+        Mon, 24 Jan 2022 21:05:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 352E6C340E5;
+        Mon, 24 Jan 2022 21:05:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058334;
-        bh=IXvHj7ag7A4+SqD1sdKZ1WXEP0mkxaXoEEPyd+zXsEQ=;
+        s=korg; t=1643058348;
+        bh=Ae6xcvFdnKy3FwdPmiKqRI4OXQ4zHeuRYY0s4+yvNzc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yy96po9LsKgR34jz7lR5etnZsSl2jaArpNG70T4Zxg2Unn0uxT0XnFZhf3j3Ga+zM
-         0OXIfe6W/0L4enXdS/okhwz1WuE3Jtpf3BLyWIbELE/mf2w1mWYv/KsojeGA5egk7B
-         9KD+2Ms2twznq/eWGZqbCBwn6i1JNsQjrH6fUkJ8=
+        b=TpiXxUIsoAD2t9TfB9w1DZdU9sD5d3Z/hBsARP22sgwCjVRFMGXFQvBDqx2Qpaacc
+         vpGjk5kATnBahR9sLtyITNOSBzZp0ax6OKWLiTmKlRq5LWwSzpvN6wiJqDgQ4U/Iwx
+         qQyYaM5FDZS2K4PPQXhwneLGBGV9Np8flBJuC7Wo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Seevalamuthu Mariappan <quic_seevalam@quicinc.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
+        stable@vger.kernel.org, Harry Wentland <harry.wentland@amd.com>,
+        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0255/1039] ath11k: Fix QMI file type enum value
-Date:   Mon, 24 Jan 2022 19:34:04 +0100
-Message-Id: <20220124184133.888375036@linuxfoundation.org>
+Subject: [PATCH 5.16 0259/1039] drm/amd/display: Fix out of bounds access on DNC31 stream encoder regs
+Date:   Mon, 24 Jan 2022 19:34:08 +0100
+Message-Id: <20220124184134.017744254@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,40 +48,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Seevalamuthu Mariappan <quic_seevalam@quicinc.com>
+From: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
 
-[ Upstream commit 18ae1ab04525507ae5528245a6df004cacd0d39a ]
+[ Upstream commit d374d3b493215d637b9e7be12a93f22caf4c1f97 ]
 
-bdf_type for caldata in QMI_WLANFW_BDF_DOWNLOAD_REQ_V01 is wrongly
-sent as 1. But, expected bdf_type value for caldata and EEPROM is 2 and 3
-respectively. It leads to firmware crash. Fix ath11k_qmi_file_type enum
-values.
+[Why]
+During dcn31_stream_encoder_create, if PHYC/D get remapped to F/G on B0
+then we'll index 5 or 6 into a array of length 5 - leading to an
+access violation on some configs during device creation.
 
-Tested-on: QCN9074 hw1.0 PCI WLAN.HK.2.5.0.1-01100-QCAHKSWPL_SILICONZ-1
-Tested-on: IPQ8074 hw2.0 AHB WLAN.HK.2.4.0.1-00192-QCAHKSWPL_SILICONZ-1
+[How]
+Software won't be touching PHYF/PHYG directly, so just extend the
+array to cover all possible engine IDs.
 
-Fixes: 336e7b53c82f ("ath11k: clean up BDF download functions")
-Signed-off-by: Seevalamuthu Mariappan <quic_seevalam@quicinc.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/1638182754-18408-1-git-send-email-quic_seevalam@quicinc.com
+Even if it does by try to access one of these registers by accident
+the offset will be 0 and we'll get a warning during the access.
+
+Fixes: 2fe9a0e1173f ("drm/amd/display: Fix DCN3 B0 DP Alt Mapping")
+Reviewed-by: Harry Wentland <harry.wentland@amd.com>
+Signed-off-by: Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/qmi.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.h b/drivers/net/wireless/ath/ath11k/qmi.h
-index 3bb0f9ef79968..d9e95b7007653 100644
---- a/drivers/net/wireless/ath/ath11k/qmi.h
-+++ b/drivers/net/wireless/ath/ath11k/qmi.h
-@@ -41,7 +41,7 @@ struct ath11k_base;
+diff --git a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
+index 27afbe6ec0fee..f969ff65f802b 100644
+--- a/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
++++ b/drivers/gpu/drm/amd/display/dc/dcn31/dcn31_resource.c
+@@ -493,7 +493,8 @@ static const struct dcn31_apg_mask apg_mask = {
+ 	SE_DCN3_REG_LIST(id)\
+ }
  
- enum ath11k_qmi_file_type {
- 	ATH11K_QMI_FILE_TYPE_BDF_GOLDEN,
--	ATH11K_QMI_FILE_TYPE_CALDATA,
-+	ATH11K_QMI_FILE_TYPE_CALDATA = 2,
- 	ATH11K_QMI_FILE_TYPE_EEPROM,
- 	ATH11K_QMI_MAX_FILE_TYPE,
- };
+-static const struct dcn10_stream_enc_registers stream_enc_regs[] = {
++/* Some encoders won't be initialized here - but they're logical, not physical. */
++static const struct dcn10_stream_enc_registers stream_enc_regs[ENGINE_ID_COUNT] = {
+ 	stream_enc_regs(0),
+ 	stream_enc_regs(1),
+ 	stream_enc_regs(2),
 -- 
 2.34.1
 
