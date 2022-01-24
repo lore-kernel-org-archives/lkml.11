@@ -2,180 +2,122 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF5AAC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3063C4321E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457494AbiAXVlo (ORCPT
+        id S1457557AbiAXVlv (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:41:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47456 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445659AbiAXVEm (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:04:42 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94472C06B5BB;
-        Mon, 24 Jan 2022 12:04:24 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D7A9B8119E;
-        Mon, 24 Jan 2022 20:04:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E1F8C340E7;
-        Mon, 24 Jan 2022 20:04:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054662;
-        bh=0w4R2NHgExzeD9t+H0AsT8Etmds2t5Ti0YZB3Jt+H/Q=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EcV090jptT92hrwxE1p5EKXWgtS8o7UoCSm4NlhWv33gkg1oB83PbpZHtchjqNuyx
-         7qVWnLMgzlqSJnXoZ+Eevo7ZjSMMZDkDTuIJI7FgqwIOGHPTRmEmHxOmEJLN7r9XHf
-         HKIi4IwXLIWzW1qY3Oy9U4136jQoQQLMP181krqw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hari Bathini <hbathini@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 430/563] powerpc/fadump: Fix inaccurate CPU state info in vmcore generated with panic
-Date:   Mon, 24 Jan 2022 19:43:15 +0100
-Message-Id: <20220124184039.325859101@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 16:41:51 -0500
+Received: from mout.gmx.net ([212.227.15.18]:50771 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1445736AbiAXVEy (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 16:04:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1643058269;
+        bh=Ec1E+XVbmVaZkoonfqus3Ied9jzwitQE64DgeYRcJ58=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=SXmhUWQ1CRWaNWJ9KeqXwp3cEMR4JpqMknuHKQTpE2Ku65iaeIz0Kq7Sn8V2KzFLK
+         XC2EVFoL2fI+8sb0leh3Ou1NfBsnomk8UH747CkEDXleOwmXqV5sJuDM4eLZIUl1we
+         aIFuEWrexXiwOCzd1005n4PkEweyW+CWl1iH2p2w=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from ls3530.fritz.box ([92.116.165.96]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MgeoI-1me8CO3qrE-00h5pr; Mon, 24
+ Jan 2022 22:04:29 +0100
+From:   Helge Deller <deller@gmx.de>
+To:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org
+Cc:     Javier Martinez Canillas <javierm@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Jani Nikula <jani.nikula@linux.intel.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org,
+        Linus Torvalds <torvalds@linux-foundation.org>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Sven Schnelle <svens@stackframe.org>,
+        Claudio Suarez <cssk@net-c.es>, Pavel Machek <pavel@ucw.cz>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Ilia Mirkin <imirkin@alum.mit.edu>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        Daniel Vetter <daniel.vetter@intel.com>
+Subject: [PATCH v2 0/2] Fix regression introduced by disabling accelerated scrolling in fbcon
+Date:   Mon, 24 Jan 2022 22:03:17 +0100
+Message-Id: <20220124210319.325512-1-deller@gmx.de>
+X-Mailer: git-send-email 2.31.1
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:6FEDwYEykD2AOXr/nEQNj6xwhFHj/FdHKryvnHfF3emq2u1Ux8U
+ SCBo/ypmBPN+TerQ3D8Vdyf+RD/HISBfpRglhojRAnBRGWsI1IFxN1J8e50EJu8PqYDo9kR
+ tvi5lRY6NDsqmqVlxWTQpkwsJbBXtdKMXADp7LtZ8UVFk96aC+croFew1lnMVWnKaf8dG0r
+ PsRdWUYwHaES2Yfi6MjHg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:lgwjfMC5XkQ=:w2BWauQ+JigdFMoVP/KZ+w
+ HWFXAax0fMJH+uM6gdbk8RtDmh1Pb8iYZKn1XtEvXpM9zLTpxeYqRN2DBMTDGEdj274GZtvbJ
+ sluAuboGYPFvyINtfXYM7R8f/yPF3fm1RqMAExGFqmcax05mrLHSi+Gg3FzTb7gHzi0R2pdv/
+ rQAXHG1SVZUIRaOT9fvuyCUxOx9hev+6ntoj9XY1Uuai2KeFykEDxUUugEqivyG/QGQQSOb57
+ fzoSDYM4N/NYiEAhD//QEV5/0gaOOWIQA7KveGSRiqzEIBdL+X73yWWqVhBMl2Wq+FKLFC3u1
+ vRERligauulv/2sFsQ8zT0d1d3BaX8+MAyWGjXOmSflk4mX5qRh3Uj1YMS4fSog/wbL/D5aJT
+ 2+IRnEVvTieyVagL9mPBmnxFplt5s1JQZzUcMi4IItvT3/ymdEsZmV1nmnUdTtzzq6Z3f6iW4
+ TEexfwLvQLXIJK7WRvRqNj0GV1kF/UrlX5hfTyQ+5OfuJn1fr2+oHpTMVYWd4QGOPUpgXZUY1
+ mJYXZCAvJjzB/Lmic+azvkck5qYUZcuj3DL/DzbJHsVEPnnJSbPx/T4jKFSENpcFR3wo2Pycn
+ ZsqIHBjMJT2PIrtJ5G/iuOfZz/PmpKdN7Cq2BB2evYcipAYqXqg25tSIIgy3Rw7H7ecfA/Gio
+ x/6pog60QXv/ROTgSADpCryr6uielpB3ufFAKhZ26EmWze3myfRpOhjHMEiozm1DQpJZM5GO9
+ /2G5wrX496KA2ckmwVffqpoksH1A4aEBUrMrEtnaXqtsmdVcY+WK33Uzt37H/StUKJ1c+mUui
+ fGoyT7rU2M7UafTuVkH2M2s+lohQnPJA/ZOEzAcNRWCHdJ+lIRvUeOUGCdaDOGDKtPd1hJQge
+ kVFR7nepF+CFn9gualAvrzsvu+jgdHVaWBRE7WGWqSlqBcmyBjKyQOSThp67qyCODIwDSRl/c
+ LYHFvu2x8KJwu3nnI17o7ZgH0dqy5fhYQ/1pHvFpKrUR1amSn9JHCLywJHt4pjVOBlsW7colX
+ Bph4YuajvA5p5DIvOjphiTPQ14HjpZWJBPxliTcEIY3DLWmwdzDmTkhnJK6LQjAN2k664RA+k
+ XfWcd2KXUPC8Vc=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hari Bathini <hbathini@linux.ibm.com>
-
-[ Upstream commit 06e629c25daa519be620a8c17359ae8fc7a2e903 ]
-
-In panic path, fadump is triggered via a panic notifier function.
-Before calling panic notifier functions, smp_send_stop() gets called,
-which stops all CPUs except the panic'ing CPU. Commit 8389b37dffdc
-("powerpc: stop_this_cpu: remove the cpu from the online map.") and
-again commit bab26238bbd4 ("powerpc: Offline CPU in stop_this_cpu()")
-started marking CPUs as offline while stopping them. So, if a kernel
-has either of the above commits, vmcore captured with fadump via panic
-path would not process register data for all CPUs except the panic'ing
-CPU. Sample output of crash-utility with such vmcore:
-
-  # crash vmlinux vmcore
-  ...
-        KERNEL: vmlinux
-      DUMPFILE: vmcore  [PARTIAL DUMP]
-          CPUS: 1
-          DATE: Wed Nov 10 09:56:34 EST 2021
-        UPTIME: 00:00:42
-  LOAD AVERAGE: 2.27, 0.69, 0.24
-         TASKS: 183
-      NODENAME: XXXXXXXXX
-       RELEASE: 5.15.0+
-       VERSION: #974 SMP Wed Nov 10 04:18:19 CST 2021
-       MACHINE: ppc64le  (2500 Mhz)
-        MEMORY: 8 GB
-         PANIC: "Kernel panic - not syncing: sysrq triggered crash"
-           PID: 3394
-       COMMAND: "bash"
-          TASK: c0000000150a5f80  [THREAD_INFO: c0000000150a5f80]
-           CPU: 1
-         STATE: TASK_RUNNING (PANIC)
-
-  crash> p -x __cpu_online_mask
-  __cpu_online_mask = $1 = {
-    bits = {0x2, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
-  }
-  crash>
-  crash>
-  crash> p -x __cpu_active_mask
-  __cpu_active_mask = $2 = {
-    bits = {0xff, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
-  }
-  crash>
-
-While this has been the case since fadump was introduced, the issue
-was not identified for two probable reasons:
-
-  - In general, the bulk of the vmcores analyzed were from crash
-    due to exception.
-
-  - The above did change since commit 8341f2f222d7 ("sysrq: Use
-    panic() to force a crash") started using panic() instead of
-    deferencing NULL pointer to force a kernel crash. But then
-    commit de6e5d38417e ("powerpc: smp_send_stop do not offline
-    stopped CPUs") stopped marking CPUs as offline till kernel
-    commit bab26238bbd4 ("powerpc: Offline CPU in stop_this_cpu()")
-    reverted that change.
-
-To ensure post processing register data of all other CPUs happens
-as intended, let panic() function take the crash friendly path (read
-crash_smp_send_stop()) with the help of crash_kexec_post_notifiers
-option. Also, as register data for all CPUs is captured by f/w, skip
-IPI callbacks here for fadump, to avoid any complications in finding
-the right backtraces.
-
-Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211207103719.91117-2-hbathini@linux.ibm.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- arch/powerpc/kernel/fadump.c |  8 ++++++++
- arch/powerpc/kernel/smp.c    | 10 ++++++++++
- 2 files changed, 18 insertions(+)
-
-diff --git a/arch/powerpc/kernel/fadump.c b/arch/powerpc/kernel/fadump.c
-index eddf362caedce..c3bb800dc4352 100644
---- a/arch/powerpc/kernel/fadump.c
-+++ b/arch/powerpc/kernel/fadump.c
-@@ -1641,6 +1641,14 @@ int __init setup_fadump(void)
- 	else if (fw_dump.reserve_dump_area_size)
- 		fw_dump.ops->fadump_init_mem_struct(&fw_dump);
- 
-+	/*
-+	 * In case of panic, fadump is triggered via ppc_panic_event()
-+	 * panic notifier. Setting crash_kexec_post_notifiers to 'true'
-+	 * lets panic() function take crash friendly path before panic
-+	 * notifiers are invoked.
-+	 */
-+	crash_kexec_post_notifiers = true;
-+
- 	return 1;
- }
- subsys_initcall(setup_fadump);
-diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
-index d993f28107afa..cf99f57aed822 100644
---- a/arch/powerpc/kernel/smp.c
-+++ b/arch/powerpc/kernel/smp.c
-@@ -60,6 +60,7 @@
- #include <asm/cpu_has_feature.h>
- #include <asm/ftrace.h>
- #include <asm/kup.h>
-+#include <asm/fadump.h>
- 
- #ifdef DEBUG
- #include <asm/udbg.h>
-@@ -612,6 +613,15 @@ void crash_smp_send_stop(void)
- {
- 	static bool stopped = false;
- 
-+	/*
-+	 * In case of fadump, register data for all CPUs is captured by f/w
-+	 * on ibm,os-term rtas call. Skip IPI callbacks to other CPUs before
-+	 * this rtas call to avoid tricky post processing of those CPUs'
-+	 * backtraces.
-+	 */
-+	if (should_fadump_crash())
-+		return;
-+
- 	if (stopped)
- 		return;
- 
--- 
-2.34.1
-
-
-
+This series reverts two patches which disabled scrolling acceleration in=0D
+fbcon/fbdev. Those patches introduced a regression for fbdev-supported grap=
+hic=0D
+cards because of the performance penalty by doing screen scrolling by softw=
+are=0D
+instead of using existing 2D hardware acceleration.=0D
+=0D
+This series has been discussed on linux-fbdev, dri-devel and linux-kernel=0D
+mailing lists. The consensus is that they will be reverted, but in addition=
+=0D
+it's being worked on to find a solution which allows to disable parts of th=
+e=0D
+classic fbdev hardware acceleration code which isn't needed in DRM-only=0D
+configurations.=0D
+=0D
+The patchset is planned to be kept in fbdev's for-next git branch and later=
+=0D
+pushed into kernel v5.18 if no issues are found until then.=0D
+=0D
+Helge=0D
+=0D
+---=0D
+Changes in v2 compared to v1:=0D
+- adjusted the stable tags (one v5.10+, the other v5.16+)=0D
+- moved the analysis and reasoning why those should be reverted into=0D
+  the commit message. That simplifies to analyze later why they were=0D
+  reverted.=0D
+- resorted the To an Cc mail recipient lists=0D
+=0D
+Helge Deller (2):=0D
+  Revert "fbdev: Garbage collect fbdev scrolling acceleration, part 1=0D
+    (from TODO list)"=0D
+  Revert "fbcon: Disable accelerated scrolling"=0D
+=0D
+ Documentation/gpu/todo.rst              |  24 --=0D
+ drivers/video/fbdev/core/bitblit.c      |  16 +=0D
+ drivers/video/fbdev/core/fbcon.c        | 540 +++++++++++++++++++++++-=0D
+ drivers/video/fbdev/core/fbcon.h        |  59 +++=0D
+ drivers/video/fbdev/core/fbcon_ccw.c    |  28 +-=0D
+ drivers/video/fbdev/core/fbcon_cw.c     |  28 +-=0D
+ drivers/video/fbdev/core/fbcon_rotate.h |   9 +=0D
+ drivers/video/fbdev/core/fbcon_ud.c     |  37 +-=0D
+ drivers/video/fbdev/core/tileblit.c     |  16 +=0D
+ drivers/video/fbdev/skeletonfb.c        |  12 +-=0D
+ include/linux/fb.h                      |   2 +-=0D
+ 11 files changed, 703 insertions(+), 68 deletions(-)=0D
+=0D
+-- =0D
+2.31.1=0D
+=0D
