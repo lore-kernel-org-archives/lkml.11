@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD727C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30190C3525A
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1449475AbiAXWrZ (ORCPT
+        id S1838099AbiAXWpx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:47:25 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50594 "EHLO
+        Mon, 24 Jan 2022 17:45:53 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51662 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457082AbiAXVky (ORCPT
+        with ESMTP id S1457005AbiAXVkn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:40:54 -0500
+        Mon, 24 Jan 2022 16:40:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4723BB81142;
-        Mon, 24 Jan 2022 21:40:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7C79AC340E4;
-        Mon, 24 Jan 2022 21:40:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4BF7DB80CCF;
+        Mon, 24 Jan 2022 21:40:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 73803C340E4;
+        Mon, 24 Jan 2022 21:40:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060452;
-        bh=RCV48ZSlTzuCqmHvJn71DlSzI5sKqDQyg1UX/Fny5Jc=;
+        s=korg; t=1643060440;
+        bh=x1ittnNsJWwt1zDpNreQd8A+qpmVXaypmHKKZugegkE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cJ9Dv7h7XZRNywSIHsHCGsuakQYS1PrxWt4Xi1qncrhJhKIWspWpFQzrRY2iCM0aN
-         WPIgt4WLvhpNfYZ2onJcdq7LgPUcrMK4f88t4mLJsrudlgQavBYkWIM5oQX2nmmTmY
-         qCGwJL/XHWN51mNKeDCR1KllTjLHbL6XLO6qP/SU=
+        b=bh6g7Swy7+QKD5BvqGnelkT4dWbxl1tArGk37YWxFkrrzccW0ebvR2BSoraRx2xiy
+         jzD6Nt/JVdVOIHz43A71pudtjQZpL+Xey0B+Ej4MX/l2K090bIG5khl3U2LKBI24Os
+         xdt69CRnriyXuRkUjQ/3+hFsvKOpdNH/L7rmb7I4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
-        Martin Krastev <krastevm@vmware.com>,
-        Thomas Zimmermann <tzimmermann@suse.de>
-Subject: [PATCH 5.16 0953/1039] drm/vmwgfx: Remove unused compile options
-Date:   Mon, 24 Jan 2022 19:45:42 +0100
-Message-Id: <20220124184157.318282671@linuxfoundation.org>
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Helge Deller <deller@gmx.de>
+Subject: [PATCH 5.16 0949/1039] parisc: pdc_stable: Fix memory leak in pdcs_register_pathentries
+Date:   Mon, 24 Jan 2022 19:45:38 +0100
+Message-Id: <20220124184157.188315636@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,98 +46,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zack Rusin <zackr@vmware.com>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-commit 50ca8cc7c0fdd9ab16b8b66ffb301fface101fac upstream.
+commit d24846a4246b6e61ecbd036880a4adf61681d241 upstream.
 
-Before the driver had screen targets support we had to disable explicit
-bringup of its infrastructure because it was breaking screen objects
-support.
-Since the implementation of screen targets landed there hasn't been a
-reason to explicitly disable it and the options were never used.
-Remove of all that unused code.
+kobject_init_and_add() takes reference even when it fails.
+According to the doc of kobject_init_and_add()：
 
-Signed-off-by: Zack Rusin <zackr@vmware.com>
-Fixes: d80efd5cb3de ("drm/vmwgfx: Initial DX support")
-Reviewed-by: Martin Krastev <krastevm@vmware.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211215184147.3688785-3-zack@kde.org
-(cherry picked from commit 11343099d5ae6c7411da1425b6b162c89fb5bf10)
-Signed-off-by: Thomas Zimmermann <tzimmermann@suse.de>
+   If this function returns an error, kobject_put() must be called to
+   properly clean up the memory associated with the object.
+
+Fix memory leak by calling kobject_put().
+
+Fixes: 73f368cf679b ("Kobject: change drivers/parisc/pdc_stable.c to use kobject_init_and_add")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Signed-off-by: Helge Deller <deller@gmx.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/vmwgfx/vmwgfx_drv.h  |    3 ---
- drivers/gpu/drm/vmwgfx/vmwgfx_mob.c  |   12 +++---------
- drivers/gpu/drm/vmwgfx/vmwgfx_stdu.c |    4 ++--
- 3 files changed, 5 insertions(+), 14 deletions(-)
+ drivers/parisc/pdc_stable.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_drv.h
-@@ -59,11 +59,8 @@
- #define VMWGFX_DRIVER_MINOR 19
- #define VMWGFX_DRIVER_PATCHLEVEL 0
- #define VMWGFX_FIFO_STATIC_SIZE (1024*1024)
--#define VMWGFX_MAX_RELOCATIONS 2048
--#define VMWGFX_MAX_VALIDATIONS 2048
- #define VMWGFX_MAX_DISPLAYS 16
- #define VMWGFX_CMD_BOUNCE_INIT_SIZE 32768
--#define VMWGFX_ENABLE_SCREEN_TARGET_OTABLE 1
+--- a/drivers/parisc/pdc_stable.c
++++ b/drivers/parisc/pdc_stable.c
+@@ -979,8 +979,10 @@ pdcs_register_pathentries(void)
+ 		entry->kobj.kset = paths_kset;
+ 		err = kobject_init_and_add(&entry->kobj, &ktype_pdcspath, NULL,
+ 					   "%s", entry->name);
+-		if (err)
++		if (err) {
++			kobject_put(&entry->kobj);
+ 			return err;
++		}
  
- #define VMWGFX_PCI_ID_SVGA2              0x0405
- #define VMWGFX_PCI_ID_SVGA3              0x0406
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_mob.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_mob.c
-@@ -1,7 +1,7 @@
- // SPDX-License-Identifier: GPL-2.0 OR MIT
- /**************************************************************************
-  *
-- * Copyright 2012-2015 VMware, Inc., Palo Alto, CA., USA
-+ * Copyright 2012-2021 VMware, Inc., Palo Alto, CA., USA
-  *
-  * Permission is hereby granted, free of charge, to any person obtaining a
-  * copy of this software and associated documentation files (the
-@@ -29,12 +29,6 @@
- 
- #include "vmwgfx_drv.h"
- 
--/*
-- * If we set up the screen target otable, screen objects stop working.
-- */
--
--#define VMW_OTABLE_SETUP_SUB ((VMWGFX_ENABLE_SCREEN_TARGET_OTABLE ? 0 : 1))
--
- #ifdef CONFIG_64BIT
- #define VMW_PPN_SIZE 8
- #define VMW_MOBFMT_PTDEPTH_0 SVGA3D_MOBFMT_PT64_0
-@@ -75,7 +69,7 @@ static const struct vmw_otable pre_dx_ta
- 	{VMWGFX_NUM_GB_CONTEXT * sizeof(SVGAOTableContextEntry), NULL, true},
- 	{VMWGFX_NUM_GB_SHADER * sizeof(SVGAOTableShaderEntry), NULL, true},
- 	{VMWGFX_NUM_GB_SCREEN_TARGET * sizeof(SVGAOTableScreenTargetEntry),
--	 NULL, VMWGFX_ENABLE_SCREEN_TARGET_OTABLE}
-+	 NULL, true}
- };
- 
- static const struct vmw_otable dx_tables[] = {
-@@ -84,7 +78,7 @@ static const struct vmw_otable dx_tables
- 	{VMWGFX_NUM_GB_CONTEXT * sizeof(SVGAOTableContextEntry), NULL, true},
- 	{VMWGFX_NUM_GB_SHADER * sizeof(SVGAOTableShaderEntry), NULL, true},
- 	{VMWGFX_NUM_GB_SCREEN_TARGET * sizeof(SVGAOTableScreenTargetEntry),
--	 NULL, VMWGFX_ENABLE_SCREEN_TARGET_OTABLE},
-+	 NULL, true},
- 	{VMWGFX_NUM_DXCONTEXT * sizeof(SVGAOTableDXContextEntry), NULL, true},
- };
- 
---- a/drivers/gpu/drm/vmwgfx/vmwgfx_stdu.c
-+++ b/drivers/gpu/drm/vmwgfx/vmwgfx_stdu.c
-@@ -1872,8 +1872,8 @@ int vmw_kms_stdu_init_display(struct vmw
- 	int i, ret;
- 
- 
--	/* Do nothing if Screen Target support is turned off */
--	if (!VMWGFX_ENABLE_SCREEN_TARGET_OTABLE || !dev_priv->has_mob)
-+	/* Do nothing if there's no support for MOBs */
-+	if (!dev_priv->has_mob)
- 		return -ENOSYS;
- 
- 	if (!(dev_priv->capabilities & SVGA_CAP_GBOBJECTS))
+ 		/* kobject is now registered */
+ 		write_lock(&entry->rw_lock);
 
 
