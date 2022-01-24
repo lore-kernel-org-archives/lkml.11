@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CF22C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0A68C41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:22:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344895AbiAXTWF (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:22:05 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41294 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345871AbiAXTNm (ORCPT
+        id S235042AbiAXTWL (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:22:11 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:39126 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242600AbiAXTNk (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:13:42 -0500
+        Mon, 24 Jan 2022 14:13:40 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1B2D56131E;
-        Mon, 24 Jan 2022 19:13:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E27FEC340E5;
-        Mon, 24 Jan 2022 19:13:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B79B4B811FC;
+        Mon, 24 Jan 2022 19:13:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC84BC340E5;
+        Mon, 24 Jan 2022 19:13:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051620;
-        bh=TKHdAe18EnCv1jjv/mi7ToHGM4RUPP9CaKAtUZa8NvQ=;
+        s=korg; t=1643051617;
+        bh=mzOXgJWu4huwItt9Jb9pt1M7G82FlnWck1CgOhpFlsE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NKK8D8YVxVBLYDkzJc9P0whTNBjapIAGCg1z3Lm3mRxczoqX+T4G5otD/Ab37dLq4
-         q6LlWUmPMRIeyA/Xxm6/LT8MLgexUNyR2HX31o+Ust0EF9dTRNMo5MPit4FmZU2dLF
-         zTXPwAhccnx7fPmZCEE4uVGik0ZrwRT5UrDclKys=
+        b=penyo4OWhPzqBwlqN66HFN5cMRa8hCZ4FyfqMNbTEKfgdp476HGwcrFP4r7G722F9
+         dM0ZMrFKtNqyJAvHpNEr4K+DPaYdGcG/M4lTFLAgyGUDv/0euCMFpTtcMqkF2VV68e
+         JQK4gBrVEIlgbuoYHPiDEl8sphdexhPwe/oGko7k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
         Hans Verkuil <hverkuil-cisco@xs4all.nl>,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 4.19 032/239] media: mceusb: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:41:10 +0100
-Message-Id: <20220124183944.146935455@linuxfoundation.org>
+Subject: [PATCH 4.19 031/239] media: flexcop-usb: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:41:09 +0100
+Message-Id: <20220124183944.116121404@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -49,55 +48,93 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Johan Hovold <johan@kernel.org>
 
-commit 16394e998cbb050730536bdf7e89f5a70efbd974 upstream.
+commit cd1798a387825cc4a51282f5a611ad05bb1ad75f upstream.
 
 USB control-message timeouts are specified in milliseconds and should
 specifically not vary with CONFIG_HZ.
 
-Fixes: 66e89522aff7 ("V4L/DVB: IR: add mceusb IR receiver driver")
-Cc: stable@vger.kernel.org      # 2.6.36
+Note that the driver was multiplying some of the timeout values with HZ
+twice resulting in 3000-second timeouts with HZ=1000.
+
+Also note that two of the timeout defines are currently unused.
+
+Fixes: 2154be651b90 ("[media] redrat3: new rc-core IR transceiver device driver")
+Cc: stable@vger.kernel.org      # 3.0
 Signed-off-by: Johan Hovold <johan@kernel.org>
 Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/rc/mceusb.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/media/usb/b2c2/flexcop-usb.c |   10 +++++-----
+ drivers/media/usb/b2c2/flexcop-usb.h |   12 ++++++------
+ 2 files changed, 11 insertions(+), 11 deletions(-)
 
---- a/drivers/media/rc/mceusb.c
-+++ b/drivers/media/rc/mceusb.c
-@@ -1367,7 +1367,7 @@ static void mceusb_gen1_init(struct mceu
- 	 */
- 	ret = usb_control_msg(ir->usbdev, usb_rcvctrlpipe(ir->usbdev, 0),
- 			      USB_REQ_SET_ADDRESS, USB_TYPE_VENDOR, 0, 0,
--			      data, USB_CTRL_MSG_SZ, HZ * 3);
-+			      data, USB_CTRL_MSG_SZ, 3000);
- 	dev_dbg(dev, "set address - ret = %d", ret);
- 	dev_dbg(dev, "set address - data[0] = %d, data[1] = %d",
- 						data[0], data[1]);
-@@ -1375,20 +1375,20 @@ static void mceusb_gen1_init(struct mceu
- 	/* set feature: bit rate 38400 bps */
- 	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
- 			      USB_REQ_SET_FEATURE, USB_TYPE_VENDOR,
--			      0xc04e, 0x0000, NULL, 0, HZ * 3);
-+			      0xc04e, 0x0000, NULL, 0, 3000);
+--- a/drivers/media/usb/b2c2/flexcop-usb.c
++++ b/drivers/media/usb/b2c2/flexcop-usb.c
+@@ -86,7 +86,7 @@ static int flexcop_usb_readwrite_dw(stru
+ 			0,
+ 			fc_usb->data,
+ 			sizeof(u32),
+-			B2C2_WAIT_FOR_OPERATION_RDW * HZ);
++			B2C2_WAIT_FOR_OPERATION_RDW);
  
- 	dev_dbg(dev, "set feature - ret = %d", ret);
+ 	if (ret != sizeof(u32)) {
+ 		err("error while %s dword from %d (%d).", read ? "reading" :
+@@ -154,7 +154,7 @@ static int flexcop_usb_v8_memory_req(str
+ 			wIndex,
+ 			fc_usb->data,
+ 			buflen,
+-			nWaitTime * HZ);
++			nWaitTime);
+ 	if (ret != buflen)
+ 		ret = -EIO;
  
- 	/* bRequest 4: set char length to 8 bits */
- 	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
- 			      4, USB_TYPE_VENDOR,
--			      0x0808, 0x0000, NULL, 0, HZ * 3);
-+			      0x0808, 0x0000, NULL, 0, 3000);
- 	dev_dbg(dev, "set char length - retB = %d", ret);
+@@ -248,13 +248,13 @@ static int flexcop_usb_i2c_req(struct fl
+ 		/* DKT 020208 - add this to support special case of DiSEqC */
+ 	case USB_FUNC_I2C_CHECKWRITE:
+ 		pipe = B2C2_USB_CTRL_PIPE_OUT;
+-		nWaitTime = 2;
++		nWaitTime = 2000;
+ 		request_type |= USB_DIR_OUT;
+ 		break;
+ 	case USB_FUNC_I2C_READ:
+ 	case USB_FUNC_I2C_REPEATREAD:
+ 		pipe = B2C2_USB_CTRL_PIPE_IN;
+-		nWaitTime = 2;
++		nWaitTime = 2000;
+ 		request_type |= USB_DIR_IN;
+ 		break;
+ 	default:
+@@ -281,7 +281,7 @@ static int flexcop_usb_i2c_req(struct fl
+ 			wIndex,
+ 			fc_usb->data,
+ 			buflen,
+-			nWaitTime * HZ);
++			nWaitTime);
  
- 	/* bRequest 2: set handshaking to use DTR/DSR */
- 	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
- 			      2, USB_TYPE_VENDOR,
--			      0x0000, 0x0100, NULL, 0, HZ * 3);
-+			      0x0000, 0x0100, NULL, 0, 3000);
- 	dev_dbg(dev, "set handshake  - retC = %d", ret);
+ 	if (ret != buflen)
+ 		ret = -EIO;
+--- a/drivers/media/usb/b2c2/flexcop-usb.h
++++ b/drivers/media/usb/b2c2/flexcop-usb.h
+@@ -91,13 +91,13 @@ typedef enum {
+ 	UTILITY_SRAM_TESTVERIFY     = 0x16,
+ } flexcop_usb_utility_function_t;
  
- 	/* device resume */
+-#define B2C2_WAIT_FOR_OPERATION_RW (1*HZ)
+-#define B2C2_WAIT_FOR_OPERATION_RDW (3*HZ)
+-#define B2C2_WAIT_FOR_OPERATION_WDW (1*HZ)
++#define B2C2_WAIT_FOR_OPERATION_RW 1000
++#define B2C2_WAIT_FOR_OPERATION_RDW 3000
++#define B2C2_WAIT_FOR_OPERATION_WDW 1000
+ 
+-#define B2C2_WAIT_FOR_OPERATION_V8READ (3*HZ)
+-#define B2C2_WAIT_FOR_OPERATION_V8WRITE (3*HZ)
+-#define B2C2_WAIT_FOR_OPERATION_V8FLASH (3*HZ)
++#define B2C2_WAIT_FOR_OPERATION_V8READ 3000
++#define B2C2_WAIT_FOR_OPERATION_V8WRITE 3000
++#define B2C2_WAIT_FOR_OPERATION_V8FLASH 3000
+ 
+ typedef enum {
+ 	V8_MEMORY_PAGE_DVB_CI = 0x20,
 
 
