@@ -2,48 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5202EC4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:03:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1674CC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:04:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444855AbiAXVBk (ORCPT
+        id S1444906AbiAXVBn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:01:40 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33224 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353760AbiAXUhy (ORCPT
+        Mon, 24 Jan 2022 16:01:43 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40890 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1388260AbiAXUiZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:37:54 -0500
+        Mon, 24 Jan 2022 15:38:25 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7457E61545;
-        Mon, 24 Jan 2022 20:37:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BB18C340E7;
-        Mon, 24 Jan 2022 20:37:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2D1B5B811F9;
+        Mon, 24 Jan 2022 20:38:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F97DC340E5;
+        Mon, 24 Jan 2022 20:38:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056672;
-        bh=IWsJn1qUltswEzZQyGwVZ4QpIXfIN5nldvNPVenoV+E=;
+        s=korg; t=1643056702;
+        bh=XOsj6tMeo3byH1VXmZp4CqHcytz5W+S7VP6NCTNikdo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OxX6YFowwv+cooyWsmh8KgcW8tPXgfJJySHwzqOAGFfWvs1VW4G4WAyc2YyjDGOlC
-         SKbOFaSbMVSgQKOtkGLOET2ugHnnZVBQw1LSvh4vusfqaH5h69fK8Ao1e7PluorQHC
-         ydxpef3Tg7663uUINfYTTMz2dccDKiYhRsfbcwKM=
+        b=C0yvE8JueFYNKtq7OmvIpo3QZ2vgtZVfk6dYlKyBkv40amAkIHhZxpIQMl7ntclgj
+         AffTcPTt7k6IES7HfvUWJtaBRGV28ujbRwP3n+ypyb8MaPc+NvD/paJMgHEl36q8P/
+         b5IZAQyqLbmrX1M2Xb2/90dkvVJvW6uFLzEoUifI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peter Gonda <pgonda@google.com>,
-        Marc Orr <marcorr@google.com>,
-        David Rientjes <rientjes@google.com>,
-        Tom Lendacky <thomas.lendacky@amd.com>,
-        Brijesh Singh <brijesh.singh@amd.com>,
-        Joerg Roedel <jroedel@suse.de>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        John Allen <john.allen@amd.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Paolo Bonzini <pbonzini@redhat.com>,
-        linux-crypto@vger.kernel.org, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 562/846] crypto: ccp - Move SEV_INIT retry for corrupted data
-Date:   Mon, 24 Jan 2022 19:41:19 +0100
-Message-Id: <20220124184120.416260637@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot <syzbot+31d54c60c5b254d6f75b@syzkaller.appspotmail.com>,
+        Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>,
+        Kalle Valo <quic_kvalo@quicinc.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 571/846] ath9k_htc: fix NULL pointer dereference at ath9k_htc_tx_get_packet()
+Date:   Mon, 24 Jan 2022 19:41:28 +0100
+Message-Id: <20220124184120.735990926@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -55,93 +49,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Peter Gonda <pgonda@google.com>
+From: Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
 
-[ Upstream commit e423b9d75e779d921e6adf5ac3d0b59400d6ba7e ]
+[ Upstream commit 8b3046abc99eefe11438090bcc4ec3a3994b55d0 ]
 
-Move the data corrupted retry of SEV_INIT into the
-__sev_platform_init_locked() function. This is for upcoming INIT_EX
-support as well as helping direct callers of
-__sev_platform_init_locked() which currently do not support the
-retry.
+syzbot is reporting lockdep warning at ath9k_wmi_event_tasklet() followed
+by kernel panic at get_htc_epid_queue() from ath9k_htc_tx_get_packet() from
+ath9k_htc_txstatus() [1], for ath9k_wmi_event_tasklet(WMI_TXSTATUS_EVENTID)
+depends on spin_lock_init() from ath9k_init_priv() being already completed.
 
-Signed-off-by: Peter Gonda <pgonda@google.com>
-Reviewed-by: Marc Orr <marcorr@google.com>
-Acked-by: David Rientjes <rientjes@google.com>
-Acked-by: Tom Lendacky <thomas.lendacky@amd.com>
-Acked-by: Brijesh Singh <brijesh.singh@amd.com>
-Cc: Tom Lendacky <thomas.lendacky@amd.com>
-Cc: Brijesh Singh <brijesh.singh@amd.com>
-Cc: Marc Orr <marcorr@google.com>
-Cc: Joerg Roedel <jroedel@suse.de>
-Cc: Herbert Xu <herbert@gondor.apana.org.au>
-Cc: David Rientjes <rientjes@google.com>
-Cc: John Allen <john.allen@amd.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Paolo Bonzini <pbonzini@redhat.com>
-Cc: linux-crypto@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Since ath9k_wmi_event_tasklet() is set by ath9k_init_wmi() from
+ath9k_htc_probe_device(), it is possible that ath9k_wmi_event_tasklet() is
+called via tasklet interrupt before spin_lock_init() from ath9k_init_priv()
+ from ath9k_init_device() from ath9k_htc_probe_device() is called.
+
+Let's hold ath9k_wmi_event_tasklet(WMI_TXSTATUS_EVENTID) no-op until
+ath9k_tx_init() completes.
+
+Link: https://syzkaller.appspot.com/bug?extid=31d54c60c5b254d6f75b [1]
+Reported-by: syzbot <syzbot+31d54c60c5b254d6f75b@syzkaller.appspotmail.com>
+Signed-off-by: Tetsuo Handa <penguin-kernel@I-love.SAKURA.ne.jp>
+Tested-by: syzbot <syzbot+31d54c60c5b254d6f75b@syzkaller.appspotmail.com>
+Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
+Link: https://lore.kernel.org/r/77b76ac8-2bee-6444-d26c-8c30858b8daa@i-love.sakura.ne.jp
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/ccp/sev-dev.c | 30 ++++++++++++++++--------------
- 1 file changed, 16 insertions(+), 14 deletions(-)
+ drivers/net/wireless/ath/ath9k/htc.h          | 1 +
+ drivers/net/wireless/ath/ath9k/htc_drv_txrx.c | 5 +++++
+ drivers/net/wireless/ath/ath9k/wmi.c          | 4 ++++
+ 3 files changed, 10 insertions(+)
 
-diff --git a/drivers/crypto/ccp/sev-dev.c b/drivers/crypto/ccp/sev-dev.c
-index 2ecb0e1f65d8d..e2806ca3300a8 100644
---- a/drivers/crypto/ccp/sev-dev.c
-+++ b/drivers/crypto/ccp/sev-dev.c
-@@ -241,7 +241,7 @@ static int __sev_platform_init_locked(int *error)
- 	struct psp_device *psp = psp_master;
- 	struct sev_data_init data;
- 	struct sev_device *sev;
--	int rc = 0;
-+	int psp_ret, rc = 0;
+diff --git a/drivers/net/wireless/ath/ath9k/htc.h b/drivers/net/wireless/ath/ath9k/htc.h
+index 4f71e962279af..6b45e63fae4ba 100644
+--- a/drivers/net/wireless/ath/ath9k/htc.h
++++ b/drivers/net/wireless/ath/ath9k/htc.h
+@@ -306,6 +306,7 @@ struct ath9k_htc_tx {
+ 	DECLARE_BITMAP(tx_slot, MAX_TX_BUF_NUM);
+ 	struct timer_list cleanup_timer;
+ 	spinlock_t tx_lock;
++	bool initialized;
+ };
  
- 	if (!psp || !psp->sev_data)
- 		return -ENODEV;
-@@ -266,7 +266,21 @@ static int __sev_platform_init_locked(int *error)
- 		data.tmr_len = SEV_ES_TMR_SIZE;
- 	}
- 
--	rc = __sev_do_cmd_locked(SEV_CMD_INIT, &data, error);
-+	rc = __sev_do_cmd_locked(SEV_CMD_INIT, &data, &psp_ret);
-+	if (rc && psp_ret == SEV_RET_SECURE_DATA_INVALID) {
-+		/*
-+		 * Initialization command returned an integrity check failure
-+		 * status code, meaning that firmware load and validation of SEV
-+		 * related persistent data has failed. Retrying the
-+		 * initialization function should succeed by replacing the state
-+		 * with a reset state.
-+		 */
-+		dev_dbg(sev->dev, "SEV: retrying INIT command");
-+		rc = __sev_do_cmd_locked(SEV_CMD_INIT, &data, &psp_ret);
-+	}
-+	if (error)
-+		*error = psp_ret;
+ struct ath9k_htc_tx_ctl {
+diff --git a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+index e7a21eaf3a68d..6a850a0bfa8ad 100644
+--- a/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
++++ b/drivers/net/wireless/ath/ath9k/htc_drv_txrx.c
+@@ -813,6 +813,11 @@ int ath9k_tx_init(struct ath9k_htc_priv *priv)
+ 	skb_queue_head_init(&priv->tx.data_vi_queue);
+ 	skb_queue_head_init(&priv->tx.data_vo_queue);
+ 	skb_queue_head_init(&priv->tx.tx_failed);
 +
- 	if (rc)
- 		return rc;
++	/* Allow ath9k_wmi_event_tasklet(WMI_TXSTATUS_EVENTID) to operate. */
++	smp_wmb();
++	priv->tx.initialized = true;
++
+ 	return 0;
+ }
  
-@@ -1091,18 +1105,6 @@ void sev_pci_init(void)
- 
- 	/* Initialize the platform */
- 	rc = sev_platform_init(&error);
--	if (rc && (error == SEV_RET_SECURE_DATA_INVALID)) {
--		/*
--		 * INIT command returned an integrity check failure
--		 * status code, meaning that firmware load and
--		 * validation of SEV related persistent data has
--		 * failed and persistent state has been erased.
--		 * Retrying INIT command here should succeed.
--		 */
--		dev_dbg(sev->dev, "SEV: retrying INIT command");
--		rc = sev_platform_init(&error);
--	}
--
- 	if (rc) {
- 		dev_err(sev->dev, "SEV: failed to INIT error %#x\n", error);
- 		return;
+diff --git a/drivers/net/wireless/ath/ath9k/wmi.c b/drivers/net/wireless/ath/ath9k/wmi.c
+index fe29ad4b9023c..f315c54bd3ac0 100644
+--- a/drivers/net/wireless/ath/ath9k/wmi.c
++++ b/drivers/net/wireless/ath/ath9k/wmi.c
+@@ -169,6 +169,10 @@ void ath9k_wmi_event_tasklet(struct tasklet_struct *t)
+ 					     &wmi->drv_priv->fatal_work);
+ 			break;
+ 		case WMI_TXSTATUS_EVENTID:
++			/* Check if ath9k_tx_init() completed. */
++			if (!data_race(priv->tx.initialized))
++				break;
++
+ 			spin_lock_bh(&priv->tx.tx_lock);
+ 			if (priv->tx.flags & ATH9K_HTC_OP_TX_DRAIN) {
+ 				spin_unlock_bh(&priv->tx.tx_lock);
 -- 
 2.34.1
 
