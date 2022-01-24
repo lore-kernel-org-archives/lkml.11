@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDB7CC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6DE8C4167E
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452332AbiAXVZL (ORCPT
+        id S1451019AbiAXVV6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:25:11 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52400 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443811AbiAXU7M (ORCPT
+        Mon, 24 Jan 2022 16:21:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43786 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1384555AbiAXUxH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:59:12 -0500
+        Mon, 24 Jan 2022 15:53:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18526C095417;
+        Mon, 24 Jan 2022 11:59:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 50C8C61330;
-        Mon, 24 Jan 2022 20:59:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32DC2C340E5;
-        Mon, 24 Jan 2022 20:59:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A9393611CD;
+        Mon, 24 Jan 2022 19:59:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7DE04C340E8;
+        Mon, 24 Jan 2022 19:59:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057950;
-        bh=8rZU2mkEPnLSkCNjqQB28l5RSQofZ+GqJfjHJOjlecg=;
+        s=korg; t=1643054362;
+        bh=VG1kD5DcqOtXZR9TY8TdK67T+wa/ynVIIQFX0eGJiCA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fyVEkbPMUmMvoaV69PbFmObY+5MSjtRkA8pVPrNyTX8a1QmKrdOs0FzCm5/gHrjIf
-         FKiV0QzRYPCMbsS8JtBl2gDK8pc46oCYVbQq0Vmd9Kzz8jUFBYOPX/xMx5jCBcerD3
-         52avpGQy4bh4xA0IFOZ9weeJ0srYRT2ArLUwRzIs=
+        b=ZdBTVU2SarNGU6btRq3GAd3djc/m2wpRjN4WUU+Ug1EdyT8jXBOT27+mnCV+PcN3Q
+         jt9JW78i405YOXMxPT9bBxyqYMMXWBL9McFG9ypjscnIf9ku5l2qwpGNO+vZTSOrTF
+         GWqzs0HVcfjeenbFg1XN4VKSgvk+dOW2S7/EXw9k=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Neil Armstrong <narmstrong@baylibre.com>,
-        Alexander Stein <alexander.stein@mailbox.org>,
+        stable@vger.kernel.org, "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0133/1039] arm64: dts: amlogic: meson-g12: Fix GPU operating point table node name
-Date:   Mon, 24 Jan 2022 19:32:02 +0100
-Message-Id: <20220124184129.630000661@linuxfoundation.org>
+Subject: [PATCH 5.10 365/563] mmc: core: Fixup storing of OCR for MMC_QUIRK_NONSTD_SDIO
+Date:   Mon, 24 Jan 2022 19:42:10 +0100
+Message-Id: <20220124184037.039837909@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,40 +50,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Stein <alexander.stein@mailbox.org>
+From: Ulf Hansson <ulf.hansson@linaro.org>
 
-[ Upstream commit bb98a6fd0b0e227cefb2ba91cea2b55455f203b7 ]
+[ Upstream commit 8c3e5b74b9e2146f564905e50ca716591c76d4f1 ]
 
-Starting with commit 94274f20f6bf ("dt-bindings: opp: Convert to DT
-schema") the opp node name has a mandatory pattern. This change
-fixes the dtbs_check warning:
-gpu-opp-table: $nodename:0: 'gpu-opp-table' does not match
-'^opp-table(-[a-z0-9]+)?$'
-Put the 'gpu' part at the end to match the pattern.
+The mmc core takes a specific path to support initializing of a
+non-standard SDIO card. This is triggered by looking for the card-quirk,
+MMC_QUIRK_NONSTD_SDIO.
 
-Fixes: 916a0edc43f0 ("arm64: dts: amlogic: meson-g12: add the Mali OPP table and use DVFS")
-Reviewed-by: Neil Armstrong <narmstrong@baylibre.com>
-Signed-off-by: Alexander Stein <alexander.stein@mailbox.org>
-Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
-Link: https://lore.kernel.org/r/20211026182813.900775-2-alexander.stein@mailbox.org
+In mmc_sdio_init_card() this gets rather messy, as it causes the code to
+bail out earlier, compared to the usual path. This leads to that the OCR
+doesn't get saved properly in card->ocr. Fortunately, only omap_hsmmc has
+been using the MMC_QUIRK_NONSTD_SDIO and is dealing with the issue, by
+assigning a hardcoded value (0x80) to card->ocr from an ->init_card() ops.
+
+To make the behaviour consistent, let's instead rely on the core to save
+the OCR in card->ocr during initialization.
+
+Reported-by: H. Nikolaus Schaller <hns@goldelico.com>
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Link: https://lore.kernel.org/r/e7936cff7fc24d187ef2680d3b4edb0ade58f293.1636564631.git.hns@goldelico.com
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/mmc/core/sdio.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
-index 00c6f53290d43..428449d98c0ae 100644
---- a/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-g12-common.dtsi
-@@ -58,7 +58,7 @@
- 		secure-monitor = <&sm>;
- 	};
+diff --git a/drivers/mmc/core/sdio.c b/drivers/mmc/core/sdio.c
+index 1b0853a82189a..99a4ce68d82f1 100644
+--- a/drivers/mmc/core/sdio.c
++++ b/drivers/mmc/core/sdio.c
+@@ -708,6 +708,8 @@ try_again:
+ 	if (host->ops->init_card)
+ 		host->ops->init_card(host, card);
  
--	gpu_opp_table: gpu-opp-table {
-+	gpu_opp_table: opp-table-gpu {
- 		compatible = "operating-points-v2";
++	card->ocr = ocr_card;
++
+ 	/*
+ 	 * If the host and card support UHS-I mode request the card
+ 	 * to switch to 1.8V signaling level.  No 1.8v signalling if
+@@ -820,7 +822,7 @@ try_again:
+ 			goto mismatch;
+ 		}
+ 	}
+-	card->ocr = ocr_card;
++
+ 	mmc_fixup_device(card, sdio_fixup_methods);
  
- 		opp-124999998 {
+ 	if (card->type == MMC_TYPE_SD_COMBO) {
 -- 
 2.34.1
 
