@@ -2,63 +2,92 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7852C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:28:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8744DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 12:29:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241131AbiAXM25 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 07:28:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36540 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241058AbiAXM2z (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 07:28:55 -0500
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C99CCC06173B
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 04:28:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=In-Reply-To:Content-Type:MIME-Version
-        :References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=IbHTPLPHKOYCbcyVROJGgzAPAFeL2yNA4XHtT8dzIss=; b=VgDBa8Mobdswrma4rOB/+beByN
-        1hbVBymHCUWWIYIwcEdJVU2Jk2sbb6vZjEw4URDJtioZ0v09lm8oiIq++yjnfywyPv6eC5uSn47cV
-        1BGoOcehpVd2+xJxNrauEJ3uGg56aA1ZfoiC2o7/TDPla2nX6fIRcxUMW0oXPQzmLX9HLZ/D01ETx
-        mjfBdszvAQLjq9zge91Bsr/swMonOBOa/oO2uMBhY7IWdjQTBLfF6y09M3bqn+I7dhqnf6UFRH2xR
-        tEBjlpIJjROfrx8Bk2Ddb9zUy6qCMgtj+GVtMJykI7rvZ2eGM0o7jhRJtF1vy3PiAVX97ED1Pba5s
-        RMua2nQw==;
-Received: from hch by bombadil.infradead.org with local (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nBySr-003HBY-Gw; Mon, 24 Jan 2022 12:28:53 +0000
-Date:   Mon, 24 Jan 2022 04:28:53 -0800
-From:   Christoph Hellwig <hch@infradead.org>
-To:     ira.weiny@intel.com
-Cc:     Andrew Morton <akpm@linux-foundation.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] highmem: Document kunmap_local()
-Message-ID: <Ye6bhQG6b6caYurD@infradead.org>
-References: <20220124013045.806718-1-ira.weiny@intel.com>
+        id S241215AbiAXM3O (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 07:29:14 -0500
+Received: from mga07.intel.com ([134.134.136.100]:6547 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239650AbiAXM3N (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 07:29:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1643027353; x=1674563353;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=o7r0U7Ku8gJK9VEbYjNho62PNu3+pf6Q/1IyLG6vJkk=;
+  b=kFhlw11iXnsD/zys52QjWkBc42TYF5UVZ/jFZSjGvVz48GItMBKX7otW
+   PLcPatXa6l1PTFGoNsNlaZW4YewKXwc47p9t1f6OkIe1yALmou075W8za
+   +lJKRAKCQSNwtVb5UaaMcketwTYpZP7xtJU6eB++uDeC/r5idDVyX0SbI
+   4C+PMtje1VSoOv9DMH8swYNU3U5WMP/Z1V0tqfYjkAa6bIrkXqUAxhTkh
+   MEZrmE071E7YsXLklF3f5zkNDA0F3vIAriWz437Y9g5V8SaiokxfgJsi9
+   XOQhVk1AljwJRQwExNxPGIZ8KGn6ZhIio2KyeLVKoya3tUAzIwxULhsjj
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="309353499"
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="309353499"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 04:29:12 -0800
+X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
+   d="scan'208";a="580353480"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 04:29:08 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nByS0-00DszF-DE;
+        Mon, 24 Jan 2022 14:28:00 +0200
+Date:   Mon, 24 Jan 2022 14:28:00 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, Ariel Elior <aelior@marvell.com>,
+        Manish Chopra <manishc@marvell.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH 10/54] net: ethernet: replace bitmap_weight with
+ bitmap_empty for qlogic
+Message-ID: <Ye6bUC1GyLLUV37p@smile.fi.intel.com>
+References: <20220123183925.1052919-1-yury.norov@gmail.com>
+ <20220123183925.1052919-11-yury.norov@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220124013045.806718-1-ira.weiny@intel.com>
-X-SRS-Rewrite: SMTP reverse-path rewritten from <hch@infradead.org> by bombadil.infradead.org. See http://www.infradead.org/rpr.html
+In-Reply-To: <20220123183925.1052919-11-yury.norov@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 23, 2022 at 05:30:44PM -0800, ira.weiny@intel.com wrote:
-> + * __addr is often an address returned from kmap_local_page().  However,
-> + * this address can be any address within the mapped page.  It does not need to
-> + * be the exact address returned from kmap_local_page()
-> + */
+On Sun, Jan 23, 2022 at 10:38:41AM -0800, Yury Norov wrote:
+> qlogic/qed code calls bitmap_weight() to check if any bit of a given
+> bitmap is set. It's better to use bitmap_empty() in that case because
+> bitmap_empty() stops traversing the bitmap as soon as it finds first
+> set bit, while bitmap_weight() counts all bits unconditionally.
 
-I'd word this a little different:
+> -		if (bitmap_weight((unsigned long *)&pmap[item], 64 * 8))
+> +		if (!bitmap_empty((unsigned long *)&pmap[item], 64 * 8))
 
-> + * __addr is often an address returned from kmap_local_page().  However,
-> + * this address can be any address within the mapped page.  It does not need to
-> + * be the exact address returned from kmap_local_page()
-> + */
+> -	    (bitmap_weight((unsigned long *)&pmap[item],
+> +	    (!bitmap_empty((unsigned long *)&pmap[item],
 
- * @__addr can be any address within the mapped page.  Commonly it is the
- * address return from kmap_local_page(), but it can also include offsets.
+Side note, these castings reminds me previous discussion and I'm wondering
+if you have this kind of potentially problematic places in your TODO as
+subject to fix.
 
-But documenting this definitively is a good idea!
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
