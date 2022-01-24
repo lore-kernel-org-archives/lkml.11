@@ -2,40 +2,52 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FA09C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E95C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:53:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839032AbiAXWtl (ORCPT
+        id S1839166AbiAXWt5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:49:41 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52876 "EHLO
+        Mon, 24 Jan 2022 17:49:57 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52952 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378515AbiAXVn2 (ORCPT
+        with ESMTP id S1445206AbiAXVng (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:43:28 -0500
+        Mon, 24 Jan 2022 16:43:36 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E394B81136;
-        Mon, 24 Jan 2022 21:43:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A7ECDC340E4;
-        Mon, 24 Jan 2022 21:43:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1F4E3B8119E;
+        Mon, 24 Jan 2022 21:43:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23521C340E4;
+        Mon, 24 Jan 2022 21:43:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060604;
-        bh=RAhbsxxG8YhgiPxl2yWSUjm73nfsyol775fPunTAP7o=;
+        s=korg; t=1643060609;
+        bh=xi4KJIaJwSCkynoxCcarqiM8KPP5W/cAYIZDLYrFnBo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LrnqEJJTXaywBKoR/lrwN4feGPfxBOGY3xIf2oQdPqXVFg7K/nfCcA6i0h34cBgaT
-         Wu01sdb9wfQRDkqAa7rC4uVFi+AfuDhpjlwL9iuyxNywAJRoPGmkVQlaXjPoc+s2tm
-         RCuLNDn2jsoV51FWV8oIo8KDd43Txlr5RRiXtqkc=
+        b=O9krJI8xsM2S5QNE6Aw2IuCATZOgoMbs8wBe7VSujvoGSQ+DD7gJDVKP1wHauRJId
+         WUN6Up3OIB6mFG1Wo21dSyGU+aCH2HGhMchR8vkYuvVa1L4vohi1mTd8d+fwY6+U/x
+         KhGqXLo+KqHs0tts/WNorz0G32PJff+/rPf29Qd0=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yury Norov <yury.norov@gmail.com>,
-        kernel test robot <lkp@intel.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>
-Subject: [PATCH 5.16 0976/1039] bitops: protect find_first_{,zero}_bit properly
-Date:   Mon, 24 Jan 2022 19:46:05 +0100
-Message-Id: <20220124184158.097950996@linuxfoundation.org>
+        stable@vger.kernel.org, Zechuan Chen <chenzechuan1@huawei.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Ingo Molnar <mingo@redhat.com>,
+        Jianlin Lv <Jianlin.Lv@arm.com>,
+        Jin Yao <yao.jin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Namhyung Kim <namhyung@kernel.org>,
+        "Naveen N. Rao" <naveen.n.rao@linux.vnet.ibm.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ravi Bangoria <ravi.bangoria@linux.ibm.com>,
+        Yang Jihong <yangjihong1@huawei.com>,
+        Arnaldo Carvalho de Melo <acme@redhat.com>
+Subject: [PATCH 5.16 1004/1039] perf probe: Fix ppc64 perf probe add events failed case
+Date:   Mon, 24 Jan 2022 19:46:33 +0100
+Message-Id: <20220124184159.039062305@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,51 +59,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yury Norov <yury.norov@gmail.com>
+From: Zechuan Chen <chenzechuan1@huawei.com>
 
-commit b7ec62d7ee0f0b8af6ba190501dff7f9ee6545ca upstream.
+commit 4624f199327a704dd1069aca1c3cadb8f2a28c6f upstream.
 
-find_first_bit() and find_first_zero_bit() are not protected with
-ifdefs as other functions in find.h. It causes build errors on some
-platforms if CONFIG_GENERIC_FIND_FIRST_BIT is enabled.
+Because of commit bf794bf52a80c627 ("powerpc/kprobes: Fix kallsyms
+lookup across powerpc ABIv1 and ABIv2"), in ppc64 ABIv1, our perf
+command eliminates the need to use the prefix "." at the symbol name.
 
-Signed-off-by: Yury Norov <yury.norov@gmail.com>
-Fixes: 2cc7b6a44ac2 ("lib: add fast path for find_first_*_bit() and find_last_bit()")
-Reported-by: kernel test robot <lkp@intel.com>
-Tested-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+But when the command "perf probe -a schedule" is executed on ppc64
+ABIv1, it obtains two symbol address information through /proc/kallsyms,
+for example:
+
+  cat /proc/kallsyms | grep -w schedule
+  c000000000657020 T .schedule
+  c000000000d4fdb8 D schedule
+
+The symbol "D schedule" is not a function symbol, and perf will print:
+"p:probe/schedule _text+13958584"Failed to write event: Invalid argument
+
+Therefore, when searching symbols from map and adding probe point for
+them, a symbol type check is added. If the type of symbol is not a
+function, skip it.
+
+Fixes: bf794bf52a80c627 ("powerpc/kprobes: Fix kallsyms lookup across powerpc ABIv1 and ABIv2")
+Signed-off-by: Zechuan Chen <chenzechuan1@huawei.com>
+Acked-by: Masami Hiramatsu <mhiramat@kernel.org>
+Cc: Alexander Shishkin <alexander.shishkin@linux.intel.com>
+Cc: Ingo Molnar <mingo@redhat.com>
+Cc: Jianlin Lv <Jianlin.Lv@arm.com>
+Cc: Jin Yao <yao.jin@linux.intel.com>
+Cc: Jiri Olsa <jolsa@redhat.com>
+Cc: Mark Rutland <mark.rutland@arm.com>
+Cc: Michael Ellerman <mpe@ellerman.id.au>
+Cc: Namhyung Kim <namhyung@kernel.org>
+Cc: Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+Cc: Peter Zijlstra <peterz@infradead.org>
+Cc: Ravi Bangoria <ravi.bangoria@linux.ibm.com>
+Cc: Yang Jihong <yangjihong1@huawei.com>
+Link: https://lore.kernel.org/r/20211228111338.218602-1-chenzechuan1@huawei.com
+Signed-off-by: Arnaldo Carvalho de Melo <acme@redhat.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/asm-generic/bitops/find.h |    5 +++++
- 1 file changed, 5 insertions(+)
+ tools/perf/util/probe-event.c |    3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/include/asm-generic/bitops/find.h
-+++ b/include/asm-generic/bitops/find.h
-@@ -97,6 +97,7 @@ unsigned long find_next_zero_bit(const u
+--- a/tools/perf/util/probe-event.c
++++ b/tools/perf/util/probe-event.c
+@@ -3083,6 +3083,9 @@ static int find_probe_trace_events_from_
+ 	for (j = 0; j < num_matched_functions; j++) {
+ 		sym = syms[j];
  
- #ifdef CONFIG_GENERIC_FIND_FIRST_BIT
- 
-+#ifndef find_first_bit
- /**
-  * find_first_bit - find the first set bit in a memory region
-  * @addr: The address to start the search at
-@@ -116,7 +117,9 @@ unsigned long find_first_bit(const unsig
- 
- 	return _find_first_bit(addr, size);
- }
-+#endif
- 
-+#ifndef find_first_zero_bit
- /**
-  * find_first_zero_bit - find the first cleared bit in a memory region
-  * @addr: The address to start the search at
-@@ -136,6 +139,8 @@ unsigned long find_first_zero_bit(const
- 
- 	return _find_first_zero_bit(addr, size);
- }
-+#endif
++		if (sym->type != STT_FUNC)
++			continue;
 +
- #else /* CONFIG_GENERIC_FIND_FIRST_BIT */
- 
- #ifndef find_first_bit
+ 		/* There can be duplicated symbols in the map */
+ 		for (i = 0; i < j; i++)
+ 			if (sym->start == syms[i]->start) {
 
 
