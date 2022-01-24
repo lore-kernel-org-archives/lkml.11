@@ -2,43 +2,49 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DCC7C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:03:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12E56C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444334AbiAXVAj (ORCPT
+        id S1444394AbiAXVAu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:00:39 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:39362 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1386132AbiAXUfM (ORCPT
+        Mon, 24 Jan 2022 16:00:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39174 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1385443AbiAXUdZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:35:12 -0500
+        Mon, 24 Jan 2022 15:33:25 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBD2BC07E294;
+        Mon, 24 Jan 2022 11:45:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79ADEB8121C;
-        Mon, 24 Jan 2022 20:35:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B697C340E5;
-        Mon, 24 Jan 2022 20:35:09 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6861261482;
+        Mon, 24 Jan 2022 19:45:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29597C340E5;
+        Mon, 24 Jan 2022 19:45:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056510;
-        bh=k/Lz/Zo8RSedFrd/Cb57u0V3RMctMpavMVRb8b8/edc=;
+        s=korg; t=1643053509;
+        bh=WCqmV5V7bA9Ezs5dDtJnZCm+j+H3lnDU0oaDy3hIKIk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=djwRMKdEp1wd99y7GeWqYI4YcYe5rY0QY9xPo2CLYfvoSV9pgKBVYQ1uZqtb72M/T
-         FXt1FShWLkFPCQPAaly9rxvjTh+tENbOM4BTDRlLUBscYh7NfOj6EknCCLJkyUT+HU
-         5TlWSxQFS3aL4BjcHgoXAPL7gQgJYpkYETlRHrUo=
+        b=QnGnXvNoylRzfJge4HSOq5tlA7cfwyuBCZ4VqET7tJgWkLgDXxWPQQR8lHoI6kAzz
+         Q8DGzxvORENUE6X+sbRgzB9hMNehrsTcEQXwHcd77X5SiBwl5pSOeTZgzdj2wm1KxX
+         G0bHa8Gon9oHj2L/GbaIKRnWyRHUchylSxYBowMs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Wan Jiabing <wanjiabing@vivo.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
+        stable@vger.kernel.org,
+        Venkateswara Naralasetty <vnaralas@codeaurora.org>,
+        Sven Eckelmann <sven@narfation.org>,
+        Karthikeyan Kathirvel <kathirve@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 476/846] ARM: shmobile: rcar-gen2: Add missing of_node_put()
-Date:   Mon, 24 Jan 2022 19:39:53 +0100
-Message-Id: <20220124184117.438723526@linuxfoundation.org>
+Subject: [PATCH 5.10 088/563] ath11k: reset RSN/WPA present state for open BSS
+Date:   Mon, 24 Jan 2022 19:37:33 +0100
+Message-Id: <20220124184027.439684369@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,49 +53,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wan Jiabing <wanjiabing@vivo.com>
+From: Karthikeyan Kathirvel <kathirve@codeaurora.org>
 
-[ Upstream commit 85744f2d938c5f3cfc44cb6533c157469634da93 ]
+[ Upstream commit 64bc3aa02ae78b1fcb1b850e0eb1f0622002bfaa ]
 
-Fix following coccicheck warning:
-./arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c:156:1-33: Function
-for_each_matching_node_and_match should have of_node_put() before break
-and goto.
+The ath11k driver is caching the information about RSN/WPA IE in the
+configured beacon template. The cached information is used during
+associations to figure out whether 4-way PKT/2-way GTK peer flags need to
+be set or not.
 
-Early exits from for_each_matching_node_and_match() should decrement the
-node reference counter.
+But the code never cleared the state when no such IE was found. This can
+for example happen when moving from an WPA/RSN to an open setup. The
+(seemingly connected) peer was then not able to communicate over the
+link because the firmware assumed a different (encryption enabled) state
+for the peer.
 
-Signed-off-by: Wan Jiabing <wanjiabing@vivo.com>
-Link: https://lore.kernel.org/r/20211018014503.7598-1-wanjiabing@vivo.com
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Tested-on: IPQ6018 hw1.0 AHB WLAN.HK.2.5.0.1-01100-QCAHKSWPL_SILICONZ-1
+
+Fixes: 01e34233c645 ("ath11k: fix wmi peer flags in peer assoc command")
+Cc: Venkateswara Naralasetty <vnaralas@codeaurora.org>
+Reported-by: Sven Eckelmann <sven@narfation.org>
+Signed-off-by: Karthikeyan Kathirvel <kathirve@codeaurora.org>
+[sven@narfation.org: split into separate patches, clean up commit message]
+Signed-off-by: Sven Eckelmann <sven@narfation.org>
+
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20211115100441.33771-2-sven@narfation.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/net/wireless/ath/ath11k/mac.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
-index ee949255ced3f..09ef73b99dd86 100644
---- a/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
-+++ b/arch/arm/mach-shmobile/regulator-quirk-rcar-gen2.c
-@@ -154,8 +154,10 @@ static int __init rcar_gen2_regulator_quirk(void)
- 		return -ENODEV;
+diff --git a/drivers/net/wireless/ath/ath11k/mac.c b/drivers/net/wireless/ath/ath11k/mac.c
+index 304e158f09751..b4f8494e3c707 100644
+--- a/drivers/net/wireless/ath/ath11k/mac.c
++++ b/drivers/net/wireless/ath/ath11k/mac.c
+@@ -792,11 +792,15 @@ static int ath11k_mac_setup_bcn_tmpl(struct ath11k_vif *arvif)
  
- 	for_each_matching_node_and_match(np, rcar_gen2_quirk_match, &id) {
--		if (!of_device_is_available(np))
-+		if (!of_device_is_available(np)) {
-+			of_node_put(np);
- 			break;
-+		}
+ 	if (cfg80211_find_ie(WLAN_EID_RSN, ies, (skb_tail_pointer(bcn) - ies)))
+ 		arvif->rsnie_present = true;
++	else
++		arvif->rsnie_present = false;
  
- 		ret = of_property_read_u32(np, "reg", &addr);
- 		if (ret)	/* Skip invalid entry and continue */
-@@ -164,6 +166,7 @@ static int __init rcar_gen2_regulator_quirk(void)
- 		quirk = kzalloc(sizeof(*quirk), GFP_KERNEL);
- 		if (!quirk) {
- 			ret = -ENOMEM;
-+			of_node_put(np);
- 			goto err_mem;
- 		}
+ 	if (cfg80211_find_vendor_ie(WLAN_OUI_MICROSOFT,
+ 				    WLAN_OUI_TYPE_MICROSOFT_WPA,
+ 				    ies, (skb_tail_pointer(bcn) - ies)))
+ 		arvif->wpaie_present = true;
++	else
++		arvif->wpaie_present = false;
+ 
+ 	ret = ath11k_wmi_bcn_tmpl(ar, arvif->vdev_id, &offs, bcn);
  
 -- 
 2.34.1
