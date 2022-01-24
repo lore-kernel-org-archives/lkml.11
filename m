@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFBE5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:55:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39C3EC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:55:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344338AbiAXSy1 (ORCPT
+        id S1343977AbiAXSy3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:54:27 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:51690 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236282AbiAXSwf (ORCPT
+        Mon, 24 Jan 2022 13:54:29 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50822 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236401AbiAXSwq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:52:35 -0500
+        Mon, 24 Jan 2022 13:52:46 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C514A614EC;
-        Mon, 24 Jan 2022 18:52:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9CB7BC340E5;
-        Mon, 24 Jan 2022 18:52:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 07AEBB8121B;
+        Mon, 24 Jan 2022 18:52:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 191D2C340E5;
+        Mon, 24 Jan 2022 18:52:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050354;
-        bh=qtKkJMFmMPARKOd3X03qqmFD/4R6AL0N8Z/w7kj3lLo=;
+        s=korg; t=1643050363;
+        bh=1WUYU2h+Ihp81t3u07UTnT8V09OXmsMPudnXV6CtIy8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=evSUhN1/wjx0RojmPt3msuMt54WzFH2avvDxM9oLw3ScE9fWiePCYElN/6rWOVdRw
-         9rXqImHreAF0BxyTZToSDqbKfQ+tJZ4QFQmM0KgPOd0yADf8S+pS9M8vji6SwoO1g2
-         1PaWwV5FQe82HNWkkQyJf/hScXRGzvC+zsO/53PA=
+        b=HB06RHFPxJSOLYs/MiB2bsTrTvfAc/z0rwkQS2QsptjEWfLjOhf3e7hE4U6KcUbAE
+         pYlS7E9jK4bHPNc6ccv9xNaWjouTHmNkciLudU4EJl1yR8BTpbx6Bpd1htRYE8qQPN
+         wa4x4w6It/ZDwPs56kGo4L6sY90F7mhBwSXLM8Yw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
+        stable@vger.kernel.org, Baoquan He <bhe@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 048/114] char/mwave: Adjust io port register size
-Date:   Mon, 24 Jan 2022 19:42:23 +0100
-Message-Id: <20220124183928.587436790@linuxfoundation.org>
+Subject: [PATCH 4.4 095/114] scsi: sr: Dont use GFP_DMA
+Date:   Mon, 24 Jan 2022 19:43:10 +0100
+Message-Id: <20220124183930.045525842@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -46,48 +48,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Christoph Hellwig <hch@lst.de>
 
-[ Upstream commit f5912cc19acd7c24b2dbf65a6340bf194244f085 ]
+[ Upstream commit d94d94969a4ba07a43d62429c60372320519c391 ]
 
-Using MKWORD() on a byte-sized variable results in OOB read. Expand the
-size of the reserved area so both MKWORD and MKBYTE continue to work
-without overflow. Silences this warning on a -Warray-bounds build:
+The allocated buffers are used as a command payload, for which the block
+layer and/or DMA API do the proper bounce buffering if needed.
 
-drivers/char/mwave/3780i.h:346:22: error: array subscript 'short unsigned int[0]' is partly outside array bounds of 'DSP_ISA_SLAVE_CONTROL[1]' [-Werror=array-bounds]
-  346 | #define MKWORD(var) (*((unsigned short *)(&var)))
-      |                     ~^~~~~~~~~~~~~~~~~~~~~~~~~~~~
-drivers/char/mwave/3780i.h:356:40: note: in definition of macro 'OutWordDsp'
-  356 | #define OutWordDsp(index,value)   outw(value,usDspBaseIO+index)
-      |                                        ^~~~~
-drivers/char/mwave/3780i.c:373:41: note: in expansion of macro 'MKWORD'
-  373 |         OutWordDsp(DSP_IsaSlaveControl, MKWORD(rSlaveControl));
-      |                                         ^~~~~~
-drivers/char/mwave/3780i.c:358:31: note: while referencing 'rSlaveControl'
-  358 |         DSP_ISA_SLAVE_CONTROL rSlaveControl;
-      |                               ^~~~~~~~~~~~~
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Link: https://lore.kernel.org/r/20211203084206.3104326-1-keescook@chromium.org
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20211222090842.920724-1-hch@lst.de
+Reported-by: Baoquan He <bhe@redhat.com>
+Reviewed-by: Baoquan He <bhe@redhat.com>
+Signed-off-by: Christoph Hellwig <hch@lst.de>
+Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/mwave/3780i.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/scsi/sr.c        | 2 +-
+ drivers/scsi/sr_vendor.c | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/char/mwave/3780i.h b/drivers/char/mwave/3780i.h
-index fba6ab1160ce8..b167163b18277 100644
---- a/drivers/char/mwave/3780i.h
-+++ b/drivers/char/mwave/3780i.h
-@@ -68,7 +68,7 @@ typedef struct {
- 	unsigned char ClockControl:1;	/* RW: Clock control: 0=normal, 1=stop 3780i clocks */
- 	unsigned char SoftReset:1;	/* RW: Soft reset 0=normal, 1=soft reset active */
- 	unsigned char ConfigMode:1;	/* RW: Configuration mode, 0=normal, 1=config mode */
--	unsigned char Reserved:5;	/* 0: Reserved */
-+	unsigned short Reserved:13;	/* 0: Reserved */
- } DSP_ISA_SLAVE_CONTROL;
+diff --git a/drivers/scsi/sr.c b/drivers/scsi/sr.c
+index df019b78d9f79..e26d6cc3c8716 100644
+--- a/drivers/scsi/sr.c
++++ b/drivers/scsi/sr.c
+@@ -883,7 +883,7 @@ static void get_capabilities(struct scsi_cd *cd)
  
+ 
+ 	/* allocate transfer buffer */
+-	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
++	buffer = kmalloc(512, GFP_KERNEL);
+ 	if (!buffer) {
+ 		sr_printk(KERN_ERR, cd, "out of memory.\n");
+ 		return;
+diff --git a/drivers/scsi/sr_vendor.c b/drivers/scsi/sr_vendor.c
+index 11a238cb22223..629bfe1b20263 100644
+--- a/drivers/scsi/sr_vendor.c
++++ b/drivers/scsi/sr_vendor.c
+@@ -118,7 +118,7 @@ int sr_set_blocklength(Scsi_CD *cd, int blocklength)
+ 		density = (blocklength > 2048) ? 0x81 : 0x83;
+ #endif
+ 
+-	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
++	buffer = kmalloc(512, GFP_KERNEL);
+ 	if (!buffer)
+ 		return -ENOMEM;
+ 
+@@ -166,7 +166,7 @@ int sr_cd_check(struct cdrom_device_info *cdi)
+ 	if (cd->cdi.mask & CDC_MULTI_SESSION)
+ 		return 0;
+ 
+-	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
++	buffer = kmalloc(512, GFP_KERNEL);
+ 	if (!buffer)
+ 		return -ENOMEM;
  
 -- 
 2.34.1
