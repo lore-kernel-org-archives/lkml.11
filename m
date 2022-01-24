@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 779FCC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23E36C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:50:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357400AbiAXTtz (ORCPT
+        id S1357435AbiAXTuA (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:49:55 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37238 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354924AbiAXTjj (ORCPT
+        Mon, 24 Jan 2022 14:50:00 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58796 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354940AbiAXTjn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:39:39 -0500
+        Mon, 24 Jan 2022 14:39:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 34A256131E;
-        Mon, 24 Jan 2022 19:39:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 077B9C340E5;
-        Mon, 24 Jan 2022 19:39:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C0B2CB80FA1;
+        Mon, 24 Jan 2022 19:39:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 02BA8C340E5;
+        Mon, 24 Jan 2022 19:39:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053177;
-        bh=NYJ7RpJ3Zpj/TBTgN+RPZymLDIAJnEHe1ThwT5uOekQ=;
+        s=korg; t=1643053180;
+        bh=Kg6lB8gyFX7ICKo3+KWCWKtc2SOVkFcVpBWAYHfLIk4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hsCzJjof/heIHnsjTnx/QvxYNglJY2KmXefmizHAcdqf5c+ehwayZjQrLAvZJzCFn
-         xJHO16eWsUe0AH/Z2G/PiM/K4K/yH/HSiJ/+qqSJrIk1saw6AiIwVaHrSqGZwM/Alp
-         X7QZrnWetwyWM8RCbfDIMCnTvpZn24YH4qLA+CUU=
+        b=iXkqVAton2oKAhP/YUDzDfvYS1KneJDZ0k5KJb75XoDFxwHzoiM+zWKZFbq+LXVUf
+         BlZyN3uEMiz6t3U+qU4wifaf90MT9rc9T6TWuL9cxImKhy0BeN9sCjvBQ/RNHrVJur
+         fznXzYrAihCIgxtk6BoDRKu9De0ynz4ej3LCnxmw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 301/320] xfrm: Dont accidentally set RTO_ONLINK in decode_session4()
-Date:   Mon, 24 Jan 2022 19:44:45 +0100
-Message-Id: <20220124184004.188391880@linuxfoundation.org>
+        stable@vger.kernel.org, Julius Werner <jwerner@chromium.org>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 5.4 275/320] firmware: Update Kconfig help text for Google firmware
+Date:   Mon, 24 Jan 2022 19:44:19 +0100
+Message-Id: <20220124184003.327989918@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -46,47 +46,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+From: Ben Hutchings <ben@decadent.org.uk>
 
-commit 23e7b1bfed61e301853b5e35472820d919498278 upstream.
+commit d185a3466f0cd5af8f1c5c782c53bc0e6f2e7136 upstream.
 
-Similar to commit 94e2238969e8 ("xfrm4: strip ECN bits from tos field"),
-clear the ECN bits from iph->tos when setting ->flowi4_tos.
-This ensures that the last bit of ->flowi4_tos is cleared, so
-ip_route_output_key_hash() isn't going to restrict the scope of the
-route lookup.
+The help text for GOOGLE_FIRMWARE states that it should only be
+enabled when building a kernel for Google's own servers.  However,
+many of the drivers dependent on it are also useful on Chromebooks or
+on any platform using coreboot.
 
-Use ~INET_ECN_MASK instead of IPTOS_RT_MASK, because we have no reason
-to clear the high order bits.
+Update the help text to reflect this double duty.
 
-Found by code inspection, compile tested only.
-
-Fixes: 4da3089f2b58 ("[IPSEC]: Use TOS when doing tunnel lookups")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: d384d6f43d1e ("firmware: google memconsole: Add coreboot support")
+Reviewed-by: Julius Werner <jwerner@chromium.org>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Link: https://lore.kernel.org/r/20180618225540.GD14131@decadent.org.uk
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/xfrm/xfrm_policy.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/firmware/google/Kconfig |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -31,6 +31,7 @@
- #include <linux/if_tunnel.h>
- #include <net/dst.h>
- #include <net/flow.h>
-+#include <net/inet_ecn.h>
- #include <net/xfrm.h>
- #include <net/ip.h>
- #include <net/gre.h>
-@@ -3282,7 +3283,7 @@ decode_session4(struct sk_buff *skb, str
- 	fl4->flowi4_proto = iph->protocol;
- 	fl4->daddr = reverse ? iph->saddr : iph->daddr;
- 	fl4->saddr = reverse ? iph->daddr : iph->saddr;
--	fl4->flowi4_tos = iph->tos;
-+	fl4->flowi4_tos = iph->tos & ~INET_ECN_MASK;
+--- a/drivers/firmware/google/Kconfig
++++ b/drivers/firmware/google/Kconfig
+@@ -3,9 +3,9 @@ menuconfig GOOGLE_FIRMWARE
+ 	bool "Google Firmware Drivers"
+ 	default n
+ 	help
+-	  These firmware drivers are used by Google's servers.  They are
+-	  only useful if you are working directly on one of their
+-	  proprietary servers.  If in doubt, say "N".
++	  These firmware drivers are used by Google servers,
++	  Chromebooks and other devices using coreboot firmware.
++	  If in doubt, say "N".
  
- 	if (!ip_is_fragment(iph)) {
- 		switch (iph->protocol) {
+ if GOOGLE_FIRMWARE
+ 
 
 
