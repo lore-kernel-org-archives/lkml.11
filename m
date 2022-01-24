@@ -2,45 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 644BBC35278
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8076AC41535
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386274AbiAXUfU (ORCPT
+        id S1386516AbiAXUff (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:35:20 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:37400 "EHLO
+        Mon, 24 Jan 2022 15:35:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:38048 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354908AbiAXUNH (ORCPT
+        with ESMTP id S1355322AbiAXUNa (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:13:07 -0500
+        Mon, 24 Jan 2022 15:13:30 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 8DCF061371;
-        Mon, 24 Jan 2022 20:13:04 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62ACCC340E5;
-        Mon, 24 Jan 2022 20:13:03 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 80F1E60B56;
+        Mon, 24 Jan 2022 20:13:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 585E3C340E5;
+        Mon, 24 Jan 2022 20:13:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055184;
-        bh=N7iqN2dtcEyo4qkf5F6uhGxw3W2pDTN7WGAfMlTzNYY=;
+        s=korg; t=1643055208;
+        bh=AuyhCT3B2V3UEEjSkj4AqU0jUqp3l0eUqnqkXQA3DdE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iULFF34YQwaikxFUcgZWyy9upVa3ofcLkCM8+0bq4ureXg4fyCXamg+COgOz4Gdpo
-         x+dr54QSUuwGlaU87vWDX6iV3qJv7/5m38u5RLQh4z9Wrb6Qj2sxkRrsFyoqKsLMya
-         D1p6EH04a2ZYlao0OiNOTwEbQBfkUjeVH7Z4O8Tg=
+        b=WnLRuokHuiilKPosSukICP9s4UKZlVwYuqkDbLc62VjqV55g1mQvkFKb9lCBY0zbq
+         xVuUZfGnHTBFnPZYxt2I8OCqR6/NEqp20vRFs30tHSgu9ErsfBitm863Eav74OVn7r
+         LE+7WFwbJYdQFkfgCN0iFeLsuu+1f8tRnif/5i80=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Chris Wilson <chris@chris-wilson.co.uk>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Gustavo Padovan <gustavo@padovan.org>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        linaro-mm-sig@lists.linaro.org,
-        =?UTF-8?q?Thomas=20Hellstr=C3=B6m?= 
-        <thomas.hellstrom@linux.intel.com>
-Subject: [PATCH 5.15 068/846] dma_fence_array: Fix PENDING_ERROR leak in dma_fence_array_signaled()
-Date:   Mon, 24 Jan 2022 19:33:05 +0100
-Message-Id: <20220124184103.321401854@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.15 043/846] media: flexcop-usb: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:32:40 +0100
+Message-Id: <20220124184102.433594035@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,51 +47,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Hellström <thomas.hellstrom@linux.intel.com>
+From: Johan Hovold <johan@kernel.org>
 
-commit 95d35838880fb040ccb9fe4a48816bd0c8b62df5 upstream.
+commit cd1798a387825cc4a51282f5a611ad05bb1ad75f upstream.
 
-If a dma_fence_array is reported signaled by a call to
-dma_fence_is_signaled(), it may leak the PENDING_ERROR status.
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-Fix this by clearing the PENDING_ERROR status if we return true in
-dma_fence_array_signaled().
+Note that the driver was multiplying some of the timeout values with HZ
+twice resulting in 3000-second timeouts with HZ=1000.
 
-v2:
-- Update Cc list, and add R-b.
+Also note that two of the timeout defines are currently unused.
 
-Fixes: 1f70b8b812f3 ("dma-fence: Propagate errors to dma-fence-array container")
-Cc: Chris Wilson <chris@chris-wilson.co.uk>
-Cc: Sumit Semwal <sumit.semwal@linaro.org>
-Cc: Gustavo Padovan <gustavo@padovan.org>
-Cc: Christian König <christian.koenig@amd.com>
-Cc: "Christian König" <christian.koenig@amd.com>
-Cc: linux-media@vger.kernel.org
-Cc: dri-devel@lists.freedesktop.org
-Cc: linaro-mm-sig@lists.linaro.org
-Cc: <stable@vger.kernel.org> # v5.4+
-Signed-off-by: Thomas Hellström <thomas.hellstrom@linux.intel.com>
-Reviewed-by: Christian König <christian.koenig@amd.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211129152727.448908-1-thomas.hellstrom@linux.intel.com
+Fixes: 2154be651b90 ("[media] redrat3: new rc-core IR transceiver device driver")
+Cc: stable@vger.kernel.org      # 3.0
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/dma-buf/dma-fence-array.c |    6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/media/usb/b2c2/flexcop-usb.c |   10 +++++-----
+ drivers/media/usb/b2c2/flexcop-usb.h |   12 ++++++------
+ 2 files changed, 11 insertions(+), 11 deletions(-)
 
---- a/drivers/dma-buf/dma-fence-array.c
-+++ b/drivers/dma-buf/dma-fence-array.c
-@@ -104,7 +104,11 @@ static bool dma_fence_array_signaled(str
- {
- 	struct dma_fence_array *array = to_dma_fence_array(fence);
+--- a/drivers/media/usb/b2c2/flexcop-usb.c
++++ b/drivers/media/usb/b2c2/flexcop-usb.c
+@@ -87,7 +87,7 @@ static int flexcop_usb_readwrite_dw(stru
+ 			0,
+ 			fc_usb->data,
+ 			sizeof(u32),
+-			B2C2_WAIT_FOR_OPERATION_RDW * HZ);
++			B2C2_WAIT_FOR_OPERATION_RDW);
  
--	return atomic_read(&array->num_pending) <= 0;
-+	if (atomic_read(&array->num_pending) > 0)
-+		return false;
-+
-+	dma_fence_array_clear_pending_error(array);
-+	return true;
- }
+ 	if (ret != sizeof(u32)) {
+ 		err("error while %s dword from %d (%d).", read ? "reading" :
+@@ -155,7 +155,7 @@ static int flexcop_usb_v8_memory_req(str
+ 			wIndex,
+ 			fc_usb->data,
+ 			buflen,
+-			nWaitTime * HZ);
++			nWaitTime);
+ 	if (ret != buflen)
+ 		ret = -EIO;
  
- static void dma_fence_array_release(struct dma_fence *fence)
+@@ -248,13 +248,13 @@ static int flexcop_usb_i2c_req(struct fl
+ 		/* DKT 020208 - add this to support special case of DiSEqC */
+ 	case USB_FUNC_I2C_CHECKWRITE:
+ 		pipe = B2C2_USB_CTRL_PIPE_OUT;
+-		nWaitTime = 2;
++		nWaitTime = 2000;
+ 		request_type |= USB_DIR_OUT;
+ 		break;
+ 	case USB_FUNC_I2C_READ:
+ 	case USB_FUNC_I2C_REPEATREAD:
+ 		pipe = B2C2_USB_CTRL_PIPE_IN;
+-		nWaitTime = 2;
++		nWaitTime = 2000;
+ 		request_type |= USB_DIR_IN;
+ 		break;
+ 	default:
+@@ -281,7 +281,7 @@ static int flexcop_usb_i2c_req(struct fl
+ 			wIndex,
+ 			fc_usb->data,
+ 			buflen,
+-			nWaitTime * HZ);
++			nWaitTime);
+ 
+ 	if (ret != buflen)
+ 		ret = -EIO;
+--- a/drivers/media/usb/b2c2/flexcop-usb.h
++++ b/drivers/media/usb/b2c2/flexcop-usb.h
+@@ -91,13 +91,13 @@ typedef enum {
+ 	UTILITY_SRAM_TESTVERIFY     = 0x16,
+ } flexcop_usb_utility_function_t;
+ 
+-#define B2C2_WAIT_FOR_OPERATION_RW (1*HZ)
+-#define B2C2_WAIT_FOR_OPERATION_RDW (3*HZ)
+-#define B2C2_WAIT_FOR_OPERATION_WDW (1*HZ)
++#define B2C2_WAIT_FOR_OPERATION_RW 1000
++#define B2C2_WAIT_FOR_OPERATION_RDW 3000
++#define B2C2_WAIT_FOR_OPERATION_WDW 1000
+ 
+-#define B2C2_WAIT_FOR_OPERATION_V8READ (3*HZ)
+-#define B2C2_WAIT_FOR_OPERATION_V8WRITE (3*HZ)
+-#define B2C2_WAIT_FOR_OPERATION_V8FLASH (3*HZ)
++#define B2C2_WAIT_FOR_OPERATION_V8READ 3000
++#define B2C2_WAIT_FOR_OPERATION_V8WRITE 3000
++#define B2C2_WAIT_FOR_OPERATION_V8FLASH 3000
+ 
+ typedef enum {
+ 	V8_MEMORY_PAGE_DVB_CI = 0x20,
 
 
