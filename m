@@ -2,47 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDB3DC4707F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CEC3C3526F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358302AbiAXTyw (ORCPT
+        id S1358445AbiAXTzO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:54:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55376 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344288AbiAXTnd (ORCPT
+        Mon, 24 Jan 2022 14:55:14 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:33730 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355426AbiAXTlX (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:43:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35985C09427E;
-        Mon, 24 Jan 2022 11:22:18 -0800 (PST)
+        Mon, 24 Jan 2022 14:41:23 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F250DB81236;
-        Mon, 24 Jan 2022 19:22:16 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21C70C340E7;
-        Mon, 24 Jan 2022 19:22:14 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 56AAEB81229;
+        Mon, 24 Jan 2022 19:41:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80FF2C340E5;
+        Mon, 24 Jan 2022 19:41:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052135;
-        bh=k6hFSNaZQpyFhrbjAzHTCV+pR3fyHRq4OVMIzVn/ZKs=;
+        s=korg; t=1643053278;
+        bh=H0WDixWq1G9g12I0MwbrOEaV0Q3A4KaDbq65bdNHOcY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RzzBOJstmrOuMehpB8PdJBBbrd6PWuTApfCobUaK2BqvJ2NTUfFHwpNCz11EdpRA8
-         YyoJfv6xnHzHtcN2wc2dtvC54fiR9fhlP9tnZ9VXbVTnSVjY/wcTyPf6AAbtXcMxhT
-         +i8QYzwd8i6Ie7ZoiYNNmrilAe4I8exz9bSw2TyU=
+        b=CxRRgGb/moBju43CN2N2iKsBtkP98OffwHvzJwvyjZQB7Uj16I81wW1A/ZkEEy5XA
+         j5lGTfWk0/jeZ4qmuGFElshBAShSa9SHcaVa/OKnOk6TeuVomksyUTMzw7zzcE+2tv
+         IdSpHBuA8pMIYsI9vNszJKeRZZUxOXsl20UqfBpI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Vlastimil Babka <vbabka@suse.com>,
-        Gerald Schaefer <gerald.schaefer@linux.ibm.com>,
-        Alexander Gordeev <agordeev@linux.ibm.com>,
-        Heiko Carstens <hca@linux.ibm.com>
-Subject: [PATCH 4.19 200/239] s390/mm: fix 2KB pgtable release race
-Date:   Mon, 24 Jan 2022 19:43:58 +0100
-Message-Id: <20220124183949.471391396@linuxfoundation.org>
+        stable@vger.kernel.org, Lucas De Marchi <lucas.demarchi@intel.com>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Subject: [PATCH 5.10 014/563] x86/gpu: Reserve stolen memory for first integrated Intel GPU
+Date:   Mon, 24 Jan 2022 19:36:19 +0100
+Message-Id: <20220124184024.911676383@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,110 +46,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Gordeev <agordeev@linux.ibm.com>
+From: Lucas De Marchi <lucas.demarchi@intel.com>
 
-commit c2c224932fd0ee6854d6ebfc8d059c2bcad86606 upstream.
+commit 9c494ca4d3a535f9ca11ad6af1813983c1c6cbdd upstream.
 
-There is a race on concurrent 2KB-pgtables release paths when
-both upper and lower halves of the containing parent page are
-freed, one via page_table_free_rcu() + __tlb_remove_table(),
-and the other via page_table_free(). The race might lead to a
-corruption as result of remove of list item in page_table_free()
-concurrently with __free_page() in __tlb_remove_table().
+"Stolen memory" is memory set aside for use by an Intel integrated GPU.
+The intel_graphics_quirks() early quirk reserves this memory when it is
+called for a GPU that appears in the intel_early_ids[] table of integrated
+GPUs.
 
-Let's assume first the lower and next the upper 2KB-pgtables are
-freed from a page. Since both halves of the page are allocated
-the tracking byte (bits 24-31 of the page _refcount) has value
-of 0x03 initially:
+Previously intel_graphics_quirks() was marked as QFLAG_APPLY_ONCE, so it
+was called only for the first Intel GPU found.  If a discrete GPU happened
+to be enumerated first, intel_graphics_quirks() was called for it but not
+for any integrated GPU found later.  Therefore, stolen memory for such an
+integrated GPU was never reserved.
 
-CPU0				CPU1
-----				----
+For example, this problem occurs in this Alderlake-P (integrated) + DG2
+(discrete) topology where the DG2 is found first, but stolen memory is
+associated with the integrated GPU:
 
-page_table_free_rcu() // lower half
-{
-	// _refcount[31..24] == 0x03
-	...
-	atomic_xor_bits(&page->_refcount,
-			0x11U << (0 + 24));
-	// _refcount[31..24] <= 0x12
-	...
-	table = table | (1U << 0);
-	tlb_remove_table(tlb, table);
-}
-...
-__tlb_remove_table()
-{
-	// _refcount[31..24] == 0x12
-	mask = _table & 3;
-	// mask <= 0x01
-	...
+  - 00:01.0 Bridge
+    `- 03:00.0 DG2 discrete GPU
+  - 00:02.0 Integrated GPU (with stolen memory)
 
-				page_table_free() // upper half
-				{
-					// _refcount[31..24] == 0x12
-					...
-					atomic_xor_bits(
-						&page->_refcount,
-						1U << (1 + 24));
-					// _refcount[31..24] <= 0x10
-					// mask <= 0x10
-					...
-	atomic_xor_bits(&page->_refcount,
-			mask << (4 + 24));
-	// _refcount[31..24] <= 0x00
-	// mask <= 0x00
-	...
-	if (mask != 0) // == false
-		break;
-	fallthrough;
-	...
-					if (mask & 3) // == false
-						...
-					else
-	__free_page(page);			list_del(&page->lru);
-	^^^^^^^^^^^^^^^^^^	RACE!		^^^^^^^^^^^^^^^^^^^^^
-}					...
-				}
+Remove the QFLAG_APPLY_ONCE flag and call intel_graphics_quirks() for every
+Intel GPU.  Reserve stolen memory for the first GPU that appears in
+intel_early_ids[].
 
-The problem is page_table_free() releases the page as result of
-lower nibble unset and __tlb_remove_table() observing zero too
-early. With this update page_table_free() will use the similar
-logic as page_table_free_rcu() + __tlb_remove_table(), and mark
-the fragment as pending for removal in the upper nibble until
-after the list_del().
-
-In other words, the parent page is considered as unreferenced and
-safe to release only when the lower nibble is cleared already and
-unsetting a bit in upper nibble results in that nibble turned zero.
-
+[bhelgaas: commit log, add code comment, squash in
+https://lore.kernel.org/r/20220118190558.2ququ4vdfjuahicm@ldmartin-desk2]
+Link: https://lore.kernel.org/r/20220114002843.2083382-1-lucas.demarchi@intel.com
+Signed-off-by: Lucas De Marchi <lucas.demarchi@intel.com>
+Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 Cc: stable@vger.kernel.org
-Suggested-by: Vlastimil Babka <vbabka@suse.com>
-Reviewed-by: Gerald Schaefer <gerald.schaefer@linux.ibm.com>
-Signed-off-by: Alexander Gordeev <agordeev@linux.ibm.com>
-Signed-off-by: Heiko Carstens <hca@linux.ibm.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/s390/mm/pgalloc.c |    4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ arch/x86/kernel/early-quirks.c |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
---- a/arch/s390/mm/pgalloc.c
-+++ b/arch/s390/mm/pgalloc.c
-@@ -256,13 +256,15 @@ void page_table_free(struct mm_struct *m
- 		/* Free 2K page table fragment of a 4K page */
- 		bit = (__pa(table) & ~PAGE_MASK)/(PTRS_PER_PTE*sizeof(pte_t));
- 		spin_lock_bh(&mm->context.lock);
--		mask = atomic_xor_bits(&page->_refcount, 1U << (bit + 24));
-+		mask = atomic_xor_bits(&page->_refcount, 0x11U << (bit + 24));
- 		mask >>= 24;
- 		if (mask & 3)
- 			list_add(&page->lru, &mm->context.pgtable_list);
- 		else
- 			list_del(&page->lru);
- 		spin_unlock_bh(&mm->context.lock);
-+		mask = atomic_xor_bits(&page->_refcount, 0x10U << (bit + 24));
-+		mask >>= 24;
- 		if (mask != 0)
- 			return;
- 	} else {
+--- a/arch/x86/kernel/early-quirks.c
++++ b/arch/x86/kernel/early-quirks.c
+@@ -515,6 +515,7 @@ static const struct intel_early_ops gen1
+ 	.stolen_size = gen9_stolen_size,
+ };
+ 
++/* Intel integrated GPUs for which we need to reserve "stolen memory" */
+ static const struct pci_device_id intel_early_ids[] __initconst = {
+ 	INTEL_I830_IDS(&i830_early_ops),
+ 	INTEL_I845G_IDS(&i845_early_ops),
+@@ -588,6 +589,13 @@ static void __init intel_graphics_quirks
+ 	u16 device;
+ 	int i;
+ 
++	/*
++	 * Reserve "stolen memory" for an integrated GPU.  If we've already
++	 * found one, there's nothing to do for other (discrete) GPUs.
++	 */
++	if (resource_size(&intel_graphics_stolen_res))
++		return;
++
+ 	device = read_pci_config_16(num, slot, func, PCI_DEVICE_ID);
+ 
+ 	for (i = 0; i < ARRAY_SIZE(intel_early_ids); i++) {
+@@ -700,7 +708,7 @@ static struct chipset early_qrk[] __init
+ 	{ PCI_VENDOR_ID_INTEL, 0x3406, PCI_CLASS_BRIDGE_HOST,
+ 	  PCI_BASE_CLASS_BRIDGE, 0, intel_remapping_check },
+ 	{ PCI_VENDOR_ID_INTEL, PCI_ANY_ID, PCI_CLASS_DISPLAY_VGA, PCI_ANY_ID,
+-	  QFLAG_APPLY_ONCE, intel_graphics_quirks },
++	  0, intel_graphics_quirks },
+ 	/*
+ 	 * HPET on the current version of the Baytrail platform has accuracy
+ 	 * problems: it will halt in deep idle state - so we disable it.
 
 
