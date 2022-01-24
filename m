@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED78FC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:37:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09304C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455651AbiAXVft (ORCPT
+        id S1455698AbiAXVfx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:35:49 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:49116 "EHLO
+        Mon, 24 Jan 2022 16:35:53 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:54954 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392236AbiAXUuw (ORCPT
+        with ESMTP id S1444229AbiAXVA2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:50:52 -0500
+        Mon, 24 Jan 2022 16:00:28 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BA303B8105C;
-        Mon, 24 Jan 2022 20:50:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC255C340E5;
-        Mon, 24 Jan 2022 20:50:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 667C0B810A8;
+        Mon, 24 Jan 2022 21:00:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A940C340E5;
+        Mon, 24 Jan 2022 21:00:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057449;
-        bh=W9rtOjKHBw6hBibNcxr0t32NfHgPu+2J1i1+BKiQQuI=;
+        s=korg; t=1643058024;
+        bh=RVQdDPDKOE/a1ZN4sGWxqjsyDozLHpHpTA/eJ4N7kSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WwiO04yHMLskbLkqfzZd69RPkHgJGP4AHHEFQ6umhTjnh3THRIg9cRRXFsRhAgKRw
-         lJVDwbOO4kr/mIQ3xDNqD8kZnURZ0gEaBOlVhFcx1vCaHL8/Wp0FG8NrRVpCgxMBsQ
-         f67iPWis4ZTvyBfzNc6Apb4bl/i83mOXB+jAiEVY=
+        b=RVZ0cIeS8Bc0ZTqWGAOEOu0rEb9TnJMfrgQMlwioLrLnCj0W4zGFYwbSDws6iftI4
+         9tkkpJFF6T8TkqXDsxmWctxeQANSp9vgw/FcKgVWVcrAxL+wr0Ze4uJzbF/zPzxL0Y
+         iGctFNPefA6/e0rwSa3N2ad6iJQOjhQ+68S//ZYQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Vinod Koul <vkoul@kernel.org>
-Subject: [PATCH 5.15 816/846] dmaengine: at_xdmac: Start transfer for cyclic channels in issue_pending
-Date:   Mon, 24 Jan 2022 19:45:33 +0100
-Message-Id: <20220124184129.057776609@linuxfoundation.org>
+        stable@vger.kernel.org, Tsuchiya Yuto <kitakar@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0123/1039] media: atomisp: fix inverted logic in buffers_needed()
+Date:   Mon, 24 Jan 2022 19:31:52 +0100
+Message-Id: <20220124184129.280692917@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,40 +47,49 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tudor Ambarus <tudor.ambarus@microchip.com>
+From: Tsuchiya Yuto <kitakar@gmail.com>
 
-commit e6af9b05bec63cd4d1de2a33968cd0be2a91282a upstream.
+[ Upstream commit e1921cd14640f0f4d1fad5eb8e448c58a536415d ]
 
-Cyclic channels must too call issue_pending in order to start a transfer.
-Start the transfer in issue_pending regardless of the type of channel.
-This wrongly worked before, because in the past the transfer was started
-at tx_submit level when only a desc in the transfer list.
+When config.mode is IA_CSS_INPUT_MODE_BUFFERED_SENSOR, it rather needs
+buffers. Fix it by inverting the return value.
 
-Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
-Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
-Link: https://lore.kernel.org/r/20211215110115.191749-3-tudor.ambarus@microchip.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 3c0538fbad9f ("media: atomisp: get rid of most checks for ISP2401 version")
+Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/at_xdmac.c |    8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/staging/media/atomisp/pci/sh_css_mipi.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/drivers/dma/at_xdmac.c
-+++ b/drivers/dma/at_xdmac.c
-@@ -1778,11 +1778,9 @@ static void at_xdmac_issue_pending(struc
+diff --git a/drivers/staging/media/atomisp/pci/sh_css_mipi.c b/drivers/staging/media/atomisp/pci/sh_css_mipi.c
+index 75489f7d75eec..483d40a467c74 100644
+--- a/drivers/staging/media/atomisp/pci/sh_css_mipi.c
++++ b/drivers/staging/media/atomisp/pci/sh_css_mipi.c
+@@ -374,17 +374,17 @@ static bool buffers_needed(struct ia_css_pipe *pipe)
+ {
+ 	if (!IS_ISP2401) {
+ 		if (pipe->stream->config.mode == IA_CSS_INPUT_MODE_BUFFERED_SENSOR)
+-			return false;
+-		else
+ 			return true;
++		else
++			return false;
+ 	}
  
- 	dev_dbg(chan2dev(&atchan->chan), "%s\n", __func__);
+ 	if (pipe->stream->config.mode == IA_CSS_INPUT_MODE_BUFFERED_SENSOR ||
+ 	    pipe->stream->config.mode == IA_CSS_INPUT_MODE_TPG ||
+ 	    pipe->stream->config.mode == IA_CSS_INPUT_MODE_PRBS)
+-		return false;
++		return true;
  
--	if (!at_xdmac_chan_is_cyclic(atchan)) {
--		spin_lock_irqsave(&atchan->lock, flags);
--		at_xdmac_advance_work(atchan);
--		spin_unlock_irqrestore(&atchan->lock, flags);
--	}
-+	spin_lock_irqsave(&atchan->lock, flags);
-+	at_xdmac_advance_work(atchan);
-+	spin_unlock_irqrestore(&atchan->lock, flags);
- 
- 	return;
+-	return true;
++	return false;
  }
+ 
+ int
+-- 
+2.34.1
+
 
 
