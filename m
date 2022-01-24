@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C00ABC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:17:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43A00C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:17:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1583119AbiAXWQb (ORCPT
+        id S1582758AbiAXWPo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:16:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390455AbiAXVM6 (ORCPT
+        Mon, 24 Jan 2022 17:15:44 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49694 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1453840AbiAXVbD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:12:58 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6585C029808;
-        Mon, 24 Jan 2022 12:09:43 -0800 (PST)
+        Mon, 24 Jan 2022 16:31:03 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 74CC4B811FB;
-        Mon, 24 Jan 2022 20:09:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9951CC340E5;
-        Mon, 24 Jan 2022 20:09:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8631A60C60;
+        Mon, 24 Jan 2022 21:31:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 618BCC340E7;
+        Mon, 24 Jan 2022 21:31:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054981;
-        bh=WI9uI2gpVnPU3QdHK+htWbOVLTe2ui+1xrW8axESCkc=;
+        s=korg; t=1643059863;
+        bh=MRETdH0R/JG+t6ZDfa9LEIzPGElTchgZ8fjTDMT/5lk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BIlRsKAQTqrFiTisIBTEwBUmfZuVq8eTZMY+2hWTJaipIelQckNXTPZLSSMggdD8l
-         FaOi4c4SvgA0aZllpumbQLhuFian+Y7/30+ULFEjXbcEPPuMF18JNeWYazvxf6nt1V
-         mZC0L60VdmIHpFO3cIEHGCV7cg18A764Qx22dUbc=
+        b=1zc1pKfjKv7vnWb9z2J2vTtEV5vBZXkfceLR7vULQrameQ0zC5GXfFwfesq116SIS
+         LKdYzTgqaPWMYGgngMvOefoPYQZX6sAmWDtbsywBWXkyfzMcCBlrSTUKQV4pE4b9Bw
+         nAQgSNHVaczLGHpyQaYHXXFTf0li0d1jl0HaTRoc=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 536/563] xfrm: Dont accidentally set RTO_ONLINK in decode_session4()
-Date:   Mon, 24 Jan 2022 19:45:01 +0100
-Message-Id: <20220124184042.974681561@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0758/1039] powerpc/40x: Map 32Mbytes of memory at startup
+Date:   Mon, 24 Jan 2022 19:42:27 +0100
+Message-Id: <20220124184150.810213382@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,47 +48,57 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+From: Christophe Leroy <christophe.leroy@csgroup.eu>
 
-commit 23e7b1bfed61e301853b5e35472820d919498278 upstream.
+[ Upstream commit 06e7cbc29e97b4713b4ea6def04ae8501a7d1a59 ]
 
-Similar to commit 94e2238969e8 ("xfrm4: strip ECN bits from tos field"),
-clear the ECN bits from iph->tos when setting ->flowi4_tos.
-This ensures that the last bit of ->flowi4_tos is cleared, so
-ip_route_output_key_hash() isn't going to restrict the scope of the
-route lookup.
+As reported by Carlo, 16Mbytes is not enough with modern kernels
+that tend to be a bit big, so map another 16M page at boot.
 
-Use ~INET_ECN_MASK instead of IPTOS_RT_MASK, because we have no reason
-to clear the high order bits.
-
-Found by code inspection, compile tested only.
-
-Fixes: 4da3089f2b58 ("[IPSEC]: Use TOS when doing tunnel lookups")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/89b5f974a7fa5011206682cd092e2c905530ff46.1632755552.git.christophe.leroy@csgroup.eu
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/xfrm/xfrm_policy.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ arch/powerpc/kernel/head_40x.S | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/net/xfrm/xfrm_policy.c
-+++ b/net/xfrm/xfrm_policy.c
-@@ -31,6 +31,7 @@
- #include <linux/if_tunnel.h>
- #include <net/dst.h>
- #include <net/flow.h>
-+#include <net/inet_ecn.h>
- #include <net/xfrm.h>
- #include <net/ip.h>
- #include <net/gre.h>
-@@ -3294,7 +3295,7 @@ decode_session4(struct sk_buff *skb, str
- 	fl4->flowi4_proto = iph->protocol;
- 	fl4->daddr = reverse ? iph->saddr : iph->daddr;
- 	fl4->saddr = reverse ? iph->daddr : iph->saddr;
--	fl4->flowi4_tos = iph->tos;
-+	fl4->flowi4_tos = iph->tos & ~INET_ECN_MASK;
+diff --git a/arch/powerpc/kernel/head_40x.S b/arch/powerpc/kernel/head_40x.S
+index 7d72ee5ab387c..e783860bea838 100644
+--- a/arch/powerpc/kernel/head_40x.S
++++ b/arch/powerpc/kernel/head_40x.S
+@@ -27,6 +27,7 @@
  
- 	if (!ip_is_fragment(iph)) {
- 		switch (iph->protocol) {
+ #include <linux/init.h>
+ #include <linux/pgtable.h>
++#include <linux/sizes.h>
+ #include <asm/processor.h>
+ #include <asm/page.h>
+ #include <asm/mmu.h>
+@@ -650,7 +651,7 @@ start_here:
+ 	b	.		/* prevent prefetch past rfi */
+ 
+ /* Set up the initial MMU state so we can do the first level of
+- * kernel initialization.  This maps the first 16 MBytes of memory 1:1
++ * kernel initialization.  This maps the first 32 MBytes of memory 1:1
+  * virtual to physical and more importantly sets the cache mode.
+  */
+ initial_mmu:
+@@ -687,6 +688,12 @@ initial_mmu:
+ 	tlbwe	r4,r0,TLB_DATA		/* Load the data portion of the entry */
+ 	tlbwe	r3,r0,TLB_TAG		/* Load the tag portion of the entry */
+ 
++	li	r0,62			/* TLB slot 62 */
++	addis	r4,r4,SZ_16M@h
++	addis	r3,r3,SZ_16M@h
++	tlbwe	r4,r0,TLB_DATA		/* Load the data portion of the entry */
++	tlbwe	r3,r0,TLB_TAG		/* Load the tag portion of the entry */
++
+ 	isync
+ 
+ 	/* Establish the exception vector base
+-- 
+2.34.1
+
 
 
