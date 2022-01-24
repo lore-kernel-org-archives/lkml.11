@@ -2,38 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6626C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:51:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84A8DC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:51:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245716AbiAXSvc (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:51:32 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50044 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245677AbiAXSuX (ORCPT
+        id S1343700AbiAXSvf (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:51:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:49164 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S245683AbiAXSuY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:50:23 -0500
+        Mon, 24 Jan 2022 13:50:24 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 34CB6B8121A;
-        Mon, 24 Jan 2022 18:50:22 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52E4BC340E7;
-        Mon, 24 Jan 2022 18:50:20 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8D926614D4;
+        Mon, 24 Jan 2022 18:50:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6417BC340E5;
+        Mon, 24 Jan 2022 18:50:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050220;
-        bh=qvukJeWuPH2cNPFvVyAkRgKIPsGmzXQ3XKZOb3xPYf4=;
+        s=korg; t=1643050224;
+        bh=ZCLq4ueO8BEDL+z2nWwbk/NGy+MQ8q+TZbhlMK+G2fY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Or/PiTuGquJvvVEFrTahnO6HHw38/JzNj2ces5m7QcY1/bqMxwnxat7gVCFR5L5yp
-         FV5ZjMP91OexFjUIMesMeq3tbCT2hq1qZsIFsljqpxywP4vc2hZsNQmbSlCGaFxTEr
-         HvuaW9pXLdM//Z5mJW3SXrgwfgvKe8df83BPAQ1s=
+        b=iy+++X7Z8lbw9IaJNUxtZDCR6PLOf65x/9Zo4norIPChsV9KZyTD33R5R9Qv86/Ez
+         sw8j8fLw/uDH4ejAKylJtWVXdZofG5CQwmof8yBfEfHhQ6u/b1ABHMuK7Fdzu1DZnK
+         juncWqPL2lEXM6xGBTJzFAP5jSnRE/hRqkUzkpRU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Bixuan Cui <cuibixuan@linux.alibaba.com>,
-        Takashi Iwai <tiwai@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 047/114] ALSA: oss: fix compile error when OSS_DEBUG is enabled
-Date:   Mon, 24 Jan 2022 19:42:22 +0100
-Message-Id: <20220124183928.557739669@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 4.4 016/114] media: pvrusb2: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:41:51 +0100
+Message-Id: <20220124183927.614206819@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -45,41 +47,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Bixuan Cui <cuibixuan@linux.alibaba.com>
+From: Johan Hovold <johan@kernel.org>
 
-[ Upstream commit 8e7daf318d97f25e18b2fc7eb5909e34cd903575 ]
+commit b82bf9b9dc305d7d3d93eab106d70dbf2171b43e upstream.
 
-Fix compile error when OSS_DEBUG is enabled:
-    sound/core/oss/pcm_oss.c: In function 'snd_pcm_oss_set_trigger':
-    sound/core/oss/pcm_oss.c:2055:10: error: 'substream' undeclared (first
-    use in this function); did you mean 'csubstream'?
-      pcm_dbg(substream->pcm, "pcm_oss: trigger = 0x%x\n", trigger);
-              ^
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-Fixes: 61efcee8608c ("ALSA: oss: Use standard printk helpers")
-Signed-off-by: Bixuan Cui <cuibixuan@linux.alibaba.com>
-Link: https://lore.kernel.org/r/1638349134-110369-1-git-send-email-cuibixuan@linux.alibaba.com
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: d855497edbfb ("V4L/DVB (4228a): pvrusb2 to kernel 2.6.18")
+Cc: stable@vger.kernel.org      # 2.6.18
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/core/oss/pcm_oss.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/media/usb/pvrusb2/pvrusb2-hdw.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/sound/core/oss/pcm_oss.c b/sound/core/oss/pcm_oss.c
-index 593791d9a334f..6af4afe23e373 100644
---- a/sound/core/oss/pcm_oss.c
-+++ b/sound/core/oss/pcm_oss.c
-@@ -2121,7 +2121,7 @@ static int snd_pcm_oss_set_trigger(struct snd_pcm_oss_file *pcm_oss_file, int tr
- 	int err, cmd;
+--- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
++++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
+@@ -1488,7 +1488,7 @@ static int pvr2_upload_firmware1(struct
+ 	for (address = 0; address < fwsize; address += 0x800) {
+ 		memcpy(fw_ptr, fw_entry->data + address, 0x800);
+ 		ret += usb_control_msg(hdw->usb_dev, pipe, 0xa0, 0x40, address,
+-				       0, fw_ptr, 0x800, HZ);
++				       0, fw_ptr, 0x800, 1000);
+ 	}
  
- #ifdef OSS_DEBUG
--	pcm_dbg(substream->pcm, "pcm_oss: trigger = 0x%x\n", trigger);
-+	pr_debug("pcm_oss: trigger = 0x%x\n", trigger);
- #endif
- 	
- 	psubstream = pcm_oss_file->streams[SNDRV_PCM_STREAM_PLAYBACK];
--- 
-2.34.1
-
+ 	trace_firmware("Upload done, releasing device's CPU");
+@@ -1627,7 +1627,7 @@ int pvr2_upload_firmware2(struct pvr2_hd
+ 			((u32 *)fw_ptr)[icnt] = swab32(((u32 *)fw_ptr)[icnt]);
+ 
+ 		ret |= usb_bulk_msg(hdw->usb_dev, pipe, fw_ptr,bcnt,
+-				    &actual_length, HZ);
++				    &actual_length, 1000);
+ 		ret |= (actual_length != bcnt);
+ 		if (ret) break;
+ 		fw_done += bcnt;
+@@ -3491,7 +3491,7 @@ void pvr2_hdw_cpufw_set_enabled(struct p
+ 						      0xa0,0xc0,
+ 						      address,0,
+ 						      hdw->fw_buffer+address,
+-						      0x800,HZ);
++						      0x800,1000);
+ 				if (ret < 0) break;
+ 			}
+ 
+@@ -4017,7 +4017,7 @@ void pvr2_hdw_cpureset_assert(struct pvr
+ 	/* Write the CPUCS register on the 8051.  The lsb of the register
+ 	   is the reset bit; a 1 asserts reset while a 0 clears it. */
+ 	pipe = usb_sndctrlpipe(hdw->usb_dev, 0);
+-	ret = usb_control_msg(hdw->usb_dev,pipe,0xa0,0x40,0xe600,0,da,1,HZ);
++	ret = usb_control_msg(hdw->usb_dev,pipe,0xa0,0x40,0xe600,0,da,1,1000);
+ 	if (ret < 0) {
+ 		pvr2_trace(PVR2_TRACE_ERROR_LEGS,
+ 			   "cpureset_assert(%d) error=%d",val,ret);
 
 
