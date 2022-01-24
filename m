@@ -2,90 +2,162 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9249FC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:09:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 135B7C4332F
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:09:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2370869AbiAYAGY (ORCPT
+        id S2370993AbiAYAGp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:06:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51610 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1847754AbiAXXUc (ORCPT
+        Mon, 24 Jan 2022 19:06:45 -0500
+Received: from alexa-out-sd-01.qualcomm.com ([199.106.114.38]:65534 "EHLO
+        alexa-out-sd-01.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1847822AbiAXXUn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:20:32 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A419EC09B052;
-        Mon, 24 Jan 2022 13:28:37 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 4138561569;
-        Mon, 24 Jan 2022 21:28:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23530C33E6A;
-        Mon, 24 Jan 2022 21:28:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059716;
-        bh=nODJdLZgNtDJsYBxRp1SexhPYRVVlpVwxtcXBGJsMPs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RldR6t/4lhZ5nJyZCddNWxuw6Iq3uL0lh5ARoxczngVT+dJaLIODANrFu1sbJJV0u
-         lKy5J6bkD9Sf5WmCMc9ELK57UljmXi6JAgYWnfOduWQE63p181s0vwg0xT33MD4oSe
-         Xnd7V3M9hLjhpdgQ0nkLaNF6xqpbGWBOGICDP+2Y=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0709/1039] btrfs: remove BUG_ON() in find_parent_nodes()
-Date:   Mon, 24 Jan 2022 19:41:38 +0100
-Message-Id: <20220124184149.164631763@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 18:20:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643066443; x=1674602443;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=lHW3hLnV/NwAlPaJvWLZeYHn/Z13jsz9Dd88QrFizYA=;
+  b=m++m4t7oTvxKU3eDqNBL/kDP212fa18klJqMbqXSBtv7nLcZYjHJO3Kl
+   t26byNRVb3if/tSC3Pyj9zZE7iY/99hJVVGMDDJoiHb5JhCyNftE91C3+
+   6974KnoGekKF0PJUxxLkggbzMwzYBegroCdVENYQW3rUaEdMi0bU/Qurm
+   E=;
+Received: from unknown (HELO ironmsg02-sd.qualcomm.com) ([10.53.140.142])
+  by alexa-out-sd-01.qualcomm.com with ESMTP; 24 Jan 2022 15:20:42 -0800
+X-QCInternal: smtphost
+Received: from nasanex01b.na.qualcomm.com ([10.46.141.250])
+  by ironmsg02-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 15:20:42 -0800
+Received: from collinsd-linux.qualcomm.com (10.80.80.8) by
+ nasanex01b.na.qualcomm.com (10.46.141.250) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Mon, 24 Jan 2022 15:20:41 -0800
+From:   David Collins <quic_collinsd@quicinc.com>
+To:     Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Sudeep Holla <sudeep.holla@arm.com>
+CC:     David Collins <quic_collinsd@quicinc.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Cristian Marussi <cristian.marussi@arm.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>,
+        Subbaraman Narayanamurthy <quic_subbaram@quicinc.com>
+Subject: [RESEND PATCH 2/2] regulator: scmi: add support for registering SCMI regulators by name
+Date:   Mon, 24 Jan 2022 15:20:02 -0800
+Message-ID: <916966958cc63e9509f94fb263ad8d3c3ec768da.1639099631.git.quic_collinsd@quicinc.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <cover.1639099631.git.quic_collinsd@quicinc.com>
+References: <cover.1639099631.git.quic_collinsd@quicinc.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nasanex01b.na.qualcomm.com (10.46.141.250)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
+Message-ID: <20220124232002.wfUraiTMzveo2J9qQVh6VqYeBSbjp7OhZ-_wYC6aLnA@z>
 
-From: Josef Bacik <josef@toxicpanda.com>
+Add support to register SCMI regulator subnodes based on an SCMI
+Voltage Domain name specified via the 'regulator-name' device tree
+property.  In doing so, make the 'reg' property optional with the
+constraint that at least one of 'reg' or 'regulator-name' must be
+specified.  If both are specified, then both must match the
+Voltage Domain data exposed by the SCMI platform.
 
-[ Upstream commit fcba0120edf88328524a4878d1d6f4ad39f2ec81 ]
+Name based SCMI regulator registration helps ensure that an SCMI
+agent doesn't need to be aware of the numbering scheme used for
+Voltage Domains by the SCMI platform.  It also ensures that the
+correct Voltage Domain is selected for a given physical regulator.
+This cannot be guaranteed with numeric Voltage Domain IDs alone.
 
-We search for an extent entry with .offset = -1, which shouldn't be a
-thing, but corruption happens.  Add an ASSERT() for the developers,
-return -EUCLEAN for mortals.
-
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Signed-off-by: David Collins <quic_collinsd@quicinc.com>
 ---
- fs/btrfs/backref.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/regulator/scmi-regulator.c | 57 ++++++++++++++++++++++++++++--
+ 1 file changed, 54 insertions(+), 3 deletions(-)
 
-diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
-index f735b8798ba12..6b4b0f105a572 100644
---- a/fs/btrfs/backref.c
-+++ b/fs/btrfs/backref.c
-@@ -1214,7 +1214,12 @@ again:
- 	ret = btrfs_search_slot(NULL, fs_info->extent_root, &key, path, 0, 0);
- 	if (ret < 0)
- 		goto out;
--	BUG_ON(ret == 0);
-+	if (ret == 0) {
-+		/* This shouldn't happen, indicates a bug or fs corruption. */
-+		ASSERT(ret != 0);
-+		ret = -EUCLEAN;
-+		goto out;
+diff --git a/drivers/regulator/scmi-regulator.c b/drivers/regulator/scmi-regulator.c
+index 1f02f60ad136..c3287901975e 100644
+--- a/drivers/regulator/scmi-regulator.c
++++ b/drivers/regulator/scmi-regulator.c
+@@ -31,6 +31,7 @@
+ #include <linux/regulator/of_regulator.h>
+ #include <linux/scmi_protocol.h>
+ #include <linux/slab.h>
++#include <linux/string.h>
+ #include <linux/types.h>
+ 
+ static const struct scmi_voltage_proto_ops *voltage_ops;
+@@ -252,16 +253,66 @@ static int scmi_regulator_common_init(struct scmi_regulator *sreg)
+ 	return 0;
+ }
+ 
++static int scmi_regulator_map_name(struct scmi_protocol_handle *ph,
++				   struct scmi_regulator_info *rinfo,
++				   const char *name)
++{
++	const struct scmi_voltage_info *vinfo;
++	int i;
++
++	for (i = 0; i < rinfo->num_doms; i++) {
++		vinfo = voltage_ops->info_get(ph, i);
++		if (!vinfo)
++			continue;
++		if (!strncmp(vinfo->name, name, sizeof(vinfo->name)))
++			return i;
++	}
++
++	return -ENODEV;
++}
++
+ static int process_scmi_regulator_of_node(struct scmi_device *sdev,
+ 					  struct scmi_protocol_handle *ph,
+ 					  struct device_node *np,
+ 					  struct scmi_regulator_info *rinfo)
+ {
+ 	u32 dom, ret;
++	int name_dom;
++	const char *name;
+ 
+-	ret = of_property_read_u32(np, "reg", &dom);
+-	if (ret)
+-		return ret;
++	dom = rinfo->num_doms;
++	if (of_find_property(np, "reg", NULL)) {
++		ret = of_property_read_u32(np, "reg", &dom);
++		if (ret)
++			return ret;
++
++		if (dom >= rinfo->num_doms)
++			return -ENODEV;
++	}
++
++	if (of_find_property(np, "regulator-name", NULL)) {
++		ret = of_property_read_string(np, "regulator-name", &name);
++		if (ret)
++			return ret;
++
++		name_dom = scmi_regulator_map_name(ph, rinfo, name);
++		if (name_dom < 0) {
++			dev_err(&sdev->dev,
++				"No SCMI Voltage Domain found named %s. Skipping: %s\n",
++				name, np->full_name);
++			return name_dom;
++		}
++
++		if (dom >= rinfo->num_doms)
++			dom = name_dom;
++
++		if (name_dom != dom) {
++			dev_err(&sdev->dev,
++				"SCMI Voltage Domain %s ID mismatch, %u (DT) != %d (firmware). Skipping: %s\n",
++				name, dom, name_dom, np->full_name);
++			return -EINVAL;
++		}
 +	}
  
- #ifdef CONFIG_BTRFS_FS_RUN_SANITY_TESTS
- 	if (trans && likely(trans->type != __TRANS_DUMMY) &&
+ 	if (dom >= rinfo->num_doms)
+ 		return -ENODEV;
 -- 
-2.34.1
-
-
+2.17.1
 
