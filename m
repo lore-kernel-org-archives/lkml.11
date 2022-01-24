@@ -2,87 +2,137 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D95B2C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:11:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AD53C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:11:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240545AbiAXPLX (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 10:11:23 -0500
-Received: from mga12.intel.com ([192.55.52.136]:6566 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235119AbiAXPLW (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 10:11:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643037082; x=1674573082;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=bPoO0UpQDTtomNmCEeSw5WFs51jU0nY+bce3pE812xs=;
-  b=JTbJXvGOkDI5hLU8WGQK9DPmIB4OXnyH8WnD9bL6AY5haKmK6P8Dy3+S
-   9DMWy9IfGnU9v34gAOhnkcDBCaTeDqRp98LcDNecc+CObRRO4Cb3QVGiH
-   WoQLbeauGNfebd0efbEAaUQeiVXRMmpB65jyZMMZBayPFcqvn+f4jVi6A
-   IZ209gvCd41wjMeDLWHW1ns+JMZs9kkDxYiT5X5voUlgU8wyMbQ7g2yQv
-   zTZ5SGmbjKLXKnXfAp60IFgTpCeHs5GZAjfDQzBpRxzNageGpXWPuJlfe
-   JeHRNcKlX1okNjHFMYPGWXABPOXt0jwVUnBsB2F+yrYiuamT8qRYBWRV6
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="226046456"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="226046456"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:11:21 -0800
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="476747480"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:11:18 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nC0yy-00DvuI-Ay;
-        Mon, 24 Jan 2022 17:10:12 +0200
-Date:   Mon, 24 Jan 2022 17:10:12 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Thierry Reding <treding@nvidia.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        linux-tegra@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>
-Subject: Re: [PATCH v1 1/1] gpio: tegra: Get rid of duplicate of_node
- assignment
-Message-ID: <Ye7BVEvepBTLgtWO@smile.fi.intel.com>
-References: <20211223122639.86923-1-andriy.shevchenko@linux.intel.com>
- <YdWp09bj4SP5oNvc@smile.fi.intel.com>
- <CAMRc=McdH7EebcM5AJb1jT2T_cP_yXyS7t+TP675f6kw92wbRA@mail.gmail.com>
+        id S240584AbiAXPLn (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 10:11:43 -0500
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:48123 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235253AbiAXPLk (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 10:11:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643037099; x=1674573099;
+  h=subject:to:cc:references:from:message-id:date:
+   mime-version:in-reply-to:content-transfer-encoding;
+  bh=/YcoCW22K4Bj4d7gqCROWQEd7ONJm4N2eOylT8ZKqls=;
+  b=NCMz68fEKoIs+pYgGx+7LX5UtQX2wv/3qBtQ3KR3G8wutN2pPs8RSq5x
+   hP3AsCWw25fAx584oKFwi7U3nZ1NDEnAQnvGDWrDknjmWqrC8Zq8OalLI
+   0VtdG1A3gI+QQAI0+wcDs1bM09rnZkCjYoEy9sITLov0NYcGewgBTr7vr
+   E=;
+Received: from unknown (HELO ironmsg01-sd.qualcomm.com) ([10.53.140.141])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 24 Jan 2022 07:11:39 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg01-sd.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:11:38 -0800
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.922.19; Mon, 24 Jan 2022 07:11:38 -0800
+Received: from [10.50.44.136] (10.80.80.8) by nalasex01a.na.qualcomm.com
+ (10.47.209.196) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Mon, 24 Jan
+ 2022 07:11:31 -0800
+Subject: Re: [PATCH v2 0/7] usb: dwc3: Calculate REFCLKPER et. al. from
+ reference clock
+To:     Baruch Siach <baruch@tkos.co.il>,
+        Kathiravan T <kathirav@codeaurora.org>
+CC:     Sean Anderson <sean.anderson@seco.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <linux-usb@vger.kernel.org>, Felipe Balbi <balbi@kernel.org>,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        "Balaji Prakash J" <bjagadee@codeaurora.org>,
+        <linux-kernel@vger.kernel.org>,
+        Robert Hancock <robert.hancock@calian.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Michal Simek <michal.simek@xilinx.com>,
+        "Rob Herring" <robh+dt@kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-arm-msm@vger.kernel.org>
+References: <20220119002438.106079-1-sean.anderson@seco.com>
+ <87ee53fv01.fsf@tarshish> <1965fc315525b8ab26cf9f71f939c24d@codeaurora.org>
+ <871r12g0j2.fsf@tarshish>
+From:   Kathiravan Thirumoorthy <quic_kathirav@quicinc.com>
+Message-ID: <e1309c23-530b-c698-b7ba-4f1a5226fe8c@quicinc.com>
+Date:   Mon, 24 Jan 2022 20:41:26 +0530
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.14.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAMRc=McdH7EebcM5AJb1jT2T_cP_yXyS7t+TP675f6kw92wbRA@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+In-Reply-To: <871r12g0j2.fsf@tarshish>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01a.na.qualcomm.com (10.52.223.231) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Thu, Jan 06, 2022 at 09:42:15AM +0100, Bartosz Golaszewski wrote:
-> On Wed, Jan 5, 2022 at 3:33 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> >
-> > On Thu, Dec 23, 2021 at 02:26:39PM +0200, Andy Shevchenko wrote:
-> > > GPIO library does copy the of_node from the parent device of
-> > > the GPIO chip, there is no need to repeat this in the individual
-> > > drivers. Remove these assignment all at once.
-> > >
-> > > For the details one may look into the of_gpio_dev_init() implementation.
-> >
-> > Any comments on this one?
-> 
-> It looks good to me but I wanted to wait for Thierry's ack.
+Hi Baruch,
 
-We have got a tag, I'll incorporate this to my usual PR, since we got into
-a new cycle anyway and this is not a fix. Same for other similar patches.
+On 1/20/2022 3:59 PM, Baruch Siach wrote:
+> Hi Kathiravan,
+>
+> On Thu, Jan 20 2022, Kathiravan T wrote:
+>> On 2022-01-19 23:44, Baruch Siach wrote:
+>>> Hi Sean,
+>>> On Tue, Jan 18 2022, Sean Anderson wrote:
+>>>> This is a rework of patches 3-5 of [1]. It attempts to correctly program
+>>>> REFCLKPER and REFCLK_FLADJ based on the reference clock frequency. Since
+>>>> we no longer need a special property duplicating this configuration,
+>>>> snps,ref-clock-period-ns is deprecated.
+>>>> Please test this! Patches 3/4 in this series have the effect of
+>>>> programming REFCLKPER and REFCLK_FLADJ on boards which already configure
+>>>> the "ref" clock. I have build tested, but not much else.
+>>> Tested here on IPQ6010 based system. USB still works. But the with
+>>> "ref"
+>>> clock at 24MHz, period is calculated as 0x29. Previous
+>>> snps,ref-clock-period-ns value used to be 0x32.
+>>> Is that expected?
+>> Yes, it is 0x29 for IPQ60xx based SoCs. In downstream it was wrongly mentioned
+>> as 0x32, which was corrected recently.
+> Thanks for the update. This needs fixing in upstream kernel. I'll send a
+> patch.
+>
+> For some reason USB appears to work here with both values. Is it because
+> I only use USB2 signals? If this is the case them I can not actually
+> test this series on my system.
 
--- 
-With Best Regards,
-Andy Shevchenko
+I could recollect we did see some issue on USB2.0 port as well, but it 
+wasn't fatal one. Anyways it is better to test it.
 
+Thanks,
 
+Kathiravan T.
+
+>
+> Thanks,
+> baruch
+>
+>>>> [1]
+>>>> https://lore.kernel.org/linux-usb/20220114044230.2677283-1-robert.hancock@calian.com/
+>>>> Changes in v2:
+>>>> - Document clock members
+>>>> - Also program GFLADJ.240MHZDECR
+>>>> - Don't program GFLADJ if the version is < 2.50a
+>>>> - Add snps,ref-clock-frequency-hz property for ACPI
+>>>> Sean Anderson (7):
+>>>>    dt-bindings: usb: dwc3: Deprecate snps,ref-clock-period-ns
+>>>>    usb: dwc3: Get clocks individually
+>>>>    usb: dwc3: Calculate REFCLKPER based on reference clock
+>>>>    usb: dwc3: Program GFLADJ
+>>>>    usb: dwc3: Add snps,ref-clock-frequency-hz property for ACPI
+>>>>    arm64: dts: zynqmp: Move USB clocks to dwc3 node
+>>>>    arm64: dts: ipq6018: Use reference clock to set dwc3 period
+>>>>   .../devicetree/bindings/usb/snps,dwc3.yaml    |   7 +-
+>>>>   arch/arm64/boot/dts/qcom/ipq6018.dtsi         |   3 +-
+>>>>   .../arm64/boot/dts/xilinx/zynqmp-clk-ccf.dtsi |   4 +-
+>>>>   arch/arm64/boot/dts/xilinx/zynqmp.dtsi        |   4 +-
+>>>>   drivers/usb/dwc3/core.c                       | 112 +++++++++++++++---
+>>>>   drivers/usb/dwc3/core.h                       |  17 ++-
+>>>>   6 files changed, 120 insertions(+), 27 deletions(-)
+>
