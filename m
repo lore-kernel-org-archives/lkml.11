@@ -2,41 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C34ADC35271
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4ADDC35270
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:13:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1581670AbiAXWMI (ORCPT
+        id S1581635AbiAXWMG (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:12:08 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:42630 "EHLO
+        Mon, 24 Jan 2022 17:12:06 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42338 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1452982AbiAXV1e (ORCPT
+        with ESMTP id S1452837AbiAXV1N (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:27:34 -0500
+        Mon, 24 Jan 2022 16:27:13 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8864EB812A4;
-        Mon, 24 Jan 2022 21:27:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AD833C340E4;
-        Mon, 24 Jan 2022 21:27:30 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 23289B81057;
+        Mon, 24 Jan 2022 21:27:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46776C340E4;
+        Mon, 24 Jan 2022 21:27:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059651;
-        bh=xsfclcnth22emOhXnExQDbZEHeQPjA9k8JwPqBUjW/I=;
+        s=korg; t=1643059627;
+        bh=Zlb1GxZyQU5sZAlAtxJ1xvGbM1W1LxN/N01mLYXusvk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n4r861l2MbFnMSWcVg9r9tzjUx8+7+9LIk8QYvKHuYcbfeE639m06Cm+EarP8SV78
-         iQhbk0PeuekaaqQ1amkkZy8BICGj+NzNLzBOoPyQVaBcx4P/U0tXkT/eyr4CJZIi9r
-         AriZoxioNS523DF8MdXxsgwtN4uNXvc659WdVrws=
+        b=fkynVlNmk8ARsfbZyPhxnKmXSXPiYaF/Ji3AKyV5Muwr3hQ8IVTAssM76TTDMopVk
+         eg4zxuGJqDsW/fC9AvQzx/dCOGAfCB1/OTnVZWyfpm7+CQed+D6xSnYZ243bGt28tM
+         07Y+TA7p4xxBoFhu9LxnClUCyX6UTFKn5lTqt9cg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Adrian Hunter <adrian.hunter@intel.com>,
-        Hector Martin <marcan@marcan.st>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org, Zeal Robot <zealci@zte.com.cn>,
+        Changcheng Deng <deng.changcheng@zte.com.cn>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0686/1039] mmc: sdhci-pci-gli: GL9755: Support for CD/WP inversion on OF platforms
-Date:   Mon, 24 Jan 2022 19:41:15 +0100
-Message-Id: <20220124184148.413659573@linuxfoundation.org>
+Subject: [PATCH 5.16 0679/1039] PM: AVS: qcom-cpr: Use div64_ul instead of do_div
+Date:   Mon, 24 Jan 2022 19:41:08 +0100
+Message-Id: <20220124184148.185749635@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,61 +48,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Changcheng Deng <deng.changcheng@zte.com.cn>
 
-[ Upstream commit 189f1d9bc3a5ea3e442e119e4a5deda63da8c462 ]
+[ Upstream commit 92c550f9ffd2884bb5def52b5c0485a35e452784 ]
 
-This is required on some Apple ARM64 laptops using this controller.
-As is typical on DT platforms, pull these quirks from the device tree
-using the standard mmc bindings.
+do_div() does a 64-by-32 division. Here the divisor is an unsigned long
+which on some platforms is 64 bit wide. So use div64_ul instead of do_div
+to avoid a possible truncation.
 
-See Documentation/devicetree/bindings/mmc/mmc-controller.yaml
-
-Acked-by: Adrian Hunter <adrian.hunter@intel.com>
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Link: https://lore.kernel.org/r/20211215161045.38843-2-marcan@marcan.st
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Changcheng Deng <deng.changcheng@zte.com.cn>
+Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Link: https://lore.kernel.org/r/20211125014311.45942-1-deng.changcheng@zte.com.cn
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/sdhci-pci-gli.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/soc/qcom/cpr.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/mmc/host/sdhci-pci-gli.c b/drivers/mmc/host/sdhci-pci-gli.c
-index 4fd99c1e82ba3..ad50f16658fe2 100644
---- a/drivers/mmc/host/sdhci-pci-gli.c
-+++ b/drivers/mmc/host/sdhci-pci-gli.c
-@@ -12,6 +12,7 @@
- #include <linux/pci.h>
- #include <linux/mmc/mmc.h>
- #include <linux/delay.h>
-+#include <linux/of.h>
- #include "sdhci.h"
- #include "sdhci-pci.h"
- #include "cqhci.h"
-@@ -116,6 +117,8 @@
- #define PCI_GLI_9755_PECONF   0x44
- #define   PCI_GLI_9755_LFCLK    GENMASK(14, 12)
- #define   PCI_GLI_9755_DMACLK   BIT(29)
-+#define   PCI_GLI_9755_INVERT_CD  BIT(30)
-+#define   PCI_GLI_9755_INVERT_WP  BIT(31)
+diff --git a/drivers/soc/qcom/cpr.c b/drivers/soc/qcom/cpr.c
+index 1d818a8ba2089..e9b854ed1bdfd 100644
+--- a/drivers/soc/qcom/cpr.c
++++ b/drivers/soc/qcom/cpr.c
+@@ -1010,7 +1010,7 @@ static int cpr_interpolate(const struct corner *corner, int step_volt,
+ 		return corner->uV;
  
- #define PCI_GLI_9755_CFG2          0x48
- #define   PCI_GLI_9755_CFG2_L1DLY    GENMASK(28, 24)
-@@ -570,6 +573,14 @@ static void gl9755_hw_setting(struct sdhci_pci_slot *slot)
- 	gl9755_wt_on(pdev);
+ 	temp = f_diff * (uV_high - uV_low);
+-	do_div(temp, f_high - f_low);
++	temp = div64_ul(temp, f_high - f_low);
  
- 	pci_read_config_dword(pdev, PCI_GLI_9755_PECONF, &value);
-+	/*
-+	 * Apple ARM64 platforms using these chips may have
-+	 * inverted CD/WP detection.
-+	 */
-+	if (of_property_read_bool(pdev->dev.of_node, "cd-inverted"))
-+		value |= PCI_GLI_9755_INVERT_CD;
-+	if (of_property_read_bool(pdev->dev.of_node, "wp-inverted"))
-+		value |= PCI_GLI_9755_INVERT_WP;
- 	value &= ~PCI_GLI_9755_LFCLK;
- 	value &= ~PCI_GLI_9755_DMACLK;
- 	pci_write_config_dword(pdev, PCI_GLI_9755_PECONF, value);
+ 	/*
+ 	 * max_volt_scale has units of uV/MHz while freq values
 -- 
 2.34.1
 
