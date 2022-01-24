@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65402C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C706CC4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450750AbiAXVVU (ORCPT
+        id S1450830AbiAXVVb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:21:20 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42638 "EHLO
+        Mon, 24 Jan 2022 16:21:31 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:44502 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358864AbiAXUw7 (ORCPT
+        with ESMTP id S1442101AbiAXUxM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:52:59 -0500
+        Mon, 24 Jan 2022 15:53:12 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id ABB7060B0B;
-        Mon, 24 Jan 2022 20:52:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EB09C340E7;
-        Mon, 24 Jan 2022 20:52:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 77D3C61227;
+        Mon, 24 Jan 2022 20:53:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 262E3C340E7;
+        Mon, 24 Jan 2022 20:53:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057578;
-        bh=6fZMCQloQ2t3ladZ5ITB1GxhYi5y6jBkCeqwFsjnSLI=;
+        s=korg; t=1643057590;
+        bh=/GYrC+HBo36Zytf1mlcSf2lAscO9v2G3xF7pkIcsPd0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1T2Daog9HuvSn5QL731fQreO1aZXcyOPsw3J5JUFlUo9ZKURE9sygQT+3qgnEec/i
-         O/lpjNPGciomdHInM3EUHuQfJ5N6xJNbl5gtJqAXmRkCydsV04Yq6x9Zzl4sShtnDd
-         uJWF3kHcAUJMgDGv5EQb+W4iN9XbYueaWnrjUSEU=
+        b=bkz2zlTsqfsq/1P1bZLHbL/+TJnG6TZKQKcJ9dL2m0Vj67VM6bN2hu1asMQoADAcd
+         YSYgciicojFPDbHuFc2cksn5cDbxHAQ+mTjQqWUYueXWtZXsAjsOgZLlIPNYS1umdZ
+         9Q5oONW44WPiprpcs1tIP8vJ4fwOa2lUYzCcqCdo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Marcelo Tosatti <mtosatti@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 0002/1039] KVM: VMX: switch blocked_vcpu_on_cpu_lock to raw spinlock
-Date:   Mon, 24 Jan 2022 19:29:51 +0100
-Message-Id: <20220124184125.216249731@linuxfoundation.org>
+        stable@vger.kernel.org, Jason Gerecke <jason.gerecke@wacom.com>,
+        Ping Cheng <ping.cheng@wacom.com>,
+        Jiri Kosina <jkosina@suse.cz>
+Subject: [PATCH 5.16 0006/1039] HID: wacom: Ignore the confidence flag when a touch is removed
+Date:   Mon, 24 Jan 2022 19:29:55 +0100
+Message-Id: <20220124184125.358253731@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,105 +47,80 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marcelo Tosatti <mtosatti@redhat.com>
+From: Jason Gerecke <killertofu@gmail.com>
 
-commit 5f02ef741a785678930f3ff0a8b6b2b0ef1bb402 upstream.
+commit df03e9bd6d4806619b4cdc91a3d7695818a8e2b7 upstream.
 
-blocked_vcpu_on_cpu_lock is taken from hard interrupt context
-(pi_wakeup_handler), therefore it cannot sleep.
+AES hardware may internally re-classify a contact that it thought was
+intentional as a palm. Intentional contacts are reported as "down" with
+the confidence bit set. When this re-classification occurs, however, the
+state transitions to "up" with the confidence bit cleared. This kind of
+transition appears to be legal according to Microsoft docs, but we do
+not handle it correctly. Because the confidence bit is clear, we don't
+call `wacom_wac_finger_slot` and update userspace. This causes hung
+touches that confuse userspace and interfere with pen arbitration.
 
-Switch it to a raw spinlock.
+This commit adds a special case to ignore the confidence flag if a contact
+is reported as removed. This ensures we do not leave a hung touch if one
+of these re-classification events occured. Ideally we'd have some way to
+also let userspace know that the touch has been re-classified as a palm
+and needs to be canceled, but that's not possible right now :)
 
-Fixes:
-
-[41297.066254] BUG: scheduling while atomic: CPU 0/KVM/635218/0x00010001
-[41297.066323] Preemption disabled at:
-[41297.066324] [<ffffffff902ee47f>] irq_enter_rcu+0xf/0x60
-[41297.066339] Call Trace:
-[41297.066342]  <IRQ>
-[41297.066346]  dump_stack_lvl+0x34/0x44
-[41297.066353]  ? irq_enter_rcu+0xf/0x60
-[41297.066356]  __schedule_bug.cold+0x7d/0x8b
-[41297.066361]  __schedule+0x439/0x5b0
-[41297.066365]  ? task_blocks_on_rt_mutex.constprop.0.isra.0+0x1b0/0x440
-[41297.066369]  schedule_rtlock+0x1e/0x40
-[41297.066371]  rtlock_slowlock_locked+0xf1/0x260
-[41297.066374]  rt_spin_lock+0x3b/0x60
-[41297.066378]  pi_wakeup_handler+0x31/0x90 [kvm_intel]
-[41297.066388]  sysvec_kvm_posted_intr_wakeup_ipi+0x9d/0xd0
-[41297.066392]  </IRQ>
-[41297.066392]  asm_sysvec_kvm_posted_intr_wakeup_ipi+0x12/0x20
-...
-
-Signed-off-by: Marcelo Tosatti <mtosatti@redhat.com>
-Cc: stable@vger.kernel.org
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
+Link: https://github.com/linuxwacom/input-wacom/issues/288
+Fixes: 7fb0413baa7f (HID: wacom: Use "Confidence" flag to prevent reporting invalid contacts)
+CC: stable@vger.kernel.org
+Signed-off-by: Jason Gerecke <jason.gerecke@wacom.com>
+Reviewed-by: Ping Cheng <ping.cheng@wacom.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/kvm/vmx/posted_intr.c |   16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/hid/wacom_wac.c |   29 ++++++++++++++++++++++++++---
+ 1 file changed, 26 insertions(+), 3 deletions(-)
 
---- a/arch/x86/kvm/vmx/posted_intr.c
-+++ b/arch/x86/kvm/vmx/posted_intr.c
-@@ -15,7 +15,7 @@
-  * can find which vCPU should be waken up.
-  */
- static DEFINE_PER_CPU(struct list_head, blocked_vcpu_on_cpu);
--static DEFINE_PER_CPU(spinlock_t, blocked_vcpu_on_cpu_lock);
-+static DEFINE_PER_CPU(raw_spinlock_t, blocked_vcpu_on_cpu_lock);
+--- a/drivers/hid/wacom_wac.c
++++ b/drivers/hid/wacom_wac.c
+@@ -2588,6 +2588,24 @@ static void wacom_wac_finger_slot(struct
+ 	}
+ }
  
- static inline struct pi_desc *vcpu_to_pi_desc(struct kvm_vcpu *vcpu)
++static bool wacom_wac_slot_is_active(struct input_dev *dev, int key)
++{
++	struct input_mt *mt = dev->mt;
++	struct input_mt_slot *s;
++
++	if (!mt)
++		return false;
++
++	for (s = mt->slots; s != mt->slots + mt->num_slots; s++) {
++		if (s->key == key &&
++			input_mt_get_value(s, ABS_MT_TRACKING_ID) >= 0) {
++			return true;
++		}
++	}
++
++	return false;
++}
++
+ static void wacom_wac_finger_event(struct hid_device *hdev,
+ 		struct hid_field *field, struct hid_usage *usage, __s32 value)
  {
-@@ -121,9 +121,9 @@ static void __pi_post_block(struct kvm_v
- 			   new.control) != old.control);
- 
- 	if (!WARN_ON_ONCE(vcpu->pre_pcpu == -1)) {
--		spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, vcpu->pre_pcpu));
-+		raw_spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, vcpu->pre_pcpu));
- 		list_del(&vcpu->blocked_vcpu_list);
--		spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, vcpu->pre_pcpu));
-+		raw_spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, vcpu->pre_pcpu));
- 		vcpu->pre_pcpu = -1;
- 	}
- }
-@@ -154,11 +154,11 @@ int pi_pre_block(struct kvm_vcpu *vcpu)
- 	local_irq_disable();
- 	if (!WARN_ON_ONCE(vcpu->pre_pcpu != -1)) {
- 		vcpu->pre_pcpu = vcpu->cpu;
--		spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, vcpu->pre_pcpu));
-+		raw_spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, vcpu->pre_pcpu));
- 		list_add_tail(&vcpu->blocked_vcpu_list,
- 			      &per_cpu(blocked_vcpu_on_cpu,
- 				       vcpu->pre_pcpu));
--		spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, vcpu->pre_pcpu));
-+		raw_spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, vcpu->pre_pcpu));
+@@ -2638,9 +2656,14 @@ static void wacom_wac_finger_event(struc
  	}
  
- 	do {
-@@ -215,7 +215,7 @@ void pi_wakeup_handler(void)
- 	struct kvm_vcpu *vcpu;
- 	int cpu = smp_processor_id();
- 
--	spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
-+	raw_spin_lock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
- 	list_for_each_entry(vcpu, &per_cpu(blocked_vcpu_on_cpu, cpu),
- 			blocked_vcpu_list) {
- 		struct pi_desc *pi_desc = vcpu_to_pi_desc(vcpu);
-@@ -223,13 +223,13 @@ void pi_wakeup_handler(void)
- 		if (pi_test_on(pi_desc) == 1)
- 			kvm_vcpu_kick(vcpu);
+ 	if (usage->usage_index + 1 == field->report_count) {
+-		if (equivalent_usage == wacom_wac->hid_data.last_slot_field &&
+-		    wacom_wac->hid_data.confidence)
+-			wacom_wac_finger_slot(wacom_wac, wacom_wac->touch_input);
++		if (equivalent_usage == wacom_wac->hid_data.last_slot_field) {
++			bool touch_removed = wacom_wac_slot_is_active(wacom_wac->touch_input,
++				wacom_wac->hid_data.id) && !wacom_wac->hid_data.tipswitch;
++
++			if (wacom_wac->hid_data.confidence || touch_removed) {
++				wacom_wac_finger_slot(wacom_wac, wacom_wac->touch_input);
++			}
++		}
  	}
--	spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
-+	raw_spin_unlock(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
  }
  
- void __init pi_init_cpu(int cpu)
- {
- 	INIT_LIST_HEAD(&per_cpu(blocked_vcpu_on_cpu, cpu));
--	spin_lock_init(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
-+	raw_spin_lock_init(&per_cpu(blocked_vcpu_on_cpu_lock, cpu));
- }
- 
- bool pi_has_pending_interrupt(struct kvm_vcpu *vcpu)
 
 
