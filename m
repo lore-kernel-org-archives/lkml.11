@@ -2,85 +2,76 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44490C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:50:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC461C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:52:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243205AbiAXPu4 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 10:50:56 -0500
-Received: from mail-ua1-f48.google.com ([209.85.222.48]:33570 "EHLO
-        mail-ua1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240796AbiAXPuw (ORCPT
+        id S238976AbiAXPwO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 10:52:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56382 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233066AbiAXPwN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 10:50:52 -0500
-Received: by mail-ua1-f48.google.com with SMTP id u6so31876750uaq.0;
-        Mon, 24 Jan 2022 07:50:52 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=CbVkEbxTIR+WGNzjkBEYilBK2bcgVTSN3u2lPmmlm40=;
-        b=i1bfkVg+Qi6fXnQrPGksEVEFeZwB8+mNVwlfgYBMiMw4JNFQFtM8qeEVlwGT5kUsJa
-         1RnTy3c0bz7ubRz01WmphR775g1BNyvZrOu0wcgCAIFCdlP+0OLmBH/Z35Sv69fgRdT2
-         zp8k26B2qJ4XBBiSjiCfLJrCBixRYJHt8xrPztZcYVx7WPPT6wllt6JlGDhCIdclGYnU
-         jTOKfVPoYtYMUGkZeYMhGmk2L/4D3J6jYsf1PfGlawRDfS92T2X2SfCsgalsPBoz54Sb
-         23BoAPa29yGvVR9+kvkNnGr1w57Zi37FN3q8X56AmB0g2Yv+gqs6m9q54jQnJceOL3sE
-         i76A==
-X-Gm-Message-State: AOAM533LehkXbyHecU01Qc/hNRS24cPkMGmgFTkiFle+rcWNZznmWT6u
-        obtk+kenJxI3AZ3ryoDBGvO8yHWkdnFofw==
-X-Google-Smtp-Source: ABdhPJzpp7sOBzRgDjOYTiWE4YAOj3jxrSZxCYmo7f1KT/K/BrY3KtHueSaUMr3Vkob8adzEWldK+g==
-X-Received: by 2002:ab0:48d1:: with SMTP id y17mr5906246uac.12.1643039451951;
-        Mon, 24 Jan 2022 07:50:51 -0800 (PST)
-Received: from mail-vk1-f169.google.com (mail-vk1-f169.google.com. [209.85.221.169])
-        by smtp.gmail.com with ESMTPSA id g25sm131201vsj.6.2022.01.24.07.50.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 24 Jan 2022 07:50:51 -0800 (PST)
-Received: by mail-vk1-f169.google.com with SMTP id w17so6330486vko.9;
-        Mon, 24 Jan 2022 07:50:50 -0800 (PST)
-X-Received: by 2002:a1f:1b46:: with SMTP id b67mr2965993vkb.20.1643039450695;
- Mon, 24 Jan 2022 07:50:50 -0800 (PST)
+        Mon, 24 Jan 2022 10:52:13 -0500
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D274C06173B;
+        Mon, 24 Jan 2022 07:52:13 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by sin.source.kernel.org (Postfix) with ESMTPS id BFAE1CE1177;
+        Mon, 24 Jan 2022 15:52:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E58F5C340E5;
+        Mon, 24 Jan 2022 15:52:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643039530;
+        bh=Za2nmmdrBsvvSiJM+At4GnGZhaz4oLqU5FLsbm9dpsM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=W+U08PP/CUGugEvX4Z2D80VWBUftxJKYh8onjWuqzhLzddbRneREAg9MNvNu8vkZ/
+         qDq7xhDibvQQoFgR8G5mYJHK+vMSkFcFOviqSp5dLj/vNUQ/1AQDRW6SPXScJHSdiz
+         IlZrY8WKGJjkGijJBqqsFXFkqfOJ6qcguMvuHNIfagEWNtwUY5RV/TnFpz2t+dP3WM
+         9MewCMHFpd5g1Zi2B+G/hdSv6tW1DidmrXMXeJFaPhPNkjPl6MvUKUkQmJPI1R/P5V
+         H12uH4OS3Q6JYN/YXSdoCVSSrQmFDd78bFxHz0XPLL1uPj9ZnVBvRU76cZUsaNi9xv
+         AfVhO1QZjBIkA==
+Date:   Mon, 24 Jan 2022 07:52:08 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        "David S . Miller" <davem@davemloft.net>, tanghui20@huawei.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH AUTOSEL 5.16 12/19] net: apple: bmac: Fix build since
+ dev_addr constification
+Message-ID: <20220124075208.24c30dcc@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+In-Reply-To: <20220123001113.2460140-12-sashal@kernel.org>
+References: <20220123001113.2460140-1-sashal@kernel.org>
+        <20220123001113.2460140-12-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20220119110839.33187-1-deller@gmx.de> <20220119110839.33187-3-deller@gmx.de>
- <YelyGDNDTn1Aq/hm@phenom.ffwll.local> <6c000477-002b-d125-b945-2c4831bad8a5@gmx.de>
- <20220121072006.ylw2hdl7jbkbwnre@sirius.home.kraxel.org> <64fd46cb-9746-3fd0-ec92-c64dba76875a@gmx.de>
- <d23800b4-503c-a6e2-2c51-2c07a736dffc@suse.de>
-In-Reply-To: <d23800b4-503c-a6e2-2c51-2c07a736dffc@suse.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 24 Jan 2022 16:50:39 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdXu_paBcNhevgxXzr1pEes7qWtD=RHXTrqP=hxNBkupnw@mail.gmail.com>
-Message-ID: <CAMuHMdXu_paBcNhevgxXzr1pEes7qWtD=RHXTrqP=hxNBkupnw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] Revert "fbcon: Disable accelerated scrolling"
-To:     Thomas Zimmermann <tzimmermann@suse.de>
-Cc:     Helge Deller <deller@gmx.de>, Gerd Hoffmann <kraxel@redhat.com>,
-        Linux Fbdev development list <linux-fbdev@vger.kernel.org>,
-        Pavel Machek <pavel@ucw.cz>, Sam Ravnborg <sam@ravnborg.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Sven Schnelle <svens@stackframe.org>,
-        Javier Martinez Canillas <javierm@redhat.com>,
-        DRI Development <dri-devel@lists.freedesktop.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Claudio Suarez <cssk@net-c.es>,
-        Tomi Valkeinen <tomi.valkeinen@ti.com>,
-        Daniel Vetter <daniel.vetter@intel.com>,
-        Linus Torvalds <torvalds@linux-foundation.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Mon, Jan 24, 2022 at 12:33 PM Thomas Zimmermann <tzimmermann@suse.de> wrote:
-> With fbdev emulation, every DRM driver is an fbdev driver too. So
+On Sat, 22 Jan 2022 19:11:05 -0500 Sasha Levin wrote:
+> From: Michael Ellerman <mpe@ellerman.id.au>
+>=20
+> [ Upstream commit ea938248557a52e231a31f338eac4baee36a8626 ]
+>=20
+> Since commit adeef3e32146 ("net: constify netdev->dev_addr") the bmac
+> driver no longer builds with the following errors (pmac32_defconfig):
+>=20
+>   linux/drivers/net/ethernet/apple/bmac.c: In function =E2=80=98bmac_prob=
+e=E2=80=99:
+>   linux/drivers/net/ethernet/apple/bmac.c:1287:20: error: assignment of r=
+ead-only location =E2=80=98*(dev->dev_addr + (sizetype)j)=E2=80=99
+>    1287 |   dev->dev_addr[j] =3D rev ? bitrev8(addr[j]): addr[j];
+>         |                    ^
+>=20
+> Fix it by making the modifications to a local macaddr variable and then
+> passing that to eth_hw_addr_set().
+>=20
+> We don't use the existing addr variable because the bitrev8() would
+> mutate it, but it is already used unreversed later in the function.
 
-Some are even without?
-
-drivers/gpu/drm/vmwgfx/vmwgfx_fb.c:     ret = register_framebuffer(info);
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+Patches 11 and 12 are another case of prep for netdev->dev_addr
+being const in 5.17, we don't need those backported.
