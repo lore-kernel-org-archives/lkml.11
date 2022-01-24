@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D7E6C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:58:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA8D6C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:58:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357838AbiAXU6F (ORCPT
+        id S1359588AbiAXU60 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:58:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39180 "EHLO
+        Mon, 24 Jan 2022 15:58:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385446AbiAXUdZ (ORCPT
+        with ESMTP id S1386521AbiAXUfg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:33:25 -0500
+        Mon, 24 Jan 2022 15:35:36 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 593A9C07E296;
-        Mon, 24 Jan 2022 11:45:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B12C038ADF;
+        Mon, 24 Jan 2022 11:49:13 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 15C62B81188;
-        Mon, 24 Jan 2022 19:45:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DE49C340E5;
-        Mon, 24 Jan 2022 19:45:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 53B49B81229;
+        Mon, 24 Jan 2022 19:49:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EDF8C340E5;
+        Mon, 24 Jan 2022 19:49:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053518;
-        bh=7X518gYPa/yoX6heLriG4edfkEp/un6Wnm5Rw2reZr0=;
+        s=korg; t=1643053751;
+        bh=9o48Je1F87lDwxkuT1N6YQqhnrPGRVS42N5wlSw4AZM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pz/sUKi7kgIpgWuPsYXsV8nCcCcs6CeJNBrGJo3wWn0a0alescDULptnE05ABuYZd
-         aqfvaRl5XZ6tcxqC0cJGo3/c8v/xWzyj8XC+JcTJACPDV8IQBtHF5oaticY9uRONIE
-         F7Y47iZKWt5Q3AxYQUpWjunFb2XKupSpdgib9xQc=
+        b=yu+7Zk1yW7AYhzm206V2SkQCd1xXtEDdP0Bu9wVAQtMw0EKG69QOamY3b5O/1UVaC
+         NLNbyma2o3RQIoAHg1y9fgWVChCcYQLTOI5bOFDLiRhd+4PiMmpa2LnFG0bBrnmBA/
+         XYJ2rnq2k08VB+OcaS219aO+9N9Wu8ebsH1WnTqs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Hans de Goede <hdegoede@redhat.com>,
+        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 091/563] drm/vboxvideo: fix a NULL vs IS_ERR() check
-Date:   Mon, 24 Jan 2022 19:37:36 +0100
-Message-Id: <20220124184027.538833367@linuxfoundation.org>
+Subject: [PATCH 5.10 165/563] media: coda/imx-vdoa: Handle dma_set_coherent_mask error codes
+Date:   Mon, 24 Jan 2022 19:38:50 +0100
+Message-Id: <20220124184030.107024827@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -50,38 +50,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
 
-[ Upstream commit cebbb5c46d0cb0615fd0c62dea9b44273d0a9780 ]
+[ Upstream commit 43f0633f89947df57fe0b5025bdd741768007708 ]
 
-The devm_gen_pool_create() function never returns NULL, it returns
-error pointers.
+The return value of dma_set_coherent_mask() is not always 0.
+To catch the exception in case that dma is not support the mask.
 
-Fixes: 4cc9b565454b ("drm/vboxvideo: Use devm_gen_pool_create")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211118111233.GA1147@kili
+Link: https://lore.kernel.org/linux-media/20211206022201.1639460-1-jiasheng@iscas.ac.cn
+Fixes: b0444f18e0b1 ("[media] coda: add i.MX6 VDOA driver")
+Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/vboxvideo/vbox_main.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/media/platform/coda/imx-vdoa.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/gpu/drm/vboxvideo/vbox_main.c b/drivers/gpu/drm/vboxvideo/vbox_main.c
-index d68d9bad76747..c5ea880d17b29 100644
---- a/drivers/gpu/drm/vboxvideo/vbox_main.c
-+++ b/drivers/gpu/drm/vboxvideo/vbox_main.c
-@@ -123,8 +123,8 @@ int vbox_hw_init(struct vbox_private *vbox)
- 	/* Create guest-heap mem-pool use 2^4 = 16 byte chunks */
- 	vbox->guest_pool = devm_gen_pool_create(vbox->ddev.dev, 4, -1,
- 						"vboxvideo-accel");
--	if (!vbox->guest_pool)
--		return -ENOMEM;
-+	if (IS_ERR(vbox->guest_pool))
-+		return PTR_ERR(vbox->guest_pool);
+diff --git a/drivers/media/platform/coda/imx-vdoa.c b/drivers/media/platform/coda/imx-vdoa.c
+index 8bc0d83718193..dd6e2e320264e 100644
+--- a/drivers/media/platform/coda/imx-vdoa.c
++++ b/drivers/media/platform/coda/imx-vdoa.c
+@@ -287,7 +287,11 @@ static int vdoa_probe(struct platform_device *pdev)
+ 	struct resource *res;
+ 	int ret;
  
- 	ret = gen_pool_add_virt(vbox->guest_pool,
- 				(unsigned long)vbox->guest_heap,
+-	dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
++	ret = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(32));
++	if (ret) {
++		dev_err(&pdev->dev, "DMA enable failed\n");
++		return ret;
++	}
+ 
+ 	vdoa = devm_kzalloc(&pdev->dev, sizeof(*vdoa), GFP_KERNEL);
+ 	if (!vdoa)
 -- 
 2.34.1
 
