@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 194BEC43219
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 966CBC433FE
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421755AbiAYC1j (ORCPT
+        id S1842023AbiAYC2Y (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:27:39 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:50028 "EHLO
+        Mon, 24 Jan 2022 21:28:24 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50618 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356915AbiAXUH3 (ORCPT
+        with ESMTP id S1353468AbiAXUIL (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:07:29 -0500
+        Mon, 24 Jan 2022 15:08:11 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 80D2DB810BD;
-        Mon, 24 Jan 2022 20:07:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 959AEC340E5;
-        Mon, 24 Jan 2022 20:07:22 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E6B43B8159B;
+        Mon, 24 Jan 2022 20:08:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1BB37C340E5;
+        Mon, 24 Jan 2022 20:08:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054843;
-        bh=hgTMhcKXn0qipvk81yvlR5VaiWMS55P9EIckJyt9sxo=;
+        s=korg; t=1643054886;
+        bh=3U9VP1OuruVXeNmVCUIDrfmA01G3vDMoXgFxbdOhwwE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hsAHzu+/sh3dX6DNg+IGZ1suR/A7VE+t+gzEBHH6lmxzaJS/c8skaPtN939VjQnjH
-         d5ZU0s0acYPFzmMDwBIVvUOoB9RpepE03/cPs6ZaxSr0kdHK5Sm4v7/RuOHbXqVPyU
-         18HznoP+lCWnEv521u9cyV6aG6hhtorzvZrdqP3I=
+        b=ZqdSBf8oY1aiQmZMKKsMkwY6mY7n01tIbWfY4MueVLRLT0p6agy8m+29ZfSflhZSG
+         5lBBwChQSM6o4kfLWmpsBReNkbaiD/T2lc08xdU2u1VIUxIFZDdgZ7rqzuAyYHGW09
+         XuW2ZUmScSHcKu8HygxZiFspoR3/V+qinE/6y0xY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.10 521/563] net: axienet: Wait for PhyRstCmplt after core reset
-Date:   Mon, 24 Jan 2022 19:44:46 +0100
-Message-Id: <20220124184042.465198186@linuxfoundation.org>
+        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.10 503/563] powerpc/fsl/dts: Enable WA for erratum A-009885 on fman3l MDIO buses
+Date:   Mon, 24 Jan 2022 19:44:28 +0100
+Message-Id: <20220124184041.865223836@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,51 +46,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Tobias Waldekranz <tobias@waldekranz.com>
 
-commit b400c2f4f4c53c86594dd57098970d97d488bfde upstream.
+commit 0d375d610fa96524e2ee2b46830a46a7bfa92a9f upstream.
 
-When resetting the device, wait for the PhyRstCmplt bit to be set
-in the interrupt status register before continuing initialization, to
-ensure that the core is actually ready. When using an external PHY, this
-also ensures we do not start trying to access the PHY while it is still
-in reset. The PHY reset is initiated by the core reset which is
-triggered just above, but remains asserted for 5ms after the core is
-reset according to the documentation.
+This block is used in (at least) T1024 and T1040, including their
+variants like T1023 etc.
 
-The MgtRdy bit could also be waited for, but unfortunately when using
-7-series devices, the bit does not appear to work as documented (it
-seems to behave as some sort of link state indication and not just an
-indication the transceiver is ready) so it can't really be relied on for
-this purpose.
-
-Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: d55ad2967d89 ("powerpc/mpc85xx: Create dts components for the FSL QorIQ DPAA FMan")
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi |    2 ++
+ 1 file changed, 2 insertions(+)
 
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -516,6 +516,16 @@ static int __axienet_device_reset(struct
- 		return ret;
- 	}
+--- a/arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi
++++ b/arch/powerpc/boot/dts/fsl/qoriq-fman3l-0.dtsi
+@@ -79,6 +79,7 @@ fman0: fman@400000 {
+ 		#size-cells = <0>;
+ 		compatible = "fsl,fman-memac-mdio", "fsl,fman-xmdio";
+ 		reg = <0xfc000 0x1000>;
++		fsl,erratum-a009885;
+ 	};
  
-+	/* Wait for PhyRstCmplt bit to be set, indicating the PHY reset has finished */
-+	ret = read_poll_timeout(axienet_ior, value,
-+				value & XAE_INT_PHYRSTCMPLT_MASK,
-+				DELAY_OF_ONE_MILLISEC, 50000, false, lp,
-+				XAE_IS_OFFSET);
-+	if (ret) {
-+		dev_err(lp->dev, "%s: timeout waiting for PhyRstCmplt\n", __func__);
-+		return ret;
-+	}
-+
- 	return 0;
- }
+ 	xmdio0: mdio@fd000 {
+@@ -86,6 +87,7 @@ fman0: fman@400000 {
+ 		#size-cells = <0>;
+ 		compatible = "fsl,fman-memac-mdio", "fsl,fman-xmdio";
+ 		reg = <0xfd000 0x1000>;
++		fsl,erratum-a009885;
+ 	};
+ };
  
 
 
