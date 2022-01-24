@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60635C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06832C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587796AbiAXW3k (ORCPT
+        id S1587990AbiAXWaZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:29:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55294 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378443AbiAXVha (ORCPT
+        Mon, 24 Jan 2022 17:30:25 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50334 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1444812AbiAXVio (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:37:30 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84C58C05A1AD;
-        Mon, 24 Jan 2022 12:23:42 -0800 (PST)
+        Mon, 24 Jan 2022 16:38:44 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 42605B81229;
-        Mon, 24 Jan 2022 20:23:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75DF1C340E5;
-        Mon, 24 Jan 2022 20:23:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B699CB80FA1;
+        Mon, 24 Jan 2022 21:38:39 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDEC7C340E4;
+        Mon, 24 Jan 2022 21:38:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055820;
-        bh=wfcsLF7GIouIju6cw/S1WOUfuc/YG6E3MeAJ34xQqVk=;
+        s=korg; t=1643060318;
+        bh=8kdnPAkKMFZeojypize7PQeSHKNwYqoEZAm1hMECNzM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jsSmn6vQnSZrTBpIllBXkq0Ib4cv3EEMINfpjAk1eRxfWOwKLsHDLBoW4qf4fECMU
-         0tWpKsk2+rT6UXcacfLy3qUPwLVr4XUAMOOTlouXzUmp0LoC4MbozFa5pNCZQzTHM+
-         Xi24UyV1nVgY8qgq3kSBQl9h0ZE2TXgo9qxSIdt4=
+        b=EZYUgsy+OHq0wpf4Q0ieotqbTSPSSySH2DxwCj+NvZ897tbHtxuBfZsOTtgfWd3Zt
+         DGonPcs1NCvOxujY/hU4gnqKIfcVLi7s+8X0j/uGgjwrEakP8zlSpUpDndQuQD9gLb
+         JK+Fgc3e6w/xxDr6owlgs042571KXB7hnnDZ+pGE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        syzbot <syzbot+28a66a9fbc621c939000@syzkaller.appspotmail.com>,
-        Christoph Hellwig <hch@lst.de>, Jens Axboe <axboe@kernel.dk>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 276/846] block: fix error unwinding in device_add_disk
-Date:   Mon, 24 Jan 2022 19:36:33 +0100
-Message-Id: <20220124184110.463545039@linuxfoundation.org>
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Subject: [PATCH 5.16 0875/1039] PCI: pci-bridge-emul: Make expansion ROM Base Address register read-only
+Date:   Mon, 24 Jan 2022 19:44:24 +0100
+Message-Id: <20220124184154.707490250@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,67 +47,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christoph Hellwig <hch@lst.de>
+From: Pali Rohár <pali@kernel.org>
 
-[ Upstream commit 99d8690aae4b2f0d1d90075de355ac087f820a66 ]
+commit 1c1a3b4d3e86b997a313ffb297c1129540882859 upstream.
 
-One device_add is called disk->ev will be freed by disk_release, so we
-should free it twice.  Fix this by allocating disk->ev after device_add
-so that the extra local unwinding can be removed entirely.
+If expansion ROM is unsupported (which is the case of pci-bridge-emul.c
+driver) then ROM Base Address register must be implemented as read-only
+register that return 0 when read, same as for unused Base Address
+registers.
 
-Based on an earlier patch from Tetsuo Handa.
-
-Reported-by: syzbot <syzbot+28a66a9fbc621c939000@syzkaller.appspotmail.com>
-Tested-by: syzbot <syzbot+28a66a9fbc621c939000@syzkaller.appspotmail.com>
-Fixes: 83cbce9574462c6b ("block: add error handling for device_add_disk / add_disk")
-Signed-off-by: Christoph Hellwig <hch@lst.de>
-Link: https://lore.kernel.org/r/20211221161851.788424-1-hch@lst.de
-Signed-off-by: Jens Axboe <axboe@kernel.dk>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Link: https://lore.kernel.org/r/20211124155944.1290-2-pali@kernel.org
+Fixes: 23a5fba4d941 ("PCI: Introduce PCI bridge emulated config space common logic")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
+Cc: stable@vger.kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- block/genhd.c | 13 ++++++-------
- 1 file changed, 6 insertions(+), 7 deletions(-)
+ drivers/pci/pci-bridge-emul.c |    7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/block/genhd.c b/block/genhd.c
-index f091a60dcf1ea..22f899615801c 100644
---- a/block/genhd.c
-+++ b/block/genhd.c
-@@ -432,10 +432,6 @@ int device_add_disk(struct device *parent, struct gendisk *disk,
- 		disk->flags |= GENHD_FL_EXT_DEVT;
- 	}
+--- a/drivers/pci/pci-bridge-emul.c
++++ b/drivers/pci/pci-bridge-emul.c
+@@ -139,8 +139,13 @@ struct pci_bridge_reg_behavior pci_regs_
+ 		.ro = GENMASK(7, 0),
+ 	},
  
--	ret = disk_alloc_events(disk);
--	if (ret)
--		goto out_free_ext_minor;
--
- 	/* delay uevents, until we scanned partition table */
- 	dev_set_uevent_suppress(ddev, 1);
++	/*
++	 * If expansion ROM is unsupported then ROM Base Address register must
++	 * be implemented as read-only register that return 0 when read, same
++	 * as for unused Base Address registers.
++	 */
+ 	[PCI_ROM_ADDRESS1 / 4] = {
+-		.rw = GENMASK(31, 11) | BIT(0),
++		.ro = ~0,
+ 	},
  
-@@ -446,7 +442,12 @@ int device_add_disk(struct device *parent, struct gendisk *disk,
- 		ddev->devt = MKDEV(disk->major, disk->first_minor);
- 	ret = device_add(ddev);
- 	if (ret)
--		goto out_disk_release_events;
-+		goto out_free_ext_minor;
-+
-+	ret = disk_alloc_events(disk);
-+	if (ret)
-+		goto out_device_del;
-+
- 	if (!sysfs_deprecated) {
- 		ret = sysfs_create_link(block_depr, &ddev->kobj,
- 					kobject_name(&ddev->kobj));
-@@ -534,8 +535,6 @@ out_del_block_link:
- 		sysfs_remove_link(block_depr, dev_name(ddev));
- out_device_del:
- 	device_del(ddev);
--out_disk_release_events:
--	disk_release_events(disk);
- out_free_ext_minor:
- 	if (disk->major == BLOCK_EXT_MAJOR)
- 		blk_free_ext_minor(disk->first_minor);
--- 
-2.34.1
-
+ 	/*
 
 
