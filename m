@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52644C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:55:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BF50C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:55:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344396AbiAXSyi (ORCPT
-        <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:54:38 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:50600 "EHLO
+        id S245411AbiAXSzW (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:55:22 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52078 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343945AbiAXSws (ORCPT
+        with ESMTP id S1343982AbiAXSwy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:52:48 -0500
+        Mon, 24 Jan 2022 13:52:54 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 848826151A;
-        Mon, 24 Jan 2022 18:52:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5E6B1C340E5;
-        Mon, 24 Jan 2022 18:52:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id EB390614BE;
+        Mon, 24 Jan 2022 18:52:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2613C340E5;
+        Mon, 24 Jan 2022 18:52:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050366;
-        bh=tiEztUcTC2j5P794DPJgbNB59Cy+LICX+yJmsLn7KSc=;
+        s=korg; t=1643050373;
+        bh=W46B476feYqGoB0BzzWIPhXASw9qeqBJiY3JXo5Z8qE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UmNllmtrGRMIiydKpk4pDD0pFJL+VSlTygyOEFQbeffhRa69ouxt20M9c/CDCBVVr
-         OcyqV6qU+tnKlnu2dRTZEZ8PZK8EaOs9RrhsRZxr4yLVKl7rBVityjQ3RMuaoB7p4O
-         V/VABxsBO2gdz4iQXrJhgMneSbnlLypYDPXYM19k=
+        b=UUzn2C5cBpCuTGlw2zb2KlsqeQ/2uu2HPOaZzIbLKmmHdt1Oc15c7TVQGZo63n2n2
+         0vdfp4hth7/9f30os2CV6OgNuCjySd36hC2C/lqD0ERP1sAdQ6zziq+YCuMx+vSVTe
+         nWM6qo1hFPb7y/LobVPXuRTMrT0ulm3MRv2T4RGE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Yauhen Kharuzhy <jekhor@gmail.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 096/114] power: bq25890: Enable continuous conversion for ADC at charging
-Date:   Mon, 24 Jan 2022 19:43:11 +0100
-Message-Id: <20220124183930.077354285@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Jeroen van Wolffelaar <jeroen@wolffelaar.nl>,
+        =?UTF-8?q?Lu=C3=ADs=20Henriques?= <lhenriques@suse.de>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 4.4 098/114] ext4: set csum seed in tmp inode while migrating to extents
+Date:   Mon, 24 Jan 2022 19:43:13 +0100
+Message-Id: <20220124183930.140510144@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -48,43 +47,55 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yauhen Kharuzhy <jekhor@gmail.com>
+From: Luís Henriques <lhenriques@suse.de>
 
-[ Upstream commit 80211be1b9dec04cc2805d3d81e2091ecac289a1 ]
+commit e81c9302a6c3c008f5c30beb73b38adb0170ff2d upstream.
 
-Instead of one shot run of ADC at beginning of charging, run continuous
-conversion to ensure that all charging-related values are monitored
-properly (input voltage, input current, themperature etc.).
+When migrating to extents, the temporary inode will have it's own checksum
+seed.  This means that, when swapping the inodes data, the inode checksums
+will be incorrect.
 
-Signed-off-by: Yauhen Kharuzhy <jekhor@gmail.com>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+This can be fixed by recalculating the extents checksums again.  Or simply
+by copying the seed into the temporary inode.
+
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=213357
+Reported-by: Jeroen van Wolffelaar <jeroen@wolffelaar.nl>
+Signed-off-by: Luís Henriques <lhenriques@suse.de>
+Link: https://lore.kernel.org/r/20211214175058.19511-1-lhenriques@suse.de
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/power/bq25890_charger.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/ext4/migrate.c |   12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/power/bq25890_charger.c b/drivers/power/bq25890_charger.c
-index f993a55cde20f..faf2a62435674 100644
---- a/drivers/power/bq25890_charger.c
-+++ b/drivers/power/bq25890_charger.c
-@@ -521,12 +521,12 @@ static void bq25890_handle_state_change(struct bq25890_device *bq,
- 
- 	if (!new_state->online) {			     /* power removed */
- 		/* disable ADC */
--		ret = bq25890_field_write(bq, F_CONV_START, 0);
-+		ret = bq25890_field_write(bq, F_CONV_RATE, 0);
- 		if (ret < 0)
- 			goto error;
- 	} else if (!old_state.online) {			    /* power inserted */
- 		/* enable ADC, to have control of charge current/voltage */
--		ret = bq25890_field_write(bq, F_CONV_START, 1);
-+		ret = bq25890_field_write(bq, F_CONV_RATE, 1);
- 		if (ret < 0)
- 			goto error;
+--- a/fs/ext4/migrate.c
++++ b/fs/ext4/migrate.c
+@@ -481,6 +481,17 @@ int ext4_ext_migrate(struct inode *inode
+ 		ext4_journal_stop(handle);
+ 		return retval;
  	}
--- 
-2.34.1
-
++	/*
++	 * Use the correct seed for checksum (i.e. the seed from 'inode').  This
++	 * is so that the metadata blocks will have the correct checksum after
++	 * the migration.
++	 *
++	 * Note however that, if a crash occurs during the migration process,
++	 * the recovery process is broken because the tmp_inode checksums will
++	 * be wrong and the orphans cleanup will fail.
++	 */
++	ei = EXT4_I(inode);
++	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
+ 	i_size_write(tmp_inode, i_size_read(inode));
+ 	/*
+ 	 * Set the i_nlink to zero so it will be deleted later
+@@ -524,7 +535,6 @@ int ext4_ext_migrate(struct inode *inode
+ 		goto out;
+ 	}
+ 
+-	ei = EXT4_I(inode);
+ 	i_data = ei->i_data;
+ 	memset(&lb, 0, sizeof(lb));
+ 
 
 
