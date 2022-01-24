@@ -2,49 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3747EC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67EAEC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587414AbiAXW2Q (ORCPT
+        id S1587453AbiAXW2X (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:28:16 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53848 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455023AbiAXVei (ORCPT
+        Mon, 24 Jan 2022 17:28:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53848 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1454658AbiAXVdT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:34:38 -0500
+        Mon, 24 Jan 2022 16:33:19 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AADACC07597E;
+        Mon, 24 Jan 2022 12:21:31 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 76D396131F;
-        Mon, 24 Jan 2022 21:34:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56670C340E4;
-        Mon, 24 Jan 2022 21:34:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 28A15B810BD;
+        Mon, 24 Jan 2022 20:21:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E284C340E5;
+        Mon, 24 Jan 2022 20:21:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060076;
-        bh=SmVEn4GoyNBFLoGjar7lW6qHLF92Ww9k0BA4JayBMZ0=;
+        s=korg; t=1643055688;
+        bh=SW3LaOTkedTk7adcIdVcisEywFdafNAxlRBLboYCbE8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qkv81Vm24chKsgTqfEHX5mcodchLieY+C+w2iw/461Psz0bZsrlFbs4OQwwQikg2K
-         28Xbym+QZzdGwNd8QX3HpzYEG6bMFp4wmUyJg/ln3ZN4PkgeIqMWAKENktmm57sVTq
-         5FthXt6wO0AJMMRNEqMN9SloA6DcF1B6jsegkBYQ=
+        b=HXPpyzJ9mywxfMFGO6nV8jmT85jAL4BXrzpeokYkCW4EQxWo3iGB7b4E7e3U/E9pV
+         N6DwnoLAo1VJmnWXCeHKLWbSZT8+4DKtej6eFrKuz3vd00/mSMei2Ju3pB7NlH1lwp
+         2HOckG9r4oB2pbVd+aSoWRm0keRaWZefZc7i/hFQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrey Konovalov <andreyknvl@google.com>,
-        Marco Elver <elver@google.com>,
-        Alexander Potapenko <glider@google.com>,
-        Andrey Konovalov <andreyknvl@gmail.com>,
-        Dmitry Vyukov <dvyukov@google.com>,
-        Andrey Ryabinin <ryabinin.a.a@gmail.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
+        stable@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0830/1039] kasan: fix quarantine conflicting with init_on_free
-Date:   Mon, 24 Jan 2022 19:43:39 +0100
-Message-Id: <20220124184153.183232888@linuxfoundation.org>
+Subject: [PATCH 5.15 234/846] crypto: stm32/cryp - fix double pm exit
+Date:   Mon, 24 Jan 2022 19:35:51 +0100
+Message-Id: <20220124184109.003431232@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,61 +51,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrey Konovalov <andreyknvl@google.com>
+From: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
 
-[ Upstream commit 26dca996ea7b1ac7008b6b6063fc88b849e3ac3e ]
+[ Upstream commit 6c12e742785bf9333faf60bfb96575bdd763448e ]
 
-KASAN's quarantine might save its metadata inside freed objects.  As
-this happens after the memory is zeroed by the slab allocator when
-init_on_free is enabled, the memory coming out of quarantine is not
-properly zeroed.
+Delete extraneous lines in probe error handling code: pm was
+disabled twice.
 
-This causes lib/test_meminit.c tests to fail with Generic KASAN.
+Fixes: 65f9aa36ee47 ("crypto: stm32/cryp - Add power management support")
 
-Zero the metadata when the object is removed from quarantine.
-
-Link: https://lkml.kernel.org/r/2805da5df4b57138fdacd671f5d227d58950ba54.1640037083.git.andreyknvl@google.com
-Fixes: 6471384af2a6 ("mm: security: introduce init_on_alloc=1 and init_on_free=1 boot options")
-Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
-Reviewed-by: Marco Elver <elver@google.com>
-Cc: Alexander Potapenko <glider@google.com>
-Cc: Andrey Konovalov <andreyknvl@gmail.com>
-Cc: Dmitry Vyukov <dvyukov@google.com>
-Cc: Andrey Ryabinin <ryabinin.a.a@gmail.com>
-Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Reported-by: Marek Vasut <marex@denx.de>
+Signed-off-by: Nicolas Toromanoff <nicolas.toromanoff@foss.st.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/kasan/quarantine.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ drivers/crypto/stm32/stm32-cryp.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/mm/kasan/quarantine.c b/mm/kasan/quarantine.c
-index d8ccff4c1275e..47ed4fc33a29e 100644
---- a/mm/kasan/quarantine.c
-+++ b/mm/kasan/quarantine.c
-@@ -132,11 +132,22 @@ static void *qlink_to_object(struct qlist_node *qlink, struct kmem_cache *cache)
- static void qlink_free(struct qlist_node *qlink, struct kmem_cache *cache)
- {
- 	void *object = qlink_to_object(qlink, cache);
-+	struct kasan_free_meta *meta = kasan_get_free_meta(cache, object);
- 	unsigned long flags;
+diff --git a/drivers/crypto/stm32/stm32-cryp.c b/drivers/crypto/stm32/stm32-cryp.c
+index fd7fb73a4d450..061db567908ae 100644
+--- a/drivers/crypto/stm32/stm32-cryp.c
++++ b/drivers/crypto/stm32/stm32-cryp.c
+@@ -2134,8 +2134,6 @@ err_engine1:
+ 	list_del(&cryp->list);
+ 	spin_unlock(&cryp_list.lock);
  
- 	if (IS_ENABLED(CONFIG_SLAB))
- 		local_irq_save(flags);
+-	pm_runtime_disable(dev);
+-	pm_runtime_put_noidle(dev);
+ 	pm_runtime_disable(dev);
+ 	pm_runtime_put_noidle(dev);
  
-+	/*
-+	 * If init_on_free is enabled and KASAN's free metadata is stored in
-+	 * the object, zero the metadata. Otherwise, the object's memory will
-+	 * not be properly zeroed, as KASAN saves the metadata after the slab
-+	 * allocator zeroes the object.
-+	 */
-+	if (slab_want_init_on_free(cache) &&
-+	    cache->kasan_info.free_meta_offset == 0)
-+		memzero_explicit(meta, sizeof(*meta));
-+
- 	/*
- 	 * As the object now gets freed from the quarantine, assume that its
- 	 * free track is no longer valid.
 -- 
 2.34.1
 
