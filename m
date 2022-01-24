@@ -2,42 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C11C35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59D95C47080
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3409448AbiAYA0O (ORCPT
+        id S3409584AbiAYA1C (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:26:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:53938 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1573435AbiAXVo5 (ORCPT
+        Mon, 24 Jan 2022 19:27:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57078 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1573401AbiAXVoz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:44:57 -0500
+        Mon, 24 Jan 2022 16:44:55 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 880B2C034036;
+        Mon, 24 Jan 2022 12:32:11 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 59005B81233;
-        Mon, 24 Jan 2022 21:44:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AABFC340E4;
-        Mon, 24 Jan 2022 21:44:52 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 69F0D61505;
+        Mon, 24 Jan 2022 20:32:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A9D3C340E5;
+        Mon, 24 Jan 2022 20:32:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060693;
-        bh=0m840cvT6xgkDwj13KN7JfbNhkL66SG8ih2oD6QU2Js=;
+        s=korg; t=1643056330;
+        bh=77zrGaV5IqpQkO6T/hLSsP09WV79+S1+/eQmIp2qcPk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OkK4MrL60YvQ/ebZz/jNMVsSg+e2lD3cX76tNJtv6Hfhs4+8C78sF1ISGury/i4pm
-         zoBmG1sky5sUULgcB2jc9YE0l6oLrfo5N+Mo+6hbb9RsWqnwGyQhnSYUMqYWWdFFaF
-         mmngd6Cs8qoGllv4m5zJJg/GBxejvGQ6tzqMGVvs=
+        b=c7mULvmU9Uivd4mF2SVkJHyWE4MSZeARYBKjwuBKy30csi3nFXRKWFJpg4UJzdnPz
+         KGnpUVBQ9OJT86vVmj1Cpyae1ucS8k96mwBiD7NF3CElAtmx42/6FPtoH6FotWj01N
+         EcaYcvqIZsz02LgWbaS6zXaQNYc41DZ9Bj3yyCq8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Vitaly Kuznetsov <vkuznets@redhat.com>,
-        Paolo Bonzini <pbonzini@redhat.com>
-Subject: [PATCH 5.16 1032/1039] KVM: x86: Do runtime CPUID update before updating vcpu->arch.cpuid_entries
-Date:   Mon, 24 Jan 2022 19:47:01 +0100
-Message-Id: <20220124184159.980048786@linuxfoundation.org>
+        stable@vger.kernel.org, Shengjiu Wang <shengjiu.wang@nxp.com>,
+        Mark Brown <broonie@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 449/846] ASoC: imx-card: improve the sound quality for low rate
+Date:   Mon, 24 Jan 2022 19:39:26 +0100
+Message-Id: <20220124184116.482259576@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,146 +50,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vitaly Kuznetsov <vkuznets@redhat.com>
+From: Shengjiu Wang <shengjiu.wang@nxp.com>
 
-commit ee3a5f9e3d9bf94159f3cc80da542fbe83502dd8 upstream.
+[ Upstream commit 3969341813eb56d2dfc39bb64229359a6ae3c195 ]
 
-kvm_update_cpuid_runtime() mangles CPUID data coming from userspace
-VMM after updating 'vcpu->arch.cpuid_entries', this makes it
-impossible to compare an update with what was previously
-supplied. Introduce __kvm_update_cpuid_runtime() version which can be
-used to tweak the input before it goes to 'vcpu->arch.cpuid_entries'
-so the upcoming update check can compare tweaked data.
+According to RM, on auto mode:
+For codec AK4458 and AK4497, the lowest ratio of MLCK/FS is 256
+if sample rate is 8kHz-48kHz,
+For codec AK5558, the lowest ratio of MLCK/FS is 512 if sample
+rate is 8kHz-48kHz.
 
-No functional change intended.
+With these setting the sound quality for 8kHz-48kHz can be improved.
 
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Message-Id: <20220117150542.2176196-2-vkuznets@redhat.com>
-Signed-off-by: Paolo Bonzini <pbonzini@redhat.com>
-Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: aa736700f42f ("ASoC: imx-card: Add imx-card machine driver")
+Signed-off-by: Shengjiu Wang <shengjiu.wang@nxp.com>
+Link: https://lore.kernel.org/r/1641292835-19085-4-git-send-email-shengjiu.wang@nxp.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kvm/cpuid.c |   54 ++++++++++++++++++++++++++++++++-------------------
- 1 file changed, 34 insertions(+), 20 deletions(-)
+ sound/soc/fsl/imx-card.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
---- a/arch/x86/kvm/cpuid.c
-+++ b/arch/x86/kvm/cpuid.c
-@@ -125,14 +125,21 @@ static void kvm_update_kvm_cpuid_base(st
- 	}
- }
+diff --git a/sound/soc/fsl/imx-card.c b/sound/soc/fsl/imx-card.c
+index ad15974a22c3f..db947180617a6 100644
+--- a/sound/soc/fsl/imx-card.c
++++ b/sound/soc/fsl/imx-card.c
+@@ -120,7 +120,7 @@ struct imx_card_data {
  
--static struct kvm_cpuid_entry2 *kvm_find_kvm_cpuid_features(struct kvm_vcpu *vcpu)
-+static struct kvm_cpuid_entry2 *__kvm_find_kvm_cpuid_features(struct kvm_vcpu *vcpu,
-+					      struct kvm_cpuid_entry2 *entries, int nent)
- {
- 	u32 base = vcpu->arch.kvm_cpuid_base;
- 
- 	if (!base)
- 		return NULL;
- 
--	return kvm_find_cpuid_entry(vcpu, base | KVM_CPUID_FEATURES, 0);
-+	return cpuid_entry2_find(entries, nent, base | KVM_CPUID_FEATURES, 0);
-+}
-+
-+static struct kvm_cpuid_entry2 *kvm_find_kvm_cpuid_features(struct kvm_vcpu *vcpu)
-+{
-+	return __kvm_find_kvm_cpuid_features(vcpu, vcpu->arch.cpuid_entries,
-+					     vcpu->arch.cpuid_nent);
- }
- 
- void kvm_update_pv_runtime(struct kvm_vcpu *vcpu)
-@@ -147,11 +154,12 @@ void kvm_update_pv_runtime(struct kvm_vc
- 		vcpu->arch.pv_cpuid.features = best->eax;
- }
- 
--void kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu)
-+static void __kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *entries,
-+				       int nent)
- {
- 	struct kvm_cpuid_entry2 *best;
- 
--	best = kvm_find_cpuid_entry(vcpu, 1, 0);
-+	best = cpuid_entry2_find(entries, nent, 1, 0);
- 	if (best) {
- 		/* Update OSXSAVE bit */
- 		if (boot_cpu_has(X86_FEATURE_XSAVE))
-@@ -162,33 +170,38 @@ void kvm_update_cpuid_runtime(struct kvm
- 			   vcpu->arch.apic_base & MSR_IA32_APICBASE_ENABLE);
- 	}
- 
--	best = kvm_find_cpuid_entry(vcpu, 7, 0);
-+	best = cpuid_entry2_find(entries, nent, 7, 0);
- 	if (best && boot_cpu_has(X86_FEATURE_PKU) && best->function == 0x7)
- 		cpuid_entry_change(best, X86_FEATURE_OSPKE,
- 				   kvm_read_cr4_bits(vcpu, X86_CR4_PKE));
- 
--	best = kvm_find_cpuid_entry(vcpu, 0xD, 0);
-+	best = cpuid_entry2_find(entries, nent, 0xD, 0);
- 	if (best)
- 		best->ebx = xstate_required_size(vcpu->arch.xcr0, false);
- 
--	best = kvm_find_cpuid_entry(vcpu, 0xD, 1);
-+	best = cpuid_entry2_find(entries, nent, 0xD, 1);
- 	if (best && (cpuid_entry_has(best, X86_FEATURE_XSAVES) ||
- 		     cpuid_entry_has(best, X86_FEATURE_XSAVEC)))
- 		best->ebx = xstate_required_size(vcpu->arch.xcr0, true);
- 
--	best = kvm_find_kvm_cpuid_features(vcpu);
-+	best = __kvm_find_kvm_cpuid_features(vcpu, entries, nent);
- 	if (kvm_hlt_in_guest(vcpu->kvm) && best &&
- 		(best->eax & (1 << KVM_FEATURE_PV_UNHALT)))
- 		best->eax &= ~(1 << KVM_FEATURE_PV_UNHALT);
- 
- 	if (!kvm_check_has_quirk(vcpu->kvm, KVM_X86_QUIRK_MISC_ENABLE_NO_MWAIT)) {
--		best = kvm_find_cpuid_entry(vcpu, 0x1, 0);
-+		best = cpuid_entry2_find(entries, nent, 0x1, 0);
- 		if (best)
- 			cpuid_entry_change(best, X86_FEATURE_MWAIT,
- 					   vcpu->arch.ia32_misc_enable_msr &
- 					   MSR_IA32_MISC_ENABLE_MWAIT);
- 	}
- }
-+
-+void kvm_update_cpuid_runtime(struct kvm_vcpu *vcpu)
-+{
-+	__kvm_update_cpuid_runtime(vcpu, vcpu->arch.cpuid_entries, vcpu->arch.cpuid_nent);
-+}
- EXPORT_SYMBOL_GPL(kvm_update_cpuid_runtime);
- 
- static void kvm_vcpu_after_set_cpuid(struct kvm_vcpu *vcpu)
-@@ -276,21 +289,22 @@ u64 kvm_vcpu_reserved_gpa_bits_raw(struc
- static int kvm_set_cpuid(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
-                         int nent)
- {
--    int r;
-+	int r;
-+
-+	__kvm_update_cpuid_runtime(vcpu, e2, nent);
- 
--    r = kvm_check_cpuid(e2, nent);
--    if (r)
--        return r;
-+	r = kvm_check_cpuid(e2, nent);
-+	if (r)
-+		return r;
- 
--    kvfree(vcpu->arch.cpuid_entries);
--    vcpu->arch.cpuid_entries = e2;
--    vcpu->arch.cpuid_nent = nent;
-+	kvfree(vcpu->arch.cpuid_entries);
-+	vcpu->arch.cpuid_entries = e2;
-+	vcpu->arch.cpuid_nent = nent;
- 
--    kvm_update_kvm_cpuid_base(vcpu);
--    kvm_update_cpuid_runtime(vcpu);
--    kvm_vcpu_after_set_cpuid(vcpu);
-+	kvm_update_kvm_cpuid_base(vcpu);
-+	kvm_vcpu_after_set_cpuid(vcpu);
- 
--    return 0;
-+	return 0;
- }
- 
- /* when an old userspace process fills a new kernel module */
+ static struct imx_akcodec_fs_mul ak4458_fs_mul[] = {
+ 	/* Normal, < 32kHz */
+-	{ .rmin = 8000,   .rmax = 24000,  .wmin = 1024, .wmax = 1024, },
++	{ .rmin = 8000,   .rmax = 24000,  .wmin = 256,  .wmax = 1024, },
+ 	/* Normal, 32kHz */
+ 	{ .rmin = 32000,  .rmax = 32000,  .wmin = 256,  .wmax = 1024, },
+ 	/* Normal */
+@@ -151,8 +151,8 @@ static struct imx_akcodec_fs_mul ak4497_fs_mul[] = {
+ 	 * Table 7      - mapping multiplier and speed mode
+ 	 * Tables 8 & 9 - mapping speed mode and LRCK fs
+ 	 */
+-	{ .rmin = 8000,   .rmax = 32000,  .wmin = 1024, .wmax = 1024, }, /* Normal, <= 32kHz */
+-	{ .rmin = 44100,  .rmax = 48000,  .wmin = 512,  .wmax = 512, }, /* Normal */
++	{ .rmin = 8000,   .rmax = 32000,  .wmin = 256,  .wmax = 1024, }, /* Normal, <= 32kHz */
++	{ .rmin = 44100,  .rmax = 48000,  .wmin = 256,  .wmax = 512, }, /* Normal */
+ 	{ .rmin = 88200,  .rmax = 96000,  .wmin = 256,  .wmax = 256, }, /* Double */
+ 	{ .rmin = 176400, .rmax = 192000, .wmin = 128,  .wmax = 128, }, /* Quad */
+ 	{ .rmin = 352800, .rmax = 384000, .wmin = 128,  .wmax = 128, }, /* Oct */
+@@ -164,7 +164,7 @@ static struct imx_akcodec_fs_mul ak4497_fs_mul[] = {
+  * (Table 4 from datasheet)
+  */
+ static struct imx_akcodec_fs_mul ak5558_fs_mul[] = {
+-	{ .rmin = 8000,   .rmax = 32000,  .wmin = 1024, .wmax = 1024, },
++	{ .rmin = 8000,   .rmax = 32000,  .wmin = 512,  .wmax = 1024, },
+ 	{ .rmin = 44100,  .rmax = 48000,  .wmin = 512,  .wmax = 512, },
+ 	{ .rmin = 88200,  .rmax = 96000,  .wmin = 256,  .wmax = 256, },
+ 	{ .rmin = 176400, .rmax = 192000, .wmin = 128,  .wmax = 128, },
+-- 
+2.34.1
+
 
 
