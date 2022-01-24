@@ -2,45 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DB02C35273
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD5BC35270
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838719AbiAXWr5 (ORCPT
+        id S1838589AbiAXWqx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:47:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56580 "EHLO
+        Mon, 24 Jan 2022 17:46:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54264 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458144AbiAXVmr (ORCPT
+        with ESMTP id S1357688AbiAXVhM (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:42:47 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A8B8C07A955;
-        Mon, 24 Jan 2022 12:31:00 -0800 (PST)
+        Mon, 24 Jan 2022 16:37:12 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45CEAC0BD118;
+        Mon, 24 Jan 2022 12:23:12 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 29FB661383;
-        Mon, 24 Jan 2022 20:31:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0839AC340E7;
-        Mon, 24 Jan 2022 20:30:58 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0E354B81239;
+        Mon, 24 Jan 2022 20:23:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 33AA5C340E5;
+        Mon, 24 Jan 2022 20:23:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056259;
-        bh=e9ukgO2HtZrPpeNCuBBCRIWPjwNXuYeZrknKf0Rh6RA=;
+        s=korg; t=1643055789;
+        bh=I83jkJq/WrYb2koe1pfNdBN/QukfSOV9ISZf16cQILE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FgRrmsTKzTTTv/EGe2/6mLZcTDNyzgT2ZkUe4NjXOrhz68EM2VKuJ2JR42Mrod+KR
-         IjJJbCrVTEgw0RFCoJhjmB4aFEGucRNLDWdwZZYaxEHszfWLleRXbwg9HAIvwNLXqj
-         hZfOj8Unhwkj4ZPUDAe3oP5m99tPICIj2FK4Izu8=
+        b=qldjHC7H8e3Y/CwUgeMJwRtScg3ZB4NPwfNx9da/Xm4abCLnQF5PAshqfJ/c1LxhS
+         pPekF8YLqWxgbcOG8yu7bbLzGOgNsjx7hssic1tqEhLyEeEhpp26KRe+fDBrK08FTQ
+         9fWZ/UoDRYLJmeZkXFcoBmPUbcNLk+He/b83yW5M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kevin Tian <kevin.tian@intel.com>,
-        Dave Jiang <dave.jiang@intel.com>,
-        Cezary Rojewski <cezary.rojewski@intel.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 424/846] ASoC: Intel: catpt: Test dmaengine_submit() result before moving on
-Date:   Mon, 24 Jan 2022 19:39:01 +0100
-Message-Id: <20220124184115.607866287@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 267/846] wilc1000: fix double free error in probe()
+Date:   Mon, 24 Jan 2022 19:36:24 +0100
+Message-Id: <20220124184110.139459629@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -52,63 +50,76 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Cezary Rojewski <cezary.rojewski@intel.com>
+From: Dan Carpenter <dan.carpenter@oracle.com>
 
-[ Upstream commit 2a9a72e290d4a4741e673f86b9fba9bfb319786d ]
+[ Upstream commit 4894edacfa93d7046bec4fc61fc402ac6a2ac9e8 ]
 
-After calling dmaengine_submit(), the submitted transfer descriptor
-belongs to the DMA engine. Pointer to that descriptor may no longer be
-valid after the call and should be tested before awaiting transfer
-completion.
+Smatch complains that there is a double free in probe:
 
-Reported-by: Kevin Tian <kevin.tian@intel.com>
-Suggested-by: Dave Jiang <dave.jiang@intel.com>
-Fixes: 4fac9b31d0b9 ("ASoC: Intel: Add catpt base members")
-Signed-off-by: Cezary Rojewski <cezary.rojewski@intel.com>
-Link: https://lore.kernel.org/r/20211216115743.2130622-2-cezary.rojewski@intel.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
+drivers/net/wireless/microchip/wilc1000/spi.c:186 wilc_bus_probe() error: double free of 'spi_priv'
+drivers/net/wireless/microchip/wilc1000/sdio.c:163 wilc_sdio_probe() error: double free of 'sdio_priv'
+
+The problem is that wilc_netdev_cleanup() function frees "wilc->bus_data".
+That's confusing and a layering violation.  Leave the frees in probe(),
+delete the free in wilc_netdev_cleanup(), and add some new frees to the
+remove() functions.
+
+Fixes: dc8b338f3bcd ("wilc1000: use goto labels on error path")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+Signed-off-by: Kalle Valo <kvalo@kernel.org>
+Link: https://lore.kernel.org/r/20211217150311.GC16611@kili
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- sound/soc/intel/catpt/dsp.c | 14 ++++++++++++--
- 1 file changed, 12 insertions(+), 2 deletions(-)
+ drivers/net/wireless/microchip/wilc1000/netdev.c | 1 -
+ drivers/net/wireless/microchip/wilc1000/sdio.c   | 2 ++
+ drivers/net/wireless/microchip/wilc1000/spi.c    | 2 ++
+ 3 files changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/sound/soc/intel/catpt/dsp.c b/sound/soc/intel/catpt/dsp.c
-index 9c5fd18f2600f..346bec0003066 100644
---- a/sound/soc/intel/catpt/dsp.c
-+++ b/sound/soc/intel/catpt/dsp.c
-@@ -65,6 +65,7 @@ static int catpt_dma_memcpy(struct catpt_dev *cdev, struct dma_chan *chan,
+diff --git a/drivers/net/wireless/microchip/wilc1000/netdev.c b/drivers/net/wireless/microchip/wilc1000/netdev.c
+index 7e4d9235251cb..9dfb1a285e6a4 100644
+--- a/drivers/net/wireless/microchip/wilc1000/netdev.c
++++ b/drivers/net/wireless/microchip/wilc1000/netdev.c
+@@ -901,7 +901,6 @@ void wilc_netdev_cleanup(struct wilc *wilc)
+ 
+ 	wilc_wlan_cfg_deinit(wilc);
+ 	wlan_deinit_locks(wilc);
+-	kfree(wilc->bus_data);
+ 	wiphy_unregister(wilc->wiphy);
+ 	wiphy_free(wilc->wiphy);
+ }
+diff --git a/drivers/net/wireless/microchip/wilc1000/sdio.c b/drivers/net/wireless/microchip/wilc1000/sdio.c
+index 42e03a701ae16..8b3b735231085 100644
+--- a/drivers/net/wireless/microchip/wilc1000/sdio.c
++++ b/drivers/net/wireless/microchip/wilc1000/sdio.c
+@@ -167,9 +167,11 @@ free:
+ static void wilc_sdio_remove(struct sdio_func *func)
  {
- 	struct dma_async_tx_descriptor *desc;
- 	enum dma_status status;
-+	int ret;
+ 	struct wilc *wilc = sdio_get_drvdata(func);
++	struct wilc_sdio *sdio_priv = wilc->bus_data;
  
- 	desc = dmaengine_prep_dma_memcpy(chan, dst_addr, src_addr, size,
- 					 DMA_CTRL_ACK);
-@@ -77,13 +78,22 @@ static int catpt_dma_memcpy(struct catpt_dev *cdev, struct dma_chan *chan,
- 	catpt_updatel_shim(cdev, HMDC,
- 			   CATPT_HMDC_HDDA(CATPT_DMA_DEVID, chan->chan_id),
- 			   CATPT_HMDC_HDDA(CATPT_DMA_DEVID, chan->chan_id));
--	dmaengine_submit(desc);
-+
-+	ret = dma_submit_error(dmaengine_submit(desc));
-+	if (ret) {
-+		dev_err(cdev->dev, "submit tx failed: %d\n", ret);
-+		goto clear_hdda;
-+	}
-+
- 	status = dma_wait_for_async_tx(desc);
-+	ret = (status == DMA_COMPLETE) ? 0 : -EPROTO;
-+
-+clear_hdda:
- 	/* regardless of status, disable access to HOST memory in demand mode */
- 	catpt_updatel_shim(cdev, HMDC,
- 			   CATPT_HMDC_HDDA(CATPT_DMA_DEVID, chan->chan_id), 0);
- 
--	return (status == DMA_COMPLETE) ? 0 : -EPROTO;
-+	return ret;
+ 	clk_disable_unprepare(wilc->rtc_clk);
+ 	wilc_netdev_cleanup(wilc);
++	kfree(sdio_priv);
  }
  
- int catpt_dma_memcpy_todsp(struct catpt_dev *cdev, struct dma_chan *chan,
+ static int wilc_sdio_reset(struct wilc *wilc)
+diff --git a/drivers/net/wireless/microchip/wilc1000/spi.c b/drivers/net/wireless/microchip/wilc1000/spi.c
+index dd481dc0b5ce0..c98c0999a6b67 100644
+--- a/drivers/net/wireless/microchip/wilc1000/spi.c
++++ b/drivers/net/wireless/microchip/wilc1000/spi.c
+@@ -182,9 +182,11 @@ free:
+ static int wilc_bus_remove(struct spi_device *spi)
+ {
+ 	struct wilc *wilc = spi_get_drvdata(spi);
++	struct wilc_spi *spi_priv = wilc->bus_data;
+ 
+ 	clk_disable_unprepare(wilc->rtc_clk);
+ 	wilc_netdev_cleanup(wilc);
++	kfree(spi_priv);
+ 
+ 	return 0;
+ }
 -- 
 2.34.1
 
