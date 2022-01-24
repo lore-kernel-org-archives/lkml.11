@@ -2,44 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0124C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:01:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C5DC43217
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:01:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345147AbiAXS7w (ORCPT
+        id S1344085AbiAXTBR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:59:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44704 "EHLO
+        Mon, 24 Jan 2022 14:01:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343508AbiAXS5J (ORCPT
+        with ESMTP id S1344516AbiAXS4z (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:57:09 -0500
+        Mon, 24 Jan 2022 13:56:55 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93977C06175B;
-        Mon, 24 Jan 2022 10:55:26 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3011C061748;
+        Mon, 24 Jan 2022 10:54:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5D71CB8121F;
-        Mon, 24 Jan 2022 18:55:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8AE7DC340E5;
-        Mon, 24 Jan 2022 18:55:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ADED3B810BD;
+        Mon, 24 Jan 2022 18:54:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C1356C340E5;
+        Mon, 24 Jan 2022 18:54:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050524;
-        bh=Us75XI7l1VTBnBYvjSJriVtvVpSWcfd0l6dAH8GK9QU=;
+        s=korg; t=1643050482;
+        bh=F65ag6AKE7JrZXlzplJis1GPW0kUgcO2P1TwKqs3nPQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XHKfwLkiCxp6SGf5nQ0g7P41bCeFs3YnQcgcBvmKhsyY3YXayuJ1n6Z7fXMUDqTIS
-         GtL6li6vbN0HnfGMdnYMIS/NpckCaCkUN6AgZhsG93NhRbhaMHHgkN2rmWYqITjE7H
-         hq/URxFKg2O52ZI22HpUhcC/bWRGdcaxlAj2ZWoE=
+        b=G1dnkgcrbSZ4DHysvLDOPvyZbbpoPCaX3/w8MINIK1LvCF4qdU1cPjW+BZkzPXKkN
+         AKzbpZeMePmNbqEAigYPi2Tdv85UjZ9FHopGiXnIH5+G1TuEaEUPovGtcOSS/VIIq2
+         d3vllNCX9IGeGk/49RSWU6piEYHJN0bB1v+PFL6w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
-        Wang Hai <wanghai38@huawei.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 029/157] Bluetooth: cmtp: fix possible panic when cmtp_init_sockets() fails
-Date:   Mon, 24 Jan 2022 19:41:59 +0100
-Message-Id: <20220124183933.720677033@linuxfoundation.org>
+        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 4.9 017/157] media: flexcop-usb: fix control-message timeouts
+Date:   Mon, 24 Jan 2022 19:41:47 +0100
+Message-Id: <20220124183933.341999304@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -51,54 +50,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Wang Hai <wanghai38@huawei.com>
+From: Johan Hovold <johan@kernel.org>
 
-[ Upstream commit 2a7ca7459d905febf519163bd9e3eed894de6bb7 ]
+commit cd1798a387825cc4a51282f5a611ad05bb1ad75f upstream.
 
-I got a kernel BUG report when doing fault injection test:
+USB control-message timeouts are specified in milliseconds and should
+specifically not vary with CONFIG_HZ.
 
-------------[ cut here ]------------
-kernel BUG at lib/list_debug.c:45!
-...
-RIP: 0010:__list_del_entry_valid.cold+0x12/0x4d
-...
-Call Trace:
- proto_unregister+0x83/0x220
- cmtp_cleanup_sockets+0x37/0x40 [cmtp]
- cmtp_exit+0xe/0x1f [cmtp]
- do_syscall_64+0x35/0xb0
- entry_SYSCALL_64_after_hwframe+0x44/0xae
+Note that the driver was multiplying some of the timeout values with HZ
+twice resulting in 3000-second timeouts with HZ=1000.
 
-If cmtp_init_sockets() in cmtp_init() fails, cmtp_init() still returns
-success. This will cause a kernel bug when accessing uncreated ctmp
-related data when the module exits.
+Also note that two of the timeout defines are currently unused.
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Wang Hai <wanghai38@huawei.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 2154be651b90 ("[media] redrat3: new rc-core IR transceiver device driver")
+Cc: stable@vger.kernel.org      # 3.0
+Signed-off-by: Johan Hovold <johan@kernel.org>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- net/bluetooth/cmtp/core.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/media/usb/b2c2/flexcop-usb.c |   10 +++++-----
+ drivers/media/usb/b2c2/flexcop-usb.h |   12 ++++++------
+ 2 files changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/net/bluetooth/cmtp/core.c b/net/bluetooth/cmtp/core.c
-index 0bb150e68c53f..e2e580c747f4b 100644
---- a/net/bluetooth/cmtp/core.c
-+++ b/net/bluetooth/cmtp/core.c
-@@ -499,9 +499,7 @@ static int __init cmtp_init(void)
- {
- 	BT_INFO("CMTP (CAPI Emulation) ver %s", VERSION);
+--- a/drivers/media/usb/b2c2/flexcop-usb.c
++++ b/drivers/media/usb/b2c2/flexcop-usb.c
+@@ -87,7 +87,7 @@ static int flexcop_usb_readwrite_dw(stru
+ 			0,
+ 			fc_usb->data,
+ 			sizeof(u32),
+-			B2C2_WAIT_FOR_OPERATION_RDW * HZ);
++			B2C2_WAIT_FOR_OPERATION_RDW);
  
--	cmtp_init_sockets();
--
--	return 0;
-+	return cmtp_init_sockets();
- }
+ 	if (ret != sizeof(u32)) {
+ 		err("error while %s dword from %d (%d).", read ? "reading" :
+@@ -155,7 +155,7 @@ static int flexcop_usb_v8_memory_req(str
+ 			wIndex,
+ 			fc_usb->data,
+ 			buflen,
+-			nWaitTime * HZ);
++			nWaitTime);
+ 	if (ret != buflen)
+ 		ret = -EIO;
  
- static void __exit cmtp_exit(void)
--- 
-2.34.1
-
+@@ -249,13 +249,13 @@ static int flexcop_usb_i2c_req(struct fl
+ 		/* DKT 020208 - add this to support special case of DiSEqC */
+ 	case USB_FUNC_I2C_CHECKWRITE:
+ 		pipe = B2C2_USB_CTRL_PIPE_OUT;
+-		nWaitTime = 2;
++		nWaitTime = 2000;
+ 		request_type |= USB_DIR_OUT;
+ 		break;
+ 	case USB_FUNC_I2C_READ:
+ 	case USB_FUNC_I2C_REPEATREAD:
+ 		pipe = B2C2_USB_CTRL_PIPE_IN;
+-		nWaitTime = 2;
++		nWaitTime = 2000;
+ 		request_type |= USB_DIR_IN;
+ 		break;
+ 	default:
+@@ -282,7 +282,7 @@ static int flexcop_usb_i2c_req(struct fl
+ 			wIndex,
+ 			fc_usb->data,
+ 			buflen,
+-			nWaitTime * HZ);
++			nWaitTime);
+ 
+ 	if (ret != buflen)
+ 		ret = -EIO;
+--- a/drivers/media/usb/b2c2/flexcop-usb.h
++++ b/drivers/media/usb/b2c2/flexcop-usb.h
+@@ -90,13 +90,13 @@ typedef enum {
+ 	UTILITY_SRAM_TESTVERIFY     = 0x16,
+ } flexcop_usb_utility_function_t;
+ 
+-#define B2C2_WAIT_FOR_OPERATION_RW (1*HZ)
+-#define B2C2_WAIT_FOR_OPERATION_RDW (3*HZ)
+-#define B2C2_WAIT_FOR_OPERATION_WDW (1*HZ)
++#define B2C2_WAIT_FOR_OPERATION_RW 1000
++#define B2C2_WAIT_FOR_OPERATION_RDW 3000
++#define B2C2_WAIT_FOR_OPERATION_WDW 1000
+ 
+-#define B2C2_WAIT_FOR_OPERATION_V8READ (3*HZ)
+-#define B2C2_WAIT_FOR_OPERATION_V8WRITE (3*HZ)
+-#define B2C2_WAIT_FOR_OPERATION_V8FLASH (3*HZ)
++#define B2C2_WAIT_FOR_OPERATION_V8READ 3000
++#define B2C2_WAIT_FOR_OPERATION_V8WRITE 3000
++#define B2C2_WAIT_FOR_OPERATION_V8FLASH 3000
+ 
+ typedef enum {
+ 	V8_MEMORY_PAGE_DVB_CI = 0x20,
 
 
