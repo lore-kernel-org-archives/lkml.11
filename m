@@ -2,78 +2,56 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D204AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:12:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9883EC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 15:14:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240605AbiAXPMr (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 10:12:47 -0500
-Received: from mga12.intel.com ([192.55.52.136]:6733 "EHLO mga12.intel.com"
+        id S240663AbiAXPOO (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 10:14:14 -0500
+Received: from foss.arm.com ([217.140.110.172]:37426 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235253AbiAXPMn (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 10:12:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643037163; x=1674573163;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=WCTc9IlDADP2jY46oae/kFECkfhZYD5oZQG3OOtRZo8=;
-  b=AHtn7gFGb5gzTz3UOS4pZgthUcBcPJYFvrnhTFdUQ62SARbEFkvNGyhk
-   8SP28YpC6wPUQ1uP0Hk2TzBWeecRQ//Tx5tMuWJ0rWhszZ27EBdip36e5
-   P/qruDvHV4YSptrGbsSoBARuQkvtbQhOvgOX4x4k6TiMtqYb8f5H7HyO0
-   HyKhTprrSXZr0z3WclY6Grn70P0uXR2PhMCvBLP4nfh3Dp+RbzwckV1YH
-   gtPn234V0meYT+jrNNQH4qPCMW72TN1WrSjXB9IvVmw7r9YUl40zthjWl
-   7xfe0kGlhSZ/tZ6z2VjDuYvEGyDkwWejwZTry78+/gtYVLkMcw+xys7bw
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="226046688"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="226046688"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:12:43 -0800
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="562684284"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 07:12:41 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nC10I-00DvvF-IT;
-        Mon, 24 Jan 2022 17:11:34 +0200
-Date:   Mon, 24 Jan 2022 17:11:34 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Alexandru Ardelean <aardelean@deviqon.com>,
-        linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Thor Thayer <thor.thayer@linux.intel.com>,
-        Bartosz Golaszewski <brgl@bgdev.pl>
-Subject: Re: [PATCH v1 1/1] gpio: altera-a10sr: Switch to use fwnode instead
- of of_node
-Message-ID: <Ye7BpogQzgKZtqse@smile.fi.intel.com>
-References: <20211223122733.86981-1-andriy.shevchenko@linux.intel.com>
- <CACRpkdYRLDqgKjuW8W6NobaTP4dTjnkmepu=T-GhO7fMNcMEzA@mail.gmail.com>
+        id S240654AbiAXPOL (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 10:14:11 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 26E436D;
+        Mon, 24 Jan 2022 07:14:11 -0800 (PST)
+Received: from e126387.arm.com (unknown [10.57.5.45])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1270D3F793;
+        Mon, 24 Jan 2022 07:14:09 -0800 (PST)
+From:   carsten.haitzler@foss.arm.com
+To:     dri-devel@lists.freedesktop.org
+Cc:     liviu.dudau@arm.com, brian.starkey@arm.com, airlied@linux.ie,
+        daniel@ffwll.ch, steven.price@arm.com, linux-kernel@vger.kernel.org
+Subject: [PATCH] drm/arm: arm hdlcd select DRM_GEM_CMA_HELPER
+Date:   Mon, 24 Jan 2022 15:13:57 +0000
+Message-Id: <20220124151357.2467149-1-carsten.haitzler@foss.arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACRpkdYRLDqgKjuW8W6NobaTP4dTjnkmepu=T-GhO7fMNcMEzA@mail.gmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On Sun, Jan 16, 2022 at 01:24:02AM +0100, Linus Walleij wrote:
-> On Thu, Dec 23, 2021 at 1:27 PM Andy Shevchenko
-> <andriy.shevchenko@linux.intel.com> wrote:
-> 
-> > GPIO library now accepts fwnode as a firmware node, so
-> > switch the driver to use it.
-> >
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> 
-> LGTM!
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+From: Carsten Haitzler <carsten.haitzler@arm.com>
 
-Pushed to my review and testing queue, thanks!
+Without DRM_GEM_CMA_HELPER HDLCD won't build. This needs to be there too.
 
+Signed-off-by: Carsten Haitzler <carsten.haitzler@arm.com>
+---
+ drivers/gpu/drm/arm/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/gpu/drm/arm/Kconfig b/drivers/gpu/drm/arm/Kconfig
+index 58a242871b28..6e3f1d600541 100644
+--- a/drivers/gpu/drm/arm/Kconfig
++++ b/drivers/gpu/drm/arm/Kconfig
+@@ -6,6 +6,7 @@ config DRM_HDLCD
+ 	depends on DRM && OF && (ARM || ARM64 || COMPILE_TEST)
+ 	depends on COMMON_CLK
+ 	select DRM_KMS_HELPER
++	select DRM_GEM_CMA_HELPER
+ 	help
+ 	  Choose this option if you have an ARM High Definition Colour LCD
+ 	  controller.
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.30.1
 
