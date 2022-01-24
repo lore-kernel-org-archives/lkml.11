@@ -2,45 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A939C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFD47C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352242AbiAXT34 (ORCPT
+        id S1352398AbiAXTaS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:29:56 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:44700 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349302AbiAXTUe (ORCPT
+        Mon, 24 Jan 2022 14:30:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50388 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349671AbiAXTVI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:20:34 -0500
+        Mon, 24 Jan 2022 14:21:08 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D111C02B847;
+        Mon, 24 Jan 2022 11:08:10 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4405BB8119D;
-        Mon, 24 Jan 2022 19:20:33 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A82CC340E5;
-        Mon, 24 Jan 2022 19:20:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B259060EC4;
+        Mon, 24 Jan 2022 19:08:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 92DC7C340E5;
+        Mon, 24 Jan 2022 19:08:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052032;
-        bh=fvew88oc9rXfBgGTAJEf7GitKFB3blNqbg6pMgytd3s=;
+        s=korg; t=1643051289;
+        bh=mIQD3rvB24aaYZEoVuPk+eHBuRYOQU0k+ObbwHf9U9A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YjZhMRTBr66WL2EE89plmcLMb8PvXDD+cxQDlRErASYkKDWYf/6yN7Kaj+dEFT4vT
-         PyjItSInFhlLjt7OwZ0UbcklySoBDDgl/yU0f6jkAgalBdbVynJZgA/Qe7kKgEVGmM
-         HZE8bUX7UVcJFUsydPPmyOR65YwSOoeNgB06WlaQ=
+        b=y45ZUuWqnoDTK9QTsk/DvduCRgfIokn7esrni1Jf0+DDJHXOlHqsuLZIHN+DGXTPZ
+         NRWr35e8OIj0IeM96NH5eGR8DeK4dChYLsBbdNgsqUvgb3cykpgcMLhESarA5E94Ed
+         oJcXIkJBOXmzngj+6Kk4qKhJKDvbdDlXPqpPWEcU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        stable@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 165/239] ACPI: battery: Add the ThinkPad "Not Charging" quirk
-Date:   Mon, 24 Jan 2022 19:43:23 +0100
-Message-Id: <20220124183948.340959603@linuxfoundation.org>
+Subject: [PATCH 4.14 107/186] bpf: Do not WARN in bpf_warn_invalid_xdp_action()
+Date:   Mon, 24 Jan 2022 19:43:02 +0100
+Message-Id: <20220124183940.557495978@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,79 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thomas Weißschuh <linux@weissschuh.net>
+From: Paolo Abeni <pabeni@redhat.com>
 
-[ Upstream commit e96c1197aca628f7d2480a1cc3214912b40b3414 ]
+[ Upstream commit 2cbad989033bff0256675c38f96f5faab852af4b ]
 
-The EC/ACPI firmware on Lenovo ThinkPads used to report a status
-of "Unknown" when the battery is between the charge start and
-charge stop thresholds. On Windows, it reports "Not Charging"
-so the quirk has been added to also report correctly.
+The WARN_ONCE() in bpf_warn_invalid_xdp_action() can be triggered by
+any bugged program, and even attaching a correct program to a NIC
+not supporting the given action.
 
-Now the "status" attribute returns "Not Charging" when the
-battery on ThinkPads is not physicaly charging.
+The resulting splat, beyond polluting the logs, fouls automated tools:
+e.g. a syzkaller reproducers using an XDP program returning an
+unsupported action will never pass validation.
 
-Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
+Replace the WARN_ONCE with a less intrusive pr_warn_once().
+
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Link: https://lore.kernel.org/bpf/016ceec56e4817ebb2a9e35ce794d5c917df572c.1638189075.git.pabeni@redhat.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/acpi/battery.c | 22 ++++++++++++++++++++++
- 1 file changed, 22 insertions(+)
+ net/core/filter.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/acpi/battery.c b/drivers/acpi/battery.c
-index 0bbf8b453ebf2..d4e42a578e186 100644
---- a/drivers/acpi/battery.c
-+++ b/drivers/acpi/battery.c
-@@ -78,6 +78,7 @@ static int battery_bix_broken_package;
- static int battery_notification_delay_ms;
- static int battery_ac_is_broken;
- static int battery_check_pmic = 1;
-+static int battery_quirk_notcharging;
- static unsigned int cache_time = 1000;
- module_param(cache_time, uint, 0644);
- MODULE_PARM_DESC(cache_time, "cache time in milliseconds");
-@@ -246,6 +247,8 @@ static int acpi_battery_get_property(struct power_supply *psy,
- 			val->intval = POWER_SUPPLY_STATUS_CHARGING;
- 		else if (acpi_battery_is_charged(battery))
- 			val->intval = POWER_SUPPLY_STATUS_FULL;
-+		else if (battery_quirk_notcharging)
-+			val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
- 		else
- 			val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
- 		break;
-@@ -1350,6 +1353,12 @@ battery_do_not_check_pmic_quirk(const struct dmi_system_id *d)
- 	return 0;
- }
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 40b378bed6033..729e302bba6e9 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -3644,9 +3644,9 @@ void bpf_warn_invalid_xdp_action(u32 act)
+ {
+ 	const u32 act_max = XDP_REDIRECT;
  
-+static int __init battery_quirk_not_charging(const struct dmi_system_id *d)
-+{
-+	battery_quirk_notcharging = 1;
-+	return 0;
-+}
-+
- static const struct dmi_system_id bat_dmi_table[] __initconst = {
- 	{
- 		/* NEC LZ750/LS */
-@@ -1394,6 +1403,19 @@ static const struct dmi_system_id bat_dmi_table[] __initconst = {
- 		  DMI_EXACT_MATCH(DMI_PRODUCT_VERSION, "Lenovo MIIX 320-10ICR"),
- 		},
- 	},
-+	{
-+		/*
-+		 * On Lenovo ThinkPads the BIOS specification defines
-+		 * a state when the bits for charging and discharging
-+		 * are both set to 0. That state is "Not Charging".
-+		 */
-+		.callback = battery_quirk_not_charging,
-+		.ident = "Lenovo ThinkPad",
-+		.matches = {
-+			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
-+			DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad"),
-+		},
-+	},
- 	{},
- };
+-	WARN_ONCE(1, "%s XDP return value %u, expect packet loss!\n",
+-		  act > act_max ? "Illegal" : "Driver unsupported",
+-		  act);
++	pr_warn_once("%s XDP return value %u, expect packet loss!\n",
++		     act > act_max ? "Illegal" : "Driver unsupported",
++		     act);
+ }
+ EXPORT_SYMBOL_GPL(bpf_warn_invalid_xdp_action);
  
 -- 
 2.34.1
