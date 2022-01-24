@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CE03C4167B
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:14:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1274C43217
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:14:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2371607AbiAYAJS (ORCPT
+        id S2371677AbiAYAJ2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:09:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51132 "EHLO
+        Mon, 24 Jan 2022 19:09:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1848470AbiAXXWe (ORCPT
+        with ESMTP id S1848451AbiAXXWc (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:22:34 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46BE0C073089;
-        Mon, 24 Jan 2022 13:29:21 -0800 (PST)
+        Mon, 24 Jan 2022 18:22:32 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDAE3C073083;
+        Mon, 24 Jan 2022 13:29:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D8EFB614DC;
-        Mon, 24 Jan 2022 21:29:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA2A0C340ED;
-        Mon, 24 Jan 2022 21:29:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 96229B81061;
+        Mon, 24 Jan 2022 21:29:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CA497C33EA1;
+        Mon, 24 Jan 2022 21:29:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059760;
-        bh=AOczSnWdWced6oq1iyNUhjT2AeFnG/1hKhyVL7vUbzw=;
+        s=korg; t=1643059754;
+        bh=AouQkowWMbLpCiSc9HCHcAG0xZ3v+aO3HmXSlgFIZUU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hRzZEr5aQUszG5Ok3Yc2vzyJS5MGBvjbwu9FcFwJd4i8DpeE1Q2DwZ8rIpPv13Ufo
-         E4Abacu6rWlzy2kv0dWl2JCU/ZYvMbX+SHfquP9gJSq/8as4Qu5bsa+ViYtBIGPnXG
-         303DEQ3kd6p8EopQnhmh2p+ThkeDrrU1mCVy5okM=
+        b=eqKxOf3FCPHldMv8tW7t82HItXUfqlWOdHkShvbgdqzuXn1A83moP43F7cmvv9MVv
+         WocVstRxU7qYCXMexUToclehWQX38kx/kelRsnBwI6EkGnHU0TggMwyiaPzBSt8zjH
+         LJzi5/StWAwbnXmc0HBaVTegPYcaqZf+39d3gSKU=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Wunner <lukas@wunner.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0723/1039] serial: core: Keep mctrl register state and cached copy in sync
-Date:   Mon, 24 Jan 2022 19:41:52 +0100
-Message-Id: <20220124184149.637956247@linuxfoundation.org>
+        stable@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
+        Lukas Wunner <lukas@wunner.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.16 0721/1039] serial: pl010: Drop CR register reset on set_termios
+Date:   Mon, 24 Jan 2022 19:41:50 +0100
+Message-Id: <20220124184149.564971629@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,49 +51,54 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit 93a770b7e16772530196674ffc79bb13fa927dc6 ]
+[ Upstream commit 08a0c6dff91c965e39905cf200d22db989203ccb ]
 
-struct uart_port contains a cached copy of the Modem Control signals.
-It is used to skip register writes in uart_update_mctrl() if the new
-signal state equals the old signal state.  It also avoids a register
-read to obtain the current state of output signals.
+pl010_set_termios() briefly resets the CR register to zero.
 
-When a uart_port is registered, uart_configure_port() changes signal
-state but neglects to keep the cached copy in sync.  That may cause
-a subsequent register write to be incorrectly skipped.  Fix it before
-it trips somebody up.
+Where does this register write come from?
 
-This behavior has been present ever since the serial core was introduced
-in 2002:
-https://git.kernel.org/history/history/c/33c0d1b0c3eb
+The PL010 driver's IRQ handler ambauart_int() originally modified the CR
+register without holding the port spinlock.  ambauart_set_termios() also
+modified that register.  To prevent concurrent read-modify-writes by the
+IRQ handler and to prevent transmission while changing baudrate,
+ambauart_set_termios() had to disable interrupts.  That is achieved by
+writing zero to the CR register.
 
-So far it was never an issue because the cached copy is initialized to 0
-by kzalloc() and when uart_configure_port() is executed, at most DTR has
-been set by uart_set_options() or sunsu_console_setup().  Therefore,
-a stable designation seems unnecessary.
+However in 2004 the PL010 driver was amended to acquire the port
+spinlock in the IRQ handler, obviating the need to disable interrupts in
+->set_termios():
+https://git.kernel.org/history/history/c/157c0342e591
 
+That rendered the CR register write obsolete.  Drop it.
+
+Cc: Russell King <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Lukas Wunner <lukas@wunner.de>
-Link: https://lore.kernel.org/r/bceeaba030b028ed810272d55d5fc6f3656ddddb.1641129752.git.lukas@wunner.de
+Link: https://lore.kernel.org/r/fcaff16e5b1abb4cc3da5a2879ac13f278b99ed0.1641128728.git.lukas@wunner.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/tty/serial/serial_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/tty/serial/amba-pl010.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/tty/serial/serial_core.c b/drivers/tty/serial/serial_core.c
-index 61e3dd0222af1..9e7e624a6c9db 100644
---- a/drivers/tty/serial/serial_core.c
-+++ b/drivers/tty/serial/serial_core.c
-@@ -2393,7 +2393,8 @@ uart_configure_port(struct uart_driver *drv, struct uart_state *state,
- 		 * We probably don't need a spinlock around this, but
- 		 */
- 		spin_lock_irqsave(&port->lock, flags);
--		port->ops->set_mctrl(port, port->mctrl & TIOCM_DTR);
-+		port->mctrl &= TIOCM_DTR;
-+		port->ops->set_mctrl(port, port->mctrl);
- 		spin_unlock_irqrestore(&port->lock, flags);
+diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
+index e744b953ca346..47654073123d6 100644
+--- a/drivers/tty/serial/amba-pl010.c
++++ b/drivers/tty/serial/amba-pl010.c
+@@ -446,14 +446,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	if ((termios->c_cflag & CREAD) == 0)
+ 		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
  
- 		/*
+-	/* first, disable everything */
+ 	old_cr = readb(uap->port.membase + UART010_CR) & ~UART010_CR_MSIE;
+ 
+ 	if (UART_ENABLE_MS(port, termios->c_cflag))
+ 		old_cr |= UART010_CR_MSIE;
+ 
+-	writel(0, uap->port.membase + UART010_CR);
+-
+ 	/* Set baud rate */
+ 	quot -= 1;
+ 	writel((quot & 0xf00) >> 8, uap->port.membase + UART010_LCRM);
 -- 
 2.34.1
 
