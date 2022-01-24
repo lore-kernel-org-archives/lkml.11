@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D67E9C3526F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E85B3C4707A
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2366931AbiAXXxr (ORCPT
+        id S2366949AbiAXXxu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:53:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49178 "EHLO
+        Mon, 24 Jan 2022 18:53:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846010AbiAXXOO (ORCPT
+        with ESMTP id S1846108AbiAXXO1 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:14:14 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 198C8C061755;
-        Mon, 24 Jan 2022 13:21:38 -0800 (PST)
+        Mon, 24 Jan 2022 18:14:27 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44D7BC061760;
+        Mon, 24 Jan 2022 13:23:07 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CBCB9B81061;
-        Mon, 24 Jan 2022 21:21:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 08439C340E4;
-        Mon, 24 Jan 2022 21:21:34 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D6DD5611C8;
+        Mon, 24 Jan 2022 21:23:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB83DC340E4;
+        Mon, 24 Jan 2022 21:23:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059295;
-        bh=/8vqTdehX2rFsIR81hlKJ31cDN856d4O4/Em5efcq6Q=;
+        s=korg; t=1643059386;
+        bh=tgMxk0poZY5zYAaPiVwW6ZLGXckdFm/KF9btJSEKfHc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SADURv+6HppuJ0C2VFNCIuw+A4daeBUDHUmKaPPFcjrkkHdqkKtEm+Qg62UIds7Dw
-         VwA39NyS0K4cGkIgyC0D4pl6EzAr6LcAMs4HuV2+0IKBpYMUOo9R/+/pOl3JoPS2wP
-         QiOHyY44DN6mjtdhNnqEBAfSQqfJE2+CB0qhOssg=
+        b=Bxn8PyKZiRnSD0X41YCrwGyaXHgjXFJg7/Mo6+8o3fgjI4ZvmEyng0JpwfrI9E37C
+         R8x4c+WZAcJNI5UYfEs99JSr9H4uIjZFfD68lPe4TeDRe+tHDEb9S+2jflxoebpwEA
+         GLbw/G18vZkIdaYOqQscQND07U3WfrDRDpOEMzAw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, John Keeping <john@metanate.com>,
-        Pavankumar Kondeti <quic_pkondeti@quicinc.com>,
+        stable@vger.kernel.org, Brendan Dolan-Gavitt <brendandg@nyu.edu>,
+        Zekun Shen <bruceshenzk@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0568/1039] usb: gadget: f_fs: Use stream_open() for endpoint files
-Date:   Mon, 24 Jan 2022 19:39:17 +0100
-Message-Id: <20220124184144.425317154@linuxfoundation.org>
+Subject: [PATCH 5.16 0599/1039] rsi: Fix out-of-bounds read in rsi_read_pkt()
+Date:   Mon, 24 Jan 2022 19:39:48 +0100
+Message-Id: <20220124184145.480831077@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,63 +51,106 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
+From: Zekun Shen <bruceshenzk@gmail.com>
 
-[ Upstream commit c76ef96fc00eb398c8fc836b0eb2f82bcc619dc7 ]
+[ Upstream commit f1cb3476e48b60c450ec3a1d7da0805bffc6e43a ]
 
-Function fs endpoint file operations are synchronized via an interruptible
-mutex wait. However we see threads that do ep file operations concurrently
-are getting blocked for the mutex lock in __fdget_pos(). This is an
-uninterruptible wait and we see hung task warnings and kernel panic
-if hung_task_panic systcl is enabled if host does not send/receive
-the data for long time.
+rsi_get_* functions rely on an offset variable from usb
+input. The size of usb input is RSI_MAX_RX_USB_PKT_SIZE(3000),
+while 2-byte offset can be up to 0xFFFF. Thus a large offset
+can cause out-of-bounds read.
 
-The reason for threads getting blocked in __fdget_pos() is due to
-the file position protection introduced by the commit 9c225f2655e3
-("vfs: atomic f_pos accesses as per POSIX"). Since function fs
-endpoint files does not have the notion of the file position, switch
-to the stream mode. This will bypass the file position mutex and
-threads will be blocked in interruptible state for the function fs
-mutex.
+The patch adds a bound checking condition when rcv_pkt_len is 0,
+indicating it's USB. It's unclear whether this is triggerable
+from other type of bus. The following check might help in that case.
+offset > rcv_pkt_len - FRAME_DESC_SZ
 
-It should not affects user space as we are only changing the task state
-changes the task state from UNINTERRUPTIBLE to INTERRUPTIBLE while waiting
-for the USB transfers to be finished. However there is a slight change to
-the O_NONBLOCK behavior. Earlier threads that are using O_NONBLOCK are also
-getting blocked inside fdget_pos(). Now they reach to function fs and error
-code is returned. The non blocking behavior is actually honoured now.
+The bug is trigerrable with conpromised/malfunctioning USB devices.
+I tested the patch with the crashing input and got no more bug report.
 
-Reviewed-by: John Keeping <john@metanate.com>
-Signed-off-by: Pavankumar Kondeti <quic_pkondeti@quicinc.com>
-Link: https://lore.kernel.org/r/1636712682-1226-1-git-send-email-quic_pkondeti@quicinc.com
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Attached is the KASAN report from fuzzing.
+
+BUG: KASAN: slab-out-of-bounds in rsi_read_pkt+0x42e/0x500 [rsi_91x]
+Read of size 2 at addr ffff888019439fdb by task RX-Thread/227
+
+CPU: 0 PID: 227 Comm: RX-Thread Not tainted 5.6.0 #66
+Call Trace:
+ dump_stack+0x76/0xa0
+ print_address_description.constprop.0+0x16/0x200
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ __kasan_report.cold+0x37/0x7c
+ ? rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ kasan_report+0xe/0x20
+ rsi_read_pkt+0x42e/0x500 [rsi_91x]
+ rsi_usb_rx_thread+0x1b1/0x2fc [rsi_usb]
+ ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
+ ? _raw_spin_lock_irqsave+0x7b/0xd0
+ ? _raw_spin_trylock_bh+0x120/0x120
+ ? __wake_up_common+0x10b/0x520
+ ? rsi_probe+0x16a0/0x16a0 [rsi_usb]
+ kthread+0x2b5/0x3b0
+ ? kthread_create_on_node+0xd0/0xd0
+ ret_from_fork+0x22/0x40
+
+Reported-by: Brendan Dolan-Gavitt <brendandg@nyu.edu>
+Signed-off-by: Zekun Shen <bruceshenzk@gmail.com>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/YXxXS4wgu2OsmlVv@10-18-43-117.dynapool.wireless.nyu.edu
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/usb/gadget/function/f_fs.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/wireless/rsi/rsi_91x_main.c | 4 ++++
+ drivers/net/wireless/rsi/rsi_91x_usb.c  | 1 -
+ drivers/net/wireless/rsi/rsi_usb.h      | 2 ++
+ 3 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/usb/gadget/function/f_fs.c b/drivers/usb/gadget/function/f_fs.c
-index a7e069b185448..25ad1e97a4585 100644
---- a/drivers/usb/gadget/function/f_fs.c
-+++ b/drivers/usb/gadget/function/f_fs.c
-@@ -614,7 +614,7 @@ static int ffs_ep0_open(struct inode *inode, struct file *file)
- 	file->private_data = ffs;
- 	ffs_data_opened(ffs);
+diff --git a/drivers/net/wireless/rsi/rsi_91x_main.c b/drivers/net/wireless/rsi/rsi_91x_main.c
+index f1bf71e6c6081..5d1490fc32db4 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_main.c
++++ b/drivers/net/wireless/rsi/rsi_91x_main.c
+@@ -23,6 +23,7 @@
+ #include "rsi_common.h"
+ #include "rsi_coex.h"
+ #include "rsi_hal.h"
++#include "rsi_usb.h"
  
--	return 0;
-+	return stream_open(inode, file);
- }
+ u32 rsi_zone_enabled = /* INFO_ZONE |
+ 			INIT_ZONE |
+@@ -168,6 +169,9 @@ int rsi_read_pkt(struct rsi_common *common, u8 *rx_pkt, s32 rcv_pkt_len)
+ 		frame_desc = &rx_pkt[index];
+ 		actual_length = *(u16 *)&frame_desc[0];
+ 		offset = *(u16 *)&frame_desc[2];
++		if (!rcv_pkt_len && offset >
++			RSI_MAX_RX_USB_PKT_SIZE - FRAME_DESC_SZ)
++			goto fail;
  
- static int ffs_ep0_release(struct inode *inode, struct file *file)
-@@ -1154,7 +1154,7 @@ ffs_epfile_open(struct inode *inode, struct file *file)
- 	file->private_data = epfile;
- 	ffs_data_opened(epfile->ffs);
+ 		queueno = rsi_get_queueno(frame_desc, offset);
+ 		length = rsi_get_length(frame_desc, offset);
+diff --git a/drivers/net/wireless/rsi/rsi_91x_usb.c b/drivers/net/wireless/rsi/rsi_91x_usb.c
+index 3cca1823c458a..66fe386ec9cc6 100644
+--- a/drivers/net/wireless/rsi/rsi_91x_usb.c
++++ b/drivers/net/wireless/rsi/rsi_91x_usb.c
+@@ -330,7 +330,6 @@ static int rsi_rx_urb_submit(struct rsi_hw *adapter, u8 ep_num, gfp_t mem_flags)
+ 	struct sk_buff *skb;
+ 	u8 dword_align_bytes = 0;
  
--	return 0;
-+	return stream_open(inode, file);
- }
+-#define RSI_MAX_RX_USB_PKT_SIZE	3000
+ 	skb = dev_alloc_skb(RSI_MAX_RX_USB_PKT_SIZE);
+ 	if (!skb)
+ 		return -ENOMEM;
+diff --git a/drivers/net/wireless/rsi/rsi_usb.h b/drivers/net/wireless/rsi/rsi_usb.h
+index 254d19b664123..961851748bc4c 100644
+--- a/drivers/net/wireless/rsi/rsi_usb.h
++++ b/drivers/net/wireless/rsi/rsi_usb.h
+@@ -44,6 +44,8 @@
+ #define RSI_USB_BUF_SIZE	     4096
+ #define RSI_USB_CTRL_BUF_SIZE	     0x04
  
- static int ffs_aio_cancel(struct kiocb *kiocb)
++#define RSI_MAX_RX_USB_PKT_SIZE	3000
++
+ struct rx_usb_ctrl_block {
+ 	u8 *data;
+ 	struct urb *rx_urb;
 -- 
 2.34.1
 
