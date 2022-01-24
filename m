@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E75C9C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:17:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFDFEC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:17:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1384489AbiAXXOu (ORCPT
+        id S1384505AbiAXXOz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:14:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37592 "EHLO
+        Mon, 24 Jan 2022 18:14:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37594 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584554AbiAXWVY (ORCPT
+        with ESMTP id S1584553AbiAXWVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:21:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D59B9C0424D1;
-        Mon, 24 Jan 2022 12:50:18 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CD04C0424D3;
+        Mon, 24 Jan 2022 12:50:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 9CD1DB80FA1;
-        Mon, 24 Jan 2022 20:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C8141C340E5;
-        Mon, 24 Jan 2022 20:50:15 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0BFFC611CD;
+        Mon, 24 Jan 2022 20:50:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D30A3C340E5;
+        Mon, 24 Jan 2022 20:50:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057416;
-        bh=OLGhyBE3yYUeUqi46/+gVKgkTva0eh9cbOByjskd/PM=;
+        s=korg; t=1643057428;
+        bh=EmwCPnertVcmjrR8Moco0fRBdrq7Suz3ieik5+sjYIs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=jC3rLpKzCKa3WsbO3LZL89Oavn3tC7wDLfshcRZrCarm3wbWB3EyZn4foUhY7wbND
-         Mjx2Ju/64PzxO8lUXQ0HAqBThyqVwnzw/nPooqnIlaP/wfgfLN4jOaA999SLW48Vxm
-         yqPoLptttcIQX7Y+4hqAdjRrA+1e8msRfSJI9SN4=
+        b=dKr8Ow3AjbNcH6oVSH0+/PXcyuhKYSw2cP+ELL61f0d1BCQVZS4B/iUv//t66/w8D
+         yKGLaYoZMd1FidK6wn8CUy/9tm3eS6J0/vzMZfhfS26GGp1oN9UgAaqon6Nx9euOCv
+         8cfVjkjPdyohpjDJ7K1FISXir6VXK9oihF9HFVBE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Balbir Singh <bsingharora@gmail.com>,
-        "Eric W. Biederman" <ebiederm@xmission.com>
-Subject: [PATCH 5.15 806/846] taskstats: Cleanup the use of task->exit_code
-Date:   Mon, 24 Jan 2022 19:45:23 +0100
-Message-Id: <20220124184128.741105302@linuxfoundation.org>
+        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>
+Subject: [PATCH 5.15 809/846] iwlwifi: fix Bz NMI behaviour
+Date:   Mon, 24 Jan 2022 19:45:26 +0100
+Message-Id: <20220124184128.831861285@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,59 +49,52 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Eric W. Biederman <ebiederm@xmission.com>
+From: Johannes Berg <johannes.berg@intel.com>
 
-commit 1b5a42d9c85f0e731f01c8d1129001fd8531a8a0 upstream.
+commit fdfde0cb79264f88992e72b5a056a3a3284fcaad upstream.
 
-In the function bacct_add_task the code reading task->exit_code was
-introduced in commit f3cef7a99469 ("[PATCH] csa: basic accounting over
-taskstats"), and it is not entirely clear what the taskstats interface
-is trying to return as only returning the exit_code of the first task
-in a process doesn't make a lot of sense.
+Contrary to what was stated before, the hardware hasn't changed
+the bits here yet. In any case, the new CSR is also directly
+(lower 16 bits) connected to UREG_DOORBELL_TO_ISR6, so if it
+still changes the changes would be there. Adjust the code and
+comments accordingly.
 
-As best as I can figure the intent is to return task->exit_code after
-a task exits.  The field is returned with per task fields, so the
-exit_code of the entire process is not wanted.  Only the value of the
-first task is returned so this is not a useful way to get the per task
-ptrace stop code.  The ordinary case of returning this value is
-returning after a task exits, which also precludes use for getting
-a ptrace value.
-
-It is common to for the first task of a process to also be the last
-task of a process so this field may have done something reasonable by
-accident in testing.
-
-Make ac_exitcode a reliable per task value by always returning it for
-every exited task.
-
-Setting ac_exitcode in a sensible mannter makes it possible to continue
-to provide this value going forward.
-
-Cc: Balbir Singh <bsingharora@gmail.com>
-Fixes: f3cef7a99469 ("[PATCH] csa: basic accounting over taskstats")
-Link: https://lkml.kernel.org/r/20220103213312.9144-5-ebiederm@xmission.com
-Signed-off-by: "Eric W. Biederman" <ebiederm@xmission.com>
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+Fixes: 6c0795f1a524 ("iwlwifi: implement Bz NMI behaviour")
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
+Link: https://lore.kernel.org/r/iwlwifi.20211210090244.75b6207536e3.I7d170a48a9096e6b7269c3a9f447c326f929b171@changeid
+Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- kernel/tsacct.c |    7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/iwl-csr.h |    5 +++--
+ drivers/net/wireless/intel/iwlwifi/iwl-io.c  |    2 +-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
---- a/kernel/tsacct.c
-+++ b/kernel/tsacct.c
-@@ -38,11 +38,10 @@ void bacct_add_tsk(struct user_namespace
- 	stats->ac_btime = clamp_t(time64_t, btime, 0, U32_MAX);
- 	stats->ac_btime64 = btime;
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-csr.h
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-csr.h
+@@ -104,9 +104,10 @@
+ /* GIO Chicken Bits (PCI Express bus link power management) */
+ #define CSR_GIO_CHICKEN_BITS    (CSR_BASE+0x100)
  
--	if (thread_group_leader(tsk)) {
-+	if (tsk->flags & PF_EXITING)
- 		stats->ac_exitcode = tsk->exit_code;
--		if (tsk->flags & PF_FORKNOEXEC)
--			stats->ac_flag |= AFORK;
--	}
-+	if (thread_group_leader(tsk) && (tsk->flags & PF_FORKNOEXEC))
-+		stats->ac_flag |= AFORK;
- 	if (tsk->flags & PF_SUPERPRIV)
- 		stats->ac_flag |= ASU;
- 	if (tsk->flags & PF_DUMPCORE)
+-/* Doorbell NMI (since Bz) */
++/* Doorbell - since Bz
++ * connected to UREG_DOORBELL_TO_ISR6 (lower 16 bits only)
++ */
+ #define CSR_DOORBELL_VECTOR	(CSR_BASE + 0x130)
+-#define CSR_DOORBELL_VECTOR_NMI	BIT(1)
+ 
+ /* host chicken bits */
+ #define CSR_HOST_CHICKEN	(CSR_BASE + 0x204)
+--- a/drivers/net/wireless/intel/iwlwifi/iwl-io.c
++++ b/drivers/net/wireless/intel/iwlwifi/iwl-io.c
+@@ -218,7 +218,7 @@ void iwl_force_nmi(struct iwl_trans *tra
+ 				    UREG_DOORBELL_TO_ISR6_NMI_BIT);
+ 	else
+ 		iwl_write32(trans, CSR_DOORBELL_VECTOR,
+-			    CSR_DOORBELL_VECTOR_NMI);
++			    UREG_DOORBELL_TO_ISR6_NMI_BIT);
+ }
+ IWL_EXPORT_SYMBOL(iwl_force_nmi);
+ 
 
 
