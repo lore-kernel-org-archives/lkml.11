@@ -2,44 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCBDAC3526D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F77C4707E
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3423630AbiAYCff (ORCPT
+        id S3423611AbiAYCfd (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:35:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38394 "EHLO
+        Mon, 24 Jan 2022 21:35:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1384590AbiAXUaL (ORCPT
+        with ESMTP id S1384459AbiAXU3t (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:30:11 -0500
+        Mon, 24 Jan 2022 15:29:49 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 177E5C07A962;
-        Mon, 24 Jan 2022 11:42:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADE2C08B4C8;
+        Mon, 24 Jan 2022 11:42:35 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AAE4461298;
-        Mon, 24 Jan 2022 19:42:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7AE69C340E5;
-        Mon, 24 Jan 2022 19:42:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AC3F161298;
+        Mon, 24 Jan 2022 19:42:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7B21EC340E5;
+        Mon, 24 Jan 2022 19:42:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053361;
-        bh=50brnauWdiAtjqcwyntiqDSwqdYnjzoEqcJ97b19AFI=;
+        s=korg; t=1643053355;
+        bh=DJ/cYkr8MzqT7hAfv92BLVMqYFrXoXo4x8FHMhWFLhY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TYEquD6OudC1uL3djaJMpSSBjT+7nCnmsSORefKl8Snv2sVSmbHNiaNesHNm0PTNw
-         TjAYxTRgcR5mpbbevS80+89MurnfiJQFyCeZupu6MoiPNdVIvWtOENZP9NqKu0fK/H
-         YfqY6vfx7fWh3DZGdFs7TuvMtVlPbfkAhE9L2VbU=
+        b=t+7/CjYsdyE+YA7sG8NX6ob2ZHHpbpbKT4ZwadMqnZXDE7VoSZRwC+NTv0nN9vfT2
+         WnKPr1uyPbH6EkVK4zlr/0u/FTBtVYeE603HzGN2LcH+m80D/GwbdV8qgS8WhEXAcK
+         ZKKLN2hE1FKnjHSSp+OE9boTnxzwfgwvXtAK9Buk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Stefan Riedmueller <s.riedmueller@phytec.de>,
-        Han Xu <han.xu@nxp.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 5.10 009/563] mtd: rawnand: gpmi: Remove explicit default gpmi clock setting for i.MX6
-Date:   Mon, 24 Jan 2022 19:36:14 +0100
-Message-Id: <20220124184024.742251646@linuxfoundation.org>
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
+Subject: [PATCH 5.10 007/563] nfc: llcp: fix NULL error pointer dereference on sendmsg() after failed bind()
+Date:   Mon, 24 Jan 2022 19:36:12 +0100
+Message-Id: <20220124184024.666216547@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -51,40 +51,102 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stefan Riedmueller <s.riedmueller@phytec.de>
+From: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
-commit aa1baa0e6c1aa4872e481dce4fc7fd6f3dd8496b upstream.
+commit dded08927ca3c31a5c37f8e7f95fe98770475dd4 upstream.
 
-There is no need to explicitly set the default gpmi clock rate during
-boot for the i.MX 6 since this is done during nand_detect anyway.
+Syzbot detected a NULL pointer dereference of nfc_llcp_sock->dev pointer
+(which is a 'struct nfc_dev *') with calls to llcp_sock_sendmsg() after
+a failed llcp_sock_bind(). The message being sent is a SOCK_DGRAM.
 
-Signed-off-by: Stefan Riedmueller <s.riedmueller@phytec.de>
-Cc: stable@vger.kernel.org
-Acked-by: Han Xu <han.xu@nxp.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/linux-mtd/20211102202022.15551-1-ceggers@arri.de
+KASAN report:
+
+  BUG: KASAN: null-ptr-deref in nfc_alloc_send_skb+0x2d/0xc0
+  Read of size 4 at addr 00000000000005c8 by task llcp_sock_nfc_a/899
+
+  CPU: 5 PID: 899 Comm: llcp_sock_nfc_a Not tainted 5.16.0-rc6-next-20211224-00001-gc6437fbf18b0 #125
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+  Call Trace:
+   <TASK>
+   dump_stack_lvl+0x45/0x59
+   ? nfc_alloc_send_skb+0x2d/0xc0
+   __kasan_report.cold+0x117/0x11c
+   ? mark_lock+0x480/0x4f0
+   ? nfc_alloc_send_skb+0x2d/0xc0
+   kasan_report+0x38/0x50
+   nfc_alloc_send_skb+0x2d/0xc0
+   nfc_llcp_send_ui_frame+0x18c/0x2a0
+   ? nfc_llcp_send_i_frame+0x230/0x230
+   ? __local_bh_enable_ip+0x86/0xe0
+   ? llcp_sock_connect+0x470/0x470
+   ? llcp_sock_connect+0x470/0x470
+   sock_sendmsg+0x8e/0xa0
+   ____sys_sendmsg+0x253/0x3f0
+   ...
+
+The issue was visible only with multiple simultaneous calls to bind() and
+sendmsg(), which resulted in most of the bind() calls to fail.  The
+bind() was failing on checking if there is available WKS/SDP/SAP
+(respective bit in 'struct nfc_llcp_local' fields).  When there was no
+available WKS/SDP/SAP, the bind returned error but the sendmsg() to such
+socket was able to trigger mentioned NULL pointer dereference of
+nfc_llcp_sock->dev.
+
+The code looks simply racy and currently it protects several paths
+against race with checks for (!nfc_llcp_sock->local) which is NULL-ified
+in error paths of bind().  The llcp_sock_sendmsg() did not have such
+check but called function nfc_llcp_send_ui_frame() had, although not
+protected with lock_sock().
+
+Therefore the race could look like (same socket is used all the time):
+  CPU0                                     CPU1
+  ====                                     ====
+  llcp_sock_bind()
+  - lock_sock()
+    - success
+  - release_sock()
+  - return 0
+                                           llcp_sock_sendmsg()
+                                           - lock_sock()
+                                           - release_sock()
+  llcp_sock_bind(), same socket
+  - lock_sock()
+    - error
+                                           - nfc_llcp_send_ui_frame()
+                                             - if (!llcp_sock->local)
+    - llcp_sock->local = NULL
+    - nfc_put_device(dev)
+                                             - dereference llcp_sock->dev
+  - release_sock()
+  - return -ERRNO
+
+The nfc_llcp_send_ui_frame() checked llcp_sock->local outside of the
+lock, which is racy and ineffective check.  Instead, its caller
+llcp_sock_sendmsg(), should perform the check inside lock_sock().
+
+Reported-and-tested-by: syzbot+7f23bcddf626e0593a39@syzkaller.appspotmail.com
+Fixes: b874dec21d1c ("NFC: Implement LLCP connection less Tx path")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c |    9 ---------
- 1 file changed, 9 deletions(-)
+ net/nfc/llcp_sock.c |    5 +++++
+ 1 file changed, 5 insertions(+)
 
---- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-+++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
-@@ -1052,15 +1052,6 @@ static int gpmi_get_clks(struct gpmi_nan
- 		r->clock[i] = clk;
- 	}
+--- a/net/nfc/llcp_sock.c
++++ b/net/nfc/llcp_sock.c
+@@ -789,6 +789,11 @@ static int llcp_sock_sendmsg(struct sock
  
--	if (GPMI_IS_MX6(this))
--		/*
--		 * Set the default value for the gpmi clock.
--		 *
--		 * If you want to use the ONFI nand which is in the
--		 * Synchronous Mode, you should change the clock as you need.
--		 */
--		clk_set_rate(r->clock[0], 22000000);
--
- 	return 0;
+ 	lock_sock(sk);
  
- err_clock:
++	if (!llcp_sock->local) {
++		release_sock(sk);
++		return -ENODEV;
++	}
++
+ 	if (sk->sk_type == SOCK_DGRAM) {
+ 		DECLARE_SOCKADDR(struct sockaddr_nfc_llcp *, addr,
+ 				 msg->msg_name);
 
 
