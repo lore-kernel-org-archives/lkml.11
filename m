@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF5EC43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:28:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD168C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:28:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1849365AbiAXXZh (ORCPT
+        id S1849295AbiAXXZY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:25:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38992 "EHLO
+        Mon, 24 Jan 2022 18:25:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1587648AbiAXW3X (ORCPT
+        with ESMTP id S1587755AbiAXW3h (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:29:23 -0500
+        Mon, 24 Jan 2022 17:29:37 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2354C0E5317;
-        Mon, 24 Jan 2022 12:54:55 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A699FC095410;
+        Mon, 24 Jan 2022 12:55:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7CF6DB811FB;
-        Mon, 24 Jan 2022 20:54:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A467BC340E5;
-        Mon, 24 Jan 2022 20:54:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D196B811FB;
+        Mon, 24 Jan 2022 20:55:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 07D9CC340E5;
+        Mon, 24 Jan 2022 20:55:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057693;
-        bh=lDnMZdm1qIoBNi8zGpb9L19ogrWHp8r6Rf4WFn0gvus=;
+        s=korg; t=1643057716;
+        bh=IgHUHKKQzYCKAcKqsjwDkEbLcCrTpp0xgZ/idz6puKc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=v5SwpL6HmfH6xkfGVtF/PGNvQc097KEA05BNCL506Z/GYYPl5gtRbvT7vMYtos0hH
-         GmmFfYEEhaPQR37H+IY5nb3p8+ND8hGYarF4k3qzZmiEfUS9UAFtJ3ug3NxbIKVrTR
-         bqXNDj4u2Ss5Y+OYVYqkm2hC1YNQ9KiArMS0WjvM=
+        b=JXmLUO7tcuEqok3wReiCViXl0hkF4tlIKJBjOdoDTgmyNpiAa18fW+fmJ8oz2hLqX
+         ZJG59v3pNJC3IbYApdni3w1B6nC8j9mJMbNugezCKEnR/MhiWR5ovDUZlNNY1myabb
+         vV1tecXB7BfK8J+pfkYv1LrNyWZ/mgvQ1/ciOrfs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.16 0047/1039] media: em28xx: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:30:36 +0100
-Message-Id: <20220124184126.723948858@linuxfoundation.org>
+        stable@vger.kernel.org, Wenqing Liu <wenqingliu0120@gmail.com>,
+        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>
+Subject: [PATCH 5.16 0012/1039] f2fs: fix to do sanity check on last xattr entry in __f2fs_setxattr()
+Date:   Mon, 24 Jan 2022 19:30:01 +0100
+Message-Id: <20220124184125.560804776@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,42 +49,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Chao Yu <chao@kernel.org>
 
-commit d9b7e8df3aa9b8c10708aab60e72e79ac08237e4 upstream.
+commit 645a3c40ca3d40cc32b4b5972bf2620f2eb5dba6 upstream.
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+As Wenqing Liu reported in bugzilla:
 
-Fixes: a6c2ba283565 ("[PATCH] v4l: 716: support for em28xx board family")
-Cc: stable@vger.kernel.org      # 2.6.16
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+https://bugzilla.kernel.org/show_bug.cgi?id=215235
+
+- Overview
+page fault in f2fs_setxattr() when mount and operate on corrupted image
+
+- Reproduce
+tested on kernel 5.16-rc3, 5.15.X under root
+
+1. unzip tmp7.zip
+2. ./single.sh f2fs 7
+
+Sometimes need to run the script several times
+
+- Kernel dump
+loop0: detected capacity change from 0 to 131072
+F2FS-fs (loop0): Found nat_bits in checkpoint
+F2FS-fs (loop0): Mounted with checkpoint version = 7548c2ee
+BUG: unable to handle page fault for address: ffffe47bc7123f48
+RIP: 0010:kfree+0x66/0x320
+Call Trace:
+ __f2fs_setxattr+0x2aa/0xc00 [f2fs]
+ f2fs_setxattr+0xfa/0x480 [f2fs]
+ __f2fs_set_acl+0x19b/0x330 [f2fs]
+ __vfs_removexattr+0x52/0x70
+ __vfs_removexattr_locked+0xb1/0x140
+ vfs_removexattr+0x56/0x100
+ removexattr+0x57/0x80
+ path_removexattr+0xa3/0xc0
+ __x64_sys_removexattr+0x17/0x20
+ do_syscall_64+0x37/0xb0
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
+
+The root cause is in __f2fs_setxattr(), we missed to do sanity check on
+last xattr entry, result in out-of-bound memory access during updating
+inconsistent xattr data of target inode.
+
+After the fix, it can detect such xattr inconsistency as below:
+
+F2FS-fs (loop11): inode (7) has invalid last xattr entry, entry_size: 60676
+F2FS-fs (loop11): inode (8) has corrupted xattr
+F2FS-fs (loop11): inode (8) has corrupted xattr
+F2FS-fs (loop11): inode (8) has invalid last xattr entry, entry_size: 47736
+
+Cc: stable@vger.kernel.org
+Reported-by: Wenqing Liu <wenqingliu0120@gmail.com>
+Signed-off-by: Chao Yu <chao@kernel.org>
+Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/em28xx/em28xx-core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/f2fs/xattr.c |   11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
---- a/drivers/media/usb/em28xx/em28xx-core.c
-+++ b/drivers/media/usb/em28xx/em28xx-core.c
-@@ -89,7 +89,7 @@ int em28xx_read_reg_req_len(struct em28x
- 	mutex_lock(&dev->ctrl_urb_lock);
- 	ret = usb_control_msg(udev, pipe, req,
- 			      USB_DIR_IN | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
--			      0x0000, reg, dev->urb_buf, len, HZ);
-+			      0x0000, reg, dev->urb_buf, len, 1000);
- 	if (ret < 0) {
- 		em28xx_regdbg("(pipe 0x%08x): IN:  %02x %02x %02x %02x %02x %02x %02x %02x  failed with error %i\n",
- 			      pipe,
-@@ -158,7 +158,7 @@ int em28xx_write_regs_req(struct em28xx
- 	memcpy(dev->urb_buf, buf, len);
- 	ret = usb_control_msg(udev, pipe, req,
- 			      USB_DIR_OUT | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
--			      0x0000, reg, dev->urb_buf, len, HZ);
-+			      0x0000, reg, dev->urb_buf, len, 1000);
- 	mutex_unlock(&dev->ctrl_urb_lock);
+--- a/fs/f2fs/xattr.c
++++ b/fs/f2fs/xattr.c
+@@ -684,8 +684,17 @@ static int __f2fs_setxattr(struct inode
+ 	}
  
- 	if (ret < 0) {
+ 	last = here;
+-	while (!IS_XATTR_LAST_ENTRY(last))
++	while (!IS_XATTR_LAST_ENTRY(last)) {
++		if ((void *)(last) + sizeof(__u32) > last_base_addr ||
++			(void *)XATTR_NEXT_ENTRY(last) > last_base_addr) {
++			f2fs_err(F2FS_I_SB(inode), "inode (%lu) has invalid last xattr entry, entry_size: %zu",
++					inode->i_ino, ENTRY_SIZE(last));
++			set_sbi_flag(F2FS_I_SB(inode), SBI_NEED_FSCK);
++			error = -EFSCORRUPTED;
++			goto exit;
++		}
+ 		last = XATTR_NEXT_ENTRY(last);
++	}
+ 
+ 	newsize = XATTR_ALIGN(sizeof(struct f2fs_xattr_entry) + len + size);
+ 
 
 
