@@ -2,94 +2,104 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09304C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8087C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:37:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1455698AbiAXVfx (ORCPT
+        id S1455723AbiAXVf4 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:35:53 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:54954 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1444229AbiAXVA2 (ORCPT
+        Mon, 24 Jan 2022 16:35:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43788 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1389762AbiAXUtE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:00:28 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 667C0B810A8;
-        Mon, 24 Jan 2022 21:00:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A940C340E5;
-        Mon, 24 Jan 2022 21:00:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058024;
-        bh=RVQdDPDKOE/a1ZN4sGWxqjsyDozLHpHpTA/eJ4N7kSw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RVZ0cIeS8Bc0ZTqWGAOEOu0rEb9TnJMfrgQMlwioLrLnCj0W4zGFYwbSDws6iftI4
-         9tkkpJFF6T8TkqXDsxmWctxeQANSp9vgw/FcKgVWVcrAxL+wr0Ze4uJzbF/zPzxL0Y
-         iGctFNPefA6/e0rwSa3N2ad6iJQOjhQ+68S//ZYQ=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tsuchiya Yuto <kitakar@gmail.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0123/1039] media: atomisp: fix inverted logic in buffers_needed()
-Date:   Mon, 24 Jan 2022 19:31:52 +0100
-Message-Id: <20220124184129.280692917@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 15:49:04 -0500
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A9A8C08C5C1
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:58:05 -0800 (PST)
+Received: by mail-lj1-x22d.google.com with SMTP id c15so7747949ljf.11
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:58:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:cc;
+        bh=ck5sHUPHFVmoqNszcJU+vx7vB03C0HSpAarVliSRSbI=;
+        b=eKFPIcw00MO03/c1r2tB+56IRqcjqNpVqU3X8goqW6UDJPz1W4NM/3aJNan9Mtz0ih
+         +eJEaDsaJoJUI+lKul7oYxUHMVrYJcrEgCcf3j332+rBrHZ+7I/0MCSiIZOLPrgFoUz2
+         0EC/vNwFfhHeh2+EcFU1dgCdnm7JOEBrhxZ0vRtyCalk5vqSyReF3yWJDSE3GxdjZD8C
+         e7/Hs1n6KEXSs4aSH4TtNMmlkesNzPr8bj++++MkzKx3q7xzifRbHy+YrKMxpyWSAo3g
+         +n7mXddDW/w+eIF0twekEExNFcht79MIAUc6AKS7FPYIpdxsNfPaOqRPeSiAyTwTHGk8
+         GBGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:cc;
+        bh=ck5sHUPHFVmoqNszcJU+vx7vB03C0HSpAarVliSRSbI=;
+        b=H7vNncnQfN8fptb7Lbm77IcEHuxMJ5uzXiugPBo1MAdFD1d24DMfNRJyJNMIuV/OOu
+         VSkOPrfH9eUgOq7zUd1deFvbvCI4rrlpmVHXytVSFFRnFSMpyxp1cooAILwwFkQEIg4v
+         OXYWFvW60YMXb9BFzYXfERQdNDVbwHgHRWCqnLb615jIJJUg4AEPiUykF2sJIjVwOrfO
+         ZY6mczCe0b93zTui4lLXTuLXuTGKT+yLXICiZvh9SEhhrFZ6TxfNVM+3niXqrO0TdeTX
+         nejYthW4/4nDnzW9rTaMaQeI8ZEUNmVIzTxjQVlDLE8PqDxNmTZnjUc501gNST2g5yXK
+         j9pg==
+X-Gm-Message-State: AOAM532xs56QukuhnKZhNf8nhl4Kvp34gwtbUnuaqXCqjLVqbNoRmWOj
+        s3O3npDhhS2IYOv9IuP1A2O71mL578mYFaUPwH4lFg==
+X-Received: by 2002:a2e:9c03:: with SMTP id s3mt4465419lji.198.1643054283214;
+ Mon, 24 Jan 2022 11:58:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220120054418.409817-1-masahiroy@kernel.org>
+In-Reply-To: <20220120054418.409817-1-masahiroy@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 24 Jan 2022 11:57:50 -0800
+Message-ID: <CAKwvOdkoK8uZP_uutf68StKi3pZjC6_4DSstg=PFQ2onB5NrJQ@mail.gmail.com>
+Subject: Re: [PATCH] ARM: vdso: remove -nostdlib compiler flag
+Cc:     patches@arm.linux.org.uk, Masahiro Yamada <masahiroy@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tsuchiya Yuto <kitakar@gmail.com>
+FWIW, it looks like this has been submitted to RMK's queue:
+https://www.armlinux.org.uk/developer/patches/viewpatch.php?id=9181/1
 
-[ Upstream commit e1921cd14640f0f4d1fad5eb8e448c58a536415d ]
 
-When config.mode is IA_CSS_INPUT_MODE_BUFFERED_SENSOR, it rather needs
-buffers. Fix it by inverting the return value.
+On Wed, Jan 19, 2022 at 9:44 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> The -nostdlib option requests the compiler to not use the standard
+> system startup files or libraries when linking. It is effective only
+> when $(CC) is used as a linker driver.
+>
+> Since commit fe00e50b2db8 ("ARM: 8858/1: vdso: use $(LD) instead of
+> $(CC) to link VDSO"), $(LD) is directly used, hence -nostdlib is
+> unneeded.
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
+> ---
+>
+> KernelVersion: 5.16
+>
+>  arch/arm/vdso/Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/arch/arm/vdso/Makefile b/arch/arm/vdso/Makefile
+> index 7c9e395b77f7..ec52b776f926 100644
+> --- a/arch/arm/vdso/Makefile
+> +++ b/arch/arm/vdso/Makefile
+> @@ -18,7 +18,7 @@ ccflags-y += -DDISABLE_BRANCH_PROFILING -DBUILD_VDSO32
+>
+>  ldflags-$(CONFIG_CPU_ENDIAN_BE8) := --be8
+>  ldflags-y := -Bsymbolic --no-undefined -soname=linux-vdso.so.1 \
+> -           -z max-page-size=4096 -nostdlib -shared $(ldflags-y) \
+> +           -z max-page-size=4096 -shared $(ldflags-y) \
+>             --hash-style=sysv --build-id=sha1 \
+>             -T
+>
+> --
+> 2.32.0
+>
 
-Fixes: 3c0538fbad9f ("media: atomisp: get rid of most checks for ISP2401 version")
-Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/staging/media/atomisp/pci/sh_css_mipi.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/sh_css_mipi.c b/drivers/staging/media/atomisp/pci/sh_css_mipi.c
-index 75489f7d75eec..483d40a467c74 100644
---- a/drivers/staging/media/atomisp/pci/sh_css_mipi.c
-+++ b/drivers/staging/media/atomisp/pci/sh_css_mipi.c
-@@ -374,17 +374,17 @@ static bool buffers_needed(struct ia_css_pipe *pipe)
- {
- 	if (!IS_ISP2401) {
- 		if (pipe->stream->config.mode == IA_CSS_INPUT_MODE_BUFFERED_SENSOR)
--			return false;
--		else
- 			return true;
-+		else
-+			return false;
- 	}
- 
- 	if (pipe->stream->config.mode == IA_CSS_INPUT_MODE_BUFFERED_SENSOR ||
- 	    pipe->stream->config.mode == IA_CSS_INPUT_MODE_TPG ||
- 	    pipe->stream->config.mode == IA_CSS_INPUT_MODE_PRBS)
--		return false;
-+		return true;
- 
--	return true;
-+	return false;
- }
- 
- int
 -- 
-2.34.1
-
-
-
+Thanks,
+~Nick Desaulniers
