@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B8EEC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 683FBC433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:01:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344920AbiAXS7h (ORCPT
+        id S1344008AbiAXS7e (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:59:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44672 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343515AbiAXS5A (ORCPT
+        Mon, 24 Jan 2022 13:59:34 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:55094 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343556AbiAXS5B (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:57:00 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5515BC061755;
-        Mon, 24 Jan 2022 10:55:07 -0800 (PST)
+        Mon, 24 Jan 2022 13:57:01 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1EA1BB8121A;
-        Mon, 24 Jan 2022 18:55:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 34293C340E5;
-        Mon, 24 Jan 2022 18:55:03 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5ECABB810BD;
+        Mon, 24 Jan 2022 18:57:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 89A7CC340E5;
+        Mon, 24 Jan 2022 18:56:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050504;
-        bh=hImpkszlYouxmdM/301iwqVHx5Xo0QnkQ+plX6an+o4=;
+        s=korg; t=1643050619;
+        bh=y+we92SPknJm552z1ppO/DVAZMNczlZ+j1Y2CQ3lDoU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zeRAw5hQAE61LH9Fazva9USpb2jGq5b0avfFCIFioCqboykEYvXhaTtl6eNCuapfy
-         AN/MLReO/HywAKt64lS83Iu5HFR/mfhuDxVPSaFaJvYnmJxwZSsVz0Q62YQYRhDdl3
-         LuS4Sl+PXEOtVfV5JioUcKb1gYl33uWSQy4/ituM=
+        b=nimoex8BIwEfsQnunmPmLnzSOVi28qVo/5So+MpIlgQX2iPA71RlyA1ZccouNY+uy
+         lpZo7EWzL41wQEQz6sZLWlewpHEw3Y0OHt3QIf3tmsy+IVD+CtZA/X2vAQmVgiFV1h
+         miEIyechZ5zuVGBN6CTCrb4ylQ4MykHweoAqIpLE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 4.9 024/157] media: pvrusb2: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:41:54 +0100
-Message-Id: <20220124183933.560152782@linuxfoundation.org>
+        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.9 060/157] RDMA/hns: Validate the pkey index
+Date:   Mon, 24 Jan 2022 19:42:30 +0100
+Message-Id: <20220124183934.685563589@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -50,60 +47,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Kamal Heib <kamalheib1@gmail.com>
 
-commit b82bf9b9dc305d7d3d93eab106d70dbf2171b43e upstream.
+[ Upstream commit 2a67fcfa0db6b4075515bd23497750849b88850f ]
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+Before query pkey, make sure that the queried index is valid.
 
-Fixes: d855497edbfb ("V4L/DVB (4228a): pvrusb2 to kernel 2.6.18")
-Cc: stable@vger.kernel.org      # 2.6.18
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 9a4435375cd1 ("IB/hns: Add driver files for hns RoCE driver")
+Link: https://lore.kernel.org/r/20211117145954.123893-1-kamalheib1@gmail.com
+Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
+Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/pvrusb2/pvrusb2-hdw.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/infiniband/hw/hns/hns_roce_main.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-+++ b/drivers/media/usb/pvrusb2/pvrusb2-hdw.c
-@@ -1488,7 +1488,7 @@ static int pvr2_upload_firmware1(struct
- 	for (address = 0; address < fwsize; address += 0x800) {
- 		memcpy(fw_ptr, fw_entry->data + address, 0x800);
- 		ret += usb_control_msg(hdw->usb_dev, pipe, 0xa0, 0x40, address,
--				       0, fw_ptr, 0x800, HZ);
-+				       0, fw_ptr, 0x800, 1000);
- 	}
+diff --git a/drivers/infiniband/hw/hns/hns_roce_main.c b/drivers/infiniband/hw/hns/hns_roce_main.c
+index 764e35a54457e..852aac146ac78 100644
+--- a/drivers/infiniband/hw/hns/hns_roce_main.c
++++ b/drivers/infiniband/hw/hns/hns_roce_main.c
+@@ -475,6 +475,9 @@ static int hns_roce_query_gid(struct ib_device *ib_dev, u8 port_num, int index,
+ static int hns_roce_query_pkey(struct ib_device *ib_dev, u8 port, u16 index,
+ 			       u16 *pkey)
+ {
++	if (index > 0)
++		return -EINVAL;
++
+ 	*pkey = PKEY_ID;
  
- 	trace_firmware("Upload done, releasing device's CPU");
-@@ -1627,7 +1627,7 @@ int pvr2_upload_firmware2(struct pvr2_hd
- 			((u32 *)fw_ptr)[icnt] = swab32(((u32 *)fw_ptr)[icnt]);
- 
- 		ret |= usb_bulk_msg(hdw->usb_dev, pipe, fw_ptr,bcnt,
--				    &actual_length, HZ);
-+				    &actual_length, 1000);
- 		ret |= (actual_length != bcnt);
- 		if (ret) break;
- 		fw_done += bcnt;
-@@ -3486,7 +3486,7 @@ void pvr2_hdw_cpufw_set_enabled(struct p
- 						      0xa0,0xc0,
- 						      address,0,
- 						      hdw->fw_buffer+address,
--						      0x800,HZ);
-+						      0x800,1000);
- 				if (ret < 0) break;
- 			}
- 
-@@ -4011,7 +4011,7 @@ void pvr2_hdw_cpureset_assert(struct pvr
- 	/* Write the CPUCS register on the 8051.  The lsb of the register
- 	   is the reset bit; a 1 asserts reset while a 0 clears it. */
- 	pipe = usb_sndctrlpipe(hdw->usb_dev, 0);
--	ret = usb_control_msg(hdw->usb_dev,pipe,0xa0,0x40,0xe600,0,da,1,HZ);
-+	ret = usb_control_msg(hdw->usb_dev,pipe,0xa0,0x40,0xe600,0,da,1,1000);
- 	if (ret < 0) {
- 		pvr2_trace(PVR2_TRACE_ERROR_LEGS,
- 			   "cpureset_assert(%d) error=%d",val,ret);
+ 	return 0;
+-- 
+2.34.1
+
 
 
