@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A32CC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14917C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359662AbiAXVOV (ORCPT
+        id S1448983AbiAXVOb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:14:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42306 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391161AbiAXUrB (ORCPT
+        Mon, 24 Jan 2022 16:14:31 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41582 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1391233AbiAXUrG (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:47:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A234DC0424D1;
-        Mon, 24 Jan 2022 11:57:29 -0800 (PST)
+        Mon, 24 Jan 2022 15:47:06 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 5E3A5B81249;
-        Mon, 24 Jan 2022 19:57:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EA8EC33DA0;
-        Mon, 24 Jan 2022 19:57:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 48BD060916;
+        Mon, 24 Jan 2022 20:47:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2AE25C340E5;
+        Mon, 24 Jan 2022 20:47:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054247;
-        bh=mzszewQvu+rH1A9pS5GqxEif5yWkdOeZ53lYTxnWPLc=;
+        s=korg; t=1643057225;
+        bh=9wTFvCDXsLGr2ff4ZSyAlfnhmj5VqNbcLjP9DYhL73E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q7hhyE7mYa2a66mIekIhR1ho45Y3gl6P57105IfqPLzWqD2+AG3CsrveSac5kezRm
-         FYmeM1aUisFQe2C+IgZsciWYjt5R8rx6lhn+IQK2Yh/QcJojoM+Q23iiPRypf+K94O
-         ypwPcMGGJIlKiBNPNmwLISrY6aMk58dDYp5Ww8cA=
+        b=hybSJX8ILAJiv4/NCK/UEJQe7qHMIShAm2Kz43zlALuKvgGnkkZzWadshCVS7Ltfw
+         AMUjtOGAPH2jOKsuKVps1XBu3D5GWqlhh/UowGX2x7QWRli43Kekyfp7JrBhf8lL3J
+         gCzw73MCfMoR893fVOFOOjqiFBtShZiIwTYknbNY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 319/563] drm/amd/display: check top_pipe_to_program pointer
-Date:   Mon, 24 Jan 2022 19:41:24 +0100
-Message-Id: <20220124184035.468725778@linuxfoundation.org>
+        stable@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Akira Yokosawa <akiyks@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>
+Subject: [PATCH 5.15 742/846] Documentation: fix firewire.rst ABI file path error
+Date:   Mon, 24 Jan 2022 19:44:19 +0100
+Message-Id: <20220124184126.592261209@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,47 +47,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Yang Li <yang.lee@linux.alibaba.com>
+From: Randy Dunlap <rdunlap@infradead.org>
 
-[ Upstream commit a689e8d1f80012f90384ebac9dcfac4201f9f77e ]
+commit b0ac702f3329cdc8a06dcaac73183d4b5a2b942d upstream.
 
-Clang static analysis reports this error
+Adjust the path of the ABI files for firewire.rst to prevent a
+documentation build error. Prevents this problem:
 
-drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc.c:2870:7: warning:
-Dereference of null pointer [clang-analyzer-core.NullDereference]
-                if
-(top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
-                    ^
+Sphinx parallel build error:
+docutils.utils.SystemMessage: Documentation/driver-api/firewire.rst:22: (SEVERE/4) Problems with "include" directive path:
+InputError: [Errno 2] No such file or directory: '../Documentation/driver-api/ABI/stable/firewire-cdev'.
 
-top_pipe_to_program being NULL is caught as an error
-But then it is used to report the error.
-
-So add a check before using it.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
-Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 2f4830ef96d2 ("FireWire: add driver-api Introduction section")
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Tested-by: Akira Yokosawa <akiyks@gmail.com>
+Link: https://lore.kernel.org/r/20220119033905.4779-1-rdunlap@infradead.org
+Signed-off-by: Jonathan Corbet <corbet@lwn.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/amd/display/dc/core/dc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ Documentation/driver-api/firewire.rst |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
-index 284ed1c8a35ac..93f5229c303e7 100644
---- a/drivers/gpu/drm/amd/display/dc/core/dc.c
-+++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
-@@ -2436,7 +2436,8 @@ static void commit_planes_for_stream(struct dc *dc,
- 	}
+--- a/Documentation/driver-api/firewire.rst
++++ b/Documentation/driver-api/firewire.rst
+@@ -19,7 +19,7 @@ of kernel interfaces is available via ex
+ Firewire char device data structures
+ ====================================
  
- 	if ((update_type != UPDATE_TYPE_FAST) && stream->update_flags.bits.dsc_changed)
--		if (top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
-+		if (top_pipe_to_program &&
-+			top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
- 			if (should_use_dmub_lock(stream->link)) {
- 				union dmub_hw_lock_flags hw_locks = { 0 };
- 				struct dmub_hw_lock_inst_flags inst_flags = { 0 };
--- 
-2.34.1
-
+-.. include:: /ABI/stable/firewire-cdev
++.. include:: ../ABI/stable/firewire-cdev
+     :literal:
+ 
+ .. kernel-doc:: include/uapi/linux/firewire-cdev.h
+@@ -28,7 +28,7 @@ Firewire char device data structures
+ Firewire device probing and sysfs interfaces
+ ============================================
+ 
+-.. include:: /ABI/stable/sysfs-bus-firewire
++.. include:: ../ABI/stable/sysfs-bus-firewire
+     :literal:
+ 
+ .. kernel-doc:: drivers/firewire/core-device.c
 
 
