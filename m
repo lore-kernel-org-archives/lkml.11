@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02738C4707E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95E64C35271
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573046AbiAXVm5 (ORCPT
+        id S1353918AbiAXVnJ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:42:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59408 "EHLO
+        Mon, 24 Jan 2022 16:43:09 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59890 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1446883AbiAXVJh (ORCPT
+        with ESMTP id S1446436AbiAXVIO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:09:37 -0500
+        Mon, 24 Jan 2022 16:08:14 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3DBCCB80FA1;
-        Mon, 24 Jan 2022 21:09:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 57B1EC340E5;
-        Mon, 24 Jan 2022 21:09:34 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D762BB8123A;
+        Mon, 24 Jan 2022 21:08:12 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E213DC340E7;
+        Mon, 24 Jan 2022 21:08:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058575;
-        bh=zYvhXmgk5raJcaWJoqoTorEjCgspp2OTg+ecp5a6CF8=;
+        s=korg; t=1643058491;
+        bh=U+Nb0NPZWLh7Nmoze8/HV96EGs6PbpH8kYa4V7Ihd9c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1hjEWtHRioKA9xbNHNNnCCd+350ZLeg/N+5D0CjFdxzrL992o7rO4QhO8BNoATinN
-         V4CkSbzoex7beFE6imUrrZGzi7r+oziw66G1b5DTggwuypVjHgDTcFvOXjMdoYdvmE
-         nqYOvJm4DkSS0dSr+qdOWj8v2mnGrThvzEPAGGuo=
+        b=WiYz4HNTW7rkx/X1/3zi0tj0lF+HlpmZvMgmjLHrfDNwwnvltp5K75CXRqi4gZeXP
+         4X+GQpVa7NhBSOUGPp6i594gtpN1D5M8RoSAJpMhdA0nNzSmiVASJo4uTxUl//E6i7
+         D7uD5+FhZKG6WMZx11yxKtggLxQK2Fb7HZRXSUjE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0332/1039] mmc: meson-mx-sdhc: add IRQ check
-Date:   Mon, 24 Jan 2022 19:35:21 +0100
-Message-Id: <20220124184136.470730761@linuxfoundation.org>
+Subject: [PATCH 5.16 0307/1039] ARM: dts: armada-38x: Add generic compatible to UART nodes
+Date:   Mon, 24 Jan 2022 19:34:56 +0100
+Message-Id: <20220124184135.632924047@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,42 +49,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sergey Shtylyov <s.shtylyov@omp.ru>
+From: Marek Behún <kabel@kernel.org>
 
-[ Upstream commit 77bed755e0f06135faccdd3948863703f9a6e640 ]
+[ Upstream commit 62480772263ab6b52e758f2346c70a526abd1d28 ]
 
-The driver neglects to check the result of platform_get_irq()'s call and
-blithely passes the negative error codes to devm_request_threaded_irq()
-(which takes *unsigned* IRQ #), causing it to fail with -EINVAL, overriding
-an original error code. Stop calling devm_request_threaded_irq() with the
-invalid IRQ #s.
+Add generic compatible string "ns16550a" to serial port nodes of Armada
+38x.
 
-Fixes: e4bf1b0970ef ("mmc: host: meson-mx-sdhc: new driver for the Amlogic Meson SDHC host")
-Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Link: https://lore.kernel.org/r/20211217202717.10041-2-s.shtylyov@omp.ru
-Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+This makes it possible to use earlycon.
+
+Fixes: 0d3d96ab0059 ("ARM: mvebu: add Device Tree description of the Armada 380/385 SoCs")
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Marek Behún <kabel@kernel.org>
+Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/mmc/host/meson-mx-sdhc-mmc.c | 5 +++++
- 1 file changed, 5 insertions(+)
+ arch/arm/boot/dts/armada-38x.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/mmc/host/meson-mx-sdhc-mmc.c b/drivers/mmc/host/meson-mx-sdhc-mmc.c
-index 8fdd0bbbfa21f..28aa78aa08f3f 100644
---- a/drivers/mmc/host/meson-mx-sdhc-mmc.c
-+++ b/drivers/mmc/host/meson-mx-sdhc-mmc.c
-@@ -854,6 +854,11 @@ static int meson_mx_sdhc_probe(struct platform_device *pdev)
- 		goto err_disable_pclk;
+diff --git a/arch/arm/boot/dts/armada-38x.dtsi b/arch/arm/boot/dts/armada-38x.dtsi
+index 9b1a24cc5e91f..df3c8d1d8f641 100644
+--- a/arch/arm/boot/dts/armada-38x.dtsi
++++ b/arch/arm/boot/dts/armada-38x.dtsi
+@@ -168,7 +168,7 @@
+ 			};
  
- 	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0) {
-+		ret = irq;
-+		goto err_disable_pclk;
-+	}
-+
- 	ret = devm_request_threaded_irq(dev, irq, meson_mx_sdhc_irq,
- 					meson_mx_sdhc_irq_thread, IRQF_ONESHOT,
- 					NULL, host);
+ 			uart0: serial@12000 {
+-				compatible = "marvell,armada-38x-uart";
++				compatible = "marvell,armada-38x-uart", "ns16550a";
+ 				reg = <0x12000 0x100>;
+ 				reg-shift = <2>;
+ 				interrupts = <GIC_SPI 12 IRQ_TYPE_LEVEL_HIGH>;
+@@ -178,7 +178,7 @@
+ 			};
+ 
+ 			uart1: serial@12100 {
+-				compatible = "marvell,armada-38x-uart";
++				compatible = "marvell,armada-38x-uart", "ns16550a";
+ 				reg = <0x12100 0x100>;
+ 				reg-shift = <2>;
+ 				interrupts = <GIC_SPI 13 IRQ_TYPE_LEVEL_HIGH>;
 -- 
 2.34.1
 
