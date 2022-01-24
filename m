@@ -2,132 +2,105 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3F33C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:09:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC135C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:12:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376754AbiAXVJP (ORCPT
+        id S1446856AbiAXVJc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:09:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42546 "EHLO
+        Mon, 24 Jan 2022 16:09:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390641AbiAXUp7 (ORCPT
+        with ESMTP id S1390642AbiAXUp7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:45:59 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6C7EC0613BD;
-        Mon, 24 Jan 2022 11:55:50 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C04EB80FA1;
-        Mon, 24 Jan 2022 19:55:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A11DFC340E5;
-        Mon, 24 Jan 2022 19:55:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054149;
-        bh=uDbfPJ73HUWqhPHuTRXhY7UbI0yEEfy4ihntlu9sniM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QZv3l+6Q3hPPdY4o8Xr4Qt2aqiqio2hdWf/RhiYubfvr9J46JjG/asJEggVE1DfIi
-         glBJ5lEeC6cleNGp8Bwp5Pz3IT6tLjstmr9Lr3kOuWslU/0wrJ/DAyx6oajaT0LJWx
-         ze5zCeOrcDsZmspy3PP3PUgPZwGMPZZHZEea44VU=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Conor Dooley <conor.dooley@microchip.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 295/563] clk: bm1880: remove kfrees on static allocations
-Date:   Mon, 24 Jan 2022 19:41:00 +0100
-Message-Id: <20220124184034.638740619@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
-User-Agent: quilt/0.66
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D671C061340
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:55:57 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id e17so338778ljk.5
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:55:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CsGwBiMEkwe4bLg19ywjdJZ3/5M1hRBHlVRcQEjbGmo=;
+        b=rtbY+gqfHYd5dj6xP5LOP4QpTVnE0wZG3g8n7uzpDUJ4jVInle5CceB62w4oNxWy8u
+         xXN8vN7IrBOKmQcgtvQFaTfgpVvlZ1C7rg8TWBiysAfRSiqHZV5kZTrpHFseJFjMV4Od
+         +Jk5BAqTQjingEkJlsAfH3x7sfC03xhNfh0ADDu2Y2dMke7fwHzLmPKHUaTG7d2OKHNx
+         fysiqoVSVENsXqjTFvu/VWsdgDVMLFS6QU1EAZh0HnTGPYzaozPOI7hgaS4vbnNHE24k
+         ov5CQ5YvZP7tmNZBSSD6kToX7EO1i/6HTOWafDrGLNTOSJU6Ciew4FpN1aYt0fGglLwQ
+         8/vQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CsGwBiMEkwe4bLg19ywjdJZ3/5M1hRBHlVRcQEjbGmo=;
+        b=0iNCbLh1iZBgrpmCa/BfneWnmFginOLYGf2hJRxdY1SiRwvCaArA7vlxdw5K8GOyEW
+         PSKxIaHNaxYYEl/TZyFbbXTcl5zthV/Btz3HdHSKz92lPomR5gUsXDHw/HmpsvOz4pQL
+         c1nVcDK758rlgMWBdez2UmbD2QBoQNFLs7lTKxPy57Vsnt8zdcraiKkP3tSXK7ShZLbI
+         V7zJr54YZMydCrKRrUVfICmg44Cda0H6scSsz1+uvGGMXhWEI/HlNXf67x/pPSEPEMXY
+         JgvHriXZNGTxAIfFzdWaxWsGgXkvf+86H3Y0RDp9YKxpLwvMt3pFEY8WEtvRAfA5xlVE
+         KLLg==
+X-Gm-Message-State: AOAM531b1EAwTokuS3HhkjsORZaeNJAWrmDtExRr7iYQ2CKaRLhr928I
+        BY/v3224VR40G3tF9rPoThwmfJY20nzKgpA1HPX02g==
+X-Google-Smtp-Source: ABdhPJyOtLsKZqsENjScci++5Pp4Q0kOx1naLw57dM5+mMcu04T6dj7bnpqZLaem4TA31GMKPuqL3D7+h16zW5aDmyc=
+X-Received: by 2002:a2e:8283:: with SMTP id y3mr12029632ljg.128.1643054155425;
+ Mon, 24 Jan 2022 11:55:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <20220120053100.408816-1-masahiroy@kernel.org>
+In-Reply-To: <20220120053100.408816-1-masahiroy@kernel.org>
+From:   Nick Desaulniers <ndesaulniers@google.com>
+Date:   Mon, 24 Jan 2022 11:55:43 -0800
+Message-ID: <CAKwvOd=52G2J2nXRbefjJ57B_ySZaZ6SD8UwwHziZMPoR6ABHQ@mail.gmail.com>
+Subject: Re: [PATCH] Revert "Makefile: Do not quote value for CONFIG_CC_IMPLICIT_FALLTHROUGH"
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     linux-kbuild@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arch@vger.kernel.org, Michal Marek <michal.lkml@markovi.net>,
+        carnil@debian.org, Kees Cook <keescook@chromium.org>,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Nathan Chancellor <nathan@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Conor Dooley <conor.dooley@microchip.com>
++ Salvatore, Kees, Gustavo, Nathan
 
-[ Upstream commit c861c1be3897845313a0df47804b1db37c7052e1 ]
+On Wed, Jan 19, 2022 at 9:31 PM Masahiro Yamada <masahiroy@kernel.org> wrote:
+>
+> This reverts commit cd8c917a56f20f48748dd43d9ae3caff51d5b987.
+>
+> Commit 129ab0d2d9f3 ("kbuild: do not quote string values in
+> include/config/auto.conf") provided the final solution.
+>
+> Now reverting the temporary workaround.
+>
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
 
-bm1880_clk_unregister_pll & bm1880_clk_unregister_div both try to
-free statically allocated variables, so remove those kfrees.
+Reviewed-by: Nick Desaulniers <ndesaulniers@google.com>
 
-For example, if we take L703 kfree(div_hw):
-- div_hw is a bm1880_div_hw_clock pointer
-- in bm1880_clk_register_plls this is pointed to an element of arg1:
-  struct bm1880_div_hw_clock *clks
-- in the probe, where bm1880_clk_register_plls is called arg1 is
-  bm1880_div_clks, defined on L371:
-  static struct bm1880_div_hw_clock bm1880_div_clks[]
+> ---
+>
+>  Makefile | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/Makefile b/Makefile
+> index 3f07f0f04475..c94559a97dca 100644
+> --- a/Makefile
+> +++ b/Makefile
+> @@ -778,7 +778,7 @@ stackp-flags-$(CONFIG_STACKPROTECTOR_STRONG)      := -fstack-protector-strong
+>  KBUILD_CFLAGS += $(stackp-flags-y)
+>
+>  KBUILD_CFLAGS-$(CONFIG_WERROR) += -Werror
+> -KBUILD_CFLAGS += $(KBUILD_CFLAGS-y) $(CONFIG_CC_IMPLICIT_FALLTHROUGH:"%"=%)
+> +KBUILD_CFLAGS += $(KBUILD_CFLAGS-y) $(CONFIG_CC_IMPLICIT_FALLTHROUGH)
+>
+>  ifdef CONFIG_CC_IS_CLANG
+>  KBUILD_CPPFLAGS += -Qunused-arguments
+> --
+> 2.32.0
+>
 
-Signed-off-by: Conor Dooley <conor.dooley@microchip.com>
-Fixes: 1ab4601da55b ("clk: Add common clock driver for BM1880 SoC")
-Link: https://lore.kernel.org/r/20211223154244.1024062-1-conor.dooley@microchip.com
-Signed-off-by: Stephen Boyd <sboyd@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/clk/clk-bm1880.c | 20 ++------------------
- 1 file changed, 2 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/clk/clk-bm1880.c b/drivers/clk/clk-bm1880.c
-index e6d6599d310a1..fad78a22218e8 100644
---- a/drivers/clk/clk-bm1880.c
-+++ b/drivers/clk/clk-bm1880.c
-@@ -522,14 +522,6 @@ static struct clk_hw *bm1880_clk_register_pll(struct bm1880_pll_hw_clock *pll_cl
- 	return hw;
- }
- 
--static void bm1880_clk_unregister_pll(struct clk_hw *hw)
--{
--	struct bm1880_pll_hw_clock *pll_hw = to_bm1880_pll_clk(hw);
--
--	clk_hw_unregister(hw);
--	kfree(pll_hw);
--}
--
- static int bm1880_clk_register_plls(struct bm1880_pll_hw_clock *clks,
- 				    int num_clks,
- 				    struct bm1880_clock_data *data)
-@@ -555,7 +547,7 @@ static int bm1880_clk_register_plls(struct bm1880_pll_hw_clock *clks,
- 
- err_clk:
- 	while (i--)
--		bm1880_clk_unregister_pll(data->hw_data.hws[clks[i].pll.id]);
-+		clk_hw_unregister(data->hw_data.hws[clks[i].pll.id]);
- 
- 	return PTR_ERR(hw);
- }
-@@ -695,14 +687,6 @@ static struct clk_hw *bm1880_clk_register_div(struct bm1880_div_hw_clock *div_cl
- 	return hw;
- }
- 
--static void bm1880_clk_unregister_div(struct clk_hw *hw)
--{
--	struct bm1880_div_hw_clock *div_hw = to_bm1880_div_clk(hw);
--
--	clk_hw_unregister(hw);
--	kfree(div_hw);
--}
--
- static int bm1880_clk_register_divs(struct bm1880_div_hw_clock *clks,
- 				    int num_clks,
- 				    struct bm1880_clock_data *data)
-@@ -729,7 +713,7 @@ static int bm1880_clk_register_divs(struct bm1880_div_hw_clock *clks,
- 
- err_clk:
- 	while (i--)
--		bm1880_clk_unregister_div(data->hw_data.hws[clks[i].div.id]);
-+		clk_hw_unregister(data->hw_data.hws[clks[i].div.id]);
- 
- 	return PTR_ERR(hw);
- }
 -- 
-2.34.1
-
-
-
+Thanks,
+~Nick Desaulniers
