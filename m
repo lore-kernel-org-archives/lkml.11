@@ -2,68 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AFF0C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19544C41535
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 04:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S246824AbiAYEpi (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 23:45:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.129.124]:36447 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1325465AbiAYDhZ (ORCPT
+        id S247702AbiAYEpu (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 23:45:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53454 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1325574AbiAYDhr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 22:37:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1643081832;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=ajFuIcB4jTNx/UM4V4dBkhnn/5IgHZMqOqwixvXnOT0=;
-        b=I0ZLdBtv90osBFzCa7i2owsYYYuFVz1AJnt2Dqb2K6sts+NHU8wvrKxkt5E9zTLGQSvl0W
-        IxrWOGJVpAnt3QHjzqch5a4puMD29735cYB0pjI+2DQIS8IpUgZuSQBIF2TJtRZJQuPfcP
-        +nIyEEh/0ex/ZNvYj22c0r71xq7N9I8=
-Received: from mail-pj1-f72.google.com (mail-pj1-f72.google.com
- [209.85.216.72]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-513-DHIIXYYYPUuVlpw80EJ3Uw-1; Mon, 24 Jan 2022 22:37:10 -0500
-X-MC-Unique: DHIIXYYYPUuVlpw80EJ3Uw-1
-Received: by mail-pj1-f72.google.com with SMTP id s13-20020a17090a5d0d00b001b4f4299cf9so11615310pji.3
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 19:37:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ajFuIcB4jTNx/UM4V4dBkhnn/5IgHZMqOqwixvXnOT0=;
-        b=InNpnOXd8mwzjVwwUq5GKDu6rlKTBNpSipQ81MGxgtelaHj6piVuhlPH+vWuP41pRE
-         GzAbrIC8woEhXY+rPgKCguKnsYJmbDSxdgVbWOB0v6m+Q0qZYvfKLC5UINEpf6t+mLq6
-         BFbk06/AXJCHEWfegAN0zKB739W7+ITvuFDeomwyz+l/28ETjtB+x7F5MT3CoEpRMOJt
-         epMEmI54q6wJ2zFvM5tT7reeET0p2vRfe+19v5uzy3HAlnu5t6z7YnnBxYy+Ft030DlS
-         YeggHBZq9m+PV0weA8E2MizW68zThQq4173ZgYKudSzCx5lKFg73Lc3jv7tXxcJxAuBi
-         CMpw==
-X-Gm-Message-State: AOAM531SnZmbadSd8gRKWTTIPEGL/l0BT6qjYTTt3dIyW77CacZ0+j7n
-        oCgJmpBmbRLEute2yzku0PAJTTj+8LiuJ2C10L+pHDZMrWqmRvYa1ijuiUZQlprAH7oka/voi8B
-        HigBLAvARRZrsAoHk4GEIKxFd
-X-Received: by 2002:a17:90b:4a85:: with SMTP id lp5mr856682pjb.25.1643081829770;
-        Mon, 24 Jan 2022 19:37:09 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyYgG+4F8lTQQQJjbb6KtDmoIF/2sWEyisHmjmUUYY7rAedb9yb1SPGbOPrnSIEEfMK7MNtgA==
-X-Received: by 2002:a17:90b:4a85:: with SMTP id lp5mr856662pjb.25.1643081829493;
-        Mon, 24 Jan 2022 19:37:09 -0800 (PST)
-Received: from localhost.localdomain ([94.177.118.73])
-        by smtp.gmail.com with ESMTPSA id oj7sm718783pjb.43.2022.01.24.19.37.05
-        (version=TLS1_3 cipher=TLS_CHACHA20_POLY1305_SHA256 bits=256/256);
-        Mon, 24 Jan 2022 19:37:09 -0800 (PST)
-From:   Peter Xu <peterx@redhat.com>
-To:     linux-mm@kvack.org, linux-kernel@vger.kernel.org
-Cc:     peterx@redhat.com, Andrew Morton <akpm@linux-foundation.org>,
-        Andrea Arcangeli <aarcange@redhat.com>,
-        Jan Kara <jack@suse.cz>,
-        =?UTF-8?q?J=C3=A9r=C3=B4me=20Glisse?= <jglisse@redhat.com>,
-        John Hubbard <jhubbard@nvidia.com>,
-        "Kirill A . Shutemov" <kirill.shutemov@linux.intel.com>,
-        Alex Williamson <alex.williamson@redhat.com>
-Subject: [PATCH] mm: Fix invalid page pointer returned with FOLL_PIN gups
-Date:   Tue, 25 Jan 2022 11:37:00 +0800
-Message-Id: <20220125033700.69705-1-peterx@redhat.com>
-X-Mailer: git-send-email 2.32.0
+        Mon, 24 Jan 2022 22:37:47 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7171FC0811AD;
+        Mon, 24 Jan 2022 12:33:09 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3A728B81229;
+        Mon, 24 Jan 2022 20:33:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4E08CC340E5;
+        Mon, 24 Jan 2022 20:33:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643056387;
+        bh=xSjM7sQ/q68pyXWnObsGO6CNownTJ0gLgJiruFyMyig=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=VXBnwyzbIHwl6L8iMtNJKDl7qiNsg18pcPzw2jKgCKdRZEvOT2VsNhdM7UjTQcAYk
+         od3ZAmGHHdONvF7dK/NWj6Rv7r6TA/AyohaXh+Xln+7v4/6BUW6SWs2V8XAjtFe1W5
+         wAKseeDt5RFOu1DiQLHgBtZ+LrlqUbpxm2CLc/Bg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Hengqi Chen <hengqi.chen@gmail.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 466/846] selftests/bpf: Fix memory leaks in btf_type_c_dump() helper
+Date:   Mon, 24 Jan 2022 19:39:43 +0100
+Message-Id: <20220124184117.052223356@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -71,76 +50,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-Alex reported invalid page pointer returned with pin_user_pages_remote() from
-vfio after upstream commit 4b6c33b32296 ("vfio/type1: Prepare for batched
-pinning with struct vfio_batch").  This problem breaks NVIDIA vfio mdev.
+From: Andrii Nakryiko <andrii@kernel.org>
 
-It turns out that it's not the fault of the vfio commit; however after vfio
-switches to a full page buffer to store the page pointers it starts to expose
-the problem easier.
+[ Upstream commit 8ba285874913da21ca39a46376e9cc5ce0f45f94 ]
 
-The problem is for VM_PFNMAP vmas we should normally fail with an -EFAULT then
-vfio will carry on to handle the MMIO regions.  However when the bug triggered,
-follow_page_mask() returned -EEXIST for such a page, which will jump over the
-current page, leaving that entry in **pages untouched.  However the caller is
-not aware of it, hence the caller will reference the page as usual even if the
-pointer data can be anything.
+Free up memory and resources used by temporary allocated memstream and
+btf_dump instance.
 
-We had that -EEXIST logic since commit 1027e4436b6a ("mm: make GUP handle pfn
-mapping unless FOLL_GET is requested") which seems very reasonable.  It could
-be that when we reworked GUP with FOLL_PIN we could have overlooked that
-special path in commit 3faa52c03f44 ("mm/gup: track FOLL_PIN pages"), even if
-that commit rightfully touched up follow_devmap_pud() on checking FOLL_PIN when
-it needs to return an -EEXIST.
-
-Since at it, add another WARN_ON_ONCE() at the -EEXIST handling to make sure we
-mustn't have **pages set when reaching there, because otherwise it means the
-caller will try to read a garbage right after __get_user_pages() returns.
-
-Attaching the Fixes to the FOLL_PIN rework commit, as it happened later than
-1027e4436b6a.
-
-Cc: Andrea Arcangeli <aarcange@redhat.com>
-Cc: Andrew Morton <akpm@linux-foundation.org>
-Cc: Jan Kara <jack@suse.cz>
-Cc: Jérôme Glisse <jglisse@redhat.com>
-Cc: John Hubbard <jhubbard@nvidia.com>
-Cc: Kirill A. Shutemov <kirill.shutemov@linux.intel.com>
-Fixes: 3faa52c03f44 ("mm/gup: track FOLL_PIN pages")
-Reported-by: Alex Williamson <alex.williamson@redhat.com>
-Debugged-by: Alex Williamson <alex.williamson@redhat.com>
-Signed-off-by: Peter Xu <peterx@redhat.com>
+Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+Signed-off-by: Alexei Starovoitov <ast@kernel.org>
+Reviewed-by: Hengqi Chen <hengqi.chen@gmail.com>
+Link: https://lore.kernel.org/bpf/20211107165521.9240-4-andrii@kernel.org
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- mm/gup.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+ tools/testing/selftests/bpf/btf_helpers.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/mm/gup.c b/mm/gup.c
-index f0af462ac1e2..8ebc04058e97 100644
---- a/mm/gup.c
-+++ b/mm/gup.c
-@@ -440,7 +440,7 @@ static int follow_pfn_pte(struct vm_area_struct *vma, unsigned long address,
- 		pte_t *pte, unsigned int flags)
- {
- 	/* No page to get reference */
--	if (flags & FOLL_GET)
-+	if (flags & (FOLL_GET | FOLL_PIN))
- 		return -EFAULT;
+diff --git a/tools/testing/selftests/bpf/btf_helpers.c b/tools/testing/selftests/bpf/btf_helpers.c
+index b692e6ead9b55..0a4ad7cb2c200 100644
+--- a/tools/testing/selftests/bpf/btf_helpers.c
++++ b/tools/testing/selftests/bpf/btf_helpers.c
+@@ -246,18 +246,23 @@ const char *btf_type_c_dump(const struct btf *btf)
+ 	d = btf_dump__new(btf, NULL, &opts, btf_dump_printf);
+ 	if (libbpf_get_error(d)) {
+ 		fprintf(stderr, "Failed to create btf_dump instance: %ld\n", libbpf_get_error(d));
+-		return NULL;
++		goto err_out;
+ 	}
  
- 	if (flags & FOLL_TOUCH) {
-@@ -1181,7 +1181,13 @@ static long __get_user_pages(struct mm_struct *mm,
- 			/*
- 			 * Proper page table entry exists, but no corresponding
- 			 * struct page.
-+			 *
-+			 * Warn if we jumped over even with a valid **pages.
-+			 * It shouldn't trigger in practise, but when there's
-+			 * buggy returns on -EEXIST we'll warn before returning
-+			 * an invalid page pointer in the array.
- 			 */
-+			WARN_ON_ONCE(pages);
- 			goto next_page;
- 		} else if (IS_ERR(page)) {
- 			ret = PTR_ERR(page);
+ 	for (i = 1; i <= btf__get_nr_types(btf); i++) {
+ 		err = btf_dump__dump_type(d, i);
+ 		if (err) {
+ 			fprintf(stderr, "Failed to dump type [%d]: %d\n", i, err);
+-			return NULL;
++			goto err_out;
+ 		}
+ 	}
+ 
++	btf_dump__free(d);
+ 	fflush(buf_file);
+ 	fclose(buf_file);
+ 	return buf;
++err_out:
++	btf_dump__free(d);
++	fclose(buf_file);
++	return NULL;
+ }
 -- 
-2.32.0
+2.34.1
+
+
 
