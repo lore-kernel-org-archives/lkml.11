@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA886C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B84D2C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386568AbiAXUfk (ORCPT
+        id S1386477AbiAXUfc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:35:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33790 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355214AbiAXUNW (ORCPT
+        Mon, 24 Jan 2022 15:35:32 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40726 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358135AbiAXUNp (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:13:22 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B52EC01D7CA;
-        Mon, 24 Jan 2022 11:34:32 -0800 (PST)
+        Mon, 24 Jan 2022 15:13:45 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 53244B811FC;
-        Mon, 24 Jan 2022 19:34:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71581C340E5;
-        Mon, 24 Jan 2022 19:34:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 92F46613FB;
+        Mon, 24 Jan 2022 20:13:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6FDD0C36AE7;
+        Mon, 24 Jan 2022 20:13:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052870;
-        bh=TcxqqP3k9ttYzsoT+++OolzMeJ1YguBUZ1x8o29WZxg=;
+        s=korg; t=1643055224;
+        bh=R3SYvAKMvIzdD7gfCpbP1XBCEPkDA2vnynlCBsHNGkE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ku7Efkn0xzFgM22oLcm1cJ3gJf7aDlY/NQ5NMufPiVdUHsdDSoX0ORo5rWNp1PvPt
-         iJVvhbqsEkw7DvenL4uHHrhEcckW5QkiFWVqwYxwKzcOiD7mFVrTgig2j+CaQIAZzS
-         b5iOFG/oryM1Ld/VzDPPAYmv7WAIBQxuEKjlK6Zk=
+        b=zme50B2eUj/3zp4v/l+VHqr/WqXVcrsBcNSKZfdAHK6oo462Pl7VNWLSeAXDXGi31
+         cfajdQYGm4XSxLFYbaomqTh75Vp95hmAs0TowBXvxKsoDwg4ignrcHbhcqkr+YS03u
+         o8d5AWoZI06RueGhQ2CiIwdMyHJycaDOLb4fsZrY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johannes Berg <johannes.berg@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 199/320] iwlwifi: fix leaks/bad data after failed firmware load
-Date:   Mon, 24 Jan 2022 19:43:03 +0100
-Message-Id: <20220124184000.405209110@linuxfoundation.org>
+        stable@vger.kernel.org, Michael Kuron <michael.kuron@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Subject: [PATCH 5.15 048/846] media: dib0700: fix undefined behavior in tuner shutdown
+Date:   Mon, 24 Jan 2022 19:32:45 +0100
+Message-Id: <20220124184102.610803008@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,69 +46,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johannes Berg <johannes.berg@intel.com>
+From: Michael Kuron <michael.kuron@gmail.com>
 
-[ Upstream commit ab07506b0454bea606095951e19e72c282bfbb42 ]
+commit f7b77ebe6d2f49c7747b2d619586d1aa33f9ea91 upstream.
 
-If firmware load fails after having loaded some parts of the
-firmware, e.g. the IML image, then this would leak. For the
-host command list we'd end up running into a WARN on the next
-attempt to load another firmware image.
+This fixes a problem where closing the tuner would leave it in a state
+where it would not tune to any channel when reopened. This problem was
+discovered as part of https://github.com/hselasky/webcamd/issues/16.
 
-Fix this by calling iwl_dealloc_ucode() on failures, and make
-that also clear the data so we start fresh on the next round.
+Since adap->id is 0 or 1, this bit-shift overflows, which is undefined
+behavior. The driver still worked in practice as the overflow would in
+most environments result in 0, which rendered the line a no-op. When
+running the driver as part of webcamd however, the overflow could lead
+to 0xff due to optimizations by the compiler, which would, in the end,
+improperly shut down the tuner.
 
-Signed-off-by: Johannes Berg <johannes.berg@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211210110539.1f742f0eb58a.I1315f22f6aa632d94ae2069f85e1bca5e734dce0@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+The bug is a regression introduced in the commit referenced below. The
+present patch causes identical behavior to before that commit for
+adap->id equal to 0 or 1. The driver does not contain support for
+dib0700 devices with more adapters, assuming such even exist.
+
+Tests have been performed with the Xbox One Digital TV Tuner on amd64.
+Not all dib0700 devices are expected to be affected by the regression;
+this code path is only taken by those with incorrect endpoint numbers.
+
+Link: https://lore.kernel.org/linux-media/1d2fc36d94ced6f67c7cc21dcc469d5e5bdd8201.1632689033.git.mchehab+huawei@kernel.org
+
+Cc: stable@vger.kernel.org
+Fixes: 7757ddda6f4f ("[media] DiB0700: add function to change I2C-speed")
+Signed-off-by: Michael Kuron <michael.kuron@gmail.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/intel/iwlwifi/iwl-drv.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/media/usb/dvb-usb/dib0700_core.c |    2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-index e68366f248fe3..c1a2fb154fe91 100644
---- a/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-+++ b/drivers/net/wireless/intel/iwlwifi/iwl-drv.c
-@@ -183,6 +183,9 @@ static void iwl_dealloc_ucode(struct iwl_drv *drv)
- 
- 	for (i = 0; i < IWL_UCODE_TYPE_MAX; i++)
- 		iwl_free_fw_img(drv, drv->fw.img + i);
-+
-+	/* clear the data for the aborted load case */
-+	memset(&drv->fw, 0, sizeof(drv->fw));
- }
- 
- static int iwl_alloc_fw_desc(struct iwl_drv *drv, struct fw_desc *desc,
-@@ -1338,6 +1341,7 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 	int i;
- 	bool load_module = false;
- 	bool usniffer_images = false;
-+	bool failure = true;
- 
- 	fw->ucode_capa.max_probe_length = IWL_DEFAULT_MAX_PROBE_LENGTH;
- 	fw->ucode_capa.standard_phy_calibration_size =
-@@ -1604,6 +1608,7 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 				op->name, err);
- #endif
- 	}
-+	failure = false;
- 	goto free;
- 
-  try_again:
-@@ -1619,6 +1624,9 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
- 	complete(&drv->request_firmware_complete);
- 	device_release_driver(drv->trans->dev);
-  free:
-+	if (failure)
-+		iwl_dealloc_ucode(drv);
-+
- 	if (pieces) {
- 		for (i = 0; i < ARRAY_SIZE(pieces->img); i++)
- 			kfree(pieces->img[i].sec);
--- 
-2.34.1
-
+--- a/drivers/media/usb/dvb-usb/dib0700_core.c
++++ b/drivers/media/usb/dvb-usb/dib0700_core.c
+@@ -618,8 +618,6 @@ int dib0700_streaming_ctrl(struct dvb_us
+ 		deb_info("the endpoint number (%i) is not correct, use the adapter id instead", adap->fe_adap[0].stream.props.endpoint);
+ 		if (onoff)
+ 			st->channel_state |=	1 << (adap->id);
+-		else
+-			st->channel_state |=	1 << ~(adap->id);
+ 	} else {
+ 		if (onoff)
+ 			st->channel_state |=	1 << (adap->fe_adap[0].stream.props.endpoint-2);
 
 
