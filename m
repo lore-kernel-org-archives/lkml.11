@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 278F8C4321E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:42:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D2CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:42:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1389526AbiAXUmF (ORCPT
+        id S1356553AbiAXUmY (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:42:05 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:46800 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349067AbiAXUWs (ORCPT
+        Mon, 24 Jan 2022 15:42:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37224 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356327AbiAXUXP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:22:48 -0500
+        Mon, 24 Jan 2022 15:23:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57368C06124C;
+        Mon, 24 Jan 2022 11:10:28 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 579CC61502;
-        Mon, 24 Jan 2022 20:22:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F8E8C340E5;
-        Mon, 24 Jan 2022 20:22:46 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E6EE860918;
+        Mon, 24 Jan 2022 19:10:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E607BC340E5;
+        Mon, 24 Jan 2022 19:10:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055767;
-        bh=RkngHeAeVCkGRFWJ2UEUeqVNrmIJmwasCnUlDu8quqk=;
+        s=korg; t=1643051427;
+        bh=64djAcdFOZX9lox2mWpaTdgR3LKocNI2zq5giDpMUEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fhuRwTXJ/vX6b3dKAjx5k0ucZ/OjqlAfwNJcI2WmPeJ4qZRAnGqBCDmuUmZvoVK3a
-         t0JGgpia5CMAY1EDEvQ2zztQVSbeoAKFqVwqX3PGTVgtTYALDHY2WQAtFugNJZsGAR
-         ndAL4gNLQmyKqkdAOwWdzPX0Q3ObMLCKUzsYHv8U=
+        b=WxDo+Be0Oqwne+MEmHm8qBAoeH9shf1GqmsVfiQq7yK1XBTv6rhm8ZLwb2TFlm8kc
+         rVPmXXEONn9uFs+dLWBsIjWqikxw+zb7SpeAFfDS524dkYiiDD277HkP680bntj5Zv
+         Wpzbr8IUZzHmtV6bR22Rj9HrZY1madrRPHfikbpY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Douglas Anderson <dianders@chromium.org>,
-        TOTE Robot <oslab@tsinghua.edu.cn>,
-        Brian Norris <briannorris@chromium.org>,
-        Kalle Valo <kvalo@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 226/846] mwifiex: Fix possible ABBA deadlock
-Date:   Mon, 24 Jan 2022 19:35:43 +0100
-Message-Id: <20220124184108.712569914@linuxfoundation.org>
+        stable@vger.kernel.org, Julius Werner <jwerner@chromium.org>,
+        Ben Hutchings <ben@decadent.org.uk>
+Subject: [PATCH 4.14 159/186] firmware: Update Kconfig help text for Google firmware
+Date:   Mon, 24 Jan 2022 19:43:54 +0100
+Message-Id: <20220124183942.212796171@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,82 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Brian Norris <briannorris@chromium.org>
+From: Ben Hutchings <ben@decadent.org.uk>
 
-[ Upstream commit 1b8bb8919ef81bfc8873d223b9361f1685f2106d ]
+commit d185a3466f0cd5af8f1c5c782c53bc0e6f2e7136 upstream.
 
-Quoting Jia-Ju Bai <baijiaju1990@gmail.com>:
+The help text for GOOGLE_FIRMWARE states that it should only be
+enabled when building a kernel for Google's own servers.  However,
+many of the drivers dependent on it are also useful on Chromebooks or
+on any platform using coreboot.
 
-  mwifiex_dequeue_tx_packet()
-     spin_lock_bh(&priv->wmm.ra_list_spinlock); --> Line 1432 (Lock A)
-     mwifiex_send_addba()
-       spin_lock_bh(&priv->sta_list_spinlock); --> Line 608 (Lock B)
+Update the help text to reflect this double duty.
 
-  mwifiex_process_sta_tx_pause()
-     spin_lock_bh(&priv->sta_list_spinlock); --> Line 398 (Lock B)
-     mwifiex_update_ralist_tx_pause()
-       spin_lock_bh(&priv->wmm.ra_list_spinlock); --> Line 941 (Lock A)
-
-Similar report for mwifiex_process_uap_tx_pause().
-
-While the locking expectations in this driver are a bit unclear, the
-Fixed commit only intended to protect the sta_ptr, so we can drop the
-lock as soon as we're done with it.
-
-IIUC, this deadlock cannot actually happen, because command event
-processing (which calls mwifiex_process_sta_tx_pause()) is
-sequentialized with TX packet processing (e.g.,
-mwifiex_dequeue_tx_packet()) via the main loop (mwifiex_main_process()).
-But it's good not to leave this potential issue lurking.
-
-Fixes: f0f7c2275fb9 ("mwifiex: minor cleanups w/ sta_list_spinlock in cfg80211.c")
-Cc: Douglas Anderson <dianders@chromium.org>
-Reported-by: TOTE Robot <oslab@tsinghua.edu.cn>
-Link: https://lore.kernel.org/linux-wireless/0e495b14-efbb-e0da-37bd-af6bd677ee2c@gmail.com/
-Signed-off-by: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Signed-off-by: Kalle Valo <kvalo@kernel.org>
-Link: https://lore.kernel.org/r/YaV0pllJ5p/EuUat@google.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: d384d6f43d1e ("firmware: google memconsole: Add coreboot support")
+Reviewed-by: Julius Werner <jwerner@chromium.org>
+Signed-off-by: Ben Hutchings <ben@decadent.org.uk>
+Link: https://lore.kernel.org/r/20180618225540.GD14131@decadent.org.uk
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/marvell/mwifiex/sta_event.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/firmware/google/Kconfig |    6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/wireless/marvell/mwifiex/sta_event.c b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-index 68c63268e2e6b..2b2e6e0166e14 100644
---- a/drivers/net/wireless/marvell/mwifiex/sta_event.c
-+++ b/drivers/net/wireless/marvell/mwifiex/sta_event.c
-@@ -365,10 +365,12 @@ static void mwifiex_process_uap_tx_pause(struct mwifiex_private *priv,
- 		sta_ptr = mwifiex_get_sta_entry(priv, tp->peermac);
- 		if (sta_ptr && sta_ptr->tx_pause != tp->tx_pause) {
- 			sta_ptr->tx_pause = tp->tx_pause;
-+			spin_unlock_bh(&priv->sta_list_spinlock);
- 			mwifiex_update_ralist_tx_pause(priv, tp->peermac,
- 						       tp->tx_pause);
-+		} else {
-+			spin_unlock_bh(&priv->sta_list_spinlock);
- 		}
--		spin_unlock_bh(&priv->sta_list_spinlock);
- 	}
- }
+--- a/drivers/firmware/google/Kconfig
++++ b/drivers/firmware/google/Kconfig
+@@ -2,9 +2,9 @@ menuconfig GOOGLE_FIRMWARE
+ 	bool "Google Firmware Drivers"
+ 	default n
+ 	help
+-	  These firmware drivers are used by Google's servers.  They are
+-	  only useful if you are working directly on one of their
+-	  proprietary servers.  If in doubt, say "N".
++	  These firmware drivers are used by Google servers,
++	  Chromebooks and other devices using coreboot firmware.
++	  If in doubt, say "N".
  
-@@ -400,11 +402,13 @@ static void mwifiex_process_sta_tx_pause(struct mwifiex_private *priv,
- 			sta_ptr = mwifiex_get_sta_entry(priv, tp->peermac);
- 			if (sta_ptr && sta_ptr->tx_pause != tp->tx_pause) {
- 				sta_ptr->tx_pause = tp->tx_pause;
-+				spin_unlock_bh(&priv->sta_list_spinlock);
- 				mwifiex_update_ralist_tx_pause(priv,
- 							       tp->peermac,
- 							       tp->tx_pause);
-+			} else {
-+				spin_unlock_bh(&priv->sta_list_spinlock);
- 			}
--			spin_unlock_bh(&priv->sta_list_spinlock);
- 		}
- 	}
- }
--- 
-2.34.1
-
+ if GOOGLE_FIRMWARE
+ 
 
 
