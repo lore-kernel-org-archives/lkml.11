@@ -2,131 +2,96 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24FCDC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A412DC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1847797AbiAXXUh (ORCPT
+        id S1847738AbiAXXUb (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:20:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36632 "EHLO
+        Mon, 24 Jan 2022 18:20:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584593AbiAXWV3 (ORCPT
+        with ESMTP id S1584597AbiAXWV3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 17:21:29 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABD5FC0424E6
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:52:01 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id d15-20020a17090a110f00b001b4e7d27474so347589pja.2
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 12:52:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=azp4drUBdsJbeJB1b3ReE50K/yU1xXzlMUUK30yNnBM=;
-        b=F3gryvXeekRjImadwhDQY4Obb+eJStO5e0tpTTJZt9j4ImBvFYCLicw/x99Xm0SBI0
-         v6NjLXjHROLZNeFvR99vUIBpZPUZzgGdh2i+u7kY7pUooz4Z7PrBNbMlwDsVbGv3GQtI
-         rRUIKMbN0FxgmE4CQyi6NWuZcIzwnnpQPuoISWNoex/9vCay++J2qrkgGmBCCals7WlB
-         TtgjoH4gxqB8vZgeUZ+f6URgGZARGSWXJihccCjshkf9m0Oes5qWsshKMMO5fb5923tb
-         zhV+/y9enMEKa4KQ/diaGgY/8z4wa3zCv35+Fr+7Pzl6lr6nSDJ0bPPT2hh6iqNoU6EL
-         rltg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=azp4drUBdsJbeJB1b3ReE50K/yU1xXzlMUUK30yNnBM=;
-        b=FJaIx9USFn7dhCU3aBuA+tkXmddiXHNQAtXL1zqQ9QeutLKnFK9j18cxqEYZ5KYIPk
-         00o8TakeOnZxAwha2Dc80tcC6D4BIRNd/bErXHeVRV7sr4dwvRWMr9CQ4NygKkoXp1EW
-         jVBzfrclprd7Ww/Ah5UzP8RxEGo47Ya/qgNceIMDmiZltrj4d7zhFPLk6c+ce0a0dMpw
-         y3sENUR2YSB3SMZz3tUa3tyLaa63sib5Oaevm/T11DZVNCwLO0KgASO32E2MhqhSgwbb
-         RuObsHIlef1GNGRuY5MkWe+isFr38u98qjyACeFihs2fYTtaokRELdQwJOoeag18GN7Z
-         IZzQ==
-X-Gm-Message-State: AOAM5339EE2TuZB9WS43rVTBOhi3G4jzYoGCU/+gI6/Auzov1YM8jUeg
-        FABGOLDKfcyQ/gdZ13AEml9xyy7QJK9ueQ==
-X-Google-Smtp-Source: ABdhPJxRSKpl34+ADkOyTL0oF0DQ+fVEvCLMRH1hZ84FdQZOa6FtRXIqo7qdgaw6fZ0jndD2x6C+zA==
-X-Received: by 2002:a17:902:8208:b0:14a:c442:8ca2 with SMTP id x8-20020a170902820800b0014ac4428ca2mr16248516pln.12.1643057520606;
-        Mon, 24 Jan 2022 12:52:00 -0800 (PST)
-Received: from google.com ([2620:15c:202:201:90e5:c14:112c:6b8f])
-        by smtp.gmail.com with ESMTPSA id d12sm16755034pfl.24.2022.01.24.12.51.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 12:51:59 -0800 (PST)
-Date:   Mon, 24 Jan 2022 12:51:53 -0800
-From:   Benson Leung <bleung@google.com>
-To:     "Dustin L. Howett" <dustin@howett.net>
-Cc:     linux-kernel@vger.kernel.org, Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>, tzungbi@google.com
-Subject: Re: [PATCH 0/2] platform/chrome: Add support for the Framework Laptop
-Message-ID: <Ye8RaQcIuR6kpaYj@google.com>
-References: <20220105031242.287751-1-dustin@howett.net>
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC54C0424E7;
+        Mon, 24 Jan 2022 12:52:01 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 76509B81218;
+        Mon, 24 Jan 2022 20:52:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A030C340E5;
+        Mon, 24 Jan 2022 20:51:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643057519;
+        bh=RwgNWwgC6tm4OmIYkTg6If1aFsmpPow52E85Zp5Xwvo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZEVoA2hFwIKhYwJp/dSeVtIgHAoQP1WZs/I5TmLSQV3qlHjFBlb5XpIeZcuPPqcwE
+         a5z9DhU6OqYtr1fudBe1wa1VOqPC9LKvhk3YgyNMI84KbYrEiI2IyovSC7C2LlgeKx
+         Umgl5X5BUDoM5ROm6/jzJMlb5S8/ctl4vTtsdBkE=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Sam Protsenko <semen.protsenko@linaro.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Rob Herring <robh@kernel.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Wim Van Sebroeck <wim@linux-watchdog.org>
+Subject: [PATCH 5.15 840/846] dt-bindings: watchdog: Require samsung,syscon-phandle for Exynos7
+Date:   Mon, 24 Jan 2022 19:45:57 +0100
+Message-Id: <20220124184129.880609350@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="p4q7HqB6Z26mUEsK"
-Content-Disposition: inline
-In-Reply-To: <20220105031242.287751-1-dustin@howett.net>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Sam Protsenko <semen.protsenko@linaro.org>
 
---p4q7HqB6Z26mUEsK
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+commit 33950f9a36aca55c2b1e6062d9b29f3e97f91c40 upstream.
 
-Hi Dustin,
+Exynos7 watchdog driver is clearly indicating that its dts node must
+define syscon phandle property. That was probably forgotten, so add it.
 
-On Tue, Jan 04, 2022 at 09:12:40PM -0600, Dustin L. Howett wrote:
-> This patch series adds support for the Framework Laptop to the cros_ec
-> LPC driver.
->=20
-> The Framework Laptop is a non-Chromebook laptop that uses the ChromeOS
-> Embedded Controller. Since the machine was designed to present a more
-> normal device profile, it does not report all 512 I/O ports that are
-> typically used by cros_ec_lpcs. Because of this, changes to the driver's
-> port reservation scheme were required.
->=20
-> Dustin L. Howett (2):
->   platform/chrome: cros-ec: detect the Framework Laptop
->   platform/chrome: reserve only the I/O ports required for the MEC EC
->=20
->  drivers/platform/chrome/cros_ec_lpc.c          |   47 ++++++++++-----
->  include/linux/platform_data/cros_ec_commands.h |    4 +
->  2 files changed, 38 insertions(+), 13 deletions(-)
->=20
+Signed-off-by: Sam Protsenko <semen.protsenko@linaro.org>
+Fixes: 2b9366b66967 ("watchdog: s3c2410_wdt: Add support for Watchdog device on Exynos7")
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+Link: https://lore.kernel.org/r/20211107202943.8859-2-semen.protsenko@linaro.org
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Wim Van Sebroeck <wim@linux-watchdog.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+---
+ Documentation/devicetree/bindings/watchdog/samsung-wdt.yaml |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-Thanks for sending this! I saw that Framework also posted their embedded
-controller source code as well, so we've got both sides of this process
-in the open now!
+--- a/Documentation/devicetree/bindings/watchdog/samsung-wdt.yaml
++++ b/Documentation/devicetree/bindings/watchdog/samsung-wdt.yaml
+@@ -39,8 +39,8 @@ properties:
+   samsung,syscon-phandle:
+     $ref: /schemas/types.yaml#/definitions/phandle
+     description:
+-      Phandle to the PMU system controller node (in case of Exynos5250
+-      and Exynos5420).
++      Phandle to the PMU system controller node (in case of Exynos5250,
++      Exynos5420 and Exynos7).
+ 
+ required:
+   - compatible
+@@ -58,6 +58,7 @@ allOf:
+             enum:
+               - samsung,exynos5250-wdt
+               - samsung,exynos5420-wdt
++              - samsung,exynos7-wdt
+     then:
+       required:
+         - samsung,syscon-phandle
 
-I'd like to have someone else at Google ramp up on reviewing chrome/platform
-patches.
 
-Tzung-Bi, could you help take a look at Dustin's series?
-
-Thanks,
-Benson
-
-> --=20
-> 2.34.1
->=20
-
---=20
-Benson Leung
-Staff Software Engineer
-Chrome OS Kernel
-Google Inc.
-bleung@google.com
-Chromium OS Project
-bleung@chromium.org
-
---p4q7HqB6Z26mUEsK
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQQCtZK6p/AktxXfkOlzbaomhzOwwgUCYe8RaQAKCRBzbaomhzOw
-wlmtAQD2bG15FEjsW9X594WUGiqSLIucKvGBKPj2hTunATXepwD/VxcenjhdfddM
-RjakdKFt5RaDyKPOKJSz6CYPmDr5XgA=
-=rgBd
------END PGP SIGNATURE-----
-
---p4q7HqB6Z26mUEsK--
