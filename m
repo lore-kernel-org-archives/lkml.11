@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEE0FC433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 194BEC43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421677AbiAYC1a (ORCPT
+        id S3421755AbiAYC1j (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:27:30 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:33768 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378349AbiAXUGy (ORCPT
+        Mon, 24 Jan 2022 21:27:39 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50028 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356915AbiAXUH3 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:06:54 -0500
+        Mon, 24 Jan 2022 15:07:29 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B6CBA6131E;
-        Mon, 24 Jan 2022 20:06:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 96DFFC340E5;
-        Mon, 24 Jan 2022 20:06:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 80D2DB810BD;
+        Mon, 24 Jan 2022 20:07:24 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 959AEC340E5;
+        Mon, 24 Jan 2022 20:07:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054813;
-        bh=X8v3YWVXZicOC7ikzRWWDSDNRdYKZm6bnipEV3B3dsE=;
+        s=korg; t=1643054843;
+        bh=hgTMhcKXn0qipvk81yvlR5VaiWMS55P9EIckJyt9sxo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PsZa9qXJn7KnMaDKo0SuZi5V2Fq+Ph5k035jOPgyAYxE7DEhak1yoj38a5RUJqACc
-         eNyp34qJMH2rNgKGCHNa2vapK6eZUgLPbeicnSFkoVJdJZOgw7KerS0OrkWB9jDgmx
-         RuBvjIVMeQwhGqXHsH8KCe8HkPeCRO2QPmF8QSuc=
+        b=hsAHzu+/sh3dX6DNg+IGZ1suR/A7VE+t+gzEBHH6lmxzaJS/c8skaPtN939VjQnjH
+         d5ZU0s0acYPFzmMDwBIVvUOoB9RpepE03/cPs6ZaxSr0kdHK5Sm4v7/RuOHbXqVPyU
+         18HznoP+lCWnEv521u9cyV6aG6hhtorzvZrdqP3I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tobias Waldekranz <tobias@waldekranz.com>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.10 512/563] net/fsl: xgmac_mdio: Fix incorrect iounmap when removing module
-Date:   Mon, 24 Jan 2022 19:44:37 +0100
-Message-Id: <20220124184042.167854518@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 521/563] net: axienet: Wait for PhyRstCmplt after core reset
+Date:   Mon, 24 Jan 2022 19:44:46 +0100
+Message-Id: <20220124184042.465198186@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -46,36 +47,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tobias Waldekranz <tobias@waldekranz.com>
+From: Robert Hancock <robert.hancock@calian.com>
 
-commit 3f7c239c7844d2044ed399399d97a5f1c6008e1b upstream.
+commit b400c2f4f4c53c86594dd57098970d97d488bfde upstream.
 
-As reported by sparse: In the remove path, the driver would attempt to
-unmap its own priv pointer - instead of the io memory that it mapped
-in probe.
+When resetting the device, wait for the PhyRstCmplt bit to be set
+in the interrupt status register before continuing initialization, to
+ensure that the core is actually ready. When using an external PHY, this
+also ensures we do not start trying to access the PHY while it is still
+in reset. The PHY reset is initiated by the core reset which is
+triggered just above, but remains asserted for 5ms after the core is
+reset according to the documentation.
 
-Fixes: 9f35a7342cff ("net/fsl: introduce Freescale 10G MDIO driver")
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+The MgtRdy bit could also be waited for, but unfortunately when using
+7-series devices, the bit does not appear to work as documented (it
+seems to behave as some sort of link state indication and not just an
+indication the transceiver is ready) so it can't really be relied on for
+this purpose.
+
+Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
 Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/freescale/xgmac_mdio.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c |   10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
---- a/drivers/net/ethernet/freescale/xgmac_mdio.c
-+++ b/drivers/net/ethernet/freescale/xgmac_mdio.c
-@@ -320,9 +320,10 @@ err_ioremap:
- static int xgmac_mdio_remove(struct platform_device *pdev)
- {
- 	struct mii_bus *bus = platform_get_drvdata(pdev);
-+	struct mdio_fsl_priv *priv = bus->priv;
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -516,6 +516,16 @@ static int __axienet_device_reset(struct
+ 		return ret;
+ 	}
  
- 	mdiobus_unregister(bus);
--	iounmap(bus->priv);
-+	iounmap(priv->mdio_base);
- 	mdiobus_free(bus);
- 
++	/* Wait for PhyRstCmplt bit to be set, indicating the PHY reset has finished */
++	ret = read_poll_timeout(axienet_ior, value,
++				value & XAE_INT_PHYRSTCMPLT_MASK,
++				DELAY_OF_ONE_MILLISEC, 50000, false, lp,
++				XAE_IS_OFFSET);
++	if (ret) {
++		dev_err(lp->dev, "%s: timeout waiting for PhyRstCmplt\n", __func__);
++		return ret;
++	}
++
  	return 0;
+ }
+ 
 
 
