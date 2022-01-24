@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4904DC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:50:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9E3FC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:50:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245744AbiAXSue (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:50:34 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48460 "EHLO
+        id S245413AbiAXSug (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:50:36 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:48420 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241963AbiAXStv (ORCPT
+        with ESMTP id S245546AbiAXStr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:49:51 -0500
+        Mon, 24 Jan 2022 13:49:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 75EFC614ED;
-        Mon, 24 Jan 2022 18:49:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4635BC340E5;
-        Mon, 24 Jan 2022 18:49:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5BBE1614C9;
+        Mon, 24 Jan 2022 18:49:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 27344C340E5;
+        Mon, 24 Jan 2022 18:49:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050189;
-        bh=3hDW7gIhEOondEF4Jh+0/sHITCd+cZaNzno8dlPJPuE=;
+        s=korg; t=1643050186;
+        bh=u+aBQpTuCtY9LJk5bEHF2dL9U4aLOFqYV4b54fbW9AY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=miz8Vm8BOybyr3b8UPwu5ebijGp4PIZU37ESmgT+qMDG66t5rR1HUc20su7jkYq8P
-         +OHuytL60VIYXKS2htojHyXhoorI0cM/iqn0+CDnEqcRZxnuBHNoFIp2TDCtrKgGE3
-         Kywj0g6snL7b7tP+yXRGttGIP+i+aANg/hOki5/w=
+        b=gDnALDqm8Fbits8VUxpINVGxvgG/ewHq9slqwU0Av52W9ic/g+Ayxpu2A9l2bzWfV
+         CgFymSykZFW7/T6jlw8GV8EH621tVIjnT56F2qxLl6M4xDKFeOT3FeCntTEpEHzUcc
+         CX/YNotzuLz5nEURoGRjm1DxohU5Vc57m7/1nOQo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
+        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 038/114] can: softing: softing_startstop(): fix set but not used variable warning
-Date:   Mon, 24 Jan 2022 19:42:13 +0100
-Message-Id: <20220124183928.288083321@linuxfoundation.org>
+Subject: [PATCH 4.4 037/114] spi: spi-meson-spifc: Add missing pm_runtime_disable() in meson_spifc_probe
+Date:   Mon, 24 Jan 2022 19:42:12 +0100
+Message-Id: <20220124183928.260103655@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -47,60 +46,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Marc Kleine-Budde <mkl@pengutronix.de>
+From: Miaoqian Lin <linmq006@gmail.com>
 
-[ Upstream commit 370d988cc529598ebaec6487d4f84c2115dc696b ]
+[ Upstream commit 69c1b87516e327a60b39f96b778fe683259408bf ]
 
-In the function softing_startstop() the variable error_reporting is
-assigned but not used. The code that uses this variable is commented
-out. Its stated that the functionality is not finally verified.
+If the probe fails, we should use pm_runtime_disable() to balance
+pm_runtime_enable().
+Add missing pm_runtime_disable() for meson_spifc_probe.
 
-To fix the warning:
-
-| drivers/net/can/softing/softing_fw.c:424:9: error: variable 'error_reporting' set but not used [-Werror,-Wunused-but-set-variable]
-
-remove the comment, activate the code, but add a "0 &&" to the if
-expression and rely on the optimizer rather than the preprocessor to
-remove the code.
-
-Link: https://lore.kernel.org/all/20220109103126.1872833-1-mkl@pengutronix.de
-Fixes: 03fd3cf5a179 ("can: add driver for Softing card")
-Cc: Kurt Van Dijck <dev.kurt@vandijck-laurijssen.be>
-Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+Fixes: c3e4bc5434d2 ("spi: meson: Add support for Amlogic Meson SPIFC")
+Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
+Link: https://lore.kernel.org/r/20220107075424.7774-1-linmq006@gmail.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/can/softing/softing_fw.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/spi/spi-meson-spifc.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/net/can/softing/softing_fw.c b/drivers/net/can/softing/softing_fw.c
-index 52fe50725d749..a74c779feb90e 100644
---- a/drivers/net/can/softing/softing_fw.c
-+++ b/drivers/net/can/softing/softing_fw.c
-@@ -576,18 +576,19 @@ int softing_startstop(struct net_device *dev, int up)
- 		if (ret < 0)
- 			goto failed;
- 	}
--	/* enable_error_frame */
--	/*
-+
-+	/* enable_error_frame
-+	 *
- 	 * Error reporting is switched off at the moment since
- 	 * the receiving of them is not yet 100% verified
- 	 * This should be enabled sooner or later
--	 *
--	if (error_reporting) {
-+	 */
-+	if (0 && error_reporting) {
- 		ret = softing_fct_cmd(card, 51, "enable_error_frame");
- 		if (ret < 0)
- 			goto failed;
- 	}
--	*/
-+
- 	/* initialize interface */
- 	iowrite16(1, &card->dpram[DPRAM_FCT_PARAM + 2]);
- 	iowrite16(1, &card->dpram[DPRAM_FCT_PARAM + 4]);
+diff --git a/drivers/spi/spi-meson-spifc.c b/drivers/spi/spi-meson-spifc.c
+index 2465259f62411..8e662e7a35181 100644
+--- a/drivers/spi/spi-meson-spifc.c
++++ b/drivers/spi/spi-meson-spifc.c
+@@ -357,6 +357,7 @@ static int meson_spifc_probe(struct platform_device *pdev)
+ 	return 0;
+ out_clk:
+ 	clk_disable_unprepare(spifc->clk);
++	pm_runtime_disable(spifc->dev);
+ out_err:
+ 	spi_master_put(master);
+ 	return ret;
 -- 
 2.34.1
 
