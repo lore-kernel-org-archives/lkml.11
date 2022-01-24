@@ -2,30 +2,26 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CCF5C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:07:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CFECC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:07:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244965AbiAXSHj (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:07:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32798 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235806AbiAXSH2 (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
+        id S241610AbiAXSHo (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:07:44 -0500
+Received: from out0.migadu.com ([94.23.1.103]:19450 "EHLO out0.migadu.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S235662AbiAXSH2 (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 13:07:28 -0500
-Received: from out0.migadu.com (out0.migadu.com [IPv6:2001:41d0:2:267::])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5CCE2C06173B
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 10:07:27 -0800 (PST)
 X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
-        t=1643047646;
+        t=1643047647;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=6d3Sqieb3hI2XdYdLDF/VqdqByrjj81xNK30fIIEhsQ=;
-        b=LsRQuM19cfHpj+rbOwNKm93U2FW/V9DpN/OSNbt4bltnQ++5YhmEPaddGuohMclRbMuGTo
-        7L2NQ+DXo5Jei1l2wSKOCjdJI25/Eenvm3rqgYOp4p8MEMXf7dWteH9R9GRqCHZmUwRT2K
-        olILs+/dM5PThFvh50qy5zzNAhKzr2c=
+        bh=5KUJZNJV1O4hNGiPaFWjJZ6YP4SR64jSFKwdeaC+81U=;
+        b=fR9nfxovI5mUNUsCx+1176TEHlvQs8TLQ6uwZ+x2GptsqtdAOJTUX+mGMICbNPu6IkO/rS
+        F2jHs8qBxY5vQVs1WqVr5EGEdOK7jGXkvDhXbP/GNitO5hdpRQO6cGvQmkpMhKmQbC0yBq
+        43z/GcU6rw7HTTFiXhVL6P/JTUdnFnA=
 From:   andrey.konovalov@linux.dev
 To:     Andrew Morton <akpm@linux-foundation.org>
 Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
@@ -43,9 +39,9 @@ Cc:     Andrey Konovalov <andreyknvl@gmail.com>,
         Evgenii Stepanov <eugenis@google.com>,
         linux-kernel@vger.kernel.org,
         Andrey Konovalov <andreyknvl@google.com>
-Subject: [PATCH v6 29/39] kasan, page_alloc: allow skipping memory init for HW_TAGS
-Date:   Mon, 24 Jan 2022 19:05:03 +0100
-Message-Id: <0d53efeff345de7d708e0baa0d8829167772521e.1643047180.git.andreyknvl@google.com>
+Subject: [PATCH v6 31/39] kasan, vmalloc: only tag normal vmalloc allocations
+Date:   Mon, 24 Jan 2022 19:05:05 +0100
+Message-Id: <fbfd9939a4dc375923c9a5c6b9e7ab05c26b8c6b.1643047180.git.andreyknvl@google.com>
 In-Reply-To: <cover.1643047180.git.andreyknvl@google.com>
 References: <cover.1643047180.git.andreyknvl@google.com>
 MIME-Version: 1.0
@@ -58,142 +54,187 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Andrey Konovalov <andreyknvl@google.com>
 
-Add a new GFP flag __GFP_SKIP_ZERO that allows to skip memory
-initialization. The flag is only effective with HW_TAGS KASAN.
+The kernel can use to allocate executable memory. The only supported way
+to do that is via __vmalloc_node_range() with the executable bit set in
+the prot argument. (vmap() resets the bit via pgprot_nx()).
 
-This flag will be used by vmalloc code for page_alloc allocations
-backing vmalloc() mappings in a following patch. The reason to skip
-memory initialization for these pages in page_alloc is because vmalloc
-code will be initializing them instead.
+Once tag-based KASAN modes start tagging vmalloc allocations, executing
+code from such allocations will lead to the PC register getting a tag,
+which is not tolerated by the kernel.
 
-With the current implementation, when __GFP_SKIP_ZERO is provided,
-__GFP_ZEROTAGS is ignored. This doesn't matter, as these two flags are
-never provided at the same time. However, if this is changed in the
-future, this particular implementation detail can be changed as well.
+Only tag the allocations for normal kernel pages.
 
 Signed-off-by: Andrey Konovalov <andreyknvl@google.com>
 
 ---
 
-Changes v5->v6:
-- Drop unnecessary explicit checks for software KASAN modes from
-  should_skip_init().
-
-Changes v4->v5:
-- Cosmetic changes to __def_gfpflag_names_kasan and __GFP_BITS_SHIFT.
-
 Changes v3->v4:
-- Only define __GFP_SKIP_ZERO when CONFIG_KASAN_HW_TAGS is enabled.
-- Add __GFP_SKIP_ZERO to include/trace/events/mmflags.h.
-- Use proper kasan_hw_tags_enabled() check instead of
-  IS_ENABLED(CONFIG_KASAN_HW_TAGS). Also add explicit checks for
-  software modes.
-
-Changes v2->v3:
+- Rename KASAN_VMALLOC_NOEXEC to KASAN_VMALLOC_PROT_NORMAL.
+- Compare with PAGE_KERNEL instead of using pgprot_nx().
 - Update patch description.
 
-Changes v1->v2:
+Changes v2->v3:
 - Add this patch.
 ---
- include/linux/gfp.h            | 18 +++++++++++-------
- include/trace/events/mmflags.h |  1 +
- mm/page_alloc.c                | 13 ++++++++++++-
- 3 files changed, 24 insertions(+), 8 deletions(-)
+ include/linux/kasan.h |  7 ++++---
+ mm/kasan/hw_tags.c    |  7 +++++++
+ mm/kasan/shadow.c     |  7 +++++++
+ mm/vmalloc.c          | 49 +++++++++++++++++++++++++------------------
+ 4 files changed, 47 insertions(+), 23 deletions(-)
 
-diff --git a/include/linux/gfp.h b/include/linux/gfp.h
-index 7303d1064460..7797c915ce54 100644
---- a/include/linux/gfp.h
-+++ b/include/linux/gfp.h
-@@ -55,14 +55,16 @@ struct vm_area_struct;
- #define ___GFP_ACCOUNT		0x400000u
- #define ___GFP_ZEROTAGS		0x800000u
- #ifdef CONFIG_KASAN_HW_TAGS
--#define ___GFP_SKIP_KASAN_UNPOISON	0x1000000u
--#define ___GFP_SKIP_KASAN_POISON	0x2000000u
-+#define ___GFP_SKIP_ZERO		0x1000000u
-+#define ___GFP_SKIP_KASAN_UNPOISON	0x2000000u
-+#define ___GFP_SKIP_KASAN_POISON	0x4000000u
- #else
-+#define ___GFP_SKIP_ZERO		0
- #define ___GFP_SKIP_KASAN_UNPOISON	0
- #define ___GFP_SKIP_KASAN_POISON	0
- #endif
- #ifdef CONFIG_LOCKDEP
--#define ___GFP_NOLOCKDEP	0x4000000u
-+#define ___GFP_NOLOCKDEP	0x8000000u
- #else
- #define ___GFP_NOLOCKDEP	0
- #endif
-@@ -239,9 +241,10 @@ struct vm_area_struct;
-  * %__GFP_ZERO returns a zeroed page on success.
-  *
-  * %__GFP_ZEROTAGS zeroes memory tags at allocation time if the memory itself
-- * is being zeroed (either via __GFP_ZERO or via init_on_alloc). This flag is
-- * intended for optimization: setting memory tags at the same time as zeroing
-- * memory has minimal additional performace impact.
-+ * is being zeroed (either via __GFP_ZERO or via init_on_alloc, provided that
-+ * __GFP_SKIP_ZERO is not set). This flag is intended for optimization: setting
-+ * memory tags at the same time as zeroing memory has minimal additional
-+ * performace impact.
-  *
-  * %__GFP_SKIP_KASAN_UNPOISON makes KASAN skip unpoisoning on page allocation.
-  * Only effective in HW_TAGS mode.
-@@ -253,6 +256,7 @@ struct vm_area_struct;
- #define __GFP_COMP	((__force gfp_t)___GFP_COMP)
- #define __GFP_ZERO	((__force gfp_t)___GFP_ZERO)
- #define __GFP_ZEROTAGS	((__force gfp_t)___GFP_ZEROTAGS)
-+#define __GFP_SKIP_ZERO ((__force gfp_t)___GFP_SKIP_ZERO)
- #define __GFP_SKIP_KASAN_UNPOISON ((__force gfp_t)___GFP_SKIP_KASAN_UNPOISON)
- #define __GFP_SKIP_KASAN_POISON   ((__force gfp_t)___GFP_SKIP_KASAN_POISON)
+diff --git a/include/linux/kasan.h b/include/linux/kasan.h
+index 499f1573dba4..3593c95d1fa5 100644
+--- a/include/linux/kasan.h
++++ b/include/linux/kasan.h
+@@ -27,9 +27,10 @@ struct kunit_kasan_expectation {
  
-@@ -261,7 +265,7 @@ struct vm_area_struct;
+ typedef unsigned int __bitwise kasan_vmalloc_flags_t;
  
- /* Room for N __GFP_FOO bits */
- #define __GFP_BITS_SHIFT (24 +						\
--			  2 * IS_ENABLED(CONFIG_KASAN_HW_TAGS) +	\
-+			  3 * IS_ENABLED(CONFIG_KASAN_HW_TAGS) +	\
- 			  IS_ENABLED(CONFIG_LOCKDEP))
- #define __GFP_BITS_MASK ((__force gfp_t)((1 << __GFP_BITS_SHIFT) - 1))
+-#define KASAN_VMALLOC_NONE	0x00u
+-#define KASAN_VMALLOC_INIT	0x01u
+-#define KASAN_VMALLOC_VM_ALLOC	0x02u
++#define KASAN_VMALLOC_NONE		0x00u
++#define KASAN_VMALLOC_INIT		0x01u
++#define KASAN_VMALLOC_VM_ALLOC		0x02u
++#define KASAN_VMALLOC_PROT_NORMAL	0x04u
  
-diff --git a/include/trace/events/mmflags.h b/include/trace/events/mmflags.h
-index 134c45e62d91..6532119a6bf1 100644
---- a/include/trace/events/mmflags.h
-+++ b/include/trace/events/mmflags.h
-@@ -53,6 +53,7 @@
+ #if defined(CONFIG_KASAN_GENERIC) || defined(CONFIG_KASAN_SW_TAGS)
  
- #ifdef CONFIG_KASAN_HW_TAGS
- #define __def_gfpflag_names_kasan ,					       \
-+	{(unsigned long)__GFP_SKIP_ZERO,	   "__GFP_SKIP_ZERO"},	       \
- 	{(unsigned long)__GFP_SKIP_KASAN_POISON,   "__GFP_SKIP_KASAN_POISON"}, \
- 	{(unsigned long)__GFP_SKIP_KASAN_UNPOISON, "__GFP_SKIP_KASAN_UNPOISON"}
- #else
-diff --git a/mm/page_alloc.c b/mm/page_alloc.c
-index 94bfbc216ae9..368c6c5bf42a 100644
---- a/mm/page_alloc.c
-+++ b/mm/page_alloc.c
-@@ -2415,10 +2415,21 @@ static inline bool should_skip_kasan_unpoison(gfp_t flags, bool init_tags)
- 	return init_tags || (flags & __GFP_SKIP_KASAN_UNPOISON);
+diff --git a/mm/kasan/hw_tags.c b/mm/kasan/hw_tags.c
+index 21104fd51872..2e9378a4f07f 100644
+--- a/mm/kasan/hw_tags.c
++++ b/mm/kasan/hw_tags.c
+@@ -247,6 +247,13 @@ void *__kasan_unpoison_vmalloc(const void *start, unsigned long size,
+ 	if (!(flags & KASAN_VMALLOC_VM_ALLOC))
+ 		return (void *)start;
+ 
++	/*
++	 * Don't tag executable memory.
++	 * The kernel doesn't tolerate having the PC register tagged.
++	 */
++	if (!(flags & KASAN_VMALLOC_PROT_NORMAL))
++		return (void *)start;
++
+ 	tag = kasan_random_tag();
+ 	start = set_tag(start, tag);
+ 
+diff --git a/mm/kasan/shadow.c b/mm/kasan/shadow.c
+index b958babc8fed..7272e248db87 100644
+--- a/mm/kasan/shadow.c
++++ b/mm/kasan/shadow.c
+@@ -488,6 +488,13 @@ void *__kasan_unpoison_vmalloc(const void *start, unsigned long size,
+ 	if (!is_vmalloc_or_module_addr(start))
+ 		return (void *)start;
+ 
++	/*
++	 * Don't tag executable memory.
++	 * The kernel doesn't tolerate having the PC register tagged.
++	 */
++	if (!(flags & KASAN_VMALLOC_PROT_NORMAL))
++		return (void *)start;
++
+ 	start = set_tag(start, kasan_random_tag());
+ 	kasan_unpoison(start, size, false);
+ 	return (void *)start;
+diff --git a/mm/vmalloc.c b/mm/vmalloc.c
+index 6dcdf815576b..375b53fd939f 100644
+--- a/mm/vmalloc.c
++++ b/mm/vmalloc.c
+@@ -2221,7 +2221,7 @@ void *vm_map_ram(struct page **pages, unsigned int count, int node)
+ 	 * With hardware tag-based KASAN, marking is skipped for
+ 	 * non-VM_ALLOC mappings, see __kasan_unpoison_vmalloc().
+ 	 */
+-	mem = kasan_unpoison_vmalloc(mem, size, KASAN_VMALLOC_NONE);
++	mem = kasan_unpoison_vmalloc(mem, size, KASAN_VMALLOC_PROT_NORMAL);
+ 
+ 	return mem;
  }
+@@ -2460,7 +2460,7 @@ static struct vm_struct *__get_vm_area_node(unsigned long size,
+ 	 */
+ 	if (!(flags & VM_ALLOC))
+ 		area->addr = kasan_unpoison_vmalloc(area->addr, requested_size,
+-							KASAN_VMALLOC_NONE);
++						    KASAN_VMALLOC_PROT_NORMAL);
  
-+static inline bool should_skip_init(gfp_t flags)
-+{
-+	/* Don't skip, if hardware tag-based KASAN is not enabled. */
-+	if (!kasan_hw_tags_enabled())
-+		return false;
-+
-+	/* For hardware tag-based KASAN, skip if requested. */
-+	return (flags & __GFP_SKIP_ZERO);
-+}
-+
- inline void post_alloc_hook(struct page *page, unsigned int order,
- 				gfp_t gfp_flags)
+ 	return area;
+ }
+@@ -3071,7 +3071,7 @@ void *__vmalloc_node_range(unsigned long size, unsigned long align,
  {
--	bool init = !want_init_on_free() && want_init_on_alloc(gfp_flags);
-+	bool init = !want_init_on_free() && want_init_on_alloc(gfp_flags) &&
-+			!should_skip_init(gfp_flags);
- 	bool init_tags = init && (gfp_flags & __GFP_ZEROTAGS);
+ 	struct vm_struct *area;
+ 	void *ret;
+-	kasan_vmalloc_flags_t kasan_flags;
++	kasan_vmalloc_flags_t kasan_flags = KASAN_VMALLOC_NONE;
+ 	unsigned long real_size = size;
+ 	unsigned long real_align = align;
+ 	unsigned int shift = PAGE_SHIFT;
+@@ -3124,21 +3124,28 @@ void *__vmalloc_node_range(unsigned long size, unsigned long align,
+ 		goto fail;
+ 	}
  
- 	set_page_private(page, 0);
+-	/* Prepare arguments for __vmalloc_area_node(). */
+-	if (kasan_hw_tags_enabled() &&
+-	    pgprot_val(prot) == pgprot_val(PAGE_KERNEL)) {
+-		/*
+-		 * Modify protection bits to allow tagging.
+-		 * This must be done before mapping in __vmalloc_area_node().
+-		 */
+-		prot = arch_vmap_pgprot_tagged(prot);
++	/*
++	 * Prepare arguments for __vmalloc_area_node() and
++	 * kasan_unpoison_vmalloc().
++	 */
++	if (pgprot_val(prot) == pgprot_val(PAGE_KERNEL)) {
++		if (kasan_hw_tags_enabled()) {
++			/*
++			 * Modify protection bits to allow tagging.
++			 * This must be done before mapping.
++			 */
++			prot = arch_vmap_pgprot_tagged(prot);
+ 
+-		/*
+-		 * Skip page_alloc poisoning and zeroing for physical pages
+-		 * backing VM_ALLOC mapping. Memory is instead poisoned and
+-		 * zeroed by kasan_unpoison_vmalloc().
+-		 */
+-		gfp_mask |= __GFP_SKIP_KASAN_UNPOISON | __GFP_SKIP_ZERO;
++			/*
++			 * Skip page_alloc poisoning and zeroing for physical
++			 * pages backing VM_ALLOC mapping. Memory is instead
++			 * poisoned and zeroed by kasan_unpoison_vmalloc().
++			 */
++			gfp_mask |= __GFP_SKIP_KASAN_UNPOISON | __GFP_SKIP_ZERO;
++		}
++
++		/* Take note that the mapping is PAGE_KERNEL. */
++		kasan_flags |= KASAN_VMALLOC_PROT_NORMAL;
+ 	}
+ 
+ 	/* Allocate physical pages and map them into vmalloc space. */
+@@ -3152,10 +3159,13 @@ void *__vmalloc_node_range(unsigned long size, unsigned long align,
+ 	 * (except for the should_skip_init() check) to make sure that memory
+ 	 * is initialized under the same conditions regardless of the enabled
+ 	 * KASAN mode.
++	 * Tag-based KASAN modes only assign tags to normal non-executable
++	 * allocations, see __kasan_unpoison_vmalloc().
+ 	 */
+-	kasan_flags = KASAN_VMALLOC_VM_ALLOC;
++	kasan_flags |= KASAN_VMALLOC_VM_ALLOC;
+ 	if (!want_init_on_free() && want_init_on_alloc(gfp_mask))
+ 		kasan_flags |= KASAN_VMALLOC_INIT;
++	/* KASAN_VMALLOC_PROT_NORMAL already set if required. */
+ 	area->addr = kasan_unpoison_vmalloc(area->addr, real_size, kasan_flags);
+ 
+ 	/*
+@@ -3861,8 +3871,7 @@ struct vm_struct **pcpu_get_vm_areas(const unsigned long *offsets,
+ 	 */
+ 	for (area = 0; area < nr_vms; area++)
+ 		vms[area]->addr = kasan_unpoison_vmalloc(vms[area]->addr,
+-							 vms[area]->size,
+-							 KASAN_VMALLOC_NONE);
++				vms[area]->size, KASAN_VMALLOC_PROT_NORMAL);
+ 
+ 	kfree(vas);
+ 	return vms;
 -- 
 2.25.1
 
