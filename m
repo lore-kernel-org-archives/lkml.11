@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09FF9C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:12:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB4E5C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:12:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1379780AbiAXUMg (ORCPT
+        id S1354827AbiAXUMm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:12:36 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:49206 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344298AbiAXTxv (ORCPT
+        Mon, 24 Jan 2022 15:12:42 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:40434 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351647AbiAXTyN (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:53:51 -0500
+        Mon, 24 Jan 2022 14:54:13 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 48A0C601B6;
-        Mon, 24 Jan 2022 19:53:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 308B5C340E5;
-        Mon, 24 Jan 2022 19:53:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 868ABB810AF;
+        Mon, 24 Jan 2022 19:54:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ACBF2C340E5;
+        Mon, 24 Jan 2022 19:54:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054028;
-        bh=lOJCY7buUeLtrTZHe3ywJbkc8zqpQTJvczT/ZH8x97Q=;
+        s=korg; t=1643054050;
+        bh=d07dzSUvA2+iSjIdp5m4YqSXELfzyQug44lKx6iS7Tw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=op4XRG0VRxo1CxhAFEmKH8ZTzdogegbVt8GyyIHXyUsgQIq51oIgXx+hQTOlgEGRX
-         K03TT/CfqMOZdfvj7JDtzh6D0zNSaC5rb/H5zn12HGDPPpfNrigm0QtwJ/4v3mWF9M
-         njJPO7Ea980N/njNGpzWBFJ3osKS7pf+Ler8xnxA=
+        b=XrQwhDlvh4mkF6gjGvCAp0rIqH1BhkTCtOHcCocjg0KmOlT90kP68YRkmj4MpF2DF
+         Wmv5vnpTjCMQLKaGAtZEOn/lRbnRqgo8V3dqifLbGWiYto8TBRDHtFn37IFMCaLSgP
+         TLdewOS4TE1eKbwqA/hphEcq6XHqoz0WoZkjBecI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Waiman Long <longman@redhat.com>,
-        "Paul E. McKenney" <paulmck@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 256/563] clocksource: Avoid accidental unstable marking of clocksources
-Date:   Mon, 24 Jan 2022 19:40:21 +0100
-Message-Id: <20220124184033.272071853@linuxfoundation.org>
+        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
+        Hector Martin <marcan@marcan.st>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 263/563] iommu/io-pgtable-arm: Fix table descriptor paddr formatting
+Date:   Mon, 24 Jan 2022 19:40:28 +0100
+Message-Id: <20220124184033.530803695@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -47,162 +47,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Waiman Long <longman@redhat.com>
+From: Hector Martin <marcan@marcan.st>
 
-[ Upstream commit c86ff8c55b8ae68837b2fa59dc0c203907e9a15f ]
+[ Upstream commit 9abe2ac834851a7d0b0756e295cf7a292c45ca53 ]
 
-Since commit db3a34e17433 ("clocksource: Retry clock read if long delays
-detected") and commit 2e27e793e280 ("clocksource: Reduce clocksource-skew
-threshold"), it is found that tsc clocksource fallback to hpet can
-sometimes happen on both Intel and AMD systems especially when they are
-running stressful benchmarking workloads. Of the 23 systems tested with
-a v5.14 kernel, 10 of them have switched to hpet clock source during
-the test run.
+Table descriptors were being installed without properly formatting the
+address using paddr_to_iopte, which does not match up with the
+iopte_deref in __arm_lpae_map. This is incorrect for the LPAE pte
+format, as it does not handle the high bits properly.
 
-The result of falling back to hpet is a drastic reduction of performance
-when running benchmarks. For example, the fio performance tests can
-drop up to 70% whereas the iperf3 performance can drop up to 80%.
+This was found on Apple T6000 DARTs, which require a new pte format
+(different shift); adding support for that to
+paddr_to_iopte/iopte_to_paddr caused it to break badly, as even <48-bit
+addresses would end up incorrect in that case.
 
-4 hpet fallbacks happened during bootup. They were:
-
-  [    8.749399] clocksource: timekeeping watchdog on CPU13: hpet read-back delay of 263750ns, attempt 4, marking unstable
-  [   12.044610] clocksource: timekeeping watchdog on CPU19: hpet read-back delay of 186166ns, attempt 4, marking unstable
-  [   17.336941] clocksource: timekeeping watchdog on CPU28: hpet read-back delay of 182291ns, attempt 4, marking unstable
-  [   17.518565] clocksource: timekeeping watchdog on CPU34: hpet read-back delay of 252196ns, attempt 4, marking unstable
-
-Other fallbacks happen when the systems were running stressful
-benchmarks. For example:
-
-  [ 2685.867873] clocksource: timekeeping watchdog on CPU117: hpet read-back delay of 57269ns, attempt 4, marking unstable
-  [46215.471228] clocksource: timekeeping watchdog on CPU8: hpet read-back delay of 61460ns, attempt 4, marking unstable
-
-Commit 2e27e793e280 ("clocksource: Reduce clocksource-skew threshold"),
-changed the skew margin from 100us to 50us. I think this is too small
-and can easily be exceeded when running some stressful workloads on a
-thermally stressed system.  So it is switched back to 100us.
-
-Even a maximum skew margin of 100us may be too small in for some systems
-when booting up especially if those systems are under thermal stress. To
-eliminate the case that the large skew is due to the system being too
-busy slowing down the reading of both the watchdog and the clocksource,
-an extra consecutive read of watchdog clock is being done to check this.
-
-The consecutive watchdog read delay is compared against
-WATCHDOG_MAX_SKEW/2. If the delay exceeds the limit, we assume that
-the system is just too busy. A warning will be printed to the console
-and the clock skew check is skipped for this round.
-
-Fixes: db3a34e17433 ("clocksource: Retry clock read if long delays detected")
-Fixes: 2e27e793e280 ("clocksource: Reduce clocksource-skew threshold")
-Signed-off-by: Waiman Long <longman@redhat.com>
-Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
+Fixes: 6c89928ff7a0 ("iommu/io-pgtable-arm: Support 52-bit physical address")
+Acked-by: Robin Murphy <robin.murphy@arm.com>
+Signed-off-by: Hector Martin <marcan@marcan.st>
+Link: https://lore.kernel.org/r/20211120031343.88034-1-marcan@marcan.st
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/time/clocksource.c | 50 ++++++++++++++++++++++++++++++++-------
- 1 file changed, 41 insertions(+), 9 deletions(-)
+ drivers/iommu/io-pgtable-arm.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/kernel/time/clocksource.c b/kernel/time/clocksource.c
-index d0803a69a2009..e34ceb91f4c5a 100644
---- a/kernel/time/clocksource.c
-+++ b/kernel/time/clocksource.c
-@@ -105,7 +105,7 @@ static u64 suspend_start;
-  * This delay could be due to SMIs, NMIs, or to VCPU preemptions.  Used as
-  * a lower bound for cs->uncertainty_margin values when registering clocks.
-  */
--#define WATCHDOG_MAX_SKEW (50 * NSEC_PER_USEC)
-+#define WATCHDOG_MAX_SKEW (100 * NSEC_PER_USEC)
- 
- #ifdef CONFIG_CLOCKSOURCE_WATCHDOG
- static void clocksource_watchdog_work(struct work_struct *work);
-@@ -200,17 +200,24 @@ void clocksource_mark_unstable(struct clocksource *cs)
- static ulong max_cswd_read_retries = 3;
- module_param(max_cswd_read_retries, ulong, 0644);
- 
--static bool cs_watchdog_read(struct clocksource *cs, u64 *csnow, u64 *wdnow)
-+enum wd_read_status {
-+	WD_READ_SUCCESS,
-+	WD_READ_UNSTABLE,
-+	WD_READ_SKIP
-+};
-+
-+static enum wd_read_status cs_watchdog_read(struct clocksource *cs, u64 *csnow, u64 *wdnow)
+diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
+index bcfbd0e44a4a0..e1cd31c0e3c19 100644
+--- a/drivers/iommu/io-pgtable-arm.c
++++ b/drivers/iommu/io-pgtable-arm.c
+@@ -302,11 +302,12 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
+ static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
+ 					     arm_lpae_iopte *ptep,
+ 					     arm_lpae_iopte curr,
+-					     struct io_pgtable_cfg *cfg)
++					     struct arm_lpae_io_pgtable *data)
  {
- 	unsigned int nretries;
--	u64 wd_end, wd_delta;
--	int64_t wd_delay;
-+	u64 wd_end, wd_end2, wd_delta;
-+	int64_t wd_delay, wd_seq_delay;
+ 	arm_lpae_iopte old, new;
++	struct io_pgtable_cfg *cfg = &data->iop.cfg;
  
- 	for (nretries = 0; nretries <= max_cswd_read_retries; nretries++) {
- 		local_irq_disable();
- 		*wdnow = watchdog->read(watchdog);
- 		*csnow = cs->read(cs);
- 		wd_end = watchdog->read(watchdog);
-+		wd_end2 = watchdog->read(watchdog);
- 		local_irq_enable();
+-	new = __pa(table) | ARM_LPAE_PTE_TYPE_TABLE;
++	new = paddr_to_iopte(__pa(table), data) | ARM_LPAE_PTE_TYPE_TABLE;
+ 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
+ 		new |= ARM_LPAE_PTE_NSTABLE;
  
- 		wd_delta = clocksource_delta(wd_end, *wdnow, watchdog->mask);
-@@ -221,13 +228,34 @@ static bool cs_watchdog_read(struct clocksource *cs, u64 *csnow, u64 *wdnow)
- 				pr_warn("timekeeping watchdog on CPU%d: %s retried %d times before success\n",
- 					smp_processor_id(), watchdog->name, nretries);
- 			}
--			return true;
-+			return WD_READ_SUCCESS;
- 		}
-+
-+		/*
-+		 * Now compute delay in consecutive watchdog read to see if
-+		 * there is too much external interferences that cause
-+		 * significant delay in reading both clocksource and watchdog.
-+		 *
-+		 * If consecutive WD read-back delay > WATCHDOG_MAX_SKEW/2,
-+		 * report system busy, reinit the watchdog and skip the current
-+		 * watchdog test.
-+		 */
-+		wd_delta = clocksource_delta(wd_end2, wd_end, watchdog->mask);
-+		wd_seq_delay = clocksource_cyc2ns(wd_delta, watchdog->mult, watchdog->shift);
-+		if (wd_seq_delay > WATCHDOG_MAX_SKEW/2)
-+			goto skip_test;
+@@ -357,7 +358,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
+ 		if (!cptep)
+ 			return -ENOMEM;
+ 
+-		pte = arm_lpae_install_table(cptep, ptep, 0, cfg);
++		pte = arm_lpae_install_table(cptep, ptep, 0, data);
+ 		if (pte)
+ 			__arm_lpae_free_pages(cptep, tblsz, cfg);
+ 	} else if (!cfg->coherent_walk && !(pte & ARM_LPAE_PTE_SW_SYNC)) {
+@@ -546,7 +547,7 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
+ 		__arm_lpae_init_pte(data, blk_paddr, pte, lvl, &tablep[i]);
  	}
  
- 	pr_warn("timekeeping watchdog on CPU%d: %s read-back delay of %lldns, attempt %d, marking unstable\n",
- 		smp_processor_id(), watchdog->name, wd_delay, nretries);
--	return false;
-+	return WD_READ_UNSTABLE;
-+
-+skip_test:
-+	pr_info("timekeeping watchdog on CPU%d: %s wd-wd read-back delay of %lldns\n",
-+		smp_processor_id(), watchdog->name, wd_seq_delay);
-+	pr_info("wd-%s-wd read-back delay of %lldns, clock-skew test skipped!\n",
-+		cs->name, wd_delay);
-+	return WD_READ_SKIP;
- }
- 
- static u64 csnow_mid;
-@@ -290,6 +318,7 @@ static void clocksource_watchdog(struct timer_list *unused)
- 	int next_cpu, reset_pending;
- 	int64_t wd_nsec, cs_nsec;
- 	struct clocksource *cs;
-+	enum wd_read_status read_ret;
- 	u32 md;
- 
- 	spin_lock(&watchdog_lock);
-@@ -307,9 +336,12 @@ static void clocksource_watchdog(struct timer_list *unused)
- 			continue;
- 		}
- 
--		if (!cs_watchdog_read(cs, &csnow, &wdnow)) {
--			/* Clock readout unreliable, so give it up. */
--			__clocksource_unstable(cs);
-+		read_ret = cs_watchdog_read(cs, &csnow, &wdnow);
-+
-+		if (read_ret != WD_READ_SUCCESS) {
-+			if (read_ret == WD_READ_UNSTABLE)
-+				/* Clock readout unreliable, so give it up. */
-+				__clocksource_unstable(cs);
- 			continue;
- 		}
- 
+-	pte = arm_lpae_install_table(tablep, ptep, blk_pte, cfg);
++	pte = arm_lpae_install_table(tablep, ptep, blk_pte, data);
+ 	if (pte != blk_pte) {
+ 		__arm_lpae_free_pages(tablep, tablesz, cfg);
+ 		/*
 -- 
 2.34.1
 
