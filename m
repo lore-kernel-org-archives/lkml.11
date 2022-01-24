@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E1BFC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:21:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6FA8C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:21:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381660AbiAXUVm (ORCPT
+        id S1350495AbiAXUVp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:21:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60646 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376679AbiAXUDd (ORCPT
+        Mon, 24 Jan 2022 15:21:45 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:47728 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352290AbiAXUDd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:03:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 055D2C08E6DC;
-        Mon, 24 Jan 2022 11:29:44 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B7B28B81238;
-        Mon, 24 Jan 2022 19:29:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E4820C340E5;
-        Mon, 24 Jan 2022 19:29:40 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BDD7BB80FA1;
+        Mon, 24 Jan 2022 20:03:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EED24C340E5;
+        Mon, 24 Jan 2022 20:03:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052581;
-        bh=J8duQaotuAl4FUUuOIClzvWBYiFdiRFM92W/pHtQcoo=;
+        s=korg; t=1643054610;
+        bh=fKi7ZwPG8n0+BGVYMxk00IA52PoG1YjyUx5UZx1Vb/o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SJmM+oGcqZ0BG+Ym7hvZlF3eRAAxm9HG+6F+1DxrFKAFbLab2lljYwjPoWhzc6PPv
-         pRExZGqps2tmTp3tzPNZ15RUAluIzj5v8PvqEA15qZwldYbCU5DzHu6PtZwmvUFP9I
-         gQVUznnK8H6FsxYsebs5yAhAWd5zp/iErJnG5iAQ=
+        b=IXbm1vNFKuVxYVWc9sVbQQitjpL9vgq8DHgcCkIVWsXi4l3L+RRZSA+LSGTPYOH1+
+         itv4ZC6BtDEEymd18uCfk7TpiErh2DXdcHtjql/RVlZJNHz0gjB9UEFnV7gnNvz1Ac
+         q4K5YLqwlrzlS5Lh8zjfvMNmmoIv3yxu1J0Ys9JI=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jiasheng Jiang <jiasheng@iscas.ac.cn>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 107/320] Bluetooth: hci_bcm: Check for error irq
-Date:   Mon, 24 Jan 2022 19:41:31 +0100
-Message-Id: <20220124183957.360997824@linuxfoundation.org>
+        stable@vger.kernel.org, Patrick Williams <patrick@stwcx.xyz>,
+        Jarkko Sakkinen <jarkko@kernel.org>
+Subject: [PATCH 5.10 445/563] tpm: fix NPE on probe for missing device
+Date:   Mon, 24 Jan 2022 19:43:30 +0100
+Message-Id: <20220124184039.846941886@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,46 +46,58 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jiasheng Jiang <jiasheng@iscas.ac.cn>
+From: Patrick Williams <patrick@stwcx.xyz>
 
-[ Upstream commit b38cd3b42fba66cc538edb9cf77e07881f43f8e2 ]
+commit 84cc69589700b90a4c8d27b481a51fce8cca6051 upstream.
 
-For the possible failure of the platform_get_irq(), the returned irq
-could be error number and will finally cause the failure of the
-request_irq().
-Consider that platform_get_irq() can now in certain cases return
--EPROBE_DEFER, and the consequences of letting request_irq() effectively
-convert that into -EINVAL, even at probe time rather than later on.
-So it might be better to check just now.
+When using the tpm_tis-spi driver on a system missing the physical TPM,
+a null pointer exception was observed.
 
-Fixes: 0395ffc1ee05 ("Bluetooth: hci_bcm: Add PM for BCM devices")
-Signed-off-by: Jiasheng Jiang <jiasheng@iscas.ac.cn>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+    [    0.938677] Unable to handle kernel NULL pointer dereference at virtual address 00000004
+    [    0.939020] pgd = 10c753cb
+    [    0.939237] [00000004] *pgd=00000000
+    [    0.939808] Internal error: Oops: 5 [#1] SMP ARM
+    [    0.940157] CPU: 0 PID: 48 Comm: kworker/u4:1 Not tainted 5.15.10-dd1e40c #1
+    [    0.940364] Hardware name: Generic DT based system
+    [    0.940601] Workqueue: events_unbound async_run_entry_fn
+    [    0.941048] PC is at tpm_tis_remove+0x28/0xb4
+    [    0.941196] LR is at tpm_tis_core_init+0x170/0x6ac
+
+This is due to an attempt in 'tpm_tis_remove' to use the drvdata, which
+was not initialized in 'tpm_tis_core_init' prior to the first error.
+
+Move the initialization of drvdata earlier so 'tpm_tis_remove' has
+access to it.
+
+Signed-off-by: Patrick Williams <patrick@stwcx.xyz>
+Fixes: 79ca6f74dae0 ("tpm: fix Atmel TPM crash caused by too frequent queries")
+Cc: stable@vger.kernel.org
+Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bluetooth/hci_bcm.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/char/tpm/tpm_tis_core.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/bluetooth/hci_bcm.c b/drivers/bluetooth/hci_bcm.c
-index 94ed734c1d7eb..c6bb380806f9b 100644
---- a/drivers/bluetooth/hci_bcm.c
-+++ b/drivers/bluetooth/hci_bcm.c
-@@ -1127,7 +1127,12 @@ static int bcm_probe(struct platform_device *pdev)
- 		return -ENOMEM;
+--- a/drivers/char/tpm/tpm_tis_core.c
++++ b/drivers/char/tpm/tpm_tis_core.c
+@@ -950,6 +950,8 @@ int tpm_tis_core_init(struct device *dev
+ 	priv->timeout_max = TPM_TIMEOUT_USECS_MAX;
+ 	priv->phy_ops = phy_ops;
  
- 	dev->dev = &pdev->dev;
--	dev->irq = platform_get_irq(pdev, 0);
++	dev_set_drvdata(&chip->dev, priv);
 +
-+	ret = platform_get_irq(pdev, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	dev->irq = ret;
+ 	rc = tpm_tis_read32(priv, TPM_DID_VID(0), &vendor);
+ 	if (rc < 0)
+ 		return rc;
+@@ -962,8 +964,6 @@ int tpm_tis_core_init(struct device *dev
+ 		priv->timeout_max = TIS_TIMEOUT_MAX_ATML;
+ 	}
  
- 	if (has_acpi_companion(&pdev->dev)) {
- 		ret = bcm_acpi_probe(dev);
--- 
-2.34.1
-
+-	dev_set_drvdata(&chip->dev, priv);
+-
+ 	if (is_bsw()) {
+ 		priv->ilb_base_addr = ioremap(INTEL_LEGACY_BLK_BASE_ADDR,
+ 					ILB_REMAP_SIZE);
 
 
