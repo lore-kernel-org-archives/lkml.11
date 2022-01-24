@@ -2,41 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB6BC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61524C433FE
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3422763AbiAYCcF (ORCPT
+        id S3422786AbiAYCcI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:32:05 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59238 "EHLO
+        Mon, 24 Jan 2022 21:32:08 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:59264 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380589AbiAXUVC (ORCPT
+        with ESMTP id S1381464AbiAXUVE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:21:02 -0500
+        Mon, 24 Jan 2022 15:21:04 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3D13DB81249;
-        Mon, 24 Jan 2022 20:20:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F375C340E5;
-        Mon, 24 Jan 2022 20:20:52 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 424EEB8124F;
+        Mon, 24 Jan 2022 20:21:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 989E9C340E5;
+        Mon, 24 Jan 2022 20:20:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055653;
-        bh=xjp7WWQ9oczjqPRlsPvPYzsUhMd43lMLHP3xvU8tHrk=;
+        s=korg; t=1643055659;
+        bh=eh+DNScqoIu6wXT0PfRf60yKRo2f61E+PvF2esfELAU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LIFAt5lYQI9du7MIegTQzX4VlwRCCJhWXcd0j0kMKiZCJ7jyUXOdj9XdwI2DaD2iY
-         91c4e5luQ0q8BHzP2mIEnf2GyJF+XQl3gmbfTEfHKKRWu7s/RmE7Rgwp6cAUmfQbfR
-         b4FoZ3eI1haRIB6XUz+mtsphHgeWM2Tcg0L1MNa8=
+        b=KmCTIUejxvUuVX8K53EZmb/OLYiR6bNsjxJY/qoRHgHScD/0nJIb+u4O3VMofEeSh
+         9vPkXgHUUQcNOFkO0uIdAibUqO0IpXfFYLw0+d4h+R75QBd61V+AxH0NRmbsIpBlDH
+         FGFk2NDsEbYEr94v2yxV+LBsyPyUCcrarQFyZWFQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
         Nishanth Menon <nm@ti.com>, Pratyush Yadav <p.yadav@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
         Vignesh Raghavendra <vigneshr@ti.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 188/846] arm64: dts: ti: k3-j7200: Fix the L2 cache sets
-Date:   Mon, 24 Jan 2022 19:35:05 +0100
-Message-Id: <20220124184107.450605487@linuxfoundation.org>
+Subject: [PATCH 5.15 190/846] arm64: dts: ti: k3-j7200: Correct the d-cache-sets info
+Date:   Mon, 24 Jan 2022 19:35:07 +0100
+Message-Id: <20220124184107.512067935@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,43 +51,54 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Nishanth Menon <nm@ti.com>
 
-[ Upstream commit d0c826106f3fc11ff97285102b576b65576654ae ]
+[ Upstream commit a172c86931709d6663318609d71a811333bdf4b0 ]
 
-A72's L2 cache[1] on J7200[2] is 1MB. A72's L2 is fixed line length of
-64 bytes and 16-way set-associative cache structure.
+A72 Cluster (chapter 1.3.1 [1]) has 48KB Icache, 32KB Dcache and 1MB L2 Cache
+ - ICache is 3-way set-associative
+ - Dcache is 2-way set-associative
+ - Line size are 64bytes
 
-1MB of L2 / 64 (line length) = 16384 ways
-16384 ways / 16 = 1024 sets
+32KB (Dcache)/64 (fixed line length of 64 bytes) = 512 ways
+512 ways / 2 (Dcache is 2-way per set) = 256 sets.
 
-Fix the l2 cache-sets.
+So, correct the d-cache-sets info.
 
-[1] https://developer.arm.com/documentation/100095/0003/Level-2-Memory-System/About-the-L2-memory-system
-[2] https://www.ti.com/lit/pdf/spruiu1
+[1] https://www.ti.com/lit/pdf/spruiu1
 
 Fixes: d361ed88455f ("arm64: dts: ti: Add support for J7200 SoC")
 Reported-by: Peng Fan <peng.fan@nxp.com>
 Signed-off-by: Nishanth Menon <nm@ti.com>
 Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
+Reviewed-by: Kishon Vijay Abraham I <kishon@ti.com>
 Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Link: https://lore.kernel.org/r/20211113043638.4358-1-nm@ti.com
+Link: https://lore.kernel.org/r/20211113042640.30955-1-nm@ti.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/arm64/boot/dts/ti/k3-j7200.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm64/boot/dts/ti/k3-j7200.dtsi | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/ti/k3-j7200.dtsi b/arch/arm64/boot/dts/ti/k3-j7200.dtsi
-index b7005b8031495..df86c36c21134 100644
+index df86c36c21134..7586b5aea446f 100644
 --- a/arch/arm64/boot/dts/ti/k3-j7200.dtsi
 +++ b/arch/arm64/boot/dts/ti/k3-j7200.dtsi
-@@ -84,7 +84,7 @@
- 		cache-level = <2>;
- 		cache-size = <0x100000>;
- 		cache-line-size = <64>;
--		cache-sets = <2048>;
-+		cache-sets = <1024>;
- 		next-level-cache = <&msmc_l3>;
- 	};
+@@ -60,7 +60,7 @@
+ 			i-cache-sets = <256>;
+ 			d-cache-size = <0x8000>;
+ 			d-cache-line-size = <64>;
+-			d-cache-sets = <128>;
++			d-cache-sets = <256>;
+ 			next-level-cache = <&L2_0>;
+ 		};
  
+@@ -74,7 +74,7 @@
+ 			i-cache-sets = <256>;
+ 			d-cache-size = <0x8000>;
+ 			d-cache-line-size = <64>;
+-			d-cache-sets = <128>;
++			d-cache-sets = <256>;
+ 			next-level-cache = <&L2_0>;
+ 		};
+ 	};
 -- 
 2.34.1
 
