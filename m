@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40FB5C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 190C4C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354073AbiAXTf4 (ORCPT
+        id S1354091AbiAXTf6 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:35:56 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:52128 "EHLO
+        Mon, 24 Jan 2022 14:35:58 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52262 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348122AbiAXT3a (ORCPT
+        with ESMTP id S1352052AbiAXT3c (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:29:30 -0500
+        Mon, 24 Jan 2022 14:29:32 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2A2F3B81232;
-        Mon, 24 Jan 2022 19:29:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 59AF6C340E5;
-        Mon, 24 Jan 2022 19:29:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 0FAB6B811F9;
+        Mon, 24 Jan 2022 19:29:31 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 332FBC340E7;
+        Mon, 24 Jan 2022 19:29:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052566;
-        bh=Kld7CYDt2mevVIhsIFjhJ24FekgJ91SGTvQxVwukp8M=;
+        s=korg; t=1643052569;
+        bh=8PyNwfE8AMHt87zLF1fUP0V9ClhrAz8U/sYGHvaLTDE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2JeXP8IxrU5DVFQ4ej/QHUWKSWqRLTv2CUK37GPlzQJiCmCK3anqrisFo8M+Ulg9i
-         MBP/sDKptYDyZgGjClcyD4r2xYGR8WleBO8Z+xqJP3p3OrzX1N6dXiVdxVD5ptkK4v
-         zTQDuSk9tiWm5X8LtkUKBlxL4qtQuY+6bh7Fy7ao=
+        b=zEqqt95hBf65fslQ9P2FuQxpB6Uhm68vHPp0gFAC5diZvh9+xUQ1EupCeiCgF7A3d
+         LZ51b9Q5yTvAgz/IRRPl6Wa4baxmxsbzbuHBr2lOFbqmDScX1OF5VmQ2QNEjuKlLvm
+         GxPRF6AxP8Y5sEYRyYdjiTSE038LeNh+fntSHAVY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Bernard Zhao <bernard@vivo.com>,
+        Paul Moore <paul@paul-moore.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 059/320] media: venus: core: Fix a resource leak in the error handling path of venus_probe()
-Date:   Mon, 24 Jan 2022 19:40:43 +0100
-Message-Id: <20220124183955.745569890@linuxfoundation.org>
+Subject: [PATCH 5.4 095/320] selinux: fix potential memleak in selinux_add_opt()
+Date:   Mon, 24 Jan 2022 19:41:19 +0100
+Message-Id: <20220124183956.964553715@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -49,58 +47,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Bernard Zhao <bernard@vivo.com>
 
-[ Upstream commit 8cc7a1b2aca067397a016cdb971a5e6ad9b640c7 ]
+[ Upstream commit 2e08df3c7c4e4e74e3dd5104c100f0bf6288aaa8 ]
 
-A successful 'of_platform_populate()' call should be balanced by a
-corresponding 'of_platform_depopulate()' call in the error handling path
-of the probe, as already done in the remove function.
+This patch try to fix potential memleak in error branch.
 
-A successful 'venus_firmware_init()' call should be balanced by a
-corresponding 'venus_firmware_deinit()' call in the error handling path
-of the probe, as already done in the remove function.
-
-Update the error handling path accordingly.
-
-Fixes: f9799fcce4bb ("media: venus: firmware: register separate platform_device for firmware loader")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Signed-off-by: Stanimir Varbanov <stanimir.varbanov@linaro.org>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: ba6418623385 ("selinux: new helper - selinux_add_opt()")
+Signed-off-by: Bernard Zhao <bernard@vivo.com>
+[PM: tweak the subject line, add Fixes tag]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/qcom/venus/core.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ security/selinux/hooks.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/platform/qcom/venus/core.c b/drivers/media/platform/qcom/venus/core.c
-index bbc430a003443..7b52d3e5d3f89 100644
---- a/drivers/media/platform/qcom/venus/core.c
-+++ b/drivers/media/platform/qcom/venus/core.c
-@@ -289,11 +289,11 @@ static int venus_probe(struct platform_device *pdev)
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index 91f2ba0b225b7..56418cf72069d 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -995,18 +995,22 @@ out:
+ static int selinux_add_opt(int token, const char *s, void **mnt_opts)
+ {
+ 	struct selinux_mnt_opts *opts = *mnt_opts;
++	bool is_alloc_opts = false;
  
- 	ret = venus_firmware_init(core);
- 	if (ret)
--		goto err_runtime_disable;
-+		goto err_of_depopulate;
+ 	if (token == Opt_seclabel)	/* eaten and completely ignored */
+ 		return 0;
  
- 	ret = venus_boot(core);
- 	if (ret)
--		goto err_runtime_disable;
-+		goto err_firmware_deinit;
- 
- 	ret = hfi_core_resume(core, true);
- 	if (ret)
-@@ -329,6 +329,10 @@ err_core_deinit:
- 	hfi_core_deinit(core, false);
- err_venus_shutdown:
- 	venus_shutdown(core);
-+err_firmware_deinit:
-+	venus_firmware_deinit(core);
-+err_of_depopulate:
-+	of_platform_depopulate(dev);
- err_runtime_disable:
- 	pm_runtime_put_noidle(dev);
- 	pm_runtime_set_suspended(dev);
++	if (!s)
++		return -ENOMEM;
++
+ 	if (!opts) {
+ 		opts = kzalloc(sizeof(struct selinux_mnt_opts), GFP_KERNEL);
+ 		if (!opts)
+ 			return -ENOMEM;
+ 		*mnt_opts = opts;
++		is_alloc_opts = true;
+ 	}
+-	if (!s)
+-		return -ENOMEM;
++
+ 	switch (token) {
+ 	case Opt_context:
+ 		if (opts->context || opts->defcontext)
+@@ -1031,6 +1035,10 @@ static int selinux_add_opt(int token, const char *s, void **mnt_opts)
+ 	}
+ 	return 0;
+ Einval:
++	if (is_alloc_opts) {
++		kfree(opts);
++		*mnt_opts = NULL;
++	}
+ 	pr_warn(SEL_MOUNT_FAIL_MSG);
+ 	return -EINVAL;
+ }
 -- 
 2.34.1
 
