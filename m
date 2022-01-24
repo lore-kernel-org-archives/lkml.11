@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B34F3C4167B
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF5AAC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:44:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457536AbiAXVls (ORCPT
+        id S1457494AbiAXVlo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:41:48 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56160 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1445725AbiAXVEu (ORCPT
+        Mon, 24 Jan 2022 16:41:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47456 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1445659AbiAXVEm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:04:50 -0500
+        Mon, 24 Jan 2022 16:04:42 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94472C06B5BB;
+        Mon, 24 Jan 2022 12:04:24 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 31E29B810BD;
-        Mon, 24 Jan 2022 21:04:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30232C340E7;
-        Mon, 24 Jan 2022 21:04:47 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D7A9B8119E;
+        Mon, 24 Jan 2022 20:04:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8E1F8C340E7;
+        Mon, 24 Jan 2022 20:04:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058287;
-        bh=9EwleqdRVZtL162VKfnttSjeH2nw2+PWu/If4AcMLWA=;
+        s=korg; t=1643054662;
+        bh=0w4R2NHgExzeD9t+H0AsT8Etmds2t5Ti0YZB3Jt+H/Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nRIMM2zMsCrf3cbM/7NcfKiSghJftRscHFUzejC0+UUwXYYQ+Nk4hTkLJhOudN0Y3
-         7vXCVLvHgqRFgio507LRx7Har4V40XCKkfPJhngN5oNOwNAArhj7nGd6+MCmSe4VhD
-         T4mr6+5fvF1F1wRPItPbIiXQ7assZE2uWGUvUVd4=
+        b=EcV090jptT92hrwxE1p5EKXWgtS8o7UoCSm4NlhWv33gkg1oB83PbpZHtchjqNuyx
+         7qVWnLMgzlqSJnXoZ+Eevo7ZjSMMZDkDTuIJI7FgqwIOGHPTRmEmHxOmEJLN7r9XHf
+         HKIi4IwXLIWzW1qY3Oy9U4136jQoQQLMP181krqw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
+        stable@vger.kernel.org, Hari Bathini <hbathini@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0241/1039] samples/bpf: Clean up samples/bpf build failes
-Date:   Mon, 24 Jan 2022 19:33:50 +0100
-Message-Id: <20220124184133.423600481@linuxfoundation.org>
+Subject: [PATCH 5.10 430/563] powerpc/fadump: Fix inaccurate CPU state info in vmcore generated with panic
+Date:   Mon, 24 Jan 2022 19:43:15 +0100
+Message-Id: <20220124184039.325859101@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,99 +50,130 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Andrii Nakryiko <andrii@kernel.org>
+From: Hari Bathini <hbathini@linux.ibm.com>
 
-[ Upstream commit 527024f7aeb683ce7ef49b07ef7ce9ecf015288d ]
+[ Upstream commit 06e629c25daa519be620a8c17359ae8fc7a2e903 ]
 
-Remove xdp_samples_user.o rule redefinition which generates Makefile
-warning and instead override TPROGS_CFLAGS. This seems to work fine when
-building inside selftests/bpf.
+In panic path, fadump is triggered via a panic notifier function.
+Before calling panic notifier functions, smp_send_stop() gets called,
+which stops all CPUs except the panic'ing CPU. Commit 8389b37dffdc
+("powerpc: stop_this_cpu: remove the cpu from the online map.") and
+again commit bab26238bbd4 ("powerpc: Offline CPU in stop_this_cpu()")
+started marking CPUs as offline while stopping them. So, if a kernel
+has either of the above commits, vmcore captured with fadump via panic
+path would not process register data for all CPUs except the panic'ing
+CPU. Sample output of crash-utility with such vmcore:
 
-That was one big head-scratcher before I found that generic
-Makefile.target hid this surprising specialization for for xdp_samples_user.o.
+  # crash vmlinux vmcore
+  ...
+        KERNEL: vmlinux
+      DUMPFILE: vmcore  [PARTIAL DUMP]
+          CPUS: 1
+          DATE: Wed Nov 10 09:56:34 EST 2021
+        UPTIME: 00:00:42
+  LOAD AVERAGE: 2.27, 0.69, 0.24
+         TASKS: 183
+      NODENAME: XXXXXXXXX
+       RELEASE: 5.15.0+
+       VERSION: #974 SMP Wed Nov 10 04:18:19 CST 2021
+       MACHINE: ppc64le  (2500 Mhz)
+        MEMORY: 8 GB
+         PANIC: "Kernel panic - not syncing: sysrq triggered crash"
+           PID: 3394
+       COMMAND: "bash"
+          TASK: c0000000150a5f80  [THREAD_INFO: c0000000150a5f80]
+           CPU: 1
+         STATE: TASK_RUNNING (PANIC)
 
-Main change is to use actual locally installed libbpf headers.
+  crash> p -x __cpu_online_mask
+  __cpu_online_mask = $1 = {
+    bits = {0x2, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
+  }
+  crash>
+  crash>
+  crash> p -x __cpu_active_mask
+  __cpu_active_mask = $2 = {
+    bits = {0xff, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0}
+  }
+  crash>
 
-Also drop printk macro re-definition (not even used!).
+While this has been the case since fadump was introduced, the issue
+was not identified for two probable reasons:
 
-Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Link: https://lore.kernel.org/bpf/20211201232824.3166325-8-andrii@kernel.org
+  - In general, the bulk of the vmcores analyzed were from crash
+    due to exception.
+
+  - The above did change since commit 8341f2f222d7 ("sysrq: Use
+    panic() to force a crash") started using panic() instead of
+    deferencing NULL pointer to force a kernel crash. But then
+    commit de6e5d38417e ("powerpc: smp_send_stop do not offline
+    stopped CPUs") stopped marking CPUs as offline till kernel
+    commit bab26238bbd4 ("powerpc: Offline CPU in stop_this_cpu()")
+    reverted that change.
+
+To ensure post processing register data of all other CPUs happens
+as intended, let panic() function take the crash friendly path (read
+crash_smp_send_stop()) with the help of crash_kexec_post_notifiers
+option. Also, as register data for all CPUs is captured by f/w, skip
+IPI callbacks here for fadump, to avoid any complications in finding
+the right backtraces.
+
+Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211207103719.91117-2-hbathini@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- samples/bpf/Makefile            | 13 ++++++++++++-
- samples/bpf/Makefile.target     | 11 -----------
- samples/bpf/lwt_len_hist_kern.c |  7 -------
- 3 files changed, 12 insertions(+), 19 deletions(-)
+ arch/powerpc/kernel/fadump.c |  8 ++++++++
+ arch/powerpc/kernel/smp.c    | 10 ++++++++++
+ 2 files changed, 18 insertions(+)
 
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index a886dff1ba899..6ae62b1dc9388 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -328,7 +328,7 @@ $(BPF_SAMPLES_PATH)/*.c: verify_target_bpf $(LIBBPF)
- $(src)/*.c: verify_target_bpf $(LIBBPF)
+diff --git a/arch/powerpc/kernel/fadump.c b/arch/powerpc/kernel/fadump.c
+index eddf362caedce..c3bb800dc4352 100644
+--- a/arch/powerpc/kernel/fadump.c
++++ b/arch/powerpc/kernel/fadump.c
+@@ -1641,6 +1641,14 @@ int __init setup_fadump(void)
+ 	else if (fw_dump.reserve_dump_area_size)
+ 		fw_dump.ops->fadump_init_mem_struct(&fw_dump);
  
- libbpf_hdrs: $(LIBBPF)
--$(obj)/$(TRACE_HELPERS): | libbpf_hdrs
-+$(obj)/$(TRACE_HELPERS) $(obj)/$(CGROUP_HELPERS) $(obj)/$(XDP_SAMPLE): | libbpf_hdrs
- 
- .PHONY: libbpf_hdrs
- 
-@@ -343,6 +343,17 @@ $(obj)/hbm_out_kern.o: $(src)/hbm.h $(src)/hbm_kern.h
- $(obj)/hbm.o: $(src)/hbm.h
- $(obj)/hbm_edt_kern.o: $(src)/hbm.h $(src)/hbm_kern.h
- 
-+# Override includes for xdp_sample_user.o because $(srctree)/usr/include in
-+# TPROGS_CFLAGS causes conflicts
-+XDP_SAMPLE_CFLAGS += -Wall -O2 -lm \
-+		     -I$(src)/../../tools/include \
-+		     -I$(src)/../../tools/include/uapi \
-+		     -I$(LIBBPF_INCLUDE) \
-+		     -I$(src)/../../tools/testing/selftests/bpf
++	/*
++	 * In case of panic, fadump is triggered via ppc_panic_event()
++	 * panic notifier. Setting crash_kexec_post_notifiers to 'true'
++	 * lets panic() function take crash friendly path before panic
++	 * notifiers are invoked.
++	 */
++	crash_kexec_post_notifiers = true;
 +
-+$(obj)/$(XDP_SAMPLE): TPROGS_CFLAGS = $(XDP_SAMPLE_CFLAGS)
-+$(obj)/$(XDP_SAMPLE): $(src)/xdp_sample_user.h $(src)/xdp_sample_shared.h
+ 	return 1;
+ }
+ subsys_initcall(setup_fadump);
+diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
+index d993f28107afa..cf99f57aed822 100644
+--- a/arch/powerpc/kernel/smp.c
++++ b/arch/powerpc/kernel/smp.c
+@@ -60,6 +60,7 @@
+ #include <asm/cpu_has_feature.h>
+ #include <asm/ftrace.h>
+ #include <asm/kup.h>
++#include <asm/fadump.h>
+ 
+ #ifdef DEBUG
+ #include <asm/udbg.h>
+@@ -612,6 +613,15 @@ void crash_smp_send_stop(void)
+ {
+ 	static bool stopped = false;
+ 
++	/*
++	 * In case of fadump, register data for all CPUs is captured by f/w
++	 * on ibm,os-term rtas call. Skip IPI callbacks to other CPUs before
++	 * this rtas call to avoid tricky post processing of those CPUs'
++	 * backtraces.
++	 */
++	if (should_fadump_crash())
++		return;
 +
- -include $(BPF_SAMPLES_PATH)/Makefile.target
+ 	if (stopped)
+ 		return;
  
- VMLINUX_BTF_PATHS ?= $(abspath $(if $(O),$(O)/vmlinux))				\
-diff --git a/samples/bpf/Makefile.target b/samples/bpf/Makefile.target
-index 5a368affa0386..7621f55e2947d 100644
---- a/samples/bpf/Makefile.target
-+++ b/samples/bpf/Makefile.target
-@@ -73,14 +73,3 @@ quiet_cmd_tprog-cobjs	= CC  $@
-       cmd_tprog-cobjs	= $(CC) $(tprogc_flags) -c -o $@ $<
- $(tprog-cobjs): $(obj)/%.o: $(src)/%.c FORCE
- 	$(call if_changed_dep,tprog-cobjs)
--
--# Override includes for xdp_sample_user.o because $(srctree)/usr/include in
--# TPROGS_CFLAGS causes conflicts
--XDP_SAMPLE_CFLAGS += -Wall -O2 -lm \
--		     -I./tools/include \
--		     -I./tools/include/uapi \
--		     -I./tools/lib \
--		     -I./tools/testing/selftests/bpf
--$(obj)/xdp_sample_user.o: $(src)/xdp_sample_user.c \
--	$(src)/xdp_sample_user.h $(src)/xdp_sample_shared.h
--	$(CC) $(XDP_SAMPLE_CFLAGS) -c -o $@ $<
-diff --git a/samples/bpf/lwt_len_hist_kern.c b/samples/bpf/lwt_len_hist_kern.c
-index 9ed63e10e1709..1fa14c54963a1 100644
---- a/samples/bpf/lwt_len_hist_kern.c
-+++ b/samples/bpf/lwt_len_hist_kern.c
-@@ -16,13 +16,6 @@
- #include <uapi/linux/in.h>
- #include <bpf/bpf_helpers.h>
- 
--# define printk(fmt, ...)						\
--		({							\
--			char ____fmt[] = fmt;				\
--			bpf_trace_printk(____fmt, sizeof(____fmt),	\
--				     ##__VA_ARGS__);			\
--		})
--
- struct bpf_elf_map {
- 	__u32 type;
- 	__u32 size_key;
 -- 
 2.34.1
 
