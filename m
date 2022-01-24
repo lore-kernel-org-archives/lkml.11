@@ -2,98 +2,90 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28EA5C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:43:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CE91C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:43:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350042AbiAXTnp (ORCPT
+        id S1351023AbiAXTny (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:43:45 -0500
-Received: from mga12.intel.com ([192.55.52.136]:30783 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1352906AbiAXTbP (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:31:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643052675; x=1674588675;
-  h=date:from:to:cc:subject:message-id:mime-version;
-  bh=q1Bhf6Ww5I5xdm+fU1OBOpYVFdM2uPYEpZ7nHNC3PiA=;
-  b=Lexm2id+2HKUofb3FzC+8ASFmdnxltByiQGu2JWZ6NyK9v/EHR/iinwm
-   P2NwOS5rl7dHKS7YDQs1YDCqUaRbvUYf+Ox41nRKF5wzINJCKsFXy5T81
-   i7Us3SbEFurTkXvTjDLLYmvMr7jqs1OG8v3pgav4hkhSCPuAEFYrHgA3Y
-   9TZ3X3+MOxyVubYXzA4lQPajdEcdUfMZgwBR/zwkXizmdZb48vTM6RcPA
-   lVvX4v8cJHOcF9V97Dtq8cYySXbc+l7EJxjWyTLc9/YCmtQ/j9dMATXYu
-   C+25wX7rgza673rcynPXZo2m3DrSAF1JD/XakW8c8PpJMBwn0x+/DjiiJ
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10237"; a="226108566"
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="226108566"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 11:25:04 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="476834099"
-Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
-  by orsmga003.jf.intel.com with ESMTP; 24 Jan 2022 11:25:03 -0800
-Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1nC4xa-000IoL-Nn; Mon, 24 Jan 2022 19:25:02 +0000
-Date:   Tue, 25 Jan 2022 03:24:11 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Ingo Molnar <mingo@kernel.org>
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org
-Subject: [mingo-tip:sched/headers 2040/2384]
- arch/mips/sgi-ip30/ip30-setup.c:136:9: error: 'ioport_resource' undeclared
-Message-ID: <202201250357.V6BlaZ0J-lkp@intel.com>
+        Mon, 24 Jan 2022 14:43:54 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58052 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352897AbiAXTbO (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 14:31:14 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 09DC561482;
+        Mon, 24 Jan 2022 19:31:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E29BEC340E5;
+        Mon, 24 Jan 2022 19:31:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643052673;
+        bh=Yfx4afU5U/SUeFI8vDC9AXyMNEsK7W7v+iXmHZLdwWE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RtaD40NqMM8WNjQRWTmcJwab5y3NB7/EFJP9vj4GWdxt8RbKKZKUU6fjHzl7K9/Mv
+         z7DvYPZLL86ipa6ju552f0YJfePmGzTtJrbMRpcu7dfORgkAqVA5WnpycXoFel8zIt
+         JU4hx8tHNNJ987E6NR4npcFelJ50B3UDg0Etj2k0=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 094/320] mmc: meson-mx-sdio: add IRQ check
+Date:   Mon, 24 Jan 2022 19:41:18 +0100
+Message-Id: <20220124183956.933670845@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-tree:   git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git sched/headers
-head:   4c707c1c0de83967079b4e385012fa5b00e2cd11
-commit: abe1ece6c06895bf5e7c8f03d10061f5712d8326 [2040/2384] headers/deps: dev/core: Optimize <linux/device.h> dependencies, remove <linux/device_api.h> inclusion
-config: mips-randconfig-m031-20220124 (https://download.01.org/0day-ci/archive/20220125/202201250357.V6BlaZ0J-lkp@intel.com/config)
-compiler: mips64-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git/commit/?id=abe1ece6c06895bf5e7c8f03d10061f5712d8326
-        git remote add mingo-tip git://git.kernel.org/pub/scm/linux/kernel/git/mingo/tip.git
-        git fetch --no-tags mingo-tip sched/headers
-        git checkout abe1ece6c06895bf5e7c8f03d10061f5712d8326
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=mips SHELL=/bin/bash arch/mips/pci/ arch/mips/sgi-ip30/ drivers/media/test-drivers/vidtv/ drivers/usb/chipidea/ drivers/usb/usbip/
+From: Sergey Shtylyov <s.shtylyov@omp.ru>
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+[ Upstream commit 8fc9a77bc64e1f23d07953439817d8402ac9706f ]
 
-All errors (new ones prefixed by >>):
+The driver neglects to check the result of platform_get_irq()'s call and
+blithely passes the negative error codes to devm_request_threaded_irq()
+(which takes *unsigned* IRQ #), causing it to fail with -EINVAL, overriding
+an original error code. Stop calling devm_request_threaded_irq() with the
+invalid IRQ #s.
 
-   arch/mips/sgi-ip30/ip30-setup.c:123:13: warning: no previous prototype for 'plat_mem_setup' [-Wmissing-prototypes]
-     123 | void __init plat_mem_setup(void)
-         |             ^~~~~~~~~~~~~~
-   arch/mips/sgi-ip30/ip30-setup.c: In function 'plat_mem_setup':
->> arch/mips/sgi-ip30/ip30-setup.c:136:9: error: 'ioport_resource' undeclared (first use in this function)
-     136 |         ioport_resource.start = 0;
-         |         ^~~~~~~~~~~~~~~
-   arch/mips/sgi-ip30/ip30-setup.c:136:9: note: each undeclared identifier is reported only once for each function it appears in
-
-
-vim +/ioport_resource +136 arch/mips/sgi-ip30/ip30-setup.c
-
-7505576d1c1ac0 Thomas Bogendoerfer 2019-10-24  135  
-7505576d1c1ac0 Thomas Bogendoerfer 2019-10-24 @136  	ioport_resource.start = 0;
-
-:::::: The code at line 136 was first introduced by commit
-:::::: 7505576d1c1ac0cfe85fdf90999433dd8b673012 MIPS: add support for SGI Octane (IP30)
-
-:::::: TO: Thomas Bogendoerfer <tbogendoerfer@suse.de>
-:::::: CC: Paul Burton <paulburton@kernel.org>
-
+Fixes: ed80a13bb4c4 ("mmc: meson-mx-sdio: Add a driver for the Amlogic Meson8 and Meson8b SoC")
+Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Link: https://lore.kernel.org/r/20211217202717.10041-3-s.shtylyov@omp.ru
+Signed-off-by: Ulf Hansson <ulf.hansson@linaro.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/mmc/host/meson-mx-sdio.c | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/drivers/mmc/host/meson-mx-sdio.c b/drivers/mmc/host/meson-mx-sdio.c
+index 360d523132bd5..780552a86ec08 100644
+--- a/drivers/mmc/host/meson-mx-sdio.c
++++ b/drivers/mmc/host/meson-mx-sdio.c
+@@ -665,6 +665,11 @@ static int meson_mx_mmc_probe(struct platform_device *pdev)
+ 	}
+ 
+ 	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		ret = irq;
++		goto error_free_mmc;
++	}
++
+ 	ret = devm_request_threaded_irq(host->controller_dev, irq,
+ 					meson_mx_mmc_irq,
+ 					meson_mx_mmc_irq_thread, IRQF_ONESHOT,
+-- 
+2.34.1
+
+
+
