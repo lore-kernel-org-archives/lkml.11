@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 183C9C3526C
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C6DBC433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421345AbiAYC0o (ORCPT
+        id S3421404AbiAYC0v (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:26:44 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:44612 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357182AbiAXTta (ORCPT
+        Mon, 24 Jan 2022 21:26:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56862 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1357234AbiAXTtj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:49:30 -0500
+        Mon, 24 Jan 2022 14:49:39 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1744C02B85E;
+        Mon, 24 Jan 2022 11:23:57 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D0AFB6090B;
-        Mon, 24 Jan 2022 19:49:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8DEFC340E8;
-        Mon, 24 Jan 2022 19:49:28 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7F82BB8119D;
+        Mon, 24 Jan 2022 19:23:56 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77C35C340E5;
+        Mon, 24 Jan 2022 19:23:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053769;
-        bh=CLLAa3KRYtUtrOCmUpY1ensPN6KX3tszgWRlsKu2Gqk=;
+        s=korg; t=1643052235;
+        bh=vOXL6mDMuE3FEEnsEWT8d+ESEXgBcEAP+vCQtONFlDk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZmQT3va2LIKrEsHfKKjq5fMRdCiv3Sb5ovxN1IHPeHeuBp07K7oWZ51dXk4PoHzoA
-         7Ok8WnxXcwJeupksC160dQYynvB+MxEuJkUWeI1oeNiQyBkklGI+fefeVI+6tv0xIr
-         5+Z+wFyayiCTUjKeB9EuCPgHYejgrtK0RtMKsgHA=
+        b=yBwZOKDcIDR7qzLNGZidtv4zjaViR2edROzy74C6p7wb3K4Xtw2bzNVzX1mbWymwP
+         amq5sy3ViDCvtldo7G84s2c/JZmr7hyGVnogb+dPMhpZZ/2QIOMlUawtPGNygbnwGK
+         WGCPEIqzfaRHvayPgDjrSP8DXBgHpS26/oBYLc2c=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Robert Foss <robert.foss@linaro.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 170/563] drm/bridge: ti-sn65dsi86: Set max register for regmap
-Date:   Mon, 24 Jan 2022 19:38:55 +0100
-Message-Id: <20220124184030.296105763@linuxfoundation.org>
+        stable@vger.kernel.org, Kevin Bracey <kevin@bracey.fi>,
+        Eric Dumazet <edumazet@google.com>,
+        Jiri Pirko <jiri@resnulli.us>, Vimalkumar <j.vimal@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 4.19 232/239] net_sched: restore "mpu xxx" handling
+Date:   Mon, 24 Jan 2022 19:44:30 +0100
+Message-Id: <20220124183950.477490702@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,40 +51,99 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stephen Boyd <swboyd@chromium.org>
+From: Kevin Bracey <kevin@bracey.fi>
 
-[ Upstream commit 0b665d4af35837f0a0ae63135b84a3c187c1db3b ]
+commit fb80445c438c78b40b547d12b8d56596ce4ccfeb upstream.
 
-Set the maximum register to 0xff so we can dump the registers for this
-device in debugfs.
+commit 56b765b79e9a ("htb: improved accuracy at high rates") broke
+"overhead X", "linklayer atm" and "mpu X" attributes.
 
-Fixes: a095f15c00e2 ("drm/bridge: add support for sn65dsi86 bridge driver")
-Cc: Rob Clark <robdclark@chromium.org>
-Cc: Douglas Anderson <dianders@chromium.org>
-Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Robert Foss <robert.foss@linaro.org>
-Signed-off-by: Robert Foss <robert.foss@linaro.org>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211215002529.382383-1-swboyd@chromium.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+"overhead X" and "linklayer atm" have already been fixed. This restores
+the "mpu X" handling, as might be used by DOCSIS or Ethernet shaping:
+
+    tc class add ... htb rate X overhead 4 mpu 64
+
+The code being fixed is used by htb, tbf and act_police. Cake has its
+own mpu handling. qdisc_calculate_pkt_len still uses the size table
+containing values adjusted for mpu by user space.
+
+iproute2 tc has always passed mpu into the kernel via a tc_ratespec
+structure, but the kernel never directly acted on it, merely stored it
+so that it could be read back by `tc class show`.
+
+Rather, tc would generate length-to-time tables that included the mpu
+(and linklayer) in their construction, and the kernel used those tables.
+
+Since v3.7, the tables were no longer used. Along with "mpu", this also
+broke "overhead" and "linklayer" which were fixed in 01cb71d2d47b
+("net_sched: restore "overhead xxx" handling", v3.10) and 8a8e3d84b171
+("net_sched: restore "linklayer atm" handling", v3.11).
+
+"overhead" was fixed by simply restoring use of tc_ratespec::overhead -
+this had originally been used by the kernel but was initially omitted
+from the new non-table-based calculations.
+
+"linklayer" had been handled in the table like "mpu", but the mode was
+not originally passed in tc_ratespec. The new implementation was made to
+handle it by getting new versions of tc to pass the mode in an extended
+tc_ratespec, and for older versions of tc the table contents were analysed
+at load time to deduce linklayer.
+
+As "mpu" has always been given to the kernel in tc_ratespec,
+accompanying the mpu-based table, we can restore system functionality
+with no userspace change by making the kernel act on the tc_ratespec
+value.
+
+Fixes: 56b765b79e9a ("htb: improved accuracy at high rates")
+Signed-off-by: Kevin Bracey <kevin@bracey.fi>
+Cc: Eric Dumazet <edumazet@google.com>
+Cc: Jiri Pirko <jiri@resnulli.us>
+Cc: Vimalkumar <j.vimal@gmail.com>
+Link: https://lore.kernel.org/r/20220112170210.1014351-1-kevin@bracey.fi
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/bridge/ti-sn65dsi86.c | 1 +
- 1 file changed, 1 insertion(+)
+ include/net/sch_generic.h |    5 +++++
+ net/sched/sch_generic.c   |    1 +
+ 2 files changed, 6 insertions(+)
 
-diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi86.c b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-index ecdf9b01340f5..1a58481037b3f 100644
---- a/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-+++ b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
-@@ -171,6 +171,7 @@ static const struct regmap_config ti_sn_bridge_regmap_config = {
- 	.val_bits = 8,
- 	.volatile_table = &ti_sn_bridge_volatile_table,
- 	.cache_type = REGCACHE_NONE,
-+	.max_register = 0xFF,
+--- a/include/net/sch_generic.h
++++ b/include/net/sch_generic.h
+@@ -1077,6 +1077,7 @@ struct psched_ratecfg {
+ 	u64	rate_bytes_ps; /* bytes per second */
+ 	u32	mult;
+ 	u16	overhead;
++	u16	mpu;
+ 	u8	linklayer;
+ 	u8	shift;
  };
+@@ -1086,6 +1087,9 @@ static inline u64 psched_l2t_ns(const st
+ {
+ 	len += r->overhead;
  
- static void ti_sn_bridge_write_u16(struct ti_sn_bridge *pdata,
--- 
-2.34.1
-
++	if (len < r->mpu)
++		len = r->mpu;
++
+ 	if (unlikely(r->linklayer == TC_LINKLAYER_ATM))
+ 		return ((u64)(DIV_ROUND_UP(len,48)*53) * r->mult) >> r->shift;
+ 
+@@ -1108,6 +1112,7 @@ static inline void psched_ratecfg_getrat
+ 	res->rate = min_t(u64, r->rate_bytes_ps, ~0U);
+ 
+ 	res->overhead = r->overhead;
++	res->mpu = r->mpu;
+ 	res->linklayer = (r->linklayer & TC_LINKLAYER_MASK);
+ }
+ 
+--- a/net/sched/sch_generic.c
++++ b/net/sched/sch_generic.c
+@@ -1367,6 +1367,7 @@ void psched_ratecfg_precompute(struct ps
+ {
+ 	memset(r, 0, sizeof(*r));
+ 	r->overhead = conf->overhead;
++	r->mpu = conf->mpu;
+ 	r->rate_bytes_ps = max_t(u64, conf->rate, rate64);
+ 	r->linklayer = (conf->linklayer & TC_LINKLAYER_MASK);
+ 	r->mult = 1;
 
 
