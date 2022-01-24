@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C3AAC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 450E9C433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588004AbiAXWa2 (ORCPT
+        id S1346686AbiAXWai (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:30:28 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48206 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378062AbiAXVio (ORCPT
+        Mon, 24 Jan 2022 17:30:38 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:56218 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1456183AbiAXViC (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:38:44 -0500
+        Mon, 24 Jan 2022 16:38:02 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B55CEB81188;
-        Mon, 24 Jan 2022 21:38:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E9EB0C340E4;
-        Mon, 24 Jan 2022 21:38:40 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B5A6961516;
+        Mon, 24 Jan 2022 21:38:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6B091C36AE7;
+        Mon, 24 Jan 2022 21:37:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060321;
-        bh=AZdeogpZIVfXj08F3oNVbYOQIuzVXxnygZlttam14NE=;
+        s=korg; t=1643060280;
+        bh=r3t9De6Vv16FA1XPz2GR0dzvGr6aoOUnk+n2LPMHXP0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Zl1T89EY4+98IcslDj/QAVT/46j/Agx3z1hkgNjSyKaxLdM05hunVmXfymHEaevvn
-         X/7jSkAF3OqdGtl2S1Pin4QZKmr4d3foZBa6ys6Z54jUDp+zeTl3B7o5/uEdGOXrpo
-         y8tEtUTS7YWhXE7IjP0c1rgABfBL/E1XDZbv9c9s=
+        b=Leruon5Vc1bLKi1LU0j+/xKUOp/ZML3em0KVZ6A34MRWWM9CAI1abn5qZ2eFTuaBw
+         rG7TTer68BTKA9gVTlwFp2334SixO1rbezxQ2+J1Viihr4h7JMyyfb4VXExRwkpe2m
+         oLV76i/Lh6YUB6c1EXWhXp1BeT/wYUNhve0EB7O4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.16 0866/1039] scsi: lpfc: Fix lpfc_force_rscn ndlp kref imbalance
-Date:   Mon, 24 Jan 2022 19:44:15 +0100
-Message-Id: <20220124184154.404731249@linuxfoundation.org>
+        stable@vger.kernel.org, Xin Yin <yinxin.x@bytedance.com>,
+        Harshad Shirwadkar <harshadshirwadkar@gmail.com>,
+        Theodore Tso <tytso@mit.edu>, stable@kernel.org
+Subject: [PATCH 5.16 0896/1039] ext4: use ext4_ext_remove_space() for fast commit replay delete range
+Date:   Mon, 24 Jan 2022 19:44:45 +0100
+Message-Id: <20220124184155.406199813@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,45 +47,60 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Xin Yin <yinxin.x@bytedance.com>
 
-commit 7576d48c64f36f6fea9df2882f710a474fa35f40 upstream.
+commit 0b5b5a62b945a141e64011b2f90ee7e46f14be98 upstream.
 
-Issuing lpfc_force_rscn twice results in an ndlp kref use-after-free call
-trace.
+For now ,we use ext4_punch_hole() during fast commit replay delete range
+procedure. But it will be affected by inode->i_size, which may not
+correct during fast commit replay procedure. The following test will
+failed.
 
-A prior patch reworked the get/put handling by ensuring nlp_get was done
-before WQE submission and a put was done in the completion path.
-Unfortunately, the issue_els_rscn path had a piece of legacy code that did
-a nlp_put, causing an imbalance on the ref counts.
+-create & write foo (len 1000K)
+-falloc FALLOC_FL_ZERO_RANGE foo (range 400K - 600K)
+-create & fsync bar
+-falloc FALLOC_FL_PUNCH_HOLE foo (range 300K-500K)
+-fsync foo
+-crash before a full commit
 
-Fixed by removing the unnecessary legacy code snippet.
+After the fast_commit reply procedure, the range 400K-500K will not be
+removed. Because in this case, when calling ext4_punch_hole() the
+inode->i_size is 0, and it just retruns with doing nothing.
 
-Link: https://lore.kernel.org/r/20211204002644.116455-4-jsmart2021@gmail.com
-Fixes: 4430f7fd09ec ("scsi: lpfc: Rework locations of ndlp reference taking")
-Cc: <stable@vger.kernel.org> # v5.11+
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Change to use ext4_ext_remove_space() instead of ext4_punch_hole()
+to remove blocks of inode directly.
+
+Signed-off-by: Xin Yin <yinxin.x@bytedance.com>
+Reviewed-by: Harshad Shirwadkar <harshadshirwadkar@gmail.com>
+Link: https://lore.kernel.org/r/20211223032337.5198-2-yinxin.x@bytedance.com
+Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+Cc: stable@kernel.org
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/lpfc/lpfc_els.c |    5 -----
- 1 file changed, 5 deletions(-)
+ fs/ext4/fast_commit.c |   13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
---- a/drivers/scsi/lpfc/lpfc_els.c
-+++ b/drivers/scsi/lpfc/lpfc_els.c
-@@ -3538,11 +3538,6 @@ lpfc_issue_els_rscn(struct lpfc_vport *v
- 		return 1;
+--- a/fs/ext4/fast_commit.c
++++ b/fs/ext4/fast_commit.c
+@@ -1812,11 +1812,14 @@ ext4_fc_replay_del_range(struct super_bl
+ 		}
  	}
  
--	/* This will cause the callback-function lpfc_cmpl_els_cmd to
--	 * trigger the release of node.
--	 */
--	if (!(vport->fc_flag & FC_PT2PT))
--		lpfc_nlp_put(ndlp);
- 	return 0;
- }
- 
+-	ret = ext4_punch_hole(inode,
+-		le32_to_cpu(lrange.fc_lblk) << sb->s_blocksize_bits,
+-		le32_to_cpu(lrange.fc_len) <<  sb->s_blocksize_bits);
+-	if (ret)
+-		jbd_debug(1, "ext4_punch_hole returned %d", ret);
++	down_write(&EXT4_I(inode)->i_data_sem);
++	ret = ext4_ext_remove_space(inode, lrange.fc_lblk,
++				lrange.fc_lblk + lrange.fc_len - 1);
++	up_write(&EXT4_I(inode)->i_data_sem);
++	if (ret) {
++		iput(inode);
++		return 0;
++	}
+ 	ext4_ext_replay_shrink_inode(inode,
+ 		i_size_read(inode) >> sb->s_blocksize_bits);
+ 	ext4_mark_inode_dirty(NULL, inode);
 
 
