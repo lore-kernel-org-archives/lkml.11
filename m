@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46BA6C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7F1C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451257AbiAXVWd (ORCPT
+        id S1451342AbiAXVWm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:22:33 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:48474 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442567AbiAXUyw (ORCPT
+        Mon, 24 Jan 2022 16:22:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43624 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1442007AbiAXUwe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:54:52 -0500
+        Mon, 24 Jan 2022 15:52:34 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0732C03540E;
+        Mon, 24 Jan 2022 11:58:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9AC360B03;
-        Mon, 24 Jan 2022 20:54:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B9B0C340E5;
-        Mon, 24 Jan 2022 20:54:49 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7D580B81218;
+        Mon, 24 Jan 2022 19:58:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id ABF00C340ED;
+        Mon, 24 Jan 2022 19:58:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057690;
-        bh=oj5Je4hEdh8UvrPiv7Hw9okiM1qi3n2AsOBeJ6hgeSM=;
+        s=korg; t=1643054326;
+        bh=+lpXt2QvzgIYVVxYWVN0oM5QZUSO2Opgpdlmv+PCAI8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OtHEGWajK4DjqRe9rNJoSHNxGRWI52ihBw2ANc7uK96kIlILfmNKNacZ9/W+6OYmq
-         Af6KjUg56tPpn6nyNK/m+4vZ3n3wwaDf9pPAXOHRzYxWin0S8G+JbmSWdNMGuLExma
-         WIpDIk5biCDuH2k7FaWOof/e7hUXNf6GjgXIrlAs=
+        b=0CckU9rOTQfJekJFNT0JgZCHv4h9MnsJ/PcKu8cXijyJ/oBiub4FPfJ5yLpIDyl6C
+         o5dsUyori/6GsaHEhvLAwWkWTFQ9mv94HdYdHiC95fPK/HwkS5c8s4a2ZNPrEtrbOA
+         Dl4+lK4e8llBzijiMCYp05FB6LB2bkuyWGxhMnEs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 5.16 0046/1039] media: mceusb: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:30:35 +0100
-Message-Id: <20220124184126.692326982@linuxfoundation.org>
+        stable@vger.kernel.org, Antoine Tenart <atenart@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 351/563] net-sysfs: update the queue counts in the unregistration path
+Date:   Mon, 24 Jan 2022 19:41:56 +0100
+Message-Id: <20220124184036.549398330@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,57 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Johan Hovold <johan@kernel.org>
+From: Antoine Tenart <atenart@kernel.org>
 
-commit 16394e998cbb050730536bdf7e89f5a70efbd974 upstream.
+[ Upstream commit d7dac083414eb5bb99a6d2ed53dc2c1b405224e5 ]
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+When updating Rx and Tx queue kobjects, the queue count should always be
+updated to match the queue kobjects count. This was not done in the net
+device unregistration path, fix it. Tracking all queue count updates
+will allow in a following up patch to detect illegal updates.
 
-Fixes: 66e89522aff7 ("V4L/DVB: IR: add mceusb IR receiver driver")
-Cc: stable@vger.kernel.org      # 2.6.36
-Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Antoine Tenart <atenart@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/rc/mceusb.c |    8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ net/core/net-sysfs.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
---- a/drivers/media/rc/mceusb.c
-+++ b/drivers/media/rc/mceusb.c
-@@ -1430,7 +1430,7 @@ static void mceusb_gen1_init(struct mceu
- 	 */
- 	ret = usb_control_msg(ir->usbdev, usb_rcvctrlpipe(ir->usbdev, 0),
- 			      USB_REQ_SET_ADDRESS, USB_TYPE_VENDOR, 0, 0,
--			      data, USB_CTRL_MSG_SZ, HZ * 3);
-+			      data, USB_CTRL_MSG_SZ, 3000);
- 	dev_dbg(dev, "set address - ret = %d", ret);
- 	dev_dbg(dev, "set address - data[0] = %d, data[1] = %d",
- 						data[0], data[1]);
-@@ -1438,20 +1438,20 @@ static void mceusb_gen1_init(struct mceu
- 	/* set feature: bit rate 38400 bps */
- 	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
- 			      USB_REQ_SET_FEATURE, USB_TYPE_VENDOR,
--			      0xc04e, 0x0000, NULL, 0, HZ * 3);
-+			      0xc04e, 0x0000, NULL, 0, 3000);
+diff --git a/net/core/net-sysfs.c b/net/core/net-sysfs.c
+index af59123601055..99303897b7bb7 100644
+--- a/net/core/net-sysfs.c
++++ b/net/core/net-sysfs.c
+@@ -1804,6 +1804,9 @@ static void remove_queue_kobjects(struct net_device *dev)
  
- 	dev_dbg(dev, "set feature - ret = %d", ret);
- 
- 	/* bRequest 4: set char length to 8 bits */
- 	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
- 			      4, USB_TYPE_VENDOR,
--			      0x0808, 0x0000, NULL, 0, HZ * 3);
-+			      0x0808, 0x0000, NULL, 0, 3000);
- 	dev_dbg(dev, "set char length - retB = %d", ret);
- 
- 	/* bRequest 2: set handshaking to use DTR/DSR */
- 	ret = usb_control_msg(ir->usbdev, usb_sndctrlpipe(ir->usbdev, 0),
- 			      2, USB_TYPE_VENDOR,
--			      0x0000, 0x0100, NULL, 0, HZ * 3);
-+			      0x0000, 0x0100, NULL, 0, 3000);
- 	dev_dbg(dev, "set handshake  - retC = %d", ret);
- 
- 	/* device resume */
+ 	net_rx_queue_update_kobjects(dev, real_rx, 0);
+ 	netdev_queue_update_kobjects(dev, real_tx, 0);
++
++	dev->real_num_rx_queues = 0;
++	dev->real_num_tx_queues = 0;
+ #ifdef CONFIG_SYSFS
+ 	kset_unregister(dev->queues_kset);
+ #endif
+-- 
+2.34.1
+
 
 
