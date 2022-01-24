@@ -2,43 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF73DC43217
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFD14C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:36:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3422826AbiAYCcO (ORCPT
+        id S3422877AbiAYCcU (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:32:14 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59358 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356863AbiAXUVN (ORCPT
+        Mon, 24 Jan 2022 21:32:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36698 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1381600AbiAXUVY (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:21:13 -0500
+        Mon, 24 Jan 2022 15:21:24 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CB25C05A19D;
+        Mon, 24 Jan 2022 11:39:17 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1E3ADB81255;
-        Mon, 24 Jan 2022 20:21:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75E92C340E5;
-        Mon, 24 Jan 2022 20:21:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5342E614FC;
+        Mon, 24 Jan 2022 19:39:16 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 246D6C340E5;
+        Mon, 24 Jan 2022 19:39:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055670;
-        bh=w+al1ds14mD9E7dlVSEZTS3IUW3zxxoIo+M8eVMaPqU=;
+        s=korg; t=1643053155;
+        bh=moZbIAZBvYyKF814I2r+Yis0lNbH4FE0BMehZkNkKc0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=m9p/Dd9Ejq9OOJY8G93s3IDJJFwrkkWJpTQeydqAeFkqvORUQ3PENdizqu/Fg+I0s
-         rniptl8DiK2ifK2UQqyJp64VyDze7yl8NgYYiaOyaummX1mtM8tXT4WHdyHpvFtsow
-         Kw7zSZYkGQtnU0q8VfQSkGVsGP/oGWdhvX9tDKl8=
+        b=z9xgVgfffB8MmNTlKWcK4swGwTqs+rCeQhvrFBj7n7ZgyUugmXTQqe2lLyC9Wz2GJ
+         ZJZnm6RmSvZa1n0gU2VW+w/5ba29xGPZ9MTKliAEhQd2E2j2oaxh1swUpud2vW40h8
+         IeuLXcqUs8ySCfCHOVWYJVElhku3cq9dXyNvqjsg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        Dave Hansen <dave.hansen@linux.intel.com>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 228/846] x86/uaccess: Move variable into switch case statement
-Date:   Mon, 24 Jan 2022 19:35:45 +0100
-Message-Id: <20220124184108.791124882@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        Stephen Boyd <sboyd@kernel.org>
+Subject: [PATCH 5.4 294/320] clk: si5341: Fix clock HW provider cleanup
+Date:   Mon, 24 Jan 2022 19:44:38 +0100
+Message-Id: <20220124184003.947457916@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,49 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit 61646ca83d3889696f2772edaff122dd96a2935e ]
+commit 49a8f2bc8d88702783c7e163ec84374e9a022f71 upstream.
 
-When building with automatic stack variable initialization, GCC 12
-complains about variables defined outside of switch case statements.
-Move the variable into the case that uses it, which silences the warning:
+The call to of_clk_add_hw_provider was not undone on remove or on probe
+failure, which could cause an oops on a subsequent attempt to retrieve
+clocks for the removed device. Switch to the devm version of the
+function to avoid this issue.
 
-./arch/x86/include/asm/uaccess.h:317:23: warning: statement will never be executed [-Wswitch-unreachable]
-  317 |         unsigned char x_u8__; \
-      |                       ^~~~~~
-
-Fixes: 865c50e1d279 ("x86/uaccess: utilize CONFIG_CC_HAS_ASM_GOTO_OUTPUT")
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Signed-off-by: Dave Hansen <dave.hansen@linux.intel.com>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lkml.kernel.org/r/20211209043456.1377875-1-keescook@chromium.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 3044a860fd09 ("clk: Add Si5341/Si5340 driver")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Link: https://lore.kernel.org/r/20220112203816.1784610-1-robert.hancock@calian.com
+Signed-off-by: Stephen Boyd <sboyd@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/uaccess.h | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/clk/clk-si5341.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/include/asm/uaccess.h b/arch/x86/include/asm/uaccess.h
-index 5c95d242f38d7..bb1430283c726 100644
---- a/arch/x86/include/asm/uaccess.h
-+++ b/arch/x86/include/asm/uaccess.h
-@@ -314,11 +314,12 @@ do {									\
- do {									\
- 	__chk_user_ptr(ptr);						\
- 	switch (size) {							\
--	unsigned char x_u8__;						\
--	case 1:								\
-+	case 1:	{							\
-+		unsigned char x_u8__;					\
- 		__get_user_asm(x_u8__, ptr, "b", "=q", label);		\
- 		(x) = x_u8__;						\
- 		break;							\
-+	}								\
- 	case 2:								\
- 		__get_user_asm(x, ptr, "w", "=r", label);		\
- 		break;							\
--- 
-2.34.1
-
+--- a/drivers/clk/clk-si5341.c
++++ b/drivers/clk/clk-si5341.c
+@@ -1303,7 +1303,7 @@ static int si5341_probe(struct i2c_clien
+ 			clk_prepare(data->clk[i].hw.clk);
+ 	}
+ 
+-	err = of_clk_add_hw_provider(client->dev.of_node, of_clk_si5341_get,
++	err = devm_of_clk_add_hw_provider(&client->dev, of_clk_si5341_get,
+ 			data);
+ 	if (err) {
+ 		dev_err(&client->dev, "unable to add clk provider\n");
 
 
