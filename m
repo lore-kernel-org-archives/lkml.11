@@ -2,39 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55B7EC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A939C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352119AbiAXT3m (ORCPT
+        id S1352242AbiAXT34 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:29:42 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:47230 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349128AbiAXTUR (ORCPT
+        Mon, 24 Jan 2022 14:29:56 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:44700 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1349302AbiAXTUe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:20:17 -0500
+        Mon, 24 Jan 2022 14:20:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 1C5936131E;
-        Mon, 24 Jan 2022 19:20:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAA6EC340E5;
-        Mon, 24 Jan 2022 19:20:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4405BB8119D;
+        Mon, 24 Jan 2022 19:20:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A82CC340E5;
+        Mon, 24 Jan 2022 19:20:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052016;
-        bh=IV9sGNAAhIv0lTHD76UObbI1oGTX0q68vnnkRH5LISs=;
+        s=korg; t=1643052032;
+        bh=fvew88oc9rXfBgGTAJEf7GitKFB3blNqbg6pMgytd3s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MlRi065GJUkhqaDp9aXO8Q1+v2tZMTZrH8nBivPvF0XGw1El23mtiNdsBDUNPnwkH
-         n4hxhfj2Eop7usjUJuF6S5iXrZVv9t2lzHmQb+20tImWUjq6hmZcLJaIE27XMtXTjX
-         dNQ3ntfHdJBy5fjZ5/f8vDk07p+EnHEKOZ0m272Y=
+        b=YjZhMRTBr66WL2EE89plmcLMb8PvXDD+cxQDlRErASYkKDWYf/6yN7Kaj+dEFT4vT
+         PyjItSInFhlLjt7OwZ0UbcklySoBDDgl/yU0f6jkAgalBdbVynJZgA/Qe7kKgEVGmM
+         HZE8bUX7UVcJFUsydPPmyOR65YwSOoeNgB06WlaQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        stable@vger.kernel.org,
+        =?UTF-8?q?Thomas=20Wei=C3=9Fschuh?= <linux@weissschuh.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.19 143/239] x86/mce: Mark mce_end() noinstr
-Date:   Mon, 24 Jan 2022 19:43:01 +0100
-Message-Id: <20220124183947.646418035@linuxfoundation.org>
+Subject: [PATCH 4.19 165/239] ACPI: battery: Add the ThinkPad "Not Charging" quirk
+Date:   Mon, 24 Jan 2022 19:43:23 +0100
+Message-Id: <20220124183948.340959603@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -46,63 +49,79 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Thomas Weißschuh <linux@weissschuh.net>
 
-[ Upstream commit b4813539d37fa31fed62cdfab7bd2dd8929c5b2e ]
+[ Upstream commit e96c1197aca628f7d2480a1cc3214912b40b3414 ]
 
-It is called by the #MC handler which is noinstr.
+The EC/ACPI firmware on Lenovo ThinkPads used to report a status
+of "Unknown" when the battery is between the charge start and
+charge stop thresholds. On Windows, it reports "Not Charging"
+so the quirk has been added to also report correctly.
 
-Fixes
+Now the "status" attribute returns "Not Charging" when the
+battery on ThinkPads is not physicaly charging.
 
-  vmlinux.o: warning: objtool: do_machine_check()+0xbd6: call to memset() leaves .noinstr.text section
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-9-bp@alien8.de
+Signed-off-by: Thomas Weißschuh <linux@weissschuh.net>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mcheck/mce.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/acpi/battery.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-diff --git a/arch/x86/kernel/cpu/mcheck/mce.c b/arch/x86/kernel/cpu/mcheck/mce.c
-index 56c4456434a82..26adaad3f2587 100644
---- a/arch/x86/kernel/cpu/mcheck/mce.c
-+++ b/arch/x86/kernel/cpu/mcheck/mce.c
-@@ -1030,10 +1030,13 @@ static int mce_start(int *no_way_out)
-  * Synchronize between CPUs after main scanning loop.
-  * This invokes the bulk of the Monarch processing.
-  */
--static int mce_end(int order)
-+static noinstr int mce_end(int order)
- {
--	int ret = -1;
- 	u64 timeout = (u64)mca_cfg.monarch_timeout * NSEC_PER_USEC;
-+	int ret = -1;
-+
-+	/* Allow instrumentation around external facilities. */
-+	instrumentation_begin();
- 
- 	if (!timeout)
- 		goto reset;
-@@ -1077,7 +1080,8 @@ static int mce_end(int order)
- 		/*
- 		 * Don't reset anything. That's done by the Monarch.
- 		 */
--		return 0;
-+		ret = 0;
-+		goto out;
- 	}
- 
- 	/*
-@@ -1092,6 +1096,10 @@ reset:
- 	 * Let others run again.
- 	 */
- 	atomic_set(&mce_executing, 0);
-+
-+out:
-+	instrumentation_end();
-+
- 	return ret;
+diff --git a/drivers/acpi/battery.c b/drivers/acpi/battery.c
+index 0bbf8b453ebf2..d4e42a578e186 100644
+--- a/drivers/acpi/battery.c
++++ b/drivers/acpi/battery.c
+@@ -78,6 +78,7 @@ static int battery_bix_broken_package;
+ static int battery_notification_delay_ms;
+ static int battery_ac_is_broken;
+ static int battery_check_pmic = 1;
++static int battery_quirk_notcharging;
+ static unsigned int cache_time = 1000;
+ module_param(cache_time, uint, 0644);
+ MODULE_PARM_DESC(cache_time, "cache time in milliseconds");
+@@ -246,6 +247,8 @@ static int acpi_battery_get_property(struct power_supply *psy,
+ 			val->intval = POWER_SUPPLY_STATUS_CHARGING;
+ 		else if (acpi_battery_is_charged(battery))
+ 			val->intval = POWER_SUPPLY_STATUS_FULL;
++		else if (battery_quirk_notcharging)
++			val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
+ 		else
+ 			val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
+ 		break;
+@@ -1350,6 +1353,12 @@ battery_do_not_check_pmic_quirk(const struct dmi_system_id *d)
+ 	return 0;
  }
+ 
++static int __init battery_quirk_not_charging(const struct dmi_system_id *d)
++{
++	battery_quirk_notcharging = 1;
++	return 0;
++}
++
+ static const struct dmi_system_id bat_dmi_table[] __initconst = {
+ 	{
+ 		/* NEC LZ750/LS */
+@@ -1394,6 +1403,19 @@ static const struct dmi_system_id bat_dmi_table[] __initconst = {
+ 		  DMI_EXACT_MATCH(DMI_PRODUCT_VERSION, "Lenovo MIIX 320-10ICR"),
+ 		},
+ 	},
++	{
++		/*
++		 * On Lenovo ThinkPads the BIOS specification defines
++		 * a state when the bits for charging and discharging
++		 * are both set to 0. That state is "Not Charging".
++		 */
++		.callback = battery_quirk_not_charging,
++		.ident = "Lenovo ThinkPad",
++		.matches = {
++			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
++			DMI_MATCH(DMI_PRODUCT_VERSION, "ThinkPad"),
++		},
++	},
+ 	{},
+ };
  
 -- 
 2.34.1
