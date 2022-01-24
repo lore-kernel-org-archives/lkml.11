@@ -2,125 +2,77 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86EAAC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 17:05:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFD9FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 17:05:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241291AbiAXRFa (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 12:05:30 -0500
-Received: from mta-p8.oit.umn.edu ([134.84.196.208]:33460 "EHLO
-        mta-p8.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244138AbiAXRFW (ORCPT
+        id S241321AbiAXRF6 (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 12:05:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45834 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231960AbiAXRF5 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 12:05:22 -0500
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p8.oit.umn.edu (Postfix) with ESMTP id 4JjGZT4vC3z9vjCJ
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 17:05:21 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p8.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p8.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id wwcWM2FjLjYF for <linux-kernel@vger.kernel.org>;
-        Mon, 24 Jan 2022 11:05:21 -0600 (CST)
-Received: from mail-pj1-f71.google.com (mail-pj1-f71.google.com [209.85.216.71])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p8.oit.umn.edu (Postfix) with ESMTPS id 4JjGZT2m6bz9vjC7
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 11:05:21 -0600 (CST)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p8.oit.umn.edu 4JjGZT2m6bz9vjC7
-DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p8.oit.umn.edu 4JjGZT2m6bz9vjC7
-Received: by mail-pj1-f71.google.com with SMTP id q8-20020a17090a064800b001b4ee55e378so241744pje.2
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 09:05:21 -0800 (PST)
+        Mon, 24 Jan 2022 12:05:57 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 716D1C06173B;
+        Mon, 24 Jan 2022 09:05:57 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id m11so57669202edi.13;
+        Mon, 24 Jan 2022 09:05:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iqOvQckE4DPpe/gz80hlCWLF/acf9yFaFDsgsRhtXZY=;
-        b=czZ1znNCyFZoXGfMGTRQpY2QtLcSB0nqHP6Qv2BEwEtBbrFdR3EEjPAtvBBJ2rdKp1
-         HCWt/yP1Uz6TUK5+DCAUbmhjfwwbeygHk6e1pINjALHkZiuZ7X3fGXVzC4ja/Uffy3Pm
-         m3cGceoUfMcKY5gFjN5U3aHa31r5FJ53R4SduFG1taFo7vp7W57sSSyOhRD9HcDYl8P2
-         ZwMydl4q3y05ziPmP1wV9YGvHMUEqf1628SaqjuAKegh5garAkZUc09Rx9cpSH9F1jUy
-         kL7fgZO90+bdz4fB3nk2e0LepQwdWwOwh021tQT+3AZp5oVuMyKjQ+YYzz9guxDVk9eE
-         G+0Q==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UW0WvST/0Oa4ZjXuG6POTABmuJiaJNLkhhJeZeOhG78=;
+        b=D850RRPva1SwXrxvTF9WZqL6Xs92ThOHEAqe8093T6q70DSgohb3KjzHHMxOiUvs7W
+         VoOwpmImmHYhF2Yowp0pNsXZ15hRZ2EugkFVwP2JGvXaNYJAXKIKOOH4aapSlYpd3QW/
+         L/7zCLdrLqWZbUqurNLKDH1vZwfogw44uEZ3TolYd3NewrOdiBdiIGQ0IocMe1wAB9n3
+         lcmOSrGbSfn4fmlHqAAGtXc/tYl87fv9N4o06LZX0+3pMfwcIAO/swxHpBd3e98oRpAk
+         P0FNtzaUtJn0Vw7YiWTRGiYbDf9q3FCyxJAkm8dCnO1KWLeUzaR/gryrKAUkj7fjWT2k
+         LKeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=iqOvQckE4DPpe/gz80hlCWLF/acf9yFaFDsgsRhtXZY=;
-        b=1EqLNONOdEJIOKprxZrrN9qe+mwT7Ykfsd4+OVHneF9bCXOIHTfNsx369nvw5zZeFn
-         fEET37vT6o6MN1gbe0aHeUarq1UDnip+Q0JVdpUfCsC99hOql71CPSo4JxiNfItD6oyh
-         +1L8h8QBFszWoeD8rQASljIq9yEAm1J/lBke46T4GjnFpM3pjqvTVa7EER998pmZHxVS
-         jEC5FCyaXFXGShF4rNlmbY9xPASLSsQxWM9CbkW0EKaJloMax9rzbxvAVCMczknGQGUH
-         5D4ofbi6iuqPCO8XeQyU6aul0SfPDsPvD/KfbkssClZc1tv/GTCehueg6Ii/juf4O3tt
-         bh5Q==
-X-Gm-Message-State: AOAM533dVacFT3khi0u3F2WK7sIjQk+MjpGmApgjvENCvZ7o/B0hszHB
-        xQSN4HjTg2FO0qM6/mJSPgI3L+xBpA7OudIaQRpe7hge+5gYqKeEpCqdwNmks18V5nUpnfhOjhK
-        GNMO4rV0tl0CWZCPsbt1xyfO7UTzw
-X-Received: by 2002:a17:902:f243:b0:14b:1f32:e923 with SMTP id j3-20020a170902f24300b0014b1f32e923mr9628337plc.121.1643043920605;
-        Mon, 24 Jan 2022 09:05:20 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJz6FN3UZbzNKOs+OIFcyGQ4fo0vfGGg3hCscMIg92FDOZqeD2qwe0OOD+rjCAyx1dQOnHgVQA==
-X-Received: by 2002:a17:902:f243:b0:14b:1f32:e923 with SMTP id j3-20020a170902f24300b0014b1f32e923mr9628306plc.121.1643043920288;
-        Mon, 24 Jan 2022 09:05:20 -0800 (PST)
-Received: from zqy787-GE5S.lan ([36.4.61.248])
-        by smtp.gmail.com with ESMTPSA id s2sm2882596pgq.38.2022.01.24.09.05.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 09:05:20 -0800 (PST)
-From:   Zhou Qingyang <zhou1615@umn.edu>
-To:     zhou1615@umn.edu
-Cc:     kjlu@umn.edu, Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Zhen Lei <thunder.leizhen@huawei.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Michael Schimek <mschimek@gmx.at>, linux-media@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] media: bttv: Fix a NULL pointer dereference in setup_window_lock()
-Date:   Tue, 25 Jan 2022 01:05:13 +0800
-Message-Id: <20220124170515.58519-1-zhou1615@umn.edu>
-X-Mailer: git-send-email 2.25.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UW0WvST/0Oa4ZjXuG6POTABmuJiaJNLkhhJeZeOhG78=;
+        b=3bR1drKkpnQms57Fof+AALF1Wp5wJQeTmzzLQAojjTf404l6yM/MuPbCFou63du/sc
+         LO0ITek9GGJE9tsXaJmo6oyo6vCj5j1rGZYwEX1hfJ+zX1x6BtWZviO/Y1FULMUcPMbG
+         ekRKmFufHbeceIQsiZCRycEXTfWZ4nHRStwAXK/cX9p0mKkNREHYr8Y+y+h/7Q98UYfV
+         LDRkZq653ZyGwcBfhSRt8cotZJ63QBRiRbSVdtTRJhfAOaVVqzBgkRNNNjlcaK+MV8Bv
+         7RFvQHZZDew5ndKj3N1+Sh+hTlgIid9hrF54b5B7G/Nex2GPI/jvfuGWK6PcDVmv/dLX
+         SLkA==
+X-Gm-Message-State: AOAM5307nyPcqj6xHAvyY+Nyb5m7wQGHpgdtkjFm/mi4gtmeJKJOoizK
+        GxJo6QpBtPHzTcMxr3LddJrPpRoDPMwctIzDsek=
+X-Google-Smtp-Source: ABdhPJwZBDsfiV38aRjijP5Fo5LDP5lt2TDVBLzwDO2annMP5B+E4KvN1YsJw7ihfURZlZZFVMP6MqBEVbuYP1ZlP9s=
+X-Received: by 2002:a05:6402:350f:: with SMTP id b15mr16695962edd.77.1643043955928;
+ Mon, 24 Jan 2022 09:05:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211220072332.81072-1-reinhold.mueller@emtrion.com>
+ <20211220072332.81072-3-reinhold.mueller@emtrion.com> <CAOMZO5BvLZYh3=q_-XNcw-v5wDcBpR3Qo26Gd3hTtJ_a-FQiuA@mail.gmail.com>
+ <e6adf5d9473e417d85a1845b007a4ee1@emtrion.de>
+In-Reply-To: <e6adf5d9473e417d85a1845b007a4ee1@emtrion.de>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Mon, 24 Jan 2022 14:05:44 -0300
+Message-ID: <CAOMZO5AwwEZHxbw4jvuewn80dCOe3VerO4mDsa_qNNabVn9Srg@mail.gmail.com>
+Subject: Re: [PATCH v4 2/2] arm64: dts: imx8mm: Add support for emtrion
+ emCON-MX8M Mini
+To:     "Mueller, Reinhold" <Reinhold.Mueller@emtrion.de>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In setup_window_lock(), the return value of videobuf_sg_alloc() is
-assigned to variable new and there is a dereference of it after
-that. the return value of videobuf_sg_alloc() could be NULL on
-failure of allocation, which could lead to a NULL pointer dereference.
+Hi Reinhold,
 
-Fix this bug by adding a NULL check of new.
+On Tue, Dec 21, 2021 at 4:33 AM Mueller, Reinhold
+<Reinhold.Mueller@emtrion.de> wrote:
 
-This bug was found by a static analyzer.
+> Yes, of course the emCON provides a connector connecting two slaves on the spi bus.
 
-Builds with 'make allyesconfig' show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Fixes: e5bd0260e7d3 ("V4L/DVB (5077): Bttv cropping support")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
----
-The analysis employs differential checking to identify inconsistent 
-security operations (e.g., checks or kfrees) between two code paths 
-and confirms that the inconsistent operations are not recovered in the
-current function or the callers, so they constitute bugs. 
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
- drivers/media/pci/bt8xx/bttv-driver.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/media/pci/bt8xx/bttv-driver.c b/drivers/media/pci/bt8xx/bttv-driver.c
-index 8cc9bec43688..6338f98d845d 100644
---- a/drivers/media/pci/bt8xx/bttv-driver.c
-+++ b/drivers/media/pci/bt8xx/bttv-driver.c
-@@ -2182,6 +2182,8 @@ static int setup_window_lock(struct bttv_fh *fh, struct bttv *btv,
- 		struct bttv_buffer *new;
- 
- 		new = videobuf_sg_alloc(sizeof(*new));
-+		if (!new)
-+			return -ENOMEM;
- 		new->crop = btv->crop[!!fh->do_crop].rect;
- 		bttv_overlay_risc(btv, &fh->ov, fh->ovfmt, new);
- 		retval = bttv_switch_overlay(btv,fh,new);
--- 
-2.25.1
-
+In this case, then please pass gpio5 13 to the cs-gpios property too.
