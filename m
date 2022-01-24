@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA5D8C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA1F5C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:17:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377763AbiAXUOw (ORCPT
+        id S1356071AbiAXUOq (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:14:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58056 "EHLO
+        Mon, 24 Jan 2022 15:14:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57542 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352150AbiAXTwn (ORCPT
+        with ESMTP id S1351774AbiAXTwn (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 14:52:43 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6535DC061381;
-        Mon, 24 Jan 2022 11:25:38 -0800 (PST)
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A7B6C061390;
+        Mon, 24 Jan 2022 11:25:52 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E4F3861488;
-        Mon, 24 Jan 2022 19:25:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A55B7C340E5;
-        Mon, 24 Jan 2022 19:25:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CA916B8121C;
+        Mon, 24 Jan 2022 19:25:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D2A94C340E7;
+        Mon, 24 Jan 2022 19:25:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052337;
-        bh=fyqEQBVglc5pdAIBij1r7tV5jKgJ1Mfni7cnBdPz3dg=;
+        s=korg; t=1643052349;
+        bh=9RUyuV8X8p3XqKTR+JMGeYvUPlLzZu6EXdN0cDot12U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MM5akitkQN9hd2gubWWeA5UMJgbJSY+tyBIExE7cVNYXK+KhRDFRPGOS0hWz/yKf1
-         mNA85o7ATQPdOpzyC0Ze+Jw+X3j3oH1l4wsSEEI/s0/qSyCgM8Ugg1EE3RjRajqRRF
-         VCzzi6XMok9IQzVCqLLwZw1f2sA6nB5uKmzP2270=
+        b=jGfM0FtFBuYL8zT9ZLMb1023ZtWPp8DrHbrtRZYOGMRQcZ/yApHP9lSH//f2DMhli
+         Ee0OChyttWZKjX4zw1LaKQWiGMA52o+2FfpT1gvCUX+xtKw+FpcMTUnM50w0AISk50
+         5it6ENzg+0NdiXq9nrScdZPOl62QTW/lQBgwAm0U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jason Gerecke <jason.gerecke@wacom.com>,
-        Ping Cheng <ping.cheng@wacom.com>,
-        Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 5.4 004/320] HID: wacom: Avoid using stale array indicies to read contact count
-Date:   Mon, 24 Jan 2022 19:39:48 +0100
-Message-Id: <20220124183953.913080008@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Stefan Riedmueller <s.riedmueller@phytec.de>,
+        Han Xu <han.xu@nxp.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH 5.4 008/320] mtd: rawnand: gpmi: Remove explicit default gpmi clock setting for i.MX6
+Date:   Mon, 24 Jan 2022 19:39:52 +0100
+Message-Id: <20220124183954.052845191@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -50,44 +51,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason Gerecke <killertofu@gmail.com>
+From: Stefan Riedmueller <s.riedmueller@phytec.de>
 
-commit 20f3cf5f860f9f267a6a6e5642d3d0525edb1814 upstream.
+commit aa1baa0e6c1aa4872e481dce4fc7fd6f3dd8496b upstream.
 
-If we ever see a touch report with contact count data we initialize
-several variables used to read the contact count in the pre-report
-phase. These variables are never reset if we process a report which
-doesn't contain a contact count, however. This can cause the pre-
-report function to trigger a read of arbitrary memory (e.g. NULL
-if we're lucky) and potentially crash the driver.
+There is no need to explicitly set the default gpmi clock rate during
+boot for the i.MX 6 since this is done during nand_detect anyway.
 
-This commit restores resetting of the variables back to default
-"none" values that were used prior to the commit mentioned
-below.
-
-Link: https://github.com/linuxwacom/input-wacom/issues/276
-Fixes: 003f50ab673c (HID: wacom: Update last_slot_field during pre_report phase)
-CC: stable@vger.kernel.org
-Signed-off-by: Jason Gerecke <jason.gerecke@wacom.com>
-Reviewed-by: Ping Cheng <ping.cheng@wacom.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Stefan Riedmueller <s.riedmueller@phytec.de>
+Cc: stable@vger.kernel.org
+Acked-by: Han Xu <han.xu@nxp.com>
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+Link: https://lore.kernel.org/linux-mtd/20211102202022.15551-1-ceggers@arri.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/wacom_wac.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c |    9 ---------
+ 1 file changed, 9 deletions(-)
 
---- a/drivers/hid/wacom_wac.c
-+++ b/drivers/hid/wacom_wac.c
-@@ -2654,6 +2654,10 @@ static void wacom_wac_finger_pre_report(
+--- a/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
++++ b/drivers/mtd/nand/raw/gpmi-nand/gpmi-nand.c
+@@ -1204,15 +1204,6 @@ static int gpmi_get_clks(struct gpmi_nan
+ 		r->clock[i] = clk;
+ 	}
  
- 	hid_data->confidence = true;
+-	if (GPMI_IS_MX6(this))
+-		/*
+-		 * Set the default value for the gpmi clock.
+-		 *
+-		 * If you want to use the ONFI nand which is in the
+-		 * Synchronous Mode, you should change the clock as you need.
+-		 */
+-		clk_set_rate(r->clock[0], 22000000);
+-
+ 	return 0;
  
-+	hid_data->cc_report = 0;
-+	hid_data->cc_index = -1;
-+	hid_data->cc_value_index = -1;
-+
- 	for (i = 0; i < report->maxfield; i++) {
- 		struct hid_field *field = report->field[i];
- 		int j;
+ err_clock:
 
 
