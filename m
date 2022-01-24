@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FE9AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:41:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC75BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:41:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1588891AbiAXWj7 (ORCPT
+        id S1835453AbiAXWgc (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:39:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55284 "EHLO
+        Mon, 24 Jan 2022 17:36:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457359AbiAXVlb (ORCPT
+        with ESMTP id S1456711AbiAXVjy (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:41:31 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB227C07E321;
-        Mon, 24 Jan 2022 12:28:23 -0800 (PST)
+        Mon, 24 Jan 2022 16:39:54 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E964C0419CA;
+        Mon, 24 Jan 2022 12:26:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8FDFAB80FA1;
-        Mon, 24 Jan 2022 20:28:23 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCAC3C340E5;
-        Mon, 24 Jan 2022 20:28:21 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D058C6150D;
+        Mon, 24 Jan 2022 20:26:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D3B10C340E5;
+        Mon, 24 Jan 2022 20:26:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056102;
-        bh=bxIi2xZ2w1xq56iz0Khve0LPSXIVSl9cFGc65n6xGTE=;
+        s=korg; t=1643055996;
+        bh=Pl/gtIakko0+K4DcO8u+PBfMjvwYR2boCYlTmG7IVEw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GxKWz9glmVejHzoolEV3Ky69W9w1GlUyxNhF+xL7r7oNIU0TkLR0juFQ9LcTcakQz
-         Gql7s135VWFf7KjFog07I8/NhqLwxxvqpZzz9r4cwOYQ4WyDpqQTIWk5EtOFMV21/U
-         6u41vSLzUjjRZcVWPHoj1PRWdvjRDJYh/SZAin+M=
+        b=NfDZFo6zE4VSqYpY2Dgwxz2fkweSZe5RcqtGMQjYXUV9NH3egTtL7MbhEfQ8ussRi
+         vS8PGUbdVjV584yE/lBfryT1lAV7NSNuo+KwdezRyqWlIflKSfhscBgXSK1z3L00/x
+         Czfxzr3LwyaTFcrtLcZC9+kQYpnqdFbl56X8y5rg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Lukas Czerner <lczerner@redhat.com>,
-        Jan Kara <jack@suse.cz>, Theodore Tso <tytso@mit.edu>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        Huang Rui <ray.huang@amd.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 372/846] ext4: avoid trim error on fs with small groups
-Date:   Mon, 24 Jan 2022 19:38:09 +0100
-Message-Id: <20220124184113.777312207@linuxfoundation.org>
+Subject: [PATCH 5.15 336/846] x86, sched: Fix undefined reference to init_freq_invariance_cppc() build error
+Date:   Mon, 24 Jan 2022 19:37:33 +0100
+Message-Id: <20220124184112.514811632@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,70 +53,48 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jan Kara <jack@suse.cz>
+From: Huang Rui <ray.huang@amd.com>
 
-[ Upstream commit 173b6e383d2a204c9921ffc1eca3b87aa2106c33 ]
+[ Upstream commit 6c4ab1b86dac3954d15c00c1a6396d60a1023fab ]
 
-A user reported FITRIM ioctl failing for him on ext4 on some devices
-without apparent reason.  After some debugging we've found out that
-these devices (being LVM volumes) report rather large discard
-granularity of 42MB and the filesystem had 1k blocksize and thus group
-size of 8MB. Because ext4 FITRIM implementation puts discard
-granularity into minlen, ext4_trim_fs() declared the trim request as
-invalid. However just silently doing nothing seems to be a more
-appropriate reaction to such combination of parameters since user did
-not specify anything wrong.
+The init_freq_invariance_cppc function is implemented in smpboot and depends on
+CONFIG_SMP.
 
-CC: Lukas Czerner <lczerner@redhat.com>
-Fixes: 5c2ed62fd447 ("ext4: Adjust minlen with discard_granularity in the FITRIM ioctl")
-Signed-off-by: Jan Kara <jack@suse.cz>
-Link: https://lore.kernel.org/r/20211112152202.26614-1-jack@suse.cz
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
+  MODPOST vmlinux.symvers
+  MODINFO modules.builtin.modinfo
+  GEN     modules.builtin
+  LD      .tmp_vmlinux.kallsyms1
+ld: drivers/acpi/cppc_acpi.o: in function `acpi_cppc_processor_probe':
+/home/ray/brahma3/linux/drivers/acpi/cppc_acpi.c:819: undefined reference to `init_freq_invariance_cppc'
+make: *** [Makefile:1161: vmlinux] Error 1
+
+See https://lore.kernel.org/lkml/484af487-7511-647e-5c5b-33d4429acdec@infradead.org/.
+
+Fixes: 41ea667227ba ("x86, sched: Calculate frequency invariance for AMD systems")
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Huang Rui <ray.huang@amd.com>
+[ rjw: Subject edits ]
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ext4/ioctl.c   | 2 --
- fs/ext4/mballoc.c | 8 ++++++++
- 2 files changed, 8 insertions(+), 2 deletions(-)
+ arch/x86/include/asm/topology.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/fs/ext4/ioctl.c b/fs/ext4/ioctl.c
-index 606dee9e08a32..220a4c8178b5e 100644
---- a/fs/ext4/ioctl.c
-+++ b/fs/ext4/ioctl.c
-@@ -1117,8 +1117,6 @@ resizefs_out:
- 		    sizeof(range)))
- 			return -EFAULT;
+diff --git a/arch/x86/include/asm/topology.h b/arch/x86/include/asm/topology.h
+index 9239399e54914..55160445ea78b 100644
+--- a/arch/x86/include/asm/topology.h
++++ b/arch/x86/include/asm/topology.h
+@@ -218,7 +218,7 @@ static inline void arch_set_max_freq_ratio(bool turbo_disabled)
+ }
+ #endif
  
--		range.minlen = max((unsigned int)range.minlen,
--				   q->limits.discard_granularity);
- 		ret = ext4_trim_fs(sb, &range);
- 		if (ret < 0)
- 			return ret;
-diff --git a/fs/ext4/mballoc.c b/fs/ext4/mballoc.c
-index 72bfac2d6dce9..7174add7b1539 100644
---- a/fs/ext4/mballoc.c
-+++ b/fs/ext4/mballoc.c
-@@ -6405,6 +6405,7 @@ ext4_trim_all_free(struct super_block *sb, ext4_group_t group,
-  */
- int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
- {
-+	struct request_queue *q = bdev_get_queue(sb->s_bdev);
- 	struct ext4_group_info *grp;
- 	ext4_group_t group, first_group, last_group;
- 	ext4_grpblk_t cnt = 0, first_cluster, last_cluster;
-@@ -6423,6 +6424,13 @@ int ext4_trim_fs(struct super_block *sb, struct fstrim_range *range)
- 	    start >= max_blks ||
- 	    range->len < sb->s_blocksize)
- 		return -EINVAL;
-+	/* No point to try to trim less than discard granularity */
-+	if (range->minlen < q->limits.discard_granularity) {
-+		minlen = EXT4_NUM_B2C(EXT4_SB(sb),
-+			q->limits.discard_granularity >> sb->s_blocksize_bits);
-+		if (minlen > EXT4_CLUSTERS_PER_GROUP(sb))
-+			goto out;
-+	}
- 	if (end >= max_blks)
- 		end = max_blks - 1;
- 	if (end <= first_data_blk)
+-#ifdef CONFIG_ACPI_CPPC_LIB
++#if defined(CONFIG_ACPI_CPPC_LIB) && defined(CONFIG_SMP)
+ void init_freq_invariance_cppc(void);
+ #define init_freq_invariance_cppc init_freq_invariance_cppc
+ #endif
 -- 
 2.34.1
 
