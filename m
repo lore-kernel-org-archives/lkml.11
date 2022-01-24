@@ -2,233 +2,94 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5446C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:43:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA94C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:43:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1457147AbiAXVlC (ORCPT
+        id S1457162AbiAXVlF (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:41:02 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:55262 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347028AbiAXVDC (ORCPT
+        Mon, 24 Jan 2022 16:41:05 -0500
+Received: from relay033.a.hostedemail.com ([64.99.140.33]:2941 "EHLO
+        relay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1351907AbiAXVDF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:03:02 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 67612B811FB;
+        Mon, 24 Jan 2022 16:03:05 -0500
+Received: from omf19.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay08.hostedemail.com (Postfix) with ESMTP id 647BB210AB;
+        Mon, 24 Jan 2022 21:03:03 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf19.hostedemail.com (Postfix) with ESMTPA id D692520030;
         Mon, 24 Jan 2022 21:03:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F133C340E5;
-        Mon, 24 Jan 2022 21:02:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058180;
-        bh=r6PJTVbTgA7n2wSq8entt3xiWEWDnWuHPyVrqFfvuUQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gjr/q4eJRij9zblNdQ/jOqW60PpN6pwa4UjJzwO5gI5aGGMgFS9D08MdmPJVF4F6J
-         uiNt77AefEr1LWDvB80ZtmXxadFsko9Vjlxj44KfUFQovmWSvhdshvuz35eutVtC2J
-         oT4LE7j3DdnfaHlLRFTa38EvBvQJDT/JYuONYnBw=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zack Rusin <zackr@vmware.com>,
-        Martin Krastev <krastevm@vmware.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0206/1039] drm/vmwgfx: Remove the deprecated lower mem limit
-Date:   Mon, 24 Jan 2022 19:33:15 +0100
-Message-Id: <20220124184132.246155959@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
-User-Agent: quilt/0.66
+Message-ID: <864dfbfdc44e288e99cf7baa3aa8f7c8568db507.camel@perches.com>
+Subject: Re: [PATCH 2/2] KVM: x86: Use memcmp in kvm_cpuid_check_equal()
+From:   Joe Perches <joe@perches.com>
+To:     Vitaly Kuznetsov <vkuznets@redhat.com>, kvm@vger.kernel.org,
+        Paolo Bonzini <pbonzini@redhat.com>
+Cc:     Sean Christopherson <seanjc@google.com>,
+        Wanpeng Li <wanpengli@tencent.com>,
+        Jim Mattson <jmattson@google.com>,
+        Igor Mammedov <imammedo@redhat.com>,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 24 Jan 2022 13:03:00 -0800
+In-Reply-To: <20220124103606.2630588-3-vkuznets@redhat.com>
+References: <20220124103606.2630588-1-vkuznets@redhat.com>
+         <20220124103606.2630588-3-vkuznets@redhat.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.40.4-1ubuntu2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Stat-Signature: gkdp8cdydwpxgpnnhk3gx3ocsdue6wgx
+X-Rspamd-Server: rspamout05
+X-Rspamd-Queue-Id: D692520030
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX19QDOkk4WUvsKIAh9pZT26JkxbkBW5jJ9w=
+X-HE-Tag: 1643058181-282243
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zack Rusin <zackr@vmware.com>
+On Mon, 2022-01-24 at 11:36 +0100, Vitaly Kuznetsov wrote:
+> kvm_cpuid_check_equal() should also check .flags equality but instead
+> of adding it to the existing check, just switch to using memcmp() for
+> the whole 'struct kvm_cpuid_entry2'.
 
-[ Upstream commit 826c387d015247df396a91eadbaca94f0394853c ]
+Is the struct padding guaranteed to be identical ?
 
-TTM during the transition to the new page allocator lost the ability
-to constrain the allocations via the lower_mem_limit. The code has
-been unused since the change:
-256dd44bd897 ("drm/ttm: nuke old page allocator")
-and there's no reason to keep it.
-
-Fixes: 256dd44bd897 ("drm/ttm: nuke old page allocator")
-Signed-off-by: Zack Rusin <zackr@vmware.com>
-Reviewed-by: Martin Krastev <krastevm@vmware.com>
-Link: https://patchwork.freedesktop.org/patch/msgid/20211105193845.258816-2-zackr@vmware.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/gpu/drm/vmwgfx/ttm_memory.c | 99 +----------------------------
- drivers/gpu/drm/vmwgfx/ttm_memory.h |  6 +-
- 2 files changed, 2 insertions(+), 103 deletions(-)
-
-diff --git a/drivers/gpu/drm/vmwgfx/ttm_memory.c b/drivers/gpu/drm/vmwgfx/ttm_memory.c
-index 7f7fe35fc21df..326d2d177c8bb 100644
---- a/drivers/gpu/drm/vmwgfx/ttm_memory.c
-+++ b/drivers/gpu/drm/vmwgfx/ttm_memory.c
-@@ -34,7 +34,6 @@
- #include <linux/mm.h>
- #include <linux/module.h>
- #include <linux/slab.h>
--#include <linux/swap.h>
- 
- #include <drm/drm_device.h>
- #include <drm/drm_file.h>
-@@ -173,69 +172,7 @@ static struct kobj_type ttm_mem_zone_kobj_type = {
- 	.sysfs_ops = &ttm_mem_zone_ops,
- 	.default_attrs = ttm_mem_zone_attrs,
- };
--
--static struct attribute ttm_mem_global_lower_mem_limit = {
--	.name = "lower_mem_limit",
--	.mode = S_IRUGO | S_IWUSR
--};
--
--static ssize_t ttm_mem_global_show(struct kobject *kobj,
--				 struct attribute *attr,
--				 char *buffer)
--{
--	struct ttm_mem_global *glob =
--		container_of(kobj, struct ttm_mem_global, kobj);
--	uint64_t val = 0;
--
--	spin_lock(&glob->lock);
--	val = glob->lower_mem_limit;
--	spin_unlock(&glob->lock);
--	/* convert from number of pages to KB */
--	val <<= (PAGE_SHIFT - 10);
--	return snprintf(buffer, PAGE_SIZE, "%llu\n",
--			(unsigned long long) val);
--}
--
--static ssize_t ttm_mem_global_store(struct kobject *kobj,
--				  struct attribute *attr,
--				  const char *buffer,
--				  size_t size)
--{
--	int chars;
--	uint64_t val64;
--	unsigned long val;
--	struct ttm_mem_global *glob =
--		container_of(kobj, struct ttm_mem_global, kobj);
--
--	chars = sscanf(buffer, "%lu", &val);
--	if (chars == 0)
--		return size;
--
--	val64 = val;
--	/* convert from KB to number of pages */
--	val64 >>= (PAGE_SHIFT - 10);
--
--	spin_lock(&glob->lock);
--	glob->lower_mem_limit = val64;
--	spin_unlock(&glob->lock);
--
--	return size;
--}
--
--static struct attribute *ttm_mem_global_attrs[] = {
--	&ttm_mem_global_lower_mem_limit,
--	NULL
--};
--
--static const struct sysfs_ops ttm_mem_global_ops = {
--	.show = &ttm_mem_global_show,
--	.store = &ttm_mem_global_store,
--};
--
--static struct kobj_type ttm_mem_glob_kobj_type = {
--	.sysfs_ops = &ttm_mem_global_ops,
--	.default_attrs = ttm_mem_global_attrs,
--};
-+static struct kobj_type ttm_mem_glob_kobj_type = {0};
- 
- static bool ttm_zones_above_swap_target(struct ttm_mem_global *glob,
- 					bool from_wq, uint64_t extra)
-@@ -435,11 +372,6 @@ int ttm_mem_global_init(struct ttm_mem_global *glob, struct device *dev)
- 
- 	si_meminfo(&si);
- 
--	spin_lock(&glob->lock);
--	/* set it as 0 by default to keep original behavior of OOM */
--	glob->lower_mem_limit = 0;
--	spin_unlock(&glob->lock);
--
- 	ret = ttm_mem_init_kernel_zone(glob, &si);
- 	if (unlikely(ret != 0))
- 		goto out_no_zone;
-@@ -526,35 +458,6 @@ void ttm_mem_global_free(struct ttm_mem_global *glob,
- }
- EXPORT_SYMBOL(ttm_mem_global_free);
- 
--/*
-- * check if the available mem is under lower memory limit
-- *
-- * a. if no swap disk at all or free swap space is under swap_mem_limit
-- * but available system mem is bigger than sys_mem_limit, allow TTM
-- * allocation;
-- *
-- * b. if the available system mem is less than sys_mem_limit but free
-- * swap disk is bigger than swap_mem_limit, allow TTM allocation.
-- */
--bool
--ttm_check_under_lowerlimit(struct ttm_mem_global *glob,
--			uint64_t num_pages,
--			struct ttm_operation_ctx *ctx)
--{
--	int64_t available;
--
--	/* We allow over commit during suspend */
--	if (ctx->force_alloc)
--		return false;
--
--	available = get_nr_swap_pages() + si_mem_available();
--	available -= num_pages;
--	if (available < glob->lower_mem_limit)
--		return true;
--
--	return false;
--}
--
- static int ttm_mem_global_reserve(struct ttm_mem_global *glob,
- 				  struct ttm_mem_zone *single_zone,
- 				  uint64_t amount, bool reserve)
-diff --git a/drivers/gpu/drm/vmwgfx/ttm_memory.h b/drivers/gpu/drm/vmwgfx/ttm_memory.h
-index c50dba7744854..7b0d617ebcb1e 100644
---- a/drivers/gpu/drm/vmwgfx/ttm_memory.h
-+++ b/drivers/gpu/drm/vmwgfx/ttm_memory.h
-@@ -50,8 +50,6 @@
-  * @work: The workqueue callback for the shrink queue.
-  * @lock: Lock to protect the @shrink - and the memory accounting members,
-  * that is, essentially the whole structure with some exceptions.
-- * @lower_mem_limit: include lower limit of swap space and lower limit of
-- * system memory.
-  * @zones: Array of pointers to accounting zones.
-  * @num_zones: Number of populated entries in the @zones array.
-  * @zone_kernel: Pointer to the kernel zone.
-@@ -69,7 +67,6 @@ extern struct ttm_mem_global {
- 	struct workqueue_struct *swap_queue;
- 	struct work_struct work;
- 	spinlock_t lock;
--	uint64_t lower_mem_limit;
- 	struct ttm_mem_zone *zones[TTM_MEM_MAX_ZONES];
- 	unsigned int num_zones;
- 	struct ttm_mem_zone *zone_kernel;
-@@ -91,6 +88,5 @@ int ttm_mem_global_alloc_page(struct ttm_mem_global *glob,
- void ttm_mem_global_free_page(struct ttm_mem_global *glob,
- 			      struct page *page, uint64_t size);
- size_t ttm_round_pot(size_t size);
--bool ttm_check_under_lowerlimit(struct ttm_mem_global *glob, uint64_t num_pages,
--				struct ttm_operation_ctx *ctx);
-+
- #endif
--- 
-2.34.1
-
+> 
+> When .flags are not checked, kvm_cpuid_check_equal() may allow an update
+> which it shouldn't but kvm_set_cpuid() does not actually update anything
+> and just returns success.
+> 
+> Suggested-by: Sean Christopherson <seanjc@google.com>
+> Signed-off-by: Vitaly Kuznetsov <vkuznets@redhat.com>
+> ---
+>  arch/x86/kvm/cpuid.c | 13 ++-----------
+>  1 file changed, 2 insertions(+), 11 deletions(-)
+> 
+> diff --git a/arch/x86/kvm/cpuid.c b/arch/x86/kvm/cpuid.c
+> index 89d7822a8f5b..7dd9c8f4f46e 100644
+> --- a/arch/x86/kvm/cpuid.c
+> +++ b/arch/x86/kvm/cpuid.c
+> @@ -123,20 +123,11 @@ static int kvm_check_cpuid(struct kvm_vcpu *vcpu,
+>  static int kvm_cpuid_check_equal(struct kvm_vcpu *vcpu, struct kvm_cpuid_entry2 *e2,
+>  				 int nent)
+>  {
+> -	struct kvm_cpuid_entry2 *orig;
+> -	int i;
+> -
+>  	if (nent != vcpu->arch.cpuid_nent)
+>  		return -EINVAL;
+>  
+> -	for (i = 0; i < nent; i++) {
+> -		orig = &vcpu->arch.cpuid_entries[i];
+> -		if (e2[i].function != orig->function ||
+> -		    e2[i].index != orig->index ||
+> -		    e2[i].eax != orig->eax || e2[i].ebx != orig->ebx ||
+> -		    e2[i].ecx != orig->ecx || e2[i].edx != orig->edx)
+> -			return -EINVAL;
+> -	}
+> +	if (memcmp(e2, vcpu->arch.cpuid_entries, nent * sizeof(*e2)))
+> +		return -EINVAL;
+>  
+>  	return 0;
+>  }
 
 
