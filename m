@@ -2,46 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 012F6C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2929FC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:28:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350968AbiAXT1r (ORCPT
+        id S1348123AbiAXT1z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:27:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48874 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347137AbiAXTRB (ORCPT
+        Mon, 24 Jan 2022 14:27:55 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:42900 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345004AbiAXTRx (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:17:01 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E78CC03327B;
-        Mon, 24 Jan 2022 11:06:43 -0800 (PST)
+        Mon, 24 Jan 2022 14:17:53 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D9AF8B8119D;
-        Mon, 24 Jan 2022 19:06:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 06271C340E5;
-        Mon, 24 Jan 2022 19:06:39 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 54614B81236;
+        Mon, 24 Jan 2022 19:17:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 68744C340E5;
+        Mon, 24 Jan 2022 19:17:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051200;
-        bh=UZqt7F9T0rDiSTLTAnZvkhKO5UvRVAdoAjXoYZrpjwA=;
+        s=korg; t=1643051870;
+        bh=anLyqKY8xcsWg1zMq4nAdOxhcpkR8TKpIZYGmfktLU4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=N8siwITzYlA3ZDO87tvvZxpPFh1kWWxW3rGPaxYq5t2GE5/qFnCLpUxD1QmriUaL4
-         EpyqTNE7HhWzURJRjdl+HXl0XnUtIxbIAVpsIpwO2y3T4Nk/5di2uoOqrzuKdFd+uG
-         4LVz1Nl2ykQV3if4bw0tZVfqxVKWSJoLrJOAFSvY=
+        b=zHUzKFuyYj7O1ztLjR97lT868Q6hocO/pXeMPdFbA1pq3neEzxn1xDIK/4BP62G0R
+         lCainNlY+5lz5D+ZiEOC0ii5KGtVOcO3/67dvPQXC33G0+FET7/5CLp60ftcFk6Gth
+         qqh7DvEmpUCeEsVY5nQxXEX571Ha4RGbMWtA9JhY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Alexander Aring <aahringo@redhat.com>,
-        David Teigland <teigland@redhat.com>,
+        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
+        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 087/186] fs: dlm: filter user dlm messages for kernel locks
-Date:   Mon, 24 Jan 2022 19:42:42 +0100
-Message-Id: <20220124183939.911852875@linuxfoundation.org>
+Subject: [PATCH 4.19 070/239] media: saa7146: mxb: Fix a NULL pointer dereference in mxb_attach()
+Date:   Mon, 24 Jan 2022 19:41:48 +0100
+Message-Id: <20220124183945.355676783@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
-References: <20220124183937.101330125@linuxfoundation.org>
+In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
+References: <20220124183943.102762895@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,116 +48,62 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Alexander Aring <aahringo@redhat.com>
+From: Zhou Qingyang <zhou1615@umn.edu>
 
-[ Upstream commit 6c2e3bf68f3e5e5a647aa52be246d5f552d7496d ]
+[ Upstream commit 0407c49ebe330333478440157c640fffd986f41b ]
 
-This patch fixes the following crash by receiving a invalid message:
+In mxb_attach(dev, info), saa7146_vv_init() is called to allocate a
+new memory for dev->vv_data. saa7146_vv_release() will be called on
+failure of mxb_probe(dev). There is a dereference of dev->vv_data
+in saa7146_vv_release(), which could lead to a NULL pointer dereference
+on failure of saa7146_vv_init().
 
-[  160.672220] ==================================================================
-[  160.676206] BUG: KASAN: user-memory-access in dlm_user_add_ast+0xc3/0x370
-[  160.679659] Read of size 8 at addr 00000000deadbeef by task kworker/u32:13/319
-[  160.681447]
-[  160.681824] CPU: 10 PID: 319 Comm: kworker/u32:13 Not tainted 5.14.0-rc2+ #399
-[  160.683472] Hardware name: Red Hat KVM/RHEL-AV, BIOS 1.14.0-1.module+el8.6.0+12648+6ede71a5 04/01/2014
-[  160.685574] Workqueue: dlm_recv process_recv_sockets
-[  160.686721] Call Trace:
-[  160.687310]  dump_stack_lvl+0x56/0x6f
-[  160.688169]  ? dlm_user_add_ast+0xc3/0x370
-[  160.689116]  kasan_report.cold.14+0x116/0x11b
-[  160.690138]  ? dlm_user_add_ast+0xc3/0x370
-[  160.690832]  dlm_user_add_ast+0xc3/0x370
-[  160.691502]  _receive_unlock_reply+0x103/0x170
-[  160.692241]  _receive_message+0x11df/0x1ec0
-[  160.692926]  ? rcu_read_lock_sched_held+0xa1/0xd0
-[  160.693700]  ? rcu_read_lock_bh_held+0xb0/0xb0
-[  160.694427]  ? lock_acquire+0x175/0x400
-[  160.695058]  ? do_purge.isra.51+0x200/0x200
-[  160.695744]  ? lock_acquired+0x360/0x5d0
-[  160.696400]  ? lock_contended+0x6a0/0x6a0
-[  160.697055]  ? lock_release+0x21d/0x5e0
-[  160.697686]  ? lock_is_held_type+0xe0/0x110
-[  160.698352]  ? lock_is_held_type+0xe0/0x110
-[  160.699026]  ? ___might_sleep+0x1cc/0x1e0
-[  160.699698]  ? dlm_wait_requestqueue+0x94/0x140
-[  160.700451]  ? dlm_process_requestqueue+0x240/0x240
-[  160.701249]  ? down_write_killable+0x2b0/0x2b0
-[  160.701988]  ? do_raw_spin_unlock+0xa2/0x130
-[  160.702690]  dlm_receive_buffer+0x1a5/0x210
-[  160.703385]  dlm_process_incoming_buffer+0x726/0x9f0
-[  160.704210]  receive_from_sock+0x1c0/0x3b0
-[  160.704886]  ? dlm_tcp_shutdown+0x30/0x30
-[  160.705561]  ? lock_acquire+0x175/0x400
-[  160.706197]  ? rcu_read_lock_sched_held+0xa1/0xd0
-[  160.706941]  ? rcu_read_lock_bh_held+0xb0/0xb0
-[  160.707681]  process_recv_sockets+0x32/0x40
-[  160.708366]  process_one_work+0x55e/0xad0
-[  160.709045]  ? pwq_dec_nr_in_flight+0x110/0x110
-[  160.709820]  worker_thread+0x65/0x5e0
-[  160.710423]  ? process_one_work+0xad0/0xad0
-[  160.711087]  kthread+0x1ed/0x220
-[  160.711628]  ? set_kthread_struct+0x80/0x80
-[  160.712314]  ret_from_fork+0x22/0x30
+Fix this bug by adding a check of saa7146_vv_init().
 
-The issue is that we received a DLM message for a user lock but the
-destination lock is a kernel lock. Note that the address which is trying
-to derefence is 00000000deadbeef, which is in a kernel lock
-lkb->lkb_astparam, this field should never be derefenced by the DLM
-kernel stack. In case of a user lock lkb->lkb_astparam is lkb->lkb_ua
-(memory is shared by a union field). The struct lkb_ua will be handled
-by the DLM kernel stack but on a kernel lock it will contain invalid
-data and ends in most likely crashing the kernel.
+This bug was found by a static analyzer. The analysis employs
+differential checking to identify inconsistent security operations
+(e.g., checks or kfrees) between two code paths and confirms that the
+inconsistent operations are not recovered in the current function or
+the callers, so they constitute bugs.
 
-It can be reproduced with two cluster nodes.
+Note that, as a bug found by static analysis, it can be a false
+positive or hard to trigger. Multiple researchers have cross-reviewed
+the bug.
 
-node 2:
-dlm_tool join test
-echo "862 fooobaar 1 2 1" > /sys/kernel/debug/dlm/test_locks
-echo "862 3 1" > /sys/kernel/debug/dlm/test_waiters
+Builds with CONFIG_VIDEO_MXB=m show no new warnings,
+and our static analyzer no longer warns about this code.
 
-node 1:
-dlm_tool join test
-
-python:
-foo = DLM(h_cmd=3, o_nextcmd=1, h_nodeid=1, h_lockspace=0x77222027, \
-          m_type=7, m_flags=0x1, m_remid=0x862, m_result=0xFFFEFFFE)
-newFile = open("/sys/kernel/debug/dlm/comms/2/rawmsg", "wb")
-newFile.write(bytes(foo))
-
-Signed-off-by: Alexander Aring <aahringo@redhat.com>
-Signed-off-by: David Teigland <teigland@redhat.com>
+Fixes: 03b1930efd3c ("V4L/DVB: saa7146: fix regression of the av7110/budget-av driver")
+Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
+Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/dlm/lock.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/media/pci/saa7146/mxb.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/fs/dlm/lock.c b/fs/dlm/lock.c
-index 21643d2b3fee4..8364f170fbb82 100644
---- a/fs/dlm/lock.c
-+++ b/fs/dlm/lock.c
-@@ -3974,6 +3974,14 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
- 	int from = ms->m_header.h_nodeid;
- 	int error = 0;
+diff --git a/drivers/media/pci/saa7146/mxb.c b/drivers/media/pci/saa7146/mxb.c
+index 6e25654da2567..bfa7a7d15dbf6 100644
+--- a/drivers/media/pci/saa7146/mxb.c
++++ b/drivers/media/pci/saa7146/mxb.c
+@@ -695,10 +695,16 @@ static struct saa7146_ext_vv vv_data;
+ static int mxb_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_data *info)
+ {
+ 	struct mxb *mxb;
++	int ret;
  
-+	/* currently mixing of user/kernel locks are not supported */
-+	if (ms->m_flags & DLM_IFL_USER && ~lkb->lkb_flags & DLM_IFL_USER) {
-+		log_error(lkb->lkb_resource->res_ls,
-+			  "got user dlm message for a kernel lock");
-+		error = -EINVAL;
-+		goto out;
+ 	DEB_EE("dev:%p\n", dev);
+ 
+-	saa7146_vv_init(dev, &vv_data);
++	ret = saa7146_vv_init(dev, &vv_data);
++	if (ret) {
++		ERR("Error in saa7146_vv_init()");
++		return ret;
 +	}
 +
- 	switch (ms->m_type) {
- 	case DLM_MSG_CONVERT:
- 	case DLM_MSG_UNLOCK:
-@@ -4002,6 +4010,7 @@ static int validate_message(struct dlm_lkb *lkb, struct dlm_message *ms)
- 		error = -EINVAL;
- 	}
- 
-+out:
- 	if (error)
- 		log_error(lkb->lkb_resource->res_ls,
- 			  "ignore invalid message %d from %d %x %x %x %d",
+ 	if (mxb_probe(dev)) {
+ 		saa7146_vv_release(dev);
+ 		return -1;
 -- 
 2.34.1
 
