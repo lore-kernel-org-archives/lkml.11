@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BCB1C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:04:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3DBFC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:04:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237101AbiAXTED (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:04:03 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:56022 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345105AbiAXS7u (ORCPT
+        id S1344090AbiAXTEF (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:04:05 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55670 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1345141AbiAXS7w (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:59:50 -0500
+        Mon, 24 Jan 2022 13:59:52 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4A893B8123A;
-        Mon, 24 Jan 2022 18:59:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6CA31C340E8;
-        Mon, 24 Jan 2022 18:59:47 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B8E4760917;
+        Mon, 24 Jan 2022 18:59:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 794FEC340E5;
+        Mon, 24 Jan 2022 18:59:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050788;
-        bh=ztCq9ANAcBkHdS4/TOCP4mgItl7HAp3oyahqlUf+rPU=;
+        s=korg; t=1643050791;
+        bh=mt14UD5wwUsEVPzv/slcZn+yEj+oYq8IMyN2ZD3IgCw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FGx6sWtYwNjCULfuIZmxOrmX+8f7oaet0NivhRDIfNdnHxHlirS2NEmzpkb5NWqlP
-         doiBetpbyCHKvCv2c1pkFnyfPUKEY7qSotuNQGjc1kqWajKHYnyy229bhC6oQ0OPaN
-         6LmJKWlgXDsQPQ6iVMVmvqQs3E0A8M7hUTi3t5Nc=
+        b=zSGK7A+MOyaEkY1WRjDmCEqPOopGSAmXxHfdiHfS68eVcfkMps1OljmyXjKjUgHDa
+         wykEzlM1LmVwRCPtGUwv5Z4I0QGHHDm11G5w8FG6sjZv6b9LDWyZ+9WbZRsQ5J/Crg
+         jvOH0ridKvYC5cRZFac/gDdmyxSajOwzVHHPm4+M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Joakim Tjernlund <joakim.tjernlund@infinera.com>,
-        Scott Wood <oss@buserror.net>, Wolfram Sang <wsa@kernel.org>,
+        stable@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.9 111/157] i2c: mpc: Correct I2C reset procedure
-Date:   Mon, 24 Jan 2022 19:43:21 +0100
-Message-Id: <20220124183936.296733102@linuxfoundation.org>
+Subject: [PATCH 4.9 080/157] gpiolib: acpi: Do not set the IRQ type if the IRQ is already in use
+Date:   Mon, 24 Jan 2022 19:42:50 +0100
+Message-Id: <20220124183935.323620286@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -47,68 +47,59 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joakim Tjernlund <joakim.tjernlund@infinera.com>
+From: Hans de Goede <hdegoede@redhat.com>
 
-[ Upstream commit ebe82cf92cd4825c3029434cabfcd2f1780e64be ]
+[ Upstream commit bdfd6ab8fdccd8b138837efff66f4a1911496378 ]
 
-Current I2C reset procedure is broken in two ways:
-1) It only generate 1 START instead of 9 STARTs and STOP.
-2) It leaves the bus Busy so every I2C xfer after the first
-   fixup calls the reset routine again, for every xfer there after.
+If the IRQ is already in use, then acpi_dev_gpio_irq_get_by() really
+should not change the type underneath the current owner.
 
-This fixes both errors.
+I specifically hit an issue with this an a Chuwi Hi8 Super (CWI509) Bay
+Trail tablet, when the Boot OS selection in the BIOS is set to Android.
+In this case _STA for a MAX17047 ACPI I2C device wrongly returns 0xf and
+the _CRS resources for this device include a GpioInt pointing to a GPIO
+already in use by an _AEI handler, with a different type then specified
+in the _CRS for the MAX17047 device. Leading to the acpi_dev_gpio_irq_get()
+call done by the i2c-core-acpi.c code changing the type breaking the
+_AEI handler.
 
-Signed-off-by: Joakim Tjernlund <joakim.tjernlund@infinera.com>
-Acked-by: Scott Wood <oss@buserror.net>
-Signed-off-by: Wolfram Sang <wsa@kernel.org>
+Now this clearly is a bug in the DSDT of this tablet (in Android mode),
+but in general calling irq_set_irq_type() on an IRQ which already is
+in use seems like a bad idea.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/i2c/busses/i2c-mpc.c | 23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
+ drivers/gpio/gpiolib-acpi.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/i2c/busses/i2c-mpc.c b/drivers/i2c/busses/i2c-mpc.c
-index 90e4f839eb1cb..d153fc28e6bfb 100644
---- a/drivers/i2c/busses/i2c-mpc.c
-+++ b/drivers/i2c/busses/i2c-mpc.c
-@@ -107,23 +107,30 @@ static irqreturn_t mpc_i2c_isr(int irq, void *dev_id)
- /* Sometimes 9th clock pulse isn't generated, and slave doesn't release
-  * the bus, because it wants to send ACK.
-  * Following sequence of enabling/disabling and sending start/stop generates
-- * the 9 pulses, so it's all OK.
-+ * the 9 pulses, each with a START then ending with STOP, so it's all OK.
-  */
- static void mpc_i2c_fixup(struct mpc_i2c *i2c)
- {
- 	int k;
--	u32 delay_val = 1000000 / i2c->real_clk + 1;
--
--	if (delay_val < 2)
--		delay_val = 2;
-+	unsigned long flags;
+diff --git a/drivers/gpio/gpiolib-acpi.c b/drivers/gpio/gpiolib-acpi.c
+index 986248f7011aa..c479280590e42 100644
+--- a/drivers/gpio/gpiolib-acpi.c
++++ b/drivers/gpio/gpiolib-acpi.c
+@@ -675,10 +675,17 @@ int acpi_dev_gpio_irq_get(struct acpi_device *adev, int index)
+ 			irq_flags = acpi_dev_get_irq_type(info.triggering,
+ 							  info.polarity);
  
- 	for (k = 9; k; k--) {
- 		writeccr(i2c, 0);
--		writeccr(i2c, CCR_MSTA | CCR_MTX | CCR_MEN);
-+		writeb(0, i2c->base + MPC_I2C_SR); /* clear any status bits */
-+		writeccr(i2c, CCR_MEN | CCR_MSTA); /* START */
-+		readb(i2c->base + MPC_I2C_DR); /* init xfer */
-+		udelay(15); /* let it hit the bus */
-+		local_irq_save(flags); /* should not be delayed further */
-+		writeccr(i2c, CCR_MEN | CCR_MSTA | CCR_RSTA); /* delay SDA */
- 		readb(i2c->base + MPC_I2C_DR);
--		writeccr(i2c, CCR_MEN);
--		udelay(delay_val << 1);
-+		if (k != 1)
-+			udelay(5);
-+		local_irq_restore(flags);
- 	}
-+	writeccr(i2c, CCR_MEN); /* Initiate STOP */
-+	readb(i2c->base + MPC_I2C_DR);
-+	udelay(15); /* Let STOP propagate */
-+	writeccr(i2c, 0);
- }
+-			/* Set type if specified and different than the current one */
+-			if (irq_flags != IRQ_TYPE_NONE &&
+-			    irq_flags != irq_get_trigger_type(irq))
+-				irq_set_irq_type(irq, irq_flags);
++			/*
++			 * If the IRQ is not already in use then set type
++			 * if specified and different than the current one.
++			 */
++			if (can_request_irq(irq, irq_flags)) {
++				if (irq_flags != IRQ_TYPE_NONE &&
++				    irq_flags != irq_get_trigger_type(irq))
++					irq_set_irq_type(irq, irq_flags);
++			} else {
++				dev_dbg(&adev->dev, "IRQ %d already in use\n", irq);
++			}
  
- static int i2c_wait(struct mpc_i2c *i2c, unsigned timeout, int writing)
+ 			return irq;
+ 		}
 -- 
 2.34.1
 
