@@ -2,144 +2,145 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57710C3525A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C48BC433F5
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:34:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1850894AbiAXXbL (ORCPT
+        id S1850918AbiAXXbR (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:31:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33712 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1579202AbiAXWFM (ORCPT
-        <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:05:12 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D984C0C6857;
-        Mon, 24 Jan 2022 12:42:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CBBF6B80FA3;
-        Mon, 24 Jan 2022 20:42:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0DAD2C36B08;
-        Mon, 24 Jan 2022 20:42:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056932;
-        bh=OBTuXiREeeRTt0kQKSBldCdfbCJ4bnAco+QXL8c1owQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ikCY4LB1Dd2Ljc8C4jq+uDk5yWLB6G0uJ0mBY3kWcA4s/gJwxnz8COLbtHYddgOVK
-         q5AkxZP1ScdUn+lPHW5ArkNdAmAaLGOjHGTX/dmFzEG1+elowkjmvfDDtfVcUpvssx
-         PnKuwL3WUwHEcvzJz4GVhayWkOZvyjstoVLomMmE=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 614/846] random: do not throw away excess input to crng_fast_load
-Date:   Mon, 24 Jan 2022 19:42:11 +0100
-Message-Id: <20220124184122.222730672@linuxfoundation.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
-User-Agent: quilt/0.66
+        Mon, 24 Jan 2022 18:31:17 -0500
+Received: from mout.gmx.net ([212.227.15.15]:32899 "EHLO mout.gmx.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1836174AbiAXWie (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 17:38:34 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1643063893;
+        bh=O/gWW4SdGdFvCDMPaydCCXLcqSMbdkD47ayl4x+bqCs=;
+        h=X-UI-Sender-Class:Date:Subject:To:References:From:In-Reply-To;
+        b=idrR5/2sy7iV86MX+VEH5JEzVpyebuoqIVaUZx24wIamcin4VaoTAEUtDnEg06VD9
+         S16Q6p6FvPF7ryHjQQAS7QaTq079x4kJdSKVC1Sib1nmuH+IGJHKi3Kdu45NUFfrql
+         TjU/DzPJrmzc1Qzgs+w86jlwIdBB71zlaUUpfNO4=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from [192.168.20.60] ([92.116.165.96]) by mail.gmx.net (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MNswE-1mwo0r0hmC-00OJvR; Mon, 24
+ Jan 2022 23:38:13 +0100
+Message-ID: <16884bfd-36ca-dd2e-43e4-4977861f8fa1@gmx.de>
+Date:   Mon, 24 Jan 2022 23:37:03 +0100
 MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v2 0/2] Fix regression introduced by disabling accelerated
+ scrolling in fbcon
+Content-Language: en-US
+To:     dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
+        Pavel Machek <pavel@ucw.cz>, Sam Ravnborg <sam@ravnborg.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Sven Schnelle <svens@stackframe.org>,
+        Javier Martinez Canillas <javierm@redhat.com>,
+        linux-kernel@vger.kernel.org,
+        Tomi Valkeinen <tomi.valkeinen@ti.com>,
+        Claudio Suarez <cssk@net-c.es>,
+        Gerd Hoffmann <kraxel@redhat.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Daniel Vetter <daniel.vetter@intel.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+References: <20220124210319.325512-1-deller@gmx.de>
+ <Ye8mDFcWSiXoRJbD@phenom.ffwll.local>
+From:   Helge Deller <deller@gmx.de>
+In-Reply-To: <Ye8mDFcWSiXoRJbD@phenom.ffwll.local>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+X-Provags-ID: V03:K1:+mKwEBgUo8e6/rdx2wnM5rh8v/iJPUii7I6UYjR0LafD+acqlae
+ rDVSPHpFVw/TqCh68N4Dcyveg6w3ot9oOtgpaEQeWF0+CwHsqvrKN0IdYxgEBS6bRSMIXRH
+ puChEGqa7ZtuOWaBLGKMRDASdYDh2gYTQsIaG7RiDW1Q0WWelAODGGa9P7kHJDJfTqaU6kt
+ VMGCrr0OSeS8sRlxIACKw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:P4h9ZZ/515I=:TShwa34J6E49MAcWMpgIEk
+ oz9CcYOoBwrolQyCjXlY8COb3clzeUbg1OZvJLD20cKD1nq23Gu2EvaR+GF/Fj9M9Y1cpPm+E
+ 9r0wnP7XFBEWMKOdEvsWO7QuUYiN6+cdgeuFE8Xzn5UoteSzMuHpTFl8ruPv14IArlHIDldac
+ AmuZlGXnUC3xz8Ky/BQfHQo+YQisn4U0F/XAVr78+vtw/pl6ZtCsl4xBJLJtoJFJNHp7+ATKd
+ 5BZNYvmf/nIJCefBK6eZMwCY4Ld/iG4r+l84OwD1rA+/FLu6K3rAjYmYMEKgRg/Cf8Wfb6D2a
+ 7JO3jXLrOW7MoLrQ1iTsU6FZD8Soek+rGT0JHG12Sc0FsCdvHCCV4tqAvqpSQhqfBAREAlBjV
+ z4MUxahZZyhHCP+2K5BfGSUNR0sctqVbM3E+hSz0OWPgYc9X3wPbcUQPurhR/KxuHCPmLOuWT
+ QNYQboTrPJA1QxRK+1tyiqLENNtNRvQi9kJeB919baluZKiu/Qwy93LUrKNLIwLhM5E8T4JJQ
+ rN92tsz4kWuCmG7ZGw3nuR47WJoIOrERFdbXBInMUQUpUXpdL96NKY5/faL/vGHCTSUEDgR2+
+ qQYu0TliHyDFNLYqAC3he81i2VOUHlPPM8sIfXq2RrrPrUoJ/jfY0iXTH6LC2xFVGdzJ/UQyZ
+ y27msW4gMk0kRhQ2LFYuljnDvNtJhljpQWlAo1HtsOnos1QWHNlgik1t6TJqux2HriueyVNb6
+ 8K3rssNCKm+p5T9WEuaUcX9+I5zu4EeLvnuiyJQfPzvrHNofeugHI0Z8sYY1FZOSIpHUWtTyG
+ /cr1zKqPAFLhlVGRP7mMUlr3z+hJ8hxR+g0FfMprs79ypR57x2JJTzDJ+CSWuNojb+kMBD1hA
+ kakGYEqgF37Tk9sL4+XHtg2pOG5RHiFROIOMgFxvqKcUfule6xaJJQC3Vu+zeeENQtAU6RCuo
+ KciOIJP+aaLohD/XyUSjwF+cMYydUAX2kPcW7yBv7pnMt6MmSJA1K14s963WiZFW5JeIhDzl+
+ BAvTilH7bTAycS+lZVBpbTNbohOAspyHblWwtxBDzt4kBcXMyWrUXZZogtGrxGCIS29K9P/Tf
+ nizlcv8pjNu6Ws=
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+On 1/24/22 23:19, Daniel Vetter wrote:
+> On Mon, Jan 24, 2022 at 10:03:17PM +0100, Helge Deller wrote:
+>> This series reverts two patches which disabled scrolling acceleration i=
+n
+>> fbcon/fbdev. Those patches introduced a regression for fbdev-supported =
+graphic
+>> cards because of the performance penalty by doing screen scrolling by s=
+oftware
+>> instead of using existing 2D hardware acceleration.
+>>
+>> This series has been discussed on linux-fbdev, dri-devel and linux-kern=
+el
+>> mailing lists. The consensus is that they will be reverted, but in addi=
+tion
+>> it's being worked on to find a solution which allows to disable parts o=
+f the
+>> classic fbdev hardware acceleration code which isn't needed in DRM-only
+>> configurations.
+>
+> That's not my take at least.
 
-[ Upstream commit 73c7733f122e8d0107f88655a12011f68f69e74b ]
+Which is?
+Didn't we discussed about introducing something like
+CONFIG_FBCON_LEGACY_ACCELERATION ?
 
-When crng_fast_load() is called by add_hwgenerator_randomness(), we
-currently will advance to crng_init==1 once we've acquired 64 bytes, and
-then throw away the rest of the buffer. Usually, that is not a problem:
-When add_hwgenerator_randomness() gets called via EFI or DT during
-setup_arch(), there won't be any IRQ randomness. Therefore, the 64 bytes
-passed by EFI exactly matches what is needed to advance to crng_init==1.
-Usually, DT seems to pass 64 bytes as well -- with one notable exception
-being kexec, which hands over 128 bytes of entropy to the kexec'd kernel.
-In that case, we'll advance to crng_init==1 once 64 of those bytes are
-consumed by crng_fast_load(), but won't continue onward feeding in bytes
-to progress to crng_init==2. This commit fixes the issue by feeding
-any leftover bytes into the next phase in add_hwgenerator_randomness().
+>> The patchset is planned to be kept in fbdev's for-next git branch and l=
+ater
+>> pushed into kernel v5.18 if no issues are found until then.
+>
+> Neither this. I don't think we've resovled maintainership of fbdev core
+> code and fbcon yet. That is the part that drm folks very much still
+> maintained, as a quick git shortlog will show.
+>
+> Maintaining these parts outside of drm trees just doesn't make sense,
+> since none of the other graphics relevant development happens outside of
 
-[linux@dominikbrodowski.net: rewrite commit message]
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/char/random.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+I have no objections if you are willing to take those two patches through
+the drm tree.
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 7470ee24db2f9..a27ae3999ff32 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -912,12 +912,14 @@ static struct crng_state *select_crng(void)
- 
- /*
-  * crng_fast_load() can be called by code in the interrupt service
-- * path.  So we can't afford to dilly-dally.
-+ * path.  So we can't afford to dilly-dally. Returns the number of
-+ * bytes processed from cp.
-  */
--static int crng_fast_load(const char *cp, size_t len)
-+static size_t crng_fast_load(const char *cp, size_t len)
- {
- 	unsigned long flags;
- 	char *p;
-+	size_t ret = 0;
- 
- 	if (!spin_trylock_irqsave(&primary_crng.lock, flags))
- 		return 0;
-@@ -928,7 +930,7 @@ static int crng_fast_load(const char *cp, size_t len)
- 	p = (unsigned char *) &primary_crng.state[4];
- 	while (len > 0 && crng_init_cnt < CRNG_INIT_CNT_THRESH) {
- 		p[crng_init_cnt % CHACHA_KEY_SIZE] ^= *cp;
--		cp++; crng_init_cnt++; len--;
-+		cp++; crng_init_cnt++; len--; ret++;
- 	}
- 	spin_unlock_irqrestore(&primary_crng.lock, flags);
- 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
-@@ -936,7 +938,7 @@ static int crng_fast_load(const char *cp, size_t len)
- 		crng_init = 1;
- 		pr_notice("fast init done\n");
- 	}
--	return 1;
-+	return ret;
- }
- 
- /*
-@@ -1287,7 +1289,7 @@ void add_interrupt_randomness(int irq, int irq_flags)
- 	if (unlikely(crng_init == 0)) {
- 		if ((fast_pool->count >= 64) &&
- 		    crng_fast_load((char *) fast_pool->pool,
--				   sizeof(fast_pool->pool))) {
-+				   sizeof(fast_pool->pool)) > 0) {
- 			fast_pool->count = 0;
- 			fast_pool->last = now;
- 		}
-@@ -2295,8 +2297,11 @@ void add_hwgenerator_randomness(const char *buffer, size_t count,
- 	struct entropy_store *poolp = &input_pool;
- 
- 	if (unlikely(crng_init == 0)) {
--		crng_fast_load(buffer, count);
--		return;
-+		size_t ret = crng_fast_load(buffer, count);
-+		count -= ret;
-+		buffer += ret;
-+		if (!count || crng_init == 0)
-+			return;
- 	}
- 
- 	/* Suspend writing if we're above the trickle threshold.
--- 
-2.34.1
+Helge
 
-
-
+>> ---
+>> Changes in v2 compared to v1:
+>> - adjusted the stable tags (one v5.10+, the other v5.16+)
+>> - moved the analysis and reasoning why those should be reverted into
+>>   the commit message. That simplifies to analyze later why they were
+>>   reverted.
+>> - resorted the To an Cc mail recipient lists
+>>
+>> Helge Deller (2):
+>>   Revert "fbdev: Garbage collect fbdev scrolling acceleration, part 1
+>>     (from TODO list)"
+>>   Revert "fbcon: Disable accelerated scrolling"
+>>
+>>  Documentation/gpu/todo.rst              |  24 --
+>>  drivers/video/fbdev/core/bitblit.c      |  16 +
+>>  drivers/video/fbdev/core/fbcon.c        | 540 +++++++++++++++++++++++-
+>>  drivers/video/fbdev/core/fbcon.h        |  59 +++
+>>  drivers/video/fbdev/core/fbcon_ccw.c    |  28 +-
+>>  drivers/video/fbdev/core/fbcon_cw.c     |  28 +-
+>>  drivers/video/fbdev/core/fbcon_rotate.h |   9 +
+>>  drivers/video/fbdev/core/fbcon_ud.c     |  37 +-
+>>  drivers/video/fbdev/core/tileblit.c     |  16 +
+>>  drivers/video/fbdev/skeletonfb.c        |  12 +-
+>>  include/linux/fb.h                      |   2 +-
+>>  11 files changed, 703 insertions(+), 68 deletions(-)
+>>
+>> --
+>> 2.31.1
