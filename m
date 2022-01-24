@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14E92C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8800AC35280
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:07:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1843613AbiAXXFH (ORCPT
+        id S1449878AbiAXXGp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:05:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34802 "EHLO
+        Mon, 24 Jan 2022 18:06:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1581298AbiAXWLd (ORCPT
+        with ESMTP id S1381208AbiAXWT2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:11:33 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18B5DC0E03C9;
-        Mon, 24 Jan 2022 12:43:39 -0800 (PST)
+        Mon, 24 Jan 2022 17:19:28 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C8CBC061344;
+        Mon, 24 Jan 2022 12:49:04 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 90342B8105C;
-        Mon, 24 Jan 2022 20:43:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0F31C340E5;
-        Mon, 24 Jan 2022 20:43:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D925260C19;
+        Mon, 24 Jan 2022 20:49:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C0CF6C340E8;
+        Mon, 24 Jan 2022 20:49:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057016;
-        bh=fKi7ZwPG8n0+BGVYMxk00IA52PoG1YjyUx5UZx1Vb/o=;
+        s=korg; t=1643057343;
+        bh=r+p6EuVF+PH7m/bX/eehcg7q4vczR+MgtacTIIK26gk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qbLoCf6WI6Qbf6Df81SSBMp7RNMkXQkeT0T1GqWy9DMct2ZcnzdQwz8GNDc9QznnY
-         EaMQSbf/8UrbIyA200lhTJFqXDVaJIwI0rVjIMXBAVd9FvVnW9I4WSewfZ6FRXWIgl
-         FNmPavPysb2yOSEtJYqkE0e7NKH4g5/c+t1tLXQY=
+        b=hHdWuY70FJ5GQcXQaTQk3mXPA6MCZCxO0AgD5dvuSa+k58aSJXjg8J475uOArmzIt
+         HsyVtHzp3Zb0dcVGHG3EwZ2OUaDPqNJiMhCzeFLSEZFC96F5uJvACMF0vixuWFifc1
+         O4pT7/44L2v46CHqNab8DeD5Gn5JiDdSWqfhq7SA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Patrick Williams <patrick@stwcx.xyz>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.15 674/846] tpm: fix NPE on probe for missing device
-Date:   Mon, 24 Jan 2022 19:43:11 +0100
-Message-Id: <20220124184124.324993444@linuxfoundation.org>
+        stable@vger.kernel.org
+Subject: [PATCH 5.15 781/846] f2fs: fix to reserve space for IO align feature
+Date:   Mon, 24 Jan 2022 19:44:58 +0100
+Message-Id: <20220124184127.898468821@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,58 +48,155 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrick Williams <patrick@stwcx.xyz>
+From: Chao Yu <chao@kernel.org>
 
-commit 84cc69589700b90a4c8d27b481a51fce8cca6051 upstream.
+commit 300a842937fbcfb5a189cea9ba15374fdb0b5c6b upstream.
 
-When using the tpm_tis-spi driver on a system missing the physical TPM,
-a null pointer exception was observed.
+https://bugzilla.kernel.org/show_bug.cgi?id=204137
 
-    [    0.938677] Unable to handle kernel NULL pointer dereference at virtual address 00000004
-    [    0.939020] pgd = 10c753cb
-    [    0.939237] [00000004] *pgd=00000000
-    [    0.939808] Internal error: Oops: 5 [#1] SMP ARM
-    [    0.940157] CPU: 0 PID: 48 Comm: kworker/u4:1 Not tainted 5.15.10-dd1e40c #1
-    [    0.940364] Hardware name: Generic DT based system
-    [    0.940601] Workqueue: events_unbound async_run_entry_fn
-    [    0.941048] PC is at tpm_tis_remove+0x28/0xb4
-    [    0.941196] LR is at tpm_tis_core_init+0x170/0x6ac
+With below script, we will hit panic during new segment allocation:
 
-This is due to an attempt in 'tpm_tis_remove' to use the drvdata, which
-was not initialized in 'tpm_tis_core_init' prior to the first error.
+DISK=bingo.img
+MOUNT_DIR=/mnt/f2fs
 
-Move the initialization of drvdata earlier so 'tpm_tis_remove' has
-access to it.
+dd if=/dev/zero of=$DISK bs=1M count=105
+mkfs.f2fe -a 1 -o 19 -t 1 -z 1 -f -q $DISK
 
-Signed-off-by: Patrick Williams <patrick@stwcx.xyz>
-Fixes: 79ca6f74dae0 ("tpm: fix Atmel TPM crash caused by too frequent queries")
-Cc: stable@vger.kernel.org
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+mount -t f2fs $DISK $MOUNT_DIR -o "noinline_dentry,flush_merge,noextent_cache,mode=lfs,io_bits=7,fsync_mode=strict"
+
+for (( i = 0; i < 4096; i++ )); do
+	name=`head /dev/urandom | tr -dc A-Za-z0-9 | head -c 10`
+	mkdir $MOUNT_DIR/$name
+done
+
+umount $MOUNT_DIR
+rm $DISK
+
 ---
- drivers/char/tpm/tpm_tis_core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ fs/f2fs/f2fs.h    |   11 +++++++++++
+ fs/f2fs/segment.h |    3 ++-
+ fs/f2fs/super.c   |   44 ++++++++++++++++++++++++++++++++++++++++++++
+ fs/f2fs/sysfs.c   |    4 +++-
+ 4 files changed, 60 insertions(+), 2 deletions(-)
 
---- a/drivers/char/tpm/tpm_tis_core.c
-+++ b/drivers/char/tpm/tpm_tis_core.c
-@@ -950,6 +950,8 @@ int tpm_tis_core_init(struct device *dev
- 	priv->timeout_max = TPM_TIMEOUT_USECS_MAX;
- 	priv->phy_ops = phy_ops;
+--- a/fs/f2fs/f2fs.h
++++ b/fs/f2fs/f2fs.h
+@@ -1012,6 +1012,7 @@ struct f2fs_sm_info {
+ 	unsigned int segment_count;	/* total # of segments */
+ 	unsigned int main_segments;	/* # of segments in main area */
+ 	unsigned int reserved_segments;	/* # of reserved segments */
++	unsigned int additional_reserved_segments;/* reserved segs for IO align feature */
+ 	unsigned int ovp_segments;	/* # of overprovision segments */
  
-+	dev_set_drvdata(&chip->dev, priv);
+ 	/* a threshold to reclaim prefree segments */
+@@ -2184,6 +2185,11 @@ static inline int inc_valid_block_count(
+ 
+ 	if (!__allow_reserved_blocks(sbi, inode, true))
+ 		avail_user_block_count -= F2FS_OPTION(sbi).root_reserved_blocks;
 +
- 	rc = tpm_tis_read32(priv, TPM_DID_VID(0), &vendor);
- 	if (rc < 0)
- 		return rc;
-@@ -962,8 +964,6 @@ int tpm_tis_core_init(struct device *dev
- 		priv->timeout_max = TIS_TIMEOUT_MAX_ATML;
++	if (F2FS_IO_ALIGNED(sbi))
++		avail_user_block_count -= sbi->blocks_per_seg *
++				SM_I(sbi)->additional_reserved_segments;
++
+ 	if (unlikely(is_sbi_flag_set(sbi, SBI_CP_DISABLED))) {
+ 		if (avail_user_block_count > sbi->unusable_block_count)
+ 			avail_user_block_count -= sbi->unusable_block_count;
+@@ -2430,6 +2436,11 @@ static inline int inc_valid_node_count(s
+ 
+ 	if (!__allow_reserved_blocks(sbi, inode, false))
+ 		valid_block_count += F2FS_OPTION(sbi).root_reserved_blocks;
++
++	if (F2FS_IO_ALIGNED(sbi))
++		valid_block_count += sbi->blocks_per_seg *
++				SM_I(sbi)->additional_reserved_segments;
++
+ 	user_block_count = sbi->user_block_count;
+ 	if (unlikely(is_sbi_flag_set(sbi, SBI_CP_DISABLED)))
+ 		user_block_count -= sbi->unusable_block_count;
+--- a/fs/f2fs/segment.h
++++ b/fs/f2fs/segment.h
+@@ -537,7 +537,8 @@ static inline unsigned int free_segments
+ 
+ static inline unsigned int reserved_segments(struct f2fs_sb_info *sbi)
+ {
+-	return SM_I(sbi)->reserved_segments;
++	return SM_I(sbi)->reserved_segments +
++			SM_I(sbi)->additional_reserved_segments;
+ }
+ 
+ static inline unsigned int free_sections(struct f2fs_sb_info *sbi)
+--- a/fs/f2fs/super.c
++++ b/fs/f2fs/super.c
+@@ -327,6 +327,46 @@ static inline void limit_reserve_root(st
+ 					   F2FS_OPTION(sbi).s_resgid));
+ }
+ 
++static inline int adjust_reserved_segment(struct f2fs_sb_info *sbi)
++{
++	unsigned int sec_blks = sbi->blocks_per_seg * sbi->segs_per_sec;
++	unsigned int avg_vblocks;
++	unsigned int wanted_reserved_segments;
++	block_t avail_user_block_count;
++
++	if (!F2FS_IO_ALIGNED(sbi))
++		return 0;
++
++	/* average valid block count in section in worst case */
++	avg_vblocks = sec_blks / F2FS_IO_SIZE(sbi);
++
++	/*
++	 * we need enough free space when migrating one section in worst case
++	 */
++	wanted_reserved_segments = (F2FS_IO_SIZE(sbi) / avg_vblocks) *
++						reserved_segments(sbi);
++	wanted_reserved_segments -= reserved_segments(sbi);
++
++	avail_user_block_count = sbi->user_block_count -
++				sbi->current_reserved_blocks -
++				F2FS_OPTION(sbi).root_reserved_blocks;
++
++	if (wanted_reserved_segments * sbi->blocks_per_seg >
++					avail_user_block_count) {
++		f2fs_err(sbi, "IO align feature can't grab additional reserved segment: %u, available segments: %u",
++			wanted_reserved_segments,
++			avail_user_block_count >> sbi->log_blocks_per_seg);
++		return -ENOSPC;
++	}
++
++	SM_I(sbi)->additional_reserved_segments = wanted_reserved_segments;
++
++	f2fs_info(sbi, "IO align feature needs additional reserved segment: %u",
++			 wanted_reserved_segments);
++
++	return 0;
++}
++
+ static inline void adjust_unusable_cap_perc(struct f2fs_sb_info *sbi)
+ {
+ 	if (!F2FS_OPTION(sbi).unusable_cap_perc)
+@@ -4148,6 +4188,10 @@ try_onemore:
+ 		goto free_nm;
  	}
  
--	dev_set_drvdata(&chip->dev, priv);
--
- 	if (is_bsw()) {
- 		priv->ilb_base_addr = ioremap(INTEL_LEGACY_BLK_BASE_ADDR,
- 					ILB_REMAP_SIZE);
++	err = adjust_reserved_segment(sbi);
++	if (err)
++		goto free_nm;
++
+ 	/* For write statistics */
+ 	sbi->sectors_written_start = f2fs_get_sectors_written(sbi);
+ 
+--- a/fs/f2fs/sysfs.c
++++ b/fs/f2fs/sysfs.c
+@@ -415,7 +415,9 @@ out:
+ 	if (a->struct_type == RESERVED_BLOCKS) {
+ 		spin_lock(&sbi->stat_lock);
+ 		if (t > (unsigned long)(sbi->user_block_count -
+-				F2FS_OPTION(sbi).root_reserved_blocks)) {
++				F2FS_OPTION(sbi).root_reserved_blocks -
++				sbi->blocks_per_seg *
++				SM_I(sbi)->additional_reserved_segments)) {
+ 			spin_unlock(&sbi->stat_lock);
+ 			return -EINVAL;
+ 		}
 
 
