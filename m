@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C314C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:07:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB83FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:08:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1446330AbiAXVHx (ORCPT
+        id S1446343AbiAXVIB (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:07:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42276 "EHLO
+        Mon, 24 Jan 2022 16:08:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42254 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390196AbiAXUpD (ORCPT
+        with ESMTP id S1390169AbiAXUpD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:45:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4C64C061395;
-        Mon, 24 Jan 2022 11:55:29 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C16CC0424C9;
+        Mon, 24 Jan 2022 11:54:23 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B972B8124F;
-        Mon, 24 Jan 2022 19:55:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67528C340E5;
-        Mon, 24 Jan 2022 19:55:27 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 243316090A;
+        Mon, 24 Jan 2022 19:54:23 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 092B1C340E5;
+        Mon, 24 Jan 2022 19:54:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054128;
-        bh=th4VKO5Ug+nK9IqtFEODJ6OwStYjXRjMQK8H8lx4WDQ=;
+        s=korg; t=1643054062;
+        bh=3/xGQscgkM8CssT8T+AIB1T7dP+Y+M/pd+KZ9tVxfUw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=J/t/eJ7c0uoezgJvaT6LXdo2LzEy/IX410IzigQMUGZ4arXjCfZMIomzefj6oMNEt
-         x3PJa1bFLQbIGVL6YqyPBZOGsfiNTG7iHrvtdOfqnXaicp7J07uEEbrhCOFyKMKS8J
-         LRw4MSD59m84uPEV0jPJceIH1nxgmp6AZXWWHOo8=
+        b=VtHgAQgjvZdj2zGvRzb3yyknKnTDVIfVzVoj/RzouHwm1w6SblXUDiEPWOhzA1a0u
+         O4Xh8XN4xkVr2YHJ8uACwDWs0jQeBYSYKNDmJEQe3+eqp2kfEHZFVe0btGpdNdi58Z
+         gKQgZLwUORbxjuhK4nhWQlVIZ43mQN5dHG1Hse0Y=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Erhard Furtner <erhard_f@mailbox.org>,
-        Christophe Leroy <christophe.leroy@csgroup.eu>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Thomas Gleixner <tglx@linutronix.de>,
+        Juergen Gross <jgross@suse.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 254/563] powerpc/32s: Fix shift-out-of-bounds in KASAN init
-Date:   Mon, 24 Jan 2022 19:40:19 +0100
-Message-Id: <20220124184033.209947453@linuxfoundation.org>
+Subject: [PATCH 5.10 266/563] PCI/MSI: Fix pci_irq_vector()/pci_irq_get_affinity()
+Date:   Mon, 24 Jan 2022 19:40:31 +0100
+Message-Id: <20220124184033.640624882@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -51,54 +52,95 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Christophe Leroy <christophe.leroy@csgroup.eu>
+From: Thomas Gleixner <tglx@linutronix.de>
 
-[ Upstream commit af11dee4361b3519981fa04d014873f9d9edd6ac ]
+[ Upstream commit 29bbc35e29d9b6347780dcacde2deb4b39344167 ]
 
-================================================================================
-UBSAN: shift-out-of-bounds in arch/powerpc/mm/kasan/book3s_32.c:22:23
-shift exponent -1 is negative
-CPU: 0 PID: 0 Comm: swapper Not tainted 5.15.5-gentoo-PowerMacG4 #9
-Call Trace:
-[c214be60] [c0ba0048] dump_stack_lvl+0x80/0xb0 (unreliable)
-[c214be80] [c0b99288] ubsan_epilogue+0x10/0x5c
-[c214be90] [c0b98fe0] __ubsan_handle_shift_out_of_bounds+0x94/0x138
-[c214bf00] [c1c0f010] kasan_init_region+0xd8/0x26c
-[c214bf30] [c1c0ed84] kasan_init+0xc0/0x198
-[c214bf70] [c1c08024] setup_arch+0x18/0x54c
-[c214bfc0] [c1c037f0] start_kernel+0x90/0x33c
-[c214bff0] [00003610] 0x3610
-================================================================================
+pci_irq_vector() and pci_irq_get_affinity() use the list position to find the
+MSI-X descriptor at a given index. That's correct for the normal case where
+the entry number is the same as the list position.
 
-This happens when the directly mapped memory is a power of 2.
+But it's wrong for cases where MSI-X was allocated with an entries array
+describing sparse entry numbers into the hardware message descriptor
+table. That's inconsistent at best.
 
-Fix it by checking the shift and set the result to 0 when shift is -1
+Make it always check the entry number because that's what the zero base
+index really means. This change won't break existing users which use a
+sparse entries array for allocation because these users retrieve the Linux
+interrupt number from the entries array after allocation and none of them
+uses pci_irq_vector() or pci_irq_get_affinity().
 
-Fixes: 7974c4732642 ("powerpc/32s: Implement dedicated kasan_init_region()")
-Reported-by: Erhard Furtner <erhard_f@mailbox.org>
-Signed-off-by: Christophe Leroy <christophe.leroy@csgroup.eu>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://bugzilla.kernel.org/show_bug.cgi?id=215169
-Link: https://lore.kernel.org/r/15cbc3439d4ad988b225e2119ec99502a5cc6ad3.1638261744.git.christophe.leroy@csgroup.eu
+Fixes: aff171641d18 ("PCI: Provide sensible IRQ vector alloc/free routines")
+Signed-off-by: Thomas Gleixner <tglx@linutronix.de>
+Tested-by: Juergen Gross <jgross@suse.com>
+Reviewed-by: Jason Gunthorpe <jgg@nvidia.com>
+Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+Link: https://lore.kernel.org/r/20211206210223.929792157@linutronix.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/powerpc/mm/kasan/book3s_32.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/pci/msi.c | 26 ++++++++++++++++++--------
+ 1 file changed, 18 insertions(+), 8 deletions(-)
 
-diff --git a/arch/powerpc/mm/kasan/book3s_32.c b/arch/powerpc/mm/kasan/book3s_32.c
-index 202bd260a0095..35b287b0a8da4 100644
---- a/arch/powerpc/mm/kasan/book3s_32.c
-+++ b/arch/powerpc/mm/kasan/book3s_32.c
-@@ -19,7 +19,8 @@ int __init kasan_init_region(void *start, size_t size)
- 	block = memblock_alloc(k_size, k_size_base);
+diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+index 57314fec2261b..3da69b26e6743 100644
+--- a/drivers/pci/msi.c
++++ b/drivers/pci/msi.c
+@@ -1291,19 +1291,24 @@ EXPORT_SYMBOL(pci_free_irq_vectors);
  
- 	if (block && k_size_base >= SZ_128K && k_start == ALIGN(k_start, k_size_base)) {
--		int k_size_more = 1 << (ffs(k_size - k_size_base) - 1);
-+		int shift = ffs(k_size - k_size_base);
-+		int k_size_more = shift ? 1 << (shift - 1) : 0;
+ /**
+  * pci_irq_vector - return Linux IRQ number of a device vector
+- * @dev: PCI device to operate on
+- * @nr: device-relative interrupt vector index (0-based).
++ * @dev:	PCI device to operate on
++ * @nr:		Interrupt vector index (0-based)
++ *
++ * @nr has the following meanings depending on the interrupt mode:
++ *   MSI-X:	The index in the MSI-X vector table
++ *   MSI:	The index of the enabled MSI vectors
++ *   INTx:	Must be 0
++ *
++ * Return: The Linux interrupt number or -EINVAl if @nr is out of range.
+  */
+ int pci_irq_vector(struct pci_dev *dev, unsigned int nr)
+ {
+ 	if (dev->msix_enabled) {
+ 		struct msi_desc *entry;
+-		int i = 0;
  
- 		setbat(-1, k_start, __pa(block), k_size_base, PAGE_KERNEL);
- 		if (k_size_more >= SZ_128K)
+ 		for_each_pci_msi_entry(entry, dev) {
+-			if (i == nr)
++			if (entry->msi_attrib.entry_nr == nr)
+ 				return entry->irq;
+-			i++;
+ 		}
+ 		WARN_ON_ONCE(1);
+ 		return -EINVAL;
+@@ -1327,17 +1332,22 @@ EXPORT_SYMBOL(pci_irq_vector);
+  * pci_irq_get_affinity - return the affinity of a particular MSI vector
+  * @dev:	PCI device to operate on
+  * @nr:		device-relative interrupt vector index (0-based).
++ *
++ * @nr has the following meanings depending on the interrupt mode:
++ *   MSI-X:	The index in the MSI-X vector table
++ *   MSI:	The index of the enabled MSI vectors
++ *   INTx:	Must be 0
++ *
++ * Return: A cpumask pointer or NULL if @nr is out of range
+  */
+ const struct cpumask *pci_irq_get_affinity(struct pci_dev *dev, int nr)
+ {
+ 	if (dev->msix_enabled) {
+ 		struct msi_desc *entry;
+-		int i = 0;
+ 
+ 		for_each_pci_msi_entry(entry, dev) {
+-			if (i == nr)
++			if (entry->msi_attrib.entry_nr == nr)
+ 				return &entry->affinity->mask;
+-			i++;
+ 		}
+ 		WARN_ON_ONCE(1);
+ 		return NULL;
 -- 
 2.34.1
 
