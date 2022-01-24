@@ -2,43 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73409C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:53:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23812C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:53:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343531AbiAXSxh (ORCPT
+        id S1343861AbiAXSxk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:53:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42634 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343599AbiAXSwH (ORCPT
+        Mon, 24 Jan 2022 13:53:40 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51220 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343823AbiAXSwJ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:52:07 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D87C061747;
-        Mon, 24 Jan 2022 10:51:54 -0800 (PST)
+        Mon, 24 Jan 2022 13:52:09 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 90C2B614F5;
-        Mon, 24 Jan 2022 18:51:54 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C720C340E5;
-        Mon, 24 Jan 2022 18:51:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BF5E0B81235;
+        Mon, 24 Jan 2022 18:52:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DD2F7C340E8;
+        Mon, 24 Jan 2022 18:52:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050314;
-        bh=PXQvNXSynGedMbXNskrLymAziKLhVRUN27jmdLGmQu0=;
+        s=korg; t=1643050326;
+        bh=mOa3viRnCiyugN9lsjwtjitWUVuvU+gNzpDpjLjWNzE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kYylGHdHDm2f9+8UnpWPypGsTqYQjLqikenBhiVkmJ++1Fo4GLfAXL1UCowM8n6QU
-         KUurWZWXax5Du9g1rzftJl0vSSOARFGnQ1xK/nCcVuCjrtq46CAurqaI1roeTXE4K/
-         BUNDKFp/mTCNlLyWZ5lTY1CzBV/PpoPwWqtg1uaQ=
+        b=at53GGcWgI0wNYCSpoRMg5z+51aTIAv1moiu4nAxIA4UD00rFu7bIVv5xnybDkfGA
+         zHJcouBhWUIuGC3x1UVHwMw/bqOAeReTLJ++kQ3Rh8he3MYsnpvV+qmAJc6mHrVD5Q
+         33Y/rQK9yK1NIS8fk70f7Wx63865+Z38Pvz8cjLk=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Mark Brown <broonie@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 051/114] dmaengine: pxa/mmp: stop referencing config->slave_id
-Date:   Mon, 24 Jan 2022 19:42:26 +0100
-Message-Id: <20220124183928.675412763@linuxfoundation.org>
+        stable@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
+        Lukas Wunner <lukas@wunner.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 4.4 081/114] serial: pl010: Drop CR register reset on set_termios
+Date:   Mon, 24 Jan 2022 19:42:56 +0100
+Message-Id: <20220124183929.610093670@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -50,61 +46,56 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Lukas Wunner <lukas@wunner.de>
 
-[ Upstream commit 134c37fa250a87a7e77c80a7c59ae16c462e46e0 ]
+[ Upstream commit 08a0c6dff91c965e39905cf200d22db989203ccb ]
 
-The last driver referencing the slave_id on Marvell PXA and MMP platforms
-was the SPI driver, but this stopped doing so a long time ago, so the
-TODO from the earlier patch can no be removed.
+pl010_set_termios() briefly resets the CR register to zero.
 
-Fixes: b729bf34535e ("spi/pxa2xx: Don't use slave_id of dma_slave_config")
-Fixes: 13b3006b8ebd ("dma: mmp_pdma: add filter function")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20211122222203.4103644-7-arnd@kernel.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Where does this register write come from?
+
+The PL010 driver's IRQ handler ambauart_int() originally modified the CR
+register without holding the port spinlock.  ambauart_set_termios() also
+modified that register.  To prevent concurrent read-modify-writes by the
+IRQ handler and to prevent transmission while changing baudrate,
+ambauart_set_termios() had to disable interrupts.  That is achieved by
+writing zero to the CR register.
+
+However in 2004 the PL010 driver was amended to acquire the port
+spinlock in the IRQ handler, obviating the need to disable interrupts in
+->set_termios():
+https://git.kernel.org/history/history/c/157c0342e591
+
+That rendered the CR register write obsolete.  Drop it.
+
+Cc: Russell King <rmk+kernel@armlinux.org.uk>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/fcaff16e5b1abb4cc3da5a2879ac13f278b99ed0.1641128728.git.lukas@wunner.de
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/mmp_pdma.c | 6 ------
- drivers/dma/pxa_dma.c  | 7 -------
- 2 files changed, 13 deletions(-)
+ drivers/tty/serial/amba-pl010.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/dma/mmp_pdma.c b/drivers/dma/mmp_pdma.c
-index e39457f13d4dd..548600ce6cc87 100644
---- a/drivers/dma/mmp_pdma.c
-+++ b/drivers/dma/mmp_pdma.c
-@@ -723,12 +723,6 @@ static int mmp_pdma_config(struct dma_chan *dchan,
+diff --git a/drivers/tty/serial/amba-pl010.c b/drivers/tty/serial/amba-pl010.c
+index 5d41d5b92619a..7f4ba92739663 100644
+--- a/drivers/tty/serial/amba-pl010.c
++++ b/drivers/tty/serial/amba-pl010.c
+@@ -465,14 +465,11 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
+ 	if ((termios->c_cflag & CREAD) == 0)
+ 		uap->port.ignore_status_mask |= UART_DUMMY_RSR_RX;
  
- 	chan->dir = cfg->direction;
- 	chan->dev_addr = addr;
--	/* FIXME: drivers should be ported over to use the filter
--	 * function. Once that's done, the following two lines can
--	 * be removed.
--	 */
--	if (cfg->slave_id)
--		chan->drcmr = cfg->slave_id;
+-	/* first, disable everything */
+ 	old_cr = readb(uap->port.membase + UART010_CR) & ~UART010_CR_MSIE;
  
- 	return 0;
- }
-diff --git a/drivers/dma/pxa_dma.c b/drivers/dma/pxa_dma.c
-index 4251e9ac0373c..ff2e28137a7b1 100644
---- a/drivers/dma/pxa_dma.c
-+++ b/drivers/dma/pxa_dma.c
-@@ -959,13 +959,6 @@ static void pxad_get_config(struct pxad_chan *chan,
- 		*dcmd |= PXA_DCMD_BURST16;
- 	else if (maxburst == 32)
- 		*dcmd |= PXA_DCMD_BURST32;
+ 	if (UART_ENABLE_MS(port, termios->c_cflag))
+ 		old_cr |= UART010_CR_MSIE;
+ 
+-	writel(0, uap->port.membase + UART010_CR);
 -
--	/* FIXME: drivers should be ported over to use the filter
--	 * function. Once that's done, the following two lines can
--	 * be removed.
--	 */
--	if (chan->cfg.slave_id)
--		chan->drcmr = chan->cfg.slave_id;
- }
- 
- static struct dma_async_tx_descriptor *
+ 	/* Set baud rate */
+ 	quot -= 1;
+ 	writel((quot & 0xf00) >> 8, uap->port.membase + UART010_LCRM);
 -- 
 2.34.1
 
