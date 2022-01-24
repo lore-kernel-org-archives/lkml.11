@@ -2,41 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 292BBC4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:55:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 295D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:57:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1575384AbiAXVve (ORCPT
+        id S1575417AbiAXVvj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:51:34 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:36490 "EHLO
+        Mon, 24 Jan 2022 16:51:39 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:35534 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1449749AbiAXVQv (ORCPT
+        with ESMTP id S1449879AbiAXVRQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:16:51 -0500
+        Mon, 24 Jan 2022 16:17:16 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3F56EB8123A;
-        Mon, 24 Jan 2022 21:16:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5F0B8C340E9;
-        Mon, 24 Jan 2022 21:16:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 77314B81142;
+        Mon, 24 Jan 2022 21:17:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A3F77C340E5;
+        Mon, 24 Jan 2022 21:17:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059008;
-        bh=8RebVPnGQbTuBjYXPFFVIGJcwMDv/Hu35mDAL/+P9Cs=;
+        s=korg; t=1643059030;
+        bh=Rx5RxhbS8kMvSzbQfANI2qKyuJIM3o5KzFcelYuNImg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=k51OYnIdj5i2lWndyBO/y/RNaWkzTXD+5fPhyV2mgsJsRcN6AXjou+hXemXhy8/6g
-         HWbsMCFF7clz/75szAZ/xvXJTNgF3uyGxb+v5VtPxdS5L4WRdu8qA4tUZ3faUlhcwG
-         wktQRjkqNHFpEmONhxDxuI5stuqV+2jNzjARIItY=
+        b=MydZCj4gYiqyFxf0SfUAxph4H9lDWY2N/IGYJ8UiS/S8IF02tlcOBXQnua07mapr7
+         CQKPv49FcwVcmfDYEgGl40cCZlYrLuo992FKitQdHlpgRjj5cq61TY+APZcvI50Yw/
+         pu6rDf5IJrVsP6E+IQXf8teEhHAOpsOnfKly4ujE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Rob Landley <rob@landley.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Stafford Horne <shorne@gmail.com>,
+        stable@vger.kernel.org, Nathan Chancellor <nathan@kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0473/1039] openrisc: Add clone3 ABI wrapper
-Date:   Mon, 24 Jan 2022 19:37:42 +0100
-Message-Id: <20220124184141.172946221@linuxfoundation.org>
+Subject: [PATCH 5.16 0439/1039] iwlwifi: mvm: Use div_s64 instead of do_div in iwl_mvm_ftm_rtt_smoothing()
+Date:   Mon, 24 Jan 2022 19:37:08 +0100
+Message-Id: <20220124184140.050838206@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,61 +47,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Stafford Horne <shorne@gmail.com>
+From: Nathan Chancellor <nathan@kernel.org>
 
-[ Upstream commit 433fe39f674d58bc7a3e8254a5d2ffc290b7e04e ]
+[ Upstream commit 4ccdcc8ffd955490feec05380223db6a48961eb5 ]
 
-Like fork and clone the clone3 syscall needs a wrapper to save callee
-saved registers, which is required by the OpenRISC ABI.  This came up
-after auditing code following a discussion with Rob Landley and Arnd
-Bergmann [0].
+When building ARCH=arm allmodconfig:
 
-Tested with the clone3 kselftests and there were no issues.
+drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c: In function ‘iwl_mvm_ftm_rtt_smoothing’:
+./include/asm-generic/div64.h:222:35: error: comparison of distinct pointer types lacks a cast [-Werror]
+  222 |         (void)(((typeof((n)) *)0) == ((uint64_t *)0));  \
+      |                                   ^~
+drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c:1070:9: note: in expansion of macro ‘do_div’
+ 1070 |         do_div(rtt_avg, 100);
+      |         ^~~~~~
 
-[0] https://lore.kernel.org/all/41206fc7-f8ce-98aa-3718-ba3e1431e320@landley.net/T/#m9c0cdb2703813b9df4da04cf6b30de1f1aa89944
+do_div() has to be used with an unsigned 64-bit integer dividend but
+rtt_avg is a signed 64-bit integer.
 
-Fixes: 07e83dfbe16c ("openrisc: Enable the clone3 syscall")
-Cc: Rob Landley <rob@landley.net>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Signed-off-by: Stafford Horne <shorne@gmail.com>
+div_s64() expects a signed 64-bit integer dividend and signed 32-bit
+divisor, which fits this scenario, so use that function here to fix the
+warning.
+
+Fixes: 8b0f92549f2c ("iwlwifi: mvm: fix 32-bit build in FTM")
+Signed-off-by: Nathan Chancellor <nathan@kernel.org>
+Link: https://lore.kernel.org/r/20211227191757.2354329-1-nathan@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/openrisc/include/asm/syscalls.h | 2 ++
- arch/openrisc/kernel/entry.S         | 5 +++++
- 2 files changed, 7 insertions(+)
+ drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/arch/openrisc/include/asm/syscalls.h b/arch/openrisc/include/asm/syscalls.h
-index 3a7eeae6f56a8..aa1c7e98722e3 100644
---- a/arch/openrisc/include/asm/syscalls.h
-+++ b/arch/openrisc/include/asm/syscalls.h
-@@ -22,9 +22,11 @@ asmlinkage long sys_or1k_atomic(unsigned long type, unsigned long *v1,
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
+index 9449d1af3c11a..628aee634b2ad 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/ftm-initiator.c
+@@ -1066,8 +1066,7 @@ static void iwl_mvm_ftm_rtt_smoothing(struct iwl_mvm *mvm,
+ 	overshoot = IWL_MVM_FTM_INITIATOR_SMOOTH_OVERSHOOT;
+ 	alpha = IWL_MVM_FTM_INITIATOR_SMOOTH_ALPHA;
  
- asmlinkage long __sys_clone(unsigned long clone_flags, unsigned long newsp,
- 			void __user *parent_tid, void __user *child_tid, int tls);
-+asmlinkage long __sys_clone3(struct clone_args __user *uargs, size_t size);
- asmlinkage long __sys_fork(void);
+-	rtt_avg = alpha * rtt + (100 - alpha) * resp->rtt_avg;
+-	do_div(rtt_avg, 100);
++	rtt_avg = div_s64(alpha * rtt + (100 - alpha) * resp->rtt_avg, 100);
  
- #define sys_clone __sys_clone
-+#define sys_clone3 __sys_clone3
- #define sys_fork __sys_fork
- 
- #endif /* __ASM_OPENRISC_SYSCALLS_H */
-diff --git a/arch/openrisc/kernel/entry.S b/arch/openrisc/kernel/entry.S
-index 59c6d3aa7081e..dc5b45e9e72b5 100644
---- a/arch/openrisc/kernel/entry.S
-+++ b/arch/openrisc/kernel/entry.S
-@@ -1170,6 +1170,11 @@ ENTRY(__sys_clone)
- 	l.j	_fork_save_extra_regs_and_call
- 	 l.nop
- 
-+ENTRY(__sys_clone3)
-+	l.movhi	r29,hi(sys_clone3)
-+	l.j	_fork_save_extra_regs_and_call
-+	 l.ori	r29,r29,lo(sys_clone3)
-+
- ENTRY(__sys_fork)
- 	l.movhi	r29,hi(sys_fork)
- 	l.ori	r29,r29,lo(sys_fork)
+ 	IWL_DEBUG_INFO(mvm,
+ 		       "%pM: prev rtt_avg=%lld, new rtt_avg=%lld, rtt=%lld\n",
 -- 
 2.34.1
 
