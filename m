@@ -2,45 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D8EFC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:56:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82AA5C433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:56:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236776AbiAXS4a (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:56:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43970 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343937AbiAXSyT (ORCPT
+        id S1343947AbiAXS4f (ORCPT
+        <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 13:56:35 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:50600 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344315AbiAXSyU (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:54:19 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F25FC06173D;
-        Mon, 24 Jan 2022 10:53:21 -0800 (PST)
+        Mon, 24 Jan 2022 13:54:20 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 57DF0B8121A;
-        Mon, 24 Jan 2022 18:53:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A2BEC340E5;
-        Mon, 24 Jan 2022 18:53:18 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1D53F614E5;
+        Mon, 24 Jan 2022 18:54:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E2427C340E5;
+        Mon, 24 Jan 2022 18:54:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050399;
-        bh=32uOvvkf5PwtZBQ1zKQge2AigcWs01gd5KpLT3qG+qQ=;
+        s=korg; t=1643050459;
+        bh=T8JLmq3cdGe2ZkGZz6n3ygpv8WuAWbfj3Wcv7M1rBR4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IS8KnmZSLOw4K1E+DChIXdwIEvnvWafUg94qP7zsXApeLqfOE7rLUmPOgYPpdb0r3
-         E5FgSFFwSIhZWTjDaX3X0PTD+wnz963TIYntQoWHgNaMC5TC3RjFQ0JxfNxLkORyV/
-         fgFoxI4D5JbmOoaRiT741FZmiLajC6SOLQ/ZYZDw=
+        b=XbkbAmj0LSv6kvkCelSekiTxOi8EI6z3SydD/IJiFuUoRGY++O5HBQfUUzXAMhb01
+         p3yim28LI1BSmbbzc0Bj1NJuy5PiUMZ+7BA6ZtZurzm0fnopNqKbdRWQhsoLu8TQKi
+         sA9XCVnpLsnipXB5Y+7zrmqZtl2mQ5O9g9M5XRhA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 4.4 105/114] net: axienet: Wait for PhyRstCmplt after core reset
-Date:   Mon, 24 Jan 2022 19:43:20 +0100
-Message-Id: <20220124183930.351490754@linuxfoundation.org>
+        stable@vger.kernel.org, Jonathan McDowell <noodles@earth.li>,
+        Alan Stern <stern@rowland.harvard.edu>
+Subject: [PATCH 4.9 002/157] USB: core: Fix bug in resuming hubs handling of wakeup requests
+Date:   Mon, 24 Jan 2022 19:41:32 +0100
+Message-Id: <20220124183932.864573637@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
-References: <20220124183927.095545464@linuxfoundation.org>
+In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
+References: <20220124183932.787526760@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,51 +46,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Hancock <robert.hancock@calian.com>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-commit b400c2f4f4c53c86594dd57098970d97d488bfde upstream.
+commit 0f663729bb4afc92a9986b66131ebd5b8a9254d1 upstream.
 
-When resetting the device, wait for the PhyRstCmplt bit to be set
-in the interrupt status register before continuing initialization, to
-ensure that the core is actually ready. When using an external PHY, this
-also ensures we do not start trying to access the PHY while it is still
-in reset. The PHY reset is initiated by the core reset which is
-triggered just above, but remains asserted for 5ms after the core is
-reset according to the documentation.
+Bugzilla #213839 reports a 7-port hub that doesn't work properly when
+devices are plugged into some of the ports; the kernel goes into an
+unending disconnect/reinitialize loop as shown in the bug report.
 
-The MgtRdy bit could also be waited for, but unfortunately when using
-7-series devices, the bit does not appear to work as documented (it
-seems to behave as some sort of link state indication and not just an
-indication the transceiver is ready) so it can't really be relied on for
-this purpose.
+This "7-port hub" comprises two four-port hubs with one plugged into
+the other; the failures occur when a device is plugged into one of the
+downstream hub's ports.  (These hubs have other problems too.  For
+example, they bill themselves as USB-2.0 compliant but they only run
+at full speed.)
 
-Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
-Signed-off-by: Robert Hancock <robert.hancock@calian.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+It turns out that the failures are caused by bugs in both the kernel
+and the hub.  The hub's bug is that it reports a different
+bmAttributes value in its configuration descriptor following a remote
+wakeup (0xe0 before, 0xc0 after -- the wakeup-support bit has
+changed).
+
+The kernel's bug is inside the hub driver's resume handler.  When
+hub_activate() sees that one of the hub's downstream ports got a
+wakeup request from a child device, it notes this fact by setting the
+corresponding bit in the hub->change_bits variable.  But this variable
+is meant for connection changes, not wakeup events; setting it causes
+the driver to believe the downstream port has been disconnected and
+then connected again (in addition to having received a wakeup
+request).
+
+Because of this, the hub driver then tries to check whether the device
+currently plugged into the downstream port is the same as the device
+that had been attached there before.  Normally this check succeeds and
+wakeup handling continues with no harm done (which is why the bug
+remained undetected until now).  But with these dodgy hubs, the check
+fails because the config descriptor has changed.  This causes the hub
+driver to reinitialize the child device, leading to the
+disconnect/reinitialize loop described in the bug report.
+
+The proper way to note reception of a downstream wakeup request is
+to set a bit in the hub->event_bits variable instead of
+hub->change_bits.  That way the hub driver will realize that something
+has happened to the port but will not think the port and child device
+have been disconnected.  This patch makes that change.
+
+Cc: <stable@vger.kernel.org>
+Tested-by: Jonathan McDowell <noodles@earth.li>
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Link: https://lore.kernel.org/r/YdCw7nSfWYPKWQoD@rowland.harvard.edu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/xilinx/xilinx_axienet_main.c |   10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/usb/core/hub.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-+++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
-@@ -278,6 +278,16 @@ static int axienet_dma_bd_init(struct ne
- 	axienet_dma_out32(lp, XAXIDMA_TX_CR_OFFSET,
- 			  cr | XAXIDMA_CR_RUNSTOP_MASK);
+--- a/drivers/usb/core/hub.c
++++ b/drivers/usb/core/hub.c
+@@ -1185,7 +1185,7 @@ static void hub_activate(struct usb_hub
+ 			 */
+ 			if (portchange || (hub_is_superspeed(hub->hdev) &&
+ 						port_resumed))
+-				set_bit(port1, hub->change_bits);
++				set_bit(port1, hub->event_bits);
  
-+	/* Wait for PhyRstCmplt bit to be set, indicating the PHY reset has finished */
-+	ret = read_poll_timeout(axienet_ior, value,
-+				value & XAE_INT_PHYRSTCMPLT_MASK,
-+				DELAY_OF_ONE_MILLISEC, 50000, false, lp,
-+				XAE_IS_OFFSET);
-+	if (ret) {
-+		dev_err(lp->dev, "%s: timeout waiting for PhyRstCmplt\n", __func__);
-+		return ret;
-+	}
-+
- 	return 0;
- out:
- 	axienet_dma_bd_release(ndev);
+ 		} else if (udev->persist_enabled) {
+ #ifdef CONFIG_PM
 
 
