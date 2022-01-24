@@ -2,46 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 773E7C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6FF1C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:18:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1846976AbiAXXRe (ORCPT
+        id S1356316AbiAXXRk (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:17:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36226 "EHLO
+        Mon, 24 Jan 2022 18:17:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1582576AbiAXWPa (ORCPT
+        with ESMTP id S1585959AbiAXWZZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:15:30 -0500
+        Mon, 24 Jan 2022 17:25:25 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AF3BC0E263D;
-        Mon, 24 Jan 2022 12:44:45 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DCD6C0418BE;
+        Mon, 24 Jan 2022 12:54:05 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2B99760B18;
-        Mon, 24 Jan 2022 20:44:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 00C75C340E5;
-        Mon, 24 Jan 2022 20:44:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 0C0C6612CA;
+        Mon, 24 Jan 2022 20:54:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D9537C340E5;
+        Mon, 24 Jan 2022 20:54:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057084;
-        bh=87O7PDaKF+1O4WQmPrJhi9c02SxXIvaMX1rfOhJh3eQ=;
+        s=korg; t=1643057644;
+        bh=NhTprGcyprwLpWfIqENv8mq2r3cv0BORHm4H5znzBLM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GwNTE19dtuOwkiEu4vmubu/UqjCqOIipgnwJqa8OYAuPvxKo/Z1/MUm6s4oAZhGG2
-         XqJcORu5x3UdKpTeOXktjw6PdoSxuChfvd2Gl9fOpkEMztCiKPVWNHqjwR1Ta3GqEi
-         67iZMEIg+IZeizuoAkLguThwcsl33PuIVPUVS2tM=
+        b=LrIh+S2h57PcTgFzqTSJXXfd+lNk6jEfwCXjpccbxyklSyKD4ktKqRAggx8sLK3Gc
+         n99SPVths0vyWhXN6LCQkxfP/VuD+wg997U9lFpZG72j5hwWuh4K3fzG8MVeV2yESm
+         pooZwyb+rmAf6xXMT1+YznnoTs8ARejbgSY8CFVE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Justin Tee <justin.tee@broadcom.com>,
-        James Smart <jsmart2021@gmail.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>
-Subject: [PATCH 5.15 697/846] scsi: lpfc: Fix lpfc_force_rscn ndlp kref imbalance
-Date:   Mon, 24 Jan 2022 19:43:34 +0100
-Message-Id: <20220124184125.099262815@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Ammar Faizi <ammar.faizi@students.amikom.ac.id>,
+        Willy Tarreau <w@1wt.eu>,
+        "Paul E. McKenney" <paulmck@kernel.org>
+Subject: [PATCH 5.16 0032/1039] tools/nolibc: i386: fix initial stack alignment
+Date:   Mon, 24 Jan 2022 19:30:21 +0100
+Message-Id: <20220124184126.214759490@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,45 +51,51 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: James Smart <jsmart2021@gmail.com>
+From: Willy Tarreau <w@1wt.eu>
 
-commit 7576d48c64f36f6fea9df2882f710a474fa35f40 upstream.
+commit ebbe0d8a449d183fa43b42d84fcb248e25303985 upstream.
 
-Issuing lpfc_force_rscn twice results in an ndlp kref use-after-free call
-trace.
+After re-checking in the spec and comparing stack offsets with glibc,
+The last pushed argument must be 16-byte aligned (i.e. aligned before the
+call) so that in the callee esp+4 is multiple of 16, so the principle is
+the 32-bit equivalent to what Ammar fixed for x86_64. It's possible that
+32-bit code using SSE2 or MMX could have been affected. In addition the
+frame pointer ought to be zero at the deepest level.
 
-A prior patch reworked the get/put handling by ensuring nlp_get was done
-before WQE submission and a put was done in the completion path.
-Unfortunately, the issue_els_rscn path had a piece of legacy code that did
-a nlp_put, causing an imbalance on the ref counts.
-
-Fixed by removing the unnecessary legacy code snippet.
-
-Link: https://lore.kernel.org/r/20211204002644.116455-4-jsmart2021@gmail.com
-Fixes: 4430f7fd09ec ("scsi: lpfc: Rework locations of ndlp reference taking")
-Cc: <stable@vger.kernel.org> # v5.11+
-Co-developed-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: Justin Tee <justin.tee@broadcom.com>
-Signed-off-by: James Smart <jsmart2021@gmail.com>
-Signed-off-by: Martin K. Petersen <martin.petersen@oracle.com>
+Link: https://gitlab.com/x86-psABIs/i386-ABI/-/wikis/Intel386-psABI
+Cc: Ammar Faizi <ammar.faizi@students.amikom.ac.id>
+Cc: stable@vger.kernel.org
+Signed-off-by: Willy Tarreau <w@1wt.eu>
+Signed-off-by: Paul E. McKenney <paulmck@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/scsi/lpfc/lpfc_els.c |    5 -----
- 1 file changed, 5 deletions(-)
+ tools/include/nolibc/nolibc.h |   10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
---- a/drivers/scsi/lpfc/lpfc_els.c
-+++ b/drivers/scsi/lpfc/lpfc_els.c
-@@ -3531,11 +3531,6 @@ lpfc_issue_els_rscn(struct lpfc_vport *v
- 		return 1;
- 	}
+--- a/tools/include/nolibc/nolibc.h
++++ b/tools/include/nolibc/nolibc.h
+@@ -583,13 +583,21 @@ struct sys_stat_struct {
+ })
  
--	/* This will cause the callback-function lpfc_cmpl_els_cmd to
--	 * trigger the release of node.
--	 */
--	if (!(vport->fc_flag & FC_PT2PT))
--		lpfc_nlp_put(ndlp);
- 	return 0;
- }
- 
+ /* startup code */
++/*
++ * i386 System V ABI mandates:
++ * 1) last pushed argument must be 16-byte aligned.
++ * 2) The deepest stack frame should be set to zero
++ *
++ */
+ asm(".section .text\n"
+     ".global _start\n"
+     "_start:\n"
+     "pop %eax\n"                // argc   (first arg, %eax)
+     "mov %esp, %ebx\n"          // argv[] (second arg, %ebx)
+     "lea 4(%ebx,%eax,4),%ecx\n" // then a NULL then envp (third arg, %ecx)
+-    "and $-16, %esp\n"          // x86 ABI : esp must be 16-byte aligned when
++    "xor %ebp, %ebp\n"          // zero the stack frame
++    "and $-16, %esp\n"          // x86 ABI : esp must be 16-byte aligned before
++    "sub $4, %esp\n"            // the call instruction (args are aligned)
+     "push %ecx\n"               // push all registers on the stack so that we
+     "push %ebx\n"               // support both regparm and plain stack modes
+     "push %eax\n"
 
 
