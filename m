@@ -2,46 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D1A0C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEAC0C433FE
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:54:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1839579AbiAXWvX (ORCPT
+        id S1839657AbiAXWvh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:51:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458135AbiAXVmr (ORCPT
+        Mon, 24 Jan 2022 17:51:37 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:53258 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378844AbiAXVoD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:42:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB8C2C04D602;
-        Mon, 24 Jan 2022 11:28:04 -0800 (PST)
+        Mon, 24 Jan 2022 16:44:03 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 73A3CB8121B;
-        Mon, 24 Jan 2022 19:28:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A0E30C340E5;
-        Mon, 24 Jan 2022 19:28:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3D439B811FC;
+        Mon, 24 Jan 2022 21:44:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49527C340E4;
+        Mon, 24 Jan 2022 21:44:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052482;
-        bh=4FbeBf20xb7bbU524D4+GOwUrzmhwbI/YceguH5f59g=;
+        s=korg; t=1643060641;
+        bh=toS2nEL/HovX5hqVgGICDP1uLl/XeY10V55n1+2q4Mw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1+ooUKFPn9fKJdPCzNIAH+5YdmnwoS6Yg2pKEOjJkSoEyOzgNt/4dVpSaY4d9m76Q
-         VXl0XbfyKQtAe00kxo+d16Fa8J5IhQLoJho5rlAoQHLRW4iwAPsHizpxm3r0CbNXtu
-         Dt+zhavZmX+xRPYbU9QhLB6af2XwvsNs5koRi0OI=
+        b=mK3kCltUOeNehVC9TStqaJT6nH3aqZdCkJSog0K56fv8KhyrieVxnkzoTxzg8hErR
+         oLnsj0xmlxTerWi0LzTG9kP04p4oHx3O3KKhHVS6ftaC/y8tnBy77XGc/aNvvnwsoo
+         GuF/TtS9+LJE1XFGzUSqqKyW/eamoHzx4G1dvMyQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robert Schlabbach <robert_s@gmx.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 074/320] media: si2157: Fix "warm" tuner state detection
-Date:   Mon, 24 Jan 2022 19:40:58 +0100
-Message-Id: <20220124183956.248493211@linuxfoundation.org>
+        stable@vger.kernel.org, Eli Cohen <elic@nvidia.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Si-Wei Liu <si-wei.liu@oracle.com>
+Subject: [PATCH 5.16 0982/1039] vdpa/mlx5: Fix wrong configuration of virtio_version_1_0
+Date:   Mon, 24 Jan 2022 19:46:11 +0100
+Message-Id: <20220124184158.288162031@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
+References: <20220124184125.121143506@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,61 +49,35 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Robert Schlabbach <robert_s@gmx.net>
+From: Eli Cohen <elic@nvidia.com>
 
-[ Upstream commit a6441ea29cb2c9314654e093a1cd8020b9b851c8 ]
+commit 97143b70aa847f2b0a1f959dde126b76ff7b5376 upstream.
 
-Commit e955f959ac52 ("media: si2157: Better check for running tuner in
-init") completely broke the "warm" tuner detection of the si2157 driver
-due to a simple endian error: The Si2157 CRYSTAL_TRIM property code is
-0x0402 and needs to be transmitted LSB first. However, it was inserted
-MSB first, causing the warm detection to always fail and spam the kernel
-log with tuner initialization messages each time the DVB frontend
-device was closed and reopened:
+Remove overriding of virtio_version_1_0 which forced the virtqueue
+object to version 1.
 
-[  312.215682] si2157 16-0060: found a 'Silicon Labs Si2157-A30'
-[  312.264334] si2157 16-0060: firmware version: 3.0.5
-[  342.248593] si2157 16-0060: found a 'Silicon Labs Si2157-A30'
-[  342.295743] si2157 16-0060: firmware version: 3.0.5
-[  372.328574] si2157 16-0060: found a 'Silicon Labs Si2157-A30'
-[  372.385035] si2157 16-0060: firmware version: 3.0.5
-
-Also, the reinitializations were observed disturb _other_ tuners on
-multi-tuner cards such as the Hauppauge WinTV-QuadHD, leading to missed
-or errored packets when one of the other DVB frontend devices on that
-card was opened.
-
-Fix the order of the property code bytes to make the warm detection work
-again, also reducing the tuner initialization message in the kernel log
-to once per power-on, as well as fixing the interference with other
-tuners.
-
-Link: https://lore.kernel.org/linux-media/trinity-2a86eb9d-6264-4387-95e1-ba7b79a4050f-1638392923493@3c-app-gmx-bap03
-
-Fixes: e955f959ac52 ("media: si2157: Better check for running tuner in init")
-Reported-by: Robert Schlabbach <robert_s@gmx.net>
-Signed-off-by: Robert Schlabbach <robert_s@gmx.net>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices")
+Signed-off-by: Eli Cohen <elic@nvidia.com>
+Link: https://lore.kernel.org/r/20211230142024.142979-1-elic@nvidia.com
+Signed-off-by: Michael S. Tsirkin <mst@redhat.com>
+Reviewed-by: Parav Pandit <parav@nvidia.com>
+Acked-by: Jason Wang <jasowang@redhat.com>
+Reviewed-by: Si-Wei Liu <si-wei.liu@oracle.com>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/tuners/si2157.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/vdpa/mlx5/net/mlx5_vnet.c |    2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/media/tuners/si2157.c b/drivers/media/tuners/si2157.c
-index a39e1966816bf..8db9f0eb98b52 100644
---- a/drivers/media/tuners/si2157.c
-+++ b/drivers/media/tuners/si2157.c
-@@ -80,7 +80,7 @@ static int si2157_init(struct dvb_frontend *fe)
- 	dev_dbg(&client->dev, "\n");
+--- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
++++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+@@ -876,8 +876,6 @@ static int create_virtqueue(struct mlx5_
+ 	MLX5_SET(virtio_q, vq_ctx, umem_3_id, mvq->umem3.id);
+ 	MLX5_SET(virtio_q, vq_ctx, umem_3_size, mvq->umem3.size);
+ 	MLX5_SET(virtio_q, vq_ctx, pd, ndev->mvdev.res.pdn);
+-	if (MLX5_CAP_DEV_VDPA_EMULATION(ndev->mvdev.mdev, eth_frame_offload_type))
+-		MLX5_SET(virtio_q, vq_ctx, virtio_version_1_0, 1);
  
- 	/* Try to get Xtal trim property, to verify tuner still running */
--	memcpy(cmd.args, "\x15\x00\x04\x02", 4);
-+	memcpy(cmd.args, "\x15\x00\x02\x04", 4);
- 	cmd.wlen = 4;
- 	cmd.rlen = 4;
- 	ret = si2157_cmd_execute(client, &cmd);
--- 
-2.34.1
-
+ 	err = mlx5_cmd_exec(ndev->mvdev.mdev, in, inlen, out, sizeof(out));
+ 	if (err)
 
 
