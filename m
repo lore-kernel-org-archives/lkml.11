@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F4BC35278
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4C52C41535
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2367762AbiAXX41 (ORCPT
+        id S2367479AbiAXXze (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:56:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50028 "EHLO
+        Mon, 24 Jan 2022 18:55:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50122 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846415AbiAXXPz (ORCPT
+        with ESMTP id S1846526AbiAXXQP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:15:55 -0500
+        Mon, 24 Jan 2022 18:16:15 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8572CC0604D2;
-        Mon, 24 Jan 2022 13:24:30 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2389CC0617BA;
+        Mon, 24 Jan 2022 13:25:27 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4E30CB812A8;
-        Mon, 24 Jan 2022 21:24:29 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7E974C340E4;
-        Mon, 24 Jan 2022 21:24:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E0EAFB80FA1;
+        Mon, 24 Jan 2022 21:25:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0960DC340E7;
+        Mon, 24 Jan 2022 21:25:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059468;
-        bh=BybjXRdFrnNgucLm1SBhLKOfxFS0NwCWkQYWRha5CHs=;
+        s=korg; t=1643059524;
+        bh=6wrrJ7aDxIrQw2TbOvBal/FrCaDdQi8ycw415kthYKU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MoTELk0EuqWlLWeIGA+4AP9oPrtNc6S/kWkES21PtfdhYsO0t4K7RX1irGg/mDz/B
-         d8GF7r+wVILnY0qWEIfJZ3v3bov2vR97KBzDKk6U+cZewzglGQsIAY9qPL5Uiu3U3o
-         5R4KypRrbGS+20L3PLE/1VjYbeXIjUXZfMmCXrQ8=
+        b=xXBzi/AD4nBmViT04kMQ71g/g10lNhLJo3+T3ikECaW88oYsTWh27GwhpccalZfhA
+         xr0SLaC8gxIxbqIRYzQGfjzKmpUW2u3TQ0+awzh4N2qCHTC/SSR76pFYroCzyMiZ4Z
+         pHIZHQ0V21voyOrQZF3s397fdJHje5FqpTxfIkHE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Niklas=20S=C3=B6derlund?= 
-        <niklas.soderlund+renesas@ragnatech.se>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0618/1039] media: rcar-vin: Update format alignment constraints
-Date:   Mon, 24 Jan 2022 19:40:07 +0100
-Message-Id: <20220124184146.112090744@linuxfoundation.org>
+Subject: [PATCH 5.16 0644/1039] x86/mce: Mark mce_read_aux() noinstr
+Date:   Mon, 24 Jan 2022 19:40:33 +0100
+Message-Id: <20220124184147.005035525@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -53,64 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
+From: Borislav Petkov <bp@suse.de>
 
-[ Upstream commit da6911f330d40cfe115a37249e47643eff555e82 ]
+[ Upstream commit db6c996d6ce45dfb44891f0824a65ecec216f47a ]
 
-This change fixes two issues with the size constraints for buffers.
+Fixes
 
-- There is no width alignment constraint for RGB formats. Prior to this
-  change they were treated as YUV and as a result were more restricted
-  than needed. Add a new check to differentiate between the two.
+  vmlinux.o: warning: objtool: do_machine_check()+0x681: call to mce_read_aux() leaves .noinstr.text section
 
-- The minimum width and height supported is 5x2, not 2x4, this is an
-  artifact from the driver's soc-camera days. Fix this incorrect
-  assumption.
-
-Signed-off-by: Niklas Söderlund <niklas.soderlund+renesas@ragnatech.se>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/r/20211208111343.8130-10-bp@alien8.de
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/platform/rcar-vin/rcar-v4l2.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ arch/x86/kernel/cpu/mce/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/platform/rcar-vin/rcar-v4l2.c b/drivers/media/platform/rcar-vin/rcar-v4l2.c
-index a5bfa76fdac6e..2e60b9fce03b0 100644
---- a/drivers/media/platform/rcar-vin/rcar-v4l2.c
-+++ b/drivers/media/platform/rcar-vin/rcar-v4l2.c
-@@ -179,20 +179,27 @@ static void rvin_format_align(struct rvin_dev *vin, struct v4l2_pix_format *pix)
- 		break;
- 	}
- 
--	/* HW limit width to a multiple of 32 (2^5) for NV12/16 else 2 (2^1) */
-+	/* Hardware limits width alignment based on format. */
- 	switch (pix->pixelformat) {
-+	/* Multiple of 32 (2^5) for NV12/16. */
- 	case V4L2_PIX_FMT_NV12:
- 	case V4L2_PIX_FMT_NV16:
- 		walign = 5;
- 		break;
--	default:
-+	/* Multiple of 2 (2^1) for YUV. */
-+	case V4L2_PIX_FMT_YUYV:
-+	case V4L2_PIX_FMT_UYVY:
- 		walign = 1;
- 		break;
-+	/* No multiple for RGB. */
-+	default:
-+		walign = 0;
-+		break;
- 	}
- 
- 	/* Limit to VIN capabilities */
--	v4l_bound_align_image(&pix->width, 2, vin->info->max_width, walign,
--			      &pix->height, 4, vin->info->max_height, 2, 0);
-+	v4l_bound_align_image(&pix->width, 5, vin->info->max_width, walign,
-+			      &pix->height, 2, vin->info->max_height, 0, 0);
- 
- 	pix->bytesperline = rvin_format_bytesperline(vin, pix);
- 	pix->sizeimage = rvin_format_sizeimage(pix);
+diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
+index 75095986e5eff..69fd51a29278f 100644
+--- a/arch/x86/kernel/cpu/mce/core.c
++++ b/arch/x86/kernel/cpu/mce/core.c
+@@ -645,7 +645,7 @@ static struct notifier_block mce_default_nb = {
+ /*
+  * Read ADDR and MISC registers.
+  */
+-static void mce_read_aux(struct mce *m, int i)
++static noinstr void mce_read_aux(struct mce *m, int i)
+ {
+ 	if (m->status & MCI_STATUS_MISCV)
+ 		m->misc = mce_rdmsrl(mca_msr_reg(i, MCA_MISC));
 -- 
 2.34.1
 
