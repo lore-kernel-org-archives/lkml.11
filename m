@@ -2,39 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6FA8C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:21:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99891C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:21:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350495AbiAXUVp (ORCPT
+        id S1351161AbiAXUVx (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:21:45 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:47728 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352290AbiAXUDd (ORCPT
+        Mon, 24 Jan 2022 15:21:53 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60038 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376685AbiAXUDe (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:03:33 -0500
+        Mon, 24 Jan 2022 15:03:34 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BDD7BB80FA1;
-        Mon, 24 Jan 2022 20:03:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EED24C340E5;
-        Mon, 24 Jan 2022 20:03:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A03E6131E;
+        Mon, 24 Jan 2022 20:03:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A066C340E5;
+        Mon, 24 Jan 2022 20:03:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054610;
-        bh=fKi7ZwPG8n0+BGVYMxk00IA52PoG1YjyUx5UZx1Vb/o=;
+        s=korg; t=1643054613;
+        bh=9YkuKF8cpwuIWjIHtOGRypGioyQeoLf8mYpkm6MpMf8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=IXbm1vNFKuVxYVWc9sVbQQitjpL9vgq8DHgcCkIVWsXi4l3L+RRZSA+LSGTPYOH1+
-         itv4ZC6BtDEEymd18uCfk7TpiErh2DXdcHtjql/RVlZJNHz0gjB9UEFnV7gnNvz1Ac
-         q4K5YLqwlrzlS5Lh8zjfvMNmmoIv3yxu1J0Ys9JI=
+        b=mbvbB2ASsm1EhDFU0quxdyq+w8VRsvC+S0qvBgBonNJlOYv9KkYpRfbS1m9rSrag9
+         ljHWg3vSbPm4/ylcGB+uDTk5eBuRqmWZvM+3FONxcrGpoXeB6x3uBhl+POxEUJcm1b
+         NHvz4IIvSZUGwKEpzbWRCFjx50edI5TQ471eArHo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Patrick Williams <patrick@stwcx.xyz>,
-        Jarkko Sakkinen <jarkko@kernel.org>
-Subject: [PATCH 5.10 445/563] tpm: fix NPE on probe for missing device
-Date:   Mon, 24 Jan 2022 19:43:30 +0100
-Message-Id: <20220124184039.846941886@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
+        Mark Brown <broonie@kernel.org>
+Subject: [PATCH 5.10 446/563] spi: uniphier: Fix a bug that doesnt point to private data correctly
+Date:   Mon, 24 Jan 2022 19:43:31 +0100
+Message-Id: <20220124184039.877813877@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -46,58 +47,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Patrick Williams <patrick@stwcx.xyz>
+From: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
 
-commit 84cc69589700b90a4c8d27b481a51fce8cca6051 upstream.
+commit 80bb73a9fbcde4ecc55e12f10c73fabbe68a24d1 upstream.
 
-When using the tpm_tis-spi driver on a system missing the physical TPM,
-a null pointer exception was observed.
+In uniphier_spi_remove(), there is a wrong code to get private data from
+the platform device, so the driver can't be removed properly.
 
-    [    0.938677] Unable to handle kernel NULL pointer dereference at virtual address 00000004
-    [    0.939020] pgd = 10c753cb
-    [    0.939237] [00000004] *pgd=00000000
-    [    0.939808] Internal error: Oops: 5 [#1] SMP ARM
-    [    0.940157] CPU: 0 PID: 48 Comm: kworker/u4:1 Not tainted 5.15.10-dd1e40c #1
-    [    0.940364] Hardware name: Generic DT based system
-    [    0.940601] Workqueue: events_unbound async_run_entry_fn
-    [    0.941048] PC is at tpm_tis_remove+0x28/0xb4
-    [    0.941196] LR is at tpm_tis_core_init+0x170/0x6ac
+The driver should get spi_master from the platform device and retrieve
+the private data from it.
 
-This is due to an attempt in 'tpm_tis_remove' to use the drvdata, which
-was not initialized in 'tpm_tis_core_init' prior to the first error.
-
-Move the initialization of drvdata earlier so 'tpm_tis_remove' has
-access to it.
-
-Signed-off-by: Patrick Williams <patrick@stwcx.xyz>
-Fixes: 79ca6f74dae0 ("tpm: fix Atmel TPM crash caused by too frequent queries")
-Cc: stable@vger.kernel.org
-Reviewed-by: Jarkko Sakkinen <jarkko@kernel.org>
-Signed-off-by: Jarkko Sakkinen <jarkko@kernel.org>
+Cc: <stable@vger.kernel.org>
+Fixes: 5ba155a4d4cc ("spi: add SPI controller driver for UniPhier SoC")
+Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
+Link: https://lore.kernel.org/r/1640148492-32178-1-git-send-email-hayashi.kunihiko@socionext.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/char/tpm/tpm_tis_core.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/spi/spi-uniphier.c |   11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
---- a/drivers/char/tpm/tpm_tis_core.c
-+++ b/drivers/char/tpm/tpm_tis_core.c
-@@ -950,6 +950,8 @@ int tpm_tis_core_init(struct device *dev
- 	priv->timeout_max = TPM_TIMEOUT_USECS_MAX;
- 	priv->phy_ops = phy_ops;
+--- a/drivers/spi/spi-uniphier.c
++++ b/drivers/spi/spi-uniphier.c
+@@ -767,12 +767,13 @@ out_master_put:
  
-+	dev_set_drvdata(&chip->dev, priv);
-+
- 	rc = tpm_tis_read32(priv, TPM_DID_VID(0), &vendor);
- 	if (rc < 0)
- 		return rc;
-@@ -962,8 +964,6 @@ int tpm_tis_core_init(struct device *dev
- 		priv->timeout_max = TIS_TIMEOUT_MAX_ATML;
- 	}
+ static int uniphier_spi_remove(struct platform_device *pdev)
+ {
+-	struct uniphier_spi_priv *priv = platform_get_drvdata(pdev);
++	struct spi_master *master = platform_get_drvdata(pdev);
++	struct uniphier_spi_priv *priv = spi_master_get_devdata(master);
  
--	dev_set_drvdata(&chip->dev, priv);
--
- 	if (is_bsw()) {
- 		priv->ilb_base_addr = ioremap(INTEL_LEGACY_BLK_BASE_ADDR,
- 					ILB_REMAP_SIZE);
+-	if (priv->master->dma_tx)
+-		dma_release_channel(priv->master->dma_tx);
+-	if (priv->master->dma_rx)
+-		dma_release_channel(priv->master->dma_rx);
++	if (master->dma_tx)
++		dma_release_channel(master->dma_tx);
++	if (master->dma_rx)
++		dma_release_channel(master->dma_rx);
+ 
+ 	clk_disable_unprepare(priv->clk);
+ 
 
 
