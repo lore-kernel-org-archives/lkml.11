@@ -2,46 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 762ECC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:05:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1EFCC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:05:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353037AbiAXVFl (ORCPT
+        id S1359757AbiAXVFt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:05:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42266 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1389732AbiAXUm6 (ORCPT
+        Mon, 24 Jan 2022 16:05:49 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:39712 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358153AbiAXUn7 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:42:58 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70BC5C04967A;
-        Mon, 24 Jan 2022 11:53:02 -0800 (PST)
+        Mon, 24 Jan 2022 15:43:59 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 0F99460B02;
-        Mon, 24 Jan 2022 19:53:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE3F6C36AE9;
-        Mon, 24 Jan 2022 19:53:00 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3698260B28;
+        Mon, 24 Jan 2022 20:43:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 196B9C340E5;
+        Mon, 24 Jan 2022 20:43:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053981;
-        bh=EdRBPmg9UuzN3RscHx/sISlmgsII/q5Oql95LbXNop0=;
+        s=korg; t=1643057037;
+        bh=GzbYbsXc5BwyTSbLqMt453HSpU4UrE4xgXx+YQpBbjc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JglY1Pcb11z48W8Ayv51vQTBUR/iXXTqciITs6xLa/Zo4IbugFZW++tVK14HT6rRf
-         ilWy8svjnw6oiBfuoiHPWCyH1FELTwroq6KAgZYRf57q2NKVnjHWbKBmcOLVh2mp54
-         jhwk6aq8/qSGibf/wwJkB5CGPpm/Y3hWRm0Sioi0=
+        b=QpkrP0qb86i8DB42Wrb58N+OPup/mcWpJqnbDKzUR9S3Wst98a4KBdmhXrEPZnmPr
+         da+fgY+lkYsCcyLvyccpyHdyMgdLk7rWetoJqD8NREQ5o/RmaBUk5wC7DsMZWKsIoB
+         b07zlPthWKk3GZ3oQ9TbPxbyOs9qCYOYoDi7SDz4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Miaoqian Lin <linmq006@gmail.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 213/563] Bluetooth: hci_qca: Fix NULL vs IS_ERR_OR_NULL check in qca_serdev_probe
-Date:   Mon, 24 Jan 2022 19:39:38 +0100
-Message-Id: <20220124184031.819170738@linuxfoundation.org>
+        stable@vger.kernel.org,
+        syzbot+9ca499bb57a2b9e4c652@syzkaller.appspotmail.com,
+        Jan Kara <jack@suse.cz>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 649/846] udf: Fix error handling in udf_new_inode()
+Date:   Mon, 24 Jan 2022 19:42:46 +0100
+Message-Id: <20220124184123.406590822@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,36 +47,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Miaoqian Lin <linmq006@gmail.com>
+From: Jan Kara <jack@suse.cz>
 
-[ Upstream commit 6845667146a28c09b5dfc401c1ad112374087944 ]
+[ Upstream commit f05f2429eec60851b98bdde213de31dab697c01b ]
 
-The function devm_gpiod_get_index() return error pointers on error.
-Thus devm_gpiod_get_index_optional() could return NULL and error pointers.
-The same as devm_gpiod_get_optional() function. Using IS_ERR_OR_NULL()
-check to catch error pointers.
+When memory allocation of iinfo or block allocation fails, already
+allocated struct udf_inode_info gets freed with iput() and
+udf_evict_inode() may look at inode fields which are not properly
+initialized. Fix it by marking inode bad before dropping reference to it
+in udf_new_inode().
 
-Fixes: 77131dfe ("Bluetooth: hci_qca: Replace devm_gpiod_get() with devm_gpiod_get_optional()")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Reported-by: syzbot+9ca499bb57a2b9e4c652@syzkaller.appspotmail.com
+Signed-off-by: Jan Kara <jack@suse.cz>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/hci_qca.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ fs/udf/ialloc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
-index 4f8a32601c1b6..dc7ee5dd2eeca 100644
---- a/drivers/bluetooth/hci_qca.c
-+++ b/drivers/bluetooth/hci_qca.c
-@@ -1990,7 +1990,7 @@ static int qca_serdev_probe(struct serdev_device *serdev)
- 
- 		qcadev->bt_en = devm_gpiod_get_optional(&serdev->dev, "enable",
- 					       GPIOD_OUT_LOW);
--		if (!qcadev->bt_en) {
-+		if (IS_ERR_OR_NULL(qcadev->bt_en)) {
- 			dev_warn(&serdev->dev, "failed to acquire enable gpio\n");
- 			power_ctrl_enabled = false;
- 		}
+diff --git a/fs/udf/ialloc.c b/fs/udf/ialloc.c
+index 2ecf0e87660e3..b5d611cee749c 100644
+--- a/fs/udf/ialloc.c
++++ b/fs/udf/ialloc.c
+@@ -77,6 +77,7 @@ struct inode *udf_new_inode(struct inode *dir, umode_t mode)
+ 					GFP_KERNEL);
+ 	}
+ 	if (!iinfo->i_data) {
++		make_bad_inode(inode);
+ 		iput(inode);
+ 		return ERR_PTR(-ENOMEM);
+ 	}
+@@ -86,6 +87,7 @@ struct inode *udf_new_inode(struct inode *dir, umode_t mode)
+ 			      dinfo->i_location.partitionReferenceNum,
+ 			      start, &err);
+ 	if (err) {
++		make_bad_inode(inode);
+ 		iput(inode);
+ 		return ERR_PTR(err);
+ 	}
 -- 
 2.34.1
 
