@@ -2,43 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FBF7C4167E
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:04:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A4BDC46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:04:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1444795AbiAXVBf (ORCPT
+        id S1444608AbiAXVBL (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:01:35 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:40348 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1387885AbiAXUh3 (ORCPT
+        Mon, 24 Jan 2022 16:01:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39752 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1387635AbiAXUhA (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:37:29 -0500
+        Mon, 24 Jan 2022 15:37:00 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3AD2C02B8D5;
+        Mon, 24 Jan 2022 11:50:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B839BB81060;
-        Mon, 24 Jan 2022 20:37:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B42DC340E5;
-        Mon, 24 Jan 2022 20:37:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7105660B8A;
+        Mon, 24 Jan 2022 19:50:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50C60C340E5;
+        Mon, 24 Jan 2022 19:50:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056646;
-        bh=zzwXETvO8DRgU0B6/KjTgVdtgOFdMCxyOYkTNdKrc3I=;
+        s=korg; t=1643053853;
+        bh=84KscKH2YPPL8zxJwn5K7nuAWQLFMwMEAMm6Ccb5/+g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l2HUbUl4K4GDXOe1I79HbT6YPuac2NnZqrUz98Mhh+j1Ugn+bMM37Tir8sV2cvi4o
-         5dxXk5XYPmldMAFcIjcga1stilzRJuhPz8egDNHwu8DPC9olKbM2k/2GnY3akAN9S+
-         CkTlDqpVyFSwbRclccVD8mxhncrN3C0oVovwMRRk=
+        b=fcq5kcwP4aEZYiA6dMUh/4vsPKq7ic/01g1yWFj1r3Bw5paYAj08q2QnEAI+CIm6K
+         SgT5iTe0R+ZosHhtkViYw76+MfcWUMOiqCalqrrv1KLPKrsWWFq3YR0qPlK0nYiQDj
+         BdGPkag+A24CWerHjfWwcvsRN4E0gmGw057iEOWE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Zhou Qingyang <zhou1615@umn.edu>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Arseny Demidov <a.demidov@yadro.com>,
+        Guenter Roeck <linux@roeck-us.net>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 554/846] media: saa7146: hexium_gemini: Fix a NULL pointer dereference in hexium_attach()
-Date:   Mon, 24 Jan 2022 19:41:11 +0100
-Message-Id: <20220124184120.137322515@linuxfoundation.org>
+Subject: [PATCH 5.10 198/563] hwmon: (mr75203) fix wrong power-up delay value
+Date:   Mon, 24 Jan 2022 19:39:23 +0100
+Message-Id: <20220124184031.278058490@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,71 +50,37 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Zhou Qingyang <zhou1615@umn.edu>
+From: Arseny Demidov <arsdemal@gmail.com>
 
-[ Upstream commit 3af86b046933ba513d08399dba0d4d8b50d607d0 ]
+[ Upstream commit a8d6d4992ad9d92356619ac372906bd29687bb46 ]
 
-In hexium_attach(dev, info), saa7146_vv_init() is called to allocate
-a new memory for dev->vv_data. saa7146_vv_release() will be called on
-failure of saa7146_register_device(). There is a dereference of
-dev->vv_data in saa7146_vv_release(), which could lead to a NULL
-pointer dereference on failure of saa7146_vv_init().
+In the file mr75203.c we have a macro named POWER_DELAY_CYCLE_256,
+the correct value should be 0x100. The register ip_tmr is expressed
+in units of IP clk cycles, in accordance with the datasheet.
+Typical power-up delays for Temperature Sensor are 256 cycles i.e. 0x100.
 
-Fix this bug by adding a check of saa7146_vv_init().
-
-This bug was found by a static analyzer. The analysis employs
-differential checking to identify inconsistent security operations
-(e.g., checks or kfrees) between two code paths and confirms that the
-inconsistent operations are not recovered in the current function or
-the callers, so they constitute bugs.
-
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
-Builds with CONFIG_VIDEO_HEXIUM_GEMINI=m show no new warnings,
-and our static analyzer no longer warns about this code.
-
-Link: https://lore.kernel.org/linux-media/20211203154030.111210-1-zhou1615@umn.edu
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Fixes: 9d823351a337 ("hwmon: Add hardware monitoring driver for Moortec MR75203 PVT controller")
+Signed-off-by: Arseny Demidov <a.demidov@yadro.com>
+Link: https://lore.kernel.org/r/20211219102239.1112-1-a.demidov@yadro.com
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/common/saa7146/saa7146_fops.c | 2 +-
- drivers/media/pci/saa7146/hexium_gemini.c   | 7 ++++++-
- 2 files changed, 7 insertions(+), 2 deletions(-)
+ drivers/hwmon/mr75203.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/media/common/saa7146/saa7146_fops.c b/drivers/media/common/saa7146/saa7146_fops.c
-index baf5772c52a96..be32159777142 100644
---- a/drivers/media/common/saa7146/saa7146_fops.c
-+++ b/drivers/media/common/saa7146/saa7146_fops.c
-@@ -521,7 +521,7 @@ int saa7146_vv_init(struct saa7146_dev* dev, struct saa7146_ext_vv *ext_vv)
- 		ERR("out of memory. aborting.\n");
- 		kfree(vv);
- 		v4l2_ctrl_handler_free(hdl);
--		return -1;
-+		return -ENOMEM;
- 	}
+diff --git a/drivers/hwmon/mr75203.c b/drivers/hwmon/mr75203.c
+index 18da5a25e89ab..046523d47c29b 100644
+--- a/drivers/hwmon/mr75203.c
++++ b/drivers/hwmon/mr75203.c
+@@ -93,7 +93,7 @@
+ #define VM_CH_REQ	BIT(21)
  
- 	saa7146_video_uops.init(dev,vv);
-diff --git a/drivers/media/pci/saa7146/hexium_gemini.c b/drivers/media/pci/saa7146/hexium_gemini.c
-index 2214c74bbbf15..3947701cd6c7e 100644
---- a/drivers/media/pci/saa7146/hexium_gemini.c
-+++ b/drivers/media/pci/saa7146/hexium_gemini.c
-@@ -284,7 +284,12 @@ static int hexium_attach(struct saa7146_dev *dev, struct saa7146_pci_extension_d
- 	hexium_set_input(hexium, 0);
- 	hexium->cur_input = 0;
+ #define IP_TMR			0x05
+-#define POWER_DELAY_CYCLE_256	0x80
++#define POWER_DELAY_CYCLE_256	0x100
+ #define POWER_DELAY_CYCLE_64	0x40
  
--	saa7146_vv_init(dev, &vv_data);
-+	ret = saa7146_vv_init(dev, &vv_data);
-+	if (ret) {
-+		i2c_del_adapter(&hexium->i2c_adapter);
-+		kfree(hexium);
-+		return ret;
-+	}
- 
- 	vv_data.vid_ops.vidioc_enum_input = vidioc_enum_input;
- 	vv_data.vid_ops.vidioc_g_input = vidioc_g_input;
+ #define PVT_POLL_DELAY_US	20
 -- 
 2.34.1
 
