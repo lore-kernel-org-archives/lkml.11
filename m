@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8507BC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:53:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73409C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 18:53:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343643AbiAXSxe (ORCPT
+        id S1343531AbiAXSxh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 13:53:34 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:51046 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245298AbiAXSvx (ORCPT
+        Mon, 24 Jan 2022 13:53:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42634 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343599AbiAXSwH (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:51:53 -0500
+        Mon, 24 Jan 2022 13:52:07 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D87C061747;
+        Mon, 24 Jan 2022 10:51:54 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 32315B81232;
-        Mon, 24 Jan 2022 18:51:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 52C6DC340E5;
-        Mon, 24 Jan 2022 18:51:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 90C2B614F5;
+        Mon, 24 Jan 2022 18:51:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6C720C340E5;
+        Mon, 24 Jan 2022 18:51:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050310;
-        bh=E11yzEnzznprBxC2hU2BGRcgYcoLM2kAXeZ9TWZ6f7g=;
+        s=korg; t=1643050314;
+        bh=PXQvNXSynGedMbXNskrLymAziKLhVRUN27jmdLGmQu0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tKT7B9RiYUr83/C2zqz8yfJ1LxwfTfn6SkEaQVyDWwc1XyvYvayPOAUCmHjeK/dBn
-         XuWu/5bhz1qSvwGoTp9GIF2IOEQR3RaXBL6YfFKFa8PzmmVKyOdw4vow3M6AZPUmO7
-         6BGeWzdz2Xk+jiwWoVko+eU6wrJ/eFDIAC0wBBSY=
+        b=kYylGHdHDm2f9+8UnpWPypGsTqYQjLqikenBhiVkmJ++1Fo4GLfAXL1UCowM8n6QU
+         KUurWZWXax5Du9g1rzftJl0vSSOARFGnQ1xK/nCcVuCjrtq46CAurqaI1roeTXE4K/
+         BUNDKFp/mTCNlLyWZ5lTY1CzBV/PpoPwWqtg1uaQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Josef Bacik <josef@toxicpanda.com>,
-        David Sterba <dsterba@suse.com>,
+        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        Mark Brown <broonie@kernel.org>, Vinod Koul <vkoul@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.4 077/114] btrfs: remove BUG_ON(!eie) in find_parent_nodes
-Date:   Mon, 24 Jan 2022 19:42:52 +0100
-Message-Id: <20220124183929.470311970@linuxfoundation.org>
+Subject: [PATCH 4.4 051/114] dmaengine: pxa/mmp: stop referencing config->slave_id
+Date:   Mon, 24 Jan 2022 19:42:26 +0100
+Message-Id: <20220124183928.675412763@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183927.095545464@linuxfoundation.org>
 References: <20220124183927.095545464@linuxfoundation.org>
@@ -47,52 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Josef Bacik <josef@toxicpanda.com>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit 9f05c09d6baef789726346397438cca4ec43c3ee ]
+[ Upstream commit 134c37fa250a87a7e77c80a7c59ae16c462e46e0 ]
 
-If we're looking for leafs that point to a data extent we want to record
-the extent items that point at our bytenr.  At this point we have the
-reference and we know for a fact that this leaf should have a reference
-to our bytenr.  However if there's some sort of corruption we may not
-find any references to our leaf, and thus could end up with eie == NULL.
-Replace this BUG_ON() with an ASSERT() and then return -EUCLEAN for the
-mortals.
+The last driver referencing the slave_id on Marvell PXA and MMP platforms
+was the SPI driver, but this stopped doing so a long time ago, so the
+TODO from the earlier patch can no be removed.
 
-Signed-off-by: Josef Bacik <josef@toxicpanda.com>
-Reviewed-by: David Sterba <dsterba@suse.com>
-Signed-off-by: David Sterba <dsterba@suse.com>
+Fixes: b729bf34535e ("spi/pxa2xx: Don't use slave_id of dma_slave_config")
+Fixes: 13b3006b8ebd ("dma: mmp_pdma: add filter function")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Acked-by: Mark Brown <broonie@kernel.org>
+Link: https://lore.kernel.org/r/20211122222203.4103644-7-arnd@kernel.org
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/btrfs/backref.c | 14 +++++++++++---
- 1 file changed, 11 insertions(+), 3 deletions(-)
+ drivers/dma/mmp_pdma.c | 6 ------
+ drivers/dma/pxa_dma.c  | 7 -------
+ 2 files changed, 13 deletions(-)
 
-diff --git a/fs/btrfs/backref.c b/fs/btrfs/backref.c
-index c59a13a53b1cc..00c9a9e719ece 100644
---- a/fs/btrfs/backref.c
-+++ b/fs/btrfs/backref.c
-@@ -1109,10 +1109,18 @@ again:
- 				goto out;
- 			if (!ret && extent_item_pos) {
- 				/*
--				 * we've recorded that parent, so we must extend
--				 * its inode list here
-+				 * We've recorded that parent, so we must extend
-+				 * its inode list here.
-+				 *
-+				 * However if there was corruption we may not
-+				 * have found an eie, return an error in this
-+				 * case.
- 				 */
--				BUG_ON(!eie);
-+				ASSERT(eie);
-+				if (!eie) {
-+					ret = -EUCLEAN;
-+					goto out;
-+				}
- 				while (eie->next)
- 					eie = eie->next;
- 				eie->next = ref->inode_list;
+diff --git a/drivers/dma/mmp_pdma.c b/drivers/dma/mmp_pdma.c
+index e39457f13d4dd..548600ce6cc87 100644
+--- a/drivers/dma/mmp_pdma.c
++++ b/drivers/dma/mmp_pdma.c
+@@ -723,12 +723,6 @@ static int mmp_pdma_config(struct dma_chan *dchan,
+ 
+ 	chan->dir = cfg->direction;
+ 	chan->dev_addr = addr;
+-	/* FIXME: drivers should be ported over to use the filter
+-	 * function. Once that's done, the following two lines can
+-	 * be removed.
+-	 */
+-	if (cfg->slave_id)
+-		chan->drcmr = cfg->slave_id;
+ 
+ 	return 0;
+ }
+diff --git a/drivers/dma/pxa_dma.c b/drivers/dma/pxa_dma.c
+index 4251e9ac0373c..ff2e28137a7b1 100644
+--- a/drivers/dma/pxa_dma.c
++++ b/drivers/dma/pxa_dma.c
+@@ -959,13 +959,6 @@ static void pxad_get_config(struct pxad_chan *chan,
+ 		*dcmd |= PXA_DCMD_BURST16;
+ 	else if (maxburst == 32)
+ 		*dcmd |= PXA_DCMD_BURST32;
+-
+-	/* FIXME: drivers should be ported over to use the filter
+-	 * function. Once that's done, the following two lines can
+-	 * be removed.
+-	 */
+-	if (chan->cfg.slave_id)
+-		chan->drcmr = chan->cfg.slave_id;
+ }
+ 
+ static struct dma_async_tx_descriptor *
 -- 
 2.34.1
 
