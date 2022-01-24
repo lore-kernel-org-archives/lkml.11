@@ -2,46 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C164BC4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 916D9C433F5
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 02:34:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3421834AbiAYC3F (ORCPT
+        id S1356828AbiAYC17 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 21:29:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60838 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1378673AbiAXUIS (ORCPT
+        Mon, 24 Jan 2022 21:27:59 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:48884 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1378614AbiAXUHr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:08:18 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 237E6C06E008;
-        Mon, 24 Jan 2022 11:32:49 -0800 (PST)
+        Mon, 24 Jan 2022 15:07:47 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D31C3B8123F;
-        Mon, 24 Jan 2022 19:32:47 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5B0AC340E5;
-        Mon, 24 Jan 2022 19:32:45 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 24B72B81544;
+        Mon, 24 Jan 2022 20:07:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4CC40C340E5;
+        Mon, 24 Jan 2022 20:07:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052766;
-        bh=Gb94Y9YdDnwpA1Wh+iUdsiCmxH8BNG5gik8azrh+w1w=;
+        s=korg; t=1643054864;
+        bh=br/iQTyRsURcetzVqnQpSl1GiGq29hfg10350Q/e9Ew=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=j2wXPH8583Oy+VUK88KQa8dd4S91TzXeDwhzaInji46X68HEXRXvgLbvkngNRlQ8M
-         PB/umJlRJjbeIL+hcS+ONRBLvCJj+f1FRMufuqw5KRemY5xGn/BHhe/joTVmCYmrRb
-         J2Z/kRHVnPmtjNyRqiOM7MRFxoDUgye7xB5xqgF8=
+        b=LpVDu3+9mWvN2wjDwgkCEgewy4tY/EJVgh8ZVg8lNrIdt7y8iNyKMYR/VrZtZnBpK
+         QVJ5SHPq7Lnl+cseu61w1JafGmOKsz2En5ASKOODQzDGJzZpi5xMaoD1p24UtLATtQ
+         LFy0WgVLvCY7+tSRMiNUjFleU1sYliSLma/8Fg8I=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Robin Murphy <robin.murphy@arm.com>,
-        Hector Martin <marcan@marcan.st>,
-        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 134/320] iommu/io-pgtable-arm: Fix table descriptor paddr formatting
-Date:   Mon, 24 Jan 2022 19:41:58 +0100
-Message-Id: <20220124183958.221993907@linuxfoundation.org>
+        stable@vger.kernel.org, Robert Hancock <robert.hancock@calian.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.10 527/563] net: axienet: fix for TX busy handling
+Date:   Mon, 24 Jan 2022 19:44:52 +0100
+Message-Id: <20220124184042.656055898@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -50,69 +46,149 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Hector Martin <marcan@marcan.st>
+From: Robert Hancock <robert.hancock@calian.com>
 
-[ Upstream commit 9abe2ac834851a7d0b0756e295cf7a292c45ca53 ]
+commit bb193e3db8b86a63f26889c99e14fd30c9ebd72a upstream.
 
-Table descriptors were being installed without properly formatting the
-address using paddr_to_iopte, which does not match up with the
-iopte_deref in __arm_lpae_map. This is incorrect for the LPAE pte
-format, as it does not handle the high bits properly.
+Network driver documentation indicates we should be avoiding returning
+NETDEV_TX_BUSY from ndo_start_xmit in normal cases, since it requires
+the packets to be requeued. Instead the queue should be stopped after
+a packet is added to the TX ring when there may not be enough room for an
+additional one. Also, when TX ring entries are completed, we should only
+wake the queue if we know there is room for another full maximally
+fragmented packet.
 
-This was found on Apple T6000 DARTs, which require a new pte format
-(different shift); adding support for that to
-paddr_to_iopte/iopte_to_paddr caused it to break badly, as even <48-bit
-addresses would end up incorrect in that case.
+Print a warning if there is insufficient space at the start of start_xmit,
+since this should no longer happen.
 
-Fixes: 6c89928ff7a0 ("iommu/io-pgtable-arm: Support 52-bit physical address")
-Acked-by: Robin Murphy <robin.murphy@arm.com>
-Signed-off-by: Hector Martin <marcan@marcan.st>
-Link: https://lore.kernel.org/r/20211120031343.88034-1-marcan@marcan.st
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Combined with increasing the default TX ring size (in a subsequent
+patch), this appears to recover the TX performance lost by previous changes
+to actually manage the TX ring state properly.
+
+Fixes: 8a3b7a252dca9 ("drivers/net/ethernet/xilinx: added Xilinx AXI Ethernet driver")
+Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iommu/io-pgtable-arm.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ drivers/net/ethernet/xilinx/xilinx_axienet_main.c |   86 ++++++++++++----------
+ 1 file changed, 47 insertions(+), 39 deletions(-)
 
-diff --git a/drivers/iommu/io-pgtable-arm.c b/drivers/iommu/io-pgtable-arm.c
-index ca51036aa53c7..975237ca03267 100644
---- a/drivers/iommu/io-pgtable-arm.c
-+++ b/drivers/iommu/io-pgtable-arm.c
-@@ -351,11 +351,12 @@ static int arm_lpae_init_pte(struct arm_lpae_io_pgtable *data,
- static arm_lpae_iopte arm_lpae_install_table(arm_lpae_iopte *table,
- 					     arm_lpae_iopte *ptep,
- 					     arm_lpae_iopte curr,
--					     struct io_pgtable_cfg *cfg)
-+					     struct arm_lpae_io_pgtable *data)
- {
- 	arm_lpae_iopte old, new;
-+	struct io_pgtable_cfg *cfg = &data->iop.cfg;
+--- a/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
++++ b/drivers/net/ethernet/xilinx/xilinx_axienet_main.c
+@@ -661,6 +661,32 @@ static int axienet_free_tx_chain(struct
+ }
  
--	new = __pa(table) | ARM_LPAE_PTE_TYPE_TABLE;
-+	new = paddr_to_iopte(__pa(table), data) | ARM_LPAE_PTE_TYPE_TABLE;
- 	if (cfg->quirks & IO_PGTABLE_QUIRK_ARM_NS)
- 		new |= ARM_LPAE_PTE_NSTABLE;
+ /**
++ * axienet_check_tx_bd_space - Checks if a BD/group of BDs are currently busy
++ * @lp:		Pointer to the axienet_local structure
++ * @num_frag:	The number of BDs to check for
++ *
++ * Return: 0, on success
++ *	    NETDEV_TX_BUSY, if any of the descriptors are not free
++ *
++ * This function is invoked before BDs are allocated and transmission starts.
++ * This function returns 0 if a BD or group of BDs can be allocated for
++ * transmission. If the BD or any of the BDs are not free the function
++ * returns a busy status. This is invoked from axienet_start_xmit.
++ */
++static inline int axienet_check_tx_bd_space(struct axienet_local *lp,
++					    int num_frag)
++{
++	struct axidma_bd *cur_p;
++
++	/* Ensure we see all descriptor updates from device or TX IRQ path */
++	rmb();
++	cur_p = &lp->tx_bd_v[(lp->tx_bd_tail + num_frag) % lp->tx_bd_num];
++	if (cur_p->cntrl)
++		return NETDEV_TX_BUSY;
++	return 0;
++}
++
++/**
+  * axienet_start_xmit_done - Invoked once a transmit is completed by the
+  * Axi DMA Tx channel.
+  * @ndev:	Pointer to the net_device structure
+@@ -689,33 +715,8 @@ static void axienet_start_xmit_done(stru
+ 	/* Matches barrier in axienet_start_xmit */
+ 	smp_mb();
  
-@@ -406,7 +407,7 @@ static int __arm_lpae_map(struct arm_lpae_io_pgtable *data, unsigned long iova,
- 		if (!cptep)
- 			return -ENOMEM;
+-	netif_wake_queue(ndev);
+-}
+-
+-/**
+- * axienet_check_tx_bd_space - Checks if a BD/group of BDs are currently busy
+- * @lp:		Pointer to the axienet_local structure
+- * @num_frag:	The number of BDs to check for
+- *
+- * Return: 0, on success
+- *	    NETDEV_TX_BUSY, if any of the descriptors are not free
+- *
+- * This function is invoked before BDs are allocated and transmission starts.
+- * This function returns 0 if a BD or group of BDs can be allocated for
+- * transmission. If the BD or any of the BDs are not free the function
+- * returns a busy status. This is invoked from axienet_start_xmit.
+- */
+-static inline int axienet_check_tx_bd_space(struct axienet_local *lp,
+-					    int num_frag)
+-{
+-	struct axidma_bd *cur_p;
+-
+-	/* Ensure we see all descriptor updates from device or TX IRQ path */
+-	rmb();
+-	cur_p = &lp->tx_bd_v[(lp->tx_bd_tail + num_frag) % lp->tx_bd_num];
+-	if (cur_p->cntrl)
+-		return NETDEV_TX_BUSY;
+-	return 0;
++	if (!axienet_check_tx_bd_space(lp, MAX_SKB_FRAGS + 1))
++		netif_wake_queue(ndev);
+ }
  
--		pte = arm_lpae_install_table(cptep, ptep, 0, cfg);
-+		pte = arm_lpae_install_table(cptep, ptep, 0, data);
- 		if (pte)
- 			__arm_lpae_free_pages(cptep, tblsz, cfg);
- 	} else if (!cfg->coherent_walk && !(pte & ARM_LPAE_PTE_SW_SYNC)) {
-@@ -575,7 +576,7 @@ static size_t arm_lpae_split_blk_unmap(struct arm_lpae_io_pgtable *data,
- 		__arm_lpae_init_pte(data, blk_paddr, pte, lvl, &tablep[i]);
+ /**
+@@ -748,19 +749,14 @@ axienet_start_xmit(struct sk_buff *skb,
+ 	cur_p = &lp->tx_bd_v[lp->tx_bd_tail];
+ 
+ 	if (axienet_check_tx_bd_space(lp, num_frag + 1)) {
+-		if (netif_queue_stopped(ndev))
+-			return NETDEV_TX_BUSY;
+-
++		/* Should not happen as last start_xmit call should have
++		 * checked for sufficient space and queue should only be
++		 * woken when sufficient space is available.
++		 */
+ 		netif_stop_queue(ndev);
+-
+-		/* Matches barrier in axienet_start_xmit_done */
+-		smp_mb();
+-
+-		/* Space might have just been freed - check again */
+-		if (axienet_check_tx_bd_space(lp, num_frag + 1))
+-			return NETDEV_TX_BUSY;
+-
+-		netif_wake_queue(ndev);
++		if (net_ratelimit())
++			netdev_warn(ndev, "TX ring unexpectedly full\n");
++		return NETDEV_TX_BUSY;
  	}
  
--	pte = arm_lpae_install_table(tablep, ptep, blk_pte, cfg);
-+	pte = arm_lpae_install_table(tablep, ptep, blk_pte, data);
- 	if (pte != blk_pte) {
- 		__arm_lpae_free_pages(tablep, tablesz, cfg);
- 		/*
--- 
-2.34.1
-
+ 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
+@@ -821,6 +817,18 @@ axienet_start_xmit(struct sk_buff *skb,
+ 	if (++lp->tx_bd_tail >= lp->tx_bd_num)
+ 		lp->tx_bd_tail = 0;
+ 
++	/* Stop queue if next transmit may not have space */
++	if (axienet_check_tx_bd_space(lp, MAX_SKB_FRAGS + 1)) {
++		netif_stop_queue(ndev);
++
++		/* Matches barrier in axienet_start_xmit_done */
++		smp_mb();
++
++		/* Space might have just been freed - check again */
++		if (!axienet_check_tx_bd_space(lp, MAX_SKB_FRAGS + 1))
++			netif_wake_queue(ndev);
++	}
++
+ 	return NETDEV_TX_OK;
+ }
+ 
 
 
