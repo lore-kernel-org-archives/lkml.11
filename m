@@ -2,41 +2,53 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD281C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8570C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451822AbiAXVXj (ORCPT
+        id S1451902AbiAXVXp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:23:39 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:46816 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442867AbiAXUzf (ORCPT
+        Mon, 24 Jan 2022 16:23:45 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:51990 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1443128AbiAXU4V (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:55:35 -0500
+        Mon, 24 Jan 2022 15:56:21 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7B015612C3;
-        Mon, 24 Jan 2022 20:55:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 55A18C340EA;
-        Mon, 24 Jan 2022 20:55:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 903F0B81057;
+        Mon, 24 Jan 2022 20:56:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B32BBC340E5;
+        Mon, 24 Jan 2022 20:56:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057733;
-        bh=XmunwkHp3uSTDer0TGSDoR8vFkcsn6YyKg9JSHU7/wM=;
+        s=korg; t=1643057779;
+        bh=LuecBG6exdVyr57uhsw42o+FTE4KyTz6RrJJmYThb+Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Aqaz7oDnQ3K3IcyldeYn7nz7Wt7W87rLKQjeBJ0h10gdNDmQE5VK/xpQdztjTB0DB
-         wRPnGJbH31wmkcjTLTO9RFJJgvmz0E9f45hxtd9tkyk3UhAfjPm15cVqfNWbwDm6D/
-         CV87PIsZWxXRI7mjrR85aYKAQPiQyrRjr7kxVn64=
+        b=Crp+5GgcHgU8yDJxom8eknM1uKALuok/117kOTd3t0O+AtqCdYU3ZrvSmIDMmZXyF
+         IfPZ6T2gGAjhKZAQRCXlvQdv3FCy63jRXlSuTbKFIlHJ8Gtd8w9ixRbhJJNskGhYTz
+         kfbf/PKt0yTOn9RmRddLEInR9wO/dfAez3tFIQwM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Aleksander Morgado <aleksander@aleksander.es>,
-        Thomas Perrot <thomas.perrot@bootlin.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH 5.16 0062/1039] bus: mhi: core: Fix race while handling SYS_ERR at power up
-Date:   Mon, 24 Jan 2022 19:30:51 +0100
-Message-Id: <20220124184127.234835641@linuxfoundation.org>
+        stable@vger.kernel.org, Baoquan He <bhe@redhat.com>,
+        Christoph Hellwig <hch@lst.de>,
+        John Donnelly <john.p.donnelly@oracle.com>,
+        David Hildenbrand <david@redhat.com>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Robin Murphy <robin.murphy@arm.com>,
+        Borislav Petkov <bp@alien8.de>,
+        Christoph Lameter <cl@linux.com>,
+        David Laight <David.Laight@ACULAB.COM>,
+        David Rientjes <rientjes@google.com>,
+        Hyeonggon Yoo <42.hyeyoo@gmail.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        Vlastimil Babka <vbabka@suse.cz>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Linus Torvalds <torvalds@linux-foundation.org>
+Subject: [PATCH 5.16 0076/1039] dma/pool: create dma atomic pool only if dma zone has managed pages
+Date:   Mon, 24 Jan 2022 19:31:05 +0100
+Message-Id: <20220124184127.725084274@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -48,116 +60,88 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+From: Baoquan He <bhe@redhat.com>
 
-commit d651ce8e917fa1bf6cfab8dca74c512edffc35d3 upstream.
+commit a674e48c5443d12a8a43c3ac42367aa39505d506 upstream.
 
-During SYS_ERR condition, as a response to the MHI_RESET from host, some
-devices tend to issue BHI interrupt without clearing the SYS_ERR state in
-the device. This creates a race condition and causes a failure in booting
-up the device.
+Currently three dma atomic pools are initialized as long as the relevant
+kernel codes are built in.  While in kdump kernel of x86_64, this is not
+right when trying to create atomic_pool_dma, because there's no managed
+pages in DMA zone.  In the case, DMA zone only has low 1M memory
+presented and locked down by memblock allocator.  So no pages are added
+into buddy of DMA zone.  Please check commit f1d4d47c5851 ("x86/setup:
+Always reserve the first 1M of RAM").
 
-The issue is seen on the Sierra Wireless EM9191 modem during SYS_ERR
-handling in mhi_async_power_up(). Once the host detects that the device
-is in SYS_ERR state, it issues MHI_RESET and waits for the device to
-process the reset request. During this time, the device triggers the BHI
-interrupt to the host without clearing SYS_ERR condition. So the host
-starts handling the SYS_ERR condition again.
+Then in kdump kernel of x86_64, it always prints below failure message:
 
-To fix this issue, let's register the IRQ handler only after handling the
-SYS_ERR check to avoid getting spurious IRQs from the device.
+ DMA: preallocated 128 KiB GFP_KERNEL pool for atomic allocations
+ swapper/0: page allocation failure: order:5, mode:0xcc1(GFP_KERNEL|GFP_DMA), nodemask=(null),cpuset=/,mems_allowed=0
+ CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.13.0-0.rc5.20210611git929d931f2b40.42.fc35.x86_64 #1
+ Hardware name: Dell Inc. PowerEdge R910/0P658H, BIOS 2.12.0 06/04/2018
+ Call Trace:
+  dump_stack+0x7f/0xa1
+  warn_alloc.cold+0x72/0xd6
+  __alloc_pages_slowpath.constprop.0+0xf29/0xf50
+  __alloc_pages+0x24d/0x2c0
+  alloc_page_interleave+0x13/0xb0
+  atomic_pool_expand+0x118/0x210
+  __dma_atomic_pool_init+0x45/0x93
+  dma_atomic_pool_init+0xdb/0x176
+  do_one_initcall+0x67/0x320
+  kernel_init_freeable+0x290/0x2dc
+  kernel_init+0xa/0x111
+  ret_from_fork+0x22/0x30
+ Mem-Info:
+ ......
+ DMA: failed to allocate 128 KiB GFP_KERNEL|GFP_DMA pool for atomic allocation
+ DMA: preallocated 128 KiB GFP_KERNEL|GFP_DMA32 pool for atomic allocations
 
-Fixes: e18d4e9fa79b ("bus: mhi: core: Handle syserr during power_up")
-Cc: stable@vger.kernel.org
-Reported-by: Aleksander Morgado <aleksander@aleksander.es>
-Tested-by: Aleksander Morgado <aleksander@aleksander.es>
-Tested-by: Thomas Perrot <thomas.perrot@bootlin.com>
-Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Link: https://lore.kernel.org/r/20211216081227.237749-8-manivannan.sadhasivam@linaro.org
+Here, let's check if DMA zone has managed pages, then create
+atomic_pool_dma if yes.  Otherwise just skip it.
+
+Link: https://lkml.kernel.org/r/20211223094435.248523-3-bhe@redhat.com
+Fixes: 6f599d84231f ("x86/kdump: Always reserve the low 1M when the crashkernel option is specified")
+Signed-off-by: Baoquan He <bhe@redhat.com>
+Reviewed-by: Christoph Hellwig <hch@lst.de>
+Acked-by: John Donnelly  <john.p.donnelly@oracle.com>
+Reviewed-by: David Hildenbrand <david@redhat.com>
+Cc: Marek Szyprowski <m.szyprowski@samsung.com>
+Cc: Robin Murphy <robin.murphy@arm.com>
+Cc: Borislav Petkov <bp@alien8.de>
+Cc: Christoph Lameter <cl@linux.com>
+Cc: David Laight <David.Laight@ACULAB.COM>
+Cc: David Rientjes <rientjes@google.com>
+Cc: Hyeonggon Yoo <42.hyeyoo@gmail.com>
+Cc: Joonsoo Kim <iamjoonsoo.kim@lge.com>
+Cc: Pekka Enberg <penberg@kernel.org>
+Cc: Vlastimil Babka <vbabka@suse.cz>
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Andrew Morton <akpm@linux-foundation.org>
+Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/bus/mhi/core/pm.c |   35 ++++++++++++-----------------------
- 1 file changed, 12 insertions(+), 23 deletions(-)
+ kernel/dma/pool.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/bus/mhi/core/pm.c
-+++ b/drivers/bus/mhi/core/pm.c
-@@ -1053,7 +1053,7 @@ int mhi_async_power_up(struct mhi_contro
- 	enum mhi_ee_type current_ee;
- 	enum dev_st_transition next_state;
- 	struct device *dev = &mhi_cntrl->mhi_dev->dev;
--	u32 val;
-+	u32 interval_us = 25000; /* poll register field every 25 milliseconds */
- 	int ret;
- 
- 	dev_info(dev, "Requested to power ON\n");
-@@ -1070,10 +1070,6 @@ int mhi_async_power_up(struct mhi_contro
- 	mutex_lock(&mhi_cntrl->pm_mutex);
- 	mhi_cntrl->pm_state = MHI_PM_DISABLE;
- 
--	ret = mhi_init_irq_setup(mhi_cntrl);
--	if (ret)
--		goto error_setup_irq;
--
- 	/* Setup BHI INTVEC */
- 	write_lock_irq(&mhi_cntrl->pm_lock);
- 	mhi_write_reg(mhi_cntrl, mhi_cntrl->bhi, BHI_INTVEC, 0);
-@@ -1087,7 +1083,7 @@ int mhi_async_power_up(struct mhi_contro
- 		dev_err(dev, "%s is not a valid EE for power on\n",
- 			TO_MHI_EXEC_STR(current_ee));
- 		ret = -EIO;
--		goto error_async_power_up;
-+		goto error_exit;
+--- a/kernel/dma/pool.c
++++ b/kernel/dma/pool.c
+@@ -203,7 +203,7 @@ static int __init dma_atomic_pool_init(v
+ 						    GFP_KERNEL);
+ 	if (!atomic_pool_kernel)
+ 		ret = -ENOMEM;
+-	if (IS_ENABLED(CONFIG_ZONE_DMA)) {
++	if (has_managed_dma()) {
+ 		atomic_pool_dma = __dma_atomic_pool_init(atomic_pool_size,
+ 						GFP_KERNEL | GFP_DMA);
+ 		if (!atomic_pool_dma)
+@@ -226,7 +226,7 @@ static inline struct gen_pool *dma_guess
+ 	if (prev == NULL) {
+ 		if (IS_ENABLED(CONFIG_ZONE_DMA32) && (gfp & GFP_DMA32))
+ 			return atomic_pool_dma32;
+-		if (IS_ENABLED(CONFIG_ZONE_DMA) && (gfp & GFP_DMA))
++		if (atomic_pool_dma && (gfp & GFP_DMA))
+ 			return atomic_pool_dma;
+ 		return atomic_pool_kernel;
  	}
- 
- 	state = mhi_get_mhi_state(mhi_cntrl);
-@@ -1096,20 +1092,12 @@ int mhi_async_power_up(struct mhi_contro
- 
- 	if (state == MHI_STATE_SYS_ERR) {
- 		mhi_set_mhi_state(mhi_cntrl, MHI_STATE_RESET);
--		ret = wait_event_timeout(mhi_cntrl->state_event,
--				MHI_PM_IN_FATAL_STATE(mhi_cntrl->pm_state) ||
--					mhi_read_reg_field(mhi_cntrl,
--							   mhi_cntrl->regs,
--							   MHICTRL,
--							   MHICTRL_RESET_MASK,
--							   MHICTRL_RESET_SHIFT,
--							   &val) ||
--					!val,
--				msecs_to_jiffies(mhi_cntrl->timeout_ms));
--		if (!ret) {
--			ret = -EIO;
-+		ret = mhi_poll_reg_field(mhi_cntrl, mhi_cntrl->regs, MHICTRL,
-+				 MHICTRL_RESET_MASK, MHICTRL_RESET_SHIFT, 0,
-+				 interval_us);
-+		if (ret) {
- 			dev_info(dev, "Failed to reset MHI due to syserr state\n");
--			goto error_async_power_up;
-+			goto error_exit;
- 		}
- 
- 		/*
-@@ -1119,6 +1107,10 @@ int mhi_async_power_up(struct mhi_contro
- 		mhi_write_reg(mhi_cntrl, mhi_cntrl->bhi, BHI_INTVEC, 0);
- 	}
- 
-+	ret = mhi_init_irq_setup(mhi_cntrl);
-+	if (ret)
-+		goto error_exit;
-+
- 	/* Transition to next state */
- 	next_state = MHI_IN_PBL(current_ee) ?
- 		DEV_ST_TRANSITION_PBL : DEV_ST_TRANSITION_READY;
-@@ -1131,10 +1123,7 @@ int mhi_async_power_up(struct mhi_contro
- 
- 	return 0;
- 
--error_async_power_up:
--	mhi_deinit_free_irq(mhi_cntrl);
--
--error_setup_irq:
-+error_exit:
- 	mhi_cntrl->pm_state = MHI_PM_DISABLE;
- 	mutex_unlock(&mhi_cntrl->pm_mutex);
- 
 
 
