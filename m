@@ -2,42 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D315C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D7CCC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:31:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1385136AbiAXUb0 (ORCPT
+        id S1352220AbiAXUbm (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:31:26 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:38048 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243990AbiAXUL2 (ORCPT
+        Mon, 24 Jan 2022 15:31:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33852 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355367AbiAXUNg (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:11:28 -0500
+        Mon, 24 Jan 2022 15:13:36 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0323C01D7D0;
+        Mon, 24 Jan 2022 11:34:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D3BB86091B;
-        Mon, 24 Jan 2022 20:11:26 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A5947C36AF9;
-        Mon, 24 Jan 2022 20:11:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 404D2612A5;
+        Mon, 24 Jan 2022 19:34:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F0774C340E5;
+        Mon, 24 Jan 2022 19:34:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055086;
-        bh=MM6JVk+Uapq/hQtW5GIQkGoyXljUX4rnKq+QBWgsLxM=;
+        s=korg; t=1643052885;
+        bh=Wz1PAbR8+iIe/jPfTcBbjPHkLNB0RxFEi0fK8+Aossk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H6Pp1LZVksR5zuhOG0640yByXnlB9T2lA3R3ovtVB1C+ddwTdoXX/sYauBzQPJSzz
-         d7atiUyynKaak+TAIVH+6NmaGZv/Rh8OV/MPE8N2ghg5BrIscILnK8tSoWr0aLY5Tp
-         YVHK8+2+bwzx4G0KrljwQKn2GNYTFvVAgksSZhSE=
+        b=GnbzTkVFfEEUR6g4t6TRBDWo+1/QnLkkDkvV2DSvkLnkQPfwvGWq5SVrP10iQeVWW
+         IY61jp3pbsHS+9fxg/MfX/FoVlZSGGWTtZ0Ki63kw46z246TptEURNqsDztso1MNDS
+         beYvSy6fypp3UuMZNWyoKGGSuZ2uwTlPZNuXoOlg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Namjae Jeon <linkinjeon@kernel.org>,
-        Steve French <stfrench@microsoft.com>
-Subject: [PATCH 5.15 035/846] ksmbd: fix guest connection failure with nautilus
-Date:   Mon, 24 Jan 2022 19:32:32 +0100
-Message-Id: <20220124184102.155872424@linuxfoundation.org>
+        stable@vger.kernel.org, Neal Liu <neal_liu@aspeedtech.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 173/320] usb: uhci: add aspeed ast2600 uhci support
+Date:   Mon, 24 Jan 2022 19:42:37 +0100
+Message-Id: <20220124183959.550782168@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
-References: <20220124184100.867127425@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -46,115 +49,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Namjae Jeon <linkinjeon@kernel.org>
+From: Neal Liu <neal_liu@aspeedtech.com>
 
-commit ac090d9c90b087d6fb714e54b2a6dd1e6c373ed6 upstream.
+[ Upstream commit 554abfe2eadec97d12c71d4a69da1518478f69eb ]
 
-MS-SMB2 describe session sign like the following.
-Session.SigningRequired MUST be set to TRUE under the following conditions:
- - If the SMB2_NEGOTIATE_SIGNING_REQUIRED bit is set in the SecurityMode
-   field of the client request.
- - If the SMB2_SESSION_FLAG_IS_GUEST bit is not set in the SessionFlags
-   field and Session.IsAnonymous is FALSE and either Connection.ShouldSign
-   or global RequireMessageSigning is TRUE.
+Enable ast2600 uhci quirks.
 
-When trying guest account connection using nautilus, The login failure
-happened on session setup. ksmbd does not allow this connection
-when the user is a guest and the connection sign is set. Just do not set
-session sign instead of error response as described in the specification.
-And this change improves the guest connection in Nautilus.
-
-Fixes: e2f34481b24d ("cifsd: add server-side procedures for SMB3")
-Cc: stable@vger.kernel.org # v5.15+
-Signed-off-by: Namjae Jeon <linkinjeon@kernel.org>
-Signed-off-by: Steve French <stfrench@microsoft.com>
+Signed-off-by: Neal Liu <neal_liu@aspeedtech.com>
+Link: https://lore.kernel.org/r/20211126100021.2331024-1-neal_liu@aspeedtech.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- fs/ksmbd/smb2pdu.c |   64 ++++++++++++++++++++++++-----------------------------
- 1 file changed, 30 insertions(+), 34 deletions(-)
+ drivers/usb/host/uhci-platform.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- a/fs/ksmbd/smb2pdu.c
-+++ b/fs/ksmbd/smb2pdu.c
-@@ -1457,11 +1457,6 @@ static int ntlm_authenticate(struct ksmb
- 
- 	sess->user = user;
- 	if (user_guest(sess->user)) {
--		if (conn->sign) {
--			ksmbd_debug(SMB, "Guest login not allowed when signing enabled\n");
--			return -EPERM;
--		}
--
- 		rsp->SessionFlags = SMB2_SESSION_FLAG_IS_GUEST_LE;
- 	} else {
- 		struct authenticate_message *authblob;
-@@ -1474,38 +1469,39 @@ static int ntlm_authenticate(struct ksmb
- 			ksmbd_debug(SMB, "authentication failed\n");
- 			return -EPERM;
+diff --git a/drivers/usb/host/uhci-platform.c b/drivers/usb/host/uhci-platform.c
+index 70dbd95c3f063..be9e9db7cad10 100644
+--- a/drivers/usb/host/uhci-platform.c
++++ b/drivers/usb/host/uhci-platform.c
+@@ -113,7 +113,8 @@ static int uhci_hcd_platform_probe(struct platform_device *pdev)
+ 				num_ports);
  		}
-+	}
- 
--		/*
--		 * If session state is SMB2_SESSION_VALID, We can assume
--		 * that it is reauthentication. And the user/password
--		 * has been verified, so return it here.
--		 */
--		if (sess->state == SMB2_SESSION_VALID) {
--			if (conn->binding)
--				goto binding_session;
--			return 0;
--		}
-+	/*
-+	 * If session state is SMB2_SESSION_VALID, We can assume
-+	 * that it is reauthentication. And the user/password
-+	 * has been verified, so return it here.
-+	 */
-+	if (sess->state == SMB2_SESSION_VALID) {
-+		if (conn->binding)
-+			goto binding_session;
-+		return 0;
-+	}
- 
--		if ((conn->sign || server_conf.enforced_signing) ||
--		    (req->SecurityMode & SMB2_NEGOTIATE_SIGNING_REQUIRED))
--			sess->sign = true;
--
--		if (smb3_encryption_negotiated(conn) &&
--		    !(req->Flags & SMB2_SESSION_REQ_FLAG_BINDING)) {
--			rc = conn->ops->generate_encryptionkey(sess);
--			if (rc) {
--				ksmbd_debug(SMB,
--					    "SMB3 encryption key generation failed\n");
--				return -EINVAL;
--			}
--			sess->enc = true;
--			rsp->SessionFlags = SMB2_SESSION_FLAG_ENCRYPT_DATA_LE;
--			/*
--			 * signing is disable if encryption is enable
--			 * on this session
--			 */
--			sess->sign = false;
-+	if ((rsp->SessionFlags != SMB2_SESSION_FLAG_IS_GUEST_LE &&
-+	     (conn->sign || server_conf.enforced_signing)) ||
-+	    (req->SecurityMode & SMB2_NEGOTIATE_SIGNING_REQUIRED))
-+		sess->sign = true;
-+
-+	if (smb3_encryption_negotiated(conn) &&
-+			!(req->Flags & SMB2_SESSION_REQ_FLAG_BINDING)) {
-+		rc = conn->ops->generate_encryptionkey(sess);
-+		if (rc) {
-+			ksmbd_debug(SMB,
-+					"SMB3 encryption key generation failed\n");
-+			return -EINVAL;
- 		}
-+		sess->enc = true;
-+		rsp->SessionFlags = SMB2_SESSION_FLAG_ENCRYPT_DATA_LE;
-+		/*
-+		 * signing is disable if encryption is enable
-+		 * on this session
-+		 */
-+		sess->sign = false;
- 	}
- 
- binding_session:
+ 		if (of_device_is_compatible(np, "aspeed,ast2400-uhci") ||
+-		    of_device_is_compatible(np, "aspeed,ast2500-uhci")) {
++		    of_device_is_compatible(np, "aspeed,ast2500-uhci") ||
++		    of_device_is_compatible(np, "aspeed,ast2600-uhci")) {
+ 			uhci->is_aspeed = 1;
+ 			dev_info(&pdev->dev,
+ 				 "Enabled Aspeed implementation workarounds\n");
+-- 
+2.34.1
+
 
 
