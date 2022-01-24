@@ -2,42 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 461E0C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:19:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 061FEC433FE
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:19:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347994AbiAXWSn (ORCPT
+        id S1582403AbiAXWS5 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:18:43 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:33280 "EHLO
+        Mon, 24 Jan 2022 17:18:57 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:45652 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447592AbiAXVLD (ORCPT
+        with ESMTP id S1454033AbiAXVbd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:11:03 -0500
+        Mon, 24 Jan 2022 16:31:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 882A8B8122A;
-        Mon, 24 Jan 2022 21:11:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8A394C340E5;
-        Mon, 24 Jan 2022 21:11:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CFA31B81233;
+        Mon, 24 Jan 2022 21:31:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0D55DC340E4;
+        Mon, 24 Jan 2022 21:31:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058661;
-        bh=19hz3DN36gB56Klljxe2nsrN2tOxcnraYLZOEAd9hso=;
+        s=korg; t=1643059886;
+        bh=SCgLEX0Kh7icKYxXAHJBDyBvz8vlCwfQ+JaNq8HYN6I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YmPnuL5Roko1PNAA3VsHj4WTMADlWBXBMYf3cMt6Xea1uG6mnbaYtdPaMOKKWdE4x
-         WdOkCiqcFQpXG5ztfHliRjM2TkRvwbh87uqPTOlME+/PuhaHhKR1zrcOmSrWLiZVC5
-         H9JRdGpmCYSXaeL1vA4Z2umyT6OTJg3IlBEqmPsM=
+        b=SOhF7xS8wJxYAkrWC+6q6qMya6VLFnqVYIcbQ4ExHb8lzKNq1C8svLNm+j2fb10/y
+         4mWaVgiUkdXV6IooQ9oGC/uTPTdwJ/YlP9djBD/8zD7cbpdEd6/6PESB1lctCpJ0+M
+         SfaxRg6WlLx/Hrq6ccwla8rsR5+9UUGlWUFmu+JE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, TCS Robot <tcs_robot@tencent.com>,
-        Haimin Zhang <tcs_kernel@tencent.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Joanne Koong <joannekoong@fb.com>,
+        stable@vger.kernel.org, kernel test robot <lkp@intel.com>,
+        Hari Bathini <hbathini@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0361/1039] bpf: Add missing map_get_next_key method to bloom filter map.
-Date:   Mon, 24 Jan 2022 19:35:50 +0100
-Message-Id: <20220124184137.412435046@linuxfoundation.org>
+Subject: [PATCH 5.16 0760/1039] powerpc: handle kdump appropriately with crash_kexec_post_notifiers option
+Date:   Mon, 24 Jan 2022 19:42:29 +0100
+Message-Id: <20220124184150.870815207@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -49,47 +48,73 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Haimin Zhang <tcs_kernel@tencent.com>
+From: Hari Bathini <hbathini@linux.ibm.com>
 
-[ Upstream commit 3ccdcee28415c4226de05438b4d89eb5514edf73 ]
+[ Upstream commit 219572d2fc4135b5ce65c735d881787d48b10e71 ]
 
-Without it, kernel crashes in map_get_next_key().
+Kdump can be triggered after panic_notifers since commit f06e5153f4ae2
+("kernel/panic.c: add "crash_kexec_post_notifiers" option for kdump
+after panic_notifers") introduced crash_kexec_post_notifiers option.
+But using this option would mean smp_send_stop(), that marks all other
+CPUs as offline, gets called before kdump is triggered. As a result,
+kdump routines fail to save other CPUs' registers. To fix this, kdump
+friendly crash_smp_send_stop() function was introduced with kernel
+commit 0ee59413c967 ("x86/panic: replace smp_send_stop() with kdump
+friendly version in panic path"). Override this kdump friendly weak
+function to handle crash_kexec_post_notifiers option appropriately
+on powerpc.
 
-Fixes: 9330986c0300 ("bpf: Add bloom filter map implementation")
-Reported-by: TCS Robot <tcs_robot@tencent.com>
-Signed-off-by: Haimin Zhang <tcs_kernel@tencent.com>
-Signed-off-by: Alexei Starovoitov <ast@kernel.org>
-Acked-by: Joanne Koong <joannekoong@fb.com>
-Link: https://lore.kernel.org/bpf/1640776802-22421-1-git-send-email-tcs.kernel@gmail.com
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Hari Bathini <hbathini@linux.ibm.com>
+[Fixed signature of crash_stop_this_cpu() - reported by lkp@intel.com]
+Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
+Link: https://lore.kernel.org/r/20211207103719.91117-1-hbathini@linux.ibm.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- kernel/bpf/bloom_filter.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ arch/powerpc/kernel/smp.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-diff --git a/kernel/bpf/bloom_filter.c b/kernel/bpf/bloom_filter.c
-index 277a05e9c9849..b141a1346f72d 100644
---- a/kernel/bpf/bloom_filter.c
-+++ b/kernel/bpf/bloom_filter.c
-@@ -82,6 +82,11 @@ static int bloom_map_delete_elem(struct bpf_map *map, void *value)
- 	return -EOPNOTSUPP;
+diff --git a/arch/powerpc/kernel/smp.c b/arch/powerpc/kernel/smp.c
+index aee3a7119f977..7201fdcf02f1c 100644
+--- a/arch/powerpc/kernel/smp.c
++++ b/arch/powerpc/kernel/smp.c
+@@ -620,6 +620,36 @@ void crash_send_ipi(void (*crash_ipi_callback)(struct pt_regs *))
  }
+ #endif
  
-+static int bloom_map_get_next_key(struct bpf_map *map, void *key, void *next_key)
++#ifdef CONFIG_NMI_IPI
++static void crash_stop_this_cpu(struct pt_regs *regs)
++#else
++static void crash_stop_this_cpu(void *dummy)
++#endif
 +{
-+	return -EOPNOTSUPP;
++	/*
++	 * Just busy wait here and avoid marking CPU as offline to ensure
++	 * register data is captured appropriately.
++	 */
++	while (1)
++		cpu_relax();
 +}
 +
- static struct bpf_map *bloom_map_alloc(union bpf_attr *attr)
++void crash_smp_send_stop(void)
++{
++	static bool stopped = false;
++
++	if (stopped)
++		return;
++
++	stopped = true;
++
++#ifdef CONFIG_NMI_IPI
++	smp_send_nmi_ipi(NMI_IPI_ALL_OTHERS, crash_stop_this_cpu, 1000000);
++#else
++	smp_call_function(crash_stop_this_cpu, NULL, 0);
++#endif /* CONFIG_NMI_IPI */
++}
++
+ #ifdef CONFIG_NMI_IPI
+ static void nmi_stop_this_cpu(struct pt_regs *regs)
  {
- 	u32 bitset_bytes, bitset_mask, nr_hash_funcs, nr_bits;
-@@ -192,6 +197,7 @@ const struct bpf_map_ops bloom_filter_map_ops = {
- 	.map_meta_equal = bpf_map_meta_equal,
- 	.map_alloc = bloom_map_alloc,
- 	.map_free = bloom_map_free,
-+	.map_get_next_key = bloom_map_get_next_key,
- 	.map_push_elem = bloom_map_push_elem,
- 	.map_peek_elem = bloom_map_peek_elem,
- 	.map_pop_elem = bloom_map_pop_elem,
 -- 
 2.34.1
 
