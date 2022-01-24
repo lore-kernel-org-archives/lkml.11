@@ -2,39 +2,41 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EA8CC433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:18:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D99AC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:19:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381054AbiAXUSt (ORCPT
+        id S1381114AbiAXUSz (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:18:49 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:44852 "EHLO
+        Mon, 24 Jan 2022 15:18:55 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:46498 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353260AbiAXUBh (ORCPT
+        with ESMTP id S1376391AbiAXUBm (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:01:37 -0500
+        Mon, 24 Jan 2022 15:01:42 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6C155B8122F;
-        Mon, 24 Jan 2022 20:01:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D309C340E5;
-        Mon, 24 Jan 2022 20:01:33 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7FBF6B811FB;
+        Mon, 24 Jan 2022 20:01:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F42EC340E5;
+        Mon, 24 Jan 2022 20:01:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054494;
-        bh=XKhNpFcyGUjE+sjTlejmD2OUYPSklbFBgEeUXUUIQe4=;
+        s=korg; t=1643054497;
+        bh=Csfys2uwM396iME7raG1/d7q99Qkj/wQ1zHtdVop2hQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UPU4jHB/7hZKEoubXPoZsU5KKFr++YmltxEJQmdIYTQt3Alr5Rx5V8artuy2hswLq
-         9T8JADaa8ULydhnUrI0yapJBBgRhv8Xy1kz7B1Q/vYNi1uok/4SJG3TB4dADHKhMdI
-         43s/bev1ns/KgMaKHSnAHWaxxOV7keTrVcZawfNU=
+        b=IKTw90tYXDjExGfaPa6oXiue1DhraGiv/b33D3RhBBbpaakWEUwGWHNQpVvk7KJgw
+         TQ4K1TChHyx+R4oy0lHzvaIcChYMUyKKsRJunEvrXWsT7sF4byNXlDg5VFMQ+bhdla
+         D62WFwL9oInsVF+z4gFZeCqi7W332PLfGHy8Yb04=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ingo Molnar <mingo@kernel.org>,
+        stable@vger.kernel.org, Marina Nikolic <Marina.Nikolic@amd.com>,
+        Evan Quan <evan.quan@amd.com>, Lijo Lazar <lijo.lazar@amd.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 408/563] x86/kbuild: Enable CONFIG_KALLSYMS_ALL=y in the defconfigs
-Date:   Mon, 24 Jan 2022 19:42:53 +0100
-Message-Id: <20220124184038.548917070@linuxfoundation.org>
+Subject: [PATCH 5.10 391/563] amdgpu/pm: Make sysfs pm attributes as read-only for VFs
+Date:   Mon, 24 Jan 2022 19:42:36 +0100
+Message-Id: <20220124184037.956883483@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -46,43 +48,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ingo Molnar <mingo@kernel.org>
+From: Marina Nikolic <Marina.Nikolic@amd.com>
 
-[ Upstream commit b6aa86cff44cf099299d3a5e66348cb709cd7964 ]
+[ Upstream commit 11c9cc95f818f0f187e9b579a7f136f532b42445 ]
 
-Most distro kernels have this option enabled, to improve debug output.
+== Description ==
+Setting values of pm attributes through sysfs
+should not be allowed in SRIOV mode.
+These calls will not be processed by FW anyway,
+but error handling on sysfs level should be improved.
 
-Lockdep also selects it.
+== Changes ==
+This patch prohibits performing of all set commands
+in SRIOV mode on sysfs level.
+It offers better error handling as calls that are
+not allowed will not be propagated further.
 
-Enable this in the defconfig kernel as well, to make it more
-representative of what people are using on x86.
+== Test ==
+Writing to any sysfs file in passthrough mode will succeed.
+Writing to any sysfs file in ONEVF mode will yield error:
+"calling process does not have sufficient permission to execute a command".
 
-Signed-off-by: Ingo Molnar <mingo@kernel.org>
-Link: https://lore.kernel.org/r/YdTn7gssoMVDMgMw@gmail.com
+Signed-off-by: Marina Nikolic <Marina.Nikolic@amd.com>
+Acked-by: Evan Quan <evan.quan@amd.com>
+Reviewed-by: Lijo Lazar <lijo.lazar@amd.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/configs/i386_defconfig   | 1 +
- arch/x86/configs/x86_64_defconfig | 1 +
- 2 files changed, 2 insertions(+)
+ drivers/gpu/drm/amd/pm/amdgpu_pm.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/x86/configs/i386_defconfig b/arch/x86/configs/i386_defconfig
-index 78210793d357c..38d7acb9610cc 100644
---- a/arch/x86/configs/i386_defconfig
-+++ b/arch/x86/configs/i386_defconfig
-@@ -264,3 +264,4 @@ CONFIG_BLK_DEV_IO_TRACE=y
- CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
- CONFIG_EARLY_PRINTK_DBGP=y
- CONFIG_DEBUG_BOOT_PARAMS=y
-+CONFIG_KALLSYMS_ALL=y
-diff --git a/arch/x86/configs/x86_64_defconfig b/arch/x86/configs/x86_64_defconfig
-index 9936528e19393..c6e587a9a6f85 100644
---- a/arch/x86/configs/x86_64_defconfig
-+++ b/arch/x86/configs/x86_64_defconfig
-@@ -260,3 +260,4 @@ CONFIG_BLK_DEV_IO_TRACE=y
- CONFIG_PROVIDE_OHCI1394_DMA_INIT=y
- CONFIG_EARLY_PRINTK_DBGP=y
- CONFIG_DEBUG_BOOT_PARAMS=y
-+CONFIG_KALLSYMS_ALL=y
+diff --git a/drivers/gpu/drm/amd/pm/amdgpu_pm.c b/drivers/gpu/drm/amd/pm/amdgpu_pm.c
+index 9f383b9041d28..49109614510b8 100644
+--- a/drivers/gpu/drm/amd/pm/amdgpu_pm.c
++++ b/drivers/gpu/drm/amd/pm/amdgpu_pm.c
+@@ -2098,6 +2098,12 @@ static int default_attr_update(struct amdgpu_device *adev, struct amdgpu_device_
+ 		}
+ 	}
+ 
++	/* setting should not be allowed from VF */
++	if (amdgpu_sriov_vf(adev)) {
++		dev_attr->attr.mode &= ~S_IWUGO;
++		dev_attr->store = NULL;
++	}
++
+ #undef DEVICE_ATTR_IS
+ 
+ 	return 0;
 -- 
 2.34.1
 
