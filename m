@@ -2,40 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBDF4C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE6AC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:28:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1452320AbiAXVYf (ORCPT
+        id S1343492AbiAXVYh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:24:35 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:52000 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443725AbiAXU6w (ORCPT
+        Mon, 24 Jan 2022 16:24:37 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52044 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1443683AbiAXU6f (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:58:52 -0500
+        Mon, 24 Jan 2022 15:58:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 08E9460C60;
-        Mon, 24 Jan 2022 20:58:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D6069C340E7;
-        Mon, 24 Jan 2022 20:58:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AC9D7B812A7;
+        Mon, 24 Jan 2022 20:58:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CF58FC340E5;
+        Mon, 24 Jan 2022 20:58:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057929;
-        bh=oM9XJ6lkMtHrXDqXRQuGbTYoOCRv3BOX3desWydiKQI=;
+        s=korg; t=1643057911;
+        bh=UhT0JaI55mgQA7ptyJJ/KmDglLAZ1One7Pak05Uef7I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WAfhJkZJ5adSIvZcHjbhHh/eWgXADFrXpZq8LfCrT26ZRyV2B2IhyvhXeKEJvnsjT
-         AmfPYj6P5rGWbA1N++BdrWqL+cMgalf4WmxW4ilb1n45SMFlv+6Ydvr+zbK7+QZjLt
-         3QVlaJhrLa6dMyi4chBnP/u4Knh6hvEtCi0znNpY=
+        b=q3Gaa+XJGqXrLntATQXF0kvSFAsT9tg6LuC6aWEf3YeLFqQZF/HasKWmMUWIj7Wqz
+         dEZ1PlzdbATyFWzVYro3UQvXLQUMwtcKZSW/ScbMHeqx0qOhXEfVswwvOmn7p7Jgd4
+         pya/ylo8teOv+iQh12u3Ofgek/wbP/NG7l3/z3y8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Soenke Huster <soenke.huster@eknoes.de>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0092/1039] Bluetooth: virtio_bt: fix memory leak in virtbt_rx_handle()
-Date:   Mon, 24 Jan 2022 19:31:21 +0100
-Message-Id: <20220124184128.250254555@linuxfoundation.org>
+Subject: [PATCH 5.16 0118/1039] mtd: hyperbus: rpc-if: Check return value of rpcif_sw_init()
+Date:   Mon, 24 Jan 2022 19:31:47 +0100
+Message-Id: <20220124184129.107940134@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,35 +51,39 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Soenke Huster <soenke.huster@eknoes.de>
+From: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
 
-[ Upstream commit 1d0688421449718c6c5f46e458a378c9b530ba18 ]
+[ Upstream commit 981387ed06b96908223a607f5fba6efa42728fc2 ]
 
-On the reception of packets with an invalid packet type, the memory of
-the allocated socket buffers is never freed. Add a default case that frees
-these to avoid a memory leak.
+rpcif_sw_init() can fail so make sure we check the return value
+of it and on error exit rpcif_hb_probe() callback with error code.
 
-Fixes: afd2daa26c7a ("Bluetooth: Add support for virtio transport driver")
-Signed-off-by: Soenke Huster <soenke.huster@eknoes.de>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: 5de15b610f78 ("mtd: hyperbus: add Renesas RPC-IF driver")
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
+Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Link: https://lore.kernel.org/r/20211025205631.21151-5-prabhakar.mahadev-lad.rj@bp.renesas.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/virtio_bt.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/mtd/hyperbus/rpc-if.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/bluetooth/virtio_bt.c b/drivers/bluetooth/virtio_bt.c
-index 57908ce4fae85..076e4942a3f0e 100644
---- a/drivers/bluetooth/virtio_bt.c
-+++ b/drivers/bluetooth/virtio_bt.c
-@@ -202,6 +202,9 @@ static void virtbt_rx_handle(struct virtio_bluetooth *vbt, struct sk_buff *skb)
- 		hci_skb_pkt_type(skb) = pkt_type;
- 		hci_recv_frame(vbt->hdev, skb);
- 		break;
-+	default:
-+		kfree_skb(skb);
-+		break;
- 	}
- }
+diff --git a/drivers/mtd/hyperbus/rpc-if.c b/drivers/mtd/hyperbus/rpc-if.c
+index ecb050ba95cdf..367b0d72bf622 100644
+--- a/drivers/mtd/hyperbus/rpc-if.c
++++ b/drivers/mtd/hyperbus/rpc-if.c
+@@ -124,7 +124,9 @@ static int rpcif_hb_probe(struct platform_device *pdev)
+ 	if (!hyperbus)
+ 		return -ENOMEM;
+ 
+-	rpcif_sw_init(&hyperbus->rpc, pdev->dev.parent);
++	error = rpcif_sw_init(&hyperbus->rpc, pdev->dev.parent);
++	if (error)
++		return error;
+ 
+ 	platform_set_drvdata(pdev, hyperbus);
  
 -- 
 2.34.1
