@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 967DCC4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 304D6C4167B
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:37:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386359AbiAXXhW (ORCPT
+        id S1382775AbiAXXhS (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:37:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44860 "EHLO
+        Mon, 24 Jan 2022 18:37:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45802 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382592AbiAXW4D (ORCPT
+        with ESMTP id S1382474AbiAXW4C (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:56:03 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59AF1C055AA2;
-        Mon, 24 Jan 2022 13:10:45 -0800 (PST)
+        Mon, 24 Jan 2022 17:56:02 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDA4EC055AA0;
+        Mon, 24 Jan 2022 13:10:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 187BBB80CCF;
-        Mon, 24 Jan 2022 21:10:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3F544C340E5;
-        Mon, 24 Jan 2022 21:10:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 7CD006141C;
+        Mon, 24 Jan 2022 21:10:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FC78C340E5;
+        Mon, 24 Jan 2022 21:10:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058642;
-        bh=dK3hIHSJOFGdVBAyhBXTzS2yjHybOl79EpD320zhCR4=;
+        s=korg; t=1643058633;
+        bh=1sxxLQIPWRG6aWSNdg8Rs1aLFGBqVedpdVrcpjRSgSU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K7h8D2FQP9GbQ4zW8Jf1nudySIkIJNUv2KCD9fnwMiCHin/UydFHqIehuE+QUYmGe
-         Ihlm19hn9QYeossWXY+csriTUefqBa810pDGi1R3DcFAGFM59R7IBiS0i8n7Rjd+HY
-         ITj5EM4vlYQFwtRqZjXxp/U0Qf2u8kdGf+Odoz3o=
+        b=dWlCZEk4OmQgk1laMwEUiMQ0BDnklTLeJXYWMQAOMATGv6MD9Ru0l0Boj9Y+WowtM
+         AYZNNcnm/dpxOL5Le41aEQzbWqLkr4jRLbTDPaIEO5Rhf2PVwV7CXcidDongP3pKsu
+         /YJfgrJQci4JMNLDa+6IEzINPNb+Kvj11B8lLBMw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
+        stable@vger.kernel.org, Bernard Zhao <bernard@vivo.com>,
+        Paul Moore <paul@paul-moore.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0355/1039] crypto: octeontx2 - prevent underflow in get_cores_bmap()
-Date:   Mon, 24 Jan 2022 19:35:44 +0100
-Message-Id: <20220124184137.215571101@linuxfoundation.org>
+Subject: [PATCH 5.16 0335/1039] selinux: fix potential memleak in selinux_add_opt()
+Date:   Mon, 24 Jan 2022 19:35:24 +0100
+Message-Id: <20220124184136.568570374@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,35 +50,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Bernard Zhao <bernard@vivo.com>
 
-[ Upstream commit 10371b6212bb682f13247733d6b76b91b2b80f9a ]
+[ Upstream commit 2e08df3c7c4e4e74e3dd5104c100f0bf6288aaa8 ]
 
-If we're going to cap "eng_grp->g->engs_num" upper bounds then we should
-cap the lower bounds as well.
+This patch try to fix potential memleak in error branch.
 
-Fixes: 43ac0b824f1c ("crypto: octeontx2 - load microcode and create engine groups")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Fixes: ba6418623385 ("selinux: new helper - selinux_add_opt()")
+Signed-off-by: Bernard Zhao <bernard@vivo.com>
+[PM: tweak the subject line, add Fixes tag]
+Signed-off-by: Paul Moore <paul@paul-moore.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ security/selinux/hooks.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
-index dff34b3ec09e1..7c1b92aaab398 100644
---- a/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
-+++ b/drivers/crypto/marvell/octeontx2/otx2_cptpf_ucode.c
-@@ -29,7 +29,8 @@ static struct otx2_cpt_bitmap get_cores_bmap(struct device *dev,
- 	bool found = false;
- 	int i;
+diff --git a/security/selinux/hooks.c b/security/selinux/hooks.c
+index dde4ecc0cd186..49b4f59db35e7 100644
+--- a/security/selinux/hooks.c
++++ b/security/selinux/hooks.c
+@@ -988,18 +988,22 @@ out:
+ static int selinux_add_opt(int token, const char *s, void **mnt_opts)
+ {
+ 	struct selinux_mnt_opts *opts = *mnt_opts;
++	bool is_alloc_opts = false;
  
--	if (eng_grp->g->engs_num > OTX2_CPT_MAX_ENGINES) {
-+	if (eng_grp->g->engs_num < 0 ||
-+	    eng_grp->g->engs_num > OTX2_CPT_MAX_ENGINES) {
- 		dev_err(dev, "unsupported number of engines %d on octeontx2\n",
- 			eng_grp->g->engs_num);
- 		return bmap;
+ 	if (token == Opt_seclabel)	/* eaten and completely ignored */
+ 		return 0;
+ 
++	if (!s)
++		return -ENOMEM;
++
+ 	if (!opts) {
+ 		opts = kzalloc(sizeof(struct selinux_mnt_opts), GFP_KERNEL);
+ 		if (!opts)
+ 			return -ENOMEM;
+ 		*mnt_opts = opts;
++		is_alloc_opts = true;
+ 	}
+-	if (!s)
+-		return -ENOMEM;
++
+ 	switch (token) {
+ 	case Opt_context:
+ 		if (opts->context || opts->defcontext)
+@@ -1024,6 +1028,10 @@ static int selinux_add_opt(int token, const char *s, void **mnt_opts)
+ 	}
+ 	return 0;
+ Einval:
++	if (is_alloc_opts) {
++		kfree(opts);
++		*mnt_opts = NULL;
++	}
+ 	pr_warn(SEL_MOUNT_FAIL_MSG);
+ 	return -EINVAL;
+ }
 -- 
 2.34.1
 
