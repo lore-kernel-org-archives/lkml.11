@@ -2,138 +2,159 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F420C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 16:58:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC8E3C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 16:58:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244032AbiAXQ6F (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 11:58:05 -0500
-Received: from mta-p6.oit.umn.edu ([134.84.196.206]:40556 "EHLO
-        mta-p6.oit.umn.edu" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243685AbiAXQ6B (ORCPT
+        id S244037AbiAXQ6i (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 11:58:38 -0500
+Received: from alexa-out-sd-02.qualcomm.com ([199.106.114.39]:10619 "EHLO
+        alexa-out-sd-02.qualcomm.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S241308AbiAXQ6e (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 11:58:01 -0500
-Received: from localhost (unknown [127.0.0.1])
-        by mta-p6.oit.umn.edu (Postfix) with ESMTP id 4JjGQ11wNqz9vvsq
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 16:58:01 +0000 (UTC)
-X-Virus-Scanned: amavisd-new at umn.edu
-Received: from mta-p6.oit.umn.edu ([127.0.0.1])
-        by localhost (mta-p6.oit.umn.edu [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id WQFxJMtFL_ov for <linux-kernel@vger.kernel.org>;
-        Mon, 24 Jan 2022 10:58:01 -0600 (CST)
-Received: from mail-pl1-f197.google.com (mail-pl1-f197.google.com [209.85.214.197])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mta-p6.oit.umn.edu (Postfix) with ESMTPS id 4JjGPk10nvz9vKfQ
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 10:57:46 -0600 (CST)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mta-p6.oit.umn.edu 4JjGPk10nvz9vKfQ
-DKIM-Filter: OpenDKIM Filter v2.11.0 mta-p6.oit.umn.edu 4JjGPk10nvz9vKfQ
-Received: by mail-pl1-f197.google.com with SMTP id b15-20020a1709027e0f00b0014a922bc3a9so3640118plm.13
-        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 08:57:46 -0800 (PST)
+        Mon, 24 Jan 2022 11:58:34 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=umn.edu; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PMFfnAra5OAPA2izCo6QzwQ1sU01OGFtg5xgGw3BVmI=;
-        b=S5ZZStViBVCiSgrJgAPXiRKX3V4djwyrlnB6OeTG4NG6+lxAOXy+29Wuihu+/e9t5U
-         sH5hNg7qOIvGf3Q1MMfagwm7osjrG9TKG8hddH3EbNMYSRBbaewNw9B5vpX1UZnmzFME
-         BsU07O7fqLmJgYObCqfe/WIyIEux3XoN91Rn3QuGbaXd0oS/+bDEYKEFTMg1JEkvBF1d
-         /ky91uNUGtQcUsznxztF+HkLCjOzeBBo+ChsTcLqdE9A5ViJkSchONnPUCrOn8XjYR8r
-         c3/aMOq1VHBdqJV22eq7L5gC2vdW5HXd9kMNLdKTXDW0fdJEcHqeobKu+nukzGp8ojhj
-         YvHA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=PMFfnAra5OAPA2izCo6QzwQ1sU01OGFtg5xgGw3BVmI=;
-        b=HNNXnyXhWJUXdL9npJy8cuUktSDgZdorHNou7UwOSQ7ru7E6rx43MQ+0lo8A47NGfg
-         NH4EHMqeT23DhAphGEDPZU79Odz+4qmMhfyL9MZTrse1cSoMsfqxyZgViZzitaqT/BdQ
-         9A+v43foqAxSmRQ5jUTSymC3buAQQWc+CFAaqjWp013+r0D1ZH5AmUDAWU4TUCyuSFmR
-         r/1tm5semo4wuFz1kD/FP3AkJgVQzrNhMI4SF8jbCbSa+t2Z1F8asP5QdakrB6CLusu1
-         D1EFyrfbM9FHX6JPtRvI+zEkXQ2mSng8QJn3hVAeuK5Q7P7WP+yDEkW2apzvX0KLtrWX
-         SCKA==
-X-Gm-Message-State: AOAM531mJIyAyLhspjlzXsj6K/ug76qp6yQJnsq3ohcGz2wj/79rnCTT
-        TeS8IKVA7xUrqfjdWn1bdErbejKDeJiz15uSzLmomGikV7Qh3Tqoflyida7ETyapZ0L4WjdV0VI
-        p35i4uawb+SrumGwTfHkK5otL5soP
-X-Received: by 2002:a65:610b:: with SMTP id z11mr12719331pgu.205.1643043465359;
-        Mon, 24 Jan 2022 08:57:45 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxQnFXtF5Ph8R6eAihtOj2AR0vQXbTXIbQRkEBMw+neKa1NwTrsboSIeKwGF8tXd48OBGjhBA==
-X-Received: by 2002:a65:610b:: with SMTP id z11mr12719303pgu.205.1643043465076;
-        Mon, 24 Jan 2022 08:57:45 -0800 (PST)
-Received: from zqy787-GE5S.lan ([36.4.61.248])
-        by smtp.gmail.com with ESMTPSA id a15sm17826365pfv.212.2022.01.24.08.57.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Jan 2022 08:57:44 -0800 (PST)
-From:   Zhou Qingyang <zhou1615@umn.edu>
-To:     zhou1615@umn.edu
-Cc:     kjlu@umn.edu, Harry Wentland <harry.wentland@amd.com>,
-        Leo Li <sunpeng.li@amd.com>,
-        Rodrigo Siqueira <Rodrigo.Siqueira@amd.com>,
-        Alex Deucher <alexander.deucher@amd.com>,
-        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
-        "Pan, Xinhui" <Xinhui.Pan@amd.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Nicholas Kazlauskas <nicholas.kazlauskas@amd.com>,
-        Qingqing Zhuo <qingqing.zhuo@amd.com>,
-        Jude Shih <shenshih@amd.com>,
-        Aurabindo Pillai <aurabindo.pillai@amd.com>,
-        Nikola Cornij <nikola.cornij@amd.com>,
-        Wayne Lin <Wayne.Lin@amd.com>, Roman Li <Roman.Li@amd.com>,
-        Tony Cheng <Tony.Cheng@amd.com>, amd-gfx@lists.freedesktop.org,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] drm/amd/display: Fix a NULL pointer dereference in amdgpu_dm_connector_add_common_modes()
-Date:   Tue, 25 Jan 2022 00:57:29 +0800
-Message-Id: <20220124165732.56587-1-zhou1615@umn.edu>
-X-Mailer: git-send-email 2.25.1
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1643043514; x=1674579514;
+  h=message-id:date:mime-version:subject:to:cc:references:
+   from:in-reply-to:content-transfer-encoding;
+  bh=PB2abBFo+LtFf89gOGyi1S52is2pdXAToSOC4wA22ac=;
+  b=Ri2xU7NcMCkUPhM3XwPHlBFIKxoCt62lrFO+q4btT4rzWD2b4QhUqKES
+   sTrn/MjMMcpCsvJ58CK6NM0fPlw7Cnr1fg0sHK1l4TohapmW+JTacajOM
+   +8AjFVjcozSUGJI4GnBZ+gMlebnemH1Zr5hNMlUK92JXrD89sAGNCwXj/
+   s=;
+Received: from unknown (HELO ironmsg-SD-alpha.qualcomm.com) ([10.53.140.30])
+  by alexa-out-sd-02.qualcomm.com with ESMTP; 24 Jan 2022 08:58:34 -0800
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg-SD-alpha.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 08:58:34 -0800
+Received: from [10.216.45.46] (10.80.80.8) by nasanex01c.na.qualcomm.com
+ (10.47.97.222) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.922.19; Mon, 24 Jan
+ 2022 08:58:32 -0800
+Message-ID: <05cdeb95-1e16-c1c1-30df-135a4d4ebfcc@quicinc.com>
+Date:   Mon, 24 Jan 2022 22:28:28 +0530
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: synchronize_rcu_expedited gets stuck in hotplug path
+Content-Language: en-US
+To:     <paulmck@kernel.org>
+CC:     Tejun Heo <tj@kernel.org>, lkml <linux-kernel@vger.kernel.org>,
+        Thomas Gleixner <tglx@linutronix.de>, <jiangshanlai@gmail.com>
+References: <7359f994-8aaf-3cea-f5cf-c0d3929689d6@quicinc.com>
+ <20220118200646.GJ947480@paulmck-ThinkPad-P17-Gen-1>
+ <Yece9mH3nzwGxar6@slm.duckdns.org>
+ <20220118214155.GK947480@paulmck-ThinkPad-P17-Gen-1>
+ <4f2ada96-234f-31d8-664a-c84f5b461385@quicinc.com>
+ <20220124164452.GG4285@paulmck-ThinkPad-P17-Gen-1>
+From:   Mukesh Ojha <quic_mojha@quicinc.com>
+In-Reply-To: <20220124164452.GG4285@paulmck-ThinkPad-P17-Gen-1>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nasanex01c.na.qualcomm.com (10.47.97.222)
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-In amdgpu_dm_connector_add_common_modes(), amdgpu_dm_create_common_mode()
-is assigned to mode and is passed to drm_mode_probed_add() directly after
-that. drm_mode_probed_add() passes &mode->head to list_add_tail(), and
-there is a dereference of it in list_add_tail() without recoveries, which
-could lead to NULL pointer dereference on failure of
-amdgpu_dm_create_common_mode().
 
-Fix this by adding a NULL check of mode.
+On 1/24/2022 10:14 PM, Paul E. McKenney wrote:
+> On Mon, Jan 24, 2022 at 07:32:01PM +0530, Mukesh Ojha wrote:
+>> On 1/19/2022 3:11 AM, Paul E. McKenney wrote:
+>>> On Tue, Jan 18, 2022 at 10:11:34AM -1000, Tejun Heo wrote:
+>>>> Hello,
+>>>>
+>>>> On Tue, Jan 18, 2022 at 12:06:46PM -0800, Paul E. McKenney wrote:
+>>>>> Interesting.  Adding Tejun and Lai on CC for their perspective.
+>>>>>
+>>>>> As you say, the incoming CPU invoked synchronize_rcu_expedited() which
+>>>>> in turn invoked queue_work().  By default, workqueues will of course
+>>>>> queue that work on the current CPU.  But in this case, the CPU's bit
+>>>>> is not yet set in the cpu_active_mask.  Thus, a workqueue scheduled on
+>>>>> the incoming CPU won't be invoked until CPUHP_AP_ACTIVE, which won't
+>>>>> be reached until after the grace period ends, which cannot happen until
+>>>>> the workqueue handler is invoked.
+>>>>>
+>>>>> I could imagine doing something as shown in the (untested) patch below,
+>>>>> but first does this help?
+>>>>>
+>>>>> If it does help, would this sort of check be appropriate here or
+>>>>> should it instead go into workqueues?
+>>>> Maybe it can be solved by rearranging the hotplug sequence but it's fragile
+>>>> to schedule per-cpu work items from hotplug paths. Maybe the whole issue can
+>>>> be side-stepped by making synchronize_rcu_expedited() use unbound workqueue
+>>>> instead? Does it require to be per-cpu?
+>>> Good point!
+>>>
+>>> And now that you mention it, RCU expedited grace periods already avoid
+>>> using workqueues during early boot.  The (again untested) patch below
+>>> extends that approach to incoming CPUs.
+>>>
+>>> Thoughts?
+>> Hi Paul,
+>>
+>> We are not seeing the issue after this patch.
+>> Can we merge this patch ?
+> It is currently in -rcu and should also be in -next shortly.  Left to
+> myself, and assuming further testing and reviews all go well, I would
+> submit it during the upcoming v5.18 merge window.
+>
+> Does that work for you?  Or do you need it in mainline sooner?
 
-This bug was found by a static analyzer.
+Before reporting this issue, we saw only one instance of it.
+Also got this fix tested with same set of test cases, did not observe 
+any issue as of yet.
 
-Builds with 'make allyesconfig' show no new warnings,
-and our static analyzer no longer warns about this code.
+I would be happy to get a mail once it clear all the testing and get merges
+to -next. I would cherry-pick it in android branch-5.10.
 
-Fixes: e7b07ceef2a6 ("drm/amd/display: Merge amdgpu_dm_types and amdgpu_dm")
-Signed-off-by: Zhou Qingyang <zhou1615@umn.edu>
----
-The analysis employs differential checking to identify inconsistent 
-security operations (e.g., checks or kfrees) between two code paths 
-and confirms that the inconsistent operations are not recovered in the
-current function or the callers, so they constitute bugs. 
+-Mukesh
 
-Note that, as a bug found by static analysis, it can be a false
-positive or hard to trigger. Multiple researchers have cross-reviewed
-the bug.
-
- drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-index 7f9773f8dab6..9ad94186b146 100644
---- a/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-+++ b/drivers/gpu/drm/amd/display/amdgpu_dm/amdgpu_dm.c
-@@ -8143,6 +8143,9 @@ static void amdgpu_dm_connector_add_common_modes(struct drm_encoder *encoder,
- 		mode = amdgpu_dm_create_common_mode(encoder,
- 				common_modes[i].name, common_modes[i].w,
- 				common_modes[i].h);
-+		if (!mode)
-+			continue;
-+
- 		drm_mode_probed_add(connector, mode);
- 		amdgpu_dm_connector->num_modes++;
- 	}
--- 
-2.25.1
-
+>
+> 							Thanx, Paul
+>
+>> -Mukesh
+>>
+>>> 							Thanx, Paul
+>>>
+>>> ------------------------------------------------------------------------
+>>>
+>>> diff --git a/kernel/rcu/tree_exp.h b/kernel/rcu/tree_exp.h
+>>> index 60197ea24ceb9..1a45667402260 100644
+>>> --- a/kernel/rcu/tree_exp.h
+>>> +++ b/kernel/rcu/tree_exp.h
+>>> @@ -816,7 +816,7 @@ static int rcu_print_task_exp_stall(struct rcu_node *rnp)
+>>>     */
+>>>    void synchronize_rcu_expedited(void)
+>>>    {
+>>> -	bool boottime = (rcu_scheduler_active == RCU_SCHEDULER_INIT);
+>>> +	bool no_wq;
+>>>    	struct rcu_exp_work rew;
+>>>    	struct rcu_node *rnp;
+>>>    	unsigned long s;
+>>> @@ -841,9 +841,15 @@ void synchronize_rcu_expedited(void)
+>>>    	if (exp_funnel_lock(s))
+>>>    		return;  /* Someone else did our work for us. */
+>>> +	/* Don't use workqueue during boot or from an incoming CPU. */
+>>> +	preempt_disable();
+>>> +	no_wq = rcu_scheduler_active == RCU_SCHEDULER_INIT ||
+>>> +		!cpumask_test_cpu(smp_processor_id(), cpu_active_mask);
+>>> +	preempt_enable();
+>>> +
+>>>    	/* Ensure that load happens before action based on it. */
+>>> -	if (unlikely(boottime)) {
+>>> -		/* Direct call during scheduler init and early_initcalls(). */
+>>> +	if (unlikely(no_wq)) {
+>>> +		/* Direct call for scheduler init, early_initcall()s, and incoming CPUs. */
+>>>    		rcu_exp_sel_wait_wake(s);
+>>>    	} else {
+>>>    		/* Marshall arguments & schedule the expedited grace period. */
+>>> @@ -861,7 +867,7 @@ void synchronize_rcu_expedited(void)
+>>>    	/* Let the next expedited grace period start. */
+>>>    	mutex_unlock(&rcu_state.exp_mutex);
+>>> -	if (likely(!boottime))
+>>> +	if (likely(!no_wq))
+>>>    		destroy_work_on_stack(&rew.rew_work);
+>>>    }
+>>>    EXPORT_SYMBOL_GPL(synchronize_rcu_expedited);
