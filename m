@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99735C4167D
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD80C2BA4C
 	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:31:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3410957AbiAYAbS (ORCPT
+        id S3411039AbiAYAbg (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:31:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59506 "EHLO
+        Mon, 24 Jan 2022 19:31:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450656AbiAXVyz (ORCPT
+        with ESMTP id S1450655AbiAXVyz (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:54:55 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1ADCC0C090E;
-        Mon, 24 Jan 2022 12:34:59 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCB0AC0C0918;
+        Mon, 24 Jan 2022 12:35:18 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 66E12B80FA1;
-        Mon, 24 Jan 2022 20:34:59 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 91486C340E5;
-        Mon, 24 Jan 2022 20:34:57 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 89771B81229;
+        Mon, 24 Jan 2022 20:35:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B5F62C340E5;
+        Mon, 24 Jan 2022 20:35:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056498;
-        bh=7KCUkHtCZDPiU8Wu1iyvT6sSWdzlValgHc36KTlvECM=;
+        s=korg; t=1643056516;
+        bh=hEOXtMUwE/45Nh6ai1hbQxYP2KFHIOMKiavrEhac3jM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DTANE3LJVm878ZdnsQz2Ut4SY28U7L+5WHU7rjzzsScMdJPMJH+DN5ffeDaNiiOgg
-         ELnSAEd7MuFvZ01KMwz6wCB1elaDEi9+CQSGcm6eSC0iKNYKHZMegDlQ4VDq7MTzej
-         1z9p6gKf64dHga1t8CxuA7RhkUhaOR46XCyOPJRc=
+        b=bs7hmTmoQcWs3UOu31C0PGEHAFLzXggmP4KYbc0N/UKosNTGhAa/s6DOSu4uk4+8w
+         bJSMzUky2IXJ0DD3T0orkGF+YhyuqHDdfeiYVwqtRBLGE7VnoGrsyXpPyq9yu7tRJN
+         yc5xQhTWODbFHHJQ66XrI0iA/NsDvdmKQ/tMed8A=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Chengfeng Ye <cyeaa@connect.ust.hk>,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 472/846] media: atomisp: fix try_fmt logic
-Date:   Mon, 24 Jan 2022 19:39:49 +0100
-Message-Id: <20220124184117.289396210@linuxfoundation.org>
+Subject: [PATCH 5.15 503/846] HSI: core: Fix return freed object in hsi_new_client
+Date:   Mon, 24 Jan 2022 19:40:20 +0100
+Message-Id: <20220124184118.382937712@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,113 +50,33 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Chengfeng Ye <cyeaa@connect.ust.hk>
 
-[ Upstream commit c9e9094c4e42124af909b2f5f6ded0498e0854ac ]
+[ Upstream commit a1ee1c08fcd5af03187dcd41dcab12fd5b379555 ]
 
-The internal try_fmt logic is not meant to provide everything
-that the V4L2 API should provide. Also, it doesn't decrement
-the pads that are used only internally by the driver, but aren't
-part of the device's output.
+cl is freed on error of calling device_register, but this
+object is return later, which will cause uaf issue. Fix it
+by return NULL on error.
 
-Fix it.
-
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Chengfeng Ye <cyeaa@connect.ust.hk>
+Signed-off-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../staging/media/atomisp/pci/atomisp_ioctl.c | 72 ++++++++++++++++++-
- 1 file changed, 71 insertions(+), 1 deletion(-)
+ drivers/hsi/hsi_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-index 29826f8e4143d..54624f8814e04 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-@@ -863,6 +863,72 @@ static int atomisp_g_fmt_file(struct file *file, void *fh,
- 	return 0;
- }
+diff --git a/drivers/hsi/hsi_core.c b/drivers/hsi/hsi_core.c
+index ec90713564e32..884066109699c 100644
+--- a/drivers/hsi/hsi_core.c
++++ b/drivers/hsi/hsi_core.c
+@@ -102,6 +102,7 @@ struct hsi_client *hsi_new_client(struct hsi_port *port,
+ 	if (device_register(&cl->device) < 0) {
+ 		pr_err("hsi: failed to register client: %s\n", info->name);
+ 		put_device(&cl->device);
++		goto err;
+ 	}
  
-+static int atomisp_adjust_fmt(struct v4l2_format *f)
-+{
-+	const struct atomisp_format_bridge *format_bridge;
-+	u32 padded_width;
-+
-+	format_bridge = atomisp_get_format_bridge(f->fmt.pix.pixelformat);
-+
-+	padded_width = f->fmt.pix.width + pad_w;
-+
-+	if (format_bridge->planar) {
-+		f->fmt.pix.bytesperline = padded_width;
-+		f->fmt.pix.sizeimage = PAGE_ALIGN(f->fmt.pix.height *
-+						  DIV_ROUND_UP(format_bridge->depth *
-+						  padded_width, 8));
-+	} else {
-+		f->fmt.pix.bytesperline = DIV_ROUND_UP(format_bridge->depth *
-+						      padded_width, 8);
-+		f->fmt.pix.sizeimage = PAGE_ALIGN(f->fmt.pix.height * f->fmt.pix.bytesperline);
-+	}
-+
-+	if (f->fmt.pix.field == V4L2_FIELD_ANY)
-+		f->fmt.pix.field = V4L2_FIELD_NONE;
-+
-+	format_bridge = atomisp_get_format_bridge(f->fmt.pix.pixelformat);
-+	if (!format_bridge)
-+		return -EINVAL;
-+
-+	/* Currently, raw formats are broken!!! */
-+	if (format_bridge->sh_fmt == IA_CSS_FRAME_FORMAT_RAW) {
-+		f->fmt.pix.pixelformat = V4L2_PIX_FMT_YUV420;
-+
-+		format_bridge = atomisp_get_format_bridge(f->fmt.pix.pixelformat);
-+		if (!format_bridge)
-+			return -EINVAL;
-+	}
-+
-+	padded_width = f->fmt.pix.width + pad_w;
-+
-+	if (format_bridge->planar) {
-+		f->fmt.pix.bytesperline = padded_width;
-+		f->fmt.pix.sizeimage = PAGE_ALIGN(f->fmt.pix.height *
-+						  DIV_ROUND_UP(format_bridge->depth *
-+						  padded_width, 8));
-+	} else {
-+		f->fmt.pix.bytesperline = DIV_ROUND_UP(format_bridge->depth *
-+						      padded_width, 8);
-+		f->fmt.pix.sizeimage = PAGE_ALIGN(f->fmt.pix.height * f->fmt.pix.bytesperline);
-+	}
-+
-+	if (f->fmt.pix.field == V4L2_FIELD_ANY)
-+		f->fmt.pix.field = V4L2_FIELD_NONE;
-+
-+	/*
-+	 * FIXME: do we need to setup this differently, depending on the
-+	 * sensor or the pipeline?
-+	 */
-+	f->fmt.pix.colorspace = V4L2_COLORSPACE_REC709;
-+	f->fmt.pix.ycbcr_enc = V4L2_YCBCR_ENC_709;
-+	f->fmt.pix.xfer_func = V4L2_XFER_FUNC_709;
-+
-+	f->fmt.pix.width -= pad_w;
-+	f->fmt.pix.height -= pad_h;
-+
-+	return 0;
-+}
-+
- /* This function looks up the closest available resolution. */
- static int atomisp_try_fmt_cap(struct file *file, void *fh,
- 			       struct v4l2_format *f)
-@@ -874,7 +940,11 @@ static int atomisp_try_fmt_cap(struct file *file, void *fh,
- 	rt_mutex_lock(&isp->mutex);
- 	ret = atomisp_try_fmt(vdev, &f->fmt.pix, NULL);
- 	rt_mutex_unlock(&isp->mutex);
--	return ret;
-+
-+	if (ret)
-+		return ret;
-+
-+	return atomisp_adjust_fmt(f);
- }
- 
- static int atomisp_s_fmt_cap(struct file *file, void *fh,
+ 	return cl;
 -- 
 2.34.1
 
