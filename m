@@ -2,43 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71328C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86403C3525A
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:58:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1576123AbiAXVxD (ORCPT
+        id S1576447AbiAXVxn (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:53:03 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:39110 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450582AbiAXVVA (ORCPT
+        Mon, 24 Jan 2022 16:53:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50948 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1450657AbiAXVVI (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:21:00 -0500
+        Mon, 24 Jan 2022 16:21:08 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23605C028C2D;
+        Mon, 24 Jan 2022 12:15:00 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4276BB8121C;
-        Mon, 24 Jan 2022 21:20:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7CFABC340E4;
-        Mon, 24 Jan 2022 21:20:56 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D64FEB81215;
+        Mon, 24 Jan 2022 20:14:58 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 124A4C340E5;
+        Mon, 24 Jan 2022 20:14:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059257;
-        bh=7KCUkHtCZDPiU8Wu1iyvT6sSWdzlValgHc36KTlvECM=;
+        s=korg; t=1643055297;
+        bh=KZblH40VVxpKVtgn0eP/ycmDT5DACGyy1hUw7tz3pc8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=1BzH/T2KJmzQteqPHzENW8QbLX26Fq3AesNtDeFTaUxZsGv7PiN+DZk4YtvEhFG5R
-         daRt6cAWycXm5NO8e0HvilS+cV4kuQa3H++OJi2G5QbnvWtcl8Pv+uziEjfj4M2+88
-         BZYu9Zt/Sv6ldNkl5KQQ17FqWG+UQg1gHQXxasnQ=
+        b=A/rRjeXzlAf9mw97Te3V36uk4eoEa68wOL4qWcjOzqLHVf8LvEte+vowFQ33oAS6r
+         shCz+50NRl7WQthbbUfnZ+09npVECfJVRv494RTIIpVbtjCdmzec02q9Snxa0Ax+49
+         KVGGc86Y0jMkxsBFJ4ZLFqBuYnD9fFJhnJSr++o4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Hulk Robot <hulkci@huawei.com>,
+        Wang Hai <wanghai38@huawei.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0556/1039] media: atomisp: fix try_fmt logic
-Date:   Mon, 24 Jan 2022 19:39:05 +0100
-Message-Id: <20220124184143.998431150@linuxfoundation.org>
+Subject: [PATCH 5.15 078/846] drm: fix null-ptr-deref in drm_dev_init_release()
+Date:   Mon, 24 Jan 2022 19:33:15 +0100
+Message-Id: <20220124184103.685178247@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -47,113 +51,84 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+From: Wang Hai <wanghai38@huawei.com>
 
-[ Upstream commit c9e9094c4e42124af909b2f5f6ded0498e0854ac ]
+[ Upstream commit acf20ed020ffa4d6cc8347e8d356509b95df3cbe ]
 
-The internal try_fmt logic is not meant to provide everything
-that the V4L2 API should provide. Also, it doesn't decrement
-the pads that are used only internally by the driver, but aren't
-part of the device's output.
+I got a null-ptr-deref report:
 
-Fix it.
+[drm:drm_dev_init [drm]] *ERROR* Cannot allocate anonymous inode: -12
+==================================================================
+BUG: KASAN: null-ptr-deref in iput+0x3c/0x4a0
+...
+Call Trace:
+ dump_stack_lvl+0x6c/0x8b
+ kasan_report.cold+0x64/0xdb
+ __asan_load8+0x69/0x90
+ iput+0x3c/0x4a0
+ drm_dev_init_release+0x39/0xb0 [drm]
+ drm_managed_release+0x158/0x2d0 [drm]
+ drm_dev_init+0x3a7/0x4c0 [drm]
+ __devm_drm_dev_alloc+0x55/0xd0 [drm]
+ mi0283qt_probe+0x8a/0x2b5 [mi0283qt]
+ spi_probe+0xeb/0x130
+...
+ entry_SYSCALL_64_after_hwframe+0x44/0xae
 
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+If drm_fs_inode_new() fails in drm_dev_init(), dev->anon_inode will point
+to PTR_ERR(...) instead of NULL. This will result in null-ptr-deref when
+drm_fs_inode_free(dev->anon_inode) is called.
+
+drm_dev_init()
+	drm_fs_inode_new() // fail, dev->anon_inode = PTR_ERR(...)
+	drm_managed_release()
+		drm_dev_init_release()
+			drm_fs_inode_free() // access non-existent anon_inode
+
+Define a temp variable and assign it to dev->anon_inode if the temp
+variable is not PTR_ERR.
+
+Fixes: 2cbf7fc6718b ("drm: Use drmm_ for drm_dev_init cleanup")
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Signed-off-by: Wang Hai <wanghai38@huawei.com>
+Signed-off-by: Sam Ravnborg <sam@ravnborg.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211013114139.4042207-1-wanghai38@huawei.com
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../staging/media/atomisp/pci/atomisp_ioctl.c | 72 ++++++++++++++++++-
- 1 file changed, 71 insertions(+), 1 deletion(-)
+ drivers/gpu/drm/drm_drv.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-index 29826f8e4143d..54624f8814e04 100644
---- a/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-+++ b/drivers/staging/media/atomisp/pci/atomisp_ioctl.c
-@@ -863,6 +863,72 @@ static int atomisp_g_fmt_file(struct file *file, void *fh,
- 	return 0;
- }
+diff --git a/drivers/gpu/drm/drm_drv.c b/drivers/gpu/drm/drm_drv.c
+index 7a5097467ba5c..b3a1636d1b984 100644
+--- a/drivers/gpu/drm/drm_drv.c
++++ b/drivers/gpu/drm/drm_drv.c
+@@ -581,6 +581,7 @@ static int drm_dev_init(struct drm_device *dev,
+ 			const struct drm_driver *driver,
+ 			struct device *parent)
+ {
++	struct inode *inode;
+ 	int ret;
  
-+static int atomisp_adjust_fmt(struct v4l2_format *f)
-+{
-+	const struct atomisp_format_bridge *format_bridge;
-+	u32 padded_width;
-+
-+	format_bridge = atomisp_get_format_bridge(f->fmt.pix.pixelformat);
-+
-+	padded_width = f->fmt.pix.width + pad_w;
-+
-+	if (format_bridge->planar) {
-+		f->fmt.pix.bytesperline = padded_width;
-+		f->fmt.pix.sizeimage = PAGE_ALIGN(f->fmt.pix.height *
-+						  DIV_ROUND_UP(format_bridge->depth *
-+						  padded_width, 8));
-+	} else {
-+		f->fmt.pix.bytesperline = DIV_ROUND_UP(format_bridge->depth *
-+						      padded_width, 8);
-+		f->fmt.pix.sizeimage = PAGE_ALIGN(f->fmt.pix.height * f->fmt.pix.bytesperline);
-+	}
-+
-+	if (f->fmt.pix.field == V4L2_FIELD_ANY)
-+		f->fmt.pix.field = V4L2_FIELD_NONE;
-+
-+	format_bridge = atomisp_get_format_bridge(f->fmt.pix.pixelformat);
-+	if (!format_bridge)
-+		return -EINVAL;
-+
-+	/* Currently, raw formats are broken!!! */
-+	if (format_bridge->sh_fmt == IA_CSS_FRAME_FORMAT_RAW) {
-+		f->fmt.pix.pixelformat = V4L2_PIX_FMT_YUV420;
-+
-+		format_bridge = atomisp_get_format_bridge(f->fmt.pix.pixelformat);
-+		if (!format_bridge)
-+			return -EINVAL;
-+	}
-+
-+	padded_width = f->fmt.pix.width + pad_w;
-+
-+	if (format_bridge->planar) {
-+		f->fmt.pix.bytesperline = padded_width;
-+		f->fmt.pix.sizeimage = PAGE_ALIGN(f->fmt.pix.height *
-+						  DIV_ROUND_UP(format_bridge->depth *
-+						  padded_width, 8));
-+	} else {
-+		f->fmt.pix.bytesperline = DIV_ROUND_UP(format_bridge->depth *
-+						      padded_width, 8);
-+		f->fmt.pix.sizeimage = PAGE_ALIGN(f->fmt.pix.height * f->fmt.pix.bytesperline);
-+	}
-+
-+	if (f->fmt.pix.field == V4L2_FIELD_ANY)
-+		f->fmt.pix.field = V4L2_FIELD_NONE;
-+
-+	/*
-+	 * FIXME: do we need to setup this differently, depending on the
-+	 * sensor or the pipeline?
-+	 */
-+	f->fmt.pix.colorspace = V4L2_COLORSPACE_REC709;
-+	f->fmt.pix.ycbcr_enc = V4L2_YCBCR_ENC_709;
-+	f->fmt.pix.xfer_func = V4L2_XFER_FUNC_709;
-+
-+	f->fmt.pix.width -= pad_w;
-+	f->fmt.pix.height -= pad_h;
-+
-+	return 0;
-+}
-+
- /* This function looks up the closest available resolution. */
- static int atomisp_try_fmt_cap(struct file *file, void *fh,
- 			       struct v4l2_format *f)
-@@ -874,7 +940,11 @@ static int atomisp_try_fmt_cap(struct file *file, void *fh,
- 	rt_mutex_lock(&isp->mutex);
- 	ret = atomisp_try_fmt(vdev, &f->fmt.pix, NULL);
- 	rt_mutex_unlock(&isp->mutex);
--	return ret;
-+
-+	if (ret)
-+		return ret;
-+
-+	return atomisp_adjust_fmt(f);
- }
+ 	if (!drm_core_init_complete) {
+@@ -617,13 +618,15 @@ static int drm_dev_init(struct drm_device *dev,
+ 	if (ret)
+ 		return ret;
  
- static int atomisp_s_fmt_cap(struct file *file, void *fh,
+-	dev->anon_inode = drm_fs_inode_new();
+-	if (IS_ERR(dev->anon_inode)) {
+-		ret = PTR_ERR(dev->anon_inode);
++	inode = drm_fs_inode_new();
++	if (IS_ERR(inode)) {
++		ret = PTR_ERR(inode);
+ 		DRM_ERROR("Cannot allocate anonymous inode: %d\n", ret);
+ 		goto err;
+ 	}
+ 
++	dev->anon_inode = inode;
++
+ 	if (drm_core_check_feature(dev, DRIVER_RENDER)) {
+ 		ret = drm_minor_alloc(dev, DRM_MINOR_RENDER);
+ 		if (ret)
 -- 
 2.34.1
 
