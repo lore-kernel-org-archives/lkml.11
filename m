@@ -2,231 +2,114 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BF8BC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 01:15:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 326ECC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 01:19:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240707AbiAXBPC (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Sun, 23 Jan 2022 20:15:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54854 "EHLO
+        id S240715AbiAXBTl (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Sun, 23 Jan 2022 20:19:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238668AbiAXBPA (ORCPT
+        with ESMTP id S238668AbiAXBTj (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Sun, 23 Jan 2022 20:15:00 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46BBFC06173D
-        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 17:15:00 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id g9-20020a17090a67c900b001b4f1d71e4fso14941559pjm.4
-        for <linux-kernel@vger.kernel.org>; Sun, 23 Jan 2022 17:15:00 -0800 (PST)
+        Sun, 23 Jan 2022 20:19:39 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC6EC06173B;
+        Sun, 23 Jan 2022 17:19:39 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id a28so15831669lfl.7;
+        Sun, 23 Jan 2022 17:19:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=66tsAlkJaKCsWolkqf3abHRV7RhHCA5HqiG6Yq8fv7w=;
-        b=hKTaUSHe3WIpu7gnIP0vAHIF8YXlvjRVF0Dgc5kW/yCOlPewW5sU8I81FJDArMYvTE
-         bb4TtOkBWz7LglgyrjYe3VuomAZXo9U1t0mhWhzzpTAIBZpr5wiycdid0Yw8H7EpfsQu
-         iE7IWd3/B+A5wtPUvMFhR7M3OSa9kE1JBa0Xw=
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=t7TE4em7JB/tZ41yHK/CgF2TCS9fy9M15DMSLo68rwY=;
+        b=B6W25/ZJ4XdX2y1N6dkBAqcHFixu3Pou7AOICcmcNX+sQha4x7Af+ZiDbbYmtal19C
+         usRIxTgBjuhTN8eIEALApeWeW7gx5S6IEtZd+AGdg3L6cTqwDMWehrMu6AH5Vjb8Pq5N
+         Uk3nlyfxD8QZW3GIlKIgOwzehvwaON2uZJfeuSybDC8wg+ukbDJ/FsTzbH6JoS1X3kGp
+         xwjVrovFpuEDiMS5HCJeWhgijhZ8JLiIOHvyIcFOoIkpBSv+YInXbgmsJn0UXByhhnEq
+         77gqBHamQ3i/gjPmzRKrFeqZQUPU5UYMC5bbGvz+NABr3zeA3DtlqXaGPf9XtP1ep+ls
+         t9xA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=66tsAlkJaKCsWolkqf3abHRV7RhHCA5HqiG6Yq8fv7w=;
-        b=jeffuuWFpFHgbcDjNtfIqSkjI8Tn6PGiP1/IKlsGsIaOGT8vheMlkTn3xcznuFus9E
-         IELbbIaWlOq7uPcE1lL8gdzouNP07EHaXCiPjEa0HfHZ0n8Vlc7V4MWAVJWt7NwHSQGy
-         HjWcHUGLt1kqnWCBHZFbq14GMouLclK0OVUqMytb3haWwlxwQfiBtGDb83D+4fJy3rTm
-         SpzzMhqLdnCS+qUWiufuOKz0tC9RIlss7Vu3X7/gBpIX+/iuGw1TillF+Uqd3CbgIJLI
-         VhDNblSNh8EwfkWs3dbc1UtpSfnX31kljtOjW/AlB1mhQoMoAZzI1Cqt/V7dzgAfkQyp
-         vYOg==
-X-Gm-Message-State: AOAM530mwsFQc7V+A+TDeif9/cK1C9DRcQu+qM8QBAnpVHzhp782YsuV
-        4ZIVZ1nQFEj2cX6+vBgaAZ4cbIXx0zpAzA==
-X-Google-Smtp-Source: ABdhPJyEQHWyPlu+q5xyJWPzK5OoSLa2bbutgzWw4FANu+WnvtNaIfZj8IPkrQIS4pwoM9d8VgPuiw==
-X-Received: by 2002:a17:90b:2252:: with SMTP id hk18mr10827593pjb.53.1642986899526;
-        Sun, 23 Jan 2022 17:14:59 -0800 (PST)
-Received: from pc98bx3.roam.corp.google.com (c-73-222-23-249.hsd1.ca.comcast.net. [73.222.23.249])
-        by smtp.gmail.com with ESMTPSA id h6sm3057316pfk.110.2022.01.23.17.14.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Jan 2022 17:14:59 -0800 (PST)
-From:   Daisuke Nojiri <dnojiri@chromium.org>
-To:     LKML <linux-kernel@vger.kernel.org>
-Cc:     Daisuke Nojiri <dnojiri@chromium.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Prashant Malani <pmalani@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>, linux-pm@vger.kernel.org
-Subject: [PATCH v2] power: supply: PCHG: Use MKBP for device event handling
-Date:   Sun, 23 Jan 2022 17:11:40 -0800
-Message-Id: <20220124011143.684348-1-dnojiri@chromium.org>
-X-Mailer: git-send-email 2.35.0.rc0.227.g00780c9af4-goog
-In-Reply-To: <20220124010348.681893-1-dnojiri@chromium.org>
-References: <20220124010348.681893-1-dnojiri@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=t7TE4em7JB/tZ41yHK/CgF2TCS9fy9M15DMSLo68rwY=;
+        b=5vkMN6sKz2u2BFFBG5gnXtWOtB0SZww1+J0U0HpGDqf1duugfWTEN3+gowuI+CVWvB
+         ktIojFK5WtPhV9PrC51GjyOSRyA44x0M44OGJ8CkuMBu+nMMtpd/DntNfpLNIV/IAzp7
+         fOL52it1tqGzjyiL90MlOzS19q4UIl3H1NqHluSFKFkFNM+YwQpO0vumqYjzcuh9orAF
+         1Bu+nqywzxgkZ/7FN93FdOmxz7kAoGBX4FN+vt009FUYgn00hqJ7YsJMHx96s4asndJa
+         +3smaXInpDc2pduAKWt/uTqyw1g1xvs4rxd+CwizokF6pxygWwsQyDebNuVVgVNk1hQG
+         MOyA==
+X-Gm-Message-State: AOAM533opQ8eIEY7U8yfXHJ0MYI2nFSNhB5rn1gI7Hzt9c2ypedLHvE8
+        uJjDjcLgPN8ah46+CjsS/uc5wWlnrAuqn8LugCQ=
+X-Google-Smtp-Source: ABdhPJyhzegui+Ot229oGKSPqX96/DbvHusqhmuwaipzrltw7hPxgnnZMYu/YO4HRCo9AseWCtP6S4UKqByAyAcFt/o=
+X-Received: by 2002:a05:6512:398b:: with SMTP id j11mr10943260lfu.94.1642987177803;
+ Sun, 23 Jan 2022 17:19:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1642960861.git.leonro@nvidia.com> <8bdb652b01f2316bc57b456fb8c60bfbffe6cc64.1642960861.git.leonro@nvidia.com>
+In-Reply-To: <8bdb652b01f2316bc57b456fb8c60bfbffe6cc64.1642960861.git.leonro@nvidia.com>
+From:   Zhu Yanjun <zyjzyj2000@gmail.com>
+Date:   Mon, 24 Jan 2022 09:19:26 +0800
+Message-ID: <CAD=hENc7UV4er4b3MwFJPRuJCBpFv46aEbG8zbnEPdE3ORQLjA@mail.gmail.com>
+Subject: Re: [PATCH rdma-next 08/11] RDMA/rxe: Delete useless module.h include
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Christian Benvenuti <benve@cisco.com>,
+        Dennis Dalessandro <dennis.dalessandro@cornelisnetworks.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>,
+        Max Gurtovoy <mgurtovoy@nvidia.com>,
+        Mike Marciniszyn <mike.marciniszyn@cornelisnetworks.com>,
+        Nelson Escobar <neescoba@cisco.com>,
+        Sagi Grimberg <sagi@grimberg.me>,
+        Yishai Hadas <yishaih@nvidia.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-This patch makes the PCHG driver receive device events through
-MKBP protocol since CrOS EC switched to deliver all peripheral
-charge events to the MKBP protocol. This will unify PCHG event
-handling on X86 and ARM.
+On Mon, Jan 24, 2022 at 2:03 AM Leon Romanovsky <leon@kernel.org> wrote:
+>
+> From: Leon Romanovsky <leonro@nvidia.com>
+>
+> There is no need in include of module.h in the following files.
+>
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
 
-Signed-off-by: Daisuke Nojiri <dnojiri@chromium.org>
----
-v1 -> v2
-* Make the patch description concise.
-* Change the order of if-conditions in cros_ec_notify.
----
- .../power/supply/cros_peripheral_charger.c    | 35 ++--------
- .../linux/platform_data/cros_ec_commands.h    | 64 +++++++++++++++++++
- 2 files changed, 70 insertions(+), 29 deletions(-)
+Thanks a lot.
+Acked-by: Zhu Yanjun <zyjzyj2000@gmail.com>
 
-diff --git a/drivers/power/supply/cros_peripheral_charger.c b/drivers/power/supply/cros_peripheral_charger.c
-index 305f10dfc06d1b..cb402f48087ddf 100644
---- a/drivers/power/supply/cros_peripheral_charger.c
-+++ b/drivers/power/supply/cros_peripheral_charger.c
-@@ -14,6 +14,7 @@
- #include <linux/slab.h>
- #include <linux/stringify.h>
- #include <linux/types.h>
-+#include <asm/unaligned.h>
- 
- #define DRV_NAME		"cros-ec-pchg"
- #define PCHG_DIR_PREFIX		"peripheral"
-@@ -237,46 +238,22 @@ static int cros_pchg_event(const struct charger_data *charger,
- 	return NOTIFY_OK;
- }
- 
--static u32 cros_get_device_event(const struct charger_data *charger)
--{
--	struct ec_params_device_event req;
--	struct ec_response_device_event rsp;
--	struct device *dev = charger->dev;
--	int ret;
--
--	req.param = EC_DEVICE_EVENT_PARAM_GET_CURRENT_EVENTS;
--	ret = cros_pchg_ec_command(charger, 0, EC_CMD_DEVICE_EVENT,
--				   &req, sizeof(req), &rsp, sizeof(rsp));
--	if (ret < 0) {
--		dev_warn(dev, "Unable to get device events (err:%d)\n", ret);
--		return 0;
--	}
--
--	return rsp.event_mask;
--}
--
- static int cros_ec_notify(struct notifier_block *nb,
- 			  unsigned long queued_during_suspend,
- 			  void *data)
- {
- 	struct cros_ec_device *ec_dev = (struct cros_ec_device *)data;
--	u32 host_event = cros_ec_get_host_event(ec_dev);
- 	struct charger_data *charger =
- 			container_of(nb, struct charger_data, notifier);
--	u32 device_event_mask;
-+	u32 host_event;
- 
--	if (!host_event)
-+	if (ec_dev->event_data.event_type != EC_MKBP_EVENT_PCHG
-+			|| ec_dev->event_size != sizeof(host_event))
- 		return NOTIFY_DONE;
- 
--	if (!(host_event & EC_HOST_EVENT_MASK(EC_HOST_EVENT_DEVICE)))
--		return NOTIFY_DONE;
-+	host_event = get_unaligned_le32(&ec_dev->event_data.data.host_event);
- 
--	/*
--	 * todo: Retrieve device event mask in common place
--	 * (e.g. cros_ec_proto.c).
--	 */
--	device_event_mask = cros_get_device_event(charger);
--	if (!(device_event_mask & EC_DEVICE_EVENT_MASK(EC_DEVICE_EVENT_WLC)))
-+	if (!(host_event & EC_MKBP_PCHG_DEVICE_EVENT))
- 		return NOTIFY_DONE;
- 
- 	return cros_pchg_event(charger, host_event);
-diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
-index 271bd87bff0a25..c784bed3388865 100644
---- a/include/linux/platform_data/cros_ec_commands.h
-+++ b/include/linux/platform_data/cros_ec_commands.h
-@@ -3386,6 +3386,9 @@ enum ec_mkbp_event {
- 	/* Send an incoming CEC message to the AP */
- 	EC_MKBP_EVENT_CEC_MESSAGE = 9,
- 
-+	/* Peripheral device charger event */
-+	EC_MKBP_EVENT_PCHG = 12,
-+
- 	/* Number of MKBP events */
- 	EC_MKBP_EVENT_COUNT,
- };
-@@ -5527,6 +5530,67 @@ enum pchg_state {
- 	[PCHG_STATE_CONNECTED] = "CONNECTED", \
- 	}
- 
-+/**
-+ * Update firmware of peripheral chip
-+ */
-+#define EC_CMD_PCHG_UPDATE 0x0136
-+
-+/* Port number is encoded in bit[28:31]. */
-+#define EC_MKBP_PCHG_PORT_SHIFT		28
-+/* Utility macro for converting MKBP event to port number. */
-+#define EC_MKBP_PCHG_EVENT_TO_PORT(e)	(((e) >> EC_MKBP_PCHG_PORT_SHIFT) & 0xf)
-+/* Utility macro for extracting event bits. */
-+#define EC_MKBP_PCHG_EVENT_MASK(e)	((e) \
-+					& GENMASK(EC_MKBP_PCHG_PORT_SHIFT-1, 0))
-+
-+#define EC_MKBP_PCHG_UPDATE_OPENED	BIT(0)
-+#define EC_MKBP_PCHG_WRITE_COMPLETE	BIT(1)
-+#define EC_MKBP_PCHG_UPDATE_CLOSED	BIT(2)
-+#define EC_MKBP_PCHG_UPDATE_ERROR	BIT(3)
-+#define EC_MKBP_PCHG_DEVICE_EVENT	BIT(4)
-+
-+enum ec_pchg_update_cmd {
-+	/* Reset chip to normal mode. */
-+	EC_PCHG_UPDATE_CMD_RESET_TO_NORMAL = 0,
-+	/* Reset and put a chip in update (a.k.a. download) mode. */
-+	EC_PCHG_UPDATE_CMD_OPEN,
-+	/* Write a block of data containing FW image. */
-+	EC_PCHG_UPDATE_CMD_WRITE,
-+	/* Close update session. */
-+	EC_PCHG_UPDATE_CMD_CLOSE,
-+	/* End of commands */
-+	EC_PCHG_UPDATE_CMD_COUNT,
-+};
-+
-+struct ec_params_pchg_update {
-+	/* PCHG port number */
-+	uint8_t port;
-+	/* enum ec_pchg_update_cmd */
-+	uint8_t cmd;
-+	/* Padding */
-+	uint8_t reserved0;
-+	uint8_t reserved1;
-+	/* Version of new firmware */
-+	uint32_t version;
-+	/* CRC32 of new firmware */
-+	uint32_t crc32;
-+	/* Address in chip memory where <data> is written to */
-+	uint32_t addr;
-+	/* Size of <data> */
-+	uint32_t size;
-+	/* Partial data of new firmware */
-+	uint8_t data[];
-+} __ec_align4;
-+
-+BUILD_ASSERT(EC_PCHG_UPDATE_CMD_COUNT
-+	     < BIT(sizeof(((struct ec_params_pchg_update *)0)->cmd)*8));
-+
-+struct ec_response_pchg_update {
-+	/* Block size */
-+	uint32_t block_size;
-+} __ec_align4;
-+
-+
- /*****************************************************************************/
- /* Voltage regulator controls */
- 
--- 
-2.31.0
+Zhu Yanjun
 
+> ---
+>  drivers/infiniband/sw/rxe/rxe.h      | 1 -
+>  drivers/infiniband/sw/rxe/rxe_mmap.c | 1 -
+>  2 files changed, 2 deletions(-)
+>
+> diff --git a/drivers/infiniband/sw/rxe/rxe.h b/drivers/infiniband/sw/rxe/rxe.h
+> index fb9066e6f5f0..30fbdf3bc76a 100644
+> --- a/drivers/infiniband/sw/rxe/rxe.h
+> +++ b/drivers/infiniband/sw/rxe/rxe.h
+> @@ -12,7 +12,6 @@
+>  #endif
+>  #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+>
+> -#include <linux/module.h>
+>  #include <linux/skbuff.h>
+>
+>  #include <rdma/ib_verbs.h>
+> diff --git a/drivers/infiniband/sw/rxe/rxe_mmap.c b/drivers/infiniband/sw/rxe/rxe_mmap.c
+> index 035f226af133..9149b6095429 100644
+> --- a/drivers/infiniband/sw/rxe/rxe_mmap.c
+> +++ b/drivers/infiniband/sw/rxe/rxe_mmap.c
+> @@ -4,7 +4,6 @@
+>   * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
+>   */
+>
+> -#include <linux/module.h>
+>  #include <linux/vmalloc.h>
+>  #include <linux/mm.h>
+>  #include <linux/errno.h>
+> --
+> 2.34.1
+>
