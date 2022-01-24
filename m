@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 427BFC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:17:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9463C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:17:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1845192AbiAXXLj (ORCPT
+        id S1845233AbiAXXLw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:11:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35700 "EHLO
+        Mon, 24 Jan 2022 18:11:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1582520AbiAXWPX (ORCPT
+        with ESMTP id S1584561AbiAXWVZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:15:23 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DD14C04966A;
-        Mon, 24 Jan 2022 12:44:28 -0800 (PST)
+        Mon, 24 Jan 2022 17:21:25 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76E4FC0424D9;
+        Mon, 24 Jan 2022 12:50:47 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 55BC3B8121C;
-        Mon, 24 Jan 2022 20:44:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BC4EC340E5;
-        Mon, 24 Jan 2022 20:44:25 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 18692611C8;
+        Mon, 24 Jan 2022 20:50:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F12B8C340E5;
+        Mon, 24 Jan 2022 20:50:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057066;
-        bh=A2EUI144kMYsLayEJBAsTA84cPoFnieVulthcDcdZcE=;
+        s=korg; t=1643057446;
+        bh=OdssgiM79/9ocsj19OPaOx7QxpE2D+RAnAHhWTYflIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kcYJNYZ8MI4fGQz36T8j1iUa2ADgkpAhXAVOaDPKB/9GIzcwFHEg3//VykVcbDwfK
-         fjIYHpBW30+o98obqt/ldqJpMYYwK2J2sNiXvZXkbPi/YRSbwcDNAk7J8inykLv6Kf
-         3Qp87uNrJQztRDx0JhRz+9lwk30ANgVw0uxb6ULU=
+        b=bx6WX7Qqpwo5/n3TEdjPGa4LogaAxwebF5bq/um5VhGz3whT9h6qJsKsqwDp/gqDV
+         4xpqckyFWwDjdUcfG4LvRl4F0zan/9tobrCPDIYe9te46MZdBlzomHETgsT0+zao7i
+         7vX931DOnMqFEofz4j1OVn+Lqtbu9MYr18tAIyfA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        Christian Gmeiner <christian.gmeiner@gmail.com>
-Subject: [PATCH 5.15 691/846] drm/etnaviv: limit submit sizes
-Date:   Mon, 24 Jan 2022 19:43:28 +0100
-Message-Id: <20220124184124.887012384@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.15 815/846] dmaengine: at_xdmac: Dont start transactions at tx_submit level
+Date:   Mon, 24 Jan 2022 19:45:32 +0100
+Message-Id: <20220124184129.025015902@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,48 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lucas Stach <l.stach@pengutronix.de>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-commit 6dfa2fab8ddd46faa771a102672176bee7a065de upstream.
+commit bccfb96b59179d4f96cbbd1ddff8fac6d335eae4 upstream.
 
-Currently we allow rediculous amounts of kernel memory being allocated
-via the etnaviv GEM_SUBMIT ioctl, which is a pretty easy DoS vector. Put
-some reasonable limits in to fix this.
+tx_submit is supposed to push the current transaction descriptor to a
+pending queue, waiting for issue_pending() to be called. issue_pending()
+must start the transfer, not tx_submit(), thus remove
+at_xdmac_start_xfer() from at_xdmac_tx_submit(). Clients of at_xdmac that
+assume that tx_submit() starts the transfer must be updated and call
+dma_async_issue_pending() if they miss to call it (one example is
+atmel_serial).
 
-The commandstream size is limited to 64KB, which was already a soft limit
-on older kernels after which the kernel only took submits on a best effort
-base, so there is no userspace that tries to submit commandstreams larger
-than this. Even if the whole commandstream is a single incrementing address
-load, the size limit also limits the number of potential relocs and
-referenced buffers to slightly under 64K, so use the same limit for those
-arguments. The performance monitoring infrastructure currently supports
-less than 50 performance counter signals, so limiting them to 128 on a
-single submit seems like a reasonably future-proof number for now. This
-number can be bumped if needed without breaking the interface.
+As the at_xdmac_start_xfer() is now called only from
+at_xdmac_advance_work() when !at_xdmac_chan_is_enabled(), the
+at_xdmac_chan_is_enabled() check is no longer needed in
+at_xdmac_start_xfer(), thus remove it.
 
-Cc: stable@vger.kernel.org
-Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-Signed-off-by: Lucas Stach <l.stach@pengutronix.de>
-Reviewed-by: Christian Gmeiner <christian.gmeiner@gmail.com>
+Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Link: https://lore.kernel.org/r/20211215110115.191749-2-tudor.ambarus@microchip.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c |    6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/dma/at_xdmac.c |    6 ------
+ 1 file changed, 6 deletions(-)
 
---- a/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
-+++ b/drivers/gpu/drm/etnaviv/etnaviv_gem_submit.c
-@@ -469,6 +469,12 @@ int etnaviv_ioctl_gem_submit(struct drm_
- 		return -EINVAL;
- 	}
+--- a/drivers/dma/at_xdmac.c
++++ b/drivers/dma/at_xdmac.c
+@@ -385,9 +385,6 @@ static void at_xdmac_start_xfer(struct a
  
-+	if (args->stream_size > SZ_64K || args->nr_relocs > SZ_64K ||
-+	    args->nr_bos > SZ_64K || args->nr_pmrs > 128) {
-+		DRM_ERROR("submit arguments out of size limits\n");
-+		return -EINVAL;
-+	}
-+
- 	/*
- 	 * Copy the command submission and bo array to kernel space in
- 	 * one go, and do this outside of any locks.
+ 	dev_vdbg(chan2dev(&atchan->chan), "%s: desc 0x%p\n", __func__, first);
+ 
+-	if (at_xdmac_chan_is_enabled(atchan))
+-		return;
+-
+ 	/* Set transfer as active to not try to start it again. */
+ 	first->active_xfer = true;
+ 
+@@ -479,9 +476,6 @@ static dma_cookie_t at_xdmac_tx_submit(s
+ 	dev_vdbg(chan2dev(tx->chan), "%s: atchan 0x%p, add desc 0x%p to xfers_list\n",
+ 		 __func__, atchan, desc);
+ 	list_add_tail(&desc->xfer_node, &atchan->xfers_list);
+-	if (list_is_singular(&atchan->xfers_list))
+-		at_xdmac_start_xfer(atchan, desc);
+-
+ 	spin_unlock_irqrestore(&atchan->lock, irqflags);
+ 	return cookie;
+ }
 
 
