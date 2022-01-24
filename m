@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D132C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EC93C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:07:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377750AbiAXUF4 (ORCPT
+        id S1358986AbiAXUH2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:05:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56104 "EHLO
+        Mon, 24 Jan 2022 15:07:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244771AbiAXTsh (ORCPT
+        with ESMTP id S1350541AbiAXTtE (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:48:37 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3960C02B8D7;
-        Mon, 24 Jan 2022 11:23:37 -0800 (PST)
+        Mon, 24 Jan 2022 14:49:04 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D87A8C02B8F1;
+        Mon, 24 Jan 2022 11:23:48 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EB7160BB9;
-        Mon, 24 Jan 2022 19:23:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D8A36C340E5;
-        Mon, 24 Jan 2022 19:23:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2F772B8122A;
+        Mon, 24 Jan 2022 19:23:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 469FBC340E8;
+        Mon, 24 Jan 2022 19:23:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052216;
-        bh=DthYjh+AUf6U0msGHmNsk3EuOaLtsWRn1QyFhfakDLQ=;
+        s=korg; t=1643052225;
+        bh=1pszC8haO9AcQCNEv/+zUuqg25w5JfFjf7bNYenSnDA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rWE5SqG2v1mFbW/+idzRSVNaom5Pn8Pv+hAIJXMKxrh984dj9b2Ib377bnqeZqD4q
-         IdBhEkQA3myBDAWFfgouImKPj/nJfIXEWdyDRbF9NGBwqhRPKU9syf2g3EuwC2XZjN
-         niu9A5/JOJeDyPmqA0S7SmwSrGYHETcmH8OxVqU4=
+        b=uqZdcdCbo2RCuMtKSNRv9WQLP+/3gexJSjlStLp5/VM+6rvGK3lYS6eBdluuCg58j
+         Z4fM7kbsnM5mxRojJ1gQHB+Mqz1FeY7lIZiciU6l6K+rlAHDcAD8oCocfJ2gqiYj42
+         0ZXCjLdreVtCYD/QZQtI8/6KuGjEJST4Tcpzvn5M=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 4.19 227/239] libcxgb: Dont accidentally set RTO_ONLINK in cxgb_find_route()
-Date:   Mon, 24 Jan 2022 19:44:25 +0100
-Message-Id: <20220124183950.325346337@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 4.19 230/239] dmaengine: at_xdmac: Fix lld view setting
+Date:   Mon, 24 Jan 2022 19:44:28 +0100
+Message-Id: <20220124183950.417192507@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -49,44 +50,41 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Guillaume Nault <gnault@redhat.com>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-commit a915deaa9abe4fb3a440312c954253a6a733608e upstream.
+commit 1385eb4d14d447cc5d744bc2ac34f43be66c9963 upstream.
 
-Mask the ECN bits before calling ip_route_output_ports(). The tos
-variable might be passed directly from an IPv4 header, so it may have
-the last ECN bit set. This interferes with the route lookup process as
-ip_route_output_key_hash() interpretes this bit specially (to restrict
-the route scope).
+AT_XDMAC_CNDC_NDVIEW_NDV3 was set even for AT_XDMAC_MBR_UBC_NDV2,
+because of the wrong bit handling. Fix it.
 
-Found by code inspection, compile tested only.
-
-Fixes: 804c2f3e36ef ("libcxgb,iw_cxgb4,cxgbit: add cxgb_find_route()")
-Signed-off-by: Guillaume Nault <gnault@redhat.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Fixes: ee0fe35c8dcd ("dmaengine: xdmac: Handle descriptor's view 3 registers")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Link: https://lore.kernel.org/r/20211215110115.191749-10-tudor.ambarus@microchip.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/chelsio/libcxgb/libcxgb_cm.c |    3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/dma/at_xdmac.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/drivers/net/ethernet/chelsio/libcxgb/libcxgb_cm.c
-+++ b/drivers/net/ethernet/chelsio/libcxgb/libcxgb_cm.c
-@@ -32,6 +32,7 @@
- 
- #include <linux/tcp.h>
- #include <linux/ipv6.h>
-+#include <net/inet_ecn.h>
- #include <net/route.h>
- #include <net/ip6_route.h>
- 
-@@ -99,7 +100,7 @@ cxgb_find_route(struct cxgb4_lld_info *l
- 
- 	rt = ip_route_output_ports(&init_net, &fl4, NULL, peer_ip, local_ip,
- 				   peer_port, local_port, IPPROTO_TCP,
--				   tos, 0);
-+				   tos & ~INET_ECN_MASK, 0);
- 	if (IS_ERR(rt))
- 		return NULL;
- 	n = dst_neigh_lookup(&rt->dst, &peer_ip);
+--- a/drivers/dma/at_xdmac.c
++++ b/drivers/dma/at_xdmac.c
+@@ -100,6 +100,7 @@
+ #define		AT_XDMAC_CNDC_NDE		(0x1 << 0)		/* Channel x Next Descriptor Enable */
+ #define		AT_XDMAC_CNDC_NDSUP		(0x1 << 1)		/* Channel x Next Descriptor Source Update */
+ #define		AT_XDMAC_CNDC_NDDUP		(0x1 << 2)		/* Channel x Next Descriptor Destination Update */
++#define		AT_XDMAC_CNDC_NDVIEW_MASK	GENMASK(28, 27)
+ #define		AT_XDMAC_CNDC_NDVIEW_NDV0	(0x0 << 3)		/* Channel x Next Descriptor View 0 */
+ #define		AT_XDMAC_CNDC_NDVIEW_NDV1	(0x1 << 3)		/* Channel x Next Descriptor View 1 */
+ #define		AT_XDMAC_CNDC_NDVIEW_NDV2	(0x2 << 3)		/* Channel x Next Descriptor View 2 */
+@@ -359,7 +360,8 @@ static void at_xdmac_start_xfer(struct a
+ 	 */
+ 	if (at_xdmac_chan_is_cyclic(atchan))
+ 		reg = AT_XDMAC_CNDC_NDVIEW_NDV1;
+-	else if (first->lld.mbr_ubc & AT_XDMAC_MBR_UBC_NDV3)
++	else if ((first->lld.mbr_ubc &
++		  AT_XDMAC_CNDC_NDVIEW_MASK) == AT_XDMAC_MBR_UBC_NDV3)
+ 		reg = AT_XDMAC_CNDC_NDVIEW_NDV3;
+ 	else
+ 		reg = AT_XDMAC_CNDC_NDVIEW_NDV2;
 
 
