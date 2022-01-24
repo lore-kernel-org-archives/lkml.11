@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B2A6C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:00:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAEBFC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:00:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359790AbiAXUAL (ORCPT
+        id S1359810AbiAXUAN (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:00:11 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:59656 "EHLO
+        Mon, 24 Jan 2022 15:00:13 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:58832 "EHLO
         ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244292AbiAXTks (ORCPT
+        with ESMTP id S1354971AbiAXTjq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:40:48 -0500
+        Mon, 24 Jan 2022 14:39:46 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8DCABB8122F;
-        Mon, 24 Jan 2022 19:40:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B9A95C340E5;
-        Mon, 24 Jan 2022 19:40:44 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C2937B811F9;
+        Mon, 24 Jan 2022 19:39:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC917C340E5;
+        Mon, 24 Jan 2022 19:39:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053245;
-        bh=yrC4/59bDpg4P6F8ntcpYsVINcsebGMtT4MPqprAZJM=;
+        s=korg; t=1643053183;
+        bh=CK8CAGzGy8qPTGEr4D6PkQuiYvHfHcCmfKy/o/TGUVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pK1ofs0520J8kjpQszfKATeTEB9Bh7a2BkN0BgBHhXjBhNotDo7AK3BcCmLSlR/JM
-         squ456ijwLqHHWwpJ+hJlLlR/S8uh9/rIQFyVLkQjL81CdTGgvPbfzG1pgmvhqKWge
-         7TFf2qVJh3xkGsKFjGX+FcAi3+CEtVK7jzodozts=
+        b=g433rv54Lkl4y4ZKCr8WauNaX4q2w8dOxSJa4PSJ5z3mdkwFXMnubUvma3Wz4Anik
+         cneYWhFHrrFpzFyEobXGvGarz0TXVgQE9FUKXH9+yMOcYeSiJjGaMYETwijIOxWu89
+         62iViTFL3Pi3cDzCPADi8HSI8pM1fpQiALMG84Bw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Tom Rix <trix@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.4 313/320] net: ethernet: mtk_eth_soc: fix error checking in mtk_mac_config()
-Date:   Mon, 24 Jan 2022 19:44:57 +0100
-Message-Id: <20220124184004.582592928@linuxfoundation.org>
+        stable@vger.kernel.org, Guillaume Nault <gnault@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH 5.4 302/320] gre: Dont accidentally set RTO_ONLINK in gre_fill_metadata_dst()
+Date:   Mon, 24 Jan 2022 19:44:46 +0100
+Message-Id: <20220124184004.225139699@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -46,37 +46,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+From: Guillaume Nault <gnault@redhat.com>
 
-commit 214b3369ab9b0a6f28d6c970220c209417edbc65 upstream.
+commit f7716b318568b22fbf0e3be99279a979e217cf71 upstream.
 
-Clang static analysis reports this problem
-mtk_eth_soc.c:394:7: warning: Branch condition evaluates
-  to a garbage value
-                if (err)
-                    ^~~
+Mask the ECN bits before initialising ->flowi4_tos. The tunnel key may
+have the last ECN bit set, which will interfere with the route lookup
+process as ip_route_output_key_hash() interpretes this bit specially
+(to restrict the route scope).
 
-err is not initialized and only conditionally set.
-So intitialize err.
+Found by code inspection, compile tested only.
 
-Fixes: 7e538372694b ("net: ethernet: mediatek: Re-add support SGMII")
-Signed-off-by: Tom Rix <trix@redhat.com>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 962924fa2b7a ("ip_gre: Refactor collect metatdata mode tunnel xmit to ip_md_tunnel_xmit")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/mediatek/mtk_eth_soc.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/ipv4/ip_gre.c |    5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
---- a/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-+++ b/drivers/net/ethernet/mediatek/mtk_eth_soc.c
-@@ -215,7 +215,7 @@ static void mtk_mac_config(struct phylin
- 					   phylink_config);
- 	struct mtk_eth *eth = mac->hw;
- 	u32 mcr_cur, mcr_new, sid, i;
--	int val, ge_mode, err;
-+	int val, ge_mode, err = 0;
+--- a/net/ipv4/ip_gre.c
++++ b/net/ipv4/ip_gre.c
+@@ -577,8 +577,9 @@ static int gre_fill_metadata_dst(struct
  
- 	/* MT76x8 has no hardware settings between for the MAC */
- 	if (!MTK_HAS_CAPS(eth->soc->caps, MTK_SOC_MT7628) &&
+ 	key = &info->key;
+ 	ip_tunnel_init_flow(&fl4, IPPROTO_GRE, key->u.ipv4.dst, key->u.ipv4.src,
+-			    tunnel_id_to_key32(key->tun_id), key->tos, 0,
+-			    skb->mark, skb_get_hash(skb));
++			    tunnel_id_to_key32(key->tun_id),
++			    key->tos & ~INET_ECN_MASK, 0, skb->mark,
++			    skb_get_hash(skb));
+ 	rt = ip_route_output_key(dev_net(dev), &fl4);
+ 	if (IS_ERR(rt))
+ 		return PTR_ERR(rt);
 
 
