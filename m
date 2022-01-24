@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F504C3525A
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:04:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FF15C35270
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:04:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1451574AbiAXWDc (ORCPT
+        id S1578152AbiAXWBt (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:03:32 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:41166 "EHLO
+        Mon, 24 Jan 2022 17:01:49 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:41660 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1450007AbiAXVRo (ORCPT
+        with ESMTP id S1450321AbiAXVUP (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:17:44 -0500
+        Mon, 24 Jan 2022 16:20:15 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E119861425;
-        Mon, 24 Jan 2022 21:17:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B8E49C340E4;
-        Mon, 24 Jan 2022 21:17:39 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 327D4611C8;
+        Mon, 24 Jan 2022 21:20:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 11F1EC340E4;
+        Mon, 24 Jan 2022 21:20:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059060;
-        bh=tZ0YmxvMOQXfzZx00GnW7zNtkxAb1Ipi6CFgNNh80E0=;
+        s=korg; t=1643059214;
+        bh=zJJCjk/TJ9AzJOpeI4ISVaIgitdR7n9T84pedxcLQjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wrdxCP3qcmaHaDUPuFowYA/8jBaIHAQbP5CgC4Jx6DwxLuoZTci7KfKEcKOGc16ey
-         DIKNGtDRdvZnzQEQj+n4w1ZK5rjC17KZigR17ZVKBwInM6FtnEBlWC/YK96s3uT8By
-         lMqqVzr0NyF1QLyT5FsNUDyc7Ghp8JobR8KTNf4o=
+        b=nsyH7H/a3X7V93Mt1+YXFjtPExby1OXgbdB59C9E8fR7Fqvj77vpm81x7pf7dLnro
+         xPUF3WQx5xtg4OzGWENTZsWWVqhfrtFcrMF0ZZLHnf09EKSC25LlKpcEk4JI5wflFw
+         PVDICukPPcaVaSXz05QLG4+sHU+bzyqB81H5dzsQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Mark Brown <broonie@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        stable@vger.kernel.org, Wei Yongjun <weiyongjun1@huawei.com>,
+        Marcel Holtmann <marcel@holtmann.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0492/1039] dmaengine: pxa/mmp: stop referencing config->slave_id
-Date:   Mon, 24 Jan 2022 19:38:01 +0100
-Message-Id: <20220124184141.798000209@linuxfoundation.org>
+Subject: [PATCH 5.16 0540/1039] Bluetooth: Fix debugfs entry leak in hci_register_dev()
+Date:   Mon, 24 Jan 2022 19:38:49 +0100
+Message-Id: <20220124184143.426234413@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,61 +47,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-[ Upstream commit 134c37fa250a87a7e77c80a7c59ae16c462e46e0 ]
+[ Upstream commit 5a4bb6a8e981d3d0d492aa38412ee80b21033177 ]
 
-The last driver referencing the slave_id on Marvell PXA and MMP platforms
-was the SPI driver, but this stopped doing so a long time ago, so the
-TODO from the earlier patch can no be removed.
+Fault injection test report debugfs entry leak as follows:
 
-Fixes: b729bf34535e ("spi/pxa2xx: Don't use slave_id of dma_slave_config")
-Fixes: 13b3006b8ebd ("dma: mmp_pdma: add filter function")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Acked-by: Mark Brown <broonie@kernel.org>
-Link: https://lore.kernel.org/r/20211122222203.4103644-7-arnd@kernel.org
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+debugfs: Directory 'hci0' with parent 'bluetooth' already present!
+
+When register_pm_notifier() failed in hci_register_dev(), the debugfs
+create by debugfs_create_dir() do not removed in the error handing path.
+
+Add the remove debugfs code to fix it.
+
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/dma/mmp_pdma.c | 6 ------
- drivers/dma/pxa_dma.c  | 7 -------
- 2 files changed, 13 deletions(-)
+ net/bluetooth/hci_core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/dma/mmp_pdma.c b/drivers/dma/mmp_pdma.c
-index a23563cd118b7..5a53d7fcef018 100644
---- a/drivers/dma/mmp_pdma.c
-+++ b/drivers/dma/mmp_pdma.c
-@@ -727,12 +727,6 @@ static int mmp_pdma_config_write(struct dma_chan *dchan,
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 2cf77d76c50be..6c00ce302f095 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -3883,6 +3883,7 @@ int hci_register_dev(struct hci_dev *hdev)
+ 	return id;
  
- 	chan->dir = direction;
- 	chan->dev_addr = addr;
--	/* FIXME: drivers should be ported over to use the filter
--	 * function. Once that's done, the following two lines can
--	 * be removed.
--	 */
--	if (cfg->slave_id)
--		chan->drcmr = cfg->slave_id;
- 
- 	return 0;
- }
-diff --git a/drivers/dma/pxa_dma.c b/drivers/dma/pxa_dma.c
-index 52d04641e3611..6078cc81892e4 100644
---- a/drivers/dma/pxa_dma.c
-+++ b/drivers/dma/pxa_dma.c
-@@ -909,13 +909,6 @@ static void pxad_get_config(struct pxad_chan *chan,
- 		*dcmd |= PXA_DCMD_BURST16;
- 	else if (maxburst == 32)
- 		*dcmd |= PXA_DCMD_BURST32;
--
--	/* FIXME: drivers should be ported over to use the filter
--	 * function. Once that's done, the following two lines can
--	 * be removed.
--	 */
--	if (chan->cfg.slave_id)
--		chan->drcmr = chan->cfg.slave_id;
- }
- 
- static struct dma_async_tx_descriptor *
+ err_wqueue:
++	debugfs_remove_recursive(hdev->debugfs);
+ 	destroy_workqueue(hdev->workqueue);
+ 	destroy_workqueue(hdev->req_workqueue);
+ err:
 -- 
 2.34.1
 
