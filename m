@@ -2,43 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD73AC433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:14:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A32CC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:16:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1448882AbiAXVOE (ORCPT
+        id S1359662AbiAXVOV (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:14:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43272 "EHLO
+        Mon, 24 Jan 2022 16:14:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42306 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1391108AbiAXUq7 (ORCPT
+        with ESMTP id S1391161AbiAXUrB (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:46:59 -0500
+        Mon, 24 Jan 2022 15:47:01 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D65F5C0619C4;
-        Mon, 24 Jan 2022 11:56:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A234DC0424D1;
+        Mon, 24 Jan 2022 11:57:29 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 79EB6B8122F;
-        Mon, 24 Jan 2022 19:56:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 97A02C340E8;
-        Mon, 24 Jan 2022 19:56:55 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5E3A5B81249;
+        Mon, 24 Jan 2022 19:57:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7EA8EC33DA0;
+        Mon, 24 Jan 2022 19:57:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054216;
-        bh=mTzcCRXvRXdFMvGvyeb2rwfSPt4Nj5V1BB1LEiRqQ70=;
+        s=korg; t=1643054247;
+        bh=mzszewQvu+rH1A9pS5GqxEif5yWkdOeZ53lYTxnWPLc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kTsLq0lynSOZmLmPL7f+UhvsxIPLNjJmwIKZbTiSJGNdzYADphLDg1MA8K1xrhjPO
-         BM4slc3gZbs78hhjz7wH6V7D4wJ/ORpdVE0hUM2YtVeYJ4HDjK7bOrWXFx79MvUSDP
-         6A1AdLHB9k3/M5ipUjdaO6JNqvX1waE+FpLmXZs0=
+        b=Q7hhyE7mYa2a66mIekIhR1ho45Y3gl6P57105IfqPLzWqD2+AG3CsrveSac5kezRm
+         FYmeM1aUisFQe2C+IgZsciWYjt5R8rx6lhn+IQK2Yh/QcJojoM+Q23iiPRypf+K94O
+         ypwPcMGGJIlKiBNPNmwLISrY6aMk58dDYp5Ww8cA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Jos=C3=A9=20Exp=C3=B3sito?= <jose.exposito89@gmail.com>,
-        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 315/563] HID: apple: Do not reset quirks when the Fn key is not found
-Date:   Mon, 24 Jan 2022 19:41:20 +0100
-Message-Id: <20220124184035.322383770@linuxfoundation.org>
+        stable@vger.kernel.org, Abaci Robot <abaci@linux.alibaba.com>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Alex Deucher <alexander.deucher@amd.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 319/563] drm/amd/display: check top_pipe_to_program pointer
+Date:   Mon, 24 Jan 2022 19:41:24 +0100
+Message-Id: <20220124184035.468725778@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -50,33 +51,45 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: José Expósito <jose.exposito89@gmail.com>
+From: Yang Li <yang.lee@linux.alibaba.com>
 
-[ Upstream commit a5fe7864d8ada170f19cc47d176bf8260ffb4263 ]
+[ Upstream commit a689e8d1f80012f90384ebac9dcfac4201f9f77e ]
 
-When a keyboard without a function key is detected, instead of removing
-all quirks, remove only the APPLE_HAS_FN quirk.
+Clang static analysis reports this error
 
-Signed-off-by: José Expósito <jose.exposito89@gmail.com>
-Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+drivers/gpu/drm/amd/amdgpu/../display/dc/core/dc.c:2870:7: warning:
+Dereference of null pointer [clang-analyzer-core.NullDereference]
+                if
+(top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
+                    ^
+
+top_pipe_to_program being NULL is caught as an error
+But then it is used to report the error.
+
+So add a check before using it.
+
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Yang Li <yang.lee@linux.alibaba.com>
+Signed-off-by: Alex Deucher <alexander.deucher@amd.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/hid/hid-apple.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/amd/display/dc/core/dc.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/hid/hid-apple.c b/drivers/hid/hid-apple.c
-index 5c1d33cda863b..e5d2e7e9541b8 100644
---- a/drivers/hid/hid-apple.c
-+++ b/drivers/hid/hid-apple.c
-@@ -415,7 +415,7 @@ static int apple_input_configured(struct hid_device *hdev,
- 
- 	if ((asc->quirks & APPLE_HAS_FN) && !asc->fn_found) {
- 		hid_info(hdev, "Fn key not found (Apple Wireless Keyboard clone?), disabling Fn key handling\n");
--		asc->quirks = 0;
-+		asc->quirks &= ~APPLE_HAS_FN;
+diff --git a/drivers/gpu/drm/amd/display/dc/core/dc.c b/drivers/gpu/drm/amd/display/dc/core/dc.c
+index 284ed1c8a35ac..93f5229c303e7 100644
+--- a/drivers/gpu/drm/amd/display/dc/core/dc.c
++++ b/drivers/gpu/drm/amd/display/dc/core/dc.c
+@@ -2436,7 +2436,8 @@ static void commit_planes_for_stream(struct dc *dc,
  	}
  
- 	return 0;
+ 	if ((update_type != UPDATE_TYPE_FAST) && stream->update_flags.bits.dsc_changed)
+-		if (top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
++		if (top_pipe_to_program &&
++			top_pipe_to_program->stream_res.tg->funcs->lock_doublebuffer_enable) {
+ 			if (should_use_dmub_lock(stream->link)) {
+ 				union dmub_hw_lock_flags hw_locks = { 0 };
+ 				struct dmub_hw_lock_inst_flags inst_flags = { 0 };
 -- 
 2.34.1
 
