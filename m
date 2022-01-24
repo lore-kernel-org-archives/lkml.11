@@ -2,43 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 005E1C47080
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:59:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CB55C35273
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:59:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3413228AbiAYAij (ORCPT
+        id S3413343AbiAYAiw (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:38:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57812 "EHLO
+        Mon, 24 Jan 2022 19:38:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2364663AbiAXXsq (ORCPT
+        with ESMTP id S2364459AbiAXXsO (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:48:46 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C6853C0419C7;
-        Mon, 24 Jan 2022 13:43:55 -0800 (PST)
+        Mon, 24 Jan 2022 18:48:14 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABA18C07E30C;
+        Mon, 24 Jan 2022 13:43:14 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 67C5061502;
-        Mon, 24 Jan 2022 21:43:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28B8DC340E4;
-        Mon, 24 Jan 2022 21:43:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 69A16B81136;
+        Mon, 24 Jan 2022 21:43:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C420DC340E4;
+        Mon, 24 Jan 2022 21:43:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060634;
-        bh=dKelhVWUvz4ApohNdesXTvFVNa5aDTyUP3bnUOpRi+0=;
+        s=korg; t=1643060592;
+        bh=NxXNBQpf4dvv8gbQ9BWxfIxyWCwIsLResc7PmWo2IHQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KBJp4gea+PDzTs9nJF/widWMElGhbfQikLF0ki5vMyMtevaoxmI8PhTHmZNydpg8f
-         xkyqMWnsmfI+NSHYt+zAUvPoWLYtb8WGMQTLWWti0zASb1oMkH1WHwSGPjPToSRbir
-         SXBAXDwEZxLx3FGXmkZwv42J1fMNcbs0iRG/8uyY=
+        b=vLNU2K/21+IbMoEBtyR2mdm47qHNKNDolN7VGqKMzt4vun84uVOp1TelR3k5NNY4S
+         l8XdyuIKCIblijASjtdaLbLIcjIODRYgLRYLOpyf3zThQNP3XMINovGJe7BvN3tiBE
+         dfDdk+GEltGLQZnebmif7D0qD0A5Zfm7SqgO9BnY=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 5.16 0980/1039] rtc: Move variable into switch case statement
-Date:   Mon, 24 Jan 2022 19:46:09 +0100
-Message-Id: <20220124184158.226111508@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 5.16 0999/1039] dmaengine: at_xdmac: Fix at_xdmac_lld struct definition
+Date:   Mon, 24 Jan 2022 19:46:28 +0100
+Message-Id: <20220124184158.864895172@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,56 +50,50 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kees Cook <keescook@chromium.org>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-commit ba52eac083e1598e748811ff58d259f77e4c5c4d upstream.
+commit 912f7c6f7fac273f40e621447cf17d14b50d6e5b upstream.
 
-When building with automatic stack variable initialization, GCC 12
-complains about variables defined outside of switch case statements.
-Move the variable into the case that uses it, which silences the warning:
+The hardware channel next descriptor view structure contains just
+fields of 32 bits, while dma_addr_t can be of type u64 or u32
+depending on CONFIG_ARCH_DMA_ADDR_T_64BIT. Force u32 to comply with
+what the hardware expects.
 
-drivers/rtc/dev.c: In function 'rtc_dev_ioctl':
-drivers/rtc/dev.c:394:30: warning: statement will never be executed [-Wswitch-unreachable]
-  394 |                         long offset;
-      |                              ^~~~~~
-
-Fixes: 6a8af1b6568a ("rtc: add parameter ioctl")
-Signed-off-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: Gustavo A. R. Silva <gustavoars@kernel.org>
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20211209043915.1378393-1-keescook@chromium.org
+Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Link: https://lore.kernel.org/r/20211215110115.191749-11-tudor.ambarus@microchip.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/rtc/dev.c |    6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/dma/at_xdmac.c |   18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
---- a/drivers/rtc/dev.c
-+++ b/drivers/rtc/dev.c
-@@ -391,14 +391,14 @@ static long rtc_dev_ioctl(struct file *f
- 		}
+--- a/drivers/dma/at_xdmac.c
++++ b/drivers/dma/at_xdmac.c
+@@ -253,15 +253,15 @@ struct at_xdmac {
  
- 		switch(param.param) {
--			long offset;
- 		case RTC_PARAM_FEATURES:
- 			if (param.index != 0)
- 				err = -EINVAL;
- 			param.uvalue = rtc->features[0];
- 			break;
+ /* Linked List Descriptor */
+ struct at_xdmac_lld {
+-	dma_addr_t	mbr_nda;	/* Next Descriptor Member */
+-	u32		mbr_ubc;	/* Microblock Control Member */
+-	dma_addr_t	mbr_sa;		/* Source Address Member */
+-	dma_addr_t	mbr_da;		/* Destination Address Member */
+-	u32		mbr_cfg;	/* Configuration Register */
+-	u32		mbr_bc;		/* Block Control Register */
+-	u32		mbr_ds;		/* Data Stride Register */
+-	u32		mbr_sus;	/* Source Microblock Stride Register */
+-	u32		mbr_dus;	/* Destination Microblock Stride Register */
++	u32 mbr_nda;	/* Next Descriptor Member */
++	u32 mbr_ubc;	/* Microblock Control Member */
++	u32 mbr_sa;	/* Source Address Member */
++	u32 mbr_da;	/* Destination Address Member */
++	u32 mbr_cfg;	/* Configuration Register */
++	u32 mbr_bc;	/* Block Control Register */
++	u32 mbr_ds;	/* Data Stride Register */
++	u32 mbr_sus;	/* Source Microblock Stride Register */
++	u32 mbr_dus;	/* Destination Microblock Stride Register */
+ };
  
--		case RTC_PARAM_CORRECTION:
-+		case RTC_PARAM_CORRECTION: {
-+			long offset;
- 			mutex_unlock(&rtc->ops_lock);
- 			if (param.index != 0)
- 				return -EINVAL;
-@@ -407,7 +407,7 @@ static long rtc_dev_ioctl(struct file *f
- 			if (err == 0)
- 				param.svalue = offset;
- 			break;
--
-+		}
- 		default:
- 			if (rtc->ops->param_get)
- 				err = rtc->ops->param_get(rtc->dev.parent, &param);
+ /* 64-bit alignment needed to update CNDA and CUBC registers in an atomic way. */
 
 
