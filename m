@@ -2,47 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D4E0C43219
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE34BC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:27:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1450687AbiAXVVL (ORCPT
+        id S1450589AbiAXVVC (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:21:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44080 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1441924AbiAXUwX (ORCPT
+        Mon, 24 Jan 2022 16:21:02 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:45560 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1358666AbiAXUwD (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:52:23 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47EDCC054336;
-        Mon, 24 Jan 2022 11:58:44 -0800 (PST)
+        Mon, 24 Jan 2022 15:52:03 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9D6C60B43;
-        Mon, 24 Jan 2022 19:58:43 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B2ADFC340E5;
-        Mon, 24 Jan 2022 19:58:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7B3360B03;
+        Mon, 24 Jan 2022 20:52:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2D62C340E7;
+        Mon, 24 Jan 2022 20:52:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054323;
-        bh=HBx2Z0bo2vlrE7hqQN6Os7uEULxdugf4B9uv+P7rybc=;
+        s=korg; t=1643057522;
+        bh=jHBt4D2LHkfF9t7FKzh7y8T3seROGWJIg2IRNcojcvs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=alcG0En+VMtFGIBsXGjRtdHapGd6w2so9qAJzLz5j+SKLWCG9uEUg5ET/CA2VnGq4
-         c/PlOhDJHqw2BpI5mG7LjAJlXENiSCAjitICQXcYsdQuzwrhEO0iqdtvq8e4jgHQNl
-         FfUpnPHl0puv+8Y3WXjFPipb1iBx8O6UwHxMDb8k=
+        b=cEZ7efX8PMRmPvtNn3ofDNd+DSqsWKVTIEtlaKuIgi9cbsJATx+jdpl5fO4Xb2gEb
+         hAyYtzY+TWMMbMxwv2BgIe3oBaf8PiHoDgVQjxb1pXRQA3SgMG0un3a+4OMAc5jZAW
+         CX20lDCEDNVPUX/SWsxtW8lXEj6+BK01Ui30hFsE=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Sebastian Gottschall <s.gottschall@dd-wrt.com>,
-        Kalle Valo <quic_kvalo@quicinc.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 350/563] ath10k: Fix tx hanging
-Date:   Mon, 24 Jan 2022 19:41:55 +0100
-Message-Id: <20220124184036.511935255@linuxfoundation.org>
+        stable@vger.kernel.org, Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.15 841/846] sch_api: Dont skip qdisc attach on ingress
+Date:   Mon, 24 Jan 2022 19:45:58 +0100
+Message-Id: <20220124184129.919921520@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -51,56 +47,68 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Sebastian Gottschall <s.gottschall@dd-wrt.com>
+From: Maxim Mikityanskiy <maximmi@nvidia.com>
 
-[ Upstream commit e8a91863eba3966a447d2daa1526082d52b5db2a ]
+commit de2d807b294d3d2ce5e59043ae2634016765d076 upstream.
 
-While running stress tests in roaming scenarios (switching ap's every 5
-seconds, we discovered a issue which leads to tx hangings of exactly 5
-seconds while or after scanning for new accesspoints. We found out that
-this hanging is triggered by ath10k_mac_wait_tx_complete since the
-empty_tx_wq was not wake when the num_tx_pending counter reaches zero.
-To fix this, we simply move the wake_up call to htt_tx_dec_pending,
-since this call was missed on several locations within the ath10k code.
+The attach callback of struct Qdisc_ops is used by only a few qdiscs:
+mq, mqprio and htb. qdisc_graft() contains the following logic
+(pseudocode):
 
-Signed-off-by: Sebastian Gottschall <s.gottschall@dd-wrt.com>
-Signed-off-by: Kalle Valo <quic_kvalo@quicinc.com>
-Link: https://lore.kernel.org/r/20210505085806.11474-1-s.gottschall@dd-wrt.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+    if (!qdisc->ops->attach) {
+        if (ingress)
+            do ingress stuff;
+        else
+            do egress stuff;
+    }
+    if (!ingress) {
+        ...
+        if (qdisc->ops->attach)
+            qdisc->ops->attach(qdisc);
+    } else {
+        ...
+    }
+
+As we see, the attach callback is not called if the qdisc is being
+attached to ingress (TC_H_INGRESS). That wasn't a problem for mq and
+mqprio, since they contain a check that they are attached to TC_H_ROOT,
+and they can't be attached to TC_H_INGRESS anyway.
+
+However, the commit cited below added the attach callback to htb. It is
+needed for the hardware offload, but in the non-offload mode it
+simulates the "do egress stuff" part of the pseudocode above. The
+problem is that when htb is attached to ingress, neither "do ingress
+stuff" nor attach() is called. It results in an inconsistency, and the
+following message is printed to dmesg:
+
+unregister_netdevice: waiting for lo to become free. Usage count = 2
+
+This commit addresses the issue by running "do ingress stuff" in the
+ingress flow even in the attach callback is present, which is fine,
+because attach isn't going to be called afterwards.
+
+The bug was found by syzbot and reported by Eric.
+
+Fixes: d03b195b5aa0 ("sch_htb: Hierarchical QoS hardware offload")
+Signed-off-by: Maxim Mikityanskiy <maximmi@nvidia.com>
+Reported-by: Eric Dumazet <edumazet@google.com>
+Reviewed-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/wireless/ath/ath10k/htt_tx.c | 3 +++
- drivers/net/wireless/ath/ath10k/txrx.c   | 2 --
- 2 files changed, 3 insertions(+), 2 deletions(-)
+ net/sched/sch_api.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath10k/htt_tx.c b/drivers/net/wireless/ath/ath10k/htt_tx.c
-index 1fc0a312ab587..5f67da47036cf 100644
---- a/drivers/net/wireless/ath/ath10k/htt_tx.c
-+++ b/drivers/net/wireless/ath/ath10k/htt_tx.c
-@@ -147,6 +147,9 @@ void ath10k_htt_tx_dec_pending(struct ath10k_htt *htt)
- 	htt->num_pending_tx--;
- 	if (htt->num_pending_tx == htt->max_num_pending_tx - 1)
- 		ath10k_mac_tx_unlock(htt->ar, ATH10K_TX_PAUSE_Q_FULL);
-+
-+	if (htt->num_pending_tx == 0)
-+		wake_up(&htt->empty_tx_wq);
- }
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -1062,7 +1062,7 @@ static int qdisc_graft(struct net_device
  
- int ath10k_htt_tx_inc_pending(struct ath10k_htt *htt)
-diff --git a/drivers/net/wireless/ath/ath10k/txrx.c b/drivers/net/wireless/ath/ath10k/txrx.c
-index aefe1f7f906c0..f51f1cf2c6a40 100644
---- a/drivers/net/wireless/ath/ath10k/txrx.c
-+++ b/drivers/net/wireless/ath/ath10k/txrx.c
-@@ -82,8 +82,6 @@ int ath10k_txrx_tx_unref(struct ath10k_htt *htt,
- 	flags = skb_cb->flags;
- 	ath10k_htt_tx_free_msdu_id(htt, tx_done->msdu_id);
- 	ath10k_htt_tx_dec_pending(htt);
--	if (htt->num_pending_tx == 0)
--		wake_up(&htt->empty_tx_wq);
- 	spin_unlock_bh(&htt->tx_lock);
+ 		qdisc_offload_graft_root(dev, new, old, extack);
  
- 	rcu_read_lock();
--- 
-2.34.1
-
+-		if (new && new->ops->attach)
++		if (new && new->ops->attach && !ingress)
+ 			goto skip;
+ 
+ 		for (i = 0; i < num_q; i++) {
 
 
