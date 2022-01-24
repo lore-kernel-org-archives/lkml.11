@@ -2,40 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83568C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE7B3C43219
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 21:46:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1573562AbiAXVpO (ORCPT
+        id S1573579AbiAXVpQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 16:45:14 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:34266 "EHLO
+        Mon, 24 Jan 2022 16:45:16 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:60114 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1447388AbiAXVKi (ORCPT
+        with ESMTP id S1352064AbiAXVHo (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:10:38 -0500
+        Mon, 24 Jan 2022 16:07:44 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 99897611C8;
-        Mon, 24 Jan 2022 21:10:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66EA0C340E5;
-        Mon, 24 Jan 2022 21:10:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 29B4161330;
+        Mon, 24 Jan 2022 21:07:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EDCE4C340E7;
+        Mon, 24 Jan 2022 21:07:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643058637;
-        bh=kjZCPYkaoD8O3IPDj3N9+OXUTPfaBdFPnZd6whD02Vo=;
+        s=korg; t=1643058463;
+        bh=fQpo6FexrM9Dgnb+bDUD84yMCWrvuPjJrI1XdmWF2gE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aLcjjV9Eb3V0gyzOtqv2o6h1mTWwvNsGnMCkfZW5aOdydln5WiKGGTXT20kqMnrog
-         R4BbcgJKLECt2kF1OFmrVuzNJJCLfQ6263NzKegJOM3A/gCRzbN1mvWXNE1yL+Kgja
-         hQL50vyP6iud7r+fbMeTO8wOK+pv2wRlIvvAAIss=
+        b=ENfOJtIYaoU69/Xo4QiRW/RePvRgzfaki9Z2pCXorBnZd8QgHdz00fOy7LS4REz8M
+         RbBeqWZGORQYQVnGlD962cyhH8JNY2JRBoInsmqymV/n9cKfjc9gjLjbIzNSSvryIS
+         GTMFMLrkMByLi7Ec7YJTjVaObBwI6XV1SdIK5YFw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Panicker Harish <quic_pharish@quicinc.com>,
-        Marcel Holtmann <marcel@holtmann.org>,
+        stable@vger.kernel.org, Rob Clark <robdclark@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Robert Foss <robert.foss@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0353/1039] Bluetooth: hci_qca: Stop IBS timer during BT OFF
-Date:   Mon, 24 Jan 2022 19:35:42 +0100
-Message-Id: <20220124184137.148309494@linuxfoundation.org>
+Subject: [PATCH 5.16 0296/1039] drm/bridge: ti-sn65dsi86: Set max register for regmap
+Date:   Mon, 24 Jan 2022 19:34:45 +0100
+Message-Id: <20220124184135.243943575@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,36 +50,38 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Panicker Harish <quic_pharish@quicinc.com>
+From: Stephen Boyd <swboyd@chromium.org>
 
-[ Upstream commit df1e5c51492fd93ffc293acdcc6f00698d19fedc ]
+[ Upstream commit 0b665d4af35837f0a0ae63135b84a3c187c1db3b ]
 
-The IBS timers are not stopped properly once BT OFF is triggered.
-we could see IBS commands being sent along with version command,
-so stopped IBS timers while Bluetooth is off.
+Set the maximum register to 0xff so we can dump the registers for this
+device in debugfs.
 
-Fixes: 3e4be65eb82c ("Bluetooth: hci_qca: Add poweroff support during hci down for wcn3990")
-Signed-off-by: Panicker Harish <quic_pharish@quicinc.com>
-Signed-off-by: Marcel Holtmann <marcel@holtmann.org>
+Fixes: a095f15c00e2 ("drm/bridge: add support for sn65dsi86 bridge driver")
+Cc: Rob Clark <robdclark@chromium.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+Reviewed-by: Robert Foss <robert.foss@linaro.org>
+Signed-off-by: Robert Foss <robert.foss@linaro.org>
+Link: https://patchwork.freedesktop.org/patch/msgid/20211215002529.382383-1-swboyd@chromium.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/bluetooth/hci_qca.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/gpu/drm/bridge/ti-sn65dsi86.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
-index dd768a8ed7cbb..9e99311038ae8 100644
---- a/drivers/bluetooth/hci_qca.c
-+++ b/drivers/bluetooth/hci_qca.c
-@@ -1928,6 +1928,9 @@ static int qca_power_off(struct hci_dev *hdev)
- 	hu->hdev->hw_error = NULL;
- 	hu->hdev->cmd_timeout = NULL;
+diff --git a/drivers/gpu/drm/bridge/ti-sn65dsi86.c b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
+index 6154bed0af5bf..83d06c16d4d74 100644
+--- a/drivers/gpu/drm/bridge/ti-sn65dsi86.c
++++ b/drivers/gpu/drm/bridge/ti-sn65dsi86.c
+@@ -188,6 +188,7 @@ static const struct regmap_config ti_sn65dsi86_regmap_config = {
+ 	.val_bits = 8,
+ 	.volatile_table = &ti_sn_bridge_volatile_table,
+ 	.cache_type = REGCACHE_NONE,
++	.max_register = 0xFF,
+ };
  
-+	del_timer_sync(&qca->wake_retrans_timer);
-+	del_timer_sync(&qca->tx_idle_timer);
-+
- 	/* Stop sending shutdown command if soc crashes. */
- 	if (soc_type != QCA_ROME
- 		&& qca->memdump_state == QCA_MEMDUMP_IDLE) {
+ static void ti_sn65dsi86_write_u16(struct ti_sn65dsi86 *pdata,
 -- 
 2.34.1
 
