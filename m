@@ -2,44 +2,45 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08936C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:23:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A57F7C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:23:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344673AbiAXUXG (ORCPT
+        id S1345913AbiAXUXT (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:23:06 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:48096 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1376814AbiAXUEG (ORCPT
+        Mon, 24 Jan 2022 15:23:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60782 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376820AbiAXUEF (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:04:06 -0500
+        Mon, 24 Jan 2022 15:04:05 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2323BC061A10;
+        Mon, 24 Jan 2022 11:30:34 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 454BDB81229;
-        Mon, 24 Jan 2022 20:04:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75399C340E5;
-        Mon, 24 Jan 2022 20:04:00 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E1B24B81235;
+        Mon, 24 Jan 2022 19:30:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24DEFC340E7;
+        Mon, 24 Jan 2022 19:30:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054641;
-        bh=/+mI8nrRREij5JDaj6gEO/h76K+KA7kZdaVgSdBD+Fk=;
+        s=korg; t=1643052631;
+        bh=cWI8ojefn/SNJygUfmetwTuVORwXnr4IbGXVnLFJoK4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RvOtHKfvir77WWjSlgwYJBiZmQkCdbrYjk0LzaU0r5zlUiiRKo58CqMRowR+vvjfL
-         jNve9bWYcY0d80I1o43obPRie5xof185qZSBaZi2qwQVu5zGaPeucJfXJqLp/fw+Xy
-         NPp4ilY2aNUEvyeHYdZRMWn0AHuwohK4ePQQKe9M=
+        b=WIkeqvbf316IwFXG60kYA6rFetUoXqWRBXBX6Wv97nNKqoC9jYcdqN80AF+KZ3qjr
+         I/VILEyRKaZO0u2EI00EMrk+7vuxx7pNvmn/aCHhmhzEbfwN9O9NDTJlH7CvVvNJ72
+         935BvgBOZC1V2+ImuL0Db69W5bOGPFh02yCeeG98=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Thadeu Lima de Souza Cascardo <cascardo@canonical.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
+        stable@vger.kernel.org, Takashi Iwai <tiwai@suse.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 428/563] selftests/powerpc/spectre_v2: Return skip code when miss_percent is high
-Date:   Mon, 24 Jan 2022 19:43:13 +0100
-Message-Id: <20220124184039.253521440@linuxfoundation.org>
+Subject: [PATCH 5.4 123/320] ALSA: jack: Add missing rwsem around snd_ctl_remove() calls
+Date:   Mon, 24 Jan 2022 19:41:47 +0100
+Message-Id: <20220124183957.867945420@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,40 +49,40 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
+From: Takashi Iwai <tiwai@suse.de>
 
-[ Upstream commit 3c42e9542050d49610077e083c7c3f5fd5e26820 ]
+[ Upstream commit 06764dc931848c3a9bc01a63bbf76a605408bb54 ]
 
-A mis-match between reported and actual mitigation is not restricted to the
-Vulnerable case. The guest might also report the mitigation as "Software
-count cache flush" and the host will still mitigate with branch cache
-disabled.
+snd_ctl_remove() has to be called with card->controls_rwsem held (when
+called after the card instantiation).  This patch add the missing
+rwsem calls around it.
 
-So, instead of skipping depending on the detected mitigation, simply skip
-whenever the detected miss_percent is the expected one for a fully
-mitigated system, that is, above 95%.
-
-Signed-off-by: Thadeu Lima de Souza Cascardo <cascardo@canonical.com>
-Signed-off-by: Michael Ellerman <mpe@ellerman.id.au>
-Link: https://lore.kernel.org/r/20211207130557.40566-1-cascardo@canonical.com
+Fixes: 9058cbe1eed2 ("ALSA: jack: implement kctl creating for jack devices")
+Link: https://lore.kernel.org/r/20211116071314.15065-1-tiwai@suse.de
+Signed-off-by: Takashi Iwai <tiwai@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- tools/testing/selftests/powerpc/security/spectre_v2.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ sound/core/jack.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/tools/testing/selftests/powerpc/security/spectre_v2.c b/tools/testing/selftests/powerpc/security/spectre_v2.c
-index adc2b7294e5fd..83647b8277e7d 100644
---- a/tools/testing/selftests/powerpc/security/spectre_v2.c
-+++ b/tools/testing/selftests/powerpc/security/spectre_v2.c
-@@ -193,7 +193,7 @@ int spectre_v2_test(void)
- 			 * We are not vulnerable and reporting otherwise, so
- 			 * missing such a mismatch is safe.
- 			 */
--			if (state == VULNERABLE)
-+			if (miss_percent > 95)
- 				return 4;
+diff --git a/sound/core/jack.c b/sound/core/jack.c
+index 8b209750c7a9c..b00ae6f39f054 100644
+--- a/sound/core/jack.c
++++ b/sound/core/jack.c
+@@ -54,10 +54,13 @@ static int snd_jack_dev_free(struct snd_device *device)
+ 	struct snd_card *card = device->card;
+ 	struct snd_jack_kctl *jack_kctl, *tmp_jack_kctl;
  
- 			return 1;
++	down_write(&card->controls_rwsem);
+ 	list_for_each_entry_safe(jack_kctl, tmp_jack_kctl, &jack->kctl_list, list) {
+ 		list_del_init(&jack_kctl->list);
+ 		snd_ctl_remove(card, jack_kctl->kctl);
+ 	}
++	up_write(&card->controls_rwsem);
++
+ 	if (jack->private_free)
+ 		jack->private_free(jack);
+ 
 -- 
 2.34.1
 
