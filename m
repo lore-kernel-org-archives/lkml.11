@@ -2,42 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD952C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:18:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 572C9C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:18:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236853AbiAXTSA (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:18:00 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:60874 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346074AbiAXTFD (ORCPT
+        id S237407AbiAXTSE (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 14:18:04 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36230 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346828AbiAXTIT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:05:03 -0500
+        Mon, 24 Jan 2022 14:08:19 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01C34B81215;
-        Mon, 24 Jan 2022 19:05:02 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10983C340E5;
-        Mon, 24 Jan 2022 19:04:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5A9A66121F;
+        Mon, 24 Jan 2022 19:08:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1DE94C340E7;
+        Mon, 24 Jan 2022 19:08:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051100;
-        bh=T7KWPVUlwwGeP3+Ec471D8gVEnDQ0SQYVaxxQ4HTt44=;
+        s=korg; t=1643051298;
+        bh=iG87uSHs6Uxi9pA35W4fWuC2vqqSy6dBDllOCeBnKQ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VLys8Cu7gsPs+jGEeW2h7gnUWY+/3UVB0+CqLKpH3Q3UhdQL5mLRS4lp5u/BkSktC
-         Jkxdxl9KMVLPKKnNi/5iNsnSfaFYmjEz9sEKAoNKEhivYxW6KWuIxGk8/Tv+TLU/OD
-         3Wt/43dgp2w9LP8DIWX35NRu7iC8EIAEm2LZbNYM=
+        b=oQ7nlGJ9hzhHFl5UBMPGctguYE+H27sQPP+zgl71C91DpedHAYy7TlC8lRE540/Iz
+         pgZEDkPuxiivbpot81izt7Gwu4gzJ1e41n0l9S0XuwNtDqTS/9wGYnh2L5ArGOYrF4
+         UEGMw0NcDjmSQ76a2WvsKbutuhSqKbPsyq2wZMgM=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Pavel Skripkin <paskripkin@gmail.com>,
-        Dongliang Mu <mudongliangabcd@gmail.com>,
-        syzkaller <syzkaller@googlegroups.com>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        stable@vger.kernel.org, Mark Langsdorf <mlangsdo@redhat.com>,
+        Bob Moore <robert.moore@intel.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 4.14 037/186] media: em28xx: fix memory leak in em28xx_init_dev
-Date:   Mon, 24 Jan 2022 19:41:52 +0100
-Message-Id: <20220124183938.318318966@linuxfoundation.org>
+Subject: [PATCH 4.14 118/186] ACPICA: actypes.h: Expand the ACPI_ACCESS_ definitions
+Date:   Mon, 24 Jan 2022 19:43:13 +0100
+Message-Id: <20220124183940.910320823@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -49,79 +47,54 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Dongliang Mu <mudongliangabcd@gmail.com>
+From: Mark Langsdorf <mlangsdo@redhat.com>
 
-[ Upstream commit 22be5a10d0b24eec9e45decd15d7e6112b25f080 ]
+[ Upstream commit f81bdeaf816142e0729eea0cc84c395ec9673151 ]
 
-In the em28xx_init_rev, if em28xx_audio_setup fails, this function fails
-to deallocate the media_dev allocated in the em28xx_media_device_init.
+ACPICA commit bc02c76d518135531483dfc276ed28b7ee632ce1
 
-Fix this by adding em28xx_unregister_media_device to free media_dev.
+The current ACPI_ACCESS_*_WIDTH defines do not provide a way to
+test that size is small enough to not cause an overflow when
+applied to a 32-bit integer.
 
-BTW, this patch is tested in my local syzkaller instance, and it can
-prevent the memory leak from occurring again.
+Rather than adding more magic numbers, add ACPI_ACCESS_*_SHIFT,
+ACPI_ACCESS_*_MAX, and ACPI_ACCESS_*_DEFAULT #defines and
+redefine ACPI_ACCESS_*_WIDTH in terms of the new #defines.
 
-CC: Pavel Skripkin <paskripkin@gmail.com>
-Fixes: 37ecc7b1278f ("[media] em28xx: add media controller support")
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-Reported-by: syzkaller <syzkaller@googlegroups.com>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+This was inititally reported on Linux where a size of 102 in
+ACPI_ACCESS_BIT_WIDTH caused an overflow error in the SPCR
+initialization code.
+
+Link: https://github.com/acpica/acpica/commit/bc02c76d
+Signed-off-by: Mark Langsdorf <mlangsdo@redhat.com>
+Signed-off-by: Bob Moore <robert.moore@intel.com>
+Signed-off-by: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/media/usb/em28xx/em28xx-cards.c | 18 ++++++++++++------
- 1 file changed, 12 insertions(+), 6 deletions(-)
+ include/acpi/actypes.h | 10 ++++++++--
+ 1 file changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/media/usb/em28xx/em28xx-cards.c b/drivers/media/usb/em28xx/em28xx-cards.c
-index 9747e23aad271..b736c027a0bd0 100644
---- a/drivers/media/usb/em28xx/em28xx-cards.c
-+++ b/drivers/media/usb/em28xx/em28xx-cards.c
-@@ -3386,8 +3386,10 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
+diff --git a/include/acpi/actypes.h b/include/acpi/actypes.h
+index 71fadbe77e211..2c5df69e67819 100644
+--- a/include/acpi/actypes.h
++++ b/include/acpi/actypes.h
+@@ -560,8 +560,14 @@ typedef u64 acpi_integer;
+  * Can be used with access_width of struct acpi_generic_address and access_size of
+  * struct acpi_resource_generic_register.
+  */
+-#define ACPI_ACCESS_BIT_WIDTH(size)     (1 << ((size) + 2))
+-#define ACPI_ACCESS_BYTE_WIDTH(size)    (1 << ((size) - 1))
++#define ACPI_ACCESS_BIT_SHIFT		2
++#define ACPI_ACCESS_BYTE_SHIFT		-1
++#define ACPI_ACCESS_BIT_MAX		(31 - ACPI_ACCESS_BIT_SHIFT)
++#define ACPI_ACCESS_BYTE_MAX		(31 - ACPI_ACCESS_BYTE_SHIFT)
++#define ACPI_ACCESS_BIT_DEFAULT		(8 - ACPI_ACCESS_BIT_SHIFT)
++#define ACPI_ACCESS_BYTE_DEFAULT	(8 - ACPI_ACCESS_BYTE_SHIFT)
++#define ACPI_ACCESS_BIT_WIDTH(size)	(1 << ((size) + ACPI_ACCESS_BIT_SHIFT))
++#define ACPI_ACCESS_BYTE_WIDTH(size)	(1 << ((size) + ACPI_ACCESS_BYTE_SHIFT))
  
- 	if (dev->is_audio_only) {
- 		retval = em28xx_audio_setup(dev);
--		if (retval)
--			return -ENODEV;
-+		if (retval) {
-+			retval = -ENODEV;
-+			goto err_deinit_media;
-+		}
- 		em28xx_init_extension(dev);
- 
- 		return 0;
-@@ -3417,7 +3419,7 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
- 		dev_err(&dev->intf->dev,
- 			"%s: em28xx_i2c_register bus 0 - error [%d]!\n",
- 		       __func__, retval);
--		return retval;
-+		goto err_deinit_media;
- 	}
- 
- 	/* register i2c bus 1 */
-@@ -3433,9 +3435,7 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
- 			       "%s: em28xx_i2c_register bus 1 - error [%d]!\n",
- 			       __func__, retval);
- 
--			em28xx_i2c_unregister(dev, 0);
--
--			return retval;
-+			goto err_unreg_i2c;
- 		}
- 	}
- 
-@@ -3443,6 +3443,12 @@ static int em28xx_init_dev(struct em28xx *dev, struct usb_device *udev,
- 	em28xx_card_setup(dev);
- 
- 	return 0;
-+
-+err_unreg_i2c:
-+	em28xx_i2c_unregister(dev, 0);
-+err_deinit_media:
-+	em28xx_unregister_media_device(dev);
-+	return retval;
- }
- 
- /* high bandwidth multiplier, as encoded in highspeed endpoint descriptors */
+ /*******************************************************************************
+  *
 -- 
 2.34.1
 
