@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDCD9C2BA4C
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A738BC46467
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:58:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2367425AbiAXXzZ (ORCPT
+        id S2367687AbiAXX4Q (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:55:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50114 "EHLO
+        Mon, 24 Jan 2022 18:56:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1846523AbiAXXQP (ORCPT
+        with ESMTP id S1846611AbiAXXQb (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:16:15 -0500
+        Mon, 24 Jan 2022 18:16:31 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55D61C0617B1;
-        Mon, 24 Jan 2022 13:25:21 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BAB5C08EE6E;
+        Mon, 24 Jan 2022 11:48:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 12649B81243;
-        Mon, 24 Jan 2022 21:25:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A177C340E4;
-        Mon, 24 Jan 2022 21:25:18 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 08A07B811F3;
+        Mon, 24 Jan 2022 19:48:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2C7A0C340E7;
+        Mon, 24 Jan 2022 19:48:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059518;
-        bh=76k952JqIoqnSJrdx/YN9ePOzNmgl602GkwnJ/y28TY=;
+        s=korg; t=1643053698;
+        bh=0sWFuJFbcEAODzI6BQVR4P305YINCtGmvnWNLVcfTuw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hX9abKQjqWcHi2yiscz10ufTLNOZl0NqPvd5BUL+xzD5g//faInXFfcp+4SVHzRj4
-         QGBhOac1SxLGb5bA/J3vcW3LVq2nve+ZTeobm/flfTg/eqy5HZYR1E2jHnQIKAWTEg
-         HmGi4sSZbBpTTa0lvZ3R1KlgMuMpa/FOCX/n0fqA=
+        b=1BJvAY89w82OS4HdaXKBSdsd5mFHQYZYSt1SML5IQOdvok+FwgfPCbi26qtgjTUhk
+         2jLRp7FHRk6kLBQa7ehMRgLdaVcYIftuIQOwYXa8jC2lv8G3mtxd+0Ga8KVGn3MaoS
+         5VET+1wX/x8BqgxaNygcm2iolxFUIgnpbSEZlLds=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Borislav Petkov <bp@suse.de>,
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0642/1039] x86/mce: Mark mce_panic() noinstr
-Date:   Mon, 24 Jan 2022 19:40:31 +0100
-Message-Id: <20220124184146.936639036@linuxfoundation.org>
+Subject: [PATCH 5.10 149/563] xfrm: fix a small bug in xfrm_sa_len()
+Date:   Mon, 24 Jan 2022 19:38:34 +0100
+Message-Id: <20220124184029.559356236@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
-References: <20220124184125.121143506@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,67 +50,36 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Borislav Petkov <bp@suse.de>
+From: Eric Dumazet <edumazet@google.com>
 
-[ Upstream commit 3c7ce80a818fa7950be123cac80cd078e5ac1013 ]
+[ Upstream commit 7770a39d7c63faec6c4f33666d49a8cb664d0482 ]
 
-And allow instrumentation inside it because it does calls to other
-facilities which will not be tagged noinstr.
+copy_user_offload() will actually push a struct struct xfrm_user_offload,
+which is different than (struct xfrm_state *)->xso
+(struct xfrm_state_offload)
 
-Fixes
-
-  vmlinux.o: warning: objtool: do_machine_check()+0xc73: call to mce_panic() leaves .noinstr.text section
-
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211208111343.8130-8-bp@alien8.de
+Fixes: d77e38e612a01 ("xfrm: Add an IPsec hardware offloading API")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Steffen Klassert <steffen.klassert@secunet.com>
+Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/x86/kernel/cpu/mce/core.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+ net/xfrm/xfrm_user.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/arch/x86/kernel/cpu/mce/core.c b/arch/x86/kernel/cpu/mce/core.c
-index 70ec5685906b2..9a52ec55e0555 100644
---- a/arch/x86/kernel/cpu/mce/core.c
-+++ b/arch/x86/kernel/cpu/mce/core.c
-@@ -267,11 +267,17 @@ static void wait_for_panic(void)
- 	panic("Panicing machine check CPU died");
- }
- 
--static void mce_panic(const char *msg, struct mce *final, char *exp)
-+static noinstr void mce_panic(const char *msg, struct mce *final, char *exp)
- {
--	int apei_err = 0;
- 	struct llist_node *pending;
- 	struct mce_evt_llist *l;
-+	int apei_err = 0;
-+
-+	/*
-+	 * Allow instrumentation around external facilities usage. Not that it
-+	 * matters a whole lot since the machine is going to panic anyway.
-+	 */
-+	instrumentation_begin();
- 
- 	if (!fake_panic) {
- 		/*
-@@ -286,7 +292,7 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
- 	} else {
- 		/* Don't log too much for fake panic */
- 		if (atomic_inc_return(&mce_fake_panicked) > 1)
--			return;
-+			goto out;
- 	}
- 	pending = mce_gen_pool_prepare_records();
- 	/* First print corrected ones that are still unlogged */
-@@ -324,6 +330,9 @@ static void mce_panic(const char *msg, struct mce *final, char *exp)
- 		panic(msg);
- 	} else
- 		pr_emerg(HW_ERR "Fake kernel panic: %s\n", msg);
-+
-+out:
-+	instrumentation_end();
- }
- 
- /* Support code for software error injection */
+diff --git a/net/xfrm/xfrm_user.c b/net/xfrm/xfrm_user.c
+index 6f97665b632ed..97f7ebf5324e7 100644
+--- a/net/xfrm/xfrm_user.c
++++ b/net/xfrm/xfrm_user.c
+@@ -2898,7 +2898,7 @@ static inline unsigned int xfrm_sa_len(struct xfrm_state *x)
+ 	if (x->props.extra_flags)
+ 		l += nla_total_size(sizeof(x->props.extra_flags));
+ 	if (x->xso.dev)
+-		 l += nla_total_size(sizeof(x->xso));
++		 l += nla_total_size(sizeof(struct xfrm_user_offload));
+ 	if (x->props.smark.v | x->props.smark.m) {
+ 		l += nla_total_size(sizeof(x->props.smark.v));
+ 		l += nla_total_size(sizeof(x->props.smark.m));
 -- 
 2.34.1
 
