@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44F19C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:08:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E00A7C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:08:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353569AbiAXUIn (ORCPT
+        id S1353226AbiAXUIu (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:08:43 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:38884 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1357360AbiAXTtw (ORCPT
+        Mon, 24 Jan 2022 15:08:50 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:47408 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1350884AbiAXTud (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:49:52 -0500
+        Mon, 24 Jan 2022 14:50:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8CBBAB810AF;
-        Mon, 24 Jan 2022 19:49:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8D847C340E5;
-        Mon, 24 Jan 2022 19:49:49 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id D563660B43;
+        Mon, 24 Jan 2022 19:50:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A6D9C340E5;
+        Mon, 24 Jan 2022 19:50:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053790;
-        bh=Hh8VGhYGSCAAIyMqk/0C8kJdzgofq8D1WaPueErDi4I=;
+        s=korg; t=1643053830;
+        bh=02qCKii77kOqjfN+HoEomacGxd5qMKcREHO1H1Kj6rU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xvpXk4zjsBudtHWXmKClfPpYGFft4RVNuvkOT3RC85RHskFbpmdQ4SgwG198qGXUy
-         hRrq8ljouMLlzHD/mTK2d+iolETRlX4YHbKopIlmtiMCeeAQpR4AbMYEq4cHyzCuuE
-         y1UXP38m72e0OO3dH7zYUmTdKHwwt2rrvjjl0uUY=
+        b=lDF+wsI9vd8kd/qcU4Wm/GCMcnNEHe0RmR+eo0F8Dp58SKneoPcVmiAE35hkWJspx
+         OtFvdg6ERWlz1OT99DmeepVHhQr7rNoWlqEpu7tSEOrvSbx2gkj57ucjxDKBJ9FNLn
+         YMepiXtiYpHCqtQHoENVxsRPLsHrNjEHv6hty1S8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, kernelbot <kernel-bot@kylinos.cn>,
-        Jackie Liu <liuyun01@kylinos.cn>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
-        Rob Clark <robdclark@chromium.org>,
+        stable@vger.kernel.org,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 146/563] drm/msm/dp: displayPort driver need algorithm rational
-Date:   Mon, 24 Jan 2022 19:38:31 +0100
-Message-Id: <20220124184029.449876198@linuxfoundation.org>
+Subject: [PATCH 5.10 191/563] backlight: qcom-wled: Fix off-by-one maximum with default num_strings
+Date:   Mon, 24 Jan 2022 19:39:16 +0100
+Message-Id: <20220124184031.029770158@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
 References: <20220124184024.407936072@linuxfoundation.org>
@@ -49,39 +51,131 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jackie Liu <liuyun01@kylinos.cn>
+From: Marijn Suijten <marijn.suijten@somainline.org>
 
-[ Upstream commit 53d22794711ad630f40d59dd726bd260d77d585f ]
+[ Upstream commit 5ada78b26f935f8751852dffa24f6b545b1d2517 ]
 
-Let's select RATIONAL with dp driver. avoid like:
+When not specifying num-strings in the DT the default is used, but +1 is
+added to it which turns WLED3 into 4 and WLED4/5 into 5 strings instead
+of 3 and 4 respectively, causing out-of-bounds reads and register
+read/writes.  This +1 exists for a deficiency in the DT parsing code,
+and is simply omitted entirely - solving this oob issue - by parsing the
+property separately much like qcom,enabled-strings.
 
-[...]
-x86_64-linux-gnu-ld: drivers/gpu/drm/msm/dp/dp_catalog.o: in function `dp_catalog_ctrl_config_msa':
-dp_catalog.c:(.text+0x57e): undefined reference to `rational_best_approximation'
+This also enables more stringent checks on the maximum value when
+qcom,enabled-strings is provided in the DT, by parsing num-strings after
+enabled-strings to allow it to check against (and in a subsequent patch
+override) the length of enabled-strings: it is invalid to set
+num-strings higher than that.
+The DT currently utilizes it to get around an incorrect fixed read of
+four elements from that array (has been addressed in a prior patch) by
+setting a lower num-strings where desired.
 
-Fixes: c943b4948b58 ("drm/msm/dp: add displayPort driver support")
-Reported-by: kernelbot <kernel-bot@kylinos.cn>
-Signed-off-by: Jackie Liu <liuyun01@kylinos.cn>
-Link: https://lore.kernel.org/r/20211110070950.3355597-2-liu.yun@linux.dev
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Signed-off-by: Rob Clark <robdclark@chromium.org>
+Fixes: 93c64f1ea1e8 ("leds: add Qualcomm PM8941 WLED driver")
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-By: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+Reviewed-by: Daniel Thompson <daniel.thompson@linaro.org>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+Link: https://lore.kernel.org/r/20211115203459.1634079-5-marijn.suijten@somainline.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/gpu/drm/msm/Kconfig | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/video/backlight/qcom-wled.c | 48 ++++++++++-------------------
+ 1 file changed, 16 insertions(+), 32 deletions(-)
 
-diff --git a/drivers/gpu/drm/msm/Kconfig b/drivers/gpu/drm/msm/Kconfig
-index dabb4a1ccdcf7..1aad34b5ffd7f 100644
---- a/drivers/gpu/drm/msm/Kconfig
-+++ b/drivers/gpu/drm/msm/Kconfig
-@@ -60,6 +60,7 @@ config DRM_MSM_HDMI_HDCP
- config DRM_MSM_DP
- 	bool "Enable DisplayPort support in MSM DRM driver"
- 	depends on DRM_MSM
-+	select RATIONAL
- 	default y
- 	help
- 	  Compile in support for DP driver in MSM DRM driver. DP external
+diff --git a/drivers/video/backlight/qcom-wled.c b/drivers/video/backlight/qcom-wled.c
+index 92df5a9f6ae51..9e09165984b48 100644
+--- a/drivers/video/backlight/qcom-wled.c
++++ b/drivers/video/backlight/qcom-wled.c
+@@ -1256,21 +1256,6 @@ static const struct wled_var_cfg wled5_ovp_cfg = {
+ 	.size = 16,
+ };
+ 
+-static u32 wled3_num_strings_values_fn(u32 idx)
+-{
+-	return idx + 1;
+-}
+-
+-static const struct wled_var_cfg wled3_num_strings_cfg = {
+-	.fn = wled3_num_strings_values_fn,
+-	.size = 3,
+-};
+-
+-static const struct wled_var_cfg wled4_num_strings_cfg = {
+-	.fn = wled3_num_strings_values_fn,
+-	.size = 4,
+-};
+-
+ static u32 wled3_switch_freq_values_fn(u32 idx)
+ {
+ 	return 19200 / (2 * (1 + idx));
+@@ -1344,11 +1329,6 @@ static int wled_configure(struct wled *wled)
+ 			.val_ptr = &cfg->switch_freq,
+ 			.cfg = &wled3_switch_freq_cfg,
+ 		},
+-		{
+-			.name = "qcom,num-strings",
+-			.val_ptr = &cfg->num_strings,
+-			.cfg = &wled3_num_strings_cfg,
+-		},
+ 	};
+ 
+ 	const struct wled_u32_opts wled4_opts[] = {
+@@ -1372,11 +1352,6 @@ static int wled_configure(struct wled *wled)
+ 			.val_ptr = &cfg->switch_freq,
+ 			.cfg = &wled3_switch_freq_cfg,
+ 		},
+-		{
+-			.name = "qcom,num-strings",
+-			.val_ptr = &cfg->num_strings,
+-			.cfg = &wled4_num_strings_cfg,
+-		},
+ 	};
+ 
+ 	const struct wled_u32_opts wled5_opts[] = {
+@@ -1400,11 +1375,6 @@ static int wled_configure(struct wled *wled)
+ 			.val_ptr = &cfg->switch_freq,
+ 			.cfg = &wled3_switch_freq_cfg,
+ 		},
+-		{
+-			.name = "qcom,num-strings",
+-			.val_ptr = &cfg->num_strings,
+-			.cfg = &wled4_num_strings_cfg,
+-		},
+ 		{
+ 			.name = "qcom,modulator-sel",
+ 			.val_ptr = &cfg->mod_sel,
+@@ -1523,8 +1493,6 @@ static int wled_configure(struct wled *wled)
+ 			*bool_opts[i].val_ptr = true;
+ 	}
+ 
+-	cfg->num_strings = cfg->num_strings + 1;
+-
+ 	string_len = of_property_count_elems_of_size(dev->of_node,
+ 						     "qcom,enabled-strings",
+ 						     sizeof(u32));
+@@ -1555,6 +1523,22 @@ static int wled_configure(struct wled *wled)
+ 		}
+ 	}
+ 
++	rc = of_property_read_u32(dev->of_node, "qcom,num-strings", &val);
++	if (!rc) {
++		if (val < 1 || val > wled->max_string_count) {
++			dev_err(dev, "qcom,num-strings must be between 1 and %d\n",
++				wled->max_string_count);
++			return -EINVAL;
++		}
++
++		if (string_len > 0 && val > string_len) {
++			dev_err(dev, "qcom,num-strings exceeds qcom,enabled-strings\n");
++			return -EINVAL;
++		}
++
++		cfg->num_strings = val;
++	}
++
+ 	return 0;
+ }
+ 
 -- 
 2.34.1
 
