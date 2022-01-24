@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A5AC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:54:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10074C43219
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:56:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357046AbiAXTyY (ORCPT
+        id S1358226AbiAXTyj (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:54:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54790 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348066AbiAXTnV (ORCPT
+        Mon, 24 Jan 2022 14:54:39 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:40964 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244676AbiAXTn2 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:43:21 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A845C094275;
-        Mon, 24 Jan 2022 11:22:13 -0800 (PST)
+        Mon, 24 Jan 2022 14:43:28 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 3932360010;
-        Mon, 24 Jan 2022 19:22:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10751C340E5;
-        Mon, 24 Jan 2022 19:22:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2EA99614B8;
+        Mon, 24 Jan 2022 19:43:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05A1EC340E5;
+        Mon, 24 Jan 2022 19:43:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052132;
-        bh=32f1GQzhq8P7rtzI6K3kbis7qu0LI7dysxm9i2zoPKc=;
+        s=korg; t=1643053406;
+        bh=w+VyngdW9N3dWCPVF+tKJ1n0N9r4Bcc/n6v1odHf5TQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PVbwqyaFY/1xleS8oZA+j2NPUDWO1mi4trrGWMSADy8e/wfj5xE86cB/pJS8DhghL
-         +lQ5Oh3aYpyWn6FhR+zBOYBL5UwKMZSmih41VDdA3J7DQrGELYqUjk6RNw1EpsCbTy
-         H60xCHosd904Uk10z4TCUeLDp9kusj8D76Cgx+Mw=
+        b=uhGyC1zvPHUP8xj9GGV7kvYGhSSVaSrqWgzZIVUOhdarXEfRcbmUB6au/llGIxerH
+         Zx3QXbfESg4e1Jag1UDymrNh+gtmFMAHD+V1sjnv9LqTRnBn5XtP0CcuO02nl0DxON
+         4Ab/AsB9nKbb7hntvx6Tw5M9Xaoq0hU85dokYgfQ=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ilan Peer <ilan.peer@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>
-Subject: [PATCH 4.19 199/239] iwlwifi: mvm: Increase the scan timeout guard to 30 seconds
-Date:   Mon, 24 Jan 2022 19:43:57 +0100
-Message-Id: <20220124183949.441382787@linuxfoundation.org>
+        stable@vger.kernel.org, Maxime Ripard <maxime@cerno.tech>,
+        Nicolas Saenz Julienne <nsaenz@kernel.org>,
+        Michael Stapelberg <michael@stapelberg.ch>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.10 054/563] drm/vc4: hdmi: Set a default HSM rate
+Date:   Mon, 24 Jan 2022 19:36:59 +0100
+Message-Id: <20220124184026.285848868@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-References: <20220124183943.102762895@linuxfoundation.org>
+In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
+References: <20220124184024.407936072@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,40 +48,61 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ilan Peer <ilan.peer@intel.com>
+From: Maxime Ripard <maxime@cerno.tech>
 
-commit ced50f1133af12f7521bb777fcf4046ca908fb77 upstream.
+[ Upstream commit 3e85b81591609bb794bb00cd619b20965b5b38cd ]
 
-With the introduction of 6GHz channels the scan guard timeout should
-be adjusted to account for the following extreme case:
+When the firmware doesn't setup the HSM rate (such as when booting
+without an HDMI cable plugged in), its rate is 0 and thus any register
+access results in a CPU stall, even though HSM is enabled.
 
-- All 6GHz channels are scanned passively: 58 channels.
-- The scan is fragmented with the following parameters: 3 fragments,
-  95 TUs suspend time, 44 TUs maximal out of channel time.
+Let's enforce a minimum rate at boot to avoid this issue.
 
-The above would result with scan time of more than 24 seconds. Thus,
-set the timeout to 30 seconds.
-
-Cc: stable@vger.kernel.org
-Signed-off-by: Ilan Peer <ilan.peer@intel.com>
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Link: https://lore.kernel.org/r/iwlwifi.20211210090244.3c851b93aef5.I346fa2e1d79220a6770496e773c6f87a2ad9e6c4@changeid
-Signed-off-by: Luca Coelho <luciano.coelho@intel.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: 4f6e3d66ac52 ("drm/vc4: Add runtime PM support to the HDMI encoder driver")
+Signed-off-by: Maxime Ripard <maxime@cerno.tech>
+Reviewed-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Tested-by: Nicolas Saenz Julienne <nsaenz@kernel.org>
+Tested-by: Michael Stapelberg <michael@stapelberg.ch>
+Link: https://patchwork.freedesktop.org/patch/msgid/20210922125419.4125779-4-maxime@cerno.tech
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/intel/iwlwifi/mvm/scan.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/gpu/drm/vc4/vc4_hdmi.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
---- a/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-+++ b/drivers/net/wireless/intel/iwlwifi/mvm/scan.c
-@@ -1555,7 +1555,7 @@ static int iwl_mvm_check_running_scans(s
- 	return -EIO;
- }
+diff --git a/drivers/gpu/drm/vc4/vc4_hdmi.c b/drivers/gpu/drm/vc4/vc4_hdmi.c
+index ee293f061f0a8..5d5c4e9a86218 100644
+--- a/drivers/gpu/drm/vc4/vc4_hdmi.c
++++ b/drivers/gpu/drm/vc4/vc4_hdmi.c
+@@ -79,6 +79,7 @@
+ # define VC4_HD_M_SW_RST			BIT(2)
+ # define VC4_HD_M_ENABLE			BIT(0)
  
--#define SCAN_TIMEOUT 20000
-+#define SCAN_TIMEOUT 30000
++#define HSM_MIN_CLOCK_FREQ	120000000
+ #define CEC_CLOCK_FREQ 40000
+ #define VC4_HSM_MID_CLOCK 149985000
  
- void iwl_mvm_scan_timeout_wk(struct work_struct *work)
- {
+@@ -1806,6 +1807,19 @@ static int vc4_hdmi_bind(struct device *dev, struct device *master, void *data)
+ 	vc4_hdmi->disable_wifi_frequencies =
+ 		of_property_read_bool(dev->of_node, "wifi-2.4ghz-coexistence");
+ 
++	/*
++	 * If we boot without any cable connected to the HDMI connector,
++	 * the firmware will skip the HSM initialization and leave it
++	 * with a rate of 0, resulting in a bus lockup when we're
++	 * accessing the registers even if it's enabled.
++	 *
++	 * Let's put a sensible default at runtime_resume so that we
++	 * don't end up in this situation.
++	 */
++	ret = clk_set_min_rate(vc4_hdmi->hsm_clock, HSM_MIN_CLOCK_FREQ);
++	if (ret)
++		goto err_put_ddc;
++
+ 	if (vc4_hdmi->variant->reset)
+ 		vc4_hdmi->variant->reset(vc4_hdmi);
+ 
+-- 
+2.34.1
+
 
 
