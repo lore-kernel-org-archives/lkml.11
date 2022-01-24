@@ -2,96 +2,73 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04A67C35270
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C49E5C4707F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:57:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1443294AbiAXU4i (ORCPT
+        id S1443165AbiAXU4Z (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:56:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39230 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385588AbiAXUdl (ORCPT
+        Mon, 24 Jan 2022 15:56:25 -0500
+Received: from isilmar-4.linta.de ([136.243.71.142]:46480 "EHLO
+        isilmar-4.linta.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1385542AbiAXUde (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:33:41 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3EB2C07E2AE;
-        Mon, 24 Jan 2022 11:47:07 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 542DB61551;
-        Mon, 24 Jan 2022 19:47:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3A3BFC340E7;
-        Mon, 24 Jan 2022 19:47:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643053626;
-        bh=07SQja4q26FSn9m5TJNZ35JcTZjsRPx9B2FJoLg8HXw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=u+CUE/la9GPjxvhKLIjDFwtv4v85g749Sn7EX/X4WrKvjNzLTpz0xsfrtjjQLWRWu
-         g77j9caucFu2zVdc3GETub1T3/AzNTENh+Zuh+yKyEzLiBWwV/vRZ2mCoC7y2hUYpW
-         WceG5qQ9z1oEDxdvC3F1fWLBMgH35RrzFk3cAWUk=
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Peng Fan <peng.fan@nxp.com>,
-        Nishanth Menon <nm@ti.com>, Pratyush Yadav <p.yadav@ti.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 125/563] arm64: dts: ti: k3-j7200: Fix the L2 cache sets
-Date:   Mon, 24 Jan 2022 19:38:10 +0100
-Message-Id: <20220124184028.727668425@linuxfoundation.org>
+        Mon, 24 Jan 2022 15:33:34 -0500
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+X-isilmar-external: YES
+Received: from owl.dominikbrodowski.net (owl.brodo.linta [10.2.0.111])
+        by isilmar-4.linta.de (Postfix) with ESMTPSA id 30355201409;
+        Mon, 24 Jan 2022 20:33:30 +0000 (UTC)
+Received: by owl.dominikbrodowski.net (Postfix, from userid 1000)
+        id ABE6480A2D; Mon, 24 Jan 2022 21:30:08 +0100 (CET)
+From:   Dominik Brodowski <linux@dominikbrodowski.net>
+To:     Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Cc:     linux-kernel@vger.kernel.org, linux-crypto@vger.kernel.org,
+        "Jason A . Donenfeld" <Jason@zx2c4.com>
+Subject: [PATCH 3/6] hw_random: use rng_fillbuf in add_early_randomness()
+Date:   Mon, 24 Jan 2022 21:29:48 +0100
+Message-Id: <20220124202951.28579-3-linux@dominikbrodowski.net>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
-User-Agent: quilt/0.66
+In-Reply-To: <20220124202951.28579-1-linux@dominikbrodowski.net>
+References: <20220124202951.28579-1-linux@dominikbrodowski.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nishanth Menon <nm@ti.com>
+Using rng_buffer in add_early_randomness() may race with rng_dev_read().
+Use rng_fillbuf instead, as it is otherwise only used within the kernel
+by hwrng_fillfn() and therefore never exposed to userspace.
 
-[ Upstream commit d0c826106f3fc11ff97285102b576b65576654ae ]
-
-A72's L2 cache[1] on J7200[2] is 1MB. A72's L2 is fixed line length of
-64 bytes and 16-way set-associative cache structure.
-
-1MB of L2 / 64 (line length) = 16384 ways
-16384 ways / 16 = 1024 sets
-
-Fix the l2 cache-sets.
-
-[1] https://developer.arm.com/documentation/100095/0003/Level-2-Memory-System/About-the-L2-memory-system
-[2] https://www.ti.com/lit/pdf/spruiu1
-
-Fixes: d361ed88455f ("arm64: dts: ti: Add support for J7200 SoC")
-Reported-by: Peng Fan <peng.fan@nxp.com>
-Signed-off-by: Nishanth Menon <nm@ti.com>
-Reviewed-by: Pratyush Yadav <p.yadav@ti.com>
-Signed-off-by: Vignesh Raghavendra <vigneshr@ti.com>
-Link: https://lore.kernel.org/r/20211113043638.4358-1-nm@ti.com
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Cc: Matt Mackall <mpm@selenic.com>
+Cc: Herbert Xu <herbert@gondor.apana.org.au>
+Cc: Jason A. Donenfeld <Jason@zx2c4.com>
+Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
 ---
- arch/arm64/boot/dts/ti/k3-j7200.dtsi | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/char/hw_random/core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/ti/k3-j7200.dtsi b/arch/arm64/boot/dts/ti/k3-j7200.dtsi
-index 66169bcf7c9a4..081b8f3d44c44 100644
---- a/arch/arm64/boot/dts/ti/k3-j7200.dtsi
-+++ b/arch/arm64/boot/dts/ti/k3-j7200.dtsi
-@@ -84,7 +84,7 @@
- 		cache-level = <2>;
- 		cache-size = <0x100000>;
- 		cache-line-size = <64>;
--		cache-sets = <2048>;
-+		cache-sets = <1024>;
- 		next-level-cache = <&msmc_l3>;
- 	};
+diff --git a/drivers/char/hw_random/core.c b/drivers/char/hw_random/core.c
+index c2d260b5dd92..89891ac87af0 100644
+--- a/drivers/char/hw_random/core.c
++++ b/drivers/char/hw_random/core.c
+@@ -66,10 +66,10 @@ static void add_early_randomness(struct hwrng *rng)
+ 	int bytes_read;
  
+ 	mutex_lock(&reading_mutex);
+-	bytes_read = rng_get_data(rng, rng_buffer, 32, 0);
++	bytes_read = rng_get_data(rng, rng_fillbuf, 32, 0);
+ 	mutex_unlock(&reading_mutex);
+ 	if (bytes_read > 0)
+-		add_device_randomness(rng_buffer, bytes_read);
++		add_device_randomness(rng_fillbuf, bytes_read);
+ }
+ 
+ static inline void cleanup_rng(struct kref *kref)
 -- 
 2.34.1
-
-
 
