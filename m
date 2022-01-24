@@ -2,43 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4F51C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:19:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 153E7C43219
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:19:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2374660AbiAYARi (ORCPT
+        id S1357808AbiAYASo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:17:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52876 "EHLO
+        Mon, 24 Jan 2022 19:18:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385506AbiAXX17 (ORCPT
+        with ESMTP id S2359649AbiAXXeV (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:27:59 -0500
+        Mon, 24 Jan 2022 18:34:21 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4E9C01D7E9;
-        Mon, 24 Jan 2022 13:30:42 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23D9FC075D1E;
+        Mon, 24 Jan 2022 13:36:30 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0E1E2B811FB;
-        Mon, 24 Jan 2022 21:30:41 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29BDBC340E4;
-        Mon, 24 Jan 2022 21:30:38 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E06DCB81243;
+        Mon, 24 Jan 2022 21:36:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1C01FC340E4;
+        Mon, 24 Jan 2022 21:36:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059839;
-        bh=cJPgM4GLpjqSaHg5vohVKKh1k0m1iDUXV+RF33JQnf0=;
+        s=korg; t=1643060187;
+        bh=Vub3gPcbHXrEudD6mir+BV04nfHnrQJy1HXlwH2MdRY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YINHEIXTrUjvPALOip075YZnYCIncvdv5s4Wkk318ySUwQk9rJJMpwFRwhJkIX5EU
-         JLbBQSZOHZT86eKHsma28dZZE63HfAaythrf/xoGVLzW0UYAlsIXa5i00IeeeG1aCE
-         VpsLKNv+UtN7Wh6f4l3mHH3tOcCzkqF576g2bAsE=
+        b=RBWuF3WFlG7PEZVMOdpNGjyZ2Ov2+t3yRo8Pviz4v3bbuMS1ZY5kmP+j0aLqZNPO0
+         X/4DilOsjh7sUKIvvQCJnQcnOp2NEqVkGag9J2YDZT7CfzZ5ddMoPeSbV2gQ/3agXl
+         07SS1ssBmLY+Q9lTi0h9ZPelka9tu36VbzqxT39w=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Ameer Hamza <amhamza.mgc@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0751/1039] ASoC: test-component: fix null pointer dereference.
-Date:   Mon, 24 Jan 2022 19:42:20 +0100
-Message-Id: <20220124184150.581833869@linuxfoundation.org>
+        stable@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>
+Subject: [PATCH 5.16 0836/1039] crypto: omap-aes - Fix broken pm_runtime_and_get() usage
+Date:   Mon, 24 Jan 2022 19:43:45 +0100
+Message-Id: <20220124184153.391678924@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -50,46 +49,34 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ameer Hamza <amhamza.mgc@gmail.com>
+From: Heiner Kallweit <hkallweit1@gmail.com>
 
-[ Upstream commit c686316ec1210d43653c91e104c1e4cd0156dc89 ]
+commit c2aec59be093bd44627bc4f6bc67e4614a93a7b6 upstream.
 
-Dereferncing of_id pointer will result in exception in current
-implementation since of_match_device() will assign it to NULL.
-Adding NULL check for protection.
+This fix is basically the same as 3d6b661330a7 ("crypto: stm32 -
+Revert broken pm_runtime_resume_and_get changes"), just for the omap
+driver. If the return value isn't used, then pm_runtime_get_sync()
+has to be used for ensuring that the usage count is balanced.
 
-Signed-off-by: Ameer Hamza <amhamza.mgc@gmail.com>
-Link: https://lore.kernel.org/r/20211205204200.7852-1-amhamza.mgc@gmail.com
-Signed-off-by: Mark Brown <broonie@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 1f34cc4a8da3 ("crypto: omap-aes - Fix PM reference leak on omap-aes.c")
+Cc: stable@vger.kernel.org
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Signed-off-by: Herbert Xu <herbert@gondor.apana.org.au>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- sound/soc/generic/test-component.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
+ drivers/crypto/omap-aes.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/sound/soc/generic/test-component.c b/sound/soc/generic/test-component.c
-index 85385a771d807..8fc97d3ff0110 100644
---- a/sound/soc/generic/test-component.c
-+++ b/sound/soc/generic/test-component.c
-@@ -532,13 +532,16 @@ static int test_driver_probe(struct platform_device *pdev)
- 	struct device_node *node = dev->of_node;
- 	struct device_node *ep;
- 	const struct of_device_id *of_id = of_match_device(test_of_match, &pdev->dev);
--	const struct test_adata *adata = of_id->data;
-+	const struct test_adata *adata;
- 	struct snd_soc_component_driver *cdriv;
- 	struct snd_soc_dai_driver *ddriv;
- 	struct test_dai_name *dname;
- 	struct test_priv *priv;
- 	int num, ret, i;
+--- a/drivers/crypto/omap-aes.c
++++ b/drivers/crypto/omap-aes.c
+@@ -1302,7 +1302,7 @@ static int omap_aes_suspend(struct devic
  
-+	if (!of_id)
-+		return -EINVAL;
-+	adata = of_id->data;
- 	num = of_graph_get_endpoint_count(node);
- 	if (!num) {
- 		dev_err(dev, "no port exits\n");
--- 
-2.34.1
-
+ static int omap_aes_resume(struct device *dev)
+ {
+-	pm_runtime_resume_and_get(dev);
++	pm_runtime_get_sync(dev);
+ 	return 0;
+ }
+ #endif
 
 
