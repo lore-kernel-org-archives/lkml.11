@@ -2,42 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0F25C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 250D4C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:57:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352925AbiAXT5j (ORCPT
+        id S1356362AbiAXT5u (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:57:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55310 "EHLO
+        Mon, 24 Jan 2022 14:57:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356113AbiAXTpR (ORCPT
+        with ESMTP id S1345107AbiAXT3L (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:45:17 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90AD7C02415F;
-        Mon, 24 Jan 2022 11:22:38 -0800 (PST)
+        Mon, 24 Jan 2022 14:29:11 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AAFD3C061370;
+        Mon, 24 Jan 2022 11:13:33 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2FD86614AA;
-        Mon, 24 Jan 2022 19:22:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0BF7EC36B0C;
-        Mon, 24 Jan 2022 19:22:36 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5C617B811FC;
+        Mon, 24 Jan 2022 19:13:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80F64C340E5;
+        Mon, 24 Jan 2022 19:13:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052157;
-        bh=Rx8dchfiegJrJJRwYhJBopyQhGvxJQNkEZe4Sd9hbbY=;
+        s=korg; t=1643051611;
+        bh=ZfBUl0u5AfHOOTBI41FpO7qivmtViI+G6jcWj/wLIu4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=13JPWYd2FLiGj+nz4W6ZLu8KEGdAtmDk5VXl3903os+ioVt64T9ZlpzB9+pAYBu2g
-         OUXuRPZZifYmmRljrCxYyA2xST7Qaq2qTqA0GA4a5vb1TRzj+j8dD3deZnevMfkjdt
-         Je0/kVE0NRfm0rIOuRVbJnZOrWqoSPLHpXNymHTo=
+        b=zIeUZW2P4QKJrSLb1ELMJlUu9iwJ5jOsjBWo8Yr0q2mZPU/mvoj3kUr6F2HZszfi1
+         7fbCwnXvFsM+zepybK9Qc4M40tUJRKL7j0zKsytwC01H9cHayjZpwRb3uzE33v2F1k
+         Dav47Ajew46a/tyTJi5Mu60MxAM+ZWYlSApUGeZs=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Theodore Tso <tytso@mit.edu>,
-        Lukas Czerner <lczerner@redhat.com>, stable@kernel.org
-Subject: [PATCH 4.19 206/239] ext4: dont use the orphan list when migrating an inode
-Date:   Mon, 24 Jan 2022 19:44:04 +0100
-Message-Id: <20220124183949.658666774@linuxfoundation.org>
+        stable@vger.kernel.org, Alan Stern <stern@rowland.harvard.edu>,
+        syzbot+3ae6a2b06f131ab9849f@syzkaller.appspotmail.com
+Subject: [PATCH 4.19 003/239] USB: Fix "slab-out-of-bounds Write" bug in usb_hcd_poll_rh_status
+Date:   Mon, 24 Jan 2022 19:40:41 +0100
+Message-Id: <20220124183943.223398994@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
 References: <20220124183943.102762895@linuxfoundation.org>
@@ -49,83 +49,65 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Theodore Ts'o <tytso@mit.edu>
+From: Alan Stern <stern@rowland.harvard.edu>
 
-commit 6eeaf88fd586f05aaf1d48cb3a139d2a5c6eb055 upstream.
+commit 1d7d4c07932e04355d6e6528d44a2f2c9e354346 upstream.
 
-We probably want to remove the indirect block to extents migration
-feature after a deprecation window, but until then, let's fix a
-potential data loss problem caused by the fact that we put the
-tmp_inode on the orphan list.  In the unlikely case where we crash and
-do a journal recovery, the data blocks belonging to the inode being
-migrated are also represented in the tmp_inode on the orphan list ---
-and so its data blocks will get marked unallocated, and available for
-reuse.
+When the USB core code for getting root-hub status reports was
+originally written, it was assumed that the hub driver would be its
+only caller.  But this isn't true now; user programs can use usbfs to
+communicate with root hubs and get status reports.  When they do this,
+they may use a transfer_buffer that is smaller than the data returned
+by the HCD, which will lead to a buffer overflow error when
+usb_hcd_poll_rh_status() tries to store the status data.  This was
+discovered by syzbot:
 
-Instead, stop putting the tmp_inode on the oprhan list.  So in the
-case where we crash while migrating the inode, we'll leak an inode,
-which is not a disaster.  It will be easily fixed the next time we run
-fsck, and it's better than potentially having blocks getting claimed
-by two different files, and losing data as a result.
+BUG: KASAN: slab-out-of-bounds in memcpy include/linux/fortify-string.h:225 [inline]
+BUG: KASAN: slab-out-of-bounds in usb_hcd_poll_rh_status+0x5f4/0x780 drivers/usb/core/hcd.c:776
+Write of size 2 at addr ffff88801da403c0 by task syz-executor133/4062
 
-Signed-off-by: Theodore Ts'o <tytso@mit.edu>
-Reviewed-by: Lukas Czerner <lczerner@redhat.com>
-Cc: stable@kernel.org
+This patch fixes the bug by reducing the amount of status data if it
+won't fit in the transfer_buffer.  If some data gets discarded then
+the URB's completion status is set to -EOVERFLOW rather than 0, to let
+the user know what happened.
+
+Reported-and-tested-by: syzbot+3ae6a2b06f131ab9849f@syzkaller.appspotmail.com
+Signed-off-by: Alan Stern <stern@rowland.harvard.edu>
+Cc: <stable@vger.kernel.org>
+Link: https://lore.kernel.org/r/Yc+3UIQJ2STbxNua@rowland.harvard.edu
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/ext4/migrate.c |   19 ++++---------------
- 1 file changed, 4 insertions(+), 15 deletions(-)
+ drivers/usb/core/hcd.c |    9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
---- a/fs/ext4/migrate.c
-+++ b/fs/ext4/migrate.c
-@@ -455,12 +455,12 @@ int ext4_ext_migrate(struct inode *inode
- 	percpu_down_write(&sbi->s_writepages_rwsem);
+--- a/drivers/usb/core/hcd.c
++++ b/drivers/usb/core/hcd.c
+@@ -750,6 +750,7 @@ void usb_hcd_poll_rh_status(struct usb_h
+ {
+ 	struct urb	*urb;
+ 	int		length;
++	int		status;
+ 	unsigned long	flags;
+ 	char		buffer[6];	/* Any root hubs with > 31 ports? */
  
- 	/*
--	 * Worst case we can touch the allocation bitmaps, a bgd
--	 * block, and a block to link in the orphan list.  We do need
--	 * need to worry about credits for modifying the quota inode.
-+	 * Worst case we can touch the allocation bitmaps and a block
-+	 * group descriptor block.  We do need need to worry about
-+	 * credits for modifying the quota inode.
- 	 */
- 	handle = ext4_journal_start(inode, EXT4_HT_MIGRATE,
--		4 + EXT4_MAXQUOTAS_TRANS_BLOCKS(inode->i_sb));
-+		3 + EXT4_MAXQUOTAS_TRANS_BLOCKS(inode->i_sb));
+@@ -767,11 +768,17 @@ void usb_hcd_poll_rh_status(struct usb_h
+ 		if (urb) {
+ 			clear_bit(HCD_FLAG_POLL_PENDING, &hcd->flags);
+ 			hcd->status_urb = NULL;
++			if (urb->transfer_buffer_length >= length) {
++				status = 0;
++			} else {
++				status = -EOVERFLOW;
++				length = urb->transfer_buffer_length;
++			}
+ 			urb->actual_length = length;
+ 			memcpy(urb->transfer_buffer, buffer, length);
  
- 	if (IS_ERR(handle)) {
- 		retval = PTR_ERR(handle);
-@@ -481,10 +481,6 @@ int ext4_ext_migrate(struct inode *inode
- 	 * Use the correct seed for checksum (i.e. the seed from 'inode').  This
- 	 * is so that the metadata blocks will have the correct checksum after
- 	 * the migration.
--	 *
--	 * Note however that, if a crash occurs during the migration process,
--	 * the recovery process is broken because the tmp_inode checksums will
--	 * be wrong and the orphans cleanup will fail.
- 	 */
- 	ei = EXT4_I(inode);
- 	EXT4_I(tmp_inode)->i_csum_seed = ei->i_csum_seed;
-@@ -496,7 +492,6 @@ int ext4_ext_migrate(struct inode *inode
- 	clear_nlink(tmp_inode);
- 
- 	ext4_ext_tree_init(handle, tmp_inode);
--	ext4_orphan_add(handle, tmp_inode);
- 	ext4_journal_stop(handle);
- 
- 	/*
-@@ -521,12 +516,6 @@ int ext4_ext_migrate(struct inode *inode
- 
- 	handle = ext4_journal_start(inode, EXT4_HT_MIGRATE, 1);
- 	if (IS_ERR(handle)) {
--		/*
--		 * It is impossible to update on-disk structures without
--		 * a handle, so just rollback in-core changes and live other
--		 * work to orphan_list_cleanup()
--		 */
--		ext4_orphan_del(NULL, tmp_inode);
- 		retval = PTR_ERR(handle);
- 		goto out_tmp_inode;
- 	}
+ 			usb_hcd_unlink_urb_from_ep(hcd, urb);
+-			usb_hcd_giveback_urb(hcd, urb, 0);
++			usb_hcd_giveback_urb(hcd, urb, status);
+ 		} else {
+ 			length = 0;
+ 			set_bit(HCD_FLAG_POLL_PENDING, &hcd->flags);
 
 
