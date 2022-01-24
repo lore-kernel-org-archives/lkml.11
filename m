@@ -2,43 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC87C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:39:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C91CC4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:39:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388194AbiAXUiR (ORCPT
+        id S1350794AbiAXUi3 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:38:17 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:42938 "EHLO
+        Mon, 24 Jan 2022 15:38:29 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43302 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380870AbiAXURB (ORCPT
+        with ESMTP id S1381004AbiAXURZ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:17:01 -0500
+        Mon, 24 Jan 2022 15:17:25 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BFD761371;
-        Mon, 24 Jan 2022 20:17:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 83B65C340E5;
-        Mon, 24 Jan 2022 20:16:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 43E1961496;
+        Mon, 24 Jan 2022 20:17:25 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 05F8BC340E7;
+        Mon, 24 Jan 2022 20:17:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643055420;
-        bh=MkNJ0R11zL6n7hF6vlIkD+vGmpNLfrFTWV3DUt/AYkk=;
+        s=korg; t=1643055444;
+        bh=RVQdDPDKOE/a1ZN4sGWxqjsyDozLHpHpTA/eJ4N7kSw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cHdkHUI3CHO24dizMh3z827SZXQ0TGj1qIhNDWQRBAIyqt8WZXlTH1u13q43FQYNC
-         TDlUx3qz3tQ/oC7PfBitnj6nNgaxgHzHYkqM+cP93hAQSxygnPdH7BlOvgPdftJja2
-         Hu92ceU1ZfY9V9/kPlPmiSXYjTf5RAuxKcCxJTOc=
+        b=ITvyyPba+AYw+0+70ijVqrUqu+Br+jzSdZLhCsvBRp9Jg91CN76ce8+hVNw0uP5n8
+         q7mWxNj+3Bj3FJe6OYEBvATT+FEz2lALnYOd/niAWgxmnDbJfrVql6q9MHI/cfGHdP
+         6DekfhFhAAxMNffkow622/S2NSYHhh/wD4QUB/Lo=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>,
-        Matthias Kaehlcke <mka@chromium.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Viresh Kumar <viresh.kumar@linaro.org>,
+        stable@vger.kernel.org, Tsuchiya Yuto <kitakar@gmail.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 144/846] cpufreq: qcom-hw: Fix probable nested interrupt handling
-Date:   Mon, 24 Jan 2022 19:34:21 +0100
-Message-Id: <20220124184105.953052126@linuxfoundation.org>
+Subject: [PATCH 5.15 110/846] media: atomisp: fix inverted logic in buffers_needed()
+Date:   Mon, 24 Jan 2022 19:33:47 +0100
+Message-Id: <20220124184104.769509072@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -50,43 +47,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
+From: Tsuchiya Yuto <kitakar@gmail.com>
 
-[ Upstream commit e0e27c3d4e20dab861566f1c348ae44e4b498630 ]
+[ Upstream commit e1921cd14640f0f4d1fad5eb8e448c58a536415d ]
 
-Re-enabling an interrupt from its own interrupt handler may cause
-an interrupt storm, if there is a pending interrupt and because its
-handling is disabled due to already done entrance into the handler
-above in the stack.
+When config.mode is IA_CSS_INPUT_MODE_BUFFERED_SENSOR, it rather needs
+buffers. Fix it by inverting the return value.
 
-Also, apparently it is improper to lock a mutex in an interrupt contex.
-
-Fixes: 275157b367f4 ("cpufreq: qcom-cpufreq-hw: Add dcvs interrupt support")
-Signed-off-by: Vladimir Zapolskiy <vladimir.zapolskiy@linaro.org>
-Reviewed-by: Matthias Kaehlcke <mka@chromium.org>
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
-Signed-off-by: Viresh Kumar <viresh.kumar@linaro.org>
+Fixes: 3c0538fbad9f ("media: atomisp: get rid of most checks for ISP2401 version")
+Signed-off-by: Tsuchiya Yuto <kitakar@gmail.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/cpufreq/qcom-cpufreq-hw.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/media/atomisp/pci/sh_css_mipi.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/cpufreq/qcom-cpufreq-hw.c b/drivers/cpufreq/qcom-cpufreq-hw.c
-index 0138b2ec406dc..35d93361fda1a 100644
---- a/drivers/cpufreq/qcom-cpufreq-hw.c
-+++ b/drivers/cpufreq/qcom-cpufreq-hw.c
-@@ -343,9 +343,9 @@ static irqreturn_t qcom_lmh_dcvs_handle_irq(int irq, void *data)
+diff --git a/drivers/staging/media/atomisp/pci/sh_css_mipi.c b/drivers/staging/media/atomisp/pci/sh_css_mipi.c
+index 75489f7d75eec..483d40a467c74 100644
+--- a/drivers/staging/media/atomisp/pci/sh_css_mipi.c
++++ b/drivers/staging/media/atomisp/pci/sh_css_mipi.c
+@@ -374,17 +374,17 @@ static bool buffers_needed(struct ia_css_pipe *pipe)
+ {
+ 	if (!IS_ISP2401) {
+ 		if (pipe->stream->config.mode == IA_CSS_INPUT_MODE_BUFFERED_SENSOR)
+-			return false;
+-		else
+ 			return true;
++		else
++			return false;
+ 	}
  
- 	/* Disable interrupt and enable polling */
- 	disable_irq_nosync(c_data->throttle_irq);
--	qcom_lmh_dcvs_notify(c_data);
-+	schedule_delayed_work(&c_data->throttle_work, 0);
+ 	if (pipe->stream->config.mode == IA_CSS_INPUT_MODE_BUFFERED_SENSOR ||
+ 	    pipe->stream->config.mode == IA_CSS_INPUT_MODE_TPG ||
+ 	    pipe->stream->config.mode == IA_CSS_INPUT_MODE_PRBS)
+-		return false;
++		return true;
  
--	return 0;
-+	return IRQ_HANDLED;
+-	return true;
++	return false;
  }
  
- static const struct qcom_cpufreq_soc_data qcom_soc_data = {
+ int
 -- 
 2.34.1
 
