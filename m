@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5B41C433FE
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4988BC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:31:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1587617AbiAXW3S (ORCPT
+        id S1587681AbiAXW30 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:29:18 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:55362 "EHLO
+        Mon, 24 Jan 2022 17:29:26 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:55524 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1455976AbiAXVhB (ORCPT
+        with ESMTP id S1357782AbiAXVhQ (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:37:01 -0500
+        Mon, 24 Jan 2022 16:37:16 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C41446150B;
-        Mon, 24 Jan 2022 21:37:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A56F0C340E7;
-        Mon, 24 Jan 2022 21:36:59 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3D9DE6150E;
+        Mon, 24 Jan 2022 21:37:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4A42CC340E7;
+        Mon, 24 Jan 2022 21:37:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060220;
-        bh=SyNYiTwXVXJKE4VV1grcVx6e6PGFPM/ywr0MEph9OnM=;
+        s=korg; t=1643060234;
+        bh=B88h2m79idm4SYEPZYoS03HG4DAKQM2Ij5Q84oDfmyc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TBIqVi630kWP5W+JtB3jZwclUEdpMKl3sw2PXSlmeUU7A1II3WFNMN1gY+DcZsZb8
-         HMGWraIqhvBbfEzH8iCLOSESyxuB3gznUhgsZ2+nJd8MO8pPo5oTcflcR1B0RSHMzE
-         6EWbo/1JmYtCcBTABrEFT2pWDsYh7lU5o1D/ba9E=
+        b=H3Da+9lGhOAKTn+KdBaCaxWg5UxZk1X2NtbuO2UKQgm5cnf7UI2YYbZRNmipKwa99
+         hIOvSxfipNKF4mZoRbFmt+zCv0R7sKSci/DfGWGFbe8h0ylnvXDAJQlkWQkZO92BY9
+         QYB+JR4wH0VjOsDAYObz4B82cOiFqcWEyLU78qU8=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Subject: [PATCH 5.16 0878/1039] PCI: pci-bridge-emul: Correctly set PCIe capabilities
-Date:   Mon, 24 Jan 2022 19:44:27 +0100
-Message-Id: <20220124184154.814356084@linuxfoundation.org>
+        stable@vger.kernel.org, Naohiro Aota <naohiro.aota@wdc.com>,
+        David Sterba <dsterba@suse.com>
+Subject: [PATCH 5.16 0883/1039] btrfs: zoned: cache reported zone during mount
+Date:   Mon, 24 Jan 2022 19:44:32 +0100
+Message-Id: <20220124184154.976481441@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,86 +46,291 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+From: Naohiro Aota <naohiro.aota@wdc.com>
 
-commit 1f1050c5e1fefb34ac90a506b43e9da803b5f8f7 upstream.
+commit 16beac87e95e2fb278b552397c8260637f8a63f7 upstream.
 
-Older mvebu hardware provides PCIe Capability structure only in version 1.
-New mvebu and aardvark hardware provides it in version 2. So do not force
-version to 2 in pci_bridge_emul_init() and rather allow drivers to set
-correct version. Drivers need to set version in pcie_conf.cap field without
-overwriting PCI_CAP_LIST_ID register. Both drivers (mvebu and aardvark) do
-not provide slot support yet, so do not set PCI_EXP_FLAGS_SLOT flag.
+When mounting a device, we are reporting the zones twice: once for
+checking the zone attributes in btrfs_get_dev_zone_info and once for
+loading block groups' zone info in
+btrfs_load_block_group_zone_info(). With a lot of block groups, that
+leads to a lot of REPORT ZONE commands and slows down the mount
+process.
 
-Link: https://lore.kernel.org/r/20211124155944.1290-6-pali@kernel.org
-Fixes: 23a5fba4d941 ("PCI: Introduce PCI bridge emulated config space common logic")
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Lorenzo Pieralisi <lorenzo.pieralisi@arm.com>
-Cc: stable@vger.kernel.org
+This patch introduces a zone info cache in struct
+btrfs_zoned_device_info. The cache is populated while in
+btrfs_get_dev_zone_info() and used for
+btrfs_load_block_group_zone_info() to reduce the number of REPORT ZONE
+commands. The zone cache is then released after loading the block
+groups, as it will not be much effective during the run time.
+
+Benchmark: Mount an HDD with 57,007 block groups
+Before patch: 171.368 seconds
+After patch: 64.064 seconds
+
+While it still takes a minute due to the slowness of loading all the
+block groups, the patch reduces the mount time by 1/3.
+
+Link: https://lore.kernel.org/linux-btrfs/CAHQ7scUiLtcTqZOMMY5kbWUBOhGRwKo6J6wYPT5WY+C=cD49nQ@mail.gmail.com/
+Fixes: 5b316468983d ("btrfs: get zone information of zoned block devices")
+CC: stable@vger.kernel.org
+Signed-off-by: Naohiro Aota <naohiro.aota@wdc.com>
+Signed-off-by: David Sterba <dsterba@suse.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/pci/controller/pci-aardvark.c |    4 +++-
- drivers/pci/controller/pci-mvebu.c    |    8 ++++++++
- drivers/pci/pci-bridge-emul.c         |    5 +----
- 3 files changed, 12 insertions(+), 5 deletions(-)
+ fs/btrfs/dev-replace.c |    2 -
+ fs/btrfs/disk-io.c     |    2 +
+ fs/btrfs/volumes.c     |    2 -
+ fs/btrfs/zoned.c       |   86 +++++++++++++++++++++++++++++++++++++++++++------
+ fs/btrfs/zoned.h       |    8 +++-
+ 5 files changed, 87 insertions(+), 13 deletions(-)
 
---- a/drivers/pci/controller/pci-aardvark.c
-+++ b/drivers/pci/controller/pci-aardvark.c
-@@ -872,7 +872,6 @@ advk_pci_bridge_emul_pcie_conf_read(stru
- 		return PCI_BRIDGE_EMUL_HANDLED;
+--- a/fs/btrfs/dev-replace.c
++++ b/fs/btrfs/dev-replace.c
+@@ -322,7 +322,7 @@ static int btrfs_init_dev_replace_tgtdev
+ 	set_blocksize(device->bdev, BTRFS_BDEV_BLOCKSIZE);
+ 	device->fs_devices = fs_info->fs_devices;
+ 
+-	ret = btrfs_get_dev_zone_info(device);
++	ret = btrfs_get_dev_zone_info(device, false);
+ 	if (ret)
+ 		goto error;
+ 
+--- a/fs/btrfs/disk-io.c
++++ b/fs/btrfs/disk-io.c
+@@ -3571,6 +3571,8 @@ int __cold open_ctree(struct super_block
+ 		goto fail_sysfs;
  	}
  
--	case PCI_CAP_LIST_ID:
- 	case PCI_EXP_DEVCAP:
- 	case PCI_EXP_DEVCTL:
- 		*value = advk_readl(pcie, PCIE_CORE_PCIEXP_CAP + reg);
-@@ -953,6 +952,9 @@ static int advk_sw_pci_bridge_init(struc
- 	/* Support interrupt A for MSI feature */
- 	bridge->conf.intpin = PCIE_CORE_INT_A_ASSERT_ENABLE;
- 
-+	/* Aardvark HW provides PCIe Capability structure in version 2 */
-+	bridge->pcie_conf.cap = cpu_to_le16(2);
++	btrfs_free_zone_cache(fs_info);
 +
- 	/* Indicates supports for Completion Retry Status */
- 	bridge->pcie_conf.rootcap = cpu_to_le16(PCI_EXP_RTCAP_CRSVIS);
+ 	if (!sb_rdonly(sb) && fs_info->fs_devices->missing_devices &&
+ 	    !btrfs_check_rw_degradable(fs_info, NULL)) {
+ 		btrfs_warn(fs_info,
+--- a/fs/btrfs/volumes.c
++++ b/fs/btrfs/volumes.c
+@@ -2643,7 +2643,7 @@ int btrfs_init_new_device(struct btrfs_f
+ 	device->fs_info = fs_info;
+ 	device->bdev = bdev;
  
---- a/drivers/pci/controller/pci-mvebu.c
-+++ b/drivers/pci/controller/pci-mvebu.c
-@@ -655,6 +655,8 @@ static struct pci_bridge_emul_ops mvebu_
- static int mvebu_pci_bridge_emul_init(struct mvebu_pcie_port *port)
+-	ret = btrfs_get_dev_zone_info(device);
++	ret = btrfs_get_dev_zone_info(device, false);
+ 	if (ret)
+ 		goto error_free_device;
+ 
+--- a/fs/btrfs/zoned.c
++++ b/fs/btrfs/zoned.c
+@@ -5,6 +5,7 @@
+ #include <linux/blkdev.h>
+ #include <linux/sched/mm.h>
+ #include <linux/atomic.h>
++#include <linux/vmalloc.h>
+ #include "ctree.h"
+ #include "volumes.h"
+ #include "zoned.h"
+@@ -213,6 +214,8 @@ static int emulate_report_zones(struct b
+ static int btrfs_get_dev_zones(struct btrfs_device *device, u64 pos,
+ 			       struct blk_zone *zones, unsigned int *nr_zones)
  {
- 	struct pci_bridge_emul *bridge = &port->bridge;
-+	u32 pcie_cap = mvebu_readl(port, PCIE_CAP_PCIEXP);
-+	u8 pcie_cap_ver = ((pcie_cap >> 16) & PCI_EXP_FLAGS_VERS);
++	struct btrfs_zoned_device_info *zinfo = device->zone_info;
++	u32 zno;
+ 	int ret;
  
- 	bridge->conf.vendor = PCI_VENDOR_ID_MARVELL;
- 	bridge->conf.device = mvebu_readl(port, PCIE_DEV_ID_OFF) >> 16;
-@@ -667,6 +669,12 @@ static int mvebu_pci_bridge_emul_init(st
- 		bridge->conf.iolimit = PCI_IO_RANGE_TYPE_32;
+ 	if (!*nr_zones)
+@@ -224,6 +227,34 @@ static int btrfs_get_dev_zones(struct bt
+ 		return 0;
+ 	}
+ 
++	/* Check cache */
++	if (zinfo->zone_cache) {
++		unsigned int i;
++
++		ASSERT(IS_ALIGNED(pos, zinfo->zone_size));
++		zno = pos >> zinfo->zone_size_shift;
++		/*
++		 * We cannot report zones beyond the zone end. So, it is OK to
++		 * cap *nr_zones to at the end.
++		 */
++		*nr_zones = min_t(u32, *nr_zones, zinfo->nr_zones - zno);
++
++		for (i = 0; i < *nr_zones; i++) {
++			struct blk_zone *zone_info;
++
++			zone_info = &zinfo->zone_cache[zno + i];
++			if (!zone_info->len)
++				break;
++		}
++
++		if (i == *nr_zones) {
++			/* Cache hit on all the zones */
++			memcpy(zones, zinfo->zone_cache + zno,
++			       sizeof(*zinfo->zone_cache) * *nr_zones);
++			return 0;
++		}
++	}
++
+ 	ret = blkdev_report_zones(device->bdev, pos >> SECTOR_SHIFT, *nr_zones,
+ 				  copy_zone_info_cb, zones);
+ 	if (ret < 0) {
+@@ -237,6 +268,11 @@ static int btrfs_get_dev_zones(struct bt
+ 	if (!ret)
+ 		return -EIO;
+ 
++	/* Populate cache */
++	if (zinfo->zone_cache)
++		memcpy(zinfo->zone_cache + zno, zones,
++		       sizeof(*zinfo->zone_cache) * *nr_zones);
++
+ 	return 0;
+ }
+ 
+@@ -300,7 +336,7 @@ int btrfs_get_dev_zone_info_all_devices(
+ 		if (!device->bdev)
+ 			continue;
+ 
+-		ret = btrfs_get_dev_zone_info(device);
++		ret = btrfs_get_dev_zone_info(device, true);
+ 		if (ret)
+ 			break;
+ 	}
+@@ -309,7 +345,7 @@ int btrfs_get_dev_zone_info_all_devices(
+ 	return ret;
+ }
+ 
+-int btrfs_get_dev_zone_info(struct btrfs_device *device)
++int btrfs_get_dev_zone_info(struct btrfs_device *device, bool populate_cache)
+ {
+ 	struct btrfs_fs_info *fs_info = device->fs_info;
+ 	struct btrfs_zoned_device_info *zone_info = NULL;
+@@ -339,6 +375,8 @@ int btrfs_get_dev_zone_info(struct btrfs
+ 	if (!zone_info)
+ 		return -ENOMEM;
+ 
++	device->zone_info = zone_info;
++
+ 	if (!bdev_is_zoned(bdev)) {
+ 		if (!fs_info->zone_size) {
+ 			ret = calculate_emulated_zone_size(fs_info);
+@@ -407,6 +445,23 @@ int btrfs_get_dev_zone_info(struct btrfs
+ 		goto out;
  	}
  
 +	/*
-+	 * Older mvebu hardware provides PCIe Capability structure only in
-+	 * version 1. New hardware provides it in version 2.
++	 * Enable zone cache only for a zoned device. On a non-zoned device, we
++	 * fill the zone info with emulated CONVENTIONAL zones, so no need to
++	 * use the cache.
 +	 */
-+	bridge->pcie_conf.cap = cpu_to_le16(pcie_cap_ver);
++	if (populate_cache && bdev_is_zoned(device->bdev)) {
++		zone_info->zone_cache = vzalloc(sizeof(struct blk_zone) *
++						zone_info->nr_zones);
++		if (!zone_info->zone_cache) {
++			btrfs_err_in_rcu(device->fs_info,
++				"zoned: failed to allocate zone cache for %s",
++				rcu_str_deref(device->name));
++			ret = -ENOMEM;
++			goto out;
++		}
++	}
 +
- 	bridge->has_pcie = true;
- 	bridge->data = port;
- 	bridge->ops = &mvebu_pci_bridge_emul_ops;
---- a/drivers/pci/pci-bridge-emul.c
-+++ b/drivers/pci/pci-bridge-emul.c
-@@ -297,10 +297,7 @@ int pci_bridge_emul_init(struct pci_brid
- 	if (bridge->has_pcie) {
- 		bridge->conf.capabilities_pointer = PCI_CAP_PCIE_START;
- 		bridge->pcie_conf.cap_id = PCI_CAP_ID_EXP;
--		/* Set PCIe v2, root port, slot support */
--		bridge->pcie_conf.cap =
--			cpu_to_le16(PCI_EXP_TYPE_ROOT_PORT << 4 | 2 |
--				    PCI_EXP_FLAGS_SLOT);
-+		bridge->pcie_conf.cap |= cpu_to_le16(PCI_EXP_TYPE_ROOT_PORT << 4);
- 		bridge->pcie_cap_regs_behavior =
- 			kmemdup(pcie_cap_regs_behavior,
- 				sizeof(pcie_cap_regs_behavior),
+ 	/* Get zones type */
+ 	nactive = 0;
+ 	while (sector < nr_sectors) {
+@@ -505,8 +560,6 @@ int btrfs_get_dev_zone_info(struct btrfs
+ 
+ 	kfree(zones);
+ 
+-	device->zone_info = zone_info;
+-
+ 	switch (bdev_zoned_model(bdev)) {
+ 	case BLK_ZONED_HM:
+ 		model = "host-managed zoned";
+@@ -539,11 +592,7 @@ int btrfs_get_dev_zone_info(struct btrfs
+ out:
+ 	kfree(zones);
+ out_free_zone_info:
+-	bitmap_free(zone_info->active_zones);
+-	bitmap_free(zone_info->empty_zones);
+-	bitmap_free(zone_info->seq_zones);
+-	kfree(zone_info);
+-	device->zone_info = NULL;
++	btrfs_destroy_dev_zone_info(device);
+ 
+ 	return ret;
+ }
+@@ -558,6 +607,7 @@ void btrfs_destroy_dev_zone_info(struct
+ 	bitmap_free(zone_info->active_zones);
+ 	bitmap_free(zone_info->seq_zones);
+ 	bitmap_free(zone_info->empty_zones);
++	vfree(zone_info->zone_cache);
+ 	kfree(zone_info);
+ 	device->zone_info = NULL;
+ }
+@@ -1975,3 +2025,21 @@ void btrfs_clear_data_reloc_bg(struct bt
+ 		fs_info->data_reloc_bg = 0;
+ 	spin_unlock(&fs_info->relocation_bg_lock);
+ }
++
++void btrfs_free_zone_cache(struct btrfs_fs_info *fs_info)
++{
++	struct btrfs_fs_devices *fs_devices = fs_info->fs_devices;
++	struct btrfs_device *device;
++
++	if (!btrfs_is_zoned(fs_info))
++		return;
++
++	mutex_lock(&fs_devices->device_list_mutex);
++	list_for_each_entry(device, &fs_devices->devices, dev_list) {
++		if (device->zone_info) {
++			vfree(device->zone_info->zone_cache);
++			device->zone_info->zone_cache = NULL;
++		}
++	}
++	mutex_unlock(&fs_devices->device_list_mutex);
++}
+--- a/fs/btrfs/zoned.h
++++ b/fs/btrfs/zoned.h
+@@ -28,6 +28,7 @@ struct btrfs_zoned_device_info {
+ 	unsigned long *seq_zones;
+ 	unsigned long *empty_zones;
+ 	unsigned long *active_zones;
++	struct blk_zone *zone_cache;
+ 	struct blk_zone sb_zones[2 * BTRFS_SUPER_MIRROR_MAX];
+ };
+ 
+@@ -35,7 +36,7 @@ struct btrfs_zoned_device_info {
+ int btrfs_get_dev_zone(struct btrfs_device *device, u64 pos,
+ 		       struct blk_zone *zone);
+ int btrfs_get_dev_zone_info_all_devices(struct btrfs_fs_info *fs_info);
+-int btrfs_get_dev_zone_info(struct btrfs_device *device);
++int btrfs_get_dev_zone_info(struct btrfs_device *device, bool populate_cache);
+ void btrfs_destroy_dev_zone_info(struct btrfs_device *device);
+ int btrfs_check_zoned_mode(struct btrfs_fs_info *fs_info);
+ int btrfs_check_mountopts_zoned(struct btrfs_fs_info *info);
+@@ -76,6 +77,7 @@ bool btrfs_can_activate_zone(struct btrf
+ void btrfs_zone_finish_endio(struct btrfs_fs_info *fs_info, u64 logical,
+ 			     u64 length);
+ void btrfs_clear_data_reloc_bg(struct btrfs_block_group *bg);
++void btrfs_free_zone_cache(struct btrfs_fs_info *fs_info);
+ #else /* CONFIG_BLK_DEV_ZONED */
+ static inline int btrfs_get_dev_zone(struct btrfs_device *device, u64 pos,
+ 				     struct blk_zone *zone)
+@@ -88,7 +90,8 @@ static inline int btrfs_get_dev_zone_inf
+ 	return 0;
+ }
+ 
+-static inline int btrfs_get_dev_zone_info(struct btrfs_device *device)
++static inline int btrfs_get_dev_zone_info(struct btrfs_device *device,
++					  bool populate_cache)
+ {
+ 	return 0;
+ }
+@@ -232,6 +235,7 @@ static inline void btrfs_zone_finish_end
+ 
+ static inline void btrfs_clear_data_reloc_bg(struct btrfs_block_group *bg) { }
+ 
++static inline void btrfs_free_zone_cache(struct btrfs_fs_info *fs_info) { }
+ #endif
+ 
+ static inline bool btrfs_dev_is_sequential(struct btrfs_device *device, u64 pos)
 
 
