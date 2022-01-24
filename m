@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DEBDC433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:11:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54307C433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:11:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347204AbiAXTJw (ORCPT
+        id S1344652AbiAXTLP (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:09:52 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:59964 "EHLO
+        Mon, 24 Jan 2022 14:11:15 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:34012 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344745AbiAXTD2 (ORCPT
+        with ESMTP id S245221AbiAXTDu (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:03:28 -0500
+        Mon, 24 Jan 2022 14:03:50 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id AF78E60917;
-        Mon, 24 Jan 2022 19:03:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 76087C340EA;
-        Mon, 24 Jan 2022 19:03:26 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 88FE960EC4;
+        Mon, 24 Jan 2022 19:03:49 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43CB1C340E5;
+        Mon, 24 Jan 2022 19:03:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643051007;
-        bh=jSDtslNoiyB+pHNp5QUV4hVr5+6MybxkHTQSJuJJGVw=;
+        s=korg; t=1643051029;
+        bh=gTiAsola0UWMwwPm3YlisJWsAT/oMqMZKVdHyRXMZh0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cvI0O0zFGUWqImpC90FNfmZ4Xm9nKxuOlDY7vZcfbRKItk2XO8YxTm9FxgtlzOC13
-         4+wFj+HX90SD+nLysz07rHCniPypnoOEd8Wc3UTSN5absEvsCMK/QqtQ6HyG4RAhv6
-         dbgOXhleHjw+pjIKhBtwVtjBqk16N96HPknp71is=
+        b=AM9BYMNlzkpbLdYXeMILgnK3eJPai/sTREAOK8EJ2ZpMIw37sWMB5nMgxDLca7yQ6
+         o7VN8/mvAvhTEFWytaKEErjiwGPkc78CRS+g8EJmoKUMULzuMavUfuDAZhST/VtX5J
+         XWuaKYJdAuBa5G29xt1zVh4mQxvWgcS9L16tuxzA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org, Johan Hovold <johan@kernel.org>,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Subject: [PATCH 4.14 024/186] media: cpia2: fix control-message timeouts
-Date:   Mon, 24 Jan 2022 19:41:39 +0100
-Message-Id: <20220124183937.898159368@linuxfoundation.org>
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 4.14 030/186] can: softing_cs: softingcs_probe(): fix memleak on registration failure
+Date:   Mon, 24 Jan 2022 19:41:45 +0100
+Message-Id: <20220124183938.091687251@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
 References: <20220124183937.101330125@linuxfoundation.org>
@@ -49,40 +48,34 @@ X-Mailing-List: linux-kernel@vger.kernel.org
 
 From: Johan Hovold <johan@kernel.org>
 
-commit 10729be03327f53258cb196362015ad5c6eabe02 upstream.
+commit ced4913efb0acc844ed65cc01d091a85d83a2082 upstream.
 
-USB control-message timeouts are specified in milliseconds and should
-specifically not vary with CONFIG_HZ.
+In case device registration fails during probe, the driver state and
+the embedded platform device structure needs to be freed using
+platform_device_put() to properly free all resources (e.g. the device
+name).
 
-Fixes: ab33d5071de7 ("V4L/DVB (3376): Add cpia2 camera support")
-Cc: stable@vger.kernel.org      # 2.6.17
+Fixes: 0a0b7a5f7a04 ("can: add driver for Softing card")
+Link: https://lore.kernel.org/all/20211222104843.6105-1-johan@kernel.org
+Cc: stable@vger.kernel.org # 2.6.38
 Signed-off-by: Johan Hovold <johan@kernel.org>
-Signed-off-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/media/usb/cpia2/cpia2_usb.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/net/can/softing/softing_cs.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
---- a/drivers/media/usb/cpia2/cpia2_usb.c
-+++ b/drivers/media/usb/cpia2/cpia2_usb.c
-@@ -559,7 +559,7 @@ static int write_packet(struct usb_devic
- 			       0,	/* index */
- 			       buf,	/* buffer */
- 			       size,
--			       HZ);
-+			       1000);
+--- a/drivers/net/can/softing/softing_cs.c
++++ b/drivers/net/can/softing/softing_cs.c
+@@ -304,7 +304,7 @@ static int softingcs_probe(struct pcmcia
+ 	return 0;
  
- 	kfree(buf);
- 	return ret;
-@@ -591,7 +591,7 @@ static int read_packet(struct usb_device
- 			       0,	/* index */
- 			       buf,	/* buffer */
- 			       size,
--			       HZ);
-+			       1000);
- 
- 	if (ret >= 0)
- 		memcpy(registers, buf, size);
+ platform_failed:
+-	kfree(dev);
++	platform_device_put(pdev);
+ mem_failed:
+ pcmcia_bad:
+ pcmcia_failed:
 
 
