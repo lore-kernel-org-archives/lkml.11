@@ -2,44 +2,47 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4A05C433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3714C4321E
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1383210AbiAXU05 (ORCPT
+        id S1383228AbiAXU07 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:26:57 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:53818 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237207AbiAXT5Z (ORCPT
+        Mon, 24 Jan 2022 15:26:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58710 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1352528AbiAXT51 (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:57:25 -0500
+        Mon, 24 Jan 2022 14:57:27 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16748C047CD7;
+        Mon, 24 Jan 2022 11:27:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 96F0D6090B;
-        Mon, 24 Jan 2022 19:57:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 544F9C33DA0;
-        Mon, 24 Jan 2022 19:57:23 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D16ABB8124F;
+        Mon, 24 Jan 2022 19:27:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0A340C340E8;
+        Mon, 24 Jan 2022 19:27:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643054244;
-        bh=eBtV3ryZiXUZattGsksT7BmwOVTZlzKcXHsLCTSvJcc=;
+        s=korg; t=1643052466;
+        bh=2GpnY8vqsVSbMQOw9UMBU8BSPRxFPtHHdtM8Ph3ap/g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=g6ooYM8B7/jCwc5C68VkebOO6p5py7J74ct8cqZhIwD7aOV0Fn2WPA3zTHpb5M5hf
-         rn6zqB3I53jnwDSP8NM3CaLtuVxCHIaTYlK8SoOKFuI5CGLPK6NzK7WooeW+cxlwOP
-         a+Fbpkqu4I37TuQ49Dh3pgbfXDnHJyagtdmNJuF8=
+        b=gCEZuOWSXCNIXsIZ362k7BB9mOOelRlU4PrN0NBEBQslkvZlzQ1IzglM6pc5FxO3x
+         uf2QbA6Lem3LeTd9jVjdW7q/pPTshdGGYnrQZRvlWPtQ7ooMDG6HD4KtyrEFQbFXbz
+         HFDXxVqyTU6fjmpjAb2+fBX5WsHY+6ij92UcsO7Q=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>,
-        Kunihiko Hayashi <hayashi.kunihiko@socionext.com>,
-        Vinod Koul <vkoul@kernel.org>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.10 282/563] phy: uniphier-usb3ss: fix unintended writing zeros to PHY register
-Date:   Mon, 24 Jan 2022 19:40:47 +0100
-Message-Id: <20220124184034.194066983@linuxfoundation.org>
+        stable@vger.kernel.org, Dan Carpenter <dan.carpenter@oracle.com>,
+        Pavel Skripkin <paskripkin@gmail.com>,
+        Yang Yingliang <yangyingliang@huawei.com>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 069/320] staging: rtl8192e: return error code from rtllib_softmac_init()
+Date:   Mon, 24 Jan 2022 19:40:53 +0100
+Message-Id: <20220124183956.071298714@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124184024.407936072@linuxfoundation.org>
-References: <20220124184024.407936072@linuxfoundation.org>
+In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
+References: <20220124183953.750177707@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -48,59 +51,69 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>
+From: Yang Yingliang <yangyingliang@huawei.com>
 
-[ Upstream commit 898c7a9ec81620125f2463714a0f4dea18ad6e54 ]
+[ Upstream commit 68bf78ff59a0891eb1239948e94ce10f73a9dd30 ]
 
-Similar to commit 4a90bbb478db ("phy: uniphier-pcie: Fix updating phy
-parameters"), in function uniphier_u3ssphy_set_param(), unintentionally
-write zeros to other fields when writing PHY registers.
+If it fails to allocate 'dot11d_info', rtllib_softmac_init()
+should return error code. And remove unneccessary error message.
 
-Fixes: 5ab43d0f8697 ("phy: socionext: add USB3 PHY driver for UniPhier SoC")
-Signed-off-by: Ryuta NAKANISHI <nakanishi.ryuta@socionext.com>
-Signed-off-by: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
-Link: https://lore.kernel.org/r/1640150369-4134-1-git-send-email-hayashi.kunihiko@socionext.com
-Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Fixes: 94a799425eee ("From: wlanfae <wlanfae@realtek.com>")
+Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
+Reviewed-by: Pavel Skripkin <paskripkin@gmail.com>
+Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+Link: https://lore.kernel.org/r/20211202030704.2425621-2-yangyingliang@huawei.com
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/phy/socionext/phy-uniphier-usb3ss.c | 10 ++++++----
- 1 file changed, 6 insertions(+), 4 deletions(-)
+ drivers/staging/rtl8192e/rtllib.h         | 2 +-
+ drivers/staging/rtl8192e/rtllib_softmac.c | 6 ++++--
+ 2 files changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/phy/socionext/phy-uniphier-usb3ss.c b/drivers/phy/socionext/phy-uniphier-usb3ss.c
-index 6700645bcbe6b..3b5ffc16a6947 100644
---- a/drivers/phy/socionext/phy-uniphier-usb3ss.c
-+++ b/drivers/phy/socionext/phy-uniphier-usb3ss.c
-@@ -22,11 +22,13 @@
- #include <linux/reset.h>
+diff --git a/drivers/staging/rtl8192e/rtllib.h b/drivers/staging/rtl8192e/rtllib.h
+index 2eeb9a43734e3..49bf3ad31f912 100644
+--- a/drivers/staging/rtl8192e/rtllib.h
++++ b/drivers/staging/rtl8192e/rtllib.h
+@@ -1982,7 +1982,7 @@ void rtllib_softmac_xmit(struct rtllib_txb *txb, struct rtllib_device *ieee);
+ void rtllib_stop_send_beacons(struct rtllib_device *ieee);
+ void notify_wx_assoc_event(struct rtllib_device *ieee);
+ void rtllib_start_ibss(struct rtllib_device *ieee);
+-void rtllib_softmac_init(struct rtllib_device *ieee);
++int rtllib_softmac_init(struct rtllib_device *ieee);
+ void rtllib_softmac_free(struct rtllib_device *ieee);
+ void rtllib_disassociate(struct rtllib_device *ieee);
+ void rtllib_stop_scan(struct rtllib_device *ieee);
+diff --git a/drivers/staging/rtl8192e/rtllib_softmac.c b/drivers/staging/rtl8192e/rtllib_softmac.c
+index f2f7529e7c80e..4ff8fd694c600 100644
+--- a/drivers/staging/rtl8192e/rtllib_softmac.c
++++ b/drivers/staging/rtl8192e/rtllib_softmac.c
+@@ -2952,7 +2952,7 @@ void rtllib_start_protocol(struct rtllib_device *ieee)
+ 	}
+ }
  
- #define SSPHY_TESTI		0x0
--#define SSPHY_TESTO		0x4
- #define TESTI_DAT_MASK		GENMASK(13, 6)
- #define TESTI_ADR_MASK		GENMASK(5, 1)
- #define TESTI_WR_EN		BIT(0)
+-void rtllib_softmac_init(struct rtllib_device *ieee)
++int rtllib_softmac_init(struct rtllib_device *ieee)
+ {
+ 	int i;
  
-+#define SSPHY_TESTO		0x4
-+#define TESTO_DAT_MASK		GENMASK(7, 0)
+@@ -2963,7 +2963,8 @@ void rtllib_softmac_init(struct rtllib_device *ieee)
+ 		ieee->seq_ctrl[i] = 0;
+ 	ieee->dot11d_info = kzalloc(sizeof(struct rt_dot11d_info), GFP_ATOMIC);
+ 	if (!ieee->dot11d_info)
+-		netdev_err(ieee->dev, "Can't alloc memory for DOT11D\n");
++		return -ENOMEM;
 +
- #define PHY_F(regno, msb, lsb) { (regno), (msb), (lsb) }
+ 	ieee->LinkDetectInfo.SlotIndex = 0;
+ 	ieee->LinkDetectInfo.SlotNum = 2;
+ 	ieee->LinkDetectInfo.NumRecvBcnInPeriod = 0;
+@@ -3031,6 +3032,7 @@ void rtllib_softmac_init(struct rtllib_device *ieee)
+ 	     (void(*)(unsigned long)) rtllib_sta_ps,
+ 	     (unsigned long)ieee);
  
- #define CDR_CPD_TRIM	PHY_F(7, 3, 0)	/* RxPLL charge pump current */
-@@ -84,12 +86,12 @@ static void uniphier_u3ssphy_set_param(struct uniphier_u3ssphy_priv *priv,
- 	val  = FIELD_PREP(TESTI_DAT_MASK, 1);
- 	val |= FIELD_PREP(TESTI_ADR_MASK, p->field.reg_no);
- 	uniphier_u3ssphy_testio_write(priv, val);
--	val = readl(priv->base + SSPHY_TESTO);
-+	val = readl(priv->base + SSPHY_TESTO) & TESTO_DAT_MASK;
++	return 0;
+ }
  
- 	/* update value */
--	val &= ~FIELD_PREP(TESTI_DAT_MASK, field_mask);
-+	val &= ~field_mask;
- 	data = field_mask & (p->value << p->field.lsb);
--	val  = FIELD_PREP(TESTI_DAT_MASK, data);
-+	val  = FIELD_PREP(TESTI_DAT_MASK, data | val);
- 	val |= FIELD_PREP(TESTI_ADR_MASK, p->field.reg_no);
- 	uniphier_u3ssphy_testio_write(priv, val);
- 	uniphier_u3ssphy_testio_write(priv, val | TESTI_WR_EN);
+ void rtllib_softmac_free(struct rtllib_device *ieee)
 -- 
 2.34.1
 
