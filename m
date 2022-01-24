@@ -2,40 +2,40 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49F6EC4707F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C9AFC35271
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838653AbiAXWrD (ORCPT
+        id S1582367AbiAXWrh (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:47:03 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:55434 "EHLO
-        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351335AbiAXVhL (ORCPT
+        Mon, 24 Jan 2022 17:47:37 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:52516 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1457934AbiAXVmd (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:37:11 -0500
+        Mon, 24 Jan 2022 16:42:33 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6C6EC614CB;
-        Mon, 24 Jan 2022 21:37:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 77EC7C340E4;
-        Mon, 24 Jan 2022 21:37:08 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 26F89B81233;
+        Mon, 24 Jan 2022 21:42:32 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4F548C340E4;
+        Mon, 24 Jan 2022 21:42:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060228;
-        bh=6NOPhziuYypkTM6BA48wy+IPkpY4HrxLprlwRYabKag=;
+        s=korg; t=1643060550;
+        bh=q67Yuv2lFh5A7efPX2bOzffmmlUvGKImDLhXNGY13OQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2s8EQ5tDgKINW0xkfXCgv9EKE5NzrGTUKVIFw5i1C5cHEwUA0RD6dIIGznK0XgddG
-         mlBZOw/k1z2hRLL6wv9zZhwECQK03C+mEA9VxPAZeZlv1liMm7xip3YVPFdT4G/I6J
-         3IXKt3hs2VsfOy17KRRxJNMcPh7y/7ezcbXmV1To=
+        b=1B1CY8MmRhfRH1IuG2pIvz52Y69m+dAH2gzsZCHpelREg99sbT/aST3QvTzoNVjrt
+         pSgT5OQxznzJYwL5aQVjqbVucs3uDgWZQgyANomYFpa4SSM2VB1LNFu2bycOiNEL8e
+         rPCKmWirBKzp2Z21xdaThM91UlKgr2lfQ7WycOy4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Nicolas Dichtel <nicolas.dichtel@6wind.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>
-Subject: [PATCH 5.16 0881/1039] xfrm: fix dflt policy check when there is no policy configured
-Date:   Mon, 24 Jan 2022 19:44:30 +0100
-Message-Id: <20220124184154.909528381@linuxfoundation.org>
+        stable@vger.kernel.org, Eric Dumazet <edumazet@google.com>,
+        "Eric W. Biederman" <ebiederm@xmission.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: [PATCH 5.16 0986/1039] netns: add schedule point in ops_exit_list()
+Date:   Mon, 24 Jan 2022 19:46:15 +0100
+Message-Id: <20220124184158.418801561@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -47,35 +47,47 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+From: Eric Dumazet <edumazet@google.com>
 
-commit ec3bb890817e4398f2d46e12e2e205495b116be9 upstream.
+commit 2836615aa22de55b8fca5e32fe1b27a67cda625e upstream.
 
-When there is no policy configured on the system, the default policy is
-checked in xfrm_route_forward. However, it was done with the wrong
-direction (XFRM_POLICY_FWD instead of XFRM_POLICY_OUT).
-The default policy for XFRM_POLICY_FWD was checked just before, with a call
-to xfrm[46]_policy_check().
+When under stress, cleanup_net() can have to dismantle
+netns in big numbers. ops_exit_list() currently calls
+many helpers [1] that have no schedule point, and we can
+end up with soft lockups, particularly on hosts
+with many cpus.
 
-CC: stable@vger.kernel.org
-Fixes: 2d151d39073a ("xfrm: Add possibility to set the default to block if we have no policy")
-Signed-off-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
-Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
+Even for moderate amount of netns processed by cleanup_net()
+this patch avoids latency spikes.
+
+[1] Some of these helpers like fib_sync_up() and fib_sync_down_dev()
+are very slow because net/ipv4/fib_semantics.c uses host-wide hash tables,
+and ifindex is used as the only input of two hash functions.
+    ifindexes tend to be the same for all netns (lo.ifindex==1 per instance)
+    This will be fixed in a separate patch.
+
+Fixes: 72ad937abd0a ("net: Add support for batching network namespace cleanups")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Cc: Eric W. Biederman <ebiederm@xmission.com>
+Signed-off-by: David S. Miller <davem@davemloft.net>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- include/net/xfrm.h |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/net_namespace.c |    4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
---- a/include/net/xfrm.h
-+++ b/include/net/xfrm.h
-@@ -1167,7 +1167,7 @@ static inline int xfrm_route_forward(str
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -164,8 +164,10 @@ static void ops_exit_list(const struct p
  {
- 	struct net *net = dev_net(skb->dev);
- 
--	if (xfrm_default_allow(net, XFRM_POLICY_FWD))
-+	if (xfrm_default_allow(net, XFRM_POLICY_OUT))
- 		return !net->xfrm.policy_count[XFRM_POLICY_OUT] ||
- 			(skb_dst(skb)->flags & DST_NOXFRM) ||
- 			__xfrm_route_forward(skb, family);
+ 	struct net *net;
+ 	if (ops->exit) {
+-		list_for_each_entry(net, net_exit_list, exit_list)
++		list_for_each_entry(net, net_exit_list, exit_list) {
+ 			ops->exit(net);
++			cond_resched();
++		}
+ 	}
+ 	if (ops->exit_batch)
+ 		ops->exit_batch(net_exit_list);
 
 
