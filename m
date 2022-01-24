@@ -2,40 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98532C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79711C433EF
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:37:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354288AbiAXTg1 (ORCPT
+        id S1354270AbiAXTgZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:36:27 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:57714 "EHLO
+        Mon, 24 Jan 2022 14:36:25 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:57640 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352589AbiAXTao (ORCPT
+        with ESMTP id S1352504AbiAXTaf (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 14:30:44 -0500
+        Mon, 24 Jan 2022 14:30:35 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 23E7661488;
-        Mon, 24 Jan 2022 19:30:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04637C340E5;
-        Mon, 24 Jan 2022 19:30:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 326B3612A5;
+        Mon, 24 Jan 2022 19:30:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0ABE3C340E7;
+        Mon, 24 Jan 2022 19:30:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052643;
-        bh=04ATbOZ0gpjTv7LO1aetEmk2zJZK8LUVag571LjjgUI=;
+        s=korg; t=1643052634;
+        bh=CRtmMYSLfsM5EdcONKC8ytJivi6XgTG8sj7QVf4Qt/Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BVS88otQ4+UCNxC+ukZU8I/bJaO2xvNmmlrFr/j7EBShCXcVJ/Czp1jUme1L73sTH
-         7lRReRMIdMnumsXBmN9Cj4IGJiKbPM9+xuBdBrAjGVWoQqDte1pjP1Ee5Y9iwQZZnC
-         hTUmeUEJ0NEI0XPKeeIOl+KZ6+cgn/cCYpDs31Z4=
+        b=0f5jruICbqhZPQYCBCyxh2YfP41HbSVy5zsf64+GFoINaFj1mo9xltXbXz1Y2RB6i
+         w8cpP8whKXcZlvbZfon1DQe2BPlsz8XytzIfWxJeCvgdxlo7frfnFFp+39TViBXD+g
+         D1Aqp7Ps0ZGfoRwqwQx9DszsrRqxpVs31YC6+h7o=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Kamal Heib <kamalheib1@gmail.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 126/320] RDMA/hns: Validate the pkey index
-Date:   Mon, 24 Jan 2022 19:41:50 +0100
-Message-Id: <20220124183957.961295397@linuxfoundation.org>
+        stable@vger.kernel.org, Zhang Zixun <zhang133010@icloud.com>,
+        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.4 097/320] x86/mce/inject: Avoid out-of-bounds write when setting flags
+Date:   Mon, 24 Jan 2022 19:41:21 +0100
+Message-Id: <20220124183957.027398739@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
 References: <20220124183953.750177707@linuxfoundation.org>
@@ -47,35 +46,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Kamal Heib <kamalheib1@gmail.com>
+From: Zhang Zixun <zhang133010@icloud.com>
 
-[ Upstream commit 2a67fcfa0db6b4075515bd23497750849b88850f ]
+[ Upstream commit de768416b203ac84e02a757b782a32efb388476f ]
 
-Before query pkey, make sure that the queried index is valid.
+A contrived zero-length write, for example, by using write(2):
 
-Fixes: 9a4435375cd1 ("IB/hns: Add driver files for hns RoCE driver")
-Link: https://lore.kernel.org/r/20211117145954.123893-1-kamalheib1@gmail.com
-Signed-off-by: Kamal Heib <kamalheib1@gmail.com>
-Signed-off-by: Jason Gunthorpe <jgg@nvidia.com>
+  ...
+  ret = write(fd, str, 0);
+  ...
+
+to the "flags" file causes:
+
+  BUG: KASAN: stack-out-of-bounds in flags_write
+  Write of size 1 at addr ffff888019be7ddf by task writefile/3787
+
+  CPU: 4 PID: 3787 Comm: writefile Not tainted 5.16.0-rc7+ #12
+  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.14.0-2 04/01/2014
+
+due to accessing buf one char before its start.
+
+Prevent such out-of-bounds access.
+
+  [ bp: Productize into a proper patch. Link below is the next best
+    thing because the original mail didn't get archived on lore. ]
+
+Fixes: 0451d14d0561 ("EDAC, mce_amd_inj: Modify flags attribute to use string arguments")
+Signed-off-by: Zhang Zixun <zhang133010@icloud.com>
+Signed-off-by: Borislav Petkov <bp@suse.de>
+Link: https://lore.kernel.org/linux-edac/YcnePfF1OOqoQwrX@zn.tnic/
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/infiniband/hw/hns/hns_roce_main.c | 3 +++
- 1 file changed, 3 insertions(+)
+ arch/x86/kernel/cpu/mce/inject.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/infiniband/hw/hns/hns_roce_main.c b/drivers/infiniband/hw/hns/hns_roce_main.c
-index f23a341400c06..a360e214deaa8 100644
---- a/drivers/infiniband/hw/hns/hns_roce_main.c
-+++ b/drivers/infiniband/hw/hns/hns_roce_main.c
-@@ -279,6 +279,9 @@ static enum rdma_link_layer hns_roce_get_link_layer(struct ib_device *device,
- static int hns_roce_query_pkey(struct ib_device *ib_dev, u8 port, u16 index,
- 			       u16 *pkey)
- {
-+	if (index > 0)
-+		return -EINVAL;
-+
- 	*pkey = PKEY_ID;
+diff --git a/arch/x86/kernel/cpu/mce/inject.c b/arch/x86/kernel/cpu/mce/inject.c
+index eb2d41c1816d6..e1fda5b19b6f6 100644
+--- a/arch/x86/kernel/cpu/mce/inject.c
++++ b/arch/x86/kernel/cpu/mce/inject.c
+@@ -347,7 +347,7 @@ static ssize_t flags_write(struct file *filp, const char __user *ubuf,
+ 	char buf[MAX_FLAG_OPT_SIZE], *__buf;
+ 	int err;
  
- 	return 0;
+-	if (cnt > MAX_FLAG_OPT_SIZE)
++	if (!cnt || cnt > MAX_FLAG_OPT_SIZE)
+ 		return -EINVAL;
+ 
+ 	if (copy_from_user(&buf, ubuf, cnt))
 -- 
 2.34.1
 
