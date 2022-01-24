@@ -2,42 +2,43 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26291C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:03:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C98B2C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 19:03:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343720AbiAXTDP (ORCPT
+        id S1345348AbiAXTDZ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 14:03:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44664 "EHLO
+        Mon, 24 Jan 2022 14:03:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344710AbiAXS65 (ORCPT
+        with ESMTP id S245492AbiAXS7K (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 13:58:57 -0500
+        Mon, 24 Jan 2022 13:59:10 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06A61C06124C;
-        Mon, 24 Jan 2022 10:56:17 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CAE6C061259;
+        Mon, 24 Jan 2022 10:56:20 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id C22D1B8122F;
-        Mon, 24 Jan 2022 18:56:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5C6DC340E7;
-        Mon, 24 Jan 2022 18:56:13 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id E790DB81233;
+        Mon, 24 Jan 2022 18:56:18 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04AF4C340E5;
+        Mon, 24 Jan 2022 18:56:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643050574;
-        bh=XjFCQMtChNzQu+/wivrPl0tpf7DCbKXansZw5loAbeM=;
+        s=korg; t=1643050577;
+        bh=0llLWABPLExHlQs4euURpnH0F+1WsUmniWIHam1or1M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hMmzBOZ9Z2UfJk79nwr4opRE8jqstYwFAzPrYgmxOyQ6sV5w2YD1WB3HYQh/020sP
-         WV7J/UH6rDa3xXAu11Hf7TJjd09UBLkM1n0Je3wlGqrzq6dQcoUZgvg8DXD4mNy4mP
-         yLSw/tpFz9POxGq6n2QfVfFG7+bq0esGpl6Am8hM=
+        b=voJd23qb9H7g8ubTybR22rQdDpO85IuuN6kPh9YgLXQxQkxS/KlOH2IB2WSMUM0Wj
+         5NgrMjMylpZ4B9mX8+CIWwbJCR4P6XDNoIsWwLCJTphfERg+mbLMq5SY4X5CAPPh8y
+         KxCmKQUXjONZ8KUtIyfIKiJeYETSZNYVAVZPmMK4=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Jann Horn <jannh@google.com>,
+        stable@vger.kernel.org, Jason Gerecke <jason.gerecke@wacom.com>,
+        Ping Cheng <ping.cheng@wacom.com>,
         Jiri Kosina <jkosina@suse.cz>
-Subject: [PATCH 4.9 013/157] HID: uhid: Fix worker destroying device without any protection
-Date:   Mon, 24 Jan 2022 19:41:43 +0100
-Message-Id: <20220124183933.213789762@linuxfoundation.org>
+Subject: [PATCH 4.9 014/157] HID: wacom: Avoid using stale array indicies to read contact count
+Date:   Mon, 24 Jan 2022 19:41:44 +0100
+Message-Id: <20220124183933.243616752@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124183932.787526760@linuxfoundation.org>
 References: <20220124183932.787526760@linuxfoundation.org>
@@ -49,101 +50,44 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jann Horn <jannh@google.com>
+From: Jason Gerecke <killertofu@gmail.com>
 
-commit 4ea5763fb79ed89b3bdad455ebf3f33416a81624 upstream.
+commit 20f3cf5f860f9f267a6a6e5642d3d0525edb1814 upstream.
 
-uhid has to run hid_add_device() from workqueue context while allowing
-parallel use of the userspace API (which is protected with ->devlock).
-But hid_add_device() can fail. Currently, that is handled by immediately
-destroying the associated HID device, without using ->devlock - but if
-there are concurrent requests from userspace, that's wrong and leads to
-NULL dereferences and/or memory corruption (via use-after-free).
+If we ever see a touch report with contact count data we initialize
+several variables used to read the contact count in the pre-report
+phase. These variables are never reset if we process a report which
+doesn't contain a contact count, however. This can cause the pre-
+report function to trigger a read of arbitrary memory (e.g. NULL
+if we're lucky) and potentially crash the driver.
 
-Fix it by leaving the HID device as-is in the worker. We can clean it up
-later, either in the UHID_DESTROY command handler or in the ->release()
-handler.
+This commit restores resetting of the variables back to default
+"none" values that were used prior to the commit mentioned
+below.
 
-Cc: stable@vger.kernel.org
-Fixes: 67f8ecc550b5 ("HID: uhid: fix timeout when probe races with IO")
-Signed-off-by: Jann Horn <jannh@google.com>
+Link: https://github.com/linuxwacom/input-wacom/issues/276
+Fixes: 003f50ab673c (HID: wacom: Update last_slot_field during pre_report phase)
+CC: stable@vger.kernel.org
+Signed-off-by: Jason Gerecke <jason.gerecke@wacom.com>
+Reviewed-by: Ping Cheng <ping.cheng@wacom.com>
 Signed-off-by: Jiri Kosina <jkosina@suse.cz>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/hid/uhid.c |   29 +++++++++++++++++++++++++----
- 1 file changed, 25 insertions(+), 4 deletions(-)
+ drivers/hid/wacom_wac.c |    4 ++++
+ 1 file changed, 4 insertions(+)
 
---- a/drivers/hid/uhid.c
-+++ b/drivers/hid/uhid.c
-@@ -33,11 +33,22 @@
+--- a/drivers/hid/wacom_wac.c
++++ b/drivers/hid/wacom_wac.c
+@@ -1693,6 +1693,10 @@ static void wacom_wac_finger_pre_report(
+ 	struct hid_data* hid_data = &wacom_wac->hid_data;
+ 	int i;
  
- struct uhid_device {
- 	struct mutex devlock;
++	hid_data->cc_report = 0;
++	hid_data->cc_index = -1;
++	hid_data->cc_value_index = -1;
 +
-+	/* This flag tracks whether the HID device is usable for commands from
-+	 * userspace. The flag is already set before hid_add_device(), which
-+	 * runs in workqueue context, to allow hid_add_device() to communicate
-+	 * with userspace.
-+	 * However, if hid_add_device() fails, the flag is cleared without
-+	 * holding devlock.
-+	 * We guarantee that if @running changes from true to false while you're
-+	 * holding @devlock, it's still fine to access @hid.
-+	 */
- 	bool running;
- 
- 	__u8 *rd_data;
- 	uint rd_size;
- 
-+	/* When this is NULL, userspace may use UHID_CREATE/UHID_CREATE2. */
- 	struct hid_device *hid;
- 	struct uhid_event input_buf;
- 
-@@ -68,9 +79,18 @@ static void uhid_device_add_worker(struc
- 	if (ret) {
- 		hid_err(uhid->hid, "Cannot register HID device: error %d\n", ret);
- 
--		hid_destroy_device(uhid->hid);
--		uhid->hid = NULL;
-+		/* We used to call hid_destroy_device() here, but that's really
-+		 * messy to get right because we have to coordinate with
-+		 * concurrent writes from userspace that might be in the middle
-+		 * of using uhid->hid.
-+		 * Just leave uhid->hid as-is for now, and clean it up when
-+		 * userspace tries to close or reinitialize the uhid instance.
-+		 *
-+		 * However, we do have to clear the ->running flag and do a
-+		 * wakeup to make sure userspace knows that the device is gone.
-+		 */
- 		uhid->running = false;
-+		wake_up_interruptible(&uhid->report_wait);
- 	}
- }
- 
-@@ -479,7 +499,7 @@ static int uhid_dev_create2(struct uhid_
- 	void *rd_data;
- 	int ret;
- 
--	if (uhid->running)
-+	if (uhid->hid)
- 		return -EALREADY;
- 
- 	rd_size = ev->u.create2.rd_size;
-@@ -560,7 +580,7 @@ static int uhid_dev_create(struct uhid_d
- 
- static int uhid_dev_destroy(struct uhid_device *uhid)
- {
--	if (!uhid->running)
-+	if (!uhid->hid)
- 		return -EINVAL;
- 
- 	uhid->running = false;
-@@ -569,6 +589,7 @@ static int uhid_dev_destroy(struct uhid_
- 	cancel_work_sync(&uhid->worker);
- 
- 	hid_destroy_device(uhid->hid);
-+	uhid->hid = NULL;
- 	kfree(uhid->rd_data);
- 
- 	return 0;
+ 	for (i = 0; i < report->maxfield; i++) {
+ 		struct hid_field *field = report->field[i];
+ 		int j;
 
 
