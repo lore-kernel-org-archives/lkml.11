@@ -2,172 +2,130 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EE81C433F5
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:50:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 610BCC433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 13:50:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234383AbiAXNuU (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 08:50:20 -0500
-Received: from mout.gmx.net ([212.227.17.21]:48773 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230180AbiAXNuT (ORCPT <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 08:50:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1643032205;
-        bh=u6MPuRG8w20At+22/EV/JwHIFBA05kw/+W1B4GWGYSM=;
-        h=X-UI-Sender-Class:Date:Subject:To:Cc:References:From:In-Reply-To;
-        b=HsfSM4HT9oFFqK3KDOdLvrrfu2fDUGadcN/HMOn5BewRp7ZE1gC1zVqK9bPAa0f4G
-         14T8gi84bGtsVjFnG+eyxIzN2tKQIGaljGROiZH7vMFQgicKMSjX1KYJUrXNPfY4Y0
-         gAHpm/z6o6F9CfpyvXeNUITt6HH0+ZAO8V2AiNxM=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from [192.168.20.60] ([92.116.165.96]) by mail.gmx.net (mrgmx105
- [212.227.17.168]) with ESMTPSA (Nemesis) id 1MUosT-1mluJA2gqn-00QnjL; Mon, 24
- Jan 2022 14:50:05 +0100
-Message-ID: <cb4323b6-99f0-c813-502a-2fbe107353ee@gmx.de>
-Date:   Mon, 24 Jan 2022 14:48:57 +0100
+        id S234424AbiAXNuz (ORCPT <rfc822;linux-kernel@archiver.kernel.org>);
+        Mon, 24 Jan 2022 08:50:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55876 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229846AbiAXNuy (ORCPT
+        <rfc822;linux-kernel@vger.kernel.org>);
+        Mon, 24 Jan 2022 08:50:54 -0500
+Received: from mail-ua1-x92f.google.com (mail-ua1-x92f.google.com [IPv6:2607:f8b0:4864:20::92f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D36A3C06173B
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 05:50:53 -0800 (PST)
+Received: by mail-ua1-x92f.google.com with SMTP id p7so23855563uao.6
+        for <linux-kernel@vger.kernel.org>; Mon, 24 Jan 2022 05:50:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=elnpBLQARnRLZNvPKlv8JLeoq3JtZl1fu0Kwxhb6W4Q=;
+        b=pOSKjTusGjLhqw45TfjvAeEDkHrppVglkaZ3biN4z+B1+eDjER6arxBNrUVxd9mTfB
+         UiKon0CaJtb/ljtfx0tbtXe0iCGZyasNfl+l+vP2P+Ug5yMmEpmwF19mvStimWu9gVnS
+         yvi50a5OOvl+pw6PX1wqAhCYu//gzXaz7WB3aOJW12F4aed4ECP1bZPZp5VkU3jJnXsC
+         WtjmgJmLBACrR/Yt3FwA15sBFuxnGhT4/6ceDUBAPfcIaUdTVVYyx+m1bv4eQoJxgjKa
+         aQQr5sBuQQkPnQqqnKkXWxWxj1H9VXJMNOuM7uHdW6AMeW/LyGGy8E82jDLKWqZtm5JI
+         QkxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=elnpBLQARnRLZNvPKlv8JLeoq3JtZl1fu0Kwxhb6W4Q=;
+        b=IMJXYx7Db4cTNBekxKZR7ocGFzgxrPd+7iad06zLNmmZAUKUOSOVCfJIVbrVGSbmq+
+         Waqx00SMug5CfjE0m/G0xS8O15UrCs8SLczU4AVY5MmC36SQsFc/AE0uAHdBNRW0O7Eq
+         nUozzgQwdQIZQq92ESINe7ZzypOoHmn+LA0S0cuG8OXj8lPJRYzp6W1LQVExvQEA3chy
+         Bw1ZrBRIt2mU+Iy5OT1uER8y2Hwxdl/CbqVn+Rogu8mj5hPqnrIJ+CvWYjhC99WW/na5
+         EkcCWX6RZpN1+NdMEWNvHeJ6GR4kaqeGcqzK+ZPHTyyXaitThBAniK88HXDcAIP0PLz/
+         kQNA==
+X-Gm-Message-State: AOAM5321/aovKtqkq8e0HjqTcvCHU2Ulkx/FNE+p23Vc8xlnGu/96/KN
+        nmsKhyc7+8M4t+zq0Cg3RphJb7frHMlbD7Zvf0WoPw==
+X-Google-Smtp-Source: ABdhPJxvi5cZdB24aTyLiac3wH/da4Ee9sNkiG0jVsHFaPMStmGQ3+FEHBnkb+seTBGiIWnc3xn/pq1JWy1QVANrkXY=
+X-Received: by 2002:a67:c591:: with SMTP id h17mr4539820vsk.86.1643032252928;
+ Mon, 24 Jan 2022 05:50:52 -0800 (PST)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.3.0
-Subject: Re: [PATCH 1/1] video: hyperv_fb: Fix validation of screen resolution
-Content-Language: en-US
-To:     Wei Liu <wei.liu@kernel.org>
-Cc:     "Michael Kelley (LINUX)" <mikelley@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Hu <weh@microsoft.com>, Dexuan Cui <decui@microsoft.com>,
-        "drawat.floss@gmail.com" <drawat.floss@gmail.com>,
-        hhei <hhei@redhat.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "linux-fbdev@vger.kernel.org" <linux-fbdev@vger.kernel.org>,
-        "dri-devel@lists.freedesktop.org" <dri-devel@lists.freedesktop.org>
-References: <1642360711-2335-1-git-send-email-mikelley@microsoft.com>
- <MN2PR21MB1295CE3BD15D4EB257A158DCCA569@MN2PR21MB1295.namprd21.prod.outlook.com>
- <20220123215606.fzycryooluavtar4@liuwe-devbox-debian-v2>
- <MWHPR21MB1593ED650DA82BC3009F66CED75D9@MWHPR21MB1593.namprd21.prod.outlook.com>
- <20220123223030.ijdzrunduww76jiq@liuwe-devbox-debian-v2>
- <e396a22d-7e0e-73a4-d831-f69dc854bfa8@gmx.de>
- <20220124133119.3yxfr7ypmmdotm6h@liuwe-devbox-debian-v2>
-From:   Helge Deller <deller@gmx.de>
-In-Reply-To: <20220124133119.3yxfr7ypmmdotm6h@liuwe-devbox-debian-v2>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:7hhzpZHkF0R/9ndEJOKmMCZI6q1JhRlydqXic/iJUhXN+6ITg0C
- 7T63RrUJS5kh8xHRYh0rm6ybrg/mvs2WW17GOnir3U3RW8PLsQGZpZHvebMB78RrgaM1eIY
- GJdjl3nANaoxpK0LSzfD0iM/1NXK2ETjrrw3CaZXO/MWylUu1U3q4cOeGG2b7E9HFN7HesZ
- +RLbp3pcoqocFb4rbV35A==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:udTipb9oxpo=:rXQsJugIhdKVGb7qsOOZrB
- ZVNfYMDX3ca4OUCR2N4mkGtsGRcmlFzInBc9j/oSMUSS9v8F0TC7f15ipYw2YgtyoFzlccN9m
- JCUekVGrbC/M3jAyysFj6zsqGLXKt49GrBdYQH2+cZ5ngC8AarVjmiPbadUQToOGCYf10pIG3
- N+PfgsqHuqnPGTEV5IjZugMSCYCKfULHy6gHTsaW9WrsOGbI675NqyO4g1f8Y31tLhSIYdFzk
- 04yd6Q/zTvWqmAWpZM9IwrkXtT90991ES1TpUzTYAHOeIaJm3Kemt8XF19m3Dlrn5IHSBsyvl
- QAN7koOxdoMx/QpgJQ5p/fvBRRX5kA1esALUUgOnOz2db/ttWFCqNVwAptLxJApignbjP5bpU
- YxcUv2PMwrcw7fEbQgn8lKDYGyuxxLu2zc8IjPwTa80F2PBF4Hf8Ntru2DbcFhvEtNC/THj+t
- Mc4i3PsuWnpdA57irjCeTafN360wiLv+F/wsOfeK7s2Okj++ipAG+hhpQ8+5hE4yFkUg9bCQs
- vTKN2KvzZ0/jMROB4+aYmqzV2CnV6DGJf4/to/XPUWPp4bNg40Q4dfy3mTop0EMuZIhZ0UExm
- zZWbA4UpaTC7uhvoDfOrw+Msg/BeylQYUzXPBgrHUZ1W0KCwnOwOjcF8Qvbu/Ehu5wjOtYvf5
- G3CG/HREnrPmH6UxQtu3Ah0Hw4Eb1eQPWlQ4twcb+e+MpUrBoRFOudFBiAjSmyWeYUrl2z6j3
- ndYajLyk8T6LpT0HaLRK1TAu5xvaX9GiTxOdSatE+WxejOLND22SnGzqE765CL5LJB6j/H6S3
- Tne/leZFR4zGiRg3rWHt8jzLj/WQrFCDCipZMcRyizzJVxzs97nvIetyZCR2aQDixc980Snw5
- +p4Yhd+C9VO0jr2DNnh6gGxuFC8AioicDWx376v6qe1vaeK0yjNr0LTGtmzRBkgnr/5P8BCOP
- Mc6ZQ/JUWu1dpvWH6WApLaDxP9GgxJdqySjjubmVYqcXKdtRYrWjIdv1SI5UTVZMlwlpqBf4m
- +UXDYJ1BTPCAyAu9G1ed9IyDU549n478oypn4xJPAlxrLGu+eh4KT5/goZV/KnBIgIpP6S3HW
- OzIMatkm6C+l+Y=
+References: <20211227112959.7325-1-krzysztof.kozlowski@canonical.com>
+ <CAPLW+4n-1H5Yu3wQaus-UJ_VW_TjHrNUHaPCGCMURXg8EqxjyA@mail.gmail.com>
+ <CAK8P3a1ou-ZdrXN0MHQoJ+gGbvhXT-e2qt96_f9M8VwrdX0pAg@mail.gmail.com>
+ <CAOesGMgF3S5_XsWjEqq=-zfYXwOWFpFNA6afL81wceRUA_0FeQ@mail.gmail.com>
+ <CAPLW+4k8=ymx56R7bKOt8kMVG_uUgrTsCkVd5wiY_rkYq8dYbQ@mail.gmail.com> <72a50afd-df9f-ceb3-898e-070d70dc0221@canonical.com>
+In-Reply-To: <72a50afd-df9f-ceb3-898e-070d70dc0221@canonical.com>
+From:   Sam Protsenko <semen.protsenko@linaro.org>
+Date:   Mon, 24 Jan 2022 15:50:41 +0200
+Message-ID: <CAPLW+4=xaHA2a=-F4ikuUPDpoO8Waj7qrrfpgkift1aMi_hU+g@mail.gmail.com>
+Subject: Re: [GIT PULL] arm64: dts: samsung: Second pull for v5.17
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Olof Johansson <olof@lixom.net>, Arnd Bergmann <arnd@arndb.de>,
+        arm-soc <arm@kernel.org>, SoC Team <soc@kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/SAMSUNG EXYNOS ARM ARCHITECTURES" 
+        <linux-samsung-soc@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-On 1/24/22 14:31, Wei Liu wrote:
-> On Mon, Jan 24, 2022 at 10:52:22AM +0100, Helge Deller wrote:
->> On 1/23/22 23:30, Wei Liu wrote:
->>> On Sun, Jan 23, 2022 at 10:27:56PM +0000, Michael Kelley (LINUX) wrote=
-:
->>>> From: Wei Liu <wei.liu@kernel.org> Sent: Sunday, January 23, 2022 1:5=
-6 PM
->>>>>
->>>>> On Sun, Jan 16, 2022 at 09:53:06PM +0000, Haiyang Zhang wrote:
->>>>>>
->>>>>>
->>>>>>> -----Original Message-----
->>>>>>> From: Michael Kelley (LINUX) <mikelley@microsoft.com>
->>>>>>> Sent: Sunday, January 16, 2022 2:19 PM
->>>>>>> To: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang
->>>>> <haiyangz@microsoft.com>; Stephen
->>>>>>> Hemminger <sthemmin@microsoft.com>; wei.liu@kernel.org; Wei Hu
->>>>> <weh@microsoft.com>; Dexuan
->>>>>>> Cui <decui@microsoft.com>; drawat.floss@gmail.com; hhei <hhei@redh=
-at.com>;
->>>>> linux-
->>>>>>> kernel@vger.kernel.org; linux-hyperv@vger.kernel.org; linux-
->>>>> fbdev@vger.kernel.org; dri-
->>>>>>> devel@lists.freedesktop.org
->>>>>>> Cc: Michael Kelley (LINUX) <mikelley@microsoft.com>
->>>>>>> Subject: [PATCH 1/1] video: hyperv_fb: Fix validation of screen re=
-solution
->>>>>>>
->>>>>>> In the WIN10 version of the Synthetic Video protocol with Hyper-V,
->>>>>>> Hyper-V reports a list of supported resolutions as part of the pro=
-tocol
->>>>>>> negotiation. The driver calculates the maximum width and height fr=
-om
->>>>>>> the list of resolutions, and uses those maximums to validate any s=
-creen
->>>>>>> resolution specified in the video=3D option on the kernel boot lin=
-e.
->>>>>>>
->>>>>>> This method of validation is incorrect. For example, the list of
->>>>>>> supported resolutions could contain 1600x1200 and 1920x1080, both =
-of
->>>>>>> which fit in an 8 Mbyte frame buffer.  But calculating the max wid=
-th
->>>>>>> and height yields 1920 and 1200, and 1920x1200 resolution does not=
- fit
->>>>>>> in an 8 Mbyte frame buffer.  Unfortunately, this resolution is acc=
-epted,
->>>>>>> causing a kernel fault when the driver accesses memory outside the
->>>>>>> frame buffer.
->>>>>>>
->>>>>>> Instead, validate the specified screen resolution by calculating
->>>>>>> its size, and comparing against the frame buffer size.  Delete the
->>>>>>> code for calculating the max width and height from the list of
->>>>>>> resolutions, since these max values have no use.  Also add the
->>>>>>> frame buffer size to the info message to aid in understanding why
->>>>>>> a resolution might be rejected.
->>>>>>>
->>>>>>> Fixes: 67e7cdb4829d ("video: hyperv: hyperv_fb: Obtain screen reso=
-lution from Hyper-V
->>>>>>> host")
->>>>>>> Signed-off-by: Michael Kelley <mikelley@microsoft.com>
->>>>> [...]
->>>>>>
->>>>>> Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
->>>>>>
->>>>>
->>>>> Applied to hyperv-fixes. Thanks.
->>>>
->>>> This fix got pulled into the fbdev/for-next tree by a new maintainer,=
- Helge Deller.
->>>> See https://git.kernel.org/pub/scm/linux/kernel/git/deller/linux-fbde=
-v.git/commit/?h=3Dfor-next&id=3Dbcc48f8d980b12e66a3d59dfa1041667db971d86
->>>
->>> OK. I will drop it from hyperv-fixes. Thanks for letting me know!
->>
->> Linus hasn't pulled my tree yet, and he will probably not before the
->> next merge window. So, if this is an urgent bugfix for you, I can offer
->> to drop it from the fbdev tree and that you take it through the hyperv-=
-fixes tree.
->> In that case you may add an Acked-by: Helge Deller <deller@gmx.de>.
->> Just let me know what you prefer.
+On Sun, 23 Jan 2022 at 21:27, Krzysztof Kozlowski
+<krzysztof.kozlowski@canonical.com> wrote:
 >
-> Hi Helge
+> On 22/01/2022 13:38, Sam Protsenko wrote:
+> > On Wed, 19 Jan 2022 at 18:53, Olof Johansson <olof@lixom.net> wrote:
+> >>
+> >> On Wed, Jan 19, 2022 at 8:07 AM Arnd Bergmann <arnd@arndb.de> wrote:
+> >>>
+> >>> On Wed, Jan 19, 2022 at 4:11 PM Sam Protsenko
+> >>> <semen.protsenko@linaro.org> wrote:
+> >>>> On Mon, 27 Dec 2021 at 13:30, Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
+> >>>>
+> >>>> Hi Olof, Arnd,
+> >>>>
+> >>>> Just want to check if it's possible for those patches to be applied in
+> >>>> v5.17? Sorry for the noise, but that's important to me.
+> >>>
+> >>> I can see that Olof merged merged this into the "arm/late" branch in
+> >>> the soc tree,
+> >>> so I assume he still plans to send it in the next few days.
+> >>
+> >> Yep, will be sent up today most likely.
+> >>
+> >
+> > Thanks for detailed answer! Glad to hear it's still a possibility.
+> > Please let me know if you need any actions on my side (like rebasing,
+> > etc).
+> >
+> >>> With the timing over Christmas, I sent out the large bulk of the
+> >>> contents (anything
+> >>> I merged before Dec 23) last year, and Linus already merged it, the rest ended
+> >>> up in the "late" branch.
+> >>>
+> >>> As usual, there is no guarantee that late changes make it in, but I have seen
+> >>> no indication of any problems so far.
+> >>
+> >> Correct. Been sitting on it for a while in case there were fixes
+> >> coming in for the first pieces that got merged, but in traditional
+> >> fashion I'm guessing those will start to show up a few days after the
+> >> late branch gets merged. :)
 >
-> Yes, I would like to upstream it as soon as possible so that it can
-> propagate to stable trees and be backported by downstream vendors.
+> Olof,
+> v5.17-rc1 came earlier, so I see this part did not make into it. Is
+> there a chance for a past-rc1 pull to Linus with it?
 >
-> I will pick it up in hyperv-fixes. Please drop it from your for-next
-> tree.
+> Sam,
+> Anyway the patches wont' get lost (you mentioned such worry in previous
+> email to me). They might just need to wait. Unfortunately if patch,
+> especially with new feature, is coming in the end of cycle, there is a
+> risk it won't make it. The patches have to wait a few days in my trees
+> before I send them to Arnd/Olof, so if the patch is coming after rc6, I
+> can push it to Arnd/Olof around rc7, you see there is very little time.
+>
 
-Dropped now from fbdev tree.
+Should I send the patch fixing hard-coded clock numbers though? I
+remember you said I should send it once -rc1 is out. But now that dts
+patches are not merged in mainline, I'm not sure it can still be
+applied?
 
-Thanks!
-Helge
+> Best regards,
+> Krzysztof
