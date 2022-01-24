@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E24D9C433EF
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41838C4167D
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 00:18:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2374305AbiAYAQq (ORCPT
+        id S2374138AbiAYAQO (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:16:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53368 "EHLO
+        Mon, 24 Jan 2022 19:16:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1383051AbiAXX2E (ORCPT
+        with ESMTP id S1382763AbiAXX2E (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 18:28:04 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A768CC01D7F3;
-        Mon, 24 Jan 2022 13:31:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 014C1C01D7F0;
+        Mon, 24 Jan 2022 13:31:16 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 480A2614F3;
-        Mon, 24 Jan 2022 21:31:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30D27C340E9;
-        Mon, 24 Jan 2022 21:31:23 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 954A1614DE;
+        Mon, 24 Jan 2022 21:31:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 54EC7C340E4;
+        Mon, 24 Jan 2022 21:31:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643059883;
-        bh=OBTuXiREeeRTt0kQKSBldCdfbCJ4bnAco+QXL8c1owQ=;
+        s=korg; t=1643059875;
+        bh=PyUDj7NjAiWTUocF8frnXLOzu5jD+g0sSLunoBOVGXw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lUGvagDkcMAsSO7hKt1pFZDtAyzUCFiYiY6ofM7Hm+cSAHHUFLS8kxQrrN86XqKOj
-         orG1xFw7XseDgT/FVZzn9mfk0j7r+pOMD4Pd9DIJD9SECRyk+8N/ERSgwnsjVZeycS
-         crPTzo/6coEbwagCkuMRToZKVtc7lBgdFjf+UJnw=
+        b=Ku/OrO5l8WxOO8RHcEUu7Yy03B46dYVfzj+L2YV22fb5nW13GVRBJmvWWWdoXbgh0
+         nq9Lhk+8zIfqthAE7qFPR6xzL2kfEzKaYX4HJ8V+e8UiZ3BF6sCLwhq6iDoBOyTbDY
+         rstcAnDxRvqKupeO7Qi2ykQDefwRAjPgnXILum68=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org,
-        Dominik Brodowski <linux@dominikbrodowski.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        stable@vger.kernel.org, Marc Kleine-Budde <mkl@pengutronix.de>,
         Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.16 0724/1039] random: do not throw away excess input to crng_fast_load
-Date:   Mon, 24 Jan 2022 19:41:53 +0100
-Message-Id: <20220124184149.668774250@linuxfoundation.org>
+Subject: [PATCH 5.16 0731/1039] can: flexcan: add more quirks to describe RX path capabilities
+Date:   Mon, 24 Jan 2022 19:42:00 +0100
+Message-Id: <20220124184149.898031977@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -51,93 +49,163 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Jason A. Donenfeld <Jason@zx2c4.com>
+From: Marc Kleine-Budde <mkl@pengutronix.de>
 
-[ Upstream commit 73c7733f122e8d0107f88655a12011f68f69e74b ]
+[ Upstream commit c5c88591040ee7d84d037328eed9019d3ffab821 ]
 
-When crng_fast_load() is called by add_hwgenerator_randomness(), we
-currently will advance to crng_init==1 once we've acquired 64 bytes, and
-then throw away the rest of the buffer. Usually, that is not a problem:
-When add_hwgenerator_randomness() gets called via EFI or DT during
-setup_arch(), there won't be any IRQ randomness. Therefore, the 64 bytes
-passed by EFI exactly matches what is needed to advance to crng_init==1.
-Usually, DT seems to pass 64 bytes as well -- with one notable exception
-being kexec, which hands over 128 bytes of entropy to the kexec'd kernel.
-In that case, we'll advance to crng_init==1 once 64 of those bytes are
-consumed by crng_fast_load(), but won't continue onward feeding in bytes
-to progress to crng_init==2. This commit fixes the issue by feeding
-any leftover bytes into the next phase in add_hwgenerator_randomness().
+Most flexcan IP cores support 2 RX modes:
+- FIFO
+- mailbox
 
-[linux@dominikbrodowski.net: rewrite commit message]
-Signed-off-by: Dominik Brodowski <linux@dominikbrodowski.net>
-Signed-off-by: Jason A. Donenfeld <Jason@zx2c4.com>
+Some IP core versions cannot receive CAN RTR messages via mailboxes.
+This patch adds quirks to document this.
+
+This information will be used in a later patch to switch from FIFO to
+more performant mailbox mode at the expense of losing the ability to
+receive RTR messages. This trade off is beneficial in certain use
+cases.
+
+Link: https://lore.kernel.org/all/20220107193105.1699523-5-mkl@pengutronix.de
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/char/random.c | 19 ++++++++++++-------
- 1 file changed, 12 insertions(+), 7 deletions(-)
+ drivers/net/can/flexcan.c | 66 ++++++++++++++++++++++++++++++++-------
+ 1 file changed, 54 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/char/random.c b/drivers/char/random.c
-index 7470ee24db2f9..a27ae3999ff32 100644
---- a/drivers/char/random.c
-+++ b/drivers/char/random.c
-@@ -912,12 +912,14 @@ static struct crng_state *select_crng(void)
+diff --git a/drivers/net/can/flexcan.c b/drivers/net/can/flexcan.c
+index ba52e70d6a166..57cebc4156616 100644
+--- a/drivers/net/can/flexcan.c
++++ b/drivers/net/can/flexcan.c
+@@ -252,6 +252,12 @@
+ #define FLEXCAN_QUIRK_NR_IRQ_3 BIT(12)
+ /* Setup 16 mailboxes */
+ #define FLEXCAN_QUIRK_NR_MB_16 BIT(13)
++/* Device supports RX via mailboxes */
++#define FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX BIT(14)
++/* Device supports RTR reception via mailboxes */
++#define FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR BIT(15)
++/* Device supports RX via FIFO */
++#define FLEXCAN_QUIRK_SUPPPORT_RX_FIFO BIT(16)
  
- /*
-  * crng_fast_load() can be called by code in the interrupt service
-- * path.  So we can't afford to dilly-dally.
-+ * path.  So we can't afford to dilly-dally. Returns the number of
-+ * bytes processed from cp.
-  */
--static int crng_fast_load(const char *cp, size_t len)
-+static size_t crng_fast_load(const char *cp, size_t len)
- {
- 	unsigned long flags;
- 	char *p;
-+	size_t ret = 0;
+ /* Structure of the message buffer */
+ struct flexcan_mb {
+@@ -386,59 +392,78 @@ struct flexcan_priv {
  
- 	if (!spin_trylock_irqsave(&primary_crng.lock, flags))
- 		return 0;
-@@ -928,7 +930,7 @@ static int crng_fast_load(const char *cp, size_t len)
- 	p = (unsigned char *) &primary_crng.state[4];
- 	while (len > 0 && crng_init_cnt < CRNG_INIT_CNT_THRESH) {
- 		p[crng_init_cnt % CHACHA_KEY_SIZE] ^= *cp;
--		cp++; crng_init_cnt++; len--;
-+		cp++; crng_init_cnt++; len--; ret++;
+ static const struct flexcan_devtype_data fsl_mcf5441x_devtype_data = {
+ 	.quirks = FLEXCAN_QUIRK_BROKEN_PERR_STATE |
+-		FLEXCAN_QUIRK_NR_IRQ_3 | FLEXCAN_QUIRK_NR_MB_16,
++		FLEXCAN_QUIRK_NR_IRQ_3 | FLEXCAN_QUIRK_NR_MB_16 |
++		FLEXCAN_QUIRK_SUPPPORT_RX_FIFO,
+ };
+ 
+ static const struct flexcan_devtype_data fsl_p1010_devtype_data = {
+ 	.quirks = FLEXCAN_QUIRK_BROKEN_WERR_STATE |
+ 		FLEXCAN_QUIRK_BROKEN_PERR_STATE |
+-		FLEXCAN_QUIRK_DEFAULT_BIG_ENDIAN,
++		FLEXCAN_QUIRK_DEFAULT_BIG_ENDIAN |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
++		FLEXCAN_QUIRK_SUPPPORT_RX_FIFO,
+ };
+ 
+ static const struct flexcan_devtype_data fsl_imx25_devtype_data = {
+ 	.quirks = FLEXCAN_QUIRK_BROKEN_WERR_STATE |
+-		FLEXCAN_QUIRK_BROKEN_PERR_STATE,
++		FLEXCAN_QUIRK_BROKEN_PERR_STATE |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
++		FLEXCAN_QUIRK_SUPPPORT_RX_FIFO,
+ };
+ 
+ static const struct flexcan_devtype_data fsl_imx28_devtype_data = {
+-	.quirks = FLEXCAN_QUIRK_BROKEN_PERR_STATE,
++	.quirks = FLEXCAN_QUIRK_BROKEN_PERR_STATE |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
++		FLEXCAN_QUIRK_SUPPPORT_RX_FIFO,
+ };
+ 
+ static const struct flexcan_devtype_data fsl_imx6q_devtype_data = {
+ 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
+ 		FLEXCAN_QUIRK_USE_RX_MAILBOX | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
+-		FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR,
++		FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
+ };
+ 
+ static const struct flexcan_devtype_data fsl_imx8qm_devtype_data = {
+ 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
+ 		FLEXCAN_QUIRK_USE_RX_MAILBOX | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
+-		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW,
++		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SETUP_STOP_MODE_SCFW |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
+ };
+ 
+ static struct flexcan_devtype_data fsl_imx8mp_devtype_data = {
+ 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
+ 		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_USE_RX_MAILBOX |
+ 		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_SETUP_STOP_MODE_GPR |
+-		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SUPPORT_ECC,
++		FLEXCAN_QUIRK_SUPPORT_FD | FLEXCAN_QUIRK_SUPPORT_ECC |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
+ };
+ 
+ static const struct flexcan_devtype_data fsl_vf610_devtype_data = {
+ 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
+ 		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_USE_RX_MAILBOX |
+-		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_SUPPORT_ECC,
++		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_SUPPORT_ECC |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
+ };
+ 
+ static const struct flexcan_devtype_data fsl_ls1021a_r2_devtype_data = {
+ 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
+-		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_USE_RX_MAILBOX,
++		FLEXCAN_QUIRK_BROKEN_PERR_STATE | FLEXCAN_QUIRK_USE_RX_MAILBOX |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
+ };
+ 
+ static const struct flexcan_devtype_data fsl_lx2160a_r1_devtype_data = {
+ 	.quirks = FLEXCAN_QUIRK_DISABLE_RXFG | FLEXCAN_QUIRK_ENABLE_EACEN_RRS |
+ 		FLEXCAN_QUIRK_DISABLE_MECR | FLEXCAN_QUIRK_BROKEN_PERR_STATE |
+ 		FLEXCAN_QUIRK_USE_RX_MAILBOX | FLEXCAN_QUIRK_SUPPORT_FD |
+-		FLEXCAN_QUIRK_SUPPORT_ECC,
++		FLEXCAN_QUIRK_SUPPORT_ECC |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR,
+ };
+ 
+ static const struct can_bittiming_const flexcan_bittiming_const = {
+@@ -2164,8 +2189,25 @@ static int flexcan_probe(struct platform_device *pdev)
+ 		return -ENODEV;
+ 
+ 	if ((devtype_data->quirks & FLEXCAN_QUIRK_SUPPORT_FD) &&
+-	    !(devtype_data->quirks & FLEXCAN_QUIRK_USE_RX_MAILBOX)) {
+-		dev_err(&pdev->dev, "CAN-FD mode doesn't work with FIFO mode!\n");
++	    !((devtype_data->quirks &
++	       (FLEXCAN_QUIRK_USE_RX_MAILBOX |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
++		FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR |
++		FLEXCAN_QUIRK_SUPPPORT_RX_FIFO)) ==
++	      (FLEXCAN_QUIRK_USE_RX_MAILBOX |
++	       FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
++	       FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR))) {
++		dev_err(&pdev->dev, "CAN-FD mode doesn't work in RX-FIFO mode!\n");
++		return -EINVAL;
++	}
++
++	if ((devtype_data->quirks &
++	     (FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX |
++	      FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR)) ==
++	    FLEXCAN_QUIRK_SUPPPORT_RX_MAILBOX_RTR) {
++		dev_err(&pdev->dev,
++			"Quirks (0x%08x) inconsistent: RX_MAILBOX_RX supported but not RX_MAILBOX\n",
++			devtype_data->quirks);
+ 		return -EINVAL;
  	}
- 	spin_unlock_irqrestore(&primary_crng.lock, flags);
- 	if (crng_init_cnt >= CRNG_INIT_CNT_THRESH) {
-@@ -936,7 +938,7 @@ static int crng_fast_load(const char *cp, size_t len)
- 		crng_init = 1;
- 		pr_notice("fast init done\n");
- 	}
--	return 1;
-+	return ret;
- }
  
- /*
-@@ -1287,7 +1289,7 @@ void add_interrupt_randomness(int irq, int irq_flags)
- 	if (unlikely(crng_init == 0)) {
- 		if ((fast_pool->count >= 64) &&
- 		    crng_fast_load((char *) fast_pool->pool,
--				   sizeof(fast_pool->pool))) {
-+				   sizeof(fast_pool->pool)) > 0) {
- 			fast_pool->count = 0;
- 			fast_pool->last = now;
- 		}
-@@ -2295,8 +2297,11 @@ void add_hwgenerator_randomness(const char *buffer, size_t count,
- 	struct entropy_store *poolp = &input_pool;
- 
- 	if (unlikely(crng_init == 0)) {
--		crng_fast_load(buffer, count);
--		return;
-+		size_t ret = crng_fast_load(buffer, count);
-+		count -= ret;
-+		buffer += ret;
-+		if (!count || crng_init == 0)
-+			return;
- 	}
- 
- 	/* Suspend writing if we're above the trickle threshold.
 -- 
 2.34.1
 
