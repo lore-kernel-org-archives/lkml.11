@@ -2,44 +2,42 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B032C43217
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72318C433EF
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1382179AbiAXWsU (ORCPT
+        id S1838795AbiAXWsQ (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:48:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56572 "EHLO
+        Mon, 24 Jan 2022 17:48:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1458140AbiAXVmr (ORCPT
+        with ESMTP id S1458141AbiAXVmr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 16:42:47 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C210C0612AB;
-        Mon, 24 Jan 2022 12:30:41 -0800 (PST)
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1316C07A953;
+        Mon, 24 Jan 2022 12:30:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 38EAEB8119E;
-        Mon, 24 Jan 2022 20:30:40 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 66175C340E5;
-        Mon, 24 Jan 2022 20:30:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8288B61383;
+        Mon, 24 Jan 2022 20:30:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5D5BCC340E5;
+        Mon, 24 Jan 2022 20:30:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643056238;
-        bh=PqkSAnQ+TpeSlwQ/kMZ40aT8mDkYSbgSAXARGL2d10c=;
+        s=korg; t=1643056244;
+        bh=lHp066GqEuWHuPWqIDH4N1W547qnHtwjWomtPz60+2M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nbK742EC7MX3q1EmVOxibw0TKWYSA0TTMmSBbhhVpKx6YtuuxJmb3mYGcA9BrmS8B
-         6pb9k7H40Kh6Crg/TjSmJ1CFPuMY0WYu/2YFmruGi07l/Bqzk1rnVQuX3tkxX1+bJf
-         s7j9xYghxOvpB+aajC16F6g4uxxuoZTEx+Ins+4U=
+        b=z6y2vvacceplFWuIxh5IRUeUNeTDzhC4LfmpY4FzifwCsvSogPnQ3BLfMKxv4VZ83
+         n2zsw44Tq7DVbVgAGQ/DC8+X9wnNI8iUfuztlyhqVE1mVnBF0s5htSRENGub5s2dnz
+         uhxEsiooxjySBoEZqNZQ+k+3aBjn7MJilQAeKANw=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        Thomas Bogendoerfer <tsbogend@alpha.franken.de>,
-        Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.15 417/846] mips: fix Kconfig reference to PHYS_ADDR_T_64BIT
-Date:   Mon, 24 Jan 2022 19:38:54 +0100
-Message-Id: <20220124184115.362381445@linuxfoundation.org>
+        stable@vger.kernel.org, Maxim Levitsky <mlevitsk@redhat.com>,
+        Joerg Roedel <jroedel@suse.de>, Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 419/846] iommu/amd: Restore GA log/tail pointer on host resume
+Date:   Mon, 24 Jan 2022 19:38:56 +0100
+Message-Id: <20220124184115.426600618@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -51,50 +49,93 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+From: Maxim Levitsky <mlevitsk@redhat.com>
 
-[ Upstream commit a670c82d9ca4f1e7385d9d6f26ff41a50fbdd944 ]
+[ Upstream commit a8d4a37d1bb93608501d0d0545f902061152669a ]
 
-Commit d4a451d5fc84 ("arch: remove the ARCH_PHYS_ADDR_T_64BIT config
-symbol") removes config ARCH_PHYS_ADDR_T_64BIT with all instances of that
-config refactored appropriately. Since then, it is recommended to use the
-config PHYS_ADDR_T_64BIT instead.
+This will give IOMMU GA log a chance to work after resume
+from s3/s4.
 
-Commit 171543e75272 ("MIPS: Disallow CPU_SUPPORTS_HUGEPAGES for XPA,EVA")
-introduces the expression "!(32BIT && (ARCH_PHYS_ADDR_T_64BIT || EVA))"
-for config CPU_SUPPORTS_HUGEPAGES, which unintentionally refers to the
-non-existing symbol ARCH_PHYS_ADDR_T_64BIT instead of the intended
-PHYS_ADDR_T_64BIT.
+Fixes: 8bda0cfbdc1a6 ("iommu/amd: Detect and initialize guest vAPIC log")
 
-Fix this Kconfig reference to the intended PHYS_ADDR_T_64BIT.
-
-This issue was identified with the script ./scripts/checkkconfigsymbols.py.
-I then reported it on the mailing list and Paul confirmed the mistake in
-the linked email thread.
-
-Link: https://lore.kernel.org/lkml/H8IU3R.H5QVNRA077PT@crapouillou.net/
-Suggested-by: Paul Cercueil <paul@crapouillou.net>
-Fixes: 171543e75272 ("MIPS: Disallow CPU_SUPPORTS_HUGEPAGES for XPA,EVA")
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Signed-off-by: Thomas Bogendoerfer <tsbogend@alpha.franken.de>
+Signed-off-by: Maxim Levitsky <mlevitsk@redhat.com>
+Link: https://lore.kernel.org/r/20211123161038.48009-2-mlevitsk@redhat.com
+Signed-off-by: Joerg Roedel <jroedel@suse.de>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- arch/mips/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iommu/amd/init.c | 31 +++++++++++++++----------------
+ 1 file changed, 15 insertions(+), 16 deletions(-)
 
-diff --git a/arch/mips/Kconfig b/arch/mips/Kconfig
-index 0200ebb7a0144..393eb2133243f 100644
---- a/arch/mips/Kconfig
-+++ b/arch/mips/Kconfig
-@@ -2161,7 +2161,7 @@ config CPU_SUPPORTS_ADDRWINCFG
- 	bool
- config CPU_SUPPORTS_HUGEPAGES
- 	bool
--	depends on !(32BIT && (ARCH_PHYS_ADDR_T_64BIT || EVA))
-+	depends on !(32BIT && (PHYS_ADDR_T_64BIT || EVA))
- config MIPS_PGD_C0_CONTEXT
- 	bool
- 	depends on 64BIT
+diff --git a/drivers/iommu/amd/init.c b/drivers/iommu/amd/init.c
+index 2a822b229bd05..9b12a2f7548ac 100644
+--- a/drivers/iommu/amd/init.c
++++ b/drivers/iommu/amd/init.c
+@@ -804,16 +804,27 @@ static int iommu_ga_log_enable(struct amd_iommu *iommu)
+ {
+ #ifdef CONFIG_IRQ_REMAP
+ 	u32 status, i;
++	u64 entry;
+ 
+ 	if (!iommu->ga_log)
+ 		return -EINVAL;
+ 
+-	status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
+-
+ 	/* Check if already running */
+-	if (status & (MMIO_STATUS_GALOG_RUN_MASK))
++	status = readl(iommu->mmio_base + MMIO_STATUS_OFFSET);
++	if (WARN_ON(status & (MMIO_STATUS_GALOG_RUN_MASK)))
+ 		return 0;
+ 
++	entry = iommu_virt_to_phys(iommu->ga_log) | GA_LOG_SIZE_512;
++	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_BASE_OFFSET,
++		    &entry, sizeof(entry));
++	entry = (iommu_virt_to_phys(iommu->ga_log_tail) &
++		 (BIT_ULL(52)-1)) & ~7ULL;
++	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_TAIL_OFFSET,
++		    &entry, sizeof(entry));
++	writel(0x00, iommu->mmio_base + MMIO_GA_HEAD_OFFSET);
++	writel(0x00, iommu->mmio_base + MMIO_GA_TAIL_OFFSET);
++
++
+ 	iommu_feature_enable(iommu, CONTROL_GAINT_EN);
+ 	iommu_feature_enable(iommu, CONTROL_GALOG_EN);
+ 
+@@ -823,7 +834,7 @@ static int iommu_ga_log_enable(struct amd_iommu *iommu)
+ 			break;
+ 	}
+ 
+-	if (i >= LOOP_TIMEOUT)
++	if (WARN_ON(i >= LOOP_TIMEOUT))
+ 		return -EINVAL;
+ #endif /* CONFIG_IRQ_REMAP */
+ 	return 0;
+@@ -832,8 +843,6 @@ static int iommu_ga_log_enable(struct amd_iommu *iommu)
+ static int iommu_init_ga_log(struct amd_iommu *iommu)
+ {
+ #ifdef CONFIG_IRQ_REMAP
+-	u64 entry;
+-
+ 	if (!AMD_IOMMU_GUEST_IR_VAPIC(amd_iommu_guest_ir))
+ 		return 0;
+ 
+@@ -847,16 +856,6 @@ static int iommu_init_ga_log(struct amd_iommu *iommu)
+ 	if (!iommu->ga_log_tail)
+ 		goto err_out;
+ 
+-	entry = iommu_virt_to_phys(iommu->ga_log) | GA_LOG_SIZE_512;
+-	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_BASE_OFFSET,
+-		    &entry, sizeof(entry));
+-	entry = (iommu_virt_to_phys(iommu->ga_log_tail) &
+-		 (BIT_ULL(52)-1)) & ~7ULL;
+-	memcpy_toio(iommu->mmio_base + MMIO_GA_LOG_TAIL_OFFSET,
+-		    &entry, sizeof(entry));
+-	writel(0x00, iommu->mmio_base + MMIO_GA_HEAD_OFFSET);
+-	writel(0x00, iommu->mmio_base + MMIO_GA_TAIL_OFFSET);
+-
+ 	return 0;
+ err_out:
+ 	free_ga_log(iommu);
 -- 
 2.34.1
 
