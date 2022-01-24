@@ -2,45 +2,46 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8DC4C433EF
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:32:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70E9FC433F5
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:32:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350392AbiAXUcB (ORCPT
+        id S1355994AbiAXUcI (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:32:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33860 "EHLO
+        Mon, 24 Jan 2022 15:32:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355388AbiAXUNh (ORCPT
+        with ESMTP id S1355393AbiAXUNh (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
         Mon, 24 Jan 2022 15:13:37 -0500
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41619C06175A;
-        Mon, 24 Jan 2022 11:34:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2A25C061354;
+        Mon, 24 Jan 2022 11:11:15 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F3945B811F9;
-        Mon, 24 Jan 2022 19:34:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 58496C340E5;
-        Mon, 24 Jan 2022 19:34:51 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 8F45AB81236;
+        Mon, 24 Jan 2022 19:11:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A22BCC340E5;
+        Mon, 24 Jan 2022 19:11:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643052891;
-        bh=QAoycasiljDcdSm6faYBKX2CXMKw6Rx++/AvlQpD6PI=;
+        s=korg; t=1643051473;
+        bh=/wufMqX4nHb3ttYgY9ynSmxAtApyX6khtVhKyV0tUd8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iB5PKUAy98OwqndIR+5L3aq5aQjwOe6O3XW1IRp+6rcXSU7LunMdjgfFetk117KRy
-         yvuzmij82p3aAPvKASeiy+ZiIAKiAFpTnHRQfyxLC0pBJIJtAbnxuIBofWENHKiMZ3
-         nQ8D5D6DgKMjHYb8Vk6b61yY4JZLUf60DIL+m9aY=
+        b=f1CQ9nu6rs7etiNR6Ghordt3j+3hlWfPKBE0FYeWl5k5cLb/xamywP6csbF5iBGWz
+         sD9ZMCkn5atCnztQNu2RFeWtrswOYFEiUsLWu3xE2a2NMvR39a7oyKZZ9hzQNcUXiC
+         1FxbM/ICzy5R+5zK24O9s1JOVGtgAjCnu7WQG4QA=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Joerg Roedel <jroedel@suse.de>,
-        Borislav Petkov <bp@suse.de>, Sasha Levin <sashal@kernel.org>
-Subject: [PATCH 5.4 175/320] x86/mm: Flush global TLB when switching to trampoline page-table
-Date:   Mon, 24 Jan 2022 19:42:39 +0100
-Message-Id: <20220124183959.610833735@linuxfoundation.org>
+        stable@vger.kernel.org,
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Vinod Koul <vkoul@kernel.org>
+Subject: [PATCH 4.14 172/186] dmaengine: at_xdmac: Dont start transactions at tx_submit level
+Date:   Mon, 24 Jan 2022 19:44:07 +0100
+Message-Id: <20220124183942.646167534@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124183953.750177707@linuxfoundation.org>
-References: <20220124183953.750177707@linuxfoundation.org>
+In-Reply-To: <20220124183937.101330125@linuxfoundation.org>
+References: <20220124183937.101330125@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,103 +50,53 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Joerg Roedel <jroedel@suse.de>
+From: Tudor Ambarus <tudor.ambarus@microchip.com>
 
-[ Upstream commit 71d5049b053876afbde6c3273250b76935494ab2 ]
+commit bccfb96b59179d4f96cbbd1ddff8fac6d335eae4 upstream.
 
-Move the switching code into a function so that it can be re-used and
-add a global TLB flush. This makes sure that usage of memory which is
-not mapped in the trampoline page-table is reliably caught.
+tx_submit is supposed to push the current transaction descriptor to a
+pending queue, waiting for issue_pending() to be called. issue_pending()
+must start the transfer, not tx_submit(), thus remove
+at_xdmac_start_xfer() from at_xdmac_tx_submit(). Clients of at_xdmac that
+assume that tx_submit() starts the transfer must be updated and call
+dma_async_issue_pending() if they miss to call it (one example is
+atmel_serial).
 
-Also move the clearing of CR4.PCIDE before the CR3 switch because the
-cr4_clear_bits() function will access data not mapped into the
-trampoline page-table.
+As the at_xdmac_start_xfer() is now called only from
+at_xdmac_advance_work() when !at_xdmac_chan_is_enabled(), the
+at_xdmac_chan_is_enabled() check is no longer needed in
+at_xdmac_start_xfer(), thus remove it.
 
-Signed-off-by: Joerg Roedel <jroedel@suse.de>
-Signed-off-by: Borislav Petkov <bp@suse.de>
-Link: https://lore.kernel.org/r/20211202153226.22946-4-joro@8bytes.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: e1f7c9eee707 ("dmaengine: at_xdmac: creation of the atmel eXtended DMA Controller driver")
+Signed-off-by: Tudor Ambarus <tudor.ambarus@microchip.com>
+Link: https://lore.kernel.org/r/20211215110115.191749-2-tudor.ambarus@microchip.com
+Signed-off-by: Vinod Koul <vkoul@kernel.org>
+Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- arch/x86/include/asm/realmode.h |  1 +
- arch/x86/kernel/reboot.c        | 12 ++----------
- arch/x86/realmode/init.c        | 26 ++++++++++++++++++++++++++
- 3 files changed, 29 insertions(+), 10 deletions(-)
+ drivers/dma/at_xdmac.c |    6 ------
+ 1 file changed, 6 deletions(-)
 
-diff --git a/arch/x86/include/asm/realmode.h b/arch/x86/include/asm/realmode.h
-index 09ecc32f65248..52d7512ea91ab 100644
---- a/arch/x86/include/asm/realmode.h
-+++ b/arch/x86/include/asm/realmode.h
-@@ -82,6 +82,7 @@ static inline void set_real_mode_mem(phys_addr_t mem)
- }
+--- a/drivers/dma/at_xdmac.c
++++ b/drivers/dma/at_xdmac.c
+@@ -344,9 +344,6 @@ static void at_xdmac_start_xfer(struct a
  
- void reserve_real_mode(void);
-+void load_trampoline_pgtable(void);
+ 	dev_vdbg(chan2dev(&atchan->chan), "%s: desc 0x%p\n", __func__, first);
  
- #endif /* __ASSEMBLY__ */
- 
-diff --git a/arch/x86/kernel/reboot.c b/arch/x86/kernel/reboot.c
-index d65d1afb27161..fdef27a84d713 100644
---- a/arch/x86/kernel/reboot.c
-+++ b/arch/x86/kernel/reboot.c
-@@ -113,17 +113,9 @@ void __noreturn machine_real_restart(unsigned int type)
- 	spin_unlock(&rtc_lock);
- 
- 	/*
--	 * Switch back to the initial page table.
-+	 * Switch to the trampoline page table.
- 	 */
--#ifdef CONFIG_X86_32
--	load_cr3(initial_page_table);
--#else
--	write_cr3(real_mode_header->trampoline_pgd);
+-	if (at_xdmac_chan_is_enabled(atchan))
+-		return;
 -
--	/* Exiting long mode will fail if CR4.PCIDE is set. */
--	if (boot_cpu_has(X86_FEATURE_PCID))
--		cr4_clear_bits(X86_CR4_PCIDE);
--#endif
-+	load_trampoline_pgtable();
+ 	/* Set transfer as active to not try to start it again. */
+ 	first->active_xfer = true;
  
- 	/* Jump to the identity-mapped low memory code */
- #ifdef CONFIG_X86_32
-diff --git a/arch/x86/realmode/init.c b/arch/x86/realmode/init.c
-index de371e52cfa85..fac50ebb122b5 100644
---- a/arch/x86/realmode/init.c
-+++ b/arch/x86/realmode/init.c
-@@ -16,6 +16,32 @@ u32 *trampoline_cr4_features;
- /* Hold the pgd entry used on booting additional CPUs */
- pgd_t trampoline_pgd_entry;
- 
-+void load_trampoline_pgtable(void)
-+{
-+#ifdef CONFIG_X86_32
-+	load_cr3(initial_page_table);
-+#else
-+	/*
-+	 * This function is called before exiting to real-mode and that will
-+	 * fail with CR4.PCIDE still set.
-+	 */
-+	if (boot_cpu_has(X86_FEATURE_PCID))
-+		cr4_clear_bits(X86_CR4_PCIDE);
-+
-+	write_cr3(real_mode_header->trampoline_pgd);
-+#endif
-+
-+	/*
-+	 * The CR3 write above will not flush global TLB entries.
-+	 * Stale, global entries from previous page tables may still be
-+	 * present.  Flush those stale entries.
-+	 *
-+	 * This ensures that memory accessed while running with
-+	 * trampoline_pgd is *actually* mapped into trampoline_pgd.
-+	 */
-+	__flush_tlb_all();
-+}
-+
- void __init reserve_real_mode(void)
- {
- 	phys_addr_t mem;
--- 
-2.34.1
-
+@@ -430,9 +427,6 @@ static dma_cookie_t at_xdmac_tx_submit(s
+ 	dev_vdbg(chan2dev(tx->chan), "%s: atchan 0x%p, add desc 0x%p to xfers_list\n",
+ 		 __func__, atchan, desc);
+ 	list_add_tail(&desc->xfer_node, &atchan->xfers_list);
+-	if (list_is_singular(&atchan->xfers_list))
+-		at_xdmac_start_xfer(atchan, desc);
+-
+ 	spin_unlock_irqrestore(&atchan->lock, irqflags);
+ 	return cookie;
+ }
 
 
