@@ -2,75 +2,84 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A8A3C4332F
-	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:39:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BB8F0C4332F
+	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 20:39:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357352AbiAXUil (ORCPT
+        id S1388336AbiAXUit (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 15:38:41 -0500
-Received: from jabberwock.ucw.cz ([46.255.230.98]:52564 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347643AbiAXURj (ORCPT
+        Mon, 24 Jan 2022 15:38:49 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:43686 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1346645AbiAXURr (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 15:17:39 -0500
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id B5F831C0B9C; Mon, 24 Jan 2022 21:17:37 +0100 (CET)
-Date:   Mon, 24 Jan 2022 21:17:37 +0100
-From:   Pavel Machek <pavel@denx.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-kernel@vger.kernel.org, torvalds@linux-foundation.org,
-        akpm@linux-foundation.org, linux@roeck-us.net, shuah@kernel.org,
-        patches@kernelci.org, lkft-triage@lists.linaro.org, pavel@denx.de,
-        jonathanh@nvidia.com, f.fainelli@gmail.com,
-        sudipm.mukherjee@gmail.com, stable@vger.kernel.org
-Subject: Re: [PATCH 4.19 000/239] 4.19.226-rc1 review
-Message-ID: <20220124201737.GB16782@duo.ucw.cz>
-References: <20220124183943.102762895@linuxfoundation.org>
+        Mon, 24 Jan 2022 15:17:47 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CA9261491;
+        Mon, 24 Jan 2022 20:17:47 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DEC97C340E8;
+        Mon, 24 Jan 2022 20:17:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1643055466;
+        bh=BNw15DMNEo5jqLE6Y6CE4dQGroEOmFccGBlIu/rczgw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=A5TBXNdmOOmjP4nc22WAh+3V9WPexcho57XMV2mSc3urSl7mLe0VZRfCmRlAHb3da
+         gxt2CQXPt4iSulumeNcLTCePOeorT4yS75+eYfxQJBp6xKimgaGm5pfF5/f4azPINe
+         hkVR2ILGJCSazPtI42gM/3x3YVrgVKvi663eGdhg=
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     linux-kernel@vger.kernel.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        stable@vger.kernel.org, Daniel Scally <djrscally@gmail.com>,
+        Sakari Ailus <sakari.ailus@linux.intel.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Sasha Levin <sashal@kernel.org>
+Subject: [PATCH 5.15 161/846] media: i2c: Re-order runtime pm initialisation
+Date:   Mon, 24 Jan 2022 19:34:38 +0100
+Message-Id: <20220124184106.539538029@linuxfoundation.org>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
+References: <20220124184100.867127425@linuxfoundation.org>
+User-Agent: quilt/0.66
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="PmA2V3Z32TCmWXqI"
-Content-Disposition: inline
-In-Reply-To: <20220124183943.102762895@linuxfoundation.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
+From: Daniel Scally <djrscally@gmail.com>
 
---PmA2V3Z32TCmWXqI
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+[ Upstream commit d2484fbf780762f6f9cc3abb7a07ee42dca2eaa3 ]
 
-Hi!
+The kerneldoc for pm_runtime_set_suspended() says:
 
-> This is the start of the stable review cycle for the 4.19.226 release.
-> There are 239 patches in this series, all will be posted as a response
-> to this one.  If anyone has any issues with these being applied, please
-> let me know.
+"It is not valid to call this function for devices with runtime PM
+enabled"
 
-CIP testing did not find any problems here:
+To satisfy that requirement, re-order the calls so that
+pm_runtime_enable() is the last one.
 
-https://gitlab.com/cip-project/cip-testing/linux-stable-rc-ci/-/tree/linux-=
-4.19.y
+Fixes: 11c0d8fdccc5 ("media: i2c: Add support for the OV8865 image sensor")
+Signed-off-by: Daniel Scally <djrscally@gmail.com>
+Signed-off-by: Sakari Ailus <sakari.ailus@linux.intel.com>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/media/i2c/ov8865.c |    2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Tested-by: Pavel Machek (CIP) <pavel@denx.de>
+--- a/drivers/media/i2c/ov8865.c
++++ b/drivers/media/i2c/ov8865.c
+@@ -2899,8 +2899,8 @@ static int ov8865_probe(struct i2c_clien
+ 
+ 	/* Runtime PM */
+ 
+-	pm_runtime_enable(sensor->dev);
+ 	pm_runtime_set_suspended(sensor->dev);
++	pm_runtime_enable(sensor->dev);
+ 
+ 	/* V4L2 subdev register */
+ 
 
-Best regards,
-                                                                Pavel
 
---=20
-DENX Software Engineering GmbH,      Managing Director: Wolfgang Denk
-HRB 165235 Munich, Office: Kirchenstr.5, D-82194 Groebenzell, Germany
-
---PmA2V3Z32TCmWXqI
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iF0EABECAB0WIQRPfPO7r0eAhk010v0w5/Bqldv68gUCYe8JYQAKCRAw5/Bqldv6
-8tvBAJ44nMydFbAEZnqP7EposRDZ6dmrlwCeOAABfiWG22dP6R2GBjT9xRIBnbo=
-=+fef
------END PGP SIGNATURE-----
-
---PmA2V3Z32TCmWXqI--
