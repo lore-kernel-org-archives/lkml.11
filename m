@@ -2,42 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0958C4321E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA0ACC4167D
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 23:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1847957AbiAXXVS (ORCPT
+        id S1847982AbiAXXV2 (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 18:21:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37102 "EHLO
+        Mon, 24 Jan 2022 18:21:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1584545AbiAXWVY (ORCPT
+        with ESMTP id S1582430AbiAXWPT (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 17:21:24 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDA0DC0424CF;
-        Mon, 24 Jan 2022 12:50:08 -0800 (PST)
+        Mon, 24 Jan 2022 17:15:19 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 082C9C0E2631;
+        Mon, 24 Jan 2022 12:44:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 732EAB80FA1;
-        Mon, 24 Jan 2022 20:50:08 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id AB3E7C340E5;
-        Mon, 24 Jan 2022 20:50:06 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9DD8D60B21;
+        Mon, 24 Jan 2022 20:44:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 805EEC340EA;
+        Mon, 24 Jan 2022 20:44:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643057407;
-        bh=t36Qf7OqaHp5mhLh63Ejubt/7CRwFd48SoJJMeaqkEw=;
+        s=korg; t=1643057060;
+        bh=uAlWWnbqersf2Iz6eORks7ljC27rMrLewZjq8ZOs8Hw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mxryHwxWoHZChzr6ovZ6iOQvaJnOe52Rq8DCM78TKHv7RIBx9SfCPfhebZfNHMpSY
-         KCYxmjHQdoAL+ghyS24hzK6waKWCyOQq0K1RmapDN50WV+wj7dZDBR/11lvXj69wbi
-         XQ6O6rzK7NQL4NWIKpzttbeIT5YVPtP34aBT4Fs8=
+        b=2fxmw28WAXAfLg7yFrcRxFyZ34EGtKmd/K9j+vUhL8nAfY0OESrfsanBrDHvkDDwC
+         Yz/aWwF0pSzGRyJ452Nhum41yAbc8HT+TI7LyajBOiv9/poAXBHo4B9qJ1jZoQCHFO
+         hmrTIcN10k3p3g4H3V9MFGO4GXKT+rYjcs0rMC2U=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Laurence de Bruxelles <lfdebrux@gmail.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 5.15 803/846] rtc: pxa: fix null pointer dereference
-Date:   Mon, 24 Jan 2022 19:45:20 +0100
-Message-Id: <20220124184128.642134089@linuxfoundation.org>
+        stable@vger.kernel.org, Rafael Gago Castano <rgc@hms.se>,
+        Jan Kiszka <jan.kiszka@siemens.com>,
+        Su Bao Cheng <baocheng.su@siemens.com>,
+        Lukas Wunner <lukas@wunner.de>
+Subject: [PATCH 5.15 681/846] serial: Fix incorrect rs485 polarity on uart open
+Date:   Mon, 24 Jan 2022 19:43:18 +0100
+Message-Id: <20220124184124.566153384@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184100.867127425@linuxfoundation.org>
 References: <20220124184100.867127425@linuxfoundation.org>
@@ -49,51 +51,67 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Laurence de Bruxelles <lfdebrux@gmail.com>
+From: Lukas Wunner <lukas@wunner.de>
 
-commit 34127b3632b21e5c391756e724b1198eb9917981 upstream.
+commit d3b3404df318504ec084213ab1065b73f49b0f1d upstream.
 
-With the latest stable kernel versions the rtc on the PXA based
-Zaurus does not work, when booting I see the following kernel messages:
+Commit a6845e1e1b78 ("serial: core: Consider rs485 settings to drive
+RTS") sought to deassert RTS when opening an rs485-enabled uart port.
+That way, the transceiver does not occupy the bus until it transmits
+data.
 
-pxa-rtc pxa-rtc: failed to find rtc clock source
-pxa-rtc pxa-rtc: Unable to init SA1100 RTC sub-device
-pxa-rtc: probe of pxa-rtc failed with error -2
-hctosys: unable to open rtc device (rtc0)
+Unfortunately, the commit mixed up the logic and *asserted* RTS instead
+of *deasserting* it:
 
-I think this is because commit f2997775b111 ("rtc: sa1100: fix possible
-race condition") moved the allocation of the rtc_device struct out of
-sa1100_rtc_init and into sa1100_rtc_probe. This means that pxa_rtc_probe
-also needs to do allocation for the rtc_device struct, otherwise
-sa1100_rtc_init will try to dereference a null pointer. This patch adds
-that allocation by copying how sa1100_rtc_probe in
-drivers/rtc/rtc-sa1100.c does it; after the IRQs are set up a managed
-rtc_device is allocated.
+The commit amended uart_port_dtr_rts(), which raises DTR and RTS when
+opening an rs232 port.  "Raising" actually means lowering the signal
+that's coming out of the uart, because an rs232 transceiver not only
+changes a signal's voltage level, it also *inverts* the signal.  See
+the simplified schematic in the MAX232 datasheet for an example:
+https://www.ti.com/lit/ds/symlink/max232.pdf
 
-I've tested this patch with `qemu-system-arm -machine akita` and with a
-real Zaurus SL-C1000 applied to 4.19, 5.4, and 5.10.
+So, to raise RTS on an rs232 port, TIOCM_RTS is *set* in port->mctrl
+and that results in the signal being driven low.
 
-Signed-off-by: Laurence de Bruxelles <lfdebrux@gmail.com>
-Fixes: f2997775b111 ("rtc: sa1100: fix possible race condition")
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Link: https://lore.kernel.org/r/20220101154149.12026-1-lfdebrux@gmail.com
+In contrast to rs232, the signal level for rs485 Transmit Enable is the
+identity, not the inversion:  If the transceiver expects a "high" RTS
+signal for Transmit Enable, the signal coming out of the uart must also
+be high, so TIOCM_RTS must be *cleared* in port->mctrl.
+
+The commit did the exact opposite, but it's easy to see why given the
+confusing semantics of rs232 and rs485.  Fix it.
+
+Fixes: a6845e1e1b78 ("serial: core: Consider rs485 settings to drive RTS")
+Cc: stable@vger.kernel.org # v4.14+
+Cc: Rafael Gago Castano <rgc@hms.se>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
+Cc: Su Bao Cheng <baocheng.su@siemens.com>
+Signed-off-by: Lukas Wunner <lukas@wunner.de>
+Link: https://lore.kernel.org/r/9395767847833f2f3193c49cde38501eeb3b5669.1639821059.git.lukas@wunner.de
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/rtc/rtc-pxa.c |    4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/tty/serial/serial_core.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
---- a/drivers/rtc/rtc-pxa.c
-+++ b/drivers/rtc/rtc-pxa.c
-@@ -330,6 +330,10 @@ static int __init pxa_rtc_probe(struct p
- 	if (sa1100_rtc->irq_alarm < 0)
- 		return -ENXIO;
+--- a/drivers/tty/serial/serial_core.c
++++ b/drivers/tty/serial/serial_core.c
+@@ -162,7 +162,7 @@ static void uart_port_dtr_rts(struct uar
+ 	int RTS_after_send = !!(uport->rs485.flags & SER_RS485_RTS_AFTER_SEND);
  
-+	sa1100_rtc->rtc = devm_rtc_allocate_device(&pdev->dev);
-+	if (IS_ERR(sa1100_rtc->rtc))
-+		return PTR_ERR(sa1100_rtc->rtc);
-+
- 	pxa_rtc->base = devm_ioremap(dev, pxa_rtc->ress->start,
- 				resource_size(pxa_rtc->ress));
- 	if (!pxa_rtc->base) {
+ 	if (raise) {
+-		if (rs485_on && !RTS_after_send) {
++		if (rs485_on && RTS_after_send) {
+ 			uart_set_mctrl(uport, TIOCM_DTR);
+ 			uart_clear_mctrl(uport, TIOCM_RTS);
+ 		} else {
+@@ -171,7 +171,7 @@ static void uart_port_dtr_rts(struct uar
+ 	} else {
+ 		unsigned int clear = TIOCM_DTR;
+ 
+-		clear |= (!rs485_on || !RTS_after_send) ? TIOCM_RTS : 0;
++		clear |= (!rs485_on || RTS_after_send) ? TIOCM_RTS : 0;
+ 		uart_clear_mctrl(uport, clear);
+ 	}
+ }
 
 
