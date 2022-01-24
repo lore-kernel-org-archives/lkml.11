@@ -2,39 +2,39 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52266C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AF69C4332F
 	for <linux-kernel@archiver.kernel.org>; Mon, 24 Jan 2022 22:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1838543AbiAXWqr (ORCPT
+        id S1838524AbiAXWqo (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 17:46:47 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:58950 "EHLO
+        Mon, 24 Jan 2022 17:46:44 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:58842 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1457107AbiAXVk4 (ORCPT
+        with ESMTP id S1457024AbiAXVko (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 16:40:56 -0500
+        Mon, 24 Jan 2022 16:40:44 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 7EAFE61520;
-        Mon, 24 Jan 2022 21:40:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8F33DC340E4;
-        Mon, 24 Jan 2022 21:40:54 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D03061519;
+        Mon, 24 Jan 2022 21:40:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72DA2C340E4;
+        Mon, 24 Jan 2022 21:40:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060454;
-        bh=bA2NVkNRdfsC9+kYNk0cI6zBu7bM2DrL1aL/zdydw6E=;
+        s=korg; t=1643060443;
+        bh=m4BNfYQYC4dEYNrO6HUF/i8ht6RJdxFTmGaSFBrmAO0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2mDkXYxnyETnsdBw8AXCEXW5ryjJ2yJwRgeDaHYyT2Vnro/9XtmKcatE4cTOVw4ur
-         claEytLSE5YhOcIom6EFQqztk1wvpmHmg6nXqLIFZBkgD+E2WTl8s5DvOKtcfgVqKd
-         yda34lqzuAyknNIWti4OgqNuSQtGT3AgCiKF2x1k=
+        b=Gd8LoQLJVHvw6TgNDOjI/is9zJypsvjTi0Wg4/1Q2IJDQxIjb/NIhX7f25F68RtEY
+         IpbX5hknXv90D9GOphjTqf2bSUxITuL/ttapBSEn9aOYJIu06khgSmOIx5M2my+I/+
+         PwmT54Ljp2a8KmPLCnqqCMY5nxzRQxMs9dk8ivvg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        stable@vger.kernel.org, Fengnan Chang <changfengnan@vivo.com>,
-        Chao Yu <chao@kernel.org>, Jaegeuk Kim <jaegeuk@kernel.org>
-Subject: [PATCH 5.16 0954/1039] f2fs: fix remove page failed in invalidate compress pages
-Date:   Mon, 24 Jan 2022 19:45:43 +0100
-Message-Id: <20220124184157.355359360@linuxfoundation.org>
+        stable@vger.kernel.org, Anup Patel <anup@brainfault.org>,
+        Palmer Dabbelt <palmer@rivosinc.com>
+Subject: [PATCH 5.16 0950/1039] RISC-V: defconfigs: Set CONFIG_FB=y, for FB console
+Date:   Mon, 24 Jan 2022 19:45:39 +0100
+Message-Id: <20220124184157.220884764@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -46,36 +46,43 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Fengnan Chang <changfengnan@vivo.com>
+From: Palmer Dabbelt <palmer@rivosinc.com>
 
-commit d1917865a7906baf6b687e15e8e6195a295a3992 upstream.
+commit 3d12b634fe8206ea974c6061a3f3eea529ffbc48 upstream.
 
-Since compress inode not a regular file, generic_error_remove_page in
-f2fs_invalidate_compress_pages will always be failed, set compress
-inode as a regular file to fix it.
+We have CONFIG_FRAMEBUFFER_CONSOLE=y in the defconfigs, but that depends
+on CONFIG_FB so it's not actually getting set.  I'm assuming most users
+on real systems want a framebuffer console, so this enables CONFIG_FB to
+allow that to take effect.
 
-Fixes: 6ce19aff0b8c ("f2fs: compress: add compress_inode to cache compressed blocks")
-Signed-off-by: Fengnan Chang <changfengnan@vivo.com>
-Reviewed-by: Chao Yu <chao@kernel.org>
-Signed-off-by: Jaegeuk Kim <jaegeuk@kernel.org>
+Fixes: 33c57c0d3c67 ("RISC-V: Add a basic defconfig")
+Reviewed-by: Anup Patel <anup@brainfault.org>
+Signed-off-by: Palmer Dabbelt <palmer@rivosinc.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- fs/f2fs/inode.c |    5 +++++
- 1 file changed, 5 insertions(+)
+ arch/riscv/configs/defconfig      |    1 +
+ arch/riscv/configs/rv32_defconfig |    1 +
+ 2 files changed, 2 insertions(+)
 
---- a/fs/f2fs/inode.c
-+++ b/fs/f2fs/inode.c
-@@ -516,6 +516,11 @@ make_now:
- 	} else if (ino == F2FS_COMPRESS_INO(sbi)) {
- #ifdef CONFIG_F2FS_FS_COMPRESSION
- 		inode->i_mapping->a_ops = &f2fs_compress_aops;
-+		/*
-+		 * generic_error_remove_page only truncates pages of regular
-+		 * inode
-+		 */
-+		inode->i_mode |= S_IFREG;
- #endif
- 		mapping_set_gfp_mask(inode->i_mapping,
- 			GFP_NOFS | __GFP_HIGHMEM | __GFP_MOVABLE);
+--- a/arch/riscv/configs/defconfig
++++ b/arch/riscv/configs/defconfig
+@@ -78,6 +78,7 @@ CONFIG_DRM=m
+ CONFIG_DRM_RADEON=m
+ CONFIG_DRM_NOUVEAU=m
+ CONFIG_DRM_VIRTIO_GPU=m
++CONFIG_FB=y
+ CONFIG_FRAMEBUFFER_CONSOLE=y
+ CONFIG_USB=y
+ CONFIG_USB_XHCI_HCD=y
+--- a/arch/riscv/configs/rv32_defconfig
++++ b/arch/riscv/configs/rv32_defconfig
+@@ -73,6 +73,7 @@ CONFIG_POWER_RESET=y
+ CONFIG_DRM=y
+ CONFIG_DRM_RADEON=y
+ CONFIG_DRM_VIRTIO_GPU=y
++CONFIG_FB=y
+ CONFIG_FRAMEBUFFER_CONSOLE=y
+ CONFIG_USB=y
+ CONFIG_USB_XHCI_HCD=y
 
 
