@@ -2,45 +2,44 @@ Return-Path: <linux-kernel-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F623C4332F
-	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1AB3C433EF
+	for <linux-kernel@archiver.kernel.org>; Tue, 25 Jan 2022 01:58:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S3412261AbiAYAgX (ORCPT
+        id S3412372AbiAYAgp (ORCPT
         <rfc822;linux-kernel@archiver.kernel.org>);
-        Mon, 24 Jan 2022 19:36:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58710 "EHLO
+        Mon, 24 Jan 2022 19:36:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2365132AbiAXXuS (ORCPT
+        with ESMTP id S2365366AbiAXXuq (ORCPT
         <rfc822;linux-kernel@vger.kernel.org>);
-        Mon, 24 Jan 2022 18:50:18 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2895AC0417CF;
-        Mon, 24 Jan 2022 13:44:11 -0800 (PST)
+        Mon, 24 Jan 2022 18:50:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83383C0FE6A4;
+        Mon, 24 Jan 2022 13:44:37 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BBD7461491;
-        Mon, 24 Jan 2022 21:44:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A2722C340E4;
-        Mon, 24 Jan 2022 21:44:09 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 4AE98B811A9;
+        Mon, 24 Jan 2022 21:44:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 84918C340E4;
+        Mon, 24 Jan 2022 21:44:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1643060650;
-        bh=eXynGo+KjFto3C/Buumq3unNrllJ5PYHTL/A30vhd9o=;
+        s=korg; t=1643060675;
+        bh=yu+IE5+gItyP4e2FuDlpjTgxMD8d6Lf0tXsdlecCLis=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uTJvxR8tndHQ8hHZNn5J3kBbn+sHhDLWn/1SfINzoTerSf1V108tpkCK5T2SNeNjP
-         25pa23UjZqUIahRYB612FwCQB24rbSUqzIi8OVILf9ikx3+waa8LDQjpFdOAkJFoK6
-         BF5z/yW5jKHAN8SG1/1kq+UAU3fXAryjNU71wOm0=
+        b=dvcUD1Dk9ZSL/l+2y58bpKVv6JAsBry7YQngUj3ZLtqWkdq/0hzSPAKVhulOKkejM
+         d7pUHZmxLtLzaIoZDpk9VvjGa4bjgB6UQ14WR1gws6tf7a2fXk/hrIfSb61AnsSr6i
+         gpTkonziGbhjGdjvJqYSAv1xm8FWub/K9zgnzXKg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         stable@vger.kernel.org,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Ard Biesheuvel <ardb@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: [PATCH 5.16 1019/1039] net: cpsw: avoid alignment faults by taking NET_IP_ALIGN into account
-Date:   Mon, 24 Jan 2022 19:46:48 +0100
-Message-Id: <20220124184159.548689447@linuxfoundation.org>
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        Frank Rowand <frank.rowand@sony.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH 5.16 1027/1039] scripts/dtc: dtx_diff: remove broken example from help text
+Date:   Mon, 24 Jan 2022 19:46:56 +0100
+Message-Id: <20220124184159.816262393@linuxfoundation.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124184125.121143506@linuxfoundation.org>
 References: <20220124184125.121143506@linuxfoundation.org>
@@ -52,100 +51,46 @@ Precedence: bulk
 List-ID: <linux-kernel.vger.kernel.org>
 X-Mailing-List: linux-kernel@vger.kernel.org
 
-From: Ard Biesheuvel <ardb@kernel.org>
+From: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
 
-commit 1771afd47430f5e95c9c3a2e3a8a63e67402d3fe upstream.
+commit d8adf5b92a9d2205620874d498c39923ecea8749 upstream.
 
-Both versions of the CPSW driver declare a CPSW_HEADROOM_NA macro that
-takes NET_IP_ALIGN into account, but fail to use it appropriately when
-storing incoming packets in memory. This results in the IPv4 source and
-destination addresses to appear misaligned in memory, which causes
-aligment faults that need to be fixed up in software.
+dtx_diff suggests to use <(...) syntax to pipe two inputs into it, but
+this has never worked: The /proc/self/fds/... paths passed by the shell
+will fail the `[ -f "${dtx}" ] && [ -r "${dtx}" ]` check in compile_to_dts,
+but even with this check removed, the function cannot work: hexdump will
+eat up the DTB magic, making the subsequent dtc call fail, as a pipe
+cannot be rewound.
 
-So let's switch from CPSW_HEADROOM to CPSW_HEADROOM_NA where needed.
-This gets rid of any alignment faults on the RX path on a Beaglebone
-White.
+Simply remove this broken example, as there is already an alternative one
+that works fine.
 
-Fixes: 9ed4050c0d75 ("net: ethernet: ti: cpsw: add XDP support")
-Cc: Grygorii Strashko <grygorii.strashko@ti.com>
-Cc: Ilias Apalodimas <ilias.apalodimas@linaro.org>
-Signed-off-by: Ard Biesheuvel <ardb@kernel.org>
-Signed-off-by: David S. Miller <davem@davemloft.net>
+Fixes: 10eadc253ddf ("dtc: create tool to diff device trees")
+Signed-off-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+Reviewed-by: Frank Rowand <frank.rowand@sony.com>
+Signed-off-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20220113081918.10387-1-matthias.schiffer@ew.tq-group.com
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/net/ethernet/ti/cpsw.c      |    6 +++---
- drivers/net/ethernet/ti/cpsw_new.c  |    6 +++---
- drivers/net/ethernet/ti/cpsw_priv.c |    2 +-
- 3 files changed, 7 insertions(+), 7 deletions(-)
+ scripts/dtc/dtx_diff |    8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
---- a/drivers/net/ethernet/ti/cpsw.c
-+++ b/drivers/net/ethernet/ti/cpsw.c
-@@ -349,7 +349,7 @@ static void cpsw_rx_handler(void *token,
- 	struct cpsw_common	*cpsw = ndev_to_cpsw(xmeta->ndev);
- 	int			pkt_size = cpsw->rx_packet_max;
- 	int			ret = 0, port, ch = xmeta->ch;
--	int			headroom = CPSW_HEADROOM;
-+	int			headroom = CPSW_HEADROOM_NA;
- 	struct net_device	*ndev = xmeta->ndev;
- 	struct cpsw_priv	*priv;
- 	struct page_pool	*pool;
-@@ -392,7 +392,7 @@ static void cpsw_rx_handler(void *token,
- 	}
+--- a/scripts/dtc/dtx_diff
++++ b/scripts/dtc/dtx_diff
+@@ -59,12 +59,8 @@ Otherwise DTx is treated as a dts source
+    or '/include/' to be processed.
  
- 	if (priv->xdp_prog) {
--		int headroom = CPSW_HEADROOM, size = len;
-+		int size = len;
+    If DTx_1 and DTx_2 are in different architectures, then this script
+-   may not work since \${ARCH} is part of the include path.  Two possible
+-   workarounds:
+-
+-      `basename $0` \\
+-          <(ARCH=arch_of_dtx_1 `basename $0` DTx_1) \\
+-          <(ARCH=arch_of_dtx_2 `basename $0` DTx_2)
++   may not work since \${ARCH} is part of the include path.  The following
++   workaround can be used:
  
- 		xdp_init_buff(&xdp, PAGE_SIZE, &priv->xdp_rxq[ch]);
- 		if (status & CPDMA_RX_VLAN_ENCAP) {
-@@ -442,7 +442,7 @@ requeue:
- 	xmeta->ndev = ndev;
- 	xmeta->ch = ch;
- 
--	dma = page_pool_get_dma_addr(new_page) + CPSW_HEADROOM;
-+	dma = page_pool_get_dma_addr(new_page) + CPSW_HEADROOM_NA;
- 	ret = cpdma_chan_submit_mapped(cpsw->rxv[ch].ch, new_page, dma,
- 				       pkt_size, 0);
- 	if (ret < 0) {
---- a/drivers/net/ethernet/ti/cpsw_new.c
-+++ b/drivers/net/ethernet/ti/cpsw_new.c
-@@ -283,7 +283,7 @@ static void cpsw_rx_handler(void *token,
- {
- 	struct page *new_page, *page = token;
- 	void *pa = page_address(page);
--	int headroom = CPSW_HEADROOM;
-+	int headroom = CPSW_HEADROOM_NA;
- 	struct cpsw_meta_xdp *xmeta;
- 	struct cpsw_common *cpsw;
- 	struct net_device *ndev;
-@@ -336,7 +336,7 @@ static void cpsw_rx_handler(void *token,
- 	}
- 
- 	if (priv->xdp_prog) {
--		int headroom = CPSW_HEADROOM, size = len;
-+		int size = len;
- 
- 		xdp_init_buff(&xdp, PAGE_SIZE, &priv->xdp_rxq[ch]);
- 		if (status & CPDMA_RX_VLAN_ENCAP) {
-@@ -386,7 +386,7 @@ requeue:
- 	xmeta->ndev = ndev;
- 	xmeta->ch = ch;
- 
--	dma = page_pool_get_dma_addr(new_page) + CPSW_HEADROOM;
-+	dma = page_pool_get_dma_addr(new_page) + CPSW_HEADROOM_NA;
- 	ret = cpdma_chan_submit_mapped(cpsw->rxv[ch].ch, new_page, dma,
- 				       pkt_size, 0);
- 	if (ret < 0) {
---- a/drivers/net/ethernet/ti/cpsw_priv.c
-+++ b/drivers/net/ethernet/ti/cpsw_priv.c
-@@ -1120,7 +1120,7 @@ int cpsw_fill_rx_channels(struct cpsw_pr
- 			xmeta->ndev = priv->ndev;
- 			xmeta->ch = ch;
- 
--			dma = page_pool_get_dma_addr(page) + CPSW_HEADROOM;
-+			dma = page_pool_get_dma_addr(page) + CPSW_HEADROOM_NA;
- 			ret = cpdma_chan_idle_submit_mapped(cpsw->rxv[ch].ch,
- 							    page, dma,
- 							    cpsw->rx_packet_max,
+       `basename $0` ARCH=arch_of_dtx_1 DTx_1 >tmp_dtx_1.dts
+       `basename $0` ARCH=arch_of_dtx_2 DTx_2 >tmp_dtx_2.dts
 
 
